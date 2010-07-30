@@ -1,0 +1,44 @@
+From: Rafael J. Wysocki <rjw@sisk.pl>
+Date: Fri, 11 Jun 2010 22:05:19 +0000 (+0200)
+Subject: ACPI / ACPICA: Do not attempt to disable GPE when installing handler
+X-Git-Tag: v2.6.35-rc4~72^2~6^2~5
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=a997ab332832519c2e292db13f509e4360495a5a
+
+ACPI / ACPICA: Do not attempt to disable GPE when installing handler
+
+Commit 0f849d2cc6863c7874889ea60a871fb71399dd3f (ACPICA: Minimize
+the differences between linux GPE code and ACPICA code base)
+introduced a change attempting to disable a GPE before installing
+a handler for it in acpi_install_gpe_handler() which was incorrect.
+First, the GPE disabled by it is never enabled again (except during
+resume) which leads to battery insert/remove events not being
+reported on the Maxim Levitsky's machine.  Second, the disabled
+GPE is still reported as enabled by the sysfs interface that only
+checks its enable register's enable_for_run mask.
+
+Revert this change for now, because it causes more damage to happen
+than the bug it was supposed to fix.
+
+Signed-off-by: Rafael J. Wysocki <rjw@sisk.pl>
+Reported-and-tested-by: Maxim Levitsky <maximlevitsky@gmail.com>
+Signed-off-by: Len Brown <len.brown@intel.com>
+---
+
+diff --git a/drivers/acpi/acpica/evxface.c b/drivers/acpi/acpica/evxface.c
+index cc82502..4a531cd 100644
+--- a/drivers/acpi/acpica/evxface.c
++++ b/drivers/acpi/acpica/evxface.c
+@@ -719,13 +719,6 @@ acpi_install_gpe_handler(acpi_handle gpe_device,
+ 	handler->context = context;
+ 	handler->method_node = gpe_event_info->dispatch.method_node;
+ 
+-	/* Disable the GPE before installing the handler */
+-
+-	status = acpi_ev_disable_gpe(gpe_event_info);
+-	if (ACPI_FAILURE (status)) {
+-		goto unlock_and_exit;
+-	}
+-
+ 	/* Install the handler */
+ 
+ 	flags = acpi_os_acquire_lock(acpi_gbl_gpe_lock);

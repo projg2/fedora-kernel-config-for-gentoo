@@ -1,0 +1,953 @@
+From c05556421742eb47f80301767653a4bcb19de9de Mon Sep 17 00:00:00 2001
+From: Ian Munsie <imunsie@au.ibm.com>
+Date: Tue, 13 Apr 2010 18:37:33 +1000
+Subject: perf: Fix endianness argument compatibility with OPT_BOOLEAN() and introduce OPT_INCR()
+
+From: Ian Munsie <imunsie@au.ibm.com>
+
+commit c05556421742eb47f80301767653a4bcb19de9de upstream.
+
+Parsing an option from the command line with OPT_BOOLEAN on a
+bool data type would not work on a big-endian machine due to the
+manner in which the boolean was being cast into an int and
+incremented. For example, running 'perf probe --list' on a
+PowerPC machine would fail to properly set the list_events bool
+and would therefore print out the usage information and
+terminate.
+
+This patch makes OPT_BOOLEAN work as expected with a bool
+datatype. For cases where the original OPT_BOOLEAN was
+intentionally being used to increment an int each time it was
+passed in on the command line, this patch introduces OPT_INCR
+with the old behaviour of OPT_BOOLEAN (the verbose variable is
+currently the only such example of this).
+
+I have reviewed every use of OPT_BOOLEAN to verify that a true
+C99 bool was passed. Where integers were used, I verified that
+they were only being used for boolean logic and changed them to
+bools to ensure that they would not be mistakenly used as ints.
+The major exception was the verbose variable which now uses
+OPT_INCR instead of OPT_BOOLEAN.
+
+Signed-off-by: Ian Munsie <imunsie@au.ibm.com>
+Acked-by: David S. Miller <davem@davemloft.net>
+Cc: <stable@kernel.org>
+Cc: Git development list <git@vger.kernel.org>
+Cc: Ian Munsie <imunsie@au1.ibm.com>
+Cc: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
+Cc: Hitoshi Mitake <mitake@dcl.info.waseda.ac.jp>
+Cc: Rusty Russell <rusty@rustcorp.com.au>
+Cc: Frederic Weisbecker <fweisbec@gmail.com>
+Cc: Eric B Munson <ebmunson@us.ibm.com>
+Cc: Valdis.Kletnieks@vt.edu
+Cc: WANG Cong <amwang@redhat.com>
+Cc: Thiago Farina <tfransosi@gmail.com>
+Cc: Masami Hiramatsu <mhiramat@redhat.com>
+Cc: Xiao Guangrong <xiaoguangrong@cn.fujitsu.com>
+Cc: Jaswinder Singh Rajput <jaswinderrajput@gmail.com>
+Cc: Arjan van de Ven <arjan@linux.intel.com>
+Cc: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Cc: Mike Galbraith <efault@gmx.de>
+Cc: Tom Zanussi <tzanussi@gmail.com>
+Cc: Anton Blanchard <anton@samba.org>
+Cc: John Kacur <jkacur@redhat.com>
+Cc: Li Zefan <lizf@cn.fujitsu.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+LKML-Reference: <1271147857-11604-1-git-send-email-imunsie@au.ibm.com>
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ tools/perf/bench/mem-memcpy.c       |    2 +-
+ tools/perf/bench/sched-messaging.c  |    4 ++--
+ tools/perf/builtin-annotate.c       |    8 ++++----
+ tools/perf/builtin-buildid-cache.c  |    2 +-
+ tools/perf/builtin-buildid-list.c   |    4 ++--
+ tools/perf/builtin-diff.c           |    4 ++--
+ tools/perf/builtin-help.c           |    2 +-
+ tools/perf/builtin-lock.c           |    2 +-
+ tools/perf/builtin-probe.c          |    2 +-
+ tools/perf/builtin-record.c         |   24 ++++++++++++------------
+ tools/perf/builtin-report.c         |    6 +++---
+ tools/perf/builtin-sched.c          |    6 +++---
+ tools/perf/builtin-stat.c           |   10 +++++-----
+ tools/perf/builtin-timechart.c      |    2 +-
+ tools/perf/builtin-top.c            |   14 +++++++-------
+ tools/perf/builtin-trace.c          |    2 +-
+ tools/perf/util/debug.c             |    2 +-
+ tools/perf/util/debug.h             |    3 ++-
+ tools/perf/util/parse-options.c     |    6 ++++++
+ tools/perf/util/parse-options.h     |    4 +++-
+ tools/perf/util/trace-event-parse.c |    2 +-
+ tools/perf/util/trace-event.h       |    3 ++-
+ 22 files changed, 62 insertions(+), 52 deletions(-)
+
+--- a/tools/perf/bench/mem-memcpy.c
++++ b/tools/perf/bench/mem-memcpy.c
+@@ -24,7 +24,7 @@
+ 
+ static const char	*length_str	= "1MB";
+ static const char	*routine	= "default";
+-static int		use_clock	= 0;
++static bool		use_clock	= false;
+ static int		clock_fd;
+ 
+ static const struct option options[] = {
+--- a/tools/perf/bench/sched-messaging.c
++++ b/tools/perf/bench/sched-messaging.c
+@@ -31,9 +31,9 @@
+ 
+ #define DATASIZE 100
+ 
+-static int use_pipes = 0;
++static bool use_pipes = false;
+ static unsigned int loops = 100;
+-static unsigned int thread_mode = 0;
++static bool thread_mode = false;
+ static unsigned int num_groups = 10;
+ 
+ struct sender_context {
+--- a/tools/perf/builtin-annotate.c
++++ b/tools/perf/builtin-annotate.c
+@@ -29,11 +29,11 @@
+ 
+ static char		const *input_name = "perf.data";
+ 
+-static int		force;
++static bool		force;
+ 
+-static int		full_paths;
++static bool		full_paths;
+ 
+-static int		print_line;
++static bool		print_line;
+ 
+ struct sym_hist {
+ 	u64		sum;
+@@ -584,7 +584,7 @@ static const struct option options[] = {
+ 	OPT_STRING('s', "symbol", &sym_hist_filter, "symbol",
+ 		    "symbol to annotate"),
+ 	OPT_BOOLEAN('f', "force", &force, "don't complain, do it"),
+-	OPT_BOOLEAN('v', "verbose", &verbose,
++	OPT_INCR('v', "verbose", &verbose,
+ 		    "be more verbose (show symbol address, etc)"),
+ 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
+ 		    "dump raw trace in ASCII"),
+--- a/tools/perf/builtin-buildid-cache.c
++++ b/tools/perf/builtin-buildid-cache.c
+@@ -27,7 +27,7 @@ static const struct option buildid_cache
+ 		   "file list", "file(s) to add"),
+ 	OPT_STRING('r', "remove", &remove_name_list_str, "file list",
+ 		    "file(s) to remove"),
+-	OPT_BOOLEAN('v', "verbose", &verbose, "be more verbose"),
++	OPT_INCR('v', "verbose", &verbose, "be more verbose"),
+ 	OPT_END()
+ };
+ 
+--- a/tools/perf/builtin-buildid-list.c
++++ b/tools/perf/builtin-buildid-list.c
+@@ -16,7 +16,7 @@
+ #include "util/symbol.h"
+ 
+ static char const *input_name = "perf.data";
+-static int force;
++static bool force;
+ static bool with_hits;
+ 
+ static const char * const buildid_list_usage[] = {
+@@ -29,7 +29,7 @@ static const struct option options[] = {
+ 	OPT_STRING('i', "input", &input_name, "file",
+ 		    "input file name"),
+ 	OPT_BOOLEAN('f', "force", &force, "don't complain, do it"),
+-	OPT_BOOLEAN('v', "verbose", &verbose,
++	OPT_INCR('v', "verbose", &verbose,
+ 		    "be more verbose"),
+ 	OPT_END()
+ };
+--- a/tools/perf/builtin-diff.c
++++ b/tools/perf/builtin-diff.c
+@@ -19,7 +19,7 @@
+ static char const *input_old = "perf.data.old",
+ 		  *input_new = "perf.data";
+ static char	  diff__default_sort_order[] = "dso,symbol";
+-static int  force;
++static bool  force;
+ static bool show_displacement;
+ 
+ static int perf_session__add_hist_entry(struct perf_session *self,
+@@ -188,7 +188,7 @@ static const char * const diff_usage[] =
+ };
+ 
+ static const struct option options[] = {
+-	OPT_BOOLEAN('v', "verbose", &verbose,
++	OPT_INCR('v', "verbose", &verbose,
+ 		    "be more verbose (show symbol address, etc)"),
+ 	OPT_BOOLEAN('m', "displacement", &show_displacement,
+ 		    "Show position displacement relative to baseline"),
+--- a/tools/perf/builtin-help.c
++++ b/tools/perf/builtin-help.c
+@@ -29,7 +29,7 @@ enum help_format {
+ 	HELP_FORMAT_WEB,
+ };
+ 
+-static int show_all = 0;
++static bool show_all = false;
+ static enum help_format help_format = HELP_FORMAT_MAN;
+ static struct option builtin_help_options[] = {
+ 	OPT_BOOLEAN('a', "all", &show_all, "print all available commands"),
+--- a/tools/perf/builtin-lock.c
++++ b/tools/perf/builtin-lock.c
+@@ -744,7 +744,7 @@ static const char * const lock_usage[] =
+ 
+ static const struct option lock_options[] = {
+ 	OPT_STRING('i', "input", &input_name, "file", "input file name"),
+-	OPT_BOOLEAN('v', "verbose", &verbose, "be more verbose (show symbol address, etc)"),
++	OPT_INCR('v', "verbose", &verbose, "be more verbose (show symbol address, etc)"),
+ 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace, "dump raw trace in ASCII"),
+ 	OPT_END()
+ };
+--- a/tools/perf/builtin-probe.c
++++ b/tools/perf/builtin-probe.c
+@@ -162,7 +162,7 @@ static const char * const probe_usage[]
+ };
+ 
+ static const struct option options[] = {
+-	OPT_BOOLEAN('v', "verbose", &verbose,
++	OPT_INCR('v', "verbose", &verbose,
+ 		    "be more verbose (show parsed arguments, etc)"),
+ #ifndef NO_DWARF_SUPPORT
+ 	OPT_STRING('k', "vmlinux", &symbol_conf.vmlinux_name,
+--- a/tools/perf/builtin-record.c
++++ b/tools/perf/builtin-record.c
+@@ -39,19 +39,19 @@ static int			output;
+ static const char		*output_name			= "perf.data";
+ static int			group				=      0;
+ static unsigned int		realtime_prio			=      0;
+-static int			raw_samples			=      0;
+-static int			system_wide			=      0;
++static bool			raw_samples			=  false;
++static bool			system_wide			=  false;
+ static int			profile_cpu			=     -1;
+ static pid_t			target_pid			=     -1;
+ static pid_t			child_pid			=     -1;
+-static int			inherit				=      1;
+-static int			force				=      0;
+-static int			append_file			=      0;
+-static int			call_graph			=      0;
+-static int			inherit_stat			=      0;
+-static int			no_samples			=      0;
+-static int			sample_address			=      0;
+-static int			multiplex			=      0;
++static bool			inherit				=   true;
++static bool			force				=  false;
++static bool			append_file			=  false;
++static bool			call_graph			=  false;
++static bool			inherit_stat			=  false;
++static bool			no_samples			=  false;
++static bool			sample_address			=  false;
++static bool			multiplex			=  false;
+ static int			multiplex_fd			=     -1;
+ 
+ static long			samples				=      0;
+@@ -451,7 +451,7 @@ static int __cmd_record(int argc, const
+ 			rename(output_name, oldname);
+ 		}
+ 	} else {
+-		append_file = 0;
++		append_file = false;
+ 	}
+ 
+ 	flags = O_CREAT|O_RDWR;
+@@ -676,7 +676,7 @@ static const struct option options[] = {
+ 		    "number of mmap data pages"),
+ 	OPT_BOOLEAN('g', "call-graph", &call_graph,
+ 		    "do call-graph (stack chain/backtrace) recording"),
+-	OPT_BOOLEAN('v', "verbose", &verbose,
++	OPT_INCR('v', "verbose", &verbose,
+ 		    "be more verbose (show counter open errors, etc)"),
+ 	OPT_BOOLEAN('s', "stat", &inherit_stat,
+ 		    "per thread counts"),
+--- a/tools/perf/builtin-report.c
++++ b/tools/perf/builtin-report.c
+@@ -33,11 +33,11 @@
+ 
+ static char		const *input_name = "perf.data";
+ 
+-static int		force;
++static bool		force;
+ static bool		hide_unresolved;
+ static bool		dont_use_callchains;
+ 
+-static int		show_threads;
++static bool		show_threads;
+ static struct perf_read_values	show_threads_values;
+ 
+ static char		default_pretty_printing_style[] = "normal";
+@@ -400,7 +400,7 @@ static const char * const report_usage[]
+ static const struct option options[] = {
+ 	OPT_STRING('i', "input", &input_name, "file",
+ 		    "input file name"),
+-	OPT_BOOLEAN('v', "verbose", &verbose,
++	OPT_INCR('v', "verbose", &verbose,
+ 		    "be more verbose (show symbol address, etc)"),
+ 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
+ 		    "dump raw trace in ASCII"),
+--- a/tools/perf/builtin-sched.c
++++ b/tools/perf/builtin-sched.c
+@@ -1790,7 +1790,7 @@ static const char * const sched_usage[]
+ static const struct option sched_options[] = {
+ 	OPT_STRING('i', "input", &input_name, "file",
+ 		    "input file name"),
+-	OPT_BOOLEAN('v', "verbose", &verbose,
++	OPT_INCR('v', "verbose", &verbose,
+ 		    "be more verbose (show symbol address, etc)"),
+ 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
+ 		    "dump raw trace in ASCII"),
+@@ -1805,7 +1805,7 @@ static const char * const latency_usage[
+ static const struct option latency_options[] = {
+ 	OPT_STRING('s', "sort", &sort_order, "key[,key2...]",
+ 		   "sort by key(s): runtime, switch, avg, max"),
+-	OPT_BOOLEAN('v', "verbose", &verbose,
++	OPT_INCR('v', "verbose", &verbose,
+ 		    "be more verbose (show symbol address, etc)"),
+ 	OPT_INTEGER('C', "CPU", &profile_cpu,
+ 		    "CPU to profile on"),
+@@ -1822,7 +1822,7 @@ static const char * const replay_usage[]
+ static const struct option replay_options[] = {
+ 	OPT_INTEGER('r', "repeat", &replay_repeat,
+ 		    "repeat the workload replay N times (-1: infinite)"),
+-	OPT_BOOLEAN('v', "verbose", &verbose,
++	OPT_INCR('v', "verbose", &verbose,
+ 		    "be more verbose (show symbol address, etc)"),
+ 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
+ 		    "dump raw trace in ASCII"),
+--- a/tools/perf/builtin-stat.c
++++ b/tools/perf/builtin-stat.c
+@@ -66,16 +66,16 @@ static struct perf_event_attr default_at
+ 
+ };
+ 
+-static int			system_wide			=  0;
++static bool			system_wide			=  false;
+ static unsigned int		nr_cpus				=  0;
+ static int			run_idx				=  0;
+ 
+ static int			run_count			=  1;
+-static int			inherit				=  1;
+-static int			scale				=  1;
++static bool			inherit				=  true;
++static bool			scale				=  true;
+ static pid_t			target_pid			= -1;
+ static pid_t			child_pid			= -1;
+-static int			null_run			=  0;
++static bool			null_run			=  false;
+ 
+ static int			fd[MAX_NR_CPUS][MAX_COUNTERS];
+ 
+@@ -494,7 +494,7 @@ static const struct option options[] = {
+ 		    "system-wide collection from all CPUs"),
+ 	OPT_BOOLEAN('c', "scale", &scale,
+ 		    "scale/normalize counters"),
+-	OPT_BOOLEAN('v', "verbose", &verbose,
++	OPT_INCR('v', "verbose", &verbose,
+ 		    "be more verbose (show counter open errors, etc)"),
+ 	OPT_INTEGER('r', "repeat", &run_count,
+ 		    "repeat command and print average + stddev (max: 100)"),
+--- a/tools/perf/builtin-timechart.c
++++ b/tools/perf/builtin-timechart.c
+@@ -43,7 +43,7 @@ static u64		turbo_frequency;
+ 
+ static u64		first_time, last_time;
+ 
+-static int		power_only;
++static bool		power_only;
+ 
+ 
+ struct per_pid;
+--- a/tools/perf/builtin-top.c
++++ b/tools/perf/builtin-top.c
+@@ -57,7 +57,7 @@
+ 
+ static int			fd[MAX_NR_CPUS][MAX_COUNTERS];
+ 
+-static int			system_wide			=      0;
++static bool			system_wide			=  false;
+ 
+ static int			default_interval		=      0;
+ 
+@@ -65,18 +65,18 @@ static int			count_filter			=      5;
+ static int			print_entries;
+ 
+ static int			target_pid			=     -1;
+-static int			inherit				=      0;
++static bool			inherit				=  false;
+ static int			profile_cpu			=     -1;
+ static int			nr_cpus				=      0;
+ static unsigned int		realtime_prio			=      0;
+-static int			group				=      0;
++static bool			group				=  false;
+ static unsigned int		page_size;
+ static unsigned int		mmap_pages			=     16;
+ static int			freq				=   1000; /* 1 KHz */
+ 
+ static int			delay_secs			=      2;
+-static int			zero                            =      0;
+-static int			dump_symtab                     =      0;
++static bool			zero                            =  false;
++static bool			dump_symtab                     =  false;
+ 
+ static bool			hide_kernel_symbols		=  false;
+ static bool			hide_user_symbols		=  false;
+@@ -839,7 +839,7 @@ static void handle_keypress(int c)
+ 			display_weighted = ~display_weighted;
+ 			break;
+ 		case 'z':
+-			zero = ~zero;
++			zero = !zero;
+ 			break;
+ 		default:
+ 			break;
+@@ -1296,7 +1296,7 @@ static const struct option options[] = {
+ 		    "display this many functions"),
+ 	OPT_BOOLEAN('U', "hide_user_symbols", &hide_user_symbols,
+ 		    "hide user symbols"),
+-	OPT_BOOLEAN('v', "verbose", &verbose,
++	OPT_INCR('v', "verbose", &verbose,
+ 		    "be more verbose (show counter open errors, etc)"),
+ 	OPT_END()
+ };
+--- a/tools/perf/builtin-trace.c
++++ b/tools/perf/builtin-trace.c
+@@ -505,7 +505,7 @@ static const char * const trace_usage[]
+ static const struct option options[] = {
+ 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
+ 		    "dump raw trace in ASCII"),
+-	OPT_BOOLEAN('v', "verbose", &verbose,
++	OPT_INCR('v', "verbose", &verbose,
+ 		    "be more verbose (show symbol address, etc)"),
+ 	OPT_BOOLEAN('L', "Latency", &latency_format,
+ 		    "show latency attributes (irqs/preemption disabled, etc)"),
+--- a/tools/perf/util/debug.c
++++ b/tools/perf/util/debug.c
+@@ -12,7 +12,7 @@
+ #include "util.h"
+ 
+ int verbose = 0;
+-int dump_trace = 0;
++bool dump_trace = false;
+ 
+ int eprintf(int level, const char *fmt, ...)
+ {
+--- a/tools/perf/util/debug.h
++++ b/tools/perf/util/debug.h
+@@ -2,10 +2,11 @@
+ #ifndef __PERF_DEBUG_H
+ #define __PERF_DEBUG_H
+ 
++#include <stdbool.h>
+ #include "event.h"
+ 
+ extern int verbose;
+-extern int dump_trace;
++extern bool dump_trace;
+ 
+ int eprintf(int level,
+ 	    const char *fmt, ...) __attribute__((format(printf, 2, 3)));
+--- a/tools/perf/util/parse-options.c
++++ b/tools/perf/util/parse-options.c
+@@ -49,6 +49,7 @@ static int get_value(struct parse_opt_ct
+ 				break;
+ 			/* FALLTHROUGH */
+ 		case OPTION_BOOLEAN:
++		case OPTION_INCR:
+ 		case OPTION_BIT:
+ 		case OPTION_SET_INT:
+ 		case OPTION_SET_PTR:
+@@ -73,6 +74,10 @@ static int get_value(struct parse_opt_ct
+ 		return 0;
+ 
+ 	case OPTION_BOOLEAN:
++		*(bool *)opt->value = unset ? false : true;
++		return 0;
++
++	case OPTION_INCR:
+ 		*(int *)opt->value = unset ? 0 : *(int *)opt->value + 1;
+ 		return 0;
+ 
+@@ -478,6 +483,7 @@ int usage_with_options_internal(const ch
+ 		case OPTION_GROUP:
+ 		case OPTION_BIT:
+ 		case OPTION_BOOLEAN:
++		case OPTION_INCR:
+ 		case OPTION_SET_INT:
+ 		case OPTION_SET_PTR:
+ 		case OPTION_LONG:
+--- a/tools/perf/util/parse-options.h
++++ b/tools/perf/util/parse-options.h
+@@ -8,7 +8,8 @@ enum parse_opt_type {
+ 	OPTION_GROUP,
+ 	/* options with no arguments */
+ 	OPTION_BIT,
+-	OPTION_BOOLEAN, /* _INCR would have been a better name */
++	OPTION_BOOLEAN,
++	OPTION_INCR,
+ 	OPTION_SET_INT,
+ 	OPTION_SET_PTR,
+ 	/* options with arguments (usually) */
+@@ -95,6 +96,7 @@ struct option {
+ #define OPT_GROUP(h)                { .type = OPTION_GROUP, .help = (h) }
+ #define OPT_BIT(s, l, v, h, b)      { .type = OPTION_BIT, .short_name = (s), .long_name = (l), .value = (v), .help = (h), .defval = (b) }
+ #define OPT_BOOLEAN(s, l, v, h)     { .type = OPTION_BOOLEAN, .short_name = (s), .long_name = (l), .value = (v), .help = (h) }
++#define OPT_INCR(s, l, v, h)        { .type = OPTION_INCR, .short_name = (s), .long_name = (l), .value = (v), .help = (h) }
+ #define OPT_SET_INT(s, l, v, h, i)  { .type = OPTION_SET_INT, .short_name = (s), .long_name = (l), .value = (v), .help = (h), .defval = (i) }
+ #define OPT_SET_PTR(s, l, v, h, p)  { .type = OPTION_SET_PTR, .short_name = (s), .long_name = (l), .value = (v), .help = (h), .defval = (p) }
+ #define OPT_INTEGER(s, l, v, h)     { .type = OPTION_INTEGER, .short_name = (s), .long_name = (l), .value = (v), .help = (h) }
+--- a/tools/perf/util/trace-event-parse.c
++++ b/tools/perf/util/trace-event-parse.c
+@@ -40,7 +40,7 @@ int header_page_size_size;
+ int header_page_data_offset;
+ int header_page_data_size;
+ 
+-int latency_format;
++bool latency_format;
+ 
+ static char *input_buf;
+ static unsigned long long input_buf_ptr;
+--- a/tools/perf/util/trace-event.h
++++ b/tools/perf/util/trace-event.h
+@@ -1,6 +1,7 @@
+ #ifndef __PERF_TRACE_EVENTS_H
+ #define __PERF_TRACE_EVENTS_H
+ 
++#include <stdbool.h>
+ #include "parse-events.h"
+ 
+ #define __unused __attribute__((unused))
+@@ -241,7 +242,7 @@ extern int header_page_size_size;
+ extern int header_page_data_offset;
+ extern int header_page_data_size;
+ 
+-extern int latency_format;
++extern bool latency_format;
+ 
+ int parse_header_page(char *buf, unsigned long size);
+ int trace_parse_common_type(void *data);
+From 6e0032f0ae4440e75256bee11b163552cae21962 Mon Sep 17 00:00:00 2001
+From: Karsten Wiese <fzuuzf@googlemail.com>
+Date: Sat, 27 Mar 2010 22:48:33 +0100
+Subject: drm/i915: Don't touch PORT_HOTPLUG_EN in intel_dp_detect()
+
+From: Karsten Wiese <fzuuzf@googlemail.com>
+
+commit 6e0032f0ae4440e75256bee11b163552cae21962 upstream.
+
+PORT_HOTPLUG_EN has allready been setup in i915_driver_irq_postinstall(),
+when intel_dp_detect() runs.
+
+Delete the DP[BCD]_HOTPLUG_INT_EN defines, they are not referenced anymore.
+
+I found this while searching for a fix for
+        https://bugzilla.redhat.com/show_bug.cgi?id=528312
+
+Signed-off-by: Karsten Wiese <fzu@wemgehoertderstaat.de>
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/i915/intel_dp.c |   10 ----------
+ 1 file changed, 10 deletions(-)
+
+--- a/drivers/gpu/drm/i915/intel_dp.c
++++ b/drivers/gpu/drm/i915/intel_dp.c
+@@ -1180,16 +1180,6 @@ intel_dp_detect(struct drm_connector *co
+ 	if (HAS_PCH_SPLIT(dev))
+ 		return ironlake_dp_detect(connector);
+ 
+-	temp = I915_READ(PORT_HOTPLUG_EN);
+-
+-	I915_WRITE(PORT_HOTPLUG_EN,
+-	       temp |
+-	       DPB_HOTPLUG_INT_EN |
+-	       DPC_HOTPLUG_INT_EN |
+-	       DPD_HOTPLUG_INT_EN);
+-
+-	POSTING_READ(PORT_HOTPLUG_EN);
+-
+ 	switch (dp_priv->output_reg) {
+ 	case DP_B:
+ 		bit = DPB_HOTPLUG_INT_STATUS;
+From 9908ff736adf261e749b4887486a32ffa209304c Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Sat, 15 May 2010 09:57:03 +0100
+Subject: drm/i915: Kill dangerous pending-flip debugging
+
+From: Chris Wilson <chris@chris-wilson.co.uk>
+
+commit 9908ff736adf261e749b4887486a32ffa209304c upstream.
+
+We can, by virtue of a vblank interrupt firing in the middle of setting
+up the unpin work (i.e. after we set the unpin_work field and before we
+write to the ringbuffer) enter intel_finish_page_flip() prior to
+receiving the pending flip notification. Therefore we can expect to hit
+intel_finish_page_flip() under normal circumstances without a pending flip
+and even without installing the pending_flip_obj. This is exacerbated by
+aperture thrashing whilst binding the framebuffer
+
+References:
+
+  Bug 28079 - "glresize" causes kernel panic in intel_finish_page_flip.
+  https://bugs.freedesktop.org/show_bug.cgi?id=28079
+
+Reported-by: Nick Bowler <nbowler@draconx.ca>
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Jesse Barnes <jbarnes@virtuousgeek.org>
+Reviewed-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/i915/intel_display.c |    6 ------
+ 1 file changed, 6 deletions(-)
+
+--- a/drivers/gpu/drm/i915/intel_display.c
++++ b/drivers/gpu/drm/i915/intel_display.c
+@@ -4155,12 +4155,6 @@ void intel_finish_page_flip(struct drm_d
+ 	spin_lock_irqsave(&dev->event_lock, flags);
+ 	work = intel_crtc->unpin_work;
+ 	if (work == NULL || !work->pending) {
+-		if (work && !work->pending) {
+-			obj_priv = to_intel_bo(work->pending_flip_obj);
+-			DRM_DEBUG_DRIVER("flip finish: %p (%d) not pending?\n",
+-					 obj_priv,
+-					 atomic_read(&obj_priv->pending_flip));
+-		}
+ 		spin_unlock_irqrestore(&dev->event_lock, flags);
+ 		return;
+ 	}
+From ac0c6b5ad3b3b513e1057806d4b7627fcc0ecc27 Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Thu, 27 May 2010 13:18:18 +0100
+Subject: drm/i915: Rebind bo if currently bound with incorrect alignment.
+
+From: Chris Wilson <chris@chris-wilson.co.uk>
+
+commit ac0c6b5ad3b3b513e1057806d4b7627fcc0ecc27 upstream.
+
+Whilst pinning the buffer, check that that its current alignment
+matches the requested alignment. If it does not, rebind.
+
+This should clear up any final render errors whilst resuming,
+for reference:
+
+  Bug 27070 - [i915] Page table errors with empty ringbuffer
+  https://bugs.freedesktop.org/show_bug.cgi?id=27070
+
+  Bug 15502 -  render error detected, EIR: 0x00000010
+  https://bugzilla.kernel.org/show_bug.cgi?id=15502
+
+  Bug 13844 -  i915 error: "render error detected"
+  https://bugzilla.kernel.org/show_bug.cgi?id=13844
+
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/i915/i915_gem.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+--- a/drivers/gpu/drm/i915/i915_gem.c
++++ b/drivers/gpu/drm/i915/i915_gem.c
+@@ -4239,6 +4239,17 @@ i915_gem_object_pin(struct drm_gem_objec
+ 	int ret;
+ 
+ 	i915_verify_inactive(dev, __FILE__, __LINE__);
++
++	if (obj_priv->gtt_space != NULL) {
++		if (alignment == 0)
++			alignment = i915_gem_get_gtt_alignment(obj);
++		if (obj_priv->gtt_offset & (alignment - 1)) {
++			ret = i915_gem_object_unbind(obj);
++			if (ret)
++				return ret;
++		}
++	}
++
+ 	if (obj_priv->gtt_space == NULL) {
+ 		ret = i915_gem_object_bind_to_gtt(obj, alignment);
+ 		if (ret)
+From cf22f20ade30f8c03955324aaf27b1049e182600 Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@redhat.com>
+Date: Sat, 29 May 2010 06:50:37 +1000
+Subject: drm/radeon: fix the r100/r200 ums block 0 page fix
+
+From: Dave Airlie <airlied@redhat.com>
+
+commit cf22f20ade30f8c03955324aaf27b1049e182600 upstream.
+
+airlied -> brown paper bag.
+
+I blame Hi-5 or the Wiggles for lowering my IQ, move the fix inside some
+brackets instead of breaking everything in site.
+
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/radeon/radeon_state.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+--- a/drivers/gpu/drm/radeon/radeon_state.c
++++ b/drivers/gpu/drm/radeon/radeon_state.c
+@@ -900,9 +900,10 @@ static void radeon_cp_dispatch_clear(str
+ 			flags |= RADEON_FRONT;
+ 	}
+ 	if (flags & (RADEON_DEPTH|RADEON_STENCIL)) {
+-		if (!dev_priv->have_z_offset)
++		if (!dev_priv->have_z_offset) {
+ 			printk_once(KERN_ERR "radeon: illegal depth clear request. Buggy mesa detected - please update.\n");
+-		flags &= ~(RADEON_DEPTH | RADEON_STENCIL);
++			flags &= ~(RADEON_DEPTH | RADEON_STENCIL);
++		}
+ 	}
+ 
+ 	if (flags & (RADEON_FRONT | RADEON_BACK)) {
+From 10b06122afcc78468bd1d009633cb71e528acdc5 Mon Sep 17 00:00:00 2001
+From: Jerome Glisse <jglisse@redhat.com>
+Date: Fri, 21 May 2010 18:48:54 +0200
+Subject: drm/radeon/kms: release AGP bridge at suspend
+
+From: Jerome Glisse <jglisse@redhat.com>
+
+commit 10b06122afcc78468bd1d009633cb71e528acdc5 upstream.
+
+I think it's good to release the AGP bridge at suspend
+and reacquire it at resume. Also fix :
+https://bugzilla.kernel.org/show_bug.cgi?id=15969
+
+Signed-off-by: Jerome Glisse <jglisse@redhat.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/radeon/radeon.h        |    1 +
+ drivers/gpu/drm/radeon/radeon_agp.c    |    5 +++++
+ drivers/gpu/drm/radeon/radeon_device.c |    2 ++
+ 3 files changed, 8 insertions(+)
+
+--- a/drivers/gpu/drm/radeon/radeon.h
++++ b/drivers/gpu/drm/radeon/radeon.h
+@@ -566,6 +566,7 @@ typedef int (*radeon_packet3_check_t)(st
+  */
+ int radeon_agp_init(struct radeon_device *rdev);
+ void radeon_agp_resume(struct radeon_device *rdev);
++void radeon_agp_suspend(struct radeon_device *rdev);
+ void radeon_agp_fini(struct radeon_device *rdev);
+ 
+ 
+--- a/drivers/gpu/drm/radeon/radeon_agp.c
++++ b/drivers/gpu/drm/radeon/radeon_agp.c
+@@ -270,3 +270,8 @@ void radeon_agp_fini(struct radeon_devic
+ 	}
+ #endif
+ }
++
++void radeon_agp_suspend(struct radeon_device *rdev)
++{
++	radeon_agp_fini(rdev);
++}
+--- a/drivers/gpu/drm/radeon/radeon_device.c
++++ b/drivers/gpu/drm/radeon/radeon_device.c
+@@ -748,6 +748,8 @@ int radeon_suspend_kms(struct drm_device
+ 	/* evict remaining vram memory */
+ 	radeon_bo_evict_vram(rdev);
+ 
++	radeon_agp_suspend(rdev);
++
+ 	pci_save_state(dev->pdev);
+ 	if (state.event == PM_EVENT_SUSPEND) {
+ 		/* Shut down the device */
+From 1ff26a3604d0292988d4cade0e49ba9918dbfd46 Mon Sep 17 00:00:00 2001
+From: Alex Deucher <alexdeucher@gmail.com>
+Date: Tue, 18 May 2010 00:23:15 -0400
+Subject: drm/radeon/kms/atom: fix typo in LVDS panel info parsing
+
+From: Alex Deucher <alexdeucher@gmail.com>
+
+commit 1ff26a3604d0292988d4cade0e49ba9918dbfd46 upstream.
+
+Fixes LVDS issues on some laptops; notably laptops with
+2048x1536 panels.
+
+Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/radeon/radeon_atombios.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/radeon/radeon_atombios.c
++++ b/drivers/gpu/drm/radeon/radeon_atombios.c
+@@ -1173,7 +1173,7 @@ struct radeon_encoder_atom_dig *radeon_a
+ 		lvds->native_mode.vtotal = lvds->native_mode.vdisplay +
+ 			le16_to_cpu(lvds_info->info.sLCDTiming.usVBlanking_Time);
+ 		lvds->native_mode.vsync_start = lvds->native_mode.vdisplay +
+-			le16_to_cpu(lvds_info->info.sLCDTiming.usVSyncWidth);
++			le16_to_cpu(lvds_info->info.sLCDTiming.usVSyncOffset);
+ 		lvds->native_mode.vsync_end = lvds->native_mode.vsync_start +
+ 			le16_to_cpu(lvds_info->info.sLCDTiming.usVSyncWidth);
+ 		lvds->panel_pwr_delay =
+From 2bfcc0fc698d550689ef020c73b2d977b73e728c Mon Sep 17 00:00:00 2001
+From: Alex Deucher <alexdeucher@gmail.com>
+Date: Tue, 18 May 2010 19:26:46 -0400
+Subject: drm/radeon/kms: reset ddc_bus in object header parsing
+
+From: Alex Deucher <alexdeucher@gmail.com>
+
+commit 2bfcc0fc698d550689ef020c73b2d977b73e728c upstream.
+
+Some LVDS connectors don't have a ddc bus, so reset the
+ddc bus to invalid before parsing the next connector
+to avoid using stale ddc bus data.  Should fix
+fdo bug 28164.
+
+Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/radeon/radeon_atombios.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+--- a/drivers/gpu/drm/radeon/radeon_atombios.c
++++ b/drivers/gpu/drm/radeon/radeon_atombios.c
+@@ -530,6 +530,8 @@ bool radeon_get_atom_connector_info_from
+ 			}
+ 
+ 			/* look up gpio for ddc, hpd */
++			ddc_bus.valid = false;
++			hpd.hpd = RADEON_HPD_NONE;
+ 			if ((le16_to_cpu(path->usDeviceTag) &
+ 			     (ATOM_DEVICE_TV_SUPPORT | ATOM_DEVICE_CV_SUPPORT)) == 0) {
+ 				for (j = 0; j < con_obj->ucNumberOfObjects; j++) {
+@@ -585,9 +587,6 @@ bool radeon_get_atom_connector_info_from
+ 						break;
+ 					}
+ 				}
+-			} else {
+-				hpd.hpd = RADEON_HPD_NONE;
+-				ddc_bus.valid = false;
+ 			}
+ 
+ 			/* needed for aux chan transactions */
+From 61dd98fad58f945ed720ba132681acb58fcee015 Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Thu, 13 May 2010 14:55:28 -0400
+Subject: drm/edid: Fix 1024x768@85Hz
+
+From: Adam Jackson <ajax@redhat.com>
+
+commit 61dd98fad58f945ed720ba132681acb58fcee015 upstream.
+
+Having hsync both start and end on pixel 1072 ain't gonna work very
+well.  Matches the X server's list.
+
+Signed-off-by: Adam Jackson <ajax@redhat.com>
+Tested-By: Michael Tokarev <mjt@tls.msk.ru>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/drm_edid.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -335,7 +335,7 @@ static struct drm_display_mode drm_dmt_m
+ 		   DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC) },
+ 	/* 1024x768@85Hz */
+ 	{ DRM_MODE("1024x768", DRM_MODE_TYPE_DRIVER, 94500, 1024, 1072,
+-		   1072, 1376, 0, 768, 769, 772, 808, 0,
++		   1168, 1376, 0, 768, 769, 772, 808, 0,
+ 		   DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC) },
+ 	/* 1152x864@75Hz */
+ 	{ DRM_MODE("1152x864", DRM_MODE_TYPE_DRIVER, 108000, 1152, 1216,
+From 45737447ed160faaba036c0709226bf9057f7b72 Mon Sep 17 00:00:00 2001
+From: Alex Deucher <alexdeucher@gmail.com>
+Date: Thu, 20 May 2010 11:26:11 -0400
+Subject: drm/radeon/kms: don't default display priority to high on rs4xx
+
+From: Alex Deucher <alexdeucher@gmail.com>
+
+commit 45737447ed160faaba036c0709226bf9057f7b72 upstream.
+
+Seems to cause issues with the sound hardware.  Fixes kernel
+bug 15982:
+https://bugzilla.kernel.org/show_bug.cgi?id=15982
+
+Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/radeon/radeon_display.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/radeon/radeon_display.c
++++ b/drivers/gpu/drm/radeon/radeon_display.c
+@@ -978,8 +978,11 @@ void radeon_update_display_priority(stru
+ 		/* set display priority to high for r3xx, rv515 chips
+ 		 * this avoids flickering due to underflow to the
+ 		 * display controllers during heavy acceleration.
++		 * Don't force high on rs4xx igp chips as it seems to
++		 * affect the sound card.  See kernel bug 15982.
+ 		 */
+-		if (ASIC_IS_R300(rdev) || (rdev->family == CHIP_RV515))
++		if ((ASIC_IS_R300(rdev) || (rdev->family == CHIP_RV515)) &&
++		    !(rdev->flags & RADEON_IS_IGP))
+ 			rdev->disp_priority = 2;
+ 		else
+ 			rdev->disp_priority = 0;
+From 654fc6073f68efa3b6c466825749e73e7fbb92cd Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Thu, 27 May 2010 13:18:21 +0100
+Subject: drm/i915: Reject bind_to_gtt() early if object > aperture
+
+From: Chris Wilson <chris@chris-wilson.co.uk>
+
+commit 654fc6073f68efa3b6c466825749e73e7fbb92cd upstream.
+
+If the object is bigger than the entire aperture, reject it early
+before evicting everything in a vain attempt to find space.
+
+v2: Use E2BIG as suggested by Owain G. Ainsworth.
+
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/i915/i915_gem.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+--- a/drivers/gpu/drm/i915/i915_gem.c
++++ b/drivers/gpu/drm/i915/i915_gem.c
+@@ -2688,6 +2688,14 @@ i915_gem_object_bind_to_gtt(struct drm_g
+ 		return -EINVAL;
+ 	}
+ 
++	/* If the object is bigger than the entire aperture, reject it early
++	 * before evicting everything in a vain attempt to find space.
++	 */
++	if (obj->size > dev->gtt_total) {
++		DRM_ERROR("Attempting to bind an object larger than the aperture\n");
++		return -E2BIG;
++	}
++
+  search_free:
+ 	free_space = drm_mm_search_free(&dev_priv->mm.gtt_space,
+ 					obj->size, alignment, 0);

@@ -1,0 +1,208 @@
+From b3786de4e1033b00d522a5c457a3ea9f8376d0d0 Mon Sep 17 00:00:00 2001
+From: Wey-Yi Guy <wey-yi.w.guy@intel.com>
+Date: Thu, 4 Mar 2010 13:38:58 -0800
+Subject: [PATCH] iwlwifi: move plcp check to separated function
+
+Move the plcp error checking into stand alone function and pointed by ops
+to accommodate devices not needing this recovery.
+
+Signed-off-by: Trieu 'Andrew' Nguyen <trieux.t.nguyen@intel.com>
+Signed-off-by: Wey-Yi Guy <wey-yi.w.guy@intel.com>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+---
+ drivers/net/wireless/iwlwifi/iwl-1000.c |    1 +
+ drivers/net/wireless/iwlwifi/iwl-4965.c |    1 +
+ drivers/net/wireless/iwlwifi/iwl-5000.c |    2 +
+ drivers/net/wireless/iwlwifi/iwl-6000.c |    2 +
+ drivers/net/wireless/iwlwifi/iwl-core.h |    5 +++
+ drivers/net/wireless/iwlwifi/iwl-rx.c   |   58 +++++++++++++++++++------------
+ 6 files changed, 47 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/net/wireless/iwlwifi/iwl-1000.c b/drivers/net/wireless/iwlwifi/iwl-1000.c
+index 89dc401..2597574 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-1000.c
++++ b/drivers/net/wireless/iwlwifi/iwl-1000.c
+@@ -212,6 +212,7 @@ static struct iwl_lib_ops iwl1000_lib = {
+ 	 },
+ 	.add_bcast_station = iwl_add_bcast_station,
+ 	.recover_from_tx_stall = iwl_bg_monitor_recover,
++	.recover_from_statistics = iwl_recover_from_statistics,
+ };
+ 
+ static const struct iwl_ops iwl1000_ops = {
+diff --git a/drivers/net/wireless/iwlwifi/iwl-4965.c b/drivers/net/wireless/iwlwifi/iwl-4965.c
+index aa49a6e..6dd4328 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-4965.c
++++ b/drivers/net/wireless/iwlwifi/iwl-4965.c
+@@ -2217,6 +2217,7 @@ static struct iwl_lib_ops iwl4965_lib = {
+ 		.set_ct_kill = iwl4965_set_ct_threshold,
+ 	},
+ 	.add_bcast_station = iwl_add_bcast_station,
++	.recover_from_statistics = iwl_recover_from_statistics,
+ };
+ 
+ static const struct iwl_ops iwl4965_ops = {
+diff --git a/drivers/net/wireless/iwlwifi/iwl-5000.c b/drivers/net/wireless/iwlwifi/iwl-5000.c
+index d05fad4..0c2469c 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-5000.c
++++ b/drivers/net/wireless/iwlwifi/iwl-5000.c
+@@ -1501,6 +1501,7 @@ struct iwl_lib_ops iwl5000_lib = {
+ 	 },
+ 	.add_bcast_station = iwl_add_bcast_station,
+ 	.recover_from_tx_stall = iwl_bg_monitor_recover,
++	.recover_from_statistics = iwl_recover_from_statistics,
+ };
+ 
+ static struct iwl_lib_ops iwl5150_lib = {
+@@ -1556,6 +1557,7 @@ static struct iwl_lib_ops iwl5150_lib = {
+ 	 },
+ 	.add_bcast_station = iwl_add_bcast_station,
+ 	.recover_from_tx_stall = iwl_bg_monitor_recover,
++	.recover_from_statistics = iwl_recover_from_statistics,
+ };
+ 
+ static const struct iwl_ops iwl5000_ops = {
+diff --git a/drivers/net/wireless/iwlwifi/iwl-6000.c b/drivers/net/wireless/iwlwifi/iwl-6000.c
+index 0c965cd..189a8ce 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-6000.c
++++ b/drivers/net/wireless/iwlwifi/iwl-6000.c
+@@ -278,6 +278,7 @@ static struct iwl_lib_ops iwl6000_lib = {
+ 	 },
+ 	.add_bcast_station = iwl_add_bcast_station,
+ 	.recover_from_tx_stall = iwl_bg_monitor_recover,
++	.recover_from_statistics = iwl_recover_from_statistics,
+ };
+ 
+ static const struct iwl_ops iwl6000_ops = {
+@@ -344,6 +345,7 @@ static struct iwl_lib_ops iwl6050_lib = {
+ 	 },
+ 	.add_bcast_station = iwl_add_bcast_station,
+ 	.recover_from_tx_stall = iwl_bg_monitor_recover,
++	.recover_from_statistics = iwl_recover_from_statistics,
+ };
+ 
+ static const struct iwl_ops iwl6050_ops = {
+diff --git a/drivers/net/wireless/iwlwifi/iwl-core.h b/drivers/net/wireless/iwlwifi/iwl-core.h
+index 9076576..d67048e 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-core.h
++++ b/drivers/net/wireless/iwlwifi/iwl-core.h
+@@ -193,6 +193,9 @@ struct iwl_lib_ops {
+ 	void (*add_bcast_station)(struct iwl_priv *priv);
+ 	/* recover from tx queue stall */
+ 	void (*recover_from_tx_stall)(unsigned long data);
++	/* recover from errors showed in statistics */
++	void (*recover_from_statistics)(struct iwl_priv *priv,
++					struct iwl_rx_packet *pkt);
+ };
+ 
+ struct iwl_led_ops {
+@@ -435,6 +438,8 @@ void iwl_rx_missed_beacon_notif(struct iwl_priv *priv,
+ 			       struct iwl_rx_mem_buffer *rxb);
+ void iwl_rx_spectrum_measure_notif(struct iwl_priv *priv,
+ 					  struct iwl_rx_mem_buffer *rxb);
++void iwl_recover_from_statistics(struct iwl_priv *priv,
++				 struct iwl_rx_packet *pkt);
+ void iwl_rx_statistics(struct iwl_priv *priv,
+ 			      struct iwl_rx_mem_buffer *rxb);
+ void iwl_reply_statistics(struct iwl_priv *priv,
+diff --git a/drivers/net/wireless/iwlwifi/iwl-rx.c b/drivers/net/wireless/iwlwifi/iwl-rx.c
+index e5eb339..fabc52f 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-rx.c
++++ b/drivers/net/wireless/iwlwifi/iwl-rx.c
+@@ -618,28 +618,18 @@ static void iwl_accumulative_statistics(struct iwl_priv *priv,
+ #define REG_RECALIB_PERIOD (60)
+ 
+ #define PLCP_MSG "plcp_err exceeded %u, %u, %u, %u, %u, %d, %u mSecs\n"
+-void iwl_rx_statistics(struct iwl_priv *priv,
+-			      struct iwl_rx_mem_buffer *rxb)
++/*
++ * This function checks for plcp error.
++ * - When the plcp error is exceeding the thresholds, it will reset the radio
++ * to improve the throughput.
++ */
++void iwl_recover_from_statistics(struct iwl_priv *priv,
++				   struct iwl_rx_packet *pkt)
+ {
+-	int change;
+-	struct iwl_rx_packet *pkt = rxb_addr(rxb);
+ 	int combined_plcp_delta;
+ 	unsigned int plcp_msec;
+ 	unsigned long plcp_received_jiffies;
+ 
+-	IWL_DEBUG_RX(priv, "Statistics notification received (%d vs %d).\n",
+-		     (int)sizeof(priv->statistics),
+-		     le32_to_cpu(pkt->len_n_flags) & FH_RSCSR_FRAME_SIZE_MSK);
+-
+-	change = ((priv->statistics.general.temperature !=
+-		   pkt->u.stats.general.temperature) ||
+-		  ((priv->statistics.flag &
+-		    STATISTICS_REPLY_FLG_HT40_MODE_MSK) !=
+-		   (pkt->u.stats.flag & STATISTICS_REPLY_FLG_HT40_MODE_MSK)));
+-
+-#ifdef CONFIG_IWLWIFI_DEBUG
+-	iwl_accumulative_statistics(priv, (__le32 *)&pkt->u.stats);
+-#endif
+ 	/*
+ 	 * check for plcp_err and trigger radio reset if it exceeds
+ 	 * the plcp error threshold plcp_delta.
+@@ -660,11 +650,11 @@ void iwl_rx_statistics(struct iwl_priv *priv,
+ 			le32_to_cpu(priv->statistics.rx.ofdm_ht.plcp_err));
+ 
+ 		if ((combined_plcp_delta > 0) &&
+-			((combined_plcp_delta * 100) / plcp_msec) >
++		    ((combined_plcp_delta * 100) / plcp_msec) >
+ 			priv->cfg->plcp_delta_threshold) {
+ 			/*
+-			 * if plcp_err exceed the threshold, the following
+-			 * data is printed in csv format:
++			 * if plcp_err exceed the threshold,
++			 * the following data is printed in csv format:
+ 			 *    Text: plcp_err exceeded %d,
+ 			 *    Received ofdm.plcp_err,
+ 			 *    Current ofdm.plcp_err,
+@@ -679,9 +669,8 @@ void iwl_rx_statistics(struct iwl_priv *priv,
+ 				le32_to_cpu(priv->statistics.rx.ofdm.plcp_err),
+ 				le32_to_cpu(pkt->u.stats.rx.ofdm_ht.plcp_err),
+ 				le32_to_cpu(
+-					priv->statistics.rx.ofdm_ht.plcp_err),
++				  priv->statistics.rx.ofdm_ht.plcp_err),
+ 				combined_plcp_delta, plcp_msec);
+-
+ 			/*
+ 			 * Reset the RF radio due to the high plcp
+ 			 * error rate
+@@ -689,6 +678,31 @@ void iwl_rx_statistics(struct iwl_priv *priv,
+ 			iwl_force_reset(priv, IWL_RF_RESET);
+ 		}
+ 	}
++}
++EXPORT_SYMBOL(iwl_recover_from_statistics);
++
++void iwl_rx_statistics(struct iwl_priv *priv,
++			      struct iwl_rx_mem_buffer *rxb)
++{
++	int change;
++	struct iwl_rx_packet *pkt = rxb_addr(rxb);
++
++
++	IWL_DEBUG_RX(priv, "Statistics notification received (%d vs %d).\n",
++		     (int)sizeof(priv->statistics),
++		     le32_to_cpu(pkt->len_n_flags) & FH_RSCSR_FRAME_SIZE_MSK);
++
++	change = ((priv->statistics.general.temperature !=
++		   pkt->u.stats.general.temperature) ||
++		  ((priv->statistics.flag &
++		    STATISTICS_REPLY_FLG_HT40_MODE_MSK) !=
++		   (pkt->u.stats.flag & STATISTICS_REPLY_FLG_HT40_MODE_MSK)));
++
++#ifdef CONFIG_IWLWIFI_DEBUG
++	iwl_accumulative_statistics(priv, (__le32 *)&pkt->u.stats);
++#endif
++	if (priv->cfg->ops->lib->recover_from_statistics)
++		priv->cfg->ops->lib->recover_from_statistics(priv, pkt);
+ 
+ 	memcpy(&priv->statistics, &pkt->u.stats, sizeof(priv->statistics));
+ 
+-- 
+1.7.0.1
+

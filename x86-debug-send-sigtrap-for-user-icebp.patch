@@ -1,0 +1,80 @@
+From: Frederic Weisbecker <fweisbec@gmail.com>
+Date: Wed, 30 Jun 2010 13:09:06 +0000 (+0200)
+Subject: x86: Send a SIGTRAP for user icebp traps
+X-Git-Tag: v2.6.35-rc4~2^2~2
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=a1e80fafc9f0742a1776a0490258cb64912411b0
+
+x86: Send a SIGTRAP for user icebp traps
+
+Before we had a generic breakpoint layer, x86 used to send a
+sigtrap for any debug event that happened in userspace,
+except if it was caused by lazy dr7 switches.
+
+Currently we only send such signal for single step or breakpoint
+events.
+
+However, there are three other kind of debug exceptions:
+
+- debug register access detected: trigger an exception if the
+  next instruction touches the debug registers. We don't use
+  it.
+- task switch, but we don't use tss.
+- icebp/int01 trap. This instruction (0xf1) is undocumented and
+  generates an int 1 exception. Unlike single step through TF
+  flag, it doesn't set the single step origin of the exception
+  in dr6.
+
+icebp then used to be reported in userspace using trap signals
+but this have been incidentally broken with the new breakpoint
+code. Reenable this. Since this is the only debug event that
+doesn't set anything in dr6, this is all we have to check.
+
+This fixes a regression in Wine where World Of Warcraft got broken
+as it uses this for software protection checks purposes. And
+probably other apps do.
+
+Reported-and-tested-by: Alexandre Julliard <julliard@winehq.org>
+Signed-off-by: Frederic Weisbecker <fweisbec@gmail.com>
+Cc: Ingo Molnar <mingo@elte.hu>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Prasad <prasad@linux.vnet.ibm.com>
+Cc: 2.6.33.x 2.6.34.x <stable@kernel.org>
+---
+
+diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
+index 142d70c..725ef4d 100644
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -526,6 +526,7 @@ asmlinkage __kprobes struct pt_regs *sync_regs(struct pt_regs *eregs)
+ dotraplinkage void __kprobes do_debug(struct pt_regs *regs, long error_code)
+ {
+ 	struct task_struct *tsk = current;
++	int user_icebp = 0;
+ 	unsigned long dr6;
+ 	int si_code;
+ 
+@@ -534,6 +535,14 @@ dotraplinkage void __kprobes do_debug(struct pt_regs *regs, long error_code)
+ 	/* Filter out all the reserved bits which are preset to 1 */
+ 	dr6 &= ~DR6_RESERVED;
+ 
++	/*
++	 * If dr6 has no reason to give us about the origin of this trap,
++	 * then it's very likely the result of an icebp/int01 trap.
++	 * User wants a sigtrap for that.
++	 */
++	if (!dr6 && user_mode(regs))
++		user_icebp = 1;
++
+ 	/* Catch kmemcheck conditions first of all! */
+ 	if ((dr6 & DR_STEP) && kmemcheck_trap(regs))
+ 		return;
+@@ -575,7 +584,7 @@ dotraplinkage void __kprobes do_debug(struct pt_regs *regs, long error_code)
+ 		regs->flags &= ~X86_EFLAGS_TF;
+ 	}
+ 	si_code = get_si_code(tsk->thread.debugreg6);
+-	if (tsk->thread.debugreg6 & (DR_STEP | DR_TRAP_BITS))
++	if (tsk->thread.debugreg6 & (DR_STEP | DR_TRAP_BITS) || user_icebp)
+ 		send_sigtrap(tsk, regs, error_code, si_code);
+ 	preempt_conditional_cli(regs);
+ 
