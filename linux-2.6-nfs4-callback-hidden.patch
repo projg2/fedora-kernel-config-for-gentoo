@@ -1,0 +1,20 @@
+Author: Steve Dickson <steved@redhat.com>
+Date: Tue Oct 13 15:59:57 EDT 2009
+
+To avoid hangs in the svc_unregister(), on version 4 mounts 
+(and unmounts), when rpcbind is not running, make the nfs4 callback 
+program an 'hidden' service by setting the 'vs_hidden' flag in the 
+nfs4_callback_version structure. 
+
+Signed-off-by: Steve Dickson <steved@redhat.com>
+
+diff -up linux-2.6.31.x86_64/fs/nfs/callback_xdr.c.orig linux-2.6.31.x86_64/fs/nfs/callback_xdr.c
+--- linux-2.6.31.x86_64/fs/nfs/callback_xdr.c.orig	2009-09-09 18:13:59.000000000 -0400
++++ linux-2.6.31.x86_64/fs/nfs/callback_xdr.c	2009-10-13 15:40:19.000000000 -0400
+@@ -716,5 +716,6 @@ struct svc_version nfs4_callback_version
+ 	.vs_proc = nfs4_callback_procedures1,
+ 	.vs_xdrsize = NFS4_CALLBACK_XDRSIZE,
+ 	.vs_dispatch = NULL,
++	.vs_hidden = 1,
+ };
+ 

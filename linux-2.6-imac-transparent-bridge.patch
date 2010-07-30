@@ -1,0 +1,15 @@
+--- linux/arch/powerpc/platforms/powermac/pci.c~	2008-03-22 19:08:07.000000000 +0000
++++ linux/arch/powerpc/platforms/powermac/pci.c	2008-03-23 09:10:46.000000000 +0000
+@@ -1271,6 +1271,12 @@ void pmac_pci_fixup_pciata(struct pci_de
+ 	}
+ }
+ DECLARE_PCI_FIXUP_EARLY(PCI_ANY_ID, PCI_ANY_ID, pmac_pci_fixup_pciata);
++#else /* CONFIG_PPC64 */
++static void __devinit imac_transparent_bridge(struct pci_dev *dev)
++{
++	dev->transparent = 1;
++}
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_APPLE, 0x005b, imac_transparent_bridge);
+ #endif /* CONFIG_PPC32 */
+ 
+ /*

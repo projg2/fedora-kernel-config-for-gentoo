@@ -1,0 +1,213 @@
+diff -Naurp a/drivers/media/video/hdpvr/hdpvr-core.c b/drivers/media/video/hdpvr/hdpvr-core.c
+--- a/drivers/media/video/hdpvr/hdpvr-core.c	2010-07-06 17:36:44.000000000 -0400
++++ b/drivers/media/video/hdpvr/hdpvr-core.c	2010-07-06 17:38:13.000000000 -0400
+@@ -363,9 +363,8 @@ static int hdpvr_probe(struct usb_interf
+ 		goto error;
+ 	}
+ 
+-#ifdef CONFIG_I2C
+-	/* until i2c is working properly */
+-	retval = 0; /* hdpvr_register_i2c_adapter(dev); */
++#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
++	retval = hdpvr_register_i2c_adapter(dev);
+ 	if (retval < 0) {
+ 		v4l2_err(&dev->v4l2_dev, "registering i2c adapter failed\n");
+ 		goto error;
+@@ -411,12 +410,9 @@ static void hdpvr_disconnect(struct usb_
+ 	mutex_unlock(&dev->io_mutex);
+ 
+ 	/* deregister I2C adapter */
+-#ifdef CONFIG_I2C
++#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+ 	mutex_lock(&dev->i2c_mutex);
+-	if (dev->i2c_adapter)
+-		i2c_del_adapter(dev->i2c_adapter);
+-	kfree(dev->i2c_adapter);
+-	dev->i2c_adapter = NULL;
++	i2c_del_adapter(&dev->i2c_adapter);
+ 	mutex_unlock(&dev->i2c_mutex);
+ #endif /* CONFIG_I2C */
+ 
+diff -Naurp a/drivers/media/video/hdpvr/hdpvr.h b/drivers/media/video/hdpvr/hdpvr.h
+--- a/drivers/media/video/hdpvr/hdpvr.h	2010-02-24 13:52:17.000000000 -0500
++++ b/drivers/media/video/hdpvr/hdpvr.h	2010-07-06 17:42:20.000000000 -0400
+@@ -101,7 +101,7 @@ struct hdpvr_device {
+ 	struct work_struct	worker;
+ 
+ 	/* I2C adapter */
+-	struct i2c_adapter	*i2c_adapter;
++	struct i2c_adapter	i2c_adapter;
+ 	/* I2C lock */
+ 	struct mutex		i2c_mutex;
+ 
+diff -Naurp a/drivers/media/video/hdpvr/hdpvr-i2c.c b/drivers/media/video/hdpvr/hdpvr-i2c.c
+--- a/drivers/media/video/hdpvr/hdpvr-i2c.c	2010-07-06 17:36:51.000000000 -0400
++++ b/drivers/media/video/hdpvr/hdpvr-i2c.c	2010-07-06 17:45:50.000000000 -0400
+@@ -10,6 +10,8 @@
+  *
+  */
+ 
++#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
++
+ #include <linux/i2c.h>
+ 
+ #include "hdpvr.h"
+@@ -19,10 +21,13 @@
+ 
+ #define REQTYPE_I2C_READ	0xb1
+ #define REQTYPE_I2C_WRITE	0xb0
+-#define REQTYPE_I2C_WRITE_STATT	0xd0
++#define REQTYPE_I2C_WRITE_STAT	0xd0
++
++#define HDPVR_HW_Z8F0811_IR_TX_I2C_ADDR	0x70
++#define HDPVR_HW_Z8F0811_IR_RX_I2C_ADDR	0x71
+ 
+ static int hdpvr_i2c_read(struct hdpvr_device *dev, unsigned char addr,
+-			  char *data, int len)
++			  char *data, int len, int bus)
+ {
+ 	int ret;
+ 	char *buf = kmalloc(len, GFP_KERNEL);
+@@ -32,7 +37,7 @@ static int hdpvr_i2c_read(struct hdpvr_d
+ 	ret = usb_control_msg(dev->udev,
+ 			      usb_rcvctrlpipe(dev->udev, 0),
+ 			      REQTYPE_I2C_READ, CTRL_READ_REQUEST,
+-			      0x100|addr, 0, buf, len, 1000);
++			      bus<<8 | addr, 0, buf, len, 1000);
+ 
+ 	if (ret == len) {
+ 		memcpy(data, buf, len);
+@@ -46,7 +51,7 @@ static int hdpvr_i2c_read(struct hdpvr_d
+ }
+ 
+ static int hdpvr_i2c_write(struct hdpvr_device *dev, unsigned char addr,
+-			   char *data, int len)
++			   char *data, int len, int bus)
+ {
+ 	int ret;
+ 	char *buf = kmalloc(len, GFP_KERNEL);
+@@ -57,17 +62,17 @@ static int hdpvr_i2c_write(struct hdpvr_
+ 	ret = usb_control_msg(dev->udev,
+ 			      usb_sndctrlpipe(dev->udev, 0),
+ 			      REQTYPE_I2C_WRITE, CTRL_WRITE_REQUEST,
+-			      0x100|addr, 0, buf, len, 1000);
++			      bus<<8 | addr, 0, buf, len, 1000);
+ 
+ 	if (ret < 0)
+ 		goto error;
+ 
+ 	ret = usb_control_msg(dev->udev,
+ 			      usb_rcvctrlpipe(dev->udev, 0),
+-			      REQTYPE_I2C_WRITE_STATT, CTRL_READ_REQUEST,
++			      REQTYPE_I2C_WRITE_STAT, CTRL_READ_REQUEST,
+ 			      0, 0, buf, 2, 1000);
+ 
+-	if (ret == 2)
++	if (ret == 2 && buf[1] == (len - 1))
+ 		ret = 0;
+ 	else if (ret >= 0)
+ 		ret = -EIO;
+@@ -93,10 +98,10 @@ static int hdpvr_transfer(struct i2c_ada
+ 
+ 		if (msgs[i].flags & I2C_M_RD)
+ 			retval = hdpvr_i2c_read(dev, addr, msgs[i].buf,
+-						msgs[i].len);
++						msgs[i].len, 1);
+ 		else
+ 			retval = hdpvr_i2c_write(dev, addr, msgs[i].buf,
+-						 msgs[i].len);
++						 msgs[i].len, 1);
+ 	}
+ 
+ 	mutex_unlock(&dev->i2c_mutex);
+@@ -114,31 +119,61 @@ static struct i2c_algorithm hdpvr_algo =
+ 	.functionality = hdpvr_functionality,
+ };
+ 
++static struct i2c_adapter hdpvr_i2c_adap_template = {
++	.name		= "Hauppauge HD PVR I2C",
++	.owner		= THIS_MODULE,
++	.id		= I2C_HW_B_HDPVR,
++	.algo		= &hdpvr_algo,
++	.algo_data	= NULL,
++	.class		= I2C_CLASS_TV_ANALOG,
++};
++
++static struct i2c_board_info hdpvr_i2c_board_info = {
++	I2C_BOARD_INFO("ir_tx_z8f0811_haup", HDPVR_HW_Z8F0811_IR_TX_I2C_ADDR),
++	I2C_BOARD_INFO("ir_rx_z8f0811_haup", HDPVR_HW_Z8F0811_IR_RX_I2C_ADDR),
++};
++
++static int hdpvr_activate_ir(struct hdpvr_device *dev)
++{
++	char buffer[8];
++
++	mutex_lock(&dev->i2c_mutex);
++
++	hdpvr_i2c_read(dev, 0x54, buffer, 1, 0);
++
++	buffer[0] = 0;
++	buffer[1] = 0x8;
++	hdpvr_i2c_write(dev, 0x54, buffer, 2, 1);
++
++	buffer[1] = 0x18;
++	hdpvr_i2c_write(dev, 0x54, buffer, 2, 1);
++
++	mutex_unlock(&dev->i2c_mutex);
++	return 0;
++}
++
++
+ int hdpvr_register_i2c_adapter(struct hdpvr_device *dev)
+ {
+-	struct i2c_adapter *i2c_adap;
+ 	int retval = -ENOMEM;
+ 
+-	i2c_adap = kzalloc(sizeof(struct i2c_adapter), GFP_KERNEL);
+-	if (i2c_adap == NULL)
++	hdpvr_activate_ir(dev);
++
++	memcpy(&dev->i2c_adapter, &hdpvr_i2c_adap_template,
++	       sizeof(struct i2c_adapter));
++	dev->i2c_adapter.dev.parent = &dev->udev->dev;
++
++	i2c_set_adapdata(&dev->i2c_adapter, dev);
++
++	retval = i2c_add_adapter(&dev->i2c_adapter);
++
++	if (retval)
+ 		goto error;
+ 
+-	strlcpy(i2c_adap->name, "Hauppauge HD PVR I2C",
+-		sizeof(i2c_adap->name));
+-	i2c_adap->algo  = &hdpvr_algo;
+-	i2c_adap->class = I2C_CLASS_TV_ANALOG;
+-	i2c_adap->owner = THIS_MODULE;
+-	i2c_adap->dev.parent = &dev->udev->dev;
+-
+-	i2c_set_adapdata(i2c_adap, dev);
+-
+-	retval = i2c_add_adapter(i2c_adap);
+-
+-	if (!retval)
+-		dev->i2c_adapter = i2c_adap;
+-	else
+-		kfree(i2c_adap);
++	i2c_new_device(&dev->i2c_adapter, &hdpvr_i2c_board_info);
+ 
+ error:
+ 	return retval;
+ }
++
++#endif /* CONFIG_I2C */
+diff -Naurp a/drivers/media/video/hdpvr/Makefile b/drivers/media/video/hdpvr/Makefile
+--- a/drivers/media/video/hdpvr/Makefile	2010-07-06 17:36:38.000000000 -0400
++++ b/drivers/media/video/hdpvr/Makefile	2010-07-06 17:35:17.000000000 -0400
+@@ -1,6 +1,4 @@
+-hdpvr-objs	:= hdpvr-control.o hdpvr-core.o hdpvr-video.o
+-
+-hdpvr-$(CONFIG_I2C) += hdpvr-i2c.o
++hdpvr-objs	:= hdpvr-control.o hdpvr-core.o hdpvr-i2c.o hdpvr-video.o
+ 
+ obj-$(CONFIG_VIDEO_HDPVR) += hdpvr.o
+ 

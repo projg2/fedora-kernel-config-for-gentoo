@@ -1,0 +1,11 @@
+diff -up linux-2.6.31.noarch/drivers/gpu/drm/i915/i915_reg.h.jx linux-2.6.31.noarch/drivers/gpu/drm/i915/i915_reg.h
+--- linux-2.6.31.noarch/drivers/gpu/drm/i915/i915_reg.h.jx	2009-09-16 13:36:20.000000000 -0400
++++ linux-2.6.31.noarch/drivers/gpu/drm/i915/i915_reg.h	2009-09-16 13:40:32.000000000 -0400
+@@ -836,7 +836,6 @@
+ 			 HDMID_HOTPLUG_INT_EN |	  \
+ 			 SDVOB_HOTPLUG_INT_EN |	  \
+ 			 SDVOC_HOTPLUG_INT_EN |	  \
+-			 TV_HOTPLUG_INT_EN |	  \
+ 			 CRT_HOTPLUG_INT_EN)
+ 
+ 

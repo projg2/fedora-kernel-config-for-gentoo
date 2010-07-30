@@ -1,0 +1,369 @@
+Back-port of the following upstream commit...
+
+commit 3e4fb5faefb57824f2e42305b3d5907845af978c
+Author: Trieu 'Andrew' Nguyen <trieux.t.nguyen@intel.com>
+Date:   Fri Jan 22 14:22:46 2010 -0800
+
+    iwlwifi: Tune radio to prevent unexpected behavior
+    
+    We have seen the throughput dropped due to external noisy environment
+    and the radio is out of tune.  There are lot of plcp errors indicating
+    this condition. Eventually the station can get de-authenticated by the
+    Access Point.  By resetting and tuning the radio, the plcp errors are
+    reduced or eliminated and the throughput starts to rise.
+    
+    To prevent unexpected behavior such as drop in throughput or deauthentication,
+    - The change provides the driver feature to monitor and tune the radio base on
+    the statistics notification from the uCode.
+    - It also allows the setting of the plcp error rate threshold via
+    the plcp_delta under debugfs interface.
+    
+    Signed-off-by: Trieu 'Andrew' Nguyen <trieux.t.nguyen@intel.com>
+    Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+    Signed-off-by: John W. Linville <linville@tuxdriver.com>
+
+diff -up linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-1000.c.orig linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-1000.c
+--- linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-1000.c.orig	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-1000.c	2010-03-22 14:23:01.000000000 -0400
+@@ -162,5 +162,6 @@ struct iwl_cfg iwl1000_bgn_cfg = {
+ 	.shadow_ram_support = false,
+ 	.ht_greenfield_support = true,
+ 	.use_rts_for_ht = true, /* use rts/cts protection */
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_THRESHOLD_DEF,
+ };
+ 
+diff -up linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-3945.c.orig linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-3945.c
+--- linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-3945.c.orig	2010-03-22 10:23:59.000000000 -0400
++++ linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-3945.c	2010-03-22 14:20:28.000000000 -0400
+@@ -2896,6 +2896,7 @@ static struct iwl_cfg iwl3945_bg_cfg = {
+ 	.use_isr_legacy = true,
+ 	.ht_greenfield_support = false,
+ 	.broken_powersave = true,
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_THRESHOLD_DEF,
+ };
+ 
+ static struct iwl_cfg iwl3945_abg_cfg = {
+@@ -2911,6 +2912,7 @@ static struct iwl_cfg iwl3945_abg_cfg = 
+ 	.use_isr_legacy = true,
+ 	.ht_greenfield_support = false,
+ 	.broken_powersave = true,
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_THRESHOLD_DEF,
+ };
+ 
+ struct pci_device_id iwl3945_hw_card_ids[] = {
+diff -up linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-4965.c.orig linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-4965.c
+--- linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-4965.c.orig	2010-03-22 11:22:14.000000000 -0400
++++ linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-4965.c	2010-03-22 14:24:14.000000000 -0400
+@@ -2363,6 +2363,7 @@ struct iwl_cfg iwl4965_agn_cfg = {
+ 	.use_isr_legacy = true,
+ 	.ht_greenfield_support = false,
+ 	.broken_powersave = true,
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_THRESHOLD_DEF,
+ };
+ 
+ /* Module firmware */
+diff -up linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-5000.c.orig linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-5000.c
+--- linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-5000.c.orig	2010-03-22 11:22:14.000000000 -0400
++++ linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-5000.c	2010-03-22 14:27:05.000000000 -0400
+@@ -1672,6 +1672,7 @@ struct iwl_cfg iwl5300_agn_cfg = {
+ 	.need_pll_cfg = true,
+ 	.ht_greenfield_support = true,
+ 	.use_rts_for_ht = true, /* use rts/cts protection */
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_LONG_THRESHOLD_DEF,
+ };
+ 
+ struct iwl_cfg iwl5100_bg_cfg = {
+@@ -1689,6 +1690,7 @@ struct iwl_cfg iwl5100_bg_cfg = {
+ 	.valid_rx_ant = ANT_AB,
+ 	.need_pll_cfg = true,
+ 	.ht_greenfield_support = true,
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_LONG_THRESHOLD_DEF,
+ };
+ 
+ struct iwl_cfg iwl5100_abg_cfg = {
+@@ -1706,6 +1708,7 @@ struct iwl_cfg iwl5100_abg_cfg = {
+ 	.valid_tx_ant = ANT_B,
+ 	.valid_rx_ant = ANT_AB,
+ 	.need_pll_cfg = true,
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_LONG_THRESHOLD_DEF,
+ };
+ 
+ struct iwl_cfg iwl5100_agn_cfg = {
+@@ -1724,6 +1727,7 @@ struct iwl_cfg iwl5100_agn_cfg = {
+ 	.need_pll_cfg = true,
+ 	.ht_greenfield_support = true,
+ 	.use_rts_for_ht = true, /* use rts/cts protection */
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_LONG_THRESHOLD_DEF,
+ };
+ 
+ struct iwl_cfg iwl5350_agn_cfg = {
+@@ -1742,6 +1746,7 @@ struct iwl_cfg iwl5350_agn_cfg = {
+ 	.need_pll_cfg = true,
+ 	.ht_greenfield_support = true,
+ 	.use_rts_for_ht = true, /* use rts/cts protection */
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_LONG_THRESHOLD_DEF,
+ };
+ 
+ struct iwl_cfg iwl5150_agn_cfg = {
+@@ -1760,6 +1765,7 @@ struct iwl_cfg iwl5150_agn_cfg = {
+ 	.need_pll_cfg = true,
+ 	.ht_greenfield_support = true,
+ 	.use_rts_for_ht = true, /* use rts/cts protection */
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_LONG_THRESHOLD_DEF,
+ };
+ 
+ MODULE_FIRMWARE(IWL5000_MODULE_FIRMWARE(IWL5000_UCODE_API_MAX));
+diff -up linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-6000.c.orig linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-6000.c
+--- linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-6000.c.orig	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-6000.c	2010-03-22 14:28:04.000000000 -0400
+@@ -176,6 +176,7 @@ struct iwl_cfg iwl6000h_2agn_cfg = {
+ 	.shadow_ram_support = true,
+ 	.ht_greenfield_support = true,
+ 	.use_rts_for_ht = true, /* use rts/cts protection */
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_THRESHOLD_DEF,
+ };
+ 
+ /*
+@@ -200,6 +201,7 @@ struct iwl_cfg iwl6000i_2agn_cfg = {
+ 	.shadow_ram_support = true,
+ 	.ht_greenfield_support = true,
+ 	.use_rts_for_ht = true, /* use rts/cts protection */
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_THRESHOLD_DEF,
+ };
+ 
+ struct iwl_cfg iwl6050_2agn_cfg = {
+@@ -221,6 +223,7 @@ struct iwl_cfg iwl6050_2agn_cfg = {
+ 	.shadow_ram_support = true,
+ 	.ht_greenfield_support = true,
+ 	.use_rts_for_ht = true, /* use rts/cts protection */
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_THRESHOLD_DEF,
+ };
+ 
+ struct iwl_cfg iwl6000_3agn_cfg = {
+@@ -242,6 +245,7 @@ struct iwl_cfg iwl6000_3agn_cfg = {
+ 	.shadow_ram_support = true,
+ 	.ht_greenfield_support = true,
+ 	.use_rts_for_ht = true, /* use rts/cts protection */
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_THRESHOLD_DEF,
+ };
+ 
+ struct iwl_cfg iwl6050_3agn_cfg = {
+@@ -263,6 +267,7 @@ struct iwl_cfg iwl6050_3agn_cfg = {
+ 	.shadow_ram_support = true,
+ 	.ht_greenfield_support = true,
+ 	.use_rts_for_ht = true, /* use rts/cts protection */
++	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_THRESHOLD_DEF,
+ };
+ 
+ MODULE_FIRMWARE(IWL6000_MODULE_FIRMWARE(IWL6000_UCODE_API_MAX));
+diff -up linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-core.h.orig linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-core.h
+--- linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-core.h.orig	2010-03-22 11:26:18.000000000 -0400
++++ linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-core.h	2010-03-22 14:29:11.000000000 -0400
+@@ -214,6 +214,8 @@ struct iwl_mod_params {
+  * @max_ll_items: max number of OTP blocks
+  * @shadow_ram_support: shadow support for OTP memory
+  * @use_rts_for_ht: use rts/cts protection for HT traffic
++ * @plcp_delta_threshold: plcp error rate threshold used to trigger
++ *	radio tuning when there is a high receiving plcp error rate
+  *
+  * We enable the driver to be backward compatible wrt API version. The
+  * driver specifies which APIs it supports (with @ucode_api_max being the
+@@ -257,6 +259,7 @@ struct iwl_cfg {
+ 	const bool ht_greenfield_support;
+ 	const bool broken_powersave;
+ 	bool use_rts_for_ht;
++	u8 plcp_delta_threshold;
+ };
+ 
+ /***************************
+diff -up linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-debugfs.c.orig linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-debugfs.c
+--- linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-debugfs.c.orig	2010-03-22 11:33:02.000000000 -0400
++++ linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-debugfs.c	2010-03-22 14:31:01.000000000 -0400
+@@ -853,6 +853,47 @@ static ssize_t iwl_dbgfs_current_sleep_c
+ 	return simple_read_from_buffer(user_buf, count, ppos, buf, pos);
+ }
+ 
++static ssize_t iwl_dbgfs_plcp_delta_read(struct file *file,
++					char __user *user_buf,
++					size_t count, loff_t *ppos) {
++
++	struct iwl_priv *priv = (struct iwl_priv *)file->private_data;
++	int pos = 0;
++	char buf[12];
++	const size_t bufsz = sizeof(buf);
++	ssize_t ret;
++
++	pos += scnprintf(buf + pos, bufsz - pos, "%u\n",
++			priv->cfg->plcp_delta_threshold);
++
++	ret = simple_read_from_buffer(user_buf, count, ppos, buf, pos);
++	return ret;
++}
++
++static ssize_t iwl_dbgfs_plcp_delta_write(struct file *file,
++					const char __user *user_buf,
++					size_t count, loff_t *ppos) {
++
++	struct iwl_priv *priv = file->private_data;
++	char buf[8];
++	int buf_size;
++	int plcp;
++
++	memset(buf, 0, sizeof(buf));
++	buf_size = min(count, sizeof(buf) -  1);
++	if (copy_from_user(buf, user_buf, buf_size))
++		return -EFAULT;
++	if (sscanf(buf, "%d", &plcp) != 1)
++		return -EINVAL;
++	if ((plcp <= IWL_MAX_PLCP_ERR_THRESHOLD_MIN) ||
++		(plcp > IWL_MAX_PLCP_ERR_THRESHOLD_MAX))
++		priv->cfg->plcp_delta_threshold =
++			IWL_MAX_PLCP_ERR_THRESHOLD_DEF;
++	else
++		priv->cfg->plcp_delta_threshold = plcp;
++	return count;
++}
++
+ DEBUGFS_READ_WRITE_FILE_OPS(sram);
+ DEBUGFS_WRITE_FILE_OPS(log_event);
+ DEBUGFS_READ_FILE_OPS(nvm);
+@@ -1647,6 +1688,7 @@ DEBUGFS_READ_FILE_OPS(sensitivity);
+ DEBUGFS_READ_FILE_OPS(chain_noise);
+ DEBUGFS_READ_FILE_OPS(tx_power);
+ DEBUGFS_WRITE_FILE_OPS(internal_scan);
++DEBUGFS_READ_WRITE_FILE_OPS(plcp_delta);
+ 
+ /*
+  * Create the debugfs files and directories
+@@ -1697,6 +1739,7 @@ int iwl_dbgfs_register(struct iwl_priv *
+ 	DEBUGFS_ADD_FILE(tx_queue, debug);
+ 	DEBUGFS_ADD_FILE(tx_power, debug);
+ 	DEBUGFS_ADD_FILE(internal_scan, debug);
++	DEBUGFS_ADD_FILE(plcp_delta, debug);
+ 	if ((priv->hw_rev & CSR_HW_REV_TYPE_MSK) != CSR_HW_REV_TYPE_3945) {
+ 		DEBUGFS_ADD_FILE(ucode_rx_stats, debug);
+ 		DEBUGFS_ADD_FILE(ucode_tx_stats, debug);
+@@ -1752,6 +1795,7 @@ void iwl_dbgfs_unregister(struct iwl_pri
+ 	DEBUGFS_REMOVE(priv->dbgfs->dbgfs_debug_files.file_tx_queue);
+ 	DEBUGFS_REMOVE(priv->dbgfs->dbgfs_debug_files.file_tx_power);
+ 	DEBUGFS_REMOVE(priv->dbgfs->dbgfs_debug_files.file_internal_scan);
++	DEBUGFS_REMOVE(priv->dbgfs->dbgfs_debug_files.file_plcp_delta);
+ 	if ((priv->hw_rev & CSR_HW_REV_TYPE_MSK) != CSR_HW_REV_TYPE_3945) {
+ 		DEBUGFS_REMOVE(priv->dbgfs->dbgfs_debug_files.
+ 			file_ucode_rx_stats);
+diff -up linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-debug.h.orig linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-debug.h
+--- linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-debug.h.orig	2010-03-22 11:27:31.000000000 -0400
++++ linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-debug.h	2010-03-22 14:20:28.000000000 -0400
+@@ -109,6 +109,7 @@ struct iwl_debugfs {
+ 		struct dentry *file_chain_noise;
+ 		struct dentry *file_tx_power;
+ 		struct dentry *file_internal_scan;
++		struct dentry *file_plcp_delta;
+ 	} dbgfs_debug_files;
+ 	u32 sram_offset;
+ 	u32 sram_len;
+diff -up linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-dev.h.orig linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-dev.h
+--- linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-dev.h.orig	2010-03-22 14:12:32.000000000 -0400
++++ linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-dev.h	2010-03-22 14:20:28.000000000 -0400
+@@ -963,6 +963,15 @@ struct traffic_stats {
+ 
+ #define IWL_MAX_NUM_QUEUES	20 /* FIXME: do dynamic allocation */
+ 
++/*
++ * This is the threshold value of plcp error rate per 100mSecs.  It is
++ * used to set and check for the validity of plcp_delta.
++ */
++#define IWL_MAX_PLCP_ERR_THRESHOLD_MIN	(0)
++#define IWL_MAX_PLCP_ERR_THRESHOLD_DEF	(50)
++#define IWL_MAX_PLCP_ERR_LONG_THRESHOLD_DEF	(100)
++#define IWL_MAX_PLCP_ERR_THRESHOLD_MAX	(255)
++
+ struct iwl_priv {
+ 
+ 	/* ieee device used by generic ieee processing code */
+@@ -991,6 +1000,9 @@ struct iwl_priv {
+ 	/* ucode beacon time */
+ 	u32 ucode_beacon_time;
+ 
++	/* storing the jiffies when the plcp error rate is received */
++	unsigned long plcp_jiffies;
++
+ 	/* we allocate array of iwl4965_channel_info for NIC's valid channels.
+ 	 *    Access via channel # using indirect index array */
+ 	struct iwl_channel_info *channel_info;	/* channel info array */
+diff -up linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-rx.c.orig linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-rx.c
+--- linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-rx.c.orig	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32.noarch/drivers/net/wireless/iwlwifi/iwl-rx.c	2010-03-22 15:18:59.000000000 -0400
+@@ -550,11 +550,15 @@ static void iwl_rx_calc_noise(struct iwl
+ 
+ #define REG_RECALIB_PERIOD (60)
+ 
++#define PLCP_MSG "plcp_err exceeded %u, %u, %u, %u, %u, %d, %u mSecs\n"
+ void iwl_rx_statistics(struct iwl_priv *priv,
+ 			      struct iwl_rx_mem_buffer *rxb)
+ {
+ 	int change;
+ 	struct iwl_rx_packet *pkt = (struct iwl_rx_packet *)rxb->skb->data;
++	int combined_plcp_delta;
++	unsigned int plcp_msec;
++	unsigned long plcp_received_jiffies;
+ 
+ 	IWL_DEBUG_RX(priv, "Statistics notification received (%d vs %d).\n",
+ 		     (int)sizeof(priv->statistics),
+@@ -566,6 +570,56 @@ void iwl_rx_statistics(struct iwl_priv *
+ 		    STATISTICS_REPLY_FLG_HT40_MODE_MSK) !=
+ 		   (pkt->u.stats.flag & STATISTICS_REPLY_FLG_HT40_MODE_MSK)));
+ 
++	/*
++	 * check for plcp_err and trigger radio reset if it exceeds
++	 * the plcp error threshold plcp_delta.
++	 */
++	plcp_received_jiffies = jiffies;
++	plcp_msec = jiffies_to_msecs((long) plcp_received_jiffies -
++					(long) priv->plcp_jiffies);
++	priv->plcp_jiffies = plcp_received_jiffies;
++	/*
++	 * check to make sure plcp_msec is not 0 to prevent division
++	 * by zero.
++	 */
++	if (plcp_msec) {
++		combined_plcp_delta =
++			(le32_to_cpu(pkt->u.stats.rx.ofdm.plcp_err) -
++			le32_to_cpu(priv->statistics.rx.ofdm.plcp_err)) +
++			(le32_to_cpu(pkt->u.stats.rx.ofdm_ht.plcp_err) -
++			le32_to_cpu(priv->statistics.rx.ofdm_ht.plcp_err));
++
++		if ((combined_plcp_delta > 0) &&
++			((combined_plcp_delta * 100) / plcp_msec) >
++			priv->cfg->plcp_delta_threshold) {
++			/*
++			 * if plcp_err exceed the threshold, the following
++			 * data is printed in csv format:
++			 *    Text: plcp_err exceeded %d,
++			 *    Received ofdm.plcp_err,
++			 *    Current ofdm.plcp_err,
++			 *    Received ofdm_ht.plcp_err,
++			 *    Current ofdm_ht.plcp_err,
++			 *    combined_plcp_delta,
++			 *    plcp_msec
++			 */
++			IWL_DEBUG_RADIO(priv, PLCP_MSG,
++				priv->cfg->plcp_delta_threshold,
++				le32_to_cpu(pkt->u.stats.rx.ofdm.plcp_err),
++				le32_to_cpu(priv->statistics.rx.ofdm.plcp_err),
++				le32_to_cpu(pkt->u.stats.rx.ofdm_ht.plcp_err),
++				le32_to_cpu(
++					priv->statistics.rx.ofdm_ht.plcp_err),
++				combined_plcp_delta, plcp_msec);
++
++			/*
++			 * Reset the RF radio due to the high plcp
++			 * error rate
++			 */
++			iwl_force_rf_reset(priv);
++		}
++	}
++
+ 	memcpy(&priv->statistics, &pkt->u.stats, sizeof(priv->statistics));
+ 
+ 	set_bit(STATUS_STATISTICS, &priv->status);

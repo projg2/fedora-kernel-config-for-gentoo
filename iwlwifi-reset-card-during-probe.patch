@@ -1,0 +1,167 @@
+From linville@redhat.com Mon Mar 29 14:49:37 2010
+Return-path: <linville@redhat.com>
+Envelope-to: linville@tuxdriver.com
+Delivery-date: Mon, 29 Mar 2010 14:49:37 -0400
+Received: from mx1.redhat.com ([209.132.183.28])
+	by smtp.tuxdriver.com with esmtp (Exim 4.63)
+	(envelope-from <linville@redhat.com>)
+	id 1NwK1n-0004Zz-SW
+	for linville@tuxdriver.com; Mon, 29 Mar 2010 14:49:37 -0400
+Received: from int-mx04.intmail.prod.int.phx2.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.17])
+	by mx1.redhat.com (8.13.8/8.13.8) with ESMTP id o2TInYO7028996
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=OK)
+	for <linville@tuxdriver.com>; Mon, 29 Mar 2010 14:49:35 -0400
+Received: from savage.usersys.redhat.com (savage.devel.redhat.com [10.11.231.4])
+	by int-mx04.intmail.prod.int.phx2.redhat.com (8.13.8/8.13.8) with ESMTP id o2TInX27023483
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO)
+	for <linville@tuxdriver.com>; Mon, 29 Mar 2010 14:49:33 -0400
+Received: from savage.usersys.redhat.com (localhost.localdomain [127.0.0.1])
+	by savage.usersys.redhat.com (8.13.1/8.13.1) with ESMTP id o2TInXPn000652
+	for <linville@tuxdriver.com>; Mon, 29 Mar 2010 14:49:33 -0400
+Received: (from linville@localhost)
+	by savage.usersys.redhat.com (8.13.1/8.13.1/Submit) id o2TInWt7000651
+	for linville@tuxdriver.com; Mon, 29 Mar 2010 14:49:32 -0400
+Resent-Message-Id: <201003291849.o2TInWt7000651@savage.usersys.redhat.com>
+Received: from zmta03.collab.prod.int.phx2.redhat.com (LHLO
+ zmta03.collab.prod.int.phx2.redhat.com) (10.5.5.33) by
+ mail03.corp.redhat.com with LMTP; Fri, 26 Mar 2010 06:05:51 -0400 (EDT)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by zmta03.collab.prod.int.phx2.redhat.com (Postfix) with ESMTP id 038004CBE9;
+	Fri, 26 Mar 2010 06:05:51 -0400 (EDT)
+Received: from zmta03.collab.prod.int.phx2.redhat.com ([127.0.0.1])
+	by localhost (zmta03.collab.prod.int.phx2.redhat.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IVjBQyibLBw2; Fri, 26 Mar 2010 06:05:50 -0400 (EDT)
+Received: from int-mx04.intmail.prod.int.phx2.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.17])
+	by zmta03.collab.prod.int.phx2.redhat.com (Postfix) with ESMTP id BF0144CBE7;
+	Fri, 26 Mar 2010 06:05:50 -0400 (EDT)
+Received: from mx1.redhat.com (ext-mx08.extmail.prod.ext.phx2.redhat.com [10.5.110.12])
+	by int-mx04.intmail.prod.int.phx2.redhat.com (8.13.8/8.13.8) with ESMTP id o2QA5m7L004056;
+	Fri, 26 Mar 2010 06:05:49 -0400
+Received: from bastion.fedoraproject.org (bastion.phx2.fedoraproject.org [10.5.126.11])
+	by mx1.redhat.com (8.13.8/8.13.8) with ESMTP id o2QA5bS2028477;
+	Fri, 26 Mar 2010 06:05:37 -0400
+Received: from lists.fedoraproject.org (collab1.vpn.fedoraproject.org [192.168.1.21])
+	by bastion02.phx2.fedoraproject.org (Postfix) with ESMTP id 16EF710F96C;
+	Fri, 26 Mar 2010 10:05:37 +0000 (UTC)
+Received: from collab1.fedoraproject.org (localhost.localdomain [127.0.0.1])
+	by lists.fedoraproject.org (Postfix) with ESMTP id 1C8C93267AC;
+	Fri, 26 Mar 2010 10:05:19 +0000 (UTC)
+X-Original-To: kernel@lists.fedoraproject.org
+Delivered-To: kernel@lists.fedoraproject.org
+Received: from smtp-mm1.fedoraproject.org (smtp-mm1.fedoraproject.org
+	[80.239.156.217])
+	by lists.fedoraproject.org (Postfix) with ESMTP id 5FD26326780
+	for <kernel@lists.fedoraproject.org>;
+	Fri, 26 Mar 2010 10:05:14 +0000 (UTC)
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp-mm1.fedoraproject.org (Postfix) with ESMTP id 9BB6A87E5F
+	for <kernel@lists.fedoraproject.org>;
+	Fri, 26 Mar 2010 10:05:13 +0000 (UTC)
+Received: from int-mx08.intmail.prod.int.phx2.redhat.com
+	(int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.21])
+	by mx1.redhat.com (8.13.8/8.13.8) with ESMTP id o2QA5CbS005173
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=OK);
+	Fri, 26 Mar 2010 06:05:12 -0400
+Received: from localhost (dhcp-0-189.brq.redhat.com [10.34.0.189])
+	by int-mx08.intmail.prod.int.phx2.redhat.com (8.13.8/8.13.8) with ESMTP
+	id o2QA5BKo028563; Fri, 26 Mar 2010 06:05:11 -0400
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+To: kernel@lists.fedoraproject.org
+Subject: [PATCH 2/3] iwlwifi: reset card during probe
+Date: Fri, 26 Mar 2010 11:03:26 +0100
+Message-Id: <1269597807-2925-2-git-send-email-sgruszka@redhat.com>
+In-Reply-To: <1269597807-2925-1-git-send-email-sgruszka@redhat.com>
+References: <1269597807-2925-1-git-send-email-sgruszka@redhat.com>
+X-Scanned-By: MIMEDefang 2.67 on 10.5.11.17
+X-Scanned-By: MIMEDefang 2.67 on 10.5.11.17
+X-Scanned-By: MIMEDefang 2.67 on 10.5.110.12
+X-Scanned-By: MIMEDefang 2.67 on 10.5.11.21
+Cc: Stanislaw Gruszka <sgruszka@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>
+X-BeenThere: kernel@lists.fedoraproject.org
+X-Mailman-Version: 2.1.9
+Precedence: list
+List-Id: "Fedora kernel development." <kernel.lists.fedoraproject.org>
+List-Unsubscribe: <https://admin.fedoraproject.org/mailman/listinfo/kernel>,
+	<mailto:kernel-request@lists.fedoraproject.org?subject=unsubscribe>
+List-Archive: <http://lists.fedoraproject.org/pipermail/kernel>
+List-Post: <mailto:kernel@lists.fedoraproject.org>
+List-Help: <mailto:kernel-request@lists.fedoraproject.org?subject=help>
+List-Subscribe: <https://admin.fedoraproject.org/mailman/listinfo/kernel>,
+	<mailto:kernel-request@lists.fedoraproject.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Sender: kernel-bounces@lists.fedoraproject.org
+Errors-To: kernel-bounces@lists.fedoraproject.org
+X-RedHat-Spam-Score: -0.01  (T_RP_MATCHES_RCVD)
+Resent-From: linville@redhat.com
+Resent-Date: Mon, 29 Mar 2010 14:49:32 -0400
+Resent-To: linville@tuxdriver.com
+X-Spam-Score: -8.8 (--------)
+X-Spam-Status: No
+Content-Length: 2455
+Lines: 61
+
+RHBZ#557084 
+
+To ensure that card is in a sane state during probe we add a reset call.
+This change was prompted by users of kdump who was not able to bring up the
+wireless driver in the kdump kernel. The problem here was that the primary
+kernel, which is not running at the time, left the wireless card up and
+running. When the kdump kernel starts it is thus possible to immediately
+receive interrupts from firmware after registering interrupt, but without
+being ready to deal with interrupts from firmware yet.
+
+Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
+---
+ drivers/net/wireless/iwlwifi/iwl-agn.c      |    8 ++++++++
+ drivers/net/wireless/iwlwifi/iwl3945-base.c |    7 +++++++
+ 2 files changed, 15 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/net/wireless/iwlwifi/iwl-agn.c b/drivers/net/wireless/iwlwifi/iwl-agn.c
+index 921dc4a..1661f3c 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-agn.c
++++ b/drivers/net/wireless/iwlwifi/iwl-agn.c
+@@ -2976,6 +2976,14 @@ static int iwl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	 * we should init now
+ 	 */
+ 	spin_lock_init(&priv->reg_lock);
++
++	/*
++	 * stop and reset the on-board processor just in case it is in a
++	 * strange state ... like being left stranded by a primary kernel
++	 * and this is now the kdump kernel trying to start up
++	 */
++	iwl_write32(priv, CSR_RESET, CSR_RESET_REG_FLAG_NEVO_RESET);
++
+ 	iwl_hw_detect(priv);
+ 	IWL_INFO(priv, "Detected Intel Wireless WiFi Link %s REV=0x%X\n",
+ 		priv->cfg->name, priv->hw_rev);
+diff --git a/drivers/net/wireless/iwlwifi/iwl3945-base.c b/drivers/net/wireless/iwlwifi/iwl3945-base.c
+index 5f26c93..3726b01 100644
+--- a/drivers/net/wireless/iwlwifi/iwl3945-base.c
++++ b/drivers/net/wireless/iwlwifi/iwl3945-base.c
+@@ -4032,6 +4032,13 @@ static int iwl3945_pci_probe(struct pci_dev *pdev, const struct pci_device_id *e
+ 	IWL_INFO(priv, "Detected Intel Wireless WiFi Link %s\n",
+ 		priv->cfg->name);
+ 
++	/*
++	 * stop and reset the on-board processor just in case it is in a
++	 * strange state ... like being left stranded by a primary kernel
++	 * and this is now the kdump kernel trying to start up
++	 */
++	iwl_write32(priv, CSR_RESET, CSR_RESET_REG_FLAG_NEVO_RESET);
++
+ 	/***********************
+ 	 * 7. Setup Services
+ 	 * ********************/
+-- 
+1.6.2.5
+
+_______________________________________________
+kernel mailing list
+kernel@lists.fedoraproject.org
+https://admin.fedoraproject.org/mailman/listinfo/kernel
+
+

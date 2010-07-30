@@ -1,0 +1,42 @@
+From: Dan Rosenberg <dan.j.rosenberg@gmail.com>
+Date: Thu, 24 Jun 2010 02:07:47 +0000 (+1000)
+Subject: xfs: prevent swapext from operating on write-only files
+X-Git-Tag: v2.6.35-rc4~4^2~4
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=1817176a86352f65210139d4c794ad2d19fc6b63
+
+xfs: prevent swapext from operating on write-only files
+[ cve-2010-2266 ]
+[ cebbert@redhat.com : backport to 2.6.32 ]
+
+This patch prevents user "foo" from using the SWAPEXT ioctl to swap
+a write-only file owned by user "bar" into a file owned by "foo" and
+subsequently reading it.  It does so by checking that the file
+descriptors passed to the ioctl are also opened for reading.
+
+Signed-off-by: Dan Rosenberg <dan.j.rosenberg@gmail.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+---
+
+diff --git a/fs/xfs/xfs_dfrag.c b/fs/xfs/xfs_dfrag.c
+index 5bba29a..7f159d2 100644
+--- a/fs/xfs/xfs_dfrag.c
++++ b/fs/xfs/xfs_dfrag.c
+@@ -69,7 +69,9 @@ xfs_swapext(
+ 		goto out;
+ 	}
+ 
+-	if (!(file->f_mode & FMODE_WRITE) || (file->f_flags & O_APPEND)) {
++	if (!(file->f_mode & FMODE_WRITE) ||
++	    !(file->f_mode & FMODE_READ) ||
++	    (file->f_flags & O_APPEND)) {
+ 		error = XFS_ERROR(EBADF);
+ 		goto out_put_file;
+ 	}
+@@ -81,6 +83,7 @@ xfs_swapext(
+ 	}
+ 
+ 	if (!(target_file->f_mode & FMODE_WRITE) ||
++	    !(target_file->f_mode & FMODE_READ) ||
+ 	    (target_file->f_flags & O_APPEND)) {
+ 		error = XFS_ERROR(EBADF);
+ 		goto out_put_target_file;

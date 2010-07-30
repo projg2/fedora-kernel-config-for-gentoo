@@ -1,0 +1,147 @@
+diff --git a/drivers/pci/hotplug/pciehp.h b/drivers/pci/hotplug/pciehp.h
+index b2801a7..c9f18f9 100644
+--- a/drivers/pci/hotplug/pciehp.h
++++ b/drivers/pci/hotplug/pciehp.h
+@@ -224,6 +224,10 @@ static inline int pciehp_get_hp_hw_control_from_firmware(struct pci_dev *dev)
+ {
+ 	u32 flags = (OSC_PCI_EXPRESS_NATIVE_HP_CONTROL |
+ 		     OSC_PCI_EXPRESS_CAP_STRUCTURE_CONTROL);
++	if (pciehp_force) {
++		dev_info(&dev->dev, "Bypassing BIOS check for pciehp\n");
++		return 0;
++	}
+ 	return acpi_get_hp_hw_control_from_firmware(dev, flags);
+ }
+ 
+diff --git a/drivers/pci/hotplug/pciehp_core.c b/drivers/pci/hotplug/pciehp_core.c
+index 39cf248..ab6b016 100644
+--- a/drivers/pci/hotplug/pciehp_core.c
++++ b/drivers/pci/hotplug/pciehp_core.c
+@@ -41,6 +41,7 @@ int pciehp_debug;
+ int pciehp_poll_mode;
+ int pciehp_poll_time;
+ int pciehp_force;
++int pciehp_passive;
+ struct workqueue_struct *pciehp_wq;
+ 
+ #define DRIVER_VERSION	"0.4"
+@@ -50,15 +51,18 @@ struct workqueue_struct *pciehp_wq;
+ MODULE_AUTHOR(DRIVER_AUTHOR);
+ MODULE_DESCRIPTION(DRIVER_DESC);
+ MODULE_LICENSE("GPL");
++MODULE_ALIAS("acpi*:PNP0A08:*");
+ 
+ module_param(pciehp_debug, bool, 0644);
+ module_param(pciehp_poll_mode, bool, 0644);
+ module_param(pciehp_poll_time, int, 0644);
+ module_param(pciehp_force, bool, 0644);
++module_param(pciehp_passive, bool, 0644);
+ MODULE_PARM_DESC(pciehp_debug, "Debugging mode enabled or not");
+ MODULE_PARM_DESC(pciehp_poll_mode, "Using polling mechanism for hot-plug events or not");
+ MODULE_PARM_DESC(pciehp_poll_time, "Polling mechanism frequency, in seconds");
+ MODULE_PARM_DESC(pciehp_force, "Force pciehp, even if _OSC and OSHP are missing");
++MODULE_PARM_DESC(pciehp_passive, "Listen for pciehp events, even if _OSC and OSHP are missing");
+ 
+ #define PCIE_MODULE_NAME "pciehp"
+ 
+@@ -85,6 +89,13 @@ static struct hotplug_slot_ops pciehp_hotplug_slot_ops = {
+   	.get_cur_bus_speed =	get_cur_bus_speed,
+ };
+ 
++static struct hotplug_slot_ops pciehp_passive_hotplug_slot_ops = {
++	.owner =		THIS_MODULE,
++	.get_adapter_status =	get_adapter_status,
++	.get_max_bus_speed =	get_max_bus_speed,
++	.get_cur_bus_speed =	get_cur_bus_speed,
++};
++
+ /*
+  * Check the status of the Electro Mechanical Interlock (EMI)
+  */
+@@ -212,7 +223,11 @@ static int init_slots(struct controller *ctrl)
+ 		hotplug_slot->info = info;
+ 		hotplug_slot->private = slot;
+ 		hotplug_slot->release = &release_slot;
+-		hotplug_slot->ops = &pciehp_hotplug_slot_ops;
++		if (pciehp_passive &&
++		    pciehp_get_hp_hw_control_from_firmware(ctrl->pci_dev))
++			hotplug_slot->ops = &pciehp_passive_hotplug_slot_ops;
++		else
++			hotplug_slot->ops = &pciehp_hotplug_slot_ops;
+ 		slot->hotplug_slot = hotplug_slot;
+ 		snprintf(name, SLOT_NAME_SIZE, "%u", slot->number);
+ 
+@@ -407,11 +422,7 @@ static int pciehp_probe(struct pcie_device *dev, const struct pcie_port_service_
+ 	u8 value;
+ 	struct pci_dev *pdev = dev->port;
+ 
+-	if (pciehp_force)
+-		dev_info(&dev->device,
+-			 "Bypassing BIOS check for pciehp use on %s\n",
+-			 pci_name(pdev));
+-	else if (pciehp_get_hp_hw_control_from_firmware(pdev))
++	if (!pciehp_passive && pciehp_get_hp_hw_control_from_firmware(pdev))
+ 		goto err_out_none;
+ 
+ 	ctrl = pcie_init(dev);
+@@ -436,7 +447,7 @@ static int pciehp_probe(struct pcie_device *dev, const struct pcie_port_service_
+ 	t_slot = pciehp_find_slot(ctrl, ctrl->slot_device_offset);
+ 	t_slot->hpc_ops->get_adapter_status(t_slot, &value);
+ 	if (value) {
+-		if (pciehp_force)
++		if (pciehp_force || pciehp_passive)
+ 			pciehp_enable_slot(t_slot);
+ 	} else {
+ 		/* Power off slot if not occupied */
+@@ -474,8 +485,11 @@ static int pciehp_suspend (struct pcie_device *dev, pm_message_t state)
+ 
+ static int pciehp_resume (struct pcie_device *dev)
+ {
++	struct pci_dev *pdev = dev->port;
+ 	dev_info(&dev->device, "%s ENTRY\n", __func__);
+-	if (pciehp_force) {
++
++	if (pciehp_force || (pciehp_passive &&
++			     pciehp_get_hp_hw_control_from_firmware(pdev))) {
+ 		struct controller *ctrl = get_service_data(dev);
+ 		struct slot *t_slot;
+ 		u8 status;
+diff --git a/drivers/pci/hotplug/pciehp_ctrl.c b/drivers/pci/hotplug/pciehp_ctrl.c
+index fead63c..12640bd 100644
+--- a/drivers/pci/hotplug/pciehp_ctrl.c
++++ b/drivers/pci/hotplug/pciehp_ctrl.c
+@@ -185,7 +185,8 @@ static void set_slot_off(struct controller *ctrl, struct slot * pslot)
+ 	 * before taking any action that relies on power having been
+ 	 * removed from the slot/adapter.
+ 	 */
+-	msleep(1000);
++	if (PWR_LED(ctrl) || ATTN_LED(ctrl))
++		msleep(1000);
+ 
+ 	if (PWR_LED(ctrl))
+ 		pslot->hpc_ops->green_led_off(pslot);
+@@ -288,16 +289,16 @@ static int remove_board(struct slot *p_slot)
+ 		}
+ 	}
+ 
+-	/*
+-	 * After turning power off, we must wait for at least 1 second
+-	 * before taking any action that relies on power having been
+-	 * removed from the slot/adapter.
+-	 */
+-	msleep(1000);
+-
+-	if (PWR_LED(ctrl))
++	if (PWR_LED(ctrl)) {
++		/*
++		 * After turning power off, we must wait for at least 1 second
++		 * before taking any action that relies on power having been
++		 * removed from the slot/adapter.
++		 */
++		msleep(1000);
+ 		/* turn off Green LED */
+ 		p_slot->hpc_ops->green_led_off(p_slot);
++	}
+ 
+ 	return 0;
+ }

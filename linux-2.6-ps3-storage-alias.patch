@@ -1,0 +1,7 @@
+--- linux-2.6.22.ppc64/drivers/block/ps3disk.c~	2007-07-25 16:06:16.000000000 +0100
++++ linux-2.6.22.ppc64/drivers/block/ps3disk.c	2007-07-26 08:49:44.000000000 +0100
+@@ -628,3 +628,4 @@ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("PS3 Disk Storage Driver");
+ MODULE_AUTHOR("Sony Corporation");
+ MODULE_ALIAS(PS3_MODULE_ALIAS_STOR_DISK);
++MODULE_ALIAS("ps3_storage");

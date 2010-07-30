@@ -1,0 +1,42 @@
+diff --git a/sound/pci/ice1712/revo.c b/sound/pci/ice1712/revo.c
+index b508bb3..dc13e2d 100644
+--- a/sound/pci/ice1712/revo.c
++++ b/sound/pci/ice1712/revo.c
+@@ -197,26 +197,26 @@ static int revo51_i2c_init(struct snd_ice1712 *ice,
+ 
+ static const struct snd_akm4xxx_dac_channel revo71_front[] = {
+ 	{
+-		.name = "PCM Playback Volume",
++		.name = "Front Playback Volume",
+ 		.num_channels = 2,
+ 		/* front channels DAC supports muting */
+-		.switch_name = "PCM Playback Switch",
++		.switch_name = "Front Playback Switch",
+ 	},
+ };
+ 
+ static const struct snd_akm4xxx_dac_channel revo71_surround[] = {
+-	AK_DAC("PCM Center Playback Volume", 1),
+-	AK_DAC("PCM LFE Playback Volume", 1),
+-	AK_DAC("PCM Side Playback Volume", 2),
+-	AK_DAC("PCM Rear Playback Volume", 2),
++	AK_DAC("Center Playback Volume", 1),
++	AK_DAC("LFE Playback Volume", 1),
++	AK_DAC("Side Playback Volume", 2),
++	AK_DAC("Rear Playback Volume", 2),
+ };
+ 
+ static const struct snd_akm4xxx_dac_channel revo51_dac[] = {
+-	AK_DAC("PCM Playback Volume", 2),
+-	AK_DAC("PCM Center Playback Volume", 1),
+-	AK_DAC("PCM LFE Playback Volume", 1),
+-	AK_DAC("PCM Rear Playback Volume", 2),
+-	AK_DAC("PCM Headphone Volume", 2),
++	AK_DAC("Front Playback Volume", 2),
++	AK_DAC("Center Playback Volume", 1),
++	AK_DAC("LFE Playback Volume", 1),
++	AK_DAC("Rear Playback Volume", 2),
++	AK_DAC("Headphone Volume", 2),
+ };
+ 
+ static const char *revo51_adc_input_names[] = {

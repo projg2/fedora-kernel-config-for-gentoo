@@ -1,0 +1,27 @@
+diff -up linux-2.6.30.noarch/drivers/pci/setup-res.c.jx linux-2.6.30.noarch/drivers/pci/setup-res.c
+--- linux-2.6.30.noarch/drivers/pci/setup-res.c.jx	2009-07-27 17:56:13.000000000 -0400
++++ linux-2.6.30.noarch/drivers/pci/setup-res.c	2009-07-27 17:58:25.000000000 -0400
+@@ -101,6 +101,7 @@ int pci_claim_resource(struct pci_dev *d
+ 	struct resource *res = &dev->resource[resource];
+ 	struct resource *root;
+ 	int err;
++	const char *dtype = resource < PCI_BRIDGE_RESOURCES ? "device" : "bridge";
+ 
+ 	root = pci_find_parent_resource(dev, res);
+ 
+@@ -108,8 +109,13 @@ int pci_claim_resource(struct pci_dev *d
+ 	if (root != NULL)
+ 		err = request_resource(root, res);
+ 
+-	if (err) {
+-		const char *dtype = resource < PCI_BRIDGE_RESOURCES ? "device" : "bridge";
++	if (err && resource == 6) {
++		dev_info(&dev->dev, "BAR %d: %s of %s %pR\n",
++			resource,
++			root ? "address space collision on" :
++				"no parent found for",
++			dtype, res);
++	} else if (err) {
+ 		dev_err(&dev->dev, "BAR %d: %s of %s %pR\n",
+ 			resource,
+ 			root ? "address space collision on" :

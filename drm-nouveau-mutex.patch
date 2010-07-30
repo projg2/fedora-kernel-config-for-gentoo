@@ -1,0 +1,56 @@
+From 967c89306de560a6da9539d24a0d63cb036d58ed Mon Sep 17 00:00:00 2001
+From: Ben Skeggs <bskeggs@redhat.com>
+Date: Tue, 16 Feb 2010 11:14:14 +1000
+Subject: [PATCH] drm/nouveau: use mutex for vbios lock
+
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+---
+ drivers/gpu/drm/nouveau/nouveau_bios.c |    7 +++----
+ drivers/gpu/drm/nouveau/nouveau_bios.h |    2 +-
+ 2 files changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/gpu/drm/nouveau/nouveau_bios.c b/drivers/gpu/drm/nouveau/nouveau_bios.c
+index 2cd0fad..0e9cd1d 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_bios.c
++++ b/drivers/gpu/drm/nouveau/nouveau_bios.c
+@@ -5861,13 +5861,12 @@ nouveau_bios_run_init_table(struct drm_device *dev, uint16_t table,
+ 	struct drm_nouveau_private *dev_priv = dev->dev_private;
+ 	struct nvbios *bios = &dev_priv->VBIOS;
+ 	struct init_exec iexec = { true, false };
+-	unsigned long flags;
+ 
+-	spin_lock_irqsave(&bios->lock, flags);
++	mutex_lock(&bios->lock);
+ 	bios->display.output = dcbent;
+ 	parse_init_table(bios, table, &iexec);
+ 	bios->display.output = NULL;
+-	spin_unlock_irqrestore(&bios->lock, flags);
++	mutex_unlock(&bios->lock);
+ }
+ 
+ static bool NVInitVBIOS(struct drm_device *dev)
+@@ -5876,7 +5875,7 @@ static bool NVInitVBIOS(struct drm_device *dev)
+ 	struct nvbios *bios = &dev_priv->VBIOS;
+ 
+ 	memset(bios, 0, sizeof(struct nvbios));
+-	spin_lock_init(&bios->lock);
++	mutex_init(&bios->lock);
+ 	bios->dev = dev;
+ 
+ 	if (!NVShadowVBIOS(dev, bios->data))
+diff --git a/drivers/gpu/drm/nouveau/nouveau_bios.h b/drivers/gpu/drm/nouveau/nouveau_bios.h
+index 68446fd..fd94bd6 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_bios.h
++++ b/drivers/gpu/drm/nouveau/nouveau_bios.h
+@@ -205,7 +205,7 @@ struct nvbios {
+ 	struct drm_device *dev;
+ 	struct nouveau_bios_info pub;
+ 
+-	spinlock_t lock;
++	struct mutex lock;
+ 
+ 	uint8_t data[NV_PROM_SIZE];
+ 	unsigned int length;
+-- 
+1.6.6.1
+

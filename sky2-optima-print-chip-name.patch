@@ -1,0 +1,27 @@
+From: stephen hemminger <shemminger@vyatta.com>
+Date: Mon, 14 Dec 2009 08:33:47 +0000 (+0000)
+Subject: sky2: print Optima chip name
+X-Git-Tag: v2.6.33-rc1~59^2~9
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=dae3a5112d258764cad9e48439ca7dd05c2edca1
+
+sky2: print Optima chip name
+
+Off by one in name lookup makes Optima display as (chip 0xbc)
+
+Signed-off-by: Stephen Hemminger <shemminger@vyatta.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+
+diff --git a/drivers/net/sky2.c b/drivers/net/sky2.c
+index 89a05d6..9431f64 100644
+--- a/drivers/net/sky2.c
++++ b/drivers/net/sky2.c
+@@ -4530,7 +4530,7 @@ static const char *sky2_name(u8 chipid, char *buf, int sz)
+ 		"Optima",	/* 0xbc */
+ 	};
+ 
+-	if (chipid >= CHIP_ID_YUKON_XL && chipid < CHIP_ID_YUKON_OPT)
++	if (chipid >= CHIP_ID_YUKON_XL && chipid <= CHIP_ID_YUKON_OPT)
+ 		strncpy(buf, name[chipid - CHIP_ID_YUKON_XL], sz);
+ 	else
+ 		snprintf(buf, sz, "(chip %#x)", chipid);

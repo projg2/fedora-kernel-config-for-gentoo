@@ -1,0 +1,13 @@
+https://bugzilla.redhat.com/show_bug.cgi?id=589777#c5
+
+diff -up linux-2.6.33.noarch/drivers/net/wireless/iwlwifi/iwl-3945.c.orig linux-2.6.33.noarch/drivers/net/wireless/iwlwifi/iwl-3945.c
+--- linux-2.6.33.noarch/drivers/net/wireless/iwlwifi/iwl-3945.c.orig	2010-05-19 16:07:15.000000000 -0400
++++ linux-2.6.33.noarch/drivers/net/wireless/iwlwifi/iwl-3945.c	2010-05-19 16:09:42.000000000 -0400
+@@ -2794,6 +2794,7 @@ static struct iwl_lib_ops iwl3945_lib = 
+ 	.post_associate = iwl3945_post_associate,
+ 	.isr = iwl_isr_legacy,
+ 	.config_ap = iwl3945_config_ap,
++	.recover_from_tx_stall = iwl_bg_monitor_recover,
+ };
+ 
+ static struct iwl_hcmd_utils_ops iwl3945_hcmd_utils = {

@@ -1,0 +1,21 @@
+diff -up linux-2.6.32.noarch/security/selinux/hooks.c.mprotect-sparc linux-2.6.32.noarch/security/selinux/hooks.c
+--- linux-2.6.32.noarch/security/selinux/hooks.c.mprotect-sparc	2010-03-10 08:28:20.957571926 -0500
++++ linux-2.6.32.noarch/security/selinux/hooks.c	2010-03-10 08:29:15.732698763 -0500
+@@ -3010,7 +3010,7 @@ static int file_map_prot_check(struct fi
+ 	const struct cred *cred = current_cred();
+ 	int rc = 0;
+ 
+-#ifndef CONFIG_PPC32
++#if !defined(CONFIG_PPC32) && !defined(CONFIG_SPARC)
+ 	if ((prot & PROT_EXEC) && (!file || (!shared && (prot & PROT_WRITE)))) {
+ 		/*
+ 		 * We are making executable an anonymous mapping or a
+@@ -3082,7 +3082,7 @@ static int selinux_file_mprotect(struct 
+ 	if (selinux_checkreqprot)
+ 		prot = reqprot;
+ 
+-#ifndef CONFIG_PPC32
++#if !defined(CONFIG_PPC32) && !defined(CONFIG_SPARC)
+ 	if ((prot & PROT_EXEC) && !(vma->vm_flags & VM_EXEC)) {
+ 		int rc = 0;
+ 		if (vma->vm_start >= vma->vm_mm->start_brk &&

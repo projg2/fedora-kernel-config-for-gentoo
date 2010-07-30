@@ -1,0 +1,51 @@
+This patch (as1403b) is a backport of commit
+48826626263d4a61d06fd8c5805da31f925aefa0 (USB: obey the sysfs
+power/wakeup setting) to 2.6.{32,33}.stable.  It turns out that the
+bug it fixes does affect quite a few people using USB infrared
+remotes.  The symptom is that the remote can no longer wake up the
+system from suspend.
+
+This fixes Bugzilla #16043.
+
+Red Hat Bugzilla #617559
+
+Signed-off-by: Alan Stern <stern@xxxxxxxxxxxxxxxxxxx>
+
+---
+
+Index: 2.6.33.5/drivers/usb/core/driver.c
+===================================================================
+--- 2.6.33.5.orig/drivers/usb/core/driver.c
++++ 2.6.33.5/drivers/usb/core/driver.c
+@@ -1790,9 +1790,6 @@ int usb_external_resume_device(struct us
+ 
+ static void choose_wakeup(struct usb_device *udev, pm_message_t msg)
+ {
+-	int			w, i;
+-	struct usb_interface	*intf;
+-
+ 	/* Remote wakeup is needed only when we actually go to sleep.
+ 	 * For things like FREEZE and QUIESCE, if the device is already
+ 	 * autosuspended then its current wakeup setting is okay.
+@@ -1802,18 +1799,10 @@ static void choose_wakeup(struct usb_dev
+ 		return;
+ 	}
+ 
+-	/* If remote wakeup is permitted, see whether any interface drivers
++	/* Allow remote wakeup if it is enabled, even if no interface drivers
+ 	 * actually want it.
+ 	 */
+-	w = 0;
+-	if (device_may_wakeup(&udev->dev) && udev->actconfig) {
+-		for (i = 0; i < udev->actconfig->desc.bNumInterfaces; i++) {
+-			intf = udev->actconfig->interface[i];
+-			w |= intf->needs_remote_wakeup;
+-		}
+-	}
+-
+-	udev->do_remote_wakeup = w;
++	udev->do_remote_wakeup = device_may_wakeup(&udev->dev);
+ }
+ 
+ int usb_suspend(struct device *dev, pm_message_t msg)
+
