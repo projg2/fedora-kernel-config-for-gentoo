@@ -10136,7 +10136,7 @@ index c3cfafc..59a2bf8 100644
  		i915_suspend(dev, pmm);
  	}
  }
-@@ -1480,19 +1402,19 @@ static int i915_load_modeset_init(struct drm_device *dev,
+@@ -1480,23 +1402,23 @@ static int i915_load_modeset_init(struct drm_device *dev,
  	/* if we have > 1 VGA cards, then disable the radeon VGA resources */
  	ret = vga_client_register(dev->pdev, dev, NULL, i915_vga_set_decode);
  	if (ret)
@@ -10149,6 +10149,10 @@ index c3cfafc..59a2bf8 100644
  	if (ret)
 -		goto destroy_ringbuffer;
 +		goto cleanup_vga_client;
+ 
+ 	/* IIR "flip pending" bit means done if this bit is set */
+ 	if (IS_GEN3(dev) && (I915_READ(ECOSKPD) & ECO_FLIP_DONE))
+ 		dev_priv->flip_pending_is_done = true;
  
  	intel_modeset_init(dev);
  
@@ -13676,9 +13680,9 @@ index df6a9cd..2479be0 100644
 +		if (HAS_BSD(dev) && (iir & I915_BSD_USER_INTERRUPT))
 +			DRM_WAKEUP(&dev_priv->bsd_ring.irq_queue);
 +
- 		if (iir & I915_DISPLAY_PLANE_A_FLIP_PENDING_INTERRUPT)
+ 		if (iir & I915_DISPLAY_PLANE_A_FLIP_PENDING_INTERRUPT) {
  			intel_prepare_page_flip(dev, 0);
- 
+ 			if (dev_priv->flip_pending_is_done)
 @@ -950,7 +958,8 @@ irqreturn_t i915_driver_irq_handler(DRM_IRQ_ARGS)
  			intel_finish_page_flip(dev, 1);
  		}
@@ -13845,8 +13849,8 @@ index 4cbc521..64b0a3a 100644
  #define EMR		0x020b4
  #define ESR		0x020b8
 @@ -368,6 +369,36 @@
- #define BB_ADDR		0x02140 /* 8 bytes */
- #define GFX_FLSH_CNTL	0x02170 /* 915+ only */
+ #define   ECO_GATING_CX_ONLY	(1<<3)
+ #define   ECO_FLIP_DONE		(1<<0)
  
 +/* GEN6 interrupt control */
 +#define GEN6_RENDER_HWSTAM	0x2098
@@ -16186,9 +16190,9 @@ index c7502b6..d753257 100644
  		return;
  	}
 @@ -4220,14 +4678,11 @@ static int intel_crtc_page_flip(struct drm_crtc *crtc,
- 	unsigned long flags;
  	int pipesrc_reg = (intel_crtc->pipe == 0) ? PIPEASRC : PIPEBSRC;
  	int ret, pipesrc;
+ 	u32 flip_mask;
 -	RING_LOCALS;
  
  	work = kzalloc(sizeof *work, GFP_KERNEL);

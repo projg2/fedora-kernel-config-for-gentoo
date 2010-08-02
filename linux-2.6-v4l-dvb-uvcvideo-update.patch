@@ -33,40 +33,6 @@ index a192c51..43892bf 100644
  	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
  				| USB_DEVICE_ID_MATCH_INT_INFO,
 From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Date: Thu, 4 Mar 2010 10:51:25 +0000 (-0300)
-Subject: V4L/DVB: uvcvideo: Add support for unbranded Arkmicro 18ec:3290 webcams
-X-Git-Url: http://git.linuxtv.org/pinchartl/uvcvideo.git?a=commitdiff_plain;h=89c21df1c6c4b984bc791dbaf50691b19852acf3
-
-V4L/DVB: uvcvideo: Add support for unbranded Arkmicro 18ec:3290 webcams
-
-The camera requires the PROBE_DEF quirk. Add a corresponding entry in
-the device IDs list.
-
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
----
-
-diff --git a/drivers/media/video/uvc/uvc_driver.c b/drivers/media/video/uvc/uvc_driver.c
-index a814820..a192c51 100644
---- a/drivers/media/video/uvc/uvc_driver.c
-+++ b/drivers/media/video/uvc/uvc_driver.c
-@@ -2168,6 +2168,15 @@ static struct usb_device_id uvc_ids[] = {
- 	  .bInterfaceSubClass	= 1,
- 	  .bInterfaceProtocol	= 0,
- 	  .driver_info		= UVC_QUIRK_PROBE_MINMAX },
-+	/* Arkmicro unbranded */
-+	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
-+				| USB_DEVICE_ID_MATCH_INT_INFO,
-+	  .idVendor		= 0x18ec,
-+	  .idProduct		= 0x3290,
-+	  .bInterfaceClass	= USB_CLASS_VIDEO,
-+	  .bInterfaceSubClass	= 1,
-+	  .bInterfaceProtocol	= 0,
-+	  .driver_info		= UVC_QUIRK_PROBE_DEF },
- 	/* Bodelin ProScopeHR */
- 	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
- 				| USB_DEVICE_ID_MATCH_DEV_HI
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Date: Wed, 31 Mar 2010 15:29:26 +0000 (-0300)
 Subject: V4L/DVB: uvcvideo: Use POLLOUT and POLLWRNORM for output devices
 X-Git-Url: http://git.linuxtv.org/pinchartl/uvcvideo.git?a=commitdiff_plain;h=a6eb7bc8e0eea78f96ad1b0f0195ec52b88c6a00
@@ -100,61 +66,6 @@ index 4a925a3..133c78d 100644
  
  done:
  	mutex_unlock(&queue->mutex);
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Date: Mon, 12 Apr 2010 13:41:22 +0000 (-0300)
-Subject: V4L/DVB: uvcvideo: Add support for V4L2_PIX_FMT_Y16
-X-Git-Url: http://git.linuxtv.org/pinchartl/uvcvideo.git?a=commitdiff_plain;h=c947c3b45d8950312e3563a1a3316f910570d017
-
-V4L/DVB: uvcvideo: Add support for V4L2_PIX_FMT_Y16
-
-The Miricle 307K (17dc:0202) camera reports a 16-bit greyscale format,
-support it in the driver.
-
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
----
-
-diff --git a/drivers/media/video/uvc/uvc_driver.c b/drivers/media/video/uvc/uvc_driver.c
-index 43892bf..4801a2a 100644
---- a/drivers/media/video/uvc/uvc_driver.c
-+++ b/drivers/media/video/uvc/uvc_driver.c
-@@ -90,11 +90,16 @@ static struct uvc_format_desc uvc_fmts[] = {
- 		.fcc		= V4L2_PIX_FMT_UYVY,
- 	},
- 	{
--		.name		= "Greyscale",
-+		.name		= "Greyscale (8-bit)",
- 		.guid		= UVC_GUID_FORMAT_Y800,
- 		.fcc		= V4L2_PIX_FMT_GREY,
- 	},
- 	{
-+		.name		= "Greyscale (16-bit)",
-+		.guid		= UVC_GUID_FORMAT_Y16,
-+		.fcc		= V4L2_PIX_FMT_Y16,
-+	},
-+	{
- 		.name		= "RGB Bayer",
- 		.guid		= UVC_GUID_FORMAT_BY8,
- 		.fcc		= V4L2_PIX_FMT_SBGGR8,
-diff --git a/drivers/media/video/uvc/uvcvideo.h b/drivers/media/video/uvc/uvcvideo.h
-index 2bba059..d1f8840 100644
---- a/drivers/media/video/uvc/uvcvideo.h
-+++ b/drivers/media/video/uvc/uvcvideo.h
-@@ -131,11 +131,13 @@ struct uvc_xu_control {
- #define UVC_GUID_FORMAT_Y800 \
- 	{ 'Y',  '8',  '0',  '0', 0x00, 0x00, 0x10, 0x00, \
- 	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
-+#define UVC_GUID_FORMAT_Y16 \
-+	{ 'Y',  '1',  '6',  ' ', 0x00, 0x00, 0x10, 0x00, \
-+	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
- #define UVC_GUID_FORMAT_BY8 \
- 	{ 'B',  'Y',  '8',  ' ', 0x00, 0x00, 0x10, 0x00, \
- 	 0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71}
- 
--
- /* ------------------------------------------------------------------------
-  * Driver specific constants.
-  */
 From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Date: Sun, 25 Apr 2010 19:23:24 +0000 (-0300)
 Subject: V4L/DVB: uvcvideo: Flag relative controls as write-only

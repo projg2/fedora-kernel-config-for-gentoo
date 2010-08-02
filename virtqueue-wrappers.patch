@@ -278,18 +278,9 @@ index b0577dd..91738d8 100644
  }
  
  static netdev_tx_t start_xmit(struct sk_buff *skb, struct net_device *dev)
-@@ -578,14 +578,14 @@ again:
- 	if (unlikely(capacity < 0)) {
- 		netif_stop_queue(dev);
- 		dev_warn(&dev->dev, "Unexpected full queue\n");
--		if (unlikely(!vi->svq->vq_ops->enable_cb(vi->svq))) {
--			vi->svq->vq_ops->disable_cb(vi->svq);
-+		if (unlikely(!virtqueue_enable_cb(vi->svq))) {
-+			virtqueue_disable_cb(vi->svq);
- 			netif_start_queue(dev);
- 			goto again;
- 		}
- 		return NETDEV_TX_BUSY;
+@@ -587,7 +587,7 @@ again:
+ 		kfree_skb(skb);
+ 		return NETDEV_TX_OK;
  	}
 -	vi->svq->vq_ops->kick(vi->svq);
 +	virtqueue_kick(vi->svq);

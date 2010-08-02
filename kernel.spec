@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 31
+%global baserelease 32
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,9 +60,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1293,7 +1293,7 @@ ApplyPatch pci-acpi-disable-aspm-if-no-osc.patch
 # allow drivers to disable aspm at load time
 ApplyPatch pci-aspm-dont-enable-too-early.patch
 # stop PCIe hotplug interrupt storm (#613412)
-ApplyPatch pci-pm-do-not-use-native-pcie-pme-by-default.patch
+#ApplyPatch pci-pm-do-not-use-native-pcie-pme-by-default.patch
 # fall back to original BIOS address when reassignment fails (KORG#16263)
 ApplyPatch pci-fall-back-to-original-bios-bar-addresses.patch
 
@@ -1302,7 +1302,7 @@ ApplyPatch pci-fall-back-to-original-bios-bar-addresses.patch
 #
 
 # ACPI
-ApplyPatch linux-2.6-acpi-sleep-live-sci-live.patch
+#ApplyPatch linux-2.6-acpi-sleep-live-sci-live.patch
 
 # ALSA
 ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
@@ -1371,8 +1371,8 @@ ApplyPatch revert-drm-kms-toggle-poll-around-switcheroo.patch
 ApplyPatch drm-i915-fix-edp-panels.patch
 ApplyPatch i915-fix-crt-hotplug-regression.patch
 # RHBZ#572799
-ApplyPatch drm-i915-make-G4X-style-PLL-search-more-permissive.patch
-ApplyPatch drm-intel-945gm-stability-fixes.patch
+#ApplyPatch drm-i915-make-G4X-style-PLL-search-more-permissive.patch
+#ApplyPatch drm-intel-945gm-stability-fixes.patch
 ApplyPatch drm-encoder-disable.patch
 
 # Nouveau DRM + drm fixes
@@ -1383,11 +1383,11 @@ ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 
 # radeon fixes
-ApplyPatch drm-radeon-fix-shared-ddc-handling.patch
+#ApplyPatch drm-radeon-fix-shared-ddc-handling.patch
 
 # hibernation memory corruption fixes
-ApplyPatch drm-i915-fix-hibernate-memory-corruption.patch
-ApplyPatch drm-i915-add-reclaimable-to-page-allocations.patch
+#ApplyPatch drm-i915-fix-hibernate-memory-corruption.patch
+#ApplyPatch drm-i915-add-reclaimable-to-page-allocations.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
@@ -1423,43 +1423,45 @@ ApplyPatch neuter_intel_microcode_load.patch
 #ApplyPatch coredump-uid-pipe-check.patch
 
 # rhbz#533746
-ApplyPatch ssb_check_for_sprom.patch
+# awful, ugly conflicts between this patch and the 2.6.34.2 patch:
+# ssb-handle-netbook-devices-where-the-sprom-address-is-changed.patch
+#ApplyPatch ssb_check_for_sprom.patch
 
 # iwlwifi fixes from F-13-2.6.33
 ApplyPatch iwlwifi-add-internal-short-scan-support-for-3945.patch
-ApplyPatch iwlwifi-Recover-TX-flow-stall-due-to-stuck-queue.patch
+#ApplyPatch iwlwifi-Recover-TX-flow-stall-due-to-stuck-queue.patch
 ApplyPatch iwlwifi-move-plcp-check-to-separated-function.patch
 ApplyPatch iwlwifi-Recover-TX-flow-failure.patch
 ApplyPatch iwlwifi-code-cleanup-for-connectivity-recovery.patch
 ApplyPatch iwlwifi-iwl_good_ack_health-only-apply-to-AGN-device.patch
-ApplyPatch iwlwifi-recover_from_tx_stall.patch
+#ApplyPatch iwlwifi-recover_from_tx_stall.patch
 
 # mac80211/iwlwifi fix connections to some APs (rhbz#558002)
 ApplyPatch mac80211-explicitly-disable-enable-QoS.patch
 ApplyPatch iwlwifi-manage-QoS-by-mac-stack.patch
-ApplyPatch mac80211-do-not-wipe-out-old-supported-rates.patch
-ApplyPatch mac80211-fix-supported-rates-IE-if-AP-doesnt-give-us-its-rates.patch
+#ApplyPatch mac80211-do-not-wipe-out-old-supported-rates.patch
+#ApplyPatch mac80211-fix-supported-rates-IE-if-AP-doesnt-give-us-its-rates.patch
 
 # iwlwifi: cancel scan watchdog in iwl_bg_abort_scan
-ApplyPatch iwlwifi-cancel-scan-watchdog-in-iwl_bg_abort_scan.patch
+#ApplyPatch iwlwifi-cancel-scan-watchdog-in-iwl_bg_abort_scan.patch
 
 ApplyPatch quiet-prove_RCU-in-cgroups.patch
 
 # BZ#608034
-ApplyPatch ata-generic-handle-new-mbp-with-mcp89.patch
-ApplyPatch ata-generic-implement-ata-gen-flags.patch
+#ApplyPatch ata-generic-handle-new-mbp-with-mcp89.patch
+#ApplyPatch ata-generic-implement-ata-gen-flags.patch
 
 # BZ#609548
-ApplyPatch x86-debug-send-sigtrap-for-user-icebp.patch
+#ApplyPatch x86-debug-send-sigtrap-for-user-icebp.patch
 
 # CVE-2010-2478
-ApplyPatch ethtool-fix-buffer-overflow.patch
+#ApplyPatch ethtool-fix-buffer-overflow.patch
 
 # fix performance problem with CGROUPS
-ApplyPatch sched-fix-over-scheduling-bug.patch
+#ApplyPatch sched-fix-over-scheduling-bug.patch
 
 # fix modpost segfault during kernel build (#595915)
-ApplyPatch kbuild-fix-modpost-segfault.patch
+#ApplyPatch kbuild-fix-modpost-segfault.patch
 
 # fix broken oneshot support and missing umount events (#607327)
 ApplyPatch inotify-fix-inotify-oneshot-support.patch
@@ -1469,24 +1471,24 @@ ApplyPatch inotify-send-IN_UNMOUNT-events.patch
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
 # ACPI GPE enable/disable fixes, needed preparation for the powerdown fix
-ApplyPatch acpica-00-linux-2.6.git-0f849d2cc6863c7874889ea60a871fb71399dd3f.patch
-ApplyPatch acpica-01-linux-2.6.git-a997ab332832519c2e292db13f509e4360495a5a.patch
-ApplyPatch acpica-02-linux-2.6.git-e4e9a735991c80fb0fc1bd4a13a93681c3c17ce0.patch
-ApplyPatch acpica-03-linux-2.6.git-fd247447c1d94a79d5cfc647430784306b3a8323.patch
-ApplyPatch acpica-04-linux-2.6.git-c9a8bbb7704cbf515c0fc68970abbe4e91d68521.patch
-ApplyPatch acpica-05-linux-2.6.git-ce43ace02320a3fb9614ddb27edc3a8700d68b26.patch
-ApplyPatch acpica-06-linux-2.6.git-9d3c752de65dbfa6e522f1d666deb0ac152ef367.patch
+#ApplyPatch acpica-00-linux-2.6.git-0f849d2cc6863c7874889ea60a871fb71399dd3f.patch
+#ApplyPatch acpica-01-linux-2.6.git-a997ab332832519c2e292db13f509e4360495a5a.patch
+#ApplyPatch acpica-02-linux-2.6.git-e4e9a735991c80fb0fc1bd4a13a93681c3c17ce0.patch
+#ApplyPatch acpica-03-linux-2.6.git-fd247447c1d94a79d5cfc647430784306b3a8323.patch
+#ApplyPatch acpica-04-linux-2.6.git-c9a8bbb7704cbf515c0fc68970abbe4e91d68521.patch
+#ApplyPatch acpica-05-linux-2.6.git-ce43ace02320a3fb9614ddb27edc3a8700d68b26.patch
+#ApplyPatch acpica-06-linux-2.6.git-9d3c752de65dbfa6e522f1d666deb0ac152ef367.patch
 # fix system powering back on after shutdown (#613239)
-ApplyPatch acpi-pm-do-not-enable-gpes-for-system-wakeup-in-advance.patch
+#ApplyPatch acpi-pm-do-not-enable-gpes-for-system-wakeup-in-advance.patch
 
 # fix newer synaptics touchpads not being recognized
 ApplyPatch input-synaptics-relax-capability-id-checks-on-new-hardware.patch
 
 # CVE-2010-2524
-ApplyPatch cifs-fix-malicious-redirect-problem-in-the-dns-lookup-code.patch
+#ApplyPatch cifs-fix-malicious-redirect-problem-in-the-dns-lookup-code.patch
 
 # restore ability of USB remotes to wake the machine (#617559)
-ApplyPatch usb-obey-the-sysfs-power-wakeup-setting.patch
+#ApplyPatch usb-obey-the-sysfs-power-wakeup-setting.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2107,6 +2109,52 @@ fi
 
 
 %changelog
+* Sun Aug 01 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.2-32.rc1
+- Linux 2.6.34.2-rc1
+- Comment out upstream merged patches:
+    pci-pm-do-not-use-native-pcie-pme-by-default.patch
+    linux-2.6-acpi-sleep-live-sci-live.patch (slightly different upstream patch)
+    drm-i915-make-G4X-style-PLL-search-more-permissive.patch
+    drm-intel-945gm-stability-fixes.patch
+    drm-radeon-fix-shared-ddc-handling.patch
+    drm-i915-add-reclaimable-to-page-allocations.patch
+    drm-i915-fix-hibernate-memory-corruption.patch
+    iwlwifi-Recover-TX-flow-stall-due-to-stuck-queue.patch
+    iwlwifi-recover_from_tx_stall.patch
+    mac80211-do-not-wipe-out-old-supported-rates.patch
+    mac80211-fix-supported-rates-IE-if-AP-doesnt-give-us-its-rates.patch
+    iwlwifi-cancel-scan-watchdog-in-iwl_bg_abort_scan.patch
+    ata-generic-handle-new-mbp-with-mcp89.patch
+    ata-generic-implement-ata-gen-flags.patch
+    x86-debug-send-sigtrap-for-user-icebp.patch
+    ethtool-fix-buffer-overflow.patch
+    sched-fix-over-scheduling-bug.patch
+    kbuild-fix-modpost-segfault.patch
+    acpica-00-linux-2.6.git-0f849d2cc6863c7874889ea60a871fb71399dd3f.patch
+    acpica-01-linux-2.6.git-a997ab332832519c2e292db13f509e4360495a5a.patch
+    acpica-02-linux-2.6.git-e4e9a735991c80fb0fc1bd4a13a93681c3c17ce0.patch
+    acpica-03-linux-2.6.git-fd247447c1d94a79d5cfc647430784306b3a8323.patch
+    acpica-04-linux-2.6.git-c9a8bbb7704cbf515c0fc68970abbe4e91d68521.patch
+    acpica-05-linux-2.6.git-ce43ace02320a3fb9614ddb27edc3a8700d68b26.patch
+    acpica-06-linux-2.6.git-9d3c752de65dbfa6e522f1d666deb0ac152ef367.patch
+    acpi-pm-do-not-enable-gpes-for-system-wakeup-in-advance.patch
+    cifs-fix-malicious-redirect-problem-in-the-dns-lookup-code.patch
+    usb-obey-the-sysfs-power-wakeup-setting.patch
+- Fix up virtqueue-wrappers.patch to apply after 2.6.34.2 due to:
+    virtio_net-fix-oom-handling-on-tx.patch
+- Revert -stable DRM patches already in our drm-next patch:
+    amd64-agp-probe-unknown-agp-devices-the-right-way.patch
+    i915-fix-lock-imbalance-on-error-path.patch
+    drm-i915-hold-the-spinlock-whilst-resetting-unpin_work-along-error-path.patch
+- Fix up drm-next.patch to apply after 2.6.34.2 due to:
+    drm-i915-gen3-page-flipping-fixes.patch
+    drm-i915-don-t-queue-flips-during-a-flip-pending-event.patch
+- Drop patches now upstream from linux-2.6-v4l-dvb-uvcvideo-update.patch:
+    V4L/DVB: uvcvideo: Add support for unbranded Arkmicro 18ec:3290 webcams
+    V4L/DVB: uvcvideo: Add support for V4L2_PIX_FMT_Y16
+- Temporarily comment out ssb_check_for_sprom.patch due to ugly conflicts with:
+    ssb-handle-netbook-devices-where-the-sprom-address-is-changed.patch
+
 * Sun Aug 01 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.1-31
 - Backport initial dist-git fixes from master (377da6d08)
 - Modify the prep stage so multiple trees can be prepped in a
