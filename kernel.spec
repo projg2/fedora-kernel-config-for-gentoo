@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 154
+%global baserelease 155
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -59,9 +59,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 17
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1333,7 +1333,7 @@ ApplyPatch linux-2.6-execshield.patch
 #
 
 # ext4
-ApplyPatch linux-2.6-ext4-quota-metadata-reservation.patch
+#ApplyPatch linux-2.6-ext4-quota-metadata-reservation.patch
 
 # xfs
 
@@ -1525,7 +1525,7 @@ ApplyPatch ice1712-fix-revo71-mixer-names.patch
 ApplyPatch linux-2.6-b43_-Rewrite-DMA-Tx-status-handling-sanity-checks.patch
 
 # rhbz#533746
-ApplyPatch ssb_check_for_sprom.patch
+#ApplyPatch ssb_check_for_sprom.patch
 
 # backport iwlwifi fixes (thanks, sgruszka!) -- drop when stable catches-up
 ApplyPatch iwlwifi-reset-card-during-probe.patch
@@ -1545,7 +1545,7 @@ ApplyPatch iwlwifi_-code-cleanup-for-connectivity-recovery.patch
 ApplyPatch iwlwifi_-iwl_good_ack_health-only-apply-to-AGN-device.patch
 
 # fix possible corruption with ssd
-ApplyPatch ext4-issue-discard-operation-before-releasing-blocks.patch
+#ApplyPatch ext4-issue-discard-operation-before-releasing-blocks.patch
 
 # iwlwifi: fix scan races
 ApplyPatch iwlwifi-fix-scan-races.patch
@@ -1557,20 +1557,20 @@ ApplyPatch iwlwifi-recover_from_tx_stall.patch
 # mac80211/iwlwifi fix connections to some APs (rhbz#558002)
 ApplyPatch mac80211-explicitly-disable-enable-QoS.patch
 ApplyPatch iwlwifi-manage-QoS-by-mac-stack.patch
-ApplyPatch mac80211-do-not-wipe-out-old-supported-rates.patch
-ApplyPatch mac80211-fix-supported-rates-IE-if-AP-doesnt-give-us-its-rates.patch
+#ApplyPatch mac80211-do-not-wipe-out-old-supported-rates.patch
+#ApplyPatch mac80211-fix-supported-rates-IE-if-AP-doesnt-give-us-its-rates.patch
 
 # iwlwifi: cancel scan watchdog in iwl_bg_abort_scan
-ApplyPatch iwlwifi-cancel-scan-watchdog-in-iwl_bg_abort_scan.patch
+#ApplyPatch iwlwifi-cancel-scan-watchdog-in-iwl_bg_abort_scan.patch
 
 # l2tp: fix oops in pppol2tp_xmit (#607054)
 ApplyPatch l2tp-fix-oops-in-pppol2tp_xmit.patch
 
 # fix performance problem with CGROUPS
-ApplyPatch sched-fix-over-scheduling-bug.patch
+#ApplyPatch sched-fix-over-scheduling-bug.patch
 
 # CVE-2010-2478
-ApplyPatch ethtool-fix-buffer-overflow.patch
+#ApplyPatch ethtool-fix-buffer-overflow.patch
 
 # fix broken oneshot support and missing umount events (F13#607327)
 ApplyPatch inotify-fix-inotify-oneshot-support.patch
@@ -1582,14 +1582,14 @@ ApplyPatch crypto-testmgr-add-null-test-for-aesni.patch
 ApplyPatch crypto-add-async-hash-testing.patch
 
 # CVE-2010-2524
-ApplyPatch cifs-fix-malicious-redirect-problem-in-the-dns-lookup-code.patch
+#ApplyPatch cifs-fix-malicious-redirect-problem-in-the-dns-lookup-code.patch
 # CVE-2010-2066
 ApplyPatch ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
 # CVE-2010-2266
 ApplyPatch xfs-prevent-swapext-from-operating-on-write-only-files.patch
 
 # fix broken USB device wakeups (#617559)
-ApplyPatch usb-obey-the-sysfs-power-wakeup-setting.patch
+#ApplyPatch usb-obey-the-sysfs-power-wakeup-setting.patch
 
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
@@ -2243,6 +2243,24 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Mon Aug 02 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.17-155.rc1
+- Linux 2.6.32.17-rc1
+- Comment out patches merged upstream:
+    linux-2.6-ext4-quota-metadata-reservation.patch
+    ext4-issue-discard-operation-before-releasing-blocks.patch
+    mac80211-do-not-wipe-out-old-supported-rates.patch
+    mac80211-fix-supported-rates-IE-if-AP-doesnt-give-us-its-rates.patch
+    iwlwifi-cancel-scan-watchdog-in-iwl_bg_abort_scan.patch
+    sched-fix-over-scheduling-bug.patch
+    ethtool-fix-buffer-overflow.patch
+    cifs-fix-malicious-redirect-problem-in-the-dns-lookup-code.patch
+    usb-obey-the-sysfs-power-wakeup-setting.patch
+- Revert -stable patches we already have:
+    drm-i915-enable-low-power-render-writes-on-gen3-hardware.patch
+    drm-i915-define-mi_arb_state-bits.patch
+- Comment out due to conflicts with -stable:
+    ssb_check_for_sprom.patch
+
 * Tue Jul 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.16-154
 - xfs-prevent-swapext-from-operating-on-write-only-files.patch:
   CVE-2010-2266
