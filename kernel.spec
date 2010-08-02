@@ -1070,7 +1070,8 @@ ApplyOptionalPatch()
 
 # Build a list of the other top-level kernel tree directories.
 # This will be used to hardlink identical vanilla subdirs.
-sharedirs=$(find $(pwd) -maxdepth 1 -type d -name kernel-2.6.\* | grep -v kernel-%{kversion}%{?dist}) ||:
+sharedirs=$(find "$PWD" -maxdepth 1 -type d -name 'kernel-2.6.*' \
+            | grep -x -v "$PWD"/kernel-%{kversion}%{?dist}) ||:
 
 if [ ! -d kernel-%{kversion}%{?dist}/vanilla-%{vanillaversion} ]; then
 
