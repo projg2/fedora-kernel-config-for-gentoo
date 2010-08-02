@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 155
+%global baserelease 156
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -61,7 +61,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 17
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -761,7 +761,6 @@ Patch2096: linux-2.6-v4l-dvb-add-kworld-a340-support.patch
 # fs fixes
 
 # ext4/quota
-Patch3000: linux-2.6-ext4-quota-metadata-reservation.patch
 
 # NFSv4
 Patch3050: linux-2.6-nfsd4-proots.patch
@@ -819,9 +818,6 @@ Patch12414: iwlwifi_-Recover-TX-flow-failure.patch
 Patch12415: iwlwifi_-code-cleanup-for-connectivity-recovery.patch
 Patch12416: iwlwifi_-iwl_good_ack_health-only-apply-to-AGN-device.patch
 
-# fix possible corruption with ssd
-Patch12700: ext4-issue-discard-operation-before-releasing-blocks.patch
-
 # iwlwifi: fix scan races
 Patch12910: iwlwifi-fix-scan-races.patch
 # iwlwifi: fix internal scan race
@@ -830,18 +826,10 @@ Patch12911: iwlwifi-fix-internal-scan-race.patch
 Patch12912: iwlwifi-recover_from_tx_stall.patch
 
 Patch12921: iwlwifi-manage-QoS-by-mac-stack.patch
-Patch12922: mac80211-do-not-wipe-out-old-supported-rates.patch
 Patch12923: mac80211-explicitly-disable-enable-QoS.patch
-Patch12924: mac80211-fix-supported-rates-IE-if-AP-doesnt-give-us-its-rates.patch
-
-# iwlwifi: cancel scan watchdog in iwl_bg_abort_scan
-Patch13020: iwlwifi-cancel-scan-watchdog-in-iwl_bg_abort_scan.patch
 
 # l2tp: fix oops in pppol2tp_xmit (#607054)
 Patch13030: l2tp-fix-oops-in-pppol2tp_xmit.patch
-
-Patch14000: sched-fix-over-scheduling-bug.patch
-Patch14010: ethtool-fix-buffer-overflow.patch
 
 Patch14020: inotify-fix-inotify-oneshot-support.patch
 Patch14030: inotify-send-IN_UNMOUNT-events.patch
@@ -849,11 +837,8 @@ Patch14030: inotify-send-IN_UNMOUNT-events.patch
 Patch14040: crypto-testmgr-add-null-test-for-aesni.patch
 Patch14050: crypto-add-async-hash-testing.patch
 
-Patch14100: cifs-fix-malicious-redirect-problem-in-the-dns-lookup-code.patch
 Patch14110: ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
 Patch14115: xfs-prevent-swapext-from-operating-on-write-only-files.patch
-
-Patch14120: usb-obey-the-sysfs-power-wakeup-setting.patch
 
 # Red Hat Bugzilla #610911
 Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
@@ -1333,7 +1318,6 @@ ApplyPatch linux-2.6-execshield.patch
 #
 
 # ext4
-#ApplyPatch linux-2.6-ext4-quota-metadata-reservation.patch
 
 # xfs
 
@@ -1544,9 +1528,6 @@ ApplyPatch iwlwifi_-Recover-TX-flow-failure.patch
 ApplyPatch iwlwifi_-code-cleanup-for-connectivity-recovery.patch
 ApplyPatch iwlwifi_-iwl_good_ack_health-only-apply-to-AGN-device.patch
 
-# fix possible corruption with ssd
-#ApplyPatch ext4-issue-discard-operation-before-releasing-blocks.patch
-
 # iwlwifi: fix scan races
 ApplyPatch iwlwifi-fix-scan-races.patch
 # iwlwifi: fix internal scan race
@@ -1557,20 +1538,9 @@ ApplyPatch iwlwifi-recover_from_tx_stall.patch
 # mac80211/iwlwifi fix connections to some APs (rhbz#558002)
 ApplyPatch mac80211-explicitly-disable-enable-QoS.patch
 ApplyPatch iwlwifi-manage-QoS-by-mac-stack.patch
-#ApplyPatch mac80211-do-not-wipe-out-old-supported-rates.patch
-#ApplyPatch mac80211-fix-supported-rates-IE-if-AP-doesnt-give-us-its-rates.patch
-
-# iwlwifi: cancel scan watchdog in iwl_bg_abort_scan
-#ApplyPatch iwlwifi-cancel-scan-watchdog-in-iwl_bg_abort_scan.patch
 
 # l2tp: fix oops in pppol2tp_xmit (#607054)
 ApplyPatch l2tp-fix-oops-in-pppol2tp_xmit.patch
-
-# fix performance problem with CGROUPS
-#ApplyPatch sched-fix-over-scheduling-bug.patch
-
-# CVE-2010-2478
-#ApplyPatch ethtool-fix-buffer-overflow.patch
 
 # fix broken oneshot support and missing umount events (F13#607327)
 ApplyPatch inotify-fix-inotify-oneshot-support.patch
@@ -1581,15 +1551,10 @@ ApplyPatch crypto-testmgr-add-null-test-for-aesni.patch
 # add tests for crypto async hashing (#571577)
 ApplyPatch crypto-add-async-hash-testing.patch
 
-# CVE-2010-2524
-#ApplyPatch cifs-fix-malicious-redirect-problem-in-the-dns-lookup-code.patch
 # CVE-2010-2066
 ApplyPatch ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
 # CVE-2010-2266
 ApplyPatch xfs-prevent-swapext-from-operating-on-write-only-files.patch
-
-# fix broken USB device wakeups (#617559)
-#ApplyPatch usb-obey-the-sysfs-power-wakeup-setting.patch
 
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
@@ -2243,6 +2208,10 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Mon Aug 02 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.17-156
+- Linux 2.6.32.17
+- Drop the patches commented out for -rc1 except ssb_check_for_sprom.patch
+
 * Mon Aug 02 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.17-155.rc1
 - Linux 2.6.32.17-rc1
 - Comment out patches merged upstream:
