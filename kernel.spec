@@ -754,6 +754,8 @@ Patch12270: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
 Patch12400: input-synaptics-relax-capability-id-checks-on-new-hardware.patch
 
+Patch12410: cifs-fix-dns-resolver.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1392,6 +1394,9 @@ ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
 # fix newer synaptics touchpads not being recognized
 ApplyPatch input-synaptics-relax-capability-id-checks-on-new-hardware.patch
+
+# Remove __init and __exit attributes from resolver code
+ApplyPatch cifs-fix-dns-resolver.patch
 
 # END OF PATCH APPLICATIONS
 
