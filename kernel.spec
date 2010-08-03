@@ -839,6 +839,7 @@ Patch14050: crypto-add-async-hash-testing.patch
 
 Patch14110: ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
 Patch14115: xfs-prevent-swapext-from-operating-on-write-only-files.patch
+Patch14120: cifs-fix-dns-resolver.patch
 
 # Red Hat Bugzilla #610911
 Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
@@ -1555,6 +1556,9 @@ ApplyPatch crypto-add-async-hash-testing.patch
 ApplyPatch ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
 # CVE-2010-2266
 ApplyPatch xfs-prevent-swapext-from-operating-on-write-only-files.patch
+
+# fix DNS resolver build, broken in 2.6.32.17
+ApplyPatch cifs-fix-dns-resolver.patch
 
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
