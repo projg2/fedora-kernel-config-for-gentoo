@@ -758,6 +758,10 @@ Patch12410: cifs-fix-dns-resolver.patch
 Patch12420: matroxfb-fix-font-corruption.patch
 Patch12430: cred-dont-resurrect-dead-credentials.patch
 
+Patch12440: direct-io-move-aio_complete-into-end_io.patch
+Patch12450: ext4-move-aio-completion-after-unwritten-extent-conversion.patch
+Patch12460: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1406,6 +1410,12 @@ ApplyPatch matroxfb-fix-font-corruption.patch
 # RHBZ #591015
 ApplyPatch cred-dont-resurrect-dead-credentials.patch
 
+# RHBZ #617699
+ApplyPatch direct-io-move-aio_complete-into-end_io.patch
+ApplyPatch ext4-move-aio-completion-after-unwritten-extent-conversion.patch
+ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
+
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2031,6 +2041,8 @@ fi
 - Drop ancient linux-2.6-mac80211-age-scan-results-on-resume.patch
 - Fix matroxfb font corruption (#617687)
 - Don't resurrect dead task credentials (#591015)
+- Fix "ext4 and xfs wrong data returned on read after write if
+  file size was changed with ftruncate" (#617699)
 
 * Sun Aug 01 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.2-32.rc1
 - Linux 2.6.34.2-rc1
