@@ -756,6 +756,7 @@ Patch12400: input-synaptics-relax-capability-id-checks-on-new-hardware.patch
 
 Patch12410: cifs-fix-dns-resolver.patch
 Patch12420: matroxfb-fix-font-corruption.patch
+Patch12430: cred-dont-resurrect-dead-credentials.patch
 
 %endif
 
@@ -1402,6 +1403,9 @@ ApplyPatch cifs-fix-dns-resolver.patch
 # RHBZ #617687
 ApplyPatch matroxfb-fix-font-corruption.patch
 
+# RHBZ #591015
+ApplyPatch cred-dont-resurrect-dead-credentials.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2026,6 +2030,7 @@ fi
 - Drop commented-out patches.
 - Drop ancient linux-2.6-mac80211-age-scan-results-on-resume.patch
 - Fix matroxfb font corruption (#617687)
+- Don't resurrect dead task credentials (#591015)
 
 * Sun Aug 01 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.2-32.rc1
 - Linux 2.6.34.2-rc1
