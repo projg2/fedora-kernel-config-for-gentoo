@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -597,6 +597,8 @@ Patch09: linux-2.6-upstream-reverts.patch
 # Standalone patches
 Patch20: linux-2.6-hotfixes.patch
 
+Patch21: linux-2.6-tip.git-396e894d289d69bacf5acd983c97cd6e21a14c08.patch
+
 Patch30: git-utrace.patch
 Patch31: utrace-ptrace-fix-build.patch
 Patch32: utrace-remove-use-of-kref_set.patch
@@ -1117,6 +1119,8 @@ ApplyOptionalPatch linux-2.6-compile-fixes.patch
 ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 
 ApplyPatch linux-2.6-hotfixes.patch
+
+ApplyPatch linux-2.6-tip.git-396e894d289d69bacf5acd983c97cd6e21a14c08.patch
 
 # Roland's utrace ptrace replacement.
 ApplyPatch git-utrace.patch
@@ -1877,6 +1881,10 @@ fi
 #                 ||     ||
 
 %changelog
+* Wed Aug 04 2010 Dave Jones <davej@redhat.com>
+- sched: Revert nohz_ratelimit() which causes a lot of
+  extra wakeups burning CPU, and my legs.
+
 * Sun Aug 01 2010 Dave Jones <davej@redhat.com>
 - Linux 2.6.35
 
