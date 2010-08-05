@@ -689,6 +689,7 @@ Patch1802: revert-drm-kms-toggle-poll-around-switcheroo.patch
 Patch1803: drm-encoder-disable.patch
 # nouveau + drm fixes
 Patch1815: drm-nouveau-updates.patch
+Patch1816: drm-nouveau-race-fix.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
 Patch1820: drm-i915-fix-edp-panels.patch
@@ -1335,6 +1336,7 @@ ApplyPatch drm-encoder-disable.patch
 
 # Nouveau DRM + drm fixes
 ApplyPatch drm-nouveau-updates.patch
+ApplyPatch drm-nouveau-race-fix.patch
 
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
@@ -2035,6 +2037,9 @@ fi
 
 
 %changelog
+* Fri Aug 06 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.2-35
+- nouveau: fix inter-engine race when under memory pressure (rhbz#602956)
+
 * Thu Aug 05 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.2-34
 - Disable CONFIG_MULTICORE_RAID456
 
