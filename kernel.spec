@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 33
+%global baserelease 34
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2035,6 +2035,9 @@ fi
 
 
 %changelog
+* Thu Aug 05 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.2-34
+- Disable CONFIG_MULTICORE_RAID456
+
 * Tue Aug 03 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.2-33
 - Linux 2.6.34.2
 - Drop commented-out patches.
