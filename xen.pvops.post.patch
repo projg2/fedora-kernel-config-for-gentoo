@@ -1,0 +1,68 @@
+Reapply and merge in Fedora changes
+
+--- a/drivers/pci/pci.h	2009-02-25 20:16:13.000000000 +0000
++++ b/drivers/pci/pci.h	2009-02-25 20:40:21.000000000 +0000
+@@ -111,9 +111,11 @@
+ 
+ #ifdef CONFIG_PCI_MSI
+ void pci_no_msi(void);
++void pci_yes_msi(void);
+ extern void pci_msi_init_pci_dev(struct pci_dev *dev);
+ #else
+ static inline void pci_no_msi(void) { }
++static inline void pci_yes_msi(void) { }
+ static inline void pci_msi_init_pci_dev(struct pci_dev *dev) { }
+ #endif
+ 
+diff --git a/arch/x86/pci/common.c b/arch/x86/pci/common.c
+index 2202b62..f371fe8 100644
+--- a/arch/x86/pci/common.c
++++ b/arch/x86/pci/common.c
+@@ -432,6 +432,22 @@ int __init pcibios_init(void)
+ 		pci_cache_line_size = 64 >> 2;  /* K7 & K8 */
+ 	else if (c->x86 > 6 && c->x86_vendor == X86_VENDOR_INTEL)
+ 		pci_cache_line_size = 128 >> 2;	/* P4 */
++	if (c->x86_clflush_size != (pci_cache_line_size <<2))
++		printk(KERN_DEBUG "PCI: old code would have set cacheline "
++			"size to %d bytes, but clflush_size = %d\n",
++			pci_cache_line_size << 2,
++			c->x86_clflush_size);
++
++	/* Once we know this logic works, all the above code can be deleted. */
++	if (c->x86_clflush_size > 0) {
++		pci_cache_line_size = c->x86_clflush_size >> 2;
++		printk(KERN_DEBUG "PCI: pci_cache_line_size set to %d bytes\n",
++			pci_cache_line_size << 2);
++	} else {
++		pci_cache_line_size = 32 >> 2;
++		printk(KERN_DEBUG "PCI: Unknown cacheline size. Setting to 32 bytes\n");
++	}
++
+ }
+ 
+ int __init pcibios_init(void)
+--- a/arch/x86/include/asm/mmu.h
++++ b/arch/x86/include/asm/mmu.h
+@@ -7,6 +7,9 @@
+ /*
+  * The x86 doesn't have a mmu context, but
+  * we put the segment information here.
++ *
++ * exec_limit is used to track the range PROT_EXEC
++ * mappings span.
+  */
+ typedef struct {
+ 	void *ldt;
+--- a/arch/x86/include/asm/mmu.h
++++ b/arch/x86/include/asm/mmu.h
+@@ -16,6 +19,10 @@
+ #ifdef CONFIG_XEN
+ 	int has_foreign_mappings;
+ #endif
++#ifdef CONFIG_X86_32
++	struct desc_struct user_cs;
++	unsigned long exec_limit;
++#endif
+ } mm_context_t;
+ 
+ #ifdef CONFIG_SMP
