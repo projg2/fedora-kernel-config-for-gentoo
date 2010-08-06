@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -700,6 +700,11 @@ Patch12030: ssb_check_for_sprom.patch
 
 Patch12040: only-use-alpha2-regulatory-information-from-country-IE.patch
 
+# rhbz #617699
+Patch12050: direct-io-move-aio_complete-into-end_io.patch
+Patch12060: ext4-move-aio-completion-after-unwritten-extent-conversion.patch
+Patch12070: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1287,6 +1292,11 @@ ApplyPatch neuter_intel_microcode_load.patch
 
 ApplyPatch only-use-alpha2-regulatory-information-from-country-IE.patch
 
+# rhbz #617699
+ApplyPatch direct-io-move-aio_complete-into-end_io.patch
+ApplyPatch ext4-move-aio-completion-after-unwritten-extent-conversion.patch
+ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1870,17 +1880,12 @@ fi
 # plz don't put in a version string unless you're going to tag
 # and build.
 
-#  ___________________________________________________________
-# / This branch is for Fedora 14. You probably want to commit \
-# \ to the F-13 branch instead, or in addition to this one.   /
-#  -----------------------------------------------------------
-#         \   ^__^
-#          \  (@@)\_______
-#             (__)\       )\/\
-#                 ||----w |
-#                 ||     ||
-
 %changelog
+* Fri Aug 06 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35-3
+- Copy fix for bug #617699 ("ext4 and xfs wrong data returned on read
+  after write if file size was changed with ftruncate") from F-13
+- Disable CONFIG_MULTICORE_RAID456
+
 * Wed Aug 04 2010 Dave Jones <davej@redhat.com>
 - sched: Revert nohz_ratelimit() which causes a lot of
   extra wakeups burning CPU, and my legs.
