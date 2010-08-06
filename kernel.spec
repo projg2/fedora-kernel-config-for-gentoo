@@ -2037,10 +2037,8 @@ fi
 
 
 %changelog
-* Fri Aug 06 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.2-35
+* Fri Aug 06 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.2-34
 - nouveau: fix inter-engine race when under memory pressure (rhbz#602956)
-
-* Thu Aug 05 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.2-34
 - Disable CONFIG_MULTICORE_RAID456
 
 * Tue Aug 03 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.2-33
