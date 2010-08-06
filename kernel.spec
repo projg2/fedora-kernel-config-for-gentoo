@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 156
+%global baserelease 157
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -844,6 +844,9 @@ Patch14120: cifs-fix-dns-resolver.patch
 # Red Hat Bugzilla #610911
 Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
+Patch14140: hid-01-usbhid-initialize-interface-pointers-early-enough.patch
+Patch14141: hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
+
 # ==============================================================================
 %endif
 
@@ -1562,6 +1565,10 @@ ApplyPatch cifs-fix-dns-resolver.patch
 
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
+# RHBZ #592785
+ApplyPatch hid-01-usbhid-initialize-interface-pointers-early-enough.patch
+ApplyPatch hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
+
 # END OF PATCH APPLICATIONS ====================================================
 %endif
 
@@ -2212,6 +2219,9 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Fri Aug 08 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.17-157
+- Fix USB HID initialization (#592785)
+
 * Mon Aug 02 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.17-156
 - Linux 2.6.32.17
 - Drop the patches commented out for -rc1 except ssb_check_for_sprom.patch

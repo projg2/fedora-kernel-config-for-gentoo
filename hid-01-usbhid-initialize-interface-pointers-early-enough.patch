@@ -1,0 +1,40 @@
+commit 57ab12e418ec4fe24c11788bb1bbdabb29d05679
+Author: Jiri Kosina <jkosina at suse.cz>
+Date:   Wed Feb 17 14:25:01 2010 +0100
+
+    HID: usbhid: initialize interface pointers early enough
+    
+    Move the initialization of USB interface pointers from _start()
+    over to _probe() callback, which is where it belongs.
+    
+    This fixes case where interface is NULL when parsing of report
+    descriptor fails.
+    
+    LKML-Reference: <20100213135720.603e5f64 at neptune.home>
+    Reported-by: Alan Stern <stern at rowland.harvard.edu>
+    Tested-by: Bruno Prémont <bonbons at linux-vserver.org>
+    Signed-off-by: Jiri Kosina <jkosina at suse.cz>
+
+diff --git a/drivers/hid/usbhid/hid-core.c b/drivers/hid/usbhid/hid-core.c
+index 74bd3ca..ceaf4a1 100644
+--- a/drivers/hid/usbhid/hid-core.c
++++ b/drivers/hid/usbhid/hid-core.c
+@@ -1005,9 +1005,6 @@ static int usbhid_start(struct hid_device *hid)
+ 
+ 	spin_lock_init(&usbhid->lock);
+ 
+-	usbhid->intf = intf;
+-	usbhid->ifnum = interface->desc.bInterfaceNumber;
+-
+ 	usbhid->urbctrl = usb_alloc_urb(0, GFP_KERNEL);
+ 	if (!usbhid->urbctrl) {
+ 		ret = -ENOMEM;
+@@ -1178,6 +1175,8 @@ static int usbhid_probe(struct usb_interface *intf, const struct usb_device_id *
+ 
+ 	hid->driver_data = usbhid;
+ 	usbhid->hid = hid;
++	usbhid->intf = intf;
++	usbhid->ifnum = interface->desc.bInterfaceNumber;
+ 
+ 	ret = hid_add_device(hid);
+ 	if (ret) {
