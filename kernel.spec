@@ -23,6 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and the first two spaces below to set buildid.)
 # % define buildid .local
+%define buildid .xendom0
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -130,7 +131,7 @@ Summary: The Linux kernel
 %define doc_build_fail true
 %endif
 
-%define rawhide_skip_docs 0
+%define rawhide_skip_docs 1
 %if 0%{?rawhide_skip_docs}
 %define with_doc 0
 %endif
@@ -150,7 +151,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # Want to build a vanilla kernel build without any non-upstream patches?
 # (well, almost none, we need nonintconfig for build purposes). Default to 0 (off).
@@ -225,6 +226,7 @@ Summary: The Linux kernel
 # kernel-PAE is only built on i686.
 %ifarch i686
 %define with_pae 1
+%define with_up 0
 %else
 %define with_pae 0
 %endif
@@ -407,7 +409,7 @@ Summary: The Linux kernel
 
 # We don't build a kernel on i386; we only do kernel-headers there,
 # and we no longer build for 31bit S390. Same for 32bit sparc and arm.
-%define nobuildarches i386 s390 sparc %{arm}
+%define nobuildarches i386 ppc ppc64 ia64 sparc sparc64 390 s390x alpha alphaev56 %{arm}
 
 %ifarch %nobuildarches
 %define with_up 0
@@ -441,7 +443,7 @@ Summary: The Linux kernel
 # problems with the newer kernel or lack certain things that make
 # integration in the distro harder than needed.
 #
-%define package_conflicts initscripts < 7.23, udev < 063-6, iptables < 1.3.2-1, ipw2200-firmware < 2.4, iwl4965-firmware < 228.57.2, selinux-policy-targeted < 1.25.3-14, squashfs-tools < 4.0, wireless-tools < 29-3
+%define package_conflicts initscripts < 7.23, udev < 063-6, iptables < 1.3.2-1, ipw2200-firmware < 2.4, iwl4965-firmware < 228.57.2, selinux-policy-targeted < 1.25.3-14, squashfs-tools < 4.0, wireless-tools < 29-3, xen < 3.4.3
 
 #
 # The ld.so.conf.d file we install uses syntax older ldconfig's don't grok.
@@ -508,7 +510,7 @@ Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
-ExclusiveArch: noarch %{all_x86} x86_64 ppc ppc64 ia64 sparc sparc64 s390x alpha alphaev56 %{arm}
+ExclusiveArch: noarch %{all_x86} x86_64 ia64 sparc sparc64 s390x alpha alphaev56 %{arm}
 ExclusiveOS: Linux
 
 %kernel_reqprovconf
@@ -846,6 +848,10 @@ Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
 Patch14140: hid-01-usbhid-initialize-interface-pointers-early-enough.patch
 Patch14141: hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
+
+Patch19997: xen.pvops.pre.patch
+Patch19998: xen.pvops.patch
+Patch19999: xen.pvops.post.patch
 
 # ==============================================================================
 %endif
@@ -1569,6 +1575,10 @@ ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 ApplyPatch hid-01-usbhid-initialize-interface-pointers-early-enough.patch
 ApplyPatch hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
 
+ApplyPatch xen.pvops.pre.patch
+ApplyPatch xen.pvops.patch
+ApplyPatch xen.pvops.post.patch
+
 # END OF PATCH APPLICATIONS ====================================================
 %endif
 
@@ -1777,7 +1787,7 @@ hwcap 0 nosegneg"
     fi
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
     cd include
-    cp -a acpi config crypto keys linux math-emu media mtd net pcmcia rdma rxrpc scsi sound trace video drm asm-generic $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
+    cp -a acpi config crypto keys linux math-emu media mtd net pcmcia rdma rxrpc scsi sound trace video drm asm-generic xen $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
     asmdir=$(readlink asm)
     cp -a $asmdir $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/
     pushd $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
@@ -2219,7 +2229,11 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
-* Fri Aug 08 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.17-157
+* Fri Aug 06 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops to 2.6.32.17
+- try removing patch that set CONFIG_XEN_XENBUS_FRONTEND=y
+
+* Fri Aug 06 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.17-157
 - Fix USB HID initialization (#592785)
 
 * Mon Aug 02 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.17-156
@@ -2251,6 +2265,11 @@ fi
 * Tue Jul 27 2010 Jarod Wilson <jarod@redhat.com> 2.6.32.16-153
 - kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch:
   Fix crash in guest Python programs (#610911)
+
+* Tue Jul 27 2010 Michael Young <m.a.young@durham.ac.uk>
+- remove some obsolete or unnecessary additions to config-generic
+- try building XEN_BLKDEV_BACKEND XEN_NETDEV_BACKEND XEN_GNTDEV
+  as modules and adding XEN_PCIDEV_FRONTEND XEN_PLATFORM_PCI as modules
 
 * Mon Jul 26 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.16-152
 - usb-obey-the-sysfs-power-wakeup-setting.patch:
@@ -2297,6 +2316,9 @@ fi
 * Wed Jul 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.16-142
 - Drop Intel Moorestown support.
 
+* Wed Jul 12 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops
+
 * Wed Jul 07 2010 Jarod Wilson <jarod@redhat.com> 2.6.32.16-141
 - Really make hdpvr i2c IR part register this time, so something can
   actually be bound to it (like, say, lirc_zilog)
@@ -2330,6 +2352,10 @@ fi
 * Wed Jun 23 2010 Kyle McMartin <kyle@redhat.com>  2.6.32.14-135
 - l2tp: fix oops in pppol2tp_xmit (rhbz#607054)
 
+* Wed Jun 16 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops
+- undo balloning patch as it is upstream in xen
+
 * Tue Jun 15 2010 Kyle McMartin <kyle@redhat.com>  2.6.32.14-134
 - Fix btrfs ACL fixes... commit 431547b3c4533b8c7fd150ab36980b9a3147797b
   changed them to take a struct dentry instead of struct inode after
@@ -2345,8 +2371,15 @@ fi
 - mac80211/iwlwifi fix connections to some APs (rhbz#558002)
   patches from sgruszka@.
 
+* Sat Jun  5 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops (only change is 2.6.32.14 -> 2.6.32.15)
+- try a ballooning patch
+
 * Wed Jun  2 2010 John W. Linville <linville@redhat.com>
 - iwlwifi: update supported PCI_ID list for 5xx0 series (#599153)
+
+* Sat May 29 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops
 
 * Thu May 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.14-127
 - CVE-2010-1437: keyrings: find_keyring_by_name() can gain the freed keyring
@@ -2365,6 +2398,9 @@ fi
 - iwlwifi: recover_from_tx_stall (#589777)
 - iwlwifi: fix scan races (#592011)
 - iwlwifi: fix internal scan race (#592011)
+
+* Tue May 18 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops
 
 * Tue May 18 2010 Kyle McMartin <kyle@redhat.com>
 - btrfs: check for read permission on src file in the clone ioctl
@@ -2399,8 +2435,19 @@ fi
 * Wed May 12 2010 Roland McGrath <roland@redhat.com> 2.6.32.12-116
 - utrace update (#590954)
 
+* Thu May 6 2010 Michael Young <m.a.young@durham.ac.uk>
+- pvops update which adds XEN_PLATFORM_PCI support
+- current pvops kernel won't build unless CONFIG_XEN_XENBUS_FRONTEND=y
+  if XEN and PM_SLEEP are selected
+- add a patch to ensure this as we can't set CONFIG_XEN_XENBUS_FRONTEND
+  directly
+- build problems with CONFIG_XEN_PLATFORM_PCI=m so unset it again
+
 * Fri Apr 30 2010 John W. Linville <linville@redhat.com> 2.6.32.12-115
 - Revert "ath9k: fix lockdep warning when unloading module"
+
+* Wed Apr 28 2010 Michael Young <m.a.young@durham.ac.uk>
+- another pvops update
 
 * Tue Apr 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.12-114
 - libiscsi-regression-fix-header-digest-errors.patch:
@@ -2466,6 +2513,9 @@ fi
 * Mon Apr 12 2010 John W. Linville <linville@redhat.com> 2.6.32.11-102
 - patches from Intel to address intermittent firmware failures with iwlagn
 
+* Sat Apr 10 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops
+
 * Tue Apr 07 2010 Chuck Ebbert <cebbert@redhat.com>
 - Disable async RAID4/5/6 processing (#575402)
 
@@ -2505,6 +2555,9 @@ fi
 - drm-intel-make-lvds-work.patch: Fix screen not turning back on on lid open
 - linux-2.6-usb-wwan-update.patch: Update wwan code and fix qcserial
 
+* Wed Mar 31 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops (xen/stable-2.6.32.x branch) which introduces PAT support
+
 * Tue Mar 30 2010 John W. Linville <linville@redhat.com> 2.6.32.10-94
 - Avoid null pointer dereference introduced by 'ssb: check for sprom' (#577463)
 
@@ -2515,6 +2568,14 @@ fi
 
 * Mon Mar 29 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.32.10-91
 - nouveau: fix display issues on Dell D620 laptops
+
+* Sun Mar 28 2010 Michael Young <m.a.young@durham.ac.uk>
+- try turning STACKPROTECTOR back on
+- add xen includes to -devel package
+
+* Tue Mar 23 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops which should hopefully fix ix86
+- Add in a conflicts xen < 3.4.3 rule
 
 * Mon Mar 22 2010 Jarod Wilson <jarod@redhat.com> 2.6.32.10-90
 - A few more imon driver button additions
@@ -2558,6 +2619,10 @@ fi
 - Rebase lirc drivers to latest git tree
 - Copious amounts of imon driver update
 
+* Mon Mar 15 2010 Michael Young <m.a.young@durham.ac.uk>
+- another pvops update
+- try pvops with dracut
+
 * Mon Mar 15 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.10-75.rc1
 - Make the perf package require libdwarf; fix up description (#568309)
 
@@ -2600,6 +2665,9 @@ fi
 * Tue Mar 02 2010 Chuck Ebbert <cebbert@redhat.com>
 - Include examples.txt in the perf package (#569506)
 
+* Mon Mar 01 2010 Michael Young <m.a.young@durham.ac.uk>
+- another pvops update
+
 * Mon Mar 01 2010 Dave Jones <davej@redhat.com>
 - Don't own /usr/src/kernels any more, it's now owned by filesystem. (#569438)
 
@@ -2612,6 +2680,9 @@ fi
 
 * Thu Feb 25 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.32.9-65
 - nouveau: DP fix for cards with version 0x20 DP tables
+
+* Wed Feb 24 2010 Michael Young <m.a.young@durham.ac.uk>
+- switch to xen/stable pvops branch
 
 * Tue Feb 23 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.9-64
 - Linux 2.6.32.9
@@ -2644,6 +2715,10 @@ fi
 - ice1712-fix-revo71-mixer-names.patch: fix mixer names for
   monty. (rhbz#566565)
 
+* Wed Feb 17 2010 Michael Young <m.a.young@durham.ac.uk>
+- try another pvops update
+- fix an incorrect git conflict merge in generating pvops patch
+
 * Wed Feb 17 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.8-58
 - fix-race-in-tty_fasync-properly.patch: fix for deadlock caused
   by original patch in 2.6.32.6
@@ -2674,6 +2749,12 @@ fi
 * Tue Feb 16 2010 Kyle McMartin <kyle@redhat.com> 2.6.32.8-50
 - fix-abrtd.patch: backport of nhorman's call_usermode_helper changes
   from devel/ & linux-next.
+
+* Mon Feb 15 2010 Michael Young <m.a.young@durham.ac.uk>
+- more pvops updates and try with STACKPROTECTOR off
+
+* Tue Feb 09 2010 Michael Young <m.a.young@durham.ac.uk>
+- try pvops again with xen/next after some more updates
 
 * Tue Feb 09 2010 Kyle McMartin <kyle@redhat.com> 2.6.32.8-49
 - Linux 2.6.32.8
@@ -2722,6 +2803,39 @@ fi
 
 * Mon Feb 01 2010 Dave Airlie <airlied@redhat.com> 2.6.32.7-39
 - Add two input quirks for HP and eGalax touchscreens.
+
+* Sat Jan 31 2010 Michael Young <m.a.young@durham.ac.uk>
+- switch pvops to xen/next branch for the moment
+- update to 2.6.32
+- orphaned comments
+-* Wed Dec 23 2009 Michael Young <m.a.young@durham.ac.uk>
+-- update to latest pvops patch
+-* Wed Dec 09 2009 Michael Young <m.a.young@durham.ac.uk>
+-- update to latest pvops patch
+-* Fri Nov 13 2009 Michael Young <m.a.young@durham.ac.uk>
+-- fix typo in drm-edid-retry.patch
+-* Thu Nov 12 2009 Michael Young <m.a.young@durham.ac.uk>
+-- XEN_NETCHANNEL2 depends on XEN_XENBUS_FRONTEND
+-- Disable XEN_PCIDEV_FRONTEND for the moment (compile issues)
+-* Mon Nov 09 2009 Michael Young <m.a.young@durham.ac.uk>
+-- update pvops which adds XEN_NETCHANNEL2 and XEN_PCIDEV_FRONTEND
+-* Fri Oct 16 2009 Michael Young <m.a.young@durham.ac.uk>
+-- update pvops patch to 2.6.31.4
+-- add configuration options for XEN_PCIDEV_BACKEND and XEN_PCIDEV_BE_DEBUG
+-* Sat Oct 10 2009 Michael Young <m.a.young@durham.ac.uk>
+-- update pvops patch
+-- try putting DRM_RADEON and DRM_NOUVEAU back in
+-* Sat Oct  3 2009 Michael Young <m.a.young@durham.ac.uk>
+-- update pvops patch
+-* Sat Sep 26 2009 Michael Young <m.a.young@durham.ac.uk>
+-- disable DRM_RADEON  and DRM_NOUVEAU due to build problems
+-* Thu Sep 24 2009 Michael Young <m.a.young@durham.ac.uk>
+-- Try a dri fix in the latest xen/master
+-* Sat Sep 19 2009 Michael Young <m.a.young@durham.ac.uk>
+-- Switch pvops from rebase/master to xen/master branch
+-* Tue Sep 15 2009 Michael Young <m.a.young@durham.ac.uk>
+-- switch to the F-12 branch for the moment
+-- try an NX related fix
 
 * Sat Jan 30 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.7-38
 - Fix possible oops in bio-integrity code.
@@ -3233,6 +3347,9 @@ fi
 - linux-2.6-rtc-show-hctosys.patch: Export the hctosys state of an rtc
 - linux-2.6-rfkill-all.patch: Support for keys that toggle all rfkill state
 
+* Thu Sep 10 2009 Michael Young <m.a.young@durham.ac.uk>
+- update pvops and get to 2.6.31
+
 * Thu Sep 10 2009 Ben Skeggs <bskeggs@redhat.com>
 - drm-nouveau.patch: add some scaler-only modes for LVDS, GEM/TTM fixes
 
@@ -3306,6 +3423,11 @@ fi
 * Sat Sep 05 2009 Chuck Ebbert <cebbert@redhat.com> 2.6.31-0.204.rc9
 - 2.6.31-rc9
 
+* Sat Sep 04 2009 Michael Young <m.a.young@durham.ac.uk>
+- update pvops which includes swiotlb updates and a network fix
+- try a drm build fix
+- therefore re-enable CONFIG_DRM_NOUVEAU and CONFIG_DRM_RADEON_KMS options
+
 * Fri Sep 04 2009 Chuck Ebbert <cebbert@redhat.com> 2.6.31-0.203.rc8.git2
 - Fix kernel build errors when building firmware by removing the
   .config file before that step and restoring it afterward.
@@ -3316,6 +3438,10 @@ fi
 
 * Thu Sep 03 2009 Jarod Wilson <jarod@redhat.com>
 - Update hdpvr and lirc_zilog drivers for 2.6.31 i2c
+
+* Thu Sep 03 2009 Michael Young <m.a.young@durham.ac.uk>
+- Update pvops patch to try stack protector on i686 again
+- disable linux-2.6-xen-stack-protector-fix.patch as we already have it
 
 * Thu Sep 03 2009 Justin M.Forbes <jforbes@redhat.com>
 - Fix xen guest with stack protector. (#508120)
@@ -3383,6 +3509,9 @@ fi
 - Fix munlock with KSM (#516909)
 - Re-enable KSM
 
+* Wed Aug 26 2009 Michael Young <m.a.young@durham.ac.uk>
+- update pvops again.
+
 * Wed Aug 26 2009 Chuck Ebbert <cebbert@redhat.com>
 - 2.6.31-rc7-git4
 - Drop patches merged upstream:
@@ -3411,11 +3540,17 @@ fi
 * Mon Aug 24 2009 Chuck Ebbert <cebbert@redhat.com>
 - 2.6.31-rc7-git2
 
+* Mon Aug 24 2009 Michael Young <m.a.young@durham.ac.uk>
+- turn off stackprotector on i686 for a working build
+
 * Mon Aug 24 2009 Chuck Ebbert <cebbert@redhat.com>
 - 2.6.31-rc7-git1
 
 * Sat Aug 22 2009 Chuck Ebbert <cebbert@redhat.com>
 - 2.6.31-rc7
+
+* Thu Aug 20 2009 Michael Young <m.a.young@durham.ac.uk>
+- test a i686 stackprotector patch
 
 * Thu Aug 20 2009 Mark McLoughlin <markmc@redhat.com>
 - Disable LZMA for xen (#515831)
@@ -3424,6 +3559,9 @@ fi
 - 2.6.31-rc6-git5
 - Fix up drm-r600-kms.patch
 - Drop fix-perf-make-man-failure.patch
+
+* Wed Aug 19 2009 Michael Young <m.a.young@durham.ac.uk>
+- update rebase/master to test i686 stackprotector issue
 
 * Wed Aug 19 2009 Chuck Ebbert <cebbert@redhat.com>
 - 2.6.31-rc6-git5
@@ -3434,6 +3572,13 @@ fi
 - Fix up perf so that it builds docs now that they are fixed.
 - with_docs disables perf docs too. be warned. (logic is that the
   build deps are (mostly) the same, so if you don't want one, odds are...)
+
+* Tue Aug 18 2009 Michael Young <m.a.young@durham.ac.uk>
+- another rebase/master update
+  - try upstream STACKPROTECTOR fixes
+  - MCE/MCA support
+- remove grubby dependency to make it more F11 friendly, it isn't needed
+  until dracut is re-enabled
 
 * Tue Aug 18 2009 Dave Jones <davej@redhat.com>
 - 2.6.31-rc6-git3
@@ -3454,8 +3599,15 @@ fi
 * Sat Aug 15 2009 Dave Jones <davej@redhat.com> 2.6.31-0.157.rc6
 - Disable KSM patches on a hunch.  Chasing the "encrypted VGs don't work" bug.
 
+* Fri Aug 14 2009 Michael Young <m.a.young@durham.ac.uk>
+- another rebase/master update
+- make perf a Source file so the kernel builds
+
 * Fri Aug 14 2009 Dave Jones <davej@redhat.com> 2.6.31-0.155.rc6
 - 2.6.31-rc6
+
+* Thu Aug 13 2009 Michael Young <m.a.young@durham.ac.uk>
+- add another rebase/master update
 
 * Wed Aug 12 2009 Kyle McMartin <kyle@redhat.com>
 - fix perf.
@@ -3479,8 +3631,18 @@ fi
 * Tue Aug 11 2009 Eric Paris <eparis@redhat.com>
 - Enable config IMA
 
+* Tue Aug 11 2009 Michael Young <m.a.young@durham.ac.uk>
+- CONFIG_CC_STACKPROTECTOR was probably innocent but leave it off
+  a bit longer just in case
+- add rebase/master update
+
 * Tue Aug 11 2009 Ben Skeggs <bskeggs@redhat.com>
 - nouveau: various cleanups and fixes + more sanity checking in dma paths
+
+* Mon Aug 10 2009 Michael Young <m.a.young@durham.ac.uk>
+- disable CONFIG_CC_STACKPROTECTOR for x86_64 again (the workaround
+  needs revising)
+- disable dracut until the issue with livecd is fixed
 
 * Mon Aug 10 2009 Jarod Wilson <jarod@redhat.com>
 - Add new device ID to lirc_mceusb (#512483)
@@ -3501,6 +3663,10 @@ fi
 - disable kgdb on sparc64 uni-processor kernel
 - set max cpus to 256 on sparc64
 - enable AT keyboard on sparc64
+
+* Sat Aug 08 2009 Michael Young <m.a.young@durham.ac.uk>
+- update pvops patch to latest rebase/master and current rawhide
+- tell kernel.spec not to build non-PAE kernel for i686
 
 * Fri Aug 07 2009 Justin M. Forbes <jforbes@redhat.com>
 - Apply KSM updates from upstream
@@ -3717,6 +3883,9 @@ fi
 - linux-2.6-vga-arb.patch - add VGA arbiter.
 - drm-vga-arb.patch - add VGA arbiter support to drm
 
+* Wed Jul 15 2009 Michael Young <m.a.young@durham.ac.uk>
+- update pvops patch x2
+
 * Tue Jul 14 2009 Kyle McMartin <kyle@redhat.com> 2.6.31-0.68-rc3
 - 2.6.31-rc3
 - config changes:
@@ -3741,6 +3910,9 @@ fi
 * Fri Jul 10 2009 Dave Jones <davej@redhat.com>
 - 2.6.31-rc2-git5
 
+* Thu Jul 09 2009 Michael Young <m.a.young@durham.ac.uk>
+- disable CONFIG_KERNEL_LZMA as xen doesn't like it
+
 * Thu Jul 09 2009 Dave Jones <davej@redhat.com> 2.6.31-0.62.rc2.git4
 - Use correct spinlock initialization in dma-debug
 
@@ -3751,6 +3923,9 @@ fi
 - Enable IR receiver on the Hauppauge HD PVR
 - Trim the changelog, axing everything before 2.6.29 (see cvs
   if you still really want to see that far back)
+
+* Thu Jul 09 2009 Michael Young <m.a.young@durham.ac.uk>
+- update pvops and see if CONFIG_KERNEL_LZMA=y is compatible with xen
 
 * Wed Jul 08 2009 Dave Jones <davej@redhat.com>
 - Enable a bunch of debugging options that were missed somehow.
@@ -3812,6 +3987,10 @@ fi
 * Tue Jun 30 2009 Dave Jones <davej@redhat.com> 2.6.31-0.37.rc1.git5
 - Disable kmemleak. Way too noisy, and not finding any real bugs.
 
+* Tue Jun 30 2009 Michael Young <m.a.young@durham.ac.uk>
+- update pvops from xen/rebase/master branch which should return disk
+  and network support
+
 * Tue Jun 30 2009 Ben Skeggs <bskeggs@redhat.com>
 - drm-nouveau.patch: match upstream
 
@@ -3821,6 +4000,13 @@ fi
 
 * Mon Jun 29 2009 Chuck Ebbert <cebbert@redhat.com>
 - Try to fix the dm overlay bug for real (#505121)
+
+* Sat Jun 27 2009 Michael Young <m.a.young@durham.ac.uk>
+- switch pvops to xen/rebase/master branch
+- rebase pvops on 2.6.31-rc1-git2
+- drivers/gpu/drm/ttm/ttm_agp_backend.c doesn't like 
+  include/linux/swiotlb.h so disable the options CONFIG_DRM_RADEON_KMS
+  and CONFIG_DRM_NOUVEAU that use it.
 
 * Sat Jun 27 2009 Ben Skeggs <bskeggs@redhat.com> 2.6.31-0.33.rc1.git2
 - drm-nouveau.patch: fix conflicts from 2.6.31-rc1-git2
@@ -4054,6 +4240,9 @@ fi
 * Mon Jun 15 2009 Jarod Wilson <jarod@redhat.com>
 - Update lirc patches w/new imon hotness
 
+* Sat Jun 13 2009 Michael Young <m.a.young@durham.ac.uk>
+- update pvops to 2.6.30
+
 * Fri Jun 12 2009 Chuck Ebbert <cebbert@redhat.com>
 - Update VIA temp sensor and mmc drivers.
 
@@ -4081,6 +4270,9 @@ fi
 
 * Fri Jun 05 2009 Chuck Ebbert <cebbert@redhat.com>
 - Linux 2.6.30-rc8-git1
+
+* Thu Jun 04 2009 Michael Young <m.a.young@durham.ac.uk>
+- pvops update to 2.6.30-rc8
 
 * Wed Jun 03 2009 Kyle McMartin <kyle@redhat.com>
 - Linux 2.6.30-rc8
@@ -4119,6 +4311,14 @@ fi
 * Sat May 23 2009 Dave Jones <davej@redhat.com>
 - 2.6.30-rc7
 
+* Fri May 22 2009 Michael Young <m.a.young@durham.ac.uk>
+- update pvops patch to latest xen-tip/next version
+- pull in patch for !PERF_COUNTERS build failure
+- That still doesn't work so enable PERF_COUNTERS for the moment
+
+* Thu May 21 2009 Michael Young <m.a.young@durham.ac.uk>
+- update pvops patch to latest xen-tip/next version
+
 * Thu May 21 2009 Dave Jones <davej@redhat.com>
 - 2.6.30-rc6-git6
 
@@ -4146,12 +4346,24 @@ fi
 * Fri May 08 2009 Kyle McMartin <kyle@redhat.com>
 - Linux 2.6.30-rc4-git4
 
+* Thu May 07 2009 Michael Young <m.a.young@durham.ac.uk>
+- i686 CONFIG_CC_STACKPROTECTOR is still broken so disable it
+
+* Wed May 06 2009 Michael Young <m.a.young@durham.ac.uk>
+- update pvops patch from xen-tip/master - hopefully i686 will work again
+
 * Wed May 06 2009 Kyle McMartin <kyle@redhat.com>
 - Linux 2.6.30-rc4-git3
 - linux-2.6-cdrom-door-status.patch: merged upstream.
 - linux-2.6-iwl3945-remove-useless-exports.patch: merged upstream.
 - linux-2.6-utrace.patch: rebase against changes to fs/proc/array.c
 - USB_NET_CDC_EEM=m
+
+* Sat May 02 2009 Michael Young <m.a.young@durham.ac.uk>
+- update pvops patch from xen-tip/master
+- Try enabling CONFIG_XEN_GNTDEV and CONFIG_XEN_PCI_PASSTHROUGH
+- test a patch to allow CONFIG_CC_STACKPROTECTOR to be enabled
+- patch to allow kernel to build with XEN_PCI_PASSTHROUGH and current config
 
 * Fri May 01 2009 Eric Sandeen <sandeen@redhat.com>
 - Fix ext4 corruption on partial write into prealloc block
@@ -4183,6 +4395,18 @@ fi
 
 * Sun Apr 26 2009 Chuck Ebbert <cebbert@redhat.com> 2.6.30-0.68.rc3.git1
 - Linux 2.6.30-rc3-git1
+
+* Fri Apr 24 2009 Michael Young <m.a.young@durham.ac.uk>
+- switch back to devel kernel branch
+- switch pvops to xen-tip/next branch
+- remove added config options now in main fedora configuration
+- add in new config options required by new pvops patch
+- relocate the below comment stranded by the devel switch
+-* Tue Apr 14 2009 Michael Young <m.a.young@durham.ac.uk>
+-- follow the 2.6.29.1 stable branch for the moment
+-- reset a few config settings to Fedora defaults
+-- drop the squashfs 3 patches as we can't build both
+-- docs won't build, so don't build them
 
 * Wed Apr 22 2009 Dave Jones <davej@redhat.com> 2.6.30-0.67.rc3
 - Disable SYSFS_DEPRECATED on ia64
@@ -4343,6 +4567,10 @@ fi
 * Mon Mar 30 2009 Dave Jones <davej@redhat.com>
 - Add a strict-devmem=0 boot argument (#492803)
 
+* Mon Mar 30 2009 Michael Young <m.a.young@durham.ac.uk>
+- pvops update and merging of patches
+- disable squashfs 3 again since we can't build both versions at the same time
+
 * Mon Mar 30 2009 Adam Jackson <ajax@redhat.com>
 - linux-2.6.29-pat-fixes.patch: Fix PAT/GTT interaction
 
@@ -4363,6 +4591,18 @@ fi
 
 * Sun Mar 29 2009 Chuck Ebbert <cebbert@redhat.com>
 - More fixes for ALSA hardware pointer updating.
+
+* Sun Mar 29 2009 Michael Young <m.a.young@durham.ac.uk>
+- try push2/xen/dom0/master branch rather than xen/dom0/hackery as it should
+    be closer to the proposed 2.6.30 merge
+- add squashfs 3 support from F-10 to make kernel more friendly to fc10
+- Set CONFIG_HIGHPTE=n in config-x86-generic to avoid eventual crash problem
+- comment out linux-2.6-net-fix-gro-bug.patch which is in push2/xen/dom0/master
+
+* Sun Mar 29 2009 Michael Young <m.a.young@durham.ac.uk>
+- drop dropwatch patch due to compile problems
+- revert pvops patches bd4a7874716d1b1f69cacfef4adf9f94050ecd82 and
+    cfb667260eb7f6dd26ceb6d49da818978396757d to get the kernel to boot
 
 * Sat Mar 28 2009 Mauro Carvalho Chehab <mchehab@redhat.com>
 - linux-2.6-revert-dvb-net-kabi-change.patch: attempt to fix dvb net breakage
@@ -4406,6 +4646,10 @@ fi
 * Wed Mar 25 2009 Mauro Carvalho Chehab <mchehab@redhat.com>
 - remove duplicated Cinergy T2 entry at config-generic
 
+* Wed Mar 25 2009 Michael Young <m.a.young@durham.ac.uk>
+- disable linux-2.6-utrace-ftrace.patch due to merge problems
+- minor pvops update
+
 * Wed Mar 25 2009 Neil Horman <nhorman@redhat.com>
 - Add dropmonitor/dropwatch protocol from 2.6.30
 
@@ -4419,6 +4663,9 @@ fi
 
 * Tue Mar 24 2009 Kyle McMartin <kyle@redhat.com>
 - Disable DMAR by default until suspend & resume is fixed.
+
+* Tue Mar 24 2009 Michael Young <m.a.young@durham.ac.uk>
+- Update pvops patch and fix package numbering for 2.6.29
 
 * Tue Mar 24 2009 Josef Bacik <josef@toxicpanda.com>
 - fsync replay fixes for btrfs
