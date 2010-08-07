@@ -452,7 +452,7 @@ Requires(pre): %{initrd_prereq}\
 %if %{with_firmware}\
 Requires(pre): kernel-firmware >= %{rpmversion}-%{pkg_release}\
 %else\
-Requires(pre): linux-firmware\
+Requires(pre): linux-firmware >= 20100806-2\
 %if %{with_perftool}\
 Requires(pre): elfutils-libs\
 %endif\
