@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 34
+%global baserelease 35
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,9 +60,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -2037,6 +2037,9 @@ fi
 
 
 %changelog
+* Sat Aug 07 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.3-35.rc1
+- Linux 2.6.34.3-rc1
+
 * Fri Aug 06 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.2-34
 - nouveau: fix inter-engine race when under memory pressure (rhbz#602956)
 - Disable CONFIG_MULTICORE_RAID456
