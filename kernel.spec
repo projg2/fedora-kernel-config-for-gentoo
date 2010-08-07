@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 157
+%global baserelease 158
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -59,9 +59,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 17
+%define stable_update 18
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1558,10 +1558,10 @@ ApplyPatch crypto-add-async-hash-testing.patch
 # CVE-2010-2066
 ApplyPatch ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
 # CVE-2010-2266
-ApplyPatch xfs-prevent-swapext-from-operating-on-write-only-files.patch
+#ApplyPatch xfs-prevent-swapext-from-operating-on-write-only-files.patch
 
 # fix DNS resolver build, broken in 2.6.32.17
-ApplyPatch cifs-fix-dns-resolver.patch
+#ApplyPatch cifs-fix-dns-resolver.patch
 
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
@@ -2219,7 +2219,16 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
-* Fri Aug 08 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.17-157
+* Sat Aug 07 2010 Chuck Ebbert <cebbert@redhat.com>
+- Linux 2.6.32.18-rc1
+- Revert DRM patches from -stable we already have:
+    drm-i915-Fix-LVDS-presence-check
+    drm-i915-parse-child-device-from-vbt.patch
+- Comment out patches merged in -stable:
+    xfs-prevent-swapext-from-operating-on-write-only-files.patch
+    cifs-fix-dns-resolver.patch
+
+* Fri Aug 06 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.17-157
 - Fix USB HID initialization (#592785)
 
 * Mon Aug 02 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.17-156
