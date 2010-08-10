@@ -61,7 +61,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 18
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -840,8 +840,7 @@ Patch14040: crypto-testmgr-add-null-test-for-aesni.patch
 Patch14050: crypto-add-async-hash-testing.patch
 
 Patch14110: ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
-Patch14115: xfs-prevent-swapext-from-operating-on-write-only-files.patch
-Patch14120: cifs-fix-dns-resolver.patch
+Patch14120: ext4-fix-freeze-deadlock-under-io.patch
 
 # Red Hat Bugzilla #610911
 Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
@@ -1561,11 +1560,8 @@ ApplyPatch crypto-add-async-hash-testing.patch
 
 # CVE-2010-2066
 ApplyPatch ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
-# CVE-2010-2266
-#ApplyPatch xfs-prevent-swapext-from-operating-on-write-only-files.patch
-
-# fix DNS resolver build, broken in 2.6.32.17
-#ApplyPatch cifs-fix-dns-resolver.patch
+# Fix deadlock caused by patch in 2.6.32.17
+ApplyPatch ext4-fix-freeze-deadlock-under-io.patch
 
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
@@ -2223,8 +2219,12 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
-* Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  159
+* Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.18-159
+- Linux 2.6.32.18
 - Backport nouveau noaccel fix for nva3+ cards from f13.
+- ext4-fix-freeze-deadlock-under-io.patch:
+  Fix deadlock caused by patch in 2.6.32.17
+  (0036-ext4-don-t-return-to-userspace-after-freezing-the-fs.patch)
 
 * Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.18-158.rc1
 - Bring back drm-upgrayed-fixes.patch, dropped in the
