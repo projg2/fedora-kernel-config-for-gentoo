@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 1
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1890,6 +1890,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.1-6
+- Linux 2.6.35.1
+
 * Tue Aug 10 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.1-5.rc1
 - nouveau: bring in patches up to what will be in 2.6.36
 
