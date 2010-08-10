@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 158
+%global baserelease 159
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -737,6 +737,7 @@ Patch1844: drm-nouveau-kconfig.patch
 Patch1845: drm-nouveau-mutex.patch
 Patch1846: drm-nouveau-update.patch
 Patch1847: drm-nouveau-d620.patch
+Patch1848: drm-nouveau-nva3-noaccel.patch
 
 # kludge to make ich9 e1000 work
 Patch2000: linux-2.6-e1000-ich9.patch
@@ -1480,6 +1481,7 @@ ApplyPatch drm-nouveau-safetile-getparam.patch
 ApplyPatch drm-nouveau-kconfig.patch
 ApplyPatch drm-nouveau-update.patch
 ApplyPatch drm-nouveau-d620.patch
+ApplyPatch drm-nouveau-nva3-noaccel.patch
 
 # linux1394 git patches
 #ApplyPatch linux-2.6-firewire-git-update.patch
@@ -2221,7 +2223,10 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
-* Sat Aug 07 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.18-158.rc1
+* Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  159
+- Backport nouveau noaccel fix for nva3+ cards from f13.
+
+* Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.18-158.rc1
 - Bring back drm-upgrayed-fixes.patch, dropped in the
   2.6.32.16 update. (#620955)
 - Revert upstream DRM stable fix we already have:
