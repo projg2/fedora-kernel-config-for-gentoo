@@ -657,6 +657,7 @@ Patch1807: drm-i2c-ch7006-fix.patch
 # nouveau + drm fixes
 Patch1810: drm-nouveau-updates.patch
 Patch1811: drm-nouveau-race-fix.patch
+Patch1812: drm-nouveau-nva3-noaccel.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -1273,6 +1274,8 @@ ApplyPatch drm-i2c-ch7006-fix.patch
 # Nouveau DRM + drm fixes
 ApplyPatch drm-nouveau-updates.patch
 ApplyPatch drm-nouveau-race-fix.patch
+ApplyPatch drm-nouveau-nva3-noaccel.patch
+
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
@@ -1923,6 +1926,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 10 2010 Ben Skeggs <bskeggs@redhat.com>
+- nouveau: disable acceleration on nva3/nva5/nva8
+
 * Wed Sep 08 2010 Kyle McMartin <kyle@redhat.com>
 - Enable GPIO_SYSFS. (#631958)
 
