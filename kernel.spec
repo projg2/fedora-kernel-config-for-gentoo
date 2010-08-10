@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 35
+%global baserelease 36
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -690,6 +690,7 @@ Patch1803: drm-encoder-disable.patch
 # nouveau + drm fixes
 Patch1815: drm-nouveau-updates.patch
 Patch1816: drm-nouveau-race-fix.patch
+Patch1817: drm-nouveau-nva3-noaccel.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
 Patch1820: drm-i915-fix-edp-panels.patch
@@ -1337,6 +1338,7 @@ ApplyPatch drm-encoder-disable.patch
 # Nouveau DRM + drm fixes
 ApplyPatch drm-nouveau-updates.patch
 ApplyPatch drm-nouveau-race-fix.patch
+ApplyPatch drm-nouveau-nva3-noaccel.patch
 
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
@@ -2037,6 +2039,10 @@ fi
 
 
 %changelog
+* Tue Aug 10 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.3-36.rc1
+- nouveau: disable accel on nva3/nva5/nva8 until it's fixed upstream
+- rhbz#596330
+
 * Sat Aug 07 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.3-35.rc1
 - Linux 2.6.34.3-rc1
 
