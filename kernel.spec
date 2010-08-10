@@ -716,6 +716,7 @@ Patch1700: linux-2.6-x86-64-fbdev-primary.patch
 
 # nouveau + drm fixes
 Patch1810: drm-upgrayedd.patch
+Patch1811: drm-upgrayed-fixes.patch
 Patch1813: drm-radeon-pm.patch
 #Patch1814: drm-nouveau.patch
 Patch1818: drm-i915-resume-force-mode.patch
@@ -1461,6 +1462,7 @@ ApplyPatch linux-2.6-phylib-autoload.patch
 ApplyPatch linux-2.6-x86-64-fbdev-primary.patch
 # Nouveau DRM + drm fixes
 ApplyPatch drm-upgrayedd.patch
+ApplyPatch drm-upgrayed-fixes.patch
 #ApplyPatch drm-intel-big-hammer.patch
 #ApplyPatch drm-intel-no-tv-hotplug.patch
 ApplyOptionalPatch drm-intel-next.patch
@@ -2219,6 +2221,12 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Sat Aug 07 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.18-158.rc1
+- Bring back drm-upgrayed-fixes.patch, dropped in the
+  2.6.32.16 update. (#620955)
+- Revert upstream DRM stable fix we already have:
+    drm-i915-give-up-on-8xx-lid-status.patch
+
 * Sat Aug 07 2010 Chuck Ebbert <cebbert@redhat.com>
 - Linux 2.6.32.18-rc1
 - Revert DRM patches from -stable we already have:

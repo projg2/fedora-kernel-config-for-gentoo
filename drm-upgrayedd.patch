@@ -11499,8 +11499,8 @@ index 0e0e4b4..b1d0acb 100644
  };
  
 @@ -622,7 +650,7 @@ static enum drm_connector_status intel_lvds_detect(struct drm_connector *connect
- 	if (IS_I8XX(dev))
- 		return connector_status_connected;
+ {
+ 	enum drm_connector_status status = connector_status_connected;
  
 -	if (!acpi_lid_open() && !dmi_check_system(bad_lid_status))
 +	if (!dmi_check_system(bad_lid_status) && !acpi_lid_open())
