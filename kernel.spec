@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -649,8 +649,13 @@ Patch1555: fix_xen_guest_on_old_EC2.patch
 # DRM
 Patch1801: drm-revert-drm-fbdev-rework-output-polling-to-be-back-in-core.patch
 Patch1802: revert-drm-kms-toggle-poll-around-switcheroo.patch
+# drm fixes nouveau depends on
+Patch1805: drm-simplify-i2c-config.patch
+Patch1806: drm-sil164-module.patch
+Patch1807: drm-i2c-ch7006-fix.patch
 # nouveau + drm fixes
 Patch1810: drm-nouveau-updates.patch
+Patch1811: drm-nouveau-race-fix.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -1250,8 +1255,12 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 #ApplyPatch drm-revert-drm-fbdev-rework-output-polling-to-be-back-in-core.patch
 #ApplyPatch revert-drm-kms-toggle-poll-around-switcheroo.patch
 
+ApplyPatch drm-simplify-i2c-config.patch
+ApplyPatch drm-sil164-module.patch
+ApplyPatch drm-i2c-ch7006-fix.patch
 # Nouveau DRM + drm fixes
 ApplyPatch drm-nouveau-updates.patch
+ApplyPatch drm-nouveau-race-fix.patch
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
@@ -1881,6 +1890,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 10 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.1-5.rc1
+- nouveau: bring in patches up to what will be in 2.6.36
+
 * Sat Aug 07 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.1-4.rc1
 - Linux 2.6.35.1-rc1
 
