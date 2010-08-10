@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 36
+%global baserelease 37
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 3
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -2039,6 +2039,9 @@ fi
 
 
 %changelog
+* Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.3-37
+- Linux 2.6.34.3
+
 * Tue Aug 10 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.3-36.rc1
 - nouveau: disable accel on nva3/nva5/nva8 until it's fixed upstream
 - rhbz#596330
