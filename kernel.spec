@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 159
+%global baserelease 160
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -59,9 +59,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 19
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1327,7 +1327,7 @@ ApplyPatch linux-2.6-execshield.patch
 # xfs
 
 # btrfs
-ApplyPatch linux-2.6-btrfs-fix-acl.patch
+#ApplyPatch linux-2.6-btrfs-fix-acl.patch
 ApplyPatch btrfs-prohibit-a-operation-of-changing-acls-mask-when-noacl-mount-option-is-used.patch
 
 # eCryptfs
@@ -1554,14 +1554,14 @@ ApplyPatch inotify-fix-inotify-oneshot-support.patch
 ApplyPatch inotify-send-IN_UNMOUNT-events.patch
 
 # add tests for aesni module (#571577)
-ApplyPatch crypto-testmgr-add-null-test-for-aesni.patch
+#ApplyPatch crypto-testmgr-add-null-test-for-aesni.patch
 # add tests for crypto async hashing (#571577)
 ApplyPatch crypto-add-async-hash-testing.patch
 
 # CVE-2010-2066
-ApplyPatch ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
+#ApplyPatch ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
 # Fix deadlock caused by patch in 2.6.32.17
-ApplyPatch ext4-fix-freeze-deadlock-under-io.patch
+#ApplyPatch ext4-fix-freeze-deadlock-under-io.patch
 
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
@@ -2219,6 +2219,15 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Fri Aug 13 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.19-160.rc1
+- Linux 2.6.32.19-rc1
+- Comment out patches merged upstream:
+    linux-2.6-btrfs-fix-acl.patch
+    crypto-testmgr-add-null-test-for-aesni.patch
+    ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
+    ext4-fix-freeze-deadlock-under-io.patch
+- Fix linux-2.6-usb-wwan-update.patch to apply after 2.6.32.19
+
 * Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.18-159
 - Linux 2.6.32.18
 - Backport nouveau noaccel fix for nva3+ cards from f13.
