@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 6
+%global baserelease 7
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,9 +60,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1130,7 +1130,7 @@ ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 
 ApplyPatch linux-2.6-hotfixes.patch
 
-ApplyPatch linux-2.6-tip.git-396e894d289d69bacf5acd983c97cd6e21a14c08.patch
+#ApplyPatch linux-2.6-tip.git-396e894d289d69bacf5acd983c97cd6e21a14c08.patch
 
 # Roland's utrace ptrace replacement.
 ApplyPatch git-utrace.patch
@@ -1164,7 +1164,7 @@ ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 #
 
 # ext4
-ApplyPatch linux-2.6-ext4-fix-freeze-deadlock.patch
+#ApplyPatch linux-2.6-ext4-fix-freeze-deadlock.patch
 
 # xfs
 
@@ -1890,6 +1890,14 @@ fi
 # and build.
 
 %changelog
+* Fri Aug 13 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.2-7.rc1
+- Linux 2.6.35.2-rc1
+- Comment out patches merged in -stable:
+    linux-2.6-tip.git-396e894d289d69bacf5acd983c97cd6e21a14c08.patch
+    linux-2.6-ext4-fix-freeze-deadlock.patch
+- New config option:
+    CONFIG_CRYPTO_MANAGER_TESTS=y
+
 * Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.1-6
 - Linux 2.6.35.1
 
