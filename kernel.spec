@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 37
+%global baserelease 38
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,9 +60,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -2039,6 +2039,10 @@ fi
 
 
 %changelog
+* Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.4-38.rc1
+- Linux 2.6.34.4-rc1
+- Fix up drm-next patch to apply on top of 2.6.34.4
+
 * Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.3-37
 - Linux 2.6.34.3
 - Disable AES-NI encryption until bugs can be sorted out (#622435)
