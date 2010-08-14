@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 160
+%global baserelease 161
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -61,7 +61,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 19
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -769,7 +769,6 @@ Patch3050: linux-2.6-nfsd4-proots.patch
 Patch3051: linux-2.6-nfs4-callback-hidden.patch
 
 # btrfs
-Patch3100: linux-2.6-btrfs-fix-acl.patch
 Patch3101: btrfs-prohibit-a-operation-of-changing-acls-mask-when-noacl-mount-option-is-used.patch
 
 # XFS
@@ -836,11 +835,7 @@ Patch13030: l2tp-fix-oops-in-pppol2tp_xmit.patch
 Patch14020: inotify-fix-inotify-oneshot-support.patch
 Patch14030: inotify-send-IN_UNMOUNT-events.patch
 
-Patch14040: crypto-testmgr-add-null-test-for-aesni.patch
 Patch14050: crypto-add-async-hash-testing.patch
-
-Patch14110: ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
-Patch14120: ext4-fix-freeze-deadlock-under-io.patch
 
 # Red Hat Bugzilla #610911
 Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
@@ -1327,7 +1322,6 @@ ApplyPatch linux-2.6-execshield.patch
 # xfs
 
 # btrfs
-#ApplyPatch linux-2.6-btrfs-fix-acl.patch
 ApplyPatch btrfs-prohibit-a-operation-of-changing-acls-mask-when-noacl-mount-option-is-used.patch
 
 # eCryptfs
@@ -1553,15 +1547,8 @@ ApplyPatch l2tp-fix-oops-in-pppol2tp_xmit.patch
 ApplyPatch inotify-fix-inotify-oneshot-support.patch
 ApplyPatch inotify-send-IN_UNMOUNT-events.patch
 
-# add tests for aesni module (#571577)
-#ApplyPatch crypto-testmgr-add-null-test-for-aesni.patch
 # add tests for crypto async hashing (#571577)
 ApplyPatch crypto-add-async-hash-testing.patch
-
-# CVE-2010-2066
-#ApplyPatch ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
-# Fix deadlock caused by patch in 2.6.32.17
-#ApplyPatch ext4-fix-freeze-deadlock-under-io.patch
 
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
@@ -2219,6 +2206,9 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Sat Aug 14 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.19-161
+- Linux 2.6.32.19
+
 * Fri Aug 13 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.19-160.rc1
 - Linux 2.6.32.19-rc1
 - Comment out patches merged upstream:
