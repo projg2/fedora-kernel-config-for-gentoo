@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 38
+%global baserelease 39
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 4
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -2039,7 +2039,10 @@ fi
 
 
 %changelog
-* Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.4-38.rc1
+* Sun Aug 15 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.4-39
+- Linux 2.6.34.4
+
+* Fri Aug 13 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.4-38.rc1
 - Linux 2.6.34.4-rc1
 - Fix up drm-next patch to apply on top of 2.6.34.4
 
