@@ -60,13 +60,14 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
-%define stable_base %{stable_update}
+# Set stable_base for incremental stable patches that are not -rc's
+%define stable_base 7
 %if 0%{?stable_rc}
 # stable RCs are incremental patches, so we need the previous stable patch
 %define stable_base %(echo $((%{stable_update} - 1)))
@@ -590,6 +591,12 @@ Patch00: %{stable_patch_00}
 %if 0%{?stable_rc}
 %define    stable_patch_01  patch-2.6.%{base_sublevel}.%{stable_update}-rc%{stable_rc}.bz2
 Patch01: %{stable_patch_01}
+%else
+# Incremental stable update
+%if %{stable_base} != %{stable_update}
+%define    stable_patch_01  patch-2.6.%{base_sublevel}.%{stable_base}-%{stable_update}.bz2
+Patch01: %{stable_patch_01}
+%endif
 %endif
 
 # non-released_kernel case
@@ -795,9 +802,6 @@ Patch12017: prevent-runtime-conntrack-changes.patch
 Patch12018: neuter_intel_microcode_load.patch
 
 Patch12019: linux-2.6-umh-refactor.patch
-
-# rhbz#533746
-Patch12021: ssb_check_for_sprom.patch
 
 # make p54pci usable on slower hardware
 Patch12103: linux-2.6-p54pci.patch
@@ -1232,6 +1236,11 @@ ApplyPatch %{stable_patch_00}
 %endif
 %if 0%{?stable_rc}
 ApplyPatch %{stable_patch_01}
+%else
+# Incremental update, not an -rc
+%if %{stable_base} != %{stable_update}
+ApplyPatch %{stable_patch_01}
+%endif
 %endif
 
 %if %{using_upstream_branch}
@@ -1505,9 +1514,6 @@ ApplyPatch neuter_intel_microcode_load.patch
 ApplyPatch linux-2.6-umh-refactor.patch
 
 ApplyPatch alsa-usbmixer-add-possibility-to-remap-dB-values.patch
-
-# rhbz#533746
-ApplyPatch ssb_check_for_sprom.patch
 
 # make p54pci usable on slower hardware
 ApplyPatch linux-2.6-p54pci.patch
@@ -2207,6 +2213,13 @@ fi
 
 
 %changelog
+* Sun Aug 15 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.33.8-148
+- 2.6.33.8 from http://git.kernel.org/?p=linux/kernel/git/jkacur/jk-2.6.git stable/2.6.33.y
+- Unrevert stable patch from .33.7:
+    ssb-handle-netbook-devices-where-the-sprom-address-is-changed.patch
+- Drop patches merged in 2.6.33.8:
+    ssb_check_for_sprom.patch
+
 * Sat Aug 14 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.33.7-148
 - Update to kernel 2.6.33.7
 - Drop patches merged in 2.6.33.7:
