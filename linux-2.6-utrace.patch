@@ -648,10 +648,10 @@ index ...e149f49 100644
 +
 +</book>
 diff --git a/fs/proc/array.c b/fs/proc/array.c
-index 885ab55..b4d0b8a 100644  
+index 13b5d07..cda9489 100644  
 --- a/fs/proc/array.c
 +++ b/fs/proc/array.c
-@@ -81,6 +81,7 @@
+@@ -82,6 +82,7 @@
  #include <linux/pid_namespace.h>
  #include <linux/ptrace.h>
  #include <linux/tracehook.h>
@@ -659,7 +659,7 @@ index 885ab55..b4d0b8a 100644
  
  #include <asm/pgtable.h>
  #include <asm/processor.h>
-@@ -192,6 +193,8 @@ static inline void task_state(struct seq
+@@ -194,6 +195,8 @@ static inline void task_state(struct seq
  		cred->uid, cred->euid, cred->suid, cred->fsuid,
  		cred->gid, cred->egid, cred->sgid, cred->fsgid);
  
@@ -669,10 +669,10 @@ index 885ab55..b4d0b8a 100644
  	if (p->files)
  		fdt = files_fdtable(p->files);
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 82e4494..8461a2d 100644  
+index 9a2b557..47379c1 100644  
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -1352,6 +1352,11 @@ struct task_struct {
+@@ -1412,6 +1412,11 @@ struct task_struct {
  #endif
  	seccomp_t seccomp;
  
@@ -1621,7 +1621,7 @@ index ...f251efe 100644
 +
 +#endif	/* linux/utrace.h */
 diff --git a/init/Kconfig b/init/Kconfig
-index eb77e8c..b849517 100644  
+index d95ca7c..6d52a08 100644  
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -320,6 +320,15 @@ config AUDIT_TREE
@@ -1641,10 +1641,10 @@ index eb77e8c..b849517 100644
  
  choice
 diff --git a/kernel/Makefile b/kernel/Makefile
-index a987aa1..8bbb631 100644  
+index 864ff75..8a0185e 100644  
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
-@@ -70,6 +70,7 @@ obj-$(CONFIG_IKCONFIG) += configs.o
+@@ -69,6 +69,7 @@ obj-$(CONFIG_IKCONFIG) += configs.o
  obj-$(CONFIG_RESOURCE_COUNTERS) += res_counter.o
  obj-$(CONFIG_STOP_MACHINE) += stop_machine.o
  obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
@@ -1653,10 +1653,10 @@ index a987aa1..8bbb631 100644
  obj-$(CONFIG_AUDITSYSCALL) += auditsc.o
  obj-$(CONFIG_GCOV_KERNEL) += gcov/
 diff --git a/kernel/fork.c b/kernel/fork.c
-index 4c14942..16030e3 100644  
+index f88bd98..2b6820c 100644  
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -161,6 +161,7 @@ void free_task(struct task_struct *tsk)
+@@ -153,6 +153,7 @@ void free_task(struct task_struct *tsk)
  	free_thread_info(tsk->stack);
  	rt_mutex_debug_task_free(tsk);
  	ftrace_graph_exit_task(tsk);
@@ -1664,7 +1664,7 @@ index 4c14942..16030e3 100644
  	free_task_struct(tsk);
  }
  EXPORT_SYMBOL(free_task);
-@@ -1000,6 +1001,8 @@ static struct task_struct *copy_process(
+@@ -1023,6 +1024,8 @@ static struct task_struct *copy_process(
  	if (!p)
  		goto fork_out;
  
@@ -1674,7 +1674,7 @@ index 4c14942..16030e3 100644
  
  	rt_mutex_init_task(p);
 diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-index 067f120..0ad4dc0 100644  
+index b7c1d32..a408bf7 100644  
 --- a/kernel/ptrace.c
 +++ b/kernel/ptrace.c
 @@ -16,6 +16,7 @@
@@ -1685,7 +1685,7 @@ index 067f120..0ad4dc0 100644
  #include <linux/security.h>
  #include <linux/signal.h>
  #include <linux/audit.h>
-@@ -165,6 +166,14 @@ bool ptrace_may_access(struct task_struc
+@@ -164,6 +165,14 @@ bool ptrace_may_access(struct task_struc
  	return !err;
  }
  
@@ -1700,7 +1700,7 @@ index 067f120..0ad4dc0 100644
  int ptrace_attach(struct task_struct *task)
  {
  	int retval;
-@@ -188,6 +197,8 @@ int ptrace_attach(struct task_struct *ta
+@@ -187,6 +196,8 @@ int ptrace_attach(struct task_struct *ta
  
  	task_lock(task);
  	retval = __ptrace_may_access(task, PTRACE_MODE_ATTACH);
@@ -1709,7 +1709,7 @@ index 067f120..0ad4dc0 100644
  	task_unlock(task);
  	if (retval)
  		goto unlock_creds;
-@@ -225,6 +236,9 @@ int ptrace_traceme(void)
+@@ -224,6 +235,9 @@ int ptrace_traceme(void)
  {
  	int ret = -EPERM;
  

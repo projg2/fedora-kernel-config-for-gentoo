@@ -1,0 +1,58 @@
+--- linux-2.6.20/arch/ia64/kernel/quirks.c	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.20_fix/arch/ia64/kernel/quirks.c	2007-02-13 13:56:34.000000000 -0500
+@@ -0,0 +1,45 @@
++/*
++ * This file contains work-arounds for ia64 platform bugs.
++ */
++#include <linux/pci.h>
++
++/*
++ * quirk_intel_ide_controller: If an ide/ata controller is
++ * at legacy mode, BIOS might initiates BAR(bar 0~3 and 5)
++ * with incorrect value. This quirk will reset the incorrect
++ * value to 0.
++ */
++static void __devinit quirk_intel_ide_controller(struct pci_dev *dev)
++{
++	unsigned int pos;
++	struct resource *res;
++	int fixed = 0;
++	u8 tmp8;
++
++	if ((dev->class >> 8) != PCI_CLASS_STORAGE_IDE)
++		return;
++
++	/* TODO: What if one channel is in native mode ... */
++	pci_read_config_byte(dev, PCI_CLASS_PROG, &tmp8);
++	if ((tmp8 & 5) == 5)
++		return;
++
++	for( pos = 0; pos < 6; pos ++ ) {
++		res = &dev->resource[pos];
++		if (!(res->flags & (IORESOURCE_IO | IORESOURCE_MEM)))
++			continue;
++
++		if (!res->start && res->end) {
++			res->start = res->end = 0;
++			res->flags = 0;
++			fixed = 1;
++		}
++	}
++	if (fixed)
++		printk(KERN_WARNING
++			"PCI device %s: BIOS resource configuration fixed.\n",
++			pci_name(dev));
++}
++
++DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82801DB_11, quirk_intel_ide_controller);
++
+--- linux-2.6.21.noarch/arch/ia64/kernel/Makefile~	2007-05-27 23:23:36.000000000 -0400
++++ linux-2.6.21.noarch/arch/ia64/kernel/Makefile	2007-05-27 23:23:48.000000000 -0400
+@@ -33,6 +33,7 @@ obj-$(CONFIG_CRASH_DUMP)	+= crash_dump.o
+ obj-$(CONFIG_IA64_UNCACHED_ALLOCATOR)	+= uncached.o
+ obj-$(CONFIG_AUDIT)		+= audit.o
+ obj-$(CONFIG_PCI_MSI)		+= msi_ia64.o
++obj-$(CONFIG_PCI)		+= quirks.o
+ mca_recovery-y			+= mca_drv.o mca_drv_asm.o
+ obj-$(CONFIG_IA64_MC_ERR_INJECT)+= err_inject.o
+ 

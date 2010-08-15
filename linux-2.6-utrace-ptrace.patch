@@ -14,16 +14,16 @@ Signed-off-by: Oleg Nesterov <oleg@redhat.com>
 ---
  include/linux/ptrace.h |    2 +-
  kernel/Makefile        |    1 +
- kernel/ptrace-utrace.c | 1127 ++++++++++++++++++++++++++++++++++++++++++++++++
- kernel/ptrace.c        |  654 ++++++++++++++--------------
+ kernel/ptrace-utrace.c | 1080 ++++++++++++++++++++++++++++++++++++++++++++++++
+ kernel/ptrace.c        |  572 +++++++++++++-------------
  kernel/utrace.c        |   16 +
- 5 files changed, 1466 insertions(+), 334 deletions(-)
+ 5 files changed, 1378 insertions(+), 293 deletions(-)
 
 diff --git a/include/linux/ptrace.h b/include/linux/ptrace.h
-index 0d84f1e..102cb0f 100644  
+index 4802e2a..03f8fc7 100644  
 --- a/include/linux/ptrace.h
 +++ b/include/linux/ptrace.h
-@@ -99,7 +99,7 @@
+@@ -79,7 +79,7 @@
  #include <linux/compiler.h>		/* For unlikely.  */
  #include <linux/sched.h>		/* For struct task_struct.  */
  
@@ -33,10 +33,10 @@ index 0d84f1e..102cb0f 100644
  extern int ptrace_traceme(void);
  extern int ptrace_readdata(struct task_struct *tsk, unsigned long src, char __user *dst, int len);
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 8bbb631..0cf7a15 100644  
+index 8a0185e..30a118d 100644  
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
-@@ -71,6 +71,7 @@ obj-$(CONFIG_RESOURCE_COUNTERS) += res_c
+@@ -70,6 +70,7 @@ obj-$(CONFIG_RESOURCE_COUNTERS) += res_c
  obj-$(CONFIG_STOP_MACHINE) += stop_machine.o
  obj-$(CONFIG_KPROBES_SANITY_TEST) += test_kprobes.o
  obj-$(CONFIG_UTRACE) += utrace.o
@@ -46,10 +46,10 @@ index 8bbb631..0cf7a15 100644
  obj-$(CONFIG_GCOV_KERNEL) += gcov/
 diff --git a/kernel/ptrace-utrace.c b/kernel/ptrace-utrace.c
 new file mode 100644
-index ...86234ee 100644  
+index ...ea419ee 100644  
 --- /dev/null
 +++ b/kernel/ptrace-utrace.c
-@@ -0,0 +1,1127 @@
+@@ -0,0 +1,1080 @@
 +/*
 + * linux/kernel/ptrace.c
 + *
@@ -999,9 +999,6 @@ index ...86234ee 100644
 +	return 0;
 +}
 +
-+extern int ptrace_regset(struct task_struct *task, int req, unsigned int type,
-+			 struct iovec *kiov);
-+
 +int ptrace_request(struct task_struct *child, long request,
 +		   long addr, long data)
 +{
@@ -1060,25 +1057,6 @@ index ...86234ee 100644
 +			ptrace_resume(child, engine, PTRACE_CONT, SIGKILL);
 +		ret = 0;
 +		break;
-+
-+	case PTRACE_GETREGSET:
-+	case PTRACE_SETREGSET:
-+	{
-+		struct iovec kiov;
-+		struct iovec __user *uiov = (struct iovec __user *) data;
-+
-+		if (!access_ok(VERIFY_WRITE, uiov, sizeof(*uiov)))
-+			return -EFAULT;
-+
-+		if (__get_user(kiov.iov_base, &uiov->iov_base) ||
-+		    __get_user(kiov.iov_len, &uiov->iov_len))
-+			return -EFAULT;
-+
-+		ret = ptrace_regset(child, request, addr, &kiov);
-+		if (!ret)
-+			ret = __put_user(kiov.iov_len, &uiov->iov_len);
-+		break;
-+	}
 +
 +	default:
 +		ret = ptrace_resume(child, engine, request, data);
@@ -1144,31 +1122,6 @@ index ...86234ee 100644
 +						&siginfo, true);
 +		break;
 +
-+	case PTRACE_GETREGSET:
-+	case PTRACE_SETREGSET:
-+	{
-+		struct iovec kiov;
-+		struct compat_iovec __user *uiov =
-+			(struct compat_iovec __user *) datap;
-+		compat_uptr_t ptr;
-+		compat_size_t len;
-+
-+		if (!access_ok(VERIFY_WRITE, uiov, sizeof(*uiov)))
-+			return -EFAULT;
-+
-+		if (__get_user(ptr, &uiov->iov_base) ||
-+		    __get_user(len, &uiov->iov_len))
-+			return -EFAULT;
-+
-+		kiov.iov_base = compat_ptr(ptr);
-+		kiov.iov_len = len;
-+
-+		ret = ptrace_regset(child, request, addr, &kiov);
-+		if (!ret)
-+			ret = __put_user(kiov.iov_len, &uiov->iov_len);
-+		break;
-+	}
-+
 +	default:
 +		ret = ptrace_request(child, request, addr, data);
 +	}
@@ -1178,7 +1131,7 @@ index ...86234ee 100644
 +}
 +#endif	/* CONFIG_COMPAT */
 diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-index 0ad4dc0..448b353 100644  
+index a408bf7..4e87441 100644  
 --- a/kernel/ptrace.c
 +++ b/kernel/ptrace.c
 @@ -16,7 +16,6 @@
@@ -1189,9 +1142,9 @@ index 0ad4dc0..448b353 100644
  #include <linux/security.h>
  #include <linux/signal.h>
  #include <linux/audit.h>
-@@ -25,7 +24,327 @@
+@@ -24,7 +23,286 @@
+ #include <linux/syscalls.h>
  #include <linux/uaccess.h>
- #include <linux/regset.h>
  
 +int __ptrace_may_access(struct task_struct *task, unsigned int mode)
 +{
@@ -1341,47 +1294,6 @@ index 0ad4dc0..448b353 100644
 +	return copied;
 +}
 +
-+#ifdef CONFIG_HAVE_ARCH_TRACEHOOK
-+
-+static const struct user_regset *
-+find_regset(const struct user_regset_view *view, unsigned int type)
-+{
-+	const struct user_regset *regset;
-+	int n;
-+
-+	for (n = 0; n < view->n; ++n) {
-+		regset = view->regsets + n;
-+		if (regset->core_note_type == type)
-+			return regset;
-+	}
-+
-+	return NULL;
-+}
-+
-+int ptrace_regset(struct task_struct *task, int req, unsigned int type,
-+		  struct iovec *kiov)
-+{
-+	const struct user_regset_view *view = task_user_regset_view(task);
-+	const struct user_regset *regset = find_regset(view, type);
-+	int regset_no;
-+
-+	if (!regset || (kiov->iov_len % regset->size) != 0)
-+		return -EINVAL;
-+
-+	regset_no = regset - view->regsets;
-+	kiov->iov_len = min(kiov->iov_len,
-+			    (__kernel_size_t) (regset->n * regset->size));
-+
-+	if (req == PTRACE_GETREGSET)
-+		return copy_regset_to_user(task, view, regset_no, 0,
-+					   kiov->iov_len, kiov->iov_base);
-+	else
-+		return copy_regset_from_user(task, view, regset_no, 0,
-+					     kiov->iov_len, kiov->iov_base);
-+}
-+
-+#endif
-+
 +static struct task_struct *ptrace_get_task_struct(pid_t pid)
 +{
 +	struct task_struct *child;
@@ -1400,7 +1312,7 @@ index 0ad4dc0..448b353 100644
 +#ifndef arch_ptrace_attach
 +#define arch_ptrace_attach(child)	do { } while (0)
 +#endif
-+
+ 
 +SYSCALL_DEFINE4(ptrace, long, request, long, pid, long, addr, long, data)
 +{
 +	struct task_struct *child;
@@ -1446,7 +1358,7 @@ index 0ad4dc0..448b353 100644
 +	unlock_kernel();
 +	return ret;
 +}
- 
++
 +int generic_ptrace_peekdata(struct task_struct *tsk, long addr, long data)
 +{
 +	unsigned long tmp;
@@ -1517,10 +1429,27 @@ index 0ad4dc0..448b353 100644
  /*
   * ptrace a task: make the debugger its new parent and
   * move it to the ptrace list.
-@@ -119,61 +438,6 @@ int ptrace_check_attach(struct task_stru
- 	return ret;
- }
- 
+@@ -101,76 +379,21 @@ int ptrace_check_attach(struct task_stru
+ 		/*
+ 		 * child->sighand can't be NULL, release_task()
+ 		 * does ptrace_unlink() before __exit_signal().
+-		 */
+-		spin_lock_irq(&child->sighand->siglock);
+-		if (task_is_stopped(child))
+-			child->state = TASK_TRACED;
+-		else if (!task_is_traced(child) && !kill)
+-			ret = -ESRCH;
+-		spin_unlock_irq(&child->sighand->siglock);
+-	}
+-	read_unlock(&tasklist_lock);
+-
+-	if (!ret && !kill)
+-		ret = wait_task_inactive(child, TASK_TRACED) ? 0 : -ESRCH;
+-
+-	/* All systems go.. */
+-	return ret;
+-}
+-
 -int __ptrace_may_access(struct task_struct *task, unsigned int mode)
 -{
 -	const struct cred *cred = current_cred(), *tcred;
@@ -1558,7 +1487,16 @@ index 0ad4dc0..448b353 100644
 -
 -	return security_ptrace_access_check(task, mode);
 -}
--
++		 */
++		spin_lock_irq(&child->sighand->siglock);
++		if (task_is_stopped(child))
++			child->state = TASK_TRACED;
++		else if (!task_is_traced(child) && !kill)
++			ret = -ESRCH;
++		spin_unlock_irq(&child->sighand->siglock);
++	}
++	read_unlock(&tasklist_lock);
+ 
 -bool ptrace_may_access(struct task_struct *task, unsigned int mode)
 -{
 -	int err;
@@ -1567,19 +1505,21 @@ index 0ad4dc0..448b353 100644
 -	task_unlock(task);
 -	return !err;
 -}
--
++	if (!ret && !kill)
++		ret = wait_task_inactive(child, TASK_TRACED) ? 0 : -ESRCH;
+ 
 -/*
 - * For experimental use of utrace, exclude ptrace on the same task.
 - */
 -static inline bool exclude_ptrace(struct task_struct *task)
 -{
 -	return unlikely(!!task_utrace_flags(task));
--}
--
++	/* All systems go.. */
++	return ret;
+ }
+ 
  int ptrace_attach(struct task_struct *task)
- {
- 	int retval;
-@@ -197,8 +461,6 @@ int ptrace_attach(struct task_struct *ta
+@@ -196,8 +419,6 @@ int ptrace_attach(struct task_struct *ta
  
  	task_lock(task);
  	retval = __ptrace_may_access(task, PTRACE_MODE_ATTACH);
@@ -1588,42 +1528,20 @@ index 0ad4dc0..448b353 100644
  	task_unlock(task);
  	if (retval)
  		goto unlock_creds;
-@@ -226,87 +488,33 @@ out:
- 	return retval;
- }
+@@ -235,9 +456,6 @@ int ptrace_traceme(void)
+ {
+ 	int ret = -EPERM;
  
--/**
-- * ptrace_traceme  --  helper for PTRACE_TRACEME
-- *
-- * Performs checks and sets PT_PTRACED.
-- * Should be used by all ptrace implementations for PTRACE_TRACEME.
-- */
--int ptrace_traceme(void)
--{
--	int ret = -EPERM;
--
 -	if (exclude_ptrace(current)) /* XXX locking */
 -		return -EBUSY;
 -
--	write_lock_irq(&tasklist_lock);
--	/* Are we already being traced? */
--	if (!current->ptrace) {
--		ret = security_ptrace_traceme(current->parent);
--		/*
--		 * Check PF_EXITING to ensure ->real_parent has not passed
--		 * exit_ptrace(). Otherwise we don't report the error but
--		 * pretend ->real_parent untraces us right after return.
--		 */
--		if (!ret && !(current->real_parent->flags & PF_EXITING)) {
--			current->ptrace = PT_PTRACED;
--			__ptrace_link(current, current->real_parent);
--		}
--	}
--	write_unlock_irq(&tasklist_lock);
--
--	return ret;
--}
--
+ 	write_lock_irq(&tasklist_lock);
+ 	/* Are we already being traced? */
+ 	if (!current->ptrace) {
+@@ -257,57 +475,6 @@ int ptrace_traceme(void)
+ 	return ret;
+ }
+ 
 -/*
 - * Called with irqs disabled, returns true if childs should reap themselves.
 - */
@@ -1651,18 +1569,11 @@ index 0ad4dc0..448b353 100644
 - * children self-reap, then this child was prevented by ptrace and we must
 - * reap it now, in that case we must also wake up sub-threads sleeping in
 - * do_wait().
-+/**
-+ * ptrace_traceme  --  helper for PTRACE_TRACEME
-+ *
-+ * Performs checks and sets PT_PTRACED.
-+ * Should be used by all ptrace implementations for PTRACE_TRACEME.
-  */
+- */
 -bool __ptrace_detach(struct task_struct *tracer, struct task_struct *p)
-+int ptrace_traceme(void)
- {
+-{
 -	__ptrace_unlink(p);
-+	int ret = -EPERM;
- 
+-
 -	if (p->exit_state == EXIT_ZOMBIE) {
 -		if (!task_detached(p) && thread_group_empty(p)) {
 -			if (!same_thread_group(p->real_parent, tracer))
@@ -1676,28 +1587,16 @@ index 0ad4dc0..448b353 100644
 -			/* Mark it as in the process of being reaped. */
 -			p->exit_state = EXIT_DEAD;
 -			return true;
-+	write_lock_irq(&tasklist_lock);
-+	/* Are we already being traced? */
-+	if (!current->ptrace) {
-+		ret = security_ptrace_traceme(current->parent);
-+		/*
-+		 * Check PF_EXITING to ensure ->real_parent has not passed
-+		 * exit_ptrace(). Otherwise we don't report the error but
-+		 * pretend ->real_parent untraces us right after return.
-+		 */
-+		if (!ret && !(current->real_parent->flags & PF_EXITING)) {
-+			current->ptrace = PT_PTRACED;
-+			__ptrace_link(current, current->real_parent);
- 		}
- 	}
-+	write_unlock_irq(&tasklist_lock);
- 
+-		}
+-	}
+-
 -	return false;
-+	return ret;
- }
- 
+-}
+-
  int ptrace_detach(struct task_struct *child, unsigned int data)
-@@ -362,56 +570,6 @@ void exit_ptrace(struct task_struct *tra
+ {
+ 	bool dead = false;
+@@ -361,56 +528,6 @@ void exit_ptrace(struct task_struct *tra
  	}
  }
  
@@ -1754,55 +1653,7 @@ index 0ad4dc0..448b353 100644
  static int ptrace_setoptions(struct task_struct *child, long data)
  {
  	child->ptrace &= ~PT_TRACE_MASK;
-@@ -526,47 +683,6 @@ static int ptrace_resume(struct task_str
- 	return 0;
- }
- 
--#ifdef CONFIG_HAVE_ARCH_TRACEHOOK
--
--static const struct user_regset *
--find_regset(const struct user_regset_view *view, unsigned int type)
--{
--	const struct user_regset *regset;
--	int n;
--
--	for (n = 0; n < view->n; ++n) {
--		regset = view->regsets + n;
--		if (regset->core_note_type == type)
--			return regset;
--	}
--
--	return NULL;
--}
--
--static int ptrace_regset(struct task_struct *task, int req, unsigned int type,
--			 struct iovec *kiov)
--{
--	const struct user_regset_view *view = task_user_regset_view(task);
--	const struct user_regset *regset = find_regset(view, type);
--	int regset_no;
--
--	if (!regset || (kiov->iov_len % regset->size) != 0)
--		return -EINVAL;
--
--	regset_no = regset - view->regsets;
--	kiov->iov_len = min(kiov->iov_len,
--			    (__kernel_size_t) (regset->n * regset->size));
--
--	if (req == PTRACE_GETREGSET)
--		return copy_regset_to_user(task, view, regset_no, 0,
--					   kiov->iov_len, kiov->iov_base);
--	else
--		return copy_regset_from_user(task, view, regset_no, 0,
--					     kiov->iov_len, kiov->iov_base);
--}
--
--#endif
--
- int ptrace_request(struct task_struct *child, long request,
- 		   long addr, long data)
- {
-@@ -656,93 +772,7 @@ int ptrace_request(struct task_struct *c
+@@ -594,93 +710,7 @@ int ptrace_request(struct task_struct *c
  	return ret;
  }
  
@@ -1896,7 +1747,7 @@ index 0ad4dc0..448b353 100644
  int compat_ptrace_request(struct task_struct *child, compat_long_t request,
  			  compat_ulong_t addr, compat_ulong_t data)
  {
-@@ -820,47 +850,5 @@ int compat_ptrace_request(struct task_st
+@@ -732,47 +762,5 @@ int compat_ptrace_request(struct task_st
  
  	return ret;
  }

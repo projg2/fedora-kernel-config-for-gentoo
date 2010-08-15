@@ -1,1044 +1,63 @@
-From 468f0b44ce4b002ca7d9260f802a341854752c02 Mon Sep 17 00:00:00 2001
-From: Chris Wilson <chris@chris-wilson.co.uk>
-Date: Thu, 27 May 2010 13:18:13 +0100
-Subject: drm/i915: Hold the spinlock whilst resetting unpin_work along error path
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From 5ce8ba7c9279a63f99e1f131602580472b8af968 Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Thu, 15 Apr 2010 14:03:30 -0400
+Subject: drm/i915: Fix 82854 PCI ID, and treat it like other 85X
 
-From: Chris Wilson <chris@chris-wilson.co.uk>
+From: Adam Jackson <ajax@redhat.com>
 
-commit 468f0b44ce4b002ca7d9260f802a341854752c02 upstream.
+commit 5ce8ba7c9279a63f99e1f131602580472b8af968 upstream.
 
-Delay taking the mutex until we need to and ensure that we hold the
-spinlock when resetting unpin_work on the error path. Also defer the
-debugging print messages until after we have released the spinlock.
+pci.ids and the datasheet both say it's 358e, not 35e8.
 
-Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: Jesse Barnes <jbarnes@virtuousgeek.org>
-Cc: Kristian Høgsberg <krh@bitplanet.net>
-Reviewed-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+Signed-off-by: Adam Jackson <ajax@redhat.com>
 Signed-off-by: Eric Anholt <eric@anholt.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 
 ---
- drivers/gpu/drm/i915/intel_display.c |   20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
-
---- a/drivers/gpu/drm/i915/intel_display.c
-+++ b/drivers/gpu/drm/i915/intel_display.c
-@@ -4239,8 +4239,6 @@ static int intel_crtc_page_flip(struct d
- 	if (work == NULL)
- 		return -ENOMEM;
- 
--	mutex_lock(&dev->struct_mutex);
--
- 	work->event = event;
- 	work->dev = crtc->dev;
- 	intel_fb = to_intel_framebuffer(crtc->fb);
-@@ -4250,10 +4248,10 @@ static int intel_crtc_page_flip(struct d
- 	/* We borrow the event spin lock for protecting unpin_work */
- 	spin_lock_irqsave(&dev->event_lock, flags);
- 	if (intel_crtc->unpin_work) {
--		DRM_DEBUG_DRIVER("flip queue: crtc already busy\n");
- 		spin_unlock_irqrestore(&dev->event_lock, flags);
- 		kfree(work);
--		mutex_unlock(&dev->struct_mutex);
-+
-+		DRM_DEBUG_DRIVER("flip queue: crtc already busy\n");
- 		return -EBUSY;
- 	}
- 	intel_crtc->unpin_work = work;
-@@ -4262,13 +4260,19 @@ static int intel_crtc_page_flip(struct d
- 	intel_fb = to_intel_framebuffer(fb);
- 	obj = intel_fb->obj;
- 
-+	mutex_lock(&dev->struct_mutex);
- 	ret = intel_pin_and_fence_fb_obj(dev, obj);
- 	if (ret != 0) {
--		DRM_DEBUG_DRIVER("flip queue: %p pin & fence failed\n",
--			  to_intel_bo(obj));
--		kfree(work);
--		intel_crtc->unpin_work = NULL;
- 		mutex_unlock(&dev->struct_mutex);
-+
-+		spin_lock_irqsave(&dev->event_lock, flags);
-+		intel_crtc->unpin_work = NULL;
-+		spin_unlock_irqrestore(&dev->event_lock, flags);
-+
-+		kfree(work);
-+
-+		DRM_DEBUG_DRIVER("flip queue: %p pin & fence failed\n",
-+				 to_intel_bo(obj));
- 		return ret;
- 	}
- 
-From f953c9353f5fe6e98fa7f32f51060a74d845b5f8 Mon Sep 17 00:00:00 2001
-From: Daniel J Blueman <daniel.blueman@gmail.com>
-Date: Mon, 17 May 2010 14:23:52 +0100
-Subject: i915: fix lock imbalance on error path...
-
-From: Daniel J Blueman <daniel.blueman@gmail.com>
-
-commit f953c9353f5fe6e98fa7f32f51060a74d845b5f8 upstream.
-
-While investigating Intel i5 Arrandale GPU lockups with -rc4, I
-noticed a lock imbalance.
-
-Signed-off-by: Daniel J Blueman <daniel.blueman@gmail.com>
-Signed-off-by: Eric Anholt <eric@anholt.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
----
- drivers/gpu/drm/i915/i915_drv.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/i915/i915_drv.c |    5 +++--
+ drivers/gpu/drm/i915/i915_drv.h |    3 ++-
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
-@@ -341,6 +341,7 @@ int i965_reset(struct drm_device *dev, u
- 		}
- 	} else {
- 		DRM_ERROR("Error occurred. Don't know how to reset this chip.\n");
-+		mutex_unlock(&dev->struct_mutex);
- 		return -ENODEV;
- 	}
- 
-From 6fd024893911dcb51b4a0aa71971db5ba38f7071 Mon Sep 17 00:00:00 2001
-From: Ben Hutchings <ben@decadent.org.uk>
-Date: Wed, 24 Mar 2010 03:36:31 +0000
-Subject: amd64-agp: Probe unknown AGP devices the right way
-
-From: Ben Hutchings <ben@decadent.org.uk>
-
-commit 6fd024893911dcb51b4a0aa71971db5ba38f7071 upstream.
-
-The current initialisation code probes 'unsupported' AGP devices
-simply by calling its own probe function.  It does not lock these
-devices or even check whether another driver is already bound to
-them.
-
-We must use the device core to manage this.  So if the specific
-device id table didn't match anything and agp_try_unsupported=1,
-switch the device id table and call driver_attach() again.
-
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Dave Airlie <airlied@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
----
- drivers/char/agp/amd64-agp.c |   27 +++++++++++++++------------
- 1 file changed, 15 insertions(+), 12 deletions(-)
-
---- a/drivers/char/agp/amd64-agp.c
-+++ b/drivers/char/agp/amd64-agp.c
-@@ -499,6 +499,10 @@ static int __devinit agp_amd64_probe(str
- 	u8 cap_ptr;
- 	int err;
- 
-+	/* The Highlander principle */
-+	if (agp_bridges_found)
-+		return -ENODEV;
-+
- 	cap_ptr = pci_find_capability(pdev, PCI_CAP_ID_AGP);
- 	if (!cap_ptr)
- 		return -ENODEV;
-@@ -562,6 +566,8 @@ static void __devexit agp_amd64_remove(s
- 			   amd64_aperture_sizes[bridge->aperture_size_idx].size);
- 	agp_remove_bridge(bridge);
- 	agp_put_bridge(bridge);
-+
-+	agp_bridges_found--;
- }
- 
- #ifdef CONFIG_PM
-@@ -709,6 +715,11 @@ static struct pci_device_id agp_amd64_pc
- 
- MODULE_DEVICE_TABLE(pci, agp_amd64_pci_table);
- 
-+static DEFINE_PCI_DEVICE_TABLE(agp_amd64_pci_promisc_table) = {
-+	{ PCI_DEVICE_CLASS(0, 0) },
-+	{ }
-+};
-+
- static struct pci_driver agp_amd64_pci_driver = {
- 	.name		= "agpgart-amd64",
- 	.id_table	= agp_amd64_pci_table,
-@@ -734,7 +745,6 @@ int __init agp_amd64_init(void)
- 		return err;
- 
- 	if (agp_bridges_found == 0) {
--		struct pci_dev *dev;
- 		if (!agp_try_unsupported && !agp_try_unsupported_boot) {
- 			printk(KERN_INFO PFX "No supported AGP bridge found.\n");
- #ifdef MODULE
-@@ -750,17 +760,10 @@ int __init agp_amd64_init(void)
- 			return -ENODEV;
- 
- 		/* Look for any AGP bridge */
--		dev = NULL;
--		err = -ENODEV;
--		for_each_pci_dev(dev) {
--			if (!pci_find_capability(dev, PCI_CAP_ID_AGP))
--				continue;
--			/* Only one bridge supported right now */
--			if (agp_amd64_probe(dev, NULL) == 0) {
--				err = 0;
--				break;
--			}
--		}
-+		agp_amd64_pci_driver.id_table = agp_amd64_pci_promisc_table;
-+		err = driver_attach(&agp_amd64_pci_driver.driver);
-+		if (err == 0 && agp_bridges_found == 0)
-+			err = -ENODEV;
- 	}
- 	return err;
- }
-From c05556421742eb47f80301767653a4bcb19de9de Mon Sep 17 00:00:00 2001
-From: Ian Munsie <imunsie@au.ibm.com>
-Date: Tue, 13 Apr 2010 18:37:33 +1000
-Subject: perf: Fix endianness argument compatibility with OPT_BOOLEAN() and introduce OPT_INCR()
-
-From: Ian Munsie <imunsie@au.ibm.com>
-
-commit c05556421742eb47f80301767653a4bcb19de9de upstream.
-
-Parsing an option from the command line with OPT_BOOLEAN on a
-bool data type would not work on a big-endian machine due to the
-manner in which the boolean was being cast into an int and
-incremented. For example, running 'perf probe --list' on a
-PowerPC machine would fail to properly set the list_events bool
-and would therefore print out the usage information and
-terminate.
-
-This patch makes OPT_BOOLEAN work as expected with a bool
-datatype. For cases where the original OPT_BOOLEAN was
-intentionally being used to increment an int each time it was
-passed in on the command line, this patch introduces OPT_INCR
-with the old behaviour of OPT_BOOLEAN (the verbose variable is
-currently the only such example of this).
-
-I have reviewed every use of OPT_BOOLEAN to verify that a true
-C99 bool was passed. Where integers were used, I verified that
-they were only being used for boolean logic and changed them to
-bools to ensure that they would not be mistakenly used as ints.
-The major exception was the verbose variable which now uses
-OPT_INCR instead of OPT_BOOLEAN.
-
-Signed-off-by: Ian Munsie <imunsie@au.ibm.com>
-Acked-by: David S. Miller <davem@davemloft.net>
-Cc: <stable@kernel.org>
-Cc: Git development list <git@vger.kernel.org>
-Cc: Ian Munsie <imunsie@au1.ibm.com>
-Cc: Peter Zijlstra <a.p.zijlstra@chello.nl>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
-Cc: KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
-Cc: Hitoshi Mitake <mitake@dcl.info.waseda.ac.jp>
-Cc: Rusty Russell <rusty@rustcorp.com.au>
-Cc: Frederic Weisbecker <fweisbec@gmail.com>
-Cc: Eric B Munson <ebmunson@us.ibm.com>
-Cc: Valdis.Kletnieks@vt.edu
-Cc: WANG Cong <amwang@redhat.com>
-Cc: Thiago Farina <tfransosi@gmail.com>
-Cc: Masami Hiramatsu <mhiramat@redhat.com>
-Cc: Xiao Guangrong <xiaoguangrong@cn.fujitsu.com>
-Cc: Jaswinder Singh Rajput <jaswinderrajput@gmail.com>
-Cc: Arjan van de Ven <arjan@linux.intel.com>
-Cc: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-Cc: Mike Galbraith <efault@gmx.de>
-Cc: Tom Zanussi <tzanussi@gmail.com>
-Cc: Anton Blanchard <anton@samba.org>
-Cc: John Kacur <jkacur@redhat.com>
-Cc: Li Zefan <lizf@cn.fujitsu.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-LKML-Reference: <1271147857-11604-1-git-send-email-imunsie@au.ibm.com>
-Signed-off-by: Ingo Molnar <mingo@elte.hu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
----
- tools/perf/bench/mem-memcpy.c       |    2 +-
- tools/perf/bench/sched-messaging.c  |    4 ++--
- tools/perf/builtin-annotate.c       |    8 ++++----
- tools/perf/builtin-buildid-cache.c  |    2 +-
- tools/perf/builtin-buildid-list.c   |    4 ++--
- tools/perf/builtin-diff.c           |    4 ++--
- tools/perf/builtin-help.c           |    2 +-
- tools/perf/builtin-lock.c           |    2 +-
- tools/perf/builtin-probe.c          |    2 +-
- tools/perf/builtin-record.c         |   24 ++++++++++++------------
- tools/perf/builtin-report.c         |    6 +++---
- tools/perf/builtin-sched.c          |    6 +++---
- tools/perf/builtin-stat.c           |   10 +++++-----
- tools/perf/builtin-timechart.c      |    2 +-
- tools/perf/builtin-top.c            |   14 +++++++-------
- tools/perf/builtin-trace.c          |    2 +-
- tools/perf/util/debug.c             |    2 +-
- tools/perf/util/debug.h             |    3 ++-
- tools/perf/util/parse-options.c     |    6 ++++++
- tools/perf/util/parse-options.h     |    4 +++-
- tools/perf/util/trace-event-parse.c |    2 +-
- tools/perf/util/trace-event.h       |    3 ++-
- 22 files changed, 62 insertions(+), 52 deletions(-)
-
---- a/tools/perf/bench/mem-memcpy.c
-+++ b/tools/perf/bench/mem-memcpy.c
-@@ -24,7 +24,7 @@
- 
- static const char	*length_str	= "1MB";
- static const char	*routine	= "default";
--static int		use_clock	= 0;
-+static bool		use_clock	= false;
- static int		clock_fd;
- 
- static const struct option options[] = {
---- a/tools/perf/bench/sched-messaging.c
-+++ b/tools/perf/bench/sched-messaging.c
-@@ -31,9 +31,9 @@
- 
- #define DATASIZE 100
- 
--static int use_pipes = 0;
-+static bool use_pipes = false;
- static unsigned int loops = 100;
--static unsigned int thread_mode = 0;
-+static bool thread_mode = false;
- static unsigned int num_groups = 10;
- 
- struct sender_context {
---- a/tools/perf/builtin-annotate.c
-+++ b/tools/perf/builtin-annotate.c
-@@ -29,11 +29,11 @@
- 
- static char		const *input_name = "perf.data";
- 
--static int		force;
-+static bool		force;
- 
--static int		full_paths;
-+static bool		full_paths;
- 
--static int		print_line;
-+static bool		print_line;
- 
- struct sym_hist {
- 	u64		sum;
-@@ -584,7 +584,7 @@ static const struct option options[] = {
- 	OPT_STRING('s', "symbol", &sym_hist_filter, "symbol",
- 		    "symbol to annotate"),
- 	OPT_BOOLEAN('f', "force", &force, "don't complain, do it"),
--	OPT_BOOLEAN('v', "verbose", &verbose,
-+	OPT_INCR('v', "verbose", &verbose,
- 		    "be more verbose (show symbol address, etc)"),
- 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
- 		    "dump raw trace in ASCII"),
---- a/tools/perf/builtin-buildid-cache.c
-+++ b/tools/perf/builtin-buildid-cache.c
-@@ -27,7 +27,7 @@ static const struct option buildid_cache
- 		   "file list", "file(s) to add"),
- 	OPT_STRING('r', "remove", &remove_name_list_str, "file list",
- 		    "file(s) to remove"),
--	OPT_BOOLEAN('v', "verbose", &verbose, "be more verbose"),
-+	OPT_INCR('v', "verbose", &verbose, "be more verbose"),
- 	OPT_END()
+@@ -68,7 +68,8 @@ const static struct intel_device_info in
  };
  
---- a/tools/perf/builtin-buildid-list.c
-+++ b/tools/perf/builtin-buildid-list.c
-@@ -16,7 +16,7 @@
- #include "util/symbol.h"
- 
- static char const *input_name = "perf.data";
--static int force;
-+static bool force;
- static bool with_hits;
- 
- static const char * const buildid_list_usage[] = {
-@@ -29,7 +29,7 @@ static const struct option options[] = {
- 	OPT_STRING('i', "input", &input_name, "file",
- 		    "input file name"),
- 	OPT_BOOLEAN('f', "force", &force, "don't complain, do it"),
--	OPT_BOOLEAN('v', "verbose", &verbose,
-+	OPT_INCR('v', "verbose", &verbose,
- 		    "be more verbose"),
- 	OPT_END()
- };
---- a/tools/perf/builtin-diff.c
-+++ b/tools/perf/builtin-diff.c
-@@ -19,7 +19,7 @@
- static char const *input_old = "perf.data.old",
- 		  *input_new = "perf.data";
- static char	  diff__default_sort_order[] = "dso,symbol";
--static int  force;
-+static bool  force;
- static bool show_displacement;
- 
- static int perf_session__add_hist_entry(struct perf_session *self,
-@@ -188,7 +188,7 @@ static const char * const diff_usage[] =
+ const static struct intel_device_info intel_i85x_info = {
+-	.is_i8xx = 1, .is_mobile = 1, .cursor_needs_physical = 1,
++	.is_i8xx = 1, .is_i85x = 1, .is_mobile = 1,
++	.cursor_needs_physical = 1,
  };
  
- static const struct option options[] = {
--	OPT_BOOLEAN('v', "verbose", &verbose,
-+	OPT_INCR('v', "verbose", &verbose,
- 		    "be more verbose (show symbol address, etc)"),
- 	OPT_BOOLEAN('m', "displacement", &show_displacement,
- 		    "Show position displacement relative to baseline"),
---- a/tools/perf/builtin-help.c
-+++ b/tools/perf/builtin-help.c
-@@ -29,7 +29,7 @@ enum help_format {
- 	HELP_FORMAT_WEB,
- };
+ const static struct intel_device_info intel_i865g_info = {
+@@ -140,7 +141,7 @@ const static struct pci_device_id pciidl
+ 	INTEL_VGA_DEVICE(0x3577, &intel_i830_info),
+ 	INTEL_VGA_DEVICE(0x2562, &intel_845g_info),
+ 	INTEL_VGA_DEVICE(0x3582, &intel_i85x_info),
+-	INTEL_VGA_DEVICE(0x35e8, &intel_i85x_info),
++	INTEL_VGA_DEVICE(0x358e, &intel_i85x_info),
+ 	INTEL_VGA_DEVICE(0x2572, &intel_i865g_info),
+ 	INTEL_VGA_DEVICE(0x2582, &intel_i915g_info),
+ 	INTEL_VGA_DEVICE(0x258a, &intel_i915g_info),
+--- a/drivers/gpu/drm/i915/i915_drv.h
++++ b/drivers/gpu/drm/i915/i915_drv.h
+@@ -175,6 +175,7 @@ struct intel_overlay;
+ struct intel_device_info {
+ 	u8 is_mobile : 1;
+ 	u8 is_i8xx : 1;
++	u8 is_i85x : 1;
+ 	u8 is_i915g : 1;
+ 	u8 is_i9xx : 1;
+ 	u8 is_i945gm : 1;
+@@ -1027,7 +1028,7 @@ extern int i915_wait_ring(struct drm_dev
  
--static int show_all = 0;
-+static bool show_all = false;
- static enum help_format help_format = HELP_FORMAT_MAN;
- static struct option builtin_help_options[] = {
- 	OPT_BOOLEAN('a', "all", &show_all, "print all available commands"),
---- a/tools/perf/builtin-lock.c
-+++ b/tools/perf/builtin-lock.c
-@@ -744,7 +744,7 @@ static const char * const lock_usage[] =
- 
- static const struct option lock_options[] = {
- 	OPT_STRING('i', "input", &input_name, "file", "input file name"),
--	OPT_BOOLEAN('v', "verbose", &verbose, "be more verbose (show symbol address, etc)"),
-+	OPT_INCR('v', "verbose", &verbose, "be more verbose (show symbol address, etc)"),
- 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace, "dump raw trace in ASCII"),
- 	OPT_END()
- };
---- a/tools/perf/builtin-probe.c
-+++ b/tools/perf/builtin-probe.c
-@@ -162,7 +162,7 @@ static const char * const probe_usage[]
- };
- 
- static const struct option options[] = {
--	OPT_BOOLEAN('v', "verbose", &verbose,
-+	OPT_INCR('v', "verbose", &verbose,
- 		    "be more verbose (show parsed arguments, etc)"),
- #ifndef NO_DWARF_SUPPORT
- 	OPT_STRING('k', "vmlinux", &symbol_conf.vmlinux_name,
---- a/tools/perf/builtin-record.c
-+++ b/tools/perf/builtin-record.c
-@@ -39,19 +39,19 @@ static int			output;
- static const char		*output_name			= "perf.data";
- static int			group				=      0;
- static unsigned int		realtime_prio			=      0;
--static int			raw_samples			=      0;
--static int			system_wide			=      0;
-+static bool			raw_samples			=  false;
-+static bool			system_wide			=  false;
- static int			profile_cpu			=     -1;
- static pid_t			target_pid			=     -1;
- static pid_t			child_pid			=     -1;
--static int			inherit				=      1;
--static int			force				=      0;
--static int			append_file			=      0;
--static int			call_graph			=      0;
--static int			inherit_stat			=      0;
--static int			no_samples			=      0;
--static int			sample_address			=      0;
--static int			multiplex			=      0;
-+static bool			inherit				=   true;
-+static bool			force				=  false;
-+static bool			append_file			=  false;
-+static bool			call_graph			=  false;
-+static bool			inherit_stat			=  false;
-+static bool			no_samples			=  false;
-+static bool			sample_address			=  false;
-+static bool			multiplex			=  false;
- static int			multiplex_fd			=     -1;
- 
- static long			samples				=      0;
-@@ -451,7 +451,7 @@ static int __cmd_record(int argc, const
- 			rename(output_name, oldname);
- 		}
- 	} else {
--		append_file = 0;
-+		append_file = false;
- 	}
- 
- 	flags = O_CREAT|O_RDWR;
-@@ -676,7 +676,7 @@ static const struct option options[] = {
- 		    "number of mmap data pages"),
- 	OPT_BOOLEAN('g', "call-graph", &call_graph,
- 		    "do call-graph (stack chain/backtrace) recording"),
--	OPT_BOOLEAN('v', "verbose", &verbose,
-+	OPT_INCR('v', "verbose", &verbose,
- 		    "be more verbose (show counter open errors, etc)"),
- 	OPT_BOOLEAN('s', "stat", &inherit_stat,
- 		    "per thread counts"),
---- a/tools/perf/builtin-report.c
-+++ b/tools/perf/builtin-report.c
-@@ -33,11 +33,11 @@
- 
- static char		const *input_name = "perf.data";
- 
--static int		force;
-+static bool		force;
- static bool		hide_unresolved;
- static bool		dont_use_callchains;
- 
--static int		show_threads;
-+static bool		show_threads;
- static struct perf_read_values	show_threads_values;
- 
- static char		default_pretty_printing_style[] = "normal";
-@@ -400,7 +400,7 @@ static const char * const report_usage[]
- static const struct option options[] = {
- 	OPT_STRING('i', "input", &input_name, "file",
- 		    "input file name"),
--	OPT_BOOLEAN('v', "verbose", &verbose,
-+	OPT_INCR('v', "verbose", &verbose,
- 		    "be more verbose (show symbol address, etc)"),
- 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
- 		    "dump raw trace in ASCII"),
---- a/tools/perf/builtin-sched.c
-+++ b/tools/perf/builtin-sched.c
-@@ -1790,7 +1790,7 @@ static const char * const sched_usage[]
- static const struct option sched_options[] = {
- 	OPT_STRING('i', "input", &input_name, "file",
- 		    "input file name"),
--	OPT_BOOLEAN('v', "verbose", &verbose,
-+	OPT_INCR('v', "verbose", &verbose,
- 		    "be more verbose (show symbol address, etc)"),
- 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
- 		    "dump raw trace in ASCII"),
-@@ -1805,7 +1805,7 @@ static const char * const latency_usage[
- static const struct option latency_options[] = {
- 	OPT_STRING('s', "sort", &sort_order, "key[,key2...]",
- 		   "sort by key(s): runtime, switch, avg, max"),
--	OPT_BOOLEAN('v', "verbose", &verbose,
-+	OPT_INCR('v', "verbose", &verbose,
- 		    "be more verbose (show symbol address, etc)"),
- 	OPT_INTEGER('C', "CPU", &profile_cpu,
- 		    "CPU to profile on"),
-@@ -1822,7 +1822,7 @@ static const char * const replay_usage[]
- static const struct option replay_options[] = {
- 	OPT_INTEGER('r', "repeat", &replay_repeat,
- 		    "repeat the workload replay N times (-1: infinite)"),
--	OPT_BOOLEAN('v', "verbose", &verbose,
-+	OPT_INCR('v', "verbose", &verbose,
- 		    "be more verbose (show symbol address, etc)"),
- 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
- 		    "dump raw trace in ASCII"),
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -66,16 +66,16 @@ static struct perf_event_attr default_at
- 
- };
- 
--static int			system_wide			=  0;
-+static bool			system_wide			=  false;
- static unsigned int		nr_cpus				=  0;
- static int			run_idx				=  0;
- 
- static int			run_count			=  1;
--static int			inherit				=  1;
--static int			scale				=  1;
-+static bool			inherit				=  true;
-+static bool			scale				=  true;
- static pid_t			target_pid			= -1;
- static pid_t			child_pid			= -1;
--static int			null_run			=  0;
-+static bool			null_run			=  false;
- 
- static int			fd[MAX_NR_CPUS][MAX_COUNTERS];
- 
-@@ -494,7 +494,7 @@ static const struct option options[] = {
- 		    "system-wide collection from all CPUs"),
- 	OPT_BOOLEAN('c', "scale", &scale,
- 		    "scale/normalize counters"),
--	OPT_BOOLEAN('v', "verbose", &verbose,
-+	OPT_INCR('v', "verbose", &verbose,
- 		    "be more verbose (show counter open errors, etc)"),
- 	OPT_INTEGER('r', "repeat", &run_count,
- 		    "repeat command and print average + stddev (max: 100)"),
---- a/tools/perf/builtin-timechart.c
-+++ b/tools/perf/builtin-timechart.c
-@@ -43,7 +43,7 @@ static u64		turbo_frequency;
- 
- static u64		first_time, last_time;
- 
--static int		power_only;
-+static bool		power_only;
- 
- 
- struct per_pid;
---- a/tools/perf/builtin-top.c
-+++ b/tools/perf/builtin-top.c
-@@ -57,7 +57,7 @@
- 
- static int			fd[MAX_NR_CPUS][MAX_COUNTERS];
- 
--static int			system_wide			=      0;
-+static bool			system_wide			=  false;
- 
- static int			default_interval		=      0;
- 
-@@ -65,18 +65,18 @@ static int			count_filter			=      5;
- static int			print_entries;
- 
- static int			target_pid			=     -1;
--static int			inherit				=      0;
-+static bool			inherit				=  false;
- static int			profile_cpu			=     -1;
- static int			nr_cpus				=      0;
- static unsigned int		realtime_prio			=      0;
--static int			group				=      0;
-+static bool			group				=  false;
- static unsigned int		page_size;
- static unsigned int		mmap_pages			=     16;
- static int			freq				=   1000; /* 1 KHz */
- 
- static int			delay_secs			=      2;
--static int			zero                            =      0;
--static int			dump_symtab                     =      0;
-+static bool			zero                            =  false;
-+static bool			dump_symtab                     =  false;
- 
- static bool			hide_kernel_symbols		=  false;
- static bool			hide_user_symbols		=  false;
-@@ -839,7 +839,7 @@ static void handle_keypress(int c)
- 			display_weighted = ~display_weighted;
- 			break;
- 		case 'z':
--			zero = ~zero;
-+			zero = !zero;
- 			break;
- 		default:
- 			break;
-@@ -1296,7 +1296,7 @@ static const struct option options[] = {
- 		    "display this many functions"),
- 	OPT_BOOLEAN('U', "hide_user_symbols", &hide_user_symbols,
- 		    "hide user symbols"),
--	OPT_BOOLEAN('v', "verbose", &verbose,
-+	OPT_INCR('v', "verbose", &verbose,
- 		    "be more verbose (show counter open errors, etc)"),
- 	OPT_END()
- };
---- a/tools/perf/builtin-trace.c
-+++ b/tools/perf/builtin-trace.c
-@@ -505,7 +505,7 @@ static const char * const trace_usage[]
- static const struct option options[] = {
- 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
- 		    "dump raw trace in ASCII"),
--	OPT_BOOLEAN('v', "verbose", &verbose,
-+	OPT_INCR('v', "verbose", &verbose,
- 		    "be more verbose (show symbol address, etc)"),
- 	OPT_BOOLEAN('L', "Latency", &latency_format,
- 		    "show latency attributes (irqs/preemption disabled, etc)"),
---- a/tools/perf/util/debug.c
-+++ b/tools/perf/util/debug.c
-@@ -12,7 +12,7 @@
- #include "util.h"
- 
- int verbose = 0;
--int dump_trace = 0;
-+bool dump_trace = false;
- 
- int eprintf(int level, const char *fmt, ...)
- {
---- a/tools/perf/util/debug.h
-+++ b/tools/perf/util/debug.h
-@@ -2,10 +2,11 @@
- #ifndef __PERF_DEBUG_H
- #define __PERF_DEBUG_H
- 
-+#include <stdbool.h>
- #include "event.h"
- 
- extern int verbose;
--extern int dump_trace;
-+extern bool dump_trace;
- 
- int eprintf(int level,
- 	    const char *fmt, ...) __attribute__((format(printf, 2, 3)));
---- a/tools/perf/util/parse-options.c
-+++ b/tools/perf/util/parse-options.c
-@@ -49,6 +49,7 @@ static int get_value(struct parse_opt_ct
- 				break;
- 			/* FALLTHROUGH */
- 		case OPTION_BOOLEAN:
-+		case OPTION_INCR:
- 		case OPTION_BIT:
- 		case OPTION_SET_INT:
- 		case OPTION_SET_PTR:
-@@ -73,6 +74,10 @@ static int get_value(struct parse_opt_ct
- 		return 0;
- 
- 	case OPTION_BOOLEAN:
-+		*(bool *)opt->value = unset ? false : true;
-+		return 0;
-+
-+	case OPTION_INCR:
- 		*(int *)opt->value = unset ? 0 : *(int *)opt->value + 1;
- 		return 0;
- 
-@@ -478,6 +483,7 @@ int usage_with_options_internal(const ch
- 		case OPTION_GROUP:
- 		case OPTION_BIT:
- 		case OPTION_BOOLEAN:
-+		case OPTION_INCR:
- 		case OPTION_SET_INT:
- 		case OPTION_SET_PTR:
- 		case OPTION_LONG:
---- a/tools/perf/util/parse-options.h
-+++ b/tools/perf/util/parse-options.h
-@@ -8,7 +8,8 @@ enum parse_opt_type {
- 	OPTION_GROUP,
- 	/* options with no arguments */
- 	OPTION_BIT,
--	OPTION_BOOLEAN, /* _INCR would have been a better name */
-+	OPTION_BOOLEAN,
-+	OPTION_INCR,
- 	OPTION_SET_INT,
- 	OPTION_SET_PTR,
- 	/* options with arguments (usually) */
-@@ -95,6 +96,7 @@ struct option {
- #define OPT_GROUP(h)                { .type = OPTION_GROUP, .help = (h) }
- #define OPT_BIT(s, l, v, h, b)      { .type = OPTION_BIT, .short_name = (s), .long_name = (l), .value = (v), .help = (h), .defval = (b) }
- #define OPT_BOOLEAN(s, l, v, h)     { .type = OPTION_BOOLEAN, .short_name = (s), .long_name = (l), .value = (v), .help = (h) }
-+#define OPT_INCR(s, l, v, h)        { .type = OPTION_INCR, .short_name = (s), .long_name = (l), .value = (v), .help = (h) }
- #define OPT_SET_INT(s, l, v, h, i)  { .type = OPTION_SET_INT, .short_name = (s), .long_name = (l), .value = (v), .help = (h), .defval = (i) }
- #define OPT_SET_PTR(s, l, v, h, p)  { .type = OPTION_SET_PTR, .short_name = (s), .long_name = (l), .value = (v), .help = (h), .defval = (p) }
- #define OPT_INTEGER(s, l, v, h)     { .type = OPTION_INTEGER, .short_name = (s), .long_name = (l), .value = (v), .help = (h) }
---- a/tools/perf/util/trace-event-parse.c
-+++ b/tools/perf/util/trace-event-parse.c
-@@ -40,7 +40,7 @@ int header_page_size_size;
- int header_page_data_offset;
- int header_page_data_size;
- 
--int latency_format;
-+bool latency_format;
- 
- static char *input_buf;
- static unsigned long long input_buf_ptr;
---- a/tools/perf/util/trace-event.h
-+++ b/tools/perf/util/trace-event.h
-@@ -1,6 +1,7 @@
- #ifndef __PERF_TRACE_EVENTS_H
- #define __PERF_TRACE_EVENTS_H
- 
-+#include <stdbool.h>
- #include "parse-events.h"
- 
- #define __unused __attribute__((unused))
-@@ -241,7 +242,7 @@ extern int header_page_size_size;
- extern int header_page_data_offset;
- extern int header_page_data_size;
- 
--extern int latency_format;
-+extern bool latency_format;
- 
- int parse_header_page(char *buf, unsigned long size);
- int trace_parse_common_type(void *data);
-From 6e0032f0ae4440e75256bee11b163552cae21962 Mon Sep 17 00:00:00 2001
-From: Karsten Wiese <fzuuzf@googlemail.com>
-Date: Sat, 27 Mar 2010 22:48:33 +0100
-Subject: drm/i915: Don't touch PORT_HOTPLUG_EN in intel_dp_detect()
-
-From: Karsten Wiese <fzuuzf@googlemail.com>
-
-commit 6e0032f0ae4440e75256bee11b163552cae21962 upstream.
-
-PORT_HOTPLUG_EN has allready been setup in i915_driver_irq_postinstall(),
-when intel_dp_detect() runs.
-
-Delete the DP[BCD]_HOTPLUG_INT_EN defines, they are not referenced anymore.
-
-I found this while searching for a fix for
-        https://bugzilla.redhat.com/show_bug.cgi?id=528312
-
-Signed-off-by: Karsten Wiese <fzu@wemgehoertderstaat.de>
-Signed-off-by: Eric Anholt <eric@anholt.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
----
- drivers/gpu/drm/i915/intel_dp.c |   10 ----------
- 1 file changed, 10 deletions(-)
-
---- a/drivers/gpu/drm/i915/intel_dp.c
-+++ b/drivers/gpu/drm/i915/intel_dp.c
-@@ -1180,16 +1180,6 @@ intel_dp_detect(struct drm_connector *co
- 	if (HAS_PCH_SPLIT(dev))
- 		return ironlake_dp_detect(connector);
- 
--	temp = I915_READ(PORT_HOTPLUG_EN);
--
--	I915_WRITE(PORT_HOTPLUG_EN,
--	       temp |
--	       DPB_HOTPLUG_INT_EN |
--	       DPC_HOTPLUG_INT_EN |
--	       DPD_HOTPLUG_INT_EN);
--
--	POSTING_READ(PORT_HOTPLUG_EN);
--
- 	switch (dp_priv->output_reg) {
- 	case DP_B:
- 		bit = DPB_HOTPLUG_INT_STATUS;
-From 9908ff736adf261e749b4887486a32ffa209304c Mon Sep 17 00:00:00 2001
-From: Chris Wilson <chris@chris-wilson.co.uk>
-Date: Sat, 15 May 2010 09:57:03 +0100
-Subject: drm/i915: Kill dangerous pending-flip debugging
-
-From: Chris Wilson <chris@chris-wilson.co.uk>
-
-commit 9908ff736adf261e749b4887486a32ffa209304c upstream.
-
-We can, by virtue of a vblank interrupt firing in the middle of setting
-up the unpin work (i.e. after we set the unpin_work field and before we
-write to the ringbuffer) enter intel_finish_page_flip() prior to
-receiving the pending flip notification. Therefore we can expect to hit
-intel_finish_page_flip() under normal circumstances without a pending flip
-and even without installing the pending_flip_obj. This is exacerbated by
-aperture thrashing whilst binding the framebuffer
-
-References:
-
-  Bug 28079 - "glresize" causes kernel panic in intel_finish_page_flip.
-  https://bugs.freedesktop.org/show_bug.cgi?id=28079
-
-Reported-by: Nick Bowler <nbowler@draconx.ca>
-Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: Jesse Barnes <jbarnes@virtuousgeek.org>
-Reviewed-by: Jesse Barnes <jbarnes@virtuousgeek.org>
-Signed-off-by: Eric Anholt <eric@anholt.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
----
- drivers/gpu/drm/i915/intel_display.c |    6 ------
- 1 file changed, 6 deletions(-)
-
---- a/drivers/gpu/drm/i915/intel_display.c
-+++ b/drivers/gpu/drm/i915/intel_display.c
-@@ -4155,12 +4155,6 @@ void intel_finish_page_flip(struct drm_d
- 	spin_lock_irqsave(&dev->event_lock, flags);
- 	work = intel_crtc->unpin_work;
- 	if (work == NULL || !work->pending) {
--		if (work && !work->pending) {
--			obj_priv = to_intel_bo(work->pending_flip_obj);
--			DRM_DEBUG_DRIVER("flip finish: %p (%d) not pending?\n",
--					 obj_priv,
--					 atomic_read(&obj_priv->pending_flip));
--		}
- 		spin_unlock_irqrestore(&dev->event_lock, flags);
- 		return;
- 	}
-From ac0c6b5ad3b3b513e1057806d4b7627fcc0ecc27 Mon Sep 17 00:00:00 2001
-From: Chris Wilson <chris@chris-wilson.co.uk>
-Date: Thu, 27 May 2010 13:18:18 +0100
-Subject: drm/i915: Rebind bo if currently bound with incorrect alignment.
-
-From: Chris Wilson <chris@chris-wilson.co.uk>
-
-commit ac0c6b5ad3b3b513e1057806d4b7627fcc0ecc27 upstream.
-
-Whilst pinning the buffer, check that that its current alignment
-matches the requested alignment. If it does not, rebind.
-
-This should clear up any final render errors whilst resuming,
-for reference:
-
-  Bug 27070 - [i915] Page table errors with empty ringbuffer
-  https://bugs.freedesktop.org/show_bug.cgi?id=27070
-
-  Bug 15502 -  render error detected, EIR: 0x00000010
-  https://bugzilla.kernel.org/show_bug.cgi?id=15502
-
-  Bug 13844 -  i915 error: "render error detected"
-  https://bugzilla.kernel.org/show_bug.cgi?id=13844
-
-Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-Signed-off-by: Eric Anholt <eric@anholt.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
----
- drivers/gpu/drm/i915/i915_gem.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
-
---- a/drivers/gpu/drm/i915/i915_gem.c
-+++ b/drivers/gpu/drm/i915/i915_gem.c
-@@ -4239,6 +4239,17 @@ i915_gem_object_pin(struct drm_gem_objec
- 	int ret;
- 
- 	i915_verify_inactive(dev, __FILE__, __LINE__);
-+
-+	if (obj_priv->gtt_space != NULL) {
-+		if (alignment == 0)
-+			alignment = i915_gem_get_gtt_alignment(obj);
-+		if (obj_priv->gtt_offset & (alignment - 1)) {
-+			ret = i915_gem_object_unbind(obj);
-+			if (ret)
-+				return ret;
-+		}
-+	}
-+
- 	if (obj_priv->gtt_space == NULL) {
- 		ret = i915_gem_object_bind_to_gtt(obj, alignment);
- 		if (ret)
-From cf22f20ade30f8c03955324aaf27b1049e182600 Mon Sep 17 00:00:00 2001
-From: Dave Airlie <airlied@redhat.com>
-Date: Sat, 29 May 2010 06:50:37 +1000
-Subject: drm/radeon: fix the r100/r200 ums block 0 page fix
-
-From: Dave Airlie <airlied@redhat.com>
-
-commit cf22f20ade30f8c03955324aaf27b1049e182600 upstream.
-
-airlied -> brown paper bag.
-
-I blame Hi-5 or the Wiggles for lowering my IQ, move the fix inside some
-brackets instead of breaking everything in site.
-
-Signed-off-by: Dave Airlie <airlied@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
----
- drivers/gpu/drm/radeon/radeon_state.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
---- a/drivers/gpu/drm/radeon/radeon_state.c
-+++ b/drivers/gpu/drm/radeon/radeon_state.c
-@@ -900,9 +900,10 @@ static void radeon_cp_dispatch_clear(str
- 			flags |= RADEON_FRONT;
- 	}
- 	if (flags & (RADEON_DEPTH|RADEON_STENCIL)) {
--		if (!dev_priv->have_z_offset)
-+		if (!dev_priv->have_z_offset) {
- 			printk_once(KERN_ERR "radeon: illegal depth clear request. Buggy mesa detected - please update.\n");
--		flags &= ~(RADEON_DEPTH | RADEON_STENCIL);
-+			flags &= ~(RADEON_DEPTH | RADEON_STENCIL);
-+		}
- 	}
- 
- 	if (flags & (RADEON_FRONT | RADEON_BACK)) {
-From 10b06122afcc78468bd1d009633cb71e528acdc5 Mon Sep 17 00:00:00 2001
-From: Jerome Glisse <jglisse@redhat.com>
-Date: Fri, 21 May 2010 18:48:54 +0200
-Subject: drm/radeon/kms: release AGP bridge at suspend
-
-From: Jerome Glisse <jglisse@redhat.com>
-
-commit 10b06122afcc78468bd1d009633cb71e528acdc5 upstream.
-
-I think it's good to release the AGP bridge at suspend
-and reacquire it at resume. Also fix :
-https://bugzilla.kernel.org/show_bug.cgi?id=15969
-
-Signed-off-by: Jerome Glisse <jglisse@redhat.com>
-Signed-off-by: Dave Airlie <airlied@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
----
- drivers/gpu/drm/radeon/radeon.h        |    1 +
- drivers/gpu/drm/radeon/radeon_agp.c    |    5 +++++
- drivers/gpu/drm/radeon/radeon_device.c |    2 ++
- 3 files changed, 8 insertions(+)
-
---- a/drivers/gpu/drm/radeon/radeon.h
-+++ b/drivers/gpu/drm/radeon/radeon.h
-@@ -566,6 +566,7 @@ typedef int (*radeon_packet3_check_t)(st
-  */
- int radeon_agp_init(struct radeon_device *rdev);
- void radeon_agp_resume(struct radeon_device *rdev);
-+void radeon_agp_suspend(struct radeon_device *rdev);
- void radeon_agp_fini(struct radeon_device *rdev);
- 
- 
---- a/drivers/gpu/drm/radeon/radeon_agp.c
-+++ b/drivers/gpu/drm/radeon/radeon_agp.c
-@@ -270,3 +270,8 @@ void radeon_agp_fini(struct radeon_devic
- 	}
- #endif
- }
-+
-+void radeon_agp_suspend(struct radeon_device *rdev)
-+{
-+	radeon_agp_fini(rdev);
-+}
---- a/drivers/gpu/drm/radeon/radeon_device.c
-+++ b/drivers/gpu/drm/radeon/radeon_device.c
-@@ -748,6 +748,8 @@ int radeon_suspend_kms(struct drm_device
- 	/* evict remaining vram memory */
- 	radeon_bo_evict_vram(rdev);
- 
-+	radeon_agp_suspend(rdev);
-+
- 	pci_save_state(dev->pdev);
- 	if (state.event == PM_EVENT_SUSPEND) {
- 		/* Shut down the device */
-From 1ff26a3604d0292988d4cade0e49ba9918dbfd46 Mon Sep 17 00:00:00 2001
-From: Alex Deucher <alexdeucher@gmail.com>
-Date: Tue, 18 May 2010 00:23:15 -0400
-Subject: drm/radeon/kms/atom: fix typo in LVDS panel info parsing
-
-From: Alex Deucher <alexdeucher@gmail.com>
-
-commit 1ff26a3604d0292988d4cade0e49ba9918dbfd46 upstream.
-
-Fixes LVDS issues on some laptops; notably laptops with
-2048x1536 panels.
-
-Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
-Signed-off-by: Dave Airlie <airlied@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
----
- drivers/gpu/drm/radeon/radeon_atombios.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/gpu/drm/radeon/radeon_atombios.c
-+++ b/drivers/gpu/drm/radeon/radeon_atombios.c
-@@ -1173,7 +1173,7 @@ struct radeon_encoder_atom_dig *radeon_a
- 		lvds->native_mode.vtotal = lvds->native_mode.vdisplay +
- 			le16_to_cpu(lvds_info->info.sLCDTiming.usVBlanking_Time);
- 		lvds->native_mode.vsync_start = lvds->native_mode.vdisplay +
--			le16_to_cpu(lvds_info->info.sLCDTiming.usVSyncWidth);
-+			le16_to_cpu(lvds_info->info.sLCDTiming.usVSyncOffset);
- 		lvds->native_mode.vsync_end = lvds->native_mode.vsync_start +
- 			le16_to_cpu(lvds_info->info.sLCDTiming.usVSyncWidth);
- 		lvds->panel_pwr_delay =
-From 2bfcc0fc698d550689ef020c73b2d977b73e728c Mon Sep 17 00:00:00 2001
-From: Alex Deucher <alexdeucher@gmail.com>
-Date: Tue, 18 May 2010 19:26:46 -0400
-Subject: drm/radeon/kms: reset ddc_bus in object header parsing
-
-From: Alex Deucher <alexdeucher@gmail.com>
-
-commit 2bfcc0fc698d550689ef020c73b2d977b73e728c upstream.
-
-Some LVDS connectors don't have a ddc bus, so reset the
-ddc bus to invalid before parsing the next connector
-to avoid using stale ddc bus data.  Should fix
-fdo bug 28164.
-
-Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
-Signed-off-by: Dave Airlie <airlied@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
----
- drivers/gpu/drm/radeon/radeon_atombios.c |    5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
---- a/drivers/gpu/drm/radeon/radeon_atombios.c
-+++ b/drivers/gpu/drm/radeon/radeon_atombios.c
-@@ -530,6 +530,8 @@ bool radeon_get_atom_connector_info_from
- 			}
- 
- 			/* look up gpio for ddc, hpd */
-+			ddc_bus.valid = false;
-+			hpd.hpd = RADEON_HPD_NONE;
- 			if ((le16_to_cpu(path->usDeviceTag) &
- 			     (ATOM_DEVICE_TV_SUPPORT | ATOM_DEVICE_CV_SUPPORT)) == 0) {
- 				for (j = 0; j < con_obj->ucNumberOfObjects; j++) {
-@@ -585,9 +587,6 @@ bool radeon_get_atom_connector_info_from
- 						break;
- 					}
- 				}
--			} else {
--				hpd.hpd = RADEON_HPD_NONE;
--				ddc_bus.valid = false;
- 			}
- 
- 			/* needed for aux chan transactions */
+ #define IS_I830(dev)		((dev)->pci_device == 0x3577)
+ #define IS_845G(dev)		((dev)->pci_device == 0x2562)
+-#define IS_I85X(dev)		((dev)->pci_device == 0x3582)
++#define IS_I85X(dev)		(INTEL_INFO(dev)->is_i85x)
+ #define IS_I865G(dev)		((dev)->pci_device == 0x2572)
+ #define IS_GEN2(dev)		(INTEL_INFO(dev)->is_i8xx)
+ #define IS_I915G(dev)		(INTEL_INFO(dev)->is_i915g)
 From 61dd98fad58f945ed720ba132681acb58fcee015 Mon Sep 17 00:00:00 2001
 From: Adam Jackson <ajax@redhat.com>
 Date: Thu, 13 May 2010 14:55:28 -0400
@@ -1062,7 +81,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 
 --- a/drivers/gpu/drm/drm_edid.c
 +++ b/drivers/gpu/drm/drm_edid.c
-@@ -335,7 +335,7 @@ static struct drm_display_mode drm_dmt_m
+@@ -334,7 +334,7 @@ static struct drm_display_mode drm_dmt_m
  		   DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC) },
  	/* 1024x768@85Hz */
  	{ DRM_MODE("1024x768", DRM_MODE_TYPE_DRIVER, 94500, 1024, 1072,
@@ -1071,78 +90,1576 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
  		   DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC) },
  	/* 1152x864@75Hz */
  	{ DRM_MODE("1152x864", DRM_MODE_TYPE_DRIVER, 108000, 1152, 1216,
-From 45737447ed160faaba036c0709226bf9057f7b72 Mon Sep 17 00:00:00 2001
-From: Alex Deucher <alexdeucher@gmail.com>
-Date: Thu, 20 May 2010 11:26:11 -0400
-Subject: drm/radeon/kms: don't default display priority to high on rs4xx
+From 8d06a1e1e9c69244f08beb7d17146483f9dcd120 Mon Sep 17 00:00:00 2001
+From: Robert Hooker <sarvatt@ubuntu.com>
+Date: Fri, 19 Mar 2010 15:13:27 -0400
+Subject: drm/i915: Disable FBC on 915GM and 945GM.
 
-From: Alex Deucher <alexdeucher@gmail.com>
+From: Robert Hooker <sarvatt@ubuntu.com>
 
-commit 45737447ed160faaba036c0709226bf9057f7b72 upstream.
+commit 8d06a1e1e9c69244f08beb7d17146483f9dcd120 upstream.
 
-Seems to cause issues with the sound hardware.  Fixes kernel
-bug 15982:
-https://bugzilla.kernel.org/show_bug.cgi?id=15982
+It is causing hangs after a suspend/resume cycle with the default
+powersave=1 module option on these chipsets since 2.6.32-rc.
 
-Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
-Signed-off-by: Dave Airlie <airlied@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
-
----
- drivers/gpu/drm/radeon/radeon_display.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
---- a/drivers/gpu/drm/radeon/radeon_display.c
-+++ b/drivers/gpu/drm/radeon/radeon_display.c
-@@ -978,8 +978,11 @@ void radeon_update_display_priority(stru
- 		/* set display priority to high for r3xx, rv515 chips
- 		 * this avoids flickering due to underflow to the
- 		 * display controllers during heavy acceleration.
-+		 * Don't force high on rs4xx igp chips as it seems to
-+		 * affect the sound card.  See kernel bug 15982.
- 		 */
--		if (ASIC_IS_R300(rdev) || (rdev->family == CHIP_RV515))
-+		if ((ASIC_IS_R300(rdev) || (rdev->family == CHIP_RV515)) &&
-+		    !(rdev->flags & RADEON_IS_IGP))
- 			rdev->disp_priority = 2;
- 		else
- 			rdev->disp_priority = 0;
-From 654fc6073f68efa3b6c466825749e73e7fbb92cd Mon Sep 17 00:00:00 2001
-From: Chris Wilson <chris@chris-wilson.co.uk>
-Date: Thu, 27 May 2010 13:18:21 +0100
-Subject: drm/i915: Reject bind_to_gtt() early if object > aperture
-
-From: Chris Wilson <chris@chris-wilson.co.uk>
-
-commit 654fc6073f68efa3b6c466825749e73e7fbb92cd upstream.
-
-If the object is bigger than the entire aperture, reject it early
-before evicting everything in a vain attempt to find space.
-
-v2: Use E2BIG as suggested by Owain G. Ainsworth.
-
-Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+BugLink: http://bugs.launchpad.net/bugs/492392
+Signed-off-by: Robert Hooker <sarvatt@ubuntu.com>
+Acked-by: Jesse Barnes <jbarnes@virtuousgeek.org>
 Signed-off-by: Eric Anholt <eric@anholt.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
 
 ---
- drivers/gpu/drm/i915/i915_gem.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/gpu/drm/i915/i915_drv.c      |    4 ++--
+ drivers/gpu/drm/i915/intel_display.c |    2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+--- a/drivers/gpu/drm/i915/i915_drv.c
++++ b/drivers/gpu/drm/i915/i915_drv.c
+@@ -79,14 +79,14 @@ const static struct intel_device_info in
+ 	.is_i915g = 1, .is_i9xx = 1, .cursor_needs_physical = 1,
+ };
+ const static struct intel_device_info intel_i915gm_info = {
+-	.is_i9xx = 1,  .is_mobile = 1, .has_fbc = 1,
++	.is_i9xx = 1,  .is_mobile = 1,
+ 	.cursor_needs_physical = 1,
+ };
+ const static struct intel_device_info intel_i945g_info = {
+ 	.is_i9xx = 1, .has_hotplug = 1, .cursor_needs_physical = 1,
+ };
+ const static struct intel_device_info intel_i945gm_info = {
+-	.is_i945gm = 1, .is_i9xx = 1, .is_mobile = 1, .has_fbc = 1,
++	.is_i945gm = 1, .is_i9xx = 1, .is_mobile = 1,
+ 	.has_hotplug = 1, .cursor_needs_physical = 1,
+ };
+ 
+--- a/drivers/gpu/drm/i915/intel_display.c
++++ b/drivers/gpu/drm/i915/intel_display.c
+@@ -4683,7 +4683,7 @@ static void intel_init_display(struct dr
+ 			dev_priv->display.fbc_enabled = g4x_fbc_enabled;
+ 			dev_priv->display.enable_fbc = g4x_enable_fbc;
+ 			dev_priv->display.disable_fbc = g4x_disable_fbc;
+-		} else if (IS_I965GM(dev) || IS_I945GM(dev) || IS_I915GM(dev)) {
++		} else if (IS_I965GM(dev)) {
+ 			dev_priv->display.fbc_enabled = i8xx_fbc_enabled;
+ 			dev_priv->display.enable_fbc = i8xx_enable_fbc;
+ 			dev_priv->display.disable_fbc = i8xx_disable_fbc;
+From 1918ad77f7f908ed67cf37c505c6ad4ac52f1ecf Mon Sep 17 00:00:00 2001
+From: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date: Fri, 23 Apr 2010 09:32:23 -0700
+Subject: drm/i915: fix non-Ironlake 965 class crashes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From: Jesse Barnes <jbarnes@virtuousgeek.org>
+
+commit 1918ad77f7f908ed67cf37c505c6ad4ac52f1ecf upstream.
+
+My PIPE_CONTROL fix (just sent via Eric's tree) was buggy; I was
+testing a whole set of patches together and missed a conversion to the
+new HAS_PIPE_CONTROL macro, which will cause breakage on non-Ironlake
+965 class chips.  Fortunately, the fix is trivial and has been tested.
+
+Be sure to use the HAS_PIPE_CONTROL macro in i915_get_gem_seqno, or
+we'll end up reading the wrong graphics memory, likely causing hangs,
+crashes, or worse.
+
+Reported-by: Zdenek Kabelac <zdenek.kabelac@gmail.com>
+Reported-by: Toralf Förster <toralf.foerster@gmx.de>
+Tested-by: Toralf Förster <toralf.foerster@gmx.de>
+Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/i915/i915_gem.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/gpu/drm/i915/i915_gem.c
 +++ b/drivers/gpu/drm/i915/i915_gem.c
-@@ -2688,6 +2688,14 @@ i915_gem_object_bind_to_gtt(struct drm_g
- 		return -EINVAL;
+@@ -1785,7 +1785,7 @@ i915_get_gem_seqno(struct drm_device *de
+ {
+ 	drm_i915_private_t *dev_priv = dev->dev_private;
+ 
+-	if (IS_I965G(dev))
++	if (HAS_PIPE_CONTROL(dev))
+ 		return ((volatile u32 *)(dev_priv->seqno_page))[0];
+ 	else
+ 		return READ_HWSP(dev_priv, I915_GEM_HWS_INDEX);
+From e552eb7038a36d9b18860f525aa02875e313fe16 Mon Sep 17 00:00:00 2001
+From: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date: Wed, 21 Apr 2010 11:39:23 -0700
+Subject: drm/i915: use PIPE_CONTROL instruction on Ironlake and Sandy Bridge
+
+From: Jesse Barnes <jbarnes@virtuousgeek.org>
+
+commit e552eb7038a36d9b18860f525aa02875e313fe16 upstream.
+
+Since 965, the hardware has supported the PIPE_CONTROL command, which
+provides fine grained GPU cache flushing control.  On recent chipsets,
+this instruction is required for reliable interrupt and sequence number
+reporting in the driver.
+
+So add support for this instruction, including workarounds, on Ironlake
+and Sandy Bridge hardware.
+
+https://bugs.freedesktop.org/show_bug.cgi?id=27108
+
+Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+Tested-by: Chris Wilson <chris@chris-wilson.co.uk>
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/i915/i915_drv.h |    4 +
+ drivers/gpu/drm/i915/i915_gem.c |  145 ++++++++++++++++++++++++++++++++++++----
+ drivers/gpu/drm/i915/i915_irq.c |    8 +-
+ drivers/gpu/drm/i915/i915_reg.h |   11 +++
+ 4 files changed, 152 insertions(+), 16 deletions(-)
+
+--- a/drivers/gpu/drm/i915/i915_drv.h
++++ b/drivers/gpu/drm/i915/i915_drv.h
+@@ -206,11 +206,14 @@ typedef struct drm_i915_private {
+ 
+ 	drm_dma_handle_t *status_page_dmah;
+ 	void *hw_status_page;
++	void *seqno_page;
+ 	dma_addr_t dma_status_page;
+ 	uint32_t counter;
+ 	unsigned int status_gfx_addr;
++	unsigned int seqno_gfx_addr;
+ 	drm_local_map_t hws_map;
+ 	struct drm_gem_object *hws_obj;
++	struct drm_gem_object *seqno_obj;
+ 	struct drm_gem_object *pwrctx;
+ 
+ 	struct resource mch_res;
+@@ -1090,6 +1093,7 @@ extern int i915_wait_ring(struct drm_dev
+ 
+ #define HAS_PCH_SPLIT(dev) (IS_IRONLAKE(dev) ||	\
+ 			    IS_GEN6(dev))
++#define HAS_PIPE_CONTROL(dev) (IS_IRONLAKE(dev) || IS_GEN6(dev))
+ 
+ #define PRIMARY_RINGBUFFER_SIZE         (128*1024)
+ 
+--- a/drivers/gpu/drm/i915/i915_gem.c
++++ b/drivers/gpu/drm/i915/i915_gem.c
+@@ -1559,6 +1559,13 @@ i915_gem_object_move_to_inactive(struct
+ 	i915_verify_inactive(dev, __FILE__, __LINE__);
+ }
+ 
++#define PIPE_CONTROL_FLUSH(addr)					\
++	OUT_RING(GFX_OP_PIPE_CONTROL | PIPE_CONTROL_QW_WRITE |		\
++		 PIPE_CONTROL_DEPTH_STALL);				\
++	OUT_RING(addr | PIPE_CONTROL_GLOBAL_GTT);			\
++	OUT_RING(0);							\
++	OUT_RING(0);							\
++
+ /**
+  * Creates a new sequence number, emitting a write of it to the status page
+  * plus an interrupt, which will trigger i915_user_interrupt_handler.
+@@ -1593,13 +1600,47 @@ i915_add_request(struct drm_device *dev,
+ 	if (dev_priv->mm.next_gem_seqno == 0)
+ 		dev_priv->mm.next_gem_seqno++;
+ 
+-	BEGIN_LP_RING(4);
+-	OUT_RING(MI_STORE_DWORD_INDEX);
+-	OUT_RING(I915_GEM_HWS_INDEX << MI_STORE_DWORD_INDEX_SHIFT);
+-	OUT_RING(seqno);
++	if (HAS_PIPE_CONTROL(dev)) {
++		u32 scratch_addr = dev_priv->seqno_gfx_addr + 128;
+ 
+-	OUT_RING(MI_USER_INTERRUPT);
+-	ADVANCE_LP_RING();
++		/*
++		 * Workaround qword write incoherence by flushing the
++		 * PIPE_NOTIFY buffers out to memory before requesting
++		 * an interrupt.
++		 */
++		BEGIN_LP_RING(32);
++		OUT_RING(GFX_OP_PIPE_CONTROL | PIPE_CONTROL_QW_WRITE |
++			 PIPE_CONTROL_WC_FLUSH | PIPE_CONTROL_TC_FLUSH);
++		OUT_RING(dev_priv->seqno_gfx_addr | PIPE_CONTROL_GLOBAL_GTT);
++		OUT_RING(seqno);
++		OUT_RING(0);
++		PIPE_CONTROL_FLUSH(scratch_addr);
++		scratch_addr += 128; /* write to separate cachelines */
++		PIPE_CONTROL_FLUSH(scratch_addr);
++		scratch_addr += 128;
++		PIPE_CONTROL_FLUSH(scratch_addr);
++		scratch_addr += 128;
++		PIPE_CONTROL_FLUSH(scratch_addr);
++		scratch_addr += 128;
++		PIPE_CONTROL_FLUSH(scratch_addr);
++		scratch_addr += 128;
++		PIPE_CONTROL_FLUSH(scratch_addr);
++		OUT_RING(GFX_OP_PIPE_CONTROL | PIPE_CONTROL_QW_WRITE |
++			 PIPE_CONTROL_WC_FLUSH | PIPE_CONTROL_TC_FLUSH |
++			 PIPE_CONTROL_NOTIFY);
++		OUT_RING(dev_priv->seqno_gfx_addr | PIPE_CONTROL_GLOBAL_GTT);
++		OUT_RING(seqno);
++		OUT_RING(0);
++		ADVANCE_LP_RING();
++	} else {
++		BEGIN_LP_RING(4);
++		OUT_RING(MI_STORE_DWORD_INDEX);
++		OUT_RING(I915_GEM_HWS_INDEX << MI_STORE_DWORD_INDEX_SHIFT);
++		OUT_RING(seqno);
++
++		OUT_RING(MI_USER_INTERRUPT);
++		ADVANCE_LP_RING();
++	}
+ 
+ 	DRM_DEBUG_DRIVER("%d\n", seqno);
+ 
+@@ -1744,7 +1785,10 @@ i915_get_gem_seqno(struct drm_device *de
+ {
+ 	drm_i915_private_t *dev_priv = dev->dev_private;
+ 
+-	return READ_HWSP(dev_priv, I915_GEM_HWS_INDEX);
++	if (IS_I965G(dev))
++		return ((volatile u32 *)(dev_priv->seqno_page))[0];
++	else
++		return READ_HWSP(dev_priv, I915_GEM_HWS_INDEX);
+ }
+ 
+ /**
+@@ -4576,6 +4620,49 @@ i915_gem_idle(struct drm_device *dev)
+ 	return 0;
+ }
+ 
++/*
++ * 965+ support PIPE_CONTROL commands, which provide finer grained control
++ * over cache flushing.
++ */
++static int
++i915_gem_init_pipe_control(struct drm_device *dev)
++{
++	drm_i915_private_t *dev_priv = dev->dev_private;
++	struct drm_gem_object *obj;
++	struct drm_i915_gem_object *obj_priv;
++	int ret;
++
++	obj = drm_gem_object_alloc(dev, 4096);
++	if (obj == NULL) {
++		DRM_ERROR("Failed to allocate seqno page\n");
++		ret = -ENOMEM;
++		goto err;
++	}
++	obj_priv = obj->driver_private;
++	obj_priv->agp_type = AGP_USER_CACHED_MEMORY;
++
++	ret = i915_gem_object_pin(obj, 4096);
++	if (ret)
++		goto err_unref;
++
++	dev_priv->seqno_gfx_addr = obj_priv->gtt_offset;
++	dev_priv->seqno_page =  kmap(obj_priv->pages[0]);
++	if (dev_priv->seqno_page == NULL)
++		goto err_unpin;
++
++	dev_priv->seqno_obj = obj;
++	memset(dev_priv->seqno_page, 0, PAGE_SIZE);
++
++	return 0;
++
++err_unpin:
++	i915_gem_object_unpin(obj);
++err_unref:
++	drm_gem_object_unreference(obj);
++err:
++	return ret;
++}
++
+ static int
+ i915_gem_init_hws(struct drm_device *dev)
+ {
+@@ -4593,7 +4680,8 @@ i915_gem_init_hws(struct drm_device *dev
+ 	obj = drm_gem_object_alloc(dev, 4096);
+ 	if (obj == NULL) {
+ 		DRM_ERROR("Failed to allocate status page\n");
+-		return -ENOMEM;
++		ret = -ENOMEM;
++		goto err;
+ 	}
+ 	obj_priv = obj->driver_private;
+ 	obj_priv->agp_type = AGP_USER_CACHED_MEMORY;
+@@ -4601,7 +4689,7 @@ i915_gem_init_hws(struct drm_device *dev
+ 	ret = i915_gem_object_pin(obj, 4096);
+ 	if (ret != 0) {
+ 		drm_gem_object_unreference(obj);
+-		return ret;
++		goto err_unref;
  	}
  
-+	/* If the object is bigger than the entire aperture, reject it early
-+	 * before evicting everything in a vain attempt to find space.
-+	 */
-+	if (obj->size > dev->gtt_total) {
-+		DRM_ERROR("Attempting to bind an object larger than the aperture\n");
-+		return -E2BIG;
+ 	dev_priv->status_gfx_addr = obj_priv->gtt_offset;
+@@ -4610,10 +4698,16 @@ i915_gem_init_hws(struct drm_device *dev
+ 	if (dev_priv->hw_status_page == NULL) {
+ 		DRM_ERROR("Failed to map status page.\n");
+ 		memset(&dev_priv->hws_map, 0, sizeof(dev_priv->hws_map));
+-		i915_gem_object_unpin(obj);
+-		drm_gem_object_unreference(obj);
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto err_unpin;
+ 	}
++
++	if (HAS_PIPE_CONTROL(dev)) {
++		ret = i915_gem_init_pipe_control(dev);
++		if (ret)
++			goto err_unpin;
 +	}
 +
-  search_free:
- 	free_space = drm_mm_search_free(&dev_priv->mm.gtt_space,
- 					obj->size, alignment, 0);
+ 	dev_priv->hws_obj = obj;
+ 	memset(dev_priv->hw_status_page, 0, PAGE_SIZE);
+ 	I915_WRITE(HWS_PGA, dev_priv->status_gfx_addr);
+@@ -4621,6 +4715,30 @@ i915_gem_init_hws(struct drm_device *dev
+ 	DRM_DEBUG_DRIVER("hws offset: 0x%08x\n", dev_priv->status_gfx_addr);
+ 
+ 	return 0;
++
++err_unpin:
++	i915_gem_object_unpin(obj);
++err_unref:
++	drm_gem_object_unreference(obj);
++err:
++	return 0;
++}
++
++static void
++i915_gem_cleanup_pipe_control(struct drm_device *dev)
++{
++	drm_i915_private_t *dev_priv = dev->dev_private;
++	struct drm_gem_object *obj;
++	struct drm_i915_gem_object *obj_priv;
++
++	obj = dev_priv->seqno_obj;
++	obj_priv = obj->driver_private;
++	kunmap(obj_priv->pages[0]);
++	i915_gem_object_unpin(obj);
++	drm_gem_object_unreference(obj);
++	dev_priv->seqno_obj = NULL;
++
++	dev_priv->seqno_page = NULL;
+ }
+ 
+ static void
+@@ -4644,6 +4762,9 @@ i915_gem_cleanup_hws(struct drm_device *
+ 	memset(&dev_priv->hws_map, 0, sizeof(dev_priv->hws_map));
+ 	dev_priv->hw_status_page = NULL;
+ 
++	if (HAS_PIPE_CONTROL(dev))
++		i915_gem_cleanup_pipe_control(dev);
++
+ 	/* Write high address into HWS_PGA when disabling. */
+ 	I915_WRITE(HWS_PGA, 0x1ffff000);
+ }
+--- a/drivers/gpu/drm/i915/i915_irq.c
++++ b/drivers/gpu/drm/i915/i915_irq.c
+@@ -297,7 +297,7 @@ irqreturn_t ironlake_irq_handler(struct
+ 				READ_BREADCRUMB(dev_priv);
+ 	}
+ 
+-	if (gt_iir & GT_USER_INTERRUPT) {
++	if (gt_iir & GT_PIPE_NOTIFY) {
+ 		u32 seqno = i915_get_gem_seqno(dev);
+ 		dev_priv->mm.irq_gem_seqno = seqno;
+ 		trace_i915_gem_request_complete(dev, seqno);
+@@ -738,7 +738,7 @@ void i915_user_irq_get(struct drm_device
+ 	spin_lock_irqsave(&dev_priv->user_irq_lock, irqflags);
+ 	if (dev->irq_enabled && (++dev_priv->user_irq_refcount == 1)) {
+ 		if (HAS_PCH_SPLIT(dev))
+-			ironlake_enable_graphics_irq(dev_priv, GT_USER_INTERRUPT);
++			ironlake_enable_graphics_irq(dev_priv, GT_PIPE_NOTIFY);
+ 		else
+ 			i915_enable_irq(dev_priv, I915_USER_INTERRUPT);
+ 	}
+@@ -754,7 +754,7 @@ void i915_user_irq_put(struct drm_device
+ 	BUG_ON(dev->irq_enabled && dev_priv->user_irq_refcount <= 0);
+ 	if (dev->irq_enabled && (--dev_priv->user_irq_refcount == 0)) {
+ 		if (HAS_PCH_SPLIT(dev))
+-			ironlake_disable_graphics_irq(dev_priv, GT_USER_INTERRUPT);
++			ironlake_disable_graphics_irq(dev_priv, GT_PIPE_NOTIFY);
+ 		else
+ 			i915_disable_irq(dev_priv, I915_USER_INTERRUPT);
+ 	}
+@@ -1034,7 +1034,7 @@ static int ironlake_irq_postinstall(stru
+ 	/* enable kind of interrupts always enabled */
+ 	u32 display_mask = DE_MASTER_IRQ_CONTROL | DE_GSE | DE_PCH_EVENT |
+ 			   DE_PLANEA_FLIP_DONE | DE_PLANEB_FLIP_DONE;
+-	u32 render_mask = GT_USER_INTERRUPT;
++	u32 render_mask = GT_PIPE_NOTIFY;
+ 	u32 hotplug_mask = SDE_CRT_HOTPLUG | SDE_PORTB_HOTPLUG |
+ 			   SDE_PORTC_HOTPLUG | SDE_PORTD_HOTPLUG;
+ 
+--- a/drivers/gpu/drm/i915/i915_reg.h
++++ b/drivers/gpu/drm/i915/i915_reg.h
+@@ -210,6 +210,16 @@
+ #define   ASYNC_FLIP                (1<<22)
+ #define   DISPLAY_PLANE_A           (0<<20)
+ #define   DISPLAY_PLANE_B           (1<<20)
++#define GFX_OP_PIPE_CONTROL	((0x3<<29)|(0x3<<27)|(0x2<<24)|2)
++#define   PIPE_CONTROL_QW_WRITE	(1<<14)
++#define   PIPE_CONTROL_DEPTH_STALL (1<<13)
++#define   PIPE_CONTROL_WC_FLUSH	(1<<12)
++#define   PIPE_CONTROL_IS_FLUSH	(1<<11) /* MBZ on Ironlake */
++#define   PIPE_CONTROL_TC_FLUSH (1<<10) /* GM45+ only */
++#define   PIPE_CONTROL_ISP_DIS	(1<<9)
++#define   PIPE_CONTROL_NOTIFY	(1<<8)
++#define   PIPE_CONTROL_GLOBAL_GTT (1<<2) /* in addr dword */
++#define   PIPE_CONTROL_STALL_EN	(1<<1) /* in addr word, Ironlake+ only */
+ 
+ /*
+  * Fence registers
+@@ -2111,6 +2121,7 @@
+ #define DEIER   0x4400c
+ 
+ /* GT interrupt */
++#define GT_PIPE_NOTIFY		(1 << 4)
+ #define GT_SYNC_STATUS          (1 << 2)
+ #define GT_USER_INTERRUPT       (1 << 0)
+ 
+From c36a2a6de59e4a141a68b7575de837d3b0bd96b3 Mon Sep 17 00:00:00 2001
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
+Date: Sat, 17 Apr 2010 15:12:03 +0200
+Subject: drm/i915: fix tiling limits for i915 class hw v2
+
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
+
+commit c36a2a6de59e4a141a68b7575de837d3b0bd96b3 upstream.
+
+Current code is definitely crap: Largest pitch allowed spills into
+the TILING_Y bit of the fence registers ... :(
+
+I've rewritten the limits check under the assumption that 3rd gen hw
+has a 3d pitch limit of 8kb (like 2nd gen). This is supported by an
+otherwise totally misleading XXX comment.
+
+This bug mostly resulted in tiling-corrupted pixmaps because the kernel
+allowed too wide buffers to be tiled. Bug brought to the light by the
+xf86-video-intel 2.11 release because that unconditionally enabled
+tiling for pixmaps, relying on the kernel to check things. Tiling for
+the framebuffer was not affected because the ddx does some additional
+checks there ensure the buffer is within hw-limits.
+
+v2: Instead of computing the value that would be written into the
+hw fence registers and then checking the limits simply check whether
+the stride is above the 8kb limit. To better document the hw, add
+some WARN_ONs in i915_write_fence_reg like I've done for the i830
+case (using the right limits).
+
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=27449
+Tested-by: Alexander Lam <lambchop468@gmail.com>
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/i915/i915_gem.c        |    6 ++++++
+ drivers/gpu/drm/i915/i915_gem_tiling.c |   22 +++++++++-------------
+ drivers/gpu/drm/i915/i915_reg.h        |    2 +-
+ 3 files changed, 16 insertions(+), 14 deletions(-)
+
+--- a/drivers/gpu/drm/i915/i915_gem.c
++++ b/drivers/gpu/drm/i915/i915_gem.c
+@@ -2316,6 +2316,12 @@ static void i915_write_fence_reg(struct
+ 	pitch_val = obj_priv->stride / tile_width;
+ 	pitch_val = ffs(pitch_val) - 1;
+ 
++	if (obj_priv->tiling_mode == I915_TILING_Y &&
++	    HAS_128_BYTE_Y_TILING(dev))
++		WARN_ON(pitch_val > I830_FENCE_MAX_PITCH_VAL);
++	else
++		WARN_ON(pitch_val > I915_FENCE_MAX_PITCH_VAL);
++
+ 	val = obj_priv->gtt_offset;
+ 	if (obj_priv->tiling_mode == I915_TILING_Y)
+ 		val |= 1 << I830_FENCE_TILING_Y_SHIFT;
+--- a/drivers/gpu/drm/i915/i915_gem_tiling.c
++++ b/drivers/gpu/drm/i915/i915_gem_tiling.c
+@@ -357,21 +357,17 @@ i915_tiling_ok(struct drm_device *dev, i
+ 		 * reg, so dont bother to check the size */
+ 		if (stride / 128 > I965_FENCE_MAX_PITCH_VAL)
+ 			return false;
+-	} else if (IS_I9XX(dev)) {
+-		uint32_t pitch_val = ffs(stride / tile_width) - 1;
+-
+-		/* XXX: For Y tiling, FENCE_MAX_PITCH_VAL is actually 6 (8KB)
+-		 * instead of 4 (2KB) on 945s.
+-		 */
+-		if (pitch_val > I915_FENCE_MAX_PITCH_VAL ||
+-		    size > (I830_FENCE_MAX_SIZE_VAL << 20))
++	} else if (IS_GEN3(dev) || IS_GEN2(dev)) {
++		if (stride > 8192)
+ 			return false;
+-	} else {
+-		uint32_t pitch_val = ffs(stride / tile_width) - 1;
+ 
+-		if (pitch_val > I830_FENCE_MAX_PITCH_VAL ||
+-		    size > (I830_FENCE_MAX_SIZE_VAL << 19))
+-			return false;
++		if (IS_GEN3(dev)) {
++			if (size > I830_FENCE_MAX_SIZE_VAL << 20)
++				return false;
++		} else {
++			if (size > I830_FENCE_MAX_SIZE_VAL << 19)
++				return false;
++		}
+ 	}
+ 
+ 	/* 965+ just needs multiples of tile width */
+--- a/drivers/gpu/drm/i915/i915_reg.h
++++ b/drivers/gpu/drm/i915/i915_reg.h
+@@ -221,7 +221,7 @@
+ #define   I830_FENCE_SIZE_BITS(size)	((ffs((size) >> 19) - 1) << 8)
+ #define   I830_FENCE_PITCH_SHIFT	4
+ #define   I830_FENCE_REG_VALID		(1<<0)
+-#define   I915_FENCE_MAX_PITCH_VAL	0x10
++#define   I915_FENCE_MAX_PITCH_VAL	4
+ #define   I830_FENCE_MAX_PITCH_VAL	6
+ #define   I830_FENCE_MAX_SIZE_VAL	(1<<8)
+ 
+From bad720ff3e8e47a04bd88d9bbc8317e7d7e049d3 Mon Sep 17 00:00:00 2001
+From: Eric Anholt <eric@anholt.net>
+Date: Thu, 22 Oct 2009 16:11:14 -0700
+Subject: drm/i915: Add initial bits for VGA modesetting bringup on Sandybridge.
+
+From: Eric Anholt <eric@anholt.net>
+
+commit bad720ff3e8e47a04bd88d9bbc8317e7d7e049d3 upstream.
+
+[needed for stable as it's just a bunch of macros that other drm patches
+need, it changes no code functionality besides adding support for a new
+device type. - gregkh]
+
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/i915/i915_debugfs.c    |    2 -
+ drivers/gpu/drm/i915/i915_dma.c        |   16 ++++++---
+ drivers/gpu/drm/i915/i915_drv.h        |   26 ++++++++++++++-
+ drivers/gpu/drm/i915/i915_gem.c        |    2 -
+ drivers/gpu/drm/i915/i915_gem_tiling.c |    2 -
+ drivers/gpu/drm/i915/i915_irq.c        |   18 +++++-----
+ drivers/gpu/drm/i915/intel_bios.c      |    3 +
+ drivers/gpu/drm/i915/intel_crt.c       |   14 ++++----
+ drivers/gpu/drm/i915/intel_display.c   |   56 ++++++++++++++++-----------------
+ drivers/gpu/drm/i915/intel_lvds.c      |    2 -
+ drivers/gpu/drm/i915/intel_overlay.c   |    2 -
+ include/drm/drm_pciids.h               |    1 
+ 12 files changed, 88 insertions(+), 56 deletions(-)
+
+--- a/drivers/gpu/drm/i915/i915_debugfs.c
++++ b/drivers/gpu/drm/i915/i915_debugfs.c
+@@ -162,7 +162,7 @@ static int i915_interrupt_info(struct se
+ 	struct drm_device *dev = node->minor->dev;
+ 	drm_i915_private_t *dev_priv = dev->dev_private;
+ 
+-	if (!IS_IRONLAKE(dev)) {
++	if (!HAS_PCH_SPLIT(dev)) {
+ 		seq_printf(m, "Interrupt enable:    %08x\n",
+ 			   I915_READ(IER));
+ 		seq_printf(m, "Interrupt identity:  %08x\n",
+--- a/drivers/gpu/drm/i915/i915_dma.c
++++ b/drivers/gpu/drm/i915/i915_dma.c
+@@ -978,15 +978,21 @@ static int i915_probe_agp(struct drm_dev
+ 	 * Some of the preallocated space is taken by the GTT
+ 	 * and popup.  GTT is 1K per MB of aperture size, and popup is 4K.
+ 	 */
+-	if (IS_G4X(dev) || IS_PINEVIEW(dev) || IS_IRONLAKE(dev))
++	if (IS_G4X(dev) || IS_PINEVIEW(dev) || IS_IRONLAKE(dev) || IS_GEN6(dev))
+ 		overhead = 4096;
+ 	else
+ 		overhead = (*aperture_size / 1024) + 4096;
+ 
+ 	switch (tmp & INTEL_GMCH_GMS_MASK) {
+ 	case INTEL_855_GMCH_GMS_DISABLED:
+-		DRM_ERROR("video memory is disabled\n");
+-		return -1;
++		/* XXX: This is what my A1 silicon has. */
++		if (IS_GEN6(dev)) {
++			stolen = 64 * 1024 * 1024;
++		} else {
++			DRM_ERROR("video memory is disabled\n");
++			return -1;
++		}
++		break;
+ 	case INTEL_855_GMCH_GMS_STOLEN_1M:
+ 		stolen = 1 * 1024 * 1024;
+ 		break;
+@@ -1064,7 +1070,7 @@ static unsigned long i915_gtt_to_phys(st
+ 	int gtt_offset, gtt_size;
+ 
+ 	if (IS_I965G(dev)) {
+-		if (IS_G4X(dev) || IS_IRONLAKE(dev)) {
++		if (IS_G4X(dev) || IS_IRONLAKE(dev) || IS_GEN6(dev)) {
+ 			gtt_offset = 2*1024*1024;
+ 			gtt_size = 2*1024*1024;
+ 		} else {
+@@ -1445,7 +1451,7 @@ int i915_driver_load(struct drm_device *
+ 
+ 	dev->driver->get_vblank_counter = i915_get_vblank_counter;
+ 	dev->max_vblank_count = 0xffffff; /* only 24 bits of frame count */
+-	if (IS_G4X(dev) || IS_IRONLAKE(dev)) {
++	if (IS_G4X(dev) || IS_IRONLAKE(dev) || IS_GEN6(dev)) {
+ 		dev->max_vblank_count = 0xffffffff; /* full 32 bit counter */
+ 		dev->driver->get_vblank_counter = gm45_get_vblank_counter;
+ 	}
+--- a/drivers/gpu/drm/i915/i915_drv.h
++++ b/drivers/gpu/drm/i915/i915_drv.h
+@@ -1026,7 +1026,7 @@ extern int i915_wait_ring(struct drm_dev
+ #define IS_845G(dev)		((dev)->pci_device == 0x2562)
+ #define IS_I85X(dev)		((dev)->pci_device == 0x3582)
+ #define IS_I865G(dev)		((dev)->pci_device == 0x2572)
+-#define IS_I8XX(dev)		(INTEL_INFO(dev)->is_i8xx)
++#define IS_GEN2(dev)		(INTEL_INFO(dev)->is_i8xx)
+ #define IS_I915G(dev)		(INTEL_INFO(dev)->is_i915g)
+ #define IS_I915GM(dev)		((dev)->pci_device == 0x2592)
+ #define IS_I945G(dev)		((dev)->pci_device == 0x2772)
+@@ -1045,8 +1045,29 @@ extern int i915_wait_ring(struct drm_dev
+ #define IS_I9XX(dev)		(INTEL_INFO(dev)->is_i9xx)
+ #define IS_MOBILE(dev)		(INTEL_INFO(dev)->is_mobile)
+ 
++#define IS_GEN3(dev)	(IS_I915G(dev) ||			\
++			 IS_I915GM(dev) ||			\
++			 IS_I945G(dev) ||			\
++			 IS_I945GM(dev) ||			\
++			 IS_G33(dev) || \
++			 IS_PINEVIEW(dev))
++#define IS_GEN4(dev)	((dev)->pci_device == 0x2972 ||		\
++			 (dev)->pci_device == 0x2982 ||		\
++			 (dev)->pci_device == 0x2992 ||		\
++			 (dev)->pci_device == 0x29A2 ||		\
++			 (dev)->pci_device == 0x2A02 ||		\
++			 (dev)->pci_device == 0x2A12 ||		\
++			 (dev)->pci_device == 0x2E02 ||		\
++			 (dev)->pci_device == 0x2E12 ||		\
++			 (dev)->pci_device == 0x2E22 ||		\
++			 (dev)->pci_device == 0x2E32 ||		\
++			 (dev)->pci_device == 0x2A42 ||		\
++			 (dev)->pci_device == 0x2E42)
++
+ #define I915_NEED_GFX_HWS(dev)	(INTEL_INFO(dev)->need_gfx_hws)
+ 
++#define IS_GEN6(dev)	((dev)->pci_device == 0x0102)
++
+ /* With the 945 and later, Y tiling got adjusted so that it was 32 128-byte
+  * rows, which changed the alignment requirements and fence programming.
+  */
+@@ -1067,6 +1088,9 @@ extern int i915_wait_ring(struct drm_dev
+ #define I915_HAS_FBC(dev) (INTEL_INFO(dev)->has_fbc)
+ #define I915_HAS_RC6(dev) (INTEL_INFO(dev)->has_rc6)
+ 
++#define HAS_PCH_SPLIT(dev) (IS_IRONLAKE(dev) ||	\
++			    IS_GEN6(dev))
++
+ #define PRIMARY_RINGBUFFER_SIZE         (128*1024)
+ 
+ #endif
+--- a/drivers/gpu/drm/i915/i915_gem.c
++++ b/drivers/gpu/drm/i915/i915_gem.c
+@@ -1819,7 +1819,7 @@ i915_do_wait_request(struct drm_device *
+ 		return -EIO;
+ 
+ 	if (!i915_seqno_passed(i915_get_gem_seqno(dev), seqno)) {
+-		if (IS_IRONLAKE(dev))
++		if (HAS_PCH_SPLIT(dev))
+ 			ier = I915_READ(DEIER) | I915_READ(GTIER);
+ 		else
+ 			ier = I915_READ(IER);
+--- a/drivers/gpu/drm/i915/i915_gem_tiling.c
++++ b/drivers/gpu/drm/i915/i915_gem_tiling.c
+@@ -209,7 +209,7 @@ i915_gem_detect_bit_6_swizzle(struct drm
+ 	uint32_t swizzle_y = I915_BIT_6_SWIZZLE_UNKNOWN;
+ 	bool need_disable;
+ 
+-	if (IS_IRONLAKE(dev)) {
++	if (IS_IRONLAKE(dev) || IS_GEN6(dev)) {
+ 		/* On Ironlake whatever DRAM config, GPU always do
+ 		 * same swizzling setup.
+ 		 */
+--- a/drivers/gpu/drm/i915/i915_irq.c
++++ b/drivers/gpu/drm/i915/i915_irq.c
+@@ -576,7 +576,7 @@ irqreturn_t i915_driver_irq_handler(DRM_
+ 
+ 	atomic_inc(&dev_priv->irq_received);
+ 
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		return ironlake_irq_handler(dev);
+ 
+ 	iir = I915_READ(IIR);
+@@ -737,7 +737,7 @@ void i915_user_irq_get(struct drm_device
+ 
+ 	spin_lock_irqsave(&dev_priv->user_irq_lock, irqflags);
+ 	if (dev->irq_enabled && (++dev_priv->user_irq_refcount == 1)) {
+-		if (IS_IRONLAKE(dev))
++		if (HAS_PCH_SPLIT(dev))
+ 			ironlake_enable_graphics_irq(dev_priv, GT_USER_INTERRUPT);
+ 		else
+ 			i915_enable_irq(dev_priv, I915_USER_INTERRUPT);
+@@ -753,7 +753,7 @@ void i915_user_irq_put(struct drm_device
+ 	spin_lock_irqsave(&dev_priv->user_irq_lock, irqflags);
+ 	BUG_ON(dev->irq_enabled && dev_priv->user_irq_refcount <= 0);
+ 	if (dev->irq_enabled && (--dev_priv->user_irq_refcount == 0)) {
+-		if (IS_IRONLAKE(dev))
++		if (HAS_PCH_SPLIT(dev))
+ 			ironlake_disable_graphics_irq(dev_priv, GT_USER_INTERRUPT);
+ 		else
+ 			i915_disable_irq(dev_priv, I915_USER_INTERRUPT);
+@@ -861,7 +861,7 @@ int i915_enable_vblank(struct drm_device
+ 		return -EINVAL;
+ 
+ 	spin_lock_irqsave(&dev_priv->user_irq_lock, irqflags);
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		ironlake_enable_display_irq(dev_priv, (pipe == 0) ? 
+ 					    DE_PIPEA_VBLANK: DE_PIPEB_VBLANK);
+ 	else if (IS_I965G(dev))
+@@ -883,7 +883,7 @@ void i915_disable_vblank(struct drm_devi
+ 	unsigned long irqflags;
+ 
+ 	spin_lock_irqsave(&dev_priv->user_irq_lock, irqflags);
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		ironlake_disable_display_irq(dev_priv, (pipe == 0) ? 
+ 					     DE_PIPEA_VBLANK: DE_PIPEB_VBLANK);
+ 	else
+@@ -897,7 +897,7 @@ void i915_enable_interrupt (struct drm_d
+ {
+ 	struct drm_i915_private *dev_priv = dev->dev_private;
+ 
+-	if (!IS_IRONLAKE(dev))
++	if (!HAS_PCH_SPLIT(dev))
+ 		opregion_enable_asle(dev);
+ 	dev_priv->irq_enabled = 1;
+ }
+@@ -1076,7 +1076,7 @@ void i915_driver_irq_preinstall(struct d
+ 	INIT_WORK(&dev_priv->hotplug_work, i915_hotplug_work_func);
+ 	INIT_WORK(&dev_priv->error_work, i915_error_work_func);
+ 
+-	if (IS_IRONLAKE(dev)) {
++	if (HAS_PCH_SPLIT(dev)) {
+ 		ironlake_irq_preinstall(dev);
+ 		return;
+ 	}
+@@ -1108,7 +1108,7 @@ int i915_driver_irq_postinstall(struct d
+ 
+ 	dev_priv->vblank_pipe = DRM_I915_VBLANK_PIPE_A | DRM_I915_VBLANK_PIPE_B;
+ 
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		return ironlake_irq_postinstall(dev);
+ 
+ 	/* Unmask the interrupts that we always want on. */
+@@ -1196,7 +1196,7 @@ void i915_driver_irq_uninstall(struct dr
+ 
+ 	dev_priv->vblank_pipe = 0;
+ 
+-	if (IS_IRONLAKE(dev)) {
++	if (HAS_PCH_SPLIT(dev)) {
+ 		ironlake_irq_uninstall(dev);
+ 		return;
+ 	}
+--- a/drivers/gpu/drm/i915/intel_bios.c
++++ b/drivers/gpu/drm/i915/intel_bios.c
+@@ -247,6 +247,7 @@ static void
+ parse_general_features(struct drm_i915_private *dev_priv,
+ 		       struct bdb_header *bdb)
+ {
++	struct drm_device *dev = dev_priv->dev;
+ 	struct bdb_general_features *general;
+ 
+ 	/* Set sensible defaults in case we can't find the general block */
+@@ -263,7 +264,7 @@ parse_general_features(struct drm_i915_p
+ 			if (IS_I85X(dev_priv->dev))
+ 				dev_priv->lvds_ssc_freq =
+ 					general->ssc_freq ? 66 : 48;
+-			else if (IS_IRONLAKE(dev_priv->dev))
++			else if (IS_IRONLAKE(dev_priv->dev) || IS_GEN6(dev))
+ 				dev_priv->lvds_ssc_freq =
+ 					general->ssc_freq ? 100 : 120;
+ 			else
+--- a/drivers/gpu/drm/i915/intel_crt.c
++++ b/drivers/gpu/drm/i915/intel_crt.c
+@@ -39,7 +39,7 @@ static void intel_crt_dpms(struct drm_en
+ 	struct drm_i915_private *dev_priv = dev->dev_private;
+ 	u32 temp, reg;
+ 
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		reg = PCH_ADPA;
+ 	else
+ 		reg = ADPA;
+@@ -113,7 +113,7 @@ static void intel_crt_mode_set(struct dr
+ 	else
+ 		dpll_md_reg = DPLL_B_MD;
+ 
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		adpa_reg = PCH_ADPA;
+ 	else
+ 		adpa_reg = ADPA;
+@@ -122,7 +122,7 @@ static void intel_crt_mode_set(struct dr
+ 	 * Disable separate mode multiplier used when cloning SDVO to CRT
+ 	 * XXX this needs to be adjusted when we really are cloning
+ 	 */
+-	if (IS_I965G(dev) && !IS_IRONLAKE(dev)) {
++	if (IS_I965G(dev) && !HAS_PCH_SPLIT(dev)) {
+ 		dpll_md = I915_READ(dpll_md_reg);
+ 		I915_WRITE(dpll_md_reg,
+ 			   dpll_md & ~DPLL_MD_UDI_MULTIPLIER_MASK);
+@@ -136,11 +136,11 @@ static void intel_crt_mode_set(struct dr
+ 
+ 	if (intel_crtc->pipe == 0) {
+ 		adpa |= ADPA_PIPE_A_SELECT;
+-		if (!IS_IRONLAKE(dev))
++		if (!HAS_PCH_SPLIT(dev))
+ 			I915_WRITE(BCLRPAT_A, 0);
+ 	} else {
+ 		adpa |= ADPA_PIPE_B_SELECT;
+-		if (!IS_IRONLAKE(dev))
++		if (!HAS_PCH_SPLIT(dev))
+ 			I915_WRITE(BCLRPAT_B, 0);
+ 	}
+ 
+@@ -202,7 +202,7 @@ static bool intel_crt_detect_hotplug(str
+ 	u32 hotplug_en;
+ 	int i, tries = 0;
+ 
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		return intel_ironlake_crt_detect_hotplug(connector);
+ 
+ 	/*
+@@ -524,7 +524,7 @@ void intel_crt_init(struct drm_device *d
+ 					  &intel_output->enc);
+ 
+ 	/* Set up the DDC bus. */
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		i2c_reg = PCH_GPIOA;
+ 	else {
+ 		i2c_reg = GPIOA;
+--- a/drivers/gpu/drm/i915/intel_display.c
++++ b/drivers/gpu/drm/i915/intel_display.c
+@@ -232,7 +232,7 @@ struct intel_limit {
+ #define G4X_P2_DISPLAY_PORT_FAST           10
+ #define G4X_P2_DISPLAY_PORT_LIMIT          0
+ 
+-/* Ironlake */
++/* Ironlake / Sandybridge */
+ /* as we calculate clock using (register_value + 2) for
+    N/M1/M2, so here the range value for them is (actual_value-2).
+  */
+@@ -690,7 +690,7 @@ static const intel_limit_t *intel_limit(
+ 	struct drm_device *dev = crtc->dev;
+ 	const intel_limit_t *limit;
+ 
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		limit = intel_ironlake_limit(crtc);
+ 	else if (IS_G4X(dev)) {
+ 		limit = intel_g4x_limit(crtc);
+@@ -1366,7 +1366,7 @@ intel_pipe_set_base(struct drm_crtc *crt
+ 			dspcntr &= ~DISPPLANE_TILED;
+ 	}
+ 
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		/* must disable */
+ 		dspcntr |= DISPPLANE_TRICKLE_FEED_DISABLE;
+ 
+@@ -1427,7 +1427,7 @@ static void i915_disable_vga (struct drm
+ 	u8 sr1;
+ 	u32 vga_reg;
+ 
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		vga_reg = CPU_VGACNTRL;
+ 	else
+ 		vga_reg = VGACNTRL;
+@@ -2111,7 +2111,7 @@ static bool intel_crtc_mode_fixup(struct
+ 				  struct drm_display_mode *adjusted_mode)
+ {
+ 	struct drm_device *dev = crtc->dev;
+-	if (IS_IRONLAKE(dev)) {
++	if (HAS_PCH_SPLIT(dev)) {
+ 		/* FDI link clock is fixed at 2.7G */
+ 		if (mode->clock * 3 > 27000 * 4)
+ 			return MODE_CLOCK_HIGH;
+@@ -2967,7 +2967,7 @@ static int intel_crtc_mode_set(struct dr
+ 					refclk / 1000);
+ 	} else if (IS_I9XX(dev)) {
+ 		refclk = 96000;
+-		if (IS_IRONLAKE(dev))
++		if (HAS_PCH_SPLIT(dev))
+ 			refclk = 120000; /* 120Mhz refclk */
+ 	} else {
+ 		refclk = 48000;
+@@ -3025,7 +3025,7 @@ static int intel_crtc_mode_set(struct dr
+ 	}
+ 
+ 	/* FDI link */
+-	if (IS_IRONLAKE(dev)) {
++	if (HAS_PCH_SPLIT(dev)) {
+ 		int lane, link_bw, bpp;
+ 		/* eDP doesn't require FDI link, so just set DP M/N
+ 		   according to current link config */
+@@ -3102,7 +3102,7 @@ static int intel_crtc_mode_set(struct dr
+ 	 * PCH B stepping, previous chipset stepping should be
+ 	 * ignoring this setting.
+ 	 */
+-	if (IS_IRONLAKE(dev)) {
++	if (HAS_PCH_SPLIT(dev)) {
+ 		temp = I915_READ(PCH_DREF_CONTROL);
+ 		/* Always enable nonspread source */
+ 		temp &= ~DREF_NONSPREAD_SOURCE_MASK;
+@@ -3149,7 +3149,7 @@ static int intel_crtc_mode_set(struct dr
+ 				reduced_clock.m2;
+ 	}
+ 
+-	if (!IS_IRONLAKE(dev))
++	if (!HAS_PCH_SPLIT(dev))
+ 		dpll = DPLL_VGA_MODE_DIS;
+ 
+ 	if (IS_I9XX(dev)) {
+@@ -3162,7 +3162,7 @@ static int intel_crtc_mode_set(struct dr
+ 			sdvo_pixel_multiply = adjusted_mode->clock / mode->clock;
+ 			if (IS_I945G(dev) || IS_I945GM(dev) || IS_G33(dev))
+ 				dpll |= (sdvo_pixel_multiply - 1) << SDVO_MULTIPLIER_SHIFT_HIRES;
+-			else if (IS_IRONLAKE(dev))
++			else if (HAS_PCH_SPLIT(dev))
+ 				dpll |= (sdvo_pixel_multiply - 1) << PLL_REF_SDVO_HDMI_MULTIPLIER_SHIFT;
+ 		}
+ 		if (is_dp)
+@@ -3174,7 +3174,7 @@ static int intel_crtc_mode_set(struct dr
+ 		else {
+ 			dpll |= (1 << (clock.p1 - 1)) << DPLL_FPA01_P1_POST_DIV_SHIFT;
+ 			/* also FPA1 */
+-			if (IS_IRONLAKE(dev))
++			if (HAS_PCH_SPLIT(dev))
+ 				dpll |= (1 << (clock.p1 - 1)) << DPLL_FPA1_P1_POST_DIV_SHIFT;
+ 			if (IS_G4X(dev) && has_reduced_clock)
+ 				dpll |= (1 << (reduced_clock.p1 - 1)) << DPLL_FPA1_P1_POST_DIV_SHIFT;
+@@ -3193,7 +3193,7 @@ static int intel_crtc_mode_set(struct dr
+ 			dpll |= DPLLB_LVDS_P2_CLOCK_DIV_14;
+ 			break;
+ 		}
+-		if (IS_I965G(dev) && !IS_IRONLAKE(dev))
++		if (IS_I965G(dev) && !HAS_PCH_SPLIT(dev))
+ 			dpll |= (6 << PLL_LOAD_PULSE_PHASE_SHIFT);
+ 	} else {
+ 		if (is_lvds) {
+@@ -3227,7 +3227,7 @@ static int intel_crtc_mode_set(struct dr
+ 
+ 	/* Ironlake's plane is forced to pipe, bit 24 is to
+ 	   enable color space conversion */
+-	if (!IS_IRONLAKE(dev)) {
++	if (!HAS_PCH_SPLIT(dev)) {
+ 		if (pipe == 0)
+ 			dspcntr &= ~DISPPLANE_SEL_PIPE_MASK;
+ 		else
+@@ -3254,14 +3254,14 @@ static int intel_crtc_mode_set(struct dr
+ 
+ 
+ 	/* Disable the panel fitter if it was on our pipe */
+-	if (!IS_IRONLAKE(dev) && intel_panel_fitter_pipe(dev) == pipe)
++	if (!HAS_PCH_SPLIT(dev) && intel_panel_fitter_pipe(dev) == pipe)
+ 		I915_WRITE(PFIT_CONTROL, 0);
+ 
+ 	DRM_DEBUG_KMS("Mode for pipe %c:\n", pipe == 0 ? 'A' : 'B');
+ 	drm_mode_debug_printmodeline(mode);
+ 
+ 	/* assign to Ironlake registers */
+-	if (IS_IRONLAKE(dev)) {
++	if (HAS_PCH_SPLIT(dev)) {
+ 		fp_reg = pch_fp_reg;
+ 		dpll_reg = pch_dpll_reg;
+ 	}
+@@ -3282,7 +3282,7 @@ static int intel_crtc_mode_set(struct dr
+ 	if (is_lvds) {
+ 		u32 lvds;
+ 
+-		if (IS_IRONLAKE(dev))
++		if (HAS_PCH_SPLIT(dev))
+ 			lvds_reg = PCH_LVDS;
+ 
+ 		lvds = I915_READ(lvds_reg);
+@@ -3328,7 +3328,7 @@ static int intel_crtc_mode_set(struct dr
+ 		/* Wait for the clocks to stabilize. */
+ 		udelay(150);
+ 
+-		if (IS_I965G(dev) && !IS_IRONLAKE(dev)) {
++		if (IS_I965G(dev) && !HAS_PCH_SPLIT(dev)) {
+ 			if (is_sdvo) {
+ 				sdvo_pixel_multiply = adjusted_mode->clock / mode->clock;
+ 				I915_WRITE(dpll_md_reg, (0 << DPLL_MD_UDI_DIVIDER_SHIFT) |
+@@ -3375,14 +3375,14 @@ static int intel_crtc_mode_set(struct dr
+ 	/* pipesrc and dspsize control the size that is scaled from, which should
+ 	 * always be the user's requested size.
+ 	 */
+-	if (!IS_IRONLAKE(dev)) {
++	if (!HAS_PCH_SPLIT(dev)) {
+ 		I915_WRITE(dspsize_reg, ((mode->vdisplay - 1) << 16) |
+ 				(mode->hdisplay - 1));
+ 		I915_WRITE(dsppos_reg, 0);
+ 	}
+ 	I915_WRITE(pipesrc_reg, ((mode->hdisplay - 1) << 16) | (mode->vdisplay - 1));
+ 
+-	if (IS_IRONLAKE(dev)) {
++	if (HAS_PCH_SPLIT(dev)) {
+ 		I915_WRITE(data_m1_reg, TU_SIZE(m_n.tu) | m_n.gmch_m);
+ 		I915_WRITE(data_n1_reg, TU_SIZE(m_n.tu) | m_n.gmch_n);
+ 		I915_WRITE(link_m1_reg, m_n.link_m);
+@@ -3403,7 +3403,7 @@ static int intel_crtc_mode_set(struct dr
+ 
+ 	intel_wait_for_vblank(dev);
+ 
+-	if (IS_IRONLAKE(dev)) {
++	if (HAS_PCH_SPLIT(dev)) {
+ 		/* enable address swizzle for tiling buffer */
+ 		temp = I915_READ(DISP_ARB_CTL);
+ 		I915_WRITE(DISP_ARB_CTL, temp | DISP_TILE_SURFACE_SWIZZLING);
+@@ -3438,7 +3438,7 @@ void intel_crtc_load_lut(struct drm_crtc
+ 		return;
+ 
+ 	/* use legacy palette for Ironlake */
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		palreg = (intel_crtc->pipe == 0) ? LGC_PALETTE_A :
+ 						   LGC_PALETTE_B;
+ 
+@@ -3922,7 +3922,7 @@ static void intel_increase_pllclock(stru
+ 	int dpll_reg = (pipe == 0) ? DPLL_A : DPLL_B;
+ 	int dpll = I915_READ(dpll_reg);
+ 
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		return;
+ 
+ 	if (!dev_priv->lvds_downclock_avail)
+@@ -3961,7 +3961,7 @@ static void intel_decrease_pllclock(stru
+ 	int dpll_reg = (pipe == 0) ? DPLL_A : DPLL_B;
+ 	int dpll = I915_READ(dpll_reg);
+ 
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		return;
+ 
+ 	if (!dev_priv->lvds_downclock_avail)
+@@ -4382,7 +4382,7 @@ static void intel_setup_outputs(struct d
+ 	if (IS_MOBILE(dev) && !IS_I830(dev))
+ 		intel_lvds_init(dev);
+ 
+-	if (IS_IRONLAKE(dev)) {
++	if (HAS_PCH_SPLIT(dev)) {
+ 		int found;
+ 
+ 		if (IS_MOBILE(dev) && (I915_READ(DP_A) & DP_DETECTED))
+@@ -4451,7 +4451,7 @@ static void intel_setup_outputs(struct d
+ 			DRM_DEBUG_KMS("probing DP_D\n");
+ 			intel_dp_init(dev, DP_D);
+ 		}
+-	} else if (IS_I8XX(dev))
++	} else if (IS_GEN2(dev))
+ 		intel_dvo_init(dev);
+ 
+ 	if (SUPPORTS_TV(dev))
+@@ -4599,7 +4599,7 @@ void intel_init_clock_gating(struct drm_
+ 	 * Disable clock gating reported to work incorrectly according to the
+ 	 * specs, but enable as much else as we can.
+ 	 */
+-	if (IS_IRONLAKE(dev)) {
++	if (HAS_PCH_SPLIT(dev)) {
+ 		return;
+ 	} else if (IS_G4X(dev)) {
+ 		uint32_t dspclk_gate;
+@@ -4672,7 +4672,7 @@ static void intel_init_display(struct dr
+ 	struct drm_i915_private *dev_priv = dev->dev_private;
+ 
+ 	/* We always want a DPMS function */
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		dev_priv->display.dpms = ironlake_crtc_dpms;
+ 	else
+ 		dev_priv->display.dpms = i9xx_crtc_dpms;
+@@ -4715,7 +4715,7 @@ static void intel_init_display(struct dr
+ 			i830_get_display_clock_speed;
+ 
+ 	/* For FIFO watermark updates */
+-	if (IS_IRONLAKE(dev))
++	if (HAS_PCH_SPLIT(dev))
+ 		dev_priv->display.update_wm = NULL;
+ 	else if (IS_G4X(dev))
+ 		dev_priv->display.update_wm = g4x_update_wm;
+--- a/drivers/gpu/drm/i915/intel_lvds.c
++++ b/drivers/gpu/drm/i915/intel_lvds.c
+@@ -661,7 +661,7 @@ static enum drm_connector_status intel_l
+ 	/* ACPI lid methods were generally unreliable in this generation, so
+ 	 * don't even bother.
+ 	 */
+-	if (IS_I8XX(dev))
++	if (IS_GEN2(dev))
+ 		return connector_status_connected;
+ 
+ 	if (!dmi_check_system(bad_lid_status) && !acpi_lid_open())
+--- a/drivers/gpu/drm/i915/intel_overlay.c
++++ b/drivers/gpu/drm/i915/intel_overlay.c
+@@ -172,7 +172,7 @@ struct overlay_registers {
+ #define OFC_UPDATE		0x1
+ 
+ #define OVERLAY_NONPHYSICAL(dev) (IS_G33(dev) || IS_I965G(dev))
+-#define OVERLAY_EXISTS(dev) (!IS_G4X(dev) && !IS_IRONLAKE(dev))
++#define OVERLAY_EXISTS(dev) (!IS_G4X(dev) && !IS_IRONLAKE(dev) && !IS_GEN6(dev))
+ 
+ 
+ static struct overlay_registers *intel_overlay_map_regs_atomic(struct intel_overlay *overlay)
+From 79b9517a33a283c5d9db875c263670ed1e055f7e Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@redhat.com>
+Date: Mon, 19 Apr 2010 17:54:31 +1000
+Subject: drm/radeon/kms: add FireMV 2400 PCI ID.
+
+From: Dave Airlie <airlied@redhat.com>
+
+commit 79b9517a33a283c5d9db875c263670ed1e055f7e upstream.
+
+This is an M24/X600 chip.
+
+From RH# 581927
+
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ include/drm/drm_pciids.h |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/include/drm/drm_pciids.h
++++ b/include/drm/drm_pciids.h
+@@ -6,6 +6,7 @@
+ 	{0x1002, 0x3150, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_RV380|RADEON_IS_MOBILITY}, \
+ 	{0x1002, 0x3152, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_RV380|RADEON_IS_MOBILITY|RADEON_NEW_MEMMAP}, \
+ 	{0x1002, 0x3154, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_RV380|RADEON_IS_MOBILITY|RADEON_NEW_MEMMAP}, \
++	{0x1002, 0x3155, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_RV380|RADEON_IS_MOBILITY|RADEON_NEW_MEMMAP}, \
+ 	{0x1002, 0x3E50, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_RV380|RADEON_NEW_MEMMAP}, \
+ 	{0x1002, 0x3E54, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_RV380|RADEON_NEW_MEMMAP}, \
+ 	{0x1002, 0x4136, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_RS100|RADEON_IS_IGP}, \
+From 30f69f3fb20bd719b5e1bf879339914063d38f47 Mon Sep 17 00:00:00 2001
+From: Jerome Glisse <jglisse@redhat.com>
+Date: Fri, 16 Apr 2010 18:46:35 +0200
+Subject: drm/radeon/kms: fix rs600 tlb flush
+
+From: Jerome Glisse <jglisse@redhat.com>
+
+commit 30f69f3fb20bd719b5e1bf879339914063d38f47 upstream.
+
+Typo in in flush leaded to no flush of the RS600 tlb which
+ultimately leaded to massive system ram corruption, with
+this patch everythings seems to work properly.
+
+Signed-off-by: Jerome Glisse <jglisse@redhat.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/radeon/rs600.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/radeon/rs600.c
++++ b/drivers/gpu/drm/radeon/rs600.c
+@@ -175,7 +175,7 @@ void rs600_gart_tlb_flush(struct radeon_
+ 	WREG32_MC(R_000100_MC_PT0_CNTL, tmp);
+ 
+ 	tmp = RREG32_MC(R_000100_MC_PT0_CNTL);
+-	tmp |= S_000100_INVALIDATE_ALL_L1_TLBS(1) & S_000100_INVALIDATE_L2_CACHE(1);
++	tmp |= S_000100_INVALIDATE_ALL_L1_TLBS(1) | S_000100_INVALIDATE_L2_CACHE(1);
+ 	WREG32_MC(R_000100_MC_PT0_CNTL, tmp);
+ 
+ 	tmp = RREG32_MC(R_000100_MC_PT0_CNTL);
+From ba1163de2f74d624e7b0e530c4104c98ede0045a Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Tue, 6 Apr 2010 16:11:00 +0000
+Subject: drm/edid/quirks: Envision EN2028
+
+From: Adam Jackson <ajax@redhat.com>
+
+commit ba1163de2f74d624e7b0e530c4104c98ede0045a upstream.
+
+Claims 1280x1024 preferred, physically 1600x1200
+
+cf. http://bugzilla.redhat.com/530399
+
+Signed-off-by: Adam Jackson <ajax@redhat.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/drm_edid.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -85,6 +85,8 @@ static struct edid_quirk {
+ 
+ 	/* Envision Peripherals, Inc. EN-7100e */
+ 	{ "EPI", 59264, EDID_QUIRK_135_CLOCK_TOO_HIGH },
++	/* Envision EN2028 */
++	{ "EPI", 8232, EDID_QUIRK_PREFER_LARGE_60 },
+ 
+ 	/* Funai Electronics PM36B */
+ 	{ "FCM", 13600, EDID_QUIRK_PREFER_LARGE_75 |
+From da58405860b992d2bb21ebae5d685fe3204dd3f0 Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Thu, 18 Mar 2010 11:56:54 +0000
+Subject: drm: Return ENODEV if the inode mapping changes
+
+From: Chris Wilson <chris@chris-wilson.co.uk>
+
+commit da58405860b992d2bb21ebae5d685fe3204dd3f0 upstream.
+
+Replace a BUG_ON with an error code in the event that the inode mapping
+changes between calls to drm_open. This may happen for instance if udev
+is loaded subsequent to the original opening of the device:
+
+[  644.291870] kernel BUG at drivers/gpu/drm/drm_fops.c:146!
+[  644.291876] invalid opcode: 0000 [#1] SMP
+[  644.291882] last sysfs file: /sys/kernel/uevent_seqnum
+[  644.291888]
+[  644.291895] Pid: 7276, comm: lt-cairo-test-s Not tainted 2.6.34-rc1 #2 N150/N210/N220             /N150/N210/N220
+[  644.291903] EIP: 0060:[<c11c70e3>] EFLAGS: 00210283 CPU: 0
+[  644.291912] EIP is at drm_open+0x4b1/0x4e2
+[  644.291918] EAX: f72d8d18 EBX: f790a400 ECX: f73176b8 EDX: 00000000
+[  644.291923] ESI: f790a414 EDI: f790a414 EBP: f647ae20 ESP: f647adfc
+[  644.291929]  DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
+[  644.291937] Process lt-cairo-test-s (pid: 7276, ti=f647a000 task=f73f5c80 task.ti=f647a000)
+[  644.291941] Stack:
+[  644.291945]  00000000 f7bb7400 00000080 f6451100 f73176b8 f6479214 f6451100 f73176b8
+[  644.291957] <0> c1297ce0 f647ae34 c11c6c04 f73176b8 f7949800 00000000 f647ae54 c1080ac5
+[  644.291969] <0> f7949800 f6451100 00000000 f6451100 f73176b8 f6452780 f647ae70 c107d1e6
+[  644.291982] Call Trace:
+[  644.291991]  [<c11c6c04>] ? drm_stub_open+0x8a/0xb8
+[  644.292000]  [<c1080ac5>] ? chrdev_open+0xef/0x106
+[  644.292008]  [<c107d1e6>] ? __dentry_open+0xd4/0x1a6
+[  644.292015]  [<c107d35b>] ? nameidata_to_filp+0x31/0x45
+[  644.292022]  [<c10809d6>] ? chrdev_open+0x0/0x106
+[  644.292030]  [<c10864e2>] ? do_last+0x346/0x423
+[  644.292037]  [<c108789f>] ? do_filp_open+0x190/0x415
+[  644.292046]  [<c1071eb5>] ? handle_mm_fault+0x214/0x710
+[  644.292053]  [<c107d008>] ? do_sys_open+0x4d/0xe9
+[  644.292061]  [<c1016462>] ? do_page_fault+0x211/0x23f
+[  644.292068]  [<c107d0f0>] ? sys_open+0x23/0x2b
+[  644.292075]  [<c1002650>] ? sysenter_do_call+0x12/0x26
+[  644.292079] Code: 89 f0 89 55 dc e8 8d 96 0a 00 8b 45 e0 8b 55 dc 83 78 04 01 75 28 8b 83 18 02 00 00 85 c0 74 0f 8b 4d ec 3b 81 ac 00 00 00 74 13 <0f> 0b eb fe 8b 4d ec 8b 81 ac 00 00 00 89 83 18 02 00 00 89 f0
+[  644.292143] EIP: [<c11c70e3>] drm_open+0x4b1/0x4e2 SS:ESP 0068:f647adfc
+[  644.292175] ---[ end trace 2ddd476af89a60fa ]---
+
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/drm_fops.c |   16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
+
+--- a/drivers/gpu/drm/drm_fops.c
++++ b/drivers/gpu/drm/drm_fops.c
+@@ -140,14 +140,16 @@ int drm_open(struct inode *inode, struct
+ 		spin_unlock(&dev->count_lock);
+ 	}
+ out:
+-	mutex_lock(&dev->struct_mutex);
+-	if (minor->type == DRM_MINOR_LEGACY) {
+-		BUG_ON((dev->dev_mapping != NULL) &&
+-			(dev->dev_mapping != inode->i_mapping));
+-		if (dev->dev_mapping == NULL)
+-			dev->dev_mapping = inode->i_mapping;
++	if (!retcode) {
++		mutex_lock(&dev->struct_mutex);
++		if (minor->type == DRM_MINOR_LEGACY) {
++			if (dev->dev_mapping == NULL)
++				dev->dev_mapping = inode->i_mapping;
++			else if (dev->dev_mapping != inode->i_mapping)
++				retcode = -ENODEV;
++		}
++		mutex_unlock(&dev->struct_mutex);
+ 	}
+-	mutex_unlock(&dev->struct_mutex);
+ 
+ 	return retcode;
+ }
+From 725398322d05486109375fbb85c3404108881e17 Mon Sep 17 00:00:00 2001
+From: Zhao Yakui <yakui.zhao@intel.com>
+Date: Thu, 4 Mar 2010 08:25:55 +0000
+Subject: drm: remove the EDID blob stored in the EDID property when it is disconnected
+
+From: Zhao Yakui <yakui.zhao@intel.com>
+
+commit 725398322d05486109375fbb85c3404108881e17 upstream.
+
+Now the EDID property will be updated when the corresponding EDID can be
+obtained from the external display device. But after the external device
+is plugged-out, the EDID property is not updated. In such case we still
+get the corresponding EDID property although it is already detected as
+disconnected.
+
+https://bugs.freedesktop.org/show_bug.cgi?id=26743
+
+Signed-off-by: Zhao Yakui <yakui.zhao@intel.com>
+Signed-off-by: Zhenyu Wang <zhenyuw@linux.intel.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/drm_crtc_helper.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/drivers/gpu/drm/drm_crtc_helper.c
++++ b/drivers/gpu/drm/drm_crtc_helper.c
+@@ -104,6 +104,7 @@ int drm_helper_probe_single_connector_mo
+ 	if (connector->status == connector_status_disconnected) {
+ 		DRM_DEBUG_KMS("%s is disconnected\n",
+ 			  drm_get_connector_name(connector));
++		drm_mode_connector_update_edid_property(connector, NULL);
+ 		goto prune;
+ 	}
+ 
+From 44fef22416886a04d432043f741a6faf2c6ffefd Mon Sep 17 00:00:00 2001
+From: Ben Skeggs <bskeggs@redhat.com>
+Date: Thu, 18 Feb 2010 09:12:09 +1000
+Subject: drm/edid: allow certain bogus edids to hit a fixup path rather than fail
+
+From: Ben Skeggs <bskeggs@redhat.com>
+
+commit 44fef22416886a04d432043f741a6faf2c6ffefd upstream.
+
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/gpu/drm/drm_edid.c |    9 ---------
+ 1 file changed, 9 deletions(-)
+
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -707,15 +707,6 @@ static struct drm_display_mode *drm_mode
+ 	mode->vsync_end = mode->vsync_start + vsync_pulse_width;
+ 	mode->vtotal = mode->vdisplay + vblank;
+ 
+-	/* perform the basic check for the detailed timing */
+-	if (mode->hsync_end > mode->htotal ||
+-		mode->vsync_end > mode->vtotal) {
+-		drm_mode_destroy(dev, mode);
+-		DRM_DEBUG_KMS("Incorrect detailed timing. "
+-				"Sync is beyond the blank.\n");
+-		return NULL;
+-	}
+-
+ 	/* Some EDIDs have bogus h/vtotal values */
+ 	if (mode->hsync_end > mode->htotal)
+ 		mode->htotal = mode->hsync_end + 1;
+From 0725e95ea56698774e893edb7e7276b1d6890954 Mon Sep 17 00:00:00 2001
+From: Bernhard Rosenkraenzer <br@blankpage.ch>
+Date: Wed, 10 Mar 2010 12:36:43 +0100
+Subject: USB: qcserial: add new device ids
+
+From: Bernhard Rosenkraenzer <br@blankpage.ch>
+
+commit 0725e95ea56698774e893edb7e7276b1d6890954 upstream.
+
+This patch adds various USB device IDs for Gobi 2000 devices, as found in the
+drivers available at https://www.codeaurora.org/wiki/GOBI_Releases
+
+Signed-off-by: Bernhard Rosenkraenzer <bero@arklinux.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/usb/serial/qcserial.c |   29 +++++++++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+
+--- a/drivers/usb/serial/qcserial.c
++++ b/drivers/usb/serial/qcserial.c
+@@ -47,6 +47,35 @@ static struct usb_device_id id_table[] =
+ 	{USB_DEVICE(0x05c6, 0x9221)},	/* Generic Gobi QDL device */
+ 	{USB_DEVICE(0x05c6, 0x9231)},	/* Generic Gobi QDL device */
+ 	{USB_DEVICE(0x1f45, 0x0001)},	/* Unknown Gobi QDL device */
++	{USB_DEVICE(0x413c, 0x8185)},	/* Dell Gobi 2000 QDL device (N0218, VU936) */
++	{USB_DEVICE(0x413c, 0x8186)},	/* Dell Gobi 2000 Modem device (N0218, VU936) */
++	{USB_DEVICE(0x05c6, 0x9224)},	/* Sony Gobi 2000 QDL device (N0279, VU730) */
++	{USB_DEVICE(0x05c6, 0x9225)},	/* Sony Gobi 2000 Modem device (N0279, VU730) */
++	{USB_DEVICE(0x05c6, 0x9244)},	/* Samsung Gobi 2000 QDL device (VL176) */
++	{USB_DEVICE(0x05c6, 0x9245)},	/* Samsung Gobi 2000 Modem device (VL176) */
++	{USB_DEVICE(0x03f0, 0x241d)},	/* HP Gobi 2000 QDL device (VP412) */
++	{USB_DEVICE(0x03f0, 0x251d)},	/* HP Gobi 2000 Modem device (VP412) */
++	{USB_DEVICE(0x05c6, 0x9214)},	/* Acer Gobi 2000 QDL device (VP413) */
++	{USB_DEVICE(0x05c6, 0x9215)},	/* Acer Gobi 2000 Modem device (VP413) */
++	{USB_DEVICE(0x05c6, 0x9264)},	/* Asus Gobi 2000 QDL device (VR305) */
++	{USB_DEVICE(0x05c6, 0x9265)},	/* Asus Gobi 2000 Modem device (VR305) */
++	{USB_DEVICE(0x05c6, 0x9234)},	/* Top Global Gobi 2000 QDL device (VR306) */
++	{USB_DEVICE(0x05c6, 0x9235)},	/* Top Global Gobi 2000 Modem device (VR306) */
++	{USB_DEVICE(0x05c6, 0x9274)},	/* iRex Technologies Gobi 2000 QDL device (VR307) */
++	{USB_DEVICE(0x05c6, 0x9275)},	/* iRex Technologies Gobi 2000 Modem device (VR307) */
++	{USB_DEVICE(0x1199, 0x9000)},	/* Sierra Wireless Gobi 2000 QDL device (VT773) */
++	{USB_DEVICE(0x1199, 0x9001)},	/* Sierra Wireless Gobi 2000 Modem device (VT773) */
++	{USB_DEVICE(0x1199, 0x9002)},	/* Sierra Wireless Gobi 2000 Modem device (VT773) */
++	{USB_DEVICE(0x1199, 0x9003)},	/* Sierra Wireless Gobi 2000 Modem device (VT773) */
++	{USB_DEVICE(0x1199, 0x9004)},	/* Sierra Wireless Gobi 2000 Modem device (VT773) */
++	{USB_DEVICE(0x1199, 0x9005)},	/* Sierra Wireless Gobi 2000 Modem device (VT773) */
++	{USB_DEVICE(0x1199, 0x9006)},	/* Sierra Wireless Gobi 2000 Modem device (VT773) */
++	{USB_DEVICE(0x1199, 0x9007)},	/* Sierra Wireless Gobi 2000 Modem device (VT773) */
++	{USB_DEVICE(0x1199, 0x9008)},	/* Sierra Wireless Gobi 2000 Modem device (VT773) */
++	{USB_DEVICE(0x1199, 0x9009)},	/* Sierra Wireless Gobi 2000 Modem device (VT773) */
++	{USB_DEVICE(0x1199, 0x900a)},	/* Sierra Wireless Gobi 2000 Modem device (VT773) */
++	{USB_DEVICE(0x16d8, 0x8001)},	/* CMDTech Gobi 2000 QDL device (VU922) */
++	{USB_DEVICE(0x16d8, 0x8002)},	/* CMDTech Gobi 2000 Modem device (VU922) */
+ 	{ }				/* Terminating entry */
+ };
+ MODULE_DEVICE_TABLE(usb, id_table);
+From 70136081fc67ea77d849f86fa323e5773c8e40ea Mon Sep 17 00:00:00 2001
+From: Theodore Kilgore <kilgota@auburn.edu>
+Date: Fri, 25 Dec 2009 05:15:10 -0300
+Subject: V4L/DVB (13991): gspca_mr973010a: Fix cif type 1 cameras not streaming on UHCI controllers
+
+From: Theodore Kilgore <kilgota@auburn.edu>
+
+commit 70136081fc67ea77d849f86fa323e5773c8e40ea upstream.
+
+If you read the mail to Oliver Neukum on the linux-usb list, then you know
+that I found a cure for the mysterious problem that the MR97310a CIF "type
+1" cameras have been freezing up and refusing to stream if hooked up to a
+machine with a UHCI controller.
+
+Namely, the cure is that if the camera is an mr97310a CIF type 1 camera, you
+have to send it 0xa0, 0x00. Somehow, this is a timing reset command, or
+such. It un-blocks whatever was previously stopping the CIF type 1 cameras
+from working on the UHCI-based machines.
+
+Signed-off-by: Theodore Kilgore <kilgota@auburn.edu>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/media/video/gspca/mr97310a.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
+
+--- a/drivers/media/video/gspca/mr97310a.c
++++ b/drivers/media/video/gspca/mr97310a.c
+@@ -697,6 +697,12 @@ static int start_cif_cam(struct gspca_de
+ 			{0x13, 0x00, {0x01}, 1},
+ 			{0, 0, {0}, 0}
+ 		};
++		/* Without this command the cam won't work with USB-UHCI */
++		gspca_dev->usb_buf[0] = 0x0a;
++		gspca_dev->usb_buf[1] = 0x00;
++		err_code = mr_write(gspca_dev, 2);
++		if (err_code < 0)
++			return err_code;
+ 		err_code = sensor_write_regs(gspca_dev, cif_sensor1_init_data,
+ 					 ARRAY_SIZE(cif_sensor1_init_data));
+ 	}
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 315fea4..3245d33 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -2421,18 +2421,17 @@ EXPORT_SYMBOL_GPL(pci_reset_function);
+  */
+ int pcix_get_max_mmrbc(struct pci_dev *dev)
+ {
+-	int err, cap;
++	int cap;
+ 	u32 stat;
+ 
+ 	cap = pci_find_capability(dev, PCI_CAP_ID_PCIX);
+ 	if (!cap)
+ 		return -EINVAL;
+ 
+-	err = pci_read_config_dword(dev, cap + PCI_X_STATUS, &stat);
+-	if (err)
++	if (pci_read_config_dword(dev, cap + PCI_X_STATUS, &stat))
+ 		return -EINVAL;
+ 
+-	return (stat & PCI_X_STATUS_MAX_READ) >> 12;
++	return 512 << ((stat & PCI_X_STATUS_MAX_READ) >> 21);
+ }
+ EXPORT_SYMBOL(pcix_get_max_mmrbc);
+ 
+@@ -2445,18 +2444,17 @@ EXPORT_SYMBOL(pcix_get_max_mmrbc);
+  */
+ int pcix_get_mmrbc(struct pci_dev *dev)
+ {
+-	int ret, cap;
+-	u32 cmd;
++	int cap;
++	u16 cmd;
+ 
+ 	cap = pci_find_capability(dev, PCI_CAP_ID_PCIX);
+ 	if (!cap)
+ 		return -EINVAL;
+ 
+-	ret = pci_read_config_dword(dev, cap + PCI_X_CMD, &cmd);
+-	if (!ret)
+-		ret = 512 << ((cmd & PCI_X_CMD_MAX_READ) >> 2);
++	if (pci_read_config_word(dev, cap + PCI_X_CMD, &cmd))
++		return -EINVAL;
+ 
+-	return ret;
++	return 512 << ((cmd & PCI_X_CMD_MAX_READ) >> 2);
+ }
+ EXPORT_SYMBOL(pcix_get_mmrbc);
+ 
+@@ -2471,28 +2469,27 @@ EXPORT_SYMBOL(pcix_get_mmrbc);
+  */
+ int pcix_set_mmrbc(struct pci_dev *dev, int mmrbc)
+ {
+-	int cap, err = -EINVAL;
+-	u32 stat, cmd, v, o;
++	int cap;
++	u32 stat, v, o;
++	u16 cmd;
+ 
+ 	if (mmrbc < 512 || mmrbc > 4096 || !is_power_of_2(mmrbc))
+-		goto out;
++		return -EINVAL;
+ 
+ 	v = ffs(mmrbc) - 10;
+ 
+ 	cap = pci_find_capability(dev, PCI_CAP_ID_PCIX);
+ 	if (!cap)
+-		goto out;
++		return -EINVAL;
+ 
+-	err = pci_read_config_dword(dev, cap + PCI_X_STATUS, &stat);
+-	if (err)
+-		goto out;
++	if (pci_read_config_dword(dev, cap + PCI_X_STATUS, &stat))
++		return -EINVAL;
+ 
+ 	if (v > (stat & PCI_X_STATUS_MAX_READ) >> 21)
+ 		return -E2BIG;
+ 
+-	err = pci_read_config_dword(dev, cap + PCI_X_CMD, &cmd);
+-	if (err)
+-		goto out;
++	if (pci_read_config_word(dev, cap + PCI_X_CMD, &cmd))
++		return -EINVAL;
+ 
+ 	o = (cmd & PCI_X_CMD_MAX_READ) >> 2;
+ 	if (o != v) {
+@@ -2502,10 +2499,10 @@ int pcix_set_mmrbc(struct pci_dev *dev, int mmrbc)
+ 
+ 		cmd &= ~PCI_X_CMD_MAX_READ;
+ 		cmd |= v << 2;
+-		err = pci_write_config_dword(dev, cap + PCI_X_CMD, cmd);
++		if (pci_write_config_word(dev, cap + PCI_X_CMD, cmd))
++			return -EIO;
+ 	}
+-out:
+-	return err;
++	return 0;
+ }
+ EXPORT_SYMBOL(pcix_set_mmrbc);
+ 
+

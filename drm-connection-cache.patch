@@ -1,0 +1,65 @@
+diff -up linux-2.6.30.noarch/drivers/gpu/drm/drm_crtc_helper.c.jx linux-2.6.30.noarch/drivers/gpu/drm/drm_crtc_helper.c
+--- linux-2.6.30.noarch/drivers/gpu/drm/drm_crtc_helper.c.jx	2009-09-09 08:57:39.000000000 -0400
++++ linux-2.6.30.noarch/drivers/gpu/drm/drm_crtc_helper.c	2009-09-09 09:35:24.000000000 -0400
+@@ -92,6 +92,18 @@ int drm_helper_probe_single_connector_mo
+ 
+ 	connector->status = connector->funcs->detect(connector);
+ 
++	/* fast path if the driver tracks disconnection */
++	if (connector->status == connector_status_cached) {
++		DRM_DEBUG_KMS("%s still connected\n",
++			      drm_get_connector_name(connector));
++		list_for_each_entry_safe(mode, t, &connector->modes, head) {
++			count++;
++			mode->status = MODE_OK;
++		}
++		connector->status = connector_status_connected;
++		return count;
++	}
++
+ 	if (connector->status == connector_status_disconnected) {
+ 		DRM_DEBUG_KMS("%s is disconnected\n",
+ 			  drm_get_connector_name(connector));
+diff -up linux-2.6.30.noarch/drivers/gpu/drm/i915/intel_lvds.c.jx linux-2.6.30.noarch/drivers/gpu/drm/i915/intel_lvds.c
+--- linux-2.6.30.noarch/drivers/gpu/drm/i915/intel_lvds.c.jx	2009-09-09 08:57:39.000000000 -0400
++++ linux-2.6.30.noarch/drivers/gpu/drm/i915/intel_lvds.c	2009-09-09 09:56:18.000000000 -0400
+@@ -593,7 +593,14 @@ static void intel_lvds_mode_set(struct d
+  */
+ static enum drm_connector_status intel_lvds_detect(struct drm_connector *connector)
+ {
+-	return connector_status_connected;
++	static int done;
++
++	if (!done) {
++		done = 1;
++		return connector_status_connected;
++	} else {
++		return connector_status_cached;
++	}
+ }
+ 
+ /**
+diff -up linux-2.6.30.noarch/include/drm/drm_crtc.h.jx linux-2.6.30.noarch/include/drm/drm_crtc.h
+--- linux-2.6.30.noarch/include/drm/drm_crtc.h.jx	2009-09-09 08:57:39.000000000 -0400
++++ linux-2.6.30.noarch/include/drm/drm_crtc.h	2009-09-09 09:35:24.000000000 -0400
+@@ -172,6 +172,7 @@ enum drm_connector_status {
+ 	connector_status_connected = 1,
+ 	connector_status_disconnected = 2,
+ 	connector_status_unknown = 3,
++	connector_status_cached = 4,
+ };
+ 
+ enum subpixel_order {
+diff -up linux-2.6.30.x86_64/drivers/gpu/drm/drm_crtc.c.jx linux-2.6.30.x86_64/drivers/gpu/drm/drm_crtc.c
+--- linux-2.6.30.x86_64/drivers/gpu/drm/drm_crtc.c.jx	2009-09-09 10:10:44.000000000 -0400
++++ linux-2.6.30.x86_64/drivers/gpu/drm/drm_crtc.c	2009-09-09 11:23:14.000000000 -0400
+@@ -185,7 +185,8 @@ EXPORT_SYMBOL(drm_get_connector_name);
+ 
+ char *drm_get_connector_status_name(enum drm_connector_status status)
+ {
+-	if (status == connector_status_connected)
++	if (status == connector_status_connected ||
++	    status == connector_status_cached)
+ 		return "connected";
+ 	else if (status == connector_status_disconnected)
+ 		return "disconnected";

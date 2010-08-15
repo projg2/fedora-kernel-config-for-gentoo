@@ -1,7 +1,7 @@
 From: Stanislaw Gruszka <sgruszka@redhat.com>
 To: kernel@lists.fedoraproject.org, "John W. Linville" <linville@redhat.com>
-Subject: [PATCH 2/4 2.6.34.y] iwlwifi: manage QoS by mac stack
-Date: Fri, 11 Jun 2010 17:05:12 +0200
+Subject: [PATCH 2/4 2.6.33.y] iwlwifi: manage QoS by mac stack
+Date: Fri, 11 Jun 2010 17:04:18 +0200
 
 commit e61146e36b40fd9d346118c40285913236c329f3 upstream.
 
@@ -26,10 +26,10 @@ Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
  5 files changed, 17 insertions(+), 171 deletions(-)
 
 diff --git a/drivers/net/wireless/iwlwifi/iwl-agn.c b/drivers/net/wireless/iwlwifi/iwl-agn.c
-index bdff565..21c3ef0 100644
+index 5622a55..9ba4207 100644
 --- a/drivers/net/wireless/iwlwifi/iwl-agn.c
 +++ b/drivers/net/wireless/iwlwifi/iwl-agn.c
-@@ -2515,7 +2515,6 @@ void iwl_post_associate(struct iwl_priv *priv)
+@@ -2327,7 +2327,6 @@ void iwl_post_associate(struct iwl_priv *priv)
  {
  	struct ieee80211_conf *conf = NULL;
  	int ret = 0;
@@ -37,7 +37,7 @@ index bdff565..21c3ef0 100644
  
  	if (priv->iw_mode == NL80211_IFTYPE_AP) {
  		IWL_ERR(priv, "%s Should not be called in AP mode\n", __func__);
-@@ -2600,10 +2599,6 @@ void iwl_post_associate(struct iwl_priv *priv)
+@@ -2412,10 +2411,6 @@ void iwl_post_associate(struct iwl_priv *priv)
  	if (priv->iw_mode == NL80211_IFTYPE_ADHOC)
  		priv->assoc_station_added = 1;
  
@@ -48,7 +48,7 @@ index bdff565..21c3ef0 100644
  	/* the chain noise calibration will enabled PM upon completion
  	 * If chain noise has already been run, then we need to enable
  	 * power management here */
-@@ -2780,7 +2775,6 @@ static int iwl_mac_tx(struct ieee80211_hw *hw, struct sk_buff *skb)
+@@ -2602,7 +2597,6 @@ static int iwl_mac_tx(struct ieee80211_hw *hw, struct sk_buff *skb)
  void iwl_config_ap(struct iwl_priv *priv)
  {
  	int ret = 0;
@@ -56,7 +56,7 @@ index bdff565..21c3ef0 100644
  
  	if (test_bit(STATUS_EXIT_PENDING, &priv->status))
  		return;
-@@ -2832,10 +2826,6 @@ void iwl_config_ap(struct iwl_priv *priv)
+@@ -2654,10 +2648,6 @@ void iwl_config_ap(struct iwl_priv *priv)
  		/* restore RXON assoc */
  		priv->staging_rxon.filter_flags |= RXON_FILTER_ASSOC_MSK;
  		iwlcore_commit_rxon(priv);
@@ -67,7 +67,7 @@ index bdff565..21c3ef0 100644
  		iwl_add_bcast_station(priv);
  	}
  	iwl_send_beacon_cmd(priv);
-@@ -3396,11 +3386,6 @@ static int iwl_init_drv(struct iwl_priv *priv)
+@@ -3195,11 +3185,6 @@ static int iwl_init_drv(struct iwl_priv *priv)
  
  	iwl_init_scan_params(priv);
  
@@ -80,10 +80,10 @@ index bdff565..21c3ef0 100644
  	/* Set the tx_power_user_lmt to the lowest power level
  	 * this value will get overwritten by channel max power avg
 diff --git a/drivers/net/wireless/iwlwifi/iwl-core.c b/drivers/net/wireless/iwlwifi/iwl-core.c
-index 049b652..2dd8aaa 100644
+index 6e9e156..d79b1e9 100644
 --- a/drivers/net/wireless/iwlwifi/iwl-core.c
 +++ b/drivers/net/wireless/iwlwifi/iwl-core.c
-@@ -325,17 +325,13 @@ EXPORT_SYMBOL(iwl_hw_nic_init);
+@@ -301,17 +301,13 @@ EXPORT_SYMBOL(iwl_hw_nic_init);
  /*
   * QoS  support
  */
@@ -102,7 +102,7 @@ index 049b652..2dd8aaa 100644
  	if (priv->qos_data.qos_active)
  		priv->qos_data.def_qos_parm.qos_flags |=
  			QOS_PARAM_FLG_UPDATE_EDCA_MSK;
-@@ -343,118 +339,14 @@ void iwl_activate_qos(struct iwl_priv *priv, u8 force)
+@@ -319,118 +315,14 @@ void iwl_activate_qos(struct iwl_priv *priv, u8 force)
  	if (priv->current_ht_config.is_ht)
  		priv->qos_data.def_qos_parm.qos_flags |= QOS_PARAM_FLG_TGN_MSK;
  
@@ -227,7 +227,7 @@ index 049b652..2dd8aaa 100644
  
  #define MAX_BIT_RATE_40_MHZ 150 /* Mbps */
  #define MAX_BIT_RATE_20_MHZ 72 /* Mbps */
-@@ -2306,12 +2198,6 @@ int iwl_mac_conf_tx(struct ieee80211_hw *hw, u16 queue,
+@@ -2273,12 +2165,6 @@ int iwl_mac_conf_tx(struct ieee80211_hw *hw, u16 queue,
  			cpu_to_le16((params->txop * 32));
  
  	priv->qos_data.def_qos_parm.ac[q].reserved1 = 0;
@@ -240,7 +240,7 @@ index 049b652..2dd8aaa 100644
  
  	spin_unlock_irqrestore(&priv->lock, flags);
  
-@@ -2587,11 +2473,8 @@ int iwl_mac_beacon_update(struct ieee80211_hw *hw, struct sk_buff *skb)
+@@ -2554,11 +2440,8 @@ int iwl_mac_beacon_update(struct ieee80211_hw *hw, struct sk_buff *skb)
  	IWL_DEBUG_MAC80211(priv, "leave\n");
  	spin_unlock_irqrestore(&priv->lock, flags);
  
@@ -252,9 +252,9 @@ index 049b652..2dd8aaa 100644
  	return 0;
  }
  EXPORT_SYMBOL(iwl_mac_beacon_update);
-@@ -2833,6 +2716,15 @@ int iwl_mac_config(struct ieee80211_hw *hw, u32 changed)
- 		iwl_set_tx_power(priv, conf->power_level, false);
- 	}
+@@ -2790,6 +2673,15 @@ int iwl_mac_config(struct ieee80211_hw *hw, u32 changed)
+ 	if (priv->cfg->ops->hcmd->set_rxon_chain)
+ 		priv->cfg->ops->hcmd->set_rxon_chain(priv);
  
 +	if (changed & IEEE80211_CONF_CHANGE_QOS) {
 +		bool qos_active = !!(conf->flags & IEEE80211_CONF_QOS);
@@ -268,7 +268,7 @@ index 049b652..2dd8aaa 100644
  	if (!iwl_is_ready(priv)) {
  		IWL_DEBUG_MAC80211(priv, "leave - not ready\n");
  		goto out;
-@@ -2867,8 +2759,6 @@ void iwl_mac_reset_tsf(struct ieee80211_hw *hw)
+@@ -2860,8 +2752,6 @@ void iwl_mac_reset_tsf(struct ieee80211_hw *hw)
  	memset(&priv->current_ht_config, 0, sizeof(struct iwl_ht_config));
  	spin_unlock_irqrestore(&priv->lock, flags);
  
@@ -278,10 +278,10 @@ index 049b652..2dd8aaa 100644
  	priv->assoc_id = 0;
  	priv->assoc_capability = 0;
 diff --git a/drivers/net/wireless/iwlwifi/iwl-core.h b/drivers/net/wireless/iwlwifi/iwl-core.h
-index 36940a9..70af968 100644
+index b69e972..403f512 100644
 --- a/drivers/net/wireless/iwlwifi/iwl-core.h
 +++ b/drivers/net/wireless/iwlwifi/iwl-core.h
-@@ -304,8 +304,7 @@ struct iwl_cfg {
+@@ -298,8 +298,7 @@ struct iwl_cfg {
  struct ieee80211_hw *iwl_alloc_all(struct iwl_cfg *cfg,
  		struct ieee80211_ops *hw_ops);
  void iwl_hw_detect(struct iwl_priv *priv);
@@ -292,10 +292,10 @@ index 36940a9..70af968 100644
  		    const struct ieee80211_tx_queue_params *params);
  void iwl_set_rxon_hwcrypto(struct iwl_priv *priv, int hw_decrypt);
 diff --git a/drivers/net/wireless/iwlwifi/iwl-dev.h b/drivers/net/wireless/iwlwifi/iwl-dev.h
-index ef1720a..cc12e89 100644
+index 3822cf5..f2a9356 100644
 --- a/drivers/net/wireless/iwlwifi/iwl-dev.h
 +++ b/drivers/net/wireless/iwlwifi/iwl-dev.h
-@@ -519,30 +519,9 @@ struct iwl_ht_config {
+@@ -518,30 +518,9 @@ struct iwl_ht_config {
  	u8 non_GF_STA_present;
  };
  
@@ -327,10 +327,10 @@ index ef1720a..cc12e89 100644
  };
  
 diff --git a/drivers/net/wireless/iwlwifi/iwl3945-base.c b/drivers/net/wireless/iwlwifi/iwl3945-base.c
-index b74a56c..c054527 100644
+index adbb3ea..2280ba7 100644
 --- a/drivers/net/wireless/iwlwifi/iwl3945-base.c
 +++ b/drivers/net/wireless/iwlwifi/iwl3945-base.c
-@@ -3152,8 +3152,6 @@ void iwl3945_post_associate(struct iwl_priv *priv)
+@@ -3127,8 +3127,6 @@ void iwl3945_post_associate(struct iwl_priv *priv)
  		break;
  	}
  
@@ -339,9 +339,9 @@ index b74a56c..c054527 100644
  	/* we have just associated, don't start scan too early */
  	priv->next_scan_jiffies = jiffies + IWL_DELAY_NEXT_SCAN;
  }
-@@ -3861,11 +3859,6 @@ static int iwl3945_init_drv(struct iwl_priv *priv)
+@@ -3841,11 +3839,6 @@ static int iwl3945_init_drv(struct iwl_priv *priv)
+ 
  	priv->iw_mode = NL80211_IFTYPE_STATION;
- 	priv->missed_beacon_threshold = IWL_MISSED_BEACON_THRESHOLD_DEF;
  
 -	iwl_reset_qos(priv);
 -

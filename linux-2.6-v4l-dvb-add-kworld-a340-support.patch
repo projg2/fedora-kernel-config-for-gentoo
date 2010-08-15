@@ -1,7 +1,4 @@
-From c34c78838f02693a70808e38309629e85aa50266 Mon Sep 17 00:00:00 2001
-From: Jarod Wilson <jarod@redhat.com>
-Date: Thu, 20 May 2010 10:03:13 -0400
-Subject: [PATCH] dvb: add support for kworld 340u and ub435-q to em28xx-dvb
+[PATCH] dvb: add support for kworld 340u and ub435-q to em28xx-dvb
 
 This adds support for the KWorld PlusTV 340U and KWorld UB345-Q ATSC
 sticks, which are really the same device. The sticks have an eMPIA
@@ -15,17 +12,12 @@ rather than the current lgdt3304 driver, as its severely lacking in
 functionality by comparison (see said patch for details).
 
 Signed-off-by: Jarod Wilson <jarod@redhat.com>
----
- drivers/media/video/em28xx/em28xx-cards.c |   28 ++++++++++++++++++++++++
- drivers/media/video/em28xx/em28xx-dvb.c   |   33 +++++++++++++++++++++++++++++
- drivers/media/video/em28xx/em28xx.h       |    1 +
- 3 files changed, 62 insertions(+), 0 deletions(-)
 
-diff --git a/drivers/media/video/em28xx/em28xx-cards.c b/drivers/media/video/em28xx/em28xx-cards.c
-index b0fb083..6312e76 100644
---- a/drivers/media/video/em28xx/em28xx-cards.c
-+++ b/drivers/media/video/em28xx/em28xx-cards.c
-@@ -158,6 +158,22 @@ static struct em28xx_reg_seq evga_indtube_digital[] = {
+---
+diff -r 14021dfc00f3 drivers/media/video/em28xx/em28xx-cards.c
+--- a/drivers/media/video/em28xx/em28xx-cards.c	Thu Feb 11 23:11:30 2010 -0200
++++ b/drivers/media/video/em28xx/em28xx-cards.c	Thu Feb 18 16:47:17 2010 -0500
+@@ -170,6 +170,22 @@
  	{ -1,			-1,	-1,		-1},
  };
  
@@ -48,7 +40,7 @@ index b0fb083..6312e76 100644
  /* Pinnacle Hybrid Pro eb1a:2881 */
  static struct em28xx_reg_seq pinnacle_hybrid_pro_analog[] = {
  	{EM28XX_R08_GPIO,	0xfd,   ~EM_GPIO_4,	10},
-@@ -1649,6 +1665,16 @@ struct em28xx_board em28xx_boards[] = {
+@@ -1703,6 +1719,16 @@
  		.tuner_gpio    = reddo_dvb_c_usb_box,
  		.has_dvb       = 1,
  	},
@@ -65,7 +57,7 @@ index b0fb083..6312e76 100644
  };
  const unsigned int em28xx_bcount = ARRAY_SIZE(em28xx_boards);
  
-@@ -1768,6 +1794,8 @@ struct usb_device_id em28xx_id_table[] = {
+@@ -1826,6 +1852,8 @@
  			.driver_info = EM2820_BOARD_IODATA_GVMVP_SZ },
  	{ USB_DEVICE(0xeb1a, 0x50a6),
  			.driver_info = EM2860_BOARD_GADMEI_UTV330 },
@@ -74,10 +66,9 @@ index b0fb083..6312e76 100644
  	{ },
  };
  MODULE_DEVICE_TABLE(usb, em28xx_id_table);
-diff --git a/drivers/media/video/em28xx/em28xx-dvb.c b/drivers/media/video/em28xx/em28xx-dvb.c
-index bcd3c37..ce8a9ee 100644
---- a/drivers/media/video/em28xx/em28xx-dvb.c
-+++ b/drivers/media/video/em28xx/em28xx-dvb.c
+diff -r 14021dfc00f3 drivers/media/video/em28xx/em28xx-dvb.c
+--- a/drivers/media/video/em28xx/em28xx-dvb.c	Thu Feb 11 23:11:30 2010 -0200
++++ b/drivers/media/video/em28xx/em28xx-dvb.c	Thu Feb 18 16:47:17 2010 -0500
 @@ -30,11 +30,13 @@
  #include "tuner-simple.h"
  
@@ -92,7 +83,7 @@ index bcd3c37..ce8a9ee 100644
  
  MODULE_DESCRIPTION("driver for em28xx based DVB cards");
  MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@infradead.org>");
-@@ -231,6 +233,18 @@ static struct lgdt330x_config em2880_lgdt3303_dev = {
+@@ -231,6 +233,18 @@
  	.demod_chip = LGDT3303,
  };
  
@@ -111,7 +102,7 @@ index bcd3c37..ce8a9ee 100644
  static struct zl10353_config em28xx_zl10353_with_xc3028 = {
  	.demod_address = (0x1e >> 1),
  	.no_tuner = 1,
-@@ -247,6 +261,17 @@ static struct s5h1409_config em28xx_s5h1409_with_xc3028 = {
+@@ -247,6 +261,17 @@
  	.mpeg_timing   = S5H1409_MPEGTIMING_CONTINOUS_NONINVERTING_CLOCK
  };
  
@@ -129,7 +120,7 @@ index bcd3c37..ce8a9ee 100644
  static struct zl10353_config em28xx_zl10353_xc3028_no_i2c_gate = {
  	.demod_address = (0x1e >> 1),
  	.no_tuner = 1,
-@@ -570,6 +595,14 @@ static int dvb_init(struct em28xx *dev)
+@@ -569,6 +594,14 @@
  			}
  		}
  		break;
@@ -144,18 +135,14 @@ index bcd3c37..ce8a9ee 100644
  	default:
  		em28xx_errdev("/2: The frontend of your DVB/ATSC card"
  				" isn't supported yet\n");
-diff --git a/drivers/media/video/em28xx/em28xx.h b/drivers/media/video/em28xx/em28xx.h
-index ba6fe5d..9f3fdad 100644
---- a/drivers/media/video/em28xx/em28xx.h
-+++ b/drivers/media/video/em28xx/em28xx.h
+diff -r 14021dfc00f3 drivers/media/video/em28xx/em28xx.h
+--- a/drivers/media/video/em28xx/em28xx.h	Thu Feb 11 23:11:30 2010 -0200
++++ b/drivers/media/video/em28xx/em28xx.h	Thu Feb 18 16:47:17 2010 -0500
 @@ -112,6 +112,7 @@
+ #define EM2861_BOARD_GADMEI_UTV330PLUS           72
  #define EM2870_BOARD_REDDO_DVB_C_USB_BOX          73
  #define EM2800_BOARD_VC211A			  74
- #define EM2882_BOARD_DIKOM_DK300		  75
 +#define EM2870_BOARD_KWORLD_A340		  76
  
  /* Limits minimum and default number of buffers */
  #define EM28XX_MIN_BUF 4
--- 
-1.7.0.1
-

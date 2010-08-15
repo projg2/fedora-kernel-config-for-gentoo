@@ -1,0 +1,123 @@
+Return-path: <kernel-bounces@lists.fedoraproject.org>
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	bombadil.infradead.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.0 required=5.0 tests=T_RP_MATCHES_RCVD
+	autolearn=ham version=3.3.1
+Envelope-to: kyle@mcmartin.ca
+Delivery-date: Fri, 11 Jun 2010 15:05:50 +0000
+Received: from bastion02.fedoraproject.org ([209.132.181.3] helo=bastion.fedoraproject.org)
+	by bombadil.infradead.org with esmtp (Exim 4.72 #1 (Red Hat Linux))
+	id 1ON5np-0006qq-A4
+	for kyle@mcmartin.ca; Fri, 11 Jun 2010 15:05:50 +0000
+Received: from lists.fedoraproject.org (collab1.vpn.fedoraproject.org [192.168.1.21])
+	by bastion02.phx2.fedoraproject.org (Postfix) with ESMTP id C8AFE110FA4;
+	Fri, 11 Jun 2010 15:05:48 +0000 (UTC)
+Received: from collab1.fedoraproject.org (localhost.localdomain [127.0.0.1])
+	by lists.fedoraproject.org (Postfix) with ESMTP id 7CD7932677B;
+	Fri, 11 Jun 2010 15:05:48 +0000 (UTC)
+X-Original-To: kernel@lists.fedoraproject.org
+Delivered-To: kernel@lists.fedoraproject.org
+Received: from smtp-mm2.fedoraproject.org (smtp-mm2.fedoraproject.org
+	[66.35.62.164])
+	by lists.fedoraproject.org (Postfix) with ESMTP id EBB823267E8
+	for <kernel@lists.fedoraproject.org>;
+	Fri, 11 Jun 2010 15:05:45 +0000 (UTC)
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp-mm2.fedoraproject.org (Postfix) with ESMTP id 5F31DE71E6
+	for <kernel@lists.fedoraproject.org>;
+	Fri, 11 Jun 2010 15:05:45 +0000 (UTC)
+Received: from int-mx01.intmail.prod.int.phx2.redhat.com
+	(int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+	by mx1.redhat.com (8.13.8/8.13.8) with ESMTP id o5BF5ifi002333
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-SHA bits=256 verify=OK)
+	for <kernel@lists.fedoraproject.org>; Fri, 11 Jun 2010 11:05:45 -0400
+Received: from localhost (vpn-10-251.rdu.redhat.com [10.11.10.251])
+	by int-mx01.intmail.prod.int.phx2.redhat.com (8.13.8/8.13.8) with ESMTP
+	id o5BF5h8Z029086; Fri, 11 Jun 2010 11:05:44 -0400
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+To: kernel@lists.fedoraproject.org, "John W. Linville" <linville@redhat.com>
+Subject: [PATCH 4/4 2.6.33.y] mac80211: fix supported rates IE if AP doesn't
+	give us it's rates
+Date: Fri, 11 Jun 2010 17:04:20 +0200
+Message-Id: <1276268660-18830-4-git-send-email-sgruszka@redhat.com>
+In-Reply-To: <1276268660-18830-3-git-send-email-sgruszka@redhat.com>
+References: <1276268660-18830-1-git-send-email-sgruszka@redhat.com>
+	<1276268660-18830-2-git-send-email-sgruszka@redhat.com>
+	<1276268660-18830-3-git-send-email-sgruszka@redhat.com>
+X-Scanned-By: MIMEDefang 2.67 on 10.5.11.11
+Cc: Stanislaw Gruszka <sgruszka@redhat.com>
+X-BeenThere: kernel@lists.fedoraproject.org
+X-Mailman-Version: 2.1.9
+Precedence: list
+List-Id: "Fedora kernel development." <kernel.lists.fedoraproject.org>
+List-Unsubscribe: <https://admin.fedoraproject.org/mailman/listinfo/kernel>,
+	<mailto:kernel-request@lists.fedoraproject.org?subject=unsubscribe>
+List-Archive: <http://lists.fedoraproject.org/pipermail/kernel>
+List-Post: <mailto:kernel@lists.fedoraproject.org>
+List-Help: <mailto:kernel-request@lists.fedoraproject.org?subject=help>
+List-Subscribe: <https://admin.fedoraproject.org/mailman/listinfo/kernel>,
+	<mailto:kernel-request@lists.fedoraproject.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Sender: kernel-bounces@lists.fedoraproject.org
+Errors-To: kernel-bounces@lists.fedoraproject.org
+X-CRM114-Version: 20090807-BlameThorstenAndJenny ( TRE 0.7.6 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20100611_110549_564657_0ED6FEC7 
+X-CRM114-Status: GOOD (  17.72  )
+Content-Length: 1846
+
+commit 76f273640134f3eb8257179cd5b3bc6ba5fe4a96 upstream.
+
+If AP do not provide us supported rates before assiociation, send
+all rates we are supporting instead of empty information element.
+
+Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
+---
+ net/mac80211/mlme.c |   17 +++++++++++------
+ 1 files changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
+index 950088d..aa90100 100644
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -270,12 +270,6 @@ static void ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata,
+ 	if (wk->bss->wmm_used)
+ 		wmm = 1;
+ 
+-	/* get all rates supported by the device and the AP as
+-	 * some APs don't like getting a superset of their rates
+-	 * in the association request (e.g. D-Link DAP 1353 in
+-	 * b-only mode) */
+-	rates_len = ieee80211_compatible_rates(wk->bss, sband, &rates);
+-
+ 	if ((wk->bss->cbss.capability & WLAN_CAPABILITY_SPECTRUM_MGMT) &&
+ 	    (local->hw.flags & IEEE80211_HW_SPECTRUM_MGMT))
+ 		capab |= WLAN_CAPABILITY_SPECTRUM_MGMT;
+@@ -310,6 +304,17 @@ static void ieee80211_send_assoc(struct ieee80211_sub_if_data *sdata,
+ 	*pos++ = wk->ssid_len;
+ 	memcpy(pos, wk->ssid, wk->ssid_len);
+ 
++	if (wk->bss->supp_rates_len) {
++		/* get all rates supported by the device and the AP as
++		 * some APs don't like getting a superset of their rates
++		 * in the association request (e.g. D-Link DAP 1353 in
++		 * b-only mode) */
++		rates_len = ieee80211_compatible_rates(wk->bss, sband, &rates);
++	} else {
++		rates = ~0;
++		rates_len = sband->n_bitrates;
++	}
++
+ 	/* add all rates which were marked to be used above */
+ 	supp_rates_len = rates_len;
+ 	if (supp_rates_len > 8)
+-- 
+1.6.2.5
+
+_______________________________________________
+kernel mailing list
+kernel@lists.fedoraproject.org
+https://admin.fedoraproject.org/mailman/listinfo/kernel
+

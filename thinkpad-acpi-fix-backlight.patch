@@ -1,7 +1,7 @@
-diff -up linux-2.6.34.noarch/drivers/platform/x86/thinkpad_acpi.c.orig linux-2.6.34.noarch/drivers/platform/x86/thinkpad_acpi.c
---- linux-2.6.34.noarch/drivers/platform/x86/thinkpad_acpi.c.orig	2010-05-17 16:28:13.254200070 -0400
-+++ linux-2.6.34.noarch/drivers/platform/x86/thinkpad_acpi.c	2010-05-17 16:29:56.471200083 -0400
-@@ -3397,7 +3397,7 @@ static int __init hotkey_init(struct ibm
+diff -ur linux-2.6.33.noarch.bak/drivers/platform/x86/thinkpad_acpi.c linux-2.6.33.noarch/drivers/platform/x86/thinkpad_acpi.c
+--- linux-2.6.33.noarch.bak/drivers/platform/x86/thinkpad_acpi.c	2010-05-17 15:56:10.864200185 -0400
++++ linux-2.6.33.noarch/drivers/platform/x86/thinkpad_acpi.c	2010-05-17 16:12:20.232074844 -0400
+@@ -3396,7 +3396,7 @@
  		/* update bright_acpimode... */
  		tpacpi_check_std_acpi_brightness_support();
  
@@ -10,7 +10,7 @@ diff -up linux-2.6.34.noarch/drivers/platform/x86/thinkpad_acpi.c.orig linux-2.6
  		printk(TPACPI_INFO
  		       "This ThinkPad has standard ACPI backlight "
  		       "brightness control, supported by the ACPI "
-@@ -6189,26 +6189,24 @@ static int __init brightness_init(struct
+@@ -6187,26 +6187,24 @@
  	 * going to publish a backlight interface
  	 */
  	b = tpacpi_check_std_acpi_brightness_support();

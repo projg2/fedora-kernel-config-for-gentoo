@@ -1,9 +1,7 @@
+From 567b1bbf982637ce3f0ac8597af91ae8106648c8 Mon Sep 17 00:00:00 2001
 From: Xiao Guangrong <xiaoguangrong@cn.fujitsu.com>
-Date: Wed, 30 Jun 2010 08:02:45 +0000 (+0800)
-Subject: KVM: MMU: fix conflict access permissions in direct sp
-X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=6aa0b9dec5d6dde26ea17b0b5be8fccfe19df3c9
-
-KVM: MMU: fix conflict access permissions in direct sp
+Date: Wed, 30 Jun 2010 16:02:45 +0800
+Subject: [PATCH] KVM: MMU: fix conflict access permissions in direct sp
 
 In no-direct mapping, we mark sp is 'direct' when we mapping the
 guest's larger page, but its access is encoded form upper page-struct
@@ -34,12 +32,14 @@ Signed-off-by: Xiao Guangrong <xiaoguangrong@cn.fujitsu.com>
 Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
 Signed-off-by: Avi Kivity <avi@redhat.com>
 ---
+ arch/x86/kvm/paging_tmpl.h |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
 diff --git a/arch/x86/kvm/paging_tmpl.h b/arch/x86/kvm/paging_tmpl.h
-index 89d66ca..2331bdc 100644
+index ede2131..b473c0f 100644
 --- a/arch/x86/kvm/paging_tmpl.h
 +++ b/arch/x86/kvm/paging_tmpl.h
-@@ -342,6 +342,7 @@ static u64 *FNAME(fetch)(struct kvm_vcpu *vcpu, gva_t addr,
+@@ -336,6 +336,7 @@ static u64 *FNAME(fetch)(struct kvm_vcpu *vcpu, gva_t addr,
  			/* advance table_gfn when emulating 1gb pages with 4k */
  			if (delta == 0)
  				table_gfn += PT_INDEX(addr, level);
@@ -47,3 +47,6 @@ index 89d66ca..2331bdc 100644
  		} else {
  			direct = 0;
  			table_gfn = gw->table_gfn[level - 2];
+-- 
+1.7.1
+

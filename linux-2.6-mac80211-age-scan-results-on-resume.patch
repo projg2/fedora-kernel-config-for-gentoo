@@ -1,0 +1,181 @@
+Backport of "cfg80211: age scan results on resume" by Dan Williams.
+
+diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
+index 23c0ab7..0432eb6 100644
+--- a/include/net/cfg80211.h
++++ b/include/net/cfg80211.h
+@@ -450,6 +450,9 @@ struct ieee80211_channel;
+  * wireless extensions but this is subject to reevaluation as soon as this
+  * code is used more widely and we have a first user without wext.
+  *
++ * @suspend: wiphy device needs to be suspended
++ * @resume: wiphy device needs to be resumed
++ *
+  * @add_virtual_intf: create a new virtual interface with the given name,
+  *	must set the struct wireless_dev's iftype.
+  *
+@@ -499,6 +502,9 @@ struct ieee80211_channel;
+  * @set_channel: Set channel
+  */
+ struct cfg80211_ops {
++	int	(*suspend)(struct wiphy *wiphy);
++	int	(*resume)(struct wiphy *wiphy);
++
+ 	int	(*add_virtual_intf)(struct wiphy *wiphy, char *name,
+ 				    enum nl80211_iftype type, u32 *flags,
+ 				    struct vif_params *params);
+diff --git a/include/net/wireless.h b/include/net/wireless.h
+index 21c5d96..ae2d34d 100644
+--- a/include/net/wireless.h
++++ b/include/net/wireless.h
+@@ -220,6 +220,9 @@ struct wiphy {
+ 	/* dir in debugfs: ieee80211/<wiphyname> */
+ 	struct dentry *debugfsdir;
+ 
++	/* time spent in suspend, in seconds */
++	unsigned long suspend_duration;
++
+ 	char priv[0] __attribute__((__aligned__(NETDEV_ALIGN)));
+ };
+ 
+diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
+index 9d4e4d8..691183e 100644
+--- a/net/mac80211/cfg.c
++++ b/net/mac80211/cfg.c
+@@ -1141,6 +1141,32 @@ static int ieee80211_set_channel(struct wiphy *wiphy,
+ 	return ieee80211_hw_config(local, IEEE80211_CONF_CHANGE_CHANNEL);
+ }
+ 
++#ifdef CONFIG_PM
++static int ieee80211_suspend(struct wiphy *wiphy)
++{
++	return 0;
++}
++
++static int ieee80211_resume(struct wiphy *wiphy)
++{
++	struct ieee80211_local *local = wiphy_priv(wiphy);
++	unsigned long age_jiffies;
++	struct ieee80211_bss *bss;
++
++	age_jiffies = msecs_to_jiffies(wiphy->suspend_duration * MSEC_PER_SEC);
++	spin_lock_bh(&local->bss_lock);
++	list_for_each_entry(bss, &local->bss_list, list) {
++		bss->last_update -= age_jiffies;
++	}
++	spin_unlock_bh(&local->bss_lock);
++
++	return 0;
++}
++#else
++#define ieee80211_suspend NULL
++#define ieee80211_resume NULL
++#endif
++
+ struct cfg80211_ops mac80211_config_ops = {
+ 	.add_virtual_intf = ieee80211_add_iface,
+ 	.del_virtual_intf = ieee80211_del_iface,
+@@ -1169,4 +1195,6 @@ struct cfg80211_ops mac80211_config_ops = {
+ 	.change_bss = ieee80211_change_bss,
+ 	.set_txq_params = ieee80211_set_txq_params,
+ 	.set_channel = ieee80211_set_channel,
++	.suspend = ieee80211_suspend,
++	.resume = ieee80211_resume,
+ };
+diff --git a/net/mac80211/scan.c b/net/mac80211/scan.c
+index f5c7c33..eb43ff5 100644
+--- a/net/mac80211/scan.c
++++ b/net/mac80211/scan.c
+@@ -745,6 +745,15 @@ static void ieee80211_scan_add_ies(struct iw_request_info *info,
+ 	}
+ }
+ 
++static inline unsigned int elapsed_jiffies_msecs(unsigned long start)
++{
++	unsigned long end = jiffies;
++
++	if (end >= start)
++		return jiffies_to_msecs(end - start);
++
++	return jiffies_to_msecs(end + (MAX_JIFFY_OFFSET - start) + 1);
++}
+ 
+ static char *
+ ieee80211_scan_result(struct ieee80211_local *local,
+@@ -857,8 +866,8 @@ ieee80211_scan_result(struct ieee80211_local *local,
+ 						  &iwe, buf);
+ 		memset(&iwe, 0, sizeof(iwe));
+ 		iwe.cmd = IWEVCUSTOM;
+-		sprintf(buf, " Last beacon: %dms ago",
+-			jiffies_to_msecs(jiffies - bss->last_update));
++		sprintf(buf, " Last beacon: %ums ago",
++			elapsed_jiffies_msecs(bss->last_update));
+ 		iwe.u.data.length = strlen(buf);
+ 		current_ev = iwe_stream_add_point(info, current_ev,
+ 						  end_buf, &iwe, buf);
+diff --git a/net/wireless/core.h b/net/wireless/core.h
+index f7fb9f4..a4031a9 100644
+--- a/net/wireless/core.h
++++ b/net/wireless/core.h
+@@ -41,6 +41,8 @@ struct cfg80211_registered_device {
+ 	struct mutex devlist_mtx;
+ 	struct list_head netdev_list;
+ 
++	unsigned long suspend_at;
++
+ 	/* must be last because of the way we do wiphy_priv(),
+ 	 * and it should at least be aligned to NETDEV_ALIGN */
+ 	struct wiphy wiphy __attribute__((__aligned__(NETDEV_ALIGN)));
+diff --git a/net/wireless/sysfs.c b/net/wireless/sysfs.c
+index 79a3828..dc92564 100644
+--- a/net/wireless/sysfs.c
++++ b/net/wireless/sysfs.c
+@@ -55,6 +55,39 @@ static int wiphy_uevent(struct device *dev, struct kobj_uevent_env *env)
+ }
+ #endif
+ 
++static int wiphy_suspend(struct device *dev, pm_message_t state)
++{
++	struct cfg80211_registered_device *rdev = dev_to_rdev(dev);
++	int ret = 0;
++
++	rdev->wiphy.suspend_duration = 0;
++	rdev->suspend_at = get_seconds();
++
++	if (rdev->ops->suspend) {
++		rtnl_lock();
++		ret = rdev->ops->suspend(&rdev->wiphy);
++		rtnl_unlock();
++	}
++
++	return ret;
++}
++
++static int wiphy_resume(struct device *dev)
++{
++	struct cfg80211_registered_device *rdev = dev_to_rdev(dev);
++	int ret = 0;
++
++	rdev->wiphy.suspend_duration = get_seconds() - rdev->suspend_at;
++
++	if (rdev->ops->resume) {
++		rtnl_lock();
++		ret = rdev->ops->resume(&rdev->wiphy);
++		rtnl_unlock();
++	}
++
++	return ret;
++}
++
+ struct class ieee80211_class = {
+ 	.name = "ieee80211",
+ 	.owner = THIS_MODULE,
+@@ -63,6 +96,8 @@ struct class ieee80211_class = {
+ #ifdef CONFIG_HOTPLUG
+ 	.dev_uevent = wiphy_uevent,
+ #endif
++	.suspend = wiphy_suspend,
++	.resume = wiphy_resume,
+ };
+ 
+ int wiphy_sysfs_init(void)

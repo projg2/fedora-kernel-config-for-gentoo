@@ -1,0 +1,30 @@
+commit 6c9ff1013b7a21099da838eeef7c3f23ee347957
+Author: Stephen Smalley <sds@tycho.nsa.gov>
+Date:   Mon Mar 15 10:42:11 2010 -0400
+
+    SELinux: Reduce max avtab size to avoid page allocation failures
+    
+    Reduce MAX_AVTAB_HASH_BITS so that the avtab allocation is an order 2
+    allocation rather than an order 4 allocation on x86_64.  This
+    addresses reports of page allocation failures:
+    http://marc.info/?l=selinux&m=126757230625867&w=2
+    https://bugzilla.redhat.com/show_bug.cgi?id=570433
+    
+    Reported-by:  Russell Coker <russell@coker.com.au>
+    Signed-off-by:  Stephen D. Smalley <sds@tycho.nsa.gov>
+    Acked-by: Eric Paris <eparis@redhat.com>
+    Signed-off-by: James Morris <jmorris@namei.org>
+
+diff --git a/security/selinux/ss/avtab.h b/security/selinux/ss/avtab.h
+index 8da6a84..cd4f734 100644
+--- a/security/selinux/ss/avtab.h
++++ b/security/selinux/ss/avtab.h
+@@ -82,7 +82,7 @@ struct avtab_node *avtab_search_node_next(struct avtab_node *node, int specified
+ void avtab_cache_init(void);
+ void avtab_cache_destroy(void);
+ 
+-#define MAX_AVTAB_HASH_BITS 13
++#define MAX_AVTAB_HASH_BITS 11
+ #define MAX_AVTAB_HASH_BUCKETS (1 << MAX_AVTAB_HASH_BITS)
+ #define MAX_AVTAB_HASH_MASK (MAX_AVTAB_HASH_BUCKETS-1)
+ #define MAX_AVTAB_SIZE MAX_AVTAB_HASH_BUCKETS

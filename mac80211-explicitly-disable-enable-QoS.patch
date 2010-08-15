@@ -1,7 +1,7 @@
 From: Stanislaw Gruszka <sgruszka@redhat.com>
 To: kernel@lists.fedoraproject.org, "John W. Linville" <linville@redhat.com>
-Subject: [PATCH 1/4 2.6.34.y] mac80211: explicitly disable/enable QoS
-Date: Fri, 11 Jun 2010 17:05:11 +0200
+Subject: [PATCH 1/4 2.6.33.y] mac80211: explicitly disable/enable QoS
+Date: Fri, 11 Jun 2010 17:04:17 +0200
 
 commit e1b3ec1a2a336c328c336cfa5485a5f0484cc90d upstream.
 
@@ -11,7 +11,6 @@ Disabling is needed for some APs, which do not support QoS, such
 we should send QoS frames to them.
 
 Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
-Signed-off-by: John W. Linville <linville@tuxdriver.com>
 ---
  include/net/mac80211.h |    5 +++++
  net/mac80211/mlme.c    |    9 ++++++++-
@@ -19,10 +18,10 @@ Signed-off-by: John W. Linville <linville@tuxdriver.com>
  3 files changed, 18 insertions(+), 1 deletions(-)
 
 diff --git a/include/net/mac80211.h b/include/net/mac80211.h
-index 45d7d44..ea607d6 100644
+index f39b303..8c1f0ee 100644
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -580,11 +580,15 @@ struct ieee80211_rx_status {
+@@ -577,11 +577,15 @@ struct ieee80211_rx_status {
   *	may turn the device off as much as possible. Typically, this flag will
   *	be set when an interface is set UP but not associated or scanning, but
   *	it can also be unset in that case when monitor interfaces are active.
@@ -38,7 +37,7 @@ index 45d7d44..ea607d6 100644
  };
  
  
-@@ -609,6 +613,7 @@ enum ieee80211_conf_changed {
+@@ -604,6 +608,7 @@ enum ieee80211_conf_changed {
  	IEEE80211_CONF_CHANGE_CHANNEL		= BIT(6),
  	IEEE80211_CONF_CHANGE_RETRY_LIMITS	= BIT(7),
  	IEEE80211_CONF_CHANGE_IDLE		= BIT(8),
@@ -47,22 +46,22 @@ index 45d7d44..ea607d6 100644
  
  /**
 diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 875c8de..1b80e2b 100644
+index 1a209ac..950088d 100644
 --- a/net/mac80211/mlme.c
 +++ b/net/mac80211/mlme.c
-@@ -592,6 +592,9 @@ static void ieee80211_sta_wmm_params(struct ieee80211_local *local,
+@@ -798,6 +798,9 @@ static void ieee80211_sta_wmm_params(struct ieee80211_local *local,
  	int count;
- 	u8 *pos, uapsd_queues = 0;
+ 	u8 *pos;
  
 +	if (!local->ops->conf_tx)
 +		return;
 +
- 	if (local->hw.queues < 4)
+ 	if (!(ifmgd->flags & IEEE80211_STA_WMM_ENABLED))
  		return;
  
-@@ -666,11 +669,15 @@ static void ieee80211_sta_wmm_params(struct ieee80211_local *local,
- 		       params.aifs, params.cw_min, params.cw_max, params.txop,
- 		       params.uapsd);
+@@ -856,11 +859,15 @@ static void ieee80211_sta_wmm_params(struct ieee80211_local *local,
+ 		       wiphy_name(local->hw.wiphy), queue, aci, acm,
+ 		       params.aifs, params.cw_min, params.cw_max, params.txop);
  #endif
 -		if (drv_conf_tx(local, queue, &params) && local->ops->conf_tx)
 +		if (drv_conf_tx(local, queue, &params))
@@ -78,10 +77,10 @@ index 875c8de..1b80e2b 100644
  
  static u32 ieee80211_handle_bss_capability(struct ieee80211_sub_if_data *sdata,
 diff --git a/net/mac80211/util.c b/net/mac80211/util.c
-index 53af570..582f43a 100644
+index 27212e8..9e35dcb 100644
 --- a/net/mac80211/util.c
 +++ b/net/mac80211/util.c
-@@ -796,6 +796,11 @@ void ieee80211_set_wmm_default(struct ieee80211_sub_if_data *sdata)
+@@ -795,6 +795,11 @@ void ieee80211_set_wmm_default(struct ieee80211_sub_if_data *sdata)
  
  		drv_conf_tx(local, queue, &qparam);
  	}

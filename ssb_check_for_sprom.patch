@@ -1,4 +1,4 @@
-From 4d9d1ff88f920e9fcdde155c0a1366b7e0462d14 Mon Sep 17 00:00:00 2001
+From 380bed7aa858cbe2d4eeb783e2bed7d01828518d Mon Sep 17 00:00:00 2001
 From: John W. Linville <linville@tuxdriver.com>
 Date: Fri, 19 Mar 2010 14:58:01 -0400
 Subject: [PATCH v4] ssb: do not read SPROM if it does not exist
@@ -20,12 +20,16 @@ Cc: Larry Finger <Larry.Finger@lwfinger.net>
 Cc: Michael Buesch <mb@bu3sch.de>
 Cc: stable@kernel.org
 ---
+Version 4, move read of ChipCommon status register to ssb_chipcommon_init
+Version 3, add missing semi-colon... :-(
+Version 2, check the correct place for ChipCommon core revision... :-)
+
  drivers/ssb/driver_chipcommon.c           |    3 +++
  drivers/ssb/pci.c                         |    3 +++
- drivers/ssb/sprom.c                       |   26 ++++++++++++++++++++++++++
+ drivers/ssb/sprom.c                       |   22 ++++++++++++++++++++++
  include/linux/ssb/ssb.h                   |    3 +++
  include/linux/ssb/ssb_driver_chipcommon.h |   15 +++++++++++++++
- 5 files changed, 50 insertions(+), 0 deletions(-)
+ 5 files changed, 46 insertions(+), 0 deletions(-)
 
 diff --git a/drivers/ssb/driver_chipcommon.c b/drivers/ssb/driver_chipcommon.c
 index 9681536..6cf288d 100644
@@ -42,10 +46,10 @@ index 9681536..6cf288d 100644
  	chipco_powercontrol_init(cc);
  	ssb_chipco_set_clockmode(cc, SSB_CLKMODE_FAST);
 diff --git a/drivers/ssb/pci.c b/drivers/ssb/pci.c
-index a8dbb06..89d7ab1 100644
+index 9e50896..2f7b16d 100644
 --- a/drivers/ssb/pci.c
 +++ b/drivers/ssb/pci.c
-@@ -621,6 +621,9 @@ static int ssb_pci_sprom_get(struct ssb_bus *bus,
+@@ -620,6 +620,9 @@ static int ssb_pci_sprom_get(struct ssb_bus *bus,
  	int err = -ENOMEM;
  	u16 *buf;
  
@@ -56,20 +60,16 @@ index a8dbb06..89d7ab1 100644
  	if (!buf)
  		goto out;
 diff --git a/drivers/ssb/sprom.c b/drivers/ssb/sprom.c
-index f2f920f..c690f58 100644
+index d0e6762..55eb9b0 100644
 --- a/drivers/ssb/sprom.c
 +++ b/drivers/ssb/sprom.c
-@@ -176,3 +176,29 @@ const struct ssb_sprom *ssb_get_fallback_sprom(void)
+@@ -175,3 +175,25 @@ const struct ssb_sprom *ssb_get_fallback_sprom(void)
  {
  	return fallback_sprom;
  }
 +
 +bool ssb_is_sprom_available(struct ssb_bus *bus)
 +{
-+	/* some older devices don't have chipcommon, but they have sprom */
-+	if (!bus->chipco.dev)
-+		return true;
-+
 +	/* status register only exists on chipcomon rev >= 11 */
 +	if (bus->chipco.dev->id.revision < 11)
 +		return true;
@@ -151,5 +151,35 @@ index 4e27acf..2cdf249 100644
  	u16 fast_pwrup_delay;
  	struct ssb_chipcommon_pmu pmu;
 -- 
-1.7.0.1
+1.6.2.5
+
+From ec032742062ad1b01dfe75cfccdbc5b850837c23 Mon Sep 17 00:00:00 2001
+From: John W. Linville <linville@tuxdriver.com>
+Date: Tue, 30 Mar 2010 13:47:39 -0400
+Subject: [PATCH] ssb: avoid null ptr deref in ssb_is_sprom_available
+
+Some older devices don't have chipcommon, but they do have SPROM.
+
+Signed-off-by: John W. Linville <linville@tuxdriver.com>
+---
+ drivers/ssb/sprom.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/ssb/sprom.c b/drivers/ssb/sprom.c
+index 55eb9b0..874d8f1 100644
+--- a/drivers/ssb/sprom.c
++++ b/drivers/ssb/sprom.c
+@@ -178,6 +178,10 @@ const struct ssb_sprom *ssb_get_fallback_sprom(void)
+ 
+ bool ssb_is_sprom_available(struct ssb_bus *bus)
+ {
++	/* some older devices don't have chipcommon, but they have sprom */
++	if (!bus->chipco.dev)
++		return true;
++
+ 	/* status register only exists on chipcomon rev >= 11 */
+ 	if (bus->chipco.dev->id.revision < 11)
+ 		return true;
+-- 
+1.6.2.5
 

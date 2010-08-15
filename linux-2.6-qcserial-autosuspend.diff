@@ -1,0 +1,23 @@
+commit b2bcfa17349e5a6a01170b5269ee261dbd762a0c
+Author: Matthew Garrett <mjg@redhat.com>
+Date:   Sat Jul 18 14:43:36 2009 +0100
+
+    usb: enable autosuspend by default on qcserial
+    
+    All qcserial hardware supports autosuspend properly. Enable it by default.
+    
+    Signed-off-by: Matthew Garrett <mjg@redhat.com>
+
+diff --git a/drivers/usb/serial/qcserial.c b/drivers/usb/serial/qcserial.c
+index 7528b8d..959a176 100644
+--- a/drivers/usb/serial/qcserial.c
++++ b/drivers/usb/serial/qcserial.c
+@@ -74,6 +74,8 @@ static int qcprobe(struct usb_serial *serial, const struct usb_device_id *id)
+ 	ifnum = serial->interface->cur_altsetting->desc.bInterfaceNumber;
+ 	dbg("This Interface = %d", ifnum);
+ 
++	usb_device_autosuspend_enable(serial->dev);
++
+ 	switch (nintf) {
+ 	case 1:
+ 		/* QDL mode */

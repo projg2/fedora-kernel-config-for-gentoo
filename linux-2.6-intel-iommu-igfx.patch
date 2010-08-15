@@ -49,7 +49,7 @@ index 4173125..8f36786 100644
  int dmar_disabled = 1;
  #endif /*CONFIG_DMAR_DEFAULT_ON*/
 
--static int dmar_map_gfx = 1;
+-static int __initdata dmar_map_gfx = 1;
 +/* disabled by default; causes way too many issues */
 +static int dmar_map_gfx = 0;
  static int dmar_forcedac;

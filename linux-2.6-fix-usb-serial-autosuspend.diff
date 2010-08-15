@@ -1,0 +1,49 @@
+commit 3b8e1210f0a558145ba87eddb20f7b104676d6f6
+Author: Oliber Neukum <oliver@neukum.org>
+Date:   Sat Jul 18 07:19:04 2009 +0200
+
+    usb: fix counter logic in opening serial converters
+    
+    the usage counter must be increased only after autoresumption
+
+diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
+index 99188c9..3d1a756 100644
+--- a/drivers/usb/serial/usb-serial.c
++++ b/drivers/usb/serial/usb-serial.c
+@@ -216,16 +216,15 @@ static int serial_open (struct tty_struct *tty, struct file *filp)
+ 		goto bailout_port_put;
+ 	}
+ 
+-	++port->port.count;
+-
+ 	/* set up our port structure making the tty driver
+ 	 * remember our port object, and us it */
+ 	tty->driver_data = port;
+ 	tty_port_tty_set(&port->port, tty);
+ 
+ 	/* If the console is attached, the device is already open */
+-	if (port->port.count == 1 && !port->console) {
++	if (!port->port.count && !port->console) {
+ 		first = 1;
++
+ 		/* lock this module before we call it
+ 		 * this may fail, which means we must bail out,
+ 		 * safe because we are called with BKL held */
+@@ -242,6 +241,8 @@ static int serial_open (struct tty_struct *tty, struct file *filp)
+ 		if (retval)
+ 			goto bailout_module_put;
+ 
++		++port->port.count;
++
+ 		/* only call the device specific open if this
+ 		 * is the first time the port is opened */
+ 		retval = serial->type->open(tty, port, filp);
+@@ -249,6 +250,8 @@ static int serial_open (struct tty_struct *tty, struct file *filp)
+ 			goto bailout_interface_put;
+ 		mutex_unlock(&serial->disc_mutex);
+ 		set_bit(ASYNCB_INITIALIZED, &port->port.flags);
++	} else {
++		++port->port.count;
+ 	}
+ 	mutex_unlock(&port->mutex);
+ 	/* Now do the correct tty layer semantics */
