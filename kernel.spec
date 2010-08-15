@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -684,7 +684,6 @@ Patch570: linux-2.6-selinux-mprotect-checks.patch
 Patch580: linux-2.6-sparc-selinux-mprotect-checks.patch
 Patch581: linux-2.6-selinux-avtab-size.patch
 
-Patch600: linux-2.6-acpi-sleep-live-sci-live.patch
 Patch601: linux-2.6-acpi-indirect_fan_control.patch
 
 Patch610: hda_intel-prealloc-4mb-dmabuffer.patch
@@ -722,7 +721,6 @@ Patch1809: drm-radeon-firemv-pciid.patch
 Patch1810: drm-radeon-kms-fix-dual-link-dvi.patch
 Patch1811: drm-radeon-fix-rs600-tlb.patch
 Patch1812: drm-radeon-ss-fix.patch
-Patch1813: drm-radeon-fix-shared-ddc-handling.patch
 # nouveau fixes
 # - these not until 2.6.34
 Patch1815: drm-nouveau-abi16.patch
@@ -748,10 +746,6 @@ Patch1830: drm-intel-sdvo-fix-2.patch
 Patch1840: drm-i915-use-pipe_control-instruction-on-ironlake-and-sandy-bridge.patch
 Patch1841: drm-i915-fix-non-ironlake-965-class-crashes.patch
 Patch1842: drm-i915-fix-edp-panels.patch
-Patch1843: drm-i915-fix-hibernate-memory-corruption.patch
-Patch1844: drm-i915-add-reclaimable-to-page-allocations.patch
-Patch1845: drm-i915-make-G4X-style-PLL-search-more-permissive.patch
-Patch1846: drm-intel-945gm-stability-fixes.patch
 
 Patch2100: linux-2.6-phylib-autoload.patch
 
@@ -846,22 +840,10 @@ Patch12911: iwlwifi-fix-internal-scan-race.patch
 Patch12912: iwlwifi-recover_from_tx_stall.patch
 
 Patch12913: iwlwifi-manage-QoS-by-mac-stack.patch
-Patch12914: mac80211-do-not-wipe-out-old-supported-rates.patch
 Patch12915: mac80211-explicitly-disable-enable-QoS.patch
-Patch12916: mac80211-fix-supported-rates-IE-if-AP-doesnt-give-us-its-rates.patch
 
 # Disable rt20xx and rt35xx chipset support in rt2800pci and rt2800usb
 Patch13010: rt2x00-rt2800-Make-rt30xx-and-rt35xx-chipsets-configurable.patch
-
-# iwlwifi: cancel scan watchdog in iwl_bg_abort_scan
-Patch13020: iwlwifi-cancel-scan-watchdog-in-iwl_bg_abort_scan.patch
-
-Patch13030: sched-fix-over-scheduling-bug.patch
-Patch13040: ethtool-fix-buffer-overflow.patch
-Patch13050: x86-debug-clear-reserved-bits-of-dr6.patch
-Patch13060: x86-debug-send-sigtrap-for-user-icebp.patch
-
-Patch13070: cifs-fix-malicious-redirect-problem-in-the-dns-lookup-code.patch
 
 Patch13074: inotify-fix-inotify-oneshot-support.patch
 Patch13076: inotify-send-IN_UNMOUNT-events.patch
@@ -1391,7 +1373,6 @@ ApplyPatch linux-2.6-defaults-aspm.patch
 #
 
 # ACPI
-ApplyPatch linux-2.6-acpi-sleep-live-sci-live.patch
 ApplyPatch linux-2.6-acpi-indirect_fan_control.patch
 
 # ALSA
@@ -1474,7 +1455,6 @@ ApplyPatch drm-radeon-firemv-pciid.patch
 ApplyPatch drm-radeon-kms-fix-dual-link-dvi.patch
 ApplyPatch drm-radeon-fix-rs600-tlb.patch
 ApplyPatch drm-radeon-ss-fix.patch
-ApplyPatch drm-radeon-fix-shared-ddc-handling.patch
 ApplyPatch drm-nouveau-abi16.patch
 ApplyPatch drm-nouveau-updates.patch
 ApplyPatch drm-nouveau-acpi-edid-fallback.patch
@@ -1491,14 +1471,6 @@ ApplyPatch drm-intel-sdvo-fix-2.patch
 ApplyPatch drm-i915-use-pipe_control-instruction-on-ironlake-and-sandy-bridge.patch
 ApplyPatch drm-i915-fix-non-ironlake-965-class-crashes.patch
 ApplyPatch drm-i915-fix-edp-panels.patch
-# hibernation memory corruption fixes
-ApplyPatch drm-i915-fix-hibernate-memory-corruption.patch
-ApplyPatch drm-i915-add-reclaimable-to-page-allocations.patch
-
-# RHBZ#572799
-ApplyPatch drm-i915-make-G4X-style-PLL-search-more-permissive.patch
-
-ApplyPatch drm-intel-945gm-stability-fixes.patch
 
 ApplyPatch linux-2.6-phylib-autoload.patch
 
@@ -1576,27 +1548,9 @@ ApplyPatch iwlwifi-recover_from_tx_stall.patch
 # mac80211/iwlwifi fix connections to some APs (rhbz#558002)
 ApplyPatch mac80211-explicitly-disable-enable-QoS.patch
 ApplyPatch iwlwifi-manage-QoS-by-mac-stack.patch
-ApplyPatch mac80211-do-not-wipe-out-old-supported-rates.patch
-ApplyPatch mac80211-fix-supported-rates-IE-if-AP-doesnt-give-us-its-rates.patch
 
 # Disable rt20xx and rt35xx chipset support in rt2800pci and rt2800usb
 ApplyPatch rt2x00-rt2800-Make-rt30xx-and-rt35xx-chipsets-configurable.patch
-
-# iwlwifi: cancel scan watchdog in iwl_bg_abort_scan
-ApplyPatch iwlwifi-cancel-scan-watchdog-in-iwl_bg_abort_scan.patch
-
-# fix performance problem with CGROUPS
-ApplyPatch sched-fix-over-scheduling-bug.patch
-
-# CVE-2010-2478
-ApplyPatch ethtool-fix-buffer-overflow.patch
-
-# BZ#609548
-ApplyPatch x86-debug-clear-reserved-bits-of-dr6.patch
-ApplyPatch x86-debug-send-sigtrap-for-user-icebp.patch
-
-# CVE-2010-2524
-ApplyPatch cifs-fix-malicious-redirect-problem-in-the-dns-lookup-code.patch
 
 # fix broken oneshot support and missing umount events (#607327)
 ApplyPatch inotify-fix-inotify-oneshot-support.patch
@@ -2253,8 +2207,25 @@ fi
 
 
 %changelog
-* Sat Aug 14 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.33.6-148
-- Add 2.6.33 branch to git repository.
+* Sat Aug 14 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.33.7-148
+- Update to kernel 2.6.33.7
+- Drop patches merged in 2.6.33.7:
+    drm-i915-add-reclaimable-to-page-allocations.patch
+    drm-i915-fix-hibernate-memory-corruption.patch
+    drm-radeon-fix-shared-ddc-handling.patch
+    linux-2.6-acpi-sleep-live-sci-live.patch
+    drm-i915-make-G4X-style-PLL-search-more-permissive.patch
+    drm-intel-945gm-stability-fixes.patch
+    mac80211-do-not-wipe-out-old-supported-rates.patch
+    mac80211-fix-supported-rates-IE-if-AP-doesnt-give-us-its-rates.patch
+    iwlwifi-cancel-scan-watchdog-in-iwl_bg_abort_scan.patch
+    sched-fix-over-scheduling-bug.patch
+    ethtool-fix-buffer-overflow.patch
+    x86-debug-clear-reserved-bits-of-dr6.patch
+    x86-debug-send-sigtrap-for-user-icebp.patch
+    cifs-fix-malicious-redirect-problem-in-the-dns-lookup-code.patch
+- Revert broken ssb patch from 2.6.33.7:
+    ssb-handle-netbook-devices-where-the-sprom-address-is-changed.patch
 
 * Fri Jul 23 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.33.6-147.2.4
 - inotify-fix-inotify-oneshot-support.patch,
