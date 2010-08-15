@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 7
+%global baserelease 8
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 2
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -597,8 +597,6 @@ Patch09: linux-2.6-upstream-reverts.patch
 # Standalone patches
 Patch20: linux-2.6-hotfixes.patch
 
-Patch21: linux-2.6-tip.git-396e894d289d69bacf5acd983c97cd6e21a14c08.patch
-
 Patch30: git-utrace.patch
 Patch31: utrace-ptrace-fix-build.patch
 Patch32: utrace-remove-use-of-kref_set.patch
@@ -687,7 +685,6 @@ Patch2915: lirc-staging-2.6.36.patch
 Patch2917: hdpvr-ir-enable.patch
 
 # fs fixes
-Patch3000: linux-2.6-ext4-fix-freeze-deadlock.patch
 
 # NFSv4
 
@@ -1130,8 +1127,6 @@ ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 
 ApplyPatch linux-2.6-hotfixes.patch
 
-#ApplyPatch linux-2.6-tip.git-396e894d289d69bacf5acd983c97cd6e21a14c08.patch
-
 # Roland's utrace ptrace replacement.
 ApplyPatch git-utrace.patch
 ApplyPatch utrace-ptrace-fix-build.patch
@@ -1164,7 +1159,6 @@ ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 #
 
 # ext4
-#ApplyPatch linux-2.6-ext4-fix-freeze-deadlock.patch
 
 # xfs
 
@@ -1890,6 +1884,9 @@ fi
 # and build.
 
 %changelog
+* Sun Aug 15 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.2-8
+- Linux 2.6.35.2
+
 * Fri Aug 13 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.2-7.rc1
 - Linux 2.6.35.2-rc1
 - Comment out patches merged in -stable:
