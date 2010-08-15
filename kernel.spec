@@ -2214,6 +2214,11 @@ fi
 
 %changelog
 * Sun Aug 15 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.33.8-148
+- Add all the patches from 2.6.34.4 that apply cleanly.
+- Roll up the 2.6.34.4 patches as git-linus.diff
+- Fix up usb-wwan-update and drm-core-next patches.
+
+* Sun Aug 15 2010 Chuck Ebbert <cebbert@redhat.com>
 - 2.6.33.8 from http://git.kernel.org/?p=linux/kernel/git/jkacur/jk-2.6.git stable/2.6.33.y
 - Unrevert stable patch from .33.7:
     ssb-handle-netbook-devices-where-the-sprom-address-is-changed.patch
