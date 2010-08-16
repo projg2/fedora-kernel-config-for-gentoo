@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 8
+%global baserelease 9
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -679,6 +679,7 @@ Patch2910: linux-2.6-v4l-dvb-add-lgdt3304-support.patch
 Patch2911: linux-2.6-v4l-dvb-add-kworld-a340-support.patch
 Patch2912: linux-2.6-v4l-dvb-ir-core-update.patch
 Patch2913: linux-2.6-v4l-dvb-ir-core-memleak-fixes.patch
+Patch2914: linux-2.6-v4l-dvb-ir-core-streamzap.patch
 
 Patch2915: lirc-staging-2.6.36.patch
 #Patch2916: lirc-staging-2.6.36-fixes.patch
@@ -1276,6 +1277,7 @@ ApplyPatch linux-2.6-v4l-dvb-uvcvideo-update.patch
 
 ApplyPatch linux-2.6-v4l-dvb-ir-core-update.patch
 ApplyPatch linux-2.6-v4l-dvb-ir-core-memleak-fixes.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-streamzap.patch
 ApplyPatch linux-2.6-v4l-dvb-add-lgdt3304-support.patch
 ApplyPatch linux-2.6-v4l-dvb-add-kworld-a340-support.patch
 
@@ -1884,6 +1886,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 16 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.2-9
+- Add ir-core streamzap driver, nuke lirc_streamzap
+
 * Sun Aug 15 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.2-8
 - Linux 2.6.35.2
 
