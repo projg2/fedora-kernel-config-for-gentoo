@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 161
+%global baserelease 162
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -843,6 +843,8 @@ Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 Patch14140: hid-01-usbhid-initialize-interface-pointers-early-enough.patch
 Patch14141: hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
 
+Patch14150: mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
+Patch14150: mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
 # ==============================================================================
 %endif
 
@@ -1556,6 +1558,10 @@ ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 ApplyPatch hid-01-usbhid-initialize-interface-pointers-early-enough.patch
 ApplyPatch hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
 
+# Fix fallout from stack guard page
+ApplyPatch mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
+ApplyPatch mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+
 # END OF PATCH APPLICATIONS ====================================================
 %endif
 
@@ -2206,6 +2212,11 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Tue Aug 17 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.19-162
+- Fix fallout from the stack guard page fixes.
+  (mm-fix-page-table-unmap-for-stack-guard-page-properly.patch,
+   mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch)
+
 * Sat Aug 14 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.19-161
 - Linux 2.6.32.19
 
