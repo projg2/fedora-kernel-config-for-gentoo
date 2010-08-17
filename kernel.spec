@@ -1326,6 +1326,8 @@ done
 rm -f kernel-%{version}-*debug.config
 %endif
 
+touch .scmversion
+
 # now run oldconfig over all the config files
 for i in *.config
 do
@@ -1886,6 +1888,12 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 17 2010 Kyle McMartin <kyle@redhat.com>
+- Touch .scmversion in the kernel top level to prevent scripts/setlocalversion
+  from recursing into our fedpkg git tree and trying to decide whether the
+  kernel git is modified (obviously not, since it's a tarball.) Fixes make
+  local.
+
 * Mon Aug 16 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.2-9
 - Add ir-core streamzap driver, nuke lirc_streamzap
 
