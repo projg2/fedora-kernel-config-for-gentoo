@@ -1436,6 +1436,8 @@ ApplyPatch mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
 
 chmod +x scripts/checkpatch.pl
 
+touch .scmversion
+
 # only deal with configs if we are going to build for the arch
 %ifnarch %nobuildarches
 
@@ -2047,6 +2049,12 @@ fi
 
 
 %changelog
+* Tue Aug 17 2010 Kyle McMartin <kyle@redhat.com>
+- Touch .scmversion in the kernel top level to prevent scripts/setlocalversion
+  from recursing into our fedpkg git tree and trying to decide whether the
+  kernel git is modified (obviously not, since it's a tarball.) Fixes make
+  local.
+
 * Tue Aug 17 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.4-41
 - Fix fallout from the stack guard page fixes.
   (mm-fix-page-table-unmap-for-stack-guard-page-properly.patch,
