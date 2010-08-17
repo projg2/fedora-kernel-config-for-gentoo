@@ -710,6 +710,9 @@ Patch12050: direct-io-move-aio_complete-into-end_io.patch
 Patch12060: ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 Patch12070: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
+Patch12070: mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
+Patch12071: mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1305,6 +1308,10 @@ ApplyPatch direct-io-move-aio_complete-into-end_io.patch
 ApplyPatch ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
+# fix fallout from stack guard page patches
+ApplyPatch mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
+ApplyPatch mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1891,6 +1898,11 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 17 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.2-9
+- Fix fallout from the stack guard page fixes.
+  (mm-fix-page-table-unmap-for-stack-guard-page-properly.patch,
+   mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch)
+
 * Tue Aug 17 2010 Kyle McMartin <kyle@redhat.com>
 - Move cgroup fs to /sys/fs/cgroup instead of /cgroup in accordance with
   upstream change post 2.6.35.
@@ -1901,7 +1913,7 @@ fi
   kernel git is modified (obviously not, since it's a tarball.) Fixes make
   local.
 
-* Mon Aug 16 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.2-9
+* Mon Aug 16 2010 Jarod Wilson <jarod@redhat.com>
 - Add ir-core streamzap driver, nuke lirc_streamzap
 
 * Sun Aug 15 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.2-8
