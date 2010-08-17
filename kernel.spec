@@ -612,6 +612,8 @@ Patch202: linux-2.6-debug-taint-vm.patch
 Patch203: linux-2.6-debug-vm-would-have-oomkilled.patch
 Patch204: linux-2.6-debug-always-inline-kzalloc.patch
 
+Patch300: create-sys-fs-cgroup-to-mount-cgroupfs-on.patch
+
 Patch380: linux-2.6-defaults-pci_no_msi.patch
 Patch383: linux-2.6-defaults-aspm.patch
 Patch384: pci-acpi-disable-aspm-if-no-osc.patch
@@ -1237,6 +1239,7 @@ ApplyPatch linux-2.6-silence-fbcon-logo.patch
 #ApplyPatch linux-2.6-sparc-selinux-mprotect-checks.patch
 
 # Changes to upstream defaults.
+ApplyPatch create-sys-fs-cgroup-to-mount-cgroupfs-on.patch
 
 
 # /dev/crash driver.
@@ -1888,6 +1891,10 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 17 2010 Kyle McMartin <kyle@redhat.com>
+- Move cgroup fs to /sys/fs/cgroup instead of /cgroup in accordance with
+  upstream change post 2.6.35.
+
 * Tue Aug 17 2010 Kyle McMartin <kyle@redhat.com>
 - Touch .scmversion in the kernel top level to prevent scripts/setlocalversion
   from recursing into our fedpkg git tree and trying to decide whether the
