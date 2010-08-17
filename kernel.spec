@@ -710,8 +710,8 @@ Patch12050: direct-io-move-aio_complete-into-end_io.patch
 Patch12060: ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 Patch12070: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
-Patch12070: mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
-Patch12071: mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+Patch12080: mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
+Patch12081: mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
 
 %endif
 
