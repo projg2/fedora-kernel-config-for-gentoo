@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 39
+%global baserelease 40
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -691,6 +691,7 @@ Patch1803: drm-encoder-disable.patch
 Patch1815: drm-nouveau-updates.patch
 Patch1816: drm-nouveau-race-fix.patch
 Patch1817: drm-nouveau-nva3-noaccel.patch
+Patch1818: drm-nouveau-nv50-crtc-update-delay.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
 Patch1820: drm-i915-fix-edp-panels.patch
@@ -1339,6 +1340,7 @@ ApplyPatch drm-encoder-disable.patch
 ApplyPatch drm-nouveau-updates.patch
 ApplyPatch drm-nouveau-race-fix.patch
 ApplyPatch drm-nouveau-nva3-noaccel.patch
+ApplyPatch drm-nouveau-nv50-crtc-update-delay.patch
 
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
@@ -2039,6 +2041,9 @@ fi
 
 
 %changelog
+* Tue Aug 17 2010 Ben Skeggs <bskeggs@redhat.com>  2.6.34.4-40
+- drm-nouveau-nv50-crtc-update-delay.patch (rhbz#614452)
+
 * Sun Aug 15 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.4-39
 - Linux 2.6.34.4
 
