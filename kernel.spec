@@ -799,9 +799,6 @@ Patch12340: ice1712-fix-revo71-mixer-names.patch
 # rhbz#572653
 Patch12370: linux-2.6-b43_-Rewrite-DMA-Tx-status-handling-sanity-checks.patch
 
-# rhbz#533746
-Patch12380: ssb_check_for_sprom.patch
-
 # backport iwlwifi fixes (thanks, sgruszka!) -- drop when stable catches-up
 Patch12391: iwlwifi-reset-card-during-probe.patch
 
@@ -844,7 +841,7 @@ Patch14140: hid-01-usbhid-initialize-interface-pointers-early-enough.patch
 Patch14141: hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
 
 Patch14150: mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
-Patch14150: mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+Patch14160: mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
 # ==============================================================================
 %endif
 
@@ -1510,9 +1507,6 @@ ApplyPatch ice1712-fix-revo71-mixer-names.patch
 
 # rhbz#572653
 ApplyPatch linux-2.6-b43_-Rewrite-DMA-Tx-status-handling-sanity-checks.patch
-
-# rhbz#533746
-#ApplyPatch ssb_check_for_sprom.patch
 
 # backport iwlwifi fixes (thanks, sgruszka!) -- drop when stable catches-up
 ApplyPatch iwlwifi-reset-card-during-probe.patch
