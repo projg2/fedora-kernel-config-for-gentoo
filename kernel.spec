@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 40
+%global baserelease 41
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -765,6 +765,9 @@ Patch12440: direct-io-move-aio_complete-into-end_io.patch
 Patch12450: ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 Patch12460: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
+Patch12470: mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
+Patch12480: mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1421,6 +1424,9 @@ ApplyPatch direct-io-move-aio_complete-into-end_io.patch
 ApplyPatch ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
+# Fix fallout from stack guard page
+ApplyPatch mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
+ApplyPatch mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2041,6 +2047,11 @@ fi
 
 
 %changelog
+* Tue Aug 17 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.4-41
+- Fix fallout from the stack guard page fixes.
+  (mm-fix-page-table-unmap-for-stack-guard-page-properly.patch,
+   mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch)
+
 * Tue Aug 17 2010 Ben Skeggs <bskeggs@redhat.com>  2.6.34.4-40
 - drm-nouveau-nv50-crtc-update-delay.patch (rhbz#614452)
 
