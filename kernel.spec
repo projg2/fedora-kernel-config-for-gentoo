@@ -671,6 +671,8 @@ Patch800: linux-2.6-crash-driver.patch
 
 Patch900: linux-2.6-cantiga-iommu-gfx.patch
 
+Patch1000: linux-2.6-libata-ata_piix-clear-spurious-IRQ.patch
+
 # crypto/
 Patch1200: crypto-add-async-hash-testing.patch
 
@@ -1316,6 +1318,8 @@ ApplyPatch linux-2.6-crash-driver.patch
 
 # Cantiga chipset b0rkage
 ApplyPatch linux-2.6-cantiga-iommu-gfx.patch
+
+ApplyPatch linux-2.6-libata-ata_piix-clear-spurious-IRQ.patch
 
 # crypto/
 
@@ -2049,6 +2053,9 @@ fi
 
 
 %changelog
+* Wed Aug 18 2010 Dave Jones <davej@redhat.com>
+- ata-piix: Detect spurious IRQs and clear them.
+
 * Tue Aug 17 2010 Kyle McMartin <kyle@redhat.com>
 - Touch .scmversion in the kernel top level to prevent scripts/setlocalversion
   from recursing into our fedpkg git tree and trying to decide whether the
