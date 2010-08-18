@@ -671,8 +671,6 @@ Patch800: linux-2.6-crash-driver.patch
 
 Patch900: linux-2.6-cantiga-iommu-gfx.patch
 
-Patch1000: linux-2.6-libata-ata_piix-clear-spurious-IRQ.patch
-
 # crypto/
 Patch1200: crypto-add-async-hash-testing.patch
 
@@ -1318,8 +1316,6 @@ ApplyPatch linux-2.6-crash-driver.patch
 
 # Cantiga chipset b0rkage
 ApplyPatch linux-2.6-cantiga-iommu-gfx.patch
-
-ApplyPatch linux-2.6-libata-ata_piix-clear-spurious-IRQ.patch
 
 # crypto/
 
@@ -2053,6 +2049,10 @@ fi
 
 
 %changelog
+* Wed Aug 18 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.4-42
+- Revert "ata-piix: Detect spurious IRQs and clear them",
+  should be fixed by commit 27943620c upstream.
+
 * Wed Aug 18 2010 Jarod Wilson <jarod@redhat.com>
 - make f13 lirc userspace happy with ioctl defs again (#623770)
 
