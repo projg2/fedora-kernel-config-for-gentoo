@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 162
+%global baserelease 163
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2208,6 +2208,9 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Wed Aug 18 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.19-163
+- Bump version.
+
 * Tue Aug 17 2010 Kyle McMartin <kyle@redhat.com>
 - Touch .scmversion in the kernel top level to prevent scripts/setlocalversion
   from recursing into our fedpkg git tree and trying to decide whether the
