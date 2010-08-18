@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 41
+%global baserelease 42
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2053,6 +2053,9 @@ fi
 
 
 %changelog
+* Wed Aug 18 2010 Jarod Wilson <jarod@redhat.com>
+- make f13 lirc userspace happy with ioctl defs again (#623770)
+
 * Wed Aug 18 2010 Dave Jones <davej@redhat.com>
 - ata-piix: Detect spurious IRQs and clear them.
 
