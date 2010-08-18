@@ -1898,6 +1898,9 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 18 2010 Dave Jones <davej@redhat.com>
+- systemd is dependant upon autofs, so build it in instead of modular.
+
 * Tue Aug 17 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.2-9
 - Fix fallout from the stack guard page fixes.
   (mm-fix-page-table-unmap-for-stack-guard-page-properly.patch,
