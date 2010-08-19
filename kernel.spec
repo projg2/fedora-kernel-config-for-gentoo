@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 42
+%global baserelease 43
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -741,7 +741,6 @@ Patch12017: prevent-runtime-conntrack-changes.patch
 Patch12018: neuter_intel_microcode_load.patch
 
 Patch12019: linux-2.6-umh-refactor.patch
-Patch12020: coredump-uid-pipe-check.patch
 
 Patch12030: ssb_check_for_sprom.patch
 
@@ -1379,8 +1378,7 @@ ApplyPatch disable-i8042-check-on-apple-mac.patch
 ApplyPatch neuter_intel_microcode_load.patch
 
 # Refactor UserModeHelper code & satisfy abrt recursion check request
-#ApplyPatch linux-2.6-umh-refactor.patch
-#ApplyPatch coredump-uid-pipe-check.patch
+ApplyPatch linux-2.6-umh-refactor.patch
 
 # rhbz#533746
 # awful, ugly conflicts between this patch and the 2.6.34.2 patch:
@@ -2049,6 +2047,10 @@ fi
 
 
 %changelog
+* Wed Aug 18 2010 Chuck Ebbert <cebbert@redhat.com>
+- Restore linux-2.6-umh-refactor.patch, still needed in 2.6.34 (#625150)
+- Drop coredump-uid-pipe-check.patch, now upstream.
+
 * Wed Aug 18 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.4-42
 - Revert "ata-piix: Detect spurious IRQs and clear them",
   should be fixed by commit 27943620c upstream.
