@@ -2648,6 +2648,8 @@ fi
 - Drop merged patches:
    mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
    mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+* Thu Aug 19 2010 Steve Dickson <steved@redhat.com>
+- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 
 * Thu Aug 19 2010 Steve Dickson <steved@redhat.com>
 - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
