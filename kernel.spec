@@ -1401,6 +1401,7 @@ ApplyPatch only-use-alpha2-regulatory-information-from-country-IE.patch
 # bz 610941
 ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
+<<<<<<< HEAD
 # bz 622149
 ApplyPatch fix-rcu_deref_check-warning.patch
 ApplyPatch linux-2.6-cgroups-rcu.patch
@@ -1462,6 +1463,8 @@ ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 # CVE-2010-2963
 ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 
+=======
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
@@ -2337,6 +2340,8 @@ fi
 - Drop merged patches:
    mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
    mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+* Thu Aug 19 2010 Steve Dickson <steved@redhat.com>
+- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 
 * Thu Aug 19 2010 Steve Dickson <steved@redhat.com>
 - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
