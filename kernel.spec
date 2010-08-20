@@ -23,7 +23,11 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
+<<<<<<< HEAD
 %define buildid .pnfs35.2010.08.24
+=======
+%define buildid .pnfs35.2010.08.19
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -759,6 +763,7 @@ Patch13603: pnpacpi-cope-with-invalid-device-ids.patch
 Patch13610: libata-it821x-dump-stack-on-cache-flush.patch
 Patch13620: xen-fix-typo-in-xen-irq-fix.patch
 
+<<<<<<< HEAD
 Patch13630: dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
 
 Patch13635: r8169-fix-dma-allocations.patch
@@ -785,6 +790,9 @@ Patch13000: pnfs-all-2.6.35-2010-08-19.patch
 =======
 Patch13000: pnfs-all-2.6.35-2010-08-24-f14.patch
 >>>>>>> - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
+=======
+Patch13000: pnfs-all-2.6.35-2010-08-19.patch
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 Patch13001: linux-2.6-pnfs-compile.patch
 Patch13002: linux-2.6.35-inline.patch
 
@@ -1436,6 +1444,7 @@ ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
 # temporary fix for typo in Xen -stable patch
 ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
 
+<<<<<<< HEAD
 # rhbz#641468
 ApplyPatch pnpacpi-cope-with-invalid-device-ids.patch
 
@@ -1471,6 +1480,9 @@ ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
 =======
 ApplyPatch pnfs-all-2.6.35-2010-08-24-f14.patch
 >>>>>>> - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
+=======
+ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 
