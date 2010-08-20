@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-# % define buildid .local
+%define buildid .pnfs35.2010.08.19
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -109,7 +109,7 @@ Summary: The Linux kernel
 # kernel-headers
 %define with_headers   %{?_without_headers:   0} %{?!_without_headers:   1}
 # kernel-firmware
-%define with_firmware  %{?_with_firmware:     1} %{?!_with_firmware:     0}
+%define with_firmware  %{?_with_firmware:     1} %{?!_with_firmware:     1}
 # tools/perf
 %define with_perf      %{?_without_perf:      0} %{?!_without_perf:      1}
 # kernel-debuginfo
@@ -830,6 +830,10 @@ Patch13703: btrfs-fix-typo-in-fallocate-to-make-it-honor-actual-size.patch
 
 # rhbz#643758
 Patch13704: hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
+
+Patch13000: pnfs-all-2.6.35-2010-08-19.patch
+Patch13001: linux-2.6-pnfs-compile.patch
+Patch13002: linux-2.6.35-inline.patch
 
 %endif
 
@@ -1567,6 +1571,10 @@ ApplyPatch block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_us
 
 # rhbz#643758
 ApplyPatch hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
+
+ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
+ApplyPatch linux-2.6-pnfs-compile.patch
+ApplyPatch linux-2.6.35-inline.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2640,6 +2648,9 @@ fi
 - Drop merged patches:
    mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
    mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+
+* Thu Aug 19 2010 Steve Dickson <steved@redhat.com>
+- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 
 * Wed Aug 18 2010 Dave Jones <davej@redhat.com>
 - systemd is dependant upon autofs, so build it in instead of modular.
