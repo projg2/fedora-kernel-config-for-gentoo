@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .pnfs35.2010.08.24
+%define buildid .pnfs35.2010.08.19
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -835,6 +835,10 @@ Patch13000: pnfs-all-2.6.35-2010-08-24-f14.patch
 Patch13001: linux-2.6-pnfs-compile.patch
 Patch13002: linux-2.6.35-inline.patch
 
+Patch13000: pnfs-all-2.6.35-2010-08-19.patch
+Patch13001: linux-2.6-pnfs-compile.patch
+Patch13002: linux-2.6.35-inline.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1573,6 +1577,10 @@ ApplyPatch block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_us
 ApplyPatch hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 
 ApplyPatch pnfs-all-2.6.35-2010-08-24-f14.patch
+ApplyPatch linux-2.6-pnfs-compile.patch
+ApplyPatch linux-2.6.35-inline.patch
+
+ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 
