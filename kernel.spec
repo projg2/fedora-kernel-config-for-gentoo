@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -764,9 +764,6 @@ Patch12440: direct-io-move-aio_complete-into-end_io.patch
 Patch12450: ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 Patch12460: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
-Patch12470: mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
-Patch12480: mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
-
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1422,10 +1419,6 @@ ApplyPatch direct-io-move-aio_complete-into-end_io.patch
 ApplyPatch ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
-# Fix fallout from stack guard page
-ApplyPatch mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
-ApplyPatch mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
-
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2047,6 +2040,12 @@ fi
 
 
 %changelog
+* Sat Aug 21 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.5-43
+- Linux 2.6.34.5
+- Drop merged patches:
+   mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
+   mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+
 * Wed Aug 18 2010 Chuck Ebbert <cebbert@redhat.com>
 - Restore linux-2.6-umh-refactor.patch, still needed in 2.6.34 (#625150)
 - Drop coredump-uid-pipe-check.patch, now upstream.
