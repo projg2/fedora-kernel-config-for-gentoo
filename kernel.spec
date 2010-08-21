@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 9
+%global baserelease 10
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -710,9 +710,6 @@ Patch12050: direct-io-move-aio_complete-into-end_io.patch
 Patch12060: ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 Patch12070: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
-Patch12080: mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
-Patch12081: mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
-
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1308,10 +1305,6 @@ ApplyPatch direct-io-move-aio_complete-into-end_io.patch
 ApplyPatch ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
-# fix fallout from stack guard page patches
-ApplyPatch mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
-ApplyPatch mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
-
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1898,6 +1891,12 @@ fi
 # and build.
 
 %changelog
+* Sat Aug 21 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.3-10
+- Linux 2.6.35.3
+- Drop merged patches:
+   mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
+   mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+
 * Wed Aug 18 2010 Dave Jones <davej@redhat.com>
 - systemd is dependant upon autofs, so build it in instead of modular.
 
