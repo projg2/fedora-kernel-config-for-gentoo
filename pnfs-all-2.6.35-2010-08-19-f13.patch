@@ -1,6 +1,11 @@
 diff -up linux-2.6.34.noarch/arch/um/os-Linux/mem.c.orig linux-2.6.34.noarch/arch/um/os-Linux/mem.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/arch/um/os-Linux/mem.c.orig	2010-08-24 14:14:03.643355000 -0400
 +++ linux-2.6.34.noarch/arch/um/os-Linux/mem.c	2010-08-24 14:17:48.415730000 -0400
+=======
+--- linux-2.6.34.noarch/arch/um/os-Linux/mem.c.orig	2010-08-23 12:08:27.310584826 -0400
++++ linux-2.6.34.noarch/arch/um/os-Linux/mem.c	2010-08-23 12:09:03.273553977 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -13,6 +13,7 @@
  #include <sys/stat.h>
  #include <sys/mman.h>
@@ -11,7 +16,11 @@ diff -up linux-2.6.34.noarch/arch/um/os-Linux/mem.c.orig linux-2.6.34.noarch/arc
  #include "os.h"
 diff -up linux-2.6.34.noarch/block/genhd.c.orig linux-2.6.34.noarch/block/genhd.c
 --- linux-2.6.34.noarch/block/genhd.c.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/block/genhd.c	2010-08-24 14:17:48.421730000 -0400
+=======
++++ linux-2.6.34.noarch/block/genhd.c	2010-08-23 12:09:03.273553977 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -1009,6 +1009,7 @@ static void disk_release(struct device *
  struct class block_class = {
  	.name		= "block",
@@ -21,8 +30,13 @@ diff -up linux-2.6.34.noarch/block/genhd.c.orig linux-2.6.34.noarch/block/genhd.
  static char *block_devnode(struct device *dev, mode_t *mode)
  {
 diff -up linux-2.6.34.noarch/Documentation/filesystems/spnfs.txt.orig linux-2.6.34.noarch/Documentation/filesystems/spnfs.txt
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/Documentation/filesystems/spnfs.txt.orig	2010-08-24 14:17:48.423729000 -0400
 +++ linux-2.6.34.noarch/Documentation/filesystems/spnfs.txt	2010-08-24 14:17:48.425730000 -0400
+=======
+--- linux-2.6.34.noarch/Documentation/filesystems/spnfs.txt.orig	2010-08-23 12:09:03.274563927 -0400
++++ linux-2.6.34.noarch/Documentation/filesystems/spnfs.txt	2010-08-23 12:09:03.274563927 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,211 @@
 +(c) 2007 Network Appliance Inc.
 +
@@ -237,7 +251,11 @@ diff -up linux-2.6.34.noarch/Documentation/filesystems/spnfs.txt.orig linux-2.6.
 +
 diff -up linux-2.6.34.noarch/drivers/md/dm-ioctl.c.orig linux-2.6.34.noarch/drivers/md/dm-ioctl.c
 --- linux-2.6.34.noarch/drivers/md/dm-ioctl.c.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/drivers/md/dm-ioctl.c	2010-08-24 14:17:48.430730000 -0400
+=======
++++ linux-2.6.34.noarch/drivers/md/dm-ioctl.c	2010-08-23 12:09:03.275584050 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -651,6 +651,12 @@ static int dev_create(struct dm_ioctl *p
  	return r;
  }
@@ -292,7 +310,11 @@ diff -up linux-2.6.34.noarch/drivers/md/dm-ioctl.c.orig linux-2.6.34.noarch/driv
  	int r;
 diff -up linux-2.6.34.noarch/drivers/scsi/hosts.c.orig linux-2.6.34.noarch/drivers/scsi/hosts.c
 --- linux-2.6.34.noarch/drivers/scsi/hosts.c.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/drivers/scsi/hosts.c	2010-08-24 14:17:48.435733000 -0400
+=======
++++ linux-2.6.34.noarch/drivers/scsi/hosts.c	2010-08-23 12:09:03.276563906 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -49,7 +49,7 @@ static void scsi_host_cls_release(struct
  	put_device(&class_to_shost(dev)->shost_gendev);
  }
@@ -304,7 +326,11 @@ diff -up linux-2.6.34.noarch/drivers/scsi/hosts.c.orig linux-2.6.34.noarch/drive
  };
 diff -up linux-2.6.34.noarch/fs/exofs/exofs.h.orig linux-2.6.34.noarch/fs/exofs/exofs.h
 --- linux-2.6.34.noarch/fs/exofs/exofs.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/exofs/exofs.h	2010-08-24 14:17:48.440733000 -0400
+=======
++++ linux-2.6.34.noarch/fs/exofs/exofs.h	2010-08-23 12:09:03.277563890 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -36,13 +36,9 @@
  #include <linux/fs.h>
  #include <linux/time.h>
@@ -360,8 +386,13 @@ diff -up linux-2.6.34.noarch/fs/exofs/exofs.h.orig linux-2.6.34.noarch/fs/exofs/
 +
  #endif
 diff -up linux-2.6.34.noarch/fs/exofs/export.c.orig linux-2.6.34.noarch/fs/exofs/export.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/exofs/export.c.orig	2010-08-24 14:17:48.444731000 -0400
 +++ linux-2.6.34.noarch/fs/exofs/export.c	2010-08-24 14:17:48.446730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/exofs/export.c.orig	2010-08-23 12:09:03.278386746 -0400
++++ linux-2.6.34.noarch/fs/exofs/export.c	2010-08-23 12:09:03.278386746 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,396 @@
 +/*
 + * export.c - Implementation of the pnfs_export_operations
@@ -761,7 +792,11 @@ diff -up linux-2.6.34.noarch/fs/exofs/export.c.orig linux-2.6.34.noarch/fs/exofs
 +}
 diff -up linux-2.6.34.noarch/fs/exofs/inode.c.orig linux-2.6.34.noarch/fs/exofs/inode.c
 --- linux-2.6.34.noarch/fs/exofs/inode.c.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/exofs/inode.c	2010-08-24 14:17:48.452730000 -0400
+=======
++++ linux-2.6.34.noarch/fs/exofs/inode.c	2010-08-23 12:09:03.279502002 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -833,7 +833,7 @@ void exofs_truncate(struct inode *inode)
  	if (unlikely(wait_obj_created(oi)))
  		goto fail;
@@ -781,7 +816,11 @@ diff -up linux-2.6.34.noarch/fs/exofs/inode.c.orig linux-2.6.34.noarch/fs/exofs/
   * Fill in an inode read from the OSD and set it up for use
 diff -up linux-2.6.34.noarch/fs/exofs/Kbuild.orig linux-2.6.34.noarch/fs/exofs/Kbuild
 --- linux-2.6.34.noarch/fs/exofs/Kbuild.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/exofs/Kbuild	2010-08-24 14:17:48.457733000 -0400
+=======
++++ linux-2.6.34.noarch/fs/exofs/Kbuild	2010-08-23 12:09:03.279502002 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -13,4 +13,5 @@
  #
  
@@ -790,7 +829,11 @@ diff -up linux-2.6.34.noarch/fs/exofs/Kbuild.orig linux-2.6.34.noarch/fs/exofs/K
  obj-$(CONFIG_EXOFS_FS) += exofs.o
 diff -up linux-2.6.34.noarch/fs/exofs/Kconfig.orig linux-2.6.34.noarch/fs/exofs/Kconfig
 --- linux-2.6.34.noarch/fs/exofs/Kconfig.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/exofs/Kconfig	2010-08-24 14:17:48.462739000 -0400
+=======
++++ linux-2.6.34.noarch/fs/exofs/Kconfig	2010-08-23 12:09:03.280553663 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -1,6 +1,7 @@
  config EXOFS_FS
  	tristate "exofs: OSD based file system support"
@@ -801,7 +844,11 @@ diff -up linux-2.6.34.noarch/fs/exofs/Kconfig.orig linux-2.6.34.noarch/fs/exofs/
  	  as its backing storage.
 diff -up linux-2.6.34.noarch/fs/exofs/super.c.orig linux-2.6.34.noarch/fs/exofs/super.c
 --- linux-2.6.34.noarch/fs/exofs/super.c.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/exofs/super.c	2010-08-24 14:17:48.468730000 -0400
+=======
++++ linux-2.6.34.noarch/fs/exofs/super.c	2010-08-23 12:09:03.281511951 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -621,6 +621,7 @@ static int exofs_fill_super(struct super
  	sb->s_fs_info = sbi;
  	sb->s_op = &exofs_sops;
@@ -812,7 +859,11 @@ diff -up linux-2.6.34.noarch/fs/exofs/super.c.orig linux-2.6.34.noarch/fs/exofs/
  		EXOFS_ERR("ERROR: exofs_iget failed\n");
 diff -up linux-2.6.34.noarch/fs/exportfs/expfs.c.orig linux-2.6.34.noarch/fs/exportfs/expfs.c
 --- linux-2.6.34.noarch/fs/exportfs/expfs.c.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/exportfs/expfs.c	2010-08-24 14:17:48.473730000 -0400
+=======
++++ linux-2.6.34.noarch/fs/exportfs/expfs.c	2010-08-23 12:09:03.282511528 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -16,6 +16,13 @@
  #include <linux/namei.h>
  #include <linux/sched.h>
@@ -829,7 +880,11 @@ diff -up linux-2.6.34.noarch/fs/exportfs/expfs.c.orig linux-2.6.34.noarch/fs/exp
  
 diff -up linux-2.6.34.noarch/fs/exportfs/Makefile.orig linux-2.6.34.noarch/fs/exportfs/Makefile
 --- linux-2.6.34.noarch/fs/exportfs/Makefile.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/exportfs/Makefile	2010-08-24 14:17:48.478733000 -0400
+=======
++++ linux-2.6.34.noarch/fs/exportfs/Makefile	2010-08-23 12:09:03.282511528 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -3,4 +3,7 @@
  
  obj-$(CONFIG_EXPORTFS) += exportfs.o
@@ -840,8 +895,13 @@ diff -up linux-2.6.34.noarch/fs/exportfs/Makefile.orig linux-2.6.34.noarch/fs/ex
 +exportfs-$(CONFIG_EXPORTFS_OSD_LAYOUT)	+= pnfs_osd_xdr_srv.o
 +exportfs-$(CONFIG_EXPORTFS_BLOCK_LAYOUT) += nfs4blocklayoutxdr.o
 diff -up linux-2.6.34.noarch/fs/exportfs/nfs4blocklayoutxdr.c.orig linux-2.6.34.noarch/fs/exportfs/nfs4blocklayoutxdr.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/exportfs/nfs4blocklayoutxdr.c.orig	2010-08-24 14:17:48.482731000 -0400
 +++ linux-2.6.34.noarch/fs/exportfs/nfs4blocklayoutxdr.c	2010-08-24 14:17:48.484734000 -0400
+=======
+--- linux-2.6.34.noarch/fs/exportfs/nfs4blocklayoutxdr.c.orig	2010-08-23 12:09:03.283511561 -0400
++++ linux-2.6.34.noarch/fs/exportfs/nfs4blocklayoutxdr.c	2010-08-23 12:09:03.283511561 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,158 @@
 +/*
 + *  linux/fs/nfsd/nfs4blocklayoutxdr.c
@@ -1002,8 +1062,13 @@ diff -up linux-2.6.34.noarch/fs/exportfs/nfs4blocklayoutxdr.c.orig linux-2.6.34.
 +}
 +EXPORT_SYMBOL_GPL(blocklayout_encode_layout);
 diff -up linux-2.6.34.noarch/fs/exportfs/nfs4filelayoutxdr.c.orig linux-2.6.34.noarch/fs/exportfs/nfs4filelayoutxdr.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/exportfs/nfs4filelayoutxdr.c.orig	2010-08-24 14:17:48.487733000 -0400
 +++ linux-2.6.34.noarch/fs/exportfs/nfs4filelayoutxdr.c	2010-08-24 14:17:48.489734000 -0400
+=======
+--- linux-2.6.34.noarch/fs/exportfs/nfs4filelayoutxdr.c.orig	2010-08-23 12:09:03.283511561 -0400
++++ linux-2.6.34.noarch/fs/exportfs/nfs4filelayoutxdr.c	2010-08-23 12:09:03.283511561 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,218 @@
 +/*
 + *  Copyright (c) 2006 The Regents of the University of Michigan.
@@ -1224,8 +1289,13 @@ diff -up linux-2.6.34.noarch/fs/exportfs/nfs4filelayoutxdr.c.orig linux-2.6.34.n
 +}
 +EXPORT_SYMBOL(filelayout_encode_layout);
 diff -up linux-2.6.34.noarch/fs/exportfs/pnfs_osd_xdr_srv.c.orig linux-2.6.34.noarch/fs/exportfs/pnfs_osd_xdr_srv.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/exportfs/pnfs_osd_xdr_srv.c.orig	2010-08-24 14:17:48.493729000 -0400
 +++ linux-2.6.34.noarch/fs/exportfs/pnfs_osd_xdr_srv.c	2010-08-24 14:17:48.494735000 -0400
+=======
+--- linux-2.6.34.noarch/fs/exportfs/pnfs_osd_xdr_srv.c.orig	2010-08-23 12:09:03.284511493 -0400
++++ linux-2.6.34.noarch/fs/exportfs/pnfs_osd_xdr_srv.c	2010-08-23 12:09:03.284511493 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,289 @@
 +/*
 + *  pnfs_osd_xdr_enc.c
@@ -1518,7 +1588,11 @@ diff -up linux-2.6.34.noarch/fs/exportfs/pnfs_osd_xdr_srv.c.orig linux-2.6.34.no
 +EXPORT_SYMBOL(pnfs_osd_xdr_decode_ioerr);
 diff -up linux-2.6.34.noarch/fs/gfs2/ops_fstype.c.orig linux-2.6.34.noarch/fs/gfs2/ops_fstype.c
 --- linux-2.6.34.noarch/fs/gfs2/ops_fstype.c.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/gfs2/ops_fstype.c	2010-08-24 14:17:48.499730000 -0400
+=======
++++ linux-2.6.34.noarch/fs/gfs2/ops_fstype.c	2010-08-23 12:09:03.285539075 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -19,6 +19,7 @@
  #include <linux/gfs2_ondisk.h>
  #include <linux/slow-work.h>
@@ -1539,7 +1613,11 @@ diff -up linux-2.6.34.noarch/fs/gfs2/ops_fstype.c.orig linux-2.6.34.noarch/fs/gf
  	sb_dqopt(sb)->flags |= DQUOT_QUOTA_SYS_FILE;
 diff -up linux-2.6.34.noarch/fs/Kconfig.orig linux-2.6.34.noarch/fs/Kconfig
 --- linux-2.6.34.noarch/fs/Kconfig.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/Kconfig	2010-08-24 14:17:48.505733000 -0400
+=======
++++ linux-2.6.34.noarch/fs/Kconfig	2010-08-23 12:09:03.286512316 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -224,6 +224,31 @@ config LOCKD_V4
  config EXPORTFS
  	tristate
@@ -1573,8 +1651,13 @@ diff -up linux-2.6.34.noarch/fs/Kconfig.orig linux-2.6.34.noarch/fs/Kconfig
  	tristate
  	select FS_POSIX_ACL
 diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/block-device-discovery-pipe.c.orig linux-2.6.34.noarch/fs/nfs/blocklayout/block-device-discovery-pipe.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/blocklayout/block-device-discovery-pipe.c.orig	2010-08-24 14:17:48.509734000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/blocklayout/block-device-discovery-pipe.c	2010-08-24 14:17:48.511732000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/blocklayout/block-device-discovery-pipe.c.orig	2010-08-23 12:09:03.287381619 -0400
++++ linux-2.6.34.noarch/fs/nfs/blocklayout/block-device-discovery-pipe.c	2010-08-23 12:09:03.287381619 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,66 @@
 +#include <linux/module.h>
 +#include <linux/uaccess.h>
@@ -1643,8 +1726,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/block-device-discovery-pipe.c.or
 +	return;
 +}
 diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.c.orig linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.c.orig	2010-08-24 14:17:48.514733000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.c	2010-08-24 14:17:48.516731000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.c.orig	2010-08-23 12:09:03.288501648 -0400
++++ linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.c	2010-08-23 12:09:03.288501648 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,1160 @@
 +/*
 + *  linux/fs/nfs/blocklayout/blocklayout.c
@@ -2807,8 +2895,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.c.orig linux-2.6.34.
 +module_init(nfs4blocklayout_init);
 +module_exit(nfs4blocklayout_exit);
 diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdev.c.orig linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdev.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdev.c.orig	2010-08-24 14:17:48.519731000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdev.c	2010-08-24 14:17:48.521730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdev.c.orig	2010-08-23 12:09:03.289501933 -0400
++++ linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdev.c	2010-08-23 12:09:03.289501933 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,335 @@
 +/*
 + *  linux/fs/nfs/blocklayout/blocklayoutdev.c
@@ -3146,8 +3239,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdev.c.orig linux-2.6.
 +	goto out;
 +}
 diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdm.c.orig linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdm.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdm.c.orig	2010-08-24 14:17:48.523733000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdm.c	2010-08-24 14:17:48.525730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdm.c.orig	2010-08-23 12:09:03.290395707 -0400
++++ linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdm.c	2010-08-23 12:09:03.290395707 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,120 @@
 +/*
 + *  linux/fs/nfs/blocklayout/blocklayoutdm.c
@@ -3270,8 +3368,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayoutdm.c.orig linux-2.6.3
 +	}
 +}
 diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.h.orig linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.h.orig	2010-08-24 14:17:48.528729000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.h	2010-08-24 14:17:48.529735000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.h.orig	2010-08-23 12:09:03.290395707 -0400
++++ linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.h	2010-08-23 12:09:03.291501560 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,303 @@
 +/*
 + *  linux/fs/nfs/blocklayout/blocklayout.h
@@ -3577,8 +3680,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/blocklayout.h.orig linux-2.6.34.
 +
 +#endif /* FS_NFS_NFS4BLOCKLAYOUT_H */
 diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/extents.c.orig linux-2.6.34.noarch/fs/nfs/blocklayout/extents.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/blocklayout/extents.c.orig	2010-08-24 14:17:48.532731000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/blocklayout/extents.c	2010-08-24 14:17:48.534734000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/blocklayout/extents.c.orig	2010-08-23 12:09:03.292511531 -0400
++++ linux-2.6.34.noarch/fs/nfs/blocklayout/extents.c	2010-08-23 12:09:03.292511531 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,948 @@
 +/*
 + *  linux/fs/nfs/blocklayout/blocklayout.h
@@ -4529,8 +4637,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/extents.c.orig linux-2.6.34.noar
 +	}
 +}
 diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/Makefile.orig linux-2.6.34.noarch/fs/nfs/blocklayout/Makefile
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/blocklayout/Makefile.orig	2010-08-24 14:17:48.537729000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/blocklayout/Makefile	2010-08-24 14:17:48.538739000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/blocklayout/Makefile.orig	2010-08-23 12:09:03.292511531 -0400
++++ linux-2.6.34.noarch/fs/nfs/blocklayout/Makefile	2010-08-23 12:09:03.293491476 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,6 @@
 +#
 +# Makefile for the pNFS block layout driver kernel module
@@ -4540,7 +4653,11 @@ diff -up linux-2.6.34.noarch/fs/nfs/blocklayout/Makefile.orig linux-2.6.34.noarc
 +			extents.o block-device-discovery-pipe.o
 diff -up linux-2.6.34.noarch/fs/nfs/callback.h.orig linux-2.6.34.noarch/fs/nfs/callback.h
 --- linux-2.6.34.noarch/fs/nfs/callback.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/nfs/callback.h	2010-08-24 14:17:48.544730000 -0400
+=======
++++ linux-2.6.34.noarch/fs/nfs/callback.h	2010-08-23 12:09:03.293491476 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -8,6 +8,8 @@
  #ifndef __LINUX_FS_NFS_CALLBACK_H
  #define __LINUX_FS_NFS_CALLBACK_H
@@ -4613,7 +4730,11 @@ diff -up linux-2.6.34.noarch/fs/nfs/callback.h.orig linux-2.6.34.noarch/fs/nfs/c
  extern __be32 nfs4_callback_getattr(struct cb_getattrargs *args, struct cb_getattrres *res);
 diff -up linux-2.6.34.noarch/fs/nfs/callback_proc.c.orig linux-2.6.34.noarch/fs/nfs/callback_proc.c
 --- linux-2.6.34.noarch/fs/nfs/callback_proc.c.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/nfs/callback_proc.c	2010-08-24 14:17:48.562731000 -0400
+=======
++++ linux-2.6.34.noarch/fs/nfs/callback_proc.c	2010-08-23 12:09:03.294522414 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -8,10 +8,15 @@
  #include <linux/nfs4.h>
  #include <linux/nfs_fs.h>
@@ -5096,7 +5217,11 @@ diff -up linux-2.6.34.noarch/fs/nfs/callback_proc.c.orig linux-2.6.34.noarch/fs/
  	return status;
 diff -up linux-2.6.34.noarch/fs/nfs/callback_xdr.c.orig linux-2.6.34.noarch/fs/nfs/callback_xdr.c
 --- linux-2.6.34.noarch/fs/nfs/callback_xdr.c.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/nfs/callback_xdr.c	2010-08-24 14:17:48.568730000 -0400
+=======
++++ linux-2.6.34.noarch/fs/nfs/callback_xdr.c	2010-08-23 12:09:03.295502055 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -22,6 +22,8 @@
  #define CB_OP_RECALL_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ)
  
@@ -5298,8 +5423,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/callback_xdr.c.orig linux-2.6.34.noarch/fs/n
  		.process_op = (callback_process_op_t)nfs4_callback_sequence,
  		.decode_args = (callback_decode_arg_t)decode_cb_sequence_args,
 diff -up linux-2.6.34.noarch/fs/nfs/client.c.orig linux-2.6.34.noarch/fs/nfs/client.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/client.c.orig	2010-08-24 14:14:13.062705000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/client.c	2010-08-24 14:17:48.575730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/client.c.orig	2010-08-23 12:08:29.037481540 -0400
++++ linux-2.6.34.noarch/fs/nfs/client.c	2010-08-23 12:09:03.297501650 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -39,6 +39,7 @@
  #include <net/ipv6.h>
  #include <linux/nfs_xdr.h>
@@ -5508,8 +5638,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/client.c.orig linux-2.6.34.noarch/fs/nfs/cli
  		goto error;
  
 diff -up linux-2.6.34.noarch/fs/nfsd/bl_com.c.orig linux-2.6.34.noarch/fs/nfsd/bl_com.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/bl_com.c.orig	2010-08-24 14:17:48.578729000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/bl_com.c	2010-08-24 14:17:48.579735000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/bl_com.c.orig	2010-08-23 12:09:03.297501650 -0400
++++ linux-2.6.34.noarch/fs/nfsd/bl_com.c	2010-08-23 12:09:03.298501447 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,292 @@
 +#if defined(CONFIG_SPNFS_BLOCK)
 +
@@ -5804,8 +5939,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/bl_com.c.orig linux-2.6.34.noarch/fs/nfsd/b
 +}
 +#endif /* CONFIG_SPNFS_BLOCK */
 diff -up linux-2.6.34.noarch/fs/nfsd/bl_ops.c.orig linux-2.6.34.noarch/fs/nfsd/bl_ops.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/bl_ops.c.orig	2010-08-24 14:17:48.584729000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/bl_ops.c	2010-08-24 14:17:48.586730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/bl_ops.c.orig	2010-08-23 12:09:03.299501445 -0400
++++ linux-2.6.34.noarch/fs/nfsd/bl_ops.c	2010-08-23 12:09:03.299501445 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,1672 @@
 +/*
 + *  bl_ops.c
@@ -7480,8 +7620,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/bl_ops.c.orig linux-2.6.34.noarch/fs/nfsd/b
 +
 +#endif /* CONFIG_SPNFS_BLOCK */
 diff -up linux-2.6.34.noarch/fs/nfs/delegation.c.orig linux-2.6.34.noarch/fs/nfs/delegation.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/delegation.c.orig	2010-08-24 14:14:13.068705000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/delegation.c	2010-08-24 14:17:48.592730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/delegation.c.orig	2010-08-23 12:08:29.037481540 -0400
++++ linux-2.6.34.noarch/fs/nfs/delegation.c	2010-08-23 12:09:03.300491952 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -104,7 +104,8 @@ again:
  			continue;
  		if (!test_bit(NFS_DELEGATED_STATE, &state->flags))
@@ -7558,7 +7703,11 @@ diff -up linux-2.6.34.noarch/fs/nfs/delegation.c.orig linux-2.6.34.noarch/fs/nfs
  	rcu_read_unlock();
 diff -up linux-2.6.34.noarch/fs/nfs/delegation.h.orig linux-2.6.34.noarch/fs/nfs/delegation.h
 --- linux-2.6.34.noarch/fs/nfs/delegation.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/nfs/delegation.h	2010-08-24 14:17:48.597733000 -0400
+=======
++++ linux-2.6.34.noarch/fs/nfs/delegation.h	2010-08-23 12:09:03.301431797 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -34,9 +34,7 @@ enum {
  int nfs_inode_set_delegation(struct inode *inode, struct rpc_cred *cred, struct nfs_openres *res);
  void nfs_inode_reclaim_delegation(struct inode *inode, struct rpc_cred *cred, struct nfs_openres *res);
@@ -7571,8 +7720,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/delegation.h.orig linux-2.6.34.noarch/fs/nfs
  
  struct inode *nfs_delegation_find_inode(struct nfs_client *clp, const struct nfs_fh *fhandle);
 diff -up linux-2.6.34.noarch/fs/nfsd/export.c.orig linux-2.6.34.noarch/fs/nfsd/export.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/export.c.orig	2010-08-24 14:14:13.612707000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/export.c	2010-08-24 14:17:48.604730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/export.c.orig	2010-08-23 12:08:29.089481525 -0400
++++ linux-2.6.34.noarch/fs/nfsd/export.c	2010-08-23 12:09:03.302511603 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -17,11 +17,19 @@
  #include <linux/module.h>
  #include <linux/exportfs.h>
@@ -7750,7 +7904,11 @@ diff -up linux-2.6.34.noarch/fs/nfsd/export.c.orig linux-2.6.34.noarch/fs/nfsd/e
  	svcauth_unix_purge();
 diff -up linux-2.6.34.noarch/fs/nfs/direct.c.orig linux-2.6.34.noarch/fs/nfs/direct.c
 --- linux-2.6.34.noarch/fs/nfs/direct.c.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/nfs/direct.c	2010-08-24 14:17:48.610730000 -0400
+=======
++++ linux-2.6.34.noarch/fs/nfs/direct.c	2010-08-23 12:09:03.303491500 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -267,6 +267,38 @@ static const struct rpc_call_ops nfs_rea
  	.rpc_release = nfs_direct_read_release,
  };
@@ -7996,7 +8154,11 @@ diff -up linux-2.6.34.noarch/fs/nfs/direct.c.orig linux-2.6.34.noarch/fs/nfs/dir
  		user_addr += bytes;
 diff -up linux-2.6.34.noarch/fs/nfsd/Kconfig.orig linux-2.6.34.noarch/fs/nfsd/Kconfig
 --- linux-2.6.34.noarch/fs/nfsd/Kconfig.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/nfsd/Kconfig	2010-08-24 14:17:48.616730000 -0400
+=======
++++ linux-2.6.34.noarch/fs/nfsd/Kconfig	2010-08-23 12:09:03.304505472 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -79,3 +79,52 @@ config NFSD_V4
  	  available from http://linux-nfs.org/.
  
@@ -8052,7 +8214,11 @@ diff -up linux-2.6.34.noarch/fs/nfsd/Kconfig.orig linux-2.6.34.noarch/fs/nfsd/Kc
 +	  If unsure, say N.
 diff -up linux-2.6.34.noarch/fs/nfsd/Makefile.orig linux-2.6.34.noarch/fs/nfsd/Makefile
 --- linux-2.6.34.noarch/fs/nfsd/Makefile.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/nfsd/Makefile	2010-08-24 14:17:48.621733000 -0400
+=======
++++ linux-2.6.34.noarch/fs/nfsd/Makefile	2010-08-23 12:09:03.304505472 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -11,3 +11,7 @@ nfsd-$(CONFIG_NFSD_V3)	+= nfs3proc.o nfs
  nfsd-$(CONFIG_NFSD_V3_ACL) += nfs3acl.o
  nfsd-$(CONFIG_NFSD_V4)	+= nfs4proc.o nfs4xdr.o nfs4state.o nfs4idmap.o \
@@ -8062,8 +8228,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/Makefile.orig linux-2.6.34.noarch/fs/nfsd/M
 +nfsd-$(CONFIG_SPNFS)	+= spnfs_com.o spnfs_ops.o
 +nfsd-$(CONFIG_SPNFS_BLOCK) += bl_com.o bl_ops.o
 diff -up linux-2.6.34.noarch/fs/nfsd/nfs4callback.c.orig linux-2.6.34.noarch/fs/nfsd/nfs4callback.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/nfs4callback.c.orig	2010-08-24 14:14:13.618705000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/nfs4callback.c	2010-08-24 14:17:48.628730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/nfs4callback.c.orig	2010-08-23 12:08:29.090501507 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfs4callback.c	2010-08-23 12:09:03.306491345 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -40,7 +40,6 @@
  
  #define NFSPROC4_CB_NULL 0
@@ -8603,8 +8774,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfs4callback.c.orig linux-2.6.34.noarch/fs/
 +}
 +#endif /* CONFIG_PNFSD */
 diff -up linux-2.6.34.noarch/fs/nfsd/nfs4pnfsd.c.orig linux-2.6.34.noarch/fs/nfsd/nfs4pnfsd.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/nfs4pnfsd.c.orig	2010-08-24 14:17:48.633729000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/nfs4pnfsd.c	2010-08-24 14:17:48.641730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/nfs4pnfsd.c.orig	2010-08-23 12:09:03.307491492 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfs4pnfsd.c	2010-08-23 12:09:03.308491262 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,1679 @@
 +/******************************************************************************
 + *
@@ -10286,8 +10462,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfs4pnfsd.c.orig linux-2.6.34.noarch/fs/nfs
 +	return status;
 +}
 diff -up linux-2.6.34.noarch/fs/nfsd/nfs4pnfsdlm.c.orig linux-2.6.34.noarch/fs/nfsd/nfs4pnfsdlm.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/nfs4pnfsdlm.c.orig	2010-08-24 14:17:48.645731000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/nfs4pnfsdlm.c	2010-08-24 14:17:48.647730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/nfs4pnfsdlm.c.orig	2010-08-23 12:09:03.309501439 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfs4pnfsdlm.c	2010-08-23 12:09:03.309501439 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,461 @@
 +/******************************************************************************
 + *
@@ -10751,8 +10932,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfs4pnfsdlm.c.orig linux-2.6.34.noarch/fs/n
 +};
 +EXPORT_SYMBOL(pnfs_dlm_export_ops);
 diff -up linux-2.6.34.noarch/fs/nfsd/nfs4pnfsds.c.orig linux-2.6.34.noarch/fs/nfsd/nfs4pnfsds.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/nfs4pnfsds.c.orig	2010-08-24 14:17:48.651729000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/nfs4pnfsds.c	2010-08-24 14:17:48.652735000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/nfs4pnfsds.c.orig	2010-08-23 12:09:03.310501390 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfs4pnfsds.c	2010-08-23 12:09:03.310501390 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,620 @@
 +/*
 +*  linux/fs/nfsd/nfs4pnfsds.c
@@ -11375,8 +11561,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfs4pnfsds.c.orig linux-2.6.34.noarch/fs/nf
 +
 +#endif /* CONFIG_PNFSD */
 diff -up linux-2.6.34.noarch/fs/nfsd/nfs4proc.c.orig linux-2.6.34.noarch/fs/nfsd/nfs4proc.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/nfs4proc.c.orig	2010-08-24 14:14:13.623707000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/nfs4proc.c	2010-08-24 14:17:48.658733000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/nfs4proc.c.orig	2010-08-23 12:08:29.091491685 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfs4proc.c	2010-08-23 12:09:03.311501496 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -34,10 +34,14 @@
   */
  #include <linux/file.h>
@@ -11851,8 +12042,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfs4proc.c.orig linux-2.6.34.noarch/fs/nfsd
  
  static const char *nfsd4_op_name(unsigned opnum)
 diff -up linux-2.6.34.noarch/fs/nfsd/nfs4state.c.orig linux-2.6.34.noarch/fs/nfsd/nfs4state.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/nfs4state.c.orig	2010-08-24 14:14:13.632707000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/nfs4state.c	2010-08-24 14:17:48.667732000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/nfs4state.c.orig	2010-08-23 12:08:29.093491375 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfs4state.c	2010-08-23 12:09:03.313491310 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -42,6 +42,8 @@
  #include "xdr4.h"
  #include "vfs.h"
@@ -12368,8 +12564,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfs4state.c.orig linux-2.6.34.noarch/fs/nfs
  }
  
 diff -up linux-2.6.34.noarch/fs/nfsd/nfs4xdr.c.orig linux-2.6.34.noarch/fs/nfsd/nfs4xdr.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/nfs4xdr.c.orig	2010-08-24 14:14:13.639707000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/nfs4xdr.c	2010-08-24 14:17:48.675730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/nfs4xdr.c.orig	2010-05-16 17:17:36.000000000 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfs4xdr.c	2010-08-23 12:09:03.315491356 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -47,9 +47,14 @@
  #include <linux/nfsd_idmap.h>
  #include <linux/nfs4_acl.h>
@@ -12988,8 +13189,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfs4xdr.c.orig linux-2.6.34.noarch/fs/nfsd/
  	[OP_SEQUENCE]		= (nfsd4_enc)nfsd4_encode_sequence,
  	[OP_SET_SSV]		= (nfsd4_enc)nfsd4_encode_noop,
 diff -up linux-2.6.34.noarch/fs/nfsd/nfsctl.c.orig linux-2.6.34.noarch/fs/nfsd/nfsctl.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/nfsctl.c.orig	2010-08-24 14:14:13.645705000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/nfsctl.c	2010-08-24 14:17:48.681730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/nfsctl.c.orig	2010-08-23 12:08:29.094491943 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfsctl.c	2010-08-23 12:09:03.317501495 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -13,10 +13,15 @@
  #include <linux/nfsd/syscall.h>
  #include <linux/lockd/lockd.h>
@@ -13166,8 +13372,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfsctl.c.orig linux-2.6.34.noarch/fs/nfsd/n
  	remove_proc_entry("fs/nfs/exports", NULL);
  	remove_proc_entry("fs/nfs", NULL);
 diff -up linux-2.6.34.noarch/fs/nfsd/nfsd.h.orig linux-2.6.34.noarch/fs/nfsd/nfsd.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/nfsd.h.orig	2010-08-24 14:14:13.651705000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/nfsd.h	2010-08-24 14:17:48.687730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/nfsd.h.orig	2010-08-23 12:08:29.095491390 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfsd.h	2010-08-23 12:09:03.318355741 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -285,11 +285,17 @@ extern time_t nfsd4_grace;
  #define NFSD4_1_SUPPORTED_ATTRS_WORD0 \
  	NFSD4_SUPPORTED_ATTRS_WORD0
@@ -13189,7 +13400,11 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfsd.h.orig linux-2.6.34.noarch/fs/nfsd/nfs
  {
 diff -up linux-2.6.34.noarch/fs/nfsd/nfsfh.c.orig linux-2.6.34.noarch/fs/nfsd/nfsfh.c
 --- linux-2.6.34.noarch/fs/nfsd/nfsfh.c.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/nfsd/nfsfh.c	2010-08-24 14:17:48.693730000 -0400
+=======
++++ linux-2.6.34.noarch/fs/nfsd/nfsfh.c	2010-08-23 12:09:03.319511586 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -10,6 +10,7 @@
  #include <linux/exportfs.h>
  
@@ -13227,7 +13442,11 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfsfh.c.orig linux-2.6.34.noarch/fs/nfsd/nf
  		__u32 tfh[2];
 diff -up linux-2.6.34.noarch/fs/nfsd/nfsfh.h.orig linux-2.6.34.noarch/fs/nfsd/nfsfh.h
 --- linux-2.6.34.noarch/fs/nfsd/nfsfh.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/nfsd/nfsfh.h	2010-08-24 14:17:48.698733000 -0400
+=======
++++ linux-2.6.34.noarch/fs/nfsd/nfsfh.h	2010-08-23 12:09:03.319511586 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -14,6 +14,7 @@ enum nfsd_fsid {
  	FSID_UUID8,
  	FSID_UUID16,
@@ -13280,8 +13499,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfsfh.h.orig linux-2.6.34.noarch/fs/nfsd/nf
 +
  #endif /* _LINUX_NFSD_FH_INT_H */
 diff -up linux-2.6.34.noarch/fs/nfsd/nfssvc.c.orig linux-2.6.34.noarch/fs/nfsd/nfssvc.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/nfssvc.c.orig	2010-08-24 14:14:06.365163000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/nfssvc.c	2010-08-24 14:17:48.704731000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/nfssvc.c.orig	2010-08-23 12:08:27.631563969 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfssvc.c	2010-08-23 12:09:03.320416974 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -115,7 +115,7 @@ struct svc_program		nfsd_program = {
  
  };
@@ -13292,8 +13516,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfssvc.c.orig linux-2.6.34.noarch/fs/nfsd/n
  int nfsd_vers(int vers, enum vers_op change)
  {
 diff -up linux-2.6.34.noarch/fs/nfsd/pnfsd.h.orig linux-2.6.34.noarch/fs/nfsd/pnfsd.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/pnfsd.h.orig	2010-08-24 14:17:48.708729000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/pnfsd.h	2010-08-24 14:17:48.710730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/pnfsd.h.orig	2010-08-23 12:09:03.321376171 -0400
++++ linux-2.6.34.noarch/fs/nfsd/pnfsd.h	2010-08-23 12:09:03.321376171 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,143 @@
 +/*
 + *  Copyright (c) 2005 The Regents of the University of Michigan.
@@ -13439,8 +13668,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/pnfsd.h.orig linux-2.6.34.noarch/fs/nfsd/pn
 +
 +#endif /* LINUX_NFSD_PNFSD_H */
 diff -up linux-2.6.34.noarch/fs/nfsd/pnfsd_lexp.c.orig linux-2.6.34.noarch/fs/nfsd/pnfsd_lexp.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/pnfsd_lexp.c.orig	2010-08-24 14:17:48.713731000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/pnfsd_lexp.c	2010-08-24 14:17:48.715730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/pnfsd_lexp.c.orig	2010-08-23 12:09:03.321376171 -0400
++++ linux-2.6.34.noarch/fs/nfsd/pnfsd_lexp.c	2010-08-23 12:09:03.322501672 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,225 @@
 +/*
 + * linux/fs/nfsd/pnfs_lexp.c
@@ -13668,8 +13902,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/pnfsd_lexp.c.orig linux-2.6.34.noarch/fs/nf
 +	inode->i_sb->s_pnfs_op = &pnfsd_lexp_ops;
 +}
 diff -up linux-2.6.34.noarch/fs/nfsd/spnfs_com.c.orig linux-2.6.34.noarch/fs/nfsd/spnfs_com.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/spnfs_com.c.orig	2010-08-24 14:17:48.719729000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/spnfs_com.c	2010-08-24 14:17:48.720735000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/spnfs_com.c.orig	2010-08-23 12:09:03.322501672 -0400
++++ linux-2.6.34.noarch/fs/nfsd/spnfs_com.c	2010-08-23 12:09:03.323511608 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,535 @@
 +/*
 + * fs/nfsd/spnfs_com.c
@@ -14207,8 +14446,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/spnfs_com.c.orig linux-2.6.34.noarch/fs/nfs
 +}
 +#endif /* CONFIG_PROC_FS */
 diff -up linux-2.6.34.noarch/fs/nfsd/spnfs_ops.c.orig linux-2.6.34.noarch/fs/nfsd/spnfs_ops.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/spnfs_ops.c.orig	2010-08-24 14:17:48.724733000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/spnfs_ops.c	2010-08-24 14:17:48.726730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/spnfs_ops.c.orig	2010-08-23 12:09:03.324501390 -0400
++++ linux-2.6.34.noarch/fs/nfsd/spnfs_ops.c	2010-08-23 12:09:03.324501390 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,878 @@
 +/*
 + * fs/nfsd/spnfs_ops.c
@@ -15089,8 +15333,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/spnfs_ops.c.orig linux-2.6.34.noarch/fs/nfs
 +	return 0;
 +}
 diff -up linux-2.6.34.noarch/fs/nfsd/state.h.orig linux-2.6.34.noarch/fs/nfsd/state.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/state.h.orig	2010-08-24 14:14:13.656705000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/state.h	2010-08-24 14:17:48.731738000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/state.h.orig	2010-08-23 12:08:29.096512142 -0400
++++ linux-2.6.34.noarch/fs/nfsd/state.h	2010-08-23 12:09:03.325501424 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -242,6 +242,12 @@ struct nfs4_client {
  	u32			cl_cb_seq_nr;
  	struct rpc_wait_queue	cl_cb_waitq;	/* backchannel callers may */
@@ -15207,8 +15456,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/state.h.orig linux-2.6.34.noarch/fs/nfsd/st
 +
  #endif   /* NFSD4_STATE_H */
 diff -up linux-2.6.34.noarch/fs/nfsd/vfs.c.orig linux-2.6.34.noarch/fs/nfsd/vfs.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/vfs.c.orig	2010-08-24 14:14:06.371160000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/vfs.c	2010-08-24 14:17:48.737742000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/vfs.c.orig	2010-08-23 12:08:27.632564132 -0400
++++ linux-2.6.34.noarch/fs/nfsd/vfs.c	2010-08-23 12:09:03.326501490 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -37,7 +37,12 @@
  #ifdef CONFIG_NFSD_V4
  #include <linux/nfs4_acl.h>
@@ -15335,8 +15589,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/vfs.c.orig linux-2.6.34.noarch/fs/nfsd/vfs.
  out_nfserr:
  	err = nfserrno(host_err);
 diff -up linux-2.6.34.noarch/fs/nfsd/xdr4.h.orig linux-2.6.34.noarch/fs/nfsd/xdr4.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfsd/xdr4.h.orig	2010-08-24 14:14:13.661705000 -0400
 +++ linux-2.6.34.noarch/fs/nfsd/xdr4.h	2010-08-24 14:17:48.743747000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfsd/xdr4.h.orig	2010-08-23 12:08:29.097425997 -0400
++++ linux-2.6.34.noarch/fs/nfsd/xdr4.h	2010-08-23 12:09:03.327451643 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -37,6 +37,8 @@
  #ifndef _LINUX_NFSD_XDR4_H
  #define _LINUX_NFSD_XDR4_H
@@ -15413,8 +15672,13 @@ diff -up linux-2.6.34.noarch/fs/nfsd/xdr4.h.orig linux-2.6.34.noarch/fs/nfsd/xdr
  	struct nfs4_replay *			replay;
  };
 diff -up linux-2.6.34.noarch/fs/nfs/file.c.orig linux-2.6.34.noarch/fs/nfs/file.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/file.c.orig	2010-08-24 14:14:13.079708000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/file.c	2010-08-24 14:17:48.749746000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/file.c.orig	2010-08-23 12:08:29.039491912 -0400
++++ linux-2.6.34.noarch/fs/nfs/file.c	2010-08-23 12:09:03.328501680 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -28,6 +28,7 @@
  #include <linux/aio.h>
  #include <linux/gfp.h>
@@ -15540,8 +15804,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/file.c.orig linux-2.6.34.noarch/fs/nfs/file.
  	if (!ret)
  		return VM_FAULT_LOCKED;
 diff -up linux-2.6.34.noarch/fs/nfs/inode.c.orig linux-2.6.34.noarch/fs/nfs/inode.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/inode.c.orig	2010-08-24 14:14:13.095705000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/inode.c	2010-08-24 14:17:48.757730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/inode.c.orig	2010-08-23 12:08:29.042511552 -0400
++++ linux-2.6.34.noarch/fs/nfs/inode.c	2010-08-23 12:09:03.329501644 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -48,6 +48,7 @@
  #include "internal.h"
  #include "fscache.h"
@@ -15755,8 +16024,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/inode.c.orig linux-2.6.34.noarch/fs/nfs/inod
  	nfs_fs_proc_exit();
  	nfsiod_stop();
 diff -up linux-2.6.34.noarch/fs/nfs/internal.h.orig linux-2.6.34.noarch/fs/nfs/internal.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/internal.h.orig	2010-08-24 14:14:13.100708000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/internal.h	2010-08-24 14:17:48.763734000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/internal.h.orig	2010-08-23 12:08:29.042511552 -0400
++++ linux-2.6.34.noarch/fs/nfs/internal.h	2010-08-23 12:09:03.330502148 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -139,6 +139,16 @@ extern struct nfs_server *nfs_clone_serv
  					   struct nfs_fattr *);
  extern void nfs_mark_client_ready(struct nfs_client *clp, int state);
@@ -15817,7 +16091,11 @@ diff -up linux-2.6.34.noarch/fs/nfs/internal.h.orig linux-2.6.34.noarch/fs/nfs/i
  		struct page *, struct page *);
 diff -up linux-2.6.34.noarch/fs/nfs/Kconfig.orig linux-2.6.34.noarch/fs/nfs/Kconfig
 --- linux-2.6.34.noarch/fs/nfs/Kconfig.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/nfs/Kconfig	2010-08-24 14:17:48.769730000 -0400
+=======
++++ linux-2.6.34.noarch/fs/nfs/Kconfig	2010-08-23 12:09:03.331395814 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -79,10 +79,48 @@ config NFS_V4_1
  	depends on NFS_V4 && EXPERIMENTAL
  	help
@@ -15870,7 +16148,11 @@ diff -up linux-2.6.34.noarch/fs/nfs/Kconfig.orig linux-2.6.34.noarch/fs/nfs/Kcon
  	depends on NFS_FS=y && IP_PNP
 diff -up linux-2.6.34.noarch/fs/nfs/Makefile.orig linux-2.6.34.noarch/fs/nfs/Makefile
 --- linux-2.6.34.noarch/fs/nfs/Makefile.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/nfs/Makefile	2010-08-24 14:17:48.774730000 -0400
+=======
++++ linux-2.6.34.noarch/fs/nfs/Makefile	2010-08-23 12:09:03.331395814 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -15,5 +15,12 @@ nfs-$(CONFIG_NFS_V4)	+= nfs4proc.o nfs4x
  			   delegation.o idmap.o \
  			   callback.o callback_xdr.o callback_proc.o \
@@ -15885,8 +16167,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/Makefile.orig linux-2.6.34.noarch/fs/nfs/Mak
 +obj-$(CONFIG_PNFS_OBJLAYOUT) += objlayout/
 +obj-$(CONFIG_PNFS_BLOCK) += blocklayout/
 diff -up linux-2.6.34.noarch/fs/nfs/nfs3proc.c.orig linux-2.6.34.noarch/fs/nfs/nfs3proc.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/nfs3proc.c.orig	2010-08-24 14:14:13.119708000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/nfs3proc.c	2010-08-24 14:17:48.780730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/nfs3proc.c.orig	2010-08-23 12:08:29.045525837 -0400
++++ linux-2.6.34.noarch/fs/nfs/nfs3proc.c	2010-08-23 12:09:03.332511640 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -833,6 +833,7 @@ const struct nfs_rpc_ops nfs_v3_clientop
  	.dentry_ops	= &nfs_dentry_operations,
  	.dir_inode_ops	= &nfs3_dir_inode_operations,
@@ -15896,8 +16183,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/nfs3proc.c.orig linux-2.6.34.noarch/fs/nfs/n
  	.getattr	= nfs3_proc_getattr,
  	.setattr	= nfs3_proc_setattr,
 diff -up linux-2.6.34.noarch/fs/nfs/nfs4filelayout.c.orig linux-2.6.34.noarch/fs/nfs/nfs4filelayout.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/nfs4filelayout.c.orig	2010-08-24 14:17:48.784731000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/nfs4filelayout.c	2010-08-24 14:17:48.786730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/nfs4filelayout.c.orig	2010-08-23 12:09:03.333512111 -0400
++++ linux-2.6.34.noarch/fs/nfs/nfs4filelayout.c	2010-08-23 12:09:03.334491472 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,765 @@
 +/*
 + *  linux/fs/nfs/nfs4filelayout.c
@@ -16665,8 +16957,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/nfs4filelayout.c.orig linux-2.6.34.noarch/fs
 +module_init(nfs4filelayout_init);
 +module_exit(nfs4filelayout_exit);
 diff -up linux-2.6.34.noarch/fs/nfs/nfs4filelayoutdev.c.orig linux-2.6.34.noarch/fs/nfs/nfs4filelayoutdev.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/nfs4filelayoutdev.c.orig	2010-08-24 14:17:48.790731000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/nfs4filelayoutdev.c	2010-08-24 14:17:48.792730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/nfs4filelayoutdev.c.orig	2010-08-23 12:09:03.334491472 -0400
++++ linux-2.6.34.noarch/fs/nfs/nfs4filelayoutdev.c	2010-08-23 12:09:03.335501543 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,636 @@
 +/*
 + *  linux/fs/nfs/nfs4filelayoutdev.c
@@ -17305,8 +17602,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/nfs4filelayoutdev.c.orig linux-2.6.34.noarch
 +}
 +
 diff -up linux-2.6.34.noarch/fs/nfs/nfs4filelayout.h.orig linux-2.6.34.noarch/fs/nfs/nfs4filelayout.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/nfs4filelayout.h.orig	2010-08-24 14:17:48.795731000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/nfs4filelayout.h	2010-08-24 14:17:48.796742000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/nfs4filelayout.h.orig	2010-08-23 12:09:03.335501543 -0400
++++ linux-2.6.34.noarch/fs/nfs/nfs4filelayout.h	2010-08-23 12:09:03.335501543 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,97 @@
 +/*
 + *  pnfs_nfs4filelayout.h
@@ -17406,8 +17708,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/nfs4filelayout.h.orig linux-2.6.34.noarch/fs
 +
 +#endif /* FS_NFS_NFS4FILELAYOUT_H */
 diff -up linux-2.6.34.noarch/fs/nfs/nfs4_fs.h.orig linux-2.6.34.noarch/fs/nfs/nfs4_fs.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/nfs4_fs.h.orig	2010-08-24 14:14:13.130705000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/nfs4_fs.h	2010-08-24 14:17:48.802730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/nfs4_fs.h.orig	2010-08-23 12:08:29.047512264 -0400
++++ linux-2.6.34.noarch/fs/nfs/nfs4_fs.h	2010-08-23 12:09:03.336490079 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -45,8 +45,28 @@ enum nfs4_client_state {
  	NFS4CLNT_RECLAIM_NOGRACE,
  	NFS4CLNT_DELEGRETURN,
@@ -17556,8 +17863,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/nfs4_fs.h.orig linux-2.6.34.noarch/fs/nfs/nf
  
  /* nfs4xdr.c */
 diff -up linux-2.6.34.noarch/fs/nfs/nfs4proc.c.orig linux-2.6.34.noarch/fs/nfs/nfs4proc.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/nfs4proc.c.orig	2010-08-24 14:14:13.143709000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/nfs4proc.c	2010-08-24 14:17:48.811734000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/nfs4proc.c.orig	2010-08-23 12:08:29.050481368 -0400
++++ linux-2.6.34.noarch/fs/nfs/nfs4proc.c	2010-08-23 12:09:03.339481253 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -49,12 +49,15 @@
  #include <linux/mount.h>
  #include <linux/module.h>
@@ -19223,7 +19535,11 @@ diff -up linux-2.6.34.noarch/fs/nfs/nfs4proc.c.orig linux-2.6.34.noarch/fs/nfs/n
  	.setattr	= nfs4_proc_setattr,
 diff -up linux-2.6.34.noarch/fs/nfs/nfs4renewd.c.orig linux-2.6.34.noarch/fs/nfs/nfs4renewd.c
 --- linux-2.6.34.noarch/fs/nfs/nfs4renewd.c.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/fs/nfs/nfs4renewd.c	2010-08-24 14:17:48.818733000 -0400
+=======
++++ linux-2.6.34.noarch/fs/nfs/nfs4renewd.c	2010-08-23 12:09:03.341491726 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -54,17 +54,17 @@
  void
  nfs4_renew_state(struct work_struct *work)
@@ -19246,8 +19562,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/nfs4renewd.c.orig linux-2.6.34.noarch/fs/nfs
  	spin_lock(&clp->cl_lock);
  	lease = clp->cl_lease_time;
 diff -up linux-2.6.34.noarch/fs/nfs/nfs4state.c.orig linux-2.6.34.noarch/fs/nfs/nfs4state.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/nfs4state.c.orig	2010-08-24 14:14:13.150705000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/nfs4state.c	2010-08-24 14:17:48.825730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/nfs4state.c.orig	2010-08-23 12:08:29.052491341 -0400
++++ linux-2.6.34.noarch/fs/nfs/nfs4state.c	2010-08-23 12:09:03.342373443 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -53,6 +53,9 @@
  #include "callback.h"
  #include "delegation.h"
@@ -19566,8 +19887,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/nfs4state.c.orig linux-2.6.34.noarch/fs/nfs/
  			    test_bit(NFS4CLNT_SESSION_RESET, &clp->cl_state) ||
  			    test_bit(NFS4CLNT_RECLAIM_REBOOT, &clp->cl_state))
 diff -up linux-2.6.34.noarch/fs/nfs/nfs4xdr.c.orig linux-2.6.34.noarch/fs/nfs/nfs4xdr.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/nfs4xdr.c.orig	2010-08-24 14:14:13.159705000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/nfs4xdr.c	2010-08-24 14:17:48.834738000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/nfs4xdr.c.orig	2010-08-23 12:08:29.054481400 -0400
++++ linux-2.6.34.noarch/fs/nfs/nfs4xdr.c	2010-08-23 12:09:03.346481283 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -50,8 +50,11 @@
  #include <linux/nfs4.h>
  #include <linux/nfs_fs.h>
@@ -21078,8 +21404,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/nfs4xdr.c.orig linux-2.6.34.noarch/fs/nfs/nf
  };
  
 diff -up linux-2.6.34.noarch/fs/nfs/objlayout/Kbuild.orig linux-2.6.34.noarch/fs/nfs/objlayout/Kbuild
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/objlayout/Kbuild.orig	2010-08-24 14:17:48.839734000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/objlayout/Kbuild	2010-08-24 14:17:48.840742000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/objlayout/Kbuild.orig	2010-08-23 12:09:03.348511665 -0400
++++ linux-2.6.34.noarch/fs/nfs/objlayout/Kbuild	2010-08-23 12:09:03.348511665 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,11 @@
 +#
 +# Makefile for the pNFS Objects Layout Driver kernel module
@@ -21093,8 +21424,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/objlayout/Kbuild.orig linux-2.6.34.noarch/fs
 +panlayoutdriver-y := pnfs_osd_xdr_cli.o objlayout.o panfs_shim.o
 +obj-$(CONFIG_PNFS_PANLAYOUT) += panlayoutdriver.o
 diff -up linux-2.6.34.noarch/fs/nfs/objlayout/objio_osd.c.orig linux-2.6.34.noarch/fs/nfs/objlayout/objio_osd.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/objlayout/objio_osd.c.orig	2010-08-24 14:17:48.843735000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/objlayout/objio_osd.c	2010-08-24 14:17:48.845739000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/objlayout/objio_osd.c.orig	2010-08-23 12:09:03.349501459 -0400
++++ linux-2.6.34.noarch/fs/nfs/objlayout/objio_osd.c	2010-08-23 12:09:03.349501459 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,1087 @@
 +/*
 + *  objio_osd.c
@@ -22184,8 +22520,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/objlayout/objio_osd.c.orig linux-2.6.34.noar
 +module_init(objlayout_init);
 +module_exit(objlayout_exit);
 diff -up linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.c.orig linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.c.orig	2010-08-24 14:17:48.848735000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.c	2010-08-24 14:17:48.851730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.c.orig	2010-08-23 12:09:03.350491564 -0400
++++ linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.c	2010-08-23 12:09:03.350491564 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,790 @@
 +/*
 + *  objlayout.c
@@ -22978,8 +23319,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.c.orig linux-2.6.34.noar
 +	.uninitialize_mountpoint = objlayout_uninitialize_mountpoint,
 +};
 diff -up linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.h.orig linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.h.orig	2010-08-24 14:17:48.852735000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.h	2010-08-24 14:17:48.854746000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.h.orig	2010-08-23 12:09:03.351434439 -0400
++++ linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.h	2010-08-23 12:09:03.351434439 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,171 @@
 +/*
 + *  objlayout.h
@@ -23153,8 +23499,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/objlayout/objlayout.h.orig linux-2.6.34.noar
 +
 +#endif /* _OBJLAYOUT_H */
 diff -up linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.c.orig linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.c.orig	2010-08-24 14:17:48.857735000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.c	2010-08-24 14:17:48.860740000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.c.orig	2010-08-23 12:09:03.352501716 -0400
++++ linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.c	2010-08-23 12:09:03.352501716 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,734 @@
 +/*
 + *  panfs_shim.c
@@ -23891,8 +24242,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.c.orig linux-2.6.34.noa
 +module_init(panlayout_init);
 +module_exit(panlayout_exit);
 diff -up linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.h.orig linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.h.orig	2010-08-24 14:17:48.863734000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.h	2010-08-24 14:17:48.864730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.h.orig	2010-08-23 12:09:03.353501685 -0400
++++ linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.h	2010-08-23 12:09:03.353501685 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,482 @@
 +/*
 + *  panfs_shim.h
@@ -24377,8 +24733,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/objlayout/panfs_shim.h.orig linux-2.6.34.noa
 +
 +#endif /* _PANLAYOUT_PANFS_SHIM_H */
 diff -up linux-2.6.34.noarch/fs/nfs/objlayout/pnfs_osd_xdr_cli.c.orig linux-2.6.34.noarch/fs/nfs/objlayout/pnfs_osd_xdr_cli.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/objlayout/pnfs_osd_xdr_cli.c.orig	2010-08-24 14:17:48.868731000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/objlayout/pnfs_osd_xdr_cli.c	2010-08-24 14:17:48.869739000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/objlayout/pnfs_osd_xdr_cli.c.orig	2010-08-23 12:09:03.354501721 -0400
++++ linux-2.6.34.noarch/fs/nfs/objlayout/pnfs_osd_xdr_cli.c	2010-08-23 12:09:03.354501721 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,435 @@
 +/*
 + *  pnfs_osd_xdr.c
@@ -24816,8 +25177,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/objlayout/pnfs_osd_xdr_cli.c.orig linux-2.6.
 +	return 0;
 +}
 diff -up linux-2.6.34.noarch/fs/nfs/pagelist.c.orig linux-2.6.34.noarch/fs/nfs/pagelist.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/pagelist.c.orig	2010-08-24 14:14:13.169705000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/pagelist.c	2010-08-24 14:17:48.875733000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/pagelist.c.orig	2010-08-23 12:08:29.056411363 -0400
++++ linux-2.6.34.noarch/fs/nfs/pagelist.c	2010-08-23 12:09:03.355511659 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -20,6 +20,7 @@
  #include <linux/nfs_mount.h>
  
@@ -24940,8 +25306,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/pagelist.c.orig linux-2.6.34.noarch/fs/nfs/p
  				if (res == INT_MAX)
  					goto out;
 diff -up linux-2.6.34.noarch/fs/nfs/pnfs.c.orig linux-2.6.34.noarch/fs/nfs/pnfs.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/pnfs.c.orig	2010-08-24 14:17:48.880733000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/pnfs.c	2010-08-24 14:17:48.883730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/pnfs.c.orig	2010-08-23 12:09:03.356501413 -0400
++++ linux-2.6.34.noarch/fs/nfs/pnfs.c	2010-08-23 12:09:03.357481204 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,2027 @@
 +/*
 + *  linux/fs/nfs/pnfs.c
@@ -26971,8 +27342,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/pnfs.c.orig linux-2.6.34.noarch/fs/nfs/pnfs.
 +}
 +EXPORT_SYMBOL(nfs4_put_deviceid_cache);
 diff -up linux-2.6.34.noarch/fs/nfs/pnfs.h.orig linux-2.6.34.noarch/fs/nfs/pnfs.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/pnfs.h.orig	2010-08-24 14:17:48.886733000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/pnfs.h	2010-08-24 14:17:48.887735000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/pnfs.h.orig	2010-08-23 12:09:03.358501440 -0400
++++ linux-2.6.34.noarch/fs/nfs/pnfs.h	2010-08-23 12:09:03.358501440 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,355 @@
 +/*
 + *  fs/nfs/pnfs.h
@@ -27330,8 +27706,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/pnfs.h.orig linux-2.6.34.noarch/fs/nfs/pnfs.
 +
 +#endif /* FS_NFS_PNFS_H */
 diff -up linux-2.6.34.noarch/fs/nfs/proc.c.orig linux-2.6.34.noarch/fs/nfs/proc.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/proc.c.orig	2010-08-24 14:14:13.174707000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/proc.c	2010-08-24 14:17:48.893730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/proc.c.orig	2010-08-23 12:08:29.057511533 -0400
++++ linux-2.6.34.noarch/fs/nfs/proc.c	2010-08-23 12:09:03.359501471 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -443,7 +443,7 @@ nfs_proc_symlink(struct inode *dir, stru
  	fattr = nfs_alloc_fattr();
  	status = -ENOMEM;
@@ -27359,8 +27740,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/proc.c.orig linux-2.6.34.noarch/fs/nfs/proc.
  	.getattr	= nfs_proc_getattr,
  	.setattr	= nfs_proc_setattr,
 diff -up linux-2.6.34.noarch/fs/nfs/read.c.orig linux-2.6.34.noarch/fs/nfs/read.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/read.c.orig	2010-08-24 14:14:13.179708000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/read.c	2010-08-24 14:17:48.899733000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/read.c.orig	2010-08-23 12:08:29.057511533 -0400
++++ linux-2.6.34.noarch/fs/nfs/read.c	2010-08-23 12:09:03.359501471 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -18,8 +18,12 @@
  #include <linux/sunrpc/clnt.h>
  #include <linux/nfs_fs.h>
@@ -27575,8 +27961,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/read.c.orig linux-2.6.34.noarch/fs/nfs/read.
  	nfs_add_stats(inode, NFSIOS_READPAGES, npages);
  read_complete:
 diff -up linux-2.6.34.noarch/fs/nfs/super.c.orig linux-2.6.34.noarch/fs/nfs/super.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/super.c.orig	2010-08-24 14:14:13.186707000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/super.c	2010-08-24 14:17:48.907729000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/super.c.orig	2010-08-23 12:08:29.059491391 -0400
++++ linux-2.6.34.noarch/fs/nfs/super.c	2010-08-23 12:09:03.361501458 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -64,6 +64,7 @@
  #include "iostat.h"
  #include "internal.h"
@@ -27624,8 +28015,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/super.c.orig linux-2.6.34.noarch/fs/nfs/supe
  #endif
  
 diff -up linux-2.6.34.noarch/fs/nfs/unlink.c.orig linux-2.6.34.noarch/fs/nfs/unlink.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/unlink.c.orig	2010-08-24 14:14:13.192705000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/unlink.c	2010-08-24 14:17:48.913730000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/unlink.c.orig	2010-08-23 12:08:29.060501485 -0400
++++ linux-2.6.34.noarch/fs/nfs/unlink.c	2010-08-23 12:09:03.362419975 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -110,7 +110,7 @@ void nfs_unlink_prepare(struct rpc_task 
  	struct nfs_unlinkdata *data = calldata;
  	struct nfs_server *server = NFS_SERVER(data->dir);
@@ -27636,8 +28032,13 @@ diff -up linux-2.6.34.noarch/fs/nfs/unlink.c.orig linux-2.6.34.noarch/fs/nfs/unl
  		return;
  	rpc_call_start(task);
 diff -up linux-2.6.34.noarch/fs/nfs/write.c.orig linux-2.6.34.noarch/fs/nfs/write.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/fs/nfs/write.c.orig	2010-08-24 14:14:06.360160000 -0400
 +++ linux-2.6.34.noarch/fs/nfs/write.c	2010-08-24 14:17:48.921712000 -0400
+=======
+--- linux-2.6.34.noarch/fs/nfs/write.c.orig	2010-08-23 12:08:27.630563929 -0400
++++ linux-2.6.34.noarch/fs/nfs/write.c	2010-08-23 12:09:03.364491337 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -20,6 +20,7 @@
  #include <linux/nfs_mount.h>
  #include <linux/nfs_page.h>
@@ -28326,7 +28727,11 @@ diff -up linux-2.6.34.noarch/fs/nfs/write.c.orig linux-2.6.34.noarch/fs/nfs/writ
  int nfs_wb_page_cancel(struct inode *inode, struct page *page)
 diff -up linux-2.6.34.noarch/include/linux/exportfs.h.orig linux-2.6.34.noarch/include/linux/exportfs.h
 --- linux-2.6.34.noarch/include/linux/exportfs.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/include/linux/exportfs.h	2010-08-24 14:17:48.933713000 -0400
+=======
++++ linux-2.6.34.noarch/include/linux/exportfs.h	2010-08-23 12:09:03.365501459 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -2,6 +2,7 @@
  #define LINUX_EXPORTFS_H 1
  
@@ -28399,8 +28804,13 @@ diff -up linux-2.6.34.noarch/include/linux/exportfs.h.orig linux-2.6.34.noarch/i
 +#endif /* CONFIG_PNFSD */
  #endif /* LINUX_EXPORTFS_H */
 diff -up linux-2.6.34.noarch/include/linux/exp_xdr.h.orig linux-2.6.34.noarch/include/linux/exp_xdr.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/exp_xdr.h.orig	2010-08-24 14:17:48.945690000 -0400
 +++ linux-2.6.34.noarch/include/linux/exp_xdr.h	2010-08-24 14:17:48.946693000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/exp_xdr.h.orig	2010-08-23 12:09:03.367491365 -0400
++++ linux-2.6.34.noarch/include/linux/exp_xdr.h	2010-08-23 12:09:03.367491365 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,141 @@
 +#ifndef _LINUX_EXP_XDR_H
 +#define _LINUX_EXP_XDR_H
@@ -28544,8 +28954,13 @@ diff -up linux-2.6.34.noarch/include/linux/exp_xdr.h.orig linux-2.6.34.noarch/in
 +}
 +#endif /* _LINUX_EXP_XDR_H */
 diff -up linux-2.6.34.noarch/include/linux/fs.h.orig linux-2.6.34.noarch/include/linux/fs.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/fs.h.orig	2010-08-24 14:14:13.014707000 -0400
 +++ linux-2.6.34.noarch/include/linux/fs.h	2010-08-24 14:17:48.961675000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/fs.h.orig	2010-08-23 12:08:29.021511898 -0400
++++ linux-2.6.34.noarch/include/linux/fs.h	2010-08-23 12:09:03.369481147 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -387,6 +387,7 @@ struct inodes_stat_t {
  #include <asm/byteorder.h>
  
@@ -28564,7 +28979,11 @@ diff -up linux-2.6.34.noarch/include/linux/fs.h.orig linux-2.6.34.noarch/include
  	struct dentry		*s_root;
 diff -up linux-2.6.34.noarch/include/linux/nfs4.h.orig linux-2.6.34.noarch/include/linux/nfs4.h
 --- linux-2.6.34.noarch/include/linux/nfs4.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/include/linux/nfs4.h	2010-08-24 14:17:48.974681000 -0400
+=======
++++ linux-2.6.34.noarch/include/linux/nfs4.h	2010-08-23 12:09:03.371491472 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -17,7 +17,10 @@
  
  #define NFS4_BITMAP_SIZE	2
@@ -28694,8 +29113,13 @@ diff -up linux-2.6.34.noarch/include/linux/nfs4.h.orig linux-2.6.34.noarch/inclu
  #endif
  
 diff -up linux-2.6.34.noarch/include/linux/nfs4_pnfs.h.orig linux-2.6.34.noarch/include/linux/nfs4_pnfs.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/nfs4_pnfs.h.orig	2010-08-24 14:17:48.986670000 -0400
 +++ linux-2.6.34.noarch/include/linux/nfs4_pnfs.h	2010-08-24 14:17:48.989666000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/nfs4_pnfs.h.orig	2010-08-23 12:09:03.372501550 -0400
++++ linux-2.6.34.noarch/include/linux/nfs4_pnfs.h	2010-08-23 12:09:03.372501550 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,330 @@
 +/*
 + *  include/linux/nfs4_pnfs.h
@@ -29028,8 +29452,13 @@ diff -up linux-2.6.34.noarch/include/linux/nfs4_pnfs.h.orig linux-2.6.34.noarch/
 +
 +#endif /* LINUX_NFS4_PNFS_H */
 diff -up linux-2.6.34.noarch/include/linux/nfsd4_block.h.orig linux-2.6.34.noarch/include/linux/nfsd4_block.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/nfsd4_block.h.orig	2010-08-24 14:17:48.998668000 -0400
 +++ linux-2.6.34.noarch/include/linux/nfsd4_block.h	2010-08-24 14:17:49.000665000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/nfsd4_block.h.orig	2010-08-23 12:09:03.373491892 -0400
++++ linux-2.6.34.noarch/include/linux/nfsd4_block.h	2010-08-23 12:09:03.374491393 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,101 @@
 +#ifndef NFSD4_BLOCK
 +#define NFSD4_BLOCK
@@ -29133,8 +29562,13 @@ diff -up linux-2.6.34.noarch/include/linux/nfsd4_block.h.orig linux-2.6.34.noarc
 +#endif /* NFSD4_BLOCK */
 +
 diff -up linux-2.6.34.noarch/include/linux/nfsd4_spnfs.h.orig linux-2.6.34.noarch/include/linux/nfsd4_spnfs.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/nfsd4_spnfs.h.orig	2010-08-24 14:17:49.012664000 -0400
 +++ linux-2.6.34.noarch/include/linux/nfsd4_spnfs.h	2010-08-24 14:17:49.013671000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/nfsd4_spnfs.h.orig	2010-08-23 12:09:03.375501481 -0400
++++ linux-2.6.34.noarch/include/linux/nfsd4_spnfs.h	2010-08-23 12:09:03.375501481 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,345 @@
 +/*
 + * include/linux/nfsd4_spnfs.h
@@ -29483,7 +29917,11 @@ diff -up linux-2.6.34.noarch/include/linux/nfsd4_spnfs.h.orig linux-2.6.34.noarc
 +#endif /* NFS_SPNFS_H */
 diff -up linux-2.6.34.noarch/include/linux/nfsd/const.h.orig linux-2.6.34.noarch/include/linux/nfsd/const.h
 --- linux-2.6.34.noarch/include/linux/nfsd/const.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/include/linux/nfsd/const.h	2010-08-24 14:17:49.018668000 -0400
+=======
++++ linux-2.6.34.noarch/include/linux/nfsd/const.h	2010-08-23 12:09:03.376401789 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -29,6 +29,7 @@
  #ifdef __KERNEL__
  
@@ -29494,7 +29932,11 @@ diff -up linux-2.6.34.noarch/include/linux/nfsd/const.h.orig linux-2.6.34.noarch
   * Largest number of bytes we need to allocate for an NFS
 diff -up linux-2.6.34.noarch/include/linux/nfsd/debug.h.orig linux-2.6.34.noarch/include/linux/nfsd/debug.h
 --- linux-2.6.34.noarch/include/linux/nfsd/debug.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/include/linux/nfsd/debug.h	2010-08-24 14:17:49.024673000 -0400
+=======
++++ linux-2.6.34.noarch/include/linux/nfsd/debug.h	2010-08-23 12:09:03.376401789 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -32,6 +32,8 @@
  #define NFSDDBG_REPCACHE	0x0080
  #define NFSDDBG_XDR		0x0100
@@ -29506,7 +29948,11 @@ diff -up linux-2.6.34.noarch/include/linux/nfsd/debug.h.orig linux-2.6.34.noarch
  
 diff -up linux-2.6.34.noarch/include/linux/nfsd/export.h.orig linux-2.6.34.noarch/include/linux/nfsd/export.h
 --- linux-2.6.34.noarch/include/linux/nfsd/export.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/include/linux/nfsd/export.h	2010-08-24 14:17:49.030665000 -0400
+=======
++++ linux-2.6.34.noarch/include/linux/nfsd/export.h	2010-08-23 12:09:03.377481954 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -100,6 +100,7 @@ struct svc_export {
  	uid_t			ex_anon_uid;
  	gid_t			ex_anon_gid;
@@ -29516,8 +29962,13 @@ diff -up linux-2.6.34.noarch/include/linux/nfsd/export.h.orig linux-2.6.34.noarc
  	struct nfsd4_fs_locations ex_fslocs;
  	int			ex_nflavors;
 diff -up linux-2.6.34.noarch/include/linux/nfsd/nfs4layoutxdr.h.orig linux-2.6.34.noarch/include/linux/nfsd/nfs4layoutxdr.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/nfsd/nfs4layoutxdr.h.orig	2010-08-24 14:17:49.033666000 -0400
 +++ linux-2.6.34.noarch/include/linux/nfsd/nfs4layoutxdr.h	2010-08-24 14:17:49.034665000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/nfsd/nfs4layoutxdr.h.orig	2010-08-23 12:09:03.377481954 -0400
++++ linux-2.6.34.noarch/include/linux/nfsd/nfs4layoutxdr.h	2010-08-23 12:09:03.378501747 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,132 @@
 +/*
 + *  Copyright (c) 2006 The Regents of the University of Michigan.
@@ -29652,8 +30103,13 @@ diff -up linux-2.6.34.noarch/include/linux/nfsd/nfs4layoutxdr.h.orig linux-2.6.3
 +
 +#endif /* NFSD_NFS4LAYOUTXDR_H */
 diff -up linux-2.6.34.noarch/include/linux/nfsd/nfs4pnfsdlm.h.orig linux-2.6.34.noarch/include/linux/nfsd/nfs4pnfsdlm.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/nfsd/nfs4pnfsdlm.h.orig	2010-08-24 14:17:49.037666000 -0400
 +++ linux-2.6.34.noarch/include/linux/nfsd/nfs4pnfsdlm.h	2010-08-24 14:17:49.039665000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/nfsd/nfs4pnfsdlm.h.orig	2010-08-23 12:09:03.378501747 -0400
++++ linux-2.6.34.noarch/include/linux/nfsd/nfs4pnfsdlm.h	2010-08-23 12:09:03.378501747 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,54 @@
 +/******************************************************************************
 + *
@@ -29710,8 +30166,13 @@ diff -up linux-2.6.34.noarch/include/linux/nfsd/nfs4pnfsdlm.h.orig linux-2.6.34.
 +
 +#endif /* CONFIG_PNFSD */
 diff -up linux-2.6.34.noarch/include/linux/nfsd/nfsd4_pnfs.h.orig linux-2.6.34.noarch/include/linux/nfsd/nfsd4_pnfs.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/nfsd/nfsd4_pnfs.h.orig	2010-08-24 14:17:49.042666000 -0400
 +++ linux-2.6.34.noarch/include/linux/nfsd/nfsd4_pnfs.h	2010-08-24 14:17:49.044665000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/nfsd/nfsd4_pnfs.h.orig	2010-08-23 12:09:03.379487099 -0400
++++ linux-2.6.34.noarch/include/linux/nfsd/nfsd4_pnfs.h	2010-08-23 12:09:03.379487099 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,271 @@
 +/*
 + *  Copyright (c) 2006 The Regents of the University of Michigan.
@@ -29986,7 +30447,11 @@ diff -up linux-2.6.34.noarch/include/linux/nfsd/nfsd4_pnfs.h.orig linux-2.6.34.n
 +#endif /* _LINUX_NFSD_NFSD4_PNFS_H */
 diff -up linux-2.6.34.noarch/include/linux/nfsd/syscall.h.orig linux-2.6.34.noarch/include/linux/nfsd/syscall.h
 --- linux-2.6.34.noarch/include/linux/nfsd/syscall.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/include/linux/nfsd/syscall.h	2010-08-24 14:17:49.049665000 -0400
+=======
++++ linux-2.6.34.noarch/include/linux/nfsd/syscall.h	2010-08-23 12:09:03.380502500 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -29,6 +29,7 @@
  /*#define NFSCTL_GETFH		6	/ * get an fh by ino DISCARDED */
  #define NFSCTL_GETFD		7	/* get an fh by path (used by mountd) */
@@ -30024,8 +30489,13 @@ diff -up linux-2.6.34.noarch/include/linux/nfsd/syscall.h.orig linux-2.6.34.noar
  
  union nfsctl_res {
 diff -up linux-2.6.34.noarch/include/linux/nfs_fs.h.orig linux-2.6.34.noarch/include/linux/nfs_fs.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/nfs_fs.h.orig	2010-08-24 14:14:13.201710000 -0400
 +++ linux-2.6.34.noarch/include/linux/nfs_fs.h	2010-08-24 14:17:49.063666000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/nfs_fs.h.orig	2010-08-23 12:08:29.061494081 -0400
++++ linux-2.6.34.noarch/include/linux/nfs_fs.h	2010-08-23 12:09:03.381511751 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -72,13 +72,20 @@ struct nfs_access_entry {
  	int			mask;
  };
@@ -30124,8 +30594,13 @@ diff -up linux-2.6.34.noarch/include/linux/nfs_fs.h.orig linux-2.6.34.noarch/inc
  
  #ifdef __KERNEL__
 diff -up linux-2.6.34.noarch/include/linux/nfs_fs_sb.h.orig linux-2.6.34.noarch/include/linux/nfs_fs_sb.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/nfs_fs_sb.h.orig	2010-08-24 14:14:13.206708000 -0400
 +++ linux-2.6.34.noarch/include/linux/nfs_fs_sb.h	2010-08-24 14:17:49.077665000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/nfs_fs_sb.h.orig	2010-08-23 12:08:29.062501618 -0400
++++ linux-2.6.34.noarch/include/linux/nfs_fs_sb.h	2010-08-23 12:09:03.383491395 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -15,6 +15,7 @@ struct nlm_host;
  struct nfs4_sequence_args;
  struct nfs4_sequence_res;
@@ -30200,7 +30675,11 @@ diff -up linux-2.6.34.noarch/include/linux/nfs_fs_sb.h.orig linux-2.6.34.noarch/
  	atomic_t active; /* Keep trace of any activity to this server */
 diff -up linux-2.6.34.noarch/include/linux/nfs_iostat.h.orig linux-2.6.34.noarch/include/linux/nfs_iostat.h
 --- linux-2.6.34.noarch/include/linux/nfs_iostat.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/include/linux/nfs_iostat.h	2010-08-24 14:17:49.089668000 -0400
+=======
++++ linux-2.6.34.noarch/include/linux/nfs_iostat.h	2010-08-23 12:09:03.384501540 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -113,6 +113,9 @@ enum nfs_stat_eventcounters {
  	NFSIOS_SHORTREAD,
  	NFSIOS_SHORTWRITE,
@@ -30213,7 +30692,11 @@ diff -up linux-2.6.34.noarch/include/linux/nfs_iostat.h.orig linux-2.6.34.noarch
  
 diff -up linux-2.6.34.noarch/include/linux/nfs_page.h.orig linux-2.6.34.noarch/include/linux/nfs_page.h
 --- linux-2.6.34.noarch/include/linux/nfs_page.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/include/linux/nfs_page.h	2010-08-24 14:17:49.103665000 -0400
+=======
++++ linux-2.6.34.noarch/include/linux/nfs_page.h	2010-08-23 12:09:03.385491518 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -39,6 +39,7 @@ struct nfs_page {
  	struct list_head	wb_list;	/* Defines state of page: */
  	struct page		*wb_page;	/* page to read in/write out */
@@ -30262,8 +30745,13 @@ diff -up linux-2.6.34.noarch/include/linux/nfs_page.h.orig linux-2.6.34.noarch/i
  			     struct inode *inode,
  			     int (*doio)(struct inode *, struct list_head *, unsigned int, size_t, int),
 diff -up linux-2.6.34.noarch/include/linux/nfs_xdr.h.orig linux-2.6.34.noarch/include/linux/nfs_xdr.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/nfs_xdr.h.orig	2010-08-24 14:14:13.211708000 -0400
 +++ linux-2.6.34.noarch/include/linux/nfs_xdr.h	2010-08-24 14:17:49.116665000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/nfs_xdr.h.orig	2010-08-23 12:08:29.062501618 -0400
++++ linux-2.6.34.noarch/include/linux/nfs_xdr.h	2010-08-23 12:09:03.387491422 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -3,6 +3,8 @@
  
  #include <linux/nfsacl.h>
@@ -30415,8 +30903,13 @@ diff -up linux-2.6.34.noarch/include/linux/nfs_xdr.h.orig linux-2.6.34.noarch/in
  extern struct rpc_version	nfs_version3;
  extern struct rpc_version	nfs_version4;
 diff -up linux-2.6.34.noarch/include/linux/panfs_shim_api.h.orig linux-2.6.34.noarch/include/linux/panfs_shim_api.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/panfs_shim_api.h.orig	2010-08-24 14:17:49.128664000 -0400
 +++ linux-2.6.34.noarch/include/linux/panfs_shim_api.h	2010-08-24 14:17:49.129670000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/panfs_shim_api.h.orig	2010-08-23 12:09:03.388491527 -0400
++++ linux-2.6.34.noarch/include/linux/panfs_shim_api.h	2010-08-23 12:09:03.388491527 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,57 @@
 +#ifndef _PANFS_SHIM_API_H
 +#define _PANFS_SHIM_API_H
@@ -30476,8 +30969,13 @@ diff -up linux-2.6.34.noarch/include/linux/panfs_shim_api.h.orig linux-2.6.34.no
 +
 +#endif /* _PANFS_SHIM_API_H */
 diff -up linux-2.6.34.noarch/include/linux/pnfs_osd_xdr.h.orig linux-2.6.34.noarch/include/linux/pnfs_osd_xdr.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/pnfs_osd_xdr.h.orig	2010-08-24 14:17:49.141664000 -0400
 +++ linux-2.6.34.noarch/include/linux/pnfs_osd_xdr.h	2010-08-24 14:17:49.142670000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/pnfs_osd_xdr.h.orig	2010-08-23 12:09:03.390501461 -0400
++++ linux-2.6.34.noarch/include/linux/pnfs_osd_xdr.h	2010-08-23 12:09:03.390501461 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,440 @@
 +/*
 + *  pnfs_osd_xdr.h
@@ -30920,8 +31418,13 @@ diff -up linux-2.6.34.noarch/include/linux/pnfs_osd_xdr.h.orig linux-2.6.34.noar
 +
 +#endif /* __PNFS_OSD_XDR_H__ */
 diff -up linux-2.6.34.noarch/include/linux/pnfs_xdr.h.orig linux-2.6.34.noarch/include/linux/pnfs_xdr.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/pnfs_xdr.h.orig	2010-08-24 14:17:49.153666000 -0400
 +++ linux-2.6.34.noarch/include/linux/pnfs_xdr.h	2010-08-24 14:17:49.155665000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/pnfs_xdr.h.orig	2010-08-23 12:09:03.391491550 -0400
++++ linux-2.6.34.noarch/include/linux/pnfs_xdr.h	2010-08-23 12:09:03.391491550 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,134 @@
 +/*
 + *  include/linux/pnfs_xdr.h
@@ -31059,7 +31562,11 @@ diff -up linux-2.6.34.noarch/include/linux/pnfs_xdr.h.orig linux-2.6.34.noarch/i
 +#endif /* LINUX_PNFS_XDR_H */
 diff -up linux-2.6.34.noarch/include/linux/posix_acl.h.orig linux-2.6.34.noarch/include/linux/posix_acl.h
 --- linux-2.6.34.noarch/include/linux/posix_acl.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/include/linux/posix_acl.h	2010-08-24 14:17:49.168668000 -0400
+=======
++++ linux-2.6.34.noarch/include/linux/posix_acl.h	2010-08-23 12:09:03.393501437 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -8,6 +8,7 @@
  #ifndef __LINUX_POSIX_ACL_H
  #define __LINUX_POSIX_ACL_H
@@ -31070,7 +31577,11 @@ diff -up linux-2.6.34.noarch/include/linux/posix_acl.h.orig linux-2.6.34.noarch/
  #define ACL_UNDEFINED_ID	(-1)
 diff -up linux-2.6.34.noarch/include/linux/sunrpc/msg_prot.h.orig linux-2.6.34.noarch/include/linux/sunrpc/msg_prot.h
 --- linux-2.6.34.noarch/include/linux/sunrpc/msg_prot.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/include/linux/sunrpc/msg_prot.h	2010-08-24 14:17:49.174665000 -0400
+=======
++++ linux-2.6.34.noarch/include/linux/sunrpc/msg_prot.h	2010-08-23 12:09:03.393501437 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -14,6 +14,8 @@
  /* size of an XDR encoding unit in bytes, i.e. 32bit */
  #define XDR_UNIT	(4)
@@ -31082,7 +31593,11 @@ diff -up linux-2.6.34.noarch/include/linux/sunrpc/msg_prot.h.orig linux-2.6.34.n
  
 diff -up linux-2.6.34.noarch/include/linux/sunrpc/rpc_pipe_fs.h.orig linux-2.6.34.noarch/include/linux/sunrpc/rpc_pipe_fs.h
 --- linux-2.6.34.noarch/include/linux/sunrpc/rpc_pipe_fs.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/include/linux/sunrpc/rpc_pipe_fs.h	2010-08-24 14:17:49.179667000 -0400
+=======
++++ linux-2.6.34.noarch/include/linux/sunrpc/rpc_pipe_fs.h	2010-08-23 12:09:03.394512138 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -3,6 +3,7 @@
  
  #ifdef __KERNEL__
@@ -31103,8 +31618,13 @@ diff -up linux-2.6.34.noarch/include/linux/sunrpc/rpc_pipe_fs.h.orig linux-2.6.3
  
  struct rpc_pipe_ops {
 diff -up linux-2.6.34.noarch/include/linux/sunrpc/simple_rpc_pipefs.h.orig linux-2.6.34.noarch/include/linux/sunrpc/simple_rpc_pipefs.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/sunrpc/simple_rpc_pipefs.h.orig	2010-08-24 14:17:49.183664000 -0400
 +++ linux-2.6.34.noarch/include/linux/sunrpc/simple_rpc_pipefs.h	2010-08-24 14:17:49.184674000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/sunrpc/simple_rpc_pipefs.h.orig	2010-08-23 12:09:03.394512138 -0400
++++ linux-2.6.34.noarch/include/linux/sunrpc/simple_rpc_pipefs.h	2010-08-23 12:09:03.395501822 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,111 @@
 +/*
 + *  Copyright (c) 2008 The Regents of the University of Michigan.
@@ -31219,7 +31739,11 @@ diff -up linux-2.6.34.noarch/include/linux/sunrpc/simple_rpc_pipefs.h.orig linux
 +#endif /* _SIMPLE_RPC_PIPEFS_H_ */
 diff -up linux-2.6.34.noarch/include/linux/sunrpc/svc_xprt.h.orig linux-2.6.34.noarch/include/linux/sunrpc/svc_xprt.h
 --- linux-2.6.34.noarch/include/linux/sunrpc/svc_xprt.h.orig	2010-05-16 17:17:36.000000000 -0400
+<<<<<<< HEAD
 +++ linux-2.6.34.noarch/include/linux/sunrpc/svc_xprt.h	2010-08-24 14:17:49.190665000 -0400
+=======
++++ linux-2.6.34.noarch/include/linux/sunrpc/svc_xprt.h	2010-08-23 12:09:03.395501822 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -166,4 +166,41 @@ static inline char *__svc_print_addr(con
  
  	return buf;
@@ -31263,8 +31787,13 @@ diff -up linux-2.6.34.noarch/include/linux/sunrpc/svc_xprt.h.orig linux-2.6.34.n
 +}
  #endif /* SUNRPC_SVC_XPRT_H */
 diff -up linux-2.6.34.noarch/include/linux/sunrpc/xdr.h.orig linux-2.6.34.noarch/include/linux/sunrpc/xdr.h
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/include/linux/sunrpc/xdr.h.orig	2010-08-24 14:14:13.258707000 -0400
 +++ linux-2.6.34.noarch/include/linux/sunrpc/xdr.h	2010-08-24 14:17:49.195672000 -0400
+=======
+--- linux-2.6.34.noarch/include/linux/sunrpc/xdr.h.orig	2010-08-23 12:08:29.066475323 -0400
++++ linux-2.6.34.noarch/include/linux/sunrpc/xdr.h	2010-08-23 12:09:03.396464612 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -131,6 +131,13 @@ xdr_decode_hyper(__be32 *p, __u64 *valp)
  	return p + 2;
  }
@@ -31287,9 +31816,20 @@ diff -up linux-2.6.34.noarch/include/linux/sunrpc/xdr.h.orig linux-2.6.34.noarch
  extern void xdr_write_pages(struct xdr_stream *xdr, struct page **pages,
  		unsigned int base, unsigned int len);
  extern void xdr_init_decode(struct xdr_stream *xdr, struct xdr_buf *buf, __be32 *p);
+<<<<<<< HEAD
 diff -up linux-2.6.34.noarch/net/sunrpc/Makefile.orig linux-2.6.34.noarch/net/sunrpc/Makefile
 --- linux-2.6.34.noarch/net/sunrpc/Makefile.orig	2010-05-16 17:17:36.000000000 -0400
 +++ linux-2.6.34.noarch/net/sunrpc/Makefile	2010-08-24 14:17:49.204668000 -0400
+=======
+diff -up linux-2.6.34.noarch/localversion-pnfs.orig linux-2.6.34.noarch/localversion-pnfs
+--- linux-2.6.34.noarch/localversion-pnfs.orig	2010-08-23 12:09:03.396464612 -0400
++++ linux-2.6.34.noarch/localversion-pnfs	2010-08-23 12:09:03.396464612 -0400
+@@ -0,0 +1 @@
++-pnfs
+diff -up linux-2.6.34.noarch/net/sunrpc/Makefile.orig linux-2.6.34.noarch/net/sunrpc/Makefile
+--- linux-2.6.34.noarch/net/sunrpc/Makefile.orig	2010-05-16 17:17:36.000000000 -0400
++++ linux-2.6.34.noarch/net/sunrpc/Makefile	2010-08-23 12:09:03.397501662 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -12,7 +12,7 @@ sunrpc-y := clnt.o xprt.o socklib.o xprt
  	    svc.o svcsock.o svcauth.o svcauth_unix.o \
  	    addr.o rpcb_clnt.o timer.o xdr.o \
@@ -31300,8 +31840,13 @@ diff -up linux-2.6.34.noarch/net/sunrpc/Makefile.orig linux-2.6.34.noarch/net/su
  sunrpc-$(CONFIG_PROC_FS) += stats.o
  sunrpc-$(CONFIG_SYSCTL) += sysctl.o
 diff -up linux-2.6.34.noarch/net/sunrpc/simple_rpc_pipefs.c.orig linux-2.6.34.noarch/net/sunrpc/simple_rpc_pipefs.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/net/sunrpc/simple_rpc_pipefs.c.orig	2010-08-24 14:17:49.208664000 -0400
 +++ linux-2.6.34.noarch/net/sunrpc/simple_rpc_pipefs.c	2010-08-24 14:17:49.209670000 -0400
+=======
+--- linux-2.6.34.noarch/net/sunrpc/simple_rpc_pipefs.c.orig	2010-08-23 12:09:03.398522348 -0400
++++ linux-2.6.34.noarch/net/sunrpc/simple_rpc_pipefs.c	2010-08-23 12:09:03.398522348 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -0,0 +1,424 @@
 +/*
 + *  net/sunrpc/simple_rpc_pipefs.c
@@ -31728,8 +32273,13 @@ diff -up linux-2.6.34.noarch/net/sunrpc/simple_rpc_pipefs.c.orig linux-2.6.34.no
 +}
 +EXPORT_SYMBOL(pipefs_generic_destroy_msg);
 diff -up linux-2.6.34.noarch/net/sunrpc/xdr.c.orig linux-2.6.34.noarch/net/sunrpc/xdr.c
+<<<<<<< HEAD
 --- linux-2.6.34.noarch/net/sunrpc/xdr.c.orig	2010-08-24 14:14:13.447705000 -0400
 +++ linux-2.6.34.noarch/net/sunrpc/xdr.c	2010-08-24 14:17:49.215665000 -0400
+=======
+--- linux-2.6.34.noarch/net/sunrpc/xdr.c.orig	2010-08-23 12:08:29.081501640 -0400
++++ linux-2.6.34.noarch/net/sunrpc/xdr.c	2010-08-23 12:09:03.399443371 -0400
+>>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 @@ -403,16 +403,14 @@ xdr_shrink_pagelen(struct xdr_buf *buf, 
  
  	/* Shift the tail first */
