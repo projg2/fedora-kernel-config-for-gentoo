@@ -1,0 +1,13 @@
+diff -up linux-2.6.32.x86_64/fs/nfs/objlayout/pnfs_osd_xdr.h.orig linux-2.6.32.x86_64/fs/nfs/objlayout/pnfs_osd_xdr.h
+diff -up linux-2.6.32.x86_64/include/net/inet_connection_sock.h.orig linux-2.6.32.x86_64/include/net/inet_connection_sock.h
+--- linux-2.6.32.x86_64/include/net/inet_connection_sock.h.orig	2009-12-02 22:51:21.000000000 -0500
++++ linux-2.6.32.x86_64/include/net/inet_connection_sock.h	2010-04-21 14:26:24.475659551 -0400
+@@ -23,7 +23,7 @@
+ #include <net/inet_sock.h>
+ #include <net/request_sock.h>
+ 
+-#define INET_CSK_DEBUG 1
++//#define INET_CSK_DEBUG 1
+ 
+ /* Cancel timers, when they are not required. */
+ #undef INET_CSK_CLEAR_TIMERS

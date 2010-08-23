@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-# % define buildid .local
+%define buildid .pnfs_all_2.6.35_2010_08_19
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # kernel-headers
 %define with_headers   %{?_without_headers:   0} %{?!_without_headers:   1}
 # kernel-firmware
-%define with_firmware  %{?_with_firmware:     1} %{?!_with_firmware:     0}
+%define with_firmware  %{?_with_firmware:     1} %{?!_with_firmware:     1}
 # tools/perf
 %define with_perftool  %{?_without_perftool:  0} %{?!_without_perftool:  1}
 # perf noarch subpkg
@@ -815,6 +815,12 @@ Patch12570: sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bi
 # bz 636534
 Patch12580: xen-handle-events-as-edge-triggered.patch
 Patch12581: xen-use-percpu-interrupts-for-ipis-and-virqs.patch
+
+Patch30000: nfs-35-fc.patch
+Patch30001: nfsd-35-fc.patch
+Patch30002: pnfs-all-2.6.35-2010-08-19-f13.patch
+Patch30003: linux-2.6-pnfs-compile.patch
+Patch30004: linux-2.6.35-inline.patch
 
 %endif
 
@@ -1543,6 +1549,11 @@ ApplyPatch sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit
 ApplyPatch xen-handle-events-as-edge-triggered.patch
 ApplyPatch xen-use-percpu-interrupts-for-ipis-and-virqs.patch
 
+ApplyPatch nfs-35-fc.patch  
+ApplyPatch nfsd-35-fc.patch  
+ApplyPatch pnfs-all-2.6.35-2010-08-19-f13.patch
+ApplyPatch linux-2.6-pnfs-compile.patch
+ApplyPatch linux-2.6.35-inline.patch
 # END OF PATCH APPLICATIONS
 
 %endif
