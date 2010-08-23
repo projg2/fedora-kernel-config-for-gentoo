@@ -1,4 +1,4 @@
-From 06b70a657cec75d89c60243d6c49bc5dae0b5612 Mon Sep 17 00:00:00 2001
+From 0c03c9751600b40a7c60e525135c75a7ab25a923 Mon Sep 17 00:00:00 2001
 From: Ben Skeggs <bskeggs@redhat.com>
 Date: Mon, 31 May 2010 12:00:43 +1000
 Subject: [PATCH] drm-nouveau-updates
@@ -327,27 +327,39 @@ match the correct output script.  However, we never fill in this field
 for LVDS so we can never match a script at all.
 
 Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+
+drm/nouveau: add nv_mask register accessor
+
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+
+drm/nv50: add function to control GPIO IRQ reporting
+
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+
+drm/nouveau: disable hotplug detect around DP link training
+
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
 ---
  drivers/gpu/drm/nouveau/Makefile            |    2 +-
  drivers/gpu/drm/nouveau/nouveau_acpi.c      |   38 +++-
- drivers/gpu/drm/nouveau/nouveau_bios.c      |  206 +++++++++------
+ drivers/gpu/drm/nouveau/nouveau_bios.c      |  206 ++++++++------
  drivers/gpu/drm/nouveau/nouveau_bios.h      |    2 +
  drivers/gpu/drm/nouveau/nouveau_bo.c        |    9 +-
  drivers/gpu/drm/nouveau/nouveau_channel.c   |    5 -
- drivers/gpu/drm/nouveau/nouveau_connector.c |  281 ++++++++++----------
+ drivers/gpu/drm/nouveau/nouveau_connector.c |  281 +++++++++----------
  drivers/gpu/drm/nouveau/nouveau_connector.h |    4 +-
  drivers/gpu/drm/nouveau/nouveau_dma.c       |    8 +-
- drivers/gpu/drm/nouveau/nouveau_dp.c        |   24 ++-
+ drivers/gpu/drm/nouveau/nouveau_dp.c        |   39 +++-
  drivers/gpu/drm/nouveau/nouveau_drv.c       |   26 +--
- drivers/gpu/drm/nouveau/nouveau_drv.h       |   89 ++-----
+ drivers/gpu/drm/nouveau/nouveau_drv.h       |   98 +++----
  drivers/gpu/drm/nouveau/nouveau_encoder.h   |   10 +-
  drivers/gpu/drm/nouveau/nouveau_fbcon.c     |    5 +-
  drivers/gpu/drm/nouveau/nouveau_fence.c     |   31 +--
  drivers/gpu/drm/nouveau/nouveau_gem.c       |   11 +-
  drivers/gpu/drm/nouveau/nouveau_grctx.c     |  160 -----------
- drivers/gpu/drm/nouveau/nouveau_mem.c       |  261 ++-----------------
+ drivers/gpu/drm/nouveau/nouveau_mem.c       |  261 ++----------------
  drivers/gpu/drm/nouveau/nouveau_notifier.c  |   30 +--
- drivers/gpu/drm/nouveau/nouveau_object.c    |  105 +++-----
+ drivers/gpu/drm/nouveau/nouveau_object.c    |  105 ++-----
  drivers/gpu/drm/nouveau/nouveau_reg.h       |    1 +
  drivers/gpu/drm/nouveau/nouveau_sgdma.c     |   46 +---
  drivers/gpu/drm/nouveau/nouveau_state.c     |  172 ++++--------
@@ -366,12 +378,14 @@ Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
  drivers/gpu/drm/nouveau/nv40_graph.c        |   58 ++---
  drivers/gpu/drm/nouveau/nv50_crtc.c         |   42 +---
  drivers/gpu/drm/nouveau/nv50_dac.c          |   43 ++-
- drivers/gpu/drm/nouveau/nv50_display.c      |  385 ++++++++++++++++-----------
- drivers/gpu/drm/nouveau/nv50_fifo.c         |  126 ++++------
+ drivers/gpu/drm/nouveau/nv50_display.c      |  405 ++++++++++++++++-----------
+ drivers/gpu/drm/nouveau/nv50_fifo.c         |  126 +++------
+ drivers/gpu/drm/nouveau/nv50_gpio.c         |   19 ++
  drivers/gpu/drm/nouveau/nv50_graph.c        |   86 +++----
  drivers/gpu/drm/nouveau/nv50_instmem.c      |   61 ++---
+ drivers/gpu/drm/nouveau/nv50_mc.c           |   13 +
  drivers/gpu/drm/nouveau/nv50_sor.c          |  105 ++++----
- 43 files changed, 1123 insertions(+), 1598 deletions(-)
+ 45 files changed, 1181 insertions(+), 1616 deletions(-)
  delete mode 100644 drivers/gpu/drm/nouveau/nouveau_grctx.c
 
 diff --git a/drivers/gpu/drm/nouveau/Makefile b/drivers/gpu/drm/nouveau/Makefile
@@ -1483,15 +1497,27 @@ index 65c441a..2e3c6ca 100644
  	/* Insert NOPS for NOUVEAU_DMA_SKIPS */
  	ret = RING_SPACE(chan, NOUVEAU_DMA_SKIPS);
 diff --git a/drivers/gpu/drm/nouveau/nouveau_dp.c b/drivers/gpu/drm/nouveau/nouveau_dp.c
-index deeb21c..184bc95 100644
+index deeb21c..64b4395 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_dp.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_dp.c
-@@ -271,12 +271,26 @@ nouveau_dp_link_train(struct drm_encoder *encoder)
+@@ -23,8 +23,10 @@
+  */
+ 
+ #include "drmP.h"
++
+ #include "nouveau_drv.h"
+ #include "nouveau_i2c.h"
++#include "nouveau_connector.h"
+ #include "nouveau_encoder.h"
+ 
+ static int
+@@ -271,12 +273,36 @@ nouveau_dp_link_train(struct drm_encoder *encoder)
  {
  	struct drm_device *dev = encoder->dev;
  	struct nouveau_encoder *nv_encoder = nouveau_encoder(encoder);
 -	uint8_t config[4];
 -	uint8_t status[3];
++	struct nouveau_connector *nv_connector;
 +	struct bit_displayport_encoder_table *dpe;
 +	int dpe_headerlen;
 +	uint8_t config[4], status[3];
@@ -1500,11 +1526,20 @@ index deeb21c..184bc95 100644
  
  	NV_DEBUG_KMS(dev, "link training!!\n");
 +
++	nv_connector = nouveau_encoder_connector_get(nv_encoder);
++	if (!nv_connector)
++		return false;
++
 +	dpe = nouveau_bios_dp_table(dev, nv_encoder->dcb, &dpe_headerlen);
 +	if (!dpe) {
 +		NV_ERROR(dev, "SOR-%d: no DP encoder table!\n", nv_encoder->or);
 +		return false;
 +	}
++
++	/* disable hotplug detect, this flips around on some panels during
++	 * link training.
++	 */
++	nv50_gpio_irq_enable(dev, nv_connector->dcb->gpio_tag, false);
 +
 +	if (dpe->script0) {
 +		NV_DEBUG_KMS(dev, "SOR-%d: running DP script 0\n", nv_encoder->or);
@@ -1515,7 +1550,7 @@ index deeb21c..184bc95 100644
  train:
  	cr_done = eq_done = false;
  
-@@ -403,6 +417,12 @@ stop:
+@@ -403,6 +429,15 @@ stop:
  		}
  	}
  
@@ -1524,6 +1559,9 @@ index deeb21c..184bc95 100644
 +		nouveau_bios_run_init_table(dev, le16_to_cpu(dpe->script1),
 +					    nv_encoder->dcb);
 +	}
++
++	/* re-enable hotplug detect */
++	nv50_gpio_irq_enable(dev, nv_connector->dcb->gpio_tag, true);
 +
  	return eq_done;
  }
@@ -1614,7 +1652,7 @@ index 2737704..b4d958c 100644
  	nouveau_unregister_dsm_handler();
  }
 diff --git a/drivers/gpu/drm/nouveau/nouveau_drv.h b/drivers/gpu/drm/nouveau/nouveau_drv.h
-index c697191..51ccd90 100644
+index c697191..7584cd7 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_drv.h
 +++ b/drivers/gpu/drm/nouveau/nouveau_drv.h
 @@ -123,14 +123,6 @@ nvbo_kmap_obj_iovirtual(struct nouveau_bo *nvbo)
@@ -1877,6 +1915,29 @@ index c697191..51ccd90 100644
  
  /* nouveau_gem.c */
  extern int nouveau_gem_new(struct drm_device *, struct nouveau_channel *,
+@@ -1174,6 +1139,7 @@ int nv17_gpio_set(struct drm_device *dev, enum dcb_gpio_tag tag, int state);
+ /* nv50_gpio.c */
+ int nv50_gpio_get(struct drm_device *dev, enum dcb_gpio_tag tag);
+ int nv50_gpio_set(struct drm_device *dev, enum dcb_gpio_tag tag, int state);
++void nv50_gpio_irq_enable(struct drm_device *, enum dcb_gpio_tag, bool on);
+ 
+ /* nv50_calc. */
+ int nv50_calc_pll(struct drm_device *, struct pll_lims *, int clk,
+@@ -1220,6 +1186,14 @@ static inline void nv_wr32(struct drm_device *dev, unsigned reg, u32 val)
+ 	iowrite32_native(val, dev_priv->mmio + reg);
+ }
+ 
++static inline void nv_mask(struct drm_device *dev, u32 reg, u32 mask, u32 val)
++{
++	u32 tmp = nv_rd32(dev, reg);
++	tmp &= ~mask;
++	tmp |= val;
++	nv_wr32(dev, reg, tmp);
++}
++
+ static inline u8 nv_rd08(struct drm_device *dev, unsigned reg)
+ {
+ 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 diff --git a/drivers/gpu/drm/nouveau/nouveau_encoder.h b/drivers/gpu/drm/nouveau/nouveau_encoder.h
 index e1df820..a1a0d48 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_encoder.h
@@ -4576,7 +4637,7 @@ index 1fd9537..1bc0859 100644
  }
  
 diff --git a/drivers/gpu/drm/nouveau/nv50_display.c b/drivers/gpu/drm/nouveau/nv50_display.c
-index e6a44af..7d59e91 100644
+index e6a44af..fb5f122 100644
 --- a/drivers/gpu/drm/nouveau/nv50_display.c
 +++ b/drivers/gpu/drm/nouveau/nv50_display.c
 @@ -71,14 +71,13 @@ nv50_evo_dmaobj_new(struct nouveau_channel *evo, uint32_t class, uint32_t name,
@@ -4606,7 +4667,44 @@ index e6a44af..7d59e91 100644
  	if (ret) {
  		NV_ERROR(dev, "Error initialising EVO PRAMIN heap: %d\n", ret);
  		nv50_evo_channel_del(pchan);
-@@ -465,6 +464,7 @@ int nv50_display_create(struct drm_device *dev)
+@@ -185,7 +184,7 @@ nv50_display_init(struct drm_device *dev)
+ 	struct nouveau_timer_engine *ptimer = &dev_priv->engine.timer;
+ 	struct nouveau_channel *evo = dev_priv->evo;
+ 	struct drm_connector *connector;
+-	uint32_t val, ram_amount, hpd_en[2];
++	uint32_t val, ram_amount;
+ 	uint64_t start;
+ 	int ret, i;
+ 
+@@ -366,26 +365,10 @@ nv50_display_init(struct drm_device *dev)
+ 					     NV50_PDISPLAY_INTR_EN_CLK_UNK40));
+ 
+ 	/* enable hotplug interrupts */
+-	hpd_en[0] = hpd_en[1] = 0;
+ 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
+ 		struct nouveau_connector *conn = nouveau_connector(connector);
+-		struct dcb_gpio_entry *gpio;
+-
+-		if (conn->dcb->gpio_tag == 0xff)
+-			continue;
+ 
+-		gpio = nouveau_bios_gpio_entry(dev, conn->dcb->gpio_tag);
+-		if (!gpio)
+-			continue;
+-
+-		hpd_en[gpio->line >> 4] |= (0x00010001 << (gpio->line & 0xf));
+-	}
+-
+-	nv_wr32(dev, 0xe054, 0xffffffff);
+-	nv_wr32(dev, 0xe050, hpd_en[0]);
+-	if (dev_priv->chipset >= 0x90) {
+-		nv_wr32(dev, 0xe074, 0xffffffff);
+-		nv_wr32(dev, 0xe070, hpd_en[1]);
++		nv50_gpio_irq_enable(dev, conn->dcb->gpio_tag, true);
+ 	}
+ 
+ 	return 0;
+@@ -465,6 +448,7 @@ int nv50_display_create(struct drm_device *dev)
  {
  	struct drm_nouveau_private *dev_priv = dev->dev_private;
  	struct dcb_table *dcb = &dev_priv->vbios.dcb;
@@ -4614,7 +4712,7 @@ index e6a44af..7d59e91 100644
  	int ret, i;
  
  	NV_DEBUG_KMS(dev, "\n");
-@@ -507,14 +507,18 @@ int nv50_display_create(struct drm_device *dev)
+@@ -507,14 +491,18 @@ int nv50_display_create(struct drm_device *dev)
  			continue;
  		}
  
@@ -4635,7 +4733,7 @@ index e6a44af..7d59e91 100644
  			break;
  		default:
  			NV_WARN(dev, "DCB encoder %d unknown\n", entry->type);
-@@ -522,11 +526,13 @@ int nv50_display_create(struct drm_device *dev)
+@@ -522,11 +510,13 @@ int nv50_display_create(struct drm_device *dev)
  		}
  	}
  
@@ -4654,7 +4752,7 @@ index e6a44af..7d59e91 100644
  	}
  
  	ret = nv50_display_init(dev);
-@@ -552,131 +558,28 @@ int nv50_display_destroy(struct drm_device *dev)
+@@ -552,131 +542,28 @@ int nv50_display_destroy(struct drm_device *dev)
  	return 0;
  }
  
@@ -4793,7 +4891,7 @@ index e6a44af..7d59e91 100644
  	case OUTPUT_LVDS:
  		script = (mc >> 8) & 0xf;
  		if (bios->fp_no_ddc) {
-@@ -767,17 +670,88 @@ nv50_display_vblank_handler(struct drm_device *dev, uint32_t intr)
+@@ -767,17 +654,88 @@ nv50_display_vblank_handler(struct drm_device *dev, uint32_t intr)
  static void
  nv50_display_unk10_handler(struct drm_device *dev)
  {
@@ -4841,7 +4939,7 @@ index e6a44af..7d59e91 100644
 +
 +		or = i;
 +	}
-+
+ 
 +	for (i = 0; type == OUTPUT_ANY && i < 4; i++) {
 +		if (dev_priv->chipset  < 0x90 ||
 +		    dev_priv->chipset == 0x92 ||
@@ -4849,7 +4947,7 @@ index e6a44af..7d59e91 100644
 +			mc = nv_rd32(dev, NV50_PDISPLAY_SOR_MODE_CTRL_C(i));
 +		else
 +			mc = nv_rd32(dev, NV90_PDISPLAY_SOR_MODE_CTRL_C(i));
- 
++
 +		NV_DEBUG_KMS(dev, "SOR-%d mc: 0x%08x\n", i, mc);
 +		if (!(mc & (1 << crtc)))
 +			continue;
@@ -4888,7 +4986,7 @@ index e6a44af..7d59e91 100644
  ack:
  	nv_wr32(dev, NV50_PDISPLAY_INTR_1, NV50_PDISPLAY_INTR_1_CLK_UNK10);
  	nv_wr32(dev, 0x610030, 0x80000000);
-@@ -817,33 +791,103 @@ nv50_display_unk20_dp_hack(struct drm_device *dev, struct dcb_entry *dcb)
+@@ -817,33 +775,103 @@ nv50_display_unk20_dp_hack(struct drm_device *dev, struct dcb_entry *dcb)
  static void
  nv50_display_unk20_handler(struct drm_device *dev)
  {
@@ -4930,17 +5028,14 @@ index e6a44af..7d59e91 100644
 -	pclk = nv_rd32(dev, NV50_PDISPLAY_CRTC_P(head, CLOCK)) & 0x3fffff;
 -	script = nv50_display_script_select(dev, dcbent, pclk);
 +	pclk  = nv_rd32(dev, NV50_PDISPLAY_CRTC_P(crtc, CLOCK)) & 0x003fffff;
- 
--	NV_DEBUG_KMS(dev, "head %d pxclk: %dKHz\n", head, pclk);
++
 +	/* Find which encoder is connected to the CRTC */
 +	for (i = 0; type == OUTPUT_ANY && i < 3; i++) {
 +		mc = nv_rd32(dev, NV50_PDISPLAY_DAC_MODE_CTRL_P(i));
 +		NV_DEBUG_KMS(dev, "DAC-%d mc: 0x%08x\n", i, mc);
 +		if (!(mc & (1 << crtc)))
 +			continue;
- 
--	if (dcbent->type != OUTPUT_DP)
--		nouveau_bios_run_display_table(dev, dcbent, 0, -2);
++
 +		switch ((mc & 0x00000f00) >> 8) {
 +		case 0: type = OUTPUT_ANALOG; break;
 +		case 1: type = OUTPUT_TV; break;
@@ -4948,12 +5043,11 @@ index e6a44af..7d59e91 100644
 +			NV_ERROR(dev, "invalid mc, DAC-%d: 0x%08x\n", i, mc);
 +			goto ack;
 +		}
- 
--	nv50_crtc_set_clock(dev, head, pclk);
++
 +		or = i;
 +	}
  
--	nouveau_bios_run_display_table(dev, dcbent, script, pclk);
+-	NV_DEBUG_KMS(dev, "head %d pxclk: %dKHz\n", head, pclk);
 +	for (i = 0; type == OUTPUT_ANY && i < 4; i++) {
 +		if (dev_priv->chipset  < 0x90 ||
 +		    dev_priv->chipset == 0x92 ||
@@ -4962,14 +5056,13 @@ index e6a44af..7d59e91 100644
 +		else
 +			mc = nv_rd32(dev, NV90_PDISPLAY_SOR_MODE_CTRL_P(i));
  
--	nv50_display_unk20_dp_hack(dev, dcbent);
+-	if (dcbent->type != OUTPUT_DP)
+-		nouveau_bios_run_display_table(dev, dcbent, 0, -2);
 +		NV_DEBUG_KMS(dev, "SOR-%d mc: 0x%08x\n", i, mc);
 +		if (!(mc & (1 << crtc)))
 +			continue;
  
--	tmp = nv_rd32(dev, NV50_PDISPLAY_CRTC_CLK_CTRL2(head));
--	tmp &= ~0x000000f;
--	nv_wr32(dev, NV50_PDISPLAY_CRTC_CLK_CTRL2(head), tmp);
+-	nv50_crtc_set_clock(dev, head, pclk);
 +		switch ((mc & 0x00000f00) >> 8) {
 +		case 0: type = OUTPUT_LVDS; break;
 +		case 1: type = OUTPUT_TMDS; break;
@@ -4981,7 +5074,8 @@ index e6a44af..7d59e91 100644
 +			NV_ERROR(dev, "invalid mc, SOR-%d: 0x%08x\n", i, mc);
 +			goto ack;
 +		}
-+
+ 
+-	nouveau_bios_run_display_table(dev, dcbent, script, pclk);
 +		or = i;
 +	}
 +
@@ -4999,10 +5093,14 @@ index e6a44af..7d59e91 100644
 +		NV_ERROR(dev, "no dcb for %d %d 0x%08x\n", or, type, mc);
 +		goto ack;
 +	}
-+
+ 
+-	nv50_display_unk20_dp_hack(dev, dcbent);
 +	script = nv50_display_script_select(dev, dcb, mc, pclk);
 +	nouveau_bios_run_display_table(dev, dcb, script, pclk);
-+
+ 
+-	tmp = nv_rd32(dev, NV50_PDISPLAY_CRTC_CLK_CTRL2(head));
+-	tmp &= ~0x000000f;
+-	nv_wr32(dev, NV50_PDISPLAY_CRTC_CLK_CTRL2(head), tmp);
 +	nv50_display_unk20_dp_hack(dev, dcb);
  
 -	if (dcbent->type != OUTPUT_ANALOG) {
@@ -5010,7 +5108,7 @@ index e6a44af..7d59e91 100644
  		tmp = nv_rd32(dev, NV50_PDISPLAY_SOR_CLK_CTRL2(or));
  		tmp &= ~0x00000f0f;
  		if (script & 0x0100)
-@@ -853,24 +897,61 @@ nv50_display_unk20_handler(struct drm_device *dev)
+@@ -853,24 +881,61 @@ nv50_display_unk20_handler(struct drm_device *dev)
  		nv_wr32(dev, NV50_PDISPLAY_DAC_CLK_CTRL2(or), 0);
  	}
  
@@ -5390,6 +5488,33 @@ index e20c0e2..fb0281a 100644
  
  	/*XXX: probably reload ch127 (NULL) state back too */
  	nv_wr32(dev, NV03_PFIFO_CACHE1_PUSH1, 127);
+diff --git a/drivers/gpu/drm/nouveau/nv50_gpio.c b/drivers/gpu/drm/nouveau/nv50_gpio.c
+index bb47ad7..88715c5 100644
+--- a/drivers/gpu/drm/nouveau/nv50_gpio.c
++++ b/drivers/gpu/drm/nouveau/nv50_gpio.c
+@@ -74,3 +74,22 @@ nv50_gpio_set(struct drm_device *dev, enum dcb_gpio_tag tag, int state)
+ 	nv_wr32(dev, r, v);
+ 	return 0;
+ }
++
++void
++nv50_gpio_irq_enable(struct drm_device *dev, enum dcb_gpio_tag tag, bool on)
++{
++	struct dcb_gpio_entry *gpio;
++	u32 reg, mask;
++
++	gpio = nouveau_bios_gpio_entry(dev, tag);
++	if (!gpio) {
++		NV_ERROR(dev, "gpio tag 0x%02x not found\n", tag);
++		return;
++	}
++
++	reg  = gpio->line < 16 ? 0xe050 : 0xe070;
++	mask = 0x00010001 << (gpio->line & 0xf);
++
++	nv_wr32(dev, reg + 4, mask);
++	nv_mask(dev, reg + 0, mask, on ? mask : 0);
++}
 diff --git a/drivers/gpu/drm/nouveau/nv50_graph.c b/drivers/gpu/drm/nouveau/nv50_graph.c
 index b203d06..1413028 100644
 --- a/drivers/gpu/drm/nouveau/nv50_graph.c
@@ -5695,6 +5820,31 @@ index 5f21df3..0c8a6f2 100644
 +		NV_ERROR(dev, "vm flush timeout: engine %d\n", engine);
  }
 -
+diff --git a/drivers/gpu/drm/nouveau/nv50_mc.c b/drivers/gpu/drm/nouveau/nv50_mc.c
+index e0a9c3f..f680e8e 100644
+--- a/drivers/gpu/drm/nouveau/nv50_mc.c
++++ b/drivers/gpu/drm/nouveau/nv50_mc.c
+@@ -31,7 +31,20 @@
+ int
+ nv50_mc_init(struct drm_device *dev)
+ {
++	struct drm_nouveau_private *dev_priv = dev->dev_private;
++
+ 	nv_wr32(dev, NV03_PMC_ENABLE, 0xFFFFFFFF);
++
++	/* disable, and ack any pending gpio interrupts
++	 * XXX doesn't technically belong here, but it'll do for the moment
++	 */
++	nv_wr32(dev, 0xe050, 0x00000000);
++	nv_wr32(dev, 0xe054, 0xffffffff);
++	if (dev_priv->chipset >= 0x90) {
++		nv_wr32(dev, 0xe070, 0x00000000);
++		nv_wr32(dev, 0xe074, 0xffffffff);
++	}
++
+ 	return 0;
+ }
+ 
 diff --git a/drivers/gpu/drm/nouveau/nv50_sor.c b/drivers/gpu/drm/nouveau/nv50_sor.c
 index 812778d..bcd4cf8 100644
 --- a/drivers/gpu/drm/nouveau/nv50_sor.c
@@ -5899,5 +6049,5 @@ index 812778d..bcd4cf8 100644
  	return 0;
  }
 -- 
-1.7.1.1
+1.7.2.1
 

@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 43
+%global baserelease 44
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2040,6 +2040,9 @@ fi
 
 
 %changelog
+* Mon Aug 23 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.5-44
+- nouveau: fix eDP panels that flip HPD during link training (rhbz#596562)
+
 * Sat Aug 21 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.5-43
 - Linux 2.6.34.5
 - Drop merged patches:
