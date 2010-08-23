@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .pnfs34.2010.08.24
+%define buildid .pnfs_all_2.6.35_2010_08_19
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -847,6 +847,10 @@ Patch13648: rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
 Patch30000: nfs-35-fc.patch
 Patch30001: nfsd-35-fc.patch
 Patch30002: pnfs-all-2.6.35-2010-08-24-f13.patch
+
+Patch30000: nfs-35-fc.patch
+Patch30001: nfsd-35-fc.patch
+Patch30002: pnfs-all-2.6.35-2010-08-19-f13.patch
 Patch30003: linux-2.6-pnfs-compile.patch
 Patch30004: linux-2.6.35-inline.patch
 
@@ -1609,6 +1613,10 @@ ApplyPatch rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
 ApplyPatch nfs-35-fc.patch  
 ApplyPatch nfsd-35-fc.patch  
 ApplyPatch pnfs-all-2.6.35-2010-08-24-f13.patch
+
+ApplyPatch nfs-35-fc.patch  
+ApplyPatch nfsd-35-fc.patch  
+ApplyPatch pnfs-all-2.6.35-2010-08-19-f13.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 # END OF PATCH APPLICATIONS
