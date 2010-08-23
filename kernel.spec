@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-# % define buildid .local
+%define buildid .pnfs_all_2.6.35_2010_08_19
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # kernel-headers
 %define with_headers   %{?_without_headers:   0} %{?!_without_headers:   1}
 # kernel-firmware
-%define with_firmware  %{?_with_firmware:     1} %{?!_with_firmware:     0}
+%define with_firmware  %{?_with_firmware:     1} %{?!_with_firmware:     1}
 # tools/perf
 %define with_perftool  %{?_without_perftool:  0} %{?!_without_perftool:  1}
 # perf noarch subpkg
@@ -843,6 +843,12 @@ Patch13646: tpm-autodetect-itpm-devices.patch
 
 Patch13647: rt2x00-disable-auto-wakeup-before-waking-up-device.patch
 Patch13648: rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
+
+Patch30000: nfs-35-fc.patch
+Patch30001: nfsd-35-fc.patch
+Patch30002: pnfs-all-2.6.35-2010-08-19-f13.patch
+Patch30003: linux-2.6-pnfs-compile.patch
+Patch30004: linux-2.6.35-inline.patch
 
 %endif
 
@@ -1600,6 +1606,11 @@ ApplyPatch tpm-autodetect-itpm-devices.patch
 ApplyPatch rt2x00-disable-auto-wakeup-before-waking-up-device.patch
 ApplyPatch rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
 
+ApplyPatch nfs-35-fc.patch  
+ApplyPatch nfsd-35-fc.patch  
+ApplyPatch pnfs-all-2.6.35-2010-08-19-f13.patch
+ApplyPatch linux-2.6-pnfs-compile.patch
+ApplyPatch linux-2.6.35-inline.patch
 # END OF PATCH APPLICATIONS
 
 %endif
