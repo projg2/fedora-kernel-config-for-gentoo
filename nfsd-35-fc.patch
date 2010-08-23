@@ -1,6 +1,6 @@
 diff -up linux-2.6.34.noarch/Documentation/filesystems/nfs/nfs41-server.txt.orig linux-2.6.34.noarch/Documentation/filesystems/nfs/nfs41-server.txt
 --- linux-2.6.34.noarch/Documentation/filesystems/nfs/nfs41-server.txt.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/Documentation/filesystems/nfs/nfs41-server.txt	2010-08-23 09:57:18.233564439 -0400
++++ linux-2.6.34.noarch/Documentation/filesystems/nfs/nfs41-server.txt	2010-08-23 14:12:24.165356789 -0400
 @@ -137,7 +137,7 @@ NS*| OPENATTR             | OPT        |
     | READ                 | REQ        |              | Section 18.22  |
     | READDIR              | REQ        |              | Section 18.23  |
@@ -12,7 +12,7 @@ diff -up linux-2.6.34.noarch/Documentation/filesystems/nfs/nfs41-server.txt.orig
     | RENAME               | REQ        |              | Section 18.26  |
 diff -up linux-2.6.34.noarch/fs/nfsd/export.c.orig linux-2.6.34.noarch/fs/nfsd/export.c
 --- linux-2.6.34.noarch/fs/nfsd/export.c.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/fs/nfsd/export.c	2010-08-23 09:57:18.234564075 -0400
++++ linux-2.6.34.noarch/fs/nfsd/export.c	2010-08-23 14:12:24.519356675 -0400
 @@ -259,10 +259,9 @@ static struct cache_detail svc_expkey_ca
  	.alloc		= expkey_alloc,
  };
@@ -108,7 +108,7 @@ diff -up linux-2.6.34.noarch/fs/nfsd/export.c.orig linux-2.6.34.noarch/fs/nfsd/e
  out_put_clp:
 diff -up linux-2.6.34.noarch/fs/nfsd/nfs4callback.c.orig linux-2.6.34.noarch/fs/nfsd/nfs4callback.c
 --- linux-2.6.34.noarch/fs/nfsd/nfs4callback.c.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/fs/nfsd/nfs4callback.c	2010-08-23 10:00:37.257414684 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfs4callback.c	2010-08-23 14:12:52.625429773 -0400
 @@ -79,11 +79,6 @@ enum nfs_cb_opnum4 {
  					cb_sequence_dec_sz +            \
  					op_dec_sz)
@@ -211,7 +211,7 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfs4callback.c.orig linux-2.6.34.noarch/fs/
  	int status;
  
 -	status = rpc_call_async(cb->cb_client, &msg,
-+	status = rpc_call_async(cb->cl_cb_client, &msg,
++	status = rpc_call_async(clp->cl_cb_client, &msg,
  				RPC_TASK_SOFT | RPC_TASK_SOFTCONN,
  				&nfsd4_cb_probe_ops, (void *)clp);
 -	if (status) {
@@ -402,7 +402,7 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfs4callback.c.orig linux-2.6.34.noarch/fs/
  }
 diff -up linux-2.6.34.noarch/fs/nfsd/nfs4proc.c.orig linux-2.6.34.noarch/fs/nfsd/nfs4proc.c
 --- linux-2.6.34.noarch/fs/nfsd/nfs4proc.c.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/fs/nfsd/nfs4proc.c	2010-08-23 09:57:18.237376763 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfs4proc.c	2010-08-23 14:12:25.698356909 -0400
 @@ -969,20 +969,36 @@ static struct nfsd4_operation nfsd4_ops[
  static const char *nfsd4_op_name(unsigned opnum);
  
@@ -490,7 +490,7 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfs4proc.c.orig linux-2.6.34.noarch/fs/nfsd
  static const char *nfsd4_op_name(unsigned opnum)
 diff -up linux-2.6.34.noarch/fs/nfsd/nfs4state.c.orig linux-2.6.34.noarch/fs/nfsd/nfs4state.c
 --- linux-2.6.34.noarch/fs/nfsd/nfs4state.c.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/fs/nfsd/nfs4state.c	2010-08-23 09:57:18.240356512 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfs4state.c	2010-08-23 14:12:25.700356284 -0400
 @@ -45,8 +45,8 @@
  #define NFSDDBG_FACILITY                NFSDDBG_PROC
  
@@ -1280,9 +1280,21 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfs4state.c.orig linux-2.6.34.noarch/fs/nfs
 -{
 -	user_lease_time = leasetime;
 -}
+diff -up linux-2.6.34.noarch/fs/nfsd/nfs4xdr.c.orig linux-2.6.34.noarch/fs/nfsd/nfs4xdr.c
+--- linux-2.6.34.noarch/fs/nfsd/nfs4xdr.c.orig	2010-08-23 14:14:22.882428704 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfs4xdr.c	2010-08-23 14:14:33.418376589 -0400
+@@ -1900,7 +1900,7 @@ nfsd4_encode_fattr(struct svc_fh *fhp, s
+ 	if (bmval0 & FATTR4_WORD0_LEASE_TIME) {
+ 		if ((buflen -= 4) < 0)
+ 			goto out_resource;
+-		WRITE32(NFSD_LEASE_TIME);
++		WRITE32(nfsd4_lease);
+ 	}
+ 	if (bmval0 & FATTR4_WORD0_RDATTR_ERROR) {
+ 		if ((buflen -= 4) < 0)
 diff -up linux-2.6.34.noarch/fs/nfsd/nfsctl.c.orig linux-2.6.34.noarch/fs/nfsd/nfsctl.c
 --- linux-2.6.34.noarch/fs/nfsd/nfsctl.c.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/fs/nfsd/nfsctl.c	2010-08-23 09:57:20.629370282 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfsctl.c	2010-08-23 14:12:25.821359224 -0400
 @@ -46,6 +46,7 @@ enum {
  	 */
  #ifdef CONFIG_NFSD_V4
@@ -1403,7 +1415,7 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfsctl.c.orig linux-2.6.34.noarch/fs/nfsd/n
  		/* last one */ {""}
 diff -up linux-2.6.34.noarch/fs/nfsd/nfsd.h.orig linux-2.6.34.noarch/fs/nfsd/nfsd.h
 --- linux-2.6.34.noarch/fs/nfsd/nfsd.h.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/fs/nfsd/nfsd.h	2010-08-23 09:57:20.629370282 -0400
++++ linux-2.6.34.noarch/fs/nfsd/nfsd.h	2010-08-23 14:12:25.835418441 -0400
 @@ -82,7 +82,6 @@ int nfs4_state_init(void);
  void nfsd4_free_slabs(void);
  int nfs4_state_start(void);
@@ -1440,7 +1452,7 @@ diff -up linux-2.6.34.noarch/fs/nfsd/nfsd.h.orig linux-2.6.34.noarch/fs/nfsd/nfs
  /*
 diff -up linux-2.6.34.noarch/fs/nfsd/state.h.orig linux-2.6.34.noarch/fs/nfsd/state.h
 --- linux-2.6.34.noarch/fs/nfsd/state.h.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/fs/nfsd/state.h	2010-08-23 09:57:21.807501619 -0400
++++ linux-2.6.34.noarch/fs/nfsd/state.h	2010-08-23 14:12:25.836366516 -0400
 @@ -70,6 +70,16 @@ struct nfsd4_cb_sequence {
  	struct nfs4_client	*cbs_clp;
  };
@@ -1558,7 +1570,7 @@ diff -up linux-2.6.34.noarch/fs/nfsd/state.h.orig linux-2.6.34.noarch/fs/nfsd/st
  nfs4_put_stateowner(struct nfs4_stateowner *so)
 diff -up linux-2.6.34.noarch/fs/nfsd/xdr4.h.orig linux-2.6.34.noarch/fs/nfsd/xdr4.h
 --- linux-2.6.34.noarch/fs/nfsd/xdr4.h.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/fs/nfsd/xdr4.h	2010-08-23 09:57:23.994379831 -0400
++++ linux-2.6.34.noarch/fs/nfsd/xdr4.h	2010-08-23 14:12:25.837387292 -0400
 @@ -381,6 +381,10 @@ struct nfsd4_destroy_session {
  	struct nfs4_sessionid	sessionid;
  };
@@ -1600,7 +1612,7 @@ diff -up linux-2.6.34.noarch/fs/nfsd/xdr4.h.orig linux-2.6.34.noarch/fs/nfsd/xdr
  extern __be32 nfsd4_process_open2(struct svc_rqst *rqstp,
 diff -up linux-2.6.34.noarch/include/linux/nfsd/nfsfh.h.orig linux-2.6.34.noarch/include/linux/nfsd/nfsfh.h
 --- linux-2.6.34.noarch/include/linux/nfsd/nfsfh.h.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/include/linux/nfsd/nfsfh.h	2010-08-23 09:57:23.994379831 -0400
++++ linux-2.6.34.noarch/include/linux/nfsd/nfsfh.h	2010-08-23 14:12:25.838377224 -0400
 @@ -40,12 +40,12 @@ struct nfs_fhbase_old {
   * This is the new flexible, extensible style NFSv2/v3 file handle.
   * by Neil Brown <neilb@cse.unsw.edu.au> - March 2000
@@ -1619,7 +1631,7 @@ diff -up linux-2.6.34.noarch/include/linux/nfsd/nfsfh.h.orig linux-2.6.34.noarch
   * This might allow a file to be confirmed to be in a writable part of a
 diff -up linux-2.6.34.noarch/net/sunrpc/cache.c.orig linux-2.6.34.noarch/net/sunrpc/cache.c
 --- linux-2.6.34.noarch/net/sunrpc/cache.c.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/net/sunrpc/cache.c	2010-08-23 09:57:23.995376793 -0400
++++ linux-2.6.34.noarch/net/sunrpc/cache.c	2010-08-23 14:12:25.839376838 -0400
 @@ -49,11 +49,17 @@ static void cache_init(struct cache_head
  	h->last_refresh = now;
  }
@@ -1686,7 +1698,7 @@ diff -up linux-2.6.34.noarch/net/sunrpc/cache.c.orig linux-2.6.34.noarch/net/sun
  		/* entry is valid */
 diff -up linux-2.6.34.noarch/net/sunrpc/svcsock.c.orig linux-2.6.34.noarch/net/sunrpc/svcsock.c
 --- linux-2.6.34.noarch/net/sunrpc/svcsock.c.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/net/sunrpc/svcsock.c	2010-08-23 09:57:23.997368707 -0400
++++ linux-2.6.34.noarch/net/sunrpc/svcsock.c	2010-08-23 14:12:25.840384371 -0400
 @@ -547,7 +547,6 @@ static int svc_udp_recvfrom(struct svc_r
  			dprintk("svc: recvfrom returned error %d\n", -err);
  			set_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
@@ -1753,7 +1765,7 @@ diff -up linux-2.6.34.noarch/net/sunrpc/svcsock.c.orig linux-2.6.34.noarch/net/s
  error:
 diff -up linux-2.6.34.noarch/net/sunrpc/svc_xprt.c.orig linux-2.6.34.noarch/net/sunrpc/svc_xprt.c
 --- linux-2.6.34.noarch/net/sunrpc/svc_xprt.c.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/net/sunrpc/svc_xprt.c	2010-08-23 09:57:23.996377209 -0400
++++ linux-2.6.34.noarch/net/sunrpc/svc_xprt.c	2010-08-23 14:12:25.841371223 -0400
 @@ -744,8 +744,10 @@ int svc_recv(struct svc_rqst *rqstp, lon
  		if (rqstp->rq_deferred) {
  			svc_xprt_received(xprt);
@@ -1782,7 +1794,7 @@ diff -up linux-2.6.34.noarch/net/sunrpc/svc_xprt.c.orig linux-2.6.34.noarch/net/
  void svc_close_xprt(struct svc_xprt *xprt)
 diff -up linux-2.6.34.noarch/net/sunrpc/xprtrdma/svc_rdma_recvfrom.c.orig linux-2.6.34.noarch/net/sunrpc/xprtrdma/svc_rdma_recvfrom.c
 --- linux-2.6.34.noarch/net/sunrpc/xprtrdma/svc_rdma_recvfrom.c.orig	2010-05-16 17:17:36.000000000 -0400
-+++ linux-2.6.34.noarch/net/sunrpc/xprtrdma/svc_rdma_recvfrom.c	2010-08-23 09:57:23.998377481 -0400
++++ linux-2.6.34.noarch/net/sunrpc/xprtrdma/svc_rdma_recvfrom.c	2010-08-23 14:12:25.842376584 -0400
 @@ -566,7 +566,6 @@ static int rdma_read_complete(struct svc
  		ret, rqstp->rq_arg.len,	rqstp->rq_arg.head[0].iov_base,
  		rqstp->rq_arg.head[0].iov_len);
