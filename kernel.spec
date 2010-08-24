@@ -23,8 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .pnfs_all_2.6.35_2010_08_19
->>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
+%define buildid .pnfs34.2010.08.19
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
