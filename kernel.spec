@@ -101,23 +101,23 @@ Summary: The Linux kernel
 # kernel-smp (only valid for ppc 32-bit)
 %define with_smp       %{?_without_smp:       0} %{?!_without_smp:       1}
 # kernel-debug
-%define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
+%define with_debug     %{?_without_debug:     0} %{?!_without_debug:     0}
 # kernel-doc
-%define with_doc       %{?_without_doc:       0} %{?!_without_doc:       1}
+%define with_doc       %{?_without_doc:       0} %{?!_without_doc:       0}
 # kernel-headers
-%define with_headers   %{?_without_headers:   0} %{?!_without_headers:   1}
+%define with_headers   %{?_without_headers:   0} %{?!_without_headers:   0}
 # kernel-firmware
 %define with_firmware  %{?_with_firmware:     1} %{?!_with_firmware:     1}
 # tools/perf
-%define with_perftool  %{?_without_perftool:  0} %{?!_without_perftool:  1}
+%define with_perftool  %{?_without_perftool:  0} %{?!_without_perftool:  0}
 # perf noarch subpkg
-%define with_perf      %{?_without_perf:      0} %{?!_without_perf:      1}
+%define with_perf      %{?_without_perf:      0} %{?!_without_perf:      0}
 # kernel-debuginfo
-%define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
+%define with_debuginfo %{?_without_debuginfo: 1} %{?!_without_debuginfo: 1}
 # kernel-bootwrapper (for creating zImages from kernel + initrd)
 %define with_bootwrapper %{?_without_bootwrapper: 0} %{?!_without_bootwrapper: 1}
 # Want to build a the vsdo directories installed
-%define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 1}
+%define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 0}
 
 # Build the kernel-doc package, but don't fail the build if it botches.
 # Here "true" means "continue" and "false" means "fail the build".
