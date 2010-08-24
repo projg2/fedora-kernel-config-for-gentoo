@@ -2040,6 +2040,10 @@ fi
 
 
 %changelog
+* Mon Aug 24 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.5-45
+- Revert commit 3d61510f4ecacfe47c75c0eb51c0659dfa77fb1b from 2.6.34.2;
+  it causes dropped keystrokes (#625758)
+
 * Mon Aug 23 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.5-44
 - nouveau: fix eDP panels that flip HPD during link training (rhbz#596562)
 
