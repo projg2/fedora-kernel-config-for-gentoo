@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 10
+%global baserelease 11
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,9 +60,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1891,6 +1891,10 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 25 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.4-11.rc1
+- Linux 2.6.35.4-rc1
+- Fix up linux-2.6-i386-nx-emulation.patch for 2.6.35.4
+
 * Sat Aug 21 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.3-10
 - Linux 2.6.35.3
 - Drop merged patches:
