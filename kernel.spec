@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 45
+%global baserelease 46
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,9 +60,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -757,7 +757,6 @@ Patch12270: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 Patch12400: input-synaptics-relax-capability-id-checks-on-new-hardware.patch
 
 Patch12410: cifs-fix-dns-resolver.patch
-Patch12420: matroxfb-fix-font-corruption.patch
 Patch12430: cred-dont-resurrect-dead-credentials.patch
 
 Patch12440: direct-io-move-aio_complete-into-end_io.patch
@@ -1408,9 +1407,6 @@ ApplyPatch input-synaptics-relax-capability-id-checks-on-new-hardware.patch
 # Remove __init and __exit attributes from resolver code
 ApplyPatch cifs-fix-dns-resolver.patch
 
-# RHBZ #617687
-ApplyPatch matroxfb-fix-font-corruption.patch
-
 # RHBZ #591015
 ApplyPatch cred-dont-resurrect-dead-credentials.patch
 
@@ -2040,7 +2036,12 @@ fi
 
 
 %changelog
-* Mon Aug 24 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.5-45
+* Wed Aug 25 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-46.rc1
+- Linux 2.6.34.6-rc1
+- Drop merged patches:
+    matroxfb-fix-font-corruption.patch
+
+* Tue Aug 24 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.5-45
 - Revert commit 3d61510f4ecacfe47c75c0eb51c0659dfa77fb1b from 2.6.34.2;
   it causes dropped keystrokes (#625758)
 
