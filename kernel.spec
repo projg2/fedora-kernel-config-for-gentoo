@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 164
+%global baserelease 165
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -59,9 +59,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 20
+%define stable_update 21
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -722,8 +722,6 @@ Patch1813: drm-radeon-pm.patch
 Patch1818: drm-i915-resume-force-mode.patch
 Patch1819: drm-intel-big-hammer.patch
 Patch1820: drm-intel-no-tv-hotplug.patch
-Patch1821: drm-i915-fix-hibernate-memory-corruption.patch
-Patch1822: drm-i915-add-reclaimable-to-page-allocations.patch
 Patch1823: drm-intel-945gm-stability-fixes.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -1461,9 +1459,6 @@ ApplyPatch drm-intel-acpi-populate-didl.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 # gm45 stability fixes
 ApplyPatch drm-intel-945gm-stability-fixes.patch
-# hibernation memory corruption fixes
-ApplyPatch drm-i915-fix-hibernate-memory-corruption.patch
-ApplyPatch drm-i915-add-reclaimable-to-page-allocations.patch
 
 ApplyPatch drm-nouveau-g80-ctxprog.patch
 ApplyPatch drm-nouveau-tvout-disable.patch
@@ -2202,6 +2197,13 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Wed Aug 25 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.21-165.rc1
+- Linux 2.6.32.21-rc1
+- Drop merged patches:
+    drm-i915-add-reclaimable-to-page-allocations.patch
+    drm-i915-fix-hibernate-memory-corruption.patch
+- Fix up execshield and DRM upgrade patches to apply after 2.6.32.21
+
 * Sat Aug 21 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.20-164
 - Linux 2.6.32.20
 - Drop merged patches:
