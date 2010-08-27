@@ -691,8 +691,6 @@ Patch2917: hdpvr-ir-enable.patch
 
 # NFSv4
 
-# VIA Nano / VX8xx updates
-
 # patches headed upstream
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
@@ -700,8 +698,6 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 Patch12017: prevent-runtime-conntrack-changes.patch
 
 Patch12018: neuter_intel_microcode_load.patch
-
-Patch12030: ssb_check_for_sprom.patch
 
 Patch12040: only-use-alpha2-regulatory-information-from-country-IE.patch
 
@@ -1296,9 +1292,6 @@ ApplyPatch hdpvr-ir-enable.patch
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch neuter_intel_microcode_load.patch
-
-# rhbz#533746
-#ApplyPatch ssb_check_for_sprom.patch
 
 ApplyPatch only-use-alpha2-regulatory-information-from-country-IE.patch
 
