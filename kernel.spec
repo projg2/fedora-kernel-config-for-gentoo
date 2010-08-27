@@ -710,6 +710,8 @@ Patch12050: direct-io-move-aio_complete-into-end_io.patch
 Patch12060: ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 Patch12070: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
+Patch12080: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1305,6 +1307,9 @@ ApplyPatch direct-io-move-aio_complete-into-end_io.patch
 ApplyPatch ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
+# bz 610941
+ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1893,6 +1898,7 @@ fi
 %changelog
 * Fri Aug 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.4-12
 - Linux 2.6.35.4
+- kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch (#610941)
 
 * Wed Aug 25 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.4-11.rc1
 - Linux 2.6.35.4-rc1
