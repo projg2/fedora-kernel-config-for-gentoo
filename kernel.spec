@@ -764,6 +764,7 @@ Patch12450: ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 Patch12460: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
 Patch12470: drivers-hwmon-coretemp-c-detect-the-thermal-sensors-by-cpuid.patch
+Patch12480: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
 %endif
 
@@ -1420,6 +1421,9 @@ ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 # bz #625734
 ApplyPatch drivers-hwmon-coretemp-c-detect-the-thermal-sensors-by-cpuid.patch
 
+# bz #610941
+ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2044,6 +2048,7 @@ fi
 * Fri Aug 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-47
 - Linux 2.6.34.6
 - drivers-hwmon-coretemp-c-detect-the-thermal-sensors-by-cpuid.patch (#625734)
+- kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch (#610941)
 
 * Wed Aug 25 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-46.rc1
 - Linux 2.6.34.6-rc1
