@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 165
+%global baserelease 166
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -61,7 +61,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 21
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -2197,6 +2197,9 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Fri Aug 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.21-166
+- Linux 2.6.32.21
+
 * Wed Aug 25 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.21-165.rc1
 - Linux 2.6.32.21-rc1
 - Drop merged patches:
