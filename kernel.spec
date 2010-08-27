@@ -763,6 +763,8 @@ Patch12440: direct-io-move-aio_complete-into-end_io.patch
 Patch12450: ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 Patch12460: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
+Patch12470: drivers-hwmon-coretemp-c-detect-the-thermal-sensors-by-cpuid.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1415,6 +1417,9 @@ ApplyPatch direct-io-move-aio_complete-into-end_io.patch
 ApplyPatch ext4-move-aio-completion-after-unwritten-extent-conversion.patch
 ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
+# bz #625734
+ApplyPatch drivers-hwmon-coretemp-c-detect-the-thermal-sensors-by-cpuid.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2038,6 +2043,7 @@ fi
 %changelog
 * Fri Aug 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-47
 - Linux 2.6.34.6
+- drivers-hwmon-coretemp-c-detect-the-thermal-sensors-by-cpuid.patch (#625734)
 
 * Wed Aug 25 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-46.rc1
 - Linux 2.6.34.6-rc1
