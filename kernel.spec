@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 12
+%global baserelease 13
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1892,7 +1892,7 @@ fi
 # and build.
 
 %changelog
-* Tue Aug 31 2010 Dave Jones <davej@redhat.com>
+* Tue Aug 31 2010 Dave Jones <davej@redhat.com> 2.6.35.4-13
 - Fix incorrect DMA size freeing error in via-velocity.
 
 * Fri Aug 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.4-12
