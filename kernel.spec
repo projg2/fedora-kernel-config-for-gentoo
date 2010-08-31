@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 13
+%global baserelease 14
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -663,6 +663,8 @@ Patch1824: drm-intel-next.patch
 Patch1825: drm-intel-make-lvds-work.patch
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
+Patch2000: efifb-add-more-models.patch
+
 # linux1394 git patches
 Patch2200: linux-2.6-firewire-git-update.patch
 Patch2201: linux-2.6-firewire-git-pending.patch
@@ -1261,6 +1263,8 @@ ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
+
+ApplyPatch efifb-add-more-models.patch
 
 # linux1394 git patches
 #ApplyPatch linux-2.6-firewire-git-update.patch
@@ -1892,6 +1896,10 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 31 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.4-14
+- efifb-add-more-models.patch: Add patch from Luke Macken to
+  support more Mac models (rhbz#528232)
+
 * Tue Aug 31 2010 Dave Jones <davej@redhat.com> 2.6.35.4-13
 - Fix incorrect DMA size freeing error in via-velocity.
 
