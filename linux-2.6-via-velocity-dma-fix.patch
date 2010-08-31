@@ -1,0 +1,20 @@
+From: Simon Kagstrom <simon.kagstrom@netinsight.net>
+Date: Tue, 31 Aug 2010 08:41:26 +0200
+Subject: [PATCH] via-velocity: Correct packet length on tx free
+
+Signed-off-by: Simon Kagstrom <simon.kagstrom@netinsight.net>
+---
+ drivers/net/via-velocity.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+--- linux-2.6.35.x86_64/drivers/net/via-velocity.c~	2010-08-31 11:40:51.000000000 -0400
++++ linux-2.6.35.x86_64/drivers/net/via-velocity.c	2010-08-31 11:40:58.000000000 -0400
+@@ -1721,7 +1721,7 @@ static void velocity_free_tx_buf(struct 
+ 			/* For scatter-gather */
+ 			if (skb_shinfo(skb)->nr_frags > 0)
+ 				pktlen = max_t(size_t, pktlen,
+-						td->td_buf[i].size & ~TD_QUEUE);
++						skb_headlen(skb));
+ 
+ 			pci_unmap_single(vptr->pdev, tdinfo->skb_dma[i],
+ 					le16_to_cpu(pktlen), PCI_DMA_TODEVICE);
