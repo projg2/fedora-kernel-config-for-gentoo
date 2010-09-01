@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 47
+%global baserelease 48
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2045,6 +2045,10 @@ fi
 
 
 %changelog
+* Wed Sep 01 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-48
+- Revert commit 6a1a82df91fa0eb1cc76069a9efe5714d087eccd from 2.6.34.1;
+  it breaks ftdi_sio (#613597)
+
 * Fri Aug 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-47
 - Linux 2.6.34.6
 - drivers-hwmon-coretemp-c-detect-the-thermal-sensors-by-cpuid.patch (#625734)
