@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .pnfs34.2010.08.19
+%define buildid .pnfs34.2010.08.24
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -768,7 +768,7 @@ Patch12480: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
 Patch30000: nfs-35-fc.patch
 Patch30001: nfsd-35-fc.patch
-Patch30002: pnfs-all-2.6.35-2010-08-19-f13.patch
+Patch30002: pnfs-all-2.6.35-2010-08-24-f13.patch
 Patch30003: linux-2.6-pnfs-compile.patch
 Patch30004: linux-2.6.35-inline.patch
 
@@ -1432,7 +1432,7 @@ ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
 ApplyPatch nfs-35-fc.patch  
 ApplyPatch nfsd-35-fc.patch  
-ApplyPatch pnfs-all-2.6.35-2010-08-19-f13.patch
+ApplyPatch pnfs-all-2.6.35-2010-08-24-f13.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 # END OF PATCH APPLICATIONS
@@ -2056,6 +2056,9 @@ fi
 
 
 %changelog
+* Tue Aug 31 2010 Steve Dickson <steved@redhat.com>
+- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
+
 * Fri Aug 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-47
 - Linux 2.6.34.6
 - drivers-hwmon-coretemp-c-detect-the-thermal-sensors-by-cpuid.patch (#625734)
