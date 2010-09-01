@@ -23,11 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-<<<<<<< HEAD
 %define buildid .pnfs35.2010.08.24
-=======
-%define buildid .pnfs35.2010.08.19
->>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -734,8 +730,6 @@ Patch12040: only-use-alpha2-regulatory-information-from-country-IE.patch
 
 Patch12080: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 # rhbz #622149
 Patch12085: fix-rcu_deref_check-warning.patch
 Patch12086: linux-2.6-cgroups-rcu.patch
@@ -763,7 +757,6 @@ Patch13603: pnpacpi-cope-with-invalid-device-ids.patch
 Patch13610: libata-it821x-dump-stack-on-cache-flush.patch
 Patch13620: xen-fix-typo-in-xen-irq-fix.patch
 
-<<<<<<< HEAD
 Patch13630: dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
 
 Patch13635: r8169-fix-dma-allocations.patch
@@ -784,15 +777,7 @@ Patch13650: drm-i915-sanity-check-pread-pwrite.patch
 Patch13651: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 Patch13652: v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 
-=======
->>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
-Patch13000: pnfs-all-2.6.35-2010-08-19.patch
-=======
 Patch13000: pnfs-all-2.6.35-2010-08-24-f14.patch
->>>>>>> - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
-=======
-Patch13000: pnfs-all-2.6.35-2010-08-19.patch
->>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 Patch13001: linux-2.6-pnfs-compile.patch
 Patch13002: linux-2.6.35-inline.patch
 
@@ -1413,7 +1398,6 @@ ApplyPatch only-use-alpha2-regulatory-information-from-country-IE.patch
 # bz 610941
 ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
-<<<<<<< HEAD
 # bz 622149
 ApplyPatch fix-rcu_deref_check-warning.patch
 ApplyPatch linux-2.6-cgroups-rcu.patch
@@ -1444,7 +1428,6 @@ ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
 # temporary fix for typo in Xen -stable patch
 ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
 
-<<<<<<< HEAD
 # rhbz#641468
 ApplyPatch pnpacpi-cope-with-invalid-device-ids.patch
 
@@ -1476,13 +1459,7 @@ ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 # CVE-2010-2963
 ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 
-ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
-=======
 ApplyPatch pnfs-all-2.6.35-2010-08-24-f14.patch
->>>>>>> - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
-=======
-ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
->>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 
