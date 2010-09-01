@@ -773,7 +773,6 @@ Patch13602: add-macbookair3-ids.patch
 
 Patch13610: libata-it821x-dump-stack-on-cache-flush.patch
 
-<<<<<<< HEAD
 Patch13630: dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
 
 Patch13637: dmar-disable-when-ricoh-multifunction.patch
@@ -788,8 +787,6 @@ Patch13645: tpm-autodetect-itpm-devices.patch
 Patch13646: tpm-fix-stall-on-boot.patch
 
 Patch13651: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
-
-<<<<<<< HEAD
 Patch13652: fix-i8k-inline-asm.patch
 
 Patch13653: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
@@ -834,6 +831,9 @@ Patch13703: btrfs-fix-typo-in-fallocate-to-make-it-honor-actual-size.patch
 Patch13704: hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 
 Patch13000: pnfs-all-2.6.35-2010-09-14-f14.patch
+Patch13652: v4l1-fix-32-bit-compat-microcode-loading-translation.patch
+
+Patch13000: pnfs-all-2.6.35-2010-08-24-f14.patch
 Patch13001: linux-2.6-pnfs-compile.patch
 Patch13002: linux-2.6.35-inline.patch
 
@@ -1489,7 +1489,6 @@ ApplyPatch only-use-alpha2-regulatory-information-from-country-IE.patch
 # bz 610941
 ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
-<<<<<<< HEAD
 # bz 622149
 ApplyPatch fix-rcu_deref_check-warning.patch
 ApplyPatch linux-2.6-cgroups-rcu.patch
@@ -1542,7 +1541,6 @@ ApplyPatch tpm-fix-stall-on-boot.patch
 # CVE-2010-3698
 ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 
-<<<<<<< HEAD
 ApplyPatch fix-i8k-inline-asm.patch
 
 # rhbz#651264 (CVE-2010-3880)
@@ -1583,6 +1581,10 @@ ApplyPatch block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_us
 ApplyPatch hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 
 ApplyPatch pnfs-all-2.6.35-2010-09-14-f14.patch
+# CVE-2010-2963
+ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
+
+ApplyPatch pnfs-all-2.6.35-2010-08-24-f14.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 
