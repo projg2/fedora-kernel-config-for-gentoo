@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .pnfs34.2010.08.19
+%define buildid .pnfs34.2010.08.24
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -818,7 +818,7 @@ Patch12581: xen-use-percpu-interrupts-for-ipis-and-virqs.patch
 
 Patch30000: nfs-35-fc.patch
 Patch30001: nfsd-35-fc.patch
-Patch30002: pnfs-all-2.6.35-2010-08-19-f13.patch
+Patch30002: pnfs-all-2.6.35-2010-08-24-f13.patch
 Patch30003: linux-2.6-pnfs-compile.patch
 Patch30004: linux-2.6.35-inline.patch
 
@@ -1551,7 +1551,7 @@ ApplyPatch xen-use-percpu-interrupts-for-ipis-and-virqs.patch
 
 ApplyPatch nfs-35-fc.patch  
 ApplyPatch nfsd-35-fc.patch  
-ApplyPatch pnfs-all-2.6.35-2010-08-19-f13.patch
+ApplyPatch pnfs-all-2.6.35-2010-08-24-f13.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 # END OF PATCH APPLICATIONS
@@ -2256,6 +2256,8 @@ fi
 * Wed Sep 01 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-48
 - Revert commit 6a1a82df91fa0eb1cc76069a9efe5714d087eccd from 2.6.34.1;
   it breaks ftdi_sio (#613597)
+* Tue Aug 31 2010 Steve Dickson <steved@redhat.com>
+- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
 
 * Fri Aug 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-47
 - Linux 2.6.34.6
