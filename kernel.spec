@@ -2052,7 +2052,6 @@ fi
 # and build.
 
 %changelog
-<<<<<<< HEAD
 * Tue Nov 02 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.6-50
 - nouveau: add potential workaround for NV86 hardware quirk
 - fix issue that occurs in certain dual-head configurations (rhbz#641524)
@@ -2317,10 +2316,9 @@ fi
 
 * Wed Sep 01 2010 Dave Jones <davej@redhat.com> 2.6.35.4-15
 - Improved version of the VIA Velocity DMA fix.
-=======
+
 * Tue Aug 31 2010 Steve Dickson <steved@redhat.com>
 - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
->>>>>>> - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
 
 * Tue Aug 31 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.4-14
 - efifb-add-more-models.patch: Add patch from Luke Macken to
@@ -2344,12 +2342,9 @@ fi
    mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
 * Thu Aug 19 2010 Steve Dickson <steved@redhat.com>
 - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
-<<<<<<< HEAD
 
 * Thu Aug 19 2010 Steve Dickson <steved@redhat.com>
 - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
-=======
->>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 
 * Wed Aug 18 2010 Dave Jones <davej@redhat.com>
 - systemd is dependant upon autofs, so build it in instead of modular.
