@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .pnfs35.2010.08.19
+%define buildid .pnfs35.2010.08.24
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -731,6 +731,7 @@ Patch12040: only-use-alpha2-regulatory-information-from-country-IE.patch
 Patch12080: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # rhbz #622149
 Patch12085: fix-rcu_deref_check-warning.patch
 Patch12086: linux-2.6-cgroups-rcu.patch
@@ -781,6 +782,9 @@ Patch13652: v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 =======
 >>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 Patch13000: pnfs-all-2.6.35-2010-08-19.patch
+=======
+Patch13000: pnfs-all-2.6.35-2010-08-24-f14.patch
+>>>>>>> - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
 Patch13001: linux-2.6-pnfs-compile.patch
 Patch13002: linux-2.6.35-inline.patch
 
@@ -1401,6 +1405,7 @@ ApplyPatch only-use-alpha2-regulatory-information-from-country-IE.patch
 # bz 610941
 ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
+<<<<<<< HEAD
 # bz 622149
 ApplyPatch fix-rcu_deref_check-warning.patch
 ApplyPatch linux-2.6-cgroups-rcu.patch
@@ -1463,6 +1468,9 @@ ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 
 ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
+=======
+ApplyPatch pnfs-all-2.6.35-2010-08-24-f14.patch
+>>>>>>> - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 
@@ -2312,6 +2320,9 @@ fi
 
 * Wed Sep 01 2010 Dave Jones <davej@redhat.com> 2.6.35.4-15
 - Improved version of the VIA Velocity DMA fix.
+
+* Tue Aug 31 2010 Steve Dickson <steved@redhat.com>
+- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
 
 * Tue Aug 31 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.4-14
 - efifb-add-more-models.patch: Add patch from Luke Macken to
