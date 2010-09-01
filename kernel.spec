@@ -2668,12 +2668,9 @@ fi
    mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
 * Thu Aug 19 2010 Steve Dickson <steved@redhat.com>
 - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
-<<<<<<< HEAD
 
 * Thu Aug 19 2010 Steve Dickson <steved@redhat.com>
 - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
-=======
->>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 
 * Wed Aug 18 2010 Dave Jones <davej@redhat.com>
 - systemd is dependant upon autofs, so build it in instead of modular.
