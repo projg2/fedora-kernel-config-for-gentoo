@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .pnfs35.2010.08.19
+%define buildid .pnfs35.2010.08.24
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -778,7 +778,7 @@ Patch13650: drm-i915-sanity-check-pread-pwrite.patch
 Patch13651: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 Patch13652: v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 
-Patch13000: pnfs-all-2.6.35-2010-08-19.patch
+Patch13000: pnfs-all-2.6.35-2010-08-24-f14.patch
 Patch13001: linux-2.6-pnfs-compile.patch
 Patch13002: linux-2.6.35-inline.patch
 
@@ -1402,6 +1402,7 @@ ApplyPatch only-use-alpha2-regulatory-information-from-country-IE.patch
 ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # bz 622149
 ApplyPatch fix-rcu_deref_check-warning.patch
 ApplyPatch linux-2.6-cgroups-rcu.patch
@@ -1466,6 +1467,9 @@ ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 =======
 >>>>>>> Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
+=======
+ApplyPatch pnfs-all-2.6.35-2010-08-24-f14.patch
+>>>>>>> - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 
@@ -2055,6 +2059,7 @@ fi
 # and build.
 
 %changelog
+<<<<<<< HEAD
 * Tue Nov 02 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.6-50
 - nouveau: add potential workaround for NV86 hardware quirk
 - fix issue that occurs in certain dual-head configurations (rhbz#641524)
@@ -2319,6 +2324,10 @@ fi
 
 * Wed Sep 01 2010 Dave Jones <davej@redhat.com> 2.6.35.4-15
 - Improved version of the VIA Velocity DMA fix.
+=======
+* Tue Aug 31 2010 Steve Dickson <steved@redhat.com>
+- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
+>>>>>>> - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
 
 * Tue Aug 31 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.4-14
 - efifb-add-more-models.patch: Add patch from Luke Macken to
