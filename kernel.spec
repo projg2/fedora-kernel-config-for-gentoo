@@ -714,6 +714,10 @@ Patch13000: pnfs-all-2.6.35-2010-08-19.patch
 Patch13001: linux-2.6-pnfs-compile.patch
 Patch13002: linux-2.6.35-inline.patch
 
+Patch13000: pnfs-all-2.6.35-2010-08-19.patch
+Patch13001: linux-2.6-pnfs-compile.patch
+Patch13002: linux-2.6.35-inline.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1313,6 +1317,10 @@ ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
 # bz 610941
 ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
+
+ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
+ApplyPatch linux-2.6-pnfs-compile.patch
+ApplyPatch linux-2.6.35-inline.patch
 
 ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
@@ -1924,6 +1932,7 @@ fi
 - Drop merged patches:
    mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
    mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+
 * Thu Aug 19 2010 Steve Dickson <steved@redhat.com>
 - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 
