@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .pnfs35.2010.08.19
+%define buildid .pnfs35.2010.08.24
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -710,11 +710,7 @@ Patch12070: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
 Patch12080: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
-Patch13000: pnfs-all-2.6.35-2010-08-19.patch
-Patch13001: linux-2.6-pnfs-compile.patch
-Patch13002: linux-2.6.35-inline.patch
-
-Patch13000: pnfs-all-2.6.35-2010-08-19.patch
+Patch13000: pnfs-all-2.6.35-2010-08-24-f14.patch
 Patch13001: linux-2.6-pnfs-compile.patch
 Patch13002: linux-2.6.35-inline.patch
 
@@ -1318,11 +1314,7 @@ ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 # bz 610941
 ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
-ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
-ApplyPatch linux-2.6-pnfs-compile.patch
-ApplyPatch linux-2.6.35-inline.patch
-
-ApplyPatch pnfs-all-2.6.35-2010-08-19.patch
+ApplyPatch pnfs-all-2.6.35-2010-08-24-f14.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 
@@ -1912,6 +1904,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 31 2010 Steve Dickson <steved@redhat.com>
+- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
+
 * Tue Aug 31 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.4-14
 - efifb-add-more-models.patch: Add patch from Luke Macken to
   support more Mac models (rhbz#528232)
