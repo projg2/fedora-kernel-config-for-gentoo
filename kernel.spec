@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 166
+%global baserelease 167
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -838,6 +838,8 @@ Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 Patch14140: hid-01-usbhid-initialize-interface-pointers-early-enough.patch
 Patch14141: hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
 
+Patch14150: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
+
 # ==============================================================================
 %endif
 
@@ -1545,6 +1547,9 @@ ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 ApplyPatch hid-01-usbhid-initialize-interface-pointers-early-enough.patch
 ApplyPatch hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
 
+# CVE-2010-2954
+ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
+
 # END OF PATCH APPLICATIONS ====================================================
 %endif
 
@@ -2197,6 +2202,9 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Thu Sep 02 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.21-167
+- irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch (CVE-2010-2954)
+
 * Fri Aug 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.21-166
 - Linux 2.6.32.21
 
