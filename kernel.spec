@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 17
+%global baserelease 18
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1896,6 +1896,10 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 02 2010 Dave Jones <davej@redhat.com> 2.6.35.4-18
+- Scatter-gather on via-velocity is hopelessly broken.
+  Just switch it off for now.
+
 * Thu Sep 02 2010 Dave Jones <davej@redhat.com> 2.6.35.4-17
 - Simplify the VIA Velocity changes. The last round of
   fixes introduced some bugs.

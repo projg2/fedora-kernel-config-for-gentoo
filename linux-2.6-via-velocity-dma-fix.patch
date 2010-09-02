@@ -9,115 +9,20 @@ References: <20100901200555.GA30689@redhat.com>
 	<20100901.133414.24593005.davem@davemloft.net>
 	<20100901.133547.236248297.davem@davemloft.net>
 
-New patch:
 
-via-velocity: Fix TX buffer unmapping.
-
-Fix several bugs in TX buffer DMA unmapping:
-
-1) Use pci_unmap_page() as appropriate.
-
-2) Don't try to fetch the length from the DMA descriptor,
-   the chip and modify that value.  Use the correct lengths,
-   calculated the same way as is done at map time.
-
-3) Kill meaningless NULL checks (against embedded sized
-   arrays which can never be NULL, and against the address
-   of the non-zero indexed entry of an array).
-
-4) max() on ETH_ZLEN is not necessary and just adds
-   confusion, since the xmit function does a proper
-   skb_padto() very early on.
-
-Reported-by: Dave Jones <davej@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Ok, this is becomming hopeless.  Let's just try turning off SG support
+for now, the length calculations are correct in those cases.
 
 diff --git a/drivers/net/via-velocity.c b/drivers/net/via-velocity.c
-index fd69095..a4e2164 100644
+index fd69095..f534123 100644
 --- a/drivers/net/via-velocity.c
 +++ b/drivers/net/via-velocity.c
-@@ -1716,15 +1716,15 @@ static void velocity_free_tx_buf(struct velocity_info *vptr,
- 		int i;
+@@ -2824,7 +2824,7 @@ static int __devinit velocity_found1(struct pci_dev *pdev, const struct pci_devi
+ 	netif_napi_add(dev, &vptr->napi, velocity_poll, VELOCITY_NAPI_WEIGHT);
  
- 		for (i = 0; i < tdinfo->nskb_dma; i++) {
--			size_t pktlen = max_t(size_t, skb->len, ETH_ZLEN);
-+			if (i > 0) {
-+				skb_frag_t *frag = &skb_shinfo(skb)->frags[i - 1];
+ 	dev->features |= NETIF_F_HW_VLAN_TX | NETIF_F_HW_VLAN_FILTER |
+-		NETIF_F_HW_VLAN_RX | NETIF_F_IP_CSUM | NETIF_F_SG;
++		NETIF_F_HW_VLAN_RX | NETIF_F_IP_CSUM;
  
--			/* For scatter-gather */
--			if (skb_shinfo(skb)->nr_frags > 0)
--				pktlen = max_t(size_t, pktlen,
--						td->td_buf[i].size & ~TD_QUEUE);
--
--			pci_unmap_single(vptr->pdev, tdinfo->skb_dma[i],
--					le16_to_cpu(pktlen), PCI_DMA_TODEVICE);
-+				pci_unmap_page(vptr->pdev, tdinfo->skb_dma[i],
-+					       frag->size, PCI_DMA_TODEVICE);
-+			} else {
-+				pci_unmap_single(vptr->pdev, tdinfo->skb_dma[i],
-+						 skb_headlen(skb), PCI_DMA_TODEVICE);
-+			}
- 		}
- 	}
- 	dev_kfree_skb_irq(skb);
-@@ -1745,14 +1745,20 @@ static void velocity_free_td_ring_entry(struct velocity_info *vptr,
- 		return;
- 
- 	if (td_info->skb) {
-+		struct sk_buff *skb = td_info->skb;
-+
- 		for (i = 0; i < td_info->nskb_dma; i++) {
--			if (td_info->skb_dma[i]) {
-+			if (i > 0) {
-+				skb_frag_t *frag = &skb_shinfo(skb)->frags[i - 1];
-+
-+				pci_unmap_page(vptr->pdev, td_info->skb_dma[i],
-+					       frag->size, PCI_DMA_TODEVICE);
-+			} else {
- 				pci_unmap_single(vptr->pdev, td_info->skb_dma[i],
--					td_info->skb->len, PCI_DMA_TODEVICE);
--				td_info->skb_dma[i] = 0;
-+						 skb_headlen(skb), PCI_DMA_TODEVICE);
- 			}
- 		}
--		dev_kfree_skb(td_info->skb);
-+		dev_kfree_skb(skb);
- 		td_info->skb = NULL;
- 	}
- }
-@@ -2520,7 +2526,6 @@ static netdev_tx_t velocity_xmit(struct sk_buff *skb,
- 	struct tx_desc *td_ptr;
- 	struct velocity_td_info *tdinfo;
- 	unsigned long flags;
--	int pktlen;
- 	int index, prev;
- 	int i = 0;
- 
-@@ -2534,10 +2539,6 @@ static netdev_tx_t velocity_xmit(struct sk_buff *skb,
- 		return NETDEV_TX_OK;
- 	}
- 
--	pktlen = skb_shinfo(skb)->nr_frags == 0 ?
--			max_t(unsigned int, skb->len, ETH_ZLEN) :
--				skb_headlen(skb);
--
- 	spin_lock_irqsave(&vptr->lock, flags);
- 
- 	index = vptr->tx.curr[qnum];
-@@ -2552,11 +2553,12 @@ static netdev_tx_t velocity_xmit(struct sk_buff *skb,
- 	 *	add it to the transmit ring.
- 	 */
- 	tdinfo->skb = skb;
--	tdinfo->skb_dma[0] = pci_map_single(vptr->pdev, skb->data, pktlen, PCI_DMA_TODEVICE);
--	td_ptr->tdesc0.len = cpu_to_le16(pktlen);
-+	tdinfo->skb_dma[0] = pci_map_single(vptr->pdev, skb->data,
-+					    skb_headlen(skb), PCI_DMA_TODEVICE);
-+	td_ptr->tdesc0.len = cpu_to_le16(skb->len);
- 	td_ptr->td_buf[0].pa_low = cpu_to_le32(tdinfo->skb_dma[0]);
- 	td_ptr->td_buf[0].pa_high = 0;
--	td_ptr->td_buf[0].size = cpu_to_le16(pktlen);
-+	td_ptr->td_buf[0].size = cpu_to_le16(skb_headlen(skb));
- 
- 	/* Handle fragments */
- 	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
-
+ 	ret = register_netdev(dev);
+ 	if (ret < 0)
