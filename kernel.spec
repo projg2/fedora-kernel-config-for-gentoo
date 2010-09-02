@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 48
+%global baserelease 49
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -699,6 +699,7 @@ Patch1821: i915-fix-crt-hotplug-regression.patch
 Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
+Patch1826: drm-radeon-resume-fixes.patch
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 # radeon
 
@@ -1347,6 +1348,7 @@ ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 
+ApplyPatch drm-radeon-resume-fixes.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
 # linux1394 git patches
@@ -2045,6 +2047,9 @@ fi
 
 
 %changelog
+* Thu Sep 02 2010 Dave Airlie <airlied@redhat.com> 2.6.34.6-49
+- fix radeon suspend/resume issues and two other minor patches
+
 * Wed Sep 01 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-48
 - Revert commit 6a1a82df91fa0eb1cc76069a9efe5714d087eccd from 2.6.34.1;
   it breaks ftdi_sio (#613597)

@@ -1,0 +1,151 @@
+diff -ur linux-2.6.34.i686/drivers/gpu/drm/radeon/radeon_device.c radeon-fixes.i686/drivers/gpu/drm/radeon/radeon_device.c
+--- linux-2.6.34.i686/drivers/gpu/drm/radeon/radeon_device.c	2010-09-02 21:50:43.000000000 +1000
++++ radeon-fixes.i686/drivers/gpu/drm/radeon/radeon_device.c	2010-09-02 21:13:09.000000000 +1000
+@@ -777,6 +777,7 @@
+ 
+ int radeon_resume_kms(struct drm_device *dev)
+ {
++	struct drm_connector *connector;
+ 	struct radeon_device *rdev = dev->dev_private;
+ 
+ 	if (rdev->powered_down)
+@@ -795,6 +796,12 @@
+ 	radeon_resume(rdev);
+ 	radeon_pm_resume(rdev);
+ 	radeon_restore_bios_scratch_regs(rdev);
++
++	/* turn on display hw */
++	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
++		drm_helper_connector_dpms(connector, DRM_MODE_DPMS_ON);
++	}
++
+ 	radeon_fbdev_set_suspend(rdev, 0);
+ 	release_console_sem();
+ 
+diff -ur linux-2.6.34.i686/drivers/gpu/drm/radeon/radeon.h radeon-fixes.i686/drivers/gpu/drm/radeon/radeon.h
+--- linux-2.6.34.i686/drivers/gpu/drm/radeon/radeon.h	2010-09-02 21:50:42.000000000 +1000
++++ radeon-fixes.i686/drivers/gpu/drm/radeon/radeon.h	2010-09-02 21:36:50.000000000 +1000
+@@ -620,7 +620,8 @@
+ 	DYNPM_STATE_DISABLED,
+ 	DYNPM_STATE_MINIMUM,
+ 	DYNPM_STATE_PAUSED,
+-	DYNPM_STATE_ACTIVE
++	DYNPM_STATE_ACTIVE,
++	DYNPM_STATE_SUSPENDED,
+ };
+ enum radeon_dynpm_action {
+ 	DYNPM_ACTION_NONE,
+diff -ur linux-2.6.34.i686/drivers/gpu/drm/radeon/radeon_pm.c radeon-fixes.i686/drivers/gpu/drm/radeon/radeon_pm.c
+--- linux-2.6.34.i686/drivers/gpu/drm/radeon/radeon_pm.c	2010-09-02 21:50:42.000000000 +1000
++++ radeon-fixes.i686/drivers/gpu/drm/radeon/radeon_pm.c	2010-09-02 21:36:50.000000000 +1000
+@@ -397,13 +397,20 @@
+ 		rdev->pm.dynpm_planned_action = DYNPM_ACTION_DEFAULT;
+ 		mutex_unlock(&rdev->pm.mutex);
+ 	} else if (strncmp("profile", buf, strlen("profile")) == 0) {
++		bool flush_wq = false;
++
+ 		mutex_lock(&rdev->pm.mutex);
+-		rdev->pm.pm_method = PM_METHOD_PROFILE;
++		if (rdev->pm.pm_method == PM_METHOD_DYNPM) {
++			cancel_delayed_work(&rdev->pm.dynpm_idle_work);
++			flush_wq = true;
++		}
+ 		/* disable dynpm */
+ 		rdev->pm.dynpm_state = DYNPM_STATE_DISABLED;
+ 		rdev->pm.dynpm_planned_action = DYNPM_ACTION_NONE;
+-		cancel_delayed_work(&rdev->pm.dynpm_idle_work);
++		rdev->pm.pm_method = PM_METHOD_PROFILE;
+ 		mutex_unlock(&rdev->pm.mutex);
++		if (flush_wq)
++			flush_workqueue(rdev->wq);
+ 	} else {
+ 		DRM_ERROR("invalid power method!\n");
+ 		goto fail;
+@@ -418,9 +425,18 @@
+ 
+ void radeon_pm_suspend(struct radeon_device *rdev)
+ {
++	bool flush_wq = false;
++
+ 	mutex_lock(&rdev->pm.mutex);
+-	cancel_delayed_work(&rdev->pm.dynpm_idle_work);
++	if (rdev->pm.pm_method == PM_METHOD_DYNPM) {
++		cancel_delayed_work(&rdev->pm.dynpm_idle_work);
++		if (rdev->pm.dynpm_state == DYNPM_STATE_ACTIVE)
++			rdev->pm.dynpm_state = DYNPM_STATE_SUSPENDED;
++		flush_wq = true;
++	}
+ 	mutex_unlock(&rdev->pm.mutex);
++	if (flush_wq)
++		flush_workqueue(rdev->wq);
+ }
+ 
+ void radeon_pm_resume(struct radeon_device *rdev)
+@@ -432,6 +448,12 @@
+ 	rdev->pm.current_sclk = rdev->clock.default_sclk;
+ 	rdev->pm.current_mclk = rdev->clock.default_mclk;
+ 	rdev->pm.current_vddc = rdev->pm.power_state[rdev->pm.default_power_state_index].clock_info[0].voltage.voltage;
++	if (rdev->pm.pm_method == PM_METHOD_DYNPM
++	    && rdev->pm.dynpm_state == DYNPM_STATE_SUSPENDED) {
++		rdev->pm.dynpm_state = DYNPM_STATE_ACTIVE;
++		queue_delayed_work(rdev->wq, &rdev->pm.dynpm_idle_work,
++					msecs_to_jiffies(RADEON_IDLE_LOOP_MS));
++	}
+ 	mutex_unlock(&rdev->pm.mutex);
+ 	radeon_pm_compute_clocks(rdev);
+ }
+@@ -486,6 +508,8 @@
+ void radeon_pm_fini(struct radeon_device *rdev)
+ {
+ 	if (rdev->pm.num_power_states > 1) {
++		bool flush_wq = false;
++
+ 		mutex_lock(&rdev->pm.mutex);
+ 		if (rdev->pm.pm_method == PM_METHOD_PROFILE) {
+ 			rdev->pm.profile = PM_PROFILE_DEFAULT;
+@@ -493,13 +517,16 @@
+ 			radeon_pm_set_clocks(rdev);
+ 		} else if (rdev->pm.pm_method == PM_METHOD_DYNPM) {
+ 			/* cancel work */
+-			cancel_delayed_work_sync(&rdev->pm.dynpm_idle_work);
++			cancel_delayed_work(&rdev->pm.dynpm_idle_work);
++			flush_wq = true;
+ 			/* reset default clocks */
+ 			rdev->pm.dynpm_state = DYNPM_STATE_DISABLED;
+ 			rdev->pm.dynpm_planned_action = DYNPM_ACTION_DEFAULT;
+ 			radeon_pm_set_clocks(rdev);
+ 		}
+ 		mutex_unlock(&rdev->pm.mutex);
++		if (flush_wq)
++			flush_workqueue(rdev->wq);
+ 
+ 		device_remove_file(rdev->dev, &dev_attr_power_profile);
+ 		device_remove_file(rdev->dev, &dev_attr_power_method);
+@@ -720,12 +747,12 @@
+ 			radeon_pm_get_dynpm_state(rdev);
+ 			radeon_pm_set_clocks(rdev);
+ 		}
++
++		queue_delayed_work(rdev->wq, &rdev->pm.dynpm_idle_work,
++					msecs_to_jiffies(RADEON_IDLE_LOOP_MS));
+ 	}
+ 	mutex_unlock(&rdev->pm.mutex);
+ 	ttm_bo_unlock_delayed_workqueue(&rdev->mman.bdev, resched);
+-
+-	queue_delayed_work(rdev->wq, &rdev->pm.dynpm_idle_work,
+-					msecs_to_jiffies(RADEON_IDLE_LOOP_MS));
+ }
+ 
+ /*
+diff -ur linux-2.6.34.i686/drivers/gpu/drm/ttm/ttm_page_alloc.c radeon-fixes.i686/drivers/gpu/drm/ttm/ttm_page_alloc.c
+--- linux-2.6.34.i686/drivers/gpu/drm/ttm/ttm_page_alloc.c	2010-09-02 21:50:42.000000000 +1000
++++ radeon-fixes.i686/drivers/gpu/drm/ttm/ttm_page_alloc.c	2010-09-02 21:13:14.000000000 +1000
+@@ -667,7 +667,7 @@
+ {
+ 	struct ttm_page_pool *pool = ttm_get_pool(flags, cstate);
+ 	struct page *p = NULL;
+-	int gfp_flags = 0;
++	int gfp_flags = GFP_USER;
+ 	int r;
+ 
+ 	/* set zero flag for page allocation if required */
