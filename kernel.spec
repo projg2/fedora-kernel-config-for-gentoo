@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 50
+%global baserelease 51
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2060,7 +2060,7 @@ fi
 
 
 %changelog
-* Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com>
+* Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com> 2.6.34.6-51
 - lirc_imon: move alloc before use (rhbz#629980)
 
 * Fri Sep 03 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-50
