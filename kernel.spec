@@ -770,6 +770,7 @@ Patch12480: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 Patch12490: dell-wmi-add-support-for-eject-key.patch
 Patch12500: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 Patch12510: wireless-extensions-fix-kernel-heap-content-leak.patch
+Patch12515: sanity-check-bond-proc_entry.patch
 
 %endif
 
@@ -1439,6 +1440,9 @@ ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 # cve-2010-2955
 ApplyPatch wireless-extensions-fix-kernel-heap-content-leak.patch
 
+# bz #604630
+ApplyPatch sanity-check-bond-proc_entry.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2060,6 +2064,9 @@ fi
 
 
 %changelog
+* Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com> 2.6.34.6-52
+- sanity-check-bond-proc_entry.patch (rhbz#604630)
+
 * Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com> 2.6.34.6-51
 - lirc_imon: move alloc before use (rhbz#629980)
 
