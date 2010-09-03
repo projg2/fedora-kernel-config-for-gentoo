@@ -630,6 +630,7 @@ Patch305: linux-2.6-fix-btusb-autosuspend.patch
 
 Patch310: linux-2.6-usb-wwan-update.patch
 
+Patch370: linux-2.6-defaults-acpi-pci_no_crs.patch
 Patch380: linux-2.6-defaults-pci_no_msi.patch
 # enable ASPM
 Patch383: linux-2.6-defaults-aspm.patch
@@ -1263,6 +1264,8 @@ ApplyPatch linux-2.6-debug-always-inline-kzalloc.patch
 #
 # PCI
 #
+# default to pci=nocrs
+ApplyPatch linux-2.6-defaults-acpi-pci_no_crs.patch
 # make default state of PCI MSI a config option
 ApplyPatch linux-2.6-defaults-pci_no_msi.patch
 # enable ASPM by default on hardware we expect to work
@@ -2071,6 +2074,7 @@ fi
 * Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com> 2.6.34.6-52
 - sanity-check-bond-proc_entry.patch (rhbz#604630)
 - asix.c: stub out set_mac_address in case it's breaking things (rhbz#629871)
+- default to pci=nocrs
 
 * Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com> 2.6.34.6-51
 - lirc_imon: move alloc before use (rhbz#629980)

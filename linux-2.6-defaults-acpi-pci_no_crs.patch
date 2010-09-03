@@ -1,0 +1,13 @@
+diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
+index 7743fb1..3a7f094 100644
+--- a/arch/x86/pci/acpi.c
++++ b/arch/x86/pci/acpi.c
+@@ -16,7 +16,7 @@ struct pci_root_info {
+ 	int busnum;
+ };
+ 
+-static bool pci_use_crs = true;
++static bool pci_use_crs = false;
+ 
+ static int __init set_use_crs(const struct dmi_system_id *id)
+ {
