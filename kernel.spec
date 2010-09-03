@@ -2060,6 +2060,9 @@ fi
 
 
 %changelog
+* Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com>
+- lirc_imon: move alloc before use (rhbz#629980)
+
 * Fri Sep 03 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-50
 - Re-enable I2O, but only for 32-bit x86 (#629676)
 - Add support for eject key on Dell laptops (#513530)

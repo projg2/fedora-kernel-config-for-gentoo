@@ -3598,7 +3598,7 @@ new file mode 100644
 index 0000000..5bea43b
 --- /dev/null
 +++ b/drivers/input/lirc/lirc_imon.c
-@@ -0,0 +1,1054 @@
+@@ -0,0 +1,1055 @@
 +/*
 + *   lirc_imon.c:  LIRC/VFD/LCD driver for SoundGraph iMON IR/VFD/LCD
 + *		   including the iMON PAD model
@@ -4331,6 +4331,13 @@ index 0000000..5bea43b
 +	int i;
 +	u16 vendor, product;
 +
++	context = kzalloc(sizeof(struct imon_context), GFP_KERNEL);
++	if (!context) {
++		err("%s: kzalloc failed for context", __func__);
++		alloc_status = 1;
++		goto alloc_status_switch;
++	}
++
 +	/*
 +	 * Try to auto-detect the type of display if the user hasn't set
 +	 * it by hand via the display_type modparam. Default is VFD.
@@ -4413,12 +4420,6 @@ index 0000000..5bea43b
 +			__func__, vfd_proto_6p);
 +	}
 +
-+	context = kzalloc(sizeof(struct imon_context), GFP_KERNEL);
-+	if (!context) {
-+		err("%s: kzalloc failed for context", __func__);
-+		alloc_status = 1;
-+		goto alloc_status_switch;
-+	}
 +	driver = kzalloc(sizeof(struct lirc_driver), GFP_KERNEL);
 +	if (!driver) {
 +		err("%s: kzalloc failed for lirc_driver", __func__);
