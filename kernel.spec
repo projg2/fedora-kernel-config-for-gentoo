@@ -701,6 +701,8 @@ Patch12017: prevent-runtime-conntrack-changes.patch
 
 Patch12018: neuter_intel_microcode_load.patch
 
+Patch12019: add-appleir-usb-driver.patch
+
 Patch12040: only-use-alpha2-regulatory-information-from-country-IE.patch
 
 # rhbz #617699
@@ -1297,6 +1299,8 @@ ApplyPatch linux-2.6-via-velocity-dma-fix.patch
 
 # Patches headed upstream
 ApplyPatch disable-i8042-check-on-apple-mac.patch
+
+ApplyPatch add-appleir-usb-driver.patch
 
 ApplyPatch neuter_intel_microcode_load.patch
 
@@ -1896,6 +1900,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 03 2010 Kyle McMartin <kyle@redhat.com>
+- Restore appleir driver that got lost in the 2.6.35 rebase.
+
 * Thu Sep 02 2010 Dave Jones <davej@redhat.com> 2.6.35.4-18
 - Scatter-gather on via-velocity is hopelessly broken.
   Just switch it off for now.
