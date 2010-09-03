@@ -1,0 +1,22 @@
+diff --git a/drivers/net/usb/asix.c b/drivers/net/usb/asix.c
+index 35f56fc..1523ad4 100644
+--- a/drivers/net/usb/asix.c
++++ b/drivers/net/usb/asix.c
+@@ -946,7 +946,7 @@ static const struct net_device_ops ax88772_netdev_ops = {
+ 	.ndo_start_xmit		= usbnet_start_xmit,
+ 	.ndo_tx_timeout		= usbnet_tx_timeout,
+ 	.ndo_change_mtu		= usbnet_change_mtu,
+-	.ndo_set_mac_address 	= asix_set_mac_address,
++	.ndo_set_mac_address 	= eth_mac_addr,
+ 	.ndo_validate_addr	= eth_validate_addr,
+ 	.ndo_do_ioctl		= asix_ioctl,
+ 	.ndo_set_multicast_list = asix_set_multicast,
+@@ -1240,7 +1240,7 @@ static const struct net_device_ops ax88178_netdev_ops = {
+ 	.ndo_stop		= usbnet_stop,
+ 	.ndo_start_xmit		= usbnet_start_xmit,
+ 	.ndo_tx_timeout		= usbnet_tx_timeout,
+-	.ndo_set_mac_address 	= asix_set_mac_address,
++	.ndo_set_mac_address 	= eth_mac_addr,
+ 	.ndo_validate_addr	= eth_validate_addr,
+ 	.ndo_set_multicast_list = asix_set_multicast,
+ 	.ndo_do_ioctl 		= asix_ioctl,

@@ -771,6 +771,7 @@ Patch12490: dell-wmi-add-support-for-eject-key.patch
 Patch12500: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 Patch12510: wireless-extensions-fix-kernel-heap-content-leak.patch
 Patch12515: sanity-check-bond-proc_entry.patch
+Patch12516: asix-use-eth_mac_addr.patch
 
 %endif
 
@@ -1443,6 +1444,9 @@ ApplyPatch wireless-extensions-fix-kernel-heap-content-leak.patch
 # bz #604630
 ApplyPatch sanity-check-bond-proc_entry.patch
 
+# bz #629871
+ApplyPatch asix-use-eth_mac_addr.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2066,6 +2070,7 @@ fi
 %changelog
 * Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com> 2.6.34.6-52
 - sanity-check-bond-proc_entry.patch (rhbz#604630)
+- asix.c: stub out set_mac_address in case it's breaking things (rhbz#629871)
 
 * Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com> 2.6.34.6-51
 - lirc_imon: move alloc before use (rhbz#629980)
