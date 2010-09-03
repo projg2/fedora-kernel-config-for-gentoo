@@ -2212,6 +2212,10 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Fri Sep 03 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops to 2.6.32.21
+- Set new dom0 related option CONFIG_NET_SCH_PLUG=m
+
 * Thu Sep 02 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.21-167
 - irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch (CVE-2010-2954)
 
