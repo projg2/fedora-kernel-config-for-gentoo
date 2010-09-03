@@ -769,6 +769,7 @@ Patch12480: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
 Patch12490: dell-wmi-add-support-for-eject-key.patch
 Patch12500: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
+Patch12510: wireless-extensions-fix-kernel-heap-content-leak.patch
 
 %endif
 
@@ -1435,6 +1436,9 @@ ApplyPatch dell-wmi-add-support-for-eject-key.patch
 # cve-2010-2954
 ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 
+# cve-2010-2955
+ApplyPatch wireless-extensions-fix-kernel-heap-content-leak.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2060,6 +2064,7 @@ fi
 - Re-enable I2O, but only for 32-bit x86 (#629676)
 - Add support for eject key on Dell laptops (#513530)
 - irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch (CVE-2010-2954)
+- wireless-extensions-fix-kernel-heap-content-leak.patch (CVE-2010-2955)
 
 * Thu Sep 02 2010 Dave Airlie <airlied@redhat.com> 2.6.34.6-49
 - fix radeon suspend/resume issues and two other minor patches
