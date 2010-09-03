@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 49
+%global baserelease 50
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -766,6 +766,7 @@ Patch12460: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
 Patch12470: drivers-hwmon-coretemp-c-detect-the-thermal-sensors-by-cpuid.patch
 Patch12480: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
+Patch12490: dell-wmi-add-support-for-eject-key.patch
 
 %endif
 
@@ -1426,6 +1427,9 @@ ApplyPatch drivers-hwmon-coretemp-c-detect-the-thermal-sensors-by-cpuid.patch
 # bz #610941
 ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
+# bz #513530
+ApplyPatch dell-wmi-add-support-for-eject-key.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2047,6 +2051,10 @@ fi
 
 
 %changelog
+* Fri Sep 03 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-50
+- Re-enable I2O, but only for 32-bit x86 (#629676)
+- Add support for eject key on Dell laptops (#513530)
+
 * Thu Sep 02 2010 Dave Airlie <airlied@redhat.com> 2.6.34.6-49
 - fix radeon suspend/resume issues and two other minor patches
 
