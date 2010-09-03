@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 158
+%global baserelease 167
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,9 +60,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 21
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -718,13 +718,12 @@ Patch1700: linux-2.6-x86-64-fbdev-primary.patch
 
 # nouveau + drm fixes
 Patch1810: drm-upgrayedd.patch
+Patch1811: drm-upgrayed-fixes.patch
 Patch1813: drm-radeon-pm.patch
 #Patch1814: drm-nouveau.patch
 Patch1818: drm-i915-resume-force-mode.patch
 Patch1819: drm-intel-big-hammer.patch
 Patch1820: drm-intel-no-tv-hotplug.patch
-Patch1821: drm-i915-fix-hibernate-memory-corruption.patch
-Patch1822: drm-i915-add-reclaimable-to-page-allocations.patch
 Patch1823: drm-intel-945gm-stability-fixes.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -738,6 +737,7 @@ Patch1844: drm-nouveau-kconfig.patch
 Patch1845: drm-nouveau-mutex.patch
 Patch1846: drm-nouveau-update.patch
 Patch1847: drm-nouveau-d620.patch
+Patch1848: drm-nouveau-nva3-noaccel.patch
 
 # kludge to make ich9 e1000 work
 Patch2000: linux-2.6-e1000-ich9.patch
@@ -769,7 +769,6 @@ Patch3050: linux-2.6-nfsd4-proots.patch
 Patch3051: linux-2.6-nfs4-callback-hidden.patch
 
 # btrfs
-Patch3100: linux-2.6-btrfs-fix-acl.patch
 Patch3101: btrfs-prohibit-a-operation-of-changing-acls-mask-when-noacl-mount-option-is-used.patch
 
 # XFS
@@ -799,9 +798,6 @@ Patch12340: ice1712-fix-revo71-mixer-names.patch
 
 # rhbz#572653
 Patch12370: linux-2.6-b43_-Rewrite-DMA-Tx-status-handling-sanity-checks.patch
-
-# rhbz#533746
-Patch12380: ssb_check_for_sprom.patch
 
 # backport iwlwifi fixes (thanks, sgruszka!) -- drop when stable catches-up
 Patch12391: iwlwifi-reset-card-during-probe.patch
@@ -836,18 +832,15 @@ Patch13030: l2tp-fix-oops-in-pppol2tp_xmit.patch
 Patch14020: inotify-fix-inotify-oneshot-support.patch
 Patch14030: inotify-send-IN_UNMOUNT-events.patch
 
-Patch14040: crypto-testmgr-add-null-test-for-aesni.patch
 Patch14050: crypto-add-async-hash-testing.patch
-
-Patch14110: ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
-Patch14115: xfs-prevent-swapext-from-operating-on-write-only-files.patch
-Patch14120: cifs-fix-dns-resolver.patch
 
 # Red Hat Bugzilla #610911
 Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
 Patch14140: hid-01-usbhid-initialize-interface-pointers-early-enough.patch
 Patch14141: hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
+
+Patch14150: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 
 Patch19997: xen.pvops.pre.patch
 Patch19998: xen.pvops.patch
@@ -1332,7 +1325,6 @@ ApplyPatch linux-2.6-execshield.patch
 # xfs
 
 # btrfs
-ApplyPatch linux-2.6-btrfs-fix-acl.patch
 ApplyPatch btrfs-prohibit-a-operation-of-changing-acls-mask-when-noacl-mount-option-is-used.patch
 
 # eCryptfs
@@ -1467,6 +1459,7 @@ ApplyPatch linux-2.6-phylib-autoload.patch
 ApplyPatch linux-2.6-x86-64-fbdev-primary.patch
 # Nouveau DRM + drm fixes
 ApplyPatch drm-upgrayedd.patch
+ApplyPatch drm-upgrayed-fixes.patch
 #ApplyPatch drm-intel-big-hammer.patch
 #ApplyPatch drm-intel-no-tv-hotplug.patch
 ApplyOptionalPatch drm-intel-next.patch
@@ -1474,9 +1467,6 @@ ApplyPatch drm-intel-acpi-populate-didl.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 # gm45 stability fixes
 ApplyPatch drm-intel-945gm-stability-fixes.patch
-# hibernation memory corruption fixes
-ApplyPatch drm-i915-fix-hibernate-memory-corruption.patch
-ApplyPatch drm-i915-add-reclaimable-to-page-allocations.patch
 
 ApplyPatch drm-nouveau-g80-ctxprog.patch
 ApplyPatch drm-nouveau-tvout-disable.patch
@@ -1484,6 +1474,7 @@ ApplyPatch drm-nouveau-safetile-getparam.patch
 ApplyPatch drm-nouveau-kconfig.patch
 ApplyPatch drm-nouveau-update.patch
 ApplyPatch drm-nouveau-d620.patch
+ApplyPatch drm-nouveau-nva3-noaccel.patch
 
 # linux1394 git patches
 #ApplyPatch linux-2.6-firewire-git-update.patch
@@ -1517,9 +1508,6 @@ ApplyPatch ice1712-fix-revo71-mixer-names.patch
 
 # rhbz#572653
 ApplyPatch linux-2.6-b43_-Rewrite-DMA-Tx-status-handling-sanity-checks.patch
-
-# rhbz#533746
-#ApplyPatch ssb_check_for_sprom.patch
 
 # backport iwlwifi fixes (thanks, sgruszka!) -- drop when stable catches-up
 ApplyPatch iwlwifi-reset-card-during-probe.patch
@@ -1556,24 +1544,17 @@ ApplyPatch l2tp-fix-oops-in-pppol2tp_xmit.patch
 ApplyPatch inotify-fix-inotify-oneshot-support.patch
 ApplyPatch inotify-send-IN_UNMOUNT-events.patch
 
-# add tests for aesni module (#571577)
-ApplyPatch crypto-testmgr-add-null-test-for-aesni.patch
 # add tests for crypto async hashing (#571577)
 ApplyPatch crypto-add-async-hash-testing.patch
-
-# CVE-2010-2066
-ApplyPatch ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
-# CVE-2010-2266
-#ApplyPatch xfs-prevent-swapext-from-operating-on-write-only-files.patch
-
-# fix DNS resolver build, broken in 2.6.32.17
-#ApplyPatch cifs-fix-dns-resolver.patch
 
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
 # RHBZ #592785
 ApplyPatch hid-01-usbhid-initialize-interface-pointers-early-enough.patch
 ApplyPatch hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
+
+# CVE-2010-2954
+ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 
 ApplyPatch xen.pvops.pre.patch
 ApplyPatch xen.pvops.patch
@@ -1585,6 +1566,8 @@ ApplyPatch xen.pvops.post.patch
 # Any further pre-build tree manipulations happen here.
 
 chmod +x scripts/checkpatch.pl
+
+touch .scmversion
 
 # only deal with configs if we are going to build for the arch
 %ifnarch %nobuildarches
@@ -2229,6 +2212,64 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Thu Sep 02 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.21-167
+- irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch (CVE-2010-2954)
+
+* Fri Aug 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.21-166
+- Linux 2.6.32.21
+
+* Wed Aug 25 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.21-165.rc1
+- Linux 2.6.32.21-rc1
+- Drop merged patches:
+    drm-i915-add-reclaimable-to-page-allocations.patch
+    drm-i915-fix-hibernate-memory-corruption.patch
+- Fix up execshield and DRM upgrade patches to apply after 2.6.32.21
+
+* Sat Aug 21 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.20-164
+- Linux 2.6.32.20
+- Drop merged patches:
+   mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
+   mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
+
+* Wed Aug 18 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.19-163
+- Bump version.
+
+* Tue Aug 17 2010 Kyle McMartin <kyle@redhat.com>
+- Touch .scmversion in the kernel top level to prevent scripts/setlocalversion
+  from recursing into our fedpkg git tree and trying to decide whether the
+  kernel git is modified (obviously not, since it's a tarball.) Fixes make
+  local.
+
+* Tue Aug 17 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.19-162
+- Fix fallout from the stack guard page fixes.
+  (mm-fix-page-table-unmap-for-stack-guard-page-properly.patch,
+   mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch)
+
+* Sat Aug 14 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.19-161
+- Linux 2.6.32.19
+
+* Fri Aug 13 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.19-160.rc1
+- Linux 2.6.32.19-rc1
+- Comment out patches merged upstream:
+    linux-2.6-btrfs-fix-acl.patch
+    crypto-testmgr-add-null-test-for-aesni.patch
+    ext4-make-sure-the-move_ext-ioctl-can-t-overwrite-append-only-files.patch
+    ext4-fix-freeze-deadlock-under-io.patch
+- Fix linux-2.6-usb-wwan-update.patch to apply after 2.6.32.19
+
+* Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.18-159
+- Linux 2.6.32.18
+- Backport nouveau noaccel fix for nva3+ cards from f13.
+- ext4-fix-freeze-deadlock-under-io.patch:
+  Fix deadlock caused by patch in 2.6.32.17
+  (0036-ext4-don-t-return-to-userspace-after-freezing-the-fs.patch)
+
+* Tue Aug 10 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.18-158.rc1
+- Bring back drm-upgrayed-fixes.patch, dropped in the
+  2.6.32.16 update. (#620955)
+- Revert upstream DRM stable fix we already have:
+    drm-i915-give-up-on-8xx-lid-status.patch
+
 * Sat Aug 07 2010 Chuck Ebbert <cebbert@redhat.com>
 - Linux 2.6.32.18-rc1
 - Revert DRM patches from -stable we already have:

@@ -817,9 +817,9 @@ index a75ca63..766c468 100644
  	atomic_inc(&dev->counts[_DRM_STAT_IOCTLS]);
  	++file_priv->ioctl_count;
 @@ -471,7 +502,13 @@ int drm_ioctl(struct inode *inode, struct file *filp,
- 				goto err_i1;
- 			}
- 		}
+ 		} else
+ 			memset(kdata, 0, _IOC_SIZE(cmd));
+ 
 -		retcode = func(dev, kdata, file_priv);
 +		if (ioctl->flags & DRM_UNLOCKED)
 +			retcode = func(dev, kdata, file_priv);
@@ -11499,8 +11499,8 @@ index 0e0e4b4..b1d0acb 100644
  };
  
 @@ -622,7 +650,7 @@ static enum drm_connector_status intel_lvds_detect(struct drm_connector *connect
- 	if (IS_I8XX(dev))
- 		return connector_status_connected;
+ {
+ 	enum drm_connector_status status = connector_status_connected;
  
 -	if (!acpi_lid_open() && !dmi_check_system(bad_lid_status))
 +	if (!dmi_check_system(bad_lid_status) && !acpi_lid_open())

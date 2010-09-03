@@ -116,7 +116,7 @@ diff -up linux-2.6.32.noarch/drivers/usb/serial/option.c.orig linux-2.6.32.noarc
  struct option_port_private {
  	/* Input endpoints and buffer for this port */
  	struct urb *in_urbs[N_IN_URB];
-@@ -767,216 +740,28 @@ module_exit(option_exit);
+@@ -767,223 +740,35 @@ module_exit(option_exit);
  static int option_probe(struct usb_serial *serial,
  			const struct usb_device_id *id)
  {
@@ -135,6 +135,13 @@ diff -up linux-2.6.32.noarch/drivers/usb/serial/option.c.orig linux-2.6.32.noarc
  		serial->interface->cur_altsetting->desc.bInterfaceClass != 0xff)
  		return -ENODEV;
  
+	/* Don't bind network interfaces on Huawei K3765 & K4505 */
+	if (serial->dev->descriptor.idVendor == HUAWEI_VENDOR_ID &&
+		(serial->dev->descriptor.idProduct == HUAWEI_PRODUCT_K3765 ||
+			serial->dev->descriptor.idProduct == HUAWEI_PRODUCT_K4505) &&
+		serial->interface->cur_altsetting->desc.bInterfaceNumber == 1)
+		return -ENODEV;
+
 -	data = serial->private = kzalloc(sizeof(struct option_intf_private), GFP_KERNEL);
 +	data = serial->private = kzalloc(sizeof(struct usb_wwan_intf_private), GFP_KERNEL);
  	if (!data)
