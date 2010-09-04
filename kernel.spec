@@ -777,6 +777,7 @@ Patch12516: asix-use-eth_mac_addr.patch
 Patch12517: flexcop-fix-xlate_proc_name-warning.patch
 
 Patch12520: acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch
+Patch12521: nfs-fix-an-oops-in-the-nfsv4-atomic-open-code.patch
 
 %endif
 
@@ -1460,6 +1461,9 @@ ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 # another fix for suspend/resume bugs
 ApplyPatch acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch
 
+# this went in 2.6.35-stable
+ApplyPatch nfs-fix-an-oops-in-the-nfsv4-atomic-open-code.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2084,6 +2088,7 @@ fi
 * Fri Sep 03 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.6-52
 - acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch:
   another possible fix for suspend/resume problems.
+- From 2.6.35.4: nfs-fix-an-oops-in-the-nfsv4-atomic-open-code.patch
 
 * Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com>
 - sanity-check-bond-proc_entry.patch (rhbz#604630)
