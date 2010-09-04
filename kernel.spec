@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 51
+%global baserelease 52
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -771,9 +771,12 @@ Patch12480: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 Patch12490: dell-wmi-add-support-for-eject-key.patch
 Patch12500: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 Patch12510: wireless-extensions-fix-kernel-heap-content-leak.patch
+
 Patch12515: sanity-check-bond-proc_entry.patch
 Patch12516: asix-use-eth_mac_addr.patch
 Patch12517: flexcop-fix-xlate_proc_name-warning.patch
+
+Patch12520: acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch
 
 %endif
 
@@ -1454,6 +1457,9 @@ ApplyPatch asix-use-eth_mac_addr.patch
 # bz #575873
 ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
+# another fix for suspend/resume bugs
+ApplyPatch acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2075,9 +2081,13 @@ fi
 
 
 %changelog
-* Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com> 2.6.34.6-52
+* Fri Sep 03 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.6-52
+- acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch:
+  another possible fix for suspend/resume problems.
+
+* Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com>
 - sanity-check-bond-proc_entry.patch (rhbz#604630)
-- asix.c: stub out set_mac_address in case it's breaking things (rhbz#629871)
+- asix.c: stub out set_mac_address in case it's breaking things (rhbz#625479)
 - default to pci=nocrs
 - flexcop: fix registering braindead stupid names (#575873)
 
