@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 52
+%global baserelease 53
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -630,10 +630,14 @@ Patch305: linux-2.6-fix-btusb-autosuspend.patch
 
 Patch310: linux-2.6-usb-wwan-update.patch
 
+# disable new features in 2.6.34
 Patch370: linux-2.6-defaults-acpi-pci_no_crs.patch
+Patch371: linux-2.6-defaults-no-pm-async.patch
+
 Patch380: linux-2.6-defaults-pci_no_msi.patch
 # enable ASPM
 Patch383: linux-2.6-defaults-aspm.patch
+# fixes for ASPM
 Patch384: pci-acpi-disable-aspm-if-no-osc.patch
 Patch385: pci-aspm-dont-enable-too-early.patch
 
@@ -1269,12 +1273,18 @@ ApplyPatch linux-2.6-debug-vm-would-have-oomkilled.patch
 ApplyPatch linux-2.6-debug-always-inline-kzalloc.patch
 
 #
-# PCI
+# PCI / PM
 #
+
+# new 2.6.34 options
+# default to async suspend disabled
+ApplyPatch linux-2.6-defaults-no-pm-async.patch
 # default to pci=nocrs
 ApplyPatch linux-2.6-defaults-acpi-pci_no_crs.patch
+
 # make default state of PCI MSI a config option
 ApplyPatch linux-2.6-defaults-pci_no_msi.patch
+
 # enable ASPM by default on hardware we expect to work
 ApplyPatch linux-2.6-defaults-aspm.patch
 # disable aspm if acpi doesn't provide an _OSC method
@@ -2091,6 +2101,9 @@ fi
 
 
 %changelog
+* Sat Sep 04 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.6-53
+- Disable asynchronous suspend, a new feature in 2.6.34
+
 * Fri Sep 03 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.6-52
 - acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch:
   another possible fix for suspend/resume problems.
