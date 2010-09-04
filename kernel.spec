@@ -778,6 +778,8 @@ Patch12517: flexcop-fix-xlate_proc_name-warning.patch
 
 Patch12520: acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch
 Patch12521: nfs-fix-an-oops-in-the-nfsv4-atomic-open-code.patch
+Patch12522: keys-fix-bug-in-keyctl-session-to-parent-if-parent-has-no-session-keyring.patch
+Patch12523: keys-fix-rcu-no-lock-warning-in-keyctl-session-to-parent.patch
 
 %endif
 
@@ -1464,6 +1466,10 @@ ApplyPatch acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch
 # this went in 2.6.35-stable
 ApplyPatch nfs-fix-an-oops-in-the-nfsv4-atomic-open-code.patch
 
+# CVE-2010-2960
+ApplyPatch keys-fix-bug-in-keyctl-session-to-parent-if-parent-has-no-session-keyring.patch
+ApplyPatch keys-fix-rcu-no-lock-warning-in-keyctl-session-to-parent.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2089,6 +2095,7 @@ fi
 - acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch:
   another possible fix for suspend/resume problems.
 - From 2.6.35.4: nfs-fix-an-oops-in-the-nfsv4-atomic-open-code.patch
+- Add fix for CVE-2010-2960: keyctl_session_to_parent NULL deref system crash
 
 * Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com>
 - sanity-check-bond-proc_entry.patch (rhbz#604630)
