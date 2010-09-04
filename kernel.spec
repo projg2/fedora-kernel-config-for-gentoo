@@ -785,6 +785,9 @@ Patch12521: nfs-fix-an-oops-in-the-nfsv4-atomic-open-code.patch
 Patch12522: keys-fix-bug-in-keyctl-session-to-parent-if-parent-has-no-session-keyring.patch
 Patch12523: keys-fix-rcu-no-lock-warning-in-keyctl-session-to-parent.patch
 
+Patch12530: pci-msi-remove-unsafe-and-unnecessary-hardware-access.patch
+Patch12531: pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1480,6 +1483,11 @@ ApplyPatch nfs-fix-an-oops-in-the-nfsv4-atomic-open-code.patch
 ApplyPatch keys-fix-bug-in-keyctl-session-to-parent-if-parent-has-no-session-keyring.patch
 ApplyPatch keys-fix-rcu-no-lock-warning-in-keyctl-session-to-parent.patch
 
+# more suspend/resume fixes form 2.6.32 / 2.6.35 queue
+# Fix unsafe access to MSI registers during suspend
+ApplyPatch pci-msi-remove-unsafe-and-unnecessary-hardware-access.patch
+ApplyPatch pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2103,6 +2111,9 @@ fi
 %changelog
 * Sat Sep 04 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.6-53
 - Disable asynchronous suspend, a new feature in 2.6.34
+- Fix unsafe access to MSI registers during suspend
+  (pci-msi-remove-unsafe-and-unnecessary-hardware-access.patch,
+   pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch)
 
 * Fri Sep 03 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.6-52
 - acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch:
