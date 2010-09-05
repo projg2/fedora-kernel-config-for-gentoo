@@ -2101,6 +2101,9 @@ fi
 
 
 %changelog
+* Sun Sep 05 2010 Jarod Wilson <jarod@redhat.com> 2.6.34.6-54
+- Restore lirc patch from 2.6.33.x F13 kernels, re-fixes multiple issues
+
 * Sat Sep 04 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.6-53
 - Disable asynchronous suspend, a new feature in 2.6.34
 
