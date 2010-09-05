@@ -785,6 +785,10 @@ Patch12521: nfs-fix-an-oops-in-the-nfsv4-atomic-open-code.patch
 Patch12522: keys-fix-bug-in-keyctl-session-to-parent-if-parent-has-no-session-keyring.patch
 Patch12523: keys-fix-rcu-no-lock-warning-in-keyctl-session-to-parent.patch
 
+Patch12530: pci-msi-remove-unsafe-and-unnecessary-hardware-access.patch
+Patch12531: pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch
+Patch12532: x86-tsc-sched-recompute-cyc2ns_offset-s-during-resume-from-sleep-states.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1480,6 +1484,13 @@ ApplyPatch nfs-fix-an-oops-in-the-nfsv4-atomic-open-code.patch
 ApplyPatch keys-fix-bug-in-keyctl-session-to-parent-if-parent-has-no-session-keyring.patch
 ApplyPatch keys-fix-rcu-no-lock-warning-in-keyctl-session-to-parent.patch
 
+# more suspend/resume fixes form 2.6.32 / 2.6.35 queue
+# Fix unsafe access to MSI registers during suspend
+ApplyPatch pci-msi-remove-unsafe-and-unnecessary-hardware-access.patch
+ApplyPatch pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch
+# Fix scheduler load balancing after suspend/resume cycle
+ApplyPatch x86-tsc-sched-recompute-cyc2ns_offset-s-during-resume-from-sleep-states.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2106,6 +2117,11 @@ fi
 
 * Sat Sep 04 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.6-53
 - Disable asynchronous suspend, a new feature in 2.6.34
+- Fix unsafe access to MSI registers during suspend
+  (pci-msi-remove-unsafe-and-unnecessary-hardware-access.patch,
+   pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch)
+- x86-tsc-sched-recompute-cyc2ns_offset-s-during-resume-from-sleep-states.patch
+   Fix load balancing after suspend/resume cycle (taken from 2.6.32 stable queue)
 
 * Fri Sep 03 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.6-52
 - acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch:
