@@ -776,8 +776,6 @@ Patch12490: dell-wmi-add-support-for-eject-key.patch
 Patch12500: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 Patch12510: wireless-extensions-fix-kernel-heap-content-leak.patch
 
-Patch12515: sanity-check-bond-proc_entry.patch
-Patch12516: asix-use-eth_mac_addr.patch
 Patch12517: flexcop-fix-xlate_proc_name-warning.patch
 
 Patch12520: acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch
@@ -1465,12 +1463,6 @@ ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 # cve-2010-2955
 ApplyPatch wireless-extensions-fix-kernel-heap-content-leak.patch
 
-# bz #604630
-ApplyPatch sanity-check-bond-proc_entry.patch
-
-# bz #629871
-ApplyPatch asix-use-eth_mac_addr.patch
-
 # bz #575873
 ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
@@ -2130,8 +2122,6 @@ fi
 - Add fix for CVE-2010-2960: keyctl_session_to_parent NULL deref system crash
 
 * Fri Sep 03 2010 Kyle McMartin <kmcmartin@redhat.com>
-- sanity-check-bond-proc_entry.patch (rhbz#604630)
-- asix.c: stub out set_mac_address in case it's breaking things (rhbz#625479)
 - default to pci=nocrs
 - flexcop: fix registering braindead stupid names (#575873)
 
