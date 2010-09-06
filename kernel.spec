@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 19
+%global baserelease 20
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1900,7 +1900,10 @@ fi
 # and build.
 
 %changelog
-* Mon Sep 04 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.4-19
+* Mon Sep 06 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.4-20
+- Restore the rest of the appleir driver patch
+
+* Mon Sep 06 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.4-19
 - nouveau: misc fixes from upstream + NVAF support
 
 * Fri Sep 03 2010 Kyle McMartin <kyle@redhat.com>
