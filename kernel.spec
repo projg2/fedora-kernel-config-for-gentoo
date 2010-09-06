@@ -840,6 +840,8 @@ Patch14141: hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
 
 Patch14150: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 
+Patch14200: net-do-not-check-capable-if-kernel.patch
+
 # ==============================================================================
 %endif
 
@@ -1550,6 +1552,9 @@ ApplyPatch hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
 # CVE-2010-2954
 ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 
+# rhbz #598796
+ApplyPatch net-do-not-check-capable-if-kernel.patch
+
 # END OF PATCH APPLICATIONS ====================================================
 %endif
 
@@ -2202,6 +2207,10 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Mon Sep 06 2010 Kyle McMartin <kyle@redhat.com>
+- Backport two fixes from Eric Paris to resolve #598796 which avoids a
+  capability check if the request comes from the kernel.
+
 * Thu Sep 02 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.32.21-167
 - irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch (CVE-2010-2954)
 
