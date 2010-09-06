@@ -715,6 +715,9 @@ Patch12080: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 # rhbz #622149
 Patch12085: fix-rcu_deref_check-warning.patch
 
+# rhbz #513530
+Patch12090: dell-wmi-add-support-for-eject-key-studio-1555.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1320,6 +1323,9 @@ ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 # bz 622149
 ApplyPatch fix-rcu_deref_check-warning.patch
 
+# bz 513530
+ApplyPatch dell-wmi-add-support-for-eject-key-studio-1555.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1906,6 +1912,10 @@ fi
 # and build.
 
 %changelog
+* Mon Sep 06 2010 Kyle McMartin <kyle@redhat.com>
+- Suck in patch from F-13 to add support for the eject key on the
+  Dell Studio 1555. (#513530)
+
 * Mon Sep 06 2010 Kyle McMartin <kyle@redhat.com>
 - Patch from paulmck to fix rcu_dereference_check warning
   (http://lkml.org/lkml/2010/8/16/258)
