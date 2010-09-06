@@ -712,6 +712,9 @@ Patch12070: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 
 Patch12080: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
+# rhbz #622149
+Patch12085: fix-rcu_deref_check-warning.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1314,6 +1317,9 @@ ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
 # bz 610941
 ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
+# bz 622149
+ApplyPatch fix-rcu_deref_check-warning.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1900,6 +1906,10 @@ fi
 # and build.
 
 %changelog
+* Mon Sep 06 2010 Kyle McMartin <kyle@redhat.com>
+- Patch from paulmck to fix rcu_dereference_check warning
+  (http://lkml.org/lkml/2010/8/16/258)
+
 * Mon Sep 06 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.4-20
 - Restore the rest of the appleir driver patch
 
