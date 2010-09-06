@@ -718,6 +718,8 @@ Patch12085: fix-rcu_deref_check-warning.patch
 # rhbz #513530
 Patch12090: dell-wmi-add-support-for-eject-key-studio-1555.patch
 
+Patch12517: flexcop-fix-xlate_proc_name-warning.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1326,6 +1328,9 @@ ApplyPatch fix-rcu_deref_check-warning.patch
 # bz 513530
 ApplyPatch dell-wmi-add-support-for-eject-key-studio-1555.patch
 
+# bz #575873
+ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1915,6 +1920,7 @@ fi
 * Mon Sep 06 2010 Kyle McMartin <kyle@redhat.com>
 - Suck in patch from F-13 to add support for the eject key on the
   Dell Studio 1555. (#513530)
+- flexcop: fix registering braindead stupid names (#575873)
 
 * Mon Sep 06 2010 Kyle McMartin <kyle@redhat.com>
 - Patch from paulmck to fix rcu_dereference_check warning
