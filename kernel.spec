@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 20
+%global baserelease 21
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -703,6 +703,8 @@ Patch12018: neuter_intel_microcode_load.patch
 
 Patch12019: add-appleir-usb-driver.patch
 
+Patch12020: hid-support-tivo-slide-remote.patch
+
 Patch12040: only-use-alpha2-regulatory-information-from-country-IE.patch
 
 # rhbz #617699
@@ -1309,6 +1311,8 @@ ApplyPatch linux-2.6-via-velocity-dma-fix.patch
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch add-appleir-usb-driver.patch
+
+ApplyPatch hid-support-tivo-slide-remote.patch
 
 ApplyPatch neuter_intel_microcode_load.patch
 
@@ -1917,6 +1921,9 @@ fi
 # and build.
 
 %changelog
+* Tue Sep 07 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.4-21
+- Enhance HID layer to fully support TiVo Slide remote and dongle
+
 * Mon Sep 06 2010 Kyle McMartin <kyle@redhat.com>
 - Suck in patch from F-13 to add support for the eject key on the
   Dell Studio 1555. (#513530)
