@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 21
+%global baserelease 22
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1921,6 +1921,9 @@ fi
 # and build.
 
 %changelog
+* Tue Sep 07 2010 Dave Jones <davej@redhat.com> 2.6.35.4-22
+- Disable hung task checker, it only ever causes false positives. (#630777)
+
 * Tue Sep 07 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.4-21
 - Enhance HID layer to fully support TiVo Slide remote and dongle
 
