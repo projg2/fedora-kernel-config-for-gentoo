@@ -615,6 +615,7 @@ Patch204: linux-2.6-debug-always-inline-kzalloc.patch
 Patch300: create-sys-fs-cgroup-to-mount-cgroupfs-on.patch
 
 Patch380: linux-2.6-defaults-pci_no_msi.patch
+Patch381: linux-2.6-defaults-pci_use_crs.patch
 Patch383: linux-2.6-defaults-aspm.patch
 Patch384: pci-acpi-disable-aspm-if-no-osc.patch
 Patch385: pci-aspm-dont-enable-too-early.patch
@@ -1206,6 +1207,7 @@ ApplyPatch linux-2.6-debug-always-inline-kzalloc.patch
 #
 # make default state of PCI MSI a config option
 ApplyPatch linux-2.6-defaults-pci_no_msi.patch
+ApplyPatch linux-2.6-defaults-pci_use_crs.patch
 # enable ASPM by default on hardware we expect to work
 ApplyPatch linux-2.6-defaults-aspm.patch
 # disable aspm if acpi doesn't provide an _OSC method
@@ -1921,6 +1923,9 @@ fi
 # and build.
 
 %changelog
+* Wed Sep 08 2010 Kyle McMartin <kyle@redhat.com>
+- Make pci=use_crs a config option.
+
 * Wed Sep 08 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.4-23
 - nouveau: handle certain GPU errors better, AGP + misc fixes
 
