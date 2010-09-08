@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 22
+%global baserelease 23
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1921,6 +1921,9 @@ fi
 # and build.
 
 %changelog
+* Wed Sep 08 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.4-23
+- nouveau: handle certain GPU errors better, AGP + misc fixes
+
 * Tue Sep 07 2010 Dave Jones <davej@redhat.com> 2.6.35.4-22
 - Disable hung task checker, it only ever causes false positives. (#630777)
 
