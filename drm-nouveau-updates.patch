@@ -1,4 +1,4 @@
-From 71c6844b5918cd5b1f8b61735e52be12fb5f80e5 Mon Sep 17 00:00:00 2001
+From 65eb698a6879847281f18930145bb6e72ef62968 Mon Sep 17 00:00:00 2001
 From: Ben Skeggs <bskeggs@redhat.com>
 Date: Tue, 1 Jun 2010 15:32:24 +1000
 Subject: [PATCH] drm-nouveau-updates
@@ -957,6 +957,8 @@ This commit also adds somewhat more useful logging when these exceptions
 occur.
 
 Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+
+fix compile error due to upstream differences
 ---
  drivers/gpu/drm/drm_crtc_helper.c           |   22 +-
  drivers/gpu/drm/i2c/ch7006_drv.c            |   22 +-
@@ -18627,7 +18629,7 @@ index 42a8fb2..336aab2 100644
  			size = (ctx->ctxvals_pos-offset)/8;
  	}
 diff --git a/drivers/gpu/drm/nouveau/nv50_instmem.c b/drivers/gpu/drm/nouveau/nv50_instmem.c
-index 5f21df3..c0eef78 100644
+index 5f21df3..457a8bc 100644
 --- a/drivers/gpu/drm/nouveau/nv50_instmem.c
 +++ b/drivers/gpu/drm/nouveau/nv50_instmem.c
 @@ -32,41 +32,87 @@
@@ -18672,7 +18674,7 @@ index 5f21df3..c0eef78 100644
 +
 +	nouveau_gpuobj_ref(NULL, &chan->ramfc);
 +	nouveau_gpuobj_ref(NULL, &chan->vm_pd);
-+	if (chan->ramin_heap.free_stack.next)
++	if (chan->ramin_heap.fl_entry.next)
 +		drm_mm_takedown(&chan->ramin_heap);
 +	nouveau_gpuobj_ref(NULL, &chan->ramin);
 +	kfree(chan);
