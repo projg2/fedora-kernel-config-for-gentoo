@@ -2104,6 +2104,9 @@ fi
 
 
 %changelog
+* Wed Sep 08 2010 Kyle McMartin <kyle@redhat.com>
+- Enable GPIO_SYSFS. (#631958)
+
 * Sun Sep 05 2010 Jarod Wilson <jarod@redhat.com> 2.6.34.6-54
 - Restore lirc patch from 2.6.33.x F13 kernels, re-fixes multiple issues
 
