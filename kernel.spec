@@ -705,6 +705,7 @@ Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
 Patch1826: drm-radeon-resume-fixes.patch
+Patch1830: drm-i915-explosion-following-oom-in-do_execbuffer.patch
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 # radeon
 
@@ -1375,6 +1376,7 @@ ApplyPatch drm-nouveau-nv50-crtc-update-delay.patch
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
+ApplyPatch drm-i915-explosion-following-oom-in-do_execbuffer.patch
 
 ApplyPatch drm-radeon-resume-fixes.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
@@ -2104,6 +2106,10 @@ fi
 
 
 %changelog
+* Thu Sep 09 2010 Kyle McMartin <kyle@redhat.com>
+- Backport 6f772d7e to hopefully fix #629442,
+  (drm/i915: Explosion following OOM in do_execbuffer.)
+
 * Wed Sep 08 2010 Kyle McMartin <kyle@redhat.com>
 - Enable GPIO_SYSFS. (#631958)
 

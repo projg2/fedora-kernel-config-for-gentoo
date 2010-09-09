@@ -1,0 +1,62 @@
+commit 6f772d7e2f4105470b9f3d0f0b26f06f61b1278d
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Fri Jul 2 08:57:15 2010 +0100
+
+    drm/i915: Explosion following OOM in do_execbuffer.
+    
+    Oops, when merging the extra details following an OOM, I missed that
+    driver_private is now NULL and the correct way to convert from the
+    drm_gem_object into the drm_i915_gem_object is to use to_intel_bo().
+    
+    BUG: unable to handle kernel NULL pointer dereference at 00000069
+    IP: [<c11a4a02>] i915_gem_do_execbuffer+0x71f/0xbb6
+    *pde = 00000000
+    Oops: 0000 [#1] SMP
+    last sysfs file: /sys/devices/virtual/vc/vcsa3/uevent
+    
+    Pid: 10993, comm: X Not tainted 2.6.35-rc2+ #67 /
+    EIP: 0060:[<c11a4a02>] EFLAGS: 00213202 CPU: 0
+    EIP is at i915_gem_do_execbuffer+0x71f/0xbb6
+    EAX: f647e8a8 EBX: 00000000 ECX: 00000003 EDX: 00000000
+    ESI: 00424000 EDI: 00000000 EBP: f6508e48 ESP: f6508dd4
+     DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
+    Process X (pid: 10993, ti=f6508000 task=f6432880 task.ti=f6508000)
+    Stack:
+     f6508de0 f7130000 00000001 00000000 00000000 f647e8a8 00000000 f64f8480
+    <0> f7974414 00000000 00000006 00000000 00000000 f6578000 00000008 00000006
+    <0> f6797880 00400000 00000000 ffffffe4 f7974400 000000d0 000000d0 000001c0
+    Call Trace:
+     [<c11a4f3a>] ? i915_gem_execbuffer2+0xa1/0xe7
+     [<c118ab96>] ? drm_ioctl+0x22c/0x2fa
+     [<c11a4e99>] ? i915_gem_execbuffer2+0x0/0xe7
+     [<c107e88c>] ? do_sync_read+0x8f/0xca
+     [<c1088cbd>] ? vfs_ioctl+0x2c/0x96
+     [<c118a96a>] ? drm_ioctl+0x0/0x2fa
+     [<c10891f4>] ? do_vfs_ioctl+0x429/0x45a
+     [<c107e5c9>] ? fsnotify_access+0x54/0x5f
+     [<c107ee1c>] ? vfs_read+0x9a/0xae
+     [<c1089258>] ? sys_ioctl+0x33/0x4d
+     [<c1002610>] ? sysenter_do_call+0x12/0x26
+    Code: d0 89 4d c4 31 c9 89 45 d8 eb 44 8b 45 cc 8b 14 88 8b 42 50 89 45
+    bc 8b 45 a0 8b 52 38 89 55 d0 31 d2 f6 40 20 01 74 0d 8b 55 bc <f6> 42
+    69 30 0f 95 c2 0f b6 d2 8b 45 d0 c7 45 d4 00 00 00 00 89
+    EIP: [<c11a4a02>] i915_gem_do_execbuffer+0x71f/0xbb6 SS:ESP 0068:f6508dd4
+    CR2: 0000000000000069
+    ---[ end trace 3f1d514b34d39381 ]---
+    
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/drivers/gpu/drm/i915/i915_gem.c b/drivers/gpu/drm/i915/i915_gem.c
+index 0743858..eb17cc3 100644
+--- a/drivers/gpu/drm/i915/i915_gem.c
++++ b/drivers/gpu/drm/i915/i915_gem.c
+@@ -3793,7 +3794,7 @@ i915_gem_do_execbuffer(struct drm_device *dev, void *data,
+ 				unsigned long long total_size = 0;
+ 				int num_fences = 0;
+ 				for (i = 0; i < args->buffer_count; i++) {
+-					obj_priv = object_list[i]->driver_private;
++					obj_priv = to_intel_bo(object_list[i]);
+ 
+ 					total_size += object_list[i]->size;
+ 					num_fences +=
