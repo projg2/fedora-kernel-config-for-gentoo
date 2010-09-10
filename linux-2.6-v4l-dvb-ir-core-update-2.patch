@@ -1,0 +1,3989 @@
+diff -Naurp linux-2.6.35/drivers/media/IR/ene_ir.c linux-2.6.35.new/drivers/media/IR/ene_ir.c
+--- linux-2.6.35/drivers/media/IR/ene_ir.c	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.35.new/drivers/media/IR/ene_ir.c	2010-09-09 23:21:49.000000000 -0400
+@@ -0,0 +1,1023 @@
++/*
++ * driver for ENE KB3926 B/C/D CIR (pnp id: ENE0XXX)
++ *
++ * Copyright (C) 2010 Maxim Levitsky <maximlevitsky@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
++ * USA
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/pnp.h>
++#include <linux/io.h>
++#include <linux/interrupt.h>
++#include <linux/sched.h>
++#include <linux/slab.h>
++#include <linux/input.h>
++#include <media/ir-core.h>
++#include <media/ir-common.h>
++#include "ene_ir.h"
++
++
++static int sample_period = -1;
++static int enable_idle = 1;
++static int input = 1;
++static int debug;
++static int txsim;
++
++static int ene_irq_status(struct ene_device *dev);
++
++/* read a hardware register */
++static u8 ene_hw_read_reg(struct ene_device *dev, u16 reg)
++{
++	u8 retval;
++	outb(reg >> 8, dev->hw_io + ENE_ADDR_HI);
++	outb(reg & 0xFF, dev->hw_io + ENE_ADDR_LO);
++	retval = inb(dev->hw_io + ENE_IO);
++
++	ene_dbg_verbose("reg %04x == %02x", reg, retval);
++	return retval;
++}
++
++/* write a hardware register */
++static void ene_hw_write_reg(struct ene_device *dev, u16 reg, u8 value)
++{
++	outb(reg >> 8, dev->hw_io + ENE_ADDR_HI);
++	outb(reg & 0xFF, dev->hw_io + ENE_ADDR_LO);
++	outb(value, dev->hw_io + ENE_IO);
++
++	ene_dbg_verbose("reg %04x <- %02x", reg, value);
++}
++
++/* change specific bits in hardware register */
++static void ene_hw_write_reg_mask(struct ene_device *dev,
++				  u16 reg, u8 value, u8 mask)
++{
++	u8 regvalue;
++
++	outb(reg >> 8, dev->hw_io + ENE_ADDR_HI);
++	outb(reg & 0xFF, dev->hw_io + ENE_ADDR_LO);
++
++	regvalue = inb(dev->hw_io + ENE_IO) & ~mask;
++	regvalue |= (value & mask);
++	outb(regvalue, dev->hw_io + ENE_IO);
++
++	ene_dbg_verbose("reg %04x <- %02x (mask=%02x)", reg, value, mask);
++}
++
++/* detect hardware features */
++static int ene_hw_detect(struct ene_device *dev)
++{
++	u8 chip_major, chip_minor;
++	u8 hw_revision, old_ver;
++	u8 tmp;
++	u8 fw_capabilities;
++	int pll_freq;
++
++	tmp = ene_hw_read_reg(dev, ENE_HW_UNK);
++	ene_hw_write_reg(dev, ENE_HW_UNK, tmp & ~ENE_HW_UNK_CLR);
++
++	chip_major = ene_hw_read_reg(dev, ENE_HW_VER_MAJOR);
++	chip_minor = ene_hw_read_reg(dev, ENE_HW_VER_MINOR);
++
++	ene_hw_write_reg(dev, ENE_HW_UNK, tmp);
++	hw_revision = ene_hw_read_reg(dev, ENE_HW_VERSION);
++	old_ver = ene_hw_read_reg(dev, ENE_HW_VER_OLD);
++
++	pll_freq = (ene_hw_read_reg(dev, ENE_PLLFRH) << 4) +
++		(ene_hw_read_reg(dev, ENE_PLLFRL) >> 4);
++
++	if (pll_freq != 1000)
++		dev->rx_period_adjust = 4;
++	else
++		dev->rx_period_adjust = 2;
++
++
++	ene_printk(KERN_NOTICE, "PLL freq = %d\n", pll_freq);
++
++	if (hw_revision == 0xFF) {
++
++		ene_printk(KERN_WARNING, "device seems to be disabled\n");
++		ene_printk(KERN_WARNING,
++			"send a mail to lirc-list@lists.sourceforge.net\n");
++		ene_printk(KERN_WARNING, "please attach output of acpidump\n");
++		return -ENODEV;
++	}
++
++	if (chip_major == 0x33) {
++		ene_printk(KERN_WARNING, "chips 0x33xx aren't supported\n");
++		return -ENODEV;
++	}
++
++	if (chip_major == 0x39 && chip_minor == 0x26 && hw_revision == 0xC0) {
++		dev->hw_revision = ENE_HW_C;
++	} else if (old_ver == 0x24 && hw_revision == 0xC0) {
++		dev->hw_revision = ENE_HW_B;
++		ene_printk(KERN_NOTICE, "KB3926B detected\n");
++	} else {
++		dev->hw_revision = ENE_HW_D;
++		ene_printk(KERN_WARNING,
++			"unknown ENE chip detected, assuming KB3926D\n");
++		ene_printk(KERN_WARNING,
++			"driver support might be not complete");
++
++	}
++
++	ene_printk(KERN_DEBUG,
++		"chip is 0x%02x%02x - kbver = 0x%02x, rev = 0x%02x\n",
++			chip_major, chip_minor, old_ver, hw_revision);
++
++	/* detect features hardware supports */
++	if (dev->hw_revision < ENE_HW_C)
++		return 0;
++
++	fw_capabilities = ene_hw_read_reg(dev, ENE_FW2);
++	ene_dbg("Firmware capabilities: %02x", fw_capabilities);
++
++	dev->hw_gpio40_learning = fw_capabilities & ENE_FW2_GP40_AS_LEARN;
++	dev->hw_learning_and_tx_capable = fw_capabilities & ENE_FW2_LEARNING;
++
++	dev->hw_fan_as_normal_input = dev->hw_learning_and_tx_capable &&
++	    (fw_capabilities & ENE_FW2_FAN_AS_NRML_IN);
++
++	ene_printk(KERN_NOTICE, "hardware features:\n");
++	ene_printk(KERN_NOTICE,
++		"learning and transmit %s, gpio40_learn %s, fan_in %s\n",
++	       dev->hw_learning_and_tx_capable ? "on" : "off",
++	       dev->hw_gpio40_learning ? "on" : "off",
++	       dev->hw_fan_as_normal_input ? "on" : "off");
++
++	if (dev->hw_learning_and_tx_capable) {
++		ene_printk(KERN_WARNING,
++		"Device supports transmitting, but that support is\n");
++		ene_printk(KERN_WARNING,
++		"lightly tested. Please test it and mail\n");
++		ene_printk(KERN_WARNING,
++		"lirc-list@lists.sourceforge.net\n");
++	}
++	return 0;
++}
++
++/* this enables/disables IR input via gpio40*/
++static void ene_enable_gpio40_receive(struct ene_device *dev, int enable)
++{
++	ene_hw_write_reg_mask(dev, ENE_CIR_CONF2, enable ?
++			      0 : ENE_CIR_CONF2_GPIO40DIS,
++			      ENE_CIR_CONF2_GPIO40DIS);
++}
++
++/* this enables/disables IR via standard input */
++static void ene_enable_normal_receive(struct ene_device *dev, int enable)
++{
++	ene_hw_write_reg(dev, ENE_CIR_CONF1, enable ? ENE_CIR_CONF1_RX_ON : 0);
++}
++
++/* this enables/disables IR input via unused fan tachtometer input */
++static void ene_enable_fan_receive(struct ene_device *dev, int enable)
++{
++	if (!enable)
++		ene_hw_write_reg(dev, ENE_FAN_AS_IN1, 0);
++	else {
++		ene_hw_write_reg(dev, ENE_FAN_AS_IN1, ENE_FAN_AS_IN1_EN);
++		ene_hw_write_reg(dev, ENE_FAN_AS_IN2, ENE_FAN_AS_IN2_EN);
++	}
++	dev->rx_fan_input_inuse = enable;
++}
++
++
++/* Sense current received carrier */
++static int ene_rx_sense_carrier(struct ene_device *dev)
++{
++	int period = ene_hw_read_reg(dev, ENE_RX_CARRIER);
++	int carrier;
++	ene_dbg("RX: hardware carrier period = %02x", period);
++
++	if (!(period & ENE_RX_CARRIER_VALID))
++		return 0;
++
++	period &= ~ENE_RX_CARRIER_VALID;
++
++	if (!period)
++		return 0;
++
++	carrier = 2000000 / period;
++	ene_dbg("RX: sensed carrier = %d Hz", carrier);
++	return carrier;
++}
++
++/* determine which input to use*/
++static void ene_rx_set_inputs(struct ene_device *dev)
++{
++	int learning_mode = dev->learning_enabled;
++
++	ene_dbg("RX: setup receiver, learning mode = %d", learning_mode);
++
++	ene_enable_normal_receive(dev, 1);
++
++	/* old hardware doesn't support learning mode for sure */
++	if (dev->hw_revision <= ENE_HW_B)
++		return;
++
++	/* receiver not learning capable, still set gpio40 correctly */
++	if (!dev->hw_learning_and_tx_capable) {
++		ene_enable_gpio40_receive(dev, !dev->hw_gpio40_learning);
++		return;
++	}
++
++	/* enable learning mode */
++	if (learning_mode) {
++		ene_enable_gpio40_receive(dev, dev->hw_gpio40_learning);
++
++		/* fan input is not used for learning */
++		if (dev->hw_fan_as_normal_input)
++			ene_enable_fan_receive(dev, 0);
++
++	/* disable learning mode */
++	} else {
++		if (dev->hw_fan_as_normal_input) {
++			ene_enable_fan_receive(dev, 1);
++			ene_enable_normal_receive(dev, 0);
++		} else
++			ene_enable_gpio40_receive(dev,
++					!dev->hw_gpio40_learning);
++	}
++
++	/* set few additional settings for this mode */
++	ene_hw_write_reg_mask(dev, ENE_CIR_CONF1, learning_mode ?
++			      ENE_CIR_CONF1_LEARN1 : 0, ENE_CIR_CONF1_LEARN1);
++
++	ene_hw_write_reg_mask(dev, ENE_CIR_CONF2, learning_mode ?
++			      ENE_CIR_CONF2_LEARN2 : 0, ENE_CIR_CONF2_LEARN2);
++
++	if (dev->rx_fan_input_inuse) {
++		dev->props->rx_resolution = ENE_SAMPLE_PERIOD_FAN * 1000;
++
++		dev->props->timeout =
++			ENE_FAN_VALUE_MASK * ENE_SAMPLE_PERIOD_FAN * 1000;
++	} else {
++		dev->props->rx_resolution = sample_period * 1000;
++		dev->props->timeout = ENE_MAXGAP * 1000;
++	}
++}
++
++/* Enable the device for receive */
++static void ene_rx_enable(struct ene_device *dev)
++{
++	u8 reg_value;
++
++	if (dev->hw_revision < ENE_HW_C) {
++		ene_hw_write_reg(dev, ENEB_IRQ, dev->irq << 1);
++		ene_hw_write_reg(dev, ENEB_IRQ_UNK1, 0x01);
++	} else {
++		reg_value = ene_hw_read_reg(dev, ENEC_IRQ) & 0xF0;
++		reg_value |= ENEC_IRQ_UNK_EN;
++		reg_value &= ~ENEC_IRQ_STATUS;
++		reg_value |= (dev->irq & ENEC_IRQ_MASK);
++		ene_hw_write_reg(dev, ENEC_IRQ, reg_value);
++		ene_hw_write_reg(dev, ENE_TX_UNK1, 0x63);
++	}
++
++	ene_hw_write_reg(dev, ENE_CIR_CONF2, 0x00);
++	ene_rx_set_inputs(dev);
++
++	/* set sampling period */
++	ene_hw_write_reg(dev, ENE_CIR_SAMPLE_PERIOD, sample_period);
++
++	/* ack any pending irqs - just in case */
++	ene_irq_status(dev);
++
++	/* enable firmware bits */
++	ene_hw_write_reg_mask(dev, ENE_FW1,
++			      ENE_FW1_ENABLE | ENE_FW1_IRQ,
++			      ENE_FW1_ENABLE | ENE_FW1_IRQ);
++
++	/* enter idle mode */
++	ir_raw_event_set_idle(dev->idev, 1);
++	ir_raw_event_reset(dev->idev);
++
++}
++
++/* Disable the device receiver */
++static void ene_rx_disable(struct ene_device *dev)
++{
++	/* disable inputs */
++	ene_enable_normal_receive(dev, 0);
++
++	if (dev->hw_fan_as_normal_input)
++		ene_enable_fan_receive(dev, 0);
++
++	/* disable hardware IRQ and firmware flag */
++	ene_hw_write_reg_mask(dev, ENE_FW1, 0, ENE_FW1_ENABLE | ENE_FW1_IRQ);
++
++	ir_raw_event_set_idle(dev->idev, 1);
++	ir_raw_event_reset(dev->idev);
++}
++
++
++/* prepare transmission */
++static void ene_tx_prepare(struct ene_device *dev)
++{
++	u8 conf1;
++
++	conf1 = ene_hw_read_reg(dev, ENE_CIR_CONF1);
++	dev->saved_conf1 = conf1;
++
++	if (dev->hw_revision == ENE_HW_C)
++		conf1 &= ~ENE_CIR_CONF1_TX_CLEAR;
++
++	/* Enable TX engine */
++	conf1 |= ENE_CIR_CONF1_TX_ON;
++
++	/* Set carrier */
++	if (dev->tx_period) {
++
++		/* NOTE: duty cycle handling is just a guess, it might
++			not be aviable. Default values were tested */
++		int tx_period_in500ns = dev->tx_period * 2;
++
++		int tx_pulse_width_in_500ns =
++			tx_period_in500ns / (100 / dev->tx_duty_cycle);
++
++		if (!tx_pulse_width_in_500ns)
++			tx_pulse_width_in_500ns = 1;
++
++		ene_dbg("TX: pulse distance = %d * 500 ns", tx_period_in500ns);
++		ene_dbg("TX: pulse width = %d * 500 ns",
++						tx_pulse_width_in_500ns);
++
++		ene_hw_write_reg(dev, ENE_TX_PERIOD, ENE_TX_PERIOD_UNKBIT |
++					tx_period_in500ns);
++
++		ene_hw_write_reg(dev, ENE_TX_PERIOD_PULSE,
++					tx_pulse_width_in_500ns);
++
++		conf1 |= ENE_CIR_CONF1_TX_CARR;
++	} else
++		conf1 &= ~ENE_CIR_CONF1_TX_CARR;
++
++	ene_hw_write_reg(dev, ENE_CIR_CONF1, conf1);
++
++}
++
++/* end transmission */
++static void ene_tx_complete(struct ene_device *dev)
++{
++	ene_hw_write_reg(dev, ENE_CIR_CONF1, dev->saved_conf1);
++	dev->tx_buffer = NULL;
++}
++
++/* set transmit mask */
++static void ene_tx_hw_set_transmiter_mask(struct ene_device *dev)
++{
++	u8 txport1 = ene_hw_read_reg(dev, ENE_TX_PORT1) & ~ENE_TX_PORT1_EN;
++	u8 txport2 = ene_hw_read_reg(dev, ENE_TX_PORT2) & ~ENE_TX_PORT2_EN;
++
++	if (dev->transmitter_mask & 0x01)
++		txport1 |= ENE_TX_PORT1_EN;
++
++	if (dev->transmitter_mask & 0x02)
++		txport2 |= ENE_TX_PORT2_EN;
++
++	ene_hw_write_reg(dev, ENE_TX_PORT1, txport1);
++	ene_hw_write_reg(dev, ENE_TX_PORT2, txport2);
++}
++
++/* TX one sample - must be called with dev->hw_lock*/
++static void ene_tx_sample(struct ene_device *dev)
++{
++	u8 raw_tx;
++	u32 sample;
++
++	if (!dev->tx_buffer) {
++		ene_dbg("TX: attempt to transmit NULL buffer");
++		return;
++	}
++
++	/* Grab next TX sample */
++	if (!dev->tx_sample) {
++again:
++		if (dev->tx_pos == dev->tx_len + 1) {
++			if (!dev->tx_done) {
++				ene_dbg("TX: no more data to send");
++				dev->tx_done = 1;
++				goto exit;
++			} else {
++				ene_dbg("TX: last sample sent by hardware");
++				ene_tx_complete(dev);
++				complete(&dev->tx_complete);
++				return;
++			}
++		}
++
++		sample = dev->tx_buffer[dev->tx_pos++];
++		dev->tx_sample_pulse = !dev->tx_sample_pulse;
++
++		ene_dbg("TX: sample %8d (%s)", sample, dev->tx_sample_pulse ?
++							"pulse" : "space");
++
++		dev->tx_sample = DIV_ROUND_CLOSEST(sample, ENE_TX_SMPL_PERIOD);
++
++		/* guard against too short samples */
++		if (!dev->tx_sample)
++			goto again;
++	}
++
++	raw_tx = min(dev->tx_sample , (unsigned int)ENE_TX_SMLP_MASK);
++	dev->tx_sample -= raw_tx;
++
++	if (dev->tx_sample_pulse)
++		raw_tx |= ENE_TX_PULSE_MASK;
++
++	ene_hw_write_reg(dev, ENE_TX_INPUT1 + dev->tx_reg, raw_tx);
++	dev->tx_reg = !dev->tx_reg;
++exit:
++	/* simulate TX done interrupt */
++	if (txsim)
++		mod_timer(&dev->tx_sim_timer, jiffies + HZ / 500);
++}
++
++/* timer to simulate tx done interrupt */
++static void ene_tx_irqsim(unsigned long data)
++{
++	struct ene_device *dev = (struct ene_device *)data;
++	unsigned long flags;
++
++	spin_lock_irqsave(&dev->hw_lock, flags);
++	ene_tx_sample(dev);
++	spin_unlock_irqrestore(&dev->hw_lock, flags);
++}
++
++
++/* read irq status and ack it */
++static int ene_irq_status(struct ene_device *dev)
++{
++	u8 irq_status;
++	u8 fw_flags1, fw_flags2;
++	int cur_rx_pointer;
++	int retval = 0;
++
++	fw_flags2 = ene_hw_read_reg(dev, ENE_FW2);
++	cur_rx_pointer = !!(fw_flags2 & ENE_FW2_BUF_HIGH);
++
++	if (dev->hw_revision < ENE_HW_C) {
++		irq_status = ene_hw_read_reg(dev, ENEB_IRQ_STATUS);
++
++		if (!(irq_status & ENEB_IRQ_STATUS_IR))
++			return 0;
++
++		ene_hw_write_reg(dev, ENEB_IRQ_STATUS,
++				 irq_status & ~ENEB_IRQ_STATUS_IR);
++		dev->rx_pointer = cur_rx_pointer;
++		return ENE_IRQ_RX;
++	}
++
++	irq_status = ene_hw_read_reg(dev, ENEC_IRQ);
++
++	if (!(irq_status & ENEC_IRQ_STATUS))
++		return 0;
++
++	/* original driver does that twice - a workaround ? */
++	ene_hw_write_reg(dev, ENEC_IRQ, irq_status & ~ENEC_IRQ_STATUS);
++	ene_hw_write_reg(dev, ENEC_IRQ, irq_status & ~ENEC_IRQ_STATUS);
++
++	/* clear unknown flag in F8F9 */
++	if (fw_flags2 & ENE_FW2_IRQ_CLR)
++		ene_hw_write_reg(dev, ENE_FW2, fw_flags2 & ~ENE_FW2_IRQ_CLR);
++
++	/* check if this is a TX interrupt */
++	fw_flags1 = ene_hw_read_reg(dev, ENE_FW1);
++	if (fw_flags1 & ENE_FW1_TXIRQ) {
++		ene_hw_write_reg(dev, ENE_FW1, fw_flags1 & ~ENE_FW1_TXIRQ);
++		retval |= ENE_IRQ_TX;
++	}
++
++	/* Check if this is RX interrupt */
++	if (dev->rx_pointer != cur_rx_pointer) {
++		retval |= ENE_IRQ_RX;
++		dev->rx_pointer = cur_rx_pointer;
++
++	} else if (!(retval & ENE_IRQ_TX)) {
++		ene_dbg("RX: interrupt without change in RX pointer(%d)",
++			dev->rx_pointer);
++		retval |= ENE_IRQ_RX;
++	}
++
++	if ((retval & ENE_IRQ_RX) && (retval & ENE_IRQ_TX))
++		ene_dbg("both RX and TX interrupt at same time");
++
++	return retval;
++}
++
++/* interrupt handler */
++static irqreturn_t ene_isr(int irq, void *data)
++{
++	u16 hw_value;
++	int i, hw_sample;
++	int pulse;
++	int irq_status;
++	unsigned long flags;
++	int carrier = 0;
++	irqreturn_t retval = IRQ_NONE;
++	struct ene_device *dev = (struct ene_device *)data;
++	struct ir_raw_event ev;
++
++
++	spin_lock_irqsave(&dev->hw_lock, flags);
++	irq_status = ene_irq_status(dev);
++
++	if (!irq_status)
++		goto unlock;
++
++	retval = IRQ_HANDLED;
++
++	if (irq_status & ENE_IRQ_TX) {
++
++		if (!dev->hw_learning_and_tx_capable) {
++			ene_dbg("TX interrupt on unsupported device!");
++			goto unlock;
++		}
++		ene_tx_sample(dev);
++	}
++
++	if (!(irq_status & ENE_IRQ_RX))
++		goto unlock;
++
++
++	if (dev->carrier_detect_enabled || debug)
++		carrier = ene_rx_sense_carrier(dev);
++#if 0
++	/* TODO */
++	if (dev->carrier_detect_enabled && carrier)
++		ir_raw_event_report_frequency(dev->idev, carrier);
++#endif
++
++	for (i = 0; i < ENE_SAMPLES_SIZE; i++) {
++		hw_value = ene_hw_read_reg(dev,
++				ENE_SAMPLE_BUFFER + dev->rx_pointer * 4 + i);
++
++		if (dev->rx_fan_input_inuse) {
++			/* read high part of the sample */
++			hw_value |= ene_hw_read_reg(dev,
++			    ENE_SAMPLE_BUFFER_FAN +
++					dev->rx_pointer * 4 + i) << 8;
++			pulse = hw_value & ENE_FAN_SMPL_PULS_MSK;
++
++			/* clear space bit, and other unused bits */
++			hw_value &= ENE_FAN_VALUE_MASK;
++			hw_sample = hw_value * ENE_SAMPLE_PERIOD_FAN;
++
++		} else {
++			pulse = !(hw_value & ENE_SAMPLE_SPC_MASK);
++			hw_value &= ENE_SAMPLE_VALUE_MASK;
++			hw_sample = hw_value * sample_period;
++
++			if (dev->rx_period_adjust) {
++				hw_sample *= (100 - dev->rx_period_adjust);
++				hw_sample /= 100;
++			}
++		}
++		/* no more data */
++		if (!(hw_value))
++			break;
++
++		ene_dbg("RX: %d (%s)", hw_sample, pulse ? "pulse" : "space");
++
++
++		ev.duration = hw_sample * 1000;
++		ev.pulse = pulse;
++		ir_raw_event_store_with_filter(dev->idev, &ev);
++	}
++
++	ir_raw_event_handle(dev->idev);
++unlock:
++	spin_unlock_irqrestore(&dev->hw_lock, flags);
++	return retval;
++}
++
++/* Initialize default settings */
++static void ene_setup_settings(struct ene_device *dev)
++{
++	dev->tx_period = 32;
++	dev->tx_duty_cycle = 25; /*%*/
++	dev->transmitter_mask = 3;
++
++	/* Force learning mode if (input == 2), otherwise
++		let user set it with LIRC_SET_REC_CARRIER */
++	dev->learning_enabled =
++		(input == 2 && dev->hw_learning_and_tx_capable);
++
++	dev->rx_pointer = -1;
++
++}
++
++/* outside interface: called on first open*/
++static int ene_open(void *data)
++{
++	struct ene_device *dev = (struct ene_device *)data;
++	unsigned long flags;
++
++	spin_lock_irqsave(&dev->hw_lock, flags);
++	dev->in_use = 1;
++	ene_setup_settings(dev);
++	ene_rx_enable(dev);
++	spin_unlock_irqrestore(&dev->hw_lock, flags);
++	return 0;
++}
++
++/* outside interface: called on device close*/
++static void ene_close(void *data)
++{
++	struct ene_device *dev = (struct ene_device *)data;
++	unsigned long flags;
++	spin_lock_irqsave(&dev->hw_lock, flags);
++
++	ene_rx_disable(dev);
++	dev->in_use = 0;
++	spin_unlock_irqrestore(&dev->hw_lock, flags);
++}
++
++/* outside interface: set transmitter mask */
++static int ene_set_tx_mask(void *data, u32 tx_mask)
++{
++	struct ene_device *dev = (struct ene_device *)data;
++	unsigned long flags;
++	ene_dbg("TX: attempt to set transmitter mask %02x", tx_mask);
++
++	/* invalid txmask */
++	if (!tx_mask || tx_mask & ~0x3) {
++		ene_dbg("TX: invalid mask");
++		/* return count of transmitters */
++		return 2;
++	}
++
++	spin_lock_irqsave(&dev->hw_lock, flags);
++	dev->transmitter_mask = tx_mask;
++	spin_unlock_irqrestore(&dev->hw_lock, flags);
++	return 0;
++}
++
++/* outside interface : set tx carrier */
++static int ene_set_tx_carrier(void *data, u32 carrier)
++{
++	struct ene_device *dev = (struct ene_device *)data;
++	unsigned long flags;
++	u32 period = 1000000 / carrier; /* (1 / freq) (* # usec in 1 sec) */
++
++	ene_dbg("TX: attempt to set tx carrier to %d kHz", carrier);
++
++	if (period && (period > ENE_TX_PERIOD_MAX ||
++			period < ENE_TX_PERIOD_MIN)) {
++
++		ene_dbg("TX: out of range %d-%d carrier, "
++			"falling back to 32 kHz",
++			1000 / ENE_TX_PERIOD_MIN,
++			1000 / ENE_TX_PERIOD_MAX);
++
++		period = 32; /* this is just a coincidence!!! */
++	}
++	ene_dbg("TX: set carrier to %d kHz", carrier);
++
++	spin_lock_irqsave(&dev->hw_lock, flags);
++	dev->tx_period = period;
++	spin_unlock_irqrestore(&dev->hw_lock, flags);
++	return 0;
++}
++
++
++/* outside interface: enable learning mode */
++static int ene_set_learning_mode(void *data, int enable)
++{
++	struct ene_device *dev = (struct ene_device *)data;
++	unsigned long flags;
++	if (enable == dev->learning_enabled)
++		return 0;
++
++	spin_lock_irqsave(&dev->hw_lock, flags);
++	dev->learning_enabled = enable;
++	ene_rx_set_inputs(dev);
++	spin_unlock_irqrestore(&dev->hw_lock, flags);
++	return 0;
++}
++
++/* outside interface: set rec carrier */
++static int ene_set_rec_carrier(void *data, u32 min, u32 max)
++{
++	struct ene_device *dev = (struct ene_device *)data;
++	ene_set_learning_mode(dev,
++		max > ENE_NORMAL_RX_HI || min < ENE_NORMAL_RX_LOW);
++	return 0;
++}
++
++/* outside interface: enable or disable idle mode */
++static void ene_rx_set_idle(void *data, int idle)
++{
++	struct ene_device *dev = (struct ene_device *)data;
++	ene_dbg("%sabling idle mode", idle ? "en" : "dis");
++
++	ene_hw_write_reg_mask(dev, ENE_CIR_SAMPLE_PERIOD,
++		(enable_idle && idle) ? 0 : ENE_CIR_SAMPLE_OVERFLOW,
++			ENE_CIR_SAMPLE_OVERFLOW);
++}
++
++
++/* outside interface: transmit */
++static int ene_transmit(void *data, int *buf, u32 n)
++{
++	struct ene_device *dev = (struct ene_device *)data;
++	unsigned long flags;
++
++	dev->tx_buffer = buf;
++	dev->tx_len = n / sizeof(int);
++	dev->tx_pos = 0;
++	dev->tx_reg = 0;
++	dev->tx_done = 0;
++	dev->tx_sample = 0;
++	dev->tx_sample_pulse = 0;
++
++	ene_dbg("TX: %d samples", dev->tx_len);
++
++	spin_lock_irqsave(&dev->hw_lock, flags);
++
++	ene_tx_hw_set_transmiter_mask(dev);
++	ene_tx_prepare(dev);
++
++	/* Transmit first two samples */
++	ene_tx_sample(dev);
++	ene_tx_sample(dev);
++
++	spin_unlock_irqrestore(&dev->hw_lock, flags);
++
++	if (wait_for_completion_timeout(&dev->tx_complete, 2 * HZ) == 0) {
++		ene_dbg("TX: timeout");
++		spin_lock_irqsave(&dev->hw_lock, flags);
++		ene_tx_complete(dev);
++		spin_unlock_irqrestore(&dev->hw_lock, flags);
++	} else
++		ene_dbg("TX: done");
++	return n;
++}
++
++
++/* probe entry */
++static int ene_probe(struct pnp_dev *pnp_dev, const struct pnp_device_id *id)
++{
++	int error = -ENOMEM;
++	struct ir_dev_props *ir_props;
++	struct input_dev *input_dev;
++	struct ene_device *dev;
++
++	/* allocate memory */
++	input_dev = input_allocate_device();
++	ir_props = kzalloc(sizeof(struct ir_dev_props), GFP_KERNEL);
++	dev = kzalloc(sizeof(struct ene_device), GFP_KERNEL);
++
++	if (!input_dev || !ir_props || !dev)
++		goto error;
++
++	/* validate resources */
++	error = -ENODEV;
++
++	if (!pnp_port_valid(pnp_dev, 0) ||
++	    pnp_port_len(pnp_dev, 0) < ENE_MAX_IO)
++		goto error;
++
++	if (!pnp_irq_valid(pnp_dev, 0))
++		goto error;
++
++	dev->hw_io = pnp_port_start(pnp_dev, 0);
++	dev->irq = pnp_irq(pnp_dev, 0);
++	spin_lock_init(&dev->hw_lock);
++
++	/* claim the resources */
++	error = -EBUSY;
++	if (!request_region(dev->hw_io, ENE_MAX_IO, ENE_DRIVER_NAME))
++		goto error;
++
++	if (request_irq(dev->irq, ene_isr,
++			IRQF_SHARED, ENE_DRIVER_NAME, (void *)dev))
++		goto error;
++
++	pnp_set_drvdata(pnp_dev, dev);
++	dev->pnp_dev = pnp_dev;
++
++	/* detect hardware version and features */
++	error = ene_hw_detect(dev);
++	if (error)
++		goto error;
++
++	ene_setup_settings(dev);
++
++	if (!dev->hw_learning_and_tx_capable && txsim) {
++		dev->hw_learning_and_tx_capable = 1;
++		setup_timer(&dev->tx_sim_timer, ene_tx_irqsim,
++						(long unsigned int)dev);
++		ene_printk(KERN_WARNING,
++			"Simulation of TX activated\n");
++	}
++
++	ir_props->driver_type = RC_DRIVER_IR_RAW;
++	ir_props->allowed_protos = IR_TYPE_ALL;
++	ir_props->priv = dev;
++	ir_props->open = ene_open;
++	ir_props->close = ene_close;
++	ir_props->min_timeout = ENE_MINGAP * 1000;
++	ir_props->max_timeout = ENE_MAXGAP * 1000;
++	ir_props->timeout = ENE_MAXGAP * 1000;
++
++	if (dev->hw_revision == ENE_HW_B)
++		ir_props->s_idle = ene_rx_set_idle;
++
++
++	dev->props = ir_props;
++	dev->idev = input_dev;
++
++	/* don't allow too short/long sample periods */
++	if (sample_period < 5 || sample_period > 0x7F)
++		sample_period = -1;
++
++	/* choose default sample period */
++	if (sample_period == -1) {
++
++		sample_period = 50;
++
++		/* on revB, hardware idle mode eats first sample
++		  if we set too low sample period */
++		if (dev->hw_revision == ENE_HW_B && enable_idle)
++			sample_period = 75;
++	}
++
++	ir_props->rx_resolution = sample_period * 1000;
++
++	if (dev->hw_learning_and_tx_capable) {
++
++		ir_props->s_learning_mode = ene_set_learning_mode;
++
++		if (input == 0)
++			ir_props->s_rx_carrier_range = ene_set_rec_carrier;
++
++		init_completion(&dev->tx_complete);
++		ir_props->tx_ir = ene_transmit;
++		ir_props->s_tx_mask = ene_set_tx_mask;
++		ir_props->s_tx_carrier = ene_set_tx_carrier;
++		ir_props->tx_resolution = ENE_TX_SMPL_PERIOD * 1000;
++		/* ir_props->s_carrier_report = ene_set_carrier_report; */
++	}
++
++
++	device_set_wakeup_capable(&pnp_dev->dev, 1);
++	device_set_wakeup_enable(&pnp_dev->dev, 1);
++
++	if (dev->hw_learning_and_tx_capable)
++		input_dev->name = "ENE eHome Infrared Remote Transceiver";
++	else
++		input_dev->name = "ENE eHome Infrared Remote Receiver";
++
++
++	error = -ENODEV;
++	if (ir_input_register(input_dev, RC_MAP_RC6_MCE, ir_props,
++							ENE_DRIVER_NAME))
++		goto error;
++
++
++	ene_printk(KERN_NOTICE, "driver has been succesfully loaded\n");
++	return 0;
++error:
++	if (dev->irq)
++		free_irq(dev->irq, dev);
++	if (dev->hw_io)
++		release_region(dev->hw_io, ENE_MAX_IO);
++
++	input_free_device(input_dev);
++	kfree(ir_props);
++	kfree(dev);
++	return error;
++}
++
++/* main unload function */
++static void ene_remove(struct pnp_dev *pnp_dev)
++{
++	struct ene_device *dev = pnp_get_drvdata(pnp_dev);
++	unsigned long flags;
++
++	spin_lock_irqsave(&dev->hw_lock, flags);
++	ene_rx_disable(dev);
++	spin_unlock_irqrestore(&dev->hw_lock, flags);
++
++	free_irq(dev->irq, dev);
++	release_region(dev->hw_io, ENE_MAX_IO);
++	ir_input_unregister(dev->idev);
++	kfree(dev->props);
++	kfree(dev);
++}
++
++/* enable wake on IR (wakes on specific button on original remote) */
++static void ene_enable_wake(struct ene_device *dev, int enable)
++{
++	enable = enable && device_may_wakeup(&dev->pnp_dev->dev);
++
++	ene_dbg("wake on IR %s", enable ? "enabled" : "disabled");
++
++	ene_hw_write_reg_mask(dev, ENE_FW1, enable ?
++		ENE_FW1_WAKE : 0, ENE_FW1_WAKE);
++}
++
++#ifdef CONFIG_PM
++static int ene_suspend(struct pnp_dev *pnp_dev, pm_message_t state)
++{
++	struct ene_device *dev = pnp_get_drvdata(pnp_dev);
++	ene_enable_wake(dev, 1);
++	return 0;
++}
++
++static int ene_resume(struct pnp_dev *pnp_dev)
++{
++	struct ene_device *dev = pnp_get_drvdata(pnp_dev);
++	if (dev->in_use)
++		ene_rx_enable(dev);
++
++	ene_enable_wake(dev, 0);
++	return 0;
++}
++#endif
++
++static void ene_shutdown(struct pnp_dev *pnp_dev)
++{
++	struct ene_device *dev = pnp_get_drvdata(pnp_dev);
++	ene_enable_wake(dev, 1);
++}
++
++static const struct pnp_device_id ene_ids[] = {
++	{.id = "ENE0100",},
++	{.id = "ENE0200",},
++	{.id = "ENE0201",},
++	{.id = "ENE0202",},
++	{},
++};
++
++static struct pnp_driver ene_driver = {
++	.name = ENE_DRIVER_NAME,
++	.id_table = ene_ids,
++	.flags = PNP_DRIVER_RES_DO_NOT_CHANGE,
++
++	.probe = ene_probe,
++	.remove = __devexit_p(ene_remove),
++#ifdef CONFIG_PM
++	.suspend = ene_suspend,
++	.resume = ene_resume,
++#endif
++	.shutdown = ene_shutdown,
++};
++
++static int __init ene_init(void)
++{
++	return pnp_register_driver(&ene_driver);
++}
++
++static void ene_exit(void)
++{
++	pnp_unregister_driver(&ene_driver);
++}
++
++module_param(sample_period, int, S_IRUGO);
++MODULE_PARM_DESC(sample_period, "Hardware sample period (50 us default)");
++
++module_param(enable_idle, bool, S_IRUGO | S_IWUSR);
++MODULE_PARM_DESC(enable_idle,
++	"Enables turning off signal sampling after long inactivity time; "
++	"if disabled might help detecting input signal (default: enabled)"
++	" (KB3926B only)");
++
++module_param(input, bool, S_IRUGO);
++MODULE_PARM_DESC(input, "select which input to use "
++	"0 - auto, 1 - standard, 2 - wideband(KB3926C+)");
++
++module_param(debug, int, S_IRUGO | S_IWUSR);
++MODULE_PARM_DESC(debug, "Enable debug (debug=2 verbose debug output)");
++
++module_param(txsim, bool, S_IRUGO);
++MODULE_PARM_DESC(txsim,
++	"Simulate TX features on unsupported hardware (dangerous)");
++
++MODULE_DEVICE_TABLE(pnp, ene_ids);
++MODULE_DESCRIPTION
++	("Infrared input driver for KB3926B/KB3926C/KB3926D "
++	"(aka ENE0100/ENE0200/ENE0201) CIR port");
++
++MODULE_AUTHOR("Maxim Levitsky");
++MODULE_LICENSE("GPL");
++
++module_init(ene_init);
++module_exit(ene_exit);
+diff -Naurp linux-2.6.35/drivers/media/IR/ene_ir.h linux-2.6.35.new/drivers/media/IR/ene_ir.h
+--- linux-2.6.35/drivers/media/IR/ene_ir.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.35.new/drivers/media/IR/ene_ir.h	2010-09-09 23:21:49.000000000 -0400
+@@ -0,0 +1,235 @@
++/*
++ * driver for ENE KB3926 B/C/D CIR (also known as ENE0XXX)
++ *
++ * Copyright (C) 2010 Maxim Levitsky <maximlevitsky@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
++ * USA
++ */
++#include <linux/spinlock.h>
++
++
++/* hardware address */
++#define ENE_STATUS		0	/* hardware status - unused */
++#define ENE_ADDR_HI		1	/* hi byte of register address */
++#define ENE_ADDR_LO		2	/* low byte of register address */
++#define ENE_IO			3	/* read/write window */
++#define ENE_MAX_IO		4
++
++/* 8 bytes of samples, divided in 2 halfs*/
++#define ENE_SAMPLE_BUFFER	0xF8F0	/* regular sample buffer */
++#define ENE_SAMPLE_SPC_MASK	0x80	/* sample is space */
++#define ENE_SAMPLE_VALUE_MASK	0x7F
++#define ENE_SAMPLE_OVERFLOW	0x7F
++#define ENE_SAMPLES_SIZE	4
++
++/* fan input sample buffer */
++#define ENE_SAMPLE_BUFFER_FAN	0xF8FB	/* this buffer holds high byte of */
++					/* each sample of normal buffer */
++#define ENE_FAN_SMPL_PULS_MSK	0x8000	/* this bit of combined sample */
++					/* if set, says that sample is pulse */
++#define ENE_FAN_VALUE_MASK	0x0FFF  /* mask for valid bits of the value */
++
++/* first firmware register */
++#define ENE_FW1			0xF8F8
++#define	ENE_FW1_ENABLE		0x01	/* enable fw processing */
++#define ENE_FW1_TXIRQ		0x02	/* TX interrupt pending */
++#define ENE_FW1_WAKE		0x40	/* enable wake from S3 */
++#define ENE_FW1_IRQ		0x80	/* enable interrupt */
++
++/* second firmware register */
++#define ENE_FW2			0xF8F9
++#define ENE_FW2_BUF_HIGH	0x01	/* which half of the buffer to read */
++#define ENE_FW2_IRQ_CLR		0x04	/* clear this on IRQ */
++#define ENE_FW2_GP40_AS_LEARN	0x08	/* normal input is used as */
++					/* learning input */
++#define ENE_FW2_FAN_AS_NRML_IN	0x40	/* fan is used as normal input */
++#define ENE_FW2_LEARNING	0x80	/* hardware supports learning and TX */
++
++/* transmitter ports */
++#define ENE_TX_PORT2		0xFC01	/* this enables one or both */
++#define ENE_TX_PORT2_EN		0x20	/* TX ports */
++#define ENE_TX_PORT1		0xFC08
++#define ENE_TX_PORT1_EN		0x02
++
++/* IRQ registers block (for revision B) */
++#define ENEB_IRQ		0xFD09	/* IRQ number */
++#define ENEB_IRQ_UNK1		0xFD17	/* unknown setting = 1 */
++#define ENEB_IRQ_STATUS		0xFD80	/* irq status */
++#define ENEB_IRQ_STATUS_IR	0x20	/* IR irq */
++
++/* fan as input settings - only if learning capable */
++#define ENE_FAN_AS_IN1		0xFE30  /* fan init reg 1 */
++#define ENE_FAN_AS_IN1_EN	0xCD
++#define ENE_FAN_AS_IN2		0xFE31  /* fan init reg 2 */
++#define ENE_FAN_AS_IN2_EN	0x03
++#define ENE_SAMPLE_PERIOD_FAN   61	/* fan input has fixed sample period */
++
++/* IRQ registers block (for revision C,D) */
++#define ENEC_IRQ		0xFE9B	/* new irq settings register */
++#define ENEC_IRQ_MASK		0x0F	/* irq number mask */
++#define ENEC_IRQ_UNK_EN		0x10	/* always enabled */
++#define ENEC_IRQ_STATUS		0x20	/* irq status and ACK */
++
++/* CIR block settings */
++#define ENE_CIR_CONF1		0xFEC0
++#define ENE_CIR_CONF1_TX_CLEAR	0x01	/* clear that on revC */
++					/* while transmitting */
++#define ENE_CIR_CONF1_RX_ON	0x07	/* normal receiver enabled */
++#define ENE_CIR_CONF1_LEARN1	0x08	/* enabled on learning mode */
++#define ENE_CIR_CONF1_TX_ON	0x30	/* enabled on transmit */
++#define ENE_CIR_CONF1_TX_CARR	0x80	/* send TX carrier or not */
++
++#define ENE_CIR_CONF2		0xFEC1	/* unknown setting = 0 */
++#define ENE_CIR_CONF2_LEARN2	0x10	/* set on enable learning */
++#define ENE_CIR_CONF2_GPIO40DIS	0x20	/* disable input via gpio40 */
++
++#define ENE_CIR_SAMPLE_PERIOD	0xFEC8	/* sample period in us */
++#define ENE_CIR_SAMPLE_OVERFLOW	0x80	/* interrupt on overflows if set */
++
++
++/* Two byte tx buffer */
++#define ENE_TX_INPUT1		0xFEC9
++#define ENE_TX_INPUT2		0xFECA
++#define ENE_TX_PULSE_MASK	0x80	/* Transmitted sample is pulse */
++#define ENE_TX_SMLP_MASK	0x7F
++#define ENE_TX_SMPL_PERIOD	50	/* transmit sample period - fixed */
++
++
++/* Unknown TX setting - TX sample period ??? */
++#define ENE_TX_UNK1		0xFECB	/* set to 0x63 */
++
++/* Current received carrier period */
++#define ENE_RX_CARRIER		0xFECC	/* RX period (500 ns) */
++#define ENE_RX_CARRIER_VALID	0x80	/* Register content valid */
++
++
++/* TX period (1/carrier) */
++#define ENE_TX_PERIOD		0xFECE	/* TX period (500 ns) */
++#define ENE_TX_PERIOD_UNKBIT	0x80	/* This bit set on transmit*/
++#define ENE_TX_PERIOD_PULSE	0xFECF	/* TX pulse period (500 ns)*/
++
++/* Hardware versions */
++#define ENE_HW_VERSION		0xFF00	/* hardware revision */
++#define ENE_PLLFRH		0xFF16
++#define ENE_PLLFRL		0xFF17
++
++#define ENE_HW_UNK		0xFF1D
++#define ENE_HW_UNK_CLR		0x04
++#define ENE_HW_VER_MAJOR	0xFF1E	/* chip version */
++#define ENE_HW_VER_MINOR	0xFF1F
++#define ENE_HW_VER_OLD		0xFD00
++
++/* Normal/Learning carrier ranges - only valid if we have learning input*/
++/* TODO: test */
++#define ENE_NORMAL_RX_LOW	34
++#define ENE_NORMAL_RX_HI	38
++
++/* Tx carrier range */
++/* Hardware might be able to do more, but this range is enough for
++   all purposes */
++#define ENE_TX_PERIOD_MAX	32	/* corresponds to 29.4 kHz */
++#define ENE_TX_PERIOD_MIN	16	/* corrsponds to 62.5 kHz */
++
++
++
++/* Minimal and maximal gaps */
++
++/* Normal case:
++	Minimal gap is 0x7F * sample period
++	Maximum gap depends on hardware.
++	For KB3926B, it is unlimited, for newer models its around
++	250000, after which HW stops sending samples, and that is
++	not possible to change */
++
++/* Fan case:
++	Both minimal and maximal gaps are same, and equal to 0xFFF * 0x61
++	And there is nothing to change this setting
++*/
++
++#define ENE_MAXGAP		250000
++#define ENE_MINGAP		(127 * sample_period)
++
++/******************************************************************************/
++
++#define ENE_DRIVER_NAME		"ene_ir"
++
++#define ENE_IRQ_RX		1
++#define ENE_IRQ_TX		2
++
++#define  ENE_HW_B		1	/* 3926B */
++#define  ENE_HW_C		2	/* 3926C */
++#define  ENE_HW_D		3	/* 3926D */
++
++#define ene_printk(level, text, ...) \
++	printk(level ENE_DRIVER_NAME ": " text, ## __VA_ARGS__)
++
++#define ene_dbg(text, ...) \
++	if (debug) \
++		printk(KERN_DEBUG \
++			ENE_DRIVER_NAME ": " text "\n" , ## __VA_ARGS__)
++
++#define ene_dbg_verbose(text, ...) \
++	if (debug > 1) \
++		printk(KERN_DEBUG \
++			ENE_DRIVER_NAME ": " text "\n" , ## __VA_ARGS__)
++
++
++struct ene_device {
++	struct pnp_dev *pnp_dev;
++	struct input_dev *idev;
++	struct ir_dev_props *props;
++	int in_use;
++
++	/* hw IO settings */
++	unsigned long hw_io;
++	int irq;
++	spinlock_t hw_lock;
++
++	/* HW features */
++	int hw_revision;			/* hardware revision */
++	bool hw_learning_and_tx_capable;	/* learning capable */
++	bool hw_gpio40_learning;		/* gpio40 is learning */
++	bool hw_fan_as_normal_input;		/* fan input is used as */
++						/* regular input */
++	/* HW state*/
++	int rx_pointer;				/* hw pointer to rx buffer */
++	bool rx_fan_input_inuse;		/* is fan input in use for rx*/
++	int tx_reg;				/* current reg used for TX */
++	u8  saved_conf1;			/* saved FEC0 reg */
++
++	/* TX sample handling */
++	unsigned int tx_sample;			/* current sample for TX */
++	bool tx_sample_pulse;			/* current sample is pulse */
++
++	/* TX buffer */
++	int *tx_buffer;				/* input samples buffer*/
++	int tx_pos;				/* position in that bufer */
++	int tx_len;				/* current len of tx buffer */
++	int tx_done;				/* done transmitting */
++						/* one more sample pending*/
++	struct completion tx_complete;		/* TX completion */
++	struct timer_list tx_sim_timer;
++
++	/* TX settings */
++	int tx_period;
++	int tx_duty_cycle;
++	int transmitter_mask;
++
++	/* RX settings */
++	bool learning_enabled;			/* learning input enabled */
++	bool carrier_detect_enabled;		/* carrier detect enabled */
++	int rx_period_adjust;
++};
+diff -Naurp linux-2.6.35/drivers/media/IR/imon.c linux-2.6.35.new/drivers/media/IR/imon.c
+--- linux-2.6.35/drivers/media/IR/imon.c	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/imon.c	2010-09-09 23:21:42.000000000 -0400
+@@ -406,7 +406,7 @@ static int display_close(struct inode *i
+ 	struct imon_context *ictx = NULL;
+ 	int retval = 0;
+ 
+-	ictx = (struct imon_context *)file->private_data;
++	ictx = file->private_data;
+ 
+ 	if (!ictx) {
+ 		err("%s: no context for device", __func__);
+@@ -811,7 +811,7 @@ static ssize_t vfd_write(struct file *fi
+ 	const unsigned char vfd_packet6[] = {
+ 		0x01, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF };
+ 
+-	ictx = (struct imon_context *)file->private_data;
++	ictx = file->private_data;
+ 	if (!ictx) {
+ 		err("%s: no context for device", __func__);
+ 		return -ENODEV;
+@@ -895,7 +895,7 @@ static ssize_t lcd_write(struct file *fi
+ 	int retval = 0;
+ 	struct imon_context *ictx;
+ 
+-	ictx = (struct imon_context *)file->private_data;
++	ictx = file->private_data;
+ 	if (!ictx) {
+ 		err("%s: no context for device", __func__);
+ 		return -ENODEV;
+diff -Naurp linux-2.6.35/drivers/media/IR/ir-core-priv.h linux-2.6.35.new/drivers/media/IR/ir-core-priv.h
+--- linux-2.6.35/drivers/media/IR/ir-core-priv.h	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/ir-core-priv.h	2010-09-09 23:21:49.000000000 -0400
+@@ -32,7 +32,7 @@ struct ir_raw_handler {
+ 
+ struct ir_raw_event_ctrl {
+ 	struct list_head		list;		/* to keep track of raw clients */
+-	struct work_struct		rx_work;	/* for the rx decoding workqueue */
++	struct task_struct		*thread;
+ 	struct kfifo			kfifo;		/* fifo for the pulse/space durations */
+ 	ktime_t				last_event;	/* when last event occurred */
+ 	enum raw_event_type		last_type;	/* last event type */
+@@ -41,10 +41,13 @@ struct ir_raw_event_ctrl {
+ 
+ 	/* raw decoder state follows */
+ 	struct ir_raw_event prev_ev;
++	struct ir_raw_event this_ev;
+ 	struct nec_dec {
+ 		int state;
+ 		unsigned count;
+ 		u32 bits;
++		bool is_nec_x;
++		bool necx_repeat;
+ 	} nec;
+ 	struct rc5_dec {
+ 		int state;
+@@ -82,7 +85,7 @@ struct ir_raw_event_ctrl {
+ 	struct lirc_codec {
+ 		struct ir_input_dev *ir_dev;
+ 		struct lirc_driver *drv;
+-		int lircdata;
++		int carrier_low;
+ 	} lirc;
+ };
+ 
+@@ -110,10 +113,9 @@ static inline void decrease_duration(str
+ 		ev->duration -= duration;
+ }
+ 
+-#define TO_US(duration)			(((duration) + 500) / 1000)
++#define TO_US(duration)			DIV_ROUND_CLOSEST((duration), 1000)
+ #define TO_STR(is_pulse)		((is_pulse) ? "pulse" : "space")
+ #define IS_RESET(ev)			(ev.duration == 0)
+-
+ /*
+  * Routines from ir-sysfs.c - Meant to be called only internally inside
+  * ir-core
+@@ -132,7 +134,8 @@ int ir_raw_handler_register(struct ir_ra
+ void ir_raw_handler_unregister(struct ir_raw_handler *ir_raw_handler);
+ void ir_raw_init(void);
+ 
+-
++int ir_rcmap_init(void);
++void ir_rcmap_cleanup(void);
+ /*
+  * Decoder initialization code
+  *
+diff -Naurp linux-2.6.35/drivers/media/IR/ir-jvc-decoder.c linux-2.6.35.new/drivers/media/IR/ir-jvc-decoder.c
+--- linux-2.6.35/drivers/media/IR/ir-jvc-decoder.c	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/ir-jvc-decoder.c	2010-09-09 23:21:49.000000000 -0400
+@@ -32,6 +32,7 @@ enum jvc_state {
+ 	STATE_BIT_SPACE,
+ 	STATE_TRAILER_PULSE,
+ 	STATE_TRAILER_SPACE,
++	STATE_CHECK_REPEAT,
+ };
+ 
+ /**
+@@ -60,6 +61,7 @@ static int ir_jvc_decode(struct input_de
+ 	IR_dprintk(2, "JVC decode started at state %d (%uus %s)\n",
+ 		   data->state, TO_US(ev.duration), TO_STR(ev.pulse));
+ 
++again:
+ 	switch (data->state) {
+ 
+ 	case STATE_INACTIVE:
+@@ -149,8 +151,18 @@ static int ir_jvc_decode(struct input_de
+ 		}
+ 
+ 		data->count = 0;
+-		data->state = STATE_BIT_PULSE;
++		data->state = STATE_CHECK_REPEAT;
+ 		return 0;
++
++	case STATE_CHECK_REPEAT:
++		if (!ev.pulse)
++			break;
++
++		if (eq_margin(ev.duration, JVC_HEADER_PULSE, JVC_UNIT / 2))
++			data->state = STATE_INACTIVE;
++  else
++			data->state = STATE_BIT_PULSE;
++		goto again;
+ 	}
+ 
+ out:
+diff -Naurp linux-2.6.35/drivers/media/IR/ir-keytable.c linux-2.6.35.new/drivers/media/IR/ir-keytable.c
+--- linux-2.6.35/drivers/media/IR/ir-keytable.c	2010-08-01 18:11:14.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/ir-keytable.c	2010-09-09 23:21:49.000000000 -0400
+@@ -339,6 +339,8 @@ void ir_repeat(struct input_dev *dev)
+ 
+ 	spin_lock_irqsave(&ir->keylock, flags);
+ 
++	input_event(dev, EV_MSC, MSC_SCAN, ir->last_scancode);
++
+ 	if (!ir->keypressed)
+ 		goto out;
+ 
+@@ -370,6 +372,8 @@ void ir_keydown(struct input_dev *dev, i
+ 
+ 	spin_lock_irqsave(&ir->keylock, flags);
+ 
++	input_event(dev, EV_MSC, MSC_SCAN, scancode);
++
+ 	/* Repeat event? */
+ 	if (ir->keypressed &&
+ 	    ir->last_scancode == scancode &&
+@@ -383,9 +387,11 @@ void ir_keydown(struct input_dev *dev, i
+ 	ir->last_toggle = toggle;
+ 	ir->last_keycode = keycode;
+ 
++
+ 	if (keycode == KEY_RESERVED)
+ 		goto out;
+ 
++
+ 	/* Register a keypress */
+ 	ir->keypressed = true;
+ 	IR_dprintk(1, "%s: key down event, key 0x%04x, scancode 0x%04x\n",
+@@ -428,7 +434,7 @@ static void ir_close(struct input_dev *i
+  */
+ int __ir_input_register(struct input_dev *input_dev,
+ 		      const struct ir_scancode_table *rc_tab,
+-		      const struct ir_dev_props *props,
++		      struct ir_dev_props *props,
+ 		      const char *driver_name)
+ {
+ 	struct ir_input_dev *ir_dev;
+@@ -480,6 +486,8 @@ int __ir_input_register(struct input_dev
+ 
+ 	set_bit(EV_KEY, input_dev->evbit);
+ 	set_bit(EV_REP, input_dev->evbit);
++	set_bit(EV_MSC, input_dev->evbit);
++	set_bit(MSC_SCAN, input_dev->mscbit);
+ 
+ 	if (ir_setkeytable(input_dev, &ir_dev->rc_tab, rc_tab)) {
+ 		rc = -ENOMEM;
+@@ -497,8 +505,10 @@ int __ir_input_register(struct input_dev
+ 				goto out_event;
+ 		}
+ 
+-	IR_dprintk(1, "Registered input device on %s for %s remote.\n",
+-		   driver_name, rc_tab->name);
++	IR_dprintk(1, "Registered input device on %s for %s remote%s.\n",
++		   driver_name, rc_tab->name,
++		   (ir_dev->props && ir_dev->props->driver_type == RC_DRIVER_IR_RAW) ?
++			" in raw mode" : "");
+ 
+ 	return 0;
+ 
+diff -Naurp linux-2.6.35/drivers/media/IR/ir-lirc-codec.c linux-2.6.35.new/drivers/media/IR/ir-lirc-codec.c
+--- linux-2.6.35/drivers/media/IR/ir-lirc-codec.c	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/ir-lirc-codec.c	2010-09-09 23:21:49.000000000 -0400
+@@ -32,6 +32,7 @@
+ static int ir_lirc_decode(struct input_dev *input_dev, struct ir_raw_event ev)
+ {
+ 	struct ir_input_dev *ir_dev = input_get_drvdata(input_dev);
++	int sample;
+ 
+ 	if (!(ir_dev->raw->enabled_protocols & IR_TYPE_LIRC))
+ 		return 0;
+@@ -39,18 +40,20 @@ static int ir_lirc_decode(struct input_d
+ 	if (!ir_dev->raw->lirc.drv || !ir_dev->raw->lirc.drv->rbuf)
+ 		return -EINVAL;
+ 
++	if (IS_RESET(ev))
++		return 0;
++
+ 	IR_dprintk(2, "LIRC data transfer started (%uus %s)\n",
+ 		   TO_US(ev.duration), TO_STR(ev.pulse));
+ 
+-	ir_dev->raw->lirc.lircdata += ev.duration / 1000;
++	sample = ev.duration / 1000;
+ 	if (ev.pulse)
+-		ir_dev->raw->lirc.lircdata |= PULSE_BIT;
++		sample |= PULSE_BIT;
+ 
+ 	lirc_buffer_write(ir_dev->raw->lirc.drv->rbuf,
+-			  (unsigned char *) &ir_dev->raw->lirc.lircdata);
++			  (unsigned char *) &sample);
+ 	wake_up(&ir_dev->raw->lirc.drv->rbuf->wait_poll);
+ 
+-	ir_dev->raw->lirc.lircdata = 0;
+ 
+ 	return 0;
+ }
+@@ -74,14 +77,9 @@ static ssize_t ir_lirc_transmit_ir(struc
+ 	if (count > LIRCBUF_SIZE || count % 2 == 0)
+ 		return -EINVAL;
+ 
+-	txbuf = kzalloc(sizeof(int) * LIRCBUF_SIZE, GFP_KERNEL);
+-	if (!txbuf)
+-		return -ENOMEM;
+-
+-	if (copy_from_user(txbuf, buf, n)) {
+-		ret = -EFAULT;
+-		goto out;
+-	}
++	txbuf = memdup_user(buf, n);
++	if (IS_ERR(txbuf))
++		return PTR_ERR(txbuf);
+ 
+ 	ir_dev = lirc->ir_dev;
+ 	if (!ir_dev) {
+@@ -97,13 +95,14 @@ out:
+ 	return ret;
+ }
+ 
+-static long ir_lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
++static long ir_lirc_ioctl(struct file *filep, unsigned int cmd,
++			unsigned long __user arg)
+ {
+ 	struct lirc_codec *lirc;
+ 	struct ir_input_dev *ir_dev;
+ 	int ret = 0;
+ 	void *drv_data;
+-	unsigned long val;
++	unsigned long val = 0;
+ 
+ 	lirc = lirc_get_pdata(filep);
+ 	if (!lirc)
+@@ -115,47 +114,106 @@ static long ir_lirc_ioctl(struct file *f
+ 
+ 	drv_data = ir_dev->props->priv;
+ 
+-	switch (cmd) {
+-	case LIRC_SET_TRANSMITTER_MASK:
++	if (_IOC_DIR(cmd) & _IOC_WRITE) {
+ 		ret = get_user(val, (unsigned long *)arg);
+ 		if (ret)
+ 			return ret;
++	}
++
++	switch (cmd) {
++
++	/* legacy support */
++	case LIRC_GET_SEND_MODE:
++		val = LIRC_CAN_SEND_PULSE & LIRC_CAN_SEND_MASK;
++		break;
+ 
+-		if (ir_dev->props && ir_dev->props->s_tx_mask)
++	case LIRC_SET_SEND_MODE:
++		if (val != (LIRC_MODE_PULSE & LIRC_CAN_SEND_MASK))
++			return -EINVAL;
++		break;
++
++	/* TX settings */
++	case LIRC_SET_TRANSMITTER_MASK:
++		if (ir_dev->props->s_tx_mask)
+ 			ret = ir_dev->props->s_tx_mask(drv_data, (u32)val);
+ 		else
+ 			return -EINVAL;
+ 		break;
+ 
+ 	case LIRC_SET_SEND_CARRIER:
+-		ret = get_user(val, (unsigned long *)arg);
+-		if (ret)
+-			return ret;
+-
+-		if (ir_dev->props && ir_dev->props->s_tx_carrier)
++		if (ir_dev->props->s_tx_carrier)
+ 			ir_dev->props->s_tx_carrier(drv_data, (u32)val);
+ 		else
+ 			return -EINVAL;
+ 		break;
+ 
+-	case LIRC_GET_SEND_MODE:
+-		val = LIRC_CAN_SEND_PULSE & LIRC_CAN_SEND_MASK;
+-		ret = put_user(val, (unsigned long *)arg);
++	case LIRC_SET_SEND_DUTY_CYCLE:
++		if (!ir_dev->props->s_tx_duty_cycle)
++			return -ENOSYS;
++
++		if (val <= 0 || val >= 100)
++			return -EINVAL;
++
++		ir_dev->props->s_tx_duty_cycle(ir_dev->props->priv, val);
+ 		break;
+ 
+-	case LIRC_SET_SEND_MODE:
+-		ret = get_user(val, (unsigned long *)arg);
+-		if (ret)
+-			return ret;
++	/* RX settings */
++	case LIRC_SET_REC_CARRIER:
++		if (ir_dev->props->s_rx_carrier_range)
++			ret = ir_dev->props->s_rx_carrier_range(
++				ir_dev->props->priv,
++				ir_dev->raw->lirc.carrier_low, val);
++		else
++			return -ENOSYS;
+ 
+-		if (val != (LIRC_MODE_PULSE & LIRC_CAN_SEND_MASK))
++		if (!ret)
++			ir_dev->raw->lirc.carrier_low = 0;
++		break;
++
++	case LIRC_SET_REC_CARRIER_RANGE:
++		if (val >= 0)
++			ir_dev->raw->lirc.carrier_low = val;
++		break;
++
++
++	case LIRC_GET_REC_RESOLUTION:
++		val = ir_dev->props->rx_resolution;
++		break;
++
++	case LIRC_SET_WIDEBAND_RECEIVER:
++		if (ir_dev->props->s_learning_mode)
++			return ir_dev->props->s_learning_mode(
++				ir_dev->props->priv, !!val);
++		else
++			return -ENOSYS;
++
++	/* Generic timeout support */
++	case LIRC_GET_MIN_TIMEOUT:
++		if (!ir_dev->props->max_timeout)
++			return -ENOSYS;
++		val = ir_dev->props->min_timeout / 1000;
++		break;
++
++	case LIRC_GET_MAX_TIMEOUT:
++		if (!ir_dev->props->max_timeout)
++			return -ENOSYS;
++		val = ir_dev->props->max_timeout / 1000;
++		break;
++
++	case LIRC_SET_REC_TIMEOUT:
++		if (val < ir_dev->props->min_timeout ||
++		    val > ir_dev->props->max_timeout)
+ 			return -EINVAL;
++		ir_dev->props->timeout = val * 1000;
+ 		break;
+ 
+ 	default:
+ 		return lirc_dev_fop_ioctl(filep, cmd, arg);
+ 	}
+ 
++	if (_IOC_DIR(cmd) & _IOC_READ)
++		ret = put_user(val, (unsigned long *)arg);
++
+ 	return ret;
+ }
+ 
+@@ -192,7 +250,7 @@ static int ir_lirc_register(struct input
+ 		return rc;
+ 
+ 	rbuf = kzalloc(sizeof(struct lirc_buffer), GFP_KERNEL);
+-	if (!drv)
++	if (!rbuf)
+ 		goto rbuf_alloc_failed;
+ 
+ 	rc = lirc_buffer_init(rbuf, sizeof(int), LIRCBUF_SIZE);
+@@ -201,13 +259,28 @@ static int ir_lirc_register(struct input
+ 
+ 	features = LIRC_CAN_REC_MODE2;
+ 	if (ir_dev->props->tx_ir) {
++
+ 		features |= LIRC_CAN_SEND_PULSE;
+ 		if (ir_dev->props->s_tx_mask)
+ 			features |= LIRC_CAN_SET_TRANSMITTER_MASK;
+ 		if (ir_dev->props->s_tx_carrier)
+ 			features |= LIRC_CAN_SET_SEND_CARRIER;
++
++		if (ir_dev->props->s_tx_duty_cycle)
++			features |= LIRC_CAN_SET_REC_DUTY_CYCLE;
+ 	}
+ 
++	if (ir_dev->props->s_rx_carrier_range)
++		features |= LIRC_CAN_SET_REC_CARRIER |
++			LIRC_CAN_SET_REC_CARRIER_RANGE;
++
++	if (ir_dev->props->s_learning_mode)
++		features |= LIRC_CAN_USE_WIDEBAND_RECEIVER;
++
++	if (ir_dev->props->max_timeout)
++		features |= LIRC_CAN_SET_REC_TIMEOUT;
++
++
+ 	snprintf(drv->name, sizeof(drv->name), "ir-lirc-codec (%s)",
+ 		 ir_dev->driver_name);
+ 	drv->minor = -1;
+@@ -229,8 +302,6 @@ static int ir_lirc_register(struct input
+ 
+ 	ir_dev->raw->lirc.drv = drv;
+ 	ir_dev->raw->lirc.ir_dev = ir_dev;
+-	ir_dev->raw->lirc.lircdata = PULSE_MASK;
+-
+ 	return 0;
+ 
+ lirc_register_failed:
+diff -Naurp linux-2.6.35/drivers/media/IR/ir-nec-decoder.c linux-2.6.35.new/drivers/media/IR/ir-nec-decoder.c
+--- linux-2.6.35/drivers/media/IR/ir-nec-decoder.c	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/ir-nec-decoder.c	2010-09-09 23:21:49.000000000 -0400
+@@ -20,12 +20,13 @@
+ #define NEC_HEADER_PULSE	(16 * NEC_UNIT)
+ #define NECX_HEADER_PULSE	(8  * NEC_UNIT) /* Less common NEC variant */
+ #define NEC_HEADER_SPACE	(8  * NEC_UNIT)
+-#define NEC_REPEAT_SPACE	(8  * NEC_UNIT)
++#define NEC_REPEAT_SPACE	(4  * NEC_UNIT)
+ #define NEC_BIT_PULSE		(1  * NEC_UNIT)
+ #define NEC_BIT_0_SPACE		(1  * NEC_UNIT)
+ #define NEC_BIT_1_SPACE		(3  * NEC_UNIT)
+ #define	NEC_TRAILER_PULSE	(1  * NEC_UNIT)
+ #define	NEC_TRAILER_SPACE	(10 * NEC_UNIT) /* even longer in reality */
++#define NECX_REPEAT_BITS	1
+ 
+ enum nec_state {
+ 	STATE_INACTIVE,
+@@ -67,8 +68,12 @@ static int ir_nec_decode(struct input_de
+ 		if (!ev.pulse)
+ 			break;
+ 
+-		if (!eq_margin(ev.duration, NEC_HEADER_PULSE, NEC_UNIT / 2) &&
+-		    !eq_margin(ev.duration, NECX_HEADER_PULSE, NEC_UNIT / 2))
++		if (eq_margin(ev.duration, NEC_HEADER_PULSE, NEC_UNIT / 2)) {
++			data->is_nec_x = false;
++			data->necx_repeat = false;
++		} else if (eq_margin(ev.duration, NECX_HEADER_PULSE, NEC_UNIT / 2))
++			data->is_nec_x = true;
++		else
+ 			break;
+ 
+ 		data->count = 0;
+@@ -105,6 +110,17 @@ static int ir_nec_decode(struct input_de
+ 		if (ev.pulse)
+ 			break;
+ 
++		if (data->necx_repeat && data->count == NECX_REPEAT_BITS &&
++			geq_margin(ev.duration,
++			NEC_TRAILER_SPACE, NEC_UNIT / 2)) {
++				IR_dprintk(1, "Repeat last key\n");
++				ir_repeat(input_dev);
++				data->state = STATE_INACTIVE;
++				return 0;
++
++		} else if (data->count > NECX_REPEAT_BITS)
++			data->necx_repeat = false;
++
+ 		data->bits <<= 1;
+ 		if (eq_margin(ev.duration, NEC_BIT_1_SPACE, NEC_UNIT / 2))
+ 			data->bits |= 1;
+@@ -159,6 +175,9 @@ static int ir_nec_decode(struct input_de
+ 			IR_dprintk(1, "NEC scancode 0x%04x\n", scancode);
+ 		}
+ 
++		if (data->is_nec_x)
++			data->necx_repeat = true;
++
+ 		ir_keydown(input_dev, scancode, 0);
+ 		data->state = STATE_INACTIVE;
+ 		return 0;
+diff -Naurp linux-2.6.35/drivers/media/IR/ir-raw-event.c linux-2.6.35.new/drivers/media/IR/ir-raw-event.c
+--- linux-2.6.35/drivers/media/IR/ir-raw-event.c	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/ir-raw-event.c	2010-09-09 23:21:49.000000000 -0400
+@@ -12,9 +12,10 @@
+  *  GNU General Public License for more details.
+  */
+ 
+-#include <linux/workqueue.h>
+-#include <linux/spinlock.h>
++#include <linux/kthread.h>
++#include <linux/mutex.h>
+ #include <linux/sched.h>
++#include <linux/freezer.h>
+ #include "ir-core-priv.h"
+ 
+ /* Define the max number of pulse/space transitions to buffer */
+@@ -24,7 +25,7 @@
+ static LIST_HEAD(ir_raw_client_list);
+ 
+ /* Used to handle IR raw handler extensions */
+-static DEFINE_SPINLOCK(ir_raw_handler_lock);
++static DEFINE_MUTEX(ir_raw_handler_lock);
+ static LIST_HEAD(ir_raw_handler_list);
+ static u64 available_protocols;
+ 
+@@ -33,20 +34,30 @@ static u64 available_protocols;
+ static struct work_struct wq_load;
+ #endif
+ 
+-static void ir_raw_event_work(struct work_struct *work)
++static int ir_raw_event_thread(void *data)
+ {
+ 	struct ir_raw_event ev;
+ 	struct ir_raw_handler *handler;
+-	struct ir_raw_event_ctrl *raw =
+-		container_of(work, struct ir_raw_event_ctrl, rx_work);
++	struct ir_raw_event_ctrl *raw = (struct ir_raw_event_ctrl *)data;
+ 
+-	while (kfifo_out(&raw->kfifo, &ev, sizeof(ev)) == sizeof(ev)) {
+-		spin_lock(&ir_raw_handler_lock);
+-		list_for_each_entry(handler, &ir_raw_handler_list, list)
+-			handler->decode(raw->input_dev, ev);
+-		spin_unlock(&ir_raw_handler_lock);
+-		raw->prev_ev = ev;
++	while (!kthread_should_stop()) {
++		try_to_freeze();
++
++		mutex_lock(&ir_raw_handler_lock);
++
++		while (kfifo_out(&raw->kfifo, &ev, sizeof(ev)) == sizeof(ev)) {
++			list_for_each_entry(handler, &ir_raw_handler_list, list)
++				handler->decode(raw->input_dev, ev);
++			raw->prev_ev = ev;
++		}
++
++		mutex_unlock(&ir_raw_handler_lock);
++
++		set_current_state(TASK_INTERRUPTIBLE);
++		schedule();
+ 	}
++
++	return 0;
+ }
+ 
+ /**
+@@ -66,6 +77,9 @@ int ir_raw_event_store(struct input_dev 
+ 	if (!ir->raw)
+ 		return -EINVAL;
+ 
++	IR_dprintk(2, "sample: (05%dus %s)\n",
++		TO_US(ev->duration), TO_STR(ev->pulse));
++
+ 	if (kfifo_in(&ir->raw->kfifo, ev, sizeof(*ev)) != sizeof(*ev))
+ 		return -ENOMEM;
+ 
+@@ -126,6 +140,90 @@ int ir_raw_event_store_edge(struct input
+ EXPORT_SYMBOL_GPL(ir_raw_event_store_edge);
+ 
+ /**
++ * ir_raw_event_store_with_filter() - pass next pulse/space to decoders with some processing
++ * @input_dev:	the struct input_dev device descriptor
++ * @type:	the type of the event that has occurred
++ *
++ * This routine (which may be called from an interrupt context) works
++ * in similiar manner to ir_raw_event_store_edge.
++ * This routine is intended for devices with limited internal buffer
++ * It automerges samples of same type, and handles timeouts
++ */
++int ir_raw_event_store_with_filter(struct input_dev *input_dev,
++						struct ir_raw_event *ev)
++{
++	struct ir_input_dev *ir = input_get_drvdata(input_dev);
++	struct ir_raw_event_ctrl *raw = ir->raw;
++
++	if (!raw || !ir->props)
++		return -EINVAL;
++
++	/* Ignore spaces in idle mode */
++	if (ir->idle && !ev->pulse)
++		return 0;
++	else if (ir->idle)
++		ir_raw_event_set_idle(input_dev, 0);
++
++	if (!raw->this_ev.duration) {
++		raw->this_ev = *ev;
++	} else if (ev->pulse == raw->this_ev.pulse) {
++		raw->this_ev.duration += ev->duration;
++	} else {
++		ir_raw_event_store(input_dev, &raw->this_ev);
++		raw->this_ev = *ev;
++	}
++
++	/* Enter idle mode if nessesary */
++	if (!ev->pulse && ir->props->timeout &&
++		raw->this_ev.duration >= ir->props->timeout)
++		ir_raw_event_set_idle(input_dev, 1);
++	return 0;
++}
++EXPORT_SYMBOL_GPL(ir_raw_event_store_with_filter);
++
++void ir_raw_event_set_idle(struct input_dev *input_dev, int idle)
++{
++	struct ir_input_dev *ir = input_get_drvdata(input_dev);
++	struct ir_raw_event_ctrl *raw = ir->raw;
++	ktime_t now;
++	u64 delta;
++
++	if (!ir->props)
++		return;
++
++	if (!ir->raw)
++		goto out;
++
++	if (idle) {
++		IR_dprintk(2, "enter idle mode\n");
++		raw->last_event = ktime_get();
++	} else {
++		IR_dprintk(2, "exit idle mode\n");
++
++		now = ktime_get();
++		delta = ktime_to_ns(ktime_sub(now, ir->raw->last_event));
++
++		WARN_ON(raw->this_ev.pulse);
++
++		raw->this_ev.duration =
++			min(raw->this_ev.duration + delta,
++						(u64)IR_MAX_DURATION);
++
++		ir_raw_event_store(input_dev, &raw->this_ev);
++
++		if (raw->this_ev.duration == IR_MAX_DURATION)
++			ir_raw_event_reset(input_dev);
++
++		raw->this_ev.duration = 0;
++	}
++out:
++	if (ir->props->s_idle)
++		ir->props->s_idle(ir->props->priv, idle);
++	ir->idle = idle;
++}
++EXPORT_SYMBOL_GPL(ir_raw_event_set_idle);
++
++/**
+  * ir_raw_event_handle() - schedules the decoding of stored ir data
+  * @input_dev:	the struct input_dev device descriptor
+  *
+@@ -138,7 +236,7 @@ void ir_raw_event_handle(struct input_de
+ 	if (!ir->raw)
+ 		return;
+ 
+-	schedule_work(&ir->raw->rx_work);
++	wake_up_process(ir->raw->thread);
+ }
+ EXPORT_SYMBOL_GPL(ir_raw_event_handle);
+ 
+@@ -147,9 +245,9 @@ u64
+ ir_raw_get_allowed_protocols()
+ {
+ 	u64 protocols;
+-	spin_lock(&ir_raw_handler_lock);
++	mutex_lock(&ir_raw_handler_lock);
+ 	protocols = available_protocols;
+-	spin_unlock(&ir_raw_handler_lock);
++	mutex_unlock(&ir_raw_handler_lock);
+ 	return protocols;
+ }
+ 
+@@ -167,7 +265,7 @@ int ir_raw_event_register(struct input_d
+ 		return -ENOMEM;
+ 
+ 	ir->raw->input_dev = input_dev;
+-	INIT_WORK(&ir->raw->rx_work, ir_raw_event_work);
++
+ 	ir->raw->enabled_protocols = ~0;
+ 	rc = kfifo_alloc(&ir->raw->kfifo, sizeof(s64) * MAX_IR_EVENT_SIZE,
+ 			 GFP_KERNEL);
+@@ -177,12 +275,23 @@ int ir_raw_event_register(struct input_d
+ 		return rc;
+ 	}
+ 
+-	spin_lock(&ir_raw_handler_lock);
++	ir->raw->thread = kthread_run(ir_raw_event_thread, ir->raw,
++			"rc%u",  (unsigned int)ir->devno);
++
++	if (IS_ERR(ir->raw->thread)) {
++		int ret = PTR_ERR(ir->raw->thread);
++
++		kfree(ir->raw);
++		ir->raw = NULL;
++		return ret;
++	}
++
++	mutex_lock(&ir_raw_handler_lock);
+ 	list_add_tail(&ir->raw->list, &ir_raw_client_list);
+ 	list_for_each_entry(handler, &ir_raw_handler_list, list)
+ 		if (handler->raw_register)
+ 			handler->raw_register(ir->raw->input_dev);
+-	spin_unlock(&ir_raw_handler_lock);
++	mutex_unlock(&ir_raw_handler_lock);
+ 
+ 	return 0;
+ }
+@@ -195,14 +304,14 @@ void ir_raw_event_unregister(struct inpu
+ 	if (!ir->raw)
+ 		return;
+ 
+-	cancel_work_sync(&ir->raw->rx_work);
++	kthread_stop(ir->raw->thread);
+ 
+-	spin_lock(&ir_raw_handler_lock);
++	mutex_lock(&ir_raw_handler_lock);
+ 	list_del(&ir->raw->list);
+ 	list_for_each_entry(handler, &ir_raw_handler_list, list)
+ 		if (handler->raw_unregister)
+ 			handler->raw_unregister(ir->raw->input_dev);
+-	spin_unlock(&ir_raw_handler_lock);
++	mutex_unlock(&ir_raw_handler_lock);
+ 
+ 	kfifo_free(&ir->raw->kfifo);
+ 	kfree(ir->raw);
+@@ -217,13 +326,13 @@ int ir_raw_handler_register(struct ir_ra
+ {
+ 	struct ir_raw_event_ctrl *raw;
+ 
+-	spin_lock(&ir_raw_handler_lock);
++	mutex_lock(&ir_raw_handler_lock);
+ 	list_add_tail(&ir_raw_handler->list, &ir_raw_handler_list);
+ 	if (ir_raw_handler->raw_register)
+ 		list_for_each_entry(raw, &ir_raw_client_list, list)
+ 			ir_raw_handler->raw_register(raw->input_dev);
+ 	available_protocols |= ir_raw_handler->protocols;
+-	spin_unlock(&ir_raw_handler_lock);
++	mutex_unlock(&ir_raw_handler_lock);
+ 
+ 	return 0;
+ }
+@@ -233,13 +342,13 @@ void ir_raw_handler_unregister(struct ir
+ {
+ 	struct ir_raw_event_ctrl *raw;
+ 
+-	spin_lock(&ir_raw_handler_lock);
++	mutex_lock(&ir_raw_handler_lock);
+ 	list_del(&ir_raw_handler->list);
+ 	if (ir_raw_handler->raw_unregister)
+ 		list_for_each_entry(raw, &ir_raw_client_list, list)
+ 			ir_raw_handler->raw_unregister(raw->input_dev);
+ 	available_protocols &= ~ir_raw_handler->protocols;
+-	spin_unlock(&ir_raw_handler_lock);
++	mutex_unlock(&ir_raw_handler_lock);
+ }
+ EXPORT_SYMBOL(ir_raw_handler_unregister);
+ 
+diff -Naurp linux-2.6.35/drivers/media/IR/ir-sysfs.c linux-2.6.35.new/drivers/media/IR/ir-sysfs.c
+--- linux-2.6.35/drivers/media/IR/ir-sysfs.c	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/ir-sysfs.c	2010-09-09 23:21:49.000000000 -0400
+@@ -33,6 +33,22 @@ static struct class ir_input_class = {
+ 	.devnode	= ir_devnode,
+ };
+ 
++static struct {
++	u64	type;
++	char	*name;
++} proto_names[] = {
++	{ IR_TYPE_UNKNOWN,	"unknown"	},
++	{ IR_TYPE_RC5,		"rc-5"		},
++	{ IR_TYPE_NEC,		"nec"		},
++	{ IR_TYPE_RC6,		"rc-6"		},
++	{ IR_TYPE_JVC,		"jvc"		},
++	{ IR_TYPE_SONY,		"sony"		},
++	{ IR_TYPE_RC5_SZ,	"rc-5-sz"	},
++	{ IR_TYPE_LIRC,		"lirc"		},
++};
++
++#define PROTO_NONE	"none"
++
+ /**
+  * show_protocols() - shows the current IR protocol(s)
+  * @d:		the device descriptor
+@@ -50,6 +66,7 @@ static ssize_t show_protocols(struct dev
+ 	struct ir_input_dev *ir_dev = dev_get_drvdata(d);
+ 	u64 allowed, enabled;
+ 	char *tmp = buf;
++	int i;
+ 
+ 	if (ir_dev->props->driver_type == RC_DRIVER_SCANCODE) {
+ 		enabled = ir_dev->rc_tab.ir_type;
+@@ -63,45 +80,12 @@ static ssize_t show_protocols(struct dev
+ 		   (long long)allowed,
+ 		   (long long)enabled);
+ 
+-	if (allowed & enabled & IR_TYPE_UNKNOWN)
+-		tmp += sprintf(tmp, "[unknown] ");
+-	else if (allowed & IR_TYPE_UNKNOWN)
+-		tmp += sprintf(tmp, "unknown ");
+-
+-	if (allowed & enabled & IR_TYPE_RC5)
+-		tmp += sprintf(tmp, "[rc5] ");
+-	else if (allowed & IR_TYPE_RC5)
+-		tmp += sprintf(tmp, "rc5 ");
+-
+-	if (allowed & enabled & IR_TYPE_NEC)
+-		tmp += sprintf(tmp, "[nec] ");
+-	else if (allowed & IR_TYPE_NEC)
+-		tmp += sprintf(tmp, "nec ");
+-
+-	if (allowed & enabled & IR_TYPE_RC6)
+-		tmp += sprintf(tmp, "[rc6] ");
+-	else if (allowed & IR_TYPE_RC6)
+-		tmp += sprintf(tmp, "rc6 ");
+-
+-	if (allowed & enabled & IR_TYPE_JVC)
+-		tmp += sprintf(tmp, "[jvc] ");
+-	else if (allowed & IR_TYPE_JVC)
+-		tmp += sprintf(tmp, "jvc ");
+-
+-	if (allowed & enabled & IR_TYPE_SONY)
+-		tmp += sprintf(tmp, "[sony] ");
+-	else if (allowed & IR_TYPE_SONY)
+-		tmp += sprintf(tmp, "sony ");
+-
+-	if (allowed & enabled & IR_TYPE_RC5_SZ)
+-		tmp += sprintf(tmp, "[rc5sz] ");
+-	else if (allowed & IR_TYPE_RC5_SZ)
+-		tmp += sprintf(tmp, "rc5sz ");
+-
+-	if (allowed & enabled & IR_TYPE_LIRC)
+-		tmp += sprintf(tmp, "[lirc] ");
+-	else if (allowed & IR_TYPE_LIRC)
+-		tmp += sprintf(tmp, "lirc ");
++	for (i = 0; i < ARRAY_SIZE(proto_names); i++) {
++		if (allowed & enabled & proto_names[i].type)
++			tmp += sprintf(tmp, "[%s] ", proto_names[i].name);
++		else if (allowed & proto_names[i].type)
++			tmp += sprintf(tmp, "%s ", proto_names[i].name);
++	}
+ 
+ 	if (tmp != buf)
+ 		tmp--;
+@@ -121,6 +105,7 @@ static ssize_t show_protocols(struct dev
+  * Writing "+proto" will add a protocol to the list of enabled protocols.
+  * Writing "-proto" will remove a protocol from the list of enabled protocols.
+  * Writing "proto" will enable only "proto".
++ * Writing "none" will disable all protocols.
+  * Returns -EINVAL if an invalid protocol combination or unknown protocol name
+  * is used, otherwise @len.
+  */
+@@ -134,71 +119,63 @@ static ssize_t store_protocols(struct de
+ 	const char *tmp;
+ 	u64 type;
+ 	u64 mask;
+-	int rc;
++	int rc, i, count = 0;
+ 	unsigned long flags;
+ 
+-	tmp = skip_spaces(data);
++	if (ir_dev->props->driver_type == RC_DRIVER_SCANCODE)
++		type = ir_dev->rc_tab.ir_type;
++	else
++		type = ir_dev->raw->enabled_protocols;
+ 
+-	if (*tmp == '+') {
+-		enable = true;
+-		disable = false;
+-		tmp++;
+-	} else if (*tmp == '-') {
+-		enable = false;
+-		disable = true;
+-		tmp++;
+-	} else {
+-		enable = false;
+-		disable = false;
+-	}
++	while ((tmp = strsep((char **) &data, " \n")) != NULL) {
++		if (!*tmp)
++			break;
++
++		if (*tmp == '+') {
++			enable = true;
++			disable = false;
++			tmp++;
++		} else if (*tmp == '-') {
++			enable = false;
++			disable = true;
++			tmp++;
++		} else {
++			enable = false;
++			disable = false;
++		}
+ 
+-	if (!strncasecmp(tmp, "unknown", 7)) {
+-		tmp += 7;
+-		mask = IR_TYPE_UNKNOWN;
+-	} else if (!strncasecmp(tmp, "rc5", 3)) {
+-		tmp += 3;
+-		mask = IR_TYPE_RC5;
+-	} else if (!strncasecmp(tmp, "nec", 3)) {
+-		tmp += 3;
+-		mask = IR_TYPE_NEC;
+-	} else if (!strncasecmp(tmp, "rc6", 3)) {
+-		tmp += 3;
+-		mask = IR_TYPE_RC6;
+-	} else if (!strncasecmp(tmp, "jvc", 3)) {
+-		tmp += 3;
+-		mask = IR_TYPE_JVC;
+-	} else if (!strncasecmp(tmp, "sony", 4)) {
+-		tmp += 4;
+-		mask = IR_TYPE_SONY;
+-	} else if (!strncasecmp(tmp, "rc5sz", 5)) {
+-		tmp += 5;
+-		mask = IR_TYPE_RC5_SZ;
+-	} else if (!strncasecmp(tmp, "lirc", 4)) {
+-		tmp += 4;
+-		mask = IR_TYPE_LIRC;
+-	} else {
+-		IR_dprintk(1, "Unknown protocol\n");
+-		return -EINVAL;
++		if (!enable && !disable && !strncasecmp(tmp, PROTO_NONE, sizeof(PROTO_NONE))) {
++			tmp += sizeof(PROTO_NONE);
++			mask = 0;
++			count++;
++		} else {
++			for (i = 0; i < ARRAY_SIZE(proto_names); i++) {
++				if (!strncasecmp(tmp, proto_names[i].name, strlen(proto_names[i].name))) {
++					tmp += strlen(proto_names[i].name);
++					mask = proto_names[i].type;
++					break;
++				}
++			}
++			if (i == ARRAY_SIZE(proto_names)) {
++				IR_dprintk(1, "Unknown protocol: '%s'\n", tmp);
++				return -EINVAL;
++			}
++			count++;
++		}
++
++		if (enable)
++			type |= mask;
++		else if (disable)
++			type &= ~mask;
++		else
++			type = mask;
+ 	}
+ 
+-	tmp = skip_spaces(tmp);
+-	if (*tmp != '\0') {
+-		IR_dprintk(1, "Invalid trailing characters\n");
++	if (!count) {
++		IR_dprintk(1, "Protocol not specified\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	if (ir_dev->props->driver_type == RC_DRIVER_SCANCODE)
+-		type = ir_dev->rc_tab.ir_type;
+-	else
+-		type = ir_dev->raw->enabled_protocols;
+-
+-	if (enable)
+-		type |= mask;
+-	else if (disable)
+-		type &= ~mask;
+-	else
+-		type = mask;
+-
+ 	if (ir_dev->props && ir_dev->props->change_protocol) {
+ 		rc = ir_dev->props->change_protocol(ir_dev->props->priv,
+ 						    type);
+@@ -217,7 +194,6 @@ static ssize_t store_protocols(struct de
+ 		ir_dev->raw->enabled_protocols = type;
+ 	}
+ 
+-
+ 	IR_dprintk(1, "Current protocol(s): 0x%llx\n",
+ 		   (long long)type);
+ 
+@@ -286,6 +262,7 @@ int ir_register_class(struct input_dev *
+ 		return devno;
+ 
+ 	ir_dev->dev.type = &rc_dev_type;
++
+ 	ir_dev->dev.class = &ir_input_class;
+ 	ir_dev->dev.parent = input_dev->dev.parent;
+ 	dev_set_name(&ir_dev->dev, "rc%d", devno);
+@@ -349,6 +326,7 @@ static int __init ir_core_init(void)
+ 
+ 	/* Initialize/load the decoders/keymap code that will be used */
+ 	ir_raw_init();
++	ir_rcmap_init();
+ 
+ 	return 0;
+ }
+@@ -356,6 +334,7 @@ static int __init ir_core_init(void)
+ static void __exit ir_core_exit(void)
+ {
+ 	class_unregister(&ir_input_class);
++	ir_rcmap_cleanup();
+ }
+ 
+ module_init(ir_core_init);
+diff -Naurp linux-2.6.35/drivers/media/IR/Kconfig linux-2.6.35.new/drivers/media/IR/Kconfig
+--- linux-2.6.35/drivers/media/IR/Kconfig	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/Kconfig	2010-09-09 23:21:49.000000000 -0400
+@@ -1,13 +1,22 @@
+-config IR_CORE
+-	tristate
++menuconfig IR_CORE
++	tristate "Infrared remote controller adapters"
+ 	depends on INPUT
+ 	default INPUT
++	---help---
++	  Enable support for Remote Controllers on Linux. This is
++	  needed in order to support several video capture adapters.
++
++	  Enable this option if you have a video capture board even
++	  if you don't need IR, as otherwise, you may not be able to
++	  compile the driver for your adapter.
+ 
+ config VIDEO_IR
+ 	tristate
+ 	depends on IR_CORE
+ 	default IR_CORE
+ 
++if IR_CORE
++
+ config LIRC
+ 	tristate
+ 	default y
+@@ -16,7 +25,7 @@ config LIRC
+ 	   Enable this option to build the Linux Infrared Remote
+ 	   Control (LIRC) core device interface driver. The LIRC
+ 	   interface passes raw IR to and from userspace, where the
+-	   LIRC daemon handles protocol decoding for IR reception ann
++	   LIRC daemon handles protocol decoding for IR reception and
+ 	   encoding for IR transmitting (aka "blasting").
+ 
+ source "drivers/media/IR/keymaps/Kconfig"
+@@ -44,6 +53,7 @@ config IR_RC5_DECODER
+ config IR_RC6_DECODER
+ 	tristate "Enable IR raw decoder for the RC6 protocol"
+ 	depends on IR_CORE
++	select BITREVERSE
+ 	default y
+ 
+ 	---help---
+@@ -77,7 +87,9 @@ config IR_RC5_SZ_DECODER
+ 
+ 	---help---
+ 	   Enable this option if you have IR with RC-5 (streamzap) protocol,
+-	   and if the IR is decoded in software.
++	   and if the IR is decoded in software. (The Streamzap PC Remote
++	   uses an IR protocol that is almost standard RC-5, but not quite,
++	   as it uses an additional bit).
+ 
+ config IR_LIRC_CODEC
+ 	tristate "Enable IR to LIRC bridge"
+@@ -113,6 +125,20 @@ config IR_MCEUSB
+ 	   To compile this driver as a module, choose M here: the
+ 	   module will be called mceusb.
+ 
++config IR_ENE
++	tristate "ENE eHome Receiver/Transciever (pnp id: ENE0100/ENE02xxx)"
++	depends on PNP
++	depends on IR_CORE
++	---help---
++	   Say Y here to enable support for integrated infrared receiver
++	   /transciever made by ENE.
++
++	   You can see if you have it by looking at lspnp output.
++	   Output should include ENE0100 ENE0200 or something similiar.
++
++	   To compile this driver as a module, choose M here: the
++	   module will be called ene_ir.
++
+ config IR_STREAMZAP
+ 	tristate "Streamzap PC Remote IR Receiver"
+ 	depends on USB_ARCH_HAS_HCD
+@@ -124,3 +150,5 @@ config IR_STREAMZAP
+ 
+ 	   To compile this driver as a module, choose M here: the
+ 	   module will be called streamzap.
++
++endif #IR_CORE
+diff -Naurp linux-2.6.35/drivers/media/IR/keymaps/Makefile linux-2.6.35.new/drivers/media/IR/keymaps/Makefile
+--- linux-2.6.35/drivers/media/IR/keymaps/Makefile	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/keymaps/Makefile	2010-09-09 23:21:42.000000000 -0400
+@@ -14,10 +14,11 @@ obj-$(CONFIG_RC_MAP) += rc-adstech-dvb-t
+ 			rc-budget-ci-old.o \
+ 			rc-cinergy-1400.o \
+ 			rc-cinergy.o \
++			rc-dib0700-nec.o \
++			rc-dib0700-rc5.o \
+ 			rc-dm1105-nec.o \
+ 			rc-dntv-live-dvb-t.o \
+ 			rc-dntv-live-dvbt-pro.o \
+-			rc-empty.o \
+ 			rc-em-terratec.o \
+ 			rc-encore-enltv2.o \
+ 			rc-encore-enltv.o \
+diff -Naurp linux-2.6.35/drivers/media/IR/keymaps/rc-dib0700-nec.c linux-2.6.35.new/drivers/media/IR/keymaps/rc-dib0700-nec.c
+--- linux-2.6.35/drivers/media/IR/keymaps/rc-dib0700-nec.c	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.35.new/drivers/media/IR/keymaps/rc-dib0700-nec.c	2010-09-09 23:21:42.000000000 -0400
+@@ -0,0 +1,124 @@
++/* rc-dvb0700-big.c - Keytable for devices in dvb0700
++ *
++ * Copyright (c) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
++ *
++ * TODO: This table is a real mess, as it merges RC codes from several
++ * devices into a big table. It also has both RC-5 and NEC codes inside.
++ * It should be broken into small tables, and the protocols should properly
++ * be indentificated.
++ *
++ * The table were imported from dib0700_devices.c.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++#include <media/rc-map.h>
++
++static struct ir_scancode dib0700_nec_table[] = {
++	/* Key codes for the Pixelview SBTVD remote */
++	{ 0x8613, KEY_MUTE },
++	{ 0x8612, KEY_POWER },
++	{ 0x8601, KEY_1 },
++	{ 0x8602, KEY_2 },
++	{ 0x8603, KEY_3 },
++	{ 0x8604, KEY_4 },
++	{ 0x8605, KEY_5 },
++	{ 0x8606, KEY_6 },
++	{ 0x8607, KEY_7 },
++	{ 0x8608, KEY_8 },
++	{ 0x8609, KEY_9 },
++	{ 0x8600, KEY_0 },
++	{ 0x860d, KEY_CHANNELUP },
++	{ 0x8619, KEY_CHANNELDOWN },
++	{ 0x8610, KEY_VOLUMEUP },
++	{ 0x860c, KEY_VOLUMEDOWN },
++
++	{ 0x860a, KEY_CAMERA },
++	{ 0x860b, KEY_ZOOM },
++	{ 0x861b, KEY_BACKSPACE },
++	{ 0x8615, KEY_ENTER },
++
++	{ 0x861d, KEY_UP },
++	{ 0x861e, KEY_DOWN },
++	{ 0x860e, KEY_LEFT },
++	{ 0x860f, KEY_RIGHT },
++
++	{ 0x8618, KEY_RECORD },
++	{ 0x861a, KEY_STOP },
++
++	/* Key codes for the EvolutePC TVWay+ remote */
++	{ 0x7a00, KEY_MENU },
++	{ 0x7a01, KEY_RECORD },
++	{ 0x7a02, KEY_PLAY },
++	{ 0x7a03, KEY_STOP },
++	{ 0x7a10, KEY_CHANNELUP },
++	{ 0x7a11, KEY_CHANNELDOWN },
++	{ 0x7a12, KEY_VOLUMEUP },
++	{ 0x7a13, KEY_VOLUMEDOWN },
++	{ 0x7a40, KEY_POWER },
++	{ 0x7a41, KEY_MUTE },
++
++	/* Key codes for the Elgato EyeTV Diversity silver remote */
++	{ 0x4501, KEY_POWER },
++	{ 0x4502, KEY_MUTE },
++	{ 0x4503, KEY_1 },
++	{ 0x4504, KEY_2 },
++	{ 0x4505, KEY_3 },
++	{ 0x4506, KEY_4 },
++	{ 0x4507, KEY_5 },
++	{ 0x4508, KEY_6 },
++	{ 0x4509, KEY_7 },
++	{ 0x450a, KEY_8 },
++	{ 0x450b, KEY_9 },
++	{ 0x450c, KEY_LAST },
++	{ 0x450d, KEY_0 },
++	{ 0x450e, KEY_ENTER },
++	{ 0x450f, KEY_RED },
++	{ 0x4510, KEY_CHANNELUP },
++	{ 0x4511, KEY_GREEN },
++	{ 0x4512, KEY_VOLUMEDOWN },
++	{ 0x4513, KEY_OK },
++	{ 0x4514, KEY_VOLUMEUP },
++	{ 0x4515, KEY_YELLOW },
++	{ 0x4516, KEY_CHANNELDOWN },
++	{ 0x4517, KEY_BLUE },
++	{ 0x4518, KEY_LEFT }, /* Skip backwards */
++	{ 0x4519, KEY_PLAYPAUSE },
++	{ 0x451a, KEY_RIGHT }, /* Skip forward */
++	{ 0x451b, KEY_REWIND },
++	{ 0x451c, KEY_L }, /* Live */
++	{ 0x451d, KEY_FASTFORWARD },
++	{ 0x451e, KEY_STOP }, /* 'Reveal' for Teletext */
++	{ 0x451f, KEY_MENU }, /* KEY_TEXT for Teletext */
++	{ 0x4540, KEY_RECORD }, /* Font 'Size' for Teletext */
++	{ 0x4541, KEY_SCREEN }, /*  Full screen toggle, 'Hold' for Teletext */
++	{ 0x4542, KEY_SELECT }, /* Select video input, 'Select' for Teletext */
++};
++
++static struct rc_keymap dib0700_nec_map = {
++	.map = {
++		.scan    = dib0700_nec_table,
++		.size    = ARRAY_SIZE(dib0700_nec_table),
++		.ir_type = IR_TYPE_NEC,
++		.name    = RC_MAP_DIB0700_NEC_TABLE,
++	}
++};
++
++static int __init init_rc_map(void)
++{
++	return ir_register_map(&dib0700_nec_map);
++}
++
++static void __exit exit_rc_map(void)
++{
++	ir_unregister_map(&dib0700_nec_map);
++}
++
++module_init(init_rc_map)
++module_exit(exit_rc_map)
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+diff -Naurp linux-2.6.35/drivers/media/IR/keymaps/rc-dib0700-rc5.c linux-2.6.35.new/drivers/media/IR/keymaps/rc-dib0700-rc5.c
+--- linux-2.6.35/drivers/media/IR/keymaps/rc-dib0700-rc5.c	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.35.new/drivers/media/IR/keymaps/rc-dib0700-rc5.c	2010-09-09 23:21:42.000000000 -0400
+@@ -0,0 +1,235 @@
++/* rc-dvb0700-big.c - Keytable for devices in dvb0700
++ *
++ * Copyright (c) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
++ *
++ * TODO: This table is a real mess, as it merges RC codes from several
++ * devices into a big table. It also has both RC-5 and NEC codes inside.
++ * It should be broken into small tables, and the protocols should properly
++ * be indentificated.
++ *
++ * The table were imported from dib0700_devices.c.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ */
++
++#include <media/rc-map.h>
++
++static struct ir_scancode dib0700_rc5_table[] = {
++	/* Key codes for the tiny Pinnacle remote*/
++	{ 0x0700, KEY_MUTE },
++	{ 0x0701, KEY_MENU }, /* Pinnacle logo */
++	{ 0x0739, KEY_POWER },
++	{ 0x0703, KEY_VOLUMEUP },
++	{ 0x0709, KEY_VOLUMEDOWN },
++	{ 0x0706, KEY_CHANNELUP },
++	{ 0x070c, KEY_CHANNELDOWN },
++	{ 0x070f, KEY_1 },
++	{ 0x0715, KEY_2 },
++	{ 0x0710, KEY_3 },
++	{ 0x0718, KEY_4 },
++	{ 0x071b, KEY_5 },
++	{ 0x071e, KEY_6 },
++	{ 0x0711, KEY_7 },
++	{ 0x0721, KEY_8 },
++	{ 0x0712, KEY_9 },
++	{ 0x0727, KEY_0 },
++	{ 0x0724, KEY_SCREEN }, /* 'Square' key */
++	{ 0x072a, KEY_TEXT },   /* 'T' key */
++	{ 0x072d, KEY_REWIND },
++	{ 0x0730, KEY_PLAY },
++	{ 0x0733, KEY_FASTFORWARD },
++	{ 0x0736, KEY_RECORD },
++	{ 0x073c, KEY_STOP },
++	{ 0x073f, KEY_CANCEL }, /* '?' key */
++
++	/* Key codes for the Terratec Cinergy DT XS Diversity, similar to cinergyT2.c */
++	{ 0xeb01, KEY_POWER },
++	{ 0xeb02, KEY_1 },
++	{ 0xeb03, KEY_2 },
++	{ 0xeb04, KEY_3 },
++	{ 0xeb05, KEY_4 },
++	{ 0xeb06, KEY_5 },
++	{ 0xeb07, KEY_6 },
++	{ 0xeb08, KEY_7 },
++	{ 0xeb09, KEY_8 },
++	{ 0xeb0a, KEY_9 },
++	{ 0xeb0b, KEY_VIDEO },
++	{ 0xeb0c, KEY_0 },
++	{ 0xeb0d, KEY_REFRESH },
++	{ 0xeb0f, KEY_EPG },
++	{ 0xeb10, KEY_UP },
++	{ 0xeb11, KEY_LEFT },
++	{ 0xeb12, KEY_OK },
++	{ 0xeb13, KEY_RIGHT },
++	{ 0xeb14, KEY_DOWN },
++	{ 0xeb16, KEY_INFO },
++	{ 0xeb17, KEY_RED },
++	{ 0xeb18, KEY_GREEN },
++	{ 0xeb19, KEY_YELLOW },
++	{ 0xeb1a, KEY_BLUE },
++	{ 0xeb1b, KEY_CHANNELUP },
++	{ 0xeb1c, KEY_VOLUMEUP },
++	{ 0xeb1d, KEY_MUTE },
++	{ 0xeb1e, KEY_VOLUMEDOWN },
++	{ 0xeb1f, KEY_CHANNELDOWN },
++	{ 0xeb40, KEY_PAUSE },
++	{ 0xeb41, KEY_HOME },
++	{ 0xeb42, KEY_MENU }, /* DVD Menu */
++	{ 0xeb43, KEY_SUBTITLE },
++	{ 0xeb44, KEY_TEXT }, /* Teletext */
++	{ 0xeb45, KEY_DELETE },
++	{ 0xeb46, KEY_TV },
++	{ 0xeb47, KEY_DVD },
++	{ 0xeb48, KEY_STOP },
++	{ 0xeb49, KEY_VIDEO },
++	{ 0xeb4a, KEY_AUDIO }, /* Music */
++	{ 0xeb4b, KEY_SCREEN }, /* Pic */
++	{ 0xeb4c, KEY_PLAY },
++	{ 0xeb4d, KEY_BACK },
++	{ 0xeb4e, KEY_REWIND },
++	{ 0xeb4f, KEY_FASTFORWARD },
++	{ 0xeb54, KEY_PREVIOUS },
++	{ 0xeb58, KEY_RECORD },
++	{ 0xeb5c, KEY_NEXT },
++
++	/* Key codes for the Haupauge WinTV Nova-TD, copied from nova-t-usb2.c (Nova-T USB2) */
++	{ 0x1e00, KEY_0 },
++	{ 0x1e01, KEY_1 },
++	{ 0x1e02, KEY_2 },
++	{ 0x1e03, KEY_3 },
++	{ 0x1e04, KEY_4 },
++	{ 0x1e05, KEY_5 },
++	{ 0x1e06, KEY_6 },
++	{ 0x1e07, KEY_7 },
++	{ 0x1e08, KEY_8 },
++	{ 0x1e09, KEY_9 },
++	{ 0x1e0a, KEY_KPASTERISK },
++	{ 0x1e0b, KEY_RED },
++	{ 0x1e0c, KEY_RADIO },
++	{ 0x1e0d, KEY_MENU },
++	{ 0x1e0e, KEY_GRAVE }, /* # */
++	{ 0x1e0f, KEY_MUTE },
++	{ 0x1e10, KEY_VOLUMEUP },
++	{ 0x1e11, KEY_VOLUMEDOWN },
++	{ 0x1e12, KEY_CHANNEL },
++	{ 0x1e14, KEY_UP },
++	{ 0x1e15, KEY_DOWN },
++	{ 0x1e16, KEY_LEFT },
++	{ 0x1e17, KEY_RIGHT },
++	{ 0x1e18, KEY_VIDEO },
++	{ 0x1e19, KEY_AUDIO },
++	{ 0x1e1a, KEY_MEDIA },
++	{ 0x1e1b, KEY_EPG },
++	{ 0x1e1c, KEY_TV },
++	{ 0x1e1e, KEY_NEXT },
++	{ 0x1e1f, KEY_BACK },
++	{ 0x1e20, KEY_CHANNELUP },
++	{ 0x1e21, KEY_CHANNELDOWN },
++	{ 0x1e24, KEY_LAST }, /* Skip backwards */
++	{ 0x1e25, KEY_OK },
++	{ 0x1e29, KEY_BLUE},
++	{ 0x1e2e, KEY_GREEN },
++	{ 0x1e30, KEY_PAUSE },
++	{ 0x1e32, KEY_REWIND },
++	{ 0x1e34, KEY_FASTFORWARD },
++	{ 0x1e35, KEY_PLAY },
++	{ 0x1e36, KEY_STOP },
++	{ 0x1e37, KEY_RECORD },
++	{ 0x1e38, KEY_YELLOW },
++	{ 0x1e3b, KEY_GOTO },
++	{ 0x1e3d, KEY_POWER },
++
++	/* Key codes for the Leadtek Winfast DTV Dongle */
++	{ 0x0042, KEY_POWER },
++	{ 0x077c, KEY_TUNER },
++	{ 0x0f4e, KEY_PRINT }, /* PREVIEW */
++	{ 0x0840, KEY_SCREEN }, /* full screen toggle*/
++	{ 0x0f71, KEY_DOT }, /* frequency */
++	{ 0x0743, KEY_0 },
++	{ 0x0c41, KEY_1 },
++	{ 0x0443, KEY_2 },
++	{ 0x0b7f, KEY_3 },
++	{ 0x0e41, KEY_4 },
++	{ 0x0643, KEY_5 },
++	{ 0x097f, KEY_6 },
++	{ 0x0d7e, KEY_7 },
++	{ 0x057c, KEY_8 },
++	{ 0x0a40, KEY_9 },
++	{ 0x0e4e, KEY_CLEAR },
++	{ 0x047c, KEY_CHANNEL }, /* show channel number */
++	{ 0x0f41, KEY_LAST }, /* recall */
++	{ 0x0342, KEY_MUTE },
++	{ 0x064c, KEY_RESERVED }, /* PIP button*/
++	{ 0x0172, KEY_SHUFFLE }, /* SNAPSHOT */
++	{ 0x0c4e, KEY_PLAYPAUSE }, /* TIMESHIFT */
++	{ 0x0b70, KEY_RECORD },
++	{ 0x037d, KEY_VOLUMEUP },
++	{ 0x017d, KEY_VOLUMEDOWN },
++	{ 0x0242, KEY_CHANNELUP },
++	{ 0x007d, KEY_CHANNELDOWN },
++
++	/* Key codes for Nova-TD "credit card" remote control. */
++	{ 0x1d00, KEY_0 },
++	{ 0x1d01, KEY_1 },
++	{ 0x1d02, KEY_2 },
++	{ 0x1d03, KEY_3 },
++	{ 0x1d04, KEY_4 },
++	{ 0x1d05, KEY_5 },
++	{ 0x1d06, KEY_6 },
++	{ 0x1d07, KEY_7 },
++	{ 0x1d08, KEY_8 },
++	{ 0x1d09, KEY_9 },
++	{ 0x1d0a, KEY_TEXT },
++	{ 0x1d0d, KEY_MENU },
++	{ 0x1d0f, KEY_MUTE },
++	{ 0x1d10, KEY_VOLUMEUP },
++	{ 0x1d11, KEY_VOLUMEDOWN },
++	{ 0x1d12, KEY_CHANNEL },
++	{ 0x1d14, KEY_UP },
++	{ 0x1d15, KEY_DOWN },
++	{ 0x1d16, KEY_LEFT },
++	{ 0x1d17, KEY_RIGHT },
++	{ 0x1d1c, KEY_TV },
++	{ 0x1d1e, KEY_NEXT },
++	{ 0x1d1f, KEY_BACK },
++	{ 0x1d20, KEY_CHANNELUP },
++	{ 0x1d21, KEY_CHANNELDOWN },
++	{ 0x1d24, KEY_LAST },
++	{ 0x1d25, KEY_OK },
++	{ 0x1d30, KEY_PAUSE },
++	{ 0x1d32, KEY_REWIND },
++	{ 0x1d34, KEY_FASTFORWARD },
++	{ 0x1d35, KEY_PLAY },
++	{ 0x1d36, KEY_STOP },
++	{ 0x1d37, KEY_RECORD },
++	{ 0x1d3b, KEY_GOTO },
++	{ 0x1d3d, KEY_POWER },
++};
++
++static struct rc_keymap dib0700_rc5_map = {
++	.map = {
++		.scan    = dib0700_rc5_table,
++		.size    = ARRAY_SIZE(dib0700_rc5_table),
++		.ir_type = IR_TYPE_RC5,
++		.name    = RC_MAP_DIB0700_RC5_TABLE,
++	}
++};
++
++static int __init init_rc_map(void)
++{
++	return ir_register_map(&dib0700_rc5_map);
++}
++
++static void __exit exit_rc_map(void)
++{
++	ir_unregister_map(&dib0700_rc5_map);
++}
++
++module_init(init_rc_map)
++module_exit(exit_rc_map)
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+diff -Naurp linux-2.6.35/drivers/media/IR/keymaps/rc-rc6-mce.c linux-2.6.35.new/drivers/media/IR/keymaps/rc-rc6-mce.c
+--- linux-2.6.35/drivers/media/IR/keymaps/rc-rc6-mce.c	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/keymaps/rc-rc6-mce.c	2010-09-09 23:21:49.000000000 -0400
+@@ -74,6 +74,8 @@ static struct ir_scancode rc6_mce[] = {
+ 	{ 0x800f045a, KEY_SUBTITLE }, /* Caption/Teletext */
+ 	{ 0x800f044d, KEY_TITLE },
+ 
++       { 0x800f044e, KEY_PRINT }, /* Print - HP OEM version of remote */
++
+ 	{ 0x800f040c, KEY_POWER },
+ 	{ 0x800f040d, KEY_PROG1 }, /* Windows MCE button */
+ 
+diff -Naurp linux-2.6.35/drivers/media/IR/keymaps/rc-streamzap.c linux-2.6.35.new/drivers/media/IR/keymaps/rc-streamzap.c
+--- linux-2.6.35/drivers/media/IR/keymaps/rc-streamzap.c	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/keymaps/rc-streamzap.c	2010-09-09 23:21:42.000000000 -0400
+@@ -60,7 +60,7 @@ static struct rc_keymap streamzap_map = 
+ 	.map = {
+ 		.scan    = streamzap,
+ 		.size    = ARRAY_SIZE(streamzap),
+-		.ir_type = IR_TYPE_RC5,
++		.ir_type = IR_TYPE_RC5_SZ,
+ 		.name    = RC_MAP_STREAMZAP,
+ 	}
+ };
+diff -Naurp linux-2.6.35/drivers/media/IR/Makefile linux-2.6.35.new/drivers/media/IR/Makefile
+--- linux-2.6.35/drivers/media/IR/Makefile	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/Makefile	2010-09-09 23:21:42.000000000 -0400
+@@ -17,4 +17,5 @@ obj-$(CONFIG_IR_LIRC_CODEC) += ir-lirc-c
+ # stand-alone IR receivers/transmitters
+ obj-$(CONFIG_IR_IMON) += imon.o
+ obj-$(CONFIG_IR_MCEUSB) += mceusb.o
++obj-$(CONFIG_IR_ENE) += ene_ir.o
+ obj-$(CONFIG_IR_STREAMZAP) += streamzap.o
+diff -Naurp linux-2.6.35/drivers/media/IR/mceusb.c linux-2.6.35.new/drivers/media/IR/mceusb.c
+--- linux-2.6.35/drivers/media/IR/mceusb.c	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/mceusb.c	2010-09-09 23:21:49.000000000 -0400
+@@ -120,6 +120,10 @@ static struct usb_device_id mceusb_dev_t
+ 	{ USB_DEVICE(VENDOR_PHILIPS, 0x0613) },
+ 	/* Philips eHome Infrared Transceiver */
+ 	{ USB_DEVICE(VENDOR_PHILIPS, 0x0815) },
++	/* Philips/Spinel plus IR transceiver for ASUS */
++	{ USB_DEVICE(VENDOR_PHILIPS, 0x206c) },
++	/* Philips/Spinel plus IR transceiver for ASUS */
++	{ USB_DEVICE(VENDOR_PHILIPS, 0x2088) },
+ 	/* Realtek MCE IR Receiver */
+ 	{ USB_DEVICE(VENDOR_REALTEK, 0x0161) },
+ 	/* SMK/Toshiba G83C0004D410 */
+@@ -427,7 +431,7 @@ static void mceusb_dev_printdata(struct 
+ 	}
+ }
+ 
+-static void usb_async_callback(struct urb *urb, struct pt_regs *regs)
++static void mce_async_callback(struct urb *urb, struct pt_regs *regs)
+ {
+ 	struct mceusb_dev *ir;
+ 	int len;
+@@ -476,7 +480,7 @@ static void mce_request_packet(struct mc
+ 		/* outbound data */
+ 		usb_fill_int_urb(async_urb, ir->usbdev,
+ 			usb_sndintpipe(ir->usbdev, ep->bEndpointAddress),
+-			async_buf, size, (usb_complete_t) usb_async_callback,
++			async_buf, size, (usb_complete_t)mce_async_callback,
+ 			ir, ep->bInterval);
+ 		memcpy(async_buf, data, size);
+ 
+@@ -919,7 +923,6 @@ static int __devinit mceusb_dev_probe(st
+ 	struct usb_endpoint_descriptor *ep = NULL;
+ 	struct usb_endpoint_descriptor *ep_in = NULL;
+ 	struct usb_endpoint_descriptor *ep_out = NULL;
+-	struct usb_host_config *config;
+ 	struct mceusb_dev *ir = NULL;
+ 	int pipe, maxp, i;
+ 	char buf[63], name[128] = "";
+@@ -929,7 +932,6 @@ static int __devinit mceusb_dev_probe(st
+ 
+ 	dev_dbg(&intf->dev, ": %s called\n", __func__);
+ 
+-	config = dev->actconfig;
+ 	idesc  = intf->cur_altsetting;
+ 
+ 	is_gen3 = usb_match_id(intf, gen3_list) ? 1 : 0;
+diff -Naurp linux-2.6.35/drivers/media/IR/rc-map.c linux-2.6.35.new/drivers/media/IR/rc-map.c
+--- linux-2.6.35/drivers/media/IR/rc-map.c	2010-08-01 18:11:14.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/rc-map.c	2010-09-09 23:21:49.000000000 -0400
+@@ -82,3 +82,26 @@ void ir_unregister_map(struct rc_keymap 
+ }
+ EXPORT_SYMBOL_GPL(ir_unregister_map);
+ 
++
++static struct ir_scancode empty[] = {
++	{ 0x2a, KEY_COFFEE },
++};
++
++static struct rc_keymap empty_map = {
++	.map = {
++		.scan    = empty,
++		.size    = ARRAY_SIZE(empty),
++		.ir_type = IR_TYPE_UNKNOWN,	/* Legacy IR type */
++		.name    = RC_MAP_EMPTY,
++	}
++};
++
++int ir_rcmap_init(void)
++{
++	return ir_register_map(&empty_map);
++}
++
++void ir_rcmap_cleanup(void)
++{
++	ir_unregister_map(&empty_map);
++}
+diff -Naurp linux-2.6.35/drivers/media/IR/rc-map.c.orig linux-2.6.35.new/drivers/media/IR/rc-map.c.orig
+--- linux-2.6.35/drivers/media/IR/rc-map.c.orig	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.35.new/drivers/media/IR/rc-map.c.orig	2010-09-09 23:21:42.000000000 -0400
+@@ -0,0 +1,84 @@
++/* ir-raw-event.c - handle IR Pulse/Space event
++ *
++ * Copyright (C) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License as published by
++ *  the Free Software Foundation version 2 of the License.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ */
++
++#include <media/ir-core.h>
++#include <linux/spinlock.h>
++#include <linux/delay.h>
++
++/* Used to handle IR raw handler extensions */
++static LIST_HEAD(rc_map_list);
++static DEFINE_SPINLOCK(rc_map_lock);
++
++static struct rc_keymap *seek_rc_map(const char *name)
++{
++	struct rc_keymap *map = NULL;
++
++	spin_lock(&rc_map_lock);
++	list_for_each_entry(map, &rc_map_list, list) {
++		if (!strcmp(name, map->map.name)) {
++			spin_unlock(&rc_map_lock);
++			return map;
++		}
++	}
++	spin_unlock(&rc_map_lock);
++
++	return NULL;
++}
++
++struct ir_scancode_table *get_rc_map(const char *name)
++{
++
++	struct rc_keymap *map;
++
++	map = seek_rc_map(name);
++#ifdef MODULE
++	if (!map) {
++		int rc = request_module(name);
++		if (rc < 0) {
++			printk(KERN_ERR "Couldn't load IR keymap %s\n", name);
++			return NULL;
++		}
++		msleep(20);	/* Give some time for IR to register */
++
++		map = seek_rc_map(name);
++	}
++#endif
++	if (!map) {
++		printk(KERN_ERR "IR keymap %s not found\n", name);
++		return NULL;
++	}
++
++	printk(KERN_INFO "Registered IR keymap %s\n", map->map.name);
++
++	return &map->map;
++}
++EXPORT_SYMBOL_GPL(get_rc_map);
++
++int ir_register_map(struct rc_keymap *map)
++{
++	spin_lock(&rc_map_lock);
++	list_add_tail(&map->list, &rc_map_list);
++	spin_unlock(&rc_map_lock);
++	return 0;
++}
++EXPORT_SYMBOL_GPL(ir_register_map);
++
++void ir_unregister_map(struct rc_keymap *map)
++{
++	spin_lock(&rc_map_lock);
++	list_del(&map->list);
++	spin_unlock(&rc_map_lock);
++}
++EXPORT_SYMBOL_GPL(ir_unregister_map);
++
+diff -Naurp linux-2.6.35/drivers/media/IR/rc-map.c.rej linux-2.6.35.new/drivers/media/IR/rc-map.c.rej
+--- linux-2.6.35/drivers/media/IR/rc-map.c.rej	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.35.new/drivers/media/IR/rc-map.c.rej	2010-09-09 23:21:42.000000000 -0400
+@@ -0,0 +1,13 @@
++--- drivers/media/IR/rc-map.c
+++++ drivers/media/IR/rc-map.c
++@@ -100,8 +100,10 @@
++ {
++ 	return ir_register_map(&empty_map);
++ }
+++EXPORT_SYMBOL_GPL(ir_rcmap_init);
++ 
++ void ir_rcmap_cleanup(void)
++ {
++ 	ir_unregister_map(&empty_map);
++ }
+++EXPORT_SYMBOL_GPL(ir_rcmap_cleanup);
+diff -Naurp linux-2.6.35/drivers/media/IR/streamzap.c linux-2.6.35.new/drivers/media/IR/streamzap.c
+--- linux-2.6.35/drivers/media/IR/streamzap.c	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/media/IR/streamzap.c	2010-09-09 23:21:42.000000000 -0400
+@@ -71,9 +71,9 @@ MODULE_DEVICE_TABLE(usb, streamzap_table
+ 
+ /* from ir-rc5-sz-decoder.c */
+ #ifdef CONFIG_IR_RC5_SZ_DECODER_MODULE
+-#define load_rc5_sz_decode()   request_module("ir-rc5-sz-decoder")
++#define load_rc5_sz_decode()    request_module("ir-rc5-sz-decoder")
+ #else
+-#define load_rc5_sz_decode()   0
++#define load_rc5_sz_decode()    0
+ #endif
+ 
+ enum StreamzapDecoderState {
+@@ -244,9 +244,9 @@ static void streamzap_callback(struct ur
+ 		break;
+ 	}
+ 
+-	dev_info(sz->dev, "%s: received urb, len %d\n", __func__, len);
++	dev_dbg(sz->dev, "%s: received urb, len %d\n", __func__, len);
+ 	for (i = 0; i < len; i++) {
+-		dev_info(sz->dev, "sz idx %d: %x\n",
++		dev_dbg(sz->dev, "sz idx %d: %x\n",
+ 			i, (unsigned char)sz->buf_in[i]);
+ 		switch (sz->decoder_state) {
+ 		case PulseSpace:
+diff -Naurp linux-2.6.35/drivers/staging/lirc/Kconfig linux-2.6.35.new/drivers/staging/lirc/Kconfig
+--- linux-2.6.35/drivers/staging/lirc/Kconfig	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/staging/lirc/Kconfig	2010-09-09 23:21:42.000000000 -0400
+@@ -18,14 +18,6 @@ config LIRC_BT829
+ 	help
+ 	  Driver for the IR interface on BT829-based hardware
+ 
+-config LIRC_ENE0100
+-	tristate "ENE KB3924/ENE0100 CIR Port Reciever"
+-	depends on LIRC_STAGING && PNP
+-	help
+-	  This is a driver for CIR port handled by ENE KB3924 embedded
+-	  controller found on some notebooks.
+-	  It appears on PNP list as ENE0100.
+-
+ config LIRC_I2C
+ 	tristate "I2C Based IR Receivers"
+ 	depends on LIRC_STAGING && I2C
+diff -Naurp linux-2.6.35/drivers/staging/lirc/lirc_ene0100.c linux-2.6.35.new/drivers/staging/lirc/lirc_ene0100.c
+--- linux-2.6.35/drivers/staging/lirc/lirc_ene0100.c	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/staging/lirc/lirc_ene0100.c	1969-12-31 19:00:00.000000000 -0500
+@@ -1,646 +0,0 @@
+-/*
+- * driver for ENE KB3926 B/C/D CIR (also known as ENE0100)
+- *
+- * Copyright (C) 2009 Maxim Levitsky <maximlevitsky@gmail.com>
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU General Public License as
+- * published by the Free Software Foundation; either version 2 of the
+- * License, or (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but
+- * WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+- * USA
+- */
+-
+-#include <linux/kernel.h>
+-#include <linux/module.h>
+-#include <linux/pnp.h>
+-#include <linux/io.h>
+-#include <linux/interrupt.h>
+-#include <linux/sched.h>
+-#include "lirc_ene0100.h"
+-
+-static int sample_period = 75;
+-static int enable_idle = 1;
+-static int enable_learning;
+-
+-static void ene_set_idle(struct ene_device *dev, int idle);
+-static void ene_set_inputs(struct ene_device *dev, int enable);
+-
+-/* read a hardware register */
+-static u8 ene_hw_read_reg(struct ene_device *dev, u16 reg)
+-{
+-	outb(reg >> 8, dev->hw_io + ENE_ADDR_HI);
+-	outb(reg & 0xFF, dev->hw_io + ENE_ADDR_LO);
+-	return inb(dev->hw_io + ENE_IO);
+-}
+-
+-/* write a hardware register */
+-static void ene_hw_write_reg(struct ene_device *dev, u16 reg, u8 value)
+-{
+-	outb(reg >> 8, dev->hw_io + ENE_ADDR_HI);
+-	outb(reg & 0xFF, dev->hw_io + ENE_ADDR_LO);
+-	outb(value, dev->hw_io + ENE_IO);
+-}
+-
+-/* change specific bits in hardware register */
+-static void ene_hw_write_reg_mask(struct ene_device *dev,
+-				  u16 reg, u8 value, u8 mask)
+-{
+-	u8 regvalue;
+-
+-	outb(reg >> 8, dev->hw_io + ENE_ADDR_HI);
+-	outb(reg & 0xFF, dev->hw_io + ENE_ADDR_LO);
+-
+-	regvalue = inb(dev->hw_io + ENE_IO) & ~mask;
+-	regvalue |= (value & mask);
+-	outb(regvalue, dev->hw_io + ENE_IO);
+-}
+-
+-/* read irq status and ack it */
+-static int ene_hw_irq_status(struct ene_device *dev, int *buffer_pointer)
+-{
+-	u8 irq_status;
+-	u8 fw_flags1, fw_flags2;
+-
+-	fw_flags2 = ene_hw_read_reg(dev, ENE_FW2);
+-
+-	if (buffer_pointer)
+-		*buffer_pointer = 4 * (fw_flags2 & ENE_FW2_BUF_HIGH);
+-
+-	if (dev->hw_revision < ENE_HW_C) {
+-		irq_status = ene_hw_read_reg(dev, ENEB_IRQ_STATUS);
+-
+-		if (!(irq_status & ENEB_IRQ_STATUS_IR))
+-			return 0;
+-		ene_hw_write_reg(dev, ENEB_IRQ_STATUS,
+-				 irq_status & ~ENEB_IRQ_STATUS_IR);
+-
+-		/* rev B support only recieving */
+-		return ENE_IRQ_RX;
+-	}
+-
+-	irq_status = ene_hw_read_reg(dev, ENEC_IRQ);
+-
+-	if (!(irq_status & ENEC_IRQ_STATUS))
+-		return 0;
+-
+-	/* original driver does that twice - a workaround ? */
+-	ene_hw_write_reg(dev, ENEC_IRQ, irq_status & ~ENEC_IRQ_STATUS);
+-	ene_hw_write_reg(dev, ENEC_IRQ, irq_status & ~ENEC_IRQ_STATUS);
+-
+-	/* clear unknown flag in F8F9 */
+-	if (fw_flags2 & ENE_FW2_IRQ_CLR)
+-		ene_hw_write_reg(dev, ENE_FW2, fw_flags2 & ~ENE_FW2_IRQ_CLR);
+-
+-	/* check if this is a TX interrupt */
+-	fw_flags1 = ene_hw_read_reg(dev, ENE_FW1);
+-
+-	if (fw_flags1 & ENE_FW1_TXIRQ) {
+-		ene_hw_write_reg(dev, ENE_FW1, fw_flags1 & ~ENE_FW1_TXIRQ);
+-		return ENE_IRQ_TX;
+-	} else
+-		return ENE_IRQ_RX;
+-}
+-
+-static int ene_hw_detect(struct ene_device *dev)
+-{
+-	u8 chip_major, chip_minor;
+-	u8 hw_revision, old_ver;
+-	u8 tmp;
+-	u8 fw_capabilities;
+-
+-	tmp = ene_hw_read_reg(dev, ENE_HW_UNK);
+-	ene_hw_write_reg(dev, ENE_HW_UNK, tmp & ~ENE_HW_UNK_CLR);
+-
+-	chip_major = ene_hw_read_reg(dev, ENE_HW_VER_MAJOR);
+-	chip_minor = ene_hw_read_reg(dev, ENE_HW_VER_MINOR);
+-
+-	ene_hw_write_reg(dev, ENE_HW_UNK, tmp);
+-	hw_revision = ene_hw_read_reg(dev, ENE_HW_VERSION);
+-	old_ver = ene_hw_read_reg(dev, ENE_HW_VER_OLD);
+-
+-	if (hw_revision == 0xFF) {
+-
+-		ene_printk(KERN_WARNING, "device seems to be disabled\n");
+-		ene_printk(KERN_WARNING,
+-			"send a mail to lirc-list@lists.sourceforge.net\n");
+-		ene_printk(KERN_WARNING, "please attach output of acpidump\n");
+-
+-		return -ENODEV;
+-	}
+-
+-	if (chip_major == 0x33) {
+-		ene_printk(KERN_WARNING, "chips 0x33xx aren't supported yet\n");
+-		return -ENODEV;
+-	}
+-
+-	if (chip_major == 0x39 && chip_minor == 0x26 && hw_revision == 0xC0) {
+-		dev->hw_revision = ENE_HW_C;
+-		ene_printk(KERN_WARNING,
+-		       "KB3926C detected, driver support is not complete!\n");
+-
+-	} else if (old_ver == 0x24 && hw_revision == 0xC0) {
+-		dev->hw_revision = ENE_HW_B;
+-		ene_printk(KERN_NOTICE, "KB3926B detected\n");
+-	} else {
+-		dev->hw_revision = ENE_HW_D;
+-		ene_printk(KERN_WARNING,
+-			"unknown ENE chip detected, assuming KB3926D\n");
+-		ene_printk(KERN_WARNING, "driver support incomplete");
+-
+-	}
+-
+-	ene_printk(KERN_DEBUG, "chip is 0x%02x%02x - 0x%02x, 0x%02x\n",
+-		chip_major, chip_minor, old_ver, hw_revision);
+-
+-
+-	/* detect features hardware supports */
+-
+-	if (dev->hw_revision < ENE_HW_C)
+-		return 0;
+-
+-	fw_capabilities = ene_hw_read_reg(dev, ENE_FW2);
+-
+-	dev->hw_gpio40_learning = fw_capabilities & ENE_FW2_GP40_AS_LEARN;
+-	dev->hw_learning_and_tx_capable = fw_capabilities & ENE_FW2_LEARNING;
+-
+-	dev->hw_fan_as_normal_input = dev->hw_learning_and_tx_capable &&
+-	    fw_capabilities & ENE_FW2_FAN_AS_NRML_IN;
+-
+-	ene_printk(KERN_NOTICE, "hardware features:\n");
+-	ene_printk(KERN_NOTICE,
+-		"learning and tx %s, gpio40_learn %s, fan_in %s\n",
+-	       dev->hw_learning_and_tx_capable ? "on" : "off",
+-	       dev->hw_gpio40_learning ? "on" : "off",
+-	       dev->hw_fan_as_normal_input ? "on" : "off");
+-
+-	if (!dev->hw_learning_and_tx_capable && enable_learning)
+-		enable_learning = 0;
+-
+-	if (dev->hw_learning_and_tx_capable) {
+-		ene_printk(KERN_WARNING,
+-		"Device supports transmitting, but the driver doesn't\n");
+-		ene_printk(KERN_WARNING,
+-		"due to lack of hardware to test against.\n");
+-		ene_printk(KERN_WARNING,
+-		"Send a mail to: lirc-list@lists.sourceforge.net\n");
+-	}
+-	return 0;
+-}
+-
+-/* hardware initialization */
+-static int ene_hw_init(void *data)
+-{
+-	u8 reg_value;
+-	struct ene_device *dev = (struct ene_device *)data;
+-	dev->in_use = 1;
+-
+-	if (dev->hw_revision < ENE_HW_C) {
+-		ene_hw_write_reg(dev, ENEB_IRQ, dev->irq << 1);
+-		ene_hw_write_reg(dev, ENEB_IRQ_UNK1, 0x01);
+-	} else {
+-		reg_value = ene_hw_read_reg(dev, ENEC_IRQ) & 0xF0;
+-		reg_value |= ENEC_IRQ_UNK_EN;
+-		reg_value &= ~ENEC_IRQ_STATUS;
+-		reg_value |= (dev->irq & ENEC_IRQ_MASK);
+-		ene_hw_write_reg(dev, ENEC_IRQ, reg_value);
+-		ene_hw_write_reg(dev, ENE_TX_UNK1, 0x63);
+-	}
+-
+-	ene_hw_write_reg(dev, ENE_CIR_CONF2, 0x00);
+-	ene_set_inputs(dev, enable_learning);
+-
+-	/* set sampling period */
+-	ene_hw_write_reg(dev, ENE_CIR_SAMPLE_PERIOD, sample_period);
+-
+-	/* ack any pending irqs - just in case */
+-	ene_hw_irq_status(dev, NULL);
+-
+-	/* enter idle mode */
+-	ene_set_idle(dev, 1);
+-
+-	/* enable firmware bits */
+-	ene_hw_write_reg_mask(dev, ENE_FW1,
+-			      ENE_FW1_ENABLE | ENE_FW1_IRQ,
+-			      ENE_FW1_ENABLE | ENE_FW1_IRQ);
+-	/* clear stats */
+-	dev->sample = 0;
+-	return 0;
+-}
+-
+-/* this enables gpio40 signal, used if connected to wide band input*/
+-static void ene_enable_gpio40(struct ene_device *dev, int enable)
+-{
+-	ene_hw_write_reg_mask(dev, ENE_CIR_CONF1, enable ?
+-			      0 : ENE_CIR_CONF2_GPIO40DIS,
+-			      ENE_CIR_CONF2_GPIO40DIS);
+-}
+-
+-/* this enables the classic sampler */
+-static void ene_enable_normal_recieve(struct ene_device *dev, int enable)
+-{
+-	ene_hw_write_reg(dev, ENE_CIR_CONF1, enable ? ENE_CIR_CONF1_ADC_ON : 0);
+-}
+-
+-/* this enables recieve via fan input */
+-static void ene_enable_fan_recieve(struct ene_device *dev, int enable)
+-{
+-	if (!enable)
+-		ene_hw_write_reg(dev, ENE_FAN_AS_IN1, 0);
+-	else {
+-		ene_hw_write_reg(dev, ENE_FAN_AS_IN1, ENE_FAN_AS_IN1_EN);
+-		ene_hw_write_reg(dev, ENE_FAN_AS_IN2, ENE_FAN_AS_IN2_EN);
+-	}
+-	dev->fan_input_inuse = enable;
+-}
+-
+-/* determine which input to use*/
+-static void ene_set_inputs(struct ene_device *dev, int learning_enable)
+-{
+-	ene_enable_normal_recieve(dev, 1);
+-
+-	/* old hardware doesn't support learning mode for sure */
+-	if (dev->hw_revision <= ENE_HW_B)
+-		return;
+-
+-	/* reciever not learning capable, still set gpio40 correctly */
+-	if (!dev->hw_learning_and_tx_capable) {
+-		ene_enable_gpio40(dev, !dev->hw_gpio40_learning);
+-		return;
+-	}
+-
+-	/* enable learning mode */
+-	if (learning_enable) {
+-		ene_enable_gpio40(dev, dev->hw_gpio40_learning);
+-
+-		/* fan input is not used for learning */
+-		if (dev->hw_fan_as_normal_input)
+-			ene_enable_fan_recieve(dev, 0);
+-
+-	/* disable learning mode */
+-	} else {
+-		if (dev->hw_fan_as_normal_input) {
+-			ene_enable_fan_recieve(dev, 1);
+-			ene_enable_normal_recieve(dev, 0);
+-		} else
+-			ene_enable_gpio40(dev, !dev->hw_gpio40_learning);
+-	}
+-
+-	/* set few additional settings for this mode */
+-	ene_hw_write_reg_mask(dev, ENE_CIR_CONF1, learning_enable ?
+-			      ENE_CIR_CONF1_LEARN1 : 0, ENE_CIR_CONF1_LEARN1);
+-
+-	ene_hw_write_reg_mask(dev, ENE_CIR_CONF2, learning_enable ?
+-			      ENE_CIR_CONF2_LEARN2 : 0, ENE_CIR_CONF2_LEARN2);
+-}
+-
+-/* deinitialization */
+-static void ene_hw_deinit(void *data)
+-{
+-	struct ene_device *dev = (struct ene_device *)data;
+-
+-	/* disable samplers */
+-	ene_enable_normal_recieve(dev, 0);
+-
+-	if (dev->hw_fan_as_normal_input)
+-		ene_enable_fan_recieve(dev, 0);
+-
+-	/* disable hardware IRQ and firmware flag */
+-	ene_hw_write_reg_mask(dev, ENE_FW1, 0, ENE_FW1_ENABLE | ENE_FW1_IRQ);
+-
+-	ene_set_idle(dev, 1);
+-	dev->in_use = 0;
+-}
+-
+-/*  sends current sample to userspace */
+-static void send_sample(struct ene_device *dev)
+-{
+-	int value = abs(dev->sample) & PULSE_MASK;
+-
+-	if (dev->sample > 0)
+-		value |= PULSE_BIT;
+-
+-	if (!lirc_buffer_full(dev->lirc_driver->rbuf)) {
+-		lirc_buffer_write(dev->lirc_driver->rbuf, (void *)&value);
+-		wake_up(&dev->lirc_driver->rbuf->wait_poll);
+-	}
+-	dev->sample = 0;
+-}
+-
+-/*  this updates current sample */
+-static void update_sample(struct ene_device *dev, int sample)
+-{
+-	if (!dev->sample)
+-		dev->sample = sample;
+-	else if (same_sign(dev->sample, sample))
+-		dev->sample += sample;
+-	else {
+-		send_sample(dev);
+-		dev->sample = sample;
+-	}
+-}
+-
+-/* enable or disable idle mode */
+-static void ene_set_idle(struct ene_device *dev, int idle)
+-{
+-	struct timeval now;
+-	int disable = idle && enable_idle && (dev->hw_revision < ENE_HW_C);
+-
+-	ene_hw_write_reg_mask(dev, ENE_CIR_SAMPLE_PERIOD,
+-			      disable ? 0 : ENE_CIR_SAMPLE_OVERFLOW,
+-			      ENE_CIR_SAMPLE_OVERFLOW);
+-	dev->idle = idle;
+-
+-	/* remember when we have entered the idle mode */
+-	if (idle) {
+-		do_gettimeofday(&dev->gap_start);
+-		return;
+-	}
+-
+-	/* send the gap between keypresses now */
+-	do_gettimeofday(&now);
+-
+-	if (now.tv_sec - dev->gap_start.tv_sec > 16)
+-		dev->sample = space(PULSE_MASK);
+-	else
+-		dev->sample = dev->sample +
+-		    space(1000000ull * (now.tv_sec - dev->gap_start.tv_sec))
+-		    + space(now.tv_usec - dev->gap_start.tv_usec);
+-
+-	if (abs(dev->sample) > PULSE_MASK)
+-		dev->sample = space(PULSE_MASK);
+-	send_sample(dev);
+-}
+-
+-/* interrupt handler */
+-static irqreturn_t ene_hw_irq(int irq, void *data)
+-{
+-	u16 hw_value;
+-	int i, hw_sample;
+-	int space;
+-	int buffer_pointer;
+-	int irq_status;
+-
+-	struct ene_device *dev = (struct ene_device *)data;
+-	irq_status = ene_hw_irq_status(dev, &buffer_pointer);
+-
+-	if (!irq_status)
+-		return IRQ_NONE;
+-
+-	/* TODO: only RX for now */
+-	if (irq_status == ENE_IRQ_TX)
+-		return IRQ_HANDLED;
+-
+-	for (i = 0; i < ENE_SAMPLES_SIZE; i++) {
+-
+-		hw_value = ene_hw_read_reg(dev,
+-				ENE_SAMPLE_BUFFER + buffer_pointer + i);
+-
+-		if (dev->fan_input_inuse) {
+-			/* read high part of the sample */
+-			hw_value |= ene_hw_read_reg(dev,
+-			    ENE_SAMPLE_BUFFER_FAN + buffer_pointer + i) << 8;
+-
+-			/* test for _space_ bit */
+-			space = !(hw_value & ENE_FAN_SMPL_PULS_MSK);
+-
+-			/* clear space bit, and other unused bits */
+-			hw_value &= ENE_FAN_VALUE_MASK;
+-			hw_sample = hw_value * ENE_SAMPLE_PERIOD_FAN;
+-
+-		} else {
+-			space = hw_value & ENE_SAMPLE_SPC_MASK;
+-			hw_value &= ENE_SAMPLE_VALUE_MASK;
+-			hw_sample = hw_value * sample_period;
+-		}
+-
+-		/* no more data */
+-		if (!(hw_value))
+-			break;
+-
+-		if (space)
+-			hw_sample *= -1;
+-
+-		/* overflow sample recieved, handle it */
+-
+-		if (!dev->fan_input_inuse && hw_value == ENE_SAMPLE_OVERFLOW) {
+-
+-			if (dev->idle)
+-				continue;
+-
+-			if (dev->sample > 0 || abs(dev->sample) <= ENE_MAXGAP)
+-				update_sample(dev, hw_sample);
+-			else
+-				ene_set_idle(dev, 1);
+-
+-			continue;
+-		}
+-
+-		/* normal first sample recieved */
+-		if (!dev->fan_input_inuse && dev->idle) {
+-			ene_set_idle(dev, 0);
+-
+-			/* discard first recieved value, its random
+-			   since its the time signal was off before
+-			   first pulse if idle mode is enabled, HW
+-			   does that for us */
+-
+-			if (!enable_idle)
+-				continue;
+-		}
+-		update_sample(dev, hw_sample);
+-		send_sample(dev);
+-	}
+-	return IRQ_HANDLED;
+-}
+-
+-static int ene_probe(struct pnp_dev *pnp_dev,
+-		     const struct pnp_device_id *dev_id)
+-{
+-	struct ene_device *dev;
+-	struct lirc_driver *lirc_driver;
+-	int error = -ENOMEM;
+-
+-	dev = kzalloc(sizeof(struct ene_device), GFP_KERNEL);
+-
+-	if (!dev)
+-		goto err1;
+-
+-	dev->pnp_dev = pnp_dev;
+-	pnp_set_drvdata(pnp_dev, dev);
+-
+-
+-	/* prepare lirc interface */
+-	error = -ENOMEM;
+-	lirc_driver = kzalloc(sizeof(struct lirc_driver), GFP_KERNEL);
+-
+-	if (!lirc_driver)
+-		goto err2;
+-
+-	dev->lirc_driver = lirc_driver;
+-
+-	strcpy(lirc_driver->name, ENE_DRIVER_NAME);
+-	lirc_driver->minor = -1;
+-	lirc_driver->code_length = sizeof(int) * 8;
+-	lirc_driver->features = LIRC_CAN_REC_MODE2;
+-	lirc_driver->data = dev;
+-	lirc_driver->set_use_inc = ene_hw_init;
+-	lirc_driver->set_use_dec = ene_hw_deinit;
+-	lirc_driver->dev = &pnp_dev->dev;
+-	lirc_driver->owner = THIS_MODULE;
+-
+-	lirc_driver->rbuf = kzalloc(sizeof(struct lirc_buffer), GFP_KERNEL);
+-
+-	if (!lirc_driver->rbuf)
+-		goto err3;
+-
+-	if (lirc_buffer_init(lirc_driver->rbuf, sizeof(int), sizeof(int) * 256))
+-		goto err4;
+-
+-	error = -ENODEV;
+-	if (lirc_register_driver(lirc_driver))
+-		goto err5;
+-
+-	/* validate resources */
+-	if (!pnp_port_valid(pnp_dev, 0) ||
+-	    pnp_port_len(pnp_dev, 0) < ENE_MAX_IO)
+-		goto err6;
+-
+-	if (!pnp_irq_valid(pnp_dev, 0))
+-		goto err6;
+-
+-	dev->hw_io = pnp_port_start(pnp_dev, 0);
+-	dev->irq = pnp_irq(pnp_dev, 0);
+-
+-	/* claim the resources */
+-	error = -EBUSY;
+-	if (!request_region(dev->hw_io, ENE_MAX_IO, ENE_DRIVER_NAME))
+-		goto err6;
+-
+-	if (request_irq(dev->irq, ene_hw_irq,
+-			IRQF_SHARED, ENE_DRIVER_NAME, (void *)dev))
+-		goto err7;
+-
+-	/* detect hardware version and features */
+-	error = ene_hw_detect(dev);
+-	if (error)
+-		goto err8;
+-
+-	ene_printk(KERN_NOTICE, "driver has been succesfully loaded\n");
+-	return 0;
+-
+-err8:
+-	free_irq(dev->irq, dev);
+-err7:
+-	release_region(dev->hw_io, ENE_MAX_IO);
+-err6:
+-	lirc_unregister_driver(lirc_driver->minor);
+-err5:
+-	lirc_buffer_free(lirc_driver->rbuf);
+-err4:
+-	kfree(lirc_driver->rbuf);
+-err3:
+-	kfree(lirc_driver);
+-err2:
+-	kfree(dev);
+-err1:
+-	return error;
+-}
+-
+-static void ene_remove(struct pnp_dev *pnp_dev)
+-{
+-	struct ene_device *dev = pnp_get_drvdata(pnp_dev);
+-	ene_hw_deinit(dev);
+-	free_irq(dev->irq, dev);
+-	release_region(dev->hw_io, ENE_MAX_IO);
+-	lirc_unregister_driver(dev->lirc_driver->minor);
+-	lirc_buffer_free(dev->lirc_driver->rbuf);
+-	kfree(dev->lirc_driver);
+-	kfree(dev);
+-}
+-
+-#ifdef CONFIG_PM
+-
+-/* TODO: make 'wake on IR' configurable and add .shutdown */
+-/* currently impossible due to lack of kernel support */
+-
+-static int ene_suspend(struct pnp_dev *pnp_dev, pm_message_t state)
+-{
+-	struct ene_device *dev = pnp_get_drvdata(pnp_dev);
+-	ene_hw_write_reg_mask(dev, ENE_FW1, ENE_FW1_WAKE, ENE_FW1_WAKE);
+-	return 0;
+-}
+-
+-static int ene_resume(struct pnp_dev *pnp_dev)
+-{
+-	struct ene_device *dev = pnp_get_drvdata(pnp_dev);
+-	if (dev->in_use)
+-		ene_hw_init(dev);
+-
+-	ene_hw_write_reg_mask(dev, ENE_FW1, 0, ENE_FW1_WAKE);
+-	return 0;
+-}
+-
+-#endif
+-
+-static const struct pnp_device_id ene_ids[] = {
+-	{.id = "ENE0100",},
+-	{},
+-};
+-
+-static struct pnp_driver ene_driver = {
+-	.name = ENE_DRIVER_NAME,
+-	.id_table = ene_ids,
+-	.flags = PNP_DRIVER_RES_DO_NOT_CHANGE,
+-
+-	.probe = ene_probe,
+-	.remove = __devexit_p(ene_remove),
+-
+-#ifdef CONFIG_PM
+-	.suspend = ene_suspend,
+-	.resume = ene_resume,
+-#endif
+-};
+-
+-static int __init ene_init(void)
+-{
+-	if (sample_period < 5) {
+-		ene_printk(KERN_ERR, "sample period must be at\n");
+-		ene_printk(KERN_ERR, "least 5 us, (at least 30 recommended)\n");
+-		return -EINVAL;
+-	}
+-	return pnp_register_driver(&ene_driver);
+-}
+-
+-static void ene_exit(void)
+-{
+-	pnp_unregister_driver(&ene_driver);
+-}
+-
+-module_param(sample_period, int, S_IRUGO);
+-MODULE_PARM_DESC(sample_period, "Hardware sample period (75 us default)");
+-
+-module_param(enable_idle, bool, S_IRUGO | S_IWUSR);
+-MODULE_PARM_DESC(enable_idle,
+-	"Enables turning off signal sampling after long inactivity time; "
+-	"if disabled might help detecting input signal (default: enabled)");
+-
+-module_param(enable_learning, bool, S_IRUGO);
+-MODULE_PARM_DESC(enable_learning, "Use wide band (learning) reciever");
+-
+-MODULE_DEVICE_TABLE(pnp, ene_ids);
+-MODULE_DESCRIPTION
+-    ("LIRC driver for KB3926B/KB3926C/KB3926D (aka ENE0100) CIR port");
+-MODULE_AUTHOR("Maxim Levitsky");
+-MODULE_LICENSE("GPL");
+-
+-module_init(ene_init);
+-module_exit(ene_exit);
+diff -Naurp linux-2.6.35/drivers/staging/lirc/lirc_ene0100.h linux-2.6.35.new/drivers/staging/lirc/lirc_ene0100.h
+--- linux-2.6.35/drivers/staging/lirc/lirc_ene0100.h	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/staging/lirc/lirc_ene0100.h	1969-12-31 19:00:00.000000000 -0500
+@@ -1,169 +0,0 @@
+-/*
+- * driver for ENE KB3926 B/C/D CIR (also known as ENE0100)
+- *
+- * Copyright (C) 2009 Maxim Levitsky <maximlevitsky@gmail.com>
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU General Public License as
+- * published by the Free Software Foundation; either version 2 of the
+- * License, or (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful, but
+- * WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * General Public License for more details.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+- * USA
+- */
+-
+-#include <media/lirc.h>
+-#include <media/lirc_dev.h>
+-
+-/* hardware address */
+-#define ENE_STATUS		0	 /* hardware status - unused */
+-#define ENE_ADDR_HI		1	 /* hi byte of register address */
+-#define ENE_ADDR_LO		2	 /* low byte of register address */
+-#define ENE_IO			3	 /* read/write window */
+-#define ENE_MAX_IO		4
+-
+-/* 8 bytes of samples, divided in 2 halfs*/
+-#define ENE_SAMPLE_BUFFER	0xF8F0	 /* regular sample buffer */
+-#define ENE_SAMPLE_SPC_MASK	(1 << 7) /* sample is space */
+-#define ENE_SAMPLE_VALUE_MASK	0x7F
+-#define ENE_SAMPLE_OVERFLOW	0x7F
+-#define ENE_SAMPLES_SIZE	4
+-
+-/* fan input sample buffer */
+-#define ENE_SAMPLE_BUFFER_FAN	0xF8FB	 /* this buffer holds high byte of */
+-					 /* each sample of normal buffer */
+-
+-#define ENE_FAN_SMPL_PULS_MSK	0x8000	 /* this bit of combined sample */
+-					 /* if set, says that sample is pulse */
+-#define ENE_FAN_VALUE_MASK	0x0FFF   /* mask for valid bits of the value */
+-
+-/* first firmware register */
+-#define ENE_FW1			0xF8F8
+-#define	ENE_FW1_ENABLE		(1 << 0) /* enable fw processing */
+-#define ENE_FW1_TXIRQ		(1 << 1) /* TX interrupt pending */
+-#define ENE_FW1_WAKE		(1 << 6) /* enable wake from S3 */
+-#define ENE_FW1_IRQ		(1 << 7) /* enable interrupt */
+-
+-/* second firmware register */
+-#define ENE_FW2			0xF8F9
+-#define ENE_FW2_BUF_HIGH	(1 << 0) /* which half of the buffer to read */
+-#define ENE_FW2_IRQ_CLR		(1 << 2) /* clear this on IRQ */
+-#define ENE_FW2_GP40_AS_LEARN	(1 << 4) /* normal input is used as */
+-					 /* learning input */
+-#define ENE_FW2_FAN_AS_NRML_IN	(1 << 6) /* fan is used as normal input */
+-#define ENE_FW2_LEARNING	(1 << 7) /* hardware supports learning and TX */
+-
+-/* fan as input settings - only if learning capable */
+-#define ENE_FAN_AS_IN1		0xFE30   /* fan init reg 1 */
+-#define ENE_FAN_AS_IN1_EN	0xCD
+-#define ENE_FAN_AS_IN2		0xFE31   /* fan init reg 2 */
+-#define ENE_FAN_AS_IN2_EN	0x03
+-#define ENE_SAMPLE_PERIOD_FAN   61	 /* fan input has fixed sample period */
+-
+-/* IRQ registers block (for revision B) */
+-#define ENEB_IRQ		0xFD09	 /* IRQ number */
+-#define ENEB_IRQ_UNK1		0xFD17	 /* unknown setting = 1 */
+-#define ENEB_IRQ_STATUS		0xFD80	 /* irq status */
+-#define ENEB_IRQ_STATUS_IR	(1 << 5) /* IR irq */
+-
+-/* IRQ registers block (for revision C,D) */
+-#define ENEC_IRQ		0xFE9B	 /* new irq settings register */
+-#define ENEC_IRQ_MASK		0x0F	 /* irq number mask */
+-#define ENEC_IRQ_UNK_EN		(1 << 4) /* always enabled */
+-#define ENEC_IRQ_STATUS		(1 << 5) /* irq status and ACK */
+-
+-/* CIR block settings */
+-#define ENE_CIR_CONF1		0xFEC0
+-#define ENE_CIR_CONF1_ADC_ON	0x7	 /* reciever on gpio40 enabled */
+-#define ENE_CIR_CONF1_LEARN1	(1 << 3) /* enabled on learning mode */
+-#define ENE_CIR_CONF1_TX_ON	0x30	 /* enabled on transmit */
+-#define ENE_CIR_CONF1_TX_CARR	(1 << 7) /* send TX carrier or not */
+-
+-#define ENE_CIR_CONF2		0xFEC1	 /* unknown setting = 0 */
+-#define ENE_CIR_CONF2_LEARN2	(1 << 4) /* set on enable learning */
+-#define ENE_CIR_CONF2_GPIO40DIS	(1 << 5) /* disable normal input via gpio40 */
+-
+-#define ENE_CIR_SAMPLE_PERIOD	0xFEC8	 /* sample period in us */
+-#define ENE_CIR_SAMPLE_OVERFLOW	(1 << 7) /* interrupt on overflows if set */
+-
+-
+-/* transmitter - not implemented yet */
+-/* KB3926C and higher */
+-/* transmission is very similiar to recieving, a byte is written to */
+-/* ENE_TX_INPUT, in same manner as it is read from sample buffer */
+-/* sample period is fixed*/
+-
+-
+-/* transmitter ports */
+-#define ENE_TX_PORT1		0xFC01	 /* this enables one or both */
+-#define ENE_TX_PORT1_EN		(1 << 5) /* TX ports */
+-#define ENE_TX_PORT2		0xFC08
+-#define ENE_TX_PORT2_EN		(1 << 1)
+-
+-#define ENE_TX_INPUT		0xFEC9	 /* next byte to transmit */
+-#define ENE_TX_SPC_MASK		(1 << 7) /* Transmitted sample is space */
+-#define ENE_TX_UNK1		0xFECB	 /* set to 0x63 */
+-#define ENE_TX_SMPL_PERIOD	50	 /* transmit sample period */
+-
+-
+-#define ENE_TX_CARRIER		0xFECE	 /* TX carrier * 2 (khz) */
+-#define ENE_TX_CARRIER_UNKBIT	0x80	 /* This bit set on transmit */
+-#define ENE_TX_CARRIER_LOW	0xFECF	 /* TX carrier / 2 */
+-
+-/* Hardware versions */
+-#define ENE_HW_VERSION		0xFF00	 /* hardware revision */
+-#define ENE_HW_UNK		0xFF1D
+-#define ENE_HW_UNK_CLR		(1 << 2)
+-#define ENE_HW_VER_MAJOR	0xFF1E	 /* chip version */
+-#define ENE_HW_VER_MINOR	0xFF1F
+-#define ENE_HW_VER_OLD		0xFD00
+-
+-#define same_sign(a, b) ((((a) > 0) && (b) > 0) || ((a) < 0 && (b) < 0))
+-
+-#define ENE_DRIVER_NAME		"enecir"
+-#define ENE_MAXGAP		250000	 /* this is amount of time we wait
+-					 before turning the sampler, chosen
+-					 arbitry */
+-
+-#define space(len)	       (-(len))	 /* add a space */
+-
+-/* software defines */
+-#define ENE_IRQ_RX		1
+-#define ENE_IRQ_TX		2
+-
+-#define  ENE_HW_B		1	/* 3926B */
+-#define  ENE_HW_C		2	/* 3926C */
+-#define  ENE_HW_D		3	/* 3926D */
+-
+-#define ene_printk(level, text, ...) \
+-	printk(level ENE_DRIVER_NAME ": " text, ## __VA_ARGS__)
+-
+-struct ene_device {
+-	struct pnp_dev *pnp_dev;
+-	struct lirc_driver *lirc_driver;
+-
+-	/* hw settings */
+-	unsigned long hw_io;
+-	int irq;
+-
+-	int hw_revision;			/* hardware revision */
+-	int hw_learning_and_tx_capable;		/* learning capable */
+-	int hw_gpio40_learning;			/* gpio40 is learning */
+-	int hw_fan_as_normal_input;	/* fan input is used as regular input */
+-
+-	/* device data */
+-	int idle;
+-	int fan_input_inuse;
+-
+-	int sample;
+-	int in_use;
+-
+-	struct timeval gap_start;
+-};
+diff -Naurp linux-2.6.35/drivers/staging/lirc/Makefile linux-2.6.35.new/drivers/staging/lirc/Makefile
+--- linux-2.6.35/drivers/staging/lirc/Makefile	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/drivers/staging/lirc/Makefile	2010-09-09 23:21:42.000000000 -0400
+@@ -4,7 +4,6 @@
+ # Each configuration option enables a list of files.
+ 
+ obj-$(CONFIG_LIRC_BT829)	+= lirc_bt829.o
+-obj-$(CONFIG_LIRC_ENE0100)	+= lirc_ene0100.o
+ obj-$(CONFIG_LIRC_I2C)		+= lirc_i2c.o
+ obj-$(CONFIG_LIRC_IGORPLUGUSB)	+= lirc_igorplugusb.o
+ obj-$(CONFIG_LIRC_IMON)		+= lirc_imon.o
+diff -Naurp linux-2.6.35/include/media/ir-core.h linux-2.6.35.new/include/media/ir-core.h
+--- linux-2.6.35/include/media/ir-core.h	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/include/media/ir-core.h	2010-09-09 23:21:49.000000000 -0400
+@@ -41,6 +41,11 @@ enum rc_driver_type {
+  *	anything with it. Yet, as the same keycode table can be used with other
+  *	devices, a mask is provided to allow its usage. Drivers should generally
+  *	leave this field in blank
++ * @timeout: optional time after which device stops sending data
++ * @min_timeout: minimum timeout supported by device
++ * @max_timeout: maximum timeout supported by device
++ * @rx_resolution : resolution (in ns) of input sampler
++ * @tx_resolution: resolution (in ns) of output sampler
+  * @priv: driver-specific data, to be used on the callbacks
+  * @change_protocol: allow changing the protocol used on hardware decoders
+  * @open: callback to allow drivers to enable polling/irq when IR input device
+@@ -49,19 +54,36 @@ enum rc_driver_type {
+  *	is opened.
+  * @s_tx_mask: set transmitter mask (for devices with multiple tx outputs)
+  * @s_tx_carrier: set transmit carrier frequency
++ * @s_tx_duty_cycle: set transmit duty cycle (0% - 100%)
++ * @s_rx_carrier: inform driver about carrier it is expected to handle
+  * @tx_ir: transmit IR
++ * @s_idle: optional: enable/disable hardware idle mode, upon which,
++	device doesn't interrupt host until it sees IR pulses
++ * @s_learning_mode: enable wide band receiver used for learning
+  */
+ struct ir_dev_props {
+ 	enum rc_driver_type	driver_type;
+ 	unsigned long		allowed_protos;
+ 	u32			scanmask;
++
++	u32			timeout;
++	u32			min_timeout;
++	u32			max_timeout;
++
++	u32			rx_resolution;
++	u32			tx_resolution;
++
+ 	void			*priv;
+ 	int			(*change_protocol)(void *priv, u64 ir_type);
+ 	int			(*open)(void *priv);
+ 	void			(*close)(void *priv);
+ 	int			(*s_tx_mask)(void *priv, u32 mask);
+ 	int			(*s_tx_carrier)(void *priv, u32 carrier);
++	int			(*s_tx_duty_cycle)(void *priv, u32 duty_cycle);
++	int			(*s_rx_carrier_range)(void *priv, u32 min, u32 max);
+ 	int			(*tx_ir)(void *priv, int *txbuf, u32 n);
++	void			(*s_idle)(void *priv, int enable);
++	int			(*s_learning_mode)(void *priv, int enable);
+ };
+ 
+ struct ir_input_dev {
+@@ -69,9 +91,10 @@ struct ir_input_dev {
+ 	char				*driver_name;	/* Name of the driver module */
+ 	struct ir_scancode_table	rc_tab;		/* scan/key table */
+ 	unsigned long			devno;		/* device number */
+-	const struct ir_dev_props	*props;		/* Device properties */
++	struct ir_dev_props		*props;		/* Device properties */
+ 	struct ir_raw_event_ctrl	*raw;		/* for raw pulse/space events */
+ 	struct input_dev		*input_dev;	/* the input device associated with this device */
++	bool				idle;
+ 
+ 	/* key info - needed by IR keycode handlers */
+ 	spinlock_t			keylock;	/* protects the below members */
+@@ -95,12 +118,12 @@ enum raw_event_type {
+ /* From ir-keytable.c */
+ int __ir_input_register(struct input_dev *dev,
+ 		      const struct ir_scancode_table *ir_codes,
+-		      const struct ir_dev_props *props,
++		      struct ir_dev_props *props,
+ 		      const char *driver_name);
+ 
+ static inline int ir_input_register(struct input_dev *dev,
+ 		      const char *map_name,
+-		      const struct ir_dev_props *props,
++		      struct ir_dev_props *props,
+ 		      const char *driver_name) {
+ 	struct ir_scancode_table *ir_codes;
+ 	struct ir_input_dev *ir_dev;
+@@ -110,8 +133,12 @@ static inline int ir_input_register(stru
+ 		return -EINVAL;
+ 
+ 	ir_codes = get_rc_map(map_name);
+-	if (!ir_codes)
+-		return -EINVAL;
++	if (!ir_codes) {
++		ir_codes = get_rc_map(RC_MAP_EMPTY);
++
++		if (!ir_codes)
++			return -EINVAL;
++	}
+ 
+ 	rc = __ir_input_register(dev, ir_codes, props, driver_name);
+ 	if (rc < 0)
+@@ -144,6 +171,10 @@ struct ir_raw_event {
+ void ir_raw_event_handle(struct input_dev *input_dev);
+ int ir_raw_event_store(struct input_dev *input_dev, struct ir_raw_event *ev);
+ int ir_raw_event_store_edge(struct input_dev *input_dev, enum raw_event_type type);
++int ir_raw_event_store_with_filter(struct input_dev *input_dev,
++				struct ir_raw_event *ev);
++void ir_raw_event_set_idle(struct input_dev *input_dev, int idle);
++
+ static inline void ir_raw_event_reset(struct input_dev *input_dev)
+ {
+ 	struct ir_raw_event ev = { .pulse = false, .duration = 0 };
+diff -Naurp linux-2.6.35/include/media/lirc.h linux-2.6.35.new/include/media/lirc.h
+--- linux-2.6.35/include/media/lirc.h	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/include/media/lirc.h	2010-09-09 23:21:42.000000000 -0400
+@@ -77,6 +77,7 @@
+ #define LIRC_CAN_SET_REC_FILTER           0x08000000
+ 
+ #define LIRC_CAN_MEASURE_CARRIER          0x02000000
++#define LIRC_CAN_USE_WIDEBAND_RECEIVER    0x04000000
+ 
+ #define LIRC_CAN_SEND(x) ((x)&LIRC_CAN_SEND_MASK)
+ #define LIRC_CAN_REC(x) ((x)&LIRC_CAN_REC_MASK)
+@@ -145,7 +146,7 @@
+  * if enabled from the next key press on the driver will send
+  * LIRC_MODE2_FREQUENCY packets
+  */
+-#define LIRC_SET_MEASURE_CARRIER_MODE  _IOW('i', 0x0000001d, __u32)
++#define LIRC_SET_MEASURE_CARRIER_MODE	_IOW('i', 0x0000001d, __u32)
+ 
+ /*
+  * to set a range use
+@@ -162,4 +163,6 @@
+ #define LIRC_SETUP_START               _IO('i', 0x00000021)
+ #define LIRC_SETUP_END                 _IO('i', 0x00000022)
+ 
++#define LIRC_SET_WIDEBAND_RECEIVER     _IOW('i', 0x00000023, __u32)
++
+ #endif
+diff -Naurp linux-2.6.35/include/media/rc-map.h linux-2.6.35.new/include/media/rc-map.h
+--- linux-2.6.35/include/media/rc-map.h	2010-09-09 23:19:00.000000000 -0400
++++ linux-2.6.35.new/include/media/rc-map.h	2010-09-09 23:21:42.000000000 -0400
+@@ -70,6 +70,8 @@ void rc_map_init(void);
+ #define RC_MAP_BUDGET_CI_OLD             "rc-budget-ci-old"
+ #define RC_MAP_CINERGY_1400              "rc-cinergy-1400"
+ #define RC_MAP_CINERGY                   "rc-cinergy"
++#define RC_MAP_DIB0700_NEC_TABLE         "rc-dib0700-nec"
++#define RC_MAP_DIB0700_RC5_TABLE         "rc-dib0700-rc5"
+ #define RC_MAP_DM1105_NEC                "rc-dm1105-nec"
+ #define RC_MAP_DNTV_LIVE_DVBT_PRO        "rc-dntv-live-dvbt-pro"
+ #define RC_MAP_DNTV_LIVE_DVB_T           "rc-dntv-live-dvb-t"
+@@ -125,6 +127,7 @@ void rc_map_init(void);
+ #define RC_MAP_VIDEOMATE_TV_PVR          "rc-videomate-tv-pvr"
+ #define RC_MAP_WINFAST                   "rc-winfast"
+ #define RC_MAP_WINFAST_USBII_DELUXE      "rc-winfast-usbii-deluxe"
++
+ /*
+  * Please, do not just append newer Remote Controller names at the end.
+  * The names should be ordered in alphabetical order

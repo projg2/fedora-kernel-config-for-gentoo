@@ -691,6 +691,7 @@ Patch2914: linux-2.6-v4l-dvb-ir-core-streamzap.patch
 Patch2915: lirc-staging-2.6.36.patch
 #Patch2916: lirc-staging-2.6.36-fixes.patch
 Patch2917: hdpvr-ir-enable.patch
+Patch2918: linux-2.6-v4l-dvb-ir-core-update-2.patch
 
 Patch3000: linux-2.6-via-velocity-dma-fix.patch
 
@@ -1310,6 +1311,7 @@ ApplyPatch lirc-staging-2.6.36.patch
 #ApplyOptionalPatch lirc-staging-2.6.36-fixes.patch
 # enable IR receiver on Hauppauge HD PVR (v4l-dvb merge pending)
 ApplyPatch hdpvr-ir-enable.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-update-2.patch
 
 # Fix DMA bug on via-velocity
 ApplyPatch linux-2.6-via-velocity-dma-fix.patch
@@ -1341,7 +1343,6 @@ ApplyPatch dell-wmi-add-support-for-eject-key-studio-1555.patch
 
 # bz #575873
 ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
-
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1928,6 +1929,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 10 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.4-26
+- ir-core rebase to current upstream
+
 * Fri Sep 10 2010 Bastien Nocera <bnocera@redhat.com> - 2.6.35.4-25
 - Update AppleIR patch to work, and support the enter key on
   newer remotes
