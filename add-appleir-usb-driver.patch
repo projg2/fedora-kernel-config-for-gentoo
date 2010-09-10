@@ -1,6 +1,6 @@
-From e11e9e78799a7641fe0dc5289f35f2604a4b71a3 Mon Sep 17 00:00:00 2001
+From 46fadae732d825141f45bf2fbd6381451da26ad7 Mon Sep 17 00:00:00 2001
 From: Bastien Nocera <hadess@hadess.net>
-Date: Sun, 17 Jan 2010 00:40:15 +0000
+Date: Fri, 10 Sep 2010 16:40:46 +0100
 Subject: [PATCH] Input: add appleir USB driver
 
 This driver was originally written by James McKenzie, updated by
@@ -95,19 +95,19 @@ index bba05d0..0059d5a 100644
  		.driver_data = APPLE_MIGHTYMOUSE | APPLE_INVERT_HWHEEL },
  
 diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-index baa25ad..abc5bd7 100644
+index 866e54e..1d5e284 100644
 --- a/drivers/hid/hid-core.c
 +++ b/drivers/hid/hid-core.c
-@@ -1244,8 +1244,6 @@ static const struct hid_device_id hid_blacklist[] = {
- #if defined(CONFIG_HID_ACRUX_FF) || defined(CONFIG_HID_ACRUX_FF_MODULE)
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_ACRUX, 0x0802) },
- #endif
+@@ -1239,8 +1239,6 @@ static const struct hid_device_id hid_blacklist[] = {
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_3M, USB_DEVICE_ID_3M2256) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_A4TECH, USB_DEVICE_ID_A4TECH_WCP32PU) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_A4TECH, USB_DEVICE_ID_A4TECH_X5_005D) },
 -	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_ATV_IRCONTROL) },
 -	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_IRCONTROL4) },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MIGHTYMOUSE) },
  	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_MAGICMOUSE) },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE, USB_DEVICE_ID_APPLE_FOUNTAIN_ANSI) },
-@@ -1577,6 +1575,11 @@ static const struct hid_device_id hid_ignore_list[] = {
+@@ -1571,6 +1569,11 @@ static const struct hid_device_id hid_ignore_list[] = {
  	{ HID_USB_DEVICE(USB_VENDOR_ID_AIPTEK, USB_DEVICE_ID_AIPTEK_24) },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_AIRCABLE, USB_DEVICE_ID_AIRCABLE1) },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_ALCOR, USB_DEVICE_ID_ALCOR_USBRS232) },
@@ -120,10 +120,10 @@ index baa25ad..abc5bd7 100644
  	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK, USB_DEVICE_ID_ASUSTEK_LCM)},
  	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK, USB_DEVICE_ID_ASUSTEK_LCM2)},
 diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index 11af537..360a5ca 100644
+index 31601ee..9afe3bc 100644
 --- a/drivers/hid/hid-ids.h
 +++ b/drivers/hid/hid-ids.h
-@@ -100,8 +100,11 @@
+@@ -98,8 +98,11 @@
  #define USB_DEVICE_ID_APPLE_ALU_WIRELESS_2009_JIS   0x023b
  #define USB_DEVICE_ID_APPLE_FOUNTAIN_TP_ONLY	0x030a
  #define USB_DEVICE_ID_APPLE_GEYSER1_TP_ONLY	0x030b
@@ -137,10 +137,10 @@ index 11af537..360a5ca 100644
  #define USB_VENDOR_ID_ASUS		0x0486
  #define USB_DEVICE_ID_ASUS_T91MT	0x0185
 diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
-index 60de906..2f2f2e7 100644
+index c44b9ea..76a12b7 100644
 --- a/drivers/input/misc/Kconfig
 +++ b/drivers/input/misc/Kconfig
-@@ -209,6 +209,19 @@ config INPUT_KEYSPAN_REMOTE
+@@ -199,6 +199,19 @@ config INPUT_KEYSPAN_REMOTE
  	  To compile this driver as a module, choose M here: the module will
  	  be called keyspan_remote.
  
@@ -161,12 +161,12 @@ index 60de906..2f2f2e7 100644
  	tristate "Griffin PowerMate and Contour Jog support"
  	depends on USB_ARCH_HAS_HCD
 diff --git a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
-index 1fe1f6c..d5ef2b9 100644
+index 71fe57d..62a5c60 100644
 --- a/drivers/input/misc/Makefile
 +++ b/drivers/input/misc/Makefile
-@@ -13,6 +13,7 @@ obj-$(CONFIG_INPUT_ADXL34X)		+= adxl34x.o
- obj-$(CONFIG_INPUT_ADXL34X_I2C)		+= adxl34x-i2c.o
- obj-$(CONFIG_INPUT_ADXL34X_SPI)		+= adxl34x-spi.o
+@@ -9,6 +9,7 @@ obj-$(CONFIG_INPUT_AD714X)		+= ad714x.o
+ obj-$(CONFIG_INPUT_AD714X_I2C)		+= ad714x-i2c.o
+ obj-$(CONFIG_INPUT_AD714X_SPI)		+= ad714x-spi.o
  obj-$(CONFIG_INPUT_APANEL)		+= apanel.o
 +obj-$(CONFIG_INPUT_APPLEIR)		+= appleir.o
  obj-$(CONFIG_INPUT_ATI_REMOTE)		+= ati_remote.o
