@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .bz620313
+# % define buildid .local
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -613,8 +613,6 @@ Patch203: linux-2.6-debug-vm-would-have-oomkilled.patch
 Patch204: linux-2.6-debug-always-inline-kzalloc.patch
 
 Patch300: create-sys-fs-cgroup-to-mount-cgroupfs-on.patch
-
-Patch370: bjorn-pci-crs-rollup-v3.patch
 
 Patch380: linux-2.6-defaults-pci_no_msi.patch
 Patch381: linux-2.6-defaults-pci_use_crs.patch
@@ -1212,8 +1210,7 @@ ApplyPatch linux-2.6-debug-always-inline-kzalloc.patch
 #
 # make default state of PCI MSI a config option
 ApplyPatch linux-2.6-defaults-pci_no_msi.patch
-#ApplyPatch linux-2.6-defaults-pci_use_crs.patch
-ApplyPatch bjorn-pci-crs-rollup-v3.patch
+ApplyPatch linux-2.6-defaults-pci_use_crs.patch
 # enable ASPM by default on hardware we expect to work
 ApplyPatch linux-2.6-defaults-aspm.patch
 # disable aspm if acpi doesn't provide an _OSC method
@@ -1931,9 +1928,6 @@ fi
 # and build.
 
 %changelog
-* Fri Sep 10 2010 Kyle McMartin <kyle@redhat.com>
-- Suck in patch from Bjorn to try to fix pci=use_crs
-
 * Fri Sep 10 2010 Chuck Ebbert <cebbert@redhat.com>
 - Disable asynchronous suspend by default.
 
