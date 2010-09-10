@@ -616,6 +616,7 @@ Patch300: create-sys-fs-cgroup-to-mount-cgroupfs-on.patch
 
 Patch380: linux-2.6-defaults-pci_no_msi.patch
 Patch381: linux-2.6-defaults-pci_use_crs.patch
+Patch382: linux-2.6-defaults-no-pm-async.patch
 Patch383: linux-2.6-defaults-aspm.patch
 Patch384: pci-acpi-disable-aspm-if-no-osc.patch
 Patch385: pci-aspm-dont-enable-too-early.patch
@@ -1195,6 +1196,7 @@ ApplyPatch linux-2.6-defaults-acpi-video.patch
 ApplyPatch linux-2.6-acpi-video-dos.patch
 ApplyPatch acpi-ec-add-delay-before-write.patch
 ApplyPatch linux-2.6-acpi-debug-infinite-loop.patch
+ApplyPatch linux-2.6-defaults-no-pm-async.patch
 
 # Various low-impact patches to aid debugging.
 ApplyPatch linux-2.6-debug-sizeof-structs.patch
@@ -1926,7 +1928,10 @@ fi
 # and build.
 
 %changelog
-* Fri Sep 10 2010 Ben Skeggs <bskeggs@redhat.com>
+* Fri Sep 10 2010 Chuck Ebbert <cebbert@redhat.com>
+- Disable asynchronous suspend by default.
+
+* Fri Sep 10 2010 Ben Skeggs <bskeggs@redhat.com> - 2.6.35.4-23
 - nouveau: disable acceleration on nva3/nva5/nva8
 
 * Wed Sep 08 2010 Kyle McMartin <kyle@redhat.com>
