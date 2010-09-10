@@ -1,0 +1,256 @@
+commit 023ce8434ec95ef8348bf4ac4068fdd9298bf1d2
+Author: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Date:   Fri Sep 3 16:03:13 2010 -0600
+
+    x86/PCI: allocate space from the end of a region, not the beginning
+    
+    Allocate from the end of a region, not the beginning.
+    
+    For example, if we need to allocate 0x800 bytes for a device on bus
+    0000:00 given these resources:
+    
+        [mem 0xbff00000-0xdfffffff] PCI Bus 0000:00
+          [mem 0xc0000000-0xdfffffff] PCI Bus 0000:02
+    
+    the available space at [mem 0xbff00000-0xbfffffff] is passed to the
+    alignment callback (pcibios_align_resource()).  Prior to this patch, we
+    would put the new 0x800 byte resource at the beginning of that available
+    space, i.e., at [mem 0xbff00000-0xbff007ff].
+    
+    With this patch, we put it at the end, at [mem 0xbffff800-0xbfffffff].
+    
+    FIXME details about Windows practice
+    
+    Signed-off-by: Bjorn Helgaas <bjorn.helgaas@hp.com>
+
+diff --git a/arch/x86/pci/i386.c b/arch/x86/pci/i386.c
+index 5525309..1ff3e9f 100644
+--- a/arch/x86/pci/i386.c
++++ b/arch/x86/pci/i386.c
+@@ -65,7 +65,10 @@ pcibios_align_resource(void *data, const struct resource *res,
+ 			resource_size_t size, resource_size_t align)
+ {
+ 	struct pci_dev *dev = data;
+-	resource_size_t start = res->start;
++	resource_size_t start = ALIGN(res->end - size + 1, align);
++
++	if (start < res->start)
++		start = res->start;
+ 
+ 	if (res->flags & IORESOURCE_IO) {
+ 		if (skip_isa_ioresource_align(dev))
+commit 23a85e85345fafcbc5dd5c1fc4868706290ef684
+Author: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Date:   Tue Sep 7 16:33:00 2010 -0600
+
+    resources: allocate space within a region from the top down
+    
+    Allocate space from the top of a region first, then work downward.
+    
+    When we allocate space from a resource, we look for gaps between children
+    of the resource.  Previously, we looked at gaps from the bottom up.  For
+    example, given this:
+    
+        [mem 0xbff00000-0xf7ffffff] PCI Bus 0000:00
+          [mem 0xc0000000-0xdfffffff] PCI Bus 0000:02
+    
+    we attempted to allocate from the [mem 0xbff00000-0xbfffffff] gap first,
+    then the [mem 0xe0000000-0xf7ffffff] gap.
+    
+    With this patch, we allocate from [mem 0xe0000000-0xf7ffffff] first.
+    
+    Low addresses are generally scarce, so it's better to use high addresses
+    when possible.  This follows Windows practice for PCI allocation.
+    
+    FIXME ref for Windows practice
+    
+    Signed-off-by: Bjorn Helgaas <bjorn.helgaas@hp.com>
+
+diff --git a/kernel/resource.c b/kernel/resource.c
+index 7b36976..e83ff7c 100644
+--- a/kernel/resource.c
++++ b/kernel/resource.c
+@@ -358,6 +358,20 @@ int __weak page_is_ram(unsigned long pfn)
+ }
+ 
+ /*
++ * Find the resource before "child" in the sibling list of "root" children.
++ */
++static struct resource *find_sibling_prev(struct resource *root, struct resource *child)
++{
++	struct resource *this;
++
++	for (this = root->child; this; this = this->sibling)
++		if (this->sibling == child)
++			return this;
++
++	return NULL;
++}
++
++/*
+  * Find empty slot in the resource tree given range and alignment.
+  */
+ static int find_resource(struct resource *root, struct resource *new,
+@@ -369,23 +383,17 @@ static int find_resource(struct resource *root, struct resource *new,
+ 						   resource_size_t),
+ 			 void *alignf_data)
+ {
+-	struct resource *this = root->child;
++	struct resource *this;
+ 	struct resource tmp = *new;
+ 
+-	tmp.start = root->start;
+-	/*
+-	 * Skip past an allocated resource that starts at 0, since the assignment
+-	 * of this->start - 1 to tmp->end below would cause an underflow.
+-	 */
+-	if (this && this->start == 0) {
+-		tmp.start = this->end + 1;
+-		this = this->sibling;
+-	}
+-	for(;;) {
++	tmp.end = root->end;
++
++	this = find_sibling_prev(root, NULL);
++	for (;;) {
+ 		if (this)
+-			tmp.end = this->start - 1;
++			tmp.start = this->end + 1;
+ 		else
+-			tmp.end = root->end;
++			tmp.start = root->start;
+ 		if (tmp.start < min)
+ 			tmp.start = min;
+ 		if (tmp.end > max)
+@@ -398,10 +406,10 @@ static int find_resource(struct resource *root, struct resource *new,
+ 			new->end = tmp.start + size - 1;
+ 			return 0;
+ 		}
+-		if (!this)
++		if (!this || this->start == root->start)
+ 			break;
+-		tmp.start = this->end + 1;
+-		this = this->sibling;
++		tmp.end = this->start - 1;
++		this = find_sibling_prev(root, this);
+ 	}
+ 	return -EBUSY;
+ }
+commit 7e50b2f8590ffe4870e2575c796386c88d006558
+Author: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Date:   Thu Sep 9 12:37:56 2010 -0600
+
+    PCI: allocate bus resources from the top down
+    
+    Allocate space from the highest-address PCI bus resource first, then work
+    downward.
+    
+    Previously, we looked for space in PCI host bridge windows in the order
+    we discovered the windows.  For example, given the following windows
+    (discovered via an ACPI _CRS method):
+    
+        pci_root PNP0A03:00: host bridge window [mem 0x000a0000-0x000bffff]
+        pci_root PNP0A03:00: host bridge window [mem 0x000c0000-0x000effff]
+        pci_root PNP0A03:00: host bridge window [mem 0x000f0000-0x000fffff]
+        pci_root PNP0A03:00: host bridge window [mem 0xbff00000-0xf7ffffff]
+        pci_root PNP0A03:00: host bridge window [mem 0xff980000-0xff980fff]
+        pci_root PNP0A03:00: host bridge window [mem 0xff97c000-0xff97ffff]
+        pci_root PNP0A03:00: host bridge window [mem 0xfed20000-0xfed9ffff]
+    
+    we attempted to allocate from [mem 0x000a0000-0x000bffff] first, then
+    [mem 0x000c0000-0x000effff], and so on.
+    
+    With this patch, we allocate from [mem 0xff980000-0xff980fff] first, then
+    [mem 0xff97c000-0xff97ffff], [mem 0xfed20000-0xfed9ffff], etc.
+    
+    Allocating top-down follows Windows practice, so we're less likely to
+    trip over BIOS defects in the _CRS description.  On the machine above,
+    the [mem 0xbff00000-0xbfffffff] region doesn't actually work and is
+    likely a BIOS defect.
+    
+    Bug: https://bugzilla.kernel.org/show_bug.cgi?id=16228
+    Bug: https://bugzilla.redhat.com/show_bug.cgi?id=620313
+    Bug: https://bugzilla.redhat.com/show_bug.cgi?id=629933
+    
+    Signed-off-by: Bjorn Helgaas <bjorn.helgaas@hp.com>
+
+diff --git a/drivers/pci/bus.c b/drivers/pci/bus.c
+index 7f0af0e..172bf26 100644
+--- a/drivers/pci/bus.c
++++ b/drivers/pci/bus.c
+@@ -64,6 +64,49 @@ void pci_bus_remove_resources(struct pci_bus *bus)
+ 	}
+ }
+ 
++/*
++ * Find the highest-address bus resource below the cursor "res".  If the
++ * cursor is NULL, return the highest resource.
++ */
++static struct resource *pci_bus_find_resource_prev(struct pci_bus *bus,
++						   unsigned int type,
++						   struct resource *res)
++{
++	struct resource *r, *prev = NULL;
++	int i;
++
++	pci_bus_for_each_resource(bus, r, i) {
++		if (!r)
++			continue;
++
++		if ((r->flags & IORESOURCE_TYPE_BITS) != type)
++			continue;
++
++		/* If this resource is at or past the cursor, skip it */
++		if (res) {
++			if (r == res)
++				continue;
++			if (r->end > res->end)
++				continue;
++			if (r->end == res->end && r->start > res->start)
++				continue;
++		}
++
++		if (!prev)
++			prev = r;
++
++		/*
++		 * A small resource is higher than a large one that ends at
++		 * the same address.
++		 */
++		if (r->end > prev->end ||
++		    (r->end == prev->end && r->start > prev->start))
++			prev = r;
++	}
++
++	return prev;
++}
++
+ /**
+  * pci_bus_alloc_resource - allocate a resource from a parent bus
+  * @bus: PCI bus
+@@ -89,9 +132,10 @@ pci_bus_alloc_resource(struct pci_bus *bus, struct resource *res,
+ 					  resource_size_t),
+ 		void *alignf_data)
+ {
+-	int i, ret = -ENOMEM;
++	int ret = -ENOMEM;
+ 	struct resource *r;
+ 	resource_size_t max = -1;
++	unsigned int type = res->flags & IORESOURCE_TYPE_BITS;
+ 
+ 	type_mask |= IORESOURCE_IO | IORESOURCE_MEM;
+ 
+@@ -99,10 +143,9 @@ pci_bus_alloc_resource(struct pci_bus *bus, struct resource *res,
+ 	if (!(res->flags & IORESOURCE_MEM_64))
+ 		max = PCIBIOS_MAX_MEM_32;
+ 
+-	pci_bus_for_each_resource(bus, r, i) {
+-		if (!r)
+-			continue;
+-
++	/* Look for space at highest addresses first */
++	r = pci_bus_find_resource_prev(bus, type, NULL);
++	for ( ; r; r = pci_bus_find_resource_prev(bus, type, r)) {
+ 		/* type_mask must match */
+ 		if ((res->flags ^ r->flags) & type_mask)
+ 			continue;
