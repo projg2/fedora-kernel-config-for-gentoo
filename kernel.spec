@@ -707,6 +707,7 @@ Patch1825: drm-intel-make-lvds-work.patch
 Patch1826: drm-radeon-resume-fixes.patch
 Patch1830: drm-i915-explosion-following-oom-in-do_execbuffer.patch
 Patch1900: linux-2.6-intel-iommu-igfx.patch
+Patch1901: drm-nouveau-acpi-edid-fix.patch
 # radeon
 
 # linux1394 git patches
@@ -1372,6 +1373,7 @@ ApplyPatch drm-nouveau-updates.patch
 ApplyPatch drm-nouveau-race-fix.patch
 ApplyPatch drm-nouveau-nva3-noaccel.patch
 ApplyPatch drm-nouveau-nv50-crtc-update-delay.patch
+ApplyPatch drm-nouveau-acpi-edid-fix.patch
 
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
