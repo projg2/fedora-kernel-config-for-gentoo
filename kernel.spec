@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 54
+%global baserelease 55
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2108,6 +2108,9 @@ fi
 
 
 %changelog
+* Mon Sep 13 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.6-55
+- nouveau: fix oops in acpi edid support (rhbz#613284)
+
 * Thu Sep 09 2010 Kyle McMartin <kyle@redhat.com>
 - Backport 6f772d7e to hopefully fix #629442,
   (drm/i915: Explosion following OOM in do_execbuffer.)
