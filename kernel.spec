@@ -495,8 +495,9 @@ BuildRequires: xmlto, asciidoc
 %if %{with_sparse}
 BuildRequires: sparse >= 0.4.1
 %endif
+# python-devel and perl(ExtUtils::Embed) are required for perf scripting
 %if %{with_perf}
-BuildRequires: elfutils-devel zlib-devel binutils-devel
+BuildRequires: elfutils-devel zlib-devel binutils-devel python-devel perl(ExtUtils::Embed)
 %endif
 BuildConflicts: rhbuildsys(DiskFree) < 500Mb
 
@@ -1931,6 +1932,9 @@ fi
 # and build.
 
 %changelog
+* Mon Sep 13 2010 Chuck Ebbert <cebbert@redhat.com>
+- Add support for perl and python scripting to perf (#632942)
+
 * Mon Sep 13 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.4-27
 - nouveau: fix oops in acpi edid support
 
