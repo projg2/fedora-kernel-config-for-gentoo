@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 55
+%global baserelease 56
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2108,6 +2108,9 @@ fi
 
 
 %changelog
+* Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.7-56
+- Linux 2.6.34.7
+
 * Mon Sep 13 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.6-55
 - nouveau: fix oops in acpi edid support (rhbz#613284)
 
