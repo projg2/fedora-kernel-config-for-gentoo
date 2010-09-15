@@ -611,6 +611,11 @@ Patch23: linux-2.6-utrace-ptrace.patch
 
 Patch50: linux-2.6-x86-cfi_sections.patch
 
+Patch100: 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
+Patch101: 02-compat-test-rax-for-the-system-call-number-not-eax.patch
+Patch102: 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
+Patch103: aio-check-for-multiplication-overflow-in-do_io_submit.patch
+
 Patch144: linux-2.6-vio-modalias.patch
 
 Patch150: linux-2.6.29-sparc-IOC_TYPECHECK.patch
@@ -1218,6 +1223,11 @@ ApplyPatch linux-2.6-utrace-ptrace.patch
 # x86(-64)
 ApplyPatch linux-2.6-x86-cfi_sections.patch
 
+ApplyPatch 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
+ApplyPatch 02-compat-test-rax-for-the-system-call-number-not-eax.patch
+ApplyPatch 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
+
+
 #
 # Intel IOMMU
 #
@@ -1241,6 +1251,7 @@ ApplyPatch linux-2.6-execshield.patch
 #
 # bugfixes to drivers and filesystems
 #
+ApplyPatch aio-check-for-multiplication-overflow-in-do_io_submit.patch
 
 # ext4
 
@@ -2108,6 +2119,11 @@ fi
 
 
 %changelog
+* Tue Sep 14 2010 Kyle McMartin <kyle@redhat.com> 2.6.34.7-57
+- x86_64: plug compat syscalls holes. (CVE-2010-3081, CVE-2010-3301)
+  upgrading is highly recommended.
+- aio: check for multiplication overflow in do_io_submit.
+
 * Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.7-56
 - Linux 2.6.34.7
 
