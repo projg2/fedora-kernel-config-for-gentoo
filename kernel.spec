@@ -805,6 +805,9 @@ Patch12542: setup_arg_pages-diagnose-excessive-argument-size.patch
 # CVE-2010-3080
 Patch12550: alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
 
+# CVE-2010-3079
+Patch12560: tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1519,6 +1522,9 @@ ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
 # CVE-2010-3080
 ApplyPatch alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
 
+# CVE-2010-3079
+ApplyPatch tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2141,6 +2147,9 @@ fi
 
 %changelog
 * Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.7-57
+- Fix CVE-2010-3079: ftrace NULL pointer dereference
+
+* Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com>
 - Fix CVE-2010-3080: /dev/sequencer open failure is not handled correctly
 
 * Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com>
