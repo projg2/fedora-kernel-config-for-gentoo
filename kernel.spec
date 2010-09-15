@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 167
+%global baserelease 168
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -637,6 +637,11 @@ Patch20: linux-2.6-hotfixes.patch
 Patch21: linux-2.6-tracehook.patch
 Patch22: linux-2.6-utrace.patch
 Patch23: linux-2.6-utrace-ptrace.patch
+
+Patch100: 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
+Patch101: 02-compat-test-rax-for-the-system-call-number-not-eax.patch
+Patch102: 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
+Patch103: aio-check-for-multiplication-overflow-in-do_io_submit.patch
 
 Patch141: linux-2.6-ps3-storage-alias.patch
 Patch143: linux-2.6-g5-therm-shutdown.patch
@@ -1282,6 +1287,11 @@ ApplyPatch linux-2.6-utrace-ptrace.patch
 ApplyPatch via-hwmon-temp-sensor.patch
 ApplyPatch linux-2.6-dell-laptop-rfkill-fix.patch
 
+ApplyPatch 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
+ApplyPatch 02-compat-test-rax-for-the-system-call-number-not-eax.patch
+ApplyPatch 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
+
+
 #
 # Intel IOMMU
 #
@@ -1315,6 +1325,7 @@ ApplyPatch linux-2.6-execshield.patch
 #
 # bugfixes to drivers and filesystems
 #
+ApplyPatch aio-check-for-multiplication-overflow-in-do_io_submit.patch
 
 # ext4
 
@@ -2207,6 +2218,11 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Tue Sep 14 2010 Kyle McMartin <kyle@redhat.com> 2.6.32.21-168
+- x86_64: plug compat syscalls holes. (CVE-2010-3081, CVE-2010-3301)
+  upgrading is highly recommended.
+- aio: check for multiplication overflow in do_io_submit.
+
 * Mon Sep 06 2010 Kyle McMartin <kyle@redhat.com>
 - Backport two fixes from Eric Paris to resolve #598796 which avoids a
   capability check if the request comes from the kernel.
