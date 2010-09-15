@@ -729,6 +729,7 @@ Patch12080: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
 # rhbz #622149
 Patch12085: fix-rcu_deref_check-warning.patch
+Patch12086: linux-2.6-cgroups-rcu.patch
 
 # rhbz #513530
 Patch12090: dell-wmi-add-support-for-eject-key-studio-1555.patch
@@ -1366,6 +1367,7 @@ ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
 # bz 622149
 ApplyPatch fix-rcu_deref_check-warning.patch
+ApplyPatch linux-2.6-cgroups-rcu.patch
 
 # bz 513530
 ApplyPatch dell-wmi-add-support-for-eject-key-studio-1555.patch
@@ -1972,6 +1974,9 @@ fi
 # and build.
 
 %changelog
+* Wed Sep 15 2010 Dave Jones <davej@redhat.com>
+- Fix another RCU lockdep warning (cgroups).
+
 * Wed Sep 15 2010 Hans de Goede <hdegoede@redhat.com>
 - virtio_console: Fix poll/select blocking even though there is data to read
 
