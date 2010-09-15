@@ -794,6 +794,11 @@ Patch12530: pci-msi-remove-unsafe-and-unnecessary-hardware-access.patch
 Patch12531: pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch
 Patch12532: x86-tsc-sched-recompute-cyc2ns_offset-s-during-resume-from-sleep-states.patch
 
+# Mitigate DOS with large argument lists.
+Patch12540: execve-improve-interactivity-with-large-arguments.patch
+Patch12541: execve-make-responsive-to-sigkill-with-large-arguments.patch
+Patch12542: setup_arg_pages-diagnose-excessive-argument-size.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1498,6 +1503,11 @@ ApplyPatch pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch
 # Fix scheduler load balancing after suspend/resume cycle
 ApplyPatch x86-tsc-sched-recompute-cyc2ns_offset-s-during-resume-from-sleep-states.patch
 
+# Mitigate DOS with large argument lists.
+ApplyPatch execve-improve-interactivity-with-large-arguments.patch
+ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
+ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2119,10 +2129,13 @@ fi
 
 
 %changelog
-* Tue Sep 14 2010 Kyle McMartin <kyle@redhat.com> 2.6.34.7-57
+* Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.7-57
+- Mitigate DOS with large argument lists.
+
+* Tue Sep 14 2010 Kyle McMartin <kyle@redhat.com>
 - x86_64: plug compat syscalls holes. (CVE-2010-3081, CVE-2010-3301)
   upgrading is highly recommended.
-- aio: check for multiplication overflow in do_io_submit.
+- aio: check for multiplication overflow in do_io_submit. (CVE-2010-3067)
 
 * Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.7-56
 - Linux 2.6.34.7
