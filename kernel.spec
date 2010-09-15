@@ -739,6 +739,14 @@ Patch12520: execve-improve-interactivity-with-large-arguments.patch
 Patch12521: execve-make-responsive-to-sigkill-with-large-arguments.patch
 Patch12522: setup_arg_pages-diagnose-excessive-argument-size.patch
 
+# CVE-2010-3080
+Patch12530: alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
+# CVE-2010-2954
+Patch12540: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
+# CVE-2010-2960
+Patch12550: keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
+Patch12551: keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1368,6 +1376,14 @@ ApplyPatch execve-improve-interactivity-with-large-arguments.patch
 ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
 ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
 
+# CVE-2010-3080
+ApplyPatch alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
+# CVE-2010-2954
+ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
+# CVE-2010-2960
+ApplyPatch keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
+ApplyPatch keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1955,6 +1971,12 @@ fi
 
 %changelog
 * Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.35.4-28
+- Fix 3 CVEs:
+  /dev/sequencer open failure is not handled correctly (CVE-2010-3080)
+  NULL deref and panic in irda (CVE-2010-2954)
+  keyctl_session_to_parent NULL deref system crash (CVE-2010-2960)
+
+* Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com>
 - Fix DOS with large argument lists.
 
 * Tue Sep 14 2010 Kyle McMartin <kyle@redhat.com>
