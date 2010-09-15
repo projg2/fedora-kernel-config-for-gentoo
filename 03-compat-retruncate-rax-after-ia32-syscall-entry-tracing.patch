@@ -1,7 +1,7 @@
-From eefdca043e8391dcd719711716492063030b55ac Mon Sep 17 00:00:00 2001
+From 1fa16daaa76d1b132c8fee027c11bad5a5d25761 Mon Sep 17 00:00:00 2001
 From: Roland McGrath <roland@redhat.com>
 Date: Tue, 14 Sep 2010 12:22:58 -0700
-Subject: [PATCH] x86-64, compat: Retruncate rax after ia32 syscall entry tracing
+Subject: [PATCH 3/4] x86-64, compat: Retruncate rax after ia32 syscall entry tracing
 
 In commit d4d6715, we reopened an old hole for a 64-bit ptracer touching a
 32-bit tracee in system call entry.  A %rax value set via ptrace at the
@@ -19,7 +19,7 @@ Signed-off-by: H. Peter Anvin <hpa@linux.intel.com>
  1 files changed, 7 insertions(+), 1 deletions(-)
 
 diff --git a/arch/x86/ia32/ia32entry.S b/arch/x86/ia32/ia32entry.S
-index 84e3a4e..518bb99 100644
+index 7f9eb54..4edd8eb 100644
 --- a/arch/x86/ia32/ia32entry.S
 +++ b/arch/x86/ia32/ia32entry.S
 @@ -50,7 +50,12 @@

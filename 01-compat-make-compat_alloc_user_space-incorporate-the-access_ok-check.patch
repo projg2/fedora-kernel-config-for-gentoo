@@ -1,7 +1,7 @@
-From c41d68a513c71e35a14f66d71782d27a79a81ea6 Mon Sep 17 00:00:00 2001
+From f45716729488bd8263b06e7d672c8ff8f2ded8b7 Mon Sep 17 00:00:00 2001
 From: H. Peter Anvin <hpa@linux.intel.com>
 Date: Tue, 7 Sep 2010 16:16:18 -0700
-Subject: [PATCH] compat: Make compat_alloc_user_space() incorporate the access_ok()
+Subject: [PATCH 1/4] compat: Make compat_alloc_user_space() incorporate the access_ok()
 
 compat_alloc_user_space() expects the caller to independently call
 access_ok() to verify the returned area.  A missing call could
@@ -47,15 +47,15 @@ Cc: <stable@kernel.org>
  arch/s390/include/asm/compat.h    |    2 +-
  arch/sparc/include/asm/compat.h   |    2 +-
  arch/x86/include/asm/compat.h     |    2 +-
- include/linux/compat.h            |    3 +++
+ include/linux/compat.h            |    2 ++
  kernel/compat.c                   |   21 +++++++++++++++++++++
- 10 files changed, 32 insertions(+), 8 deletions(-)
+ 9 files changed, 30 insertions(+), 7 deletions(-)
 
 diff --git a/arch/ia64/include/asm/compat.h b/arch/ia64/include/asm/compat.h
-index f90edc8..9301a28 100644
+index dfcf75b..c8662cd 100644
 --- a/arch/ia64/include/asm/compat.h
 +++ b/arch/ia64/include/asm/compat.h
-@@ -199,7 +199,7 @@ ptr_to_compat(void __user *uptr)
+@@ -198,7 +198,7 @@ ptr_to_compat(void __user *uptr)
  }
  
  static __inline__ void __user *
@@ -65,10 +65,10 @@ index f90edc8..9301a28 100644
  	struct pt_regs *regs = task_pt_regs(current);
  	return (void __user *) (((regs->r12 & 0xffffffff) & -16) - len);
 diff --git a/arch/mips/include/asm/compat.h b/arch/mips/include/asm/compat.h
-index 613f691..dbc5106 100644
+index f58aed3..27505bd 100644
 --- a/arch/mips/include/asm/compat.h
 +++ b/arch/mips/include/asm/compat.h
-@@ -145,7 +145,7 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
+@@ -144,7 +144,7 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
  	return (u32)(unsigned long)uptr;
  }
  
@@ -78,10 +78,10 @@ index 613f691..dbc5106 100644
  	struct pt_regs *regs = (struct pt_regs *)
  		((unsigned long) current_thread_info() + THREAD_SIZE - 32) - 1;
 diff --git a/arch/parisc/include/asm/compat.h b/arch/parisc/include/asm/compat.h
-index 02b77ba..efa0b60 100644
+index 7f32611..7c77fa9 100644
 --- a/arch/parisc/include/asm/compat.h
 +++ b/arch/parisc/include/asm/compat.h
-@@ -147,7 +147,7 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
+@@ -146,7 +146,7 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
  	return (u32)(unsigned long)uptr;
  }
  
@@ -91,10 +91,10 @@ index 02b77ba..efa0b60 100644
  	struct pt_regs *regs = &current->thread.regs;
  	return (void __user *)regs->gr[30];
 diff --git a/arch/powerpc/include/asm/compat.h b/arch/powerpc/include/asm/compat.h
-index 396d21a..a11d4ea 100644
+index 4774c2f..8d0fff3 100644
 --- a/arch/powerpc/include/asm/compat.h
 +++ b/arch/powerpc/include/asm/compat.h
-@@ -134,7 +134,7 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
+@@ -133,7 +133,7 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
  	return (u32)(unsigned long)uptr;
  }
  
@@ -104,10 +104,10 @@ index 396d21a..a11d4ea 100644
  	struct pt_regs *regs = current->thread.regs;
  	unsigned long usp = regs->gpr[1];
 diff --git a/arch/s390/include/asm/compat.h b/arch/s390/include/asm/compat.h
-index 104f200..a875c2f 100644
+index 01a0802..0c940d3 100644
 --- a/arch/s390/include/asm/compat.h
 +++ b/arch/s390/include/asm/compat.h
-@@ -181,7 +181,7 @@ static inline int is_compat_task(void)
+@@ -180,7 +180,7 @@ static inline int is_compat_task(void)
  
  #endif
  
@@ -117,10 +117,10 @@ index 104f200..a875c2f 100644
  	unsigned long stack;
  
 diff --git a/arch/sparc/include/asm/compat.h b/arch/sparc/include/asm/compat.h
-index 5016f76..6f57325 100644
+index 0e70625..612bb38 100644
 --- a/arch/sparc/include/asm/compat.h
 +++ b/arch/sparc/include/asm/compat.h
-@@ -167,7 +167,7 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
+@@ -166,7 +166,7 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
  	return (u32)(unsigned long)uptr;
  }
  
@@ -130,10 +130,10 @@ index 5016f76..6f57325 100644
  	struct pt_regs *regs = current_thread_info()->kregs;
  	unsigned long usp = regs->u_regs[UREG_I6];
 diff --git a/arch/x86/include/asm/compat.h b/arch/x86/include/asm/compat.h
-index 306160e..1d9cd27 100644
+index 9a9c7bd..c8c9a74 100644
 --- a/arch/x86/include/asm/compat.h
 +++ b/arch/x86/include/asm/compat.h
-@@ -205,7 +205,7 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
+@@ -204,7 +204,7 @@ static inline compat_uptr_t ptr_to_compat(void __user *uptr)
  	return (u32)(unsigned long)uptr;
  }
  
@@ -143,23 +143,22 @@ index 306160e..1d9cd27 100644
  	struct pt_regs *regs = task_pt_regs(current);
  	return (void __user *)regs->sp - len;
 diff --git a/include/linux/compat.h b/include/linux/compat.h
-index 9ddc878..5778b55 100644
+index af931ee..cab23f2 100644
 --- a/include/linux/compat.h
 +++ b/include/linux/compat.h
-@@ -360,5 +360,8 @@ extern ssize_t compat_rw_copy_check_uvector(int type,
- 		const struct compat_iovec __user *uvector, unsigned long nr_segs,
- 		unsigned long fast_segs, struct iovec *fast_pointer,
- 		struct iovec **ret_pointer);
-+
+@@ -309,5 +309,7 @@ asmlinkage long compat_sys_newfstatat(unsigned int dfd, char __user * filename,
+ asmlinkage long compat_sys_openat(unsigned int dfd, const char __user *filename,
+ 				  int flags, int mode);
+ 
 +extern void __user *compat_alloc_user_space(unsigned long len);
 +
  #endif /* CONFIG_COMPAT */
  #endif /* _LINUX_COMPAT_H */
 diff --git a/kernel/compat.c b/kernel/compat.c
-index e167efc..c9e2ec0 100644
+index 180d188..61112e5 100644
 --- a/kernel/compat.c
 +++ b/kernel/compat.c
-@@ -1126,3 +1126,24 @@ compat_sys_sysinfo(struct compat_sysinfo __user *info)
+@@ -1136,3 +1136,24 @@ compat_sys_sysinfo(struct compat_sysinfo __user *info)
  
  	return 0;
  }

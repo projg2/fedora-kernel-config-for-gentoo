@@ -1,7 +1,7 @@
-From 36d001c70d8a0144ac1d038f6876c484849a74de Mon Sep 17 00:00:00 2001
+From aaeacea2992c28f1d355ff7cd4c4754131bdd831 Mon Sep 17 00:00:00 2001
 From: H. Peter Anvin <hpa@linux.intel.com>
 Date: Tue, 14 Sep 2010 12:42:41 -0700
-Subject: [PATCH] x86-64, compat: Test %rax for the syscall number, not %eax
+Subject: [PATCH 2/4] x86-64, compat: Test %rax for the syscall number, not %eax
 
 On 64 bits, we always, by necessity, jump through the system call
 table via %rax.  For 32-bit system calls, in theory the system call
@@ -26,7 +26,7 @@ Cc: Andrew Morton <akpm@linux-foundation.org>
  1 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/arch/x86/ia32/ia32entry.S b/arch/x86/ia32/ia32entry.S
-index b86feab..84e3a4e 100644
+index 5294d84..7f9eb54 100644
 --- a/arch/x86/ia32/ia32entry.S
 +++ b/arch/x86/ia32/ia32entry.S
 @@ -153,7 +153,7 @@ ENTRY(ia32_sysenter_target)

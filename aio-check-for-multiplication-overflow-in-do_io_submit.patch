@@ -1,23 +1,23 @@
-From 75e1c70fc31490ef8a373ea2a4bea2524099b478 Mon Sep 17 00:00:00 2001
+From be18992d0630149403bfae5882601cf01a7d4eea Mon Sep 17 00:00:00 2001
 From: Jeff Moyer <jmoyer@redhat.com>
 Date: Fri, 10 Sep 2010 14:16:00 -0700
-Subject: [PATCH] aio: check for multiplication overflow in do_io_submit
+Subject: [PATCH 4/4] aio: check for multiplication overflow in do_io_submit
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 Tavis Ormandy pointed out that do_io_submit does not do proper bounds
 checking on the passed-in iocb array:
 
-Â  Â  Â  Â if (unlikely(nr < 0))
-Â  Â  Â  Â  Â  Â  Â  Â return -EINVAL;
+       if (unlikely(nr < 0))
+               return -EINVAL;
 
-Â  Â  Â  Â if (unlikely(!access_ok(VERIFY_READ, iocbpp, (nr*sizeof(iocbpp)))))
-Â  Â  Â  Â  Â  Â  Â  Â return -EFAULT; Â  Â  Â  Â  Â  Â  Â  Â  Â  Â  Â ^^^^^^^^^^^^^^^^^^
+       if (unlikely(!access_ok(VERIFY_READ, iocbpp, (nr*sizeof(iocbpp)))))
+               return -EFAULT;                      ^^^^^^^^^^^^^^^^^^
 
 The attached patch checks for overflow, and if it is detected, the
 number of iocbs submitted is scaled down to a number that will fit in
-the long. Â This is an ok thing to do, as sys_io_submit is documented as
+the long.  This is an ok thing to do, as sys_io_submit is documented as
 returning the number of iocbs submitted, so callers should handle a
 return value of less than the 'nr' argument passed in.
 
@@ -29,10 +29,10 @@ Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
  1 files changed, 3 insertions(+), 0 deletions(-)
 
 diff --git a/fs/aio.c b/fs/aio.c
-index 3006b5b..1320b2a 100644
+index 02a2c93..b84a769 100644
 --- a/fs/aio.c
 +++ b/fs/aio.c
-@@ -1659,6 +1659,9 @@ long do_io_submit(aio_context_t ctx_id, long nr,
+@@ -1639,6 +1639,9 @@ SYSCALL_DEFINE3(io_submit, aio_context_t, ctx_id, long, nr,
  	if (unlikely(nr < 0))
  		return -EINVAL;
  
