@@ -847,6 +847,11 @@ Patch14150: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 
 Patch14200: net-do-not-check-capable-if-kernel.patch
 
+# Mitigate DOS with large argument lists
+Patch14210: execve-improve-interactivity-with-large-arguments.patch
+Patch14211: execve-make-responsive-to-sigkill-with-large-arguments.patch
+Patch14212: setup_arg_pages-diagnose-excessive-argument-size.patch
+
 # ==============================================================================
 %endif
 
@@ -1566,6 +1571,11 @@ ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 # rhbz #598796
 ApplyPatch net-do-not-check-capable-if-kernel.patch
 
+# Mitigate DOS with large argument lists
+ApplyPatch execve-improve-interactivity-with-large-arguments.patch
+ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
+ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
+
 # END OF PATCH APPLICATIONS ====================================================
 %endif
 
@@ -2218,10 +2228,13 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
-* Tue Sep 14 2010 Kyle McMartin <kyle@redhat.com> 2.6.32.21-168
+* Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.21-168
+- Mitigate DOS with large argument lists.
+
+* Tue Sep 14 2010 Kyle McMartin <kyle@redhat.com>
 - x86_64: plug compat syscalls holes. (CVE-2010-3081, CVE-2010-3301)
   upgrading is highly recommended.
-- aio: check for multiplication overflow in do_io_submit.
+- aio: check for multiplication overflow in do_io_submit. (CVE-2010-3067)
 
 * Mon Sep 06 2010 Kyle McMartin <kyle@redhat.com>
 - Backport two fixes from Eric Paris to resolve #598796 which avoids a
