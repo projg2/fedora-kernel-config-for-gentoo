@@ -792,7 +792,10 @@ Patch12523: keys-fix-rcu-no-lock-warning-in-keyctl-session-to-parent.patch
 
 Patch12530: pci-msi-remove-unsafe-and-unnecessary-hardware-access.patch
 Patch12531: pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch
+
 Patch12532: x86-tsc-sched-recompute-cyc2ns_offset-s-during-resume-from-sleep-states.patch
+# fix bug caused by above patch
+Patch12533: x86-tsc-fix-a-preemption-leak-in-restore_sched_clock_state.patch
 
 # Mitigate DOS with large argument lists.
 Patch12540: execve-improve-interactivity-with-large-arguments.patch
@@ -1502,6 +1505,8 @@ ApplyPatch pci-msi-remove-unsafe-and-unnecessary-hardware-access.patch
 ApplyPatch pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch
 # Fix scheduler load balancing after suspend/resume cycle
 ApplyPatch x86-tsc-sched-recompute-cyc2ns_offset-s-during-resume-from-sleep-states.patch
+# fix bug caused by above patch
+ApplyPatch x86-tsc-fix-a-preemption-leak-in-restore_sched_clock_state.patch
 
 # Mitigate DOS with large argument lists.
 ApplyPatch execve-improve-interactivity-with-large-arguments.patch
@@ -2130,6 +2135,9 @@ fi
 
 %changelog
 * Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.7-57
+- Fix bug added in 2.6.34.6-53
+
+* Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com>
 - Mitigate DOS with large argument lists.
 
 * Tue Sep 14 2010 Kyle McMartin <kyle@redhat.com>
@@ -2138,7 +2146,7 @@ fi
 - aio: check for multiplication overflow in do_io_submit. (CVE-2010-3067)
 
 * Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.7-56
-- Linux 2.6.34.7
+- Linux 2.6.34.7, should fix multiple USB HID device issues.
 
 * Mon Sep 13 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.6-55
 - nouveau: fix oops in acpi edid support (rhbz#613284)
