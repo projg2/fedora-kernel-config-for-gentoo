@@ -802,6 +802,9 @@ Patch12540: execve-improve-interactivity-with-large-arguments.patch
 Patch12541: execve-make-responsive-to-sigkill-with-large-arguments.patch
 Patch12542: setup_arg_pages-diagnose-excessive-argument-size.patch
 
+# CVE-2010-3080
+Patch12550: alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1513,6 +1516,9 @@ ApplyPatch execve-improve-interactivity-with-large-arguments.patch
 ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
 ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
 
+# CVE-2010-3080
+ApplyPatch alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2135,6 +2141,9 @@ fi
 
 %changelog
 * Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.7-57
+- Fix CVE-2010-3080: /dev/sequencer open failure is not handled correctly
+
+* Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com>
 - Fix bug added in 2.6.34.6-53
 
 * Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com>
