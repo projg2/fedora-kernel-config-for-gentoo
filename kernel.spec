@@ -654,6 +654,7 @@ Patch800: linux-2.6-crash-driver.patch
 
 # virt + ksm patches
 Patch1555: fix_xen_guest_on_old_EC2.patch
+Patch1556: linux-2.6.35.4-virtio_console-fix-poll.patch
 
 # DRM
 Patch1801: drm-revert-drm-fbdev-rework-output-polling-to-be-back-in-core.patch
@@ -1293,6 +1294,7 @@ ApplyPatch linux-2.6-crash-driver.patch
 
 # Assorted Virt Fixes
 ApplyPatch fix_xen_guest_on_old_EC2.patch
+ApplyPatch linux-2.6.35.4-virtio_console-fix-poll.patch
 
 #ApplyPatch drm-revert-drm-fbdev-rework-output-polling-to-be-back-in-core.patch
 #ApplyPatch revert-drm-kms-toggle-poll-around-switcheroo.patch
@@ -1970,6 +1972,9 @@ fi
 # and build.
 
 %changelog
+* Wed Sep 15 2010 Hans de Goede <hdegoede@redhat.com>
+- virtio_console: Fix poll/select blocking even though there is data to read
+
 * Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.35.4-28
 - Fix 3 CVEs:
   /dev/sequencer open failure is not handled correctly (CVE-2010-3080)
