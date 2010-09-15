@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 26
+%global baserelease 28
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -602,10 +602,16 @@ Patch30: git-utrace.patch
 Patch31: utrace-ptrace-fix-build.patch
 Patch32: utrace-remove-use-of-kref_set.patch
 
+Patch101: 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
+Patch102: 02-compat-test-rax-for-the-system-call-number-not-eax.patch
+Patch103: 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
+
 Patch150: linux-2.6.29-sparc-IOC_TYPECHECK.patch
 
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
+
+Patch180: aio-check-for-multiplication-overflow-in-do_io_submit.patch
 
 Patch200: linux-2.6-debug-sizeof-structs.patch
 Patch201: linux-2.6-debug-nmi-timeout.patch
@@ -1155,6 +1161,9 @@ ApplyPatch utrace-remove-use-of-kref_set.patch
 
 # Architecture patches
 # x86(-64)
+ApplyPatch 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
+ApplyPatch 02-compat-test-rax-for-the-system-call-number-not-eax.patch
+ApplyPatch 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
 
 #
 # Intel IOMMU
@@ -1178,6 +1187,8 @@ ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 #
 # bugfixes to drivers and filesystems
 #
+
+ApplyPatch aio-check-for-multiplication-overflow-in-do_io_submit.patch
 
 # ext4
 
@@ -1932,6 +1943,11 @@ fi
 # and build.
 
 %changelog
+* Tue Sep 14 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.4-28
+- x86_64: plug compat syscalls holes. (CVE-2010-3081, CVE-2010-3301)
+  upgrading is highly recommended.
+- aio: check for multiplication overflow in do_io_submit.
+
 * Mon Sep 13 2010 Chuck Ebbert <cebbert@redhat.com>
 - Add support for perl and python scripting to perf (#632942)
 
