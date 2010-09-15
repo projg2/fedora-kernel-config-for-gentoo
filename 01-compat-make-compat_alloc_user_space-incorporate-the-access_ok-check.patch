@@ -40,6 +40,9 @@ Cc: Paul Mackerras <paulus@samba.org>
 Cc: Ralf Baechle <ralf@linux-mips.org>
 Cc: <stable@kernel.org>
 ---
+
+ [ edited to fix build on 2.6.32 ]
+
  arch/ia64/include/asm/compat.h    |    2 +-
  arch/mips/include/asm/compat.h    |    2 +-
  arch/parisc/include/asm/compat.h  |    2 +-
@@ -48,7 +51,7 @@ Cc: <stable@kernel.org>
  arch/sparc/include/asm/compat.h   |    2 +-
  arch/x86/include/asm/compat.h     |    2 +-
  include/linux/compat.h            |    2 ++
- kernel/compat.c                   |   21 +++++++++++++++++++++
+ kernel/compat.c                   |   22 +++++++++++++++++++++
  9 files changed, 30 insertions(+), 7 deletions(-)
 
 diff --git a/arch/ia64/include/asm/compat.h b/arch/ia64/include/asm/compat.h
@@ -154,11 +157,18 @@ index af931ee..cab23f2 100644
 +
  #endif /* CONFIG_COMPAT */
  #endif /* _LINUX_COMPAT_H */
-diff --git a/kernel/compat.c b/kernel/compat.c
-index 180d188..61112e5 100644
+diff a/kernel/compat.c b/kernel/compat.c
 --- a/kernel/compat.c
 +++ b/kernel/compat.c
-@@ -1136,3 +1136,24 @@ compat_sys_sysinfo(struct compat_sysinfo __user *info)
+@@ -13,6 +13,7 @@
+ 
+ #include <linux/linkage.h>
+ #include <linux/compat.h>
++#include <linux/module.h>
+ #include <linux/errno.h>
+ #include <linux/time.h>
+ #include <linux/signal.h>
+@@ -1137,3 +1137,24 @@ compat_sys_sysinfo(struct compat_sysinfo __user *info)
  
  	return 0;
  }
