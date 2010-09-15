@@ -734,6 +734,11 @@ Patch12090: dell-wmi-add-support-for-eject-key-studio-1555.patch
 
 Patch12517: flexcop-fix-xlate_proc_name-warning.patch
 
+# mitigate DOS attack with large argument lists
+Patch12520: execve-improve-interactivity-with-large-arguments.patch
+Patch12521: execve-make-responsive-to-sigkill-with-large-arguments.patch
+Patch12522: setup_arg_pages-diagnose-excessive-argument-size.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1357,6 +1362,12 @@ ApplyPatch dell-wmi-add-support-for-eject-key-studio-1555.patch
 
 # bz #575873
 ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
+
+# mitigate DOS attack with large argument lists
+ApplyPatch execve-improve-interactivity-with-large-arguments.patch
+ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
+ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1943,10 +1954,13 @@ fi
 # and build.
 
 %changelog
-* Tue Sep 14 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.4-28
+* Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.35.4-28
+- Fix DOS with large argument lists.
+
+* Tue Sep 14 2010 Kyle McMartin <kyle@redhat.com>
 - x86_64: plug compat syscalls holes. (CVE-2010-3081, CVE-2010-3301)
   upgrading is highly recommended.
-- aio: check for multiplication overflow in do_io_submit.
+- aio: check for multiplication overflow in do_io_submit. (CVE-2010-3067)
 
 * Mon Sep 13 2010 Chuck Ebbert <cebbert@redhat.com>
 - Add support for perl and python scripting to perf (#632942)
