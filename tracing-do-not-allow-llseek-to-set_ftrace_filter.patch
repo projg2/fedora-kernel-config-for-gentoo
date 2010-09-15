@@ -1,0 +1,51 @@
+From: Steven Rostedt <srostedt@redhat.com>
+Date: Wed, 8 Sep 2010 15:20:37 +0000 (-0400)
+Subject: tracing: Do not allow llseek to set_ftrace_filter
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=9c55cb12c1c172e2d51e85fbb5a4796ca86b77e7
+
+tracing: Do not allow llseek to set_ftrace_filter
+
+Reading the file set_ftrace_filter does three things.
+
+1) shows whether or not filters are set for the function tracer
+2) shows what functions are set for the function tracer
+3) shows what triggers are set on any functions
+
+3 is independent from 1 and 2.
+
+The way this file currently works is that it is a state machine,
+and as you read it, it may change state. But this assumption breaks
+when you use lseek() on the file. The state machine gets out of sync
+and the t_show() may use the wrong pointer and cause a kernel oops.
+
+Luckily, this will only kill the app that does the lseek, but the app
+dies while holding a mutex. This prevents anyone else from using the
+set_ftrace_filter file (or any other function tracing file for that matter).
+
+A real fix for this is to rewrite the code, but that is too much for
+a -rc release or stable. This patch simply disables llseek on the
+set_ftrace_filter() file for now, and we can do the proper fix for the
+next major release.
+
+Reported-by: Robert Swiecki <swiecki@google.com>
+Cc: Chris Wright <chrisw@sous-sol.org>
+Cc: Tavis Ormandy <taviso@google.com>
+Cc: Eugene Teo <eugene@redhat.com>
+Cc: vendor-sec@lst.de
+Cc: <stable@kernel.org>
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+---
+
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 7cb1f45..83a16e9 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -2416,7 +2416,7 @@ static const struct file_operations ftrace_filter_fops = {
+ 	.open = ftrace_filter_open,
+ 	.read = seq_read,
+ 	.write = ftrace_filter_write,
+-	.llseek = ftrace_regex_lseek,
++	.llseek = no_llseek,
+ 	.release = ftrace_filter_release,
+ };
+ 
