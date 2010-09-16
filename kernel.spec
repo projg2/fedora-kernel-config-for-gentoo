@@ -1978,6 +1978,10 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 16 2010 Dennis Gilmore <dennis@ausil.us>
+- build sparc headers on sparcv9
+- disable some modules to enable the kernel to build on sparc
+
 * Thu Sep 16 2010 Hans de Goede <hdegoede@redhat.com>
 - Small fix to virtio_console poll fix from upstream review
 
