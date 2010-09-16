@@ -1974,6 +1974,9 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 16 2010 Hans de Goede <hdegoede@redhat.com>
+- Small fix to virtio_console poll fix from upstream review
+
 * Wed Sep 15 2010 Dave Jones <davej@redhat.com>
 - Fix another RCU lockdep warning (cgroups).
 
