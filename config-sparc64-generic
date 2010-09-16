@@ -200,4 +200,9 @@ CONFIG_SERIAL_GRLIB_GAISLER_APBUART=m
 CONFIG_GRETH=m
 CONFIG_FB_XVR1000=y
 
-CONFIG_CRYPTO_DEV_NIAGARA2=y
+CONFIG_CRYPTO_DEV_NIAGARA2=m
+
+# Bellow is changes made to get the kernel building on sparc again, they need to have upstream fixes
+# CONFIG_DEBUG_STRICT_USER_COPY_CHECKS is not set
+# CONFIG_ATA_OVER_ETH is not set
+# CONFIG_INFINIBAND is not set
