@@ -326,6 +326,10 @@ Summary: The Linux kernel
 %define kernel_image arch/s390/boot/image
 %endif
 
+%ifarch sparcv9
+%define hdrarch sparc
+%endif
+
 %ifarch sparc64
 %define asmarch sparc
 %define all_arch_configs kernel-%{version}-sparc64*.config
@@ -387,7 +391,7 @@ Summary: The Linux kernel
 # Which is a BadThing(tm).
 
 # We only build kernel-headers on the following...
-%define nobuildarches i386 s390 sparc %{arm}
+%define nobuildarches i386 s390 sparc sparcv9 %{arm}
 
 %ifarch %nobuildarches
 %define with_up 0
@@ -475,7 +479,7 @@ Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
-ExclusiveArch: noarch %{all_x86} x86_64 ppc ppc64 ia64 sparc sparc64 s390 s390x alpha alphaev56 %{arm}
+ExclusiveArch: noarch %{all_x86} x86_64 ppc ppc64 ia64 sparc sparcv9 sparc64 s390 s390x alpha alphaev56 %{arm}
 ExclusiveOS: Linux
 
 %kernel_reqprovconf
