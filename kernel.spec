@@ -2254,6 +2254,9 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Mon Sep 20 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops
+
 * Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.21-168
 - Fix three CVEs:
   CVE-2010-3080: /dev/sequencer open failure is not handled correctly

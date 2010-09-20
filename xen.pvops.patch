@@ -238,6 +238,19 @@ index 6a25d5d..ac91eed 100644
  }
  
  static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+diff --git a/arch/x86/include/asm/e820.h b/arch/x86/include/asm/e820.h
+index 40b4e61..fa3fd43 100644
+--- a/arch/x86/include/asm/e820.h
++++ b/arch/x86/include/asm/e820.h
+@@ -109,6 +109,8 @@ extern void reserve_early(u64 start, u64 end, char *name);
+ extern void reserve_early_overlap_ok(u64 start, u64 end, char *name);
+ extern void free_early(u64 start, u64 end);
+ extern void early_res_to_bootmem(u64 start, u64 end);
++extern u64 early_res_next_free(u64 start);
++extern u64 early_res_next_reserved(u64 addr, u64 max);
+ extern u64 early_reserve_e820(u64 startt, u64 sizet, u64 align);
+ 
+ extern unsigned long e820_end_of_ram_pfn(void);
 diff --git a/arch/x86/include/asm/gart.h b/arch/x86/include/asm/gart.h
 index 6cfdafa..4ac5b0f 100644
 --- a/arch/x86/include/asm/gart.h
@@ -1092,7 +1105,7 @@ index 0000000..75df312
 +#endif
 +
 diff --git a/arch/x86/include/asm/xen/page.h b/arch/x86/include/asm/xen/page.h
-index 018a0a4..a839127 100644
+index 018a0a4..8760cc6 100644
 --- a/arch/x86/include/asm/xen/page.h
 +++ b/arch/x86/include/asm/xen/page.h
 @@ -5,6 +5,7 @@
@@ -1103,7 +1116,7 @@ index 018a0a4..a839127 100644
  
  #include <asm/uaccess.h>
  #include <asm/page.h>
-@@ -35,9 +36,11 @@ typedef struct xpaddr {
+@@ -35,16 +36,25 @@ typedef struct xpaddr {
  #define MAX_DOMAIN_PAGES						\
      ((unsigned long)((u64)CONFIG_XEN_MAX_DOMAIN_MEMORY * 1024 * 1024 * 1024 / PAGE_SIZE))
  
@@ -1116,7 +1129,22 @@ index 018a0a4..a839127 100644
  
  static inline unsigned long pfn_to_mfn(unsigned long pfn)
  {
-@@ -62,10 +65,8 @@ static inline unsigned long mfn_to_pfn(unsigned long mfn)
++	unsigned long mfn;
++
+ 	if (xen_feature(XENFEAT_auto_translated_physmap))
+ 		return pfn;
+ 
+-	return get_phys_to_machine(pfn) & ~FOREIGN_FRAME_BIT;
++	mfn = get_phys_to_machine(pfn);
++
++	if (mfn != INVALID_P2M_ENTRY)
++		mfn &= ~FOREIGN_FRAME_BIT;
++
++	return mfn;
+ }
+ 
+ static inline int phys_to_machine_mapping_valid(unsigned long pfn)
+@@ -62,10 +72,8 @@ static inline unsigned long mfn_to_pfn(unsigned long mfn)
  	if (xen_feature(XENFEAT_auto_translated_physmap))
  		return mfn;
  
@@ -1128,7 +1156,7 @@ index 018a0a4..a839127 100644
  
  	pfn = 0;
  	/*
-@@ -112,13 +113,9 @@ static inline xpaddr_t machine_to_phys(xmaddr_t machine)
+@@ -112,13 +120,9 @@ static inline xpaddr_t machine_to_phys(xmaddr_t machine)
   */
  static inline unsigned long mfn_to_local_pfn(unsigned long mfn)
  {
@@ -1144,7 +1172,7 @@ index 018a0a4..a839127 100644
  	return pfn;
  }
  
-@@ -163,6 +160,7 @@ static inline pte_t __pte_ma(pteval_t x)
+@@ -163,6 +167,7 @@ static inline pte_t __pte_ma(pteval_t x)
  
  #define pgd_val_ma(x)	((x).pgd)
  
@@ -2039,6 +2067,47 @@ index ff95824..ebd4c51 100644
  #if defined(CONFIG_SMP) && defined(CONFIG_X86_LOCAL_APIC)
  
  static void kdump_nmi_callback(int cpu, struct die_args *args)
+diff --git a/arch/x86/kernel/e820.c b/arch/x86/kernel/e820.c
+index d17d482..4d0aded 100644
+--- a/arch/x86/kernel/e820.c
++++ b/arch/x86/kernel/e820.c
+@@ -750,6 +750,36 @@ static int __init find_overlapped_early(u64 start, u64 end)
+ 	return i;
+ }
+ 
++u64 __init early_res_next_free(u64 addr)
++{
++	int i;
++	u64 end = addr;
++	struct early_res *r;
++
++	for (i = 0; i < MAX_EARLY_RES; i++) {
++		r = &early_res[i];
++		if (addr >= r->start && addr < r->end) {
++			end = r->end;
++			break;
++		}
++	}
++	return end;
++}
++
++u64 __init early_res_next_reserved(u64 addr, u64 max)
++{
++	int i;
++	struct early_res *r;
++	u64 next_res = max;
++
++	for (i = 0; i < MAX_EARLY_RES && early_res[i].end; i++) {
++		r = &early_res[i];
++		if ((r->start >= addr) && (r->start < next_res))
++			next_res = r->start;
++	}
++	return next_res;
++}
++
+ /*
+  * Drop the i-th range from the early reservation map,
+  * by copying any higher ranges down one over it, and
 diff --git a/arch/x86/kernel/entry_32.S b/arch/x86/kernel/entry_32.S
 index c097e7d..7764118 100644
 --- a/arch/x86/kernel/entry_32.S
@@ -3071,6 +3140,73 @@ index 71da1bc..892b8eb 100644
  	/*
  	 * XXX: batch / limit 'nr', to avoid large irq off latency
  	 * needs some instrumenting to determine the common sizes used by
+diff --git a/arch/x86/mm/init_32.c b/arch/x86/mm/init_32.c
+index 30938c1..10c3719 100644
+--- a/arch/x86/mm/init_32.c
++++ b/arch/x86/mm/init_32.c
+@@ -430,22 +430,45 @@ static int __init add_highpages_work_fn(unsigned long start_pfn,
+ {
+ 	int node_pfn;
+ 	struct page *page;
++	phys_addr_t chunk_end, chunk_max;
+ 	unsigned long final_start_pfn, final_end_pfn;
+-	struct add_highpages_data *data;
+-
+-	data = (struct add_highpages_data *)datax;
++	struct add_highpages_data *data = (struct add_highpages_data *)datax;
+ 
+ 	final_start_pfn = max(start_pfn, data->start_pfn);
+ 	final_end_pfn = min(end_pfn, data->end_pfn);
+ 	if (final_start_pfn >= final_end_pfn)
+ 		return 0;
+ 
+-	for (node_pfn = final_start_pfn; node_pfn < final_end_pfn;
+-	     node_pfn++) {
+-		if (!pfn_valid(node_pfn))
+-			continue;
+-		page = pfn_to_page(node_pfn);
+-		add_one_highpage_init(page, node_pfn);
++	chunk_end = PFN_PHYS(final_start_pfn);
++	chunk_max = PFN_PHYS(final_end_pfn);
++
++	/*
++	 * Check for reserved areas.
++	 */
++	for (;;) {
++		phys_addr_t chunk_start;
++		chunk_start = early_res_next_free(chunk_end);
++		
++		/*
++		 * Reserved area. Just count high mem pages.
++		 */
++		for (node_pfn = PFN_DOWN(chunk_end);
++		     node_pfn < PFN_DOWN(chunk_start); node_pfn++) {
++			if (pfn_valid(node_pfn))
++				totalhigh_pages++;
++		}
++
++		if (chunk_start >= chunk_max)
++			break;
++
++		chunk_end = early_res_next_reserved(chunk_start, chunk_max);
++		for (node_pfn = PFN_DOWN(chunk_start);
++		     node_pfn < PFN_DOWN(chunk_end); node_pfn++) {
++			if (!pfn_valid(node_pfn))
++				continue;
++			page = pfn_to_page(node_pfn);
++			add_one_highpage_init(page, node_pfn);
++		}
+ 	}
+ 
+ 	return 0;
+@@ -459,7 +482,6 @@ void __init add_highpages_with_active_regions(int nid, unsigned long start_pfn,
+ 
+ 	data.start_pfn = start_pfn;
+ 	data.end_pfn = end_pfn;
+-
+ 	work_with_active_regions(nid, add_highpages_work_fn, &data);
+ }
+ 
 diff --git a/arch/x86/mm/pat.c b/arch/x86/mm/pat.c
 index e78cd0e..fb91994 100644
 --- a/arch/x86/mm/pat.c
@@ -3592,7 +3728,7 @@ index 0000000..21a3089
 +#endif
 +}
 diff --git a/arch/x86/xen/enlighten.c b/arch/x86/xen/enlighten.c
-index 942ccf1..472de02 100644
+index 942ccf1..ea32198 100644
 --- a/arch/x86/xen/enlighten.c
 +++ b/arch/x86/xen/enlighten.c
 @@ -11,6 +11,7 @@
@@ -3664,7 +3800,7 @@ index 942ccf1..472de02 100644
  static void xen_vcpu_setup(int cpu)
  {
  	struct vcpu_register_vcpu_info info;
-@@ -101,13 +122,17 @@ static void xen_vcpu_setup(int cpu)
+@@ -101,19 +122,20 @@ static void xen_vcpu_setup(int cpu)
  	struct vcpu_info *vcpup;
  
  	BUG_ON(HYPERVISOR_shared_info == &xen_dummy_shared_info);
@@ -3686,7 +3822,13 @@ index 942ccf1..472de02 100644
  	info.mfn = arbitrary_virt_to_mfn(vcpup);
  	info.offset = offset_in_page(vcpup);
  
-@@ -122,6 +147,7 @@ static void xen_vcpu_setup(int cpu)
+-	printk(KERN_DEBUG "trying to map vcpu_info %d at %p, mfn %llx, offset %d\n",
+-	       cpu, vcpup, info.mfn, info.offset);
+-
+ 	/* Check to see if the hypervisor will put the vcpu_info
+ 	   structure where we want it, which allows direct access via
+ 	   a percpu-variable. */
+@@ -122,13 +144,11 @@ static void xen_vcpu_setup(int cpu)
  	if (err) {
  		printk(KERN_DEBUG "register_vcpu_info failed: err=%d\n", err);
  		have_vcpu_info_placement = 0;
@@ -3694,7 +3836,14 @@ index 942ccf1..472de02 100644
  	} else {
  		/* This cpu is using the registered vcpu info, even if
  		   later ones fail to. */
-@@ -167,13 +193,16 @@ static void __init xen_banner(void)
+ 		per_cpu(xen_vcpu, cpu) = vcpup;
+-
+-		printk(KERN_DEBUG "cpu %d using vcpu_info at %p\n",
+-		       cpu, vcpup);
+ 	}
+ }
+ 
+@@ -167,13 +187,16 @@ static void __init xen_banner(void)
  
  	printk(KERN_INFO "Booting paravirtualized kernel on %s\n",
  	       pv_info.name);
@@ -3713,7 +3862,7 @@ index 942ccf1..472de02 100644
  
  static void xen_cpuid(unsigned int *ax, unsigned int *bx,
  		      unsigned int *cx, unsigned int *dx)
-@@ -187,7 +216,7 @@ static void xen_cpuid(unsigned int *ax, unsigned int *bx,
+@@ -187,7 +210,7 @@ static void xen_cpuid(unsigned int *ax, unsigned int *bx,
  	 * unsupported kernel subsystems as possible.
  	 */
  	switch (*ax) {
@@ -3722,7 +3871,7 @@ index 942ccf1..472de02 100644
  		maskecx = cpuid_leaf1_ecx_mask;
  		maskedx = cpuid_leaf1_edx_mask;
  		break;
-@@ -196,6 +225,10 @@ static void xen_cpuid(unsigned int *ax, unsigned int *bx,
+@@ -196,6 +219,10 @@ static void xen_cpuid(unsigned int *ax, unsigned int *bx,
  		/* Suppress extended topology stuff */
  		maskebx = 0;
  		break;
@@ -3733,7 +3882,7 @@ index 942ccf1..472de02 100644
  	}
  
  	asm(XEN_EMULATE_PREFIX "cpuid"
-@@ -215,13 +248,15 @@ static __init void xen_init_cpuid_mask(void)
+@@ -215,13 +242,15 @@ static __init void xen_init_cpuid_mask(void)
  	unsigned int ax, bx, cx, dx;
  
  	cpuid_leaf1_edx_mask =
@@ -3753,7 +3902,7 @@ index 942ccf1..472de02 100644
  			  (1 << X86_FEATURE_ACPI));  /* disable ACPI */
  
  	ax = 1;
-@@ -406,7 +441,7 @@ static __init void xen_load_gdt_boot(const struct desc_ptr *dtr)
+@@ -406,7 +435,7 @@ static __init void xen_load_gdt_boot(const struct desc_ptr *dtr)
  
  		pte = pfn_pte(pfn, PAGE_KERNEL_RO);
  
@@ -3762,7 +3911,7 @@ index 942ccf1..472de02 100644
  			BUG();
  
  		frames[f] = mfn;
-@@ -517,13 +552,13 @@ static int cvt_gate_to_trap(int vector, const gate_desc *val,
+@@ -517,13 +546,13 @@ static int cvt_gate_to_trap(int vector, const gate_desc *val,
  		return 0;
  #ifdef CONFIG_X86_MCE
  	} else if (addr == (unsigned long)machine_check) {
@@ -3782,7 +3931,7 @@ index 942ccf1..472de02 100644
  #endif	/* CONFIG_X86_64 */
  	info->address = addr;
  
-@@ -679,6 +714,18 @@ static void xen_set_iopl_mask(unsigned mask)
+@@ -679,6 +708,18 @@ static void xen_set_iopl_mask(unsigned mask)
  	HYPERVISOR_physdev_op(PHYSDEVOP_set_iopl, &set_iopl);
  }
  
@@ -3801,7 +3950,7 @@ index 942ccf1..472de02 100644
  static void xen_io_delay(void)
  {
  }
-@@ -716,7 +763,7 @@ static u32 xen_safe_apic_wait_icr_idle(void)
+@@ -716,7 +757,7 @@ static u32 xen_safe_apic_wait_icr_idle(void)
          return 0;
  }
  
@@ -3810,7 +3959,7 @@ index 942ccf1..472de02 100644
  {
  	apic->read = xen_apic_read;
  	apic->write = xen_apic_write;
-@@ -728,7 +775,6 @@ static void set_xen_basic_apic_ops(void)
+@@ -728,7 +769,6 @@ static void set_xen_basic_apic_ops(void)
  
  #endif
  
@@ -3818,7 +3967,7 @@ index 942ccf1..472de02 100644
  static void xen_clts(void)
  {
  	struct multicall_space mcs;
-@@ -811,6 +857,11 @@ static int xen_write_msr_safe(unsigned int msr, unsigned low, unsigned high)
+@@ -811,6 +851,11 @@ static int xen_write_msr_safe(unsigned int msr, unsigned low, unsigned high)
  		   Xen console noise. */
  		break;
  
@@ -3830,7 +3979,16 @@ index 942ccf1..472de02 100644
  	default:
  		ret = native_write_msr_safe(msr, low, high);
  	}
-@@ -923,10 +974,6 @@ static const struct pv_init_ops xen_init_ops __initdata = {
+@@ -849,8 +894,6 @@ void xen_setup_vcpu_info_placement(void)
+ 	/* xen_vcpu_setup managed to place the vcpu_info within the
+ 	   percpu area for all cpus, so make use of it */
+ 	if (have_vcpu_info_placement) {
+-		printk(KERN_INFO "Xen: using vcpu_info placement\n");
+-
+ 		pv_irq_ops.save_fl = __PV_IS_CALLEE_SAVE(xen_save_fl_direct);
+ 		pv_irq_ops.restore_fl = __PV_IS_CALLEE_SAVE(xen_restore_fl_direct);
+ 		pv_irq_ops.irq_disable = __PV_IS_CALLEE_SAVE(xen_irq_disable_direct);
+@@ -923,10 +966,6 @@ static const struct pv_init_ops xen_init_ops __initdata = {
  	.patch = xen_patch,
  };
  
@@ -3841,7 +3999,7 @@ index 942ccf1..472de02 100644
  static const struct pv_cpu_ops xen_cpu_ops __initdata = {
  	.cpuid = xen_cpuid,
  
-@@ -978,6 +1025,7 @@ static const struct pv_cpu_ops xen_cpu_ops __initdata = {
+@@ -978,6 +1017,7 @@ static const struct pv_cpu_ops xen_cpu_ops __initdata = {
  	.load_sp0 = xen_load_sp0,
  
  	.set_iopl_mask = xen_set_iopl_mask,
@@ -3849,7 +4007,7 @@ index 942ccf1..472de02 100644
  	.io_delay = xen_io_delay,
  
  	/* Xen takes care of %gs when switching to usermode for us */
-@@ -1020,15 +1068,40 @@ static void xen_machine_halt(void)
+@@ -1020,15 +1060,40 @@ static void xen_machine_halt(void)
  	xen_reboot(SHUTDOWN_poweroff);
  }
  
@@ -3891,7 +4049,7 @@ index 942ccf1..472de02 100644
  	.shutdown = xen_machine_halt,
  	.crash_shutdown = xen_crash_shutdown,
  	.emergency_restart = xen_emergency_restart,
-@@ -1061,10 +1134,11 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1061,10 +1126,11 @@ asmlinkage void __init xen_start_kernel(void)
  
  	xen_domain_type = XEN_PV_DOMAIN;
  
@@ -3904,7 +4062,7 @@ index 942ccf1..472de02 100644
  	pv_cpu_ops = xen_cpu_ops;
  	pv_apic_ops = xen_apic_ops;
  
-@@ -1072,13 +1146,7 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1072,13 +1138,7 @@ asmlinkage void __init xen_start_kernel(void)
  	x86_init.oem.arch_setup = xen_arch_setup;
  	x86_init.oem.banner = xen_banner;
  
@@ -3919,7 +4077,7 @@ index 942ccf1..472de02 100644
  
  	/*
  	 * Set up some pagetable state before starting to set any ptes.
-@@ -1116,6 +1184,10 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1116,6 +1176,10 @@ asmlinkage void __init xen_start_kernel(void)
  	 */
  	xen_setup_stackprotector();
  
@@ -3930,7 +4088,7 @@ index 942ccf1..472de02 100644
  	xen_init_irq_ops();
  	xen_init_cpuid_mask();
  
-@@ -1144,6 +1216,8 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1144,6 +1208,8 @@ asmlinkage void __init xen_start_kernel(void)
  
  	pgd = (pgd_t *)xen_start_info->pt_base;
  
@@ -3939,7 +4097,7 @@ index 942ccf1..472de02 100644
  	/* Don't do the full vcpu_info placement stuff until we have a
  	   possible map and a non-dummy shared_info. */
  	per_cpu(xen_vcpu, 0) = &HYPERVISOR_shared_info->vcpu_info[0];
-@@ -1153,6 +1227,10 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1153,6 +1219,10 @@ asmlinkage void __init xen_start_kernel(void)
  
  	xen_raw_console_write("mapping kernel into physical memory\n");
  	pgd = xen_setup_kernel_pagetable(pgd, xen_start_info->nr_pages);
@@ -3950,7 +4108,7 @@ index 942ccf1..472de02 100644
  
  	init_mm.pgd = pgd;
  
-@@ -1162,6 +1240,14 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1162,6 +1232,14 @@ asmlinkage void __init xen_start_kernel(void)
  	if (xen_feature(XENFEAT_supervisor_mode_kernel))
  		pv_info.kernel_rpl = 0;
  
@@ -3965,7 +4123,7 @@ index 942ccf1..472de02 100644
  	/* set the limit of our address space */
  	xen_reserve_top();
  
-@@ -1184,6 +1270,16 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1184,6 +1262,16 @@ asmlinkage void __init xen_start_kernel(void)
  		add_preferred_console("xenboot", 0, NULL);
  		add_preferred_console("tty", 0, NULL);
  		add_preferred_console("hvc", 0, NULL);
@@ -3982,7 +4140,7 @@ index 942ccf1..472de02 100644
  	}
  
  	xen_raw_console_write("about to get started...\n");
-@@ -1197,3 +1293,126 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1197,3 +1285,126 @@ asmlinkage void __init xen_start_kernel(void)
  	x86_64_start_reservations((char *)__pa_symbol(&boot_params));
  #endif
  }
@@ -4110,7 +4268,7 @@ index 942ccf1..472de02 100644
 +}
 +#endif
 diff --git a/arch/x86/xen/mmu.c b/arch/x86/xen/mmu.c
-index 350a3de..c3fc5ce 100644
+index 350a3de..c3364f8 100644
 --- a/arch/x86/xen/mmu.c
 +++ b/arch/x86/xen/mmu.c
 @@ -42,6 +42,7 @@
@@ -4292,17 +4450,17 @@ index 350a3de..c3fc5ce 100644
 +		*ptep = ((uint64_t)pfn_to_mfn(page_to_pfn(pmd_page)) <<
 +			 PAGE_SHIFT) | ((unsigned long)pte & ~PAGE_MASK);
 +	return 0;
-+}
-+
+ }
+ 
+-/* Build the parallel p2m_top_mfn structures */
 +int create_lookup_pte_addr(struct mm_struct *mm,
 +			   unsigned long address,
 +			   uint64_t *ptep)
 +{
 +	return apply_to_page_range(mm, address, PAGE_SIZE,
 +				   lookup_pte_fn, ptep);
- }
- 
--/* Build the parallel p2m_top_mfn structures */
++}
++
 +EXPORT_SYMBOL(create_lookup_pte_addr);
 +
 +/*
@@ -4382,7 +4540,7 @@ index 350a3de..c3fc5ce 100644
  }
  
  /* Set up p2m_top to point to the domain-builder provided p2m pages */
-@@ -217,96 +364,168 @@ void __init xen_build_dynamic_phys_to_machine(void)
+@@ -217,96 +364,170 @@ void __init xen_build_dynamic_phys_to_machine(void)
  	unsigned long max_pfn = min(MAX_DOMAIN_PAGES, xen_start_info->nr_pages);
  	unsigned pfn;
  
@@ -4448,16 +4606,12 @@ index 350a3de..c3fc5ce 100644
 -	unsigned i;
 +	return (void *)__get_free_page(GFP_KERNEL | __GFP_REPEAT);
 +}
- 
--	pfnp = &p2m_top[topidx];
--	mfnp = &p2m_top_mfn[topidx];
++
 +static void free_p2m_page(void *p)
 +{
 +	free_page((unsigned long)p);
 +}
- 
--	for (i = 0; i < P2M_ENTRIES_PER_PAGE; i++)
--		p[i] = INVALID_P2M_ENTRY;
++
 +/* 
 + * Fully allocate the p2m structure for a given pfn.  We need to check
 + * that both the top and mid levels are allocated, and make sure the
@@ -4471,15 +4625,19 @@ index 350a3de..c3fc5ce 100644
 +	unsigned long ***top_p, **mid;
 +	unsigned long *top_mfn_p, *mid_mfn;
  
+-	pfnp = &p2m_top[topidx];
+-	mfnp = &p2m_top_mfn[topidx];
++	topidx = p2m_top_index(pfn);
++	mididx = p2m_mid_index(pfn);
+ 
+-	for (i = 0; i < P2M_ENTRIES_PER_PAGE; i++)
+-		p[i] = INVALID_P2M_ENTRY;
++	top_p = &p2m_top[topidx];
++	mid = *top_p;
+ 
 -	if (cmpxchg(pfnp, p2m_missing, p) == p2m_missing) {
 -		*mfnp = virt_to_mfn(p);
 -		return true;
-+	topidx = p2m_top_index(pfn);
-+	mididx = p2m_mid_index(pfn);
-+
-+	top_p = &p2m_top[topidx];
-+	mid = *top_p;
-+
 +	if (mid == p2m_mid_missing) {
 +		/* Mid level is missing, allocate a new one */
 +		mid = alloc_p2m_page();
@@ -4503,6 +4661,7 @@ index 350a3de..c3fc5ce 100644
 +	if (mid_mfn == p2m_mid_missing_mfn) {
 +		/* Separately check the mid mfn level */
 +		unsigned long missing_mfn;
++		unsigned long mid_mfn_mfn;
 +
 +		mid_mfn = alloc_p2m_page();
 +		if (!mid_mfn)
@@ -4511,24 +4670,25 @@ index 350a3de..c3fc5ce 100644
 +		p2m_mid_mfn_init(mid_mfn);
 +		
 +		missing_mfn = virt_to_mfn(p2m_mid_missing_mfn);
-+		if (cmpxchg(top_mfn_p, missing_mfn, mid) != missing_mfn)
-+			free_p2m_page(mid);
++		mid_mfn_mfn = virt_to_mfn(mid_mfn);
++		if (cmpxchg(top_mfn_p, missing_mfn, mid_mfn_mfn) != missing_mfn)
++			free_p2m_page(mid_mfn);
 +	}
 +
 +	if (p2m_top[topidx][mididx] == p2m_missing) {
 +		/* p2m leaf page is missing */
 +		unsigned long *p2m;
- 
--	p = (void *)__get_free_page(GFP_KERNEL | __GFP_NOFAIL);
--	BUG_ON(p == NULL);
++
 +		p2m = alloc_p2m_page();
 +		if (!p2m)
 +			return false;
  
+-	p = (void *)__get_free_page(GFP_KERNEL | __GFP_NOFAIL);
+-	BUG_ON(p == NULL);
++		p2m_init(p2m);
+ 
 -	if (!install_p2mtop_page(pfn, p))
 -		free_page((unsigned long)p);
-+		p2m_init(p2m);
-+
 +		if (cmpxchg(&mid[mididx], p2m_missing, p2m) != p2m_missing)
 +			free_p2m_page(p2m);
 +		else
@@ -4592,7 +4752,7 @@ index 350a3de..c3fc5ce 100644
  }
  
  unsigned long arbitrary_virt_to_mfn(void *vaddr)
-@@ -315,6 +534,7 @@ unsigned long arbitrary_virt_to_mfn(void *vaddr)
+@@ -315,6 +536,7 @@ unsigned long arbitrary_virt_to_mfn(void *vaddr)
  
  	return PFN_DOWN(maddr.maddr);
  }
@@ -4600,7 +4760,7 @@ index 350a3de..c3fc5ce 100644
  
  xmaddr_t arbitrary_virt_to_machine(void *vaddr)
  {
-@@ -376,6 +596,34 @@ static bool xen_page_pinned(void *ptr)
+@@ -376,6 +598,34 @@ static bool xen_page_pinned(void *ptr)
  	return PagePinned(page);
  }
  
@@ -4635,7 +4795,7 @@ index 350a3de..c3fc5ce 100644
  static void xen_extend_mmu_update(const struct mmu_update *update)
  {
  	struct multicall_space mcs;
-@@ -452,6 +700,11 @@ void set_pte_mfn(unsigned long vaddr, unsigned long mfn, pgprot_t flags)
+@@ -452,6 +702,11 @@ void set_pte_mfn(unsigned long vaddr, unsigned long mfn, pgprot_t flags)
  void xen_set_pte_at(struct mm_struct *mm, unsigned long addr,
  		    pte_t *ptep, pte_t pteval)
  {
@@ -4647,10 +4807,30 @@ index 350a3de..c3fc5ce 100644
  	ADD_STATS(set_pte_at, 1);
  //	ADD_STATS(set_pte_at_pinned, xen_page_pinned(ptep));
  	ADD_STATS(set_pte_at_current, mm == current->mm);
-@@ -522,9 +775,34 @@ static pteval_t pte_pfn_to_mfn(pteval_t val)
- 	return val;
- }
- 
+@@ -516,7 +771,34 @@ static pteval_t pte_pfn_to_mfn(pteval_t val)
+ 	if (val & _PAGE_PRESENT) {
+ 		unsigned long pfn = (val & PTE_PFN_MASK) >> PAGE_SHIFT;
+ 		pteval_t flags = val & PTE_FLAGS_MASK;
+-		val = ((pteval_t)pfn_to_mfn(pfn) << PAGE_SHIFT) | flags;
++		unsigned long mfn = pfn_to_mfn(pfn);
++
++		/*
++		 * If there's no mfn for the pfn, then just create an
++		 * empty non-present pte.  Unfortunately this loses
++		 * information about the original pfn, so
++		 * pte_mfn_to_pfn is asymmetric.
++		 */
++		if (unlikely(mfn == INVALID_P2M_ENTRY)) {
++			mfn = 0;
++			flags = 0;
++		}
++
++		val = ((pteval_t)mfn << PAGE_SHIFT) | flags;
++	}
++
++	return val;
++}
++
 +static pteval_t iomap_pte(pteval_t val)
 +{
 +	if (val & _PAGE_PRESENT) {
@@ -4660,11 +4840,11 @@ index 350a3de..c3fc5ce 100644
 +		/* We assume the pte frame number is a MFN, so
 +		   just use it as-is. */
 +		val = ((pteval_t)pfn << PAGE_SHIFT) | flags;
-+	}
-+
-+	return val;
-+}
-+
+ 	}
+ 
+ 	return val;
+@@ -524,7 +806,18 @@ static pteval_t pte_pfn_to_mfn(pteval_t val)
+ 
  pteval_t xen_pte_val(pte_t pte)
  {
 -	return pte_mfn_to_pfn(pte.pte);
@@ -4683,7 +4863,7 @@ index 350a3de..c3fc5ce 100644
  }
  PV_CALLEE_SAVE_REGS_THUNK(xen_pte_val);
  
-@@ -534,9 +812,62 @@ pgdval_t xen_pgd_val(pgd_t pgd)
+@@ -534,9 +827,62 @@ pgdval_t xen_pgd_val(pgd_t pgd)
  }
  PV_CALLEE_SAVE_REGS_THUNK(xen_pgd_val);
  
@@ -4747,7 +4927,7 @@ index 350a3de..c3fc5ce 100644
  	return native_make_pte(pte);
  }
  PV_CALLEE_SAVE_REGS_THUNK(xen_make_pte);
-@@ -592,6 +923,11 @@ void xen_set_pud(pud_t *ptr, pud_t val)
+@@ -592,6 +938,11 @@ void xen_set_pud(pud_t *ptr, pud_t val)
  
  void xen_set_pte(pte_t *ptep, pte_t pte)
  {
@@ -4759,7 +4939,7 @@ index 350a3de..c3fc5ce 100644
  	ADD_STATS(pte_update, 1);
  //	ADD_STATS(pte_update_pinned, xen_page_pinned(ptep));
  	ADD_STATS(pte_update_batched, paravirt_get_lazy_mode() == PARAVIRT_LAZY_MMU);
-@@ -608,6 +944,11 @@ void xen_set_pte(pte_t *ptep, pte_t pte)
+@@ -608,6 +959,11 @@ void xen_set_pte(pte_t *ptep, pte_t pte)
  #ifdef CONFIG_X86_PAE
  void xen_set_pte_atomic(pte_t *ptep, pte_t pte)
  {
@@ -4771,7 +4951,7 @@ index 350a3de..c3fc5ce 100644
  	set_64bit((u64 *)ptep, native_pte_val(pte));
  }
  
-@@ -934,8 +1275,6 @@ static int xen_pin_page(struct mm_struct *mm, struct page *page,
+@@ -934,8 +1290,6 @@ static int xen_pin_page(struct mm_struct *mm, struct page *page,
     read-only, and can be pinned. */
  static void __xen_pgd_pin(struct mm_struct *mm, pgd_t *pgd)
  {
@@ -4780,7 +4960,7 @@ index 350a3de..c3fc5ce 100644
  	xen_mc_batch();
  
  	if (__xen_pgd_walk(mm, pgd, xen_pin_page, USER_LIMIT)) {
-@@ -1219,7 +1558,7 @@ void xen_exit_mmap(struct mm_struct *mm)
+@@ -1219,7 +1573,7 @@ void xen_exit_mmap(struct mm_struct *mm)
  	spin_lock(&mm->page_table_lock);
  
  	/* pgd may not be pinned in the error exit path of execve */
@@ -4789,7 +4969,7 @@ index 350a3de..c3fc5ce 100644
  		xen_pgd_unpin(mm);
  
  	spin_unlock(&mm->page_table_lock);
-@@ -1288,12 +1627,19 @@ static void xen_flush_tlb_single(unsigned long addr)
+@@ -1288,12 +1642,19 @@ static void xen_flush_tlb_single(unsigned long addr)
  	preempt_enable();
  }
  
@@ -4810,7 +4990,7 @@ index 350a3de..c3fc5ce 100644
  	} *args;
  	struct multicall_space mcs;
  
-@@ -1417,6 +1763,13 @@ static int xen_pgd_alloc(struct mm_struct *mm)
+@@ -1417,6 +1778,13 @@ static int xen_pgd_alloc(struct mm_struct *mm)
  	return ret;
  }
  
@@ -4824,7 +5004,7 @@ index 350a3de..c3fc5ce 100644
  static void xen_pgd_free(struct mm_struct *mm, pgd_t *pgd)
  {
  #ifdef CONFIG_X86_64
-@@ -1448,10 +1801,17 @@ static void *xen_kmap_atomic_pte(struct page *page, enum km_type type)
+@@ -1448,10 +1816,17 @@ static void *xen_kmap_atomic_pte(struct page *page, enum km_type type)
  #ifdef CONFIG_X86_32
  static __init pte_t mask_rw_pte(pte_t *ptep, pte_t pte)
  {
@@ -4844,7 +5024,7 @@ index 350a3de..c3fc5ce 100644
  
  	return pte;
  }
-@@ -1517,7 +1877,6 @@ static void xen_alloc_ptpage(struct mm_struct *mm, unsigned long pfn, unsigned l
+@@ -1517,7 +1892,6 @@ static void xen_alloc_ptpage(struct mm_struct *mm, unsigned long pfn, unsigned l
  	if (PagePinned(virt_to_page(mm->pgd))) {
  		SetPagePinned(page);
  
@@ -4852,7 +5032,7 @@ index 350a3de..c3fc5ce 100644
  		if (!PageHighMem(page)) {
  			make_lowmem_page_readonly(__va(PFN_PHYS((unsigned long)pfn)));
  			if (level == PT_PTE && USE_SPLIT_PTLOCKS)
-@@ -1620,6 +1979,7 @@ static void *m2v(phys_addr_t maddr)
+@@ -1620,6 +1994,7 @@ static void *m2v(phys_addr_t maddr)
  	return __ka(m2p(maddr));
  }
  
@@ -4860,7 +5040,7 @@ index 350a3de..c3fc5ce 100644
  static void set_page_prot(void *addr, pgprot_t prot)
  {
  	unsigned long pfn = __pa(addr) >> PAGE_SHIFT;
-@@ -1635,6 +1995,9 @@ static __init void xen_map_identity_early(pmd_t *pmd, unsigned long max_pfn)
+@@ -1635,6 +2010,9 @@ static __init void xen_map_identity_early(pmd_t *pmd, unsigned long max_pfn)
  	unsigned ident_pte;
  	unsigned long pfn;
  
@@ -4870,7 +5050,7 @@ index 350a3de..c3fc5ce 100644
  	ident_pte = 0;
  	pfn = 0;
  	for (pmdidx = 0; pmdidx < PTRS_PER_PMD && pfn < max_pfn; pmdidx++) {
-@@ -1645,7 +2008,7 @@ static __init void xen_map_identity_early(pmd_t *pmd, unsigned long max_pfn)
+@@ -1645,7 +2023,7 @@ static __init void xen_map_identity_early(pmd_t *pmd, unsigned long max_pfn)
  			pte_page = m2v(pmd[pmdidx].pmd);
  		else {
  			/* Check for free pte pages */
@@ -4879,7 +5059,7 @@ index 350a3de..c3fc5ce 100644
  				break;
  
  			pte_page = &level1_ident_pgt[ident_pte];
-@@ -1675,6 +2038,20 @@ static __init void xen_map_identity_early(pmd_t *pmd, unsigned long max_pfn)
+@@ -1675,6 +2053,20 @@ static __init void xen_map_identity_early(pmd_t *pmd, unsigned long max_pfn)
  	set_page_prot(pmd, PAGE_KERNEL_RO);
  }
  
@@ -4900,7 +5080,7 @@ index 350a3de..c3fc5ce 100644
  #ifdef CONFIG_X86_64
  static void convert_pfn_mfn(void *v)
  {
-@@ -1760,12 +2137,15 @@ __init pgd_t *xen_setup_kernel_pagetable(pgd_t *pgd,
+@@ -1760,12 +2152,15 @@ __init pgd_t *xen_setup_kernel_pagetable(pgd_t *pgd,
  	return pgd;
  }
  #else	/* !CONFIG_X86_64 */
@@ -4917,7 +5097,7 @@ index 350a3de..c3fc5ce 100644
  
  	max_pfn_mapped = PFN_DOWN(__pa(xen_start_info->pt_base) +
  				  xen_start_info->nr_pt_frames * PAGE_SIZE +
-@@ -1777,6 +2157,20 @@ __init pgd_t *xen_setup_kernel_pagetable(pgd_t *pgd,
+@@ -1777,6 +2172,20 @@ __init pgd_t *xen_setup_kernel_pagetable(pgd_t *pgd,
  	xen_map_identity_early(level2_kernel_pgt, max_pfn);
  
  	memcpy(swapper_pg_dir, pgd, sizeof(pgd_t) * PTRS_PER_PGD);
@@ -4938,7 +5118,7 @@ index 350a3de..c3fc5ce 100644
  	set_pgd(&swapper_pg_dir[KERNEL_PGD_BOUNDARY],
  			__pgd(__pa(level2_kernel_pgt) | _PAGE_PRESENT));
  
-@@ -1799,6 +2193,8 @@ __init pgd_t *xen_setup_kernel_pagetable(pgd_t *pgd,
+@@ -1799,6 +2208,8 @@ __init pgd_t *xen_setup_kernel_pagetable(pgd_t *pgd,
  }
  #endif	/* CONFIG_X86_64 */
  
@@ -4947,7 +5127,7 @@ index 350a3de..c3fc5ce 100644
  static void xen_set_fixmap(unsigned idx, phys_addr_t phys, pgprot_t prot)
  {
  	pte_t pte;
-@@ -1828,9 +2224,26 @@ static void xen_set_fixmap(unsigned idx, phys_addr_t phys, pgprot_t prot)
+@@ -1828,9 +2239,26 @@ static void xen_set_fixmap(unsigned idx, phys_addr_t phys, pgprot_t prot)
  		pte = pfn_pte(phys, prot);
  		break;
  
@@ -4975,7 +5155,7 @@ index 350a3de..c3fc5ce 100644
  	}
  
  	__native_set_fixmap(idx, pte);
-@@ -1845,6 +2258,29 @@ static void xen_set_fixmap(unsigned idx, phys_addr_t phys, pgprot_t prot)
+@@ -1845,6 +2273,29 @@ static void xen_set_fixmap(unsigned idx, phys_addr_t phys, pgprot_t prot)
  #endif
  }
  
@@ -5005,7 +5185,7 @@ index 350a3de..c3fc5ce 100644
  static __init void xen_post_allocator_init(void)
  {
  	pv_mmu_ops.set_pte = xen_set_pte;
-@@ -1960,8 +2396,305 @@ void __init xen_init_mmu_ops(void)
+@@ -1960,8 +2411,305 @@ void __init xen_init_mmu_ops(void)
  	x86_init.paging.pagetable_setup_start = xen_pagetable_setup_start;
  	x86_init.paging.pagetable_setup_done = xen_pagetable_setup_done;
  	pv_mmu_ops = xen_mmu_ops;
@@ -5839,7 +6019,7 @@ index 0000000..0f45638
 +early_param("xen_emul_unplug", parse_xen_emul_unplug);
 +#endif
 diff --git a/arch/x86/xen/setup.c b/arch/x86/xen/setup.c
-index ad0047f..804815c 100644
+index ad0047f..a0db643 100644
 --- a/arch/x86/xen/setup.c
 +++ b/arch/x86/xen/setup.c
 @@ -10,6 +10,7 @@
@@ -5860,10 +6040,30 @@ index ad0047f..804815c 100644
  #include <xen/features.h>
  
  #include "xen-ops.h"
-@@ -32,25 +35,131 @@ extern void xen_sysenter_target(void);
+@@ -32,25 +35,157 @@ extern void xen_sysenter_target(void);
  extern void xen_syscall_target(void);
  extern void xen_syscall32_target(void);
  
++/* Amount of extra memory space we add to the e820 ranges */
++phys_addr_t xen_extra_mem_start, xen_extra_mem_size;
++
++static __init void xen_add_extra_mem(unsigned long pages)
++{
++	u64 size = (u64)pages * PAGE_SIZE;
++
++	if (!pages)
++		return;
++
++	e820_add_region(xen_extra_mem_start + xen_extra_mem_size, size, E820_RAM);
++	sanitize_e820_map(e820.map, ARRAY_SIZE(e820.map), &e820.nr_map);
++
++	reserve_early(xen_extra_mem_start + xen_extra_mem_size,
++		      xen_extra_mem_start + xen_extra_mem_size + size,
++		      "XEN EXTRA");
++
++	xen_extra_mem_size += size;
++}
++
 +static unsigned long __init xen_release_chunk(phys_addr_t start_addr,
 +					      phys_addr_t end_addr)
 +{
@@ -5938,17 +6138,18 @@ index ad0047f..804815c 100644
 -
  char * __init xen_memory_setup(void)
  {
-+	static __initdata struct e820entry map[E820MAX];
++	static struct e820entry map[E820MAX] __initdata;
 +
  	unsigned long max_pfn = xen_start_info->nr_pages;
-+	struct xen_memory_map memmap;
 +	unsigned long long mem_end;
-+	int op;
 +	int rc;
++	struct xen_memory_map memmap;
++	unsigned long extra_pages = 0;
++	int op;
 +	int i;
  
  	max_pfn = min(MAX_DOMAIN_PAGES, max_pfn);
-+	mem_end = PFN_PHYS((u64)max_pfn);
++	mem_end = PFN_PHYS(max_pfn);
 +
 +	memmap.nr_entries = E820MAX;
 +	set_xen_guest_handle(memmap.buffer, map);
@@ -5971,17 +6172,22 @@ index ad0047f..804815c 100644
  	e820.nr_map = 0;
 -
 -	e820_add_region(0, PFN_PHYS((u64)max_pfn), E820_RAM);
++	xen_extra_mem_start = mem_end;
 +	for (i = 0; i < memmap.nr_entries; i++) {
 +		unsigned long long end = map[i].addr + map[i].size;
++
 +		if (map[i].type == E820_RAM) {
-+			if (map[i].addr > mem_end)
-+				continue;
 +			if (end > mem_end) {
 +				/* Truncate region to max_mem. */
 +				map[i].size -= end - mem_end;
++
++				extra_pages += PFN_DOWN(end - mem_end);
 +			}
-+		}
-+		if (map[i].size > 0)
++		} else if (map[i].type != E820_RAM)
++			xen_extra_mem_start = end;
++
++		if ((map[i].type != E820_RAM || map[i].addr < mem_end) &&
++		    map[i].size > 0)
 +			e820_add_region(map[i].addr, map[i].size, map[i].type);
 +	}
  
@@ -5995,16 +6201,18 @@ index ad0047f..804815c 100644
  	 */
  	e820_add_region(ISA_START_ADDRESS, ISA_END_ADDRESS - ISA_START_ADDRESS,
  			E820_RESERVED);
-@@ -67,6 +176,8 @@ char * __init xen_memory_setup(void)
+@@ -67,6 +202,10 @@ char * __init xen_memory_setup(void)
  
  	sanitize_e820_map(e820.map, ARRAY_SIZE(e820.map), &e820.nr_map);
  
-+	xen_return_unused_memory(xen_start_info->nr_pages, &e820);
++	extra_pages += xen_return_unused_memory(xen_start_info->nr_pages, &e820);
++
++	xen_add_extra_mem(extra_pages);
 +
  	return "Xen";
  }
  
-@@ -156,6 +267,8 @@ void __init xen_arch_setup(void)
+@@ -156,6 +295,8 @@ void __init xen_arch_setup(void)
  	struct physdev_set_iopl set_iopl;
  	int rc;
  
@@ -6013,7 +6221,7 @@ index ad0047f..804815c 100644
  	HYPERVISOR_vm_assist(VMASST_CMD_enable, VMASST_TYPE_4gb_segments);
  	HYPERVISOR_vm_assist(VMASST_CMD_enable, VMASST_TYPE_writable_pagetables);
  
-@@ -182,13 +295,17 @@ void __init xen_arch_setup(void)
+@@ -182,13 +323,17 @@ void __init xen_arch_setup(void)
  	}
  #endif
  
@@ -7356,7 +7564,7 @@ index 1d886e0..f4a2b10 100644
  	  This driver implements the front-end of the Xen virtual
  	  block device driver.  It communicates with a back-end driver
 diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-index b8578bb..0ce883a 100644
+index b8578bb..44059e6 100644
 --- a/drivers/block/xen-blkfront.c
 +++ b/drivers/block/xen-blkfront.c
 @@ -42,10 +42,12 @@
@@ -7407,17 +7615,17 @@ index b8578bb..0ce883a 100644
  
  #define MAXIMUM_OUTSTANDING_BLOCK_REQS \
  	(BLKIF_MAX_SEGMENTS_PER_REQUEST * BLK_RING_SIZE)
-@@ -119,6 +121,10 @@ static DEFINE_SPINLOCK(blkif_io_lock);
+@@ -116,6 +118,10 @@ static DEFINE_SPINLOCK(blkif_io_lock);
+ #define EXTENDED (1<<EXT_SHIFT)
+ #define VDEV_IS_EXTENDED(dev) ((dev)&(EXTENDED))
+ #define BLKIF_MINOR_EXT(dev) ((dev)&(~EXTENDED))
++#define EMULATED_HD_DISK_MINOR_OFFSET (0)
++#define EMULATED_HD_DISK_NAME_OFFSET (EMULATED_HD_DISK_MINOR_OFFSET / 256)
++#define EMULATED_SD_DISK_MINOR_OFFSET (EMULATED_HD_DISK_MINOR_OFFSET + (4 * 16))
++#define EMULATED_SD_DISK_NAME_OFFSET (EMULATED_HD_DISK_NAME_OFFSET + 4)
  
  #define DEV_NAME	"xvd"	/* name in /dev */
  
-+/* all the Xen major numbers we currently support are identical to Linux
-+ * major numbers */
-+static inline int xen_translate_major(int major) { return major; }
-+
- static int get_id_from_freelist(struct blkfront_info *info)
- {
- 	unsigned long free = info->shadow_free;
 @@ -136,6 +142,55 @@ static void add_id_to_freelist(struct blkfront_info *info,
  	info->shadow_free = id;
  }
@@ -7489,7 +7697,7 @@ index b8578bb..0ce883a 100644
  	if (rq == NULL)
  		return -1;
  
-@@ -370,17 +426,22 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size)
+@@ -370,20 +426,84 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size)
  static int xlvbd_barrier(struct blkfront_info *info)
  {
  	int err;
@@ -7517,39 +7725,25 @@ index b8578bb..0ce883a 100644
  	return 0;
  }
  
-@@ -393,8 +454,9 @@ static int xlvbd_alloc_gendisk(blkif_sector_t capacity,
- 	int nr_minors = 1;
- 	int err = -ENODEV;
- 	unsigned int offset;
--	int minor;
-+	int minor = 0, major = XENVBD_MAJOR;
- 	int nr_parts;
-+	char *name = DEV_NAME;
- 
- 	BUG_ON(info->gd != NULL);
- 	BUG_ON(info->rq != NULL);
-@@ -406,57 +468,110 @@ static int xlvbd_alloc_gendisk(blkif_sector_t capacity,
- 	}
- 
- 	if (!VDEV_IS_EXTENDED(info->vdevice)) {
-+		major = BLKIF_MAJOR(info->vdevice);
- 		minor = BLKIF_MINOR(info->vdevice);
- 		nr_parts = PARTS_PER_DISK;
-+		switch (major) {
++static int xen_translate_vdev(int vdevice, int *minor, unsigned int *offset)
++{
++	int major;
++	major = BLKIF_MAJOR(vdevice);
++	*minor = BLKIF_MINOR(vdevice);
++	switch (major) {
 +		case XEN_IDE0_MAJOR:
-+			major = xen_translate_major(major);
-+			offset = (minor / 64);
-+			name = "hd";
++			*offset = (*minor / 64) + EMULATED_HD_DISK_NAME_OFFSET;
++			*minor = ((*minor / 64) * PARTS_PER_DISK) +
++				EMULATED_HD_DISK_MINOR_OFFSET;
 +			break;
 +		case XEN_IDE1_MAJOR:
-+			major = xen_translate_major(major);
-+			offset = (minor / 64) + 2;
-+			name = "hd";
++			*offset = (*minor / 64) + 2 + EMULATED_HD_DISK_NAME_OFFSET;
++			*minor = (((*minor / 64) + 2) * PARTS_PER_DISK) +
++				EMULATED_HD_DISK_MINOR_OFFSET;
 +			break;
 +		case XEN_SCSI_DISK0_MAJOR:
-+			major = xen_translate_major(major);
-+			offset = minor / nr_parts;
-+			name = "sd";
++			*offset = (*minor / PARTS_PER_DISK) + EMULATED_SD_DISK_NAME_OFFSET;
++			*minor = *minor + EMULATED_SD_DISK_MINOR_OFFSET;
 +			break;
 +		case XEN_SCSI_DISK1_MAJOR:
 +		case XEN_SCSI_DISK2_MAJOR:
@@ -7558,10 +7752,12 @@ index b8578bb..0ce883a 100644
 +		case XEN_SCSI_DISK5_MAJOR:
 +		case XEN_SCSI_DISK6_MAJOR:
 +		case XEN_SCSI_DISK7_MAJOR:
-+			offset = (minor / nr_parts) +
-+				(major - XEN_SCSI_DISK1_MAJOR + 1) * 16;
-+			major = xen_translate_major(major);
-+			name = "sd";
++			*offset = (*minor / PARTS_PER_DISK) + 
++				((major - XEN_SCSI_DISK1_MAJOR + 1) * 16) +
++				EMULATED_SD_DISK_NAME_OFFSET;
++			*minor = *minor +
++				((major - XEN_SCSI_DISK1_MAJOR + 1) * 16 * PARTS_PER_DISK) +
++				EMULATED_SD_DISK_MINOR_OFFSET;
 +			break;
 +		case XEN_SCSI_DISK8_MAJOR:
 +		case XEN_SCSI_DISK9_MAJOR:
@@ -7571,24 +7767,56 @@ index b8578bb..0ce883a 100644
 +		case XEN_SCSI_DISK13_MAJOR:
 +		case XEN_SCSI_DISK14_MAJOR:
 +		case XEN_SCSI_DISK15_MAJOR:
-+			offset = (minor / nr_parts) +
-+				(major - XEN_SCSI_DISK8_MAJOR + 8) * 16;
-+			major = xen_translate_major(major);
-+			name = "sd";
++			*offset = (*minor / PARTS_PER_DISK) + 
++				((major - XEN_SCSI_DISK8_MAJOR + 8) * 16) +
++				EMULATED_SD_DISK_NAME_OFFSET;
++			*minor = *minor +
++				((major - XEN_SCSI_DISK8_MAJOR + 8) * 16 * PARTS_PER_DISK) +
++				EMULATED_SD_DISK_MINOR_OFFSET;
 +			break;
 +		case XENVBD_MAJOR:
-+			offset = minor / nr_parts;
++			*offset = *minor / PARTS_PER_DISK;
 +			break;
 +		default:
 +			printk(KERN_WARNING "blkfront: your disk configuration is "
 +					"incorrect, please use an xvd device instead\n");
 +			return -ENODEV;
-+		}
++	}
++	return 0;
++}
+ 
+ static int xlvbd_alloc_gendisk(blkif_sector_t capacity,
+ 			       struct blkfront_info *info,
+@@ -391,7 +511,7 @@ static int xlvbd_alloc_gendisk(blkif_sector_t capacity,
+ {
+ 	struct gendisk *gd;
+ 	int nr_minors = 1;
+-	int err = -ENODEV;
++	int err;
+ 	unsigned int offset;
+ 	int minor;
+ 	int nr_parts;
+@@ -406,21 +526,33 @@ static int xlvbd_alloc_gendisk(blkif_sector_t capacity,
+ 	}
+ 
+ 	if (!VDEV_IS_EXTENDED(info->vdevice)) {
+-		minor = BLKIF_MINOR(info->vdevice);
+-		nr_parts = PARTS_PER_DISK;
++		err = xen_translate_vdev(info->vdevice, &minor, &offset);
++		if (err)
++			return err;		
++ 		nr_parts = PARTS_PER_DISK;
  	} else {
  		minor = BLKIF_MINOR_EXT(info->vdevice);
  		nr_parts = PARTS_PER_EXT_DISK;
 +		offset = minor / nr_parts;
++		if (xen_hvm_domain() && minor >= EMULATED_HD_DISK_MINOR_OFFSET) {
++			printk(KERN_WARNING "blkfront: vdevice 0x%x might conflict with "
++					"emulated IDE and SCSI disks; ignoring", info->vdevice);
++			return -ENODEV;
++		}
  	}
++	err = -ENODEV;
  
  	if ((minor % nr_parts) == 0)
  		nr_minors = nr_parts;
@@ -7607,32 +7835,7 @@ index b8578bb..0ce883a 100644
  
  	if (nr_minors > 1) {
  		if (offset < 26)
--			sprintf(gd->disk_name, "%s%c", DEV_NAME, 'a' + offset);
-+			sprintf(gd->disk_name, "%s%c", name, 'a' + offset);
- 		else
--			sprintf(gd->disk_name, "%s%c%c", DEV_NAME,
--				'a' + ((offset / 26)-1), 'a' + (offset % 26));
-+			sprintf(gd->disk_name, "%s%c%c", name,
-+					'a' + ((offset / 26)-1), 'a' + (offset % 26));
- 	} else {
- 		if (offset < 26)
--			sprintf(gd->disk_name, "%s%c%d", DEV_NAME,
-+			sprintf(gd->disk_name, "%s%c%d", name,
- 				'a' + offset,
- 				minor & (nr_parts - 1));
- 		else
--			sprintf(gd->disk_name, "%s%c%c%d", DEV_NAME,
-+			sprintf(gd->disk_name, "%s%c%c%d", name,
- 				'a' + ((offset / 26) - 1),
- 				'a' + (offset % 26),
- 				minor & (nr_parts - 1));
- 	}
- 
--	gd->major = XENVBD_MAJOR;
-+	gd->major = major;
- 	gd->first_minor = minor;
- 	gd->fops = &xlvbd_block_fops;
- 	gd->private_data = info;
+@@ -447,16 +579,15 @@ static int xlvbd_alloc_gendisk(blkif_sector_t capacity,
  	gd->driverfs_dev = &(info->xbdev->dev);
  	set_capacity(gd, capacity);
  
@@ -7652,7 +7855,7 @@ index b8578bb..0ce883a 100644
  
  	if (vdisk_info & VDISK_READONLY)
  		set_disk_ro(gd, 1);
-@@ -469,10 +584,45 @@ static int xlvbd_alloc_gendisk(blkif_sector_t capacity,
+@@ -469,10 +600,45 @@ static int xlvbd_alloc_gendisk(blkif_sector_t capacity,
  
  	return 0;
  
@@ -7698,7 +7901,7 @@ index b8578bb..0ce883a 100644
  static void kick_pending_request_queues(struct blkfront_info *info)
  {
  	if (!RING_FULL(&info->ring)) {
-@@ -487,16 +637,16 @@ static void blkif_restart_queue(struct work_struct *work)
+@@ -487,16 +653,16 @@ static void blkif_restart_queue(struct work_struct *work)
  {
  	struct blkfront_info *info = container_of(work, struct blkfront_info, work);
  
@@ -7718,7 +7921,7 @@ index b8578bb..0ce883a 100644
  	info->connected = suspend ?
  		BLKIF_STATE_SUSPENDED : BLKIF_STATE_DISCONNECTED;
  	/* No more blkif_request(). */
-@@ -504,7 +654,7 @@ static void blkif_free(struct blkfront_info *info, int suspend)
+@@ -504,7 +670,7 @@ static void blkif_free(struct blkfront_info *info, int suspend)
  		blk_stop_queue(info->rq);
  	/* No more gnttab callback work. */
  	gnttab_cancel_free_callback(&info->callback);
@@ -7727,7 +7930,7 @@ index b8578bb..0ce883a 100644
  
  	/* Flush gnttab callback work. Must be done with no locks held. */
  	flush_scheduled_work();
-@@ -529,21 +679,20 @@ static void blkif_completion(struct blk_shadow *s)
+@@ -529,21 +695,20 @@ static void blkif_completion(struct blk_shadow *s)
  		gnttab_end_foreign_access(s->req.seg[i].gref, 0, 0UL);
  }
  
@@ -7755,7 +7958,7 @@ index b8578bb..0ce883a 100644
  
   again:
  	rp = info->ring.sring->rsp_prod;
-@@ -567,7 +716,7 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+@@ -567,7 +732,7 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
  				printk(KERN_WARNING "blkfront: %s: write barrier op failed\n",
  				       info->gd->disk_name);
  				error = -EOPNOTSUPP;
@@ -7764,7 +7967,7 @@ index b8578bb..0ce883a 100644
  				xlvbd_barrier(info);
  			}
  			/* fall through */
-@@ -596,7 +745,17 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+@@ -596,7 +761,17 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
  
  	kick_pending_request_queues(info);
  
@@ -7783,7 +7986,7 @@ index b8578bb..0ce883a 100644
  
  	return IRQ_HANDLED;
  }
-@@ -650,7 +809,7 @@ fail:
+@@ -650,7 +825,7 @@ fail:
  
  
  /* Common code used when first setting up, and when resuming. */
@@ -7792,7 +7995,7 @@ index b8578bb..0ce883a 100644
  			   struct blkfront_info *info)
  {
  	const char *message = NULL;
-@@ -710,7 +869,6 @@ again:
+@@ -710,7 +885,6 @@ again:
  	return err;
  }
  
@@ -7800,7 +8003,7 @@ index b8578bb..0ce883a 100644
  /**
   * Entry point to this code when a new device is created.  Allocate the basic
   * structures and the ring buffer for communication with the backend, and
-@@ -736,16 +894,48 @@ static int blkfront_probe(struct xenbus_device *dev,
+@@ -736,16 +910,48 @@ static int blkfront_probe(struct xenbus_device *dev,
  		}
  	}
  
@@ -7849,7 +8052,7 @@ index b8578bb..0ce883a 100644
  
  	for (i = 0; i < BLK_RING_SIZE; i++)
  		info->shadow[i].req.id = i+1;
-@@ -755,7 +945,7 @@ static int blkfront_probe(struct xenbus_device *dev,
+@@ -755,7 +961,7 @@ static int blkfront_probe(struct xenbus_device *dev,
  	info->handle = simple_strtoul(strrchr(dev->nodename, '/')+1, NULL, 0);
  	dev_set_drvdata(&dev->dev, info);
  
@@ -7858,7 +8061,7 @@ index b8578bb..0ce883a 100644
  	if (err) {
  		kfree(info);
  		dev_set_drvdata(&dev->dev, NULL);
-@@ -819,7 +1009,7 @@ static int blkif_recover(struct blkfront_info *info)
+@@ -819,7 +1025,7 @@ static int blkif_recover(struct blkfront_info *info)
  
  	xenbus_switch_state(info->xbdev, XenbusStateConnected);
  
@@ -7867,7 +8070,7 @@ index b8578bb..0ce883a 100644
  
  	/* Now safe for us to use the shared ring */
  	info->connected = BLKIF_STATE_CONNECTED;
-@@ -830,7 +1020,7 @@ static int blkif_recover(struct blkfront_info *info)
+@@ -830,7 +1036,7 @@ static int blkif_recover(struct blkfront_info *info)
  	/* Kick any other new requests queued since we resumed */
  	kick_pending_request_queues(info);
  
@@ -7876,7 +8079,7 @@ index b8578bb..0ce883a 100644
  
  	return 0;
  }
-@@ -850,13 +1040,50 @@ static int blkfront_resume(struct xenbus_device *dev)
+@@ -850,13 +1056,50 @@ static int blkfront_resume(struct xenbus_device *dev)
  
  	blkif_free(info, info->connected == BLKIF_STATE_CONNECTED);
  
@@ -7928,7 +8131,7 @@ index b8578bb..0ce883a 100644
  
  /*
   * Invoked when the backend is finally 'ready' (and has told produced
-@@ -868,11 +1095,31 @@ static void blkfront_connect(struct blkfront_info *info)
+@@ -868,11 +1111,31 @@ static void blkfront_connect(struct blkfront_info *info)
  	unsigned long sector_size;
  	unsigned int binfo;
  	int err;
@@ -7963,7 +8166,7 @@ index b8578bb..0ce883a 100644
  	dev_dbg(&info->xbdev->dev, "%s:%s.\n",
  		__func__, info->xbdev->otherend);
  
-@@ -889,10 +1136,26 @@ static void blkfront_connect(struct blkfront_info *info)
+@@ -889,10 +1152,26 @@ static void blkfront_connect(struct blkfront_info *info)
  	}
  
  	err = xenbus_gather(XBT_NIL, info->xbdev->otherend,
@@ -7992,7 +8195,7 @@ index b8578bb..0ce883a 100644
  
  	err = xlvbd_alloc_gendisk(sectors, info, binfo, sector_size);
  	if (err) {
-@@ -904,10 +1167,10 @@ static void blkfront_connect(struct blkfront_info *info)
+@@ -904,10 +1183,10 @@ static void blkfront_connect(struct blkfront_info *info)
  	xenbus_switch_state(info->xbdev, XenbusStateConnected);
  
  	/* Kick pending requests. */
@@ -8005,7 +8208,7 @@ index b8578bb..0ce883a 100644
  
  	add_disk(info->gd);
  
-@@ -915,57 +1178,21 @@ static void blkfront_connect(struct blkfront_info *info)
+@@ -915,57 +1194,21 @@ static void blkfront_connect(struct blkfront_info *info)
  }
  
  /**
@@ -8067,7 +8270,7 @@ index b8578bb..0ce883a 100644
  	case XenbusStateUnknown:
  	case XenbusStateClosed:
  		break;
-@@ -975,35 +1202,56 @@ static void backend_changed(struct xenbus_device *dev,
+@@ -975,35 +1218,56 @@ static void backend_changed(struct xenbus_device *dev,
  		break;
  
  	case XenbusStateClosing:
@@ -8144,7 +8347,7 @@ index b8578bb..0ce883a 100644
  
  	return 0;
  }
-@@ -1012,30 +1260,68 @@ static int blkfront_is_ready(struct xenbus_device *dev)
+@@ -1012,30 +1276,68 @@ static int blkfront_is_ready(struct xenbus_device *dev)
  {
  	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
  
@@ -8227,7 +8430,7 @@ index b8578bb..0ce883a 100644
  	return 0;
  }
  
-@@ -1061,7 +1347,7 @@ static struct xenbus_driver blkfront = {
+@@ -1061,7 +1363,7 @@ static struct xenbus_driver blkfront = {
  	.probe = blkfront_probe,
  	.remove = blkfront_remove,
  	.resume = blkfront_resume,
@@ -9074,7 +9277,7 @@ index b2f71f7..b7feb84 100644
  	help
  	  The network device frontend driver allows the kernel to
 diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 1a11d95..d4a80b8 100644
+index 1a11d95..aa9130b 100644
 --- a/drivers/net/xen-netfront.c
 +++ b/drivers/net/xen-netfront.c
 @@ -42,6 +42,7 @@
@@ -9085,7 +9288,16 @@ index 1a11d95..d4a80b8 100644
  #include <xen/xenbus.h>
  #include <xen/events.h>
  #include <xen/page.h>
-@@ -58,6 +59,19 @@ struct netfront_cb {
+@@ -53,19 +54,36 @@
+ 
+ static const struct ethtool_ops xennet_ethtool_ops;
+ 
++static int use_smartpoll = 0;
++module_param(use_smartpoll, int, 0600);
++MODULE_PARM_DESC (use_smartpoll, "Use smartpoll mechanism if available");
++
+ struct netfront_cb {
+ 	struct page *page;
  	unsigned offset;
  };
  
@@ -9105,7 +9317,17 @@ index 1a11d95..d4a80b8 100644
  #define NETFRONT_SKB_CB(skb)	((struct netfront_cb *)((skb)->cb))
  
  #define RX_COPY_THRESHOLD 256
-@@ -104,7 +118,7 @@ struct netfront_info {
+ 
+ #define GRANT_INVALID_REF	0
+ 
+-#define NET_TX_RING_SIZE __RING_SIZE((struct xen_netif_tx_sring *)0, PAGE_SIZE)
+-#define NET_RX_RING_SIZE __RING_SIZE((struct xen_netif_rx_sring *)0, PAGE_SIZE)
++#define NET_TX_RING_SIZE __CONST_RING_SIZE(xen_netif_tx, PAGE_SIZE)
++#define NET_RX_RING_SIZE __CONST_RING_SIZE(xen_netif_rx, PAGE_SIZE)
+ #define TX_MAX_TARGET min_t(int, NET_RX_RING_SIZE, 256)
+ 
+ struct netfront_info {
+@@ -104,7 +122,7 @@ struct netfront_info {
  
  	/* Receive-ring batched refills. */
  #define RX_MIN_TARGET 8
@@ -9114,7 +9336,7 @@ index 1a11d95..d4a80b8 100644
  #define RX_MAX_TARGET min_t(int, NET_RX_RING_SIZE, 256)
  	unsigned rx_min_target, rx_max_target, rx_target;
  	struct sk_buff_head rx_batch;
-@@ -118,6 +132,8 @@ struct netfront_info {
+@@ -118,6 +136,8 @@ struct netfront_info {
  	unsigned long rx_pfn_array[NET_RX_RING_SIZE];
  	struct multicall_entry rx_mcl[NET_RX_RING_SIZE+1];
  	struct mmu_update rx_mmu[NET_RX_RING_SIZE];
@@ -9123,7 +9345,7 @@ index 1a11d95..d4a80b8 100644
  };
  
  struct netfront_rx_info {
-@@ -337,15 +353,17 @@ static int xennet_open(struct net_device *dev)
+@@ -337,15 +357,17 @@ static int xennet_open(struct net_device *dev)
  	return 0;
  }
  
@@ -9142,7 +9364,7 @@ index 1a11d95..d4a80b8 100644
  	do {
  		prod = np->tx.sring->rsp_prod;
  		rmb(); /* Ensure we see responses up to 'rp'. */
-@@ -390,7 +408,11 @@ static void xennet_tx_buf_gc(struct net_device *dev)
+@@ -390,7 +412,11 @@ static void xennet_tx_buf_gc(struct net_device *dev)
  		mb();		/* update shared area */
  	} while ((cons == prod) && (prod != np->tx.sring->rsp_prod));
  
@@ -9154,7 +9376,7 @@ index 1a11d95..d4a80b8 100644
  }
  
  static void xennet_make_frags(struct sk_buff *skb, struct net_device *dev,
-@@ -1267,6 +1289,14 @@ static void xennet_disconnect_backend(struct netfront_info *info)
+@@ -1267,6 +1293,14 @@ static void xennet_disconnect_backend(struct netfront_info *info)
  	info->rx.sring = NULL;
  }
  
@@ -9169,7 +9391,7 @@ index 1a11d95..d4a80b8 100644
  /**
   * We are reconnecting to the backend, due to a suspend/resume, or a backend
   * driver restart.  We tear down our netif structure and recreate it, but
-@@ -1305,6 +1335,54 @@ static int xen_net_read_mac(struct xenbus_device *dev, u8 mac[])
+@@ -1305,6 +1339,59 @@ static int xen_net_read_mac(struct xenbus_device *dev, u8 mac[])
  	return 0;
  }
  
@@ -9211,10 +9433,15 @@ index 1a11d95..d4a80b8 100644
 +		np->smart_poll.active = 0;
 +	}
 +
-+	if (np->rx.sring->private.netif.smartpoll_active)
-+		hrtimer_start(timer,
++	if (np->rx.sring->private.netif.smartpoll_active) {
++		if ( hrtimer_start(timer,
 +			ktime_set(0, NANO_SECOND/psmart_poll->smart_poll_freq),
-+			HRTIMER_MODE_REL);
++			HRTIMER_MODE_REL) ) {
++			printk(KERN_DEBUG "Failed to start hrtimer,"
++					"use interrupt mode for this packet\n");
++			np->rx.sring->private.netif.smartpoll_active = 0;
++		}
++	}
 +
 +end:
 +	spin_unlock_irqrestore(&np->tx_lock, flags);
@@ -9224,19 +9451,24 @@ index 1a11d95..d4a80b8 100644
  static irqreturn_t xennet_interrupt(int irq, void *dev_id)
  {
  	struct net_device *dev = dev_id;
-@@ -1320,6 +1398,11 @@ static irqreturn_t xennet_interrupt(int irq, void *dev_id)
+@@ -1320,6 +1407,16 @@ static irqreturn_t xennet_interrupt(int irq, void *dev_id)
  			napi_schedule(&np->napi);
  	}
  
-+	if (np->smart_poll.feature_smart_poll)
-+		hrtimer_start(&np->smart_poll.timer,
-+			ktime_set(0, NANO_SECOND/np->smart_poll.smart_poll_freq),
-+			HRTIMER_MODE_REL);
++	if (np->smart_poll.feature_smart_poll) {
++		if ( hrtimer_start(&np->smart_poll.timer,
++			ktime_set(0,NANO_SECOND/np->smart_poll.smart_poll_freq),
++			HRTIMER_MODE_REL) ) {
++			printk(KERN_DEBUG "Failed to start hrtimer,"
++					"use interrupt mode for this packet\n");
++			np->rx.sring->private.netif.smartpoll_active = 0;
++		}
++	}
 +
  	spin_unlock_irqrestore(&np->tx_lock, flags);
  
  	return IRQ_HANDLED;
-@@ -1393,7 +1476,7 @@ static int setup_netfront(struct xenbus_device *dev, struct netfront_info *info)
+@@ -1393,7 +1490,7 @@ static int setup_netfront(struct xenbus_device *dev, struct netfront_info *info)
  }
  
  /* Common code used when first setting up, and when resuming. */
@@ -9245,11 +9477,11 @@ index 1a11d95..d4a80b8 100644
  			   struct netfront_info *info)
  {
  	const char *message;
-@@ -1456,6 +1539,12 @@ again:
+@@ -1456,6 +1553,12 @@ again:
  		goto abort_transaction;
  	}
  
-+	err = xenbus_printf(xbt, dev->nodename, "feature-smart-poll", "%d", 1);
++	err = xenbus_printf(xbt, dev->nodename, "feature-smart-poll", "%d", use_smartpoll);
 +	if (err) {
 +		message = "writing feature-smart-poll";
 +		goto abort_transaction;
@@ -9258,16 +9490,19 @@ index 1a11d95..d4a80b8 100644
  	err = xenbus_transaction_end(xbt, 0);
  	if (err) {
  		if (err == -EAGAIN)
-@@ -1543,7 +1632,23 @@ static int xennet_connect(struct net_device *dev)
+@@ -1543,7 +1646,26 @@ static int xennet_connect(struct net_device *dev)
  		return -ENODEV;
  	}
  
 -	err = talk_to_backend(np->xbdev, np);
-+	err = xenbus_scanf(XBT_NIL, np->xbdev->otherend,
-+			   "feature-smart-poll", "%u",
-+			   &np->smart_poll.feature_smart_poll);
-+	if (err != 1)
-+		np->smart_poll.feature_smart_poll = 0;
++	np->smart_poll.feature_smart_poll = 0;
++	if (use_smartpoll) {
++		err = xenbus_scanf(XBT_NIL, np->xbdev->otherend,
++				   "feature-smart-poll", "%u",
++				   &np->smart_poll.feature_smart_poll);
++		if (err != 1)
++			np->smart_poll.feature_smart_poll = 0;
++	}
 +
 +	if (np->smart_poll.feature_smart_poll) {
 +		hrtimer_init(&np->smart_poll.timer, CLOCK_MONOTONIC,
@@ -9283,7 +9518,7 @@ index 1a11d95..d4a80b8 100644
  	if (err)
  		return err;
  
-@@ -1597,7 +1702,7 @@ static int xennet_connect(struct net_device *dev)
+@@ -1597,7 +1719,7 @@ static int xennet_connect(struct net_device *dev)
  /**
   * Callback received when the backend's state changes.
   */
@@ -9292,7 +9527,7 @@ index 1a11d95..d4a80b8 100644
  			    enum xenbus_state backend_state)
  {
  	struct netfront_info *np = dev_get_drvdata(&dev->dev);
-@@ -1608,6 +1713,8 @@ static void backend_changed(struct xenbus_device *dev,
+@@ -1608,6 +1730,8 @@ static void backend_changed(struct xenbus_device *dev,
  	switch (backend_state) {
  	case XenbusStateInitialising:
  	case XenbusStateInitialised:
@@ -9301,7 +9536,7 @@ index 1a11d95..d4a80b8 100644
  	case XenbusStateConnected:
  	case XenbusStateUnknown:
  	case XenbusStateClosed:
-@@ -1628,12 +1735,30 @@ static void backend_changed(struct xenbus_device *dev,
+@@ -1628,12 +1752,30 @@ static void backend_changed(struct xenbus_device *dev,
  	}
  }
  
@@ -9332,7 +9567,7 @@ index 1a11d95..d4a80b8 100644
  };
  
  #ifdef CONFIG_SYSFS
-@@ -1798,8 +1923,9 @@ static struct xenbus_driver netfront_driver = {
+@@ -1798,8 +1940,9 @@ static struct xenbus_driver netfront_driver = {
  	.ids = netfront_ids,
  	.probe = netfront_probe,
  	.remove = __devexit_p(xennet_remove),
@@ -11711,7 +11946,7 @@ index 0000000..e83b615
 +subsys_initcall(xen_acpi_processor_extcntl_init);
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/xen/balloon.c b/drivers/xen/balloon.c
-index 4204336..a5ac75b 100644
+index 4204336..b76245c 100644
 --- a/drivers/xen/balloon.c
 +++ b/drivers/xen/balloon.c
 @@ -43,6 +43,7 @@
@@ -11761,7 +11996,7 @@ index 4204336..a5ac75b 100644
  
  /* We increase/decrease in batches which fit in a page */
  static unsigned long frame_list[PAGE_SIZE / sizeof(unsigned long)];
-@@ -118,10 +122,41 @@ static struct timer_list balloon_timer;
+@@ -118,12 +122,43 @@ static struct timer_list balloon_timer;
  static void scrub_page(struct page *page)
  {
  #ifdef CONFIG_XEN_SCRUB_PAGES
@@ -11802,14 +12037,29 @@ index 4204336..a5ac75b 100644
 +}
 +
  /* balloon_append: add the given page to the balloon. */
- static void balloon_append(struct page *page)
+-static void balloon_append(struct page *page)
++static void __balloon_append(struct page *page)
  {
-@@ -195,19 +230,18 @@ static unsigned long current_target(void)
+ 	/* Lowmem is re-populated first, so highmem pages go at list tail. */
+ 	if (PageHighMem(page)) {
+@@ -134,7 +169,11 @@ static void balloon_append(struct page *page)
+ 		list_add(&page->lru, &ballooned_pages);
+ 		balloon_stats.balloon_low++;
+ 	}
++}
+ 
++static void balloon_append(struct page *page)
++{
++	__balloon_append(page);
+ 	totalram_pages--;
+ }
+ 
+@@ -195,20 +234,17 @@ static unsigned long current_target(void)
  
  static int increase_reservation(unsigned long nr_pages)
  {
 -	unsigned long  pfn, i, flags;
-+	unsigned long  pfn, mfn, i, j, flags;
++	unsigned long  pfn, mfn, i, j;
  	struct page   *page;
  	long           rc;
  	struct xen_memory_reservation reservation = {
@@ -11822,11 +12072,11 @@ index 4204336..a5ac75b 100644
  		nr_pages = ARRAY_SIZE(frame_list);
  
 -	spin_lock_irqsave(&balloon_lock, flags);
-+	spin_lock_irqsave(&xen_reservation_lock, flags);
- 
+-
  	page = balloon_first_page();
  	for (i = 0; i < nr_pages; i++) {
-@@ -218,6 +252,8 @@ static int increase_reservation(unsigned long nr_pages)
+ 		BUG_ON(page == NULL);
+@@ -218,6 +254,8 @@ static int increase_reservation(unsigned long nr_pages)
  
  	set_xen_guest_handle(reservation.extent_start, frame_list);
  	reservation.nr_extents = nr_pages;
@@ -11835,7 +12085,7 @@ index 4204336..a5ac75b 100644
  	rc = HYPERVISOR_memory_op(XENMEM_populate_physmap, &reservation);
  	if (rc < 0)
  		goto out;
-@@ -227,19 +263,22 @@ static int increase_reservation(unsigned long nr_pages)
+@@ -227,19 +265,22 @@ static int increase_reservation(unsigned long nr_pages)
  		BUG_ON(page == NULL);
  
  		pfn = page_to_pfn(page);
@@ -11868,13 +12118,12 @@ index 4204336..a5ac75b 100644
  		}
  
  		/* Relinquish the page back to the allocator. */
-@@ -251,20 +290,20 @@ static int increase_reservation(unsigned long nr_pages)
+@@ -251,20 +292,18 @@ static int increase_reservation(unsigned long nr_pages)
  	balloon_stats.current_pages += rc;
  
   out:
 -	spin_unlock_irqrestore(&balloon_lock, flags);
-+	spin_unlock_irqrestore(&xen_reservation_lock, flags);
- 
+-
  	return rc < 0 ? rc : rc != nr_pages;
  }
  
@@ -11882,7 +12131,7 @@ index 4204336..a5ac75b 100644
  {
 -	unsigned long  pfn, i, flags;
 -	struct page   *page;
-+	unsigned long  pfn, lpfn, mfn, i, j, flags;
++	unsigned long  pfn, lpfn, mfn, i, j;
 +	struct page   *page = NULL;
  	int            need_sleep = 0;
 -	int ret;
@@ -11903,7 +12152,7 @@ index 4204336..a5ac75b 100644
  			nr_pages = i;
  			need_sleep = 1;
  			break;
-@@ -282,37 +321,52 @@ static int decrease_reservation(unsigned long nr_pages)
+@@ -282,38 +321,49 @@ static int decrease_reservation(unsigned long nr_pages)
  		frame_list[i] = pfn_to_mfn(pfn);
  
  		scrub_page(page);
@@ -11922,8 +12171,7 @@ index 4204336..a5ac75b 100644
  	flush_tlb_all();
  
 -	spin_lock_irqsave(&balloon_lock, flags);
-+	spin_lock_irqsave(&xen_reservation_lock, flags);
- 
+-
  	/* No more mappings: invalidate P2M and add to balloon. */
  	for (i = 0; i < nr_pages; i++) {
 -		pfn = mfn_to_pfn(frame_list[i]);
@@ -11966,11 +12214,11 @@ index 4204336..a5ac75b 100644
 -	balloon_stats.current_pages -= nr_pages;
 -
 -	spin_unlock_irqrestore(&balloon_lock, flags);
-+	spin_unlock_irqrestore(&xen_reservation_lock, flags);
- 
+-
  	return need_sleep;
  }
-@@ -379,7 +433,7 @@ static void watch_target(struct xenbus_watch *watch,
+ 
+@@ -379,7 +429,7 @@ static void watch_target(struct xenbus_watch *watch,
  	/* The given memory/target value is in KiB, so it needs converting to
  	 * pages. PAGE_SHIFT converts bytes to pages, hence PAGE_SHIFT - 10.
  	 */
@@ -11979,31 +12227,39 @@ index 4204336..a5ac75b 100644
  }
  
  static int balloon_init_watcher(struct notifier_block *notifier,
-@@ -405,9 +459,12 @@ static int __init balloon_init(void)
+@@ -405,9 +455,12 @@ static int __init balloon_init(void)
  	if (!xen_pv_domain())
  		return -ENODEV;
  
 -	pr_info("xen_balloon: Initialising balloon driver.\n");
 +	pr_info("xen_balloon: Initialising balloon driver with page order %d.\n",
 +		balloon_order);
++
++	balloon_npages = 1 << balloon_order;
  
 -	balloon_stats.current_pages = min(xen_start_info->nr_pages, max_pfn);
-+	balloon_npages = 1 << balloon_order;
-+
 +	balloon_stats.current_pages = (min(xen_start_info->nr_pages, max_pfn)) >> balloon_order;
  	balloon_stats.target_pages  = balloon_stats.current_pages;
  	balloon_stats.balloon_low   = 0;
  	balloon_stats.balloon_high  = 0;
-@@ -420,7 +477,7 @@ static int __init balloon_init(void)
+@@ -420,10 +473,13 @@ static int __init balloon_init(void)
  	register_balloon(&balloon_sysdev);
  
  	/* Initialise the balloon with excess memory space. */
 -	for (pfn = xen_start_info->nr_pages; pfn < max_pfn; pfn++) {
-+	for (pfn = xen_start_info->nr_pages; pfn < max_pfn; pfn += balloon_npages) {
++	for (pfn = PFN_UP(xen_extra_mem_start);
++	     pfn < PFN_DOWN(xen_extra_mem_start + xen_extra_mem_size);
++	     pfn += balloon_npages) {
  		page = pfn_to_page(pfn);
- 		if (!PageReserved(page))
- 			balloon_append(page);
-@@ -444,6 +501,121 @@ static void balloon_exit(void)
+-		if (!PageReserved(page))
+-			balloon_append(page);
++		/* totalram_pages doesn't include the boot-time
++		   balloon extension, so don't subtract from it. */
++		__balloon_append(page);
+ 	}
+ 
+ 	target_watch.callback = watch_target;
+@@ -444,6 +500,121 @@ static void balloon_exit(void)
  
  module_exit(balloon_exit);
  
@@ -12125,7 +12381,7 @@ index 4204336..a5ac75b 100644
  #define BALLOON_SHOW(name, format, args...)				\
  	static ssize_t show_##name(struct sys_device *dev,		\
  				   struct sysdev_attribute *attr,	\
-@@ -477,7 +649,7 @@ static ssize_t store_target_kb(struct sys_device *dev,
+@@ -477,7 +648,7 @@ static ssize_t store_target_kb(struct sys_device *dev,
  
  	target_bytes = simple_strtoull(buf, &endchar, 0) * 1024;
  
@@ -12134,7 +12390,7 @@ index 4204336..a5ac75b 100644
  
  	return count;
  }
-@@ -491,7 +663,7 @@ static ssize_t show_target(struct sys_device *dev, struct sysdev_attribute *attr
+@@ -491,7 +662,7 @@ static ssize_t show_target(struct sys_device *dev, struct sysdev_attribute *attr
  {
  	return sprintf(buf, "%llu\n",
  		       (unsigned long long)balloon_stats.target_pages
@@ -12143,7 +12399,7 @@ index 4204336..a5ac75b 100644
  }
  
  static ssize_t store_target(struct sys_device *dev,
-@@ -507,7 +679,7 @@ static ssize_t store_target(struct sys_device *dev,
+@@ -507,7 +678,7 @@ static ssize_t store_target(struct sys_device *dev,
  
  	target_bytes = memparse(buf, &endchar);
  
@@ -14580,10 +14836,10 @@ index 0000000..ef54fa1
 +MODULE_LICENSE("Dual BSD/GPL");
 diff --git a/drivers/xen/blktap/device.c b/drivers/xen/blktap/device.c
 new file mode 100644
-index 0000000..6091780b
+index 0000000..e4fc23e
 --- /dev/null
 +++ b/drivers/xen/blktap/device.c
-@@ -0,0 +1,943 @@
+@@ -0,0 +1,941 @@
 +#include <linux/fs.h>
 +#include <linux/blkdev.h>
 +#include <linux/cdrom.h>
@@ -14827,11 +15083,9 @@ index 0000000..6091780b
 +		      khandle->user);
 +
 +		page = map[offset];
-+		if (page) {
-+			ClearPageReserved(map[offset]);
-+			if (blkback_pagemap_contains_page(page))
-+				set_page_private(page, 0);
-+		}
++		if (page && blkback_pagemap_contains_page(page))
++			set_page_private(page, 0);
++
 +		map[offset] = NULL;
 +
 +		khandle->kernel = INVALID_GRANT_HANDLE;
@@ -15832,10 +16086,10 @@ index 0000000..eee7100
 +}
 diff --git a/drivers/xen/blktap/ring.c b/drivers/xen/blktap/ring.c
 new file mode 100644
-index 0000000..7e2b687
+index 0000000..057e97f
 --- /dev/null
 +++ b/drivers/xen/blktap/ring.c
-@@ -0,0 +1,548 @@
+@@ -0,0 +1,545 @@
 +#include <linux/device.h>
 +#include <linux/signal.h>
 +#include <linux/sched.h>
@@ -15984,11 +16238,8 @@ index 0000000..7e2b687
 +
 +	offset  = (int)((uvaddr - vma->vm_start) >> PAGE_SHIFT);
 +	page    = map[offset];
-+	if (page) {
-+		ClearPageReserved(page);
-+		if (blkback_pagemap_contains_page(page))
-+			set_page_private(page, 0);
-+	}
++	if (page && blkback_pagemap_contains_page(page))
++		set_page_private(page, 0);
 +	map[offset] = NULL;
 +
 +	request = tap->pending_requests[usr_idx];
@@ -16654,7 +16905,7 @@ index bdfd584..6625ffe 100644
  
  #include <asm/xen/hypervisor.h>
 diff --git a/drivers/xen/events.c b/drivers/xen/events.c
-index 30e0467..dd1e71b 100644
+index 30e0467..6b6f563 100644
 --- a/drivers/xen/events.c
 +++ b/drivers/xen/events.c
 @@ -16,7 +16,7 @@
@@ -16666,7 +16917,7 @@ index 30e0467..dd1e71b 100644
   *
   * Jeremy Fitzhardinge <jeremy@xensource.com>, XenSource Inc, 2007
   */
-@@ -27,18 +27,31 @@
+@@ -27,18 +27,32 @@
  #include <linux/module.h>
  #include <linux/string.h>
  #include <linux/bootmem.h>
@@ -16693,12 +16944,13 @@ index 30e0467..dd1e71b 100644
  #include <xen/interface/event_channel.h>
 +#include <xen/interface/hvm/hvm_op.h>
 +#include <xen/interface/hvm/params.h>
++#include <xen/page.h>
 +
 +#include "../pci/msi.h"
  
  /*
   * This lock protects updates to the following mapping and reference-count
-@@ -67,7 +80,7 @@ enum xen_irq_type {
+@@ -67,7 +81,7 @@ enum xen_irq_type {
   * event channel - irq->event channel mapping
   * cpu - cpu this event channel is bound to
   * index - type-specific information:
@@ -16707,7 +16959,7 @@ index 30e0467..dd1e71b 100644
   *    VIRQ - virq number
   *    IPI - IPI vector
   *    EVTCHN -
-@@ -83,20 +96,27 @@ struct irq_info
+@@ -83,20 +97,30 @@ struct irq_info
  		enum ipi_vector ipi;
  		struct {
  			unsigned short gsi;
@@ -16718,15 +16970,18 @@ index 30e0467..dd1e71b 100644
  		} pirq;
  	} u;
  };
-+#define PIRQ_NEEDS_EOI	(1 << 0)
 +#define PIRQ_SHAREABLE	(1 << 1)
  
 -static struct irq_info irq_info[NR_IRQS];
-+static struct irq_info *irq_info;
++/* Bitmap indicating which PIRQs require Xen to be notified on unmask. */
++static bool pirq_eoi_does_unmask;
++static unsigned long *pirq_needs_eoi_bits;
  
 -static int evtchn_to_irq[NR_EVENT_CHANNELS] = {
 -	[0 ... NR_EVENT_CHANNELS-1] = -1
 -};
++static struct irq_info *irq_info;
++
 +static int *evtchn_to_irq;
  struct cpu_evtchn_s {
  	unsigned long bits[NR_EVENT_CHANNELS/BITS_PER_LONG];
@@ -16741,7 +16996,7 @@ index 30e0467..dd1e71b 100644
  static inline unsigned long *cpu_evtchn_mask(int cpu)
  {
  	return cpu_evtchn_mask_p[cpu].bits;
-@@ -106,6 +126,8 @@ static inline unsigned long *cpu_evtchn_mask(int cpu)
+@@ -106,6 +130,8 @@ static inline unsigned long *cpu_evtchn_mask(int cpu)
  #define VALID_EVTCHN(chn)	((chn) != 0)
  
  static struct irq_chip xen_dynamic_chip;
@@ -16750,7 +17005,7 @@ index 30e0467..dd1e71b 100644
  
  /* Constructor for packed IRQ information. */
  static struct irq_info mk_unbound_info(void)
-@@ -135,7 +157,8 @@ static struct irq_info mk_pirq_info(unsigned short evtchn,
+@@ -135,7 +161,8 @@ static struct irq_info mk_pirq_info(unsigned short evtchn,
  				    unsigned short gsi, unsigned short vector)
  {
  	return (struct irq_info) { .type = IRQT_PIRQ, .evtchn = evtchn,
@@ -16760,7 +17015,7 @@ index 30e0467..dd1e71b 100644
  }
  
  /*
-@@ -218,6 +241,15 @@ static unsigned int cpu_from_evtchn(unsigned int evtchn)
+@@ -218,6 +245,15 @@ static unsigned int cpu_from_evtchn(unsigned int evtchn)
  	return ret;
  }
  
@@ -16770,16 +17025,39 @@ index 30e0467..dd1e71b 100644
 +
 +	BUG_ON(info->type != IRQT_PIRQ);
 +
-+	return info->u.pirq.flags & PIRQ_NEEDS_EOI;
++	return test_bit(info->u.pirq.gsi, pirq_needs_eoi_bits);
 +}
 +
  static inline unsigned long active_evtchns(unsigned int cpu,
  					   struct shared_info *sh,
  					   unsigned int idx)
-@@ -329,27 +361,368 @@ static void unmask_evtchn(int port)
+@@ -299,6 +335,14 @@ static void mask_evtchn(int port)
+ 	sync_set_bit(port, &s->evtchn_mask[0]);
+ }
+ 
++static void mask_irq(unsigned int irq)
++{
++	int evtchn = evtchn_from_irq(irq);
++
++	if (VALID_EVTCHN(evtchn))
++		mask_evtchn(evtchn);
++}
++
+ static void unmask_evtchn(int port)
+ {
+ 	struct shared_info *s = HYPERVISOR_shared_info;
+@@ -329,26 +373,370 @@ static void unmask_evtchn(int port)
  	put_cpu();
  }
  
++static void unmask_irq(unsigned int irq)
++{
++	int evtchn = evtchn_from_irq(irq);
++
++	if (VALID_EVTCHN(evtchn))
++		unmask_evtchn(evtchn);
++}
++
 +static int get_nr_hw_irqs(void)
 +{
 +	int ret = 1;
@@ -16843,8 +17121,14 @@ index 30e0467..dd1e71b 100644
 +{
 +	struct irq_info *info = info_for_irq(irq);
 +	struct physdev_eoi eoi = { .irq = info->u.pirq.gsi };
++	bool need_eoi;
 +
-+	if (unlikely(pirq_needs_eoi(irq))) {
++	need_eoi = pirq_needs_eoi(irq);
++
++	if (!need_eoi || !pirq_eoi_does_unmask)
++		unmask_evtchn(info->evtchn);
++
++	if (need_eoi) {
 +		int rc = HYPERVISOR_physdev_op(PHYSDEVOP_eoi, &eoi);
 +		WARN_ON(rc);
 +	}
@@ -16855,15 +17139,18 @@ index 30e0467..dd1e71b 100644
 +	struct physdev_irq_status_query irq_status;
 +	struct irq_info *info = info_for_irq(irq);
 +
++	if (pirq_eoi_does_unmask)
++		return;
++
 +	BUG_ON(info->type != IRQT_PIRQ);
 +
 +	irq_status.irq = info->u.pirq.gsi;
 +	if (HYPERVISOR_physdev_op(PHYSDEVOP_irq_status_query, &irq_status))
 +		irq_status.flags = 0;
 +
-+	info->u.pirq.flags &= ~PIRQ_NEEDS_EOI;
++	clear_bit(info->u.pirq.gsi, pirq_needs_eoi_bits);
 +	if (irq_status.flags & XENIRQSTAT_needs_eoi)
-+		info->u.pirq.flags |= PIRQ_NEEDS_EOI;
++		set_bit(info->u.pirq.gsi, pirq_needs_eoi_bits);
 +}
 +
 +static bool probing_irq(int irq)
@@ -16905,7 +17192,6 @@ index 30e0467..dd1e71b 100644
 +	info->evtchn = evtchn;
 +
 + out:
-+	unmask_evtchn(evtchn);
 +	pirq_eoi(irq);
 +
 +	return 0;
@@ -16933,23 +17219,10 @@ index 30e0467..dd1e71b 100644
 +	info->evtchn = 0;
 +}
 +
-+static void enable_pirq(unsigned int irq)
-+{
-+	startup_pirq(irq);
-+}
-+
-+static void disable_pirq(unsigned int irq)
-+{
-+}
-+
 +static void ack_pirq(unsigned int irq)
 +{
-+	int evtchn = evtchn_from_irq(irq);
-+
-+	move_native_irq(irq);
-+
-+	if (VALID_EVTCHN(evtchn))
-+		clear_evtchn(evtchn);
++	move_masked_irq(irq);
++	
 +	pirq_eoi(irq);
 +}
 +
@@ -17015,7 +17288,7 @@ index 30e0467..dd1e71b 100644
 +		irq = find_unbound_irq();
 +
 +	set_irq_chip_and_handler_name(irq, &xen_pirq_chip,
-+				      handle_edge_irq, name);
++				      handle_fasteoi_irq, name);
 +
 +	irq_op.irq = gsi;
 +	irq_op.vector = 0;
@@ -17035,10 +17308,10 @@ index 30e0467..dd1e71b 100644
 +
 +out:
 +	spin_unlock(&irq_mapping_update_lock);
- 
- 	return irq;
- }
- 
++
++	return irq;
++}
++
 +#ifdef CONFIG_PCI_MSI
 +int xen_destroy_irq(int irq)
 +{
@@ -17063,7 +17336,7 @@ index 30e0467..dd1e71b 100644
 +		}
 +	}
 +	irq_info[irq] = mk_unbound_info();
-+
+ 
 +	dynamic_irq_cleanup(irq);
 +
 +out:
@@ -17125,13 +17398,13 @@ index 30e0467..dd1e71b 100644
 +		irq_info[irq].u.pirq.domid = domid;
 +
 +	set_irq_chip_and_handler_name(irq, &xen_pirq_chip,
-+			handle_edge_irq,
-+			(type == PCI_CAP_ID_MSIX) ? "msi-x":"msi");
++				      handle_fasteoi_irq,
++				      (type == PCI_CAP_ID_MSIX) ? "msi-x":"msi");
 +
 +out:
 +	spin_unlock(&irq_mapping_update_lock);
-+	return irq;
-+}
+ 	return irq;
+ }
 +#endif
 +#endif
 +
@@ -17145,20 +17418,19 @@ index 30e0467..dd1e71b 100644
 +	return gsi_from_irq(irq);
 +}
 +EXPORT_SYMBOL_GPL(xen_gsi_from_irq);
-+
+ 
  int bind_evtchn_to_irq(unsigned int evtchn)
  {
- 	int irq;
-@@ -362,7 +735,7 @@ int bind_evtchn_to_irq(unsigned int evtchn)
+@@ -362,7 +750,7 @@ int bind_evtchn_to_irq(unsigned int evtchn)
  		irq = find_unbound_irq();
  
  		set_irq_chip_and_handler_name(irq, &xen_dynamic_chip,
 -					      handle_level_irq, "event");
-+					      handle_edge_irq, "event");
++					      handle_fasteoi_irq, "event");
  
  		evtchn_to_irq[evtchn] = irq;
  		irq_info[irq] = mk_evtchn_info(evtchn);
-@@ -388,8 +761,8 @@ static int bind_ipi_to_irq(unsigned int ipi, unsigned int cpu)
+@@ -388,8 +776,8 @@ static int bind_ipi_to_irq(unsigned int ipi, unsigned int cpu)
  		if (irq < 0)
  			goto out;
  
@@ -17169,7 +17441,7 @@ index 30e0467..dd1e71b 100644
  
  		bind_ipi.vcpu = cpu;
  		if (HYPERVISOR_event_channel_op(EVTCHNOP_bind_ipi,
-@@ -409,8 +782,23 @@ static int bind_ipi_to_irq(unsigned int ipi, unsigned int cpu)
+@@ -409,8 +797,23 @@ static int bind_ipi_to_irq(unsigned int ipi, unsigned int cpu)
  	return irq;
  }
  
@@ -17178,7 +17450,8 @@ index 30e0467..dd1e71b 100644
 +{
 +        struct evtchn_bind_interdomain bind_interdomain;
 +        int err;
-+
+ 
+-static int bind_virq_to_irq(unsigned int virq, unsigned int cpu)
 +        bind_interdomain.remote_dom  = remote_domain;
 +        bind_interdomain.remote_port = remote_port;
 +
@@ -17188,13 +17461,12 @@ index 30e0467..dd1e71b 100644
 +        return err ? : bind_evtchn_to_irq(bind_interdomain.local_port);
 +}
 +
- 
--static int bind_virq_to_irq(unsigned int virq, unsigned int cpu)
++
 +int bind_virq_to_irq(unsigned int virq, unsigned int cpu)
  {
  	struct evtchn_bind_virq bind_virq;
  	int evtchn, irq;
-@@ -429,8 +817,8 @@ static int bind_virq_to_irq(unsigned int virq, unsigned int cpu)
+@@ -429,8 +832,8 @@ static int bind_virq_to_irq(unsigned int virq, unsigned int cpu)
  
  		irq = find_unbound_irq();
  
@@ -17205,7 +17477,7 @@ index 30e0467..dd1e71b 100644
  
  		evtchn_to_irq[evtchn] = irq;
  		irq_info[irq] = mk_virq_info(evtchn, virq);
-@@ -504,6 +892,29 @@ int bind_evtchn_to_irqhandler(unsigned int evtchn,
+@@ -504,6 +907,29 @@ int bind_evtchn_to_irqhandler(unsigned int evtchn,
  }
  EXPORT_SYMBOL_GPL(bind_evtchn_to_irqhandler);
  
@@ -17235,7 +17507,7 @@ index 30e0467..dd1e71b 100644
  int bind_virq_to_irqhandler(unsigned int virq, unsigned int cpu,
  			    irq_handler_t handler,
  			    unsigned long irqflags, const char *devname, void *dev_id)
-@@ -617,17 +1028,13 @@ static DEFINE_PER_CPU(unsigned, xed_nesting_count);
+@@ -617,17 +1043,13 @@ static DEFINE_PER_CPU(unsigned, xed_nesting_count);
   * a bitset of words which contain pending event bits.  The second
   * level is a bitset of pending events themselves.
   */
@@ -17254,7 +17526,7 @@ index 30e0467..dd1e71b 100644
  	do {
  		unsigned long pending_words;
  
-@@ -650,9 +1057,13 @@ void xen_evtchn_do_upcall(struct pt_regs *regs)
+@@ -650,9 +1072,16 @@ void xen_evtchn_do_upcall(struct pt_regs *regs)
  				int bit_idx = __ffs(pending_bits);
  				int port = (word_idx * BITS_PER_LONG) + bit_idx;
  				int irq = evtchn_to_irq[port];
@@ -17262,6 +17534,9 @@ index 30e0467..dd1e71b 100644
  
 -				if (irq != -1)
 -					handle_irq(irq, regs);
++				mask_evtchn(port);
++				clear_evtchn(port);
++
 +				if (irq != -1) {
 +					desc = irq_to_desc(irq);
 +					if (desc)
@@ -17270,7 +17545,7 @@ index 30e0467..dd1e71b 100644
  			}
  		}
  
-@@ -660,14 +1071,32 @@ void xen_evtchn_do_upcall(struct pt_regs *regs)
+@@ -660,14 +1089,32 @@ void xen_evtchn_do_upcall(struct pt_regs *regs)
  
  		count = __get_cpu_var(xed_nesting_count);
  		__get_cpu_var(xed_nesting_count) = 0;
@@ -17305,7 +17580,7 @@ index 30e0467..dd1e71b 100644
  
  /* Rebind a new event channel to an existing irq. */
  void rebind_evtchn_irq(int evtchn, int irq)
-@@ -704,7 +1133,10 @@ static int rebind_irq_to_cpu(unsigned irq, unsigned tcpu)
+@@ -704,7 +1151,10 @@ static int rebind_irq_to_cpu(unsigned irq, unsigned tcpu)
  	struct evtchn_bind_vcpu bind_vcpu;
  	int evtchn = evtchn_from_irq(irq);
  
@@ -17317,7 +17592,44 @@ index 30e0467..dd1e71b 100644
  		return -1;
  
  	/* Send future instances of this interrupt to other vcpu. */
-@@ -856,7 +1288,7 @@ void xen_clear_irq_pending(int irq)
+@@ -745,33 +1195,17 @@ int resend_irq_on_evtchn(unsigned int irq)
+ 	return 1;
+ }
+ 
+-static void enable_dynirq(unsigned int irq)
+-{
+-	int evtchn = evtchn_from_irq(irq);
+-
+-	if (VALID_EVTCHN(evtchn))
+-		unmask_evtchn(evtchn);
+-}
+-
+-static void disable_dynirq(unsigned int irq)
+-{
+-	int evtchn = evtchn_from_irq(irq);
+-
+-	if (VALID_EVTCHN(evtchn))
+-		mask_evtchn(evtchn);
+-}
+-
+ static void ack_dynirq(unsigned int irq)
+ {
+ 	int evtchn = evtchn_from_irq(irq);
+ 
+-	move_native_irq(irq);
++	move_masked_irq(irq);
+ 
+ 	if (VALID_EVTCHN(evtchn))
+-		clear_evtchn(evtchn);
++		unmask_evtchn(evtchn);
+ }
+ 
+-static int retrigger_dynirq(unsigned int irq)
++static int retrigger_irq(unsigned int irq)
+ {
+ 	int evtchn = evtchn_from_irq(irq);
+ 	struct shared_info *sh = HYPERVISOR_shared_info;
+@@ -856,7 +1290,7 @@ void xen_clear_irq_pending(int irq)
  	if (VALID_EVTCHN(evtchn))
  		clear_evtchn(evtchn);
  }
@@ -17326,7 +17638,7 @@ index 30e0467..dd1e71b 100644
  void xen_set_irq_pending(int irq)
  {
  	int evtchn = evtchn_from_irq(irq);
-@@ -876,9 +1308,9 @@ bool xen_test_irq_pending(int irq)
+@@ -876,9 +1310,9 @@ bool xen_test_irq_pending(int irq)
  	return ret;
  }
  
@@ -17338,7 +17650,7 @@ index 30e0467..dd1e71b 100644
  {
  	evtchn_port_t evtchn = evtchn_from_irq(irq);
  
-@@ -886,13 +1318,33 @@ void xen_poll_irq(int irq)
+@@ -886,13 +1320,33 @@ void xen_poll_irq(int irq)
  		struct sched_poll poll;
  
  		poll.nr_ports = 1;
@@ -17373,18 +17685,45 @@ index 30e0467..dd1e71b 100644
  
  void xen_irq_resume(void)
  {
-@@ -929,13 +1381,84 @@ static struct irq_chip xen_dynamic_chip __read_mostly = {
- 	.retrigger	= retrigger_dynirq,
- };
+@@ -915,27 +1369,117 @@ void xen_irq_resume(void)
+ 		restore_cpu_virqs(cpu);
+ 		restore_cpu_ipis(cpu);
+ 	}
++
++	if (pirq_eoi_does_unmask) {
++		struct physdev_pirq_eoi_gmfn eoi_gmfn;
++		
++		eoi_gmfn.gmfn = virt_to_mfn(pirq_needs_eoi_bits);
++		if (HYPERVISOR_physdev_op(PHYSDEVOP_pirq_eoi_gmfn, &eoi_gmfn) == 0) {
++			/* Could recover by reverting to old method...? */
++			BUG();
++		}
++	}
+ }
  
+ static struct irq_chip xen_dynamic_chip __read_mostly = {
+ 	.name		= "xen-dyn",
+ 
+-	.disable	= disable_dynirq,
+-	.mask		= disable_dynirq,
+-	.unmask		= enable_dynirq,
++	.disable	= mask_irq,
++	.mask		= mask_irq,
++	.unmask		= unmask_irq,
++
++	.eoi		= ack_dynirq,
++	.set_affinity	= set_affinity_irq,
++	.retrigger	= retrigger_irq,
++};
++
 +static struct irq_chip xen_percpu_chip __read_mostly = {
 +	.name		= "xen-percpu",
 +
-+	.disable	= disable_dynirq,
-+	.mask		= disable_dynirq,
-+	.unmask		= enable_dynirq,
-+
-+	.ack		= ack_dynirq,
++	.disable	= mask_irq,
++	.mask		= mask_irq,
++	.unmask		= unmask_irq,
+ 
+ 	.ack		= ack_dynirq,
 +};
 +
 +static struct irq_chip xen_pirq_chip __read_mostly = {
@@ -17393,20 +17732,21 @@ index 30e0467..dd1e71b 100644
 +	.startup	= startup_pirq,
 +	.shutdown	= shutdown_pirq,
 +
-+	.enable		= enable_pirq,
-+	.unmask		= enable_pirq,
++	.enable		= pirq_eoi,
++	.unmask		= unmask_irq,
 +
-+	.disable	= disable_pirq,
-+	.mask		= disable_pirq,
++	.disable	= mask_irq,
++	.mask		= mask_irq,
 +
-+	.ack		= ack_pirq,
++	.eoi		= ack_pirq,
 +	.end		= end_pirq,
 +
-+	.set_affinity	= set_affinity_irq,
+ 	.set_affinity	= set_affinity_irq,
+-	.retrigger	= retrigger_dynirq,
 +
-+	.retrigger	= retrigger_dynirq,
-+};
-+
++	.retrigger	= retrigger_irq,
+ };
+ 
 +int xen_set_callback_via(uint64_t via)
 +{
 +	struct xen_hvm_param a;
@@ -17446,6 +17786,8 @@ index 30e0467..dd1e71b 100644
  void __init xen_init_IRQ(void)
  {
  	int i;
++	struct physdev_pirq_eoi_gmfn eoi_gmfn;
++	int nr_pirqs = NR_IRQS;
  
  	cpu_evtchn_mask_p = kcalloc(nr_cpu_ids, sizeof(struct cpu_evtchn_s),
  				    GFP_KERNEL);
@@ -17456,10 +17798,17 @@ index 30e0467..dd1e71b 100644
 +				GFP_KERNEL);
 +	for(i = 0; i < NR_EVENT_CHANNELS; i++)
 +		evtchn_to_irq[i] = -1;
++
++	i = get_order(sizeof(unsigned long) * BITS_TO_LONGS(nr_pirqs));
++	pirq_needs_eoi_bits = (void *)__get_free_pages(GFP_KERNEL|__GFP_ZERO, i);
++
++ 	eoi_gmfn.gmfn = virt_to_mfn(pirq_needs_eoi_bits);
++	if (HYPERVISOR_physdev_op(PHYSDEVOP_pirq_eoi_gmfn, &eoi_gmfn) == 0)
++		pirq_eoi_does_unmask = true;
  
  	init_evtchn_cpu_bindings();
  
-@@ -943,5 +1466,11 @@ void __init xen_init_IRQ(void)
+@@ -943,5 +1487,11 @@ void __init xen_init_IRQ(void)
  	for (i = 0; i < NR_EVENT_CHANNELS; i++)
  		mask_evtchn(i);
  
@@ -19747,10 +20096,10 @@ index 0000000..2e8508a
 +}
 diff --git a/drivers/xen/netback/netback.c b/drivers/xen/netback/netback.c
 new file mode 100644
-index 0000000..ed7cd65
+index 0000000..9052895
 --- /dev/null
 +++ b/drivers/xen/netback/netback.c
-@@ -0,0 +1,1879 @@
+@@ -0,0 +1,1881 @@
 +/******************************************************************************
 + * drivers/xen/netback/netback.c
 + *
@@ -20551,17 +20900,19 @@ index 0000000..ed7cd65
 +
 +static void add_to_net_schedule_list_tail(struct xen_netif *netif)
 +{
++	unsigned long flags;
++
 +	struct xen_netbk *netbk = &xen_netbk[netif->group];
 +	if (__on_net_schedule_list(netif))
 +		return;
 +
-+	spin_lock_irq(&netbk->net_schedule_list_lock);
++	spin_lock_irqsave(&netbk->net_schedule_list_lock, flags);
 +	if (!__on_net_schedule_list(netif) &&
 +	    likely(netif_schedulable(netif))) {
 +		list_add_tail(&netif->list, &netbk->net_schedule_list);
 +		netif_get(netif);
 +	}
-+	spin_unlock_irq(&netbk->net_schedule_list_lock);
++	spin_unlock_irqrestore(&netbk->net_schedule_list_lock, flags);
 +}
 +
 +void netif_schedule_work(struct xen_netif *netif)
@@ -30434,11 +30785,14 @@ index 6559e0c..afaa6ed 100644
  }
  
 diff --git a/drivers/xen/xenfs/xenbus.c b/drivers/xen/xenfs/xenbus.c
-index 6c4269b..c309f1f 100644
+index 6c4269b..0ddef43 100644
 --- a/drivers/xen/xenfs/xenbus.c
 +++ b/drivers/xen/xenfs/xenbus.c
-@@ -123,6 +123,9 @@ static ssize_t xenbus_file_read(struct file *filp,
+@@ -121,8 +121,12 @@ static ssize_t xenbus_file_read(struct file *filp,
+ 	int ret;
+ 
  	mutex_lock(&u->reply_mutex);
++again:
  	while (list_empty(&u->read_buffers)) {
  		mutex_unlock(&u->reply_mutex);
 +		if (filp->f_flags & O_NONBLOCK)
@@ -30447,7 +30801,7 @@ index 6c4269b..c309f1f 100644
  		ret = wait_event_interruptible(u->read_waitq,
  					       !list_empty(&u->read_buffers));
  		if (ret)
-@@ -140,7 +143,7 @@ static ssize_t xenbus_file_read(struct file *filp,
+@@ -140,7 +144,7 @@ static ssize_t xenbus_file_read(struct file *filp,
  		i += sz - ret;
  		rb->cons += sz - ret;
  
@@ -30456,7 +30810,24 @@ index 6c4269b..c309f1f 100644
  			if (i == 0)
  				i = -EFAULT;
  			goto out;
-@@ -451,7 +454,7 @@ static ssize_t xenbus_file_write(struct file *filp,
+@@ -156,6 +160,8 @@ static ssize_t xenbus_file_read(struct file *filp,
+ 					struct read_buffer, list);
+ 		}
+ 	}
++	if (i == 0)
++		goto again;
+ 
+ out:
+ 	mutex_unlock(&u->reply_mutex);
+@@ -403,6 +409,7 @@ static int xenbus_write_watch(unsigned msg_type, struct xenbus_file_priv *u)
+ 
+ 		mutex_lock(&u->reply_mutex);
+ 		rc = queue_reply(&u->read_buffers, &reply, sizeof(reply));
++		wake_up(&u->read_waitq);
+ 		mutex_unlock(&u->reply_mutex);
+ 	}
+ 
+@@ -451,7 +458,7 @@ static ssize_t xenbus_file_write(struct file *filp,
  
  	ret = copy_from_user(u->u.buffer + u->len, ubuf, len);
  
@@ -30465,6 +30836,38 @@ index 6c4269b..c309f1f 100644
  		rc = -EFAULT;
  		goto out;
  	}
+@@ -484,21 +491,6 @@ static ssize_t xenbus_file_write(struct file *filp,
+ 	msg_type = u->u.msg.type;
+ 
+ 	switch (msg_type) {
+-	case XS_TRANSACTION_START:
+-	case XS_TRANSACTION_END:
+-	case XS_DIRECTORY:
+-	case XS_READ:
+-	case XS_GET_PERMS:
+-	case XS_RELEASE:
+-	case XS_GET_DOMAIN_PATH:
+-	case XS_WRITE:
+-	case XS_MKDIR:
+-	case XS_RM:
+-	case XS_SET_PERMS:
+-		/* Send out a transaction */
+-		ret = xenbus_write_transaction(msg_type, u);
+-		break;
+-
+ 	case XS_WATCH:
+ 	case XS_UNWATCH:
+ 		/* (Un)Ask for some path to be watched for changes */
+@@ -506,7 +498,8 @@ static ssize_t xenbus_file_write(struct file *filp,
+ 		break;
+ 
+ 	default:
+-		ret = -EINVAL;
++		/* Send out a transaction */
++		ret = xenbus_write_transaction(msg_type, u);
+ 		break;
+ 	}
+ 	if (ret != 0)
 diff --git a/drivers/xen/xenfs/xenfs.h b/drivers/xen/xenfs/xenfs.h
 index 51f08b2..b68aa62 100644
 --- a/drivers/xen/xenfs/xenfs.h
@@ -32045,10 +32448,28 @@ index 0000000..c4177f3
 + * End:
 + */
 diff --git a/include/xen/interface/io/ring.h b/include/xen/interface/io/ring.h
-index e8cbf43..7b301fa 100644
+index e8cbf43..c9ba846 100644
 --- a/include/xen/interface/io/ring.h
 +++ b/include/xen/interface/io/ring.h
-@@ -73,7 +73,16 @@ union __name##_sring_entry {						\
+@@ -24,8 +24,15 @@ typedef unsigned int RING_IDX;
+  * A ring contains as many entries as will fit, rounded down to the nearest
+  * power of two (so we can mask with (size-1) to loop around).
+  */
+-#define __RING_SIZE(_s, _sz) \
+-    (__RD32(((_sz) - (long)&(_s)->ring + (long)(_s)) / sizeof((_s)->ring[0])))
++#define __CONST_RING_SIZE(_s, _sz)				\
++	(__RD32(((_sz) - offsetof(struct _s##_sring, ring)) /	\
++		sizeof(((struct _s##_sring *)0)->ring[0])))
++
++/*
++ * The same for passing in an actual pointer instead of a name tag.
++ */
++#define __RING_SIZE(_s, _sz)						\
++	(__RD32(((_sz) - (long)&(_s)->ring + (long)(_s)) / sizeof((_s)->ring[0])))
+ 
+ /*
+  * Macros to make the correct C datatypes for a new kind of ring.
+@@ -73,7 +80,16 @@ union __name##_sring_entry {						\
  struct __name##_sring {							\
      RING_IDX req_prod, req_event;					\
      RING_IDX rsp_prod, rsp_event;					\
@@ -32087,7 +32508,7 @@ index 46508c7..9fda532 100644
  
  #endif /* _XEN_PUBLIC_IO_XENBUS_H */
 diff --git a/include/xen/interface/memory.h b/include/xen/interface/memory.h
-index af36ead..eac3ce1 100644
+index af36ead..aa4e368 100644
 --- a/include/xen/interface/memory.h
 +++ b/include/xen/interface/memory.h
 @@ -9,6 +9,8 @@
@@ -32168,7 +32589,7 @@ index af36ead..eac3ce1 100644
   * Sets the GPFN at which a particular page appears in the specified guest's
   * pseudophysical address space.
   * arg == addr of xen_add_to_physmap_t.
-@@ -142,4 +199,39 @@ struct xen_translate_gpfn_list {
+@@ -142,4 +199,38 @@ struct xen_translate_gpfn_list {
  };
  DEFINE_GUEST_HANDLE_STRUCT(xen_translate_gpfn_list);
  
@@ -32201,7 +32622,6 @@ index af36ead..eac3ce1 100644
 + */
 +#define XENMEM_machine_memory_map   10
 +
-+
 +/*
 + * Prevent the balloon driver from changing the memory reservation
 + * during a driver critical region.
@@ -32209,10 +32629,30 @@ index af36ead..eac3ce1 100644
 +extern spinlock_t xen_reservation_lock;
  #endif /* __XEN_PUBLIC_MEMORY_H__ */
 diff --git a/include/xen/interface/physdev.h b/include/xen/interface/physdev.h
-index cd69391..66122aa 100644
+index cd69391..0703ef6 100644
 --- a/include/xen/interface/physdev.h
 +++ b/include/xen/interface/physdev.h
-@@ -106,6 +106,64 @@ struct physdev_irq {
+@@ -39,6 +39,19 @@ struct physdev_eoi {
+ };
+ 
+ /*
++ * Register a shared page for the hypervisor to indicate whether the guest
++ * must issue PHYSDEVOP_eoi. The semantics of PHYSDEVOP_eoi change slightly
++ * once the guest used this function in that the associated event channel
++ * will automatically get unmasked. The page registered is used as a bit
++ * array indexed by Xen's PIRQ value.
++ */
++#define PHYSDEVOP_pirq_eoi_gmfn         17
++struct physdev_pirq_eoi_gmfn {
++    /* IN */
++    unsigned long gmfn;
++};
++
++/*
+  * Query the status of an IRQ line.
+  * @arg == pointer to physdev_irq_status_query structure.
+  */
+@@ -106,6 +119,64 @@ struct physdev_irq {
  	uint32_t vector;
  };
  
@@ -32277,7 +32717,7 @@ index cd69391..66122aa 100644
  /*
   * Argument to physdev_op_compat() hypercall. Superceded by new physdev_op()
   * hypercall since 0x00030202.
-@@ -121,6 +179,16 @@ struct physdev_op {
+@@ -121,6 +192,16 @@ struct physdev_op {
  	} u;
  };
  
@@ -33196,6 +33636,19 @@ index 2befa3e..9ffaee0 100644
  #else /* __ASSEMBLY__ */
  
  /* In assembly code we cannot use C numeric constant suffixes. */
+diff --git a/include/xen/page.h b/include/xen/page.h
+index eaf85fa..0be36b9 100644
+--- a/include/xen/page.h
++++ b/include/xen/page.h
+@@ -1 +1,8 @@
++#ifndef _XEN_PAGE_H
++#define _XEN_PAGE_H
++
+ #include <asm/xen/page.h>
++
++extern phys_addr_t xen_extra_mem_start, xen_extra_mem_size;
++
++#endif	/* _XEN_PAGE_H */
 diff --git a/include/xen/pcpu.h b/include/xen/pcpu.h
 new file mode 100644
 index 0000000..fb2bf6b
