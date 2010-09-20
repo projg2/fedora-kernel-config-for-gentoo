@@ -713,6 +713,7 @@ Patch1826: drm-radeon-resume-fixes.patch
 Patch1830: drm-i915-explosion-following-oom-in-do_execbuffer.patch
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 Patch1901: drm-nouveau-acpi-edid-fix.patch
+Patch1902: agp-intel-use-the-correct-mask-to-detect-i830-aperture-size.patch
 # radeon
 
 # linux1394 git patches
@@ -1404,6 +1405,8 @@ ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch drm-i915-explosion-following-oom-in-do_execbuffer.patch
+# broken in 2.6.35-rc2, fixed in 2.6.35, but our drm-next snapshot has the bug
+ApplyPatch agp-intel-use-the-correct-mask-to-detect-i830-aperture-size.patch
 
 ApplyPatch drm-radeon-resume-fixes.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
@@ -2146,6 +2149,9 @@ fi
 
 
 %changelog
+* Mon Sep 20 2010 Chuck Ebbert <cebbert@redhat.com>
+- Fix AGP aperture size detection on Intel G33/Q35 chipsets (#629203)
+
 * Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.34.7-57
 - Fix CVE-2010-3079: ftrace NULL pointer dereference
 

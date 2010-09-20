@@ -1,0 +1,62 @@
+From: Tim Gardner <tim.gardner@canonical.com>
+Date: Fri, 9 Jul 2010 20:48:50 +0000 (-0600)
+Subject: agp/intel: Use the correct mask to detect i830 aperture size.
+X-Git-Tag: v2.6.35~33^2~4
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=e7b96f28c58ca09f15f6c2e8ccbb889a30fab4f7
+
+agp/intel: Use the correct mask to detect i830 aperture size.
+
+BugLink: https://bugs.launchpad.net/bugs/597075
+
+commit f1befe71fa7a79ab733011b045639d8d809924ad introduced a
+regression when detecting aperture size of some i915 adapters, e.g.,
+those on the Intel Q35 chipset.
+
+The original report: https://bugzilla.kernel.org/show_bug.cgi?id=15733
+The regression report: https://bugzilla.kernel.org/show_bug.cgi?id=16294
+
+According to the specification found at
+http://intellinuxgraphics.org/VOL_1_graphics_core.pdf, the PCI config
+space register I830_GMCH_CTRL is a mirror of GMCH Graphics
+Control. The correct macro for isolating the aperture size bits is
+therefore I830_GMCH_GMS_MASK along with the attendant changes to the
+case statement.
+
+Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
+Tested-by: Kees Cook <kees.cook@canonical.com>
+Cc: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Eric Anholt <eric@anholt.net>
+Cc: Jesse Barnes <jbarnes@virtuousgeek.org>
+Signed-off-by: Eric Anholt <eric@anholt.net>
+---
+
+diff --git a/drivers/char/agp/intel-gtt.c b/drivers/char/agp/intel-gtt.c
+index 9344216..a754715 100644
+--- a/drivers/char/agp/intel-gtt.c
++++ b/drivers/char/agp/intel-gtt.c
+@@ -1216,17 +1216,20 @@ static int intel_i915_get_gtt_size(void)
+ 
+ 		/* G33's GTT size defined in gmch_ctrl */
+ 		pci_read_config_word(agp_bridge->dev, I830_GMCH_CTRL, &gmch_ctrl);
+-		switch (gmch_ctrl & G33_PGETBL_SIZE_MASK) {
+-		case G33_PGETBL_SIZE_1M:
++		switch (gmch_ctrl & I830_GMCH_GMS_MASK) {
++		case I830_GMCH_GMS_STOLEN_512:
++			size = 512;
++			break;
++		case I830_GMCH_GMS_STOLEN_1024:
+ 			size = 1024;
+ 			break;
+-		case G33_PGETBL_SIZE_2M:
+-			size = 2048;
++		case I830_GMCH_GMS_STOLEN_8192:
++			size = 8*1024;
+ 			break;
+ 		default:
+ 			dev_info(&agp_bridge->dev->dev,
+ 				 "unknown page table size 0x%x, assuming 512KB\n",
+-				(gmch_ctrl & G33_PGETBL_SIZE_MASK));
++				(gmch_ctrl & I830_GMCH_GMS_MASK));
+ 			size = 512;
+ 		}
+ 	} else {
