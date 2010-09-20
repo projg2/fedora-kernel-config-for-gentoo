@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 167
+%global baserelease 168
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -640,6 +640,11 @@ Patch21: linux-2.6-tracehook.patch
 Patch22: linux-2.6-utrace.patch
 Patch23: linux-2.6-utrace-ptrace.patch
 
+Patch100: 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
+Patch101: 02-compat-test-rax-for-the-system-call-number-not-eax.patch
+Patch102: 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
+Patch103: aio-check-for-multiplication-overflow-in-do_io_submit.patch
+
 Patch141: linux-2.6-ps3-storage-alias.patch
 Patch143: linux-2.6-g5-therm-shutdown.patch
 Patch144: linux-2.6-vio-modalias.patch
@@ -841,6 +846,21 @@ Patch14140: hid-01-usbhid-initialize-interface-pointers-early-enough.patch
 Patch14141: hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
 
 Patch14150: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
+
+Patch14200: net-do-not-check-capable-if-kernel.patch
+
+# Mitigate DOS with large argument lists
+Patch14210: execve-improve-interactivity-with-large-arguments.patch
+Patch14211: execve-make-responsive-to-sigkill-with-large-arguments.patch
+Patch14212: setup_arg_pages-diagnose-excessive-argument-size.patch
+
+# CVE-2010-3080
+Patch14220: alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
+# CVE-2010-2960
+Patch14230: keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
+Patch14231: keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
+# CVE-2010-3079
+Patch14240: tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
 
 Patch19997: xen.pvops.pre.patch
 Patch19998: xen.pvops.patch
@@ -1286,6 +1306,11 @@ ApplyPatch linux-2.6-utrace-ptrace.patch
 ApplyPatch via-hwmon-temp-sensor.patch
 ApplyPatch linux-2.6-dell-laptop-rfkill-fix.patch
 
+ApplyPatch 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
+ApplyPatch 02-compat-test-rax-for-the-system-call-number-not-eax.patch
+ApplyPatch 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
+
+
 #
 # Intel IOMMU
 #
@@ -1319,6 +1344,7 @@ ApplyPatch linux-2.6-execshield.patch
 #
 # bugfixes to drivers and filesystems
 #
+ApplyPatch aio-check-for-multiplication-overflow-in-do_io_submit.patch
 
 # ext4
 
@@ -1555,6 +1581,22 @@ ApplyPatch hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
 
 # CVE-2010-2954
 ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
+
+# rhbz #598796
+ApplyPatch net-do-not-check-capable-if-kernel.patch
+
+# Mitigate DOS with large argument lists
+ApplyPatch execve-improve-interactivity-with-large-arguments.patch
+ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
+ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
+
+# CVE-2010-3080
+ApplyPatch alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
+# CVE-2010-2960
+ApplyPatch keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
+ApplyPatch keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
+# CVE-2010-3079
+ApplyPatch tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
 
 ApplyPatch xen.pvops.pre.patch
 ApplyPatch xen.pvops.patch
@@ -2212,6 +2254,24 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.21-168
+- Fix three CVEs:
+  CVE-2010-3080: /dev/sequencer open failure is not handled correctly
+  CVE-2010-2960: keyctl_session_to_parent NULL deref system crash
+  CVE-2010-3079: ftrace NULL pointer dereference
+
+* Tue Sep 14 2010 Chuck Ebbert <cebbert@redhat.com>
+- Mitigate DOS with large argument lists.
+
+* Tue Sep 14 2010 Kyle McMartin <kyle@redhat.com>
+- x86_64: plug compat syscalls holes. (CVE-2010-3081, CVE-2010-3301)
+  upgrading is highly recommended.
+- aio: check for multiplication overflow in do_io_submit. (CVE-2010-3067)
+
+* Mon Sep 06 2010 Kyle McMartin <kyle@redhat.com>
+- Backport two fixes from Eric Paris to resolve #598796 which avoids a
+  capability check if the request comes from the kernel.
+
 * Fri Sep 03 2010 Michael Young <m.a.young@durham.ac.uk>
 - update pvops to 2.6.32.21
 - Set new dom0 related option CONFIG_NET_SCH_PLUG=m
