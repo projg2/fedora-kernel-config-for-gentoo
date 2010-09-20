@@ -10283,7 +10283,7 @@ index 601415d..b27202d 100644
 +	dev_priv->pipe_to_crtc_mapping[intel_crtc->pipe] = &intel_crtc->base;
 +
  	intel_crtc->cursor_addr = 0;
- 	intel_crtc->dpms_mode = DRM_MODE_DPMS_OFF;
+ 	intel_crtc->dpms_mode = -1;
  	drm_crtc_helper_add(&intel_crtc->base, &intel_helper_funcs);
 @@ -4036,7 +4382,7 @@ static void intel_setup_outputs(struct drm_device *dev)
  	if (IS_MOBILE(dev) && !IS_I830(dev))
