@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 28
+%global baserelease 29
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -606,10 +606,6 @@ Patch30: git-utrace.patch
 Patch31: utrace-ptrace-fix-build.patch
 Patch32: utrace-remove-use-of-kref_set.patch
 
-Patch101: 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
-Patch102: 02-compat-test-rax-for-the-system-call-number-not-eax.patch
-Patch103: 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
-
 Patch150: linux-2.6.29-sparc-IOC_TYPECHECK.patch
 
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
@@ -724,11 +720,6 @@ Patch12020: hid-support-tivo-slide-remote.patch
 
 Patch12040: only-use-alpha2-regulatory-information-from-country-IE.patch
 
-# rhbz #617699
-Patch12050: direct-io-move-aio_complete-into-end_io.patch
-Patch12060: ext4-move-aio-completion-after-unwritten-extent-conversion.patch
-Patch12070: xfs-move-aio-completion-after-unwritten-extent-conversion.patch
-
 Patch12080: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
 # rhbz #622149
@@ -745,8 +736,6 @@ Patch12520: execve-improve-interactivity-with-large-arguments.patch
 Patch12521: execve-make-responsive-to-sigkill-with-large-arguments.patch
 Patch12522: setup_arg_pages-diagnose-excessive-argument-size.patch
 
-# CVE-2010-3080
-Patch12530: alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
 # CVE-2010-2954
 Patch12540: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 # CVE-2010-2960
@@ -1180,9 +1169,6 @@ ApplyPatch utrace-remove-use-of-kref_set.patch
 
 # Architecture patches
 # x86(-64)
-ApplyPatch 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
-ApplyPatch 02-compat-test-rax-for-the-system-call-number-not-eax.patch
-ApplyPatch 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
 
 #
 # Intel IOMMU
@@ -1361,11 +1347,6 @@ ApplyPatch neuter_intel_microcode_load.patch
 
 ApplyPatch only-use-alpha2-regulatory-information-from-country-IE.patch
 
-# rhbz #617699
-ApplyPatch direct-io-move-aio_complete-into-end_io.patch
-ApplyPatch ext4-move-aio-completion-after-unwritten-extent-conversion.patch
-ApplyPatch xfs-move-aio-completion-after-unwritten-extent-conversion.patch
-
 # bz 610941
 ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
@@ -1384,8 +1365,6 @@ ApplyPatch execve-improve-interactivity-with-large-arguments.patch
 ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
 ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
 
-# CVE-2010-3080
-ApplyPatch alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
 # CVE-2010-2954
 ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 # CVE-2010-2960
@@ -1978,6 +1957,17 @@ fi
 # and build.
 
 %changelog
+* Mon Sep 20 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.35.5-29
+- Linux 2.6.35.5
+- Drop merged patches:
+  01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
+  02-compat-test-rax-for-the-system-call-number-not-eax.patch
+  03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
+  direct-io-move-aio_complete-into-end_io.patch
+  ext4-move-aio-completion-after-unwritten-extent-conversion.patch
+  xfs-move-aio-completion-after-unwritten-extent-conversion.patch
+  alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
+
 * Thu Sep 16 2010 Dennis Gilmore <dennis@ausil.us>
 - build sparc headers on sparcv9
 - disable some modules to enable the kernel to build on sparc
