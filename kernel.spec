@@ -749,6 +749,9 @@ Patch12575: sched-15-update-rq-clock-for-nohz-balanced-cpus.patch
 Patch12580: sched-20-fix-rq-clock-synchronization-when-migrating-tasks.patch
 Patch12585: sched-25-move-sched_avg_update-to-update_cpu_load.patch
 
+Patch13600: btusb-macbookpro-6-2.patch
+Patch13601: btusb-macbookpro-7-1.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1386,6 +1389,9 @@ ApplyPatch sched-15-update-rq-clock-for-nohz-balanced-cpus.patch
 ApplyPatch sched-20-fix-rq-clock-synchronization-when-migrating-tasks.patch
 ApplyPatch sched-25-move-sched_avg_update-to-update_cpu_load.patch
 
+ApplyPatch btusb-macbookpro-7-1.patch
+ApplyPatch btusb-macbookpro-6-2.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1972,6 +1978,9 @@ fi
 # and build.
 
 %changelog
+* Tue Sep 21 2010 Kyle McMartin <kyle@redhat.com>
+- Add new btusb ids for MacBookPro from wwoods@.
+
 * Tue Sep 21 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.35.5-29
 - Scheduler fixes for Bugzilla #635813 and #633037
 
