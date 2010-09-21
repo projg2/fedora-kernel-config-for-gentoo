@@ -742,6 +742,13 @@ Patch12540: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 Patch12550: keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
 Patch12551: keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
 
+Patch12560: sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
+Patch12565: sched-05-avoid-side-effect-of-tickless-idle-on-update_cpu_load.patch
+Patch12570: sched-10-change-nohz-idle-load-balancing-logic-to-push-model.patch
+Patch12575: sched-15-update-rq-clock-for-nohz-balanced-cpus.patch
+Patch12580: sched-20-fix-rq-clock-synchronization-when-migrating-tasks.patch
+Patch12585: sched-25-move-sched_avg_update-to-update_cpu_load.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1371,6 +1378,14 @@ ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 ApplyPatch keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
 ApplyPatch keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
 
+# Scheduler fixes (#635813 and #633037)
+ApplyPatch sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
+ApplyPatch sched-05-avoid-side-effect-of-tickless-idle-on-update_cpu_load.patch
+ApplyPatch sched-10-change-nohz-idle-load-balancing-logic-to-push-model.patch
+ApplyPatch sched-15-update-rq-clock-for-nohz-balanced-cpus.patch
+ApplyPatch sched-20-fix-rq-clock-synchronization-when-migrating-tasks.patch
+ApplyPatch sched-25-move-sched_avg_update-to-update_cpu_load.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1957,7 +1972,10 @@ fi
 # and build.
 
 %changelog
-* Mon Sep 20 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.35.5-29
+* Tue Sep 21 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.35.5-29
+- Scheduler fixes for Bugzilla #635813 and #633037
+
+* Mon Sep 20 2010 Chuck Ebbert <cebbert@redhat.com>
 - Linux 2.6.35.5
 - Drop merged patches:
   01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
