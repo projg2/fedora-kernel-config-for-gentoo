@@ -809,6 +809,8 @@ Patch12550: alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
 # CVE-2010-3079
 Patch12560: tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
 
+Patch12570: sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1528,6 +1530,9 @@ ApplyPatch alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
 # CVE-2010-3079
 ApplyPatch tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
 
+# BZ 633037
+ApplyPatch sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2149,6 +2154,9 @@ fi
 
 
 %changelog
+* Tue Sep 21 2010 Chuck Ebbert <cebbert@redhat.com>
+- Fix RHBZ #633037, Process user time incorrectly accounted as system time
+
 * Mon Sep 20 2010 Chuck Ebbert <cebbert@redhat.com>
 - Fix AGP aperture size detection on Intel G33/Q35 chipsets (#629203)
 
