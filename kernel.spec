@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 29
+%global baserelease 30
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -667,7 +667,6 @@ Patch1807: drm-i2c-ch7006-fix.patch
 Patch1810: drm-nouveau-updates.patch
 Patch1811: drm-nouveau-race-fix.patch
 Patch1812: drm-nouveau-nva3-noaccel.patch
-Patch1813: drm-nouveau-acpi-edid-fix.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -1310,7 +1309,6 @@ ApplyPatch drm-i2c-ch7006-fix.patch
 ApplyPatch drm-nouveau-updates.patch
 ApplyPatch drm-nouveau-race-fix.patch
 ApplyPatch drm-nouveau-nva3-noaccel.patch
-ApplyPatch drm-nouveau-acpi-edid-fix.patch
 
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
@@ -1985,6 +1983,10 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 23 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.5-30
+- nouveau: fix IGP chipsets (rhbz#636326), and some DP boards
+- drm-nouveau-acpi-edid-fix.patch: drop, merged into updates
+
 * Wed Sep 22 2010 Chuck Ebbert <cebbert@redhat.com>
 - Fix possible lockup with new scheduler idle balance code.
 - Dump stack on failed ATA commands in pata_it821x driver (#632753)
