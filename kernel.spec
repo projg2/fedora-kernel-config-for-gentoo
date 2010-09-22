@@ -753,6 +753,8 @@ Patch12590: sched-30-sched-fix-nohz-balance-kick.patch
 Patch13600: btusb-macbookpro-6-2.patch
 Patch13601: btusb-macbookpro-7-1.patch
 
+Patch13610: libata-it821x-dump-stack-on-cache-flush.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1394,6 +1396,9 @@ ApplyPatch sched-30-sched-fix-nohz-balance-kick.patch
 ApplyPatch btusb-macbookpro-7-1.patch
 ApplyPatch btusb-macbookpro-6-2.patch
 
+# temporary patch, dump stack on failed it821x commands
+ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1982,6 +1987,7 @@ fi
 %changelog
 * Wed Sep 22 2010 Chuck Ebbert <cebbert@redhat.com>
 - Fix possible lockup with new scheduler idle balance code.
+- Dump stack on failed ATA commands in pata_it821x driver (#632753)
 
 * Tue Sep 21 2010 Kyle McMartin <kyle@redhat.com>
 - Add new btusb ids for MacBookPro from wwoods@.

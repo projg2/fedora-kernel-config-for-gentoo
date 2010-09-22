@@ -1,0 +1,30 @@
+Dump stack once on unsupported commands to see who is submitting them.
+(#632753)
+
+--- linux-2.6.34.noarch.orig/drivers/ata/pata_it821x.c
++++ linux-2.6.34.noarch/drivers/ata/pata_it821x.c
+@@ -399,6 +399,16 @@ static void it821x_passthru_dev_select(s
+ 	ata_sff_dev_select(ap, device);
+ }
+ 
++static void it821x_dump_stack_once(void)
++{
++	static int dumped = 0;
++
++	if (!dumped) {
++		dump_stack();
++		dumped = 1;
++	}
++}
++
+ /**
+  *	it821x_smart_qc_issue		-	wrap qc issue prot
+  *	@qc: command
+@@ -433,6 +443,7 @@ static unsigned int it821x_smart_qc_issu
+ 			return ata_sff_qc_issue(qc);
+ 	}
+ 	printk(KERN_DEBUG "it821x: can't process command 0x%02X\n", qc->tf.command);
++	it821x_dump_stack_once();
+ 	return AC_ERR_DEV;
+ }
+ 
