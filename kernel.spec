@@ -811,6 +811,10 @@ Patch12560: tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
 
 Patch12570: sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
 
+# bz 636534
+Patch12580: xen-handle-events-as-edge-triggered.patch
+Patch12581: xen-use-percpu-interrupts-for-ipis-and-virqs.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1533,6 +1537,10 @@ ApplyPatch tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
 # BZ 633037
 ApplyPatch sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
 
+# BZ 636534
+ApplyPatch xen-handle-events-as-edge-triggered.patch
+ApplyPatch xen-use-percpu-interrupts-for-ipis-and-virqs.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2154,6 +2162,9 @@ fi
 
 
 %changelog
+* Wed Sep 22 2010 Chuck Ebbert <cebbert@redhat.com>
+- Copy two Xen fixes from 2.6.35-stable for RHBZ#636534
+
 * Tue Sep 21 2010 Chuck Ebbert <cebbert@redhat.com>
 - Fix RHBZ #633037, Process user time incorrectly accounted as system time
 
