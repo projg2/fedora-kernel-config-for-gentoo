@@ -724,6 +724,7 @@ Patch12080: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 # rhbz #622149
 Patch12085: fix-rcu_deref_check-warning.patch
 Patch12086: linux-2.6-cgroups-rcu.patch
+Patch12087: fix-unprotected-access-to-task-credentials-in-whatid.patch
 
 # rhbz #513530
 Patch12090: dell-wmi-add-support-for-eject-key-studio-1555.patch
@@ -1364,6 +1365,7 @@ ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 # bz 622149
 ApplyPatch fix-rcu_deref_check-warning.patch
 ApplyPatch linux-2.6-cgroups-rcu.patch
+ApplyPatch fix-unprotected-access-to-task-credentials-in-whatid.patch
 
 # bz 513530
 ApplyPatch dell-wmi-add-support-for-eject-key-studio-1555.patch
@@ -1984,6 +1986,10 @@ fi
 
 %changelog
 * Thu Sep 23 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.5-31
+- Slay another rcu_dereference_check warning pointed out by
+  rmcgrath@.
+
+* Thu Sep 23 2010 Kyle McMartin <kyle@redhat.com>
 - Enable -debug flavours and switch default image to release builds.
 - Bump NR_CPUS on i686 to 64.
 
