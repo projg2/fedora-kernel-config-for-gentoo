@@ -2162,6 +2162,9 @@ fi
 
 
 %changelog
+* Fri Sep 24 2010 Chuck Ebbert <cebbert@redhat.com>
+- Fix typo in previous Xen fix that causes boot failure.
+
 * Wed Sep 22 2010 Chuck Ebbert <cebbert@redhat.com>
 - Copy two Xen fixes from 2.6.35-stable for RHBZ#636534
 
