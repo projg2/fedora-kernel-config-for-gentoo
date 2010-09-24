@@ -1700,7 +1700,7 @@ BuildKernel %make_target %kernel_image smp
 
 %if %{with_doc}
 # Make the HTML and man pages.
-make %{?_smp_mflags} htmldocs mandocs || %{doc_build_fail}
+make htmldocs mandocs || %{doc_build_fail}
 
 # sometimes non-world-readable files sneak into the kernel source tree
 chmod -R a=rX Documentation
@@ -1985,6 +1985,10 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 23 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.5-32
+- Serialize mandocs/htmldocs build, since otherwise it will constantly
+  fail on the koji builders.
+
 * Thu Sep 23 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.5-31
 - Slay another rcu_dereference_check warning pointed out by
   rmcgrath@.
