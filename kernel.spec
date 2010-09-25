@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 32
+%global baserelease 33
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,9 +60,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1206,7 +1206,7 @@ ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 # bugfixes to drivers and filesystems
 #
 
-ApplyPatch aio-check-for-multiplication-overflow-in-do_io_submit.patch
+#ApplyPatch aio-check-for-multiplication-overflow-in-do_io_submit.patch
 
 # ext4
 
@@ -1298,7 +1298,7 @@ ApplyPatch linux-2.6-crash-driver.patch
 
 # Assorted Virt Fixes
 ApplyPatch fix_xen_guest_on_old_EC2.patch
-ApplyPatch linux-2.6.35.4-virtio_console-fix-poll.patch
+#ApplyPatch linux-2.6.35.4-virtio_console-fix-poll.patch
 
 #ApplyPatch drm-revert-drm-fbdev-rework-output-polling-to-be-back-in-core.patch
 #ApplyPatch revert-drm-kms-toggle-poll-around-switcheroo.patch
@@ -1365,10 +1365,10 @@ ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 # bz 622149
 ApplyPatch fix-rcu_deref_check-warning.patch
 ApplyPatch linux-2.6-cgroups-rcu.patch
-ApplyPatch fix-unprotected-access-to-task-credentials-in-whatid.patch
+#ApplyPatch fix-unprotected-access-to-task-credentials-in-whatid.patch
 
 # bz 513530
-ApplyPatch dell-wmi-add-support-for-eject-key-studio-1555.patch
+#ApplyPatch dell-wmi-add-support-for-eject-key-studio-1555.patch
 
 # bz #575873
 ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
@@ -1379,13 +1379,13 @@ ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
 ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
 
 # CVE-2010-2954
-ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
+#ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 # CVE-2010-2960
-ApplyPatch keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
-ApplyPatch keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
+#ApplyPatch keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
+#ApplyPatch keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
 
 # Scheduler fixes (#635813 and #633037)
-ApplyPatch sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
+#ApplyPatch sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
 ApplyPatch sched-05-avoid-side-effect-of-tickless-idle-on-update_cpu_load.patch
 ApplyPatch sched-10-change-nohz-idle-load-balancing-logic-to-push-model.patch
 ApplyPatch sched-15-update-rq-clock-for-nohz-balanced-cpus.patch
@@ -1985,6 +1985,20 @@ fi
 # and build.
 
 %changelog
+* Sat Sep 25 2010 Chuck Ebbert <kyle@redhat.com> 2.6.35.6-33.rc1
+- Linux 2.6.35.6-rc1
+- Comment out merged patches:
+   aio-check-for-multiplication-overflow-in-do_io_submit.patch
+   linux-2.6.35.4-virtio_console-fix-poll.patch
+   fix-unprotected-access-to-task-credentials-in-whatid.patch
+   dell-wmi-add-support-for-eject-key-studio-1555.patch
+   irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
+   keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
+   keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
+   sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
+- Revert: "drm/nv50: initialize ramht_refs list for faked 0 channel"
+  (our DRM update removes ramht_refs entirely.)
+
 * Thu Sep 23 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.5-32
 - Serialize mandocs/htmldocs build, since otherwise it will constantly
   fail on the koji builders.
