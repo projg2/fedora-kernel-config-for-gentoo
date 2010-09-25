@@ -755,6 +755,7 @@ Patch13600: btusb-macbookpro-6-2.patch
 Patch13601: btusb-macbookpro-7-1.patch
 
 Patch13610: libata-it821x-dump-stack-on-cache-flush.patch
+Patch13620: xen-fix-typo-in-xen-irq-fix.patch
 
 %endif
 
@@ -1401,6 +1402,9 @@ ApplyPatch btusb-macbookpro-6-2.patch
 # temporary patch, dump stack on failed it821x commands
 ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
 
+# temporary fix for typo in Xen -stable patch
+ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2002,6 +2006,7 @@ fi
   (our DRM update removes ramht_refs entirely.)
 - Add sched-35-increment-cache_nice_tries-only-on-periodic-lb.patch, another
   fix for excessive scheduler load balancing.
+- Add xen-fix-typo-in-xen-irq-fix.patch, fixes typo in 2.6.35.5 patch.
 
 * Thu Sep 23 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.5-32
 - Serialize mandocs/htmldocs build, since otherwise it will constantly
