@@ -749,6 +749,7 @@ Patch12575: sched-15-update-rq-clock-for-nohz-balanced-cpus.patch
 Patch12580: sched-20-fix-rq-clock-synchronization-when-migrating-tasks.patch
 Patch12585: sched-25-move-sched_avg_update-to-update_cpu_load.patch
 Patch12590: sched-30-sched-fix-nohz-balance-kick.patch
+Patch12595: sched-35-increment-cache_nice_tries-only-on-periodic-lb.patch
 
 Patch13600: btusb-macbookpro-6-2.patch
 Patch13601: btusb-macbookpro-7-1.patch
@@ -1392,6 +1393,7 @@ ApplyPatch sched-15-update-rq-clock-for-nohz-balanced-cpus.patch
 ApplyPatch sched-20-fix-rq-clock-synchronization-when-migrating-tasks.patch
 ApplyPatch sched-25-move-sched_avg_update-to-update_cpu_load.patch
 ApplyPatch sched-30-sched-fix-nohz-balance-kick.patch
+ApplyPatch sched-35-increment-cache_nice_tries-only-on-periodic-lb.patch
 
 ApplyPatch btusb-macbookpro-7-1.patch
 ApplyPatch btusb-macbookpro-6-2.patch
@@ -1998,6 +2000,8 @@ fi
    sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
 - Revert: "drm/nv50: initialize ramht_refs list for faked 0 channel"
   (our DRM update removes ramht_refs entirely.)
+- Add sched-35-increment-cache_nice_tries-only-on-periodic-lb.patch, another
+  fix for excessive scheduler load balancing.
 
 * Thu Sep 23 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.5-32
 - Serialize mandocs/htmldocs build, since otherwise it will constantly
