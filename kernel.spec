@@ -2199,7 +2199,7 @@ fi
 
 %changelog
 * Mon Sep 27 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.23-170
-- Linux 2.6.32.22
+- Linux 2.6.32.23
 - Drop merged patches:
   aio-check-for-multiplication-overflow-in-do_io_submit.patch
   inotify-fix-inotify-oneshot-support.patch
