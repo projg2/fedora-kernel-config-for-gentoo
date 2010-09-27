@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 33
+%global baserelease 34
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 6
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1991,6 +1991,12 @@ fi
 # and build.
 
 %changelog
+* Mon Sep 27 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-34
+- Linux 2.6.35.6
+- bdi-fix-warnings-in-__mark_inode_dirty-for-dev-zero-and-friends.patch was
+  dropped, should fix the inode_to_bdi WARN_ON triggering for a bunch of
+  people.
+
 * Sat Sep 25 2010 Chuck Ebbert <kyle@redhat.com> 2.6.35.6-33.rc1
 - Linux 2.6.35.6-rc1
 - Comment out merged patches:
