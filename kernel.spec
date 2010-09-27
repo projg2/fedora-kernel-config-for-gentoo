@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 169
+%global baserelease 170
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -59,7 +59,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 22
+%define stable_update 23
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -638,8 +638,6 @@ Patch21: linux-2.6-tracehook.patch
 Patch22: linux-2.6-utrace.patch
 Patch23: linux-2.6-utrace-ptrace.patch
 
-Patch103: aio-check-for-multiplication-overflow-in-do_io_submit.patch
-
 Patch141: linux-2.6-ps3-storage-alias.patch
 Patch143: linux-2.6-g5-therm-shutdown.patch
 Patch144: linux-2.6-vio-modalias.patch
@@ -829,15 +827,10 @@ Patch12923: mac80211-explicitly-disable-enable-QoS.patch
 # l2tp: fix oops in pppol2tp_xmit (#607054)
 Patch13030: l2tp-fix-oops-in-pppol2tp_xmit.patch
 
-Patch14020: inotify-fix-inotify-oneshot-support.patch
-Patch14030: inotify-send-IN_UNMOUNT-events.patch
-
 Patch14050: crypto-add-async-hash-testing.patch
 
 # Red Hat Bugzilla #610911
 Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
-
-Patch14150: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 
 Patch14200: net-do-not-check-capable-if-kernel.patch
 
@@ -845,10 +838,6 @@ Patch14200: net-do-not-check-capable-if-kernel.patch
 Patch14210: execve-improve-interactivity-with-large-arguments.patch
 Patch14211: execve-make-responsive-to-sigkill-with-large-arguments.patch
 Patch14212: setup_arg_pages-diagnose-excessive-argument-size.patch
-
-# CVE-2010-2960
-Patch14230: keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
-Patch14231: keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
 
 # ==============================================================================
 %endif
@@ -1323,8 +1312,6 @@ ApplyPatch linux-2.6-execshield.patch
 #
 # bugfixes to drivers and filesystems
 #
-# CVE-2010-3067
-ApplyPatch aio-check-for-multiplication-overflow-in-do_io_submit.patch
 
 # ext4
 
@@ -1546,17 +1533,10 @@ ApplyPatch iwlwifi-manage-QoS-by-mac-stack.patch
 # l2tp: fix oops in pppol2tp_xmit (#607054)
 ApplyPatch l2tp-fix-oops-in-pppol2tp_xmit.patch
 
-# fix broken oneshot support and missing umount events (F13#607327)
-ApplyPatch inotify-fix-inotify-oneshot-support.patch
-ApplyPatch inotify-send-IN_UNMOUNT-events.patch
-
 # add tests for crypto async hashing (#571577)
 ApplyPatch crypto-add-async-hash-testing.patch
 
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
-
-# CVE-2010-2954
-ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 
 # rhbz #598796
 ApplyPatch net-do-not-check-capable-if-kernel.patch
@@ -1565,10 +1545,6 @@ ApplyPatch net-do-not-check-capable-if-kernel.patch
 ApplyPatch execve-improve-interactivity-with-large-arguments.patch
 ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
 ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
-
-# CVE-2010-2960
-ApplyPatch keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
-ApplyPatch keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
 
 # END OF PATCH APPLICATIONS ====================================================
 %endif
@@ -2222,7 +2198,17 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
-* Mon Sep 20 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.21-169
+* Mon Sep 27 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.23-170
+- Linux 2.6.32.22
+- Drop merged patches:
+  aio-check-for-multiplication-overflow-in-do_io_submit.patch
+  inotify-fix-inotify-oneshot-support.patch
+  inotify-send-IN_UNMOUNT-events.patch
+  irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
+  keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
+  keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
+
+* Mon Sep 20 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.22-169
 - Linux 2.6.32.22
 - Drop merged patches:
   01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
