@@ -1,0 +1,78 @@
+From ef0744eff71f519db7641313d1588289f5cb49d2 Mon Sep 17 00:00:00 2001
+From: Ben Skeggs <bskeggs@redhat.com>
+Date: Wed, 8 Sep 2010 15:40:30 +1000
+Subject: [PATCH] drm/nouveau: handle fifo pusher errors better
+
+The most important part of this change is that we now instruct PFIFO to
+drop all pending fetches, rather than attempting to skip a single dword
+and hope that things would magically sort themselves out - they usually
+don't, and we end up with PFIFO being completely hung.
+
+This commit also adds somewhat more useful logging when these exceptions
+occur.
+
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+---
+ drivers/gpu/drm/nouveau/nouveau_irq.c |   45 +++++++++++++++++++++++++++------
+ 1 files changed, 37 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/nouveau/nouveau_irq.c b/drivers/gpu/drm/nouveau/nouveau_irq.c
+index 53360f1..a0f31e4 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_irq.c
++++ b/drivers/gpu/drm/nouveau/nouveau_irq.c
+@@ -200,16 +200,45 @@ nouveau_fifo_irq_handler(struct drm_device *dev)
+		}
+
+		if (status & NV_PFIFO_INTR_DMA_PUSHER) {
+-			NV_INFO(dev, "PFIFO_DMA_PUSHER - Ch %d\n", chid);
++			u32 get = nv_rd32(dev, 0x003244);
++			u32 put = nv_rd32(dev, 0x003240);
++			u32 push = nv_rd32(dev, 0x003220);
++			u32 state = nv_rd32(dev, 0x003228);
++
++			if (dev_priv->card_type == NV_50) {
++				u32 ho_get = nv_rd32(dev, 0x003328);
++				u32 ho_put = nv_rd32(dev, 0x003320);
++				u32 ib_get = nv_rd32(dev, 0x003334);
++				u32 ib_put = nv_rd32(dev, 0x003330);
++
++				NV_INFO(dev, "PFIFO_DMA_PUSHER - Ch %d Get 0x%02x%08x "
++					     "Put 0x%02x%08x IbGet 0x%08x IbPut 0x%08x "
++					     "State 0x%08x Push 0x%08x\n",
++					chid, ho_get, get, ho_put, put, ib_get, ib_put,
++					state, push);
++
++				/* METHOD_COUNT, in DMA_STATE on earlier chipsets */
++				nv_wr32(dev, 0x003364, 0x00000000);
++				if (get != put || ho_get != ho_put) {
++					nv_wr32(dev, 0x003244, put);
++					nv_wr32(dev, 0x003328, ho_put);
++				} else
++				if (ib_get != ib_put) {
++					nv_wr32(dev, 0x003334, ib_put);
++				}
++			} else {
++				NV_INFO(dev, "PFIFO_DMA_PUSHER - Ch %d Get 0x%08x "
++					     "Put 0x%08x State 0x%08x Push 0x%08x\n",
++					chid, get, put, state, push);
+
+-			status &= ~NV_PFIFO_INTR_DMA_PUSHER;
+-			nv_wr32(dev, NV03_PFIFO_INTR_0,
+-						NV_PFIFO_INTR_DMA_PUSHER);
++				if (get != put)
++					nv_wr32(dev, 0x003244, put);
++			}
+
+-			nv_wr32(dev, NV04_PFIFO_CACHE1_DMA_STATE, 0x00000000);
+-			if (nv_rd32(dev, NV04_PFIFO_CACHE1_DMA_PUT) != get)
+-				nv_wr32(dev, NV04_PFIFO_CACHE1_DMA_GET,
+-								get + 4);
++			nv_wr32(dev, 0x003228, 0x00000000);
++			nv_wr32(dev, 0x003220, 0x00000001);
++			nv_wr32(dev, 0x002100, NV_PFIFO_INTR_DMA_PUSHER);
++			status &= ~NV_PFIFO_INTR_DMA_PUSHER;
+		}
+
+		if (status & NV_PFIFO_INTR_SEMAPHORE) {
+--
+1.7.2.2
