@@ -839,6 +839,8 @@ Patch14210: execve-improve-interactivity-with-large-arguments.patch
 Patch14211: execve-make-responsive-to-sigkill-with-large-arguments.patch
 Patch14212: setup_arg_pages-diagnose-excessive-argument-size.patch
 
+Patch14220: xen-fix-typo-in-xen-irq-fix.patch
+
 # ==============================================================================
 %endif
 
@@ -1546,6 +1548,9 @@ ApplyPatch execve-improve-interactivity-with-large-arguments.patch
 ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
 ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
 
+# Fix typo in Xen patch from 2.6.22 that causes hang on boot.
+ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
+
 # END OF PATCH APPLICATIONS ====================================================
 %endif
 
@@ -2207,6 +2212,7 @@ fi
   irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
   keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
   keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
+- Fix typo in Xen patch from 2.6.32.22.
 
 * Mon Sep 20 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.22-169
 - Linux 2.6.32.22
