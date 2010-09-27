@@ -776,7 +776,6 @@ Patch11010: via-hwmon-temp-sensor.patch
 
 # patches headed upstream
 Patch12010: linux-2.6-dell-laptop-rfkill-fix.patch
-Patch12011: linux-2.6-block-silently-error-unsupported-empty-barriers-too.patch
 Patch12013: linux-2.6-rfkill-all.patch
 Patch12020: linux-2.6-cantiga-iommu-gfx.patch
 
@@ -1443,9 +1442,6 @@ ApplyPatch crystalhd-2.6.34-staging.patch
 #ApplyPatch linux-2.6-ksm-kvm.patch
 
 # Assorted Virt Fixes
-
-# Fix block I/O errors in KVM
-#ApplyPatch linux-2.6-block-silently-error-unsupported-empty-barriers-too.patch
 
 ApplyPatch linux-2.6-e1000-ich9.patch
 
