@@ -1963,6 +1963,9 @@ fi
 # and build.
 
 %changelog
+* Wed Sep 29 2010 Dave Jones <davej@redhat.com>
+- Enable IB700 watchdog (used by qemu/kvm). (#637152)
+
 * Mon Sep 27 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-34
 - Linux 2.6.35.6
 - bdi-fix-warnings-in-__mark_inode_dirty-for-dev-zero-and-friends.patch was
