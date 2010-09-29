@@ -2256,6 +2256,7 @@ fi
 * Wed Sep 01 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-48
 - Revert commit 6a1a82df91fa0eb1cc76069a9efe5714d087eccd from 2.6.34.1;
   it breaks ftdi_sio (#613597)
+
 * Tue Aug 31 2010 Steve Dickson <steved@redhat.com>
 - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
 
