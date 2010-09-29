@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 34
+%global baserelease 35
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1968,7 +1968,7 @@ fi
 # and build.
 
 %changelog
-* Wed Sep 29 2010 Dave Jones <davej@redhat.com>
+* Wed Sep 29 2010 Dave Jones <davej@redhat.com> 2.6.35.6-35
 - Add back an old hack to make an SDV e1000e variant work.
 
 * Wed Sep 29 2010 Dave Jones <davej@redhat.com>
