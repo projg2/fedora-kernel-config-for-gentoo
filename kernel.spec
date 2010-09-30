@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .pnfs35.2010.08.24
+%define buildid .pnfs35.2010.09.14
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -835,7 +835,7 @@ Patch13000: pnfs-all-2.6.35-2010-08-24-f14.patch
 Patch13001: linux-2.6-pnfs-compile.patch
 Patch13002: linux-2.6.35-inline.patch
 
-Patch13000: pnfs-all-2.6.35-2010-08-24-f14.patch
+Patch13000: pnfs-all-2.6.35-2010-09-14-f14.patch
 Patch13001: linux-2.6-pnfs-compile.patch
 Patch13002: linux-2.6.35-inline.patch
 
@@ -1580,7 +1580,7 @@ ApplyPatch pnfs-all-2.6.35-2010-08-24-f14.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 
-ApplyPatch pnfs-all-2.6.35-2010-08-24-f14.patch
+ApplyPatch pnfs-all-2.6.35-2010-09-14-f14.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 
@@ -2479,6 +2479,9 @@ fi
 
 * Wed Sep 29 2010 Dave Jones <davej@redhat.com> 2.6.35.6-35
 - Add back an old hack to make an SDV e1000e variant work.
+
+* Thu Sep 30 2010 Steve Dickson <steved@redhat.com>
+- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-09-14
 
 * Wed Sep 29 2010 Dave Jones <davej@redhat.com>
 - Enable IB700 watchdog (used by qemu/kvm). (#637152)
