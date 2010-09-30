@@ -1,0 +1,29 @@
+From 55647c139cf7d6caeaa08a99b2165763a02ab71a Mon Sep 17 00:00:00 2001
+From: Ben Skeggs <bskeggs@redhat.com>
+Date: Thu, 30 Sep 2010 09:09:42 +1000
+Subject: [PATCH] drm/nv50: prevent (IB_PUT == IB_GET) for occurring unless idle
+
+Should fix a DMA race condition I've never seen myself, but could be
+the culprit in some random hangs that have been reported.
+
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+---
+ drivers/gpu/drm/nouveau/nouveau_dma.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/gpu/drm/nouveau/nouveau_dma.c b/drivers/gpu/drm/nouveau/nouveau_dma.c
+index 9d27acd..eb24e2b 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_dma.c
++++ b/drivers/gpu/drm/nouveau/nouveau_dma.c
+@@ -214,7 +214,7 @@ nv50_dma_push_wait(struct nouveau_channel *chan, int count)
+ 
+ 		chan->dma.ib_free = get - chan->dma.ib_put;
+ 		if (chan->dma.ib_free <= 0)
+-			chan->dma.ib_free += chan->dma.ib_max + 1;
++			chan->dma.ib_free += chan->dma.ib_max;
+ 	}
+ 
+ 	return 0;
+-- 
+1.7.2.2
+
