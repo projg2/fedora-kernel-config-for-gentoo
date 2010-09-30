@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .pnfs34.2010.08.24
+%define buildid .pnfs35.2010.09.14
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -818,7 +818,7 @@ Patch12581: xen-use-percpu-interrupts-for-ipis-and-virqs.patch
 
 Patch30000: nfs-35-fc.patch
 Patch30001: nfsd-35-fc.patch
-Patch30002: pnfs-all-2.6.35-2010-08-24-f13.patch
+Patch30002: pnfs-all-2.6.35-2010-09-14-f13.patch
 Patch30003: linux-2.6-pnfs-compile.patch
 Patch30004: linux-2.6.35-inline.patch
 
@@ -1551,7 +1551,7 @@ ApplyPatch xen-use-percpu-interrupts-for-ipis-and-virqs.patch
 
 ApplyPatch nfs-35-fc.patch  
 ApplyPatch nfsd-35-fc.patch  
-ApplyPatch pnfs-all-2.6.35-2010-08-24-f13.patch
+ApplyPatch pnfs-all-2.6.35-2010-09-14-f13.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 # END OF PATCH APPLICATIONS
@@ -2175,6 +2175,9 @@ fi
 
 
 %changelog
+* Thu Sep 30 2010 Steve Dickson <steved@redhat.com>
+- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-09-14
+
 * Mon Sep 27 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.7-58
 - nouveau: better handling of certain GPU errors
 
