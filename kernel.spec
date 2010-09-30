@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .pnfs35.2010.08.24
+%define buildid .pnfs35.2010.09.14
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -743,7 +743,7 @@ Patch13601: btusb-macbookpro-7-1.patch
 Patch13610: libata-it821x-dump-stack-on-cache-flush.patch
 Patch13620: xen-fix-typo-in-xen-irq-fix.patch
 
-Patch13000: pnfs-all-2.6.35-2010-08-24-f14.patch
+Patch13000: pnfs-all-2.6.35-2010-09-14-f14.patch
 Patch13001: linux-2.6-pnfs-compile.patch
 Patch13002: linux-2.6.35-inline.patch
 
@@ -1381,7 +1381,7 @@ ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
 # temporary fix for typo in Xen -stable patch
 ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
 
-ApplyPatch pnfs-all-2.6.35-2010-08-24-f14.patch
+ApplyPatch pnfs-all-2.6.35-2010-09-14-f14.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 
@@ -1971,6 +1971,9 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 30 2010 Steve Dickson <steved@redhat.com>
+- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-09-14
+
 * Wed Sep 29 2010 Dave Jones <davej@redhat.com>
 - Enable IB700 watchdog (used by qemu/kvm). (#637152)
 
