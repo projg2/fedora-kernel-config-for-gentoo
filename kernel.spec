@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 58
+%global baserelease 59
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -715,6 +715,7 @@ Patch1900: linux-2.6-intel-iommu-igfx.patch
 Patch1901: drm-nouveau-acpi-edid-fix.patch
 Patch1902: agp-intel-use-the-correct-mask-to-detect-i830-aperture-size.patch
 Patch1903: drm-nouveau-pusher-intr.patch
+Patch1904: drm-nouveau-ibdma-race.patch
 # radeon
 
 # linux1394 git patches
@@ -1408,6 +1409,7 @@ ApplyPatch drm-nouveau-nva3-noaccel.patch
 ApplyPatch drm-nouveau-nv50-crtc-update-delay.patch
 ApplyPatch drm-nouveau-acpi-edid-fix.patch
 ApplyPatch drm-nouveau-pusher-intr.patch
+ApplyPatch drm-nouveau-ibdma-race.patch
 
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
@@ -2164,6 +2166,10 @@ fi
 
 
 %changelog
+* Thu Sep 30 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.7-59
+- nouveau: fix theoretical race condition that could be responsible for
+  certain random hangs that have been reported.
+
 * Mon Sep 27 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.7-58
 - nouveau: better handling of certain GPU errors
 
