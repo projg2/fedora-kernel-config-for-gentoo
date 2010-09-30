@@ -703,6 +703,8 @@ Patch2918: linux-2.6-v4l-dvb-ir-core-update-2.patch
 
 Patch3000: linux-2.6-via-velocity-dma-fix.patch
 
+Patch3010: linux-2.6-rcu-sched-warning.patch
+
 # NFSv4
 
 # patches headed upstream
@@ -1340,6 +1342,9 @@ ApplyPatch linux-2.6-v4l-dvb-ir-core-update-2.patch
 # Fix DMA bug on via-velocity
 ApplyPatch linux-2.6-via-velocity-dma-fix.patch
 
+# silence another rcu_reference warning
+ApplyPatch linux-2.6-rcu-sched-warning.patch
+
 # Patches headed upstream
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
@@ -1970,6 +1975,9 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 30 2010 Dave Jones <davej@redhat.com>
+- silence another rcu_reference warning
+
 * Thu Sep 30 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.6-36
 - nouveau: fix theoretical race condition which may be the cause of some
   random hangs people reported.
