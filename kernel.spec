@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .pnfs35.2010.08.24
+%define buildid .pnfs35.2010.09.14
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -833,7 +833,7 @@ Patch13704: hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 Patch13000: pnfs-all-2.6.35-2010-09-14-f14.patch
 Patch13652: v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 
-Patch13000: pnfs-all-2.6.35-2010-08-24-f14.patch
+Patch13000: pnfs-all-2.6.35-2010-09-14-f14.patch
 Patch13001: linux-2.6-pnfs-compile.patch
 Patch13002: linux-2.6.35-inline.patch
 
@@ -1584,7 +1584,7 @@ ApplyPatch pnfs-all-2.6.35-2010-09-14-f14.patch
 # CVE-2010-2963
 ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 
-ApplyPatch pnfs-all-2.6.35-2010-08-24-f14.patch
+ApplyPatch pnfs-all-2.6.35-2010-09-14-f14.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
 ApplyPatch linux-2.6.35-inline.patch
 
