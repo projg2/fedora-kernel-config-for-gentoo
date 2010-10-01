@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 36
+%global baserelease 37
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -666,7 +666,6 @@ Patch1807: drm-i2c-ch7006-fix.patch
 Patch1810: drm-nouveau-updates.patch
 Patch1811: drm-nouveau-race-fix.patch
 Patch1812: drm-nouveau-nva3-noaccel.patch
-Patch1813: drm-nouveau-ibdma-race.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -1303,7 +1302,6 @@ ApplyPatch drm-i2c-ch7006-fix.patch
 ApplyPatch drm-nouveau-updates.patch
 ApplyPatch drm-nouveau-race-fix.patch
 ApplyPatch drm-nouveau-nva3-noaccel.patch
-ApplyPatch drm-nouveau-ibdma-race.patch
 
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
@@ -1975,6 +1973,10 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 01 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.6-37
+- nouveau: DP fixes, nv50+ corruption fix, display fixes
+- drm-nouveau-ibdma-race.patch: removed, in updates now
+
 * Thu Sep 30 2010 Dave Jones <davej@redhat.com>
 - silence another rcu_reference warning
 
