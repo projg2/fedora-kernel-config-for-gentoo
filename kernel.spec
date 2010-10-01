@@ -611,9 +611,11 @@ Patch23: linux-2.6-utrace-ptrace.patch
 
 Patch50: linux-2.6-x86-cfi_sections.patch
 
+# CVE-2010-3301, CVE-2010-3081
 Patch100: 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
 Patch101: 02-compat-test-rax-for-the-system-call-number-not-eax.patch
 Patch102: 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
+# CVE-2010-3067
 Patch103: aio-check-for-multiplication-overflow-in-do_io_submit.patch
 
 Patch144: linux-2.6-vio-modalias.patch
@@ -816,6 +818,9 @@ Patch12570: sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bi
 # bz 636534
 Patch12580: xen-handle-events-as-edge-triggered.patch
 Patch12581: xen-use-percpu-interrupts-for-ipis-and-virqs.patch
+
+# CVE-2010-3432
+Patch12590: sctp-do-not-reset-the-packet-during-sctp_packet_config.patch
 
 %endif
 
@@ -1246,10 +1251,10 @@ ApplyPatch linux-2.6-utrace-ptrace.patch
 # x86(-64)
 ApplyPatch linux-2.6-x86-cfi_sections.patch
 
+# CVE-2010-3301, CVE-2010-3081
 ApplyPatch 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
 ApplyPatch 02-compat-test-rax-for-the-system-call-number-not-eax.patch
 ApplyPatch 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
-
 
 #
 # Intel IOMMU
@@ -1544,6 +1549,9 @@ ApplyPatch sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit
 # BZ 636534
 ApplyPatch xen-handle-events-as-edge-triggered.patch
 ApplyPatch xen-use-percpu-interrupts-for-ipis-and-virqs.patch
+
+# CVE-2010-3432
+ApplyPatch sctp-do-not-reset-the-packet-during-sctp_packet_config.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2166,6 +2174,9 @@ fi
 
 
 %changelog
+* Thu Sep 30 2010 Chuck Ebbert <cebbert@redhat.com>
+- CVE-2010-3432: sctp-do-not-reset-the-packet-during-sctp_packet_config.patch
+
 * Thu Sep 30 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.34.7-59
 - nouveau: fix theoretical race condition that could be responsible for
   certain random hangs that have been reported.
