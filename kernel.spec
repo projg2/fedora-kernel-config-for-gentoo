@@ -1975,6 +1975,10 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 04 2010 Kyle McMartin <kyle@redhat.com>
+- Make printk.time=1 the default, use printk.time=0 to turn it off.
+  Results in much more useful traces for us, which is a big win.
+
 * Sun Oct 03 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-38
 - Add more mac models supported by efifb. (#528232)
 - Sanity check base address in efifb on pci systems.
