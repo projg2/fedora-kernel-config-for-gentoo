@@ -1976,6 +1976,11 @@ fi
 
 %changelog
 * Mon Oct 04 2010 Kyle McMartin <kyle@redhat.com>
+- Build intel_idle into the kernel, so they get loaded by default. In
+  later kernels, it is no longer modular, so it isn't an issue. Noticed
+  by mjg59.
+
+* Mon Oct 04 2010 Kyle McMartin <kyle@redhat.com>
 - Make printk.time=1 the default, use printk.time=0 to turn it off.
   Results in much more useful traces for us, which is a big win.
 
