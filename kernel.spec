@@ -2209,6 +2209,7 @@ fi
 * Wed Oct 06 2010 Michael Young <m.a.young@durham.ac.uk>
 - update pvops including memory and irq fixes
 - Drop xen-fix-typo-in-xen-irq-fix.patch as it is in the pvops patch
+- Build new xen watchdog driver CONFIG_XEN_WDT=m
 
 * Mon Sep 27 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.23-170
 - Linux 2.6.32.23
