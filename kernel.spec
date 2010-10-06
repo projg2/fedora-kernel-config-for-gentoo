@@ -701,9 +701,10 @@ Patch2915: lirc-staging-2.6.36.patch
 Patch2917: hdpvr-ir-enable.patch
 Patch2918: linux-2.6-v4l-dvb-ir-core-update-2.patch
 
-Patch3000: linux-2.6-via-velocity-dma-fix.patch
+Patch2950: linux-2.6-via-velocity-dma-fix.patch
 
-Patch3010: linux-2.6-rcu-sched-warning.patch
+Patch3000: linux-2.6-rcu-sched-warning.patch
+Patch3010: linux-2.6-rcu-netpoll.patch
 
 # NFSv4
 
@@ -1344,6 +1345,7 @@ ApplyPatch linux-2.6-via-velocity-dma-fix.patch
 
 # silence another rcu_reference warning
 ApplyPatch linux-2.6-rcu-sched-warning.patch
+ApplyPatch linux-2.6-rcu-netpoll.patch
 
 # Patches headed upstream
 ApplyPatch disable-i8042-check-on-apple-mac.patch
@@ -1975,6 +1977,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 06 2010 Dave Jones <davej@redhat.com>
+- Another day, another rcu_dereference warning. (#640673)
+
 * Mon Oct 04 2010 Kyle McMartin <kyle@redhat.com>
 - Build intel_idle into the kernel, so they get loaded by default. In
   later kernels, it is no longer modular, so it isn't an issue. Noticed
