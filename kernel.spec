@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 168
+%global baserelease 170
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 21
+%define stable_update 23
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -640,11 +640,6 @@ Patch21: linux-2.6-tracehook.patch
 Patch22: linux-2.6-utrace.patch
 Patch23: linux-2.6-utrace-ptrace.patch
 
-Patch100: 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
-Patch101: 02-compat-test-rax-for-the-system-call-number-not-eax.patch
-Patch102: 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
-Patch103: aio-check-for-multiplication-overflow-in-do_io_submit.patch
-
 Patch141: linux-2.6-ps3-storage-alias.patch
 Patch143: linux-2.6-g5-therm-shutdown.patch
 Patch144: linux-2.6-vio-modalias.patch
@@ -783,7 +778,6 @@ Patch11010: via-hwmon-temp-sensor.patch
 
 # patches headed upstream
 Patch12010: linux-2.6-dell-laptop-rfkill-fix.patch
-Patch12011: linux-2.6-block-silently-error-unsupported-empty-barriers-too.patch
 Patch12013: linux-2.6-rfkill-all.patch
 Patch12020: linux-2.6-cantiga-iommu-gfx.patch
 
@@ -834,18 +828,10 @@ Patch12923: mac80211-explicitly-disable-enable-QoS.patch
 # l2tp: fix oops in pppol2tp_xmit (#607054)
 Patch13030: l2tp-fix-oops-in-pppol2tp_xmit.patch
 
-Patch14020: inotify-fix-inotify-oneshot-support.patch
-Patch14030: inotify-send-IN_UNMOUNT-events.patch
-
 Patch14050: crypto-add-async-hash-testing.patch
 
 # Red Hat Bugzilla #610911
 Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
-
-Patch14140: hid-01-usbhid-initialize-interface-pointers-early-enough.patch
-Patch14141: hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
-
-Patch14150: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 
 Patch14200: net-do-not-check-capable-if-kernel.patch
 
@@ -854,13 +840,7 @@ Patch14210: execve-improve-interactivity-with-large-arguments.patch
 Patch14211: execve-make-responsive-to-sigkill-with-large-arguments.patch
 Patch14212: setup_arg_pages-diagnose-excessive-argument-size.patch
 
-# CVE-2010-3080
-Patch14220: alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
-# CVE-2010-2960
-Patch14230: keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
-Patch14231: keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
-# CVE-2010-3079
-Patch14240: tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
+Patch14220: xen-fix-typo-in-xen-irq-fix.patch
 
 Patch19997: xen.pvops.pre.patch
 Patch19998: xen.pvops.patch
@@ -1306,11 +1286,6 @@ ApplyPatch linux-2.6-utrace-ptrace.patch
 ApplyPatch via-hwmon-temp-sensor.patch
 ApplyPatch linux-2.6-dell-laptop-rfkill-fix.patch
 
-ApplyPatch 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
-ApplyPatch 02-compat-test-rax-for-the-system-call-number-not-eax.patch
-ApplyPatch 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
-
-
 #
 # Intel IOMMU
 #
@@ -1344,7 +1319,6 @@ ApplyPatch linux-2.6-execshield.patch
 #
 # bugfixes to drivers and filesystems
 #
-ApplyPatch aio-check-for-multiplication-overflow-in-do_io_submit.patch
 
 # ext4
 
@@ -1475,9 +1449,6 @@ ApplyPatch crystalhd-2.6.34-staging.patch
 
 # Assorted Virt Fixes
 
-# Fix block I/O errors in KVM
-#ApplyPatch linux-2.6-block-silently-error-unsupported-empty-barriers-too.patch
-
 ApplyPatch linux-2.6-e1000-ich9.patch
 
 ApplyPatch linux-2.6-phylib-autoload.patch
@@ -1566,21 +1537,10 @@ ApplyPatch iwlwifi-manage-QoS-by-mac-stack.patch
 # l2tp: fix oops in pppol2tp_xmit (#607054)
 ApplyPatch l2tp-fix-oops-in-pppol2tp_xmit.patch
 
-# fix broken oneshot support and missing umount events (F13#607327)
-ApplyPatch inotify-fix-inotify-oneshot-support.patch
-ApplyPatch inotify-send-IN_UNMOUNT-events.patch
-
 # add tests for crypto async hashing (#571577)
 ApplyPatch crypto-add-async-hash-testing.patch
 
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
-
-# RHBZ #592785
-ApplyPatch hid-01-usbhid-initialize-interface-pointers-early-enough.patch
-ApplyPatch hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
-
-# CVE-2010-2954
-ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
 
 # rhbz #598796
 ApplyPatch net-do-not-check-capable-if-kernel.patch
@@ -1590,13 +1550,8 @@ ApplyPatch execve-improve-interactivity-with-large-arguments.patch
 ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
 ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
 
-# CVE-2010-3080
-ApplyPatch alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
-# CVE-2010-2960
-ApplyPatch keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
-ApplyPatch keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
-# CVE-2010-3079
-ApplyPatch tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
+# Fix typo in Xen patch from 2.6.22 that causes hang on boot.
+ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
 
 ApplyPatch xen.pvops.pre.patch
 ApplyPatch xen.pvops.patch
@@ -2254,6 +2209,28 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Mon Sep 27 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.23-170
+- Linux 2.6.32.23
+- Drop merged patches:
+  aio-check-for-multiplication-overflow-in-do_io_submit.patch
+  inotify-fix-inotify-oneshot-support.patch
+  inotify-send-IN_UNMOUNT-events.patch
+  irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
+  keys-fix-bug-in-keyctl_session_to_parent-if-parent-has-no-session-keyring.patch
+  keys-fix-rcu-no-lock-warning-in-keyctl_session_to_parent.patch
+- Fix typo in Xen patch from 2.6.32.22.
+
+* Mon Sep 20 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.22-169
+- Linux 2.6.32.22
+- Drop merged patches:
+  01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
+  02-compat-test-rax-for-the-system-call-number-not-eax.patch
+  03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
+  hid-01-usbhid-initialize-interface-pointers-early-enough.patch
+  hid-02-fix-suspend-crash-by-moving-initializations-earlier.patch
+  alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
+  tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
+
 * Mon Sep 20 2010 Michael Young <m.a.young@durham.ac.uk>
 - update pvops
 

@@ -1,0 +1,13 @@
+Fix typo in Xen patch from 2.6.35.5
+
+--- linux-2.6.35.noarch.orig/drivers/xen/events.c
++++ linux-2.6.35.noarch/drivers/xen/events.c
+@@ -935,7 +935,7 @@ static struct irq_chip xen_dynamic_chip 
+ 	.retrigger	= retrigger_dynirq,
+ };
+ 
+-static struct irq_chip en_percpu_chip __read_mostly = {
++static struct irq_chip xen_percpu_chip __read_mostly = {
+ 	.name		= "xen-percpu",
+ 
+ 	.disable	= disable_dynirq,
