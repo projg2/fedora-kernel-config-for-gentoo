@@ -840,7 +840,6 @@ Patch14210: execve-improve-interactivity-with-large-arguments.patch
 Patch14211: execve-make-responsive-to-sigkill-with-large-arguments.patch
 Patch14212: setup_arg_pages-diagnose-excessive-argument-size.patch
 
-Patch14220: xen-fix-typo-in-xen-irq-fix.patch
 
 Patch19997: xen.pvops.pre.patch
 Patch19998: xen.pvops.patch
@@ -1550,8 +1549,6 @@ ApplyPatch execve-improve-interactivity-with-large-arguments.patch
 ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
 ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
 
-# Fix typo in Xen patch from 2.6.22 that causes hang on boot.
-ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
 
 ApplyPatch xen.pvops.pre.patch
 ApplyPatch xen.pvops.patch
@@ -2209,6 +2206,10 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Wed Oct 06 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops including memory and irq fixes
+- Drop xen-fix-typo-in-xen-irq-fix.patch as it is in the pvops patch
+
 * Mon Sep 27 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.23-170
 - Linux 2.6.32.23
 - Drop merged patches:
