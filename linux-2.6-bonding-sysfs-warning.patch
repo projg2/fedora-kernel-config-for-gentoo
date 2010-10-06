@@ -1,0 +1,71 @@
+From: Neil Horman <nhorman@tuxdriver.com>
+Date: Tue, 5 Oct 2010 03:39:21 +0000 (+0000)
+Subject: bonding: fix WARN_ON when writing to bond_master sysfs file
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Fdavem%2Fnet-2.6.git;a=commitdiff_plain;h=27e6f065df132b5270014d3285889b15185e9da9
+
+bonding: fix WARN_ON when writing to bond_master sysfs file
+
+Fix a WARN_ON failure in bond_masters sysfs file
+
+Got a report of this warning recently
+
+bonding: bond0 is being created...
+------------[ cut here ]------------
+WARNING: at fs/proc/generic.c:590 proc_register+0x14d/0x185()
+Hardware name: ProLiant BL465c G1
+proc_dir_entry 'bonding/bond0' already registered
+Modules linked in: bonding ipv6 tg3 bnx2 shpchp amd64_edac_mod edac_core
+ipmi_si
+ipmi_msghandler serio_raw i2c_piix4 k8temp edac_mce_amd hpwdt microcode hpsa
+cc
+iss radeon ttm drm_kms_helper drm i2c_algo_bit i2c_core [last unloaded:
+scsi_wai
+t_scan]
+Pid: 935, comm: ifup-eth Not tainted 2.6.33.5-124.fc13.x86_64 #1
+Call Trace:
+[<ffffffff8104b54c>] warn_slowpath_common+0x77/0x8f
+[<ffffffff8104b5b1>] warn_slowpath_fmt+0x3c/0x3e
+[<ffffffff8114bf0b>] proc_register+0x14d/0x185
+[<ffffffff8114c20c>] proc_create_data+0x87/0xa1
+[<ffffffffa0211e9b>] bond_create_proc_entry+0x55/0x95 [bonding]
+[<ffffffffa0215e5d>] bond_init+0x95/0xd0 [bonding]
+[<ffffffff8138cd97>] register_netdevice+0xdd/0x29e
+[<ffffffffa021240b>] bond_create+0x8e/0xb8 [bonding]
+[<ffffffffa021c4be>] bonding_store_bonds+0xb3/0x1c1 [bonding]
+[<ffffffff812aec85>] class_attr_store+0x27/0x29
+[<ffffffff8115423d>] sysfs_write_file+0x10f/0x14b
+[<ffffffff81101acf>] vfs_write+0xa9/0x106
+[<ffffffff81101be2>] sys_write+0x45/0x69
+[<ffffffff81009b02>] system_call_fastpath+0x16/0x1b
+---[ end trace a677c3f7f8b16b1e ]---
+bonding: Bond creation failed.
+
+It happens because a user space writer to bond_master can try to
+register an already existing bond interface name.  Fix it by teaching
+bond_create to check for the existance of devices with that name first
+in cases where a non-NULL name parameter has been passed in
+
+Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 3b16f62..e953c6a 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -5164,6 +5164,15 @@ int bond_create(struct net *net, const char *name)
+ 		res = dev_alloc_name(bond_dev, "bond%d");
+ 		if (res < 0)
+ 			goto out;
++	} else {
++		/*
++		 * If we're given a name to register
++		 * we need to ensure that its not already
++		 * registered
++		 */
++		res = -EEXIST;
++		if (__dev_get_by_name(net, name) != NULL)
++			goto out;
+ 	}
+ 
+ 	res = register_netdevice(bond_dev);

@@ -822,6 +822,9 @@ Patch12581: xen-use-percpu-interrupts-for-ipis-and-virqs.patch
 # CVE-2010-3432
 Patch12590: sctp-do-not-reset-the-packet-during-sctp_packet_config.patch
 
+#Bonding sysfs WARN_ON (bz 604630)
+Patch12591: linux-2.6-bonding-sysfs-warning.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1553,6 +1556,9 @@ ApplyPatch xen-use-percpu-interrupts-for-ipis-and-virqs.patch
 # CVE-2010-3432
 ApplyPatch sctp-do-not-reset-the-packet-during-sctp_packet_config.patch
 
+# BZ 604630
+ApplyPatch linux-2.6-bonding-sysfs-warning.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2174,6 +2180,9 @@ fi
 
 
 %changelog
+* Wed Oct 06 2010 Neil Horman <nhorman@redhat.com>
+- Fix WARN_ON when you try to create an exiting bond in bond_masters
+
 * Thu Sep 30 2010 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2010-3432: sctp-do-not-reset-the-packet-during-sctp_packet_config.patch
 
