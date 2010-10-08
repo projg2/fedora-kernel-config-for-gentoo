@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 38
+%global baserelease 39
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1977,6 +1977,9 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 08 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-39
+- Push to F-14.
+
 * Wed Oct 06 2010 Dave Jones <davej@redhat.com>
 - Another day, another rcu_dereference warning. (#640673)
 
