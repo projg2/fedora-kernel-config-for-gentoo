@@ -1,0 +1,2709 @@
+ drivers/media/IR/Kconfig         |   27 +-
+ drivers/media/IR/Makefile        |    1 +
+ drivers/media/IR/imon.c          |  583 +++++++++++--------
+ drivers/media/IR/ir-keytable.c   |    3 +-
+ drivers/media/IR/nuvoton-cir.c   | 1237 ++++++++++++++++++++++++++++++++++++++
+ drivers/media/IR/nuvoton-cir.h   |  408 +++++++++++++
+ include/media/ir-core.h          |    1 +
+ 7 files changed, 2010 insertions(+), 250 deletions(-)
+
+diff --git a/drivers/media/IR/Kconfig b/drivers/media/IR/Kconfig
+index 152000d..d67fff3 100644
+--- a/drivers/media/IR/Kconfig
++++ b/drivers/media/IR/Kconfig
+@@ -101,6 +101,20 @@ config IR_LIRC_CODEC
+ 	   Enable this option to pass raw IR to and from userspace via
+ 	   the LIRC interface.
+ 
++config IR_ENE
++	tristate "ENE eHome Receiver/Transciever (pnp id: ENE0100/ENE02xxx)"
++	depends on PNP
++	depends on IR_CORE
++	---help---
++	   Say Y here to enable support for integrated infrared receiver
++	   /transciever made by ENE.
++
++	   You can see if you have it by looking at lspnp output.
++	   Output should include ENE0100 ENE0200 or something similiar.
++
++	   To compile this driver as a module, choose M here: the
++	   module will be called ene_ir.
++
+ config IR_IMON
+ 	tristate "SoundGraph iMON Receiver and Display"
+ 	depends on USB_ARCH_HAS_HCD
+@@ -125,19 +139,18 @@ config IR_MCEUSB
+ 	   To compile this driver as a module, choose M here: the
+ 	   module will be called mceusb.
+ 
+-config IR_ENE
+-	tristate "ENE eHome Receiver/Transciever (pnp id: ENE0100/ENE02xxx)"
++config IR_NUVOTON
++	tristate "Nuvoton w836x7hg Consumer Infrared Transceiver"
+ 	depends on PNP
+ 	depends on IR_CORE
+ 	---help---
+ 	   Say Y here to enable support for integrated infrared receiver
+-	   /transciever made by ENE.
+-
+-	   You can see if you have it by looking at lspnp output.
+-	   Output should include ENE0100 ENE0200 or something similiar.
++	   /transciever made by Nuvoton (formerly Winbond). This chip is
++	   found in the ASRock ION 330HT, as well as assorted Intel
++	   DP55-series motherboards (and of course, possibly others).
+ 
+ 	   To compile this driver as a module, choose M here: the
+-	   module will be called ene_ir.
++	   module will be called nuvoton-cir.
+ 
+ config IR_STREAMZAP
+ 	tristate "Streamzap PC Remote IR Receiver"
+diff --git a/drivers/media/IR/Makefile b/drivers/media/IR/Makefile
+index 953c6c4..f9574ad 100644
+--- a/drivers/media/IR/Makefile
++++ b/drivers/media/IR/Makefile
+@@ -17,5 +17,6 @@ obj-$(CONFIG_IR_LIRC_CODEC) += ir-lirc-codec.o
+ # stand-alone IR receivers/transmitters
+ obj-$(CONFIG_IR_IMON) += imon.o
+ obj-$(CONFIG_IR_MCEUSB) += mceusb.o
++obj-$(CONFIG_IR_NUVOTON) += nuvoton-cir.o
+ obj-$(CONFIG_IR_ENE) += ene_ir.o
+ obj-$(CONFIG_IR_STREAMZAP) += streamzap.o
+diff --git a/drivers/media/IR/imon.c b/drivers/media/IR/imon.c
+index c185422..7a97176 100644
+--- a/drivers/media/IR/imon.c
++++ b/drivers/media/IR/imon.c
+@@ -1,7 +1,7 @@
+ /*
+  *   imon.c:	input and display driver for SoundGraph iMON IR/VFD/LCD
+  *
+- *   Copyright(C) 2009  Jarod Wilson <jarod@wilsonet.com>
++ *   Copyright(C) 2010  Jarod Wilson <jarod@wilsonet.com>
+  *   Portions based on the original lirc_imon driver,
+  *	Copyright(C) 2004  Venky Raju(dev@venky.ws)
+  *
+@@ -44,7 +44,7 @@
+ #define MOD_AUTHOR	"Jarod Wilson <jarod@wilsonet.com>"
+ #define MOD_DESC	"Driver for SoundGraph iMON MultiMedia IR/Display"
+ #define MOD_NAME	"imon"
+-#define MOD_VERSION	"0.9.1"
++#define MOD_VERSION	"0.9.2"
+ 
+ #define DISPLAY_MINOR_BASE	144
+ #define DEVICE_NAME	"lcd%d"
+@@ -121,21 +121,26 @@ struct imon_context {
+ 	u16 vendor;			/* usb vendor ID */
+ 	u16 product;			/* usb product ID */
+ 
+-	struct input_dev *idev;		/* input device for remote */
++	struct input_dev *rdev;		/* input device for remote */
++	struct input_dev *idev;		/* input device for panel & IR mouse */
+ 	struct input_dev *touch;	/* input device for touchscreen */
+ 
++	spinlock_t kc_lock;		/* make sure we get keycodes right */
+ 	u32 kc;				/* current input keycode */
+ 	u32 last_keycode;		/* last reported input keycode */
++	u32 rc_scancode;		/* the computed remote scancode */
++	u8 rc_toggle;			/* the computed remote toggle bit */
+ 	u64 ir_type;			/* iMON or MCE (RC6) IR protocol? */
+-	u8 mce_toggle_bit;		/* last mce toggle bit */
+ 	bool release_code;		/* some keys send a release code */
+ 
+ 	u8 display_type;		/* store the display type */
+ 	bool pad_mouse;			/* toggle kbd(0)/mouse(1) mode */
+ 
++	char name_rdev[128];		/* rc input device name */
++	char phys_rdev[64];		/* rc input device phys path */
++
+ 	char name_idev[128];		/* input device name */
+ 	char phys_idev[64];		/* input device phys path */
+-	struct timer_list itimer;	/* input device timer, need for rc6 */
+ 
+ 	char name_touch[128];		/* touch screen name */
+ 	char phys_touch[64];		/* touch screen phys path */
+@@ -287,6 +292,9 @@ static const struct {
+ 	{ 0x000100000000ffeell, KEY_VOLUMEUP },
+ 	{ 0x010000000000ffeell, KEY_VOLUMEDOWN },
+ 	{ 0x000000000100ffeell, KEY_MUTE },
++	/* 0xffdc iMON MCE VFD */
++	{ 0x00010000ffffffeell, KEY_VOLUMEUP },
++	{ 0x01000000ffffffeell, KEY_VOLUMEDOWN },
+ 	/* iMON Knob values */
+ 	{ 0x000100ffffffffeell, KEY_VOLUMEUP },
+ 	{ 0x010000ffffffffeell, KEY_VOLUMEDOWN },
+@@ -956,17 +964,6 @@ static void usb_tx_callback(struct urb *urb)
+ }
+ 
+ /**
+- * mce/rc6 keypresses have no distinct release code, use timer
+- */
+-static void imon_mce_timeout(unsigned long data)
+-{
+-	struct imon_context *ictx = (struct imon_context *)data;
+-
+-	input_report_key(ictx->idev, ictx->last_keycode, 0);
+-	input_sync(ictx->idev);
+-}
+-
+-/**
+  * report touchscreen input
+  */
+ static void imon_touch_display_timeout(unsigned long data)
+@@ -1006,9 +1003,6 @@ int imon_ir_change_protocol(void *priv, u64 ir_type)
+ 		dev_dbg(dev, "Configuring IR receiver for MCE protocol\n");
+ 		ir_proto_packet[0] = 0x01;
+ 		pad_mouse = false;
+-		init_timer(&ictx->itimer);
+-		ictx->itimer.data = (unsigned long)ictx;
+-		ictx->itimer.function = imon_mce_timeout;
+ 		break;
+ 	case IR_TYPE_UNKNOWN:
+ 	case IR_TYPE_OTHER:
+@@ -1147,20 +1141,21 @@ static int stabilize(int a, int b, u16 timeout, u16 threshold)
+ 	return result;
+ }
+ 
+-static u32 imon_remote_key_lookup(struct imon_context *ictx, u32 hw_code)
++static u32 imon_remote_key_lookup(struct imon_context *ictx, u32 scancode)
+ {
+-	u32 scancode = be32_to_cpu(hw_code);
+ 	u32 keycode;
+ 	u32 release;
+ 	bool is_release_code = false;
+ 
+ 	/* Look for the initial press of a button */
+-	keycode = ir_g_keycode_from_table(ictx->idev, scancode);
++	keycode = ir_g_keycode_from_table(ictx->rdev, scancode);
++	ictx->rc_toggle = 0x0;
++	ictx->rc_scancode = scancode;
+ 
+ 	/* Look for the release of a button */
+ 	if (keycode == KEY_RESERVED) {
+ 		release = scancode & ~0x4000;
+-		keycode = ir_g_keycode_from_table(ictx->idev, release);
++		keycode = ir_g_keycode_from_table(ictx->rdev, release);
+ 		if (keycode != KEY_RESERVED)
+ 			is_release_code = true;
+ 	}
+@@ -1170,9 +1165,8 @@ static u32 imon_remote_key_lookup(struct imon_context *ictx, u32 hw_code)
+ 	return keycode;
+ }
+ 
+-static u32 imon_mce_key_lookup(struct imon_context *ictx, u32 hw_code)
++static u32 imon_mce_key_lookup(struct imon_context *ictx, u32 scancode)
+ {
+-	u32 scancode = be32_to_cpu(hw_code);
+ 	u32 keycode;
+ 
+ #define MCE_KEY_MASK 0x7000
+@@ -1186,18 +1180,21 @@ static u32 imon_mce_key_lookup(struct imon_context *ictx, u32 hw_code)
+ 	 * but we can't or them into all codes, as some keys are decoded in
+ 	 * a different way w/o the same use of the toggle bit...
+ 	 */
+-	if ((scancode >> 24) & 0x80)
++	if (scancode & 0x80000000)
+ 		scancode = scancode | MCE_KEY_MASK | MCE_TOGGLE_BIT;
+ 
+-	keycode = ir_g_keycode_from_table(ictx->idev, scancode);
++	ictx->rc_scancode = scancode;
++	keycode = ir_g_keycode_from_table(ictx->rdev, scancode);
++
++	/* not used in mce mode, but make sure we know its false */
++	ictx->release_code = false;
+ 
+ 	return keycode;
+ }
+ 
+-static u32 imon_panel_key_lookup(u64 hw_code)
++static u32 imon_panel_key_lookup(u64 code)
+ {
+ 	int i;
+-	u64 code = be64_to_cpu(hw_code);
+ 	u32 keycode = KEY_RESERVED;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(imon_panel_key_table); i++) {
+@@ -1217,6 +1214,9 @@ static bool imon_mouse_event(struct imon_context *ictx,
+ 	u8 right_shift = 1;
+ 	bool mouse_input = true;
+ 	int dir = 0;
++	unsigned long flags;
++
++	spin_lock_irqsave(&ictx->kc_lock, flags);
+ 
+ 	/* newer iMON device PAD or mouse button */
+ 	if (ictx->product != 0xffdc && (buf[0] & 0x01) && len == 5) {
+@@ -1248,6 +1248,8 @@ static bool imon_mouse_event(struct imon_context *ictx,
+ 	} else
+ 		mouse_input = false;
+ 
++	spin_unlock_irqrestore(&ictx->kc_lock, flags);
++
+ 	if (mouse_input) {
+ 		dev_dbg(ictx->dev, "sending mouse data via input subsystem\n");
+ 
+@@ -1262,7 +1264,9 @@ static bool imon_mouse_event(struct imon_context *ictx,
+ 					 buf[1] >> right_shift & 0x1);
+ 		}
+ 		input_sync(ictx->idev);
++		spin_lock_irqsave(&ictx->kc_lock, flags);
+ 		ictx->last_keycode = ictx->kc;
++		spin_unlock_irqrestore(&ictx->kc_lock, flags);
+ 	}
+ 
+ 	return mouse_input;
+@@ -1284,8 +1288,8 @@ static void imon_pad_to_keys(struct imon_context *ictx, unsigned char *buf)
+ 	int dir = 0;
+ 	char rel_x = 0x00, rel_y = 0x00;
+ 	u16 timeout, threshold;
+-	u64 temp_key;
+-	u32 remote_key;
++	u32 scancode = KEY_RESERVED;
++	unsigned long flags;
+ 
+ 	/*
+ 	 * The imon directional pad functions more like a touchpad. Bytes 3 & 4
+@@ -1309,26 +1313,36 @@ static void imon_pad_to_keys(struct imon_context *ictx, unsigned char *buf)
+ 				dir = stabilize((int)rel_x, (int)rel_y,
+ 						timeout, threshold);
+ 				if (!dir) {
++					spin_lock_irqsave(&ictx->kc_lock,
++							  flags);
+ 					ictx->kc = KEY_UNKNOWN;
++					spin_unlock_irqrestore(&ictx->kc_lock,
++							       flags);
+ 					return;
+ 				}
+ 				buf[2] = dir & 0xFF;
+ 				buf[3] = (dir >> 8) & 0xFF;
+-				memcpy(&temp_key, buf, sizeof(temp_key));
+-				remote_key = (u32) (le64_to_cpu(temp_key)
+-						    & 0xffffffff);
+-				ictx->kc = imon_remote_key_lookup(ictx,
+-								  remote_key);
++				scancode = be32_to_cpu(*((u32 *)buf));
+ 			}
+ 		} else {
++			/*
++			 * Hack alert: instead of using keycodes, we have
++			 * to use hard-coded scancodes here...
++			 */
+ 			if (abs(rel_y) > abs(rel_x)) {
+ 				buf[2] = (rel_y > 0) ? 0x7F : 0x80;
+ 				buf[3] = 0;
+-				ictx->kc = (rel_y > 0) ? KEY_DOWN : KEY_UP;
++				if (rel_y > 0)
++					scancode = 0x01007f00; /* KEY_DOWN */
++				else
++					scancode = 0x01008000; /* KEY_UP */
+ 			} else {
+ 				buf[2] = 0;
+ 				buf[3] = (rel_x > 0) ? 0x7F : 0x80;
+-				ictx->kc = (rel_x > 0) ? KEY_RIGHT : KEY_LEFT;
++				if (rel_x > 0)
++					scancode = 0x0100007f; /* KEY_RIGHT */
++				else
++					scancode = 0x01000080; /* KEY_LEFT */
+ 			}
+ 		}
+ 
+@@ -1365,34 +1379,56 @@ static void imon_pad_to_keys(struct imon_context *ictx, unsigned char *buf)
+ 			dir = stabilize((int)rel_x, (int)rel_y,
+ 					timeout, threshold);
+ 			if (!dir) {
++				spin_lock_irqsave(&ictx->kc_lock, flags);
+ 				ictx->kc = KEY_UNKNOWN;
++				spin_unlock_irqrestore(&ictx->kc_lock, flags);
+ 				return;
+ 			}
+ 			buf[2] = dir & 0xFF;
+ 			buf[3] = (dir >> 8) & 0xFF;
+-			memcpy(&temp_key, buf, sizeof(temp_key));
+-			remote_key = (u32) (le64_to_cpu(temp_key) & 0xffffffff);
+-			ictx->kc = imon_remote_key_lookup(ictx, remote_key);
++			scancode = be32_to_cpu(*((u32 *)buf));
+ 		} else {
++			/*
++			 * Hack alert: instead of using keycodes, we have
++			 * to use hard-coded scancodes here...
++			 */
+ 			if (abs(rel_y) > abs(rel_x)) {
+ 				buf[2] = (rel_y > 0) ? 0x7F : 0x80;
+ 				buf[3] = 0;
+-				ictx->kc = (rel_y > 0) ? KEY_DOWN : KEY_UP;
++				if (rel_y > 0)
++					scancode = 0x01007f00; /* KEY_DOWN */
++				else
++					scancode = 0x01008000; /* KEY_UP */
+ 			} else {
+ 				buf[2] = 0;
+ 				buf[3] = (rel_x > 0) ? 0x7F : 0x80;
+-				ictx->kc = (rel_x > 0) ? KEY_RIGHT : KEY_LEFT;
++				if (rel_x > 0)
++					scancode = 0x0100007f; /* KEY_RIGHT */
++				else
++					scancode = 0x01000080; /* KEY_LEFT */
+ 			}
+ 		}
+ 	}
++
++	if (scancode) {
++		spin_lock_irqsave(&ictx->kc_lock, flags);
++		ictx->kc = imon_remote_key_lookup(ictx, scancode);
++		spin_unlock_irqrestore(&ictx->kc_lock, flags);
++	}
+ }
+ 
++/**
++ * figure out if these is a press or a release. We don't actually
++ * care about repeats, as those will be auto-generated within the IR
++ * subsystem for repeating scancodes.
++ */
+ static int imon_parse_press_type(struct imon_context *ictx,
+ 				 unsigned char *buf, u8 ktype)
+ {
+ 	int press_type = 0;
+-	int rep_delay = ictx->idev->rep[REP_DELAY];
+-	int rep_period = ictx->idev->rep[REP_PERIOD];
++	unsigned long flags;
++
++	spin_lock_irqsave(&ictx->kc_lock, flags);
+ 
+ 	/* key release of 0x02XXXXXX key */
+ 	if (ictx->kc == KEY_RESERVED && buf[0] == 0x02 && buf[3] == 0x00)
+@@ -1408,22 +1444,10 @@ static int imon_parse_press_type(struct imon_context *ictx,
+ 		 buf[2] == 0x81 && buf[3] == 0xb7)
+ 		ictx->kc = ictx->last_keycode;
+ 
+-	/* mce-specific button handling */
++	/* mce-specific button handling, no keyup events */
+ 	else if (ktype == IMON_KEY_MCE) {
+-		/* initial press */
+-		if (ictx->kc != ictx->last_keycode
+-		    || buf[2] != ictx->mce_toggle_bit) {
+-			ictx->last_keycode = ictx->kc;
+-			ictx->mce_toggle_bit = buf[2];
+-			press_type = 1;
+-			mod_timer(&ictx->itimer,
+-				  jiffies + msecs_to_jiffies(rep_delay));
+-		/* repeat */
+-		} else {
+-			press_type = 2;
+-			mod_timer(&ictx->itimer,
+-				  jiffies + msecs_to_jiffies(rep_period));
+-		}
++		ictx->rc_toggle = buf[2];
++		press_type = 1;
+ 
+ 	/* incoherent or irrelevant data */
+ 	} else if (ictx->kc == KEY_RESERVED)
+@@ -1437,6 +1461,8 @@ static int imon_parse_press_type(struct imon_context *ictx,
+ 	else
+ 		press_type = 1;
+ 
++	spin_unlock_irqrestore(&ictx->kc_lock, flags);
++
+ 	return press_type;
+ }
+ 
+@@ -1449,41 +1475,45 @@ static void imon_incoming_packet(struct imon_context *ictx,
+ 	int len = urb->actual_length;
+ 	unsigned char *buf = urb->transfer_buffer;
+ 	struct device *dev = ictx->dev;
++	unsigned long flags;
+ 	u32 kc;
+ 	bool norelease = false;
+ 	int i;
+-	u64 temp_key;
+-	u64 panel_key = 0;
+-	u32 remote_key = 0;
++	u64 scancode;
+ 	struct input_dev *idev = NULL;
++	struct ir_input_dev *irdev = NULL;
+ 	int press_type = 0;
+ 	int msec;
+ 	struct timeval t;
+ 	static struct timeval prev_time = { 0, 0 };
+-	u8 ktype = IMON_KEY_IMON;
++	u8 ktype;
+ 
+ 	idev = ictx->idev;
++	irdev = input_get_drvdata(idev);
+ 
+ 	/* filter out junk data on the older 0xffdc imon devices */
+ 	if ((buf[0] == 0xff) && (buf[1] == 0xff) && (buf[2] == 0xff))
+ 		return;
+ 
+ 	/* Figure out what key was pressed */
+-	memcpy(&temp_key, buf, sizeof(temp_key));
+ 	if (len == 8 && buf[7] == 0xee) {
++		scancode = be64_to_cpu(*((u64 *)buf));
+ 		ktype = IMON_KEY_PANEL;
+-		panel_key = le64_to_cpu(temp_key);
+-		kc = imon_panel_key_lookup(panel_key);
++		kc = imon_panel_key_lookup(scancode);
+ 	} else {
+-		remote_key = (u32) (le64_to_cpu(temp_key) & 0xffffffff);
++		scancode = be32_to_cpu(*((u32 *)buf));
+ 		if (ictx->ir_type == IR_TYPE_RC6) {
++			ktype = IMON_KEY_IMON;
+ 			if (buf[0] == 0x80)
+ 				ktype = IMON_KEY_MCE;
+-			kc = imon_mce_key_lookup(ictx, remote_key);
+-		} else
+-			kc = imon_remote_key_lookup(ictx, remote_key);
++			kc = imon_mce_key_lookup(ictx, scancode);
++		} else {
++			ktype = IMON_KEY_IMON;
++			kc = imon_remote_key_lookup(ictx, scancode);
++		}
+ 	}
+ 
++	spin_lock_irqsave(&ictx->kc_lock, flags);
+ 	/* keyboard/mouse mode toggle button */
+ 	if (kc == KEY_KEYBOARD && !ictx->release_code) {
+ 		ictx->last_keycode = kc;
+@@ -1491,6 +1521,7 @@ static void imon_incoming_packet(struct imon_context *ictx,
+ 			ictx->pad_mouse = ~(ictx->pad_mouse) & 0x1;
+ 			dev_dbg(dev, "toggling to %s mode\n",
+ 				ictx->pad_mouse ? "mouse" : "keyboard");
++			spin_unlock_irqrestore(&ictx->kc_lock, flags);
+ 			return;
+ 		} else {
+ 			ictx->pad_mouse = 0;
+@@ -1499,11 +1530,13 @@ static void imon_incoming_packet(struct imon_context *ictx,
+ 	}
+ 
+ 	ictx->kc = kc;
++	spin_unlock_irqrestore(&ictx->kc_lock, flags);
+ 
+ 	/* send touchscreen events through input subsystem if touchpad data */
+ 	if (ictx->display_type == IMON_DISPLAY_TYPE_VGA && len == 8 &&
+ 	    buf[7] == 0x86) {
+ 		imon_touch_event(ictx, buf);
++		return;
+ 
+ 	/* look for mouse events with pad in mouse mode */
+ 	} else if (ictx->pad_mouse) {
+@@ -1531,36 +1564,56 @@ static void imon_incoming_packet(struct imon_context *ictx,
+ 	if (press_type < 0)
+ 		goto not_input_data;
+ 
++	spin_lock_irqsave(&ictx->kc_lock, flags);
+ 	if (ictx->kc == KEY_UNKNOWN)
+ 		goto unknown_key;
++	spin_unlock_irqrestore(&ictx->kc_lock, flags);
++
++	if (ktype != IMON_KEY_PANEL) {
++		if (press_type == 0)
++			ir_keyup(irdev);
++		else {
++			ir_keydown(ictx->rdev, ictx->rc_scancode,
++				   ictx->rc_toggle);
++			spin_lock_irqsave(&ictx->kc_lock, flags);
++			ictx->last_keycode = ictx->kc;
++			spin_unlock_irqrestore(&ictx->kc_lock, flags);
++		}
++		return;
++	}
++
++	/* Only panel type events left to process now */
++	spin_lock_irqsave(&ictx->kc_lock, flags);
+ 
+-	/* KEY_MUTE repeats from MCE and knob need to be suppressed */
+-	if ((ictx->kc == KEY_MUTE && ictx->kc == ictx->last_keycode)
+-	    && (buf[7] == 0xee || ktype == IMON_KEY_MCE)) {
++	/* KEY_MUTE repeats from knob need to be suppressed */
++	if (ictx->kc == KEY_MUTE && ictx->kc == ictx->last_keycode) {
+ 		do_gettimeofday(&t);
+ 		msec = tv2int(&t, &prev_time);
+ 		prev_time = t;
+-		if (msec < idev->rep[REP_DELAY])
++		if (msec < idev->rep[REP_DELAY]) {
++			spin_unlock_irqrestore(&ictx->kc_lock, flags);
+ 			return;
++		}
+ 	}
++	kc = ictx->kc;
++
++	spin_unlock_irqrestore(&ictx->kc_lock, flags);
+ 
+-	input_report_key(idev, ictx->kc, press_type);
++	input_report_key(idev, kc, press_type);
+ 	input_sync(idev);
+ 
+-	/* panel keys and some remote keys don't generate a release */
+-	if (panel_key || norelease) {
+-		input_report_key(idev, ictx->kc, 0);
+-		input_sync(idev);
+-	}
++	/* panel keys don't generate a release */
++	input_report_key(idev, kc, 0);
++	input_sync(idev);
+ 
+-	ictx->last_keycode = ictx->kc;
++	ictx->last_keycode = kc;
+ 
+ 	return;
+ 
+ unknown_key:
++	spin_unlock_irqrestore(&ictx->kc_lock, flags);
+ 	dev_info(dev, "%s: unknown keypress, code 0x%llx\n", __func__,
+-		 (panel_key ? be64_to_cpu(panel_key) :
+-			      be32_to_cpu(remote_key)));
++		 (long long)scancode);
+ 	return;
+ 
+ not_input_data:
+@@ -1651,31 +1704,205 @@ static void usb_rx_callback_intf1(struct urb *urb)
+ 	usb_submit_urb(ictx->rx_urb_intf1, GFP_ATOMIC);
+ }
+ 
++/*
++ * The 0x15c2:0xffdc device ID was used for umpteen different imon
++ * devices, and all of them constantly spew interrupts, even when there
++ * is no actual data to report. However, byte 6 of this buffer looks like
++ * its unique across device variants, so we're trying to key off that to
++ * figure out which display type (if any) and what IR protocol the device
++ * actually supports. These devices have their IR protocol hard-coded into
++ * their firmware, they can't be changed on the fly like the newer hardware.
++ */
++static void imon_get_ffdc_type(struct imon_context *ictx)
++{
++	u8 ffdc_cfg_byte = ictx->usb_rx_buf[6];
++	u8 detected_display_type = IMON_DISPLAY_TYPE_NONE;
++	u64 allowed_protos = IR_TYPE_OTHER;
++
++	switch (ffdc_cfg_byte) {
++	/* iMON Knob, no display, iMON IR + vol knob */
++	case 0x21:
++		dev_info(ictx->dev, "0xffdc iMON Knob, iMON IR");
++		ictx->display_supported = false;
++		break;
++	/* iMON 2.4G LT (usb stick), no display, iMON RF */
++	case 0x4e:
++		dev_info(ictx->dev, "0xffdc iMON 2.4G LT, iMON RF");
++		ictx->display_supported = false;
++		ictx->rf_device = true;
++		break;
++	/* iMON VFD, no IR (does have vol knob tho) */
++	case 0x35:
++		dev_info(ictx->dev, "0xffdc iMON VFD + knob, no IR");
++		detected_display_type = IMON_DISPLAY_TYPE_VFD;
++		break;
++	/* iMON VFD, iMON IR */
++	case 0x24:
++	case 0x85:
++		dev_info(ictx->dev, "0xffdc iMON VFD, iMON IR");
++		detected_display_type = IMON_DISPLAY_TYPE_VFD;
++		break;
++	/* iMON VFD, MCE IR */
++	case 0x9e:
++		dev_info(ictx->dev, "0xffdc iMON VFD, MCE IR");
++		detected_display_type = IMON_DISPLAY_TYPE_VFD;
++		allowed_protos = IR_TYPE_RC6;
++		break;
++	/* iMON LCD, MCE IR */
++	case 0x9f:
++		dev_info(ictx->dev, "0xffdc iMON LCD, MCE IR");
++		detected_display_type = IMON_DISPLAY_TYPE_LCD;
++		allowed_protos = IR_TYPE_RC6;
++		break;
++	default:
++		dev_info(ictx->dev, "Unknown 0xffdc device, "
++			 "defaulting to VFD and iMON IR");
++		detected_display_type = IMON_DISPLAY_TYPE_VFD;
++		break;
++	}
++
++	printk(KERN_CONT " (id 0x%02x)\n", ffdc_cfg_byte);
++
++	ictx->display_type = detected_display_type;
++	ictx->props->allowed_protos = allowed_protos;
++	ictx->ir_type = allowed_protos;
++}
++
++static void imon_set_display_type(struct imon_context *ictx)
++{
++	u8 configured_display_type = IMON_DISPLAY_TYPE_VFD;
++
++	/*
++	 * Try to auto-detect the type of display if the user hasn't set
++	 * it by hand via the display_type modparam. Default is VFD.
++	 */
++
++	if (display_type == IMON_DISPLAY_TYPE_AUTO) {
++		switch (ictx->product) {
++		case 0xffdc:
++			/* set in imon_get_ffdc_type() */
++			configured_display_type = ictx->display_type;
++			break;
++		case 0x0034:
++		case 0x0035:
++			configured_display_type = IMON_DISPLAY_TYPE_VGA;
++			break;
++		case 0x0038:
++		case 0x0039:
++		case 0x0045:
++			configured_display_type = IMON_DISPLAY_TYPE_LCD;
++			break;
++		case 0x003c:
++		case 0x0041:
++		case 0x0042:
++		case 0x0043:
++			configured_display_type = IMON_DISPLAY_TYPE_NONE;
++			ictx->display_supported = false;
++			break;
++		case 0x0036:
++		case 0x0044:
++		default:
++			configured_display_type = IMON_DISPLAY_TYPE_VFD;
++			break;
++		}
++	} else {
++		configured_display_type = display_type;
++		if (display_type == IMON_DISPLAY_TYPE_NONE)
++			ictx->display_supported = false;
++		else
++			ictx->display_supported = true;
++		dev_info(ictx->dev, "%s: overriding display type to %d via "
++			 "modparam\n", __func__, display_type);
++	}
++
++	ictx->display_type = configured_display_type;
++}
++
++static struct input_dev *imon_init_rdev(struct imon_context *ictx)
++{
++	struct input_dev *rdev;
++	struct ir_dev_props *props;
++	int ret;
++	char *ir_codes = NULL;
++	const unsigned char fp_packet[] = { 0x40, 0x00, 0x00, 0x00,
++					    0x00, 0x00, 0x00, 0x88 };
++
++	rdev = input_allocate_device();
++	props = kzalloc(sizeof(*props), GFP_KERNEL);
++	if (!rdev || !props) {
++		dev_err(ictx->dev, "remote control dev allocation failed\n");
++		goto out;
++	}
++
++	snprintf(ictx->name_rdev, sizeof(ictx->name_rdev),
++		 "iMON Remote (%04x:%04x)", ictx->vendor, ictx->product);
++	usb_make_path(ictx->usbdev_intf0, ictx->phys_rdev,
++		      sizeof(ictx->phys_rdev));
++	strlcat(ictx->phys_rdev, "/input0", sizeof(ictx->phys_rdev));
++
++	rdev->name = ictx->name_rdev;
++	rdev->phys = ictx->phys_rdev;
++	usb_to_input_id(ictx->usbdev_intf0, &rdev->id);
++	rdev->dev.parent = ictx->dev;
++	rdev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_REP);
++	input_set_drvdata(rdev, ictx);
++
++	props->priv = ictx;
++	props->driver_type = RC_DRIVER_SCANCODE;
++	props->allowed_protos = IR_TYPE_OTHER | IR_TYPE_RC6; /* iMON PAD or MCE */
++	props->change_protocol = imon_ir_change_protocol;
++	ictx->props = props;
++
++	/* Enable front-panel buttons and/or knobs */
++	memcpy(ictx->usb_tx_buf, &fp_packet, sizeof(fp_packet));
++	ret = send_packet(ictx);
++	/* Not fatal, but warn about it */
++	if (ret)
++		dev_info(ictx->dev, "panel buttons/knobs setup failed\n");
++
++	if (ictx->product == 0xffdc)
++		imon_get_ffdc_type(ictx);
++
++	imon_set_display_type(ictx);
++
++	if (ictx->ir_type == IR_TYPE_RC6)
++		ir_codes = RC_MAP_IMON_MCE;
++	else
++		ir_codes = RC_MAP_IMON_PAD;
++
++	ret = ir_input_register(rdev, ir_codes, props, MOD_NAME);
++	if (ret < 0) {
++		dev_err(ictx->dev, "remote input dev register failed\n");
++		goto out;
++	}
++
++	return rdev;
++
++out:
++	kfree(props);
++	input_free_device(rdev);
++	return NULL;
++}
++
+ static struct input_dev *imon_init_idev(struct imon_context *ictx)
+ {
+ 	struct input_dev *idev;
+-	struct ir_dev_props *props;
+ 	int ret, i;
+ 
+ 	idev = input_allocate_device();
+ 	if (!idev) {
+-		dev_err(ictx->dev, "remote input dev allocation failed\n");
+-		goto idev_alloc_failed;
+-	}
+-
+-	props = kzalloc(sizeof(struct ir_dev_props), GFP_KERNEL);
+-	if (!props) {
+-		dev_err(ictx->dev, "remote ir dev props allocation failed\n");
+-		goto props_alloc_failed;
++		dev_err(ictx->dev, "input dev allocation failed\n");
++		goto out;
+ 	}
+ 
+ 	snprintf(ictx->name_idev, sizeof(ictx->name_idev),
+-		 "iMON Remote (%04x:%04x)", ictx->vendor, ictx->product);
++		 "iMON Panel, Knob and Mouse(%04x:%04x)",
++		 ictx->vendor, ictx->product);
+ 	idev->name = ictx->name_idev;
+ 
+ 	usb_make_path(ictx->usbdev_intf0, ictx->phys_idev,
+ 		      sizeof(ictx->phys_idev));
+-	strlcat(ictx->phys_idev, "/input0", sizeof(ictx->phys_idev));
++	strlcat(ictx->phys_idev, "/input1", sizeof(ictx->phys_idev));
+ 	idev->phys = ictx->phys_idev;
+ 
+ 	idev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_REP) | BIT_MASK(EV_REL);
+@@ -1691,30 +1918,20 @@ static struct input_dev *imon_init_idev(struct imon_context *ictx)
+ 		__set_bit(kc, idev->keybit);
+ 	}
+ 
+-	props->priv = ictx;
+-	props->driver_type = RC_DRIVER_SCANCODE;
+-	/* IR_TYPE_OTHER maps to iMON PAD remote, IR_TYPE_RC6 to MCE remote */
+-	props->allowed_protos = IR_TYPE_OTHER | IR_TYPE_RC6;
+-	props->change_protocol = imon_ir_change_protocol;
+-	ictx->props = props;
+-
+ 	usb_to_input_id(ictx->usbdev_intf0, &idev->id);
+ 	idev->dev.parent = ictx->dev;
++	input_set_drvdata(idev, ictx);
+ 
+-	ret = ir_input_register(idev, RC_MAP_IMON_PAD, props, MOD_NAME);
++	ret = input_register_device(idev);
+ 	if (ret < 0) {
+-		dev_err(ictx->dev, "remote input dev register failed\n");
+-		goto idev_register_failed;
++		dev_err(ictx->dev, "input dev register failed\n");
++		goto out;
+ 	}
+ 
+ 	return idev;
+ 
+-idev_register_failed:
+-	kfree(props);
+-props_alloc_failed:
++out:
+ 	input_free_device(idev);
+-idev_alloc_failed:
+-
+ 	return NULL;
+ }
+ 
+@@ -1736,7 +1953,7 @@ static struct input_dev *imon_init_touch(struct imon_context *ictx)
+ 
+ 	usb_make_path(ictx->usbdev_intf1, ictx->phys_touch,
+ 		      sizeof(ictx->phys_touch));
+-	strlcat(ictx->phys_touch, "/input1", sizeof(ictx->phys_touch));
++	strlcat(ictx->phys_touch, "/input2", sizeof(ictx->phys_touch));
+ 	touch->phys = ictx->phys_touch;
+ 
+ 	touch->evbit[0] =
+@@ -1886,6 +2103,7 @@ static struct imon_context *imon_init_intf0(struct usb_interface *intf)
+ 	}
+ 
+ 	mutex_init(&ictx->lock);
++	spin_lock_init(&ictx->kc_lock);
+ 
+ 	mutex_lock(&ictx->lock);
+ 
+@@ -1911,6 +2129,12 @@ static struct imon_context *imon_init_intf0(struct usb_interface *intf)
+ 		goto idev_setup_failed;
+ 	}
+ 
++	ictx->rdev = imon_init_rdev(ictx);
++	if (!ictx->rdev) {
++		dev_err(dev, "%s: rc device setup failed\n", __func__);
++		goto rdev_setup_failed;
++	}
++
+ 	usb_fill_int_urb(ictx->rx_urb_intf0, ictx->usbdev_intf0,
+ 		usb_rcvintpipe(ictx->usbdev_intf0,
+ 			ictx->rx_endpoint_intf0->bEndpointAddress),
+@@ -1928,7 +2152,9 @@ static struct imon_context *imon_init_intf0(struct usb_interface *intf)
+ 	return ictx;
+ 
+ urb_submit_failed:
+-	ir_input_unregister(ictx->idev);
++	ir_input_unregister(ictx->rdev);
++rdev_setup_failed:
++	input_unregister_device(ictx->idev);
+ idev_setup_failed:
+ find_endpoint_failed:
+ 	mutex_unlock(&ictx->lock);
+@@ -2010,116 +2236,6 @@ rx_urb_alloc_failed:
+ 	return NULL;
+ }
+ 
+-/*
+- * The 0x15c2:0xffdc device ID was used for umpteen different imon
+- * devices, and all of them constantly spew interrupts, even when there
+- * is no actual data to report. However, byte 6 of this buffer looks like
+- * its unique across device variants, so we're trying to key off that to
+- * figure out which display type (if any) and what IR protocol the device
+- * actually supports. These devices have their IR protocol hard-coded into
+- * their firmware, they can't be changed on the fly like the newer hardware.
+- */
+-static void imon_get_ffdc_type(struct imon_context *ictx)
+-{
+-	u8 ffdc_cfg_byte = ictx->usb_rx_buf[6];
+-	u8 detected_display_type = IMON_DISPLAY_TYPE_NONE;
+-	u64 allowed_protos = IR_TYPE_OTHER;
+-
+-	switch (ffdc_cfg_byte) {
+-	/* iMON Knob, no display, iMON IR + vol knob */
+-	case 0x21:
+-		dev_info(ictx->dev, "0xffdc iMON Knob, iMON IR");
+-		ictx->display_supported = false;
+-		break;
+-	/* iMON 2.4G LT (usb stick), no display, iMON RF */
+-	case 0x4e:
+-		dev_info(ictx->dev, "0xffdc iMON 2.4G LT, iMON RF");
+-		ictx->display_supported = false;
+-		ictx->rf_device = true;
+-		break;
+-	/* iMON VFD, no IR (does have vol knob tho) */
+-	case 0x35:
+-		dev_info(ictx->dev, "0xffdc iMON VFD + knob, no IR");
+-		detected_display_type = IMON_DISPLAY_TYPE_VFD;
+-		break;
+-	/* iMON VFD, iMON IR */
+-	case 0x24:
+-	case 0x85:
+-		dev_info(ictx->dev, "0xffdc iMON VFD, iMON IR");
+-		detected_display_type = IMON_DISPLAY_TYPE_VFD;
+-		break;
+-	/* iMON LCD, MCE IR */
+-	case 0x9e:
+-	case 0x9f:
+-		dev_info(ictx->dev, "0xffdc iMON LCD, MCE IR");
+-		detected_display_type = IMON_DISPLAY_TYPE_LCD;
+-		allowed_protos = IR_TYPE_RC6;
+-		break;
+-	default:
+-		dev_info(ictx->dev, "Unknown 0xffdc device, "
+-			 "defaulting to VFD and iMON IR");
+-		detected_display_type = IMON_DISPLAY_TYPE_VFD;
+-		break;
+-	}
+-
+-	printk(KERN_CONT " (id 0x%02x)\n", ffdc_cfg_byte);
+-
+-	ictx->display_type = detected_display_type;
+-	ictx->props->allowed_protos = allowed_protos;
+-	ictx->ir_type = allowed_protos;
+-}
+-
+-static void imon_set_display_type(struct imon_context *ictx,
+-				  struct usb_interface *intf)
+-{
+-	u8 configured_display_type = IMON_DISPLAY_TYPE_VFD;
+-
+-	/*
+-	 * Try to auto-detect the type of display if the user hasn't set
+-	 * it by hand via the display_type modparam. Default is VFD.
+-	 */
+-
+-	if (display_type == IMON_DISPLAY_TYPE_AUTO) {
+-		switch (ictx->product) {
+-		case 0xffdc:
+-			/* set in imon_get_ffdc_type() */
+-			configured_display_type = ictx->display_type;
+-			break;
+-		case 0x0034:
+-		case 0x0035:
+-			configured_display_type = IMON_DISPLAY_TYPE_VGA;
+-			break;
+-		case 0x0038:
+-		case 0x0039:
+-		case 0x0045:
+-			configured_display_type = IMON_DISPLAY_TYPE_LCD;
+-			break;
+-		case 0x003c:
+-		case 0x0041:
+-		case 0x0042:
+-		case 0x0043:
+-			configured_display_type = IMON_DISPLAY_TYPE_NONE;
+-			ictx->display_supported = false;
+-			break;
+-		case 0x0036:
+-		case 0x0044:
+-		default:
+-			configured_display_type = IMON_DISPLAY_TYPE_VFD;
+-			break;
+-		}
+-	} else {
+-		configured_display_type = display_type;
+-		if (display_type == IMON_DISPLAY_TYPE_NONE)
+-			ictx->display_supported = false;
+-		else
+-			ictx->display_supported = true;
+-		dev_info(ictx->dev, "%s: overriding display type to %d via "
+-			 "modparam\n", __func__, display_type);
+-	}
+-
+-	ictx->display_type = configured_display_type;
+-}
+-
+ static void imon_init_display(struct imon_context *ictx,
+ 			      struct usb_interface *intf)
+ {
+@@ -2160,8 +2276,6 @@ static int __devinit imon_probe(struct usb_interface *interface,
+ 	struct imon_context *ictx = NULL;
+ 	struct imon_context *first_if_ctx = NULL;
+ 	u16 vendor, product;
+-	const unsigned char fp_packet[] = { 0x40, 0x00, 0x00, 0x00,
+-					    0x00, 0x00, 0x00, 0x88 };
+ 
+ 	code_length = BUF_CHUNK_SIZE * 8;
+ 
+@@ -2202,19 +2316,6 @@ static int __devinit imon_probe(struct usb_interface *interface,
+ 	usb_set_intfdata(interface, ictx);
+ 
+ 	if (ifnum == 0) {
+-		/* Enable front-panel buttons and/or knobs */
+-		memcpy(ictx->usb_tx_buf, &fp_packet, sizeof(fp_packet));
+-		ret = send_packet(ictx);
+-		/* Not fatal, but warn about it */
+-		if (ret)
+-			dev_info(dev, "failed to enable panel buttons "
+-				 "and/or knobs\n");
+-
+-		if (product == 0xffdc)
+-			imon_get_ffdc_type(ictx);
+-
+-		imon_set_display_type(ictx, interface);
+-
+ 		if (product == 0xffdc && ictx->rf_device) {
+ 			sysfs_err = sysfs_create_group(&interface->dev.kobj,
+ 						       &imon_rf_attribute_group);
+@@ -2289,7 +2390,8 @@ static void __devexit imon_disconnect(struct usb_interface *interface)
+ 	if (ifnum == 0) {
+ 		ictx->dev_present_intf0 = false;
+ 		usb_kill_urb(ictx->rx_urb_intf0);
+-		ir_input_unregister(ictx->idev);
++		input_unregister_device(ictx->idev);
++		ir_input_unregister(ictx->rdev);
+ 		if (ictx->display_supported) {
+ 			if (ictx->display_type == IMON_DISPLAY_TYPE_LCD)
+ 				usb_deregister_dev(interface, &imon_lcd_class);
+@@ -2309,11 +2411,8 @@ static void __devexit imon_disconnect(struct usb_interface *interface)
+ 		mutex_unlock(&ictx->lock);
+ 		if (!ictx->display_isopen)
+ 			free_imon_context(ictx);
+-	} else {
+-		if (ictx->ir_type == IR_TYPE_RC6)
+-			del_timer_sync(&ictx->itimer);
++	} else
+ 		mutex_unlock(&ictx->lock);
+-	}
+ 
+ 	mutex_unlock(&driver_lock);
+ 
+diff --git a/drivers/media/IR/ir-keytable.c b/drivers/media/IR/ir-keytable.c
+index 7961d59..59510cd 100644
+--- a/drivers/media/IR/ir-keytable.c
++++ b/drivers/media/IR/ir-keytable.c
+@@ -285,7 +285,7 @@ EXPORT_SYMBOL_GPL(ir_g_keycode_from_table);
+  * This routine is used to signal that a key has been released on the
+  * remote control. It reports a keyup input event via input_report_key().
+  */
+-static void ir_keyup(struct ir_input_dev *ir)
++void ir_keyup(struct ir_input_dev *ir)
+ {
+ 	if (!ir->keypressed)
+ 		return;
+@@ -295,6 +295,7 @@ static void ir_keyup(struct ir_input_dev *ir)
+ 	input_sync(ir->input_dev);
+ 	ir->keypressed = false;
+ }
++EXPORT_SYMBOL_GPL(ir_keyup);
+ 
+ /**
+  * ir_timer_keyup() - generates a keyup event after a timeout
+diff --git a/drivers/media/IR/nuvoton-cir.c b/drivers/media/IR/nuvoton-cir.c
+new file mode 100644
+index 0000000..fdb280e
+--- /dev/null
++++ b/drivers/media/IR/nuvoton-cir.c
+@@ -0,0 +1,1237 @@
++/*
++ * Driver for Nuvoton Technology Corporation w83667hg/w83677hg-i CIR
++ *
++ * Copyright (C) 2010 Jarod Wilson <jarod@redhat.com>
++ * Copyright (C) 2009 Nuvoton PS Team
++ *
++ * Special thanks to Nuvoton for providing hardware, spec sheets and
++ * sample code upon which portions of this driver are based. Indirect
++ * thanks also to Maxim Levitsky, whose ene_ir driver this driver is
++ * modeled after.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
++ * USA
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/pnp.h>
++#include <linux/io.h>
++#include <linux/interrupt.h>
++#include <linux/sched.h>
++#include <linux/slab.h>
++#include <linux/input.h>
++#include <media/ir-core.h>
++#include <linux/pci_ids.h>
++
++#include "nuvoton-cir.h"
++
++static char *chip_id = "w836x7hg";
++
++/* write val to config reg */
++static inline void nvt_cr_write(struct nvt_dev *nvt, u8 val, u8 reg)
++{
++	outb(reg, nvt->cr_efir);
++	outb(val, nvt->cr_efdr);
++}
++
++/* read val from config reg */
++static inline u8 nvt_cr_read(struct nvt_dev *nvt, u8 reg)
++{
++	outb(reg, nvt->cr_efir);
++	return inb(nvt->cr_efdr);
++}
++
++/* update config register bit without changing other bits */
++static inline void nvt_set_reg_bit(struct nvt_dev *nvt, u8 val, u8 reg)
++{
++	u8 tmp = nvt_cr_read(nvt, reg) | val;
++	nvt_cr_write(nvt, tmp, reg);
++}
++
++/* clear config register bit without changing other bits */
++static inline void nvt_clear_reg_bit(struct nvt_dev *nvt, u8 val, u8 reg)
++{
++	u8 tmp = nvt_cr_read(nvt, reg) & ~val;
++	nvt_cr_write(nvt, tmp, reg);
++}
++
++/* enter extended function mode */
++static inline void nvt_efm_enable(struct nvt_dev *nvt)
++{
++	/* Enabling Extended Function Mode explicitly requires writing 2x */
++	outb(EFER_EFM_ENABLE, nvt->cr_efir);
++	outb(EFER_EFM_ENABLE, nvt->cr_efir);
++}
++
++/* exit extended function mode */
++static inline void nvt_efm_disable(struct nvt_dev *nvt)
++{
++	outb(EFER_EFM_DISABLE, nvt->cr_efir);
++}
++
++/*
++ * When you want to address a specific logical device, write its logical
++ * device number to CR_LOGICAL_DEV_SEL, then enable/disable by writing
++ * 0x1/0x0 respectively to CR_LOGICAL_DEV_EN.
++ */
++static inline void nvt_select_logical_dev(struct nvt_dev *nvt, u8 ldev)
++{
++	outb(CR_LOGICAL_DEV_SEL, nvt->cr_efir);
++	outb(ldev, nvt->cr_efdr);
++}
++
++/* write val to cir config register */
++static inline void nvt_cir_reg_write(struct nvt_dev *nvt, u8 val, u8 offset)
++{
++	outb(val, nvt->cir_addr + offset);
++}
++
++/* read val from cir config register */
++static u8 nvt_cir_reg_read(struct nvt_dev *nvt, u8 offset)
++{
++	u8 val;
++
++	val = inb(nvt->cir_addr + offset);
++
++	return val;
++}
++
++/* write val to cir wake register */
++static inline void nvt_cir_wake_reg_write(struct nvt_dev *nvt,
++					  u8 val, u8 offset)
++{
++	outb(val, nvt->cir_wake_addr + offset);
++}
++
++/* read val from cir wake config register */
++static u8 nvt_cir_wake_reg_read(struct nvt_dev *nvt, u8 offset)
++{
++	u8 val;
++
++	val = inb(nvt->cir_wake_addr + offset);
++
++	return val;
++}
++
++/* dump current cir register contents */
++static void cir_dump_regs(struct nvt_dev *nvt)
++{
++	nvt_efm_enable(nvt);
++	nvt_select_logical_dev(nvt, LOGICAL_DEV_CIR);
++
++	printk("%s: Dump CIR logical device registers:\n", NVT_DRIVER_NAME);
++	printk(" * CR CIR ACTIVE :   0x%x\n",
++	       nvt_cr_read(nvt, CR_LOGICAL_DEV_EN));
++	printk(" * CR CIR BASE ADDR: 0x%x\n",
++	       (nvt_cr_read(nvt, CR_CIR_BASE_ADDR_HI) << 8) |
++		nvt_cr_read(nvt, CR_CIR_BASE_ADDR_LO));
++	printk(" * CR CIR IRQ NUM:   0x%x\n",
++	       nvt_cr_read(nvt, CR_CIR_IRQ_RSRC));
++
++	nvt_efm_disable(nvt);
++
++	printk("%s: Dump CIR registers:\n", NVT_DRIVER_NAME);
++	printk(" * IRCON:     0x%x\n", nvt_cir_reg_read(nvt, CIR_IRCON));
++	printk(" * IRSTS:     0x%x\n", nvt_cir_reg_read(nvt, CIR_IRSTS));
++	printk(" * IREN:      0x%x\n", nvt_cir_reg_read(nvt, CIR_IREN));
++	printk(" * RXFCONT:   0x%x\n", nvt_cir_reg_read(nvt, CIR_RXFCONT));
++	printk(" * CP:        0x%x\n", nvt_cir_reg_read(nvt, CIR_CP));
++	printk(" * CC:        0x%x\n", nvt_cir_reg_read(nvt, CIR_CC));
++	printk(" * SLCH:      0x%x\n", nvt_cir_reg_read(nvt, CIR_SLCH));
++	printk(" * SLCL:      0x%x\n", nvt_cir_reg_read(nvt, CIR_SLCL));
++	printk(" * FIFOCON:   0x%x\n", nvt_cir_reg_read(nvt, CIR_FIFOCON));
++	printk(" * IRFIFOSTS: 0x%x\n", nvt_cir_reg_read(nvt, CIR_IRFIFOSTS));
++	printk(" * SRXFIFO:   0x%x\n", nvt_cir_reg_read(nvt, CIR_SRXFIFO));
++	printk(" * TXFCONT:   0x%x\n", nvt_cir_reg_read(nvt, CIR_TXFCONT));
++	printk(" * STXFIFO:   0x%x\n", nvt_cir_reg_read(nvt, CIR_STXFIFO));
++	printk(" * FCCH:      0x%x\n", nvt_cir_reg_read(nvt, CIR_FCCH));
++	printk(" * FCCL:      0x%x\n", nvt_cir_reg_read(nvt, CIR_FCCL));
++	printk(" * IRFSM:     0x%x\n", nvt_cir_reg_read(nvt, CIR_IRFSM));
++}
++
++/* dump current cir wake register contents */
++static void cir_wake_dump_regs(struct nvt_dev *nvt)
++{
++	u8 i, fifo_len;
++
++	nvt_efm_enable(nvt);
++	nvt_select_logical_dev(nvt, LOGICAL_DEV_CIR_WAKE);
++
++	printk("%s: Dump CIR WAKE logical device registers:\n",
++	       NVT_DRIVER_NAME);
++	printk(" * CR CIR WAKE ACTIVE :   0x%x\n",
++	       nvt_cr_read(nvt, CR_LOGICAL_DEV_EN));
++	printk(" * CR CIR WAKE BASE ADDR: 0x%x\n",
++	       (nvt_cr_read(nvt, CR_CIR_BASE_ADDR_HI) << 8) |
++	        nvt_cr_read(nvt, CR_CIR_BASE_ADDR_LO));
++	printk(" * CR CIR WAKE IRQ NUM:   0x%x\n",
++	       nvt_cr_read(nvt, CR_CIR_IRQ_RSRC));
++
++	nvt_efm_disable(nvt);
++
++	printk("%s: Dump CIR WAKE registers\n", NVT_DRIVER_NAME);
++	printk(" * IRCON:          0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_IRCON));
++	printk(" * IRSTS:          0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_IRSTS));
++	printk(" * IREN:           0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_IREN));
++	printk(" * FIFO CMP DEEP:  0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_FIFO_CMP_DEEP));
++	printk(" * FIFO CMP TOL:   0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_FIFO_CMP_TOL));
++	printk(" * FIFO COUNT:     0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_FIFO_COUNT));
++	printk(" * SLCH:           0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_SLCH));
++	printk(" * SLCL:           0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_SLCL));
++	printk(" * FIFOCON:        0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_FIFOCON));
++	printk(" * SRXFSTS:        0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_SRXFSTS));
++	printk(" * SAMPLE RX FIFO: 0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_SAMPLE_RX_FIFO));
++	printk(" * WR FIFO DATA:   0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_WR_FIFO_DATA));
++	printk(" * RD FIFO ONLY:   0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_RD_FIFO_ONLY));
++	printk(" * RD FIFO ONLY IDX: 0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_RD_FIFO_ONLY_IDX));
++	printk(" * FIFO IGNORE:    0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_FIFO_IGNORE));
++	printk(" * IRFSM:          0x%x\n",
++	       nvt_cir_wake_reg_read(nvt, CIR_WAKE_IRFSM));
++
++	fifo_len = nvt_cir_wake_reg_read(nvt, CIR_WAKE_FIFO_COUNT);
++	printk("%s: Dump CIR WAKE FIFO (len %d)\n", NVT_DRIVER_NAME, fifo_len);
++	printk("* Contents = ");
++	for (i = 0; i < fifo_len; i++)
++		printk("%02x ",
++		       nvt_cir_wake_reg_read(nvt, CIR_WAKE_RD_FIFO_ONLY));
++	printk("\n");
++}
++
++/* detect hardware features */
++static int nvt_hw_detect(struct nvt_dev *nvt)
++{
++	unsigned long flags;
++	u8 chip_major, chip_minor;
++	int ret = 0;
++
++	nvt_efm_enable(nvt);
++
++	/* Check if we're wired for the alternate EFER setup */
++	chip_major = nvt_cr_read(nvt, CR_CHIP_ID_HI);
++	if (chip_major == 0xff) {
++		nvt->cr_efir = CR_EFIR2;
++		nvt->cr_efdr = CR_EFDR2;
++		nvt_efm_enable(nvt);
++		chip_major = nvt_cr_read(nvt, CR_CHIP_ID_HI);
++	}
++
++	chip_minor = nvt_cr_read(nvt, CR_CHIP_ID_LO);
++	nvt_dbg("%s: chip id: 0x%02x 0x%02x", chip_id, chip_major, chip_minor);
++
++	if (chip_major != CHIP_ID_HIGH &&
++	    (chip_minor != CHIP_ID_LOW || chip_minor != CHIP_ID_LOW2))
++		ret = -ENODEV;
++
++	nvt_efm_disable(nvt);
++
++	spin_lock_irqsave(&nvt->nvt_lock, flags);
++	nvt->chip_major = chip_major;
++	nvt->chip_minor = chip_minor;
++	spin_unlock_irqrestore(&nvt->nvt_lock, flags);
++
++	return ret;
++}
++
++static void nvt_cir_ldev_init(struct nvt_dev *nvt)
++{
++	u8 val;
++
++	/* output pin selection (Pin95=CIRRX, Pin96=CIRTX1, WB enabled */
++	val = nvt_cr_read(nvt, CR_OUTPUT_PIN_SEL);
++	val &= OUTPUT_PIN_SEL_MASK;
++	val |= (OUTPUT_ENABLE_CIR | OUTPUT_ENABLE_CIRWB);
++	nvt_cr_write(nvt, val, CR_OUTPUT_PIN_SEL);
++
++	/* Select CIR logical device and enable */
++	nvt_select_logical_dev(nvt, LOGICAL_DEV_CIR);
++	nvt_cr_write(nvt, LOGICAL_DEV_ENABLE, CR_LOGICAL_DEV_EN);
++
++	nvt_cr_write(nvt, nvt->cir_addr >> 8, CR_CIR_BASE_ADDR_HI);
++	nvt_cr_write(nvt, nvt->cir_addr & 0xff, CR_CIR_BASE_ADDR_LO);
++
++	nvt_cr_write(nvt, nvt->cir_irq, CR_CIR_IRQ_RSRC);
++
++	nvt_dbg("CIR initialized, base io port address: 0x%lx, irq: %d",
++		nvt->cir_addr, nvt->cir_irq);
++}
++
++static void nvt_cir_wake_ldev_init(struct nvt_dev *nvt)
++{
++	/* Select ACPI logical device, enable it and CIR Wake */
++	nvt_select_logical_dev(nvt, LOGICAL_DEV_ACPI);
++	nvt_cr_write(nvt, LOGICAL_DEV_ENABLE, CR_LOGICAL_DEV_EN);
++
++	/* Enable CIR Wake via PSOUT# (Pin60) */
++	nvt_set_reg_bit(nvt, CIR_WAKE_ENABLE_BIT, CR_ACPI_CIR_WAKE);
++
++	/* enable cir interrupt of mouse/keyboard IRQ event */
++	nvt_set_reg_bit(nvt, CIR_INTR_MOUSE_IRQ_BIT, CR_ACPI_IRQ_EVENTS);
++
++	/* enable pme interrupt of cir wakeup event */
++	nvt_set_reg_bit(nvt, PME_INTR_CIR_PASS_BIT, CR_ACPI_IRQ_EVENTS2);
++
++	/* Select CIR Wake logical device and enable */
++	nvt_select_logical_dev(nvt, LOGICAL_DEV_CIR_WAKE);
++	nvt_cr_write(nvt, LOGICAL_DEV_ENABLE, CR_LOGICAL_DEV_EN);
++
++	nvt_cr_write(nvt, nvt->cir_wake_addr >> 8, CR_CIR_BASE_ADDR_HI);
++	nvt_cr_write(nvt, nvt->cir_wake_addr & 0xff, CR_CIR_BASE_ADDR_LO);
++
++	nvt_cr_write(nvt, nvt->cir_wake_irq, CR_CIR_IRQ_RSRC);
++
++	nvt_dbg("CIR Wake initialized, base io port address: 0x%lx, irq: %d",
++		nvt->cir_wake_addr, nvt->cir_wake_irq);
++}
++
++/* clear out the hardware's cir rx fifo */
++static void nvt_clear_cir_fifo(struct nvt_dev *nvt)
++{
++	u8 val;
++
++	val = nvt_cir_reg_read(nvt, CIR_FIFOCON);
++	nvt_cir_reg_write(nvt, val | CIR_FIFOCON_RXFIFOCLR, CIR_FIFOCON);
++}
++
++/* clear out the hardware's cir wake rx fifo */
++static void nvt_clear_cir_wake_fifo(struct nvt_dev *nvt)
++{
++	u8 val;
++
++	val = nvt_cir_wake_reg_read(nvt, CIR_WAKE_FIFOCON);
++	nvt_cir_wake_reg_write(nvt, val | CIR_WAKE_FIFOCON_RXFIFOCLR,
++			       CIR_WAKE_FIFOCON);
++}
++
++/* clear out the hardware's cir tx fifo */
++static void nvt_clear_tx_fifo(struct nvt_dev *nvt)
++{
++	u8 val;
++
++	val = nvt_cir_reg_read(nvt, CIR_FIFOCON);
++	nvt_cir_reg_write(nvt, val | CIR_FIFOCON_TXFIFOCLR, CIR_FIFOCON);
++}
++
++/* enable RX Trigger Level Reach and Packet End interrupts */
++static void nvt_set_cir_iren(struct nvt_dev *nvt)
++{
++	u8 iren;
++
++	iren = CIR_IREN_RTR | CIR_IREN_PE;
++	nvt_cir_reg_write(nvt, iren, CIR_IREN);
++}
++
++static void nvt_cir_regs_init(struct nvt_dev *nvt)
++{
++	/* set sample limit count (PE interrupt raised when reached) */
++	nvt_cir_reg_write(nvt, CIR_RX_LIMIT_COUNT >> 8, CIR_SLCH);
++	nvt_cir_reg_write(nvt, CIR_RX_LIMIT_COUNT & 0xff, CIR_SLCL);
++
++	/* set fifo irq trigger levels */
++	nvt_cir_reg_write(nvt, CIR_FIFOCON_TX_TRIGGER_LEV |
++			  CIR_FIFOCON_RX_TRIGGER_LEV, CIR_FIFOCON);
++
++	/*
++	 * Enable TX and RX, specify carrier on = low, off = high, and set
++	 * sample period (currently 50us)
++	 */
++	nvt_cir_reg_write(nvt, CIR_IRCON_TXEN | CIR_IRCON_RXEN | CIR_IRCON_RXINV |
++			  CIR_IRCON_SAMPLE_PERIOD_SEL, CIR_IRCON);
++
++	/* clear hardware rx and tx fifos */
++	nvt_clear_cir_fifo(nvt);
++	nvt_clear_tx_fifo(nvt);
++
++	/* clear any and all stray interrupts */
++	nvt_cir_reg_write(nvt, 0xff, CIR_IRSTS);
++
++	/* and finally, enable interrupts */
++	nvt_set_cir_iren(nvt);
++}
++
++static void nvt_cir_wake_regs_init(struct nvt_dev *nvt)
++{
++	/* set number of bytes needed for wake key comparison (default 67) */
++	nvt_cir_wake_reg_write(nvt, CIR_WAKE_FIFO_LEN, CIR_WAKE_FIFO_CMP_DEEP);
++
++	/* set tolerance/variance allowed per byte during wake compare */
++	nvt_cir_wake_reg_write(nvt, CIR_WAKE_CMP_TOLERANCE,
++			       CIR_WAKE_FIFO_CMP_TOL);
++
++	/* set sample limit count (PE interrupt raised when reached) */
++	nvt_cir_wake_reg_write(nvt, CIR_RX_LIMIT_COUNT >> 8, CIR_WAKE_SLCH);
++	nvt_cir_wake_reg_write(nvt, CIR_RX_LIMIT_COUNT & 0xff, CIR_WAKE_SLCL);
++
++	/* set cir wake fifo rx trigger level (currently 67) */
++	nvt_cir_wake_reg_write(nvt, CIR_WAKE_FIFOCON_RX_TRIGGER_LEV,
++			       CIR_WAKE_FIFOCON);
++
++	/*
++	 * Enable TX and RX, specific carrier on = low, off = high, and set
++	 * sample period (currently 50us)
++	 */
++	nvt_cir_wake_reg_write(nvt, CIR_WAKE_IRCON_MODE0 | CIR_WAKE_IRCON_RXEN |
++			       CIR_WAKE_IRCON_R | CIR_WAKE_IRCON_RXINV |
++			       CIR_WAKE_IRCON_SAMPLE_PERIOD_SEL,
++			       CIR_WAKE_IRCON);
++
++	/* clear cir wake rx fifo */
++	nvt_clear_cir_wake_fifo(nvt);
++
++	/* clear any and all stray interrupts */
++	nvt_cir_wake_reg_write(nvt, 0xff, CIR_WAKE_IRSTS);
++}
++
++static void nvt_enable_wake(struct nvt_dev *nvt)
++{
++	nvt_efm_enable(nvt);
++
++	nvt_select_logical_dev(nvt, LOGICAL_DEV_ACPI);
++	nvt_set_reg_bit(nvt, CIR_WAKE_ENABLE_BIT, CR_ACPI_CIR_WAKE);
++	nvt_set_reg_bit(nvt, CIR_INTR_MOUSE_IRQ_BIT, CR_ACPI_IRQ_EVENTS);
++	nvt_set_reg_bit(nvt, PME_INTR_CIR_PASS_BIT, CR_ACPI_IRQ_EVENTS2);
++
++	nvt_select_logical_dev(nvt, LOGICAL_DEV_CIR_WAKE);
++	nvt_cr_write(nvt, LOGICAL_DEV_ENABLE, CR_LOGICAL_DEV_EN);
++
++	nvt_efm_disable(nvt);
++
++	nvt_cir_wake_reg_write(nvt, CIR_WAKE_IRCON_MODE0 | CIR_WAKE_IRCON_RXEN |
++			       CIR_WAKE_IRCON_R | CIR_WAKE_IRCON_RXINV |
++			       CIR_WAKE_IRCON_SAMPLE_PERIOD_SEL, CIR_WAKE_IRCON);
++	nvt_cir_wake_reg_write(nvt, 0xff, CIR_WAKE_IRSTS);
++	nvt_cir_wake_reg_write(nvt, 0, CIR_WAKE_IREN);
++}
++
++/* rx carrier detect only works in learning mode, must be called w/nvt_lock */
++static u32 nvt_rx_carrier_detect(struct nvt_dev *nvt)
++{
++	u32 count, carrier, duration = 0;
++	int i;
++
++	count = nvt_cir_reg_read(nvt, CIR_FCCL) |
++		nvt_cir_reg_read(nvt, CIR_FCCH) << 8;
++
++	for (i = 0; i < nvt->pkts; i++) {
++		if (nvt->buf[i] & BUF_PULSE_BIT)
++			duration += nvt->buf[i] & BUF_LEN_MASK;
++	}
++
++	duration *= SAMPLE_PERIOD;
++
++	if (!count || !duration) {
++		nvt_pr(KERN_NOTICE, "Unable to determine carrier! (c:%u, d:%u)",
++		       count, duration);
++		return 0;
++	}
++
++	carrier = (count * 1000000) / duration;
++
++	if ((carrier > MAX_CARRIER) || (carrier < MIN_CARRIER))
++		nvt_dbg("WTF? Carrier frequency out of range!");
++
++	nvt_dbg("Carrier frequency: %u (count %u, duration %u)",
++		carrier, count, duration);
++
++	return carrier;
++}
++
++/*
++ * set carrier frequency
++ *
++ * set carrier on 2 registers: CP & CC
++ * always set CP as 0x81
++ * set CC by SPEC, CC = 3MHz/carrier - 1
++ */
++static int nvt_set_tx_carrier(void *data, u32 carrier)
++{
++	struct nvt_dev *nvt = data;
++	u16 val;
++
++	nvt_cir_reg_write(nvt, 1, CIR_CP);
++	val = 3000000 / (carrier) - 1;
++	nvt_cir_reg_write(nvt, val & 0xff, CIR_CC);
++
++	nvt_dbg("cp: 0x%x cc: 0x%x\n",
++		nvt_cir_reg_read(nvt, CIR_CP), nvt_cir_reg_read(nvt, CIR_CC));
++
++	return 0;
++}
++
++/*
++ * nvt_tx_ir
++ *
++ * 1) clean TX fifo first (handled by AP)
++ * 2) copy data from user space
++ * 3) disable RX interrupts, enable TX interrupts: TTR & TFU
++ * 4) send 9 packets to TX FIFO to open TTR
++ * in interrupt_handler:
++ * 5) send all data out
++ * go back to write():
++ * 6) disable TX interrupts, re-enable RX interupts
++ *
++ * The key problem of this function is user space data may larger than
++ * driver's data buf length. So nvt_tx_ir() will only copy TX_BUF_LEN data to
++ * buf, and keep current copied data buf num in cur_buf_num. But driver's buf
++ * number may larger than TXFCONT (0xff). So in interrupt_handler, it has to
++ * set TXFCONT as 0xff, until buf_count less than 0xff.
++ */
++static int nvt_tx_ir(void *priv, int *txbuf, u32 n)
++{
++	struct nvt_dev *nvt = priv;
++	unsigned long flags;
++	size_t cur_count;
++	unsigned int i;
++	u8 iren;
++	int ret;
++
++	spin_lock_irqsave(&nvt->tx.lock, flags);
++
++	if (n >= TX_BUF_LEN) {
++		nvt->tx.buf_count = cur_count = TX_BUF_LEN;
++		ret = TX_BUF_LEN;
++	} else {
++		nvt->tx.buf_count = cur_count = n;
++		ret = n;
++	}
++
++	memcpy(nvt->tx.buf, txbuf, nvt->tx.buf_count);
++
++	nvt->tx.cur_buf_num = 0;
++
++	/* save currently enabled interrupts */
++	iren = nvt_cir_reg_read(nvt, CIR_IREN);
++
++	/* now disable all interrupts, save TFU & TTR */
++	nvt_cir_reg_write(nvt, CIR_IREN_TFU | CIR_IREN_TTR, CIR_IREN);
++
++	nvt->tx.tx_state = ST_TX_REPLY;
++
++	nvt_cir_reg_write(nvt, CIR_FIFOCON_TX_TRIGGER_LEV_8 |
++			  CIR_FIFOCON_RXFIFOCLR, CIR_FIFOCON);
++
++	/* trigger TTR interrupt by writing out ones, (yes, it's ugly) */
++	for (i = 0; i < 9; i++)
++		nvt_cir_reg_write(nvt, 0x01, CIR_STXFIFO);
++
++	spin_unlock_irqrestore(&nvt->tx.lock, flags);
++
++	wait_event(nvt->tx.queue, nvt->tx.tx_state == ST_TX_REQUEST);
++
++	spin_lock_irqsave(&nvt->tx.lock, flags);
++	nvt->tx.tx_state = ST_TX_NONE;
++	spin_unlock_irqrestore(&nvt->tx.lock, flags);
++
++	/* restore enabled interrupts to prior state */
++	nvt_cir_reg_write(nvt, iren, CIR_IREN);
++
++	return ret;
++}
++
++/* dump contents of the last rx buffer we got from the hw rx fifo */
++static void nvt_dump_rx_buf(struct nvt_dev *nvt)
++{
++	int i;
++
++	printk("%s (len %d): ", __func__, nvt->pkts);
++	for (i = 0; (i < nvt->pkts) && (i < RX_BUF_LEN); i++)
++		printk("0x%02x ", nvt->buf[i]);
++	printk("\n");
++}
++
++/*
++ * Process raw data in rx driver buffer, store it in raw IR event kfifo,
++ * trigger decode when appropriate.
++ *
++ * We get IR data samples one byte at a time. If the msb is set, its a pulse,
++ * otherwise its a space. The lower 7 bits are the count of SAMPLE_PERIOD
++ * (default 50us) intervals for that pulse/space. A discrete signal is
++ * followed by a series of 0x7f packets, then either 0x7<something> or 0x80
++ * to signal more IR coming (repeats) or end of IR, respectively. We store
++ * sample data in the raw event kfifo until we see 0x7<something> (except f)
++ * or 0x80, at which time, we trigger a decode operation.
++ */
++static void nvt_process_rx_ir_data(struct nvt_dev *nvt)
++{
++	struct ir_raw_event rawir = { .pulse = false, .duration = 0 };
++	unsigned int count;
++	u32 carrier;
++	u8 sample;
++	int i;
++
++	nvt_dbg_verbose("%s firing", __func__);
++
++	if (debug)
++		nvt_dump_rx_buf(nvt);
++
++	if (nvt->carrier_detect_enabled)
++		carrier = nvt_rx_carrier_detect(nvt);
++
++	count = nvt->pkts;
++	nvt_dbg_verbose("Processing buffer of len %d", count);
++
++	for (i = 0; i < count; i++) {
++		nvt->pkts--;
++		sample = nvt->buf[i];
++
++		rawir.pulse = ((sample & BUF_PULSE_BIT) != 0);
++		rawir.duration = (sample & BUF_LEN_MASK)
++					* SAMPLE_PERIOD * 1000;
++
++		if ((sample & BUF_LEN_MASK) == BUF_LEN_MASK) {
++			if (nvt->rawir.pulse == rawir.pulse)
++				nvt->rawir.duration += rawir.duration;
++			else {
++				nvt->rawir.duration = rawir.duration;
++				nvt->rawir.pulse = rawir.pulse;
++			}
++			continue;
++		}
++
++		rawir.duration += nvt->rawir.duration;
++		nvt->rawir.duration = 0;
++		nvt->rawir.pulse = rawir.pulse;
++
++		if (sample == BUF_PULSE_BIT)
++			rawir.pulse = false;
++
++		if (rawir.duration) {
++			nvt_dbg("Storing %s with duration %d",
++				rawir.pulse ? "pulse" : "space",
++				rawir.duration);
++
++			ir_raw_event_store(nvt->rdev, &rawir);
++		}
++
++		/*
++		 * BUF_PULSE_BIT indicates end of IR data, BUF_REPEAT_BYTE
++		 * indicates end of IR signal, but new data incoming. In both
++		 * cases, it means we're ready to call ir_raw_event_handle
++		 */
++		if (sample == BUF_PULSE_BIT || ((sample != BUF_LEN_MASK) &&
++		    (sample & BUF_REPEAT_MASK) == BUF_REPEAT_BYTE))
++			ir_raw_event_handle(nvt->rdev);
++	}
++
++	if (nvt->pkts) {
++		nvt_dbg("Odd, pkts should be 0 now... (its %u)", nvt->pkts);
++		nvt->pkts = 0;
++	}
++
++	nvt_dbg_verbose("%s done", __func__);
++}
++
++static void nvt_handle_rx_fifo_overrun(struct nvt_dev *nvt)
++{
++	nvt_pr(KERN_WARNING, "RX FIFO overrun detected, flushing data!");
++
++	nvt->pkts = 0;
++	nvt_clear_cir_fifo(nvt);
++	ir_raw_event_reset(nvt->rdev);
++}
++
++/* copy data from hardware rx fifo into driver buffer */
++static void nvt_get_rx_ir_data(struct nvt_dev *nvt)
++{
++	unsigned long flags;
++	u8 fifocount, val;
++	unsigned int b_idx;
++	bool overrun = false;
++	int i;
++
++	/* Get count of how many bytes to read from RX FIFO */
++	fifocount = nvt_cir_reg_read(nvt, CIR_RXFCONT);
++	/* if we get 0xff, probably means the logical dev is disabled */
++	if (fifocount == 0xff)
++		return;
++	/* watch out for a fifo overrun condition */
++	else if (fifocount > RX_BUF_LEN) {
++		overrun = true;
++		fifocount = RX_BUF_LEN;
++	}
++
++	nvt_dbg("attempting to fetch %u bytes from hw rx fifo", fifocount);
++
++	spin_lock_irqsave(&nvt->nvt_lock, flags);
++
++	b_idx = nvt->pkts;
++
++	/* This should never happen, but lets check anyway... */
++	if (b_idx + fifocount > RX_BUF_LEN) {
++		nvt_process_rx_ir_data(nvt);
++		b_idx = 0;
++	}
++
++	/* Read fifocount bytes from CIR Sample RX FIFO register */
++	for (i = 0; i < fifocount; i++) {
++		val = nvt_cir_reg_read(nvt, CIR_SRXFIFO);
++		nvt->buf[b_idx + i] = val;
++	}
++
++	nvt->pkts += fifocount;
++	nvt_dbg("%s: pkts now %d", __func__, nvt->pkts);
++
++	nvt_process_rx_ir_data(nvt);
++
++	if (overrun)
++		nvt_handle_rx_fifo_overrun(nvt);
++
++	spin_unlock_irqrestore(&nvt->nvt_lock, flags);
++}
++
++static void nvt_cir_log_irqs(u8 status, u8 iren)
++{
++	nvt_pr(KERN_INFO, "IRQ 0x%02x (IREN 0x%02x) :%s%s%s%s%s%s%s%s%s",
++		status, iren,
++		status & CIR_IRSTS_RDR	? " RDR"	: "",
++		status & CIR_IRSTS_RTR	? " RTR"	: "",
++		status & CIR_IRSTS_PE	? " PE"		: "",
++		status & CIR_IRSTS_RFO	? " RFO"	: "",
++		status & CIR_IRSTS_TE	? " TE"		: "",
++		status & CIR_IRSTS_TTR	? " TTR"	: "",
++		status & CIR_IRSTS_TFU	? " TFU"	: "",
++		status & CIR_IRSTS_GH	? " GH"		: "",
++		status & ~(CIR_IRSTS_RDR | CIR_IRSTS_RTR | CIR_IRSTS_PE |
++			   CIR_IRSTS_RFO | CIR_IRSTS_TE | CIR_IRSTS_TTR |
++			   CIR_IRSTS_TFU | CIR_IRSTS_GH) ? " ?" : "");
++}
++
++static bool nvt_cir_tx_inactive(struct nvt_dev *nvt)
++{
++	unsigned long flags;
++	bool tx_inactive;
++	u8 tx_state;
++
++	spin_lock_irqsave(&nvt->tx.lock, flags);
++	tx_state = nvt->tx.tx_state;
++	spin_unlock_irqrestore(&nvt->tx.lock, flags);
++
++	tx_inactive = (tx_state == ST_TX_NONE);
++
++	return tx_inactive;
++}
++
++/* interrupt service routine for incoming and outgoing CIR data */
++static irqreturn_t nvt_cir_isr(int irq, void *data)
++{
++	struct nvt_dev *nvt = data;
++	u8 status, iren, cur_state;
++	unsigned long flags;
++
++	nvt_dbg_verbose("%s firing", __func__);
++
++	nvt_efm_enable(nvt);
++	nvt_select_logical_dev(nvt, LOGICAL_DEV_CIR);
++	nvt_efm_disable(nvt);
++
++	/*
++	 * Get IR Status register contents. Write 1 to ack/clear
++	 *
++	 * bit: reg name      - description
++	 *   7: CIR_IRSTS_RDR - RX Data Ready
++	 *   6: CIR_IRSTS_RTR - RX FIFO Trigger Level Reach
++	 *   5: CIR_IRSTS_PE  - Packet End
++	 *   4: CIR_IRSTS_RFO - RX FIFO Overrun (RDR will also be set)
++	 *   3: CIR_IRSTS_TE  - TX FIFO Empty
++	 *   2: CIR_IRSTS_TTR - TX FIFO Trigger Level Reach
++	 *   1: CIR_IRSTS_TFU - TX FIFO Underrun
++	 *   0: CIR_IRSTS_GH  - Min Length Detected
++	 */
++	status = nvt_cir_reg_read(nvt, CIR_IRSTS);
++	if (!status) {
++		nvt_dbg_verbose("%s exiting, IRSTS 0x0", __func__);
++		nvt_cir_reg_write(nvt, 0xff, CIR_IRSTS);
++		return IRQ_RETVAL(IRQ_NONE);
++	}
++
++	/* ack/clear all irq flags we've got */
++	nvt_cir_reg_write(nvt, status, CIR_IRSTS);
++	nvt_cir_reg_write(nvt, 0, CIR_IRSTS);
++
++	/* Interrupt may be shared with CIR Wake, bail if CIR not enabled */
++	iren = nvt_cir_reg_read(nvt, CIR_IREN);
++	if (!iren) {
++		nvt_dbg_verbose("%s exiting, CIR not enabled", __func__);
++		return IRQ_RETVAL(IRQ_NONE);
++	}
++
++	if (debug)
++		nvt_cir_log_irqs(status, iren);
++
++	if (status & CIR_IRSTS_RTR) {
++		/* FIXME: add code for study/learn mode */
++		/* We only do rx if not tx'ing */
++		if (nvt_cir_tx_inactive(nvt))
++			nvt_get_rx_ir_data(nvt);
++	}
++
++	if (status & CIR_IRSTS_PE) {
++		if (nvt_cir_tx_inactive(nvt))
++			nvt_get_rx_ir_data(nvt);
++
++		spin_lock_irqsave(&nvt->nvt_lock, flags);
++
++		cur_state = nvt->study_state;
++
++		spin_unlock_irqrestore(&nvt->nvt_lock, flags);
++
++		if (cur_state == ST_STUDY_NONE)
++			nvt_clear_cir_fifo(nvt);
++	}
++
++	if (status & CIR_IRSTS_TE)
++		nvt_clear_tx_fifo(nvt);
++
++	if (status & CIR_IRSTS_TTR) {
++		unsigned int pos, count;
++		u8 tmp;
++
++		spin_lock_irqsave(&nvt->tx.lock, flags);
++
++		pos = nvt->tx.cur_buf_num;
++		count = nvt->tx.buf_count;
++
++		/* Write data into the hardware tx fifo while pos < count */
++		if (pos < count) {
++			nvt_cir_reg_write(nvt, nvt->tx.buf[pos], CIR_STXFIFO);
++			nvt->tx.cur_buf_num++;
++		/* Disable TX FIFO Trigger Level Reach (TTR) interrupt */
++		} else {
++			tmp = nvt_cir_reg_read(nvt, CIR_IREN);
++			nvt_cir_reg_write(nvt, tmp & ~CIR_IREN_TTR, CIR_IREN);
++		}
++
++		spin_unlock_irqrestore(&nvt->tx.lock, flags);
++
++	}
++
++	if (status & CIR_IRSTS_TFU) {
++		spin_lock_irqsave(&nvt->tx.lock, flags);
++		if (nvt->tx.tx_state == ST_TX_REPLY) {
++			nvt->tx.tx_state = ST_TX_REQUEST;
++			wake_up(&nvt->tx.queue);
++		}
++		spin_unlock_irqrestore(&nvt->tx.lock, flags);
++	}
++
++	nvt_dbg_verbose("%s done", __func__);
++	return IRQ_RETVAL(IRQ_HANDLED);
++}
++
++/* Interrupt service routine for CIR Wake */
++static irqreturn_t nvt_cir_wake_isr(int irq, void *data)
++{
++	u8 status, iren, val;
++	struct nvt_dev *nvt = data;
++	unsigned long flags;
++
++	nvt_dbg_wake("%s firing", __func__);
++
++	status = nvt_cir_wake_reg_read(nvt, CIR_WAKE_IRSTS);
++	if (!status)
++		return IRQ_RETVAL(IRQ_NONE);
++
++	if (status & CIR_WAKE_IRSTS_IR_PENDING)
++		nvt_clear_cir_wake_fifo(nvt);
++
++	nvt_cir_wake_reg_write(nvt, status, CIR_WAKE_IRSTS);
++	nvt_cir_wake_reg_write(nvt, 0, CIR_WAKE_IRSTS);
++
++	/* Interrupt may be shared with CIR, bail if Wake not enabled */
++	iren = nvt_cir_wake_reg_read(nvt, CIR_WAKE_IREN);
++	if (!iren) {
++		nvt_dbg_wake("%s exiting, wake not enabled", __func__);
++		return IRQ_RETVAL(IRQ_HANDLED);
++	}
++
++	if ((status & CIR_WAKE_IRSTS_PE) &&
++	    (nvt->wake_state == ST_WAKE_START)) {
++		while (nvt_cir_wake_reg_read(nvt, CIR_WAKE_RD_FIFO_ONLY_IDX)) {
++			val = nvt_cir_wake_reg_read(nvt, CIR_WAKE_RD_FIFO_ONLY);
++			nvt_dbg("setting wake up key: 0x%x", val);
++		}
++
++		nvt_cir_wake_reg_write(nvt, 0, CIR_WAKE_IREN);
++		spin_lock_irqsave(&nvt->nvt_lock, flags);
++		nvt->wake_state = ST_WAKE_FINISH;
++		spin_unlock_irqrestore(&nvt->nvt_lock, flags);
++	}
++
++	nvt_dbg_wake("%s done", __func__);
++	return IRQ_RETVAL(IRQ_HANDLED);
++}
++
++static void nvt_enable_cir(struct nvt_dev *nvt)
++{
++	/* set function enable flags */
++	nvt_cir_reg_write(nvt, CIR_IRCON_TXEN | CIR_IRCON_RXEN |
++			  CIR_IRCON_RXINV | CIR_IRCON_SAMPLE_PERIOD_SEL,
++			  CIR_IRCON);
++
++	nvt_efm_enable(nvt);
++
++	/* enable the CIR logical device */
++	nvt_select_logical_dev(nvt, LOGICAL_DEV_CIR);
++	nvt_cr_write(nvt, LOGICAL_DEV_ENABLE, CR_LOGICAL_DEV_EN);
++
++	nvt_efm_disable(nvt);
++
++	/* clear all pending interrupts */
++	nvt_cir_reg_write(nvt, 0xff, CIR_IRSTS);
++
++	/* enable interrupts */
++	nvt_set_cir_iren(nvt);
++}
++
++static void nvt_disable_cir(struct nvt_dev *nvt)
++{
++	/* disable CIR interrupts */
++	nvt_cir_reg_write(nvt, 0, CIR_IREN);
++
++	/* clear any and all pending interrupts */
++	nvt_cir_reg_write(nvt, 0xff, CIR_IRSTS);
++
++	/* clear all function enable flags */
++	nvt_cir_reg_write(nvt, 0, CIR_IRCON);
++
++	/* clear hardware rx and tx fifos */
++	nvt_clear_cir_fifo(nvt);
++	nvt_clear_tx_fifo(nvt);
++
++	nvt_efm_enable(nvt);
++
++	/* disable the CIR logical device */
++	nvt_select_logical_dev(nvt, LOGICAL_DEV_CIR);
++	nvt_cr_write(nvt, LOGICAL_DEV_DISABLE, CR_LOGICAL_DEV_EN);
++
++	nvt_efm_disable(nvt);
++}
++
++static int nvt_open(void *data)
++{
++	struct nvt_dev *nvt = (struct nvt_dev *)data;
++	unsigned long flags;
++
++	spin_lock_irqsave(&nvt->nvt_lock, flags);
++	nvt->in_use = true;
++	nvt_enable_cir(nvt);
++	spin_unlock_irqrestore(&nvt->nvt_lock, flags);
++
++	return 0;
++}
++
++static void nvt_close(void *data)
++{
++	struct nvt_dev *nvt = (struct nvt_dev *)data;
++	unsigned long flags;
++
++	spin_lock_irqsave(&nvt->nvt_lock, flags);
++	nvt->in_use = false;
++	nvt_disable_cir(nvt);
++	spin_unlock_irqrestore(&nvt->nvt_lock, flags);
++}
++
++/* Allocate memory, probe hardware, and initialize everything */
++static int nvt_probe(struct pnp_dev *pdev, const struct pnp_device_id *dev_id)
++{
++	struct nvt_dev *nvt = NULL;
++	struct input_dev *rdev = NULL;
++	struct ir_dev_props *props = NULL;
++	int ret = -ENOMEM;
++
++	nvt = kzalloc(sizeof(struct nvt_dev), GFP_KERNEL);
++	if (!nvt)
++		return ret;
++
++	props = kzalloc(sizeof(struct ir_dev_props), GFP_KERNEL);
++	if (!props)
++		goto failure;
++
++	/* input device for IR remote (and tx) */
++	rdev = input_allocate_device();
++	if (!rdev)
++		goto failure;
++
++	ret = -ENODEV;
++	/* validate pnp resources */
++	if (!pnp_port_valid(pdev, 0) ||
++	    pnp_port_len(pdev, 0) < CIR_IOREG_LENGTH) {
++		dev_err(&pdev->dev, "IR PNP Port not valid!\n");
++		goto failure;
++	}
++
++	if (!pnp_irq_valid(pdev, 0)) {
++		dev_err(&pdev->dev, "PNP IRQ not valid!\n");
++		goto failure;
++	}
++
++	if (!pnp_port_valid(pdev, 1) ||
++	    pnp_port_len(pdev, 1) < CIR_IOREG_LENGTH) {
++		dev_err(&pdev->dev, "Wake PNP Port not valid!\n");
++		goto failure;
++	}
++
++	nvt->cir_addr = pnp_port_start(pdev, 0);
++	nvt->cir_irq  = pnp_irq(pdev, 0);
++
++	nvt->cir_wake_addr = pnp_port_start(pdev, 1);
++	/* irq is always shared between cir and cir wake */
++	nvt->cir_wake_irq  = nvt->cir_irq;
++
++	nvt->cr_efir = CR_EFIR;
++	nvt->cr_efdr = CR_EFDR;
++
++	spin_lock_init(&nvt->nvt_lock);
++	spin_lock_init(&nvt->tx.lock);
++
++	ret = -EBUSY;
++	/* now claim resources */
++	if (!request_region(nvt->cir_addr,
++			    CIR_IOREG_LENGTH, NVT_DRIVER_NAME))
++		goto failure;
++
++	if (request_irq(nvt->cir_irq, nvt_cir_isr, IRQF_SHARED,
++			NVT_DRIVER_NAME, (void *)nvt))
++		goto failure;
++
++	if (!request_region(nvt->cir_wake_addr,
++			    CIR_IOREG_LENGTH, NVT_DRIVER_NAME))
++		goto failure;
++
++	if (request_irq(nvt->cir_wake_irq, nvt_cir_wake_isr, IRQF_SHARED,
++			NVT_DRIVER_NAME, (void *)nvt))
++		goto failure;
++
++	pnp_set_drvdata(pdev, nvt);
++	nvt->pdev = pdev;
++
++	init_waitqueue_head(&nvt->tx.queue);
++
++	ret = nvt_hw_detect(nvt);
++	if (ret)
++		goto failure;
++
++	/* Initialize CIR & CIR Wake Logical Devices */
++	nvt_efm_enable(nvt);
++	nvt_cir_ldev_init(nvt);
++	nvt_cir_wake_ldev_init(nvt);
++	nvt_efm_disable(nvt);
++
++	/* Initialize CIR & CIR Wake Config Registers */
++	nvt_cir_regs_init(nvt);
++	nvt_cir_wake_regs_init(nvt);
++
++	/* Set up ir-core props */
++	props->priv = nvt;
++	props->driver_type = RC_DRIVER_IR_RAW;
++	props->allowed_protos = IR_TYPE_ALL;
++	props->open = nvt_open;
++	props->close = nvt_close;
++#if 0
++	props->min_timeout = XYZ;
++	props->max_timeout = XYZ;
++	props->timeout = XYZ;
++	/* rx resolution is hardwired to 50us atm, 1, 25, 100 also possible */
++	props->rx_resolution = XYZ;
++
++	/* tx bits */
++	props->tx_resolution = XYZ;
++#endif
++	props->tx_ir = nvt_tx_ir;
++	props->s_tx_carrier = nvt_set_tx_carrier;
++
++	rdev->name = "Nuvoton w836x7hg Infrared Remote Transceiver";
++	rdev->id.bustype = BUS_HOST;
++	rdev->id.vendor = PCI_VENDOR_ID_WINBOND2;
++	rdev->id.product = nvt->chip_major;
++	rdev->id.version = nvt->chip_minor;
++
++	nvt->props = props;
++	nvt->rdev = rdev;
++
++	device_set_wakeup_capable(&pdev->dev, 1);
++	device_set_wakeup_enable(&pdev->dev, 1);
++
++	ret = ir_input_register(rdev, RC_MAP_RC6_MCE, props, NVT_DRIVER_NAME);
++	if (ret)
++		goto failure;
++
++	nvt_pr(KERN_NOTICE, "driver has been successfully loaded\n");
++	if (debug) {
++		cir_dump_regs(nvt);
++		cir_wake_dump_regs(nvt);
++	}
++
++	return 0;
++
++failure:
++	if (nvt->cir_irq)
++		free_irq(nvt->cir_irq, nvt);
++	if (nvt->cir_addr)
++		release_region(nvt->cir_addr, CIR_IOREG_LENGTH);
++
++	if (nvt->cir_wake_irq)
++		free_irq(nvt->cir_wake_irq, nvt);
++	if (nvt->cir_wake_addr)
++		release_region(nvt->cir_wake_addr, CIR_IOREG_LENGTH);
++
++	input_free_device(rdev);
++	kfree(props);
++	kfree(nvt);
++
++	return ret;
++}
++
++static void __devexit nvt_remove(struct pnp_dev *pdev)
++{
++	struct nvt_dev *nvt = pnp_get_drvdata(pdev);
++	unsigned long flags;
++
++	spin_lock_irqsave(&nvt->nvt_lock, flags);
++	/* disable CIR */
++	nvt_cir_reg_write(nvt, 0, CIR_IREN);
++	nvt_disable_cir(nvt);
++	/* enable CIR Wake (for IR power-on) */
++	nvt_enable_wake(nvt);
++	spin_unlock_irqrestore(&nvt->nvt_lock, flags);
++
++	/* free resources */
++	free_irq(nvt->cir_irq, nvt);
++	free_irq(nvt->cir_wake_irq, nvt);
++	release_region(nvt->cir_addr, CIR_IOREG_LENGTH);
++	release_region(nvt->cir_wake_addr, CIR_IOREG_LENGTH);
++
++	ir_input_unregister(nvt->rdev);
++
++	kfree(nvt->props);
++	kfree(nvt);
++}
++
++static int nvt_suspend(struct pnp_dev *pdev, pm_message_t state)
++{
++	struct nvt_dev *nvt = pnp_get_drvdata(pdev);
++	unsigned long flags;
++
++	nvt_dbg("%s called", __func__);
++
++	/* zero out misc state tracking */
++	spin_lock_irqsave(&nvt->nvt_lock, flags);
++	nvt->study_state = ST_STUDY_NONE;
++	nvt->wake_state = ST_WAKE_NONE;
++	spin_unlock_irqrestore(&nvt->nvt_lock, flags);
++
++	spin_lock_irqsave(&nvt->tx.lock, flags);
++	nvt->tx.tx_state = ST_TX_NONE;
++	spin_unlock_irqrestore(&nvt->tx.lock, flags);
++
++	/* disable all CIR interrupts */
++	nvt_cir_reg_write(nvt, 0, CIR_IREN);
++
++	nvt_efm_enable(nvt);
++
++	/* disable cir logical dev */
++	nvt_select_logical_dev(nvt, LOGICAL_DEV_CIR);
++	nvt_cr_write(nvt, LOGICAL_DEV_DISABLE, CR_LOGICAL_DEV_EN);
++
++	nvt_efm_disable(nvt);
++
++	/* make sure wake is enabled */
++	nvt_enable_wake(nvt);
++
++	return 0;
++}
++
++static int nvt_resume(struct pnp_dev *pdev)
++{
++	int ret = 0;
++	struct nvt_dev *nvt = pnp_get_drvdata(pdev);
++
++	nvt_dbg("%s called", __func__);
++
++	/* open interrupt */
++	nvt_set_cir_iren(nvt);
++
++	/* Enable CIR logical device */
++	nvt_efm_enable(nvt);
++	nvt_select_logical_dev(nvt, LOGICAL_DEV_CIR);
++	nvt_cr_write(nvt, LOGICAL_DEV_ENABLE, CR_LOGICAL_DEV_EN);
++
++	nvt_efm_disable(nvt);
++
++	nvt_cir_regs_init(nvt);
++	nvt_cir_wake_regs_init(nvt);
++
++	return ret;
++}
++
++static void nvt_shutdown(struct pnp_dev *pdev)
++{
++	struct nvt_dev *nvt = pnp_get_drvdata(pdev);
++	nvt_enable_wake(nvt);
++}
++
++static const struct pnp_device_id nvt_ids[] = {
++	{ "WEC0530", 0 },   /* CIR */
++	{ "NTN0530", 0 },   /* CIR for new chip's pnp id*/
++	{ "", 0 },
++};
++
++static struct pnp_driver nvt_driver = {
++	.name		= NVT_DRIVER_NAME,
++	.id_table	= nvt_ids,
++	.flags		= PNP_DRIVER_RES_DO_NOT_CHANGE,
++	.probe		= nvt_probe,
++	.remove		= __devexit_p(nvt_remove),
++	.suspend	= nvt_suspend,
++	.resume		= nvt_resume,
++	.shutdown	= nvt_shutdown,
++};
++
++int nvt_init(void)
++{
++	return pnp_register_driver(&nvt_driver);
++}
++
++void nvt_exit(void)
++{
++	pnp_unregister_driver(&nvt_driver);
++}
++
++module_param(debug, int, S_IRUGO | S_IWUSR);
++MODULE_PARM_DESC(debug, "Enable debugging output");
++
++MODULE_DEVICE_TABLE(pnp, nvt_ids);
++MODULE_DESCRIPTION("Nuvoton W83667HG-A & W83677HG-I CIR driver");
++
++MODULE_AUTHOR("Jarod Wilson <jarod@redhat.com>");
++MODULE_LICENSE("GPL");
++
++module_init(nvt_init);
++module_exit(nvt_exit);
+diff --git a/drivers/media/IR/nuvoton-cir.h b/drivers/media/IR/nuvoton-cir.h
+new file mode 100644
+index 0000000..12bfe89
+--- /dev/null
++++ b/drivers/media/IR/nuvoton-cir.h
+@@ -0,0 +1,408 @@
++/*
++ * Driver for Nuvoton Technology Corporation w83667hg/w83677hg-i CIR
++ *
++ * Copyright (C) 2010 Jarod Wilson <jarod@redhat.com>
++ * Copyright (C) 2009 Nuvoton PS Team
++ *
++ * Special thanks to Nuvoton for providing hardware, spec sheets and
++ * sample code upon which portions of this driver are based. Indirect
++ * thanks also to Maxim Levitsky, whose ene_ir driver this driver is
++ * modeled after.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
++ * USA
++ */
++
++#include <linux/spinlock.h>
++#include <asm/ioctl.h>
++
++/* platform driver name to register */
++#define NVT_DRIVER_NAME "nuvoton-cir"
++
++/* debugging module parameter */
++static int debug;
++
++
++#define nvt_pr(level, text, ...) \
++	printk(level KBUILD_MODNAME ": " text, ## __VA_ARGS__)
++
++#define nvt_dbg(text, ...) \
++	if (debug) \
++		printk(KERN_DEBUG \
++			KBUILD_MODNAME ": " text "\n" , ## __VA_ARGS__)
++
++#define nvt_dbg_verbose(text, ...) \
++	if (debug > 1) \
++		printk(KERN_DEBUG \
++			KBUILD_MODNAME ": " text "\n" , ## __VA_ARGS__)
++
++#define nvt_dbg_wake(text, ...) \
++	if (debug > 2) \
++		printk(KERN_DEBUG \
++			KBUILD_MODNAME ": " text "\n" , ## __VA_ARGS__)
++
++
++/*
++ * Original lirc driver said min value of 76, and recommended value of 256
++ * for the buffer length, but then used 2048. Never mind that the size of the
++ * RX FIFO is 32 bytes... So I'm using 32 for RX and 256 for TX atm, but I'm
++ * not sure if maybe that TX value is off by a factor of 8 (bits vs. bytes),
++ * and I don't have TX-capable hardware to test/debug on...
++ */
++#define TX_BUF_LEN 256
++#define RX_BUF_LEN 32
++
++struct nvt_dev {
++	struct pnp_dev *pdev;
++	struct input_dev *rdev;
++	struct ir_dev_props *props;
++	struct ir_raw_event rawir;
++
++	spinlock_t nvt_lock;
++	bool in_use;
++
++	/* for rx */
++	u8 buf[RX_BUF_LEN];
++	unsigned int pkts;
++
++	struct {
++		spinlock_t lock;
++		u8 buf[TX_BUF_LEN];
++		unsigned int buf_count;
++		unsigned int cur_buf_num;
++		wait_queue_head_t queue;
++		u8 tx_state;
++	} tx;
++
++	/* EFER Config register index/data pair */
++	u8 cr_efir;
++	u8 cr_efdr;
++
++	/* hardware I/O settings */
++	unsigned long cir_addr;
++	unsigned long cir_wake_addr;
++	int cir_irq;
++	int cir_wake_irq;
++
++	/* hardware id */
++	u8 chip_major;
++	u8 chip_minor;
++
++	/* hardware features */
++	bool hw_learning_capable;
++	bool hw_tx_capable;
++
++	/* rx settings */
++	bool learning_enabled;
++	bool carrier_detect_enabled;
++
++	/* track cir wake state */
++	u8 wake_state;
++	/* for study */
++	u8 study_state;
++	/* carrier period = 1 / frequency */
++	u32 carrier;
++};
++
++/* study states */
++#define ST_STUDY_NONE      0x0
++#define ST_STUDY_START     0x1
++#define ST_STUDY_CARRIER   0x2
++#define ST_STUDY_ALL_RECV  0x4
++
++/* wake states */
++#define ST_WAKE_NONE	0x0
++#define ST_WAKE_START	0x1
++#define ST_WAKE_FINISH	0x2
++
++/* receive states */
++#define ST_RX_WAIT_7F		0x1
++#define ST_RX_WAIT_HEAD		0x2
++#define ST_RX_WAIT_SILENT_END	0x4
++
++/* send states */
++#define ST_TX_NONE	0x0
++#define ST_TX_REQUEST	0x2
++#define ST_TX_REPLY	0x4
++
++/* buffer packet constants */
++#define BUF_PULSE_BIT	0x80
++#define BUF_LEN_MASK	0x7f
++#define BUF_REPEAT_BYTE	0x70
++#define BUF_REPEAT_MASK	0xf0
++
++/* CIR settings */
++
++/* total length of CIR and CIR WAKE */
++#define CIR_IOREG_LENGTH	0x0f
++
++/* RX limit length, 8 high bits for SLCH, 8 low bits for SLCL (0x7d0 = 2000) */
++#define CIR_RX_LIMIT_COUNT	0x7d0
++
++/* CIR Regs */
++#define CIR_IRCON	0x00
++#define CIR_IRSTS	0x01
++#define CIR_IREN	0x02
++#define CIR_RXFCONT	0x03
++#define CIR_CP		0x04
++#define CIR_CC		0x05
++#define CIR_SLCH	0x06
++#define CIR_SLCL	0x07
++#define CIR_FIFOCON	0x08
++#define CIR_IRFIFOSTS	0x09
++#define CIR_SRXFIFO	0x0a
++#define CIR_TXFCONT	0x0b
++#define CIR_STXFIFO	0x0c
++#define CIR_FCCH	0x0d
++#define CIR_FCCL	0x0e
++#define CIR_IRFSM	0x0f
++
++/* CIR IRCON settings */
++#define CIR_IRCON_RECV	 0x80
++#define CIR_IRCON_WIREN	 0x40
++#define CIR_IRCON_TXEN	 0x20
++#define CIR_IRCON_RXEN	 0x10
++#define CIR_IRCON_WRXINV 0x08
++#define CIR_IRCON_RXINV	 0x04
++
++#define CIR_IRCON_SAMPLE_PERIOD_SEL_1	0x00
++#define CIR_IRCON_SAMPLE_PERIOD_SEL_25	0x01
++#define CIR_IRCON_SAMPLE_PERIOD_SEL_50	0x02
++#define CIR_IRCON_SAMPLE_PERIOD_SEL_100	0x03
++
++/* FIXME: make this a runtime option */
++/* select sample period as 50us */
++#define CIR_IRCON_SAMPLE_PERIOD_SEL	CIR_IRCON_SAMPLE_PERIOD_SEL_50
++
++/* CIR IRSTS settings */
++#define CIR_IRSTS_RDR	0x80
++#define CIR_IRSTS_RTR	0x40
++#define CIR_IRSTS_PE	0x20
++#define CIR_IRSTS_RFO	0x10
++#define CIR_IRSTS_TE	0x08
++#define CIR_IRSTS_TTR	0x04
++#define CIR_IRSTS_TFU	0x02
++#define CIR_IRSTS_GH	0x01
++
++/* CIR IREN settings */
++#define CIR_IREN_RDR	0x80
++#define CIR_IREN_RTR	0x40
++#define CIR_IREN_PE	0x20
++#define CIR_IREN_RFO	0x10
++#define CIR_IREN_TE	0x08
++#define CIR_IREN_TTR	0x04
++#define CIR_IREN_TFU	0x02
++#define CIR_IREN_GH	0x01
++
++/* CIR FIFOCON settings */
++#define CIR_FIFOCON_TXFIFOCLR		0x80
++
++#define CIR_FIFOCON_TX_TRIGGER_LEV_31	0x00
++#define CIR_FIFOCON_TX_TRIGGER_LEV_24	0x10
++#define CIR_FIFOCON_TX_TRIGGER_LEV_16	0x20
++#define CIR_FIFOCON_TX_TRIGGER_LEV_8	0x30
++
++/* FIXME: make this a runtime option */
++/* select TX trigger level as 16 */
++#define CIR_FIFOCON_TX_TRIGGER_LEV	CIR_FIFOCON_TX_TRIGGER_LEV_16
++
++#define CIR_FIFOCON_RXFIFOCLR		0x08
++
++#define CIR_FIFOCON_RX_TRIGGER_LEV_1	0x00
++#define CIR_FIFOCON_RX_TRIGGER_LEV_8	0x01
++#define CIR_FIFOCON_RX_TRIGGER_LEV_16	0x02
++#define CIR_FIFOCON_RX_TRIGGER_LEV_24	0x03
++
++/* FIXME: make this a runtime option */
++/* select RX trigger level as 24 */
++#define CIR_FIFOCON_RX_TRIGGER_LEV	CIR_FIFOCON_RX_TRIGGER_LEV_24
++
++/* CIR IRFIFOSTS settings */
++#define CIR_IRFIFOSTS_IR_PENDING	0x80
++#define CIR_IRFIFOSTS_RX_GS		0x40
++#define CIR_IRFIFOSTS_RX_FTA		0x20
++#define CIR_IRFIFOSTS_RX_EMPTY		0x10
++#define CIR_IRFIFOSTS_RX_FULL		0x08
++#define CIR_IRFIFOSTS_TX_FTA		0x04
++#define CIR_IRFIFOSTS_TX_EMPTY		0x02
++#define CIR_IRFIFOSTS_TX_FULL		0x01
++
++
++/* CIR WAKE UP Regs */
++#define CIR_WAKE_IRCON			0x00
++#define CIR_WAKE_IRSTS			0x01
++#define CIR_WAKE_IREN			0x02
++#define CIR_WAKE_FIFO_CMP_DEEP		0x03
++#define CIR_WAKE_FIFO_CMP_TOL		0x04
++#define CIR_WAKE_FIFO_COUNT		0x05
++#define CIR_WAKE_SLCH			0x06
++#define CIR_WAKE_SLCL			0x07
++#define CIR_WAKE_FIFOCON		0x08
++#define CIR_WAKE_SRXFSTS		0x09
++#define CIR_WAKE_SAMPLE_RX_FIFO		0x0a
++#define CIR_WAKE_WR_FIFO_DATA		0x0b
++#define CIR_WAKE_RD_FIFO_ONLY		0x0c
++#define CIR_WAKE_RD_FIFO_ONLY_IDX	0x0d
++#define CIR_WAKE_FIFO_IGNORE		0x0e
++#define CIR_WAKE_IRFSM			0x0f
++
++/* CIR WAKE UP IRCON settings */
++#define CIR_WAKE_IRCON_DEC_RST		0x80
++#define CIR_WAKE_IRCON_MODE1		0x40
++#define CIR_WAKE_IRCON_MODE0		0x20
++#define CIR_WAKE_IRCON_RXEN		0x10
++#define CIR_WAKE_IRCON_R		0x08
++#define CIR_WAKE_IRCON_RXINV		0x04
++
++/* FIXME/jarod: make this a runtime option */
++/* select a same sample period like cir register */
++#define CIR_WAKE_IRCON_SAMPLE_PERIOD_SEL	CIR_IRCON_SAMPLE_PERIOD_SEL_50
++
++/* CIR WAKE IRSTS Bits */
++#define CIR_WAKE_IRSTS_RDR		0x80
++#define CIR_WAKE_IRSTS_RTR		0x40
++#define CIR_WAKE_IRSTS_PE		0x20
++#define CIR_WAKE_IRSTS_RFO		0x10
++#define CIR_WAKE_IRSTS_GH		0x08
++#define CIR_WAKE_IRSTS_IR_PENDING	0x01
++
++/* CIR WAKE UP IREN Bits */
++#define CIR_WAKE_IREN_RDR		0x80
++#define CIR_WAKE_IREN_RTR		0x40
++#define CIR_WAKE_IREN_PE		0x20
++#define CIR_WAKE_IREN_RFO		0x10
++#define CIR_WAKE_IREN_TE		0x08
++#define CIR_WAKE_IREN_TTR		0x04
++#define CIR_WAKE_IREN_TFU		0x02
++#define CIR_WAKE_IREN_GH		0x01
++
++/* CIR WAKE FIFOCON settings */
++#define CIR_WAKE_FIFOCON_RXFIFOCLR	0x08
++
++#define CIR_WAKE_FIFOCON_RX_TRIGGER_LEV_67	0x00
++#define CIR_WAKE_FIFOCON_RX_TRIGGER_LEV_66	0x01
++#define CIR_WAKE_FIFOCON_RX_TRIGGER_LEV_65	0x02
++#define CIR_WAKE_FIFOCON_RX_TRIGGER_LEV_64	0x03
++
++/* FIXME: make this a runtime option */
++/* select WAKE UP RX trigger level as 67 */
++#define CIR_WAKE_FIFOCON_RX_TRIGGER_LEV	CIR_WAKE_FIFOCON_RX_TRIGGER_LEV_67
++
++/* CIR WAKE SRXFSTS settings */
++#define CIR_WAKE_IRFIFOSTS_RX_GS	0x80
++#define CIR_WAKE_IRFIFOSTS_RX_FTA	0x40
++#define CIR_WAKE_IRFIFOSTS_RX_EMPTY	0x20
++#define CIR_WAKE_IRFIFOSTS_RX_FULL	0x10
++
++/* CIR Wake FIFO buffer is 67 bytes long */
++#define CIR_WAKE_FIFO_LEN		67
++/* CIR Wake byte comparison tolerance */
++#define CIR_WAKE_CMP_TOLERANCE		5
++
++/*
++ * Extended Function Enable Registers:
++ *  Extended Function Index Register
++ *  Extended Function Data Register
++ */
++#define CR_EFIR			0x2e
++#define CR_EFDR			0x2f
++
++/* Possible alternate EFER values, depends on how the chip is wired */
++#define CR_EFIR2		0x4e
++#define CR_EFDR2		0x4f
++
++/* Extended Function Mode enable/disable magic values */
++#define EFER_EFM_ENABLE		0x87
++#define EFER_EFM_DISABLE	0xaa
++
++/* Chip IDs found in CR_CHIP_ID_{HI,LO} */
++#define CHIP_ID_HIGH		0xb4
++#define CHIP_ID_LOW		0x72
++#define CHIP_ID_LOW2		0x73
++
++/* Config regs we need to care about */
++#define CR_SOFTWARE_RESET	0x02
++#define CR_LOGICAL_DEV_SEL	0x07
++#define CR_CHIP_ID_HI		0x20
++#define CR_CHIP_ID_LO		0x21
++#define CR_DEV_POWER_DOWN	0x22 /* bit 2 is CIR power, default power on */
++#define CR_OUTPUT_PIN_SEL	0x27
++#define CR_LOGICAL_DEV_EN	0x30 /* valid for all logical devices */
++/* next three regs valid for both the CIR and CIR_WAKE logical devices */
++#define CR_CIR_BASE_ADDR_HI	0x60
++#define CR_CIR_BASE_ADDR_LO	0x61
++#define CR_CIR_IRQ_RSRC		0x70
++/* next three regs valid only for ACPI logical dev */
++#define CR_ACPI_CIR_WAKE	0xe0
++#define CR_ACPI_IRQ_EVENTS	0xf6
++#define CR_ACPI_IRQ_EVENTS2	0xf7
++
++/* Logical devices that we need to care about */
++#define LOGICAL_DEV_LPT		0x01
++#define LOGICAL_DEV_CIR		0x06
++#define LOGICAL_DEV_ACPI	0x0a
++#define LOGICAL_DEV_CIR_WAKE	0x0e
++
++#define LOGICAL_DEV_DISABLE	0x00
++#define LOGICAL_DEV_ENABLE	0x01
++
++#define CIR_WAKE_ENABLE_BIT	0x08
++#define CIR_INTR_MOUSE_IRQ_BIT	0x80
++#define PME_INTR_CIR_PASS_BIT	0x08
++
++#define OUTPUT_PIN_SEL_MASK	0xbc
++#define OUTPUT_ENABLE_CIR	0x01 /* Pin95=CIRRX, Pin96=CIRTX1 */
++#define OUTPUT_ENABLE_CIRWB	0x40 /* enable wide-band sensor */
++
++/* MCE CIR signal length, related on sample period */
++
++/* MCE CIR controller signal length: about 43ms
++ * 43ms / 50us (sample period) * 0.85 (inaccuracy)
++ */
++#define CONTROLLER_BUF_LEN_MIN 830
++
++/* MCE CIR keyboard signal length: about 26ms
++ * 26ms / 50us (sample period) * 0.85 (inaccuracy)
++ */
++#define KEYBOARD_BUF_LEN_MAX 650
++#define KEYBOARD_BUF_LEN_MIN 610
++
++/* MCE CIR mouse signal length: about 24ms
++ * 24ms / 50us (sample period) * 0.85 (inaccuracy)
++ */
++#define MOUSE_BUF_LEN_MIN 565
++
++#define CIR_SAMPLE_PERIOD 50
++#define CIR_SAMPLE_LOW_INACCURACY 0.85
++
++/* MAX silence time that driver will sent to lirc */
++#define MAX_SILENCE_TIME 60000
++
++#if CIR_IRCON_SAMPLE_PERIOD_SEL == CIR_IRCON_SAMPLE_PERIOD_SEL_100
++#define SAMPLE_PERIOD 100
++
++#elif CIR_IRCON_SAMPLE_PERIOD_SEL == CIR_IRCON_SAMPLE_PERIOD_SEL_50
++#define SAMPLE_PERIOD 50
++
++#elif CIR_IRCON_SAMPLE_PERIOD_SEL == CIR_IRCON_SAMPLE_PERIOD_SEL_25
++#define SAMPLE_PERIOD 25
++
++#else
++#define SAMPLE_PERIOD 1
++#endif
++
++/* as VISTA MCE definition, valid carrier value */
++#define MAX_CARRIER 60000
++#define MIN_CARRIER 30000
+diff --git a/include/media/ir-core.h b/include/media/ir-core.h
+index eb7fddf..4dd43d4 100644
+--- a/include/media/ir-core.h
++++ b/include/media/ir-core.h
+@@ -157,6 +157,7 @@ void ir_input_unregister(struct input_dev *input_dev);
+ 
+ void ir_repeat(struct input_dev *dev);
+ void ir_keydown(struct input_dev *dev, int scancode, u8 toggle);
++void ir_keyup(struct ir_input_dev *ir);
+ u32 ir_g_keycode_from_table(struct input_dev *input_dev, u32 scancode);
+ 
+ /* From ir-raw-event.c */

@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 39
+%global baserelease 40
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -701,6 +701,8 @@ Patch2915: lirc-staging-2.6.36.patch
 #Patch2916: lirc-staging-2.6.36-fixes.patch
 Patch2917: hdpvr-ir-enable.patch
 Patch2918: linux-2.6-v4l-dvb-ir-core-update-2.patch
+Patch2919: linux-2.6-v4l-dvb-ir-core-update-3.patch
+Patch2920: linux-2.6-lirc-ioctl-compat-fixups.patch
 
 Patch2950: linux-2.6-via-velocity-dma-fix.patch
 
@@ -1341,6 +1343,8 @@ ApplyPatch lirc-staging-2.6.36.patch
 # enable IR receiver on Hauppauge HD PVR (v4l-dvb merge pending)
 ApplyPatch hdpvr-ir-enable.patch
 ApplyPatch linux-2.6-v4l-dvb-ir-core-update-2.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-update-3.patch
+ApplyPatch linux-2.6-lirc-ioctl-compat-fixups.patch
 
 # Fix DMA bug on via-velocity
 ApplyPatch linux-2.6-via-velocity-dma-fix.patch
@@ -1979,6 +1983,12 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 11 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.6-40
+- update imon driver to fix issues with key releases and properly
+  auto-configure another 0xffdc device (VFD + MCE IR)
+- add new nuvoton-cir driver (for integrated IR in ASRock ION 330HT)
+- add lirc compat ioctl portability fixups
+
 * Mon Oct 11 2010 Ben Skeggs <bskeggs@redhat.com>
 - fix ttm bug that can cause nouveau to crash
 
