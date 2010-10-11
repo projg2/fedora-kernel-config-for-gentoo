@@ -662,6 +662,7 @@ Patch1802: revert-drm-kms-toggle-poll-around-switcheroo.patch
 Patch1805: drm-simplify-i2c-config.patch
 Patch1806: drm-sil164-module.patch
 Patch1807: drm-i2c-ch7006-fix.patch
+Patch1808: drm-ttm-fix.patch
 # nouveau + drm fixes
 Patch1810: drm-nouveau-updates.patch
 Patch1811: drm-nouveau-race-fix.patch
@@ -1300,6 +1301,7 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 ApplyPatch drm-simplify-i2c-config.patch
 ApplyPatch drm-sil164-module.patch
 ApplyPatch drm-i2c-ch7006-fix.patch
+ApplyPatch drm-ttm-fix.patch
 # Nouveau DRM + drm fixes
 ApplyPatch drm-nouveau-updates.patch
 ApplyPatch drm-nouveau-race-fix.patch
@@ -1977,6 +1979,9 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 11 2010 Ben Skeggs <bskeggs@redhat.com>
+- fix ttm bug that can cause nouveau to crash
+
 * Fri Oct 08 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-39
 - Push to F-14.
 
