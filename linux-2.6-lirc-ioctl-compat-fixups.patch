@@ -1,3 +1,59 @@
+This patch rolls up the following commits pending merge in the v4l-dvb tree:
+
+commit 7ce3b9f7bdb40837e15af89bb9d623c207ac9586
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Sat Oct 9 14:17:03 2010 -0400
+
+    lirc_dev: fixup error messages w/missing newlines
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit d1af871dadaf58580490431a335ea122a9b00d92
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Sat Oct 9 14:07:06 2010 -0400
+
+    lirc: wire up .compat_ioctl to main ioctl handler
+    
+    As pointed out (and tested) by Joris van Rantwijk, we do actually need
+    to wire up .compat_ioctl for 32-bit lirc userspace to work with 64-bit
+    lirc kernelspace. Do it. And add a check to make sure we get a valid
+    irctl in the ioctl handler.
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit 8dea589f4dc51b0363555a53fee128965a0548d4
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Fri Oct 8 16:24:21 2010 -0400
+
+    IR/lirc: further ioctl portability fixups
+    
+    From: Joris van Rantwijk <jorispubl@xs4all.nl>
+    
+    ----8<----
+    I tested lirc_serial and found that it works fine.
+    Except the LIRC ioctls do not work in my 64-bit-kernel/32-bit-user
+    setup. I added compat_ioctl entries in the drivers to fix this.
+    
+    While doing so, I noticed inconsistencies in the argument type of
+    the LIRC ioctls. All ioctls are declared in lirc.h as having argument
+    type __u32, however there are a few places where the driver calls
+    get_user/put_user with an unsigned long argument.
+    
+    The patch below changes lirc_dev and lirc_serial to use __u32 for all
+    ioctl arguments, and adds compat_ioctl entries.
+    It should probably also be done in the other low-level drivers,
+    but I don't have hardware to test those.
+    ----8<----
+    
+    I've dropped the .compat_ioctl addition from Joris' original patch,
+    as I swear the non-compat definition should now work for both 32-bit
+    and 64-bit userspace. Technically, I think we still need/want a
+    Signed-off-by: from Joris here. Joris? (And sorry for the lengthy delay
+    in getting a reply to you).
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+---
  drivers/media/IR/ir-lirc-codec.c        |   13 +++++++----
  drivers/media/IR/lirc_dev.c             |   36 ++++++++++++++++++++----------
  drivers/staging/lirc/lirc_igorplugusb.c |    2 +-

@@ -1,3 +1,216 @@
+This patch rolls up the following v4l-dvb upstream commits:
+
+commit 9b44ed200f1584f029da82e60e1f284d1d8de3da
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:26 2010 -0300
+
+    V4L/DVB: IR: Port ene driver to new IR subsystem and enable it
+
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 46192437f6d17c49f37bef73c97a14f2ed278db0
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:25 2010 -0300
+
+    V4L/DVB: STAGING: remove lirc_ene0100 driver
+    
+    Add latest unported version of this driver to media/IR.
+    Next patch will port it to ir core.
+    
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit abf84383ecadc8ada1963f9976e887c6f0b1bad9
+Author: Joe Perches <joe@perches.com>
+Date:   Mon Jul 12 17:50:03 2010 -0300
+
+    V4L/DVB: drivers/media: Remove unnecessary casts of private_data
+
+    Signed-off-by: Joe Perches <joe@perches.com>
+    Acked-by: Jarod Wilson <jarod@redhat.com>
+    Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 26699e3cf2ce4938112ddf60e084feaf4ce435b5
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:20 2010 -0300
+
+    V4L/DVB: IR: NECX: support repeat
+        
+    This adds support for repeat detecting for NECX variant
+    Tested with uneversal remote
+
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 7f01033b288bb86d4f9d2885966d2c255f3659c1
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:19 2010 -0300
+
+    V4L/DVB: IR: nec decoder: fix repeat
+
+    Repeat space is 4 units, not 8.
+    Current code would never trigger a repeat.
+
+    However that isn't true for NECX, so repeat there
+    must be handled differently.
+
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Reviewed-by: Andy Walls <awalls@md.metrocast.net>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 54f7413aa4ce44d18c7f9744e37ff64c4668daa6
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:18 2010 -0300
+
+    V4L/DVB: IR: JVC: make repeat work
+
+    Currently, jvc decoder will attempt misdetect next press as a repeat
+    of last keypress, therefore second keypress isn't detected.
+
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 951c6835be77d1baf619f7960c2beb22eea36947
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:24 2010 -0300
+
+    V4L/DVB: IR: report unknown scancodes the in-kernel decoders found
+
+    This way it is possible to use evtest to create keymap for unknown remote.
+
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 3879b56940f84f3b90fb77ad5860083930be4bac
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:23 2010 -0300
+
+    V4L/DVB: IR: extend interfaces to support more device settings
+
+    LIRC: add new IOCTL that enables learning mode (wide band receiver)
+    Still missing features: carrier report & timeout reports.
+    Will need to pack these into ir_raw_event
+
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 2f5fb55510cf309cd749f1af85e26274f9e360ab
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:22 2010 -0300
+
+    V4L/DVB: IR: add helper function for hardware with small o/b buffer
+    
+    Some ir input devices have small buffer, and interrupt the host
+    each time it is full (or half full)
+    
+    Add a helper that automaticly handles timeouts, and also
+    automaticly merges samples of same time (space-space)
+    Such samples might be placed by hardware because size of
+    sample in the buffer is small (a byte for example).
+    
+    Also remove constness from ir_dev_props, because it now contains timeout
+    settings that driver might want to change
+    
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Acked-by: Jarod Wilson <jarod@redhat.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 0f3f74ce40f25e80e3733e5d5293251568b03d83
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:21 2010 -0300
+
+    V4L/DVB: IR: Allow not to compile keymaps in
+    
+    Currently, ir device registration fails if keymap requested by driver is not found.
+    Fix that by always compiling in the empty keymap, and using it as a failback.
+    
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Acked-by: Jarod Wilson <jarod@redhat.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit daad37e3a9e0b9366da8eecb3e64bd47ac831938
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:17 2010 -0300
+
+    V4L/DVB: IR: replace workqueue with kthread
+    
+    It is perfectly possible to have ir_raw_event_work
+    running concurently on two cpus, thus we must protect
+    it from that situation.
+    
+    This stems from the fact that if hardware sends short packets of samples
+    we might end up queueing the work item more times that nessesary.
+    
+    Such job isn't well suited for a workqueue, so use a kernel thread.
+    
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 7c4be7bab7bb06974d649835cac66b5df984047f
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:16 2010 -0300
+
+    V4L/DVB: IR: replace spinlock with mutex
+    
+    Some handlers (lirc for example) allocates memory on initialization,
+    doing so in atomic context is cumbersome.
+    Fixes warning about sleeping function in atomic context.
+    
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 211ed16e58b2fdf0335e47546b252398b47e7790
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:15 2010 -0300
+
+    V4L/DVB: IR: minor fixes
+    
+    * lirc: Don't propagate reset event to userspace
+    * lirc: Remove strange logic from lirc that would make first sample always be pulse
+    * Make TO_US macro actualy print what it should.
+    
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit d8ffb6454250115ca0636d8481030466c1e3fdec
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Sat Jul 31 11:59:14 2010 -0300
+
+    V4L/DVB: IR: Kconfig fixes
+    
+    Move IR drives below separate menu.
+    This allows to disable them.
+    Also correct a typo.
+    
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 5af935cc96a291f90799bf6a2587d87329a91699
+Author: Mauro Carvalho Chehab <mchehab@redhat.com>
+Date:   Sun Aug 1 08:02:35 2010 -0300
+
+    V4L/DVB: dib0700: break keytable into NEC and RC-5 variants
+    
+    Instead of having one big keytable with 2 protocols inside, break it
+    into two separate tables, being one for NEC and another for RC-5 variants,
+    and properly identify what variant should be used at the boards entries.
+    
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 50b9d21ae2ac1b85be46f1ee5aa1b5e588622361
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Fri Aug 27 18:21:14 2010 -0300
+
+    V4L/DVB: mceusb: add two new ASUS device IDs
+    
+    Reported in lirc sf.net tracker and on lirc mailing list
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+
 diff -Naurp linux-2.6.35/drivers/media/IR/ene_ir.c linux-2.6.35.new/drivers/media/IR/ene_ir.c
 --- linux-2.6.35/drivers/media/IR/ene_ir.c	1969-12-31 19:00:00.000000000 -0500
 +++ linux-2.6.35.new/drivers/media/IR/ene_ir.c	2010-09-09 23:21:49.000000000 -0400

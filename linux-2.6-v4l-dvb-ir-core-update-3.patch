@@ -1,3 +1,218 @@
+This patch rolls up the following upstream v4l-dvb tree commits:
+
+commit 48f1bba604f1a5a312368bad822d2c03198a3ec3
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Fri Sep 17 18:12:31 2010 -0300
+
+    V4L/DVB: IR/lirc_dev: check for valid irctl in unregister path
+    
+    Prompted by Red Hat bugzilla #633023
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit e156b731596795714f1428c4ec00fe9f5468e083
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Wed Sep 15 00:28:41 2010 -0300
+
+    V4L/DVB: IR/imon: set up mce-only devices w/mce keytable
+    
+    Currently, they get set up with the pad keytable, which they can't
+    actually use at all. Also add another variant of volume scancodes from
+    another 0xffdc device, and properly set up the 0x9e 0xffdc device as an
+    iMON VFD w/MCE proto IR.
+    
+    Based on data and a prior patch from Anders Eriksson on the lirc list.
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 08d23a4d7bf43cd7246f6546ddeab8c25d5d4e45
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Wed Sep 15 15:56:03 2010 -0300
+
+    V4L/DVB: IR/imon: protect ictx's kc and last_keycode w/spinlock
+    
+    Lest we get our keycodes wrong... Thus far, in practice, I've not found
+    it to actually matter, but its one of the issues raised in
+    https://bugzilla.kernel.org/show_bug.cgi?id=16351 that wasn't addressed
+    by converting to using native IR keydown/up functions.
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 4d2acb4e7a23d47b8792bce34cf874da24193ce2
+Author: David Härdeman <david@hardeman.nu>
+Date:   Wed Sep 15 15:42:07 2010 -0300
+
+    V4L/DVB: imon: split mouse events to a separate input dev
+    
+    This is a stab at separating the mouse (and front panel/knob) events
+    out to a separate input device. This is necessary in preparation for
+    the next patch which makes the rc-core input dev opaque to rc
+    drivers.
+    
+    I can't verify the correctness of the patch beyond the fact that it
+    compiles without warnings. The driver has resisted most of my
+    attempts at understanding it properly...for example, the double calls
+    to le64_to_cpu() and be64_to_cpu() which are applied in
+    imon_incoming_packet() and imon_panel_key_lookup() would amount
+    to a bswab64() call, irregardless of the cpu endianness, and I think
+    the code wouldn't have worked on a big-endian machine...
+    
+    - Minor alterations to apply with minimal core IR changes
+    - Use timer for imon keys too, since its entirely possible for the
+      receiver to miss release codes (either by way of another key being
+      pressed while the first is held or by the remote pointing away from
+      the recevier when the key is release. yes, I know, its ugly).
+    - Bump driver version number, since this is a fairly significant change
+      (for the much much better).
+    Tested successfully w/an imon knob receiver.
+    
+    Signed-off-by: David Härdeman <david@hardeman.nu>
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 04c9c7d7135d0504638e02603dafa714e8d58945
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Wed Sep 15 15:31:12 2010 -0300
+
+    V4L/DVB: IR: export ir_keyup so imon driver can use it directly
+    
+    The imon driver currently reimplements its own version of ir_keyup
+    (along with key release timer functionality also already present in the
+    core IR code). A follow-up imon patch will make use of ir_keyup and the
+    IR stack's key release code.
+    
+    Trivial extraction from David Härdeman's pending rc-core merge and
+    device interface abstraction patchset to facilitate merging a patch
+    based on his imon input dev split patch ahead of the larger churn, which
+    is slated for post-2.6.37-rc1 (after Dmitry's large keycode patches are
+    merged in mainline).
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+Also includes the following patches pending v4l-dvb merge:
+
+commit 4032fc38fc2839871acd03a42d8d85ef1a43e2ff
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Fri Oct 8 15:23:56 2010 -0400
+
+    IR/Kconfig: sort hardware entries alphabetically
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit fc6507cb31f7f91d451726c89df7b59c566f62b8
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Fri Oct 8 15:16:23 2010 -0400
+
+    nuvoton-cir: add proper rx fifo overrun handling
+    
+    Per discussion with Andy Walls on irc, rx fifo overruns are not all that
+    uncommon on a busy system, and the initial posting of the nuvoton-cir
+    driver doesn't handle them well enough. With this addition, we'll drain
+    the hw fifo, attempt to process any ir pulse trains completed with that
+    flush, then we'll issue a hw rx fifo clear and reset the raw ir sample
+    kfifo and start over collecting raw ir data.
+    
+    Also slightly refactors the cir interrupt enabling so that we always get
+    consistent flags set and only have to modify them in one place, should
+    they need to be altered.
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit 6728577395dac7238f3900096ab7236b95e8516f
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Thu Oct 7 16:50:34 2010 -0400
+
+    IR: add driver for Nuvoton w836x7hg integrated CIR
+    
+    This is a new ir-core pnp driver for the Nuvoton w836x7hg integrated CIR
+    function. The chip is found on at least the ASRock ION 330HT boxes and
+    apparently, on a number of Intel DP55-series motherboards:
+    
+    http://www.asrock.com/nettop/overview.asp?Model=ION%20330HT
+    http://downloadcenter.intel.com/Detail_Desc.aspx?agr=Y&DwnldID=17685&lang=eng
+    
+    This driver was made possible by a hardware donation from Nuvoton, along
+    with sample code (in the form of an lirc driver) and datasheet, so huge
+    thanks to them for supporting this effort. Note that this driver
+    constitutes a massive rewrite, porting from the lirc interfaces to the
+    ir-core interfaces, and restructuring the driver to look more like Maxim
+    Levitsky's ene_ir driver (as well as generally making it look more like
+    kernel code).
+    
+    There's some work left to be done on this driver, to fully support the
+    range of functionality possible, but receive and IR power-on/wake are
+    both functional (may require setting wake key under another OS atm). The
+    hardware I've got (one of the ASRock boxes) only supports RX, so TX is
+    completely untested as of yet. Certain RX parameters, like sample
+    resolution and RX IRQ sample length trigger level could possibly stand
+    to be made tweakable via modparams or sysfs nodes, but the current
+    values work well enough for me w/an MCE RC6A remote.
+    
+    The original lirc driver carried support for the Windows MCE IR
+    keyboard/mouse device, which I plan to add back generically, in a way
+    that should be usable by any raw IR receiver (or at least by this driver
+    and the mceusb driver).
+    
+    Suspend and resume have also been tested, the power button on my remote
+    can be used to wake the machine, and CIR functionality resumes just
+    fine. Module unload/reload has also been tested, though not extensively
+    or repetitively. Also tested to work with the lirc bridge plugin for
+    userspace decoding.
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit 3551d7d1ab34408eb6ae228d200243723c151db0
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Mon Sep 6 18:26:10 2010 -0300
+
+    V4L/DVB: IR: extend MCE keymap
+    
+    These keys are found on remote bundled with
+    Toshiba Qosmio F50-10q.
+    
+    Found and tested by, Sami R <maesesami@gmail.com>
+    
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Acked-by: Jarod Wilson <jarod@redhat.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit e081b5aead012579740501220624cafc35f22510
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Mon Sep 6 18:26:09 2010 -0300
+
+    V4L/DVB: IR: fix keys beeing stuck down forever
+    
+    The logic in ir_timer_keyup was inverted.
+    
+    In case that values aren't equal,
+    the meaning of the time_is_after_eq_jiffies(ir->keyup_jiffies) is that
+    ir->keyup_jiffies is after the the jiffies or equally that
+    that jiffies are before the the ir->keyup_jiffies which is
+    exactly the situation we want to avoid (that the timeout is in the future)
+    Confusing Eh?
+    
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Acked-by: Jarod Wilson <jarod@redhat.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 30e18408adbdd840756fea541245b833dc764196
+Author: Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Mon Sep 6 18:26:08 2010 -0300
+
+    V4L/DVB: IR: fix duty cycle capability
+    
+    Due to typo lirc bridge enabled wrong capability.
+    
+    Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+    Acked-by: Jarod Wilson <jarod@redhat.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+
+---
  drivers/media/IR/Kconfig         |   27 +-
  drivers/media/IR/Makefile        |    1 +
  drivers/media/IR/imon.c          |  583 +++++++++++--------
@@ -1038,6 +1253,16 @@ index 7961d59..59510cd 100644
  
  /**
   * ir_timer_keyup() - generates a keyup event after a timeout
+@@ -319,7 +319,7 @@ static void ir_timer_keyup(unsigned long cookie)
+	 * a keyup event might follow immediately after the keydown.
+	 */
+	spin_lock_irqsave(&ir->keylock, flags);
+-	if (time_is_after_eq_jiffies(ir->keyup_jiffies))
++	if (time_is_before_eq_jiffies(ir->keyup_jiffies))
+		ir_keyup(ir);
+	spin_unlock_irqrestore(&ir->keylock, flags);
+ }
+
 diff --git a/drivers/media/IR/nuvoton-cir.c b/drivers/media/IR/nuvoton-cir.c
 new file mode 100644
 index 0000000..fdb280e
@@ -2707,3 +2932,38 @@ index eb7fddf..4dd43d4 100644
  u32 ir_g_keycode_from_table(struct input_dev *input_dev, u32 scancode);
  
  /* From ir-raw-event.c */
+diff --git a/drivers/media/IR/keymaps/rc-rc6-mce.c b/drivers/media/IR/keymaps/rc-rc6-mce.c
+index 64264f7..39557ad 100644
+--- a/drivers/media/IR/keymaps/rc-rc6-mce.c
++++ b/drivers/media/IR/keymaps/rc-rc6-mce.c
+@@ -19,6 +19,7 @@ static struct ir_scancode rc6_mce[] = {
+ 
+	{ 0x800f0416, KEY_PLAY },
+	{ 0x800f0418, KEY_PAUSE },
++	{ 0x800f046e, KEY_PLAYPAUSE },
+	{ 0x800f0419, KEY_STOP },
+	{ 0x800f0417, KEY_RECORD },
+ 
+@@ -37,6 +38,8 @@ static struct ir_scancode rc6_mce[] = {
+	{ 0x800f0411, KEY_VOLUMEDOWN },
+	{ 0x800f0412, KEY_CHANNELUP },
+	{ 0x800f0413, KEY_CHANNELDOWN },
++	{ 0x800f043a, KEY_BRIGHTNESSUP },
++	{ 0x800f0480, KEY_BRIGHTNESSDOWN },
+ 
+	{ 0x800f0401, KEY_NUMERIC_1 },
+	{ 0x800f0402, KEY_NUMERIC_2 },
+diff --git a/drivers/media/IR/ir-lirc-codec.c b/drivers/media/IR/ir-lirc-codec.c
+index 77b5946..e63f757 100644
+--- a/drivers/media/IR/ir-lirc-codec.c
++++ b/drivers/media/IR/ir-lirc-codec.c
+@@ -267,7 +267,7 @@ static int ir_lirc_register(struct input_dev *input_dev)
+			features |= LIRC_CAN_SET_SEND_CARRIER;
+ 
+		if (ir_dev->props->s_tx_duty_cycle)
+-			features |= LIRC_CAN_SET_REC_DUTY_CYCLE;
++			features |= LIRC_CAN_SET_SEND_DUTY_CYCLE;
+	}
+ 
+	if (ir_dev->props->s_rx_carrier_range)
+
