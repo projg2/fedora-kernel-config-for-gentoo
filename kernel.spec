@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 41
+%global baserelease 42
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1989,7 +1989,7 @@ fi
 # and build.
 
 %changelog
-* Tue Oct 12 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-41
+* Tue Oct 12 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-42
 - Fix  devicemapper UUID field cannot be assigned after map creation
   (rhbz#641476) thanks pjones@.
 

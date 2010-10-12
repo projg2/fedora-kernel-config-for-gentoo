@@ -91,7 +91,7 @@ index bb6bdc8..d102269 100644
 +		if (hc->uuid) {
 +			DMWARN("Unable to change uuid of device, %s because "
 +			       "uuid is already set to %s",
-+			       param->name, hc->uuid);
++			       old, hc->uuid);
 +			up_write(&_hash_lock);
 +			kfree(new_data);
 +			return -EINVAL;
