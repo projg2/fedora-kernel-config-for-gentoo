@@ -1,0 +1,204 @@
+From ce5fa9851090cc5f3de4139bf0f343eb78d1c568 Mon Sep 17 00:00:00 2001
+From: Peter Jones <pjones@redhat.com>
+Date: Mon, 11 Oct 2010 15:49:28 -0400
+Subject: [PATCH] device-mapper: Allow setting of UUID via rename if not already set
+
+This makes it possible to use DM_DEV_RENAME to add a uuid to a device so
+long as one has not been previously set either with DM_DEV_CREATE or
+with DM_DEV_RENAME. This is needed because sometimes in it's necessary
+to create the device before the uuid is known, and in such cases the
+uuid must be filled in after the creation.
+
+Also bump the minor number to 19.
+
+Signed-off-by: Peter Jones <pjones@redhat.com>
+---
+ drivers/md/dm-ioctl.c    |   95 ++++++++++++++++++++++++++++++++--------------
+ include/linux/dm-ioctl.h |   11 ++++-
+ 2 files changed, 74 insertions(+), 32 deletions(-)
+
+diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
+index bb6bdc8..d102269 100644
+--- a/drivers/md/dm-ioctl.c
++++ b/drivers/md/dm-ioctl.c
+@@ -298,15 +298,15 @@ retry:
+ static int dm_hash_rename(uint32_t cookie, uint32_t *flags, const char *old,
+ 			  const char *new)
+ {
+-	char *new_name, *old_name;
++	char *new_data, *old_data;
+ 	struct hash_cell *hc;
+ 	struct dm_table *table;
+ 
+ 	/*
+ 	 * duplicate new.
+ 	 */
+-	new_name = kstrdup(new, GFP_KERNEL);
+-	if (!new_name)
++	new_data = kstrdup(new, GFP_KERNEL);
++	if (!new_data)
+ 		return -ENOMEM;
+ 
+ 	down_write(&_hash_lock);
+@@ -314,13 +314,18 @@ static int dm_hash_rename(uint32_t cookie, uint32_t *flags, const char *old,
+ 	/*
+ 	 * Is new free ?
+ 	 */
+-	hc = __get_name_cell(new);
++	if (*flags & DM_NEW_UUID_FLAG)
++		hc = __get_uuid_cell(new);
++	else
++		hc = __get_name_cell(new);
+ 	if (hc) {
+-		DMWARN("asked to rename to an already existing name %s -> %s",
++		DMWARN("Unable to change %s on device, %s to one that "
++		       "already exists: %s",
++		       (*flags & DM_NEW_UUID_FLAG) ? "uuid" : "name",
+ 		       old, new);
+ 		dm_put(hc->md);
+ 		up_write(&_hash_lock);
+-		kfree(new_name);
++		kfree(new_data);
+ 		return -EBUSY;
+ 	}
+ 
+@@ -329,22 +334,45 @@ static int dm_hash_rename(uint32_t cookie, uint32_t *flags, const char *old,
+ 	 */
+ 	hc = __get_name_cell(old);
+ 	if (!hc) {
+-		DMWARN("asked to rename a non existent device %s -> %s",
++		DMWARN("Unable to rename non-existent device, %s to %s",
+ 		       old, new);
+ 		up_write(&_hash_lock);
+-		kfree(new_name);
++		kfree(new_data);
+ 		return -ENXIO;
+ 	}
+ 
+-	/*
+-	 * rename and move the name cell.
+-	 */
+-	list_del(&hc->name_list);
+-	old_name = hc->name;
+-	mutex_lock(&dm_hash_cells_mutex);
+-	hc->name = new_name;
+-	mutex_unlock(&dm_hash_cells_mutex);
+-	list_add(&hc->name_list, _name_buckets + hash_str(new_name));
++	if (*flags & DM_NEW_UUID_FLAG) {
++		/*
++		 * Does this device already have a uuid?
++		 */
++		if (hc->uuid) {
++			DMWARN("Unable to change uuid of device, %s because "
++			       "uuid is already set to %s",
++			       param->name, hc->uuid);
++			up_write(&_hash_lock);
++			kfree(new_data);
++			return -EINVAL;
++		}
++		/*
++		 * change uuid and move the uuid cell.
++		 */
++		list_del(&hc->uuid_list);
++		old_data = hc->uuid;
++		mutex_lock(&dm_hash_cells_mutex);
++		hc->uuid = new_data;
++		mutex_unlock(&dm_hash_cells_mutex);
++		list_add(&hc->uuid_list, _uuid_buckets + hash_str(new_data));
++	} else {
++		/*
++		 * rename and move the name cell.
++		 */
++		list_del(&hc->name_list);
++		old_data = hc->name;
++		mutex_lock(&dm_hash_cells_mutex);
++		hc->name = new_data;
++		mutex_unlock(&dm_hash_cells_mutex);
++		list_add(&hc->name_list, _name_buckets + hash_str(new_data));
++	}
+ 
+ 	/*
+ 	 * Wake up any dm event waiters.
+@@ -360,7 +388,7 @@ static int dm_hash_rename(uint32_t cookie, uint32_t *flags, const char *old,
+ 
+ 	dm_put(hc->md);
+ 	up_write(&_hash_lock);
+-	kfree(old_name);
++	kfree(old_data);
+ 	return 0;
+ }
+ 
+@@ -773,23 +801,32 @@ static int invalid_str(char *str, void *end)
+ static int dev_rename(struct dm_ioctl *param, size_t param_size)
+ {
+ 	int r;
+-	char *new_name = (char *) param + param->data_start;
++	char *new_data = (char *) param + param->data_start;
+ 
+-	if (new_name < param->data ||
+-	    invalid_str(new_name, (void *) param + param_size) ||
+-	    strlen(new_name) > DM_NAME_LEN - 1) {
+-		DMWARN("Invalid new logical volume name supplied.");
+-		return -EINVAL;
+-	}
++	if (param->flags & DM_NEW_UUID_FLAG) {
++		if (new_data < param->data ||
++		    invalid_str(new_data, (void *) param + param_size) ||
++		    strlen(new_data) > DM_UUID_LEN - 1) {
++			DMWARN("Invalid new device uuid supplied.");
++			return -EINVAL;
++		}
++	} else {
++		if (new_data < param->data ||
++		    invalid_str(new_data, (void *) param + param_size) ||
++		    strlen(new_data) > DM_NAME_LEN - 1) {
++			DMWARN("Invalid new device name supplied.");
++			return -EINVAL;
++		}
+ 
+-	r = check_name(new_name);
+-	if (r)
+-		return r;
++		r = check_name(new_data);
++		if (r)
++			return r;
++	}
+ 
+ 	param->data_size = 0;
+ 
+ 	return dm_hash_rename(param->event_nr, &param->flags, param->name,
+-			      new_name);
++			      new_data);
+ }
+ 
+ static int dev_set_geometry(struct dm_ioctl *param, size_t param_size)
+diff --git a/include/linux/dm-ioctl.h b/include/linux/dm-ioctl.h
+index 2c445e1..3bbcb3a 100644
+--- a/include/linux/dm-ioctl.h
++++ b/include/linux/dm-ioctl.h
+@@ -266,9 +266,9 @@ enum {
+ #define DM_DEV_SET_GEOMETRY	_IOWR(DM_IOCTL, DM_DEV_SET_GEOMETRY_CMD, struct dm_ioctl)
+ 
+ #define DM_VERSION_MAJOR	4
+-#define DM_VERSION_MINOR	17
+-#define DM_VERSION_PATCHLEVEL	0
+-#define DM_VERSION_EXTRA	"-ioctl (2010-03-05)"
++#define DM_VERSION_MINOR	19
++#define DM_VERSION_PATCHLEVEL	1
++#define DM_VERSION_EXTRA	"-ioctl (2010-10-12)"
+ 
+ /* Status bits */
+ #define DM_READONLY_FLAG	(1 << 0) /* In/Out */
+@@ -321,4 +321,9 @@ enum {
+  */
+ #define DM_UEVENT_GENERATED_FLAG	(1 << 13) /* Out */
+ 
++/*
++ * If set, rename operates on uuid, not name.
++ */
++#define DM_NEW_UUID_FLAG        (1 << 14) /* In */
++
+ #endif				/* _LINUX_DM_IOCTL_H */
+-- 
+1.7.2.3
+

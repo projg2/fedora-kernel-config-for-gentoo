@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 40
+%global baserelease 41
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -752,6 +752,8 @@ Patch13601: btusb-macbookpro-7-1.patch
 Patch13610: libata-it821x-dump-stack-on-cache-flush.patch
 Patch13620: xen-fix-typo-in-xen-irq-fix.patch
 
+Patch13630: dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1397,6 +1399,10 @@ ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
 # temporary fix for typo in Xen -stable patch
 ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
 
+
+# rhbz#641476
+ApplyPatch dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1983,6 +1989,10 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 12 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-41
+- Fix  devicemapper UUID field cannot be assigned after map creation
+  (rhbz#641476) thanks pjones@.
+
 * Mon Oct 11 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.6-40
 - update imon driver to fix issues with key releases and properly
   auto-configure another 0xffdc device (VFD + MCE IR)
