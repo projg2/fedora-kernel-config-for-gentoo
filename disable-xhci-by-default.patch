@@ -1,0 +1,31 @@
+diff --git a/drivers/usb/host/xhci-pci.c b/drivers/usb/host/xhci-pci.c
+index 11482b6..b05ff9c 100644
+--- a/drivers/usb/host/xhci-pci.c
++++ b/drivers/usb/host/xhci-pci.c
+@@ -179,9 +179,25 @@ static struct pci_driver xhci_pci_driver = {
+ 	.shutdown = 	usb_hcd_pci_shutdown,
+ };
+ 
++
++static int enable;
++module_param(enable, int, S_IRUGO);
++MODULE_PARM_DESC(enable, "Enable XHCI host controller");
++
+ int xhci_register_pci(void)
+ {
+-	return pci_register_driver(&xhci_pci_driver);
++	/* xhci will prevent suspend/resume if it's loaded.
++	 * force user to pass xhci.enable=1 to the kernel in order
++	 * to get usb3.0 support for the time being.
++	 *
++	 * ugly yes, but there's few enough users out there using
++	 * usb3.0, and a lot who just have the hardware breaking
++	 * their suspend.
++	 */
++	if (enable)
++		return pci_register_driver(&xhci_pci_driver);
++	else
++		return 0;
+ }
+ 
+ void xhci_unregister_pci(void)

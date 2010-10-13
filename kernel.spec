@@ -619,6 +619,8 @@ Patch204: linux-2.6-debug-always-inline-kzalloc.patch
 
 Patch300: create-sys-fs-cgroup-to-mount-cgroupfs-on.patch
 
+Patch360: disable-xhci-by-default.patch
+
 Patch380: linux-2.6-defaults-pci_no_msi.patch
 Patch381: linux-2.6-defaults-pci_use_crs.patch
 Patch382: linux-2.6-defaults-no-pm-async.patch
@@ -1217,6 +1219,7 @@ ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 # NFSv4
 
 # USB
+ApplyPatch disable-xhci-by-default.patch
 
 # WMI
 
@@ -1989,6 +1992,18 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 13 2010 Kyle McMartin <kyle@redhat.com>
+- Disable XHCI registration by default. Passing xhci.enable=1 to the
+  kernel will enable it, as will
+  echo "options xhci-hcd enable=1" >/etc/modprobe.d/xhci.conf
+  This is necessary, because it is beginning to turn up on more and
+  more boards, and prevents suspend if the device is probed (since it
+  does not implement suspend handlers.)
+  Simply removing the module alias would work (and require you to
+  manually load the driver, like for floppy) however, there's a chance
+  people would like to install onto usb3 drives, so let's provide them
+  with an easy means to enable it (the grub cmdline.)
+
 * Tue Oct 12 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-42
 - Fix  devicemapper UUID field cannot be assigned after map creation
   (rhbz#641476) thanks pjones@.
