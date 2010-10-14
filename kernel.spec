@@ -825,6 +825,9 @@ Patch12590: sctp-do-not-reset-the-packet-during-sctp_packet_config.patch
 #Bonding sysfs WARN_ON (bz 604630)
 Patch12591: linux-2.6-bonding-sysfs-warning.patch
 
+#twsock rcu warning fix (bz 642905)
+Patch12592: linux-2.6-twsock-rcu-lockdep-warn.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1559,6 +1562,9 @@ ApplyPatch sctp-do-not-reset-the-packet-during-sctp_packet_config.patch
 # BZ 604630
 ApplyPatch linux-2.6-bonding-sysfs-warning.patch
 
+# BZ 642905
+ApplyPatch linux-2.6-twsock-rcu-lockdep-warn.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2180,6 +2186,9 @@ fi
 
 
 %changelog
+* Thu Oct 14 2010 Neil Horman <nhorman@redhat.com>
+- Fix rcu warning in twsock_net (bz 642905)
+
 * Wed Oct 06 2010 Neil Horman <nhorman@redhat.com>
 - Fix WARN_ON when you try to create an exiting bond in bond_masters
 
