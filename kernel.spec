@@ -840,6 +840,15 @@ Patch14212: setup_arg_pages-diagnose-excessive-argument-size.patch
 
 Patch14220: xen-fix-typo-in-xen-irq-fix.patch
 
+# rhbz#447489
+Patch14224: skge-quirk-to-4gb-dma.patch
+
+# rhbz#629158
+Patch14225: r8169-fix-dma-allocations.patch
+
+# rhbz#596475
+Patch14226: add-support-for-ricoh-e822-sdhci.patch
+
 # ==============================================================================
 %endif
 
@@ -1547,6 +1556,15 @@ ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
 # Fix typo in Xen patch from 2.6.22 that causes hang on boot.
 ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
 
+# rhbz#629158
+ApplyPatch r8169-fix-dma-allocations.patch
+
+# rhbz#447489
+ApplyPatch skge-quirk-to-4gb-dma.patch
+
+# rhbz#596475
+ApplyPatch add-support-for-ricoh-e822-sdhci.patch
+
 # END OF PATCH APPLICATIONS ====================================================
 %endif
 
@@ -2199,6 +2217,11 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Thu Oct 14 2010 Kyle McMartin <kyle@redhat.com>
+- rhbz447489: skge-quirk-to-4gb-dma.patch
+- rhbz629158: r8169-fix-dma-allocations.patch
+- rhbz596475: add-support-for-ricoh-e822-sdhci.patch
+
 * Mon Sep 27 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.23-170
 - Linux 2.6.32.23
 - Drop merged patches:
