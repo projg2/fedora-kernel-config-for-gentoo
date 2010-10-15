@@ -751,6 +751,8 @@ Patch12595: sched-35-increment-cache_nice_tries-only-on-periodic-lb.patch
 Patch13600: btusb-macbookpro-6-2.patch
 Patch13601: btusb-macbookpro-7-1.patch
 
+Patch13603: pnpacpi-cope-with-invalid-device-ids.patch
+
 Patch13610: libata-it821x-dump-stack-on-cache-flush.patch
 Patch13620: xen-fix-typo-in-xen-irq-fix.patch
 
@@ -1402,6 +1404,8 @@ ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
 # temporary fix for typo in Xen -stable patch
 ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
 
+# rhbz#641468
+ApplyPatch pnpacpi-cope-with-invalid-device-ids.patch
 
 # rhbz#641476
 ApplyPatch dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
@@ -1992,6 +1996,9 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 15 2010 Kyle McMartin <kyle@redhat.com>
+- pnpacpi: cope with invalid device IDs. (rhbz#641468)
+
 * Fri Oct 15 2010 Peter Jones <pjones@redhat.com> 2.6.35.6-44
 - Add a missing dm_put in previous device mapper patch.
 
