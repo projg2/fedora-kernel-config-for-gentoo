@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 43
+%global baserelease 44
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1992,6 +1992,9 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 15 2010 Peter Jones <pjones@redhat.com> 2.6.35.6-44
+- Add a missing dm_put in previous device mapper patch.
+
 * Wed Oct 13 2010 Dave Jones <davej@redhat.com> 2.6.35.6-43
 - bump build.
 
