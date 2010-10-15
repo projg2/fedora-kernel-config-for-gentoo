@@ -62,7 +62,7 @@ index bb6bdc8..d102269 100644
  		return -EBUSY;
  	}
  
-@@ -329,22 +334,45 @@ static int dm_hash_rename(uint32_t cookie, uint32_t *flags, const char *old,
+@@ -329,22 +334,46 @@ static int dm_hash_rename(uint32_t cookie, uint32_t *flags, const char *old,
  	 */
  	hc = __get_name_cell(old);
  	if (!hc) {
@@ -92,6 +92,7 @@ index bb6bdc8..d102269 100644
 +			DMWARN("Unable to change uuid of device, %s because "
 +			       "uuid is already set to %s",
 +			       old, hc->uuid);
++	 		dm_put(hc->md);
 +			up_write(&_hash_lock);
 +			kfree(new_data);
 +			return -EINVAL;
