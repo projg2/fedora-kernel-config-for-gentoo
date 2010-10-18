@@ -831,6 +831,8 @@ Patch12592: linux-2.6-twsock-rcu-lockdep-warn.patch
 Patch13635: r8169-fix-dma-allocations.patch
 Patch13636: skge-quirk-to-4gb-dma.patch
 
+Patch13637: dmar-disable-when-ricoh-multifunction.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1573,6 +1575,9 @@ ApplyPatch r8169-fix-dma-allocations.patch
 # rhbz#447489
 ApplyPatch skge-quirk-to-4gb-dma.patch
 
+# rhbz#605888
+ApplyPatch dmar-disable-when-ricoh-multifunction.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2194,6 +2199,9 @@ fi
 
 
 %changelog
+* Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com>
+- Quirk to disable DMAR with Ricoh card reader/firewire. (rhbz#605888)
+
 * Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com>
 - Two networking fixes (skge, r8169) from sgruska. (rhbz#447489,629158)
 
