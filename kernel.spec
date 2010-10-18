@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 44
+%global baserelease 45
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2013,6 +2013,13 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-45
+- Print a useful message when disabling IOMMU when a Ricoh cardreader
+  is probed.
+- Disable eDP pipe bringup on i915 since it won't work anyway, and changes
+  away from text-mode, resulting in nothing but a backlight on a lot of
+  laptops. (rhbz#639146)
+
 * Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com>
 - ima: Default it to off, pass ima=on to enable. Reduce impact of the option
   when disabled.
