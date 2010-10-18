@@ -1,4 +1,4 @@
-From 6d5193dfd682c5eb6c98024355dd53fbb153cd4f Mon Sep 17 00:00:00 2001
+From 8d2f6746f7f82e1aee2dc40a937b5954cfc73414 Mon Sep 17 00:00:00 2001
 From: Kyle McMartin <kyle@mcmartin.ca>
 Date: Sun, 17 Oct 2010 15:55:32 -0400
 Subject: [PATCH] dmar: disable if ricoh multifunction detected
@@ -8,12 +8,12 @@ Subject: [PATCH] dmar: disable if ricoh multifunction detected
  1 files changed, 10 insertions(+), 0 deletions(-)
 
 diff --git a/drivers/pci/intel-iommu.c b/drivers/pci/intel-iommu.c
-index 4789f8e..5923914 100644
+index 8e499e8..076c5de 100644
 --- a/drivers/pci/intel-iommu.c
 +++ b/drivers/pci/intel-iommu.c
-@@ -3784,6 +3784,16 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0044, quirk_calpella_no_shadow_g
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0062, quirk_calpella_no_shadow_gtt);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x006a, quirk_calpella_no_shadow_gtt);
+@@ -3755,6 +3755,16 @@ static void __devinit quirk_iommu_rwbf(struct pci_dev *dev)
+ 
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2a40, quirk_iommu_rwbf);
  
 +/* https://bugzilla.redhat.com/show_bug.cgi?id=605888 */
 +static void __devinit quirk_ricoh_multifunction(struct pci_dev *dev)
