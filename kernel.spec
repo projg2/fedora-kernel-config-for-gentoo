@@ -758,6 +758,9 @@ Patch13620: xen-fix-typo-in-xen-irq-fix.patch
 
 Patch13630: dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
 
+Patch13635: r8169-fix-dma-allocations.patch
+Patch13636: skge-quirk-to-4gb-dma.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1410,6 +1413,11 @@ ApplyPatch pnpacpi-cope-with-invalid-device-ids.patch
 # rhbz#641476
 ApplyPatch dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
 
+# rhbz#629158
+ApplyPatch r8169-fix-dma-allocations.patch
+# rhbz#447489
+ApplyPatch skge-quirk-to-4gb-dma.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1996,6 +2004,9 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com>
+- Two networking fixes (skge, r8169) from sgruska. (rhbz#447489,629158)
+
 * Fri Oct 15 2010 Kyle McMartin <kyle@redhat.com>
 - pnpacpi: cope with invalid device IDs. (rhbz#641468)
 
