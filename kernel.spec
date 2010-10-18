@@ -828,6 +828,9 @@ Patch12591: linux-2.6-bonding-sysfs-warning.patch
 #twsock rcu warning fix (bz 642905)
 Patch12592: linux-2.6-twsock-rcu-lockdep-warn.patch
 
+Patch13635: r8169-fix-dma-allocations.patch
+Patch13636: skge-quirk-to-4gb-dma.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1565,6 +1568,11 @@ ApplyPatch linux-2.6-bonding-sysfs-warning.patch
 # BZ 642905
 ApplyPatch linux-2.6-twsock-rcu-lockdep-warn.patch
 
+# rhbz#629158
+ApplyPatch r8169-fix-dma-allocations.patch
+# rhbz#447489
+ApplyPatch skge-quirk-to-4gb-dma.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2186,6 +2194,9 @@ fi
 
 
 %changelog
+* Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com>
+- Two networking fixes (skge, r8169) from sgruska. (rhbz#447489,629158)
+
 * Thu Oct 14 2010 Neil Horman <nhorman@redhat.com>
 - Fix rcu warning in twsock_net (bz 642905)
 

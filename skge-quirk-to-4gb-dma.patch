@@ -1,0 +1,98 @@
+From sgruszka@redhat.com Mon Oct 18 05:19:21 2010
+Return-Path: sgruszka@redhat.com
+Received: from zmta02.collab.prod.int.phx2.redhat.com (LHLO
+ zmta02.collab.prod.int.phx2.redhat.com) (10.5.5.32) by
+ mail03.corp.redhat.com with LMTP; Mon, 18 Oct 2010 05:19:21 -0400 (EDT)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by zmta02.collab.prod.int.phx2.redhat.com (Postfix) with ESMTP id A11F69E559;
+	Mon, 18 Oct 2010 05:19:21 -0400 (EDT)
+Received: from zmta02.collab.prod.int.phx2.redhat.com ([127.0.0.1])
+	by localhost (zmta02.collab.prod.int.phx2.redhat.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IhyIgD7E4aj3; Mon, 18 Oct 2010 05:19:21 -0400 (EDT)
+Received: from int-mx08.intmail.prod.int.phx2.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.21])
+	by zmta02.collab.prod.int.phx2.redhat.com (Postfix) with ESMTP id 9007B9E55E;
+	Mon, 18 Oct 2010 05:19:21 -0400 (EDT)
+Received: from localhost (dhcp-1-246.brq.redhat.com [10.34.1.246])
+	by int-mx08.intmail.prod.int.phx2.redhat.com (8.13.8/8.13.8) with ESMTP id o9I9JKsF025385;
+	Mon, 18 Oct 2010 05:19:21 -0400
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+To: stable@kernel.org
+Cc: Kyle McMartin <kmcmartin@redhat.com>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH -stable 2.6.34+] skge: add quirk to limit DMA
+Date: Mon, 18 Oct 2010 11:21:54 +0200
+Message-Id: <1287393714-3720-1-git-send-email-sgruszka@redhat.com>
+X-Scanned-By: MIMEDefang 2.67 on 10.5.11.21
+
+Upstream 392bd0cb000d4aac9e88e4f50823db85e7220688 commit.
+
+Skge devices installed on some Gigabyte motherboards are not able to
+perform 64 dma correctly due to board PCI implementation, so limit
+DMA to 32bit if such boards are detected.
+
+Bug was reported here:
+https://bugzilla.redhat.com/show_bug.cgi?id=447489
+
+Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
+Tested-by: Luya Tshimbalanga <luya@fedoraproject.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/skge.c |   18 +++++++++++++++++-
+ 1 files changed, 17 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/net/skge.c b/drivers/net/skge.c
+index 40e5c46..465ae7e 100644
+--- a/drivers/net/skge.c
++++ b/drivers/net/skge.c
+@@ -43,6 +43,7 @@
+ #include <linux/seq_file.h>
+ #include <linux/mii.h>
+ #include <linux/slab.h>
++#include <linux/dmi.h>
+ #include <asm/irq.h>
+ 
+ #include "skge.h"
+@@ -3868,6 +3869,8 @@ static void __devinit skge_show_addr(struct net_device *dev)
+ 	netif_info(skge, probe, skge->netdev, "addr %pM\n", dev->dev_addr);
+ }
+ 
++static int only_32bit_dma;
++
+ static int __devinit skge_probe(struct pci_dev *pdev,
+ 				const struct pci_device_id *ent)
+ {
+@@ -3889,7 +3892,7 @@ static int __devinit skge_probe(struct pci_dev *pdev,
+ 
+ 	pci_set_master(pdev);
+ 
+-	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
++	if (!only_32bit_dma && !pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
+ 		using_dac = 1;
+ 		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
+ 	} else if (!(err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32)))) {
+@@ -4147,8 +4150,21 @@ static struct pci_driver skge_driver = {
+ 	.shutdown =	skge_shutdown,
+ };
+ 
++static struct dmi_system_id skge_32bit_dma_boards[] = {
++	{
++		.ident = "Gigabyte nForce boards",
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "Gigabyte Technology Co"),
++			DMI_MATCH(DMI_BOARD_NAME, "nForce"),
++		},
++	},
++	{}
++};
++
+ static int __init skge_init_module(void)
+ {
++	if (dmi_check_system(skge_32bit_dma_boards))
++		only_32bit_dma = 1;
+ 	skge_debug_init();
+ 	return pci_register_driver(&skge_driver);
+ }
+-- 
+1.7.1
+
