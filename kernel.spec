@@ -833,6 +833,11 @@ Patch13636: skge-quirk-to-4gb-dma.patch
 
 Patch13637: dmar-disable-when-ricoh-multifunction.patch
 
+Patch13640: mmc-SDHCI_INT_DATA_MASK-typo-error.patch
+Patch13641: mmc-add-ricoh-e822-pci-id.patch
+Patch13642: mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
+Patch13643: sdhci-8-bit-data-transfer-width-support.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1578,6 +1583,11 @@ ApplyPatch skge-quirk-to-4gb-dma.patch
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
+ApplyPatch mmc-SDHCI_INT_DATA_MASK-typo-error.patch
+ApplyPatch sdhci-8-bit-data-transfer-width-support.patch
+ApplyPatch mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
+ApplyPatch mmc-add-ricoh-e822-pci-id.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2199,6 +2209,10 @@ fi
 
 
 %changelog
+* Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com>
+- Add Ricoh e822 support. (rhbz#596475) Thanks to sgruszka@ for
+  sending the patches in.
+
 * Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com> 2.6.34.7-60
 - Quirk to disable DMAR with Ricoh card reader/firewire. (rhbz#605888)
 

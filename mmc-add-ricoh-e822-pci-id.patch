@@ -1,0 +1,46 @@
+From kernel-bounces@lists.fedoraproject.org Thu Sep  9 09:22:43 2010
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+Subject: [PATCH 4/4] mmc: add ricoh e822 pci id
+Date: Thu,  9 Sep 2010 15:22:19 +0200
+
+From: Pablo Castillo <CyberCastle@gmail.com>
+
+Upstream 568133ebda39f7507759a744fa9cf4d5097bad2f commit. 
+
+Signed-off-by: Pablo Castillo <CyberCastle@gmail.com>
+Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
+Tested-by: Gregg Lebovitz <gregg@lebovitz.net>
+Cc: Maxim Levitsky <maximlevitsky@gmail.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+---
+ drivers/mmc/host/sdhci-pci.c |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/mmc/host/sdhci-pci.c b/drivers/mmc/host/sdhci-pci.c
+index 3f2fdde..c4c759d 100644
+--- a/drivers/mmc/host/sdhci-pci.c
++++ b/drivers/mmc/host/sdhci-pci.c
+@@ -415,6 +415,14 @@ static const struct pci_device_id pci_ids[] __devinitdata = {
+ 	},
+ 
+ 	{
++		.vendor         = PCI_VENDOR_ID_RICOH,
++		.device         = 0xe822,
++		.subvendor      = PCI_ANY_ID,
++		.subdevice      = PCI_ANY_ID,
++		.driver_data    = (kernel_ulong_t)&sdhci_ricoh_mmc,
++	},
++
++	{
+ 		.vendor		= PCI_VENDOR_ID_ENE,
+ 		.device		= PCI_DEVICE_ID_ENE_CB712_SD,
+ 		.subvendor	= PCI_ANY_ID,
+-- 
+1.7.1
+
+_______________________________________________
+kernel mailing list
+kernel@lists.fedoraproject.org
+https://admin.fedoraproject.org/mailman/listinfo/kernel
+

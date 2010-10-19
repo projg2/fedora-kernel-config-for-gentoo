@@ -1,0 +1,39 @@
+From kernel-bounces@lists.fedoraproject.org Thu Sep  9 09:22:50 2010
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+Subject: [PATCH 1/4] mmc: SDHCI_INT_DATA_MASK typo error
+Date: Thu,  9 Sep 2010 15:22:16 +0200
+
+From: Zhangfei Gao <zgao6@marvell.com>
+
+Upstream a751a7d69fe91e4640884ae02fe44ddceb7f4cd8 commit.
+
+Signed-off-by: Zhangfei Gao <zgao6@marvell.com>
+Reviewed-by: Matt Fleming <matt@console-pimps.org>
+Cc: <linux-mmc@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+---
+ drivers/mmc/host/sdhci.h |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/mmc/host/sdhci.h b/drivers/mmc/host/sdhci.h
+index 842f46f..9ba4268 100644
+--- a/drivers/mmc/host/sdhci.h
++++ b/drivers/mmc/host/sdhci.h
+@@ -127,7 +127,7 @@
+ #define  SDHCI_INT_DATA_MASK	(SDHCI_INT_DATA_END | SDHCI_INT_DMA_END | \
+ 		SDHCI_INT_DATA_AVAIL | SDHCI_INT_SPACE_AVAIL | \
+ 		SDHCI_INT_DATA_TIMEOUT | SDHCI_INT_DATA_CRC | \
+-		SDHCI_INT_DATA_END_BIT | SDHCI_ADMA_ERROR)
++		SDHCI_INT_DATA_END_BIT | SDHCI_INT_ADMA_ERROR)
+ #define SDHCI_INT_ALL_MASK	((unsigned int)-1)
+ 
+ #define SDHCI_ACMD12_ERR	0x3C
+-- 
+1.7.1
+
+_______________________________________________
+kernel mailing list
+kernel@lists.fedoraproject.org
+https://admin.fedoraproject.org/mailman/listinfo/kernel
+

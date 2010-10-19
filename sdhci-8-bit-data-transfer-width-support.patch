@@ -1,0 +1,57 @@
+From kernel-bounces@lists.fedoraproject.org Thu Sep  9 09:22:34 2010
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+Subject: [PATCH 2/4] sdhci: 8-bit data transfer width support
+Date: Thu,  9 Sep 2010 15:22:17 +0200
+
+From: Kyungmin Park <kyungmin.park@samsung.com>
+
+Upstream ae6d6c92212e94b12ab9365c23fb73acc2c3c2e7 commit.
+
+Some host controllers such as s5pc110 support the WIDE8 feature.
+
+Signed-off-by: Kyungmin Park <kyungmin.park@samsung.com>
+Cc: Grant Likely <grant.likely@secretlab.ca>
+Cc: <linux-mmc@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+---
+ drivers/mmc/host/sdhci.c |    5 +++++
+ drivers/mmc/host/sdhci.h |    1 +
+ 2 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
+index 9d4fdfa..dae42aa 100644
+--- a/drivers/mmc/host/sdhci.c
++++ b/drivers/mmc/host/sdhci.c
+@@ -1149,6 +1149,11 @@ static void sdhci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
+ 
+ 	ctrl = sdhci_readb(host, SDHCI_HOST_CONTROL);
+ 
++	if (ios->bus_width == MMC_BUS_WIDTH_8)
++		ctrl |= SDHCI_CTRL_8BITBUS;
++	else
++		ctrl &= ~SDHCI_CTRL_8BITBUS;
++
+ 	if (ios->bus_width == MMC_BUS_WIDTH_4)
+ 		ctrl |= SDHCI_CTRL_4BITBUS;
+ 	else
+diff --git a/drivers/mmc/host/sdhci.h b/drivers/mmc/host/sdhci.h
+index 9ba4268..6bd46e5 100644
+--- a/drivers/mmc/host/sdhci.h
++++ b/drivers/mmc/host/sdhci.h
+@@ -72,6 +72,7 @@
+ #define   SDHCI_CTRL_ADMA1	0x08
+ #define   SDHCI_CTRL_ADMA32	0x10
+ #define   SDHCI_CTRL_ADMA64	0x18
++#define  SDHCI_CTRL_8BITBUS	0x20
+ 
+ #define SDHCI_POWER_CONTROL	0x29
+ #define  SDHCI_POWER_ON		0x01
+-- 
+1.7.1
+
+_______________________________________________
+kernel mailing list
+kernel@lists.fedoraproject.org
+https://admin.fedoraproject.org/mailman/listinfo/kernel
+
