@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 46
+%global baserelease 47
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -705,6 +705,8 @@ Patch2917: hdpvr-ir-enable.patch
 Patch2918: linux-2.6-v4l-dvb-ir-core-update-2.patch
 Patch2919: linux-2.6-v4l-dvb-ir-core-update-3.patch
 Patch2920: linux-2.6-lirc-ioctl-compat-fixups.patch
+Patch2921: linux-2.6-v4l-dvb-ir-core-update-4.patch
+Patch2922: linux-2.6-v4l-dvb-hdpvr-updates.patch
 
 Patch2950: linux-2.6-via-velocity-dma-fix.patch
 
@@ -1363,6 +1365,8 @@ ApplyPatch hdpvr-ir-enable.patch
 ApplyPatch linux-2.6-v4l-dvb-ir-core-update-2.patch
 ApplyPatch linux-2.6-v4l-dvb-ir-core-update-3.patch
 ApplyPatch linux-2.6-lirc-ioctl-compat-fixups.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-update-4.patch
+ApplyPatch linux-2.6-v4l-dvb-hdpvr-updates.patch
 
 # Fix DMA bug on via-velocity
 ApplyPatch linux-2.6-via-velocity-dma-fix.patch
@@ -2022,6 +2026,10 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 19 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.6-47
+- More ir-core and lirc updates
+- HD-PVR driver updates
+
 * Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-46
 - Add Ricoh e822 support. (rhbz#596475) Thanks to sgruszka@ for
   sending the patches in.
