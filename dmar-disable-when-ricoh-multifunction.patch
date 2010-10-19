@@ -11,14 +11,15 @@ diff --git a/drivers/pci/intel-iommu.c b/drivers/pci/intel-iommu.c
 index 8e499e8..076c5de 100644
 --- a/drivers/pci/intel-iommu.c
 +++ b/drivers/pci/intel-iommu.c
-@@ -3755,6 +3755,17 @@ static void __devinit quirk_iommu_rwbf(struct pci_dev *dev)
+@@ -3755,6 +3755,18 @@ static void __devinit quirk_iommu_rwbf(struct pci_dev *dev)
  
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2a40, quirk_iommu_rwbf);
  
 +/* https://bugzilla.redhat.com/show_bug.cgi?id=605888 */
 +static void __devinit quirk_ricoh_multifunction(struct pci_dev *dev)
 +{
-+	printk(KERN_INFO "intel_iommu: broken Ricoh device %04X detected, disabling...\n");
++	printk(KERN_INFO "intel_iommu: broken Ricoh device %04X detected, disabling...\n",
++		dev->device);
 +	dmar_disabled = 1;
 +}
 +DECLARE_PCI_FIXUP_HEADER(0x1180, 0xe822, quirk_ricoh_multifunction);
