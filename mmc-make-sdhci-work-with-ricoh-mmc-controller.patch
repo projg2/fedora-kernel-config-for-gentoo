@@ -1,0 +1,150 @@
+From kernel-bounces@lists.fedoraproject.org Thu Sep  9 09:24:33 2010
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+Subject: [PATCH 2/3] mmc: make sdhci work with ricoh mmc controller
+Date: Thu,  9 Sep 2010 15:24:11 +0200
+
+From: Maxim Levitsky <maximlevitsky@gmail.com>
+
+Upstream ccc92c23240cdf952ef7cc39ba563910dcbc9cbe commit.
+
+The current way of disabling it is not well tested by vendor and has all
+kinds of bugs that show up on resume from ram/disk.  A very good example
+is a dead SDHCI controller.
+
+Old way of disabling is still supported by continuing to use
+CONFIG_MMC_RICOH_MMC.
+
+Based on 'http://list.drzeus.cx/pipermail/sdhci-devel/2007-December/002085.html'
+Therefore most of the credit for this goes to Andrew de Quincey
+
+Signed-off-by: Maxim Levitsky <maximlevitsky@gmail.com>
+Cc: Andrew de Quincey <adq_dvb@lidskialf.net>
+Acked-by: Philip Langdale <philipl@overt.org>
+Cc: "Rafael J. Wysocki" <rjw@sisk.pl>
+Cc: <linux-mmc@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+---
+ drivers/mmc/host/sdhci-pci.c |   41 +++++++++++++++++++++++++++++++++++++++++
+ drivers/mmc/host/sdhci.c     |    3 ++-
+ drivers/mmc/host/sdhci.h     |    4 ++++
+ 3 files changed, 47 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/mmc/host/sdhci-pci.c b/drivers/mmc/host/sdhci-pci.c
+index 65483fd..e021431 100644
+--- a/drivers/mmc/host/sdhci-pci.c
++++ b/drivers/mmc/host/sdhci-pci.c
+@@ -17,6 +17,7 @@
+ #include <linux/pci.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/slab.h>
++#include <linux/device.h>
+ 
+ #include <linux/mmc/host.h>
+ 
+@@ -84,7 +85,30 @@ static int ricoh_probe(struct sdhci_pci_chip *chip)
+ 	if (chip->pdev->subsystem_vendor == PCI_VENDOR_ID_SAMSUNG ||
+ 	    chip->pdev->subsystem_vendor == PCI_VENDOR_ID_SONY)
+ 		chip->quirks |= SDHCI_QUIRK_NO_CARD_NO_RESET;
++	return 0;
++}
++
++static int ricoh_mmc_probe_slot(struct sdhci_pci_slot *slot)
++{
++	slot->host->caps =
++		((0x21 << SDHCI_TIMEOUT_CLK_SHIFT)
++			& SDHCI_TIMEOUT_CLK_MASK) |
++
++		((0x21 << SDHCI_CLOCK_BASE_SHIFT)
++			& SDHCI_CLOCK_BASE_MASK) |
+ 
++		SDHCI_TIMEOUT_CLK_UNIT |
++		SDHCI_CAN_VDD_330 |
++		SDHCI_CAN_DO_SDMA;
++	return 0;
++}
++
++static int ricoh_mmc_resume(struct sdhci_pci_chip *chip)
++{
++	/* Apply a delay to allow controller to settle */
++	/* Otherwise it becomes confused if card state changed
++		during suspend */
++	msleep(500);
+ 	return 0;
+ }
+ 
+@@ -95,6 +119,15 @@ static const struct sdhci_pci_fixes sdhci_ricoh = {
+ 			  SDHCI_QUIRK_CLOCK_BEFORE_RESET,
+ };
+ 
++static const struct sdhci_pci_fixes sdhci_ricoh_mmc = {
++	.probe_slot	= ricoh_mmc_probe_slot,
++	.resume		= ricoh_mmc_resume,
++	.quirks		= SDHCI_QUIRK_32BIT_DMA_ADDR |
++			  SDHCI_QUIRK_CLOCK_BEFORE_RESET |
++			  SDHCI_QUIRK_NO_CARD_NO_RESET |
++			  SDHCI_QUIRK_MISSING_CAPS
++};
++
+ static const struct sdhci_pci_fixes sdhci_ene_712 = {
+ 	.quirks		= SDHCI_QUIRK_SINGLE_POWER_WRITE |
+ 			  SDHCI_QUIRK_BROKEN_DMA,
+@@ -374,6 +407,14 @@ static const struct pci_device_id pci_ids[] __devinitdata = {
+ 	},
+ 
+ 	{
++		.vendor         = PCI_VENDOR_ID_RICOH,
++		.device         = 0x843,
++		.subvendor      = PCI_ANY_ID,
++		.subdevice      = PCI_ANY_ID,
++		.driver_data    = (kernel_ulong_t)&sdhci_ricoh_mmc,
++	},
++
++	{
+ 		.vendor		= PCI_VENDOR_ID_ENE,
+ 		.device		= PCI_DEVICE_ID_ENE_CB712_SD,
+ 		.subvendor	= PCI_ANY_ID,
+diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
+index 955cad9..8e1dda3 100644
+--- a/drivers/mmc/host/sdhci.c
++++ b/drivers/mmc/host/sdhci.c
+@@ -1692,7 +1692,8 @@ int sdhci_add_host(struct sdhci_host *host)
+ 			host->version);
+ 	}
+ 
+-	caps = sdhci_readl(host, SDHCI_CAPABILITIES);
++	caps = (host->quirks & SDHCI_QUIRK_MISSING_CAPS) ? host->caps :
++		sdhci_readl(host, SDHCI_CAPABILITIES);
+ 
+ 	if (host->quirks & SDHCI_QUIRK_FORCE_DMA)
+ 		host->flags |= SDHCI_USE_SDMA;
+diff --git a/drivers/mmc/host/sdhci.h b/drivers/mmc/host/sdhci.h
+index eb5efe0..030de49 100644
+--- a/drivers/mmc/host/sdhci.h
++++ b/drivers/mmc/host/sdhci.h
+@@ -241,6 +241,8 @@ struct sdhci_host {
+ #define SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN		(1<<25)
+ /* Controller cannot support End Attribute in NOP ADMA descriptor */
+ #define SDHCI_QUIRK_NO_ENDATTR_IN_NOPDESC		(1<<26)
++/* Controller is missing device caps. Use caps provided by host */
++#define SDHCI_QUIRK_MISSING_CAPS			(1<<27)
+ 
+ 	int			irq;		/* Device IRQ */
+ 	void __iomem *		ioaddr;		/* Mapped address */
+@@ -293,6 +295,8 @@ struct sdhci_host {
+ 
+ 	struct timer_list	timer;		/* Timer for timeouts */
+ 
++	unsigned int		caps;		/* Alternative capabilities */
++
+ 	unsigned long		private[0] ____cacheline_aligned;
+ };
+ 
+-- 
+1.7.1
+
+_______________________________________________
+kernel mailing list
+kernel@lists.fedoraproject.org
+https://admin.fedoraproject.org/mailman/listinfo/kernel
+

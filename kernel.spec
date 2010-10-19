@@ -765,6 +765,10 @@ Patch13637: dmar-disable-when-ricoh-multifunction.patch
 
 Patch13638: ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
+Patch13640: sdhci-8-bit-data-transfer-width-support.patch
+Patch13641: mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
+Patch13642: mmc-add-ricoh-e822-pci-id.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1427,6 +1431,11 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 ApplyPatch ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
+# rhbz#596475
+ApplyPatch sdhci-8-bit-data-transfer-width-support.patch
+ApplyPatch mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
+ApplyPatch mmc-add-ricoh-e822-pci-id.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2013,6 +2022,10 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com>
+- Add Ricoh e822 support. (rhbz#596475) Thanks to sgruszka@ for
+  sending the patches in.
+
 * Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-45
 - Print a useful message when disabling IOMMU when a Ricoh cardreader
   is probed.
@@ -2028,7 +2041,7 @@ fi
 - Quirk to disable DMAR with Ricoh card reader/firewire. (rhbz#605888)
 
 * Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com>
-- Two networking fixes (skge, r8169) from sgruska. (rhbz#447489,629158)
+- Two networking fixes (skge, r8169) from sgruszka@. (rhbz#447489,629158)
 
 * Fri Oct 15 2010 Kyle McMartin <kyle@redhat.com>
 - pnpacpi: cope with invalid device IDs. (rhbz#641468)
