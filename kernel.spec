@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 60
+%global baserelease 61
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2209,7 +2209,7 @@ fi
 
 
 %changelog
-* Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com>
+* Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com> 2.6.34.7-61
 - Add Ricoh e822 support. (rhbz#596475) Thanks to sgruszka@ for
   sending the patches in.
 
