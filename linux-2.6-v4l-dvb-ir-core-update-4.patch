@@ -1,3 +1,12 @@
+Commits are primarily from the staging/v2.6.37 branch of the media_tree:
+
+http://git.linuxtv.org/media_tree.git?a=shortlog;h=refs/heads/staging/v2.6.37
+
+Some of the commits aren't there yet though, they're found in Jarod's IR
+staging branch (which tracks the above), over here:
+
+http://git.kernel.org/?p=linux/kernel/git/jarod/linux-2.6-lirc.git;a=shortlog;h=refs/heads/staging
+
 commit 142c766f64248ef57d46e6654c4b4cd2654754f1
 Author: Jarod Wilson <jarod@redhat.com>
 Date:   Tue Oct 12 10:41:27 2010 -0300
