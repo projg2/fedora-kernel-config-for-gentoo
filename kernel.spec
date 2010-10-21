@@ -840,6 +840,14 @@ Patch14210: execve-improve-interactivity-with-large-arguments.patch
 Patch14211: execve-make-responsive-to-sigkill-with-large-arguments.patch
 Patch14212: setup_arg_pages-diagnose-excessive-argument-size.patch
 
+# rhbz#447489
+Patch14224: skge-quirk-to-4gb-dma.patch
+
+# rhbz#629158
+Patch14225: r8169-fix-dma-allocations.patch
+
+# rhbz#596475
+Patch14226: add-support-for-ricoh-e822-sdhci.patch
 
 Patch19997: xen.pvops.pre.patch
 Patch19998: xen.pvops.patch
@@ -1549,6 +1557,14 @@ ApplyPatch execve-improve-interactivity-with-large-arguments.patch
 ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
 ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
 
+# rhbz#629158
+ApplyPatch r8169-fix-dma-allocations.patch
+
+# rhbz#447489
+ApplyPatch skge-quirk-to-4gb-dma.patch
+
+# rhbz#596475
+ApplyPatch add-support-for-ricoh-e822-sdhci.patch
 
 ApplyPatch xen.pvops.pre.patch
 ApplyPatch xen.pvops.patch
@@ -2206,6 +2222,11 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Thu Oct 14 2010 Kyle McMartin <kyle@redhat.com>
+- rhbz447489: skge-quirk-to-4gb-dma.patch
+- rhbz629158: r8169-fix-dma-allocations.patch
+- rhbz596475: add-support-for-ricoh-e822-sdhci.patch
+
 * Wed Oct 06 2010 Michael Young <m.a.young@durham.ac.uk>
 - update pvops including memory and irq fixes
 - Drop xen-fix-typo-in-xen-irq-fix.patch as it is in the pvops patch
