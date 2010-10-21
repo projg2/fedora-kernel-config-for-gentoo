@@ -2222,7 +2222,7 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
-* Thu Oct 21 Michael Young <m.a.young@durham.ac.uk>
+* Thu Oct 21 2010 Michael Young <m.a.young@durham.ac.uk>
 - update pvops including event channels fix
 
 * Thu Oct 14 2010 Kyle McMartin <kyle@redhat.com>
