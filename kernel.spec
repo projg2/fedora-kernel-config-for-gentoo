@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 170
+%global baserelease 170.1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2222,6 +2222,9 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Thu Oct 21 Michael Young <m.a.young@durham.ac.uk>
+- update pvops including event channels fix
+
 * Thu Oct 14 2010 Kyle McMartin <kyle@redhat.com>
 - rhbz447489: skge-quirk-to-4gb-dma.patch
 - rhbz629158: r8169-fix-dma-allocations.patch
