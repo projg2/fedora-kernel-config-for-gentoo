@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 47
+%global baserelease 48
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -772,6 +772,10 @@ Patch13642: mmc-add-ricoh-e822-pci-id.patch
 Patch13645: tpm-autodetect-itpm-devices.patch
 Patch13646: depessimize-rds_copy_page_user.patch
 
+Patch13650: drm-i915-sanity-check-pread-pwrite.patch
+Patch13651: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
+Patch13652: v4l1-fix-32-bit-compat-microcode-loading-translation.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1442,6 +1446,13 @@ ApplyPatch mmc-add-ricoh-e822-pci-id.patch
 ApplyPatch depessimize-rds_copy_page_user.patch
 ApplyPatch tpm-autodetect-itpm-devices.patch
 
+# CVE-2010-2962
+ApplyPatch drm-i915-sanity-check-pread-pwrite.patch
+# CVE-2010-3698
+ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
+# CVE-2010-2963
+ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2028,6 +2039,14 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 22 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.35.6-48
+- drm-i915-sanity-check-pread-pwrite.patch;
+   fix CVE-2010-2962, arbitrary kernel memory write via i915 GEM ioctl
+- kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch;
+   fix CVE-2010-3698, kvm: invalid selector in fs/gs causes kernel panic
+- v4l1-fix-32-bit-compat-microcode-loading-translation.patch;
+   fixes CVE-2010-2963, v4l: VIDIOCSMICROCODE arbitrary write
+
 * Fri Oct 22 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-47
 - tpm-autodetect-itpm-devices.patch: Auto-fix TPM issues on various
   laptops which prevented suspend/resume.
