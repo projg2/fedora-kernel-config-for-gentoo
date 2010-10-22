@@ -1,0 +1,146 @@
+From sgruszka@redhat.com Wed Oct 20 10:35:02 2010
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+To: stable@kernel.org
+Subject: [PATCH -stable 2.6.34 2/2] rt2x00: Fix failed SLEEP->AWAKE and AWAKE->SLEEP transitions.
+Date: Wed, 20 Oct 2010 16:37:28 +0200
+
+From: Gertjan van Wingerde <gwingerde@gmail.com>
+
+commit 9655a6ec19ca656af246fb80817aa337892aefbf upstream.
+
+Together with "rt2x00: Disable auto wakeup before waking up device"
+fix kernel oops/hang reported here:
+https://bugzilla.redhat.com/show_bug.cgi?id=642031
+
+(Based on a patch created by Ondrej Zary)
+
+In some circumstances the Ralink devices do not properly go to sleep
+or wake up, with timeouts occurring.
+Fix this by retrying telling the device that it has to wake up or
+sleep.
+
+Signed-off-by: Gertjan van Wingerde <gwingerde@gmail.com>
+Acked-by: Ivo van Doorn <IvDoorn@gmail.com>
+Signed-off-by: John W. Linville <linville@tuxdriver.com>
+---
+ drivers/net/wireless/rt2x00/rt2400pci.c |    9 +++++----
+ drivers/net/wireless/rt2x00/rt2500pci.c |    9 +++++----
+ drivers/net/wireless/rt2x00/rt61pci.c   |    7 ++++---
+ drivers/net/wireless/rt2x00/rt73usb.c   |    7 ++++---
+ 4 files changed, 18 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/net/wireless/rt2x00/rt2400pci.c b/drivers/net/wireless/rt2x00/rt2400pci.c
+index 4ba7b038..ad2c98a 100644
+--- a/drivers/net/wireless/rt2x00/rt2400pci.c
++++ b/drivers/net/wireless/rt2x00/rt2400pci.c
+@@ -926,7 +926,7 @@ static void rt2400pci_disable_radio(struct rt2x00_dev *rt2x00dev)
+ static int rt2400pci_set_state(struct rt2x00_dev *rt2x00dev,
+ 			       enum dev_state state)
+ {
+-	u32 reg;
++	u32 reg, reg2;
+ 	unsigned int i;
+ 	char put_to_sleep;
+ 	char bbp_state;
+@@ -947,11 +947,12 @@ static int rt2400pci_set_state(struct rt2x00_dev *rt2x00dev,
+ 	 * device has entered the correct state.
+ 	 */
+ 	for (i = 0; i < REGISTER_BUSY_COUNT; i++) {
+-		rt2x00pci_register_read(rt2x00dev, PWRCSR1, &reg);
+-		bbp_state = rt2x00_get_field32(reg, PWRCSR1_BBP_CURR_STATE);
+-		rf_state = rt2x00_get_field32(reg, PWRCSR1_RF_CURR_STATE);
++		rt2x00pci_register_read(rt2x00dev, PWRCSR1, &reg2);
++		bbp_state = rt2x00_get_field32(reg2, PWRCSR1_BBP_CURR_STATE);
++		rf_state = rt2x00_get_field32(reg2, PWRCSR1_RF_CURR_STATE);
+ 		if (bbp_state == state && rf_state == state)
+ 			return 0;
++		rt2x00pci_register_write(rt2x00dev, PWRCSR1, reg);
+ 		msleep(10);
+ 	}
+ 
+diff --git a/drivers/net/wireless/rt2x00/rt2500pci.c b/drivers/net/wireless/rt2x00/rt2500pci.c
+index 89d132d..41da3d2 100644
+--- a/drivers/net/wireless/rt2x00/rt2500pci.c
++++ b/drivers/net/wireless/rt2x00/rt2500pci.c
+@@ -1084,7 +1084,7 @@ static void rt2500pci_disable_radio(struct rt2x00_dev *rt2x00dev)
+ static int rt2500pci_set_state(struct rt2x00_dev *rt2x00dev,
+ 			       enum dev_state state)
+ {
+-	u32 reg;
++	u32 reg, reg2;
+ 	unsigned int i;
+ 	char put_to_sleep;
+ 	char bbp_state;
+@@ -1105,11 +1105,12 @@ static int rt2500pci_set_state(struct rt2x00_dev *rt2x00dev,
+ 	 * device has entered the correct state.
+ 	 */
+ 	for (i = 0; i < REGISTER_BUSY_COUNT; i++) {
+-		rt2x00pci_register_read(rt2x00dev, PWRCSR1, &reg);
+-		bbp_state = rt2x00_get_field32(reg, PWRCSR1_BBP_CURR_STATE);
+-		rf_state = rt2x00_get_field32(reg, PWRCSR1_RF_CURR_STATE);
++		rt2x00pci_register_read(rt2x00dev, PWRCSR1, &reg2);
++		bbp_state = rt2x00_get_field32(reg2, PWRCSR1_BBP_CURR_STATE);
++		rf_state = rt2x00_get_field32(reg2, PWRCSR1_RF_CURR_STATE);
+ 		if (bbp_state == state && rf_state == state)
+ 			return 0;
++		rt2x00pci_register_write(rt2x00dev, PWRCSR1, reg);
+ 		msleep(10);
+ 	}
+ 
+diff --git a/drivers/net/wireless/rt2x00/rt61pci.c b/drivers/net/wireless/rt2x00/rt61pci.c
+index 2e3076f..6a74baf 100644
+--- a/drivers/net/wireless/rt2x00/rt61pci.c
++++ b/drivers/net/wireless/rt2x00/rt61pci.c
+@@ -1689,7 +1689,7 @@ static void rt61pci_disable_radio(struct rt2x00_dev *rt2x00dev)
+ 
+ static int rt61pci_set_state(struct rt2x00_dev *rt2x00dev, enum dev_state state)
+ {
+-	u32 reg;
++	u32 reg, reg2;
+ 	unsigned int i;
+ 	char put_to_sleep;
+ 
+@@ -1706,10 +1706,11 @@ static int rt61pci_set_state(struct rt2x00_dev *rt2x00dev, enum dev_state state)
+ 	 * device has entered the correct state.
+ 	 */
+ 	for (i = 0; i < REGISTER_BUSY_COUNT; i++) {
+-		rt2x00pci_register_read(rt2x00dev, MAC_CSR12, &reg);
+-		state = rt2x00_get_field32(reg, MAC_CSR12_BBP_CURRENT_STATE);
++		rt2x00pci_register_read(rt2x00dev, MAC_CSR12, &reg2);
++		state = rt2x00_get_field32(reg2, MAC_CSR12_BBP_CURRENT_STATE);
+ 		if (state == !put_to_sleep)
+ 			return 0;
++		rt2x00pci_register_write(rt2x00dev, MAC_CSR12, reg);
+ 		msleep(10);
+ 	}
+ 
+diff --git a/drivers/net/wireless/rt2x00/rt73usb.c b/drivers/net/wireless/rt2x00/rt73usb.c
+index e35bd19..6e0d82e 100644
+--- a/drivers/net/wireless/rt2x00/rt73usb.c
++++ b/drivers/net/wireless/rt2x00/rt73usb.c
+@@ -1366,7 +1366,7 @@ static void rt73usb_disable_radio(struct rt2x00_dev *rt2x00dev)
+ 
+ static int rt73usb_set_state(struct rt2x00_dev *rt2x00dev, enum dev_state state)
+ {
+-	u32 reg;
++	u32 reg, reg2;
+ 	unsigned int i;
+ 	char put_to_sleep;
+ 
+@@ -1383,10 +1383,11 @@ static int rt73usb_set_state(struct rt2x00_dev *rt2x00dev, enum dev_state state)
+ 	 * device has entered the correct state.
+ 	 */
+ 	for (i = 0; i < REGISTER_BUSY_COUNT; i++) {
+-		rt2x00usb_register_read(rt2x00dev, MAC_CSR12, &reg);
+-		state = rt2x00_get_field32(reg, MAC_CSR12_BBP_CURRENT_STATE);
++		rt2x00usb_register_read(rt2x00dev, MAC_CSR12, &reg2);
++		state = rt2x00_get_field32(reg2, MAC_CSR12_BBP_CURRENT_STATE);
+ 		if (state == !put_to_sleep)
+ 			return 0;
++		rt2x00usb_register_write(rt2x00dev, MAC_CSR12, reg);
+ 		msleep(10);
+ 	}
+ 
+-- 
+1.7.2.3
+

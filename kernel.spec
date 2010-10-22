@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 61
+%global baserelease 62
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -838,6 +838,12 @@ Patch13641: mmc-add-ricoh-e822-pci-id.patch
 Patch13642: mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 Patch13643: sdhci-8-bit-data-transfer-width-support.patch
 
+Patch13645: depessimize-rds_copy_page_user.patch
+Patch13646: tpm-autodetect-itpm-devices.patch
+
+Patch13647: rt2x00-disable-auto-wakeup-before-waking-up-device.patch
+Patch13648: rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1588,6 +1594,12 @@ ApplyPatch sdhci-8-bit-data-transfer-width-support.patch
 ApplyPatch mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 ApplyPatch mmc-add-ricoh-e822-pci-id.patch
 
+ApplyPatch depessimize-rds_copy_page_user.patch
+ApplyPatch tpm-autodetect-itpm-devices.patch
+
+ApplyPatch rt2x00-disable-auto-wakeup-before-waking-up-device.patch
+ApplyPatch rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2209,6 +2221,13 @@ fi
 
 
 %changelog
+* Fri Oct 22 2010 Kyle McMartin <kyle@redhat.cmo> 2.6.34.7-62
+- tpm-autodetect-itpm-devices.patch: Auto-fix TPM issues on various
+  laptops which prevented suspend/resume.
+- depessimize-rds_copy_page_user.patch: Fix CVE-2010-3904, local
+  privilege escalation via RDS protocol.
+- rt2x00: Backport fixes for #642031 from Stanislaw Gruszka.
+
 * Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com> 2.6.34.7-61
 - Add Ricoh e822 support. (rhbz#596475) Thanks to sgruszka@ for
   sending the patches in.
