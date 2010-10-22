@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 46
+%global baserelease 47
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -769,6 +769,9 @@ Patch13640: sdhci-8-bit-data-transfer-width-support.patch
 Patch13641: mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 Patch13642: mmc-add-ricoh-e822-pci-id.patch
 
+Patch13645: tpm-autodetect-itpm-devices.patch
+Patch13646: depessimize-rds_copy_page_user.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1436,6 +1439,9 @@ ApplyPatch sdhci-8-bit-data-transfer-width-support.patch
 ApplyPatch mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 ApplyPatch mmc-add-ricoh-e822-pci-id.patch
 
+ApplyPatch depessimize-rds_copy_page_user.patch
+ApplyPatch tpm-autodetect-itpm-devices.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2022,6 +2028,12 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 22 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-47
+- tpm-autodetect-itpm-devices.patch: Auto-fix TPM issues on various
+  laptops which prevented suspend/resume.
+- depessimize-rds_copy_page_user.patch: Fix CVE-2010-3904, local
+  privilege escalation via RDS protocol.
+
 * Mon Oct 18 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.6-46
 - Add Ricoh e822 support. (rhbz#596475) Thanks to sgruszka@ for
   sending the patches in.
