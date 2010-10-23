@@ -728,14 +728,16 @@ Patch1824: drm-intel-next.patch
 Patch1825: drm-intel-acpi-populate-didl.patch
 Patch1826: drm-intel-make-lvds-work.patch
 #Patch1827: linux-2.6-intel-agp-clear-gtt.patch
-Patch1828: drm-nouveau-g80-ctxprog.patch
-Patch1831: drm-nouveau-tvout-disable.patch
-Patch1832: drm-nouveau-safetile-getparam.patch
-Patch1844: drm-nouveau-kconfig.patch
-Patch1845: drm-nouveau-mutex.patch
-Patch1846: drm-nouveau-update.patch
-Patch1847: drm-nouveau-d620.patch
-Patch1848: drm-nouveau-nva3-noaccel.patch
+Patch1828: drm-i915-sanity-check-pread-pwrite.patch
+
+Patch1850: drm-nouveau-g80-ctxprog.patch
+Patch1851: drm-nouveau-tvout-disable.patch
+Patch1852: drm-nouveau-safetile-getparam.patch
+Patch1853: drm-nouveau-kconfig.patch
+Patch1854: drm-nouveau-mutex.patch
+Patch1855: drm-nouveau-update.patch
+Patch1856: drm-nouveau-d620.patch
+Patch1857: drm-nouveau-nva3-noaccel.patch
 
 # kludge to make ich9 e1000 work
 Patch2000: linux-2.6-e1000-ich9.patch
@@ -1467,6 +1469,8 @@ ApplyPatch drm-intel-acpi-populate-didl.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 # gm45 stability fixes
 ApplyPatch drm-intel-945gm-stability-fixes.patch
+# CVE-2010-2962
+ApplyPatch drm-i915-sanity-check-pread-pwrite.patch
 
 ApplyPatch drm-nouveau-g80-ctxprog.patch
 ApplyPatch drm-nouveau-tvout-disable.patch
@@ -2226,6 +2230,8 @@ fi
    xen-fix-typo-in-xen-irq-fix.patch
    r8169-fix-dma-allocations.patch
    skge-quirk-to-4gb-dma.patch
+- drm-i915-sanity-check-pread-pwrite.patch: backport fix for
+   CVE-2010-2962
 
 * Thu Oct 14 2010 Kyle McMartin <kyle@redhat.com>
 - rhbz447489: skge-quirk-to-4gb-dma.patch
