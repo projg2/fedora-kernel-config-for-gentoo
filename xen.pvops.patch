@@ -49,19 +49,6 @@ index 29a6ff8..81f9b94 100644
  
    Settings for the IBM Calgary hardware IOMMU currently found in IBM
    pSeries and xSeries machines:
-diff --git a/Makefile b/Makefile
-index 6a29b82..83813cc 100644
---- a/Makefile
-+++ b/Makefile
-@@ -1,7 +1,7 @@
- VERSION = 2
- PATCHLEVEL = 6
- SUBLEVEL = 32
--EXTRAVERSION = .23
-+EXTRAVERSION = .24
- NAME = Man-Eating Seals of Antiquity
- 
- # *DOCUMENTATION*
 diff --git a/arch/ia64/include/asm/dma-mapping.h b/arch/ia64/include/asm/dma-mapping.h
 index 8d3c79c..7d09a09 100644
 --- a/arch/ia64/include/asm/dma-mapping.h
@@ -4462,7 +4449,7 @@ index 942ccf1..fd3803e 100644
 +}
 +#endif
 diff --git a/arch/x86/xen/mmu.c b/arch/x86/xen/mmu.c
-index 350a3de..15bbccd 100644
+index 350a3de..ebb74ec 100644
 --- a/arch/x86/xen/mmu.c
 +++ b/arch/x86/xen/mmu.c
 @@ -42,6 +42,7 @@
@@ -4518,7 +4505,7 @@ index 350a3de..15bbccd 100644
  
  #ifdef CONFIG_X86_64
  /* l3 pud for userspace vsyscall mapping */
-@@ -155,49 +170,182 @@ DEFINE_PER_CPU(unsigned long, xen_current_cr3);	 /* actual vcpu cr3 */
+@@ -155,49 +170,202 @@ DEFINE_PER_CPU(unsigned long, xen_current_cr3);	 /* actual vcpu cr3 */
   */
  #define USER_LIMIT	((STACK_TOP_MAX + PGDIR_SIZE - 1) & PGDIR_MASK)
  
@@ -4538,6 +4525,8 @@ index 350a3de..15bbccd 100644
 + *    / \      / \         /           /
 + *  p2m p2m p2m p2m p2m p2m p2m ...
 + *
++ * The p2m_mid_mfn pages are mapped by p2m_top_mfn_p.
++ *
 + * The p2m_top and p2m_top_mfn levels are limited to 1 page, so the
 + * maximum representable pseudo-physical address space is:
 + *  P2M_TOP_PER_PAGE * P2M_MID_PER_PAGE * P2M_PER_PAGE pages
@@ -4546,35 +4535,36 @@ index 350a3de..15bbccd 100644
 + * unsigned long (8 bytes on 64-bit, 4 bytes on 32), leading to
 + * 512 and 1024 entries respectively. 
 + */
++
++unsigned long xen_max_p2m_pfn __read_mostly;
  
 -#define P2M_ENTRIES_PER_PAGE	(PAGE_SIZE / sizeof(unsigned long))
 -#define TOP_ENTRIES		(MAX_DOMAIN_PAGES / P2M_ENTRIES_PER_PAGE)
-+unsigned long xen_max_p2m_pfn __read_mostly;
- 
--/* Placeholder for holes in the address space */
--static unsigned long p2m_missing[P2M_ENTRIES_PER_PAGE] __page_aligned_data =
--		{ [ 0 ... P2M_ENTRIES_PER_PAGE-1 ] = ~0UL };
 +#define P2M_PER_PAGE		(PAGE_SIZE / sizeof(unsigned long))
 +#define P2M_MID_PER_PAGE	(PAGE_SIZE / sizeof(unsigned long *))
 +#define P2M_TOP_PER_PAGE	(PAGE_SIZE / sizeof(unsigned long **))
  
+-/* Placeholder for holes in the address space */
+-static unsigned long p2m_missing[P2M_ENTRIES_PER_PAGE] __page_aligned_data =
+-		{ [ 0 ... P2M_ENTRIES_PER_PAGE-1 ] = ~0UL };
++#define MAX_P2M_PFN		(P2M_TOP_PER_PAGE * P2M_MID_PER_PAGE * P2M_PER_PAGE)
+ 
 - /* Array of pointers to pages containing p2m entries */
 -static unsigned long *p2m_top[TOP_ENTRIES] __page_aligned_data =
 -		{ [ 0 ... TOP_ENTRIES - 1] = &p2m_missing[0] };
-+#define MAX_P2M_PFN		(P2M_TOP_PER_PAGE * P2M_MID_PER_PAGE * P2M_PER_PAGE)
- 
--/* Arrays of p2m arrays expressed in mfns used for save/restore */
--static unsigned long p2m_top_mfn[TOP_ENTRIES] __page_aligned_bss;
 +/* Placeholders for holes in the address space */
 +static RESERVE_BRK_ARRAY(unsigned long, p2m_missing, P2M_PER_PAGE);
 +static RESERVE_BRK_ARRAY(unsigned long *, p2m_mid_missing, P2M_MID_PER_PAGE);
 +static RESERVE_BRK_ARRAY(unsigned long, p2m_mid_missing_mfn, P2M_MID_PER_PAGE);
  
--static unsigned long p2m_top_mfn_list[TOP_ENTRIES / P2M_ENTRIES_PER_PAGE]
--	__page_aligned_bss;
+-/* Arrays of p2m arrays expressed in mfns used for save/restore */
+-static unsigned long p2m_top_mfn[TOP_ENTRIES] __page_aligned_bss;
 +static RESERVE_BRK_ARRAY(unsigned long **, p2m_top, P2M_TOP_PER_PAGE);
 +static RESERVE_BRK_ARRAY(unsigned long, p2m_top_mfn, P2M_TOP_PER_PAGE);
-+
++static RESERVE_BRK_ARRAY(unsigned long *, p2m_top_mfn_p, P2M_TOP_PER_PAGE);
+ 
+-static unsigned long p2m_top_mfn_list[TOP_ENTRIES / P2M_ENTRIES_PER_PAGE]
+-	__page_aligned_bss;
 +RESERVE_BRK(p2m_mid, PAGE_SIZE * (MAX_DOMAIN_PAGES / (P2M_PER_PAGE * P2M_MID_PER_PAGE)));
 +RESERVE_BRK(p2m_mid_mfn, PAGE_SIZE * (MAX_DOMAIN_PAGES / (P2M_PER_PAGE * P2M_MID_PER_PAGE)));
  
@@ -4595,8 +4585,9 @@ index 350a3de..15bbccd 100644
  {
 -	return pfn % P2M_ENTRIES_PER_PAGE;
 +	return pfn % P2M_PER_PAGE;
-+}
-+
+ }
+ 
+-/* Build the parallel p2m_top_mfn structures */
 +static void p2m_top_init(unsigned long ***top)
 +{
 +	unsigned i;
@@ -4611,6 +4602,14 @@ index 350a3de..15bbccd 100644
 +
 +	for (i = 0; i < P2M_TOP_PER_PAGE; i++)
 +		top[i] = virt_to_mfn(p2m_mid_missing_mfn);
++}
++
++static void p2m_top_mfn_p_init(unsigned long **top)
++{
++	unsigned i;
++
++	for (i = 0; i < P2M_TOP_PER_PAGE; i++)
++		top[i] = p2m_mid_missing_mfn;
 +}
 +
 +static void p2m_mid_init(unsigned long **mid)
@@ -4653,9 +4652,8 @@ index 350a3de..15bbccd 100644
 +{
 +	return apply_to_page_range(mm, address, PAGE_SIZE,
 +				   lookup_pte_fn, ptep);
- }
- 
--/* Build the parallel p2m_top_mfn structures */
++}
++
 +EXPORT_SYMBOL(create_lookup_pte_addr);
 +
 +/*
@@ -4671,7 +4669,7 @@ index 350a3de..15bbccd 100644
  void xen_build_mfn_list_list(void)
  {
 -	unsigned pfn, idx;
-+	unsigned pfn;
++	unsigned long pfn;
  
 -	for (pfn = 0; pfn < MAX_DOMAIN_PAGES; pfn += P2M_ENTRIES_PER_PAGE) {
 -		unsigned topidx = p2m_top_index(pfn);
@@ -4679,10 +4677,16 @@ index 350a3de..15bbccd 100644
 +	if (p2m_top_mfn == NULL) {
 +		p2m_mid_missing_mfn = extend_brk(PAGE_SIZE, PAGE_SIZE);
 +		p2m_mid_mfn_init(p2m_mid_missing_mfn);
++
++		p2m_top_mfn_p = extend_brk(PAGE_SIZE, PAGE_SIZE);
++		p2m_top_mfn_p_init(p2m_top_mfn_p);
  
 -		p2m_top_mfn[topidx] = virt_to_mfn(p2m_top[topidx]);
 +		p2m_top_mfn = extend_brk(PAGE_SIZE, PAGE_SIZE);
 +		p2m_top_mfn_init(p2m_top_mfn);
++	} else {
++		/* Reinitialise, mfn's all change after migration */
++		p2m_mid_mfn_init(p2m_mid_missing_mfn);
  	}
  
 -	for (idx = 0; idx < ARRAY_SIZE(p2m_top_mfn_list); idx++) {
@@ -4692,18 +4696,22 @@ index 350a3de..15bbccd 100644
 +		unsigned topidx = p2m_top_index(pfn);
 +		unsigned mididx = p2m_mid_index(pfn);
 +		unsigned long **mid;
-+		unsigned long mid_mfn;
 +		unsigned long *mid_mfn_p;
 +
 +		mid = p2m_top[topidx];
++		mid_mfn_p = p2m_top_mfn_p[topidx];
 +
 +		/* Don't bother allocating any mfn mid levels if
-+		   they're just missing */
-+		if (mid[mididx] == p2m_missing)
++		 * they're just missing, just update the stored mfn,
++		 * since all could have changed over a migrate.
++		 */
++		if (mid == p2m_mid_missing) {
++			BUG_ON(mididx);
++			BUG_ON(mid_mfn_p != p2m_mid_missing_mfn);
++			p2m_top_mfn[topidx] = virt_to_mfn(p2m_mid_missing_mfn);
++			pfn += (P2M_MID_PER_PAGE - 1) * P2M_PER_PAGE;
 +			continue;
-+
-+		mid_mfn = p2m_top_mfn[topidx];
-+		mid_mfn_p = mfn_to_virt(mid_mfn);
++		}
 +
 +		if (mid_mfn_p == p2m_mid_missing_mfn) {
 +			/*
@@ -4715,16 +4723,15 @@ index 350a3de..15bbccd 100644
 +			mid_mfn_p = extend_brk(PAGE_SIZE, PAGE_SIZE);
 +			p2m_mid_mfn_init(mid_mfn_p);
 +
-+			mid_mfn = virt_to_mfn(mid_mfn_p);
-+			
-+			p2m_top_mfn[topidx] = mid_mfn;
++			p2m_top_mfn_p[topidx] = mid_mfn_p;
 +		}
 +
++		p2m_top_mfn[topidx] = virt_to_mfn(mid_mfn_p);
 +		mid_mfn_p[mididx] = virt_to_mfn(mid[mididx]);
  	}
  }
  
-@@ -206,8 +354,8 @@ void xen_setup_mfn_list_list(void)
+@@ -206,8 +374,8 @@ void xen_setup_mfn_list_list(void)
  	BUG_ON(HYPERVISOR_shared_info == &xen_dummy_shared_info);
  
  	HYPERVISOR_shared_info->arch.pfn_to_mfn_frame_list_list =
@@ -4735,11 +4742,13 @@ index 350a3de..15bbccd 100644
  }
  
  /* Set up p2m_top to point to the domain-builder provided p2m pages */
-@@ -217,96 +365,170 @@ void __init xen_build_dynamic_phys_to_machine(void)
+@@ -215,98 +383,176 @@ void __init xen_build_dynamic_phys_to_machine(void)
+ {
+ 	unsigned long *mfn_list = (unsigned long *)xen_start_info->mfn_list;
  	unsigned long max_pfn = min(MAX_DOMAIN_PAGES, xen_start_info->nr_pages);
- 	unsigned pfn;
- 
--	for (pfn = 0; pfn < max_pfn; pfn += P2M_ENTRIES_PER_PAGE) {
+-	unsigned pfn;
++	unsigned long pfn;
++
 +	xen_max_p2m_pfn = max_pfn;
 +
 +	p2m_missing = extend_brk(PAGE_SIZE, PAGE_SIZE);
@@ -4747,7 +4756,8 @@ index 350a3de..15bbccd 100644
 +
 +	p2m_mid_missing = extend_brk(PAGE_SIZE, PAGE_SIZE);
 +	p2m_mid_init(p2m_mid_missing);
-+
+ 
+-	for (pfn = 0; pfn < max_pfn; pfn += P2M_ENTRIES_PER_PAGE) {
 +	p2m_top = extend_brk(PAGE_SIZE, PAGE_SIZE);
 +	p2m_top_init(p2m_top);
 +
@@ -4848,36 +4858,40 @@ index 350a3de..15bbccd 100644
 -	return false;
 -}
 +	top_mfn_p = &p2m_top_mfn[topidx];
-+	mid_mfn = mfn_to_virt(*top_mfn_p);
++	mid_mfn = p2m_top_mfn_p[topidx];
  
 -static void alloc_p2m(unsigned long pfn)
 -{
 -	unsigned long *p;
++	BUG_ON(virt_to_mfn(mid_mfn) != *top_mfn_p);
++
 +	if (mid_mfn == p2m_mid_missing_mfn) {
 +		/* Separately check the mid mfn level */
 +		unsigned long missing_mfn;
 +		unsigned long mid_mfn_mfn;
- 
--	p = (void *)__get_free_page(GFP_KERNEL | __GFP_NOFAIL);
--	BUG_ON(p == NULL);
++
 +		mid_mfn = alloc_p2m_page();
 +		if (!mid_mfn)
 +			return false;
 +
 +		p2m_mid_mfn_init(mid_mfn);
-+		
++
 +		missing_mfn = virt_to_mfn(p2m_mid_missing_mfn);
 +		mid_mfn_mfn = virt_to_mfn(mid_mfn);
 +		if (cmpxchg(top_mfn_p, missing_mfn, mid_mfn_mfn) != missing_mfn)
 +			free_p2m_page(mid_mfn);
++		else
++			p2m_top_mfn_p[topidx] = mid_mfn;
 +	}
  
--	if (!install_p2mtop_page(pfn, p))
--		free_page((unsigned long)p);
+-	p = (void *)__get_free_page(GFP_KERNEL | __GFP_NOFAIL);
+-	BUG_ON(p == NULL);
 +	if (p2m_top[topidx][mididx] == p2m_missing) {
 +		/* p2m leaf page is missing */
 +		unsigned long *p2m;
-+
+ 
+-	if (!install_p2mtop_page(pfn, p))
+-		free_page((unsigned long)p);
 +		p2m = alloc_p2m_page();
 +		if (!p2m)
 +			return false;
@@ -4947,7 +4961,7 @@ index 350a3de..15bbccd 100644
  }
  
  unsigned long arbitrary_virt_to_mfn(void *vaddr)
-@@ -315,6 +537,7 @@ unsigned long arbitrary_virt_to_mfn(void *vaddr)
+@@ -315,6 +561,7 @@ unsigned long arbitrary_virt_to_mfn(void *vaddr)
  
  	return PFN_DOWN(maddr.maddr);
  }
@@ -4955,7 +4969,7 @@ index 350a3de..15bbccd 100644
  
  xmaddr_t arbitrary_virt_to_machine(void *vaddr)
  {
-@@ -345,7 +568,8 @@ void make_lowmem_page_readonly(void *vaddr)
+@@ -345,7 +592,8 @@ void make_lowmem_page_readonly(void *vaddr)
  	unsigned int level;
  
  	pte = lookup_address(address, &level);
@@ -4965,7 +4979,7 @@ index 350a3de..15bbccd 100644
  
  	ptev = pte_wrprotect(*pte);
  
-@@ -360,7 +584,8 @@ void make_lowmem_page_readwrite(void *vaddr)
+@@ -360,7 +608,8 @@ void make_lowmem_page_readwrite(void *vaddr)
  	unsigned int level;
  
  	pte = lookup_address(address, &level);
@@ -4975,7 +4989,7 @@ index 350a3de..15bbccd 100644
  
  	ptev = pte_mkwrite(*pte);
  
-@@ -376,6 +601,34 @@ static bool xen_page_pinned(void *ptr)
+@@ -376,6 +625,34 @@ static bool xen_page_pinned(void *ptr)
  	return PagePinned(page);
  }
  
@@ -5010,7 +5024,7 @@ index 350a3de..15bbccd 100644
  static void xen_extend_mmu_update(const struct mmu_update *update)
  {
  	struct multicall_space mcs;
-@@ -452,6 +705,11 @@ void set_pte_mfn(unsigned long vaddr, unsigned long mfn, pgprot_t flags)
+@@ -452,6 +729,11 @@ void set_pte_mfn(unsigned long vaddr, unsigned long mfn, pgprot_t flags)
  void xen_set_pte_at(struct mm_struct *mm, unsigned long addr,
  		    pte_t *ptep, pte_t pteval)
  {
@@ -5022,7 +5036,7 @@ index 350a3de..15bbccd 100644
  	ADD_STATS(set_pte_at, 1);
  //	ADD_STATS(set_pte_at_pinned, xen_page_pinned(ptep));
  	ADD_STATS(set_pte_at_current, mm == current->mm);
-@@ -516,7 +774,34 @@ static pteval_t pte_pfn_to_mfn(pteval_t val)
+@@ -516,7 +798,34 @@ static pteval_t pte_pfn_to_mfn(pteval_t val)
  	if (val & _PAGE_PRESENT) {
  		unsigned long pfn = (val & PTE_PFN_MASK) >> PAGE_SHIFT;
  		pteval_t flags = val & PTE_FLAGS_MASK;
@@ -5058,7 +5072,7 @@ index 350a3de..15bbccd 100644
  	}
  
  	return val;
-@@ -524,7 +809,18 @@ static pteval_t pte_pfn_to_mfn(pteval_t val)
+@@ -524,7 +833,18 @@ static pteval_t pte_pfn_to_mfn(pteval_t val)
  
  pteval_t xen_pte_val(pte_t pte)
  {
@@ -5078,7 +5092,7 @@ index 350a3de..15bbccd 100644
  }
  PV_CALLEE_SAVE_REGS_THUNK(xen_pte_val);
  
-@@ -534,9 +830,62 @@ pgdval_t xen_pgd_val(pgd_t pgd)
+@@ -534,9 +854,62 @@ pgdval_t xen_pgd_val(pgd_t pgd)
  }
  PV_CALLEE_SAVE_REGS_THUNK(xen_pgd_val);
  
@@ -5142,7 +5156,7 @@ index 350a3de..15bbccd 100644
  	return native_make_pte(pte);
  }
  PV_CALLEE_SAVE_REGS_THUNK(xen_make_pte);
-@@ -592,6 +941,11 @@ void xen_set_pud(pud_t *ptr, pud_t val)
+@@ -592,6 +965,11 @@ void xen_set_pud(pud_t *ptr, pud_t val)
  
  void xen_set_pte(pte_t *ptep, pte_t pte)
  {
@@ -5154,7 +5168,7 @@ index 350a3de..15bbccd 100644
  	ADD_STATS(pte_update, 1);
  //	ADD_STATS(pte_update_pinned, xen_page_pinned(ptep));
  	ADD_STATS(pte_update_batched, paravirt_get_lazy_mode() == PARAVIRT_LAZY_MMU);
-@@ -608,6 +962,11 @@ void xen_set_pte(pte_t *ptep, pte_t pte)
+@@ -608,6 +986,11 @@ void xen_set_pte(pte_t *ptep, pte_t pte)
  #ifdef CONFIG_X86_PAE
  void xen_set_pte_atomic(pte_t *ptep, pte_t pte)
  {
@@ -5166,7 +5180,7 @@ index 350a3de..15bbccd 100644
  	set_64bit((u64 *)ptep, native_pte_val(pte));
  }
  
-@@ -934,8 +1293,6 @@ static int xen_pin_page(struct mm_struct *mm, struct page *page,
+@@ -934,8 +1317,6 @@ static int xen_pin_page(struct mm_struct *mm, struct page *page,
     read-only, and can be pinned. */
  static void __xen_pgd_pin(struct mm_struct *mm, pgd_t *pgd)
  {
@@ -5175,7 +5189,7 @@ index 350a3de..15bbccd 100644
  	xen_mc_batch();
  
  	if (__xen_pgd_walk(mm, pgd, xen_pin_page, USER_LIMIT)) {
-@@ -1219,7 +1576,7 @@ void xen_exit_mmap(struct mm_struct *mm)
+@@ -1219,7 +1600,7 @@ void xen_exit_mmap(struct mm_struct *mm)
  	spin_lock(&mm->page_table_lock);
  
  	/* pgd may not be pinned in the error exit path of execve */
@@ -5184,7 +5198,7 @@ index 350a3de..15bbccd 100644
  		xen_pgd_unpin(mm);
  
  	spin_unlock(&mm->page_table_lock);
-@@ -1288,12 +1645,19 @@ static void xen_flush_tlb_single(unsigned long addr)
+@@ -1288,12 +1669,19 @@ static void xen_flush_tlb_single(unsigned long addr)
  	preempt_enable();
  }
  
@@ -5205,7 +5219,7 @@ index 350a3de..15bbccd 100644
  	} *args;
  	struct multicall_space mcs;
  
-@@ -1417,6 +1781,13 @@ static int xen_pgd_alloc(struct mm_struct *mm)
+@@ -1417,6 +1805,13 @@ static int xen_pgd_alloc(struct mm_struct *mm)
  	return ret;
  }
  
@@ -5219,7 +5233,7 @@ index 350a3de..15bbccd 100644
  static void xen_pgd_free(struct mm_struct *mm, pgd_t *pgd)
  {
  #ifdef CONFIG_X86_64
-@@ -1445,13 +1816,29 @@ static void *xen_kmap_atomic_pte(struct page *page, enum km_type type)
+@@ -1445,13 +1840,29 @@ static void *xen_kmap_atomic_pte(struct page *page, enum km_type type)
  }
  #endif
  
@@ -5252,7 +5266,7 @@ index 350a3de..15bbccd 100644
  
  	return pte;
  }
-@@ -1464,7 +1851,6 @@ static __init void xen_set_pte_init(pte_t *ptep, pte_t pte)
+@@ -1464,7 +1875,6 @@ static __init void xen_set_pte_init(pte_t *ptep, pte_t pte)
  
  	xen_set_pte(ptep, pte);
  }
@@ -5260,7 +5274,7 @@ index 350a3de..15bbccd 100644
  
  static void pin_pagetable_pfn(unsigned cmd, unsigned long pfn)
  {
-@@ -1517,7 +1903,6 @@ static void xen_alloc_ptpage(struct mm_struct *mm, unsigned long pfn, unsigned l
+@@ -1517,7 +1927,6 @@ static void xen_alloc_ptpage(struct mm_struct *mm, unsigned long pfn, unsigned l
  	if (PagePinned(virt_to_page(mm->pgd))) {
  		SetPagePinned(page);
  
@@ -5268,7 +5282,7 @@ index 350a3de..15bbccd 100644
  		if (!PageHighMem(page)) {
  			make_lowmem_page_readonly(__va(PFN_PHYS((unsigned long)pfn)));
  			if (level == PT_PTE && USE_SPLIT_PTLOCKS)
-@@ -1620,6 +2005,7 @@ static void *m2v(phys_addr_t maddr)
+@@ -1620,6 +2029,7 @@ static void *m2v(phys_addr_t maddr)
  	return __ka(m2p(maddr));
  }
  
@@ -5276,7 +5290,7 @@ index 350a3de..15bbccd 100644
  static void set_page_prot(void *addr, pgprot_t prot)
  {
  	unsigned long pfn = __pa(addr) >> PAGE_SHIFT;
-@@ -1635,6 +2021,9 @@ static __init void xen_map_identity_early(pmd_t *pmd, unsigned long max_pfn)
+@@ -1635,6 +2045,9 @@ static __init void xen_map_identity_early(pmd_t *pmd, unsigned long max_pfn)
  	unsigned ident_pte;
  	unsigned long pfn;
  
@@ -5286,7 +5300,7 @@ index 350a3de..15bbccd 100644
  	ident_pte = 0;
  	pfn = 0;
  	for (pmdidx = 0; pmdidx < PTRS_PER_PMD && pfn < max_pfn; pmdidx++) {
-@@ -1645,7 +2034,7 @@ static __init void xen_map_identity_early(pmd_t *pmd, unsigned long max_pfn)
+@@ -1645,7 +2058,7 @@ static __init void xen_map_identity_early(pmd_t *pmd, unsigned long max_pfn)
  			pte_page = m2v(pmd[pmdidx].pmd);
  		else {
  			/* Check for free pte pages */
@@ -5295,7 +5309,7 @@ index 350a3de..15bbccd 100644
  				break;
  
  			pte_page = &level1_ident_pgt[ident_pte];
-@@ -1675,6 +2064,20 @@ static __init void xen_map_identity_early(pmd_t *pmd, unsigned long max_pfn)
+@@ -1675,6 +2088,20 @@ static __init void xen_map_identity_early(pmd_t *pmd, unsigned long max_pfn)
  	set_page_prot(pmd, PAGE_KERNEL_RO);
  }
  
@@ -5316,7 +5330,7 @@ index 350a3de..15bbccd 100644
  #ifdef CONFIG_X86_64
  static void convert_pfn_mfn(void *v)
  {
-@@ -1760,12 +2163,15 @@ __init pgd_t *xen_setup_kernel_pagetable(pgd_t *pgd,
+@@ -1760,12 +2187,15 @@ __init pgd_t *xen_setup_kernel_pagetable(pgd_t *pgd,
  	return pgd;
  }
  #else	/* !CONFIG_X86_64 */
@@ -5333,7 +5347,7 @@ index 350a3de..15bbccd 100644
  
  	max_pfn_mapped = PFN_DOWN(__pa(xen_start_info->pt_base) +
  				  xen_start_info->nr_pt_frames * PAGE_SIZE +
-@@ -1777,6 +2183,20 @@ __init pgd_t *xen_setup_kernel_pagetable(pgd_t *pgd,
+@@ -1777,6 +2207,20 @@ __init pgd_t *xen_setup_kernel_pagetable(pgd_t *pgd,
  	xen_map_identity_early(level2_kernel_pgt, max_pfn);
  
  	memcpy(swapper_pg_dir, pgd, sizeof(pgd_t) * PTRS_PER_PGD);
@@ -5354,7 +5368,7 @@ index 350a3de..15bbccd 100644
  	set_pgd(&swapper_pg_dir[KERNEL_PGD_BOUNDARY],
  			__pgd(__pa(level2_kernel_pgt) | _PAGE_PRESENT));
  
-@@ -1799,6 +2219,8 @@ __init pgd_t *xen_setup_kernel_pagetable(pgd_t *pgd,
+@@ -1799,6 +2243,8 @@ __init pgd_t *xen_setup_kernel_pagetable(pgd_t *pgd,
  }
  #endif	/* CONFIG_X86_64 */
  
@@ -5363,7 +5377,7 @@ index 350a3de..15bbccd 100644
  static void xen_set_fixmap(unsigned idx, phys_addr_t phys, pgprot_t prot)
  {
  	pte_t pte;
-@@ -1828,9 +2250,26 @@ static void xen_set_fixmap(unsigned idx, phys_addr_t phys, pgprot_t prot)
+@@ -1828,9 +2274,26 @@ static void xen_set_fixmap(unsigned idx, phys_addr_t phys, pgprot_t prot)
  		pte = pfn_pte(phys, prot);
  		break;
  
@@ -5391,7 +5405,7 @@ index 350a3de..15bbccd 100644
  	}
  
  	__native_set_fixmap(idx, pte);
-@@ -1845,6 +2284,29 @@ static void xen_set_fixmap(unsigned idx, phys_addr_t phys, pgprot_t prot)
+@@ -1845,6 +2308,29 @@ static void xen_set_fixmap(unsigned idx, phys_addr_t phys, pgprot_t prot)
  #endif
  }
  
@@ -5421,7 +5435,7 @@ index 350a3de..15bbccd 100644
  static __init void xen_post_allocator_init(void)
  {
  	pv_mmu_ops.set_pte = xen_set_pte;
-@@ -1907,11 +2369,7 @@ static const struct pv_mmu_ops xen_mmu_ops __initdata = {
+@@ -1907,11 +2393,7 @@ static const struct pv_mmu_ops xen_mmu_ops __initdata = {
  	.kmap_atomic_pte = xen_kmap_atomic_pte,
  #endif
  
@@ -5433,7 +5447,7 @@ index 350a3de..15bbccd 100644
  	.set_pte_at = xen_set_pte_at,
  	.set_pmd = xen_set_pmd_hyper,
  
-@@ -1960,8 +2418,305 @@ void __init xen_init_mmu_ops(void)
+@@ -1960,8 +2442,305 @@ void __init xen_init_mmu_ops(void)
  	x86_init.paging.pagetable_setup_start = xen_pagetable_setup_start;
  	x86_init.paging.pagetable_setup_done = xen_pagetable_setup_done;
  	pv_mmu_ops = xen_mmu_ops;
@@ -5467,8 +5481,8 @@ index 350a3de..15bbccd 100644
 +			out_frames[i] = virt_to_pfn(vaddr);
 +	}
 +	xen_mc_issue(0);
-+}
-+
+ }
+ 
 +/*
 + * Update the pfn-to-mfn mappings for a virtual address range, either to
 + * point to an array of mfns, or contiguously from a single starting
@@ -5554,8 +5568,8 @@ index 350a3de..15bbccd 100644
 +	BUG_ON(success && (rc != 0));
 +
 +	return success;
- }
- 
++}
++
 +int xen_create_contiguous_region(unsigned long vstart, unsigned int order,
 +				 unsigned int address_bits)
 +{
@@ -17645,7 +17659,7 @@ index bdfd584..6625ffe 100644
  
  #include <asm/xen/hypervisor.h>
 diff --git a/drivers/xen/events.c b/drivers/xen/events.c
-index a4dc7bf..175e931 100644
+index ac91a4e..7b29ae1 100644
 --- a/drivers/xen/events.c
 +++ b/drivers/xen/events.c
 @@ -16,7 +16,7 @@
@@ -17794,7 +17808,7 @@ index a4dc7bf..175e931 100644
  static void unmask_evtchn(int port)
  {
  	struct shared_info *s = HYPERVISOR_shared_info;
-@@ -330,27 +373,371 @@ static void unmask_evtchn(int port)
+@@ -330,26 +373,370 @@ static void unmask_evtchn(int port)
  	put_cpu();
  }
  
@@ -17852,8 +17866,8 @@ index a4dc7bf..175e931 100644
  
 -	dynamic_irq_init(irq);
 +	dynamic_irq_init_keep_chip_data(irq);
- 
- 	return irq;
++
++	return irq;
 +
 +no_irqs:
 +	panic("No available IRQ to bind to: increase nr_irqs!\n");
@@ -17880,8 +17894,8 @@ index a4dc7bf..175e931 100644
 +		int rc = HYPERVISOR_physdev_op(PHYSDEVOP_eoi, &eoi);
 +		WARN_ON(rc);
 +	}
- }
- 
++}
++
 +static void pirq_query_unmask(int irq)
 +{
 +	struct physdev_irq_status_query irq_status;
@@ -18148,11 +18162,11 @@ index a4dc7bf..175e931 100644
 +	set_irq_chip_and_handler_name(irq, &xen_pirq_chip,
 +				      handle_fasteoi_irq,
 +				      (type == PCI_CAP_ID_MSIX) ? "msi-x":"msi");
-+
+ 
 +out:
 +	spin_unlock(&irq_mapping_update_lock);
-+	return irq;
-+}
+ 	return irq;
+ }
 +#endif
 +#endif
 +
@@ -18166,10 +18180,9 @@ index a4dc7bf..175e931 100644
 +	return gsi_from_irq(irq);
 +}
 +EXPORT_SYMBOL_GPL(xen_gsi_from_irq);
-+
+ 
  int bind_evtchn_to_irq(unsigned int evtchn)
  {
- 	int irq;
 @@ -363,7 +750,7 @@ int bind_evtchn_to_irq(unsigned int evtchn)
  		irq = find_unbound_irq();
  
@@ -18258,7 +18271,105 @@ index a4dc7bf..175e931 100644
  int bind_virq_to_irqhandler(unsigned int virq, unsigned int cpu,
  			    irq_handler_t handler,
  			    unsigned long irqflags, const char *devname, void *dev_id)
-@@ -618,17 +1043,13 @@ static DEFINE_PER_CPU(unsigned, xed_nesting_count);
+@@ -564,41 +989,75 @@ irqreturn_t xen_debug_interrupt(int irq, void *dev_id)
+ {
+ 	struct shared_info *sh = HYPERVISOR_shared_info;
+ 	int cpu = smp_processor_id();
++	unsigned long *cpu_evtchn = cpu_evtchn_mask(cpu);
+ 	int i;
+ 	unsigned long flags;
+ 	static DEFINE_SPINLOCK(debug_lock);
++	struct vcpu_info *v;
+ 
+ 	spin_lock_irqsave(&debug_lock, flags);
+ 
+-	printk("vcpu %d\n  ", cpu);
++	printk("\nvcpu %d\n  ", cpu);
+ 
+ 	for_each_online_cpu(i) {
+-		struct vcpu_info *v = per_cpu(xen_vcpu, i);
+-		printk("%d: masked=%d pending=%d event_sel %08lx\n  ", i,
+-			(get_irq_regs() && i == cpu) ? xen_irqs_disabled(get_irq_regs()) : v->evtchn_upcall_mask,
+-			v->evtchn_upcall_pending,
+-			v->evtchn_pending_sel);
++		int pending;
++		v = per_cpu(xen_vcpu, i);
++		pending = (get_irq_regs() && i == cpu)
++			? xen_irqs_disabled(get_irq_regs())
++			: v->evtchn_upcall_mask;
++		printk("%d: masked=%d pending=%d event_sel %0*lx\n  ", i,
++		       pending, v->evtchn_upcall_pending,
++		       (int)(sizeof(v->evtchn_pending_sel)*2),
++		       v->evtchn_pending_sel);
++	}
++	v = per_cpu(xen_vcpu, cpu);
++
++	printk("\npending:\n   ");
++	for (i = ARRAY_SIZE(sh->evtchn_pending)-1; i >= 0; i--)
++		printk("%0*lx%s", (int)sizeof(sh->evtchn_pending[0])*2,
++		       sh->evtchn_pending[i],
++		       i % 8 == 0 ? "\n   " : " ");
++	printk("\nglobal mask:\n   ");
++	for (i = ARRAY_SIZE(sh->evtchn_mask)-1; i >= 0; i--)
++		printk("%0*lx%s",
++		       (int)(sizeof(sh->evtchn_mask[0])*2),
++		       sh->evtchn_mask[i],
++		       i % 8 == 0 ? "\n   " : " ");
++
++	printk("\nglobally unmasked:\n   ");
++	for (i = ARRAY_SIZE(sh->evtchn_mask)-1; i >= 0; i--)
++		printk("%0*lx%s", (int)(sizeof(sh->evtchn_mask[0])*2),
++		       sh->evtchn_pending[i] & ~sh->evtchn_mask[i],
++		       i % 8 == 0 ? "\n   " : " ");
++
++	printk("\nlocal cpu%d mask:\n   ", cpu);
++	for (i = (NR_EVENT_CHANNELS/BITS_PER_LONG)-1; i >= 0; i--)
++		printk("%0*lx%s", (int)(sizeof(cpu_evtchn[0])*2),
++		       cpu_evtchn[i],
++		       i % 8 == 0 ? "\n   " : " ");
++
++	printk("\nlocally unmasked:\n   ");
++	for (i = ARRAY_SIZE(sh->evtchn_mask)-1; i >= 0; i--) {
++		unsigned long pending = sh->evtchn_pending[i]
++			& ~sh->evtchn_mask[i]
++			& cpu_evtchn[i];
++		printk("%0*lx%s", (int)(sizeof(sh->evtchn_mask[0])*2),
++		       pending, i % 8 == 0 ? "\n   " : " ");
+ 	}
+-	printk("pending:\n   ");
+-	for(i = ARRAY_SIZE(sh->evtchn_pending)-1; i >= 0; i--)
+-		printk("%08lx%s", sh->evtchn_pending[i],
+-			i % 8 == 0 ? "\n   " : " ");
+-	printk("\nmasks:\n   ");
+-	for(i = ARRAY_SIZE(sh->evtchn_mask)-1; i >= 0; i--)
+-		printk("%08lx%s", sh->evtchn_mask[i],
+-			i % 8 == 0 ? "\n   " : " ");
+-
+-	printk("\nunmasked:\n   ");
+-	for(i = ARRAY_SIZE(sh->evtchn_mask)-1; i >= 0; i--)
+-		printk("%08lx%s", sh->evtchn_pending[i] & ~sh->evtchn_mask[i],
+-			i % 8 == 0 ? "\n   " : " ");
+ 
+ 	printk("\npending list:\n");
+-	for(i = 0; i < NR_EVENT_CHANNELS; i++) {
++	for (i = 0; i < NR_EVENT_CHANNELS; i++) {
+ 		if (sync_test_bit(i, sh->evtchn_pending)) {
+-			printk("  %d: event %d -> irq %d\n",
++			int word_idx = i / BITS_PER_LONG;
++			printk("  %d: event %d -> irq %d%s%s%s\n",
+ 			       cpu_from_evtchn(i), i,
+-			       evtchn_to_irq[i]);
++			       evtchn_to_irq[i],
++			       sync_test_bit(word_idx, &v->evtchn_pending_sel)
++					     ? "" : " l2-clear",
++			       !sync_test_bit(i, sh->evtchn_mask)
++					     ? "" : " globally-masked",
++			       sync_test_bit(i, cpu_evtchn)
++					     ? "" : " locally-masked");
+ 		}
+ 	}
+ 
+@@ -618,17 +1077,13 @@ static DEFINE_PER_CPU(unsigned, xed_nesting_count);
   * a bitset of words which contain pending event bits.  The second
   * level is a bitset of pending events themselves.
   */
@@ -18277,7 +18388,7 @@ index a4dc7bf..175e931 100644
  	do {
  		unsigned long pending_words;
  
-@@ -651,9 +1072,16 @@ void xen_evtchn_do_upcall(struct pt_regs *regs)
+@@ -651,9 +1106,16 @@ void xen_evtchn_do_upcall(struct pt_regs *regs)
  				int bit_idx = __ffs(pending_bits);
  				int port = (word_idx * BITS_PER_LONG) + bit_idx;
  				int irq = evtchn_to_irq[port];
@@ -18296,7 +18407,7 @@ index a4dc7bf..175e931 100644
  			}
  		}
  
-@@ -661,14 +1089,32 @@ void xen_evtchn_do_upcall(struct pt_regs *regs)
+@@ -661,14 +1123,32 @@ void xen_evtchn_do_upcall(struct pt_regs *regs)
  
  		count = __get_cpu_var(xed_nesting_count);
  		__get_cpu_var(xed_nesting_count) = 0;
@@ -18331,7 +18442,7 @@ index a4dc7bf..175e931 100644
  
  /* Rebind a new event channel to an existing irq. */
  void rebind_evtchn_irq(int evtchn, int irq)
-@@ -705,7 +1151,10 @@ static int rebind_irq_to_cpu(unsigned irq, unsigned tcpu)
+@@ -705,7 +1185,10 @@ static int rebind_irq_to_cpu(unsigned irq, unsigned tcpu)
  	struct evtchn_bind_vcpu bind_vcpu;
  	int evtchn = evtchn_from_irq(irq);
  
@@ -18343,7 +18454,7 @@ index a4dc7bf..175e931 100644
  		return -1;
  
  	/* Send future instances of this interrupt to other vcpu. */
-@@ -746,33 +1195,17 @@ int resend_irq_on_evtchn(unsigned int irq)
+@@ -746,33 +1229,17 @@ int resend_irq_on_evtchn(unsigned int irq)
  	return 1;
  }
  
@@ -18380,7 +18491,7 @@ index a4dc7bf..175e931 100644
  {
  	int evtchn = evtchn_from_irq(irq);
  	struct shared_info *sh = HYPERVISOR_shared_info;
-@@ -857,7 +1290,7 @@ void xen_clear_irq_pending(int irq)
+@@ -857,7 +1324,7 @@ void xen_clear_irq_pending(int irq)
  	if (VALID_EVTCHN(evtchn))
  		clear_evtchn(evtchn);
  }
@@ -18389,7 +18500,7 @@ index a4dc7bf..175e931 100644
  void xen_set_irq_pending(int irq)
  {
  	int evtchn = evtchn_from_irq(irq);
-@@ -877,9 +1310,9 @@ bool xen_test_irq_pending(int irq)
+@@ -877,9 +1344,9 @@ bool xen_test_irq_pending(int irq)
  	return ret;
  }
  
@@ -18401,7 +18512,7 @@ index a4dc7bf..175e931 100644
  {
  	evtchn_port_t evtchn = evtchn_from_irq(irq);
  
-@@ -887,13 +1320,33 @@ void xen_poll_irq(int irq)
+@@ -887,13 +1354,33 @@ void xen_poll_irq(int irq)
  		struct sched_poll poll;
  
  		poll.nr_ports = 1;
@@ -18436,7 +18547,7 @@ index a4dc7bf..175e931 100644
  
  void xen_irq_resume(void)
  {
-@@ -916,37 +1369,117 @@ void xen_irq_resume(void)
+@@ -916,37 +1403,117 @@ void xen_irq_resume(void)
  		restore_cpu_virqs(cpu);
  		restore_cpu_ipis(cpu);
  	}
@@ -18469,8 +18580,7 @@ index a4dc7bf..175e931 100644
 +	.retrigger	= retrigger_irq,
  };
  
--static struct irq_chip en_percpu_chip __read_mostly = {
-+static struct irq_chip xen_percpu_chip __read_mostly = {
+ static struct irq_chip xen_percpu_chip __read_mostly = {
  	.name		= "xen-percpu",
  
 -	.disable	= disable_dynirq,
@@ -18564,7 +18674,7 @@ index a4dc7bf..175e931 100644
  
  	init_evtchn_cpu_bindings();
  
-@@ -954,5 +1487,11 @@ void __init xen_init_IRQ(void)
+@@ -954,5 +1521,11 @@ void __init xen_init_IRQ(void)
  	for (i = 0; i < NR_EVENT_CHANNELS; i++)
  		mask_evtchn(i);
  
@@ -20845,10 +20955,10 @@ index 0000000..2e8508a
 +}
 diff --git a/drivers/xen/netback/netback.c b/drivers/xen/netback/netback.c
 new file mode 100644
-index 0000000..9052895
+index 0000000..c448675
 --- /dev/null
 +++ b/drivers/xen/netback/netback.c
-@@ -0,0 +1,1881 @@
+@@ -0,0 +1,1902 @@
 +/******************************************************************************
 + * drivers/xen/netback/netback.c
 + *
@@ -21636,15 +21746,34 @@ index 0000000..9052895
 +	return !list_empty(&netif->list);
 +}
 +
++/* Must be called with net_schedule_list_lock held */
 +static void remove_from_net_schedule_list(struct xen_netif *netif)
 +{
-+	struct xen_netbk *netbk = &xen_netbk[netif->group];
-+	spin_lock_irq(&netbk->net_schedule_list_lock);
 +	if (likely(__on_net_schedule_list(netif))) {
 +		list_del_init(&netif->list);
 +		netif_put(netif);
 +	}
++}
++
++static struct xen_netif *poll_net_schedule_list(struct xen_netbk *netbk)
++{
++	struct xen_netif *netif = NULL;
++
++	spin_lock_irq(&netbk->net_schedule_list_lock);
++	if (list_empty(&netbk->net_schedule_list))
++		goto out;
++
++	netif = list_first_entry(&netbk->net_schedule_list,
++				 struct xen_netif, list);
++	if (!netif)
++		goto out;
++
++	netif_get(netif);
++
++	remove_from_net_schedule_list(netif);
++out:
 +	spin_unlock_irq(&netbk->net_schedule_list_lock);
++	return netif;
 +}
 +
 +static void add_to_net_schedule_list_tail(struct xen_netif *netif)
@@ -21679,7 +21808,10 @@ index 0000000..9052895
 +
 +void netif_deschedule_work(struct xen_netif *netif)
 +{
++	struct xen_netbk *netbk = &xen_netbk[netif->group];
++	spin_lock_irq(&netbk->net_schedule_list_lock);
 +	remove_from_net_schedule_list(netif);
++	spin_unlock_irq(&netbk->net_schedule_list_lock);
 +}
 +
 +
@@ -22163,12 +22295,11 @@ index 0000000..9052895
 +		int work_to_do;
 +		unsigned int data_len;
 +		pending_ring_idx_t index;
-+	
++
 +		/* Get a netif from the list with work to do. */
-+		netif = list_first_entry(&netbk->net_schedule_list,
-+				struct xen_netif, list);
-+		netif_get(netif);
-+		remove_from_net_schedule_list(netif);
++		netif = poll_net_schedule_list(netbk);
++		if (!netif)
++			continue;
 +
 +		RING_FINAL_CHECK_FOR_REQUESTS(&netif->tx, work_to_do);
 +		if (!work_to_do) {

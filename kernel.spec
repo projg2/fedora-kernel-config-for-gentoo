@@ -2226,6 +2226,10 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Sat Oct 23 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops again to get security fix (CVE-2010-3904) in 2.6.32.25-rc1
+- slight tweaks to make xen/stable-2.6.32.x apply to 2.6.32.25-rc1
+
 * Fri Oct 22 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.25-171.rc1
 - Linux 2.6.32.25-rc1
 - Comment out patches merged upstream:

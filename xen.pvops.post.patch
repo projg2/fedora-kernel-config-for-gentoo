@@ -66,3 +66,15 @@ index 2202b62..f371fe8 100644
  } mm_context_t;
  
  #ifdef CONFIG_SMP
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index d8e5d0c..d1911ab 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -12,6 +12,7 @@ ifdef CONFIG_FUNCTION_TRACER
+ CFLAGS_REMOVE_rtc.o = -pg
+ CFLAGS_REMOVE_paravirt-spinlocks.o = -pg
+ CFLAGS_REMOVE_pvclock.o = -pg
++CFLAGS_REMOVE_kvmclock.o = -pg
+ CFLAGS_REMOVE_ftrace.o = -pg
+ CFLAGS_REMOVE_early_printk.o = -pg
+ endif
