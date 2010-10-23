@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 170
+%global baserelease 171
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -59,9 +59,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 23
+%define stable_update 25
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1549,18 +1549,18 @@ ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 ApplyPatch net-do-not-check-capable-if-kernel.patch
 
 # Mitigate DOS with large argument lists
-ApplyPatch execve-improve-interactivity-with-large-arguments.patch
-ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
-ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
+#ApplyPatch execve-improve-interactivity-with-large-arguments.patch
+#ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
+#ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
 
 # Fix typo in Xen patch from 2.6.22 that causes hang on boot.
-ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
+#ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
 
 # rhbz#629158
-ApplyPatch r8169-fix-dma-allocations.patch
+#ApplyPatch r8169-fix-dma-allocations.patch
 
 # rhbz#447489
-ApplyPatch skge-quirk-to-4gb-dma.patch
+#ApplyPatch skge-quirk-to-4gb-dma.patch
 
 # rhbz#596475
 ApplyPatch add-support-for-ricoh-e822-sdhci.patch
@@ -2217,6 +2217,16 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Fri Oct 22 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.25-171.rc1
+- Linux 2.6.32.25-rc1
+- Comment out patches merged upstream:
+   execve-improve-interactivity-with-large-arguments.patch
+   execve-make-responsive-to-sigkill-with-large-arguments.patch
+   setup_arg_pages-diagnose-excessive-argument-size.patch
+   xen-fix-typo-in-xen-irq-fix.patch
+   r8169-fix-dma-allocations.patch
+   skge-quirk-to-4gb-dma.patch
+
 * Thu Oct 14 2010 Kyle McMartin <kyle@redhat.com>
 - rhbz447489: skge-quirk-to-4gb-dma.patch
 - rhbz629158: r8169-fix-dma-allocations.patch
