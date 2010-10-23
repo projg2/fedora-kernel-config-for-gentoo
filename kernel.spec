@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 48
+%global baserelease 49
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -705,6 +705,7 @@ Patch2917: hdpvr-ir-enable.patch
 Patch2918: linux-2.6-v4l-dvb-ir-core-update-2.patch
 Patch2919: linux-2.6-v4l-dvb-ir-core-update-3.patch
 Patch2920: linux-2.6-lirc-ioctl-compat-fixups.patch
+Patch2923: linux-2.6-v4l-dvb-ir-core-fix-imon.patch
 
 Patch2950: linux-2.6-via-velocity-dma-fix.patch
 
@@ -1370,6 +1371,7 @@ ApplyPatch hdpvr-ir-enable.patch
 ApplyPatch linux-2.6-v4l-dvb-ir-core-update-2.patch
 ApplyPatch linux-2.6-v4l-dvb-ir-core-update-3.patch
 ApplyPatch linux-2.6-lirc-ioctl-compat-fixups.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-fix-imon.patch
 
 # Fix DMA bug on via-velocity
 ApplyPatch linux-2.6-via-velocity-dma-fix.patch
@@ -2039,6 +2041,9 @@ fi
 # and build.
 
 %changelog
+* Sat Oct 23 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.6-49
+- Fix brown paper bag bug in imon driver
+
 * Fri Oct 22 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.35.6-48
 - drm-i915-sanity-check-pread-pwrite.patch;
    fix CVE-2010-2962, arbitrary kernel memory write via i915 GEM ioctl
