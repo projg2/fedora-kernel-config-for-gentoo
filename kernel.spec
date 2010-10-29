@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 171
+%global baserelease 172
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -61,7 +61,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 25
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -835,19 +835,6 @@ Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
 Patch14200: net-do-not-check-capable-if-kernel.patch
 
-# Mitigate DOS with large argument lists
-Patch14210: execve-improve-interactivity-with-large-arguments.patch
-Patch14211: execve-make-responsive-to-sigkill-with-large-arguments.patch
-Patch14212: setup_arg_pages-diagnose-excessive-argument-size.patch
-
-Patch14220: xen-fix-typo-in-xen-irq-fix.patch
-
-# rhbz#447489
-Patch14224: skge-quirk-to-4gb-dma.patch
-
-# rhbz#629158
-Patch14225: r8169-fix-dma-allocations.patch
-
 # rhbz#596475
 Patch14226: add-support-for-ricoh-e822-sdhci.patch
 
@@ -1552,20 +1539,6 @@ ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 # rhbz #598796
 ApplyPatch net-do-not-check-capable-if-kernel.patch
 
-# Mitigate DOS with large argument lists
-#ApplyPatch execve-improve-interactivity-with-large-arguments.patch
-#ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
-#ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
-
-# Fix typo in Xen patch from 2.6.22 that causes hang on boot.
-#ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
-
-# rhbz#629158
-#ApplyPatch r8169-fix-dma-allocations.patch
-
-# rhbz#447489
-#ApplyPatch skge-quirk-to-4gb-dma.patch
-
 # rhbz#596475
 ApplyPatch add-support-for-ricoh-e822-sdhci.patch
 
@@ -2221,6 +2194,9 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Fri Oct 29 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.25-172
+- Linux 2.6.32.25
+
 * Fri Oct 22 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.25-171.rc1
 - Linux 2.6.32.25-rc1
 - Comment out patches merged upstream:
