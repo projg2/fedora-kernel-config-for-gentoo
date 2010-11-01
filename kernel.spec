@@ -2360,6 +2360,9 @@ fi
 * Tue Aug 31 2010 Steve Dickson <steved@redhat.com>
 - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
 
+* Tue Aug 31 2010 Steve Dickson <steved@redhat.com>
+- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-24
+
 * Fri Aug 27 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.6-47
 - Linux 2.6.34.6
 - drivers-hwmon-coretemp-c-detect-the-thermal-sensors-by-cpuid.patch (#625734)
