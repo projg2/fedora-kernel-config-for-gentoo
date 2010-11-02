@@ -670,6 +670,7 @@ Patch1810: drm-nouveau-updates.patch
 Patch1811: drm-nouveau-race-fix.patch
 Patch1812: drm-nouveau-nva3-noaccel.patch
 Patch1813: drm-nouveau-nv86-bug.patch
+Patch1814: drm-nouveau-nv50-crtc-update-delay.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -1335,6 +1336,7 @@ ApplyPatch drm-nouveau-updates.patch
 ApplyPatch drm-nouveau-race-fix.patch
 ApplyPatch drm-nouveau-nva3-noaccel.patch
 ApplyPatch drm-nouveau-nv86-bug.patch
+ApplyPatch drm-nouveau-nv50-crtc-update-delay.patch
 
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
@@ -2042,6 +2044,10 @@ fi
 # and build.
 
 %changelog
+* Tue Nov 02 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.6-50
+- nouveau: add potential workaround for NV86 hardware quirk
+- fix issue that occurs in certain dual-head configurations (rhbz#641524)
+
 * Sat Oct 23 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.6-49
 - Fix brown paper bag bug in imon driver
 

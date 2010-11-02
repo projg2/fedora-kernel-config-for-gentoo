@@ -1,7 +1,9 @@
-From ad3ff4f72ef7fa1e559cc835535025a4b5a746e6 Mon Sep 17 00:00:00 2001
+From e7e3837f6395e44b5b5fb7cdbcccaba5baf76803 Mon Sep 17 00:00:00 2001
 From: Ben Skeggs <bskeggs@redhat.com>
 Date: Fri, 22 Oct 2010 10:26:24 +1000
-Subject: [PATCH] drm/nv50: implement possible workaround for NV86 PGRAPH TLB flush hang
+Subject: [PATCH] drm-nouveau-nv86-bug
+
+drm/nv50: implement possible workaround for NV86 PGRAPH TLB flush hang
 
 Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
 ---
@@ -15,10 +17,10 @@ Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
  7 files changed, 82 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/gpu/drm/nouveau/nouveau_drv.h b/drivers/gpu/drm/nouveau/nouveau_drv.h
-index 88b5093..14236b8 100644
+index be53e92..4273390 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_drv.h
 +++ b/drivers/gpu/drm/nouveau/nouveau_drv.h
-@@ -314,6 +314,7 @@ struct nouveau_fifo_engine {
+@@ -304,6 +304,7 @@ struct nouveau_fifo_engine {
  	void (*destroy_context)(struct nouveau_channel *);
  	int  (*load_context)(struct nouveau_channel *);
  	int  (*unload_context)(struct drm_device *);
@@ -26,7 +28,7 @@ index 88b5093..14236b8 100644
  };
  
  struct nouveau_pgraph_object_method {
-@@ -346,6 +347,7 @@ struct nouveau_pgraph_engine {
+@@ -336,6 +337,7 @@ struct nouveau_pgraph_engine {
  	void (*destroy_context)(struct nouveau_channel *);
  	int  (*load_context)(struct nouveau_channel *);
  	int  (*unload_context)(struct drm_device *);
@@ -34,28 +36,28 @@ index 88b5093..14236b8 100644
  
  	void (*set_region_tiling)(struct drm_device *dev, int i, uint32_t addr,
  				  uint32_t size, uint32_t pitch);
-@@ -943,6 +945,7 @@ extern int  nv50_fifo_create_context(struct nouveau_channel *);
+@@ -944,6 +946,7 @@ extern int  nv50_fifo_create_context(struct nouveau_channel *);
  extern void nv50_fifo_destroy_context(struct nouveau_channel *);
  extern int  nv50_fifo_load_context(struct nouveau_channel *);
  extern int  nv50_fifo_unload_context(struct drm_device *);
 +extern void nv50_fifo_tlb_flush(struct drm_device *dev);
  
- /* nv04_graph.c */
- extern struct nouveau_pgraph_object_class nv04_graph_grclass[];
-@@ -1007,6 +1010,8 @@ extern int  nv50_graph_load_context(struct nouveau_channel *);
+ /* nvc0_fifo.c */
+ extern int  nvc0_fifo_init(struct drm_device *);
+@@ -1021,6 +1024,8 @@ extern int  nv50_graph_load_context(struct nouveau_channel *);
  extern int  nv50_graph_unload_context(struct drm_device *);
  extern void nv50_graph_context_switch(struct drm_device *);
  extern int  nv50_grctx_init(struct nouveau_grctx *);
 +extern void nv50_graph_tlb_flush(struct drm_device *dev);
 +extern void nv86_graph_tlb_flush(struct drm_device *dev);
  
- /* nv04_instmem.c */
- extern int  nv04_instmem_init(struct drm_device *);
+ /* nvc0_graph.c */
+ extern int  nvc0_graph_init(struct drm_device *);
 diff --git a/drivers/gpu/drm/nouveau/nouveau_mem.c b/drivers/gpu/drm/nouveau/nouveau_mem.c
-index 09db6f6..de43b3e 100644
+index 4f0ae39..514ad9f 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_mem.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_mem.c
-@@ -174,11 +174,10 @@ nv50_mem_vm_bind_linear(struct drm_device *dev, uint64_t virt, uint32_t size,
+@@ -173,11 +173,10 @@ nv50_mem_vm_bind_linear(struct drm_device *dev, uint64_t virt, uint32_t size,
  			}
  		}
  	}
@@ -70,9 +72,9 @@ index 09db6f6..de43b3e 100644
  	nv50_vm_flush(dev, 6);
  	return 0;
  }
-@@ -206,11 +205,10 @@ nv50_mem_vm_unbind(struct drm_device *dev, uint64_t virt, uint32_t size)
- 		while (pte < end)
- 			nv_wo32(dev, pgt, pte++, 0);
+@@ -207,11 +206,10 @@ nv50_mem_vm_unbind(struct drm_device *dev, uint64_t virt, uint32_t size)
+ 			pte++;
+ 		}
  	}
 -	dev_priv->engine.instmem.flush(dev);
  
@@ -86,10 +88,10 @@ index 09db6f6..de43b3e 100644
  }
  
 diff --git a/drivers/gpu/drm/nouveau/nouveau_sgdma.c b/drivers/gpu/drm/nouveau/nouveau_sgdma.c
-index 491767f..ae9f353 100644
+index 7f028fe..d55a583 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_sgdma.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_sgdma.c
-@@ -118,8 +118,8 @@ nouveau_sgdma_bind(struct ttm_backend *be, struct ttm_mem_reg *mem)
+@@ -120,8 +120,8 @@ nouveau_sgdma_bind(struct ttm_backend *be, struct ttm_mem_reg *mem)
  	dev_priv->engine.instmem.flush(nvbe->dev);
  
  	if (dev_priv->card_type == NV_50) {
@@ -100,7 +102,7 @@ index 491767f..ae9f353 100644
  	}
  
  	nvbe->bound = true;
-@@ -158,8 +158,8 @@ nouveau_sgdma_unbind(struct ttm_backend *be)
+@@ -162,8 +162,8 @@ nouveau_sgdma_unbind(struct ttm_backend *be)
  	dev_priv->engine.instmem.flush(nvbe->dev);
  
  	if (dev_priv->card_type == NV_50) {
@@ -112,10 +114,10 @@ index 491767f..ae9f353 100644
  
  	nvbe->bound = false;
 diff --git a/drivers/gpu/drm/nouveau/nouveau_state.c b/drivers/gpu/drm/nouveau/nouveau_state.c
-index 866f437..32a9d81 100644
+index be85960..47c353c 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_state.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_state.c
-@@ -283,6 +283,15 @@ static int nouveau_init_engine_ptrs(struct drm_device *dev)
+@@ -333,6 +333,15 @@ static int nouveau_init_engine_ptrs(struct drm_device *dev)
  		engine->graph.destroy_context	= nv50_graph_destroy_context;
  		engine->graph.load_context	= nv50_graph_load_context;
  		engine->graph.unload_context	= nv50_graph_unload_context;
@@ -131,16 +133,16 @@ index 866f437..32a9d81 100644
  		engine->fifo.channels		= 128;
  		engine->fifo.init		= nv50_fifo_init;
  		engine->fifo.takedown		= nv50_fifo_takedown;
-@@ -294,6 +303,7 @@ static int nouveau_init_engine_ptrs(struct drm_device *dev)
+@@ -344,6 +353,7 @@ static int nouveau_init_engine_ptrs(struct drm_device *dev)
  		engine->fifo.destroy_context	= nv50_fifo_destroy_context;
  		engine->fifo.load_context	= nv50_fifo_load_context;
  		engine->fifo.unload_context	= nv50_fifo_unload_context;
 +		engine->fifo.tlb_flush		= nv50_fifo_tlb_flush;
- 		break;
- 	default:
- 		NV_ERROR(dev, "NV%02x unsupported\n", dev_priv->chipset);
+ 		engine->display.early_init	= nv50_display_early_init;
+ 		engine->display.late_takedown	= nv50_display_late_takedown;
+ 		engine->display.create		= nv50_display_create;
 diff --git a/drivers/gpu/drm/nouveau/nv50_fifo.c b/drivers/gpu/drm/nouveau/nv50_fifo.c
-index fb0281a..3c1cfde 100644
+index a46a961..1da65bd 100644
 --- a/drivers/gpu/drm/nouveau/nv50_fifo.c
 +++ b/drivers/gpu/drm/nouveau/nv50_fifo.c
 @@ -464,3 +464,8 @@ nv50_fifo_unload_context(struct drm_device *dev)
@@ -153,10 +155,10 @@ index fb0281a..3c1cfde 100644
 +	nv50_vm_flush(dev, 5);
 +}
 diff --git a/drivers/gpu/drm/nouveau/nv50_graph.c b/drivers/gpu/drm/nouveau/nv50_graph.c
-index 1413028..8bdbbe4 100644
+index cbf5ae2..8b669d0 100644
 --- a/drivers/gpu/drm/nouveau/nv50_graph.c
 +++ b/drivers/gpu/drm/nouveau/nv50_graph.c
-@@ -403,3 +403,55 @@ struct nouveau_pgraph_object_class nv50_graph_grclass[] = {
+@@ -402,3 +402,55 @@ struct nouveau_pgraph_object_class nv50_graph_grclass[] = {
  	{ 0x8597, false, NULL }, /* tesla (nva3, nva5, nva8) */
  	{}
  };
@@ -213,10 +215,10 @@ index 1413028..8bdbbe4 100644
 +	spin_unlock_irqrestore(&dev_priv->context_switch_lock, flags);
 +}
 diff --git a/drivers/gpu/drm/nouveau/nv50_instmem.c b/drivers/gpu/drm/nouveau/nv50_instmem.c
-index 0c8a6f2..42fcc65 100644
+index ac3de05..c836ddc 100644
 --- a/drivers/gpu/drm/nouveau/nv50_instmem.c
 +++ b/drivers/gpu/drm/nouveau/nv50_instmem.c
-@@ -453,7 +453,6 @@ nv50_instmem_bind(struct drm_device *dev, struct nouveau_gpuobj *gpuobj)
+@@ -402,7 +402,6 @@ nv50_instmem_bind(struct drm_device *dev, struct nouveau_gpuobj *gpuobj)
  	}
  	dev_priv->engine.instmem.flush(dev);
  
