@@ -669,13 +669,13 @@ Patch1808: drm-ttm-fix.patch
 Patch1810: drm-nouveau-updates.patch
 Patch1811: drm-nouveau-race-fix.patch
 Patch1812: drm-nouveau-nva3-noaccel.patch
+Patch1813: drm-nouveau-nv86-bug.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
 Patch1900: linux-2.6-intel-iommu-igfx.patch
-
 Patch2000: efifb-add-more-models.patch
 Patch2001: efifb-check-that-the-base-addr-is-plausible-on-pci-systems.patch
 
@@ -1334,6 +1334,7 @@ ApplyPatch drm-ttm-fix.patch
 ApplyPatch drm-nouveau-updates.patch
 ApplyPatch drm-nouveau-race-fix.patch
 ApplyPatch drm-nouveau-nva3-noaccel.patch
+ApplyPatch drm-nouveau-nv86-bug.patch
 
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
