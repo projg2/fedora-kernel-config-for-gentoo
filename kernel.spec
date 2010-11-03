@@ -23,6 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
+%define buildid .lr645937
 # % define buildid .local
 ###################################################################
 
