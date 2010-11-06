@@ -773,6 +773,17 @@ index 13b1885..0aac25a 100644
  #endif /* CONFIG_PARAVIRT */
  
  /*
+diff --git a/arch/x86/include/asm/pvclock.h b/arch/x86/include/asm/pvclock.h
+index 53235fd..daaacab 100644
+--- a/arch/x86/include/asm/pvclock.h
++++ b/arch/x86/include/asm/pvclock.h
+@@ -10,5 +10,6 @@ unsigned long pvclock_tsc_khz(struct pvclock_vcpu_time_info *src);
+ void pvclock_read_wallclock(struct pvclock_wall_clock *wall,
+ 			    struct pvclock_vcpu_time_info *vcpu,
+ 			    struct timespec *ts);
++void pvclock_resume(void);
+ 
+ #endif /* _ASM_X86_PVCLOCK_H */
 diff --git a/arch/x86/include/asm/setup.h b/arch/x86/include/asm/setup.h
 index 18e496c..154a5f1 100644
 --- a/arch/x86/include/asm/setup.h
@@ -1329,18 +1340,10 @@ index 0000000..e4fe299
 + 
 +#endif /* _ASM_X86_SWIOTLB_XEN_H */
 diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index d8e5d0c..d4f3b05 100644
+index d1911ab..cfe00bc 100644
 --- a/arch/x86/kernel/Makefile
 +++ b/arch/x86/kernel/Makefile
-@@ -11,6 +11,7 @@ ifdef CONFIG_FUNCTION_TRACER
- CFLAGS_REMOVE_tsc.o = -pg
- CFLAGS_REMOVE_rtc.o = -pg
- CFLAGS_REMOVE_paravirt-spinlocks.o = -pg
-+CFLAGS_REMOVE_pvclock.o = -pg
- CFLAGS_REMOVE_ftrace.o = -pg
- CFLAGS_REMOVE_early_printk.o = -pg
- endif
-@@ -111,6 +112,7 @@ obj-$(CONFIG_X86_MRST)		+= mrst.o
+@@ -113,6 +113,7 @@ obj-$(CONFIG_X86_MRST)		+= mrst.o
  microcode-y				:= microcode_core.o
  microcode-$(CONFIG_MICROCODE_INTEL)	+= microcode_intel.o
  microcode-$(CONFIG_MICROCODE_AMD)	+= microcode_amd.o
@@ -1466,7 +1469,7 @@ index ca93638..9eff23c 100644
  #include "sleep.h"
  
 diff --git a/arch/x86/kernel/amd_iommu.c b/arch/x86/kernel/amd_iommu.c
-index f0fa7a1..0c1876b 100644
+index 7cd33f7..b8497c6 100644
 --- a/arch/x86/kernel/amd_iommu.c
 +++ b/arch/x86/kernel/amd_iommu.c
 @@ -928,7 +928,7 @@ static unsigned long dma_ops_alloc_addresses(struct device *dev,
@@ -1514,7 +1517,7 @@ index f0fa7a1..0c1876b 100644
  }
  
  /*
-@@ -1691,7 +1691,7 @@ static void __unmap_single(struct amd_iommu *iommu,
+@@ -1692,7 +1692,7 @@ static void __unmap_single(struct amd_iommu *iommu,
  	dma_addr_t i, start;
  	unsigned int pages;
  
@@ -1523,7 +1526,7 @@ index f0fa7a1..0c1876b 100644
  	    (dma_addr + size > dma_dom->aperture_size))
  		return;
  
-@@ -1733,7 +1733,7 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
+@@ -1735,7 +1735,7 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
  	INC_STATS_COUNTER(cnt_map_single);
  
  	if (!check_device(dev))
@@ -1532,7 +1535,7 @@ index f0fa7a1..0c1876b 100644
  
  	dma_mask = *dev->dma_mask;
  
-@@ -1744,12 +1744,12 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
+@@ -1746,12 +1746,12 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
  		return (dma_addr_t)paddr;
  
  	if (!dma_ops_domain(domain))
@@ -1547,7 +1550,7 @@ index f0fa7a1..0c1876b 100644
  		goto out;
  
  	iommu_completion_wait(iommu);
-@@ -1958,7 +1958,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
+@@ -1960,7 +1960,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
  	*dma_addr = __map_single(dev, iommu, domain->priv, paddr,
  				 size, DMA_BIDIRECTIONAL, true, dma_mask);
  
@@ -1556,7 +1559,7 @@ index f0fa7a1..0c1876b 100644
  		spin_unlock_irqrestore(&domain->lock, flags);
  		goto out_free;
  	}
-@@ -2120,8 +2120,7 @@ int __init amd_iommu_init_dma_ops(void)
+@@ -2122,8 +2122,7 @@ int __init amd_iommu_init_dma_ops(void)
  		prealloc_protection_domains();
  
  	iommu_detected = 1;
@@ -1567,7 +1570,7 @@ index f0fa7a1..0c1876b 100644
  	gart_iommu_aperture_disabled = 1;
  	gart_iommu_aperture = 0;
 diff --git a/arch/x86/kernel/amd_iommu_init.c b/arch/x86/kernel/amd_iommu_init.c
-index 3925adf..642793e 100644
+index 400be99..0069df5 100644
 --- a/arch/x86/kernel/amd_iommu_init.c
 +++ b/arch/x86/kernel/amd_iommu_init.c
 @@ -29,6 +29,7 @@
@@ -1578,7 +1581,7 @@ index 3925adf..642793e 100644
  
  /*
   * definitions for the ACPI scanning code
-@@ -1183,19 +1184,10 @@ static struct sys_device device_amd_iommu = {
+@@ -1206,19 +1207,10 @@ static struct sys_device device_amd_iommu = {
   * functions. Finally it prints some information about AMD IOMMUs and
   * the driver state and enables the hardware.
   */
@@ -1599,7 +1602,7 @@ index 3925adf..642793e 100644
  	/*
  	 * First parse ACPI tables to find the largest Bus/Dev/Func
  	 * we need to handle. Upon this information the shared data
-@@ -1310,6 +1302,7 @@ int __init amd_iommu_init(void)
+@@ -1333,6 +1325,7 @@ int __init amd_iommu_init(void)
  	else
  		printk(KERN_INFO "AMD-Vi: Lazy IO/TLB flushing enabled\n");
  
@@ -1607,7 +1610,7 @@ index 3925adf..642793e 100644
  out:
  	return ret;
  
-@@ -1338,11 +1331,6 @@ free:
+@@ -1361,11 +1354,6 @@ free:
  	goto out;
  }
  
@@ -1619,7 +1622,7 @@ index 3925adf..642793e 100644
  /****************************************************************************
   *
   * Early detect code. This code runs at IOMMU detection time in the DMA
-@@ -1357,16 +1345,13 @@ static int __init early_amd_iommu_detect(struct acpi_table_header *table)
+@@ -1380,16 +1368,13 @@ static int __init early_amd_iommu_detect(struct acpi_table_header *table)
  
  void __init amd_iommu_detect(void)
  {
@@ -1668,7 +1671,7 @@ index 082089e..8d34362 100644
  	} else if ((!no_iommu && max_pfn > MAX_DMA32_PFN) ||
  		   force_iommu ||
 diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index 0da6495..42d1fe2 100644
+index 420e43e..3a9e72a 100644
 --- a/arch/x86/kernel/apic/io_apic.c
 +++ b/arch/x86/kernel/apic/io_apic.c
 @@ -63,7 +63,12 @@
@@ -1684,7 +1687,7 @@ index 0da6495..42d1fe2 100644
  
  #define __apicdebuginit(type) static type __init
  #define for_each_irq_pin(entry, head) \
-@@ -390,14 +395,18 @@ static inline void io_apic_eoi(unsigned int apic, unsigned int vector)
+@@ -395,14 +400,18 @@ static inline void io_apic_eoi(unsigned int apic, unsigned int vector)
  
  static inline unsigned int io_apic_read(unsigned int apic, unsigned int reg)
  {
@@ -1705,7 +1708,7 @@ index 0da6495..42d1fe2 100644
  	writel(reg, &io_apic->index);
  	writel(value, &io_apic->data);
  }
-@@ -410,7 +419,9 @@ static inline void io_apic_write(unsigned int apic, unsigned int reg, unsigned i
+@@ -415,7 +424,9 @@ static inline void io_apic_write(unsigned int apic, unsigned int reg, unsigned i
   */
  static inline void io_apic_modify(unsigned int apic, unsigned int reg, unsigned int value)
  {
@@ -1716,7 +1719,7 @@ index 0da6495..42d1fe2 100644
  
  	if (sis_apic_bug)
  		writel(reg, &io_apic->index);
-@@ -3487,6 +3498,9 @@ int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
+@@ -3492,6 +3503,9 @@ int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
  	if (type == PCI_CAP_ID_MSI && nvec > 1)
  		return 1;
  
@@ -1726,7 +1729,7 @@ index 0da6495..42d1fe2 100644
  	node = dev_to_node(&dev->dev);
  	irq_want = nr_irqs_gsi;
  	sub_handle = 0;
-@@ -3536,7 +3550,29 @@ error:
+@@ -3541,7 +3555,29 @@ error:
  
  void arch_teardown_msi_irq(unsigned int irq)
  {
@@ -1757,7 +1760,7 @@ index 0da6495..42d1fe2 100644
  }
  
  #if defined (CONFIG_DMAR) || defined (CONFIG_INTR_REMAP)
-@@ -3852,7 +3888,14 @@ void __init probe_nr_irqs_gsi(void)
+@@ -3857,7 +3893,14 @@ void __init probe_nr_irqs_gsi(void)
  	printk(KERN_DEBUG "nr_irqs_gsi: %d\n", nr_irqs_gsi);
  }
  
@@ -1772,7 +1775,7 @@ index 0da6495..42d1fe2 100644
  int __init arch_probe_nr_irqs(void)
  {
  	int nr;
-@@ -3870,6 +3913,8 @@ int __init arch_probe_nr_irqs(void)
+@@ -3875,6 +3918,8 @@ int __init arch_probe_nr_irqs(void)
  	if (nr < nr_irqs)
  		nr_irqs = nr;
  
@@ -2190,7 +2193,7 @@ index 0b06cd7..f59b07a 100644
  #ifdef CONFIG_EARLY_PRINTK
  		set_intr_gate(i, &early_idt_handlers[i]);
 diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-index 19528ef..40e47cd 100644
+index c771e1a..8b970b8 100644
 --- a/arch/x86/kernel/hpet.c
 +++ b/arch/x86/kernel/hpet.c
 @@ -98,7 +98,7 @@ static int __init hpet_setup(char *str)
@@ -3066,6 +3069,22 @@ index 5fd5b07..11d8667 100644
  }
  
  int sys_fork(struct pt_regs *regs)
+diff --git a/arch/x86/kernel/pvclock.c b/arch/x86/kernel/pvclock.c
+index dfdfe46..b12fe8d 100644
+--- a/arch/x86/kernel/pvclock.c
++++ b/arch/x86/kernel/pvclock.c
+@@ -111,6 +111,11 @@ unsigned long pvclock_tsc_khz(struct pvclock_vcpu_time_info *src)
+ 
+ static atomic64_t last_value = ATOMIC64_INIT(0);
+ 
++void pvclock_resume(void)
++{
++	atomic64_set(&last_value, 0);
++}
++
+ cycle_t pvclock_clocksource_read(struct pvclock_vcpu_time_info *src)
+ {
+ 	struct pvclock_shadow_time shadow;
 diff --git a/arch/x86/kernel/reboot.c b/arch/x86/kernel/reboot.c
 index 269c2a3..8e1aac8 100644
 --- a/arch/x86/kernel/reboot.c
@@ -4449,7 +4468,7 @@ index 942ccf1..fd3803e 100644
 +}
 +#endif
 diff --git a/arch/x86/xen/mmu.c b/arch/x86/xen/mmu.c
-index 350a3de..ebb74ec 100644
+index 350a3de..0fa0445 100644
 --- a/arch/x86/xen/mmu.c
 +++ b/arch/x86/xen/mmu.c
 @@ -42,6 +42,7 @@
@@ -5343,7 +5362,7 @@ index 350a3de..ebb74ec 100644
  	pmd_t *kernel_pmd;
 +	int i;
 +
-+	level2_kernel_pgt = extend_brk(sizeof(pmd_t *) * PTRS_PER_PMD, PAGE_SIZE);
++	level2_kernel_pgt = extend_brk(sizeof(pmd_t) * PTRS_PER_PMD, PAGE_SIZE);
  
  	max_pfn_mapped = PFN_DOWN(__pa(xen_start_info->pt_base) +
  				  xen_start_info->nr_pt_frames * PAGE_SIZE +
@@ -6281,7 +6300,7 @@ index 0000000..0f45638
 +early_param("xen_emul_unplug", parse_xen_emul_unplug);
 +#endif
 diff --git a/arch/x86/xen/setup.c b/arch/x86/xen/setup.c
-index ad0047f..915b0c3 100644
+index ad0047f..b8530cc 100644
 --- a/arch/x86/xen/setup.c
 +++ b/arch/x86/xen/setup.c
 @@ -10,6 +10,7 @@
@@ -6292,8 +6311,11 @@ index ad0047f..915b0c3 100644
  #include <asm/vdso.h>
  #include <asm/e820.h>
  #include <asm/setup.h>
-@@ -19,7 +20,9 @@
+@@ -17,9 +18,12 @@
+ #include <asm/xen/hypervisor.h>
+ #include <asm/xen/hypercall.h>
  
++#include <xen/xen.h>
  #include <xen/page.h>
  #include <xen/interface/callback.h>
 +#include <xen/interface/memory.h>
@@ -6302,7 +6324,7 @@ index ad0047f..915b0c3 100644
  #include <xen/features.h>
  
  #include "xen-ops.h"
-@@ -32,25 +35,177 @@ extern void xen_sysenter_target(void);
+@@ -32,25 +36,184 @@ extern void xen_sysenter_target(void);
  extern void xen_syscall_target(void);
  extern void xen_syscall32_target(void);
  
@@ -6357,6 +6379,11 @@ index ad0047f..915b0c3 100644
 +
 +	if (end <= start)
 +		return 0;
++
++	if (end < PFN_DOWN(ISA_END_ADDRESS))
++		return 0;
++	if (start < PFN_DOWN(ISA_END_ADDRESS))
++		start = PFN_DOWN(ISA_END_ADDRESS);
 +
 +	printk(KERN_INFO "xen_release_chunk: looking at area pfn %lx-%lx: ",
 +	       start, end);
@@ -6435,6 +6462,7 @@ index ad0047f..915b0c3 100644
 +		XENMEM_memory_map;
 +	rc = HYPERVISOR_memory_op(op, &memmap);
 +	if (rc == -ENOSYS) {
++		BUG_ON(xen_initial_domain());
 +		memmap.nr_entries = 1;
 +		map[0].addr = 0ULL;
 +		map[0].size = mem_end;
@@ -6454,15 +6482,15 @@ index ad0047f..915b0c3 100644
 +			if (map[i].addr < mem_end && end > mem_end) {
 +				/* Truncate region to max_mem. */
 +				u64 delta = end - mem_end;
-+
+ 
+-	e820_add_region(0, PFN_PHYS((u64)max_pfn), E820_RAM);
 +				map[i].size -= delta;
 +				extra_pages += PFN_DOWN(delta);
 +
 +				end = mem_end;
 +			}
 +		}
- 
--	e820_add_region(0, PFN_PHYS((u64)max_pfn), E820_RAM);
++
 +		if (end > xen_extra_mem_start)
 +			xen_extra_mem_start = end;
 +
@@ -6473,16 +6501,19 @@ index ad0047f..915b0c3 100644
 +	}
  
  	/*
- 	 * Even though this is normal, usable memory under Xen, reserve
- 	 * ISA memory anyway because too many things think they can poke
+-	 * Even though this is normal, usable memory under Xen, reserve
+-	 * ISA memory anyway because too many things think they can poke
++	 * In domU, the ISA region is normal, usable memory, but we
++	 * reserve ISA memory anyway because too many things poke
  	 * about in there.
 +	 *
-+	 * In a dom0 kernel, this region is identity mapped with the
-+	 * hardware ISA area, so it really is out of bounds.
++	 * In Dom0, the host E820 information can leave gaps in the
++	 * ISA range, which would cause us to release those pages.  To
++	 * avoid this, we unconditionally reserve them here.
  	 */
  	e820_add_region(ISA_START_ADDRESS, ISA_END_ADDRESS - ISA_START_ADDRESS,
  			E820_RESERVED);
-@@ -67,6 +222,29 @@ char * __init xen_memory_setup(void)
+@@ -67,6 +230,29 @@ char * __init xen_memory_setup(void)
  
  	sanitize_e820_map(e820.map, ARRAY_SIZE(e820.map), &e820.nr_map);
  
@@ -6512,7 +6543,7 @@ index ad0047f..915b0c3 100644
  	return "Xen";
  }
  
-@@ -156,6 +334,8 @@ void __init xen_arch_setup(void)
+@@ -156,6 +342,8 @@ void __init xen_arch_setup(void)
  	struct physdev_set_iopl set_iopl;
  	int rc;
  
@@ -6521,7 +6552,7 @@ index ad0047f..915b0c3 100644
  	HYPERVISOR_vm_assist(VMASST_CMD_enable, VMASST_TYPE_4gb_segments);
  	HYPERVISOR_vm_assist(VMASST_CMD_enable, VMASST_TYPE_writable_pagetables);
  
-@@ -182,13 +362,17 @@ void __init xen_arch_setup(void)
+@@ -182,13 +370,17 @@ void __init xen_arch_setup(void)
  	}
  #endif
  
@@ -6606,7 +6637,7 @@ index a9c6611..1d789d5 100644
  {
  	xen_build_mfn_list_list();
 diff --git a/arch/x86/xen/time.c b/arch/x86/xen/time.c
-index 8e04980..30b7b44 100644
+index 8e04980..ab35140 100644
 --- a/arch/x86/xen/time.c
 +++ b/arch/x86/xen/time.c
 @@ -19,6 +19,7 @@
@@ -6671,7 +6702,16 @@ index 8e04980..30b7b44 100644
  }
  
  void xen_teardown_timer(int cpu)
-@@ -433,7 +450,7 @@ void xen_timer_resume(void)
+@@ -424,6 +441,8 @@ void xen_timer_resume(void)
+ {
+ 	int cpu;
+ 
++	pvclock_resume();
++
+ 	if (xen_clockevent != &xen_vcpuop_clockevent)
+ 		return;
+ 
+@@ -433,7 +452,7 @@ void xen_timer_resume(void)
  	}
  }
  
@@ -6680,7 +6720,7 @@ index 8e04980..30b7b44 100644
  {
  	int cpu = smp_processor_id();
  
-@@ -457,3 +474,51 @@ __init void xen_time_init(void)
+@@ -457,3 +476,51 @@ __init void xen_time_init(void)
  	xen_setup_timer(cpu);
  	xen_setup_cpu_clockevents();
  }
@@ -6987,7 +7027,7 @@ index cc22f9a..747d96f 100644
  	status = acpi_hw_write_pm1_control(pm1a_control, pm1b_control);
  	if (ACPI_FAILURE(status)) {
 diff --git a/drivers/acpi/processor_core.c b/drivers/acpi/processor_core.c
-index ec742a4..492a899 100644
+index 7102474..2428cc0 100644
 --- a/drivers/acpi/processor_core.c
 +++ b/drivers/acpi/processor_core.c
 @@ -58,6 +58,7 @@
@@ -7010,7 +7050,7 @@ index ec742a4..492a899 100644
  static acpi_status acpi_processor_hotadd_init(acpi_handle handle, int *p_cpu);
  static int acpi_processor_handle_eject(struct acpi_processor *pr);
  
-@@ -253,7 +252,7 @@ static int acpi_processor_errata_piix4(struct pci_dev *dev)
+@@ -247,7 +246,7 @@ static int acpi_processor_errata_piix4(struct pci_dev *dev)
  	return 0;
  }
  
@@ -7019,7 +7059,7 @@ index ec742a4..492a899 100644
  {
  	int result = 0;
  	struct pci_dev *dev = NULL;
-@@ -284,7 +283,7 @@ static int acpi_processor_errata(struct acpi_processor *pr)
+@@ -278,7 +277,7 @@ static int acpi_processor_errata(struct acpi_processor *pr)
   * _PDC is required for a BIOS-OS handshake for most of the newer
   * ACPI processor features.
   */
@@ -7028,7 +7068,7 @@ index ec742a4..492a899 100644
  {
  	struct acpi_object_list *pdc_in = pr->pdc;
  	acpi_status status = AE_OK;
-@@ -353,7 +352,7 @@ static int acpi_processor_info_open_fs(struct inode *inode, struct file *file)
+@@ -347,7 +346,7 @@ static int acpi_processor_info_open_fs(struct inode *inode, struct file *file)
  			   PDE(inode)->data);
  }
  
@@ -7037,7 +7077,7 @@ index ec742a4..492a899 100644
  {
  	struct proc_dir_entry *entry = NULL;
  
-@@ -392,7 +391,7 @@ static int acpi_processor_add_fs(struct acpi_device *device)
+@@ -386,7 +385,7 @@ static int acpi_processor_add_fs(struct acpi_device *device)
  		return -EIO;
  	return 0;
  }
@@ -7046,7 +7086,7 @@ index ec742a4..492a899 100644
  {
  
  	if (acpi_device_dir(device)) {
-@@ -408,15 +407,6 @@ static int acpi_processor_remove_fs(struct acpi_device *device)
+@@ -402,15 +401,6 @@ static int acpi_processor_remove_fs(struct acpi_device *device)
  
  	return 0;
  }
@@ -7062,7 +7102,7 @@ index ec742a4..492a899 100644
  #endif
  
  /* Use the acpiid in MADT to map cpus in case of SMP */
-@@ -711,7 +701,7 @@ static int acpi_processor_get_info(struct acpi_device *device)
+@@ -705,7 +695,7 @@ static int acpi_processor_get_info(struct acpi_device *device)
  
  static DEFINE_PER_CPU(void *, processor_device_array);
  
@@ -7071,7 +7111,7 @@ index ec742a4..492a899 100644
  {
  	struct acpi_processor *pr = acpi_driver_data(device);
  	int saved;
-@@ -879,7 +869,7 @@ err_free_cpumask:
+@@ -873,7 +863,7 @@ err_free_cpumask:
  	return result;
  }
  
@@ -7080,7 +7120,7 @@ index ec742a4..492a899 100644
  {
  	struct acpi_processor *pr = NULL;
  
-@@ -1154,7 +1144,11 @@ static int __init acpi_processor_init(void)
+@@ -1148,7 +1138,11 @@ static int __init acpi_processor_init(void)
  	if (result < 0)
  		goto out_proc;
  
@@ -7093,7 +7133,7 @@ index ec742a4..492a899 100644
  	if (result < 0)
  		goto out_cpuidle;
  
-@@ -1190,7 +1184,10 @@ static void __exit acpi_processor_exit(void)
+@@ -1184,7 +1178,10 @@ static void __exit acpi_processor_exit(void)
  
  	acpi_processor_uninstall_hotplug_notify();
  
@@ -32080,7 +32120,7 @@ index 176c518..d681cc9 100644
 +};
  #endif /* _LINUX_IF_LINK_H */
 diff --git a/include/linux/mm.h b/include/linux/mm.h
-index a8d25e4..1bc4927 100644
+index 11e5be6..4c98621 100644
 --- a/include/linux/mm.h
 +++ b/include/linux/mm.h
 @@ -109,6 +109,12 @@ extern unsigned int kobjsize(const void *objp);
@@ -32232,10 +32272,10 @@ index e07d194..ca28e46 100644
  
  #if defined(CONFIG_HOTPLUG_PCI) || defined(CONFIG_HOTPLUG_PCI_MODULE)
 diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-index 67325bf..c398cc3 100644
+index 07ed684..49cd5c9 100644
 --- a/include/linux/pci_ids.h
 +++ b/include/linux/pci_ids.h
-@@ -2712,3 +2712,6 @@
+@@ -2715,3 +2715,6 @@
  #define PCI_DEVICE_ID_RME_DIGI32	0x9896
  #define PCI_DEVICE_ID_RME_DIGI32_PRO	0x9897
  #define PCI_DEVICE_ID_RME_DIGI32_8	0x9898

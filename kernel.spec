@@ -2204,6 +2204,9 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Sat Nov 06 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops to 2.6.32.25
+
 * Fri Oct 29 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.25-172
 - Linux 2.6.32.25
 
