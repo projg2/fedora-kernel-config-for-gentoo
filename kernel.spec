@@ -2158,11 +2158,11 @@ fi
 - nouveau: fix theoretical race condition which may be the cause of some
   random hangs people reported.
 
-* Wed Sep 29 2010 Dave Jones <davej@redhat.com> 2.6.35.6-35
-- Add back an old hack to make an SDV e1000e variant work.
-
 * Thu Sep 30 2010 Steve Dickson <steved@redhat.com>
 - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-09-14
+
+* Wed Sep 29 2010 Dave Jones <davej@redhat.com> 2.6.35.6-35
+- Add back an old hack to make an SDV e1000e variant work.
 
 * Wed Sep 29 2010 Dave Jones <davej@redhat.com>
 - Enable IB700 watchdog (used by qemu/kvm). (#637152)
@@ -2343,8 +2343,6 @@ fi
 - Drop merged patches:
    mm-fix-page-table-unmap-for-stack-guard-page-properly.patch
    mm-fix-up-some-user-visible-effects-of-the-stack-guard-page.patch
-* Thu Aug 19 2010 Steve Dickson <steved@redhat.com>
-- Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
 
 * Thu Aug 19 2010 Steve Dickson <steved@redhat.com>
 - Updated to the latest pNFS tag: pnfs-all-2.6.35-2010-08-19
