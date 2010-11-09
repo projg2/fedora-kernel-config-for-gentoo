@@ -1,0 +1,703 @@
+commit 879d56da9b89b52de2109cadf1369967522428e8
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Tue Oct 26 12:55:52 2010 +1000
+
+    drm/radeon/kms: don't poll dac load detect.
+    
+    This is slightly destructive, cpu intensive and can cause lockups.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 2563a90cdda1fe490947dc032ce17bf1118afc39
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Tue Nov 9 10:26:00 2010 +1000
+
+    drm: Use a nondestructive mode for output detect when polling (v2)
+    
+    v2: Julien Cristau pointed out that @nondestructive results in
+    double-negatives and confusion when trying to interpret the parameter,
+    so use @force instead. Much easier to type as well. ;-)
+    
+    And fix the miscompilation of vmgfx reported by Sedat Dilek.
+    
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Cc: stable@kernel.org
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    
+    Conflicts:
+    
+    	drivers/gpu/drm/i915/intel_tv.c
+    	drivers/gpu/drm/nouveau/nouveau_connector.c
+
+commit deb557bbbcaa7fa8281d51490c73b51f579bc84d
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Tue Nov 9 10:24:06 2010 +1000
+
+    drm: Use a nondestructive mode for output detect when polling
+    
+    Destructive load-detection is very expensive and due to failings
+    elsewhere can trigger system wide stalls of up to 600ms. A simple
+    first step to correcting this is not to invoke such an expensive
+    and destructive load-detection operation automatically.
+    
+    Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=29536
+    Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=16265
+    Reported-by: Bruno Prémont <bonbons@linux-vserver.org>
+    Tested-by: Sitsofe Wheeler <sitsofe@yahoo.com>
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Cc: stable@kernel.org
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    
+    Conflicts:
+    
+    	drivers/gpu/drm/i915/intel_tv.c
+    	drivers/gpu/drm/nouveau/nouveau_connector.c
+
+commit 8d5d3cd3612618a3c2214048788f0b2cc463ce0f
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Sep 6 23:53:47 2010 +0100
+
+    drm: Fix regression in disable polling e58f637
+    
+    I broke out my trusty i845 and found a new boot failure, which upon
+    inspection turned out to be a recursion within:
+    
+    drm_helper_probe_single_connector_modes() -> drm_helper_hpd_irq_event()
+    -> intel_crt_detect() -> drm_helper_probe_single_connector_modes()
+    
+    Calling drm_kms_helper_poll_enable() instead performs the desired
+    re-initialisation of the polling should the user have toggled the
+    parameter, without the recursive side-effect.
+    
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Cc: Dave Airlie <airlied@redhat.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit ec0becade1eae9b0f40b12ea4fcc3ea36e993ba3
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Tue Nov 9 09:48:34 2010 +1000
+
+    drm/kms: Add a module parameter to disable polling
+    
+    Polling for a VGA device on an old system can be quite expensive,
+    causing latencies on the order of 600ms. As we hold the mode mutex for
+    this time and also need the same mutex to move the cursor, we trigger a
+    user-visible stall.
+    
+    The real solution would involve improving the granulatity of the
+    locking and so perhaps performing some of the probing not under the lock
+    or some other updates can be done under different locks. Also reducing the
+    cost of probing for a non-existent monitor would be worthwhile. However,
+    exposing a parameter to disable polling is a simple workaround in the
+    meantime.
+    
+    In order to accommodate users turning polling on and off at runtime, the
+    polling is potentially re-enabled on every probe. This is coupled to
+    the user calling xrandr, which seems to be a vaild time to reset the
+    polling timeout since the information on the connection has just been
+    updated. (The presumption being that all connections are probed in a
+    single xrandr pass, which is currently valid.)
+    
+    References:
+    
+      Bug 29536 - 2.6.35 causes ~600ms latency every 10s
+      https://bugs.freedesktop.org/show_bug.cgi?id=29536
+    
+      Bug 16265 - Why is kslowd accumulating so much CPU time?
+      https://bugzilla.kernel.org/show_bug.cgi?id=16265
+    
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Reported-and-tested-by: Bruno Prémont <bonbons@linux-vserver.org>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    
+    Conflicts:
+    
+    	drivers/gpu/drm/drm_crtc_helper.c
+
+commit 77e90256db2f7e6424717f7cc984b22d2832243f
+Author: Dan Carpenter <error27@gmail.com>
+Date:   Thu Aug 19 11:46:29 2010 +0200
+
+    drm: move dereference below check
+    
+    "fb_helper_conn" is dereferenced before the check for NULL.  It's never
+    actually NULL here, so this is mostly to keep the static checkers happy.
+    
+    Signed-off-by: Dan Carpenter <error27@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 86e25290d9df7a84d185dfc037851d72d270a6c0
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue Jul 20 03:24:11 2010 -0400
+
+    drm/radeon/kms: make sure HPD is set to NONE on analog-only connectors
+    
+    HPD is digital only.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 93d2725f536c17a85c35051beb4c41b7c1707db0
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon Oct 25 19:44:00 2010 -0400
+
+    drm/radeon/kms: MC vram map needs to be >= pci aperture size
+    
+    The vram map in the radeon memory controller needs to be
+    >= the pci aperture size.  Fixes:
+    https://bugs.freedesktop.org/show_bug.cgi?id=28402
+    
+    The problematic cards in the above bug have 64 MB of vram,
+    but the pci aperture is 128 MB and the MC vram map was only
+    64 MB.  This can lead to hangs.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Cc: stable@kernel.org
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 3fd6d68cfa32d8a5c99ba24e3d2c669bffef45ec
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Oct 27 01:02:35 2010 -0400
+
+    drm/radeon/kms: fix handling of tex lookup disable in cs checker on r2xx
+    
+    There are cases when multiple texture units have to be enabled,
+    but not actually used to sample.  This patch checks to see if
+    the lookup_disable bit is set and if so, skips the texture check.
+    
+    Fixes:
+    https://bugs.freedesktop.org/show_bug.cgi?id=25544
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Cc: stable@kernel.org
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+diff --git a/drivers/gpu/drm/drm_crtc_helper.c b/drivers/gpu/drm/drm_crtc_helper.c
+index 25d70d6..d537039 100644
+--- a/drivers/gpu/drm/drm_crtc_helper.c
++++ b/drivers/gpu/drm/drm_crtc_helper.c
+@@ -34,6 +34,9 @@
+ #include "drm_crtc_helper.h"
+ #include "drm_fb_helper.h"
+ 
++static bool drm_kms_helper_poll = true;
++module_param_named(poll, drm_kms_helper_poll, bool, 0600);
++
+ static void drm_mode_validate_flag(struct drm_connector *connector,
+ 				   int flags)
+ {
+@@ -98,8 +101,10 @@ int drm_helper_probe_single_connector_modes(struct drm_connector *connector,
+ 			connector->status = connector_status_disconnected;
+ 		if (connector->funcs->force)
+ 			connector->funcs->force(connector);
+-	} else
+-		connector->status = connector->funcs->detect(connector);
++	} else {
++		connector->status = connector->funcs->detect(connector, true);
++		drm_kms_helper_poll_enable(dev);
++	}
+ 
+ 	if (connector->status == connector_status_disconnected) {
+ 		DRM_DEBUG_KMS("%s is disconnected\n",
+@@ -820,6 +825,9 @@ static void output_poll_execute(struct slow_work *work)
+ 	bool repoll = false, changed = false;
+ 	int ret;
+ 
++	if (!drm_kms_helper_poll)
++		return;
++
+ 	mutex_lock(&dev->mode_config.mutex);
+ 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
+ 
+@@ -839,7 +847,7 @@ static void output_poll_execute(struct slow_work *work)
+ 		    !(connector->polled & DRM_CONNECTOR_POLL_HPD))
+ 			continue;
+ 
+-		status = connector->funcs->detect(connector);
++		status = connector->funcs->detect(connector, false);
+ 		if (old_status != status)
+ 			changed = true;
+ 	}
+@@ -874,6 +882,9 @@ void drm_kms_helper_poll_enable(struct drm_device *dev)
+ 	struct drm_connector *connector;
+ 	int ret;
+ 
++	if (!dev->mode_config.poll_enabled || !drm_kms_helper_poll)
++		return;
++
+ 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
+ 		if (connector->polled)
+ 			poll = true;
+@@ -909,9 +920,12 @@ void drm_helper_hpd_irq_event(struct drm_device *dev)
+ {
+ 	if (!dev->mode_config.poll_enabled)
+ 		return;
++
+ 	delayed_slow_work_cancel(&dev->mode_config.output_poll_slow_work);
+ 	/* schedule a slow work asap */
+-	delayed_slow_work_enqueue(&dev->mode_config.output_poll_slow_work, 0);
++	if (drm_kms_helper_poll)
++		delayed_slow_work_enqueue(&dev->mode_config.output_poll_slow_work, 0);
++
+ }
+ EXPORT_SYMBOL(drm_helper_hpd_irq_event);
+ 
+diff --git a/drivers/gpu/drm/drm_fb_helper.c b/drivers/gpu/drm/drm_fb_helper.c
+index 7196620..cef8d8d 100644
+--- a/drivers/gpu/drm/drm_fb_helper.c
++++ b/drivers/gpu/drm/drm_fb_helper.c
+@@ -94,10 +94,11 @@ static bool drm_fb_helper_connector_parse_command_line(struct drm_fb_helper_conn
+ 	int i;
+ 	enum drm_connector_force force = DRM_FORCE_UNSPECIFIED;
+ 	struct drm_fb_helper_cmdline_mode *cmdline_mode;
+-	struct drm_connector *connector = fb_helper_conn->connector;
++	struct drm_connector *connector;
+ 
+ 	if (!fb_helper_conn)
+ 		return false;
++	connector = fb_helper_conn->connector;
+ 
+ 	cmdline_mode = &fb_helper_conn->cmdline_mode;
+ 	if (!mode_option)
+diff --git a/drivers/gpu/drm/drm_sysfs.c b/drivers/gpu/drm/drm_sysfs.c
+index 101d381..9500af1 100644
+--- a/drivers/gpu/drm/drm_sysfs.c
++++ b/drivers/gpu/drm/drm_sysfs.c
+@@ -159,7 +159,7 @@ static ssize_t status_show(struct device *device,
+ 	struct drm_connector *connector = to_drm_connector(device);
+ 	enum drm_connector_status status;
+ 
+-	status = connector->funcs->detect(connector);
++	status = connector->funcs->detect(connector, true);
+ 	return snprintf(buf, PAGE_SIZE, "%s\n",
+ 			drm_get_connector_status_name(status));
+ }
+diff --git a/drivers/gpu/drm/i915/intel_crt.c b/drivers/gpu/drm/i915/intel_crt.c
+index ee0732b..3886b47 100644
+--- a/drivers/gpu/drm/i915/intel_crt.c
++++ b/drivers/gpu/drm/i915/intel_crt.c
+@@ -402,7 +402,8 @@ intel_crt_load_detect(struct drm_crtc *crtc, struct intel_encoder *intel_encoder
+ 	return status;
+ }
+ 
+-static enum drm_connector_status intel_crt_detect(struct drm_connector *connector)
++static enum drm_connector_status
++intel_crt_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct drm_device *dev = connector->dev;
+ 	struct drm_encoder *encoder = intel_attached_encoder(connector);
+@@ -421,6 +422,9 @@ static enum drm_connector_status intel_crt_detect(struct drm_connector *connecto
+ 	if (intel_crt_detect_ddc(encoder))
+ 		return connector_status_connected;
+ 
++	if (!force)
++		return connector->status;
++
+ 	/* for pre-945g platforms use load detect */
+ 	if (encoder->crtc && encoder->crtc->enabled) {
+ 		status = intel_crt_load_detect(encoder->crtc, intel_encoder);
+diff --git a/drivers/gpu/drm/i915/intel_dp.c b/drivers/gpu/drm/i915/intel_dp.c
+index d9de8f1..b58249d 100644
+--- a/drivers/gpu/drm/i915/intel_dp.c
++++ b/drivers/gpu/drm/i915/intel_dp.c
+@@ -1287,7 +1287,7 @@ ironlake_dp_detect(struct drm_connector *connector)
+  * \return false if DP port is disconnected.
+  */
+ static enum drm_connector_status
+-intel_dp_detect(struct drm_connector *connector)
++intel_dp_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct drm_encoder *encoder = intel_attached_encoder(connector);
+ 	struct intel_encoder *intel_encoder = enc_to_intel_encoder(encoder);
+diff --git a/drivers/gpu/drm/i915/intel_dvo.c b/drivers/gpu/drm/i915/intel_dvo.c
+index 227feca..48a1889 100644
+--- a/drivers/gpu/drm/i915/intel_dvo.c
++++ b/drivers/gpu/drm/i915/intel_dvo.c
+@@ -211,7 +211,8 @@ static void intel_dvo_mode_set(struct drm_encoder *encoder,
+  *
+  * Unimplemented.
+  */
+-static enum drm_connector_status intel_dvo_detect(struct drm_connector *connector)
++static enum drm_connector_status
++intel_dvo_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct drm_encoder *encoder = intel_attached_encoder(connector);
+ 	struct intel_encoder *intel_encoder = enc_to_intel_encoder(encoder);
+diff --git a/drivers/gpu/drm/i915/intel_hdmi.c b/drivers/gpu/drm/i915/intel_hdmi.c
+index 83bd764..d1decfc 100644
+--- a/drivers/gpu/drm/i915/intel_hdmi.c
++++ b/drivers/gpu/drm/i915/intel_hdmi.c
+@@ -134,7 +134,7 @@ static bool intel_hdmi_mode_fixup(struct drm_encoder *encoder,
+ }
+ 
+ static enum drm_connector_status
+-intel_hdmi_detect(struct drm_connector *connector)
++intel_hdmi_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct drm_encoder *encoder = intel_attached_encoder(connector);
+ 	struct intel_encoder *intel_encoder = enc_to_intel_encoder(encoder);
+diff --git a/drivers/gpu/drm/i915/intel_lvds.c b/drivers/gpu/drm/i915/intel_lvds.c
+index 7d42ff1..9ad3425 100644
+--- a/drivers/gpu/drm/i915/intel_lvds.c
++++ b/drivers/gpu/drm/i915/intel_lvds.c
+@@ -546,7 +546,8 @@ static void intel_lvds_mode_set(struct drm_encoder *encoder,
+  * connected and closed means disconnected.  We also send hotplug events as
+  * needed, using lid status notification from the input layer.
+  */
+-static enum drm_connector_status intel_lvds_detect(struct drm_connector *connector)
++static enum drm_connector_status
++intel_lvds_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct drm_device *dev = connector->dev;
+ 	enum drm_connector_status status = connector_status_connected;
+@@ -641,7 +642,9 @@ static int intel_lid_notify(struct notifier_block *nb, unsigned long val,
+ 	 * the LID nofication event.
+ 	 */
+ 	if (connector)
+-		connector->status = connector->funcs->detect(connector);
++		connector->status = connector->funcs->detect(connector,
++							     false);
++
+ 	/* Don't force modeset on machines where it causes a GPU lockup */
+ 	if (dmi_check_system(intel_no_modeset_on_lid))
+ 		return NOTIFY_OK;
+diff --git a/drivers/gpu/drm/i915/intel_sdvo.c b/drivers/gpu/drm/i915/intel_sdvo.c
+index 76993ac..76c9b3d 100644
+--- a/drivers/gpu/drm/i915/intel_sdvo.c
++++ b/drivers/gpu/drm/i915/intel_sdvo.c
+@@ -1496,7 +1496,7 @@ intel_analog_is_connected(struct drm_device *dev)
+ 	if (!analog_connector)
+ 		return false;
+ 
+-	if (analog_connector->funcs->detect(analog_connector) ==
++	if (analog_connector->funcs->detect(analog_connector, false) ==
+ 			connector_status_disconnected)
+ 		return false;
+ 
+@@ -1567,7 +1567,8 @@ intel_sdvo_hdmi_sink_detect(struct drm_connector *connector)
+ 	return status;
+ }
+ 
+-static enum drm_connector_status intel_sdvo_detect(struct drm_connector *connector)
++static enum drm_connector_status
++intel_sdvo_detect(struct drm_connector *connector, bool force)
+ {
+ 	uint16_t response;
+ 	u8 status;
+diff --git a/drivers/gpu/drm/i915/intel_tv.c b/drivers/gpu/drm/i915/intel_tv.c
+index 6d553c2..ad40f1b 100644
+--- a/drivers/gpu/drm/i915/intel_tv.c
++++ b/drivers/gpu/drm/i915/intel_tv.c
+@@ -1336,7 +1336,7 @@ static void intel_tv_find_better_format(struct drm_connector *connector)
+  * we have a pipe programmed in order to probe the TV.
+  */
+ static enum drm_connector_status
+-intel_tv_detect(struct drm_connector *connector)
++intel_tv_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct drm_crtc *crtc;
+ 	struct drm_display_mode mode;
+@@ -1351,7 +1351,7 @@ intel_tv_detect(struct drm_connector *connector)
+ 
+ 	if (encoder->crtc && encoder->crtc->enabled) {
+ 		type = intel_tv_detect_type(encoder->crtc, intel_encoder);
+-	} else {
++	} else if (force) {
+ 		crtc = intel_get_load_detect_pipe(intel_encoder, connector,
+ 						  &mode, &dpms_mode);
+ 		if (crtc) {
+@@ -1359,8 +1359,9 @@ intel_tv_detect(struct drm_connector *connector)
+ 			intel_release_load_detect_pipe(intel_encoder, connector,
+ 						       dpms_mode);
+ 		} else
+-			type = -1;
+-	}
++			return connector_status_unknown;
++	} else
++		return connector->status;
+ 
+ 	tv_priv->type = type;
+ 
+diff --git a/drivers/gpu/drm/nouveau/nouveau_connector.c b/drivers/gpu/drm/nouveau/nouveau_connector.c
+index 149ed22..1085376 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_connector.c
++++ b/drivers/gpu/drm/nouveau/nouveau_connector.c
+@@ -228,7 +228,7 @@ nouveau_connector_set_encoder(struct drm_connector *connector,
+ }
+ 
+ static enum drm_connector_status
+-nouveau_connector_detect(struct drm_connector *connector)
++nouveau_connector_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct drm_device *dev = connector->dev;
+ 	struct nouveau_connector *nv_connector = nouveau_connector(connector);
+diff --git a/drivers/gpu/drm/radeon/r100.c b/drivers/gpu/drm/radeon/r100.c
+index a89a15a..a3378ba 100644
+--- a/drivers/gpu/drm/radeon/r100.c
++++ b/drivers/gpu/drm/radeon/r100.c
+@@ -2321,6 +2321,9 @@ void r100_vram_init_sizes(struct radeon_device *rdev)
+ 		/* Fix for RN50, M6, M7 with 8/16/32(??) MBs of VRAM - 
+ 		 * Novell bug 204882 + along with lots of ubuntu ones
+ 		 */
++		if (rdev->mc.aper_size > config_aper_size)
++			config_aper_size = rdev->mc.aper_size;
++
+ 		if (config_aper_size > rdev->mc.real_vram_size)
+ 			rdev->mc.mc_vram_size = config_aper_size;
+ 		else
+@@ -3229,6 +3232,8 @@ static int r100_cs_track_texture_check(struct radeon_device *rdev,
+ 	for (u = 0; u < track->num_texture; u++) {
+ 		if (!track->textures[u].enabled)
+ 			continue;
++		if (track->textures[u].lookup_disable)
++			continue;
+ 		robj = track->textures[u].robj;
+ 		if (robj == NULL) {
+ 			DRM_ERROR("No texture bound to unit %u\n", u);
+@@ -3462,6 +3467,7 @@ void r100_cs_track_clear(struct radeon_device *rdev, struct r100_cs_track *track
+ 		track->textures[i].robj = NULL;
+ 		/* CS IB emission code makes sure texture unit are disabled */
+ 		track->textures[i].enabled = false;
++		track->textures[i].lookup_disable = false;
+ 		track->textures[i].roundup_w = true;
+ 		track->textures[i].roundup_h = true;
+ 		if (track->separate_cube)
+diff --git a/drivers/gpu/drm/radeon/r100_track.h b/drivers/gpu/drm/radeon/r100_track.h
+index f47cdca..af65600 100644
+--- a/drivers/gpu/drm/radeon/r100_track.h
++++ b/drivers/gpu/drm/radeon/r100_track.h
+@@ -46,6 +46,7 @@ struct r100_cs_track_texture {
+ 	unsigned		height_11;
+ 	bool			use_pitch;
+ 	bool			enabled;
++	bool                    lookup_disable;
+ 	bool			roundup_w;
+ 	bool			roundup_h;
+ 	unsigned                compress_format;
+diff --git a/drivers/gpu/drm/radeon/r200.c b/drivers/gpu/drm/radeon/r200.c
+index 0266d72..d2408c3 100644
+--- a/drivers/gpu/drm/radeon/r200.c
++++ b/drivers/gpu/drm/radeon/r200.c
+@@ -447,6 +447,8 @@ int r200_packet0_check(struct radeon_cs_parser *p,
+ 			track->textures[i].width = 1 << ((idx_value >> RADEON_TXFORMAT_WIDTH_SHIFT) & RADEON_TXFORMAT_WIDTH_MASK);
+ 			track->textures[i].height = 1 << ((idx_value >> RADEON_TXFORMAT_HEIGHT_SHIFT) & RADEON_TXFORMAT_HEIGHT_MASK);
+ 		}
++		if (idx_value & R200_TXFORMAT_LOOKUP_DISABLE)
++			track->textures[i].lookup_disable = true;
+ 		switch ((idx_value & RADEON_TXFORMAT_FORMAT_MASK)) {
+ 		case R200_TXFORMAT_I8:
+ 		case R200_TXFORMAT_RGB332:
+diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+index adccbc2..1680600 100644
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -467,7 +467,8 @@ static int radeon_lvds_mode_valid(struct drm_connector *connector,
+ 	return MODE_OK;
+ }
+ 
+-static enum drm_connector_status radeon_lvds_detect(struct drm_connector *connector)
++static enum drm_connector_status
++radeon_lvds_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
+ 	struct drm_encoder *encoder = radeon_best_single_encoder(connector);
+@@ -582,7 +583,8 @@ static int radeon_vga_mode_valid(struct drm_connector *connector,
+ 	return MODE_OK;
+ }
+ 
+-static enum drm_connector_status radeon_vga_detect(struct drm_connector *connector)
++static enum drm_connector_status
++radeon_vga_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
+ 	struct drm_encoder *encoder;
+@@ -621,6 +623,11 @@ static enum drm_connector_status radeon_vga_detect(struct drm_connector *connect
+ 				ret = connector_status_connected;
+ 		}
+ 	} else {
++
++		/* if we aren't forcing don't do destructive polling */
++		if (!force)
++			return connector->status;
++
+ 		if (radeon_connector->dac_load_detect && encoder) {
+ 			encoder_funcs = encoder->helper_private;
+ 			ret = encoder_funcs->detect(encoder, connector);
+@@ -679,7 +686,8 @@ static int radeon_tv_mode_valid(struct drm_connector *connector,
+ 	return MODE_OK;
+ }
+ 
+-static enum drm_connector_status radeon_tv_detect(struct drm_connector *connector)
++static enum drm_connector_status
++radeon_tv_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct drm_encoder *encoder;
+ 	struct drm_encoder_helper_funcs *encoder_funcs;
+@@ -736,7 +744,8 @@ static int radeon_dvi_get_modes(struct drm_connector *connector)
+  * we have to check if this analog encoder is shared with anyone else (TV)
+  * if its shared we have to set the other connector to disconnected.
+  */
+-static enum drm_connector_status radeon_dvi_detect(struct drm_connector *connector)
++static enum drm_connector_status
++radeon_dvi_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
+ 	struct drm_encoder *encoder = NULL;
+@@ -806,6 +815,11 @@ static enum drm_connector_status radeon_dvi_detect(struct drm_connector *connect
+ 	if ((ret == connector_status_connected) && (radeon_connector->use_digital == true))
+ 		goto out;
+ 
++	if (!force) {
++		ret = connector->status;
++		goto out;
++	}
++
+ 	/* find analog encoder */
+ 	if (radeon_connector->dac_load_detect) {
+ 		for (i = 0; i < DRM_CONNECTOR_MAX_ENCODER; i++) {
+@@ -962,7 +976,8 @@ static int radeon_dp_get_modes(struct drm_connector *connector)
+ 	return ret;
+ }
+ 
+-static enum drm_connector_status radeon_dp_detect(struct drm_connector *connector)
++static enum drm_connector_status
++radeon_dp_detect(struct drm_connector *connector, bool force)
+ {
+ 	struct radeon_connector *radeon_connector = to_radeon_connector(connector);
+ 	enum drm_connector_status ret = connector_status_disconnected;
+@@ -1082,6 +1097,8 @@ radeon_add_atom_connector(struct drm_device *dev,
+ 		drm_connector_attach_property(&radeon_connector->base,
+ 					      rdev->mode_info.load_detect_property,
+ 					      1);
++		/* no HPD on analog connectors */
++		radeon_connector->hpd.hpd = RADEON_HPD_NONE;
+ 		connector->polled = DRM_CONNECTOR_POLL_CONNECT;
+ 		break;
+ 	case DRM_MODE_CONNECTOR_DVIA:
+@@ -1096,6 +1113,8 @@ radeon_add_atom_connector(struct drm_device *dev,
+ 		drm_connector_attach_property(&radeon_connector->base,
+ 					      rdev->mode_info.load_detect_property,
+ 					      1);
++		/* no HPD on analog connectors */
++		radeon_connector->hpd.hpd = RADEON_HPD_NONE;
+ 		break;
+ 	case DRM_MODE_CONNECTOR_DVII:
+ 	case DRM_MODE_CONNECTOR_DVID:
+@@ -1186,6 +1205,8 @@ radeon_add_atom_connector(struct drm_device *dev,
+ 			drm_connector_attach_property(&radeon_connector->base,
+ 						      rdev->mode_info.tv_std_property,
+ 						      radeon_atombios_get_tv_info(rdev));
++			/* no HPD on analog connectors */
++			radeon_connector->hpd.hpd = RADEON_HPD_NONE;
+ 		}
+ 		break;
+ 	case DRM_MODE_CONNECTOR_LVDS:
+@@ -1209,7 +1230,7 @@ radeon_add_atom_connector(struct drm_device *dev,
+ 		break;
+ 	}
+ 
+-	if (hpd->hpd == RADEON_HPD_NONE) {
++	if (radeon_connector->hpd.hpd == RADEON_HPD_NONE) {
+ 		if (i2c_bus->valid)
+ 			connector->polled = DRM_CONNECTOR_POLL_CONNECT;
+ 	} else
+@@ -1276,6 +1297,8 @@ radeon_add_legacy_connector(struct drm_device *dev,
+ 		drm_connector_attach_property(&radeon_connector->base,
+ 					      rdev->mode_info.load_detect_property,
+ 					      1);
++		/* no HPD on analog connectors */
++		radeon_connector->hpd.hpd = RADEON_HPD_NONE;
+ 		connector->polled = DRM_CONNECTOR_POLL_CONNECT;
+ 		break;
+ 	case DRM_MODE_CONNECTOR_DVIA:
+@@ -1290,6 +1313,8 @@ radeon_add_legacy_connector(struct drm_device *dev,
+ 		drm_connector_attach_property(&radeon_connector->base,
+ 					      rdev->mode_info.load_detect_property,
+ 					      1);
++		/* no HPD on analog connectors */
++		radeon_connector->hpd.hpd = RADEON_HPD_NONE;
+ 		break;
+ 	case DRM_MODE_CONNECTOR_DVII:
+ 	case DRM_MODE_CONNECTOR_DVID:
+@@ -1328,6 +1353,8 @@ radeon_add_legacy_connector(struct drm_device *dev,
+ 			drm_connector_attach_property(&radeon_connector->base,
+ 						      rdev->mode_info.tv_std_property,
+ 						      radeon_combios_get_tv_info(rdev));
++			/* no HPD on analog connectors */
++			radeon_connector->hpd.hpd = RADEON_HPD_NONE;
+ 		}
+ 		break;
+ 	case DRM_MODE_CONNECTOR_LVDS:
+@@ -1345,7 +1372,7 @@ radeon_add_legacy_connector(struct drm_device *dev,
+ 		break;
+ 	}
+ 
+-	if (hpd->hpd == RADEON_HPD_NONE) {
++	if (radeon_connector->hpd.hpd == RADEON_HPD_NONE) {
+ 		if (i2c_bus->valid)
+ 			connector->polled = DRM_CONNECTOR_POLL_CONNECT;
+ 	} else
+diff --git a/drivers/gpu/drm/radeon/radeon_reg.h b/drivers/gpu/drm/radeon/radeon_reg.h
+index c332f46..6492881 100644
+--- a/drivers/gpu/drm/radeon/radeon_reg.h
++++ b/drivers/gpu/drm/radeon/radeon_reg.h
+@@ -2836,6 +2836,7 @@
+ #       define R200_TXFORMAT_ST_ROUTE_STQ5	(5 << 24)
+ #       define R200_TXFORMAT_ST_ROUTE_MASK	(7 << 24)
+ #       define R200_TXFORMAT_ST_ROUTE_SHIFT	24
++#       define R200_TXFORMAT_LOOKUP_DISABLE	(1 << 27)
+ #       define R200_TXFORMAT_ALPHA_MASK_ENABLE	(1 << 28)
+ #       define R200_TXFORMAT_CHROMA_KEY_ENABLE	(1 << 29)
+ #       define R200_TXFORMAT_CUBIC_MAP_ENABLE		(1 << 30)
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_ldu.c b/drivers/gpu/drm/vmwgfx/vmwgfx_ldu.c
+index cfaf690..5b638cb 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_ldu.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_ldu.c
+@@ -335,7 +335,8 @@ static void vmw_ldu_connector_restore(struct drm_connector *connector)
+ }
+ 
+ static enum drm_connector_status
+-	vmw_ldu_connector_detect(struct drm_connector *connector)
++	vmw_ldu_connector_detect(struct drm_connector *connector,
++				 bool force)
+ {
+ 	if (vmw_connector_to_ldu(connector)->pref_active)
+ 		return connector_status_connected;
+@@ -516,7 +517,7 @@ static int vmw_ldu_init(struct vmw_private *dev_priv, unsigned unit)
+ 
+ 	drm_connector_init(dev, connector, &vmw_legacy_connector_funcs,
+ 			   DRM_MODE_CONNECTOR_LVDS);
+-	connector->status = vmw_ldu_connector_detect(connector);
++	connector->status = vmw_ldu_connector_detect(connector, true);
+ 
+ 	drm_encoder_init(dev, encoder, &vmw_legacy_encoder_funcs,
+ 			 DRM_MODE_ENCODER_LVDS);
+@@ -610,7 +611,7 @@ int vmw_kms_ldu_update_layout(struct vmw_private *dev_priv, unsigned num,
+ 			ldu->pref_height = 600;
+ 			ldu->pref_active = false;
+ 		}
+-		con->status = vmw_ldu_connector_detect(con);
++		con->status = vmw_ldu_connector_detect(con, true);
+ 	}
+ 
+ 	mutex_unlock(&dev->mode_config.mutex);
+diff --git a/include/drm/drm_crtc.h b/include/drm/drm_crtc.h
+index 93a1a31..afbb578 100644
+--- a/include/drm/drm_crtc.h
++++ b/include/drm/drm_crtc.h
+@@ -420,7 +420,15 @@ struct drm_connector_funcs {
+ 	void (*dpms)(struct drm_connector *connector, int mode);
+ 	void (*save)(struct drm_connector *connector);
+ 	void (*restore)(struct drm_connector *connector);
+-	enum drm_connector_status (*detect)(struct drm_connector *connector);
++
++	/* Check to see if anything is attached to the connector.
++	 * @force is set to false whilst polling, true when checking the
++	 * connector due to user request. @force can be used by the driver
++	 * to avoid expensive, destructive operations during automated
++	 * probing.
++	 */
++	enum drm_connector_status (*detect)(struct drm_connector *connector,
++					    bool force);
+ 	int (*fill_modes)(struct drm_connector *connector, uint32_t max_width, uint32_t max_height);
+ 	int (*set_property)(struct drm_connector *connector, struct drm_property *property,
+ 			     uint64_t val);

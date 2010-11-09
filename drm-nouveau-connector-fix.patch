@@ -1,0 +1,21 @@
+diff -up linux-2.6.35.x86_64/drivers/gpu/drm/nouveau/nouveau_connector.c.da linux-2.6.35.x86_64/drivers/gpu/drm/nouveau/nouveau_connector.c
+--- linux-2.6.35.x86_64/drivers/gpu/drm/nouveau/nouveau_connector.c.da	2010-11-08 19:55:42.000000000 -0500
++++ linux-2.6.35.x86_64/drivers/gpu/drm/nouveau/nouveau_connector.c	2010-11-08 19:55:49.000000000 -0500
+@@ -298,7 +298,7 @@ detect_analog:
+ }
+ 
+ static enum drm_connector_status
+-nouveau_connector_detect_lvds(struct drm_connector *connector)
++nouveau_connector_detect_lvds(struct drm_connector *connector, bool force)
+ {
+ 	struct drm_device *dev = connector->dev;
+ 	struct drm_nouveau_private *dev_priv = dev->dev_private;
+@@ -319,7 +319,7 @@ nouveau_connector_detect_lvds(struct drm
+ 
+ 	/* Try retrieving EDID via DDC */
+ 	if (!dev_priv->vbios.fp_no_ddc) {
+-		status = nouveau_connector_detect(connector);
++		status = nouveau_connector_detect(connector, force);
+ 		if (status == connector_status_connected)
+ 			goto out;
+ 	}
