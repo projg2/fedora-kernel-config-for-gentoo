@@ -1,0 +1,70 @@
+From ab7959dd389be36c0bc63e3e883b7891d2c1bfc4 Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Wed, 8 Sep 2010 09:45:11 +0100
+Subject: [PATCH] drm/i915: Disable output polling across suspend & resume
+
+Suspending (especially hibernating) may take a finite amount of time,
+during which a hotplug event may trigger and we will attempt to handle
+it with inconsistent state. Disable hotplug polling around suspend and
+resume.
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=30070
+Reported-by: Rui Tiago Matos <tiagomatos@gmail.com>
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+---
+ drivers/gpu/drm/i915/i915_dma.c |    2 --
+ drivers/gpu/drm/i915/i915_drv.c |   11 ++++++++++-
+ 2 files changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/i915_dma.c b/drivers/gpu/drm/i915/i915_dma.c
+index ce8ff0e..c569617 100644
+--- a/drivers/gpu/drm/i915/i915_dma.c
++++ b/drivers/gpu/drm/i915/i915_dma.c
+@@ -1334,10 +1334,8 @@ static void i915_switcheroo_set_state(struct pci_dev *pdev, enum vga_switcheroo_
+ 		/* i915 resume handler doesn't set to D0 */
+ 		pci_set_power_state(dev->pdev, PCI_D0);
+ 		i915_resume(dev);
+-		drm_kms_helper_poll_enable(dev);
+ 	} else {
+ 		printk(KERN_ERR "i915: switched off\n");
+-		drm_kms_helper_poll_disable(dev);
+ 		i915_suspend(dev, pmm);
+ 	}
+ }
+diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
+index 194e0c4..3ad3ebe 100644
+--- a/drivers/gpu/drm/i915/i915_drv.c
++++ b/drivers/gpu/drm/i915/i915_drv.c
+@@ -263,6 +263,8 @@ int i915_suspend(struct drm_device *dev, pm_message_t state)
+ 	if (state.event == PM_EVENT_PRETHAW)
+ 		return 0;
+ 
++	drm_kms_helper_poll_disable(dev);
++
+ 	error = i915_drm_freeze(dev);
+ 	if (error)
+ 		return error;
+@@ -306,12 +308,19 @@ static int i915_drm_thaw(struct drm_device *dev)
+ 
+ int i915_resume(struct drm_device *dev)
+ {
++	int ret;
++
+ 	if (pci_enable_device(dev->pdev))
+ 		return -EIO;
+ 
+ 	pci_set_master(dev->pdev);
+ 
+-	return i915_drm_thaw(dev);
++	ret = i915_drm_thaw(dev);
++	if (ret)
++		return ret;
++
++	drm_kms_helper_poll_enable(dev);
++	return 0;
+ }
+ 
+ /**
+-- 
+1.7.2.3
+

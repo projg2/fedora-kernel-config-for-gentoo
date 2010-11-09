@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 51
+%global baserelease 52
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -676,6 +676,7 @@ Patch1819: drm-intel-big-hammer.patch
 Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
+Patch1826: drm-i915-disable-sr-polling.patch
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 Patch2000: efifb-add-more-models.patch
 Patch2001: efifb-check-that-the-base-addr-is-plausible-on-pci-systems.patch
@@ -1340,6 +1341,7 @@ ApplyPatch drm-nouveau-connector-fix.patch
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
+ApplyPatch drm-i915-disable-sr-polling.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
 ApplyPatch efifb-add-more-models.patch
@@ -2043,6 +2045,9 @@ fi
 # and build.
 
 %changelog
+* Tue Nov 09 2010 Dave Airlie <airlied@redhat.com> - 2.6.35.6-52
+- add i915 polling s/r patch
+
 * Mon Nov 08 2010 Dave Airlie <airlied@redhat.com> - 2.6.35.6-51
 - Backport polling fixes + radeon hang fixes from upstream
 
