@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 50
+%global baserelease 51
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2043,6 +2043,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 08 2010 Dave Airlie <airlied@redhat.com> - 2.6.35.6-51
+- Backport polling fixes + radeon hang fixes from upstream
+
 * Tue Nov 02 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.6-50
 - nouveau: add potential workaround for NV86 hardware quirk
 - fix issue that occurs in certain dual-head configurations (rhbz#641524)
