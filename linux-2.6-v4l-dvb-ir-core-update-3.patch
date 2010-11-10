@@ -222,10 +222,10 @@ Date:   Mon Sep 6 18:26:08 2010 -0300
  include/media/ir-core.h          |    1 +
  7 files changed, 2010 insertions(+), 250 deletions(-)
 
-diff --git a/drivers/media/IR/Kconfig b/drivers/media/IR/Kconfig
-index 152000d..d67fff3 100644
---- a/drivers/media/IR/Kconfig
-+++ b/drivers/media/IR/Kconfig
+Index: linux-2.6.35.x86_64/drivers/media/IR/Kconfig
+===================================================================
+--- linux-2.6.35.x86_64.orig/drivers/media/IR/Kconfig
++++ linux-2.6.35.x86_64/drivers/media/IR/Kconfig
 @@ -101,6 +101,20 @@ config IR_LIRC_CODEC
  	   Enable this option to pass raw IR to and from userspace via
  	   the LIRC interface.
@@ -273,21 +273,21 @@ index 152000d..d67fff3 100644
  
  config IR_STREAMZAP
  	tristate "Streamzap PC Remote IR Receiver"
-diff --git a/drivers/media/IR/Makefile b/drivers/media/IR/Makefile
-index 953c6c4..f9574ad 100644
---- a/drivers/media/IR/Makefile
-+++ b/drivers/media/IR/Makefile
-@@ -17,5 +17,6 @@ obj-$(CONFIG_IR_LIRC_CODEC) += ir-lirc-codec.o
+Index: linux-2.6.35.x86_64/drivers/media/IR/Makefile
+===================================================================
+--- linux-2.6.35.x86_64.orig/drivers/media/IR/Makefile
++++ linux-2.6.35.x86_64/drivers/media/IR/Makefile
+@@ -17,5 +17,6 @@ obj-$(CONFIG_IR_LIRC_CODEC) += ir-lirc-c
  # stand-alone IR receivers/transmitters
  obj-$(CONFIG_IR_IMON) += imon.o
  obj-$(CONFIG_IR_MCEUSB) += mceusb.o
 +obj-$(CONFIG_IR_NUVOTON) += nuvoton-cir.o
  obj-$(CONFIG_IR_ENE) += ene_ir.o
  obj-$(CONFIG_IR_STREAMZAP) += streamzap.o
-diff --git a/drivers/media/IR/imon.c b/drivers/media/IR/imon.c
-index c185422..7a97176 100644
---- a/drivers/media/IR/imon.c
-+++ b/drivers/media/IR/imon.c
+Index: linux-2.6.35.x86_64/drivers/media/IR/imon.c
+===================================================================
+--- linux-2.6.35.x86_64.orig/drivers/media/IR/imon.c
++++ linux-2.6.35.x86_64/drivers/media/IR/imon.c
 @@ -1,7 +1,7 @@
  /*
   *   imon.c:	input and display driver for SoundGraph iMON IR/VFD/LCD
@@ -346,7 +346,7 @@ index c185422..7a97176 100644
  	/* iMON Knob values */
  	{ 0x000100ffffffffeell, KEY_VOLUMEUP },
  	{ 0x010000ffffffffeell, KEY_VOLUMEDOWN },
-@@ -956,17 +964,6 @@ static void usb_tx_callback(struct urb *urb)
+@@ -956,17 +964,6 @@ static void usb_tx_callback(struct urb *
  }
  
  /**
@@ -364,7 +364,7 @@ index c185422..7a97176 100644
   * report touchscreen input
   */
  static void imon_touch_display_timeout(unsigned long data)
-@@ -1006,9 +1003,6 @@ int imon_ir_change_protocol(void *priv, u64 ir_type)
+@@ -1006,9 +1003,6 @@ int imon_ir_change_protocol(void *priv, 
  		dev_dbg(dev, "Configuring IR receiver for MCE protocol\n");
  		ir_proto_packet[0] = 0x01;
  		pad_mouse = false;
@@ -374,7 +374,7 @@ index c185422..7a97176 100644
  		break;
  	case IR_TYPE_UNKNOWN:
  	case IR_TYPE_OTHER:
-@@ -1147,20 +1141,21 @@ static int stabilize(int a, int b, u16 timeout, u16 threshold)
+@@ -1147,20 +1141,21 @@ static int stabilize(int a, int b, u16 t
  	return result;
  }
  
@@ -400,7 +400,7 @@ index c185422..7a97176 100644
  		if (keycode != KEY_RESERVED)
  			is_release_code = true;
  	}
-@@ -1170,9 +1165,8 @@ static u32 imon_remote_key_lookup(struct imon_context *ictx, u32 hw_code)
+@@ -1170,9 +1165,8 @@ static u32 imon_remote_key_lookup(struct
  	return keycode;
  }
  
@@ -411,7 +411,7 @@ index c185422..7a97176 100644
  	u32 keycode;
  
  #define MCE_KEY_MASK 0x7000
-@@ -1186,18 +1180,21 @@ static u32 imon_mce_key_lookup(struct imon_context *ictx, u32 hw_code)
+@@ -1186,18 +1180,21 @@ static u32 imon_mce_key_lookup(struct im
  	 * but we can't or them into all codes, as some keys are decoded in
  	 * a different way w/o the same use of the toggle bit...
  	 */
@@ -437,7 +437,7 @@ index c185422..7a97176 100644
  	u32 keycode = KEY_RESERVED;
  
  	for (i = 0; i < ARRAY_SIZE(imon_panel_key_table); i++) {
-@@ -1217,6 +1214,9 @@ static bool imon_mouse_event(struct imon_context *ictx,
+@@ -1217,6 +1214,9 @@ static bool imon_mouse_event(struct imon
  	u8 right_shift = 1;
  	bool mouse_input = true;
  	int dir = 0;
@@ -447,7 +447,7 @@ index c185422..7a97176 100644
  
  	/* newer iMON device PAD or mouse button */
  	if (ictx->product != 0xffdc && (buf[0] & 0x01) && len == 5) {
-@@ -1248,6 +1248,8 @@ static bool imon_mouse_event(struct imon_context *ictx,
+@@ -1248,6 +1248,8 @@ static bool imon_mouse_event(struct imon
  	} else
  		mouse_input = false;
  
@@ -456,7 +456,7 @@ index c185422..7a97176 100644
  	if (mouse_input) {
  		dev_dbg(ictx->dev, "sending mouse data via input subsystem\n");
  
-@@ -1262,7 +1264,9 @@ static bool imon_mouse_event(struct imon_context *ictx,
+@@ -1262,7 +1264,9 @@ static bool imon_mouse_event(struct imon
  					 buf[1] >> right_shift & 0x1);
  		}
  		input_sync(ictx->idev);
@@ -466,7 +466,7 @@ index c185422..7a97176 100644
  	}
  
  	return mouse_input;
-@@ -1284,8 +1288,8 @@ static void imon_pad_to_keys(struct imon_context *ictx, unsigned char *buf)
+@@ -1284,8 +1288,8 @@ static void imon_pad_to_keys(struct imon
  	int dir = 0;
  	char rel_x = 0x00, rel_y = 0x00;
  	u16 timeout, threshold;
@@ -477,7 +477,7 @@ index c185422..7a97176 100644
  
  	/*
  	 * The imon directional pad functions more like a touchpad. Bytes 3 & 4
-@@ -1309,26 +1313,36 @@ static void imon_pad_to_keys(struct imon_context *ictx, unsigned char *buf)
+@@ -1309,26 +1313,36 @@ static void imon_pad_to_keys(struct imon
  				dir = stabilize((int)rel_x, (int)rel_y,
  						timeout, threshold);
  				if (!dir) {
@@ -521,7 +521,7 @@ index c185422..7a97176 100644
  			}
  		}
  
-@@ -1365,34 +1379,56 @@ static void imon_pad_to_keys(struct imon_context *ictx, unsigned char *buf)
+@@ -1365,34 +1379,56 @@ static void imon_pad_to_keys(struct imon
  			dir = stabilize((int)rel_x, (int)rel_y,
  					timeout, threshold);
  			if (!dir) {
@@ -585,7 +585,7 @@ index c185422..7a97176 100644
  
  	/* key release of 0x02XXXXXX key */
  	if (ictx->kc == KEY_RESERVED && buf[0] == 0x02 && buf[3] == 0x00)
-@@ -1408,22 +1444,10 @@ static int imon_parse_press_type(struct imon_context *ictx,
+@@ -1408,22 +1444,10 @@ static int imon_parse_press_type(struct 
  		 buf[2] == 0x81 && buf[3] == 0xb7)
  		ictx->kc = ictx->last_keycode;
  
@@ -611,7 +611,7 @@ index c185422..7a97176 100644
  
  	/* incoherent or irrelevant data */
  	} else if (ictx->kc == KEY_RESERVED)
-@@ -1437,6 +1461,8 @@ static int imon_parse_press_type(struct imon_context *ictx,
+@@ -1437,6 +1461,8 @@ static int imon_parse_press_type(struct 
  	else
  		press_type = 1;
  
@@ -620,7 +620,7 @@ index c185422..7a97176 100644
  	return press_type;
  }
  
-@@ -1449,41 +1475,45 @@ static void imon_incoming_packet(struct imon_context *ictx,
+@@ -1449,41 +1475,45 @@ static void imon_incoming_packet(struct 
  	int len = urb->actual_length;
  	unsigned char *buf = urb->transfer_buffer;
  	struct device *dev = ictx->dev;
@@ -677,7 +677,7 @@ index c185422..7a97176 100644
  	/* keyboard/mouse mode toggle button */
  	if (kc == KEY_KEYBOARD && !ictx->release_code) {
  		ictx->last_keycode = kc;
-@@ -1491,6 +1521,7 @@ static void imon_incoming_packet(struct imon_context *ictx,
+@@ -1491,6 +1521,7 @@ static void imon_incoming_packet(struct 
  			ictx->pad_mouse = ~(ictx->pad_mouse) & 0x1;
  			dev_dbg(dev, "toggling to %s mode\n",
  				ictx->pad_mouse ? "mouse" : "keyboard");
@@ -685,7 +685,7 @@ index c185422..7a97176 100644
  			return;
  		} else {
  			ictx->pad_mouse = 0;
-@@ -1499,11 +1530,13 @@ static void imon_incoming_packet(struct imon_context *ictx,
+@@ -1499,11 +1530,13 @@ static void imon_incoming_packet(struct 
  	}
  
  	ictx->kc = kc;
@@ -699,7 +699,7 @@ index c185422..7a97176 100644
  
  	/* look for mouse events with pad in mouse mode */
  	} else if (ictx->pad_mouse) {
-@@ -1531,36 +1564,56 @@ static void imon_incoming_packet(struct imon_context *ictx,
+@@ -1531,36 +1564,56 @@ static void imon_incoming_packet(struct 
  	if (press_type < 0)
  		goto not_input_data;
  
@@ -769,7 +769,7 @@ index c185422..7a97176 100644
  	return;
  
  not_input_data:
-@@ -1651,31 +1704,205 @@ static void usb_rx_callback_intf1(struct urb *urb)
+@@ -1651,31 +1704,205 @@ static void usb_rx_callback_intf1(struct
  	usb_submit_urb(ictx->rx_urb_intf1, GFP_ATOMIC);
  }
  
@@ -986,7 +986,7 @@ index c185422..7a97176 100644
  	idev->phys = ictx->phys_idev;
  
  	idev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_REP) | BIT_MASK(EV_REL);
-@@ -1691,30 +1918,20 @@ static struct input_dev *imon_init_idev(struct imon_context *ictx)
+@@ -1691,30 +1918,20 @@ static struct input_dev *imon_init_idev(
  		__set_bit(kc, idev->keybit);
  	}
  
@@ -1022,7 +1022,7 @@ index c185422..7a97176 100644
  	return NULL;
  }
  
-@@ -1736,7 +1953,7 @@ static struct input_dev *imon_init_touch(struct imon_context *ictx)
+@@ -1736,7 +1953,7 @@ static struct input_dev *imon_init_touch
  
  	usb_make_path(ictx->usbdev_intf1, ictx->phys_touch,
  		      sizeof(ictx->phys_touch));
@@ -1031,7 +1031,7 @@ index c185422..7a97176 100644
  	touch->phys = ictx->phys_touch;
  
  	touch->evbit[0] =
-@@ -1886,6 +2103,7 @@ static struct imon_context *imon_init_intf0(struct usb_interface *intf)
+@@ -1886,6 +2103,7 @@ static struct imon_context *imon_init_in
  	}
  
  	mutex_init(&ictx->lock);
@@ -1039,7 +1039,7 @@ index c185422..7a97176 100644
  
  	mutex_lock(&ictx->lock);
  
-@@ -1911,6 +2129,12 @@ static struct imon_context *imon_init_intf0(struct usb_interface *intf)
+@@ -1911,6 +2129,12 @@ static struct imon_context *imon_init_in
  		goto idev_setup_failed;
  	}
  
@@ -1052,7 +1052,7 @@ index c185422..7a97176 100644
  	usb_fill_int_urb(ictx->rx_urb_intf0, ictx->usbdev_intf0,
  		usb_rcvintpipe(ictx->usbdev_intf0,
  			ictx->rx_endpoint_intf0->bEndpointAddress),
-@@ -1928,7 +2152,9 @@ static struct imon_context *imon_init_intf0(struct usb_interface *intf)
+@@ -1928,7 +2152,9 @@ static struct imon_context *imon_init_in
  	return ictx;
  
  urb_submit_failed:
@@ -1180,7 +1180,7 @@ index c185422..7a97176 100644
  static void imon_init_display(struct imon_context *ictx,
  			      struct usb_interface *intf)
  {
-@@ -2160,8 +2276,6 @@ static int __devinit imon_probe(struct usb_interface *interface,
+@@ -2160,8 +2276,6 @@ static int __devinit imon_probe(struct u
  	struct imon_context *ictx = NULL;
  	struct imon_context *first_if_ctx = NULL;
  	u16 vendor, product;
@@ -1189,7 +1189,7 @@ index c185422..7a97176 100644
  
  	code_length = BUF_CHUNK_SIZE * 8;
  
-@@ -2202,19 +2316,6 @@ static int __devinit imon_probe(struct usb_interface *interface,
+@@ -2202,19 +2316,6 @@ static int __devinit imon_probe(struct u
  	usb_set_intfdata(interface, ictx);
  
  	if (ifnum == 0) {
@@ -1209,7 +1209,7 @@ index c185422..7a97176 100644
  		if (product == 0xffdc && ictx->rf_device) {
  			sysfs_err = sysfs_create_group(&interface->dev.kobj,
  						       &imon_rf_attribute_group);
-@@ -2289,7 +2390,8 @@ static void __devexit imon_disconnect(struct usb_interface *interface)
+@@ -2289,7 +2390,8 @@ static void __devexit imon_disconnect(st
  	if (ifnum == 0) {
  		ictx->dev_present_intf0 = false;
  		usb_kill_urb(ictx->rx_urb_intf0);
@@ -1219,7 +1219,7 @@ index c185422..7a97176 100644
  		if (ictx->display_supported) {
  			if (ictx->display_type == IMON_DISPLAY_TYPE_LCD)
  				usb_deregister_dev(interface, &imon_lcd_class);
-@@ -2309,11 +2411,8 @@ static void __devexit imon_disconnect(struct usb_interface *interface)
+@@ -2309,11 +2411,8 @@ static void __devexit imon_disconnect(st
  		mutex_unlock(&ictx->lock);
  		if (!ictx->display_isopen)
  			free_imon_context(ictx);
@@ -1232,11 +1232,11 @@ index c185422..7a97176 100644
  
  	mutex_unlock(&driver_lock);
  
-diff --git a/drivers/media/IR/ir-keytable.c b/drivers/media/IR/ir-keytable.c
-index 7961d59..59510cd 100644
---- a/drivers/media/IR/ir-keytable.c
-+++ b/drivers/media/IR/ir-keytable.c
-@@ -285,7 +285,7 @@ EXPORT_SYMBOL_GPL(ir_g_keycode_from_table);
+Index: linux-2.6.35.x86_64/drivers/media/IR/ir-keytable.c
+===================================================================
+--- linux-2.6.35.x86_64.orig/drivers/media/IR/ir-keytable.c
++++ linux-2.6.35.x86_64/drivers/media/IR/ir-keytable.c
+@@ -285,7 +285,7 @@ EXPORT_SYMBOL_GPL(ir_g_keycode_from_tabl
   * This routine is used to signal that a key has been released on the
   * remote control. It reports a keyup input event via input_report_key().
   */
@@ -1245,7 +1245,7 @@ index 7961d59..59510cd 100644
  {
  	if (!ir->keypressed)
  		return;
-@@ -295,6 +295,7 @@ static void ir_keyup(struct ir_input_dev *ir)
+@@ -295,6 +295,7 @@ static void ir_keyup(struct ir_input_dev
  	input_sync(ir->input_dev);
  	ir->keypressed = false;
  }
@@ -1253,21 +1253,10 @@ index 7961d59..59510cd 100644
  
  /**
   * ir_timer_keyup() - generates a keyup event after a timeout
-@@ -319,7 +319,7 @@ static void ir_timer_keyup(unsigned long cookie)
-	 * a keyup event might follow immediately after the keydown.
-	 */
-	spin_lock_irqsave(&ir->keylock, flags);
--	if (time_is_after_eq_jiffies(ir->keyup_jiffies))
-+	if (time_is_before_eq_jiffies(ir->keyup_jiffies))
-		ir_keyup(ir);
-	spin_unlock_irqrestore(&ir->keylock, flags);
- }
-
-diff --git a/drivers/media/IR/nuvoton-cir.c b/drivers/media/IR/nuvoton-cir.c
-new file mode 100644
-index 0000000..fdb280e
+Index: linux-2.6.35.x86_64/drivers/media/IR/nuvoton-cir.c
+===================================================================
 --- /dev/null
-+++ b/drivers/media/IR/nuvoton-cir.c
++++ linux-2.6.35.x86_64/drivers/media/IR/nuvoton-cir.c
 @@ -0,0 +1,1237 @@
 +/*
 + * Driver for Nuvoton Technology Corporation w83667hg/w83677hg-i CIR
@@ -2506,11 +2495,10 @@ index 0000000..fdb280e
 +
 +module_init(nvt_init);
 +module_exit(nvt_exit);
-diff --git a/drivers/media/IR/nuvoton-cir.h b/drivers/media/IR/nuvoton-cir.h
-new file mode 100644
-index 0000000..12bfe89
+Index: linux-2.6.35.x86_64/drivers/media/IR/nuvoton-cir.h
+===================================================================
 --- /dev/null
-+++ b/drivers/media/IR/nuvoton-cir.h
++++ linux-2.6.35.x86_64/drivers/media/IR/nuvoton-cir.h
 @@ -0,0 +1,408 @@
 +/*
 + * Driver for Nuvoton Technology Corporation w83667hg/w83677hg-i CIR
@@ -2920,11 +2908,11 @@ index 0000000..12bfe89
 +/* as VISTA MCE definition, valid carrier value */
 +#define MAX_CARRIER 60000
 +#define MIN_CARRIER 30000
-diff --git a/include/media/ir-core.h b/include/media/ir-core.h
-index eb7fddf..4dd43d4 100644
---- a/include/media/ir-core.h
-+++ b/include/media/ir-core.h
-@@ -157,6 +157,7 @@ void ir_input_unregister(struct input_dev *input_dev);
+Index: linux-2.6.35.x86_64/include/media/ir-core.h
+===================================================================
+--- linux-2.6.35.x86_64.orig/include/media/ir-core.h
++++ linux-2.6.35.x86_64/include/media/ir-core.h
+@@ -157,6 +157,7 @@ void ir_input_unregister(struct input_de
  
  void ir_repeat(struct input_dev *dev);
  void ir_keydown(struct input_dev *dev, int scancode, u8 toggle);
@@ -2932,38 +2920,37 @@ index eb7fddf..4dd43d4 100644
  u32 ir_g_keycode_from_table(struct input_dev *input_dev, u32 scancode);
  
  /* From ir-raw-event.c */
-diff --git a/drivers/media/IR/keymaps/rc-rc6-mce.c b/drivers/media/IR/keymaps/rc-rc6-mce.c
-index 64264f7..39557ad 100644
---- a/drivers/media/IR/keymaps/rc-rc6-mce.c
-+++ b/drivers/media/IR/keymaps/rc-rc6-mce.c
+Index: linux-2.6.35.x86_64/drivers/media/IR/keymaps/rc-rc6-mce.c
+===================================================================
+--- linux-2.6.35.x86_64.orig/drivers/media/IR/keymaps/rc-rc6-mce.c
++++ linux-2.6.35.x86_64/drivers/media/IR/keymaps/rc-rc6-mce.c
 @@ -19,6 +19,7 @@ static struct ir_scancode rc6_mce[] = {
  
-	{ 0x800f0416, KEY_PLAY },
-	{ 0x800f0418, KEY_PAUSE },
+ 	{ 0x800f0416, KEY_PLAY },
+ 	{ 0x800f0418, KEY_PAUSE },
 +	{ 0x800f046e, KEY_PLAYPAUSE },
-	{ 0x800f0419, KEY_STOP },
-	{ 0x800f0417, KEY_RECORD },
+ 	{ 0x800f0419, KEY_STOP },
+ 	{ 0x800f0417, KEY_RECORD },
  
 @@ -37,6 +38,8 @@ static struct ir_scancode rc6_mce[] = {
-	{ 0x800f0411, KEY_VOLUMEDOWN },
-	{ 0x800f0412, KEY_CHANNELUP },
-	{ 0x800f0413, KEY_CHANNELDOWN },
+ 	{ 0x800f0411, KEY_VOLUMEDOWN },
+ 	{ 0x800f0412, KEY_CHANNELUP },
+ 	{ 0x800f0413, KEY_CHANNELDOWN },
 +	{ 0x800f043a, KEY_BRIGHTNESSUP },
 +	{ 0x800f0480, KEY_BRIGHTNESSDOWN },
  
-	{ 0x800f0401, KEY_NUMERIC_1 },
-	{ 0x800f0402, KEY_NUMERIC_2 },
-diff --git a/drivers/media/IR/ir-lirc-codec.c b/drivers/media/IR/ir-lirc-codec.c
-index 77b5946..e63f757 100644
---- a/drivers/media/IR/ir-lirc-codec.c
-+++ b/drivers/media/IR/ir-lirc-codec.c
-@@ -267,7 +267,7 @@ static int ir_lirc_register(struct input_dev *input_dev)
-			features |= LIRC_CAN_SET_SEND_CARRIER;
+ 	{ 0x800f0401, KEY_NUMERIC_1 },
+ 	{ 0x800f0402, KEY_NUMERIC_2 },
+Index: linux-2.6.35.x86_64/drivers/media/IR/ir-lirc-codec.c
+===================================================================
+--- linux-2.6.35.x86_64.orig/drivers/media/IR/ir-lirc-codec.c
++++ linux-2.6.35.x86_64/drivers/media/IR/ir-lirc-codec.c
+@@ -267,7 +267,7 @@ static int ir_lirc_register(struct input
+ 			features |= LIRC_CAN_SET_SEND_CARRIER;
  
-		if (ir_dev->props->s_tx_duty_cycle)
+ 		if (ir_dev->props->s_tx_duty_cycle)
 -			features |= LIRC_CAN_SET_REC_DUTY_CYCLE;
 +			features |= LIRC_CAN_SET_SEND_DUTY_CYCLE;
-	}
+ 	}
  
-	if (ir_dev->props->s_rx_carrier_range)
-
+ 	if (ir_dev->props->s_rx_carrier_range)

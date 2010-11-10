@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 52
+%global baserelease 53
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 8
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -707,6 +707,8 @@ Patch2917: hdpvr-ir-enable.patch
 Patch2918: linux-2.6-v4l-dvb-ir-core-update-2.patch
 Patch2919: linux-2.6-v4l-dvb-ir-core-update-3.patch
 Patch2920: linux-2.6-lirc-ioctl-compat-fixups.patch
+Patch2921: linux-2.6-v4l-dvb-ir-core-update-4.patch
+Patch2922: linux-2.6-v4l-dvb-hdpvr-updates.patch
 Patch2923: linux-2.6-v4l-dvb-ir-core-fix-imon.patch
 
 Patch2950: linux-2.6-via-velocity-dma-fix.patch
@@ -738,11 +740,6 @@ Patch12086: linux-2.6-cgroups-rcu.patch
 
 Patch12517: flexcop-fix-xlate_proc_name-warning.patch
 
-# mitigate DOS attack with large argument lists
-Patch12520: execve-improve-interactivity-with-large-arguments.patch
-Patch12521: execve-make-responsive-to-sigkill-with-large-arguments.patch
-Patch12522: setup_arg_pages-diagnose-excessive-argument-size.patch
-
 Patch12565: sched-05-avoid-side-effect-of-tickless-idle-on-update_cpu_load.patch
 Patch12570: sched-10-change-nohz-idle-load-balancing-logic-to-push-model.patch
 Patch12575: sched-15-update-rq-clock-for-nohz-balanced-cpus.patch
@@ -757,12 +754,8 @@ Patch13601: btusb-macbookpro-7-1.patch
 Patch13603: pnpacpi-cope-with-invalid-device-ids.patch
 
 Patch13610: libata-it821x-dump-stack-on-cache-flush.patch
-Patch13620: xen-fix-typo-in-xen-irq-fix.patch
 
 Patch13630: dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
-
-Patch13635: r8169-fix-dma-allocations.patch
-Patch13636: skge-quirk-to-4gb-dma.patch
 
 Patch13637: dmar-disable-when-ricoh-multifunction.patch
 
@@ -773,11 +766,8 @@ Patch13641: mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 Patch13642: mmc-add-ricoh-e822-pci-id.patch
 
 Patch13645: tpm-autodetect-itpm-devices.patch
-Patch13646: depessimize-rds_copy_page_user.patch
 
-Patch13650: drm-i915-sanity-check-pread-pwrite.patch
 Patch13651: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
-Patch13652: v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 
 %endif
 
@@ -1375,6 +1365,8 @@ ApplyPatch hdpvr-ir-enable.patch
 ApplyPatch linux-2.6-v4l-dvb-ir-core-update-2.patch
 ApplyPatch linux-2.6-v4l-dvb-ir-core-update-3.patch
 ApplyPatch linux-2.6-lirc-ioctl-compat-fixups.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-update-4.patch
+ApplyPatch linux-2.6-v4l-dvb-hdpvr-updates.patch
 ApplyPatch linux-2.6-v4l-dvb-ir-core-fix-imon.patch
 
 # Fix DMA bug on via-velocity
@@ -1405,11 +1397,6 @@ ApplyPatch linux-2.6-cgroups-rcu.patch
 # bz #575873
 ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
-# mitigate DOS attack with large argument lists
-ApplyPatch execve-improve-interactivity-with-large-arguments.patch
-ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
-ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
-
 # Scheduler fixes (#635813 and #633037)
 ApplyPatch sched-05-avoid-side-effect-of-tickless-idle-on-update_cpu_load.patch
 ApplyPatch sched-10-change-nohz-idle-load-balancing-logic-to-push-model.patch
@@ -1425,19 +1412,11 @@ ApplyPatch btusb-macbookpro-6-2.patch
 # temporary patch, dump stack on failed it821x commands
 ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
 
-# temporary fix for typo in Xen -stable patch
-ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
-
 # rhbz#641468
 ApplyPatch pnpacpi-cope-with-invalid-device-ids.patch
 
 # rhbz#641476
 ApplyPatch dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
-
-# rhbz#629158
-ApplyPatch r8169-fix-dma-allocations.patch
-# rhbz#447489
-ApplyPatch skge-quirk-to-4gb-dma.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1449,15 +1428,10 @@ ApplyPatch sdhci-8-bit-data-transfer-width-support.patch
 ApplyPatch mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 ApplyPatch mmc-add-ricoh-e822-pci-id.patch
 
-ApplyPatch depessimize-rds_copy_page_user.patch
 ApplyPatch tpm-autodetect-itpm-devices.patch
 
-# CVE-2010-2962
-ApplyPatch drm-i915-sanity-check-pread-pwrite.patch
 # CVE-2010-3698
 ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
-# CVE-2010-2963
-ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2045,6 +2019,12 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 10 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.8-53
+- Linux 2.6.35.8
+- Drop patches upstreamed in 2.6.35.8
+- More ir-core and lirc updates
+- HD-PVR driver updates
+
 * Tue Nov 09 2010 Dave Airlie <airlied@redhat.com> - 2.6.35.6-52
 - add i915 polling s/r patch
 
