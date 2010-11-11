@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 53
+%global baserelease 54
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -656,6 +656,8 @@ Patch800: linux-2.6-crash-driver.patch
 
 # virt + ksm patches
 Patch1555: fix_xen_guest_on_old_EC2.patch
+# Already upstream (commit 16518d5ada690643453eb0aef3cc7841d3623c2d)
+Patch1556: kvm-fix-regression-with-cmpxchg8b-on-i386-hosts.patch
 
 # DRM
 Patch1801: drm-polling-fixes.patch
@@ -1314,6 +1316,7 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # Assorted Virt Fixes
 ApplyPatch fix_xen_guest_on_old_EC2.patch
+ApplyPatch kvm-fix-regression-with-cmpxchg8b-on-i386-hosts.patch
 
 ApplyPatch drm-polling-fixes.patch
 ApplyPatch drm-simplify-i2c-config.patch
@@ -2019,6 +2022,9 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 10 2010 Justin M. Forbes <jforbes@redhat.com> 2.6.35.8-54
+- fix regression with cmpxchg8b on i386 hosts (rhbz#650215)
+
 * Wed Nov 10 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.8-53
 - Linux 2.6.35.8
 - Drop patches upstreamed in 2.6.35.8
