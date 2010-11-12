@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 54
+%global baserelease 55
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2024,6 +2024,9 @@ fi
 # and build.
 
 %changelog
+* Thu Nov 11 2010 airlied@redhat.com - 2.6.35.8-55
+- drm: fix EDID issues
+
 * Wed Nov 10 2010 Justin M. Forbes <jforbes@redhat.com> 2.6.35.8-54
 - fix regression with cmpxchg8b on i386 hosts (rhbz#650215)
 
