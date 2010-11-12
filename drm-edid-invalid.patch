@@ -37,7 +37,7 @@ diff -up linux-2.6.35.x86_64/drivers/gpu/drm/drm_edid.c.da linux-2.6.35.x86_64/d
  		}
  		if (i == 4)
 -			goto carp;
-+			dev_warn(connector->dev->dev,
++			printk(KERN_WARNING
 +			 "%s: Ignoring invalid EDID block %d.\n",
 +			 drm_get_connector_name(connector), j);
 +	}
