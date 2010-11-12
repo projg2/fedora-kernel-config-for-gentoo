@@ -661,6 +661,7 @@ Patch1556: kvm-fix-regression-with-cmpxchg8b-on-i386-hosts.patch
 
 # DRM
 Patch1801: drm-polling-fixes.patch
+Patch1802: drm-edid-invalid.patch
 # drm fixes nouveau depends on
 Patch1805: drm-simplify-i2c-config.patch
 Patch1806: drm-sil164-module.patch
@@ -1319,6 +1320,7 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 ApplyPatch kvm-fix-regression-with-cmpxchg8b-on-i386-hosts.patch
 
 ApplyPatch drm-polling-fixes.patch
+ApplyPatch drm-edid-invalid.patch
 ApplyPatch drm-simplify-i2c-config.patch
 ApplyPatch drm-sil164-module.patch
 ApplyPatch drm-i2c-ch7006-fix.patch
