@@ -753,6 +753,7 @@ Patch12595: sched-35-increment-cache_nice_tries-only-on-periodic-lb.patch
 
 Patch13600: btusb-macbookpro-6-2.patch
 Patch13601: btusb-macbookpro-7-1.patch
+Patch13602: add-macbookair3-ids.patch
 
 Patch13603: pnpacpi-cope-with-invalid-device-ids.patch
 
@@ -1414,6 +1415,9 @@ ApplyPatch sched-35-increment-cache_nice_tries-only-on-periodic-lb.patch
 ApplyPatch btusb-macbookpro-7-1.patch
 ApplyPatch btusb-macbookpro-6-2.patch
 
+# rhbz#651019
+ApplyPatch add-macbookair3-ids.patch
+
 # temporary patch, dump stack on failed it821x commands
 ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
 
@@ -2024,6 +2028,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 15 2010 Kyle McMartin <kyle@redhat.com>
+- rhbz#651019: pull in support for MBA3.
+
 * Thu Nov 11 2010 airlied@redhat.com - 2.6.35.8-55
 - drm: fix EDID issues
 
