@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 59
+%global baserelease 60
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -674,6 +674,9 @@ Patch1812: drm-nouveau-nva3-noaccel.patch
 Patch1813: drm-nouveau-nv86-bug.patch
 Patch1814: drm-nouveau-nv50-crtc-update-delay.patch
 Patch1815: drm-nouveau-connector-fix.patch
+Patch1816: drm-nouveau-imac-g4.patch
+Patch1817: drm-nouveau-evo-hang.patch
+Patch1818: drm-nouveau-nvaf-grclass.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -1333,6 +1336,9 @@ ApplyPatch drm-nouveau-nva3-noaccel.patch
 ApplyPatch drm-nouveau-nv86-bug.patch
 ApplyPatch drm-nouveau-nv50-crtc-update-delay.patch
 ApplyPatch drm-nouveau-connector-fix.patch
+ApplyPatch drm-nouveau-imac-g4.patch
+ApplyPatch drm-nouveau-evo-hang.patch
+ApplyPatch drm-nouveau-nvaf-grclass.patch
 
 ApplyPatch drm-intel-big-hammer.patch
 ApplyOptionalPatch drm-intel-next.patch
@@ -2028,6 +2034,11 @@ fi
 # and build.
 
 %changelog
+* Fri Nov 19 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.8-60
+- nouveau: add quirk for iMac G4 (rhbz#505161)
+- nouveau: add workaround for display hang on GF8+ (rhbz#537065)
+- nouveau: don't reject 3D object creation on NVAF (MBA3)
+
 * Mon Nov 15 2010 Kyle McMartin <kyle@redhat.com>
 - rhbz#651019: pull in support for MBA3.
 
