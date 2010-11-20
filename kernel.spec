@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 60
+%global baserelease 61
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,9 +60,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1321,7 +1321,7 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # Assorted Virt Fixes
 ApplyPatch fix_xen_guest_on_old_EC2.patch
-ApplyPatch kvm-fix-regression-with-cmpxchg8b-on-i386-hosts.patch
+#ApplyPatch kvm-fix-regression-with-cmpxchg8b-on-i386-hosts.patch
 
 ApplyPatch drm-polling-fixes.patch
 ApplyPatch drm-edid-invalid.patch
@@ -2034,6 +2034,11 @@ fi
 # and build.
 
 %changelog
+* Sat Nov 20 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.35.9-61.rc1
+- Linux 2.6.35.9-rc1
+- Comment out upstreamed patches:
+  kvm-fix-regression-with-cmpxchg8b-on-i386-hosts.patch
+
 * Fri Nov 19 2010 Ben Skeggs <bskeggs@redhat.com> 2.6.35.8-60
 - nouveau: add quirk for iMac G4 (rhbz#505161)
 - nouveau: add workaround for display hang on GF8+ (rhbz#537065)
