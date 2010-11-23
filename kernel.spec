@@ -780,6 +780,8 @@ Patch13652: fix-i8k-inline-asm.patch
 Patch13700: ipc-zero-struct-memory-for-compat-fns.patch
 Patch13701: ipc-shm-fix-information-leak-to-user.patch
 
+Patch13702: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1460,6 +1462,9 @@ ApplyPatch ipc-zero-struct-memory-for-compat-fns.patch
 # rhbz#648656 (CVE-2010-4072)
 ApplyPatch ipc-shm-fix-information-leak-to-user.patch
 
+# rhbz#651264 (CVE-2010-3880)
+ApplyPatch inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2049,6 +2054,7 @@ fi
 * Tue Nov 23 2010 Kyle McMartin <kyle@redhat.com>
 - zero struct memory in ipc compat (CVE-2010-4073) (#648658)
 - zero struct memory in ipc shm (CVE-2010-4072) (#648656)
+- fix logic error in INET_DIAG bytecode auditing (CVE-2010-3880) (#651264)
 
 * Tue Nov 23 2010 Kyle McMartin <kyle@redhat.com>
 - fix-i8k-inline-asm.patch: backport gcc miscompilation fix from git
