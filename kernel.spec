@@ -656,8 +656,6 @@ Patch800: linux-2.6-crash-driver.patch
 
 # virt + ksm patches
 Patch1555: fix_xen_guest_on_old_EC2.patch
-# Already upstream (commit 16518d5ada690643453eb0aef3cc7841d3623c2d)
-Patch1556: kvm-fix-regression-with-cmpxchg8b-on-i386-hosts.patch
 
 # DRM
 Patch1801: drm-polling-fixes.patch
@@ -776,6 +774,8 @@ Patch13642: mmc-add-ricoh-e822-pci-id.patch
 Patch13645: tpm-autodetect-itpm-devices.patch
 
 Patch13651: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
+
+Patch13652: fix-i8k-inline-asm.patch
 
 %endif
 
@@ -1322,7 +1322,6 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # Assorted Virt Fixes
 ApplyPatch fix_xen_guest_on_old_EC2.patch
-#ApplyPatch kvm-fix-regression-with-cmpxchg8b-on-i386-hosts.patch
 
 ApplyPatch drm-polling-fixes.patch
 ApplyPatch drm-edid-invalid.patch
@@ -1449,6 +1448,8 @@ ApplyPatch tpm-autodetect-itpm-devices.patch
 
 # CVE-2010-3698
 ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
+
+ApplyPatch fix-i8k-inline-asm.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2036,6 +2037,10 @@ fi
 # and build.
 
 %changelog
+* Tue Nov 23 2010 Kyle McMartin <kyle@redhat.com>
+- fix-i8k-inline-asm.patch: backport gcc miscompilation fix from git
+  [22d3243d, 6b4e81db] (rhbz#647677)
+
 * Mon Nov 22 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.9-62
 - Linux 2.6.35.9
 - IR driver fixes from upstream
