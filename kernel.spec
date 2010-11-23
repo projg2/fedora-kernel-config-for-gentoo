@@ -840,6 +840,8 @@ Patch14301: ipc-shm-fix-information-leak-to-user.patch
 
 Patch14302: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 
+Patch14303: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
+
 # ==============================================================================
 %endif
 
@@ -1551,6 +1553,9 @@ ApplyPatch ipc-shm-fix-information-leak-to-user.patch
 # rhbz#651264 (CVE-2010-3880)
 ApplyPatch inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 
+# rhbz#656264
+ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
+
 # END OF PATCH APPLICATIONS ====================================================
 %endif
 
@@ -2207,6 +2212,8 @@ fi
 - zero struct memory in ipc compat (CVE-2010-4073) (#648658)
 - zero struct memory in ipc shm (CVE-2010-4072) (#648656)
 - fix logic error in INET_DIAG bytecode auditing (CVE-2010-3880) (#651264)
+- posix-cpu-timers: workaround to suppress the problems with mt exec
+  (rhbz#656264)
 
 * Mon Nov 22 2010 Kyle McMartin <kyle@redhat.com> 2.6.32.26-174
 - Linux 2.6.32.26
