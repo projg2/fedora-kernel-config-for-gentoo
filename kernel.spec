@@ -845,6 +845,7 @@ Patch13647: rt2x00-disable-auto-wakeup-before-waking-up-device.patch
 Patch13648: rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
 
 Patch13700: ipc-zero-struct-memory-for-compat-fns.patch
+Patch13701: ipc-shm-fix-information-leak-to-user.patch
 
 %endif
 
@@ -1605,6 +1606,9 @@ ApplyPatch rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
 # rhbz#648658 (CVE-2010-4073)
 ApplyPatch ipc-zero-struct-memory-for-compat-fns.patch
 
+# rhbz#648656 (CVE-2010-4072)
+ApplyPatch ipc-shm-fix-information-leak-to-user.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2228,6 +2232,7 @@ fi
 %changelog
 * Tue Nov 23 2010 Kyle McMartin <kyle@redhat.com>
 - zero struct memory in ipc compat (CVE-2010-4073) (#648658)
+- zero struct memory in ipc shm (CVE-2010-4072) (#648656)
 
 * Fri Oct 22 2010 Kyle McMartin <kyle@redhat.cmo> 2.6.34.7-62
 - tpm-autodetect-itpm-devices.patch: Auto-fix TPM issues on various
