@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 172
+%global baserelease 174
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 25
+%define stable_update 26
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -832,9 +832,6 @@ Patch13030: l2tp-fix-oops-in-pppol2tp_xmit.patch
 
 Patch14050: crypto-add-async-hash-testing.patch
 
-# Red Hat Bugzilla #610911
-Patch14130: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
-
 Patch14200: net-do-not-check-capable-if-kernel.patch
 
 # rhbz#596475
@@ -1540,8 +1537,6 @@ ApplyPatch l2tp-fix-oops-in-pppol2tp_xmit.patch
 # add tests for crypto async hashing (#571577)
 ApplyPatch crypto-add-async-hash-testing.patch
 
-ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
-
 # rhbz #598796
 ApplyPatch net-do-not-check-capable-if-kernel.patch
 
@@ -2204,6 +2199,14 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Mon Nov 22 2010 Kyle McMartin <kyle@redhat.com> 2.6.32.26-174
+- Linux 2.6.32.26
+
+* Sat Nov 20 2010 Chuck Ebbert <cebbert@redhat.com> 2.6.32.26-173.rc1
+- Linux 2.6.32.26-rc1
+- Comment out upstreamed patches:
+  kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
+
 * Sat Nov 06 2010 Michael Young <m.a.young@durham.ac.uk>
 - update pvops to 2.6.32.25
 
