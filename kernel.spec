@@ -844,6 +844,8 @@ Patch13646: tpm-autodetect-itpm-devices.patch
 Patch13647: rt2x00-disable-auto-wakeup-before-waking-up-device.patch
 Patch13648: rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
 
+Patch13700: ipc-zero-struct-memory-for-compat-fns.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1600,6 +1602,9 @@ ApplyPatch tpm-autodetect-itpm-devices.patch
 ApplyPatch rt2x00-disable-auto-wakeup-before-waking-up-device.patch
 ApplyPatch rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
 
+# rhbz#648658 (CVE-2010-4073)
+ApplyPatch ipc-zero-struct-memory-for-compat-fns.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2221,6 +2226,9 @@ fi
 
 
 %changelog
+* Tue Nov 23 2010 Kyle McMartin <kyle@redhat.com>
+- zero struct memory in ipc compat (CVE-2010-4073) (#648658)
+
 * Fri Oct 22 2010 Kyle McMartin <kyle@redhat.cmo> 2.6.34.7-62
 - tpm-autodetect-itpm-devices.patch: Auto-fix TPM issues on various
   laptops which prevented suspend/resume.
