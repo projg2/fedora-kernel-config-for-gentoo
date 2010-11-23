@@ -835,6 +835,8 @@ Patch14200: net-do-not-check-capable-if-kernel.patch
 # rhbz#596475
 Patch14226: add-support-for-ricoh-e822-sdhci.patch
 
+Patch14300: ipc-zero-struct-memory-for-compat-fns.patch
+
 # ==============================================================================
 %endif
 
@@ -1537,6 +1539,9 @@ ApplyPatch net-do-not-check-capable-if-kernel.patch
 # rhbz#596475
 ApplyPatch add-support-for-ricoh-e822-sdhci.patch
 
+# rhbz#648658 (CVE-2010-4073)
+ApplyPatch ipc-zero-struct-memory-for-compat-fns.patch
+
 # END OF PATCH APPLICATIONS ====================================================
 %endif
 
@@ -2189,6 +2194,9 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Tue Nov 23 2010 Kyle McMartin <kyle@redhat.com>
+- zero struct memory in ipc compat (CVE-2010-4073) (#648658)
+
 * Mon Nov 22 2010 Kyle McMartin <kyle@redhat.com> 2.6.32.26-174
 - Linux 2.6.32.26
 
