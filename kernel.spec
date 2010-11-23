@@ -777,6 +777,8 @@ Patch13651: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 
 Patch13652: fix-i8k-inline-asm.patch
 
+Patch13700: ipc-zero-struct-memory-for-compat-fns.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1451,6 +1453,9 @@ ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 
 ApplyPatch fix-i8k-inline-asm.patch
 
+# rhbz#648658 (CVE-2010-4073)
+ApplyPatch ipc-zero-struct-memory-for-compat-fns.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2037,6 +2042,9 @@ fi
 # and build.
 
 %changelog
+* Tue Nov 23 2010 Kyle McMartin <kyle@redhat.com>
+- zero struct memory in ipc compat (CVE-2010-4073) (#648658)
+
 * Tue Nov 23 2010 Kyle McMartin <kyle@redhat.com>
 - fix-i8k-inline-asm.patch: backport gcc miscompilation fix from git
   [22d3243d, 6b4e81db] (rhbz#647677)
