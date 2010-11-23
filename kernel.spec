@@ -851,6 +851,8 @@ Patch13702: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 
 Patch13703: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
+Patch13704: via-ioctl-prevent-reading-uninit-memory.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1619,6 +1621,9 @@ ApplyPatch inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 # rhbz#656264
 ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
+# rhbz#648671 (CVE-2010-4082)
+ApplyPatch via-ioctl-prevent-reading-uninit-memory.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2246,6 +2251,7 @@ fi
 - fix logic error in INET_DIAG bytecode auditing (CVE-2010-3880) (#651264)
 - posix-cpu-timers: workaround to suppress the problems with mt exec
   (rhbz#656264)
+- clear memory in viafb ioctl (CVE-2010-4082) (#648671)
 
 * Fri Oct 22 2010 Kyle McMartin <kyle@redhat.cmo> 2.6.34.7-62
 - tpm-autodetect-itpm-devices.patch: Auto-fix TPM issues on various
