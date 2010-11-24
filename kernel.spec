@@ -784,6 +784,9 @@ Patch13702: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 
 Patch13703: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
+Patch13660: rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
+Patch13661: rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1470,6 +1473,9 @@ ApplyPatch inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 # rhbz#656264
 ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
+ApplyPatch rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
+ApplyPatch rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2056,6 +2062,10 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 24 2010 John W. Linville <linville@redhat.com>
+- rtl8180: improve signal reporting for rtl8185 hardware
+- rtl8180: improve signal reporting for actual rtl8180 hardware
+
 * Tue Nov 23 2010 Kyle McMartin <kyle@redhat.com>
 - zero struct memory in ipc compat (CVE-2010-4073) (#648658)
 - zero struct memory in ipc shm (CVE-2010-4072) (#648656)
