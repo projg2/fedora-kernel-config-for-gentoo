@@ -853,6 +853,9 @@ Patch13703: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
 Patch13704: via-ioctl-prevent-reading-uninit-memory.patch
 
+Patch13710: rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
+Patch13711: rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1624,6 +1627,9 @@ ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 # rhbz#648671 (CVE-2010-4082)
 ApplyPatch via-ioctl-prevent-reading-uninit-memory.patch
 
+ApplyPatch rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
+ApplyPatch rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2245,6 +2251,10 @@ fi
 
 
 %changelog
+* Wed Nov 24 2010 John W. Linville <linville@redhat.com>
+- rtl8180: improve signal reporting for rtl8185 hardware
+- rtl8180: improve signal reporting for actual rtl8180 hardware
+
 * Tue Nov 23 2010 Kyle McMartin <kyle@redhat.com>
 - zero struct memory in ipc compat (CVE-2010-4073) (#648658)
 - zero struct memory in ipc shm (CVE-2010-4072) (#648656)
