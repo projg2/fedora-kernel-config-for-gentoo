@@ -98,6 +98,10 @@ debug:
 	@perl -pi -e 's/^%define debugbuildsenabled 1/%define debugbuildsenabled 0/' kernel.spec
 	@perl -pi -e 's/^%define rawhide_skip_docs 0/%define rawhide_skip_docs 1/' kernel.spec
 
+nodebuginfo:
+	@perl -pi -e 's/^%define with_debuginfo %\{\?_without_debuginfo: 0\} %\{\?\!_without_debuginfo: 1\}/%define with_debuginfo %\{\?_without_debuginfo: 0\} %\{\?\!_without_debuginfo: 0\}/' kernel.spec
+nodebug: release
+	@perl -pi -e 's/^%define debugbuildsenabled 1/%define debugbuildsenabled 0/' kernel.spec
 release:
 	@perl -pi -e 's/CONFIG_SLUB_DEBUG_ON=y/# CONFIG_SLUB_DEBUG_ON is not set/' config-nodebug
 	@perl -pi -e 's/CONFIG_LOCK_STAT=y/# CONFIG_LOCK_STAT is not set/' config-nodebug
