@@ -1,0 +1,34 @@
+From sgruszka@redhat.com Fri Nov 26 08:04:43 2010
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+To: kernel@lists.fedoraproject.org, Kyle McMartin <kmcmartin@redhat.com>
+Subject: [PATCH 2.6.35 3/3] r8169: fix broken checksum for invalid sctp/igmp packets
+Date: Fri, 26 Nov 2010 14:04:33 +0100
+
+From: Shan Wei <shanwei@cn.fujitsu.com>
+
+Commit d5d3ebe3be5c5123f2d444e186717f45284151e2 upstream.
+
+Signed-off-by: Shan Wei <shanwei@cn.fujitsu.com>
+Acked-by: Francois Romieu <romieu@fr.zoreil.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/r8169.c |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/r8169.c b/drivers/net/r8169.c
+index 661109f..b99dd04 100644
+--- a/drivers/net/r8169.c
++++ b/drivers/net/r8169.c
+@@ -4463,8 +4463,7 @@ static inline void rtl8169_rx_csum(struct sk_buff *skb, u32 opts1)
+ 	u32 status = opts1 & RxProtoMask;
+ 
+ 	if (((status == RxProtoTCP) && !(opts1 & TCPFail)) ||
+-	    ((status == RxProtoUDP) && !(opts1 & UDPFail)) ||
+-	    ((status == RxProtoIP) && !(opts1 & IPFail)))
++	    ((status == RxProtoUDP) && !(opts1 & UDPFail)))
+ 		skb->ip_summed = CHECKSUM_UNNECESSARY;
+ 	else
+ 		skb->ip_summed = CHECKSUM_NONE;
+-- 
+1.7.1
+

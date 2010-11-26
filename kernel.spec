@@ -787,6 +787,14 @@ Patch13703: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 Patch13660: rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 Patch13661: rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
 
+#rhbz #502974
+Patch13670: r8169-01-fix-rx-checksum-offload.patch
+Patch13671: r8169-02-_re_init-phy-on-resume.patch
+Patch13672: r8169-03-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
+
+#rhbz #657388
+Patch13680: hda_realtek-handle-unset-external-amp-bits.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1476,6 +1484,14 @@ ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 ApplyPatch rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 ApplyPatch rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
 
+#rhbz #502974
+ApplyPatch r8169-01-fix-rx-checksum-offload.patch
+ApplyPatch r8169-02-_re_init-phy-on-resume.patch
+ApplyPatch r8169-03-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
+
+#rhbz #657388
+ApplyPatch hda_realtek-handle-unset-external-amp-bits.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2062,6 +2078,10 @@ fi
 # and build.
 
 %changelog
+* Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
+- r8169 fixes from sgruszka@redhat.com (#502974)
+- hda/realtek: handle unset external amp bits (#657388)
+
 * Wed Nov 24 2010 John W. Linville <linville@redhat.com>
 - rtl8180: improve signal reporting for rtl8185 hardware
 - rtl8180: improve signal reporting for actual rtl8180 hardware
