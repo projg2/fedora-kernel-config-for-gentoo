@@ -842,6 +842,9 @@ Patch14302: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 
 Patch14303: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
+Patch14305: tty-make-tiocgicount-a-handler.patch
+Patch14306: tty-icount-changeover-for-other-main-devices.patch
+
 # ==============================================================================
 %endif
 
@@ -1556,6 +1559,10 @@ ApplyPatch inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 # rhbz#656264
 ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
+# CVE-2010-4077, CVE-2010-4075 (rhbz#648660, #648663)
+ApplyPatch tty-make-tiocgicount-a-handler.patch
+ApplyPatch tty-icount-changeover-for-other-main-devices.patch
+
 # END OF PATCH APPLICATIONS ====================================================
 %endif
 
@@ -2208,6 +2215,9 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
+- Plug stack leaks in tty/serial drivers. (#648663, #648660)
+
 * Tue Nov 23 2010 Kyle McMartin <kyle@redhat.com>
 - zero struct memory in ipc compat (CVE-2010-4073) (#648658)
 - zero struct memory in ipc shm (CVE-2010-4072) (#648656)
