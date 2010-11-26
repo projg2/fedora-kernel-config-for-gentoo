@@ -839,6 +839,7 @@ Patch14300: ipc-zero-struct-memory-for-compat-fns.patch
 Patch14301: ipc-shm-fix-information-leak-to-user.patch
 
 Patch14302: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
+Patch14307: netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
 
 Patch14303: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
@@ -1555,6 +1556,7 @@ ApplyPatch ipc-shm-fix-information-leak-to-user.patch
 
 # rhbz#651264 (CVE-2010-3880)
 ApplyPatch inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
+ApplyPatch netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
 
 # rhbz#656264
 ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
@@ -2215,6 +2217,10 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
+- netlink-make-nlmsg_find_attr-take-a-const-ptr.patch: quiet build warning
+  the INET_DIAG fix caused.
+
 * Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
 - Plug stack leaks in tty/serial drivers. (#648663, #648660)
 
