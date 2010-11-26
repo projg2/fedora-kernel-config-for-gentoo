@@ -862,6 +862,9 @@ Patch13721: r8169-02-fix-rx-checksum-offload.patch
 Patch13722: r8169-03-_re_init-phy-on-resume.patch
 Patch13723: r8169-04-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
 
+Patch13727: tty-make-tiocgicount-a-handler.patch
+Patch13728: tty-icount-changeover-for-other-main-devices.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1642,6 +1645,10 @@ ApplyPatch r8169-02-fix-rx-checksum-offload.patch
 ApplyPatch r8169-03-_re_init-phy-on-resume.patch
 ApplyPatch r8169-04-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
 
+# CVE-2010-4077, CVE-2010-4075 (rhbz#648660, #648663)
+ApplyPatch tty-make-tiocgicount-a-handler.patch
+ApplyPatch tty-icount-changeover-for-other-main-devices.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2263,6 +2270,9 @@ fi
 
 
 %changelog
+* Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
+- Plug stack leaks in tty/serial drivers. (#648663, #648660)
+
 * Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
 - r8169 fixes from sgruszka@redhat.com (#502974)
 
