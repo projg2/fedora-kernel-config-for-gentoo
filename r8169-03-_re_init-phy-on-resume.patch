@@ -1,0 +1,35 @@
+From sgruszka@redhat.com Fri Nov 26 08:03:44 2010
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+To: kernel@lists.fedoraproject.org, Kyle McMartin <kmcmartin@redhat.com>
+Subject: [PATCH 2.6.34 3/4] r8169: (re)init phy on resume
+Date: Fri, 26 Nov 2010 14:03:35 +0100
+
+Fix switching device to low-speed mode after resume reported in:
+https://bugzilla.redhat.com/show_bug.cgi?id=502974
+
+Commit fccec10b33503a2b1197c8e7a3abd30443bedb08 upstream.
+
+Reported-and-tested-by: Laurentiu Badea <bugzilla-redhat@wotevah.com>
+Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/r8169.c |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/net/r8169.c b/drivers/net/r8169.c
+index 2f60e2d..7ca9d39 100644
+--- a/drivers/net/r8169.c
++++ b/drivers/net/r8169.c
+@@ -4845,6 +4845,9 @@ static int rtl8169_resume(struct device *device)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(device);
+ 	struct net_device *dev = pci_get_drvdata(pdev);
++	struct rtl8169_private *tp = netdev_priv(dev);
++
++	rtl8169_init_phy(dev, tp);
+ 
+ 	if (!netif_running(dev))
+ 		goto out;
+-- 
+1.7.3.2
+

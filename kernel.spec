@@ -856,6 +856,12 @@ Patch13704: via-ioctl-prevent-reading-uninit-memory.patch
 Patch13710: rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 Patch13711: rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
 
+# rhbz#502974
+Patch13720: r8169-01-incorrect-identifier-for-a-8168dp.patch
+Patch13721: r8169-02-fix-rx-checksum-offload.patch
+Patch13722: r8169-03-_re_init-phy-on-resume.patch
+Patch13723: r8169-04-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1630,6 +1636,12 @@ ApplyPatch via-ioctl-prevent-reading-uninit-memory.patch
 ApplyPatch rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 ApplyPatch rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
 
+# rhbz#502974
+ApplyPatch r8169-01-incorrect-identifier-for-a-8168dp.patch
+ApplyPatch r8169-02-fix-rx-checksum-offload.patch
+ApplyPatch r8169-03-_re_init-phy-on-resume.patch
+ApplyPatch r8169-04-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2251,6 +2263,9 @@ fi
 
 
 %changelog
+* Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
+- r8169 fixes from sgruszka@redhat.com (#502974)
+
 * Wed Nov 24 2010 John W. Linville <linville@redhat.com>
 - rtl8180: improve signal reporting for rtl8185 hardware
 - rtl8180: improve signal reporting for actual rtl8180 hardware
