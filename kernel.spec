@@ -795,6 +795,9 @@ Patch13672: r8169-03-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
 #rhbz #657388
 Patch13680: hda_realtek-handle-unset-external-amp-bits.patch
 
+Patch13684: tty-make-tiocgicount-a-handler.patch
+Patch13685: tty-icount-changeover-for-other-main-devices.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1492,6 +1495,10 @@ ApplyPatch r8169-03-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
 #rhbz #657388
 ApplyPatch hda_realtek-handle-unset-external-amp-bits.patch
 
+# CVE-2010-4077, CVE-2010-4075 (rhbz#648660, #648663)
+ApplyPatch tty-make-tiocgicount-a-handler.patch
+ApplyPatch tty-icount-changeover-for-other-main-devices.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2078,6 +2085,9 @@ fi
 # and build.
 
 %changelog
+* Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
+- Plug stack leaks in tty/serial drivers. (#648663, #648660)
+
 * Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
 - r8169 fixes from sgruszka@redhat.com (#502974)
 - hda/realtek: handle unset external amp bits (#657388)
