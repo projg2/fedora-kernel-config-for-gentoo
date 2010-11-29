@@ -6308,7 +6308,7 @@ index 0000000..0f45638
 +early_param("xen_emul_unplug", parse_xen_emul_unplug);
 +#endif
 diff --git a/arch/x86/xen/setup.c b/arch/x86/xen/setup.c
-index ad0047f..86b7221 100644
+index ad0047f..1a1934a 100644
 --- a/arch/x86/xen/setup.c
 +++ b/arch/x86/xen/setup.c
 @@ -10,6 +10,7 @@
@@ -6483,14 +6483,14 @@ index ad0047f..86b7221 100644
 +		if (map[i].type == E820_RAM && end > mem_end) {
 +			/* RAM off the end - may be partially included */
 +			u64 delta = min(map[i].size, end - mem_end);
-+
+ 
+-	e820_add_region(0, PFN_PHYS((u64)max_pfn), E820_RAM);
 +			map[i].size -= delta;
 +			end -= delta;
 +
 +			extra_pages += PFN_DOWN(delta);
 +		}
- 
--	e820_add_region(0, PFN_PHYS((u64)max_pfn), E820_RAM);
++
 +		if (map[i].size > 0 && end > xen_extra_mem_start)
 +			xen_extra_mem_start = end;
 +
@@ -6512,12 +6512,26 @@ index ad0047f..86b7221 100644
  	 */
  	e820_add_region(ISA_START_ADDRESS, ISA_END_ADDRESS - ISA_START_ADDRESS,
  			E820_RESERVED);
-@@ -67,6 +223,29 @@ char * __init xen_memory_setup(void)
+@@ -67,21 +223,30 @@ char * __init xen_memory_setup(void)
  
  	sanitize_e820_map(e820.map, ARRAY_SIZE(e820.map), &e820.nr_map);
  
+-	return "Xen";
+-}
 +	extra_pages += xen_return_unused_memory(xen_start_info->nr_pages, &e820);
-+
+ 
+-static void xen_idle(void)
+-{
+-	local_irq_disable();
+-
+-	if (need_resched())
+-		local_irq_enable();
+-	else {
+-		current_thread_info()->status &= ~TS_POLLING;
+-		smp_mb__after_clear_bit();
+-		safe_halt();
+-		current_thread_info()->status |= TS_POLLING;
+-	}
 +	/*
 +	 * Clamp the amount of extra memory to a EXTRA_MEM_RATIO
 +	 * factor the base size.  On non-highmem systems, the base
@@ -6539,10 +6553,11 @@ index ad0047f..86b7221 100644
 +
 +	xen_add_extra_mem(extra_pages);
 +
- 	return "Xen";
++	return "Xen";
  }
  
-@@ -156,6 +335,8 @@ void __init xen_arch_setup(void)
+ /*
+@@ -156,6 +321,8 @@ void __init xen_arch_setup(void)
  	struct physdev_set_iopl set_iopl;
  	int rc;
  
@@ -6551,7 +6566,7 @@ index ad0047f..86b7221 100644
  	HYPERVISOR_vm_assist(VMASST_CMD_enable, VMASST_TYPE_4gb_segments);
  	HYPERVISOR_vm_assist(VMASST_CMD_enable, VMASST_TYPE_writable_pagetables);
  
-@@ -182,13 +363,17 @@ void __init xen_arch_setup(void)
+@@ -182,13 +349,21 @@ void __init xen_arch_setup(void)
  	}
  #endif
  
@@ -6565,10 +6580,15 @@ index ad0047f..86b7221 100644
  	       MAX_GUEST_CMDLINE > COMMAND_LINE_SIZE ?
  	       COMMAND_LINE_SIZE : MAX_GUEST_CMDLINE);
  
- 	pm_idle = xen_idle;
- 
--	paravirt_disable_iospace();
+-	pm_idle = xen_idle;
 -
+-	paravirt_disable_iospace();
++	/* Set up idle, making sure it calls safe_halt() pvop */
++#ifdef CONFIG_X86_32
++	boot_cpu_data.hlt_works_ok = 1;
++#endif
++	pm_idle = default_idle;
+ 
  	fiddle_vdso();
  }
 diff --git a/arch/x86/xen/smp.c b/arch/x86/xen/smp.c
@@ -9346,6 +9366,44 @@ index a6ee32b..a7c6529 100644
  }
  
  void xen_raw_printk(const char *fmt, ...)
+diff --git a/drivers/firewire/net.c b/drivers/firewire/net.c
+index cbaf420..163459d 100644
+--- a/drivers/firewire/net.c
++++ b/drivers/firewire/net.c
+@@ -8,7 +8,6 @@
+ 
+ #include <linux/bug.h>
+ #include <linux/device.h>
+-#include <linux/ethtool.h>
+ #include <linux/firewire.h>
+ #include <linux/firewire-constants.h>
+ #include <linux/highmem.h>
+@@ -1333,17 +1332,6 @@ static int fwnet_change_mtu(struct net_device *net, int new_mtu)
+ 	return 0;
+ }
+ 
+-static void fwnet_get_drvinfo(struct net_device *net,
+-			      struct ethtool_drvinfo *info)
+-{
+-	strcpy(info->driver, KBUILD_MODNAME);
+-	strcpy(info->bus_info, "ieee1394");
+-}
+-
+-static const struct ethtool_ops fwnet_ethtool_ops = {
+-	.get_drvinfo = fwnet_get_drvinfo,
+-};
+-
+ static const struct net_device_ops fwnet_netdev_ops = {
+ 	.ndo_open       = fwnet_open,
+ 	.ndo_stop	= fwnet_stop,
+@@ -1362,7 +1350,6 @@ static void fwnet_init_dev(struct net_device *net)
+ 	net->hard_header_len	= FWNET_HLEN;
+ 	net->type		= ARPHRD_IEEE1394;
+ 	net->tx_queue_len	= 10;
+-	SET_ETHTOOL_OPS(net, &fwnet_ethtool_ops);
+ }
+ 
+ /* caller must hold fwnet_device_mutex */
 diff --git a/drivers/gpu/drm/drm_drv.c b/drivers/gpu/drm/drm_drv.c
 index 0e27d98..f5e2572 100644
 --- a/drivers/gpu/drm/drm_drv.c
@@ -9612,6 +9670,54 @@ index 3d5b8b0..8b05e38 100644
  		}
  	}
  	ttm->state = tt_unpopulated;
+diff --git a/drivers/ieee1394/eth1394.c b/drivers/ieee1394/eth1394.c
+index a4e9dcb..62ab09e 100644
+--- a/drivers/ieee1394/eth1394.c
++++ b/drivers/ieee1394/eth1394.c
+@@ -58,7 +58,6 @@
+ #include <linux/tcp.h>
+ #include <linux/skbuff.h>
+ #include <linux/bitops.h>
+-#include <linux/ethtool.h>
+ #include <asm/uaccess.h>
+ #include <asm/delay.h>
+ #include <asm/unaligned.h>
+@@ -173,8 +172,6 @@ static netdev_tx_t ether1394_tx(struct sk_buff *skb,
+ 				struct net_device *dev);
+ static void ether1394_iso(struct hpsb_iso *iso);
+ 
+-static const struct ethtool_ops ethtool_ops;
+-
+ static int ether1394_write(struct hpsb_host *host, int srcid, int destid,
+ 			   quadlet_t *data, u64 addr, size_t len, u16 flags);
+ static void ether1394_add_host(struct hpsb_host *host);
+@@ -525,8 +522,6 @@ static void ether1394_init_dev(struct net_device *dev)
+ 	dev->header_ops		= &ether1394_header_ops;
+ 	dev->netdev_ops		= &ether1394_netdev_ops;
+ 
+-	SET_ETHTOOL_OPS(dev, &ethtool_ops);
+-
+ 	dev->watchdog_timeo	= ETHER1394_TIMEOUT;
+ 	dev->flags		= IFF_BROADCAST | IFF_MULTICAST;
+ 	dev->features		= NETIF_F_HIGHDMA;
+@@ -1698,17 +1693,6 @@ fail:
+ 	return NETDEV_TX_OK;
+ }
+ 
+-static void ether1394_get_drvinfo(struct net_device *dev,
+-				  struct ethtool_drvinfo *info)
+-{
+-	strcpy(info->driver, driver_name);
+-	strcpy(info->bus_info, "ieee1394"); /* FIXME provide more detail? */
+-}
+-
+-static const struct ethtool_ops ethtool_ops = {
+-	.get_drvinfo = ether1394_get_drvinfo
+-};
+-
+ static int __init ether1394_init_module(void)
+ {
+ 	int err;
 diff --git a/drivers/input/xen-kbdfront.c b/drivers/input/xen-kbdfront.c
 index b115726..80a072e 100644
 --- a/drivers/input/xen-kbdfront.c
@@ -9657,6 +9763,462 @@ index b2f71f7..b7feb84 100644
  	default y
  	help
  	  The network device frontend driver allows the kernel to
+diff --git a/drivers/net/bmac.c b/drivers/net/bmac.c
+index 406f064..c063b53 100644
+--- a/drivers/net/bmac.c
++++ b/drivers/net/bmac.c
+@@ -1236,15 +1236,8 @@ static void bmac_reset_and_enable(struct net_device *dev)
+ 	}
+ 	spin_unlock_irqrestore(&bp->lock, flags);
+ }
+-static void bmac_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
+-{
+-	struct bmac_data *bp = netdev_priv(dev);
+-	strcpy(info->driver, "bmac");
+-	strcpy(info->bus_info, dev_name(&bp->mdev->ofdev.dev));
+-}
+ 
+ static const struct ethtool_ops bmac_ethtool_ops = {
+-	.get_drvinfo		= bmac_get_drvinfo,
+ 	.get_link		= ethtool_op_get_link,
+ };
+ 
+diff --git a/drivers/net/fec_mpc52xx.c b/drivers/net/fec_mpc52xx.c
+index 66dace6..8238fa2 100644
+--- a/drivers/net/fec_mpc52xx.c
++++ b/drivers/net/fec_mpc52xx.c
+@@ -772,11 +772,6 @@ static void mpc52xx_fec_reset(struct net_device *dev)
+ 
+ 
+ /* ethtool interface */
+-static void mpc52xx_fec_get_drvinfo(struct net_device *dev,
+-		struct ethtool_drvinfo *info)
+-{
+-	strcpy(info->driver, DRIVER_NAME);
+-}
+ 
+ static int mpc52xx_fec_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
+ {
+@@ -811,7 +806,6 @@ static void mpc52xx_fec_set_msglevel(struct net_device *dev, u32 level)
+ }
+ 
+ static const struct ethtool_ops mpc52xx_fec_ethtool_ops = {
+-	.get_drvinfo = mpc52xx_fec_get_drvinfo,
+ 	.get_settings = mpc52xx_fec_get_settings,
+ 	.set_settings = mpc52xx_fec_set_settings,
+ 	.get_link = ethtool_op_get_link,
+diff --git a/drivers/net/pasemi_mac_ethtool.c b/drivers/net/pasemi_mac_ethtool.c
+index 28a8622..29ff9ad 100644
+--- a/drivers/net/pasemi_mac_ethtool.c
++++ b/drivers/net/pasemi_mac_ethtool.c
+@@ -77,21 +77,6 @@ pasemi_mac_ethtool_get_settings(struct net_device *netdev,
+ 	return phy_ethtool_gset(phydev, cmd);
+ }
+ 
+-static void
+-pasemi_mac_ethtool_get_drvinfo(struct net_device *netdev,
+-			       struct ethtool_drvinfo *drvinfo)
+-{
+-	struct pasemi_mac *mac;
+-	mac = netdev_priv(netdev);
+-
+-	/* clear and fill out info */
+-	memset(drvinfo, 0, sizeof(struct ethtool_drvinfo));
+-	strncpy(drvinfo->driver, "pasemi_mac", 12);
+-	strcpy(drvinfo->version, "N/A");
+-	strcpy(drvinfo->fw_version, "N/A");
+-	strncpy(drvinfo->bus_info, pci_name(mac->pdev), 32);
+-}
+-
+ static u32
+ pasemi_mac_ethtool_get_msglevel(struct net_device *netdev)
+ {
+@@ -150,7 +135,6 @@ static void pasemi_mac_get_strings(struct net_device *netdev, u32 stringset,
+ 
+ const struct ethtool_ops pasemi_mac_ethtool_ops = {
+ 	.get_settings		= pasemi_mac_ethtool_get_settings,
+-	.get_drvinfo		= pasemi_mac_ethtool_get_drvinfo,
+ 	.get_msglevel		= pasemi_mac_ethtool_get_msglevel,
+ 	.set_msglevel		= pasemi_mac_ethtool_set_msglevel,
+ 	.get_link		= ethtool_op_get_link,
+diff --git a/drivers/net/pcmcia/3c574_cs.c b/drivers/net/pcmcia/3c574_cs.c
+index b58965a..7f9a4f4 100644
+--- a/drivers/net/pcmcia/3c574_cs.c
++++ b/drivers/net/pcmcia/3c574_cs.c
+@@ -83,7 +83,6 @@ earlier 3Com products.
+ #include <linux/skbuff.h>
+ #include <linux/if_arp.h>
+ #include <linux/ioport.h>
+-#include <linux/ethtool.h>
+ #include <linux/bitops.h>
+ #include <linux/mii.h>
+ 
+@@ -249,7 +248,6 @@ static int el3_rx(struct net_device *dev, int worklimit);
+ static int el3_close(struct net_device *dev);
+ static void el3_tx_timeout(struct net_device *dev);
+ static int el3_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
+-static const struct ethtool_ops netdev_ethtool_ops;
+ static void set_rx_mode(struct net_device *dev);
+ static void set_multicast_list(struct net_device *dev);
+ 
+@@ -300,7 +298,6 @@ static int tc574_probe(struct pcmcia_device *link)
+ 	link->conf.ConfigIndex = 1;
+ 
+ 	dev->netdev_ops = &el3_netdev_ops;
+-	SET_ETHTOOL_OPS(dev, &netdev_ethtool_ops);
+ 	dev->watchdog_timeo = TX_TIMEOUT;
+ 
+ 	return tc574_config(link);
+@@ -1083,16 +1080,6 @@ static int el3_rx(struct net_device *dev, int worklimit)
+ 	return worklimit;
+ }
+ 
+-static void netdev_get_drvinfo(struct net_device *dev,
+-			       struct ethtool_drvinfo *info)
+-{
+-	strcpy(info->driver, "3c574_cs");
+-}
+-
+-static const struct ethtool_ops netdev_ethtool_ops = {
+-	.get_drvinfo		= netdev_get_drvinfo,
+-};
+-
+ /* Provide ioctl() calls to examine the MII xcvr state. */
+ static int el3_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ {
+diff --git a/drivers/net/pcmcia/axnet_cs.c b/drivers/net/pcmcia/axnet_cs.c
+index 3131a59..40e5e7c 100644
+--- a/drivers/net/pcmcia/axnet_cs.c
++++ b/drivers/net/pcmcia/axnet_cs.c
+@@ -33,7 +33,6 @@
+ #include <linux/timer.h>
+ #include <linux/delay.h>
+ #include <linux/spinlock.h>
+-#include <linux/ethtool.h>
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
+ #include <linux/crc32.h>
+@@ -98,7 +97,6 @@ static netdev_tx_t axnet_start_xmit(struct sk_buff *skb,
+ static struct net_device_stats *get_stats(struct net_device *dev);
+ static void set_multicast_list(struct net_device *dev);
+ static void axnet_tx_timeout(struct net_device *dev);
+-static const struct ethtool_ops netdev_ethtool_ops;
+ static irqreturn_t ei_irq_wrapper(int irq, void *dev_id);
+ static void ei_watchdog(u_long arg);
+ static void axnet_reset_8390(struct net_device *dev);
+@@ -186,7 +184,6 @@ static int axnet_probe(struct pcmcia_device *link)
+ 
+     dev->netdev_ops = &axnet_netdev_ops;
+ 
+-    SET_ETHTOOL_OPS(dev, &netdev_ethtool_ops);
+     dev->watchdog_timeo = TX_TIMEOUT;
+ 
+     return axnet_config(link);
+@@ -683,16 +680,6 @@ reschedule:
+     add_timer(&info->watchdog);
+ }
+ 
+-static void netdev_get_drvinfo(struct net_device *dev,
+-			       struct ethtool_drvinfo *info)
+-{
+-	strcpy(info->driver, "axnet_cs");
+-}
+-
+-static const struct ethtool_ops netdev_ethtool_ops = {
+-	.get_drvinfo		= netdev_get_drvinfo,
+-};
+-
+ /*====================================================================*/
+ 
+ static int axnet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+diff --git a/drivers/net/pcmcia/ibmtr_cs.c b/drivers/net/pcmcia/ibmtr_cs.c
+index 06618af..db0c890 100644
+--- a/drivers/net/pcmcia/ibmtr_cs.c
++++ b/drivers/net/pcmcia/ibmtr_cs.c
+@@ -52,7 +52,6 @@
+ #include <linux/string.h>
+ #include <linux/timer.h>
+ #include <linux/module.h>
+-#include <linux/ethtool.h>
+ #include <linux/netdevice.h>
+ #include <linux/trdevice.h>
+ #include <linux/ibmtr.h>
+@@ -120,16 +119,6 @@ typedef struct ibmtr_dev_t {
+     struct tok_info	*ti;
+ } ibmtr_dev_t;
+ 
+-static void netdev_get_drvinfo(struct net_device *dev,
+-			       struct ethtool_drvinfo *info)
+-{
+-	strcpy(info->driver, "ibmtr_cs");
+-}
+-
+-static const struct ethtool_ops netdev_ethtool_ops = {
+-	.get_drvinfo		= netdev_get_drvinfo,
+-};
+-
+ /*======================================================================
+ 
+     ibmtr_attach() creates an "instance" of the driver, allocating
+@@ -170,8 +159,6 @@ static int __devinit ibmtr_attach(struct pcmcia_device *link)
+ 
+     link->irq.Instance = info->dev = dev;
+ 
+-    SET_ETHTOOL_OPS(dev, &netdev_ethtool_ops);
+-
+     return ibmtr_config(link);
+ } /* ibmtr_attach */
+ 
+diff --git a/drivers/net/pcmcia/pcnet_cs.c b/drivers/net/pcmcia/pcnet_cs.c
+index 94c9ad2..1b673b0 100644
+--- a/drivers/net/pcmcia/pcnet_cs.c
++++ b/drivers/net/pcmcia/pcnet_cs.c
+@@ -36,7 +36,6 @@
+ #include <linux/string.h>
+ #include <linux/timer.h>
+ #include <linux/delay.h>
+-#include <linux/ethtool.h>
+ #include <linux/netdevice.h>
+ #include <linux/log2.h>
+ #include <linux/etherdevice.h>
+@@ -111,7 +110,6 @@ static void pcnet_release(struct pcmcia_device *link);
+ static int pcnet_open(struct net_device *dev);
+ static int pcnet_close(struct net_device *dev);
+ static int ei_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
+-static const struct ethtool_ops netdev_ethtool_ops;
+ static irqreturn_t ei_irq_wrapper(int irq, void *dev_id);
+ static void ei_watchdog(u_long arg);
+ static void pcnet_reset_8390(struct net_device *dev);
+@@ -654,8 +652,6 @@ static int pcnet_config(struct pcmcia_device *link)
+     ei_status.word16 = 1;
+     ei_status.reset_8390 = &pcnet_reset_8390;
+ 
+-    SET_ETHTOOL_OPS(dev, &netdev_ethtool_ops);
+-
+     if (info->flags & (IS_DL10019|IS_DL10022))
+ 	mii_phy_probe(dev);
+ 
+@@ -1175,18 +1171,6 @@ reschedule:
+ 
+ /*====================================================================*/
+ 
+-static void netdev_get_drvinfo(struct net_device *dev,
+-			       struct ethtool_drvinfo *info)
+-{
+-	strcpy(info->driver, "pcnet_cs");
+-}
+-
+-static const struct ethtool_ops netdev_ethtool_ops = {
+-	.get_drvinfo		= netdev_get_drvinfo,
+-};
+-
+-/*====================================================================*/
+-
+ 
+ static int ei_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+ {
+diff --git a/drivers/net/sc92031.c b/drivers/net/sc92031.c
+index 8d60300..0926832 100644
+--- a/drivers/net/sc92031.c
++++ b/drivers/net/sc92031.c
+@@ -1255,16 +1255,6 @@ static int sc92031_ethtool_set_settings(struct net_device *dev,
+ 	return 0;
+ }
+ 
+-static void sc92031_ethtool_get_drvinfo(struct net_device *dev,
+-		struct ethtool_drvinfo *drvinfo)
+-{
+-	struct sc92031_priv *priv = netdev_priv(dev);
+-	struct pci_dev *pdev = priv->pdev;
+-
+-	strcpy(drvinfo->driver, SC92031_NAME);
+-	strcpy(drvinfo->bus_info, pci_name(pdev));
+-}
+-
+ static void sc92031_ethtool_get_wol(struct net_device *dev,
+ 		struct ethtool_wolinfo *wolinfo)
+ {
+@@ -1386,7 +1376,6 @@ static void sc92031_ethtool_get_ethtool_stats(struct net_device *dev,
+ static const struct ethtool_ops sc92031_ethtool_ops = {
+ 	.get_settings		= sc92031_ethtool_get_settings,
+ 	.set_settings		= sc92031_ethtool_set_settings,
+-	.get_drvinfo		= sc92031_ethtool_get_drvinfo,
+ 	.get_wol		= sc92031_ethtool_get_wol,
+ 	.set_wol		= sc92031_ethtool_set_wol,
+ 	.nway_reset		= sc92031_ethtool_nway_reset,
+diff --git a/drivers/net/tulip/xircom_cb.c b/drivers/net/tulip/xircom_cb.c
+index 0f2ca598..44159be 100644
+--- a/drivers/net/tulip/xircom_cb.c
++++ b/drivers/net/tulip/xircom_cb.c
+@@ -27,7 +27,6 @@
+ #include <linux/skbuff.h>
+ #include <linux/delay.h>
+ #include <linux/init.h>
+-#include <linux/ethtool.h>
+ #include <linux/bitops.h>
+ 
+ #include <asm/uaccess.h>
+@@ -179,19 +178,6 @@ static void print_binary(unsigned int number)
+ }
+ #endif
+ 
+-static void netdev_get_drvinfo(struct net_device *dev,
+-			       struct ethtool_drvinfo *info)
+-{
+-	struct xircom_private *private = netdev_priv(dev);
+-
+-	strcpy(info->driver, "xircom_cb");
+-	strcpy(info->bus_info, pci_name(private->pdev));
+-}
+-
+-static const struct ethtool_ops netdev_ethtool_ops = {
+-	.get_drvinfo		= netdev_get_drvinfo,
+-};
+-
+ static const struct net_device_ops netdev_ops = {
+ 	.ndo_open		= xircom_open,
+ 	.ndo_stop		= xircom_close,
+@@ -277,7 +263,6 @@ static int __devinit xircom_probe(struct pci_dev *pdev, const struct pci_device_
+ 	setup_descriptors(private);
+ 
+ 	dev->netdev_ops = &netdev_ops;
+-	SET_ETHTOOL_OPS(dev, &netdev_ethtool_ops);
+ 	pci_set_drvdata(pdev, dev);
+ 
+ 	if (register_netdev(dev)) {
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index f450bc9..2109514 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -820,17 +820,7 @@ static netdev_tx_t hso_net_start_xmit(struct sk_buff *skb,
+ 	return NETDEV_TX_OK;
+ }
+ 
+-static void hso_get_drvinfo(struct net_device *net, struct ethtool_drvinfo *info)
+-{
+-	struct hso_net *odev = netdev_priv(net);
+-
+-	strncpy(info->driver, driver_name, ETHTOOL_BUSINFO_LEN);
+-	strncpy(info->version, DRIVER_VERSION, ETHTOOL_BUSINFO_LEN);
+-	usb_make_path(odev->parent->usb, info->bus_info, sizeof info->bus_info);
+-}
+-
+ static const struct ethtool_ops ops = {
+-	.get_drvinfo = hso_get_drvinfo,
+ 	.get_link = ethtool_op_get_link
+ };
+ 
+diff --git a/drivers/net/usb/kaweth.c b/drivers/net/usb/kaweth.c
+index e391ef9..47d1926 100644
+--- a/drivers/net/usb/kaweth.c
++++ b/drivers/net/usb/kaweth.c
+@@ -767,14 +767,6 @@ static int kaweth_close(struct net_device *net)
+ 	return 0;
+ }
+ 
+-static void kaweth_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
+-{
+-	struct kaweth_device *kaweth = netdev_priv(dev);
+-
+-	strlcpy(info->driver, driver_name, sizeof(info->driver));
+-	usb_make_path(kaweth->dev, info->bus_info, sizeof (info->bus_info));
+-}
+-
+ static u32 kaweth_get_link(struct net_device *dev)
+ {
+ 	struct kaweth_device *kaweth = netdev_priv(dev);
+@@ -783,7 +775,6 @@ static u32 kaweth_get_link(struct net_device *dev)
+ }
+ 
+ static const struct ethtool_ops ops = {
+-	.get_drvinfo	= kaweth_get_drvinfo,
+ 	.get_link	= kaweth_get_link
+ };
+ 
+diff --git a/drivers/net/wireless/ray_cs.c b/drivers/net/wireless/ray_cs.c
+index 1c88c2e..2e65100 100644
+--- a/drivers/net/wireless/ray_cs.c
++++ b/drivers/net/wireless/ray_cs.c
+@@ -44,7 +44,6 @@
+ #include <linux/if_arp.h>
+ #include <linux/ioport.h>
+ #include <linux/skbuff.h>
+-#include <linux/ethtool.h>
+ #include <linux/ieee80211.h>
+ 
+ #include <pcmcia/cs_types.h>
+@@ -101,8 +100,6 @@ static int ray_dev_config(struct net_device *dev, struct ifmap *map);
+ static struct net_device_stats *ray_get_stats(struct net_device *dev);
+ static int ray_dev_init(struct net_device *dev);
+ 
+-static const struct ethtool_ops netdev_ethtool_ops;
+-
+ static int ray_open(struct net_device *dev);
+ static netdev_tx_t ray_dev_start_xmit(struct sk_buff *skb,
+ 					    struct net_device *dev);
+@@ -362,7 +359,6 @@ static int ray_probe(struct pcmcia_device *p_dev)
+ 
+ 	/* Raylink entries in the device structure */
+ 	dev->netdev_ops = &ray_netdev_ops;
+-	SET_ETHTOOL_OPS(dev, &netdev_ethtool_ops);
+ 	dev->wireless_handlers = &ray_handler_def;
+ #ifdef WIRELESS_SPY
+ 	local->wireless_data.spy_data = &local->spy_data;
+@@ -1106,18 +1102,6 @@ AP to AP	1	1	dest AP		src AP		dest	source
+ 	}
+ } /* end encapsulate_frame */
+ 
+-/*===========================================================================*/
+-
+-static void netdev_get_drvinfo(struct net_device *dev,
+-			       struct ethtool_drvinfo *info)
+-{
+-	strcpy(info->driver, "ray_cs");
+-}
+-
+-static const struct ethtool_ops netdev_ethtool_ops = {
+-	.get_drvinfo = netdev_get_drvinfo,
+-};
+-
+ /*====================================================================*/
+ 
+ /*------------------------------------------------------------------*/
+diff --git a/drivers/net/wireless/wl3501_cs.c b/drivers/net/wireless/wl3501_cs.c
+index 4f1e0cf..22b2b43 100644
+--- a/drivers/net/wireless/wl3501_cs.c
++++ b/drivers/net/wireless/wl3501_cs.c
+@@ -29,7 +29,6 @@
+ 
+ #include <linux/delay.h>
+ #include <linux/types.h>
+-#include <linux/ethtool.h>
+ #include <linux/init.h>
+ #include <linux/interrupt.h>
+ #include <linux/in.h>
+@@ -1436,15 +1435,6 @@ static struct iw_statistics *wl3501_get_wireless_stats(struct net_device *dev)
+ 	return wstats;
+ }
+ 
+-static void wl3501_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
+-{
+-	strlcpy(info->driver, wl3501_dev_info, sizeof(info->driver));
+-}
+-
+-static const struct ethtool_ops ops = {
+-	.get_drvinfo = wl3501_get_drvinfo
+-};
+-
+ /**
+  * wl3501_detach - deletes a driver "instance"
+  * @link - FILL_IN
+@@ -1936,7 +1926,6 @@ static int wl3501_probe(struct pcmcia_device *p_dev)
+ 	this->p_dev = p_dev;
+ 	dev->wireless_data	= &this->wireless_data;
+ 	dev->wireless_handlers	= &wl3501_handler_def;
+-	SET_ETHTOOL_OPS(dev, &ops);
+ 	netif_stop_queue(dev);
+ 	p_dev->priv = p_dev->irq.Instance = dev;
+ 
 diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
 index 1a11d95..3f71199 100644
 --- a/drivers/net/xen-netfront.c
@@ -36798,6 +37360,76 @@ index 680dcbb..4f701c2 100644
  
  	if (nr || force_flush)
  		flush_tlb_kernel_range(*start, *end);
+diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+index 450862e..ff35ce3 100644
+--- a/net/core/ethtool.c
++++ b/net/core/ethtool.c
+@@ -179,14 +179,24 @@ static int ethtool_get_drvinfo(struct net_device *dev, void __user *useraddr)
+ 	struct ethtool_drvinfo info;
+ 	const struct ethtool_ops *ops = dev->ethtool_ops;
+ 
+-	if (!ops->get_drvinfo)
+-		return -EOPNOTSUPP;
+-
+ 	memset(&info, 0, sizeof(info));
+ 	info.cmd = ETHTOOL_GDRVINFO;
+-	ops->get_drvinfo(dev, &info);
++	if (ops && ops->get_drvinfo) {
++		ops->get_drvinfo(dev, &info);
++	} else if (dev->dev.parent && dev->dev.parent->driver) {
++		strlcpy(info.bus_info, dev_name(dev->dev.parent),
++			sizeof(info.bus_info));
++		strlcpy(info.driver, dev->dev.parent->driver->name,
++			sizeof(info.driver));
++	} else {
++		return -EOPNOTSUPP;
++	}
+ 
+-	if (ops->get_sset_count) {
++	/*
++	 * this method of obtaining string set info is deprecated;
++	 * Use ETHTOOL_GSSET_INFO instead.
++	 */
++	if (ops && ops->get_sset_count) {
+ 		int rc;
+ 
+ 		rc = ops->get_sset_count(dev, ETH_SS_TEST);
+@@ -206,9 +216,9 @@ static int ethtool_get_drvinfo(struct net_device *dev, void __user *useraddr)
+ 		if (ops->get_stats_count)
+ 			info.n_stats = ops->get_stats_count(dev);
+ 	}
+-	if (ops->get_regs_len)
++	if (ops && ops->get_regs_len)
+ 		info.regdump_len = ops->get_regs_len(dev);
+-	if (ops->get_eeprom_len)
++	if (ops && ops->get_eeprom_len)
+ 		info.eedump_len = ops->get_eeprom_len(dev);
+ 
+ 	if (copy_to_user(useraddr, &info, sizeof(info)))
+@@ -945,12 +955,19 @@ int dev_ethtool(struct net *net, struct ifreq *ifr)
+ 	if (!dev || !netif_device_present(dev))
+ 		return -ENODEV;
+ 
+-	if (!dev->ethtool_ops)
+-		return -EOPNOTSUPP;
+-
+-	if (copy_from_user(&ethcmd, useraddr, sizeof (ethcmd)))
++	if (copy_from_user(&ethcmd, useraddr, sizeof(ethcmd)))
+ 		return -EFAULT;
+ 
++	if (!dev->ethtool_ops) {
++		/* ETHTOOL_GDRVINFO does not require any driver support.
++		 * It is also unprivileged and does not change anything,
++		 * so we can take a shortcut to it. */
++		if (ethcmd == ETHTOOL_GDRVINFO)
++			return ethtool_get_drvinfo(dev, useraddr);
++		else
++			return -EOPNOTSUPP;
++	}
++
+ 	/* Allow some commands to be done by anyone */
+ 	switch(ethcmd) {
+ 	case ETHTOOL_GDRVINFO:
 diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
 index d4fd895..4ab8c97 100644
 --- a/net/core/rtnetlink.c
