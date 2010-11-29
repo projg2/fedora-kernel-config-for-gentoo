@@ -837,6 +837,17 @@ Patch14200: net-do-not-check-capable-if-kernel.patch
 # rhbz#596475
 Patch14226: add-support-for-ricoh-e822-sdhci.patch
 
+Patch14300: ipc-zero-struct-memory-for-compat-fns.patch
+Patch14301: ipc-shm-fix-information-leak-to-user.patch
+
+Patch14302: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
+Patch14307: netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
+
+Patch14303: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
+
+Patch14305: tty-make-tiocgicount-a-handler.patch
+Patch14306: tty-icount-changeover-for-other-main-devices.patch
+
 Patch19997: xen.pvops.pre.patch
 Patch19998: xen.pvops.patch
 Patch19999: xen.pvops.post.patch
@@ -1543,6 +1554,23 @@ ApplyPatch net-do-not-check-capable-if-kernel.patch
 # rhbz#596475
 ApplyPatch add-support-for-ricoh-e822-sdhci.patch
 
+# rhbz#648658 (CVE-2010-4073)
+ApplyPatch ipc-zero-struct-memory-for-compat-fns.patch
+
+# rhbz#648656 (CVE-2010-4072)
+ApplyPatch ipc-shm-fix-information-leak-to-user.patch
+
+# rhbz#651264 (CVE-2010-3880)
+ApplyPatch inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
+ApplyPatch netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
+
+# rhbz#656264
+ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
+
+# CVE-2010-4077, CVE-2010-4075 (rhbz#648660, #648663)
+ApplyPatch tty-make-tiocgicount-a-handler.patch
+ApplyPatch tty-icount-changeover-for-other-main-devices.patch
+
 ApplyPatch xen.pvops.pre.patch
 ApplyPatch xen.pvops.patch
 ApplyPatch xen.pvops.post.patch
@@ -2199,6 +2227,20 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
+- netlink-make-nlmsg_find_attr-take-a-const-ptr.patch: quiet build warning
+  the INET_DIAG fix caused.
+
+* Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
+- Plug stack leaks in tty/serial drivers. (#648663, #648660)
+
+* Tue Nov 23 2010 Kyle McMartin <kyle@redhat.com>
+- zero struct memory in ipc compat (CVE-2010-4073) (#648658)
+- zero struct memory in ipc shm (CVE-2010-4072) (#648656)
+- fix logic error in INET_DIAG bytecode auditing (CVE-2010-3880) (#651264)
+- posix-cpu-timers: workaround to suppress the problems with mt exec
+  (rhbz#656264)
+
 * Tue Nov 23 2010 Michael Young <m.a.young@durham.ac.uk>
 - update pvops to 2.6.32.26
 
