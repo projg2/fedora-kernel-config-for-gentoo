@@ -1,21 +1,46 @@
-diff -up linux-2.6.34.noarch/drivers/platform/x86/thinkpad_acpi.c.orig linux-2.6.34.noarch/drivers/platform/x86/thinkpad_acpi.c
---- linux-2.6.34.noarch/drivers/platform/x86/thinkpad_acpi.c.orig	2010-05-17 16:28:13.254200070 -0400
-+++ linux-2.6.34.noarch/drivers/platform/x86/thinkpad_acpi.c	2010-05-17 16:29:56.471200083 -0400
-@@ -3397,7 +3397,7 @@ static int __init hotkey_init(struct ibm
- 		/* update bright_acpimode... */
- 		tpacpi_check_std_acpi_brightness_support();
+From baa7ac7527ee3990007fb28b59ec1d73b922ddaa Mon Sep 17 00:00:00 2001
+From: Henrique de Moraes Holschuh <hmh@hmh.eng.br>
+Date: Mon, 9 Aug 2010 23:48:19 -0300
+Subject: [PATCH] thinkpad-acpi: untangle ACPI/vendor backlight selection
+
+acpi_video_backlight_support() already tells us if ACPI is handling
+backlight control through the generic ACPI handle.  It is better to just
+trust it.
+
+While at it, adjust down a printk priority, and test earlier for
+brightness_enable=0.
+
+Signed-off-by: Henrique de Moraes Holschuh <hmh@hmh.eng.br>
+Signed-off-by: Matthew Garrett <mjg@redhat.com>
+---
+ Documentation/laptops/thinkpad-acpi.txt |    4 +++
+ drivers/platform/x86/thinkpad_acpi.c    |   42 ++++++++++++++----------------
+ 2 files changed, 24 insertions(+), 22 deletions(-)
+
+diff --git a/Documentation/laptops/thinkpad-acpi.txt b/Documentation/laptops/thinkpad-acpi.txt
+index fc15538..720ba04 100644
+--- a/Documentation/laptops/thinkpad-acpi.txt
++++ b/Documentation/laptops/thinkpad-acpi.txt
+@@ -1073,6 +1073,10 @@ ThinkPad-specific interface.  The driver will disable its native
+ backlight brightness control interface if it detects that the standard
+ ACPI interface is available in the ThinkPad.
  
--	if (tp_features.bright_acpimode && acpi_video_backlight_support()) {
-+	if (acpi_video_backlight_support()) {
- 		printk(TPACPI_INFO
- 		       "This ThinkPad has standard ACPI backlight "
- 		       "brightness control, supported by the ACPI "
-@@ -6189,26 +6189,24 @@ static int __init brightness_init(struct
- 	 * going to publish a backlight interface
- 	 */
- 	b = tpacpi_check_std_acpi_brightness_support();
--	if (b > 0) {
++If you want to use the thinkpad-acpi backlight brightness control
++instead of the generic ACPI video backlight brightness control for some
++reason, you should use the acpi_backlight=vendor kernel parameter.
++
+ The brightness_enable module parameter can be used to control whether
+ the LCD brightness control feature will be enabled when available.
+ brightness_enable=0 forces it to be disabled.  brightness_enable=1
+diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
+index 4bdb137..b383cc6 100644
+--- a/drivers/platform/x86/thinkpad_acpi.c
++++ b/drivers/platform/x86/thinkpad_acpi.c
+@@ -6313,28 +6313,6 @@ static int __init brightness_init(struct ibm_init_struct *iibm)
+ 	if (tp_features.bright_unkfw)
+ 		return 1;
  
+-	if (tp_features.bright_acpimode) {
 -		if (acpi_video_backlight_support()) {
 -			if (brightness_enable > 1) {
 -				printk(TPACPI_NOTICE
@@ -34,23 +59,39 @@ diff -up linux-2.6.34.noarch/drivers/platform/x86/thinkpad_acpi.c.orig linux-2.6
 -				       "available, thinkpad_acpi native "
 -				       "brightness control enabled\n");
 -			}
+-		}
+-	}
+-
+ 	if (!brightness_enable) {
+ 		dbg_printk(TPACPI_DBG_INIT | TPACPI_DBG_BRGHT,
+ 			   "brightness support disabled by "
+@@ -6342,6 +6320,26 @@ static int __init brightness_init(struct ibm_init_struct *iibm)
+ 		return 1;
+ 	}
+ 
 +	if (acpi_video_backlight_support()) {
 +		if (brightness_enable > 1) {
-+			printk(TPACPI_NOTICE
++			printk(TPACPI_INFO
 +			       "Standard ACPI backlight interface "
 +			       "available, not loading native one.\n");
 +			return 1;
 +		} else if (brightness_enable == 1) {
-+			printk(TPACPI_NOTICE
-+			       "Backlight control force enabled, even if standard "
-+			       "ACPI backlight interface is available\n");
++			printk(TPACPI_WARN
++				"Cannot enable backlight brightness support, "
++				"ACPI is already handling it.  Refer to the "
++				"acpi_backlight kernel parameter\n");
++			return 1;
 +		}
-+	} else {
-+		if (brightness_enable > 1) {
-+			printk(TPACPI_NOTICE
-+			       "Standard ACPI backlight interface not "
-+			       "available, thinkpad_acpi native "
-+			       "brightness control enabled\n");
- 		}
- 	}
- 
++	} else if (tp_features.bright_acpimode && brightness_enable > 1) {
++		printk(TPACPI_NOTICE
++			"Standard ACPI backlight interface not "
++			"available, thinkpad_acpi native "
++			"brightness control enabled\n");
++	}
++
+ 	/*
+ 	 * Check for module parameter bogosity, note that we
+ 	 * init brightness_mode to TPACPI_BRGHT_MODE_MAX in order to be
+-- 
+1.7.3.2
+
