@@ -1,0 +1,231 @@
+From 5883ea2555b2ae8dd84a256532f7abb2d4837fc1 Mon Sep 17 00:00:00 2001
+From: Dave Chinner <dchinner@redhat.com>
+Date: Tue, 20 Jul 2010 09:43:39 +1000
+Subject: xfs: track AGs with reclaimable inodes in per-ag radix tree
+
+https://bugzilla.kernel.org/show_bug.cgi?id=16348
+
+When the filesystem grows to a large number of allocation groups,
+the summing of recalimable inodes gets expensive. In many cases,
+most AGs won't have any reclaimable inodes and so we are wasting CPU
+time aggregating over these AGs. This is particularly important for
+the inode shrinker that gets called frequently under memory
+pressure.
+
+To avoid the overhead, track AGs with reclaimable inodes in the
+per-ag radix tree so that we can find all the AGs with reclaimable
+inodes via a simple gang tag lookup. This involves setting the tag
+when the first reclaimable inode is tracked in the AG, and removing
+the tag when the last reclaimable inode is removed from the tree.
+Then the summation process becomes a loop walking the radix tree
+summing AGs with the reclaim tag set.
+
+This significantly reduces the overhead of scanning - a 6400 AG
+filesystea now only uses about 25% of a cpu in kswapd while slab
+reclaim progresses instead of being permanently stuck at 100% CPU
+and making little progress. Clean filesystems filesystems will see
+no overhead and the overhead only increases linearly with the number
+of dirty AGs.
+
+Signed-off-by: Dave Chinner <dchinner@redhat.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+---
+ fs/xfs/linux-2.6/xfs_sync.c  |   68 +++++++++++++++++++++++++++++++++++++----
+ fs/xfs/linux-2.6/xfs_trace.h |   61 +++++++++++++++++++++----------------
+ 2 files changed, 95 insertions(+), 34 deletions(-)
+
+diff --git a/fs/xfs/linux-2.6/xfs_sync.c b/fs/xfs/linux-2.6/xfs_sync.c
+index a427c63..b927a54 100644
+--- a/fs/xfs/linux-2.6/xfs_sync.c
++++ b/fs/xfs/linux-2.6/xfs_sync.c
+@@ -144,6 +144,41 @@ restart:
+ 	return last_error;
+ }
+ 
++/*
++ * Select the next per-ag structure to iterate during the walk. The reclaim
++ * walk is optimised only to walk AGs with reclaimable inodes in them.
++ */
++static struct xfs_perag *
++xfs_inode_ag_iter_next_pag(
++	struct xfs_mount	*mp,
++	xfs_agnumber_t		*first,
++	int			tag)
++{
++	struct xfs_perag	*pag = NULL;
++
++	if (tag == XFS_ICI_RECLAIM_TAG) {
++		int found;
++		int ref;
++
++		spin_lock(&mp->m_perag_lock);
++		found = radix_tree_gang_lookup_tag(&mp->m_perag_tree,
++				(void **)&pag, *first, 1, tag);
++		if (found <= 0) {
++			spin_unlock(&mp->m_perag_lock);
++			return NULL;
++		}
++		*first = pag->pag_agno + 1;
++		/* open coded pag reference increment */
++		ref = atomic_inc_return(&pag->pag_ref);
++		spin_unlock(&mp->m_perag_lock);
++		trace_xfs_perag_get_reclaim(mp, pag->pag_agno, ref, _RET_IP_);
++	} else {
++		pag = xfs_perag_get(mp, *first);
++		(*first)++;
++	}
++	return pag;
++}
++
+ int
+ xfs_inode_ag_iterator(
+ 	struct xfs_mount	*mp,
+@@ -154,16 +189,15 @@ xfs_inode_ag_iterator(
+ 	int			exclusive,
+ 	int			*nr_to_scan)
+ {
++	struct xfs_perag	*pag;
+ 	int			error = 0;
+ 	int			last_error = 0;
+ 	xfs_agnumber_t		ag;
+ 	int			nr;
+ 
+ 	nr = nr_to_scan ? *nr_to_scan : INT_MAX;
+-	for (ag = 0; ag < mp->m_sb.sb_agcount; ag++) {
+-		struct xfs_perag	*pag;
+-
+-		pag = xfs_perag_get(mp, ag);
++	ag = 0;
++	while ((pag = xfs_inode_ag_iter_next_pag(mp, &ag, tag))) {
+ 		if (!pag->pag_ici_init) {
+ 			xfs_perag_put(pag);
+ 			continue;
+@@ -681,6 +715,17 @@ __xfs_inode_set_reclaim_tag(
+ 	radix_tree_tag_set(&pag->pag_ici_root,
+ 			   XFS_INO_TO_AGINO(ip->i_mount, ip->i_ino),
+ 			   XFS_ICI_RECLAIM_TAG);
++
++	if (!pag->pag_ici_reclaimable) {
++		/* propagate the reclaim tag up into the perag radix tree */
++		spin_lock(&ip->i_mount->m_perag_lock);
++		radix_tree_tag_set(&ip->i_mount->m_perag_tree,
++				XFS_INO_TO_AGNO(ip->i_mount, ip->i_ino),
++				XFS_ICI_RECLAIM_TAG);
++		spin_unlock(&ip->i_mount->m_perag_lock);
++		trace_xfs_perag_set_reclaim(ip->i_mount, pag->pag_agno,
++							-1, _RET_IP_);
++	}
+ 	pag->pag_ici_reclaimable++;
+ }
+ 
+@@ -715,6 +760,16 @@ __xfs_inode_clear_reclaim_tag(
+ 	radix_tree_tag_clear(&pag->pag_ici_root,
+ 			XFS_INO_TO_AGINO(mp, ip->i_ino), XFS_ICI_RECLAIM_TAG);
+ 	pag->pag_ici_reclaimable--;
++	if (!pag->pag_ici_reclaimable) {
++		/* clear the reclaim tag from the perag radix tree */
++		spin_lock(&ip->i_mount->m_perag_lock);
++		radix_tree_tag_clear(&ip->i_mount->m_perag_tree,
++				XFS_INO_TO_AGNO(ip->i_mount, ip->i_ino),
++				XFS_ICI_RECLAIM_TAG);
++		spin_unlock(&ip->i_mount->m_perag_lock);
++		trace_xfs_perag_clear_reclaim(ip->i_mount, pag->pag_agno,
++							-1, _RET_IP_);
++	}
+ }
+ 
+ /*
+@@ -903,9 +958,8 @@ xfs_reclaim_inode_shrink(
+ 
+ 	down_read(&xfs_mount_list_lock);
+ 	list_for_each_entry(mp, &xfs_mount_list, m_mplist) {
+-		for (ag = 0; ag < mp->m_sb.sb_agcount; ag++) {
+-
+-			pag = xfs_perag_get(mp, ag);
++		while ((pag = xfs_inode_ag_iter_next_pag(mp, &ag,
++					XFS_ICI_RECLAIM_TAG))) {
+ 			if (!pag->pag_ici_init) {
+ 				xfs_perag_put(pag);
+ 				continue;
+diff --git a/fs/xfs/linux-2.6/xfs_trace.h b/fs/xfs/linux-2.6/xfs_trace.h
+index fcaa62f..072d581 100644
+--- a/fs/xfs/linux-2.6/xfs_trace.h
++++ b/fs/xfs/linux-2.6/xfs_trace.h
+@@ -78,33 +78,6 @@ DECLARE_EVENT_CLASS(xfs_attr_list_class,
+ 	)
+ )
+ 
+-#define DEFINE_PERAG_REF_EVENT(name) \
+-TRACE_EVENT(name, \
+-	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno, int refcount, \
+-		 unsigned long caller_ip), \
+-	TP_ARGS(mp, agno, refcount, caller_ip), \
+-	TP_STRUCT__entry( \
+-		__field(dev_t, dev) \
+-		__field(xfs_agnumber_t, agno) \
+-		__field(int, refcount) \
+-		__field(unsigned long, caller_ip) \
+-	), \
+-	TP_fast_assign( \
+-		__entry->dev = mp->m_super->s_dev; \
+-		__entry->agno = agno; \
+-		__entry->refcount = refcount; \
+-		__entry->caller_ip = caller_ip; \
+-	), \
+-	TP_printk("dev %d:%d agno %u refcount %d caller %pf", \
+-		  MAJOR(__entry->dev), MINOR(__entry->dev), \
+-		  __entry->agno, \
+-		  __entry->refcount, \
+-		  (char *)__entry->caller_ip) \
+-);
+-
+-DEFINE_PERAG_REF_EVENT(xfs_perag_get)
+-DEFINE_PERAG_REF_EVENT(xfs_perag_put)
+-
+ #define DEFINE_ATTR_LIST_EVENT(name) \
+ DEFINE_EVENT(xfs_attr_list_class, name, \
+ 	TP_PROTO(struct xfs_attr_list_context *ctx), \
+@@ -118,6 +91,40 @@ DEFINE_ATTR_LIST_EVENT(xfs_attr_list_add);
+ DEFINE_ATTR_LIST_EVENT(xfs_attr_list_wrong_blk);
+ DEFINE_ATTR_LIST_EVENT(xfs_attr_list_notfound);
+ 
++DECLARE_EVENT_CLASS(xfs_perag_class,
++	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno, int refcount,
++		 unsigned long caller_ip),
++	TP_ARGS(mp, agno, refcount, caller_ip),
++	TP_STRUCT__entry(
++		__field(dev_t, dev)
++		__field(xfs_agnumber_t, agno)
++		__field(int, refcount)
++		__field(unsigned long, caller_ip)
++	),
++	TP_fast_assign(
++		__entry->dev = mp->m_super->s_dev;
++		__entry->agno = agno;
++		__entry->refcount = refcount;
++		__entry->caller_ip = caller_ip;
++	),
++	TP_printk("dev %d:%d agno %u refcount %d caller %pf",
++		  MAJOR(__entry->dev), MINOR(__entry->dev),
++		  __entry->agno,
++		  __entry->refcount,
++		  (char *)__entry->caller_ip)
++);
++
++#define DEFINE_PERAG_REF_EVENT(name)	\
++DEFINE_EVENT(xfs_perag_class, name,	\
++	TP_PROTO(struct xfs_mount *mp, xfs_agnumber_t agno, int refcount,	\
++		 unsigned long caller_ip),					\
++	TP_ARGS(mp, agno, refcount, caller_ip))
++DEFINE_PERAG_REF_EVENT(xfs_perag_get);
++DEFINE_PERAG_REF_EVENT(xfs_perag_get_reclaim);
++DEFINE_PERAG_REF_EVENT(xfs_perag_put);
++DEFINE_PERAG_REF_EVENT(xfs_perag_set_reclaim);
++DEFINE_PERAG_REF_EVENT(xfs_perag_clear_reclaim);
++
+ TRACE_EVENT(xfs_attr_list_node_descend,
+ 	TP_PROTO(struct xfs_attr_list_context *ctx,
+ 		 struct xfs_da_node_entry *btree),
+-- 
+1.7.3.2
+

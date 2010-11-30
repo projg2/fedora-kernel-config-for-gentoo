@@ -866,6 +866,10 @@ Patch13723: r8169-04-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
 Patch13727: tty-make-tiocgicount-a-handler.patch
 Patch13728: tty-icount-changeover-for-other-main-devices.patch
 
+Patch13800: xfs-track-ags-with-reclaimable-inodes-in-per-ag-radix-tree.patch
+Patch13801: xfs-simplify-and-remove-xfs_ireclaim.patch
+Patch13802: xfs-properly-account-for-reclaimed-inodes.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1651,6 +1655,11 @@ ApplyPatch r8169-04-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
 ApplyPatch tty-make-tiocgicount-a-handler.patch
 ApplyPatch tty-icount-changeover-for-other-main-devices.patch
 
+# the korg bug [4d4e307a]
+ApplyPatch xfs-track-ags-with-reclaimable-inodes-in-per-ag-radix-tree.patch
+ApplyPatch xfs-simplify-and-remove-xfs_ireclaim.patch
+ApplyPatch xfs-properly-account-for-reclaimed-inodes.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2272,6 +2281,10 @@ fi
 
 
 %changelog
+* Mon Nov 29 2010 Kyle McMartin <kyle@redhat.com>
+- Backport XFS fixes for the kernel.org xfs boog. [4d4e307a]
+  Needed two other backports to simplify life.
+
 * Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
 - Quiet a netlink build warning the INET_DIAG fix caused.
 
