@@ -681,6 +681,9 @@ Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
 Patch1826: drm-i915-disable-sr-polling.patch
+
+Patch1828: drm-ttm-fix-two-race-conditions-fix-busy-codepaths.patch
+
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 Patch2000: efifb-add-more-models.patch
 Patch2001: efifb-check-that-the-base-addr-is-plausible-on-pci-systems.patch
@@ -1367,6 +1370,8 @@ ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch drm-i915-disable-sr-polling.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
+
+ApplyPatch drm-ttm-fix-two-race-conditions-fix-busy-codepaths.patch
 
 ApplyPatch efifb-add-more-models.patch
 ApplyPatch efifb-check-that-the-base-addr-is-plausible-on-pci-systems.patch
@@ -2087,6 +2092,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 29 2010 Kyle McMartin <kyle@redhat.com>
+- drm/ttm: Fix two race conditions + fix busy codepaths [1df6a2eb] (#615505)
+
 * Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
 - Quiet a build warning the previous INET_DIAG fix caused.
 
