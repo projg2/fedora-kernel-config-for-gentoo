@@ -870,6 +870,8 @@ Patch13800: xfs-track-ags-with-reclaimable-inodes-in-per-ag-radix-tree.patch
 Patch13801: xfs-simplify-and-remove-xfs_ireclaim.patch
 Patch13802: xfs-properly-account-for-reclaimed-inodes.patch
 
+Patch13900: ima-allow-it-to-be-completely-disabled-and-default-off.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1660,6 +1662,9 @@ ApplyPatch xfs-track-ags-with-reclaimable-inodes-in-per-ag-radix-tree.patch
 ApplyPatch xfs-simplify-and-remove-xfs_ireclaim.patch
 ApplyPatch xfs-properly-account-for-reclaimed-inodes.patch
 
+# disable IMA by default as we did in F-14
+ApplyPatch ima-allow-it-to-be-completely-disabled-and-default-off.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2281,6 +2286,10 @@ fi
 
 
 %changelog
+* Mon Nov 29 2010 Kyle McMartin <kyle@redhat.com>
+- Make ima an opt-in parameter like we did in F-14. Pass ima=on if you want
+  it enabled.
+
 * Mon Nov 29 2010 Kyle McMartin <kyle@redhat.com>
 - Backport XFS fixes for the kernel.org xfs boog. [4d4e307a]
   Needed two other backports to simplify life.
