@@ -621,6 +621,8 @@ Patch300: create-sys-fs-cgroup-to-mount-cgroupfs-on.patch
 
 Patch360: disable-xhci-by-default.patch
 
+Patch370: pnp-log-pnp-resources-as-we-do-for-pci.patch
+
 Patch380: linux-2.6-defaults-pci_no_msi.patch
 Patch381: linux-2.6-defaults-pci_use_crs.patch
 Patch382: linux-2.6-defaults-no-pm-async.patch
@@ -1282,6 +1284,8 @@ ApplyPatch linux-2.6-debug-nmi-timeout.patch
 ApplyPatch linux-2.6-debug-taint-vm.patch
 ApplyPatch linux-2.6-debug-vm-would-have-oomkilled.patch
 ApplyPatch linux-2.6-debug-always-inline-kzalloc.patch
+
+ApplyPatch pnp-log-pnp-resources-as-we-do-for-pci.patch
 
 #
 # PCI
@@ -2092,6 +2096,10 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 29 2010 Kyle McMartin <kyle@redhat.com>
+- PNP: log PNP resources, as we do for PCI [c1f3f281]
+  should help us debug resource conflicts (requested by bjorn.)
+
 * Mon Nov 29 2010 Kyle McMartin <kyle@redhat.com>
 - drm/ttm: Fix two race conditions + fix busy codepaths [1df6a2eb] (#615505)
 
