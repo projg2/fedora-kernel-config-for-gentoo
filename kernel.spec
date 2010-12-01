@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 174.1
+%global baserelease 174.2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2227,6 +2227,9 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Wed Dec 01 2010 Michael Young <m.a.young@durham.ac.uk>
+- update pvops to get a crash-on-shutdown fix
+
 * Mon Nov 29 2010 Michael Young <m.a.young@durham.ac.uk>
 - Another pvops update before F12 reaches EOL
 

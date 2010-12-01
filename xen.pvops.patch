@@ -3908,7 +3908,7 @@ index 0000000..21a3089
 +#endif
 +}
 diff --git a/arch/x86/xen/enlighten.c b/arch/x86/xen/enlighten.c
-index 7f8d2b2..8ab3b7b 100644
+index 7f8d2b2..fbb35cd 100644
 --- a/arch/x86/xen/enlighten.c
 +++ b/arch/x86/xen/enlighten.c
 @@ -11,6 +11,7 @@
@@ -4215,7 +4215,18 @@ index 7f8d2b2..8ab3b7b 100644
  	.io_delay = xen_io_delay,
  
  	/* Xen takes care of %gs when switching to usermode for us */
-@@ -1020,15 +1053,40 @@ static void xen_machine_halt(void)
+@@ -997,10 +1030,6 @@ static void xen_reboot(int reason)
+ {
+ 	struct sched_shutdown r = { .reason = reason };
+ 
+-#ifdef CONFIG_SMP
+-	stop_other_cpus();
+-#endif
+-
+ 	if (HYPERVISOR_sched_op(SCHEDOP_shutdown, &r))
+ 		BUG();
+ }
+@@ -1020,15 +1049,40 @@ static void xen_machine_halt(void)
  	xen_reboot(SHUTDOWN_poweroff);
  }
  
@@ -4257,7 +4268,7 @@ index 7f8d2b2..8ab3b7b 100644
  	.shutdown = xen_machine_halt,
  	.crash_shutdown = xen_crash_shutdown,
  	.emergency_restart = xen_emergency_restart,
-@@ -1061,10 +1119,11 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1061,10 +1115,11 @@ asmlinkage void __init xen_start_kernel(void)
  
  	xen_domain_type = XEN_PV_DOMAIN;
  
@@ -4270,7 +4281,7 @@ index 7f8d2b2..8ab3b7b 100644
  	pv_cpu_ops = xen_cpu_ops;
  	pv_apic_ops = xen_apic_ops;
  
-@@ -1072,13 +1131,7 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1072,13 +1127,7 @@ asmlinkage void __init xen_start_kernel(void)
  	x86_init.oem.arch_setup = xen_arch_setup;
  	x86_init.oem.banner = xen_banner;
  
@@ -4285,7 +4296,7 @@ index 7f8d2b2..8ab3b7b 100644
  
  	/*
  	 * Set up some pagetable state before starting to set any ptes.
-@@ -1116,6 +1169,10 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1116,6 +1165,10 @@ asmlinkage void __init xen_start_kernel(void)
  	 */
  	xen_setup_stackprotector();
  
@@ -4296,7 +4307,7 @@ index 7f8d2b2..8ab3b7b 100644
  	xen_init_irq_ops();
  	xen_init_cpuid_mask();
  
-@@ -1144,6 +1201,8 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1144,6 +1197,8 @@ asmlinkage void __init xen_start_kernel(void)
  
  	pgd = (pgd_t *)xen_start_info->pt_base;
  
@@ -4305,7 +4316,7 @@ index 7f8d2b2..8ab3b7b 100644
  	/* Don't do the full vcpu_info placement stuff until we have a
  	   possible map and a non-dummy shared_info. */
  	per_cpu(xen_vcpu, 0) = &HYPERVISOR_shared_info->vcpu_info[0];
-@@ -1153,6 +1212,10 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1153,6 +1208,10 @@ asmlinkage void __init xen_start_kernel(void)
  
  	xen_raw_console_write("mapping kernel into physical memory\n");
  	pgd = xen_setup_kernel_pagetable(pgd, xen_start_info->nr_pages);
@@ -4316,7 +4327,7 @@ index 7f8d2b2..8ab3b7b 100644
  
  	init_mm.pgd = pgd;
  
-@@ -1162,6 +1225,14 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1162,6 +1221,14 @@ asmlinkage void __init xen_start_kernel(void)
  	if (xen_feature(XENFEAT_supervisor_mode_kernel))
  		pv_info.kernel_rpl = 0;
  
@@ -4331,7 +4342,7 @@ index 7f8d2b2..8ab3b7b 100644
  	/* set the limit of our address space */
  	xen_reserve_top();
  
-@@ -1184,6 +1255,16 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1184,6 +1251,16 @@ asmlinkage void __init xen_start_kernel(void)
  		add_preferred_console("xenboot", 0, NULL);
  		add_preferred_console("tty", 0, NULL);
  		add_preferred_console("hvc", 0, NULL);
@@ -4348,7 +4359,7 @@ index 7f8d2b2..8ab3b7b 100644
  	}
  
  	xen_raw_console_write("about to get started...\n");
-@@ -1197,3 +1278,126 @@ asmlinkage void __init xen_start_kernel(void)
+@@ -1197,3 +1274,126 @@ asmlinkage void __init xen_start_kernel(void)
  	x86_64_start_reservations((char *)__pa_symbol(&boot_params));
  #endif
  }
