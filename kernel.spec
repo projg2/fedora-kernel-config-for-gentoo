@@ -47,7 +47,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 174
+%global baserelease 175
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2217,7 +2217,7 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
-* Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
+* Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com> 2.6.32.26-175
 - netlink-make-nlmsg_find_attr-take-a-const-ptr.patch: quiet build warning
   the INET_DIAG fix caused.
 
