@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 62
+%global baserelease 63
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -804,6 +804,9 @@ Patch13680: hda_realtek-handle-unset-external-amp-bits.patch
 Patch13684: tty-make-tiocgicount-a-handler.patch
 Patch13685: tty-icount-changeover-for-other-main-devices.patch
 
+Patch13690: mm-page-allocator-adjust-the-per-cpu-counter-threshold-when-memory-is-low.patch
+Patch13691: mm-vmstat-use-a-single-setter-function-and-callback-for-adjusting-percpu-thresholds.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1510,6 +1513,10 @@ ApplyPatch hda_realtek-handle-unset-external-amp-bits.patch
 ApplyPatch tty-make-tiocgicount-a-handler.patch
 ApplyPatch tty-icount-changeover-for-other-main-devices.patch
 
+# backport some fixes for kswapd from mmotm, rhbz#649694
+ApplyPatch mm-page-allocator-adjust-the-per-cpu-counter-threshold-when-memory-is-low.patch
+ApplyPatch mm-vmstat-use-a-single-setter-function-and-callback-for-adjusting-percpu-thresholds.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2096,6 +2103,9 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 02 2010 Kyle McMartin <kyle@redhat.com>
+- Grab some of Mel's fixes from -mmotm to hopefully sort out #649694.
+
 * Mon Nov 29 2010 Kyle McMartin <kyle@redhat.com>
 - PNP: log PNP resources, as we do for PCI [c1f3f281]
   should help us debug resource conflicts (requested by bjorn.)
