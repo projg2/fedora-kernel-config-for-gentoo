@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 62
+%global baserelease 63
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2286,6 +2286,9 @@ fi
 
 
 %changelog
+* Fri Dec 03 2010 Kyle McMartin <kyle@redhat.com> 2.6.34.7-63
+- Enable hpilo.ko on x86_64. (#571329)
+
 * Mon Nov 29 2010 Kyle McMartin <kyle@redhat.com>
 - Make ima an opt-in parameter like we did in F-14. Pass ima=on if you want
   it enabled.
