@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 174.2
+%global baserelease 175
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2233,7 +2233,7 @@ fi
 * Mon Nov 29 2010 Michael Young <m.a.young@durham.ac.uk>
 - Another pvops update before F12 reaches EOL
 
-* Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com>
+* Fri Nov 26 2010 Kyle McMartin <kyle@redhat.com> 2.6.32.26-175
 - netlink-make-nlmsg_find_attr-take-a-const-ptr.patch: quiet build warning
   the INET_DIAG fix caused.
 
