@@ -66,3 +66,51 @@ index 2202b62..f371fe8 100644
  } mm_context_t;
  
  #ifdef CONFIG_SMP
+Date: Fri, 03 Dec 2010 21:48:34 +0100
+From: Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH xen/stable-2.6.32.x] fix ethtool_get_drvinfo NULL pointer dereference
+
+Fixes the following crash on "ethtool -i":
+
+BUG: unable to handle kernel NULL pointer dereference at 0000000000000148
+IP: [<ffffffff813bcfe2>] ethtool_get_drvinfo+0x106/0x1a5
+PGD d8040067 PUD d8041067 PMD 0
+Oops: 0000 [#1] SMP
+last sysfs file: /sys/devices/pci0000:00/0000:00:1c.0/0000:09:00.0/irq 
+...
+Call Trace:
+[<ffffffff813bd298>] dev_ethtool+0x93/0x1153
+[<ffffffff810dd957>] ? __alloc_pages_nodemask+0x122/0x62d
+[<ffffffff810dd957>] ? __alloc_pages_nodemask+0x122/0x62d
+[<ffffffff811ee21e>] ? avc_has_perm+0x5c/0x6e
+[<ffffffff811158ad>] ? try_get_mem_cgroup_from_mm+0x39/0x49 
+...
+RIP  [<ffffffff813bcfe2>] ethtool_get_drvinfo+0x106/0x1a5 
+
+The backport of 01414802 was incomplete.  This is the patch we are
+using in RHEL6.
+
+Reported-by: M A Young <m.a.young@durham.ac.uk>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Jeremy Fitzhardinge <jeremy.fitzhardinge@citrix.com>
+---
+ ethtool.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+index ff35ce3..8ca3a26 100644
+--- a/net/core/ethtool.c
++++ b/net/core/ethtool.c
+@@ -211,9 +211,9 @@ static int ethtool_get_drvinfo(struct net_device *dev, void __user *useraddr)
+ 	} else {
+ 		/* code path for obsolete hooks */
+ 
+-		if (ops->self_test_count)
++		if (ops && ops->self_test_count)
+ 			info.testinfo_len = ops->self_test_count(dev);
+-		if (ops->get_stats_count)
++		if (ops && ops->get_stats_count)
+ 			info.n_stats = ops->get_stats_count(dev);
+ 	}
+ 	if (ops && ops->get_regs_len)
+

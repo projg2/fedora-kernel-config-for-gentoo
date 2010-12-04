@@ -2227,6 +2227,10 @@ fi
 %kernel_variant_files -k vmlinux %{with_kdump} kdump
 
 %changelog
+* Sat Dec 04 2010 Michael Young <m.a.young@durham.ac.uk>
+- add patch "fix ethtool_get_drvinfo NULL pointer dereference"
+  to xen.pvops.post.patch (post F12 EOL)
+
 * Wed Dec 01 2010 Michael Young <m.a.young@durham.ac.uk>
 - update pvops to get a crash-on-shutdown fix
 
