@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 63
+%global baserelease 64
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -719,6 +719,7 @@ Patch1902: agp-intel-use-the-correct-mask-to-detect-i830-aperture-size.patch
 Patch1903: drm-nouveau-pusher-intr.patch
 Patch1904: drm-nouveau-ibdma-race.patch
 # radeon
+Patch1905: drm-radeon-kms-mc-vram-map-needs-to-be-gteq-pci-aperature.patch
 
 # linux1394 git patches
 Patch2200: linux-2.6-firewire-git-update.patch
@@ -1474,6 +1475,8 @@ ApplyPatch drm-i915-explosion-following-oom-in-do_execbuffer.patch
 ApplyPatch agp-intel-use-the-correct-mask-to-detect-i830-aperture-size.patch
 
 ApplyPatch drm-radeon-resume-fixes.patch
+# rhbz#632310
+ApplyPatch drm-radeon-kms-mc-vram-map-needs-to-be-gteq-pci-aperature.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
 # linux1394 git patches
@@ -2286,6 +2289,10 @@ fi
 
 
 %changelog
+* Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com> 2.6.34.7-64
+- Copy fix for (#632310) from F-14:
+  drm/radeon/kms: MC vram map needs to be >= pci aperture size
+
 * Fri Dec 03 2010 Kyle McMartin <kyle@redhat.com> 2.6.34.7-63
 - Enable hpilo.ko on x86_64. (#571329)
 
