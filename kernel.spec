@@ -875,6 +875,8 @@ Patch13802: xfs-properly-account-for-reclaimed-inodes.patch
 
 Patch13900: ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
+Patch13901: ioat2-catch-and-recover-from-broken-vtd-configurations.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1673,6 +1675,9 @@ ApplyPatch xfs-properly-account-for-reclaimed-inodes.patch
 # disable IMA by default as we did in F-14
 ApplyPatch ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
+# rhbz605845 [556ab45f]
+ApplyPatch ioat2-catch-and-recover-from-broken-vtd-configurations.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2294,6 +2299,10 @@ fi
 
 
 %changelog
+* Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
+- ioat2-catch-and-recover-from-broken-vtd-configurations.patch: copy patch
+  from 2.6.35.y (#605845) [556ab45f]
+
 * Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
 - Copy tpm-fix-stall-on-boot.patch from rawhide tree. (#530393)
 
