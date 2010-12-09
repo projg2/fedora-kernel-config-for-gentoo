@@ -779,6 +779,7 @@ Patch13641: mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 Patch13642: mmc-add-ricoh-e822-pci-id.patch
 
 Patch13645: tpm-autodetect-itpm-devices.patch
+Patch13646: tpm-fix-stall-on-boot.patch
 
 Patch13651: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 
@@ -1484,6 +1485,8 @@ ApplyPatch mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 ApplyPatch mmc-add-ricoh-e822-pci-id.patch
 
 ApplyPatch tpm-autodetect-itpm-devices.patch
+# rhbz#530393
+ApplyPatch tpm-fix-stall-on-boot.patch
 
 # CVE-2010-3698
 ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
@@ -2108,6 +2111,9 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
+- Copy tpm-fix-stall-on-boot.patch from rawhide tree. (#530393)
+
 * Thu Dec 09 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.9-65
 - Require newt-devel for building perf, to enable the perf TUI (#661180)
 
