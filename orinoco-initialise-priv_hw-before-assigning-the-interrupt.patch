@@ -1,0 +1,86 @@
+From 1b3df4f489345b0fd6e83645ad5d464aee55f7de Mon Sep 17 00:00:00 2001
+From: David Kilroy <kilroyd@googlemail.com>
+Date: Sat, 4 Dec 2010 18:36:30 +0000
+Subject: [PATCH] orinoco: initialise priv->hw before assigning the interrupt
+
+The interrupt handler takes a lock - but since commit bcad6e80f3f this
+lock goes through an indirection specified in the hermes_t structure.
+We must therefore initialise the structure before setting up the
+interrupt handler.
+
+<https://bugzilla.kernel.org/show_bug.cgi?id=23932>
+
+Fix both orinoco_cs and spectrum_cs
+
+Bisected by: Matt Domsch <Matt_Domsch@dell.com>
+Tested by: Matt Domsch <Matt_Domsch@dell.com>
+Signed-off by: David Kilroy <kilroyd@googlemail.com>
+---
+ drivers/net/wireless/orinoco/orinoco_cs.c  |   12 ++++++------
+ drivers/net/wireless/orinoco/spectrum_cs.c |   12 ++++++------
+ 2 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/wireless/orinoco/orinoco_cs.c b/drivers/net/wireless/orinoco/orinoco_cs.c
+index b16d5db..66c7bcc 100644
+--- a/drivers/net/wireless/orinoco/orinoco_cs.c
++++ b/drivers/net/wireless/orinoco/orinoco_cs.c
+@@ -251,19 +251,19 @@ orinoco_cs_config(struct pcmcia_device *link)
+ 		goto failed;
+ 	}
+ 
+-	ret = pcmcia_request_irq(link, orinoco_interrupt);
+-	if (ret)
++	mem = ioport_map(link->io.BasePort1, link->io.NumPorts1);
++	if (!mem)
+ 		goto failed;
+ 
+ 	/* We initialize the hermes structure before completing PCMCIA
+ 	 * configuration just in case the interrupt handler gets
+ 	 * called. */
+-	mem = ioport_map(link->io.BasePort1, link->io.NumPorts1);
+-	if (!mem)
+-		goto failed;
+-
+ 	hermes_struct_init(hw, mem, HERMES_16BIT_REGSPACING);
+ 
++	ret = pcmcia_request_irq(link, orinoco_interrupt);
++	if (ret)
++		goto failed;
++
+ 	/*
+ 	 * This actually configures the PCMCIA socket -- setting up
+ 	 * the I/O windows and the interrupt mapping, and putting the
+diff --git a/drivers/net/wireless/orinoco/spectrum_cs.c b/drivers/net/wireless/orinoco/spectrum_cs.c
+index b51a9ad..0148763 100644
+--- a/drivers/net/wireless/orinoco/spectrum_cs.c
++++ b/drivers/net/wireless/orinoco/spectrum_cs.c
+@@ -325,20 +325,20 @@ spectrum_cs_config(struct pcmcia_device *link)
+ 		goto failed;
+ 	}
+ 
+-	ret = pcmcia_request_irq(link, orinoco_interrupt);
+-	if (ret)
++	mem = ioport_map(link->io.BasePort1, link->io.NumPorts1);
++	if (!mem)
+ 		goto failed;
+ 
+ 	/* We initialize the hermes structure before completing PCMCIA
+ 	 * configuration just in case the interrupt handler gets
+ 	 * called. */
+-	mem = ioport_map(link->io.BasePort1, link->io.NumPorts1);
+-	if (!mem)
+-		goto failed;
+-
+ 	hermes_struct_init(hw, mem, HERMES_16BIT_REGSPACING);
+ 	hw->eeprom_pda = true;
+ 
++	ret = pcmcia_request_irq(link, orinoco_interrupt);
++	if (ret)
++		goto failed;
++
+ 	/*
+ 	 * This actually configures the PCMCIA socket -- setting up
+ 	 * the I/O windows and the interrupt mapping, and putting the
+-- 
+1.7.2.2
+

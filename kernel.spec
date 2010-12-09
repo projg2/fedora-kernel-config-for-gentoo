@@ -810,6 +810,8 @@ Patch13685: tty-icount-changeover-for-other-main-devices.patch
 Patch13690: mm-page-allocator-adjust-the-per-cpu-counter-threshold-when-memory-is-low.patch
 Patch13691: mm-vmstat-use-a-single-setter-function-and-callback-for-adjusting-percpu-thresholds.patch
 
+Patch13692: orinoco-initialise-priv_hw-before-assigning-the-interrupt.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1525,6 +1527,9 @@ ApplyPatch tty-icount-changeover-for-other-main-devices.patch
 ApplyPatch mm-page-allocator-adjust-the-per-cpu-counter-threshold-when-memory-is-low.patch
 ApplyPatch mm-vmstat-use-a-single-setter-function-and-callback-for-adjusting-percpu-thresholds.patch
 
+# rhbz#657864
+ApplyPatch orinoco-initialise-priv_hw-before-assigning-the-interrupt.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2111,6 +2116,11 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
+- Snarf patch from wireless-next to fix mdomsch's orinico wifi.
+  (orinoco: initialise priv->hw before assigning the interrupt)
+  [229bd792]
+
 * Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
 - Copy tpm-fix-stall-on-boot.patch from rawhide tree. (#530393)
 
