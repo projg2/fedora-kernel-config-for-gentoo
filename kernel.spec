@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 64
+%global baserelease 65
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -501,7 +501,7 @@ BuildRequires: sparse >= 0.4.1
 %endif
 # python-devel and perl(ExtUtils::Embed) are required for perf scripting
 %if %{with_perf}
-BuildRequires: elfutils-devel zlib-devel binutils-devel python-devel perl(ExtUtils::Embed)
+BuildRequires: elfutils-devel zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed)
 %endif
 BuildConflicts: rhbuildsys(DiskFree) < 500Mb
 
@@ -2108,6 +2108,9 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 09 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.35.9-65
+- Require newt-devel for building perf, to enable the perf TUI (#661180)
+
 * Wed Dec 08 2010 Kyle McMartin <kyle@redhat.com>
 - sched-cure-more-NO_HZ-load-average-woes.patch: fix some of the complaints
   in 2.6.35+ about load average with dynticks. (rhbz#650934)
