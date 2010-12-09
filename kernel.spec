@@ -845,6 +845,8 @@ Patch13646: tpm-autodetect-itpm-devices.patch
 Patch13647: rt2x00-disable-auto-wakeup-before-waking-up-device.patch
 Patch13648: rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
 
+Patch13649: tpm-fix-stall-on-boot.patch
+
 Patch13700: ipc-zero-struct-memory-for-compat-fns.patch
 Patch13701: ipc-shm-fix-information-leak-to-user.patch
 
@@ -1628,6 +1630,9 @@ ApplyPatch mmc-add-ricoh-e822-pci-id.patch
 ApplyPatch depessimize-rds_copy_page_user.patch
 ApplyPatch tpm-autodetect-itpm-devices.patch
 
+# rhbz#530393
+ApplyPatch tpm-fix-stall-on-boot.patch
+
 ApplyPatch rt2x00-disable-auto-wakeup-before-waking-up-device.patch
 ApplyPatch rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
 
@@ -2289,6 +2294,9 @@ fi
 
 
 %changelog
+* Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
+- Copy tpm-fix-stall-on-boot.patch from rawhide tree. (#530393)
+
 * Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com> 2.6.34.7-64
 - Copy fix for (#632310) from F-14:
   drm/radeon/kms: MC vram map needs to be >= pci aperture size
