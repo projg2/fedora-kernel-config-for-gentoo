@@ -881,6 +881,8 @@ Patch13901: ioat2-catch-and-recover-from-broken-vtd-configurations.patch
 
 # CVE-2010-2963
 Patch13910: v4l1-fix-32-bit-compat-microcode-loading-translation.patch
+# CVE-2010-3698
+Patch13911: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 
 %endif
 
@@ -1687,6 +1689,8 @@ ApplyPatch ioat2-catch-and-recover-from-broken-vtd-configurations.patch
 
 # CVE-2010-2963
 ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
+# CVE-2010-3698
+ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2312,6 +2316,7 @@ fi
 * Fri Dec 10 2010 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2010-2962: arbitrary kernel memory write via i915 GEM ioctl
 - CVE-2010-2963: v4l: VIDIOCSMICROCODE arbitrary write
+- CVE-2010-3698: kvm: invalid selector in fs/gs causes kernel panic
 
 * Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
 - ioat2-catch-and-recover-from-broken-vtd-configurations.patch: copy patch
