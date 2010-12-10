@@ -629,6 +629,7 @@ Patch382: linux-2.6-defaults-no-pm-async.patch
 Patch383: linux-2.6-defaults-aspm.patch
 Patch384: pci-acpi-disable-aspm-if-no-osc.patch
 Patch385: pci-aspm-dont-enable-too-early.patch
+Patch386: pci-disable-aspm-if-bios-asks-us-to.patch
 
 Patch390: linux-2.6-defaults-acpi-video.patch
 Patch391: linux-2.6-acpi-video-dos.patch
@@ -1320,6 +1321,7 @@ ApplyPatch linux-2.6-defaults-aspm.patch
 ApplyPatch pci-acpi-disable-aspm-if-no-osc.patch
 # allow drivers to disable aspm at load time
 ApplyPatch pci-aspm-dont-enable-too-early.patch
+ApplyPatch pci-disable-aspm-if-bios-asks-us-to.patch
 
 #
 # SCSI Bits.
@@ -2129,6 +2131,10 @@ fi
 # and build.
 
 %changelog
+* Fri Dec 10 2010 Kyle McMartin <kyle@redhat.com>
+- pci-disable-aspm-if-bios-asks-us-to.patch: Patch from mjg59 to disable
+  ASPM if the BIOS has disabled it, but enabled it already on some devices.
+
 * Fri Dec 10 2010 Kyle McMartin <kyle@redhat.com>
 - Fix some issues mounting btrfs devices with subvolumes (#656465)
 
