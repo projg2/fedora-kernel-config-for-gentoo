@@ -814,6 +814,10 @@ Patch13692: orinoco-initialise-priv_hw-before-assigning-the-interrupt.patch
 
 Patch13693: ext4-always-journal-quota-file-modifications.patch
 
+Patch13694: btrfs-fix-error-handling-in-btrfs_get_sub.patch
+Patch13695: btrfs-setup-blank-root-and-fs_info-for-mount-time.patch
+Patch13696: btrfs-fix-race-between-btrfs_get_sb-and-unmount.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1274,6 +1278,10 @@ ApplyPatch ext4-always-journal-quota-file-modifications.patch
 
 # btrfs
 
+# rhbz#656465
+ApplyPatch btrfs-fix-error-handling-in-btrfs_get_sub.patch
+ApplyPatch btrfs-setup-blank-root-and-fs_info-for-mount-time.patch
+ApplyPatch btrfs-fix-race-between-btrfs_get_sb-and-unmount.patch
 
 # eCryptfs
 
@@ -2121,6 +2129,9 @@ fi
 # and build.
 
 %changelog
+* Fri Dec 10 2010 Kyle McMartin <kyle@redhat.com>
+- Fix some issues mounting btrfs devices with subvolumes (#656465)
+
 * Fri Dec 10 2010 Kyle McMartin <kyle@redhat.com>
 - Fix jbd2 warnings when using quotas. (#578674)
 
