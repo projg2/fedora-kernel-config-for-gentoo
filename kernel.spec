@@ -720,6 +720,8 @@ Patch1903: drm-nouveau-pusher-intr.patch
 Patch1904: drm-nouveau-ibdma-race.patch
 # radeon
 Patch1905: drm-radeon-kms-mc-vram-map-needs-to-be-gteq-pci-aperature.patch
+# CVE-2010-2962
+Patch1906: drm-i915-sanity-check-pread-pwrite.patch
 
 # linux1394 git patches
 Patch2200: linux-2.6-firewire-git-update.patch
@@ -1482,6 +1484,8 @@ ApplyPatch drm-radeon-resume-fixes.patch
 # rhbz#632310
 ApplyPatch drm-radeon-kms-mc-vram-map-needs-to-be-gteq-pci-aperature.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
+# CVE-2010-2962
+ApplyPatch drm-i915-sanity-check-pread-pwrite.patch
 
 # linux1394 git patches
 ApplyOptionalPatch linux-2.6-firewire-git-update.patch
@@ -2299,6 +2303,9 @@ fi
 
 
 %changelog
+* Fri Dec 10 2010 Chuck Ebbert <cebbert@redhat.com>
+- CVE-2010-2962: arbitrary kernel memory write via i915 GEM ioctl
+
 * Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
 - ioat2-catch-and-recover-from-broken-vtd-configurations.patch: copy patch
   from 2.6.35.y (#605845) [556ab45f]
