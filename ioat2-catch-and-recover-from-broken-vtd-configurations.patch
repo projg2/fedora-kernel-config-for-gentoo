@@ -127,7 +127,7 @@ diff --git a/drivers/pci/intel-iommu.c b/drivers/pci/intel-iommu.c
 index 4173125..f4ba2e5 100644
 --- a/drivers/pci/intel-iommu.c
 +++ b/drivers/pci/intel-iommu.c
-@@ -3032,6 +3032,34 @@ static void __init iommu_exit_mempool(void)
+@@ -3032,6 +3032,33 @@ static void __init iommu_exit_mempool(void)
  
  }
  
@@ -152,8 +152,7 @@ index 4173125..f4ba2e5 100644
 +
 +	/* we know that the this iommu should be at offset 0xa000 from vtbar */
 +	drhd = dmar_find_matched_drhd_unit(pdev);
-+	if (WARN_TAINT_ONCE(!drhd || drhd->reg_base_addr - vtbar != 0xa000,
-+			    TAINT_FIRMWARE_WORKAROUND,
++	if (WARN_ONCE(!drhd || drhd->reg_base_addr - vtbar != 0xa000,
 +			    "BIOS assigned incorrect VT-d unit for Intel(R) QuickData Technology device\n"))
 +		pdev->dev.archdata.iommu = DUMMY_DEVICE_DOMAIN_INFO;
 +}
