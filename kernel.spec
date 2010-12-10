@@ -879,6 +879,9 @@ Patch13900: ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
 Patch13901: ioat2-catch-and-recover-from-broken-vtd-configurations.patch
 
+# CVE-2010-2963
+Patch13910: v4l1-fix-32-bit-compat-microcode-loading-translation.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1682,6 +1685,9 @@ ApplyPatch ima-allow-it-to-be-completely-disabled-and-default-off.patch
 # rhbz605845 [556ab45f]
 ApplyPatch ioat2-catch-and-recover-from-broken-vtd-configurations.patch
 
+# CVE-2010-2963
+ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2305,6 +2311,7 @@ fi
 %changelog
 * Fri Dec 10 2010 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2010-2962: arbitrary kernel memory write via i915 GEM ioctl
+- CVE-2010-2963: v4l: VIDIOCSMICROCODE arbitrary write
 
 * Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
 - ioat2-catch-and-recover-from-broken-vtd-configurations.patch: copy patch
