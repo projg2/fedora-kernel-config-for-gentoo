@@ -1,6 +1,6 @@
-From 863472a34f271e546bf20550ad3571645c557ab3 Mon Sep 17 00:00:00 2001
-From: Ian Kent <raven@themaw.net>
-Date: Mon, 22 Nov 2010 02:21:38 +0000
+From 3d07b06c5d62e98b46ef21980e5c2a904990149f Mon Sep 17 00:00:00 2001
+From: Kyle McMartin <kyle@mcmartin.ca>
+Date: Fri, 10 Dec 2010 10:32:29 -0500
 Subject: [PATCH] Btrfs - fix race between btrfs_get_sb() and umount
 
 When mounting a btrfs file system btrfs_test_super() may attempt to
@@ -11,12 +11,16 @@ so we can return false in this case.
 
 Signed-off-by: Ian Kent <raven@themaw.net>
 Signed-off-by: Chris Mason <chris.mason@oracle.com>
+
+Conflicts:
+
+	fs/btrfs/super.c
 ---
  fs/btrfs/super.c |    6 ++++++
  1 files changed, 6 insertions(+), 0 deletions(-)
 
 diff --git a/fs/btrfs/super.c b/fs/btrfs/super.c
-index 66864bc..31d11c6 100644
+index 89e299f..f4a4dd3 100644
 --- a/fs/btrfs/super.c
 +++ b/fs/btrfs/super.c
 @@ -551,6 +551,12 @@ static int btrfs_test_super(struct super_block *s, void *data)
@@ -29,7 +33,7 @@ index 66864bc..31d11c6 100644
 +	 */
 +	if (!atomic_read(&s->s_active))
 +		return 0;
- 	return root->fs_info->fs_devices == test_fs_devices;
+ 	return root->fs_info->fs_devices == test_root->fs_info->fs_devices;
  }
  
 -- 

@@ -1,7 +1,7 @@
-From 432400763c869563b2deb179d1bd8b11dcb18917 Mon Sep 17 00:00:00 2001
+From 2049a8887f699650cd66c3da220e84d5c140c546 Mon Sep 17 00:00:00 2001
 From: Kyle McMartin <kyle@mcmartin.ca>
 Date: Fri, 10 Dec 2010 10:09:15 -0500
-Subject: Btrfs: setup blank root and fs_info for mount time
+Subject: [PATCH] Btrfs: setup blank root and fs_info for mount time
 
 There is a problem with how we use sget, it searches through the list of supers
 attached to the fs_type looking for a super with the same fs_devices as what
@@ -21,8 +21,8 @@ Conflicts:
 	fs/btrfs/super.c
 ---
  fs/btrfs/disk-io.c |    6 ++----
- fs/btrfs/super.c   |   32 ++++++++++++++++++++++++++++++--
- 2 files changed, 32 insertions(+), 6 deletions(-)
+ fs/btrfs/super.c   |   34 +++++++++++++++++++++++++++++++---
+ 2 files changed, 33 insertions(+), 7 deletions(-)
 
 diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
 index 34f7c37..b6c3dad 100644
@@ -42,10 +42,10 @@ index 34f7c37..b6c3dad 100644
  						GFP_NOFS);
  	struct btrfs_root *dev_root = kzalloc(sizeof(struct btrfs_root),
 diff --git a/fs/btrfs/super.c b/fs/btrfs/super.c
-index c246f25..66864bc 100644
+index f2393b3..89e299f 100644
 --- a/fs/btrfs/super.c
 +++ b/fs/btrfs/super.c
-@@ -548,13 +548,21 @@ static int btrfs_show_options(struct seq_file *seq, struct vfsmount *vfs)
+@@ -548,12 +548,20 @@ static int btrfs_show_options(struct seq_file *seq, struct vfsmount *vfs)
  
  static int btrfs_test_super(struct super_block *s, void *data)
  {
@@ -53,8 +53,8 @@ index c246f25..66864bc 100644
 +	struct btrfs_root *test_root = data;
  	struct btrfs_root *root = btrfs_sb(s);
  
-- 	return root->fs_info->fs_devices == test_fs_devices;
-+ 	return root->fs_info->fs_devices == test_root->fs_info->fs_devices;
+-	return root->fs_info->fs_devices == test_fs_devices;
++	return root->fs_info->fs_devices == test_root->fs_info->fs_devices;
  }
  
 +static int btrfs_set_super(struct super_block *s, void *data)
@@ -111,7 +111,7 @@ index c246f25..66864bc 100644
 +	kfree(tree_root);
  error_free_subvol_name:
  	kfree(subvol_name);
- 	return error;
+ error:
 -- 
 1.7.3.3
 
