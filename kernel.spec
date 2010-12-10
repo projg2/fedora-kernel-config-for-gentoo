@@ -812,6 +812,8 @@ Patch13691: mm-vmstat-use-a-single-setter-function-and-callback-for-adjusting-pe
 
 Patch13692: orinoco-initialise-priv_hw-before-assigning-the-interrupt.patch
 
+Patch13693: ext4-always-journal-quota-file-modifications.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1264,6 +1266,9 @@ ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 #
 
 # ext4
+
+# rhbz#578674
+ApplyPatch ext4-always-journal-quota-file-modifications.patch
 
 # xfs
 
@@ -2116,6 +2121,9 @@ fi
 # and build.
 
 %changelog
+* Fri Dec 10 2010 Kyle McMartin <kyle@redhat.com>
+- Fix jbd2 warnings when using quotas. (#578674)
+
 * Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
 - Snarf patch from wireless-next to fix mdomsch's orinico wifi.
   (orinoco: initialise priv->hw before assigning the interrupt)
