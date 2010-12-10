@@ -883,6 +883,8 @@ Patch13901: ioat2-catch-and-recover-from-broken-vtd-configurations.patch
 Patch13910: v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 # CVE-2010-3698
 Patch13911: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
+# CVE-2010-3705
+Patch13912: sctp-fix-out-of-bounds-reading-in-sctp_asoc_get_hmac.patch
 
 %endif
 
@@ -1691,6 +1693,8 @@ ApplyPatch ioat2-catch-and-recover-from-broken-vtd-configurations.patch
 ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 # CVE-2010-3698
 ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
+# CVE-2010-3705
+ApplyPatch sctp-fix-out-of-bounds-reading-in-sctp_asoc_get_hmac.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2317,6 +2321,7 @@ fi
 - CVE-2010-2962: arbitrary kernel memory write via i915 GEM ioctl
 - CVE-2010-2963: v4l: VIDIOCSMICROCODE arbitrary write
 - CVE-2010-3698: kvm: invalid selector in fs/gs causes kernel panic
+- CVE-2010-3705: sctp: Fix out-of-bounds reading in sctp_asoc_get_hmac()
 
 * Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
 - ioat2-catch-and-recover-from-broken-vtd-configurations.patch: copy patch
