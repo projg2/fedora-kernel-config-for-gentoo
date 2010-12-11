@@ -887,6 +887,8 @@ Patch13911: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 Patch13912: sctp-fix-out-of-bounds-reading-in-sctp_asoc_get_hmac.patch
 # CVE-2010-3442
 Patch13913: alsa-prevent-heap-corruption-in-snd_ctl_new.patch
+# CVE-2010-4258
+Patch13914: do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
 
 %endif
 
@@ -1699,6 +1701,8 @@ ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 ApplyPatch sctp-fix-out-of-bounds-reading-in-sctp_asoc_get_hmac.patch
 # CVE-2010-3442
 ApplyPatch alsa-prevent-heap-corruption-in-snd_ctl_new.patch
+# CVE-2010-4258
+ApplyPatch do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2327,6 +2331,7 @@ fi
 - CVE-2010-3698: kvm: invalid selector in fs/gs causes kernel panic
 - CVE-2010-3705: sctp: Fix out-of-bounds reading in sctp_asoc_get_hmac()
 - CVE-2010-3442: ALSA: prevent heap corruption in snd_ctl_new()
+- CVE-2010-4258: failure to revert address limit override in OOPS error path
 
 * Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
 - ioat2-catch-and-recover-from-broken-vtd-configurations.patch: copy patch
