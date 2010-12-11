@@ -889,6 +889,8 @@ Patch13912: sctp-fix-out-of-bounds-reading-in-sctp_asoc_get_hmac.patch
 Patch13913: alsa-prevent-heap-corruption-in-snd_ctl_new.patch
 # CVE-2010-4258
 Patch13914: do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
+# CVE-2010-4169
+Patch13915: perf_events-fix-perf_counter_mmap-hook-in-mprotect.patch
 
 %endif
 
@@ -1703,6 +1705,8 @@ ApplyPatch sctp-fix-out-of-bounds-reading-in-sctp_asoc_get_hmac.patch
 ApplyPatch alsa-prevent-heap-corruption-in-snd_ctl_new.patch
 # CVE-2010-4258
 ApplyPatch do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
+# CVE-2010-4169
+ApplyPatch perf_events-fix-perf_counter_mmap-hook-in-mprotect.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2332,6 +2336,7 @@ fi
 - CVE-2010-3705: sctp: Fix out-of-bounds reading in sctp_asoc_get_hmac()
 - CVE-2010-3442: ALSA: prevent heap corruption in snd_ctl_new()
 - CVE-2010-4258: failure to revert address limit override in OOPS error path
+- CVE-2010-4169: perf_events: denial-of-service bug
 
 * Thu Dec 09 2010 Kyle McMartin <kyle@redhat.com>
 - ioat2-catch-and-recover-from-broken-vtd-configurations.patch: copy patch
