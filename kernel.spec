@@ -841,12 +841,13 @@ Patch13641: mmc-add-ricoh-e822-pci-id.patch
 Patch13642: mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 Patch13643: sdhci-8-bit-data-transfer-width-support.patch
 
+# CVE-2010-3904
 Patch13645: depessimize-rds_copy_page_user.patch
-Patch13646: tpm-autodetect-itpm-devices.patch
 
-Patch13647: rt2x00-disable-auto-wakeup-before-waking-up-device.patch
-Patch13648: rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
+Patch13646: rt2x00-disable-auto-wakeup-before-waking-up-device.patch
+Patch13647: rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
 
+Patch13648: tpm-autodetect-itpm-devices.patch
 Patch13649: tpm-fix-stall-on-boot.patch
 
 Patch13700: ipc-zero-struct-memory-for-compat-fns.patch
@@ -855,6 +856,7 @@ Patch13701: ipc-shm-fix-information-leak-to-user.patch
 Patch13702: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 Patch13705: netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
 
+# CVE-2010-4248
 Patch13703: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
 Patch13704: via-ioctl-prevent-reading-uninit-memory.patch
@@ -1647,8 +1649,8 @@ ApplyPatch mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 ApplyPatch mmc-add-ricoh-e822-pci-id.patch
 
 ApplyPatch depessimize-rds_copy_page_user.patch
-ApplyPatch tpm-autodetect-itpm-devices.patch
 
+ApplyPatch tpm-autodetect-itpm-devices.patch
 # rhbz#530393
 ApplyPatch tpm-fix-stall-on-boot.patch
 
@@ -1665,7 +1667,7 @@ ApplyPatch ipc-shm-fix-information-leak-to-user.patch
 ApplyPatch inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 ApplyPatch netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
 
-# rhbz#656264
+# rhbz#656264 (CVE-2010-4248)
 ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
 # rhbz#648671 (CVE-2010-4082)
@@ -1680,8 +1682,9 @@ ApplyPatch r8169-02-fix-rx-checksum-offload.patch
 ApplyPatch r8169-03-_re_init-phy-on-resume.patch
 ApplyPatch r8169-04-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
 
-# CVE-2010-4077, CVE-2010-4075 (rhbz#648660, #648663)
+# CVE-2010-4077 (rhbz#648660)
 ApplyPatch tty-make-tiocgicount-a-handler.patch
+# CVE-2010-4075 (rhbz#648663)
 ApplyPatch tty-icount-changeover-for-other-main-devices.patch
 
 # the korg bug [4d4e307a]
