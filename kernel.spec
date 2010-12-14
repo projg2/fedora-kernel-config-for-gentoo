@@ -895,6 +895,9 @@ Patch13914: do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
 Patch13915: perf_events-fix-perf_counter_mmap-hook-in-mprotect.patch
 # CVE-2010-4162
 Patch13916: bio-take-care-not-overflow-page-count-when-mapping-copying-user-data.patch
+# CVE-2010-4249
+Patch13917: af_unix-limit-unix_tot_inflight.patch
+Patch13918: scm-lower-SCM-MAX-FD.patch
 
 %endif
 
@@ -1714,6 +1717,9 @@ ApplyPatch do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
 ApplyPatch perf_events-fix-perf_counter_mmap-hook-in-mprotect.patch
 # CVE-2010-4162
 ApplyPatch bio-take-care-not-overflow-page-count-when-mapping-copying-user-data.patch
+# CVE-2010-4249
+ApplyPatch af_unix-limit-unix_tot_inflight.patch
+ApplyPatch scm-lower-SCM-MAX-FD.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2338,6 +2344,7 @@ fi
 %changelog
 * Tue Dec 14 2010 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2010-4162 bio: integer overflow page count when mapping/copying user data
+- CVE-2010-4249 unix socket local dos
 
 * Fri Dec 10 2010 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2010-2962: arbitrary kernel memory write via i915 GEM ioctl
