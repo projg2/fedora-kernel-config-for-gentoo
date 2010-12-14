@@ -893,6 +893,8 @@ Patch13913: alsa-prevent-heap-corruption-in-snd_ctl_new.patch
 Patch13914: do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
 # CVE-2010-4169
 Patch13915: perf_events-fix-perf_counter_mmap-hook-in-mprotect.patch
+# CVE-2010-4162
+Patch13916: bio-take-care-not-overflow-page-count-when-mapping-copying-user-data.patch
 
 %endif
 
@@ -1710,6 +1712,8 @@ ApplyPatch alsa-prevent-heap-corruption-in-snd_ctl_new.patch
 ApplyPatch do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
 # CVE-2010-4169
 ApplyPatch perf_events-fix-perf_counter_mmap-hook-in-mprotect.patch
+# CVE-2010-4162
+ApplyPatch bio-take-care-not-overflow-page-count-when-mapping-copying-user-data.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2332,6 +2336,9 @@ fi
 
 
 %changelog
+* Tue Dec 14 2010 Chuck Ebbert <cebbert@redhat.com>
+- CVE-2010-4162 bio: integer overflow page count when mapping/copying user data
+
 * Fri Dec 10 2010 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2010-2962: arbitrary kernel memory write via i915 GEM ioctl
 - CVE-2010-2963: v4l: VIDIOCSMICROCODE arbitrary write
