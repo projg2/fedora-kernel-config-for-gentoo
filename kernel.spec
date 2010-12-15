@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -724,7 +724,6 @@ Patch2924: linux-2.6-v4l-dvb-ir-core-fix-imon.patch
 
 Patch2950: linux-2.6-via-velocity-dma-fix.patch
 
-Patch3000: linux-2.6-rcu-sched-warning.patch
 Patch3010: linux-2.6-rcu-netpoll.patch
 
 # NFSv4
@@ -765,8 +764,6 @@ Patch13600: btusb-macbookpro-6-2.patch
 Patch13601: btusb-macbookpro-7-1.patch
 Patch13602: add-macbookair3-ids.patch
 
-Patch13603: pnpacpi-cope-with-invalid-device-ids.patch
-
 Patch13610: libata-it821x-dump-stack-on-cache-flush.patch
 
 Patch13630: dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
@@ -786,9 +783,6 @@ Patch13651: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 
 Patch13652: fix-i8k-inline-asm.patch
 
-Patch13700: ipc-zero-struct-memory-for-compat-fns.patch
-Patch13701: ipc-shm-fix-information-leak-to-user.patch
-
 Patch13702: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 Patch13704: netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
 
@@ -796,14 +790,6 @@ Patch13703: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
 Patch13660: rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 Patch13661: rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
-
-#rhbz #502974
-Patch13670: r8169-01-fix-rx-checksum-offload.patch
-Patch13671: r8169-02-_re_init-phy-on-resume.patch
-Patch13672: r8169-03-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
-
-#rhbz #657388
-Patch13680: hda_realtek-handle-unset-external-amp-bits.patch
 
 Patch13684: tty-make-tiocgicount-a-handler.patch
 Patch13685: tty-icount-changeover-for-other-main-devices.patch
@@ -1440,7 +1426,6 @@ ApplyPatch linux-2.6-v4l-dvb-ir-core-fix-imon.patch
 ApplyPatch linux-2.6-via-velocity-dma-fix.patch
 
 # silence another rcu_reference warning
-ApplyPatch linux-2.6-rcu-sched-warning.patch
 ApplyPatch linux-2.6-rcu-netpoll.patch
 
 # Patches headed upstream
@@ -1485,9 +1470,6 @@ ApplyPatch add-macbookair3-ids.patch
 # temporary patch, dump stack on failed it821x commands
 ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
 
-# rhbz#641468
-ApplyPatch pnpacpi-cope-with-invalid-device-ids.patch
-
 # rhbz#641476
 ApplyPatch dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
 
@@ -1510,12 +1492,6 @@ ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 
 ApplyPatch fix-i8k-inline-asm.patch
 
-# rhbz#648658 (CVE-2010-4073)
-ApplyPatch ipc-zero-struct-memory-for-compat-fns.patch
-
-# rhbz#648656 (CVE-2010-4072)
-ApplyPatch ipc-shm-fix-information-leak-to-user.patch
-
 # rhbz#651264 (CVE-2010-3880)
 ApplyPatch inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 ApplyPatch netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
@@ -1525,14 +1501,6 @@ ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
 ApplyPatch rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 ApplyPatch rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
-
-#rhbz #502974
-ApplyPatch r8169-01-fix-rx-checksum-offload.patch
-ApplyPatch r8169-02-_re_init-phy-on-resume.patch
-ApplyPatch r8169-03-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
-
-#rhbz #657388
-ApplyPatch hda_realtek-handle-unset-external-amp-bits.patch
 
 # CVE-2010-4077, CVE-2010-4075 (rhbz#648660, #648663)
 ApplyPatch tty-make-tiocgicount-a-handler.patch
@@ -2131,6 +2099,24 @@ fi
 # and build.
 
 %changelog
+* Wed Dec 15 2010 Chuck Ebbert <cebbert@redhat.com>
+- Linux 2.6.35.10
+- Remove merged patches and fix up conflicts:
+   drm-polling-fixes.patch
+   linux-2.6-v4l-dvb-hdpvr-updates.patch
+   kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
+- Drop merged patches:
+   linux-2.6-rcu-sched-warning.patch
+   pnpacpi-cope-with-invalid-device-ids.patch
+   ipc-zero-struct-memory-for-compat-fns.patch
+   ipc-shm-fix-information-leak-to-user.patch
+   r8169-01-fix-rx-checksum-offload.patch
+   r8169-02-_re_init-phy-on-resume.patch
+   r8169-03-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
+   hda_realtek-handle-unset-external-amp-bits.patch
+
+MARKME
+
 * Fri Dec 10 2010 Kyle McMartin <kyle@redhat.com>
 - pci-disable-aspm-if-bios-asks-us-to.patch: Patch from mjg59 to disable
   ASPM if the BIOS has disabled it, but enabled it already on some devices.

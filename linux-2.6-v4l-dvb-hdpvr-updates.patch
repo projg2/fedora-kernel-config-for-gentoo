@@ -2,18 +2,6 @@ These are from the media_tree staging/v2.6.37 branch:
 
 http://git.linuxtv.org/media_tree.git?a=shortlog;h=refs/heads/staging/v2.6.37
 
-commit 203096251dce7079ef6689836e08a97c2365a258
-Author: James M McLaren <mclaren@tulane.edu>
-Date:   Sun Oct 3 19:09:18 2010 -0300
-
-    [media] hdpvr: Add missing URB_NO_TRANSFER_DMA_MAP flag
-    
-    Necessary on arm.
-    
-    Signed-off-by: Janne Grunau <j@jannau.net>
-    Cc: stable@kernel.org
-    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
-
 commit 0987d5b39def07e081376ec48e0825a8d9d0c1e0
 Author: Alan Young <ayoung@teleport.com>
 Date:   Mon Jul 26 08:17:53 2010 -0300
@@ -109,15 +97,7 @@ Index: linux-2.6.35.x86_64.ir/drivers/media/video/hdpvr/hdpvr-video.c
  
  #define print_buffer_status() { \
  		v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,	\
-@@ -157,6 +157,7 @@ int hdpvr_alloc_buffers(struct hdpvr_dev
- 				  mem, dev->bulk_in_size,
- 				  hdpvr_read_bulk_callback, buf);
- 
-+		buf->urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
- 		buf->status = BUFSTAT_AVAILABLE;
- 		list_add_tail(&buf->buff_list, &dev->free_buff_list);
- 	}
-@@ -337,8 +338,6 @@ static int hdpvr_stop_streaming(struct h
+@@ -337,8 +337,6 @@ static int hdpvr_stop_streaming(struct h
  					     dev->bulk_in_endpointAddr),
  			     buf, dev->bulk_in_size, &actual_length,
  			     BULK_URB_TIMEOUT)) {
