@@ -898,6 +898,8 @@ Patch13916: bio-take-care-not-overflow-page-count-when-mapping-copying-user-data
 # CVE-2010-4249
 Patch13917: af_unix-limit-unix_tot_inflight.patch
 Patch13918: scm-lower-SCM-MAX-FD.patch
+# CVE-2010-4157
+Patch13919: gdth-integer-overflow-in-ioctl.patch
 
 %endif
 
@@ -1720,6 +1722,8 @@ ApplyPatch bio-take-care-not-overflow-page-count-when-mapping-copying-user-data.
 # CVE-2010-4249
 ApplyPatch af_unix-limit-unix_tot_inflight.patch
 ApplyPatch scm-lower-SCM-MAX-FD.patch
+# CVE-2010-4157
+ApplyPatch gdth-integer-overflow-in-ioctl.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2342,6 +2346,9 @@ fi
 
 
 %changelog
+* Tue Dec 14 2010 Chuck Ebbert <cebbert@redhat.com>
+- CVE-2010-4157 gdth: integer overflow in ioc_general()
+
 * Tue Dec 14 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.7-65
 - CVE-2010-4162 bio: integer overflow page count when mapping/copying user data
 - CVE-2010-4249 unix socket local dos
