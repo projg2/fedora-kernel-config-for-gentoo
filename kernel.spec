@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 65
+%global baserelease 66
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2354,7 +2354,7 @@ fi
 
 
 %changelog
-* Tue Dec 14 2010 Chuck Ebbert <cebbert@redhat.com>
+* Tue Dec 14 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.7-66
 - CVE-2010-4157: gdth: integer overflow in ioc_general()
 - CVE-2010-4158: socket filters infoleak
 - CVE-2010-3874: CAN sockets minor heap overflow
