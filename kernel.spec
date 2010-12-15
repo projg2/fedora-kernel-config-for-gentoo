@@ -900,6 +900,8 @@ Patch13917: af_unix-limit-unix_tot_inflight.patch
 Patch13918: scm-lower-SCM-MAX-FD.patch
 # CVE-2010-4157
 Patch13919: gdth-integer-overflow-in-ioctl.patch
+# CVE-2010-4158
+Patch13920: filter-make-sure-filters-dont-read-uninitialized-memory.patch
 
 %endif
 
@@ -1724,6 +1726,8 @@ ApplyPatch af_unix-limit-unix_tot_inflight.patch
 ApplyPatch scm-lower-SCM-MAX-FD.patch
 # CVE-2010-4157
 ApplyPatch gdth-integer-overflow-in-ioctl.patch
+# CVE-2010-4158
+ApplyPatch filter-make-sure-filters-dont-read-uninitialized-memory.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2348,6 +2352,7 @@ fi
 %changelog
 * Tue Dec 14 2010 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2010-4157 gdth: integer overflow in ioc_general()
+- CVE-2010-4158 socket filters infoleak
 
 * Tue Dec 14 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.7-65
 - CVE-2010-4162 bio: integer overflow page count when mapping/copying user data
