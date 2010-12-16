@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 67
+%global baserelease 68
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2065,6 +2065,10 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 16 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.10-68
+- Additional mceusb updates just sent upstream, hopefully to fix
+  keybounce/excessive buffering issues
+
 * Wed Dec 15 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.10-67
 - Rebase v4l/dvb/rc code to latest upstream, should fix a fair
   number of ir/rc-related issues, including bugzilla #662071
