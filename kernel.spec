@@ -904,6 +904,8 @@ Patch13919: gdth-integer-overflow-in-ioctl.patch
 Patch13920: filter-make-sure-filters-dont-read-uninitialized-memory.patch
 # CVE-2010-3874
 Patch13921: can-bcm-fix-minor-heap-overflow.patch
+# Allow AF_PACKET to be less of a pig with contiguous ram
+Patch13922: patch-2.6.38-afpacket-vmalloc.patch 
 
 %endif
 
@@ -1732,6 +1734,8 @@ ApplyPatch gdth-integer-overflow-in-ioctl.patch
 ApplyPatch filter-make-sure-filters-dont-read-uninitialized-memory.patch
 # CVE-2010-3874
 ApplyPatch can-bcm-fix-minor-heap-overflow.patch
+# Allow AF_PACKET to be less of a contiguous ram pig
+ApplyPatch patch-2.6.38-afpacket-vmalloc.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2354,6 +2358,9 @@ fi
 
 
 %changelog
+* Fri Dec 17 2010 Neil Horman <nhorman@redhat.com>
+- Enhance AF_PACKET to allow non-contiguous buffer alloc (bz 637619)
+
 * Tue Dec 14 2010 Chuck Ebbert <cebbert@redhat.com>  2.6.34.7-66
 - CVE-2010-4157: gdth: integer overflow in ioc_general()
 - CVE-2010-4158: socket filters infoleak
