@@ -907,6 +907,9 @@ Patch13921: can-bcm-fix-minor-heap-overflow.patch
 # Allow AF_PACKET to be less of a pig with contiguous ram
 Patch13922: patch-2.6.38-afpacket-vmalloc.patch 
 
+# rhbz#662344
+Patch12922: fs-call-security_d_instantiate-in-d_obtain_alias.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1737,6 +1740,9 @@ ApplyPatch can-bcm-fix-minor-heap-overflow.patch
 # Allow AF_PACKET to be less of a contiguous ram pig
 ApplyPatch patch-2.6.38-afpacket-vmalloc.patch
 
+# rhbz#662344
+ApplyPatch fs-call-security_d_instantiate-in-d_obtain_alias.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2358,6 +2364,9 @@ fi
 
 
 %changelog
+* Sat Dec 18 2010 Kyle McMartin <kyle@redhat.com>
+- Fix SELinux issues with NFS/btrfs and/or xfsdump. (#662344)
+
 * Fri Dec 17 2010 Neil Horman <nhorman@redhat.com>
 - Enhance AF_PACKET to allow non-contiguous buffer alloc (bz 637619)
 
