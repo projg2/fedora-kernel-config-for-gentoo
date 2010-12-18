@@ -790,6 +790,8 @@ Patch13696: btrfs-fix-race-between-btrfs_get_sb-and-unmount.patch
 
 Patch13697: fs-call-security_d_instantiate-in-d_obtain_alias.patch
 
+Patch13698: net-AF_PACKET-vmalloc.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1484,6 +1486,9 @@ ApplyPatch mm-vmstat-use-a-single-setter-function-and-callback-for-adjusting-per
 # rhbz#657864
 ApplyPatch orinoco-initialise-priv_hw-before-assigning-the-interrupt.patch
 
+# rhbz#637619
+ApplyPatch net-AF_PACKET-vmalloc.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2070,6 +2075,10 @@ fi
 # and build.
 
 %changelog
+* Sat Dec 18 2010 Kyle McMartin <kyle@redhat.com>
+- Patch from nhorman against f13:
+  Enhance AF_PACKET to allow non-contiguous buffer alloc (#637619)
+
 * Sat Dec 18 2010 Kyle McMartin <kyle@redhat.com>
 - Fix SELinux issues with NFS/btrfs and/or xfsdump. (#662344)
 
