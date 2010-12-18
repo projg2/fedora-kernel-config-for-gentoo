@@ -788,6 +788,8 @@ Patch13694: btrfs-fix-error-handling-in-btrfs_get_sub.patch
 Patch13695: btrfs-setup-blank-root-and-fs_info-for-mount-time.patch
 Patch13696: btrfs-fix-race-between-btrfs_get_sb-and-unmount.patch
 
+Patch13697: fs-call-security_d_instantiate-in-d_obtain_alias.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1238,6 +1240,9 @@ ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 #
 # bugfixes to drivers and filesystems
 #
+
+# rhbz#662344,600690
+ApplyPatch fs-call-security_d_instantiate-in-d_obtain_alias.patch
 
 # ext4
 
@@ -2065,6 +2070,9 @@ fi
 # and build.
 
 %changelog
+* Sat Dec 18 2010 Kyle McMartin <kyle@redhat.com>
+- Fix SELinux issues with NFS/btrfs and/or xfsdump. (#662344)
+
 * Thu Dec 16 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.10-68
 - Additional mceusb updates just sent upstream, hopefully to fix
   keybounce/excessive buffering issues
