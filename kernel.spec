@@ -2079,6 +2079,9 @@ fi
 # and build.
 
 %changelog
+* Mon Dec 20 2010 Kyle McMartin <kyle@redhat.com>
+- Backport some of the radeon r600_cs.c fixes between .35 and master. (#664206)
+
 * Sun Dec 19 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.10-69
 - Revert Jarod's v4l-dvb-ir rebase, due to several issues reported against
   the 2.6.35.10-68 update.
