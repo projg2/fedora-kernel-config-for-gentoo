@@ -1,0 +1,219 @@
+These are from the media_tree staging/v2.6.37 branch:
+
+http://git.linuxtv.org/media_tree.git?a=shortlog;h=refs/heads/staging/v2.6.37
+
+commit 0987d5b39def07e081376ec48e0825a8d9d0c1e0
+Author: Alan Young <ayoung@teleport.com>
+Date:   Mon Jul 26 08:17:53 2010 -0300
+
+    [media] hdpvr: remove unnecessary sleep in hdpvr_config_call
+    
+    Signed-off-by: Janne Grunau <j@jannau.net>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit db882a96564a8f8384b3d44ba5f4dcc2b29fa6ea
+Author: Alan Young <ayoung@teleport.com>
+Date:   Mon Jul 26 16:27:32 2010 -0300
+
+    [media] hdpvr: remove unecessary sleep in buffer drain loop
+    
+    Signed-off-by: Janne Grunau <j@jannau.net>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit c4b3bb7d6cbbfd729f8531ea433cdbe4ce6d6ec9
+Author: Alan Young <ayoung@teleport.com>
+Date:   Mon Jul 26 08:30:06 2010 -0300
+
+    [media] hdpvr: print firmware date
+    
+    Hauppauge released different firmwares using the same version number.
+    The firmware date can be used to identify the exact driver/firmware
+    combination.
+    
+    Signed-off-by: Janne Grunau <j@jannau.net>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit a742a790bc200a356b0645592bb21ebee55c81cd
+Author: Janne Grunau <j@jannau.net>
+Date:   Tue Jul 27 11:03:35 2010 -0300
+
+    [media] hdpvr: add two known to work firmware versions
+    
+    refine the firmware version test and print the version only once
+    
+    Signed-off-by: Janne Grunau <j@jannau.net>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit ab98088577ea97545c72be69ba092b4f12909bc9
+Author: Janne Grunau <j@jannau.net>
+Date:   Tue Jul 27 10:40:43 2010 -0300
+
+    [media] hdpvr: use AC3 as default audio codec for SPDIF
+    
+    Signed-off-by: Janne Grunau <j@jannau.net>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit a7c443ee3040383e4d9b261d0af811350d221035
+Author: Janne Grunau <j@jannau.net>
+Date:   Tue Jul 27 11:01:47 2010 -0300
+
+    [media] hdpvr: fix audio input setting for pre AC3 firmwares
+    
+    Signed-off-by: Janne Grunau <j@jannau.net>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+
+commit 8a01ef612c78a802262a455eadf46240d4f02136
+Author: Alan Young <ayoung@teleport.com>
+Date:   Mon Jul 26 08:50:32 2010 -0300
+
+    [media] hdpvr: decrease URB timeout to 90ms
+    
+    Based on USB traces of the windows driver.
+    
+    Signed-off-by: Janne Grunau <j@jannau.net>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+commit 0e64f3d51b608e95bef4a324e85992d3da3c52ac
+Author: Janne Grunau <j@jannau.net>
+Date:   Mon Oct 11 10:29:36 2010 -0300
+
+    [media] hdpvr: add usb product id 0x4903
+    
+    Signed-off-by: Janne Grunau <j@jannau.net>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+---
+Index: linux-2.6.35.x86_64.ir/drivers/media/video/hdpvr/hdpvr-video.c
+===================================================================
+--- linux-2.6.35.x86_64.ir.orig/drivers/media/video/hdpvr/hdpvr-video.c
++++ linux-2.6.35.x86_64.ir/drivers/media/video/hdpvr/hdpvr-video.c
+@@ -26,7 +26,7 @@
+ #include <media/v4l2-ioctl.h>
+ #include "hdpvr.h"
+ 
+-#define BULK_URB_TIMEOUT 1250 /* 1.25 seconds */
++#define BULK_URB_TIMEOUT   90 /* 0.09 seconds */
+ 
+ #define print_buffer_status() { \
+ 		v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,	\
+@@ -337,8 +337,6 @@ static int hdpvr_stop_streaming(struct h
+ 					     dev->bulk_in_endpointAddr),
+ 			     buf, dev->bulk_in_size, &actual_length,
+ 			     BULK_URB_TIMEOUT)) {
+-		/* wait */
+-		msleep(5);
+ 		v4l2_dbg(MSG_BUFFER, hdpvr_debug, &dev->v4l2_dev,
+ 			 "%2d: got %d bytes\n", c, actual_length);
+ 	}
+Index: linux-2.6.35.x86_64.ir/drivers/media/video/hdpvr/hdpvr-control.c
+===================================================================
+--- linux-2.6.35.x86_64.ir.orig/drivers/media/video/hdpvr/hdpvr-control.c
++++ linux-2.6.35.x86_64.ir/drivers/media/video/hdpvr/hdpvr-control.c
+@@ -29,8 +29,6 @@ int hdpvr_config_call(struct hdpvr_devic
+ 	int ret;
+ 	char request_type = 0x38, snd_request = 0x01;
+ 
+-	msleep(10);
+-
+ 	mutex_lock(&dev->usbc_mutex);
+ 	dev->usbc_buf[0] = valbuf;
+ 	ret = usb_control_msg(dev->udev,
+@@ -170,8 +168,7 @@ int hdpvr_set_audio(struct hdpvr_device 
+ 		if (ret == 2)
+ 			ret = 0;
+ 	} else
+-		ret = hdpvr_config_call(dev, CTRL_AUDIO_INPUT_VALUE,
+-					dev->options.audio_input+1);
++		ret = hdpvr_config_call(dev, CTRL_AUDIO_INPUT_VALUE, input);
+ error:
+ 	return ret;
+ }
+Index: linux-2.6.35.x86_64.ir/drivers/media/video/hdpvr/hdpvr-core.c
+===================================================================
+--- linux-2.6.35.x86_64.ir.orig/drivers/media/video/hdpvr/hdpvr-core.c
++++ linux-2.6.35.x86_64.ir/drivers/media/video/hdpvr/hdpvr-core.c
+@@ -60,6 +60,7 @@ static struct usb_device_id hdpvr_table[
+ 	{ USB_DEVICE(HD_PVR_VENDOR_ID, HD_PVR_PRODUCT_ID1) },
+ 	{ USB_DEVICE(HD_PVR_VENDOR_ID, HD_PVR_PRODUCT_ID2) },
+ 	{ USB_DEVICE(HD_PVR_VENDOR_ID, HD_PVR_PRODUCT_ID3) },
++	{ USB_DEVICE(HD_PVR_VENDOR_ID, HD_PVR_PRODUCT_ID4) },
+ 	{ }					/* Terminating entry */
+ };
+ MODULE_DEVICE_TABLE(usb, hdpvr_table);
+@@ -152,19 +153,26 @@ static int device_authorization(struct h
+ 			 ret, print_buf);
+ 	}
+ #endif
+-	if (dev->usbc_buf[1] == HDPVR_FIRMWARE_VERSION) {
++
++	v4l2_info(&dev->v4l2_dev, "firmware version 0x%x dated %s\n",
++			  dev->usbc_buf[1], &dev->usbc_buf[2]);
++
++	switch (dev->usbc_buf[1]) {
++	case HDPVR_FIRMWARE_VERSION:
+ 		dev->flags &= ~HDPVR_FLAG_AC3_CAP;
+-	} else if (dev->usbc_buf[1] == HDPVR_FIRMWARE_VERSION_AC3) {
+-		dev->flags |= HDPVR_FLAG_AC3_CAP;
+-	} else if (dev->usbc_buf[1] > HDPVR_FIRMWARE_VERSION_AC3) {
+-		v4l2_info(&dev->v4l2_dev, "untested firmware version 0x%x, "
+-			  "the driver might not work\n", dev->usbc_buf[1]);
++		break;
++	case HDPVR_FIRMWARE_VERSION_AC3:
++	case HDPVR_FIRMWARE_VERSION_0X12:
++	case HDPVR_FIRMWARE_VERSION_0X15:
+ 		dev->flags |= HDPVR_FLAG_AC3_CAP;
+-	} else {
+-		v4l2_err(&dev->v4l2_dev, "unknown firmware version 0x%x\n",
+-			dev->usbc_buf[1]);
+-		ret = -EINVAL;
+-		goto unlock;
++		break;
++	default:
++		v4l2_info(&dev->v4l2_dev, "untested firmware, the driver might"
++			  " not work.\n");
++		if (dev->usbc_buf[1] >= HDPVR_FIRMWARE_VERSION_AC3)
++			dev->flags |= HDPVR_FLAG_AC3_CAP;
++		else
++			dev->flags &= ~HDPVR_FLAG_AC3_CAP;
+ 	}
+ 
+ 	response = dev->usbc_buf+38;
+@@ -319,8 +327,12 @@ static int hdpvr_probe(struct usb_interf
+ 	if (default_video_input < HDPVR_VIDEO_INPUTS)
+ 		dev->options.video_input = default_video_input;
+ 
+-	if (default_audio_input < HDPVR_AUDIO_INPUTS)
++	if (default_audio_input < HDPVR_AUDIO_INPUTS) {
+ 		dev->options.audio_input = default_audio_input;
++		if (default_audio_input == HDPVR_SPDIF)
++			dev->options.audio_codec =
++				V4L2_MPEG_AUDIO_ENCODING_AC3;
++	}
+ 
+ 	dev->udev = usb_get_dev(interface_to_usbdev(interface));
+ 
+Index: linux-2.6.35.x86_64.ir/drivers/media/video/hdpvr/hdpvr.h
+===================================================================
+--- linux-2.6.35.x86_64.ir.orig/drivers/media/video/hdpvr/hdpvr.h
++++ linux-2.6.35.x86_64.ir/drivers/media/video/hdpvr/hdpvr.h
+@@ -30,14 +30,17 @@
+ #define HD_PVR_PRODUCT_ID	0x4900
+ #define HD_PVR_PRODUCT_ID1	0x4901
+ #define HD_PVR_PRODUCT_ID2	0x4902
++#define HD_PVR_PRODUCT_ID4	0x4903
+ #define HD_PVR_PRODUCT_ID3	0x4982
+ 
+ #define UNSET    (-1U)
+ 
+ #define NUM_BUFFERS 64
+ 
+-#define HDPVR_FIRMWARE_VERSION		0x8
+-#define HDPVR_FIRMWARE_VERSION_AC3	0xd
++#define HDPVR_FIRMWARE_VERSION		0x08
++#define HDPVR_FIRMWARE_VERSION_AC3	0x0d
++#define HDPVR_FIRMWARE_VERSION_0X12	0x12
++#define HDPVR_FIRMWARE_VERSION_0X15	0x15
+ 
+ /* #define HDPVR_DEBUG */
+ 

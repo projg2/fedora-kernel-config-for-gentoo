@@ -1,0 +1,625 @@
+This patch rolls up the following commits pending merge in the v4l-dvb tree:
+
+commit 7ce3b9f7bdb40837e15af89bb9d623c207ac9586
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Sat Oct 9 14:17:03 2010 -0400
+
+    lirc_dev: fixup error messages w/missing newlines
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit d1af871dadaf58580490431a335ea122a9b00d92
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Sat Oct 9 14:07:06 2010 -0400
+
+    lirc: wire up .compat_ioctl to main ioctl handler
+    
+    As pointed out (and tested) by Joris van Rantwijk, we do actually need
+    to wire up .compat_ioctl for 32-bit lirc userspace to work with 64-bit
+    lirc kernelspace. Do it. And add a check to make sure we get a valid
+    irctl in the ioctl handler.
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit 8dea589f4dc51b0363555a53fee128965a0548d4
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Fri Oct 8 16:24:21 2010 -0400
+
+    IR/lirc: further ioctl portability fixups
+    
+    From: Joris van Rantwijk <jorispubl@xs4all.nl>
+    
+    ----8<----
+    I tested lirc_serial and found that it works fine.
+    Except the LIRC ioctls do not work in my 64-bit-kernel/32-bit-user
+    setup. I added compat_ioctl entries in the drivers to fix this.
+    
+    While doing so, I noticed inconsistencies in the argument type of
+    the LIRC ioctls. All ioctls are declared in lirc.h as having argument
+    type __u32, however there are a few places where the driver calls
+    get_user/put_user with an unsigned long argument.
+    
+    The patch below changes lirc_dev and lirc_serial to use __u32 for all
+    ioctl arguments, and adds compat_ioctl entries.
+    It should probably also be done in the other low-level drivers,
+    but I don't have hardware to test those.
+    ----8<----
+    
+    I've dropped the .compat_ioctl addition from Joris' original patch,
+    as I swear the non-compat definition should now work for both 32-bit
+    and 64-bit userspace. Technically, I think we still need/want a
+    Signed-off-by: from Joris here. Joris? (And sorry for the lengthy delay
+    in getting a reply to you).
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+---
+ drivers/media/IR/ir-lirc-codec.c        |   13 +++++++----
+ drivers/media/IR/lirc_dev.c             |   36 ++++++++++++++++++++----------
+ drivers/staging/lirc/lirc_igorplugusb.c |    2 +-
+ drivers/staging/lirc/lirc_it87.c        |   20 +++++++++-------
+ drivers/staging/lirc/lirc_ite8709.c     |    6 ++--
+ drivers/staging/lirc/lirc_parallel.c    |   35 ++++++++++++++++-------------
+ drivers/staging/lirc/lirc_serial.c      |   24 +++++++++++---------
+ drivers/staging/lirc/lirc_sir.c         |   24 +++++++++++---------
+ drivers/staging/lirc/lirc_zilog.c       |    3 ++
+ include/media/lirc_dev.h                |    6 ++--
+ 10 files changed, 98 insertions(+), 71 deletions(-)
+
+diff --git a/drivers/media/IR/ir-lirc-codec.c b/drivers/media/IR/ir-lirc-codec.c
+index e63f757..20ac9a4 100644
+--- a/drivers/media/IR/ir-lirc-codec.c
++++ b/drivers/media/IR/ir-lirc-codec.c
+@@ -102,7 +102,7 @@ static long ir_lirc_ioctl(struct file *filep, unsigned int cmd,
+ 	struct ir_input_dev *ir_dev;
+ 	int ret = 0;
+ 	void *drv_data;
+-	unsigned long val = 0;
++	__u32 val = 0;
+ 
+ 	lirc = lirc_get_pdata(filep);
+ 	if (!lirc)
+@@ -115,7 +115,7 @@ static long ir_lirc_ioctl(struct file *filep, unsigned int cmd,
+ 	drv_data = ir_dev->props->priv;
+ 
+ 	if (_IOC_DIR(cmd) & _IOC_WRITE) {
+-		ret = get_user(val, (unsigned long *)arg);
++		ret = get_user(val, (__u32 *)arg);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -135,14 +135,14 @@ static long ir_lirc_ioctl(struct file *filep, unsigned int cmd,
+ 	/* TX settings */
+ 	case LIRC_SET_TRANSMITTER_MASK:
+ 		if (ir_dev->props->s_tx_mask)
+-			ret = ir_dev->props->s_tx_mask(drv_data, (u32)val);
++			ret = ir_dev->props->s_tx_mask(drv_data, val);
+ 		else
+ 			return -EINVAL;
+ 		break;
+ 
+ 	case LIRC_SET_SEND_CARRIER:
+ 		if (ir_dev->props->s_tx_carrier)
+-			ir_dev->props->s_tx_carrier(drv_data, (u32)val);
++			ir_dev->props->s_tx_carrier(drv_data, val);
+ 		else
+ 			return -EINVAL;
+ 		break;
+@@ -212,7 +212,7 @@ static long ir_lirc_ioctl(struct file *filep, unsigned int cmd,
+ 	}
+ 
+ 	if (_IOC_DIR(cmd) & _IOC_READ)
+-		ret = put_user(val, (unsigned long *)arg);
++		ret = put_user(val, (__u32 *)arg);
+ 
+ 	return ret;
+ }
+@@ -231,6 +231,9 @@ static struct file_operations lirc_fops = {
+ 	.owner		= THIS_MODULE,
+ 	.write		= ir_lirc_transmit_ir,
+ 	.unlocked_ioctl	= ir_lirc_ioctl,
++#ifdef CONFIG_COMPAT
++	.compat_ioctl	= ir_lirc_ioctl,
++#endif
+ 	.read		= lirc_dev_fop_read,
+ 	.poll		= lirc_dev_fop_poll,
+ 	.open		= lirc_dev_fop_open,
+diff --git a/drivers/media/IR/lirc_dev.c b/drivers/media/IR/lirc_dev.c
+index 899891b..930e4a7 100644
+--- a/drivers/media/IR/lirc_dev.c
++++ b/drivers/media/IR/lirc_dev.c
+@@ -161,6 +161,9 @@ static struct file_operations fops = {
+ 	.write		= lirc_dev_fop_write,
+ 	.poll		= lirc_dev_fop_poll,
+ 	.unlocked_ioctl	= lirc_dev_fop_ioctl,
++#ifdef CONFIG_COMPAT
++	.compat_ioctl	= lirc_dev_fop_ioctl,
++#endif
+ 	.open		= lirc_dev_fop_open,
+ 	.release	= lirc_dev_fop_close,
+ };
+@@ -359,19 +362,23 @@ int lirc_unregister_driver(int minor)
+ 	struct irctl *ir;
+ 
+ 	if (minor < 0 || minor >= MAX_IRCTL_DEVICES) {
+-		printk(KERN_ERR "lirc_dev: lirc_unregister_driver: "
+-		       "\"minor (%d)\" must be between 0 and %d!\n",
+-		       minor, MAX_IRCTL_DEVICES-1);
++		printk(KERN_ERR "lirc_dev: %s: minor (%d) must be between "
++		       "0 and %d!\n", __func__, minor, MAX_IRCTL_DEVICES-1);
+ 		return -EBADRQC;
+ 	}
+ 
+ 	ir = irctls[minor];
++	if (!ir) {
++		printk(KERN_ERR "lirc_dev: %s: failed to get irctl struct "
++		       "for minor %d!\n", __func__, minor);
++		return -ENOENT;
++	}
+ 
+ 	mutex_lock(&lirc_dev_lock);
+ 
+ 	if (ir->d.minor != minor) {
+-		printk(KERN_ERR "lirc_dev: lirc_unregister_driver: "
+-		       "minor (%d) device not registered!", minor);
++		printk(KERN_ERR "lirc_dev: %s: minor (%d) device not "
++		       "registered!\n", __func__, minor);
+ 		mutex_unlock(&lirc_dev_lock);
+ 		return -ENOENT;
+ 	}
+@@ -519,10 +526,15 @@ EXPORT_SYMBOL(lirc_dev_fop_poll);
+ 
+ long lirc_dev_fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ {
+-	unsigned long mode;
++	__u32 mode;
+ 	int result = 0;
+ 	struct irctl *ir = file->private_data;
+ 
++	if (!ir) {
++		printk(KERN_ERR "lirc_dev: %s: no irctl found!\n", __func__);
++		return -ENODEV;
++	}
++
+ 	dev_dbg(ir->d.dev, LOGHEAD "ioctl called (0x%x)\n",
+ 		ir->d.name, ir->d.minor, cmd);
+ 
+@@ -536,7 +548,7 @@ long lirc_dev_fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 
+ 	switch (cmd) {
+ 	case LIRC_GET_FEATURES:
+-		result = put_user(ir->d.features, (unsigned long *)arg);
++		result = put_user(ir->d.features, (__u32 *)arg);
+ 		break;
+ 	case LIRC_GET_REC_MODE:
+ 		if (!(ir->d.features & LIRC_CAN_REC_MASK)) {
+@@ -546,7 +558,7 @@ long lirc_dev_fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 
+ 		result = put_user(LIRC_REC2MODE
+ 				  (ir->d.features & LIRC_CAN_REC_MASK),
+-				  (unsigned long *)arg);
++				  (__u32 *)arg);
+ 		break;
+ 	case LIRC_SET_REC_MODE:
+ 		if (!(ir->d.features & LIRC_CAN_REC_MASK)) {
+@@ -554,7 +566,7 @@ long lirc_dev_fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 			break;
+ 		}
+ 
+-		result = get_user(mode, (unsigned long *)arg);
++		result = get_user(mode, (__u32 *)arg);
+ 		if (!result && !(LIRC_MODE2REC(mode) & ir->d.features))
+ 			result = -EINVAL;
+ 		/*
+@@ -563,7 +575,7 @@ long lirc_dev_fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 		 */
+ 		break;
+ 	case LIRC_GET_LENGTH:
+-		result = put_user(ir->d.code_length, (unsigned long *)arg);
++		result = put_user(ir->d.code_length, (__u32 *)arg);
+ 		break;
+ 	case LIRC_GET_MIN_TIMEOUT:
+ 		if (!(ir->d.features & LIRC_CAN_SET_REC_TIMEOUT) ||
+@@ -572,7 +584,7 @@ long lirc_dev_fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 			break;
+ 		}
+ 
+-		result = put_user(ir->d.min_timeout, (unsigned long *)arg);
++		result = put_user(ir->d.min_timeout, (__u32 *)arg);
+ 		break;
+ 	case LIRC_GET_MAX_TIMEOUT:
+ 		if (!(ir->d.features & LIRC_CAN_SET_REC_TIMEOUT) ||
+@@ -581,7 +593,7 @@ long lirc_dev_fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 			break;
+ 		}
+ 
+-		result = put_user(ir->d.max_timeout, (unsigned long *)arg);
++		result = put_user(ir->d.max_timeout, (__u32 *)arg);
+ 		break;
+ 	default:
+ 		result = -EINVAL;
+diff --git a/drivers/staging/lirc/lirc_igorplugusb.c b/drivers/staging/lirc/lirc_igorplugusb.c
+index bce600e..e680d88 100644
+--- a/drivers/staging/lirc/lirc_igorplugusb.c
++++ b/drivers/staging/lirc/lirc_igorplugusb.c
+@@ -390,7 +390,7 @@ static int usb_remote_probe(struct usb_interface *intf,
+ 	devnum = dev->devnum;
+ 	maxp = usb_maxpacket(dev, pipe, usb_pipeout(pipe));
+ 
+-	dprintk(DRIVER_NAME "[%d]: bytes_in_key=%lu maxp=%d\n",
++	dprintk(DRIVER_NAME "[%d]: bytes_in_key=%zu maxp=%d\n",
+ 		devnum, CODE_LENGTH, maxp);
+ 
+ 
+diff --git a/drivers/staging/lirc/lirc_it87.c b/drivers/staging/lirc/lirc_it87.c
+index ec11c0e..bd5006c 100644
+--- a/drivers/staging/lirc/lirc_it87.c
++++ b/drivers/staging/lirc/lirc_it87.c
+@@ -239,8 +239,7 @@ static ssize_t lirc_write(struct file *file, const char *buf,
+ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ {
+ 	int retval = 0;
+-	unsigned long value = 0;
+-	unsigned int ivalue;
++	__u32 value = 0;
+ 	unsigned long hw_flags;
+ 
+ 	if (cmd == LIRC_GET_FEATURES)
+@@ -256,24 +255,24 @@ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ 	case LIRC_GET_FEATURES:
+ 	case LIRC_GET_SEND_MODE:
+ 	case LIRC_GET_REC_MODE:
+-		retval = put_user(value, (unsigned long *) arg);
++		retval = put_user(value, (__u32 *) arg);
+ 		break;
+ 
+ 	case LIRC_SET_SEND_MODE:
+ 	case LIRC_SET_REC_MODE:
+-		retval = get_user(value, (unsigned long *) arg);
++		retval = get_user(value, (__u32 *) arg);
+ 		break;
+ 
+ 	case LIRC_SET_SEND_CARRIER:
+-		retval = get_user(ivalue, (unsigned int *) arg);
++		retval = get_user(value, (__u32 *) arg);
+ 		if (retval)
+ 			return retval;
+-		ivalue /= 1000;
+-		if (ivalue > IT87_CIR_FREQ_MAX ||
+-		    ivalue < IT87_CIR_FREQ_MIN)
++		value /= 1000;
++		if (value > IT87_CIR_FREQ_MAX ||
++		    value < IT87_CIR_FREQ_MIN)
+ 			return -EINVAL;
+ 
+-		it87_freq = ivalue;
++		it87_freq = value;
+ 
+ 		spin_lock_irqsave(&hardware_lock, hw_flags);
+ 		outb(((inb(io + IT87_CIR_TCR2) & IT87_CIR_TCR2_TXMPW) |
+@@ -340,6 +339,9 @@ static const struct file_operations lirc_fops = {
+ 	.write		= lirc_write,
+ 	.poll		= lirc_poll,
+ 	.unlocked_ioctl	= lirc_ioctl,
++#ifdef CONFIG_COMPAT
++	.compat_ioctl	= lirc_ioctl,
++#endif
+ 	.open		= lirc_open,
+ 	.release	= lirc_close,
+ };
+diff --git a/drivers/staging/lirc/lirc_ite8709.c b/drivers/staging/lirc/lirc_ite8709.c
+index 9352f45..cb20cfd 100644
+--- a/drivers/staging/lirc/lirc_ite8709.c
++++ b/drivers/staging/lirc/lirc_ite8709.c
+@@ -102,8 +102,8 @@ struct ite8709_device {
+ 	int io;
+ 	int irq;
+ 	spinlock_t hardware_lock;
+-	unsigned long long acc_pulse;
+-	unsigned long long acc_space;
++	__u64 acc_pulse;
++	__u64 acc_space;
+ 	char lastbit;
+ 	struct timeval last_tv;
+ 	struct lirc_driver driver;
+@@ -220,7 +220,7 @@ static void ite8709_set_use_dec(void *data)
+ }
+ 
+ static void ite8709_add_read_queue(struct ite8709_device *dev, int flag,
+-					unsigned long long val)
++				   __u64 val)
+ {
+ 	int value;
+ 
+diff --git a/drivers/staging/lirc/lirc_parallel.c b/drivers/staging/lirc/lirc_parallel.c
+index 6da4a8c..b8cce87 100644
+--- a/drivers/staging/lirc/lirc_parallel.c
++++ b/drivers/staging/lirc/lirc_parallel.c
+@@ -301,9 +301,9 @@ static void irq_handler(void *blah)
+ 
+ 	if (signal != 0) {
+ 		/* ajust value to usecs */
+-		unsigned long long helper;
++		__u64 helper;
+ 
+-		helper = ((unsigned long long) signal)*1000000;
++		helper = ((__u64) signal)*1000000;
+ 		do_div(helper, timer);
+ 		signal = (long) helper;
+ 
+@@ -404,9 +404,9 @@ static ssize_t lirc_write(struct file *filep, const char *buf, size_t n,
+ 
+ 	/* adjust values from usecs */
+ 	for (i = 0; i < count; i++) {
+-		unsigned long long helper;
++		__u64 helper;
+ 
+-		helper = ((unsigned long long) wbuf[i])*timer;
++		helper = ((__u64) wbuf[i])*timer;
+ 		do_div(helper, 1000000);
+ 		wbuf[i] = (int) helper;
+ 	}
+@@ -464,48 +464,48 @@ static unsigned int lirc_poll(struct file *file, poll_table *wait)
+ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ {
+ 	int result;
+-	unsigned long features = LIRC_CAN_SET_TRANSMITTER_MASK |
+-				 LIRC_CAN_SEND_PULSE | LIRC_CAN_REC_MODE2;
+-	unsigned long mode;
+-	unsigned int ivalue;
++	__u32 features = LIRC_CAN_SET_TRANSMITTER_MASK |
++			 LIRC_CAN_SEND_PULSE | LIRC_CAN_REC_MODE2;
++	__u32 mode;
++	__u32 value;
+ 
+ 	switch (cmd) {
+ 	case LIRC_GET_FEATURES:
+-		result = put_user(features, (unsigned long *) arg);
++		result = put_user(features, (__u32 *) arg);
+ 		if (result)
+ 			return result;
+ 		break;
+ 	case LIRC_GET_SEND_MODE:
+-		result = put_user(LIRC_MODE_PULSE, (unsigned long *) arg);
++		result = put_user(LIRC_MODE_PULSE, (__u32 *) arg);
+ 		if (result)
+ 			return result;
+ 		break;
+ 	case LIRC_GET_REC_MODE:
+-		result = put_user(LIRC_MODE_MODE2, (unsigned long *) arg);
++		result = put_user(LIRC_MODE_MODE2, (__u32 *) arg);
+ 		if (result)
+ 			return result;
+ 		break;
+ 	case LIRC_SET_SEND_MODE:
+-		result = get_user(mode, (unsigned long *) arg);
++		result = get_user(mode, (__u32 *) arg);
+ 		if (result)
+ 			return result;
+ 		if (mode != LIRC_MODE_PULSE)
+ 			return -EINVAL;
+ 		break;
+ 	case LIRC_SET_REC_MODE:
+-		result = get_user(mode, (unsigned long *) arg);
++		result = get_user(mode, (__u32 *) arg);
+ 		if (result)
+ 			return result;
+ 		if (mode != LIRC_MODE_MODE2)
+ 			return -ENOSYS;
+ 		break;
+ 	case LIRC_SET_TRANSMITTER_MASK:
+-		result = get_user(ivalue, (unsigned int *) arg);
++		result = get_user(value, (__u32 *) arg);
+ 		if (result)
+ 			return result;
+-		if ((ivalue & LIRC_PARALLEL_TRANSMITTER_MASK) != ivalue)
++		if ((value & LIRC_PARALLEL_TRANSMITTER_MASK) != value)
+ 			return LIRC_PARALLEL_MAX_TRANSMITTERS;
+-		tx_mask = ivalue;
++		tx_mask = value;
+ 		break;
+ 	default:
+ 		return -ENOIOCTLCMD;
+@@ -546,6 +546,9 @@ static const struct file_operations lirc_fops = {
+ 	.write		= lirc_write,
+ 	.poll		= lirc_poll,
+ 	.unlocked_ioctl	= lirc_ioctl,
++#ifdef CONFIG_COMPAT
++	.compat_ioctl	= lirc_ioctl,
++#endif
+ 	.open		= lirc_open,
+ 	.release	= lirc_close
+ };
+diff --git a/drivers/staging/lirc/lirc_serial.c b/drivers/staging/lirc/lirc_serial.c
+index 9456f8e..05a9bf3 100644
+--- a/drivers/staging/lirc/lirc_serial.c
++++ b/drivers/staging/lirc/lirc_serial.c
+@@ -372,7 +372,7 @@ static unsigned long conv_us_to_clocks;
+ static int init_timing_params(unsigned int new_duty_cycle,
+ 		unsigned int new_freq)
+ {
+-	unsigned long long loops_per_sec, work;
++	__u64 loops_per_sec, work;
+ 
+ 	duty_cycle = new_duty_cycle;
+ 	freq = new_freq;
+@@ -987,8 +987,7 @@ static ssize_t lirc_write(struct file *file, const char *buf,
+ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ {
+ 	int result;
+-	unsigned long value;
+-	unsigned int ivalue;
++	__u32 value;
+ 
+ 	switch (cmd) {
+ 	case LIRC_GET_SEND_MODE:
+@@ -997,7 +996,7 @@ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ 
+ 		result = put_user(LIRC_SEND2MODE
+ 				  (hardware[type].features&LIRC_CAN_SEND_MASK),
+-				  (unsigned long *) arg);
++				  (__u32 *) arg);
+ 		if (result)
+ 			return result;
+ 		break;
+@@ -1006,7 +1005,7 @@ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ 		if (!(hardware[type].features&LIRC_CAN_SEND_MASK))
+ 			return -ENOIOCTLCMD;
+ 
+-		result = get_user(value, (unsigned long *) arg);
++		result = get_user(value, (__u32 *) arg);
+ 		if (result)
+ 			return result;
+ 		/* only LIRC_MODE_PULSE supported */
+@@ -1023,12 +1022,12 @@ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ 		if (!(hardware[type].features&LIRC_CAN_SET_SEND_DUTY_CYCLE))
+ 			return -ENOIOCTLCMD;
+ 
+-		result = get_user(ivalue, (unsigned int *) arg);
++		result = get_user(value, (__u32 *) arg);
+ 		if (result)
+ 			return result;
+-		if (ivalue <= 0 || ivalue > 100)
++		if (value <= 0 || value > 100)
+ 			return -EINVAL;
+-		return init_timing_params(ivalue, freq);
++		return init_timing_params(value, freq);
+ 		break;
+ 
+ 	case LIRC_SET_SEND_CARRIER:
+@@ -1036,12 +1035,12 @@ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ 		if (!(hardware[type].features&LIRC_CAN_SET_SEND_CARRIER))
+ 			return -ENOIOCTLCMD;
+ 
+-		result = get_user(ivalue, (unsigned int *) arg);
++		result = get_user(value, (__u32 *) arg);
+ 		if (result)
+ 			return result;
+-		if (ivalue > 500000 || ivalue < 20000)
++		if (value > 500000 || value < 20000)
+ 			return -EINVAL;
+-		return init_timing_params(duty_cycle, ivalue);
++		return init_timing_params(duty_cycle, value);
+ 		break;
+ 
+ 	default:
+@@ -1054,6 +1053,9 @@ static const struct file_operations lirc_fops = {
+ 	.owner		= THIS_MODULE,
+ 	.write		= lirc_write,
+ 	.unlocked_ioctl	= lirc_ioctl,
++#ifdef CONFIG_COMPAT
++	.compat_ioctl	= lirc_ioctl,
++#endif
+ 	.read		= lirc_dev_fop_read,
+ 	.poll		= lirc_dev_fop_poll,
+ 	.open		= lirc_dev_fop_open,
+diff --git a/drivers/staging/lirc/lirc_sir.c b/drivers/staging/lirc/lirc_sir.c
+index eb08fa7..c4cb3aa 100644
+--- a/drivers/staging/lirc/lirc_sir.c
++++ b/drivers/staging/lirc/lirc_sir.c
+@@ -336,9 +336,8 @@ static ssize_t lirc_write(struct file *file, const char *buf, size_t n,
+ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ {
+ 	int retval = 0;
+-	unsigned long value = 0;
++	__u32 value = 0;
+ #ifdef LIRC_ON_SA1100
+-	unsigned int ivalue;
+ 
+ 	if (cmd == LIRC_GET_FEATURES)
+ 		value = LIRC_CAN_SEND_PULSE |
+@@ -362,22 +361,22 @@ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ 	case LIRC_GET_FEATURES:
+ 	case LIRC_GET_SEND_MODE:
+ 	case LIRC_GET_REC_MODE:
+-		retval = put_user(value, (unsigned long *) arg);
++		retval = put_user(value, (__u32 *) arg);
+ 		break;
+ 
+ 	case LIRC_SET_SEND_MODE:
+ 	case LIRC_SET_REC_MODE:
+-		retval = get_user(value, (unsigned long *) arg);
++		retval = get_user(value, (__u32 *) arg);
+ 		break;
+ #ifdef LIRC_ON_SA1100
+ 	case LIRC_SET_SEND_DUTY_CYCLE:
+-		retval = get_user(ivalue, (unsigned int *) arg);
++		retval = get_user(value, (__u32 *) arg);
+ 		if (retval)
+ 			return retval;
+-		if (ivalue <= 0 || ivalue > 100)
++		if (value <= 0 || value > 100)
+ 			return -EINVAL;
+-		/* (ivalue/100)*(1000000/freq) */
+-		duty_cycle = ivalue;
++		/* (value/100)*(1000000/freq) */
++		duty_cycle = value;
+ 		pulse_width = (unsigned long) duty_cycle*10000/freq;
+ 		space_width = (unsigned long) 1000000L/freq-pulse_width;
+ 		if (pulse_width >= LIRC_ON_SA1100_TRANSMITTER_LATENCY)
+@@ -386,12 +385,12 @@ static long lirc_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
+ 			space_width -= LIRC_ON_SA1100_TRANSMITTER_LATENCY;
+ 		break;
+ 	case LIRC_SET_SEND_CARRIER:
+-		retval = get_user(ivalue, (unsigned int *) arg);
++		retval = get_user(value, (__u32 *) arg);
+ 		if (retval)
+ 			return retval;
+-		if (ivalue > 500000 || ivalue < 20000)
++		if (value > 500000 || value < 20000)
+ 			return -EINVAL;
+-		freq = ivalue;
++		freq = value;
+ 		pulse_width = (unsigned long) duty_cycle*10000/freq;
+ 		space_width = (unsigned long) 1000000L/freq-pulse_width;
+ 		if (pulse_width >= LIRC_ON_SA1100_TRANSMITTER_LATENCY)
+@@ -457,6 +456,9 @@ static const struct file_operations lirc_fops = {
+ 	.write		= lirc_write,
+ 	.poll		= lirc_poll,
+ 	.unlocked_ioctl	= lirc_ioctl,
++#ifdef CONFIG_COMPAT
++	.compat_ioctl	= lirc_ioctl,
++#endif
+ 	.open		= lirc_dev_fop_open,
+ 	.release	= lirc_dev_fop_close,
+ };
+diff --git a/drivers/staging/lirc/lirc_zilog.c b/drivers/staging/lirc/lirc_zilog.c
+index 100caab..d920644 100644
+--- a/drivers/staging/lirc/lirc_zilog.c
++++ b/drivers/staging/lirc/lirc_zilog.c
+@@ -1139,6 +1139,9 @@ static const struct file_operations lirc_fops = {
+ 	.write		= write,
+ 	.poll		= poll,
+ 	.unlocked_ioctl	= ioctl,
++#ifdef CONFIG_COMPAT
++	.compat_ioctl	= ioctl,
++#endif
+ 	.open		= open,
+ 	.release	= close
+ };
+diff --git a/include/media/lirc_dev.h b/include/media/lirc_dev.h
+index b1f6066..54780a5 100644
+--- a/include/media/lirc_dev.h
++++ b/include/media/lirc_dev.h
+@@ -125,10 +125,10 @@ static inline unsigned int lirc_buffer_write(struct lirc_buffer *buf,
+ struct lirc_driver {
+ 	char name[40];
+ 	int minor;
+-	unsigned long code_length;
++	__u32 code_length;
+ 	unsigned int buffer_size; /* in chunks holding one code each */
+ 	int sample_rate;
+-	unsigned long features;
++	__u32 features;
+ 
+ 	unsigned int chunk_size;
+ 
+@@ -139,7 +139,7 @@ struct lirc_driver {
+ 	struct lirc_buffer *rbuf;
+ 	int (*set_use_inc) (void *data);
+ 	void (*set_use_dec) (void *data);
+-	struct file_operations *fops;
++	const struct file_operations *fops;
+ 	struct device *dev;
+ 	struct module *owner;
+ };

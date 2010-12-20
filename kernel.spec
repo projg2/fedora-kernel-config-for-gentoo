@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 69
+%global baserelease 70
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -703,7 +703,24 @@ Patch2802: linux-2.6-silence-acpi-blacklist.patch
 Patch2899: linux-2.6-v4l-dvb-fixes.patch
 Patch2900: linux-2.6-v4l-dvb-update.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
+Patch2902: linux-2.6-v4l-dvb-uvcvideo-update.patch
+
+Patch2910: linux-2.6-v4l-dvb-add-lgdt3304-support.patch
+Patch2911: linux-2.6-v4l-dvb-add-kworld-a340-support.patch
+Patch2912: linux-2.6-v4l-dvb-ir-core-update.patch
+Patch2913: linux-2.6-v4l-dvb-ir-core-memleak-fixes.patch
+Patch2914: linux-2.6-v4l-dvb-ir-core-streamzap.patch
+
+Patch2915: lirc-staging-2.6.36.patch
+#Patch2916: lirc-staging-2.6.36-fixes.patch
 Patch2917: hdpvr-ir-enable.patch
+Patch2918: linux-2.6-v4l-dvb-ir-core-update-2.patch
+Patch2919: linux-2.6-v4l-dvb-ir-core-update-3.patch
+Patch2920: linux-2.6-lirc-ioctl-compat-fixups.patch
+Patch2921: linux-2.6-v4l-dvb-ir-core-update-4.patch
+Patch2922: linux-2.6-v4l-dvb-ir-core-update-5.patch
+Patch2923: linux-2.6-v4l-dvb-hdpvr-updates.patch
+Patch2924: linux-2.6-v4l-dvb-ir-core-fix-imon.patch
 
 Patch2950: linux-2.6-via-velocity-dma-fix.patch
 
@@ -1386,16 +1403,31 @@ ApplyPatch efifb-check-that-the-base-addr-is-plausible-on-pci-systems.patch
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 
-# enable IR receiver on Hauppauge HD PVR (v4l-dvb merge pending)
-ApplyPatch hdpvr-ir-enable.patch
-# bz #575873
-ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
-
 # V4L/DVB updates/fixes/experimental drivers
 #  apply if non-empty
 ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
+ApplyPatch linux-2.6-v4l-dvb-uvcvideo-update.patch
+
+ApplyPatch linux-2.6-v4l-dvb-ir-core-update.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-memleak-fixes.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-streamzap.patch
+ApplyPatch linux-2.6-v4l-dvb-add-lgdt3304-support.patch
+ApplyPatch linux-2.6-v4l-dvb-add-kworld-a340-support.patch
+
+# http://www.lirc.org/
+ApplyPatch lirc-staging-2.6.36.patch
+#ApplyOptionalPatch lirc-staging-2.6.36-fixes.patch
+# enable IR receiver on Hauppauge HD PVR (v4l-dvb merge pending)
+ApplyPatch hdpvr-ir-enable.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-update-2.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-update-3.patch
+ApplyPatch linux-2.6-lirc-ioctl-compat-fixups.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-update-4.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-update-5.patch
+ApplyPatch linux-2.6-v4l-dvb-hdpvr-updates.patch
+ApplyPatch linux-2.6-v4l-dvb-ir-core-fix-imon.patch
 
 # Fix DMA bug on via-velocity
 ApplyPatch linux-2.6-via-velocity-dma-fix.patch
@@ -1421,6 +1453,8 @@ ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 ApplyPatch fix-rcu_deref_check-warning.patch
 ApplyPatch linux-2.6-cgroups-rcu.patch
 
+# bz #575873
+ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
 # Scheduler fixes (#635813 and #633037)
 ApplyPatch sched-05-avoid-side-effect-of-tickless-idle-on-update_cpu_load.patch
@@ -2075,7 +2109,7 @@ fi
 # and build.
 
 %changelog
-* Sun Dec 19 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.10-69
+* Sun Dec 19 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.10-70
 - Revert Jarod's v4l-dvb-ir rebase, due to several issues reported against
   the 2.6.35.10-68 update.
   https://admin.fedoraproject.org/updates/kernel-2.6.35.10-68.fc14
@@ -2110,6 +2144,8 @@ fi
    r8169-02-_re_init-phy-on-resume.patch
    r8169-03-fix-broken-checksum-for-invalid-sctp_igmp-packets.patch
    hda_realtek-handle-unset-external-amp-bits.patch
+
+MARKME
 
 * Fri Dec 10 2010 Kyle McMartin <kyle@redhat.com>
 - pci-disable-aspm-if-bios-asks-us-to.patch: Patch from mjg59 to disable
