@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-# % define buildid .local
+%define buildid .bz664206
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -686,6 +686,8 @@ Patch1825: drm-intel-make-lvds-work.patch
 Patch1826: drm-i915-disable-sr-polling.patch
 
 Patch1828: drm-ttm-fix-two-race-conditions-fix-busy-codepaths.patch
+
+Patch1830: drm-radeon-r600-cs-checker-fixes.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 Patch2000: efifb-add-more-models.patch
@@ -1375,6 +1377,8 @@ ApplyPatch drm-i915-disable-sr-polling.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
 ApplyPatch drm-ttm-fix-two-race-conditions-fix-busy-codepaths.patch
+
+ApplyPatch drm-radeon-r600-cs-checker-fixes.patch
 
 ApplyPatch efifb-add-more-models.patch
 ApplyPatch efifb-check-that-the-base-addr-is-plausible-on-pci-systems.patch
