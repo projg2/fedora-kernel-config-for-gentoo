@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .bz664206
+# % define buildid .local
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
