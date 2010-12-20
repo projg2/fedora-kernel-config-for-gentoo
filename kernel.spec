@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 68
+%global baserelease 71
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -700,8 +700,8 @@ Patch2201: linux-2.6-firewire-git-pending.patch
 Patch2802: linux-2.6-silence-acpi-blacklist.patch
 
 # media patches
-Patch2899: linux-2.6-v4l-dvb-fixes.patch
-Patch2900: linux-2.6-v4l-dvb-update.patch
+Patch2899: linux-2.6-v4l-dvb-update.patch
+Patch2900: linux-2.6-v4l-dvb-fixes.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
 Patch2917: hdpvr-ir-enable.patch
 
@@ -1393,8 +1393,8 @@ ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
 # V4L/DVB updates/fixes/experimental drivers
 #  apply if non-empty
-ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
+ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 
 # Fix DMA bug on via-velocity
@@ -2075,6 +2075,15 @@ fi
 # and build.
 
 %changelog
+* Mon Dec 20 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.10-71
+- Restore v4l/dvb/rc rebase, now with prospective fixes for the bttv and
+  ene_ir issues that showed up in -67 and -68
+
+* Sun Dec 19 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.10-70
+- Revert Jarod's v4l-dvb-ir rebase, due to several issues reported against
+  the 2.6.35.10-68 update.
+  https://admin.fedoraproject.org/updates/kernel-2.6.35.10-68.fc14
+
 * Sat Dec 18 2010 Kyle McMartin <kyle@redhat.com>
 - Patch from nhorman against f13:
   Enhance AF_PACKET to allow non-contiguous buffer alloc (#637619)
