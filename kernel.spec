@@ -1392,14 +1392,15 @@ ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 
 # enable IR receiver on Hauppauge HD PVR (v4l-dvb merge pending)
 ApplyPatch hdpvr-ir-enable.patch
-# bz #575873
-ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
 # V4L/DVB updates/fixes/experimental drivers
 #  apply if non-empty
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
+
+# bz #575873
+ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
 # Fix DMA bug on via-velocity
 ApplyPatch linux-2.6-via-velocity-dma-fix.patch
