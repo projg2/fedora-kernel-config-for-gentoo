@@ -694,3 +694,20 @@ Index: linux-2.6.35.x86_64/drivers/media/rc/ene_ir.c
  	if (!pnp_port_valid(pnp_dev, 0) ||
  	    pnp_port_len(pnp_dev, 0) < ENE_IO_SIZE)
  		goto error;
+@@ -1076,6 +1076,8 @@ static int ene_probe(struct pnp_dev *pnp
+ 		rdev->input_name = "ENE eHome Infrared Remote Transceiver";
+ 	}
+ 
++	dev->rdev = rdev;
++
+ 	ene_rx_setup_hw_buffer(dev);
+ 	ene_setup_default_settings(dev);
+ 	ene_setup_hw_settings(dev);
+@@ -1087,7 +1089,6 @@ static int ene_probe(struct pnp_dev *pnp
+ 	if (error < 0)
+ 		goto error;
+ 
+-	dev->rdev = rdev;
+ 	ene_notice("driver has been succesfully loaded");
+ 	return 0;
+ error:

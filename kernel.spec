@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 72
+%global baserelease 73
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2080,6 +2080,9 @@ fi
 # and build.
 
 %changelog
+* Wed Dec 22 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.10-73
+- Fix ene_ir bugs (jumping off a null dev->rdev pointer) (#664145)
+
 * Mon Dec 20 2010 Kyle McMartin <kyle@redhat.com> 2.6.35.10-72
 - Backport some of the radeon r600_cs.c fixes between .35 and master. (#664206)
 
