@@ -1,3 +1,22 @@
+There are a few patches here... Two are upstream, three are not yet,
+but will be soon...
+
+--jarod
+
+From upstream:
+commit 692e42df12e8427219958468301f3d03ca5f0f0d
+Author: Brandon Philips <brandon@ifup.org>
+Date:   Fri Dec 17 12:58:22 2010 -0300
+
+    [media] bttv: remove unneeded locking comments
+    
+    After Mauro's "bttv: Fix locking issues due to BKL removal code" there
+    are a number of comments that are no longer needed about lock ordering.
+    Remove them.
+    
+    Signed-off-by: Brandon Philips <bphilips@suse.de>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
 commit 587f0d5d6d44e3529028bf197d424f866fb2411d
 Author: Mauro Carvalho Chehab <mchehab@infradead.org>
 Date:   Wed Dec 15 18:45:42 2010 -0300
@@ -25,11 +44,51 @@ Date:   Wed Dec 15 18:45:42 2010 -0300
     Tested-by: Torsten Kaiser <just.for.lkml@googlemail.com>
     Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
 
-diff --git a/drivers/media/video/bt8xx/bttv-driver.c b/drivers/media/video/bt8xx/bttv-driver.c
-index 3da6e80..c14b819 100644
---- a/drivers/media/video/bt8xx/bttv-driver.c
-+++ b/drivers/media/video/bt8xx/bttv-driver.c
-@@ -855,7 +855,6 @@ int check_alloc_btres_lock(struct bttv *btv, struct bttv_fh *fh, int bit)
+Not yet upstream:
+commit b8f82c5b7258f0d82102347c52c8f4144ec03990
+Author: Kyle McMartin <kylem@redhat.com>
+Date:   Fri Dec 31 00:32:08 2010 -0500
+
+    rc/ene_ir: fix oops on module load
+    
+    dev->rdev is accessed in ene_setup_hw_settings, so it needs to be wired
+    up before then. Also fix a possible improper resource freeing bug.
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit e47a4d6dd9429c817a393fafc79259450a423c8b
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Thu Dec 30 23:21:08 2010 -0500
+
+    rc/imon: need to submit urb before ffdc type check
+    
+    Otherwise, we have a null receive buffer, and the logic all falls down,
+    goes boom, all ffdc devs wind up as imon IR w/VFD. Oops.
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit 8d52511af719eace80cc75258d9adff4fa9b5bb7
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Mon Dec 27 23:04:02 2010 -0500
+
+    rc/imon: fix ffdc device detection oops
+    
+    There's a nasty bug that slipped in when the rc device interface was
+    altered, only affecting the older 0xffdc imon devices. We were trying
+    to access ictx->rdev->allowed_protos before ictx->rdev had been set.
+    
+    There's also an issue with call ordering that meant the correct
+    keymap wasn't getting loaded for MCE IR type 0xffdc devices.
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+
+
+Index: linux-2.6.35.x86_64/drivers/media/video/bt8xx/bttv-driver.c
+===================================================================
+--- linux-2.6.35.x86_64.orig/drivers/media/video/bt8xx/bttv-driver.c
++++ linux-2.6.35.x86_64/drivers/media/video/bt8xx/bttv-driver.c
+@@ -855,7 +855,6 @@ int check_alloc_btres_lock(struct bttv *
  		xbits |= RESOURCE_VIDEO_READ | RESOURCE_VIDEO_STREAM;
  
  	/* is it free? */
@@ -37,7 +96,7 @@ index 3da6e80..c14b819 100644
  	if (btv->resources & xbits) {
  		/* no, someone else uses it */
  		goto fail;
-@@ -885,11 +884,9 @@ int check_alloc_btres_lock(struct bttv *btv, struct bttv_fh *fh, int bit)
+@@ -885,11 +884,9 @@ int check_alloc_btres_lock(struct bttv *
  	/* it's free, grab it */
  	fh->resources  |= bit;
  	btv->resources |= bit;
@@ -49,7 +108,7 @@ index 3da6e80..c14b819 100644
  	return 0;
  }
  
-@@ -941,7 +938,6 @@ void free_btres_lock(struct bttv *btv, struct bttv_fh *fh, int bits)
+@@ -941,7 +938,6 @@ void free_btres_lock(struct bttv *btv, s
  		/* trying to free ressources not allocated by us ... */
  		printk("bttv: BUG! (btres)\n");
  	}
@@ -57,7 +116,7 @@ index 3da6e80..c14b819 100644
  	fh->resources  &= ~bits;
  	btv->resources &= ~bits;
  
-@@ -952,8 +948,6 @@ void free_btres_lock(struct bttv *btv, struct bttv_fh *fh, int bits)
+@@ -952,8 +948,6 @@ void free_btres_lock(struct bttv *btv, s
  
  	if (0 == (bits & VBI_RESOURCES))
  		disclaim_vbi_lines(btv);
@@ -66,7 +125,7 @@ index 3da6e80..c14b819 100644
  }
  
  /* ----------------------------------------------------------------------- */
-@@ -1714,28 +1708,20 @@ static int bttv_prepare_buffer(struct videobuf_queue *q,struct bttv *btv,
+@@ -1714,28 +1708,20 @@ static int bttv_prepare_buffer(struct vi
  
  		/* Make sure tvnorm and vbi_end remain consistent
  		   until we're done. */
@@ -95,7 +154,7 @@ index 3da6e80..c14b819 100644
  		if (width < c.min_scaled_width ||
  		    width > c.max_scaled_width ||
  		    height < c.min_scaled_height)
-@@ -1859,7 +1845,6 @@ static int bttv_s_std(struct file *file, void *priv, v4l2_std_id *id)
+@@ -1859,7 +1845,6 @@ static int bttv_s_std(struct file *file,
  	unsigned int i;
  	int err;
  
@@ -103,7 +162,7 @@ index 3da6e80..c14b819 100644
  	err = v4l2_prio_check(&btv->prio, fh->prio);
  	if (err)
  		goto err;
-@@ -1875,7 +1860,6 @@ static int bttv_s_std(struct file *file, void *priv, v4l2_std_id *id)
+@@ -1875,7 +1860,6 @@ static int bttv_s_std(struct file *file,
  	set_tvnorm(btv, i);
  
  err:
@@ -111,7 +170,7 @@ index 3da6e80..c14b819 100644
  
  	return err;
  }
-@@ -1899,7 +1883,6 @@ static int bttv_enum_input(struct file *file, void *priv,
+@@ -1899,7 +1883,6 @@ static int bttv_enum_input(struct file *
  	struct bttv *btv = fh->btv;
  	int rc = 0;
  
@@ -119,7 +178,7 @@ index 3da6e80..c14b819 100644
  	if (i->index >= bttv_tvcards[btv->c.type].video_inputs) {
  		rc = -EINVAL;
  		goto err;
-@@ -1929,7 +1912,6 @@ static int bttv_enum_input(struct file *file, void *priv,
+@@ -1929,7 +1912,6 @@ static int bttv_enum_input(struct file *
  	i->std = BTTV_NORMS;
  
  err:
@@ -127,7 +186,7 @@ index 3da6e80..c14b819 100644
  
  	return rc;
  }
-@@ -1939,9 +1921,7 @@ static int bttv_g_input(struct file *file, void *priv, unsigned int *i)
+@@ -1939,9 +1921,7 @@ static int bttv_g_input(struct file *fil
  	struct bttv_fh *fh = priv;
  	struct bttv *btv = fh->btv;
  
@@ -137,7 +196,7 @@ index 3da6e80..c14b819 100644
  
  	return 0;
  }
-@@ -1953,7 +1933,6 @@ static int bttv_s_input(struct file *file, void *priv, unsigned int i)
+@@ -1953,7 +1933,6 @@ static int bttv_s_input(struct file *fil
  
  	int err;
  
@@ -145,7 +204,7 @@ index 3da6e80..c14b819 100644
  	err = v4l2_prio_check(&btv->prio, fh->prio);
  	if (unlikely(err))
  		goto err;
-@@ -1966,7 +1945,6 @@ static int bttv_s_input(struct file *file, void *priv, unsigned int i)
+@@ -1966,7 +1945,6 @@ static int bttv_s_input(struct file *fil
  	set_input(btv, i, btv->tvnorm);
  
  err:
@@ -153,7 +212,7 @@ index 3da6e80..c14b819 100644
  	return 0;
  }
  
-@@ -1980,7 +1958,6 @@ static int bttv_s_tuner(struct file *file, void *priv,
+@@ -1980,7 +1958,6 @@ static int bttv_s_tuner(struct file *fil
  	if (unlikely(0 != t->index))
  		return -EINVAL;
  
@@ -161,7 +220,7 @@ index 3da6e80..c14b819 100644
  	if (unlikely(btv->tuner_type == TUNER_ABSENT)) {
  		err = -EINVAL;
  		goto err;
-@@ -1996,7 +1973,6 @@ static int bttv_s_tuner(struct file *file, void *priv,
+@@ -1996,7 +1973,6 @@ static int bttv_s_tuner(struct file *fil
  		btv->audio_mode_gpio(btv, t, 1);
  
  err:
@@ -169,7 +228,7 @@ index 3da6e80..c14b819 100644
  
  	return 0;
  }
-@@ -2007,10 +1983,8 @@ static int bttv_g_frequency(struct file *file, void *priv,
+@@ -2007,10 +1983,8 @@ static int bttv_g_frequency(struct file 
  	struct bttv_fh *fh  = priv;
  	struct bttv *btv = fh->btv;
  
@@ -180,7 +239,7 @@ index 3da6e80..c14b819 100644
  
  	return 0;
  }
-@@ -2025,7 +1999,6 @@ static int bttv_s_frequency(struct file *file, void *priv,
+@@ -2025,7 +1999,6 @@ static int bttv_s_frequency(struct file 
  	if (unlikely(f->tuner != 0))
  		return -EINVAL;
  
@@ -188,7 +247,7 @@ index 3da6e80..c14b819 100644
  	err = v4l2_prio_check(&btv->prio, fh->prio);
  	if (unlikely(err))
  		goto err;
-@@ -2040,7 +2013,6 @@ static int bttv_s_frequency(struct file *file, void *priv,
+@@ -2040,7 +2013,6 @@ static int bttv_s_frequency(struct file 
  	if (btv->has_matchbox && btv->radio_user)
  		tea5757_set_freq(btv, btv->freq);
  err:
@@ -196,7 +255,7 @@ index 3da6e80..c14b819 100644
  
  	return 0;
  }
-@@ -2173,7 +2145,6 @@ limit_scaled_size_lock       (struct bttv_fh *               fh,
+@@ -2173,7 +2145,6 @@ limit_scaled_size_lock       (struct btt
  
  	/* Make sure tvnorm, vbi_end and the current cropping parameters
  	   remain consistent until we're done. */
@@ -204,7 +263,7 @@ index 3da6e80..c14b819 100644
  
  	b = &bttv_tvnorms[btv->tvnorm].cropcap.bounds;
  
-@@ -2251,7 +2222,6 @@ limit_scaled_size_lock       (struct bttv_fh *               fh,
+@@ -2251,7 +2222,6 @@ limit_scaled_size_lock       (struct btt
  	rc = 0; /* success */
  
   fail:
@@ -212,7 +271,7 @@ index 3da6e80..c14b819 100644
  
  	return rc;
  }
-@@ -2283,9 +2253,7 @@ verify_window_lock		(struct bttv_fh *               fh,
+@@ -2283,9 +2253,7 @@ verify_window_lock		(struct bttv_fh *   
  	if (V4L2_FIELD_ANY == field) {
  		__s32 height2;
  
@@ -222,7 +281,7 @@ index 3da6e80..c14b819 100644
  		field = (win->w.height > height2)
  			? V4L2_FIELD_INTERLACED
  			: V4L2_FIELD_TOP;
-@@ -2361,7 +2329,6 @@ static int setup_window_lock(struct bttv_fh *fh, struct bttv *btv,
+@@ -2361,7 +2329,6 @@ static int setup_window_lock(struct bttv
  		}
  	}
  
@@ -230,7 +289,21 @@ index 3da6e80..c14b819 100644
  	/* clip against screen */
  	if (NULL != btv->fbuf.base)
  		n = btcx_screen_clips(btv->fbuf.fmt.width, btv->fbuf.fmt.height,
-@@ -2413,7 +2380,6 @@ static int setup_window_lock(struct bttv_fh *fh, struct bttv *btv,
+@@ -2392,13 +2359,6 @@ static int setup_window_lock(struct bttv
+ 	fh->ov.field    = win->field;
+ 	fh->ov.setup_ok = 1;
+ 
+-	/*
+-	 * FIXME: btv is protected by btv->lock mutex, while btv->init
+-	 *	  is protected by fh->cap.vb_lock. This seems to open the
+-	 *	  possibility for some race situations. Maybe the better would
+-	 *	  be to unify those locks or to use another way to store the
+-	 *	  init values that will be consumed by videobuf callbacks
+-	 */
+ 	btv->init.ov.w.width   = win->w.width;
+ 	btv->init.ov.w.height  = win->w.height;
+ 	btv->init.ov.field     = win->field;
+@@ -2413,7 +2373,6 @@ static int setup_window_lock(struct bttv
  		bttv_overlay_risc(btv, &fh->ov, fh->ovfmt, new);
  		retval = bttv_switch_overlay(btv,fh,new);
  	}
@@ -238,7 +311,7 @@ index 3da6e80..c14b819 100644
  	return retval;
  }
  
-@@ -2527,9 +2493,7 @@ static int bttv_try_fmt_vid_cap(struct file *file, void *priv,
+@@ -2527,9 +2486,7 @@ static int bttv_try_fmt_vid_cap(struct f
  	if (V4L2_FIELD_ANY == field) {
  		__s32 height2;
  
@@ -248,7 +321,7 @@ index 3da6e80..c14b819 100644
  		field = (f->fmt.pix.height > height2)
  			? V4L2_FIELD_INTERLACED
  			: V4L2_FIELD_BOTTOM;
-@@ -2615,7 +2579,6 @@ static int bttv_s_fmt_vid_cap(struct file *file, void *priv,
+@@ -2615,7 +2572,6 @@ static int bttv_s_fmt_vid_cap(struct fil
  	fmt = format_by_fourcc(f->fmt.pix.pixelformat);
  
  	/* update our state informations */
@@ -256,7 +329,7 @@ index 3da6e80..c14b819 100644
  	fh->fmt              = fmt;
  	fh->cap.field        = f->fmt.pix.field;
  	fh->cap.last         = V4L2_FIELD_NONE;
-@@ -2624,7 +2587,6 @@ static int bttv_s_fmt_vid_cap(struct file *file, void *priv,
+@@ -2624,7 +2580,6 @@ static int bttv_s_fmt_vid_cap(struct fil
  	btv->init.fmt        = fmt;
  	btv->init.width      = f->fmt.pix.width;
  	btv->init.height     = f->fmt.pix.height;
@@ -264,7 +337,7 @@ index 3da6e80..c14b819 100644
  
  	return 0;
  }
-@@ -2650,11 +2612,9 @@ static int vidiocgmbuf(struct file *file, void *priv, struct video_mbuf *mbuf)
+@@ -2650,11 +2605,9 @@ static int vidiocgmbuf(struct file *file
  	unsigned int i;
  	struct bttv_fh *fh = priv;
  
@@ -276,7 +349,7 @@ index 3da6e80..c14b819 100644
  		return retval;
  	}
  
-@@ -2666,7 +2626,6 @@ static int vidiocgmbuf(struct file *file, void *priv, struct video_mbuf *mbuf)
+@@ -2666,7 +2619,6 @@ static int vidiocgmbuf(struct file *file
  	for (i = 0; i < gbuffers; i++)
  		mbuf->offsets[i] = i * gbufsize;
  
@@ -284,7 +357,7 @@ index 3da6e80..c14b819 100644
  	return 0;
  }
  #endif
-@@ -2776,10 +2735,8 @@ static int bttv_overlay(struct file *file, void *f, unsigned int on)
+@@ -2776,10 +2728,8 @@ static int bttv_overlay(struct file *fil
  	int retval = 0;
  
  	if (on) {
@@ -295,7 +368,7 @@ index 3da6e80..c14b819 100644
  			return -EINVAL;
  		}
  		if (unlikely(!fh->ov.setup_ok)) {
-@@ -2788,13 +2745,11 @@ static int bttv_overlay(struct file *file, void *f, unsigned int on)
+@@ -2788,13 +2738,11 @@ static int bttv_overlay(struct file *fil
  		}
  		if (retval)
  			return retval;
@@ -309,7 +382,7 @@ index 3da6e80..c14b819 100644
  	if (on) {
  		fh->ov.tvnorm = btv->tvnorm;
  		new = videobuf_sg_alloc(sizeof(*new));
-@@ -2806,7 +2761,6 @@ static int bttv_overlay(struct file *file, void *f, unsigned int on)
+@@ -2806,7 +2754,6 @@ static int bttv_overlay(struct file *fil
  
  	/* switch over */
  	retval = bttv_switch_overlay(btv, fh, new);
@@ -317,7 +390,7 @@ index 3da6e80..c14b819 100644
  	return retval;
  }
  
-@@ -2845,7 +2799,6 @@ static int bttv_s_fbuf(struct file *file, void *f,
+@@ -2845,7 +2792,6 @@ static int bttv_s_fbuf(struct file *file
  	}
  
  	/* ok, accept it */
@@ -325,7 +398,7 @@ index 3da6e80..c14b819 100644
  	btv->fbuf.base       = fb->base;
  	btv->fbuf.fmt.width  = fb->fmt.width;
  	btv->fbuf.fmt.height = fb->fmt.height;
-@@ -2877,7 +2830,6 @@ static int bttv_s_fbuf(struct file *file, void *f,
+@@ -2877,7 +2823,6 @@ static int bttv_s_fbuf(struct file *file
  			retval = bttv_switch_overlay(btv, fh, new);
  		}
  	}
@@ -333,7 +406,7 @@ index 3da6e80..c14b819 100644
  	return retval;
  }
  
-@@ -2956,7 +2908,6 @@ static int bttv_queryctrl(struct file *file, void *priv,
+@@ -2956,7 +2901,6 @@ static int bttv_queryctrl(struct file *f
  	     c->id >= V4L2_CID_PRIVATE_LASTP1))
  		return -EINVAL;
  
@@ -341,7 +414,7 @@ index 3da6e80..c14b819 100644
  	if (!btv->volume_gpio && (c->id == V4L2_CID_AUDIO_VOLUME))
  		*c = no_ctl;
  	else {
-@@ -2964,7 +2915,6 @@ static int bttv_queryctrl(struct file *file, void *priv,
+@@ -2964,7 +2908,6 @@ static int bttv_queryctrl(struct file *f
  
  		*c = (NULL != ctrl) ? *ctrl : no_ctl;
  	}
@@ -349,7 +422,7 @@ index 3da6e80..c14b819 100644
  
  	return 0;
  }
-@@ -2975,10 +2925,8 @@ static int bttv_g_parm(struct file *file, void *f,
+@@ -2975,10 +2918,8 @@ static int bttv_g_parm(struct file *file
  	struct bttv_fh *fh = f;
  	struct bttv *btv = fh->btv;
  
@@ -360,7 +433,7 @@ index 3da6e80..c14b819 100644
  
  	return 0;
  }
-@@ -2994,7 +2942,6 @@ static int bttv_g_tuner(struct file *file, void *priv,
+@@ -2994,7 +2935,6 @@ static int bttv_g_tuner(struct file *fil
  	if (0 != t->index)
  		return -EINVAL;
  
@@ -368,7 +441,7 @@ index 3da6e80..c14b819 100644
  	t->rxsubchans = V4L2_TUNER_SUB_MONO;
  	bttv_call_all(btv, tuner, g_tuner, t);
  	strcpy(t->name, "Television");
-@@ -3006,7 +2953,6 @@ static int bttv_g_tuner(struct file *file, void *priv,
+@@ -3006,7 +2946,6 @@ static int bttv_g_tuner(struct file *fil
  	if (btv->audio_mode_gpio)
  		btv->audio_mode_gpio(btv, t, 0);
  
@@ -376,7 +449,7 @@ index 3da6e80..c14b819 100644
  	return 0;
  }
  
-@@ -3015,9 +2961,7 @@ static int bttv_g_priority(struct file *file, void *f, enum v4l2_priority *p)
+@@ -3015,9 +2954,7 @@ static int bttv_g_priority(struct file *
  	struct bttv_fh *fh = f;
  	struct bttv *btv = fh->btv;
  
@@ -386,7 +459,7 @@ index 3da6e80..c14b819 100644
  
  	return 0;
  }
-@@ -3029,9 +2973,7 @@ static int bttv_s_priority(struct file *file, void *f,
+@@ -3029,9 +2966,7 @@ static int bttv_s_priority(struct file *
  	struct bttv *btv = fh->btv;
  	int	rc;
  
@@ -396,7 +469,7 @@ index 3da6e80..c14b819 100644
  
  	return rc;
  }
-@@ -3046,9 +2988,7 @@ static int bttv_cropcap(struct file *file, void *priv,
+@@ -3046,9 +2981,7 @@ static int bttv_cropcap(struct file *fil
  	    cap->type != V4L2_BUF_TYPE_VIDEO_OVERLAY)
  		return -EINVAL;
  
@@ -406,7 +479,7 @@ index 3da6e80..c14b819 100644
  
  	return 0;
  }
-@@ -3066,9 +3006,7 @@ static int bttv_g_crop(struct file *file, void *f, struct v4l2_crop *crop)
+@@ -3066,9 +2999,7 @@ static int bttv_g_crop(struct file *file
  	   inconsistent with fh->width or fh->height and apps
  	   do not expect a change here. */
  
@@ -416,7 +489,7 @@ index 3da6e80..c14b819 100644
  
  	return 0;
  }
-@@ -3092,17 +3030,14 @@ static int bttv_s_crop(struct file *file, void *f, struct v4l2_crop *crop)
+@@ -3092,17 +3023,14 @@ static int bttv_s_crop(struct file *file
  	/* Make sure tvnorm, vbi_end and the current cropping
  	   parameters remain consistent until we're done. Note
  	   read() may change vbi_end in check_alloc_btres_lock(). */
@@ -434,7 +507,7 @@ index 3da6e80..c14b819 100644
  		return retval;
  	}
  
-@@ -3114,7 +3049,6 @@ static int bttv_s_crop(struct file *file, void *f, struct v4l2_crop *crop)
+@@ -3114,7 +3042,6 @@ static int bttv_s_crop(struct file *file
  
  	b_top = max(b->top, btv->vbi_end);
  	if (b_top + 32 >= b_bottom) {
@@ -442,7 +515,7 @@ index 3da6e80..c14b819 100644
  		return retval;
  	}
  
-@@ -3137,12 +3071,8 @@ static int bttv_s_crop(struct file *file, void *f, struct v4l2_crop *crop)
+@@ -3137,12 +3064,8 @@ static int bttv_s_crop(struct file *file
  
  	btv->crop[1] = c;
  
@@ -455,7 +528,7 @@ index 3da6e80..c14b819 100644
  	if (fh->width < c.min_scaled_width) {
  		fh->width = c.min_scaled_width;
  		btv->init.width = c.min_scaled_width;
-@@ -3159,8 +3089,6 @@ static int bttv_s_crop(struct file *file, void *f, struct v4l2_crop *crop)
+@@ -3159,8 +3082,6 @@ static int bttv_s_crop(struct file *file
  		btv->init.height = c.max_scaled_height;
  	}
  
@@ -464,7 +537,7 @@ index 3da6e80..c14b819 100644
  	return 0;
  }
  
-@@ -3228,7 +3156,6 @@ static unsigned int bttv_poll(struct file *file, poll_table *wait)
+@@ -3228,7 +3149,6 @@ static unsigned int bttv_poll(struct fil
  		return videobuf_poll_stream(file, &fh->vbi, wait);
  	}
  
@@ -472,7 +545,7 @@ index 3da6e80..c14b819 100644
  	if (check_btres(fh,RESOURCE_VIDEO_STREAM)) {
  		/* streaming capture */
  		if (list_empty(&fh->cap.stream))
-@@ -3263,7 +3190,6 @@ static unsigned int bttv_poll(struct file *file, poll_table *wait)
+@@ -3263,7 +3183,6 @@ static unsigned int bttv_poll(struct fil
  	else
  		rc = 0;
  err:
@@ -480,10 +553,19 @@ index 3da6e80..c14b819 100644
  	return rc;
  }
  
-@@ -3303,14 +3229,11 @@ static int bttv_open(struct file *file)
- 	 * Let's first copy btv->init at fh, holding cap.vb_lock, and then work
- 	 * with the rest of init, holding btv->lock.
- 	 */
+@@ -3294,23 +3213,11 @@ static int bttv_open(struct file *file)
+ 		return -ENOMEM;
+ 	file->private_data = fh;
+ 
+-	/*
+-	 * btv is protected by btv->lock mutex, while btv->init and other
+-	 * streaming vars are protected by fh->cap.vb_lock. We need to take
+-	 * care of both locks to avoid troubles. However, vb_lock is used also
+-	 * inside videobuf, without calling buf->lock. So, it is a very bad
+-	 * idea to hold both locks at the same time.
+-	 * Let's first copy btv->init at fh, holding cap.vb_lock, and then work
+-	 * with the rest of init, holding btv->lock.
+-	 */
 -	mutex_lock(&fh->cap.vb_lock);
  	*fh = btv->init;
 -	mutex_unlock(&fh->cap.vb_lock);
@@ -495,7 +577,7 @@ index 3da6e80..c14b819 100644
  	v4l2_prio_open(&btv->prio, &fh->prio);
  
  	videobuf_queue_sg_init(&fh->cap, &bttv_video_qops,
-@@ -3318,13 +3241,13 @@ static int bttv_open(struct file *file)
+@@ -3318,13 +3225,13 @@ static int bttv_open(struct file *file)
  			    V4L2_BUF_TYPE_VIDEO_CAPTURE,
  			    V4L2_FIELD_INTERLACED,
  			    sizeof(struct bttv_buffer),
@@ -511,7 +593,7 @@ index 3da6e80..c14b819 100644
  	set_tvnorm(btv,btv->tvnorm);
  	set_input(btv, btv->input, btv->tvnorm);
  
-@@ -3347,7 +3270,6 @@ static int bttv_open(struct file *file)
+@@ -3347,7 +3254,6 @@ static int bttv_open(struct file *file)
  	bttv_vbi_fmt_reset(&fh->vbi_fmt, btv->tvnorm);
  
  	bttv_field_count(btv);
@@ -519,7 +601,7 @@ index 3da6e80..c14b819 100644
  	return 0;
  }
  
-@@ -3356,7 +3278,6 @@ static int bttv_release(struct file *file)
+@@ -3356,7 +3262,6 @@ static int bttv_release(struct file *fil
  	struct bttv_fh *fh = file->private_data;
  	struct bttv *btv = fh->btv;
  
@@ -527,10 +609,14 @@ index 3da6e80..c14b819 100644
  	/* turn off overlay */
  	if (check_btres(fh, RESOURCE_OVERLAY))
  		bttv_switch_overlay(btv,fh,NULL);
-@@ -3386,10 +3307,8 @@ static int bttv_release(struct file *file)
- 	 * videobuf uses cap.vb_lock - we should avoid holding btv->lock,
- 	 * otherwise we may have dead lock conditions
- 	 */
+@@ -3382,14 +3287,8 @@ static int bttv_release(struct file *fil
+ 
+ 	/* free stuff */
+ 
+-	/*
+-	 * videobuf uses cap.vb_lock - we should avoid holding btv->lock,
+-	 * otherwise we may have dead lock conditions
+-	 */
 -	mutex_unlock(&btv->lock);
  	videobuf_mmap_free(&fh->cap);
  	videobuf_mmap_free(&fh->vbi);
@@ -538,7 +624,7 @@ index 3da6e80..c14b819 100644
  	v4l2_prio_close(&btv->prio, fh->prio);
  	file->private_data = NULL;
  	kfree(fh);
-@@ -3399,7 +3318,6 @@ static int bttv_release(struct file *file)
+@@ -3399,7 +3298,6 @@ static int bttv_release(struct file *fil
  
  	if (!btv->users)
  		audio_mute(btv, 1);
@@ -546,7 +632,7 @@ index 3da6e80..c14b819 100644
  
  	return 0;
  }
-@@ -3503,11 +3421,8 @@ static int radio_open(struct file *file)
+@@ -3503,11 +3401,8 @@ static int radio_open(struct file *file)
  	if (unlikely(!fh))
  		return -ENOMEM;
  	file->private_data = fh;
@@ -558,7 +644,7 @@ index 3da6e80..c14b819 100644
  	v4l2_prio_open(&btv->prio, &fh->prio);
  
  	btv->radio_user++;
-@@ -3515,7 +3430,6 @@ static int radio_open(struct file *file)
+@@ -3515,7 +3410,6 @@ static int radio_open(struct file *file)
  	bttv_call_all(btv, tuner, s_radio);
  	audio_input(btv,TVAUDIO_INPUT_RADIO);
  
@@ -566,7 +652,7 @@ index 3da6e80..c14b819 100644
  	return 0;
  }
  
-@@ -3525,7 +3439,6 @@ static int radio_release(struct file *file)
+@@ -3525,7 +3419,6 @@ static int radio_release(struct file *fi
  	struct bttv *btv = fh->btv;
  	struct rds_command cmd;
  
@@ -574,7 +660,7 @@ index 3da6e80..c14b819 100644
  	v4l2_prio_close(&btv->prio, fh->prio);
  	file->private_data = NULL;
  	kfree(fh);
-@@ -3533,7 +3446,6 @@ static int radio_release(struct file *file)
+@@ -3533,7 +3426,6 @@ static int radio_release(struct file *fi
  	btv->radio_user--;
  
  	bttv_call_all(btv, core, ioctl, RDS_CMD_CLOSE, &cmd);
@@ -582,7 +668,7 @@ index 3da6e80..c14b819 100644
  
  	return 0;
  }
-@@ -3562,7 +3474,6 @@ static int radio_g_tuner(struct file *file, void *priv, struct v4l2_tuner *t)
+@@ -3562,7 +3454,6 @@ static int radio_g_tuner(struct file *fi
  		return -EINVAL;
  	if (0 != t->index)
  		return -EINVAL;
@@ -590,7 +676,7 @@ index 3da6e80..c14b819 100644
  	strcpy(t->name, "Radio");
  	t->type = V4L2_TUNER_RADIO;
  
-@@ -3571,8 +3482,6 @@ static int radio_g_tuner(struct file *file, void *priv, struct v4l2_tuner *t)
+@@ -3571,8 +3462,6 @@ static int radio_g_tuner(struct file *fi
  	if (btv->audio_mode_gpio)
  		btv->audio_mode_gpio(btv, t, 0);
  
@@ -599,7 +685,7 @@ index 3da6e80..c14b819 100644
  	return 0;
  }
  
-@@ -3693,7 +3602,7 @@ static const struct v4l2_file_operations radio_fops =
+@@ -3693,7 +3582,7 @@ static const struct v4l2_file_operations
  	.open	  = radio_open,
  	.read     = radio_read,
  	.release  = radio_release,
@@ -608,77 +694,6 @@ index 3da6e80..c14b819 100644
  	.poll     = radio_poll,
  };
  
-
-
-commit 692e42df12e8427219958468301f3d03ca5f0f0d
-Author: Brandon Philips <brandon@ifup.org>
-Date:   Fri Dec 17 12:58:22 2010 -0300
-
-    [media] bttv: remove unneeded locking comments
-    
-    After Mauro's "bttv: Fix locking issues due to BKL removal code" there
-    are a number of comments that are no longer needed about lock ordering.
-    Remove them.
-    
-    Signed-off-by: Brandon Philips <bphilips@suse.de>
-    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
-
-diff --git a/drivers/media/video/bt8xx/bttv-driver.c b/drivers/media/video/bt8xx/bttv-driver.c
-index c14b819..e071b62 100644
---- a/drivers/media/video/bt8xx/bttv-driver.c
-+++ b/drivers/media/video/bt8xx/bttv-driver.c
-@@ -2359,13 +2359,6 @@ static int setup_window_lock(struct bttv_fh *fh, struct bttv *btv,
- 	fh->ov.field    = win->field;
- 	fh->ov.setup_ok = 1;
- 
--	/*
--	 * FIXME: btv is protected by btv->lock mutex, while btv->init
--	 *	  is protected by fh->cap.vb_lock. This seems to open the
--	 *	  possibility for some race situations. Maybe the better would
--	 *	  be to unify those locks or to use another way to store the
--	 *	  init values that will be consumed by videobuf callbacks
--	 */
- 	btv->init.ov.w.width   = win->w.width;
- 	btv->init.ov.w.height  = win->w.height;
- 	btv->init.ov.field     = win->field;
-@@ -3220,15 +3213,6 @@ static int bttv_open(struct file *file)
- 		return -ENOMEM;
- 	file->private_data = fh;
- 
--	/*
--	 * btv is protected by btv->lock mutex, while btv->init and other
--	 * streaming vars are protected by fh->cap.vb_lock. We need to take
--	 * care of both locks to avoid troubles. However, vb_lock is used also
--	 * inside videobuf, without calling buf->lock. So, it is a very bad
--	 * idea to hold both locks at the same time.
--	 * Let's first copy btv->init at fh, holding cap.vb_lock, and then work
--	 * with the rest of init, holding btv->lock.
--	 */
- 	*fh = btv->init;
- 
- 	fh->type = type;
-@@ -3303,10 +3287,6 @@ static int bttv_release(struct file *file)
- 
- 	/* free stuff */
- 
--	/*
--	 * videobuf uses cap.vb_lock - we should avoid holding btv->lock,
--	 * otherwise we may have dead lock conditions
--	 */
- 	videobuf_mmap_free(&fh->cap);
- 	videobuf_mmap_free(&fh->vbi);
- 	v4l2_prio_close(&btv->prio, fh->prio);
-
-
-Initial attempt at possible resolution to the ene_ir probe failure. It was possible
-for the io region and irq valid checks to fail, sending us to the error handling
-paths before calling request_region and request_irq, but with hw_io and irq set to
-zero, which are valid possibilities, and thus we'd call free_irq and/or release_region
-when we shouldn't, thus things go kaboom... Upstream author may sort this out in a
-slightly different manner, but it'll prevent the same problem.
-
---jarod
-
 Index: linux-2.6.35.x86_64/drivers/media/rc/ene_ir.c
 ===================================================================
 --- linux-2.6.35.x86_64.orig/drivers/media/rc/ene_ir.c
@@ -694,7 +709,7 @@ Index: linux-2.6.35.x86_64/drivers/media/rc/ene_ir.c
  	if (!pnp_port_valid(pnp_dev, 0) ||
  	    pnp_port_len(pnp_dev, 0) < ENE_IO_SIZE)
  		goto error;
-@@ -1076,6 +1076,8 @@ static int ene_probe(struct pnp_dev *pnp
+@@ -1072,6 +1076,8 @@ static int ene_probe(struct pnp_dev *pnp
  		rdev->input_name = "ENE eHome Infrared Remote Transceiver";
  	}
  
@@ -703,7 +718,7 @@ Index: linux-2.6.35.x86_64/drivers/media/rc/ene_ir.c
  	ene_rx_setup_hw_buffer(dev);
  	ene_setup_default_settings(dev);
  	ene_setup_hw_settings(dev);
-@@ -1087,7 +1089,6 @@ static int ene_probe(struct pnp_dev *pnp
+@@ -1083,7 +1089,6 @@ static int ene_probe(struct pnp_dev *pnp
  	if (error < 0)
  		goto error;
  
@@ -711,3 +726,93 @@ Index: linux-2.6.35.x86_64/drivers/media/rc/ene_ir.c
  	ene_notice("driver has been succesfully loaded");
  	return 0;
  error:
+Index: linux-2.6.35.x86_64/drivers/media/rc/imon.c
+===================================================================
+--- linux-2.6.35.x86_64.orig/drivers/media/rc/imon.c
++++ linux-2.6.35.x86_64/drivers/media/rc/imon.c
+@@ -1754,7 +1754,6 @@ static void imon_get_ffdc_type(struct im
+ 	printk(KERN_CONT " (id 0x%02x)\n", ffdc_cfg_byte);
+ 
+ 	ictx->display_type = detected_display_type;
+-	ictx->rdev->allowed_protos = allowed_protos;
+ 	ictx->rc_type = allowed_protos;
+ }
+ 
+@@ -1837,10 +1836,6 @@ static struct rc_dev *imon_init_rdev(str
+ 	rdev->allowed_protos = RC_TYPE_OTHER | RC_TYPE_RC6; /* iMON PAD or MCE */
+ 	rdev->change_protocol = imon_ir_change_protocol;
+ 	rdev->driver_name = MOD_NAME;
+-	if (ictx->rc_type == RC_TYPE_RC6)
+-		rdev->map_name = RC_MAP_IMON_MCE;
+-	else
+-		rdev->map_name = RC_MAP_IMON_PAD;
+ 
+ 	/* Enable front-panel buttons and/or knobs */
+ 	memcpy(ictx->usb_tx_buf, &fp_packet, sizeof(fp_packet));
+@@ -1849,11 +1844,18 @@ static struct rc_dev *imon_init_rdev(str
+ 	if (ret)
+ 		dev_info(ictx->dev, "panel buttons/knobs setup failed\n");
+ 
+-	if (ictx->product == 0xffdc)
++	if (ictx->product == 0xffdc) {
+ 		imon_get_ffdc_type(ictx);
++		rdev->allowed_protos = ictx->rc_type;
++	}
+ 
+ 	imon_set_display_type(ictx);
+ 
++	if (ictx->rc_type == RC_TYPE_RC6)
++		rdev->map_name = RC_MAP_IMON_MCE;
++	else
++		rdev->map_name = RC_MAP_IMON_PAD;
++
+ 	ret = rc_register_device(rdev);
+ 	if (ret < 0) {
+ 		dev_err(ictx->dev, "remote input dev register failed\n");
+@@ -2106,18 +2108,6 @@ static struct imon_context *imon_init_in
+ 		goto find_endpoint_failed;
+ 	}
+ 
+-	ictx->idev = imon_init_idev(ictx);
+-	if (!ictx->idev) {
+-		dev_err(dev, "%s: input device setup failed\n", __func__);
+-		goto idev_setup_failed;
+-	}
+-
+-	ictx->rdev = imon_init_rdev(ictx);
+-	if (!ictx->rdev) {
+-		dev_err(dev, "%s: rc device setup failed\n", __func__);
+-		goto rdev_setup_failed;
+-	}
+-
+ 	usb_fill_int_urb(ictx->rx_urb_intf0, ictx->usbdev_intf0,
+ 		usb_rcvintpipe(ictx->usbdev_intf0,
+ 			ictx->rx_endpoint_intf0->bEndpointAddress),
+@@ -2131,13 +2121,25 @@ static struct imon_context *imon_init_in
+ 		goto urb_submit_failed;
+ 	}
+ 
++	ictx->idev = imon_init_idev(ictx);
++	if (!ictx->idev) {
++		dev_err(dev, "%s: input device setup failed\n", __func__);
++		goto idev_setup_failed;
++	}
++
++	ictx->rdev = imon_init_rdev(ictx);
++	if (!ictx->rdev) {
++		dev_err(dev, "%s: rc device setup failed\n", __func__);
++		goto rdev_setup_failed;
++	}
++
+ 	return ictx;
+ 
+-urb_submit_failed:
+-	rc_unregister_device(ictx->rdev);
+ rdev_setup_failed:
+ 	input_unregister_device(ictx->idev);
+ idev_setup_failed:
++	usb_kill_urb(ictx->rx_urb_intf0);
++urb_submit_failed:
+ find_endpoint_failed:
+ 	mutex_unlock(&ictx->lock);
+ 	usb_free_urb(tx_urb);

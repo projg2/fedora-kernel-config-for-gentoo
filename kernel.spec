@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 74
+%global baserelease 75
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2082,6 +2082,9 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 30 2010 Jarod Wilson <jarod@redhat.com> 2.6.35.10-75
+- Fix imon 0xffdc device detection and oops on probe
+
 * Thu Dec 23 2010 Matthew Garrett <mjg@redhat.com> 2.6.35.10-74
 - Backport the ACPI battery notification patch (#656738)
 
