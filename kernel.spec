@@ -795,6 +795,10 @@ Patch13697: fs-call-security_d_instantiate-in-d_obtain_alias.patch
 
 Patch13698: net-AF_PACKET-vmalloc.patch
 
+# rhbz#652744
+Patch13700: e1000e-cleanup-e1000_sw_lcd_config_ich8lan.patch
+Patch13701: e1000e-82566DC-fails-to-get-link.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1496,6 +1500,10 @@ ApplyPatch orinoco-initialise-priv_hw-before-assigning-the-interrupt.patch
 # rhbz#637619
 ApplyPatch net-AF_PACKET-vmalloc.patch
 
+# rhbz#652744
+ApplyPatch e1000e-cleanup-e1000_sw_lcd_config_ich8lan.patch
+ApplyPatch e1000e-82566DC-fails-to-get-link.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2082,6 +2090,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jan 06 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix failure to get link with e1000e model 82576DC (#652744)
+
 * Wed Jan 05 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.10-76
 - Restore functional audio on PVR-150 video capture cards (#666456)
 - Fix another mceusb regression cropping up mostly with rc5 signals (#662071)
