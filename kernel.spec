@@ -100,6 +100,8 @@ Summary: The Linux kernel
 %define with_up        %{?_without_up:        0} %{?!_without_up:        1}
 # kernel-smp (only valid for ppc 32-bit)
 %define with_smp       %{?_without_smp:       0} %{?!_without_smp:       1}
+# kernel-PAE (only valid for i686)
+%define with_pae       %{?_without_pae:       0} %{?!_without_pae:       1}
 # kernel-debug
 %define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
 # kernel-doc
@@ -137,6 +139,8 @@ Summary: The Linux kernel
 %define with_baseonly  %{?_with_baseonly:     1} %{?!_with_baseonly:     0}
 # Only build the smp kernel (--with smponly):
 %define with_smponly   %{?_with_smponly:      1} %{?!_with_smponly:      0}
+# Only build the pae kernel (--with paeonly):
+%define with_paeonly   %{?_with_paeonly:      1} %{?!_with_paeonly:      0}
 # Only build the debug kernel (--with dbgonly):
 %define with_dbgonly   %{?_with_dbgonly:      1} %{?!_with_dbgonly:      0}
 
@@ -219,21 +223,28 @@ Summary: The Linux kernel
 %define debuginfodir /usr/lib/debug
 
 # kernel-PAE is only built on i686.
-%ifarch i686
-%define with_pae 1
-%else
+%ifnarch i686
 %define with_pae 0
 %endif
 
 # if requested, only build base kernel
 %if %{with_baseonly}
 %define with_smp 0
+%define with_pae 0
 %define with_debug 0
 %endif
 
 # if requested, only build smp kernel
 %if %{with_smponly}
 %define with_up 0
+%define with_pae 0
+%define with_debug 0
+%endif
+
+# if requested, only build pae kernel
+%if %{with_paeonly}
+%define with_up 0
+%define with_smp 0
 %define with_debug 0
 %endif
 
@@ -241,6 +252,7 @@ Summary: The Linux kernel
 %if %{with_dbgonly}
 %if %{debugbuildsenabled}
 %define with_up 0
+%define with_pae 0
 %endif
 %define with_smp 0
 %define with_pae 0
@@ -2110,6 +2122,7 @@ fi
 %changelog
 * Mon Jan 10 2011 Jarod Wilson <jarod@redhat.com>
 - Add support for local rebuild config option overrides
+- Add missing --with/--without pae build flag support
 
 * Mon Jan 10 2011 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2010-4668: kernel panic with 0-length IOV
