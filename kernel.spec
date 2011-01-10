@@ -812,6 +812,8 @@ Patch13697: fs-call-security_d_instantiate-in-d_obtain_alias.patch
 
 Patch13698: net-AF_PACKET-vmalloc.patch
 
+Patch13699: mac80211-fix-hard-lockup-in-sta_addba_resp_timer_expired.patch
+
 # rhbz#652744
 Patch13700: e1000e-cleanup-e1000_sw_lcd_config_ich8lan.patch
 Patch13701: e1000e-82566DC-fails-to-get-link.patch
@@ -1531,6 +1533,9 @@ ApplyPatch orinoco-initialise-priv_hw-before-assigning-the-interrupt.patch
 # rhbz#637619
 ApplyPatch net-AF_PACKET-vmalloc.patch
 
+# rhbz#667459
+ApplyPatch mac80211-fix-hard-lockup-in-sta_addba_resp_timer_expired.patch
+
 # rhbz#652744
 ApplyPatch e1000e-cleanup-e1000_sw_lcd_config_ich8lan.patch
 ApplyPatch e1000e-82566DC-fails-to-get-link.patch
@@ -2129,6 +2134,7 @@ fi
 - Add missing --with/--without pae build flag support
 - Restore imon mce default proto modparam, since ir-keytable currently
   won't work with the 2.6.35.x input layer ioctls
+- mac80211 fix for hard lockup in sta_addba_resp_timer_expired (sgruszka, #667459)
 
 * Mon Jan 10 2011 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2010-4668: kernel panic with 0-length IOV
