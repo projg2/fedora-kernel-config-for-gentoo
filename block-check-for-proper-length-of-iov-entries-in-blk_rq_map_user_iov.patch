@@ -1,0 +1,29 @@
+From: Jens Axboe <jaxboe@fusionio.com>
+Date: Fri, 29 Oct 2010 14:10:18 +0000 (-0600)
+Subject: block: check for proper length of iov entries in blk_rq_map_user_iov()
+X-Git-Tag: v2.6.37-rc4~22^2~17
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=9284bcf
+
+block: check for proper length of iov entries in blk_rq_map_user_iov()
+
+Ensure that we pass down properly validated iov segments before
+calling into the mapping or copy functions.
+
+Reported-by: Dan Rosenberg <drosenberg@vsecurity.com>
+Cc: stable@kernel.org
+Signed-off-by: Jens Axboe <jaxboe@fusionio.com>
+---
+
+diff --git a/block/blk-map.c b/block/blk-map.c
+index d4a586d..5d5dbe4 100644
+--- a/block/blk-map.c
++++ b/block/blk-map.c
+@@ -205,6 +205,8 @@ int blk_rq_map_user_iov(struct request_queue *q, struct request *rq,
+ 			unaligned = 1;
+ 			break;
+ 		}
++		if (!iov[i].iov_len)
++			return -EINVAL;
+ 	}
+ 
+ 	if (unaligned || (q->dma_pad_mask & len) || map_data)

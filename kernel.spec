@@ -908,7 +908,12 @@ Patch13921: can-bcm-fix-minor-heap-overflow.patch
 Patch13922: patch-2.6.38-afpacket-vmalloc.patch 
 
 # rhbz#662344
-Patch12922: fs-call-security_d_instantiate-in-d_obtain_alias.patch
+Patch13923: fs-call-security_d_instantiate-in-d_obtain_alias.patch
+
+# CVE-2010-4163
+Patch13924: block-check-for-proper-length-of-iov-entries-in-blk_rq_map_user_iov.patch
+# CVE-2010-4668
+Patch13925: block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_user_iov.patch
 
 %endif
 
@@ -1743,6 +1748,11 @@ ApplyPatch patch-2.6.38-afpacket-vmalloc.patch
 # rhbz#662344
 ApplyPatch fs-call-security_d_instantiate-in-d_obtain_alias.patch
 
+# CVE-2010-4163
+ApplyPatch block-check-for-proper-length-of-iov-entries-in-blk_rq_map_user_iov.patch
+# CVE-2010-4668
+ApplyPatch block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_user_iov.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2364,6 +2374,9 @@ fi
 
 
 %changelog
+* Mon Jan 10 2011 Chuck Ebbert <cebbert@redhat.com>
+- CVE-2010-4163 CVE-2010-4668: panic when submitting 0-length I/O requests
+
 * Sat Dec 18 2010 Kyle McMartin <kyle@redhat.com>
 - Fix SELinux issues with NFS/btrfs and/or xfsdump. (#662344)
 
