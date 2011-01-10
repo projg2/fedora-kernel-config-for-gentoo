@@ -1,0 +1,52 @@
+From: Jarod Wilson <jarod@redhat.com>
+Date: Sat, 23 Oct 2010 14:54:06 -0400
+Subject: [PATCH] imon: add back modparam for default protocol
+
+The latest imon devices support both imon and mce remotes, but we
+default to using the imon native protocol. Upstream, ir-keytable
+can be used to change protocol and upload the mce keytable, but it
+isn't functional with the input layer interfaces in 2.6.35. As a
+work-around for now, add back a modparam so people can have the
+driver load the mce keytable by default.
+
+Note, this patch won't be going upstream. Upstream, we're moving
+towards all keytables being in userspace, uploaded at driver init
+time by ir-keytable (triggered by udev events).
+
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
+---
+ drivers/media/rc/imon.c |   14 ++++++++++++++
+ 1 files changed, 14 insertions(+), 0 deletions(-)
+
+Index: linux-2.6.35.x86_64/drivers/media/rc/imon.c
+===================================================================
+--- linux-2.6.35.x86_64.orig/drivers/media/rc/imon.c
++++ linux-2.6.35.x86_64/drivers/media/rc/imon.c
+@@ -328,6 +328,17 @@ MODULE_PARM_DESC(pad_stabilize, "Apply s
+ 		 "presses in arrow key mode. 0=disable, 1=enable (default).");
+ 
+ /*
++ * The latest imon devices support both imon and mce remotes, but we default
++ * to using the imon native protocol. Rather than require people to have and
++ * run ir-keytable to switch every module load, they can add mce=1 to their
++ * modparams to default to mce/rc6 instead.
++ */
++static bool mce;
++module_param(mce, bool, S_IRUGO);
++MODULE_PARM_DESC(mce, "Configure for mce/rc6 protocol instead of imon native, "
++		 "if supported: 0=no, 1=yes (default: no)");
++
++/*
+  * In certain use cases, mouse mode isn't really helpful, and could actually
+  * cause confusion, so allow disabling it when the IR device is open.
+  */
+@@ -1851,6 +1862,9 @@ static struct rc_dev *imon_init_rdev(str
+ 
+ 	imon_set_display_type(ictx);
+ 
++	if (mce && ((rdev->allowed_protos & RC_TYPE_RC6) == RC_TYPE_RC6))
++		ictx->rc_type = RC_TYPE_RC6;
++
+ 	if (ictx->rc_type == RC_TYPE_RC6)
+ 		rdev->map_name = RC_MAP_IMON_MCE;
+ 	else

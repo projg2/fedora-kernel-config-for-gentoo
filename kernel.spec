@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 76
+%global baserelease 77
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -723,6 +723,7 @@ Patch2899: linux-2.6-v4l-dvb-update.patch
 Patch2900: linux-2.6-v4l-dvb-fixes.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
 Patch2917: hdpvr-ir-enable.patch
+Patch2918: imon-default-proto-modparam.patch
 
 Patch2950: linux-2.6-via-velocity-dma-fix.patch
 
@@ -1432,6 +1433,9 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 
+# one-off non-upstream patch, since ir-keytable doesn't work yet
+ApplyPatch imon-default-proto-modparam.patch
+
 # bz #575873
 ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
@@ -2120,9 +2124,11 @@ fi
 # and build.
 
 %changelog
-* Mon Jan 10 2011 Jarod Wilson <jarod@redhat.com>
+* Mon Jan 10 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.10-77
 - Add support for local rebuild config option overrides
 - Add missing --with/--without pae build flag support
+- Restore imon mce default proto modparam, since ir-keytable currently
+  won't work with the 2.6.35.x input layer ioctls
 
 * Mon Jan 10 2011 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2010-4668: kernel panic with 0-length IOV
