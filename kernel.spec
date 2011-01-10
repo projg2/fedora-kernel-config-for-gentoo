@@ -769,10 +769,10 @@ Patch13651: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 
 Patch13652: fix-i8k-inline-asm.patch
 
-Patch13702: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
-Patch13704: netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
+Patch13653: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
+Patch13654: netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
 
-Patch13703: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
+Patch13658: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
 Patch13660: rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 Patch13661: rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
@@ -798,6 +798,9 @@ Patch13698: net-AF_PACKET-vmalloc.patch
 # rhbz#652744
 Patch13700: e1000e-cleanup-e1000_sw_lcd_config_ich8lan.patch
 Patch13701: e1000e-82566DC-fails-to-get-link.patch
+
+# CVE-2010-4668
+Patch13702: block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_user_iov.patch
 
 %endif
 
@@ -1504,6 +1507,9 @@ ApplyPatch net-AF_PACKET-vmalloc.patch
 ApplyPatch e1000e-cleanup-e1000_sw_lcd_config_ich8lan.patch
 ApplyPatch e1000e-82566DC-fails-to-get-link.patch
 
+# CVE-2010-4668
+ApplyPatch block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_user_iov.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2090,6 +2096,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jan 10 2011 Chuck Ebbert <cebbert@redhat.com>
+- CVE-2010-4668: kernel panic with 0-length IOV
+
 * Thu Jan 06 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix failure to get link with e1000e model 82576DC (#652744)
 
