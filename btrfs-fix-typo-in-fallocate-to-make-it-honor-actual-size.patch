@@ -1,0 +1,51 @@
+From: Josef Bacik <josef@redhat.com>
+Date: Mon, 22 Nov 2010 18:50:32 +0000 (+0000)
+Subject: Btrfs: fix typo in fallocate to make it honor actual size
+X-Git-Tag: v2.6.37-rc4~6^2~7
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=55a61d1d06a3dc443d0db8aaa613365dcb83b98a
+
+Btrfs: fix typo in fallocate to make it honor actual size
+
+[ Trivial backport to 2.6.35/2.6.36 ]
+
+There is a typo in __btrfs_prealloc_file_range() where we set the i_size to
+actual_len/cur_offset, and then just set it to cur_offset again, and do the same
+with btrfs_ordered_update_i_size().  This fixes it back to keeping i_size in a
+local variable and then updating i_size properly.  Tested this with
+
+xfs_io -F -f -c "falloc 0 1" -c "pwrite 0 1" foo
+
+stat'ing foo gives us a size of 1 instead of 4096 like it was.  Thanks,
+
+Signed-off-by: Josef Bacik <josef@redhat.com>
+Signed-off-by: Chris Mason <chris.mason@oracle.com>
+---
+
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index 37cc177..0058fb3 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -7002,6 +7002,7 @@ static int __btrfs_prealloc_file_range(struct inode *inode, int mode,
+ 	struct btrfs_root *root = BTRFS_I(inode)->root;
+ 	struct btrfs_key ins;
+ 	u64 cur_offset = start;
++	u64 i_size;
+ 	int ret = 0;
+ 
+ 	while (num_bytes > 0) {
+@@ -7043,11 +7044,11 @@ static int __btrfs_prealloc_file_range(struct inode *inode, int mode,
+ 		    (actual_len > inode->i_size) &&
+ 		    (cur_offset > inode->i_size)) {
+ 			if (cur_offset > actual_len)
+-				i_size_write(inode, actual_len);
++				i_size = actual_len;
+ 			else
+-				i_size_write(inode, cur_offset);
+-			i_size_write(inode, cur_offset);
+-			btrfs_ordered_update_i_size(inode, cur_offset, NULL);
++				i_size = cur_offset;
++			i_size_write(inode, i_size);
++			btrfs_ordered_update_i_size(inode, i_size, NULL);
+ 		}
+ 
+ 		ret = btrfs_update_inode(trans, root, inode);

@@ -821,6 +821,9 @@ Patch13701: e1000e-82566DC-fails-to-get-link.patch
 # CVE-2010-4668
 Patch13702: block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_user_iov.patch
 
+# RHBZ #669511
+Patch13703: btrfs-fix-typo-in-fallocate-to-make-it-honor-actual-size.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1296,6 +1299,9 @@ ApplyPatch ext4-always-journal-quota-file-modifications.patch
 ApplyPatch btrfs-fix-error-handling-in-btrfs_get_sub.patch
 ApplyPatch btrfs-setup-blank-root-and-fs_info-for-mount-time.patch
 ApplyPatch btrfs-fix-race-between-btrfs_get_sb-and-unmount.patch
+
+# RHBZ #669511
+ApplyPatch btrfs-fix-typo-in-fallocate-to-make-it-honor-actual-size.patch
 
 # eCryptfs
 
@@ -2129,6 +2135,9 @@ fi
 # and build.
 
 %changelog
+* Sun Jan 16 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix wrong file allocation size in btrfs (#669511)
+
 * Mon Jan 10 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.10-77
 - Add support for local rebuild config option overrides
 - Add missing --with/--without pae build flag support
