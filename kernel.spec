@@ -826,6 +826,9 @@ Patch13702: block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_u
 # RHBZ #669511
 Patch13703: btrfs-fix-typo-in-fallocate-to-make-it-honor-actual-size.patch
 
+# rhbz#643758
+Patch13704: hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1551,6 +1554,9 @@ ApplyPatch e1000e-82566DC-fails-to-get-link.patch
 # CVE-2010-4668
 ApplyPatch block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_user_iov.patch
 
+# rhbz#643758
+ApplyPatch hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2137,6 +2143,10 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 18 2011 Kyle McMartin <kmcmartin@redhat.com>
+- sgruszka: hostap_cs: fix sleeping function called in invalid
+  context (#643758)
+
 * Tue Jan 18 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.10-78
 - Rebase v4l/dvb/rc bits to 2.6.38-rc1 code
 - Fix lirc_serial transmit (#658600)
