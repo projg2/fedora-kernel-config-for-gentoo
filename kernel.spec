@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 78
+%global baserelease 79
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -726,6 +726,7 @@ Patch2899: linux-2.6-v4l-dvb-update.patch
 Patch2900: linux-2.6-v4l-dvb-fixes.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
 Patch2918: imon-default-proto-modparam.patch
+Patch2919: linux-2.6-v4l-dvb-build-lirc.patch
 
 Patch2950: linux-2.6-via-velocity-dma-fix.patch
 
@@ -1442,15 +1443,19 @@ ApplyPatch linux-2.6-vzalloc.patch
 
 # V4L/DVB updates/fixes/experimental drivers
 #  apply if non-empty
-#ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
-#ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
-#ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
+ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
+ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
+ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 
 # one-off non-upstream patch, since ir-keytable doesn't work yet
-#ApplyPatch imon-default-proto-modparam.patch
+ApplyPatch imon-default-proto-modparam.patch
+
+# enable building lirc separate from the v4l-dvb update,
+# because I keep forgetting to manually add the bits back
+ApplyPatch linux-2.6-v4l-dvb-build-lirc.patch
 
 # bz #575873
-#ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
+ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
 # Fix DMA bug on via-velocity
 ApplyPatch linux-2.6-via-velocity-dma-fix.patch
@@ -2143,6 +2148,10 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 18 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.10-79
+- Generally, its a good idea to actually apply the patches you were
+  intending to include in the build, and enable their Kconfig options
+
 * Tue Jan 18 2011 Kyle McMartin <kmcmartin@redhat.com>
 - sgruszka: hostap_cs: fix sleeping function called in invalid
   context (#643758)
