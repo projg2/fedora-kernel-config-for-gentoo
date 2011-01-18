@@ -3,6 +3,13 @@ Not yet upstream, willl send RSN...
 --jarod
 
 Author: Jarod Wilson <jarod@redhat.com>
+Date:   Tue Jan 18 15:31:24 2011 -0500
+
+    rc/streamzap: timeout needs to be in NS
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+Author: Jarod Wilson <jarod@redhat.com>
 Date:   Tue Jan 18 00:27:45 2011 -0500
 
     rc/mce: add mappings for missing keys
@@ -85,3 +92,16 @@ index 3bf3337..2f5dc06 100644
  	{ 0x800f043a, KEY_BRIGHTNESSUP },
  
  	{ 0x800f0446, KEY_TV },
+diff --git a/drivers/media/rc/streamzap.c b/drivers/media/rc/streamzap.c
+index 6e2911c..1b013d4 100644
+--- a/drivers/media/rc/streamzap.c
++++ b/drivers/media/rc/streamzap.c
+@@ -430,7 +430,7 @@ static int __devinit streamzap_probe(struct usb_interface *intf,
+ 	sz->decoder_state = PulseSpace;
+ 	/* FIXME: don't yet have a way to set this */
+ 	sz->timeout_enabled = true;
+-	sz->rdev->timeout = (((SZ_TIMEOUT * SZ_RESOLUTION * 1000) &
++	sz->rdev->timeout = ((MS_TO_NS(SZ_TIMEOUT * SZ_RESOLUTION) &
+ 				IR_MAX_DURATION) | 0x03000000);
+ 	#if 0
+ 	/* not yet supported, depends on patches from maxim */
