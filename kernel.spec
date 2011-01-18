@@ -915,6 +915,9 @@ Patch13924: block-check-for-proper-length-of-iov-entries-in-blk_rq_map_user_iov.
 # CVE-2010-4668
 Patch13925: block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_user_iov.patch
 
+# rhbz#643758
+Patch13926: hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1753,6 +1756,9 @@ ApplyPatch block-check-for-proper-length-of-iov-entries-in-blk_rq_map_user_iov.p
 # CVE-2010-4668
 ApplyPatch block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_user_iov.patch
 
+# rhbz#643758
+ApplyPatch hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2374,6 +2380,10 @@ fi
 
 
 %changelog
+* Tue Jan 18 2011 Kyle McMartin <kmcmartin@redhat.com>
+- sgruszka: hostap_cs: fix sleeping function called in invalid
+  context (#643758)
+
 * Mon Jan 10 2011 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2010-4163 CVE-2010-4668: panic when submitting 0-length I/O requests
 

@@ -1,0 +1,101 @@
+From sgruszka@redhat.com Mon Jan 17 08:04:28 2011
+Return-Path: sgruszka@redhat.com
+Received: from zmta03.collab.prod.int.phx2.redhat.com (LHLO
+ zmta03.collab.prod.int.phx2.redhat.com) (10.5.5.33) by
+ mail03.corp.redhat.com with LMTP; Mon, 17 Jan 2011 08:04:28 -0500 (EST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by zmta03.collab.prod.int.phx2.redhat.com (Postfix) with ESMTP id 5CF754C96B;
+	Mon, 17 Jan 2011 08:04:28 -0500 (EST)
+Received: from zmta03.collab.prod.int.phx2.redhat.com ([127.0.0.1])
+	by localhost (zmta03.collab.prod.int.phx2.redhat.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qCtjRMUf-IeX; Mon, 17 Jan 2011 08:04:28 -0500 (EST)
+Received: from int-mx02.intmail.prod.int.phx2.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+	by zmta03.collab.prod.int.phx2.redhat.com (Postfix) with ESMTP id 4B8794C91D;
+	Mon, 17 Jan 2011 08:04:28 -0500 (EST)
+Received: from localhost (vpn-235-108.phx2.redhat.com [10.3.235.108])
+	by int-mx02.intmail.prod.int.phx2.redhat.com (8.13.8/8.13.8) with ESMTP id p0HD4RC9017134;
+	Mon, 17 Jan 2011 08:04:27 -0500
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+To: stable@kernel.org, kernel@lists.fedoraproject.org
+Cc: Kyle McMartin <kmcmartin@redhat.com>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Tim Gardner <tim.gardner@canonical.com>,
+        linux-wireless@vger.kernel.org
+Subject: [PATCH 2.6.34.y] hostap_cs: fix sleeping function called from invalid context
+Date: Mon, 17 Jan 2011 14:04:25 +0100
+Message-Id: <1295269465-4903-1-git-send-email-sgruszka@redhat.com>
+X-Scanned-By: MIMEDefang 2.67 on 10.5.11.12
+
+commit 4e5518ca53be29c1ec3c00089c97bef36bfed515 upstream.
+
+pcmcia_request_irq() and pcmcia_enable_device() are intended
+to be called from process context (first function allocate memory
+with GFP_KERNEL, second take a mutex). We can not take spin lock
+and call them.
+
+It's safe to move spin lock after pcmcia_enable_device() as we
+still hold off IRQ until dev->base_addr is 0 and driver will
+not proceed with interrupts when is not ready.
+
+Patch resolves:
+https://bugzilla.redhat.com/show_bug.cgi?id=643758
+
+Reported-and-tested-by: rbugz@biobind.com
+Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
+---
+ drivers/net/wireless/hostap/hostap_cs.c |   14 +++-----------
+ 1 files changed, 3 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/wireless/hostap/hostap_cs.c b/drivers/net/wireless/hostap/hostap_cs.c
+index f33e18e..116b5c6 100644
+--- a/drivers/net/wireless/hostap/hostap_cs.c
++++ b/drivers/net/wireless/hostap/hostap_cs.c
+@@ -638,12 +638,6 @@ static int prism2_config(struct pcmcia_device *link)
+ 	link->dev_node = &hw_priv->node;
+ 
+ 	/*
+-	 * Make sure the IRQ handler cannot proceed until at least
+-	 * dev->base_addr is initialized.
+-	 */
+-	spin_lock_irqsave(&local->irq_init_lock, flags);
+-
+-	/*
+ 	 * Allocate an interrupt line.  Note that this does not assign a
+ 	 * handler to the interrupt, unless the 'Handler' member of the
+ 	 * irq structure is initialized.
+@@ -653,7 +647,7 @@ static int prism2_config(struct pcmcia_device *link)
+ 		link->irq.Handler = prism2_interrupt;
+ 		ret = pcmcia_request_irq(link, &link->irq);
+ 		if (ret)
+-			goto failed_unlock;
++			goto failed;
+ 	}
+ 
+ 	/*
+@@ -663,11 +657,11 @@ static int prism2_config(struct pcmcia_device *link)
+ 	 */
+ 	ret = pcmcia_request_configuration(link, &link->conf);
+ 	if (ret)
+-		goto failed_unlock;
++		goto failed;
+ 
++	spin_lock_irqsave(&local->irq_init_lock, flags);
+ 	dev->irq = link->irq.AssignedIRQ;
+ 	dev->base_addr = link->io.BasePort1;
+-
+ 	spin_unlock_irqrestore(&local->irq_init_lock, flags);
+ 
+ 	/* Finally, report what we've done */
+@@ -698,8 +692,6 @@ static int prism2_config(struct pcmcia_device *link)
+ 	}
+ 	return ret;
+ 
+- failed_unlock:
+-	 spin_unlock_irqrestore(&local->irq_init_lock, flags);
+  failed:
+ 	kfree(hw_priv);
+ 	prism2_release((u_long)link);
+-- 
+1.7.1
+
