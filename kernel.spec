@@ -722,7 +722,6 @@ Patch2802: linux-2.6-silence-acpi-blacklist.patch
 Patch2899: linux-2.6-v4l-dvb-update.patch
 Patch2900: linux-2.6-v4l-dvb-fixes.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
-Patch2917: hdpvr-ir-enable.patch
 Patch2918: imon-default-proto-modparam.patch
 
 Patch2950: linux-2.6-via-velocity-dma-fix.patch
@@ -1432,9 +1431,6 @@ ApplyPatch efifb-check-that-the-base-addr-is-plausible-on-pci-systems.patch
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 
-# enable IR receiver on Hauppauge HD PVR (v4l-dvb merge pending)
-ApplyPatch hdpvr-ir-enable.patch
-
 # V4L/DVB updates/fixes/experimental drivers
 #  apply if non-empty
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
@@ -2135,6 +2131,10 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 18 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.10-78
+- Rebase v4l/dvb/rc bits to 2.6.38-rc1 code
+- Fix lirc_serial transmit (#658600)
+
 * Sun Jan 16 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix wrong file allocation size in btrfs (#669511)
 
