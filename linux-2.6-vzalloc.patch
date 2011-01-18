@@ -1,0 +1,196 @@
+mm: add vzalloc() and vzalloc_node() helpers
+
+Drop-in helper function backport from upstream.
+    
+Upstream commits:
+  commit e1ca7788dec6773b1a2bce51b7141948f2b8bccf
+  Author: Dave Young <hidave.darkstar@gmail.com>
+  Date:   Tue Oct 26 14:22:06 2010 -0700
+
+    mm: add vzalloc() and vzalloc_node() helpers
+
+    Add vzalloc() and vzalloc_node() to encapsulate the
+    vmalloc-then-memset-zero operation.
+
+    Use __GFP_ZERO to zero fill the allocated memory.
+
+    Signed-off-by: Dave Young <hidave.darkstar@gmail.com>
+    Cc: Christoph Lameter <cl@linux-foundation.org>
+    Acked-by: Greg Ungerer <gerg@snapgear.com>
+    Cc: David Howells <dhowells@redhat.com>
+    Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+    Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+
+  commit 9a14f653dfe349c0916e6a78c413effa2fa3f001
+  Author: Paul Mundt <lethal@linux-sh.org>
+  Date:   Fri Dec 24 11:50:34 2010 +0900
+
+    nommu: Fix up vmalloc_node() symbol export regression.
+
+    Commit e1ca778 ("mm: add vzalloc() and vzalloc_node() helpers") ended up
+    accidentally deleting the vmalloc_node() symbol export, resulting in:
+
+    "vmalloc_node" [net/core/pktgen.ko] undefined!
+    "vmalloc_node" [net/netfilter/x_tables.ko] undefined!
+
+    regressions.
+
+    Signed-off-by: Paul Mundt <lethal@linux-sh.org>
+
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+diff --git a/include/linux/vmalloc.h b/include/linux/vmalloc.h
+index d9a787a..5e03b00 100644
+--- a/include/linux/vmalloc.h
++++ b/include/linux/vmalloc.h
+@@ -51,8 +51,10 @@ static inline void vmalloc_init(void)
+ #endif
+ 
+ extern void *vmalloc(unsigned long size);
++extern void *vzalloc(unsigned long size);
+ extern void *vmalloc_user(unsigned long size);
+ extern void *vmalloc_node(unsigned long size, int node);
++extern void *vzalloc_node(unsigned long size, int node);
+ extern void *vmalloc_exec(unsigned long size);
+ extern void *vmalloc_32(unsigned long size);
+ extern void *vmalloc_32_user(unsigned long size);
+diff --git a/mm/nommu.c b/mm/nommu.c
+index b30fde0..bdb4d22 100644
+--- a/mm/nommu.c
++++ b/mm/nommu.c
+@@ -298,12 +298,60 @@ void *vmalloc(unsigned long size)
+ }
+ EXPORT_SYMBOL(vmalloc);
+ 
++/*
++ *	vzalloc - allocate virtually continguos memory with zero fill
++ *
++ *	@size:		allocation size
++ *
++ *	Allocate enough pages to cover @size from the page level
++ *	allocator and map them into continguos kernel virtual space.
++ *	The memory allocated is set to zero.
++ *
++ *	For tight control over page level allocator and protection flags
++ *	use __vmalloc() instead.
++ */
++void *vzalloc(unsigned long size)
++{
++	return __vmalloc(size, GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO,
++			PAGE_KERNEL);
++}
++EXPORT_SYMBOL(vzalloc);
++
++/**
++ * vmalloc_node - allocate memory on a specific node
++ * @size:	allocation size
++ * @node:	numa node
++ *
++ * Allocate enough pages to cover @size from the page level
++ * allocator and map them into contiguous kernel virtual space.
++ *
++ * For tight control over page level allocator and protection flags
++ * use __vmalloc() instead.
++ */
+ void *vmalloc_node(unsigned long size, int node)
+ {
+ 	return vmalloc(size);
+ }
+ EXPORT_SYMBOL(vmalloc_node);
+ 
++/**
++ * vzalloc_node - allocate memory on a specific node with zero fill
++ * @size:	allocation size
++ * @node:	numa node
++ *
++ * Allocate enough pages to cover @size from the page level
++ * allocator and map them into contiguous kernel virtual space.
++ * The memory allocated is set to zero.
++ *
++ * For tight control over page level allocator and protection flags
++ * use __vmalloc() instead.
++ */
++void *vzalloc_node(unsigned long size, int node)
++{
++	return vzalloc(size);
++}
++EXPORT_SYMBOL(vzalloc_node);
++
+ #ifndef PAGE_KERNEL_EXEC
+ # define PAGE_KERNEL_EXEC PAGE_KERNEL
+ #endif
+diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+index 12568fa..2e2e7a3 100644
+--- a/mm/vmalloc.c
++++ b/mm/vmalloc.c
+@@ -1583,6 +1583,13 @@ void *__vmalloc(unsigned long size, gfp_t gfp_mask, pgprot_t prot)
+ }
+ EXPORT_SYMBOL(__vmalloc);
+ 
++static inline void *__vmalloc_node_flags(unsigned long size,
++					int node, gfp_t flags)
++{
++	return __vmalloc_node(size, 1, flags, PAGE_KERNEL,
++					node, __builtin_return_address(0));
++}
++
+ /**
+  *	vmalloc  -  allocate virtually contiguous memory
+  *	@size:		allocation size
+@@ -1594,12 +1601,28 @@ EXPORT_SYMBOL(__vmalloc);
+  */
+ void *vmalloc(unsigned long size)
+ {
+-	return __vmalloc_node(size, 1, GFP_KERNEL | __GFP_HIGHMEM, PAGE_KERNEL,
+-					-1, __builtin_return_address(0));
++	return __vmalloc_node_flags(size, -1, GFP_KERNEL | __GFP_HIGHMEM);
+ }
+ EXPORT_SYMBOL(vmalloc);
+ 
+ /**
++ *	vzalloc - allocate virtually contiguous memory with zero fill
++ *	@size:	allocation size
++ *	Allocate enough pages to cover @size from the page level
++ *	allocator and map them into contiguous kernel virtual space.
++ *	The memory allocated is set to zero.
++ *
++ *	For tight control over page level allocator and protection flags
++ *	use __vmalloc() instead.
++ */
++void *vzalloc(unsigned long size)
++{
++	return __vmalloc_node_flags(size, -1,
++				GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO);
++}
++EXPORT_SYMBOL(vzalloc);
++
++/**
+  * vmalloc_user - allocate zeroed virtually contiguous memory for userspace
+  * @size: allocation size
+  *
+@@ -1640,6 +1663,25 @@ void *vmalloc_node(unsigned long size, int node)
+ }
+ EXPORT_SYMBOL(vmalloc_node);
+ 
++/**
++ * vzalloc_node - allocate memory on a specific node with zero fill
++ * @size:	allocation size
++ * @node:	numa node
++ *
++ * Allocate enough pages to cover @size from the page level
++ * allocator and map them into contiguous kernel virtual space.
++ * The memory allocated is set to zero.
++ *
++ * For tight control over page level allocator and protection flags
++ * use __vmalloc_node() instead.
++ */
++void *vzalloc_node(unsigned long size, int node)
++{
++	return __vmalloc_node_flags(size, node,
++			 GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO);
++}
++EXPORT_SYMBOL(vzalloc_node);
++
+ #ifndef PAGE_KERNEL_EXEC
+ # define PAGE_KERNEL_EXEC PAGE_KERNEL
+ #endif

@@ -718,6 +718,9 @@ Patch2201: linux-2.6-firewire-git-pending.patch
 # silence the ACPI blacklist code
 Patch2802: linux-2.6-silence-acpi-blacklist.patch
 
+# Drop-in backport of upstream vzalloc additions, used by the v4l/dvb bits
+Patch2805: linux-2.6-vzalloc.patch
+
 # media patches
 Patch2899: linux-2.6-v4l-dvb-update.patch
 Patch2900: linux-2.6-v4l-dvb-fixes.patch
@@ -1431,17 +1434,20 @@ ApplyPatch efifb-check-that-the-base-addr-is-plausible-on-pci-systems.patch
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 
+# Backport of upstream vzalloc functions, used by the v4l/dvb bits
+ApplyPatch linux-2.6-vzalloc.patch
+
 # V4L/DVB updates/fixes/experimental drivers
 #  apply if non-empty
-ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
-ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
-ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
+#ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
+#ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
+#ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 
 # one-off non-upstream patch, since ir-keytable doesn't work yet
-ApplyPatch imon-default-proto-modparam.patch
+#ApplyPatch imon-default-proto-modparam.patch
 
 # bz #575873
-ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
+#ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
 # Fix DMA bug on via-velocity
 ApplyPatch linux-2.6-via-velocity-dma-fix.patch
