@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 79
+%global baserelease 80
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2148,6 +2148,12 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 19 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.10-80
+- Make lirc_zilog behave correctly with hdpvr again, and for the first
+  time ever, with pvrusb2-driven HVR-1950 (#635045)
+- Call dib0700 rc bug whacked (#667157)
+- Call saa7134-based i2c IR registration bug whacked (#665870)
+
 * Tue Jan 18 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.10-79
 - Generally, its a good idea to actually apply the patches you were
   intending to include in the build, and enable their Kconfig options
