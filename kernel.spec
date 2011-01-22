@@ -918,6 +918,17 @@ Patch13925: block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_u
 # rhbz#643758
 Patch13926: hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 
+# CVE-2010-4346
+Patch13930: install-special-mapping-skips-security-file-mmap-check.patch
+# CVE-2010-4649
+Patch13931: ib-uverbs-handle-large-number-of-poll-entries-in-poll-cq.patch
+# CVE-2011-0006
+Patch13932: ima-fix-add-lsm-rule-bug.patch
+# CVE-2010-4648
+Patch13933: orinoco-fix-tkip-countermeasure-behaviour.patch
+# CVE-2010-4650
+Patch13934: fuse-verify-ioctl-retries.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1759,6 +1770,17 @@ ApplyPatch block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_us
 # rhbz#643758
 ApplyPatch hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 
+# CVE-2010-4346
+ApplyPatch install-special-mapping-skips-security-file-mmap-check.patch
+# CVE-2010-4649
+ApplyPatch ib-uverbs-handle-large-number-of-poll-entries-in-poll-cq.patch
+# CVE-2011-0006
+ApplyPatch ima-fix-add-lsm-rule-bug.patch
+# CVE-2010-4648
+ApplyPatch orinoco-fix-tkip-countermeasure-behaviour.patch
+# CVE-2010-4650
+ApplyPatch fuse-verify-ioctl-retries.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2380,6 +2402,14 @@ fi
 
 
 %changelog
+* Sat Jan 22 2011 Chuck Ebbert <cebbert@redhat.com>
+- Security updates
+  CVE-2010-4346: install_special_mapping skips security_file_mmap check
+  CVE-2010-4649: IB/uverbs: Handle large number of entries in poll CQ
+  CVE-2011-0006: ima: fix add LSM rule bug
+  CVE-2010-4648: orinoco: fix TKIP countermeasure behaviour
+  CVE-2010-4650: fuse: verify ioctl retries
+
 * Tue Jan 18 2011 Kyle McMartin <kmcmartin@redhat.com>
 - sgruszka: hostap_cs: fix sleeping function called in invalid
   context (#643758)
