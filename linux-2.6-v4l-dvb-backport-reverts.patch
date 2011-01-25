@@ -1,0 +1,306 @@
+diff -Naurp linux-2.6.35/drivers/media/dvb/dvb-core/dvb_net.c linux-2.6.35.media/drivers/media/dvb/dvb-core/dvb_net.c
+--- linux-2.6.35/drivers/media/dvb/dvb-core/dvb_net.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/dvb/dvb-core/dvb_net.c	2011-01-25 10:14:06.000000000 -0500
+@@ -1329,8 +1329,7 @@ static int dvb_net_remove_if(struct dvb_
+ 		return -EBUSY;
+ 
+ 	dvb_net_stop(net);
+-	flush_work_sync(&priv->set_multicast_list_wq);
+-	flush_work_sync(&priv->restart_net_feed_wq);
++	flush_scheduled_work();
+ 	printk("dvb_net: removed network interface %s\n", net->name);
+ 	unregister_netdev(net);
+ 	dvbnet->state[num]=0;
+diff -Naurp linux-2.6.35/drivers/media/dvb/dvb-usb/dvb-usb-remote.c linux-2.6.35.media/drivers/media/dvb/dvb-usb/dvb-usb-remote.c
+--- linux-2.6.35/drivers/media/dvb/dvb-usb/dvb-usb-remote.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/dvb/dvb-usb/dvb-usb-remote.c	2011-01-25 10:14:06.000000000 -0500
+@@ -314,6 +314,7 @@ int dvb_usb_remote_exit(struct dvb_usb_d
+ {
+ 	if (d->state & DVB_USB_STATE_REMOTE) {
+ 		cancel_delayed_work_sync(&d->rc_query_work);
++		flush_scheduled_work();
+ 		if (d->props.rc.mode == DVB_RC_LEGACY)
+ 			input_unregister_device(d->input_dev);
+ 		else
+diff -Naurp linux-2.6.35/drivers/media/dvb/mantis/mantis_evm.c linux-2.6.35.media/drivers/media/dvb/mantis/mantis_evm.c
+--- linux-2.6.35/drivers/media/dvb/mantis/mantis_evm.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/dvb/mantis/mantis_evm.c	2011-01-25 10:14:06.000000000 -0500
+@@ -111,7 +111,7 @@ void mantis_evmgr_exit(struct mantis_ca 
+ 	struct mantis_pci *mantis = ca->ca_priv;
+ 
+ 	dprintk(MANTIS_DEBUG, 1, "Mantis Host I/F Event manager exiting");
+-	flush_work_sync(&ca->hif_evm_work);
++	flush_scheduled_work();
+ 	mantis_hif_exit(ca);
+ 	mantis_pcmcia_exit(ca);
+ }
+diff -Naurp linux-2.6.35/drivers/media/dvb/mantis/mantis_uart.c linux-2.6.35.media/drivers/media/dvb/mantis/mantis_uart.c
+--- linux-2.6.35/drivers/media/dvb/mantis/mantis_uart.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/dvb/mantis/mantis_uart.c	2011-01-25 10:14:06.000000000 -0500
+@@ -182,6 +182,5 @@ void mantis_uart_exit(struct mantis_pci 
+ {
+ 	/* disable interrupt */
+ 	mmwrite(mmread(MANTIS_UART_CTL) & 0xffef, MANTIS_UART_CTL);
+-	flush_work_sync(&mantis->uart_work);
+ }
+ EXPORT_SYMBOL_GPL(mantis_uart_exit);
+diff -Naurp linux-2.6.35/drivers/media/rc/keymaps/rc-tbs-nec.c linux-2.6.35.media/drivers/media/rc/keymaps/rc-tbs-nec.c
+--- linux-2.6.35/drivers/media/rc/keymaps/rc-tbs-nec.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/rc/keymaps/rc-tbs-nec.c	2011-01-25 11:10:04.000000000 -0500
+@@ -12,6 +12,9 @@
+ 
+ #include <media/rc-map.h>
+ 
++#define KEY_10CHANNELSUP	0x1b8
++#define KEY_10CHANNELSDOWN	0x1b9
++
+ static struct rc_map_table tbs_nec[] = {
+ 	{ 0x84, KEY_POWER2},		/* power */
+ 	{ 0x94, KEY_MUTE},		/* mute */
+diff -Naurp linux-2.6.35/drivers/media/video/bt8xx/bttv-driver.c linux-2.6.35.media/drivers/media/video/bt8xx/bttv-driver.c
+--- linux-2.6.35/drivers/media/video/bt8xx/bttv-driver.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/video/bt8xx/bttv-driver.c	2011-01-25 10:32:49.000000000 -0500
+@@ -189,14 +189,8 @@ static void request_modules(struct bttv 
+ 	INIT_WORK(&dev->request_module_wk, request_module_async);
+ 	schedule_work(&dev->request_module_wk);
+ }
+-
+-static void flush_request_modules(struct bttv *dev)
+-{
+-	flush_work_sync(&dev->request_module_wk);
+-}
+ #else
+ #define request_modules(dev)
+-#define flush_request_modules(dev)
+ #endif /* CONFIG_MODULES */
+ 
+ 
+@@ -4435,9 +4429,6 @@ static void __devexit bttv_remove(struct
+ 	if (bttv_verbose)
+ 		printk("bttv%d: unloading\n",btv->c.nr);
+ 
+-	if (bttv_tvcards[btv->c.type].has_dvb)
+-		flush_request_modules(btv);
+-
+ 	/* shutdown everything (DMA+IRQs) */
+ 	btand(~15, BT848_GPIO_DMA_CTL);
+ 	btwrite(0, BT848_INT_MASK);
+diff -Naurp linux-2.6.35/drivers/media/video/cx18/cx18-driver.c linux-2.6.35.media/drivers/media/video/cx18/cx18-driver.c
+--- linux-2.6.35/drivers/media/video/cx18/cx18-driver.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/video/cx18/cx18-driver.c	2011-01-25 10:32:49.000000000 -0500
+@@ -268,14 +268,8 @@ static void request_modules(struct cx18 
+ 	INIT_WORK(&dev->request_module_wk, request_module_async);
+ 	schedule_work(&dev->request_module_wk);
+ }
+-
+-static void flush_request_modules(struct cx18 *dev)
+-{
+-	flush_work_sync(&dev->request_module_wk);
+-}
+ #else
+ #define request_modules(dev)
+-#define flush_request_modules(dev)
+ #endif /* CONFIG_MODULES */
+ 
+ /* Generic utility functions */
+@@ -1245,8 +1239,6 @@ static void cx18_remove(struct pci_dev *
+ 
+ 	CX18_DEBUG_INFO("Removing Card\n");
+ 
+-	flush_request_modules(cx);
+-
+ 	/* Stop all captures */
+ 	CX18_DEBUG_INFO("Stopping all streams\n");
+ 	if (atomic_read(&cx->tot_capturing) > 0)
+diff -Naurp linux-2.6.35/drivers/media/video/cx231xx/cx231xx-cards.c linux-2.6.35.media/drivers/media/video/cx231xx/cx231xx-cards.c
+--- linux-2.6.35/drivers/media/video/cx231xx/cx231xx-cards.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/video/cx231xx/cx231xx-cards.c	2011-01-25 10:32:49.000000000 -0500
+@@ -813,14 +813,8 @@ static void request_modules(struct cx231
+ 	INIT_WORK(&dev->request_module_wk, request_module_async);
+ 	schedule_work(&dev->request_module_wk);
+ }
+-
+-static void flush_request_modules(struct cx231xx *dev)
+-{
+-	flush_work_sync(&dev->request_module_wk);
+-}
+ #else
+ #define request_modules(dev)
+-#define flush_request_modules(dev)
+ #endif /* CONFIG_MODULES */
+ 
+ /*
+@@ -1153,8 +1147,6 @@ static void cx231xx_usb_disconnect(struc
+ 	if (!dev->udev)
+ 		return;
+ 
+-	flush_request_modules(dev);
+-
+ 	/* delete v4l2 device */
+ 	v4l2_device_unregister(&dev->v4l2_dev);
+ 
+diff -Naurp linux-2.6.35/drivers/media/video/cx23885/cx23885-input.c linux-2.6.35.media/drivers/media/video/cx23885/cx23885-input.c
+--- linux-2.6.35/drivers/media/video/cx23885/cx23885-input.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/video/cx23885/cx23885-input.c	2011-01-25 10:14:06.000000000 -0500
+@@ -229,6 +229,8 @@ static void cx23885_input_ir_stop(struct
+ 		v4l2_subdev_call(dev->sd_ir, ir, rx_s_parameters, &params);
+ 		v4l2_subdev_call(dev->sd_ir, ir, rx_g_parameters, &params);
+ 	}
++
++	flush_scheduled_work();
+ }
+ 
+ static void cx23885_input_ir_close(struct rc_dev *rc)
+diff -Naurp linux-2.6.35/drivers/media/video/cx88/cx88-mpeg.c linux-2.6.35.media/drivers/media/video/cx88/cx88-mpeg.c
+--- linux-2.6.35/drivers/media/video/cx88/cx88-mpeg.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/video/cx88/cx88-mpeg.c	2011-01-25 10:32:49.000000000 -0500
+@@ -66,14 +66,8 @@ static void request_modules(struct cx880
+ 	INIT_WORK(&dev->request_module_wk, request_module_async);
+ 	schedule_work(&dev->request_module_wk);
+ }
+-
+-static void flush_request_modules(struct cx8802_dev *dev)
+-{
+-	flush_work_sync(&dev->request_module_wk);
+-}
+ #else
+ #define request_modules(dev)
+-#define flush_request_modules(dev)
+ #endif /* CONFIG_MODULES */
+ 
+ 
+@@ -825,8 +819,6 @@ static void __devexit cx8802_remove(stru
+ 
+ 	dprintk( 1, "%s\n", __func__);
+ 
+-	flush_request_modules(dev);
+-
+ 	if (!list_empty(&dev->drvlist)) {
+ 		struct cx8802_driver *drv, *tmp;
+ 		int err;
+diff -Naurp linux-2.6.35/drivers/media/video/em28xx/em28xx-cards.c linux-2.6.35.media/drivers/media/video/em28xx/em28xx-cards.c
+--- linux-2.6.35/drivers/media/video/em28xx/em28xx-cards.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/video/em28xx/em28xx-cards.c	2011-01-25 10:32:49.000000000 -0500
+@@ -2693,14 +2693,8 @@ static void request_modules(struct em28x
+ 	INIT_WORK(&dev->request_module_wk, request_module_async);
+ 	schedule_work(&dev->request_module_wk);
+ }
+-
+-static void flush_request_modules(struct em28xx *dev)
+-{
+-	flush_work_sync(&dev->request_module_wk);
+-}
+ #else
+ #define request_modules(dev)
+-#define flush_request_modules(dev)
+ #endif /* CONFIG_MODULES */
+ 
+ /*
+@@ -3127,8 +3121,6 @@ static void em28xx_usb_disconnect(struct
+ 
+ 	em28xx_info("disconnecting %s\n", dev->vdev->name);
+ 
+-	flush_request_modules(dev);
+-
+ 	/* wait until all current v4l2 io is finished then deallocate
+ 	   resources */
+ 	mutex_lock(&dev->lock);
+diff -Naurp linux-2.6.35/drivers/media/video/omap24xxcam.c linux-2.6.35.media/drivers/media/video/omap24xxcam.c
+--- linux-2.6.35/drivers/media/video/omap24xxcam.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/video/omap24xxcam.c	2011-01-25 10:14:06.000000000 -0500
+@@ -1198,7 +1198,7 @@ static int vidioc_streamoff(struct file 
+ 
+ 	atomic_inc(&cam->reset_disable);
+ 
+-	flush_work_sync(&cam->sensor_reset_work);
++	flush_scheduled_work();
+ 
+ 	rval = videobuf_streamoff(q);
+ 	if (!rval) {
+@@ -1512,7 +1512,7 @@ static int omap24xxcam_release(struct fi
+ 
+ 	atomic_inc(&cam->reset_disable);
+ 
+-	flush_work_sync(&cam->sensor_reset_work);
++	flush_scheduled_work();
+ 
+ 	/* stop streaming capture */
+ 	videobuf_streamoff(&fh->vbq);
+@@ -1536,7 +1536,7 @@ static int omap24xxcam_release(struct fi
+ 	 * not be scheduled anymore since streaming is already
+ 	 * disabled.)
+ 	 */
+-	flush_work_sync(&cam->sensor_reset_work);
++	flush_scheduled_work();
+ 
+ 	mutex_lock(&cam->mutex);
+ 	if (atomic_dec_return(&cam->users) == 0) {
+diff -Naurp linux-2.6.35/drivers/media/video/saa7134/saa7134-core.c linux-2.6.35.media/drivers/media/video/saa7134/saa7134-core.c
+--- linux-2.6.35/drivers/media/video/saa7134/saa7134-core.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/video/saa7134/saa7134-core.c	2011-01-25 10:32:49.000000000 -0500
+@@ -166,14 +166,8 @@ static void request_submodules(struct sa
+ 	schedule_work(&dev->request_module_wk);
+ }
+ 
+-static void flush_request_submodules(struct saa7134_dev *dev)
+-{
+-	flush_work_sync(&dev->request_module_wk);
+-}
+-
+ #else
+ #define request_submodules(dev)
+-#define flush_request_submodules(dev)
+ #endif /* CONFIG_MODULES */
+ 
+ /* ------------------------------------------------------------------ */
+@@ -1027,6 +1021,8 @@ static int __devinit saa7134_initdev(str
+ 		}
+ 	}
+ 
++	request_submodules(dev);
++
+ 	v4l2_prio_init(&dev->prio);
+ 
+ 	mutex_lock(&saa7134_devlist_lock);
+@@ -1081,7 +1077,6 @@ static int __devinit saa7134_initdev(str
+ 	if (saa7134_dmasound_init && !dev->dmasound.priv_data)
+ 		saa7134_dmasound_init(dev);
+ 
+-	request_submodules(dev);
+ 	return 0;
+ 
+  fail4:
+@@ -1107,8 +1102,6 @@ static void __devexit saa7134_finidev(st
+ 	struct saa7134_dev *dev = container_of(v4l2_dev, struct saa7134_dev, v4l2_dev);
+ 	struct saa7134_mpeg_ops *mops;
+ 
+-	flush_request_submodules(dev);
+-
+ 	/* Release DMA sound modules if present */
+ 	if (saa7134_dmasound_exit && dev->dmasound.priv_data) {
+ 		saa7134_dmasound_exit(dev);
+diff -Naurp linux-2.6.35/drivers/media/video/saa7134/saa7134-empress.c linux-2.6.35.media/drivers/media/video/saa7134/saa7134-empress.c
+--- linux-2.6.35/drivers/media/video/saa7134/saa7134-empress.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/video/saa7134/saa7134-empress.c	2011-01-25 10:14:06.000000000 -0500
+@@ -553,7 +553,7 @@ static int empress_fini(struct saa7134_d
+ 
+ 	if (NULL == dev->empress_dev)
+ 		return 0;
+-	flush_work_sync(&dev->empress_workqueue);
++	flush_scheduled_work();
+ 	video_unregister_device(dev->empress_dev);
+ 	dev->empress_dev = NULL;
+ 	return 0;
+diff -Naurp linux-2.6.35/drivers/media/video/tlg2300/pd-main.c linux-2.6.35.media/drivers/media/video/tlg2300/pd-main.c
+--- linux-2.6.35/drivers/media/video/tlg2300/pd-main.c	2011-01-25 10:10:44.000000000 -0500
++++ linux-2.6.35.media/drivers/media/video/tlg2300/pd-main.c	2011-01-25 11:08:48.000000000 -0500
+@@ -452,8 +452,7 @@ static int poseidon_probe(struct usb_int
+ 
+ 	device_init_wakeup(&udev->dev, 1);
+ #ifdef CONFIG_PM
+-	pm_runtime_set_autosuspend_delay(&pd->udev->dev,
+-			1000 * PM_SUSPEND_DELAY);
++	pd->udev->autosuspend_delay = HZ * PM_SUSPEND_DELAY;
+ 	usb_enable_autosuspend(pd->udev);
+ 
+ 	if (in_hibernation(pd)) {
