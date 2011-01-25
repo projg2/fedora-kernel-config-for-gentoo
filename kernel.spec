@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 80
+%global baserelease 81
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2148,6 +2148,10 @@ fi
 # and build.
 
 %changelog
+* Mon Jan 24 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.10-81
+- Further improvements to ir-kbd-i2c when used with zilog chips
+- Finally hopefully fix annoying mceusb keybounce issue
+
 * Wed Jan 19 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.10-80
 - Make lirc_zilog behave correctly with hdpvr again, and for the first
   time ever, with pvrusb2-driven HVR-1950 (#635045)

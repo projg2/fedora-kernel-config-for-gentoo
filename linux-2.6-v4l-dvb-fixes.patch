@@ -1,21 +1,67 @@
-Not yet upstream, willl send RSN...
+All IR fixups take from:
 
---jarod
+http://git.kernel.org/?p=linux/kernel/git/jarod/linux-2.6-ir.git;a=shortlog;h=refs/heads/staging
 
+Should be in v4l/dvb/rc soon...
+
+commit 583602a0c6cab187b2f3b4c90509bbe2b85f5d51
 Author: Jarod Wilson <jarod@redhat.com>
-Date:   Wed Jan 19 16:49:19 2011 -0500
+Date:   Mon Jan 24 22:06:32 2011 -0500
 
-    lirc_zilog: wait a bit after firmware upload
+    mceusb: really fix remaining keybounce issues
+    
+    Make sure rawir struct is zeroed out before populating it for each
+    ir_raw_event_store_with_filter() call, and when we see a trailing 0x80
+    packet (end-of-data), issue an ir_raw_event_reset() call.
     
     Signed-off-by: Jarod Wilson <jarod@redhat.com>
 
+commit 8b07e7fe2fa1c763a8f08a179917fdf1a43b479d
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Thu Jan 20 16:31:18 2011 -0500
+
+    ir-kbd-i2c: improve remote behavior with z8 behind usb
+    
+    Add the same "are you ready?" i2c_master_send() poll command to
+    get_key_haup_xvr found in lirc_zilog, which is apparently seen in
+    the Windows driver for the PVR-150 w/a z8. This stabilizes what is
+    received from both the HD-PVR and HVR-1950, even with their polling
+    intervals at the default of 100, thus the removal of the custom
+    260ms polling_interval in pvrusb2-i2c-core.c.
+    
+    Acked-by: Andy Walls <awalls@md.metrocast.net>
+    Acked-by: Mike Isely <isely@isely.net>
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit aedf7d79cdeaf97d3efc7d667eeb94689bbc6e7d
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Wed Jan 19 16:49:19 2011 -0500
+
+    lirc_zilog: z8 on usb doesn't like back-to-back i2c_master_send
+    
+    Both the HD-PVR and HVR-1950, driven by the hdpvr and pvrusb2 drivers
+    respectively, have a zilog z8 chip exposed via i2c. These are both
+    usb-connected devices, and on both of them, back-to-back i2c_master_send
+    calls that work fine with a z8 on a pci card fail with a -EIO, as the
+    chip isn't yet ready from the prior command. To cope with that, add a
+    delay and retry loop where necessary.
+    
+    Acked-by: Andy Walls <awalls@md.metrocast.net>
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+t 2b197149441796e694721db984db9e5ca4656856
 Author: Jarod Wilson <jarod@redhat.com>
 Date:   Wed Jan 19 16:10:14 2011 -0500
 
     hdpvr: fix up i2c device registration
     
+    We have to actually call i2c_new_device() once for each of the rx and tx
+    addresses. Also improve error-handling and device remove i2c cleanup.
+    
+    Reviewed-by: Andy Walls <awalls@md.metrocast.net>
     Signed-off-by: Jarod Wilson <jarod@redhat.com>
 
+commit bcbc3901fdc43e78c548d5c6d12eb42408002256
 Author: Jarod Wilson <jarod@redhat.com>
 Date:   Tue Jan 18 15:31:24 2011 -0500
 
@@ -23,31 +69,35 @@ Date:   Tue Jan 18 15:31:24 2011 -0500
     
     Signed-off-by: Jarod Wilson <jarod@redhat.com>
 
+commit f2a6849f005fc0da0528ada0c3c79c7572db2898
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Tue Jan 18 00:33:08 2011 -0500
+
+    rc/ir-lirc-codec: add back debug spew
+    
+    Some occasionally useful debug spew disappeared as part of a feature
+    update a while back, and I'm finding myself in need of it again to help
+    diagnose some issues.
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit 20285f04106a578f6202ba043e0044df614aee05
 Author: Jarod Wilson <jarod@redhat.com>
 Date:   Tue Jan 18 00:27:45 2011 -0500
 
     rc/mce: add mappings for missing keys
-
+    
     Per http://mediacenterguides.com/book/export/html/31 and investigation
     by Erin, we were missing these last three mappings to complete the mce
     key table. Lets remedy that.
-
+    
     Reported-by: Erin Simonds <fisslefink@gmail.com>
     Signed-off-by: Jarod Wilson <jarod@redhat.com>
 
-Author: Jarod Wilson <jarod@redhat.com>
-Date:   Wed Jan 5 10:16:13 2011 -0500
 
-    rc/ir-lirc-codec: add back debug spew
-
-    Some occasionally useful debug spew disappeared as part of a feature
-    update a while back, and I'm finding myself in need of it again to help
-    diagnose some issues.
-
-    Signed-off-by: Jarod Wilson <jarod@redhat.com>
 
 diff --git a/drivers/media/rc/ir-lirc-codec.c b/drivers/media/rc/ir-lirc-codec.c
-index f011c5d..31a98e2 100644
+index f011c5d..1c5cc65 100644
 --- a/drivers/media/rc/ir-lirc-codec.c
 +++ b/drivers/media/rc/ir-lirc-codec.c
 @@ -1,4 +1,4 @@
@@ -105,6 +155,27 @@ index 3bf3337..2f5dc06 100644
  	{ 0x800f043a, KEY_BRIGHTNESSUP },
  
  	{ 0x800f0446, KEY_TV },
+diff --git a/drivers/media/rc/mceusb.c b/drivers/media/rc/mceusb.c
+index 079353e..cf763fb 100644
+--- a/drivers/media/rc/mceusb.c
++++ b/drivers/media/rc/mceusb.c
+@@ -855,6 +855,7 @@ static void mceusb_process_ir_data(struct mceusb_dev *ir, int buf_len)
+ 			break;
+ 		case PARSE_IRDATA:
+ 			ir->rem--;
++			init_ir_raw_event(&rawir);
+ 			rawir.pulse = ((ir->buf_in[i] & MCE_PULSE_BIT) != 0);
+ 			rawir.duration = (ir->buf_in[i] & MCE_PULSE_MASK)
+ 					 * MS_TO_US(MCE_TIME_UNIT);
+@@ -883,6 +884,8 @@ static void mceusb_process_ir_data(struct mceusb_dev *ir, int buf_len)
+ 					     i, ir->rem + 1, false);
+ 			if (ir->rem)
+ 				ir->parser_state = PARSE_IRDATA;
++			else
++				ir_raw_event_reset(ir->rc);
+ 			break;
+ 		}
+ 
 diff --git a/drivers/media/rc/streamzap.c b/drivers/media/rc/streamzap.c
 index 6e2911c..1b013d4 100644
 --- a/drivers/media/rc/streamzap.c
@@ -119,10 +190,18 @@ index 6e2911c..1b013d4 100644
  	#if 0
  	/* not yet supported, depends on patches from maxim */
 diff --git a/drivers/media/video/hdpvr/hdpvr-core.c b/drivers/media/video/hdpvr/hdpvr-core.c
-index a6572e5..263e2fa 100644
+index a6572e5..a27d93b 100644
 --- a/drivers/media/video/hdpvr/hdpvr-core.c
 +++ b/drivers/media/video/hdpvr/hdpvr-core.c
-@@ -381,13 +381,21 @@ static int hdpvr_probe(struct usb_interface *interface,
+@@ -283,6 +283,7 @@ static int hdpvr_probe(struct usb_interface *interface,
+ 	struct hdpvr_device *dev;
+ 	struct usb_host_interface *iface_desc;
+ 	struct usb_endpoint_descriptor *endpoint;
++	struct i2c_client *client;
+ 	size_t buffer_size;
+ 	int i;
+ 	int retval = -ENOMEM;
+@@ -381,13 +382,21 @@ static int hdpvr_probe(struct usb_interface *interface,
  #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
  	retval = hdpvr_register_i2c_adapter(dev);
  	if (retval < 0) {
@@ -134,64 +213,74 @@ index a6572e5..263e2fa 100644
 -	retval = hdpvr_register_i2c_ir(dev);
 -	if (retval < 0)
 -		v4l2_err(&dev->v4l2_dev, "registering i2c IR devices failed\n");
-+	hdpvr_register_ir_rx_i2c(dev);
-+	if (!dev->i2c_rx) {
++	client = hdpvr_register_ir_rx_i2c(dev);
++	if (!client) {
 +		v4l2_err(&dev->v4l2_dev, "i2c IR RX device register failed\n");
-+		goto rx_reg_fail;
++		goto reg_fail;
 +	}
 +
-+	hdpvr_register_ir_tx_i2c(dev);
-+	if (!dev->i2c_tx) {
++	client = hdpvr_register_ir_tx_i2c(dev);
++	if (!client) {
 +		v4l2_err(&dev->v4l2_dev, "i2c IR TX device register failed\n");
-+		goto tx_reg_fail;
++		goto reg_fail;
 +	}
  #endif
  
  	/* let the user know what node this device is now attached to */
-@@ -395,6 +403,10 @@ static int hdpvr_probe(struct usb_interface *interface,
+@@ -395,6 +404,10 @@ static int hdpvr_probe(struct usb_interface *interface,
  		  video_device_node_name(dev->video_dev));
  	return 0;
  
-+tx_reg_fail:
-+	i2c_unregister_device(dev->i2c_rx);
-+rx_reg_fail:
++reg_fail:
++#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
 +	i2c_del_adapter(&dev->i2c_adapter);
++#endif
  error:
  	if (dev) {
  		/* Destroy single thread */
+@@ -424,6 +437,9 @@ static void hdpvr_disconnect(struct usb_interface *interface)
+ 	mutex_lock(&dev->io_mutex);
+ 	hdpvr_cancel_queue(dev);
+ 	mutex_unlock(&dev->io_mutex);
++#if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
++	i2c_del_adapter(&dev->i2c_adapter);
++#endif
+ 	video_unregister_device(dev->video_dev);
+ 	atomic_dec(&dev_nr);
+ }
 diff --git a/drivers/media/video/hdpvr/hdpvr-i2c.c b/drivers/media/video/hdpvr/hdpvr-i2c.c
-index 89b71fa..e891bb0 100644
+index 89b71fa..e53fa55 100644
 --- a/drivers/media/video/hdpvr/hdpvr-i2c.c
 +++ b/drivers/media/video/hdpvr/hdpvr-i2c.c
-@@ -31,26 +31,39 @@
+@@ -31,26 +31,34 @@
  #define Z8F0811_IR_RX_I2C_ADDR	0x71
  
  
 -static struct i2c_board_info hdpvr_i2c_board_info = {
-+static struct i2c_board_info hdpvr_ir_tx_i2c_board_info = {
- 	I2C_BOARD_INFO("ir_tx_z8f0811_hdpvr", Z8F0811_IR_TX_I2C_ADDR),
-+};
-+
-+void hdpvr_register_ir_tx_i2c(struct hdpvr_device *dev)
+-	I2C_BOARD_INFO("ir_tx_z8f0811_hdpvr", Z8F0811_IR_TX_I2C_ADDR),
+-	I2C_BOARD_INFO("ir_rx_z8f0811_hdpvr", Z8F0811_IR_RX_I2C_ADDR),
+-};
++struct i2c_client *hdpvr_register_ir_tx_i2c(struct hdpvr_device *dev)
 +{
 +	struct IR_i2c_init_data *init_data = &dev->ir_i2c_init_data;
++	struct i2c_board_info hdpvr_ir_tx_i2c_board_info = {
++		I2C_BOARD_INFO("ir_tx_z8f0811_hdpvr", Z8F0811_IR_TX_I2C_ADDR),
++	};
 +
 +	init_data->name = "HD-PVR";
 +	hdpvr_ir_tx_i2c_board_info.platform_data = init_data;
-+
-+	dev->i2c_tx = i2c_new_device(&dev->i2c_adapter,
-+				     &hdpvr_ir_tx_i2c_board_info);
-+}
-+
-+static struct i2c_board_info hdpvr_ir_rx_i2c_board_info = {
- 	I2C_BOARD_INFO("ir_rx_z8f0811_hdpvr", Z8F0811_IR_RX_I2C_ADDR),
- };
  
 -int hdpvr_register_i2c_ir(struct hdpvr_device *dev)
-+void hdpvr_register_ir_rx_i2c(struct hdpvr_device *dev)
++	return i2c_new_device(&dev->i2c_adapter, &hdpvr_ir_tx_i2c_board_info);
++}
++
++struct i2c_client *hdpvr_register_ir_rx_i2c(struct hdpvr_device *dev)
  {
 -	struct i2c_client *c;
  	struct IR_i2c_init_data *init_data = &dev->ir_i2c_init_data;
++	struct i2c_board_info hdpvr_ir_rx_i2c_board_info = {
++		I2C_BOARD_INFO("ir_rx_z8f0811_hdpvr", Z8F0811_IR_RX_I2C_ADDR),
++	};
  
  	/* Our default information for ir-kbd-i2c.c to use */
  	init_data->ir_codes = RC_MAP_HAUPPAUGE_NEW;
@@ -202,43 +291,76 @@ index 89b71fa..e891bb0 100644
 -
 -	c = i2c_new_device(&dev->i2c_adapter, &hdpvr_i2c_board_info);
 +	init_data->name = "HD-PVR";
-+	init_data->polling_interval = 260; /* matches lirc_zilog */
 +	hdpvr_ir_rx_i2c_board_info.platform_data = init_data;
  
 -	return (c == NULL) ? -ENODEV : 0;
-+	dev->i2c_rx = i2c_new_device(&dev->i2c_adapter,
-+				     &hdpvr_ir_rx_i2c_board_info);
++	return i2c_new_device(&dev->i2c_adapter, &hdpvr_ir_rx_i2c_board_info);
  }
  
  static int hdpvr_i2c_read(struct hdpvr_device *dev, int bus,
 diff --git a/drivers/media/video/hdpvr/hdpvr.h b/drivers/media/video/hdpvr/hdpvr.h
-index ee74e3b..29357f0 100644
+index ee74e3b..072f23c 100644
 --- a/drivers/media/video/hdpvr/hdpvr.h
 +++ b/drivers/media/video/hdpvr/hdpvr.h
-@@ -108,6 +108,9 @@ struct hdpvr_device {
- 
- 	/* I2C adapter */
- 	struct i2c_adapter	i2c_adapter;
-+	/* I2C clients */
-+	struct i2c_client	*i2c_rx;
-+	struct i2c_client	*i2c_tx;
- 	/* I2C lock */
- 	struct mutex		i2c_mutex;
- 	/* I2C message buffer space */
-@@ -313,7 +316,8 @@ int hdpvr_cancel_queue(struct hdpvr_device *dev);
+@@ -313,7 +313,8 @@ int hdpvr_cancel_queue(struct hdpvr_device *dev);
  /* i2c adapter registration */
  int hdpvr_register_i2c_adapter(struct hdpvr_device *dev);
  
 -int hdpvr_register_i2c_ir(struct hdpvr_device *dev);
-+void hdpvr_register_ir_rx_i2c(struct hdpvr_device *dev);
-+void hdpvr_register_ir_tx_i2c(struct hdpvr_device *dev);
++struct i2c_client *hdpvr_register_ir_rx_i2c(struct hdpvr_device *dev);
++struct i2c_client *hdpvr_register_ir_tx_i2c(struct hdpvr_device *dev);
  
  /*========================================================================*/
  /* buffer management */
+diff --git a/drivers/media/video/ir-kbd-i2c.c b/drivers/media/video/ir-kbd-i2c.c
+index d2b20ad..a221ad6 100644
+--- a/drivers/media/video/ir-kbd-i2c.c
++++ b/drivers/media/video/ir-kbd-i2c.c
+@@ -128,6 +128,19 @@ static int get_key_haup(struct IR_i2c *ir, u32 *ir_key, u32 *ir_raw)
+ 
+ static int get_key_haup_xvr(struct IR_i2c *ir, u32 *ir_key, u32 *ir_raw)
+ {
++	int ret;
++	unsigned char buf[1] = { 0 };
++
++	/*
++	 * This is the same apparent "are you ready?" poll command observed
++	 * watching Windows driver traffic and implemented in lirc_zilog. With
++	 * this added, we get far saner remote behavior with z8 chips on usb
++	 * connected devices, even with the default polling interval of 100ms.
++	 */
++	ret = i2c_master_send(ir->c, buf, 1);
++	if (ret != 1)
++		return (ret < 0) ? ret : -EINVAL;
++
+ 	return get_key_haup_common (ir, ir_key, ir_raw, 6, 3);
+ }
+ 
+diff --git a/drivers/media/video/pvrusb2/pvrusb2-i2c-core.c b/drivers/media/video/pvrusb2/pvrusb2-i2c-core.c
+index ccc8849..451ecd4 100644
+--- a/drivers/media/video/pvrusb2/pvrusb2-i2c-core.c
++++ b/drivers/media/video/pvrusb2/pvrusb2-i2c-core.c
+@@ -597,7 +597,6 @@ static void pvr2_i2c_register_ir(struct pvr2_hdw *hdw)
+ 		init_data->internal_get_key_func = IR_KBD_GET_KEY_HAUP_XVR;
+ 		init_data->type                  = RC_TYPE_RC5;
+ 		init_data->name                  = hdw->hdw_desc->description;
+-		init_data->polling_interval      = 260; /* ms From lirc_zilog */
+ 		/* IR Receiver */
+ 		info.addr          = 0x71;
+ 		info.platform_data = init_data;
 diff --git a/drivers/staging/lirc/lirc_zilog.c b/drivers/staging/lirc/lirc_zilog.c
-index 3fe5f41..6422e26 100644
+index 3fe5f41..0aad0d7 100644
 --- a/drivers/staging/lirc/lirc_zilog.c
 +++ b/drivers/staging/lirc/lirc_zilog.c
+@@ -495,7 +495,7 @@ static int send_data_block(struct IR_tx *tx, unsigned char *data_block)
+ /* send boot data to the IR TX device */
+ static int send_boot_data(struct IR_tx *tx)
+ {
+-	int ret;
++	int ret, i;
+ 	unsigned char buf[4];
+ 
+ 	/* send the boot block */
 @@ -503,7 +503,7 @@ static int send_boot_data(struct IR_tx *tx)
  	if (ret != 0)
  		return ret;
@@ -248,18 +370,52 @@ index 3fe5f41..6422e26 100644
  	buf[0] = 0x00;
  	buf[1] = 0x20;
  	ret = i2c_master_send(tx->c, buf, 2);
-@@ -511,6 +511,14 @@ static int send_boot_data(struct IR_tx *tx)
+@@ -511,7 +511,19 @@ static int send_boot_data(struct IR_tx *tx)
  		zilog_error("i2c_master_send failed with %d\n", ret);
  		return ret < 0 ? ret : -EFAULT;
  	}
+-	ret = i2c_master_send(tx->c, buf, 1);
 +
 +	/*
 +	 * Wait for zilog to settle after hitting go post boot block upload.
 +	 * Without this delay, the HD-PVR and HVR-1950 both return an -EIO
 +	 * upon attempting to get firmware revision, and tx probe thus fails.
 +	 */
-+	mdelay(20);
++	for (i = 0; i < 10; i++) {
++		ret = i2c_master_send(tx->c, buf, 1);
++		if (ret == 1)
++			break;
++		udelay(100);
++	}
 +
- 	ret = i2c_master_send(tx->c, buf, 1);
  	if (ret != 1) {
  		zilog_error("i2c_master_send failed with %d\n", ret);
+ 		return ret < 0 ? ret : -EFAULT;
+@@ -523,8 +535,8 @@ static int send_boot_data(struct IR_tx *tx)
+ 		zilog_error("i2c_master_recv failed with %d\n", ret);
+ 		return 0;
+ 	}
+-	if (buf[0] != 0x80) {
+-		zilog_error("unexpected IR TX response: %02x\n", buf[0]);
++	if ((buf[0] != 0x80) && (buf[0] != 0xa0)) {
++		zilog_error("unexpected IR TX init response: %02x\n", buf[0]);
+ 		return 0;
+ 	}
+ 	zilog_notify("Zilog/Hauppauge IR blaster firmware version "
+@@ -827,7 +839,15 @@ static int send_code(struct IR_tx *tx, unsigned int code, unsigned int key)
+ 		zilog_error("i2c_master_send failed with %d\n", ret);
+ 		return ret < 0 ? ret : -EFAULT;
+ 	}
+-	ret = i2c_master_send(tx->c, buf, 1);
++
++	/* Give the z8 a moment to process data block */
++	for (i = 0; i < 10; i++) {
++		ret = i2c_master_send(tx->c, buf, 1);
++		if (ret == 1)
++			break;
++		udelay(100);
++	}
++
+ 	if (ret != 1) {
+ 		zilog_error("i2c_master_send failed with %d\n", ret);
+ 		return ret < 0 ? ret : -EFAULT;
