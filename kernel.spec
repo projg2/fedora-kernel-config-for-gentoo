@@ -741,6 +741,8 @@ Patch2906: linux-2.6-v4l-dvb-uvcvideo-update.patch
 
 Patch2910: linux-2.6-v4l-dvb-add-lgdt3304-support.patch
 Patch2911: linux-2.6-v4l-dvb-add-kworld-a340-support.patch
+# CVE-2011-0521
+Patch2912: linux-2.6-v4l-dvb-av7110-check-for-negative-array-offset.patch
 
 # fs fixes
 
@@ -1564,6 +1566,8 @@ ApplyPatch linux-2.6-v4l-dvb-uvcvideo-update.patch
 
 ApplyPatch linux-2.6-v4l-dvb-add-lgdt3304-support.patch
 ApplyPatch linux-2.6-v4l-dvb-add-kworld-a340-support.patch
+# CVE-2011-0521
+ApplyPatch linux-2.6-v4l-dvb-av7110-check-for-negative-array-offset.patch
 
 ApplyPatch linux-2.6-phylib-autoload.patch
 
@@ -2423,6 +2427,7 @@ fi
 * Wed Jan 26 2011 Chuck Ebbert <cebbert@redhat.com>
 - TCP networking fixes from 2.6.36.3, including one CVE
   CVE-2010-4165: possible kernel oops from user MSS
+- CVE-2011-0521: av7110 negative array offset
 
 * Sat Jan 22 2011 Chuck Ebbert <cebbert@redhat.com>
 - Security updates
