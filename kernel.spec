@@ -929,6 +929,15 @@ Patch13933: orinoco-fix-tkip-countermeasure-behaviour.patch
 # CVE-2010-4650
 Patch13934: fuse-verify-ioctl-retries.patch
 
+# Networking fixes from 2.6.36.3
+Patch13940: tcp-avoid-a-possible-divide-by-zero.patch
+Patch13941: tcp-bug-fix-in-initialization-of-receive-window.patch
+Patch13942: tcp-don-t-change-unlocked-socket-state-in-tcp_v4_err.patch
+# CVE-2010-4165
+Patch13943: tcp-increase-tcp_maxseg-socket-option-minimum.patch
+Patch13944: tcp-make-tcp_maxseg-minimum-more-correct.patch
+Patch13945: tcp-protect-sysctl_tcp_cookie_size-reads.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1781,6 +1790,15 @@ ApplyPatch orinoco-fix-tkip-countermeasure-behaviour.patch
 # CVE-2010-4650
 ApplyPatch fuse-verify-ioctl-retries.patch
 
+# Networking fixes from 2.6.36.3
+ApplyPatch tcp-avoid-a-possible-divide-by-zero.patch
+ApplyPatch tcp-bug-fix-in-initialization-of-receive-window.patch
+ApplyPatch tcp-don-t-change-unlocked-socket-state-in-tcp_v4_err.patch
+# CVE-2010-4165
+ApplyPatch tcp-increase-tcp_maxseg-socket-option-minimum.patch
+ApplyPatch tcp-make-tcp_maxseg-minimum-more-correct.patch
+ApplyPatch tcp-protect-sysctl_tcp_cookie_size-reads.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2402,6 +2420,10 @@ fi
 
 
 %changelog
+* Wed Jan 26 2011 Chuck Ebbert <cebbert@redhat.com>
+- TCP networking fixes from 2.6.36.3, including one CVE
+  CVE-2010-4165: possible kernel oops from user MSS
+
 * Sat Jan 22 2011 Chuck Ebbert <cebbert@redhat.com>
 - Security updates
   CVE-2010-4346: install_special_mapping skips security_file_mmap check

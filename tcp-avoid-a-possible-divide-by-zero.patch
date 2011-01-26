@@ -7,6 +7,7 @@ Subject: tcp: avoid a possible divide by zero
 From: Eric Dumazet <eric.dumazet@gmail.com>
 
 [ Upstream commit ad9f4f50fe9288bbe65b7dfd76d8820afac6a24c ]
+[ trivial backport to 2.6.34 ]
 
 sysctl_tcp_tso_win_divisor might be set to zero while one cpu runs in
 tcp_tso_should_defer(). Make sure we dont allow a divide by zero by
@@ -27,7 +28,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
  	u32 send_win, cong_win, limit, in_flight;
 +	int win_divisor;
  
- 	if (TCP_SKB_CB(skb)->flags & TCPHDR_FIN)
+ 	if (TCP_SKB_CB(skb)->flags & TCPCB_FLAG_FIN)
  		goto send_now;
 @@ -1549,13 +1550,14 @@ static int tcp_tso_should_defer(struct s
  	if ((skb != tcp_write_queue_tail(sk)) && (limit >= skb->len))
