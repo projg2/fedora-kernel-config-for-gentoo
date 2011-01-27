@@ -4,6 +4,23 @@ http://git.kernel.org/?p=linux/kernel/git/jarod/linux-2.6-ir.git;a=shortlog;h=re
 
 Should be in v4l/dvb/rc soon...
 
+
+commit db7e4498b17d9b52c8fddf828bad54454ab130ec
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Thu Jan 27 13:08:35 2011 -0500
+
+    rc/streamzap: fix reporting response times
+    
+    The streamzap driver has relatively low sampling resolution, and any
+    delays in reporting events seem to cause some minor problems for the
+    likes of irw when using the lirc bridge driver, resulting in a single
+    keypress registering as multiple independent ones, rather than as a
+    single press with repeats. If we call ir_raw_event_handle() more
+    frequently and reset the rawir kfifo at end-of-signal, the behavior
+    improves quite a bit.
+    
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
 commit 583602a0c6cab187b2f3b4c90509bbe2b85f5d51
 Author: Jarod Wilson <jarod@redhat.com>
 Date:   Mon Jan 24 22:06:32 2011 -0500
@@ -59,14 +76,6 @@ Date:   Wed Jan 19 16:10:14 2011 -0500
     addresses. Also improve error-handling and device remove i2c cleanup.
     
     Reviewed-by: Andy Walls <awalls@md.metrocast.net>
-    Signed-off-by: Jarod Wilson <jarod@redhat.com>
-
-commit bcbc3901fdc43e78c548d5c6d12eb42408002256
-Author: Jarod Wilson <jarod@redhat.com>
-Date:   Tue Jan 18 15:31:24 2011 -0500
-
-    rc/streamzap: timeout needs to be in NS
-    
     Signed-off-by: Jarod Wilson <jarod@redhat.com>
 
 commit f2a6849f005fc0da0528ada0c3c79c7572db2898
@@ -176,19 +185,6 @@ index 079353e..cf763fb 100644
  			break;
  		}
  
-diff --git a/drivers/media/rc/streamzap.c b/drivers/media/rc/streamzap.c
-index 6e2911c..1b013d4 100644
---- a/drivers/media/rc/streamzap.c
-+++ b/drivers/media/rc/streamzap.c
-@@ -430,7 +430,7 @@ static int __devinit streamzap_probe(struct usb_interface *intf,
- 	sz->decoder_state = PulseSpace;
- 	/* FIXME: don't yet have a way to set this */
- 	sz->timeout_enabled = true;
--	sz->rdev->timeout = (((SZ_TIMEOUT * SZ_RESOLUTION * 1000) &
-+	sz->rdev->timeout = ((MS_TO_NS(SZ_TIMEOUT * SZ_RESOLUTION) &
- 				IR_MAX_DURATION) | 0x03000000);
- 	#if 0
- 	/* not yet supported, depends on patches from maxim */
 diff --git a/drivers/media/video/hdpvr/hdpvr-core.c b/drivers/media/video/hdpvr/hdpvr-core.c
 index a6572e5..a27d93b 100644
 --- a/drivers/media/video/hdpvr/hdpvr-core.c
@@ -419,3 +415,23 @@ index 3fe5f41..0aad0d7 100644
  	if (ret != 1) {
  		zilog_error("i2c_master_send failed with %d\n", ret);
  		return ret < 0 ? ret : -EFAULT;
+diff --git a/drivers/media/rc/streamzap.c b/drivers/media/rc/streamzap.c
+index d9b6b48..e435d94 100644
+--- a/drivers/media/rc/streamzap.c
++++ b/drivers/media/rc/streamzap.c
+@@ -273,6 +273,7 @@ static void streamzap_callback(struct urb *urb)
+ 				if (sz->timeout_enabled)
+ 					sz_push(sz, rawir);
+ 				ir_raw_event_handle(sz->rdev);
++				ir_raw_event_reset(sz->rdev);
+ 			} else {
+ 				sz_push_full_space(sz, sz->buf_in[i]);
+ 			}
+@@ -290,6 +291,7 @@ static void streamzap_callback(struct urb *urb)
+ 		}
+ 	}
+ 
++	ir_raw_event_handle(sz->rdev);
+ 	usb_submit_urb(urb, GFP_ATOMIC);
+ 
+ 	return;
