@@ -787,6 +787,7 @@ Patch13645: tpm-autodetect-itpm-devices.patch
 Patch13646: tpm-fix-stall-on-boot.patch
 
 Patch13651: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
+
 Patch13652: fix-i8k-inline-asm.patch
 
 Patch13653: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
@@ -829,9 +830,6 @@ Patch13703: btrfs-fix-typo-in-fallocate-to-make-it-honor-actual-size.patch
 
 # rhbz#643758
 Patch13704: hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
-
-Patch13000: pnfs-all-2.6.35-2010-09-14-f14.patch
-Patch13652: v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 
 Patch13000: pnfs-all-2.6.35-2010-09-14-f14.patch
 Patch13001: linux-2.6-pnfs-compile.patch
@@ -1515,12 +1513,6 @@ ApplyPatch add-macbookair3-ids.patch
 # temporary patch, dump stack on failed it821x commands
 ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
 
-# temporary fix for typo in Xen -stable patch
-ApplyPatch xen-fix-typo-in-xen-irq-fix.patch
-
-# rhbz#641468
-ApplyPatch pnpacpi-cope-with-invalid-device-ids.patch
-
 # rhbz#641476
 ApplyPatch dm-allow-setting-of-uuid-via-rename-if-not-already-set.patch
 
@@ -1579,10 +1571,6 @@ ApplyPatch block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_us
 
 # rhbz#643758
 ApplyPatch hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
-
-ApplyPatch pnfs-all-2.6.35-2010-09-14-f14.patch
-# CVE-2010-2963
-ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
 
 ApplyPatch pnfs-all-2.6.35-2010-09-14-f14.patch
 ApplyPatch linux-2.6-pnfs-compile.patch
