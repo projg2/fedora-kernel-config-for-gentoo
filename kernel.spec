@@ -940,6 +940,9 @@ Patch13943: tcp-increase-tcp_maxseg-socket-option-minimum.patch
 Patch13944: tcp-make-tcp_maxseg-minimum-more-correct.patch
 Patch13945: tcp-protect-sysctl_tcp_cookie_size-reads.patch
 
+# rhbz#673207 (f14)
+Patch13950: sunrpc-kernel-panic-when-mount-nfsv4.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1803,6 +1806,9 @@ ApplyPatch tcp-increase-tcp_maxseg-socket-option-minimum.patch
 ApplyPatch tcp-make-tcp_maxseg-minimum-more-correct.patch
 ApplyPatch tcp-protect-sysctl_tcp_cookie_size-reads.patch
 
+# rhbz#673207 (f14)
+ApplyPatch sunrpc-kernel-panic-when-mount-nfsv4.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2424,6 +2430,9 @@ fi
 
 
 %changelog
+* Sun Jan 30 2011 Chuck Ebbert <cebbert@redhat.com>
+- Copy sunrpc oops fix from F14
+
 * Wed Jan 26 2011 Chuck Ebbert <cebbert@redhat.com>
 - TCP networking fixes from 2.6.36.3, including one CVE
   CVE-2010-4165: possible kernel oops from user MSS
