@@ -943,6 +943,9 @@ Patch13945: tcp-protect-sysctl_tcp_cookie_size-reads.patch
 # rhbz#673207 (f14)
 Patch13950: sunrpc-kernel-panic-when-mount-nfsv4.patch
 
+# rhbz#643758
+Patch13952: hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1809,6 +1812,8 @@ ApplyPatch tcp-protect-sysctl_tcp_cookie_size-reads.patch
 # rhbz#673207 (f14)
 ApplyPatch sunrpc-kernel-panic-when-mount-nfsv4.patch
 
+ApplyPatch hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2430,6 +2435,10 @@ fi
 
 
 %changelog
+* Mon Jan 31 2011 Kyle McMartin <kmcmartin@redhat.com>
+- hostap_cs: fix sleeping function called from invalid context (#643758)
+  patch from Stanislaw Gruszka.
+
 * Sun Jan 30 2011 Chuck Ebbert <cebbert@redhat.com>
 - Copy sunrpc oops fix from F14
 
