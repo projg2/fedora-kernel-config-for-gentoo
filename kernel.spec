@@ -831,6 +831,9 @@ Patch13703: btrfs-fix-typo-in-fallocate-to-make-it-honor-actual-size.patch
 # rhbz#643758
 Patch13704: hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 
+# rhbz #673207
+Patch13705: sunrpc-kernel-panic-when-mount-nfsv4.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1568,6 +1571,9 @@ ApplyPatch block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_us
 # rhbz#643758
 ApplyPatch hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 
+# rhbz #673207
+ApplyPatch sunrpc-kernel-panic-when-mount-nfsv4.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2154,6 +2160,9 @@ fi
 # and build.
 
 %changelog
+* Sun Jan 30 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix oops in sunrpc code (#673207)
+
 * Tue Jan 25 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.10-81
 - Further improvements to ir-kbd-i2c when used with zilog chips
 - Finally hopefully fix annoying mceusb keybounce issue
