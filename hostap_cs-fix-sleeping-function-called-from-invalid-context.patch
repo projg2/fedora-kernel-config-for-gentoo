@@ -1,10 +1,31 @@
-From kernel-bounces@lists.fedoraproject.org Mon Jan 17 08:04:38 2011
+From sgruszka@redhat.com Mon Jan 17 08:04:28 2011
+Return-Path: sgruszka@redhat.com
+Received: from zmta03.collab.prod.int.phx2.redhat.com (LHLO
+ zmta03.collab.prod.int.phx2.redhat.com) (10.5.5.33) by
+ mail03.corp.redhat.com with LMTP; Mon, 17 Jan 2011 08:04:28 -0500 (EST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by zmta03.collab.prod.int.phx2.redhat.com (Postfix) with ESMTP id 5CF754C96B;
+	Mon, 17 Jan 2011 08:04:28 -0500 (EST)
+Received: from zmta03.collab.prod.int.phx2.redhat.com ([127.0.0.1])
+	by localhost (zmta03.collab.prod.int.phx2.redhat.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qCtjRMUf-IeX; Mon, 17 Jan 2011 08:04:28 -0500 (EST)
+Received: from int-mx02.intmail.prod.int.phx2.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+	by zmta03.collab.prod.int.phx2.redhat.com (Postfix) with ESMTP id 4B8794C91D;
+	Mon, 17 Jan 2011 08:04:28 -0500 (EST)
+Received: from localhost (vpn-235-108.phx2.redhat.com [10.3.235.108])
+	by int-mx02.intmail.prod.int.phx2.redhat.com (8.13.8/8.13.8) with ESMTP id p0HD4RC9017134;
+	Mon, 17 Jan 2011 08:04:27 -0500
 From: Stanislaw Gruszka <sgruszka@redhat.com>
 To: stable@kernel.org, kernel@lists.fedoraproject.org
-Subject: [PATCH 2.6.34.y] hostap_cs: fix sleeping function called from invalid
-	context
+Cc: Kyle McMartin <kmcmartin@redhat.com>,
+        Stanislaw Gruszka <sgruszka@redhat.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Tim Gardner <tim.gardner@canonical.com>,
+        linux-wireless@vger.kernel.org
+Subject: [PATCH 2.6.34.y] hostap_cs: fix sleeping function called from invalid context
 Date: Mon, 17 Jan 2011 14:04:25 +0100
 Message-Id: <1295269465-4903-1-git-send-email-sgruszka@redhat.com>
+X-Scanned-By: MIMEDefang 2.67 on 10.5.11.12
 
 commit 4e5518ca53be29c1ec3c00089c97bef36bfed515 upstream.
 
@@ -77,9 +98,4 @@ index f33e18e..116b5c6 100644
  	prism2_release((u_long)link);
 -- 
 1.7.1
-
-_______________________________________________
-kernel mailing list
-kernel@lists.fedoraproject.org
-https://admin.fedoraproject.org/mailman/listinfo/kernel
 
