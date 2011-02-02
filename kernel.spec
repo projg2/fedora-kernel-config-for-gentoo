@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 81
+%global baserelease 82
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,9 +60,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1501,7 +1501,7 @@ ApplyPatch sched-30-sched-fix-nohz-balance-kick.patch
 ApplyPatch sched-35-increment-cache_nice_tries-only-on-periodic-lb.patch
 
 # rhbz#650934
-ApplyPatch sched-cure-more-NO_HZ-load-average-woes.patch
+#ApplyPatch sched-cure-more-NO_HZ-load-average-woes.patch
 
 ApplyPatch btusb-macbookpro-7-1.patch
 ApplyPatch btusb-macbookpro-6-2.patch
@@ -1539,7 +1539,7 @@ ApplyPatch inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 ApplyPatch netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
 
 # rhbz#656264
-ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
+#ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
 ApplyPatch rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 ApplyPatch rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
@@ -1559,7 +1559,7 @@ ApplyPatch orinoco-initialise-priv_hw-before-assigning-the-interrupt.patch
 ApplyPatch net-AF_PACKET-vmalloc.patch
 
 # rhbz#667459
-ApplyPatch mac80211-fix-hard-lockup-in-sta_addba_resp_timer_expired.patch
+#ApplyPatch mac80211-fix-hard-lockup-in-sta_addba_resp_timer_expired.patch
 
 # rhbz#652744
 ApplyPatch e1000e-cleanup-e1000_sw_lcd_config_ich8lan.patch
@@ -2160,6 +2160,16 @@ fi
 # and build.
 
 %changelog
+* Tue Feb 01 2011 Chuck Ebbert <cebbert@redhat.com>  2.6.35.11-82.rc1
+- Linux 2.6.35.11-rc1
+- Revert patches we already have in the big v4l update:
+    gspca-sonixj-add-a-flag-in-the-driver_info-table.patch
+    gspca-sonixj-set-the-flag-for-some-devices.patch
+- Comment out patches merged upstream:
+    sched-cure-more-NO_HZ-load-average-woes.patch
+    posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
+    mac80211-fix-hard-lockup-in-sta_addba_resp_timer_expired.patch
+
 * Sun Jan 30 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix oops in sunrpc code (#673207)
 

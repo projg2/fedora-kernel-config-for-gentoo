@@ -1,3 +1,109 @@
+From c6c14330717f9850b4b4c054b81424b9979cd07d Mon Sep 17 00:00:00 2001
+From: Jean-Francois Moine <moinejf@free.fr>
+Date: Tue, 14 Dec 2010 16:15:37 -0300
+Subject: [media] gspca - sonixj: Add a flag in the driver_info table
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From: Jean-Francois Moine <moinejf@free.fr>
+
+commit c6c14330717f9850b4b4c054b81424b9979cd07d upstream.
+
+Signed-off-by: Jean-François Moine <moinejf@free.fr>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+
+---
+ drivers/media/video/gspca/sonixj.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+Index: linux-2.6.35.y/drivers/media/video/gspca/sonixj.c
+===================================================================
+--- linux-2.6.35.y.orig/drivers/media/video/gspca/sonixj.c
++++ linux-2.6.35.y/drivers/media/video/gspca/sonixj.c
+@@ -57,6 +57,7 @@ struct sd {
+ 	u8 jpegqual;			/* webcam quality */
+ 
+ 	u8 reg18;
++	u8 flags;
+ 
+ 	s8 ag_cnt;
+ #define AG_CNT_START 13
+@@ -1777,7 +1778,8 @@ static int sd_config(struct gspca_dev *g
+ 	struct cam *cam;
+ 
+ 	sd->bridge = id->driver_info >> 16;
+-	sd->sensor = id->driver_info;
++	sd->sensor = id->driver_info >> 8;
++	sd->flags = id->driver_info;
+ 
+ 	cam = &gspca_dev->cam;
+ 	if (sd->sensor == SENSOR_ADCM1700) {
+@@ -3001,7 +3003,11 @@ static const struct sd_desc sd_desc = {
+ /* -- module initialisation -- */
+ #define BS(bridge, sensor) \
+ 	.driver_info = (BRIDGE_ ## bridge << 16) \
+-			| SENSOR_ ## sensor
++			| (SENSOR_ ## sensor << 8)
++#define BSF(bridge, sensor, flags) \
++	.driver_info = (BRIDGE_ ## bridge << 16) \
++			| (SENSOR_ ## sensor << 8) \
++			| (flags)
+ static const __devinitdata struct usb_device_id device_table[] = {
+ #if !defined CONFIG_USB_SN9C102 && !defined CONFIG_USB_SN9C102_MODULE
+ 	{USB_DEVICE(0x0458, 0x7025), BS(SN9C120, MI0360)},
+From b2272a49e7df37732d73988f00468ce31e1ebc92 Mon Sep 17 00:00:00 2001
+From: Jean-Francois Moine <moinejf@free.fr>
+Date: Tue, 14 Dec 2010 16:16:16 -0300
+Subject: [media] gspca - sonixj: Set the flag for some devices
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From: Jean-Francois Moine <moinejf@free.fr>
+
+commit b2272a49e7df37732d73988f00468ce31e1ebc92 upstream.
+
+The flag PDN_INV indicates that the sensor pin S_PWR_DN has not the same
+value as other webcams with the same sensor. For now, only two webcams have
+been so detected: the Microsoft's VX1000 and VX3000.
+
+Signed-off-by: Jean-François Moine <moinejf@free.fr>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+
+---
+ drivers/media/video/gspca/sonixj.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+Index: linux-2.6.35.y/drivers/media/video/gspca/sonixj.c
+===================================================================
+--- linux-2.6.35.y.orig/drivers/media/video/gspca/sonixj.c
++++ linux-2.6.35.y/drivers/media/video/gspca/sonixj.c
+@@ -88,6 +88,9 @@ enum {
+ 	u8 jpeg_hdr[JPEG_HDR_SZ];
+ };
+ 
++/* device flags */
++#define PDN_INV	1		/* inverse pin S_PWR_DN / sn_xxx tables */
++
+ /* V4L2 controls supported by the driver */
+ static int sd_setbrightness(struct gspca_dev *gspca_dev, __s32 val);
+ static int sd_getbrightness(struct gspca_dev *gspca_dev, __s32 *val);
+@@ -3004,8 +3007,8 @@ static const __devinitdata struct usb_de
+ 	{USB_DEVICE(0x0458, 0x7025), BS(SN9C120, MI0360)},
+ 	{USB_DEVICE(0x0458, 0x702e), BS(SN9C120, OV7660)},
+ #endif
+-	{USB_DEVICE(0x045e, 0x00f5), BS(SN9C105, OV7660)},
+-	{USB_DEVICE(0x045e, 0x00f7), BS(SN9C105, OV7660)},
++	{USB_DEVICE(0x045e, 0x00f5), BSF(SN9C105, OV7660, PDN_INV)},
++	{USB_DEVICE(0x045e, 0x00f7), BSF(SN9C105, OV7660, PDN_INV)},
+ 	{USB_DEVICE(0x0471, 0x0327), BS(SN9C105, MI0360)},
+ 	{USB_DEVICE(0x0471, 0x0328), BS(SN9C105, MI0360)},
+ 	{USB_DEVICE(0x0471, 0x0330), BS(SN9C105, MI0360)},
 From 615661f3948a066fd22a36fe8ea0c528b75ee373 Mon Sep 17 00:00:00 2001
 From: Marcin Slusarz <marcin.slusarz@gmail.com>
 Date: Sun, 22 Aug 2010 20:54:08 +0200
