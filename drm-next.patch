@@ -202,7 +202,6 @@ Date:   Fri May 21 11:14:52 2010 -0700
     8e36ed0 drm/radeon/kms: hpd cleanup
     2bfcc0f drm/radeon/kms: reset ddc_bus in object header parsing
     6fd0248 amd64-agp: Probe unknown AGP devices the right way
-    d831692 sis-agp: Remove SIS 760, handled by amd64-agp
     26481fb drm/radeon/pm: fix device_create_file return value checks.
     4bff517 drm/radeon/kms/pm: fix r6xx+ profile setup
     ce8a3eb drm/radeon/kms/pm: make pm spam debug only
@@ -5815,21 +5814,6 @@ index 6c3837a..29aacd8 100644
  	.configure		= sis_configure,
  	.fetch_size		= sis_fetch_size,
  	.cleanup		= sis_cleanup,
-@@ -415,14 +416,6 @@ static struct pci_device_id agp_sis_pci_table[] = {
- 		.subvendor	= PCI_ANY_ID,
- 		.subdevice	= PCI_ANY_ID,
- 	},
--	{
--		.class		= (PCI_CLASS_BRIDGE_HOST << 8),
--		.class_mask	= ~0,
--		.vendor		= PCI_VENDOR_ID_SI,
--		.device		= PCI_DEVICE_ID_SI_760,
--		.subvendor	= PCI_ANY_ID,
--		.subdevice	= PCI_ANY_ID,
--	},
- 	{ }
- };
- 
 diff --git a/drivers/char/agp/uninorth-agp.c b/drivers/char/agp/uninorth-agp.c
 index 6f48931..95db713 100644
 --- a/drivers/char/agp/uninorth-agp.c

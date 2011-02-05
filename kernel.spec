@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 66
+%global baserelease 67
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -611,13 +611,6 @@ Patch23: linux-2.6-utrace-ptrace.patch
 
 Patch50: linux-2.6-x86-cfi_sections.patch
 
-# CVE-2010-3301, CVE-2010-3081
-Patch100: 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
-Patch101: 02-compat-test-rax-for-the-system-call-number-not-eax.patch
-Patch102: 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
-# CVE-2010-3067
-Patch103: aio-check-for-multiplication-overflow-in-do_io_submit.patch
-
 Patch144: linux-2.6-vio-modalias.patch
 
 Patch150: linux-2.6.29-sparc-IOC_TYPECHECK.patch
@@ -772,14 +765,10 @@ Patch12035: quiet-prove_RCU-in-cgroups.patch
 Patch12040: iwlwifi-manage-QoS-by-mac-stack.patch
 Patch12042: mac80211-explicitly-disable-enable-QoS.patch
 
-Patch12250: inotify-fix-inotify-oneshot-support.patch
-Patch12260: inotify-send-IN_UNMOUNT-events.patch
-
 Patch12270: kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
 Patch12400: input-synaptics-relax-capability-id-checks-on-new-hardware.patch
 
-Patch12410: cifs-fix-dns-resolver.patch
 Patch12430: cred-dont-resurrect-dead-credentials.patch
 
 Patch12440: direct-io-move-aio_complete-into-end_io.patch
@@ -790,42 +779,11 @@ Patch12470: drivers-hwmon-coretemp-c-detect-the-thermal-sensors-by-cpuid.patch
 Patch12480: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 
 Patch12490: dell-wmi-add-support-for-eject-key.patch
-Patch12500: irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
-Patch12510: wireless-extensions-fix-kernel-heap-content-leak.patch
 
 Patch12517: flexcop-fix-xlate_proc_name-warning.patch
 
 Patch12520: acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch
 Patch12521: nfs-fix-an-oops-in-the-nfsv4-atomic-open-code.patch
-Patch12522: keys-fix-bug-in-keyctl-session-to-parent-if-parent-has-no-session-keyring.patch
-Patch12523: keys-fix-rcu-no-lock-warning-in-keyctl-session-to-parent.patch
-
-Patch12530: pci-msi-remove-unsafe-and-unnecessary-hardware-access.patch
-Patch12531: pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch
-
-Patch12532: x86-tsc-sched-recompute-cyc2ns_offset-s-during-resume-from-sleep-states.patch
-# fix bug caused by above patch
-Patch12533: x86-tsc-fix-a-preemption-leak-in-restore_sched_clock_state.patch
-
-# Mitigate DOS with large argument lists.
-Patch12540: execve-improve-interactivity-with-large-arguments.patch
-Patch12541: execve-make-responsive-to-sigkill-with-large-arguments.patch
-Patch12542: setup_arg_pages-diagnose-excessive-argument-size.patch
-
-# CVE-2010-3080
-Patch12550: alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
-
-# CVE-2010-3079
-Patch12560: tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
-
-Patch12570: sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
-
-# bz 636534
-Patch12580: xen-handle-events-as-edge-triggered.patch
-Patch12581: xen-use-percpu-interrupts-for-ipis-and-virqs.patch
-
-# CVE-2010-3432
-Patch12590: sctp-do-not-reset-the-packet-during-sctp_packet_config.patch
 
 #Bonding sysfs WARN_ON (bz 604630)
 Patch12591: linux-2.6-bonding-sysfs-warning.patch
@@ -833,18 +791,12 @@ Patch12591: linux-2.6-bonding-sysfs-warning.patch
 #twsock rcu warning fix (bz 642905)
 Patch12592: linux-2.6-twsock-rcu-lockdep-warn.patch
 
-Patch13635: r8169-fix-dma-allocations.patch
-Patch13636: skge-quirk-to-4gb-dma.patch
-
 Patch13637: dmar-disable-when-ricoh-multifunction.patch
 
 Patch13640: mmc-SDHCI_INT_DATA_MASK-typo-error.patch
 Patch13641: mmc-add-ricoh-e822-pci-id.patch
 Patch13642: mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 Patch13643: sdhci-8-bit-data-transfer-width-support.patch
-
-# CVE-2010-3904
-Patch13645: depessimize-rds_copy_page_user.patch
 
 Patch13646: rt2x00-disable-auto-wakeup-before-waking-up-device.patch
 Patch13647: rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
@@ -860,8 +812,6 @@ Patch13705: netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
 
 # CVE-2010-4248
 Patch13703: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
-
-Patch13704: via-ioctl-prevent-reading-uninit-memory.patch
 
 Patch13710: rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 Patch13711: rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
@@ -883,14 +833,8 @@ Patch13900: ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
 Patch13901: ioat2-catch-and-recover-from-broken-vtd-configurations.patch
 
-# CVE-2010-2963
-Patch13910: v4l1-fix-32-bit-compat-microcode-loading-translation.patch
-# CVE-2010-3698
-Patch13911: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 # CVE-2010-3705
 Patch13912: sctp-fix-out-of-bounds-reading-in-sctp_asoc_get_hmac.patch
-# CVE-2010-3442
-Patch13913: alsa-prevent-heap-corruption-in-snd_ctl_new.patch
 # CVE-2010-4258
 Patch13914: do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
 # CVE-2010-4169
@@ -900,8 +844,6 @@ Patch13916: bio-take-care-not-overflow-page-count-when-mapping-copying-user-data
 # CVE-2010-4249
 Patch13917: af_unix-limit-unix_tot_inflight.patch
 Patch13918: scm-lower-SCM-MAX-FD.patch
-# CVE-2010-4157
-Patch13919: gdth-integer-overflow-in-ioctl.patch
 # CVE-2010-4158
 Patch13920: filter-make-sure-filters-dont-read-uninitialized-memory.patch
 # CVE-2010-3874
@@ -1373,9 +1315,6 @@ ApplyPatch linux-2.6-utrace-ptrace.patch
 ApplyPatch linux-2.6-x86-cfi_sections.patch
 
 # CVE-2010-3301, CVE-2010-3081
-ApplyPatch 01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
-ApplyPatch 02-compat-test-rax-for-the-system-call-number-not-eax.patch
-ApplyPatch 03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
 
 #
 # Intel IOMMU
@@ -1400,7 +1339,6 @@ ApplyPatch linux-2.6-execshield.patch
 #
 # bugfixes to drivers and filesystems
 #
-ApplyPatch aio-check-for-multiplication-overflow-in-do_io_submit.patch
 
 # ext4
 
@@ -1601,18 +1539,11 @@ ApplyPatch iwlwifi-manage-QoS-by-mac-stack.patch
 
 ApplyPatch quiet-prove_RCU-in-cgroups.patch
 
-# fix broken oneshot support and missing umount events (#607327)
-ApplyPatch inotify-fix-inotify-oneshot-support.patch
-ApplyPatch inotify-send-IN_UNMOUNT-events.patch
-
 # 610911
 ApplyPatch kvm-mmu-fix-conflict-access-permissions-in-direct-sp.patch
 
 # fix newer synaptics touchpads not being recognized
 ApplyPatch input-synaptics-relax-capability-id-checks-on-new-hardware.patch
-
-# Remove __init and __exit attributes from resolver code
-ApplyPatch cifs-fix-dns-resolver.patch
 
 # RHBZ #591015
 ApplyPatch cred-dont-resurrect-dead-credentials.patch
@@ -1631,12 +1562,6 @@ ApplyPatch kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 # bz #513530
 ApplyPatch dell-wmi-add-support-for-eject-key.patch
 
-# cve-2010-2954
-ApplyPatch irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
-
-# cve-2010-2955
-ApplyPatch wireless-extensions-fix-kernel-heap-content-leak.patch
-
 # bz #575873
 ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
@@ -1646,50 +1571,11 @@ ApplyPatch acpi-ec-pm-fix-race-between-ec-transactions-and-system-suspend.patch
 # this went in 2.6.35-stable
 ApplyPatch nfs-fix-an-oops-in-the-nfsv4-atomic-open-code.patch
 
-# CVE-2010-2960
-ApplyPatch keys-fix-bug-in-keyctl-session-to-parent-if-parent-has-no-session-keyring.patch
-ApplyPatch keys-fix-rcu-no-lock-warning-in-keyctl-session-to-parent.patch
-
-# more suspend/resume fixes form 2.6.32 / 2.6.35 queue
-# Fix unsafe access to MSI registers during suspend
-ApplyPatch pci-msi-remove-unsafe-and-unnecessary-hardware-access.patch
-ApplyPatch pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch
-# Fix scheduler load balancing after suspend/resume cycle
-ApplyPatch x86-tsc-sched-recompute-cyc2ns_offset-s-during-resume-from-sleep-states.patch
-# fix bug caused by above patch
-ApplyPatch x86-tsc-fix-a-preemption-leak-in-restore_sched_clock_state.patch
-
-# Mitigate DOS with large argument lists.
-ApplyPatch execve-improve-interactivity-with-large-arguments.patch
-ApplyPatch execve-make-responsive-to-sigkill-with-large-arguments.patch
-ApplyPatch setup_arg_pages-diagnose-excessive-argument-size.patch
-
-# CVE-2010-3080
-ApplyPatch alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
-
-# CVE-2010-3079
-ApplyPatch tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
-
-# BZ 633037
-ApplyPatch sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
-
-# BZ 636534
-ApplyPatch xen-handle-events-as-edge-triggered.patch
-ApplyPatch xen-use-percpu-interrupts-for-ipis-and-virqs.patch
-
-# CVE-2010-3432
-ApplyPatch sctp-do-not-reset-the-packet-during-sctp_packet_config.patch
-
 # BZ 604630
 ApplyPatch linux-2.6-bonding-sysfs-warning.patch
 
 # BZ 642905
 ApplyPatch linux-2.6-twsock-rcu-lockdep-warn.patch
-
-# rhbz#629158
-ApplyPatch r8169-fix-dma-allocations.patch
-# rhbz#447489
-ApplyPatch skge-quirk-to-4gb-dma.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1698,8 +1584,6 @@ ApplyPatch mmc-SDHCI_INT_DATA_MASK-typo-error.patch
 ApplyPatch sdhci-8-bit-data-transfer-width-support.patch
 ApplyPatch mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 ApplyPatch mmc-add-ricoh-e822-pci-id.patch
-
-ApplyPatch depessimize-rds_copy_page_user.patch
 
 ApplyPatch tpm-autodetect-itpm-devices.patch
 # rhbz#530393
@@ -1720,9 +1604,6 @@ ApplyPatch netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
 
 # rhbz#656264 (CVE-2010-4248)
 ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
-
-# rhbz#648671 (CVE-2010-4082)
-ApplyPatch via-ioctl-prevent-reading-uninit-memory.patch
 
 ApplyPatch rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 ApplyPatch rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
@@ -1749,14 +1630,8 @@ ApplyPatch ima-allow-it-to-be-completely-disabled-and-default-off.patch
 # rhbz605845 [556ab45f]
 ApplyPatch ioat2-catch-and-recover-from-broken-vtd-configurations.patch
 
-# CVE-2010-2963
-ApplyPatch v4l1-fix-32-bit-compat-microcode-loading-translation.patch
-# CVE-2010-3698
-ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 # CVE-2010-3705
 ApplyPatch sctp-fix-out-of-bounds-reading-in-sctp_asoc_get_hmac.patch
-# CVE-2010-3442
-ApplyPatch alsa-prevent-heap-corruption-in-snd_ctl_new.patch
 # CVE-2010-4258
 ApplyPatch do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
 # CVE-2010-4169
@@ -1766,8 +1641,6 @@ ApplyPatch bio-take-care-not-overflow-page-count-when-mapping-copying-user-data.
 # CVE-2010-4249
 ApplyPatch af_unix-limit-unix_tot_inflight.patch
 ApplyPatch scm-lower-SCM-MAX-FD.patch
-# CVE-2010-4157
-ApplyPatch gdth-integer-overflow-in-ioctl.patch
 # CVE-2010-4158
 ApplyPatch filter-make-sure-filters-dont-read-uninitialized-memory.patch
 # CVE-2010-3874
@@ -2430,6 +2303,45 @@ fi
 
 
 %changelog
+* Sat Feb 05 2011 Chuck Ebbert <cebbert@redhat.com>
+- Linux 2.6.34.8
+- Drop merged patches:
+    01-compat-make-compat_alloc_user_space-incorporate-the-access_ok-check.patch
+    02-compat-test-rax-for-the-system-call-number-not-eax.patch
+    03-compat-retruncate-rax-after-ia32-syscall-entry-tracing.patch
+    aio-check-for-multiplication-overflow-in-do_io_submit.patch
+    cifs-fix-dns-resolver.patch
+    inotify-fix-inotify-oneshot-support.patch
+    inotify-send-IN_UNMOUNT-events.patch
+    irda-correctly-clean-up-self-ias_obj-on-irda_bind-failure.patch
+    keys-fix-bug-in-keyctl-session-to-parent-if-parent-has-no-session-keyring.patch
+    keys-fix-rcu-no-lock-warning-in-keyctl-session-to-parent.patch
+    wireless-extensions-fix-kernel-heap-content-leak.patch
+    pci-msi-remove-unsafe-and-unnecessary-hardware-access.patch
+    pci-msi-restore-read_msi_msg_desc-add-get_cached_msi_msg_desc.patch
+    x86-tsc-sched-recompute-cyc2ns_offset-s-during-resume-from-sleep-states.patch
+    x86-tsc-fix-a-preemption-leak-in-restore_sched_clock_state.patch
+    execve-improve-interactivity-with-large-arguments.patch
+    execve-make-responsive-to-sigkill-with-large-arguments.patch
+    setup_arg_pages-diagnose-excessive-argument-size.patch
+    alsa-seq-oss-fix-double-free-at-error-path-of-snd_seq_oss_open.patch
+    tracing-do-not-allow-llseek-to-set_ftrace_filter.patch
+    sched-00-fix-user-time-incorrectly-accounted-as-system-time-on-32-bit.patch
+    xen-handle-events-as-edge-triggered.patch
+    xen-use-percpu-interrupts-for-ipis-and-virqs.patch
+    sctp-do-not-reset-the-packet-during-sctp_packet_config.patch
+    r8169-fix-dma-allocations.patch
+    skge-quirk-to-4gb-dma.patch
+    depessimize-rds_copy_page_user.patch
+    via-ioctl-prevent-reading-uninit-memory.patch
+    v4l1-fix-32-bit-compat-microcode-loading-translation.patch
+    kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
+    alsa-prevent-heap-corruption-in-snd_ctl_new.patch
+    gdth-integer-overflow-in-ioctl.patch
+- Drop from drm-next patch:
+    d831692 sis-agp: Remove SIS 760, handled by amd64-agp
+- Drop hunk of quiet-prove_RCU-in-cgroups.patch, now upstream.
+
 * Sun Jan 30 2011 Chuck Ebbert <cebbert@redhat.com>
 - Copy sunrpc oops fix from F14
 
