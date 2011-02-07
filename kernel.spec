@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 11
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
