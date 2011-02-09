@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 83
+%global baserelease 84
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -652,6 +652,7 @@ Patch391: linux-2.6-acpi-video-dos.patch
 Patch393: acpi-ec-add-delay-before-write.patch
 Patch394: linux-2.6-acpi-debug-infinite-loop.patch
 Patch395: acpi-update-battery-information-on-notification-0x81.patch
+Patch396: linux-2.6-acpi-fix-alias.patch
 
 Patch450: linux-2.6-input-kill-stupid-messages.patch
 Patch452: linux-2.6.30-no-pcspkr-modalias.patch
@@ -1323,6 +1324,7 @@ ApplyPatch acpi-ec-add-delay-before-write.patch
 ApplyPatch linux-2.6-acpi-debug-infinite-loop.patch
 ApplyPatch acpi-update-battery-information-on-notification-0x81.patch
 ApplyPatch linux-2.6-defaults-no-pm-async.patch
+ApplyPatch linux-2.6-acpi-fix-alias.patch
 
 # Various low-impact patches to aid debugging.
 ApplyPatch linux-2.6-debug-sizeof-structs.patch
@@ -2145,6 +2147,9 @@ fi
 # and build.
 
 %changelog
+* Wed Feb 11 2011 Matthew Garrett <mjg@redhat.com> 2.6.35.11-84
+- linux-2.6-acpi-fix-alias.patch: Fix ACPI object aliasing (#608648)
+
 * Sun Feb 06 2011 Chuck Ebbert <cebbert@redhat.com>  2.6.35.11-83
 - Linux 2.6.35.11
 
