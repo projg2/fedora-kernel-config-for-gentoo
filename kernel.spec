@@ -648,6 +648,7 @@ Patch390: linux-2.6-defaults-acpi-video.patch
 Patch391: linux-2.6-acpi-video-dos.patch
 Patch392: linux-2.6-acpi-video-export-edid.patch
 Patch393: acpi-ec-add-delay-before-write.patch
+Patch394: linux-2.6-acpi-fix-alias.patch
 
 Patch450: linux-2.6-input-kill-stupid-messages.patch
 Patch452: linux-2.6.30-no-pcspkr-modalias.patch
@@ -1366,6 +1367,7 @@ ApplyPatch linux-2.6-defaults-acpi-video.patch
 ApplyPatch linux-2.6-acpi-video-dos.patch
 ApplyPatch linux-2.6-acpi-video-export-edid.patch
 ApplyPatch acpi-ec-add-delay-before-write.patch
+ApplyPatch linux-2.6-acpi-fix-alias.patch
 
 # Various low-impact patches to aid debugging.
 ApplyPatch linux-2.6-debug-sizeof-structs.patch
@@ -2301,8 +2303,10 @@ fi
 %kernel_variant_files %{with_pae} PAE
 %kernel_variant_files %{with_pae_debug} PAEdebug
 
-
 %changelog
+* Wed Feb 09 2011 Matthew Garrett <mjg@redhat.com>
+- linux-2.6-acpi-fix-alias.patch: fix ACPI object aliasing (#608648)
+
 * Sat Feb 05 2011 Chuck Ebbert <cebbert@redhat.com>
 - Linux 2.6.34.8
 - Drop merged patches:
