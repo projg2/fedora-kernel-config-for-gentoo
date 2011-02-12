@@ -886,6 +886,9 @@ Patch13945: tcp-protect-sysctl_tcp_cookie_size-reads.patch
 # rhbz#673207 (f14)
 Patch13950: sunrpc-kernel-panic-when-mount-nfsv4.patch
 
+# rhbz#650151
+Patch13951: bridge-fix-mglist-corruption-that-leads-to-memory-corruption.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1684,6 +1687,9 @@ ApplyPatch tcp-protect-sysctl_tcp_cookie_size-reads.patch
 # rhbz#673207 (f14)
 ApplyPatch sunrpc-kernel-panic-when-mount-nfsv4.patch
 
+# rhbz#650151
+ApplyPatch bridge-fix-mglist-corruption-that-leads-to-memory-corruption.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2304,6 +2310,9 @@ fi
 %kernel_variant_files %{with_pae_debug} PAEdebug
 
 %changelog
+* Sat Feb 12 2011 Chuck Ebbert <cebbert@redhat.com>
+- bridge: Fix mglist corruption that leads to memory corruption (#650151)
+
 * Wed Feb 09 2011 Matthew Garrett <mjg@redhat.com>
 - linux-2.6-acpi-fix-alias.patch: fix ACPI object aliasing (#608648)
 
