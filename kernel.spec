@@ -829,6 +829,9 @@ Patch13704: hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 # rhbz #673207
 Patch13705: sunrpc-kernel-panic-when-mount-nfsv4.patch
 
+# rhbz #650151 (F13)
+Patch13706: bridge-fix-mglist-corruption-that-leads-to-memory-corruption.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1561,6 +1564,9 @@ ApplyPatch hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 # rhbz #673207
 ApplyPatch sunrpc-kernel-panic-when-mount-nfsv4.patch
 
+# rhbz #650151 (F13)
+ApplyPatch bridge-fix-mglist-corruption-that-leads-to-memory-corruption.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2147,6 +2153,9 @@ fi
 # and build.
 
 %changelog
+* Sat Feb 12 2011 Chuck Ebbert <cebbert@redhat.com>
+- bridge: Fix mglist corruption that leads to memory corruption (F13#650151)
+
 * Wed Feb 11 2011 Matthew Garrett <mjg@redhat.com> 2.6.35.11-84
 - linux-2.6-acpi-fix-alias.patch: Fix ACPI object aliasing (#608648)
 
