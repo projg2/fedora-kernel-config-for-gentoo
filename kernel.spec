@@ -832,6 +832,9 @@ Patch13705: sunrpc-kernel-panic-when-mount-nfsv4.patch
 # rhbz #650151 (F13)
 Patch13706: bridge-fix-mglist-corruption-that-leads-to-memory-corruption.patch
 
+# Fix 32-bit guest hang on 32-bit PAE host (#677167)
+Patch13707: kvm-mmu-fix-32-bit-legacy-paging-with-npt.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1569,6 +1572,9 @@ ApplyPatch sunrpc-kernel-panic-when-mount-nfsv4.patch
 # rhbz #650151 (F13)
 ApplyPatch bridge-fix-mglist-corruption-that-leads-to-memory-corruption.patch
 
+# Fix 32-bit guest hang on 32-bit PAE host (#677167)
+ApplyPatch kvm-mmu-fix-32-bit-legacy-paging-with-npt.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2155,6 +2161,9 @@ fi
 # and build.
 
 %changelog
+* Sat Feb 12 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix 32-bit guest hang on 32-bit PAE host (#677167)
+
 * Sat Feb 12 2011 Chuck Ebbert <cebbert@redhat.com>
 - bridge: Fix mglist corruption that leads to memory corruption (F13#650151)
 
