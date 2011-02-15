@@ -716,6 +716,7 @@ Patch1904: drm-nouveau-ibdma-race.patch
 Patch1905: drm-radeon-kms-mc-vram-map-needs-to-be-gteq-pci-aperature.patch
 # CVE-2010-2962
 Patch1906: drm-i915-sanity-check-pread-pwrite.patch
+Patch1907: drm-intel-fix-sandybridge.patch
 
 # linux1394 git patches
 Patch2200: linux-2.6-firewire-git-update.patch
@@ -1486,6 +1487,7 @@ ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch drm-i915-explosion-following-oom-in-do_execbuffer.patch
 # broken in 2.6.35-rc2, fixed in 2.6.35, but our drm-next snapshot has the bug
 ApplyPatch agp-intel-use-the-correct-mask-to-detect-i830-aperture-size.patch
+ApplyPatch drm-intel-fix-sandybridge.patch
 
 ApplyPatch drm-radeon-resume-fixes.patch
 # rhbz#632310
@@ -2310,6 +2312,10 @@ fi
 %kernel_variant_files %{with_pae_debug} PAEdebug
 
 %changelog
+* Mon Feb 14 2011 Kyle McMartin <kmcmartin@redhat.com>
+- Backport commits from longterm-2.6.35.y to 'fix' Intel Sandy Bridge
+  chipsets. (Requested by Intel folks.)
+
 * Sat Feb 12 2011 Chuck Ebbert <cebbert@redhat.com>
 - bridge: Fix mglist corruption that leads to memory corruption (#650151)
 

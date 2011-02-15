@@ -1,0 +1,245 @@
+commit 96b6a8c56dbee75f61271f6484f56730beb17a20
+Author: Zhenyu Wang <zhenyuw@linux.intel.com>
+Date:   Sun Sep 19 10:28:54 2010 +0800
+
+    agp/intel: fix dma mask bits on sandybridge
+    
+    [This is backport patch from upstream 877fdacf.]
+    
+    Signed-off-by: Zhenyu Wang <zhenyuw@linux.intel.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+commit 1252894fa9ea0a4e73cb68f49f5913dda9834d6c
+Author: Zhenyu Wang <zhenyuw@linux.intel.com>
+Date:   Sun Sep 19 10:28:53 2010 +0800
+
+    agp/intel: fix physical address mask bits for sandybridge
+    
+    [This is backport patch from upstream 8dfc2b14.]
+    
+    Signed-off-by: Zhenyu Wang <zhenyuw@linux.intel.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+commit 6d51cdffcae15394f615489d57d8ca0e9a91e494
+Author: Zhenyu Wang <zhenyuw@linux.intel.com>
+Date:   Sun Sep 19 10:28:52 2010 +0800
+
+    intel_agp, drm/i915: Add all sandybridge graphics devices support
+    
+    New pci ids for all sandybridge graphics versions on desktop/mobile/server.
+    
+    [This is backport patch from upstream commit 4fefe435 and 85540480.]
+    
+    Signed-off-by: Zhenyu Wang <zhenyuw@linux.intel.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+ drivers/char/agp/intel-agp.c    |   42 ++++++++++++++++++++++++----------
+ drivers/char/agp/intel-agp.h    |   17 ++++++++++----
+ drivers/char/agp/intel-gtt.c    |   47 +++++++++++++++++++++++++++++++++++++-
+ drivers/gpu/drm/i915/i915_drv.c |    5 ++++
+ 4 files changed, 91 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/char/agp/intel-agp.c b/drivers/char/agp/intel-agp.c
+index d836a71..fe9c6e0 100644
+--- a/drivers/char/agp/intel-agp.c
++++ b/drivers/char/agp/intel-agp.c
+@@ -815,17 +815,27 @@ static const struct intel_driver_description {
+ 	    "HD Graphics", NULL, &intel_i965_driver },
+ 	{ PCI_DEVICE_ID_INTEL_IRONLAKE_MC2_HB, PCI_DEVICE_ID_INTEL_IRONLAKE_M_IG,
+ 	    "HD Graphics", NULL, &intel_i965_driver },
+-	{ PCI_DEVICE_ID_INTEL_SANDYBRIDGE_HB, PCI_DEVICE_ID_INTEL_SANDYBRIDGE_IG,
+-	    "Sandybridge", NULL, &intel_i965_driver },
+-	{ PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_HB, PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_IG,
+-	    "Sandybridge", NULL, &intel_i965_driver },
++	{ PCI_DEVICE_ID_INTEL_SANDYBRIDGE_HB, PCI_DEVICE_ID_INTEL_SANDYBRIDGE_GT1_IG,
++	    "Sandybridge", NULL, &intel_gen6_driver },
++	{ PCI_DEVICE_ID_INTEL_SANDYBRIDGE_HB, PCI_DEVICE_ID_INTEL_SANDYBRIDGE_GT2_IG,
++	    "Sandybridge", NULL, &intel_gen6_driver },
++	{ PCI_DEVICE_ID_INTEL_SANDYBRIDGE_HB, PCI_DEVICE_ID_INTEL_SANDYBRIDGE_GT2_PLUS_IG,
++	    "Sandybridge", NULL, &intel_gen6_driver },
++	{ PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_HB, PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_GT1_IG,
++	    "Sandybridge", NULL, &intel_gen6_driver },
++	{ PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_HB, PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_GT2_IG,
++	    "Sandybridge", NULL, &intel_gen6_driver },
++	{ PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_HB, PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_GT2_PLUS_IG,
++	    "Sandybridge", NULL, &intel_gen6_driver },
++	{ PCI_DEVICE_ID_INTEL_SANDYBRIDGE_S_HB, PCI_DEVICE_ID_INTEL_SANDYBRIDGE_S_IG,
++	    "Sandybridge", NULL, &intel_gen6_driver },
+ 	{ 0, 0, NULL, NULL, NULL }
+ };
+ 
+ static int __devinit intel_gmch_probe(struct pci_dev *pdev,
+ 				      struct agp_bridge_data *bridge)
+ {
+-	int i;
++	int i, mask;
+ 	bridge->driver = NULL;
+ 
+ 	for (i = 0; intel_agp_chipsets[i].name != NULL; i++) {
+@@ -845,14 +855,19 @@ static int __devinit intel_gmch_probe(struct pci_dev *pdev,
+ 
+ 	dev_info(&pdev->dev, "Intel %s Chipset\n", intel_agp_chipsets[i].name);
+ 
+-	if (bridge->driver->mask_memory == intel_i965_mask_memory) {
+-		if (pci_set_dma_mask(intel_private.pcidev, DMA_BIT_MASK(36)))
+-			dev_err(&intel_private.pcidev->dev,
+-				"set gfx device dma mask 36bit failed!\n");
+-		else
+-			pci_set_consistent_dma_mask(intel_private.pcidev,
+-						    DMA_BIT_MASK(36));
+-	}
++	if (bridge->driver->mask_memory == intel_gen6_mask_memory)
++		mask = 40;
++	else if (bridge->driver->mask_memory == intel_i965_mask_memory)
++		mask = 36;
++	else
++		mask = 32;
++
++	if (pci_set_dma_mask(intel_private.pcidev, DMA_BIT_MASK(mask)))
++		dev_err(&intel_private.pcidev->dev,
++			"set gfx device dma mask %d-bit failed!\n", mask);
++	else
++		pci_set_consistent_dma_mask(intel_private.pcidev,
++					    DMA_BIT_MASK(mask));
+ 
+ 	return 1;
+ }
+@@ -1036,6 +1051,7 @@ static struct pci_device_id agp_intel_pci_table[] = {
+ 	ID(PCI_DEVICE_ID_INTEL_IRONLAKE_MC2_HB),
+ 	ID(PCI_DEVICE_ID_INTEL_SANDYBRIDGE_HB),
+ 	ID(PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_HB),
++	ID(PCI_DEVICE_ID_INTEL_SANDYBRIDGE_S_HB),
+ 	{ }
+ };
+ 
+diff --git a/drivers/char/agp/intel-agp.h b/drivers/char/agp/intel-agp.h
+index 2547465..ffa87b7 100644
+--- a/drivers/char/agp/intel-agp.h
++++ b/drivers/char/agp/intel-agp.h
+@@ -194,10 +194,16 @@
+ #define PCI_DEVICE_ID_INTEL_IRONLAKE_MA_HB	    0x0062
+ #define PCI_DEVICE_ID_INTEL_IRONLAKE_MC2_HB    0x006a
+ #define PCI_DEVICE_ID_INTEL_IRONLAKE_M_IG	    0x0046
+-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_HB  0x0100
+-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_IG  0x0102
+-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_HB  0x0104
+-#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_IG  0x0106
++#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_HB		0x0100  /* Desktop */
++#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_GT1_IG		0x0102
++#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_GT2_IG		0x0112
++#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_GT2_PLUS_IG	0x0122
++#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_HB		0x0104  /* Mobile */
++#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_GT1_IG	0x0106
++#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_GT2_IG	0x0116
++#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_GT2_PLUS_IG	0x0126
++#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_S_HB		0x0108  /* Server */
++#define PCI_DEVICE_ID_INTEL_SANDYBRIDGE_S_IG		0x010A
+ 
+ /* cover 915 and 945 variants */
+ #define IS_I915 (agp_bridge->dev->device == PCI_DEVICE_ID_INTEL_E7221_HB || \
+@@ -224,7 +230,8 @@
+ 		agp_bridge->dev->device == PCI_DEVICE_ID_INTEL_PINEVIEW_HB)
+ 
+ #define IS_SNB (agp_bridge->dev->device == PCI_DEVICE_ID_INTEL_SANDYBRIDGE_HB || \
+-		agp_bridge->dev->device == PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_HB)
++		agp_bridge->dev->device == PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_HB || \
++		agp_bridge->dev->device == PCI_DEVICE_ID_INTEL_SANDYBRIDGE_S_HB)
+ 
+ #define IS_G4X (agp_bridge->dev->device == PCI_DEVICE_ID_INTEL_EAGLELAKE_HB || \
+ 		agp_bridge->dev->device == PCI_DEVICE_ID_INTEL_Q45_HB || \
+diff --git a/drivers/char/agp/intel-gtt.c b/drivers/char/agp/intel-gtt.c
+index ea6997e..ed11c77 100644
+--- a/drivers/char/agp/intel-gtt.c
++++ b/drivers/char/agp/intel-gtt.c
+@@ -585,8 +585,7 @@ static void intel_i830_init_gtt_entries(void)
+ 			gtt_entries = 0;
+ 			break;
+ 		}
+-	} else if (agp_bridge->dev->device == PCI_DEVICE_ID_INTEL_SANDYBRIDGE_HB ||
+-		   agp_bridge->dev->device == PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_HB) {
++	} else if (IS_SNB) {
+ 		/*
+ 		 * SandyBridge has new memory control reg at 0x50.w
+ 		 */
+@@ -1318,6 +1317,16 @@ static unsigned long intel_i965_mask_memory(struct agp_bridge_data *bridge,
+ 	return addr | bridge->driver->masks[type].mask;
+ }
+ 
++static unsigned long intel_gen6_mask_memory(struct agp_bridge_data *bridge,
++					    dma_addr_t addr, int type)
++{
++	/* gen6 has bit11-4 for physical addr bit39-32 */
++	addr |= (addr >> 28) & 0xff0;
++
++	/* Type checking must be done elsewhere */
++	return addr | bridge->driver->masks[type].mask;
++}
++
+ static void intel_i965_get_gtt_range(int *gtt_offset, int *gtt_size)
+ {
+ 	u16 snb_gmch_ctl;
+@@ -1337,6 +1346,7 @@ static void intel_i965_get_gtt_range(int *gtt_offset, int *gtt_size)
+ 		break;
+ 	case PCI_DEVICE_ID_INTEL_SANDYBRIDGE_HB:
+ 	case PCI_DEVICE_ID_INTEL_SANDYBRIDGE_M_HB:
++	case PCI_DEVICE_ID_INTEL_SANDYBRIDGE_S_HB:
+ 		*gtt_offset = MB(2);
+ 
+ 		pci_read_config_word(intel_private.pcidev, SNB_GMCH_CTRL, &snb_gmch_ctl);
+@@ -1526,6 +1536,39 @@ static const struct agp_bridge_driver intel_i965_driver = {
+ #endif
+ };
+ 
++static const struct agp_bridge_driver intel_gen6_driver = {
++	.owner			= THIS_MODULE,
++	.aperture_sizes		= intel_i830_sizes,
++	.size_type		= FIXED_APER_SIZE,
++	.num_aperture_sizes	= 4,
++	.needs_scratch_page	= true,
++	.configure		= intel_i9xx_configure,
++	.fetch_size		= intel_i9xx_fetch_size,
++	.cleanup		= intel_i915_cleanup,
++	.mask_memory		= intel_gen6_mask_memory,
++	.masks			= intel_i810_masks,
++	.agp_enable		= intel_i810_agp_enable,
++	.cache_flush		= global_cache_flush,
++	.create_gatt_table	= intel_i965_create_gatt_table,
++	.free_gatt_table	= intel_i830_free_gatt_table,
++	.insert_memory		= intel_i915_insert_entries,
++	.remove_memory		= intel_i915_remove_entries,
++	.alloc_by_type		= intel_i830_alloc_by_type,
++	.free_by_type		= intel_i810_free_by_type,
++	.agp_alloc_page		= agp_generic_alloc_page,
++	.agp_alloc_pages        = agp_generic_alloc_pages,
++	.agp_destroy_page	= agp_generic_destroy_page,
++	.agp_destroy_pages      = agp_generic_destroy_pages,
++	.agp_type_to_mask_type	= intel_i830_type_to_mask_type,
++	.chipset_flush		= intel_i915_chipset_flush,
++#ifdef USE_PCI_DMA_API
++	.agp_map_page		= intel_agp_map_page,
++	.agp_unmap_page		= intel_agp_unmap_page,
++	.agp_map_memory		= intel_agp_map_memory,
++	.agp_unmap_memory	= intel_agp_unmap_memory,
++#endif
++};
++
+ static const struct agp_bridge_driver intel_g33_driver = {
+ 	.owner			= THIS_MODULE,
+ 	.aperture_sizes		= intel_i830_sizes,
+diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
+index 423dc90..07a0cf1 100644
+--- a/drivers/gpu/drm/i915/i915_drv.c
++++ b/drivers/gpu/drm/i915/i915_drv.c
+@@ -180,7 +180,12 @@ static const struct pci_device_id pciidlist[] = {
+ 	INTEL_VGA_DEVICE(0x0042, &intel_ironlake_d_info),
+ 	INTEL_VGA_DEVICE(0x0046, &intel_ironlake_m_info),
+ 	INTEL_VGA_DEVICE(0x0102, &intel_sandybridge_d_info),
++	INTEL_VGA_DEVICE(0x0112, &intel_sandybridge_d_info),
++	INTEL_VGA_DEVICE(0x0122, &intel_sandybridge_d_info),
+ 	INTEL_VGA_DEVICE(0x0106, &intel_sandybridge_m_info),
++	INTEL_VGA_DEVICE(0x0116, &intel_sandybridge_m_info),
++	INTEL_VGA_DEVICE(0x0126, &intel_sandybridge_m_info),
++	INTEL_VGA_DEVICE(0x010A, &intel_sandybridge_d_info),
+ 	{0, 0, 0}
+ };
+ 
