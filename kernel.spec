@@ -835,6 +835,9 @@ Patch13706: bridge-fix-mglist-corruption-that-leads-to-memory-corruption.patch
 # Fix 32-bit guest hang on 32-bit PAE host (#677167)
 Patch13707: kvm-mmu-fix-32-bit-legacy-paging-with-npt.patch
 
+# rhbz#676860
+Patch13708: hid-force-feedback-support-for-logitech-rumblepad-gamepad.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1575,6 +1578,9 @@ ApplyPatch bridge-fix-mglist-corruption-that-leads-to-memory-corruption.patch
 # Fix 32-bit guest hang on 32-bit PAE host (#677167)
 ApplyPatch kvm-mmu-fix-32-bit-legacy-paging-with-npt.patch
 
+# rhbz#676860
+ApplyPatch hid-force-feedback-support-for-logitech-rumblepad-gamepad.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2161,6 +2167,9 @@ fi
 # and build.
 
 %changelog
+* Wed Feb 16 2011 Chuck Ebbert <cebbert@redhat.com>
+- Add support for additional Logitech Rumblepad model (#676577)
+
 * Sat Feb 12 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix 32-bit guest hang on 32-bit PAE host (#677167)
 

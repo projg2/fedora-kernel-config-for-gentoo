@@ -1,0 +1,99 @@
+From: Hendrik Iben <Hendrik_Iben@web.de>
+Date: Mon, 4 Oct 2010 13:39:49 +0000 (+0200)
+Subject: HID: force feedback support for Logitech RumblePad gamepad
+X-Git-Tag: v2.6.37-rc1~144^2~3^4
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=2c6118e43040034d80894daeba41960bf0035b31
+
+HID: force feedback support for Logitech RumblePad gamepad
+
+This patch adds force feedback support for Logitech WingMan RumblePad
+gamepads by extending the Logitech Rumblepad 2 force feedback code.
+
+Signed-off-by: Hendrik Iben <Hendrik_Iben@web.de>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+---
+
+diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
+index 6664c57..3892ff5 100644
+--- a/drivers/hid/Kconfig
++++ b/drivers/hid/Kconfig
+@@ -220,12 +220,12 @@ config LOGITECH_FF
+ 	  force feedback.
+ 
+ config LOGIRUMBLEPAD2_FF
+-	bool "Logitech Rumblepad 2 force feedback support"
++	bool "Logitech RumblePad/Rumblepad 2 force feedback support"
+ 	depends on HID_LOGITECH
+ 	select INPUT_FF_MEMLESS
+ 	help
+ 	  Say Y here if you want to enable force feedback support for Logitech
+-	  Rumblepad 2 devices.
++	  RumblePad and Rumblepad 2 devices.
+ 
+ config LOGIG940_FF
+ 	bool "Logitech Flight System G940 force feedback support"
+diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+index 19d4547..0120557 100644
+--- a/drivers/hid/hid-core.c
++++ b/drivers/hid/hid-core.c
+@@ -1326,6 +1326,7 @@ static const struct hid_device_id hid_blacklist[] = {
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_CORDLESS_DESKTOP_LX500) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_EXTREME_3D) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_WHEEL) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_RUMBLEPAD_CORD) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_RUMBLEPAD) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_RUMBLEPAD2_2) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_WINGMAN_F3D) },
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index 6b111e1..79f0304 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -339,6 +339,7 @@
+ #define USB_DEVICE_ID_LOGITECH_RECEIVER	0xc101
+ #define USB_DEVICE_ID_LOGITECH_HARMONY_FIRST  0xc110
+ #define USB_DEVICE_ID_LOGITECH_HARMONY_LAST 0xc14f
++#define USB_DEVICE_ID_LOGITECH_RUMBLEPAD_CORD	0xc20a
+ #define USB_DEVICE_ID_LOGITECH_RUMBLEPAD	0xc211
+ #define USB_DEVICE_ID_LOGITECH_EXTREME_3D	0xc215
+ #define USB_DEVICE_ID_LOGITECH_RUMBLEPAD2	0xc218
+diff --git a/drivers/hid/hid-lg.c b/drivers/hid/hid-lg.c
+index 8989f15..9e92c27 100644
+--- a/drivers/hid/hid-lg.c
++++ b/drivers/hid/hid-lg.c
+@@ -7,6 +7,7 @@
+  *  Copyright (c) 2006-2007 Jiri Kosina
+  *  Copyright (c) 2007 Paul Walmsley
+  *  Copyright (c) 2008 Jiri Slaby
++ *  Copyright (c) 2010 Hendrik Iben
+  */
+ 
+ /*
+@@ -361,6 +362,8 @@ static const struct hid_device_id lg_devices[] = {
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_WHEEL),
+ 		.driver_data = LG_NOGET | LG_FF },
+ 
++	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_RUMBLEPAD_CORD),
++		.driver_data = LG_FF2 },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_RUMBLEPAD),
+ 		.driver_data = LG_FF },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_RUMBLEPAD2_2),
+diff --git a/drivers/hid/hid-lg2ff.c b/drivers/hid/hid-lg2ff.c
+index d888f1e..4258253 100644
+--- a/drivers/hid/hid-lg2ff.c
++++ b/drivers/hid/hid-lg2ff.c
+@@ -1,5 +1,5 @@
+ /*
+- *  Force feedback support for Logitech Rumblepad 2
++ *  Force feedback support for Logitech RumblePad and Rumblepad 2
+  *
+  *  Copyright (c) 2008 Anssi Hannula <anssi.hannula@gmail.com>
+  */
+@@ -110,7 +110,7 @@ int lg2ff_init(struct hid_device *hid)
+ 
+ 	usbhid_submit_report(hid, report, USB_DIR_OUT);
+ 
+-	dev_info(&hid->dev, "Force feedback for Logitech Rumblepad 2 by "
++	dev_info(&hid->dev, "Force feedback for Logitech RumblePad/Rumblepad 2 by "
+ 	       "Anssi Hannula <anssi.hannula@gmail.com>\n");
+ 
+ 	return 0;
