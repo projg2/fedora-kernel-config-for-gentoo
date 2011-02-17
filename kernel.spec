@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 67
+%global baserelease 68
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2312,7 +2312,7 @@ fi
 %kernel_variant_files %{with_pae_debug} PAEdebug
 
 %changelog
-* Mon Feb 14 2011 Kyle McMartin <kmcmartin@redhat.com>
+* Mon Feb 14 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.34.8-68
 - Backport commits from longterm-2.6.35.y to 'fix' Intel Sandy Bridge
   chipsets. (Requested by Intel folks.)
 
