@@ -841,6 +841,9 @@ Patch13708: hid-force-feedback-support-for-logitech-rumblepad-gamepad.patch
 # rhbz#654599
 Patch13709: iwl3945-remove-plcp-check.patch
 
+# rhbz#604630
+Patch13710: linux-2.6-bonding-sysfs-warning.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1587,6 +1590,9 @@ ApplyPatch hid-force-feedback-support-for-logitech-rumblepad-gamepad.patch
 # rhbz#654599
 ApplyPatch iwl3945-remove-plcp-check.patch
 
+# rhbz#604630
+ApplyPatch linux-2.6-bonding-sysfs-warning.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2176,6 +2182,7 @@ fi
 * Thu Feb 24 2011 Chuck Ebbert <cebbert@redhat.com>
 - iwl3945-remove-plcp-check.patch: fix slow speed on some iwl3945
   (#654599)
+- Copy fix for bonding error message from F13 (#604630)
 
 * Wed Feb 16 2011 Chuck Ebbert <cebbert@redhat.com>
 - Add support for additional Logitech Rumblepad model (#676577)
