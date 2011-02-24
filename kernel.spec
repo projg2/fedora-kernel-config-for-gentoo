@@ -890,6 +890,9 @@ Patch13950: sunrpc-kernel-panic-when-mount-nfsv4.patch
 # rhbz#650151
 Patch13951: bridge-fix-mglist-corruption-that-leads-to-memory-corruption.patch
 
+# rhbz#649871
+Patch13952: drm-hold-the-mutex-when-dropping-the-last-gem-reference-v2.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1692,6 +1695,9 @@ ApplyPatch sunrpc-kernel-panic-when-mount-nfsv4.patch
 # rhbz#650151
 ApplyPatch bridge-fix-mglist-corruption-that-leads-to-memory-corruption.patch
 
+# rhbz#649871
+ApplyPatch drm-hold-the-mutex-when-dropping-the-last-gem-reference-v2.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2312,6 +2318,9 @@ fi
 %kernel_variant_files %{with_pae_debug} PAEdebug
 
 %changelog
+* Thu Feb 24 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix crash when dropping filesystem caches (#649871)
+
 * Mon Feb 14 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.34.8-68
 - Backport commits from longterm-2.6.35.y to 'fix' Intel Sandy Bridge
   chipsets. (Requested by Intel folks.)
