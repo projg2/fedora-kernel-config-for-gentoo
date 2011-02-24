@@ -838,6 +838,9 @@ Patch13707: kvm-mmu-fix-32-bit-legacy-paging-with-npt.patch
 # rhbz#676860
 Patch13708: hid-force-feedback-support-for-logitech-rumblepad-gamepad.patch
 
+# rhbz#654599
+Patch13709: iwl3945-remove-plcp-check.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1581,6 +1584,9 @@ ApplyPatch kvm-mmu-fix-32-bit-legacy-paging-with-npt.patch
 # rhbz#676860
 ApplyPatch hid-force-feedback-support-for-logitech-rumblepad-gamepad.patch
 
+# rhbz#654599
+ApplyPatch iwl3945-remove-plcp-check.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2167,6 +2173,10 @@ fi
 # and build.
 
 %changelog
+* Thu Feb 24 2011 Chuck Ebbert <cebbert@redhat.com>
+- iwl3945-remove-plcp-check.patch: fix slow speed on some iwl3945
+  (#654599)
+
 * Wed Feb 16 2011 Chuck Ebbert <cebbert@redhat.com>
 - Add support for additional Logitech Rumblepad model (#676577)
 
