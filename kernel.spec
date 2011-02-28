@@ -844,6 +844,9 @@ Patch13709: iwl3945-remove-plcp-check.patch
 # rhbz#604630
 Patch13710: linux-2.6-bonding-sysfs-warning.patch
 
+# rhbz#680791
+Patch13711: md-fix-regression-resulting-in-delays-in-clearing-bits-in-a-bitmap.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1593,6 +1596,9 @@ ApplyPatch iwl3945-remove-plcp-check.patch
 # rhbz#604630
 ApplyPatch linux-2.6-bonding-sysfs-warning.patch
 
+# rhbz#680791
+ApplyPatch md-fix-regression-resulting-in-delays-in-clearing-bits-in-a-bitmap.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2179,6 +2185,9 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 28 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix stuck bits in md bitmaps (#680791)
+
 * Thu Feb 24 2011 Chuck Ebbert <cebbert@redhat.com>
 - iwl3945-remove-plcp-check.patch: fix slow speed on some iwl3945
   (#654599)

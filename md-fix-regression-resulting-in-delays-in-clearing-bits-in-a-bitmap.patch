@@ -1,0 +1,46 @@
+From: NeilBrown <neilb@suse.de>
+Date: Thu, 13 Jan 2011 22:13:53 +0000 (+1100)
+Subject: md: fix regression resulting in delays in clearing bits in a bitmap
+X-Git-Tag: v2.6.38-rc1~222^2~14
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=6c9879101442b08581e8a0e3ae6b7f643a78fd63
+
+md: fix regression resulting in delays in clearing bits in a bitmap
+
+commit 589a594be1fb (2.6.37-rc4) fixed a problem were md_thread would
+sometimes call the ->run function at a bad time.
+
+If an error is detected during array start up after the md_thread has
+been started, the md_thread is killed.  This resulted in the ->run
+function being called once.  However the array may not be in a state
+that it is safe to call ->run.
+
+However the fix imposed meant that  ->run was not called on a timeout.
+This means that when an array goes idle, bitmap bits do not get
+cleared promptly.  While the array is busy the bits will still be
+cleared when appropriate so this is not very serious.  There is no
+risk to data.
+
+Change the test so that we only avoid calling ->run when the thread
+is being stopped.  This more explicitly addresses the problem situation.
+
+This is suitable for 2.6.37-stable and any -stable kernel to which
+589a594be1fb was applied.
+
+Cc: stable@kernel.org
+Signed-off-by: NeilBrown <neilb@suse.de>
+---
+
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 0da25da..a301912 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -6042,7 +6042,8 @@ static int md_thread(void * arg)
+ 			 || kthread_should_stop(),
+ 			 thread->timeout);
+ 
+-		if (test_and_clear_bit(THREAD_WAKEUP, &thread->flags))
++		clear_bit(THREAD_WAKEUP, &thread->flags);
++		if (!kthread_should_stop())
+ 			thread->run(thread->mddev);
+ 	}
+ 
