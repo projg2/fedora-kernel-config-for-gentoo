@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 84
+%global baserelease 85
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2185,6 +2185,12 @@ fi
 # and build.
 
 %changelog
+* Tue Mar 01 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.11-85
+- Fix IR wakeup on nuvoton-cir-driven hardware
+- Make mceusb only bind to the IR interface on Realtek multifuction thingy
+- Kill the crappy old lirc_it* drivers, add new ite_cir driver
+- Fix HVR-1950 (and possibly other) device bring-up (#680450)
+
 * Mon Feb 28 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix stuck bits in md bitmaps (#680791)
 

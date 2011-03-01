@@ -1,8 +1,12 @@
-All IR fixups take from:
+Most IR fixups take from:
 
 http://git.kernel.org/?p=linux/kernel/git/jarod/linux-2.6-ir.git;a=shortlog;h=refs/heads/staging
 
-Should be in v4l/dvb/rc soon...
+Last three taken from:
+
+http://git.linuxtv.org/jarod/linux-2.6-ir.git?a=shortlog;h=refs/heads/for-2.6.38
+
+Should all be in v4l/dvb/rc soon...
 
 
 commit db7e4498b17d9b52c8fddf828bad54454ab130ec
@@ -103,6 +107,64 @@ Date:   Tue Jan 18 00:27:45 2011 -0500
     Reported-by: Erin Simonds <fisslefink@gmail.com>
     Signed-off-by: Jarod Wilson <jarod@redhat.com>
 
+commit 2469809bfffe496fa51cb030759f6c2f55dc5002
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Tue Mar 1 10:21:50 2011 -0500
+
+    tda829x: fix regression in probe functions
+    
+    In commit 567aba0b7997dad5fe3fb4aeb174ee9018df8c5b, the probe address
+    for tda8290_probe and tda8295_probe was hard-coded to 0x4b, which is the
+    default i2c address for those devices, but its possible for the device
+    to be at an alternate address, 0x42, which is the case for the HVR-1950.
+    If we probe the wrong address, probe fails and we have a non-working
+    device. We have the actual address passed into the function by way of
+    i2c_props, we just need to use it. Also fix up some copy/paste comment
+    issues and streamline debug spew a touch. Verified to restore my
+    HVR-1950 to full working order.
+    
+    Special thanks to Ken Bass for reporting the issue in the first place,
+    and to both he and Gary Buhrmaster for aiding in debugging and analysis
+    of the problem.
+    
+    Reported-by: Ken Bass <kbass@kenbass.com>
+    Tested-by: Jarod Wilson <jarod@redhat.com>
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit 428cca0644eba44c867b21b1fef5d30678d52e8a
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Mon Feb 28 17:04:43 2011 -0500
+
+    mceusb: don't claim multifunction device non-IR parts
+    
+    There's a Realtek combo card reader and IR receiver device with multiple
+    usb interfaces on it. The mceusb driver is incorrectly grabbing all of
+    them. This change should make it bind to only interface 2 (patch based
+    on lsusb output on the linux-media list from Lucian Muresan).
+    
+    Tested regression-free with the six mceusb devices I have myself.
+    
+    Reported-by: Patrick Boettcher <pboettcher@kernellabs.com>
+    Reported-by: Lucian Muresan <lucianm@users.sourceforge.net>
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
+
+commit 24a576808cee7c32f2be97ed9050562fd671292e
+Author: Jarod Wilson <jarod@redhat.com>
+Date:   Mon Feb 28 16:33:32 2011 -0500
+
+    nuvoton-cir: fix wake from suspend
+    
+    The CIR Wake FIFO is 67 bytes long, but the stock remote appears to only
+    populate 65 of them. Limit comparison to 65 bytes, and wake from suspend
+    works a whole lot better (it wasn't working at all for most folks).
+    
+    Fix based on comparison with the old lirc_wb677 driver from Nuvoton,
+    debugging and testing done by Dave Treacy by way of the lirc mailing
+    list.
+    
+    Reported-by: Dave Treacy <davetreacy@gmail.com>
+    CC: stable@vger.kernel.org
+    Signed-off-by: Jarod Wilson <jarod@redhat.com>
 
 
 diff --git a/drivers/media/rc/ir-lirc-codec.c b/drivers/media/rc/ir-lirc-codec.c
@@ -435,3 +497,162 @@ index d9b6b48..e435d94 100644
  	usb_submit_urb(urb, GFP_ATOMIC);
  
  	return;
+diff --git a/drivers/media/rc/nuvoton-cir.c b/drivers/media/rc/nuvoton-cir.c
+index dd4caf8..d0b1c10 100644
+--- a/drivers/media/rc/nuvoton-cir.c
++++ b/drivers/media/rc/nuvoton-cir.c
+@@ -385,8 +385,9 @@ static void nvt_cir_regs_init(struct nvt_dev *nvt)
+ 
+ static void nvt_cir_wake_regs_init(struct nvt_dev *nvt)
+ {
+-	/* set number of bytes needed for wake key comparison (default 67) */
+-	nvt_cir_wake_reg_write(nvt, CIR_WAKE_FIFO_LEN, CIR_WAKE_FIFO_CMP_DEEP);
++	/* set number of bytes needed for wake from s3 (default 65) */
++	nvt_cir_wake_reg_write(nvt, CIR_WAKE_FIFO_CMP_BYTES,
++			       CIR_WAKE_FIFO_CMP_DEEP);
+ 
+ 	/* set tolerance/variance allowed per byte during wake compare */
+ 	nvt_cir_wake_reg_write(nvt, CIR_WAKE_CMP_TOLERANCE,
+diff --git a/drivers/media/rc/nuvoton-cir.h b/drivers/media/rc/nuvoton-cir.h
+index 1df8235..048135e 100644
+--- a/drivers/media/rc/nuvoton-cir.h
++++ b/drivers/media/rc/nuvoton-cir.h
+@@ -305,8 +305,11 @@ struct nvt_dev {
+ #define CIR_WAKE_IRFIFOSTS_RX_EMPTY	0x20
+ #define CIR_WAKE_IRFIFOSTS_RX_FULL	0x10
+ 
+-/* CIR Wake FIFO buffer is 67 bytes long */
+-#define CIR_WAKE_FIFO_LEN		67
++/*
++ * The CIR Wake FIFO buffer is 67 bytes long, but the stock remote wakes
++ * the system comparing only 65 bytes (fails with this set to 67)
++ */
++#define CIR_WAKE_FIFO_CMP_BYTES		65
+ /* CIR Wake byte comparison tolerance */
+ #define CIR_WAKE_CMP_TOLERANCE		5
+ 
+diff --git a/drivers/media/rc/mceusb.c b/drivers/media/rc/mceusb.c
+index 079353e..d21ae1a 100644
+--- a/drivers/media/rc/mceusb.c
++++ b/drivers/media/rc/mceusb.c
+@@ -148,6 +148,7 @@ enum mceusb_model_type {
+ 	MCE_GEN2_TX_INV,
+ 	POLARIS_EVK,
+ 	CX_HYBRID_TV,
++	MULTIFUNCTION,
+ };
+ 
+ struct mceusb_model {
+@@ -155,9 +156,10 @@ struct mceusb_model {
+ 	u32 mce_gen2:1;
+ 	u32 mce_gen3:1;
+ 	u32 tx_mask_normal:1;
+-	u32 is_polaris:1;
+ 	u32 no_tx:1;
+ 
++	int ir_intfnum;
++
+ 	const char *rc_map;	/* Allow specify a per-board map */
+ 	const char *name;	/* per-board name */
+ };
+@@ -179,7 +181,6 @@ static const struct mceusb_model mceusb_model[] = {
+ 		.tx_mask_normal = 1,
+ 	},
+ 	[POLARIS_EVK] = {
+-		.is_polaris = 1,
+ 		/*
+ 		 * In fact, the EVK is shipped without
+ 		 * remotes, but we should have something handy,
+@@ -189,10 +190,13 @@ static const struct mceusb_model mceusb_model[] = {
+ 		.name = "Conexant Hybrid TV (cx231xx) MCE IR",
+ 	},
+ 	[CX_HYBRID_TV] = {
+-		.is_polaris = 1,
+ 		.no_tx = 1, /* tx isn't wired up at all */
+ 		.name = "Conexant Hybrid TV (cx231xx) MCE IR",
+ 	},
++	[MULTIFUNCTION] = {
++		.mce_gen2 = 1,
++		.ir_intfnum = 2,
++	},
+ };
+ 
+ static struct usb_device_id mceusb_dev_table[] = {
+@@ -216,8 +220,9 @@ static struct usb_device_id mceusb_dev_table[] = {
+ 	{ USB_DEVICE(VENDOR_PHILIPS, 0x206c) },
+ 	/* Philips/Spinel plus IR transceiver for ASUS */
+ 	{ USB_DEVICE(VENDOR_PHILIPS, 0x2088) },
+-	/* Realtek MCE IR Receiver */
+-	{ USB_DEVICE(VENDOR_REALTEK, 0x0161) },
++	/* Realtek MCE IR Receiver and card reader */
++	{ USB_DEVICE(VENDOR_REALTEK, 0x0161),
++	  .driver_info = MULTIFUNCTION },
+ 	/* SMK/Toshiba G83C0004D410 */
+ 	{ USB_DEVICE(VENDOR_SMK, 0x031d),
+ 	  .driver_info = MCE_GEN2_TX_INV },
+@@ -1098,7 +1103,7 @@ static int __devinit mceusb_dev_probe(struct usb_interface *intf,
+ 	bool is_gen3;
+ 	bool is_microsoft_gen1;
+ 	bool tx_mask_normal;
+-	bool is_polaris;
++	int ir_intfnum;
+ 
+ 	dev_dbg(&intf->dev, "%s called\n", __func__);
+ 
+@@ -1107,13 +1112,11 @@ static int __devinit mceusb_dev_probe(struct usb_interface *intf,
+ 	is_gen3 = mceusb_model[model].mce_gen3;
+ 	is_microsoft_gen1 = mceusb_model[model].mce_gen1;
+ 	tx_mask_normal = mceusb_model[model].tx_mask_normal;
+-	is_polaris = mceusb_model[model].is_polaris;
++	ir_intfnum = mceusb_model[model].ir_intfnum;
+ 
+-	if (is_polaris) {
+-		/* Interface 0 is IR */
+-		if (idesc->desc.bInterfaceNumber)
+-			return -ENODEV;
+-	}
++	/* There are multi-function devices with non-IR interfaces */
++	if (idesc->desc.bInterfaceNumber != ir_intfnum)
++		return -ENODEV;
+ 
+ 	/* step through the endpoints to find first bulk in and out endpoint */
+ 	for (i = 0; i < idesc->desc.bNumEndpoints; ++i) {
+diff --git a/drivers/media/common/tuners/tda8290.c b/drivers/media/common/tuners/tda8290.c
+index bc6a677..8c48521 100644
+--- a/drivers/media/common/tuners/tda8290.c
++++ b/drivers/media/common/tuners/tda8290.c
+@@ -658,13 +658,13 @@ static int tda8290_probe(struct tuner_i2c_props *i2c_props)
+ #define TDA8290_ID 0x89
+ 	u8 reg = 0x1f, id;
+ 	struct i2c_msg msg_read[] = {
+-		{ .addr = 0x4b, .flags = 0, .len = 1, .buf = &reg },
+-		{ .addr = 0x4b, .flags = I2C_M_RD, .len = 1, .buf = &id },
++		{ .addr = i2c_props->addr, .flags = 0, .len = 1, .buf = &reg },
++		{ .addr = i2c_props->addr, .flags = I2C_M_RD, .len = 1, .buf = &id },
+ 	};
+ 
+ 	/* detect tda8290 */
+ 	if (i2c_transfer(i2c_props->adap, msg_read, 2) != 2) {
+-		printk(KERN_WARNING "%s: tda8290 couldn't read register 0x%02x\n",
++		printk(KERN_WARNING "%s: couldn't read register 0x%02x\n",
+ 			       __func__, reg);
+ 		return -ENODEV;
+ 	}
+@@ -685,13 +685,13 @@ static int tda8295_probe(struct tuner_i2c_props *i2c_props)
+ #define TDA8295C2_ID 0x8b
+ 	u8 reg = 0x2f, id;
+ 	struct i2c_msg msg_read[] = {
+-		{ .addr = 0x4b, .flags = 0, .len = 1, .buf = &reg },
+-		{ .addr = 0x4b, .flags = I2C_M_RD, .len = 1, .buf = &id },
++		{ .addr = i2c_props->addr, .flags = 0, .len = 1, .buf = &reg },
++		{ .addr = i2c_props->addr, .flags = I2C_M_RD, .len = 1, .buf = &id },
+ 	};
+ 
+-	/* detect tda8290 */
++	/* detect tda8295 */
+ 	if (i2c_transfer(i2c_props->adap, msg_read, 2) != 2) {
+-		printk(KERN_WARNING "%s: tda8290 couldn't read register 0x%02x\n",
++		printk(KERN_WARNING "%s: couldn't read register 0x%02x\n",
+ 			       __func__, reg);
+ 		return -ENODEV;
+ 	}
