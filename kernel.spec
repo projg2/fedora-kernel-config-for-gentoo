@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -63,7 +63,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -679,7 +679,6 @@ Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
 Patch1826: drm-intel-edp-fixes.patch
-Patch1827: drm_i915-check-eDP-encoder-correctly-when-setting-modes.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
@@ -719,8 +718,6 @@ Patch12017: prevent-runtime-conntrack-changes.patch
 
 Patch12018: neuter_intel_microcode_load.patch
 
-Patch12030: tpm-fix-stall-on-boot.patch
-
 Patch12100: applesmc_update.patch
 Patch12101: apple_backlight.patch
 Patch12102: efifb_update.patch
@@ -738,7 +735,6 @@ Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch12401: debug-tty-print-dev-name.patch
 
-Patch12410: mm-page-allocator-adjust-the-per-cpu-counter-threshold-when-memory-is-low.patch
 Patch12411: mm-vmstat-use-a-single-setter-function-and-callback-for-adjusting-percpu-thresholds.patch
 
 Patch12421: fs-call-security_d_instantiate-in-d_obtain_alias.patch
@@ -1305,7 +1301,6 @@ ApplyPatch drm-intel-big-hammer.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 ApplyPatch drm-intel-edp-fixes.patch
-ApplyPatch drm_i915-check-eDP-encoder-correctly-when-setting-modes.patch
 
 # linux1394 git patches
 #ApplyPatch linux-2.6-firewire-git-update.patch
@@ -1339,9 +1334,6 @@ ApplyPatch add-appleir-usb-driver.patch
 
 ApplyPatch neuter_intel_microcode_load.patch
 
-# try to fix stalls during boot (#530393)
-ApplyPatch tpm-fix-stall-on-boot.patch
-
 # various fixes for Apple and EFI
 ApplyPatch applesmc_update.patch
 ApplyPatch apple_backlight.patch
@@ -1363,7 +1355,6 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 ApplyPatch debug-tty-print-dev-name.patch
 
 # backport some fixes for kswapd from mmotm, rhbz#649694
-ApplyPatch mm-page-allocator-adjust-the-per-cpu-counter-threshold-when-memory-is-low.patch
 ApplyPatch mm-vmstat-use-a-single-setter-function-and-callback-for-adjusting-percpu-thresholds.patch
 
 # rhbz#662344,600690
@@ -1984,6 +1975,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Mar 04 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.37.2-1
+- Linux 2.6.37.2 for Fedora 14 and 13
+- Drop/fixup conflicting and merged patches.
+
 * Wed Jan 19 2011 Roland McGrath <roland@redhat.com>
 - utrace update
 
