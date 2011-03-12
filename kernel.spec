@@ -635,8 +635,6 @@ Patch370: linux-2.6-defaults-acpi-pci_no_crs.patch
 Patch371: linux-2.6-defaults-no-pm-async.patch
 
 Patch380: linux-2.6-defaults-pci_no_msi.patch
-# enable ASPM
-Patch383: linux-2.6-defaults-aspm.patch
 # fixes for ASPM
 Patch384: pci-acpi-disable-aspm-if-no-osc.patch
 Patch385: pci-aspm-dont-enable-too-early.patch
@@ -1396,8 +1394,6 @@ ApplyPatch linux-2.6-defaults-acpi-pci_no_crs.patch
 # make default state of PCI MSI a config option
 ApplyPatch linux-2.6-defaults-pci_no_msi.patch
 
-# enable ASPM by default on hardware we expect to work
-ApplyPatch linux-2.6-defaults-aspm.patch
 # disable aspm if acpi doesn't provide an _OSC method
 ApplyPatch pci-acpi-disable-aspm-if-no-osc.patch
 # allow drivers to disable aspm at load time
@@ -2318,6 +2314,10 @@ fi
 %kernel_variant_files %{with_pae_debug} PAEdebug
 
 %changelog
+* Fri Mar 11 2011 Chuck Ebbert <cebbert@redhat.com>
+- Drop linux-2.6-defaults-aspm.patch; fixing ASPM properly will
+  be too difficult in this old kernel.
+
 * Thu Feb 24 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix crash when dropping filesystem caches (#649871)
 
