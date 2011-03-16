@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 85
+%global baserelease 86
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -847,6 +847,9 @@ Patch13710: linux-2.6-bonding-sysfs-warning.patch
 # rhbz#680791
 Patch13711: md-fix-regression-resulting-in-delays-in-clearing-bits-in-a-bitmap.patch
 
+# rhbz#671514
+Patch13712: cfg80211-fix-can_beacon_sec_chan-reenable-ht40.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1599,6 +1602,9 @@ ApplyPatch linux-2.6-bonding-sysfs-warning.patch
 # rhbz#680791
 ApplyPatch md-fix-regression-resulting-in-delays-in-clearing-bits-in-a-bitmap.patch
 
+# rhbz#671514
+ApplyPatch cfg80211-fix-can_beacon_sec_chan-reenable-ht40.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2185,6 +2191,10 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 16 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.35.11-86
+- Fix a regression in cfg80211 ht40 support from 2.6.35, patch from
+  Mark Mentovai and Stanislaw Gruszka. Thanks!
+
 * Tue Mar 01 2011 Jarod Wilson <jarod@redhat.com> 2.6.35.11-85
 - Fix IR wakeup on nuvoton-cir-driven hardware
 - Make mceusb only bind to the IR interface on Realtek multifuction thingy
