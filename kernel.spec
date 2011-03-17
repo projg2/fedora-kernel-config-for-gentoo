@@ -345,7 +345,7 @@ Summary: The Linux kernel
 %define asmarch sparc
 %define all_arch_configs kernel-%{version}-sparc64*.config
 %define make_target image
-%define kernel_image arch/sparc/boot/image
+%define kernel_image vmlinux
 %define image_install_path boot
 %define with_perf 0
 %endif
@@ -1972,6 +1972,10 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 16 2011 Dennis Gilmore <dennis@ausil.us>
+- build sparc imagae as vmlinux
+- fixes buildid conflicts since the sparc kernel is just a elf image
+
 * Tue Mar 15 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38-1
 - Linux 2.6.38
 
