@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1350,7 +1350,7 @@ ApplyPatch efifb_update.patch
 ApplyPatch acpi_reboot.patch
 
 # Runtime PM
-ApplyPatch linux-2.6-ehci-check-port-status.patch
+#ApplyPatch linux-2.6-ehci-check-port-status.patch
 #ApplyPatch linux-2.6-usb-pci-autosuspend.patch
 ### Broken by implicit notify support & ACPICA rebase
 ###ApplyPatch linux-2.6-enable-more-pci-autosuspend.patch
@@ -1970,6 +1970,9 @@ fi
 # and build.
 
 %changelog
+* Mon Mar 21 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38-3
+- Add contents of 2.6.38.1 patch queue (in git-linus.diff)
+
 * Thu Mar 17 2011 Matthew Garrett <mjg@redhat.com> 2.6.38-2
 - drop efi_default_physical.patch - it's actually setting up something that's
   neither physical nor virtual, and it's probably breaking EFI boots
