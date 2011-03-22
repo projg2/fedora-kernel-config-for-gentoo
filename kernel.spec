@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1970,6 +1970,10 @@ fi
 # and build.
 
 %changelog
+* Tue Mar 22 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38-4
+- nouveau: implement missing bios opcode 0x5c (rhbz#688569)
+- nouveau: a couple of minor fixes from nouveau git
+
 * Mon Mar 21 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38-3
 - Add contents of 2.6.38.1 patch queue (in git-linus.diff)
 
