@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -672,6 +672,8 @@ Patch1555: fix_xen_guest_on_old_EC2.patch
 Patch1810: drm-nouveau-updates.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
+# fix for 945G corruption will hit stable eventually
+Patch1821: drm-i915-fix-pipelined-fencing.patch
 Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
@@ -1306,6 +1308,7 @@ ApplyPatch drm-intel-big-hammer.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 ApplyPatch drm-intel-edp-fixes.patch
+ApplyPatch drm-i915-fix-pipelined-fencing.patch
 # rhbz#681285 (i965: crash in brw_wm_surface_state.c::prepare_wm_surfaces()
 #  where intelObj->mt == NULL)
 #ApplyPatch drm-i915-gen4-has-non-power-of-two-strides.patch
@@ -1970,6 +1973,9 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 23 2011 Dave Airlie <airlied@redhat.com> 2.6.38-5
+- i915: add fix for 945G misrendering terminal
+
 * Tue Mar 22 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38-4
 - nouveau: implement missing bios opcode 0x5c (rhbz#688569)
 - nouveau: a couple of minor fixes from nouveau git
