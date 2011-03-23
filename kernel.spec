@@ -891,6 +891,8 @@ Patch13951: bridge-fix-mglist-corruption-that-leads-to-memory-corruption.patch
 # rhbz#649871
 Patch13952: drm-hold-the-mutex-when-dropping-the-last-gem-reference-v2.patch
 
+Patch13955: virtio_net-add-schedule-check-to-napi_enable-call.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1694,6 +1696,8 @@ ApplyPatch bridge-fix-mglist-corruption-that-leads-to-memory-corruption.patch
 # rhbz#649871
 ApplyPatch drm-hold-the-mutex-when-dropping-the-last-gem-reference-v2.patch
 
+ApplyPatch virtio_net-add-schedule-check-to-napi_enable-call.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2314,6 +2318,9 @@ fi
 %kernel_variant_files %{with_pae_debug} PAEdebug
 
 %changelog
+* Wed Mar 23 2011 Kyle McMartin <kmcmartin@redhat.com>
+- Backport 3e9d08e: "virtio_net: Add schedule check to napi_enable call"
+
 * Fri Mar 11 2011 Chuck Ebbert <cebbert@redhat.com>
 - Drop linux-2.6-defaults-aspm.patch; fixing ASPM properly will
   be too difficult in this old kernel.
