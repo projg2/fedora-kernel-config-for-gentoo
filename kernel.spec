@@ -851,6 +851,8 @@ Patch13711: md-fix-regression-resulting-in-delays-in-clearing-bits-in-a-bitmap.p
 # rhbz#671514
 Patch13712: cfg80211-fix-can_beacon_sec_chan-reenable-ht40.patch
 
+Patch13713: virtio_net-add-schedule-check-to-napi_enable-call.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1607,6 +1609,8 @@ ApplyPatch md-fix-regression-resulting-in-delays-in-clearing-bits-in-a-bitmap.pa
 # rhbz#671514
 ApplyPatch cfg80211-fix-can_beacon_sec_chan-reenable-ht40.patch
 
+ApplyPatch virtio_net-add-schedule-check-to-napi_enable-call.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2193,6 +2197,9 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 23 2011 Kyle McMartin <kmcmartin@redhat.com>
+- Backport 3e9d08e: "virtio_net: Add schedule check to napi_enable call"
+
 * Wed Mar 23 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.35.11-87
 - nouveau: fix s/r on some boards (f14 port of #688569)
 
