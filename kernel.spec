@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -63,7 +63,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -727,7 +727,6 @@ Patch12102: efifb_update.patch
 Patch12200: acpi_reboot.patch
 
 # Runtime power management
-Patch12202: linux-2.6-ehci-check-port-status.patch
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
 Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
 Patch12205: runtime_pm_fixups.patch
@@ -735,6 +734,9 @@ Patch12205: runtime_pm_fixups.patch
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch12421: fs-call-security_d_instantiate-in-d_obtain_alias.patch
+
+# Fix possible memory corruption on Dell HW
+Patch12430: dcdbas-force-smi-to-happen-when-expected.patch
 
 %endif
 
@@ -1356,7 +1358,6 @@ ApplyPatch efifb_update.patch
 ApplyPatch acpi_reboot.patch
 
 # Runtime PM
-#ApplyPatch linux-2.6-ehci-check-port-status.patch
 #ApplyPatch linux-2.6-usb-pci-autosuspend.patch
 ### Broken by implicit notify support & ACPICA rebase
 ###ApplyPatch linux-2.6-enable-more-pci-autosuspend.patch
@@ -1367,6 +1368,9 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 # rhbz#662344,600690
 ApplyPatch fs-call-security_d_instantiate-in-d_obtain_alias.patch
+
+# Fix possible memory corruption on Dell HW
+ApplyPatch dcdbas-force-smi-to-happen-when-expected.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1976,6 +1980,11 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 23 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.1-6
+- Linux 2.6.38.1
+- Drop linux-2.6-ehci-check-port-status.patch, merged in .38.1
+- Add dcdbas-force-smi-to-happen-when-expected.patch
+
 * Wed Mar 23 2011 Kyle McMartin <kmcmartin@redhat.com>
 - Re-create ACPI battery sysfs files on resume from suspend, fixes the
   upstream changes to the dropped
