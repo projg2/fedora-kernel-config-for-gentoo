@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 6
+%global baserelease 7
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -738,6 +738,9 @@ Patch12421: fs-call-security_d_instantiate-in-d_obtain_alias.patch
 # Fix possible memory corruption on Dell HW
 Patch12430: dcdbas-force-smi-to-happen-when-expected.patch
 
+# CVE-2011-1182
+Patch12431: prevent-rt_sigqueueinfo-and-rt_tgsigqueueinfo-from-spoofing-the-signal-code.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1372,6 +1375,9 @@ ApplyPatch fs-call-security_d_instantiate-in-d_obtain_alias.patch
 # Fix possible memory corruption on Dell HW
 ApplyPatch dcdbas-force-smi-to-happen-when-expected.patch
 
+# CVE-2011-1182
+ApplyPatch prevent-rt_sigqueueinfo-and-rt_tgsigqueueinfo-from-spoofing-the-signal-code.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1980,6 +1986,9 @@ fi
 # and build.
 
 %changelog
+* Fri Mar 25 2011 Chuck Ebbert <cebbert@redhat.com>
+- CVE-2011-1182: kernel signal spoofing issue
+
 * Wed Mar 23 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.1-6
 - Linux 2.6.38.1
 - Drop linux-2.6-ehci-check-port-status.patch, merged in .38.1
