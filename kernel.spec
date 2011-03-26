@@ -23,7 +23,8 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-# % define buildid .local
+%define buildid .pnfs.2011.03.25
+ 
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -739,6 +740,9 @@ Patch12430: dcdbas-force-smi-to-happen-when-expected.patch
 # CVE-2011-1182
 Patch12431: prevent-rt_sigqueueinfo-and-rt_tgsigqueueinfo-from-spoofing-the-signal-code.patch
 
+Patch30000: pnfs-all-2.6.38-2011-03-25.patch
+Patch30001: linux-2.6-pnfs-compile.patch
+Patch30002: linux-2.6.35-inline.patch
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1372,6 +1376,9 @@ ApplyPatch dcdbas-force-smi-to-happen-when-expected.patch
 # CVE-2011-1182
 ApplyPatch prevent-rt_sigqueueinfo-and-rt_tgsigqueueinfo-from-spoofing-the-signal-code.patch
 
+ApplyPatch pnfs-all-2.6.38-2011-03-25.patch
+ApplyPatch linux-2.6-pnfs-compile.patch
+ApplyPatch linux-2.6.35-inline.patch
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1980,6 +1987,9 @@ fi
 # and build.
 
 %changelog
+* Sat Mar 26 2011 Steve Dickson <steved@redhat.com> 2.6.38.1-6.pnfs
+- Updated to the latest pNFS branch: pnfs-all-2.6.38-2011-03-25
+
 * Fri Mar 25 2011 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2011-1182: kernel signal spoofing issue
 - Drop unused patches already applied upstream:
