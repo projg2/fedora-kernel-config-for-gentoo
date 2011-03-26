@@ -63,9 +63,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1364,13 +1364,13 @@ ApplyPatch acpi_reboot.patch
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 # rhbz#662344,600690
-ApplyPatch fs-call-security_d_instantiate-in-d_obtain_alias.patch
+#ApplyPatch fs-call-security_d_instantiate-in-d_obtain_alias.patch
 
 # Fix possible memory corruption on Dell HW
-ApplyPatch dcdbas-force-smi-to-happen-when-expected.patch
+#ApplyPatch dcdbas-force-smi-to-happen-when-expected.patch
 
 # CVE-2011-1182
-ApplyPatch prevent-rt_sigqueueinfo-and-rt_tgsigqueueinfo-from-spoofing-the-signal-code.patch
+#ApplyPatch prevent-rt_sigqueueinfo-and-rt_tgsigqueueinfo-from-spoofing-the-signal-code.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1980,6 +1980,9 @@ fi
 # and build.
 
 %changelog
+* Sat Mar 26 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.2-7.rc1
+- Linux 2.6.38.2-rc1
+
 * Fri Mar 25 2011 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2011-1182: kernel signal spoofing issue
 - Drop unused patches already applied upstream:
