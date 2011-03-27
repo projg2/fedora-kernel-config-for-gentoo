@@ -7,6 +7,8 @@ Date: Wed, 23 Mar 2011 02:42:48 -0400
 
 From: Kyle McMartin <kyle@redhat.com>
 
+Upstream commit 25be5821521640eb00b7eb219ffe59664510d073
+
 Commit da8aeb92 re-poked the battery on resume, but Linus reports that
 it broke his eee and partially reverted it in b23fffd7. Unfortunately
 this also results in my x201s giving crack values until the sysfs files
