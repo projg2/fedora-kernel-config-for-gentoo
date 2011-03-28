@@ -65,7 +65,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 2
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1983,7 +1983,8 @@ fi
 # and build.
 
 %changelog
-* Sat Mar 26 2011 Chuck Ebbert <cebbert@redhat.com>
+* Sun Mar 27 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.2-8
+- Linux 2.6.38.2
 - Fix more PCIe ASPM bugs:
    kworker task over 65% after resume (#683156)
    ASPM powersave mode does not get enabled
