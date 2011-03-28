@@ -715,8 +715,6 @@ Patch12010: add-appleir-usb-driver.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch12017: prevent-runtime-conntrack-changes.patch
-
 Patch12018: neuter_intel_microcode_load.patch
 
 Patch12101: apple_backlight.patch
