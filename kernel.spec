@@ -732,14 +732,6 @@ Patch12207: pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
-Patch12421: fs-call-security_d_instantiate-in-d_obtain_alias.patch
-
-# Fix possible memory corruption on Dell HW
-Patch12430: dcdbas-force-smi-to-happen-when-expected.patch
-
-# CVE-2011-1182
-Patch12431: prevent-rt_sigqueueinfo-and-rt_tgsigqueueinfo-from-spoofing-the-signal-code.patch
-
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1366,15 +1358,6 @@ ApplyPatch acpi_reboot.patch
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
-# rhbz#662344,600690
-#ApplyPatch fs-call-security_d_instantiate-in-d_obtain_alias.patch
-
-# Fix possible memory corruption on Dell HW
-#ApplyPatch dcdbas-force-smi-to-happen-when-expected.patch
-
-# CVE-2011-1182
-#ApplyPatch prevent-rt_sigqueueinfo-and-rt_tgsigqueueinfo-from-spoofing-the-signal-code.patch
-
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1985,6 +1968,10 @@ fi
 %changelog
 * Sun Mar 27 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.2-8
 - Linux 2.6.38.2
+- Drop patches merged in 2.6.38.2:
+   dcdbas-force-smi-to-happen-when-expected.patch
+   fs-call-security_d_instantiate-in-d_obtain_alias.patch
+   prevent-rt_sigqueueinfo-and-rt_tgsigqueueinfo-from-spoofing-the-signal-code.patch
 - Fix more PCIe ASPM bugs:
    kworker task over 65% after resume (#683156)
    ASPM powersave mode does not get enabled
