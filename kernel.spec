@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 7
+%global baserelease 8
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -633,7 +633,6 @@ Patch204: linux-2.6-debug-always-inline-kzalloc.patch
 Patch380: linux-2.6-defaults-pci_no_msi.patch
 Patch381: linux-2.6-defaults-pci_use_crs.patch
 Patch383: linux-2.6-defaults-aspm.patch
-Patch386: pci-_osc-supported-field-should-contain-supported-features-not-enabled-ones.patch
 
 Patch385: ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
@@ -728,6 +727,8 @@ Patch12200: acpi_reboot.patch
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
 Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
 Patch12205: runtime_pm_fixups.patch
+Patch12206: pci-acpi-report-aspm-support-to-bios-if-not-disabled-from-command-line.patch
+Patch12207: pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
@@ -1247,8 +1248,10 @@ ApplyPatch linux-2.6-defaults-pci_no_msi.patch
 ApplyPatch linux-2.6-defaults-pci_use_crs.patch
 # enable ASPM by default on hardware we expect to work
 ApplyPatch linux-2.6-defaults-aspm.patch
-# rhbz#638912
-#ApplyPatch pci-_osc-supported-field-should-contain-supported-features-not-enabled-ones.patch
+# rhbz #683156
+ApplyPatch pci-acpi-report-aspm-support-to-bios-if-not-disabled-from-command-line.patch
+#
+ApplyPatch pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.patch
 
 #ApplyPatch ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
@@ -1980,6 +1983,11 @@ fi
 # and build.
 
 %changelog
+* Sat Mar 26 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix more PCIe ASPM bugs:
+   kworker task over 65% after resume (#683156)
+   ASPM powersave mode does not get enabled
+
 * Sat Mar 26 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.2-7.rc1
 - Linux 2.6.38.2-rc1
 
