@@ -730,6 +730,8 @@ Patch12207: pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
+Patch12305: printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1356,6 +1358,9 @@ ApplyPatch acpi_reboot.patch
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
+# rhbz#691888
+ApplyPatch printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1964,6 +1969,12 @@ fi
 # and build.
 
 %changelog
+* Tue Mar 29 2011 Kyle McMartin <kmcmartin@redhat.com>
+- printk: do not mangle valid userspace syslog prefixes with
+  /dev/kmsg (#691888)
+  - The patch is upstream in 2.6.39, and Lennart tells me the patch has been
+    backported for the next Suse release as well.
+
 * Sun Mar 27 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.2-8
 - Linux 2.6.38.2
 - Drop patches merged in 2.6.38.2:
