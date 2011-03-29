@@ -1974,6 +1974,7 @@ fi
   /dev/kmsg (#691888)
   - The patch is upstream in 2.6.39, and Lennart tells me the patch has been
     backported for the next Suse release as well.
+- Disable qla4xxx (CONFIG_SCSI_QLA_ISCSI) driver on powerpc32 (#686199)
 
 * Sun Mar 27 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.2-8
 - Linux 2.6.38.2
