@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 8
+%global baserelease 9
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -731,6 +731,7 @@ Patch12207: pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch12305: printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
+Patch12306: scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 
 %endif
 
@@ -1361,6 +1362,8 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 # rhbz#691888
 ApplyPatch printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
 
+ApplyPatch scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1969,6 +1972,12 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 29 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.2-9
+- Downgrade SCSI sd printk's about disk caching from KERN_ERR to KERN_NOTICE
+  so they don't show up in our pretty quiet boot. Ray noticed them when
+  booting from a USB stick which doesn't have a cache page returned in the
+  sense buffer.
+
 * Tue Mar 29 2011 Kyle McMartin <kmcmartin@redhat.com>
 - Disable CONFIG_IMA, CONFIG_TCG_TPM on powerpc (#689468)
 
