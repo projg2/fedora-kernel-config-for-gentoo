@@ -1970,6 +1970,9 @@ fi
 
 %changelog
 * Tue Mar 29 2011 Kyle McMartin <kmcmartin@redhat.com>
+- Disable CONFIG_IMA, CONFIG_TCG_TPM on powerpc (#689468)
+
+* Tue Mar 29 2011 Kyle McMartin <kmcmartin@redhat.com>
 - printk: do not mangle valid userspace syslog prefixes with
   /dev/kmsg (#691888)
   - The patch is upstream in 2.6.39, and Lennart tells me the patch has been
