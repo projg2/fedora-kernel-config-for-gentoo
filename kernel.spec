@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 87
+%global baserelease 88
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -763,13 +763,10 @@ Patch12565: sched-05-avoid-side-effect-of-tickless-idle-on-update_cpu_load.patch
 Patch12570: sched-10-change-nohz-idle-load-balancing-logic-to-push-model.patch
 Patch12575: sched-15-update-rq-clock-for-nohz-balanced-cpus.patch
 Patch12580: sched-20-fix-rq-clock-synchronization-when-migrating-tasks.patch
-Patch12585: sched-25-move-sched_avg_update-to-update_cpu_load.patch
 Patch12590: sched-30-sched-fix-nohz-balance-kick.patch
-Patch12595: sched-35-increment-cache_nice_tries-only-on-periodic-lb.patch
 
 Patch13600: btusb-macbookpro-6-2.patch
 Patch13601: btusb-macbookpro-7-1.patch
-Patch13602: add-macbookair3-ids.patch
 
 Patch13610: libata-it821x-dump-stack-on-cache-flush.patch
 
@@ -784,9 +781,6 @@ Patch13641: mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 Patch13642: mmc-add-ricoh-e822-pci-id.patch
 
 Patch13645: tpm-autodetect-itpm-devices.patch
-Patch13646: tpm-fix-stall-on-boot.patch
-
-Patch13651: kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 
 Patch13652: fix-i8k-inline-asm.patch
 
@@ -810,8 +804,6 @@ Patch13694: btrfs-fix-error-handling-in-btrfs_get_sub.patch
 Patch13695: btrfs-setup-blank-root-and-fs_info-for-mount-time.patch
 Patch13696: btrfs-fix-race-between-btrfs_get_sb-and-unmount.patch
 
-Patch13697: fs-call-security_d_instantiate-in-d_obtain_alias.patch
-
 Patch13698: net-AF_PACKET-vmalloc.patch
 
 # rhbz#652744
@@ -823,9 +815,6 @@ Patch13702: block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_u
 
 # RHBZ #669511
 Patch13703: btrfs-fix-typo-in-fallocate-to-make-it-honor-actual-size.patch
-
-# rhbz#643758
-Patch13704: hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 
 # rhbz #673207
 Patch13705: sunrpc-kernel-panic-when-mount-nfsv4.patch
@@ -839,17 +828,11 @@ Patch13707: kvm-mmu-fix-32-bit-legacy-paging-with-npt.patch
 # rhbz#676860
 Patch13708: hid-force-feedback-support-for-logitech-rumblepad-gamepad.patch
 
-# rhbz#654599
-Patch13709: iwl3945-remove-plcp-check.patch
-
 # rhbz#604630
 Patch13710: linux-2.6-bonding-sysfs-warning.patch
 
 # rhbz#680791
 Patch13711: md-fix-regression-resulting-in-delays-in-clearing-bits-in-a-bitmap.patch
-
-# rhbz#671514
-Patch13712: cfg80211-fix-can_beacon_sec_chan-reenable-ht40.patch
 
 Patch13713: virtio_net-add-schedule-check-to-napi_enable-call.patch
 
@@ -1314,9 +1297,6 @@ ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 # bugfixes to drivers and filesystems
 #
 
-# rhbz#662344,600690
-ApplyPatch fs-call-security_d_instantiate-in-d_obtain_alias.patch
-
 # ext4
 
 # rhbz#578674
@@ -1519,15 +1499,10 @@ ApplyPatch sched-05-avoid-side-effect-of-tickless-idle-on-update_cpu_load.patch
 ApplyPatch sched-10-change-nohz-idle-load-balancing-logic-to-push-model.patch
 ApplyPatch sched-15-update-rq-clock-for-nohz-balanced-cpus.patch
 ApplyPatch sched-20-fix-rq-clock-synchronization-when-migrating-tasks.patch
-ApplyPatch sched-25-move-sched_avg_update-to-update_cpu_load.patch
 ApplyPatch sched-30-sched-fix-nohz-balance-kick.patch
-ApplyPatch sched-35-increment-cache_nice_tries-only-on-periodic-lb.patch
 
 ApplyPatch btusb-macbookpro-7-1.patch
 ApplyPatch btusb-macbookpro-6-2.patch
-
-# rhbz#651019
-ApplyPatch add-macbookair3-ids.patch
 
 # temporary patch, dump stack on failed it821x commands
 ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
@@ -1546,11 +1521,6 @@ ApplyPatch mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 ApplyPatch mmc-add-ricoh-e822-pci-id.patch
 
 ApplyPatch tpm-autodetect-itpm-devices.patch
-# rhbz#530393
-ApplyPatch tpm-fix-stall-on-boot.patch
-
-# CVE-2010-3698
-ApplyPatch kvm-fix-fs-gs-reload-oops-with-invalid-ldt.patch
 
 ApplyPatch fix-i8k-inline-asm.patch
 
@@ -1582,9 +1552,6 @@ ApplyPatch e1000e-82566DC-fails-to-get-link.patch
 # CVE-2010-4668
 ApplyPatch block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_user_iov.patch
 
-# rhbz#643758
-ApplyPatch hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
-
 # rhbz #673207
 ApplyPatch sunrpc-kernel-panic-when-mount-nfsv4.patch
 
@@ -1597,17 +1564,11 @@ ApplyPatch kvm-mmu-fix-32-bit-legacy-paging-with-npt.patch
 # rhbz#676860
 ApplyPatch hid-force-feedback-support-for-logitech-rumblepad-gamepad.patch
 
-# rhbz#654599
-ApplyPatch iwl3945-remove-plcp-check.patch
-
 # rhbz#604630
 ApplyPatch linux-2.6-bonding-sysfs-warning.patch
 
 # rhbz#680791
 ApplyPatch md-fix-regression-resulting-in-delays-in-clearing-bits-in-a-bitmap.patch
-
-# rhbz#671514
-ApplyPatch cfg80211-fix-can_beacon_sec_chan-reenable-ht40.patch
 
 ApplyPatch virtio_net-add-schedule-check-to-napi_enable-call.patch
 
@@ -2197,6 +2158,9 @@ fi
 # and build.
 
 %changelog
+* Thu Mar 31 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.35.12-88
+- Update to longterm 2.6.35.12, drop upstream patches.
+
 * Wed Mar 23 2011 Kyle McMartin <kmcmartin@redhat.com>
 - Backport 3e9d08e: "virtio_net: Add schedule check to napi_enable call"
 
