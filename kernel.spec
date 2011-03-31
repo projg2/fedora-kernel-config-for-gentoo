@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 9
+%global baserelease 10
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1972,6 +1972,12 @@ fi
 # and build.
 
 %changelog
+* Thu Mar 31 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38-2.10
+- nouveau: nva3+ stability improvements
+- nouveau: nvc0 "stutter" fixes
+- nouveau: nv50/nvc0 page flipping
+- nouveau: nv50 z compression
+
 * Wed Mar 29 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.2-9
 - Downgrade SCSI sd printk's about disk caching from KERN_ERR to KERN_NOTICE
   so they don't show up in our pretty quiet boot. Ray noticed them when
