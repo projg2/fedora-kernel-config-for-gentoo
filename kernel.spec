@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 10
+%global baserelease 11
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -670,6 +670,7 @@ Patch1555: fix_xen_guest_on_old_EC2.patch
 
 # nouveau + drm fixes
 Patch1810: drm-nouveau-updates.patch
+Patch1811: drm-ttm-move-notify.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
 # fix for 945G corruption will hit stable eventually
@@ -1300,6 +1301,7 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 # DRM core
 
 # Nouveau DRM
+ApplyPatch drm-ttm-move-notify.patch
 ApplyOptionalPatch drm-nouveau-updates.patch
 
 # Intel DRM
@@ -1972,6 +1974,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 04 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38-2.11
+- ttm: add patch from upstream to fix a recent nouveau issue
+
 * Thu Mar 31 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38-2.10
 - nouveau: nva3+ stability improvements
 - nouveau: nvc0 "stutter" fixes
