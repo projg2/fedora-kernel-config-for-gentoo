@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 11
+%global baserelease 12
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1974,6 +1974,9 @@ fi
 # and build.
 
 %changelog
+* Thu Apr 07 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38-2.12
+- nouveau: switch nv4x back to DMA32 only (rhbz#689825)
+
 * Mon Apr 04 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38-2.11
 - ttm: add patch from upstream to fix a recent nouveau issue
 

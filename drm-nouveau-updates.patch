@@ -1680,7 +1680,7 @@ index 4a8ad13..86c2e37 100644
  static inline void
  cp_pos(struct nouveau_grctx *ctx, int offset)
 diff --git a/drivers/gpu/drm/nouveau/nouveau_mem.c b/drivers/gpu/drm/nouveau/nouveau_mem.c
-index b0fb9bd..9a91bf1 100644
+index b0fb9bd..07ee9af 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_mem.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_mem.c
 @@ -152,7 +152,6 @@ nouveau_mem_vram_fini(struct drm_device *dev)
@@ -1705,7 +1705,7 @@ index b0fb9bd..9a91bf1 100644
 +		if (pci_dma_supported(dev->pdev, DMA_BIT_MASK(40)))
 +			dma_bits = 40;
 +	} else
-+	if (drm_device_is_pcie(dev) &&
++	if (0 && drm_device_is_pcie(dev) &&
 +	    dev_priv->chipset != 0x40 &&
 +	    dev_priv->chipset != 0x45) {
 +		if (pci_dma_supported(dev->pdev, DMA_BIT_MASK(39)))
