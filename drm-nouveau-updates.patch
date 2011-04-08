@@ -1680,7 +1680,7 @@ index 4a8ad13..86c2e37 100644
  static inline void
  cp_pos(struct nouveau_grctx *ctx, int offset)
 diff --git a/drivers/gpu/drm/nouveau/nouveau_mem.c b/drivers/gpu/drm/nouveau/nouveau_mem.c
-index b0fb9bd..07ee9af 100644
+index b0fb9bd..f017997 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_mem.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_mem.c
 @@ -152,7 +152,6 @@ nouveau_mem_vram_fini(struct drm_device *dev)
@@ -1706,7 +1706,7 @@ index b0fb9bd..07ee9af 100644
 +			dma_bits = 40;
 +	} else
 +	if (0 && drm_device_is_pcie(dev) &&
-+	    dev_priv->chipset != 0x40 &&
++	    dev_priv->chipset  > 0x40 &&
 +	    dev_priv->chipset != 0x45) {
 +		if (pci_dma_supported(dev->pdev, DMA_BIT_MASK(39)))
 +			dma_bits = 39;
@@ -2277,7 +2277,7 @@ index 04e8fb7..f18cdfc 100644
  #define NV50_PDISPLAY_USER(i)                        ((i) * 0x1000 + 0x00640000)
  #define NV50_PDISPLAY_USER_PUT(i)                    ((i) * 0x1000 + 0x00640000)
 diff --git a/drivers/gpu/drm/nouveau/nouveau_sgdma.c b/drivers/gpu/drm/nouveau/nouveau_sgdma.c
-index 9a250eb..b410d31 100644
+index 9a250eb..2bf9686 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_sgdma.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_sgdma.c
 @@ -74,8 +74,24 @@ nouveau_sgdma_clear(struct ttm_backend *be)
@@ -2605,7 +2605,7 @@ index 9a250eb..b410d31 100644
 -			aper_size = 64 * 1024 * 1024;
 -		else
 -			aper_size = 512 * 1024 * 1024;
-+	if (dev_priv->card_type >= NV_50 || drm_device_is_pcie(dev))
++	if (dev_priv->card_type >= NV_40 && drm_device_is_pcie(dev))
 +		aper_size = 512 * 1024 * 1024;
 +	else
 +		aper_size = 64 * 1024 * 1024;
@@ -2640,7 +2640,7 @@ index 9a250eb..b410d31 100644
 +		dev_priv->gart_info.func = &nv50_sgdma_backend;
 +	} else
 +	if (0 && drm_device_is_pcie(dev) &&
-+	    dev_priv->chipset != 0x40 && dev_priv->chipset != 0x45) {
++	    dev_priv->chipset > 0x40 && dev_priv->chipset != 0x45) {
 +		if (nv44_graph_class(dev)) {
 +			dev_priv->gart_info.func = &nv44_sgdma_backend;
 +			align = 512 * 1024;

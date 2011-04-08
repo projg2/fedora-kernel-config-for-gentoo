@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 12
+%global baserelease 13
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1976,6 +1976,9 @@ fi
 # and build.
 
 %changelog
+* Fri Apr 08 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38-2.13
+- nouveau: fix pcie nv3x (rhbz#692588)
+
 * Thu Apr 07 2011 Hans de Goede <hdegoede@redhat.com>
 - i915: Add a no lvds quirk for the Asus EB1007, this fixes gnome-shell
 
