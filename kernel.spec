@@ -619,6 +619,8 @@ Patch30: linux-2.6-tracehook.patch
 Patch31: linux-2.6-utrace.patch
 Patch32: linux-2.6-utrace-ptrace.patch
 
+Patch60: linux-2.6-x86-fix-mtrr-resume.patch
+
 Patch150: linux-2.6.29-sparc-IOC_TYPECHECK.patch
 Patch151: sparc64_fix_build_errors_with_gcc460.patch
 
@@ -1182,6 +1184,7 @@ ApplyPatch linux-2.6-utrace-ptrace.patch
 
 # Architecture patches
 # x86(-64)
+ApplyPatch linux-2.6-x86-fix-mtrr-resume.patch
 
 #
 # Intel IOMMU
@@ -1976,6 +1979,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 11 2011 Dave Airlie <airlied@redhat.com>
+- x86: add upstream patch to fix MTRR on resume - will come via stable later.
+
 * Fri Apr 08 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38-2.13
 - nouveau: fix pcie nv3x (rhbz#692588)
 
