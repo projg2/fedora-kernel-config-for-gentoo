@@ -671,6 +671,7 @@ Patch1555: fix_xen_guest_on_old_EC2.patch
 # DRM
 
 # nouveau + drm fixes
+Patch1809: drm-nouveau-fixes.patch
 Patch1810: drm-nouveau-updates.patch
 Patch1811: drm-ttm-move-notify.patch
 Patch1819: drm-intel-big-hammer.patch
@@ -1306,6 +1307,7 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # Nouveau DRM
 ApplyPatch drm-ttm-move-notify.patch
+ApplyOptionalPatch drm-nouveau-fixes.patch
 ApplyOptionalPatch drm-nouveau-updates.patch
 
 # Intel DRM
@@ -1979,6 +1981,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 12 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38-2.14
+- nouveau: correct lock ordering problem
+
 * Mon Apr 11 2011 Dave Airlie <airlied@redhat.com>
 - x86: add upstream patch to fix MTRR on resume - will come via stable later.
 
