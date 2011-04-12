@@ -1,0 +1,46 @@
+From 157db94a095cbfa84a1932d516930f4371e7fab5 Mon Sep 17 00:00:00 2001
+From: H. Peter Anvin <hpa@linux.intel.com>
+Date: Wed, 6 Apr 2011 13:10:02 -0700
+Subject: [PATCH] x86, hibernate: Initialize mmu_cr4_features during boot
+
+Restore the initialization of mmu_cr4_features during boot, which was
+removed without comment in checkin e5f15b45ddf3afa2bbbb10c7ea34fb32b6de0a0e
+
+x86: Cleanup highmap after brk is concluded
+
+thereby breaking resume from hibernate.  This restores previous
+functionality in approximately the same place, and corrects the
+reading of %cr4 on pre-CPUID hardware (%cr4 exists if and only if
+CPUID is supported.)
+
+However, part of the problem is that the hibernate suspend/resume
+sequence should manage the save/restore of %cr4 explicitly.
+
+Signed-off-by: H. Peter Anvin <hpa@linux.intel.com>
+Cc: Rafael J. Wysocki <rjw@sisk.pl>
+Cc: Stefano Stabellini <stefano.stabellini@eu.citrix.com>
+Cc: Yinghai Lu <yinghai@kernel.org>
+LKML-Reference: <201104020154.57136.rjw@sisk.pl>
+---
+ arch/x86/kernel/setup.c |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index e543fe9..4e59873 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -1013,6 +1013,11 @@ void __init setup_arch(char **cmdline_p)
+ 	paging_init();
+ 	x86_init.paging.pagetable_setup_done(swapper_pg_dir);
+ 
++	if (boot_cpu_data.cpuid_level >= 0) {
++		/* A CPU has %cr4 if and only if it has CPUID */
++		mmu_cr4_features = read_cr4();
++	}
++
+ #ifdef CONFIG_X86_32
+ 	/* sync back kernel address range */
+ 	clone_pgd_range(initial_page_table + KERNEL_PGD_BOUNDARY,
+-- 
+1.7.4.2
+

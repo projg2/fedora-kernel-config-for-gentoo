@@ -738,6 +738,8 @@ Patch12303: dmar-disable-when-ricoh-multifunction.patch
 Patch12305: printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
 Patch12306: scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 
+Patch12307: x86-hibernate-initialize-mmu_cr4_features-during-boot.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1373,6 +1375,9 @@ ApplyPatch printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
 
 ApplyPatch scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 
+# fix hibernate broken by 2.6.38.y
+ApplyPatch x86-hibernate-initialize-mmu_cr4_features-during-boot.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1981,6 +1986,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 12 2011 Kyle McMartin <kmcmartin@redhat.com>
+- fix hibernate which was broken by 2.6.38.y (korg#32222)
+
 * Tue Apr 12 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38-2.14
 - nouveau: correct lock ordering problem
 
