@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 15
+%global baserelease 16
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -65,7 +65,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 3
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -619,8 +619,6 @@ Patch30: linux-2.6-tracehook.patch
 Patch31: linux-2.6-utrace.patch
 Patch32: linux-2.6-utrace-ptrace.patch
 
-Patch60: linux-2.6-x86-fix-mtrr-resume.patch
-
 Patch150: linux-2.6.29-sparc-IOC_TYPECHECK.patch
 Patch151: sparc64_fix_build_errors_with_gcc460.patch
 
@@ -682,7 +680,6 @@ Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
 Patch1826: drm-intel-edp-fixes.patch
-Patch1827: drm-i915-gen4-has-non-power-of-two-strides.patch
 Patch1828: drm-intel-eeebox-eb1007-quirk.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
@@ -729,8 +726,6 @@ Patch12200: acpi_reboot.patch
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
 Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
-Patch12205: runtime_pm_fixups.patch
-Patch12206: pci-acpi-report-aspm-support-to-bios-if-not-disabled-from-command-line.patch
 Patch12207: pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
@@ -1187,7 +1182,6 @@ ApplyPatch linux-2.6-utrace-ptrace.patch
 
 # Architecture patches
 # x86(-64)
-#ApplyPatch linux-2.6-x86-fix-mtrr-resume.patch
 
 #
 # Intel IOMMU
@@ -1249,8 +1243,6 @@ ApplyPatch linux-2.6-defaults-pci_no_msi.patch
 ApplyPatch linux-2.6-defaults-pci_use_crs.patch
 # enable ASPM by default on hardware we expect to work
 ApplyPatch linux-2.6-defaults-aspm.patch
-# rhbz #683156
-#ApplyPatch pci-acpi-report-aspm-support-to-bios-if-not-disabled-from-command-line.patch
 #
 ApplyPatch pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.patch
 
@@ -1319,9 +1311,6 @@ ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 ApplyPatch drm-intel-edp-fixes.patch
 ApplyPatch drm-i915-fix-pipelined-fencing.patch
-# rhbz#681285 (i965: crash in brw_wm_surface_state.c::prepare_wm_surfaces()
-#  where intelObj->mt == NULL)
-#ApplyPatch drm-i915-gen4-has-non-power-of-two-strides.patch
 ApplyPatch drm-intel-eeebox-eb1007-quirk.patch
 
 # linux1394 git patches
@@ -1365,7 +1354,6 @@ ApplyPatch acpi_reboot.patch
 #ApplyPatch linux-2.6-usb-pci-autosuspend.patch
 ### Broken by implicit notify support & ACPICA rebase
 ###ApplyPatch linux-2.6-enable-more-pci-autosuspend.patch
-#ApplyPatch runtime_pm_fixups.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1986,6 +1974,15 @@ fi
 # and build.
 
 %changelog
+* Thu Apr 14 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.3-16
+- Linux 2.6.38.3
+- Drop merged patches:
+    linux-2.6-x86-fix-mtrr-resume.patch
+    pci-acpi-report-aspm-support-to-bios-if-not-disabled-from-command-line.patch
+- Drop some obsolete patches:
+    runtime_pm_fixups.patch
+    drm-i915-gen4-has-non-power-of-two-strides.patch'
+
 * Wed Apr 13 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.3-15.rc1
 - Linux 2.6.38.3-rc1
 
