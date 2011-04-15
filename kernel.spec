@@ -733,8 +733,6 @@ Patch12303: dmar-disable-when-ricoh-multifunction.patch
 Patch12305: printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
 Patch12306: scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 
-Patch12307: x86-hibernate-initialize-mmu_cr4_features-during-boot.patch
-
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1363,9 +1361,6 @@ ApplyPatch printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
 
 ApplyPatch scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 
-# fix hibernate broken by 2.6.38.y
-ApplyPatch x86-hibernate-initialize-mmu_cr4_features-during-boot.patch
-
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1974,6 +1969,10 @@ fi
 # and build.
 
 %changelog
+* Fri Apr 15 2011 Kyle McMartin <kmcmartin@redhat.com>
+- Drop x86-hibernate-initialize-mmu_cr4_features-during-boot.patch, 
+  e5f15b45 was reverted in stable.
+
 * Thu Apr 14 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.3-16
 - Linux 2.6.38.3
 - Drop merged patches:
