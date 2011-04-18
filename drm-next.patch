@@ -17327,11 +17327,17 @@ index e302537..df931f7 100644
  struct intel_crtc;
  struct intel_overlay {
  	struct drm_device *dev;
-@@ -149,17 +152,18 @@ struct intel_crtc {
+@@ -149,23 +152,24 @@ struct intel_crtc {
  	bool lowfreq_avail;
  	struct intel_overlay *overlay;
  	struct intel_unpin_work *unpin_work;
 +	int fdi_lanes;
+ 
+ 	struct drm_gem_object *cursor_bo;
+ 	uint32_t cursor_addr;
+ 	int16_t cursor_x, cursor_y;
+ 	int16_t cursor_width, cursor_height;
+ 	bool cursor_visble;
  };
  
  #define to_intel_crtc(x) container_of(x, struct intel_crtc, base)
@@ -36045,7 +36051,7 @@ index 1227747..d5b9373 100644
 --- a/drivers/gpu/drm/radeon/radeon_object.c
 +++ b/drivers/gpu/drm/radeon/radeon_object.c
 @@ -112,9 +112,11 @@ int radeon_bo_create(struct radeon_device *rdev, struct drm_gem_object *gobj,
- 
+ retry:
  	radeon_ttm_placement_from_domain(bo, domain);
  	/* Kernel allocation are uninterruptible */
 +	mutex_lock(&rdev->vram_mutex);
@@ -36054,8 +36060,8 @@ index 1227747..d5b9373 100644
  			&radeon_ttm_bo_destroy);
 +	mutex_unlock(&rdev->vram_mutex);
  	if (unlikely(r != 0)) {
- 		if (r != -ERESTARTSYS)
- 			dev_err(rdev->dev,
+ 		if (r != -ERESTARTSYS) {
+ 			if (domain == RADEON_GEM_DOMAIN_VRAM) {
 @@ -166,11 +168,15 @@ void radeon_bo_kunmap(struct radeon_bo *bo)
  void radeon_bo_unref(struct radeon_bo **bo)
  {
@@ -36118,14 +36124,14 @@ index 1227747..d5b9373 100644
  	if (unlikely(r != 0)) {
  		return r;
 @@ -331,7 +341,7 @@ int radeon_bo_list_validate(struct list_head *head)
- 								lobj->rdomain);
- 			}
+ 		retry:
+ 			radeon_ttm_placement_from_domain(bo, domain);
  			r = ttm_bo_validate(&bo->tbo, &bo->placement,
 -						true, false);
 +						true, false, false);
- 			if (unlikely(r))
- 				return r;
- 		}
+ 			if (unlikely(r)) {
+ 				if (r != -ERESTARTSYS && domain == RADEON_GEM_DOMAIN_VRAM) {
+ 					domain |= RADEON_GEM_DOMAIN_GTT;
 @@ -499,11 +509,33 @@ void radeon_bo_move_notify(struct ttm_buffer_object *bo,
  	radeon_bo_check_tiling(rbo, 0, 1);
  }
@@ -39104,8 +39110,8 @@ index bbf3da7..bcc3319 100644
  			d1mode_priority_a_cnt |= S_006548_D1MODE_PRIORITY_A_ALWAYS_ON(1);
  			d2mode_priority_a_cnt |= S_006D48_D2MODE_PRIORITY_A_ALWAYS_ON(1);
 @@ -502,32 +500,32 @@ void rs690_bandwidth_update(struct radeon_device *rdev)
- 		WREG32(R_006D48_D2MODE_PRIORITY_A_CNT, d2mode_priority_a_cnt);
- 		WREG32(R_006D4C_D2MODE_PRIORITY_B_CNT, d2mode_priority_a_cnt);
+ 			d2mode_priority_a_cnt |= S_006D48_D2MODE_PRIORITY_A_ALWAYS_ON(1);
+ 		}
  	} else if (mode0) {
 -		if (rfixed_trunc(wm0.dbpp) > 64)
 -			a.full = rfixed_mul(wm0.dbpp, wm0.num_line_pair);
@@ -39149,9 +39155,9 @@ index bbf3da7..bcc3319 100644
  			d1mode_priority_a_cnt |= S_006548_D1MODE_PRIORITY_A_ALWAYS_ON(1);
  		WREG32(R_006548_D1MODE_PRIORITY_A_CNT, d1mode_priority_a_cnt);
 @@ -537,32 +535,32 @@ void rs690_bandwidth_update(struct radeon_device *rdev)
- 		WREG32(R_006D4C_D2MODE_PRIORITY_B_CNT,
- 			S_006D4C_D2MODE_PRIORITY_B_OFF(1));
- 	} else {
+ 		if (rdev->disp_priority == 2)
+ 			d1mode_priority_a_cnt |= S_006548_D1MODE_PRIORITY_A_ALWAYS_ON(1);
+ 	} else if (mode1) {
 -		if (rfixed_trunc(wm1.dbpp) > 64)
 -			a.full = rfixed_mul(wm1.dbpp, wm1.num_line_pair);
 +		if (dfixed_trunc(wm1.dbpp) > 64)
@@ -39633,8 +39639,8 @@ index 9035121..7d9a7b0 100644
  			d1mode_priority_a_cnt |= MODE_PRIORITY_ALWAYS_ON;
  			d2mode_priority_a_cnt |= MODE_PRIORITY_ALWAYS_ON;
 @@ -1096,32 +1003,32 @@ void rv515_bandwidth_avivo_update(struct radeon_device *rdev)
- 		WREG32(D2MODE_PRIORITY_A_CNT, d2mode_priority_a_cnt);
- 		WREG32(D2MODE_PRIORITY_B_CNT, d2mode_priority_a_cnt);
+ 			d2mode_priority_a_cnt |= MODE_PRIORITY_ALWAYS_ON;
+ 		}
  	} else if (mode0) {
 -		if (rfixed_trunc(wm0.dbpp) > 64)
 -			a.full = rfixed_div(wm0.dbpp, wm0.num_line_pair);
@@ -39678,9 +39684,9 @@ index 9035121..7d9a7b0 100644
  			d1mode_priority_a_cnt |= MODE_PRIORITY_ALWAYS_ON;
  		WREG32(D1MODE_PRIORITY_A_CNT, d1mode_priority_a_cnt);
 @@ -1129,32 +1036,32 @@ void rv515_bandwidth_avivo_update(struct radeon_device *rdev)
- 		WREG32(D2MODE_PRIORITY_A_CNT, MODE_PRIORITY_OFF);
- 		WREG32(D2MODE_PRIORITY_B_CNT, MODE_PRIORITY_OFF);
- 	} else {
+ 		if (rdev->disp_priority == 2)
+ 			d1mode_priority_a_cnt |= MODE_PRIORITY_ALWAYS_ON;
+ 	} else if (mode1) {
 -		if (rfixed_trunc(wm1.dbpp) > 64)
 -			a.full = rfixed_div(wm1.dbpp, wm1.num_line_pair);
 +		if (dfixed_trunc(wm1.dbpp) > 64)

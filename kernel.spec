@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 68
+%global baserelease 69
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -734,8 +734,6 @@ Patch2906: linux-2.6-v4l-dvb-uvcvideo-update.patch
 
 Patch2910: linux-2.6-v4l-dvb-add-lgdt3304-support.patch
 Patch2911: linux-2.6-v4l-dvb-add-kworld-a340-support.patch
-# CVE-2011-0521
-Patch2912: linux-2.6-v4l-dvb-av7110-check-for-negative-array-offset.patch
 
 # fs fixes
 
@@ -804,14 +802,8 @@ Patch13647: rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
 Patch13648: tpm-autodetect-itpm-devices.patch
 Patch13649: tpm-fix-stall-on-boot.patch
 
-Patch13700: ipc-zero-struct-memory-for-compat-fns.patch
-Patch13701: ipc-shm-fix-information-leak-to-user.patch
-
 Patch13702: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 Patch13705: netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
-
-# CVE-2010-4248
-Patch13703: posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
 Patch13710: rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 Patch13711: rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
@@ -831,55 +823,18 @@ Patch13802: xfs-properly-account-for-reclaimed-inodes.patch
 
 Patch13900: ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
-Patch13901: ioat2-catch-and-recover-from-broken-vtd-configurations.patch
-
-# CVE-2010-3705
-Patch13912: sctp-fix-out-of-bounds-reading-in-sctp_asoc_get_hmac.patch
-# CVE-2010-4258
-Patch13914: do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
-# CVE-2010-4169
-Patch13915: perf_events-fix-perf_counter_mmap-hook-in-mprotect.patch
-# CVE-2010-4162
-Patch13916: bio-take-care-not-overflow-page-count-when-mapping-copying-user-data.patch
 # CVE-2010-4249
-Patch13917: af_unix-limit-unix_tot_inflight.patch
 Patch13918: scm-lower-SCM-MAX-FD.patch
-# CVE-2010-4158
-Patch13920: filter-make-sure-filters-dont-read-uninitialized-memory.patch
-# CVE-2010-3874
-Patch13921: can-bcm-fix-minor-heap-overflow.patch
 # Allow AF_PACKET to be less of a pig with contiguous ram
 Patch13922: patch-2.6.38-afpacket-vmalloc.patch 
 
 # rhbz#662344
 Patch13923: fs-call-security_d_instantiate-in-d_obtain_alias.patch
 
-# CVE-2010-4163
-Patch13924: block-check-for-proper-length-of-iov-entries-in-blk_rq_map_user_iov.patch
-# CVE-2010-4668
-Patch13925: block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_user_iov.patch
-
 # rhbz#643758
 Patch13926: hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 
-# CVE-2010-4346
-Patch13930: install-special-mapping-skips-security-file-mmap-check.patch
-# CVE-2010-4649
-Patch13931: ib-uverbs-handle-large-number-of-poll-entries-in-poll-cq.patch
-# CVE-2011-0006
-Patch13932: ima-fix-add-lsm-rule-bug.patch
-# CVE-2010-4648
-Patch13933: orinoco-fix-tkip-countermeasure-behaviour.patch
-# CVE-2010-4650
-Patch13934: fuse-verify-ioctl-retries.patch
-
-# Networking fixes from 2.6.36.3
-Patch13940: tcp-avoid-a-possible-divide-by-zero.patch
-Patch13941: tcp-bug-fix-in-initialization-of-receive-window.patch
-Patch13942: tcp-don-t-change-unlocked-socket-state-in-tcp_v4_err.patch
 # CVE-2010-4165
-Patch13943: tcp-increase-tcp_maxseg-socket-option-minimum.patch
-Patch13944: tcp-make-tcp_maxseg-minimum-more-correct.patch
 Patch13945: tcp-protect-sysctl_tcp_cookie_size-reads.patch
 
 # rhbz#673207 (f14)
@@ -1515,8 +1470,6 @@ ApplyPatch linux-2.6-v4l-dvb-uvcvideo-update.patch
 
 ApplyPatch linux-2.6-v4l-dvb-add-lgdt3304-support.patch
 ApplyPatch linux-2.6-v4l-dvb-add-kworld-a340-support.patch
-# CVE-2011-0521
-ApplyPatch linux-2.6-v4l-dvb-av7110-check-for-negative-array-offset.patch
 
 ApplyPatch linux-2.6-phylib-autoload.patch
 
@@ -1600,18 +1553,9 @@ ApplyPatch tpm-fix-stall-on-boot.patch
 ApplyPatch rt2x00-disable-auto-wakeup-before-waking-up-device.patch
 ApplyPatch rt2x00-fix-failed-SLEEP-AWAKE-and-AWAKE-SLEEP-transitions.patch
 
-# rhbz#648658 (CVE-2010-4073)
-ApplyPatch ipc-zero-struct-memory-for-compat-fns.patch
-
-# rhbz#648656 (CVE-2010-4072)
-ApplyPatch ipc-shm-fix-information-leak-to-user.patch
-
 # rhbz#651264 (CVE-2010-3880)
 ApplyPatch inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
 ApplyPatch netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
-
-# rhbz#656264 (CVE-2010-4248)
-ApplyPatch posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
 
 ApplyPatch rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 ApplyPatch rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
@@ -1635,56 +1579,19 @@ ApplyPatch xfs-properly-account-for-reclaimed-inodes.patch
 # disable IMA by default as we did in F-14
 ApplyPatch ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
-# rhbz605845 [556ab45f]
-ApplyPatch ioat2-catch-and-recover-from-broken-vtd-configurations.patch
-
-# CVE-2010-3705
-ApplyPatch sctp-fix-out-of-bounds-reading-in-sctp_asoc_get_hmac.patch
-# CVE-2010-4258
-ApplyPatch do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
-# CVE-2010-4169
-ApplyPatch perf_events-fix-perf_counter_mmap-hook-in-mprotect.patch
-# CVE-2010-4162
-ApplyPatch bio-take-care-not-overflow-page-count-when-mapping-copying-user-data.patch
 # CVE-2010-4249
-ApplyPatch af_unix-limit-unix_tot_inflight.patch
 ApplyPatch scm-lower-SCM-MAX-FD.patch
-# CVE-2010-4158
-ApplyPatch filter-make-sure-filters-dont-read-uninitialized-memory.patch
-# CVE-2010-3874
-ApplyPatch can-bcm-fix-minor-heap-overflow.patch
+
 # Allow AF_PACKET to be less of a contiguous ram pig
 ApplyPatch patch-2.6.38-afpacket-vmalloc.patch
 
 # rhbz#662344
 ApplyPatch fs-call-security_d_instantiate-in-d_obtain_alias.patch
 
-# CVE-2010-4163
-ApplyPatch block-check-for-proper-length-of-iov-entries-in-blk_rq_map_user_iov.patch
-# CVE-2010-4668
-ApplyPatch block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_user_iov.patch
-
 # rhbz#643758
 ApplyPatch hostap_cs-fix-sleeping-function-called-from-invalid-context.patch
 
-# CVE-2010-4346
-ApplyPatch install-special-mapping-skips-security-file-mmap-check.patch
-# CVE-2010-4649
-ApplyPatch ib-uverbs-handle-large-number-of-poll-entries-in-poll-cq.patch
-# CVE-2011-0006
-ApplyPatch ima-fix-add-lsm-rule-bug.patch
-# CVE-2010-4648
-ApplyPatch orinoco-fix-tkip-countermeasure-behaviour.patch
-# CVE-2010-4650
-ApplyPatch fuse-verify-ioctl-retries.patch
-
-# Networking fixes from 2.6.36.3
-ApplyPatch tcp-avoid-a-possible-divide-by-zero.patch
-ApplyPatch tcp-bug-fix-in-initialization-of-receive-window.patch
-ApplyPatch tcp-don-t-change-unlocked-socket-state-in-tcp_v4_err.patch
 # CVE-2010-4165
-ApplyPatch tcp-increase-tcp_maxseg-socket-option-minimum.patch
-ApplyPatch tcp-make-tcp_maxseg-minimum-more-correct.patch
 ApplyPatch tcp-protect-sysctl_tcp_cookie_size-reads.patch
 
 # rhbz#673207 (f14)
@@ -2318,6 +2225,36 @@ fi
 %kernel_variant_files %{with_pae_debug} PAEdebug
 
 %changelog
+* Sun Apr 17 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.34.9-69
+- Linux 2.6.34.9
+- Fix up drm-next.patch to apply on top of cda4b7d3a, e06b14ee9
+- Un-revert 6a1a82df9 from upstream
+- Drop:
+    linux-2.6-v4l-dvb-av7110-check-for-negative-array-offset.patch
+    ipc-zero-struct-memory-for-compat-fns.patch
+    ipc-shm-fix-information-leak-to-user.patch
+    posix-cpu-timers-workaround-to-suppress-problems-with-mt-exec.patch
+    ioat2-catch-and-recover-from-broken-vtd-configurations.patch
+    sctp-fix-out-of-bounds-reading-in-sctp_asoc_get_hmac.patch
+    do_exit-make-sure-that-we-run-with-get_fs-user_ds.patch
+    perf_events-fix-perf_counter_mmap-hook-in-mprotect.patch
+    bio-take-care-not-overflow-page-count-when-mapping-copying-user-data.patch
+    af_unix-limit-unix_tot_inflight.patch
+    filter-make-sure-filters-dont-read-uninitialized-memory.patch
+    can-bcm-fix-minor-heap-overflow.patch
+    block-check-for-proper-length-of-iov-entries-in-blk_rq_map_user_iov.patch
+    block-check-for-proper-length-of-iov-entries-earlier-in-blk_rq_map_user_iov.patch
+    install-special-mapping-skips-security-file-mmap-check.patch
+    ib-uverbs-handle-large-number-of-poll-entries-in-poll-cq.patch
+    ima-fix-add-lsm-rule-bug.patch
+    orinoco-fix-tkip-countermeasure-behaviour.patch
+    fuse-verify-ioctl-retries.patch
+    tcp-avoid-a-possible-divide-by-zero.patch
+    tcp-bug-fix-in-initialization-of-receive-window.patch
+    tcp-don-t-change-unlocked-socket-state-in-tcp_v4_err.patch
+    tcp-increase-tcp_maxseg-socket-option-minimum.patch
+    tcp-make-tcp_maxseg-minimum-more-correct.patch
+
 * Wed Mar 23 2011 Kyle McMartin <kmcmartin@redhat.com>
 - Backport 3e9d08e: "virtio_net: Add schedule check to napi_enable call"
 
