@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 88
+%global baserelease 89
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2158,6 +2158,10 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 18 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.12-89
+- Revert TPM patches from -stable (c4ff4b829, 9b29050f8) that caused
+  timeouts and suspend failures (#695953)
+
 * Thu Mar 31 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.35.12-88
 - Update to longterm 2.6.35.12, drop upstream patches.
 

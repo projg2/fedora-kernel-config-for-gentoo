@@ -1,3 +1,154 @@
+From c4ff4b829ef9e6353c0b133b7adb564a68054979 Mon Sep 17 00:00:00 2001
+From: Rajiv Andrade <srajiv@linux.vnet.ibm.com>
+Date: Fri, 12 Nov 2010 22:30:02 +0100
+Subject: TPM: Long default timeout fix
+
+From: Rajiv Andrade <srajiv@linux.vnet.ibm.com>
+
+commit c4ff4b829ef9e6353c0b133b7adb564a68054979 upstream.
+
+If duration variable value is 0 at this point, it's because
+chip->vendor.duration wasn't filled by tpm_get_timeouts() yet.
+This patch sets then the lowest timeout just to give enough
+time for tpm_get_timeouts() to further succeed.
+
+This fix avoids long boot times in case another entity attempts
+to send commands to the TPM when the TPM isn't accessible.
+
+Signed-off-by: Rajiv Andrade <srajiv@linux.vnet.ibm.com>
+Signed-off-by: James Morris <jmorris@namei.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+
+---
+ drivers/char/tpm/tpm.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+Index: linux-2.6.35.y/drivers/char/tpm/tpm.c
+===================================================================
+--- linux-2.6.35.y.orig/drivers/char/tpm/tpm.c	2011-03-29 22:51:41.259667437 -0700
++++ linux-2.6.35.y/drivers/char/tpm/tpm.c	2011-03-29 23:55:12.337151500 -0700
+@@ -354,12 +354,14 @@
+ 		    tpm_protected_ordinal_duration[ordinal &
+ 						   TPM_PROTECTED_ORDINAL_MASK];
+ 
+-	if (duration_idx != TPM_UNDEFINED)
++	if (duration_idx != TPM_UNDEFINED) {
+ 		duration = chip->vendor.duration[duration_idx];
+-	if (duration <= 0)
++		/* if duration is 0, it's because chip->vendor.duration wasn't */
++		/* filled yet, so we set the lowest timeout just to give enough */
++		/* time for tpm_get_timeouts() to succeed */
++		return (duration <= 0 ? HZ : duration);
++	} else
+ 		return 2 * 60 * HZ;
+-	else
+-		return duration;
+ }
+ EXPORT_SYMBOL_GPL(tpm_calc_ordinal_duration);
+ 
+From 9b29050f8f75916f974a2d231ae5d3cd59792296 Mon Sep 17 00:00:00 2001
+From: Stefan Berger <stefanb@linux.vnet.ibm.com>
+Date: Tue, 11 Jan 2011 14:37:29 -0500
+Subject: tpm_tis: Use timeouts returned from TPM
+
+From: Stefan Berger <stefanb@linux.vnet.ibm.com>
+
+commit 9b29050f8f75916f974a2d231ae5d3cd59792296 upstream.
+
+The current TPM TIS driver in git discards the timeout values returned
+from the TPM. The check of the response packet needs to consider that
+the return_code field is 0 on success and the size of the expected
+packet is equivalent to the header size + u32 length indicator for the
+TPM_GetCapability() result + 3 timeout indicators of type u32.
+
+I am also adding a sysfs entry 'timeouts' showing the timeouts that are
+being used.
+
+Signed-off-by: Stefan Berger <stefanb@linux.vnet.ibm.com>
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+Tested-by: Guillaume Chazarain <guichaz@gmail.com>
+Signed-off-by: Rajiv Andrade <srajiv@linux.vnet.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+ drivers/char/tpm/tpm.c     |   18 ++++++++++++++++--
+ drivers/char/tpm/tpm.h     |    2 ++
+ drivers/char/tpm/tpm_tis.c |    4 +++-
+ 3 files changed, 21 insertions(+), 3 deletions(-)
+
+Index: linux-2.6.35.y/drivers/char/tpm/tpm.c
+===================================================================
+--- linux-2.6.35.y.orig/drivers/char/tpm/tpm.c	2011-03-29 23:02:59.667308683 -0700
++++ linux-2.6.35.y/drivers/char/tpm/tpm.c	2011-03-29 23:02:59.685308223 -0700
+@@ -567,9 +567,11 @@
+ 	if (rc)
+ 		return;
+ 
+-	if (be32_to_cpu(tpm_cmd.header.out.return_code)
+-	    != 3 * sizeof(u32))
++	if (be32_to_cpu(tpm_cmd.header.out.return_code) != 0 ||
++	    be32_to_cpu(tpm_cmd.header.out.length)
++	    != sizeof(tpm_cmd.header.out) + sizeof(u32) + 3 * sizeof(u32))
+ 		return;
++
+ 	duration_cap = &tpm_cmd.params.getcap_out.cap.duration;
+ 	chip->vendor.duration[TPM_SHORT] =
+ 	    usecs_to_jiffies(be32_to_cpu(duration_cap->tpm_short));
+@@ -913,6 +915,18 @@
+ }
+ EXPORT_SYMBOL_GPL(tpm_show_caps_1_2);
+ 
++ssize_t tpm_show_timeouts(struct device *dev, struct device_attribute *attr,
++			  char *buf)
++{
++	struct tpm_chip *chip = dev_get_drvdata(dev);
++
++	return sprintf(buf, "%d %d %d\n",
++	               jiffies_to_usecs(chip->vendor.duration[TPM_SHORT]),
++	               jiffies_to_usecs(chip->vendor.duration[TPM_MEDIUM]),
++	               jiffies_to_usecs(chip->vendor.duration[TPM_LONG]));
++}
++EXPORT_SYMBOL_GPL(tpm_show_timeouts);
++
+ ssize_t tpm_store_cancel(struct device *dev, struct device_attribute *attr,
+ 			const char *buf, size_t count)
+ {
+Index: linux-2.6.35.y/drivers/char/tpm/tpm.h
+===================================================================
+--- linux-2.6.35.y.orig/drivers/char/tpm/tpm.h	2011-03-29 22:51:40.876677237 -0700
++++ linux-2.6.35.y/drivers/char/tpm/tpm.h	2011-03-29 23:02:59.685308223 -0700
+@@ -56,6 +56,8 @@
+ 				char *);
+ extern ssize_t tpm_show_temp_deactivated(struct device *,
+ 					 struct device_attribute *attr, char *);
++extern ssize_t tpm_show_timeouts(struct device *,
++				 struct device_attribute *attr, char *);
+ 
+ struct tpm_chip;
+ 
+Index: linux-2.6.35.y/drivers/char/tpm/tpm_tis.c
+===================================================================
+--- linux-2.6.35.y.orig/drivers/char/tpm/tpm_tis.c	2011-03-29 22:51:40.877677211 -0700
++++ linux-2.6.35.y/drivers/char/tpm/tpm_tis.c	2011-03-29 23:02:59.686308198 -0700
+@@ -355,6 +355,7 @@
+ 		   NULL);
+ static DEVICE_ATTR(caps, S_IRUGO, tpm_show_caps_1_2, NULL);
+ static DEVICE_ATTR(cancel, S_IWUSR | S_IWGRP, NULL, tpm_store_cancel);
++static DEVICE_ATTR(timeouts, S_IRUGO, tpm_show_timeouts, NULL);
+ 
+ static struct attribute *tis_attrs[] = {
+ 	&dev_attr_pubek.attr,
+@@ -364,7 +365,8 @@
+ 	&dev_attr_owned.attr,
+ 	&dev_attr_temp_deactivated.attr,
+ 	&dev_attr_caps.attr,
+-	&dev_attr_cancel.attr, NULL,
++	&dev_attr_cancel.attr,
++	&dev_attr_timeouts.attr, NULL,
+ };
+ 
+ static struct attribute_group tis_attr_grp = {
 From c6c14330717f9850b4b4c054b81424b9979cd07d Mon Sep 17 00:00:00 2001
 From: Jean-Francois Moine <moinejf@free.fr>
 Date: Tue, 14 Dec 2010 16:15:37 -0300
