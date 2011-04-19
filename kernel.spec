@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 16
+%global baserelease 17
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -696,12 +696,6 @@ Patch2802: linux-2.6-silence-acpi-blacklist.patch
 Patch2899: linux-2.6-v4l-dvb-fixes.patch
 Patch2900: linux-2.6-v4l-dvb-update.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
-Patch2902: linux-2.6-v4l-dvb-uvcvideo-update.patch
-
-Patch2910: linux-2.6-v4l-dvb-add-lgdt3304-support.patch
-Patch2912: linux-2.6-v4l-dvb-ir-core-update.patch
-
-#Patch2916: lirc-staging-2.6.36-fixes.patch
 
 Patch2918: flexcop-fix-xlate_proc_name-warning.patch
 
@@ -1323,13 +1317,6 @@ ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
-#ApplyPatch linux-2.6-v4l-dvb-uvcvideo-update.patch
-#ApplyPatch linux-2.6-v4l-dvb-ir-core-update.patch
-
-###FIX###ApplyPatch linux-2.6-v4l-dvb-add-lgdt3304-support.patch
-
-# http://www.lirc.org/
-#ApplyOptionalPatch lirc-staging-2.6.36-fixes.patch
 
 # rhbz#664852
 ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
@@ -1969,6 +1956,19 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 19 2011 Jarod Wilson <jarod@redhat.com>
+- Add basic support for full 32-bit NEC IR scancodes
+- Add latest patches sent upstream for hid layer expansion and full
+  support for the TiVo Slide bluetooth/hid remote
+- Add a TiVo IR remote keymap, use it by default with TiVo mceusb device
+- Add ite-cir driver, nuke crappy old lirc_it* drivers
+- Add an initial Apple remote keymap
+- Add support for more Nuvoton IR hardware variants
+- Overhaul lirc_zilog refcounting so it doesn't suck so badly anymore
+- Clean up myriad of Hauppauge keymaps
+- Make ir-kbd-i2c pass full rc5 scancodes when it can
+- Misc minor v4l/dvb fixes
+
 * Fri Apr 15 2011 Kyle McMartin <kmcmartin@redhat.com>
 - Drop x86-hibernate-initialize-mmu_cr4_features-during-boot.patch, 
   e5f15b45 was reverted in stable.
