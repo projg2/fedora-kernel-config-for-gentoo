@@ -2158,9 +2158,10 @@ fi
 # and build.
 
 %changelog
-* Mon Apr 18 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.12-89
+* Mon Apr 20 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.12-89
 - Revert TPM patches from -stable (c4ff4b829, 9b29050f8) that caused
   timeouts and suspend failures (#695953)
+- Revert extra fix for credentials leak (#683568)
 
 * Thu Mar 31 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.35.12-88
 - Update to longterm 2.6.35.12, drop upstream patches.
