@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 18
+%global baserelease 19
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -63,7 +63,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -620,7 +620,6 @@ Patch31: linux-2.6-utrace.patch
 Patch32: linux-2.6-utrace-ptrace.patch
 
 Patch150: linux-2.6.29-sparc-IOC_TYPECHECK.patch
-Patch151: sparc64_fix_build_errors_with_gcc460.patch
 
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
@@ -704,8 +703,6 @@ Patch2918: flexcop-fix-xlate_proc_name-warning.patch
 # NFSv4
 
 # patches headed upstream
-
-Patch12001: perf-gcc460-build-fixes.patch
 
 Patch12010: add-appleir-usb-driver.patch
 
@@ -1189,7 +1186,6 @@ ApplyPatch linux-2.6-utrace-ptrace.patch
 # SPARC64
 #
 ApplyPatch linux-2.6.29-sparc-IOC_TYPECHECK.patch
-ApplyPatch sparc64_fix_build_errors_with_gcc460.patch
 
 #
 # Exec shield
@@ -1327,7 +1323,6 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
 # Patches headed upstream
-ApplyPatch perf-gcc460-build-fixes.patch
 
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
@@ -1961,6 +1956,9 @@ fi
 # and build.
 
 %changelog
+* Fri Apr 22 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.4-19
+- Update to 2.6.38.4
+
 * Fri Apr 22 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.3-18
 - iwlwifi: fix scanning when channel changing (#688252)
 
