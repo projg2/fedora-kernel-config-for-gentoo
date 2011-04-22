@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 89
+%global baserelease 90
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -670,6 +670,7 @@ Patch580: linux-2.6-sparc-selinux-mprotect-checks.patch
 Patch610: hda_intel-prealloc-4mb-dmabuffer.patch
 
 Patch700: linux-2.6-e1000-ich9-montevina.patch
+Patch701: iwlagn-support-new-5000-microcode.patch
 
 Patch800: linux-2.6-crash-driver.patch
 
@@ -1365,6 +1366,9 @@ ApplyPatch pci-disable-aspm-if-bios-asks-us-to.patch
 ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
 
 # Networking
+
+# rhbz#695712
+ApplyPatch iwlagn-support-new-5000-microcode.patch
 
 # Misc fixes
 # The input layer spews crap no-one cares about.
@@ -2158,6 +2162,10 @@ fi
 # and build.
 
 %changelog
+* Fri Apr 22 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.35.12-90
+- iwlagn-support-new-5000-microcode.patch: stable submission patch from
+  sgruszka to support newer microcode versions with the iwl5000 hardware.
+
 * Mon Apr 20 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.12-89
 - Revert TPM patches from -stable (c4ff4b829, 9b29050f8) that caused
   timeouts and suspend failures (#695953)
