@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 17
+%global baserelease 18
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -727,6 +727,8 @@ Patch12303: dmar-disable-when-ricoh-multifunction.patch
 Patch12305: printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
 Patch12306: scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 
+Patch12307: iwlwifi-do-not-set-tx-power-when-channel-is-changing.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1250,6 +1252,9 @@ ApplyPatch pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.p
 ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
 
 # Networking
+
+# rhbz#688252
+ApplyPatch iwlwifi-do-not-set-tx-power-when-channel-is-changing.patch
 
 # Misc fixes
 # The input layer spews crap no-one cares about.
@@ -1956,6 +1961,9 @@ fi
 # and build.
 
 %changelog
+* Fri Apr 22 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.3-18
+- iwlwifi: fix scanning when channel changing (#688252)
+
 * Tue Apr 19 2011 Jarod Wilson <jarod@redhat.com>
 - Add basic support for full 32-bit NEC IR scancodes
 - Add latest patches sent upstream for hid layer expansion and full
