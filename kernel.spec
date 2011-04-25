@@ -1962,6 +1962,11 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 25 2011 Jarod Wilson <jarod@redhat.com>
+- ite-cir: fix modular build on powerpc (#698378)
+- mceusb: add Dell-branded transceiver device ID
+- nuvoton-cir: improve compatibility with lirc raw IR mode
+
 * Mon Apr 25 2011 Neil Horman <nhorman@redhat.com>
 - netconsole: fix deadlock in netdev notifier handler
 
