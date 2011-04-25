@@ -726,6 +726,9 @@ Patch12306: scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 
 Patch12307: iwlwifi-do-not-set-tx-power-when-channel-is-changing.patch
 
+#netconsole fixes
+Patch12400: linux-2.6-netconsole-deadlock.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1348,6 +1351,9 @@ ApplyPatch printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
 
 ApplyPatch scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 
+#rhbz 668231
+ApplyPatch linux-2.6-netconsole-deadlock.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1956,6 +1962,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 25 2011 Neil Horman <nhorman@redhat.com>
+- netconsole: fix deadlock in netdev notifier handler
+
 * Sun Apr 24 2011 Kyle McMartin <kmcmartin@redhat.com>
 - ppc64: disable TUNE_CELL, which causes problems with illegal instuctions
   being generated on non-Cell PPC machines. (#698256)
