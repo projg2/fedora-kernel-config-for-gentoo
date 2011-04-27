@@ -631,9 +631,13 @@ Patch204: linux-2.6-debug-always-inline-kzalloc.patch
 
 Patch380: linux-2.6-defaults-pci_no_msi.patch
 Patch381: linux-2.6-defaults-pci_use_crs.patch
-Patch383: linux-2.6-defaults-aspm.patch
 
-Patch385: ima-allow-it-to-be-completely-disabled-and-default-off.patch
+# ASPM: enable powersave by default
+Patch383: linux-2.6-defaults-aspm.patch
+Patch384: pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.patch
+Patch385: pci-enable-aspm-state-clearing-regardless-of-policy.patch
+
+Patch389: ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
 Patch390: linux-2.6-defaults-acpi-video.patch
 Patch391: linux-2.6-acpi-video-dos.patch
@@ -717,7 +721,6 @@ Patch12200: acpi_reboot.patch
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
 Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
-Patch12207: pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
@@ -1236,8 +1239,9 @@ ApplyPatch linux-2.6-defaults-pci_no_msi.patch
 ApplyPatch linux-2.6-defaults-pci_use_crs.patch
 # enable ASPM by default on hardware we expect to work
 ApplyPatch linux-2.6-defaults-aspm.patch
-#
+# fixes for ASPM powersave mode
 ApplyPatch pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.patch
+ApplyPatch pci-enable-aspm-state-clearing-regardless-of-policy.patch
 
 #ApplyPatch ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
@@ -1962,6 +1966,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 26 2011 Chuck Ebbert <cebbert@redhat.com>
+- Another fix for ASPM powersave mode
+
 * Mon Apr 25 2011 Jarod Wilson <jarod@redhat.com>
 - ite-cir: fix modular build on powerpc (#698378)
 - mceusb: add Dell-branded transceiver device ID
