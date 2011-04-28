@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 19
+%global baserelease 20
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -727,7 +727,10 @@ Patch12303: dmar-disable-when-ricoh-multifunction.patch
 Patch12305: printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
 Patch12306: scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 
-Patch12307: iwlwifi-do-not-set-tx-power-when-channel-is-changing.patch
+Patch12310: iwlwifi-do-not-set-tx-power-when-channel-is-changing.patch
+Patch12311: iwl3945-do-not-deprecate-software-scan.patch
+Patch12312: iwl3945-disable-hw-scan-by-default.patch
+Patch12313: iwlwifi-fix-tx_power-initialization.patch
 
 #netconsole fixes
 Patch12400: linux-2.6-netconsole-deadlock.patch
@@ -1258,6 +1261,9 @@ ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
 
 # rhbz#688252
 ApplyPatch iwlwifi-do-not-set-tx-power-when-channel-is-changing.patch
+ApplyPatch iwl3945-do-not-deprecate-software-scan.patch
+ApplyPatch iwl3945-disable-hw-scan-by-default.patch
+ApplyPatch iwlwifi-fix-tx_power-initialization.patch
 
 # Misc fixes
 # The input layer spews crap no-one cares about.
@@ -1966,6 +1972,9 @@ fi
 # and build.
 
 %changelog
+* Thu Apr 28 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.4-20
+- [sgruszka@] Upstream fixes for iwl3945 bugs (#683571, #688252, #671366)
+
 * Tue Apr 26 2011 Chuck Ebbert <cebbert@redhat.com>
 - Another fix for ASPM powersave mode
 

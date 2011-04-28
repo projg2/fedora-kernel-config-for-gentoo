@@ -1,7 +1,12 @@
-From dda82c37c366672fa74499f4b639d059a802d16e Mon Sep 17 00:00:00 2001
+From kernel-bounces@lists.fedoraproject.org Thu Apr 28 08:09:22 2011
 From: Stanislaw Gruszka <sgruszka@redhat.com>
-Date: Fri, 28 Jan 2011 16:47:44 +0100
-Subject: [PATCH] iwlwifi: do not set tx power when channel is changing
+To: stable@kernel.org, kernel@lists.fedoraproject.org
+Subject: [PATCH 2.6.38 1/4] iwlwifi: do not set tx power when channel is
+	changing
+Date: Thu, 28 Apr 2011 14:08:12 +0200
+Message-Id: <1303992495-7337-2-git-send-email-sgruszka@redhat.com>
+
+commit f844a709a7d8f8be61a571afc31dfaca9e779621 upstream.
 
 Mac80211 can request for tx power and channel change in one ->config
 call. If that happens, *_send_tx_power functions will try to setup tx
@@ -10,8 +15,6 @@ the band. I.e  error  "Failed to get channel info for channel 140 [0]",
 can be printed frequently when operating in software scanning mode.
 
 Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
-Acked-by: Wey-Yi Guy <wey-yi.w.guy@intel.com>
-Signed-off-by: John W. Linville <linville@tuxdriver.com>
 ---
  drivers/net/wireless/iwlwifi/iwl-3945.c     |    2 +-
  drivers/net/wireless/iwlwifi/iwl-4965.c     |    2 +-
@@ -95,5 +98,10 @@ index efbde1f..91cac6f 100644
  	}
  
 -- 
-1.7.4.4
+1.7.1
+
+_______________________________________________
+kernel mailing list
+kernel@lists.fedoraproject.org
+https://admin.fedoraproject.org/mailman/listinfo/kernel
 
