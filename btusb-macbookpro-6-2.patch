@@ -34,8 +34,8 @@ index eac44e4..320e798 100644
 +	/* Apple MacBookPro6,2 */
 +	{ USB_DEVICE(0x05ac, 0x8218) },
 +
- 	/* AVM BlueFRITZ! USB v2.0 */
- 	{ USB_DEVICE(0x057c, 0x3800) },
+ 	/* Apple MacBookPro8,2 */
+ 	{ USB_DEVICE(0x05ac, 0x821a) },
  
 -- 
 1.7.2.3

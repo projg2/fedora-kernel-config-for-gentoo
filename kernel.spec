@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 90
+%global baserelease 91
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -670,7 +670,6 @@ Patch580: linux-2.6-sparc-selinux-mprotect-checks.patch
 Patch610: hda_intel-prealloc-4mb-dmabuffer.patch
 
 Patch700: linux-2.6-e1000-ich9-montevina.patch
-Patch701: iwlagn-support-new-5000-microcode.patch
 
 Patch800: linux-2.6-crash-driver.patch
 
@@ -785,16 +784,12 @@ Patch13645: tpm-autodetect-itpm-devices.patch
 
 Patch13652: fix-i8k-inline-asm.patch
 
-Patch13653: inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
-Patch13654: netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
-
 Patch13660: rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 Patch13661: rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
 
 Patch13684: tty-make-tiocgicount-a-handler.patch
 Patch13685: tty-icount-changeover-for-other-main-devices.patch
 
-Patch13690: mm-page-allocator-adjust-the-per-cpu-counter-threshold-when-memory-is-low.patch
 Patch13691: mm-vmstat-use-a-single-setter-function-and-callback-for-adjusting-percpu-thresholds.patch
 
 Patch13692: orinoco-initialise-priv_hw-before-assigning-the-interrupt.patch
@@ -1367,9 +1362,6 @@ ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
 
 # Networking
 
-# rhbz#695712
-ApplyPatch iwlagn-support-new-5000-microcode.patch
-
 # Misc fixes
 # The input layer spews crap no-one cares about.
 ApplyPatch linux-2.6-input-kill-stupid-messages.patch
@@ -1528,10 +1520,6 @@ ApplyPatch tpm-autodetect-itpm-devices.patch
 
 ApplyPatch fix-i8k-inline-asm.patch
 
-# rhbz#651264 (CVE-2010-3880)
-ApplyPatch inet_diag-make-sure-we-run-the-same-bytecode-we-audited.patch
-ApplyPatch netlink-make-nlmsg_find_attr-take-a-const-ptr.patch
-
 ApplyPatch rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 ApplyPatch rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
 
@@ -1540,7 +1528,6 @@ ApplyPatch tty-make-tiocgicount-a-handler.patch
 ApplyPatch tty-icount-changeover-for-other-main-devices.patch
 
 # backport some fixes for kswapd from mmotm, rhbz#649694
-ApplyPatch mm-page-allocator-adjust-the-per-cpu-counter-threshold-when-memory-is-low.patch
 ApplyPatch mm-vmstat-use-a-single-setter-function-and-callback-for-adjusting-percpu-thresholds.patch
 
 # rhbz#657864
@@ -2162,6 +2149,9 @@ fi
 # and build.
 
 %changelog
+* Thu Apr 29 2011 Chuck Ebbert <cebbert@redhat.com>
+- Linux 2.6.35.13
+
 * Fri Apr 22 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.35.12-90
 - iwlagn-support-new-5000-microcode.patch: stable submission patch from
   sgruszka to support newer microcode versions with the iwl5000 hardware.
