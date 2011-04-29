@@ -851,6 +851,11 @@ Patch13955: virtio_net-add-schedule-check-to-napi_enable-call.patch
 # cve-2011-1079
 Patch13956: bluetooth-bnep-fix-buffer-overflow.patch
 
+# cve-2011-1745
+Patch13957: agp-fix-arbitrary-kernel-memory-writes.patch
+# cve-2011-1746
+Patch13958: agp-fix-oom-and-buffer-overflow.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1611,6 +1616,11 @@ ApplyPatch virtio_net-add-schedule-check-to-napi_enable-call.patch
 # cve-2011-1079
 ApplyPatch bluetooth-bnep-fix-buffer-overflow.patch
 
+# cve-2011-1745
+ApplyPatch agp-fix-arbitrary-kernel-memory-writes.patch
+# cve-2011-1746
+ApplyPatch agp-fix-oom-and-buffer-overflow.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2233,6 +2243,8 @@ fi
 %changelog
 * Fri Apr 29 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.34.9-69
 - Bluetooth: bnep: fix buffer overflow (CVE-2011-1079)
+- agp: fix arbitrary kernel memory writes (CVE-2011-1745)
+- agp: fix OOM and buffer overflow (CVE-2011-1746)
 
 * Sun Apr 17 2011 Chuck Ebbert <cebbert@redhat.com>
 - Linux 2.6.34.9
