@@ -848,6 +848,9 @@ Patch13952: drm-hold-the-mutex-when-dropping-the-last-gem-reference-v2.patch
 
 Patch13955: virtio_net-add-schedule-check-to-napi_enable-call.patch
 
+# cve-2011-1079
+Patch13956: bluetooth-bnep-fix-buffer-overflow.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1605,6 +1608,9 @@ ApplyPatch drm-hold-the-mutex-when-dropping-the-last-gem-reference-v2.patch
 
 ApplyPatch virtio_net-add-schedule-check-to-napi_enable-call.patch
 
+# cve-2011-1079
+ApplyPatch bluetooth-bnep-fix-buffer-overflow.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2225,7 +2231,10 @@ fi
 %kernel_variant_files %{with_pae_debug} PAEdebug
 
 %changelog
-* Sun Apr 17 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.34.9-69
+* Fri Apr 29 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.34.9-69
+- Bluetooth: bnep: fix buffer overflow (CVE-2011-1079)
+
+* Sun Apr 17 2011 Chuck Ebbert <cebbert@redhat.com>
 - Linux 2.6.34.9
 - Fix up drm-next.patch to apply on top of cda4b7d3a, e06b14ee9
 - Un-revert 6a1a82df9 from upstream
