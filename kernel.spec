@@ -726,6 +726,9 @@ Patch12306: scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 #netconsole fixes
 Patch12400: linux-2.6-netconsole-deadlock.patch
 
+# CVE-2011-1494, CVE-2011-1495
+Patch12401: scsi-mptsas-prevent-heap-overflows-and-unchecked-reads.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1345,6 +1348,9 @@ ApplyPatch scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 #rhbz 668231
 ApplyPatch linux-2.6-netconsole-deadlock.patch
 
+# CVE-2011-1494, CVE-2011-1495
+ApplyPatch scsi-mptsas-prevent-heap-overflows-and-unchecked-reads.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1953,6 +1959,10 @@ fi
 # and build.
 
 %changelog
+* Mon May 02 2011 Chuck Ebbert <cebbert@redhat.com>
+- [SCSI] mpt2sas: prevent heap overflows and unchecked reads
+  (CVE-2011-1494, CVE-2011-1495)
+
 * Mon May 02 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.5-22
 - And to the released 2.6.38.5
 
