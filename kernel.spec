@@ -855,6 +855,8 @@ Patch13956: bluetooth-bnep-fix-buffer-overflow.patch
 Patch13957: agp-fix-arbitrary-kernel-memory-writes.patch
 # cve-2011-1746
 Patch13958: agp-fix-oom-and-buffer-overflow.patch
+# CVE-2011-1494, CVE-2011-1495
+Patch13960: scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
 
 %endif
 
@@ -1620,6 +1622,8 @@ ApplyPatch bluetooth-bnep-fix-buffer-overflow.patch
 ApplyPatch agp-fix-arbitrary-kernel-memory-writes.patch
 # cve-2011-1746
 ApplyPatch agp-fix-oom-and-buffer-overflow.patch
+# CVE-2011-1494, CVE-2011-1495
+ApplyPatch scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2241,7 +2245,11 @@ fi
 %kernel_variant_files %{with_pae_debug} PAEdebug
 
 %changelog
-* Fri Apr 29 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.34.9-69
+* Mon May 02 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.34.9-69
+- [SCSI] mpt2sas: prevent heap overflows and unchecked reads
+  (CVE-2011-1494, CVE-2011-1495)
+
+* Fri Apr 29 2011 Chuck Ebbert <cebbert@redhat.com>
 - Bluetooth: bnep: fix buffer overflow (CVE-2011-1079)
 - agp: fix arbitrary kernel memory writes (CVE-2011-1745)
 - agp: fix OOM and buffer overflow (CVE-2011-1746)
