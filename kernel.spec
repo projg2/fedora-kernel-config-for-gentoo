@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 20
+%global baserelease 21
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -63,9 +63,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -644,8 +644,6 @@ Patch391: linux-2.6-acpi-video-dos.patch
 Patch393: acpi-ec-add-delay-before-write.patch
 Patch394: linux-2.6-acpi-debug-infinite-loop.patch
 
-Patch399: acpi_battery-fribble-sysfs-files-from-a-resume-notifier.patch
-
 Patch450: linux-2.6-input-kill-stupid-messages.patch
 Patch452: linux-2.6.30-no-pcspkr-modalias.patch
 
@@ -700,8 +698,6 @@ Patch2899: linux-2.6-v4l-dvb-fixes.patch
 Patch2900: linux-2.6-v4l-dvb-update.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
 
-Patch2918: flexcop-fix-xlate_proc_name-warning.patch
-
 # fs fixes
 
 # NFSv4
@@ -726,11 +722,6 @@ Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch12305: printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
 Patch12306: scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
-
-Patch12310: iwlwifi-do-not-set-tx-power-when-channel-is-changing.patch
-Patch12311: iwl3945-do-not-deprecate-software-scan.patch
-Patch12312: iwl3945-disable-hw-scan-by-default.patch
-Patch12313: iwlwifi-fix-tx_power-initialization.patch
 
 #netconsole fixes
 Patch12400: linux-2.6-netconsole-deadlock.patch
@@ -1226,7 +1217,6 @@ ApplyPatch linux-2.6-defaults-acpi-video.patch
 ApplyPatch linux-2.6-acpi-video-dos.patch
 ApplyPatch acpi-ec-add-delay-before-write.patch
 ApplyPatch linux-2.6-acpi-debug-infinite-loop.patch
-ApplyPatch acpi_battery-fribble-sysfs-files-from-a-resume-notifier.patch
 
 # Various low-impact patches to aid debugging.
 ApplyPatch linux-2.6-debug-sizeof-structs.patch
@@ -1258,12 +1248,6 @@ ApplyPatch pci-enable-aspm-state-clearing-regardless-of-policy.patch
 ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
 
 # Networking
-
-# rhbz#688252
-ApplyPatch iwlwifi-do-not-set-tx-power-when-channel-is-changing.patch
-ApplyPatch iwl3945-do-not-deprecate-software-scan.patch
-ApplyPatch iwl3945-disable-hw-scan-by-default.patch
-ApplyPatch iwlwifi-fix-tx_power-initialization.patch
 
 # Misc fixes
 # The input layer spews crap no-one cares about.
@@ -1331,9 +1315,6 @@ ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
-
-# rhbz#664852
-ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
 
 # Patches headed upstream
 
@@ -1972,6 +1953,9 @@ fi
 # and build.
 
 %changelog
+* Sun May 01 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.5-21.rc1
+- Update to stable release candidate 2.6.38.5-rc1
+
 * Thu Apr 28 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.4-20
 - [sgruszka@] Upstream fixes for iwl3945 bugs (#683571, #688252, #671366)
 
