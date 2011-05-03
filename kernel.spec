@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 22
+%global baserelease 23
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -668,6 +668,7 @@ Patch800: linux-2.6-crash-driver.patch
 Patch1555: fix_xen_guest_on_old_EC2.patch
 
 # DRM
+Patch1800: drm-vblank-events-fix-hangs.patch
 
 # nouveau + drm fixes
 Patch1809: drm-nouveau-fixes.patch
@@ -682,6 +683,8 @@ Patch1824: drm-intel-next.patch
 Patch1825: drm-intel-make-lvds-work.patch
 Patch1826: drm-intel-edp-fixes.patch
 Patch1828: drm-intel-eeebox-eb1007-quirk.patch
+# radeon - new hw + fixes for fusion and t500 regression
+Patch1840: drm-radeon-update.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
@@ -1301,6 +1304,7 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # DRM core
+ApplyPatch drm-vblank-events-fix-hangs.patch
 
 # Nouveau DRM
 ApplyPatch drm-ttm-move-notify.patch
@@ -1315,6 +1319,9 @@ ApplyPatch linux-2.6-intel-iommu-igfx.patch
 ApplyPatch drm-intel-edp-fixes.patch
 ApplyPatch drm-i915-fix-pipelined-fencing.patch
 ApplyPatch drm-intel-eeebox-eb1007-quirk.patch
+
+# radeon DRM (add cayman support)
+ApplyPatch drm-radeon-update.patch
 
 # linux1394 git patches
 #ApplyPatch linux-2.6-firewire-git-update.patch
@@ -1972,6 +1979,10 @@ fi
 # and build.
 
 %changelog
+* Tue May 03 2011 Dave Airlie <airlied@redhat.com> 2.6.38.5-23
+- radeon updates from 2.6.39 with cayman + fixes for lots of things including Fusion.
+- vblank fix for core drm
+
 * Mon May 02 2011 Chuck Ebbert <cebbert@redhat.com>
 - [SCSI] mpt2sas: prevent heap overflows and unchecked reads
   (CVE-2011-1494, CVE-2011-1495)

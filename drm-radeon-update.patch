@@ -1,0 +1,4807 @@
+commit 6d7f810bacd0fc2cf3966ec5d756a23735cb781e
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue May 3 19:28:02 2011 -0400
+
+    drm/radeon/kms: fix gart setup on fusion parts (v2)
+    
+    Out of the entire GART/VM subsystem, the hw designers changed
+    the location of 3 regs.
+    
+    v2: airlied: add parameter for userspace to work from.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Jerome Glisse <jglisse@redhat.com>
+    Cc: stable@kernel.org
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 00a99cbeca8ffb6d6165f388230ad49786a1a64e
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Sun May 1 20:16:30 2011 +1000
+
+    drm/radeon: fix regression on atom cards with hardcoded EDID record.
+    
+    Since fafcf94e2b5732d1e13b440291c53115d2b172e9 introduced an edid size, it seems to have broken this path.
+    
+    This manifest as oops on T500 Lenovo laptops with dual graphics primarily.
+    
+    Fixes: https://bugzilla.kernel.org/show_bug.cgi?id=33812
+    
+    cc: stable@kernel.org
+    Reviewed-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit ea9254cde5e773424d3af177012ab8019a9a1664
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue Apr 26 13:27:43 2011 -0400
+
+    drm/radeon/kms: add info query for tile pipes
+    
+    needed by mesa for htile setup.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 5ac5da9419c4b51efa17ef222b0ac82d1af63af8
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue Apr 26 13:10:20 2011 -0400
+
+    drm/radeon/kms: add missing safe regs for 6xx/7xx
+    
+    needed for HiS in mesa.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 7ad87e13c92ac772cc1eced43df0555ec4a71bbc
+Author: Cédric Cano <ccano@interfaceconcept.com>
+Date:   Tue Apr 19 11:07:13 2011 -0400
+
+    drm/radeon/kms: fix IH writeback on r6xx+ on big endian machines
+    
+    agd5f: fix commit message.
+    
+    Signed-off-by: Cedric Cano <ccano@interfaceconcept.com>
+    Reviewed-by: Michel Dänzer <michel@daenzer.net>
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 10045c9e73dfa9e53fb429c6d5b1a2261da0ad51
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Thu Apr 14 19:07:34 2011 -0400
+
+    drm/radeon/kms: adjust evergreen display watermark setup
+    
+    This patch fixes two issues:
+    - A disabled crtc does not use any lb, so return 0 for
+    lb size.  This makes the display priority calculation
+    more exact.
+    - Only use 1/2 and whole lb partitions. Using smaller
+    partitions can cause underflow to one of the displays
+    if you have multiple large displays on the same lb.
+    
+    Fixes:
+    https://bugs.freedesktop.org/show_bug.cgi?id=34534
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit ea7537dfbe693d8a0d9a3f8dc040fea8d74db625
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue Apr 12 14:49:24 2011 -0400
+
+    drm/radeon/kms: properly program vddci on evergreen+
+    
+    Change vddci as well as vddc when changing power modes
+    on evergreen/ni.  Also, properly set vddci on boot up
+    for ni cards.  The vbios only sets the limited clocks
+    and voltages on boot until the mc ucode is loaded.  This
+    should fix stability problems on some btc cards.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit d45b8c22db23566ec99d330afe69ca0eb99877e3
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue Apr 12 14:49:23 2011 -0400
+
+    drm/radeon/kms: add voltage type to atom set voltage function
+    
+    This is needed for setting voltages other than vddc.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit ced08b02a89170bfcb0a7cff2b89000fce712efa
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue Apr 12 13:40:18 2011 -0400
+
+    drm/radeon/kms: fix pcie_p callbacks on btc and cayman
+    
+    btc and cayman asics use the same callback for
+    pcie port registers.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 7e2f10779d1b11b9dc086d95dada8f2d441fcb7c
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Sat Apr 2 09:15:50 2011 -0400
+
+    drm/radeon/kms: pageflipping cleanup for avivo+
+    
+    Avoid touching the flip setup regs while
+    acceleration is running.  Set them at modeset
+    rather than during pageflip.  Touching these
+    regs while acceleration is active caused hangs
+    on pre-avivo chips.  These chips do not seem
+    to be affected, but better safe than sorry,
+    plus it avoids repeatedly reprogramming the
+    regs every flip.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit c079101fc0747d6924edf6b476793267c8707731
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Sat Apr 2 09:09:08 2011 -0400
+
+    drm/radeon/kms: Add support for tv-out dongle on G5 9600
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 80b359eb082c7e84c9ee970a98578dd409211f52
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 10:21:05 2011 -0500
+
+    drm/radeon/kms: allow max clock of 340 Mhz on hdmi 1.3+
+    
+    hdmi 1.3 raises the max clock from 165 Mhz to 340 Mhz.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 4b77fd7824c73fd19a06b3942f498eb23740826d
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:40 2011 -0500
+
+    drm/radeon/kms: cayman/evergreen cs checker updates
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 8f62b708e5f4a3e7b617fa7e5ddd9e9becf85920
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:39 2011 -0500
+
+    drm/radeon/kms/cayman: always set certain VGT regs at CP init
+    
+    These should be handled by the clear_state setup, but set them
+    directly as well just to be sure.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 25bfa1ee008f6d8871dd71c529ba25f6492e6b27
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:38 2011 -0500
+
+    drm/radeon/kms: additional default context regs for cayman
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 65a9c7094637d67ffec51dc7373c53f1e4836b79
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:37 2011 -0500
+
+    drm/radeon/kms: add cayman CS check support
+    
+    Added to existing evergreen CS checker.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 4655de2aadf3ef4d885600214f8bf989e35087fb
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:36 2011 -0500
+
+    drm/radeon/kms: add radeon_asic entry for cayman
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 6110f1c930fa057a0380cbf786350dbd01e9dab9
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:35 2011 -0500
+
+    drm/radeon/kms: add cayman safe regs
+    
+    For the CS checker.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit f0c8c61d41e93b1b616b5eb5d29b1bdccb50b6ec
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:34 2011 -0500
+
+    drm/radeon/kms/cayman: add asic init/startup/fini/suspend/resume functions
+    
+    Cayman is different enough from evergreen to warrant it's own functions.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit f772bd94e036bf8809359b4e37c1aa2ec2dcf4f3
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:33 2011 -0500
+
+    drm/radeon/kms: add cayman asic reset support
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit f83146d1532f80351e8b08ae6063d5792e56914f
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:32 2011 -0500
+
+    drm/radeon/kms: add support for cayman irqs
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 004e9f16d1a0dbf2a8787f64b70e8bb3b86abe21
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:31 2011 -0500
+
+    drm/radeon/kms: add support for CP setup on cayman asics
+    
+    Cayman asics have 3 ring buffers:
+    ring 0 supports both gfx and compute
+    rings 1 and 2 are compute only
+    
+    At the moment we only support ring 0.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 5ca642f168996cd6f1dda99ffb17855cc65e493e
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:30 2011 -0500
+
+    drm/radeon/kms: add support for cayman gart setup
+    
+    This patch sets up the gart in legacy mode.  We
+    probably want to switch to full VM mode at some point.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 8e72474ace85f7a13c88dc360cbfc28dc2fe67e5
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:29 2011 -0500
+
+    drm/radeon/kms: add gpu_init function for cayman
+    
+    This may some work to get accel going.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 5b22a85481f452a23dd625e9a389d8f5c0f9b269
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:28 2011 -0500
+
+    drm/radeon/kms: add ucode loader for cayman
+    
+    The MC ucode is no longer loaded by the vbios
+    tables as on previous asics.  It now must be loaded
+    by the driver.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 11fa70b2e7022d25933fc1d17518aeb054752dc9
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Mar 2 20:07:27 2011 -0500
+
+    drm/radeon/kms: add cayman chip family
+    
+    Cayman is DCE5 display plus a new 4-way shader block.
+    3D state programming is similar to evergreen.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit fe4608d030a121d61dfbc7a80c57706b89fbdabd
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Tue Mar 1 14:32:27 2011 +1000
+
+    drm/radeon: add new getparam for number of backends.
+    
+    This allows userspace to work out how many DBs there are
+    for conditional rendering to work.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit cd3e8f6393bce904aad911b8c261e14d5201d347
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Tue Mar 1 12:10:43 2011 +1000
+
+    drm/radeon: bump version to 2.9
+    
+    This lets r600g enable texture formats and some more extensions.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 7855f7a2d8095e04916a097d14cad09c85ebf08a
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Mon Feb 28 16:11:48 2011 +1000
+
+    drm/r600: parse the set predication command. (v2)
+    
+    This is required for NV_conditional_render and EXT_transform_feedback.
+    
+    v2: add evergreen support.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 85d824cf58fec0921e4e559cd91dbea50cb7bc20
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Mon Feb 28 14:27:03 2011 +1000
+
+    drm/radeon: make sure ib reads are in-order.
+    
+    have to read values from the IB in order as we could cross
+    a page boundary at any time and won't be able to go backwards.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit a3f1872b53f046631f48faf19e932f6c9b020446
+Author: Dan Carpenter <error27@gmail.com>
+Date:   Sat Feb 26 04:48:18 2011 +0300
+
+    drm/radeon/r600_cs: off by one errors
+    
+    There are a bunch of off by one errors in the sanity checks here.
+    
+    Signed-off-by: Dan Carpenter <error27@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 6c23a39f630acd5c792b731372f5fa227009c7ee
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Fri Feb 18 05:51:58 2011 +0000
+
+    drm/radeon: overhaul texture checking. (v3)
+    
+    the texture checking code didn't work for block formats like s3tc,
+    this overhauls it to work for all types.
+    
+    v2: add texture array support.
+    v3: add subsampled formats
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+diff --git a/drivers/gpu/drm/radeon/Makefile b/drivers/gpu/drm/radeon/Makefile
+index e47eecf..3896ef8 100644
+--- a/drivers/gpu/drm/radeon/Makefile
++++ b/drivers/gpu/drm/radeon/Makefile
+@@ -36,6 +36,9 @@ $(obj)/r600_reg_safe.h: $(src)/reg_srcs/r600 $(obj)/mkregtable
+ $(obj)/evergreen_reg_safe.h: $(src)/reg_srcs/evergreen $(obj)/mkregtable
+ 	$(call if_changed,mkregtable)
+ 
++$(obj)/cayman_reg_safe.h: $(src)/reg_srcs/cayman $(obj)/mkregtable
++	$(call if_changed,mkregtable)
++
+ $(obj)/r100.o: $(obj)/r100_reg_safe.h $(obj)/rn50_reg_safe.h
+ 
+ $(obj)/r200.o: $(obj)/r200_reg_safe.h
+@@ -50,7 +53,7 @@ $(obj)/rs600.o: $(obj)/rs600_reg_safe.h
+ 
+ $(obj)/r600_cs.o: $(obj)/r600_reg_safe.h
+ 
+-$(obj)/evergreen_cs.o: $(obj)/evergreen_reg_safe.h
++$(obj)/evergreen_cs.o: $(obj)/evergreen_reg_safe.h $(obj)/cayman_reg_safe.h
+ 
+ radeon-y := radeon_drv.o radeon_cp.o radeon_state.o radeon_mem.o \
+ 	radeon_irq.o r300_cmdbuf.o r600_cp.o
+@@ -66,7 +69,7 @@ radeon-y += radeon_device.o radeon_asic.o radeon_kms.o \
+ 	r200.o radeon_legacy_tv.o r600_cs.o r600_blit.o r600_blit_shaders.o \
+ 	r600_blit_kms.o radeon_pm.o atombios_dp.o r600_audio.o r600_hdmi.o \
+ 	evergreen.o evergreen_cs.o evergreen_blit_shaders.o evergreen_blit_kms.o \
+-	radeon_trace_points.o ni.o
++	radeon_trace_points.o ni.o cayman_blit_shaders.o
+ 
+ radeon-$(CONFIG_COMPAT) += radeon_ioc32.o
+ radeon-$(CONFIG_VGA_SWITCHEROO) += radeon_atpx_handler.o
+diff --git a/drivers/gpu/drm/radeon/atombios_crtc.c b/drivers/gpu/drm/radeon/atombios_crtc.c
+index bede31c..2bab32f 100644
+--- a/drivers/gpu/drm/radeon/atombios_crtc.c
++++ b/drivers/gpu/drm/radeon/atombios_crtc.c
+@@ -1011,6 +1011,7 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
+ 	uint64_t fb_location;
+ 	uint32_t fb_format, fb_pitch_pixels, tiling_flags;
+ 	u32 fb_swap = EVERGREEN_GRPH_ENDIAN_SWAP(EVERGREEN_GRPH_ENDIAN_NONE);
++	u32 tmp;
+ 	int r;
+ 
+ 	/* no fb bound */
+@@ -1139,6 +1140,15 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
+ 	WREG32(EVERGREEN_VIEWPORT_SIZE + radeon_crtc->crtc_offset,
+ 	       (crtc->mode.hdisplay << 16) | crtc->mode.vdisplay);
+ 
++	/* pageflip setup */
++	/* make sure flip is at vb rather than hb */
++	tmp = RREG32(EVERGREEN_GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset);
++	tmp &= ~EVERGREEN_GRPH_SURFACE_UPDATE_H_RETRACE_EN;
++	WREG32(EVERGREEN_GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset, tmp);
++
++	/* set pageflip to happen anywhere in vblank interval */
++	WREG32(EVERGREEN_MASTER_UPDATE_MODE + radeon_crtc->crtc_offset, 0);
++
+ 	if (!atomic && fb && fb != crtc->fb) {
+ 		radeon_fb = to_radeon_framebuffer(fb);
+ 		rbo = radeon_fb->obj->driver_private;
+@@ -1169,6 +1179,7 @@ static int avivo_crtc_do_set_base(struct drm_crtc *crtc,
+ 	uint64_t fb_location;
+ 	uint32_t fb_format, fb_pitch_pixels, tiling_flags;
+ 	u32 fb_swap = R600_D1GRPH_SWAP_ENDIAN_NONE;
++	u32 tmp;
+ 	int r;
+ 
+ 	/* no fb bound */
+@@ -1296,6 +1307,15 @@ static int avivo_crtc_do_set_base(struct drm_crtc *crtc,
+ 	WREG32(AVIVO_D1MODE_VIEWPORT_SIZE + radeon_crtc->crtc_offset,
+ 	       (crtc->mode.hdisplay << 16) | crtc->mode.vdisplay);
+ 
++	/* pageflip setup */
++	/* make sure flip is at vb rather than hb */
++	tmp = RREG32(AVIVO_D1GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset);
++	tmp &= ~AVIVO_D1GRPH_SURFACE_UPDATE_H_RETRACE_EN;
++	WREG32(AVIVO_D1GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset, tmp);
++
++	/* set pageflip to happen anywhere in vblank interval */
++	WREG32(AVIVO_D1MODE_MASTER_UPDATE_MODE + radeon_crtc->crtc_offset, 0);
++
+ 	if (!atomic && fb && fb != crtc->fb) {
+ 		radeon_fb = to_radeon_framebuffer(fb);
+ 		rbo = radeon_fb->obj->driver_private;
+diff --git a/drivers/gpu/drm/radeon/cayman_blit_shaders.c b/drivers/gpu/drm/radeon/cayman_blit_shaders.c
+new file mode 100644
+index 0000000..e148ab0
+--- /dev/null
++++ b/drivers/gpu/drm/radeon/cayman_blit_shaders.c
+@@ -0,0 +1,55 @@
++/*
++ * Copyright 2010 Advanced Micro Devices, Inc.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the next
++ * paragraph) shall be included in all copies or substantial portions of the
++ * Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++ * THE COPYRIGHT HOLDER(S) AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
++ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++ * DEALINGS IN THE SOFTWARE.
++ *
++ * Authors:
++ *     Alex Deucher <alexander.deucher@amd.com>
++ */
++
++#include <linux/types.h>
++#include <linux/kernel.h>
++
++/*
++ * evergreen cards need to use the 3D engine to blit data which requires
++ * quite a bit of hw state setup.  Rather than pull the whole 3D driver
++ * (which normally generates the 3D state) into the DRM, we opt to use
++ * statically generated state tables.  The regsiter state and shaders
++ * were hand generated to support blitting functionality.  See the 3D
++ * driver or documentation for descriptions of the registers and
++ * shader instructions.
++ */
++
++const u32 cayman_default_state[] =
++{
++	/* XXX fill in additional blit state */
++
++	0xc0026900,
++	0x00000316,
++	0x0000000e, /* VGT_VERTEX_REUSE_BLOCK_CNTL */
++	0x00000010, /*  */
++
++	0xc0026900,
++	0x000000d9,
++	0x00000000, /* CP_RINGID */
++	0x00000000, /* CP_VMID */
++};
++
++const u32 cayman_default_size = ARRAY_SIZE(cayman_default_state);
+diff --git a/drivers/gpu/drm/radeon/cayman_blit_shaders.h b/drivers/gpu/drm/radeon/cayman_blit_shaders.h
+new file mode 100644
+index 0000000..33b75e5
+--- /dev/null
++++ b/drivers/gpu/drm/radeon/cayman_blit_shaders.h
+@@ -0,0 +1,32 @@
++/*
++ * Copyright 2010 Advanced Micro Devices, Inc.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the next
++ * paragraph) shall be included in all copies or substantial portions of the
++ * Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++ * THE COPYRIGHT HOLDER(S) AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
++ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
++ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++ * DEALINGS IN THE SOFTWARE.
++ *
++ */
++
++#ifndef CAYMAN_BLIT_SHADERS_H
++#define CAYMAN_BLIT_SHADERS_H
++
++extern const u32 cayman_default_state[];
++
++extern const u32 cayman_default_size;
++
++#endif
+diff --git a/drivers/gpu/drm/radeon/evergreen.c b/drivers/gpu/drm/radeon/evergreen.c
+index 6140ea1..f7e0376 100644
+--- a/drivers/gpu/drm/radeon/evergreen.c
++++ b/drivers/gpu/drm/radeon/evergreen.c
+@@ -43,17 +43,6 @@ static void evergreen_pcie_gen2_enable(struct radeon_device *rdev);
+ 
+ void evergreen_pre_page_flip(struct radeon_device *rdev, int crtc)
+ {
+-	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc];
+-	u32 tmp;
+-
+-	/* make sure flip is at vb rather than hb */
+-	tmp = RREG32(EVERGREEN_GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset);
+-	tmp &= ~EVERGREEN_GRPH_SURFACE_UPDATE_H_RETRACE_EN;
+-	WREG32(EVERGREEN_GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset, tmp);
+-
+-	/* set pageflip to happen anywhere in vblank interval */
+-	WREG32(EVERGREEN_MASTER_UPDATE_MODE + radeon_crtc->crtc_offset, 0);
+-
+ 	/* enable the pflip int */
+ 	radeon_irq_kms_pflip_irq_get(rdev, crtc);
+ }
+@@ -131,11 +120,16 @@ void evergreen_pm_misc(struct radeon_device *rdev)
+ 	struct radeon_power_state *ps = &rdev->pm.power_state[req_ps_idx];
+ 	struct radeon_voltage *voltage = &ps->clock_info[req_cm_idx].voltage;
+ 
+-	if ((voltage->type == VOLTAGE_SW) && voltage->voltage) {
+-		if (voltage->voltage != rdev->pm.current_vddc) {
+-			radeon_atom_set_voltage(rdev, voltage->voltage);
++	if (voltage->type == VOLTAGE_SW) {
++		if (voltage->voltage && (voltage->voltage != rdev->pm.current_vddc)) {
++			radeon_atom_set_voltage(rdev, voltage->voltage, SET_VOLTAGE_TYPE_ASIC_VDDC);
+ 			rdev->pm.current_vddc = voltage->voltage;
+-			DRM_DEBUG("Setting: v: %d\n", voltage->voltage);
++			DRM_DEBUG("Setting: vddc: %d\n", voltage->voltage);
++		}
++		if (voltage->vddci && (voltage->vddci != rdev->pm.current_vddci)) {
++			radeon_atom_set_voltage(rdev, voltage->vddci, SET_VOLTAGE_TYPE_ASIC_VDDCI);
++			rdev->pm.current_vddci = voltage->vddci;
++			DRM_DEBUG("Setting: vddci: %d\n", voltage->vddci);
+ 		}
+ 	}
+ }
+@@ -359,7 +353,7 @@ static u32 evergreen_line_buffer_adjust(struct radeon_device *rdev,
+ 					struct drm_display_mode *mode,
+ 					struct drm_display_mode *other_mode)
+ {
+-	u32 tmp = 0;
++	u32 tmp;
+ 	/*
+ 	 * Line Buffer Setup
+ 	 * There are 3 line buffers, each one shared by 2 display controllers.
+@@ -369,64 +363,63 @@ static u32 evergreen_line_buffer_adjust(struct radeon_device *rdev,
+ 	 * first display controller
+ 	 *  0 - first half of lb (3840 * 2)
+ 	 *  1 - first 3/4 of lb (5760 * 2)
+-	 *  2 - whole lb (7680 * 2)
++	 *  2 - whole lb (7680 * 2), other crtc must be disabled
+ 	 *  3 - first 1/4 of lb (1920 * 2)
+ 	 * second display controller
+ 	 *  4 - second half of lb (3840 * 2)
+ 	 *  5 - second 3/4 of lb (5760 * 2)
+-	 *  6 - whole lb (7680 * 2)
++	 *  6 - whole lb (7680 * 2), other crtc must be disabled
+ 	 *  7 - last 1/4 of lb (1920 * 2)
+ 	 */
+-	if (mode && other_mode) {
+-		if (mode->hdisplay > other_mode->hdisplay) {
+-			if (mode->hdisplay > 2560)
+-				tmp = 1; /* 3/4 */
+-			else
+-				tmp = 0; /* 1/2 */
+-		} else if (other_mode->hdisplay > mode->hdisplay) {
+-			if (other_mode->hdisplay > 2560)
+-				tmp = 3; /* 1/4 */
+-			else
+-				tmp = 0; /* 1/2 */
+-		} else
++	/* this can get tricky if we have two large displays on a paired group
++	 * of crtcs.  Ideally for multiple large displays we'd assign them to
++	 * non-linked crtcs for maximum line buffer allocation.
++	 */
++	if (radeon_crtc->base.enabled && mode) {
++		if (other_mode)
+ 			tmp = 0; /* 1/2 */
+-	} else if (mode)
+-		tmp = 2; /* whole */
+-	else if (other_mode)
+-		tmp = 3; /* 1/4 */
++		else
++			tmp = 2; /* whole */
++	} else
++		tmp = 0;
+ 
+ 	/* second controller of the pair uses second half of the lb */
+ 	if (radeon_crtc->crtc_id % 2)
+ 		tmp += 4;
+ 	WREG32(DC_LB_MEMORY_SPLIT + radeon_crtc->crtc_offset, tmp);
+ 
+-	switch (tmp) {
+-	case 0:
+-	case 4:
+-	default:
+-		if (ASIC_IS_DCE5(rdev))
+-			return 4096 * 2;
+-		else
+-			return 3840 * 2;
+-	case 1:
+-	case 5:
+-		if (ASIC_IS_DCE5(rdev))
+-			return 6144 * 2;
+-		else
+-			return 5760 * 2;
+-	case 2:
+-	case 6:
+-		if (ASIC_IS_DCE5(rdev))
+-			return 8192 * 2;
+-		else
+-			return 7680 * 2;
+-	case 3:
+-	case 7:
+-		if (ASIC_IS_DCE5(rdev))
+-			return 2048 * 2;
+-		else
+-			return 1920 * 2;
++	if (radeon_crtc->base.enabled && mode) {
++		switch (tmp) {
++		case 0:
++		case 4:
++		default:
++			if (ASIC_IS_DCE5(rdev))
++				return 4096 * 2;
++			else
++				return 3840 * 2;
++		case 1:
++		case 5:
++			if (ASIC_IS_DCE5(rdev))
++				return 6144 * 2;
++			else
++				return 5760 * 2;
++		case 2:
++		case 6:
++			if (ASIC_IS_DCE5(rdev))
++				return 8192 * 2;
++			else
++				return 7680 * 2;
++		case 3:
++		case 7:
++			if (ASIC_IS_DCE5(rdev))
++				return 2048 * 2;
++			else
++				return 1920 * 2;
++		}
+ 	}
++
++	/* controller not enabled, so no lb used */
++	return 0;
+ }
+ 
+ static u32 evergreen_get_number_of_dram_channels(struct radeon_device *rdev)
+@@ -804,7 +797,7 @@ void evergreen_bandwidth_update(struct radeon_device *rdev)
+ 	}
+ }
+ 
+-static int evergreen_mc_wait_for_idle(struct radeon_device *rdev)
++int evergreen_mc_wait_for_idle(struct radeon_device *rdev)
+ {
+ 	unsigned i;
+ 	u32 tmp;
+@@ -869,9 +862,15 @@ int evergreen_pcie_gart_enable(struct radeon_device *rdev)
+ 		SYSTEM_ACCESS_MODE_NOT_IN_SYS |
+ 		SYSTEM_APERTURE_UNMAPPED_ACCESS_PASS_THRU |
+ 		EFFECTIVE_L1_TLB_SIZE(5) | EFFECTIVE_L1_QUEUE_SIZE(5);
+-	WREG32(MC_VM_MD_L1_TLB0_CNTL, tmp);
+-	WREG32(MC_VM_MD_L1_TLB1_CNTL, tmp);
+-	WREG32(MC_VM_MD_L1_TLB2_CNTL, tmp);
++	if (rdev->flags & RADEON_IS_IGP) {
++		WREG32(FUS_MC_VM_MD_L1_TLB0_CNTL, tmp);
++		WREG32(FUS_MC_VM_MD_L1_TLB1_CNTL, tmp);
++		WREG32(FUS_MC_VM_MD_L1_TLB2_CNTL, tmp);
++	} else {
++		WREG32(MC_VM_MD_L1_TLB0_CNTL, tmp);
++		WREG32(MC_VM_MD_L1_TLB1_CNTL, tmp);
++		WREG32(MC_VM_MD_L1_TLB2_CNTL, tmp);
++	}
+ 	WREG32(MC_VM_MB_L1_TLB0_CNTL, tmp);
+ 	WREG32(MC_VM_MB_L1_TLB1_CNTL, tmp);
+ 	WREG32(MC_VM_MB_L1_TLB2_CNTL, tmp);
+@@ -957,7 +956,7 @@ void evergreen_agp_enable(struct radeon_device *rdev)
+ 	WREG32(VM_CONTEXT1_CNTL, 0);
+ }
+ 
+-static void evergreen_mc_stop(struct radeon_device *rdev, struct evergreen_mc_save *save)
++void evergreen_mc_stop(struct radeon_device *rdev, struct evergreen_mc_save *save)
+ {
+ 	save->vga_control[0] = RREG32(D1VGA_CONTROL);
+ 	save->vga_control[1] = RREG32(D2VGA_CONTROL);
+@@ -1011,7 +1010,7 @@ static void evergreen_mc_stop(struct radeon_device *rdev, struct evergreen_mc_sa
+ 	WREG32(EVERGREEN_D6VGA_CONTROL, 0);
+ }
+ 
+-static void evergreen_mc_resume(struct radeon_device *rdev, struct evergreen_mc_save *save)
++void evergreen_mc_resume(struct radeon_device *rdev, struct evergreen_mc_save *save)
+ {
+ 	WREG32(EVERGREEN_GRPH_PRIMARY_SURFACE_ADDRESS_HIGH + EVERGREEN_CRTC0_REGISTER_OFFSET,
+ 	       upper_32_bits(rdev->mc.vram_start));
+@@ -1108,7 +1107,7 @@ static void evergreen_mc_resume(struct radeon_device *rdev, struct evergreen_mc_
+ 	WREG32(VGA_RENDER_CONTROL, save->vga_render_control);
+ }
+ 
+-static void evergreen_mc_program(struct radeon_device *rdev)
++void evergreen_mc_program(struct radeon_device *rdev)
+ {
+ 	struct evergreen_mc_save save;
+ 	u32 tmp;
+@@ -2576,7 +2575,7 @@ void evergreen_irq_disable(struct radeon_device *rdev)
+ 	evergreen_disable_interrupt_state(rdev);
+ }
+ 
+-static void evergreen_irq_suspend(struct radeon_device *rdev)
++void evergreen_irq_suspend(struct radeon_device *rdev)
+ {
+ 	evergreen_irq_disable(rdev);
+ 	r600_rlc_stop(rdev);
+@@ -2587,7 +2586,7 @@ static inline u32 evergreen_get_ih_wptr(struct radeon_device *rdev)
+ 	u32 wptr, tmp;
+ 
+ 	if (rdev->wb.enabled)
+-		wptr = rdev->wb.wb[R600_WB_IH_WPTR_OFFSET/4];
++		wptr = le32_to_cpu(rdev->wb.wb[R600_WB_IH_WPTR_OFFSET/4]);
+ 	else
+ 		wptr = RREG32(IH_RB_WPTR);
+ 
+@@ -2899,7 +2898,7 @@ static int evergreen_startup(struct radeon_device *rdev)
+ 				return r;
+ 			}
+ 		}
+-		r = btc_mc_load_microcode(rdev);
++		r = ni_mc_load_microcode(rdev);
+ 		if (r) {
+ 			DRM_ERROR("Failed to load MC firmware!\n");
+ 			return r;
+@@ -2930,11 +2929,6 @@ static int evergreen_startup(struct radeon_device *rdev)
+ 		rdev->asic->copy = NULL;
+ 		dev_warn(rdev->dev, "failed blitter (%d) falling back to memcpy\n", r);
+ 	}
+-	/* XXX: ontario has problems blitting to gart at the moment */
+-	if (rdev->family == CHIP_PALM) {
+-		rdev->asic->copy = NULL;
+-		radeon_ttm_set_active_vram_size(rdev, rdev->mc.visible_vram_size);
+-	}
+ 
+ 	/* allocate wb buffer */
+ 	r = radeon_wb_init(rdev);
+@@ -2981,7 +2975,7 @@ int evergreen_resume(struct radeon_device *rdev)
+ 
+ 	r = evergreen_startup(rdev);
+ 	if (r) {
+-		DRM_ERROR("r600 startup failed on resume\n");
++		DRM_ERROR("evergreen startup failed on resume\n");
+ 		return r;
+ 	}
+ 
+@@ -3061,7 +3055,7 @@ int evergreen_init(struct radeon_device *rdev)
+ 	}
+ 	/* Must be an ATOMBIOS */
+ 	if (!rdev->is_atom_bios) {
+-		dev_err(rdev->dev, "Expecting atombios for R600 GPU\n");
++		dev_err(rdev->dev, "Expecting atombios for evergreen GPU\n");
+ 		return -EINVAL;
+ 	}
+ 	r = radeon_atombios_init(rdev);
+diff --git a/drivers/gpu/drm/radeon/evergreen_cs.c b/drivers/gpu/drm/radeon/evergreen_cs.c
+index 345a75a..5e4f9f8 100644
+--- a/drivers/gpu/drm/radeon/evergreen_cs.c
++++ b/drivers/gpu/drm/radeon/evergreen_cs.c
+@@ -29,6 +29,7 @@
+ #include "radeon.h"
+ #include "evergreend.h"
+ #include "evergreen_reg_safe.h"
++#include "cayman_reg_safe.h"
+ 
+ static int evergreen_cs_packet_next_reloc(struct radeon_cs_parser *p,
+ 					  struct radeon_cs_reloc **cs_reloc);
+@@ -425,18 +426,28 @@ static inline int evergreen_cs_check_reg(struct radeon_cs_parser *p, u32 reg, u3
+ {
+ 	struct evergreen_cs_track *track = (struct evergreen_cs_track *)p->track;
+ 	struct radeon_cs_reloc *reloc;
+-	u32 last_reg = ARRAY_SIZE(evergreen_reg_safe_bm);
++	u32 last_reg;
+ 	u32 m, i, tmp, *ib;
+ 	int r;
+ 
++	if (p->rdev->family >= CHIP_CAYMAN)
++		last_reg = ARRAY_SIZE(cayman_reg_safe_bm);
++	else
++		last_reg = ARRAY_SIZE(evergreen_reg_safe_bm);
++
+ 	i = (reg >> 7);
+ 	if (i > last_reg) {
+ 		dev_warn(p->dev, "forbidden register 0x%08x at %d\n", reg, idx);
+ 		return -EINVAL;
+ 	}
+ 	m = 1 << ((reg >> 2) & 31);
+-	if (!(evergreen_reg_safe_bm[i] & m))
+-		return 0;
++	if (p->rdev->family >= CHIP_CAYMAN) {
++		if (!(cayman_reg_safe_bm[i] & m))
++			return 0;
++	} else {
++		if (!(evergreen_reg_safe_bm[i] & m))
++			return 0;
++	}
+ 	ib = p->ib->ptr;
+ 	switch (reg) {
+ 	/* force following reg to 0 in an attemp to disable out buffer
+@@ -468,12 +479,42 @@ static inline int evergreen_cs_check_reg(struct radeon_cs_parser *p, u32 reg, u3
+ 	case SQ_VSTMP_RING_ITEMSIZE:
+ 	case VGT_TF_RING_SIZE:
+ 		/* get value to populate the IB don't remove */
+-		tmp =radeon_get_ib_value(p, idx);
+-		ib[idx] = 0;
++		/*tmp =radeon_get_ib_value(p, idx);
++		  ib[idx] = 0;*/
++		break;
++	case SQ_ESGS_RING_BASE:
++	case SQ_GSVS_RING_BASE:
++	case SQ_ESTMP_RING_BASE:
++	case SQ_GSTMP_RING_BASE:
++	case SQ_HSTMP_RING_BASE:
++	case SQ_LSTMP_RING_BASE:
++	case SQ_PSTMP_RING_BASE:
++	case SQ_VSTMP_RING_BASE:
++		r = evergreen_cs_packet_next_reloc(p, &reloc);
++		if (r) {
++			dev_warn(p->dev, "bad SET_CONTEXT_REG "
++					"0x%04X\n", reg);
++			return -EINVAL;
++		}
++		ib[idx] += (u32)((reloc->lobj.gpu_offset >> 8) & 0xffffffff);
+ 		break;
+ 	case DB_DEPTH_CONTROL:
+ 		track->db_depth_control = radeon_get_ib_value(p, idx);
+ 		break;
++	case CAYMAN_DB_EQAA:
++		if (p->rdev->family < CHIP_CAYMAN) {
++			dev_warn(p->dev, "bad SET_CONTEXT_REG "
++				 "0x%04X\n", reg);
++			return -EINVAL;
++		}
++		break;
++	case CAYMAN_DB_DEPTH_INFO:
++		if (p->rdev->family < CHIP_CAYMAN) {
++			dev_warn(p->dev, "bad SET_CONTEXT_REG "
++				 "0x%04X\n", reg);
++			return -EINVAL;
++		}
++		break;
+ 	case DB_Z_INFO:
+ 		r = evergreen_cs_packet_next_reloc(p, &reloc);
+ 		if (r) {
+@@ -559,9 +600,23 @@ static inline int evergreen_cs_check_reg(struct radeon_cs_parser *p, u32 reg, u3
+ 		track->cb_shader_mask = radeon_get_ib_value(p, idx);
+ 		break;
+ 	case PA_SC_AA_CONFIG:
++		if (p->rdev->family >= CHIP_CAYMAN) {
++			dev_warn(p->dev, "bad SET_CONTEXT_REG "
++				 "0x%04X\n", reg);
++			return -EINVAL;
++		}
+ 		tmp = radeon_get_ib_value(p, idx) & MSAA_NUM_SAMPLES_MASK;
+ 		track->nsamples = 1 << tmp;
+ 		break;
++	case CAYMAN_PA_SC_AA_CONFIG:
++		if (p->rdev->family < CHIP_CAYMAN) {
++			dev_warn(p->dev, "bad SET_CONTEXT_REG "
++				 "0x%04X\n", reg);
++			return -EINVAL;
++		}
++		tmp = radeon_get_ib_value(p, idx) & CAYMAN_MSAA_NUM_SAMPLES_MASK;
++		track->nsamples = 1 << tmp;
++		break;
+ 	case CB_COLOR0_VIEW:
+ 	case CB_COLOR1_VIEW:
+ 	case CB_COLOR2_VIEW:
+@@ -942,6 +997,37 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
+ 	idx_value = radeon_get_ib_value(p, idx);
+ 
+ 	switch (pkt->opcode) {
++	case PACKET3_SET_PREDICATION:
++	{
++		int pred_op;
++		int tmp;
++		if (pkt->count != 1) {
++			DRM_ERROR("bad SET PREDICATION\n");
++			return -EINVAL;
++		}
++
++		tmp = radeon_get_ib_value(p, idx + 1);
++		pred_op = (tmp >> 16) & 0x7;
++
++		/* for the clear predicate operation */
++		if (pred_op == 0)
++			return 0;
++
++		if (pred_op > 2) {
++			DRM_ERROR("bad SET PREDICATION operation %d\n", pred_op);
++			return -EINVAL;
++		}
++
++		r = evergreen_cs_packet_next_reloc(p, &reloc);
++		if (r) {
++			DRM_ERROR("bad SET PREDICATION\n");
++			return -EINVAL;
++		}
++
++		ib[idx + 0] = idx_value + (u32)(reloc->lobj.gpu_offset & 0xffffffff);
++		ib[idx + 1] = tmp + (upper_32_bits(reloc->lobj.gpu_offset) & 0xff);
++	}
++	break;
+ 	case PACKET3_CONTEXT_CONTROL:
+ 		if (pkt->count != 1) {
+ 			DRM_ERROR("bad CONTEXT_CONTROL\n");
+@@ -956,6 +1042,16 @@ static int evergreen_packet3_check(struct radeon_cs_parser *p,
+ 			return -EINVAL;
+ 		}
+ 		break;
++	case CAYMAN_PACKET3_DEALLOC_STATE:
++		if (p->rdev->family < CHIP_CAYMAN) {
++			DRM_ERROR("bad PACKET3_DEALLOC_STATE\n");
++			return -EINVAL;
++		}
++		if (pkt->count) {
++			DRM_ERROR("bad INDEX_TYPE/NUM_INSTANCES/CLEAR_STATE\n");
++			return -EINVAL;
++		}
++		break;
+ 	case PACKET3_INDEX_BASE:
+ 		if (pkt->count != 1) {
+ 			DRM_ERROR("bad INDEX_BASE\n");
+diff --git a/drivers/gpu/drm/radeon/evergreend.h b/drivers/gpu/drm/radeon/evergreend.h
+index eb4acf4..9453384 100644
+--- a/drivers/gpu/drm/radeon/evergreend.h
++++ b/drivers/gpu/drm/radeon/evergreend.h
+@@ -221,6 +221,11 @@
+ #define	MC_VM_MD_L1_TLB0_CNTL				0x2654
+ #define	MC_VM_MD_L1_TLB1_CNTL				0x2658
+ #define	MC_VM_MD_L1_TLB2_CNTL				0x265C
++
++#define	FUS_MC_VM_MD_L1_TLB0_CNTL			0x265C
++#define	FUS_MC_VM_MD_L1_TLB1_CNTL			0x2660
++#define	FUS_MC_VM_MD_L1_TLB2_CNTL			0x2664
++
+ #define	MC_VM_SYSTEM_APERTURE_DEFAULT_ADDR		0x203C
+ #define	MC_VM_SYSTEM_APERTURE_HIGH_ADDR			0x2038
+ #define	MC_VM_SYSTEM_APERTURE_LOW_ADDR			0x2034
+@@ -755,13 +760,21 @@
+ 
+ #define SQ_CONST_MEM_BASE				0x8df8
+ 
++#define SQ_ESGS_RING_BASE				0x8c40
+ #define SQ_ESGS_RING_SIZE				0x8c44
++#define SQ_GSVS_RING_BASE				0x8c48
+ #define SQ_GSVS_RING_SIZE				0x8c4c
++#define SQ_ESTMP_RING_BASE				0x8c50
+ #define SQ_ESTMP_RING_SIZE				0x8c54
++#define SQ_GSTMP_RING_BASE				0x8c58
+ #define SQ_GSTMP_RING_SIZE				0x8c5c
++#define SQ_VSTMP_RING_BASE				0x8c60
+ #define SQ_VSTMP_RING_SIZE				0x8c64
++#define SQ_PSTMP_RING_BASE				0x8c68
+ #define SQ_PSTMP_RING_SIZE				0x8c6c
++#define SQ_LSTMP_RING_BASE				0x8e10
+ #define SQ_LSTMP_RING_SIZE				0x8e14
++#define SQ_HSTMP_RING_BASE				0x8e18
+ #define SQ_HSTMP_RING_SIZE				0x8e1c
+ #define VGT_TF_RING_SIZE				0x8988
+ 
+@@ -1093,5 +1106,14 @@
+ #define SQ_TEX_RESOURCE_WORD6_0                         0x30018
+ #define SQ_TEX_RESOURCE_WORD7_0                         0x3001c
+ 
++/* cayman 3D regs */
++#define CAYMAN_VGT_OFFCHIP_LDS_BASE			0x89B0
++#define CAYMAN_DB_EQAA					0x28804
++#define CAYMAN_DB_DEPTH_INFO				0x2803C
++#define CAYMAN_PA_SC_AA_CONFIG				0x28BE0
++#define         CAYMAN_MSAA_NUM_SAMPLES_SHIFT           0
++#define         CAYMAN_MSAA_NUM_SAMPLES_MASK            0x7
++/* cayman packet3 addition */
++#define	CAYMAN_PACKET3_DEALLOC_STATE			0x14
+ 
+ #endif
+diff --git a/drivers/gpu/drm/radeon/ni.c b/drivers/gpu/drm/radeon/ni.c
+index 5e0bef8..8c199c4 100644
+--- a/drivers/gpu/drm/radeon/ni.c
++++ b/drivers/gpu/drm/radeon/ni.c
+@@ -31,12 +31,25 @@
+ #include "nid.h"
+ #include "atom.h"
+ #include "ni_reg.h"
++#include "cayman_blit_shaders.h"
++
++extern void evergreen_mc_stop(struct radeon_device *rdev, struct evergreen_mc_save *save);
++extern void evergreen_mc_resume(struct radeon_device *rdev, struct evergreen_mc_save *save);
++extern int evergreen_mc_wait_for_idle(struct radeon_device *rdev);
++extern void evergreen_mc_program(struct radeon_device *rdev);
++extern void evergreen_irq_suspend(struct radeon_device *rdev);
++extern int evergreen_mc_init(struct radeon_device *rdev);
+ 
+ #define EVERGREEN_PFP_UCODE_SIZE 1120
+ #define EVERGREEN_PM4_UCODE_SIZE 1376
+ #define EVERGREEN_RLC_UCODE_SIZE 768
+ #define BTC_MC_UCODE_SIZE 6024
+ 
++#define CAYMAN_PFP_UCODE_SIZE 2176
++#define CAYMAN_PM4_UCODE_SIZE 2176
++#define CAYMAN_RLC_UCODE_SIZE 1024
++#define CAYMAN_MC_UCODE_SIZE 6037
++
+ /* Firmware Names */
+ MODULE_FIRMWARE("radeon/BARTS_pfp.bin");
+ MODULE_FIRMWARE("radeon/BARTS_me.bin");
+@@ -48,6 +61,10 @@ MODULE_FIRMWARE("radeon/TURKS_mc.bin");
+ MODULE_FIRMWARE("radeon/CAICOS_pfp.bin");
+ MODULE_FIRMWARE("radeon/CAICOS_me.bin");
+ MODULE_FIRMWARE("radeon/CAICOS_mc.bin");
++MODULE_FIRMWARE("radeon/CAYMAN_pfp.bin");
++MODULE_FIRMWARE("radeon/CAYMAN_me.bin");
++MODULE_FIRMWARE("radeon/CAYMAN_mc.bin");
++MODULE_FIRMWARE("radeon/CAYMAN_rlc.bin");
+ 
+ #define BTC_IO_MC_REGS_SIZE 29
+ 
+@@ -147,12 +164,44 @@ static const u32 caicos_io_mc_regs[BTC_IO_MC_REGS_SIZE][2] = {
+ 	{0x0000009f, 0x00916a00}
+ };
+ 
+-int btc_mc_load_microcode(struct radeon_device *rdev)
++static const u32 cayman_io_mc_regs[BTC_IO_MC_REGS_SIZE][2] = {
++	{0x00000077, 0xff010100},
++	{0x00000078, 0x00000000},
++	{0x00000079, 0x00001434},
++	{0x0000007a, 0xcc08ec08},
++	{0x0000007b, 0x00040000},
++	{0x0000007c, 0x000080c0},
++	{0x0000007d, 0x09000000},
++	{0x0000007e, 0x00210404},
++	{0x00000081, 0x08a8e800},
++	{0x00000082, 0x00030444},
++	{0x00000083, 0x00000000},
++	{0x00000085, 0x00000001},
++	{0x00000086, 0x00000002},
++	{0x00000087, 0x48490000},
++	{0x00000088, 0x20244647},
++	{0x00000089, 0x00000005},
++	{0x0000008b, 0x66030000},
++	{0x0000008c, 0x00006603},
++	{0x0000008d, 0x00000100},
++	{0x0000008f, 0x00001c0a},
++	{0x00000090, 0xff000001},
++	{0x00000094, 0x00101101},
++	{0x00000095, 0x00000fff},
++	{0x00000096, 0x00116fff},
++	{0x00000097, 0x60010000},
++	{0x00000098, 0x10010000},
++	{0x00000099, 0x00006000},
++	{0x0000009a, 0x00001000},
++	{0x0000009f, 0x00976b00}
++};
++
++int ni_mc_load_microcode(struct radeon_device *rdev)
+ {
+ 	const __be32 *fw_data;
+ 	u32 mem_type, running, blackout = 0;
+ 	u32 *io_mc_regs;
+-	int i;
++	int i, ucode_size, regs_size;
+ 
+ 	if (!rdev->mc_fw)
+ 		return -EINVAL;
+@@ -160,13 +209,24 @@ int btc_mc_load_microcode(struct radeon_device *rdev)
+ 	switch (rdev->family) {
+ 	case CHIP_BARTS:
+ 		io_mc_regs = (u32 *)&barts_io_mc_regs;
++		ucode_size = BTC_MC_UCODE_SIZE;
++		regs_size = BTC_IO_MC_REGS_SIZE;
+ 		break;
+ 	case CHIP_TURKS:
+ 		io_mc_regs = (u32 *)&turks_io_mc_regs;
++		ucode_size = BTC_MC_UCODE_SIZE;
++		regs_size = BTC_IO_MC_REGS_SIZE;
+ 		break;
+ 	case CHIP_CAICOS:
+ 	default:
+ 		io_mc_regs = (u32 *)&caicos_io_mc_regs;
++		ucode_size = BTC_MC_UCODE_SIZE;
++		regs_size = BTC_IO_MC_REGS_SIZE;
++		break;
++	case CHIP_CAYMAN:
++		io_mc_regs = (u32 *)&cayman_io_mc_regs;
++		ucode_size = CAYMAN_MC_UCODE_SIZE;
++		regs_size = BTC_IO_MC_REGS_SIZE;
+ 		break;
+ 	}
+ 
+@@ -184,13 +244,13 @@ int btc_mc_load_microcode(struct radeon_device *rdev)
+ 		WREG32(MC_SEQ_SUP_CNTL, 0x00000010);
+ 
+ 		/* load mc io regs */
+-		for (i = 0; i < BTC_IO_MC_REGS_SIZE; i++) {
++		for (i = 0; i < regs_size; i++) {
+ 			WREG32(MC_SEQ_IO_DEBUG_INDEX, io_mc_regs[(i << 1)]);
+ 			WREG32(MC_SEQ_IO_DEBUG_DATA, io_mc_regs[(i << 1) + 1]);
+ 		}
+ 		/* load the MC ucode */
+ 		fw_data = (const __be32 *)rdev->mc_fw->data;
+-		for (i = 0; i < BTC_MC_UCODE_SIZE; i++)
++		for (i = 0; i < ucode_size; i++)
+ 			WREG32(MC_SEQ_SUP_PGM, be32_to_cpup(fw_data++));
+ 
+ 		/* put the engine back into the active state */
+@@ -231,23 +291,38 @@ int ni_init_microcode(struct radeon_device *rdev)
+ 	case CHIP_BARTS:
+ 		chip_name = "BARTS";
+ 		rlc_chip_name = "BTC";
++		pfp_req_size = EVERGREEN_PFP_UCODE_SIZE * 4;
++		me_req_size = EVERGREEN_PM4_UCODE_SIZE * 4;
++		rlc_req_size = EVERGREEN_RLC_UCODE_SIZE * 4;
++		mc_req_size = BTC_MC_UCODE_SIZE * 4;
+ 		break;
+ 	case CHIP_TURKS:
+ 		chip_name = "TURKS";
+ 		rlc_chip_name = "BTC";
++		pfp_req_size = EVERGREEN_PFP_UCODE_SIZE * 4;
++		me_req_size = EVERGREEN_PM4_UCODE_SIZE * 4;
++		rlc_req_size = EVERGREEN_RLC_UCODE_SIZE * 4;
++		mc_req_size = BTC_MC_UCODE_SIZE * 4;
+ 		break;
+ 	case CHIP_CAICOS:
+ 		chip_name = "CAICOS";
+ 		rlc_chip_name = "BTC";
++		pfp_req_size = EVERGREEN_PFP_UCODE_SIZE * 4;
++		me_req_size = EVERGREEN_PM4_UCODE_SIZE * 4;
++		rlc_req_size = EVERGREEN_RLC_UCODE_SIZE * 4;
++		mc_req_size = BTC_MC_UCODE_SIZE * 4;
++		break;
++	case CHIP_CAYMAN:
++		chip_name = "CAYMAN";
++		rlc_chip_name = "CAYMAN";
++		pfp_req_size = CAYMAN_PFP_UCODE_SIZE * 4;
++		me_req_size = CAYMAN_PM4_UCODE_SIZE * 4;
++		rlc_req_size = CAYMAN_RLC_UCODE_SIZE * 4;
++		mc_req_size = CAYMAN_MC_UCODE_SIZE * 4;
+ 		break;
+ 	default: BUG();
+ 	}
+ 
+-	pfp_req_size = EVERGREEN_PFP_UCODE_SIZE * 4;
+-	me_req_size = EVERGREEN_PM4_UCODE_SIZE * 4;
+-	rlc_req_size = EVERGREEN_RLC_UCODE_SIZE * 4;
+-	mc_req_size = BTC_MC_UCODE_SIZE * 4;
+-
+ 	DRM_INFO("Loading %s Microcode\n", chip_name);
+ 
+ 	snprintf(fw_name, sizeof(fw_name), "radeon/%s_pfp.bin", chip_name);
+@@ -314,3 +389,1204 @@ out:
+ 	return err;
+ }
+ 
++/*
++ * Core functions
++ */
++static u32 cayman_get_tile_pipe_to_backend_map(struct radeon_device *rdev,
++					       u32 num_tile_pipes,
++					       u32 num_backends_per_asic,
++					       u32 *backend_disable_mask_per_asic,
++					       u32 num_shader_engines)
++{
++	u32 backend_map = 0;
++	u32 enabled_backends_mask = 0;
++	u32 enabled_backends_count = 0;
++	u32 num_backends_per_se;
++	u32 cur_pipe;
++	u32 swizzle_pipe[CAYMAN_MAX_PIPES];
++	u32 cur_backend = 0;
++	u32 i;
++	bool force_no_swizzle;
++
++	/* force legal values */
++	if (num_tile_pipes < 1)
++		num_tile_pipes = 1;
++	if (num_tile_pipes > rdev->config.cayman.max_tile_pipes)
++		num_tile_pipes = rdev->config.cayman.max_tile_pipes;
++	if (num_shader_engines < 1)
++		num_shader_engines = 1;
++	if (num_shader_engines > rdev->config.cayman.max_shader_engines)
++		num_shader_engines = rdev->config.cayman.max_shader_engines;
++	if (num_backends_per_asic > num_shader_engines)
++		num_backends_per_asic = num_shader_engines;
++	if (num_backends_per_asic > (rdev->config.cayman.max_backends_per_se * num_shader_engines))
++		num_backends_per_asic = rdev->config.cayman.max_backends_per_se * num_shader_engines;
++
++	/* make sure we have the same number of backends per se */
++	num_backends_per_asic = ALIGN(num_backends_per_asic, num_shader_engines);
++	/* set up the number of backends per se */
++	num_backends_per_se = num_backends_per_asic / num_shader_engines;
++	if (num_backends_per_se > rdev->config.cayman.max_backends_per_se) {
++		num_backends_per_se = rdev->config.cayman.max_backends_per_se;
++		num_backends_per_asic = num_backends_per_se * num_shader_engines;
++	}
++
++	/* create enable mask and count for enabled backends */
++	for (i = 0; i < CAYMAN_MAX_BACKENDS; ++i) {
++		if (((*backend_disable_mask_per_asic >> i) & 1) == 0) {
++			enabled_backends_mask |= (1 << i);
++			++enabled_backends_count;
++		}
++		if (enabled_backends_count == num_backends_per_asic)
++			break;
++	}
++
++	/* force the backends mask to match the current number of backends */
++	if (enabled_backends_count != num_backends_per_asic) {
++		u32 this_backend_enabled;
++		u32 shader_engine;
++		u32 backend_per_se;
++
++		enabled_backends_mask = 0;
++		enabled_backends_count = 0;
++		*backend_disable_mask_per_asic = CAYMAN_MAX_BACKENDS_MASK;
++		for (i = 0; i < CAYMAN_MAX_BACKENDS; ++i) {
++			/* calc the current se */
++			shader_engine = i / rdev->config.cayman.max_backends_per_se;
++			/* calc the backend per se */
++			backend_per_se = i % rdev->config.cayman.max_backends_per_se;
++			/* default to not enabled */
++			this_backend_enabled = 0;
++			if ((shader_engine < num_shader_engines) &&
++			    (backend_per_se < num_backends_per_se))
++				this_backend_enabled = 1;
++			if (this_backend_enabled) {
++				enabled_backends_mask |= (1 << i);
++				*backend_disable_mask_per_asic &= ~(1 << i);
++				++enabled_backends_count;
++			}
++		}
++	}
++
++
++	memset((uint8_t *)&swizzle_pipe[0], 0, sizeof(u32) * CAYMAN_MAX_PIPES);
++	switch (rdev->family) {
++	case CHIP_CAYMAN:
++		force_no_swizzle = true;
++		break;
++	default:
++		force_no_swizzle = false;
++		break;
++	}
++	if (force_no_swizzle) {
++		bool last_backend_enabled = false;
++
++		force_no_swizzle = false;
++		for (i = 0; i < CAYMAN_MAX_BACKENDS; ++i) {
++			if (((enabled_backends_mask >> i) & 1) == 1) {
++				if (last_backend_enabled)
++					force_no_swizzle = true;
++				last_backend_enabled = true;
++			} else
++				last_backend_enabled = false;
++		}
++	}
++
++	switch (num_tile_pipes) {
++	case 1:
++	case 3:
++	case 5:
++	case 7:
++		DRM_ERROR("odd number of pipes!\n");
++		break;
++	case 2:
++		swizzle_pipe[0] = 0;
++		swizzle_pipe[1] = 1;
++		break;
++	case 4:
++		if (force_no_swizzle) {
++			swizzle_pipe[0] = 0;
++			swizzle_pipe[1] = 1;
++			swizzle_pipe[2] = 2;
++			swizzle_pipe[3] = 3;
++		} else {
++			swizzle_pipe[0] = 0;
++			swizzle_pipe[1] = 2;
++			swizzle_pipe[2] = 1;
++			swizzle_pipe[3] = 3;
++		}
++		break;
++	case 6:
++		if (force_no_swizzle) {
++			swizzle_pipe[0] = 0;
++			swizzle_pipe[1] = 1;
++			swizzle_pipe[2] = 2;
++			swizzle_pipe[3] = 3;
++			swizzle_pipe[4] = 4;
++			swizzle_pipe[5] = 5;
++		} else {
++			swizzle_pipe[0] = 0;
++			swizzle_pipe[1] = 2;
++			swizzle_pipe[2] = 4;
++			swizzle_pipe[3] = 1;
++			swizzle_pipe[4] = 3;
++			swizzle_pipe[5] = 5;
++		}
++		break;
++	case 8:
++		if (force_no_swizzle) {
++			swizzle_pipe[0] = 0;
++			swizzle_pipe[1] = 1;
++			swizzle_pipe[2] = 2;
++			swizzle_pipe[3] = 3;
++			swizzle_pipe[4] = 4;
++			swizzle_pipe[5] = 5;
++			swizzle_pipe[6] = 6;
++			swizzle_pipe[7] = 7;
++		} else {
++			swizzle_pipe[0] = 0;
++			swizzle_pipe[1] = 2;
++			swizzle_pipe[2] = 4;
++			swizzle_pipe[3] = 6;
++			swizzle_pipe[4] = 1;
++			swizzle_pipe[5] = 3;
++			swizzle_pipe[6] = 5;
++			swizzle_pipe[7] = 7;
++		}
++		break;
++	}
++
++	for (cur_pipe = 0; cur_pipe < num_tile_pipes; ++cur_pipe) {
++		while (((1 << cur_backend) & enabled_backends_mask) == 0)
++			cur_backend = (cur_backend + 1) % CAYMAN_MAX_BACKENDS;
++
++		backend_map |= (((cur_backend & 0xf) << (swizzle_pipe[cur_pipe] * 4)));
++
++		cur_backend = (cur_backend + 1) % CAYMAN_MAX_BACKENDS;
++	}
++
++	return backend_map;
++}
++
++static void cayman_program_channel_remap(struct radeon_device *rdev)
++{
++	u32 tcp_chan_steer_lo, tcp_chan_steer_hi, mc_shared_chremap, tmp;
++
++	tmp = RREG32(MC_SHARED_CHMAP);
++	switch ((tmp & NOOFCHAN_MASK) >> NOOFCHAN_SHIFT) {
++	case 0:
++	case 1:
++	case 2:
++	case 3:
++	default:
++		/* default mapping */
++		mc_shared_chremap = 0x00fac688;
++		break;
++	}
++
++	switch (rdev->family) {
++	case CHIP_CAYMAN:
++	default:
++		//tcp_chan_steer_lo = 0x54763210
++		tcp_chan_steer_lo = 0x76543210;
++		tcp_chan_steer_hi = 0x0000ba98;
++		break;
++	}
++
++	WREG32(TCP_CHAN_STEER_LO, tcp_chan_steer_lo);
++	WREG32(TCP_CHAN_STEER_HI, tcp_chan_steer_hi);
++	WREG32(MC_SHARED_CHREMAP, mc_shared_chremap);
++}
++
++static u32 cayman_get_disable_mask_per_asic(struct radeon_device *rdev,
++					    u32 disable_mask_per_se,
++					    u32 max_disable_mask_per_se,
++					    u32 num_shader_engines)
++{
++	u32 disable_field_width_per_se = r600_count_pipe_bits(disable_mask_per_se);
++	u32 disable_mask_per_asic = disable_mask_per_se & max_disable_mask_per_se;
++
++	if (num_shader_engines == 1)
++		return disable_mask_per_asic;
++	else if (num_shader_engines == 2)
++		return disable_mask_per_asic | (disable_mask_per_asic << disable_field_width_per_se);
++	else
++		return 0xffffffff;
++}
++
++static void cayman_gpu_init(struct radeon_device *rdev)
++{
++	u32 cc_rb_backend_disable = 0;
++	u32 cc_gc_shader_pipe_config;
++	u32 gb_addr_config = 0;
++	u32 mc_shared_chmap, mc_arb_ramcfg;
++	u32 gb_backend_map;
++	u32 cgts_tcc_disable;
++	u32 sx_debug_1;
++	u32 smx_dc_ctl0;
++	u32 gc_user_shader_pipe_config;
++	u32 gc_user_rb_backend_disable;
++	u32 cgts_user_tcc_disable;
++	u32 cgts_sm_ctrl_reg;
++	u32 hdp_host_path_cntl;
++	u32 tmp;
++	int i, j;
++
++	switch (rdev->family) {
++	case CHIP_CAYMAN:
++	default:
++		rdev->config.cayman.max_shader_engines = 2;
++		rdev->config.cayman.max_pipes_per_simd = 4;
++		rdev->config.cayman.max_tile_pipes = 8;
++		rdev->config.cayman.max_simds_per_se = 12;
++		rdev->config.cayman.max_backends_per_se = 4;
++		rdev->config.cayman.max_texture_channel_caches = 8;
++		rdev->config.cayman.max_gprs = 256;
++		rdev->config.cayman.max_threads = 256;
++		rdev->config.cayman.max_gs_threads = 32;
++		rdev->config.cayman.max_stack_entries = 512;
++		rdev->config.cayman.sx_num_of_sets = 8;
++		rdev->config.cayman.sx_max_export_size = 256;
++		rdev->config.cayman.sx_max_export_pos_size = 64;
++		rdev->config.cayman.sx_max_export_smx_size = 192;
++		rdev->config.cayman.max_hw_contexts = 8;
++		rdev->config.cayman.sq_num_cf_insts = 2;
++
++		rdev->config.cayman.sc_prim_fifo_size = 0x100;
++		rdev->config.cayman.sc_hiz_tile_fifo_size = 0x30;
++		rdev->config.cayman.sc_earlyz_tile_fifo_size = 0x130;
++		break;
++	}
++
++	/* Initialize HDP */
++	for (i = 0, j = 0; i < 32; i++, j += 0x18) {
++		WREG32((0x2c14 + j), 0x00000000);
++		WREG32((0x2c18 + j), 0x00000000);
++		WREG32((0x2c1c + j), 0x00000000);
++		WREG32((0x2c20 + j), 0x00000000);
++		WREG32((0x2c24 + j), 0x00000000);
++	}
++
++	WREG32(GRBM_CNTL, GRBM_READ_TIMEOUT(0xff));
++
++	mc_shared_chmap = RREG32(MC_SHARED_CHMAP);
++	mc_arb_ramcfg = RREG32(MC_ARB_RAMCFG);
++
++	cc_rb_backend_disable = RREG32(CC_RB_BACKEND_DISABLE);
++	cc_gc_shader_pipe_config = RREG32(CC_GC_SHADER_PIPE_CONFIG);
++	cgts_tcc_disable = RREG32(CGTS_TCC_DISABLE);
++	gc_user_rb_backend_disable = RREG32(GC_USER_RB_BACKEND_DISABLE);
++	gc_user_shader_pipe_config = RREG32(GC_USER_SHADER_PIPE_CONFIG);
++	cgts_user_tcc_disable = RREG32(CGTS_USER_TCC_DISABLE);
++
++	rdev->config.cayman.num_shader_engines = rdev->config.cayman.max_shader_engines;
++	tmp = ((~gc_user_shader_pipe_config) & INACTIVE_QD_PIPES_MASK) >> INACTIVE_QD_PIPES_SHIFT;
++	rdev->config.cayman.num_shader_pipes_per_simd = r600_count_pipe_bits(tmp);
++	rdev->config.cayman.num_tile_pipes = rdev->config.cayman.max_tile_pipes;
++	tmp = ((~gc_user_shader_pipe_config) & INACTIVE_SIMDS_MASK) >> INACTIVE_SIMDS_SHIFT;
++	rdev->config.cayman.num_simds_per_se = r600_count_pipe_bits(tmp);
++	tmp = ((~gc_user_rb_backend_disable) & BACKEND_DISABLE_MASK) >> BACKEND_DISABLE_SHIFT;
++	rdev->config.cayman.num_backends_per_se = r600_count_pipe_bits(tmp);
++	tmp = (gc_user_rb_backend_disable & BACKEND_DISABLE_MASK) >> BACKEND_DISABLE_SHIFT;
++	rdev->config.cayman.backend_disable_mask_per_asic =
++		cayman_get_disable_mask_per_asic(rdev, tmp, CAYMAN_MAX_BACKENDS_PER_SE_MASK,
++						 rdev->config.cayman.num_shader_engines);
++	rdev->config.cayman.backend_map =
++		cayman_get_tile_pipe_to_backend_map(rdev, rdev->config.cayman.num_tile_pipes,
++						    rdev->config.cayman.num_backends_per_se *
++						    rdev->config.cayman.num_shader_engines,
++						    &rdev->config.cayman.backend_disable_mask_per_asic,
++						    rdev->config.cayman.num_shader_engines);
++	tmp = ((~cgts_user_tcc_disable) & TCC_DISABLE_MASK) >> TCC_DISABLE_SHIFT;
++	rdev->config.cayman.num_texture_channel_caches = r600_count_pipe_bits(tmp);
++	tmp = (mc_arb_ramcfg & BURSTLENGTH_MASK) >> BURSTLENGTH_SHIFT;
++	rdev->config.cayman.mem_max_burst_length_bytes = (tmp + 1) * 256;
++	if (rdev->config.cayman.mem_max_burst_length_bytes > 512)
++		rdev->config.cayman.mem_max_burst_length_bytes = 512;
++	tmp = (mc_arb_ramcfg & NOOFCOLS_MASK) >> NOOFCOLS_SHIFT;
++	rdev->config.cayman.mem_row_size_in_kb = (4 * (1 << (8 + tmp))) / 1024;
++	if (rdev->config.cayman.mem_row_size_in_kb > 4)
++		rdev->config.cayman.mem_row_size_in_kb = 4;
++	/* XXX use MC settings? */
++	rdev->config.cayman.shader_engine_tile_size = 32;
++	rdev->config.cayman.num_gpus = 1;
++	rdev->config.cayman.multi_gpu_tile_size = 64;
++
++	//gb_addr_config = 0x02011003
++#if 0
++	gb_addr_config = RREG32(GB_ADDR_CONFIG);
++#else
++	gb_addr_config = 0;
++	switch (rdev->config.cayman.num_tile_pipes) {
++	case 1:
++	default:
++		gb_addr_config |= NUM_PIPES(0);
++		break;
++	case 2:
++		gb_addr_config |= NUM_PIPES(1);
++		break;
++	case 4:
++		gb_addr_config |= NUM_PIPES(2);
++		break;
++	case 8:
++		gb_addr_config |= NUM_PIPES(3);
++		break;
++	}
++
++	tmp = (rdev->config.cayman.mem_max_burst_length_bytes / 256) - 1;
++	gb_addr_config |= PIPE_INTERLEAVE_SIZE(tmp);
++	gb_addr_config |= NUM_SHADER_ENGINES(rdev->config.cayman.num_shader_engines - 1);
++	tmp = (rdev->config.cayman.shader_engine_tile_size / 16) - 1;
++	gb_addr_config |= SHADER_ENGINE_TILE_SIZE(tmp);
++	switch (rdev->config.cayman.num_gpus) {
++	case 1:
++	default:
++		gb_addr_config |= NUM_GPUS(0);
++		break;
++	case 2:
++		gb_addr_config |= NUM_GPUS(1);
++		break;
++	case 4:
++		gb_addr_config |= NUM_GPUS(2);
++		break;
++	}
++	switch (rdev->config.cayman.multi_gpu_tile_size) {
++	case 16:
++		gb_addr_config |= MULTI_GPU_TILE_SIZE(0);
++		break;
++	case 32:
++	default:
++		gb_addr_config |= MULTI_GPU_TILE_SIZE(1);
++		break;
++	case 64:
++		gb_addr_config |= MULTI_GPU_TILE_SIZE(2);
++		break;
++	case 128:
++		gb_addr_config |= MULTI_GPU_TILE_SIZE(3);
++		break;
++	}
++	switch (rdev->config.cayman.mem_row_size_in_kb) {
++	case 1:
++	default:
++		gb_addr_config |= ROW_SIZE(0);
++		break;
++	case 2:
++		gb_addr_config |= ROW_SIZE(1);
++		break;
++	case 4:
++		gb_addr_config |= ROW_SIZE(2);
++		break;
++	}
++#endif
++
++	tmp = (gb_addr_config & NUM_PIPES_MASK) >> NUM_PIPES_SHIFT;
++	rdev->config.cayman.num_tile_pipes = (1 << tmp);
++	tmp = (gb_addr_config & PIPE_INTERLEAVE_SIZE_MASK) >> PIPE_INTERLEAVE_SIZE_SHIFT;
++	rdev->config.cayman.mem_max_burst_length_bytes = (tmp + 1) * 256;
++	tmp = (gb_addr_config & NUM_SHADER_ENGINES_MASK) >> NUM_SHADER_ENGINES_SHIFT;
++	rdev->config.cayman.num_shader_engines = tmp + 1;
++	tmp = (gb_addr_config & NUM_GPUS_MASK) >> NUM_GPUS_SHIFT;
++	rdev->config.cayman.num_gpus = tmp + 1;
++	tmp = (gb_addr_config & MULTI_GPU_TILE_SIZE_MASK) >> MULTI_GPU_TILE_SIZE_SHIFT;
++	rdev->config.cayman.multi_gpu_tile_size = 1 << tmp;
++	tmp = (gb_addr_config & ROW_SIZE_MASK) >> ROW_SIZE_SHIFT;
++	rdev->config.cayman.mem_row_size_in_kb = 1 << tmp;
++
++	//gb_backend_map = 0x76541032;
++#if 0
++	gb_backend_map = RREG32(GB_BACKEND_MAP);
++#else
++	gb_backend_map =
++		cayman_get_tile_pipe_to_backend_map(rdev, rdev->config.cayman.num_tile_pipes,
++						    rdev->config.cayman.num_backends_per_se *
++						    rdev->config.cayman.num_shader_engines,
++						    &rdev->config.cayman.backend_disable_mask_per_asic,
++						    rdev->config.cayman.num_shader_engines);
++#endif
++	/* setup tiling info dword.  gb_addr_config is not adequate since it does
++	 * not have bank info, so create a custom tiling dword.
++	 * bits 3:0   num_pipes
++	 * bits 7:4   num_banks
++	 * bits 11:8  group_size
++	 * bits 15:12 row_size
++	 */
++	rdev->config.cayman.tile_config = 0;
++	switch (rdev->config.cayman.num_tile_pipes) {
++	case 1:
++	default:
++		rdev->config.cayman.tile_config |= (0 << 0);
++		break;
++	case 2:
++		rdev->config.cayman.tile_config |= (1 << 0);
++		break;
++	case 4:
++		rdev->config.cayman.tile_config |= (2 << 0);
++		break;
++	case 8:
++		rdev->config.cayman.tile_config |= (3 << 0);
++		break;
++	}
++	rdev->config.cayman.tile_config |=
++		((mc_arb_ramcfg & NOOFBANK_MASK) >> NOOFBANK_SHIFT) << 4;
++	rdev->config.cayman.tile_config |=
++		(gb_addr_config & PIPE_INTERLEAVE_SIZE_MASK) >> PIPE_INTERLEAVE_SIZE_SHIFT;
++	rdev->config.cayman.tile_config |=
++		((gb_addr_config & ROW_SIZE_MASK) >> ROW_SIZE_SHIFT) << 12;
++
++	WREG32(GB_BACKEND_MAP, gb_backend_map);
++	WREG32(GB_ADDR_CONFIG, gb_addr_config);
++	WREG32(DMIF_ADDR_CONFIG, gb_addr_config);
++	WREG32(HDP_ADDR_CONFIG, gb_addr_config);
++
++	cayman_program_channel_remap(rdev);
++
++	/* primary versions */
++	WREG32(CC_RB_BACKEND_DISABLE, cc_rb_backend_disable);
++	WREG32(CC_SYS_RB_BACKEND_DISABLE, cc_rb_backend_disable);
++	WREG32(CC_GC_SHADER_PIPE_CONFIG, cc_gc_shader_pipe_config);
++
++	WREG32(CGTS_TCC_DISABLE, cgts_tcc_disable);
++	WREG32(CGTS_SYS_TCC_DISABLE, cgts_tcc_disable);
++
++	/* user versions */
++	WREG32(GC_USER_RB_BACKEND_DISABLE, cc_rb_backend_disable);
++	WREG32(GC_USER_SYS_RB_BACKEND_DISABLE, cc_rb_backend_disable);
++	WREG32(GC_USER_SHADER_PIPE_CONFIG, cc_gc_shader_pipe_config);
++
++	WREG32(CGTS_USER_SYS_TCC_DISABLE, cgts_tcc_disable);
++	WREG32(CGTS_USER_TCC_DISABLE, cgts_tcc_disable);
++
++	/* reprogram the shader complex */
++	cgts_sm_ctrl_reg = RREG32(CGTS_SM_CTRL_REG);
++	for (i = 0; i < 16; i++)
++		WREG32(CGTS_SM_CTRL_REG, OVERRIDE);
++	WREG32(CGTS_SM_CTRL_REG, cgts_sm_ctrl_reg);
++
++	/* set HW defaults for 3D engine */
++	WREG32(CP_MEQ_THRESHOLDS, MEQ1_START(0x30) | MEQ2_START(0x60));
++
++	sx_debug_1 = RREG32(SX_DEBUG_1);
++	sx_debug_1 |= ENABLE_NEW_SMX_ADDRESS;
++	WREG32(SX_DEBUG_1, sx_debug_1);
++
++	smx_dc_ctl0 = RREG32(SMX_DC_CTL0);
++	smx_dc_ctl0 &= ~NUMBER_OF_SETS(0x1ff);
++	smx_dc_ctl0 |= NUMBER_OF_SETS(rdev->config.evergreen.sx_num_of_sets);
++	WREG32(SMX_DC_CTL0, smx_dc_ctl0);
++
++	WREG32(SPI_CONFIG_CNTL_1, VTX_DONE_DELAY(4) | CRC_SIMD_ID_WADDR_DISABLE);
++
++	/* need to be explicitly zero-ed */
++	WREG32(VGT_OFFCHIP_LDS_BASE, 0);
++	WREG32(SQ_LSTMP_RING_BASE, 0);
++	WREG32(SQ_HSTMP_RING_BASE, 0);
++	WREG32(SQ_ESTMP_RING_BASE, 0);
++	WREG32(SQ_GSTMP_RING_BASE, 0);
++	WREG32(SQ_VSTMP_RING_BASE, 0);
++	WREG32(SQ_PSTMP_RING_BASE, 0);
++
++	WREG32(TA_CNTL_AUX, DISABLE_CUBE_ANISO);
++
++	WREG32(SX_EXPORT_BUFFER_SIZES, (COLOR_BUFFER_SIZE((rdev->config.evergreen.sx_max_export_size / 4) - 1) |
++					POSITION_BUFFER_SIZE((rdev->config.evergreen.sx_max_export_pos_size / 4) - 1) |
++					SMX_BUFFER_SIZE((rdev->config.evergreen.sx_max_export_smx_size / 4) - 1)));
++
++	WREG32(PA_SC_FIFO_SIZE, (SC_PRIM_FIFO_SIZE(rdev->config.evergreen.sc_prim_fifo_size) |
++				 SC_HIZ_TILE_FIFO_SIZE(rdev->config.evergreen.sc_hiz_tile_fifo_size) |
++				 SC_EARLYZ_TILE_FIFO_SIZE(rdev->config.evergreen.sc_earlyz_tile_fifo_size)));
++
++
++	WREG32(VGT_NUM_INSTANCES, 1);
++
++	WREG32(CP_PERFMON_CNTL, 0);
++
++	WREG32(SQ_MS_FIFO_SIZES, (CACHE_FIFO_SIZE(16 * rdev->config.evergreen.sq_num_cf_insts) |
++				  FETCH_FIFO_HIWATER(0x4) |
++				  DONE_FIFO_HIWATER(0xe0) |
++				  ALU_UPDATE_FIFO_HIWATER(0x8)));
++
++	WREG32(SQ_GPR_RESOURCE_MGMT_1, NUM_CLAUSE_TEMP_GPRS(4));
++	WREG32(SQ_CONFIG, (VC_ENABLE |
++			   EXPORT_SRC_C |
++			   GFX_PRIO(0) |
++			   CS1_PRIO(0) |
++			   CS2_PRIO(1)));
++	WREG32(SQ_DYN_GPR_CNTL_PS_FLUSH_REQ, DYN_GPR_ENABLE);
++
++	WREG32(PA_SC_FORCE_EOV_MAX_CNTS, (FORCE_EOV_MAX_CLK_CNT(4095) |
++					  FORCE_EOV_MAX_REZ_CNT(255)));
++
++	WREG32(VGT_CACHE_INVALIDATION, CACHE_INVALIDATION(VC_AND_TC) |
++	       AUTO_INVLD_EN(ES_AND_GS_AUTO));
++
++	WREG32(VGT_GS_VERTEX_REUSE, 16);
++	WREG32(PA_SC_LINE_STIPPLE_STATE, 0);
++
++	WREG32(CB_PERF_CTR0_SEL_0, 0);
++	WREG32(CB_PERF_CTR0_SEL_1, 0);
++	WREG32(CB_PERF_CTR1_SEL_0, 0);
++	WREG32(CB_PERF_CTR1_SEL_1, 0);
++	WREG32(CB_PERF_CTR2_SEL_0, 0);
++	WREG32(CB_PERF_CTR2_SEL_1, 0);
++	WREG32(CB_PERF_CTR3_SEL_0, 0);
++	WREG32(CB_PERF_CTR3_SEL_1, 0);
++
++	hdp_host_path_cntl = RREG32(HDP_HOST_PATH_CNTL);
++	WREG32(HDP_HOST_PATH_CNTL, hdp_host_path_cntl);
++
++	WREG32(PA_CL_ENHANCE, CLIP_VTX_REORDER_ENA | NUM_CLIP_SEQ(3));
++
++	udelay(50);
++}
++
++/*
++ * GART
++ */
++void cayman_pcie_gart_tlb_flush(struct radeon_device *rdev)
++{
++	/* flush hdp cache */
++	WREG32(HDP_MEM_COHERENCY_FLUSH_CNTL, 0x1);
++
++	/* bits 0-7 are the VM contexts0-7 */
++	WREG32(VM_INVALIDATE_REQUEST, 1);
++}
++
++int cayman_pcie_gart_enable(struct radeon_device *rdev)
++{
++	int r;
++
++	if (rdev->gart.table.vram.robj == NULL) {
++		dev_err(rdev->dev, "No VRAM object for PCIE GART.\n");
++		return -EINVAL;
++	}
++	r = radeon_gart_table_vram_pin(rdev);
++	if (r)
++		return r;
++	radeon_gart_restore(rdev);
++	/* Setup TLB control */
++	WREG32(MC_VM_MX_L1_TLB_CNTL, ENABLE_L1_TLB |
++	       ENABLE_L1_FRAGMENT_PROCESSING |
++	       SYSTEM_ACCESS_MODE_NOT_IN_SYS |
++	       SYSTEM_APERTURE_UNMAPPED_ACCESS_PASS_THRU);
++	/* Setup L2 cache */
++	WREG32(VM_L2_CNTL, ENABLE_L2_CACHE |
++	       ENABLE_L2_PTE_CACHE_LRU_UPDATE_BY_WRITE |
++	       ENABLE_L2_PDE0_CACHE_LRU_UPDATE_BY_WRITE |
++	       EFFECTIVE_L2_QUEUE_SIZE(7) |
++	       CONTEXT1_IDENTITY_ACCESS_MODE(1));
++	WREG32(VM_L2_CNTL2, INVALIDATE_ALL_L1_TLBS | INVALIDATE_L2_CACHE);
++	WREG32(VM_L2_CNTL3, L2_CACHE_BIGK_ASSOCIATIVITY |
++	       L2_CACHE_BIGK_FRAGMENT_SIZE(6));
++	/* setup context0 */
++	WREG32(VM_CONTEXT0_PAGE_TABLE_START_ADDR, rdev->mc.gtt_start >> 12);
++	WREG32(VM_CONTEXT0_PAGE_TABLE_END_ADDR, rdev->mc.gtt_end >> 12);
++	WREG32(VM_CONTEXT0_PAGE_TABLE_BASE_ADDR, rdev->gart.table_addr >> 12);
++	WREG32(VM_CONTEXT0_PROTECTION_FAULT_DEFAULT_ADDR,
++			(u32)(rdev->dummy_page.addr >> 12));
++	WREG32(VM_CONTEXT0_CNTL2, 0);
++	WREG32(VM_CONTEXT0_CNTL, ENABLE_CONTEXT | PAGE_TABLE_DEPTH(0) |
++				RANGE_PROTECTION_FAULT_ENABLE_DEFAULT);
++	/* disable context1-7 */
++	WREG32(VM_CONTEXT1_CNTL2, 0);
++	WREG32(VM_CONTEXT1_CNTL, 0);
++
++	cayman_pcie_gart_tlb_flush(rdev);
++	rdev->gart.ready = true;
++	return 0;
++}
++
++void cayman_pcie_gart_disable(struct radeon_device *rdev)
++{
++	int r;
++
++	/* Disable all tables */
++	WREG32(VM_CONTEXT0_CNTL, 0);
++	WREG32(VM_CONTEXT1_CNTL, 0);
++	/* Setup TLB control */
++	WREG32(MC_VM_MX_L1_TLB_CNTL, ENABLE_L1_FRAGMENT_PROCESSING |
++	       SYSTEM_ACCESS_MODE_NOT_IN_SYS |
++	       SYSTEM_APERTURE_UNMAPPED_ACCESS_PASS_THRU);
++	/* Setup L2 cache */
++	WREG32(VM_L2_CNTL, ENABLE_L2_PTE_CACHE_LRU_UPDATE_BY_WRITE |
++	       ENABLE_L2_PDE0_CACHE_LRU_UPDATE_BY_WRITE |
++	       EFFECTIVE_L2_QUEUE_SIZE(7) |
++	       CONTEXT1_IDENTITY_ACCESS_MODE(1));
++	WREG32(VM_L2_CNTL2, 0);
++	WREG32(VM_L2_CNTL3, L2_CACHE_BIGK_ASSOCIATIVITY |
++	       L2_CACHE_BIGK_FRAGMENT_SIZE(6));
++	if (rdev->gart.table.vram.robj) {
++		r = radeon_bo_reserve(rdev->gart.table.vram.robj, false);
++		if (likely(r == 0)) {
++			radeon_bo_kunmap(rdev->gart.table.vram.robj);
++			radeon_bo_unpin(rdev->gart.table.vram.robj);
++			radeon_bo_unreserve(rdev->gart.table.vram.robj);
++		}
++	}
++}
++
++void cayman_pcie_gart_fini(struct radeon_device *rdev)
++{
++	cayman_pcie_gart_disable(rdev);
++	radeon_gart_table_vram_free(rdev);
++	radeon_gart_fini(rdev);
++}
++
++/*
++ * CP.
++ */
++static void cayman_cp_enable(struct radeon_device *rdev, bool enable)
++{
++	if (enable)
++		WREG32(CP_ME_CNTL, 0);
++	else {
++		radeon_ttm_set_active_vram_size(rdev, rdev->mc.visible_vram_size);
++		WREG32(CP_ME_CNTL, (CP_ME_HALT | CP_PFP_HALT));
++		WREG32(SCRATCH_UMSK, 0);
++	}
++}
++
++static int cayman_cp_load_microcode(struct radeon_device *rdev)
++{
++	const __be32 *fw_data;
++	int i;
++
++	if (!rdev->me_fw || !rdev->pfp_fw)
++		return -EINVAL;
++
++	cayman_cp_enable(rdev, false);
++
++	fw_data = (const __be32 *)rdev->pfp_fw->data;
++	WREG32(CP_PFP_UCODE_ADDR, 0);
++	for (i = 0; i < CAYMAN_PFP_UCODE_SIZE; i++)
++		WREG32(CP_PFP_UCODE_DATA, be32_to_cpup(fw_data++));
++	WREG32(CP_PFP_UCODE_ADDR, 0);
++
++	fw_data = (const __be32 *)rdev->me_fw->data;
++	WREG32(CP_ME_RAM_WADDR, 0);
++	for (i = 0; i < CAYMAN_PM4_UCODE_SIZE; i++)
++		WREG32(CP_ME_RAM_DATA, be32_to_cpup(fw_data++));
++
++	WREG32(CP_PFP_UCODE_ADDR, 0);
++	WREG32(CP_ME_RAM_WADDR, 0);
++	WREG32(CP_ME_RAM_RADDR, 0);
++	return 0;
++}
++
++static int cayman_cp_start(struct radeon_device *rdev)
++{
++	int r, i;
++
++	r = radeon_ring_lock(rdev, 7);
++	if (r) {
++		DRM_ERROR("radeon: cp failed to lock ring (%d).\n", r);
++		return r;
++	}
++	radeon_ring_write(rdev, PACKET3(PACKET3_ME_INITIALIZE, 5));
++	radeon_ring_write(rdev, 0x1);
++	radeon_ring_write(rdev, 0x0);
++	radeon_ring_write(rdev, rdev->config.cayman.max_hw_contexts - 1);
++	radeon_ring_write(rdev, PACKET3_ME_INITIALIZE_DEVICE_ID(1));
++	radeon_ring_write(rdev, 0);
++	radeon_ring_write(rdev, 0);
++	radeon_ring_unlock_commit(rdev);
++
++	cayman_cp_enable(rdev, true);
++
++	r = radeon_ring_lock(rdev, cayman_default_size + 19);
++	if (r) {
++		DRM_ERROR("radeon: cp failed to lock ring (%d).\n", r);
++		return r;
++	}
++
++	/* setup clear context state */
++	radeon_ring_write(rdev, PACKET3(PACKET3_PREAMBLE_CNTL, 0));
++	radeon_ring_write(rdev, PACKET3_PREAMBLE_BEGIN_CLEAR_STATE);
++
++	for (i = 0; i < cayman_default_size; i++)
++		radeon_ring_write(rdev, cayman_default_state[i]);
++
++	radeon_ring_write(rdev, PACKET3(PACKET3_PREAMBLE_CNTL, 0));
++	radeon_ring_write(rdev, PACKET3_PREAMBLE_END_CLEAR_STATE);
++
++	/* set clear context state */
++	radeon_ring_write(rdev, PACKET3(PACKET3_CLEAR_STATE, 0));
++	radeon_ring_write(rdev, 0);
++
++	/* SQ_VTX_BASE_VTX_LOC */
++	radeon_ring_write(rdev, 0xc0026f00);
++	radeon_ring_write(rdev, 0x00000000);
++	radeon_ring_write(rdev, 0x00000000);
++	radeon_ring_write(rdev, 0x00000000);
++
++	/* Clear consts */
++	radeon_ring_write(rdev, 0xc0036f00);
++	radeon_ring_write(rdev, 0x00000bc4);
++	radeon_ring_write(rdev, 0xffffffff);
++	radeon_ring_write(rdev, 0xffffffff);
++	radeon_ring_write(rdev, 0xffffffff);
++
++	radeon_ring_write(rdev, 0xc0026900);
++	radeon_ring_write(rdev, 0x00000316);
++	radeon_ring_write(rdev, 0x0000000e); /* VGT_VERTEX_REUSE_BLOCK_CNTL */
++	radeon_ring_write(rdev, 0x00000010); /*  */
++
++	radeon_ring_unlock_commit(rdev);
++
++	/* XXX init other rings */
++
++	return 0;
++}
++
++static void cayman_cp_fini(struct radeon_device *rdev)
++{
++	cayman_cp_enable(rdev, false);
++	radeon_ring_fini(rdev);
++}
++
++int cayman_cp_resume(struct radeon_device *rdev)
++{
++	u32 tmp;
++	u32 rb_bufsz;
++	int r;
++
++	/* Reset cp; if cp is reset, then PA, SH, VGT also need to be reset */
++	WREG32(GRBM_SOFT_RESET, (SOFT_RESET_CP |
++				 SOFT_RESET_PA |
++				 SOFT_RESET_SH |
++				 SOFT_RESET_VGT |
++				 SOFT_RESET_SX));
++	RREG32(GRBM_SOFT_RESET);
++	mdelay(15);
++	WREG32(GRBM_SOFT_RESET, 0);
++	RREG32(GRBM_SOFT_RESET);
++
++	WREG32(CP_SEM_WAIT_TIMER, 0x4);
++
++	/* Set the write pointer delay */
++	WREG32(CP_RB_WPTR_DELAY, 0);
++
++	WREG32(CP_DEBUG, (1 << 27));
++
++	/* ring 0 - compute and gfx */
++	/* Set ring buffer size */
++	rb_bufsz = drm_order(rdev->cp.ring_size / 8);
++	tmp = (drm_order(RADEON_GPU_PAGE_SIZE/8) << 8) | rb_bufsz;
++#ifdef __BIG_ENDIAN
++	tmp |= BUF_SWAP_32BIT;
++#endif
++	WREG32(CP_RB0_CNTL, tmp);
++
++	/* Initialize the ring buffer's read and write pointers */
++	WREG32(CP_RB0_CNTL, tmp | RB_RPTR_WR_ENA);
++	WREG32(CP_RB0_WPTR, 0);
++
++	/* set the wb address wether it's enabled or not */
++	WREG32(CP_RB0_RPTR_ADDR, (rdev->wb.gpu_addr + RADEON_WB_CP_RPTR_OFFSET) & 0xFFFFFFFC);
++	WREG32(CP_RB0_RPTR_ADDR_HI, upper_32_bits(rdev->wb.gpu_addr + RADEON_WB_CP_RPTR_OFFSET) & 0xFF);
++	WREG32(SCRATCH_ADDR, ((rdev->wb.gpu_addr + RADEON_WB_SCRATCH_OFFSET) >> 8) & 0xFFFFFFFF);
++
++	if (rdev->wb.enabled)
++		WREG32(SCRATCH_UMSK, 0xff);
++	else {
++		tmp |= RB_NO_UPDATE;
++		WREG32(SCRATCH_UMSK, 0);
++	}
++
++	mdelay(1);
++	WREG32(CP_RB0_CNTL, tmp);
++
++	WREG32(CP_RB0_BASE, rdev->cp.gpu_addr >> 8);
++
++	rdev->cp.rptr = RREG32(CP_RB0_RPTR);
++	rdev->cp.wptr = RREG32(CP_RB0_WPTR);
++
++	/* ring1  - compute only */
++	/* Set ring buffer size */
++	rb_bufsz = drm_order(rdev->cp1.ring_size / 8);
++	tmp = (drm_order(RADEON_GPU_PAGE_SIZE/8) << 8) | rb_bufsz;
++#ifdef __BIG_ENDIAN
++	tmp |= BUF_SWAP_32BIT;
++#endif
++	WREG32(CP_RB1_CNTL, tmp);
++
++	/* Initialize the ring buffer's read and write pointers */
++	WREG32(CP_RB1_CNTL, tmp | RB_RPTR_WR_ENA);
++	WREG32(CP_RB1_WPTR, 0);
++
++	/* set the wb address wether it's enabled or not */
++	WREG32(CP_RB1_RPTR_ADDR, (rdev->wb.gpu_addr + RADEON_WB_CP1_RPTR_OFFSET) & 0xFFFFFFFC);
++	WREG32(CP_RB1_RPTR_ADDR_HI, upper_32_bits(rdev->wb.gpu_addr + RADEON_WB_CP1_RPTR_OFFSET) & 0xFF);
++
++	mdelay(1);
++	WREG32(CP_RB1_CNTL, tmp);
++
++	WREG32(CP_RB1_BASE, rdev->cp1.gpu_addr >> 8);
++
++	rdev->cp1.rptr = RREG32(CP_RB1_RPTR);
++	rdev->cp1.wptr = RREG32(CP_RB1_WPTR);
++
++	/* ring2 - compute only */
++	/* Set ring buffer size */
++	rb_bufsz = drm_order(rdev->cp2.ring_size / 8);
++	tmp = (drm_order(RADEON_GPU_PAGE_SIZE/8) << 8) | rb_bufsz;
++#ifdef __BIG_ENDIAN
++	tmp |= BUF_SWAP_32BIT;
++#endif
++	WREG32(CP_RB2_CNTL, tmp);
++
++	/* Initialize the ring buffer's read and write pointers */
++	WREG32(CP_RB2_CNTL, tmp | RB_RPTR_WR_ENA);
++	WREG32(CP_RB2_WPTR, 0);
++
++	/* set the wb address wether it's enabled or not */
++	WREG32(CP_RB2_RPTR_ADDR, (rdev->wb.gpu_addr + RADEON_WB_CP2_RPTR_OFFSET) & 0xFFFFFFFC);
++	WREG32(CP_RB2_RPTR_ADDR_HI, upper_32_bits(rdev->wb.gpu_addr + RADEON_WB_CP2_RPTR_OFFSET) & 0xFF);
++
++	mdelay(1);
++	WREG32(CP_RB2_CNTL, tmp);
++
++	WREG32(CP_RB2_BASE, rdev->cp2.gpu_addr >> 8);
++
++	rdev->cp2.rptr = RREG32(CP_RB2_RPTR);
++	rdev->cp2.wptr = RREG32(CP_RB2_WPTR);
++
++	/* start the rings */
++	cayman_cp_start(rdev);
++	rdev->cp.ready = true;
++	rdev->cp1.ready = true;
++	rdev->cp2.ready = true;
++	/* this only test cp0 */
++	r = radeon_ring_test(rdev);
++	if (r) {
++		rdev->cp.ready = false;
++		rdev->cp1.ready = false;
++		rdev->cp2.ready = false;
++		return r;
++	}
++
++	return 0;
++}
++
++bool cayman_gpu_is_lockup(struct radeon_device *rdev)
++{
++	u32 srbm_status;
++	u32 grbm_status;
++	u32 grbm_status_se0, grbm_status_se1;
++	struct r100_gpu_lockup *lockup = &rdev->config.cayman.lockup;
++	int r;
++
++	srbm_status = RREG32(SRBM_STATUS);
++	grbm_status = RREG32(GRBM_STATUS);
++	grbm_status_se0 = RREG32(GRBM_STATUS_SE0);
++	grbm_status_se1 = RREG32(GRBM_STATUS_SE1);
++	if (!(grbm_status & GUI_ACTIVE)) {
++		r100_gpu_lockup_update(lockup, &rdev->cp);
++		return false;
++	}
++	/* force CP activities */
++	r = radeon_ring_lock(rdev, 2);
++	if (!r) {
++		/* PACKET2 NOP */
++		radeon_ring_write(rdev, 0x80000000);
++		radeon_ring_write(rdev, 0x80000000);
++		radeon_ring_unlock_commit(rdev);
++	}
++	/* XXX deal with CP0,1,2 */
++	rdev->cp.rptr = RREG32(CP_RB0_RPTR);
++	return r100_gpu_cp_is_lockup(rdev, lockup, &rdev->cp);
++}
++
++static int cayman_gpu_soft_reset(struct radeon_device *rdev)
++{
++	struct evergreen_mc_save save;
++	u32 grbm_reset = 0;
++
++	if (!(RREG32(GRBM_STATUS) & GUI_ACTIVE))
++		return 0;
++
++	dev_info(rdev->dev, "GPU softreset \n");
++	dev_info(rdev->dev, "  GRBM_STATUS=0x%08X\n",
++		RREG32(GRBM_STATUS));
++	dev_info(rdev->dev, "  GRBM_STATUS_SE0=0x%08X\n",
++		RREG32(GRBM_STATUS_SE0));
++	dev_info(rdev->dev, "  GRBM_STATUS_SE1=0x%08X\n",
++		RREG32(GRBM_STATUS_SE1));
++	dev_info(rdev->dev, "  SRBM_STATUS=0x%08X\n",
++		RREG32(SRBM_STATUS));
++	evergreen_mc_stop(rdev, &save);
++	if (evergreen_mc_wait_for_idle(rdev)) {
++		dev_warn(rdev->dev, "Wait for MC idle timedout !\n");
++	}
++	/* Disable CP parsing/prefetching */
++	WREG32(CP_ME_CNTL, CP_ME_HALT | CP_PFP_HALT);
++
++	/* reset all the gfx blocks */
++	grbm_reset = (SOFT_RESET_CP |
++		      SOFT_RESET_CB |
++		      SOFT_RESET_DB |
++		      SOFT_RESET_GDS |
++		      SOFT_RESET_PA |
++		      SOFT_RESET_SC |
++		      SOFT_RESET_SPI |
++		      SOFT_RESET_SH |
++		      SOFT_RESET_SX |
++		      SOFT_RESET_TC |
++		      SOFT_RESET_TA |
++		      SOFT_RESET_VGT |
++		      SOFT_RESET_IA);
++
++	dev_info(rdev->dev, "  GRBM_SOFT_RESET=0x%08X\n", grbm_reset);
++	WREG32(GRBM_SOFT_RESET, grbm_reset);
++	(void)RREG32(GRBM_SOFT_RESET);
++	udelay(50);
++	WREG32(GRBM_SOFT_RESET, 0);
++	(void)RREG32(GRBM_SOFT_RESET);
++	/* Wait a little for things to settle down */
++	udelay(50);
++	dev_info(rdev->dev, "  GRBM_STATUS=0x%08X\n",
++		RREG32(GRBM_STATUS));
++	dev_info(rdev->dev, "  GRBM_STATUS_SE0=0x%08X\n",
++		RREG32(GRBM_STATUS_SE0));
++	dev_info(rdev->dev, "  GRBM_STATUS_SE1=0x%08X\n",
++		RREG32(GRBM_STATUS_SE1));
++	dev_info(rdev->dev, "  SRBM_STATUS=0x%08X\n",
++		RREG32(SRBM_STATUS));
++	evergreen_mc_resume(rdev, &save);
++	return 0;
++}
++
++int cayman_asic_reset(struct radeon_device *rdev)
++{
++	return cayman_gpu_soft_reset(rdev);
++}
++
++static int cayman_startup(struct radeon_device *rdev)
++{
++	int r;
++
++	if (!rdev->me_fw || !rdev->pfp_fw || !rdev->rlc_fw || !rdev->mc_fw) {
++		r = ni_init_microcode(rdev);
++		if (r) {
++			DRM_ERROR("Failed to load firmware!\n");
++			return r;
++		}
++	}
++	r = ni_mc_load_microcode(rdev);
++	if (r) {
++		DRM_ERROR("Failed to load MC firmware!\n");
++		return r;
++	}
++
++	evergreen_mc_program(rdev);
++	r = cayman_pcie_gart_enable(rdev);
++	if (r)
++		return r;
++	cayman_gpu_init(rdev);
++
++#if 0
++	r = cayman_blit_init(rdev);
++	if (r) {
++		cayman_blit_fini(rdev);
++		rdev->asic->copy = NULL;
++		dev_warn(rdev->dev, "failed blitter (%d) falling back to memcpy\n", r);
++	}
++#endif
++
++	/* allocate wb buffer */
++	r = radeon_wb_init(rdev);
++	if (r)
++		return r;
++
++	/* Enable IRQ */
++	r = r600_irq_init(rdev);
++	if (r) {
++		DRM_ERROR("radeon: IH init failed (%d).\n", r);
++		radeon_irq_kms_fini(rdev);
++		return r;
++	}
++	evergreen_irq_set(rdev);
++
++	r = radeon_ring_init(rdev, rdev->cp.ring_size);
++	if (r)
++		return r;
++	r = cayman_cp_load_microcode(rdev);
++	if (r)
++		return r;
++	r = cayman_cp_resume(rdev);
++	if (r)
++		return r;
++
++	return 0;
++}
++
++int cayman_resume(struct radeon_device *rdev)
++{
++	int r;
++
++	/* Do not reset GPU before posting, on rv770 hw unlike on r500 hw,
++	 * posting will perform necessary task to bring back GPU into good
++	 * shape.
++	 */
++	/* post card */
++	atom_asic_init(rdev->mode_info.atom_context);
++
++	r = cayman_startup(rdev);
++	if (r) {
++		DRM_ERROR("cayman startup failed on resume\n");
++		return r;
++	}
++
++	r = r600_ib_test(rdev);
++	if (r) {
++		DRM_ERROR("radeon: failled testing IB (%d).\n", r);
++		return r;
++	}
++
++	return r;
++
++}
++
++int cayman_suspend(struct radeon_device *rdev)
++{
++	/* int r; */
++
++	/* FIXME: we should wait for ring to be empty */
++	cayman_cp_enable(rdev, false);
++	rdev->cp.ready = false;
++	evergreen_irq_suspend(rdev);
++	radeon_wb_disable(rdev);
++	cayman_pcie_gart_disable(rdev);
++
++#if 0
++	/* unpin shaders bo */
++	r = radeon_bo_reserve(rdev->r600_blit.shader_obj, false);
++	if (likely(r == 0)) {
++		radeon_bo_unpin(rdev->r600_blit.shader_obj);
++		radeon_bo_unreserve(rdev->r600_blit.shader_obj);
++	}
++#endif
++	return 0;
++}
++
++/* Plan is to move initialization in that function and use
++ * helper function so that radeon_device_init pretty much
++ * do nothing more than calling asic specific function. This
++ * should also allow to remove a bunch of callback function
++ * like vram_info.
++ */
++int cayman_init(struct radeon_device *rdev)
++{
++	int r;
++
++	/* This don't do much */
++	r = radeon_gem_init(rdev);
++	if (r)
++		return r;
++	/* Read BIOS */
++	if (!radeon_get_bios(rdev)) {
++		if (ASIC_IS_AVIVO(rdev))
++			return -EINVAL;
++	}
++	/* Must be an ATOMBIOS */
++	if (!rdev->is_atom_bios) {
++		dev_err(rdev->dev, "Expecting atombios for cayman GPU\n");
++		return -EINVAL;
++	}
++	r = radeon_atombios_init(rdev);
++	if (r)
++		return r;
++
++	/* Post card if necessary */
++	if (!radeon_card_posted(rdev)) {
++		if (!rdev->bios) {
++			dev_err(rdev->dev, "Card not posted and no BIOS - ignoring\n");
++			return -EINVAL;
++		}
++		DRM_INFO("GPU not posted. posting now...\n");
++		atom_asic_init(rdev->mode_info.atom_context);
++	}
++	/* Initialize scratch registers */
++	r600_scratch_init(rdev);
++	/* Initialize surface registers */
++	radeon_surface_init(rdev);
++	/* Initialize clocks */
++	radeon_get_clock_info(rdev->ddev);
++	/* Fence driver */
++	r = radeon_fence_driver_init(rdev);
++	if (r)
++		return r;
++	/* initialize memory controller */
++	r = evergreen_mc_init(rdev);
++	if (r)
++		return r;
++	/* Memory manager */
++	r = radeon_bo_init(rdev);
++	if (r)
++		return r;
++
++	r = radeon_irq_kms_init(rdev);
++	if (r)
++		return r;
++
++	rdev->cp.ring_obj = NULL;
++	r600_ring_init(rdev, 1024 * 1024);
++
++	rdev->ih.ring_obj = NULL;
++	r600_ih_ring_init(rdev, 64 * 1024);
++
++	r = r600_pcie_gart_init(rdev);
++	if (r)
++		return r;
++
++	rdev->accel_working = true;
++	r = cayman_startup(rdev);
++	if (r) {
++		dev_err(rdev->dev, "disabling GPU acceleration\n");
++		cayman_cp_fini(rdev);
++		r600_irq_fini(rdev);
++		radeon_wb_fini(rdev);
++		radeon_irq_kms_fini(rdev);
++		cayman_pcie_gart_fini(rdev);
++		rdev->accel_working = false;
++	}
++	if (rdev->accel_working) {
++		r = radeon_ib_pool_init(rdev);
++		if (r) {
++			DRM_ERROR("radeon: failed initializing IB pool (%d).\n", r);
++			rdev->accel_working = false;
++		}
++		r = r600_ib_test(rdev);
++		if (r) {
++			DRM_ERROR("radeon: failed testing IB (%d).\n", r);
++			rdev->accel_working = false;
++		}
++	}
++
++	/* Don't start up if the MC ucode is missing.
++	 * The default clocks and voltages before the MC ucode
++	 * is loaded are not suffient for advanced operations.
++	 */
++	if (!rdev->mc_fw) {
++		DRM_ERROR("radeon: MC ucode required for NI+.\n");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++void cayman_fini(struct radeon_device *rdev)
++{
++	/* cayman_blit_fini(rdev); */
++	cayman_cp_fini(rdev);
++	r600_irq_fini(rdev);
++	radeon_wb_fini(rdev);
++	radeon_irq_kms_fini(rdev);
++	cayman_pcie_gart_fini(rdev);
++	radeon_gem_fini(rdev);
++	radeon_fence_driver_fini(rdev);
++	radeon_bo_fini(rdev);
++	radeon_atombios_fini(rdev);
++	kfree(rdev->bios);
++	rdev->bios = NULL;
++}
++
+diff --git a/drivers/gpu/drm/radeon/nid.h b/drivers/gpu/drm/radeon/nid.h
+index f7b4453..0f9a08b 100644
+--- a/drivers/gpu/drm/radeon/nid.h
++++ b/drivers/gpu/drm/radeon/nid.h
+@@ -24,7 +24,101 @@
+ #ifndef NI_H
+ #define NI_H
+ 
++#define CAYMAN_MAX_SH_GPRS           256
++#define CAYMAN_MAX_TEMP_GPRS         16
++#define CAYMAN_MAX_SH_THREADS        256
++#define CAYMAN_MAX_SH_STACK_ENTRIES  4096
++#define CAYMAN_MAX_FRC_EOV_CNT       16384
++#define CAYMAN_MAX_BACKENDS          8
++#define CAYMAN_MAX_BACKENDS_MASK     0xFF
++#define CAYMAN_MAX_BACKENDS_PER_SE_MASK 0xF
++#define CAYMAN_MAX_SIMDS             16
++#define CAYMAN_MAX_SIMDS_MASK        0xFFFF
++#define CAYMAN_MAX_SIMDS_PER_SE_MASK 0xFFF
++#define CAYMAN_MAX_PIPES             8
++#define CAYMAN_MAX_PIPES_MASK        0xFF
++#define CAYMAN_MAX_LDS_NUM           0xFFFF
++#define CAYMAN_MAX_TCC               16
++#define CAYMAN_MAX_TCC_MASK          0xFF
++
++#define DMIF_ADDR_CONFIG  				0xBD4
++#define	SRBM_STATUS				        0x0E50
++
++#define VM_CONTEXT0_REQUEST_RESPONSE			0x1470
++#define		REQUEST_TYPE(x)					(((x) & 0xf) << 0)
++#define		RESPONSE_TYPE_MASK				0x000000F0
++#define		RESPONSE_TYPE_SHIFT				4
++#define VM_L2_CNTL					0x1400
++#define		ENABLE_L2_CACHE					(1 << 0)
++#define		ENABLE_L2_FRAGMENT_PROCESSING			(1 << 1)
++#define		ENABLE_L2_PTE_CACHE_LRU_UPDATE_BY_WRITE		(1 << 9)
++#define		ENABLE_L2_PDE0_CACHE_LRU_UPDATE_BY_WRITE	(1 << 10)
++#define		EFFECTIVE_L2_QUEUE_SIZE(x)			(((x) & 7) << 14)
++#define		CONTEXT1_IDENTITY_ACCESS_MODE(x)		(((x) & 3) << 18)
++/* CONTEXT1_IDENTITY_ACCESS_MODE
++ * 0 physical = logical
++ * 1 logical via context1 page table
++ * 2 inside identity aperture use translation, outside physical = logical
++ * 3 inside identity aperture physical = logical, outside use translation
++ */
++#define VM_L2_CNTL2					0x1404
++#define		INVALIDATE_ALL_L1_TLBS				(1 << 0)
++#define		INVALIDATE_L2_CACHE				(1 << 1)
++#define VM_L2_CNTL3					0x1408
++#define		BANK_SELECT(x)					((x) << 0)
++#define		CACHE_UPDATE_MODE(x)				((x) << 6)
++#define		L2_CACHE_BIGK_ASSOCIATIVITY			(1 << 20)
++#define		L2_CACHE_BIGK_FRAGMENT_SIZE(x)			((x) << 15)
++#define	VM_L2_STATUS					0x140C
++#define		L2_BUSY						(1 << 0)
++#define VM_CONTEXT0_CNTL				0x1410
++#define		ENABLE_CONTEXT					(1 << 0)
++#define		PAGE_TABLE_DEPTH(x)				(((x) & 3) << 1)
++#define		RANGE_PROTECTION_FAULT_ENABLE_DEFAULT		(1 << 4)
++#define VM_CONTEXT1_CNTL				0x1414
++#define VM_CONTEXT0_CNTL2				0x1430
++#define VM_CONTEXT1_CNTL2				0x1434
++#define VM_INVALIDATE_REQUEST				0x1478
++#define VM_INVALIDATE_RESPONSE				0x147c
++#define VM_CONTEXT0_PROTECTION_FAULT_DEFAULT_ADDR	0x1518
++#define VM_CONTEXT1_PROTECTION_FAULT_DEFAULT_ADDR	0x151c
++#define	VM_CONTEXT0_PAGE_TABLE_BASE_ADDR		0x153C
++#define	VM_CONTEXT0_PAGE_TABLE_START_ADDR		0x155C
++#define	VM_CONTEXT0_PAGE_TABLE_END_ADDR			0x157C
++
++#define MC_SHARED_CHMAP						0x2004
++#define		NOOFCHAN_SHIFT					12
++#define		NOOFCHAN_MASK					0x00003000
++#define MC_SHARED_CHREMAP					0x2008
++
++#define	MC_VM_SYSTEM_APERTURE_LOW_ADDR			0x2034
++#define	MC_VM_SYSTEM_APERTURE_HIGH_ADDR			0x2038
++#define	MC_VM_SYSTEM_APERTURE_DEFAULT_ADDR		0x203C
++#define	MC_VM_MX_L1_TLB_CNTL				0x2064
++#define		ENABLE_L1_TLB					(1 << 0)
++#define		ENABLE_L1_FRAGMENT_PROCESSING			(1 << 1)
++#define		SYSTEM_ACCESS_MODE_PA_ONLY			(0 << 3)
++#define		SYSTEM_ACCESS_MODE_USE_SYS_MAP			(1 << 3)
++#define		SYSTEM_ACCESS_MODE_IN_SYS			(2 << 3)
++#define		SYSTEM_ACCESS_MODE_NOT_IN_SYS			(3 << 3)
++#define		SYSTEM_APERTURE_UNMAPPED_ACCESS_PASS_THRU	(0 << 5)
++#define		ENABLE_ADVANCED_DRIVER_MODEL			(1 << 6)
++
+ #define MC_SHARED_BLACKOUT_CNTL           		0x20ac
++#define	MC_ARB_RAMCFG					0x2760
++#define		NOOFBANK_SHIFT					0
++#define		NOOFBANK_MASK					0x00000003
++#define		NOOFRANK_SHIFT					2
++#define		NOOFRANK_MASK					0x00000004
++#define		NOOFROWS_SHIFT					3
++#define		NOOFROWS_MASK					0x00000038
++#define		NOOFCOLS_SHIFT					6
++#define		NOOFCOLS_MASK					0x000000C0
++#define		CHANSIZE_SHIFT					8
++#define		CHANSIZE_MASK					0x00000100
++#define		BURSTLENGTH_SHIFT				9
++#define		BURSTLENGTH_MASK				0x00000200
++#define		CHANSIZE_OVERRIDE				(1 << 11)
+ #define MC_SEQ_SUP_CNTL           			0x28c8
+ #define		RUN_MASK      				(1 << 0)
+ #define MC_SEQ_SUP_PGM           			0x28cc
+@@ -37,5 +131,406 @@
+ #define MC_SEQ_IO_DEBUG_INDEX           		0x2a44
+ #define MC_SEQ_IO_DEBUG_DATA           			0x2a48
+ 
++#define	HDP_HOST_PATH_CNTL				0x2C00
++#define	HDP_NONSURFACE_BASE				0x2C04
++#define	HDP_NONSURFACE_INFO				0x2C08
++#define	HDP_NONSURFACE_SIZE				0x2C0C
++#define HDP_ADDR_CONFIG  				0x2F48
++
++#define	CC_SYS_RB_BACKEND_DISABLE			0x3F88
++#define	GC_USER_SYS_RB_BACKEND_DISABLE			0x3F8C
++#define	CGTS_SYS_TCC_DISABLE				0x3F90
++#define	CGTS_USER_SYS_TCC_DISABLE			0x3F94
++
++#define	CONFIG_MEMSIZE					0x5428
++
++#define HDP_MEM_COHERENCY_FLUSH_CNTL			0x5480
++#define HDP_REG_COHERENCY_FLUSH_CNTL			0x54A0
++
++#define	GRBM_CNTL					0x8000
++#define		GRBM_READ_TIMEOUT(x)				((x) << 0)
++#define	GRBM_STATUS					0x8010
++#define		CMDFIFO_AVAIL_MASK				0x0000000F
++#define		RING2_RQ_PENDING				(1 << 4)
++#define		SRBM_RQ_PENDING					(1 << 5)
++#define		RING1_RQ_PENDING				(1 << 6)
++#define		CF_RQ_PENDING					(1 << 7)
++#define		PF_RQ_PENDING					(1 << 8)
++#define		GDS_DMA_RQ_PENDING				(1 << 9)
++#define		GRBM_EE_BUSY					(1 << 10)
++#define		SX_CLEAN					(1 << 11)
++#define		DB_CLEAN					(1 << 12)
++#define		CB_CLEAN					(1 << 13)
++#define		TA_BUSY 					(1 << 14)
++#define		GDS_BUSY 					(1 << 15)
++#define		VGT_BUSY_NO_DMA					(1 << 16)
++#define		VGT_BUSY					(1 << 17)
++#define		IA_BUSY_NO_DMA					(1 << 18)
++#define		IA_BUSY						(1 << 19)
++#define		SX_BUSY 					(1 << 20)
++#define		SH_BUSY 					(1 << 21)
++#define		SPI_BUSY					(1 << 22)
++#define		SC_BUSY 					(1 << 24)
++#define		PA_BUSY 					(1 << 25)
++#define		DB_BUSY 					(1 << 26)
++#define		CP_COHERENCY_BUSY      				(1 << 28)
++#define		CP_BUSY 					(1 << 29)
++#define		CB_BUSY 					(1 << 30)
++#define		GUI_ACTIVE					(1 << 31)
++#define	GRBM_STATUS_SE0					0x8014
++#define	GRBM_STATUS_SE1					0x8018
++#define		SE_SX_CLEAN					(1 << 0)
++#define		SE_DB_CLEAN					(1 << 1)
++#define		SE_CB_CLEAN					(1 << 2)
++#define		SE_VGT_BUSY					(1 << 23)
++#define		SE_PA_BUSY					(1 << 24)
++#define		SE_TA_BUSY					(1 << 25)
++#define		SE_SX_BUSY					(1 << 26)
++#define		SE_SPI_BUSY					(1 << 27)
++#define		SE_SH_BUSY					(1 << 28)
++#define		SE_SC_BUSY					(1 << 29)
++#define		SE_DB_BUSY					(1 << 30)
++#define		SE_CB_BUSY					(1 << 31)
++#define	GRBM_SOFT_RESET					0x8020
++#define		SOFT_RESET_CP					(1 << 0)
++#define		SOFT_RESET_CB					(1 << 1)
++#define		SOFT_RESET_DB					(1 << 3)
++#define		SOFT_RESET_GDS					(1 << 4)
++#define		SOFT_RESET_PA					(1 << 5)
++#define		SOFT_RESET_SC					(1 << 6)
++#define		SOFT_RESET_SPI					(1 << 8)
++#define		SOFT_RESET_SH					(1 << 9)
++#define		SOFT_RESET_SX					(1 << 10)
++#define		SOFT_RESET_TC					(1 << 11)
++#define		SOFT_RESET_TA					(1 << 12)
++#define		SOFT_RESET_VGT					(1 << 14)
++#define		SOFT_RESET_IA					(1 << 15)
++
++#define	SCRATCH_REG0					0x8500
++#define	SCRATCH_REG1					0x8504
++#define	SCRATCH_REG2					0x8508
++#define	SCRATCH_REG3					0x850C
++#define	SCRATCH_REG4					0x8510
++#define	SCRATCH_REG5					0x8514
++#define	SCRATCH_REG6					0x8518
++#define	SCRATCH_REG7					0x851C
++#define	SCRATCH_UMSK					0x8540
++#define	SCRATCH_ADDR					0x8544
++#define	CP_SEM_WAIT_TIMER				0x85BC
++#define CP_ME_CNTL					0x86D8
++#define		CP_ME_HALT					(1 << 28)
++#define		CP_PFP_HALT					(1 << 26)
++#define	CP_RB2_RPTR					0x86f8
++#define	CP_RB1_RPTR					0x86fc
++#define	CP_RB0_RPTR					0x8700
++#define	CP_RB_WPTR_DELAY				0x8704
++#define CP_MEQ_THRESHOLDS				0x8764
++#define		MEQ1_START(x)				((x) << 0)
++#define		MEQ2_START(x)				((x) << 8)
++#define	CP_PERFMON_CNTL					0x87FC
++
++#define	VGT_CACHE_INVALIDATION				0x88C4
++#define		CACHE_INVALIDATION(x)				((x) << 0)
++#define			VC_ONLY						0
++#define			TC_ONLY						1
++#define			VC_AND_TC					2
++#define		AUTO_INVLD_EN(x)				((x) << 6)
++#define			NO_AUTO						0
++#define			ES_AUTO						1
++#define			GS_AUTO						2
++#define			ES_AND_GS_AUTO					3
++#define	VGT_GS_VERTEX_REUSE				0x88D4
++
++#define CC_GC_SHADER_PIPE_CONFIG			0x8950
++#define	GC_USER_SHADER_PIPE_CONFIG			0x8954
++#define		INACTIVE_QD_PIPES(x)				((x) << 8)
++#define		INACTIVE_QD_PIPES_MASK				0x0000FF00
++#define		INACTIVE_QD_PIPES_SHIFT				8
++#define		INACTIVE_SIMDS(x)				((x) << 16)
++#define		INACTIVE_SIMDS_MASK				0xFFFF0000
++#define		INACTIVE_SIMDS_SHIFT				16
++
++#define VGT_PRIMITIVE_TYPE                              0x8958
++#define	VGT_NUM_INSTANCES				0x8974
++#define VGT_TF_RING_SIZE				0x8988
++#define VGT_OFFCHIP_LDS_BASE				0x89b4
++
++#define	PA_SC_LINE_STIPPLE_STATE			0x8B10
++#define	PA_CL_ENHANCE					0x8A14
++#define		CLIP_VTX_REORDER_ENA				(1 << 0)
++#define		NUM_CLIP_SEQ(x)					((x) << 1)
++#define	PA_SC_FIFO_SIZE					0x8BCC
++#define		SC_PRIM_FIFO_SIZE(x)				((x) << 0)
++#define		SC_HIZ_TILE_FIFO_SIZE(x)			((x) << 12)
++#define		SC_EARLYZ_TILE_FIFO_SIZE(x)			((x) << 20)
++#define	PA_SC_FORCE_EOV_MAX_CNTS			0x8B24
++#define		FORCE_EOV_MAX_CLK_CNT(x)			((x) << 0)
++#define		FORCE_EOV_MAX_REZ_CNT(x)			((x) << 16)
++
++#define	SQ_CONFIG					0x8C00
++#define		VC_ENABLE					(1 << 0)
++#define		EXPORT_SRC_C					(1 << 1)
++#define		GFX_PRIO(x)					((x) << 2)
++#define		CS1_PRIO(x)					((x) << 4)
++#define		CS2_PRIO(x)					((x) << 6)
++#define	SQ_GPR_RESOURCE_MGMT_1				0x8C04
++#define		NUM_PS_GPRS(x)					((x) << 0)
++#define		NUM_VS_GPRS(x)					((x) << 16)
++#define		NUM_CLAUSE_TEMP_GPRS(x)				((x) << 28)
++#define SQ_ESGS_RING_SIZE				0x8c44
++#define SQ_GSVS_RING_SIZE				0x8c4c
++#define SQ_ESTMP_RING_BASE				0x8c50
++#define SQ_ESTMP_RING_SIZE				0x8c54
++#define SQ_GSTMP_RING_BASE				0x8c58
++#define SQ_GSTMP_RING_SIZE				0x8c5c
++#define SQ_VSTMP_RING_BASE				0x8c60
++#define SQ_VSTMP_RING_SIZE				0x8c64
++#define SQ_PSTMP_RING_BASE				0x8c68
++#define SQ_PSTMP_RING_SIZE				0x8c6c
++#define	SQ_MS_FIFO_SIZES				0x8CF0
++#define		CACHE_FIFO_SIZE(x)				((x) << 0)
++#define		FETCH_FIFO_HIWATER(x)				((x) << 8)
++#define		DONE_FIFO_HIWATER(x)				((x) << 16)
++#define		ALU_UPDATE_FIFO_HIWATER(x)			((x) << 24)
++#define SQ_LSTMP_RING_BASE				0x8e10
++#define SQ_LSTMP_RING_SIZE				0x8e14
++#define SQ_HSTMP_RING_BASE				0x8e18
++#define SQ_HSTMP_RING_SIZE				0x8e1c
++#define	SQ_DYN_GPR_CNTL_PS_FLUSH_REQ    		0x8D8C
++#define		DYN_GPR_ENABLE					(1 << 8)
++#define SQ_CONST_MEM_BASE				0x8df8
++
++#define	SX_EXPORT_BUFFER_SIZES				0x900C
++#define		COLOR_BUFFER_SIZE(x)				((x) << 0)
++#define		POSITION_BUFFER_SIZE(x)				((x) << 8)
++#define		SMX_BUFFER_SIZE(x)				((x) << 16)
++#define	SX_DEBUG_1					0x9058
++#define		ENABLE_NEW_SMX_ADDRESS				(1 << 16)
++
++#define	SPI_CONFIG_CNTL					0x9100
++#define		GPR_WRITE_PRIORITY(x)				((x) << 0)
++#define	SPI_CONFIG_CNTL_1				0x913C
++#define		VTX_DONE_DELAY(x)				((x) << 0)
++#define		INTERP_ONE_PRIM_PER_ROW				(1 << 4)
++#define		CRC_SIMD_ID_WADDR_DISABLE			(1 << 8)
++
++#define	CGTS_TCC_DISABLE				0x9148
++#define	CGTS_USER_TCC_DISABLE				0x914C
++#define		TCC_DISABLE_MASK				0xFFFF0000
++#define		TCC_DISABLE_SHIFT				16
++#define	CGTS_SM_CTRL_REG				0x915C
++#define		OVERRIDE				(1 << 21)
++
++#define	TA_CNTL_AUX					0x9508
++#define		DISABLE_CUBE_WRAP				(1 << 0)
++#define		DISABLE_CUBE_ANISO				(1 << 1)
++
++#define	TCP_CHAN_STEER_LO				0x960c
++#define	TCP_CHAN_STEER_HI				0x9610
++
++#define CC_RB_BACKEND_DISABLE				0x98F4
++#define		BACKEND_DISABLE(x)     			((x) << 16)
++#define GB_ADDR_CONFIG  				0x98F8
++#define		NUM_PIPES(x)				((x) << 0)
++#define		NUM_PIPES_MASK				0x00000007
++#define		NUM_PIPES_SHIFT				0
++#define		PIPE_INTERLEAVE_SIZE(x)			((x) << 4)
++#define		PIPE_INTERLEAVE_SIZE_MASK		0x00000070
++#define		PIPE_INTERLEAVE_SIZE_SHIFT		4
++#define		BANK_INTERLEAVE_SIZE(x)			((x) << 8)
++#define		NUM_SHADER_ENGINES(x)			((x) << 12)
++#define		NUM_SHADER_ENGINES_MASK			0x00003000
++#define		NUM_SHADER_ENGINES_SHIFT		12
++#define		SHADER_ENGINE_TILE_SIZE(x)     		((x) << 16)
++#define		SHADER_ENGINE_TILE_SIZE_MASK		0x00070000
++#define		SHADER_ENGINE_TILE_SIZE_SHIFT		16
++#define		NUM_GPUS(x)     			((x) << 20)
++#define		NUM_GPUS_MASK				0x00700000
++#define		NUM_GPUS_SHIFT				20
++#define		MULTI_GPU_TILE_SIZE(x)     		((x) << 24)
++#define		MULTI_GPU_TILE_SIZE_MASK		0x03000000
++#define		MULTI_GPU_TILE_SIZE_SHIFT		24
++#define		ROW_SIZE(x)             		((x) << 28)
++#define		ROW_SIZE_MASK				0x30000007
++#define		ROW_SIZE_SHIFT				28
++#define		NUM_LOWER_PIPES(x)			((x) << 30)
++#define		NUM_LOWER_PIPES_MASK			0x40000000
++#define		NUM_LOWER_PIPES_SHIFT			30
++#define GB_BACKEND_MAP  				0x98FC
++
++#define CB_PERF_CTR0_SEL_0				0x9A20
++#define CB_PERF_CTR0_SEL_1				0x9A24
++#define CB_PERF_CTR1_SEL_0				0x9A28
++#define CB_PERF_CTR1_SEL_1				0x9A2C
++#define CB_PERF_CTR2_SEL_0				0x9A30
++#define CB_PERF_CTR2_SEL_1				0x9A34
++#define CB_PERF_CTR3_SEL_0				0x9A38
++#define CB_PERF_CTR3_SEL_1				0x9A3C
++
++#define	GC_USER_RB_BACKEND_DISABLE			0x9B7C
++#define		BACKEND_DISABLE_MASK			0x00FF0000
++#define		BACKEND_DISABLE_SHIFT			16
++
++#define	SMX_DC_CTL0					0xA020
++#define		USE_HASH_FUNCTION				(1 << 0)
++#define		NUMBER_OF_SETS(x)				((x) << 1)
++#define		FLUSH_ALL_ON_EVENT				(1 << 10)
++#define		STALL_ON_EVENT					(1 << 11)
++#define	SMX_EVENT_CTL					0xA02C
++#define		ES_FLUSH_CTL(x)					((x) << 0)
++#define		GS_FLUSH_CTL(x)					((x) << 3)
++#define		ACK_FLUSH_CTL(x)				((x) << 6)
++#define		SYNC_FLUSH_CTL					(1 << 8)
++
++#define	CP_RB0_BASE					0xC100
++#define	CP_RB0_CNTL					0xC104
++#define		RB_BUFSZ(x)					((x) << 0)
++#define		RB_BLKSZ(x)					((x) << 8)
++#define		RB_NO_UPDATE					(1 << 27)
++#define		RB_RPTR_WR_ENA					(1 << 31)
++#define		BUF_SWAP_32BIT					(2 << 16)
++#define	CP_RB0_RPTR_ADDR				0xC10C
++#define	CP_RB0_RPTR_ADDR_HI				0xC110
++#define	CP_RB0_WPTR					0xC114
++#define	CP_RB1_BASE					0xC180
++#define	CP_RB1_CNTL					0xC184
++#define	CP_RB1_RPTR_ADDR				0xC188
++#define	CP_RB1_RPTR_ADDR_HI				0xC18C
++#define	CP_RB1_WPTR					0xC190
++#define	CP_RB2_BASE					0xC194
++#define	CP_RB2_CNTL					0xC198
++#define	CP_RB2_RPTR_ADDR				0xC19C
++#define	CP_RB2_RPTR_ADDR_HI				0xC1A0
++#define	CP_RB2_WPTR					0xC1A4
++#define	CP_PFP_UCODE_ADDR				0xC150
++#define	CP_PFP_UCODE_DATA				0xC154
++#define	CP_ME_RAM_RADDR					0xC158
++#define	CP_ME_RAM_WADDR					0xC15C
++#define	CP_ME_RAM_DATA					0xC160
++#define	CP_DEBUG					0xC1FC
++
++/*
++ * PM4
++ */
++#define	PACKET_TYPE0	0
++#define	PACKET_TYPE1	1
++#define	PACKET_TYPE2	2
++#define	PACKET_TYPE3	3
++
++#define CP_PACKET_GET_TYPE(h) (((h) >> 30) & 3)
++#define CP_PACKET_GET_COUNT(h) (((h) >> 16) & 0x3FFF)
++#define CP_PACKET0_GET_REG(h) (((h) & 0xFFFF) << 2)
++#define CP_PACKET3_GET_OPCODE(h) (((h) >> 8) & 0xFF)
++#define PACKET0(reg, n)	((PACKET_TYPE0 << 30) |				\
++			 (((reg) >> 2) & 0xFFFF) |			\
++			 ((n) & 0x3FFF) << 16)
++#define CP_PACKET2			0x80000000
++#define		PACKET2_PAD_SHIFT		0
++#define		PACKET2_PAD_MASK		(0x3fffffff << 0)
++
++#define PACKET2(v)	(CP_PACKET2 | REG_SET(PACKET2_PAD, (v)))
++
++#define PACKET3(op, n)	((PACKET_TYPE3 << 30) |				\
++			 (((op) & 0xFF) << 8) |				\
++			 ((n) & 0x3FFF) << 16)
++
++/* Packet 3 types */
++#define	PACKET3_NOP					0x10
++#define	PACKET3_SET_BASE				0x11
++#define	PACKET3_CLEAR_STATE				0x12
++#define	PACKET3_INDEX_BUFFER_SIZE			0x13
++#define	PACKET3_DEALLOC_STATE				0x14
++#define	PACKET3_DISPATCH_DIRECT				0x15
++#define	PACKET3_DISPATCH_INDIRECT			0x16
++#define	PACKET3_INDIRECT_BUFFER_END			0x17
++#define	PACKET3_SET_PREDICATION				0x20
++#define	PACKET3_REG_RMW					0x21
++#define	PACKET3_COND_EXEC				0x22
++#define	PACKET3_PRED_EXEC				0x23
++#define	PACKET3_DRAW_INDIRECT				0x24
++#define	PACKET3_DRAW_INDEX_INDIRECT			0x25
++#define	PACKET3_INDEX_BASE				0x26
++#define	PACKET3_DRAW_INDEX_2				0x27
++#define	PACKET3_CONTEXT_CONTROL				0x28
++#define	PACKET3_DRAW_INDEX_OFFSET			0x29
++#define	PACKET3_INDEX_TYPE				0x2A
++#define	PACKET3_DRAW_INDEX				0x2B
++#define	PACKET3_DRAW_INDEX_AUTO				0x2D
++#define	PACKET3_DRAW_INDEX_IMMD				0x2E
++#define	PACKET3_NUM_INSTANCES				0x2F
++#define	PACKET3_DRAW_INDEX_MULTI_AUTO			0x30
++#define	PACKET3_INDIRECT_BUFFER				0x32
++#define	PACKET3_STRMOUT_BUFFER_UPDATE			0x34
++#define	PACKET3_DRAW_INDEX_OFFSET_2			0x35
++#define	PACKET3_DRAW_INDEX_MULTI_ELEMENT		0x36
++#define	PACKET3_WRITE_DATA				0x37
++#define	PACKET3_MEM_SEMAPHORE				0x39
++#define	PACKET3_MPEG_INDEX				0x3A
++#define	PACKET3_WAIT_REG_MEM				0x3C
++#define	PACKET3_MEM_WRITE				0x3D
++#define	PACKET3_SURFACE_SYNC				0x43
++#              define PACKET3_CB0_DEST_BASE_ENA    (1 << 6)
++#              define PACKET3_CB1_DEST_BASE_ENA    (1 << 7)
++#              define PACKET3_CB2_DEST_BASE_ENA    (1 << 8)
++#              define PACKET3_CB3_DEST_BASE_ENA    (1 << 9)
++#              define PACKET3_CB4_DEST_BASE_ENA    (1 << 10)
++#              define PACKET3_CB5_DEST_BASE_ENA    (1 << 11)
++#              define PACKET3_CB6_DEST_BASE_ENA    (1 << 12)
++#              define PACKET3_CB7_DEST_BASE_ENA    (1 << 13)
++#              define PACKET3_DB_DEST_BASE_ENA     (1 << 14)
++#              define PACKET3_CB8_DEST_BASE_ENA    (1 << 15)
++#              define PACKET3_CB9_DEST_BASE_ENA    (1 << 16)
++#              define PACKET3_CB10_DEST_BASE_ENA   (1 << 17)
++#              define PACKET3_CB11_DEST_BASE_ENA   (1 << 18)
++#              define PACKET3_FULL_CACHE_ENA       (1 << 20)
++#              define PACKET3_TC_ACTION_ENA        (1 << 23)
++#              define PACKET3_CB_ACTION_ENA        (1 << 25)
++#              define PACKET3_DB_ACTION_ENA        (1 << 26)
++#              define PACKET3_SH_ACTION_ENA        (1 << 27)
++#              define PACKET3_SX_ACTION_ENA        (1 << 28)
++#define	PACKET3_ME_INITIALIZE				0x44
++#define		PACKET3_ME_INITIALIZE_DEVICE_ID(x) ((x) << 16)
++#define	PACKET3_COND_WRITE				0x45
++#define	PACKET3_EVENT_WRITE				0x46
++#define	PACKET3_EVENT_WRITE_EOP				0x47
++#define	PACKET3_EVENT_WRITE_EOS				0x48
++#define	PACKET3_PREAMBLE_CNTL				0x4A
++#              define PACKET3_PREAMBLE_BEGIN_CLEAR_STATE     (2 << 28)
++#              define PACKET3_PREAMBLE_END_CLEAR_STATE       (3 << 28)
++#define	PACKET3_ALU_PS_CONST_BUFFER_COPY		0x4C
++#define	PACKET3_ALU_VS_CONST_BUFFER_COPY		0x4D
++#define	PACKET3_ALU_PS_CONST_UPDATE		        0x4E
++#define	PACKET3_ALU_VS_CONST_UPDATE		        0x4F
++#define	PACKET3_ONE_REG_WRITE				0x57
++#define	PACKET3_SET_CONFIG_REG				0x68
++#define		PACKET3_SET_CONFIG_REG_START			0x00008000
++#define		PACKET3_SET_CONFIG_REG_END			0x0000ac00
++#define	PACKET3_SET_CONTEXT_REG				0x69
++#define		PACKET3_SET_CONTEXT_REG_START			0x00028000
++#define		PACKET3_SET_CONTEXT_REG_END			0x00029000
++#define	PACKET3_SET_ALU_CONST				0x6A
++/* alu const buffers only; no reg file */
++#define	PACKET3_SET_BOOL_CONST				0x6B
++#define		PACKET3_SET_BOOL_CONST_START			0x0003a500
++#define		PACKET3_SET_BOOL_CONST_END			0x0003a518
++#define	PACKET3_SET_LOOP_CONST				0x6C
++#define		PACKET3_SET_LOOP_CONST_START			0x0003a200
++#define		PACKET3_SET_LOOP_CONST_END			0x0003a500
++#define	PACKET3_SET_RESOURCE				0x6D
++#define		PACKET3_SET_RESOURCE_START			0x00030000
++#define		PACKET3_SET_RESOURCE_END			0x00038000
++#define	PACKET3_SET_SAMPLER				0x6E
++#define		PACKET3_SET_SAMPLER_START			0x0003c000
++#define		PACKET3_SET_SAMPLER_END				0x0003c600
++#define	PACKET3_SET_CTL_CONST				0x6F
++#define		PACKET3_SET_CTL_CONST_START			0x0003cff0
++#define		PACKET3_SET_CTL_CONST_END			0x0003ff0c
++#define	PACKET3_SET_RESOURCE_OFFSET			0x70
++#define	PACKET3_SET_ALU_CONST_VS			0x71
++#define	PACKET3_SET_ALU_CONST_DI			0x72
++#define	PACKET3_SET_CONTEXT_REG_INDIRECT		0x73
++#define	PACKET3_SET_RESOURCE_INDIRECT			0x74
++#define	PACKET3_SET_APPEND_CNT			        0x75
++
+ #endif
+ 
+diff --git a/drivers/gpu/drm/radeon/r600.c b/drivers/gpu/drm/radeon/r600.c
+index 9b3fad2..70e9fb0 100644
+--- a/drivers/gpu/drm/radeon/r600.c
++++ b/drivers/gpu/drm/radeon/r600.c
+@@ -47,6 +47,7 @@
+ #define EVERGREEN_PFP_UCODE_SIZE 1120
+ #define EVERGREEN_PM4_UCODE_SIZE 1376
+ #define EVERGREEN_RLC_UCODE_SIZE 768
++#define CAYMAN_RLC_UCODE_SIZE 1024
+ 
+ /* Firmware Names */
+ MODULE_FIRMWARE("radeon/R600_pfp.bin");
+@@ -586,7 +587,7 @@ void r600_pm_misc(struct radeon_device *rdev)
+ 
+ 	if ((voltage->type == VOLTAGE_SW) && voltage->voltage) {
+ 		if (voltage->voltage != rdev->pm.current_vddc) {
+-			radeon_atom_set_voltage(rdev, voltage->voltage);
++			radeon_atom_set_voltage(rdev, voltage->voltage, SET_VOLTAGE_TYPE_ASIC_VDDC);
+ 			rdev->pm.current_vddc = voltage->voltage;
+ 			DRM_DEBUG_DRIVER("Setting: v: %d\n", voltage->voltage);
+ 		}
+@@ -2820,13 +2821,20 @@ static int r600_rlc_init(struct radeon_device *rdev)
+ 	WREG32(RLC_HB_CNTL, 0);
+ 	WREG32(RLC_HB_RPTR, 0);
+ 	WREG32(RLC_HB_WPTR, 0);
+-	WREG32(RLC_HB_WPTR_LSB_ADDR, 0);
+-	WREG32(RLC_HB_WPTR_MSB_ADDR, 0);
++	if (rdev->family <= CHIP_CAICOS) {
++		WREG32(RLC_HB_WPTR_LSB_ADDR, 0);
++		WREG32(RLC_HB_WPTR_MSB_ADDR, 0);
++	}
+ 	WREG32(RLC_MC_CNTL, 0);
+ 	WREG32(RLC_UCODE_CNTL, 0);
+ 
+ 	fw_data = (const __be32 *)rdev->rlc_fw->data;
+-	if (rdev->family >= CHIP_CEDAR) {
++	if (rdev->family >= CHIP_CAYMAN) {
++		for (i = 0; i < CAYMAN_RLC_UCODE_SIZE; i++) {
++			WREG32(RLC_UCODE_ADDR, i);
++			WREG32(RLC_UCODE_DATA, be32_to_cpup(fw_data++));
++		}
++	} else if (rdev->family >= CHIP_CEDAR) {
+ 		for (i = 0; i < EVERGREEN_RLC_UCODE_SIZE; i++) {
+ 			WREG32(RLC_UCODE_ADDR, i);
+ 			WREG32(RLC_UCODE_DATA, be32_to_cpup(fw_data++));
+@@ -3227,7 +3235,7 @@ static inline u32 r600_get_ih_wptr(struct radeon_device *rdev)
+ 	u32 wptr, tmp;
+ 
+ 	if (rdev->wb.enabled)
+-		wptr = rdev->wb.wb[R600_WB_IH_WPTR_OFFSET/4];
++		wptr = le32_to_cpu(rdev->wb.wb[R600_WB_IH_WPTR_OFFSET/4]);
+ 	else
+ 		wptr = RREG32(IH_RB_WPTR);
+ 
+diff --git a/drivers/gpu/drm/radeon/r600_cs.c b/drivers/gpu/drm/radeon/r600_cs.c
+index 153095f..0a0848f 100644
+--- a/drivers/gpu/drm/radeon/r600_cs.c
++++ b/drivers/gpu/drm/radeon/r600_cs.c
+@@ -71,75 +71,167 @@ struct r600_cs_track {
+ 	u64			db_bo_mc;
+ };
+ 
++#define FMT_8_BIT(fmt, vc) [fmt] = { 1, 1, 1, vc }
++#define FMT_16_BIT(fmt, vc) [fmt] = { 1, 1, 2, vc }
++#define FMT_24_BIT(fmt) [fmt] = { 1, 1, 3, 0 }
++#define FMT_32_BIT(fmt, vc) [fmt] = { 1, 1, 4, vc }
++#define FMT_48_BIT(fmt) [fmt] = { 1, 1, 6, 0 }
++#define FMT_64_BIT(fmt, vc) [fmt] = { 1, 1, 8, vc }
++#define FMT_96_BIT(fmt) [fmt] = { 1, 1, 12, 0 }
++#define FMT_128_BIT(fmt, vc) [fmt] = { 1, 1, 16, vc }
++
++struct gpu_formats {
++	unsigned blockwidth;
++	unsigned blockheight;
++	unsigned blocksize;
++	unsigned valid_color;
++};
++
++static const struct gpu_formats color_formats_table[] = {
++	/* 8 bit */
++	FMT_8_BIT(V_038004_COLOR_8, 1),
++	FMT_8_BIT(V_038004_COLOR_4_4, 1),
++	FMT_8_BIT(V_038004_COLOR_3_3_2, 1),
++	FMT_8_BIT(V_038004_FMT_1, 0),
++
++	/* 16-bit */
++	FMT_16_BIT(V_038004_COLOR_16, 1),
++	FMT_16_BIT(V_038004_COLOR_16_FLOAT, 1),
++	FMT_16_BIT(V_038004_COLOR_8_8, 1),
++	FMT_16_BIT(V_038004_COLOR_5_6_5, 1),
++	FMT_16_BIT(V_038004_COLOR_6_5_5, 1),
++	FMT_16_BIT(V_038004_COLOR_1_5_5_5, 1),
++	FMT_16_BIT(V_038004_COLOR_4_4_4_4, 1),
++	FMT_16_BIT(V_038004_COLOR_5_5_5_1, 1),
++
++	/* 24-bit */
++	FMT_24_BIT(V_038004_FMT_8_8_8),
++					       
++	/* 32-bit */
++	FMT_32_BIT(V_038004_COLOR_32, 1),
++	FMT_32_BIT(V_038004_COLOR_32_FLOAT, 1),
++	FMT_32_BIT(V_038004_COLOR_16_16, 1),
++	FMT_32_BIT(V_038004_COLOR_16_16_FLOAT, 1),
++	FMT_32_BIT(V_038004_COLOR_8_24, 1),
++	FMT_32_BIT(V_038004_COLOR_8_24_FLOAT, 1),
++	FMT_32_BIT(V_038004_COLOR_24_8, 1),
++	FMT_32_BIT(V_038004_COLOR_24_8_FLOAT, 1),
++	FMT_32_BIT(V_038004_COLOR_10_11_11, 1),
++	FMT_32_BIT(V_038004_COLOR_10_11_11_FLOAT, 1),
++	FMT_32_BIT(V_038004_COLOR_11_11_10, 1),
++	FMT_32_BIT(V_038004_COLOR_11_11_10_FLOAT, 1),
++	FMT_32_BIT(V_038004_COLOR_2_10_10_10, 1),
++	FMT_32_BIT(V_038004_COLOR_8_8_8_8, 1),
++	FMT_32_BIT(V_038004_COLOR_10_10_10_2, 1),
++	FMT_32_BIT(V_038004_FMT_5_9_9_9_SHAREDEXP, 0),
++	FMT_32_BIT(V_038004_FMT_32_AS_8, 0),
++	FMT_32_BIT(V_038004_FMT_32_AS_8_8, 0),
++
++	/* 48-bit */
++	FMT_48_BIT(V_038004_FMT_16_16_16),
++	FMT_48_BIT(V_038004_FMT_16_16_16_FLOAT),
++
++	/* 64-bit */
++	FMT_64_BIT(V_038004_COLOR_X24_8_32_FLOAT, 1),
++	FMT_64_BIT(V_038004_COLOR_32_32, 1),
++	FMT_64_BIT(V_038004_COLOR_32_32_FLOAT, 1),
++	FMT_64_BIT(V_038004_COLOR_16_16_16_16, 1),
++	FMT_64_BIT(V_038004_COLOR_16_16_16_16_FLOAT, 1),
++
++	FMT_96_BIT(V_038004_FMT_32_32_32),
++	FMT_96_BIT(V_038004_FMT_32_32_32_FLOAT),
++
++	/* 128-bit */
++	FMT_128_BIT(V_038004_COLOR_32_32_32_32, 1),
++	FMT_128_BIT(V_038004_COLOR_32_32_32_32_FLOAT, 1),
++
++	[V_038004_FMT_GB_GR] = { 2, 1, 4, 0 },
++	[V_038004_FMT_BG_RG] = { 2, 1, 4, 0 },
++
++	/* block compressed formats */
++	[V_038004_FMT_BC1] = { 4, 4, 8, 0 },
++	[V_038004_FMT_BC2] = { 4, 4, 16, 0 },
++	[V_038004_FMT_BC3] = { 4, 4, 16, 0 },
++	[V_038004_FMT_BC4] = { 4, 4, 8, 0 },
++	[V_038004_FMT_BC5] = { 4, 4, 16, 0},
++
++};
++
++static inline bool fmt_is_valid_color(u32 format)
++{
++	if (format >= ARRAY_SIZE(color_formats_table))
++		return false;
++	
++	if (color_formats_table[format].valid_color)
++		return true;
++
++	return false;
++}
++
++static inline bool fmt_is_valid_texture(u32 format)
++{
++	if (format >= ARRAY_SIZE(color_formats_table))
++		return false;
++	
++	if (color_formats_table[format].blockwidth > 0)
++		return true;
++
++	return false;
++}
++
++static inline int fmt_get_blocksize(u32 format)
++{
++	if (format >= ARRAY_SIZE(color_formats_table))
++		return 0;
++
++	return color_formats_table[format].blocksize;
++}
++
++static inline int fmt_get_nblocksx(u32 format, u32 w)
++{
++	unsigned bw;
++
++	if (format >= ARRAY_SIZE(color_formats_table))
++		return 0;
++
++	bw = color_formats_table[format].blockwidth;
++	if (bw == 0)
++		return 0;
++
++	return (w + bw - 1) / bw;
++}
++
++static inline int fmt_get_nblocksy(u32 format, u32 h)
++{
++	unsigned bh;
++
++	if (format >= ARRAY_SIZE(color_formats_table))
++		return 0;
++
++	bh = color_formats_table[format].blockheight;
++	if (bh == 0)
++		return 0;
++
++	return (h + bh - 1) / bh;
++}
++
+ static inline int r600_bpe_from_format(u32 *bpe, u32 format)
+ {
+-	switch (format) {
+-	case V_038004_COLOR_8:
+-	case V_038004_COLOR_4_4:
+-	case V_038004_COLOR_3_3_2:
+-	case V_038004_FMT_1:
+-		*bpe = 1;
+-		break;
+-	case V_038004_COLOR_16:
+-	case V_038004_COLOR_16_FLOAT:
+-	case V_038004_COLOR_8_8:
+-	case V_038004_COLOR_5_6_5:
+-	case V_038004_COLOR_6_5_5:
+-	case V_038004_COLOR_1_5_5_5:
+-	case V_038004_COLOR_4_4_4_4:
+-	case V_038004_COLOR_5_5_5_1:
+-		*bpe = 2;
+-		break;
+-	case V_038004_FMT_8_8_8:
+-		*bpe = 3;
+-		break;
+-	case V_038004_COLOR_32:
+-	case V_038004_COLOR_32_FLOAT:
+-	case V_038004_COLOR_16_16:
+-	case V_038004_COLOR_16_16_FLOAT:
+-	case V_038004_COLOR_8_24:
+-	case V_038004_COLOR_8_24_FLOAT:
+-	case V_038004_COLOR_24_8:
+-	case V_038004_COLOR_24_8_FLOAT:
+-	case V_038004_COLOR_10_11_11:
+-	case V_038004_COLOR_10_11_11_FLOAT:
+-	case V_038004_COLOR_11_11_10:
+-	case V_038004_COLOR_11_11_10_FLOAT:
+-	case V_038004_COLOR_2_10_10_10:
+-	case V_038004_COLOR_8_8_8_8:
+-	case V_038004_COLOR_10_10_10_2:
+-	case V_038004_FMT_5_9_9_9_SHAREDEXP:
+-	case V_038004_FMT_32_AS_8:
+-	case V_038004_FMT_32_AS_8_8:
+-		*bpe = 4;
+-		break;
+-	case V_038004_COLOR_X24_8_32_FLOAT:
+-	case V_038004_COLOR_32_32:
+-	case V_038004_COLOR_32_32_FLOAT:
+-	case V_038004_COLOR_16_16_16_16:
+-	case V_038004_COLOR_16_16_16_16_FLOAT:
+-		*bpe = 8;
+-		break;
+-	case V_038004_FMT_16_16_16:
+-	case V_038004_FMT_16_16_16_FLOAT:
+-		*bpe = 6;
+-		break;
+-	case V_038004_FMT_32_32_32:
+-	case V_038004_FMT_32_32_32_FLOAT:
+-		*bpe = 12;
+-		break;
+-	case V_038004_COLOR_32_32_32_32:
+-	case V_038004_COLOR_32_32_32_32_FLOAT:
+-		*bpe = 16;
+-		break;
+-	case V_038004_FMT_GB_GR:
+-	case V_038004_FMT_BG_RG:
+-	case V_038004_COLOR_INVALID:
+-	default:
+-		*bpe = 16;
+-		return -EINVAL;
+-	}
++ 	unsigned res;
++
++	if (format >= ARRAY_SIZE(color_formats_table))
++		goto fail;
++
++	res = color_formats_table[format].blocksize;
++	if (res == 0)
++		goto fail;
++
++	*bpe = res;
+ 	return 0;
++
++fail:
++	*bpe = 16;
++	return -EINVAL;
+ }
+ 
+ struct array_mode_checker {
+@@ -148,7 +240,7 @@ struct array_mode_checker {
+ 	u32 nbanks;
+ 	u32 npipes;
+ 	u32 nsamples;
+-	u32 bpe;
++	u32 blocksize;
+ };
+ 
+ /* returns alignment in pixels for pitch/height/depth and bytes for base */
+@@ -162,7 +254,7 @@ static inline int r600_get_array_mode_alignment(struct array_mode_checker *value
+ 	u32 tile_height = 8;
+ 	u32 macro_tile_width = values->nbanks;
+ 	u32 macro_tile_height = values->npipes;
+-	u32 tile_bytes = tile_width * tile_height * values->bpe * values->nsamples;
++	u32 tile_bytes = tile_width * tile_height * values->blocksize * values->nsamples;
+ 	u32 macro_tile_bytes = macro_tile_width * macro_tile_height * tile_bytes;
+ 
+ 	switch (values->array_mode) {
+@@ -174,7 +266,7 @@ static inline int r600_get_array_mode_alignment(struct array_mode_checker *value
+ 		*base_align = 1;
+ 		break;
+ 	case ARRAY_LINEAR_ALIGNED:
+-		*pitch_align = max((u32)64, (u32)(values->group_size / values->bpe));
++		*pitch_align = max((u32)64, (u32)(values->group_size / values->blocksize));
+ 		*height_align = tile_height;
+ 		*depth_align = 1;
+ 		*base_align = values->group_size;
+@@ -182,7 +274,7 @@ static inline int r600_get_array_mode_alignment(struct array_mode_checker *value
+ 	case ARRAY_1D_TILED_THIN1:
+ 		*pitch_align = max((u32)tile_width,
+ 				   (u32)(values->group_size /
+-					 (tile_height * values->bpe * values->nsamples)));
++					 (tile_height * values->blocksize * values->nsamples)));
+ 		*height_align = tile_height;
+ 		*depth_align = 1;
+ 		*base_align = values->group_size;
+@@ -190,12 +282,12 @@ static inline int r600_get_array_mode_alignment(struct array_mode_checker *value
+ 	case ARRAY_2D_TILED_THIN1:
+ 		*pitch_align = max((u32)macro_tile_width,
+ 				  (u32)(((values->group_size / tile_height) /
+-					 (values->bpe * values->nsamples)) *
++					 (values->blocksize * values->nsamples)) *
+ 					values->nbanks)) * tile_width;
+ 		*height_align = macro_tile_height * tile_height;
+ 		*depth_align = 1;
+ 		*base_align = max(macro_tile_bytes,
+-				  (*pitch_align) * values->bpe * (*height_align) * values->nsamples);
++				  (*pitch_align) * values->blocksize * (*height_align) * values->nsamples);
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -234,21 +326,22 @@ static void r600_cs_track_init(struct r600_cs_track *track)
+ static inline int r600_cs_track_validate_cb(struct radeon_cs_parser *p, int i)
+ {
+ 	struct r600_cs_track *track = p->track;
+-	u32 bpe = 0, slice_tile_max, size, tmp;
++	u32 slice_tile_max, size, tmp;
+ 	u32 height, height_align, pitch, pitch_align, depth_align;
+ 	u64 base_offset, base_align;
+ 	struct array_mode_checker array_check;
+ 	volatile u32 *ib = p->ib->ptr;
+ 	unsigned array_mode;
+-
++	u32 format;
+ 	if (G_0280A0_TILE_MODE(track->cb_color_info[i])) {
+ 		dev_warn(p->dev, "FMASK or CMASK buffer are not supported by this kernel\n");
+ 		return -EINVAL;
+ 	}
+ 	size = radeon_bo_size(track->cb_color_bo[i]) - track->cb_color_bo_offset[i];
+-	if (r600_bpe_from_format(&bpe, G_0280A0_FORMAT(track->cb_color_info[i]))) {
++	format = G_0280A0_FORMAT(track->cb_color_info[i]);
++	if (!fmt_is_valid_color(format)) {
+ 		dev_warn(p->dev, "%s:%d cb invalid format %d for %d (0x%08X)\n",
+-			 __func__, __LINE__, G_0280A0_FORMAT(track->cb_color_info[i]),
++			 __func__, __LINE__, format,
+ 			i, track->cb_color_info[i]);
+ 		return -EINVAL;
+ 	}
+@@ -267,7 +360,7 @@ static inline int r600_cs_track_validate_cb(struct radeon_cs_parser *p, int i)
+ 	array_check.nbanks = track->nbanks;
+ 	array_check.npipes = track->npipes;
+ 	array_check.nsamples = track->nsamples;
+-	array_check.bpe = bpe;
++	array_check.blocksize = fmt_get_blocksize(format);
+ 	if (r600_get_array_mode_alignment(&array_check,
+ 					  &pitch_align, &height_align, &depth_align, &base_align)) {
+ 		dev_warn(p->dev, "%s invalid tiling %d for %d (0x%08X)\n", __func__,
+@@ -311,7 +404,7 @@ static inline int r600_cs_track_validate_cb(struct radeon_cs_parser *p, int i)
+ 	}
+ 
+ 	/* check offset */
+-	tmp = height * pitch * bpe;
++	tmp = fmt_get_nblocksy(format, height) * fmt_get_nblocksx(format, pitch) * fmt_get_blocksize(format);
+ 	if ((tmp + track->cb_color_bo_offset[i]) > radeon_bo_size(track->cb_color_bo[i])) {
+ 		if (array_mode == V_0280A0_ARRAY_LINEAR_GENERAL) {
+ 			/* the initial DDX does bad things with the CB size occasionally */
+@@ -436,7 +529,7 @@ static int r600_cs_track_check(struct radeon_cs_parser *p)
+ 			array_check.nbanks = track->nbanks;
+ 			array_check.npipes = track->npipes;
+ 			array_check.nsamples = track->nsamples;
+-			array_check.bpe = bpe;
++			array_check.blocksize = bpe;
+ 			if (r600_get_array_mode_alignment(&array_check,
+ 							  &pitch_align, &height_align, &depth_align, &base_align)) {
+ 				dev_warn(p->dev, "%s invalid tiling %d (0x%08X)\n", __func__,
+@@ -1113,39 +1206,61 @@ static inline int r600_cs_check_reg(struct radeon_cs_parser *p, u32 reg, u32 idx
+ 	return 0;
+ }
+ 
+-static inline unsigned minify(unsigned size, unsigned levels)
++static inline unsigned mip_minify(unsigned size, unsigned level)
+ {
+-	size = size >> levels;
+-	if (size < 1)
+-		size = 1;
+-	return size;
++	unsigned val;
++
++	val = max(1U, size >> level);
++	if (level > 0)
++		val = roundup_pow_of_two(val);
++	return val;
+ }
+ 
+-static void r600_texture_size(unsigned nfaces, unsigned blevel, unsigned nlevels,
+-			      unsigned w0, unsigned h0, unsigned d0, unsigned bpe,
+-			      unsigned pitch_align,
++static void r600_texture_size(unsigned nfaces, unsigned blevel, unsigned llevel,
++			      unsigned w0, unsigned h0, unsigned d0, unsigned format,
++			      unsigned block_align, unsigned height_align, unsigned base_align,
+ 			      unsigned *l0_size, unsigned *mipmap_size)
+ {
+-	unsigned offset, i, level, face;
+-	unsigned width, height, depth, rowstride, size;
+-
+-	w0 = minify(w0, 0);
+-	h0 = minify(h0, 0);
+-	d0 = minify(d0, 0);
++	unsigned offset, i, level;
++	unsigned width, height, depth, size;
++	unsigned blocksize;
++	unsigned nbx, nby;
++	unsigned nlevels = llevel - blevel + 1;
++
++	*l0_size = -1;
++	blocksize = fmt_get_blocksize(format);
++
++	w0 = mip_minify(w0, 0);
++	h0 = mip_minify(h0, 0);
++	d0 = mip_minify(d0, 0);
+ 	for(i = 0, offset = 0, level = blevel; i < nlevels; i++, level++) {
+-		width = minify(w0, i);
+-		height = minify(h0, i);
+-		depth = minify(d0, i);
+-		for(face = 0; face < nfaces; face++) {
+-			rowstride = ALIGN((width * bpe), pitch_align);
+-			size = height * rowstride * depth;
+-			offset += size;
+-			offset = (offset + 0x1f) & ~0x1f;
+-		}
++		width = mip_minify(w0, i);
++		nbx = fmt_get_nblocksx(format, width);
++
++		nbx = round_up(nbx, block_align);
++
++		height = mip_minify(h0, i);
++		nby = fmt_get_nblocksy(format, height);
++		nby = round_up(nby, height_align);
++
++		depth = mip_minify(d0, i);
++
++		size = nbx * nby * blocksize;
++		if (nfaces)
++			size *= nfaces;
++		else
++			size *= depth;
++
++		if (i == 0)
++			*l0_size = size;
++
++		if (i == 0 || i == 1)
++			offset = round_up(offset, base_align);
++
++		offset += size;
+ 	}
+-	*l0_size = ALIGN((w0 * bpe), pitch_align) * h0 * d0;
+ 	*mipmap_size = offset;
+-	if (!nlevels)
++	if (llevel == 0)
+ 		*mipmap_size = *l0_size;
+ 	if (!blevel)
+ 		*mipmap_size -= *l0_size;
+@@ -1169,11 +1284,13 @@ static inline int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 i
+ 					      u32 tiling_flags)
+ {
+ 	struct r600_cs_track *track = p->track;
+-	u32 nfaces, nlevels, blevel, w0, h0, d0, bpe = 0;
+-	u32 word0, word1, l0_size, mipmap_size;
++	u32 nfaces, llevel, blevel, w0, h0, d0;
++	u32 word0, word1, l0_size, mipmap_size, word2, word3;
+ 	u32 height_align, pitch, pitch_align, depth_align;
++	u32 array, barray, larray;
+ 	u64 base_align;
+ 	struct array_mode_checker array_check;
++	u32 format;
+ 
+ 	/* on legacy kernel we don't perform advanced check */
+ 	if (p->rdev == NULL)
+@@ -1199,19 +1316,25 @@ static inline int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 i
+ 	case V_038000_SQ_TEX_DIM_3D:
+ 		break;
+ 	case V_038000_SQ_TEX_DIM_CUBEMAP:
+-		nfaces = 6;
++		if (p->family >= CHIP_RV770)
++			nfaces = 8;
++		else
++			nfaces = 6;
+ 		break;
+ 	case V_038000_SQ_TEX_DIM_1D_ARRAY:
+ 	case V_038000_SQ_TEX_DIM_2D_ARRAY:
++		array = 1;
++		break;
+ 	case V_038000_SQ_TEX_DIM_2D_MSAA:
+ 	case V_038000_SQ_TEX_DIM_2D_ARRAY_MSAA:
+ 	default:
+ 		dev_warn(p->dev, "this kernel doesn't support %d texture dim\n", G_038000_DIM(word0));
+ 		return -EINVAL;
+ 	}
+-	if (r600_bpe_from_format(&bpe,  G_038004_DATA_FORMAT(word1))) {
++	format = G_038004_DATA_FORMAT(word1);
++	if (!fmt_is_valid_texture(format)) {
+ 		dev_warn(p->dev, "%s:%d texture invalid format %d\n",
+-			 __func__, __LINE__, G_038004_DATA_FORMAT(word1));
++			 __func__, __LINE__, format);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -1222,7 +1345,7 @@ static inline int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 i
+ 	array_check.nbanks = track->nbanks;
+ 	array_check.npipes = track->npipes;
+ 	array_check.nsamples = 1;
+-	array_check.bpe = bpe;
++	array_check.blocksize = fmt_get_blocksize(format);
+ 	if (r600_get_array_mode_alignment(&array_check,
+ 					  &pitch_align, &height_align, &depth_align, &base_align)) {
+ 		dev_warn(p->dev, "%s:%d tex array mode (%d) invalid\n",
+@@ -1248,25 +1371,34 @@ static inline int r600_check_texture_resource(struct radeon_cs_parser *p,  u32 i
+ 		return -EINVAL;
+ 	}
+ 
++	word2 = radeon_get_ib_value(p, idx + 2) << 8;
++	word3 = radeon_get_ib_value(p, idx + 3) << 8;
++
+ 	word0 = radeon_get_ib_value(p, idx + 4);
+ 	word1 = radeon_get_ib_value(p, idx + 5);
+ 	blevel = G_038010_BASE_LEVEL(word0);
+-	nlevels = G_038014_LAST_LEVEL(word1);
+-	r600_texture_size(nfaces, blevel, nlevels, w0, h0, d0, bpe,
+-			  (pitch_align * bpe),
++	llevel = G_038014_LAST_LEVEL(word1);
++	if (array == 1) {
++		barray = G_038014_BASE_ARRAY(word1);
++		larray = G_038014_LAST_ARRAY(word1);
++
++		nfaces = larray - barray + 1;
++	}
++	r600_texture_size(nfaces, blevel, llevel, w0, h0, d0, format,
++			  pitch_align, height_align, base_align,
+ 			  &l0_size, &mipmap_size);
+ 	/* using get ib will give us the offset into the texture bo */
+-	word0 = radeon_get_ib_value(p, idx + 2) << 8;
+-	if ((l0_size + word0) > radeon_bo_size(texture)) {
++	if ((l0_size + word2) > radeon_bo_size(texture)) {
+ 		dev_warn(p->dev, "texture bo too small (%d %d %d %d -> %d have %ld)\n",
+-			w0, h0, bpe, word0, l0_size, radeon_bo_size(texture));
++			w0, h0, format, word2, l0_size, radeon_bo_size(texture));
++		dev_warn(p->dev, "alignments %d %d %d %lld\n", pitch, pitch_align, height_align, base_align);
+ 		return -EINVAL;
+ 	}
+ 	/* using get ib will give us the offset into the mipmap bo */
+-	word0 = radeon_get_ib_value(p, idx + 3) << 8;
+-	if ((mipmap_size + word0) > radeon_bo_size(mipmap)) {
++	word3 = radeon_get_ib_value(p, idx + 3) << 8;
++	if ((mipmap_size + word3) > radeon_bo_size(mipmap)) {
+ 		/*dev_warn(p->dev, "mipmap bo too small (%d %d %d %d %d %d -> %d have %ld)\n",
+-		  w0, h0, bpe, blevel, nlevels, word0, mipmap_size, radeon_bo_size(texture));*/
++		  w0, h0, format, blevel, nlevels, word3, mipmap_size, radeon_bo_size(texture));*/
+ 	}
+ 	return 0;
+ }
+@@ -1289,6 +1421,38 @@ static int r600_packet3_check(struct radeon_cs_parser *p,
+ 	idx_value = radeon_get_ib_value(p, idx);
+ 
+ 	switch (pkt->opcode) {
++	case PACKET3_SET_PREDICATION:
++	{
++		int pred_op;
++		int tmp;
++		if (pkt->count != 1) {
++			DRM_ERROR("bad SET PREDICATION\n");
++			return -EINVAL;
++		}
++
++		tmp = radeon_get_ib_value(p, idx + 1);
++		pred_op = (tmp >> 16) & 0x7;
++
++		/* for the clear predicate operation */
++		if (pred_op == 0)
++			return 0;
++
++		if (pred_op > 2) {
++			DRM_ERROR("bad SET PREDICATION operation %d\n", pred_op);
++			return -EINVAL;
++		}
++
++		r = r600_cs_packet_next_reloc(p, &reloc);
++		if (r) {
++			DRM_ERROR("bad SET PREDICATION\n");
++			return -EINVAL;
++		}
++
++		ib[idx + 0] = idx_value + (u32)(reloc->lobj.gpu_offset & 0xffffffff);
++		ib[idx + 1] = tmp + (upper_32_bits(reloc->lobj.gpu_offset) & 0xff);
++	}
++	break;
++
+ 	case PACKET3_START_3D_CMDBUF:
+ 		if (p->family >= CHIP_RV770 || pkt->count) {
+ 			DRM_ERROR("bad START_3D\n");
+diff --git a/drivers/gpu/drm/radeon/r600d.h b/drivers/gpu/drm/radeon/r600d.h
+index 04bac0b..b2b944b 100644
+--- a/drivers/gpu/drm/radeon/r600d.h
++++ b/drivers/gpu/drm/radeon/r600d.h
+@@ -1304,6 +1304,11 @@
+ #define     V_038004_FMT_16_16_16_FLOAT                0x0000002E
+ #define     V_038004_FMT_32_32_32                      0x0000002F
+ #define     V_038004_FMT_32_32_32_FLOAT                0x00000030
++#define     V_038004_FMT_BC1                           0x00000031
++#define     V_038004_FMT_BC2                           0x00000032
++#define     V_038004_FMT_BC3                           0x00000033
++#define     V_038004_FMT_BC4                           0x00000034
++#define     V_038004_FMT_BC5                           0x00000035
+ #define R_038010_SQ_TEX_RESOURCE_WORD4_0             0x038010
+ #define   S_038010_FORMAT_COMP_X(x)                    (((x) & 0x3) << 0)
+ #define   G_038010_FORMAT_COMP_X(x)                    (((x) >> 0) & 0x3)
+diff --git a/drivers/gpu/drm/radeon/radeon.h b/drivers/gpu/drm/radeon/radeon.h
+index 6b34294..27df931 100644
+--- a/drivers/gpu/drm/radeon/radeon.h
++++ b/drivers/gpu/drm/radeon/radeon.h
+@@ -177,7 +177,7 @@ void radeon_pm_suspend(struct radeon_device *rdev);
+ void radeon_pm_resume(struct radeon_device *rdev);
+ void radeon_combios_get_power_modes(struct radeon_device *rdev);
+ void radeon_atombios_get_power_modes(struct radeon_device *rdev);
+-void radeon_atom_set_voltage(struct radeon_device *rdev, u16 level);
++void radeon_atom_set_voltage(struct radeon_device *rdev, u16 voltage_level, u8 voltage_type);
+ void rs690_pm_info(struct radeon_device *rdev);
+ extern int rv6xx_get_temp(struct radeon_device *rdev);
+ extern int rv770_get_temp(struct radeon_device *rdev);
+@@ -651,6 +651,8 @@ struct radeon_wb {
+ 
+ #define RADEON_WB_SCRATCH_OFFSET 0
+ #define RADEON_WB_CP_RPTR_OFFSET 1024
++#define RADEON_WB_CP1_RPTR_OFFSET 1280
++#define RADEON_WB_CP2_RPTR_OFFSET 1536
+ #define R600_WB_IH_WPTR_OFFSET   2048
+ #define R600_WB_EVENT_OFFSET     3072
+ 
+@@ -753,7 +755,9 @@ struct radeon_voltage {
+ 	u8 vddci_id; /* index into vddci voltage table */
+ 	bool vddci_enabled;
+ 	/* r6xx+ sw */
+-	u32 voltage;
++	u16 voltage;
++	/* evergreen+ vddci */
++	u16 vddci;
+ };
+ 
+ /* clock mode flags */
+@@ -821,10 +825,12 @@ struct radeon_pm {
+ 	int                     default_power_state_index;
+ 	u32                     current_sclk;
+ 	u32                     current_mclk;
+-	u32                     current_vddc;
++	u16                     current_vddc;
++	u16                     current_vddci;
+ 	u32                     default_sclk;
+ 	u32                     default_mclk;
+-	u32                     default_vddc;
++	u16                     default_vddc;
++	u16                     default_vddci;
+ 	struct radeon_i2c_chan *i2c_bus;
+ 	/* selected pm method */
+ 	enum radeon_pm_method     pm_method;
+@@ -1037,12 +1043,52 @@ struct evergreen_asic {
+ 	struct r100_gpu_lockup	lockup;
+ };
+ 
++struct cayman_asic {
++	unsigned max_shader_engines;
++	unsigned max_pipes_per_simd;
++	unsigned max_tile_pipes;
++	unsigned max_simds_per_se;
++	unsigned max_backends_per_se;
++	unsigned max_texture_channel_caches;
++	unsigned max_gprs;
++	unsigned max_threads;
++	unsigned max_gs_threads;
++	unsigned max_stack_entries;
++	unsigned sx_num_of_sets;
++	unsigned sx_max_export_size;
++	unsigned sx_max_export_pos_size;
++	unsigned sx_max_export_smx_size;
++	unsigned max_hw_contexts;
++	unsigned sq_num_cf_insts;
++	unsigned sc_prim_fifo_size;
++	unsigned sc_hiz_tile_fifo_size;
++	unsigned sc_earlyz_tile_fifo_size;
++
++	unsigned num_shader_engines;
++	unsigned num_shader_pipes_per_simd;
++	unsigned num_tile_pipes;
++	unsigned num_simds_per_se;
++	unsigned num_backends_per_se;
++	unsigned backend_disable_mask_per_asic;
++	unsigned backend_map;
++	unsigned num_texture_channel_caches;
++	unsigned mem_max_burst_length_bytes;
++	unsigned mem_row_size_in_kb;
++	unsigned shader_engine_tile_size;
++	unsigned num_gpus;
++	unsigned multi_gpu_tile_size;
++
++	unsigned tile_config;
++	struct r100_gpu_lockup	lockup;
++};
++
+ union radeon_asic_config {
+ 	struct r300_asic	r300;
+ 	struct r100_asic	r100;
+ 	struct r600_asic	r600;
+ 	struct rv770_asic	rv770;
+ 	struct evergreen_asic	evergreen;
++	struct cayman_asic	cayman;
+ };
+ 
+ /*
+@@ -1133,6 +1179,9 @@ struct radeon_device {
+ 	struct radeon_mman		mman;
+ 	struct radeon_fence_driver	fence_drv;
+ 	struct radeon_cp		cp;
++	/* cayman compute rings */
++	struct radeon_cp		cp1;
++	struct radeon_cp		cp2;
+ 	struct radeon_ib_pool		ib_pool;
+ 	struct radeon_irq		irq;
+ 	struct radeon_asic		*asic;
+@@ -1504,7 +1553,7 @@ extern int evergreen_blit_init(struct radeon_device *rdev);
+ extern void evergreen_blit_fini(struct radeon_device *rdev);
+ 
+ extern int ni_init_microcode(struct radeon_device *rdev);
+-extern int btc_mc_load_microcode(struct radeon_device *rdev);
++extern int ni_mc_load_microcode(struct radeon_device *rdev);
+ 
+ /* radeon_acpi.c */ 
+ #if defined(CONFIG_ACPI) 
+diff --git a/drivers/gpu/drm/radeon/radeon_asic.c b/drivers/gpu/drm/radeon/radeon_asic.c
+index 793c5e6..ca57619 100644
+--- a/drivers/gpu/drm/radeon/radeon_asic.c
++++ b/drivers/gpu/drm/radeon/radeon_asic.c
+@@ -94,7 +94,7 @@ static void radeon_register_accessor_init(struct radeon_device *rdev)
+ 		rdev->mc_rreg = &rs600_mc_rreg;
+ 		rdev->mc_wreg = &rs600_mc_wreg;
+ 	}
+-	if ((rdev->family >= CHIP_R600) && (rdev->family <= CHIP_HEMLOCK)) {
++	if (rdev->family >= CHIP_R600) {
+ 		rdev->pciep_rreg = &r600_pciep_rreg;
+ 		rdev->pciep_wreg = &r600_pciep_wreg;
+ 	}
+@@ -885,6 +885,52 @@ static struct radeon_asic btc_asic = {
+ 	.post_page_flip = &evergreen_post_page_flip,
+ };
+ 
++static struct radeon_asic cayman_asic = {
++	.init = &cayman_init,
++	.fini = &cayman_fini,
++	.suspend = &cayman_suspend,
++	.resume = &cayman_resume,
++	.cp_commit = &r600_cp_commit,
++	.gpu_is_lockup = &cayman_gpu_is_lockup,
++	.asic_reset = &cayman_asic_reset,
++	.vga_set_state = &r600_vga_set_state,
++	.gart_tlb_flush = &cayman_pcie_gart_tlb_flush,
++	.gart_set_page = &rs600_gart_set_page,
++	.ring_test = &r600_ring_test,
++	.ring_ib_execute = &evergreen_ring_ib_execute,
++	.irq_set = &evergreen_irq_set,
++	.irq_process = &evergreen_irq_process,
++	.get_vblank_counter = &evergreen_get_vblank_counter,
++	.fence_ring_emit = &r600_fence_ring_emit,
++	.cs_parse = &evergreen_cs_parse,
++	.copy_blit = NULL,
++	.copy_dma = NULL,
++	.copy = NULL,
++	.get_engine_clock = &radeon_atom_get_engine_clock,
++	.set_engine_clock = &radeon_atom_set_engine_clock,
++	.get_memory_clock = &radeon_atom_get_memory_clock,
++	.set_memory_clock = &radeon_atom_set_memory_clock,
++	.get_pcie_lanes = NULL,
++	.set_pcie_lanes = NULL,
++	.set_clock_gating = NULL,
++	.set_surface_reg = r600_set_surface_reg,
++	.clear_surface_reg = r600_clear_surface_reg,
++	.bandwidth_update = &evergreen_bandwidth_update,
++	.hpd_init = &evergreen_hpd_init,
++	.hpd_fini = &evergreen_hpd_fini,
++	.hpd_sense = &evergreen_hpd_sense,
++	.hpd_set_polarity = &evergreen_hpd_set_polarity,
++	.gui_idle = &r600_gui_idle,
++	.pm_misc = &evergreen_pm_misc,
++	.pm_prepare = &evergreen_pm_prepare,
++	.pm_finish = &evergreen_pm_finish,
++	.pm_init_profile = &r600_pm_init_profile,
++	.pm_get_dynpm_state = &r600_pm_get_dynpm_state,
++	.pre_page_flip = &evergreen_pre_page_flip,
++	.page_flip = &evergreen_page_flip,
++	.post_page_flip = &evergreen_post_page_flip,
++};
++
+ int radeon_asic_init(struct radeon_device *rdev)
+ {
+ 	radeon_register_accessor_init(rdev);
+@@ -977,6 +1023,9 @@ int radeon_asic_init(struct radeon_device *rdev)
+ 	case CHIP_CAICOS:
+ 		rdev->asic = &btc_asic;
+ 		break;
++	case CHIP_CAYMAN:
++		rdev->asic = &cayman_asic;
++		break;
+ 	default:
+ 		/* FIXME: not supported yet */
+ 		return -EINVAL;
+diff --git a/drivers/gpu/drm/radeon/radeon_asic.h b/drivers/gpu/drm/radeon/radeon_asic.h
+index c59bd98..82c4bc2 100644
+--- a/drivers/gpu/drm/radeon/radeon_asic.h
++++ b/drivers/gpu/drm/radeon/radeon_asic.h
+@@ -375,4 +375,15 @@ extern void evergreen_pre_page_flip(struct radeon_device *rdev, int crtc);
+ extern u32 evergreen_page_flip(struct radeon_device *rdev, int crtc, u64 crtc_base);
+ extern void evergreen_post_page_flip(struct radeon_device *rdev, int crtc);
+ 
++/*
++ * cayman
++ */
++void cayman_pcie_gart_tlb_flush(struct radeon_device *rdev);
++int cayman_init(struct radeon_device *rdev);
++void cayman_fini(struct radeon_device *rdev);
++int cayman_suspend(struct radeon_device *rdev);
++int cayman_resume(struct radeon_device *rdev);
++bool cayman_gpu_is_lockup(struct radeon_device *rdev);
++int cayman_asic_reset(struct radeon_device *rdev);
++
+ #endif
+diff --git a/drivers/gpu/drm/radeon/radeon_atombios.c b/drivers/gpu/drm/radeon/radeon_atombios.c
+index 99768d9..f116516 100644
+--- a/drivers/gpu/drm/radeon/radeon_atombios.c
++++ b/drivers/gpu/drm/radeon/radeon_atombios.c
+@@ -1599,9 +1599,10 @@ struct radeon_encoder_atom_dig *radeon_atombios_get_lvds_info(struct
+ 							memcpy((u8 *)edid, (u8 *)&fake_edid_record->ucFakeEDIDString[0],
+ 							       fake_edid_record->ucFakeEDIDLength);
+ 
+-							if (drm_edid_is_valid(edid))
++							if (drm_edid_is_valid(edid)) {
+ 								rdev->mode_info.bios_hardcoded_edid = edid;
+-							else
++								rdev->mode_info.bios_hardcoded_edid_size = edid_size;
++							} else
+ 								kfree(edid);
+ 						}
+ 					}
+@@ -2176,24 +2177,27 @@ static void radeon_atombios_add_pplib_thermal_controller(struct radeon_device *r
+ 	}
+ }
+ 
+-static u16 radeon_atombios_get_default_vddc(struct radeon_device *rdev)
++static void radeon_atombios_get_default_voltages(struct radeon_device *rdev,
++						 u16 *vddc, u16 *vddci)
+ {
+ 	struct radeon_mode_info *mode_info = &rdev->mode_info;
+ 	int index = GetIndexIntoMasterTable(DATA, FirmwareInfo);
+ 	u8 frev, crev;
+ 	u16 data_offset;
+ 	union firmware_info *firmware_info;
+-	u16 vddc = 0;
++
++	*vddc = 0;
++	*vddci = 0;
+ 
+ 	if (atom_parse_data_header(mode_info->atom_context, index, NULL,
+ 				   &frev, &crev, &data_offset)) {
+ 		firmware_info =
+ 			(union firmware_info *)(mode_info->atom_context->bios +
+ 						data_offset);
+-		vddc = le16_to_cpu(firmware_info->info_14.usBootUpVDDCVoltage);
++		*vddc = le16_to_cpu(firmware_info->info_14.usBootUpVDDCVoltage);
++		if ((frev == 2) && (crev >= 2))
++			*vddci = le16_to_cpu(firmware_info->info_22.usBootUpVDDCIVoltage);
+ 	}
+-
+-	return vddc;
+ }
+ 
+ static void radeon_atombios_parse_pplib_non_clock_info(struct radeon_device *rdev,
+@@ -2203,7 +2207,9 @@ static void radeon_atombios_parse_pplib_non_clock_info(struct radeon_device *rde
+ 	int j;
+ 	u32 misc = le32_to_cpu(non_clock_info->ulCapsAndSettings);
+ 	u32 misc2 = le16_to_cpu(non_clock_info->usClassification);
+-	u16 vddc = radeon_atombios_get_default_vddc(rdev);
++	u16 vddc, vddci;
++
++	radeon_atombios_get_default_voltages(rdev, &vddc, &vddci);
+ 
+ 	rdev->pm.power_state[state_index].misc = misc;
+ 	rdev->pm.power_state[state_index].misc2 = misc2;
+@@ -2244,6 +2250,7 @@ static void radeon_atombios_parse_pplib_non_clock_info(struct radeon_device *rde
+ 			rdev->pm.default_sclk = rdev->pm.power_state[state_index].clock_info[0].sclk;
+ 			rdev->pm.default_mclk = rdev->pm.power_state[state_index].clock_info[0].mclk;
+ 			rdev->pm.default_vddc = rdev->pm.power_state[state_index].clock_info[0].voltage.voltage;
++			rdev->pm.default_vddci = rdev->pm.power_state[state_index].clock_info[0].voltage.vddci;
+ 		} else {
+ 			/* patch the table values with the default slck/mclk from firmware info */
+ 			for (j = 0; j < mode_index; j++) {
+@@ -2286,6 +2293,8 @@ static bool radeon_atombios_parse_pplib_clock_info(struct radeon_device *rdev,
+ 			VOLTAGE_SW;
+ 		rdev->pm.power_state[state_index].clock_info[mode_index].voltage.voltage =
+ 			le16_to_cpu(clock_info->evergreen.usVDDC);
++		rdev->pm.power_state[state_index].clock_info[mode_index].voltage.vddci =
++			le16_to_cpu(clock_info->evergreen.usVDDCI);
+ 	} else {
+ 		sclk = le16_to_cpu(clock_info->r600.usEngineClockLow);
+ 		sclk |= clock_info->r600.ucEngineClockHigh << 16;
+@@ -2577,25 +2586,25 @@ union set_voltage {
+ 	struct _SET_VOLTAGE_PARAMETERS_V2 v2;
+ };
+ 
+-void radeon_atom_set_voltage(struct radeon_device *rdev, u16 level)
++void radeon_atom_set_voltage(struct radeon_device *rdev, u16 voltage_level, u8 voltage_type)
+ {
+ 	union set_voltage args;
+ 	int index = GetIndexIntoMasterTable(COMMAND, SetVoltage);
+-	u8 frev, crev, volt_index = level;
++	u8 frev, crev, volt_index = voltage_level;
+ 
+ 	if (!atom_parse_cmd_header(rdev->mode_info.atom_context, index, &frev, &crev))
+ 		return;
+ 
+ 	switch (crev) {
+ 	case 1:
+-		args.v1.ucVoltageType = SET_VOLTAGE_TYPE_ASIC_VDDC;
++		args.v1.ucVoltageType = voltage_type;
+ 		args.v1.ucVoltageMode = SET_ASIC_VOLTAGE_MODE_ALL_SOURCE;
+ 		args.v1.ucVoltageIndex = volt_index;
+ 		break;
+ 	case 2:
+-		args.v2.ucVoltageType = SET_VOLTAGE_TYPE_ASIC_VDDC;
++		args.v2.ucVoltageType = voltage_type;
+ 		args.v2.ucVoltageMode = SET_ASIC_VOLTAGE_MODE_SET_VOLTAGE;
+-		args.v2.usVoltageLevel = cpu_to_le16(level);
++		args.v2.usVoltageLevel = cpu_to_le16(voltage_level);
+ 		break;
+ 	default:
+ 		DRM_ERROR("Unknown table version %d, %d\n", frev, crev);
+diff --git a/drivers/gpu/drm/radeon/radeon_combios.c b/drivers/gpu/drm/radeon/radeon_combios.c
+index cf602e2..8caf546 100644
+--- a/drivers/gpu/drm/radeon/radeon_combios.c
++++ b/drivers/gpu/drm/radeon/radeon_combios.c
+@@ -2079,6 +2079,19 @@ bool radeon_get_legacy_connector_info_from_table(struct drm_device *dev)
+ 					    DRM_MODE_CONNECTOR_DVII, &ddc_i2c,
+ 					    CONNECTOR_OBJECT_ID_SINGLE_LINK_DVI_I,
+ 					    &hpd);
++		/* TV - TV DAC */
++		ddc_i2c.valid = false;
++		hpd.hpd = RADEON_HPD_NONE;
++		radeon_add_legacy_encoder(dev,
++					  radeon_get_encoder_enum(dev,
++								ATOM_DEVICE_TV1_SUPPORT,
++								2),
++					  ATOM_DEVICE_TV1_SUPPORT);
++		radeon_add_legacy_connector(dev, 2, ATOM_DEVICE_TV1_SUPPORT,
++					    DRM_MODE_CONNECTOR_SVIDEO,
++					    &ddc_i2c,
++					    CONNECTOR_OBJECT_ID_SVIDEO,
++					    &hpd);
+ 		break;
+ 	default:
+ 		DRM_INFO("Connector table: %d (invalid)\n",
+diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+index d83338b..a186673 100644
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -998,7 +998,16 @@ static int radeon_dvi_mode_valid(struct drm_connector *connector,
+ 		    (radeon_connector->connector_object_id == CONNECTOR_OBJECT_ID_DUAL_LINK_DVI_D) ||
+ 		    (radeon_connector->connector_object_id == CONNECTOR_OBJECT_ID_HDMI_TYPE_B))
+ 			return MODE_OK;
+-		else
++		else if (radeon_connector->connector_object_id == CONNECTOR_OBJECT_ID_HDMI_TYPE_A) {
++			if (ASIC_IS_DCE3(rdev)) {
++				/* HDMI 1.3+ supports max clock of 340 Mhz */
++				if (mode->clock > 340000)
++					return MODE_CLOCK_HIGH;
++				else
++					return MODE_OK;
++			} else
++				return MODE_CLOCK_HIGH;
++		} else
+ 			return MODE_CLOCK_HIGH;
+ 	}
+ 	return MODE_OK;
+diff --git a/drivers/gpu/drm/radeon/radeon_device.c b/drivers/gpu/drm/radeon/radeon_device.c
+index 4954e2d..207d43f 100644
+--- a/drivers/gpu/drm/radeon/radeon_device.c
++++ b/drivers/gpu/drm/radeon/radeon_device.c
+@@ -85,6 +85,7 @@ static const char radeon_family_name[][16] = {
+ 	"BARTS",
+ 	"TURKS",
+ 	"CAICOS",
++	"CAYMAN",
+ 	"LAST",
+ };
+ 
+diff --git a/drivers/gpu/drm/radeon/radeon_drv.c b/drivers/gpu/drm/radeon/radeon_drv.c
+index 275b26a..0444911 100644
+--- a/drivers/gpu/drm/radeon/radeon_drv.c
++++ b/drivers/gpu/drm/radeon/radeon_drv.c
+@@ -49,9 +49,10 @@
+  * - 2.6.0 - add tiling config query (r6xx+), add initial HiZ support (r300->r500)
+  *   2.7.0 - fixups for r600 2D tiling support. (no external ABI change), add eg dyn gpr regs
+  *   2.8.0 - pageflip support, r500 US_FORMAT regs. r500 ARGB2101010 colorbuf, r300->r500 CMASK, clock crystal query
++ *   2.9.0 - r600 tiling (s3tc,rgtc) working, SET_PREDICATION packet 3 on r600 + eg, backend query
+  */
+ #define KMS_DRIVER_MAJOR	2
+-#define KMS_DRIVER_MINOR	8
++#define KMS_DRIVER_MINOR	9
+ #define KMS_DRIVER_PATCHLEVEL	0
+ int radeon_driver_load_kms(struct drm_device *dev, unsigned long flags);
+ int radeon_driver_unload_kms(struct drm_device *dev);
+diff --git a/drivers/gpu/drm/radeon/radeon_family.h b/drivers/gpu/drm/radeon/radeon_family.h
+index 1ca55eb..6f1d9e5 100644
+--- a/drivers/gpu/drm/radeon/radeon_family.h
++++ b/drivers/gpu/drm/radeon/radeon_family.h
+@@ -84,6 +84,7 @@ enum radeon_family {
+ 	CHIP_BARTS,
+ 	CHIP_TURKS,
+ 	CHIP_CAICOS,
++	CHIP_CAYMAN,
+ 	CHIP_LAST,
+ };
+ 
+diff --git a/drivers/gpu/drm/radeon/radeon_kms.c b/drivers/gpu/drm/radeon/radeon_kms.c
+index 8387d32..d36fe3f 100644
+--- a/drivers/gpu/drm/radeon/radeon_kms.c
++++ b/drivers/gpu/drm/radeon/radeon_kms.c
+@@ -169,7 +169,9 @@ int radeon_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
+ 		value = rdev->accel_working;
+ 		break;
+ 	case RADEON_INFO_TILING_CONFIG:
+-		if (rdev->family >= CHIP_CEDAR)
++		if (rdev->family >= CHIP_CAYMAN)
++			value = rdev->config.cayman.tile_config;
++		else if (rdev->family >= CHIP_CEDAR)
+ 			value = rdev->config.evergreen.tile_config;
+ 		else if (rdev->family >= CHIP_RV770)
+ 			value = rdev->config.rv770.tile_config;
+@@ -205,6 +207,36 @@ int radeon_info_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
+ 		/* return clock value in KHz */
+ 		value = rdev->clock.spll.reference_freq * 10;
+ 		break;
++	case RADEON_INFO_NUM_BACKENDS:
++		if (rdev->family >= CHIP_CAYMAN)
++			value = rdev->config.cayman.max_backends_per_se *
++				rdev->config.cayman.max_shader_engines;
++		else if (rdev->family >= CHIP_CEDAR)
++			value = rdev->config.evergreen.max_backends;
++		else if (rdev->family >= CHIP_RV770)
++			value = rdev->config.rv770.max_backends;
++		else if (rdev->family >= CHIP_R600)
++			value = rdev->config.r600.max_backends;
++		else {
++			return -EINVAL;
++		}
++		break;
++	case RADEON_INFO_NUM_TILE_PIPES:
++		if (rdev->family >= CHIP_CAYMAN)
++			value = rdev->config.cayman.max_tile_pipes;
++		else if (rdev->family >= CHIP_CEDAR)
++			value = rdev->config.evergreen.max_tile_pipes;
++		else if (rdev->family >= CHIP_RV770)
++			value = rdev->config.rv770.max_tile_pipes;
++		else if (rdev->family >= CHIP_R600)
++			value = rdev->config.r600.max_tile_pipes;
++		else {
++			return -EINVAL;
++		}
++		break;
++	case RADEON_INFO_FUSION_GART_WORKING:
++		value = 1;
++		break;
+ 	default:
+ 		DRM_DEBUG_KMS("Invalid request %d\n", info->request);
+ 		return -EINVAL;
+diff --git a/drivers/gpu/drm/radeon/radeon_pm.c b/drivers/gpu/drm/radeon/radeon_pm.c
+index 2aed03b..320ddc3 100644
+--- a/drivers/gpu/drm/radeon/radeon_pm.c
++++ b/drivers/gpu/drm/radeon/radeon_pm.c
+@@ -23,6 +23,7 @@
+ #include "drmP.h"
+ #include "radeon.h"
+ #include "avivod.h"
++#include "atom.h"
+ #ifdef CONFIG_ACPI
+ #include <linux/acpi.h>
+ #endif
+@@ -533,7 +534,11 @@ void radeon_pm_resume(struct radeon_device *rdev)
+ 	/* set up the default clocks if the MC ucode is loaded */
+ 	if (ASIC_IS_DCE5(rdev) && rdev->mc_fw) {
+ 		if (rdev->pm.default_vddc)
+-			radeon_atom_set_voltage(rdev, rdev->pm.default_vddc);
++			radeon_atom_set_voltage(rdev, rdev->pm.default_vddc,
++						SET_VOLTAGE_TYPE_ASIC_VDDC);
++		if (rdev->pm.default_vddci)
++			radeon_atom_set_voltage(rdev, rdev->pm.default_vddci,
++						SET_VOLTAGE_TYPE_ASIC_VDDCI);
+ 		if (rdev->pm.default_sclk)
+ 			radeon_set_engine_clock(rdev, rdev->pm.default_sclk);
+ 		if (rdev->pm.default_mclk)
+@@ -546,6 +551,7 @@ void radeon_pm_resume(struct radeon_device *rdev)
+ 	rdev->pm.current_sclk = rdev->pm.default_sclk;
+ 	rdev->pm.current_mclk = rdev->pm.default_mclk;
+ 	rdev->pm.current_vddc = rdev->pm.power_state[rdev->pm.default_power_state_index].clock_info[0].voltage.voltage;
++	rdev->pm.current_vddci = rdev->pm.power_state[rdev->pm.default_power_state_index].clock_info[0].voltage.vddci;
+ 	if (rdev->pm.pm_method == PM_METHOD_DYNPM
+ 	    && rdev->pm.dynpm_state == DYNPM_STATE_SUSPENDED) {
+ 		rdev->pm.dynpm_state = DYNPM_STATE_ACTIVE;
+@@ -583,7 +589,8 @@ int radeon_pm_init(struct radeon_device *rdev)
+ 		/* set up the default clocks if the MC ucode is loaded */
+ 		if (ASIC_IS_DCE5(rdev) && rdev->mc_fw) {
+ 			if (rdev->pm.default_vddc)
+-				radeon_atom_set_voltage(rdev, rdev->pm.default_vddc);
++				radeon_atom_set_voltage(rdev, rdev->pm.default_vddc,
++							SET_VOLTAGE_TYPE_ASIC_VDDC);
+ 			if (rdev->pm.default_sclk)
+ 				radeon_set_engine_clock(rdev, rdev->pm.default_sclk);
+ 			if (rdev->pm.default_mclk)
+diff --git a/drivers/gpu/drm/radeon/reg_srcs/cayman b/drivers/gpu/drm/radeon/reg_srcs/cayman
+new file mode 100644
+index 0000000..6334f8a
+--- /dev/null
++++ b/drivers/gpu/drm/radeon/reg_srcs/cayman
+@@ -0,0 +1,619 @@
++cayman 0x9400
++0x0000802C GRBM_GFX_INDEX
++0x000088B0 VGT_VTX_VECT_EJECT_REG
++0x000088C4 VGT_CACHE_INVALIDATION
++0x000088D4 VGT_GS_VERTEX_REUSE
++0x00008958 VGT_PRIMITIVE_TYPE
++0x0000895C VGT_INDEX_TYPE
++0x00008970 VGT_NUM_INDICES
++0x00008974 VGT_NUM_INSTANCES
++0x00008990 VGT_COMPUTE_DIM_X
++0x00008994 VGT_COMPUTE_DIM_Y
++0x00008998 VGT_COMPUTE_DIM_Z
++0x0000899C VGT_COMPUTE_START_X
++0x000089A0 VGT_COMPUTE_START_Y
++0x000089A4 VGT_COMPUTE_START_Z
++0x000089A8 VGT_COMPUTE_INDEX
++0x000089AC VGT_COMPUTE_THREAD_GOURP_SIZE
++0x000089B0 VGT_HS_OFFCHIP_PARAM
++0x00008A14 PA_CL_ENHANCE
++0x00008A60 PA_SC_LINE_STIPPLE_VALUE
++0x00008B10 PA_SC_LINE_STIPPLE_STATE
++0x00008BF0 PA_SC_ENHANCE
++0x00008D8C SQ_DYN_GPR_CNTL_PS_FLUSH_REQ
++0x00008D94 SQ_DYN_GPR_SIMD_LOCK_EN
++0x00008C00 SQ_CONFIG
++0x00008C04 SQ_GPR_RESOURCE_MGMT_1
++0x00008C10 SQ_GLOBAL_GPR_RESOURCE_MGMT_1
++0x00008C14 SQ_GLOBAL_GPR_RESOURCE_MGMT_2
++0x00008DF8 SQ_CONST_MEM_BASE
++0x00008E20 SQ_STATIC_THREAD_MGMT_1
++0x00008E24 SQ_STATIC_THREAD_MGMT_2
++0x00008E28 SQ_STATIC_THREAD_MGMT_3
++0x00008E48 SQ_EX_ALLOC_TABLE_SLOTS
++0x00009100 SPI_CONFIG_CNTL
++0x0000913C SPI_CONFIG_CNTL_1
++0x00009830 DB_DEBUG
++0x00009834 DB_DEBUG2
++0x00009838 DB_DEBUG3
++0x0000983C DB_DEBUG4
++0x00009854 DB_WATERMARKS
++0x0000A400 TD_PS_BORDER_COLOR_INDEX
++0x0000A404 TD_PS_BORDER_COLOR_RED
++0x0000A408 TD_PS_BORDER_COLOR_GREEN
++0x0000A40C TD_PS_BORDER_COLOR_BLUE
++0x0000A410 TD_PS_BORDER_COLOR_ALPHA
++0x0000A414 TD_VS_BORDER_COLOR_INDEX
++0x0000A418 TD_VS_BORDER_COLOR_RED
++0x0000A41C TD_VS_BORDER_COLOR_GREEN
++0x0000A420 TD_VS_BORDER_COLOR_BLUE
++0x0000A424 TD_VS_BORDER_COLOR_ALPHA
++0x0000A428 TD_GS_BORDER_COLOR_INDEX
++0x0000A42C TD_GS_BORDER_COLOR_RED
++0x0000A430 TD_GS_BORDER_COLOR_GREEN
++0x0000A434 TD_GS_BORDER_COLOR_BLUE
++0x0000A438 TD_GS_BORDER_COLOR_ALPHA
++0x0000A43C TD_HS_BORDER_COLOR_INDEX
++0x0000A440 TD_HS_BORDER_COLOR_RED
++0x0000A444 TD_HS_BORDER_COLOR_GREEN
++0x0000A448 TD_HS_BORDER_COLOR_BLUE
++0x0000A44C TD_HS_BORDER_COLOR_ALPHA
++0x0000A450 TD_LS_BORDER_COLOR_INDEX
++0x0000A454 TD_LS_BORDER_COLOR_RED
++0x0000A458 TD_LS_BORDER_COLOR_GREEN
++0x0000A45C TD_LS_BORDER_COLOR_BLUE
++0x0000A460 TD_LS_BORDER_COLOR_ALPHA
++0x0000A464 TD_CS_BORDER_COLOR_INDEX
++0x0000A468 TD_CS_BORDER_COLOR_RED
++0x0000A46C TD_CS_BORDER_COLOR_GREEN
++0x0000A470 TD_CS_BORDER_COLOR_BLUE
++0x0000A474 TD_CS_BORDER_COLOR_ALPHA
++0x00028000 DB_RENDER_CONTROL
++0x00028004 DB_COUNT_CONTROL
++0x0002800C DB_RENDER_OVERRIDE
++0x00028010 DB_RENDER_OVERRIDE2
++0x00028028 DB_STENCIL_CLEAR
++0x0002802C DB_DEPTH_CLEAR
++0x00028030 PA_SC_SCREEN_SCISSOR_TL
++0x00028034 PA_SC_SCREEN_SCISSOR_BR
++0x0002805C DB_DEPTH_SLICE
++0x00028140 SQ_ALU_CONST_BUFFER_SIZE_PS_0
++0x00028144 SQ_ALU_CONST_BUFFER_SIZE_PS_1
++0x00028148 SQ_ALU_CONST_BUFFER_SIZE_PS_2
++0x0002814C SQ_ALU_CONST_BUFFER_SIZE_PS_3
++0x00028150 SQ_ALU_CONST_BUFFER_SIZE_PS_4
++0x00028154 SQ_ALU_CONST_BUFFER_SIZE_PS_5
++0x00028158 SQ_ALU_CONST_BUFFER_SIZE_PS_6
++0x0002815C SQ_ALU_CONST_BUFFER_SIZE_PS_7
++0x00028160 SQ_ALU_CONST_BUFFER_SIZE_PS_8
++0x00028164 SQ_ALU_CONST_BUFFER_SIZE_PS_9
++0x00028168 SQ_ALU_CONST_BUFFER_SIZE_PS_10
++0x0002816C SQ_ALU_CONST_BUFFER_SIZE_PS_11
++0x00028170 SQ_ALU_CONST_BUFFER_SIZE_PS_12
++0x00028174 SQ_ALU_CONST_BUFFER_SIZE_PS_13
++0x00028178 SQ_ALU_CONST_BUFFER_SIZE_PS_14
++0x0002817C SQ_ALU_CONST_BUFFER_SIZE_PS_15
++0x00028180 SQ_ALU_CONST_BUFFER_SIZE_VS_0
++0x00028184 SQ_ALU_CONST_BUFFER_SIZE_VS_1
++0x00028188 SQ_ALU_CONST_BUFFER_SIZE_VS_2
++0x0002818C SQ_ALU_CONST_BUFFER_SIZE_VS_3
++0x00028190 SQ_ALU_CONST_BUFFER_SIZE_VS_4
++0x00028194 SQ_ALU_CONST_BUFFER_SIZE_VS_5
++0x00028198 SQ_ALU_CONST_BUFFER_SIZE_VS_6
++0x0002819C SQ_ALU_CONST_BUFFER_SIZE_VS_7
++0x000281A0 SQ_ALU_CONST_BUFFER_SIZE_VS_8
++0x000281A4 SQ_ALU_CONST_BUFFER_SIZE_VS_9
++0x000281A8 SQ_ALU_CONST_BUFFER_SIZE_VS_10
++0x000281AC SQ_ALU_CONST_BUFFER_SIZE_VS_11
++0x000281B0 SQ_ALU_CONST_BUFFER_SIZE_VS_12
++0x000281B4 SQ_ALU_CONST_BUFFER_SIZE_VS_13
++0x000281B8 SQ_ALU_CONST_BUFFER_SIZE_VS_14
++0x000281BC SQ_ALU_CONST_BUFFER_SIZE_VS_15
++0x000281C0 SQ_ALU_CONST_BUFFER_SIZE_GS_0
++0x000281C4 SQ_ALU_CONST_BUFFER_SIZE_GS_1
++0x000281C8 SQ_ALU_CONST_BUFFER_SIZE_GS_2
++0x000281CC SQ_ALU_CONST_BUFFER_SIZE_GS_3
++0x000281D0 SQ_ALU_CONST_BUFFER_SIZE_GS_4
++0x000281D4 SQ_ALU_CONST_BUFFER_SIZE_GS_5
++0x000281D8 SQ_ALU_CONST_BUFFER_SIZE_GS_6
++0x000281DC SQ_ALU_CONST_BUFFER_SIZE_GS_7
++0x000281E0 SQ_ALU_CONST_BUFFER_SIZE_GS_8
++0x000281E4 SQ_ALU_CONST_BUFFER_SIZE_GS_9
++0x000281E8 SQ_ALU_CONST_BUFFER_SIZE_GS_10
++0x000281EC SQ_ALU_CONST_BUFFER_SIZE_GS_11
++0x000281F0 SQ_ALU_CONST_BUFFER_SIZE_GS_12
++0x000281F4 SQ_ALU_CONST_BUFFER_SIZE_GS_13
++0x000281F8 SQ_ALU_CONST_BUFFER_SIZE_GS_14
++0x000281FC SQ_ALU_CONST_BUFFER_SIZE_GS_15
++0x00028200 PA_SC_WINDOW_OFFSET
++0x00028204 PA_SC_WINDOW_SCISSOR_TL
++0x00028208 PA_SC_WINDOW_SCISSOR_BR
++0x0002820C PA_SC_CLIPRECT_RULE
++0x00028210 PA_SC_CLIPRECT_0_TL
++0x00028214 PA_SC_CLIPRECT_0_BR
++0x00028218 PA_SC_CLIPRECT_1_TL
++0x0002821C PA_SC_CLIPRECT_1_BR
++0x00028220 PA_SC_CLIPRECT_2_TL
++0x00028224 PA_SC_CLIPRECT_2_BR
++0x00028228 PA_SC_CLIPRECT_3_TL
++0x0002822C PA_SC_CLIPRECT_3_BR
++0x00028230 PA_SC_EDGERULE
++0x00028234 PA_SU_HARDWARE_SCREEN_OFFSET
++0x00028240 PA_SC_GENERIC_SCISSOR_TL
++0x00028244 PA_SC_GENERIC_SCISSOR_BR
++0x00028250 PA_SC_VPORT_SCISSOR_0_TL
++0x00028254 PA_SC_VPORT_SCISSOR_0_BR
++0x00028258 PA_SC_VPORT_SCISSOR_1_TL
++0x0002825C PA_SC_VPORT_SCISSOR_1_BR
++0x00028260 PA_SC_VPORT_SCISSOR_2_TL
++0x00028264 PA_SC_VPORT_SCISSOR_2_BR
++0x00028268 PA_SC_VPORT_SCISSOR_3_TL
++0x0002826C PA_SC_VPORT_SCISSOR_3_BR
++0x00028270 PA_SC_VPORT_SCISSOR_4_TL
++0x00028274 PA_SC_VPORT_SCISSOR_4_BR
++0x00028278 PA_SC_VPORT_SCISSOR_5_TL
++0x0002827C PA_SC_VPORT_SCISSOR_5_BR
++0x00028280 PA_SC_VPORT_SCISSOR_6_TL
++0x00028284 PA_SC_VPORT_SCISSOR_6_BR
++0x00028288 PA_SC_VPORT_SCISSOR_7_TL
++0x0002828C PA_SC_VPORT_SCISSOR_7_BR
++0x00028290 PA_SC_VPORT_SCISSOR_8_TL
++0x00028294 PA_SC_VPORT_SCISSOR_8_BR
++0x00028298 PA_SC_VPORT_SCISSOR_9_TL
++0x0002829C PA_SC_VPORT_SCISSOR_9_BR
++0x000282A0 PA_SC_VPORT_SCISSOR_10_TL
++0x000282A4 PA_SC_VPORT_SCISSOR_10_BR
++0x000282A8 PA_SC_VPORT_SCISSOR_11_TL
++0x000282AC PA_SC_VPORT_SCISSOR_11_BR
++0x000282B0 PA_SC_VPORT_SCISSOR_12_TL
++0x000282B4 PA_SC_VPORT_SCISSOR_12_BR
++0x000282B8 PA_SC_VPORT_SCISSOR_13_TL
++0x000282BC PA_SC_VPORT_SCISSOR_13_BR
++0x000282C0 PA_SC_VPORT_SCISSOR_14_TL
++0x000282C4 PA_SC_VPORT_SCISSOR_14_BR
++0x000282C8 PA_SC_VPORT_SCISSOR_15_TL
++0x000282CC PA_SC_VPORT_SCISSOR_15_BR
++0x000282D0 PA_SC_VPORT_ZMIN_0
++0x000282D4 PA_SC_VPORT_ZMAX_0
++0x000282D8 PA_SC_VPORT_ZMIN_1
++0x000282DC PA_SC_VPORT_ZMAX_1
++0x000282E0 PA_SC_VPORT_ZMIN_2
++0x000282E4 PA_SC_VPORT_ZMAX_2
++0x000282E8 PA_SC_VPORT_ZMIN_3
++0x000282EC PA_SC_VPORT_ZMAX_3
++0x000282F0 PA_SC_VPORT_ZMIN_4
++0x000282F4 PA_SC_VPORT_ZMAX_4
++0x000282F8 PA_SC_VPORT_ZMIN_5
++0x000282FC PA_SC_VPORT_ZMAX_5
++0x00028300 PA_SC_VPORT_ZMIN_6
++0x00028304 PA_SC_VPORT_ZMAX_6
++0x00028308 PA_SC_VPORT_ZMIN_7
++0x0002830C PA_SC_VPORT_ZMAX_7
++0x00028310 PA_SC_VPORT_ZMIN_8
++0x00028314 PA_SC_VPORT_ZMAX_8
++0x00028318 PA_SC_VPORT_ZMIN_9
++0x0002831C PA_SC_VPORT_ZMAX_9
++0x00028320 PA_SC_VPORT_ZMIN_10
++0x00028324 PA_SC_VPORT_ZMAX_10
++0x00028328 PA_SC_VPORT_ZMIN_11
++0x0002832C PA_SC_VPORT_ZMAX_11
++0x00028330 PA_SC_VPORT_ZMIN_12
++0x00028334 PA_SC_VPORT_ZMAX_12
++0x00028338 PA_SC_VPORT_ZMIN_13
++0x0002833C PA_SC_VPORT_ZMAX_13
++0x00028340 PA_SC_VPORT_ZMIN_14
++0x00028344 PA_SC_VPORT_ZMAX_14
++0x00028348 PA_SC_VPORT_ZMIN_15
++0x0002834C PA_SC_VPORT_ZMAX_15
++0x00028350 SX_MISC
++0x00028354 SX_SURFACE_SYNC
++0x00028380 SQ_VTX_SEMANTIC_0
++0x00028384 SQ_VTX_SEMANTIC_1
++0x00028388 SQ_VTX_SEMANTIC_2
++0x0002838C SQ_VTX_SEMANTIC_3
++0x00028390 SQ_VTX_SEMANTIC_4
++0x00028394 SQ_VTX_SEMANTIC_5
++0x00028398 SQ_VTX_SEMANTIC_6
++0x0002839C SQ_VTX_SEMANTIC_7
++0x000283A0 SQ_VTX_SEMANTIC_8
++0x000283A4 SQ_VTX_SEMANTIC_9
++0x000283A8 SQ_VTX_SEMANTIC_10
++0x000283AC SQ_VTX_SEMANTIC_11
++0x000283B0 SQ_VTX_SEMANTIC_12
++0x000283B4 SQ_VTX_SEMANTIC_13
++0x000283B8 SQ_VTX_SEMANTIC_14
++0x000283BC SQ_VTX_SEMANTIC_15
++0x000283C0 SQ_VTX_SEMANTIC_16
++0x000283C4 SQ_VTX_SEMANTIC_17
++0x000283C8 SQ_VTX_SEMANTIC_18
++0x000283CC SQ_VTX_SEMANTIC_19
++0x000283D0 SQ_VTX_SEMANTIC_20
++0x000283D4 SQ_VTX_SEMANTIC_21
++0x000283D8 SQ_VTX_SEMANTIC_22
++0x000283DC SQ_VTX_SEMANTIC_23
++0x000283E0 SQ_VTX_SEMANTIC_24
++0x000283E4 SQ_VTX_SEMANTIC_25
++0x000283E8 SQ_VTX_SEMANTIC_26
++0x000283EC SQ_VTX_SEMANTIC_27
++0x000283F0 SQ_VTX_SEMANTIC_28
++0x000283F4 SQ_VTX_SEMANTIC_29
++0x000283F8 SQ_VTX_SEMANTIC_30
++0x000283FC SQ_VTX_SEMANTIC_31
++0x00028400 VGT_MAX_VTX_INDX
++0x00028404 VGT_MIN_VTX_INDX
++0x00028408 VGT_INDX_OFFSET
++0x0002840C VGT_MULTI_PRIM_IB_RESET_INDX
++0x00028410 SX_ALPHA_TEST_CONTROL
++0x00028414 CB_BLEND_RED
++0x00028418 CB_BLEND_GREEN
++0x0002841C CB_BLEND_BLUE
++0x00028420 CB_BLEND_ALPHA
++0x00028430 DB_STENCILREFMASK
++0x00028434 DB_STENCILREFMASK_BF
++0x00028438 SX_ALPHA_REF
++0x0002843C PA_CL_VPORT_XSCALE_0
++0x00028440 PA_CL_VPORT_XOFFSET_0
++0x00028444 PA_CL_VPORT_YSCALE_0
++0x00028448 PA_CL_VPORT_YOFFSET_0
++0x0002844C PA_CL_VPORT_ZSCALE_0
++0x00028450 PA_CL_VPORT_ZOFFSET_0
++0x00028454 PA_CL_VPORT_XSCALE_1
++0x00028458 PA_CL_VPORT_XOFFSET_1
++0x0002845C PA_CL_VPORT_YSCALE_1
++0x00028460 PA_CL_VPORT_YOFFSET_1
++0x00028464 PA_CL_VPORT_ZSCALE_1
++0x00028468 PA_CL_VPORT_ZOFFSET_1
++0x0002846C PA_CL_VPORT_XSCALE_2
++0x00028470 PA_CL_VPORT_XOFFSET_2
++0x00028474 PA_CL_VPORT_YSCALE_2
++0x00028478 PA_CL_VPORT_YOFFSET_2
++0x0002847C PA_CL_VPORT_ZSCALE_2
++0x00028480 PA_CL_VPORT_ZOFFSET_2
++0x00028484 PA_CL_VPORT_XSCALE_3
++0x00028488 PA_CL_VPORT_XOFFSET_3
++0x0002848C PA_CL_VPORT_YSCALE_3
++0x00028490 PA_CL_VPORT_YOFFSET_3
++0x00028494 PA_CL_VPORT_ZSCALE_3
++0x00028498 PA_CL_VPORT_ZOFFSET_3
++0x0002849C PA_CL_VPORT_XSCALE_4
++0x000284A0 PA_CL_VPORT_XOFFSET_4
++0x000284A4 PA_CL_VPORT_YSCALE_4
++0x000284A8 PA_CL_VPORT_YOFFSET_4
++0x000284AC PA_CL_VPORT_ZSCALE_4
++0x000284B0 PA_CL_VPORT_ZOFFSET_4
++0x000284B4 PA_CL_VPORT_XSCALE_5
++0x000284B8 PA_CL_VPORT_XOFFSET_5
++0x000284BC PA_CL_VPORT_YSCALE_5
++0x000284C0 PA_CL_VPORT_YOFFSET_5
++0x000284C4 PA_CL_VPORT_ZSCALE_5
++0x000284C8 PA_CL_VPORT_ZOFFSET_5
++0x000284CC PA_CL_VPORT_XSCALE_6
++0x000284D0 PA_CL_VPORT_XOFFSET_6
++0x000284D4 PA_CL_VPORT_YSCALE_6
++0x000284D8 PA_CL_VPORT_YOFFSET_6
++0x000284DC PA_CL_VPORT_ZSCALE_6
++0x000284E0 PA_CL_VPORT_ZOFFSET_6
++0x000284E4 PA_CL_VPORT_XSCALE_7
++0x000284E8 PA_CL_VPORT_XOFFSET_7
++0x000284EC PA_CL_VPORT_YSCALE_7
++0x000284F0 PA_CL_VPORT_YOFFSET_7
++0x000284F4 PA_CL_VPORT_ZSCALE_7
++0x000284F8 PA_CL_VPORT_ZOFFSET_7
++0x000284FC PA_CL_VPORT_XSCALE_8
++0x00028500 PA_CL_VPORT_XOFFSET_8
++0x00028504 PA_CL_VPORT_YSCALE_8
++0x00028508 PA_CL_VPORT_YOFFSET_8
++0x0002850C PA_CL_VPORT_ZSCALE_8
++0x00028510 PA_CL_VPORT_ZOFFSET_8
++0x00028514 PA_CL_VPORT_XSCALE_9
++0x00028518 PA_CL_VPORT_XOFFSET_9
++0x0002851C PA_CL_VPORT_YSCALE_9
++0x00028520 PA_CL_VPORT_YOFFSET_9
++0x00028524 PA_CL_VPORT_ZSCALE_9
++0x00028528 PA_CL_VPORT_ZOFFSET_9
++0x0002852C PA_CL_VPORT_XSCALE_10
++0x00028530 PA_CL_VPORT_XOFFSET_10
++0x00028534 PA_CL_VPORT_YSCALE_10
++0x00028538 PA_CL_VPORT_YOFFSET_10
++0x0002853C PA_CL_VPORT_ZSCALE_10
++0x00028540 PA_CL_VPORT_ZOFFSET_10
++0x00028544 PA_CL_VPORT_XSCALE_11
++0x00028548 PA_CL_VPORT_XOFFSET_11
++0x0002854C PA_CL_VPORT_YSCALE_11
++0x00028550 PA_CL_VPORT_YOFFSET_11
++0x00028554 PA_CL_VPORT_ZSCALE_11
++0x00028558 PA_CL_VPORT_ZOFFSET_11
++0x0002855C PA_CL_VPORT_XSCALE_12
++0x00028560 PA_CL_VPORT_XOFFSET_12
++0x00028564 PA_CL_VPORT_YSCALE_12
++0x00028568 PA_CL_VPORT_YOFFSET_12
++0x0002856C PA_CL_VPORT_ZSCALE_12
++0x00028570 PA_CL_VPORT_ZOFFSET_12
++0x00028574 PA_CL_VPORT_XSCALE_13
++0x00028578 PA_CL_VPORT_XOFFSET_13
++0x0002857C PA_CL_VPORT_YSCALE_13
++0x00028580 PA_CL_VPORT_YOFFSET_13
++0x00028584 PA_CL_VPORT_ZSCALE_13
++0x00028588 PA_CL_VPORT_ZOFFSET_13
++0x0002858C PA_CL_VPORT_XSCALE_14
++0x00028590 PA_CL_VPORT_XOFFSET_14
++0x00028594 PA_CL_VPORT_YSCALE_14
++0x00028598 PA_CL_VPORT_YOFFSET_14
++0x0002859C PA_CL_VPORT_ZSCALE_14
++0x000285A0 PA_CL_VPORT_ZOFFSET_14
++0x000285A4 PA_CL_VPORT_XSCALE_15
++0x000285A8 PA_CL_VPORT_XOFFSET_15
++0x000285AC PA_CL_VPORT_YSCALE_15
++0x000285B0 PA_CL_VPORT_YOFFSET_15
++0x000285B4 PA_CL_VPORT_ZSCALE_15
++0x000285B8 PA_CL_VPORT_ZOFFSET_15
++0x000285BC PA_CL_UCP_0_X
++0x000285C0 PA_CL_UCP_0_Y
++0x000285C4 PA_CL_UCP_0_Z
++0x000285C8 PA_CL_UCP_0_W
++0x000285CC PA_CL_UCP_1_X
++0x000285D0 PA_CL_UCP_1_Y
++0x000285D4 PA_CL_UCP_1_Z
++0x000285D8 PA_CL_UCP_1_W
++0x000285DC PA_CL_UCP_2_X
++0x000285E0 PA_CL_UCP_2_Y
++0x000285E4 PA_CL_UCP_2_Z
++0x000285E8 PA_CL_UCP_2_W
++0x000285EC PA_CL_UCP_3_X
++0x000285F0 PA_CL_UCP_3_Y
++0x000285F4 PA_CL_UCP_3_Z
++0x000285F8 PA_CL_UCP_3_W
++0x000285FC PA_CL_UCP_4_X
++0x00028600 PA_CL_UCP_4_Y
++0x00028604 PA_CL_UCP_4_Z
++0x00028608 PA_CL_UCP_4_W
++0x0002860C PA_CL_UCP_5_X
++0x00028610 PA_CL_UCP_5_Y
++0x00028614 PA_CL_UCP_5_Z
++0x00028618 PA_CL_UCP_5_W
++0x0002861C SPI_VS_OUT_ID_0
++0x00028620 SPI_VS_OUT_ID_1
++0x00028624 SPI_VS_OUT_ID_2
++0x00028628 SPI_VS_OUT_ID_3
++0x0002862C SPI_VS_OUT_ID_4
++0x00028630 SPI_VS_OUT_ID_5
++0x00028634 SPI_VS_OUT_ID_6
++0x00028638 SPI_VS_OUT_ID_7
++0x0002863C SPI_VS_OUT_ID_8
++0x00028640 SPI_VS_OUT_ID_9
++0x00028644 SPI_PS_INPUT_CNTL_0
++0x00028648 SPI_PS_INPUT_CNTL_1
++0x0002864C SPI_PS_INPUT_CNTL_2
++0x00028650 SPI_PS_INPUT_CNTL_3
++0x00028654 SPI_PS_INPUT_CNTL_4
++0x00028658 SPI_PS_INPUT_CNTL_5
++0x0002865C SPI_PS_INPUT_CNTL_6
++0x00028660 SPI_PS_INPUT_CNTL_7
++0x00028664 SPI_PS_INPUT_CNTL_8
++0x00028668 SPI_PS_INPUT_CNTL_9
++0x0002866C SPI_PS_INPUT_CNTL_10
++0x00028670 SPI_PS_INPUT_CNTL_11
++0x00028674 SPI_PS_INPUT_CNTL_12
++0x00028678 SPI_PS_INPUT_CNTL_13
++0x0002867C SPI_PS_INPUT_CNTL_14
++0x00028680 SPI_PS_INPUT_CNTL_15
++0x00028684 SPI_PS_INPUT_CNTL_16
++0x00028688 SPI_PS_INPUT_CNTL_17
++0x0002868C SPI_PS_INPUT_CNTL_18
++0x00028690 SPI_PS_INPUT_CNTL_19
++0x00028694 SPI_PS_INPUT_CNTL_20
++0x00028698 SPI_PS_INPUT_CNTL_21
++0x0002869C SPI_PS_INPUT_CNTL_22
++0x000286A0 SPI_PS_INPUT_CNTL_23
++0x000286A4 SPI_PS_INPUT_CNTL_24
++0x000286A8 SPI_PS_INPUT_CNTL_25
++0x000286AC SPI_PS_INPUT_CNTL_26
++0x000286B0 SPI_PS_INPUT_CNTL_27
++0x000286B4 SPI_PS_INPUT_CNTL_28
++0x000286B8 SPI_PS_INPUT_CNTL_29
++0x000286BC SPI_PS_INPUT_CNTL_30
++0x000286C0 SPI_PS_INPUT_CNTL_31
++0x000286C4 SPI_VS_OUT_CONFIG
++0x000286C8 SPI_THREAD_GROUPING
++0x000286CC SPI_PS_IN_CONTROL_0
++0x000286D0 SPI_PS_IN_CONTROL_1
++0x000286D4 SPI_INTERP_CONTROL_0
++0x000286D8 SPI_INPUT_Z
++0x000286DC SPI_FOG_CNTL
++0x000286E0 SPI_BARYC_CNTL
++0x000286E4 SPI_PS_IN_CONTROL_2
++0x000286E8 SPI_COMPUTE_INPUT_CNTL
++0x000286EC SPI_COMPUTE_NUM_THREAD_X
++0x000286F0 SPI_COMPUTE_NUM_THREAD_Y
++0x000286F4 SPI_COMPUTE_NUM_THREAD_Z
++0x000286F8 SPI_GPR_MGMT
++0x000286FC SPI_LDS_MGMT
++0x00028700 SPI_STACK_MGMT
++0x00028704 SPI_WAVE_MGMT_1
++0x00028708 SPI_WAVE_MGMT_2
++0x00028724 GDS_ADDR_SIZE
++0x00028780 CB_BLEND0_CONTROL
++0x00028784 CB_BLEND1_CONTROL
++0x00028788 CB_BLEND2_CONTROL
++0x0002878C CB_BLEND3_CONTROL
++0x00028790 CB_BLEND4_CONTROL
++0x00028794 CB_BLEND5_CONTROL
++0x00028798 CB_BLEND6_CONTROL
++0x0002879C CB_BLEND7_CONTROL
++0x000287CC CS_COPY_STATE
++0x000287D0 GFX_COPY_STATE
++0x000287D4 PA_CL_POINT_X_RAD
++0x000287D8 PA_CL_POINT_Y_RAD
++0x000287DC PA_CL_POINT_SIZE
++0x000287E0 PA_CL_POINT_CULL_RAD
++0x00028808 CB_COLOR_CONTROL
++0x0002880C DB_SHADER_CONTROL
++0x00028810 PA_CL_CLIP_CNTL
++0x00028814 PA_SU_SC_MODE_CNTL
++0x00028818 PA_CL_VTE_CNTL
++0x0002881C PA_CL_VS_OUT_CNTL
++0x00028820 PA_CL_NANINF_CNTL
++0x00028824 PA_SU_LINE_STIPPLE_CNTL
++0x00028828 PA_SU_LINE_STIPPLE_SCALE
++0x0002882C PA_SU_PRIM_FILTER_CNTL
++0x00028844 SQ_PGM_RESOURCES_PS
++0x00028848 SQ_PGM_RESOURCES_2_PS
++0x0002884C SQ_PGM_EXPORTS_PS
++0x00028860 SQ_PGM_RESOURCES_VS
++0x00028864 SQ_PGM_RESOURCES_2_VS
++0x00028878 SQ_PGM_RESOURCES_GS
++0x0002887C SQ_PGM_RESOURCES_2_GS
++0x00028890 SQ_PGM_RESOURCES_ES
++0x00028894 SQ_PGM_RESOURCES_2_ES
++0x000288A8 SQ_PGM_RESOURCES_FS
++0x000288BC SQ_PGM_RESOURCES_HS
++0x000288C0 SQ_PGM_RESOURCES_2_HS
++0x000288D4 SQ_PGM_RESOURCES_LS
++0x000288D8 SQ_PGM_RESOURCES_2_LS
++0x000288E8 SQ_LDS_ALLOC
++0x000288EC SQ_LDS_ALLOC_PS
++0x000288F0 SQ_VTX_SEMANTIC_CLEAR
++0x00028A00 PA_SU_POINT_SIZE
++0x00028A04 PA_SU_POINT_MINMAX
++0x00028A08 PA_SU_LINE_CNTL
++0x00028A0C PA_SC_LINE_STIPPLE
++0x00028A10 VGT_OUTPUT_PATH_CNTL
++0x00028A14 VGT_HOS_CNTL
++0x00028A18 VGT_HOS_MAX_TESS_LEVEL
++0x00028A1C VGT_HOS_MIN_TESS_LEVEL
++0x00028A20 VGT_HOS_REUSE_DEPTH
++0x00028A24 VGT_GROUP_PRIM_TYPE
++0x00028A28 VGT_GROUP_FIRST_DECR
++0x00028A2C VGT_GROUP_DECR
++0x00028A30 VGT_GROUP_VECT_0_CNTL
++0x00028A34 VGT_GROUP_VECT_1_CNTL
++0x00028A38 VGT_GROUP_VECT_0_FMT_CNTL
++0x00028A3C VGT_GROUP_VECT_1_FMT_CNTL
++0x00028A40 VGT_GS_MODE
++0x00028A48 PA_SC_MODE_CNTL_0
++0x00028A4C PA_SC_MODE_CNTL_1
++0x00028A50 VGT_ENHANCE
++0x00028A54 VGT_GS_PER_ES
++0x00028A58 VGT_ES_PER_GS
++0x00028A5C VGT_GS_PER_VS
++0x00028A6C VGT_GS_OUT_PRIM_TYPE
++0x00028A70 IA_ENHANCE
++0x00028A84 VGT_PRIMITIVEID_EN
++0x00028A94 VGT_MULTI_PRIM_IB_RESET_EN
++0x00028AA0 VGT_INSTANCE_STEP_RATE_0
++0x00028AA4 VGT_INSTANCE_STEP_RATE_1
++0x00028AA8 IA_MULTI_VGT_PARAM
++0x00028AB4 VGT_REUSE_OFF
++0x00028AB8 VGT_VTX_CNT_EN
++0x00028ABC DB_HTILE_SURFACE
++0x00028AC0 DB_SRESULTS_COMPARE_STATE0
++0x00028AC4 DB_SRESULTS_COMPARE_STATE1
++0x00028AC8 DB_PRELOAD_CONTROL
++0x00028B38 VGT_GS_MAX_VERT_OUT
++0x00028B54 VGT_SHADER_STAGES_EN
++0x00028B58 VGT_LS_HS_CONFIG
++0x00028B6C VGT_TF_PARAM
++0x00028B70 DB_ALPHA_TO_MASK
++0x00028B74 VGT_DISPATCH_INITIATOR
++0x00028B78 PA_SU_POLY_OFFSET_DB_FMT_CNTL
++0x00028B7C PA_SU_POLY_OFFSET_CLAMP
++0x00028B80 PA_SU_POLY_OFFSET_FRONT_SCALE
++0x00028B84 PA_SU_POLY_OFFSET_FRONT_OFFSET
++0x00028B88 PA_SU_POLY_OFFSET_BACK_SCALE
++0x00028B8C PA_SU_POLY_OFFSET_BACK_OFFSET
++0x00028B74 VGT_GS_INSTANCE_CNT
++0x00028BD4 PA_SC_CENTROID_PRIORITY_0
++0x00028BD8 PA_SC_CENTROID_PRIORITY_1
++0x00028BDC PA_SC_LINE_CNTL
++0x00028BE4 PA_SU_VTX_CNTL
++0x00028BE8 PA_CL_GB_VERT_CLIP_ADJ
++0x00028BEC PA_CL_GB_VERT_DISC_ADJ
++0x00028BF0 PA_CL_GB_HORZ_CLIP_ADJ
++0x00028BF4 PA_CL_GB_HORZ_DISC_ADJ
++0x00028BF8 PA_SC_AA_SAMPLE_LOCS_PIXEL_X0_Y0_0
++0x00028BFC PA_SC_AA_SAMPLE_LOCS_PIXEL_X0_Y0_1
++0x00028C00 PA_SC_AA_SAMPLE_LOCS_PIXEL_X0_Y0_2
++0x00028C04 PA_SC_AA_SAMPLE_LOCS_PIXEL_X0_Y0_3
++0x00028C08 PA_SC_AA_SAMPLE_LOCS_PIXEL_X1_Y0_0
++0x00028C0C PA_SC_AA_SAMPLE_LOCS_PIXEL_X1_Y0_1
++0x00028C10 PA_SC_AA_SAMPLE_LOCS_PIXEL_X1_Y0_2
++0x00028C14 PA_SC_AA_SAMPLE_LOCS_PIXEL_X1_Y0_3
++0x00028C18 PA_SC_AA_SAMPLE_LOCS_PIXEL_X0_Y1_0
++0x00028C1C PA_SC_AA_SAMPLE_LOCS_PIXEL_X0_Y1_1
++0x00028C20 PA_SC_AA_SAMPLE_LOCS_PIXEL_X0_Y1_2
++0x00028C24 PA_SC_AA_SAMPLE_LOCS_PIXEL_X0_Y1_3
++0x00028C28 PA_SC_AA_SAMPLE_LOCS_PIXEL_X1_Y1_0
++0x00028C2C PA_SC_AA_SAMPLE_LOCS_PIXEL_X1_Y1_1
++0x00028C30 PA_SC_AA_SAMPLE_LOCS_PIXEL_X1_Y1_2
++0x00028C34 PA_SC_AA_SAMPLE_LOCS_PIXEL_X1_Y1_3
++0x00028C38 PA_SC_AA_MASK_X0_Y0_X1_Y0
++0x00028C3C PA_SC_AA_MASK_X0_Y1_X1_Y1
++0x00028C8C CB_COLOR0_CLEAR_WORD0
++0x00028C90 CB_COLOR0_CLEAR_WORD1
++0x00028C94 CB_COLOR0_CLEAR_WORD2
++0x00028C98 CB_COLOR0_CLEAR_WORD3
++0x00028CC8 CB_COLOR1_CLEAR_WORD0
++0x00028CCC CB_COLOR1_CLEAR_WORD1
++0x00028CD0 CB_COLOR1_CLEAR_WORD2
++0x00028CD4 CB_COLOR1_CLEAR_WORD3
++0x00028D04 CB_COLOR2_CLEAR_WORD0
++0x00028D08 CB_COLOR2_CLEAR_WORD1
++0x00028D0C CB_COLOR2_CLEAR_WORD2
++0x00028D10 CB_COLOR2_CLEAR_WORD3
++0x00028D40 CB_COLOR3_CLEAR_WORD0
++0x00028D44 CB_COLOR3_CLEAR_WORD1
++0x00028D48 CB_COLOR3_CLEAR_WORD2
++0x00028D4C CB_COLOR3_CLEAR_WORD3
++0x00028D7C CB_COLOR4_CLEAR_WORD0
++0x00028D80 CB_COLOR4_CLEAR_WORD1
++0x00028D84 CB_COLOR4_CLEAR_WORD2
++0x00028D88 CB_COLOR4_CLEAR_WORD3
++0x00028DB8 CB_COLOR5_CLEAR_WORD0
++0x00028DBC CB_COLOR5_CLEAR_WORD1
++0x00028DC0 CB_COLOR5_CLEAR_WORD2
++0x00028DC4 CB_COLOR5_CLEAR_WORD3
++0x00028DF4 CB_COLOR6_CLEAR_WORD0
++0x00028DF8 CB_COLOR6_CLEAR_WORD1
++0x00028DFC CB_COLOR6_CLEAR_WORD2
++0x00028E00 CB_COLOR6_CLEAR_WORD3
++0x00028E30 CB_COLOR7_CLEAR_WORD0
++0x00028E34 CB_COLOR7_CLEAR_WORD1
++0x00028E38 CB_COLOR7_CLEAR_WORD2
++0x00028E3C CB_COLOR7_CLEAR_WORD3
++0x00028F80 SQ_ALU_CONST_BUFFER_SIZE_HS_0
++0x00028F84 SQ_ALU_CONST_BUFFER_SIZE_HS_1
++0x00028F88 SQ_ALU_CONST_BUFFER_SIZE_HS_2
++0x00028F8C SQ_ALU_CONST_BUFFER_SIZE_HS_3
++0x00028F90 SQ_ALU_CONST_BUFFER_SIZE_HS_4
++0x00028F94 SQ_ALU_CONST_BUFFER_SIZE_HS_5
++0x00028F98 SQ_ALU_CONST_BUFFER_SIZE_HS_6
++0x00028F9C SQ_ALU_CONST_BUFFER_SIZE_HS_7
++0x00028FA0 SQ_ALU_CONST_BUFFER_SIZE_HS_8
++0x00028FA4 SQ_ALU_CONST_BUFFER_SIZE_HS_9
++0x00028FA8 SQ_ALU_CONST_BUFFER_SIZE_HS_10
++0x00028FAC SQ_ALU_CONST_BUFFER_SIZE_HS_11
++0x00028FB0 SQ_ALU_CONST_BUFFER_SIZE_HS_12
++0x00028FB4 SQ_ALU_CONST_BUFFER_SIZE_HS_13
++0x00028FB8 SQ_ALU_CONST_BUFFER_SIZE_HS_14
++0x00028FBC SQ_ALU_CONST_BUFFER_SIZE_HS_15
++0x00028FC0 SQ_ALU_CONST_BUFFER_SIZE_LS_0
++0x00028FC4 SQ_ALU_CONST_BUFFER_SIZE_LS_1
++0x00028FC8 SQ_ALU_CONST_BUFFER_SIZE_LS_2
++0x00028FCC SQ_ALU_CONST_BUFFER_SIZE_LS_3
++0x00028FD0 SQ_ALU_CONST_BUFFER_SIZE_LS_4
++0x00028FD4 SQ_ALU_CONST_BUFFER_SIZE_LS_5
++0x00028FD8 SQ_ALU_CONST_BUFFER_SIZE_LS_6
++0x00028FDC SQ_ALU_CONST_BUFFER_SIZE_LS_7
++0x00028FE0 SQ_ALU_CONST_BUFFER_SIZE_LS_8
++0x00028FE4 SQ_ALU_CONST_BUFFER_SIZE_LS_9
++0x00028FE8 SQ_ALU_CONST_BUFFER_SIZE_LS_10
++0x00028FEC SQ_ALU_CONST_BUFFER_SIZE_LS_11
++0x00028FF0 SQ_ALU_CONST_BUFFER_SIZE_LS_12
++0x00028FF4 SQ_ALU_CONST_BUFFER_SIZE_LS_13
++0x00028FF8 SQ_ALU_CONST_BUFFER_SIZE_LS_14
++0x00028FFC SQ_ALU_CONST_BUFFER_SIZE_LS_15
++0x0003CFF0 SQ_VTX_BASE_VTX_LOC
++0x0003CFF4 SQ_VTX_START_INST_LOC
++0x0003FF00 SQ_TEX_SAMPLER_CLEAR
++0x0003FF04 SQ_TEX_RESOURCE_CLEAR
++0x0003FF08 SQ_LOOP_BOOL_CLEAR
+diff --git a/drivers/gpu/drm/radeon/reg_srcs/evergreen b/drivers/gpu/drm/radeon/reg_srcs/evergreen
+index 9177f91..7e16371 100644
+--- a/drivers/gpu/drm/radeon/reg_srcs/evergreen
++++ b/drivers/gpu/drm/radeon/reg_srcs/evergreen
+@@ -1,4 +1,5 @@
+ evergreen 0x9400
++0x0000802C GRBM_GFX_INDEX
+ 0x00008040 WAIT_UNTIL
+ 0x00008044 WAIT_UNTIL_POLL_CNTL
+ 0x00008048 WAIT_UNTIL_POLL_MASK
+@@ -220,6 +221,7 @@ evergreen 0x9400
+ 0x00028348 PA_SC_VPORT_ZMIN_15
+ 0x0002834C PA_SC_VPORT_ZMAX_15
+ 0x00028350 SX_MISC
++0x00028354 SX_SURFACE_SYNC
+ 0x00028380 SQ_VTX_SEMANTIC_0
+ 0x00028384 SQ_VTX_SEMANTIC_1
+ 0x00028388 SQ_VTX_SEMANTIC_2
+diff --git a/drivers/gpu/drm/radeon/reg_srcs/r600 b/drivers/gpu/drm/radeon/reg_srcs/r600
+index af0da4a..92f1900 100644
+--- a/drivers/gpu/drm/radeon/reg_srcs/r600
++++ b/drivers/gpu/drm/radeon/reg_srcs/r600
+@@ -708,6 +708,7 @@ r600 0x9400
+ 0x00028D0C DB_RENDER_CONTROL
+ 0x00028D10 DB_RENDER_OVERRIDE
+ 0x0002880C DB_SHADER_CONTROL
++0x00028D28 DB_SRESULTS_COMPARE_STATE0
+ 0x00028D2C DB_SRESULTS_COMPARE_STATE1
+ 0x00028430 DB_STENCILREFMASK
+ 0x00028434 DB_STENCILREFMASK_BF
+diff --git a/drivers/gpu/drm/radeon/rs600.c b/drivers/gpu/drm/radeon/rs600.c
+index 8af4679..c55cf2a 100644
+--- a/drivers/gpu/drm/radeon/rs600.c
++++ b/drivers/gpu/drm/radeon/rs600.c
+@@ -48,17 +48,6 @@ int rs600_mc_wait_for_idle(struct radeon_device *rdev);
+ 
+ void rs600_pre_page_flip(struct radeon_device *rdev, int crtc)
+ {
+-	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc];
+-	u32 tmp;
+-
+-	/* make sure flip is at vb rather than hb */
+-	tmp = RREG32(AVIVO_D1GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset);
+-	tmp &= ~AVIVO_D1GRPH_SURFACE_UPDATE_H_RETRACE_EN;
+-	WREG32(AVIVO_D1GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset, tmp);
+-
+-	/* set pageflip to happen anywhere in vblank interval */
+-	WREG32(AVIVO_D1MODE_MASTER_UPDATE_MODE + radeon_crtc->crtc_offset, 0);
+-
+ 	/* enable the pflip int */
+ 	radeon_irq_kms_pflip_irq_get(rdev, crtc);
+ }
+@@ -125,7 +114,7 @@ void rs600_pm_misc(struct radeon_device *rdev)
+ 				udelay(voltage->delay);
+ 		}
+ 	} else if (voltage->type == VOLTAGE_VDDC)
+-		radeon_atom_set_voltage(rdev, voltage->vddc_id);
++		radeon_atom_set_voltage(rdev, voltage->vddc_id, SET_VOLTAGE_TYPE_ASIC_VDDC);
+ 
+ 	dyn_pwrmgt_sclk_length = RREG32_PLL(DYN_PWRMGT_SCLK_LENGTH);
+ 	dyn_pwrmgt_sclk_length &= ~REDUCED_POWER_SCLK_HILEN(0xf);
+diff --git a/drivers/gpu/drm/radeon/rv770.c b/drivers/gpu/drm/radeon/rv770.c
+index 714ad45..114e5cc 100644
+--- a/drivers/gpu/drm/radeon/rv770.c
++++ b/drivers/gpu/drm/radeon/rv770.c
+@@ -106,7 +106,7 @@ void rv770_pm_misc(struct radeon_device *rdev)
+ 
+ 	if ((voltage->type == VOLTAGE_SW) && voltage->voltage) {
+ 		if (voltage->voltage != rdev->pm.current_vddc) {
+-			radeon_atom_set_voltage(rdev, voltage->voltage);
++			radeon_atom_set_voltage(rdev, voltage->voltage, SET_VOLTAGE_TYPE_ASIC_VDDC);
+ 			rdev->pm.current_vddc = voltage->voltage;
+ 			DRM_DEBUG("Setting: v: %d\n", voltage->voltage);
+ 		}
+diff --git a/include/drm/radeon_drm.h b/include/drm/radeon_drm.h
+index e5c607a..32c8e1c 100644
+--- a/include/drm/radeon_drm.h
++++ b/include/drm/radeon_drm.h
+@@ -908,6 +908,9 @@ struct drm_radeon_cs {
+ #define RADEON_INFO_WANT_HYPERZ		0x07
+ #define RADEON_INFO_WANT_CMASK		0x08 /* get access to CMASK on r300 */
+ #define RADEON_INFO_CLOCK_CRYSTAL_FREQ	0x09 /* clock crystal frequency */
++#define RADEON_INFO_NUM_BACKENDS	0x0a /* DB/backends for r600+ - need for OQ */
++#define RADEON_INFO_NUM_TILE_PIPES	0x0b /* tile pipes for r600+ */
++#define RADEON_INFO_FUSION_GART_WORKING	0x0c /* fusion writes to GTT were broken before this */
+ 
+ struct drm_radeon_info {
+ 	uint32_t		request;
