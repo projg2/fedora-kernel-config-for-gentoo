@@ -732,6 +732,10 @@ Patch12401: scsi-mptsas-prevent-heap-overflows-and-unchecked-reads.patch
 # CVE-2011-1581
 Patch12402: bonding-incorrect-tx-queue-offset.patch
 
+# Restore reliable stack backtraces, and hopefully
+# fix RHBZ #700718
+Patch12403: x86-dumpstack-correct-stack-dump-info-when-frame-pointer-is-available.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1179,6 +1183,9 @@ ApplyPatch linux-2.6-utrace-ptrace.patch
 
 # Architecture patches
 # x86(-64)
+# Restore reliable stack backtraces, and hopefully
+# fix RHBZ #700718
+ApplyPatch x86-dumpstack-correct-stack-dump-info-when-frame-pointer-is-available.patch
 
 #
 # Intel IOMMU
@@ -1969,6 +1976,7 @@ fi
 - [SCSI] mpt2sas: prevent heap overflows and unchecked reads
   (CVE-2011-1494, CVE-2011-1495)
 - bonding: Incorrect TX queue offset (CVE-2011-1581)
+- Restore reliable stack backtraces, and hopefully fix RHBZ #700718
 
 * Mon May 02 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.5-22
 - And to the released 2.6.38.5
