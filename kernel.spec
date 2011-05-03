@@ -832,6 +832,13 @@ Patch13711: md-fix-regression-resulting-in-delays-in-clearing-bits-in-a-bitmap.p
 
 Patch13713: virtio_net-add-schedule-check-to-napi_enable-call.patch
 
+# cve-2011-1745
+Patch13957: agp-fix-arbitrary-kernel-memory-writes.patch
+# cve-2011-1746
+Patch13958: agp-fix-oom-and-buffer-overflow.patch
+# CVE-2011-1494, CVE-2011-1495
+Patch13960: scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1563,6 +1570,13 @@ ApplyPatch md-fix-regression-resulting-in-delays-in-clearing-bits-in-a-bitmap.pa
 
 ApplyPatch virtio_net-add-schedule-check-to-napi_enable-call.patch
 
+# cve-2011-1745
+ApplyPatch agp-fix-arbitrary-kernel-memory-writes.patch
+# cve-2011-1746
+ApplyPatch agp-fix-oom-and-buffer-overflow.patch
+# CVE-2011-1494, CVE-2011-1495
+ApplyPatch scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2149,6 +2163,12 @@ fi
 # and build.
 
 %changelog
+* Tue May 03 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.13-91
+- [SCSI] mpt2sas: prevent heap overflows and unchecked reads
+  (CVE-2011-1494, CVE-2011-1495)
+- agp: fix arbitrary kernel memory writes (CVE-2011-1745)
+- agp: fix OOM and buffer overflow (CVE-2011-1746)
+
 * Thu Apr 29 2011 Chuck Ebbert <cebbert@redhat.com>
 - Linux 2.6.35.13
 
