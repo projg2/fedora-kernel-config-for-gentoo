@@ -839,6 +839,10 @@ Patch13958: agp-fix-oom-and-buffer-overflow.patch
 # CVE-2011-1494, CVE-2011-1495
 Patch13960: scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
 
+# fix credentials leakage regression (#700637)
+Patch13961: revert-incomplete-af_netlink-add-needed-scm-destroy-after-scm-send.patch
+Patch13962: af_netlink-add-needed-scm_destroy-after-scm_send.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1577,6 +1581,10 @@ ApplyPatch agp-fix-oom-and-buffer-overflow.patch
 # CVE-2011-1494, CVE-2011-1495
 ApplyPatch scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
 
+# fix credentials leakage regression (#700637)
+ApplyPatch revert-incomplete-af_netlink-add-needed-scm-destroy-after-scm-send.patch
+ApplyPatch af_netlink-add-needed-scm_destroy-after-scm_send.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2168,6 +2176,7 @@ fi
   (CVE-2011-1494, CVE-2011-1495)
 - agp: fix arbitrary kernel memory writes (CVE-2011-1745)
 - agp: fix OOM and buffer overflow (CVE-2011-1746)
+- Fix credentials leakage regression (#700637)
 
 * Thu Apr 29 2011 Chuck Ebbert <cebbert@redhat.com>
 - Linux 2.6.35.13

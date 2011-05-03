@@ -1,0 +1,57 @@
+From: Eric W. Biederman <ebiederm@xmission.com>
+Date: Sun, 13 Jun 2010 03:31:06 +0000 (+0000)
+Subject: af_netlink: Add needed scm_destroy after scm_send.
+X-Git-Tag: v2.6.36-rc1~571^2~552
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=b47030c71dfd6c8cd5cb6e551b6f7f7cfc96f6a6
+
+af_netlink: Add needed scm_destroy after scm_send.
+
+scm_send occasionally allocates state in the scm_cookie, so I have
+modified netlink_sendmsg to guarantee that when scm_send succeeds
+scm_destory will be called to free that state.
+
+Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
+Reviewed-by: Daniel Lezcano <daniel.lezcano@free.fr>
+Acked-by: Pavel Emelyanov <xemul@openvz.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index a2eb965..7aeaa83 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -1323,19 +1323,23 @@ static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
+ 	if (msg->msg_flags&MSG_OOB)
+ 		return -EOPNOTSUPP;
+ 
+-	if (NULL == siocb->scm)
++	if (NULL == siocb->scm) {
+ 		siocb->scm = &scm;
++		memset(&scm, 0, sizeof(scm));
++	}
+ 	err = scm_send(sock, msg, siocb->scm);
+ 	if (err < 0)
+ 		return err;
+ 
+ 	if (msg->msg_namelen) {
++		err = -EINVAL;
+ 		if (addr->nl_family != AF_NETLINK)
+-			return -EINVAL;
++			goto out;
+ 		dst_pid = addr->nl_pid;
+ 		dst_group = ffs(addr->nl_groups);
++		err =  -EPERM;
+ 		if (dst_group && !netlink_capable(sock, NL_NONROOT_SEND))
+-			return -EPERM;
++			goto out;
+ 	} else {
+ 		dst_pid = nlk->dst_pid;
+ 		dst_group = nlk->dst_group;
+@@ -1387,6 +1391,7 @@ static int netlink_sendmsg(struct kiocb *kiocb, struct socket *sock,
+ 	err = netlink_unicast(sk, skb, dst_pid, msg->msg_flags&MSG_DONTWAIT);
+ 
+ out:
++	scm_destroy(siocb->scm);
+ 	return err;
+ }
+ 

@@ -1,0 +1,29 @@
+2.6.35.11 added two patches:
+  af_netlink-add-needed-scm_destroy-after-scm_send
+  fix-cred-leak-in-af_netlink
+
+The first one was supposedly a backport of upstream commit
+b47030c71dfd6c8cd5cb6e551b6f7f7cfc96f6a6, but it was incomplete and the
+rest of that commit was in the second patch. I asked for the second
+patch to be reverted in 2.6.35.12, thinking it was a duplicate fix for
+the credentials leakage, and that caused the leak to return. This patch
+reverts the first of those two patches so we can apply the complete
+upstream patch.
+
+Signed-off-by: Chuck Ebbert <cebbert@redhat.com>
+
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -1323,11 +1323,8 @@
+ 	if (msg->msg_flags&MSG_OOB)
+ 		return -EOPNOTSUPP;
+ 
++	if (NULL == siocb->scm)
+-	if (NULL == siocb->scm) {
+ 		siocb->scm = &scm;
+-		memset(&scm, 0, sizeof(scm));
+-	}
+-
+ 	err = scm_send(sock, msg, siocb->scm);
+ 	if (err < 0)
+ 		return err;
