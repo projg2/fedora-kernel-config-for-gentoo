@@ -857,6 +857,8 @@ Patch13957: agp-fix-arbitrary-kernel-memory-writes.patch
 Patch13958: agp-fix-oom-and-buffer-overflow.patch
 # CVE-2011-1494, CVE-2011-1495
 Patch13960: scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
+# CVE-2011-1093
+Patch13961: dccp-fix-oops-on-reset-after-close.patch
 
 %endif
 
@@ -1624,6 +1626,8 @@ ApplyPatch agp-fix-arbitrary-kernel-memory-writes.patch
 ApplyPatch agp-fix-oom-and-buffer-overflow.patch
 # CVE-2011-1494, CVE-2011-1495
 ApplyPatch scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
+# CVE-2011-1093
+ApplyPatch dccp-fix-oops-on-reset-after-close.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2248,6 +2252,7 @@ fi
 * Mon May 02 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.34.9-69
 - [SCSI] mpt2sas: prevent heap overflows and unchecked reads
   (CVE-2011-1494, CVE-2011-1495)
+- dccp: fix oops on Reset after close (CVE-2011-1093)
 
 * Fri Apr 29 2011 Chuck Ebbert <cebbert@redhat.com>
 - Bluetooth: bnep: fix buffer overflow (CVE-2011-1079)
