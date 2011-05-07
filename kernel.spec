@@ -735,9 +735,11 @@ Patch12401: scsi-mptsas-prevent-heap-overflows-and-unchecked-reads.patch
 # CVE-2011-1581
 Patch12402: bonding-incorrect-tx-queue-offset.patch
 
-# Restore reliable stack backtraces, and hopefully
-# fix RHBZ #700718
+# Restore reliable stack backtraces, and hopefully fix RHBZ #700718
 Patch12403: x86-dumpstack-correct-stack-dump-info-when-frame-pointer-is-available.patch
+
+# Fix breakage of PCI network adapter names on older Dell systems
+Patch12404: x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
 
 %endif
 
@@ -1251,6 +1253,8 @@ ApplyPatch linux-2.6-defaults-aspm.patch
 # fixes for ASPM powersave mode
 ApplyPatch pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.patch
 ApplyPatch pci-enable-aspm-state-clearing-regardless-of-policy.patch
+# Fix breakage of PCI network adapter names on older Dell systems
+ApplyPatch x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
 
 #ApplyPatch ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
@@ -1979,6 +1983,9 @@ fi
 # and build.
 
 %changelog
+* Sat May 07 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix breakage of network device names on Dell systems (#702740)
+
 * Fri May 06 2011 Dave Airlie <airlied@redhat.com> 2.6.38.5-24
 - forgot the cayman PCI IDs.
 
