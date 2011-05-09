@@ -683,6 +683,7 @@ Patch1824: drm-intel-next.patch
 Patch1825: drm-intel-make-lvds-work.patch
 Patch1826: drm-intel-edp-fixes.patch
 Patch1828: drm-intel-eeebox-eb1007-quirk.patch
+Patch1829: drm-intel-restore-mode.patch
 # radeon - new hw + fixes for fusion and t500 regression
 Patch1840: drm-radeon-update.patch
 
@@ -1323,6 +1324,7 @@ ApplyPatch linux-2.6-intel-iommu-igfx.patch
 ApplyPatch drm-intel-edp-fixes.patch
 ApplyPatch drm-i915-fix-pipelined-fencing.patch
 ApplyPatch drm-intel-eeebox-eb1007-quirk.patch
+ApplyPatch drm-intel-restore-mode.patch
 
 # radeon DRM (add cayman support)
 ApplyPatch drm-radeon-update.patch
@@ -1983,6 +1985,9 @@ fi
 # and build.
 
 %changelog
+* Mon May 09 2011 Dave Airlie <airlied@redhat.com>
+- fix dual-gpu intel/radeon laptops where intel would cause radeon crash.
+
 * Sat May 07 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix breakage of network device names on Dell systems (#702740)
 
