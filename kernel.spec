@@ -1985,6 +1985,9 @@ fi
 # and build.
 
 %changelog
+* Mon May 08 2011 Chuck Ebbert <cebbert@redhat.com>
+- Enable CONFIG_FB_UDL (#634636)
+
 * Mon May 09 2011 Dave Airlie <airlied@redhat.com>
 - fix dual-gpu intel/radeon laptops where intel would cause radeon crash.
 
