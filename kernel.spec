@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 25
+%global baserelease 26
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -745,6 +745,8 @@ Patch12410: scsi-fix-oops-in-scsi_run_queue.patch
 
 Patch12420: can-add-missing-socket-check-in-can_raw_release.patch
 
+Patch12430: vm-skip-the-stack-guard-page-lookup-in-get_user_pages-only-for-mlock.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1379,8 +1381,10 @@ ApplyPatch linux-2.6-netconsole-deadlock.patch
 # CVE-2011-1581
 ApplyPatch bonding-incorrect-tx-queue-offset.patch
 
+# 2.6.38.6-rc1 fixes requested for final
 ApplyPatch can-add-missing-socket-check-in-can_raw_release.patch
 ApplyPatch scsi-fix-oops-in-scsi_run_queue.patch
+ApplyPatch vm-skip-the-stack-guard-page-lookup-in-get_user_pages-only-for-mlock.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1990,6 +1994,9 @@ fi
 # and build.
 
 %changelog
+* Mon May 09 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.6-26.rc1
+- Fix a VM bug introduced in 2.6.38.4
+
 * Mon May 09 2011 Kyle McMartin <kmcmartin@redhat.com>
 - Update to stable review 2.6.38.6-rc1
 - Revert DRM patch duplicated in drm-radeon-update rollup.
