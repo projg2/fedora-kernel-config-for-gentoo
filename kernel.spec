@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 24
+%global baserelease 25
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -63,9 +63,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -685,6 +685,7 @@ Patch1826: drm-intel-edp-fixes.patch
 Patch1828: drm-intel-eeebox-eb1007-quirk.patch
 Patch1829: drm-intel-restore-mode.patch
 # radeon - new hw + fixes for fusion and t500 regression
+Patch1839: drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch
 Patch1840: drm-radeon-update.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
@@ -698,6 +699,7 @@ Patch2201: linux-2.6-firewire-git-pending.patch
 Patch2802: linux-2.6-silence-acpi-blacklist.patch
 
 # media patches
+Patch2898: cx88-Fix-HVR4000-IR-keymap.patch
 Patch2899: linux-2.6-v4l-dvb-fixes.patch
 Patch2900: linux-2.6-v4l-dvb-update.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
@@ -730,9 +732,6 @@ Patch12306: scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 #netconsole fixes
 Patch12400: linux-2.6-netconsole-deadlock.patch
 
-# CVE-2011-1494, CVE-2011-1495
-Patch12401: scsi-mptsas-prevent-heap-overflows-and-unchecked-reads.patch
-
 # CVE-2011-1581
 Patch12402: bonding-incorrect-tx-queue-offset.patch
 
@@ -741,6 +740,10 @@ Patch12403: x86-dumpstack-correct-stack-dump-info-when-frame-pointer-is-availabl
 
 # Fix breakage of PCI network adapter names on older Dell systems
 Patch12404: x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
+
+Patch12410: scsi-fix-oops-in-scsi_run_queue.patch
+
+Patch12420: can-add-missing-socket-check-in-can_raw_release.patch
 
 %endif
 
@@ -1327,6 +1330,7 @@ ApplyPatch drm-intel-eeebox-eb1007-quirk.patch
 ApplyPatch drm-intel-restore-mode.patch
 
 # radeon DRM (add cayman support)
+ApplyPatch drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch -R
 ApplyPatch drm-radeon-update.patch
 
 # linux1394 git patches
@@ -1338,6 +1342,7 @@ ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 
 # V4L/DVB updates/fixes/experimental drivers
 #  apply if non-empty
+ApplyPatch cx88-Fix-HVR4000-IR-keymap.patch -R
 ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
@@ -1371,11 +1376,11 @@ ApplyPatch scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 #rhbz 668231
 ApplyPatch linux-2.6-netconsole-deadlock.patch
 
-# CVE-2011-1494, CVE-2011-1495
-ApplyPatch scsi-mptsas-prevent-heap-overflows-and-unchecked-reads.patch
-
 # CVE-2011-1581
 ApplyPatch bonding-incorrect-tx-queue-offset.patch
+
+ApplyPatch can-add-missing-socket-check-in-can_raw_release.patch
+ApplyPatch scsi-fix-oops-in-scsi_run_queue.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1985,6 +1990,15 @@ fi
 # and build.
 
 %changelog
+* Mon May 09 2011 Kyle McMartin <kmcmartin@redhat.com>
+- Update to stable review 2.6.38.6-rc1
+- Revert DRM patch duplicated in drm-radeon-update rollup.
+- Revert cx88 fix in stable which has been fixed differently in the
+  v4l-dvb-update backport.
+- Add two patches which should make it into the final 2.6.38.6 release.
+ - can-add-missing-socket-check-in-can_raw_release.patch
+ - scsi-fix-oops-in-scsi_run_queue.patch
+
 * Mon May 09 2011 Chuck Ebbert <cebbert@redhat.com>
 - Enable CONFIG_FB_UDL (#634636)
 
