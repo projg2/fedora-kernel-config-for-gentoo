@@ -741,6 +741,9 @@ Patch12403: x86-dumpstack-correct-stack-dump-info-when-frame-pointer-is-availabl
 # Fix breakage of PCI network adapter names on older Dell systems
 Patch12404: x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
 
+# iwlwifi: add {ack,plpc}_check module parameters (#666646)
+Patch12405: iwlwifi-add-_ack_plpc_check-module-parameters.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1375,6 +1378,9 @@ ApplyPatch linux-2.6-netconsole-deadlock.patch
 # CVE-2011-1581
 ApplyPatch bonding-incorrect-tx-queue-offset.patch
 
+# iwlwifi: add {ack,plpc}_check module parameters (#666646) queued for stable
+ApplyPatch iwlwifi-add-_ack_plpc_check-module-parameters.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1983,6 +1989,9 @@ fi
 # and build.
 
 %changelog
+* Tue May 10 2011 Kyle McMartin <kmcmartin@redhat.com>
+- [sgruszka@] iwlwifi: add {ack,plpc}_check module parameters (#666646)
+
 * Tue May 10 2011 Chuck Ebbert <cebbert@redhat.com>
 - Linux 2.6.38.6 (no functional changes from 2.6.38.6-26.rc1)
 - Drop merged patches:
