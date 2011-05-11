@@ -744,6 +744,9 @@ Patch12404: x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patc
 # iwlwifi: add {ack,plpc}_check module parameters (#666646)
 Patch12405: iwlwifi-add-_ack_plpc_check-module-parameters.patch
 
+# intel_ips driver bug (#703511) causes cooling fan to run
+Patch12406: ips-use-interruptible-waits-in-ips-monitor.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1381,6 +1384,9 @@ ApplyPatch bonding-incorrect-tx-queue-offset.patch
 # iwlwifi: add {ack,plpc}_check module parameters (#666646) queued for stable
 ApplyPatch iwlwifi-add-_ack_plpc_check-module-parameters.patch
 
+# intel_ips driver bug (#703511) causes cooling fan to run
+ApplyPatch ips-use-interruptible-waits-in-ips-monitor.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1989,6 +1995,9 @@ fi
 # and build.
 
 %changelog
+* Wed May 11 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix Intel IPS driver so it doesn't run continuously (#703511)
+
 * Tue May 10 2011 Kyle McMartin <kmcmartin@redhat.com>
 - [sgruszka@] iwlwifi: add {ack,plpc}_check module parameters (#666646)
 
