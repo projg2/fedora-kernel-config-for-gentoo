@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 91
+%global baserelease 92
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -843,6 +843,9 @@ Patch13960: scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
 Patch13961: revert-incomplete-af_netlink-add-needed-scm-destroy-after-scm-send.patch
 Patch13962: af_netlink-add-needed-scm_destroy-after-scm_send.patch
 
+# fix regression causing stalls on AMD processors in 2.6.35.13
+Patch13963: x86-amd-fix-apic-timer-erratum-400-affecting-k8-rev.a-e-processors.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1585,6 +1588,9 @@ ApplyPatch scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
 ApplyPatch revert-incomplete-af_netlink-add-needed-scm-destroy-after-scm-send.patch
 ApplyPatch af_netlink-add-needed-scm_destroy-after-scm_send.patch
 
+# fix regression causing stalls on AMD processors in 2.6.35.13
+ApplyPatch x86-amd-fix-apic-timer-erratum-400-affecting-k8-rev.a-e-processors.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2171,6 +2177,9 @@ fi
 # and build.
 
 %changelog
+* Thu May 12 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.13-92
+- Fix stalls on AMD machines with C1E caused by 2.6.35.13 (#704059)
+
 * Tue May 03 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.13-91
 - [SCSI] mpt2sas: prevent heap overflows and unchecked reads
   (CVE-2011-1494, CVE-2011-1495)
