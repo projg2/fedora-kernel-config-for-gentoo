@@ -747,6 +747,8 @@ Patch12405: iwlwifi-add-_ack_plpc_check-module-parameters.patch
 # intel_ips driver bug (#703511) causes cooling fan to run
 Patch12406: ips-use-interruptible-waits-in-ips-monitor.patch
 
+Patch12407: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1387,6 +1389,8 @@ ApplyPatch iwlwifi-add-_ack_plpc_check-module-parameters.patch
 # intel_ips driver bug (#703511) causes cooling fan to run
 ApplyPatch ips-use-interruptible-waits-in-ips-monitor.patch
 
+ApplyPatch scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1995,6 +1999,10 @@ fi
 # and build.
 
 %changelog
+* Fri May 13 2011 Kyle McMartin <kmcmartin@redhat.com>
+- [fabbione@] Fix a deadlock when using hp_sw with an HP san.
+  (7a1e9d82 upstream)
+
 * Wed May 11 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix Intel IPS driver so it doesn't run continuously (#703511)
 

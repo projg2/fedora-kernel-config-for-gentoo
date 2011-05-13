@@ -1,0 +1,32 @@
+From 7a1e9d829f8bd821466c5ea834ad6f378740d2be Mon Sep 17 00:00:00 2001
+From: Mike Snitzer <snitzer@redhat.com>
+Date: Tue, 25 Jan 2011 11:52:17 -0500
+Subject: [SCSI] scsi_dh_hp_sw: fix deadlock in start_stop_endio
+
+The use of blk_execute_rq_nowait() implies __blk_put_request() is needed
+in start_stop_endio() rather than blk_put_request() --
+blk_finish_request() is called with queue lock already held.
+
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Signed-off-by: James Bottomley <James.Bottomley@suse.de>
+---
+ drivers/scsi/device_handler/scsi_dh_hp_sw.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/scsi/device_handler/scsi_dh_hp_sw.c b/drivers/scsi/device_handler/scsi_dh_hp_sw.c
+index e391664..d0363c8 100644
+--- a/drivers/scsi/device_handler/scsi_dh_hp_sw.c
++++ b/drivers/scsi/device_handler/scsi_dh_hp_sw.c
+@@ -225,7 +225,8 @@ static void start_stop_endio(struct request *req, int error)
+ 		}
+ 	}
+ done:
+-	blk_put_request(req);
++	req->end_io_data = NULL;
++	__blk_put_request(req->q, req);
+ 	if (h->callback_fn) {
+ 		h->callback_fn(h->callback_data, err);
+ 		h->callback_fn = h->callback_data = NULL;
+-- 
+1.7.5.1
+
