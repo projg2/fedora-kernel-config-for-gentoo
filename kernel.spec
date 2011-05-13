@@ -847,6 +847,8 @@ Patch13962: af_netlink-add-needed-scm_destroy-after-scm_send.patch
 Patch13963: x86-amd-fix-apic-timer-erratum-400-affecting-k8-rev.a-e-processors.patch
 Patch13964: x86-amd-fix-another-erratum-400-bug.patch
 
+Patch13969: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1593,6 +1595,8 @@ ApplyPatch af_netlink-add-needed-scm_destroy-after-scm_send.patch
 ApplyPatch x86-amd-fix-apic-timer-erratum-400-affecting-k8-rev.a-e-processors.patch
 ApplyPatch x86-amd-fix-another-erratum-400-bug.patch
 
+ApplyPatch scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2179,6 +2183,10 @@ fi
 # and build.
 
 %changelog
+* Fri May 13 2011 Kyle McMartin <kmcmartin@redhat.com>
+- [fabbione@] Fix a deadlock when using hp_sw with an HP san.
+  (7a1e9d82 upstream)
+
 * Thu May 12 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.13-92
 - Fix stalls on AMD machines with C1E caused by 2.6.35.13 (#704059)
 
