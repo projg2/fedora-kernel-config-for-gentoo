@@ -845,6 +845,7 @@ Patch13962: af_netlink-add-needed-scm_destroy-after-scm_send.patch
 
 # fix regression causing stalls on AMD processors in 2.6.35.13
 Patch13963: x86-amd-fix-apic-timer-erratum-400-affecting-k8-rev.a-e-processors.patch
+Patch13964: x86-amd-fix-another-erratum-400-bug.patch
 
 %endif
 
@@ -1590,6 +1591,7 @@ ApplyPatch af_netlink-add-needed-scm_destroy-after-scm_send.patch
 
 # fix regression causing stalls on AMD processors in 2.6.35.13
 ApplyPatch x86-amd-fix-apic-timer-erratum-400-affecting-k8-rev.a-e-processors.patch
+ApplyPatch x86-amd-fix-another-erratum-400-bug.patch
 
 # END OF PATCH APPLICATIONS
 
