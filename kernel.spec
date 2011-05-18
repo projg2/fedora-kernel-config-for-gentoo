@@ -844,8 +844,7 @@ Patch13961: revert-incomplete-af_netlink-add-needed-scm-destroy-after-scm-send.p
 Patch13962: af_netlink-add-needed-scm_destroy-after-scm_send.patch
 
 # fix regression causing stalls on AMD processors in 2.6.35.13
-Patch13963: x86-amd-fix-apic-timer-erratum-400-affecting-k8-rev.a-e-processors.patch
-Patch13964: x86-amd-fix-another-erratum-400-bug.patch
+Patch13963: x86-amd-fix-arat-feature-setting-again.patch
 
 Patch13969: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
@@ -1595,8 +1594,7 @@ ApplyPatch revert-incomplete-af_netlink-add-needed-scm-destroy-after-scm-send.pa
 ApplyPatch af_netlink-add-needed-scm_destroy-after-scm_send.patch
 
 # fix regression causing stalls on AMD processors in 2.6.35.13
-ApplyPatch x86-amd-fix-apic-timer-erratum-400-affecting-k8-rev.a-e-processors.patch
-ApplyPatch x86-amd-fix-another-erratum-400-bug.patch
+ApplyPatch x86-amd-fix-arat-feature-setting-again.patch
 
 ApplyPatch scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
@@ -2191,6 +2189,7 @@ fi
 %changelog
 * Wed May 18 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.13-92
 - Fix cifs bug in 2.6.35.13 with old Windows servers (#704125)
+- Revert broken fixes for #704059, add proper partial fix.
 
 * Fri May 13 2011 Kyle McMartin <kmcmartin@redhat.com>
 - [fabbione@] Fix a deadlock when using hp_sw with an HP san.
