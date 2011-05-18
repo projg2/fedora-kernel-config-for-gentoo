@@ -1,0 +1,33 @@
+From: Jeff Layton <jlayton@redhat.com>
+Date: Tue, 17 May 2011 10:40:30 +0000 (-0400)
+Subject: cifs: add fallback in is_path_accessible for old servers
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=221d1d797202984cb874e3ed9f1388593d34ee22
+
+cifs: add fallback in is_path_accessible for old servers
+
+The is_path_accessible check uses a QPathInfo call, which isn't
+supported by ancient win9x era servers. Fall back to an older
+SMBQueryInfo call if it fails with the magic error codes.
+
+Cc: stable@kernel.org
+Reported-and-Tested-by: Sandro Bonazzola <sandro.bonazzola@gmail.com>
+Signed-off-by: Jeff Layton <jlayton@redhat.com>
+Signed-off-by: Steve French <sfrench@us.ibm.com>
+---
+
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index 05f1dcf..277262a 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -2673,6 +2673,11 @@ is_path_accessible(int xid, struct cifsTconInfo *tcon,
+ 			      0 /* not legacy */, cifs_sb->local_nls,
+ 			      cifs_sb->mnt_cifs_flags &
+ 				CIFS_MOUNT_MAP_SPECIAL_CHR);
++
++	if (rc == -EOPNOTSUPP || rc == -EINVAL)
++		rc = SMBQueryInformation(xid, tcon, full_path, pfile_info,
++				cifs_sb->local_nls, cifs_sb->mnt_cifs_flags &
++				  CIFS_MOUNT_MAP_SPECIAL_CHR);
+ 	kfree(pfile_info);
+ 	return rc;
+ }

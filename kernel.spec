@@ -849,6 +849,9 @@ Patch13964: x86-amd-fix-another-erratum-400-bug.patch
 
 Patch13969: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
+# fix bug in 2.6.35.13 with old windows servers
+Patch13970: cifs-add-fallback-in-is_path_accessible-for-old-servers.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1597,6 +1600,9 @@ ApplyPatch x86-amd-fix-another-erratum-400-bug.patch
 
 ApplyPatch scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
+# fix bug in 2.6.35.13 with old windows servers
+ApplyPatch cifs-add-fallback-in-is_path_accessible-for-old-servers.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2183,11 +2189,14 @@ fi
 # and build.
 
 %changelog
+* Wed May 18 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.13-92
+- Fix cifs bug in 2.6.35.13 with old Windows servers (#704125)
+
 * Fri May 13 2011 Kyle McMartin <kmcmartin@redhat.com>
 - [fabbione@] Fix a deadlock when using hp_sw with an HP san.
   (7a1e9d82 upstream)
 
-* Thu May 12 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.13-92
+* Thu May 12 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix stalls on AMD machines with C1E caused by 2.6.35.13 (#704059)
 
 * Tue May 03 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.13-91
