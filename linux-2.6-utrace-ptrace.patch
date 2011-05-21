@@ -1249,8 +1249,8 @@ index e275608..72ea65c 100644
  #include <linux/signal.h>
  #include <linux/audit.h>
 @@ -24,7 +23,320 @@
- #include <linux/uaccess.h>
  #include <linux/regset.h>
+ #include <linux/hw_breakpoint.h>
  
 +int __ptrace_may_access(struct task_struct *task, unsigned int mode)
 +{
@@ -1955,7 +1955,7 @@ index e275608..72ea65c 100644
  int compat_ptrace_request(struct task_struct *child, compat_long_t request,
  			  compat_ulong_t addr, compat_ulong_t data)
  {
-@@ -851,42 +876,5 @@ int compat_ptrace_request(struct task_st
+@@ -851,45 +876,8 @@ int compat_ptrace_request(struct task_st
  
  	return ret;
  }
@@ -1999,6 +1999,9 @@ index e275608..72ea65c 100644
 -}
  #endif	/* CONFIG_COMPAT */
 +#endif	/* CONFIG_UTRACE */
+ 
+ #ifdef CONFIG_HAVE_HW_BREAKPOINT
+ int ptrace_get_breakpoints(struct task_struct *tsk)
 diff --git a/kernel/utrace.c b/kernel/utrace.c
 index 26d6faf..37dce16 100644  
 --- a/kernel/utrace.c

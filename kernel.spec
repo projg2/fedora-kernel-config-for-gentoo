@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 27
+%global baserelease 28
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -63,9 +63,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -741,9 +741,6 @@ Patch12403: x86-dumpstack-correct-stack-dump-info-when-frame-pointer-is-availabl
 # Fix breakage of PCI network adapter names on older Dell systems
 Patch12404: x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
 
-# iwlwifi: add {ack,plpc}_check module parameters (#666646)
-Patch12405: iwlwifi-add-_ack_plpc_check-module-parameters.patch
-
 # intel_ips driver bug (#703511) causes cooling fan to run
 Patch12406: ips-use-interruptible-waits-in-ips-monitor.patch
 
@@ -1383,9 +1380,6 @@ ApplyPatch linux-2.6-netconsole-deadlock.patch
 # CVE-2011-1581
 ApplyPatch bonding-incorrect-tx-queue-offset.patch
 
-# iwlwifi: add {ack,plpc}_check module parameters (#666646) queued for stable
-ApplyPatch iwlwifi-add-_ack_plpc_check-module-parameters.patch
-
 # intel_ips driver bug (#703511) causes cooling fan to run
 ApplyPatch ips-use-interruptible-waits-in-ips-monitor.patch
 
@@ -1999,6 +1993,14 @@ fi
 # and build.
 
 %changelog
+* Fri May 20 2011 Chuck Ebbert <cebbert@redhat.com>
+- Linux 2.6.38.7-rc1
+- Fix up context in utrace-ptrace.patch
+- Revert radeon patches already in our radeon update:
+  drm-radeon-kms-fix-gart-setup-on-fusion-parts-v2-backport.patch
+- Drop merged patches:
+  iwlwifi-add-_ack_plpc_check-module-parameters.patch
+
 * Fri May 13 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.6-28
 - [fabbione@] Fix a deadlock when using hp_sw with an HP san.
   (7a1e9d82 upstream)
