@@ -855,6 +855,9 @@ Patch13970: cifs-add-fallback-in-is_path_accessible-for-old-servers.patch
 # cve-2011-1770
 Patch13980: dccp-handle-invalid-feature-options-length.patch
 
+# the rest of the pgoff wrap fix
+Patch13990: vm-fix-vm_pgoff-wrap-in-stack-expansion.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1609,6 +1612,9 @@ ApplyPatch cifs-add-fallback-in-is_path_accessible-for-old-servers.patch
 # cve-2011-1770
 ApplyPatch dccp-handle-invalid-feature-options-length.patch
 
+# the rest of the pgoff wrap fix
+ApplyPatch vm-fix-vm_pgoff-wrap-in-stack-expansion.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2198,6 +2204,7 @@ fi
 * Fri May 20 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.13-92
 - Add the rest of the fix for bug #704059
 - dccp: handle invalid feature options length (CVE-2011-1770)
+- Fix address wrapping in stack expansion code.
 
 * Wed May 18 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix cifs bug in 2.6.35.13 with old Windows servers (#704125)
