@@ -845,6 +845,7 @@ Patch13962: af_netlink-add-needed-scm_destroy-after-scm_send.patch
 
 # fix regression causing stalls on AMD processors in 2.6.35.13
 Patch13963: x86-amd-fix-arat-feature-setting-again.patch
+Patch13964: x86-amd-arat-bug-on-sempron-workaround.patch
 
 Patch13969: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
@@ -1595,6 +1596,7 @@ ApplyPatch af_netlink-add-needed-scm_destroy-after-scm_send.patch
 
 # fix regression causing stalls on AMD processors in 2.6.35.13
 ApplyPatch x86-amd-fix-arat-feature-setting-again.patch
+ApplyPatch x86-amd-arat-bug-on-sempron-workaround.patch
 
 ApplyPatch scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
@@ -2187,7 +2189,10 @@ fi
 # and build.
 
 %changelog
-* Wed May 18 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.13-92
+* Fri May 20 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.13-92
+- Add the rest of the fix for bug #704059
+
+* Wed May 18 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix cifs bug in 2.6.35.13 with old Windows servers (#704125)
 - Revert broken fixes for #704059, add proper partial fix.
 

@@ -1,0 +1,18 @@
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -724,6 +724,15 @@ bool cpu_has_amd_erratum(const int *erra
+ 	if (cpu->x86_vendor != X86_VENDOR_AMD)
+ 		return false;
+ 
++	/*
++	 * Temporary workaround for ARAT bug on Sempron.
++	 * The BIOS clears the bit in OSVW, so the check
++	 * fails, then ARAT gets set and when the processor
++	 * uses C3 it hangs. Always return true for that CPU.
++	 */
++	if (cpu->x86 == 0x10 && cpu->x86_model == 6 && cpu->x86_mask == 2)
++		return true;
++
+ 	if (osvw_id >= 0 && osvw_id < 65536 &&
+ 	    cpu_has(cpu, X86_FEATURE_OSVW)) {
+ 		u64 osvw_len;
