@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 28
+%global baserelease 29
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -65,7 +65,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 7
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1999,6 +1999,9 @@ fi
 # and build.
 
 %changelog
+* Mon May 23 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.7-29
+- Linux 2.6.38.7
+
 * Fri May 20 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.7-28.rc1
 - Linux 2.6.38.7-rc1
 - Fix up context in utrace-ptrace.patch
