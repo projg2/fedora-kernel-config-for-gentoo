@@ -749,6 +749,11 @@ Patch12407: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 # temporary fix for Sempron machines stalling (#704059)
 Patch12408: x86-amd-arat-bug-on-sempron-workaround.patch
 
+# Eliminate hangs when using frequent high-order allocations V4
+# (will be in 2.6.38.8)
+Patch12410: mm-vmscan-correct-use-of-pgdat_balanced-in-sleeping_prematurely.patch
+Patch12411: mm-vmscan-correctly-check-if-reclaimer-should-schedule-during-shrink_slab.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1391,6 +1396,11 @@ ApplyPatch scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 # temporary fix for Sempron machines stalling (#704059)
 ApplyPatch x86-amd-arat-bug-on-sempron-workaround.patch
 
+# Eliminate hangs when using frequent high-order allocations V4
+# (will be in 2.6.38.8)
+ApplyPatch mm-vmscan-correct-use-of-pgdat_balanced-in-sleeping_prematurely.patch
+ApplyPatch mm-vmscan-correctly-check-if-reclaimer-should-schedule-during-shrink_slab.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2001,6 +2011,7 @@ fi
 %changelog
 * Mon May 23 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.7-29
 - Linux 2.6.38.7
+- Eliminate hangs when using frequent high-order allocations
 
 * Fri May 20 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.7-28.rc1
 - Linux 2.6.38.7-rc1
