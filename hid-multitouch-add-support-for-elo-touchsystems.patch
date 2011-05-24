@@ -1,0 +1,78 @@
+From: Benjamin Tissoires <benjamin.tissoires@enac.fr>
+Date: Thu, 19 May 2011 09:37:29 +0000 (+0200)
+Subject: HID: hid-multitouch: add support for Elo TouchSystems 2515 IntelliTouch Plus
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Fjikos%2Fhid.git;a=commitdiff_plain;h=c04abeeff9d76a703cac1e6d312853b0fc8136f5
+
+HID: hid-multitouch: add support for Elo TouchSystems 2515 IntelliTouch Plus
+
+This patch adds support for Elo TouchSystems 2515 IntelliTouch Plus
+that can be found in Lenovo A700 all-in-one.
+
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@enac.fr>
+Tested-by: Bastien Nocera <hadess@hadess.net>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+
+--- a/drivers/hid/Kconfig
++++ b/drivers/hid/Kconfig
+@@ -309,6 +309,7 @@ config HID_MULTITOUCH
+ 
+ 	  Say Y here if you have one of the following devices:
+ 	  - Cypress TrueTouch panels
++	  - Elo TouchSystems IntelliTouch Plus panels
+ 	  - Hanvon dual touch panels
+ 	  - Pixcir dual touch panels
+ 	  - 'Sensing Win7-TwoFinger' panel by GeneralTouch
+--- a/drivers/hid/hid-core.c
++++ b/drivers/hid/hid-core.c
+@@ -1335,6 +1335,7 @@ static const struct hid_device_id hid_have_special_driver[] = {
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_DWAV, USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH3) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_DWAV, USB_DEVICE_ID_DWAV_EGALAX_MULTITOUCH4) },
+ 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_ELECOM, USB_DEVICE_ID_ELECOM_BM084) },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_ELO, USB_DEVICE_ID_ELO_TS2515) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_EMS, USB_DEVICE_ID_EMS_TRIO_LINKER_PLUS_II) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_EZKEY, USB_DEVICE_ID_BTC_8193) },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_GAMERON, USB_DEVICE_ID_GAMERON_DUAL_PSX_ADAPTOR) },
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -219,6 +219,7 @@
+ #define USB_VENDOR_ID_DREAM_CHEEKY	0x1d34
+ 
+ #define USB_VENDOR_ID_ELO		0x04E7
++#define USB_DEVICE_ID_ELO_TS2515	0x0022
+ #define USB_DEVICE_ID_ELO_TS2700	0x0020
+ 
+ #define USB_VENDOR_ID_EMS		0x2006
+--- a/drivers/hid/hid-multitouch.c
++++ b/drivers/hid/hid-multitouch.c
+@@ -69,6 +69,7 @@ struct mt_class {
+ #define MT_CLS_DUAL1	2
+ #define MT_CLS_DUAL2	3
+ #define MT_CLS_CYPRESS	4
++#define MT_CLS_DUAL_NSMU_CONTACTID	5
+ 
+ /*
+  * these device-dependent functions determine what slot corresponds
+@@ -119,6 +120,11 @@ struct mt_class mt_classes[] = {
+ 			MT_QUIRK_CYPRESS,
+ 		.maxcontacts = 10 },
+ 
++	{ .name = MT_CLS_DUAL_NSMU_CONTACTID,
++		.quirks = MT_QUIRK_NOT_SEEN_MEANS_UP |
++			MT_QUIRK_SLOT_IS_CONTACTID,
++		.maxcontacts = 2 },
++
+ 	{ }
+ };
+ 
+@@ -465,6 +471,11 @@ static const struct hid_device_id mt_devices[] = {
+ 		HID_USB_DEVICE(USB_VENDOR_ID_CYPRESS,
+ 			USB_DEVICE_ID_CYPRESS_TRUETOUCH) },
+ 
++	/* Elo TouchSystems IntelliTouch Plus panel */
++	{ .driver_data = MT_CLS_DUAL_NSMU_CONTACTID,
++		HID_USB_DEVICE(USB_VENDOR_ID_ELO,
++			USB_DEVICE_ID_ELO_TS2515) },
++
+ 	/* GeneralTouch panel */
+ 	{ .driver_data = MT_CLS_DUAL2,
+ 		HID_USB_DEVICE(USB_VENDOR_ID_GENERAL_TOUCH,

@@ -754,6 +754,9 @@ Patch12408: x86-amd-arat-bug-on-sempron-workaround.patch
 Patch12410: mm-vmscan-correct-use-of-pgdat_balanced-in-sleeping_prematurely.patch
 Patch12411: mm-vmscan-correctly-check-if-reclaimer-should-schedule-during-shrink_slab.patch
 
+Patch12415: hid-multitouch-add-support-for-elo-touchsystems.patch
+Patch12416: bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1401,6 +1404,9 @@ ApplyPatch x86-amd-arat-bug-on-sempron-workaround.patch
 ApplyPatch mm-vmscan-correct-use-of-pgdat_balanced-in-sleeping_prematurely.patch
 ApplyPatch mm-vmscan-correctly-check-if-reclaimer-should-schedule-during-shrink_slab.patch
 
+ApplyPatch hid-multitouch-add-support-for-elo-touchsystems.patch
+ApplyPatch bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2009,6 +2015,11 @@ fi
 # and build.
 
 %changelog
+* Tue May 24 2011 Kyle McMartin <kmcmartin@redhat.com>
+- hid-multitouch: add support for elo touchsystems panels (requested
+  by hadess, backported from hid-next)
+- bluetooth: add support for more ath3k devices (Ditto.)
+
 * Mon May 23 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.7-29
 - Linux 2.6.38.7
 - Eliminate hangs when using frequent high-order allocations
