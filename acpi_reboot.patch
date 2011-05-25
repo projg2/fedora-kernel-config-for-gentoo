@@ -1,4 +1,8 @@
-Improve our reboot handling for compatibility with Windows. Upstream in .38?
+Improve our reboot handling for compatibility with Windows. 
+
+Upstream commits:
+660e34cebf0a11d54f2d5dd8838607452355f321
+f17d9cbf20c4734c4199caa6dee87047f2f8278f
 
 diff --git a/arch/x86/kernel/reboot.c b/arch/x86/kernel/reboot.c
 index c495aa8..c770e66 100644
