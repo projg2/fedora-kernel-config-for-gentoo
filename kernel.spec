@@ -687,6 +687,7 @@ Patch1829: drm-intel-restore-mode.patch
 # radeon - new hw + fixes for fusion and t500 regression
 Patch1839: drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch
 Patch1840: drm-radeon-update.patch
+Patch1841: drm-radeon-update2.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
@@ -1344,6 +1345,7 @@ ApplyPatch drm-intel-restore-mode.patch
 # radeon DRM (add cayman support)
 ApplyPatch drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch -R
 ApplyPatch drm-radeon-update.patch
+ApplyPatch drm-radeon-update2.patch
 
 # linux1394 git patches
 #ApplyPatch linux-2.6-firewire-git-update.patch
@@ -2015,6 +2017,9 @@ fi
 # and build.
 
 %changelog
+* Wed May 25 2011 Dave Airlie <airlied@redhat.com>
+- drm-radeon-update2.patch: more radeon updates + cayman accel support
+
 * Tue May 24 2011 Kyle McMartin <kmcmartin@redhat.com>
 - hid-multitouch: add support for elo touchsystems panels (requested
   by hadess, backported from hid-next)
