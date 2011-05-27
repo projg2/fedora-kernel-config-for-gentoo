@@ -3513,7 +3513,7 @@ index af75015..055677a 100644
  	{ NV03_PGRAPH_NSOURCE_DATA_ERROR,         "DATA_ERROR" },
  	{ NV03_PGRAPH_NSOURCE_PROTECTION_ERROR,   "PROTECTION_ERROR" },
 diff --git a/drivers/gpu/drm/nouveau/nv04_instmem.c b/drivers/gpu/drm/nouveau/nv04_instmem.c
-index b8e3edb..b8611b9 100644
+index b8e3edb..0671b7f 100644
 --- a/drivers/gpu/drm/nouveau/nv04_instmem.c
 +++ b/drivers/gpu/drm/nouveau/nv04_instmem.c
 @@ -95,6 +95,9 @@ nv04_instmem_takedown(struct drm_device *dev)
@@ -3521,7 +3521,7 @@ index b8e3edb..b8611b9 100644
  	nouveau_gpuobj_ref(NULL, &dev_priv->ramro);
  	nouveau_gpuobj_ref(NULL, &dev_priv->ramfc);
 +
-+	if (drm_mm_initialized(&dev_priv->ramin_heap))
++	if (dev_priv->ramin_heap.free_stack.next)
 +		drm_mm_takedown(&dev_priv->ramin_heap);
  }
  
