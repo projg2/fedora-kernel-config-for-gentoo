@@ -1,5 +1,5 @@
 diff --git a/drivers/gpu/drm/nouveau/nouveau_bios.c b/drivers/gpu/drm/nouveau/nouveau_bios.c
-index 6bdab89..90aef64 100644
+index 6bdab89..729d5fd 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_bios.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_bios.c
 @@ -269,7 +269,7 @@ struct init_tbl_entry {
@@ -102,7 +102,20 @@ index 6bdab89..90aef64 100644
  	}
  #ifdef __powerpc__
  	/* Powerbook specific quirks */
-@@ -5950,6 +5971,11 @@ apply_dcb_connector_quirks(struct nvbios *bios, int idx)
+@@ -5028,11 +5049,7 @@ int get_pll_limits(struct drm_device *dev, uint32_t limit_match, struct pll_lims
+ 		pll_lim->vco1.max_n = record[11];
+ 		pll_lim->min_p = record[12];
+ 		pll_lim->max_p = record[13];
+-		/* where did this go to?? */
+-		if ((entry[0] & 0xf0) == 0x80)
+-			pll_lim->refclk = 27000;
+-		else
+-			pll_lim->refclk = 100000;
++		pll_lim->refclk = ROM16(entry[9]) * 1000;
+ 	}
+ 
+ 	/*
+@@ -5950,6 +5967,11 @@ apply_dcb_connector_quirks(struct nvbios *bios, int idx)
  	}
  }
  
@@ -114,7 +127,7 @@ index 6bdab89..90aef64 100644
  static void
  parse_dcb_connector_table(struct nvbios *bios)
  {
-@@ -5986,23 +6012,9 @@ parse_dcb_connector_table(struct nvbios *bios)
+@@ -5986,23 +6008,9 @@ parse_dcb_connector_table(struct nvbios *bios)
  
  		cte->type  = (cte->entry & 0x000000ff) >> 0;
  		cte->index2 = (cte->entry & 0x00000f00) >> 8;
@@ -141,7 +154,15 @@ index 6bdab89..90aef64 100644
  
  		if (cte->type == 0xff)
  			continue;
-@@ -6342,6 +6354,32 @@ apply_dcb_encoder_quirks(struct drm_device *dev, int idx, u32 *conn, u32 *conf)
+@@ -6023,6 +6031,7 @@ parse_dcb_connector_table(struct nvbios *bios)
+ 		case DCB_CONNECTOR_DVI_I:
+ 		case DCB_CONNECTOR_DVI_D:
+ 		case DCB_CONNECTOR_LVDS:
++		case DCB_CONNECTOR_LVDS_SPWG:
+ 		case DCB_CONNECTOR_DP:
+ 		case DCB_CONNECTOR_eDP:
+ 		case DCB_CONNECTOR_HDMI_0:
+@@ -6342,6 +6351,32 @@ apply_dcb_encoder_quirks(struct drm_device *dev, int idx, u32 *conn, u32 *conf)
  		}
  	}
  
@@ -174,7 +195,7 @@ index 6bdab89..90aef64 100644
  	return true;
  }
  
-@@ -6702,11 +6740,11 @@ nouveau_bios_run_init_table(struct drm_device *dev, uint16_t table,
+@@ -6702,11 +6737,11 @@ nouveau_bios_run_init_table(struct drm_device *dev, uint16_t table,
  	struct nvbios *bios = &dev_priv->vbios;
  	struct init_exec iexec = { true, false };
  
@@ -188,7 +209,7 @@ index 6bdab89..90aef64 100644
  }
  
  static bool NVInitVBIOS(struct drm_device *dev)
-@@ -6715,7 +6753,7 @@ static bool NVInitVBIOS(struct drm_device *dev)
+@@ -6715,7 +6750,7 @@ static bool NVInitVBIOS(struct drm_device *dev)
  	struct nvbios *bios = &dev_priv->vbios;
  
  	memset(bios, 0, sizeof(struct nvbios));
@@ -198,10 +219,18 @@ index 6bdab89..90aef64 100644
  
  	if (!NVShadowVBIOS(dev, bios->data))
 diff --git a/drivers/gpu/drm/nouveau/nouveau_bios.h b/drivers/gpu/drm/nouveau/nouveau_bios.h
-index 50a648e..8a54fa7 100644
+index 50a648e..050c314 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_bios.h
 +++ b/drivers/gpu/drm/nouveau/nouveau_bios.h
-@@ -251,7 +251,7 @@ struct nvbios {
+@@ -82,6 +82,7 @@ enum dcb_connector_type {
+ 	DCB_CONNECTOR_DVI_I = 0x30,
+ 	DCB_CONNECTOR_DVI_D = 0x31,
+ 	DCB_CONNECTOR_LVDS = 0x40,
++	DCB_CONNECTOR_LVDS_SPWG = 0x41,
+ 	DCB_CONNECTOR_DP = 0x46,
+ 	DCB_CONNECTOR_eDP = 0x47,
+ 	DCB_CONNECTOR_HDMI_0 = 0x60,
+@@ -251,7 +252,7 @@ struct nvbios {
  	uint8_t digital_min_front_porch;
  	bool fp_no_ddc;
  
@@ -716,6 +745,53 @@ index 3960d66..3837090 100644
  	if (ret) {
  		NV_ERROR(dev, "error allocating DMA push buffer: %d\n", ret);
  		return NULL;
+diff --git a/drivers/gpu/drm/nouveau/nouveau_connector.c b/drivers/gpu/drm/nouveau/nouveau_connector.c
+index 390d82c..084c089 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_connector.c
++++ b/drivers/gpu/drm/nouveau/nouveau_connector.c
+@@ -438,7 +438,7 @@ nouveau_connector_set_property(struct drm_connector *connector,
+ 		}
+ 
+ 		/* LVDS always needs gpu scaling */
+-		if (nv_connector->dcb->type == DCB_CONNECTOR_LVDS &&
++		if (connector->connector_type == DRM_MODE_CONNECTOR_LVDS &&
+ 		    value == DRM_MODE_SCALE_NONE)
+ 			return -EINVAL;
+ 
+@@ -646,6 +646,7 @@ nouveau_connector_get_modes(struct drm_connector *connector)
+ 		ret = get_slave_funcs(encoder)->get_modes(encoder, connector);
+ 
+ 	if (nv_connector->dcb->type == DCB_CONNECTOR_LVDS ||
++	    nv_connector->dcb->type == DCB_CONNECTOR_LVDS_SPWG ||
+ 	    nv_connector->dcb->type == DCB_CONNECTOR_eDP)
+ 		ret += nouveau_connector_scaler_modes_add(connector);
+ 
+@@ -806,6 +807,7 @@ nouveau_connector_create(struct drm_device *dev, int index)
+ 		type = DRM_MODE_CONNECTOR_HDMIA;
+ 		break;
+ 	case DCB_CONNECTOR_LVDS:
++	case DCB_CONNECTOR_LVDS_SPWG:
+ 		type = DRM_MODE_CONNECTOR_LVDS;
+ 		funcs = &nouveau_connector_funcs_lvds;
+ 		break;
+@@ -834,7 +836,7 @@ nouveau_connector_create(struct drm_device *dev, int index)
+ 	drm_connector_helper_add(connector, &nouveau_connector_helper_funcs);
+ 
+ 	/* Check if we need dithering enabled */
+-	if (dcb->type == DCB_CONNECTOR_LVDS) {
++	if (connector->connector_type == DRM_MODE_CONNECTOR_LVDS) {
+ 		bool dummy, is_24bit = false;
+ 
+ 		ret = nouveau_bios_parse_lvds_table(dev, 0, &dummy, &is_24bit);
+@@ -879,7 +881,7 @@ nouveau_connector_create(struct drm_device *dev, int index)
+ 				nv_connector->use_dithering ?
+ 				DRM_MODE_DITHERING_ON : DRM_MODE_DITHERING_OFF);
+ 
+-		if (dcb->type != DCB_CONNECTOR_LVDS) {
++		if (connector->connector_type != DRM_MODE_CONNECTOR_LVDS) {
+ 			if (dev_priv->card_type >= NV_50)
+ 				connector->polled = DRM_CONNECTOR_POLL_HPD;
+ 			else
 diff --git a/drivers/gpu/drm/nouveau/nouveau_display.c b/drivers/gpu/drm/nouveau/nouveau_display.c
 index 505c6bf..764c15d 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_display.c
@@ -852,9 +928,18 @@ index 505c6bf..764c15d 100644
  
  	spin_unlock_irqrestore(&dev->event_lock, flags);
 diff --git a/drivers/gpu/drm/nouveau/nouveau_dma.c b/drivers/gpu/drm/nouveau/nouveau_dma.c
-index b368ed7..ce38e97 100644
+index b368ed7..568caed 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_dma.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_dma.c
+@@ -83,7 +83,7 @@ nouveau_dma_init(struct nouveau_channel *chan)
+ 		return ret;
+ 
+ 	/* NV_MEMORY_TO_MEMORY_FORMAT requires a notifier object */
+-	ret = nouveau_notifier_alloc(chan, NvNotify0, 32, 0xfd0, 0x1000,
++	ret = nouveau_notifier_alloc(chan, NvNotify0, 32, 0xfe0, 0x1000,
+ 				     &chan->m2mf_ntfy);
+ 	if (ret)
+ 		return ret;
 @@ -97,13 +97,15 @@ nouveau_dma_init(struct nouveau_channel *chan)
  		OUT_RING(chan, 0);
  
@@ -926,7 +1011,7 @@ index 38d5995..7beb82a 100644
  	ret = auxch_rd(encoder, DP_ADJUST_REQUEST_LANE0_1, request, 2);
  	if (ret)
 diff --git a/drivers/gpu/drm/nouveau/nouveau_drv.h b/drivers/gpu/drm/nouveau/nouveau_drv.h
-index 982d70b..e172d72 100644
+index 982d70b..b260c55 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_drv.h
 +++ b/drivers/gpu/drm/nouveau/nouveau_drv.h
 @@ -57,7 +57,7 @@ struct nouveau_fpriv {
@@ -981,7 +1066,15 @@ index 982d70b..e172d72 100644
  	int (*early_init)(struct drm_device *);
  	void (*late_takedown)(struct drm_device *);
  	int (*create)(struct drm_device *);
-@@ -463,6 +466,7 @@ struct nouveau_pm_memtiming {
+@@ -433,6 +436,7 @@ struct nouveau_pm_level {
+ 	u32 memory;
+ 	u32 shader;
+ 	u32 unk05;
++	u32 unk0a;
+ 
+ 	u8 voltage;
+ 	u8 fanspeed;
+@@ -463,6 +467,7 @@ struct nouveau_pm_memtiming {
  	u32 reg_100234;
  	u32 reg_100238;
  	u32 reg_10023c;
@@ -989,7 +1082,7 @@ index 982d70b..e172d72 100644
  };
  
  struct nouveau_pm_memtimings {
-@@ -509,8 +513,8 @@ struct nouveau_crypt_engine {
+@@ -509,8 +514,8 @@ struct nouveau_crypt_engine {
  struct nouveau_vram_engine {
  	int  (*init)(struct drm_device *);
  	int  (*get)(struct drm_device *, u64, u32 align, u32 size_nc,
@@ -1000,7 +1093,7 @@ index 982d70b..e172d72 100644
  
  	bool (*flags_valid)(struct drm_device *, u32 tile_flags);
  };
-@@ -634,6 +638,7 @@ struct drm_nouveau_private {
+@@ -634,6 +639,7 @@ struct drm_nouveau_private {
  	enum nouveau_card_type card_type;
  	/* exact chipset, derived from NV_PMC_BOOT_0 */
  	int chipset;
@@ -1008,7 +1101,7 @@ index 982d70b..e172d72 100644
  	int flags;
  
  	void __iomem *mmio;
-@@ -652,8 +657,6 @@ struct drm_nouveau_private {
+@@ -652,8 +658,6 @@ struct drm_nouveau_private {
  	/* interrupt handling */
  	void (*irq_handler[32])(struct drm_device *);
  	bool msi_enabled;
@@ -1017,7 +1110,17 @@ index 982d70b..e172d72 100644
  
  	struct list_head vbl_waiting;
  
-@@ -691,15 +694,22 @@ struct drm_nouveau_private {
+@@ -681,6 +685,9 @@ struct drm_nouveau_private {
+ 	/* For PFIFO and PGRAPH. */
+ 	spinlock_t context_switch_lock;
+ 
++	/* VM/PRAMIN flush, legacy PRAMIN aperture */
++	spinlock_t vm_lock;
++
+ 	/* RAMIN configuration, RAMFC, RAMHT and RAMRO offsets */
+ 	struct nouveau_ramht  *ramht;
+ 	struct nouveau_gpuobj *ramfc;
+@@ -691,15 +698,22 @@ struct drm_nouveau_private {
  	struct {
  		enum {
  			NOUVEAU_GART_NONE = 0,
@@ -1043,7 +1146,7 @@ index 982d70b..e172d72 100644
  	} gart_info;
  
  	/* nv10-nv40 tiling regions */
-@@ -740,14 +750,6 @@ struct drm_nouveau_private {
+@@ -740,14 +754,6 @@ struct drm_nouveau_private {
  
  	struct backlight_device *backlight;
  
@@ -1058,7 +1161,7 @@ index 982d70b..e172d72 100644
  	struct {
  		struct dentry *channel_root;
  	} debugfs;
-@@ -847,6 +849,7 @@ extern void nv10_mem_put_tile_region(struct drm_device *dev,
+@@ -847,6 +853,7 @@ extern void nv10_mem_put_tile_region(struct drm_device *dev,
  				     struct nouveau_tile_reg *tile,
  				     struct nouveau_fence *fence);
  extern const struct ttm_mem_type_manager_func nouveau_vram_manager;
@@ -1066,7 +1169,7 @@ index 982d70b..e172d72 100644
  
  /* nouveau_notifier.c */
  extern int  nouveau_notifier_init_channel(struct nouveau_channel *);
-@@ -879,17 +882,17 @@ extern void nouveau_channel_ref(struct nouveau_channel *chan,
+@@ -879,17 +886,17 @@ extern void nouveau_channel_ref(struct nouveau_channel *chan,
  extern void nouveau_channel_idle(struct nouveau_channel *chan);
  
  /* nouveau_object.c */
@@ -1088,7 +1191,7 @@ index 982d70b..e172d72 100644
  
  extern int  nouveau_gpuobj_early_init(struct drm_device *);
  extern int  nouveau_gpuobj_init(struct drm_device *);
-@@ -899,7 +902,7 @@ extern void nouveau_gpuobj_resume(struct drm_device *dev);
+@@ -899,7 +906,7 @@ extern void nouveau_gpuobj_resume(struct drm_device *dev);
  extern int  nouveau_gpuobj_class_new(struct drm_device *, u32 class, u32 eng);
  extern int  nouveau_gpuobj_mthd_new(struct drm_device *, u32 class, u32 mthd,
  				    int (*exec)(struct nouveau_channel *,
@@ -1097,7 +1200,7 @@ index 982d70b..e172d72 100644
  extern int  nouveau_gpuobj_mthd_call(struct nouveau_channel *, u32, u32, u32);
  extern int  nouveau_gpuobj_mthd_call2(struct drm_device *, int, u32, u32, u32);
  extern int nouveau_gpuobj_channel_init(struct nouveau_channel *,
-@@ -1076,7 +1079,7 @@ extern void nv40_fb_set_tile_region(struct drm_device *dev, int i);
+@@ -1076,7 +1083,7 @@ extern void nv40_fb_set_tile_region(struct drm_device *dev, int i);
  /* nv50_fb.c */
  extern int  nv50_fb_init(struct drm_device *);
  extern void nv50_fb_takedown(struct drm_device *);
@@ -1106,7 +1209,7 @@ index 982d70b..e172d72 100644
  
  /* nvc0_fb.c */
  extern int  nvc0_fb_init(struct drm_device *);
-@@ -1189,7 +1192,7 @@ extern int  nv50_graph_load_context(struct nouveau_channel *);
+@@ -1189,7 +1196,7 @@ extern int  nv50_graph_load_context(struct nouveau_channel *);
  extern int  nv50_graph_unload_context(struct drm_device *);
  extern int  nv50_grctx_init(struct nouveau_grctx *);
  extern void nv50_graph_tlb_flush(struct drm_device *dev);
@@ -1115,7 +1218,7 @@ index 982d70b..e172d72 100644
  extern struct nouveau_enum nv50_data_error_names[];
  
  /* nvc0_graph.c */
-@@ -1295,7 +1298,7 @@ extern struct ttm_bo_driver nouveau_bo_driver;
+@@ -1295,7 +1302,7 @@ extern struct ttm_bo_driver nouveau_bo_driver;
  extern int nouveau_bo_new(struct drm_device *, struct nouveau_channel *,
  			  int size, int align, uint32_t flags,
  			  uint32_t tile_mode, uint32_t tile_flags,
@@ -1124,7 +1227,7 @@ index 982d70b..e172d72 100644
  extern int nouveau_bo_pin(struct nouveau_bo *, uint32_t flags);
  extern int nouveau_bo_unpin(struct nouveau_bo *);
  extern int nouveau_bo_map(struct nouveau_bo *);
-@@ -1356,9 +1359,9 @@ static inline struct nouveau_fence *nouveau_fence_ref(struct nouveau_fence *obj)
+@@ -1356,9 +1363,9 @@ static inline struct nouveau_fence *nouveau_fence_ref(struct nouveau_fence *obj)
  
  /* nouveau_gem.c */
  extern int nouveau_gem_new(struct drm_device *, struct nouveau_channel *,
@@ -1136,6 +1239,17 @@ index 982d70b..e172d72 100644
  extern int nouveau_gem_object_new(struct drm_gem_object *);
  extern void nouveau_gem_object_del(struct drm_gem_object *);
  extern int nouveau_gem_ioctl_new(struct drm_device *, void *,
+@@ -1398,8 +1405,8 @@ bool nv50_gpio_irq_enable(struct drm_device *, enum dcb_gpio_tag, bool on);
+ /* nv50_calc. */
+ int nv50_calc_pll(struct drm_device *, struct pll_lims *, int clk,
+ 		  int *N1, int *M1, int *N2, int *M2, int *P);
+-int nv50_calc_pll2(struct drm_device *, struct pll_lims *,
+-		   int clk, int *N, int *fN, int *M, int *P);
++int nva3_calc_pll(struct drm_device *, struct pll_lims *,
++		  int clk, int *N, int *fN, int *M, int *P);
+ 
+ #ifndef ioread32_native
+ #ifdef __BIG_ENDIAN
 diff --git a/drivers/gpu/drm/nouveau/nouveau_fb.h b/drivers/gpu/drm/nouveau/nouveau_fb.h
 index d432134..a3a88ad 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_fb.h
@@ -1151,7 +1265,7 @@ index d432134..a3a88ad 100644
  
  static inline struct nouveau_framebuffer *
 diff --git a/drivers/gpu/drm/nouveau/nouveau_fbcon.c b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
-index 60769d2..889c445 100644
+index 7826be0..39aee6d 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_fbcon.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_fbcon.c
 @@ -296,8 +296,8 @@ nouveau_fbcon_create(struct nouveau_fbdev *nfbdev,
@@ -1679,19 +1793,41 @@ index 4a8ad13..86c2e37 100644
  
  static inline void
  cp_pos(struct nouveau_grctx *ctx, int offset)
+diff --git a/drivers/gpu/drm/nouveau/nouveau_hw.c b/drivers/gpu/drm/nouveau/nouveau_hw.c
+index 053edf9..ba896e5 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_hw.c
++++ b/drivers/gpu/drm/nouveau/nouveau_hw.c
+@@ -900,6 +900,7 @@ nv_save_state_ext(struct drm_device *dev, int head,
+ 	}
+ 	/* NV11 and NV20 don't have this, they stop at 0x52. */
+ 	if (nv_gf4_disp_arch(dev)) {
++		rd_cio_state(dev, head, regp, NV_CIO_CRE_42);
+ 		rd_cio_state(dev, head, regp, NV_CIO_CRE_53);
+ 		rd_cio_state(dev, head, regp, NV_CIO_CRE_54);
+ 
+@@ -1003,6 +1004,7 @@ nv_load_state_ext(struct drm_device *dev, int head,
+ 			nouveau_wait_eq(dev, 650000000, NV_PRMCIO_INP0__COLOR, 0x8, 0x0);
+ 		}
+ 
++		wr_cio_state(dev, head, regp, NV_CIO_CRE_42);
+ 		wr_cio_state(dev, head, regp, NV_CIO_CRE_53);
+ 		wr_cio_state(dev, head, regp, NV_CIO_CRE_54);
+ 
 diff --git a/drivers/gpu/drm/nouveau/nouveau_mem.c b/drivers/gpu/drm/nouveau/nouveau_mem.c
-index b0fb9bd..f017997 100644
+index b0fb9bd..4942294 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_mem.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_mem.c
-@@ -152,7 +152,6 @@ nouveau_mem_vram_fini(struct drm_device *dev)
+@@ -152,9 +152,6 @@ nouveau_mem_vram_fini(struct drm_device *dev)
  {
  	struct drm_nouveau_private *dev_priv = dev->dev_private;
  
 -	nouveau_bo_unpin(dev_priv->vga_ram);
- 	nouveau_bo_ref(NULL, &dev_priv->vga_ram);
- 
+-	nouveau_bo_ref(NULL, &dev_priv->vga_ram);
+-
  	ttm_bo_device_release(&dev_priv->ttm.bdev);
-@@ -393,11 +392,17 @@ nouveau_mem_vram_init(struct drm_device *dev)
+ 
+ 	nouveau_ttm_global_release(dev_priv);
+@@ -393,11 +390,17 @@ nouveau_mem_vram_init(struct drm_device *dev)
  	struct ttm_bo_device *bdev = &dev_priv->ttm.bdev;
  	int ret, dma_bits;
  
@@ -1714,7 +1850,7 @@ index b0fb9bd..f017997 100644
  
  	ret = pci_set_dma_mask(dev->pdev, DMA_BIT_MASK(dma_bits));
  	if (ret)
-@@ -419,14 +424,32 @@ nouveau_mem_vram_init(struct drm_device *dev)
+@@ -419,14 +422,32 @@ nouveau_mem_vram_init(struct drm_device *dev)
  	}
  
  	/* reserve space at end of VRAM for PRAMIN */
@@ -1755,7 +1891,7 @@ index b0fb9bd..f017997 100644
  
  	ret = dev_priv->engine.vram.init(dev);
  	if (ret)
-@@ -455,13 +478,17 @@ nouveau_mem_vram_init(struct drm_device *dev)
+@@ -455,13 +476,17 @@ nouveau_mem_vram_init(struct drm_device *dev)
  		return ret;
  	}
  
@@ -1780,7 +1916,7 @@ index b0fb9bd..f017997 100644
  	}
  
  	dev_priv->fb_mtrr = drm_mtrr_add(pci_resource_start(dev->pdev, 1),
-@@ -525,6 +552,7 @@ nouveau_mem_timing_init(struct drm_device *dev)
+@@ -525,6 +550,7 @@ nouveau_mem_timing_init(struct drm_device *dev)
  	u8 tRC;		/* Byte 9 */
  	u8 tUNK_10, tUNK_11, tUNK_12, tUNK_13, tUNK_14;
  	u8 tUNK_18, tUNK_19, tUNK_20, tUNK_21;
@@ -1788,7 +1924,7 @@ index b0fb9bd..f017997 100644
  	u8 *mem = NULL, *entry;
  	int i, recordlen, entries;
  
-@@ -569,6 +597,12 @@ nouveau_mem_timing_init(struct drm_device *dev)
+@@ -569,6 +595,12 @@ nouveau_mem_timing_init(struct drm_device *dev)
  	if (!memtimings->timing)
  		return;
  
@@ -1801,7 +1937,7 @@ index b0fb9bd..f017997 100644
  	entry = mem + mem[1];
  	for (i = 0; i < entries; i++, entry += recordlen) {
  		struct nouveau_pm_memtiming *timing = &pm->memtimings.timing[i];
-@@ -608,36 +642,67 @@ nouveau_mem_timing_init(struct drm_device *dev)
+@@ -608,36 +640,67 @@ nouveau_mem_timing_init(struct drm_device *dev)
  
  		/* XXX: I don't trust the -1's and +1's... they must come
  		 *      from somewhere! */
@@ -1896,7 +2032,7 @@ index b0fb9bd..f017997 100644
  		}
  
  		NV_DEBUG(dev, "Entry %d: 220: %08x %08x %08x %08x\n", i,
-@@ -646,9 +711,10 @@ nouveau_mem_timing_init(struct drm_device *dev)
+@@ -646,9 +709,10 @@ nouveau_mem_timing_init(struct drm_device *dev)
  		NV_DEBUG(dev, "         230: %08x %08x %08x %08x\n",
  			 timing->reg_100230, timing->reg_100234,
  			 timing->reg_100238, timing->reg_10023c);
@@ -1908,7 +2044,7 @@ index b0fb9bd..f017997 100644
  	memtimings->supported = true;
  }
  
-@@ -666,13 +732,14 @@ nouveau_vram_manager_init(struct ttm_mem_type_manager *man, unsigned long p_size
+@@ -666,13 +730,14 @@ nouveau_vram_manager_init(struct ttm_mem_type_manager *man, unsigned long p_size
  {
  	struct drm_nouveau_private *dev_priv = nouveau_bdev(man->bdev);
  	struct nouveau_mm *mm;
@@ -1927,7 +2063,7 @@ index b0fb9bd..f017997 100644
  	if (ret)
  		return ret;
  
-@@ -700,9 +767,15 @@ nouveau_vram_manager_del(struct ttm_mem_type_manager *man,
+@@ -700,9 +765,15 @@ nouveau_vram_manager_del(struct ttm_mem_type_manager *man,
  {
  	struct drm_nouveau_private *dev_priv = nouveau_bdev(man->bdev);
  	struct nouveau_vram_engine *vram = &dev_priv->engine.vram;
@@ -1944,7 +2080,7 @@ index b0fb9bd..f017997 100644
  }
  
  static int
-@@ -715,7 +788,7 @@ nouveau_vram_manager_new(struct ttm_mem_type_manager *man,
+@@ -715,7 +786,7 @@ nouveau_vram_manager_new(struct ttm_mem_type_manager *man,
  	struct nouveau_vram_engine *vram = &dev_priv->engine.vram;
  	struct drm_device *dev = dev_priv->dev;
  	struct nouveau_bo *nvbo = nouveau_bo(bo);
@@ -1953,7 +2089,7 @@ index b0fb9bd..f017997 100644
  	u32 size_nc = 0;
  	int ret;
  
-@@ -724,7 +797,7 @@ nouveau_vram_manager_new(struct ttm_mem_type_manager *man,
+@@ -724,7 +795,7 @@ nouveau_vram_manager_new(struct ttm_mem_type_manager *man,
  
  	ret = vram->get(dev, mem->num_pages << PAGE_SHIFT,
  			mem->page_alignment << PAGE_SHIFT, size_nc,
@@ -1962,7 +2098,7 @@ index b0fb9bd..f017997 100644
  	if (ret) {
  		mem->mm_node = NULL;
  		return (ret == -ENOSPC) ? 0 : ret;
-@@ -771,3 +844,84 @@ const struct ttm_mem_type_manager_func nouveau_vram_manager = {
+@@ -771,3 +842,84 @@ const struct ttm_mem_type_manager_func nouveau_vram_manager = {
  	nouveau_vram_manager_del,
  	nouveau_vram_manager_debug
  };
@@ -2069,18 +2205,28 @@ index 798eaf3..1f7483a 100644
  
  #endif
 diff --git a/drivers/gpu/drm/nouveau/nouveau_notifier.c b/drivers/gpu/drm/nouveau/nouveau_notifier.c
-index 5ea1676..7ba3fc0 100644
+index 5ea1676..5b39718 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_notifier.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_notifier.c
-@@ -39,12 +39,11 @@ nouveau_notifier_init_channel(struct nouveau_channel *chan)
+@@ -35,20 +35,22 @@ nouveau_notifier_init_channel(struct nouveau_channel *chan)
+ {
+ 	struct drm_device *dev = chan->dev;
+ 	struct nouveau_bo *ntfy = NULL;
+-	uint32_t flags;
++	uint32_t flags, ttmpl;
  	int ret;
  
- 	if (nouveau_vram_notify)
+-	if (nouveau_vram_notify)
 -		flags = TTM_PL_FLAG_VRAM;
-+		flags = NOUVEAU_GEM_DOMAIN_VRAM;
- 	else
+-	else
 -		flags = TTM_PL_FLAG_TT;
++	if (nouveau_vram_notify) {
++		flags = NOUVEAU_GEM_DOMAIN_VRAM;
++		ttmpl = TTM_PL_FLAG_VRAM;
++	} else {
 +		flags = NOUVEAU_GEM_DOMAIN_GART;
++		ttmpl = TTM_PL_FLAG_TT;
++	}
  
 -	ret = nouveau_gem_new(dev, NULL, PAGE_SIZE, 0, flags,
 -			      0, 0x0000, false, true, &ntfy);
@@ -2088,7 +2234,12 @@ index 5ea1676..7ba3fc0 100644
  	if (ret)
  		return ret;
  
-@@ -100,6 +99,7 @@ nouveau_notifier_alloc(struct nouveau_channel *chan, uint32_t handle,
+-	ret = nouveau_bo_pin(ntfy, flags);
++	ret = nouveau_bo_pin(ntfy, ttmpl);
+ 	if (ret)
+ 		goto out_err;
+ 
+@@ -100,6 +102,7 @@ nouveau_notifier_alloc(struct nouveau_channel *chan, uint32_t handle,
  		       uint32_t *b_offset)
  {
  	struct drm_device *dev = chan->dev;
@@ -2096,7 +2247,7 @@ index 5ea1676..7ba3fc0 100644
  	struct nouveau_gpuobj *nobj = NULL;
  	struct drm_mm_node *mem;
  	uint32_t offset;
-@@ -114,11 +114,16 @@ nouveau_notifier_alloc(struct nouveau_channel *chan, uint32_t handle,
+@@ -114,11 +117,16 @@ nouveau_notifier_alloc(struct nouveau_channel *chan, uint32_t handle,
  		return -ENOMEM;
  	}
  
@@ -2119,7 +2270,7 @@ index 5ea1676..7ba3fc0 100644
  
  	ret = nouveau_gpuobj_dma_new(chan, NV_CLASS_DMA_IN_MEMORY, offset,
 diff --git a/drivers/gpu/drm/nouveau/nouveau_object.c b/drivers/gpu/drm/nouveau/nouveau_object.c
-index 30b6544..823800d 100644
+index 30b6544..59b446e 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_object.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_object.c
 @@ -36,6 +36,7 @@
@@ -2196,8 +2347,53 @@ index 30b6544..823800d 100644
  	}
  
  	/* VRAM ctxdma */
+@@ -1013,19 +1039,20 @@ nv_ro32(struct nouveau_gpuobj *gpuobj, u32 offset)
+ {
+ 	struct drm_nouveau_private *dev_priv = gpuobj->dev->dev_private;
+ 	struct drm_device *dev = gpuobj->dev;
++	unsigned long flags;
+ 
+ 	if (gpuobj->pinst == ~0 || !dev_priv->ramin_available) {
+ 		u64  ptr = gpuobj->vinst + offset;
+ 		u32 base = ptr >> 16;
+ 		u32  val;
+ 
+-		spin_lock(&dev_priv->ramin_lock);
++		spin_lock_irqsave(&dev_priv->vm_lock, flags);
+ 		if (dev_priv->ramin_base != base) {
+ 			dev_priv->ramin_base = base;
+ 			nv_wr32(dev, 0x001700, dev_priv->ramin_base);
+ 		}
+ 		val = nv_rd32(dev, 0x700000 + (ptr & 0xffff));
+-		spin_unlock(&dev_priv->ramin_lock);
++		spin_unlock_irqrestore(&dev_priv->vm_lock, flags);
+ 		return val;
+ 	}
+ 
+@@ -1037,18 +1064,19 @@ nv_wo32(struct nouveau_gpuobj *gpuobj, u32 offset, u32 val)
+ {
+ 	struct drm_nouveau_private *dev_priv = gpuobj->dev->dev_private;
+ 	struct drm_device *dev = gpuobj->dev;
++	unsigned long flags;
+ 
+ 	if (gpuobj->pinst == ~0 || !dev_priv->ramin_available) {
+ 		u64  ptr = gpuobj->vinst + offset;
+ 		u32 base = ptr >> 16;
+ 
+-		spin_lock(&dev_priv->ramin_lock);
++		spin_lock_irqsave(&dev_priv->vm_lock, flags);
+ 		if (dev_priv->ramin_base != base) {
+ 			dev_priv->ramin_base = base;
+ 			nv_wr32(dev, 0x001700, dev_priv->ramin_base);
+ 		}
+ 		nv_wr32(dev, 0x700000 + (ptr & 0xffff), val);
+-		spin_unlock(&dev_priv->ramin_lock);
++		spin_unlock_irqrestore(&dev_priv->vm_lock, flags);
+ 		return;
+ 	}
+ 
 diff --git a/drivers/gpu/drm/nouveau/nouveau_perf.c b/drivers/gpu/drm/nouveau/nouveau_perf.c
-index ac62a1b..670e3cb 100644
+index ac62a1b..3045566 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_perf.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_perf.c
 @@ -134,7 +134,7 @@ nouveau_perf_init(struct drm_device *dev)
@@ -2209,6 +2405,31 @@ index ac62a1b..670e3cb 100644
  			perflvl->core = ROM32(entry[1]) * 10;
  			perflvl->memory = ROM32(entry[5]) * 20;
  			break;
+@@ -174,9 +174,21 @@ nouveau_perf_init(struct drm_device *dev)
+ #define subent(n) entry[perf[2] + ((n) * perf[3])]
+ 			perflvl->fanspeed = 0; /*XXX*/
+ 			perflvl->voltage = entry[2];
+-			perflvl->core = (ROM16(subent(0)) & 0xfff) * 1000;
+-			perflvl->shader = (ROM16(subent(1)) & 0xfff) * 1000;
+-			perflvl->memory = (ROM16(subent(2)) & 0xfff) * 1000;
++			if (dev_priv->card_type == NV_50) {
++				perflvl->core = ROM16(subent(0)) & 0xfff;
++				perflvl->shader = ROM16(subent(1)) & 0xfff;
++				perflvl->memory = ROM16(subent(2)) & 0xfff;
++			} else {
++				perflvl->shader = ROM16(subent(3)) & 0xfff;
++				perflvl->core   = perflvl->shader / 2;
++				perflvl->unk0a  = ROM16(subent(4)) & 0xfff;
++				perflvl->memory = ROM16(subent(5)) & 0xfff;
++			}
++
++			perflvl->core *= 1000;
++			perflvl->shader *= 1000;
++			perflvl->memory *= 1000;
++			perflvl->unk0a *= 1000;
+ 			break;
+ 		}
+ 
 diff --git a/drivers/gpu/drm/nouveau/nouveau_pm.c b/drivers/gpu/drm/nouveau/nouveau_pm.c
 index 4399e2f..0b1caeb 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_pm.c
@@ -2712,7 +2933,7 @@ index 9a250eb..2bf9686 100644
  
  uint32_t
 diff --git a/drivers/gpu/drm/nouveau/nouveau_state.c b/drivers/gpu/drm/nouveau/nouveau_state.c
-index a54fc43..eb4f09e 100644
+index a54fc43..adf6dac 100644
 --- a/drivers/gpu/drm/nouveau/nouveau_state.c
 +++ b/drivers/gpu/drm/nouveau/nouveau_state.c
 @@ -376,15 +376,11 @@ static int nouveau_init_engine_ptrs(struct drm_device *dev)
@@ -2735,7 +2956,15 @@ index a54fc43..eb4f09e 100644
  		engine->fifo.channels		= 128;
  		engine->fifo.init		= nv50_fifo_init;
  		engine->fifo.takedown		= nv50_fifo_takedown;
-@@ -544,7 +540,6 @@ static int
+@@ -513,6 +509,7 @@ static int nouveau_init_engine_ptrs(struct drm_device *dev)
+ 		engine->vram.get		= nvc0_vram_new;
+ 		engine->vram.put		= nv50_vram_del;
+ 		engine->vram.flags_valid	= nvc0_vram_flags_valid;
++		engine->pm.temp_get		= nv84_temp_get;
+ 		break;
+ 	default:
+ 		NV_ERROR(dev, "NV%02x unsupported\n", dev_priv->chipset);
+@@ -544,7 +541,6 @@ static int
  nouveau_card_init_channel(struct drm_device *dev)
  {
  	struct drm_nouveau_private *dev_priv = dev->dev_private;
@@ -2743,7 +2972,7 @@ index a54fc43..eb4f09e 100644
  	int ret;
  
  	ret = nouveau_channel_alloc(dev, &dev_priv->channel,
-@@ -552,41 +547,8 @@ nouveau_card_init_channel(struct drm_device *dev)
+@@ -552,41 +548,8 @@ nouveau_card_init_channel(struct drm_device *dev)
  	if (ret)
  		return ret;
  
@@ -2785,7 +3014,27 @@ index a54fc43..eb4f09e 100644
  }
  
  static void nouveau_switcheroo_set_state(struct pci_dev *pdev,
-@@ -904,7 +866,7 @@ static int nouveau_remove_conflicting_drivers(struct drm_device *dev)
+@@ -646,6 +609,7 @@ nouveau_card_init(struct drm_device *dev)
+ 	spin_lock_init(&dev_priv->channels.lock);
+ 	spin_lock_init(&dev_priv->tile.lock);
+ 	spin_lock_init(&dev_priv->context_switch_lock);
++	spin_lock_init(&dev_priv->vm_lock);
+ 
+ 	/* Make the CRTCs and I2C buses accessible */
+ 	ret = engine->display.early_init(dev);
+@@ -811,6 +775,11 @@ static void nouveau_card_takedown(struct drm_device *dev)
+ 	engine->mc.takedown(dev);
+ 	engine->display.late_takedown(dev);
+ 
++	if (dev_priv->vga_ram) {
++		nouveau_bo_unpin(dev_priv->vga_ram);
++		nouveau_bo_ref(NULL, &dev_priv->vga_ram);
++	}
++
+ 	mutex_lock(&dev->struct_mutex);
+ 	ttm_bo_clean_mm(&dev_priv->ttm.bdev, TTM_PL_VRAM);
+ 	ttm_bo_clean_mm(&dev_priv->ttm.bdev, TTM_PL_TT);
+@@ -904,7 +873,7 @@ static int nouveau_remove_conflicting_drivers(struct drm_device *dev)
  #ifdef CONFIG_X86
  	primary = dev->pdev->resource[PCI_ROM_RESOURCE].flags & IORESOURCE_ROM_SHADOW;
  #endif
@@ -2794,7 +3043,7 @@ index a54fc43..eb4f09e 100644
  	remove_conflicting_framebuffers(dev_priv->apertures, "nouveaufb", primary);
  	return 0;
  }
-@@ -929,12 +891,6 @@ int nouveau_load(struct drm_device *dev, unsigned long flags)
+@@ -929,12 +898,6 @@ int nouveau_load(struct drm_device *dev, unsigned long flags)
  	NV_DEBUG(dev, "vendor: 0x%X device: 0x%X class: 0x%X\n",
  		 dev->pci_vendor, dev->pci_device, dev->pdev->class);
  
@@ -2807,7 +3056,7 @@ index a54fc43..eb4f09e 100644
  	/* resource 0 is mmio regs */
  	/* resource 1 is linear FB */
  	/* resource 2 is RAMIN (mmio regs + 0x1000000) */
-@@ -947,7 +903,7 @@ int nouveau_load(struct drm_device *dev, unsigned long flags)
+@@ -947,7 +910,7 @@ int nouveau_load(struct drm_device *dev, unsigned long flags)
  		NV_ERROR(dev, "Unable to initialize the mmio mapping. "
  			 "Please report your setup to " DRIVER_EMAIL "\n");
  		ret = -EINVAL;
@@ -2816,7 +3065,7 @@ index a54fc43..eb4f09e 100644
  	}
  	NV_DEBUG(dev, "regs mapped ok at 0x%llx\n",
  					(unsigned long long)mmio_start_offs);
-@@ -962,11 +918,13 @@ int nouveau_load(struct drm_device *dev, unsigned long flags)
+@@ -962,11 +925,13 @@ int nouveau_load(struct drm_device *dev, unsigned long flags)
  
  	/* Time to determine the card architecture */
  	reg0 = nv_rd32(dev, NV03_PMC_BOOT_0);
@@ -2830,7 +3079,7 @@ index a54fc43..eb4f09e 100644
  	/* NV04 or NV05 */
  	} else if ((reg0 & 0xff00fff0) == 0x20004000) {
  		if (reg0 & 0x00f00000)
-@@ -1054,8 +1012,6 @@ err_ramin:
+@@ -1054,8 +1019,6 @@ err_ramin:
  	iounmap(dev_priv->ramin);
  err_mmio:
  	iounmap(dev_priv->mmio);
@@ -2839,7 +3088,7 @@ index a54fc43..eb4f09e 100644
  err_priv:
  	kfree(dev_priv);
  	dev->dev_private = NULL;
-@@ -1126,7 +1082,7 @@ int nouveau_ioctl_getparam(struct drm_device *dev, void *data,
+@@ -1126,7 +1089,7 @@ int nouveau_ioctl_getparam(struct drm_device *dev, void *data,
  		getparam->value = 1;
  		break;
  	case NOUVEAU_GETPARAM_HAS_PAGEFLIP:
@@ -3089,10 +3338,22 @@ index 04fdc00..75e87274 100644
  	default:
  		NV_WARN(dev, "voltage table 0x%02x unknown\n", volt[0]);
 diff --git a/drivers/gpu/drm/nouveau/nv04_crtc.c b/drivers/gpu/drm/nouveau/nv04_crtc.c
-index 297505e..5ffc5ba 100644
+index 297505e..9eaafcc 100644
 --- a/drivers/gpu/drm/nouveau/nv04_crtc.c
 +++ b/drivers/gpu/drm/nouveau/nv04_crtc.c
-@@ -790,8 +790,7 @@ nv04_crtc_do_mode_set_base(struct drm_crtc *crtc,
+@@ -376,7 +376,10 @@ nv_crtc_mode_set_vga(struct drm_crtc *crtc, struct drm_display_mode *mode)
+ 	 */
+ 
+ 	/* framebuffer can be larger than crtc scanout area. */
+-	regp->CRTC[NV_CIO_CRE_RPC0_INDEX] = XLATE(fb->pitch / 8, 8, NV_CIO_CRE_RPC0_OFFSET_10_8);
++	regp->CRTC[NV_CIO_CRE_RPC0_INDEX] =
++		XLATE(fb->pitch / 8, 8, NV_CIO_CRE_RPC0_OFFSET_10_8);
++	regp->CRTC[NV_CIO_CRE_42] =
++		XLATE(fb->pitch / 8, 11, NV_CIO_CRE_42_OFFSET_11);
+ 	regp->CRTC[NV_CIO_CRE_RPC1_INDEX] = mode->crtc_hdisplay < 1280 ?
+ 					    MASK(NV_CIO_CRE_RPC1_LARGE) : 0x00;
+ 	regp->CRTC[NV_CIO_CRE_LSR_INDEX] = XLATE(horizBlankEnd, 6, NV_CIO_CRE_LSR_HBE_6) |
+@@ -790,8 +793,7 @@ nv04_crtc_do_mode_set_base(struct drm_crtc *crtc,
  	if (atomic) {
  		drm_fb = passed_fb;
  		fb = nouveau_framebuffer(passed_fb);
@@ -3102,7 +3363,37 @@ index 297505e..5ffc5ba 100644
  		/* If not atomic, we can go ahead and pin, and unpin the
  		 * old fb we were passed.
  		 */
-@@ -1031,7 +1030,7 @@ nv04_crtc_create(struct drm_device *dev, int crtc_num)
+@@ -825,8 +827,11 @@ nv04_crtc_do_mode_set_base(struct drm_crtc *crtc,
+ 	regp->CRTC[NV_CIO_CR_OFFSET_INDEX] = drm_fb->pitch >> 3;
+ 	regp->CRTC[NV_CIO_CRE_RPC0_INDEX] =
+ 		XLATE(drm_fb->pitch >> 3, 8, NV_CIO_CRE_RPC0_OFFSET_10_8);
++	regp->CRTC[NV_CIO_CRE_42] =
++		XLATE(drm_fb->pitch / 8, 11, NV_CIO_CRE_42_OFFSET_11);
+ 	crtc_wr_cio_state(crtc, regp, NV_CIO_CRE_RPC0_INDEX);
+ 	crtc_wr_cio_state(crtc, regp, NV_CIO_CR_OFFSET_INDEX);
++	crtc_wr_cio_state(crtc, regp, NV_CIO_CRE_42);
+ 
+ 	/* Update the framebuffer location. */
+ 	regp->fb_start = nv_crtc->fb.offset & ~3;
+@@ -944,14 +949,14 @@ nv04_crtc_cursor_set(struct drm_crtc *crtc, struct drm_file *file_priv,
+ 	struct drm_gem_object *gem;
+ 	int ret = 0;
+ 
+-	if (width != 64 || height != 64)
+-		return -EINVAL;
+-
+ 	if (!buffer_handle) {
+ 		nv_crtc->cursor.hide(nv_crtc, true);
+ 		return 0;
+ 	}
+ 
++	if (width != 64 || height != 64)
++		return -EINVAL;
++
+ 	gem = drm_gem_object_lookup(dev, file_priv, buffer_handle);
+ 	if (!gem)
+ 		return -ENOENT;
+@@ -1031,7 +1036,7 @@ nv04_crtc_create(struct drm_device *dev, int crtc_num)
  	drm_mode_crtc_set_gamma_size(&nv_crtc->base, 256);
  
  	ret = nouveau_bo_new(dev, NULL, 64*64*4, 0x100, TTM_PL_FLAG_VRAM,
@@ -3221,6 +3512,20 @@ index af75015..055677a 100644
  	{ NV03_PGRAPH_NSOURCE_NOTIFICATION,       "NOTIFICATION" },
  	{ NV03_PGRAPH_NSOURCE_DATA_ERROR,         "DATA_ERROR" },
  	{ NV03_PGRAPH_NSOURCE_PROTECTION_ERROR,   "PROTECTION_ERROR" },
+diff --git a/drivers/gpu/drm/nouveau/nv04_instmem.c b/drivers/gpu/drm/nouveau/nv04_instmem.c
+index b8e3edb..b8611b9 100644
+--- a/drivers/gpu/drm/nouveau/nv04_instmem.c
++++ b/drivers/gpu/drm/nouveau/nv04_instmem.c
+@@ -95,6 +95,9 @@ nv04_instmem_takedown(struct drm_device *dev)
+ 	nouveau_ramht_ref(NULL, &dev_priv->ramht, NULL);
+ 	nouveau_gpuobj_ref(NULL, &dev_priv->ramro);
+ 	nouveau_gpuobj_ref(NULL, &dev_priv->ramfc);
++
++	if (drm_mm_initialized(&dev_priv->ramin_heap))
++		drm_mm_takedown(&dev_priv->ramin_heap);
+ }
+ 
+ int
 diff --git a/drivers/gpu/drm/nouveau/nv10_graph.c b/drivers/gpu/drm/nouveau/nv10_graph.c
 index 8c92edb..531d7ba 100644
 --- a/drivers/gpu/drm/nouveau/nv10_graph.c
@@ -3312,8 +3617,103 @@ index f3d9c05..f0ac2a7 100644
  
  	switch (dev_priv->chipset) {
  	case 0x40:
+diff --git a/drivers/gpu/drm/nouveau/nv50_calc.c b/drivers/gpu/drm/nouveau/nv50_calc.c
+index de81151..8cf63a8 100644
+--- a/drivers/gpu/drm/nouveau/nv50_calc.c
++++ b/drivers/gpu/drm/nouveau/nv50_calc.c
+@@ -23,7 +23,6 @@
+  */
+ 
+ #include "drmP.h"
+-#include "drm_fixed.h"
+ #include "nouveau_drv.h"
+ #include "nouveau_hw.h"
+ 
+@@ -47,45 +46,52 @@ nv50_calc_pll(struct drm_device *dev, struct pll_lims *pll, int clk,
+ }
+ 
+ int
+-nv50_calc_pll2(struct drm_device *dev, struct pll_lims *pll, int clk,
+-	       int *N, int *fN, int *M, int *P)
++nva3_calc_pll(struct drm_device *dev, struct pll_lims *pll, int clk,
++	      int *pN, int *pfN, int *pM, int *P)
+ {
+-	fixed20_12 fb_div, a, b;
+-	u32 refclk = pll->refclk / 10;
+-	u32 max_vco_freq = pll->vco1.maxfreq / 10;
+-	u32 max_vco_inputfreq = pll->vco1.max_inputfreq / 10;
+-	clk /= 10;
++	u32 best_err = ~0, err;
++	int M, lM, hM, N, fN;
+ 
+-	*P = max_vco_freq / clk;
++	*P = pll->vco1.maxfreq / clk;
+ 	if (*P > pll->max_p)
+ 		*P = pll->max_p;
+ 	if (*P < pll->min_p)
+ 		*P = pll->min_p;
+ 
+-	/* *M = floor((refclk + max_vco_inputfreq) / max_vco_inputfreq); */
+-	a.full = dfixed_const(refclk + max_vco_inputfreq);
+-	b.full = dfixed_const(max_vco_inputfreq);
+-	a.full = dfixed_div(a, b);
+-	a.full = dfixed_floor(a);
+-	*M = dfixed_trunc(a);
++	lM = (pll->refclk + pll->vco1.max_inputfreq) / pll->vco1.max_inputfreq;
++	lM = max(lM, (int)pll->vco1.min_m);
++	hM = (pll->refclk + pll->vco1.min_inputfreq) / pll->vco1.min_inputfreq;
++	hM = min(hM, (int)pll->vco1.max_m);
+ 
+-	/* fb_div = (vco * *M) / refclk; */
+-	fb_div.full = dfixed_const(clk * *P);
+-	fb_div.full = dfixed_mul(fb_div, a);
+-	a.full = dfixed_const(refclk);
+-	fb_div.full = dfixed_div(fb_div, a);
++	for (M = lM; M <= hM; M++) {
++		u32 tmp = clk * *P * M;
++		N  = tmp / pll->refclk;
++		fN = tmp % pll->refclk;
++		if (!pfN && fN >= pll->refclk / 2)
++			N++;
+ 
+-	/* *N = floor(fb_div); */
+-	a.full = dfixed_floor(fb_div);
+-	*N = dfixed_trunc(fb_div);
++		if (N < pll->vco1.min_n)
++			continue;
++		if (N > pll->vco1.max_n)
++			break;
+ 
+-	/* *fN = (fmod(fb_div, 1.0) * 8192) - 4096; */
+-	b.full = dfixed_const(8192);
+-	a.full = dfixed_mul(a, b);
+-	fb_div.full = dfixed_mul(fb_div, b);
+-	fb_div.full = fb_div.full - a.full;
+-	*fN = dfixed_trunc(fb_div) - 4096;
+-	*fN &= 0xffff;
++		err = abs(clk - (pll->refclk * N / M / *P));
++		if (err < best_err) {
++			best_err = err;
++			*pN = N;
++			*pM = M;
++		}
+ 
+-	return clk;
++		if (pfN) {
++			*pfN = (((fN << 13) / pll->refclk) - 4096) & 0xffff;
++			return clk;
++		}
++	}
++
++	if (unlikely(best_err == ~0)) {
++		NV_ERROR(dev, "unable to find matching pll values\n");
++		return -EINVAL;
++	}
++
++	return pll->refclk * *pN / *pM / *P;
+ }
 diff --git a/drivers/gpu/drm/nouveau/nv50_crtc.c b/drivers/gpu/drm/nouveau/nv50_crtc.c
-index 9023c4d..e900a51 100644
+index 9023c4d..ebabacf 100644
 --- a/drivers/gpu/drm/nouveau/nv50_crtc.c
 +++ b/drivers/gpu/drm/nouveau/nv50_crtc.c
 @@ -65,7 +65,7 @@ nv50_crtc_blank(struct nouveau_crtc *nv_crtc, bool blanked)
@@ -3345,6 +3745,42 @@ index 9023c4d..e900a51 100644
  	struct drm_display_mode *native_mode = NULL;
  	struct drm_display_mode *mode = &nv_crtc->base.mode;
  	uint32_t outX, outY, horiz, vert;
+@@ -288,7 +286,7 @@ nv50_crtc_set_clock(struct drm_device *dev, int head, int pclk)
+ 		nv_wr32(dev, pll.reg + 8, reg2 | (P << 28) | (M2 << 16) | N2);
+ 	} else
+ 	if (dev_priv->chipset < NV_C0) {
+-		ret = nv50_calc_pll2(dev, &pll, pclk, &N1, &N2, &M1, &P);
++		ret = nva3_calc_pll(dev, &pll, pclk, &N1, &N2, &M1, &P);
+ 		if (ret <= 0)
+ 			return 0;
+ 
+@@ -300,7 +298,7 @@ nv50_crtc_set_clock(struct drm_device *dev, int head, int pclk)
+ 		nv_wr32(dev, pll.reg + 4, reg1 | (P << 16) | (M1 << 8) | N1);
+ 		nv_wr32(dev, pll.reg + 8, N2);
+ 	} else {
+-		ret = nv50_calc_pll2(dev, &pll, pclk, &N1, &N2, &M1, &P);
++		ret = nva3_calc_pll(dev, &pll, pclk, &N1, &N2, &M1, &P);
+ 		if (ret <= 0)
+ 			return 0;
+ 
+@@ -351,14 +349,14 @@ nv50_crtc_cursor_set(struct drm_crtc *crtc, struct drm_file *file_priv,
+ 	struct drm_gem_object *gem;
+ 	int ret = 0, i;
+ 
+-	if (width != 64 || height != 64)
+-		return -EINVAL;
+-
+ 	if (!buffer_handle) {
+ 		nv_crtc->cursor.hide(nv_crtc, true);
+ 		return 0;
+ 	}
+ 
++	if (width != 64 || height != 64)
++		return -EINVAL;
++
+ 	gem = drm_gem_object_lookup(dev, file_priv, buffer_handle);
+ 	if (!gem)
+ 		return -ENOENT;
 @@ -445,6 +443,39 @@ nv50_crtc_dpms(struct drm_crtc *crtc, int mode)
  {
  }
@@ -3674,7 +4110,7 @@ index 875414b..808f3ec 100644
  	uint32_t mode_ctl = 0, mode_ctl2 = 0;
  	int ret;
 diff --git a/drivers/gpu/drm/nouveau/nv50_display.c b/drivers/gpu/drm/nouveau/nv50_display.c
-index 7cc94ed..75a376c 100644
+index 7cc94ed..74a3f68 100644
 --- a/drivers/gpu/drm/nouveau/nv50_display.c
 +++ b/drivers/gpu/drm/nouveau/nv50_display.c
 @@ -24,6 +24,7 @@
@@ -3909,7 +4345,36 @@ index 7cc94ed..75a376c 100644
  }
  
  static u16
-@@ -466,11 +600,12 @@ static void
+@@ -383,13 +517,25 @@ nv50_display_script_select(struct drm_device *dev, struct dcb_entry *dcb,
+ 			if (bios->fp.if_is_24bit)
+ 				script |= 0x0200;
+ 		} else {
++			/* determine number of lvds links */
++			if (nv_connector && nv_connector->edid &&
++			    nv_connector->dcb->type == DCB_CONNECTOR_LVDS_SPWG) {
++				/* http://www.spwg.org */
++				if (((u8 *)nv_connector->edid)[121] == 2)
++					script |= 0x0100;
++			} else
+ 			if (pxclk >= bios->fp.duallink_transition_clk) {
+ 				script |= 0x0100;
++			}
++
++			/* determine panel depth */
++			if (script & 0x0100) {
+ 				if (bios->fp.strapless_is_24bit & 2)
+ 					script |= 0x0200;
+-			} else
+-			if (bios->fp.strapless_is_24bit & 1)
+-				script |= 0x0200;
++			} else {
++				if (bios->fp.strapless_is_24bit & 1)
++					script |= 0x0200;
++			}
+ 
+ 			if (nv_connector && nv_connector->edid &&
+ 			    (nv_connector->edid->revision >= 4) &&
+@@ -466,11 +612,12 @@ static void
  nv50_display_unk10_handler(struct drm_device *dev)
  {
  	struct drm_nouveau_private *dev_priv = dev->dev_private;
@@ -3923,7 +4388,7 @@ index 7cc94ed..75a376c 100644
  
  	nv_wr32(dev, 0x619494, nv_rd32(dev, 0x619494) & ~8);
  
-@@ -541,7 +676,7 @@ nv50_display_unk10_handler(struct drm_device *dev)
+@@ -541,7 +688,7 @@ nv50_display_unk10_handler(struct drm_device *dev)
  
  		if (dcb->type == type && (dcb->or & (1 << or))) {
  			nouveau_bios_run_display_table(dev, dcb, 0, -1);
@@ -3932,7 +4397,7 @@ index 7cc94ed..75a376c 100644
  			goto ack;
  		}
  	}
-@@ -587,15 +722,16 @@ static void
+@@ -587,15 +734,16 @@ static void
  nv50_display_unk20_handler(struct drm_device *dev)
  {
  	struct drm_nouveau_private *dev_priv = dev->dev_private;
@@ -3952,7 +4417,7 @@ index 7cc94ed..75a376c 100644
  	}
  
  	/* CRTC clock change requested? */
-@@ -692,9 +828,9 @@ nv50_display_unk20_handler(struct drm_device *dev)
+@@ -692,9 +840,9 @@ nv50_display_unk20_handler(struct drm_device *dev)
  		nv_wr32(dev, NV50_PDISPLAY_DAC_CLK_CTRL2(or), 0);
  	}
  
@@ -3965,7 +4430,7 @@ index 7cc94ed..75a376c 100644
  
  ack:
  	nv_wr32(dev, NV50_PDISPLAY_INTR_1, NV50_PDISPLAY_INTR_1_CLK_UNK20);
-@@ -735,13 +871,13 @@ nv50_display_unk40_dp_set_tmds(struct drm_device *dev, struct dcb_entry *dcb)
+@@ -735,13 +883,13 @@ nv50_display_unk40_dp_set_tmds(struct drm_device *dev, struct dcb_entry *dcb)
  static void
  nv50_display_unk40_handler(struct drm_device *dev)
  {
@@ -3984,7 +4449,7 @@ index 7cc94ed..75a376c 100644
  	if (!dcb)
  		goto ack;
  
-@@ -754,12 +890,10 @@ ack:
+@@ -754,12 +902,10 @@ ack:
  	nv_wr32(dev, 0x619494, nv_rd32(dev, 0x619494) | 8);
  }
  
@@ -4000,7 +4465,7 @@ index 7cc94ed..75a376c 100644
  
  	for (;;) {
  		uint32_t intr0 = nv_rd32(dev, NV50_PDISPLAY_INTR_0);
-@@ -807,7 +941,7 @@ nv50_display_error_handler(struct drm_device *dev)
+@@ -807,7 +953,7 @@ nv50_display_error_handler(struct drm_device *dev)
  static void
  nv50_display_isr(struct drm_device *dev)
  {
@@ -4009,7 +4474,7 @@ index 7cc94ed..75a376c 100644
  	uint32_t delayed = 0;
  
  	while (nv_rd32(dev, NV50_PMC_INTR_0) & NV50_PMC_INTR_0_DISPLAY) {
-@@ -835,8 +969,7 @@ nv50_display_isr(struct drm_device *dev)
+@@ -835,8 +981,7 @@ nv50_display_isr(struct drm_device *dev)
  				  NV50_PDISPLAY_INTR_1_CLK_UNK40));
  		if (clock) {
  			nv_wr32(dev, NV03_PMC_INTR_EN_0, 0);
@@ -5154,7 +5619,7 @@ index 336aab2..de9abff 100644
  	else
  		xf_emit(ctx, 3, 0);	/* 1, 7, 3ff */
 diff --git a/drivers/gpu/drm/nouveau/nv50_instmem.c b/drivers/gpu/drm/nouveau/nv50_instmem.c
-index e57caa2..fa94973 100644
+index e57caa2..993ad3f 100644
 --- a/drivers/gpu/drm/nouveau/nv50_instmem.c
 +++ b/drivers/gpu/drm/nouveau/nv50_instmem.c
 @@ -300,7 +300,7 @@ nv50_instmem_resume(struct drm_device *dev)
@@ -5166,6 +5631,36 @@ index e57caa2..fa94973 100644
  	struct nouveau_vma chan_vma;
  	u32 align;
  };
+@@ -404,23 +404,25 @@ void
+ nv50_instmem_flush(struct drm_device *dev)
+ {
+ 	struct drm_nouveau_private *dev_priv = dev->dev_private;
++	unsigned long flags;
+ 
+-	spin_lock(&dev_priv->ramin_lock);
++	spin_lock_irqsave(&dev_priv->vm_lock, flags);
+ 	nv_wr32(dev, 0x00330c, 0x00000001);
+ 	if (!nv_wait(dev, 0x00330c, 0x00000002, 0x00000000))
+ 		NV_ERROR(dev, "PRAMIN flush timeout\n");
+-	spin_unlock(&dev_priv->ramin_lock);
++	spin_unlock_irqrestore(&dev_priv->vm_lock, flags);
+ }
+ 
+ void
+ nv84_instmem_flush(struct drm_device *dev)
+ {
+ 	struct drm_nouveau_private *dev_priv = dev->dev_private;
++	unsigned long flags;
+ 
+-	spin_lock(&dev_priv->ramin_lock);
++	spin_lock_irqsave(&dev_priv->vm_lock, flags);
+ 	nv_wr32(dev, 0x070000, 0x00000001);
+ 	if (!nv_wait(dev, 0x070000, 0x00000002, 0x00000000))
+ 		NV_ERROR(dev, "PRAMIN flush timeout\n");
+-	spin_unlock(&dev_priv->ramin_lock);
++	spin_unlock_irqrestore(&dev_priv->vm_lock, flags);
+ }
+ 
 diff --git a/drivers/gpu/drm/nouveau/nv50_sor.c b/drivers/gpu/drm/nouveau/nv50_sor.c
 index b4a5ecb..c25c593 100644
 --- a/drivers/gpu/drm/nouveau/nv50_sor.c
@@ -5191,7 +5686,7 @@ index b4a5ecb..c25c593 100644
  	struct drm_device *dev = encoder->dev;
  	struct nouveau_crtc *crtc = nouveau_crtc(encoder->crtc);
 diff --git a/drivers/gpu/drm/nouveau/nv50_vm.c b/drivers/gpu/drm/nouveau/nv50_vm.c
-index 6144156..4fd3432 100644
+index 6144156..6c26944 100644
 --- a/drivers/gpu/drm/nouveau/nv50_vm.c
 +++ b/drivers/gpu/drm/nouveau/nv50_vm.c
 @@ -31,7 +31,6 @@ void
@@ -5257,6 +5752,20 @@ index 6144156..4fd3432 100644
  		nv_wo32(pgt, pte + 0, lower_32_bits(phys));
  		nv_wo32(pgt, pte + 4, upper_32_bits(phys));
  		pte += 8;
+@@ -170,10 +174,11 @@ void
+ nv50_vm_flush_engine(struct drm_device *dev, int engine)
+ {
+ 	struct drm_nouveau_private *dev_priv = dev->dev_private;
++	unsigned long flags;
+ 
+-	spin_lock(&dev_priv->ramin_lock);
++	spin_lock_irqsave(&dev_priv->vm_lock, flags);
+ 	nv_wr32(dev, 0x100c80, (engine << 16) | 1);
+ 	if (!nv_wait(dev, 0x100c80, 0x00000001, 0x00000000))
+ 		NV_ERROR(dev, "vm flush timeout: engine %d\n", engine);
+-	spin_unlock(&dev_priv->ramin_lock);
++	spin_unlock_irqrestore(&dev_priv->vm_lock, flags);
+ }
 diff --git a/drivers/gpu/drm/nouveau/nv50_vram.c b/drivers/gpu/drm/nouveau/nv50_vram.c
 index 58e98ad..ffbc3d8 100644
 --- a/drivers/gpu/drm/nouveau/nv50_vram.c
@@ -5390,6 +5899,312 @@ index ec18ae1..fabc7fd 100644
  
 -	nv50_fb_vm_trap(dev, show, "PCRYPT");
 +	nv50_fb_vm_trap(dev, show);
+ }
+diff --git a/drivers/gpu/drm/nouveau/nva3_pm.c b/drivers/gpu/drm/nouveau/nva3_pm.c
+index dbbafed..e4b2b9e 100644
+--- a/drivers/gpu/drm/nouveau/nva3_pm.c
++++ b/drivers/gpu/drm/nouveau/nva3_pm.c
+@@ -27,32 +27,74 @@
+ #include "nouveau_bios.h"
+ #include "nouveau_pm.h"
+ 
+-/*XXX: boards using limits 0x40 need fixing, the register layout
+- *     is correct here, but, there's some other funny magic
+- *     that modifies things, so it's not likely we'll set/read
+- *     the correct timings yet..  working on it...
++/* This is actually a lot more complex than it appears here, but hopefully
++ * this should be able to deal with what the VBIOS leaves for us..
++ *
++ * If not, well, I'll jump off that bridge when I come to it.
+  */
+ 
+ struct nva3_pm_state {
+-	struct pll_lims pll;
+-	int N, M, P;
++	enum pll_types type;
++	u32 src0;
++	u32 src1;
++	u32 ctrl;
++	u32 coef;
++	u32 old_pnm;
++	u32 new_pnm;
++	u32 new_div;
+ };
+ 
++static int
++nva3_pm_pll_offset(u32 id)
++{
++	static const u32 pll_map[] = {
++		0x00, PLL_CORE,
++		0x01, PLL_SHADER,
++		0x02, PLL_MEMORY,
++		0x00, 0x00
++	};
++	const u32 *map = pll_map;
++
++	while (map[1]) {
++		if (id == map[1])
++			return map[0];
++		map += 2;
++	}
++
++	return -ENOENT;
++}
++
+ int
+ nva3_pm_clock_get(struct drm_device *dev, u32 id)
+ {
++	u32 src0, src1, ctrl, coef;
+ 	struct pll_lims pll;
+-	int P, N, M, ret;
+-	u32 reg;
++	int ret, off;
++	int P, N, M;
+ 
+ 	ret = get_pll_limits(dev, id, &pll);
+ 	if (ret)
+ 		return ret;
+ 
+-	reg = nv_rd32(dev, pll.reg + 4);
+-	P = (reg & 0x003f0000) >> 16;
+-	N = (reg & 0x0000ff00) >> 8;
+-	M = (reg & 0x000000ff);
++	off = nva3_pm_pll_offset(id);
++	if (off < 0)
++		return off;
++
++	src0 = nv_rd32(dev, 0x4120 + (off * 4));
++	src1 = nv_rd32(dev, 0x4160 + (off * 4));
++	ctrl = nv_rd32(dev, pll.reg + 0);
++	coef = nv_rd32(dev, pll.reg + 4);
++	NV_DEBUG(dev, "PLL %02x: 0x%08x 0x%08x 0x%08x 0x%08x\n",
++		      id, src0, src1, ctrl, coef);
++
++	if (ctrl & 0x00000008) {
++		u32 div = ((src1 & 0x003c0000) >> 18) + 1;
++		return (pll.refclk * 2) / div;
++	}
++
++	P = (coef & 0x003f0000) >> 16;
++	N = (coef & 0x0000ff00) >> 8;
++	M = (coef & 0x000000ff);
+ 	return pll.refclk * N / M / P;
+ }
+ 
+@@ -60,36 +102,103 @@ void *
+ nva3_pm_clock_pre(struct drm_device *dev, struct nouveau_pm_level *perflvl,
+ 		  u32 id, int khz)
+ {
+-	struct nva3_pm_state *state;
+-	int dummy, ret;
++	struct nva3_pm_state *pll;
++	struct pll_lims limits;
++	int N, M, P, diff;
++	int ret, off;
++
++	ret = get_pll_limits(dev, id, &limits);
++	if (ret < 0)
++		return (ret == -ENOENT) ? NULL : ERR_PTR(ret);
++
++	off = nva3_pm_pll_offset(id);
++	if (id < 0)
++		return ERR_PTR(-EINVAL);
+ 
+-	state = kzalloc(sizeof(*state), GFP_KERNEL);
+-	if (!state)
++
++	pll = kzalloc(sizeof(*pll), GFP_KERNEL);
++	if (!pll)
+ 		return ERR_PTR(-ENOMEM);
++	pll->type = id;
++	pll->src0 = 0x004120 + (off * 4);
++	pll->src1 = 0x004160 + (off * 4);
++	pll->ctrl = limits.reg + 0;
++	pll->coef = limits.reg + 4;
+ 
+-	ret = get_pll_limits(dev, id, &state->pll);
+-	if (ret < 0) {
+-		kfree(state);
+-		return (ret == -ENOENT) ? NULL : ERR_PTR(ret);
++	/* If target clock is within [-2, 3) MHz of a divisor, we'll
++	 * use that instead of calculating MNP values
++	 */
++	pll->new_div = min((limits.refclk * 2) / (khz - 2999), 16);
++	if (pll->new_div) {
++		diff = khz - ((limits.refclk * 2) / pll->new_div);
++		if (diff < -2000 || diff >= 3000)
++			pll->new_div = 0;
+ 	}
+ 
+-	ret = nv50_calc_pll2(dev, &state->pll, khz, &state->N, &dummy,
+-			     &state->M, &state->P);
+-	if (ret < 0) {
+-		kfree(state);
+-		return ERR_PTR(ret);
++	if (!pll->new_div) {
++		ret = nva3_calc_pll(dev, &limits, khz, &N, NULL, &M, &P);
++		if (ret < 0)
++			return ERR_PTR(ret);
++
++		pll->new_pnm = (P << 16) | (N << 8) | M;
++		pll->new_div = 2 - 1;
++	} else {
++		pll->new_pnm = 0;
++		pll->new_div--;
+ 	}
+ 
+-	return state;
++	if ((nv_rd32(dev, pll->src1) & 0x00000101) != 0x00000101)
++		pll->old_pnm = nv_rd32(dev, pll->coef);
++	return pll;
+ }
+ 
+ void
+ nva3_pm_clock_set(struct drm_device *dev, void *pre_state)
+ {
+-	struct nva3_pm_state *state = pre_state;
+-	u32 reg = state->pll.reg;
++	struct nva3_pm_state *pll = pre_state;
++	u32 ctrl = 0;
++
++	/* For the memory clock, NVIDIA will build a "script" describing
++	 * the reclocking process and ask PDAEMON to execute it.
++	 */
++	if (pll->type == PLL_MEMORY) {
++		nv_wr32(dev, 0x100210, 0);
++		nv_wr32(dev, 0x1002dc, 1);
++		nv_wr32(dev, 0x004018, 0x00001000);
++		ctrl = 0x18000100;
++	}
++
++	if (pll->old_pnm || !pll->new_pnm) {
++		nv_mask(dev, pll->src1, 0x003c0101, 0x00000101 |
++						    (pll->new_div << 18));
++		nv_wr32(dev, pll->ctrl, 0x0001001d | ctrl);
++		nv_mask(dev, pll->ctrl, 0x00000001, 0x00000000);
++	}
++
++	if (pll->new_pnm) {
++		nv_mask(dev, pll->src0, 0x00000101, 0x00000101);
++		nv_wr32(dev, pll->coef, pll->new_pnm);
++		nv_wr32(dev, pll->ctrl, 0x0001001d | ctrl);
++		nv_mask(dev, pll->ctrl, 0x00000010, 0x00000000);
++		nv_mask(dev, pll->ctrl, 0x00020010, 0x00020010);
++		nv_wr32(dev, pll->ctrl, 0x00010015 | ctrl);
++		nv_mask(dev, pll->src1, 0x00000100, 0x00000000);
++		nv_mask(dev, pll->src1, 0x00000001, 0x00000000);
++		if (pll->type == PLL_MEMORY)
++			nv_wr32(dev, 0x4018, 0x10005000);
++	} else {
++		nv_mask(dev, pll->ctrl, 0x00000001, 0x00000000);
++		nv_mask(dev, pll->src0, 0x00000100, 0x00000000);
++		nv_mask(dev, pll->src0, 0x00000001, 0x00000000);
++		if (pll->type == PLL_MEMORY)
++			nv_wr32(dev, 0x4018, 0x1000d000);
++	}
++
++	if (pll->type == PLL_MEMORY) {
++		nv_wr32(dev, 0x1002dc, 0);
++		nv_wr32(dev, 0x100210, 0x80000000);
++	}
+ 
+-	nv_wr32(dev, reg + 4, (state->P << 16) | (state->N << 8) | state->M);
+-	kfree(state);
++	kfree(pll);
+ }
+ 
+diff --git a/drivers/gpu/drm/nouveau/nvc0_fb.c b/drivers/gpu/drm/nouveau/nvc0_fb.c
+index 26a9960..08e6b11 100644
+--- a/drivers/gpu/drm/nouveau/nvc0_fb.c
++++ b/drivers/gpu/drm/nouveau/nvc0_fb.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright 2010 Red Hat Inc.
++ * Copyright 2011 Red Hat Inc.
+  *
+  * Permission is hereby granted, free of charge, to any person obtaining a
+  * copy of this software and associated documentation files (the "Software"),
+@@ -23,16 +23,80 @@
+  */
+ 
+ #include "drmP.h"
+-
++#include "drm.h"
+ #include "nouveau_drv.h"
++#include "nouveau_drm.h"
++
++struct nvc0_fb_priv {
++	struct page *r100c10_page;
++	dma_addr_t r100c10;
++};
++
++static void
++nvc0_fb_destroy(struct drm_device *dev)
++{
++	struct drm_nouveau_private *dev_priv = dev->dev_private;
++	struct nouveau_fb_engine *pfb = &dev_priv->engine.fb;
++	struct nvc0_fb_priv *priv = pfb->priv;
++
++	if (priv->r100c10_page) {
++		pci_unmap_page(dev->pdev, priv->r100c10, PAGE_SIZE,
++			       PCI_DMA_BIDIRECTIONAL);
++		__free_page(priv->r100c10_page);
++	}
++
++	kfree(priv);
++	pfb->priv = NULL;
++}
++
++static int
++nvc0_fb_create(struct drm_device *dev)
++{
++	struct drm_nouveau_private *dev_priv = dev->dev_private;
++	struct nouveau_fb_engine *pfb = &dev_priv->engine.fb;
++	struct nvc0_fb_priv *priv;
++
++	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++	pfb->priv = priv;
++
++	priv->r100c10_page = alloc_page(GFP_KERNEL | __GFP_ZERO);
++	if (!priv->r100c10_page) {
++		nvc0_fb_destroy(dev);
++		return -ENOMEM;
++	}
++
++	priv->r100c10 = pci_map_page(dev->pdev, priv->r100c10_page, 0,
++				     PAGE_SIZE, PCI_DMA_BIDIRECTIONAL);
++	if (pci_dma_mapping_error(dev->pdev, priv->r100c10)) {
++		nvc0_fb_destroy(dev);
++		return -EFAULT;
++	}
++
++	return 0;
++}
+ 
+ int
+ nvc0_fb_init(struct drm_device *dev)
+ {
++	struct drm_nouveau_private *dev_priv = dev->dev_private;
++	struct nvc0_fb_priv *priv;
++	int ret;
++
++	if (!dev_priv->engine.fb.priv) {
++		ret = nvc0_fb_create(dev);
++		if (ret)
++			return ret;
++	}
++	priv = dev_priv->engine.fb.priv;
++
++	nv_wr32(dev, 0x100c10, priv->r100c10 >> 8);
+ 	return 0;
+ }
+ 
+ void
+ nvc0_fb_takedown(struct drm_device *dev)
+ {
++	nvc0_fb_destroy(dev);
  }
 diff --git a/drivers/gpu/drm/nouveau/nvc0_fifo.c b/drivers/gpu/drm/nouveau/nvc0_fifo.c
 index e6f92c5..55a4245 100644
@@ -5777,7 +6592,7 @@ index f880ff7..6cede9f 100644
  				gpc = (gpc + 1) % priv->gpc_nr;
  			} while (!tpnr[gpc]);
 diff --git a/drivers/gpu/drm/nouveau/nvc0_vm.c b/drivers/gpu/drm/nouveau/nvc0_vm.c
-index e4e83c2..69af0ba 100644
+index e4e83c2..a179e6c 100644
 --- a/drivers/gpu/drm/nouveau/nvc0_vm.c
 +++ b/drivers/gpu/drm/nouveau/nvc0_vm.c
 @@ -59,7 +59,7 @@ nvc0_vm_addr(struct nouveau_vma *vma, u64 phys, u32 memtype, u32 target)
@@ -5803,6 +6618,43 @@ index e4e83c2..69af0ba 100644
  		nv_wo32(pgt, pte + 0, lower_32_bits(phys));
  		nv_wo32(pgt, pte + 4, upper_32_bits(phys));
  		pte += 8;
+@@ -104,20 +104,27 @@ nvc0_vm_flush(struct nouveau_vm *vm)
+ 	struct nouveau_instmem_engine *pinstmem = &dev_priv->engine.instmem;
+ 	struct drm_device *dev = vm->dev;
+ 	struct nouveau_vm_pgd *vpgd;
+-	u32 r100c80, engine;
++	unsigned long flags;
++	u32 engine = (dev_priv->chan_vm == vm) ? 1 : 5;
+ 
+ 	pinstmem->flush(vm->dev);
+ 
+-	if (vm == dev_priv->chan_vm)
+-		engine = 1;
+-	else
+-		engine = 5;
+-
++	spin_lock_irqsave(&dev_priv->vm_lock, flags);
+ 	list_for_each_entry(vpgd, &vm->pgd_list, head) {
+-		r100c80 = nv_rd32(dev, 0x100c80);
++		/* looks like maybe a "free flush slots" counter, the
++		 * faster you write to 0x100cbc to more it decreases
++		 */
++		if (!nv_wait_ne(dev, 0x100c80, 0x00ff0000, 0x00000000)) {
++			NV_ERROR(dev, "vm timeout 0: 0x%08x %d\n",
++				 nv_rd32(dev, 0x100c80), engine);
++		}
+ 		nv_wr32(dev, 0x100cb8, vpgd->obj->vinst >> 8);
+ 		nv_wr32(dev, 0x100cbc, 0x80000000 | engine);
+-		if (!nv_wait(dev, 0x100c80, 0xffffffff, r100c80))
+-			NV_ERROR(dev, "vm flush timeout eng %d\n", engine);
++		/* wait for flush to be queued? */
++		if (!nv_wait(dev, 0x100c80, 0x00008000, 0x00008000)) {
++			NV_ERROR(dev, "vm timeout 1: 0x%08x %d\n",
++				 nv_rd32(dev, 0x100c80), engine);
++		}
+ 	}
++	spin_unlock_irqrestore(&dev_priv->vm_lock, flags);
+ }
 diff --git a/drivers/gpu/drm/nouveau/nvc0_vram.c b/drivers/gpu/drm/nouveau/nvc0_vram.c
 index 858eda5..67c6ec6 100644
 --- a/drivers/gpu/drm/nouveau/nvc0_vram.c
@@ -5910,3 +6762,16 @@ index 858eda5..67c6ec6 100644
  	return 0;
  }
  
+diff --git a/drivers/gpu/drm/nouveau/nvreg.h b/drivers/gpu/drm/nouveau/nvreg.h
+index fe0f253..bbfb1a6 100644
+--- a/drivers/gpu/drm/nouveau/nvreg.h
++++ b/drivers/gpu/drm/nouveau/nvreg.h
+@@ -277,6 +277,8 @@
+ #		define NV_CIO_CRE_EBR_VDE_11		2:2
+ #		define NV_CIO_CRE_EBR_VRS_11		4:4
+ #		define NV_CIO_CRE_EBR_VBS_11		6:6
++#	define NV_CIO_CRE_42			0x42
++#		define NV_CIO_CRE_42_OFFSET_11		6:6
+ #	define NV_CIO_CRE_43			0x43
+ #	define NV_CIO_CRE_44			0x44	/* head control */
+ #	define NV_CIO_CRE_CSB			0x45	/* colour saturation boost */

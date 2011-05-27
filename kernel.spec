@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 29
+%global baserelease 30
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2017,6 +2017,12 @@ fi
 # and build.
 
 %changelog
+* Fri May 27 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38.7-30
+- nouveau: minor fixes for various issues from upstream
+- nv40 modesetting fix (rhbz#708235)
+- nv50+ support for LVDS panels using SPWG spec (blank/corrupt screen fixes)
+- nva3+ pm clock get/set fixes
+
 * Wed May 25 2011 Dave Airlie <airlied@redhat.com>
 - drm-radeon-update2.patch: more radeon updates + cayman accel support
 
