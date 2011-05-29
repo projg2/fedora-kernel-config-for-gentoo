@@ -688,6 +688,7 @@ Patch1829: drm-intel-restore-mode.patch
 Patch1839: drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch
 Patch1840: drm-radeon-update.patch
 Patch1841: drm-radeon-update2.patch
+Patch1842: drm-radeon-pageflip-oops-fix.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
@@ -1346,6 +1347,7 @@ ApplyPatch drm-intel-restore-mode.patch
 ApplyPatch drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch -R
 ApplyPatch drm-radeon-update.patch
 ApplyPatch drm-radeon-update2.patch
+ApplyPatch drm-radeon-pageflip-oops-fix.patch
 
 # linux1394 git patches
 #ApplyPatch linux-2.6-firewire-git-update.patch
@@ -2017,6 +2019,9 @@ fi
 # and build.
 
 %changelog
+* Sun May 29 2011 Dave Airlie <airlied@redhat.com>
+- fix oops on pageflipping sometimes (#680651)
+
 * Fri May 27 2011 Ben Skeggs <bskeggs@redhat.com> 2.6.38.7-30
 - nouveau: minor fixes for various issues from upstream
 - nv40 modesetting fix (rhbz#708235)
