@@ -744,9 +744,6 @@ Patch12404: x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patc
 
 Patch12407: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
-# temporary fix for Sempron machines stalling (#704059)
-Patch12408: x86-amd-arat-bug-on-sempron-workaround.patch
-
 Patch12415: hid-multitouch-add-support-for-elo-touchsystems.patch
 Patch12416: bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 
@@ -1387,9 +1384,6 @@ ApplyPatch bonding-incorrect-tx-queue-offset.patch
 
 ApplyPatch scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
-# temporary fix for Sempron machines stalling (#704059)
-ApplyPatch x86-amd-arat-bug-on-sempron-workaround.patch
-
 ApplyPatch hid-multitouch-add-support-for-elo-touchsystems.patch
 ApplyPatch bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 
@@ -2011,6 +2005,7 @@ fi
    drm-vblank-events-fix-hangs.patch
    mm-vmscan-correct-use-of-pgdat_balanced-in-sleeping_prematurely.patch
    mm-vmscan-correctly-check-if-reclaimer-should-schedule-during-shrink_slab.patch
+- Drop x86-amd-arat-bug-on-sempron-workaround.patch; the proper fix is in 2.6.38.8
 
 * Sun May 29 2011 Dave Airlie <airlied@redhat.com>
 - fix oops on pageflipping sometimes (#680651)
