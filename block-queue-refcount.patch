@@ -41,3 +41,21 @@ index e639125..e0bd3f7 100644
  	/* NULL queue means the device can't be used */
  	sdev->request_queue = NULL;
  
+--- linux-2.6.38.noarch/block/blk-core.c~	2011-06-07 15:29:26.000000000 -0400
++++ linux-2.6.38.noarch/block/blk-core.c	2011-06-07 15:29:49.000000000 -0400
+@@ -456,6 +456,7 @@ void blk_put_queue(struct request_queue 
+ {
+ 	kobject_put(&q->kobj);
+ }
++EXPORT_SYMBOL(blk_put_queue);
+ 
+ void blk_cleanup_queue(struct request_queue *q)
+ {
+@@ -663,6 +664,7 @@ int blk_get_queue(struct request_queue *
+ 
+ 	return 1;
+ }
++EXPORT_SYMBOL(blk_get_queue);
+ 
+ static inline void blk_free_request(struct request_queue *q, struct request *rq)
+ {
