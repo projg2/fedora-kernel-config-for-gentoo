@@ -656,6 +656,8 @@ Patch530: linux-2.6-silence-fbcon-logo.patch
 Patch570: linux-2.6-selinux-mprotect-checks.patch
 Patch580: linux-2.6-sparc-selinux-mprotect-checks.patch
 
+Patch600: block-queue-refcount.patch
+
 Patch610: hda_intel-prealloc-4mb-dmabuffer.patch
 
 Patch700: linux-2.6-e1000-ich9-montevina.patch
@@ -1267,6 +1269,7 @@ ApplyPatch x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
 #
 # SCSI Bits.
 #
+ApplyPatch block-queue-refcount.patch
 
 # ACPI
 
@@ -1995,6 +1998,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jun 07 2011 Dave Jones <davej@redhat.com>
+- [SCSI] Fix oops caused by queue refcounting failure.
+
 * Sat Jun 04 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.38.8-31
 - Linux 2.6.38.8
 - Revert radeon patches we already have:
