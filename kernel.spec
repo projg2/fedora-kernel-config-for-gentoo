@@ -749,6 +749,8 @@ Patch12407: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 Patch12415: hid-multitouch-add-support-for-elo-touchsystems.patch
 Patch12416: bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 
+Patch12418: ath5k-disable-fast-channel-switching-by-default.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1390,6 +1392,9 @@ ApplyPatch scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 ApplyPatch hid-multitouch-add-support-for-elo-touchsystems.patch
 ApplyPatch bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 
+# rhbz#709122
+ApplyPatch ath5k-disable-fast-channel-switching-by-default.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1998,6 +2003,10 @@ fi
 # and build.
 
 %changelog
+* Thu Jun 09 2011 Kyle McMartin <kmcmartin@redhat.com>
+- ath5k-disable-fast-channel-switching-by-default.patch (rhbz#709122)
+  (korgbz#34992) [a99168ee in wireless-next]
+
 * Tue Jun 07 2011 Dave Jones <davej@redhat.com>
 - [SCSI] Fix oops caused by queue refcounting failure.
 
