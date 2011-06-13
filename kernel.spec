@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 31
+%global baserelease 32
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2003,7 +2003,7 @@ fi
 # and build.
 
 %changelog
-* Thu Jun 09 2011 Kyle McMartin <kmcmartin@redhat.com>
+* Thu Jun 09 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.8-32
 - ath5k-disable-fast-channel-switching-by-default.patch (rhbz#709122)
   (korgbz#34992) [a99168ee in wireless-next]
 
