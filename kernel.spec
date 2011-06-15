@@ -751,6 +751,8 @@ Patch12416: bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 
 Patch12418: ath5k-disable-fast-channel-switching-by-default.patch
 
+Patch12420: crypto-aesni_intel-merge-with-fpu_ko.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1395,6 +1397,9 @@ ApplyPatch bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 # rhbz#709122
 ApplyPatch ath5k-disable-fast-channel-switching-by-default.patch
 
+# rhbz#589390
+ApplyPatch crypto-aesni_intel-merge-with-fpu_ko.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2003,6 +2008,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jun 15 2011 Kyle McMartin <kmcmartin@redhat.com>
+- crypto: aesni-intel - Merge with fpu.ko (rhbz#589390)
+
 * Thu Jun 09 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.8-32
 - ath5k-disable-fast-channel-switching-by-default.patch (rhbz#709122)
   (korgbz#34992) [a99168ee in wireless-next]
