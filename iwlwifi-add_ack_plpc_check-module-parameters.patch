@@ -1,0 +1,97 @@
+From sgruszka@redhat.com Mon Jun 20 10:14:54 2011
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+To: kernel@lists.fedoraproject.org
+Subject: [PATCH 2.6.35 1/3] iwlwifi: add {ack, plpc}_check module parameters
+Date: Mon, 20 Jun 2011 16:15:12 +0200
+Message-Id: <1308579314-19348-2-git-send-email-sgruszka@redhat.com>
+
+commit b7977ffaab5187ad75edaf04ac854615cea93828 upstream.
+
+Add module ack_check, and plcp_check parameters. Ack_check is disabled
+by default since is proved that check ack health can cause troubles.
+Plcp_check is enabled by default.
+
+This prevent connection hangs with "low ack count detected" messages.
+
+Resolves:
+https://bugzilla.redhat.com/show_bug.cgi?id=666646
+
+Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
+---
+ drivers/net/wireless/iwlwifi/iwl-agn-lib.c |    1 +
+ drivers/net/wireless/iwlwifi/iwl-agn.c     |    6 ++++++
+ drivers/net/wireless/iwlwifi/iwl-core.h    |    2 ++
+ drivers/net/wireless/iwlwifi/iwl-rx.c      |    8 ++++++--
+ 4 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/iwlwifi/iwl-agn-lib.c b/drivers/net/wireless/iwlwifi/iwl-agn-lib.c
+index 0f292a2..3a79907 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-agn-lib.c
++++ b/drivers/net/wireless/iwlwifi/iwl-agn-lib.c
+@@ -387,6 +387,7 @@ const u8 *iwlagn_eeprom_query_addr(const struct iwl_priv *priv,
+ struct iwl_mod_params iwlagn_mod_params = {
+ 	.amsdu_size_8K = 1,
+ 	.restart_fw = 1,
++	.plcp_check = true,
+ 	/* the rest are 0 by default */
+ };
+ 
+diff --git a/drivers/net/wireless/iwlwifi/iwl-agn.c b/drivers/net/wireless/iwlwifi/iwl-agn.c
+index 8a2c4d7..6bd11c7 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-agn.c
++++ b/drivers/net/wireless/iwlwifi/iwl-agn.c
+@@ -4180,3 +4180,9 @@ module_param_named(ucode_alternative, iwlagn_wanted_ucode_alternative, int,
+ 		   S_IRUGO);
+ MODULE_PARM_DESC(ucode_alternative,
+ 		 "specify ucode alternative to use from ucode file");
++
++module_param_named(plcp_check, iwlagn_mod_params.plcp_check, bool, S_IRUGO);
++MODULE_PARM_DESC(plcp_check, "Check plcp health (default: 1 [enabled])");
++
++module_param_named(ack_check, iwlagn_mod_params.ack_check, bool, S_IRUGO);
++MODULE_PARM_DESC(ack_check, "Check ack health (default: 0 [disabled])");
+diff --git a/drivers/net/wireless/iwlwifi/iwl-core.h b/drivers/net/wireless/iwlwifi/iwl-core.h
+index e8ef317..ef03c24 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-core.h
++++ b/drivers/net/wireless/iwlwifi/iwl-core.h
+@@ -226,6 +226,8 @@ struct iwl_mod_params {
+ 	int amsdu_size_8K;	/* def: 1 = enable 8K amsdu size */
+ 	int antenna;  		/* def: 0 = both antennas (use diversity) */
+ 	int restart_fw;		/* def: 1 = restart firmware */
++	bool plcp_check;	/* def: true = enable plcp health check */
++	bool ack_check;		/* def: false = disable ack health check */
+ };
+ 
+ /**
+diff --git a/drivers/net/wireless/iwlwifi/iwl-rx.c b/drivers/net/wireless/iwlwifi/iwl-rx.c
+index 0a5d7cf..d6c5927 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-rx.c
++++ b/drivers/net/wireless/iwlwifi/iwl-rx.c
+@@ -401,10 +401,13 @@ EXPORT_SYMBOL(iwl_good_plcp_health);
+ void iwl_recover_from_statistics(struct iwl_priv *priv,
+ 				struct iwl_rx_packet *pkt)
+ {
++	const struct iwl_mod_params *mod_params = priv->cfg->mod_params;
++
+ 	if (test_bit(STATUS_EXIT_PENDING, &priv->status))
+ 		return;
+ 	if (iwl_is_associated(priv)) {
+-		if (priv->cfg->ops->lib->check_ack_health) {
++		if (mod_params->ack_check &&
++		    priv->cfg->ops->lib->check_ack_health) {
+ 			if (!priv->cfg->ops->lib->check_ack_health(
+ 			    priv, pkt)) {
+ 				/*
+@@ -417,7 +420,8 @@ void iwl_recover_from_statistics(struct iwl_priv *priv,
+ 					return;
+ 			}
+ 		}
+-		if (priv->cfg->ops->lib->check_plcp_health) {
++		if (mod_params->plcp_check &&
++		    priv->cfg->ops->lib->check_plcp_health) {
+ 			if (!priv->cfg->ops->lib->check_plcp_health(
+ 			    priv, pkt)) {
+ 				/*
+-- 
+1.7.1
+

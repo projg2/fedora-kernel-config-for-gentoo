@@ -1,0 +1,133 @@
+From sgruszka@redhat.com Mon Jun 20 10:14:57 2011
+From: Stanislaw Gruszka <sgruszka@redhat.com>
+To: kernel@lists.fedoraproject.org
+Subject: [PATCH 2.6.35 3/3] iwlagn: use cts-to-self protection on 5000 adapters series
+Date: Mon, 20 Jun 2011 16:15:14 +0200
+Message-Id: <1308579314-19348-4-git-send-email-sgruszka@redhat.com>
+
+This patch fixes 802.11n stability and performance regression we have
+since 2.6.35. It boost performance on my 5GHz N-only network from about
+5MB/s to 8MB/s. Similar percentage boost can be observed on 2.4 GHz.
+
+These are test results of 5x downloading of approximately 700MB iso
+image:
+
+vanilla: 5.27 5.22 4.94 4.47 5.31 ; avr 5.0420 std 0.35110
+patched: 8.07 7.95 8.06 7.99 7.96 ; avr 8.0060 std 0.055946
+
+This was achieved with NetworkManager configured to do not perform
+periodical scans, by configuring constant BSSID. With periodical scans,
+after some time, performance downgrade to unpatched driver level, like
+in example below:
+
+patched: 7.40 7.61 4.28 4.37 4.80 avr 5.6920 std 1.6683
+
+However patch still make better here, since similar test on unpatched
+driver make link disconnects with below messages after some time:
+
+wlan1: authenticate with 00:23:69:35:d1:3f (try 1)
+wlan1: authenticate with 00:23:69:35:d1:3f (try 2)
+wlan1: authenticate with 00:23:69:35:d1:3f (try 3)
+wlan1: authentication with 00:23:69:35:d1:3f timed out
+
+On 2.6.35 kernel patch helps against connection hangs with messages:
+
+iwlagn 0000:20:00.0: queue 10 stuck 3 time. Fw reload.
+iwlagn 0000:20:00.0: On demand firmware reload
+iwlagn 0000:20:00.0: Stopping AGG while state not ON or starting
+
+Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
+---
+ drivers/net/wireless/iwlwifi/iwl-5000.c     |    5 -----
+ drivers/net/wireless/iwlwifi/iwl-agn-hcmd.c |   11 ++---------
+ drivers/net/wireless/iwlwifi/iwl-agn.c      |    7 +++++++
+ 3 files changed, 9 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/net/wireless/iwlwifi/iwl-5000.c b/drivers/net/wireless/iwlwifi/iwl-5000.c
+index 0a67558..8270ed6 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-5000.c
++++ b/drivers/net/wireless/iwlwifi/iwl-5000.c
+@@ -458,7 +458,6 @@ struct iwl_cfg iwl5300_agn_cfg = {
+ 	.use_bsm = false,
+ 	.ht_greenfield_support = true,
+ 	.led_compensation = 51,
+-	.use_rts_for_ht = true, /* use rts/cts protection */
+ 	.chain_noise_num_beacons = IWL_CAL_NUM_BEACONS,
+ 	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_LONG_THRESHOLD_DEF,
+ 	.chain_noise_scale = 1000,
+@@ -489,7 +488,6 @@ struct iwl_cfg iwl5100_bgn_cfg = {
+ 	.use_bsm = false,
+ 	.ht_greenfield_support = true,
+ 	.led_compensation = 51,
+-	.use_rts_for_ht = true, /* use rts/cts protection */
+ 	.chain_noise_num_beacons = IWL_CAL_NUM_BEACONS,
+ 	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_LONG_THRESHOLD_DEF,
+ 	.chain_noise_scale = 1000,
+@@ -549,7 +547,6 @@ struct iwl_cfg iwl5100_agn_cfg = {
+ 	.use_bsm = false,
+ 	.ht_greenfield_support = true,
+ 	.led_compensation = 51,
+-	.use_rts_for_ht = true, /* use rts/cts protection */
+ 	.chain_noise_num_beacons = IWL_CAL_NUM_BEACONS,
+ 	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_LONG_THRESHOLD_DEF,
+ 	.chain_noise_scale = 1000,
+@@ -580,7 +577,6 @@ struct iwl_cfg iwl5350_agn_cfg = {
+ 	.use_bsm = false,
+ 	.ht_greenfield_support = true,
+ 	.led_compensation = 51,
+-	.use_rts_for_ht = true, /* use rts/cts protection */
+ 	.chain_noise_num_beacons = IWL_CAL_NUM_BEACONS,
+ 	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_LONG_THRESHOLD_DEF,
+ 	.chain_noise_scale = 1000,
+@@ -611,7 +607,6 @@ struct iwl_cfg iwl5150_agn_cfg = {
+ 	.use_bsm = false,
+ 	.ht_greenfield_support = true,
+ 	.led_compensation = 51,
+-	.use_rts_for_ht = true, /* use rts/cts protection */
+ 	.chain_noise_num_beacons = IWL_CAL_NUM_BEACONS,
+ 	.plcp_delta_threshold = IWL_MAX_PLCP_ERR_LONG_THRESHOLD_DEF,
+ 	.chain_noise_scale = 1000,
+diff --git a/drivers/net/wireless/iwlwifi/iwl-agn-hcmd.c b/drivers/net/wireless/iwlwifi/iwl-agn-hcmd.c
+index 2a30397..44e91af 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-agn-hcmd.c
++++ b/drivers/net/wireless/iwlwifi/iwl-agn-hcmd.c
+@@ -214,16 +214,9 @@ static void iwlagn_rts_tx_cmd_flag(struct iwl_priv *priv,
+ 				     __le16 fc, __le32 *tx_flags)
+ {
+ 	if (info->control.rates[0].flags & IEEE80211_TX_RC_USE_RTS_CTS ||
+-	    info->control.rates[0].flags & IEEE80211_TX_RC_USE_CTS_PROTECT) {
++	    info->control.rates[0].flags & IEEE80211_TX_RC_USE_CTS_PROTECT ||
++	    info->flags & IEEE80211_TX_CTL_AMPDU)
+ 		*tx_flags |= TX_CMD_FLG_RTS_CTS_MSK;
+-		return;
+-	}
+-
+-	if (priv->cfg->use_rts_for_ht &&
+-	    info->flags & IEEE80211_TX_CTL_AMPDU) {
+-		*tx_flags |= TX_CMD_FLG_RTS_CTS_MSK;
+-		return;
+-	}
+ }
+ 
+ /* Calc max signal level (dBm) among 3 possible receivers */
+diff --git a/drivers/net/wireless/iwlwifi/iwl-agn.c b/drivers/net/wireless/iwlwifi/iwl-agn.c
+index 6bd11c7..20ffe4b 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-agn.c
++++ b/drivers/net/wireless/iwlwifi/iwl-agn.c
+@@ -103,6 +103,13 @@ int iwl_commit_rxon(struct iwl_priv *priv)
+ 	if (!iwl_is_alive(priv))
+ 		return -EBUSY;
+ 
++	/*
++	 * force CTS-to-self frames protection if RTS-CTS is not preferred
++	 * one aggregation protection method
++	 */
++	if (!priv->cfg->use_rts_for_ht)
++		priv->staging_rxon.flags |= RXON_FLG_SELF_CTS_EN;
++
+ 	/* always get timestamp with Rx frame */
+ 	priv->staging_rxon.flags |= RXON_FLG_TSF2HOST_MSK;
+ 
+-- 
+1.7.1
+

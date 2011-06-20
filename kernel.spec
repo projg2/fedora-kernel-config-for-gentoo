@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 92
+%global baserelease 93
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -858,6 +858,11 @@ Patch13980: dccp-handle-invalid-feature-options-length.patch
 # the rest of the pgoff wrap fix
 Patch13990: vm-fix-vm_pgoff-wrap-in-stack-expansion.patch
 
+Patch14000: iwlagn-fix-Received-BA-when-not-expected.patch
+Patch14001: iwlagn-use-cts-to-self-protection-on-5000-adapters-series.patch
+Patch14002: iwlwifi-add_ack_plpc_check-module-parameters.patch
+
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1615,6 +1620,11 @@ ApplyPatch dccp-handle-invalid-feature-options-length.patch
 # the rest of the pgoff wrap fix
 ApplyPatch vm-fix-vm_pgoff-wrap-in-stack-expansion.patch
 
+# rhbz#666646,648732
+ApplyPatch iwlwifi-add_ack_plpc_check-module-parameters.patch
+ApplyPatch iwlagn-fix-Received-BA-when-not-expected.patch
+ApplyPatch iwlagn-use-cts-to-self-protection-on-5000-adapters-series.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2201,6 +2211,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jun 20 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.35.13-93
+- [sgruszka@] iwlwifi: fix general 11n instability (#648732,#666646)
+
 * Fri May 20 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.13-92
 - Add the rest of the fix for bug #704059
 - dccp: handle invalid feature options length (CVE-2011-1770)
