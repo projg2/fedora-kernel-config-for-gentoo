@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 32
+%global baserelease 33
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -750,6 +750,7 @@ Patch12415: hid-multitouch-add-support-for-elo-touchsystems.patch
 Patch12416: bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 
 Patch12418: ath5k-disable-fast-channel-switching-by-default.patch
+Patch12419: iwlagn-use-cts-to-self-protection-on-5000-adapters-series.patch
 
 Patch12420: crypto-aesni_intel-merge-with-fpu_ko.patch
 
@@ -1397,6 +1398,9 @@ ApplyPatch bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 # rhbz#709122
 ApplyPatch ath5k-disable-fast-channel-switching-by-default.patch
 
+# rhbz#648732
+ApplyPatch iwlagn-use-cts-to-self-protection-on-5000-adapters-series.patch
+
 # rhbz#589390
 ApplyPatch crypto-aesni_intel-merge-with-fpu_ko.patch
 
@@ -2008,6 +2012,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jun 20 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.8-33
+- [sgruszka@] iwlwifi: fix general 11n instability (rhbz#648732)
+
 * Wed Jun 15 2011 Kyle McMartin <kmcmartin@redhat.com>
 - crypto: aesni-intel - Merge with fpu.ko (rhbz#589390)
 
