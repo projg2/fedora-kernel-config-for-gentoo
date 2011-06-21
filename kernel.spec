@@ -746,8 +746,11 @@ Patch12404: x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patc
 
 Patch12407: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
+Patch12410: hid-ntrig-deref-unclaimed-input.patch
+
 Patch12415: hid-multitouch-add-support-for-elo-touchsystems.patch
 Patch12416: bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
+
 
 Patch12418: ath5k-disable-fast-channel-switching-by-default.patch
 Patch12419: iwlagn-use-cts-to-self-protection-on-5000-adapters-series.patch
@@ -1392,6 +1395,8 @@ ApplyPatch bonding-incorrect-tx-queue-offset.patch
 
 ApplyPatch scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
+ApplyPatch hid-ntrig-deref-unclaimed-input.patch
+
 ApplyPatch hid-multitouch-add-support-for-elo-touchsystems.patch
 ApplyPatch bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 
@@ -2012,6 +2017,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jun 21 2011 Dave Jones <davej@redhat.com>
+- HID: ntrig don't dereference unclaimed hidinput (rhbz#714827)
+
 * Mon Jun 20 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.38.8-33
 - [sgruszka@] iwlwifi: fix general 11n instability (rhbz#648732)
 
