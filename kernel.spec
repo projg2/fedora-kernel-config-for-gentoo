@@ -665,6 +665,7 @@ Patch580: linux-2.6-sparc-selinux-mprotect-checks.patch
 Patch600: block-queue-refcount.patch
 Patch601: block-export-blk_-get-put-_queue.patch
 Patch602: block-blkdev_get-should-access-bd_disk-only-after.patch
+Patch603: cfq-iosched-fix-locking-around-ioc-ioc-data-assignment.patch
 
 # libata
 Patch620: ahci-add-another-pci-id-for-marvell.patch
@@ -1298,6 +1299,8 @@ ApplyPatch x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
 ApplyPatch block-queue-refcount.patch
 ApplyPatch block-export-blk_-get-put-_queue.patch
 ApplyPatch block-blkdev_get-should-access-bd_disk-only-after.patch
+# rhbz#577968
+ApplyPatch cfq-iosched-fix-locking-around-ioc-ioc-data-assignment.patch
 
 # libata
 ApplyPatch ahci-add-another-pci-id-for-marvell.patch
@@ -2053,6 +2056,7 @@ fi
 - CVE-2011-2183: ksm: race between ksmd and exiting task
 - Revert 2.6.38.8 patch that broke magicmouse (rhbz#714381)
 - Fix drive detection failure on mvsas (rhbz#705019)
+- Fix oopses in the CFQ disk scheduler (rhbz#577968)
 
 * Thu Jun 23 2011 Dave Airlie <airlied@redhat.com> 2.6.38.8-34
 - drm-i915-snb-irq-stalls-fix.patch: fix Sandybridge IRQ stalls

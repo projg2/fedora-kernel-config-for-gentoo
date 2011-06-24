@@ -1,0 +1,44 @@
+From: Jens Axboe <jaxboe@fusionio.com>
+Date: Sun, 5 Jun 2011 04:01:13 +0000 (+0200)
+Subject: cfq-iosched: fix locking around ioc->ioc_data assignment
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=ab4bd22d3cce6977dc039664cc2d052e3147d662
+
+cfq-iosched: fix locking around ioc->ioc_data assignment
+
+Since we are modifying this RCU pointer, we need to hold
+the lock protecting it around it.
+
+This fixes a potential reuse and double free of a cfq
+io_context structure. The bug has been in CFQ for a long
+time, it hit very few people but those it did hit seemed
+to see it a lot.
+
+Tracked in RH bugzilla here:
+
+https://bugzilla.redhat.com/show_bug.cgi?id=577968
+
+Credit goes to Paul Bolle for figuring out that the issue
+was around the one-hit ioc->ioc_data cache. Thanks to his
+hard work the issue is now fixed.
+
+Cc: stable@kernel.org
+Signed-off-by: Jens Axboe <jaxboe@fusionio.com>
+---
+
+diff --git a/block/cfq-iosched.c b/block/cfq-iosched.c
+index 3c7b537..545b8d4 100644
+--- a/block/cfq-iosched.c
++++ b/block/cfq-iosched.c
+@@ -2772,8 +2772,11 @@ static void __cfq_exit_single_io_context(struct cfq_data *cfqd,
+ 	smp_wmb();
+ 	cic->key = cfqd_dead_key(cfqd);
+ 
+-	if (ioc->ioc_data == cic)
++	if (rcu_dereference(ioc->ioc_data) == cic) {
++		spin_lock(&ioc->lock);
+ 		rcu_assign_pointer(ioc->ioc_data, NULL);
++		spin_unlock(&ioc->lock);
++	}
+ 
+ 	if (cic->cfqq[BLK_RW_ASYNC]) {
+ 		cfq_exit_cfqq(cfqd, cic->cfqq[BLK_RW_ASYNC]);
