@@ -690,6 +690,7 @@ Patch1839: drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.pa
 Patch1840: drm-radeon-update.patch
 Patch1841: drm-radeon-update2.patch
 Patch1842: drm-radeon-pageflip-oops-fix.patch
+Patch1843: drm-radeon-update3.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
@@ -1346,6 +1347,7 @@ ApplyPatch drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.pa
 ApplyPatch drm-radeon-update.patch
 ApplyPatch drm-radeon-update2.patch
 ApplyPatch drm-radeon-pageflip-oops-fix.patch
+ApplyPatch drm-radeon-update3.patch
 
 # linux1394 git patches
 #ApplyPatch linux-2.6-firewire-git-update.patch
@@ -2017,6 +2019,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jun 23 2011 Dave Airlie <airlied@redhat.com> 
+- drm-radeon-update3.patch: more radeon fixes backport
+
 * Tue Jun 21 2011 Dave Jones <davej@redhat.com>
 - HID: ntrig don't dereference unclaimed hidinput (rhbz#714827)
 

@@ -1,0 +1,820 @@
+commit 3c79cf677a2eca93762d15f69744937d43185573
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Thu Jun 23 12:19:32 2011 -0400
+
+    drm/radeon/kms: handle special cases for vddc
+    
+    A voltage value of 0xff01 requires that the driver
+    look up the max voltage for the board based using the
+    atom SetVoltage command table.
+    
+    Setting the proper voltage should fix stability on
+    some newer asics.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 63311583922e52b7687233c18e9eebe83207d2e8
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Thu Jun 23 00:49:29 2011 -0400
+
+    drm/radeon/kms: fix num_banks tiling config for fusion
+    
+    The field is encoded:
+    0 = 4 banks
+    1 = 8 banks
+    2 = 16 banks
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 1421991c155016ce31777d09ebfdfe3eb04cb78c
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon Jun 20 13:00:31 2011 -0400
+
+    drm/radeon/kms/r6xx+: voltage fixes
+    
+    0xff01 is not an actual voltage value, but a flag
+    for the driver.  If the power state as that value,
+    skip setting the voltage.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit a7b65dda144af8ba443f1745875440c87a41b0a3
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Sat Jun 18 03:59:51 2011 +0000
+
+    drm/radeon: avoid warnings from r600/eg irq handlers on powered off card.
+    
+    Since we were calling the wptr function before checking if the IH was
+    even enabled, or the GPU wasn't shutdown, we'd get spam in the logs when
+    the GPU readback 0xffffffff. This reorders things so we return early
+    in the no IH and GPU shutdown cases.
+    
+    Reported-and-tested-by: ManDay on #radeon
+    Reviewed-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 3f662051e0acf55bc8c2ea246c9f05e004a2d698
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Fri Jun 17 06:11:30 2011 +0000
+
+    drm/radeon/kms: add missing param for dce3.2 DP transmitter setup
+    
+    This is used during phy init to set up the phy for DP.  This may
+    fix DP problems on DCE3.2 cards.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit dc4f34ba0796f4b09501b035825c02c405335063
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Fri Jun 17 13:13:52 2011 -0400
+
+    drm/radeon/kms/atom: fix duallink on some early DCE3.2 cards
+    
+    Certain revisions of the vbios on DCE3.2 cards have a bug
+    in the transmitter control table which prevents duallink from
+    being enabled properly on some cards.  The action switch statement
+    jumps to the wrong offset for the OUTPUT_ENABLE action.  The fix
+    is to use the ENABLE action rather than the OUTPUT_ENABLE action
+    on the affected cards.  In fixed version of the vbios, both
+    actions jump to the same offset, so the change should be safe.
+    
+    Reported-and-tested-by: Dave Airlie <airlied@redhat.com>
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Cc: stable@kernel.org
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit b5097472f2119480f60657f92b17dd79bcf8e24a
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon Jun 13 17:39:06 2011 -0400
+
+    drm/radeon/kms: use helper functions for fence read/write
+    
+    The existing code assumed scratch registers in a number
+    of places while in most cases we are be using writeback
+    and events rather than scratch registers.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 4414ac4ea84407d14e9fde512c1c229f9cfc96c4
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Thu Jun 16 18:14:22 2011 +0000
+
+    drm/radeon/kms: fix num crtcs for Cedar and Caicos
+    
+    Only support 4 rather than 6.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit c4eee24a87a71c14f223e85065cccea6bf32321d
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon Jun 13 22:02:51 2011 +0000
+
+    drm/radeon/kms: clear wb memory by default
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 12ca85df2db5988ea5c53d0ee53ff1b1cf1257fd
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue Jun 14 19:15:53 2011 +0000
+
+    drm/radeon/kms: signed fix for evergreen thermal
+    
+    temperature is signed.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit dd53acd144d8fa6385e50949f4f635890420ba0b
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed Jun 8 13:01:11 2011 -0400
+
+    drm/radeon/kms: check modes against max pixel clock
+    
+    Filter out modes that are higher than the max pixel
+    clock.
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit a812b560d0d041f2318ae4243ead692e26bae429
+Author: Daniel Haid <d.haid@gogi.tv>
+Date:   Wed Jun 8 20:04:45 2011 +1000
+
+    drm/radeon/kms: fix for radeon on systems >4GB without hardware iommu
+    
+    On my x86_64 system with >4GB of ram and swiotlb instead of
+    a hardware iommu (because I have a VIA chipset), the call
+    to pci_set_dma_mask (see below) with 40bits returns an error.
+    
+    But it seems that the radeon driver is designed to have
+    need_dma32 = true exactly if pci_set_dma_mask is called
+    with 32 bits and false if it is called with 40 bits.
+    
+    I have read somewhere that the default are 32 bits. So if the
+    call fails I suppose that need_dma32 should be set to true.
+    
+    And indeed the patch fixes the problem I have had before
+    and which I had described here:
+    http://choon.net/forum/read.php?21,106131,115940
+    
+    Acked-by: Alex Deucher <alexdeucher@gmail.com>
+    cc: stable@kernel.org
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 262016fe924bbc06d50bcfc816c635d465cd503d
+Author: Alex Deucher <alexdeucher@gmail.com>
+Date:   Fri May 27 10:05:03 2011 -0400
+
+    drm/radeon/kms: viewport height has to be even
+    
+    Otherwise, no vblank interrupts.
+    Fixes:
+    https://bugs.freedesktop.org/show_bug.cgi?id=37522
+    
+    Signed-off-by: Alex Deucher <alexdeucher@gmail.com>
+    Cc: stable@kernel.org
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 36b3cb168810e68ae8dd2036189c4f2cfc0c6d49
+Author: Marek Olšák <maraeo@gmail.com>
+Date:   Fri Jun 10 14:41:26 2011 +0000
+
+    drm/radeon/kms: do bounds checking for 3D_LOAD_VBPNTR and bump array limit
+    
+    To my knowledge, the limit is 16 on r300.
+    (the docs don't say what the limit is)
+    
+    The lack of bounds checking can be abused to do all sorts of things
+    (from bypassing parts of the CS checker to crashing the kernel).
+    
+    Bugzilla:
+    https://bugs.freedesktop.org/show_bug.cgi?id=36745
+    
+    Cc: stable@kernel.org
+    Signed-off-by: Marek Olšák <maraeo@gmail.com>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+diff --git a/drivers/gpu/drm/radeon/atombios_crtc.c b/drivers/gpu/drm/radeon/atombios_crtc.c
+index 2bab32f..1fce6b7 100644
+--- a/drivers/gpu/drm/radeon/atombios_crtc.c
++++ b/drivers/gpu/drm/radeon/atombios_crtc.c
+@@ -1011,7 +1011,7 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
+ 	uint64_t fb_location;
+ 	uint32_t fb_format, fb_pitch_pixels, tiling_flags;
+ 	u32 fb_swap = EVERGREEN_GRPH_ENDIAN_SWAP(EVERGREEN_GRPH_ENDIAN_NONE);
+-	u32 tmp;
++	u32 tmp, viewport_w, viewport_h;
+ 	int r;
+ 
+ 	/* no fb bound */
+@@ -1137,8 +1137,10 @@ static int dce4_crtc_do_set_base(struct drm_crtc *crtc,
+ 	y &= ~1;
+ 	WREG32(EVERGREEN_VIEWPORT_START + radeon_crtc->crtc_offset,
+ 	       (x << 16) | y);
++	viewport_w = crtc->mode.hdisplay;
++	viewport_h = (crtc->mode.vdisplay + 1) & ~1;
+ 	WREG32(EVERGREEN_VIEWPORT_SIZE + radeon_crtc->crtc_offset,
+-	       (crtc->mode.hdisplay << 16) | crtc->mode.vdisplay);
++	       (viewport_w << 16) | viewport_h);
+ 
+ 	/* pageflip setup */
+ 	/* make sure flip is at vb rather than hb */
+@@ -1179,7 +1181,7 @@ static int avivo_crtc_do_set_base(struct drm_crtc *crtc,
+ 	uint64_t fb_location;
+ 	uint32_t fb_format, fb_pitch_pixels, tiling_flags;
+ 	u32 fb_swap = R600_D1GRPH_SWAP_ENDIAN_NONE;
+-	u32 tmp;
++	u32 tmp, viewport_w, viewport_h;
+ 	int r;
+ 
+ 	/* no fb bound */
+@@ -1304,8 +1306,10 @@ static int avivo_crtc_do_set_base(struct drm_crtc *crtc,
+ 	y &= ~1;
+ 	WREG32(AVIVO_D1MODE_VIEWPORT_START + radeon_crtc->crtc_offset,
+ 	       (x << 16) | y);
++	viewport_w = crtc->mode.hdisplay;
++	viewport_h = (crtc->mode.vdisplay + 1) & ~1;
+ 	WREG32(AVIVO_D1MODE_VIEWPORT_SIZE + radeon_crtc->crtc_offset,
+-	       (crtc->mode.hdisplay << 16) | crtc->mode.vdisplay);
++	       (viewport_w << 16) | viewport_h);
+ 
+ 	/* pageflip setup */
+ 	/* make sure flip is at vb rather than hb */
+diff --git a/drivers/gpu/drm/radeon/evergreen.c b/drivers/gpu/drm/radeon/evergreen.c
+index 1b583f8..81f5211 100644
+--- a/drivers/gpu/drm/radeon/evergreen.c
++++ b/drivers/gpu/drm/radeon/evergreen.c
+@@ -88,7 +88,8 @@ u32 evergreen_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base)
+ /* get temperature in millidegrees */
+ int evergreen_get_temp(struct radeon_device *rdev)
+ {
+-	u32 temp, toffset, actual_temp = 0;
++	u32 temp, toffset;
++	int actual_temp = 0;
+ 
+ 	if (rdev->family == CHIP_JUNIPER) {
+ 		toffset = (RREG32(CG_THERMAL_CTRL) & TOFFSET_MASK) >>
+@@ -139,11 +140,17 @@ void evergreen_pm_misc(struct radeon_device *rdev)
+ 	struct radeon_voltage *voltage = &ps->clock_info[req_cm_idx].voltage;
+ 
+ 	if (voltage->type == VOLTAGE_SW) {
++		/* 0xff01 is a flag rather then an actual voltage */
++		if (voltage->voltage == 0xff01)
++			return;
+ 		if (voltage->voltage && (voltage->voltage != rdev->pm.current_vddc)) {
+ 			radeon_atom_set_voltage(rdev, voltage->voltage, SET_VOLTAGE_TYPE_ASIC_VDDC);
+ 			rdev->pm.current_vddc = voltage->voltage;
+ 			DRM_DEBUG("Setting: vddc: %d\n", voltage->voltage);
+ 		}
++		/* 0xff01 is a flag rather then an actual voltage */
++		if (voltage->vddci == 0xff01)
++			return;
+ 		if (voltage->vddci && (voltage->vddci != rdev->pm.current_vddci)) {
+ 			radeon_atom_set_voltage(rdev, voltage->vddci, SET_VOLTAGE_TYPE_ASIC_VDDCI);
+ 			rdev->pm.current_vddci = voltage->vddci;
+@@ -1954,9 +1961,9 @@ static void evergreen_gpu_init(struct radeon_device *rdev)
+ 		rdev->config.evergreen.tile_config |= (3 << 0);
+ 		break;
+ 	}
+-	/* num banks is 8 on all fusion asics */
++	/* num banks is 8 on all fusion asics. 0 = 4, 1 = 8, 2 = 16 */
+ 	if (rdev->flags & RADEON_IS_IGP)
+-		rdev->config.evergreen.tile_config |= 8 << 4;
++		rdev->config.evergreen.tile_config |= 1 << 4;
+ 	else
+ 		rdev->config.evergreen.tile_config |=
+ 			((mc_arb_ramcfg & NOOFBANK_MASK) >> NOOFBANK_SHIFT) << 4;
+@@ -2636,28 +2643,25 @@ static inline u32 evergreen_get_ih_wptr(struct radeon_device *rdev)
+ 
+ int evergreen_irq_process(struct radeon_device *rdev)
+ {
+-	u32 wptr = evergreen_get_ih_wptr(rdev);
+-	u32 rptr = rdev->ih.rptr;
++	u32 wptr;
++	u32 rptr;
+ 	u32 src_id, src_data;
+ 	u32 ring_index;
+ 	unsigned long flags;
+ 	bool queue_hotplug = false;
+ 
+-	DRM_DEBUG("r600_irq_process start: rptr %d, wptr %d\n", rptr, wptr);
+-	if (!rdev->ih.enabled)
++	if (!rdev->ih.enabled || rdev->shutdown)
+ 		return IRQ_NONE;
+ 
+-	spin_lock_irqsave(&rdev->ih.lock, flags);
++	wptr = evergreen_get_ih_wptr(rdev);
++	rptr = rdev->ih.rptr;
++	DRM_DEBUG("r600_irq_process start: rptr %d, wptr %d\n", rptr, wptr);
+ 
++	spin_lock_irqsave(&rdev->ih.lock, flags);
+ 	if (rptr == wptr) {
+ 		spin_unlock_irqrestore(&rdev->ih.lock, flags);
+ 		return IRQ_NONE;
+ 	}
+-	if (rdev->shutdown) {
+-		spin_unlock_irqrestore(&rdev->ih.lock, flags);
+-		return IRQ_NONE;
+-	}
+-
+ restart_ih:
+ 	/* display interrupts */
+ 	evergreen_irq_ack(rdev);
+diff --git a/drivers/gpu/drm/radeon/r100_track.h b/drivers/gpu/drm/radeon/r100_track.h
+index 2fef9de..686f9dc 100644
+--- a/drivers/gpu/drm/radeon/r100_track.h
++++ b/drivers/gpu/drm/radeon/r100_track.h
+@@ -63,7 +63,7 @@ struct r100_cs_track {
+ 	unsigned			num_arrays;
+ 	unsigned			max_indx;
+ 	unsigned			color_channel_mask;
+-	struct r100_cs_track_array	arrays[11];
++	struct r100_cs_track_array	arrays[16];
+ 	struct r100_cs_track_cb 	cb[R300_MAX_CB];
+ 	struct r100_cs_track_cb 	zb;
+ 	struct r100_cs_track_cb 	aa;
+@@ -146,6 +146,12 @@ static inline int r100_packet3_load_vbpntr(struct radeon_cs_parser *p,
+ 	ib = p->ib->ptr;
+ 	track = (struct r100_cs_track *)p->track;
+ 	c = radeon_get_ib_value(p, idx++) & 0x1F;
++	if (c > 16) {
++	    DRM_ERROR("Only 16 vertex buffers are allowed %d\n",
++		      pkt->opcode);
++	    r100_cs_dump_packet(p, pkt);
++	    return -EINVAL;
++	}
+ 	track->num_arrays = c;
+ 	for (i = 0; i < (c - 1); i+=2, idx+=3) {
+ 		r = r100_cs_packet_next_reloc(p, &reloc);
+diff --git a/drivers/gpu/drm/radeon/r600.c b/drivers/gpu/drm/radeon/r600.c
+index 70e9fb0..e7157b7 100644
+--- a/drivers/gpu/drm/radeon/r600.c
++++ b/drivers/gpu/drm/radeon/r600.c
+@@ -586,6 +586,9 @@ void r600_pm_misc(struct radeon_device *rdev)
+ 	struct radeon_voltage *voltage = &ps->clock_info[req_cm_idx].voltage;
+ 
+ 	if ((voltage->type == VOLTAGE_SW) && voltage->voltage) {
++		/* 0xff01 is a flag rather then an actual voltage */
++		if (voltage->voltage == 0xff01)
++			return;
+ 		if (voltage->voltage != rdev->pm.current_vddc) {
+ 			radeon_atom_set_voltage(rdev, voltage->voltage, SET_VOLTAGE_TYPE_ASIC_VDDC);
+ 			rdev->pm.current_vddc = voltage->voltage;
+@@ -3286,27 +3289,26 @@ static inline u32 r600_get_ih_wptr(struct radeon_device *rdev)
+ 
+ int r600_irq_process(struct radeon_device *rdev)
+ {
+-	u32 wptr = r600_get_ih_wptr(rdev);
+-	u32 rptr = rdev->ih.rptr;
++	u32 wptr;
++	u32 rptr;
+ 	u32 src_id, src_data;
+ 	u32 ring_index;
+ 	unsigned long flags;
+ 	bool queue_hotplug = false;
+ 
+-	DRM_DEBUG("r600_irq_process start: rptr %d, wptr %d\n", rptr, wptr);
+-	if (!rdev->ih.enabled)
++	if (!rdev->ih.enabled || rdev->shutdown)
+ 		return IRQ_NONE;
+ 
++	wptr = r600_get_ih_wptr(rdev);
++	rptr = rdev->ih.rptr;
++	DRM_DEBUG("r600_irq_process start: rptr %d, wptr %d\n", rptr, wptr);
++
+ 	spin_lock_irqsave(&rdev->ih.lock, flags);
+ 
+ 	if (rptr == wptr) {
+ 		spin_unlock_irqrestore(&rdev->ih.lock, flags);
+ 		return IRQ_NONE;
+ 	}
+-	if (rdev->shutdown) {
+-		spin_unlock_irqrestore(&rdev->ih.lock, flags);
+-		return IRQ_NONE;
+-	}
+ 
+ restart_ih:
+ 	/* display interrupts */
+diff --git a/drivers/gpu/drm/radeon/radeon.h b/drivers/gpu/drm/radeon/radeon.h
+index 27df931..c46552d 100644
+--- a/drivers/gpu/drm/radeon/radeon.h
++++ b/drivers/gpu/drm/radeon/radeon.h
+@@ -165,6 +165,7 @@ struct radeon_clock {
+ 	uint32_t default_sclk;
+ 	uint32_t default_dispclk;
+ 	uint32_t dp_extclk;
++	uint32_t max_pixel_clock;
+ };
+ 
+ /*
+@@ -178,6 +179,7 @@ void radeon_pm_resume(struct radeon_device *rdev);
+ void radeon_combios_get_power_modes(struct radeon_device *rdev);
+ void radeon_atombios_get_power_modes(struct radeon_device *rdev);
+ void radeon_atom_set_voltage(struct radeon_device *rdev, u16 voltage_level, u8 voltage_type);
++int radeon_atom_get_max_vddc(struct radeon_device *rdev, u16 *voltage);
+ void rs690_pm_info(struct radeon_device *rdev);
+ extern int rv6xx_get_temp(struct radeon_device *rdev);
+ extern int rv770_get_temp(struct radeon_device *rdev);
+diff --git a/drivers/gpu/drm/radeon/radeon_asic.c b/drivers/gpu/drm/radeon/radeon_asic.c
+index b9b3c2a..6f5bd29 100644
+--- a/drivers/gpu/drm/radeon/radeon_asic.c
++++ b/drivers/gpu/drm/radeon/radeon_asic.c
+@@ -938,6 +938,13 @@ static struct radeon_asic cayman_asic = {
+ int radeon_asic_init(struct radeon_device *rdev)
+ {
+ 	radeon_register_accessor_init(rdev);
++
++	/* set the number of crtcs */
++	if (rdev->flags & RADEON_SINGLE_CRTC)
++		rdev->num_crtc = 1;
++	else
++		rdev->num_crtc = 2;
++
+ 	switch (rdev->family) {
+ 	case CHIP_R100:
+ 	case CHIP_RV100:
+@@ -1017,6 +1024,11 @@ int radeon_asic_init(struct radeon_device *rdev)
+ 	case CHIP_JUNIPER:
+ 	case CHIP_CYPRESS:
+ 	case CHIP_HEMLOCK:
++		/* set num crtcs */
++		if (rdev->family == CHIP_CEDAR)
++			rdev->num_crtc = 4;
++		else
++			rdev->num_crtc = 6;
+ 		rdev->asic = &evergreen_asic;
+ 		break;
+ 	case CHIP_PALM:
+@@ -1025,10 +1037,17 @@ int radeon_asic_init(struct radeon_device *rdev)
+ 	case CHIP_BARTS:
+ 	case CHIP_TURKS:
+ 	case CHIP_CAICOS:
++		/* set num crtcs */
++		if (rdev->family == CHIP_CAICOS)
++			rdev->num_crtc = 4;
++		else
++			rdev->num_crtc = 6;
+ 		rdev->asic = &btc_asic;
+ 		break;
+ 	case CHIP_CAYMAN:
+ 		rdev->asic = &cayman_asic;
++		/* set num crtcs */
++		rdev->num_crtc = 6;
+ 		break;
+ 	default:
+ 		/* FIXME: not supported yet */
+@@ -1040,18 +1059,6 @@ int radeon_asic_init(struct radeon_device *rdev)
+ 		rdev->asic->set_memory_clock = NULL;
+ 	}
+ 
+-	/* set the number of crtcs */
+-	if (rdev->flags & RADEON_SINGLE_CRTC)
+-		rdev->num_crtc = 1;
+-	else {
+-		if (ASIC_IS_DCE41(rdev))
+-			rdev->num_crtc = 2;
+-		else if (ASIC_IS_DCE4(rdev))
+-			rdev->num_crtc = 6;
+-		else
+-			rdev->num_crtc = 2;
+-	}
+-
+ 	return 0;
+ }
+ 
+diff --git a/drivers/gpu/drm/radeon/radeon_atombios.c b/drivers/gpu/drm/radeon/radeon_atombios.c
+index f116516..ce861ff 100644
+--- a/drivers/gpu/drm/radeon/radeon_atombios.c
++++ b/drivers/gpu/drm/radeon/radeon_atombios.c
+@@ -1246,6 +1246,10 @@ bool radeon_atom_get_clock_info(struct drm_device *dev)
+ 		}
+ 		*dcpll = *p1pll;
+ 
++		rdev->clock.max_pixel_clock = le16_to_cpu(firmware_info->info.usMaxPixelClock);
++		if (rdev->clock.max_pixel_clock == 0)
++			rdev->clock.max_pixel_clock = 40000;
++
+ 		return true;
+ 	}
+ 
+@@ -2308,6 +2312,14 @@ static bool radeon_atombios_parse_pplib_clock_info(struct radeon_device *rdev,
+ 			le16_to_cpu(clock_info->r600.usVDDC);
+ 	}
+ 
++	/* patch up vddc if necessary */
++	if (rdev->pm.power_state[state_index].clock_info[mode_index].voltage.voltage == 0xff01) {
++		u16 vddc;
++
++		if (radeon_atom_get_max_vddc(rdev, &vddc) == 0)
++			rdev->pm.power_state[state_index].clock_info[mode_index].voltage.voltage = vddc;
++	}
++
+ 	if (rdev->flags & RADEON_IS_IGP) {
+ 		/* skip invalid modes */
+ 		if (rdev->pm.power_state[state_index].clock_info[mode_index].sclk == 0)
+@@ -2595,6 +2607,10 @@ void radeon_atom_set_voltage(struct radeon_device *rdev, u16 voltage_level, u8 v
+ 	if (!atom_parse_cmd_header(rdev->mode_info.atom_context, index, &frev, &crev))
+ 		return;
+ 
++	/* 0xff01 is a flag rather then an actual voltage */
++	if (voltage_level == 0xff01)
++		return;
++
+ 	switch (crev) {
+ 	case 1:
+ 		args.v1.ucVoltageType = voltage_type;
+@@ -2614,7 +2630,35 @@ void radeon_atom_set_voltage(struct radeon_device *rdev, u16 voltage_level, u8 v
+ 	atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
+ }
+ 
++int radeon_atom_get_max_vddc(struct radeon_device *rdev,
++			     u16 *voltage)
++{
++	union set_voltage args;
++	int index = GetIndexIntoMasterTable(COMMAND, SetVoltage);
++	u8 frev, crev;
++
++	if (!atom_parse_cmd_header(rdev->mode_info.atom_context, index, &frev, &crev))
++		return -EINVAL;
+ 
++	switch (crev) {
++	case 1:
++		return -EINVAL;
++	case 2:
++		args.v2.ucVoltageType = SET_VOLTAGE_GET_MAX_VOLTAGE;
++		args.v2.ucVoltageMode = 0;
++		args.v2.usVoltageLevel = 0;
++
++		atom_execute_table(rdev->mode_info.atom_context, index, (uint32_t *)&args);
++
++		*voltage = le16_to_cpu(args.v2.usVoltageLevel);
++		break;
++	default:
++		DRM_ERROR("Unknown table version %d, %d\n", frev, crev);
++		return -EINVAL;
++	}
++
++	return 0;
++}
+ 
+ void radeon_atom_initialize_bios_scratch_regs(struct drm_device *dev)
+ {
+diff --git a/drivers/gpu/drm/radeon/radeon_clocks.c b/drivers/gpu/drm/radeon/radeon_clocks.c
+index 5249af8..2d48e7a 100644
+--- a/drivers/gpu/drm/radeon/radeon_clocks.c
++++ b/drivers/gpu/drm/radeon/radeon_clocks.c
+@@ -117,7 +117,7 @@ static bool __devinit radeon_read_clocks_OF(struct drm_device *dev)
+ 	p1pll->reference_div = RREG32_PLL(RADEON_PPLL_REF_DIV) & 0x3ff;
+ 	if (p1pll->reference_div < 2)
+ 		p1pll->reference_div = 12;
+-	p2pll->reference_div = p1pll->reference_div;	
++	p2pll->reference_div = p1pll->reference_div;
+ 
+ 	/* These aren't in the device-tree */
+ 	if (rdev->family >= CHIP_R420) {
+@@ -139,6 +139,8 @@ static bool __devinit radeon_read_clocks_OF(struct drm_device *dev)
+ 		p2pll->pll_out_min = 12500;
+ 		p2pll->pll_out_max = 35000;
+ 	}
++	/* not sure what the max should be in all cases */
++	rdev->clock.max_pixel_clock = 35000;
+ 
+ 	spll->reference_freq = mpll->reference_freq = p1pll->reference_freq;
+ 	spll->reference_div = mpll->reference_div =
+@@ -151,7 +153,7 @@ static bool __devinit radeon_read_clocks_OF(struct drm_device *dev)
+ 	else
+ 		rdev->clock.default_sclk =
+ 			radeon_legacy_get_engine_clock(rdev);
+-			
++
+ 	val = of_get_property(dp, "ATY,MCLK", NULL);
+ 	if (val && *val)
+ 		rdev->clock.default_mclk = (*val) / 10;
+@@ -160,7 +162,7 @@ static bool __devinit radeon_read_clocks_OF(struct drm_device *dev)
+ 			radeon_legacy_get_memory_clock(rdev);
+ 
+ 	DRM_INFO("Using device-tree clock info\n");
+-	
++
+ 	return true;
+ }
+ #else
+diff --git a/drivers/gpu/drm/radeon/radeon_combios.c b/drivers/gpu/drm/radeon/radeon_combios.c
+index 089ab92..8a53691 100644
+--- a/drivers/gpu/drm/radeon/radeon_combios.c
++++ b/drivers/gpu/drm/radeon/radeon_combios.c
+@@ -833,6 +833,11 @@ bool radeon_combios_get_clock_info(struct drm_device *dev)
+ 		rdev->clock.default_sclk = sclk;
+ 		rdev->clock.default_mclk = mclk;
+ 
++		if (RBIOS32(pll_info + 0x16))
++			rdev->clock.max_pixel_clock = RBIOS32(pll_info + 0x16);
++		else
++			rdev->clock.max_pixel_clock = 35000; /* might need something asic specific */
++
+ 		return true;
+ 	}
+ 	return false;
+diff --git a/drivers/gpu/drm/radeon/radeon_connectors.c b/drivers/gpu/drm/radeon/radeon_connectors.c
+index a186673..33cb72b 100644
+--- a/drivers/gpu/drm/radeon/radeon_connectors.c
++++ b/drivers/gpu/drm/radeon/radeon_connectors.c
+@@ -621,8 +621,14 @@ static int radeon_vga_get_modes(struct drm_connector *connector)
+ static int radeon_vga_mode_valid(struct drm_connector *connector,
+ 				  struct drm_display_mode *mode)
+ {
++	struct drm_device *dev = connector->dev;
++	struct radeon_device *rdev = dev->dev_private;
++
+ 	/* XXX check mode bandwidth */
+-	/* XXX verify against max DAC output frequency */
++
++	if ((mode->clock / 10) > rdev->clock.max_pixel_clock)
++		return MODE_CLOCK_HIGH;
++
+ 	return MODE_OK;
+ }
+ 
+@@ -1010,6 +1016,11 @@ static int radeon_dvi_mode_valid(struct drm_connector *connector,
+ 		} else
+ 			return MODE_CLOCK_HIGH;
+ 	}
++
++	/* check against the max pixel clock */
++	if ((mode->clock / 10) > rdev->clock.max_pixel_clock)
++		return MODE_CLOCK_HIGH;
++
+ 	return MODE_OK;
+ }
+ 
+diff --git a/drivers/gpu/drm/radeon/radeon_device.c b/drivers/gpu/drm/radeon/radeon_device.c
+index 207d43f..8a64a3b 100644
+--- a/drivers/gpu/drm/radeon/radeon_device.c
++++ b/drivers/gpu/drm/radeon/radeon_device.c
+@@ -213,6 +213,8 @@ int radeon_wb_init(struct radeon_device *rdev)
+ 		return r;
+ 	}
+ 
++	/* clear wb memory */
++	memset((char *)rdev->wb.wb, 0, RADEON_GPU_PAGE_SIZE);
+ 	/* disable event_write fences */
+ 	rdev->wb.use_event = false;
+ 	/* disabled via module param */
+@@ -752,6 +754,7 @@ int radeon_device_init(struct radeon_device *rdev,
+ 	dma_bits = rdev->need_dma32 ? 32 : 40;
+ 	r = pci_set_dma_mask(rdev->pdev, DMA_BIT_MASK(dma_bits));
+ 	if (r) {
++		rdev->need_dma32 = true;
+ 		printk(KERN_WARNING "radeon: No suitable DMA available.\n");
+ 	}
+ 
+diff --git a/drivers/gpu/drm/radeon/radeon_encoders.c b/drivers/gpu/drm/radeon/radeon_encoders.c
+index b427488..e2a1c7d 100644
+--- a/drivers/gpu/drm/radeon/radeon_encoders.c
++++ b/drivers/gpu/drm/radeon/radeon_encoders.c
+@@ -994,9 +994,10 @@ atombios_dig_transmitter_setup(struct drm_encoder *encoder, int action, uint8_t
+ 			break;
+ 		}
+ 
+-		if (is_dp)
++		if (is_dp) {
+ 			args.v2.acConfig.fCoherentMode = 1;
+-		else if (radeon_encoder->devices & (ATOM_DEVICE_DFP_SUPPORT)) {
++			args.v2.acConfig.fDPConnector = 1;
++		} else if (radeon_encoder->devices & (ATOM_DEVICE_DFP_SUPPORT)) {
+ 			if (dig->coherent_mode)
+ 				args.v2.acConfig.fCoherentMode = 1;
+ 			if (radeon_encoder->pixel_clock > 165000)
+@@ -1294,7 +1295,11 @@ radeon_atom_encoder_dpms(struct drm_encoder *encoder, int mode)
+ 	if (is_dig) {
+ 		switch (mode) {
+ 		case DRM_MODE_DPMS_ON:
+-			atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_ENABLE_OUTPUT, 0, 0);
++			/* some early dce3.2 boards have a bug in their transmitter control table */
++			if ((rdev->family == CHIP_RV710) || (rdev->family == CHIP_RV730))
++				atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_ENABLE, 0, 0);
++			else
++				atombios_dig_transmitter_setup(encoder, ATOM_TRANSMITTER_ACTION_ENABLE_OUTPUT, 0, 0);
+ 			if (atombios_get_encoder_mode(encoder) == ATOM_ENCODER_MODE_DP) {
+ 				struct drm_connector *connector = radeon_get_connector_for_encoder(encoder);
+ 
+diff --git a/drivers/gpu/drm/radeon/radeon_fence.c b/drivers/gpu/drm/radeon/radeon_fence.c
+index 2b0ee62..3285de1 100644
+--- a/drivers/gpu/drm/radeon/radeon_fence.c
++++ b/drivers/gpu/drm/radeon/radeon_fence.c
+@@ -40,6 +40,35 @@
+ #include "radeon.h"
+ #include "radeon_trace.h"
+ 
++static void radeon_fence_write(struct radeon_device *rdev, u32 seq)
++{
++	if (rdev->wb.enabled) {
++		u32 scratch_index;
++		if (rdev->wb.use_event)
++			scratch_index = R600_WB_EVENT_OFFSET + rdev->fence_drv.scratch_reg - rdev->scratch.reg_base;
++		else
++			scratch_index = RADEON_WB_SCRATCH_OFFSET + rdev->fence_drv.scratch_reg - rdev->scratch.reg_base;
++		rdev->wb.wb[scratch_index/4] = cpu_to_le32(seq);;
++	} else
++		WREG32(rdev->fence_drv.scratch_reg, seq);
++}
++
++static u32 radeon_fence_read(struct radeon_device *rdev)
++{
++	u32 seq;
++
++	if (rdev->wb.enabled) {
++		u32 scratch_index;
++		if (rdev->wb.use_event)
++			scratch_index = R600_WB_EVENT_OFFSET + rdev->fence_drv.scratch_reg - rdev->scratch.reg_base;
++		else
++			scratch_index = RADEON_WB_SCRATCH_OFFSET + rdev->fence_drv.scratch_reg - rdev->scratch.reg_base;
++		seq = le32_to_cpu(rdev->wb.wb[scratch_index/4]);
++	} else
++		seq = RREG32(rdev->fence_drv.scratch_reg);
++	return seq;
++}
++
+ int radeon_fence_emit(struct radeon_device *rdev, struct radeon_fence *fence)
+ {
+ 	unsigned long irq_flags;
+@@ -50,12 +79,12 @@ int radeon_fence_emit(struct radeon_device *rdev, struct radeon_fence *fence)
+ 		return 0;
+ 	}
+ 	fence->seq = atomic_add_return(1, &rdev->fence_drv.seq);
+-	if (!rdev->cp.ready) {
++	if (!rdev->cp.ready)
+ 		/* FIXME: cp is not running assume everythings is done right
+ 		 * away
+ 		 */
+-		WREG32(rdev->fence_drv.scratch_reg, fence->seq);
+-	} else
++		radeon_fence_write(rdev, fence->seq);
++	else
+ 		radeon_fence_ring_emit(rdev, fence);
+ 
+ 	trace_radeon_fence_emit(rdev->ddev, fence->seq);
+@@ -74,15 +103,7 @@ static bool radeon_fence_poll_locked(struct radeon_device *rdev)
+ 	bool wake = false;
+ 	unsigned long cjiffies;
+ 
+-	if (rdev->wb.enabled) {
+-		u32 scratch_index;
+-		if (rdev->wb.use_event)
+-			scratch_index = R600_WB_EVENT_OFFSET + rdev->fence_drv.scratch_reg - rdev->scratch.reg_base;
+-		else
+-			scratch_index = RADEON_WB_SCRATCH_OFFSET + rdev->fence_drv.scratch_reg - rdev->scratch.reg_base;
+-		seq = le32_to_cpu(rdev->wb.wb[scratch_index/4]);
+-	} else
+-		seq = RREG32(rdev->fence_drv.scratch_reg);
++	seq = radeon_fence_read(rdev);
+ 	if (seq != rdev->fence_drv.last_seq) {
+ 		rdev->fence_drv.last_seq = seq;
+ 		rdev->fence_drv.last_jiffies = jiffies;
+@@ -253,7 +274,7 @@ retry:
+ 			r = radeon_gpu_reset(rdev);
+ 			if (r)
+ 				return r;
+-			WREG32(rdev->fence_drv.scratch_reg, fence->seq);
++			radeon_fence_write(rdev, fence->seq);
+ 			rdev->gpu_lockup = false;
+ 		}
+ 		timeout = RADEON_FENCE_JIFFIES_TIMEOUT;
+@@ -353,7 +374,7 @@ int radeon_fence_driver_init(struct radeon_device *rdev)
+ 		write_unlock_irqrestore(&rdev->fence_drv.lock, irq_flags);
+ 		return r;
+ 	}
+-	WREG32(rdev->fence_drv.scratch_reg, 0);
++	radeon_fence_write(rdev, 0);
+ 	atomic_set(&rdev->fence_drv.seq, 0);
+ 	INIT_LIST_HEAD(&rdev->fence_drv.created);
+ 	INIT_LIST_HEAD(&rdev->fence_drv.emited);
+@@ -393,7 +414,7 @@ static int radeon_debugfs_fence_info(struct seq_file *m, void *data)
+ 	struct radeon_fence *fence;
+ 
+ 	seq_printf(m, "Last signaled fence 0x%08X\n",
+-		   RREG32(rdev->fence_drv.scratch_reg));
++		   radeon_fence_read(rdev));
+ 	if (!list_empty(&rdev->fence_drv.emited)) {
+ 		   fence = list_entry(rdev->fence_drv.emited.prev,
+ 				      struct radeon_fence, list);
+diff --git a/drivers/gpu/drm/radeon/rv770.c b/drivers/gpu/drm/radeon/rv770.c
+index 114e5cc..cd9578b 100644
+--- a/drivers/gpu/drm/radeon/rv770.c
++++ b/drivers/gpu/drm/radeon/rv770.c
+@@ -105,6 +105,9 @@ void rv770_pm_misc(struct radeon_device *rdev)
+ 	struct radeon_voltage *voltage = &ps->clock_info[req_cm_idx].voltage;
+ 
+ 	if ((voltage->type == VOLTAGE_SW) && voltage->voltage) {
++		/* 0xff01 is a flag rather then an actual voltage */
++		if (voltage->voltage == 0xff01)
++			return;
+ 		if (voltage->voltage != rdev->pm.current_vddc) {
+ 			radeon_atom_set_voltage(rdev, voltage->voltage, SET_VOLTAGE_TYPE_ASIC_VDDC);
+ 			rdev->pm.current_vddc = voltage->voltage;
