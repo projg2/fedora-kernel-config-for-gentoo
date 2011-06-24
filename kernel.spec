@@ -657,6 +657,7 @@ Patch570: linux-2.6-selinux-mprotect-checks.patch
 Patch580: linux-2.6-sparc-selinux-mprotect-checks.patch
 
 Patch600: block-queue-refcount.patch
+Patch601: block-export-blk_-get-put-_queue.patch
 
 Patch610: hda_intel-prealloc-4mb-dmabuffer.patch
 
@@ -1280,6 +1281,7 @@ ApplyPatch x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
 # SCSI Bits.
 #
 ApplyPatch block-queue-refcount.patch
+ApplyPatch block-export-blk_-get-put-_queue.patch
 
 # ACPI
 
@@ -2021,6 +2023,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jun 24 2011 Chuck Ebbert <cebbert@redhat.com>
+- Minor cleanup: use upstream patch to export block_{get,put}_queue
+
 * Thu Jun 23 2011 Dave Airlie <airlied@redhat.com> 2.6.38.8-34
 - drm-i915-snb-irq-stalls-fix.patch: fix Sandybridge IRQ stalls
 
