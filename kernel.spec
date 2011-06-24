@@ -685,6 +685,7 @@ Patch1825: drm-intel-make-lvds-work.patch
 Patch1826: drm-intel-edp-fixes.patch
 Patch1828: drm-intel-eeebox-eb1007-quirk.patch
 Patch1829: drm-intel-restore-mode.patch
+Patch1830: drm-i915-snb-irq-stalls-fix.patch
 # radeon - new hw + fixes for fusion and t500 regression
 Patch1839: drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch
 Patch1840: drm-radeon-update.patch
@@ -1341,6 +1342,7 @@ ApplyPatch drm-intel-edp-fixes.patch
 ApplyPatch drm-i915-fix-pipelined-fencing.patch
 ApplyPatch drm-intel-eeebox-eb1007-quirk.patch
 ApplyPatch drm-intel-restore-mode.patch
+ApplyPatch drm-i915-snb-irq-stalls-fix.patch
 
 # radeon DRM (add cayman support)
 ApplyPatch drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch -R
@@ -2019,6 +2021,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jun 23 2011 Dave Airlie <airlied@redhat.com>
+- drm-i915-snb-irq-stalls-fix.patch: fix Sandybridge IRQ stalls
+
 * Thu Jun 23 2011 Dave Airlie <airlied@redhat.com> 
 - drm-radeon-update3.patch: more radeon fixes backport
 
