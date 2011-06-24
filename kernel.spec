@@ -656,11 +656,15 @@ Patch530: linux-2.6-silence-fbcon-logo.patch
 Patch570: linux-2.6-selinux-mprotect-checks.patch
 Patch580: linux-2.6-sparc-selinux-mprotect-checks.patch
 
+# scsi / block
 Patch600: block-queue-refcount.patch
 Patch601: block-export-blk_-get-put-_queue.patch
 Patch602: block-blkdev_get-should-access-bd_disk-only-after.patch
 
-Patch610: hda_intel-prealloc-4mb-dmabuffer.patch
+# libata
+Patch620: ahci-add-another-pci-id-for-marvell.patch
+
+Patch650: hda_intel-prealloc-4mb-dmabuffer.patch
 
 Patch700: linux-2.6-e1000-ich9-montevina.patch
 
@@ -1284,6 +1288,9 @@ ApplyPatch x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
 ApplyPatch block-queue-refcount.patch
 ApplyPatch block-export-blk_-get-put-_queue.patch
 ApplyPatch block-blkdev_get-should-access-bd_disk-only-after.patch
+
+# libata
+ApplyPatch ahci-add-another-pci-id-for-marvell.patch
 
 # ACPI
 
@@ -2029,6 +2036,7 @@ fi
 - Minor cleanup: use upstream patch to export block_{get,put}_queue
 - block-blkdev_get-should-access-bd_disk-only-after.patch:
   fix potential oops introduced in 2.6.38.8
+- ahci-add-another-pci-id-for-marvell.patch (#705960)
 
 * Thu Jun 23 2011 Dave Airlie <airlied@redhat.com> 2.6.38.8-34
 - drm-i915-snb-irq-stalls-fix.patch: fix Sandybridge IRQ stalls
