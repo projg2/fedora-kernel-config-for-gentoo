@@ -619,6 +619,9 @@ Patch30: linux-2.6-tracehook.patch
 Patch31: linux-2.6-utrace.patch
 Patch32: linux-2.6-utrace-ptrace.patch
 
+# CVE-2011-2183
+Patch80: ksm-fix-null-pointer-dereference-in-scan-get-next-rmap-item.patch
+
 Patch150: linux-2.6.29-sparc-IOC_TYPECHECK.patch
 
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
@@ -1209,6 +1212,10 @@ ApplyPatch linux-2.6-utrace-revert-make-ptrace-functions-static.patch
 ApplyPatch linux-2.6-tracehook.patch
 ApplyPatch linux-2.6-utrace.patch
 ApplyPatch linux-2.6-utrace-ptrace.patch
+
+# mm patches
+# CVE-2011-2183
+ApplyPatch ksm-fix-null-pointer-dereference-in-scan-get-next-rmap-item.patch
 
 # Architecture patches
 # x86(-64)
@@ -2037,6 +2044,7 @@ fi
 - block-blkdev_get-should-access-bd_disk-only-after.patch:
   fix potential oops introduced in 2.6.38.8
 - ahci-add-another-pci-id-for-marvell.patch (#705960)
+- CVE-2011-2183: ksm: race between ksmd and exiting task
 
 * Thu Jun 23 2011 Dave Airlie <airlied@redhat.com> 2.6.38.8-34
 - drm-i915-snb-irq-stalls-fix.patch: fix Sandybridge IRQ stalls
