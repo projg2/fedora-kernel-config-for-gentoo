@@ -649,6 +649,8 @@ Patch394: linux-2.6-acpi-debug-infinite-loop.patch
 
 Patch450: linux-2.6-input-kill-stupid-messages.patch
 Patch452: linux-2.6.30-no-pcspkr-modalias.patch
+# revert 2.6.38.8 patch that broke magicmouse
+Patch453: hid-magicmouse-ignore-ivalid-report-id-while-switching.patch
 
 Patch460: linux-2.6-serial-460800.patch
 
@@ -1309,11 +1311,12 @@ ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
 # Misc fixes
 # The input layer spews crap no-one cares about.
 ApplyPatch linux-2.6-input-kill-stupid-messages.patch
+ApplyPatch linux-2.6.30-no-pcspkr-modalias.patch
+# Revert 2.6.38.8 patch that broke magicmouse
+ApplyPatch hid-magicmouse-ignore-ivalid-report-id-while-switching.patch -R
 
 # stop floppy.ko from autoloading during udev...
 ApplyPatch die-floppy-die.patch
-
-ApplyPatch linux-2.6.30-no-pcspkr-modalias.patch
 
 # Allow to use 480600 baud on 16C950 UARTs
 ApplyPatch linux-2.6-serial-460800.patch
@@ -2045,6 +2048,7 @@ fi
   fix potential oops introduced in 2.6.38.8
 - ahci-add-another-pci-id-for-marvell.patch (#705960)
 - CVE-2011-2183: ksm: race between ksmd and exiting task
+- Revert 2.6.38.8 patch that broke magicmouse (#714381)
 
 * Thu Jun 23 2011 Dave Airlie <airlied@redhat.com> 2.6.38.8-34
 - drm-i915-snb-irq-stalls-fix.patch: fix Sandybridge IRQ stalls
