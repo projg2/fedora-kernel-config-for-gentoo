@@ -658,6 +658,7 @@ Patch580: linux-2.6-sparc-selinux-mprotect-checks.patch
 
 Patch600: block-queue-refcount.patch
 Patch601: block-export-blk_-get-put-_queue.patch
+Patch602: block-blkdev_get-should-access-bd_disk-only-after.patch
 
 Patch610: hda_intel-prealloc-4mb-dmabuffer.patch
 
@@ -1278,10 +1279,11 @@ ApplyPatch x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
 #ApplyPatch ima-allow-it-to-be-completely-disabled-and-default-off.patch
 
 #
-# SCSI Bits.
+# SCSI / block Bits.
 #
 ApplyPatch block-queue-refcount.patch
 ApplyPatch block-export-blk_-get-put-_queue.patch
+ApplyPatch block-blkdev_get-should-access-bd_disk-only-after.patch
 
 # ACPI
 
@@ -2025,6 +2027,8 @@ fi
 %changelog
 * Fri Jun 24 2011 Chuck Ebbert <cebbert@redhat.com>
 - Minor cleanup: use upstream patch to export block_{get,put}_queue
+- block-blkdev_get-should-access-bd_disk-only-after.patch:
+  fix potential oops introduced in 2.6.38.8
 
 * Thu Jun 23 2011 Dave Airlie <airlied@redhat.com> 2.6.38.8-34
 - drm-i915-snb-irq-stalls-fix.patch: fix Sandybridge IRQ stalls
