@@ -668,6 +668,7 @@ Patch602: block-blkdev_get-should-access-bd_disk-only-after.patch
 
 # libata
 Patch620: ahci-add-another-pci-id-for-marvell.patch
+Patch621: libata-sas-only-set-frozen-flag-if-new-eh-is-supported.patch
 
 Patch650: hda_intel-prealloc-4mb-dmabuffer.patch
 
@@ -1300,6 +1301,8 @@ ApplyPatch block-blkdev_get-should-access-bd_disk-only-after.patch
 
 # libata
 ApplyPatch ahci-add-another-pci-id-for-marvell.patch
+# Fix drive detection failure on mvsas (rhbz#705019)
+ApplyPatch libata-sas-only-set-frozen-flag-if-new-eh-is-supported.patch
 
 # ACPI
 
@@ -2046,9 +2049,10 @@ fi
 - Minor cleanup: use upstream patch to export block_{get,put}_queue
 - block-blkdev_get-should-access-bd_disk-only-after.patch:
   fix potential oops introduced in 2.6.38.8
-- ahci-add-another-pci-id-for-marvell.patch (#705960)
+- ahci-add-another-pci-id-for-marvell.patch (rhbz#705960)
 - CVE-2011-2183: ksm: race between ksmd and exiting task
-- Revert 2.6.38.8 patch that broke magicmouse (#714381)
+- Revert 2.6.38.8 patch that broke magicmouse (rhbz#714381)
+- Fix drive detection failure on mvsas (rhbz#705019)
 
 * Thu Jun 23 2011 Dave Airlie <airlied@redhat.com> 2.6.38.8-34
 - drm-i915-snb-irq-stalls-fix.patch: fix Sandybridge IRQ stalls
