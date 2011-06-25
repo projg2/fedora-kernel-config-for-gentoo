@@ -700,6 +700,7 @@ Patch1826: drm-intel-edp-fixes.patch
 Patch1828: drm-intel-eeebox-eb1007-quirk.patch
 Patch1829: drm-intel-restore-mode.patch
 Patch1830: drm-i915-snb-irq-stalls-fix.patch
+Patch1831: drm-i915-apply-hwstam-workaround-for-bsd-ring-on-sandybridge.patch
 # radeon - new hw + fixes for fusion and t500 regression
 Patch1839: drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch
 Patch1840: drm-radeon-update.patch
@@ -1391,6 +1392,7 @@ ApplyPatch drm-i915-fix-pipelined-fencing.patch
 ApplyPatch drm-intel-eeebox-eb1007-quirk.patch
 ApplyPatch drm-intel-restore-mode.patch
 ApplyPatch drm-i915-snb-irq-stalls-fix.patch
+ApplyPatch drm-i915-apply-hwstam-workaround-for-bsd-ring-on-sandybridge.patch
 
 # radeon DRM (add cayman support)
 ApplyPatch drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch -R
@@ -2068,6 +2070,8 @@ fi
 %changelog
 * Sat Jun 25 2011 Chuck Ebbert <cebbert@redhat.com>
 - Intel IOMMU fixes from 2.6.39.2
+- drm-i915-apply-hwstam-workaround-for-bsd-ring-on-sandybridge.patch:
+  Another fix for Sandybridge stalls
 
 * Fri Jun 24 2011 Chuck Ebbert <cebbert@redhat.com>
 - Minor cleanup: use upstream patch to export block_{get,put}_queue
