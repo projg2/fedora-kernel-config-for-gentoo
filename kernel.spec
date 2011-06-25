@@ -708,6 +708,14 @@ Patch1842: drm-radeon-pageflip-oops-fix.patch
 Patch1843: drm-radeon-update3.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
+Patch1901: intel-iommu-flush-unmaps-at-domain_exit.patch
+Patch1902: intel-iommu-only-unlink-device-domains-from-iommu.patch
+Patch1903: intel-iommu-check-for-identity-mapping-candidate-using.patch
+Patch1904: intel-iommu-speed-up-processing-of-the-identity_mapping.patch
+Patch1905: intel-iommu-dont-cache-iova-above-32bit.patch
+Patch1906: intel-iommu-use-coherent-dma-mask-when-requested.patch
+Patch1907: intel-iommu-remove-host-bridge-devices-from-identity.patch
+Patch1908: intel-iommu-add-domain-check-in-domain_remove_one_dev_info.patch
 
 # linux1394 git patches
 Patch2200: linux-2.6-firewire-git-update.patch
@@ -1231,6 +1239,15 @@ ApplyPatch x86-dumpstack-correct-stack-dump-info-when-frame-pointer-is-available
 #
 # Intel IOMMU
 #
+# from 2.6.39.2
+ApplyPatch intel-iommu-flush-unmaps-at-domain_exit.patch
+ApplyPatch intel-iommu-only-unlink-device-domains-from-iommu.patch
+ApplyPatch intel-iommu-check-for-identity-mapping-candidate-using.patch
+ApplyPatch intel-iommu-speed-up-processing-of-the-identity_mapping.patch
+ApplyPatch intel-iommu-dont-cache-iova-above-32bit.patch
+ApplyPatch intel-iommu-use-coherent-dma-mask-when-requested.patch
+ApplyPatch intel-iommu-remove-host-bridge-devices-from-identity.patch
+ApplyPatch intel-iommu-add-domain-check-in-domain_remove_one_dev_info.patch
 
 #
 # PowerPC
@@ -2049,6 +2066,9 @@ fi
 # and build.
 
 %changelog
+* Sat Jun 25 2011 Chuck Ebbert <cebbert@redhat.com>
+- Intel IOMMU fixes from 2.6.39.2
+
 * Fri Jun 24 2011 Chuck Ebbert <cebbert@redhat.com>
 - Minor cleanup: use upstream patch to export block_{get,put}_queue
 - block-blkdev_get-should-access-bd_disk-only-after.patch:
