@@ -649,9 +649,10 @@ Patch394: linux-2.6-acpi-debug-infinite-loop.patch
 
 Patch450: linux-2.6-input-kill-stupid-messages.patch
 Patch452: linux-2.6.30-no-pcspkr-modalias.patch
-# revert 2.6.38.8 patch that broke magicmouse
-Patch453: hid-magicmouse-ignore-ivalid-report-id-while-switching.patch
+Patch453: revert-hid-magicmouse-ignore-ivalid-report-id-while-switching.patch
 Patch454: input-wacom-add-support-for-lenovo-tablet-id-0xe6.patch
+Patch455: hid-ntrig-deref-unclaimed-input.patch
+Patch456: hid-multitouch-add-support-for-elo-touchsystems.patch
 
 Patch460: linux-2.6-serial-460800.patch
 
@@ -771,9 +772,6 @@ Patch12404: x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patc
 
 Patch12407: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
-Patch12410: hid-ntrig-deref-unclaimed-input.patch
-
-Patch12415: hid-multitouch-add-support-for-elo-touchsystems.patch
 Patch12416: bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 
 
@@ -1337,8 +1335,7 @@ ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
 # The input layer spews crap no-one cares about.
 ApplyPatch linux-2.6-input-kill-stupid-messages.patch
 ApplyPatch linux-2.6.30-no-pcspkr-modalias.patch
-# Revert 2.6.38.8 patch that broke magicmouse
-ApplyPatch hid-magicmouse-ignore-ivalid-report-id-while-switching.patch -R
+ApplyPatch revert-hid-magicmouse-ignore-ivalid-report-id-while-switching.patch
 ApplyPatch input-wacom-add-support-for-lenovo-tablet-id-0xe6.patch
 ApplyPatch hid-ntrig-deref-unclaimed-input.patch
 ApplyPatch hid-multitouch-add-support-for-elo-touchsystems.patch
