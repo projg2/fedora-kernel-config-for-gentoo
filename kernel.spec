@@ -2065,6 +2065,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jun 27 2011 Dave Jones <davej@redhat.com>
+- Disable CONFIG_CRYPTO_MANAGER_DISABLE_TESTS, as this also disables FIPS (rhbz 716942)
+
 * Sat Jun 25 2011 Chuck Ebbert <cebbert@redhat.com>
 - Intel IOMMU fixes from 2.6.39.2
 - drm-i915-apply-hwstam-workaround-for-bsd-ring-on-sandybridge.patch:
