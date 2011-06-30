@@ -1,4 +1,4 @@
-From ee11d4db3389aab9df38edb3eed4d5822320d5f1 Mon Sep 17 00:00:00 2001
+From 498c555f56a02ec1059bc150cde84411ba0ac010 Mon Sep 17 00:00:00 2001
 From: Dave Airlie <airlied@redhat.com>
 Date: Sun, 29 May 2011 17:48:32 +1000
 Subject: [PATCH] drm/radeon: fix oops in ttm reserve when pageflipping (v2)
