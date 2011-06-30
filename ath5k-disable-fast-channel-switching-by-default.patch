@@ -40,10 +40,10 @@ index 09ae4ef..0fb6333 100644
  
  	ATH5K_DBG(sc, ATH5K_DEBUG_RESET, "resetting\n");
  
-@@ -2685,7 +2691,8 @@ ath5k_reset(struct ath5k_softc *sc, struct ieee80211_channel *chan,
+@@ -2669,7 +2669,8 @@ ath5k_reset(struct ath5k_softc *sc, stru
+ 	ath5k_drain_tx_buffs(sc);
+ 	if (chan)
  		sc->curchan = chan;
- 		sc->curband = &sc->sbands[chan->band];
- 	}
 -	ret = ath5k_hw_reset(ah, sc->opmode, sc->curchan, chan != NULL,
 +	fast = ((chan != NULL) && modparam_fastchanswitch) ? 1 : 0;
 +	ret = ath5k_hw_reset(ah, sc->opmode, sc->curchan, fast,

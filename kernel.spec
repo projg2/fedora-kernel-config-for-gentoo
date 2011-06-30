@@ -51,19 +51,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 34
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 2.6.22-rc7-git1 starts with a 2.6.21 base,
 # which yields a base_sublevel of 21.
-%define base_sublevel 38
+%define base_sublevel 39
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -596,8 +596,6 @@ Patch00: patch-2.6.%{base_sublevel}-git%{gitrev}.bz2
 ### BRANCH PATCH ###
 %endif
 
-Patch02: git-linus.diff
-
 # we also need compile fixes for -vanilla
 Patch04: linux-2.6-compile-fixes.patch
 
@@ -609,10 +607,7 @@ Patch05: linux-2.6-makefile-after_link.patch
 
 # revert upstream patches we get via other methods
 Patch09: linux-2.6-upstream-reverts.patch
-# Git trees.
 
-# Standalone patches
-Patch20: linux-2.6-hotfixes.patch
 
 Patch29: linux-2.6-utrace-revert-make-ptrace-functions-static.patch
 Patch30: linux-2.6-tracehook.patch
@@ -627,17 +622,14 @@ Patch150: linux-2.6.29-sparc-IOC_TYPECHECK.patch
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
 
-Patch200: linux-2.6-debug-sizeof-structs.patch
 Patch202: linux-2.6-debug-taint-vm.patch
 Patch203: linux-2.6-debug-vm-would-have-oomkilled.patch
-Patch204: linux-2.6-debug-always-inline-kzalloc.patch
 
 Patch380: linux-2.6-defaults-pci_no_msi.patch
 Patch381: linux-2.6-defaults-pci_use_crs.patch
 
 # ASPM: enable powersave by default
 Patch383: linux-2.6-defaults-aspm.patch
-Patch384: pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.patch
 Patch385: pci-enable-aspm-state-clearing-regardless-of-policy.patch
 
 Patch389: ima-allow-it-to-be-completely-disabled-and-default-off.patch
@@ -650,8 +642,6 @@ Patch394: linux-2.6-acpi-debug-infinite-loop.patch
 Patch450: linux-2.6-input-kill-stupid-messages.patch
 Patch452: linux-2.6.30-no-pcspkr-modalias.patch
 Patch453: revert-hid-magicmouse-ignore-ivalid-report-id-while-switching.patch
-Patch454: input-wacom-add-support-for-lenovo-tablet-id-0xe6.patch
-Patch455: hid-ntrig-deref-unclaimed-input.patch
 Patch456: hid-multitouch-add-support-for-elo-touchsystems.patch
 
 Patch460: linux-2.6-serial-460800.patch
@@ -664,13 +654,9 @@ Patch570: linux-2.6-selinux-mprotect-checks.patch
 Patch580: linux-2.6-sparc-selinux-mprotect-checks.patch
 
 # scsi / block
-Patch600: block-queue-refcount.patch
-Patch601: block-export-blk_-get-put-_queue.patch
-Patch602: block-blkdev_get-should-access-bd_disk-only-after.patch
 Patch603: cfq-iosched-fix-locking-around-ioc-ioc-data-assignment.patch
 
 # libata
-Patch620: ahci-add-another-pci-id-for-marvell.patch
 Patch621: libata-sas-only-set-frozen-flag-if-new-eh-is-supported.patch
 
 Patch650: hda_intel-prealloc-4mb-dmabuffer.patch
@@ -689,35 +675,18 @@ Patch1555: fix_xen_guest_on_old_EC2.patch
 # nouveau + drm fixes
 Patch1809: drm-nouveau-fixes.patch
 Patch1810: drm-nouveau-updates.patch
-Patch1811: drm-ttm-move-notify.patch
 Patch1819: drm-intel-big-hammer.patch
 # intel drm is all merged upstream
-# fix for 945G corruption will hit stable eventually
-Patch1821: drm-i915-fix-pipelined-fencing.patch
 Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
 Patch1826: drm-intel-edp-fixes.patch
-Patch1828: drm-intel-eeebox-eb1007-quirk.patch
-Patch1829: drm-intel-restore-mode.patch
 Patch1830: drm-i915-snb-irq-stalls-fix.patch
 Patch1831: drm-i915-apply-hwstam-workaround-for-bsd-ring-on-sandybridge.patch
 # radeon - new hw + fixes for fusion and t500 regression
 Patch1839: drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch
-Patch1840: drm-radeon-update.patch
-Patch1841: drm-radeon-update2.patch
-Patch1842: drm-radeon-pageflip-oops-fix.patch
-Patch1843: drm-radeon-update3.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
-Patch1901: intel-iommu-flush-unmaps-at-domain_exit.patch
-Patch1902: intel-iommu-only-unlink-device-domains-from-iommu.patch
-Patch1903: intel-iommu-check-for-identity-mapping-candidate-using.patch
-Patch1904: intel-iommu-speed-up-processing-of-the-identity_mapping.patch
-Patch1905: intel-iommu-dont-cache-iova-above-32bit.patch
-Patch1906: intel-iommu-use-coherent-dma-mask-when-requested.patch
-Patch1907: intel-iommu-remove-host-bridge-devices-from-identity.patch
-Patch1908: intel-iommu-add-domain-check-in-domain_remove_one_dev_info.patch
 
 # linux1394 git patches
 Patch2200: linux-2.6-firewire-git-update.patch
@@ -728,7 +697,6 @@ Patch2201: linux-2.6-firewire-git-pending.patch
 Patch2802: linux-2.6-silence-acpi-blacklist.patch
 
 # media patches
-Patch2898: cx88-Fix-HVR4000-IR-keymap.patch
 Patch2899: linux-2.6-v4l-dvb-fixes.patch
 Patch2900: linux-2.6-v4l-dvb-update.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
@@ -745,38 +713,21 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 
 Patch12018: neuter_intel_microcode_load.patch
 
-Patch12101: apple_backlight.patch
-Patch12102: efifb_update.patch
-Patch12200: acpi_reboot.patch
-
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
 Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
-Patch12305: printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
 Patch12306: scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
-
-#netconsole fixes
-Patch12400: linux-2.6-netconsole-deadlock.patch
-
-# CVE-2011-1581
-Patch12402: bonding-incorrect-tx-queue-offset.patch
-
-# Restore reliable stack backtraces, and hopefully fix RHBZ #700718
-Patch12403: x86-dumpstack-correct-stack-dump-info-when-frame-pointer-is-available.patch
 
 # Fix breakage of PCI network adapter names on older Dell systems
 Patch12404: x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
-
-Patch12407: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
 Patch12416: bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 
 
 Patch12418: ath5k-disable-fast-channel-switching-by-default.patch
-Patch12419: iwlagn-use-cts-to-self-protection-on-5000-adapters-series.patch
 
 Patch12420: crypto-aesni_intel-merge-with-fpu_ko.patch
 
@@ -1203,8 +1154,6 @@ do
 done
 %endif
 
-ApplyOptionalPatch git-linus.diff
-
 ApplyPatch linux-2.6-makefile-after_link.patch
 
 #
@@ -1217,9 +1166,7 @@ ApplyOptionalPatch linux-2.6-compile-fixes.patch
 # revert patches from upstream that conflict or that we get via other means
 ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 
-ApplyPatch linux-2.6-hotfixes.patch
-
-# Roland's utrace ptrace replacement.
+# utrace
 ApplyPatch linux-2.6-utrace-revert-make-ptrace-functions-static.patch
 ApplyPatch linux-2.6-tracehook.patch
 ApplyPatch linux-2.6-utrace.patch
@@ -1231,22 +1178,6 @@ ApplyPatch ksm-fix-null-pointer-dereference-in-scan-get-next-rmap-item.patch
 
 # Architecture patches
 # x86(-64)
-# Restore reliable stack backtraces, and hopefully
-# fix RHBZ #700718
-ApplyPatch x86-dumpstack-correct-stack-dump-info-when-frame-pointer-is-available.patch
-
-#
-# Intel IOMMU
-#
-# from 2.6.39.2
-ApplyPatch intel-iommu-flush-unmaps-at-domain_exit.patch
-ApplyPatch intel-iommu-only-unlink-device-domains-from-iommu.patch
-ApplyPatch intel-iommu-check-for-identity-mapping-candidate-using.patch
-ApplyPatch intel-iommu-speed-up-processing-of-the-identity_mapping.patch
-ApplyPatch intel-iommu-dont-cache-iova-above-32bit.patch
-ApplyPatch intel-iommu-use-coherent-dma-mask-when-requested.patch
-ApplyPatch intel-iommu-remove-host-bridge-devices-from-identity.patch
-ApplyPatch intel-iommu-add-domain-check-in-domain_remove_one_dev_info.patch
 
 #
 # PowerPC
@@ -1289,10 +1220,8 @@ ApplyPatch acpi-ec-add-delay-before-write.patch
 ApplyPatch linux-2.6-acpi-debug-infinite-loop.patch
 
 # Various low-impact patches to aid debugging.
-ApplyPatch linux-2.6-debug-sizeof-structs.patch
 ApplyPatch linux-2.6-debug-taint-vm.patch
 ApplyPatch linux-2.6-debug-vm-would-have-oomkilled.patch
-ApplyPatch linux-2.6-debug-always-inline-kzalloc.patch
 
 #
 # PCI
@@ -1302,8 +1231,6 @@ ApplyPatch linux-2.6-defaults-pci_no_msi.patch
 ApplyPatch linux-2.6-defaults-pci_use_crs.patch
 # enable ASPM by default on hardware we expect to work
 ApplyPatch linux-2.6-defaults-aspm.patch
-# fixes for ASPM powersave mode
-ApplyPatch pci-pcie-links-may-not-get-configured-for-aspm-under-powersave-mode.patch
 ApplyPatch pci-enable-aspm-state-clearing-regardless-of-policy.patch
 # Fix breakage of PCI network adapter names on older Dell systems
 ApplyPatch x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
@@ -1313,14 +1240,10 @@ ApplyPatch x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
 #
 # SCSI / block Bits.
 #
-ApplyPatch block-queue-refcount.patch
-ApplyPatch block-export-blk_-get-put-_queue.patch
-ApplyPatch block-blkdev_get-should-access-bd_disk-only-after.patch
 # rhbz#577968
 ApplyPatch cfq-iosched-fix-locking-around-ioc-ioc-data-assignment.patch
 
 # libata
-ApplyPatch ahci-add-another-pci-id-for-marvell.patch
 # Fix drive detection failure on mvsas (rhbz#705019)
 ApplyPatch libata-sas-only-set-frozen-flag-if-new-eh-is-supported.patch
 
@@ -1336,8 +1259,6 @@ ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
 ApplyPatch linux-2.6-input-kill-stupid-messages.patch
 ApplyPatch linux-2.6.30-no-pcspkr-modalias.patch
 ApplyPatch revert-hid-magicmouse-ignore-ivalid-report-id-while-switching.patch
-ApplyPatch input-wacom-add-support-for-lenovo-tablet-id-0xe6.patch
-ApplyPatch hid-ntrig-deref-unclaimed-input.patch
 ApplyPatch hid-multitouch-add-support-for-elo-touchsystems.patch
 
 # stop floppy.ko from autoloading during udev...
@@ -1375,7 +1296,6 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 # DRM core
 
 # Nouveau DRM
-ApplyPatch drm-ttm-move-notify.patch
 ApplyOptionalPatch drm-nouveau-fixes.patch
 ApplyOptionalPatch drm-nouveau-updates.patch
 
@@ -1385,18 +1305,11 @@ ApplyPatch drm-intel-big-hammer.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 ApplyPatch drm-intel-edp-fixes.patch
-ApplyPatch drm-i915-fix-pipelined-fencing.patch
-ApplyPatch drm-intel-eeebox-eb1007-quirk.patch
-ApplyPatch drm-intel-restore-mode.patch
 ApplyPatch drm-i915-snb-irq-stalls-fix.patch
 ApplyPatch drm-i915-apply-hwstam-workaround-for-bsd-ring-on-sandybridge.patch
 
 # radeon DRM (add cayman support)
 ApplyPatch drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch -R
-ApplyPatch drm-radeon-update.patch
-ApplyPatch drm-radeon-update2.patch
-ApplyPatch drm-radeon-pageflip-oops-fix.patch
-ApplyPatch drm-radeon-update3.patch
 
 # linux1394 git patches
 #ApplyPatch linux-2.6-firewire-git-update.patch
@@ -1407,7 +1320,6 @@ ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 
 # V4L/DVB updates/fixes/experimental drivers
 #  apply if non-empty
-ApplyPatch cx88-Fix-HVR4000-IR-keymap.patch -R
 ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
@@ -1420,11 +1332,6 @@ ApplyPatch add-appleir-usb-driver.patch
 
 ApplyPatch neuter_intel_microcode_load.patch
 
-# various fixes for Apple and EFI
-ApplyPatch apple_backlight.patch
-ApplyPatch efifb_update.patch
-ApplyPatch acpi_reboot.patch
-
 # Runtime PM
 #ApplyPatch linux-2.6-usb-pci-autosuspend.patch
 ### Broken by implicit notify support & ACPICA rebase
@@ -1433,26 +1340,12 @@ ApplyPatch acpi_reboot.patch
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
-# rhbz#691888
-ApplyPatch printk-do-not-mangle-valid-userspace-syslog-prefixes.patch
-
 ApplyPatch scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
-
-#rhbz 668231
-ApplyPatch linux-2.6-netconsole-deadlock.patch
-
-# CVE-2011-1581
-ApplyPatch bonding-incorrect-tx-queue-offset.patch
-
-ApplyPatch scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
 ApplyPatch bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 
 # rhbz#709122
 ApplyPatch ath5k-disable-fast-channel-switching-by-default.patch
-
-# rhbz#648732
-ApplyPatch iwlagn-use-cts-to-self-protection-on-5000-adapters-series.patch
 
 # rhbz#589390
 ApplyPatch crypto-aesni_intel-merge-with-fpu_ko.patch
@@ -2065,6 +1958,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jun 29 2011 Dave Jones <davej@redhat.com>
+- 2.6.39
+
 * Mon Jun 27 2011 Dave Jones <davej@redhat.com>
 - Disable CONFIG_CRYPTO_MANAGER_DISABLE_TESTS, as this also disables FIPS (rhbz 716942)
 
