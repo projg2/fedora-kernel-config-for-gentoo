@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -382,6 +382,7 @@ Summary: The Linux kernel
 %ifarch %{arm}
 %define all_arch_configs kernel-%{version}-arm*.config
 %define image_install_path boot
+%define asmarch arm
 %define hdrarch arm
 %define make_target vmlinux
 %define kernel_image vmlinux
@@ -557,7 +558,8 @@ Source70: config-s390x
 
 Source90: config-sparc64-generic
 
-Source100: config-arm
+Source100: config-arm-generic
+Source110: config-arm-omap-generic
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -1902,6 +1904,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 09 2011 Josh Boyer <jwboyer@redhat.com>
+- Add Makefile.config and ARM config changes from David Marlin
+
 * Tue Aug 09 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch davej applied to f15 for rhbz 728872
 
