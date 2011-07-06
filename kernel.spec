@@ -664,8 +664,8 @@ Patch570: linux-2.6-selinux-mprotect-checks.patch
 Patch580: linux-2.6-sparc-selinux-mprotect-checks.patch
 
 # scsi / block
-Patch600: block-queue-refcount.patch
-Patch601: block-export-blk_-get-put-_queue.patch
+Patch600: revert-fix-oops-in-scsi_run_queue.patch
+Patch601: revert-put-stricter-guards-on-queue-dead-checks.patch
 Patch602: block-blkdev_get-should-access-bd_disk-only-after.patch
 Patch603: cfq-iosched-fix-locking-around-ioc-ioc-data-assignment.patch
 
@@ -1313,8 +1313,10 @@ ApplyPatch x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
 #
 # SCSI / block Bits.
 #
-ApplyPatch block-queue-refcount.patch
-ApplyPatch block-export-blk_-get-put-_queue.patch
+# Revert SCSI patches from 2.6.38.6 that cause more problems thatn they solve
+ApplyPatch revert-fix-oops-in-scsi_run_queue.patch
+ApplyPatch revert-put-stricter-guards-on-queue-dead-checks.patch
+# Fix potential NULL deref in 2.6.38.8
 ApplyPatch block-blkdev_get-should-access-bd_disk-only-after.patch
 # rhbz#577968
 ApplyPatch cfq-iosched-fix-locking-around-ioc-ioc-data-assignment.patch
@@ -2065,6 +2067,10 @@ fi
 # and build.
 
 %changelog
+* Wed Jul 06 2011 Chuck Ebbert <cebbert@redhat.com>
+- Revert SCSI/block patches from 2.6.38.6 that caused more problems
+  than they fixed; drop band-aid patch attempting to fix the fix.
+
 * Mon Jun 27 2011 Dave Jones <davej@redhat.com>
 - Disable CONFIG_CRYPTO_MANAGER_DISABLE_TESTS, as this also disables FIPS (rhbz 716942)
 
