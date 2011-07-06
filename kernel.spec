@@ -773,7 +773,7 @@ Patch12404: x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patc
 Patch12407: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
 Patch12416: bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
-
+Patch12417: bluetooth-prevent-buffer-overflow-in-l2cap-config-request.patch
 
 Patch12418: ath5k-disable-fast-channel-switching-by-default.patch
 Patch12419: iwlagn-use-cts-to-self-protection-on-5000-adapters-series.patch
@@ -1332,6 +1332,9 @@ ApplyPatch libata-sas-only-set-frozen-flag-if-new-eh-is-supported.patch
 ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
 
 # Networking
+ApplyPatch bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
+# CVE-2011-2497
+ApplyPatch bluetooth-prevent-buffer-overflow-in-l2cap-config-request.patch
 
 # Misc fixes
 # The input layer spews crap no-one cares about.
@@ -1448,7 +1451,6 @@ ApplyPatch bonding-incorrect-tx-queue-offset.patch
 
 ApplyPatch scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
 
-ApplyPatch bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 
 # rhbz#709122
 ApplyPatch ath5k-disable-fast-channel-switching-by-default.patch
@@ -2070,6 +2072,7 @@ fi
 * Wed Jul 06 2011 Chuck Ebbert <cebbert@redhat.com>
 - Revert SCSI/block patches from 2.6.38.6 that caused more problems
   than they fixed; drop band-aid patch attempting to fix the fix.
+- CVE-2011-2497: kernel: bluetooth: buffer overflow in l2cap config request
 
 * Mon Jun 27 2011 Dave Jones <davej@redhat.com>
 - Disable CONFIG_CRYPTO_MANAGER_DISABLE_TESTS, as this also disables FIPS (rhbz 716942)
