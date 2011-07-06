@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 34
+%global baserelease 35
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2075,7 +2075,7 @@ fi
 # and build.
 
 %changelog
-* Wed Jul 06 2011 Chuck Ebbert <cebbert@redhat.com>
+* Wed Jul 06 2011 Chuck Ebbert <cebbert@redhat.com>  2.6.38.8-35
 - Revert SCSI/block patches from 2.6.38.6 that caused more problems
   than they fixed; drop band-aid patch attempting to fix the fix.
 - CVE-2011-2497: kernel: bluetooth: buffer overflow in l2cap config request
