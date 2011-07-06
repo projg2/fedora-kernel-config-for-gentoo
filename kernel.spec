@@ -780,6 +780,9 @@ Patch12419: iwlagn-use-cts-to-self-protection-on-5000-adapters-series.patch
 
 Patch12420: crypto-aesni_intel-merge-with-fpu_ko.patch
 
+Patch12430: nl80211-fix-check-for-valid-ssid-size-in-scan-operations.patch
+Patch12431: nl80211-fix-overflow-in-ssid_len.patch.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1335,6 +1338,9 @@ ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
 ApplyPatch bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 # CVE-2011-2497
 ApplyPatch bluetooth-prevent-buffer-overflow-in-l2cap-config-request.patch
+# CVE-2011-2517
+ApplyPatch nl80211-fix-check-for-valid-ssid-size-in-scan-operations.patch
+ApplyPatch nl80211-fix-overflow-in-ssid_len.patch.patch
 
 # Misc fixes
 # The input layer spews crap no-one cares about.
@@ -2073,6 +2079,7 @@ fi
 - Revert SCSI/block patches from 2.6.38.6 that caused more problems
   than they fixed; drop band-aid patch attempting to fix the fix.
 - CVE-2011-2497: kernel: bluetooth: buffer overflow in l2cap config request
+- CVE-2011-2517: kernel: nl80211: missing check for valid SSID size in scan operations
 
 * Mon Jun 27 2011 Dave Jones <davej@redhat.com>
 - Disable CONFIG_CRYPTO_MANAGER_DISABLE_TESTS, as this also disables FIPS (rhbz 716942)

@@ -1,0 +1,42 @@
+From: Luciano Coelho <coelho@ti.com>
+Date: Wed, 18 May 2011 21:43:38 +0000 (+0300)
+Subject: nl80211: fix check for valid SSID size in scan operations
+X-Git-Tag: v3.0-rc2~7^2~16^2~12
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Ftorvalds%2Flinux-2.6.git;a=commitdiff_plain;h=208c72f4fe44fe09577e7975ba0e7fa0278f3d03
+
+nl80211: fix check for valid SSID size in scan operations
+[ 2.6.38 backport ]
+
+In both trigger_scan and sched_scan operations, we were checking for
+the SSID length before assigning the value correctly.  Since the
+memory was just kzalloc'ed, the check was always failing and SSID with
+over 32 characters were allowed to go through.
+
+This was causing a buffer overflow when copying the actual SSID to the
+proper place.
+
+This bug has been there since 2.6.29-rc4.
+
+Cc: stable@kernel.org
+Signed-off-by: Luciano Coelho <coelho@ti.com>
+Signed-off-by: John W. Linville <linville@tuxdriver.com>
+---
+
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index ec83f41..88a565f 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -3406,12 +3406,12 @@ static int nl80211_trigger_scan(struct sk_buff *skb, struct genl_info *info)
+ 	i = 0;
+ 	if (info->attrs[NL80211_ATTR_SCAN_SSIDS]) {
+ 		nla_for_each_nested(attr, info->attrs[NL80211_ATTR_SCAN_SSIDS], tmp) {
++			request->ssids[i].ssid_len = nla_len(attr);
+ 			if (request->ssids[i].ssid_len > IEEE80211_MAX_SSID_LEN) {
+ 				err = -EINVAL;
+ 				goto out_free;
+ 			}
+ 			memcpy(request->ssids[i].ssid, nla_data(attr), nla_len(attr));
+-			request->ssids[i].ssid_len = nla_len(attr);
+ 			i++;
+ 		}
+ 	}
