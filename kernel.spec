@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 35
+%global baserelease 36
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2079,7 +2079,7 @@ fi
 # and build.
 
 %changelog
-* Tue Jul 12 2011 John W. Linville <linville@tuxdriver.com>
+* Tue Jul 12 2011 John W. Linville <linville@redhat.com> - 2.6.38.8-36
 - zd1211rw: fix invalid signal values from device (rhbz 720093)
 
 * Wed Jul 06 2011 Chuck Ebbert <cebbert@redhat.com>  2.6.38.8-35
