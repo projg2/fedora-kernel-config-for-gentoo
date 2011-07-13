@@ -63,7 +63,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -614,9 +614,6 @@ Patch30: linux-2.6-tracehook.patch
 Patch31: linux-2.6-utrace.patch
 Patch32: linux-2.6-utrace-ptrace.patch
 
-# CVE-2011-2183
-Patch80: ksm-fix-null-pointer-dereference-in-scan-get-next-rmap-item.patch
-
 Patch150: linux-2.6.29-sparc-IOC_TYPECHECK.patch
 
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
@@ -654,7 +651,6 @@ Patch570: linux-2.6-selinux-mprotect-checks.patch
 Patch580: linux-2.6-sparc-selinux-mprotect-checks.patch
 
 # scsi / block
-Patch603: cfq-iosched-fix-locking-around-ioc-ioc-data-assignment.patch
 
 # libata
 Patch621: libata-sas-only-set-frozen-flag-if-new-eh-is-supported.patch
@@ -681,8 +677,6 @@ Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
 Patch1826: drm-intel-edp-fixes.patch
-Patch1830: drm-i915-snb-irq-stalls-fix.patch
-Patch1831: drm-i915-apply-hwstam-workaround-for-bsd-ring-on-sandybridge.patch
 # radeon - new hw + fixes for fusion and t500 regression
 Patch1839: drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch
 
@@ -726,8 +720,6 @@ Patch12404: x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patc
 
 Patch12416: bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
 
-
-Patch12418: ath5k-disable-fast-channel-switching-by-default.patch
 
 Patch12420: crypto-aesni_intel-merge-with-fpu_ko.patch
 
@@ -1173,8 +1165,6 @@ ApplyPatch linux-2.6-utrace.patch
 ApplyPatch linux-2.6-utrace-ptrace.patch
 
 # mm patches
-# CVE-2011-2183
-ApplyPatch ksm-fix-null-pointer-dereference-in-scan-get-next-rmap-item.patch
 
 # Architecture patches
 # x86(-64)
@@ -1240,8 +1230,6 @@ ApplyPatch x86-pci-preserve-existing-pci-bfsort-whitelist-for-dell-systems.patch
 #
 # SCSI / block Bits.
 #
-# rhbz#577968
-ApplyPatch cfq-iosched-fix-locking-around-ioc-ioc-data-assignment.patch
 
 # libata
 # Fix drive detection failure on mvsas (rhbz#705019)
@@ -1305,8 +1293,6 @@ ApplyPatch drm-intel-big-hammer.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 ApplyPatch drm-intel-edp-fixes.patch
-ApplyPatch drm-i915-snb-irq-stalls-fix.patch
-ApplyPatch drm-i915-apply-hwstam-workaround-for-bsd-ring-on-sandybridge.patch
 
 # radeon DRM (add cayman support)
 ApplyPatch drm-radeon-fix-regression-on-atom-cards-with-hardcoded-EDID-record.patch -R
@@ -1343,9 +1329,6 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 ApplyPatch scsi-sd-downgrade-caching-printk-from-error-to-notice.patch
 
 ApplyPatch bluetooth-device-ids-for-ath3k-on-pegatron-lucid-tablets.patch
-
-# rhbz#709122
-ApplyPatch ath5k-disable-fast-channel-switching-by-default.patch
 
 # rhbz#589390
 ApplyPatch crypto-aesni_intel-merge-with-fpu_ko.patch
@@ -1958,8 +1941,17 @@ fi
 # and build.
 
 %changelog
+* Tue Jul 12 2011 Dave Jones <davej@redhat.com>
+- 2.6.39.3
+  dropped: (merged upstream)
+   ath5k-disable-fast-channel-switching-by-default.patch
+   cfq-iosched-fix-locking-around-ioc-ioc-data-assignment.patch
+   drm-i915-apply-hwstam-workaround-for-bsd-ring-on-sandybridge.patch
+   drm-i915-snb-irq-stalls-fix.patch
+   ksm-fix-null-pointer-dereference-in-scan-get-next-rmap-item.patch
+
 * Wed Jun 29 2011 Dave Jones <davej@redhat.com>
-- 2.6.39
+- 2.6.39.2
 
 * Mon Jun 27 2011 Dave Jones <davej@redhat.com>
 - Disable CONFIG_CRYPTO_MANAGER_DISABLE_TESTS, as this also disables FIPS (rhbz 716942)
