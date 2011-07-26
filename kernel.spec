@@ -557,15 +557,17 @@ Source1000: config-local
 
 # Here should be only the patches up to the upstream canonical Linus tree.
 
+Patch00: patch-3.0.bz2
+
 # For a stable release kernel
 %if 0%{?stable_update}
 %if 0%{?stable_base}
 %define    stable_patch_00  patch-3.%{base_sublevel}.%{stable_base}.bz2
-Patch00: %{stable_patch_00}
+Patch01: %{stable_patch_00}
 %endif
 %if 0%{?stable_rc}
 %define    stable_patch_01  patch-3.%{base_sublevel}.%{stable_update}-rc%{stable_rc}.bz2
-Patch01: %{stable_patch_01}
+Patch02: %{stable_patch_01}
 %endif
 
 # non-released_kernel case
@@ -589,7 +591,7 @@ Patch00: patch-3.%{base_sublevel}-git%{gitrev}.bz2
 ### BRANCH PATCH ###
 %endif
 
-Patch02: git-linus.diff
+Patch03: git-linus.diff
 
 # we also need compile fixes for -vanilla
 Patch04: linux-2.6-compile-fixes.patch
