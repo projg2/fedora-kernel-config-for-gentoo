@@ -6,7 +6,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1. For rawhide
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
-%global released_kernel 0
+%global released_kernel 1
 
 # Save original buildid for later if it's defined
 %if 0%{?buildid:1}
@@ -51,13 +51,14 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 1
+%global baserelease 0
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 2.6.22-rc7-git1 starts with a 2.6.21 base,
 # which yields a base_sublevel of 21.
 %define base_sublevel 39
+%define fake_sublevel 40
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
@@ -75,19 +76,8 @@ Summary: The Linux kernel
 %define stable_base %(echo $((%{stable_update} - 1)))
 %endif
 %endif
-%define rpmversion 2.6.%{base_sublevel}%{?stablerev}
+%define rpmversion 2.6.%{fake_sublevel}%{?stablerev}
 
-## The not-released-kernel case ##
-%else
-# The next upstream release sublevel (base_sublevel+1)
-# % define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
-%define upstream_sublevel 40
-# The rc snapshot level
-%define rcrev 5
-# The git snapshot level
-%define gitrev 0
-# Set rpm version accordingly
-%define rpmversion 2.6.%{upstream_sublevel}
 %endif
 # Nb: The above rcrev and gitrev values automagically define Patch00 and Patch01 below.
 
@@ -690,7 +680,6 @@ Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
 Patch12205: runtime_pm_fixups.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
-Patch12304: iwlagn-fix-dma-direction.patch
 
 %endif
 
@@ -1115,6 +1104,9 @@ do
 done
 %endif
 
+# Update vanilla to the latest upstream. (2.6.39 -> 3.0)
+ApplyPatch patch-3.0.bz2
+
 ApplyOptionalPatch git-linus.diff
 
 ApplyPatch linux-2.6-makefile-after_link.patch
@@ -1265,7 +1257,6 @@ ApplyPatch neuter_intel_microcode_load.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
-ApplyPatch iwlagn-fix-dma-direction.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1879,6 +1870,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jul 26 2011 Dave Jones <davej@redhat.com> 2.6.40-0
+- Rebase to final 3.0 (munge to 2.6.40-0)
+
 * Thu Jun 30 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.40-0.rc5.git0.1
 - More than meets the eye, it's Linux 3.0-rc5 in disguise.
 
