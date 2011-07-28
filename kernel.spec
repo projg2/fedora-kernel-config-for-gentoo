@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -686,6 +686,8 @@ Patch12019: linux-2.6-rt2x00-Add-device-ID-for-RT539F-device.patch
 
 Patch12020: linux-2.6-zd1211rw-fix-invalid-signal-values-from-device.patch
 
+Patch12021: udlfb-bind-framebuffer-to-interface.patch
+
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
 Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
@@ -1263,6 +1265,8 @@ ApplyPatch add-appleir-usb-driver.patch
 ApplyPatch neuter_intel_microcode_load.patch
 
 ApplyPatch linux-2.6-rt2x00-Add-device-ID-for-RT539F-device.patch
+
+ApplyPatch udlfb-bind-framebuffer-to-interface.patch
 
 # Runtime PM
 #ApplyPatch linux-2.6-usb-pci-autosuspend.patch
@@ -1885,6 +1889,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jul 28 2011 Josh Boyer <jwboyer@redhat.com>
+- Backport patch to correct udlfb removal events (rhbz 726163)
+
 * Wed Jul 27 2011 Dave Jones <davej@redhat.com>
 - Turn off debug builds.
 
