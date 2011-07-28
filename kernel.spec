@@ -683,6 +683,8 @@ Patch12205: runtime_pm_fixups.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
+Patch13000: fix-scsi_dispatch_cmd.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1259,6 +1261,8 @@ ApplyPatch neuter_intel_microcode_load.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
+
+ApplyPatch fix-scsi_dispatch_cmd.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1872,6 +1876,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jul 28 2011 Dave Jones <davej@redhat.com>
+- fix crash in scsi_dispatch_cmd()
+
 * Thu Jul 28 2011 Dave Jones <davej@redhat.com> 2.6.40-1
 - Turn off debugging options. (make release)
 
