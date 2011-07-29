@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -683,6 +683,8 @@ Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch13000: fix-scsi_dispatch_cmd.patch
 
+Patch20000: utrace.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1254,6 +1256,8 @@ ApplyPatch neuter_intel_microcode_load.patch
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 ApplyPatch fix-scsi_dispatch_cmd.patch
+
+ApplyPatch utrace.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1867,6 +1871,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jul 29 2011 Dave Jones <davej@redhat.com> 2.6.40-4
+- Re-add utrace, which got accidentally dropped during the rebase.
+
 * Thu Jul 28 2011 Dave Jones <davej@redhat.com> 2.6.40-3
 - Fix module-init-tools conflict:
 
