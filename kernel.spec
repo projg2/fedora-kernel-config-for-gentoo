@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -423,7 +423,7 @@ Summary: The Linux kernel
 # First the general kernel 2.6 required versions as per
 # Documentation/Changes
 #
-%define kernel_dot_org_conflicts  ppp < 2.4.3-3, isdn4k-utils < 3.2-32, nfs-utils < 1.0.7-12, e2fsprogs < 1.37-4, util-linux < 2.12, jfsutils < 1.1.7-2, reiserfs-utils < 3.6.19-2, xfsprogs < 2.6.13-4, procps < 3.2.5-6.3, oprofile < 0.9.1-2, module-init-tools < 3.13-1
+%define kernel_dot_org_conflicts  ppp < 2.4.3-3, isdn4k-utils < 3.2-32, nfs-utils < 1.0.7-12, e2fsprogs < 1.37-4, util-linux < 2.12, jfsutils < 1.1.7-2, reiserfs-utils < 3.6.19-2, xfsprogs < 2.6.13-4, procps < 3.2.5-6.3, oprofile < 0.9.1-2
 
 #
 # Then a series of requirements that are distribution specific, either
@@ -441,7 +441,7 @@ Summary: The Linux kernel
 # Packages that need to be installed before the kernel is, because the %%post
 # scripts use them.
 #
-%define kernel_prereq  fileutils, module-init-tools, initscripts >= 8.11.1-1, grubby >= 7.0.10-1
+%define kernel_prereq  fileutils, module-init-tools >= 3.16-2, initscripts >= 8.11.1-1, grubby >= 7.0.10-1
 %define initrd_prereq  dracut >= 001-7
 
 #
@@ -1867,7 +1867,10 @@ fi
 # and build.
 
 %changelog
-* Thu Jul 28 2011 Dave Jones <davej@redhat.com>
+* Thu Jul 28 2011 Dave Jones <davej@redhat.com> 2.6.40-3
+- Fix module-init-tools conflict:
+
+* Thu Jul 28 2011 Dave Jones <davej@redhat.com> 2.6.40-2
 - fix crash in scsi_dispatch_cmd()
 
 * Thu Jul 28 2011 Dave Jones <davej@redhat.com> 2.6.40-1
