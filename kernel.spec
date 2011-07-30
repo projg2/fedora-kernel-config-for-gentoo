@@ -695,6 +695,8 @@ Patch12205: runtime_pm_fixups.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
+Patch13000: fix-scsi_dispatch_cmd.patch
+
 Patch20000: utrace.patch
 
 %endif
@@ -1276,6 +1278,8 @@ ApplyPatch udlfb-bind-framebuffer-to-interface.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
+
+ApplyPatch fix-scsi_dispatch_cmd.patch
 
 # utrace.
 ApplyPatch utrace.patch
@@ -1889,6 +1893,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jul 29 2011 Dave Jones <davej@redhat.com>
+- Fix scsi_dispatch_cmd oops (USB eject problems, etc).
+
 * Thu Jul 28 2011 Dave Jones <davej@redhat.com>
 - module-init-tools needs to be a prereq, not a conflict.
 
