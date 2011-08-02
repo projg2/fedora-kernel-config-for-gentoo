@@ -131,7 +131,7 @@ Summary: The Linux kernel
 %define doc_build_fail true
 %endif
 
-%define rawhide_skip_docs 0
+%define rawhide_skip_docs 1
 %if 0%{?rawhide_skip_docs}
 %define with_doc 0
 %define doc_build_fail true
@@ -154,7 +154,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
@@ -696,6 +696,7 @@ Patch12205: runtime_pm_fixups.patch
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch13000: fix-scsi_dispatch_cmd.patch
+Patch13001: epoll-fix-spurious-lockdep-warnings.patch
 
 Patch20000: utrace.patch
 
@@ -1280,6 +1281,7 @@ ApplyPatch udlfb-bind-framebuffer-to-interface.patch
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 ApplyPatch fix-scsi_dispatch_cmd.patch
+ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
 
 # utrace.
 ApplyPatch utrace.patch
@@ -1893,6 +1895,10 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 02 2011 Josh Boyer <jwboyer@redhat.com>
+- Fix epoll recursive lockdep warnings (rhbz 722472)
+- Turn debug builds back on
+
 * Tue Aug 02 2011 Josh Boyer <jwboyer@redhat.com>
 - Add change from Yanko Kaneti to get the rt2x00 drivers in modules.networking
   (rhbz 708314)
