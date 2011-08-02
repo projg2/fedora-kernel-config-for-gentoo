@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -682,6 +682,7 @@ Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch13000: fix-scsi_dispatch_cmd.patch
+Patch13001: hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
 Patch20000: utrace.patch
 
@@ -1256,6 +1257,8 @@ ApplyPatch neuter_intel_microcode_load.patch
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 ApplyPatch fix-scsi_dispatch_cmd.patch
+
+ApplyPatch hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
 ApplyPatch utrace.patch
 
@@ -1871,6 +1874,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 02 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix HFSPlus filesystem mounting (rhbz 720771)
+
 * Tue Aug 02 2011 Dave Jones <davej@redhat.com>
 - Change USB_SERIAL_OPTION back to modular. (rhbz 727680)
 
