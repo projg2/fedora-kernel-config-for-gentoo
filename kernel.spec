@@ -682,7 +682,8 @@ Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch13000: fix-scsi_dispatch_cmd.patch
-Patch13001: hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
+Patch13001: epoll-fix-spurious-lockdep-warnings.patch
+Patch13002: hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
 Patch20000: utrace.patch
 
@@ -1257,6 +1258,7 @@ ApplyPatch neuter_intel_microcode_load.patch
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 ApplyPatch fix-scsi_dispatch_cmd.patch
+ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
 
 ApplyPatch hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
@@ -1874,6 +1876,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 02 2011 Josh Boyer <jwboyer@redhat.com>
+- Fix epoll recursive lockdep warnings (rhbz 722472)
+
 * Tue Aug 02 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix HFSPlus filesystem mounting (rhbz 720771)
 
