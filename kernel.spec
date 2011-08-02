@@ -1871,6 +1871,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 02 2011 Dave Jones <davej@redhat.com>
+- Change USB_SERIAL_OPTION back to modular. (rhbz 727680)
+
 * Tue Aug 02 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40-5
 - Add change from Yanko Kaneti to get the rt2x00 drivers in modules.networking
   (rhbz 708314)
