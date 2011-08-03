@@ -688,6 +688,9 @@ Patch12020: linux-2.6-zd1211rw-fix-invalid-signal-values-from-device.patch
 
 Patch12021: udlfb-bind-framebuffer-to-interface.patch
 
+Patch12022: fix-cdc-ncm-dma-stack-vars.patch
+Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
+
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
 Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
@@ -1271,6 +1274,8 @@ ApplyPatch neuter_intel_microcode_load.patch
 ApplyPatch linux-2.6-rt2x00-Add-device-ID-for-RT539F-device.patch
 
 ApplyPatch udlfb-bind-framebuffer-to-interface.patch
+ApplyPatch fix-cdc-ncm-dma-stack-vars.patch
+ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
 
 # Runtime PM
 #ApplyPatch linux-2.6-usb-pci-autosuspend.patch
@@ -1897,6 +1902,10 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 03 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix backtrace in cdc_ncm driver (rhbz 720128)
+- Add patch to fix backtrace in usm-realtek driver (rhbz 720054)
+
 * Tue Aug 02 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix HFSPlus filesystem mounting (rhbz 720771)
 
