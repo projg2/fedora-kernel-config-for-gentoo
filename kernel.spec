@@ -1886,6 +1886,9 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 03 2011 John W. Linville <linville@redhat.com>
+- Disable CONFIG_BCMA since no driver currently uses it (rhbz 727796)
+
 * Wed Aug 03 2011 Josh Boyer <jwboyer@redhat.com>
 - rt2x00: Add device ID for RT539F device. (rhbz 720594)
 - Add patch to fix backtrace in cdc_ncm driver (rhbz 720128)
