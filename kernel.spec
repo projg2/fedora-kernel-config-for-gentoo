@@ -675,6 +675,11 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 
 Patch12018: neuter_intel_microcode_load.patch
 
+Patch12019: linux-2.6-rt2x00-Add-device-ID-for-RT539F-device.patch
+
+Patch12022: fix-cdc-ncm-dma-stack-vars.patch
+Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
+
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
 Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
@@ -1253,6 +1258,11 @@ ApplyPatch disable-i8042-check-on-apple-mac.patch
 ApplyPatch add-appleir-usb-driver.patch
 
 ApplyPatch neuter_intel_microcode_load.patch
+
+ApplyPatch linux-2.6-rt2x00-Add-device-ID-for-RT539F-device.patch
+
+ApplyPatch fix-cdc-ncm-dma-stack-vars.patch
+ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1876,6 +1886,11 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 03 2011 Josh Boyer <jwboyer@redhat.com>
+- rt2x00: Add device ID for RT539F device. (rhbz 720594)
+- Add patch to fix backtrace in cdc_ncm driver (rhbz 720128)
+- Add patch to fix backtrace in usm-realtek driver (rhbz 720054)
+
 * Tue Aug 02 2011 Josh Boyer <jwboyer@redhat.com>
 - Fix epoll recursive lockdep warnings (rhbz 722472)
 
