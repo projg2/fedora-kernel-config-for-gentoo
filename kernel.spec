@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 93
+%global baserelease 94
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -757,16 +757,11 @@ Patch12080: kprobes-x86-fix-kprobes-to-skip-prefixes-correctly.patch
 Patch12085: fix-rcu_deref_check-warning.patch
 Patch12086: linux-2.6-cgroups-rcu.patch
 
-Patch12517: flexcop-fix-xlate_proc_name-warning.patch
-
 Patch12565: sched-05-avoid-side-effect-of-tickless-idle-on-update_cpu_load.patch
 Patch12570: sched-10-change-nohz-idle-load-balancing-logic-to-push-model.patch
 Patch12575: sched-15-update-rq-clock-for-nohz-balanced-cpus.patch
 Patch12580: sched-20-fix-rq-clock-synchronization-when-migrating-tasks.patch
 Patch12590: sched-30-sched-fix-nohz-balance-kick.patch
-
-Patch13600: btusb-macbookpro-6-2.patch
-Patch13601: btusb-macbookpro-7-1.patch
 
 Patch13610: libata-it821x-dump-stack-on-cache-flush.patch
 
@@ -781,8 +776,6 @@ Patch13641: mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 Patch13642: mmc-add-ricoh-e822-pci-id.patch
 
 Patch13645: tpm-autodetect-itpm-devices.patch
-
-Patch13652: fix-i8k-inline-asm.patch
 
 Patch13660: rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 Patch13661: rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
@@ -830,30 +823,11 @@ Patch13710: linux-2.6-bonding-sysfs-warning.patch
 # rhbz#680791
 Patch13711: md-fix-regression-resulting-in-delays-in-clearing-bits-in-a-bitmap.patch
 
-Patch13713: virtio_net-add-schedule-check-to-napi_enable-call.patch
-
-# cve-2011-1745
-Patch13957: agp-fix-arbitrary-kernel-memory-writes.patch
-# cve-2011-1746
-Patch13958: agp-fix-oom-and-buffer-overflow.patch
-# CVE-2011-1494, CVE-2011-1495
-Patch13960: scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
-
 # fix credentials leakage regression (#700637)
 Patch13961: revert-incomplete-af_netlink-add-needed-scm-destroy-after-scm-send.patch
 Patch13962: af_netlink-add-needed-scm_destroy-after-scm_send.patch
 
-# fix regression causing stalls on AMD processors in 2.6.35.13
-Patch13963: x86-amd-fix-arat-feature-setting-again.patch
-Patch13964: x86-amd-arat-bug-on-sempron-workaround.patch
-
 Patch13969: scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
-
-# fix bug in 2.6.35.13 with old windows servers
-Patch13970: cifs-add-fallback-in-is_path_accessible-for-old-servers.patch
-
-# cve-2011-1770
-Patch13980: dccp-handle-invalid-feature-options-length.patch
 
 # the rest of the pgoff wrap fix
 Patch13990: vm-fix-vm_pgoff-wrap-in-stack-expansion.patch
@@ -1493,9 +1467,6 @@ ApplyPatch linux-2.6-v4l-dvb-build-lirc.patch
 # own patch
 ApplyPatch linux-2.6-v4l-dvb-backport-reverts.patch
 
-# bz #575873
-ApplyPatch flexcop-fix-xlate_proc_name-warning.patch
-
 # Fix DMA bug on via-velocity
 ApplyPatch linux-2.6-via-velocity-dma-fix.patch
 
@@ -1528,9 +1499,6 @@ ApplyPatch sched-15-update-rq-clock-for-nohz-balanced-cpus.patch
 ApplyPatch sched-20-fix-rq-clock-synchronization-when-migrating-tasks.patch
 ApplyPatch sched-30-sched-fix-nohz-balance-kick.patch
 
-ApplyPatch btusb-macbookpro-7-1.patch
-ApplyPatch btusb-macbookpro-6-2.patch
-
 # temporary patch, dump stack on failed it821x commands
 ApplyPatch libata-it821x-dump-stack-on-cache-flush.patch
 
@@ -1548,8 +1516,6 @@ ApplyPatch mmc-make-sdhci-work-with-ricoh-mmc-controller.patch
 ApplyPatch mmc-add-ricoh-e822-pci-id.patch
 
 ApplyPatch tpm-autodetect-itpm-devices.patch
-
-ApplyPatch fix-i8k-inline-asm.patch
 
 ApplyPatch rtl8180-improve-signal-reporting-for-rtl8185-hardware.patch
 ApplyPatch rtl8180-improve-signal-reporting-for-actual-rtl8180-hardware.patch
@@ -1592,30 +1558,11 @@ ApplyPatch linux-2.6-bonding-sysfs-warning.patch
 # rhbz#680791
 ApplyPatch md-fix-regression-resulting-in-delays-in-clearing-bits-in-a-bitmap.patch
 
-ApplyPatch virtio_net-add-schedule-check-to-napi_enable-call.patch
-
-# cve-2011-1745
-ApplyPatch agp-fix-arbitrary-kernel-memory-writes.patch
-# cve-2011-1746
-ApplyPatch agp-fix-oom-and-buffer-overflow.patch
-# CVE-2011-1494, CVE-2011-1495
-ApplyPatch scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
-
 # fix credentials leakage regression (#700637)
 ApplyPatch revert-incomplete-af_netlink-add-needed-scm-destroy-after-scm-send.patch
 ApplyPatch af_netlink-add-needed-scm_destroy-after-scm_send.patch
 
-# fix regression causing stalls on AMD processors in 2.6.35.13
-ApplyPatch x86-amd-fix-arat-feature-setting-again.patch
-ApplyPatch x86-amd-arat-bug-on-sempron-workaround.patch
-
 ApplyPatch scsi_dh_hp_sw-fix-deadlock-in-start_stop_endio.patch
-
-# fix bug in 2.6.35.13 with old windows servers
-ApplyPatch cifs-add-fallback-in-is_path_accessible-for-old-servers.patch
-
-# cve-2011-1770
-ApplyPatch dccp-handle-invalid-feature-options-length.patch
 
 # the rest of the pgoff wrap fix
 ApplyPatch vm-fix-vm_pgoff-wrap-in-stack-expansion.patch
@@ -2211,6 +2158,22 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 03 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.14-94
+- Linux 2.6.35.14
+- Drop merged patches:
+    flexcop-fix-xlate_proc_name-warning.patch
+    btusb-macbookpro-6-2.patch
+    btusb-macbookpro-7-1.patch
+    fix-i8k-inline-asm.patch
+    virtio_net-add-schedule-check-to-napi_enable-call.patch
+    agp-fix-arbitrary-kernel-memory-writes.patch
+    agp-fix-oom-and-buffer-overflow.patch
+    scsi-mpt2sas-prevent-heap-overflows-and-unchecked-reads.patch
+    x86-amd-arat-bug-on-sempron-workaround.patch
+    x86-amd-fix-arat-feature-setting-again.patch
+    cifs-add-fallback-in-is_path_accessible-for-old-servers.patch
+    dccp-handle-invalid-feature-options-length.patch
+
 * Mon Jun 20 2011 Kyle McMartin <kmcmartin@redhat.com> 2.6.35.13-93
 - [sgruszka@] iwlwifi: fix general 11n instability (#648732,#666646)
 
