@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 6
+%global baserelease 0
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -64,7 +64,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -558,40 +558,8 @@ Source1000: config-local
 # Here should be only the patches up to the upstream canonical Linus tree.
 
 Patch00: patch-3.0.bz2
+Patch01: patch-3.0.1-rc1.bz2
 
-# For a stable release kernel
-%if 0%{?stable_update}
-%if 0%{?stable_base}
-%define    stable_patch_00  patch-3.%{base_sublevel}.%{stable_base}.bz2
-Patch01: %{stable_patch_00}
-%endif
-%if 0%{?stable_rc}
-%define    stable_patch_01  patch-3.%{base_sublevel}.%{stable_update}-rc%{stable_rc}.bz2
-Patch02: %{stable_patch_01}
-%endif
-
-# non-released_kernel case
-# These are automagically defined by the rcrev and gitrev values set up
-# near the top of this spec file.
-%else
-%if 0%{?rcrev}
-Patch00: patch-3.0-rc%{rcrev}.bz2
-%if 0%{?gitrev}
-Patch01: patch-3.0-rc%{rcrev}-git%{gitrev}.bz2
-%endif
-%else
-# pre-{base_sublevel+1}-rc1 case
-%if 0%{?gitrev}
-Patch00: patch-3.%{base_sublevel}-git%{gitrev}.bz2
-%endif
-%endif
-%endif
-
-%if %{using_upstream_branch}
-### BRANCH PATCH ###
-%endif
-
-Patch03: git-linus.diff
 
 # we also need compile fixes for -vanilla
 Patch04: linux-2.6-compile-fixes.patch
@@ -675,8 +643,6 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 
 Patch12018: neuter_intel_microcode_load.patch
 
-Patch12019: linux-2.6-rt2x00-Add-device-ID-for-RT539F-device.patch
-
 Patch12022: fix-cdc-ncm-dma-stack-vars.patch
 Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
 
@@ -686,7 +652,6 @@ Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
-Patch13000: fix-scsi_dispatch_cmd.patch
 Patch13001: epoll-fix-spurious-lockdep-warnings.patch
 Patch13002: hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
@@ -1034,24 +999,6 @@ if [ ! -d kernel-%{kversion}%{?dist}/vanilla-%{vanillaversion} ]; then
 
     # Need to apply patches to the base vanilla version.
     cp -rl vanilla-%{kversion} vanilla-%{vanillaversion}
-    cd vanilla-%{vanillaversion}
-
-# Update vanilla to the latest upstream.
-# (non-released_kernel case only)
-%if 0%{?rcrev}
-    ApplyPatch patch-3.0-rc%{rcrev}.bz2
-%if 0%{?gitrev}
-    ApplyPatch patch-3.0-rc%{rcrev}-git%{gitrev}.bz2
-%endif
-%else
-# pre-{base_sublevel+1}-rc1 case
-%if 0%{?gitrev}
-    ApplyPatch patch-3.0-git%{gitrev}.bz2
-%endif
-%endif
-
-    cd ..
-
   fi
 
 %endif
@@ -1075,14 +1022,6 @@ fi
 cp -rl vanilla-%{vanillaversion} linux-%{kversion}.%{_target_cpu}
 
 cd linux-%{kversion}.%{_target_cpu}
-
-# released_kernel with possible stable updates
-%if 0%{?stable_base}
-ApplyPatch %{stable_patch_00}
-%endif
-%if 0%{?stable_rc}
-ApplyPatch %{stable_patch_01}
-%endif
 
 %if %{using_upstream_branch}
 ### BRANCH APPLY ###
@@ -1117,8 +1056,7 @@ done
 
 # Update vanilla to the latest upstream. (2.6.39 -> 3.0)
 ApplyPatch patch-3.0.bz2
-
-ApplyOptionalPatch git-linus.diff
+ApplyPatch patch-3.0.1-rc1.bz2
 
 ApplyPatch linux-2.6-makefile-after_link.patch
 
@@ -1259,15 +1197,12 @@ ApplyPatch add-appleir-usb-driver.patch
 
 ApplyPatch neuter_intel_microcode_load.patch
 
-ApplyPatch linux-2.6-rt2x00-Add-device-ID-for-RT539F-device.patch
-
 ApplyPatch fix-cdc-ncm-dma-stack-vars.patch
 ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
-ApplyPatch fix-scsi_dispatch_cmd.patch
 ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
 
 ApplyPatch hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
@@ -1886,6 +1821,9 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 03 2011 Dave Jones <davej@redhat.com>
+- Apply patches from patch-3.0.1-rc1
+
 * Wed Aug 03 2011 John W. Linville <linville@redhat.com>
 - Disable CONFIG_BCMA since no driver currently uses it (rhbz 727796)
 
