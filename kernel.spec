@@ -641,8 +641,6 @@ Patch12010: add-appleir-usb-driver.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch12018: neuter_intel_microcode_load.patch
-
 Patch12022: fix-cdc-ncm-dma-stack-vars.patch
 Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
 
@@ -1196,8 +1194,6 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch add-appleir-usb-driver.patch
-
-ApplyPatch neuter_intel_microcode_load.patch
 
 ApplyPatch fix-cdc-ncm-dma-stack-vars.patch
 ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
@@ -1825,6 +1821,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 04 2011 Dave Jones <davej@redhat.com>
+- Drop neuter_intel_microcode_load.patch (rhbz 690930)
+
 * Wed Aug 03 2011 Dave Jones <davej@redhat.com>
 - iwlagn: check for !priv->txq in iwlagn_wait_tx_queue_empty (rhbz 728044)
 
