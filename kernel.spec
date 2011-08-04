@@ -655,6 +655,8 @@ Patch12303: dmar-disable-when-ricoh-multifunction.patch
 Patch13001: epoll-fix-spurious-lockdep-warnings.patch
 Patch13002: hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
+Patch13010: iwlagn-check-for-priv--txq-in-iwlagn_wait_tx_queue_empty.patch
+
 Patch20000: utrace.patch
 
 %endif
@@ -1206,6 +1208,8 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
 
 ApplyPatch hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
+
+ApplyPatch iwlagn-check-for-priv--txq-in-iwlagn_wait_tx_queue_empty.patch
 
 ApplyPatch utrace.patch
 
@@ -1821,6 +1825,9 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 03 2011 Dave Jones <davej@redhat.com>
+- iwlagn: check for !priv->txq in iwlagn_wait_tx_queue_empty (rhbz 728044)
+
 * Wed Aug 03 2011 Dave Jones <davej@redhat.com>
 - Apply patches from patch-3.0.1-rc1
 
