@@ -680,8 +680,6 @@ Patch12010: add-appleir-usb-driver.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch12018: neuter_intel_microcode_load.patch
-
 Patch12019: linux-2.6-rt2x00-Add-device-ID-for-RT539F-device.patch
 
 Patch12020: linux-2.6-zd1211rw-fix-invalid-signal-values-from-device.patch
@@ -1268,8 +1266,6 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch add-appleir-usb-driver.patch
-
-ApplyPatch neuter_intel_microcode_load.patch
 
 ApplyPatch linux-2.6-rt2x00-Add-device-ID-for-RT539F-device.patch
 
@@ -1902,6 +1898,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 04 2011 Dave Jones <davej@redhat.com>
+- Drop neuter_intel_microcode_load.patch (rhbz 690930)
+
 * Wed Aug 03 2011 John W. Linville <linville@redhat.com>
 - Disable CONFIG_BCMA since no driver currently uses it (rhbz 727796)
 
