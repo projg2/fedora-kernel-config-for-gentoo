@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -700,6 +700,7 @@ Patch13000: fix-scsi_dispatch_cmd.patch
 Patch13001: epoll-fix-spurious-lockdep-warnings.patch
 Patch13002: hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
+Patch13003: efi-dont-map-boot-services-on-32bit.patch
 Patch20000: utrace.patch
 
 %endif
@@ -1285,6 +1286,8 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 ApplyPatch fix-scsi_dispatch_cmd.patch
 ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
 ApplyPatch hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
+
+ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
 # utrace.
 ApplyPatch utrace.patch
@@ -1898,6 +1901,9 @@ fi
 # and build.
 
 %changelog
+* Fri Aug 05 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch for rhbz 726701 from Matthew Garrett
+
 * Thu Aug 04 2011 Dave Jones <davej@redhat.com>
 - Drop neuter_intel_microcode_load.patch (rhbz 690930)
 
