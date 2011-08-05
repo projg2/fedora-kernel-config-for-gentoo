@@ -1822,6 +1822,9 @@ fi
 
 %changelog
 * Fri Aug 05 2011 Dave Jones <davej@redhat.com>
+- Revert f16-only change that made IPV6 built-in.
+
+* Fri Aug 05 2011 Dave Jones <davej@redhat.com>
 - Final 3.0.1 diff.
 
 * Thu Aug 04 2011 Dave Jones <davej@redhat.com>
