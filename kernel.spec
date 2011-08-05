@@ -558,7 +558,7 @@ Source1000: config-local
 # Here should be only the patches up to the upstream canonical Linus tree.
 
 Patch00: patch-3.0.bz2
-Patch01: patch-3.0.1-rc1.bz2
+Patch01: patch-3.0.1.bz2
 
 
 # we also need compile fixes for -vanilla
@@ -1056,7 +1056,7 @@ done
 
 # Update vanilla to the latest upstream. (2.6.39 -> 3.0)
 ApplyPatch patch-3.0.bz2
-ApplyPatch patch-3.0.1-rc1.bz2
+ApplyPatch patch-3.0.1.bz2
 
 ApplyPatch linux-2.6-makefile-after_link.patch
 
@@ -1821,6 +1821,9 @@ fi
 # and build.
 
 %changelog
+* Fri Aug 05 2011 Dave Jones <davej@redhat.com>
+- Final 3.0.1 diff.
+
 * Thu Aug 04 2011 Dave Jones <davej@redhat.com>
 - Drop neuter_intel_microcode_load.patch (rhbz 690930)
 
