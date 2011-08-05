@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 5
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -63,7 +63,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -680,8 +680,6 @@ Patch12010: add-appleir-usb-driver.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch12019: linux-2.6-rt2x00-Add-device-ID-for-RT539F-device.patch
-
 Patch12020: linux-2.6-zd1211rw-fix-invalid-signal-values-from-device.patch
 
 Patch12021: udlfb-bind-framebuffer-to-interface.patch
@@ -696,7 +694,6 @@ Patch12205: runtime_pm_fixups.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
-Patch13000: fix-scsi_dispatch_cmd.patch
 Patch13001: epoll-fix-spurious-lockdep-warnings.patch
 Patch13002: hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
@@ -1268,8 +1265,6 @@ ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch add-appleir-usb-driver.patch
 
-ApplyPatch linux-2.6-rt2x00-Add-device-ID-for-RT539F-device.patch
-
 ApplyPatch udlfb-bind-framebuffer-to-interface.patch
 ApplyPatch fix-cdc-ncm-dma-stack-vars.patch
 ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
@@ -1283,7 +1278,6 @@ ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
-ApplyPatch fix-scsi_dispatch_cmd.patch
 ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
 ApplyPatch hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
@@ -1901,6 +1895,9 @@ fi
 # and build.
 
 %changelog
+* Fri Aug 05 2011 Josh Boyer <jwboyer@redhat.com>
+- 3.0.1
+
 * Fri Aug 05 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch for rhbz 726701 from Matthew Garrett
 
