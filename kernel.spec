@@ -1821,6 +1821,9 @@ fi
 # and build.
 
 %changelog
+* Sun Aug 07 2011 Dave Jones <davej@redhat.com>
+- Utrace fixes.
+
 * Fri Aug 05 2011 Dave Jones <davej@redhat.com>  2.6.40.1-1
 - Revert f16-only change that made IPV6 built-in.
 
