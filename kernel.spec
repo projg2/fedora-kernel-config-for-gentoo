@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1899,6 +1899,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 08 2011 Josh Boyer <jwboyer@redhat.com>
+- Bring in utrace fixes davej applied to f15. (rhbz 728379)
+
 * Fri Aug 05 2011 Josh Boyer <jwboyer@redhat.com>
 - Adjust Makefile munging for new 3.x numbering scheme
 
