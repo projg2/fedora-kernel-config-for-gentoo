@@ -6471,3 +6471,82 @@ index 5612d2d..ac833de 100644
 -- 
 1.5.5.1
 
+From davej  Tue Aug  9 13:34:35 2011
+Return-Path: oleg@redhat.com
+X-Spam-Checker-Version: SpamAssassin 3.3.2 (2011-06-06) on
+	gelk.kernelslacker.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,T_RP_MATCHES_RCVD,
+	UNPARSEABLE_RELAY autolearn=ham version=3.3.2
+Received: from mail.corp.redhat.com [10.5.5.51]
+	by gelk with IMAP (fetchmail-6.3.20)
+	for <davej@localhost> (single-drop); Tue, 09 Aug 2011 13:34:35 -0400 (EDT)
+Received: from zmta01.collab.prod.int.phx2.redhat.com (LHLO
+ zmta01.collab.prod.int.phx2.redhat.com) (10.5.5.31) by
+ mail04.corp.redhat.com with LMTP; Tue, 9 Aug 2011 13:33:16 -0400 (EDT)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by zmta01.collab.prod.int.phx2.redhat.com (Postfix) with ESMTP id 16B6E9EBAD;
+	Tue,  9 Aug 2011 13:33:16 -0400 (EDT)
+Received: from zmta01.collab.prod.int.phx2.redhat.com ([127.0.0.1])
+	by localhost (zmta01.collab.prod.int.phx2.redhat.com [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id T2mXXk1FjIIy; Tue,  9 Aug 2011 13:33:16 -0400 (EDT)
+Received: from int-mx12.intmail.prod.int.phx2.redhat.com (int-mx12.intmail.prod.int.phx2.redhat.com [10.5.11.25])
+	by zmta01.collab.prod.int.phx2.redhat.com (Postfix) with ESMTP id 025259EBA5;
+	Tue,  9 Aug 2011 13:33:16 -0400 (EDT)
+Received: from tranklukator.englab.brq.redhat.com (dhcp-1-232.brq.redhat.com [10.34.1.232])
+	by int-mx12.intmail.prod.int.phx2.redhat.com (8.14.4/8.14.4) with SMTP id p79HXDVF004054;
+	Tue, 9 Aug 2011 13:33:13 -0400
+Received: by tranklukator.englab.brq.redhat.com (nbSMTP-1.00) for uid 500
+	oleg@redhat.com; Tue,  9 Aug 2011 19:30:35 +0200 (CEST)
+Date: Tue, 9 Aug 2011 19:30:33 +0200
+From: Oleg Nesterov <oleg@redhat.com>
+To: "Frank Ch. Eigler" <fche@redhat.com>, Kyle McMartin <kmcmartin@redhat.com>,
+        Dave Jones <davej@redhat.com>, Josh Stone <jistone@redhat.com>,
+        Matthew Garrett <mjg@redhat.com>, David Smith <dsmith@redhat.com>
+Cc: kernel@lists.fedoraproject.org, Tony Breeds <tony@bakeyournoodle.com>
+Subject: [PATCH utrace-3.0 23/22] ptrace_report_syscall: check if
+	TIF_SYSCALL_EMU is defined
+Message-ID: <20110809173033.GA26443@redhat.com>
+References: <20110701002053.GA25767@redhat.com> <20110807191434.GA13184@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20110807191434.GA13184@redhat.com>
+User-Agent: Mutt/1.5.18 (2008-05-17)
+X-Scanned-By: MIMEDefang 2.68 on 10.5.11.25
+Status: RO
+Content-Length: 844
+Lines: 31
+
+From: Tony Breeds <tony@bakeyournoodle.com>
+
+TIF_SYSCALL_EMU is x86 only, add ifdef into ptrace_report_syscall().
+
+Signed-off-by: Oleg Nesterov <oleg@redhat.com>
+---
+ include/linux/tracehook.h |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/tracehook.h b/include/linux/tracehook.h
+index ac833de..d5baf86 100644
+--- a/include/linux/tracehook.h
++++ b/include/linux/tracehook.h
+@@ -76,8 +76,12 @@ static inline void ptrace_report_syscall(struct pt_regs *regs)
+ {
+ 	int ptrace = task_ptrace(current);
+ 
+-	if (!(ptrace & PT_SYSCALL_TRACE) && !test_thread_flag(TIF_SYSCALL_EMU))
+-		return;
++	if (!(ptrace & PT_SYSCALL_TRACE)) {
++#ifdef TIF_SYSCALL_EMU
++		if (!test_thread_flag(TIF_SYSCALL_EMU))
++#endif
++			return;
++	}
+ 
+ 	ptrace_notify(SIGTRAP | ((ptrace & PT_TRACESYSGOOD) ? 0x80 : 0));
+ 
+-- 
+1.5.5.1
+
+
