@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -623,6 +623,8 @@ Patch1825: drm-intel-make-lvds-work.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
+Patch2000: block-stray-block-put-after-teardown.patch
+
 # Quiet boot fixes
 # silence the ACPI blacklist code
 Patch2802: linux-2.6-silence-acpi-blacklist.patch
@@ -1180,6 +1182,8 @@ ApplyOptionalPatch drm-nouveau-updates.patch
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
+
+ApplyPatch block-stray-block-put-after-teardown.patch
 
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
@@ -1821,6 +1825,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 09 2011 Dave Jones <davej@redhat.com>  2.6.40.1-2
+- Fix stray block put after queue teardown (rhbz 728872)
+
 * Sun Aug 07 2011 Dave Jones <davej@redhat.com>
 - Utrace fixes. (rhbz 728379)
 
