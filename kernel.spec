@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -686,6 +686,7 @@ Patch12021: udlfb-bind-framebuffer-to-interface.patch
 
 Patch12022: fix-cdc-ncm-dma-stack-vars.patch
 Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
+Patch12024: block-stray-block-put-after-teardown.patch
 
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
@@ -698,6 +699,7 @@ Patch13001: epoll-fix-spurious-lockdep-warnings.patch
 Patch13002: hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
+
 Patch20000: utrace.patch
 
 %endif
@@ -1268,6 +1270,7 @@ ApplyPatch add-appleir-usb-driver.patch
 ApplyPatch udlfb-bind-framebuffer-to-interface.patch
 ApplyPatch fix-cdc-ncm-dma-stack-vars.patch
 ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
+ApplyPatch block-stray-block-put-after-teardown.patch
 
 # Runtime PM
 #ApplyPatch linux-2.6-usb-pci-autosuspend.patch
@@ -1899,6 +1902,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 09 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch davej applied to f15 for rhbz 728872
+
 * Tue Aug 09 2011 Dave Jones <davej@redhat.com>
 - ptrace_report_syscall: check if TIF_SYSCALL_EMU is defined
 
