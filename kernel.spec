@@ -1825,6 +1825,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 09 2011 Dave Jones <davej@redhat.com>
+- Enable CONFIG_SAMSUNG_LAPTOP (rhbz 729363)
+
 * Tue Aug 09 2011 Dave Jones <davej@redhat.com>  2.6.40.1-2
 - Fix stray block put after queue teardown (rhbz 728872)
 
