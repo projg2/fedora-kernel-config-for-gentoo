@@ -612,7 +612,8 @@ Patch800: linux-2.6-crash-driver.patch
 # crypto/
 
 # virt + ksm patches
-Patch1555: fix_xen_guest_on_old_EC2.patch
+Patch1500: fix_xen_guest_on_old_EC2.patch
+Patch1501: xen-blkfront-name-adjust.patch
 
 # DRM
 
@@ -1174,6 +1175,7 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # Assorted Virt Fixes
 ApplyPatch fix_xen_guest_on_old_EC2.patch
+ApplyPatch xen-blkfront-name-adjust.patch
 
 # DRM core
 
@@ -1827,6 +1829,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 11 2011 Dave Jones <davej@redhat.com>
+- Fix Xen blk device naming (rhbz 729340)
+
 * Tue Aug 09 2011 Josh Boyer <jwboyer@redhat.com>
 - Add Makefile.config and ARM config changes from David Marlin
 
