@@ -648,6 +648,7 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 
 Patch12022: fix-cdc-ncm-dma-stack-vars.patch
 Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
+Patch12024: usb-add-quirk-for-logitech-webcams.patch
 
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
@@ -1205,6 +1206,7 @@ ApplyPatch add-appleir-usb-driver.patch
 
 ApplyPatch fix-cdc-ncm-dma-stack-vars.patch
 ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
+ApplyPatch usb-add-quirk-for-logitech-webcams.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1829,6 +1831,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 11 2011 Josh Boyer <jwboyer@redhat.com>
+- Add munged together patch for rhbz 729269
+
 * Thu Aug 11 2011 Dave Jones <davej@redhat.com>
 - Fix Xen blk device naming (rhbz 729340)
 
