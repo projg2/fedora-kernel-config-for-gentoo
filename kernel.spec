@@ -691,6 +691,7 @@ Patch12021: udlfb-bind-framebuffer-to-interface.patch
 Patch12022: fix-cdc-ncm-dma-stack-vars.patch
 Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
 Patch12024: block-stray-block-put-after-teardown.patch
+Patch12025: usb-add-quirk-for-logitech-webcams.patch
 
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
@@ -1276,6 +1277,7 @@ ApplyPatch udlfb-bind-framebuffer-to-interface.patch
 ApplyPatch fix-cdc-ncm-dma-stack-vars.patch
 ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
 ApplyPatch block-stray-block-put-after-teardown.patch
+ApplyPatch usb-add-quirk-for-logitech-webcams.patch
 
 # Runtime PM
 #ApplyPatch linux-2.6-usb-pci-autosuspend.patch
@@ -1909,6 +1911,7 @@ fi
 %changelog
 * Thu Aug 11 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch davej applied to f15 for rhbz 729340
+- Add munged together patch for rhbz 729269
 
 * Tue Aug 09 2011 Josh Boyer <jwboyer@redhat.com>
 - Add Makefile.config and ARM config changes from David Marlin
