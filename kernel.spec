@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -650,7 +650,9 @@ Patch800: linux-2.6-crash-driver.patch
 # crypto/
 
 # virt + ksm patches
-Patch1555: fix_xen_guest_on_old_EC2.patch
+Patch1500: fix_xen_guest_on_old_EC2.patch
+Patch1501: xen-blkfront-name-adjust.patch
+
 
 # DRM
 
@@ -1243,6 +1245,7 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # Assorted Virt Fixes
 ApplyPatch fix_xen_guest_on_old_EC2.patch
+ApplyPatch xen-blkfront-name-adjust.patch
 
 # DRM core
 
@@ -1904,6 +1907,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 11 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch davej applied to f15 for rhbz 729340
+
 * Tue Aug 09 2011 Josh Boyer <jwboyer@redhat.com>
 - Add Makefile.config and ARM config changes from David Marlin
 
