@@ -1912,6 +1912,7 @@ fi
 * Thu Aug 11 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch davej applied to f15 for rhbz 729340
 - Add munged together patch for rhbz 729269
+- Build ide_pmac as a module (rhbz 730039)
 
 * Tue Aug 09 2011 Josh Boyer <jwboyer@redhat.com>
 - Add Makefile.config and ARM config changes from David Marlin
