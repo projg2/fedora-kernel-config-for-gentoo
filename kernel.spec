@@ -1909,6 +1909,9 @@ fi
 # and build.
 
 %changelog
+* Sat Aug 13 2011 Dave Jones <davej@redhat.com>
+- CPU_FREQ drivers should now be built-in on x86-64.
+
 * Thu Aug 11 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch davej applied to f15 for rhbz 729340
 - Add munged together patch for rhbz 729269
