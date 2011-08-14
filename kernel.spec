@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 3
+%global baserelease 0
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -64,7 +64,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -582,6 +582,7 @@ Source1000: config-local
 
 Patch00: patch-3.0.bz2
 Patch01: patch-3.0.1.bz2
+Patch02: patch-3.0.2-rc1.gz
 
 
 # we also need compile fixes for -vanilla
@@ -1100,6 +1101,7 @@ done
 # Update vanilla to the latest upstream. (2.6.39 -> 3.0)
 ApplyPatch patch-3.0.bz2
 ApplyPatch patch-3.0.1.bz2
+ApplyPatch patch-3.0.2-rc1.gz
 
 ApplyPatch linux-2.6-makefile-after_link.patch
 
@@ -1890,6 +1892,9 @@ fi
 # and build.
 
 %changelog
+* Sat Aug 13 2011 Dave Jones <davej@redhat.com>
+- Apply patches from 3.0.2rc1
+
 * Thu Aug 11 2011 Dennis Gilmore <dennis@ausil.us>
 - add config for arm tegra devices
 - setup kernel to build omap image (patch from David Marlin)
