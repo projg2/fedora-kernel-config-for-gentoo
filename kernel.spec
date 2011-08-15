@@ -584,7 +584,6 @@ Patch00: patch-3.0.bz2
 Patch01: patch-3.0.1.bz2
 Patch02: patch-3.0.2-rc1.gz
 
-
 # we also need compile fixes for -vanilla
 Patch04: linux-2.6-compile-fixes.patch
 
@@ -593,10 +592,10 @@ Patch05: linux-2.6-makefile-after_link.patch
 
 %if !%{nopatches}
 
-
 # revert upstream patches we get via other methods
 Patch09: linux-2.6-upstream-reverts.patch
-# Git trees.
+
+Patch10: CVE-2011-2905.patch
 
 # Standalone patches
 
@@ -1114,6 +1113,9 @@ ApplyOptionalPatch linux-2.6-compile-fixes.patch
 
 # revert patches from upstream that conflict or that we get via other means
 ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
+
+# CVE fixes
+ApplyPatch CVE-2011-2905.patch
 
 
 # Architecture patches
@@ -1892,6 +1894,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 15 2011 Dave Jones <davej@redhat.com>
+- CVE-2011-2905 perf tools may parse user-controlled config file. (rhbz 729809)
+
 * Sat Aug 13 2011 Dave Jones <davej@redhat.com>
 - Apply patches from 3.0.2rc1
 
