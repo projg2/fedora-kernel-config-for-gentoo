@@ -1,5 +1,5 @@
---- arch/arm/include/asm/io.h.orig	2011-07-26 00:44:15.000000000 -0400
-+++ arch/arm/include/asm/io.h	2011-07-26 00:40:41.000000000 -0400
+--- kernel/arch/arm/include/asm/io.h.orig	2011-07-26 00:44:15.000000000 -0400
++++ kernel/arch/arm/include/asm/io.h	2011-07-26 00:40:41.000000000 -0400
 @@ -55,6 +55,46 @@
  #define __raw_readw(a)		(__chk_io_ptr(a), *(volatile unsigned short __force *)(a))
  #define __raw_readl(a)		(__chk_io_ptr(a), *(volatile unsigned int __force   *)(a))
