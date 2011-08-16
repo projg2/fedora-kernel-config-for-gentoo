@@ -840,6 +840,8 @@ Patch14002: iwlwifi-add_ack_plpc_check-module-parameters.patch
 Patch14010: perf-tools-do-not-look-at-config-for-configuration.patch
 # CVE-2011-2695
 Patch14011: ext4-fix-max-file-size-and-logical-block-counting-of-extent-format-file.patch
+# CVE-2011-2497
+Patch14012: bluetooth-prevent-buffer-overflow-in-l2cap-config-request.patch
 
 %endif
 
@@ -1580,6 +1582,8 @@ ApplyPatch iwlagn-use-cts-to-self-protection-on-5000-adapters-series.patch
 ApplyPatch perf-tools-do-not-look-at-config-for-configuration.patch
 # CVE-2011-2695
 ApplyPatch ext4-fix-max-file-size-and-logical-block-counting-of-extent-format-file.patch
+# CVE-2011-2497
+ApplyPatch bluetooth-prevent-buffer-overflow-in-l2cap-config-request.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2170,6 +2174,7 @@ fi
 * Mon Aug 15 2011 Chuck Ebbert <cebbert@redhat.com>
 - CVE-2011-2905: perf tools: may parse user-controlled configuration file
 - CVE-2011-2695: ext4: kernel panic when writing data to the last block of sparse file
+- CVE-2011-2497: bluetooth: buffer overflow in l2cap config request
 
 * Wed Aug 03 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.14-94
 - Linux 2.6.35.14
