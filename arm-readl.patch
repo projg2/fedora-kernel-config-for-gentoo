@@ -1,0 +1,49 @@
+--- arch/arm/include/asm/io.h.orig	2011-07-26 00:44:15.000000000 -0400
++++ arch/arm/include/asm/io.h	2011-07-26 00:40:41.000000000 -0400
+@@ -55,6 +55,46 @@
+ #define __raw_readw(a)		(__chk_io_ptr(a), *(volatile unsigned short __force *)(a))
+ #define __raw_readl(a)		(__chk_io_ptr(a), *(volatile unsigned int __force   *)(a))
+ 
++#undef __raw_writew
++#define __raw_writew(v,a) __dj_writew(v,a)
++static inline void
++__dj_writew(unsigned short v, unsigned short *a)
++{
++  __chk_io_ptr(a);
++  asm volatile ("strh %0,[%1,#0]" :: "r" (v), "r" (a));
++}
++
++#undef __raw_writel
++#define __raw_writel(v,a) __dj_writel(v,a)
++static inline void
++__dj_writel(unsigned int v, unsigned int *a)
++{
++  __chk_io_ptr(a);
++  asm volatile ("str %0,[%1,#0]" :: "r" (v), "r" (a));
++}
++
++#undef __raw_readw
++#define __raw_readw(a) __dj_readw(a)
++static inline unsigned short
++__dj_readw(unsigned short *a)
++{
++  unsigned short rv;
++  __chk_io_ptr(a);
++  asm volatile ("ldrh %0,[%1,#0]" : "=r" (rv) : "r" (a));
++  return rv;
++}
++
++#undef __raw_readl
++#define __raw_readl(a) __dj_readl(a)
++static inline unsigned int
++__dj_readl(unsigned int *a)
++{
++  unsigned long rv;
++  __chk_io_ptr(a);
++  asm volatile ("ldr %0,[%1,#0]" : "=r" (rv) : "r" (a));
++  return rv;
++}
++
+ /*
+  * Architecture ioremap implementation.
+  */

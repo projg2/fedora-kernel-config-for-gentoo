@@ -687,6 +687,13 @@ Patch20000: utrace.patch
 # Flattened devicetree support
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
+
+# workaround for issue with gcc-4.6.x
+# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=45819
+# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=45704
+# patch from http://www.delorie.com/tmp/arm-readl.patch
+Patch21002: arm-readl.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1127,6 +1134,7 @@ ApplyPatch linux-2.6.29-sparc-IOC_TYPECHECK.patch
 #
 ApplyPatch arm-omap-dt-compat.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
+ApplyPatch arm-readl.patch
 
 #
 # Exec shield
@@ -1882,6 +1890,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 16 2011 Dennis Gilmore <dennis@ausil.us>
+- add patch to work around gcc bug on arm
+
 * Mon Aug 15 2011 Dave Jones <davej@redhat.com> 2.6.40.3-0
 - Apply patches from 3.0.3-rc1
 
