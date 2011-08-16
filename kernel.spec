@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 1
+%global baserelease 0
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -64,7 +64,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -582,6 +582,7 @@ Source1000: config-local
 
 Patch00: patch-3.0.bz2
 Patch01: patch-3.0.2.bz2
+Patch02: patch-3.0.3-rc1.gz
 
 # we also need compile fixes for -vanilla
 Patch04: linux-2.6-compile-fixes.patch
@@ -594,9 +595,9 @@ Patch05: linux-2.6-makefile-after_link.patch
 # revert upstream patches we get via other methods
 Patch09: linux-2.6-upstream-reverts.patch
 
-Patch10: CVE-2011-2905.patch
-
 # Standalone patches
+
+Patch100: perf-check-ownership.patch
 
 Patch150: linux-2.6.29-sparc-IOC_TYPECHECK.patch
 
@@ -1099,6 +1100,7 @@ done
 # Update vanilla to the latest upstream. (2.6.39 -> 3.0)
 ApplyPatch patch-3.0.bz2
 ApplyPatch patch-3.0.2.bz2
+ApplyPatch patch-3.0.3-rc1.gz
 
 ApplyPatch linux-2.6-makefile-after_link.patch
 
@@ -1112,20 +1114,8 @@ ApplyOptionalPatch linux-2.6-compile-fixes.patch
 # revert patches from upstream that conflict or that we get via other means
 ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 
-# CVE fixes
-ApplyPatch CVE-2011-2905.patch
 
-
-# Architecture patches
-# x86(-64)
-
-#
-# Intel IOMMU
-#
-
-#
-# PowerPC
-#
+ApplyPatch perf-check-ownership.patch
 
 #
 # SPARC64
@@ -1892,8 +1882,11 @@ fi
 # and build.
 
 %changelog
-* Mon Aug 15 2011 Dave Jones <davej@redhat.com> 2.6.40.2-1
-- 3.0.2
+* Mon Aug 15 2011 Dave Jones <davej@redhat.com> 2.6.40.3-0
+- Apply patches from 3.0.3-rc1
+
+* Mon Aug 15 2011 Dave Jones <davej@redhat.com>
+- Apply patches from 3.0.2
 
 * Mon Aug 15 2011 Dave Jones <davej@redhat.com>
 - CVE-2011-2905 perf tools may parse user-controlled config file. (rhbz 729809)
