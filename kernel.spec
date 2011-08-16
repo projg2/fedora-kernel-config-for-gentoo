@@ -6,7 +6,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1. For rawhide
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
-%global released_kernel 1
+%global released_kernel 0
 
 # Save original buildid for later if it's defined
 %if 0%{?buildid:1}
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 6
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -63,7 +63,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 0
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -80,10 +80,9 @@ Summary: The Linux kernel
 ## The not-released-kernel case ##
 %else
 # The next upstream release sublevel (base_sublevel+1)
-# % define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
-%define upstream_sublevel 0
+%define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%define rcrev 0
+%define rcrev 2
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -544,6 +543,7 @@ Source24: config-rhel-generic
 
 Source30: config-x86-generic
 Source31: config-i686-PAE
+Source32: config-x86-32-generic
 
 Source40: config-x86_64-generic
 
@@ -641,8 +641,6 @@ Patch470: die-floppy-die.patch
 Patch510: linux-2.6-silence-noise.patch
 Patch530: linux-2.6-silence-fbcon-logo.patch
 
-Patch610: hda_intel-prealloc-4mb-dmabuffer.patch
-
 Patch700: linux-2.6-e1000-ich9-montevina.patch
 
 Patch800: linux-2.6-crash-driver.patch
@@ -684,14 +682,14 @@ Patch12010: add-appleir-usb-driver.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch12020: linux-2.6-zd1211rw-fix-invalid-signal-values-from-device.patch
-
 Patch12021: udlfb-bind-framebuffer-to-interface.patch
 
 Patch12022: fix-cdc-ncm-dma-stack-vars.patch
 Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
-Patch12024: block-stray-block-put-after-teardown.patch
-Patch12025: usb-add-quirk-for-logitech-webcams.patch
+Patch12024: epoll-fix-spurious-lockdep-warnings.patch
+Patch12025: rcu-avoid-just-onlined-cpu-resched.patch
+Patch12026: block-stray-block-put-after-teardown.patch
+Patch12027: usb-add-quirk-for-logitech-webcams.patch
 
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
@@ -699,9 +697,6 @@ Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
 Patch12205: runtime_pm_fixups.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
-
-Patch13001: epoll-fix-spurious-lockdep-warnings.patch
-Patch13002: hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
@@ -1209,11 +1204,9 @@ ApplyPatch linux-2.6-defaults-aspm.patch
 # ACPI
 
 # ALSA
-ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
 
 # Networking
 
-ApplyPatch linux-2.6-zd1211rw-fix-invalid-signal-values-from-device.patch
 
 # Misc fixes
 # The input layer spews crap no-one cares about.
@@ -1276,6 +1269,8 @@ ApplyPatch add-appleir-usb-driver.patch
 ApplyPatch udlfb-bind-framebuffer-to-interface.patch
 ApplyPatch fix-cdc-ncm-dma-stack-vars.patch
 ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
+ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
+ApplyPatch rcu-avoid-just-onlined-cpu-resched.patch
 ApplyPatch block-stray-block-put-after-teardown.patch
 ApplyPatch usb-add-quirk-for-logitech-webcams.patch
 
@@ -1287,9 +1282,6 @@ ApplyPatch usb-add-quirk-for-logitech-webcams.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
-
-ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
-ApplyPatch hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
@@ -1304,6 +1296,7 @@ ApplyPatch utrace.patch
 
 chmod +x scripts/checkpatch.pl
 
+# This Prevents scripts/setlocalversion from mucking with our version numbers.
 touch .scmversion
 
 # only deal with configs if we are going to build for the arch
