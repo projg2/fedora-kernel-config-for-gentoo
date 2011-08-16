@@ -158,6 +158,37 @@ index 5199bac..4157570 100644
  		ext_debug("cache gap(whole file):");
  	} else if (block < le32_to_cpu(ex->ee_block)) {
  		lblock = block;
+@@ -2239,8 +2239,8 @@ ext4_ext_rm_leaf(handle_t *handle, struc
+ 		path[depth].p_ext = ex;
+ 
+ 		a = ex_ee_block > start ? ex_ee_block : start;
+-		b = ex_ee_block + ex_ee_len - 1 < EXT_MAX_BLOCK ?
+-			ex_ee_block + ex_ee_len - 1 : EXT_MAX_BLOCK;
++		b = ex_ee_block + ex_ee_len - 1 < EXT_MAX_BLOCKS ?
++			ex_ee_block + ex_ee_len - 1 : EXT_MAX_BLOCKS;
+ 
+ 		ext_debug("  border %u:%u\n", a, b);
+ 
+@@ -3869,15 +3869,15 @@ static int ext4_ext_fiemap_cb(struct ino
+ 		flags |= FIEMAP_EXTENT_UNWRITTEN;
+ 
+ 	/*
+-	 * If this extent reaches EXT_MAX_BLOCK, it must be last.
++	 * If this extent reaches EXT_MAX_BLOCKS, it must be last.
+ 	 *
+-	 * Or if ext4_ext_next_allocated_block is EXT_MAX_BLOCK,
++	 * Or if ext4_ext_next_allocated_block is EXT_MAX_BLOCKS,
+ 	 * this also indicates no more allocated blocks.
+ 	 *
+ 	 * XXX this might miss a single-block extent at EXT_MAX_BLOCK
+ 	 */
+-	if (ext4_ext_next_allocated_block(path) == EXT_MAX_BLOCK ||
+-	    newex->ec_block + newex->ec_len - 1 == EXT_MAX_BLOCK) {
++	if (ext4_ext_next_allocated_block(path) == EXT_MAX_BLOCKS ||
++	    newex->ec_block + newex->ec_len == EXT_MAX_BLOCKS) {
+ 		loff_t size = i_size_read(inode);
+ 		loff_t bs = EXT4_BLOCK_SIZE(inode->i_sb);
+ 
 @@ -4347,8 +4347,8 @@ int ext4_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
  
  		start_blk = start >> inode->i_sb->s_blocksize_bits;
