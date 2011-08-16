@@ -1,0 +1,116 @@
+commit aba8d056078e47350d85b06a9cabd5afcc4b72ea
+Author: Jonathan Nieder <jrnieder@gmail.com>
+Date:   Fri Aug 5 18:58:38 2011 +0200
+
+    perf tools: do not look at ./config for configuration
+    
+    In addition to /etc/perfconfig and $HOME/.perfconfig, perf looks for
+    configuration in the file ./config, imitating git which looks at
+    $GIT_DIR/config.  If ./config is not a perf configuration file, it
+    fails, or worse, treats it as a configuration file and changes behavior
+    in some unexpected way.
+    
+    "config" is not an unusual name for a file to be lying around and perf
+    does not have a private directory dedicated for its own use, so let's
+    just stop looking for configuration in the cwd.  Callers needing
+    context-sensitive configuration can use the PERF_CONFIG environment
+    variable.
+    
+    Requested-by: Christian Ohm <chr.ohm@gmx.net>
+    Cc: 632923@bugs.debian.org
+    Cc: Ben Hutchings <ben@decadent.org.uk>
+    Cc: Christian Ohm <chr.ohm@gmx.net>
+    Cc: Ingo Molnar <mingo@elte.hu>
+    Cc: Paul Mackerras <paulus@samba.org>
+    Cc: Peter Zijlstra <a.p.zijlstra@chello.nl>
+    Link: http://lkml.kernel.org/r/20110805165838.GA7237@elie.gateway.2wire.net
+    Signed-off-by: Jonathan Nieder <jrnieder@gmail.com>
+    Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+
+diff --git a/tools/perf/util/config.c b/tools/perf/util/config.c
+index e02d78c..6c86eca 100644
+--- a/tools/perf/util/config.c
++++ b/tools/perf/util/config.c
+@@ -399,7 +399,6 @@ static int perf_config_global(void)
+ int perf_config(config_fn_t fn, void *data)
+ {
+ 	int ret = 0, found = 0;
+-	char *repo_config = NULL;
+ 	const char *home = NULL;
+ 
+ 	/* Setting $PERF_CONFIG makes perf read _only_ the given config file. */
+@@ -421,12 +420,6 @@ int perf_config(config_fn_t fn, void *data)
+ 		free(user_config);
+ 	}
+ 
+-	repo_config = perf_pathdup("config");
+-	if (!access(repo_config, R_OK)) {
+-		ret += perf_config_from_file(fn, repo_config, data);
+-		found += 1;
+-	}
+-	free(repo_config);
+ 	if (found == 0)
+ 		return -1;
+ 	return ret;
+commit 069e3725dd9be3b759a98e8c80ac5fc38b392b23
+Author: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date:   Tue Aug 9 12:42:13 2011 -0300
+
+    perf tools: Check $HOME/.perfconfig ownership
+    
+    Just like we do already for perf.data files.
+    
+    Requested-by: Ingo Molnar <mingo@elte.hu>
+    Cc: Ben Hutchings <ben@decadent.org.uk>
+    Cc: Christian Ohm <chr.ohm@gmx.net>
+    Cc: David Ahern <dsahern@gmail.com>
+    Cc: Frederic Weisbecker <fweisbec@gmail.com>
+    Cc: Jonathan Nieder <jrnieder@gmail.com>
+    Cc: Mike Galbraith <efault@gmx.de>
+    Cc: Paul Mackerras <paulus@samba.org>
+    Cc: Peter Zijlstra <peterz@infradead.org>
+    Cc: Stephane Eranian <eranian@google.com>
+    Link: http://lkml.kernel.org/n/tip-qgokmxsmvppwpc5404qhyk7e@git.kernel.org
+    Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+
+diff --git a/tools/perf/util/config.c b/tools/perf/util/config.c
+index 6c86eca..fe02903 100644
+--- a/tools/perf/util/config.c
++++ b/tools/perf/util/config.c
+@@ -413,13 +413,32 @@ int perf_config(config_fn_t fn, void *data)
+ 	home = getenv("HOME");
+ 	if (perf_config_global() && home) {
+ 		char *user_config = strdup(mkpath("%s/.perfconfig", home));
+-		if (!access(user_config, R_OK)) {
+-			ret += perf_config_from_file(fn, user_config, data);
+-			found += 1;
++		struct stat st;
++
++		if (user_config == NULL) {
++			warning("Not enough memory to process %s/.perfconfig, "
++				"ignoring it.", home);
++			goto out;
++		}
++
++		if (stat(user_config, &st) < 0)
++			goto out_free;
++
++		if (st.st_uid && (st.st_uid != geteuid())) {
++			warning("File %s not owned by current user or root, "
++				"ignoring it.", user_config);
++			goto out_free;
+ 		}
++
++		if (!st.st_size)
++			goto out_free;
++
++		ret += perf_config_from_file(fn, user_config, data);
++		found += 1;
++out_free:
+ 		free(user_config);
+ 	}
+-
++out:
+ 	if (found == 0)
+ 		return -1;
+ 	return ret;

@@ -836,6 +836,9 @@ Patch14000: iwlagn-fix-Received-BA-when-not-expected.patch
 Patch14001: iwlagn-use-cts-to-self-protection-on-5000-adapters-series.patch
 Patch14002: iwlwifi-add_ack_plpc_check-module-parameters.patch
 
+# CVE-2011-2905
+Patch14010: perf-tools-do-not-look-at-config-for-configuration.patch
+
 
 %endif
 
@@ -1572,6 +1575,9 @@ ApplyPatch iwlwifi-add_ack_plpc_check-module-parameters.patch
 ApplyPatch iwlagn-fix-Received-BA-when-not-expected.patch
 ApplyPatch iwlagn-use-cts-to-self-protection-on-5000-adapters-series.patch
 
+# CVE-2011-2905
+ApplyPatch perf-tools-do-not-look-at-config-for-configuration.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2158,6 +2164,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 15 2011 Chuck Ebbert <cebbert@redhat.com>
+- CVE-2011-2905: perf tools: may parse user-controlled configuration file
+
 * Wed Aug 03 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.14-94
 - Linux 2.6.35.14
 - Drop merged patches:
