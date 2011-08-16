@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 94
+%global baserelease 95
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -842,6 +842,8 @@ Patch14010: perf-tools-do-not-look-at-config-for-configuration.patch
 Patch14011: ext4-fix-max-file-size-and-logical-block-counting-of-extent-format-file.patch
 # CVE-2011-2497
 Patch14012: bluetooth-prevent-buffer-overflow-in-l2cap-config-request.patch
+# CVE-2011-2517
+Patch14013: nl80211-fix-overflow-in-ssid_len.patch.patch
 
 %endif
 
@@ -1584,6 +1586,8 @@ ApplyPatch perf-tools-do-not-look-at-config-for-configuration.patch
 ApplyPatch ext4-fix-max-file-size-and-logical-block-counting-of-extent-format-file.patch
 # CVE-2011-2497
 ApplyPatch bluetooth-prevent-buffer-overflow-in-l2cap-config-request.patch
+# CVE-2011-2517
+ApplyPatch nl80211-fix-overflow-in-ssid_len.patch.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2171,10 +2175,11 @@ fi
 # and build.
 
 %changelog
-* Mon Aug 15 2011 Chuck Ebbert <cebbert@redhat.com>
+* Mon Aug 15 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.14-95
 - CVE-2011-2905: perf tools: may parse user-controlled configuration file
 - CVE-2011-2695: ext4: kernel panic when writing data to the last block of sparse file
 - CVE-2011-2497: bluetooth: buffer overflow in l2cap config request
+- CVE-2011-2517: nl80211: missing check for valid SSID size in scan operations
 
 * Wed Aug 03 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.14-94
 - Linux 2.6.35.14
