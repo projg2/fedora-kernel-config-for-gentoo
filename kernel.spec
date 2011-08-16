@@ -844,6 +844,8 @@ Patch14011: ext4-fix-max-file-size-and-logical-block-counting-of-extent-format-f
 Patch14012: bluetooth-prevent-buffer-overflow-in-l2cap-config-request.patch
 # CVE-2011-2517
 Patch14013: nl80211-fix-overflow-in-ssid_len.patch.patch
+# CVE-2011-2699
+Patch14014: ipv6-make-fragment-identifications-less-predictable.patch
 
 %endif
 
@@ -1588,6 +1590,8 @@ ApplyPatch ext4-fix-max-file-size-and-logical-block-counting-of-extent-format-fi
 ApplyPatch bluetooth-prevent-buffer-overflow-in-l2cap-config-request.patch
 # CVE-2011-2517
 ApplyPatch nl80211-fix-overflow-in-ssid_len.patch.patch
+# CVE-2011-2699
+ApplyPatch ipv6-make-fragment-identifications-less-predictable.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2180,6 +2184,7 @@ fi
 - CVE-2011-2695: ext4: kernel panic when writing data to the last block of sparse file
 - CVE-2011-2497: bluetooth: buffer overflow in l2cap config request
 - CVE-2011-2517: nl80211: missing check for valid SSID size in scan operations
+- CVE-2011-2699: ipv6: make fragment identifications less predictable
 
 * Wed Aug 03 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.14-94
 - Linux 2.6.35.14
