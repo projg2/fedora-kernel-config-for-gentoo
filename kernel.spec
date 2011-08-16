@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 0
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -581,8 +581,7 @@ Source1000: config-local
 # Here should be only the patches up to the upstream canonical Linus tree.
 
 Patch00: patch-3.0.bz2
-Patch01: patch-3.0.1.bz2
-Patch02: patch-3.0.2-rc1.gz
+Patch01: patch-3.0.2.bz2
 
 # we also need compile fixes for -vanilla
 Patch04: linux-2.6-compile-fixes.patch
@@ -1099,8 +1098,7 @@ done
 
 # Update vanilla to the latest upstream. (2.6.39 -> 3.0)
 ApplyPatch patch-3.0.bz2
-ApplyPatch patch-3.0.1.bz2
-ApplyPatch patch-3.0.2-rc1.gz
+ApplyPatch patch-3.0.2.bz2
 
 ApplyPatch linux-2.6-makefile-after_link.patch
 
@@ -1894,6 +1892,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 15 2011 Dave Jones <davej@redhat.com> 2.6.40.2-1
+- 3.0.2
+
 * Mon Aug 15 2011 Dave Jones <davej@redhat.com>
 - CVE-2011-2905 perf tools may parse user-controlled config file. (rhbz 729809)
 
