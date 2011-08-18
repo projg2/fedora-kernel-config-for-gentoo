@@ -694,6 +694,8 @@ Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 # patch from http://www.delorie.com/tmp/arm-readl.patch
 Patch21002: arm-readl.patch
 
+Patch21003: TEGRA-2.6.40.2-enable-USB-ports.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1135,6 +1137,7 @@ ApplyPatch linux-2.6.29-sparc-IOC_TYPECHECK.patch
 ApplyPatch arm-omap-dt-compat.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 ApplyPatch arm-readl.patch
+ApplyPatch TEGRA-2.6.40.2-enable-USB-ports.patch
 
 #
 # Exec shield
@@ -1890,6 +1893,10 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 17 2011 Dennis Gilmore <dennis@ausil.us>
+- add patch to correctly initialise usb on trimslice systems
+- build in usb-storage on tegra, internal ssd on trimslice is connected to usb
+
 * Tue Aug 16 2011 Dennis Gilmore <dennis@ausil.us>
 - add patch to work around gcc bug on arm
 
