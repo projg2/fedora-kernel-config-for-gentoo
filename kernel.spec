@@ -802,7 +802,14 @@ Summary: Assortment of tools for the Linux kernel
 Group: Development/System
 License: GPLv2
 Obsoletes: perf
-Provides: perf
+Provides:  perf
+Provides:  cpupowerutils = 1:009-0.6.p1
+Obsoletes: cpupowerutils < 1:009-0.6.p1
+Provides:  cpufreq-utils = 1:009-0.6.p1
+Provides:  cpufrequtils = 1:009-0.6.p1
+Obsoletes: cpufreq-utils < 1:009-0.6.p1
+Obsoletes: cpufrequtils < 1:009-0.6.p1
+Obsoletes: cpuspeed < 1:1.5-16
 %description -n kernel-tools
 This package contains the tools/ directory from the kernel source
 - the perf tool and the supporting documentation.
@@ -811,6 +818,7 @@ This package contains the tools/ directory from the kernel source
 Summary: Assortment of tools for the Linux kernel
 Group: Development/System
 License: GPLv2
+Requires: kernel-tools = %{version}-%{release}
 %description -n kernel-tools-devel
 This package contains the development files for the tools/ directory from
 the kernel source.
@@ -2050,6 +2058,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 18 2011 Josh Boyer <jwboyer@redhat.com>
+- Adjust provides/obsoletes to replace the cpupowerutils package
+
 * Wed Aug 17 2011 Josh Boyer <jwboyer@redhat.com>
 - Create the kernel-tools subpackages based on a start by davej
 
