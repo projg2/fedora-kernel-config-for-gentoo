@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -535,7 +535,7 @@ BuildRequires: xmlto, asciidoc
 BuildRequires: sparse >= 0.4.1
 %endif
 %if %{with_tools}
-BuildRequires: elfutils-devel zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) pciutils-devel
+BuildRequires: elfutils-devel zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) pciutils-devel gettext
 %endif
 BuildConflicts: rhbuildsys(DiskFree) < 500Mb
 
@@ -2065,6 +2065,7 @@ fi
 %changelog
 * Fri Aug 19 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch from upstream to fix 64-bit divide error in btrfs
+- Add BuildRequires on gettext for cpupowerutils translations
 
 * Fri Aug 19 2011 Josh Boyer <jwboyer@redhat.com>
 - Linux 3.1-rc2-git5
