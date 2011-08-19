@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 0
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -670,6 +670,7 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 Patch12022: fix-cdc-ncm-dma-stack-vars.patch
 Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
 Patch12024: usb-add-quirk-for-logitech-webcams.patch
+Patch12025: crypto-register-cryptd-first.patch
 
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
@@ -1253,6 +1254,7 @@ ApplyPatch add-appleir-usb-driver.patch
 ApplyPatch fix-cdc-ncm-dma-stack-vars.patch
 ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
 ApplyPatch usb-add-quirk-for-logitech-webcams.patch
+ApplyPatch crypto-register-cryptd-first.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1893,6 +1895,9 @@ fi
 # and build.
 
 %changelog
+* Fri Aug 19 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix race between cryptd and aesni (rhbz 721002)
+
 * Wed Aug 17 2011 Dennis Gilmore <dennis@ausil.us>
 - add patch to correctly initialise usb on trimslice systems
 - build in usb-storage on tegra, internal ssd on trimslice is connected to usb
