@@ -84,7 +84,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %define rcrev 2
 # The git snapshot level
-%define gitrev 5
+%define gitrev 7
 # Set rpm version accordingly
 %define rpmversion 3.%{upstream_sublevel}.0
 %endif
@@ -677,8 +677,6 @@ Patch800: linux-2.6-crash-driver.patch
 
 # virt + ksm patches
 Patch1500: fix_xen_guest_on_old_EC2.patch
-Patch1501: xen-blkfront-name-adjust.patch
-
 
 # DRM
 
@@ -821,6 +819,8 @@ Summary: Assortment of tools for the Linux kernel
 Group: Development/System
 License: GPLv2
 Requires: kernel-tools = %{version}-%{release}
+Provides:  cpupowerutils-devel = 1:009-0.6.p1
+Obsoletes: cpupowerutils-devel < 1:009-0.6.p1
 %description -n kernel-tools-devel
 This package contains the development files for the tools/ directory from
 the kernel source.
@@ -1310,7 +1310,6 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # Assorted Virt Fixes
 ApplyPatch fix_xen_guest_on_old_EC2.patch
-ApplyPatch xen-blkfront-name-adjust.patch
 
 # DRM core
 
@@ -2063,6 +2062,10 @@ fi
 # and build.
 
 %changelog
+* Sat Aug 20 2011 Josh Boyer <jwboyer@redhat.com>
+- Linux 3.1-rc2-git7
+- Add a provides/obsoletes for cpupowerutils-devel
+
 * Fri Aug 19 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch from upstream to fix 64-bit divide error in btrfs
 - Add BuildRequires on gettext for cpupowerutils translations
