@@ -683,6 +683,7 @@ Patch13001: epoll-fix-spurious-lockdep-warnings.patch
 Patch13002: hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
 Patch13010: iwlagn-check-for-priv--txq-in-iwlagn_wait_tx_queue_empty.patch
+Patch13011: iwlagn-revert-max-aggregate-size.patch
 
 Patch20000: utrace.patch
 
@@ -1267,6 +1268,7 @@ ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
 ApplyPatch hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
 ApplyPatch iwlagn-check-for-priv--txq-in-iwlagn_wait_tx_queue_empty.patch
+ApplyPatch iwlagn-revert-max-aggregate-size.patch
 
 ApplyPatch utrace.patch
 
@@ -1898,6 +1900,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 22 2011 Dave Jones <davej@redhat.com>
+- Revert 'iwlwifi: advertise max aggregate size'. (rhbz 708747)
+
 * Mon Aug 22 2011 Chuck Ebbert <cebbert@redhat.com>
 - Update to 3.0.3-final
 
