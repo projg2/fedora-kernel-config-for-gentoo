@@ -699,6 +699,8 @@ Patch2900: linux-2.6-v4l-dvb-update.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
 Patch2902: linux-2.6-v4l-dvb-uvcvideo-update.patch
 
+Patch3000: rcutree-avoid-false-quiescent-states.patch
+
 # fs fixes
 
 # NFSv4
@@ -1332,6 +1334,8 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 #ApplyPatch linux-2.6-v4l-dvb-uvcvideo-update.patch
 
 # Patches headed upstream
+ApplyPatch rcutree-avoid-false-quiescent-states.patch
+
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch add-appleir-usb-driver.patch
@@ -2062,6 +2066,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 22 2011 Dave Jones <davej@redhat.com>
+- Avoid false quiescent states in rcutree with CONFIG_RCU_FAST_NO_HZ. (rhbz 577968)
+
 * Sat Aug 20 2011 Josh Boyer <jwboyer@redhat.com>
 - Linux 3.1-rc2-git7
 - Add a provides/obsoletes for cpupowerutils-devel
