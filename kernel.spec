@@ -735,6 +735,8 @@ Patch2950: linux-2.6-via-velocity-dma-fix.patch
 
 Patch3010: linux-2.6-rcu-netpoll.patch
 
+Patch4000: rcutree-avoid-false-quiescent-states.patch
+
 # NFSv4
 
 # patches headed upstream
@@ -1482,6 +1484,8 @@ ApplyPatch linux-2.6-via-velocity-dma-fix.patch
 
 # silence another rcu_reference warning
 ApplyPatch linux-2.6-rcu-netpoll.patch
+
+ApplyPatch rcutree-avoid-false-quiescent-states.patch
 
 # Patches headed upstream
 ApplyPatch disable-i8042-check-on-apple-mac.patch
