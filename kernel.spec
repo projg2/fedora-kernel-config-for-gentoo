@@ -581,8 +581,7 @@ Source1000: config-local
 # Here should be only the patches up to the upstream canonical Linus tree.
 
 Patch00: patch-3.0.bz2
-Patch01: patch-3.0.2.bz2
-Patch02: patch-3.0.3-rc1.gz
+Patch01: patch-3.0.3.bz2
 
 # we also need compile fixes for -vanilla
 Patch04: linux-2.6-compile-fixes.patch
@@ -1111,8 +1110,7 @@ done
 
 # Update vanilla to the latest upstream. (2.6.39 -> 3.0)
 ApplyPatch patch-3.0.bz2
-ApplyPatch patch-3.0.2.bz2
-ApplyPatch patch-3.0.3-rc1.gz
+ApplyPatch patch-3.0.3.bz2
 
 ApplyPatch linux-2.6-makefile-after_link.patch
 
@@ -1900,6 +1898,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 22 2011 Chuck Ebbert <cebbert@redhat.com>
+- Update to 3.0.3-final
+
 * Mon Aug 22 2011 Dave Jones <davej@redhat.com>
 - Avoid false quiescent states in rcutree with CONFIG_RCU_FAST_NO_HZ. (rhbz 577968)
 
