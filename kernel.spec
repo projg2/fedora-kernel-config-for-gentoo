@@ -2179,6 +2179,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 22 2011 Dave Jones <davej@redhat.com>
+- Avoid false quiescent states in rcutree with CONFIG_RCU_FAST_NO_HZ. (rhbz 577968)
+
 * Mon Aug 15 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.35.14-95
 - CVE-2011-2905: perf tools: may parse user-controlled configuration file
 - CVE-2011-2695: ext4: kernel panic when writing data to the last block of sparse file
