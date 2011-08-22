@@ -658,6 +658,8 @@ Patch2899: linux-2.6-v4l-dvb-fixes.patch
 Patch2900: linux-2.6-v4l-dvb-update.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
 
+Patch3000: rcutree-avoid-false-quiescent-states.patch
+
 # fs fixes
 
 # NFSv4
@@ -1245,6 +1247,9 @@ ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
+
+# Avoid false quiescent states in rcu.
+ApplyPatch rcutree-avoid-false-quiescent-states.patch
 
 # Patches headed upstream
 ApplyPatch disable-i8042-check-on-apple-mac.patch
@@ -1895,6 +1900,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 22 2011 Dave Jones <davej@redhat.com>
+- Avoid false quiescent states in rcutree with CONFIG_RCU_FAST_NO_HZ. (rhbz 577968)
+
 * Fri Aug 19 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix race between cryptd and aesni (rhbz 721002)
 
