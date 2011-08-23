@@ -1900,6 +1900,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 23 2011 Ben Skeggs <bskeggs@redhat.com>
+- nouveau: pull patches from 3.1 to fix some suspend/hibernate problems (rhbz#730582)
+
 * Mon Aug 22 2011 Dave Jones <davej@redhat.com>
 - Revert 'iwlwifi: advertise max aggregate size'. (rhbz 708747)
 
