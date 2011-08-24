@@ -1161,6 +1161,7 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 ApplyPatch xen-blkfront-name-adjust.patch
 
 # DRM core
+ApplyPatch drm-ttm-nouveau-oops-fix.patch
 
 # Nouveau DRM
 ApplyOptionalPatch drm-nouveau-updates.patch
@@ -1826,6 +1827,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 25 2011 Ben Skeggs <bskeggs@redhat.com>
+- nouveau: add patch fixing ttm issues that lead to oopses/corruption (rhbz#699551)
+
 * Wed Aug 24 2011 Chuck Ebbert <cebbert@redhat.com>
 - Automate the kernel version faking.
 
