@@ -1,0 +1,216 @@
+Backport to 2.6.35:
+
+ commit a79e53d85683c6dd9f99c90511028adc2043031f
+ x86/mm: Fix pgd_lock deadlock
+
+This is needed because:
+
+ commit 4981d01eada5354d81c8929d5b2836829ba3df7b
+ x86: Flush TLB if PGD entry is changed in i386 PAE mode)
+
+was added in 2.6.35.12 and caused deadlocks fixed by this patch.
+
+Signed-off-by: Chuck Ebbert <cebbert@redhat.com>
+---
+BZ 699684
+
+--- linux-2.6.35.noarch.orig/arch/x86/mm/fault.c
++++ linux-2.6.35.noarch/arch/x86/mm/fault.c
+@@ -224,15 +224,14 @@ void vmalloc_sync_all(void)
+ 	     address >= TASK_SIZE && address < FIXADDR_TOP;
+ 	     address += PMD_SIZE) {
+ 
+-		unsigned long flags;
+ 		struct page *page;
+ 
+-		spin_lock_irqsave(&pgd_lock, flags);
++		spin_lock(&pgd_lock);
+ 		list_for_each_entry(page, &pgd_list, lru) {
+ 			if (!vmalloc_sync_one(page_address(page), address))
+ 				break;
+ 		}
+-		spin_unlock_irqrestore(&pgd_lock, flags);
++		spin_unlock(&pgd_lock);
+ 	}
+ }
+ 
+@@ -332,13 +331,12 @@ void vmalloc_sync_all(void)
+ 	     address += PGDIR_SIZE) {
+ 
+ 		const pgd_t *pgd_ref = pgd_offset_k(address);
+-		unsigned long flags;
+ 		struct page *page;
+ 
+ 		if (pgd_none(*pgd_ref))
+ 			continue;
+ 
+-		spin_lock_irqsave(&pgd_lock, flags);
++		spin_lock(&pgd_lock);
+ 		list_for_each_entry(page, &pgd_list, lru) {
+ 			pgd_t *pgd;
+ 			pgd = (pgd_t *)page_address(page) + pgd_index(address);
+@@ -347,7 +345,7 @@ void vmalloc_sync_all(void)
+ 			else
+ 				BUG_ON(pgd_page_vaddr(*pgd) != pgd_page_vaddr(*pgd_ref));
+ 		}
+-		spin_unlock_irqrestore(&pgd_lock, flags);
++		spin_unlock(&pgd_lock);
+ 	}
+ }
+ 
+--- linux-2.6.35.noarch.orig/arch/x86/xen/mmu.c
++++ linux-2.6.35.noarch/arch/x86/xen/mmu.c
+@@ -988,10 +988,9 @@ static void xen_pgd_pin(struct mm_struct
+  */
+ void xen_mm_pin_all(void)
+ {
+-	unsigned long flags;
+ 	struct page *page;
+ 
+-	spin_lock_irqsave(&pgd_lock, flags);
++	spin_lock(&pgd_lock);
+ 
+ 	list_for_each_entry(page, &pgd_list, lru) {
+ 		if (!PagePinned(page)) {
+@@ -1000,7 +999,7 @@ void xen_mm_pin_all(void)
+ 		}
+ 	}
+ 
+-	spin_unlock_irqrestore(&pgd_lock, flags);
++	spin_unlock(&pgd_lock);
+ }
+ 
+ /*
+@@ -1101,10 +1100,9 @@ static void xen_pgd_unpin(struct mm_stru
+  */
+ void xen_mm_unpin_all(void)
+ {
+-	unsigned long flags;
+ 	struct page *page;
+ 
+-	spin_lock_irqsave(&pgd_lock, flags);
++	spin_lock(&pgd_lock);
+ 
+ 	list_for_each_entry(page, &pgd_list, lru) {
+ 		if (PageSavePinned(page)) {
+@@ -1114,7 +1112,7 @@ void xen_mm_unpin_all(void)
+ 		}
+ 	}
+ 
+-	spin_unlock_irqrestore(&pgd_lock, flags);
++	spin_unlock(&pgd_lock);
+ }
+ 
+ void xen_activate_mm(struct mm_struct *prev, struct mm_struct *next)
+--- linux-2.6.35.noarch.orig/arch/x86/mm/pageattr.c
++++ linux-2.6.35.noarch/arch/x86/mm/pageattr.c
+@@ -56,12 +56,10 @@ static unsigned long direct_pages_count[
+ 
+ void update_page_count(int level, unsigned long pages)
+ {
+-	unsigned long flags;
+-
+ 	/* Protect against CPA */
+-	spin_lock_irqsave(&pgd_lock, flags);
++	spin_lock(&pgd_lock);
+ 	direct_pages_count[level] += pages;
+-	spin_unlock_irqrestore(&pgd_lock, flags);
++	spin_unlock(&pgd_lock);
+ }
+ 
+ static void split_page_count(int level)
+@@ -391,7 +389,7 @@ static int
+ try_preserve_large_page(pte_t *kpte, unsigned long address,
+ 			struct cpa_data *cpa)
+ {
+-	unsigned long nextpage_addr, numpages, pmask, psize, flags, addr, pfn;
++	unsigned long nextpage_addr, numpages, pmask, psize, addr, pfn;
+ 	pte_t new_pte, old_pte, *tmp;
+ 	pgprot_t old_prot, new_prot;
+ 	int i, do_split = 1;
+@@ -400,7 +398,7 @@ try_preserve_large_page(pte_t *kpte, uns
+ 	if (cpa->force_split)
+ 		return 1;
+ 
+-	spin_lock_irqsave(&pgd_lock, flags);
++	spin_lock(&pgd_lock);
+ 	/*
+ 	 * Check for races, another CPU might have split this page
+ 	 * up already:
+@@ -495,14 +493,14 @@ try_preserve_large_page(pte_t *kpte, uns
+ 	}
+ 
+ out_unlock:
+-	spin_unlock_irqrestore(&pgd_lock, flags);
++	spin_unlock(&pgd_lock);
+ 
+ 	return do_split;
+ }
+ 
+ static int split_large_page(pte_t *kpte, unsigned long address)
+ {
+-	unsigned long flags, pfn, pfninc = 1;
++	unsigned long pfn, pfninc = 1;
+ 	unsigned int i, level;
+ 	pte_t *pbase, *tmp;
+ 	pgprot_t ref_prot;
+@@ -516,7 +514,7 @@ static int split_large_page(pte_t *kpte,
+ 	if (!base)
+ 		return -ENOMEM;
+ 
+-	spin_lock_irqsave(&pgd_lock, flags);
++	spin_lock(&pgd_lock);
+ 	/*
+ 	 * Check for races, another CPU might have split this page
+ 	 * up for us already:
+@@ -588,7 +586,7 @@ out_unlock:
+ 	 */
+ 	if (base)
+ 		__free_page(base);
+-	spin_unlock_irqrestore(&pgd_lock, flags);
++	spin_unlock(&pgd_lock);
+ 
+ 	return 0;
+ }
+--- linux-2.6.35.noarch.orig/arch/x86/mm/pgtable.c
++++ linux-2.6.35.noarch/arch/x86/mm/pgtable.c
+@@ -111,14 +111,12 @@ static void pgd_ctor(pgd_t *pgd)
+ 
+ static void pgd_dtor(pgd_t *pgd)
+ {
+-	unsigned long flags; /* can be called from interrupt context */
+-
+ 	if (SHARED_KERNEL_PMD)
+ 		return;
+ 
+-	spin_lock_irqsave(&pgd_lock, flags);
++	spin_lock(&pgd_lock);
+ 	pgd_list_del(pgd);
+-	spin_unlock_irqrestore(&pgd_lock, flags);
++	spin_unlock(&pgd_lock);
+ }
+ 
+ /*
+@@ -249,7 +247,6 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
+ {
+ 	pgd_t *pgd;
+ 	pmd_t *pmds[PREALLOCATED_PMDS];
+-	unsigned long flags;
+ 
+ 	pgd = (pgd_t *)__get_free_page(PGALLOC_GFP);
+ 
+@@ -269,12 +266,12 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
+ 	 * respect to anything walking the pgd_list, so that they
+ 	 * never see a partially populated pgd.
+ 	 */
+-	spin_lock_irqsave(&pgd_lock, flags);
++	spin_lock(&pgd_lock);
+ 
+ 	pgd_ctor(pgd);
+ 	pgd_prepopulate_pmd(mm, pgd, pmds);
+ 
+-	spin_unlock_irqrestore(&pgd_lock, flags);
++	spin_unlock(&pgd_lock);
+ 
+ 	return pgd;
+ 

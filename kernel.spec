@@ -849,6 +849,9 @@ Patch14013: nl80211-fix-overflow-in-ssid_len.patch.patch
 # CVE-2011-2699
 Patch14014: ipv6-make-fragment-identifications-less-predictable.patch
 
+# RHBZ #699684
+Patch14020: x86-mm-fix-pgd_lock-deadlock.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1597,6 +1600,9 @@ ApplyPatch nl80211-fix-overflow-in-ssid_len.patch.patch
 # CVE-2011-2699
 ApplyPatch ipv6-make-fragment-identifications-less-predictable.patch
 
+# RHBZ #699684
+ApplyPatch x86-mm-fix-pgd_lock-deadlock.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2183,6 +2189,9 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 24 2011 Chuck Ebbert <cebbert@redhat.com>
+- Add fix for RHBZ #699684: System freeze with 2.6.35.12-*.fc14.i686.PAE
+
 * Mon Aug 22 2011 Dave Jones <davej@redhat.com>
 - Avoid false quiescent states in rcutree with CONFIG_RCU_FAST_NO_HZ. (rhbz 577968)
 
