@@ -609,6 +609,7 @@ Patch1501: xen-blkfront-name-adjust.patch
 
 # nouveau + drm fixes
 Patch1810: drm-nouveau-updates.patch
+Patch1811: drm-ttm-nouveau-oops-fix.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
@@ -668,6 +669,9 @@ Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 Patch21002: arm-readl.patch
 
 Patch21003: TEGRA-2.6.40.2-enable-USB-ports.patch
+
+# rhbz#719607
+Patch21004: vfs-fix-automount-for-negative-autofs-dentries.patch
 
 %endif
 
@@ -1206,6 +1210,9 @@ ApplyPatch iwlagn-check-for-priv--txq-in-iwlagn_wait_tx_queue_empty.patch
 ApplyPatch iwlagn-revert-max-aggregate-size.patch
 
 ApplyPatch utrace.patch
+
+# rhbz#719607
+ApplyPatch vfs-fix-automount-for-negative-autofs-dentries.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1827,6 +1834,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 25 2011 Chuck Ebbert <cebbert@redhat.com>
+- VFS: Fix automount for negative autofs dentries (rhbz#719607)
+
 * Thu Aug 25 2011 Ben Skeggs <bskeggs@redhat.com>
 - nouveau: add patch fixing ttm issues that lead to oopses/corruption (rhbz#699551)
 
