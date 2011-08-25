@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -553,6 +553,9 @@ Patch01: %{stable_patch_01}
 %endif
 %endif
 
+# Patches from git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+Patch02: stable-queue.patch
+
 # we also need compile fixes for -vanilla
 Patch04: linux-2.6-compile-fixes.patch
 
@@ -1051,6 +1054,8 @@ ApplyPatch %{stable_patch_00}
 ApplyPatch %{stable_patch_01}
 %endif
 
+ApplyOptionalPatch stable-queue.patch
+
 ApplyPatch linux-2.6-makefile-after_link.patch
 
 #
@@ -1162,7 +1167,7 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # Assorted Virt Fixes
 ApplyPatch fix_xen_guest_on_old_EC2.patch
-ApplyPatch xen-blkfront-name-adjust.patch
+#ApplyPatch xen-blkfront-name-adjust.patch
 
 # DRM core
 ApplyPatch drm-ttm-nouveau-oops-fix.patch
@@ -1834,6 +1839,10 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 25 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.40.3-2
+- Add patches queued for 3.0.4
+- Comment out xen-blkfront-name-adjust.patch, now queued for -stable
+
 * Thu Aug 25 2011 Chuck Ebbert <cebbert@redhat.com>
 - VFS: Fix automount for negative autofs dentries (rhbz#719607)
 
