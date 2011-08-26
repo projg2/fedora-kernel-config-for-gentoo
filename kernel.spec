@@ -644,7 +644,6 @@ Patch09: linux-2.6-upstream-reverts.patch
 
 # Standalone patches
 
-Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
 
 Patch202: linux-2.6-debug-taint-vm.patch
@@ -1209,10 +1208,9 @@ ApplyPatch arm-omap-dt-compat.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 
 #
-# Exec shield
+# NX Emulation
 #
 ApplyPatch linux-2.6-i386-nx-emulation.patch
-ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -2036,6 +2034,10 @@ fi
 # and build.
 
 %changelog
+* Fri Aug 26 2011 Dave Jones <davej@redhat.com>
+- Drop linux-2.6-32bit-mmap-exec-randomization.patch
+  Outlived it's usefulness (and made of ugly)
+
 * Fri Aug 26 2011 Dave Jones <davej@redhat.com>
 - Drop acpi-ec-add-delay-before-write.patch (rhbz 733690)
 
