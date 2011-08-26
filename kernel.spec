@@ -719,9 +719,6 @@ Patch12027: usb-add-quirk-for-logitech-webcams.patch
 Patch12029: crypto-register-cryptd-first.patch
 Patch12030: fix-intel-duplicate-backlight.patch
 
-# Runtime power management
-Patch12205: runtime_pm_fixups.patch
-
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
