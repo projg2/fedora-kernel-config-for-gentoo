@@ -1205,19 +1205,6 @@ ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 # x86(-64)
 
 #
-# Intel IOMMU
-#
-
-#
-# PowerPC
-#
-
-#
-# SPARC64
-#
-ApplyPatch linux-2.6.29-sparc-IOC_TYPECHECK.patch
-
-#
 # ARM
 #
 ApplyPatch arm-omap-dt-compat.patch
