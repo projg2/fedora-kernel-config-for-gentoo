@@ -678,6 +678,9 @@ Patch21003: TEGRA-2.6.40.2-enable-USB-ports.patch
 # rhbz#719607
 Patch21004: vfs-fix-automount-for-negative-autofs-dentries.patch
 
+# rhbz#727927 rhbz#731278 rhbz#732934
+Patch21005: cifs-fix-ERR_PTR-dereference-in-cifs_get_root.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1223,6 +1226,10 @@ ApplyPatch utrace.patch
 
 # rhbz#719607
 ApplyPatch vfs-fix-automount-for-negative-autofs-dentries.patch
+
+# rhbz#727927 rhbz#731278 rhbz#732934
+# cifs-possible-memory-corruption-on-mount.patch is already queued for 3.0.4
+ApplyPatch cifs-fix-ERR_PTR-dereference-in-cifs_get_root.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1844,6 +1851,9 @@ fi
 # and build.
 
 %changelog
+* Fri Aug 26 2011 Chuck Ebbert <cebbert@redhat.com>
+- Add fixes for cifs mount oopses (rhbz#727927 rhbz#731278 rhbz#732934)
+
 * Thu Aug 25 2011 Chuck Ebbert <cebbert@redhat.com>
 - Reduce severity of host bridge window conflict warnings (rhbz#729652)
 
