@@ -595,6 +595,8 @@ Patch470: die-floppy-die.patch
 
 Patch510: linux-2.6-silence-noise.patch
 Patch530: linux-2.6-silence-fbcon-logo.patch
+# from 3.1
+Patch540: x86-pci-reduce-severity-of-host-bridge-window-conflict-warnings.patch
 
 Patch610: hda_intel-prealloc-4mb-dmabuffer.patch
 
@@ -1153,6 +1155,9 @@ ApplyPatch linux-2.6-silence-noise.patch
 
 # Make fbcon not show the penguins with 'quiet'
 ApplyPatch linux-2.6-silence-fbcon-logo.patch
+
+# Get rid of useless bridge window conflict warnings
+ApplyPatch x86-pci-reduce-severity-of-host-bridge-window-conflict-warnings.patch
 
 # Changes to upstream defaults.
 
@@ -1839,6 +1844,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 25 2011 Chuck Ebbert <cebbert@redhat.com>
+- Reduce severity of host bridge window conflict warnings (rhbz#729652)
+
 * Thu Aug 25 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.40.3-2
 - Add patches queued for 3.0.4
 - Comment out xen-blkfront-name-adjust.patch, now queued for -stable
