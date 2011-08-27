@@ -2032,6 +2032,10 @@ fi
 # and build.
 
 %changelog
+* Sat Aug 27 2011 Dave Jones <davej@redhat.com>
+- Fix get_gate_vma usage in i386 NX emulation
+- Fix up dependancy on the dropped randomization patch.
+
 * Fri Aug 26 2011 Dave Jones <davej@redhat.com>
 - Enable CONFIG_DETECT_HUNG_TASK for debug builds & rawhide.
 
