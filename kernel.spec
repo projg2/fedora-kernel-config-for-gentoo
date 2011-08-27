@@ -1851,6 +1851,9 @@ fi
 # and build.
 
 %changelog
+* Sat Aug 27 2011 Dave Jones <davej@redhat.com>
+- Fix get_gate_vma usage in 32bit NX emulation.
+
 * Fri Aug 26 2011 Chuck Ebbert <cebbert@redhat.com>
 - Add fixes for cifs mount oopses (rhbz#727927 rhbz#731278 rhbz#732934)
 
