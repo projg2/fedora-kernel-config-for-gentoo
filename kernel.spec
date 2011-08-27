@@ -644,6 +644,7 @@ Patch09: linux-2.6-upstream-reverts.patch
 
 # Standalone patches
 
+Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
 
 Patch202: linux-2.6-debug-taint-vm.patch
@@ -1209,6 +1210,7 @@ ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 #
 # NX Emulation
 #
+ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 ApplyPatch linux-2.6-i386-nx-emulation.patch
 
 #
@@ -2034,7 +2036,8 @@ fi
 %changelog
 * Sat Aug 27 2011 Dave Jones <davej@redhat.com>
 - Fix get_gate_vma usage in i386 NX emulation
-- Fix up dependancy on the dropped randomization patch.
+- Bring back the 32bit mmap randomization patch for now.
+  NX emulation is still too dependant upon it.
 
 * Fri Aug 26 2011 Dave Jones <davej@redhat.com>
 - Enable CONFIG_DETECT_HUNG_TASK for debug builds & rawhide.
