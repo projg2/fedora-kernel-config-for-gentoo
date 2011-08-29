@@ -852,6 +852,9 @@ Patch14014: ipv6-make-fragment-identifications-less-predictable.patch
 # RHBZ #699684
 Patch14020: x86-mm-fix-pgd_lock-deadlock.patch
 
+# RHBZ #573210
+Patch14030: utrace-use-task_pid_vnr-in-ptrace_report_clone.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1603,6 +1606,9 @@ ApplyPatch ipv6-make-fragment-identifications-less-predictable.patch
 # RHBZ #699684
 ApplyPatch x86-mm-fix-pgd_lock-deadlock.patch
 
+# RHBZ #573210
+ApplyPatch utrace-use-task_pid_vnr-in-ptrace_report_clone.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2189,6 +2195,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 29 2011 Josh Boyer <jwboyer@redhat.com>
+- Add fix from Oleg Nesterov for RHBZ #573210
+
 * Wed Aug 24 2011 Chuck Ebbert <cebbert@redhat.com>
 - Add fix for RHBZ #699684: System freeze with 2.6.35.12-*.fc14.i686.PAE
 

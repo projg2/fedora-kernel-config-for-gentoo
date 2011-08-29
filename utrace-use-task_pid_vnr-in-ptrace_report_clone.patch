@@ -1,0 +1,24 @@
+https://bugzilla.redhat.com/show_bug.cgi?id=573210
+
+ptrace_report_clone() uses child->pid, this is obviously wrong unless
+the tracer is from the global namespace. Change it to use task_pid_vnr().
+
+This is still not right, we should use the tracer's namespace, not
+parent's. But this matches upstream, and at least this works if they
+are from the same namespace.
+
+Reported-by: Robin Green <greenrd@greenrd.org>
+Signed-off-by: Oleg Nesterov <oleg@redhat.com>
+
+--- a/kernel/ptrace-utrace.c
++++ b/kernel/ptrace-utrace.c
+@@ -403,7 +403,7 @@ static u32 ptrace_report_clone(u32 actio
+ 		return UTRACE_RESUME;
+ 
+ 	set_stop_code(ctx, event);
+-	ctx->eventmsg = child->pid;
++	ctx->eventmsg = task_pid_vnr(child);
+ 	/*
+ 	 * We shouldn't stop now, inside the do_fork() path.
+ 	 * We will stop later, before return to user-mode.
+
