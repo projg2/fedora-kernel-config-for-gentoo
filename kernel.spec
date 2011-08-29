@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -608,7 +608,6 @@ Patch800: linux-2.6-crash-driver.patch
 
 # virt + ksm patches
 Patch1500: fix_xen_guest_on_old_EC2.patch
-Patch1501: xen-blkfront-name-adjust.patch
 
 # DRM
 
@@ -1175,7 +1174,6 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # Assorted Virt Fixes
 ApplyPatch fix_xen_guest_on_old_EC2.patch
-#ApplyPatch xen-blkfront-name-adjust.patch
 
 # DRM core
 ApplyPatch drm-ttm-nouveau-oops-fix.patch
@@ -1851,6 +1849,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 29 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.40.4-3
+- Linux 3.0.4
+
 * Sat Aug 27 2011 Dave Jones <davej@redhat.com>
 - Fix get_gate_vma usage in 32bit NX emulation.
 
