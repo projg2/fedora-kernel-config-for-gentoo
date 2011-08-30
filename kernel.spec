@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -680,6 +680,9 @@ Patch21004: vfs-fix-automount-for-negative-autofs-dentries.patch
 # rhbz#727927 rhbz#731278 rhbz#732934
 Patch21005: cifs-fix-ERR_PTR-dereference-in-cifs_get_root.patch
 
+# from 3.0.5 patch queue
+Patch21006: sendmmsg-sendmsg-fix-unsafe-user-pointer-access.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1228,6 +1231,9 @@ ApplyPatch vfs-fix-automount-for-negative-autofs-dentries.patch
 # rhbz#727927 rhbz#731278 rhbz#732934
 # cifs-possible-memory-corruption-on-mount.patch is already queued for 3.0.4
 ApplyPatch cifs-fix-ERR_PTR-dereference-in-cifs_get_root.patch
+
+# from 3.0.5 patch queue
+ApplyPatch sendmmsg-sendmsg-fix-unsafe-user-pointer-access.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1849,6 +1855,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 30 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.40.4-4
+- Fix unsafe pointer access in sendmsg/sendmmsg
+
 * Mon Aug 29 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.40.4-3
 - Linux 3.0.4
 
