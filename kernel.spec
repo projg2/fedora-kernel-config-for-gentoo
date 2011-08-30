@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -1857,6 +1857,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 30 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.4-5
+- Fix kconfig error in patch for rhbz 606017
+
 * Tue Aug 30 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.40.4-4
 - Fix unsafe pointer access in sendmsg/sendmmsg
 
