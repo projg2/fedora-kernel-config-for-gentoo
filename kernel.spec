@@ -858,9 +858,6 @@ Patch14030: utrace-use-task_pid_vnr-in-ptrace_report_clone.patch
 # RHBZ #672056
 Patch14040: asix-add-USB-ID-for-Logitec-LAN-GTJ-U2A.patch
 
-# RHBZ #606017
-Patch14050: acpi-ensure-thermal-limits-match-cpu-freq.patch
-
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1618,9 +1615,6 @@ ApplyPatch utrace-use-task_pid_vnr-in-ptrace_report_clone.patch
 # RHBZ #672056
 ApplyPatch asix-add-USB-ID-for-Logitec-LAN-GTJ-U2A.patch
 
-# RHBZ #606017
-ApplyPatch acpi-ensure-thermal-limits-match-cpu-freq.patch
-
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2207,9 +2201,6 @@ fi
 # and build.
 
 %changelog
-* Tue Aug 30 2011 Josh Boyer <jwboyer@redhat.com>
-- Add fix from Matthew Garret for RHBZ #606017
-
 * Mon Aug 29 2011 Josh Boyer <jwboyer@redhat.com>
 - Add fix from Oleg Nesterov for RHBZ #573210
 - Add patch for RHBZ #672056
