@@ -718,6 +718,7 @@ Patch12029: crypto-register-cryptd-first.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
+Patch13002: revert-efi-rtclock.patch
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
 Patch13004: iwlagn-revert-max-aggregate-size.patch
 
@@ -1329,6 +1330,7 @@ ApplyPatch crypto-register-cryptd-first.patch
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
+ApplyPatch revert-efi-rtclock.patch
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 ApplyPatch iwlagn-revert-max-aggregate-size.patch
 
@@ -2034,6 +2036,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 30 2011 Dave Jones <davej@redhat.com>
+- Revert "x86: Serialize EFI time accesses on rtc_lock" (rhbz 732755)
+
 * Tue Aug 30 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix rhbz 606017
 
