@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -585,6 +585,7 @@ Patch390: linux-2.6-defaults-acpi-video.patch
 Patch391: linux-2.6-acpi-video-dos.patch
 Patch393: acpi-ec-add-delay-before-write.patch
 Patch394: linux-2.6-acpi-debug-infinite-loop.patch
+Patch395: acpi-ensure-thermal-limits-match-cpu-freq.patch
 
 Patch450: linux-2.6-input-kill-stupid-messages.patch
 Patch452: linux-2.6.30-no-pcspkr-modalias.patch
@@ -1118,6 +1119,7 @@ ApplyPatch linux-2.6-defaults-acpi-video.patch
 ApplyPatch linux-2.6-acpi-video-dos.patch
 ApplyPatch acpi-ec-add-delay-before-write.patch
 ApplyPatch linux-2.6-acpi-debug-infinite-loop.patch
+ApplyPatch acpi-ensure-thermal-limits-match-cpu-freq.patch
 
 # Various low-impact patches to aid debugging.
 ApplyPatch linux-2.6-debug-taint-vm.patch
@@ -1849,6 +1851,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 30 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix rhbz 606017
+
 * Mon Aug 29 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.40.4-3
 - Linux 3.0.4
 
