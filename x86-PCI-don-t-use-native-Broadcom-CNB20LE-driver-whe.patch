@@ -1,0 +1,59 @@
+From 30e664afb5cb597dd6f7651e6d116e10b9741084 Mon Sep 17 00:00:00 2001
+From: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Date: Thu, 6 Jan 2011 10:12:24 -0700
+Subject: [PATCH] x86/PCI: don't use native Broadcom CNB20LE driver when ACPI
+ is available
+
+The broadcom_bus.c quirk was written (without benefit of documentation)
+to support PCI hotplug on an old system that doesn't have ACPI.  As
+such, we should only use it when the system doesn't have ACPI.
+
+If the system does have ACPI and we need the host bridge description, we
+should get it from the ACPI _CRS method.  On machines older than 2008,
+we currently ignore _CRS, but that doesn't mean we should use
+broadcom_bus.c.  It means we should either (a) do what we've done in the
+past and assume everything in the PCI gap is routed to bus 0 (so hotplug
+may not work), or (b) arrange to use _CRS.  This patch does (a).
+
+Reference: https://bugzilla.redhat.com/show_bug.cgi?id=665109
+Acked-by: Ira W. Snyder <iws@ovro.caltech.edu>
+Signed-off-by: Bjorn Helgaas <bjorn.helgaas@hp.com>
+Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+---
+ arch/x86/pci/broadcom_bus.c |   11 +++++++----
+ 1 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/pci/broadcom_bus.c b/arch/x86/pci/broadcom_bus.c
+index 0846a5b..ab8269b 100644
+--- a/arch/x86/pci/broadcom_bus.c
++++ b/arch/x86/pci/broadcom_bus.c
+@@ -9,6 +9,7 @@
+  * option) any later version.
+  */
+ 
++#include <linux/acpi.h>
+ #include <linux/delay.h>
+ #include <linux/dmi.h>
+ #include <linux/pci.h>
+@@ -25,12 +26,14 @@ static void __devinit cnb20le_res(struct pci_dev *dev)
+ 	u8 fbus, lbus;
+ 	int i;
+ 
++#ifdef CONFIG_ACPI
+ 	/*
+-	 * The x86_pci_root_bus_res_quirks() function already refuses to use
+-	 * this information if ACPI _CRS was used. Therefore, we don't bother
+-	 * checking if ACPI is enabled, and just generate the information
+-	 * for both the ACPI _CRS and no ACPI cases.
++	 * We should get host bridge information from ACPI unless the BIOS
++	 * doesn't support it.
+ 	 */
++	if (acpi_os_get_root_pointer())
++		return;
++#endif
+ 
+ 	info = &pci_root_info[pci_root_num];
+ 	pci_root_num++;
+-- 
+1.7.6
+
