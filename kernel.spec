@@ -406,7 +406,7 @@ Summary: The Linux kernel
 # First the general kernel 2.6 required versions as per
 # Documentation/Changes
 #
-%define kernel_dot_org_conflicts  ppp < 2.4.3-3, isdn4k-utils < 3.2-32, nfs-utils < 1.0.7-12, e2fsprogs < 1.37-4, util-linux < 2.12, jfsutils < 1.1.7-2, reiserfs-utils < 3.6.19-2, xfsprogs < 2.6.13-4, procps < 3.2.5-6.3, oprofile < 0.9.1-2
+%define kernel_dot_org_conflicts  ppp < 2.4.3-3, isdn4k-utils < 3.2-32, nfs-utils < 1.0.7-12, e2fsprogs < 1.37-4, util-linux < 2.12, jfsutils < 1.1.7-2, reiserfs-utils < 3.6.19-2, xfsprogs < 2.6.13-4, procps < 3.2.5-6.3, oprofile < 0.9.1-2, device-mapper-libs < 1.02.63-2, mdadm < 3.2.1-5
 
 #
 # Then a series of requirements that are distribution specific, either
@@ -1857,6 +1857,9 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 31 2011 Dave Jones <davej@redhat.com>
+- Reinstate some conflicts: that disappeared during the rebase (rhbz 710646)
+
 * Tue Aug 30 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.4-5
 - Fix kconfig error in patch for rhbz 606017
 
