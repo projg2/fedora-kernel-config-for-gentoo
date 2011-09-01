@@ -2207,7 +2207,7 @@ fi
 # and build.
 
 %changelog
-* Wed Aug 31 2011 Josh Boyer <jwboyer@redhat.com>
+* Wed Aug 31 2011 Josh Boyer <jwboyer@redhat.com> 2.6.35.14-96
 - Add patch to fix RHBZ #665109
 
 * Mon Aug 29 2011 Josh Boyer <jwboyer@redhat.com>
