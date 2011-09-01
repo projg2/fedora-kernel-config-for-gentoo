@@ -2036,6 +2036,9 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 01 2011 Dave Jones <davej@redhat.com>
+- utrace: s390: fix the compile problem with traps.c (rhbz 735118)
+
 * Tue Aug 30 2011 Dave Jones <davej@redhat.com>
 - Revert "x86: Serialize EFI time accesses on rtc_lock" (rhbz 732755)
 
