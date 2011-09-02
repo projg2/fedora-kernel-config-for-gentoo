@@ -647,6 +647,8 @@ Patch09: linux-2.6-upstream-reverts.patch
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
 
+Patch200: ext4-lockdep.patch
+
 Patch202: linux-2.6-debug-taint-vm.patch
 
 Patch383: linux-2.6-defaults-aspm.patch
@@ -1219,6 +1221,7 @@ ApplyPatch linux-2.6-i386-nx-emulation.patch
 #
 
 # ext4
+ApplyPatch ext4-lockdep.patch
 
 # xfs
 
@@ -2036,6 +2039,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 02 2011 Dave Jones <davej@redhat.com>
+- Apply patch to fix lockdep reports from ext4 (rhbz 732572)
+
 * Thu Sep 01 2011 Dave Jones <davej@redhat.com>
 - utrace: s390: fix the compile problem with traps.c (rhbz 735118)
 

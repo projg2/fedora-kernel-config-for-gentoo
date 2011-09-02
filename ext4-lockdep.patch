@@ -1,0 +1,12 @@
+--- linux-3.0.noarch/fs/ext4/inode.c~	2011-09-02 11:50:56.206445843 -0400
++++ linux-3.0.noarch/fs/ext4/inode.c	2011-09-02 11:51:31.224323827 -0400
+@@ -121,9 +121,6 @@ void ext4_evict_inode(struct inode *inod
+ 
+ 	trace_ext4_evict_inode(inode);
+ 
+-	mutex_lock(&inode->i_mutex);
+-	ext4_flush_completed_IO(inode);
+-	mutex_unlock(&inode->i_mutex);
+ 	ext4_ioend_wait(inode);
+ 
+ 	if (inode->i_nlink) {
