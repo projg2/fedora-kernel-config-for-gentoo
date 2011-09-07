@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -684,6 +684,9 @@ Patch21005: cifs-fix-ERR_PTR-dereference-in-cifs_get_root.patch
 # from 3.0.5 patch queue
 Patch21006: sendmmsg-sendmsg-fix-unsafe-user-pointer-access.patch
 
+# rhbz #735437
+Patch21007: ucvideo-fix-crash-when-linking-entities.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1236,6 +1239,9 @@ ApplyPatch cifs-fix-ERR_PTR-dereference-in-cifs_get_root.patch
 
 # from 3.0.5 patch queue
 ApplyPatch sendmmsg-sendmsg-fix-unsafe-user-pointer-access.patch
+
+#rhbz 735437
+ApplyPatch ucvideo-fix-crash-when-linking-entities.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1857,6 +1863,9 @@ fi
 # and build.
 
 %changelog
+* Wed Sep 07 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix oops when linking entities in ucvideo (rhbz 735437)
+
 * Wed Aug 31 2011 Dave Jones <davej@redhat.com>
 - Reinstate some conflicts: that disappeared during the rebase (rhbz 710646)
 
