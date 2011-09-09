@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 2
+%global baserelease 0
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%define rcrev 4
+%define rcrev 5
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -646,8 +646,6 @@ Patch09: linux-2.6-upstream-reverts.patch
 
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
-
-Patch200: ext4-lockdep.patch
 
 Patch202: linux-2.6-debug-taint-vm.patch
 
@@ -1222,7 +1220,6 @@ ApplyPatch linux-2.6-i386-nx-emulation.patch
 #
 
 # ext4
-ApplyPatch ext4-lockdep.patch
 
 # xfs
 
@@ -2041,6 +2038,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 09 2011 Josh Boyer <jwboyer@redhat.com> 3.1.0-0.rc5.git0.0
+- Linux 3.1-rc5
+
 * Wed Sep 07 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix oops when linking entities in ucvideo (rhbz 735437)
 
