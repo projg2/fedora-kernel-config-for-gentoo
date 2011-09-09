@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 0
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2038,6 +2038,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 09 2011 Josh Boyer <jwboyer@redhat.com>
+- Change to 64K page size for ppc64 kernels (rhbz 736751)
+
 * Fri Sep 09 2011 Josh Boyer <jwboyer@redhat.com> 3.1.0-0.rc5.git0.0
 - Linux 3.1-rc5
 
