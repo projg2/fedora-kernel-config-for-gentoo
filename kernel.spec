@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 96
+%global baserelease 97
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -861,6 +861,9 @@ Patch14040: asix-add-USB-ID-for-Logitec-LAN-GTJ-U2A.patch
 # RHBZ #665109
 Patch14050: x86-PCI-don-t-use-native-Broadcom-CNB20LE-driver-whe.patch
 
+# RHBZ #648571
+Patch14051: modules-Fix-module_bug_list-list-corruption-race.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1621,6 +1624,9 @@ ApplyPatch asix-add-USB-ID-for-Logitec-LAN-GTJ-U2A.patch
 # RHBZ #665109
 ApplyPatch x86-PCI-don-t-use-native-Broadcom-CNB20LE-driver-whe.patch
 
+# RHBZ #648571
+ApplyPatch modules-Fix-module_bug_list-list-corruption-race.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2207,6 +2213,9 @@ fi
 # and build.
 
 %changelog
+* Mon Sep 12 2011 Josh Boyer <jwboyer@redhat.com>
+- Backport 5336377d to fix RHBZ #648571
+
 * Wed Aug 31 2011 Josh Boyer <jwboyer@redhat.com> 2.6.35.14-96
 - Add patch to fix RHBZ #665109
 
