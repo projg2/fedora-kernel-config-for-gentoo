@@ -683,6 +683,8 @@ Patch1810: drm-nouveau-updates.patch
 Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
+# hush the i915 fbc noise
+Patch1826: drm-i915-fbc-stfu.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
@@ -1300,6 +1302,7 @@ ApplyOptionalPatch drm-nouveau-updates.patch
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
+ApplyPatch drm-i915-fbc-stfu.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
 # silence the ACPI blacklist code
@@ -2038,6 +2041,9 @@ fi
 # and build.
 
 %changelog
+* Tue Sep 13 2011 Adam Jackson <ajax@redhat.com>
+- drm/i915: Shut the fbc messages up when drm.debug & 4
+
 * Mon Sep 12 2011 Josh Boyer <jwboyer@redhat.com> 3.1.0-0.rc6.git0.0
 - Linux 3.1-rc6 (contains the fix for 737076)
 - Disable debug builds
