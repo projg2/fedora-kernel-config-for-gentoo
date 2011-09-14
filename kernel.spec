@@ -729,6 +729,8 @@ Patch13006: add-macbookair41-trackpad.patch
 Patch13007: add-macbookair41-keyboard.patch
 Patch13008: add-macbookair41-btusb.patch
 
+Patch13009: hvcs_pi_buf_alloc.patch
+
 Patch20000: utrace.patch
 
 # Flattened devicetree support
@@ -1346,6 +1348,8 @@ ApplyPatch ucvideo-fix-crash-when-linking-entities.patch
 ApplyPatch add-macbookair41-trackpad.patch
 ApplyPatch add-macbookair41-keyboard.patch
 ApplyPatch add-macbookair41-btusb.patch
+
+ApplyPatch hvcs_pi_buf_alloc.patch
 
 # utrace.
 ApplyPatch utrace.patch
@@ -2051,6 +2055,7 @@ fi
 %changelog
 * Wed Sep 14 2011 Josh Boyer <jwboyer@redhat.com>
 - Add support for Macbook Air 4,1 keyboard, trackpad, and bluetooth
+- Add patch to fix HVCS on ppc64 (rhbz 738096)
 
 * Tue Sep 13 2011 Adam Jackson <ajax@redhat.com>
 - drm/i915: Shut the fbc messages up when drm.debug & 4
