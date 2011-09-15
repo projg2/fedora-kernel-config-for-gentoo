@@ -864,6 +864,12 @@ Patch14050: x86-PCI-don-t-use-native-Broadcom-CNB20LE-driver-whe.patch
 # RHBZ #648571
 Patch14051: modules-Fix-module_bug_list-list-corruption-race.patch
 
+# CVE-2011-2723
+Patch14052: gro-Only-reset-frag0-when-skb-can-be-pulled.patch
+
+# CVE-2011-2928
+Patch14053: befs-Validate-length-of-long-symbolic-links.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1627,6 +1633,12 @@ ApplyPatch x86-PCI-don-t-use-native-Broadcom-CNB20LE-driver-whe.patch
 # RHBZ #648571
 ApplyPatch modules-Fix-module_bug_list-list-corruption-race.patch
 
+# CVE-2011-2723
+ApplyPatch gro-Only-reset-frag0-when-skb-can-be-pulled.patch
+
+# CVE-2011-2928
+ApplyPatch befs-Validate-length-of-long-symbolic-links.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2213,6 +2225,10 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 15 2011 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-2723: gro: Only reset frag0 when skb can be pulled
+- CVE-2011-2928: befs: Validate length of long symbolic links
+
 * Mon Sep 12 2011 Josh Boyer <jwboyer@redhat.com>
 - Backport 5336377d to fix RHBZ #648571
 
