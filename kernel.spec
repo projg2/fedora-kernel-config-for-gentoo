@@ -870,6 +870,9 @@ Patch14052: gro-Only-reset-frag0-when-skb-can-be-pulled.patch
 # CVE-2011-2928
 Patch14053: befs-Validate-length-of-long-symbolic-links.patch
 
+# CVE-2011-3191
+Patch14054: cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1639,6 +1642,9 @@ ApplyPatch gro-Only-reset-frag0-when-skb-can-be-pulled.patch
 # CVE-2011-2928
 ApplyPatch befs-Validate-length-of-long-symbolic-links.patch
 
+# CVE-2011-3191
+ApplyPatch cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2228,6 +2234,7 @@ fi
 * Thu Sep 15 2011 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-2723: gro: Only reset frag0 when skb can be pulled
 - CVE-2011-2928: befs: Validate length of long symbolic links
+- CVE-2011-3191: cifs: fix possible memory corruption in CIFSFindNext
 
 * Mon Sep 12 2011 Josh Boyer <jwboyer@redhat.com>
 - Backport 5336377d to fix RHBZ #648571
