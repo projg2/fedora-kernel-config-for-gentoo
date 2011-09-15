@@ -687,6 +687,9 @@ Patch21006: sendmmsg-sendmsg-fix-unsafe-user-pointer-access.patch
 # rhbz #735437
 Patch21007: ucvideo-fix-crash-when-linking-entities.patch
 
+# CVE-2011-3192
+Patch21008: cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1242,6 +1245,9 @@ ApplyPatch sendmmsg-sendmsg-fix-unsafe-user-pointer-access.patch
 
 #rhbz 735437
 ApplyPatch ucvideo-fix-crash-when-linking-entities.patch
+
+# CVE-2011-3191
+ApplyPatch cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1863,6 +1869,9 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 15 2011 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-3191: cifs: fix possible memory corruption in CIFSFindNext
+
 * Wed Sep 07 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix oops when linking entities in ucvideo (rhbz 735437)
 
