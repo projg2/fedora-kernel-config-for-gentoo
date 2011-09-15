@@ -737,6 +737,9 @@ Patch13012: ibmveth-Checksum-offload-is-always-disabled.patch
 
 Patch13013: powerpc-Fix-deadlock-in-icswx-code.patch
 
+# CVE-2011-3191
+Patch13014: cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
+
 Patch20000: utrace.patch
 
 # Flattened devicetree support
@@ -1362,6 +1365,9 @@ ApplyPatch ibmveth-Fix-issue-with-DMA-mapping-failure.patch
 ApplyPatch ibmveth-Checksum-offload-is-always-disabled.patch
 
 ApplyPatch powerpc-Fix-deadlock-in-icswx-code.patch
+
+# CVE-2011-3191
+ApplyPatch cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
 
 # utrace.
 ApplyPatch utrace.patch
@@ -2065,6 +2071,9 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 15 2011 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-3191: cifs: fix possible memory corruption in CIFSFindNext
+
 * Wed Sep 14 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix deadlock in ppc64 icswx (rhbz 737984)
 
