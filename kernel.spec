@@ -873,6 +873,9 @@ Patch14053: befs-Validate-length-of-long-symbolic-links.patch
 # CVE-2011-3191
 Patch14054: cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
 
+# CVE-2011-1833
+Patch14055: Ecryptfs-Add-mount-option-to-check-uid-of-device-bei.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1645,6 +1648,9 @@ ApplyPatch befs-Validate-length-of-long-symbolic-links.patch
 # CVE-2011-3191
 ApplyPatch cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
 
+# CVE-2011-1833
+ApplyPatch Ecryptfs-Add-mount-option-to-check-uid-of-device-bei.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2235,6 +2241,7 @@ fi
 - CVE-2011-2723: gro: Only reset frag0 when skb can be pulled
 - CVE-2011-2928: befs: Validate length of long symbolic links
 - CVE-2011-3191: cifs: fix possible memory corruption in CIFSFindNext
+- CVE-2011-1833: ecryptfs: mount source TOCTOU race
 
 * Mon Sep 12 2011 Josh Boyer <jwboyer@redhat.com>
 - Backport 5336377d to fix RHBZ #648571

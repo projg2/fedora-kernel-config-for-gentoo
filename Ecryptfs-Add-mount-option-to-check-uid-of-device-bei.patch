@@ -1,0 +1,130 @@
+From ed62f63919f93dcb040109959ee19983eda8ea84 Mon Sep 17 00:00:00 2001
+From: John Johansen <john.johansen@canonical.com>
+Date: Thu, 15 Sep 2011 12:48:12 -0400
+Subject: [PATCH] Ecryptfs: Add mount option to check uid of device being
+ mounted = expect uid
+
+Close a TOCTOU race for mounts done via ecryptfs-mount-private.  The mount
+source (device) can be raced when the ownership test is done in userspace.
+Provide Ecryptfs a means to force the uid check at mount time.
+
+Signed-off-by: John Johansen <john.johansen@canonical.com>
+Cc: <stable@kernel.org>
+Signed-off-by: Tyler Hicks <tyhicks@linux.vnet.ibm.com>
+
+Backported to 2.6.35.14 by Josh Boyer <jwboyer@redhat.com>
+---
+ fs/ecryptfs/main.c |   27 ++++++++++++++++++++++-----
+ 1 files changed, 22 insertions(+), 5 deletions(-)
+
+diff --git a/fs/ecryptfs/main.c b/fs/ecryptfs/main.c
+index cbd4e18..c249d14 100644
+--- a/fs/ecryptfs/main.c
++++ b/fs/ecryptfs/main.c
+@@ -208,7 +208,7 @@ enum { ecryptfs_opt_sig, ecryptfs_opt_ecryptfs_sig,
+        ecryptfs_opt_passthrough, ecryptfs_opt_xattr_metadata,
+        ecryptfs_opt_encrypted_view, ecryptfs_opt_fnek_sig,
+        ecryptfs_opt_fn_cipher, ecryptfs_opt_fn_cipher_key_bytes,
+-       ecryptfs_opt_unlink_sigs, ecryptfs_opt_err };
++       ecryptfs_opt_unlink_sigs, ecryptfs_opt_check_dev_ruid, ecryptfs_opt_err };
+ 
+ static const match_table_t tokens = {
+ 	{ecryptfs_opt_sig, "sig=%s"},
+@@ -223,6 +223,7 @@ static const match_table_t tokens = {
+ 	{ecryptfs_opt_fn_cipher, "ecryptfs_fn_cipher=%s"},
+ 	{ecryptfs_opt_fn_cipher_key_bytes, "ecryptfs_fn_key_bytes=%u"},
+ 	{ecryptfs_opt_unlink_sigs, "ecryptfs_unlink_sigs"},
++	{ecryptfs_opt_check_dev_ruid, "ecryptfs_check_dev_ruid"},
+ 	{ecryptfs_opt_err, NULL}
+ };
+ 
+@@ -266,6 +267,7 @@ static void ecryptfs_init_mount_crypt_stat(
+  * ecryptfs_parse_options
+  * @sb: The ecryptfs super block
+  * @options: The options pased to the kernel
++ * @check_ruid: set to 1 if device uid should be checked against the ruid
+  *
+  * Parse mount options:
+  * debug=N 	   - ecryptfs_verbosity level for debug output
+@@ -281,7 +283,7 @@ static void ecryptfs_init_mount_crypt_stat(
+  *
+  * Returns zero on success; non-zero on error
+  */
+-static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options)
++static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options, uid_t *check_ruid)
+ {
+ 	char *p;
+ 	int rc = 0;
+@@ -306,6 +308,8 @@ static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options)
+ 	char *cipher_key_bytes_src;
+ 	char *fn_cipher_key_bytes_src;
+ 
++	*check_ruid = 0;
++
+ 	if (!options) {
+ 		rc = -EINVAL;
+ 		goto out;
+@@ -406,6 +410,9 @@ static int ecryptfs_parse_options(struct ecryptfs_sb_info *sbi, char *options)
+ 		case ecryptfs_opt_unlink_sigs:
+ 			mount_crypt_stat->flags |= ECRYPTFS_UNLINK_SIGS;
+ 			break;
++		case ecryptfs_opt_check_dev_ruid:
++			*check_ruid = 1;
++			break;
+ 		case ecryptfs_opt_err:
+ 		default:
+ 			printk(KERN_WARNING
+@@ -494,7 +501,7 @@ static struct file_system_type ecryptfs_fs_type;
+  * ecryptfs_interpose to create our initial inode and super block
+  * struct.
+  */
+-static int ecryptfs_read_super(struct super_block *sb, const char *dev_name)
++static int ecryptfs_read_super(struct super_block *sb, const char *dev_name, uid_t check_ruid)
+ {
+ 	struct path path;
+ 	int rc;
+@@ -511,6 +518,15 @@ static int ecryptfs_read_super(struct super_block *sb, const char *dev_name)
+ 			"known incompatibilities\n");
+ 		goto out_free;
+ 	}
++
++	if (check_ruid && path.dentry->d_inode->i_uid != current_uid()) {
++		rc = -EPERM;
++		printk(KERN_ERR "Mount of device (uid: %d) not owned by "
++		       "requested user (uid: %d)\n",
++		       path.dentry->d_inode->i_uid, current_uid());
++		goto out_free;
++	}
++
+ 	ecryptfs_set_superblock_lower(sb, path.dentry->d_sb);
+ 	sb->s_maxbytes = path.dentry->d_sb->s_maxbytes;
+ 	sb->s_blocksize = path.dentry->d_sb->s_blocksize;
+@@ -549,6 +565,7 @@ static int ecryptfs_get_sb(struct file_system_type *fs_type, int flags,
+ 	struct ecryptfs_dentry_info *root_info;
+ 	const char *err = "Getting sb failed";
+ 	int rc;
++	uid_t check_ruid;
+ 
+ 	sbi = kmem_cache_zalloc(ecryptfs_sb_info_cache, GFP_KERNEL);
+ 	if (!sbi) {
+@@ -556,7 +573,7 @@ static int ecryptfs_get_sb(struct file_system_type *fs_type, int flags,
+ 		goto out;
+ 	}
+ 
+-	rc = ecryptfs_parse_options(sbi, raw_data);
++	rc = ecryptfs_parse_options(sbi, raw_data, &check_ruid);
+ 	if (rc) {
+ 		err = "Error parsing options";
+ 		goto out;
+@@ -601,7 +618,7 @@ static int ecryptfs_get_sb(struct file_system_type *fs_type, int flags,
+ 	/* ->kill_sb() will take care of root_info */
+ 	ecryptfs_set_dentry_private(s->s_root, root_info);
+ 	s->s_flags |= MS_ACTIVE;
+-	rc = ecryptfs_read_super(s, dev_name);
++	rc = ecryptfs_read_super(s, dev_name, check_ruid);
+ 	if (rc) {
+ 		deactivate_locked_super(s);
+ 		err = "Reading sb failed";
+-- 
+1.7.6
+
