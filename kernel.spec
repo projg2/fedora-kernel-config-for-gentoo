@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -740,6 +740,8 @@ Patch13013: powerpc-Fix-deadlock-in-icswx-code.patch
 # CVE-2011-3191
 Patch13014: cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
 
+Patch13015: ipw2x00-fix-rtnl-mutex-deadlock.patch
+
 Patch20000: utrace.patch
 
 # Flattened devicetree support
@@ -1369,6 +1371,8 @@ ApplyPatch powerpc-Fix-deadlock-in-icswx-code.patch
 # CVE-2011-3191
 ApplyPatch cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
 
+ApplyPatch ipw2x00-fix-rtnl-mutex-deadlock.patch
+
 # utrace.
 ApplyPatch utrace.patch
 
@@ -1987,8 +1991,10 @@ fi
 
 %ifarch %{cpupowerarchs}
 %{_bindir}/cpupower
+%ifarch %{ix86} x86_64
 %{_bindir}/centrino-decode
 %{_bindir}/powernow-k8-decode
+%endif
 %{_libdir}/libcpupower.so.0
 %{_libdir}/libcpupower.so.0.0.0
 %{_unitdir}/cpupower.service
@@ -2071,6 +2077,10 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 16 2011 Josh Boyer <jwboyer@redhat.com> 3.1.0-0.rc6.git0.3.fc16
+- Add patch to fix deadlock in ipw2x00 (rhbz 738387)
+- Fixup kernel-tools file section for ppc/ppc64
+
 * Thu Sep 15 2011 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-3191: cifs: fix possible memory corruption in CIFSFindNext
 
