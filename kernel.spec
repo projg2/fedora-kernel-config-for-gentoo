@@ -879,6 +879,10 @@ Patch14055: Ecryptfs-Add-mount-option-to-check-uid-of-device-bei.patch
 # CVE-2011-2918
 Patch14056: perf-Fix-software-event-overflow.patch
 
+# CVE-2011-3188
+Patch14057: crypto-Move-md5_transform-to-lib-md5.c.patch
+Patch14058: net-Compute-protocol-sequence-numbers-and-fragment-I.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1657,6 +1661,10 @@ ApplyPatch Ecryptfs-Add-mount-option-to-check-uid-of-device-bei.patch
 # CVE-2011-2918
 ApplyPatch perf-Fix-software-event-overflow.patch
 
+# CVE-2011-3188
+ApplyPatch crypto-Move-md5_transform-to-lib-md5.c.patch
+ApplyPatch net-Compute-protocol-sequence-numbers-and-fragment-I.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2245,6 +2253,7 @@ fi
 %changelog
 * Fri Sep 16 2011 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-2918: perf: Fix software event overflow
+- CVE-2011-3188: net: improve sequence number generation
 
 * Thu Sep 15 2011 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-2723: gro: Only reset frag0 when skb can be pulled
