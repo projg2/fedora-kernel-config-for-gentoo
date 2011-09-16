@@ -876,6 +876,9 @@ Patch14054: cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
 # CVE-2011-1833
 Patch14055: Ecryptfs-Add-mount-option-to-check-uid-of-device-bei.patch
 
+# CVE-2011-2918
+Patch14056: perf-Fix-software-event-overflow.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1651,6 +1654,9 @@ ApplyPatch cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
 # CVE-2011-1833
 ApplyPatch Ecryptfs-Add-mount-option-to-check-uid-of-device-bei.patch
 
+# CVE-2011-2918
+ApplyPatch perf-Fix-software-event-overflow.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2237,6 +2243,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 16 2011 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-2918: perf: Fix software event overflow
+
 * Thu Sep 15 2011 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-2723: gro: Only reset frag0 when skb can be pulled
 - CVE-2011-2928: befs: Validate length of long symbolic links

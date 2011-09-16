@@ -1,0 +1,40 @@
+From 68183a00aebc8b7b89975578cda38358bf6f93a1 Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Date: Fri, 16 Sep 2011 09:13:29 -0400
+Subject: [PATCH] perf: Fix software event overflow
+
+The below patch is for -stable only, upstream has a much larger patch
+that contains the below hunk in commit a8b0ca17b80e92faab46ee7179ba9e99ccb61233
+
+Vince found that under certain circumstances software event overflows
+go wrong and deadlock. Avoid trying to delete a timer from the timer
+callback.
+
+Reported-by: Vince Weaver <vweaver1@eecs.utk.edu>
+Signed-off-by: Peter Zijlstra <a.p.zijlstra@chello.nl>
+---
+ kernel/perf_event.c |    8 ++------
+ 1 files changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/kernel/perf_event.c b/kernel/perf_event.c
+index fa8123e..720b764 100644
+--- a/kernel/perf_event.c
++++ b/kernel/perf_event.c
+@@ -3985,12 +3985,8 @@ static int __perf_event_overflow(struct perf_event *event, int nmi,
+ 	if (events && atomic_dec_and_test(&event->event_limit)) {
+ 		ret = 1;
+ 		event->pending_kill = POLL_HUP;
+-		if (nmi) {
+-			event->pending_disable = 1;
+-			perf_pending_queue(&event->pending,
+-					   perf_pending_event);
+-		} else
+-			perf_event_disable(event);
++		event->pending_disable = 1;
++		perf_pending_queue(&event->pending, perf_pending_event);
+ 	}
+ 
+ 	if (event->overflow_handler)
+-- 
+1.7.6
+
