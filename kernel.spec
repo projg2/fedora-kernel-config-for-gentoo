@@ -2251,7 +2251,7 @@ fi
 # and build.
 
 %changelog
-* Fri Sep 16 2011 Josh Boyer <jwboyer@redhat.com>
+* Fri Sep 16 2011 Josh Boyer <jwboyer@redhat.com> 2.6.35.14-97
 - CVE-2011-2918: perf: Fix software event overflow
 - CVE-2011-3188: net: improve sequence number generation
 
