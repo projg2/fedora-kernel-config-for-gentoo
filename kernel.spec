@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2077,6 +2077,9 @@ fi
 # and build.
 
 %changelog
+* Tue Sep 20 2011 Ben Skeggs <bskeggs@redhat.com> 3.1.0-0.rc6.git0.4.fc16
+- nouveau: patch in updates queued for 3.2, mostly new hw support (GF116/GF119)
+
 * Fri Sep 16 2011 Josh Boyer <jwboyer@redhat.com> 3.1.0-0.rc6.git0.3.fc16
 - Add patch to fix deadlock in ipw2x00 (rhbz 738387)
 - Fixup kernel-tools file section for ppc/ppc64
