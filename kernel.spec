@@ -2077,6 +2077,9 @@ fi
 # and build.
 
 %changelog
+* Tue Sep 20 2011 Dave Jones <davej@redhat.com>
+- Limit 32-bit x86 kernels to 32 processors.
+
 * Tue Sep 20 2011 Ben Skeggs <bskeggs@redhat.com> 3.1.0-0.rc6.git0.4.fc16
 - nouveau: patch in updates queued for 3.2, mostly new hw support (GF116/GF119)
 
