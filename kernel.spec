@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 97
+%global baserelease 98
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -883,6 +883,9 @@ Patch14056: perf-Fix-software-event-overflow.patch
 Patch14057: crypto-Move-md5_transform-to-lib-md5.c.patch
 Patch14058: net-Compute-protocol-sequence-numbers-and-fragment-I.patch
 
+# CVE-2011-3353
+Patch14059: fuse-check-size-of-FUSE_NOTIFY_INVAL_ENTRY-message.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1665,6 +1668,9 @@ ApplyPatch perf-Fix-software-event-overflow.patch
 ApplyPatch crypto-Move-md5_transform-to-lib-md5.c.patch
 ApplyPatch net-Compute-protocol-sequence-numbers-and-fragment-I.patch
 
+# CVE-2011-3353
+ApplyPatch fuse-check-size-of-FUSE_NOTIFY_INVAL_ENTRY-message.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2251,6 +2257,9 @@ fi
 # and build.
 
 %changelog
+* Tue Sep 20 2011 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-3353: fuse: check size of FUSE_NOTIFY_INVAL_ENTRY message
+
 * Fri Sep 16 2011 Josh Boyer <jwboyer@redhat.com> 2.6.35.14-97
 - CVE-2011-2918: perf: Fix software event overflow
 - CVE-2011-3188: net: improve sequence number generation
