@@ -690,6 +690,10 @@ Patch21007: ucvideo-fix-crash-when-linking-entities.patch
 # CVE-2011-3192
 Patch21008: cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
 
+# CVE-2011-1161 CVE-2011-1162
+Patch21009: TPM-Call-tpm_transmit-with-correct-size.patch
+Patch21010: TPM-Zero-buffer-after-copying-to-userspace.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1248,6 +1252,10 @@ ApplyPatch ucvideo-fix-crash-when-linking-entities.patch
 
 # CVE-2011-3191
 ApplyPatch cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
+
+# CVE-2011-1161 CVE-2011-1162
+ApplyPatch TPM-Call-tpm_transmit-with-correct-size.patch
+ApplyPatch TPM-Zero-buffer-after-copying-to-userspace.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1869,6 +1877,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 23 2011 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-1161 CVE-2011-1162: tpm: infoleaks
+
 * Thu Sep 22 2011 Dennis Gilmore <dennis@ausil.us>
 - build a vmlinux image on sparc64 
 
