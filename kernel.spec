@@ -886,6 +886,10 @@ Patch14058: net-Compute-protocol-sequence-numbers-and-fragment-I.patch
 # CVE-2011-3353
 Patch14059: fuse-check-size-of-FUSE_NOTIFY_INVAL_ENTRY-message.patch
 
+# CVE-2011-1161 CVE-2011-1162
+Patch14060: TPM-Call-tpm_transmit-with-correct-size.patch
+Patch14061: TPM-Zero-buffer-after-copying-to-userspace.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1671,6 +1675,10 @@ ApplyPatch net-Compute-protocol-sequence-numbers-and-fragment-I.patch
 # CVE-2011-3353
 ApplyPatch fuse-check-size-of-FUSE_NOTIFY_INVAL_ENTRY-message.patch
 
+# CVE-2011-1161 CVE-2011-1162
+ApplyPatch TPM-Call-tpm_transmit-with-correct-size.patch
+ApplyPatch TPM-Zero-buffer-after-copying-to-userspace.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2257,6 +2265,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 23 2011 Josh Boyer <jwboyer@redhat.com> 2.6.35.14-98
+- CVE-2011-1161 CVE-2011-1161: tpm: infoleaks
+
 * Tue Sep 20 2011 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-3353: fuse: check size of FUSE_NOTIFY_INVAL_ENTRY message
 
