@@ -697,6 +697,9 @@ Patch21010: TPM-Zero-buffer-after-copying-to-userspace.patch
 # rhbz #740645
 Patch21011: md-dont-delay-reboot-by-1-second-if-no-MD-devices.patch
 
+# rhbz #714381
+Patch21012: hid-magicmouse-ignore-ivalid-report-id-while-switching-modes-v2.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1262,6 +1265,9 @@ ApplyPatch TPM-Zero-buffer-after-copying-to-userspace.patch
 
 #rhbz 740645
 ApplyPatch md-dont-delay-reboot-by-1-second-if-no-MD-devices.patch
+
+# rhbz #714381
+ApplyPatch hid-magicmouse-ignore-ivalid-report-id-while-switching-modes-v2.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1883,6 +1889,9 @@ fi
 # and build.
 
 %changelog
+* Mon Sep 26 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix breakage of Apple MagicMouse/Trackpad (rhbz #714381)
+
 * Fri Sep 23 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix 1 second delay from MD driver during shutdown (rhbz 740645)
 - CVE-2011-1161 CVE-2011-1162: tpm: infoleaks
