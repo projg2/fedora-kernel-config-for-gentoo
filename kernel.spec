@@ -703,6 +703,8 @@ Patch21012: hid-magicmouse-ignore-ivalid-report-id-while-switching-modes-v2.patc
 # rhbz #496975
 Patch21013: Platform-fix-samsung-laptop-DMI-identification-for-N.patch
 
+Patch21014: block-Free-queue-resources-at-blk_release_queue.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1274,6 +1276,8 @@ ApplyPatch hid-magicmouse-ignore-ivalid-report-id-while-switching-modes-v2.patch
 
 # rhbz #496675
 ApplyPatch Platform-fix-samsung-laptop-DMI-identification-for-N.patch
+
+ApplyPatch block-Free-queue-resources-at-blk_release_queue.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1895,6 +1899,10 @@ fi
 # and build.
 
 %changelog
+* Wed Sep 28 2011 Josh Boyer <jwboyer@redhat.com>
+- Backport upstream block patch to try and fix a number of oopses we're seeing
+  with USB drive removals
+
 * Tue Sep 27 2011 Josh Boyer <jwboyer@redhat.com>
 - Backport support for Samsung n150 class machines (rhbz 496975)
 
