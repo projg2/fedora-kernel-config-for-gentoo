@@ -82,7 +82,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%define rcrev 7
+%define rcrev 8
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -2053,6 +2053,11 @@ fi
 # and build.
 
 %changelog
+* Tue Sep 27 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.0-0.rc8.git0.0
+- Linux 3.1-rc8
+- New option: CONFIG_ARM_ERRATA_764369 is not set
+- Fix up utrace.patch to apply after commit f9d81f61c
+
 * Thu Sep 22 2011 Dave Jones <davej@redhat.com>
 - Make CONFIG_XEN_PLATFORM_PCI=y (rhbz 740664)
 
