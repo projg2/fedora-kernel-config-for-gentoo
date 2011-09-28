@@ -700,6 +700,9 @@ Patch21011: md-dont-delay-reboot-by-1-second-if-no-MD-devices.patch
 # rhbz #714381
 Patch21012: hid-magicmouse-ignore-ivalid-report-id-while-switching-modes-v2.patch
 
+# rhbz #496975
+Patch21013: Platform-fix-samsung-laptop-DMI-identification-for-N.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1268,6 +1271,9 @@ ApplyPatch md-dont-delay-reboot-by-1-second-if-no-MD-devices.patch
 
 # rhbz #714381
 ApplyPatch hid-magicmouse-ignore-ivalid-report-id-while-switching-modes-v2.patch
+
+# rhbz #496675
+ApplyPatch Platform-fix-samsung-laptop-DMI-identification-for-N.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1889,6 +1895,9 @@ fi
 # and build.
 
 %changelog
+* Tue Sep 27 2011 Josh Boyer <jwboyer@redhat.com>
+- Backport support for Samsung n150 class machines (rhbz 496975)
+
 * Mon Sep 26 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix breakage of Apple MagicMouse/Trackpad (rhbz #714381)
 
