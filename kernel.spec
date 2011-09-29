@@ -1899,9 +1899,10 @@ fi
 # and build.
 
 %changelog
-* Wed Sep 28 2011 Josh Boyer <jwboyer@redhat.com>
+* Wed Sep 28 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.4-6
 - Backport upstream block patch to try and fix a number of oopses we're seeing
   with USB drive removals
+- Update usb-add-quirk-for-logitech-webcams.patch (rhbz 742010)
 
 * Tue Sep 27 2011 Josh Boyer <jwboyer@redhat.com>
 - Backport support for Samsung n150 class machines (rhbz 496975)
