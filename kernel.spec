@@ -705,6 +705,10 @@ Patch21013: Platform-fix-samsung-laptop-DMI-identification-for-N.patch
 
 Patch21014: block-Free-queue-resources-at-blk_release_queue.patch
 
+# rhbz #700718
+Patch21015: x86-Save-stack-pointer-in-perf-live-regs-savings.patch
+Patch21016: x86-Fetch-stack-from-regs-when-possible-in-dump_trac.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1278,6 +1282,10 @@ ApplyPatch hid-magicmouse-ignore-ivalid-report-id-while-switching-modes-v2.patch
 ApplyPatch Platform-fix-samsung-laptop-DMI-identification-for-N.patch
 
 ApplyPatch block-Free-queue-resources-at-blk_release_queue.patch
+
+# rhbz #700718
+ApplyPatch x86-Save-stack-pointer-in-perf-live-regs-savings.patch
+ApplyPatch x86-Fetch-stack-from-regs-when-possible-in-dump_trac.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1899,7 +1907,10 @@ fi
 # and build.
 
 %changelog
-* Wed Sep 28 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.4-6
+* Thu Sep 29 2011 Josh Boyer <jwboyer@redhat.com>
+- Backport two upstream patches to fix rhbz 700718
+
+* Wed Sep 28 2011 Josh Boyer <jwboyer@redhat.com>
 - Backport upstream block patch to try and fix a number of oopses we're seeing
   with USB drive removals
 - Update usb-add-quirk-for-logitech-webcams.patch (rhbz 742010)
