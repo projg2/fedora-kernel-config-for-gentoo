@@ -709,6 +709,9 @@ Patch21014: block-Free-queue-resources-at-blk_release_queue.patch
 Patch21015: x86-Save-stack-pointer-in-perf-live-regs-savings.patch
 Patch21016: x86-Fetch-stack-from-regs-when-possible-in-dump_trac.patch
 
+#rhbz #708563
+Patch21017: binfmt_elf-fix-PIE-execution-with-random-disabled.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1286,6 +1289,9 @@ ApplyPatch block-Free-queue-resources-at-blk_release_queue.patch
 # rhbz #700718
 ApplyPatch x86-Save-stack-pointer-in-perf-live-regs-savings.patch
 ApplyPatch x86-Fetch-stack-from-regs-when-possible-in-dump_trac.patch
+
+#rhbz #708563
+ApplyPatch binfmt_elf-fix-PIE-execution-with-random-disabled.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1907,6 +1913,9 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 04 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.4-6
+- Add patch to fix PIE execution when ASLR is disabled at runtime (rhbz 708563)
+
 * Thu Sep 29 2011 Josh Boyer <jwboyer@redhat.com>
 - Backport two upstream patches to fix rhbz 700718
 
