@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 6
+%global baserelease 0
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -644,7 +644,6 @@ Patch12010: add-appleir-usb-driver.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch12022: fix-cdc-ncm-dma-stack-vars.patch
 Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
 Patch12024: usb-add-quirk-for-logitech-webcams.patch
 Patch12025: crypto-register-cryptd-first.patch
@@ -659,7 +658,6 @@ Patch13001: epoll-fix-spurious-lockdep-warnings.patch
 Patch13002: hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
 Patch13010: iwlagn-check-for-priv--txq-in-iwlagn_wait_tx_queue_empty.patch
-Patch13011: iwlagn-revert-max-aggregate-size.patch
 
 Patch20000: utrace.patch
 
@@ -681,18 +679,8 @@ Patch21004: vfs-fix-automount-for-negative-autofs-dentries.patch
 # rhbz#727927 rhbz#731278 rhbz#732934
 Patch21005: cifs-fix-ERR_PTR-dereference-in-cifs_get_root.patch
 
-# from 3.0.5 patch queue
-Patch21006: sendmmsg-sendmsg-fix-unsafe-user-pointer-access.patch
-
 # rhbz #735437
 Patch21007: ucvideo-fix-crash-when-linking-entities.patch
-
-# CVE-2011-3192
-Patch21008: cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
-
-# CVE-2011-1161 CVE-2011-1162
-Patch21009: TPM-Call-tpm_transmit-with-correct-size.patch
-Patch21010: TPM-Zero-buffer-after-copying-to-userspace.patch
 
 # rhbz #740645
 Patch21011: md-dont-delay-reboot-by-1-second-if-no-MD-devices.patch
@@ -702,8 +690,6 @@ Patch21012: hid-magicmouse-ignore-ivalid-report-id-while-switching-modes-v2.patc
 
 # rhbz #496975
 Patch21013: Platform-fix-samsung-laptop-DMI-identification-for-N.patch
-
-Patch21014: block-Free-queue-resources-at-blk_release_queue.patch
 
 # rhbz #700718
 Patch21015: x86-Save-stack-pointer-in-perf-live-regs-savings.patch
@@ -1238,7 +1224,6 @@ ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch add-appleir-usb-driver.patch
 
-ApplyPatch fix-cdc-ncm-dma-stack-vars.patch
 ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
 ApplyPatch usb-add-quirk-for-logitech-webcams.patch
 ApplyPatch crypto-register-cryptd-first.patch
@@ -1251,7 +1236,6 @@ ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
 ApplyPatch hfsplus-ensure-bio-requests-are-not-smaller-than-the.patch
 
 ApplyPatch iwlagn-check-for-priv--txq-in-iwlagn_wait_tx_queue_empty.patch
-ApplyPatch iwlagn-revert-max-aggregate-size.patch
 
 ApplyPatch utrace.patch
 
@@ -1262,18 +1246,8 @@ ApplyPatch vfs-fix-automount-for-negative-autofs-dentries.patch
 # cifs-possible-memory-corruption-on-mount.patch is already queued for 3.0.4
 ApplyPatch cifs-fix-ERR_PTR-dereference-in-cifs_get_root.patch
 
-# from 3.0.5 patch queue
-ApplyPatch sendmmsg-sendmsg-fix-unsafe-user-pointer-access.patch
-
 #rhbz 735437
 ApplyPatch ucvideo-fix-crash-when-linking-entities.patch
-
-# CVE-2011-3191
-ApplyPatch cifs-fix-possible-memory-corruption-in-CIFSFindNext.patch
-
-# CVE-2011-1161 CVE-2011-1162
-ApplyPatch TPM-Call-tpm_transmit-with-correct-size.patch
-ApplyPatch TPM-Zero-buffer-after-copying-to-userspace.patch
 
 #rhbz 740645
 ApplyPatch md-dont-delay-reboot-by-1-second-if-no-MD-devices.patch
@@ -1283,8 +1257,6 @@ ApplyPatch hid-magicmouse-ignore-ivalid-report-id-while-switching-modes-v2.patch
 
 # rhbz #496675
 ApplyPatch Platform-fix-samsung-laptop-DMI-identification-for-N.patch
-
-ApplyPatch block-Free-queue-resources-at-blk_release_queue.patch
 
 # rhbz #700718
 ApplyPatch x86-Save-stack-pointer-in-perf-live-regs-savings.patch
@@ -1913,7 +1885,10 @@ fi
 # and build.
 
 %changelog
-* Mon Oct 04 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.4-6
+* Mon Oct 03 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.6-0
+- Linux 3.0.6 stable release
+
+* Mon Oct 03 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.4-6
 - Add patch to fix PIE execution when ASLR is disabled at runtime (rhbz 708563)
 
 * Thu Sep 29 2011 Josh Boyer <jwboyer@redhat.com>
