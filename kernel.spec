@@ -735,6 +735,8 @@ Patch20000: utrace.patch
 # Flattened devicetree support
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
+
+Patch21010: 777eb1bf15b8532c396821774bf6451e563438f5.patch
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1351,6 +1353,8 @@ ApplyPatch powerpc-Fix-deadlock-in-icswx-code.patch
 
 # utrace.
 ApplyPatch utrace.patch
+
+ApplyPatch 777eb1bf15b8532c396821774bf6451e563438f5.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2053,6 +2057,9 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 03 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.0-0.rc8.git0.1
+- block: Free queue resources at blk_release_queue()
+
 * Thu Sep 29 2011 Chuck Ebbert <cebbert@redhat.com>
 - Require grubby >= 8.3-1 so initrd line gets added (rhbz #725185)
 
