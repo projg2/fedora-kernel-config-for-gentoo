@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 1
+%global baserelease 0
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%define rcrev 8
+%define rcrev 9
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -722,7 +722,6 @@ Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch13002: revert-efi-rtclock.patch
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
-Patch13005: ucvideo-fix-crash-when-linking-entities.patch
 
 Patch13007: add-macbookair41-keyboard.patch
 
@@ -736,7 +735,6 @@ Patch20000: utrace.patch
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 
-Patch21010: 777eb1bf15b8532c396821774bf6451e563438f5.patch
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1343,7 +1341,6 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 ApplyPatch revert-efi-rtclock.patch
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
-ApplyPatch ucvideo-fix-crash-when-linking-entities.patch
 
 ApplyPatch add-macbookair41-keyboard.patch
 
@@ -1353,8 +1350,6 @@ ApplyPatch powerpc-Fix-deadlock-in-icswx-code.patch
 
 # utrace.
 ApplyPatch utrace.patch
-
-ApplyPatch 777eb1bf15b8532c396821774bf6451e563438f5.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2057,6 +2052,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 05 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.0-0.rc9.git0.0
+- Linux 3.1-rc9
+
 * Mon Oct 03 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.0-0.rc8.git0.1
 - block: Free queue resources at blk_release_queue()
 

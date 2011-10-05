@@ -89,8 +89,8 @@ index 56a8554..a6d14eb 100644
  	 * display to settle before starting the compression. Note that
  	 * this delay also serves a second purpose: it allows for a
 @@ -1800,8 +1783,6 @@ static void intel_update_fbc(struct drm_device *dev)
- 	struct intel_framebuffer *intel_fb;
  	struct drm_i915_gem_object *obj;
+ 	int enable_fbc;
  
 -	DRM_DEBUG_KMS("\n");
 -
