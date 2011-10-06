@@ -644,6 +644,7 @@ Patch09: linux-2.6-upstream-reverts.patch
 
 # Standalone patches
 
+Patch100: taint-vbox.patch
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
 
@@ -1216,6 +1217,7 @@ ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 ApplyPatch arm-omap-dt-compat.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 
+ApplyPatch taint-vbox.patch
 #
 # NX Emulation
 #
@@ -2052,6 +2054,9 @@ fi
 # and build.
 
 %changelog
+* Thu Oct 06 2011 Dave Jones <davej@redhat.com>
+- Taint if virtualbox modules have been loaded.
+
 * Wed Oct 05 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.0-0.rc9.git0.0
 - Linux 3.1-rc9
 
