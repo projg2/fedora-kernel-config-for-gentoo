@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 0
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -698,6 +698,9 @@ Patch21016: x86-Fetch-stack-from-regs-when-possible-in-dump_trac.patch
 #rhbz #708563
 Patch21017: binfmt_elf-fix-PIE-execution-with-random-disabled.patch
 
+#rhbz #722509
+Patch21018: mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1264,6 +1267,9 @@ ApplyPatch x86-Fetch-stack-from-regs-when-possible-in-dump_trac.patch
 
 #rhbz #708563
 ApplyPatch binfmt_elf-fix-PIE-execution-with-random-disabled.patch
+
+#rhbz #722509
+ApplyPatch mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1885,6 +1891,9 @@ fi
 # and build.
 
 %changelog
+* Thu Oct 06 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix base frequency check for Ricoh e823 devices (rhbz 722509)
+
 * Mon Oct 03 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.6-0
 - Linux 3.0.6 stable release
 
