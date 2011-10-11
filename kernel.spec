@@ -602,6 +602,7 @@ Patch540: x86-pci-reduce-severity-of-host-bridge-window-conflict-warnings.patch
 Patch610: hda_intel-prealloc-4mb-dmabuffer.patch
 
 Patch700: linux-2.6-e1000-ich9-montevina.patch
+Patch701: net-3-4-e1000e-workaround-for-packet-drop-on-82579-at-100Mbps.patch
 
 Patch800: linux-2.6-crash-driver.patch
 
@@ -1191,6 +1192,7 @@ ApplyPatch linux-2.6-crash-driver.patch
 
 # Hack e1000e to work on Montevina SDV
 ApplyPatch linux-2.6-e1000-ich9-montevina.patch
+ApplyPatch net-3-4-e1000e-workaround-for-packet-drop-on-82579-at-100Mbps.patch
 
 # crypto/
 
@@ -1891,6 +1893,9 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 11 2011 Dave Jones <davej@redhat.com>
+- add e1000e workaround for packet drop on 82579 at 100Mbps (rhbz 713315)
+
 * Thu Oct 06 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix base frequency check for Ricoh e823 devices (rhbz 722509)
 
