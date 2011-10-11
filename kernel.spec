@@ -2271,7 +2271,7 @@ fi
 
 %changelog
 * Tue Oct 11 2011 Dave Jones <davej@redhat.com>
-- usb-wwan: implement TIOCGSERIAL and TIOCSSERIAL to avoid blocking close(2)
+- usb-wwan: implement TIOCGSERIAL and TIOCSSERIAL to avoid blocking close(2) (rhbz 725724)
 
 * Fri Sep 23 2011 Josh Boyer <jwboyer@redhat.com> 2.6.35.14-98
 - CVE-2011-1161 CVE-2011-1161: tpm: infoleaks
