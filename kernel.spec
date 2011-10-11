@@ -739,7 +739,7 @@ Patch3010: linux-2.6-rcu-netpoll.patch
 
 Patch4000: rcutree-avoid-false-quiescent-states.patch
 
-# NFSv4
+Patch5000: acer-wmi-modalias.patch
 
 # patches headed upstream
 
@@ -1533,6 +1533,9 @@ ApplyPatch linux-2.6-rcu-netpoll.patch
 
 ApplyPatch rcutree-avoid-false-quiescent-states.patch
 
+# acer-wmi: Fix capitalisation of GUID in module alias
+ApplyPatch acer-wmi-modalias.patch
+
 # Patches headed upstream
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
@@ -2270,6 +2273,9 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 11 2011 Dave Jones <davej@redhat.com>
+- acer-wmi: Fix capitalisation of GUID in module alias (rhbz 661322)
+
 * Tue Oct 11 2011 Dave Jones <davej@redhat.com>
 - usb-wwan: implement TIOCGSERIAL and TIOCSSERIAL to avoid blocking close(2) (rhbz 725724)
 
