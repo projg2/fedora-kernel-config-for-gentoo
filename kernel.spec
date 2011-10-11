@@ -673,6 +673,8 @@ Patch700: linux-2.6-e1000-ich9-montevina.patch
 
 Patch800: linux-2.6-crash-driver.patch
 
+Patch1000: usb-wwan-ioctls.patch
+
 # crypto/
 
 # virt + ksm patches
@@ -1452,6 +1454,9 @@ ApplyPatch create-sys-fs-cgroup-to-mount-cgroupfs-on.patch
 
 # /dev/crash driver.
 ApplyPatch linux-2.6-crash-driver.patch
+
+# usb-wwan: implement TIOCGSERIAL and TIOCSSERIAL to avoid blocking close(2)
+ApplyPatch usb-wwan-ioctls.patch
 
 # Hack e1000e to work on Montevina SDV
 ApplyPatch linux-2.6-e1000-ich9-montevina.patch
@@ -2265,6 +2270,9 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 11 2011 Dave Jones <davej@redhat.com>
+- usb-wwan: implement TIOCGSERIAL and TIOCSSERIAL to avoid blocking close(2)
+
 * Fri Sep 23 2011 Josh Boyer <jwboyer@redhat.com> 2.6.35.14-98
 - CVE-2011-1161 CVE-2011-1161: tpm: infoleaks
 
