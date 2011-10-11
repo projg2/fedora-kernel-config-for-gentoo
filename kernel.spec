@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -702,6 +702,9 @@ Patch21017: binfmt_elf-fix-PIE-execution-with-random-disabled.patch
 #rhbz #722509
 Patch21018: mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
 
+#rhbz #745241
+Patch21019: fuse-fix-memory-leak.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1272,6 +1275,9 @@ ApplyPatch binfmt_elf-fix-PIE-execution-with-random-disabled.patch
 
 #rhbz #722509
 ApplyPatch mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
+
+#rhbz #745241
+ApplyPatch fuse-fix-memory-leak.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1893,6 +1899,9 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 11 2011 Josh Boyer <jwboyer@redhat.com>
+- fix memory leak in fuse (rhbz 745241)
+
 * Tue Oct 11 2011 Dave Jones <davej@redhat.com>
 - add e1000e workaround for packet drop on 82579 at 100Mbps (rhbz 713315)
 
