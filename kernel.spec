@@ -1902,6 +1902,9 @@ fi
 # and build.
 
 %changelog
+* Thu Oct 13 2011 Josh Boyer <jwboyer@redhat.com>
+- Update usb-add-quirk-for-logitech-webcams.patch with C600 ID (rhbz 742010)
+
 * Thu Oct 13 2011 Adam Jackson <ajax@redhat.com>
 - drm/i915: Treat SDVO LVDS as digital when parsing EDID (#729882)
 
