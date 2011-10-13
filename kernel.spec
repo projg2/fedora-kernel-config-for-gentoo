@@ -620,6 +620,8 @@ Patch1811: drm-ttm-nouveau-oops-fix.patch
 Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
+# rhbz#729882, https://bugs.freedesktop.org/attachment.cgi?id=49069
+Patch1827: drm-i915-sdvo-lvds-is-digital.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
@@ -1211,6 +1213,7 @@ ApplyOptionalPatch drm-nouveau-updates.patch
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
+ApplyPatch drm-i915-sdvo-lvds-is-digital.patch
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
 ApplyPatch block-stray-block-put-after-teardown.patch
@@ -1899,6 +1902,9 @@ fi
 # and build.
 
 %changelog
+* Thu Oct 13 2011 Adam Jackson <ajax@redhat.com>
+- drm/i915: Treat SDVO LVDS as digital when parsing EDID (#729882)
+
 * Tue Oct 11 2011 Josh Boyer <jwboyer@redhat.com>
 - fix memory leak in fuse (rhbz 745241)
 
