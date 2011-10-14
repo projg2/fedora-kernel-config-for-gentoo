@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 98
+%global baserelease 99
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -892,6 +892,10 @@ Patch14059: fuse-check-size-of-FUSE_NOTIFY_INVAL_ENTRY-message.patch
 Patch14060: TPM-Call-tpm_transmit-with-correct-size.patch
 Patch14061: TPM-Zero-buffer-after-copying-to-userspace.patch
 
+# RHBZ #663186
+Patch14062: 0001-EHCI-don-t-rescan-interrupt-QHs-needlessly.patch
+Patch14063: 0002-USB-EHCI-go-back-to-using-the-system-clock-for-QH-un.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1687,6 +1691,10 @@ ApplyPatch fuse-check-size-of-FUSE_NOTIFY_INVAL_ENTRY-message.patch
 ApplyPatch TPM-Call-tpm_transmit-with-correct-size.patch
 ApplyPatch TPM-Zero-buffer-after-copying-to-userspace.patch
 
+# RHBZ #663186
+ApplyPatch 0001-EHCI-don-t-rescan-interrupt-QHs-needlessly.patch
+ApplyPatch 0002-USB-EHCI-go-back-to-using-the-system-clock-for-QH-un.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2273,6 +2281,9 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 14 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patches to fix RHBZ #663186
+
 * Tue Oct 11 2011 Dave Jones <davej@redhat.com>
 - acer-wmi: Fix capitalisation of GUID in module alias (rhbz 661322)
 
