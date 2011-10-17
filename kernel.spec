@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 3
+%global baserelease 0
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -602,7 +602,6 @@ Patch540: x86-pci-reduce-severity-of-host-bridge-window-conflict-warnings.patch
 Patch610: hda_intel-prealloc-4mb-dmabuffer.patch
 
 Patch700: linux-2.6-e1000-ich9-montevina.patch
-Patch701: net-3-4-e1000e-workaround-for-packet-drop-on-82579-at-100Mbps.patch
 
 Patch800: linux-2.6-crash-driver.patch
 
@@ -1201,7 +1200,6 @@ ApplyPatch linux-2.6-crash-driver.patch
 
 # Hack e1000e to work on Montevina SDV
 ApplyPatch linux-2.6-e1000-ich9-montevina.patch
-ApplyPatch net-3-4-e1000e-workaround-for-packet-drop-on-82579-at-100Mbps.patch
 
 # crypto/
 
@@ -1910,7 +1908,8 @@ fi
 # and build.
 
 %changelog
-* Mon Oct 17 2011 Josh Boyer <jwboyer@redhat.com>
+* Mon Oct 17 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.7-0
+- Linux 3.0.7 stable release
 - Add two patches to fix stalls in khugepaged (rhbz 735946)
 
 * Thu Oct 13 2011 Josh Boyer <jwboyer@redhat.com>
