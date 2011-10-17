@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -707,6 +707,10 @@ Patch21018: mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
 #rhbz #745241
 Patch21019: fuse-fix-memory-leak.patch
 
+#rhbz #735946
+Patch21020: 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
+Patch21021: 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1281,6 +1285,10 @@ ApplyPatch mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
 
 #rhbz #745241
 ApplyPatch fuse-fix-memory-leak.patch
+
+#rhbz #735946
+ApplyPatch 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
+ApplyPatch 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1902,6 +1910,9 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 17 2011 Josh Boyer <jwboyer@redhat.com>
+- Add two patches to fix stalls in khugepaged (rhbz 735946)
+
 * Thu Oct 13 2011 Josh Boyer <jwboyer@redhat.com>
 - Update usb-add-quirk-for-logitech-webcams.patch with C600 ID (rhbz 742010)
 
