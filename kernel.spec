@@ -743,6 +743,10 @@ Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 #rhbz #722509
 Patch21002: mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
 
+#rhbz #735946
+Patch21020: 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
+Patch21021: 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1365,6 +1369,10 @@ ApplyPatch mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
 
 # utrace.
 ApplyPatch utrace.patch
+
+#rhbz #735946
+ApplyPatch 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
+ApplyPatch 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2067,6 +2075,9 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 17 2011 Josh Boyer <jwboyer@redhat.com>
+- Add two patches to fix stalls in khugepaged (rhbz 735946)
+
 * Thu Oct 13 2011 Josh Boyer <jwboyer@redhat.com>
 - Update usb-add-quirk-for-logitech-webcams.patch with C600 ID (rhbz 742010)
 
