@@ -650,6 +650,7 @@ Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
 Patch12024: usb-add-quirk-for-logitech-webcams.patch
 Patch12025: crypto-register-cryptd-first.patch
 Patch12026: cputimer-Cure-lock-inversion.patch
+Patch12027: x86-efi-Calling-__pa-with-an-ioremap-address-is-invalid.patch
 
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
@@ -1242,6 +1243,7 @@ ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
 ApplyPatch usb-add-quirk-for-logitech-webcams.patch
 ApplyPatch crypto-register-cryptd-first.patch
 ApplyPatch cputimer-Cure-lock-inversion.patch
+ApplyPatch x86-efi-Calling-__pa-with-an-ioremap-address-is-invalid.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1911,6 +1913,7 @@ fi
 
 %changelog
 * Tue Oct 18 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix invalid EFI remap calls from Matt Fleming
 - Add patch to fix lock inversion introduced in 3.0.7
 
 * Mon Oct 17 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.7-0
