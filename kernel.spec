@@ -748,6 +748,9 @@ Patch21002: mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
 Patch21020: 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
 Patch21021: 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
 
+# rhbz #746485
+Patch21030: cputimer-cure-lock-inversion.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1376,6 +1379,9 @@ ApplyPatch utrace.patch
 #rhbz #735946
 ApplyPatch 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
 ApplyPatch 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
+
+# rhbz #746485
+ApplyPatch cputimer-cure-lock-inversion.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2078,6 +2084,9 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 18 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix lock inversion causing hangs in 3.1-rc9 (rhbz #746485)
+
 * Tue Oct 18 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix invalid EFI remap calls from Matt Fleming
 
