@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 0
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -649,6 +649,7 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
 Patch12024: usb-add-quirk-for-logitech-webcams.patch
 Patch12025: crypto-register-cryptd-first.patch
+Patch12026: cputimer-Cure-lock-inversion.patch
 
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
@@ -1240,6 +1241,7 @@ ApplyPatch add-appleir-usb-driver.patch
 ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
 ApplyPatch usb-add-quirk-for-logitech-webcams.patch
 ApplyPatch crypto-register-cryptd-first.patch
+ApplyPatch cputimer-Cure-lock-inversion.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1908,6 +1910,9 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 18 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix lock inversion introduced in 3.0.7
+
 * Mon Oct 17 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.7-0
 - Linux 3.0.7 stable release
 - Add two patches to fix stalls in khugepaged (rhbz 735946)
