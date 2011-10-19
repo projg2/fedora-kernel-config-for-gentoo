@@ -656,6 +656,7 @@ Patch390: linux-2.6-defaults-acpi-video.patch
 Patch391: linux-2.6-acpi-video-dos.patch
 Patch394: linux-2.6-acpi-debug-infinite-loop.patch
 Patch395: acpi-ensure-thermal-limits-match-cpu-freq.patch
+Patch396: acpi-sony-nonvs-blacklist.patch
 
 Patch450: linux-2.6-input-kill-stupid-messages.patch
 Patch452: linux-2.6.30-no-pcspkr-modalias.patch
@@ -1263,6 +1264,7 @@ ApplyPatch linux-2.6-defaults-acpi-video.patch
 ApplyPatch linux-2.6-acpi-video-dos.patch
 ApplyPatch linux-2.6-acpi-debug-infinite-loop.patch
 ApplyPatch acpi-ensure-thermal-limits-match-cpu-freq.patch
+ApplyPatch acpi-sony-nonvs-blacklist.patch
 
 # Various low-impact patches to aid debugging.
 ApplyPatch linux-2.6-debug-taint-vm.patch
@@ -2084,6 +2086,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 19 2011 Dave Jones <davej@redhat.com>
+- Add Sony VGN-FW21E to nonvs blacklist. (rhbz 641789)
+
 * Wed Oct 19 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.0-0.rc10.git0.1
 - Fix divide-by-zero in nouveau driver (rhbz #747129)
 
