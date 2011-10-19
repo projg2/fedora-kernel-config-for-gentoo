@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -82,7 +82,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%define rcrev 9
+%define rcrev 10
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -2086,6 +2086,7 @@ fi
 %changelog
 * Tue Oct 18 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix lock inversion causing hangs in 3.1-rc9 (rhbz #746485)
+- Linux 3.1-rc10
 
 * Tue Oct 18 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix invalid EFI remap calls from Matt Fleming
