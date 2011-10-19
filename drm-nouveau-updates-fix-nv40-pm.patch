@@ -1,0 +1,24 @@
+diff --git a/drivers/gpu/drm/nouveau/nv40_pm.c b/drivers/gpu/drm/nouveau/nv40_pm.c
+index 9b5cbb4..73dfdff 100644
+--- a/drivers/gpu/drm/nouveau/nv40_pm.c
++++ b/drivers/gpu/drm/nouveau/nv40_pm.c
+@@ -57,12 +57,14 @@ read_pll_2(struct drm_device *dev, u32 reg)
+ 	int P = (ctrl & 0x00070000) >> 16;
+ 	u32 ref = 27000, clk = 0;
+ 
+-	if (ctrl & 0x80000000)
++	if ((ctrl & 0x80000000) && M1) {
+ 		clk = ref * N1 / M1;
+-
+-	if (!(ctrl & 0x00000100)) {
+-		if (ctrl & 0x40000000)
+-			clk = clk * N2 / M2;
++		if ((ctrl & 0x40000100) == 0x40000000) {
++			if (M2)
++				clk = clk * N2 / M2;
++			else
++				clk = 0;
++		}
+ 	}
+ 
+ 	return clk >> P;

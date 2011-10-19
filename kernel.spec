@@ -680,6 +680,8 @@ Patch1500: fix_xen_guest_on_old_EC2.patch
 
 # nouveau + drm fixes
 Patch1810: drm-nouveau-updates.patch
+# fix divide by zero (rhbz #747129)
+Patch1811: drm-nouveau-updates-fix-nv40-pm.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
@@ -1320,6 +1322,8 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # Nouveau DRM
 ApplyOptionalPatch drm-nouveau-updates.patch
+# fix divide by zero (rhbz #747129)
+ApplyPatch drm-nouveau-updates-fix-nv40-pm.patch
 
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
@@ -2084,6 +2088,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 19 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.0-0.rc10.git0.1
+- Fix divide-by-zero in nouveau driver (rhbz #747129)
+
 * Tue Oct 18 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix lock inversion causing hangs in 3.1-rc9 (rhbz #746485)
 - Linux 3.1-rc10
