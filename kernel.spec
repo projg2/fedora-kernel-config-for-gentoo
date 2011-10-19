@@ -680,8 +680,6 @@ Patch1500: fix_xen_guest_on_old_EC2.patch
 
 # nouveau + drm fixes
 Patch1810: drm-nouveau-updates.patch
-# fix divide by zero (rhbz #747129)
-Patch1811: drm-nouveau-updates-fix-nv40-pm.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
@@ -1322,8 +1320,6 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # Nouveau DRM
 ApplyOptionalPatch drm-nouveau-updates.patch
-# fix divide by zero (rhbz #747129)
-ApplyPatch drm-nouveau-updates-fix-nv40-pm.patch
 
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch

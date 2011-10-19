@@ -5146,10 +5146,10 @@ index ad03a0e..0000000
 -}
 diff --git a/drivers/gpu/drm/nouveau/nv40_pm.c b/drivers/gpu/drm/nouveau/nv40_pm.c
 new file mode 100644
-index 0000000..bbc0b9c
+index 0000000..e676b0d
 --- /dev/null
 +++ b/drivers/gpu/drm/nouveau/nv40_pm.c
-@@ -0,0 +1,338 @@
+@@ -0,0 +1,348 @@
 +/*
 + * Copyright 2011 Red Hat Inc.
 + *
@@ -5209,12 +5209,14 @@ index 0000000..bbc0b9c
 +	int P = (ctrl & 0x00070000) >> 16;
 +	u32 ref = 27000, clk = 0;
 +
-+	if (ctrl & 0x80000000)
++	if ((ctrl & 0x80000000) && M1) {
 +		clk = ref * N1 / M1;
-+
-+	if (!(ctrl & 0x00000100)) {
-+		if (ctrl & 0x40000000)
-+			clk = clk * N2 / M2;
++		if ((ctrl & 0x40000100) == 0x40000000) {
++			if (M2)
++				clk = clk * N2 / M2;
++			else
++				clk = 0;
++		}
 +	}
 +
 +	return clk >> P;
@@ -5329,6 +5331,11 @@ index 0000000..bbc0b9c
 +	}
 +
 +	/* memory clock */
++	if (!perflvl->memory) {
++		info->mpll_ctrl = 0x00000000;
++		goto out;
++	}
++
 +	ret = nv40_calc_pll(dev, 0x004020, &pll, perflvl->memory,
 +			    &N1, &M1, &N2, &M2, &log2P);
 +	if (ret < 0)
@@ -5415,6 +5422,9 @@ index 0000000..bbc0b9c
 +	nv_mask(dev, 0x004008, 0xc007ffff, info->spll);
 +	mdelay(5);
 +	nv_mask(dev, 0x00c040, 0x00000333, info->ctrl);
++
++	if (!info->mpll_ctrl)
++		goto resume;
 +
 +	/* wait for vblank start on active crtcs, disable memory access */
 +	for (i = 0; i < 2; i++) {
