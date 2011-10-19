@@ -653,6 +653,7 @@ Patch393: acpi-ec-add-delay-before-write.patch
 Patch394: linux-2.6-acpi-debug-infinite-loop.patch
 Patch395: acpi-update-battery-information-on-notification-0x81.patch
 Patch396: linux-2.6-acpi-fix-alias.patch
+Patch397: acpi-sony-nonvs-blacklist.patch
 
 Patch450: linux-2.6-input-kill-stupid-messages.patch
 Patch452: linux-2.6.30-no-pcspkr-modalias.patch
@@ -1391,6 +1392,7 @@ ApplyPatch linux-2.6-acpi-debug-infinite-loop.patch
 ApplyPatch acpi-update-battery-information-on-notification-0x81.patch
 ApplyPatch linux-2.6-defaults-no-pm-async.patch
 ApplyPatch linux-2.6-acpi-fix-alias.patch
+ApplyPatch acpi-sony-nonvs-blacklist.patch
 
 # Various low-impact patches to aid debugging.
 ApplyPatch linux-2.6-debug-sizeof-structs.patch
@@ -2281,6 +2283,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 19 2011 Dave Jones <davej@redhat.com>
+- Add Sony VGN-FW21E to nonvs blacklist. (rhbz 641789)
+
 * Fri Oct 14 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patches to fix RHBZ #663186
 
