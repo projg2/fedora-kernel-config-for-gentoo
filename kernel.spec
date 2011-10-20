@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -652,6 +652,7 @@ Patch12024: usb-add-quirk-for-logitech-webcams.patch
 Patch12025: crypto-register-cryptd-first.patch
 Patch12026: cputimer-Cure-lock-inversion.patch
 Patch12027: x86-efi-Calling-__pa-with-an-ioremap-address-is-invalid.patch
+Patch12028: x86-p4-make-watchdog-and-perf-work-together.patch
 
 # Runtime power management
 Patch12203: linux-2.6-usb-pci-autosuspend.patch
@@ -1246,6 +1247,7 @@ ApplyPatch usb-add-quirk-for-logitech-webcams.patch
 ApplyPatch crypto-register-cryptd-first.patch
 ApplyPatch cputimer-Cure-lock-inversion.patch
 ApplyPatch x86-efi-Calling-__pa-with-an-ioremap-address-is-invalid.patch
+ApplyPatch x86-p4-make-watchdog-and-perf-work-together.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1914,6 +1916,9 @@ fi
 # and build.
 
 %changelog
+* Thu Oct 20 2011 Josh Boyer <jwboyer@redhat.com>
+- Add backport for P4 watchdog and perf support from Don Zickus (rhbz 713675)
+
 * Wed Oct 19 2011 Dave Jones <davej@redhat.com>
 - Add Sony VGN-FW21E to nonvs blacklist. (rhbz 641789)
 
