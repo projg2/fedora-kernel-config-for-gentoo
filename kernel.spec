@@ -2292,7 +2292,7 @@ fi
 # and build.
 
 %changelog
-* Fri Oct 21 2011 Dave Jones <davej@redhat.com>
+* Fri Oct 21 2011 Dave Jones <davej@redhat.com> 2.6.35.14-100
 - Lower severity of Radeon lockup messages.
 
 * Fri Oct 20 2011 Josh Boyer <jwboyer@redhat.com>
