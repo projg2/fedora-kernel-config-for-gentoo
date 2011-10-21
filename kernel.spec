@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 99
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -897,6 +897,9 @@ Patch14061: TPM-Zero-buffer-after-copying-to-userspace.patch
 Patch14062: 0001-EHCI-don-t-rescan-interrupt-QHs-needlessly.patch
 Patch14063: 0002-USB-EHCI-go-back-to-using-the-system-clock-for-QH-un.patch
 
+#rhbz 747948
+Patch14064: ext4-fix-BUG_ON-in-ext4_ext_insert_extent.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1697,6 +1700,9 @@ ApplyPatch TPM-Zero-buffer-after-copying-to-userspace.patch
 ApplyPatch 0001-EHCI-don-t-rescan-interrupt-QHs-needlessly.patch
 ApplyPatch 0002-USB-EHCI-go-back-to-using-the-system-clock-for-QH-un.patch
 
+#rhbz 747948
+ApplyPatch ext4-fix-BUG_ON-in-ext4_ext_insert_extent.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2283,6 +2289,9 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 20 2011 Josh Boyer <jwboyer@redhat.com>
+- Add fix for ext4 BUG_ON backtrace (rhbz 747948)
+
 * Wed Oct 19 2011 Dave Jones <davej@redhat.com>
 - Add Sony VGN-FW21E to nonvs blacklist. (rhbz 641789)
 

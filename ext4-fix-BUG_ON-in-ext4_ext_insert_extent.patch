@@ -1,0 +1,62 @@
+BZ 742091
+https://bugzilla.redhat.com/show_bug.cgi?id=742091
+
+This bug was never properly fixed upstream since the code got
+reorganized in:
+
+667eff35a1f56fa74ce98a0c7c29a40adc1ba4e3 ext4: reimplement convert and
+split_unwritten
+
+This fix has proposed by Zheng Liu <wenqing.lz@taobao.com>, then updated,
+reviewed and tested by me.
+
+We will meet with a BUG_ON() if following script is run.
+
+mkfs.ext4 -b 4096 /dev/sdb1 1000000
+mount -t ext4 /dev/sdb1 /mnt/sdb1
+fallocate -l 100M /mnt/sdb1/test
+sync
+for((i=0;i<170;i++))
+do
+        dd if=/dev/zero of=/mnt/sdb1/test conv=notrunc bs=256k count=1 seek=`expr $i \* 2`
+done
+umount /mnt/sdb1
+mount -t ext4 /dev/sdb1 /mnt/sdb1
+dd if=/dev/zero of=/mnt/sdb1/test conv=notrunc bs=256k count=1 seek=341
+umount /mnt/sdb1
+mount /dev/sdb1 /mnt/sdb1
+dd if=/dev/zero of=/mnt/sdb1/test conv=notrunc bs=256k count=1 seek=340
+sync
+
+The reason is that it forgot to mark dirty when splitting two extents in
+ext4_ext_convert_to_initialized(). Althrough ex has been updated in memory,
+it is not dirtied both in ext4_ext_convert_to_initialized() and
+ext4_ext_insert_extent(). The disk layout is corrupted. Then it will meet with
+a BUG_ON() when writting at the start of that extent again.
+
+Originally-from: Zheng Liu <wenqing.lz@taobao.com>
+Signed-off-by: Lukas Czerner <lczerner@redhat.com>
+---
+ fs/ext4/extents.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+Index: linux-2.6.35.noarch/fs/ext4/extents.c
+===================================================================
+--- linux-2.6.35.noarch.orig/fs/ext4/extents.c
++++ linux-2.6.35.noarch/fs/ext4/extents.c
+@@ -2687,6 +2687,7 @@ static int ext4_ext_convert_to_initializ
+ 		ex1 = ex;
+ 		ex1->ee_len = cpu_to_le16(map->m_lblk - ee_block);
+ 		ext4_ext_mark_uninitialized(ex1);
++		ext4_ext_dirty(handle, inode, path + depth);
+ 		ex2 = &newex;
+ 	}
+ 	/*
+@@ -2850,6 +2851,7 @@ static int ext4_ext_convert_to_initializ
+ 		ex1 = ex;
+ 		ex1->ee_len = cpu_to_le16(map->m_lblk - ee_block);
+ 		ext4_ext_mark_uninitialized(ex1);
++		ext4_ext_dirty(handle, inode, path + depth);
+ 		ex2 = &newex;
+ 	}
+ 	/* ex2: map->m_lblk to map->m_lblk + maxblocks-1 : initialised */
