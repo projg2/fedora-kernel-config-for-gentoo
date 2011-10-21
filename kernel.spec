@@ -623,6 +623,8 @@ Patch1825: drm-intel-make-lvds-work.patch
 # rhbz#729882, https://bugs.freedesktop.org/attachment.cgi?id=49069
 Patch1827: drm-i915-sdvo-lvds-is-digital.patch
 
+Patch1850: drm-lower-severity-radeon-lockup.diff
+
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
 Patch2000: block-stray-block-put-after-teardown.patch
@@ -1221,6 +1223,9 @@ ApplyOptionalPatch drm-nouveau-updates.patch
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch drm-i915-sdvo-lvds-is-digital.patch
+
+ApplyPatch drm-lower-severity-radeon-lockup.diff
+
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
 ApplyPatch block-stray-block-put-after-teardown.patch
@@ -1916,6 +1921,9 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 21 2011 Dave Jones <davej@redhat.com>
+- Lower severity of Radeon lockup messages.
+
 * Thu Oct 20 2011 Josh Boyer <jwboyer@redhat.com>
 - Add backport for P4 watchdog and perf support from Don Zickus (rhbz 713675)
 
