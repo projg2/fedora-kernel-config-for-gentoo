@@ -2085,7 +2085,7 @@ fi
 # and build.
 
 %changelog
-* Fri Oct 21 2011 Chuck Ebbert <cebbert@redhat.com>
+* Fri Oct 21 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.0-0.rc10.git1.1
 - Update to upstream HEAD (v3.1-rc10-42-g2efd7c0)
 
 * Fri Oct 21 2011 Dave Jones <davej@redhat.com>
