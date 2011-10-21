@@ -1,0 +1,11 @@
+--- linux-2.6.35.noarch/drivers/gpu/drm/radeon/radeon_fence.c~	2011-10-21 14:08:15.229351796 -0400
++++ linux-2.6.35.noarch/drivers/gpu/drm/radeon/radeon_fence.c	2011-10-21 14:08:35.140287089 -0400
+@@ -232,7 +232,7 @@ retry:
+ 		 */
+ 		if (seq == rdev->fence_drv.last_seq && radeon_gpu_is_lockup(rdev)) {
+ 			/* good news we believe it's a lockup */
+-			WARN(1, "GPU lockup (waiting for 0x%08X last fence id 0x%08X)\n", fence->seq, seq);
++			printk(KERN_WARNING, "GPU lockup (waiting for 0x%08X last fence id 0x%08X)\n", fence->seq, seq);
+ 			/* FIXME: what should we do ? marking everyone
+ 			 * as signaled for now
+ 			 */

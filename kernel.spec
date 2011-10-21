@@ -710,6 +710,7 @@ Patch1826: drm-i915-disable-sr-polling.patch
 Patch1828: drm-ttm-fix-two-race-conditions-fix-busy-codepaths.patch
 
 Patch1830: drm-radeon-r600-cs-checker-fixes.patch
+Patch1850: drm-lower-severity-radeon-lockup.diff
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 Patch2000: efifb-add-more-models.patch
@@ -1503,6 +1504,8 @@ ApplyPatch drm-ttm-fix-two-race-conditions-fix-busy-codepaths.patch
 
 ApplyPatch drm-radeon-r600-cs-checker-fixes.patch
 
+ApplyPatch drm-lower-severity-radeon-lockup.diff
+
 ApplyPatch efifb-add-more-models.patch
 ApplyPatch efifb-check-that-the-base-addr-is-plausible-on-pci-systems.patch
 
@@ -2289,6 +2292,9 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 21 2011 Dave Jones <davej@redhat.com>
+- Lower severity of Radeon lockup messages.
+
 * Fri Oct 20 2011 Josh Boyer <jwboyer@redhat.com>
 - Add fix for ext4 BUG_ON backtrace (rhbz 747948)
 
