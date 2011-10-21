@@ -690,6 +690,8 @@ Patch1826: drm-i915-fbc-stfu.patch
 # rhbz#729882, https://bugs.freedesktop.org/attachment.cgi?id=49069
 Patch1827: drm-i915-sdvo-lvds-is-digital.patch
 
+Patch1850: drm-lower-severity-radeon-lockup.diff
+
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
 # Quiet boot fixes
@@ -1328,6 +1330,9 @@ ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch drm-i915-fbc-stfu.patch
 ApplyPatch drm-i915-sdvo-lvds-is-digital.patch
+
+ApplyPatch drm-lower-severity-radeon-lockup.diff
+
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
 # silence the ACPI blacklist code
@@ -2086,6 +2091,9 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 21 2011 Dave Jones <davej@redhat.com>
+- Lower severity of Radeon lockup messages.
+
 * Wed Oct 19 2011 Dave Jones <davej@redhat.com>
 - Add Sony VGN-FW21E to nonvs blacklist. (rhbz 641789)
 
