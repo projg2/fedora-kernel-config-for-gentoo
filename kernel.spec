@@ -1929,7 +1929,7 @@ fi
 # and build.
 
 %changelog
-* Mon Oct 24 2011 Josh Boyer <jwboyer@redhat.com>
+* Mon Oct 24 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.7-3
 - Backport 3 fixed from linux-next to fix dib0700 playback (rhbz 733827)
 
 * Fri Oct 21 2011 Dave Jones <davej@redhat.com>
