@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -637,6 +637,10 @@ Patch2802: linux-2.6-silence-acpi-blacklist.patch
 Patch2899: linux-2.6-v4l-dvb-fixes.patch
 Patch2900: linux-2.6-v4l-dvb-update.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
+
+Patch2902: media-DiBcom-protect-the-I2C-bufer-access.patch
+Patch2903: media-dib0700-protect-the-dib0700-buffer-access.patch
+Patch2904: media-dib0700-correct-error-message.patch
 
 Patch3000: rcutree-avoid-false-quiescent-states.patch
 
@@ -1238,6 +1242,10 @@ ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
+
+ApplyPatch media-DiBcom-protect-the-I2C-bufer-access.patch
+ApplyPatch media-dib0700-protect-the-dib0700-buffer-access.patch
+ApplyPatch media-dib0700-correct-error-message.patch
 
 # Avoid false quiescent states in rcu.
 ApplyPatch rcutree-avoid-false-quiescent-states.patch
@@ -1921,6 +1929,9 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 24 2011 Josh Boyer <jwboyer@redhat.com>
+- Backport 3 fixed from linux-next to fix dib0700 playback (rhbz 733827)
+
 * Fri Oct 21 2011 Dave Jones <davej@redhat.com>
 - Lower severity of Radeon lockup messages.
 
