@@ -720,6 +720,9 @@ Patch21019: fuse-fix-memory-leak.patch
 Patch21020: 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
 Patch21021: 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
 
+#rhbz 737108
+Patch21030: platform-fix-samsung-brightness-min-max-calculations.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1308,6 +1311,9 @@ ApplyPatch fuse-fix-memory-leak.patch
 #rhbz #735946
 ApplyPatch 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
 ApplyPatch 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
+
+#rhbz 737108
+ApplyPatch platform-fix-samsung-brightness-min-max-calculations.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1929,6 +1935,9 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 24 2011 Chuck Ebbert <cebbert@redhat.com>
+- Add patch from LKML to fix Samsung notebook brightness flicker (rhbz 737108)
+
 * Mon Oct 24 2011 Dave Jones <davej@redhat.com>
 - Print modules list from bad_page()
 
