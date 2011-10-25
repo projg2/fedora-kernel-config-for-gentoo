@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -903,6 +903,10 @@ Patch14063: 0002-USB-EHCI-go-back-to-using-the-system-clock-for-QH-un.patch
 #rhbz 747948
 Patch14064: ext4-fix-BUG_ON-in-ext4_ext_insert_extent.patch
 
+#rhbz 748668
+Patch14065: epoll-fix-spurious-lockdep-warnings.patch
+Patch14066: epoll-limit-paths.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1709,6 +1713,10 @@ ApplyPatch 0002-USB-EHCI-go-back-to-using-the-system-clock-for-QH-un.patch
 #rhbz 747948
 ApplyPatch ext4-fix-BUG_ON-in-ext4_ext_insert_extent.patch
 
+#rhbz 748668
+ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
+ApplyPatch epoll-limit-paths.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2295,6 +2303,9 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 25 2011 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-1083: excessive in kernel CPU consumption when creating large nested epoll structures (rhbz 748668)
+
 * Tue Oct 25 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix NULL dereference in udp6_ufo_fragment(), caused by
   fix for CVE-2011-2699.
