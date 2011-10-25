@@ -852,6 +852,8 @@ Patch14012: bluetooth-prevent-buffer-overflow-in-l2cap-config-request.patch
 Patch14013: nl80211-fix-overflow-in-ssid_len.patch.patch
 # CVE-2011-2699
 Patch14014: ipv6-make-fragment-identifications-less-predictable.patch
+# fix possible null dereference in above fix
+Patch14015: ipv6-fix-null-dereference-in-udp6_ufo_fragment.patch
 
 # RHBZ #699684
 Patch14020: x86-mm-fix-pgd_lock-deadlock.patch
@@ -1657,6 +1659,7 @@ ApplyPatch bluetooth-prevent-buffer-overflow-in-l2cap-config-request.patch
 ApplyPatch nl80211-fix-overflow-in-ssid_len.patch.patch
 # CVE-2011-2699
 ApplyPatch ipv6-make-fragment-identifications-less-predictable.patch
+ApplyPatch ipv6-fix-null-dereference-in-udp6_ufo_fragment.patch
 
 # RHBZ #699684
 ApplyPatch x86-mm-fix-pgd_lock-deadlock.patch
@@ -2292,6 +2295,10 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 25 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix NULL dereference in udp6_ufo_fragment(), caused by
+  fix for CVE-2011-2699.
+
 * Fri Oct 21 2011 Dave Jones <davej@redhat.com> 2.6.35.14-100
 - Lower severity of Radeon lockup messages.
 
