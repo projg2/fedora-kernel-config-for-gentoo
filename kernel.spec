@@ -709,6 +709,11 @@ Patch21021: 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
 #rhbz 737108
 Patch21030: platform-fix-samsung-brightness-min-max-calculations.patch
 
+#rhbz 748691
+Patch21040: be2net-move-to-new-vlan-model.patch
+Patch21041: be2net-non-member-vlan-pkts-not-received-in-promisco.patch
+Patch21042: benet-remove-bogus-unlikely-on-vlan-check.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1284,6 +1289,11 @@ ApplyPatch 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
 
 #rhbz 737108
 ApplyPatch platform-fix-samsung-brightness-min-max-calculations.patch
+
+#rhbz 748691
+ApplyPatch be2net-move-to-new-vlan-model.patch
+ApplyPatch be2net-non-member-vlan-pkts-not-received-in-promisco.patch
+ApplyPatch benet-remove-bogus-unlikely-on-vlan-check.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1906,6 +1916,7 @@ fi
 
 %changelog
 * Tue Oct 25 2011 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-3347: be2net: promiscuous mode and non-member VLAN packets DoS (rhbz 748691)
 - CVE-2011-1083: excessive in kernel CPU consumption when creating large nested epoll structures (rhbz 748668)
 
 * Tue Oct 25 2011 Josh Boyer <jwboyer@redhat.com>
