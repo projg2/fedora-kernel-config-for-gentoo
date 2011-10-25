@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 0
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -665,6 +665,7 @@ Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch13001: epoll-fix-spurious-lockdep-warnings.patch
+Patch13002: epoll-limit-paths.patch
 
 Patch13010: iwlagn-check-for-priv--txq-in-iwlagn_wait_tx_queue_empty.patch
 
@@ -1252,6 +1253,7 @@ ApplyPatch x86-p4-make-watchdog-and-perf-work-together.patch
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
+ApplyPatch epoll-limit-paths.patch
 
 ApplyPatch iwlagn-check-for-priv--txq-in-iwlagn_wait_tx_queue_empty.patch
 
@@ -1903,6 +1905,9 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 25 2011 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-1083: excessive in kernel CPU consumption when creating large nested epoll structures (rhbz 748668)
+
 * Tue Oct 25 2011 Josh Boyer <jwboyer@redhat.com>
 - Linux 3.0.8 stable release
 
