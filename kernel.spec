@@ -1919,7 +1919,7 @@ fi
 # and build.
 
 %changelog
-* Wed Oct 26 2011 Josh Boyer <jwboyer@redhat.com>
+* Wed Oct 26 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.8-2
 - CVE-2011-4077: xfs: potential buffer overflow in xfs_readlink() (rhbz 749166)
 
 * Tue Oct 25 2011 Josh Boyer <jwboyer@redhat.com>
