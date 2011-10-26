@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 101
+%global baserelease 102
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -907,6 +907,9 @@ Patch14064: ext4-fix-BUG_ON-in-ext4_ext_insert_extent.patch
 Patch14065: epoll-fix-spurious-lockdep-warnings.patch
 Patch14066: epoll-limit-paths.patch
 
+#rhbz 749166
+Patch21050: xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1374,6 +1377,7 @@ ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 ApplyPatch ext4-always-journal-quota-file-modifications.patch
 
 # xfs
+ApplyPatch xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
 
 # btrfs
 
@@ -2303,6 +2307,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 26 2011 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-4077: Add patch to fix XFS memory corruption (rhbz 749166)
+
 * Tue Oct 25 2011 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-1083: excessive in kernel CPU consumption when creating large nested epoll structures (rhbz 748668)
 
