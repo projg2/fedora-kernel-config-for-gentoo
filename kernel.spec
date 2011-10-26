@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -714,6 +714,9 @@ Patch21040: be2net-move-to-new-vlan-model.patch
 Patch21041: be2net-non-member-vlan-pkts-not-received-in-promisco.patch
 Patch21042: benet-remove-bogus-unlikely-on-vlan-check.patch
 
+#rhbz 749166
+Patch21050: xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1135,6 +1138,7 @@ ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 # ext4
 
 # xfs
+ApplyPatch xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
 
 # btrfs
 
@@ -1915,6 +1919,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 26 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix XFS memory corruption (rhbz 749166)
+
 * Tue Oct 25 2011 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-3347: be2net: promiscuous mode and non-member VLAN packets DoS (rhbz 748691)
 - CVE-2011-1083: excessive in kernel CPU consumption when creating large nested epoll structures (rhbz 748668)
