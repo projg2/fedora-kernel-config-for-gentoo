@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2107,6 +2107,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 26 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.1.0-5
+- Rebuilt for glibc bug#747377
+
 * Wed Oct 26 2011 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-4077: xfs: potential buffer overflow in xfs_readlink() (rhbz 749166)
 
