@@ -910,6 +910,9 @@ Patch14066: epoll-limit-paths.patch
 #rhbz 749166
 Patch21050: xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
 
+#rhbz 749484
+Patch21060: crypto-ghash-Avoid-null-pointer-dereference-if-no-ke.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1721,6 +1724,9 @@ ApplyPatch ext4-fix-BUG_ON-in-ext4_ext_insert_extent.patch
 ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
 ApplyPatch epoll-limit-paths.patch
 
+#rhbz 749484
+ApplyPatch crypto-ghash-Avoid-null-pointer-dereference-if-no-ke.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2307,6 +2313,9 @@ fi
 # and build.
 
 %changelog
+* Thu Oct 27 2011 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-4081 crypto: ghash: null pointer deref if no key is set (rhbz 749484)
+
 * Wed Oct 26 2011 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-4077: Add patch to fix XFS memory corruption (rhbz 749166)
 
