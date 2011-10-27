@@ -1,4 +1,4 @@
-From cbee73333a2d05c274240dff5de1b4bb74bfb497 Mon Sep 17 00:00:00 2001
+From fbf6404575f42b383d9607321bd129f0e28fc0d7 Mon Sep 17 00:00:00 2001
 From: Carlos Maiolino <cmaiolino@redhat.com>
 Date: Tue, 18 Oct 2011 02:18:58 -0200
 Subject: [PATCH] Fix possible memory corruption in xfs_readlink
@@ -14,10 +14,10 @@ Signed-off-by: Carlos Maiolino <cmaiolino@redhat.com>
  1 files changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/fs/xfs/xfs_vnodeops.c b/fs/xfs/xfs_vnodeops.c
-index 6197207..111870b 100644
+index c164683..529d983 100644
 --- a/fs/xfs/xfs_vnodeops.c
 +++ b/fs/xfs/xfs_vnodeops.c
-@@ -545,13 +545,17 @@ xfs_readlink(
+@@ -564,13 +564,17 @@ xfs_readlink(
  
  	xfs_ilock(ip, XFS_ILOCK_SHARED);
  
@@ -29,7 +29,7 @@ index 6197207..111870b 100644
  		goto out;
  
 +	if (pathlen > MAXPATHLEN) {
-+		xfs_alert(mp, "%s: inode (%llu) symlink length (%d) too long",
++		xfs_fs_cmn_err(CE_ALERT, mp, "%s: inode (%llu) symlink length (%d) too long",
 +			 __func__, (unsigned long long)ip->i_ino, pathlen);
 +		ASSERT(0);
 +		return XFS_ERROR(EFSCORRUPTED);

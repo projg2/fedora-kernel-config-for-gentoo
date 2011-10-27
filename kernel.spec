@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 102
+%global baserelease 103
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2313,7 +2313,8 @@ fi
 # and build.
 
 %changelog
-* Thu Oct 27 2011 Josh Boyer <jwboyer@redhat.com>
+* Thu Oct 27 2011 Josh Boyer <jwboyer@redhat.com> 2.6.35.14-103
+- Fix backport of xfs patch
 - CVE-2011-4081 crypto: ghash: null pointer deref if no key is set (rhbz 749484)
 
 * Wed Oct 26 2011 Josh Boyer <jwboyer@redhat.com>
