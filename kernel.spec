@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -664,6 +664,7 @@ Patch452: linux-2.6.30-no-pcspkr-modalias.patch
 Patch460: linux-2.6-serial-460800.patch
 
 Patch470: die-floppy-die.patch
+Patch471: floppy-drop-disable_hlt-warning.patch
 
 Patch510: linux-2.6-silence-noise.patch
 Patch530: linux-2.6-silence-fbcon-logo.patch
@@ -1304,6 +1305,7 @@ ApplyPatch linux-2.6-input-kill-stupid-messages.patch
 
 # stop floppy.ko from autoloading during udev...
 ApplyPatch die-floppy-die.patch
+ApplyPatch floppy-drop-disable_hlt-warning.patch
 
 ApplyPatch linux-2.6.30-no-pcspkr-modalias.patch
 
@@ -2107,6 +2109,9 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 28 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to prevent tracebacks on a warning in floppy.c (rhbz 749887)
+
 * Wed Oct 26 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.1.0-5
 - Rebuilt for glibc bug#747377
 
