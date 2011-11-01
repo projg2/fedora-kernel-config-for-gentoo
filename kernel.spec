@@ -2111,6 +2111,9 @@ fi
 # and build.
 
 %changelog
+* Tue Nov 01 2011 Dave Jones <davej@redhat.com> 3.1.0-8
+- Add another Sony laptop to the nonvs blacklist. (rhbz 641789)
+
 * Tue Nov  1 2011 Josh Boyer <jwboyer@redhat.com> 3.1.0-7
 - Drop x86-efi-Calling-__pa-with-an-ioremap-address-is-invalid (rhbz 748516)
 
