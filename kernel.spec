@@ -718,6 +718,8 @@ Patch21042: benet-remove-bogus-unlikely-on-vlan-check.patch
 #rhbz 749166
 Patch21050: xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
 
+Patch21070: oom-fix-integer-overflow-of-points.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1300,6 +1302,9 @@ ApplyPatch platform-fix-samsung-brightness-min-max-calculations.patch
 ApplyPatch be2net-move-to-new-vlan-model.patch
 ApplyPatch be2net-non-member-vlan-pkts-not-received-in-promisco.patch
 ApplyPatch benet-remove-bogus-unlikely-on-vlan-check.patch
+
+#rhbz 750402
+ApplyPatch oom-fix-integer-overflow-of-points.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1921,6 +1926,9 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 31 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix integer overflow of points in oom_badness (rhbz 750402)
+
 * Fri Oct 28 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to prevent tracebacks on a warning in floppy.c (rhbz 749887)
 
