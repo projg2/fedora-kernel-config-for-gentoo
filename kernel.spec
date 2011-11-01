@@ -1926,8 +1926,11 @@ fi
 # and build.
 
 %changelog
+* Tue Nov 01 2011 Dave Jones <davej@redhat.com> 2.6.40.8-4
+- Add another Sony laptop to the nonvs blacklist. (rhbz 641789)
+
 * Mon Oct 31 2011 Josh Boyer <jwboyer@redhat.com>
--CVE-2011-4097: oom_badness() integer overflow (rhbz 750402)
+- CVE-2011-4097: oom_badness() integer overflow (rhbz 750402)
 
 * Fri Oct 28 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to prevent tracebacks on a warning in floppy.c (rhbz 749887)
