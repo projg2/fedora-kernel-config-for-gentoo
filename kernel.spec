@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 6
+%global baserelease 7
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -721,7 +721,6 @@ Patch12010: add-appleir-usb-driver.patch
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
 Patch12021: udlfb-bind-framebuffer-to-interface.patch
-Patch12022: x86-efi-Calling-__pa-with-an-ioremap-address-is-invalid.patch
 
 Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
 Patch12024: epoll-fix-spurious-lockdep-warnings.patch
@@ -1375,8 +1374,6 @@ ApplyPatch block-stray-block-put-after-teardown.patch
 ApplyPatch usb-add-quirk-for-logitech-webcams.patch
 
 ApplyPatch crypto-register-cryptd-first.patch
-
-ApplyPatch x86-efi-Calling-__pa-with-an-ioremap-address-is-invalid.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -2114,8 +2111,11 @@ fi
 # and build.
 
 %changelog
+* Tue Nov  1 2011 Josh Boyer <jwboyer@redhat.com> 3.1.0-7
+- Drop x86-efi-Calling-__pa-with-an-ioremap-address-is-invalid (rhbz 748516)
+
 * Mon Oct 31 2011 Josh Boyer <jwboyer@redhat.com>
--CVE-2011-4097: oom_badness() integer overflow (rhbz 750402)
+- CVE-2011-4097: oom_badness() integer overflow (rhbz 750402)
 
 * Fri Oct 28 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to prevent tracebacks on a warning in floppy.c (rhbz 749887)
