@@ -352,13 +352,13 @@ Summary: The Linux kernel
 # we build a up kernel on armv5tel. its used for qemu.
 %ifnarch armv5tel
 %define with_up 0
+%define with_perf 0
 %endif
 # we only build headers on the base arm arches
 # just like we used to only build them on i386 for x86
 %ifnarch armv5tel armv7hl
 %define with_headers 0
 %endif
-%define with_perf 0
 %endif
 
 %if %{nopatches}
@@ -1924,6 +1924,9 @@ fi
 # and build.
 
 %changelog
+* Tue Nov 01 2011 Dave Jones <davej@redhat.com> 2.6.40.8-5
+- allow building the perf rpm for ARM (rhbz 741325)
+
 * Tue Nov 01 2011 Josh Boyer <jwboyer@redhat.com> 2.6.40.8-4
 - Drop x86-efi-Calling-__pa-with-an-ioremap-address-is-invalid (rhbz 748516)
 
