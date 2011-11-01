@@ -2313,6 +2313,9 @@ fi
 # and build.
 
 %changelog
+* Tue Nov 01 2011 Dave Jones <davej@redhat.com>
+- Add another Sony laptop to the nonvs blacklist. (rhbz 641789)
+
 * Thu Oct 27 2011 Josh Boyer <jwboyer@redhat.com> 2.6.35.14-103
 - Fix backport of xfs patch
 - CVE-2011-4081 crypto: ghash: null pointer deref if no key is set (rhbz 749484)
