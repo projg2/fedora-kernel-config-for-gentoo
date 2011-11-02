@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -719,6 +719,9 @@ Patch21050: xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
 
 Patch21070: oom-fix-integer-overflow-of-points.patch
 
+#rhbz 706574
+Patch21071: WMI-properly-cleanup-devices-to-avoid-crashes.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1303,6 +1306,9 @@ ApplyPatch benet-remove-bogus-unlikely-on-vlan-check.patch
 
 #rhbz 750402
 ApplyPatch oom-fix-integer-overflow-of-points.patch
+
+#rhbz 706574
+ApplyPatch WMI-properly-cleanup-devices-to-avoid-crashes.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1924,6 +1930,9 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 02 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix oops when removing wmi module (rhbz 706574)
+
 * Tue Nov 01 2011 Dave Jones <davej@redhat.com> 2.6.40.8-5
 - allow building the perf rpm for ARM (rhbz 741325)
 
