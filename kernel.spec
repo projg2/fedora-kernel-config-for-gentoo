@@ -771,6 +771,9 @@ Patch21071: WMI-properly-cleanup-devices-to-avoid-crashes.patch
 #rhbz 728607
 Patch21060: elantech.patch
 
+#rhbz 748210
+Patch21061: ideapad-Check-if-acpi-already-handle-backlight.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1421,6 +1424,9 @@ ApplyPatch WMI-properly-cleanup-devices-to-avoid-crashes.patch
 
 #rhbz 728607
 ApplyPatch elantech.patch
+
+#rhbz 748210
+ApplyPatch ideapad-Check-if-acpi-already-handle-backlight.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2125,6 +2131,7 @@ fi
 %changelog
 * Thu Nov 03 2011 Josh Boyer <jwboyer@redhat.com>
 - Add commits queued for 3.2 for elantech driver (rhbz 728607)
+- Fix crash when setting brightness via Fn keys on ideapads (rhbz 748210)
 
 * Wed Nov 02 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix oops when removing wmi module (rhbz 706574)
