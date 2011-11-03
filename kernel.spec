@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 8
+%global baserelease 9
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -768,6 +768,9 @@ Patch21070: oom-fix-integer-overflow-of-points.patch
 #rhbz 706574
 Patch21071: WMI-properly-cleanup-devices-to-avoid-crashes.patch
 
+#rhbz 728607
+Patch21060: elantech.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1415,6 +1418,9 @@ ApplyPatch oom-fix-integer-overflow-of-points.patch
 
 #rhbz 706574
 ApplyPatch WMI-properly-cleanup-devices-to-avoid-crashes.patch
+
+#rhbz 728607
+ApplyPatch elantech.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2117,6 +2123,9 @@ fi
 # and build.
 
 %changelog
+* Thu Nov 03 2011 Josh Boyer <jwboyer@redhat.com>
+- Add commits queued for 3.2 for elantech driver (rhbz 728607)
+
 * Wed Nov 02 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix oops when removing wmi module (rhbz 706574)
 
