@@ -355,3 +355,5 @@ CONFIG_CRYPTO_DEV_FSL_CAAM_CRYPTO_API=m
 # CONFIG_GPIO_GENERIC_PLATFORM is not set
 # CONFIG_GPIO_MCP23S08 is not set
 
+# Disable btrfs until it is shown to work with 64k pages (rhbz 747079)
+# CONFIG_BTRFS_FS is not set
