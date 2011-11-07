@@ -1,7 +1,10 @@
-From 4aa9d354534c2fcbb06170f5968f762aa9bdd0f6 Mon Sep 17 00:00:00 2001
 From: Patrick Boettcher <Patrick.Boettcher@dibcom.fr>
-Date: Wed, 3 Aug 2011 15:08:21 -0300
-Subject: [PATCH 1/3] [media] DiBcom: protect the I2C bufer access
+Date: Wed, 3 Aug 2011 15:08:21 +0000 (-0300)
+Subject: [media] DiBcom: protect the I2C bufer access
+X-Git-Tag: next-20110927~67^2~4^2~225
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Fnext%2Flinux-next.git;a=commitdiff_plain;h=79fcce3230b140f7675f8529ee53fe2f9644f902
+
+[media] DiBcom: protect the I2C bufer access
 
 This patch protects the I2C buffer access in order to manage concurrent
 access. This protection is done using mutex.
@@ -16,15 +19,6 @@ Signed-off-by: Olivier Grenie <olivier.grenie@dibcom.fr>
 Signed-off-by: Patrick Boettcher <Patrick.Boettcher@dibcom.fr>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
 ---
- drivers/media/dvb/frontends/dib0070.c        |   37 +++++-
- drivers/media/dvb/frontends/dib0090.c        |   70 +++++++++--
- drivers/media/dvb/frontends/dib7000m.c       |   27 ++++-
- drivers/media/dvb/frontends/dib7000p.c       |   32 +++++-
- drivers/media/dvb/frontends/dib8000.c        |   72 ++++++++++--
- drivers/media/dvb/frontends/dib9000.c        |  164 +++++++++++++++++++++++---
- drivers/media/dvb/frontends/dibx000_common.c |   76 ++++++++++--
- drivers/media/dvb/frontends/dibx000_common.h |    1 +
- 8 files changed, 412 insertions(+), 67 deletions(-)
 
 diff --git a/drivers/media/dvb/frontends/dib0070.c b/drivers/media/dvb/frontends/dib0070.c
 index 1d47d4d..dc1cb17 100644
@@ -341,7 +335,7 @@ index 79cb1c2..dbb76d7 100644
  	st->timf_default = cfg->bw->timf;
  
 diff --git a/drivers/media/dvb/frontends/dib7000p.c b/drivers/media/dvb/frontends/dib7000p.c
-index 0c9f40c..292bc19 100644
+index a64a538..4eb9c2b 100644
 --- a/drivers/media/dvb/frontends/dib7000p.c
 +++ b/drivers/media/dvb/frontends/dib7000p.c
 @@ -10,6 +10,7 @@
@@ -434,8 +428,8 @@ index 0c9f40c..292bc19 100644
 +	   more common) */
 +	st->i2c_master.gated_tuner_i2c_adap.dev.parent = i2c_adap->dev.parent;
  
- 	dibx000_init_i2c_master(&st->i2c_master, DIB7000P, st->i2c_adap, st->i2c_addr);
- 
+ 	/* FIXME: make sure the dev.parent field is initialized, or else
+ 	   request_firmware() will hit an OOPS (this should be moved somewhere
 diff --git a/drivers/media/dvb/frontends/dib8000.c b/drivers/media/dvb/frontends/dib8000.c
 index 7d2ea11..fe284d5 100644
 --- a/drivers/media/dvb/frontends/dib8000.c
@@ -1154,6 +1148,3 @@ index f031165..5e01147 100644
  };
  
  extern int dibx000_init_i2c_master(struct dibx000_i2c_master *mst,
--- 
-1.7.6.4
-

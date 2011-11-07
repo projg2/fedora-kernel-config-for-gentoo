@@ -1,7 +1,10 @@
-From e4f0158142e4b23939d9444d8af80ff20692f7a5 Mon Sep 17 00:00:00 2001
 From: Olivier Grenie <olivier.grenie@dibcom.fr>
-Date: Thu, 4 Aug 2011 16:10:03 -0300
-Subject: [PATCH 3/3] [media] dib0700: correct error message
+Date: Thu, 4 Aug 2011 16:10:03 +0000 (-0300)
+Subject: [media] dib0700: correct error message
+X-Git-Tag: next-20110927~67^2~4^2~223
+X-Git-Url: http://git.kernel.org/?p=linux%2Fkernel%2Fgit%2Fnext%2Flinux-next.git;a=commitdiff_plain;h=680417bb318adc5f1f8f392730776176fbcdedd8
+
+[media] dib0700: correct error message
 
 The goal of this patch is to correct a previous patch. In case of error,
 the err() function should be used instead of dprintk() function.
@@ -12,8 +15,6 @@ the err() function should be used instead of dprintk() function.
 Signed-off-by: Olivier Grenie <olivier.grenie@dibcom.fr>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
 ---
- drivers/media/dvb/dvb-usb/dib0700_core.c |   18 +++++++++---------
- 1 files changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/media/dvb/dvb-usb/dib0700_core.c b/drivers/media/dvb/dvb-usb/dib0700_core.c
 index a224e94..b693ed1 100644
@@ -100,6 +101,3 @@ index a224e94..b693ed1 100644
  		return 0;
  	}
  
--- 
-1.7.6.4
-

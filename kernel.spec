@@ -42,16 +42,16 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 6
+%global baserelease 0
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
-%define real_sublevel 0
+%define real_sublevel 1
 # fake_sublevel is the 2.6.x version we're faking
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 0
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -328,20 +328,6 @@ Summary: The Linux kernel
 %define kernel_image_elf 1
 %endif
 
-%ifarch ia64
-%define all_arch_configs kernel-%{version}-ia64*.config
-%define image_install_path boot/efi/EFI/redhat
-%define make_target compressed
-%define kernel_image vmlinux.gz
-%endif
-
-%ifarch alpha alphaev56
-%define all_arch_configs kernel-%{version}-alpha*.config
-%define image_install_path boot
-%define make_target vmlinux
-%define kernel_image vmlinux
-%endif
-
 %ifarch %{arm}
 %define all_arch_configs kernel-%{version}-arm*.config
 %define image_install_path boot
@@ -424,7 +410,7 @@ Summary: The Linux kernel
 # Packages that need to be installed before the kernel is, because the %%post
 # scripts use them.
 #
-%define kernel_prereq  fileutils, module-init-tools >= 3.16-2, initscripts >= 8.11.1-1, grubby >= 7.0.10-1
+%define kernel_prereq  fileutils, module-init-tools >= 3.16-2, initscripts >= 8.11.1-1, grubby >= 7.0.16-5
 %define initrd_prereq  dracut >= 001-7
 
 #
@@ -517,6 +503,7 @@ Source24: config-rhel-generic
 
 Source30: config-x86-generic
 Source31: config-i686-PAE
+Source32: config-x86-32-generic
 
 Source40: config-x86_64-generic
 
@@ -524,8 +511,6 @@ Source50: config-powerpc-generic
 Source51: config-powerpc32-generic
 Source52: config-powerpc32-smp
 Source53: config-powerpc64
-
-Source60: config-ia64-generic
 
 Source70: config-s390x
 
@@ -564,26 +549,23 @@ Patch05: linux-2.6-makefile-after_link.patch
 
 %if !%{nopatches}
 
+
 # revert upstream patches we get via other methods
 Patch09: linux-2.6-upstream-reverts.patch
+# Git trees.
 
 # Standalone patches
 
-Patch100: perf-check-ownership.patch
-
-Patch150: linux-2.6.29-sparc-IOC_TYPECHECK.patch
-
+Patch100: taint-vbox.patch
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
 
 Patch202: linux-2.6-debug-taint-vm.patch
-Patch203: linux-2.6-debug-vm-would-have-oomkilled.patch
 
 Patch383: linux-2.6-defaults-aspm.patch
 
 Patch390: linux-2.6-defaults-acpi-video.patch
 Patch391: linux-2.6-acpi-video-dos.patch
-Patch393: acpi-ec-add-delay-before-write.patch
 Patch394: linux-2.6-acpi-debug-infinite-loop.patch
 Patch395: acpi-ensure-thermal-limits-match-cpu-freq.patch
 Patch396: acpi-sony-nonvs-blacklist.patch
@@ -598,10 +580,6 @@ Patch471: floppy-drop-disable_hlt-warning.patch
 
 Patch510: linux-2.6-silence-noise.patch
 Patch530: linux-2.6-silence-fbcon-logo.patch
-# from 3.1
-Patch540: x86-pci-reduce-severity-of-host-bridge-window-conflict-warnings.patch
-
-Patch610: hda_intel-prealloc-4mb-dmabuffer.patch
 
 Patch700: linux-2.6-e1000-ich9-montevina.patch
 
@@ -620,14 +598,14 @@ Patch1810: drm-nouveau-updates.patch
 Patch1824: drm-intel-next.patch
 # make sure the lvds comes back on lid open
 Patch1825: drm-intel-make-lvds-work.patch
+# hush the i915 fbc noise
+Patch1826: drm-i915-fbc-stfu.patch
 # rhbz#729882, https://bugs.freedesktop.org/attachment.cgi?id=49069
 Patch1827: drm-i915-sdvo-lvds-is-digital.patch
 
 Patch1850: drm-lower-severity-radeon-lockup.diff
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
-
-Patch2000: block-stray-block-put-after-teardown.patch
 
 # Quiet boot fixes
 # silence the ACPI blacklist code
@@ -638,9 +616,9 @@ Patch2899: linux-2.6-v4l-dvb-fixes.patch
 Patch2900: linux-2.6-v4l-dvb-update.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
 
-Patch2902: media-DiBcom-protect-the-I2C-bufer-access.patch
-Patch2903: media-dib0700-protect-the-dib0700-buffer-access.patch
-Patch2904: media-dib0700-correct-error-message.patch
+Patch2903: media-DiBcom-protect-the-I2C-bufer-access.patch
+Patch2904: media-dib0700-protect-the-dib0700-buffer-access.patch
+Patch2905: media-dib0700-correct-error-message.patch
 
 Patch3000: rcutree-avoid-false-quiescent-states.patch
 
@@ -653,21 +631,28 @@ Patch12010: add-appleir-usb-driver.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
-Patch12024: usb-add-quirk-for-logitech-webcams.patch
-Patch12025: crypto-register-cryptd-first.patch
-Patch12028: x86-p4-make-watchdog-and-perf-work-together.patch
+Patch12021: udlfb-bind-framebuffer-to-interface.patch
 
-# Runtime power management
-Patch12203: linux-2.6-usb-pci-autosuspend.patch
-Patch12204: linux-2.6-enable-more-pci-autosuspend.patch
+Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
+Patch12024: epoll-fix-spurious-lockdep-warnings.patch
+Patch12025: rcu-avoid-just-onlined-cpu-resched.patch
+Patch12026: block-stray-block-put-after-teardown.patch
+Patch12027: usb-add-quirk-for-logitech-webcams.patch
+Patch12029: crypto-register-cryptd-first.patch
+Patch12030: epoll-limit-paths.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
-Patch13001: epoll-fix-spurious-lockdep-warnings.patch
-Patch13002: epoll-limit-paths.patch
+Patch13002: revert-efi-rtclock.patch
+Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
-Patch13010: iwlagn-check-for-priv--txq-in-iwlagn_wait_tx_queue_empty.patch
+Patch13007: add-macbookair41-keyboard.patch
+
+Patch13009: hvcs_pi_buf_alloc.patch
+
+Patch13013: powerpc-Fix-deadlock-in-icswx-code.patch
+
+Patch13014: iwlagn-fix-ht_params-NULL-pointer-dereference.patch
 
 Patch20000: utrace.patch
 
@@ -675,44 +660,16 @@ Patch20000: utrace.patch
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 
-# workaround for issue with gcc-4.6.x
-# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=45819
-# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=45704
-# patch from http://www.delorie.com/tmp/arm-readl.patch
-Patch21002: arm-readl.patch
-
-Patch21003: TEGRA-2.6.40.2-enable-USB-ports.patch
-
-# rhbz#719607
-Patch21004: vfs-fix-automount-for-negative-autofs-dentries.patch
-
-# rhbz #740645
-Patch21011: md-dont-delay-reboot-by-1-second-if-no-MD-devices.patch
-
-# rhbz #496975
-Patch21013: Platform-fix-samsung-laptop-DMI-identification-for-N.patch
-
-# rhbz #700718
-Patch21015: x86-Save-stack-pointer-in-perf-live-regs-savings.patch
-Patch21016: x86-Fetch-stack-from-regs-when-possible-in-dump_trac.patch
-
-#rhbz #708563
-Patch21017: binfmt_elf-fix-PIE-execution-with-random-disabled.patch
-
 #rhbz #722509
-Patch21018: mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
+Patch21002: mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
 
 #rhbz #735946
 Patch21020: 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
 Patch21021: 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
 
-#rhbz 737108
-Patch21030: platform-fix-samsung-brightness-min-max-calculations.patch
-
 #rhbz 748691
-Patch21040: be2net-move-to-new-vlan-model.patch
-Patch21041: be2net-non-member-vlan-pkts-not-received-in-promisco.patch
-Patch21042: benet-remove-bogus-unlikely-on-vlan-check.patch
+Patch21030: be2net-non-member-vlan-pkts-not-received-in-promisco.patch
+Patch21031: benet-remove-bogus-unlikely-on-vlan-check.patch
 
 #rhbz 749166
 Patch21050: xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
@@ -724,6 +681,9 @@ Patch21071: WMI-properly-cleanup-devices-to-avoid-crashes.patch
 
 #rhbz 728607
 Patch21060: elantech.patch
+
+#rhbz 748210
+Patch21061: ideapad-Check-if-acpi-already-handle-backlight.patch
 
 %endif
 
@@ -776,7 +736,7 @@ operate.
 %package bootwrapper
 Summary: Boot wrapper files for generating combined kernel + initrd images
 Group: Development/System
-Requires: gzip
+Requires: gzip binutils
 %description bootwrapper
 Kernel-bootwrapper contains the wrapper code which makes bootable "zImage"
 files combining both kernel and initial ramdisk.
@@ -845,8 +805,7 @@ AutoReqProv: no\
 Requires(pre): /usr/bin/find\
 Requires: perl\
 %description -n kernel%{?variant}%{?1:-%{1}}-devel\
-This package provides kernel headers and 
-makefiles sufficient to build modules\
+This package provides kernel headers and makefiles sufficient to build modules\
 against the %{?2:%{2} }kernel package.\
 %{nil}
 
@@ -1118,26 +1077,21 @@ ApplyOptionalPatch linux-2.6-compile-fixes.patch
 ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 
 
-ApplyPatch perf-check-ownership.patch
-
-#
-# SPARC64
-#
-ApplyPatch linux-2.6.29-sparc-IOC_TYPECHECK.patch
+# Architecture patches
+# x86(-64)
 
 #
 # ARM
 #
 ApplyPatch arm-omap-dt-compat.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
-ApplyPatch arm-readl.patch
-ApplyPatch TEGRA-2.6.40.2-enable-USB-ports.patch
 
+ApplyPatch taint-vbox.patch
 #
-# Exec shield
+# NX Emulation
 #
-ApplyPatch linux-2.6-i386-nx-emulation.patch
 ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
+ApplyPatch linux-2.6-i386-nx-emulation.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -1162,14 +1116,12 @@ ApplyPatch xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
 # ACPI
 ApplyPatch linux-2.6-defaults-acpi-video.patch
 ApplyPatch linux-2.6-acpi-video-dos.patch
-ApplyPatch acpi-ec-add-delay-before-write.patch
 ApplyPatch linux-2.6-acpi-debug-infinite-loop.patch
 ApplyPatch acpi-ensure-thermal-limits-match-cpu-freq.patch
 ApplyPatch acpi-sony-nonvs-blacklist.patch
 
 # Various low-impact patches to aid debugging.
 ApplyPatch linux-2.6-debug-taint-vm.patch
-ApplyPatch linux-2.6-debug-vm-would-have-oomkilled.patch
 
 #
 # PCI
@@ -1184,9 +1136,9 @@ ApplyPatch linux-2.6-defaults-aspm.patch
 # ACPI
 
 # ALSA
-ApplyPatch hda_intel-prealloc-4mb-dmabuffer.patch
 
 # Networking
+
 
 # Misc fixes
 # The input layer spews crap no-one cares about.
@@ -1206,9 +1158,6 @@ ApplyPatch linux-2.6-silence-noise.patch
 
 # Make fbcon not show the penguins with 'quiet'
 ApplyPatch linux-2.6-silence-fbcon-logo.patch
-
-# Get rid of useless bridge window conflict warnings
-ApplyPatch x86-pci-reduce-severity-of-host-bridge-window-conflict-warnings.patch
 
 # Changes to upstream defaults.
 
@@ -1232,13 +1181,12 @@ ApplyOptionalPatch drm-nouveau-updates.patch
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-intel-make-lvds-work.patch
+ApplyPatch drm-i915-fbc-stfu.patch
 ApplyPatch drm-i915-sdvo-lvds-is-digital.patch
 
 ApplyPatch drm-lower-severity-radeon-lockup.diff
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
-
-ApplyPatch block-stray-block-put-after-teardown.patch
 
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
@@ -1249,61 +1197,52 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 
-ApplyPatch media-DiBcom-protect-the-I2C-bufer-access.patch
-ApplyPatch media-dib0700-protect-the-dib0700-buffer-access.patch
-ApplyPatch media-dib0700-correct-error-message.patch
-
-# Avoid false quiescent states in rcu.
+# Patches headed upstream
 ApplyPatch rcutree-avoid-false-quiescent-states.patch
 
-# Patches headed upstream
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch add-appleir-usb-driver.patch
 
+ApplyPatch udlfb-bind-framebuffer-to-interface.patch
 ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
+ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
+ApplyPatch epoll-limit-paths.patch
+ApplyPatch rcu-avoid-just-onlined-cpu-resched.patch
+ApplyPatch block-stray-block-put-after-teardown.patch
 ApplyPatch usb-add-quirk-for-logitech-webcams.patch
+
 ApplyPatch crypto-register-cryptd-first.patch
-ApplyPatch x86-p4-make-watchdog-and-perf-work-together.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
-ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
-ApplyPatch epoll-limit-paths.patch
+ApplyPatch revert-efi-rtclock.patch
+ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
-ApplyPatch iwlagn-check-for-priv--txq-in-iwlagn_wait_tx_queue_empty.patch
+ApplyPatch add-macbookair41-keyboard.patch
 
-ApplyPatch utrace.patch
+ApplyPatch hvcs_pi_buf_alloc.patch
 
-# rhbz#719607
-ApplyPatch vfs-fix-automount-for-negative-autofs-dentries.patch
+ApplyPatch powerpc-Fix-deadlock-in-icswx-code.patch
 
-#rhbz 740645
-ApplyPatch md-dont-delay-reboot-by-1-second-if-no-MD-devices.patch
-
-# rhbz #496675
-ApplyPatch Platform-fix-samsung-laptop-DMI-identification-for-N.patch
-
-# rhbz #700718
-ApplyPatch x86-Save-stack-pointer-in-perf-live-regs-savings.patch
-ApplyPatch x86-Fetch-stack-from-regs-when-possible-in-dump_trac.patch
-
-#rhbz #708563
-ApplyPatch binfmt_elf-fix-PIE-execution-with-random-disabled.patch
+ApplyPatch iwlagn-fix-ht_params-NULL-pointer-dereference.patch
 
 #rhbz #722509
 ApplyPatch mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
+
+ApplyPatch media-DiBcom-protect-the-I2C-bufer-access.patch
+ApplyPatch media-dib0700-protect-the-dib0700-buffer-access.patch
+ApplyPatch media-dib0700-correct-error-message.patch
+
+# utrace.
+ApplyPatch utrace.patch
 
 #rhbz #735946
 ApplyPatch 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
 ApplyPatch 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
 
-#rhbz 737108
-ApplyPatch platform-fix-samsung-brightness-min-max-calculations.patch
-
 #rhbz 748691
-ApplyPatch be2net-move-to-new-vlan-model.patch
 ApplyPatch be2net-non-member-vlan-pkts-not-received-in-promisco.patch
 ApplyPatch benet-remove-bogus-unlikely-on-vlan-check.patch
 
@@ -1315,6 +1254,9 @@ ApplyPatch WMI-properly-cleanup-devices-to-avoid-crashes.patch
 
 #rhbz 728607
 ApplyPatch elantech.patch
+
+#rhbz 748210
+ApplyPatch ideapad-Check-if-acpi-already-handle-backlight.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1936,6 +1878,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 07 2011 Dave Jones <davej@redhat.com>
+- Rebase to 3.1.0
+
 * Thu Nov 03 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patches queued for 3.2 for elantech driver (rhbz 728607)
 
