@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 9
+%global baserelease 10
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -774,6 +774,10 @@ Patch21060: elantech.patch
 #rhbz 748210
 Patch21061: ideapad-Check-if-acpi-already-handle-backlight.patch
 
+#rhbz 731365
+Patch21062: mac80211-fix-remain_off_channel-regression.patch
+Patch21063: mac80211-config-hw-when-going-back-on-channel.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1427,6 +1431,10 @@ ApplyPatch elantech.patch
 
 #rhbz 748210
 ApplyPatch ideapad-Check-if-acpi-already-handle-backlight.patch
+
+#rhbz 731365
+ApplyPatch mac80211-fix-remain_off_channel-regression.patch
+ApplyPatch mac80211-config-hw-when-going-back-on-channel.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2129,6 +2137,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 07 2011 Josh Boyer <jwboyer@redhat.com>
+- Add two patches to fix mac80211 issues (rhbz 731365)
+
 * Thu Nov 03 2011 Josh Boyer <jwboyer@redhat.com>
 - Add commits queued for 3.2 for elantech driver (rhbz 728607)
 - Fix crash when setting brightness via Fn keys on ideapads (rhbz 748210)
