@@ -778,6 +778,8 @@ Patch21061: ideapad-Check-if-acpi-already-handle-backlight.patch
 Patch21062: mac80211-fix-remain_off_channel-regression.patch
 Patch21063: mac80211-config-hw-when-going-back-on-channel.patch
 
+#rhbz752176
+Patch21080: sysfs-msi-irq-per-device.patch
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1435,6 +1437,9 @@ ApplyPatch ideapad-Check-if-acpi-already-handle-backlight.patch
 #rhbz 731365
 ApplyPatch mac80211-fix-remain_off_channel-regression.patch
 ApplyPatch mac80211-config-hw-when-going-back-on-channel.patch
+
+#rhbz 752176
+ApplyPatch sysfs-msi-irq-per-device.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2137,6 +2142,9 @@ fi
 # and build.
 
 %changelog
+* Tue Nov 08 2011 Neil Horman <nhorman@redhat.com>
+- Add msi irq ennumeration per device in sysfs (rhbz 752176)
+
 * Mon Nov 07 2011 Josh Boyer <jwboyer@redhat.com>
 - Add two patches to fix mac80211 issues (rhbz 731365)
 
