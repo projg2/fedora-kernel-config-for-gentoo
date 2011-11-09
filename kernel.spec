@@ -780,6 +780,9 @@ Patch21063: mac80211-config-hw-when-going-back-on-channel.patch
 
 #rhbz752176
 Patch21080: sysfs-msi-irq-per-device.patch
+
+#backport brcm80211 from 3.2-rc1
+Patch21090: brcm80211.patch
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1440,6 +1443,9 @@ ApplyPatch mac80211-config-hw-when-going-back-on-channel.patch
 
 #rhbz 752176
 ApplyPatch sysfs-msi-irq-per-device.patch
+
+#backport brcm80211 from 3.2-rc1
+ApplyPatch brcm80211.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2142,6 +2148,9 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 09 2011 John W. Linville <linville@redhat.com>
+- Backport brcm80211 from 3.2-rc1
+
 * Tue Nov 08 2011 Neil Horman <nhorman@redhat.com>
 - Add msi irq ennumeration per device in sysfs (rhbz 752176)
 
