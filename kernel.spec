@@ -685,6 +685,8 @@ Patch21060: elantech.patch
 #rhbz 748210
 Patch21061: ideapad-Check-if-acpi-already-handle-backlight.patch
 
+#backport brcm80211 from 3.2-rc1
+Patch21090: brcm80211.patch
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1257,6 +1259,9 @@ ApplyPatch elantech.patch
 
 #rhbz 748210
 ApplyPatch ideapad-Check-if-acpi-already-handle-backlight.patch
+
+#backport brcm80211 from 3.2-rc1
+ApplyPatch brcm80211.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1878,6 +1883,9 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 09 2011 John W. Linville <linville@redhat.com>
+- Backport brcm80211 from 3.2-rc1
+
 * Mon Nov 07 2011 Dave Jones <davej@redhat.com>
 - Rebase to 3.1.0
 
