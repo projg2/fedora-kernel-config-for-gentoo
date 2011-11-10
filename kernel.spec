@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -584,6 +584,9 @@ Patch530: linux-2.6-silence-fbcon-logo.patch
 Patch700: linux-2.6-e1000-ich9-montevina.patch
 
 Patch800: linux-2.6-crash-driver.patch
+
+# Platform
+Patch900: samsung-laptop-brightness-fixes-3.2.patch
 
 # crypto/
 
@@ -1198,6 +1201,9 @@ ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
+
+# Platform fixes not sent for -stable
+ApplyPatch samsung-laptop-brightness-fixes-3.2.patch
 
 # Patches headed upstream
 ApplyPatch rcutree-avoid-false-quiescent-states.patch
@@ -1883,6 +1889,9 @@ fi
 # and build.
 
 %changelog
+* Thu Nov 10 2011 Chuck Ebbert <cebbert@redhat.com>
+- Sync samsung-laptop driver with what's in 3.2 (rhbz 747560)
+
 * Wed Nov 09 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.1-1.rc1
 - Linux 3.1.1-rc1 (Fedora 2.6.41.1-rc1)
 - Comment out merged patches, will drop when release is final:
