@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 10
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -63,9 +63,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1384,14 +1384,14 @@ ApplyPatch disable-i8042-check-on-apple-mac.patch
 ApplyPatch add-appleir-usb-driver.patch
 
 ApplyPatch udlfb-bind-framebuffer-to-interface.patch
-ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
-ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
+#ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
+#ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
 ApplyPatch epoll-limit-paths.patch
 ApplyPatch rcu-avoid-just-onlined-cpu-resched.patch
 ApplyPatch block-stray-block-put-after-teardown.patch
 ApplyPatch usb-add-quirk-for-logitech-webcams.patch
 
-ApplyPatch crypto-register-cryptd-first.patch
+#ApplyPatch crypto-register-cryptd-first.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1399,19 +1399,19 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 ApplyPatch revert-efi-rtclock.patch
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
-ApplyPatch add-macbookair41-keyboard.patch
+#ApplyPatch add-macbookair41-keyboard.patch
 
 ApplyPatch hvcs_pi_buf_alloc.patch
 
-ApplyPatch powerpc-Fix-deadlock-in-icswx-code.patch
+#ApplyPatch powerpc-Fix-deadlock-in-icswx-code.patch
 
-ApplyPatch iwlagn-fix-ht_params-NULL-pointer-dereference.patch
+#ApplyPatch iwlagn-fix-ht_params-NULL-pointer-dereference.patch
 
 #rhbz #722509
-ApplyPatch mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
+#ApplyPatch mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
 
-ApplyPatch media-DiBcom-protect-the-I2C-bufer-access.patch
-ApplyPatch media-dib0700-protect-the-dib0700-buffer-access.patch
+#ApplyPatch media-DiBcom-protect-the-I2C-bufer-access.patch
+#ApplyPatch media-dib0700-protect-the-dib0700-buffer-access.patch
 ApplyPatch media-dib0700-correct-error-message.patch
 
 # utrace.
@@ -1429,7 +1429,7 @@ ApplyPatch benet-remove-bogus-unlikely-on-vlan-check.patch
 ApplyPatch oom-fix-integer-overflow-of-points.patch
 
 #rhbz 706574
-ApplyPatch WMI-properly-cleanup-devices-to-avoid-crashes.patch
+#ApplyPatch WMI-properly-cleanup-devices-to-avoid-crashes.patch
 
 #rhbz 728607
 ApplyPatch elantech.patch
@@ -1438,8 +1438,8 @@ ApplyPatch elantech.patch
 ApplyPatch ideapad-Check-if-acpi-already-handle-backlight.patch
 
 #rhbz 731365
-ApplyPatch mac80211-fix-remain_off_channel-regression.patch
-ApplyPatch mac80211-config-hw-when-going-back-on-channel.patch
+#ApplyPatch mac80211-fix-remain_off_channel-regression.patch
+#ApplyPatch mac80211-config-hw-when-going-back-on-channel.patch
 
 #rhbz 752176
 ApplyPatch sysfs-msi-irq-per-device.patch
@@ -2148,6 +2148,22 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 09 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.1-1.rc1
+- Linux 3.1.1-rc1
+- Comment out merged patches, will drop when release is final:
+   ums-realtek-driver-uses-stack-memory-for-DMA.patch
+   epoll-fix-spurious-lockdep-warnings.patch
+   crypto-register-cryptd-first.patch
+   add-macbookair41-keyboard.patch
+   powerpc-Fix-deadlock-in-icswx-code.patch
+   iwlagn-fix-ht_params-NULL-pointer-dereference.patch
+   mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
+   media-DiBcom-protect-the-I2C-bufer-access.patch
+   media-dib0700-protect-the-dib0700-buffer-access.patch
+   WMI-properly-cleanup-devices-to-avoid-crashes.patch
+   mac80211-fix-remain_off_channel-regression.patch
+   mac80211-config-hw-when-going-back-on-channel.patch
+
 * Wed Nov 09 2011 John W. Linville <linville@redhat.com>
 - Backport brcm80211 from 3.2-rc1
 
