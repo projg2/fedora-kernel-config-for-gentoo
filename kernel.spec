@@ -690,6 +690,8 @@ Patch21061: ideapad-Check-if-acpi-already-handle-backlight.patch
 
 #backport brcm80211 from 3.2-rc1
 Patch21090: brcm80211.patch
+Patch21091: bcma-brcmsmac-compat.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1268,6 +1270,8 @@ ApplyPatch ideapad-Check-if-acpi-already-handle-backlight.patch
 
 #backport brcm80211 from 3.2-rc1
 ApplyPatch brcm80211.patch
+# Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
+ApplyPatch bcma-brcmsmac-compat.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1889,6 +1893,9 @@ fi
 # and build.
 
 %changelog
+* Fri Nov 11 2011 John W. Linville <linville@redhat.com>
+- Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
+
 * Thu Nov 10 2011 Chuck Ebbert <cebbert@redhat.com>
 - Sync samsung-laptop driver with what's in 3.2 (rhbz 747560)
 
