@@ -51,7 +51,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be prepended with "0.", so
 # for example a 3 here will become 0.3
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -65,7 +65,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 1
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -708,8 +708,6 @@ Patch2900: linux-2.6-v4l-dvb-update.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
 Patch2902: linux-2.6-v4l-dvb-uvcvideo-update.patch
 
-Patch2903: media-DiBcom-protect-the-I2C-bufer-access.patch
-Patch2904: media-dib0700-protect-the-dib0700-buffer-access.patch
 Patch2905: media-dib0700-correct-error-message.patch
 
 Patch3000: rcutree-avoid-false-quiescent-states.patch
@@ -725,12 +723,9 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 
 Patch12021: udlfb-bind-framebuffer-to-interface.patch
 
-Patch12023: ums-realtek-driver-uses-stack-memory-for-DMA.patch
-Patch12024: epoll-fix-spurious-lockdep-warnings.patch
 Patch12025: rcu-avoid-just-onlined-cpu-resched.patch
 Patch12026: block-stray-block-put-after-teardown.patch
 Patch12027: usb-add-quirk-for-logitech-webcams.patch
-Patch12029: crypto-register-cryptd-first.patch
 Patch12030: epoll-limit-paths.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
@@ -738,22 +733,13 @@ Patch12303: dmar-disable-when-ricoh-multifunction.patch
 Patch13002: revert-efi-rtclock.patch
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
-Patch13007: add-macbookair41-keyboard.patch
-
 Patch13009: hvcs_pi_buf_alloc.patch
-
-Patch13013: powerpc-Fix-deadlock-in-icswx-code.patch
-
-Patch13014: iwlagn-fix-ht_params-NULL-pointer-dereference.patch
 
 Patch20000: utrace.patch
 
 # Flattened devicetree support
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
-
-#rhbz #722509
-Patch21002: mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
 
 #rhbz #735946
 Patch21020: 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
@@ -768,18 +754,11 @@ Patch21050: xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
 
 Patch21070: oom-fix-integer-overflow-of-points.patch
 
-#rhbz 706574
-Patch21071: WMI-properly-cleanup-devices-to-avoid-crashes.patch
-
 #rhbz 728607
 Patch21060: elantech.patch
 
 #rhbz 748210
 Patch21061: ideapad-Check-if-acpi-already-handle-backlight.patch
-
-#rhbz 731365
-Patch21062: mac80211-fix-remain_off_channel-regression.patch
-Patch21063: mac80211-config-hw-when-going-back-on-channel.patch
 
 #rhbz752176
 Patch21080: sysfs-msi-irq-per-device.patch
@@ -1379,7 +1358,6 @@ ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
-#ApplyPatch linux-2.6-v4l-dvb-uvcvideo-update.patch
 
 # Platform fixes not sent for -stable
 ApplyPatch samsung-laptop-brightness-fixes-3.2.patch
@@ -1392,14 +1370,10 @@ ApplyPatch disable-i8042-check-on-apple-mac.patch
 ApplyPatch add-appleir-usb-driver.patch
 
 ApplyPatch udlfb-bind-framebuffer-to-interface.patch
-#ApplyPatch ums-realtek-driver-uses-stack-memory-for-DMA.patch
-#ApplyPatch epoll-fix-spurious-lockdep-warnings.patch
 ApplyPatch epoll-limit-paths.patch
 ApplyPatch rcu-avoid-just-onlined-cpu-resched.patch
 ApplyPatch block-stray-block-put-after-teardown.patch
 ApplyPatch usb-add-quirk-for-logitech-webcams.patch
-
-#ApplyPatch crypto-register-cryptd-first.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1407,19 +1381,8 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 ApplyPatch revert-efi-rtclock.patch
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
-#ApplyPatch add-macbookair41-keyboard.patch
-
 ApplyPatch hvcs_pi_buf_alloc.patch
 
-#ApplyPatch powerpc-Fix-deadlock-in-icswx-code.patch
-
-#ApplyPatch iwlagn-fix-ht_params-NULL-pointer-dereference.patch
-
-#rhbz #722509
-#ApplyPatch mmc-Always-check-for-lower-base-frequency-quirk-for-.patch
-
-#ApplyPatch media-DiBcom-protect-the-I2C-bufer-access.patch
-#ApplyPatch media-dib0700-protect-the-dib0700-buffer-access.patch
 ApplyPatch media-dib0700-correct-error-message.patch
 
 # utrace.
@@ -1436,18 +1399,11 @@ ApplyPatch benet-remove-bogus-unlikely-on-vlan-check.patch
 #rhbz 750402
 ApplyPatch oom-fix-integer-overflow-of-points.patch
 
-#rhbz 706574
-#ApplyPatch WMI-properly-cleanup-devices-to-avoid-crashes.patch
-
 #rhbz 728607
 ApplyPatch elantech.patch
 
 #rhbz 748210
 ApplyPatch ideapad-Check-if-acpi-already-handle-backlight.patch
-
-#rhbz 731365
-#ApplyPatch mac80211-fix-remain_off_channel-regression.patch
-#ApplyPatch mac80211-config-hw-when-going-back-on-channel.patch
 
 #rhbz 752176
 ApplyPatch sysfs-msi-irq-per-device.patch
@@ -2158,6 +2114,9 @@ fi
 # and build.
 
 %changelog
+* Fri Nov 11 2011 Josh Boyer <jwboyer@redhat.com> 3.1.1-1
+- Linux 3.1.1
+
 * Fri Nov 11 2011 John W. Linville <linville@redhat.com>
 - Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 
