@@ -655,6 +655,9 @@ Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
 Patch13009: hvcs_pi_buf_alloc.patch
 
+#rhbz 751165
+Patch13010: ip6_tunnel-copy-parms.name-after-register_netdevice.patch
+
 Patch20000: utrace.patch
 
 # Flattened devicetree support
@@ -1228,6 +1231,9 @@ ApplyPatch revert-efi-rtclock.patch
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
 ApplyPatch hvcs_pi_buf_alloc.patch
+
+#rhbz 751165
+ApplyPatch ip6_tunnel-copy-parms.name-after-register_netdevice.patch
 
 ApplyPatch media-dib0700-correct-error-message.patch
 
@@ -1879,6 +1885,7 @@ fi
 * Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com>
 - Patch from Joshua Roys to add rtl8192* to modules.networking (rhbz 753645)
 - Add patch for wacom tablets for Bastien Nocera (upstream 3797ef6b6)
+- Add patch to fix ip6_tunnel naming (rhbz 751165)
 
 * Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com> 2.6.41.1-2
 - CVE-2011-4131: nfs4_getfacl decoding kernel oops (rhbz 753236)
