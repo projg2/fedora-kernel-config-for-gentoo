@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 103
+%global baserelease 104
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -739,6 +739,9 @@ Patch2950: linux-2.6-via-velocity-dma-fix.patch
 
 Patch3010: linux-2.6-rcu-netpoll.patch
 
+#rhbz 753346
+Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
+
 Patch4000: rcutree-avoid-false-quiescent-states.patch
 
 Patch5000: acer-wmi-modalias.patch
@@ -1375,6 +1378,8 @@ ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 #
 
 # ext4
+#rhbz 753346
+ApplyPatch jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 
 # rhbz#578674
 ApplyPatch ext4-always-journal-quota-file-modifications.patch
@@ -2313,6 +2318,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com> 2.6.41.1-2
+- CVE-2011-4132: jbd/jbd2: invalid value of first log block leads to oops (rhbz 753346)
+
 * Tue Nov 01 2011 Dave Jones <davej@redhat.com>
 - Add another Sony laptop to the nonvs blacklist. (rhbz 641789)
 
