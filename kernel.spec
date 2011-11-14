@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -738,6 +738,7 @@ Patch12025: rcu-avoid-just-onlined-cpu-resched.patch
 Patch12026: block-stray-block-put-after-teardown.patch
 Patch12027: usb-add-quirk-for-logitech-webcams.patch
 Patch12030: epoll-limit-paths.patch
+Patch12031: HID-wacom-Set-input-bits-before-registration.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
@@ -1393,6 +1394,7 @@ ApplyPatch epoll-limit-paths.patch
 ApplyPatch rcu-avoid-just-onlined-cpu-resched.patch
 ApplyPatch block-stray-block-put-after-teardown.patch
 ApplyPatch usb-add-quirk-for-logitech-webcams.patch
+ApplyPatch HID-wacom-Set-input-bits-before-registration.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -2135,6 +2137,7 @@ fi
 %changelog
 * Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com>
 - Patch from Joshua Roys to add rtl8192* to modules.networking (rhbz 753645)
+- Add patch for wacom tablets for Bastien Nocera (upstream 3797ef6b6)
 
 * Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com> 3.1.1-2
 - CVE-2011-4131: nfs4_getfacl decoding kernel oops (rhbz 753236)
