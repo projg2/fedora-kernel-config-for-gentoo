@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -719,7 +719,13 @@ Patch3000: rcutree-avoid-false-quiescent-states.patch
 
 # fs fixes
 
+#rhbz 753346
+Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
+
 # NFSv4
+
+#rhbz 753236
+Patch4000: nfsv4-include-bitmap-in-nfsv4_get_acl_data.patch
 
 # patches headed upstream
 Patch12010: add-appleir-usb-driver.patch
@@ -1270,6 +1276,8 @@ ApplyPatch linux-2.6-i386-nx-emulation.patch
 #
 
 # ext4
+#rhbz 753346
+ApplyPatch jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 
 # xfs
 ApplyPatch xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
@@ -1280,6 +1288,7 @@ ApplyPatch xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
 # eCryptfs
 
 # NFSv4
+ApplyPatch nfsv4-include-bitmap-in-nfsv4_get_acl_data.patch
 
 # USB
 
@@ -2124,6 +2133,10 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com> 3.1.1-2
+- CVE-2011-4131: nfs4_getfacl decoding kernel oops (rhbz 753236)
+- CVE-2011-4132: jbd/jbd2: invalid value of first log block leads to oops (rhbz 753346)
+
 * Fri Nov 11 2011 Chuck Ebbert <cebbert@redhat.com>
 - Use the same naming scheme as rawhide for -stable RC kernels
   (e.g. 3.1.1-0.rc1.1 instead of 3.1.1-1.rc1)
