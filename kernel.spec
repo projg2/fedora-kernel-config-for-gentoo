@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -646,6 +646,7 @@ Patch12025: rcu-avoid-just-onlined-cpu-resched.patch
 Patch12026: block-stray-block-put-after-teardown.patch
 Patch12027: usb-add-quirk-for-logitech-webcams.patch
 Patch12030: epoll-limit-paths.patch
+Patch12031: HID-wacom-Set-input-bits-before-registration.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
@@ -1218,6 +1219,7 @@ ApplyPatch epoll-limit-paths.patch
 ApplyPatch rcu-avoid-just-onlined-cpu-resched.patch
 ApplyPatch block-stray-block-put-after-teardown.patch
 ApplyPatch usb-add-quirk-for-logitech-webcams.patch
+ApplyPatch HID-wacom-Set-input-bits-before-registration.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1876,6 +1878,7 @@ fi
 %changelog
 * Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com>
 - Patch from Joshua Roys to add rtl8192* to modules.networking (rhbz 753645)
+- Add patch for wacom tablets for Bastien Nocera (upstream 3797ef6b6)
 
 * Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com> 2.6.41.1-2
 - CVE-2011-4131: nfs4_getfacl decoding kernel oops (rhbz 753236)
