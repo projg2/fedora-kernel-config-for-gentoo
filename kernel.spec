@@ -1491,7 +1491,7 @@ BuildKernel() {
     }
 
     collect_modules_list networking \
-    			 'register_netdev|ieee80211_register_hw|usbnet_probe|phy_driver_register|rt2x00(pci|usb)_probe'
+    			 'register_netdev|ieee80211_register_hw|usbnet_probe|phy_driver_register|rt(l_|2x00)(pci|usb)_probe'
     collect_modules_list block \
     			 'ata_scsi_ioctl|scsi_add_host|scsi_add_host_with_dma|blk_init_queue|register_mtd_blktrans|scsi_esp_register|scsi_register_device_handler'
     collect_modules_list drm \
@@ -1874,6 +1874,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com>
+- Patch from Joshua Roys to add rtl8192* to modules.networking (rhbz 753645)
+
 * Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com> 2.6.41.1-2
 - CVE-2011-4131: nfs4_getfacl decoding kernel oops (rhbz 753236)
 - CVE-2011-4132: jbd/jbd2: invalid value of first log block leads to oops (rhbz 753346)
