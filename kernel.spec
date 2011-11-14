@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -627,7 +627,13 @@ Patch3000: rcutree-avoid-false-quiescent-states.patch
 
 # fs fixes
 
+#rhbz 753346
+Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
+
 # NFSv4
+
+#rhbz 753236
+Patch4000: nfsv4-include-bitmap-in-nfsv4_get_acl_data.patch
 
 # patches headed upstream
 Patch12010: add-appleir-usb-driver.patch
@@ -1095,6 +1101,8 @@ ApplyPatch linux-2.6-i386-nx-emulation.patch
 #
 
 # ext4
+#rhbz 753346
+ApplyPatch jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 
 # xfs
 ApplyPatch xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
@@ -1105,6 +1113,7 @@ ApplyPatch xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
 # eCryptfs
 
 # NFSv4
+ApplyPatch nfsv4-include-bitmap-in-nfsv4_get_acl_data.patch
 
 # USB
 
@@ -1865,6 +1874,10 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com> 2.6.41.1-2
+- CVE-2011-4131: nfs4_getfacl decoding kernel oops (rhbz 753236)
+- CVE-2011-4132: jbd/jbd2: invalid value of first log block leads to oops (rhbz 753346)
+
 * Fri Nov 11 2011 Chuck Ebbert <cebbert@redhat.com>
 - Use the same naming scheme as rawhide for -stable RC kernels
   (e.g. 2.6.41.1-0.rc1.1 instead of 2.6.41.1-1.rc1)
