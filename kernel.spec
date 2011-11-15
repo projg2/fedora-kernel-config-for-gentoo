@@ -681,6 +681,7 @@ Patch800: linux-2.6-crash-driver.patch
 
 # Platform
 Patch900: samsung-laptop-brightness-fixes-3.2.patch
+Patch901: asus-laptop-3.2-backport.patch
 
 # crypto/
 
@@ -1386,6 +1387,7 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 
 # Platform fixes not sent for -stable
 ApplyPatch samsung-laptop-brightness-fixes-3.2.patch
+ApplyPatch asus-laptop-3.2-backport.patch
 
 # Patches headed upstream
 ApplyPatch rcutree-avoid-false-quiescent-states.patch
@@ -2143,6 +2145,9 @@ fi
 # and build.
 
 %changelog
+* Tue Nov 15 2011 Dave Jones <davej@redhat.com>
+- Backport asus-laptop changes from 3.2 (rhbz 754214)
+
 * Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com>
 - Patch from Joshua Roys to add rtl8192* to modules.networking (rhbz 753645)
 - Add patch for wacom tablets for Bastien Nocera (upstream 3797ef6b6)
