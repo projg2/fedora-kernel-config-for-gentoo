@@ -668,6 +668,7 @@ Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 #rhbz #735946
 Patch21020: 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
 Patch21021: 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
+Patch21022: mm-do-not-stall-in-synchronous-compaction-for-THP-allocations.patch
 
 #rhbz 748691
 Patch21030: be2net-non-member-vlan-pkts-not-received-in-promisco.patch
@@ -1245,6 +1246,7 @@ ApplyPatch utrace.patch
 #rhbz #735946
 ApplyPatch 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
 ApplyPatch 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
+ApplyPatch mm-do-not-stall-in-synchronous-compaction-for-THP-allocations.patch
 
 #rhbz 748691
 ApplyPatch be2net-non-member-vlan-pkts-not-received-in-promisco.patch
@@ -1884,6 +1886,9 @@ fi
 # and build.
 
 %changelog
+* Tue Nov 15 2011 Dave Jones <davej@redhat.com>
+- mm: Do not stall in synchronous compaction for THP allocations
+
 * Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com>
 - Patch from Joshua Roys to add rtl8192* to modules.networking (rhbz 753645)
 - Add patch for wacom tablets for Bastien Nocera (upstream 3797ef6b6)
