@@ -304,7 +304,6 @@ Summary: The Linux kernel
 %define image_install_path boot
 %define make_target image
 %define kernel_image arch/s390/boot/image
-%define with_perf 0
 %endif
 
 %ifarch sparc64
@@ -1582,7 +1581,7 @@ BuildKernel %make_target %kernel_image smp
 %global perf_make \
   make %{?_smp_mflags} -C tools/perf -s V=1 HAVE_CPLUS_DEMANGLE=1 prefix=%{_prefix}
 %if %{with_perf}
-%{perf_make} all
+%{perf_make} EXTRA_CFLAGS="-Wno-error=array-bounds" all
 %{perf_make} man || %{doc_build_fail}
 %endif
 
@@ -1886,6 +1885,9 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 16 2011 Kyle McMartin <kmcmartin@redhat.com>
+- Work around #663080 on s390x and restore building perf there.
+
 * Tue Nov 15 2011 Dave Jones <davej@redhat.com>
 - mm: Do not stall in synchronous compaction for THP allocations
 
