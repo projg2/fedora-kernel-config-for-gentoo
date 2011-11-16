@@ -1579,9 +1579,9 @@ BuildKernel %make_target %kernel_image smp
 %endif
 
 %global perf_make \
-  make %{?_smp_mflags} -C tools/perf -s V=1 HAVE_CPLUS_DEMANGLE=1 prefix=%{_prefix}
+  make %{?_smp_mflags} -C tools/perf -s V=1 HAVE_CPLUS_DEMANGLE=1 EXTRA_CFLAGS="-Wno-error=array-bounds" prefix=%{_prefix}
 %if %{with_perf}
-%{perf_make} EXTRA_CFLAGS="-Wno-error=array-bounds" all
+%{perf_make} all
 %{perf_make} man || %{doc_build_fail}
 %endif
 
