@@ -4,3 +4,4 @@ clog
 *.rpm
 *.orig
 kernel-[23].*/
+/compat-wireless-3.2-rc1-1.tar.bz2

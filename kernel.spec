@@ -157,6 +157,9 @@ Summary: The Linux kernel
 # should we do C=1 builds with sparse
 %define with_sparse    %{?_with_sparse:       1} %{?!_with_sparse:       0}
 
+# Include driver backports (e.g. compat-wireless) in the kernel build.
+%define with_backports %{?_with_backports:    1} %{?!_with_backports:    0}
+
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
@@ -194,6 +197,10 @@ Summary: The Linux kernel
 
 # The kernel tarball/base version
 %define kversion 3.%{base_sublevel}
+
+# The compat-wireless version
+# (If this is less than kversion, make sure with_backports is turned-off.)
+%define cwversion 3.2-rc1-1
 
 %define make_target bzImage
 
@@ -558,6 +565,7 @@ BuildRequires: rpm-build >= 4.4.2.1-4
 %endif
 
 Source0: ftp://ftp.kernel.org/pub/linux/kernel/v3.0/linux-%{kversion}.tar.bz2
+Source1: compat-wireless-%{cwversion}.tar.bz2
 
 Source11: genkey
 Source14: find-provides
@@ -1501,6 +1509,13 @@ find . -name .gitignore -exec rm -f {} \; >/dev/null
 
 cd ..
 
+%if %{with_backports}
+
+# Extract the compat-wireless bits
+%setup -q -n kernel-%{kversion}%{?dist} -T -D -a 1
+
+%endif
+
 ###
 ### build
 ###
@@ -1623,6 +1638,9 @@ BuildKernel() {
     # dirs for additional modules per module-init-tools, kbuild/modules.txt
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/extra
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/updates
+%if %{with_backports}
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/backports
+%endif
     # first copy everything
     cp --parents `find  -type f -name "Makefile*" -o -name "Kconfig*"` $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp Module.symvers $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
@@ -1728,6 +1746,23 @@ BuildKernel() {
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
+
+%if %{with_backports}
+
+    cd ../compat-wireless-%{cwversion}/
+    make clean
+
+    make KLIB_BUILD=../linux-%{kversion}.%{_target_cpu} \
+	KMODPATH_ARG="INSTALL_MOD_PATH=$RPM_BUILD_ROOT" \
+	KMODDIR="backports" install-modules
+
+    # mark modules executable so that strip-to-file can strip them
+    find $RPM_BUILD_ROOT/lib/modules/$KernelVer/backports -name "*.ko" \
+	-type f | xargs --no-run-if-empty chmod u+x
+
+    cd -
+
+%endif
 }
 
 ###
@@ -2105,6 +2140,9 @@ fi
 /lib/modules/%{KVERREL}%{?2:.%{2}}/source\
 /lib/modules/%{KVERREL}%{?2:.%{2}}/extra\
 /lib/modules/%{KVERREL}%{?2:.%{2}}/updates\
+%if %{with_backports}\
+/lib/modules/%{KVERREL}%{?2:.%{2}}/backports\
+%endif\
 %ifarch %{vdso_arches}\
 /lib/modules/%{KVERREL}%{?2:.%{2}}/vdso\
 /etc/ld.so.conf.d/kernel-%{KVERREL}%{?2:.%{2}}.conf\
@@ -2147,6 +2185,9 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 16 2011 John W. Linville <linville@redhat.com>
+- Add compat-wireless as an option for kernel build
+
 * Tue Nov 15 2011 Dave Jones <davej@redhat.com>
 - mm: Do not stall in synchronous compaction for THP allocations
 
