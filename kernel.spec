@@ -635,8 +635,6 @@ Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 #rhbz 753236
 Patch4000: nfsv4-include-bitmap-in-nfsv4_get_acl_data.patch
 
-Patch10000: get_random_bytes-consecutive-words.patch
-
 # patches headed upstream
 Patch12010: add-appleir-usb-driver.patch
 
@@ -1220,8 +1218,6 @@ ApplyPatch rcutree-avoid-false-quiescent-states.patch
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch add-appleir-usb-driver.patch
-
-ApplyPatch get_random_bytes-consecutive-words.patch
 
 ApplyPatch udlfb-bind-framebuffer-to-interface.patch
 ApplyPatch epoll-limit-paths.patch
@@ -1889,9 +1885,6 @@ fi
 # and build.
 
 %changelog
-* Wed Nov 16 2011 Dave Jones <davej@redhat.com>
-- Fix thinko in get_random_bytes().
-
 * Wed Nov 16 2011 Kyle McMartin <kmcmartin@redhat.com>
 - Work around #663080 on s390x and restore building perf there.
 
