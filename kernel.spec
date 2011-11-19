@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,9 +66,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2185,6 +2185,9 @@ fi
 # and build.
 
 %changelog
+* Sat Nov 19 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.2-0.rc1.1
+- Linux 3.1.2-rc1
+
 * Wed Nov 16 2011 John W. Linville <linville@redhat.com>
 - Add compat-wireless as an option for kernel build
 
