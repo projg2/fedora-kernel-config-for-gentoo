@@ -1885,6 +1885,9 @@ fi
 # and build.
 
 %changelog
+* Fri Nov 18 2011 Dennis Gilmore <dennis@ausil.us>
+- enable selinux to work on arm
+
 * Wed Nov 16 2011 Kyle McMartin <kmcmartin@redhat.com>
 - Work around #663080 on s390x and restore building perf there.
 
