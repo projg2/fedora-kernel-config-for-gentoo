@@ -156,6 +156,9 @@ CONFIG_MMC_SDHCI_PXAV2=m
 
 CONFIG_FTGMAC100=m
 
+CONFIG_DEFAULT_MMAP_MIN_ADDR=32768
+CONFIG_LSM_MMAP_MIN_ADDR=32768
+
 # disable TPM on arm at least on the trimslices it causes havoc
 # CONFIG_TCG_TPM is not set
 # CONFIG_IMA is not set
