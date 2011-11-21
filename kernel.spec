@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 104
+%global baserelease 105
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -916,6 +916,9 @@ Patch21050: xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
 #rhbz 749484
 Patch21060: crypto-ghash-Avoid-null-pointer-dereference-if-no-ke.patch
 
+#rhbz 755590
+Patch21061: ipv6-udp-fix-the-wrong-headroom-check.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1732,6 +1735,9 @@ ApplyPatch epoll-limit-paths.patch
 #rhbz 749484
 ApplyPatch crypto-ghash-Avoid-null-pointer-dereference-if-no-ke.patch
 
+#rhbz 755590
+ApplyPatch ipv6-udp-fix-the-wrong-headroom-check.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2318,7 +2324,10 @@ fi
 # and build.
 
 %changelog
-* Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com> 2.6.41.1-2
+* Mon Nov 21 2011 Josh Boyer <jwboyer@redhat.com> 2.6.35.14-105
+- CVE-2011-4326: wrong headroom check in udp6_ufo_fragment() (rhbz 755590)
+
+* Mon Nov 14 2011 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-4132: jbd/jbd2: invalid value of first log block leads to oops (rhbz 753346)
 
 * Tue Nov 01 2011 Dave Jones <davej@redhat.com>
