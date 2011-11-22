@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
 # scripts/rebase.sh should be made to do that for you, actually.
 #
-%global baserelease 105
+%global baserelease 106
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
