@@ -158,7 +158,7 @@ Summary: The Linux kernel
 %define with_sparse    %{?_with_sparse:       1} %{?!_with_sparse:       0}
 
 # Include driver backports (e.g. compat-wireless) in the kernel build.
-%define with_backports %{?_with_backports:    1} %{?!_with_backports:    0}
+%define with_backports %{?_without_backports: 0} %{?!_without_backports: 1}
 
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
@@ -199,8 +199,18 @@ Summary: The Linux kernel
 %define kversion 3.%{base_sublevel}
 
 # The compat-wireless version
-# (If this is less than kversion, make sure with_backports is turned-off.)
-%define cwversion 3.2-rc1-1
+%define cwversion 3.2-rc6-3
+
+#######################################################################
+# If cwversion is less than kversion, make sure with_backports is
+# turned-off.
+#
+# For rawhide, disable with_backports immediately after a rebase...
+#
+# (Uncomment the '#' and both spaces below to disable with_backports.)
+#
+# % define with_backports 0
+#######################################################################
 
 %define make_target bzImage
 
@@ -485,7 +495,7 @@ Summary: The Linux kernel
 # Packages that need to be installed before the kernel is, because the %%post
 # scripts use them.
 #
-%define kernel_prereq  fileutils, module-init-tools >= 3.16-2, initscripts >= 8.11.1-1, grubby >= 8.3-1
+%define kernel_prereq  fileutils, module-init-tools >= 3.16-5, initscripts >= 8.11.1-1, grubby >= 8.3-1
 %define initrd_prereq  dracut >= 001-7
 
 #
@@ -597,6 +607,8 @@ Source90: config-sparc64-generic
 Source100: config-arm-generic
 Source110: config-arm-omap-generic
 Source111: config-arm-tegra
+
+Source200: config-backports
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -814,6 +826,10 @@ Patch21048: b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
 #rhbz 746097
 Patch21049: tpm_tis-delay-after-aborting-cmd.patch
+
+# compat-wireless patches
+Patch50000: compat-wireless-config-fixups.patch
+Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
 
 %endif
 
@@ -1257,6 +1273,16 @@ cp %{SOURCE15} .
 # Dynamically generate kernel .config files from config-* files
 make -f %{SOURCE20} VERSION=%{version} configs
 
+%if %{with_backports}
+# Turn-off bits provided by compat-wireless
+for i in %{all_arch_configs}
+do
+  mv $i $i.tmp
+  ./merge.pl %{SOURCE200} $i.tmp > $i
+  rm $i.tmp
+done
+%endif
+
 %if %{?all_arch_configs:1}%{!?all_arch_configs:0}
 #if a rhel kernel, apply the rhel config options
 %if 0%{?rhel}
@@ -1470,10 +1496,12 @@ ApplyPatch ideapad-Check-if-acpi-already-handle-backlight.patch
 #rhbz 752176
 ApplyPatch sysfs-msi-irq-per-device.patch
 
+%if !%{with_backports}
 #backport brcm80211 from 3.2-rc1
 ApplyPatch brcm80211.patch
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
+%endif
 
 # rhbz 754907
 ApplyPatch cciss-fix-irqf-shared.patch
@@ -1559,8 +1587,21 @@ cd ..
 
 %if %{with_backports}
 
+# Always start fresh
+rm -rf compat-wireless-%{cwversion}
+
 # Extract the compat-wireless bits
 %setup -q -n kernel-%{kversion}%{?dist} -T -D -a 1
+
+cd compat-wireless-%{cwversion}
+
+ApplyPatch compat-wireless-config-fixups.patch
+ApplyPatch compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
+
+# Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
+ApplyPatch bcma-brcmsmac-compat.patch
+
+cd ..
 
 %endif
 
@@ -1798,7 +1839,6 @@ BuildKernel() {
 %if %{with_backports}
 
     cd ../compat-wireless-%{cwversion}/
-    make clean
 
     make KLIB_BUILD=../linux-%{kversion}.%{_target_cpu} \
 	KMODPATH_ARG="INSTALL_MOD_PATH=$RPM_BUILD_ROOT" \
@@ -2233,6 +2273,11 @@ fi
 # and build.
 
 %changelog
+* Wed Dec 21 2011 John W. Linville <linville@redhat.com> 
+- Revise compat-wireless configuration
+- Enable with-backports by default
+- Update compat-wireless snaptshot from verstion 3.2-rc6-3
+
 * Tue Dec 20 2011 Dave Jones <davej@redhat.com>
 - Delay after aborting command in tpm_tis (rhbz #746097)
 
