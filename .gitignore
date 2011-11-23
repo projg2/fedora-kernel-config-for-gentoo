@@ -1,6 +1,6 @@
-linux-*.tar.bz2
-patch-*.bz2
 clog
+*.bz2
 *.rpm
+*.orig
 kernel-2.6.*/
 kernel-3.*/
