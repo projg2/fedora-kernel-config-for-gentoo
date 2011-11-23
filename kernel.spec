@@ -66,9 +66,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1409,7 +1409,7 @@ ApplyPatch udlfb-bind-framebuffer-to-interface.patch
 ApplyPatch epoll-limit-paths.patch
 ApplyPatch rcu-avoid-just-onlined-cpu-resched.patch
 ApplyPatch block-stray-block-put-after-teardown.patch
-ApplyPatch usb-add-quirk-for-logitech-webcams.patch
+#ApplyPatch usb-add-quirk-for-logitech-webcams.patch
 ApplyPatch HID-wacom-Set-input-bits-before-registration.patch
 
 # rhbz#605888
@@ -1421,7 +1421,7 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 ApplyPatch hvcs_pi_buf_alloc.patch
 
 #rhbz 751165
-ApplyPatch ip6_tunnel-copy-parms.name-after-register_netdevice.patch
+#ApplyPatch ip6_tunnel-copy-parms.name-after-register_netdevice.patch
 
 ApplyPatch media-dib0700-correct-error-message.patch
 
@@ -2185,6 +2185,12 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 23 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.3-0.rc1.1
+- Linux 3.1.3-rc1
+- Comment out merged patches:
+  usb-add-quirk-for-logitech-webcams.patch
+  ip6_tunnel-copy-parms.name-after-register_netdevice.patch
+
 * Tue Nov 22 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.2-1
 - Linux 3.1.2
 
