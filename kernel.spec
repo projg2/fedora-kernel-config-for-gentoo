@@ -53,7 +53,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 3
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -644,7 +644,6 @@ Patch12021: udlfb-bind-framebuffer-to-interface.patch
 
 Patch12025: rcu-avoid-just-onlined-cpu-resched.patch
 Patch12026: block-stray-block-put-after-teardown.patch
-Patch12027: usb-add-quirk-for-logitech-webcams.patch
 Patch12030: epoll-limit-paths.patch
 Patch12031: HID-wacom-Set-input-bits-before-registration.patch
 
@@ -654,9 +653,6 @@ Patch13002: revert-efi-rtclock.patch
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
 Patch13009: hvcs_pi_buf_alloc.patch
-
-#rhbz 751165
-Patch13010: ip6_tunnel-copy-parms.name-after-register_netdevice.patch
 
 Patch20000: utrace.patch
 
@@ -1223,7 +1219,6 @@ ApplyPatch udlfb-bind-framebuffer-to-interface.patch
 ApplyPatch epoll-limit-paths.patch
 ApplyPatch rcu-avoid-just-onlined-cpu-resched.patch
 ApplyPatch block-stray-block-put-after-teardown.patch
-#ApplyPatch usb-add-quirk-for-logitech-webcams.patch
 ApplyPatch HID-wacom-Set-input-bits-before-registration.patch
 
 # rhbz#605888
@@ -1233,9 +1228,6 @@ ApplyPatch revert-efi-rtclock.patch
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
 ApplyPatch hvcs_pi_buf_alloc.patch
-
-#rhbz 751165
-#ApplyPatch ip6_tunnel-copy-parms.name-after-register_netdevice.patch
 
 ApplyPatch media-dib0700-correct-error-message.patch
 
@@ -1885,6 +1877,9 @@ fi
 # and build.
 
 %changelog
+* Sun Nov 26 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.3-1
+- Linux 3.1.3 (Fedora 2.6.41.3)
+
 * Wed Nov 23 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.3-0.rc1.1
 - Linux 3.1.3-rc1 (Fedora 2.6.41.3-rc1)
 - Comment out merged patches:
