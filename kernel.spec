@@ -684,6 +684,8 @@ Patch21061: ideapad-Check-if-acpi-already-handle-backlight.patch
 Patch21090: brcm80211.patch
 Patch21091: bcma-brcmsmac-compat.patch
 
+Patch22000: force-version-2.6.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1257,6 +1259,8 @@ ApplyPatch brcm80211.patch
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
 
+ApplyPatch force-version-2.6.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1360,9 +1364,6 @@ BuildKernel() {
 
     # make sure EXTRAVERSION says what we want it to say
     perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = %{?stablerev}-%{release}.%{_target_cpu}${Flavour:+.${Flavour}}/" Makefile
-    perl -p -i -e 's/^VERSION.*/VERSION = 2/' Makefile
-    perl -p -i -e 's/^PATCHLEVEL.*/PATCHLEVEL = 6/' Makefile
-    perl -p -i -e 's/^SUBLEVEL.*/SUBLEVEL = %{fake_sublevel}/' Makefile
 
     # and now to start the build process
 
@@ -1877,7 +1878,11 @@ fi
 # and build.
 
 %changelog
-* Sun Nov 26 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.3-1
+* Mon Nov 28 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.3-1
+- Fake version 2.6.4X by changing UTSNAME
+  (instead of changing the internal kernel version)
+
+* Sun Nov 27 2011 Chuck Ebbert <cebbert@redhat.com>
 - Linux 3.1.3 (Fedora 2.6.41.3)
 
 * Wed Nov 23 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.3-0.rc1.1
