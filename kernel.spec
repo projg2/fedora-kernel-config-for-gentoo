@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2177,6 +2177,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 28 2011 Ben Skeggs <bskeggs@redhat.com> 3.1.3-2
+- nouveau: fix two instances of an oops in ttm clear() (rhbz#751753)
+
 * Sun Nov 26 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.3-1
 - Linux 3.1.3
 
