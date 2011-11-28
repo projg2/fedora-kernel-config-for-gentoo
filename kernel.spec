@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -1878,6 +1878,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 28 2011 Ben Skeggs <bskeggs@redhat.com> 3.1.3-2
+- nouveau: fix two instances of an oops in ttm clear() (rhbz#751753)
+
 * Mon Nov 28 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.3-1
 - Fake version 2.6.4X by changing UTSNAME
   (instead of changing the internal kernel version)
