@@ -563,6 +563,8 @@ Patch161: linux-2.6-i386-nx-emulation.patch
 
 Patch202: linux-2.6-debug-taint-vm.patch
 
+Patch350: force-version-2.6.patch
+
 Patch383: linux-2.6-defaults-aspm.patch
 
 Patch390: linux-2.6-defaults-acpi-video.patch
@@ -684,7 +686,9 @@ Patch21061: ideapad-Check-if-acpi-already-handle-backlight.patch
 Patch21090: brcm80211.patch
 Patch21091: bcma-brcmsmac-compat.patch
 
-Patch22000: force-version-2.6.patch
+# rhbz 754907
+Patch21100: cciss-fix-irqf-shared.patch
+Patch21101: hpsa-add-irqf-shared.patch
 
 %endif
 
@@ -1129,6 +1133,9 @@ ApplyPatch linux-2.6-acpi-debug-infinite-loop.patch
 ApplyPatch acpi-ensure-thermal-limits-match-cpu-freq.patch
 ApplyPatch acpi-sony-nonvs-blacklist.patch
 
+# force UTSNAME to show version 2.6.4X
+ApplyPatch force-version-2.6.patch
+
 # Various low-impact patches to aid debugging.
 ApplyPatch linux-2.6-debug-taint-vm.patch
 
@@ -1259,7 +1266,9 @@ ApplyPatch brcm80211.patch
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
 
-ApplyPatch force-version-2.6.patch
+# rhbz 754907
+ApplyPatch cciss-fix-irqf-shared.patch
+ApplyPatch hpsa-add-irqf-shared.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1878,7 +1887,10 @@ fi
 # and build.
 
 %changelog
-* Mon Nov 28 2011 Ben Skeggs <bskeggs@redhat.com> 3.1.3-2
+* Mon Nov 28 2011 Chuck Ebbert <cebbert@redhat.com>
+- Fix IRQ error preventing load of cciss module (rhbz#754907)
+
+* Mon Nov 28 2011 Ben Skeggs <bskeggs@redhat.com>
 - nouveau: fix two instances of an oops in ttm clear() (rhbz#751753)
 
 * Mon Nov 28 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.3-1
