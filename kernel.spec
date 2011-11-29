@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -1887,6 +1887,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 28 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.4-1
+- Linux 3.1.4 (Fedora 2.6.41.4)
+
 * Mon Nov 28 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix IRQ error preventing load of cciss module (rhbz#754907)
 
