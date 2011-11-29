@@ -702,8 +702,6 @@ Patch1500: fix_xen_guest_on_old_EC2.patch
 Patch1810: drm-nouveau-updates.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
-# make sure the lvds comes back on lid open
-Patch1825: drm-intel-make-lvds-work.patch
 # hush the i915 fbc noise
 Patch1826: drm-i915-fbc-stfu.patch
 # rhbz#729882, https://bugs.freedesktop.org/attachment.cgi?id=49069
@@ -1379,7 +1377,6 @@ ApplyOptionalPatch drm-nouveau-updates.patch
 
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
-ApplyPatch drm-intel-make-lvds-work.patch
 ApplyPatch drm-i915-fbc-stfu.patch
 ApplyPatch drm-i915-sdvo-lvds-is-digital.patch
 
@@ -2193,6 +2190,7 @@ fi
 %changelog
 * Tue Nov 29 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix deadlock in rtlwifi (rhbz #755154)
+- Drop drm-intel-make-lvds-work.patch (rhbz #731296)
 
 * Mon Nov 28 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.4-1
 - Linux 3.1.4
