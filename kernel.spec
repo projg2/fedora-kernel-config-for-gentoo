@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -690,6 +690,9 @@ Patch21091: bcma-brcmsmac-compat.patch
 Patch21100: cciss-fix-irqf-shared.patch
 Patch21101: hpsa-add-irqf-shared.patch
 
+#rhbz 755154
+Patch21200: rtlwifi-fix-lps_lock-deadlock.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1269,6 +1272,9 @@ ApplyPatch bcma-brcmsmac-compat.patch
 # rhbz 754907
 ApplyPatch cciss-fix-irqf-shared.patch
 ApplyPatch hpsa-add-irqf-shared.patch
+
+#rhbz 755154
+ApplyPatch rtlwifi-fix-lps_lock-deadlock.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1887,8 +1893,14 @@ fi
 # and build.
 
 %changelog
+* Tue Nov 29 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix deadlock in rtlwifi (rhbz #755154)
+
 * Mon Nov 28 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.4-1
 - Linux 3.1.4 (Fedora 2.6.41.4)
+
+* Mon Nov 28 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.4-1
+- Linux 3.1.4
 
 * Mon Nov 28 2011 Chuck Ebbert <cebbert@redhat.com>
 - Fix IRQ error preventing load of cciss module (rhbz#754907)
