@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -1890,6 +1890,9 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 30 2011 Josh Boyer <jwboyer@redhat.com>
+- Include commit 3940d6185 from JJ Ding in elantech.patch
+
 * Tue Nov 29 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix deadlock in rtlwifi (rhbz #755154)
 - Drop drm-intel-make-lvds-work.patch (rhbz #731296)
