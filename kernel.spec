@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2188,6 +2188,9 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 30 2011 Josh Boyer <jwboyer@redhat.com>
+- Include commit 3940d6185 from JJ Ding in elantech.patch
+
 * Tue Nov 29 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix deadlock in rtlwifi (rhbz #755154)
 - Drop drm-intel-make-lvds-work.patch (rhbz #731296)
