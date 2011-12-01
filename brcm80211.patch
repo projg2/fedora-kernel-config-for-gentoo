@@ -97223,4 +97223,16 @@ index 6403423..0000000
 -obj-$(CONFIG_BRCMUTIL)	+= $(MODULEPFX).o
 -$(MODULEPFX)-objs	= $(BRCMUTIL_OFILES)
 -- 
-1.7.7.3
+diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
+index f3c5e33..f2c2209 100644
+--- a/drivers/staging/Makefile
++++ b/drivers/staging/Makefile
+@@ -14,8 +14,6 @@ obj-$(CONFIG_USBIP_CORE)	+= usbip/
+ obj-$(CONFIG_W35UND)		+= winbond/
+ obj-$(CONFIG_PRISM2_USB)	+= wlan-ng/
+ obj-$(CONFIG_ECHO)		+= echo/
+-obj-$(CONFIG_BRCMSMAC)		+= brcm80211/
+-obj-$(CONFIG_BRCMFMAC)		+= brcm80211/
+ obj-$(CONFIG_COMEDI)		+= comedi/
+ obj-$(CONFIG_FB_OLPC_DCON)	+= olpc_dcon/
+ obj-$(CONFIG_ASUS_OLED)		+= asus_oled/
