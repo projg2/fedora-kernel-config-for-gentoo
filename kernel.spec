@@ -1898,6 +1898,7 @@ fi
 %changelog
 * Thu Dec 01 2011 Josh Boyer <jwboyer@redhat.com>
 - Apply patch to revert mac80211 scan optimizations (rhbz #731365)
+- Disable the existing brcm80211 staging drivers (rhbz #759109)
 
 * Wed Nov 30 2011 Josh Boyer <jwboyer@redhat.com>
 - Include commit 3940d6185 from JJ Ding in elantech.patch

@@ -96989,3 +96989,238 @@ diff -up linux-3.1.x86_64/drivers/net/wireless/Makefile.orig linux-3.1.x86_64/dr
 +
 +obj-$(CONFIG_BRCMFMAC) += brcm80211/
 +obj-$(CONFIG_BRCMSMAC) += brcm80211/
+diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
+index 06c9081..e2c3532 100644
+--- a/drivers/staging/Kconfig
++++ b/drivers/staging/Kconfig
+@@ -44,8 +44,6 @@ source "drivers/staging/wlan-ng/Kconfig"
+ 
+ source "drivers/staging/echo/Kconfig"
+ 
+-source "drivers/staging/brcm80211/Kconfig"
+-
+ source "drivers/staging/comedi/Kconfig"
+ 
+ source "drivers/staging/olpc_dcon/Kconfig"
+diff --git a/drivers/staging/brcm80211/Kconfig b/drivers/staging/brcm80211/Kconfig
+deleted file mode 100644
+index 379cf16..0000000
+--- a/drivers/staging/brcm80211/Kconfig
++++ /dev/null
+@@ -1,40 +0,0 @@
+-config BRCMUTIL
+-	tristate
+-	default n
+-
+-config BRCMSMAC
+-	tristate "Broadcom IEEE802.11n PCIe SoftMAC WLAN driver"
+-	default n
+-	depends on PCI
+-	depends on WLAN && MAC80211
+-	depends on X86 || MIPS
+-	select BRCMUTIL
+-	select FW_LOADER
+-	select CRC_CCITT
+-	---help---
+-	  This module adds support for PCIe wireless adapters based on Broadcom
+-	  IEEE802.11n SoftMAC chipsets.  If you choose to build a module, it'll
+-	  be called brcmsmac.ko.
+-
+-config BRCMFMAC
+-	tristate "Broadcom IEEE802.11n embedded FullMAC WLAN driver"
+-	default n
+-	depends on MMC
+-	depends on WLAN && CFG80211
+-	depends on X86 || MIPS
+-	select BRCMUTIL
+-	select FW_LOADER
+-	select WIRELESS_EXT
+-	select WEXT_PRIV
+-	---help---
+-	  This module adds support for embedded wireless adapters based on
+-	  Broadcom IEEE802.11n FullMAC chipsets.  This driver uses the kernel's
+-	  wireless extensions subsystem.  If you choose to build a module,
+-	  it'll be called brcmfmac.ko.
+-
+-config BRCMDBG
+-	bool "Broadcom driver debug functions"
+-	default n
+-	depends on BRCMSMAC || BRCMFMAC
+-	---help---
+-	  Selecting this enables additional code for debug purposes.
+diff --git a/drivers/staging/brcm80211/Makefile b/drivers/staging/brcm80211/Makefile
+deleted file mode 100644
+index 8b01f5e..0000000
+--- a/drivers/staging/brcm80211/Makefile
++++ /dev/null
+@@ -1,24 +0,0 @@
+-#
+-# Makefile fragment for Broadcom 802.11n Networking Device Driver
+-#
+-# Copyright (c) 2010 Broadcom Corporation
+-#
+-# Permission to use, copy, modify, and/or distribute this software for any
+-# purpose with or without fee is hereby granted, provided that the above
+-# copyright notice and this permission notice appear in all copies.
+-#
+-# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+-# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+-# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+-# SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+-# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+-# OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+-# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-
+-# common flags
+-subdir-ccflags-y					:= -DBCMDMA32
+-subdir-ccflags-$(CONFIG_BRCMDBG)	+= -DBCMDBG
+-
+-obj-$(CONFIG_BRCMUTIL)	+= brcmutil/
+-obj-$(CONFIG_BRCMFMAC)	+= brcmfmac/
+-obj-$(CONFIG_BRCMSMAC)	+= brcmsmac/
+diff --git a/drivers/staging/brcm80211/brcmfmac/Makefile b/drivers/staging/brcm80211/brcmfmac/Makefile
+deleted file mode 100644
+index da3c805..0000000
+--- a/drivers/staging/brcm80211/brcmfmac/Makefile
++++ /dev/null
+@@ -1,39 +0,0 @@
+-#
+-# Makefile fragment for Broadcom 802.11n Networking Device Driver
+-#
+-# Copyright (c) 2010 Broadcom Corporation
+-#
+-# Permission to use, copy, modify, and/or distribute this software for any
+-# purpose with or without fee is hereby granted, provided that the above
+-# copyright notice and this permission notice appear in all copies.
+-#
+-# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+-# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+-# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+-# SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+-# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+-# OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+-# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-
+-ccflags-y :=			\
+-	-DBRCMF_FIRSTREAD=64	\
+-	-DBRCMF_SDALIGN=64	\
+-	-DMAX_HDR_READ=64
+-
+-ccflags-$(CONFIG_BRCMDBG)	+= -DSHOW_EVENTS
+-
+-ccflags-y += \
+-	-Idrivers/staging/brcm80211/brcmfmac	\
+-	-Idrivers/staging/brcm80211/include
+-
+-DHDOFILES = \
+-	wl_cfg80211.o \
+-	dhd_cdc.o \
+-	dhd_common.o \
+-	dhd_sdio.o	\
+-	dhd_linux.o \
+-	bcmsdh.o \
+-	bcmsdh_sdmmc.o
+-
+-obj-$(CONFIG_BRCMFMAC) += brcmfmac.o
+-brcmfmac-objs += $(DHDOFILES)
+diff --git a/drivers/staging/brcm80211/brcmsmac/Makefile b/drivers/staging/brcm80211/brcmsmac/Makefile
+deleted file mode 100644
+index 1ea3e0c..0000000
+--- a/drivers/staging/brcm80211/brcmsmac/Makefile
++++ /dev/null
+@@ -1,58 +0,0 @@
+-#
+-# Makefile fragment for Broadcom 802.11n Networking Device Driver
+-#
+-# Copyright (c) 2010 Broadcom Corporation
+-#
+-# Permission to use, copy, modify, and/or distribute this software for any
+-# purpose with or without fee is hereby granted, provided that the above
+-# copyright notice and this permission notice appear in all copies.
+-#
+-# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+-# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+-# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+-# SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+-# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+-# OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+-# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-
+-ccflags-y :=				\
+-	-DWLC_HIGH				\
+-	-DWLC_LOW				\
+-	-DSTA					\
+-	-DWME					\
+-	-DWL11N					\
+-	-DDBAND					\
+-	-DBCMNVRAMR				\
+-	-Idrivers/staging/brcm80211/brcmsmac \
+-	-Idrivers/staging/brcm80211/brcmsmac/phy \
+-	-Idrivers/staging/brcm80211/include
+-
+-BRCMSMAC_OFILES := \
+-	mac80211_if.o \
+-	ucode_loader.o \
+-	alloc.o \
+-	ampdu.o \
+-	antsel.o \
+-	bmac.o \
+-	channel.o \
+-	main.o \
+-	phy_shim.o \
+-	pmu.o \
+-	rate.o \
+-	stf.o \
+-	aiutils.o \
+-	phy/phy_cmn.o \
+-	phy/phy_lcn.o \
+-	phy/phy_n.o \
+-	phy/phytbl_lcn.o \
+-	phy/phytbl_n.o \
+-	phy/phy_qmath.o \
+-	otp.o \
+-	srom.o \
+-	dma.o \
+-	nicpci.o
+-
+-MODULEPFX := brcmsmac
+-
+-obj-$(CONFIG_BRCMSMAC)	+= $(MODULEPFX).o
+-$(MODULEPFX)-objs	= $(BRCMSMAC_OFILES)
+diff --git a/drivers/staging/brcm80211/brcmutil/Makefile b/drivers/staging/brcm80211/brcmutil/Makefile
+deleted file mode 100644
+index 6403423..0000000
+--- a/drivers/staging/brcm80211/brcmutil/Makefile
++++ /dev/null
+@@ -1,29 +0,0 @@
+-#
+-# Makefile fragment for Broadcom 802.11n Networking Device Driver Utilities
+-#
+-# Copyright (c) 2011 Broadcom Corporation
+-#
+-# Permission to use, copy, modify, and/or distribute this software for any
+-# purpose with or without fee is hereby granted, provided that the above
+-# copyright notice and this permission notice appear in all copies.
+-#
+-# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+-# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+-# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+-# SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+-# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+-# OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+-# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+-
+-ccflags-y :=				\
+-	-Idrivers/staging/brcm80211/brcmutil \
+-	-Idrivers/staging/brcm80211/include
+-
+-BRCMUTIL_OFILES := \
+-	utils.o \
+-	wifi.o
+-
+-MODULEPFX := brcmutil
+-
+-obj-$(CONFIG_BRCMUTIL)	+= $(MODULEPFX).o
+-$(MODULEPFX)-objs	= $(BRCMUTIL_OFILES)
+-- 
+1.7.7.3
