@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -691,6 +691,9 @@ Patch21101: hpsa-add-irqf-shared.patch
 #rhbz 755154
 Patch21200: rtlwifi-fix-lps_lock-deadlock.patch
 
+#rhbz 731365
+Patch21220: mac80211_offchannel_rework_revert.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1272,6 +1275,9 @@ ApplyPatch hpsa-add-irqf-shared.patch
 
 #rhbz 755154
 ApplyPatch rtlwifi-fix-lps_lock-deadlock.patch
+
+#rhbz 731365
+ApplyPatch mac80211_offchannel_rework_revert.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1890,6 +1896,9 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 01 2011 Josh Boyer <jwboyer@redhat.com>
+- Apply patch to revert mac80211 scan optimizations (rhbz #731365)
+
 * Wed Nov 30 2011 Josh Boyer <jwboyer@redhat.com>
 - Include commit 3940d6185 from JJ Ding in elantech.patch
 
