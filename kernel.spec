@@ -712,6 +712,9 @@ Patch21230: net-sky2-88e8059-fix-link-speed.patch
 #rhbz 717735
 Patch21045: nfs-client-freezer.patch
 
+#rhbz 590880
+Patch21046: alps.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1317,6 +1320,9 @@ ApplyPatch net-sky2-88e8059-fix-link-speed.patch
 
 #rhbz 717735
 ApplyPatch nfs-client-freezer.patch
+
+#rhbz 590880
+ApplyPatch alps.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1967,6 +1973,7 @@ fi
 %changelog
 * Thu Dec 15 2011 Josh Boyer <jwboyer@redhat.com>
 - Add patch from Jeff Layton to fix suspend with NFS (rhbz #717735)
+- Backport ALPS touchpad patches from input/next branch (rhbz #590880)
 
 * Thu Dec 15 2011 Dave Jones <davej@redhat.com> - 2.6.41.5-3
 - Disable Intel IOMMU by default.
