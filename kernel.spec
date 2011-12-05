@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2194,6 +2194,9 @@ fi
 # and build.
 
 %changelog
+* Mon Dec 05 2011 Josh Boyer <jwboyer@redhat.com>
+- Only print the apm_cpu_idle message once (rhbz #760341)
+
 * Mon Dec 05 2011 Dave Jones <davej@redhat.com>
 - Switch from -Os to -O2
 
