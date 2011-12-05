@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -1896,6 +1896,9 @@ fi
 # and build.
 
 %changelog
+* Mon Dec 05 2011 Josh Boyer <jwboyer@redhat.com>
+- Only print the apm_cpu_idle message once (rhbz #760341)
+
 * Mon Dec 05 2011 Dave Jones <davej@redhat.com>
 - Switch from -Os to -O2
 
