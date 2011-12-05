@@ -2194,6 +2194,9 @@ fi
 # and build.
 
 %changelog
+* Mon Dec 05 2011 Dave Jones <davej@redhat.com>
+- Switch from -Os to -O2
+
 * Thu Dec 01 2011 Josh Boyer <jwboyer@redhat.com>
 - Apply patch to revert mac80211 scan optimizations (rhbz #731365)
 - Disable the existing brcm80211 staging drivers (rhbz #759109)
