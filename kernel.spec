@@ -1900,6 +1900,9 @@ fi
 # and build.
 
 %changelog
+* Tue Dec 06 2011 Chuck Ebbert <cebbert@redhat.com>
+- Disable uas until someone can fix it (rhbz #717633)
+
 * Tue Dec 06 2011 Josh Boyer <jwboyer@redhat.com>
 - Add reworked pci ASPM patch from Matthew Garrett
 
