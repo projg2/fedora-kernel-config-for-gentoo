@@ -797,6 +797,8 @@ Patch21200: rtlwifi-fix-lps_lock-deadlock.patch
 #rhbz 731365
 Patch21220: mac80211_offchannel_rework_revert.patch
 
+Patch21225: pci-Rework-ASPM-disable-code.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1462,6 +1464,8 @@ ApplyPatch rtlwifi-fix-lps_lock-deadlock.patch
 
 #rhbz 731365
 ApplyPatch mac80211_offchannel_rework_revert.patch
+
+ApplyPatch pci-Rework-ASPM-disable-code.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2194,6 +2198,9 @@ fi
 # and build.
 
 %changelog
+* Tue Dec 06 2011 Josh Boyer <jwboyer@redhat.com>
+- Add reworked pci ASPM patch from Matthew Garrett
+
 * Mon Dec 05 2011 Josh Boyer <jwboyer@redhat.com>
 - Only print the apm_cpu_idle message once (rhbz #760341)
 
