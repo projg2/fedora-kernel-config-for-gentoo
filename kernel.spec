@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 5
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,9 +66,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1301,7 +1301,7 @@ ApplyPatch linux-2.6-i386-nx-emulation.patch
 ApplyPatch jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 
 # xfs
-ApplyPatch xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
+#ApplyPatch xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
 
 # btrfs
 
@@ -1460,7 +1460,7 @@ ApplyPatch cciss-fix-irqf-shared.patch
 ApplyPatch hpsa-add-irqf-shared.patch
 
 #rhbz 755154
-ApplyPatch rtlwifi-fix-lps_lock-deadlock.patch
+#ApplyPatch rtlwifi-fix-lps_lock-deadlock.patch
 
 #rhbz 731365
 ApplyPatch mac80211_offchannel_rework_revert.patch
@@ -2198,6 +2198,12 @@ fi
 # and build.
 
 %changelog
+* Wed Dec 07 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.5-0.rc1.1
+- Linux 3.1.5-rc1
+- Comment out merged patches:
+  xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
+  rtlwifi-fix-lps_lock-deadlock.patch
+
 * Tue Dec 06 2011 Chuck Ebbert <cebbert@redhat.com>
 - Disable uas until someone can fix it (rhbz #717633)
 
