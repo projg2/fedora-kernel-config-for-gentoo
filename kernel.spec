@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -68,7 +68,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 5
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%define rcrev 10
+%define rcrev 0
 # The git snapshot level
-%define gitrev 1
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 3.%{upstream_sublevel}.0
 %endif
@@ -2200,10 +2200,15 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 08 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.5-0.rc2.1
+- Linux 3.1.5-rc2
+- Drop obsolete changelog, set rcrev and gitrev to 0 so they're
+  less distracting.
+
 * Thu Dec 08 2011 Ben Skeggs <bskeggs@redhat.com> 3.1.5-0.rc1.2
 - nouveau: fix accel on GF108 and enable on GF108/GF110
 
-* Wed Dec 07 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.5-0.rc1.1
+* Wed Dec 07 2011 Chuck Ebbert <cebbert@redhat.com>
 - Linux 3.1.5-rc1
 - Comment out merged patches:
   xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
