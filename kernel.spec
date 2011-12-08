@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -700,6 +700,7 @@ Patch1500: fix_xen_guest_on_old_EC2.patch
 
 # nouveau + drm fixes
 Patch1810: drm-nouveau-updates.patch
+Patch1811: drm-nouveau-gf108.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
 # hush the i915 fbc noise
@@ -1379,6 +1380,7 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # Nouveau DRM
 ApplyOptionalPatch drm-nouveau-updates.patch
+ApplyPatch drm-nouveau-gf108.patch
 
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
@@ -2198,6 +2200,9 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 08 2011 Ben Skeggs <bskeggs@redhat.com> 3.1.5-0.rc1.2
+- nouveau: fix accel on GF108 and enable on GF108/GF110
+
 * Wed Dec 07 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.5-0.rc1.1
 - Linux 3.1.5-rc1
 - Comment out merged patches:
