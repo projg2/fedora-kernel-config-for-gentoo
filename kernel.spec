@@ -797,6 +797,9 @@ Patch21225: pci-Rework-ASPM-disable-code.patch
 #rhbz #757839
 Patch21230: net-sky2-88e8059-fix-link-speed.patch
 
+#rhbz 717735
+Patch21045: nfs-client-freezer.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1464,6 +1467,9 @@ ApplyPatch pci-Rework-ASPM-disable-code.patch
 
 #rhbz #757839
 ApplyPatch net-sky2-88e8059-fix-link-speed.patch
+
+#rhbz 717735
+ApplyPatch nfs-client-freezer.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2196,6 +2202,9 @@ fi
 # and build.
 
 %changelog
+* Mon Dec 12 2011 Josh Boyer <jwboyer@redhat.com>
+- Add patch from Jeff Layton to fix suspend with NFS (rhbz #717735)
+
 * Fri Dec 09 2011 Josh Boyer <jwboyer@redhat.com> 3.1.5-1
 - Linux 3.1.5
 
