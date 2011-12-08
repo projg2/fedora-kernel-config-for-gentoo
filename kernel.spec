@@ -53,7 +53,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 5
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1900,7 +1900,10 @@ fi
 # and build.
 
 %changelog
-* Wed Dec 07 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.5-0.rc1.1
+* Thu Dec 08 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.5-0.rc2.1
+- Linux 3.1.5-rc2 (Fedora 2.6.41.5-rc2)
+
+* Wed Dec 07 2011 Chuck Ebbert <cebbert@redhat.com>
 - Linux 3.1.5-rc1 (Fedora 2.6.41.5-rc1)
 - Comment out merged patches:
   xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
