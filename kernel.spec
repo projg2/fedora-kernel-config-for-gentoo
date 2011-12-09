@@ -696,6 +696,9 @@ Patch21220: mac80211_offchannel_rework_revert.patch
 
 Patch21225: pci-Rework-ASPM-disable-code.patch
 
+#rhbz #757839
+Patch21230: net-sky2-88e8059-fix-link-speed.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1282,6 +1285,9 @@ ApplyPatch hpsa-add-irqf-shared.patch
 ApplyPatch mac80211_offchannel_rework_revert.patch
 
 ApplyPatch pci-Rework-ASPM-disable-code.patch
+
+#rhbz #757839
+ApplyPatch net-sky2-88e8059-fix-link-speed.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1902,6 +1908,7 @@ fi
 %changelog
 * Thu Dec 08 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.5-0.rc2.1
 - Linux 3.1.5-rc2 (Fedora 2.6.41.5-rc2)
+- Fix wrong link speed on some sky2 network adapters (rhbz #757839)
 
 * Wed Dec 07 2011 Chuck Ebbert <cebbert@redhat.com>
 - Linux 3.1.5-rc1 (Fedora 2.6.41.5-rc1)
