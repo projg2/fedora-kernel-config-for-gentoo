@@ -68,7 +68,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 5
 # Is it a -stable RC?
-%define stable_rc 2
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2206,6 +2206,9 @@ fi
 # and build.
 
 %changelog
+* Fri Dec 09 2011 Josh Boyer <jwboyer@redhat.com> 3.1.5-1
+- Linux 3.1.5
+
 * Thu Dec 08 2011 Chuck Ebbert <cebbert@redhat.com> 3.1.5-0.rc2.1
 - Linux 3.1.5-rc2
 - Drop obsolete changelog, set rcrev and gitrev to 0 so they're
