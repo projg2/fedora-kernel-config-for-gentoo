@@ -800,6 +800,9 @@ Patch21220: mac80211_offchannel_rework_revert.patch
 
 Patch21225: pci-Rework-ASPM-disable-code.patch
 
+#rhbz #757839
+Patch21230: net-sky2-88e8059-fix-link-speed.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1468,6 +1471,9 @@ ApplyPatch hpsa-add-irqf-shared.patch
 ApplyPatch mac80211_offchannel_rework_revert.patch
 
 ApplyPatch pci-Rework-ASPM-disable-code.patch
+
+#rhbz #757839
+ApplyPatch net-sky2-88e8059-fix-link-speed.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2204,6 +2210,7 @@ fi
 - Linux 3.1.5-rc2
 - Drop obsolete changelog, set rcrev and gitrev to 0 so they're
   less distracting.
+- Fix wrong link speed on some sky2 network adapters (rhbz #757839)
 
 * Thu Dec 08 2011 Ben Skeggs <bskeggs@redhat.com> 3.1.5-0.rc1.2
 - nouveau: fix accel on GF108 and enable on GF108/GF110
