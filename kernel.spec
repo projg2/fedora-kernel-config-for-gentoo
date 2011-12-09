@@ -53,7 +53,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 5
 # Is it a -stable RC?
-%define stable_rc 2
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev .%{stable_update}
@@ -1906,6 +1906,9 @@ fi
 # and build.
 
 %changelog
+* Fri Dec 09 2011 Josh Boyer <jwboyer@redhat.com> 2.6.41.5-1
+- Linux 3.1.5 (Fedora 2.6.41.5)
+
 * Thu Dec 08 2011 Chuck Ebbert <cebbert@redhat.com> 2.6.41.5-0.rc2.1
 - Linux 3.1.5-rc2 (Fedora 2.6.41.5-rc2)
 - Fix wrong link speed on some sky2 network adapters (rhbz #757839)
