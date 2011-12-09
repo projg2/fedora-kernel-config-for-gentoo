@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -770,9 +770,6 @@ Patch21022: mm-do-not-stall-in-synchronous-compaction-for-THP-allocations.patch
 Patch21030: be2net-non-member-vlan-pkts-not-received-in-promisco.patch
 Patch21031: benet-remove-bogus-unlikely-on-vlan-check.patch
 
-#rhbz 749166
-Patch21050: xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
-
 Patch21070: oom-fix-integer-overflow-of-points.patch
 
 #rhbz 728607
@@ -791,9 +788,6 @@ Patch21091: bcma-brcmsmac-compat.patch
 # rhbz 754907
 Patch21100: cciss-fix-irqf-shared.patch
 Patch21101: hpsa-add-irqf-shared.patch
-
-#rhbz 755154
-Patch21200: rtlwifi-fix-lps_lock-deadlock.patch
 
 #rhbz 731365
 Patch21220: mac80211_offchannel_rework_revert.patch
@@ -1305,7 +1299,6 @@ ApplyPatch linux-2.6-i386-nx-emulation.patch
 ApplyPatch jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 
 # xfs
-#ApplyPatch xfs-Fix-possible-memory-corruption-in-xfs_readlink.patch
 
 # btrfs
 
@@ -1463,9 +1456,6 @@ ApplyPatch bcma-brcmsmac-compat.patch
 # rhbz 754907
 ApplyPatch cciss-fix-irqf-shared.patch
 ApplyPatch hpsa-add-irqf-shared.patch
-
-#rhbz 755154
-#ApplyPatch rtlwifi-fix-lps_lock-deadlock.patch
 
 #rhbz 731365
 ApplyPatch mac80211_offchannel_rework_revert.patch
