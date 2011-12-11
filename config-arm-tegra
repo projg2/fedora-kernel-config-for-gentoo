@@ -83,3 +83,9 @@ CONFIG_CPU_FREQ_STAT=y
 CONFIG_CPU_FREQ_STAT_DETAILS=y
 
 CONFIG_CRYSTALHD=m
+
+# these all currently fail due to missing symbols __bad_udelay or
+# error: implicit declaration of function ‘iowrite32be’
+# CONFIG_SND_ALI5451 is not set
+# CONFIG_DRM_NOUVEAU is not set
+# CONFIG_MLX4_EN is not set

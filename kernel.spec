@@ -100,6 +100,12 @@ Summary: The Linux kernel
 %define with_omap      %{?_without_omap:      0} %{?!_without_omap:      1}
 # kernel-tegra (only valid for arm)
 %define with_tegra       %{?_without_tegra:       0} %{?!_without_tegra:       1}
+# kernel-kirkwood (only valid for arm)
+%define with_kirkwood       %{?_without_kirkwood:       0} %{?!_without_kirkwood:       1}
+# kernel-imx (only valid for arm)
+%define with_imx       %{?_without_imx:       0} %{?!_without_imx:       1}
+# kernel-highbank (only valid for arm)
+%define with_highbank       %{?_without_highbank:       0} %{?!_without_highbank:       1}
 
 # Build the kernel-doc package, but don't fail the build if it botches.
 # Here "true" means "continue" and "false" means "fail the build".
@@ -189,10 +195,17 @@ Summary: The Linux kernel
 %define with_pae 0
 %endif
 
-# kernel-tegra and omap is only built on armv7 hard and softfp
+# kernel-tegra, omap, imx and highbank are only built on armv7 hard and softfp
 %ifnarch armv7hl armv7l
 %define with_tegra 0
 %define with_omap 0
+%define with_imx 0
+%define with_highbank 0
+%endif
+
+# kernel-kirkwood is only built for armv5
+%ifnarch armv5tel
+%define with_kirkwood 0
 %endif
 
 # if requested, only build base kernel
@@ -520,6 +533,9 @@ Source90: config-sparc64-generic
 Source100: config-arm-generic
 Source110: config-arm-omap-generic
 Source111: config-arm-tegra
+Source112: config-arm-kirkwood
+Source113: config-arm-imx
+Source114: config-arm-highbank
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -884,6 +900,23 @@ This variant of the kernel has numerous debugging options enabled.
 It should only be installed when trying to gather additional information
 on kernel bugs, as some of these options impact performance noticably.
 
+%define variant_summary The Linux kernel compiled for marvell kirkwood boards
+%kernel_variant_package kirkwood
+%description kirkwood
+This package includes a version of the Linux kernel with support for
+marvell kirkwood based systems, i.e., guruplug, sheevaplug
+
+%define variant_summary The Linux kernel compiled for freescale boards
+%kernel_variant_package imx
+%description imx
+This package includes a version of the Linux kernel with support for
+freescale based systems, i.e., efika smartbook.
+
+%define variant_summary The Linux kernel compiled for Calxeda boards
+%kernel_variant_package highbank
+%description highbank
+This package includes a version of the Linux kernel with support for
+Calxeda based systems, i.e., HP arm servers.
 
 %define variant_summary The Linux kernel compiled for TI-OMAP boards
 %kernel_variant_package omap
@@ -1470,6 +1503,12 @@ BuildKernel() {
     if [ -d arch/%{asmarch}/include ]; then
       cp -a --parents arch/%{asmarch}/include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     fi
+    # include the machine specific headers for ARM variants, if available.
+%ifarch %{arm}
+    if [ -d arch/%{asmarch}/mach-${Flavour}/include ]; then
+      cp -a --parents arch/%{asmarch}/mach-${Flavour}/include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+    fi
+%endif
     cp -a include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
 
     # Make sure the Makefile and version.h have a matching timestamp so that
@@ -1571,6 +1610,18 @@ BuildKernel %make_target %kernel_image PAEdebug
 
 %if %{with_pae}
 BuildKernel %make_target %kernel_image PAE
+%endif
+
+%if %{with_kirkwood}
+BuildKernel %make_target %kernel_image kirkwood
+%endif
+
+%if %{with_imx}
+BuildKernel %make_target %kernel_image imx
+%endif
+
+%if %{with_highbank}
+BuildKernel %make_target %kernel_image highbank
 %endif
 
 %if %{with_omap}
@@ -1773,6 +1824,15 @@ fi}\
 %kernel_variant_post -v PAEdebug -r (kernel|kernel-smp)
 %kernel_variant_preun PAEdebug
 
+%kernel_variant_preun kirkwood
+%kernel_variant_post -v kirkwood
+
+%kernel_variant_preun imx
+%kernel_variant_post -v imx
+
+%kernel_variant_preun highbank
+%kernel_variant_post -v highbank
+
 %kernel_variant_preun omap
 %kernel_variant_post -v omap
 
@@ -1889,6 +1949,9 @@ fi
 %kernel_variant_files %{with_debug} debug
 %kernel_variant_files %{with_pae} PAE
 %kernel_variant_files %{with_pae_debug} PAEdebug
+%kernel_variant_files %{with_kirkwood} kirkwood
+%kernel_variant_files %{with_imx} imx
+%kernel_variant_files %{with_highbank} highbank
 %kernel_variant_files %{with_omap} omap
 %kernel_variant_files %{with_tegra} tegra
 
