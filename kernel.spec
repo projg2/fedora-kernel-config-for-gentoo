@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -471,6 +471,7 @@ Summary: The Linux kernel
 %define with_pae 0
 %define with_debuginfo 0
 %define with_tools 0
+%define with_backports 0
 %define _enable_debug_packages 0
 %endif
 
@@ -2387,6 +2388,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jan 06 2012 Josh Boyer <jwboyer@redhat.com>
+- Disable backports on arches where we don't actually build a kernel (or config)
+
 * Thu Jan 05 2012 John W. Linville <linville@redhat.com>
 - Patch compat-wireless build to avoid "pr_fmt redefined" warnings
 - Include compat-wireless in removal of files resulting from patch fuzz
