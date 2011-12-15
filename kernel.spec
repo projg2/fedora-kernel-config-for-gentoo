@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -715,6 +715,9 @@ Patch21045: nfs-client-freezer.patch
 #rhbz 590880
 Patch21046: alps.patch
 
+#rhbz 767173
+Patch21047: iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1323,6 +1326,9 @@ ApplyPatch nfs-client-freezer.patch
 
 #rhbz 590880
 ApplyPatch alps.patch
+
+#rhbz 767173
+ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1971,7 +1977,8 @@ fi
 # and build.
 
 %changelog
-* Thu Dec 15 2011 Josh Boyer <jwboyer@redhat.com>
+* Thu Dec 15 2011 Josh Boyer <jwboyer@redhat.com> - 2.6.41.5-4
+- Add patch to fix Intel wifi regression in 3.1.5 (rhbz 767173)
 - Add patch from Jeff Layton to fix suspend with NFS (rhbz #717735)
 - Backport ALPS touchpad patches from input/next branch (rhbz #590880)
 
