@@ -1979,6 +1979,11 @@ fi
 # and build.
 
 %changelog
+* Sun Dec 11 2011 Dennis Gilmore <dennis@ausil.us>
+- build imx highbank and kirkwood kernel variants on arm
+- add patch for tegra usb storage resets
+- omap config cleanups from dmarlin
+
 * Thu Dec 15 2011 Josh Boyer <jwboyer@redhat.com> - 2.6.41.5-4
 - Add patch to fix Intel wifi regression in 3.1.5 (rhbz 767173)
 - Add patch from Jeff Layton to fix suspend with NFS (rhbz #717735)
