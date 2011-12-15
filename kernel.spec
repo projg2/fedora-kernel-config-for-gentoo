@@ -1979,7 +1979,7 @@ fi
 # and build.
 
 %changelog
-* Sun Dec 11 2011 Dennis Gilmore <dennis@ausil.us>
+* Thu Dec 15 2011 Dennis Gilmore <dennis@ausil.us>
 - build imx highbank and kirkwood kernel variants on arm
 - add patch for tegra usb storage resets
 - omap config cleanups from dmarlin
