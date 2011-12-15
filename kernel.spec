@@ -675,6 +675,7 @@ Patch20000: utrace.patch
 # Flattened devicetree support
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
+Patch21002: arm-tegra-usb-no-reset.patch
 
 #rhbz #735946
 Patch21020: 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
@@ -1140,6 +1141,7 @@ ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 #
 ApplyPatch arm-omap-dt-compat.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
+ApplyPatch arm-tegra-usb-no-reset.patch
 
 ApplyPatch taint-vbox.patch
 #

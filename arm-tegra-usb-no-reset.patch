@@ -1,0 +1,29 @@
+From 6b0cbdfaf589e6f39ab7588ed1047d1a55224eb9 Mon Sep 17 00:00:00 2001
+From: Mike Rapoport <mike@compulab.co.il>
+Date: Mon, 11 Apr 2011 10:33:20 +0300
+Subject: [PATCH] BUGFIX: don't allow disconnection of USB-SATA on TrimSlice
+
+---
+ drivers/usb/core/hub.c |    7 +++++++
+ 1 files changed, 7 insertions(+), 0 deletions(-)
+
+diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+index 566c183..74b5165 100644
+--- a/drivers/usb/core/hub.c
++++ b/drivers/usb/core/hub.c
+@@ -3263,6 +3263,13 @@ static void hub_events(void)
+ 				(u16) hub->change_bits[0],
+ 				(u16) hub->event_bits[0]);
+ 
++		/* Don't disconnect USB-SATA on TrimSlice */
++		if (strcmp(dev_name(hdev->bus->controller), "tegra-ehci.0") == 0) {
++			if ((hdev->state == 7) && (hub->change_bits[0] == 0) &&
++			    (hub->event_bits[0] == 0x2))
++				hub->event_bits[0] = 0;
++		}
++
+ 		/* Lock the device, then check to see if we were
+ 		 * disconnected while waiting for the lock to succeed. */
+ 		usb_lock_device(hdev);
+-- 
+1.7.6
