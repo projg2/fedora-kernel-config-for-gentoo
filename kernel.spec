@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -803,6 +803,9 @@ Patch21045: nfs-client-freezer.patch
 #rhbz 590880
 Patch21046: alps.patch
 
+#rhbz 767173
+Patch21047: iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1476,6 +1479,9 @@ ApplyPatch nfs-client-freezer.patch
 
 #rhbz 590880
 ApplyPatch alps.patch
+
+#rhbz 767173
+ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2208,6 +2214,9 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 15 2011 Josh Boyer <jwboyer@redhat.com> - 3.1.5-6
+- Add patch to fix Intel wifi regression in 3.1.5 (rhbz 767173)
+
 * Thu Dec 15 2011 Dave Jones <davej@redhat.com> - 3.1.5-5
 - Change configfs to be built-in. (rhbz 767857)
 
