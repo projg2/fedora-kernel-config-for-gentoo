@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -1959,6 +1959,9 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 15 2011 Dave Jones <davej@redhat.com> - 2.6.41.5-3
+- Disable Intel IOMMU by default.
+
 * Fri Dec 09 2011 Josh Boyer <jwboyer@redhat.com> 2.6.41.5-1
 - Linux 3.1.5 (Fedora 2.6.41.5)
 
