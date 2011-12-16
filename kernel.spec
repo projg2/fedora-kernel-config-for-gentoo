@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 6
+%global baserelease 7
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -697,6 +697,7 @@ Patch901: asus-laptop-3.2-backport.patch
 Patch1500: fix_xen_guest_on_old_EC2.patch
 
 # DRM
+Patch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
 
 # nouveau + drm fixes
 Patch1810: drm-nouveau-updates.patch
@@ -1382,6 +1383,7 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # DRM core
+ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
 
 # Nouveau DRM
 ApplyOptionalPatch drm-nouveau-updates.patch
@@ -2214,6 +2216,9 @@ fi
 # and build.
 
 %changelog
+* Fri Dec 16 2011 Ben Skeggs <bskeggs@redhat.com> - 3.1.5-7
+- Add patch to do a better job of dealing with busted EDID headers (rhbz#751589)
+
 * Thu Dec 15 2011 Josh Boyer <jwboyer@redhat.com> - 3.1.5-6
 - Add patch to fix Intel wifi regression in 3.1.5 (rhbz 767173)
 
