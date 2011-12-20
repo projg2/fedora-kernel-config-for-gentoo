@@ -721,6 +721,9 @@ Patch21046: alps.patch
 #rhbz 767173
 Patch21047: iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 
+#rhbz 741117
+Patch21048: b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1336,6 +1339,9 @@ ApplyPatch alps.patch
 
 #rhbz 767173
 ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
+
+#rhbz 741117
+ApplyPatch b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1986,6 +1992,7 @@ fi
 %changelog
 * Tue Dec 20 2011 Josh Boyer <jwboyer@redhat.com>
 - Fix config options in arm configs after latest commits
+- Backport upstream fix for b44_poll oops (rhbz #741117)
 
 * Mon Dec 19 2011 Dave Jones <davej@redhat.com>
 - x86, dumpstack: Fix code bytes breakage due to missing KERN_CONT
