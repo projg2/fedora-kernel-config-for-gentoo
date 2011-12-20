@@ -771,6 +771,8 @@ Patch21022: mm-do-not-stall-in-synchronous-compaction-for-THP-allocations.patch
 Patch21030: be2net-non-member-vlan-pkts-not-received-in-promisco.patch
 Patch21031: benet-remove-bogus-unlikely-on-vlan-check.patch
 
+Patch21040: x86-code-dump-fix-truncation.patch
+
 Patch21070: oom-fix-integer-overflow-of-points.patch
 
 #rhbz 728607
@@ -1446,6 +1448,9 @@ ApplyPatch mm-do-not-stall-in-synchronous-compaction-for-THP-allocations.patch
 #rhbz 748691
 ApplyPatch be2net-non-member-vlan-pkts-not-received-in-promisco.patch
 ApplyPatch benet-remove-bogus-unlikely-on-vlan-check.patch
+
+#rhbz 736815
+ApplyPatch x86-code-dump-fix-truncation.patch
 
 #rhbz 750402
 ApplyPatch oom-fix-integer-overflow-of-points.patch
@@ -2216,6 +2221,9 @@ fi
 # and build.
 
 %changelog
+* Mon Dec 19 2011 Dave Jones <davej@redhat.com>
+- x86, dumpstack: Fix code bytes breakage due to missing KERN_CONT
+
 * Fri Dec 16 2011 Ben Skeggs <bskeggs@redhat.com> - 3.1.5-7
 - Add patch to do a better job of dealing with busted EDID headers (rhbz#751589)
 
