@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 9
+%global baserelease 10
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1704,7 +1704,7 @@ BuildKernel() {
     fi
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/*.o
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/*/*.o
-%ifarch ppc
+%ifarch ppc ppc64
     cp -a --parents arch/powerpc/lib/crtsavres.[So] $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
 %endif
     if [ -d arch/%{asmarch}/include ]; then
@@ -2229,6 +2229,7 @@ fi
 %changelog
 * Tue Dec 20 2011 Josh Boyer <jwboyer@redhat.com>
 - Backport upstream fix for b44_poll oops (rhbz #741117)
+- Include crtsaves.o for ppc64 as well (rhbz #769415)
 
 * Mon Dec 19 2011 Kyle McMartin <kyle@redhat.com> - 3.1.5-8
 - Add versioned Obsoletes and Provides for kernel-tools -> perf, hopefully
