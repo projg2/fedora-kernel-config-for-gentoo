@@ -697,7 +697,7 @@ Patch901: asus-laptop-3.2-backport.patch
 Patch1500: fix_xen_guest_on_old_EC2.patch
 
 # DRM
-Patch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
+#atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
 
 # nouveau + drm fixes
 Patch1810: drm-nouveau-updates.patch
@@ -1388,7 +1388,7 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # DRM core
-ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
+#ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
 
 # Nouveau DRM
 ApplyOptionalPatch drm-nouveau-updates.patch
@@ -2230,6 +2230,7 @@ fi
 * Tue Dec 20 2011 Josh Boyer <jwboyer@redhat.com>
 - Backport upstream fix for b44_poll oops (rhbz #741117)
 - Include crtsaves.o for ppc64 as well (rhbz #769415)
+- Drop EDID headers patch from 751589 for now (rhbz #769103)
 
 * Mon Dec 19 2011 Kyle McMartin <kyle@redhat.com> - 3.1.5-8
 - Add versioned Obsoletes and Provides for kernel-tools -> perf, hopefully
