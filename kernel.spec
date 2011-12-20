@@ -119,7 +119,7 @@ Summary: The Linux kernel
 # tools
 %define with_tools     %{?_without_tools:     0} %{?!_without_tools:     1}
 # kernel-debuginfo
-%define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 0}
+%define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
 # kernel-bootwrapper (for creating zImages from kernel + initrd)
 %define with_bootwrapper %{?_without_bootwrapper: 0} %{?!_without_bootwrapper: 1}
 # Want to build a the vsdo directories installed
@@ -163,7 +163,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
