@@ -812,6 +812,9 @@ Patch21047: iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 #rhbz 741117
 Patch21048: b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
+#rhbz 746097
+Patch21049: tpm_tis-delay-after-aborting-cmd.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1495,6 +1498,9 @@ ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 
 #rhbz 741117
 ApplyPatch b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
+
+#rhbz 746097
+ApplyPatch tpm_tis-delay-after-aborting-cmd.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2227,6 +2233,9 @@ fi
 # and build.
 
 %changelog
+* Tue Dec 20 2011 Dave Jones <davej@redhat.com>
+- Delay after aborting command in tpm_tis (rhbz #746097)
+
 * Tue Dec 20 2011 Josh Boyer <jwboyer@redhat.com>
 - Backport upstream fix for b44_poll oops (rhbz #741117)
 - Include crtsaves.o for ppc64 as well (rhbz #769415)
