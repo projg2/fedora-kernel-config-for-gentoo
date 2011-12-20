@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -1984,6 +1984,9 @@ fi
 # and build.
 
 %changelog
+* Tue Dec 20 2011 Josh Boyer <jwboyer@redhat.com>
+- Fix config options in arm configs after latest commits
+
 * Mon Dec 19 2011 Dave Jones <davej@redhat.com>
 - x86, dumpstack: Fix code bytes breakage due to missing KERN_CONT
 
