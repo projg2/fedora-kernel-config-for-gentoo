@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 7
+%global baserelease 8
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -119,7 +119,7 @@ Summary: The Linux kernel
 # tools
 %define with_tools     %{?_without_tools:     0} %{?!_without_tools:     1}
 # kernel-debuginfo
-%define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
+%define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 0}
 # kernel-bootwrapper (for creating zImages from kernel + initrd)
 %define with_bootwrapper %{?_without_bootwrapper: 0} %{?!_without_bootwrapper: 1}
 # Want to build a the vsdo directories installed
@@ -163,7 +163,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
@@ -877,8 +877,8 @@ It provides the kernel source files common to all builds.
 Summary: Assortment of tools for the Linux kernel
 Group: Development/System
 License: GPLv2
-Obsoletes: perf
-Provides:  perf
+Obsoletes: perf < 3.1.0-0.rc2.git7.2
+Provides:  perf = %{version}-%{release}
 Provides:  cpupowerutils = 1:009-0.6.p1
 Obsoletes: cpupowerutils < 1:009-0.6.p1
 Provides:  cpufreq-utils = 1:009-0.6.p1
@@ -2221,6 +2221,11 @@ fi
 # and build.
 
 %changelog
+* Mon Dec 19 2011 Kyle McMartin <kyle@redhat.com> - 3.1.5-8
+- Add versioned Obsoletes and Provides for kernel-tools -> perf, hopefully
+  this should allow upgrades from kernel-tools to perf+kernel-tools in rawhide
+  from F-16.
+
 * Mon Dec 19 2011 Dave Jones <davej@redhat.com>
 - x86, dumpstack: Fix code bytes breakage due to missing KERN_CONT
 
