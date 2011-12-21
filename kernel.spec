@@ -371,6 +371,7 @@ Summary: The Linux kernel
 %define make_target image
 %define kernel_image arch/s390/boot/image
 %define with_tools 0
+%define with_backports 0
 %endif
 
 %ifarch sparc64
@@ -830,6 +831,7 @@ Patch21049: tpm_tis-delay-after-aborting-cmd.patch
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
+Patch50100: iwlwifi-tx_sync-only-on-PAN-context.patch
 
 Patch22000: route-cache-garbage-collector.patch
 
@@ -1605,6 +1607,10 @@ ApplyPatch compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
 
+# Apply some iwlwifi regression fixes not in the 3.2-rc6 wireless snapshot
+ApplyPatch iwlwifi-tx_sync-only-on-PAN-context.patch
+ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
+
 cd ..
 
 %endif
@@ -2277,6 +2283,10 @@ fi
 # and build.
 
 %changelog
+* Wed Dec 21 2011 John W. Linville <linville@redhat.com> 
+- Apply some iwlwifi regression fixes not in the 3.2-rc6 wireless snapshot
+- Turn-off with_backports for s390x
+
 * Wed Dec 21 2011 Dave Jones <davej@redhat.com> 3.1.5-11
 - Reinstate the route cache garbage collector.
 
