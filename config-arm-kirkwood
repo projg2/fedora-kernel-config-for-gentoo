@@ -41,10 +41,3 @@ CONFIG_MV_XOR=y
 CONFIG_CRYPTO_DEV_MV_CESA=m
 
 # CONFIG_TOUCHSCREEN_EETI is not set
-
-# these all currently fail due to missing symbols __bad_udelay or
-# error: implicit declaration of function ‘iowrite32be’
-# CONFIG_SND_ALI5451 is not set
-# CONFIG_DRM_NOUVEAU is not set
-# CONFIG_MLX4_EN is not set
-

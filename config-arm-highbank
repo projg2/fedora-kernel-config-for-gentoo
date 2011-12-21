@@ -14,10 +14,3 @@ CONFIG_CPU_FREQ_GOV_CONSERVATIVE=m
 CONFIG_CPU_FREQ_TABLE=y
 CONFIG_CPU_FREQ_STAT=y
 CONFIG_CPU_FREQ_STAT_DETAILS=y
-
-
-# these all currently fail due to missing symbols __bad_udelay or
-# error: implicit declaration of function ‘iowrite32be’
-# CONFIG_SND_ALI5451 is not set
-# CONFIG_DRM_NOUVEAU is not set 
-# CONFIG_MLX4_EN is not set
