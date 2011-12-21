@@ -831,6 +831,8 @@ Patch21049: tpm_tis-delay-after-aborting-cmd.patch
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
 
+Patch22000: route-cache-garbage-collector.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1529,6 +1531,8 @@ ApplyPatch b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
 #rhbz 746097
 ApplyPatch tpm_tis-delay-after-aborting-cmd.patch
+
+ApplyPatch route-cache-garbage-collector.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2273,6 +2277,9 @@ fi
 # and build.
 
 %changelog
+* Wed Dec 21 2011 Dave Jones <davej@redhat.com> 3.1.5-10
+- Reinstate the route cache garbage collector.
+
 * Wed Dec 21 2011 John W. Linville <linville@redhat.com> 
 - Revise compat-wireless configuration
 - Enable with-backports by default
