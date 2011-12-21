@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 11
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2283,6 +2283,9 @@ fi
 # and build.
 
 %changelog
+* Wed Dec 21 2011 Dave Jones <davej@redhat.com> 3.1.6-1
+- Linux 3.1.6
+
 * Wed Dec 21 2011 John W. Linville <linville@redhat.com> 
 - Apply some iwlwifi regression fixes not in the 3.2-rc6 wireless snapshot
 - Turn-off with_backports for s390x
