@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 5
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -1994,6 +1994,9 @@ fi
 # and build.
 
 %changelog
+* Wed Dec 21 2011 Dave Jones <davej@redhat.com> 2.6.41.6-1
+- Linux 3.1.6 (Fedora 2.6.31.6)
+
 * Wed Dec 21 2011 Dave Jones <davej@redhat.com> 2.6.41.5-5
 - Reinstate the route cache garbage collector.
 
