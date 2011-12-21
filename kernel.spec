@@ -724,6 +724,8 @@ Patch21047: iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 #rhbz 741117
 Patch21048: b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
+Patch22000: route-cache-garbage-collector.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1342,6 +1344,8 @@ ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 
 #rhbz 741117
 ApplyPatch b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
+
+ApplyPatch route-cache-garbage-collector.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1990,6 +1994,9 @@ fi
 # and build.
 
 %changelog
+* Wed Dec 21 2011 Dave Jones <davej@redhat.com> 2.6.41.5-5
+- Reinstate the route cache garbage collector.
+
 * Tue Dec 20 2011 Josh Boyer <jwboyer@redhat.com>
 - Fix config options in arm configs after latest commits
 - Backport upstream fix for b44_poll oops (rhbz #741117)
