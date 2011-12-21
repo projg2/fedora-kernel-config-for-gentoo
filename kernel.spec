@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 10
+%global baserelease 11
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2277,7 +2277,7 @@ fi
 # and build.
 
 %changelog
-* Wed Dec 21 2011 Dave Jones <davej@redhat.com> 3.1.5-10
+* Wed Dec 21 2011 Dave Jones <davej@redhat.com> 3.1.5-11
 - Reinstate the route cache garbage collector.
 
 * Wed Dec 21 2011 John W. Linville <linville@redhat.com> 
@@ -2285,7 +2285,7 @@ fi
 - Enable with-backports by default
 - Update compat-wireless snaptshot from verstion 3.2-rc6-3
 
-* Tue Dec 20 2011 Dave Jones <davej@redhat.com>
+* Tue Dec 20 2011 Dave Jones <davej@redhat.com> 3.1.5-10
 - Delay after aborting command in tpm_tis (rhbz #746097)
 
 * Tue Dec 20 2011 Josh Boyer <jwboyer@redhat.com>
