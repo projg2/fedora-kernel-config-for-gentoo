@@ -832,6 +832,10 @@ Patch21049: tpm_tis-delay-after-aborting-cmd.patch
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
 Patch50100: iwlwifi-tx_sync-only-on-PAN-context.patch
+Patch50101: ath9k-fix-max-phy-rate-at-rate-control-init.patch
+Patch50102: iwlwifi-do-not-set-the-sequence-control-bit-is-not-n.patch
+Patch50103: iwlwifi-update-SCD-BC-table-for-all-SCD-queues.patch
+Patch50104: mwifiex-avoid-double-list_del-in-command-cancel-path.patch
 
 Patch22000: route-cache-garbage-collector.patch
 
@@ -1608,8 +1612,12 @@ ApplyPatch compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
 ApplyPatch bcma-brcmsmac-compat.patch
 
 # Apply some iwlwifi regression fixes not in the 3.2-rc6 wireless snapshot
+ApplyPatch iwlwifi-do-not-set-the-sequence-control-bit-is-not-n.patch
+ApplyPatch ath9k-fix-max-phy-rate-at-rate-control-init.patch
+ApplyPatch mwifiex-avoid-double-list_del-in-command-cancel-path.patch
 ApplyPatch iwlwifi-tx_sync-only-on-PAN-context.patch
 ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
+ApplyPatch iwlwifi-update-SCD-BC-table-for-all-SCD-queues.patch
 
 cd ..
 
@@ -2283,6 +2291,12 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 22 2011 John W. Linville <linville@redhat.com> 
+- iwlwifi: do not set the sequence control bit is not needed
+- ath9k: fix max phy rate at rate control init
+- mwifiex: avoid double list_del in command cancel path
+- iwlwifi: update SCD BC table for all SCD queues
+
 * Wed Dec 21 2011 Dave Jones <davej@redhat.com> 3.1.6-1
 - Linux 3.1.6
 
