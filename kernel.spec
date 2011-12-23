@@ -2348,6 +2348,9 @@ fi
 # and build.
 
 %changelog
+* Fri Dec 23 2011 Dennis Gilmore <dennis@ausil.us>
+- build imx highbank and kirkwood kernels for arm
+
 * Thu Dec 22 2011 John W. Linville <linville@redhat.com> 
 - iwlwifi: do not set the sequence control bit is not needed
 - ath9k: fix max phy rate at rate control init
