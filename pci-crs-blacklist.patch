@@ -1,0 +1,36 @@
+diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
+index 404f21a..2704a9c 100644
+--- a/arch/x86/pci/acpi.c
++++ b/arch/x86/pci/acpi.c
+@@ -24,6 +24,12 @@ static int __init set_use_crs(const struct dmi_system_id *id)
+ 	return 0;
+ }
+ 
++static int __init set_nouse_crs(const struct dmi_system_id *id)
++{
++	pci_use_crs = false;
++	return 0;
++}
++
+ static const struct dmi_system_id pci_use_crs_table[] __initconst = {
+ 	/* http://bugzilla.kernel.org/show_bug.cgi?id=14183 */
+ 	{
+@@ -54,6 +60,18 @@ static const struct dmi_system_id pci_use_crs_table[] __initconst = {
+ 			DMI_MATCH(DMI_BIOS_VENDOR, "American Megatrends Inc."),
+ 		},
+ 	},
++
++	/* Now for the blacklist.. */
++
++	/* https://bugzilla.redhat.com/show_bug.cgi?id=770308 */
++	{
++		.callback = set_nouse_crs,
++		.ident = "Dell Studio 1536",
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "Dell Inc."),
++			DMI_MATCH(DMI_BOARD_NAME, "0M273C"),
++		},
++	},
+ 	{}
+ };
+ 

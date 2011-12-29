@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -826,6 +826,8 @@ Patch21220: mac80211_offchannel_rework_revert.patch
 
 Patch21225: pci-Rework-ASPM-disable-code.patch
 
+Patch21226: pci-crs-blacklist.patch
+
 #rhbz #757839
 Patch21230: net-sky2-88e8059-fix-link-speed.patch
 
@@ -1552,6 +1554,8 @@ ApplyPatch hpsa-add-irqf-shared.patch
 ApplyPatch mac80211_offchannel_rework_revert.patch
 
 ApplyPatch pci-Rework-ASPM-disable-code.patch
+
+ApplyPatch pci-crs-blacklist.patch
 
 #rhbz #757839
 ApplyPatch net-sky2-88e8059-fix-link-speed.patch
@@ -2348,6 +2352,10 @@ fi
 # and build.
 
 %changelog
+* Thu Dec 29 2011 Dave Jones <davej@redhat.com> 3.1.6-2
+- Create a blacklist for pci=nocrs
+  Add Dell Studio 1536 to it.
+
 * Fri Dec 23 2011 Dennis Gilmore <dennis@ausil.us>
 - build imx highbank and kirkwood kernels for arm
 
