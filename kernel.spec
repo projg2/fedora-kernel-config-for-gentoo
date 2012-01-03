@@ -2370,6 +2370,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 03 2012 Dave Jones <davej@redhat.com>
+- Add Thinkpad SL510 to the pci=nocrs blacklist.
+
 * Tue Jan 03 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-4622 kvm: pit timer with no irqchip crashes the system (rhbz 771387)
 - Add bluetooth support for BCM20102A0 (rhbz 770233)

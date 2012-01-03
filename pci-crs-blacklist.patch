@@ -34,3 +34,22 @@ index 404f21a..2704a9c 100644
  	{}
  };
  
+--- linux-3.1.noarch/arch/x86/pci/acpi.c~	2011-12-30 14:42:43.495717907 -0500
++++ linux-3.1.noarch/arch/x86/pci/acpi.c	2011-12-30 14:45:09.296198024 -0500
+@@ -72,6 +72,16 @@ static const struct dmi_system_id pci_us
+ 			DMI_MATCH(DMI_BOARD_NAME, "0M273C"),
+ 		},
+ 	},
++	/* https://bugzilla.redhat.com/show_bug.cgi?id=769657 */
++	{
++		.callback = set_nouse_crs,
++		.ident = "Thinkpad SL510",
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_BOARD_NAME, "2847DFG"),
++			DMI_MATCH(DMI_BIOS_VERSION, "6JET85WW (1.43 )"),
++		},
++	},
+ 	{}
+ };
+ 
