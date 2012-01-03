@@ -730,9 +730,6 @@ Patch21050: thp-reduce-khugepaged-freezing-latency.patch
 #rhbz 770102
 Patch21055: KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
 
-#rhbz 771006
-Patch21050: thp-reduce-khugepaged-freezing-latency.patch
-
 #rhbz 770233
 Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
 
@@ -1356,9 +1353,6 @@ ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 
 #rhbz 741117
 ApplyPatch b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
-
-#rhbz 771006
-ApplyPatch thp-reduce-khugepaged-freezing-latency.patch
 
 #rhbz 771006
 ApplyPatch thp-reduce-khugepaged-freezing-latency.patch
@@ -2020,9 +2014,6 @@ fi
 %changelog
 * Tue Jan 03 2012 Josh Boyer <jwboyer@redhat.com>
 - Add bluetooth support for BCM20102A0 (rhbz 770233)
-
-* Tue Jan 03 2012 Dave Jones <davej@redhat.com>
-- thp: reduce khugepaged freezing latency (rhbz 771006)
 
 * Tue Jan 03 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-4622 kvm: pit timer with no irqchip crashes the system (rhbz 770102)
