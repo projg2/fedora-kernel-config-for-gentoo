@@ -846,6 +846,9 @@ Patch21048: b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 #rhbz 746097
 Patch21049: tpm_tis-delay-after-aborting-cmd.patch
 
+#rhbz 771006
+Patch21050: thp-reduce-khugepaged-freezing-latency.patch
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
@@ -1574,6 +1577,9 @@ ApplyPatch b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
 #rhbz 746097
 ApplyPatch tpm_tis-delay-after-aborting-cmd.patch
+
+#rhbz 771006
+ApplyPatch thp-reduce-khugepaged-freezing-latency.patch
 
 ApplyPatch route-cache-garbage-collector.patch
 
@@ -2352,6 +2358,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 03 2012 Dave Jones <davej@redhat.com>
+- thp: reduce khugepaged freezing latency (rhbz 771006)
+
 * Tue Jan  3 2012 John W. Linville <linville@redhat.com> 
 - Re-enable CONFIG_RT2800PCI_RT53XX in compat-wireless build (rhbz #720594)
 
