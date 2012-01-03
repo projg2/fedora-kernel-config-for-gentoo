@@ -724,6 +724,9 @@ Patch21047: iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 #rhbz 741117
 Patch21048: b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
+#rhbz 771006
+Patch21050: thp-reduce-khugepaged-freezing-latency.patch
+
 Patch22000: route-cache-garbage-collector.patch
 
 %endif
@@ -1344,6 +1347,9 @@ ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 
 #rhbz 741117
 ApplyPatch b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
+
+#rhbz 771006
+ApplyPatch thp-reduce-khugepaged-freezing-latency.patch
 
 ApplyPatch route-cache-garbage-collector.patch
 
@@ -1994,6 +2000,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 03 2012 Dave Jones <davej@redhat.com>
+- thp: reduce khugepaged freezing latency (rhbz 771006)
+
 * Wed Dec 21 2011 Dave Jones <davej@redhat.com> 2.6.41.6-1
 - Linux 3.1.6 (Fedora 2.6.31.6)
 
