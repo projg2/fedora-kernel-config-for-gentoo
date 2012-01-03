@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2012,6 +2012,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 03 2012 Josh Boyer <jwboyer@redhat.com> 2.6.41.7-1
+- Linux 3.1.7
+
 * Tue Jan 03 2012 Josh Boyer <jwboyer@redhat.com>
 - Add bluetooth support for BCM20102A0 (rhbz 770233)
 
