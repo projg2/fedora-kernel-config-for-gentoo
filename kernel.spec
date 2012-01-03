@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -727,6 +727,9 @@ Patch21048: b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 #rhbz 771006
 Patch21050: thp-reduce-khugepaged-freezing-latency.patch
 
+#rhbz 770102
+Patch21055: KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
+
 Patch22000: route-cache-garbage-collector.patch
 
 %endif
@@ -1352,6 +1355,9 @@ ApplyPatch b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 ApplyPatch thp-reduce-khugepaged-freezing-latency.patch
 
 ApplyPatch route-cache-garbage-collector.patch
+
+#rhbz 770102
+ApplyPatch KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2000,6 +2006,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 03 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-4622 kvm: pit timer with no irqchip crashes the system (rhbz 770102)
+
 * Tue Jan 03 2012 Dave Jones <davej@redhat.com>
 - thp: reduce khugepaged freezing latency (rhbz 771006)
 
