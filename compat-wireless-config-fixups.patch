@@ -69,6 +69,17 @@ diff -up compat-wireless-3.2-rc6-3/drivers/net/usb/Makefile.orig compat-wireless
 diff -up compat-wireless-3.2-rc6-3/Makefile.orig compat-wireless-3.2-rc6-3/Makefile
 --- compat-wireless-3.2-rc6-3/Makefile.orig	2012-01-03 09:41:57.109826807 -0500
 +++ compat-wireless-3.2-rc6-3/Makefile	2012-01-03 09:42:03.470747287 -0500
+@@ -8,8 +8,8 @@ endif
+ export KLIB_BUILD ?=	$(KLIB)/build
+ # Sometimes not available in the path
+ MODPROBE := /sbin/modprobe
+-MADWIFI=$(shell $(MODPROBE) -l ath_pci)
+-OLD_IWL=$(shell $(MODPROBE) -l iwl4965)
++MADWIFI=""
++OLD_IWL=""
+ 
+ DESTDIR?=
+ 
 @@ -41,8 +41,8 @@ endif
  
  endif
