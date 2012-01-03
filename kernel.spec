@@ -2352,6 +2352,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan  3 2012 John W. Linville <linville@redhat.com> 
+- Re-enable CONFIG_RT2800PCI_RT53XX in compat-wireless build (rhbz #720594)
+
 * Thu Dec 29 2011 Dave Jones <davej@redhat.com> 3.1.6-2
 - Create a blacklist for pci=nocrs
   Add Dell Studio 1536 to it.
