@@ -733,6 +733,9 @@ Patch21055: KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
 #rhbz 771006
 Patch21050: thp-reduce-khugepaged-freezing-latency.patch
 
+#rhbz 770233
+Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
+
 Patch22000: route-cache-garbage-collector.patch
 
 %endif
@@ -1364,6 +1367,9 @@ ApplyPatch route-cache-garbage-collector.patch
 
 #rhbz 770102
 ApplyPatch KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
+
+#rhbz 770233
+ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2012,6 +2018,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 03 2012 Josh Boyer <jwboyer@redhat.com>
+- Add bluetooth support for BCM20102A0 (rhbz 770233)
+
 * Tue Jan 03 2012 Dave Jones <davej@redhat.com>
 - thp: reduce khugepaged freezing latency (rhbz 771006)
 
