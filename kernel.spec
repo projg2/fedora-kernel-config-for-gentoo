@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -849,6 +849,9 @@ Patch21049: tpm_tis-delay-after-aborting-cmd.patch
 #rhbz 771006
 Patch21050: thp-reduce-khugepaged-freezing-latency.patch
 
+#rhbz 771387
+Patch21055: KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
@@ -1582,6 +1585,9 @@ ApplyPatch tpm_tis-delay-after-aborting-cmd.patch
 ApplyPatch thp-reduce-khugepaged-freezing-latency.patch
 
 ApplyPatch route-cache-garbage-collector.patch
+
+#rhbz 771387
+ApplyPatch KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2358,6 +2364,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 03 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-4622 kvm: pit timer with no irqchip crashes the system (rhbz 771387)
+
 * Tue Jan 03 2012 Dave Jones <davej@redhat.com>
 - thp: reduce khugepaged freezing latency (rhbz 771006)
 
