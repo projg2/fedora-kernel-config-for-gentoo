@@ -1,0 +1,205 @@
+    x86, amd: factor out MMCONFIG discovery
+    
+    This factors out the AMD native MMCONFIG discovery so we can use it
+    outside amd_bus.c.
+    
+    amd_bus.c reads AMD MSRs so it can remove the MMCONFIG area from the
+    PCI resources.  We may also need the MMCONFIG information to work
+    around BIOS defects in the ACPI MCFG table.
+    
+    Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+--- a/arch/x86/include/asm/amd_nb.h	
++++ a/arch/x86/include/asm/amd_nb.h	
+@@ -13,6 +13,7 @@ extern const struct pci_device_id amd_nb_misc_ids[];
+ extern const struct amd_nb_bus_dev_range amd_nb_bus_dev_ranges[];
+ 
+ extern bool early_is_amd_nb(u32 value);
++extern void amd_get_mmconfig_range(u64 *start, u64 *end);
+ extern int amd_cache_northbridges(void);
+ extern void amd_flush_garts(void);
+ extern int amd_numa_init(void);
+--- a/arch/x86/kernel/amd_nb.c	
++++ a/arch/x86/kernel/amd_nb.c	
+@@ -119,6 +119,38 @@ bool __init early_is_amd_nb(u32 device)
+ 	return false;
+ }
+ 
++void amd_get_mmconfig_range(u64 *start, u64 *end)
++{
++	u32 address;
++	u64 base, msr;
++	unsigned segn_busn_bits;
++
++	*start = 0;
++	*end = 0;
++
++	if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD)
++		return;
++
++	/* assume all cpus from fam10h have mmconfig */
++        if (boot_cpu_data.x86 < 0x10)
++		return;
++
++	address = MSR_FAM10H_MMIO_CONF_BASE;
++	rdmsrl(address, msr);
++
++	/* mmconfig is not enabled */
++	if (!(msr & FAM10H_MMIO_CONF_ENABLE))
++		return;
++
++	base = msr & (FAM10H_MMIO_CONF_BASE_MASK<<FAM10H_MMIO_CONF_BASE_SHIFT);
++
++	segn_busn_bits = (msr >> FAM10H_MMIO_CONF_BUSRANGE_SHIFT) &
++			 FAM10H_MMIO_CONF_BUSRANGE_MASK;
++
++	*start = base;
++	*end = base + (1ULL<<(segn_busn_bits + 20)) - 1;
++}
++
+ int amd_get_subcaches(int cpu)
+ {
+ 	struct pci_dev *link = node_to_amd_nb(amd_get_nb_id(cpu))->link;
+--- a/arch/x86/pci/amd_bus.c	
++++ a/arch/x86/pci/amd_bus.c	
+@@ -30,34 +30,6 @@ static struct pci_hostbridge_probe pci_probes[] __initdata = {
+ 	{ 0, 0x18, PCI_VENDOR_ID_AMD, 0x1300 },
+ };
+ 
+-static u64 __initdata fam10h_mmconf_start;
+-static u64 __initdata fam10h_mmconf_end;
+-static void __init get_pci_mmcfg_amd_fam10h_range(void)
+-{
+-	u32 address;
+-	u64 base, msr;
+-	unsigned segn_busn_bits;
+-
+-	/* assume all cpus from fam10h have mmconf */
+-        if (boot_cpu_data.x86 < 0x10)
+-		return;
+-
+-	address = MSR_FAM10H_MMIO_CONF_BASE;
+-	rdmsrl(address, msr);
+-
+-	/* mmconfig is not enable */
+-	if (!(msr & FAM10H_MMIO_CONF_ENABLE))
+-		return;
+-
+-	base = msr & (FAM10H_MMIO_CONF_BASE_MASK<<FAM10H_MMIO_CONF_BASE_SHIFT);
+-
+-	segn_busn_bits = (msr >> FAM10H_MMIO_CONF_BUSRANGE_SHIFT) &
+-			 FAM10H_MMIO_CONF_BUSRANGE_MASK;
+-
+-	fam10h_mmconf_start = base;
+-	fam10h_mmconf_end = base + (1ULL<<(segn_busn_bits + 20)) - 1;
+-}
+-
+ #define RANGE_NUM 16
+ 
+ /**
+@@ -85,6 +57,8 @@ static int __init early_fill_mp_bus_info(void)
+ 	u64 val;
+ 	u32 address;
+ 	bool found;
++	u64 fam10h_mmconf_start;
++	u64 fam10h_mmconf_end;
+ 
+ 	if (!early_pci_allowed())
+ 		return -1;
+@@ -211,7 +185,7 @@ static int __init early_fill_mp_bus_info(void)
+ 		subtract_range(range, RANGE_NUM, 0, end);
+ 
+ 	/* get mmconfig */
+-	get_pci_mmcfg_amd_fam10h_range();
++	amd_get_mmconfig_range(&fam10h_mmconf_start, &fam10h_mmconf_end);
+ 	/* need to take out mmconf range */
+ 	if (fam10h_mmconf_end) {
+ 		printk(KERN_DEBUG "Fam 10h mmconf [%llx, %llx]\n", fam10h_mmconf_start, fam10h_mmconf_end);
+
+
+
+
+    PNP: work around Dell 1536/1546 BIOS MMCONFIG bug that breaks USB
+    
+    Some Dell BIOSes have MCFG tables that don't report the entire
+    MMCONFIG area claimed by the chipset.  If we move PCI devices into
+    that claimed-but-unreported area, they don't work.
+    
+    This quirk reads the AMD MMCONFIG MSRs and adds PNP0C01 resources as
+    needed to cover the entire area.
+    
+    Example problem scenario:
+    
+      BIOS-e820: 00000000cfec5400 - 00000000d4000000 (reserved)
+      Fam 10h mmconf [d0000000, dfffffff]
+      PCI: MMCONFIG for domain 0000 [bus 00-3f] at [mem 0xd0000000-0xd3ffffff] (base 0xd0000000)
+      pnp 00:0c: [mem 0xd0000000-0xd3ffffff]
+      pci 0000:00:12.0: reg 10: [mem 0xffb00000-0xffb00fff]
+      pci 0000:00:12.0: no compatible bridge window for [mem 0xffb00000-0xffb00fff]
+      pci 0000:00:12.0: BAR 0: assigned [mem 0xd4000000-0xd40000ff]
+    
+    Reported-by: Lisa Salimbas <lisa.salimbas@canonical.com>
+    Reported-by: <thuban@singularity.fr>
+    References: https://bugzilla.kernel.org/show_bug.cgi?id=31602
+    References: https://bugs.launchpad.net/ubuntu/+source/linux/+bug/647043
+    References: https://bugzilla.redhat.com/show_bug.cgi?id=770308
+    Cc: stable@kernel.org	# 2.6.34+
+    Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+--- a/drivers/pnp/quirks.c	
++++ a/drivers/pnp/quirks.c	
+@@ -295,6 +295,46 @@ static void quirk_system_pci_resources(struct pnp_dev *dev)
+ 	}
+ }
+ 
++#ifdef CONFIG_AMD_NB
++
++#include <asm/amd_nb.h>
++
++static void quirk_amd_mmconfig_area(struct pnp_dev *dev)
++{
++	u64 mmconfig_start, mmconfig_end;
++	resource_size_t start, end;
++	struct pnp_resource *pnp_res;
++	struct resource *res;
++
++	amd_get_mmconfig_range(&mmconfig_start, &mmconfig_end);
++	if (!mmconfig_end)
++		return;
++
++	list_for_each_entry(pnp_res, &dev->resources, list) {
++		res = &pnp_res->res;
++		if (res->end < mmconfig_start || res->start > mmconfig_end ||
++		    (res->start == mmconfig_start && res->end == mmconfig_end))
++			continue;
++
++		dev_warn(&dev->dev, FW_BUG
++			 "%pR covers only part of AMD MMCONFIG area [mem %#010llx-%#010llx]; adding more reservations\n",
++			 res, (unsigned long long) mmconfig_start,
++			 (unsigned long long) mmconfig_end);
++		if (mmconfig_start < res->start) {
++			start = mmconfig_start;
++			end = res->start - 1;
++			pnp_add_mem_resource(dev, start, end, 0);
++		}
++		if (mmconfig_end > res->end) {
++			start = res->end + 1;
++			end = mmconfig_end;
++			pnp_add_mem_resource(dev, start, end, 0);
++		}
++		break;
++	}
++}
++#endif
++
+ /*
+  *  PnP Quirks
+  *  Cards or devices that need some tweaking due to incomplete resource info
+@@ -322,6 +362,9 @@ static struct pnp_fixup pnp_fixups[] = {
+ 	/* PnP resources that might overlap PCI BARs */
+ 	{"PNP0c01", quirk_system_pci_resources},
+ 	{"PNP0c02", quirk_system_pci_resources},
++#ifdef CONFIG_AMD_NB
++	{"PNP0c01", quirk_amd_mmconfig_area},
++#endif
+ 	{""}
+ };
+ 

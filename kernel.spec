@@ -827,6 +827,7 @@ Patch21220: mac80211_offchannel_rework_revert.patch
 Patch21225: pci-Rework-ASPM-disable-code.patch
 
 Patch21226: pci-crs-blacklist.patch
+Patch21227: dell-mmconfig-quirk.patch
 
 #rhbz #757839
 Patch21230: net-sky2-88e8059-fix-link-speed.patch
@@ -1570,7 +1571,8 @@ ApplyPatch mac80211_offchannel_rework_revert.patch
 
 ApplyPatch pci-Rework-ASPM-disable-code.patch
 
-ApplyPatch pci-crs-blacklist.patch
+#ApplyPatch pci-crs-blacklist.patch
+ApplyPatch dell-mmconfig-quirk.patch
 
 #rhbz #757839
 ApplyPatch net-sky2-88e8059-fix-link-speed.patch
@@ -2384,6 +2386,11 @@ fi
 %changelog
 * Wed Jan 04 2012 Neil Horman <nhorman@redhat.com>
 - Fix warning about msi sysfs refcount (bz 771058)
+
+* Wed Jan 04 2012 Dave Jones <davej@redhat.com>
+- Disable PCI CRS blacklist patch
+- Try alternative approach from Bjorn Helgaas to work around
+  MCFG quirks on some laptops.
 
 * Wed Jan 04 2012 Dave Jones <davej@redhat.com>
 - Add Dell Studio 1557 to pci=nocrs blacklist. (rhbz 769657)
