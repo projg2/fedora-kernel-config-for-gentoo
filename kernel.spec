@@ -869,6 +869,9 @@ Patch50104: mwifiex-avoid-double-list_del-in-command-cancel-path.patch
 
 Patch22000: route-cache-garbage-collector.patch
 
+#rhbz 771058
+Patch22100: msi-irq-sysfs-warning.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1600,6 +1603,9 @@ ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
 
 #rhbz 771678
 ApplyPatch KVM-fix-device-assignment-permissions.patch
+
+#rhbz 771058
+ApplyPatch msi-irq-sysfs-warning.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2376,6 +2382,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 04 2012 Neil Horman <nhorman@redhat.com>
+- Fix warning about msi sysfs refcount (bz 771058)
+
 * Wed Jan 04 2012 Dave Jones <davej@redhat.com>
 - Add Dell Studio 1557 to pci=nocrs blacklist. (rhbz 769657)
 
