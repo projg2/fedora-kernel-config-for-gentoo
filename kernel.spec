@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -852,6 +852,9 @@ Patch21050: thp-reduce-khugepaged-freezing-latency.patch
 #rhbz 771387
 Patch21055: KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
 
+#rhbz 771678
+Patch21056: KVM-fix-device-assignment-permissions.patch
+
 #rhbz 770233
 Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
 
@@ -1594,6 +1597,9 @@ ApplyPatch KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
 
 #rhbz 770233
 ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
+
+#rhbz 771678
+ApplyPatch KVM-fix-device-assignment-permissions.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2370,6 +2376,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 04 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-4347 kvm: device assignment DoS (rhbz 771678)
+
 * Tue Jan 03 2012 Josh Boyer <jwboyer@redhat.com> 3.1.7-1
 - Linux 3.1.7
 
