@@ -2376,6 +2376,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 04 2012 Dave Jones <davej@redhat.com>
+- Add Dell Studio 1557 to pci=nocrs blacklist. (rhbz 769657)
+
 * Wed Jan 04 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-4347 kvm: device assignment DoS (rhbz 771678)
 

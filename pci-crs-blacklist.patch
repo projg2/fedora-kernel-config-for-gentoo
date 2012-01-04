@@ -53,3 +53,22 @@ index 404f21a..2704a9c 100644
  	{}
  };
  
+--- linux-3.1.noarch/arch/x86/pci/acpi.c~	2012-01-04 11:19:36.783664477 -0500
++++ linux-3.1.noarch/arch/x86/pci/acpi.c	2012-01-04 11:23:42.403666272 -0500
+@@ -75,6 +75,16 @@ static const struct dmi_system_id pci_us
+ 	/* https://bugzilla.redhat.com/show_bug.cgi?id=769657 */
+ 	{
+ 		.callback = set_nouse_crs,
++		.ident = "Dell Studio 1557",
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "Dell Inc."),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Studio 1557");
++			DMI_MATCH(DMI_BIOS_VERSION, "A09"),
++		},
++	},
++	/* https://bugzilla.redhat.com/show_bug.cgi?id=769657 */
++	{
++		.callback = set_nouse_crs,
+ 		.ident = "Thinkpad SL510",
+ 		.matches = {
+ 			DMI_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
