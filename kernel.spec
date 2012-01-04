@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -730,6 +730,9 @@ Patch21050: thp-reduce-khugepaged-freezing-latency.patch
 #rhbz 770102
 Patch21055: KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
 
+#rhbz 770096
+Patch21056: KVM-fix-device-assignment-permissions.patch
+
 #rhbz 770233
 Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
 
@@ -1364,6 +1367,9 @@ ApplyPatch KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
 
 #rhbz 770233
 ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
+
+#rhbz 770096
+ApplyPatch KVM-fix-device-assignment-permissions.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2012,6 +2018,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 04 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-4347 kvm: device assignment DoS (rhbz 770096)
+
 * Tue Jan 03 2012 Josh Boyer <jwboyer@redhat.com> 2.6.41.7-1
 - Linux 3.1.7
 
