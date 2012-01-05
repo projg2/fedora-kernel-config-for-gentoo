@@ -62,7 +62,7 @@ index 404f21a..2704a9c 100644
 +		.ident = "Dell Studio 1557",
 +		.matches = {
 +			DMI_MATCH(DMI_BOARD_VENDOR, "Dell Inc."),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Studio 1557");
++			DMI_MATCH(DMI_PRODUCT_NAME, "Studio 1557"),
 +			DMI_MATCH(DMI_BIOS_VERSION, "A09"),
 +		},
 +	},
