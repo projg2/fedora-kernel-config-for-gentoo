@@ -862,6 +862,7 @@ Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
+Patch50002: compat-wireless-pr_fmt-warning-avoidance.patch
 Patch50100: iwlwifi-tx_sync-only-on-PAN-context.patch
 Patch50101: ath9k-fix-max-phy-rate-at-rate-control-init.patch
 Patch50102: iwlwifi-do-not-set-the-sequence-control-bit-is-not-n.patch
@@ -1656,9 +1657,6 @@ done
 # end of kernel config
 %endif
 
-# get rid of unwanted files resulting from patch fuzz
-find . \( -name "*.orig" -o -name "*~" \) -exec rm -f {} \; >/dev/null
-
 # remove unnecessary SCM files
 find . -name .gitignore -exec rm -f {} \; >/dev/null
 
@@ -1676,6 +1674,7 @@ cd compat-wireless-%{cwversion}
 
 ApplyPatch compat-wireless-config-fixups.patch
 ApplyPatch compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
+ApplyPatch compat-wireless-pr_fmt-warning-avoidance.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
@@ -1691,6 +1690,9 @@ ApplyPatch iwlwifi-update-SCD-BC-table-for-all-SCD-queues.patch
 cd ..
 
 %endif
+
+# get rid of unwanted files resulting from patch fuzz
+find . \( -name "*.orig" -o -name "*~" \) -exec rm -f {} \; >/dev/null
 
 ###
 ### build
@@ -2385,6 +2387,10 @@ fi
 # and build.
 
 %changelog
+* Thu Jan 05 2012 John W. Linville <linville@redhat.com>
+- Patch compat-wireless build to avoid "pr_fmt redefined" warnings
+- Include compat-wireless in removal of files resulting from patch fuzz
+
 * Thu Jan 05 2012 Josh Boyer <jwboyer@redhat.com>
 - Move the depmod file removal below the compat-wireless build to make sure we
   clean them all out
