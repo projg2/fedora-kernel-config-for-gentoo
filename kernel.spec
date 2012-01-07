@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -803,8 +803,6 @@ Patch21031: benet-remove-bogus-unlikely-on-vlan-check.patch
 
 Patch21040: x86-code-dump-fix-truncation.patch
 
-Patch21070: oom-fix-integer-overflow-of-points.patch
-
 #rhbz 728607
 Patch21060: elantech.patch
 
@@ -839,9 +837,6 @@ Patch21045: nfs-client-freezer.patch
 #rhbz 590880
 Patch21046: alps.patch
 
-#rhbz 767173
-Patch21047: iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
-
 #rhbz 741117
 Patch21048: b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
@@ -869,8 +864,6 @@ Patch50101: ath9k-fix-max-phy-rate-at-rate-control-init.patch
 Patch50102: iwlwifi-do-not-set-the-sequence-control-bit-is-not-n.patch
 Patch50103: iwlwifi-update-SCD-BC-table-for-all-SCD-queues.patch
 Patch50104: mwifiex-avoid-double-list_del-in-command-cancel-path.patch
-
-Patch22000: route-cache-garbage-collector.patch
 
 #rhbz 771058
 Patch22100: msi-irq-sysfs-warning.patch
@@ -1545,9 +1538,6 @@ ApplyPatch benet-remove-bogus-unlikely-on-vlan-check.patch
 #rhbz 736815
 ApplyPatch x86-code-dump-fix-truncation.patch
 
-#rhbz 750402
-ApplyPatch oom-fix-integer-overflow-of-points.patch
-
 #rhbz 728607
 ApplyPatch elantech.patch
 
@@ -1585,9 +1575,6 @@ ApplyPatch nfs-client-freezer.patch
 #rhbz 590880
 ApplyPatch alps.patch
 
-#rhbz 767173
-ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
-
 #rhbz 741117
 ApplyPatch b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
@@ -1596,8 +1583,6 @@ ApplyPatch tpm_tis-delay-after-aborting-cmd.patch
 
 #rhbz 771006
 ApplyPatch thp-reduce-khugepaged-freezing-latency.patch
-
-ApplyPatch route-cache-garbage-collector.patch
 
 #rhbz 771387
 ApplyPatch KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
@@ -1685,7 +1670,6 @@ ApplyPatch iwlwifi-do-not-set-the-sequence-control-bit-is-not-n.patch
 ApplyPatch ath9k-fix-max-phy-rate-at-rate-control-init.patch
 ApplyPatch mwifiex-avoid-double-list_del-in-command-cancel-path.patch
 ApplyPatch iwlwifi-tx_sync-only-on-PAN-context.patch
-ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 ApplyPatch iwlwifi-update-SCD-BC-table-for-all-SCD-queues.patch
 
 cd ..
@@ -2388,8 +2372,9 @@ fi
 # and build.
 
 %changelog
-* Fri Jan 06 2012 Josh Boyer <jwboyer@redhat.com>
+* Fri Jan 06 2012 Josh Boyer <jwboyer@redhat.com> 3.1.8-1
 - Disable backports on arches where we don't actually build a kernel (or config)
+- Linux 3.1.8
 
 * Thu Jan 05 2012 John W. Linville <linville@redhat.com>
 - Patch compat-wireless build to avoid "pr_fmt redefined" warnings
