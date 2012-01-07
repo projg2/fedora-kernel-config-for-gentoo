@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -864,6 +864,7 @@ Patch50101: ath9k-fix-max-phy-rate-at-rate-control-init.patch
 Patch50102: iwlwifi-do-not-set-the-sequence-control-bit-is-not-n.patch
 Patch50103: iwlwifi-update-SCD-BC-table-for-all-SCD-queues.patch
 Patch50104: mwifiex-avoid-double-list_del-in-command-cancel-path.patch
+Patch50105: iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 
 #rhbz 771058
 Patch22100: msi-irq-sysfs-warning.patch
@@ -1670,6 +1671,7 @@ ApplyPatch iwlwifi-do-not-set-the-sequence-control-bit-is-not-n.patch
 ApplyPatch ath9k-fix-max-phy-rate-at-rate-control-init.patch
 ApplyPatch mwifiex-avoid-double-list_del-in-command-cancel-path.patch
 ApplyPatch iwlwifi-tx_sync-only-on-PAN-context.patch
+ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 ApplyPatch iwlwifi-update-SCD-BC-table-for-all-SCD-queues.patch
 
 cd ..
@@ -2372,6 +2374,10 @@ fi
 # and build.
 
 %changelog
+* Sat Jan 07 2012 Josh Boyer <jwboyer@redhat.com> 3.1.8-2
+- Add iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch back to
+  compat-wireless
+
 * Fri Jan 06 2012 Josh Boyer <jwboyer@redhat.com> 3.1.8-1
 - Disable backports on arches where we don't actually build a kernel (or config)
 - Linux 3.1.8
