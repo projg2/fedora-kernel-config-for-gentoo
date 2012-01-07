@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -688,8 +688,6 @@ Patch21031: benet-remove-bogus-unlikely-on-vlan-check.patch
 
 Patch21040: x86-code-dump-fix-truncation.patch
 
-Patch21070: oom-fix-integer-overflow-of-points.patch
-
 #rhbz 728607
 Patch21060: elantech.patch
 
@@ -718,9 +716,6 @@ Patch21045: nfs-client-freezer.patch
 #rhbz 590880
 Patch21046: alps.patch
 
-#rhbz 767173
-Patch21047: iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
-
 #rhbz 741117
 Patch21048: b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
@@ -735,8 +730,6 @@ Patch21056: KVM-fix-device-assignment-permissions.patch
 
 #rhbz 770233
 Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
-
-Patch22000: route-cache-garbage-collector.patch
 
 %endif
 
@@ -1319,9 +1312,6 @@ ApplyPatch benet-remove-bogus-unlikely-on-vlan-check.patch
 #rhbz 736815
 ApplyPatch x86-code-dump-fix-truncation.patch
 
-#rhbz 750402
-ApplyPatch oom-fix-integer-overflow-of-points.patch
-
 #rhbz 728607
 ApplyPatch elantech.patch
 
@@ -1351,16 +1341,11 @@ ApplyPatch nfs-client-freezer.patch
 #rhbz 590880
 ApplyPatch alps.patch
 
-#rhbz 767173
-ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
-
 #rhbz 741117
 ApplyPatch b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
 #rhbz 771006
 ApplyPatch thp-reduce-khugepaged-freezing-latency.patch
-
-ApplyPatch route-cache-garbage-collector.patch
 
 #rhbz 770102
 ApplyPatch KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
@@ -2018,6 +2003,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jan 06 2012 Josh Boyer <jwboyer@redhat.com> 2.6.41.8-1
+- Linux 3.1.8
+
 * Wed Jan 04 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-4347 kvm: device assignment DoS (rhbz 770096)
 
