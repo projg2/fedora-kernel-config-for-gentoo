@@ -205,7 +205,7 @@ Summary: The Linux kernel
 %define kversion 3.%{base_sublevel}
 
 # The compat-wireless version
-%define cwversion 3.2-rc6-3
+%define cwversion 3.2-1
 
 #######################################################################
 # If cwversion is less than kversion, make sure with_backports is
@@ -862,12 +862,6 @@ Patch21071: ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
 Patch50002: compat-wireless-pr_fmt-warning-avoidance.patch
-Patch50100: iwlwifi-tx_sync-only-on-PAN-context.patch
-Patch50101: ath9k-fix-max-phy-rate-at-rate-control-init.patch
-Patch50102: iwlwifi-do-not-set-the-sequence-control-bit-is-not-n.patch
-Patch50103: iwlwifi-update-SCD-BC-table-for-all-SCD-queues.patch
-Patch50104: mwifiex-avoid-double-list_del-in-command-cancel-path.patch
-Patch50105: iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
 
 #rhbz 771058
 Patch22100: msi-irq-sysfs-warning.patch
@@ -1673,14 +1667,6 @@ ApplyPatch compat-wireless-pr_fmt-warning-avoidance.patch
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
 
-# Apply some iwlwifi regression fixes not in the 3.2-rc6 wireless snapshot
-ApplyPatch iwlwifi-do-not-set-the-sequence-control-bit-is-not-n.patch
-ApplyPatch ath9k-fix-max-phy-rate-at-rate-control-init.patch
-ApplyPatch mwifiex-avoid-double-list_del-in-command-cancel-path.patch
-ApplyPatch iwlwifi-tx_sync-only-on-PAN-context.patch
-ApplyPatch iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch
-ApplyPatch iwlwifi-update-SCD-BC-table-for-all-SCD-queues.patch
-
 cd ..
 
 %endif
@@ -2381,6 +2367,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 10 2012 John W. Linville <linville@redhat.com>
+- Update compat-wireless snapshot to version 3.2-1
+
 * Tue Jan 10 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix ext4 compatibility with ext2 mount option (rhbz 770172)
 - Fix ext4 corrupted bitmap error path (pointed out by Eric Sandeen)
