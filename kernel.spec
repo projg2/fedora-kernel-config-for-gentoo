@@ -731,6 +731,8 @@ Patch21056: KVM-fix-device-assignment-permissions.patch
 #rhbz 770233
 Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
 
+Patch21071: ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1355,6 +1357,8 @@ ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
 
 #rhbz 770096
 ApplyPatch KVM-fix-device-assignment-permissions.patch
+
+ApplyPatch ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2003,6 +2007,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 10 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix ext4 corrupted bitmap error path (pointed out by Eric Sandeen)
+
 * Fri Jan 06 2012 Josh Boyer <jwboyer@redhat.com> 2.6.41.8-1
 - Linux 3.1.8
 
