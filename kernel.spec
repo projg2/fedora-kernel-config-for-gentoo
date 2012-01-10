@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3 
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -855,6 +855,8 @@ Patch21056: KVM-fix-device-assignment-permissions.patch
 #rhbz 770233
 Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
 
+Patch21070: ext4-Support-check-none-nocheck-mount-options.patch
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
@@ -1596,6 +1598,8 @@ ApplyPatch KVM-fix-device-assignment-permissions.patch
 
 #rhbz 771058
 ApplyPatch msi-irq-sysfs-warning.patch
+
+ApplyPatch ext4-Support-check-none-nocheck-mount-options.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2374,6 +2378,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 10 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix ext4 compatibility with ext2 mount option (rhbz 770172)
+
 * Sat Jan 07 2012 Josh Boyer <jwboyer@redhat.com> 3.1.8-2
 - Add iwlwifi-allow-to-switch-to-HT40-if-not-associated.patch back to
   compat-wireless
