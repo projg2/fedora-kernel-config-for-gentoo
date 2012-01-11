@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3 
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -858,6 +858,9 @@ Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
 Patch21070: ext4-Support-check-none-nocheck-mount-options.patch
 Patch21071: ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
 
+#rhbz 769766
+Patch21072: mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
@@ -1597,6 +1600,8 @@ ApplyPatch msi-irq-sysfs-warning.patch
 ApplyPatch ext4-Support-check-none-nocheck-mount-options.patch
 
 ApplyPatch ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
+
+ApplyPatch mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2367,6 +2372,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 11 2012 Josh Boyer <jwboyer@redhat.com>
+- Patch from Stanislaw Gruszka to fix NULL ptr deref in mac80211 (rhbz 769766)
+
 * Tue Jan 10 2012 John W. Linville <linville@redhat.com>
 - Update compat-wireless snapshot to version 3.2-1
 
