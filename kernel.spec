@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -734,6 +734,9 @@ Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
 Patch21071: ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
 Patch21072: ext3-Fix-error-handling-on-inode-bitmap-corruption.patch
 
+#rhbz 769766
+Patch21073: mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1361,6 +1364,8 @@ ApplyPatch KVM-fix-device-assignment-permissions.patch
 
 ApplyPatch ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
 ApplyPatch ext3-Fix-error-handling-on-inode-bitmap-corruption.patch
+
+ApplyPatch mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2009,6 +2014,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 11 2012 Josh Boyer <jwboyer@redhat.com>
+- Patch from Stanislaw Gruszka to fix NULL ptr deref in mac80211 (rhbz 769766)
+
 * Tue Jan 10 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix ext3/ext4 corrupted bitmap error path (pointed out by Eric Sandeen)
 
