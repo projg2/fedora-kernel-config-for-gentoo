@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -741,6 +741,9 @@ Patch21073: mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
 Patch21074: KVM-x86-extend-struct-x86_emulate_ops-with-get_cpuid.patch
 Patch21075: KVM-x86-fix-missing-checks-in-syscall-emulation.patch
 
+#rhbz 728740
+Patch21076: rtl8192cu-Fix-WARNING-on-suspend-resume.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1374,6 +1377,9 @@ ApplyPatch mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
 #rhbz 773392
 ApplyPatch KVM-x86-extend-struct-x86_emulate_ops-with-get_cpuid.patch
 ApplyPatch KVM-x86-fix-missing-checks-in-syscall-emulation.patch
+
+#rhbz 728740
+ApplyPatch rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2022,6 +2028,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jan 13 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix verbose logging messages in the rtl8192cu driver (rhbz 728740)
+
 * Fri Jan 13 2012 Josh Boyer <jwboyer@redhat.com> 2.6.41.9-1
 - Linux 3.1.9
 - CVE-2012-0045 kvm: syscall instruction induced guest panic (rhbz 773392)
