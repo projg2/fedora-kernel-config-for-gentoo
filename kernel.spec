@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -1760,7 +1760,7 @@ man9dir=$RPM_BUILD_ROOT%{_datadir}/man/man9
 
 # copy the source over
 mkdir -p $docdir
-tar -f - --exclude=man --exclude='.*' -c Documentation | tar xf - -C $docdir
+tar -h -f - --exclude=man --exclude='.*' -c Documentation | tar xf - -C $docdir
 
 # Install man pages for the kernel API.
 mkdir -p $man9dir
@@ -2028,6 +2028,9 @@ fi
 # and build.
 
 %changelog
+* Sun Jan 15 2012 Josh Boyer <jwboyer@redhat.com>
+- Avoid packaging symlinks for kernel-doc files (rhbz 767351)
+
 * Fri Jan 13 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix verbose logging messages in the rtl8192cu driver (rhbz 728740)
 
