@@ -1687,6 +1687,9 @@ ApplyPatch compat-wireless-pr_fmt-warning-avoidance.patch
 ApplyPatch compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 ApplyPatch mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
 
+#rhbz 731365, 773271
+ApplyPatch mac80211_offchannel_rework_revert.patch
+
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
 
@@ -2390,6 +2393,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jan 16 2012 John W. Linville <linville@redhat.com>
+- Re-apply patch to revert mac80211 scan optimizations (rhbz #731365, #773271)
+
 * Sun Jan 15 2012 Josh Boyer <jwboyer@redhat.com>
 - Avoid packaging symlinks for kernel-doc files (rhbz 767351)
 - Apply mac80211 NULL ptr deref fix to compat-wireless too (rhbz 769766)
