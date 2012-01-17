@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -878,6 +878,11 @@ Patch22100: msi-irq-sysfs-warning.patch
 #rhbz 728740
 Patch21076: rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
+Patch21077: 01-block-add-and-use-scsi_blk_cmd_ioctl.patch
+Patch21078: 02-block-fail-SCSI-passthrough-ioctls-on-partition-devs.patch
+Patch21079: 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
+
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1618,6 +1623,11 @@ ApplyPatch KVM-x86-fix-missing-checks-in-syscall-emulation.patch
 
 #rhbz 728740
 ApplyPatch rtl8192cu-Fix-WARNING-on-suspend-resume.patch
+
+#rhbz 769911
+ApplyPatch 01-block-add-and-use-scsi_blk_cmd_ioctl.patch
+ApplyPatch 02-block-fail-SCSI-passthrough-ioctls-on-partition-devs.patch
+ApplyPatch 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2393,6 +2403,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 17 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-4127 possible privilege escalation via SG_IO ioctl (rhbz 769911)
+
 * Mon Jan 16 2012 John W. Linville <linville@redhat.com>
 - Re-apply patch to revert mac80211 scan optimizations (rhbz #731365, #773271)
 
