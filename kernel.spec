@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -744,6 +744,11 @@ Patch21075: KVM-x86-fix-missing-checks-in-syscall-emulation.patch
 #rhbz 728740
 Patch21076: rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
+Patch21077: 01-block-add-and-use-scsi_blk_cmd_ioctl.patch
+Patch21078: 02-block-fail-SCSI-passthrough-ioctls-on-partition-devs.patch
+Patch21079: 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
+
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1380,6 +1385,11 @@ ApplyPatch KVM-x86-fix-missing-checks-in-syscall-emulation.patch
 
 #rhbz 728740
 ApplyPatch rtl8192cu-Fix-WARNING-on-suspend-resume.patch
+
+#rhbz 769911
+ApplyPatch 01-block-add-and-use-scsi_blk_cmd_ioctl.patch
+ApplyPatch 02-block-fail-SCSI-passthrough-ioctls-on-partition-devs.patch
+ApplyPatch 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2028,6 +2038,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 17 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-4127 possible privilege escalation via SG_IO ioctl (rhbz 769911)
+
 * Sun Jan 15 2012 Josh Boyer <jwboyer@redhat.com>
 - Avoid packaging symlinks for kernel-doc files (rhbz 767351)
 
