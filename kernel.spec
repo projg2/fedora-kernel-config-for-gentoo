@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -764,9 +764,6 @@ Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 
 # NFSv4
 
-#rhbz 753236
-Patch4000: nfsv4-include-bitmap-in-nfsv4_get_acl_data.patch
-
 # patches headed upstream
 Patch12010: add-appleir-usb-driver.patch
 
@@ -806,9 +803,6 @@ Patch21040: x86-code-dump-fix-truncation.patch
 #rhbz 728607
 Patch21060: elantech.patch
 
-#rhbz 748210
-Patch21061: ideapad-Check-if-acpi-already-handle-backlight.patch
-
 #rhbz752176
 Patch21080: sysfs-msi-irq-per-device.patch
 
@@ -826,7 +820,6 @@ Patch21220: mac80211_offchannel_rework_revert.patch
 Patch21225: pci-Rework-ASPM-disable-code.patch
 
 Patch21226: pci-crs-blacklist.patch
-Patch21227: dell-mmconfig-quirk.patch
 
 #rhbz #757839
 Patch21230: net-sky2-88e8059-fix-link-speed.patch
@@ -845,12 +838,6 @@ Patch21049: tpm_tis-delay-after-aborting-cmd.patch
 
 #rhbz 771006
 Patch21050: thp-reduce-khugepaged-freezing-latency.patch
-
-#rhbz 771387
-Patch21055: KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
-
-#rhbz 771678
-Patch21056: KVM-fix-device-assignment-permissions.patch
 
 #rhbz 770233
 Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
@@ -1424,7 +1411,6 @@ ApplyPatch jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 # eCryptfs
 
 # NFSv4
-ApplyPatch nfsv4-include-bitmap-in-nfsv4_get_acl_data.patch
 
 # USB
 
@@ -1561,9 +1547,6 @@ ApplyPatch x86-code-dump-fix-truncation.patch
 #rhbz 728607
 ApplyPatch elantech.patch
 
-#rhbz 748210
-ApplyPatch ideapad-Check-if-acpi-already-handle-backlight.patch
-
 #rhbz 752176
 ApplyPatch sysfs-msi-irq-per-device.patch
 
@@ -1584,7 +1567,6 @@ ApplyPatch mac80211_offchannel_rework_revert.patch
 ApplyPatch pci-Rework-ASPM-disable-code.patch
 
 #ApplyPatch pci-crs-blacklist.patch
-ApplyPatch dell-mmconfig-quirk.patch
 
 #rhbz #757839
 ApplyPatch net-sky2-88e8059-fix-link-speed.patch
@@ -1604,14 +1586,8 @@ ApplyPatch tpm_tis-delay-after-aborting-cmd.patch
 #rhbz 771006
 ApplyPatch thp-reduce-khugepaged-freezing-latency.patch
 
-#rhbz 771387
-ApplyPatch KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
-
 #rhbz 770233
 ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
-
-#rhbz 771678
-ApplyPatch KVM-fix-device-assignment-permissions.patch
 
 #rhbz 771058
 ApplyPatch msi-irq-sysfs-warning.patch
@@ -1619,8 +1595,6 @@ ApplyPatch msi-irq-sysfs-warning.patch
 ApplyPatch ext4-Support-check-none-nocheck-mount-options.patch
 
 ApplyPatch ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
-
-ApplyPatch mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
 
 #rhbz 773392
 ApplyPatch KVM-x86-extend-struct-x86_emulate_ops-with-get_cpuid.patch
@@ -2414,7 +2388,8 @@ fi
 # and build.
 
 %changelog
-* Wed Jan 18 2012 Josh Boyer <jwboyer@redhat.com>
+* Wed Jan 18 2012 Josh Boyer <jwboyer@redhat.com> 3.1.10-1
+- Linux 3.1.10
 - CVE-2012-0056 proc: clean up and fix /proc/<pid>/mem (rhbz 782681)
 - loop: prevent information leak after failed read (rhbz 782687)
 
