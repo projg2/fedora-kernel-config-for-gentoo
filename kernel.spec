@@ -354,6 +354,9 @@ Summary: The Linux kernel
 %define with_up 0
 %define with_perf 0
 %endif
+%ifarch armv7hl
+%define with_perf 1
+%endif
 # we only build headers on the base arm arches
 # just like we used to only build them on i386 for x86
 %ifnarch armv5tel armv7hl
@@ -2044,6 +2047,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 18 2012 Dennis Gilmore <dennis@ausil.us>
+- build perf on armv7hl
+
 * Wed Jan 18 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-0056 proc: clean up and fix /proc/<pid>/mem (rhbz 782681)
 
