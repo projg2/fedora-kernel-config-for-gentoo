@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 4
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -651,9 +651,6 @@ Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 
 # NFSv4
 
-#rhbz 753236
-Patch4000: nfsv4-include-bitmap-in-nfsv4_get_acl_data.patch
-
 # patches headed upstream
 Patch12010: add-appleir-usb-driver.patch
 
@@ -694,9 +691,6 @@ Patch21040: x86-code-dump-fix-truncation.patch
 #rhbz 728607
 Patch21060: elantech.patch
 
-#rhbz 748210
-Patch21061: ideapad-Check-if-acpi-already-handle-backlight.patch
-
 #backport brcm80211 from 3.2-rc1
 Patch21090: brcm80211.patch
 Patch21091: bcma-brcmsmac-compat.patch
@@ -724,12 +718,6 @@ Patch21048: b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
 #rhbz 771006
 Patch21050: thp-reduce-khugepaged-freezing-latency.patch
-
-#rhbz 770102
-Patch21055: KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
-
-#rhbz 770096
-Patch21056: KVM-fix-device-assignment-permissions.patch
 
 #rhbz 770233
 Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
@@ -1204,7 +1192,6 @@ ApplyPatch jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 # eCryptfs
 
 # NFSv4
-ApplyPatch nfsv4-include-bitmap-in-nfsv4_get_acl_data.patch
 
 # USB
 
@@ -1341,9 +1328,6 @@ ApplyPatch x86-code-dump-fix-truncation.patch
 #rhbz 728607
 ApplyPatch elantech.patch
 
-#rhbz 748210
-ApplyPatch ideapad-Check-if-acpi-already-handle-backlight.patch
-
 #backport brcm80211 from 3.2-rc1
 ApplyPatch brcm80211.patch
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
@@ -1373,19 +1357,11 @@ ApplyPatch b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 #rhbz 771006
 ApplyPatch thp-reduce-khugepaged-freezing-latency.patch
 
-#rhbz 770102
-ApplyPatch KVM-x86-Prevent-starting-PIT-timers-in-the-absence-of.patch
-
 #rhbz 770233
 ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
 
-#rhbz 770096
-ApplyPatch KVM-fix-device-assignment-permissions.patch
-
 ApplyPatch ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
 ApplyPatch ext3-Fix-error-handling-on-inode-bitmap-corruption.patch
-
-ApplyPatch mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
 
 #rhbz 773392
 ApplyPatch KVM-x86-extend-struct-x86_emulate_ops-with-get_cpuid.patch
@@ -2052,6 +2028,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 18 2012 Josh Boyer <jwboyer@redhat.com> 2.6.41.10-1
+- Linux 3.1.10
+
 * Wed Jan 18 2012 Dennis Gilmore <dennis@ausil.us>
 - build perf on armv7hl
 
