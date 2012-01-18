@@ -869,6 +869,11 @@ Patch21077: 01-block-add-and-use-scsi_blk_cmd_ioctl.patch
 Patch21078: 02-block-fail-SCSI-passthrough-ioctls-on-partition-devs.patch
 Patch21079: 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
 
+#rhbz 782686
+Patch21082: procfs-parse-mount-options.patch
+Patch21083: procfs-add-hidepid-and-gid-mount-options.patch
+Patch21084: proc-fix-null-pointer-deref-in-proc_pid_permission.patch
+
 #rhbz 782681
 Patch21085: proc-clean-up-and-fix-proc-pid-mem-handling.patch
 
@@ -1607,6 +1612,11 @@ ApplyPatch rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 ApplyPatch 01-block-add-and-use-scsi_blk_cmd_ioctl.patch
 ApplyPatch 02-block-fail-SCSI-passthrough-ioctls-on-partition-devs.patch
 ApplyPatch 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
+
+#rhbz 782686
+ApplyPatch procfs-parse-mount-options.patch
+ApplyPatch procfs-add-hidepid-and-gid-mount-options.patch
+ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
 #rhbz 782681
 ApplyPatch proc-clean-up-and-fix-proc-pid-mem-handling.patch
@@ -2390,6 +2400,7 @@ fi
 %changelog
 * Wed Jan 18 2012 Josh Boyer <jwboyer@redhat.com> 3.1.10-1
 - Linux 3.1.10
+- /proc/pid/* information leak (rhbz 782686)
 - CVE-2012-0056 proc: clean up and fix /proc/<pid>/mem (rhbz 782681)
 - loop: prevent information leak after failed read (rhbz 782687)
 
