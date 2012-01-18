@@ -1,0 +1,41 @@
+From 3bb9068278ea524581237abadd41377a14717e7d Mon Sep 17 00:00:00 2001
+From: Dmitry Monakhov <dmonakhov@openvz.org>
+Date: Wed, 16 Nov 2011 09:21:48 +0100
+Subject: [PATCH] loop: prevent information leak after failed read
+
+If read was not fully successful we have to fail whole bio to prevent
+information leak of old pages
+
+##Testcase_begin
+dd if=/dev/zero of=./file bs=1M count=1
+losetup /dev/loop0 ./file -o 4096
+truncate -s 0 ./file
+# OOps loop offset is now beyond i_size, so read will silently fail.
+# So bio's pages would not be cleared, may which result in information leak.
+hexdump -C /dev/loop0
+##testcase_end
+
+Signed-off-by: Dmitry Monakhov <dmonakhov@openvz.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+---
+ drivers/block/loop.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/block/loop.c b/drivers/block/loop.c
+index 3d80682..0d56739 100644
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -372,7 +372,8 @@ do_lo_receive(struct loop_device *lo,
+ 
+ 	if (retval < 0)
+ 		return retval;
+-
++	if (retval != bvec->bv_len)
++		return -EIO;
+ 	return 0;
+ }
+ 
+-- 
+1.7.7.5
+
