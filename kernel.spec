@@ -885,6 +885,8 @@ Patch21079: 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
 #rhbz 782681
 Patch21085: proc-clean-up-and-fix-proc-pid-mem-handling.patch
 
+#rhbz 782687
+Patch21086: loop-prevent-information-leak-after-failed-read.patch
 
 %endif
 
@@ -1634,6 +1636,9 @@ ApplyPatch 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
 
 #rhbz 782681
 ApplyPatch proc-clean-up-and-fix-proc-pid-mem-handling.patch
+
+#rhbz 782687
+ApplyPatch loop-prevent-information-leak-after-failed-read.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2411,6 +2416,7 @@ fi
 %changelog
 * Wed Jan 18 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-0056 proc: clean up and fix /proc/<pid>/mem (rhbz 782681)
+- loop: prevent information leak after failed read (rhbz 782687)
 
 * Tue Jan 17 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2011-4127 possible privilege escalation via SG_IO ioctl (rhbz 769911)
