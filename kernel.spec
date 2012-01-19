@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -2038,6 +2038,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 18 2012 Josh Boyer <jwboyer@redhat.com> 2.6.41.10-2
+- Fix broken procfs backport (rhbz 782961)
+
 * Wed Jan 18 2012 Josh Boyer <jwboyer@redhat.com> 2.6.41.10-1
 - Linux 3.1.10
 - /proc/pid/* information leak (rhbz 782686)
