@@ -807,6 +807,9 @@ Patch21226: pci-crs-blacklist.patch
 
 Patch21227: mac80211-fix-work-removal-on-deauth-request.patch
 
+Patch22000: rcu-reintroduce-missing-calls.patch
+
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
@@ -1492,6 +1495,8 @@ ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 ApplyPatch proc-clean-up-and-fix-proc-pid-mem-handling.patch
 
 ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
+
+ApplyPatch rcu-reintroduce-missing-calls.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2269,6 +2274,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jan 20 2012 Dave Jones <davej@redhat.com>
+- net: reintroduce missing rcu_assign_pointer() calls
+
 * Fri Jan 20 2012 Josh Boyer <jwboyer@redhat.com>
 - Add mac80211 deauth fix pointed out by Stanislaw Gruszka
 
