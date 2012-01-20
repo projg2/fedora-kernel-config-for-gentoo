@@ -759,20 +759,6 @@ Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 Patch21021: 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
 Patch21022: mm-do-not-stall-in-synchronous-compaction-for-THP-allocations.patch
 
-#rhbz752176
-Patch21080: sysfs-msi-irq-per-device.patch
-
-
-# rhbz 754907
-Patch21101: hpsa-add-irqf-shared.patch
-
-#rhbz 731365
-Patch21220: mac80211_offchannel_rework_revert.patch
-
-Patch21225: pci-Rework-ASPM-disable-code.patch
-
-Patch21226: pci-crs-blacklist.patch
-
 #rhbz 717735
 Patch21045: nfs-client-freezer.patch
 
@@ -792,18 +778,11 @@ Patch21072: mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
 Patch21073: KVM-x86-extend-struct-x86_emulate_ops-with-get_cpuid.patch
 Patch21074: KVM-x86-fix-missing-checks-in-syscall-emulation.patch
 
-
-# compat-wireless patches
-Patch50000: compat-wireless-config-fixups.patch
-Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
-Patch50002: compat-wireless-pr_fmt-warning-avoidance.patch
-Patch50003: compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
-
-#rhbz 771058
-Patch22100: msi-irq-sysfs-warning.patch
-
 #rhbz 728740
 Patch21076: rtl8192cu-Fix-WARNING-on-suspend-resume.patch
+
+#rhbz752176
+Patch21080: sysfs-msi-irq-per-device.patch
 
 #rhbz 782686
 Patch21082: procfs-parse-mount-options.patch
@@ -812,6 +791,25 @@ Patch21084: proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
 #rhbz 782681
 Patch21085: proc-clean-up-and-fix-proc-pid-mem-handling.patch
+
+#rhbz 771058
+Patch22100: msi-irq-sysfs-warning.patch
+
+# rhbz 754907
+Patch21101: hpsa-add-irqf-shared.patch
+
+#rhbz 731365
+Patch21220: mac80211_offchannel_rework_revert.patch
+
+Patch21225: pci-Rework-ASPM-disable-code.patch
+
+Patch21226: pci-crs-blacklist.patch
+
+# compat-wireless patches
+Patch50000: compat-wireless-config-fixups.patch
+Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
+Patch50002: compat-wireless-pr_fmt-warning-avoidance.patch
+Patch50003: compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
 %endif
 
