@@ -688,25 +688,6 @@ Patch21031: benet-remove-bogus-unlikely-on-vlan-check.patch
 
 Patch21040: x86-code-dump-fix-truncation.patch
 
-#rhbz 728607
-Patch21060: elantech.patch
-
-#backport brcm80211 from 3.2-rc1
-Patch21090: brcm80211.patch
-Patch21091: bcma-brcmsmac-compat.patch
-
-# rhbz 754907
-Patch21100: cciss-fix-irqf-shared.patch
-Patch21101: hpsa-add-irqf-shared.patch
-
-#rhbz 731365
-Patch21220: mac80211_offchannel_rework_revert.patch
-
-Patch21225: pci-Rework-ASPM-disable-code.patch
-
-#rhbz #757839
-Patch21230: net-sky2-88e8059-fix-link-speed.patch
-
 #rhbz 717735
 Patch21045: nfs-client-freezer.patch
 
@@ -718,6 +699,9 @@ Patch21048: b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
 
 #rhbz 771006
 Patch21050: thp-reduce-khugepaged-freezing-latency.patch
+
+#rhbz 728607
+Patch21060: elantech.patch
 
 #rhbz 770233
 Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
@@ -749,6 +733,22 @@ Patch21085: proc-clean-up-and-fix-proc-pid-mem-handling.patch
 
 #rhbz 782687
 Patch21086: loop-prevent-information-leak-after-failed-read.patch
+
+#backport brcm80211 from 3.2-rc1
+Patch21090: brcm80211.patch
+Patch21091: bcma-brcmsmac-compat.patch
+
+# rhbz 754907
+Patch21100: cciss-fix-irqf-shared.patch
+Patch21101: hpsa-add-irqf-shared.patch
+
+#rhbz 731365
+Patch21220: mac80211_offchannel_rework_revert.patch
+
+Patch21225: pci-Rework-ASPM-disable-code.patch
+
+#rhbz #757839
+Patch21230: net-sky2-88e8059-fix-link-speed.patch
 
 %endif
 
