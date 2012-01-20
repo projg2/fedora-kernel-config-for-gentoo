@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -805,6 +805,8 @@ Patch21225: pci-Rework-ASPM-disable-code.patch
 
 Patch21226: pci-crs-blacklist.patch
 
+Patch21227: mac80211-fix-work-removal-on-deauth-request.patch
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
@@ -1489,6 +1491,8 @@ ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 #rhbz 782681
 ApplyPatch proc-clean-up-and-fix-proc-pid-mem-handling.patch
 
+ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1556,6 +1560,7 @@ ApplyPatch compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
 ApplyPatch compat-wireless-pr_fmt-warning-avoidance.patch
 ApplyPatch compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 ApplyPatch mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
+ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
 
 #rhbz 731365, 773271
 ApplyPatch mac80211_offchannel_rework_revert.patch
@@ -2264,6 +2269,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jan 20 2012 Josh Boyer <jwboyer@redhat.com>
+- Add mac80211 deauth fix pointed out by Stanislaw Gruszka
+
 * Thu Jan 19 2012 Dave Jones <davej@redhat.com> 3.2.1-1
 - Rebase to Linux 3.2.1
 
