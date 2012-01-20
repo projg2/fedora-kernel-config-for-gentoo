@@ -1,45 +1,13 @@
-A recent LKML thread (http://lkml.indiana.edu/hypermail/linux/kernel/1112.3/00965.html)
-discusses warnings that occur during a suspend/resume cycle. The driver
-attempts to read the firmware file before userspace is ready, leading to the
-following warning:
-
-WARNING: at drivers/base/firmware_class.c:537 _request_firmware+0x3f6/0x420()
-
-For rtl8192cu, the problem is fixed by storing the firmware in a global buffer
-rather than one allocated per device. The usage count is increased when
-suspending and decreased when resuming. This way, the firmware is retained
-through a suspend/resume cycle, and does not have to be reread.
-
-This patch should fix the bug reported in
-https://bugzilla.redhat.com/show_bug.cgi?id=771002.
-
-Note: This patch also touches rtl8192ce as the "firmware" loaded message
-is now printed in the wrong place.
-Note: This patch also touches rtl8192ce as the "firmware" loaded message
-is now printed in the wrong place.
-
-Reported-by: Mohammed Arafa <bugzilla@xxxxxxxxxxxx>
-Reported-by: Dave Jones <davej@xxxxxxxxxx>
-Signed-off-by: Larry Finger <Larry.Finger@xxxxxxxxxxxx>
-Cc: Linus Torvalds <torvalds@xxxxxxxxxxxxxxxxxxxx>
-Cc: Stable <stable@xxxxxxxxxxxxxxx>
-
----
- drivers/net/wireless/rtlwifi/rtl8192c/fw_common.c |    1 -
- drivers/net/wireless/rtlwifi/rtl8192ce/sw.c       |    1 +
- drivers/net/wireless/rtlwifi/rtl8192cu/sw.c       |   58 +++++++++++++++++----
- 3 files changed, 49 insertions(+), 11 deletions(-)
-
---- linux-2.6/drivers/net/wireless/rtlwifi/rtl8192c/fw_common.c	2012-01-13 13:07:58.830625006 -0500
-+++ linux-2.6/drivers/net/wireless/rtlwifi/rtl8192c/fw_common.c	2012-01-13 13:08:06.825439927 -0500
-@@ -227,7 +227,6 @@ int rtl92c_download_fw(struct ieee80211_
- 	u32 fwsize;
- 	enum version_8192c version = rtlhal->version;
- 
--	pr_info("Loading firmware file %s\n", rtlpriv->cfg->fw_name);
+--- linux-2.6/drivers/net/wireless/rtlwifi/rtl8192c/fw_common.c	
++++ linux-2.6/drivers/net/wireless/rtlwifi/rtl8192c/fw_common.c	
+@@ -265,7 +265,6 @@ int rtl92c_download_fw(struct ieee80211_
  	if (!rtlhal->pfirmware)
  		return 1;
-
+ 
+-	pr_info("Loading firmware file %s\n", rtlpriv->cfg->fw_name);
+ 	pfwheader = (struct rtl92c_firmware_header *)rtlhal->pfirmware;
+ 	pfwdata = (u8 *) rtlhal->pfirmware;
+ 	fwsize = rtlhal->fwsize;
 --- linux-2.6/drivers/net/wireless/rtlwifi/rtl8192ce/sw.c	
 +++ linux-2.6/drivers/net/wireless/rtlwifi/rtl8192ce/sw.c	
 @@ -186,6 +186,7 @@ int rtl92c_init_sw_vars(struct ieee80211
