@@ -747,6 +747,8 @@ Patch21220: mac80211_offchannel_rework_revert.patch
 
 Patch21225: pci-Rework-ASPM-disable-code.patch
 
+Patch21227: mac80211-fix-work-removal-on-deauth-request.patch
+
 #rhbz #757839
 Patch21230: net-sky2-88e8059-fix-link-speed.patch
 
@@ -1346,6 +1348,8 @@ ApplyPatch hpsa-add-irqf-shared.patch
 ApplyPatch mac80211_offchannel_rework_revert.patch
 
 ApplyPatch pci-Rework-ASPM-disable-code.patch
+
+ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
 
 #rhbz #757839
 ApplyPatch net-sky2-88e8059-fix-link-speed.patch
@@ -2038,6 +2042,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jan 20 2012 Josh Boyer <jwboyer@redhat.com>
+- Add mac80211 deauth fix pointed out by Stanislaw Gruszka
+
 * Wed Jan 18 2012 Josh Boyer <jwboyer@redhat.com> 2.6.41.10-2
 - Fix broken procfs backport (rhbz 782961)
 
