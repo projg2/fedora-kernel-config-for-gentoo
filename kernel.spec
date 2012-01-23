@@ -2286,7 +2286,7 @@ fi
 # and build.
 
 %changelog
-* Mon Jan 23 2012 Josh Boyer <jwboyer@redhat.com>
+* Mon Jan 23 2012 Josh Boyer <jwboyer@redhat.com> 3.2.1-3
 - Fix oops in iwlwifi/iwlagn driver (rhbz 766071)
 - Fix NULL pointer dereference in sym53c8xx module (rhbz 781625)
 
