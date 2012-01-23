@@ -807,6 +807,9 @@ Patch21226: pci-crs-blacklist.patch
 
 Patch21227: mac80211-fix-work-removal-on-deauth-request.patch
 
+#rhbz 781625
+Patch21228: SCSI-sym53c8xx-Fix-NULL-pointer-dereference-in-slave.patch
+
 Patch22000: rcu-reintroduce-missing-calls.patch
 
 
@@ -1495,6 +1498,9 @@ ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 ApplyPatch proc-clean-up-and-fix-proc-pid-mem-handling.patch
 
 ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
+
+#rhbz 781625
+ApplyPatch SCSI-sym53c8xx-Fix-NULL-pointer-dereference-in-slave.patch
 
 ApplyPatch rcu-reintroduce-missing-calls.patch
 
@@ -2274,6 +2280,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jan 23 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix NULL pointer dereference in sym53c8xx module (rhbz 781625)
+
 * Fri Jan 20 2012 Dave Jones <davej@redhat.com>
 - net: reintroduce missing rcu_assign_pointer() calls
 
