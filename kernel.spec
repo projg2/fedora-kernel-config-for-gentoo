@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -2048,7 +2048,7 @@ fi
 # and build.
 
 %changelog
-* Mon Jan 23 2012 Josh Boyer <jwboyer@redhat.com>
+* Mon Jan 23 2012 Josh Boyer <jwboyer@redhat.com> 2.6.41.10-3
 - Fix NULL pointer dereference in sym53c8xx module (rhbz 781625)
 
 * Fri Jan 20 2012 Josh Boyer <jwboyer@redhat.com>
