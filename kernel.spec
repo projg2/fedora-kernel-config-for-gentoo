@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -810,6 +810,9 @@ Patch21227: mac80211-fix-work-removal-on-deauth-request.patch
 #rhbz 781625
 Patch21228: SCSI-sym53c8xx-Fix-NULL-pointer-dereference-in-slave.patch
 
+#rhbz 766071
+Patch21229: iwlagn-check-for-SMPS-mode.patch
+
 Patch22000: rcu-reintroduce-missing-calls.patch
 
 
@@ -1501,6 +1504,9 @@ ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
 
 #rhbz 781625
 ApplyPatch SCSI-sym53c8xx-Fix-NULL-pointer-dereference-in-slave.patch
+
+#rhbz 766071
+ApplyPatch iwlagn-check-for-SMPS-mode.patch
 
 ApplyPatch rcu-reintroduce-missing-calls.patch
 
@@ -2281,6 +2287,7 @@ fi
 
 %changelog
 * Mon Jan 23 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix oops in iwlwifi/iwlagn driver (rhbz 766071)
 - Fix NULL pointer dereference in sym53c8xx module (rhbz 781625)
 
 * Fri Jan 20 2012 Dave Jones <davej@redhat.com>
