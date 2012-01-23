@@ -749,6 +749,9 @@ Patch21225: pci-Rework-ASPM-disable-code.patch
 
 Patch21227: mac80211-fix-work-removal-on-deauth-request.patch
 
+#rhbz 781625
+Patch21228: SCSI-sym53c8xx-Fix-NULL-pointer-dereference-in-slave.patch
+
 #rhbz #757839
 Patch21230: net-sky2-88e8059-fix-link-speed.patch
 
@@ -1394,6 +1397,9 @@ ApplyPatch proc-clean-up-and-fix-proc-pid-mem-handling.patch
 
 #rhbz 782687
 ApplyPatch loop-prevent-information-leak-after-failed-read.patch
+
+#rhbz 781625
+ApplyPatch SCSI-sym53c8xx-Fix-NULL-pointer-dereference-in-slave.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2042,6 +2048,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jan 23 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix NULL pointer dereference in sym53c8xx module (rhbz 781625)
+
 * Fri Jan 20 2012 Josh Boyer <jwboyer@redhat.com>
 - Add mac80211 deauth fix pointed out by Stanislaw Gruszka
 
