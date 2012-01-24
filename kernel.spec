@@ -2298,6 +2298,7 @@ fi
 * Tue Jan 24 2012 Josh Boyer <jwboyer@redhat.com>
 - Re-enable the ARCMSR module (rhbz 784287)
 - Add back a set of patches that were erroneously dropped during the rebase
+- Re-enable the LIRC_STAGING drivers (rhbz 784398)
 
 * Mon Jan 23 2012 Josh Boyer <jwboyer@redhat.com> 3.2.1-3
 - Fix oops in iwlwifi/iwlagn driver (rhbz 766071)
