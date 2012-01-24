@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -781,6 +781,10 @@ Patch21074: KVM-x86-fix-missing-checks-in-syscall-emulation.patch
 #rhbz 728740
 Patch21076: rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
+Patch21077: 01-block-add-and-use-scsi_blk_cmd_ioctl.patch
+Patch21078: 02-block-fail-SCSI-passthrough-ioctls-on-partition-devs.patch
+Patch21079: 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
+
 #rhbz752176
 Patch21080: sysfs-msi-irq-per-device.patch
 
@@ -1491,6 +1495,11 @@ ApplyPatch KVM-x86-fix-missing-checks-in-syscall-emulation.patch
 
 #rhbz 728740
 ApplyPatch rtl8192cu-Fix-WARNING-on-suspend-resume.patch
+
+#rhbz 769911
+ApplyPatch 01-block-add-and-use-scsi_blk_cmd_ioctl.patch
+ApplyPatch 02-block-fail-SCSI-passthrough-ioctls-on-partition-devs.patch
+ApplyPatch 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
 
 #rhbz 782686
 ApplyPatch procfs-parse-mount-options.patch
@@ -2288,6 +2297,7 @@ fi
 %changelog
 * Tue Jan 24 2012 Josh Boyer <jwboyer@redhat.com>
 - Re-enable the ARCMSR module (rhbz 784287)
+- Add back a set of patches that were erroneously dropped during the rebase
 
 * Mon Jan 23 2012 Josh Boyer <jwboyer@redhat.com> 3.2.1-3
 - Fix oops in iwlwifi/iwlagn driver (rhbz 766071)

@@ -1,4 +1,4 @@
-From bf50a5715cac3b85f3bd33f184f7c031debabe0b Mon Sep 17 00:00:00 2001
+From 0d18592f2fcd3891e5955362565ea12d0846bf9f Mon Sep 17 00:00:00 2001
 From: Paolo Bonzini <pbonzini@redhat.com>
 Date: Mon, 16 Jan 2012 17:13:00 +0100
 Subject: [PATCH 3/3] dm: do not forward ioctls from logical volumes to the
@@ -87,5 +87,5 @@ index 5e0090e..801d92d 100644
  }
  
 -- 
-1.7.7.5
+1.7.7.6
 

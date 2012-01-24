@@ -1,4 +1,4 @@
-From 6051b3759d3d4b70d33a7be70ab6b86ed3559224 Mon Sep 17 00:00:00 2001
+From a7f3cbff409dde86b6bded8978f71bc193022427 Mon Sep 17 00:00:00 2001
 From: Paolo Bonzini <pbonzini@redhat.com>
 Date: Mon, 16 Jan 2012 17:12:58 +0100
 Subject: [PATCH 1/3] block: add and use scsi_blk_cmd_ioctl
@@ -28,10 +28,10 @@ Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
  8 files changed, 18 insertions(+), 12 deletions(-)
 
 diff --git a/block/scsi_ioctl.c b/block/scsi_ioctl.c
-index 4f4230b..57ac937 100644
+index fbdf0d8..a2c11f3 100644
 --- a/block/scsi_ioctl.c
 +++ b/block/scsi_ioctl.c
-@@ -691,6 +691,13 @@ int scsi_cmd_ioctl(struct request_queue *q, struct gendisk *bd_disk, fmode_t mod
+@@ -690,6 +690,13 @@ int scsi_cmd_ioctl(struct request_queue *q, struct gendisk *bd_disk, fmode_t mod
  }
  EXPORT_SYMBOL(scsi_cmd_ioctl);
  
@@ -46,10 +46,10 @@ index 4f4230b..57ac937 100644
  {
  	blk_set_cmd_filter_defaults(&blk_default_cmd_filter);
 diff --git a/drivers/block/cciss.c b/drivers/block/cciss.c
-index c2f9b3e..1dab802 100644
+index 587cce5..b0f553b 100644
 --- a/drivers/block/cciss.c
 +++ b/drivers/block/cciss.c
-@@ -1716,7 +1716,7 @@ static int cciss_ioctl(struct block_device *bdev, fmode_t mode,
+@@ -1735,7 +1735,7 @@ static int cciss_ioctl(struct block_device *bdev, fmode_t mode,
  	case CCISS_BIG_PASSTHRU:
  		return cciss_bigpassthru(h, argp);
  
@@ -58,7 +58,7 @@ index c2f9b3e..1dab802 100644
  	/* very meaningful for cciss.  SG_IO is the main one people want. */
  
  	case SG_GET_VERSION_NUM:
-@@ -1727,9 +1727,9 @@ static int cciss_ioctl(struct block_device *bdev, fmode_t mode,
+@@ -1746,9 +1746,9 @@ static int cciss_ioctl(struct block_device *bdev, fmode_t mode,
  	case SG_EMULATED_HOST:
  	case SG_IO:
  	case SCSI_IOCTL_SEND_COMMAND:
@@ -89,10 +89,10 @@ index 0e376d4..7333b9e 100644
  
  	return ret;
 diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-index 079c088..5d7a934 100644
+index 4d0b70a..e46f2f7 100644
 --- a/drivers/block/virtio_blk.c
 +++ b/drivers/block/virtio_blk.c
-@@ -236,8 +236,8 @@ static int virtblk_ioctl(struct block_device *bdev, fmode_t mode,
+@@ -243,8 +243,8 @@ static int virtblk_ioctl(struct block_device *bdev, fmode_t mode,
  	if (!virtio_has_feature(vblk->vdev, VIRTIO_BLK_F_SCSI))
  		return -ENOTTY;
  
@@ -136,10 +136,10 @@ index d267b7a..a22ca84 100644
  	if (err == -ENOTTY)
  		err = generic_ide_ioctl(drive, bdev, cmd, arg);
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 953773c..c88885d 100644
+index fa3a591..ffa1c79 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
-@@ -1095,7 +1095,7 @@ static int sd_ioctl(struct block_device *bdev, fmode_t mode,
+@@ -1096,7 +1096,7 @@ static int sd_ioctl(struct block_device *bdev, fmode_t mode,
  			error = scsi_ioctl(sdp, cmd, p);
  			break;
  		default:
@@ -149,7 +149,7 @@ index 953773c..c88885d 100644
  				break;
  			error = scsi_ioctl(sdp, cmd, p);
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index 5e30b45..aa829a4 100644
+index 94acd81..ca7b869 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
 @@ -675,6 +675,8 @@ extern int blk_insert_cloned_request(struct request_queue *q,
@@ -162,5 +162,5 @@ index 5e30b45..aa829a4 100644
  			  unsigned int, void __user *);
  extern int sg_scsi_ioctl(struct request_queue *, struct gendisk *, fmode_t,
 -- 
-1.7.7.5
+1.7.7.6
 
