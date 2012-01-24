@@ -205,7 +205,7 @@ Summary: The Linux kernel
 %define kversion 3.%{base_sublevel}
 
 # The compat-wireless version
-%define cwversion 3.2-1
+%define cwversion 3.3-rc1-2
 
 #######################################################################
 # If cwversion is less than kversion, make sure with_backports is
@@ -215,7 +215,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to disable with_backports.)
 #
-%define with_backports 0
+# % define with_backports 0
 #######################################################################
 
 %define make_target bzImage
@@ -822,9 +822,11 @@ Patch22000: rcu-reintroduce-missing-calls.patch
 
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
-Patch50001: compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
-Patch50002: compat-wireless-pr_fmt-warning-avoidance.patch
-Patch50003: compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
+Patch50001: compat-wireless-pr_fmt-warning-avoidance.patch
+Patch50002: compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
+
+# Remove overlapping hardware support between b43 and brcmsmac
+Patch50100: b43-add-option-to-avoid-duplicating-device-support-w.patch
 
 %endif
 
@@ -1582,17 +1584,12 @@ rm -rf compat-wireless-%{cwversion}
 cd compat-wireless-%{cwversion}
 
 ApplyPatch compat-wireless-config-fixups.patch
-ApplyPatch compat-wireless-change-CONFIG_IWLAGN-CONFIG_IWLWIFI.patch
 ApplyPatch compat-wireless-pr_fmt-warning-avoidance.patch
 ApplyPatch compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
-ApplyPatch mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
 ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
 
-#rhbz 731365, 773271
-ApplyPatch mac80211_offchannel_rework_revert.patch
-
-# Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
-ApplyPatch bcma-brcmsmac-compat.patch
+# Remove overlapping hardware support between b43 and brcmsmac
+ApplyPatch b43-add-option-to-avoid-duplicating-device-support-w.patch
 
 cd ..
 
@@ -2295,6 +2292,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 24 2012 John W. Linville <linville@redhat.com>
+- Update compat-wireless snapshot to version 3.3-rc1-2
+
 * Tue Jan 24 2012 Josh Boyer <jwboyer@redhat.com>
 - Re-enable the ARCMSR module (rhbz 784287)
 - Add back a set of patches that were erroneously dropped during the rebase
