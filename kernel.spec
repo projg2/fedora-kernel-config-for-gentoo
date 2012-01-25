@@ -817,6 +817,9 @@ Patch21228: SCSI-sym53c8xx-Fix-NULL-pointer-dereference-in-slave.patch
 #rhbz 766071
 Patch21229: iwlagn-check-for-SMPS-mode.patch
 
+#rhbz 718790
+Patch21230: rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
+
 Patch22000: rcu-reintroduce-missing-calls.patch
 
 
@@ -1520,6 +1523,9 @@ ApplyPatch SCSI-sym53c8xx-Fix-NULL-pointer-dereference-in-slave.patch
 ApplyPatch iwlagn-check-for-SMPS-mode.patch
 
 ApplyPatch rcu-reintroduce-missing-calls.patch
+
+#rhbz 718790
+ApplyPatch rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2292,6 +2298,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 25 2012 Josh Boyer <jwboyer@redhat.com>
+- Backport patch to fix oops in rds (rhbz 718790)
+
 * Tue Jan 24 2012 John W. Linville <linville@redhat.com>
 - Update compat-wireless snapshot to version 3.3-rc1-2
 
