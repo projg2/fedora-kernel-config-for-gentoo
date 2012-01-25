@@ -797,6 +797,9 @@ Patch21084: proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 #rhbz 782681
 Patch21085: proc-clean-up-and-fix-proc-pid-mem-handling.patch
 
+#rhbz 783211
+Patch21087: fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
+
 #rhbz 771058
 Patch22100: msi-irq-sysfs-warning.patch
 
@@ -823,7 +826,6 @@ Patch21230: rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
 
 Patch22000: rcu-reintroduce-missing-calls.patch
 
-
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-pr_fmt-warning-avoidance.patch
@@ -833,6 +835,7 @@ Patch50100: compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
 # Remove overlapping hardware support between b43 and brcmsmac
 Patch50101: b43-add-option-to-avoid-duplicating-device-support-w.patch
+
 
 %endif
 
@@ -1534,6 +1537,9 @@ ApplyPatch rcu-reintroduce-missing-calls.patch
 
 #rhbz 718790
 ApplyPatch rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
+
+#rhbz 783211
+ApplyPatch fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2306,6 +2312,10 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 25 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to invalidate parent cache when fsync is called on a partition 
+  (rhbz 783211)
+
 * Wed Jan 25 2012 John W. Linville <linville@redhat.com>
 - modpost: add option to allow external modules to avoid taint
 - Make integrated compat-wireless take advantage of the above
