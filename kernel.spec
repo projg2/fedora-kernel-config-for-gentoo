@@ -701,6 +701,7 @@ Patch471: floppy-drop-disable_hlt-warning.patch
 Patch510: linux-2.6-silence-noise.patch
 Patch520: quite-apm.patch
 Patch530: linux-2.6-silence-fbcon-logo.patch
+Patch540: modpost-add-option-to-allow-external-modules-to-avoi.patch
 
 Patch700: linux-2.6-e1000-ich9-montevina.patch
 
@@ -826,10 +827,12 @@ Patch22000: rcu-reintroduce-missing-calls.patch
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-pr_fmt-warning-avoidance.patch
-Patch50002: compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
+Patch50002: compat-wireless-integrated-build.patch
+
+Patch50100: compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
 # Remove overlapping hardware support between b43 and brcmsmac
-Patch50100: b43-add-option-to-avoid-duplicating-device-support-w.patch
+Patch50101: b43-add-option-to-avoid-duplicating-device-support-w.patch
 
 %endif
 
@@ -1415,6 +1418,11 @@ ApplyPatch linux-2.6-silence-noise.patch
 
 # Make fbcon not show the penguins with 'quiet'
 ApplyPatch linux-2.6-silence-fbcon-logo.patch
+
+%if %{with_backports}
+# modpost: add option to allow external modules to avoid taint
+ApplyPatch modpost-add-option-to-allow-external-modules-to-avoi.patch
+%endif
 
 # Changes to upstream defaults.
 
@@ -2298,6 +2306,10 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 25 2012 John W. Linville <linville@redhat.com>
+- modpost: add option to allow external modules to avoid taint
+- Make integrated compat-wireless take advantage of the above
+
 * Wed Jan 25 2012 Josh Boyer <jwboyer@redhat.com>
 - Backport patch to fix oops in rds (rhbz 718790)
 
