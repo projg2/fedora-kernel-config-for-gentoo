@@ -808,6 +808,9 @@ Patch21227: mac80211-fix-work-removal-on-deauth-request.patch
 #rhbz 718790
 Patch21230: rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
 
+#rhbz 784345
+Patch21231: realtek_async_autopm.patch
+
 Patch22000: rcu-reintroduce-missing-calls.patch
 
 # compat-wireless patches
@@ -1507,6 +1510,9 @@ ApplyPatch rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
 
 #rhbz 783211
 ApplyPatch fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
+
+#rhbz 784345
+ApplyPatch realtek_async_autopm.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2283,6 +2289,7 @@ fi
 - Linux 3.2.2
 - Add patch to invalidate parent cache when fsync is called on a partition 
   (rhbz 783211)
+- Test fix for realtek_async_autopm oops from Stanislaw Gruszka (rhbz 784345)
 
 * Wed Jan 25 2012 John W. Linville <linville@redhat.com>
 - modpost: add option to allow external modules to avoid taint
