@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -782,10 +782,6 @@ Patch21074: KVM-x86-fix-missing-checks-in-syscall-emulation.patch
 #rhbz 728740
 Patch21076: rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
-Patch21077: 01-block-add-and-use-scsi_blk_cmd_ioctl.patch
-Patch21078: 02-block-fail-SCSI-passthrough-ioctls-on-partition-devs.patch
-Patch21079: 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
-
 #rhbz752176
 Patch21080: sysfs-msi-irq-per-device.patch
 
@@ -793,9 +789,6 @@ Patch21080: sysfs-msi-irq-per-device.patch
 Patch21082: procfs-parse-mount-options.patch
 Patch21083: procfs-add-hidepid-and-gid-mount-options.patch
 Patch21084: proc-fix-null-pointer-deref-in-proc_pid_permission.patch
-
-#rhbz 782681
-Patch21085: proc-clean-up-and-fix-proc-pid-mem-handling.patch
 
 #rhbz 783211
 Patch21087: fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
@@ -806,20 +799,11 @@ Patch22100: msi-irq-sysfs-warning.patch
 # rhbz 754907
 Patch21101: hpsa-add-irqf-shared.patch
 
-#rhbz 731365
-Patch21220: mac80211_offchannel_rework_revert.patch
-
 Patch21225: pci-Rework-ASPM-disable-code.patch
 
 Patch21226: pci-crs-blacklist.patch
 
 Patch21227: mac80211-fix-work-removal-on-deauth-request.patch
-
-#rhbz 781625
-Patch21228: SCSI-sym53c8xx-Fix-NULL-pointer-dereference-in-slave.patch
-
-#rhbz 766071
-Patch21229: iwlagn-check-for-SMPS-mode.patch
 
 #rhbz 718790
 Patch21230: rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
@@ -1482,9 +1466,6 @@ ApplyPatch sysfs-msi-irq-per-device.patch
 # rhbz 754907
 ApplyPatch hpsa-add-irqf-shared.patch
 
-#rhbz 731365
-ApplyPatch mac80211_offchannel_rework_revert.patch
-
 ApplyPatch pci-Rework-ASPM-disable-code.patch
 
 #ApplyPatch pci-crs-blacklist.patch
@@ -1512,26 +1493,12 @@ ApplyPatch KVM-x86-fix-missing-checks-in-syscall-emulation.patch
 #rhbz 728740
 ApplyPatch rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
-#rhbz 769911
-ApplyPatch 01-block-add-and-use-scsi_blk_cmd_ioctl.patch
-ApplyPatch 02-block-fail-SCSI-passthrough-ioctls-on-partition-devs.patch
-ApplyPatch 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
-
 #rhbz 782686
 ApplyPatch procfs-parse-mount-options.patch
 ApplyPatch procfs-add-hidepid-and-gid-mount-options.patch
 ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
-#rhbz 782681
-ApplyPatch proc-clean-up-and-fix-proc-pid-mem-handling.patch
-
 ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
-
-#rhbz 781625
-ApplyPatch SCSI-sym53c8xx-Fix-NULL-pointer-dereference-in-slave.patch
-
-#rhbz 766071
-ApplyPatch iwlagn-check-for-SMPS-mode.patch
 
 ApplyPatch rcu-reintroduce-missing-calls.patch
 
@@ -2312,7 +2279,8 @@ fi
 # and build.
 
 %changelog
-* Wed Jan 25 2012 Josh Boyer <jwboyer@redhat.com>
+* Wed Jan 25 2012 Josh Boyer <jwboyer@redhat.com> - 3.2.2-1
+- Linux 3.2.2
 - Add patch to invalidate parent cache when fsync is called on a partition 
   (rhbz 783211)
 
