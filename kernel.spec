@@ -1820,6 +1820,9 @@ BuildKernel() {
 
     cd ../compat-wireless-%{cwversion}/
 
+    install -m 644 config.mk \
+	$RPM_BUILD_ROOT/boot/config.mk-compat-wireless-%{cwversion}-$KernelVer
+
     make -s ARCH=$Arch V=1 %{?_smp_mflags} \
 	KLIB_BUILD=../linux-%{kversion}.%{_target_cpu} \
 	KMODPATH_ARG="INSTALL_MOD_PATH=$RPM_BUILD_ROOT" \
@@ -2238,6 +2241,7 @@ fi
 /lib/modules/%{KVERREL}%{?2:.%{2}}/extra\
 /lib/modules/%{KVERREL}%{?2:.%{2}}/updates\
 %if %{with_backports}\
+/boot/config.mk-compat-wireless-%{cwversion}-%{KVERREL}%{?2:.%{2}}\
 /lib/modules/%{KVERREL}%{?2:.%{2}}/backports\
 %endif\
 %ifarch %{vdso_arches}\
@@ -2285,6 +2289,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jan 27 2012 John W. Linville <linville@redhat.com>
+- Include config.mk from compat-wireless build in files for installation
+
 * Wed Jan 25 2012 Josh Boyer <jwboyer@redhat.com> - 3.2.2-1
 - Linux 3.2.2
 - Add patch to invalidate parent cache when fsync is called on a partition 
