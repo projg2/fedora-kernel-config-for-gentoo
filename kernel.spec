@@ -2305,6 +2305,10 @@ fi
 # and build.
 
 %changelog
+* Mon Jan 30 2012 Dave Jones <davej@redhat.com>
+- Restore the Savage DRM and several others that were accidentally
+  early-deprecated.
+
 * Mon Jan 30 2012 John W. Linville <linville@redhat.com>
 - Use the eeprom_93cx6 driver from the compat-wireless package
 - mac80211: fix debugfs key->station symlink
