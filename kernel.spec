@@ -690,6 +690,9 @@ Patch21084: proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 #rhbz 783211
 Patch21087: fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
 
+# Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
+Patch21091: bcma-brcmsmac-compat.patch
+
 #rhbz 771058
 Patch21100: msi-irq-sysfs-warning.patch
 
@@ -1299,6 +1302,9 @@ ApplyPatch rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
 
 #rhbz 783211
 ApplyPatch fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
+
+# Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
+ApplyPatch bcma-brcmsmac-compat.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1947,6 +1953,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jan 30 2012 John W. Linville <linville@redhat.com>
+- Reinstate patch to remove overlap between bcma/b43 and brcmsmac
+
 * Mon Jan 30 2012 Dave Jones <davej@redhat.com> 2.6.42.2-1
 - Rebase to 3.2.2
 
