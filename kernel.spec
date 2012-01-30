@@ -706,6 +706,9 @@ Patch21227: mac80211-fix-work-removal-on-deauth-request.patch
 #rhbz 718790
 Patch21230: rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
 
+#rhbz 784345
+Patch21231: realtek_async_autopm.patch
+
 Patch22000: rcu-reintroduce-missing-calls.patch
 
 %endif
@@ -1305,6 +1308,9 @@ ApplyPatch fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
+
+#rhbz 784345
+ApplyPatch realtek_async_autopm.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1953,6 +1959,12 @@ fi
 # and build.
 
 %changelog
+* Mon Jan 30 2012 Dave Jones <davej@redhat.com>
+- Enable kmemleak (off by default) in kernel-debug (rhbz 782419)
+
+* Mon Jan 30 2012 Dave Jones <davej@redhat.com>
+- Test fix for realtek_async_autopm oops from Stanislaw Gruszka (rhbz 784345)
+
 * Mon Jan 30 2012 Dave Jones <davej@redhat.com>
 - Restore the Savage DRM and several others that were accidentally early-deprecated.
 
