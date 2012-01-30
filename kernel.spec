@@ -2306,6 +2306,9 @@ fi
 
 %changelog
 * Mon Jan 30 2012 Dave Jones <davej@redhat.com>
+- Enable kmemleak (off by default) in kernel-debug (rhbz 782419)
+
+* Mon Jan 30 2012 Dave Jones <davej@redhat.com>
 - Restore the Savage DRM and several others that were accidentally
   early-deprecated.
 
