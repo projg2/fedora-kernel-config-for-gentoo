@@ -757,9 +757,6 @@ Patch20000: utrace.patch
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 
-Patch21021: 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
-Patch21022: mm-do-not-stall-in-synchronous-compaction-for-THP-allocations.patch
-
 #rhbz 717735
 Patch21045: nfs-client-freezer.patch
 
