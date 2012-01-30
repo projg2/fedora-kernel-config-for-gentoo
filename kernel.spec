@@ -42,16 +42,16 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
-%define real_sublevel 1
+%define real_sublevel 2
 # fake_sublevel is the 2.6.x version we're faking
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -472,7 +472,7 @@ Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
-ExclusiveArch: noarch %{all_x86} x86_64 ppc ppc64 ia64 %{sparc} s390 s390x alpha alphaev56 %{arm}
+ExclusiveArch: noarch %{all_x86} x86_64 ppc ppc64 %{sparc} s390 s390x alpha alphaev56 %{arm}
 ExclusiveOS: Linux
 
 %kernel_reqprovconf
@@ -481,7 +481,7 @@ ExclusiveOS: Linux
 # List the packages used during the kernel build
 #
 BuildRequires: module-init-tools, patch >= 2.5.4, bash >= 2.03, sh-utils, tar
-BuildRequires: bzip2, findutils, gzip, m4, perl, make >= 3.78, diffutils, gawk
+BuildRequires: bzip2, xz, findutils, gzip, m4, perl, make >= 3.78, diffutils, gawk
 BuildRequires: gcc >= 3.4.2, binutils >= 2.12, redhat-rpm-config
 BuildRequires: net-tools
 BuildRequires: xmlto, asciidoc
@@ -506,7 +506,7 @@ BuildRequires: rpm-build >= 4.4.2.1-4
 %define debuginfo_args --strict-build-id
 %endif
 
-Source0: ftp://ftp.kernel.org/pub/linux/kernel/v3.x/linux-%{realversion}.tar.bz2
+Source0: ftp://ftp.kernel.org/pub/linux/kernel/v3.x/linux-%{realversion}.tar.xz
 
 Source11: genkey
 Source14: find-provides
@@ -549,11 +549,11 @@ Source1000: config-local
 # For a stable release kernel
 %if 0%{?stable_update}
 %if 0%{?stable_base}
-%define    stable_patch_00  patch-3.%{real_sublevel}.%{stable_base}.bz2
+%define    stable_patch_00  patch-3.%{real_sublevel}.%{stable_base}.xz
 Patch00: %{stable_patch_00}
 %endif
 %if 0%{?stable_rc}
-%define    stable_patch_01  patch-3.%{real_sublevel}.%{stable_update}-rc%{stable_rc}.bz2
+%define    stable_patch_01  patch-3.%{real_sublevel}.%{stable_update}-rc%{stable_rc}.xz
 Patch01: %{stable_patch_01}
 %endif
 %endif
@@ -579,8 +579,6 @@ Patch09: linux-2.6-upstream-reverts.patch
 Patch100: taint-vbox.patch
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
-
-Patch202: linux-2.6-debug-taint-vm.patch
 
 Patch350: force-version-2.6.patch
 
@@ -608,9 +606,6 @@ Patch700: linux-2.6-e1000-ich9-montevina.patch
 
 Patch800: linux-2.6-crash-driver.patch
 
-# Platform
-Patch900: samsung-laptop-brightness-fixes-3.2.patch
-
 # crypto/
 
 # virt + ksm patches
@@ -624,10 +619,6 @@ Patch1810: drm-nouveau-updates.patch
 Patch1824: drm-intel-next.patch
 # hush the i915 fbc noise
 Patch1826: drm-i915-fbc-stfu.patch
-# rhbz#729882, https://bugs.freedesktop.org/attachment.cgi?id=49069
-Patch1827: drm-i915-sdvo-lvds-is-digital.patch
-
-Patch1850: drm-lower-severity-radeon-lockup.diff
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
@@ -640,10 +631,6 @@ Patch2899: linux-2.6-v4l-dvb-fixes.patch
 Patch2900: linux-2.6-v4l-dvb-update.patch
 Patch2901: linux-2.6-v4l-dvb-experimental.patch
 
-Patch2905: media-dib0700-correct-error-message.patch
-
-Patch3000: rcutree-avoid-false-quiescent-states.patch
-
 # fs fixes
 
 #rhbz 753346
@@ -652,41 +639,22 @@ Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 # NFSv4
 
 # patches headed upstream
-Patch12010: add-appleir-usb-driver.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch12021: udlfb-bind-framebuffer-to-interface.patch
-
-Patch12025: rcu-avoid-just-onlined-cpu-resched.patch
 Patch12026: block-stray-block-put-after-teardown.patch
 Patch12030: epoll-limit-paths.patch
-Patch12031: HID-wacom-Set-input-bits-before-registration.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch13002: revert-efi-rtclock.patch
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
-Patch13009: hvcs_pi_buf_alloc.patch
-
 Patch20000: utrace.patch
 
 # Flattened devicetree support
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
-Patch21002: arm-tegra-usb-no-reset.patch
-
-#rhbz #735946
-Patch21020: 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
-Patch21021: 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
-Patch21022: mm-do-not-stall-in-synchronous-compaction-for-THP-allocations.patch
-
-#rhbz 748691
-Patch21030: be2net-non-member-vlan-pkts-not-received-in-promisco.patch
-Patch21031: benet-remove-bogus-unlikely-on-vlan-check.patch
-
-Patch21040: x86-code-dump-fix-truncation.patch
 
 #rhbz 717735
 Patch21045: nfs-client-freezer.patch
@@ -694,18 +662,10 @@ Patch21045: nfs-client-freezer.patch
 #rhbz 590880
 Patch21046: alps.patch
 
-#rhbz 741117
-Patch21048: b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
+#rhbz 746097
+Patch21049: tpm_tis-delay-after-aborting-cmd.patch
 
-#rhbz 771006
-Patch21050: thp-reduce-khugepaged-freezing-latency.patch
-
-#rhbz 728607
-Patch21060: elantech.patch
-
-#rhbz 770233
-Patch21065: Bluetooth-Add-support-for-BCM20702A0.patch
-
+Patch21070: ext4-Support-check-none-nocheck-mount-options.patch
 Patch21071: ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
 Patch21072: ext3-Fix-error-handling-on-inode-bitmap-corruption.patch
 
@@ -719,41 +679,31 @@ Patch21075: KVM-x86-fix-missing-checks-in-syscall-emulation.patch
 #rhbz 728740
 Patch21076: rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
-Patch21077: 01-block-add-and-use-scsi_blk_cmd_ioctl.patch
-Patch21078: 02-block-fail-SCSI-passthrough-ioctls-on-partition-devs.patch
-Patch21079: 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
+#rhbz752176
+Patch21080: sysfs-msi-irq-per-device.patch
 
 #rhbz 782686
 Patch21082: procfs-parse-mount-options.patch
 Patch21083: procfs-add-hidepid-and-gid-mount-options.patch
 Patch21084: proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
-#rhbz 782681
-Patch21085: proc-clean-up-and-fix-proc-pid-mem-handling.patch
+#rhbz 783211
+Patch21087: fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
 
-#rhbz 782687
-Patch21086: loop-prevent-information-leak-after-failed-read.patch
-
-#backport brcm80211 from 3.2-rc1
-Patch21090: brcm80211.patch
-Patch21091: bcma-brcmsmac-compat.patch
+#rhbz 771058
+Patch21100: msi-irq-sysfs-warning.patch
 
 # rhbz 754907
-Patch21100: cciss-fix-irqf-shared.patch
 Patch21101: hpsa-add-irqf-shared.patch
-
-#rhbz 731365
-Patch21220: mac80211_offchannel_rework_revert.patch
 
 Patch21225: pci-Rework-ASPM-disable-code.patch
 
 Patch21227: mac80211-fix-work-removal-on-deauth-request.patch
 
-#rhbz 781625
-Patch21228: SCSI-sym53c8xx-Fix-NULL-pointer-dereference-in-slave.patch
+#rhbz 718790
+Patch21230: rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
 
-#rhbz #757839
-Patch21230: net-sky2-88e8059-fix-link-speed.patch
+Patch22000: rcu-reintroduce-missing-calls.patch
 
 %endif
 
@@ -1027,6 +977,7 @@ ApplyPatch()
   case "$patch" in
   *.bz2) bunzip2 < "$RPM_SOURCE_DIR/$patch" | $patch_command ${1+"$@"} ;;
   *.gz) gunzip < "$RPM_SOURCE_DIR/$patch" | $patch_command ${1+"$@"} ;;
+  *.xz)  unxz    < "$RPM_SOURCE_DIR/$patch" | $patch_command ${1+"$@"} ;;
   *) $patch_command ${1+"$@"} < "$RPM_SOURCE_DIR/$patch" ;;
   esac
 }
@@ -1177,7 +1128,6 @@ ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 #
 ApplyPatch arm-omap-dt-compat.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
-ApplyPatch arm-tegra-usb-no-reset.patch
 
 ApplyPatch taint-vbox.patch
 #
@@ -1216,9 +1166,6 @@ ApplyPatch acpi-sony-nonvs-blacklist.patch
 
 # force UTSNAME to show version 2.6.4X
 ApplyPatch force-version-2.6.patch
-
-# Various low-impact patches to aid debugging.
-ApplyPatch linux-2.6-debug-taint-vm.patch
 
 #
 # PCI
@@ -1278,9 +1225,6 @@ ApplyOptionalPatch drm-nouveau-updates.patch
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-i915-fbc-stfu.patch
-ApplyPatch drm-i915-sdvo-lvds-is-digital.patch
-
-ApplyPatch drm-lower-severity-radeon-lockup.diff
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
@@ -1294,21 +1238,12 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
 ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 
-# Platform fixes not sent for -stable
-ApplyPatch samsung-laptop-brightness-fixes-3.2.patch
-
 # Patches headed upstream
-ApplyPatch rcutree-avoid-false-quiescent-states.patch
 
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
-ApplyPatch add-appleir-usb-driver.patch
-
-ApplyPatch udlfb-bind-framebuffer-to-interface.patch
 ApplyPatch epoll-limit-paths.patch
-ApplyPatch rcu-avoid-just-onlined-cpu-resched.patch
 ApplyPatch block-stray-block-put-after-teardown.patch
-ApplyPatch HID-wacom-Set-input-bits-before-registration.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1316,46 +1251,18 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 ApplyPatch revert-efi-rtclock.patch
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
-ApplyPatch hvcs_pi_buf_alloc.patch
-
-ApplyPatch media-dib0700-correct-error-message.patch
-
 # utrace.
 ApplyPatch utrace.patch
 
-#rhbz #735946
-ApplyPatch 0001-mm-vmscan-Limit-direct-reclaim-for-higher-order-allo.patch
-ApplyPatch 0002-mm-Abort-reclaim-compaction-if-compaction-can-procee.patch
-ApplyPatch mm-do-not-stall-in-synchronous-compaction-for-THP-allocations.patch
-
-#rhbz 748691
-ApplyPatch be2net-non-member-vlan-pkts-not-received-in-promisco.patch
-ApplyPatch benet-remove-bogus-unlikely-on-vlan-check.patch
-
-#rhbz 736815
-ApplyPatch x86-code-dump-fix-truncation.patch
-
-#rhbz 728607
-ApplyPatch elantech.patch
-
-#backport brcm80211 from 3.2-rc1
-ApplyPatch brcm80211.patch
-# Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
-ApplyPatch bcma-brcmsmac-compat.patch
+#rhbz 752176
+ApplyPatch sysfs-msi-irq-per-device.patch
 
 # rhbz 754907
-ApplyPatch cciss-fix-irqf-shared.patch
 ApplyPatch hpsa-add-irqf-shared.patch
-
-#rhbz 731365
-ApplyPatch mac80211_offchannel_rework_revert.patch
 
 ApplyPatch pci-Rework-ASPM-disable-code.patch
 
 ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
-
-#rhbz #757839
-ApplyPatch net-sky2-88e8059-fix-link-speed.patch
 
 #rhbz 717735
 ApplyPatch nfs-client-freezer.patch
@@ -1363,15 +1270,13 @@ ApplyPatch nfs-client-freezer.patch
 #rhbz 590880
 ApplyPatch alps.patch
 
-#rhbz 741117
-ApplyPatch b44-Use-dev_kfree_skb_irq-in-b44_tx.patch
+#rhbz 746097
+ApplyPatch tpm_tis-delay-after-aborting-cmd.patch
 
-#rhbz 771006
-ApplyPatch thp-reduce-khugepaged-freezing-latency.patch
+#rhbz 771058
+ApplyPatch msi-irq-sysfs-warning.patch
 
-#rhbz 770233
-ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
-
+ApplyPatch ext4-Support-check-none-nocheck-mount-options.patch
 ApplyPatch ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
 ApplyPatch ext3-Fix-error-handling-on-inode-bitmap-corruption.patch
 
@@ -1382,24 +1287,18 @@ ApplyPatch KVM-x86-fix-missing-checks-in-syscall-emulation.patch
 #rhbz 728740
 ApplyPatch rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
-#rhbz 769911
-ApplyPatch 01-block-add-and-use-scsi_blk_cmd_ioctl.patch
-ApplyPatch 02-block-fail-SCSI-passthrough-ioctls-on-partition-devs.patch
-ApplyPatch 03-dm-dont-fwd-ioctls-from-LVs-to-underlying-dev.patch
-
 #rhbz 782686
 ApplyPatch procfs-parse-mount-options.patch
 ApplyPatch procfs-add-hidepid-and-gid-mount-options.patch
 ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
-#rhbz 782681
-ApplyPatch proc-clean-up-and-fix-proc-pid-mem-handling.patch
+ApplyPatch rcu-reintroduce-missing-calls.patch
 
-#rhbz 782687
-ApplyPatch loop-prevent-information-leak-after-failed-read.patch
+#rhbz 718790
+ApplyPatch rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
 
-#rhbz 781625
-ApplyPatch SCSI-sym53c8xx-Fix-NULL-pointer-dereference-in-slave.patch
+#rhbz 783211
+ApplyPatch fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2048,6 +1947,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jan 30 2012 Dave Jones <davej@redhat.com> 2.6.42.2-1
+- Rebase to 3.2.2
+
 * Mon Jan 23 2012 Josh Boyer <jwboyer@redhat.com> 2.6.41.10-3
 - Fix NULL pointer dereference in sym53c8xx module (rhbz 781625)
 
