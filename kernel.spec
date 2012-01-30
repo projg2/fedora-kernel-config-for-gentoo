@@ -830,6 +830,8 @@ Patch50106: mac80211-update-oper_channel-on-ibss-join.patch
 Patch50107: mac80211-set-bss_conf.idle-when-vif-is-connected.patch
 Patch50108: iwlwifi-fix-PCI-E-transport-inta-race.patch
 
+Patch50200: ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1596,6 +1598,8 @@ ApplyPatch mac80211-update-oper_channel-on-ibss-join.patch
 ApplyPatch mac80211-set-bss_conf.idle-when-vif-is-connected.patch
 ApplyPatch iwlwifi-fix-PCI-E-transport-inta-race.patch
 
+ApplyPatch ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
+
 cd ..
 
 %endif
@@ -2311,6 +2315,7 @@ fi
 - mac80211: update oper_channel on ibss join
 - mac80211: set bss_conf.idle when vif is connected
 - iwlwifi: fix PCI-E transport "inta" race
+- ath9k: use WARN_ON_ONCE in ath_rc_get_highest_rix
 
 * Fri Jan 27 2012 John W. Linville <linville@redhat.com>
 - Include config.mk from compat-wireless build in files for installation
