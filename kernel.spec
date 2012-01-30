@@ -1953,6 +1953,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jan 30 2012 Dave Jones <davej@redhat.com>
+- Restore the Savage DRM and several others that were accidentally early-deprecated.
+
 * Mon Jan 30 2012 John W. Linville <linville@redhat.com>
 - Reinstate patch to remove overlap between bcma/b43 and brcmsmac
 
