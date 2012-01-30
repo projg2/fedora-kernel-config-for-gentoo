@@ -824,7 +824,7 @@ Patch50100: compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 Patch50101: mac80211-fix-debugfs-key-station-symlink.patch
 Patch50102: brcmsmac-fix-tx-queue-flush-infinite-loop.patch
 Patch50103: mac80211-Use-the-right-headroom-size-for-mesh-mgmt-f.patch
-Patch50104: mac80211-fix-work-removal-on-deauth-request.patch
+# mac80211-fix-work-removal-on-deauth-request.patch is patch 21227
 Patch50105: b43-add-option-to-avoid-duplicating-device-support-w.patch
 Patch50106: mac80211-update-oper_channel-on-ibss-join.patch
 Patch50107: mac80211-set-bss_conf.idle-when-vif-is-connected.patch
