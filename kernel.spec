@@ -820,9 +820,15 @@ Patch50002: compat-wireless-integrated-build.patch
 
 Patch50100: compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
-# Remove overlapping hardware support between b43 and brcmsmac
-Patch50101: b43-add-option-to-avoid-duplicating-device-support-w.patch
-
+# Pending upstream fixes
+Patch50101: mac80211-fix-debugfs-key-station-symlink.patch
+Patch50102: brcmsmac-fix-tx-queue-flush-infinite-loop.patch
+Patch50103: mac80211-Use-the-right-headroom-size-for-mesh-mgmt-f.patch
+Patch50104: mac80211-fix-work-removal-on-deauth-request.patch
+Patch50105: b43-add-option-to-avoid-duplicating-device-support-w.patch
+Patch50106: mac80211-update-oper_channel-on-ibss-join.patch
+Patch50107: mac80211-set-bss_conf.idle-when-vif-is-connected.patch
+Patch50108: iwlwifi-fix-PCI-E-transport-inta-race.patch
 
 %endif
 
@@ -1579,10 +1585,16 @@ cd compat-wireless-%{cwversion}
 ApplyPatch compat-wireless-config-fixups.patch
 ApplyPatch compat-wireless-pr_fmt-warning-avoidance.patch
 ApplyPatch compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
-ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
 
-# Remove overlapping hardware support between b43 and brcmsmac
+# Pending upstream fixes
+ApplyPatch mac80211-fix-debugfs-key-station-symlink.patch
+ApplyPatch brcmsmac-fix-tx-queue-flush-infinite-loop.patch
+ApplyPatch mac80211-Use-the-right-headroom-size-for-mesh-mgmt-f.patch
+ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
 ApplyPatch b43-add-option-to-avoid-duplicating-device-support-w.patch
+ApplyPatch mac80211-update-oper_channel-on-ibss-join.patch
+ApplyPatch mac80211-set-bss_conf.idle-when-vif-is-connected.patch
+ApplyPatch iwlwifi-fix-PCI-E-transport-inta-race.patch
 
 cd ..
 
@@ -2291,6 +2303,14 @@ fi
 %changelog
 * Mon Jan 30 2012 John W. Linville <linville@redhat.com>
 - Use the eeprom_93cx6 driver from the compat-wireless package
+- mac80211: fix debugfs key->station symlink
+- brcmsmac: fix tx queue flush infinite loop
+- mac80211: Use the right headroom size for mesh mgmt frames
+- mac80211: fix work removal on deauth request
+- b43: add option to avoid duplicating device support with brcmsmac
+- mac80211: update oper_channel on ibss join
+- mac80211: set bss_conf.idle when vif is connected
+- iwlwifi: fix PCI-E transport "inta" race
 
 * Fri Jan 27 2012 John W. Linville <linville@redhat.com>
 - Include config.mk from compat-wireless build in files for installation

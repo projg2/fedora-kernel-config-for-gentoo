@@ -1,7 +1,7 @@
 From 4f3d09de38d234ce7ffba5ec5a7e6704f983d375 Mon Sep 17 00:00:00 2001
 From: John W. Linville <linville@tuxdriver.com>
 Date: Wed, 11 Jan 2012 15:50:15 -0500
-Subject: [PATCH] b43: add option to avoid duplicating device support with
+Subject: [PATCH 5/8] b43: add option to avoid duplicating device support with
  brcmsmac
 
 Signed-off-by: John W. Linville <linville@tuxdriver.com>

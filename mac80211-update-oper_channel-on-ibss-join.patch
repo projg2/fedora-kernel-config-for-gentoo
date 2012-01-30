@@ -1,0 +1,31 @@
+From ba1960257c5980f9b58057995ce3394bd8e48ca3 Mon Sep 17 00:00:00 2001
+From: Eliad Peller <eliad@wizery.com>
+Date: Tue, 10 Jan 2012 15:19:54 +0200
+Subject: [PATCH 6/8] mac80211: update oper_channel on ibss join
+
+Commit 13c40c5 ("mac80211: Add HT operation modes for IBSS") broke
+ibss operation by mistakenly removing the local->oper_channel
+update (causing ibss to start on the wrong channel). fix it.
+
+Signed-off-by: Eliad Peller <eliad@wizery.com>
+Acked-by: Simon Wunderlich <siwu@hrz.tu-chemnitz.de>
+Signed-off-by: John W. Linville <linville@tuxdriver.com>
+---
+ net/mac80211/ibss.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/net/mac80211/ibss.c b/net/mac80211/ibss.c
+index b3d76b7..a464396 100644
+--- a/net/mac80211/ibss.c
++++ b/net/mac80211/ibss.c
+@@ -106,6 +106,7 @@ static void __ieee80211_sta_join_ibss(struct ieee80211_sub_if_data *sdata,
+ 
+ 	sdata->drop_unencrypted = capability & WLAN_CAPABILITY_PRIVACY ? 1 : 0;
+ 
++	local->oper_channel = chan;
+ 	channel_type = ifibss->channel_type;
+ 	if (channel_type > NL80211_CHAN_HT20 &&
+ 	    !cfg80211_can_beacon_sec_chan(local->hw.wiphy, chan, channel_type))
+-- 
+1.7.4.4
+
