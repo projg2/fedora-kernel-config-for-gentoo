@@ -11,12 +11,6 @@ diff -up compat-wireless-3.3-rc1-2/config.mk.orig compat-wireless-3.3-rc1-2/conf
  ifneq ($(wildcard $(KLIB_BUILD)/Makefile),)
  
  COMPAT_LATEST_VERSION = 3
-diff -up compat-wireless-3.3-rc1-2/drivers/misc/eeprom/Makefile.orig compat-wireless-3.3-rc1-2/drivers/misc/eeprom/Makefile
---- compat-wireless-3.3-rc1-2/drivers/misc/eeprom/Makefile.orig	2012-01-21 02:08:39.000000000 -0500
-+++ compat-wireless-3.3-rc1-2/drivers/misc/eeprom/Makefile	2012-01-24 15:16:38.204409844 -0500
-@@ -1 +1 @@
--obj-$(CONFIG_EEPROM_93CX6)	+= eeprom_93cx6.o
-+#obj-$(CONFIG_EEPROM_93CX6)	+= eeprom_93cx6.o
 diff -up compat-wireless-3.3-rc1-2/drivers/net/ethernet/atheros/Makefile.orig compat-wireless-3.3-rc1-2/drivers/net/ethernet/atheros/Makefile
 --- compat-wireless-3.3-rc1-2/drivers/net/ethernet/atheros/Makefile.orig	2012-01-21 02:08:39.000000000 -0500
 +++ compat-wireless-3.3-rc1-2/drivers/net/ethernet/atheros/Makefile	2012-01-24 15:16:38.204409844 -0500

@@ -17,6 +17,11 @@
 # CONFIG_B43_BCMA is not set
 
 #
+# Several wireless drivers have this chip, use the backported driver version
+#
+# CONFIG_EEPROM_93CX6 is not set
+
+#
 # These have to be turned-on again since compat-wireless does not
 # provide them...
 #

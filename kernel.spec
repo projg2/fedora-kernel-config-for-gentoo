@@ -2289,6 +2289,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jan 30 2012 John W. Linville <linville@redhat.com>
+- Use the eeprom_93cx6 driver from the compat-wireless package
+
 * Fri Jan 27 2012 John W. Linville <linville@redhat.com>
 - Include config.mk from compat-wireless build in files for installation
 
