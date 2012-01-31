@@ -1959,6 +1959,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 31 2012 Dennis Gilmore <dennis@ausil.us>
+- diable TOUCHSCREEN_EETI on all arm arches 
+
 * Mon Jan 30 2012 Dave Jones <davej@redhat.com>
 - Enable kmemleak (off by default) in kernel-debug (rhbz 782419)
 
