@@ -828,6 +828,7 @@ Patch50107: mac80211-set-bss_conf.idle-when-vif-is-connected.patch
 Patch50108: iwlwifi-fix-PCI-E-transport-inta-race.patch
 
 Patch50200: ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
+Patch50201: iwlwifi-bz785561.patch
 
 %endif
 
@@ -1597,6 +1598,8 @@ ApplyPatch iwlwifi-fix-PCI-E-transport-inta-race.patch
 
 ApplyPatch ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
 
+ApplyPatch iwlwifi-bz785561.patch
+
 cd ..
 
 %endif
@@ -2302,6 +2305,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jan 31 2012 John W. Linville <linville@redhat.com>
+- Apply iwlwifi patch for TID issue (rhbz 785561)
+
 * Mon Jan 30 2012 Dave Jones <davej@redhat.com>
 - Enable kmemleak (off by default) in kernel-debug (rhbz 782419)
 
