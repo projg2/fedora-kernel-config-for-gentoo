@@ -1963,6 +1963,9 @@ fi
 # and build.
 
 %changelog
+* Wed Feb 01 2012 Dave Jones <davej@redhat.com>
+- Revert the f16 use-ext4-for-ext2/ext3 change.
+
 * Tue Jan 31 2012 Dennis Gilmore <dennis@ausil.us>
 - diable TOUCHSCREEN_EETI on all arm arches 
 - add patch for arm mtd
