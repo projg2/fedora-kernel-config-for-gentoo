@@ -1964,6 +1964,9 @@ fi
 
 %changelog
 * Wed Feb 01 2012 Dave Jones <davej@redhat.com>
+- Revert more f16 config changes that shouldn't be in f15.
+
+* Wed Feb 01 2012 Dave Jones <davej@redhat.com>
 - Revert the f16 use-ext4-for-ext2/ext3 change.
 
 * Tue Jan 31 2012 Dennis Gilmore <dennis@ausil.us>
