@@ -2308,11 +2308,11 @@ fi
 
 %changelog
 * Wed Feb  1 2012 John W. Linville <linville@redhat.com>
-- Use "iwlwifi: don't mess up QoS counters with non-QoS frames" (rhbz 785561)
+- Use "iwlwifi: don't mess up QoS counters with non-QoS frames" (rhbz 785239)
 - Actually apply patch to make integrated compat-wireless avoid taint...
 
 * Tue Jan 31 2012 John W. Linville <linville@redhat.com>
-- Apply iwlwifi patch for TID issue (rhbz 785561)
+- Apply iwlwifi patch for TID issue (rhbz 785239)
 
 * Mon Jan 30 2012 Dave Jones <davej@redhat.com>
 - Enable kmemleak (off by default) in kernel-debug (rhbz 782419)
