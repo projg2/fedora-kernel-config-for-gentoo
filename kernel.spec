@@ -1967,6 +1967,8 @@ fi
 - diable TOUCHSCREEN_EETI on all arm arches 
 - add patch for arm mtd
 - add patch for stmmac on arm
+- disable USB_IMX21_HCD pn imx
+- enable CACHE_L2X0 on imx
 
 * Mon Jan 30 2012 Dave Jones <davej@redhat.com>
 - Enable kmemleak (off by default) in kernel-debug (rhbz 782419)
