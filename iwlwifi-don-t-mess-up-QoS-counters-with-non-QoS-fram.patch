@@ -1,0 +1,89 @@
+From 3d29dd9b5b160ba4542a9b8f869a220559e633a0 Mon Sep 17 00:00:00 2001
+From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Date: Wed, 1 Feb 2012 07:01:32 -0800
+Subject: [PATCH] iwlwifi: don't mess up QoS counters with non-QoS frames
+
+In my AMPDU rework, I rely on the sequence numbers of frames. But
+I didn't check that the frame has a valid tid before updating the
+tracking counters. As a result, the Tx queues were stalled. People
+who hit this bug saw that we simply didn't let any data out.
+
+This bug was introduced in 3.3.
+
+This patch fixes that and checks that the frame is a QoS frame before
+looking at its tid and changing the counters.
+
+Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Signed-off-by: Wey-Yi Guy <wey-yi.w.guy@intel.com>
+Signed-off-by: John W. Linville <linville@tuxdriver.com>
+---
+ drivers/net/wireless/iwlwifi/iwl-agn-tx.c     |   12 +++++++++---
+ drivers/net/wireless/iwlwifi/iwl-commands.h   |    1 +
+ drivers/net/wireless/iwlwifi/iwl-trans-pcie.c |    1 +
+ 3 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/iwlwifi/iwl-agn-tx.c b/drivers/net/wireless/iwlwifi/iwl-agn-tx.c
+index 339e8d9..63bbc60 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-agn-tx.c
++++ b/drivers/net/wireless/iwlwifi/iwl-agn-tx.c
+@@ -91,6 +91,7 @@ static void iwlagn_tx_cmd_build_basic(struct iwl_priv *priv,
+ 		tx_cmd->tid_tspec = qc[0] & 0xf;
+ 		tx_flags &= ~TX_CMD_FLG_SEQ_CTL_MSK;
+ 	} else {
++		tx_cmd->tid_tspec = IWL_TID_NON_QOS;
+ 		if (info->flags & IEEE80211_TX_CTL_ASSIGN_SEQ)
+ 			tx_flags |= TX_CMD_FLG_SEQ_CTL_MSK;
+ 		else
+@@ -808,6 +809,8 @@ static void iwl_rx_reply_tx_agg(struct iwl_priv *priv,
+ 	u32 status = le16_to_cpu(tx_resp->status.status);
+ 	int i;
+ 
++	WARN_ON(tid == IWL_TID_NON_QOS);
++
+ 	if (agg->wait_for_ba)
+ 		IWL_DEBUG_TX_REPLY(priv,
+ 			"got tx response w/o block-ack\n");
+@@ -1035,10 +1038,13 @@ int iwlagn_rx_reply_tx(struct iwl_priv *priv, struct iwl_rx_mem_buffer *rxb,
+ 		}
+ 
+ 		__skb_queue_head_init(&skbs);
+-		priv->tid_data[sta_id][tid].next_reclaimed = next_reclaimed;
+ 
+-		IWL_DEBUG_TX_REPLY(priv, "Next reclaimed packet:%d",
+-					  next_reclaimed);
++		if (tid != IWL_TID_NON_QOS) {
++			priv->tid_data[sta_id][tid].next_reclaimed =
++				next_reclaimed;
++			IWL_DEBUG_TX_REPLY(priv, "Next reclaimed packet:%d",
++						  next_reclaimed);
++		}
+ 
+ 		/*we can free until ssn % q.n_bd not inclusive */
+ 		WARN_ON(iwl_trans_reclaim(trans(priv), sta_id, tid, txq_id,
+diff --git a/drivers/net/wireless/iwlwifi/iwl-commands.h b/drivers/net/wireless/iwlwifi/iwl-commands.h
+index 265de39..f822ac4 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-commands.h
++++ b/drivers/net/wireless/iwlwifi/iwl-commands.h
+@@ -815,6 +815,7 @@ struct iwl_qosparam_cmd {
+ 
+ #define	IWL_INVALID_STATION 	255
+ #define IWL_MAX_TID_COUNT	8
++#define IWL_TID_NON_QOS IWL_MAX_TID_COUNT
+ 
+ #define STA_FLG_TX_RATE_MSK		cpu_to_le32(1 << 2)
+ #define STA_FLG_PWR_SAVE_MSK		cpu_to_le32(1 << 8)
+diff --git a/drivers/net/wireless/iwlwifi/iwl-trans-pcie.c b/drivers/net/wireless/iwlwifi/iwl-trans-pcie.c
+index 67d6e32..324d06d 100644
+--- a/drivers/net/wireless/iwlwifi/iwl-trans-pcie.c
++++ b/drivers/net/wireless/iwlwifi/iwl-trans-pcie.c
+@@ -1262,6 +1262,7 @@ static int iwl_trans_pcie_reclaim(struct iwl_trans *trans, int sta_id, int tid,
+ 	txq->time_stamp = jiffies;
+ 
+ 	if (unlikely(txq_id >= IWLAGN_FIRST_AMPDU_QUEUE &&
++		     tid != IWL_TID_NON_QOS &&
+ 		     txq_id != trans_pcie->agg_txq[sta_id][tid])) {
+ 		/*
+ 		 * FIXME: this is a uCode bug which need to be addressed,
+-- 
+1.7.4.4
+

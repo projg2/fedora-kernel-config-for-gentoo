@@ -828,7 +828,7 @@ Patch50107: mac80211-set-bss_conf.idle-when-vif-is-connected.patch
 Patch50108: iwlwifi-fix-PCI-E-transport-inta-race.patch
 
 Patch50200: ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
-Patch50201: iwlwifi-bz785561.patch
+Patch50201: iwlwifi-don-t-mess-up-QoS-counters-with-non-QoS-fram.patch
 
 %endif
 
@@ -1584,6 +1584,8 @@ cd compat-wireless-%{cwversion}
 
 ApplyPatch compat-wireless-config-fixups.patch
 ApplyPatch compat-wireless-pr_fmt-warning-avoidance.patch
+ApplyPatch compat-wireless-integrated-build.patch
+
 ApplyPatch compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
 # Pending upstream fixes
@@ -1598,7 +1600,7 @@ ApplyPatch iwlwifi-fix-PCI-E-transport-inta-race.patch
 
 ApplyPatch ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
 
-ApplyPatch iwlwifi-bz785561.patch
+ApplyPatch iwlwifi-don-t-mess-up-QoS-counters-with-non-QoS-fram.patch
 
 cd ..
 
@@ -2305,6 +2307,10 @@ fi
 # and build.
 
 %changelog
+* Wed Feb  1 2012 John W. Linville <linville@redhat.com>
+- Use "iwlwifi: don't mess up QoS counters with non-QoS frames" (rhbz 785561)
+- Actually apply patch to make integrated compat-wireless avoid taint...
+
 * Tue Jan 31 2012 John W. Linville <linville@redhat.com>
 - Apply iwlwifi patch for TID issue (rhbz 785561)
 
