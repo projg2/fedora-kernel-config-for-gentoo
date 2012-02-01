@@ -655,6 +655,7 @@ Patch20000: utrace.patch
 # Flattened devicetree support
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
+Patch21002: arm-build-bug-on.patch
 
 #rhbz 717735
 Patch21045: nfs-client-freezer.patch
@@ -1134,6 +1135,7 @@ ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 #
 ApplyPatch arm-omap-dt-compat.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
+ApplyPatch arm-build-bug-on.patch
 
 ApplyPatch taint-vbox.patch
 #
@@ -1961,6 +1963,7 @@ fi
 %changelog
 * Tue Jan 31 2012 Dennis Gilmore <dennis@ausil.us>
 - diable TOUCHSCREEN_EETI on all arm arches 
+- add patch for arm mtd
 
 * Mon Jan 30 2012 Dave Jones <davej@redhat.com>
 - Enable kmemleak (off by default) in kernel-debug (rhbz 782419)
