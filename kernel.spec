@@ -657,6 +657,7 @@ Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 Patch21002: arm-build-bug-on.patch
 Patch21003: arm-stmmac-mmc-core.patch
+Patch21004: arm-tegra-nvec-kconfig.patch
 
 #rhbz 717735
 Patch21045: nfs-client-freezer.patch
@@ -1138,6 +1139,7 @@ ApplyPatch arm-omap-dt-compat.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 ApplyPatch arm-build-bug-on.patch
 ApplyPatch arm-stmmac-mmc-core.patch
+ApplyPatch arm-tegra-nvec-kconfig.patch
 
 ApplyPatch taint-vbox.patch
 #
@@ -1963,6 +1965,10 @@ fi
 # and build.
 
 %changelog
+* Thu Feb 02 2012 Dennis Gilmore <dennis@ausil.us>
+- add patch to ensure that mfd-core is builtin when building nvec on tegra
+- build nvec-leds on tegra kernel
+
 * Wed Feb 01 2012 Dave Jones <davej@redhat.com>
 - Revert more f16 config changes that shouldn't be in f15.
 
