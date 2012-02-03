@@ -815,9 +815,14 @@ Patch50105: b43-add-option-to-avoid-duplicating-device-support-w.patch
 Patch50106: mac80211-update-oper_channel-on-ibss-join.patch
 Patch50107: mac80211-set-bss_conf.idle-when-vif-is-connected.patch
 Patch50108: iwlwifi-fix-PCI-E-transport-inta-race.patch
+Patch50109: bcma-Fix-mem-leak-in-bcma_bus_scan.patch
+Patch50110: rt2800lib-fix-wrong-128dBm-when-signal-is-stronger-t.patch
+Patch50111: iwlwifi-make-Tx-aggregation-enabled-on-ra-be-at-DEBU.patch
+Patch50112: ssb-fix-cardbus-slot-in-hostmode.patch
+Patch50113: iwlwifi-don-t-mess-up-QoS-counters-with-non-QoS-fram.patch
+Patch50114: mac80211-timeout-a-single-frame-in-the-rx-reorder-bu.patch
 
 Patch50200: ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
-Patch50201: iwlwifi-don-t-mess-up-QoS-counters-with-non-QoS-fram.patch
 
 %endif
 
@@ -1575,10 +1580,15 @@ ApplyPatch b43-add-option-to-avoid-duplicating-device-support-w.patch
 ApplyPatch mac80211-update-oper_channel-on-ibss-join.patch
 ApplyPatch mac80211-set-bss_conf.idle-when-vif-is-connected.patch
 ApplyPatch iwlwifi-fix-PCI-E-transport-inta-race.patch
+ApplyPatch bcma-Fix-mem-leak-in-bcma_bus_scan.patch
+ApplyPatch rt2800lib-fix-wrong-128dBm-when-signal-is-stronger-t.patch
+ApplyPatch iwlwifi-make-Tx-aggregation-enabled-on-ra-be-at-DEBU.patch
+ApplyPatch ssb-fix-cardbus-slot-in-hostmode.patch
+ApplyPatch iwlwifi-don-t-mess-up-QoS-counters-with-non-QoS-fram.patch
+ApplyPatch mac80211-timeout-a-single-frame-in-the-rx-reorder-bu.patch
 
 ApplyPatch ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
 
-ApplyPatch iwlwifi-don-t-mess-up-QoS-counters-with-non-QoS-fram.patch
 ApplyPatch rt2x00_fix_MCU_request_failures.patch
 
 cd ..
@@ -2286,6 +2296,13 @@ fi
 # and build.
 
 %changelog
+* Fri Feb  3 2012 John W. Linville <linville@redhat.com>
+- bcma: Fix mem leak in bcma_bus_scan()
+- rt2800lib: fix wrong -128dBm when signal is stronger than -12dBm
+- iwlwifi: make "Tx aggregation enabled on ra =" be at DEBUG level
+- ssb: fix cardbus slot in hostmode
+- mac80211: timeout a single frame in the rx reorder buffer
+
 * Fri Feb 03 2012 Dave Jones <davej@redhat.com>
 - Linux 3.2.3
 
