@@ -2300,7 +2300,7 @@ fi
 - ssb: fix cardbus slot in hostmode
 - mac80211: timeout a single frame in the rx reorder buffer
 
-* Fri Feb 03 2012 Dave Jones <davej@redhat.com>
+* Fri Feb 03 2012 Dave Jones <davej@redhat.com> 3.2.3-1
 - Linux 3.2.3
 
 * Fri Feb 03 2012 Josh Boyer <jwboyer@redhat.com>
