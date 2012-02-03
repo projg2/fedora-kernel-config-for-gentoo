@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -763,9 +763,6 @@ Patch21045: nfs-client-freezer.patch
 #rhbz 590880
 Patch21046: alps.patch
 
-#rhbz 746097
-Patch21049: tpm_tis-delay-after-aborting-cmd.patch
-
 Patch21070: ext4-Support-check-none-nocheck-mount-options.patch
 Patch21071: ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
 
@@ -800,18 +797,8 @@ Patch21225: pci-Rework-ASPM-disable-code.patch
 
 Patch21226: pci-crs-blacklist.patch
 
-Patch21227: mac80211-fix-work-removal-on-deauth-request.patch
-
-#rhbz 718790
-Patch21230: rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
-
-#rhbz 784345
-Patch21231: realtek_async_autopm.patch
-
 #rhbz 772772
 Patch21232: rt2x00_fix_MCU_request_failures.patch
-
-Patch22000: rcu-reintroduce-missing-calls.patch
 
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
@@ -824,7 +811,6 @@ Patch50100: compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 Patch50101: mac80211-fix-debugfs-key-station-symlink.patch
 Patch50102: brcmsmac-fix-tx-queue-flush-infinite-loop.patch
 Patch50103: mac80211-Use-the-right-headroom-size-for-mesh-mgmt-f.patch
-# mac80211-fix-work-removal-on-deauth-request.patch is patch 21227
 Patch50105: b43-add-option-to-avoid-duplicating-device-support-w.patch
 Patch50106: mac80211-update-oper_channel-on-ibss-join.patch
 Patch50107: mac80211-set-bss_conf.idle-when-vif-is-connected.patch
@@ -1488,9 +1474,6 @@ ApplyPatch nfs-client-freezer.patch
 #rhbz 590880
 ApplyPatch alps.patch
 
-#rhbz 746097
-ApplyPatch tpm_tis-delay-after-aborting-cmd.patch
-
 #rhbz 771058
 ApplyPatch msi-irq-sysfs-warning.patch
 
@@ -1510,18 +1493,8 @@ ApplyPatch procfs-parse-mount-options.patch
 ApplyPatch procfs-add-hidepid-and-gid-mount-options.patch
 ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
-ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
-
-ApplyPatch rcu-reintroduce-missing-calls.patch
-
-#rhbz 718790
-ApplyPatch rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
-
 #rhbz 783211
 ApplyPatch fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
-
-#rhbz 784345
-ApplyPatch realtek_async_autopm.patch
 
 #rhbz 772772
 ApplyPatch rt2x00_fix_MCU_request_failures.patch
@@ -1598,7 +1571,6 @@ ApplyPatch compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 ApplyPatch mac80211-fix-debugfs-key-station-symlink.patch
 ApplyPatch brcmsmac-fix-tx-queue-flush-infinite-loop.patch
 ApplyPatch mac80211-Use-the-right-headroom-size-for-mesh-mgmt-f.patch
-ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
 ApplyPatch b43-add-option-to-avoid-duplicating-device-support-w.patch
 ApplyPatch mac80211-update-oper_channel-on-ibss-join.patch
 ApplyPatch mac80211-set-bss_conf.idle-when-vif-is-connected.patch
@@ -2314,6 +2286,9 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 03 2012 Dave Jones <davej@redhat.com>
+- Linux 3.2.3
+
 * Fri Feb 03 2012 Josh Boyer <jwboyer@redhat.com>
 - Patch from Jakub Kicinski to fix rt2x00 MCU requests (rhbz 772772)
 
