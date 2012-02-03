@@ -808,6 +808,9 @@ Patch21230: rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
 #rhbz 784345
 Patch21231: realtek_async_autopm.patch
 
+#rhbz 772772
+Patch21232: rt2x00_fix_MCU_request_failures.patch
+
 Patch22000: rcu-reintroduce-missing-calls.patch
 
 # compat-wireless patches
@@ -1520,6 +1523,9 @@ ApplyPatch fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
 #rhbz 784345
 ApplyPatch realtek_async_autopm.patch
 
+#rhbz 772772
+ApplyPatch rt2x00_fix_MCU_request_failures.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -1601,6 +1607,7 @@ ApplyPatch iwlwifi-fix-PCI-E-transport-inta-race.patch
 ApplyPatch ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
 
 ApplyPatch iwlwifi-don-t-mess-up-QoS-counters-with-non-QoS-fram.patch
+ApplyPatch rt2x00_fix_MCU_request_failures.patch
 
 cd ..
 
@@ -2307,6 +2314,9 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 03 2012 Josh Boyer <jwboyer@redhat.com>
+- Patch from Jakub Kicinski to fix rt2x00 MCU requests (rhbz 772772)
+
 * Wed Feb  1 2012 John W. Linville <linville@redhat.com>
 - Use "iwlwifi: don't mess up QoS counters with non-QoS frames" (rhbz 785239)
 - Actually apply patch to make integrated compat-wireless avoid taint...
