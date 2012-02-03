@@ -784,9 +784,6 @@ Patch21082: procfs-parse-mount-options.patch
 Patch21083: procfs-add-hidepid-and-gid-mount-options.patch
 Patch21084: proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
-#rhbz 783211
-Patch21087: fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
-
 #rhbz 771058
 Patch22100: msi-irq-sysfs-warning.patch
 
@@ -1497,9 +1494,6 @@ ApplyPatch rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 ApplyPatch procfs-parse-mount-options.patch
 ApplyPatch procfs-add-hidepid-and-gid-mount-options.patch
 ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
-
-#rhbz 783211
-ApplyPatch fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
 
 #rhbz 772772
 ApplyPatch rt2x00_fix_MCU_request_failures.patch
@@ -2296,6 +2290,9 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 03 2012 Josh Boyer <jwboyer@redhat.com>
+- Drop patch that was NAKed upstream (rhbz 783211)
+
 * Fri Feb  3 2012 John W. Linville <linville@redhat.com>
 - bcma: Fix mem leak in bcma_bus_scan()
 - rt2800lib: fix wrong -128dBm when signal is stronger than -12dBm
