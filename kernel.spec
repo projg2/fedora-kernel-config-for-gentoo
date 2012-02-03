@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -665,9 +665,6 @@ Patch21045: nfs-client-freezer.patch
 #rhbz 590880
 Patch21046: alps.patch
 
-#rhbz 746097
-Patch21049: tpm_tis-delay-after-aborting-cmd.patch
-
 Patch21070: ext4-Support-check-none-nocheck-mount-options.patch
 Patch21071: ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
 Patch21072: ext3-Fix-error-handling-on-inode-bitmap-corruption.patch
@@ -703,16 +700,6 @@ Patch21100: msi-irq-sysfs-warning.patch
 Patch21101: hpsa-add-irqf-shared.patch
 
 Patch21225: pci-Rework-ASPM-disable-code.patch
-
-Patch21227: mac80211-fix-work-removal-on-deauth-request.patch
-
-#rhbz 718790
-Patch21230: rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
-
-#rhbz 784345
-Patch21231: realtek_async_autopm.patch
-
-Patch22000: rcu-reintroduce-missing-calls.patch
 
 %endif
 
@@ -1274,16 +1261,11 @@ ApplyPatch hpsa-add-irqf-shared.patch
 
 ApplyPatch pci-Rework-ASPM-disable-code.patch
 
-ApplyPatch mac80211-fix-work-removal-on-deauth-request.patch
-
 #rhbz 717735
 ApplyPatch nfs-client-freezer.patch
 
 #rhbz 590880
 ApplyPatch alps.patch
-
-#rhbz 746097
-ApplyPatch tpm_tis-delay-after-aborting-cmd.patch
 
 #rhbz 771058
 ApplyPatch msi-irq-sysfs-warning.patch
@@ -1304,19 +1286,11 @@ ApplyPatch procfs-parse-mount-options.patch
 ApplyPatch procfs-add-hidepid-and-gid-mount-options.patch
 ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
-ApplyPatch rcu-reintroduce-missing-calls.patch
-
-#rhbz 718790
-ApplyPatch rds-Make-rds_sock_lock-BH-rather-than-IRQ-safe.patch
-
 #rhbz 783211
 ApplyPatch fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
-
-#rhbz 784345
-ApplyPatch realtek_async_autopm.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1965,6 +1939,9 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 03 2012 Dave Jones <davej@redhat.com>
+- Linux 3.2.3
+
 * Thu Feb 02 2012 Dennis Gilmore <dennis@ausil.us>
 - add patch to ensure that mfd-core is builtin when building nvec on tegra
 - build nvec-leds on tegra kernel
