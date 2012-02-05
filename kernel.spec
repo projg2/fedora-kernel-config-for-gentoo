@@ -642,7 +642,8 @@ Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch12026: block-stray-block-put-after-teardown.patch
+Patch12025: block-readahead-block-plug.patch
+
 Patch12030: epoll-limit-paths.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
@@ -1242,7 +1243,7 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch epoll-limit-paths.patch
-ApplyPatch block-stray-block-put-after-teardown.patch
+ApplyPatch block-readahead-block-plug.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1939,6 +1940,10 @@ fi
 # and build.
 
 %changelog
+* Sun Feb 05 2012 Dave Jones <davej@redhat.com>
+- Remove unnecessary block-stray-block-put-after-teardown.patch
+- readahead: fix pipeline break caused by block plug
+
 * Fri Feb 03 2012 Dave Jones <davej@redhat.com>
 - Linux 3.2.3
 
