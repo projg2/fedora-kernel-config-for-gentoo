@@ -821,6 +821,8 @@ Patch50113: iwlwifi-don-t-mess-up-QoS-counters-with-non-QoS-fram.patch
 Patch50114: mac80211-timeout-a-single-frame-in-the-rx-reorder-bu.patch
 
 Patch50200: ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
+Patch50201: ath9k-fix-a-WEP-crypto-related-regression.patch
+Patch50202: ath9k_hw-fix-a-RTS-CTS-timeout-regression.patch
 
 %endif
 
@@ -1583,6 +1585,8 @@ ApplyPatch iwlwifi-don-t-mess-up-QoS-counters-with-non-QoS-fram.patch
 ApplyPatch mac80211-timeout-a-single-frame-in-the-rx-reorder-bu.patch
 
 ApplyPatch ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
+ApplyPatch ath9k-fix-a-WEP-crypto-related-regression.patch
+ApplyPatch ath9k_hw-fix-a-RTS-CTS-timeout-regression.patch
 
 ApplyPatch rt2x00_fix_MCU_request_failures.patch
 
@@ -2291,6 +2295,10 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 06 2012 John W. Linville <linville@redhat.com>
+- ath9k: fix a WEP crypto related regression
+- ath9k_hw: fix a RTS/CTS timeout regression
+
 * Sun Feb 05 2012 Dave Jones <davej@redhat.com>
 - Remove unnecessary block-stray-block-put-after-teardown.patch
 - readahead: fix pipeline break caused by block plug
