@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1813,7 +1813,12 @@ BuildKernel() {
     # Move the devel headers out of the root file system
     mkdir -p $RPM_BUILD_ROOT/usr/src/kernels
     mv $RPM_BUILD_ROOT/lib/modules/$KernelVer/build $RPM_BUILD_ROOT/$DevelDir
-    ln -sf ../../..$DevelDir $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+
+    # This is going to create a broken link during the build, but we don't use
+    # it after this point.  We need the link to actually point to something
+    # when kernel-devel is installed, and a relative link doesn't work across
+    # the F17 UsrMove feature.
+    ln -sf $DevelDir $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
@@ -2291,6 +2296,9 @@ fi
 # and build.
 
 %changelog
+* Tue Feb 07 2012 Josh Boyer <jwboyer@redhat.com>
+- Make build/ point to /usr/src/kernels instead of being relative (rhbz 788125)
+
 * Mon Feb 06 2012 Josh Boyer <jwboyer@redhat.com>
 - Linux 3.2.5.  Happy Birthday
 
