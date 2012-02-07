@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 5
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -791,8 +791,6 @@ Patch22100: msi-irq-sysfs-warning.patch
 # rhbz 754907
 Patch21101: hpsa-add-irqf-shared.patch
 
-Patch21225: pci-Rework-ASPM-disable-code.patch
-
 Patch21226: pci-crs-blacklist.patch
 
 #rhbz 772772
@@ -1468,8 +1466,6 @@ ApplyPatch sysfs-msi-irq-per-device.patch
 
 # rhbz 754907
 ApplyPatch hpsa-add-irqf-shared.patch
-
-ApplyPatch pci-Rework-ASPM-disable-code.patch
 
 #ApplyPatch pci-crs-blacklist.patch
 
@@ -2295,6 +2291,9 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 06 2012 Josh Boyer <jwboyer@redhat.com>
+- Linux 3.2.5.  Happy Birthday
+
 * Mon Feb 06 2012 John W. Linville <linville@redhat.com>
 - ath9k: fix a WEP crypto related regression
 - ath9k_hw: fix a RTS/CTS timeout regression
