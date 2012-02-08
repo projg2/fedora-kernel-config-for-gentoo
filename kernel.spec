@@ -2294,6 +2294,25 @@ fi
 # plz don't put in a version string unless you're going to tag
 # and build.
 
+#
+#              .---. __
+#    ,         /     \   \    ||||
+#   \\\\      |O___O |    | \\||||
+#   \   //    | \_/  |    |  \   /
+#    '--/----/|     /     |   |-'
+#           // //  /     -----'
+#          //  \\ /      /
+#         //  // /      /
+#        //  \\ /      /
+#       //  // /      /
+#      /|   ' /      /
+#      //\___/      /
+#     //   ||\     /
+#     \\_  || '---'
+#     /' /  \\_.-
+#    /  /    --| |
+#    '-'      |  |
+#              '-'
 %changelog
 * Tue Feb 07 2012 Josh Boyer <jwboyer@redhat.com>
 - Linux 3.3-rc2-git6 (upstream 6bd113f1f4a8c0d05c4dbadb300319e0e3526db4)
