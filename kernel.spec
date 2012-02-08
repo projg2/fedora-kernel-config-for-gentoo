@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -796,6 +796,9 @@ Patch21226: pci-crs-blacklist.patch
 #rhbz 772772
 Patch21232: rt2x00_fix_MCU_request_failures.patch
 
+#rhbz 788260
+Patch21233: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-pr_fmt-warning-avoidance.patch
@@ -1496,6 +1499,9 @@ ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
 #rhbz 772772
 ApplyPatch rt2x00_fix_MCU_request_failures.patch
+
+#rhbz 788269
+ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2296,6 +2302,10 @@ fi
 # and build.
 
 %changelog
+* Wed Feb 08 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-4086 jbd2: unmapped buffer with _Unwritten or _Delay flags set can
+  lead to DoS (rhbz 788260)
+
 * Tue Feb 07 2012 Josh Boyer <jwboyer@redhat.com>
 - Make build/ point to /usr/src/kernels instead of being relative (rhbz 788125)
 
