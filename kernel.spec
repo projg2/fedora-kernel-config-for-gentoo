@@ -688,6 +688,9 @@ Patch21082: procfs-parse-mount-options.patch
 Patch21083: procfs-add-hidepid-and-gid-mount-options.patch
 Patch21084: proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
+#rhbz 788260
+Patch21085: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
+
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 Patch21091: bcma-brcmsmac-compat.patch
 
@@ -1283,6 +1286,9 @@ ApplyPatch rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 ApplyPatch procfs-parse-mount-options.patch
 ApplyPatch procfs-add-hidepid-and-gid-mount-options.patch
 ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
+
+#rhbz 788260
+ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
@@ -1935,6 +1941,8 @@ fi
 
 %changelog
 * Wed Feb 08 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2011-4086: jbd2: unmapped buffer with _Unwritten or _Delay flags
+  set can lead to DoS (rhbz 788260)
 - Drop patch that was NAKd upstream (rhbz 783211)
 
 * Sun Feb 05 2012 Dave Jones <davej@redhat.com>
