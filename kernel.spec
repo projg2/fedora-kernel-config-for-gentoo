@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -688,9 +688,6 @@ Patch21082: procfs-parse-mount-options.patch
 Patch21083: procfs-add-hidepid-and-gid-mount-options.patch
 Patch21084: proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
-#rhbz 783211
-Patch21087: fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
-
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 Patch21091: bcma-brcmsmac-compat.patch
 
@@ -1286,9 +1283,6 @@ ApplyPatch rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 ApplyPatch procfs-parse-mount-options.patch
 ApplyPatch procfs-add-hidepid-and-gid-mount-options.patch
 ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
-
-#rhbz 783211
-ApplyPatch fs-Inval-cache-for-parent-block-device-if-fsync-called-on-part.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
@@ -1940,6 +1934,9 @@ fi
 # and build.
 
 %changelog
+* Wed Feb 08 2012 Josh Boyer <jwboyer@redhat.com>
+- Drop patch that was NAKd upstream (rhbz 783211)
+
 * Sun Feb 05 2012 Dave Jones <davej@redhat.com>
 - Remove unnecessary block-stray-block-put-after-teardown.patch
 - readahead: fix pipeline break caused by block plug
