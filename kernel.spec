@@ -2294,15 +2294,6 @@ fi
 # plz don't put in a version string unless you're going to tag
 # and build.
 
-#  ___________________________________________________________
-# / This branch is for Fedora 17. You probably want to commit \
-# \ to the F-16 branch instead, or in addition to this one.   /
-#  -----------------------------------------------------------
-#         \   ^__^
-#          \  (@@)\_______
-#             (__)\       )\/\
-#                 ||----w |
-#                 ||     ||
 %changelog
 * Tue Feb 07 2012 Josh Boyer <jwboyer@redhat.com>
 - Linux 3.3-rc2-git6 (upstream 6bd113f1f4a8c0d05c4dbadb300319e0e3526db4)
