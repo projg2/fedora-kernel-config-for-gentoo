@@ -799,6 +799,9 @@ Patch21232: rt2x00_fix_MCU_request_failures.patch
 #rhbz 788260
 Patch21233: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 
+#rhbz 785806
+Patch21234: e1000e-Avoid-wrong-check-on-TX-hang.patch
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-pr_fmt-warning-avoidance.patch
@@ -1502,6 +1505,9 @@ ApplyPatch rt2x00_fix_MCU_request_failures.patch
 
 #rhbz 788269
 ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
+
+#rhbz 785806
+ApplyPatch e1000e-Avoid-wrong-check-on-TX-hang.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2303,6 +2309,7 @@ fi
 
 %changelog
 * Wed Feb 08 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix e1000e Tx hang check (rhbz 785806)
 - CVE-2011-4086 jbd2: unmapped buffer with _Unwritten or _Delay flags set can
   lead to DoS (rhbz 788260)
 
