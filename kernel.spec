@@ -694,6 +694,9 @@ Patch21085: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 Patch21091: bcma-brcmsmac-compat.patch
 
+#rhbz 785806
+Patch21092: e1000e-Avoid-wrong-check-on-TX-hang.patch
+
 #rhbz 771058
 Patch21100: msi-irq-sysfs-warning.patch
 
@@ -1289,6 +1292,9 @@ ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
 #rhbz 788260
 ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
+
+#rhbz 785806
+ApplyPatch e1000e-Avoid-wrong-check-on-TX-hang.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
@@ -1944,6 +1950,7 @@ fi
 - CVE-2011-4086: jbd2: unmapped buffer with _Unwritten or _Delay flags
   set can lead to DoS (rhbz 788260)
 - Drop patch that was NAKd upstream (rhbz 783211)
+- Fix e1000e Tx hang check (rhbz 785806)
 
 * Sun Feb 05 2012 Dave Jones <davej@redhat.com>
 - Remove unnecessary block-stray-block-put-after-teardown.patch
