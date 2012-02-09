@@ -644,6 +644,8 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 
 Patch12025: block-readahead-block-plug.patch
 
+Patch12026: bsg-fix-sysfs-link-remove-warning.patch
+
 Patch12030: epoll-limit-paths.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
@@ -1247,6 +1249,8 @@ ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch epoll-limit-paths.patch
 ApplyPatch block-readahead-block-plug.patch
+
+ApplyPatch bsg-fix-sysfs-link-remove-warning.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1946,7 +1950,10 @@ fi
 # and build.
 
 %changelog
-* Wed Feb 08 2012 Josh Boyer <jwboyer@redhat.com>
+* Thu Feb 09 2012 Dave Jones <davej@redhat.com>
+- bsg: fix sysfs link remove warning (#787862)
+
+* Wed Feb 08 2012 Josh Boyer <jwboyer@redhat.com> 2.6.42.3-2.fc15
 - CVE-2011-4086: jbd2: unmapped buffer with _Unwritten or _Delay flags
   set can lead to DoS (rhbz 788260)
 - Drop patch that was NAKd upstream (rhbz 783211)
