@@ -804,11 +804,13 @@ Patch21233: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 #rhbz 785806
 Patch21234: e1000e-Avoid-wrong-check-on-TX-hang.patch
 
+#rhbz 754518
+Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-pr_fmt-warning-avoidance.patch
 Patch50002: compat-wireless-integrated-build.patch
-
 Patch50100: compat-wireless-rtl8192cu-Fix-WARNING-on-suspend-resume.patch
 
 # Pending upstream fixes
@@ -1512,6 +1514,9 @@ ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 
 #rhbz 785806
 ApplyPatch e1000e-Avoid-wrong-check-on-TX-hang.patch
+
+#rhbz 754518
+ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2312,6 +2317,9 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 10 2012 Josh Boyer <jwboyer@redhat.com>
+- Patch to prevent NULL pointer dereference in sd_revalidate_disk (rhbz 754518)
+
 * Thu Feb 09 2012 Dave Jones <davej@redhat.com>
 - bsg: fix sysfs link remove warning (#787862)
 
