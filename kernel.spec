@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -701,6 +701,9 @@ Patch21091: bcma-brcmsmac-compat.patch
 #rhbz 785806
 Patch21092: e1000e-Avoid-wrong-check-on-TX-hang.patch
 
+#rhbz 754518
+Patch21093: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+
 #rhbz 771058
 Patch21100: msi-irq-sysfs-warning.patch
 
@@ -1304,6 +1307,9 @@ ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 
 #rhbz 785806
 ApplyPatch e1000e-Avoid-wrong-check-on-TX-hang.patch
+
+#rhbz 754518
+ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
@@ -1955,6 +1961,9 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 10 2012 Josh Boyer <jwboyer@redhat.com>
+- Patch to prevent NULL pointer dereference in sd_revalidate_disk (rhbz 754518)
+
 * Fri Feb 10 2012 Dave Jones <davej@redhat.com>
 - Implement TIOCGSERIAL for acm_tty_ioctl (rhbz 787607)
 
