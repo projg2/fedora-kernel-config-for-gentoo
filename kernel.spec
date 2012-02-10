@@ -653,6 +653,8 @@ Patch12303: dmar-disable-when-ricoh-multifunction.patch
 Patch13002: revert-efi-rtclock.patch
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
+Patch14000: cdc-acm-tiocgserial.patch
+
 Patch20000: utrace.patch
 
 # Flattened devicetree support
@@ -1257,6 +1259,9 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 ApplyPatch revert-efi-rtclock.patch
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=787607
+ApplyPatch cdc-acm-tiocgserial.patch
 
 # utrace.
 ApplyPatch utrace.patch
@@ -1950,6 +1955,9 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 10 2012 Dave Jones <davej@redhat.com>
+- Implement TIOCGSERIAL for acm_tty_ioctl (rhbz 787607)
+
 * Thu Feb 09 2012 Dave Jones <davej@redhat.com>
 - bsg: fix sysfs link remove warning (#787862)
 
