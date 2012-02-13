@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -742,8 +742,6 @@ Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 # patches headed upstream
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
-
-Patch12025: block-readahead-block-plug.patch
 
 Patch12026: bsg-fix-sysfs-link-remove-warning.patch
 
@@ -1466,7 +1464,6 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch epoll-limit-paths.patch
-ApplyPatch block-readahead-block-plug.patch
 
 ApplyPatch bsg-fix-sysfs-link-remove-warning.patch
 
@@ -2329,6 +2326,9 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 13 2012 Dave Jones <davej@redhat.com> 3.2.6-3
+- Linux 3.2.6
+
 * Mon Feb 13 2012 John W. Linville <linville@redhat.com>
 - mwifiex: handle association failure case correctly
 - ath9k: Fix kernel panic during driver initilization
