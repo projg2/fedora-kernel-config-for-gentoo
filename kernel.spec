@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -642,8 +642,6 @@ Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch12025: block-readahead-block-plug.patch
-
 Patch12026: bsg-fix-sysfs-link-remove-warning.patch
 
 Patch12030: epoll-limit-paths.patch
@@ -709,8 +707,6 @@ Patch21100: msi-irq-sysfs-warning.patch
 
 # rhbz 754907
 Patch21101: hpsa-add-irqf-shared.patch
-
-Patch21225: pci-Rework-ASPM-disable-code.patch
 
 %endif
 
@@ -1253,7 +1249,6 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch epoll-limit-paths.patch
-ApplyPatch block-readahead-block-plug.patch
 
 ApplyPatch bsg-fix-sysfs-link-remove-warning.patch
 
@@ -1274,8 +1269,6 @@ ApplyPatch sysfs-msi-irq-per-device.patch
 
 # rhbz 754907
 ApplyPatch hpsa-add-irqf-shared.patch
-
-ApplyPatch pci-Rework-ASPM-disable-code.patch
 
 #rhbz 717735
 ApplyPatch nfs-client-freezer.patch
@@ -1961,6 +1954,9 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 13 2012 Dave Jones <davej@redhat.com> 2.6.42.6-3
+- Linux 3.2.6
+
 * Fri Feb 10 2012 Josh Boyer <jwboyer@redhat.com>
 - Patch to prevent NULL pointer dereference in sd_revalidate_disk (rhbz 754518)
 
