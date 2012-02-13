@@ -827,10 +827,16 @@ Patch50111: iwlwifi-make-Tx-aggregation-enabled-on-ra-be-at-DEBU.patch
 Patch50112: ssb-fix-cardbus-slot-in-hostmode.patch
 Patch50113: iwlwifi-don-t-mess-up-QoS-counters-with-non-QoS-fram.patch
 Patch50114: mac80211-timeout-a-single-frame-in-the-rx-reorder-bu.patch
-
-Patch50200: ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
-Patch50201: ath9k-fix-a-WEP-crypto-related-regression.patch
-Patch50202: ath9k_hw-fix-a-RTS-CTS-timeout-regression.patch
+Patch50115: ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
+Patch50116: mwifiex-handle-association-failure-case-correctly.patch
+Patch50117: ath9k-Fix-kernel-panic-during-driver-initilization.patch
+Patch50118: mwifiex-add-NULL-checks-in-driver-unload-path.patch
+Patch50119: ath9k-fix-a-WEP-crypto-related-regression.patch
+Patch50120: ath9k_hw-fix-a-RTS-CTS-timeout-regression.patch
+Patch50121: bcma-don-t-fail-for-bad-SPROM-CRC.patch
+Patch50122: zd1211rw-firmware-needs-duration_id-set-to-zero-for-.patch
+Patch50123: mac80211-Fix-a-rwlock-bad-magic-bug.patch
+Patch50124: rtlwifi-Modify-rtl_pci_init-to-return-0-on-success.patch
 
 %endif
 
@@ -1600,10 +1606,16 @@ ApplyPatch iwlwifi-make-Tx-aggregation-enabled-on-ra-be-at-DEBU.patch
 ApplyPatch ssb-fix-cardbus-slot-in-hostmode.patch
 ApplyPatch iwlwifi-don-t-mess-up-QoS-counters-with-non-QoS-fram.patch
 ApplyPatch mac80211-timeout-a-single-frame-in-the-rx-reorder-bu.patch
-
 ApplyPatch ath9k-use-WARN_ON_ONCE-in-ath_rc_get_highest_rix.patch
+ApplyPatch mwifiex-handle-association-failure-case-correctly.patch
+ApplyPatch ath9k-Fix-kernel-panic-during-driver-initilization.patch
+ApplyPatch mwifiex-add-NULL-checks-in-driver-unload-path.patch
 ApplyPatch ath9k-fix-a-WEP-crypto-related-regression.patch
 ApplyPatch ath9k_hw-fix-a-RTS-CTS-timeout-regression.patch
+ApplyPatch bcma-don-t-fail-for-bad-SPROM-CRC.patch
+ApplyPatch zd1211rw-firmware-needs-duration_id-set-to-zero-for-.patch
+ApplyPatch mac80211-Fix-a-rwlock-bad-magic-bug.patch
+ApplyPatch rtlwifi-Modify-rtl_pci_init-to-return-0-on-success.patch
 
 ApplyPatch rt2x00_fix_MCU_request_failures.patch
 
@@ -2317,6 +2329,15 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 13 2012 John W. Linville <linville@redhat.com>
+- mwifiex: handle association failure case correctly
+- ath9k: Fix kernel panic during driver initilization
+- mwifiex: add NULL checks in driver unload path
+- bcma: don't fail for bad SPROM CRC
+- zd1211rw: firmware needs duration_id set to zero for non-pspoll frames
+- mac80211: Fix a rwlock bad magic bug
+- rtlwifi: Modify rtl_pci_init to return 0 on success
+
 * Fri Feb 10 2012 Josh Boyer <jwboyer@redhat.com>
 - Patch to prevent NULL pointer dereference in sd_revalidate_disk (rhbz 754518)
 

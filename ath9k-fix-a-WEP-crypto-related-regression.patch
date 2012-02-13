@@ -1,29 +1,7 @@
-From nbd@nbd.name Sun Feb  5 15:15:47 2012
-Return-path: <nbd@nbd.name>
-Envelope-to: linville@tuxdriver.com
-Delivery-date: Sun, 05 Feb 2012 15:15:47 -0500
-Received: from [2a01:4f8:131:30e2::2] (helo=nbd.name)
-	by smtp.tuxdriver.com with esmtps (TLSv1:AES256-SHA:256)
-	(Exim 4.63)
-	(envelope-from <nbd@nbd.name>)
-	id 1Ru8Um-0004mD-I2
-	for linville@tuxdriver.com; Sun, 05 Feb 2012 15:15:47 -0500
-Received: by nf.local (Postfix, from userid 501)
-	id 12D0F5BDE1DC; Sun,  5 Feb 2012 21:15:18 +0100 (CET)
+From f88373fa47f3ce6590fdfaa742d0ddacc2ae017f Mon Sep 17 00:00:00 2001
 From: Felix Fietkau <nbd@openwrt.org>
-To: linux-wireless@vger.kernel.org
-Cc: linville@tuxdriver.com,
-	mcgrof@qca.qualcomm.com,
-	mohammed@qca.qualcomm.com
-Subject: [PATCH 3.3 1/2] ath9k: fix a WEP crypto related regression
-Date: Sun,  5 Feb 2012 21:15:17 +0100
-Message-Id: <1328472918-30012-1-git-send-email-nbd@openwrt.org>
-X-Mailer: git-send-email 1.7.3.2
-X-Spam-Score: -1.1 (-)
-X-Spam-Status: No
-Status: RO
-Content-Length: 1381
-Lines: 38
+Date: Sun, 5 Feb 2012 21:15:17 +0100
+Subject: [PATCH] ath9k: fix a WEP crypto related regression
 
 commit b4a82a0 "ath9k_hw: fix interpretation of the rx KeyMiss flag"
 fixed the interpretation of the KeyMiss flag for keycache based lookups,
@@ -36,6 +14,7 @@ Signed-off-by: Felix Fietkau <nbd@openwrt.org>
 Cc: stable@vger.kernel.org
 Reported-by: Laurent Bonnans <bonnans.l@gmail.com>
 Reported-by: Jurica Vukadin <u.ra604@googlemail.com>
+Signed-off-by: John W. Linville <linville@tuxdriver.com>
 ---
  drivers/net/wireless/ath/ath9k/recv.c |    8 ++++++++
  1 files changed, 8 insertions(+), 0 deletions(-)
@@ -60,7 +39,5 @@ index 0e666fb..7e1a91a 100644
  		return false;
          /*
 -- 
-1.7.3.2
-
-
+1.7.4.4
 
