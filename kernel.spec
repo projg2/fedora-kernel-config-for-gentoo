@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -805,6 +805,9 @@ Patch21234: e1000e-Avoid-wrong-check-on-TX-hang.patch
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
+#rhbz 790367
+Patch21239: s390x-enable-keys-compat.patch
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-pr_fmt-warning-avoidance.patch
@@ -1520,6 +1523,9 @@ ApplyPatch e1000e-Avoid-wrong-check-on-TX-hang.patch
 
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+
+#rhbz 790367
+ApplyPatch s390x-enable-keys-compat.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2326,6 +2332,9 @@ fi
 # and build.
 
 %changelog
+* Tue Feb 14 2012 Josh Boyer <jwboyer@redhat.com>
+- Patch to enable CONFIG_KEYS_COMPAT on s390 from David Howells (rhbz 790367)
+
 * Mon Feb 13 2012 Dave Jones <davej@redhat.com> 3.2.6-3
 - Linux 3.2.6
 
