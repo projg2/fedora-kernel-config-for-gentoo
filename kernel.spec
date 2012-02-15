@@ -698,6 +698,7 @@ Patch1556: linux-3.3-virtio-scsi.patch
 
 # DRM
 #atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
+Patch1800: drm-vgem.patch
 
 # nouveau + drm fixes
 # intel drm is all merged upstream
@@ -1416,6 +1417,7 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # DRM core
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
+ApplyPatch drm-vgem.patch
 
 # Nouveau DRM
 
@@ -2357,6 +2359,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Feb 15 2012 Adam Jackson <ajax@redhat.com>
+- Add patch and config change for vgem.ko
+
 * Wed Feb 15 2012 John W. Linville <linville@redhat.com>
 - Disable with_backports to help things to stabilize
 
