@@ -218,7 +218,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to disable with_backports.)
 #
-# % define with_backports 0
+%define with_backports 0
 #######################################################################
 
 %define make_target bzImage
@@ -2357,6 +2357,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Feb 15 2012 John W. Linville <linville@redhat.com>
+- Disable with_backports to help things to stabilize
+
 * Tue Feb 14 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix RCU usage during cpu idle (rhbz 789641)
 - Add patch to fix mce rcu splat (rhbz 789644)
