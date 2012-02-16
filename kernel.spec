@@ -524,7 +524,7 @@ Requires(pre): %{initrd_prereq}\
 %if %{with_firmware}\
 Requires(pre): kernel-firmware >= %{rpmversion}-%{pkg_release}\
 %else\
-Requires(pre): linux-firmware >= 20100806-2\
+Requires(pre): linux-firmware >= 20120206-0.1.git06c8f81\
 %endif\
 Requires(post): /sbin/new-kernel-pkg\
 Requires(preun): /sbin/new-kernel-pkg\
@@ -2332,6 +2332,9 @@ fi
 # and build.
 
 %changelog
+* Wed Feb 15 2012 Josh Boyer <jwboyer@redhat.com>
+- Require newer linux-firmware for updated bnx2/bnx2x drivers
+
 * Tue Feb 14 2012 Josh Boyer <jwboyer@redhat.com>
 - Patch to enable CONFIG_KEYS_COMPAT on s390 from David Howells (rhbz 790367)
 
