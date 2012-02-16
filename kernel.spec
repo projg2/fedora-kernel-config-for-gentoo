@@ -448,7 +448,7 @@ Requires(pre): %{initrd_prereq}\
 %if %{with_firmware}\
 Requires(pre): kernel-firmware >= %{rpmversion}-%{pkg_release}\
 %else\
-Requires(pre): linux-firmware >= 20100806-2\
+Requires(pre): linux-firmware >= 20120206-0.1.git06c8f81\
 %endif\
 Requires(post): /sbin/new-kernel-pkg\
 Requires(preun): /sbin/new-kernel-pkg\
@@ -1954,6 +1954,9 @@ fi
 # and build.
 
 %changelog
+* Wed Feb 15 2012 Josh Boyer <jwboyer@redhat.com>
+- Require newer linux-firmware for updated bnx2/bnx2x drivers
+
 * Mon Feb 13 2012 Dave Jones <davej@redhat.com> 2.6.42.6-3
 - Linux 3.2.6
 
