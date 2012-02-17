@@ -653,6 +653,8 @@ Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
 Patch14000: cdc-acm-tiocgserial.patch
 
+Patch15000: hibernate-freeze-filesystems.patch
+
 Patch20000: utrace.patch
 
 # Flattened devicetree support
@@ -1260,6 +1262,8 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=787607
 ApplyPatch cdc-acm-tiocgserial.patch
+
+ApplyPatch hibernate-freeze-filesystems.patch
 
 # utrace.
 ApplyPatch utrace.patch
@@ -1954,6 +1958,9 @@ fi
 # and build.
 
 %changelog
+* Thu Feb 16 2012 Dave Jones <davej@redhat.com>
+- Freeze all filesystems during system suspend/hibernate.
+
 * Wed Feb 15 2012 Josh Boyer <jwboyer@redhat.com>
 - Require newer linux-firmware for updated bnx2/bnx2x drivers
 
