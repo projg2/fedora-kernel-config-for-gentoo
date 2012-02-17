@@ -1958,6 +1958,9 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 17 2012 Dave Jones <davej@redhat.com>
+- Reenable radio drivers. (rhbz 784824)
+
 * Thu Feb 16 2012 Dave Jones <davej@redhat.com>
 - Freeze all filesystems during system suspend/hibernate.
 
