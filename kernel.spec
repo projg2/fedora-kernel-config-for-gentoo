@@ -2336,7 +2336,7 @@ fi
 # and build.
 
 %changelog
-* Thu Feb 16 2012 Dave Jones <davej@redhat.com>
+* Thu Feb 16 2012 Dave Jones <davej@redhat.com> 3.2.6-4
 - Freeze all filesystems during system suspend/hibernate.
 
 * Wed Feb 15 2012 Josh Boyer <jwboyer@redhat.com>
