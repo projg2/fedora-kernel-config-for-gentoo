@@ -655,6 +655,8 @@ Patch14000: cdc-acm-tiocgserial.patch
 
 Patch15000: hibernate-freeze-filesystems.patch
 
+Patch15010: lis3-improve-handling-of-null-rate.patch
+
 Patch20000: utrace.patch
 
 # Flattened devicetree support
@@ -1264,6 +1266,8 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 ApplyPatch cdc-acm-tiocgserial.patch
 
 ApplyPatch hibernate-freeze-filesystems.patch
+
+ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 # utrace.
 ApplyPatch utrace.patch
@@ -1958,6 +1962,9 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 17 2012 Dave Jones <davej@redhat.com>
+- improve handling of null rate in LIS3LV02Dx accelerometer driver. (rhbz 785814)
+
 * Fri Feb 17 2012 Dave Jones <davej@redhat.com>
 - Reenable radio drivers. (rhbz 784824)
 
