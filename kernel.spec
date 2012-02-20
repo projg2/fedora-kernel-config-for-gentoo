@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -765,8 +765,10 @@ Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 #rhbz 717735
 Patch21045: nfs-client-freezer.patch
 
+Patch21046: nfs-oops-getacl.patch
+
 #rhbz 590880
-Patch21046: alps.patch
+Patch21050: alps.patch
 
 Patch21070: ext4-Support-check-none-nocheck-mount-options.patch
 Patch21071: ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
@@ -1497,6 +1499,8 @@ ApplyPatch hpsa-add-irqf-shared.patch
 
 #rhbz 717735
 ApplyPatch nfs-client-freezer.patch
+
+ApplyPatch nfs-oops-getacl.patch
 
 #rhbz 590880
 ApplyPatch alps.patch
@@ -2340,6 +2344,9 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 20 2012 Dave Jones <davej@redhat.com>
+- NFSv4: Fix an Oops in the NFSv4 getacl code
+
 * Fri Feb 17 2012 Dave Jones <davej@redhat.com>
 - improve handling of null rate in LIS3LV02Dx accelerometer driver. (rhbz 785814)
 
