@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 6
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -1966,6 +1966,9 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 20 2012 Dave Jones <davej@redhat.com>
+- Linux 3.2.7
+
 * Mon Feb 20 2012 Dave Jones <davej@redhat.com>
 - NFSv4: Fix an Oops in the NFSv4 getacl code
 
