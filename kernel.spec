@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 6
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2344,6 +2344,9 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 20 2012 Dave Jones <davej@redhat.com>
+- Linux 3.2.7
+
 * Mon Feb 20 2012 Dave Jones <davej@redhat.com>
 - NFSv4: Fix an Oops in the NFSv4 getacl code
 
