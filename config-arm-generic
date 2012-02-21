@@ -181,6 +181,7 @@ CONFIG_LSM_MMAP_MIN_ADDR=32768
 # CONFIG_DRM_RADEON is not set
 # CONFIG_ATM_HE is not set
 # CONFIG_SCSI_ACARD is not set
+# CONFIG_SFC is not set
 
 # these all currently fail due to missing symbols __bad_udelay or
 # error: implicit declaration of function ‘iowrite32be’

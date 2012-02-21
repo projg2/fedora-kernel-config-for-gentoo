@@ -2386,6 +2386,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Feb 20 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Disable sfc ethernet driver on ARM
+
 * Mon Feb 20 2012 Josh Boyer <jwboyer@redhat.com>
 - Avoid using stack variables in ums_realtek (again) (rhbz 795544)
 
