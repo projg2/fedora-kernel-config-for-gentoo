@@ -269,8 +269,10 @@ Summary: The Linux kernel
 %define with_tegra 0
 %define with_omap 0
 %define with_imx 0
-%define with_highbank 0
 %endif
+
+# disable highbank ARM kernels for the time being
+%define with_highbank 0
 
 # kernel-kirkwood is only built for armv5
 %ifnarch armv5tel
@@ -2388,6 +2390,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Feb 21 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Disable ARM highbank kernels for the time being
+
 * Mon Feb 20 2012 Dave Jones <davej@redhat.com>
 - Do not call drivers when invalidating partitions for -ENOMEDIUM
 
