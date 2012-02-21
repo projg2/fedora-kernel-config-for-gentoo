@@ -809,7 +809,8 @@ Patch21233: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 Patch21234: e1000e-Avoid-wrong-check-on-TX-hang.patch
 
 #rhbz 754518
-Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+#Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+Patch21235: scsi-fix-sd_revalidate_disk-oops.patch
 
 #rhbz 790367
 Patch21239: s390x-enable-keys-compat.patch
@@ -1534,7 +1535,8 @@ ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 ApplyPatch e1000e-Avoid-wrong-check-on-TX-hang.patch
 
 #rhbz 754518
-ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+#ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+ApplyPatch scsi-fix-sd_revalidate_disk-oops.patch
 
 #rhbz 790367
 ApplyPatch s390x-enable-keys-compat.patch
@@ -2344,6 +2346,9 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 20 2012 Dave Jones <davej@redhat.com> 3.2.7-1
+- Do not call drivers when invalidating partitions for -ENOMEDIUM
+
 * Mon Feb 20 2012 Dave Jones <davej@redhat.com>
 - Linux 3.2.7
 
