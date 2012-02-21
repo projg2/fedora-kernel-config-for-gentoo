@@ -706,7 +706,8 @@ Patch21091: bcma-brcmsmac-compat.patch
 Patch21092: e1000e-Avoid-wrong-check-on-TX-hang.patch
 
 #rhbz 754518
-Patch21093: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+#Patch21093: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+Patch21093: scsi-fix-sd_revalidate_disk-oops.patch
 
 #rhbz 771058
 Patch21100: msi-irq-sysfs-warning.patch
@@ -1314,7 +1315,8 @@ ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 ApplyPatch e1000e-Avoid-wrong-check-on-TX-hang.patch
 
 #rhbz 754518
-ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+#ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+ApplyPatch scsi-fix-sd_revalidate_disk-oops.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
@@ -1966,6 +1968,9 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 20 2012 Dave Jones <davej@redhat.com> 2.6.42.7-1
+- Do not call drivers when invalidating partitions for -ENOMEDIUM
+
 * Mon Feb 20 2012 Dave Jones <davej@redhat.com>
 - Linux 3.2.7
 
