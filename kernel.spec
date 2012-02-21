@@ -2381,6 +2381,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Feb 21 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update ARM configs
+
 * Tue Feb 21 2012 Josh Boyer <jwboyer@redhat.com>
 - ext4: fix resize when resizing within single group (rhbz 786454)
 - imon: don't wedge hardware after early callbacks (rhbz 781832)
