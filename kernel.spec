@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -87,7 +87,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %define rcrev 4
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 3.%{upstream_sublevel}.0
 %endif
@@ -765,9 +765,6 @@ Patch21234: Bluetooth-Remove-bogus-inline-decl-from-l2cap_chan_connect.patch
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 Patch21236: scsi-fix-sd_revalidate_disk-oops.patch
-
-#rhbz 714828
-Patch21240: autofs4-lockdep.patch
 
 Patch21250: mcelog-rcu-splat.patch
 Patch21270: x86-Avoid-invoking-RCU-when-CPU-is-idle.patch
@@ -1489,9 +1486,6 @@ ApplyPatch Bluetooth-Remove-bogus-inline-decl-from-l2cap_chan_connect.patch
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 ApplyPatch scsi-fix-sd_revalidate_disk-oops.patch
-
-#rhbz 714828
-ApplyPatch autofs4-lockdep.patch
 
 ApplyPatch mcelog-rcu-splat.patch
 ApplyPatch x86-Avoid-invoking-RCU-when-CPU-is-idle.patch
@@ -2383,6 +2377,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Feb 21 2012 Josh Boyer <jwboyer@redhat.com> - 3.3.0-0.rc4.git1.1
+- Linux 3.3-rc4-git1 (upstream 27e74da9800289e69ba907777df1e2085231eff7)
+
 * Tue Feb 21 2012 Peter Robinson <pbrobinson@fedoraproject.org>
 - Disable ARM highbank kernels for the time being
 
