@@ -1,0 +1,91 @@
+From 4b5a433ae5348c23caa0b5f0a2fca7c342acb200 Mon Sep 17 00:00:00 2001
+From: Johannes Berg <johannes.berg@intel.com>
+Date: Fri, 20 Jan 2012 13:55:23 +0100
+Subject: [PATCH] mac80211: call rate control only after init
+
+There are situations where we don't have the
+necessary rate control information yet for
+station entries, e.g. when associating. This
+currently doesn't really happen due to the
+dummy station handling; explicitly disabling
+rate control when it's not initialised will
+allow us to remove dummy stations.
+
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: John W. Linville <linville@tuxdriver.com>
+---
+ net/mac80211/debugfs_sta.c |    4 ++--
+ net/mac80211/rate.c        |    2 +-
+ net/mac80211/rate.h        |    1 +
+ net/mac80211/sta_info.h    |    2 ++
+ 4 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/net/mac80211/debugfs_sta.c b/net/mac80211/debugfs_sta.c
+index 2406b3e..d86217d 100644
+--- a/net/mac80211/debugfs_sta.c
++++ b/net/mac80211/debugfs_sta.c
+@@ -63,14 +63,14 @@ static ssize_t sta_flags_read(struct file *file, char __user *userbuf,
+ 	test_sta_flag(sta, WLAN_STA_##flg) ? #flg "\n" : ""
+ 
+ 	int res = scnprintf(buf, sizeof(buf),
+-			    "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
++			    "%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
+ 			    TEST(AUTH), TEST(ASSOC), TEST(PS_STA),
+ 			    TEST(PS_DRIVER), TEST(AUTHORIZED),
+ 			    TEST(SHORT_PREAMBLE),
+ 			    TEST(WME), TEST(WDS), TEST(CLEAR_PS_FILT),
+ 			    TEST(MFP), TEST(BLOCK_BA), TEST(PSPOLL),
+ 			    TEST(UAPSD), TEST(SP), TEST(TDLS_PEER),
+-			    TEST(TDLS_PEER_AUTH));
++			    TEST(TDLS_PEER_AUTH), TEST(RATE_CONTROL));
+ #undef TEST
+ 	return simple_read_from_buffer(userbuf, count, ppos, buf, res);
+ }
+diff --git a/net/mac80211/rate.c b/net/mac80211/rate.c
+index 5a5a776..ad64f4d 100644
+--- a/net/mac80211/rate.c
++++ b/net/mac80211/rate.c
+@@ -336,7 +336,7 @@ void rate_control_get_rate(struct ieee80211_sub_if_data *sdata,
+ 	int i;
+ 	u32 mask;
+ 
+-	if (sta) {
++	if (sta && test_sta_flag(sta, WLAN_STA_RATE_CONTROL)) {
+ 		ista = &sta->sta;
+ 		priv_sta = sta->rate_ctrl_priv;
+ 	}
+diff --git a/net/mac80211/rate.h b/net/mac80211/rate.h
+index 168427b..2b83f32 100644
+--- a/net/mac80211/rate.h
++++ b/net/mac80211/rate.h
+@@ -62,6 +62,7 @@ static inline void rate_control_rate_init(struct sta_info *sta)
+ 	sband = local->hw.wiphy->bands[local->hw.conf.channel->band];
+ 
+ 	ref->ops->rate_init(ref->priv, sband, ista, priv_sta);
++	set_sta_flag(sta, WLAN_STA_RATE_CONTROL);
+ }
+ 
+ static inline void rate_control_rate_update(struct ieee80211_local *local,
+diff --git a/net/mac80211/sta_info.h b/net/mac80211/sta_info.h
+index 6f77f12..bfed851 100644
+--- a/net/mac80211/sta_info.h
++++ b/net/mac80211/sta_info.h
+@@ -52,6 +52,7 @@
+  * @WLAN_STA_SP: Station is in a service period, so don't try to
+  *	reply to other uAPSD trigger frames or PS-Poll.
+  * @WLAN_STA_4ADDR_EVENT: 4-addr event was already sent for this frame.
++ * @WLAN_STA_RATE_CONTROL: rate control was initialized for this station.
+  */
+ enum ieee80211_sta_info_flags {
+ 	WLAN_STA_AUTH,
+@@ -71,6 +72,7 @@ enum ieee80211_sta_info_flags {
+ 	WLAN_STA_UAPSD,
+ 	WLAN_STA_SP,
+ 	WLAN_STA_4ADDR_EVENT,
++	WLAN_STA_RATE_CONTROL,
+ };
+ 
+ enum ieee80211_sta_state {
+-- 
+1.7.4.4
+

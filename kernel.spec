@@ -845,6 +845,17 @@ Patch50121: bcma-don-t-fail-for-bad-SPROM-CRC.patch
 Patch50122: zd1211rw-firmware-needs-duration_id-set-to-zero-for-.patch
 Patch50123: mac80211-Fix-a-rwlock-bad-magic-bug.patch
 Patch50124: rtlwifi-Modify-rtl_pci_init-to-return-0-on-success.patch
+Patch50125: mac80211-call-rate-control-only-after-init.patch
+Patch50126: mac80211-do-not-call-rate-control-.tx_status-before-.patch
+Patch50127: mwifiex-clear-previous-security-setting-during-assoc.patch
+Patch50128: ath9k-stop-on-rates-with-idx-1-in-ath9k-rate-control.patch
+Patch50129: ath9k_hw-prevent-writes-to-const-data-on-AR9160.patch
+Patch50130: rt2x00-fix-a-possible-NULL-pointer-dereference.patch
+Patch50131: iwlwifi-fix-key-removal.patch
+Patch50132: mac80211-zero-initialize-count-field-in-ieee80211_tx.patch
+Patch50133: mac80211-Fix-a-warning-on-changing-to-monitor-mode-f.patch
+Patch50134: brcm80211-smac-fix-endless-retry-of-A-MPDU-transmiss.patch
+Patch50135: brcm80211-smac-only-print-block-ack-timeout-message-.patch
 
 %endif
 
@@ -1633,6 +1644,17 @@ ApplyPatch bcma-don-t-fail-for-bad-SPROM-CRC.patch
 ApplyPatch zd1211rw-firmware-needs-duration_id-set-to-zero-for-.patch
 ApplyPatch mac80211-Fix-a-rwlock-bad-magic-bug.patch
 ApplyPatch rtlwifi-Modify-rtl_pci_init-to-return-0-on-success.patch
+ApplyPatch mac80211-call-rate-control-only-after-init.patch
+ApplyPatch mac80211-do-not-call-rate-control-.tx_status-before-.patch
+ApplyPatch mwifiex-clear-previous-security-setting-during-assoc.patch
+ApplyPatch ath9k-stop-on-rates-with-idx-1-in-ath9k-rate-control.patch
+ApplyPatch ath9k_hw-prevent-writes-to-const-data-on-AR9160.patch
+ApplyPatch rt2x00-fix-a-possible-NULL-pointer-dereference.patch
+ApplyPatch iwlwifi-fix-key-removal.patch
+ApplyPatch mac80211-zero-initialize-count-field-in-ieee80211_tx.patch
+ApplyPatch mac80211-Fix-a-warning-on-changing-to-monitor-mode-f.patch
+ApplyPatch brcm80211-smac-fix-endless-retry-of-A-MPDU-transmiss.patch
+ApplyPatch brcm80211-smac-only-print-block-ack-timeout-message-.patch
 
 ApplyPatch rt2x00_fix_MCU_request_failures.patch
 
@@ -2346,6 +2368,19 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 24 2012 John W. Linville <linville@redhat.com>
+- mac80211: call rate control only after init
+- mac80211: do not call rate control .tx_status before .rate_init
+- mwifiex: clear previous security setting during association
+- ath9k: stop on rates with idx -1 in ath9k rate control's .tx_status
+- ath9k_hw: prevent writes to const data on AR9160
+- rt2x00: fix a possible NULL pointer dereference
+- iwlwifi: fix key removal
+- mac80211: zero initialize count field in ieee80211_tx_rate
+- mac80211: Fix a warning on changing to monitor mode from STA
+- brcm80211: smac: fix endless retry of A-MPDU transmissions
+- brcm80211: smac: only print block-ack timeout message at trace level
+
 * Mon Feb 20 2012 Dave Jones <davej@redhat.com> 3.2.7-1
 - Do not call drivers when invalidating partitions for -ENOMEDIUM
 

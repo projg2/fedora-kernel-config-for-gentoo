@@ -1,0 +1,37 @@
+From 7be081539e540517d5e1fcbf96b8080074afbf08 Mon Sep 17 00:00:00 2001
+From: Gabor Juhos <juhosg@openwrt.org>
+Date: Thu, 16 Feb 2012 20:44:59 +0100
+Subject: [PATCH] rt2x00: fix a possible NULL pointer dereference
+
+The 'rt2x00lib_probe_dev' function tries to
+allocate the workqueue. If the allocation
+fails, 'rt2x00_lib_remove_dev' is called on
+the error path. Because 'rt2x00dev->workqueue'
+is NULL in this case, the 'destroy_workqueue'
+call will cause a NULL pointer dereference.
+
+Signed-off-by: Gabor Juhos <juhosg@openwrt.org>
+Acked-by: Gertjan van Wingerde <gwingerde@gmail.com>
+Acked-by: Ivo van Doorn <IvDoorn@gmail.com>
+Signed-off-by: John W. Linville <linville@tuxdriver.com>
+---
+ drivers/net/wireless/rt2x00/rt2x00dev.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/net/wireless/rt2x00/rt2x00dev.c b/drivers/net/wireless/rt2x00/rt2x00dev.c
+index c3e1aa7..d2a1ea9 100644
+--- a/drivers/net/wireless/rt2x00/rt2x00dev.c
++++ b/drivers/net/wireless/rt2x00/rt2x00dev.c
+@@ -1220,7 +1220,8 @@ void rt2x00lib_remove_dev(struct rt2x00_dev *rt2x00dev)
+ 		cancel_work_sync(&rt2x00dev->rxdone_work);
+ 		cancel_work_sync(&rt2x00dev->txdone_work);
+ 	}
+-	destroy_workqueue(rt2x00dev->workqueue);
++	if (rt2x00dev->workqueue)
++		destroy_workqueue(rt2x00dev->workqueue);
+ 
+ 	/*
+ 	 * Free the tx status fifo.
+-- 
+1.7.4.4
+
