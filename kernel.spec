@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -857,6 +857,9 @@ Patch50133: mac80211-Fix-a-warning-on-changing-to-monitor-mode-f.patch
 Patch50134: brcm80211-smac-fix-endless-retry-of-A-MPDU-transmiss.patch
 Patch50135: brcm80211-smac-only-print-block-ack-timeout-message-.patch
 
+#rhbz 727865 730007
+Patch21102: ACPICA-Fix-regression-in-FADT-revision-checks.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1551,6 +1554,9 @@ ApplyPatch scsi-fix-sd_revalidate_disk-oops.patch
 
 #rhbz 790367
 ApplyPatch s390x-enable-keys-compat.patch
+
+#rhbz 727865 730007
+ApplyPatch ACPICA-Fix-regression-in-FADT-revision-checks.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2368,6 +2374,9 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 27 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix regression in FADT revision checks (rhbz 730007 727865)
+
 * Fri Feb 24 2012 John W. Linville <linville@redhat.com>
 - mac80211: call rate control only after init
 - mac80211: do not call rate control .tx_status before .rate_init
