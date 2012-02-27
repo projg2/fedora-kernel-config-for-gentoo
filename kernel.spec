@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -715,6 +715,9 @@ Patch21100: msi-irq-sysfs-warning.patch
 # rhbz 754907
 Patch21101: hpsa-add-irqf-shared.patch
 
+#rhbz 727865 730007
+Patch21102: ACPICA-Fix-regression-in-FADT-revision-checks.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1320,6 +1323,9 @@ ApplyPatch scsi-fix-sd_revalidate_disk-oops.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
+
+#rhbz 727865 730007
+ApplyPatch ACPICA-Fix-regression-in-FADT-revision-checks.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1968,6 +1974,9 @@ fi
 # and build.
 
 %changelog
+* Mon Feb 27 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix regression in FADT revision checks (rhbz 730007 727865)
+
 * Mon Feb 20 2012 Dave Jones <davej@redhat.com> 2.6.42.7-1
 - Do not call drivers when invalidating partitions for -ENOMEDIUM
 
