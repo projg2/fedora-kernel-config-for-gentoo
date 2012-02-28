@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -856,6 +856,7 @@ Patch50132: mac80211-zero-initialize-count-field-in-ieee80211_tx.patch
 Patch50133: mac80211-Fix-a-warning-on-changing-to-monitor-mode-f.patch
 Patch50134: brcm80211-smac-fix-endless-retry-of-A-MPDU-transmiss.patch
 Patch50135: brcm80211-smac-only-print-block-ack-timeout-message-.patch
+Patch50136: cifs-fix-dentry-refcount-leak-when-opening-a-FIFO.patch
 
 #rhbz 727865 730007
 Patch21102: ACPICA-Fix-regression-in-FADT-revision-checks.patch
@@ -1557,6 +1558,9 @@ ApplyPatch s390x-enable-keys-compat.patch
 
 #rhbz 727865 730007
 ApplyPatch ACPICA-Fix-regression-in-FADT-revision-checks.patch
+
+#rhbz 798296
+ApplyPatch cifs-fix-dentry-refcount-leak-when-opening-a-FIFO.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2374,6 +2378,9 @@ fi
 # and build.
 
 %changelog
+* Tue Feb 28 2012 Justin M. Forbes <jforbes@redhat.com> 3.2.8-2
+- CVE-2012-1090 CIFS: fix dentry refcount leak when opening a FIFO on lookup (rhbz 798296)
+
 * Mon Feb 27 2012 Josh Boyer <jwboyer@redhat.com> 3.2.8-1
 - Linux 3.2.8
 
