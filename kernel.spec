@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -721,6 +721,9 @@ Patch21102: ACPICA-Fix-regression-in-FADT-revision-checks.patch
 # rhbz 798296
 Patch21103: cifs-fix-dentry-refcount-leak-when-opening-a-FIFO.patch
 
+#rhbz 728478
+Patch21104: sony-laptop-Enable-keyboard-backlight-by-default.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1332,6 +1335,9 @@ ApplyPatch ACPICA-Fix-regression-in-FADT-revision-checks.patch
 
 # rhbz 798296
 ApplyPatch cifs-fix-dentry-refcount-leak-when-opening-a-FIFO.patch
+
+#rhbz 728478
+ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1980,6 +1986,9 @@ fi
 # and build.
 
 %changelog
+* Tue Feb 28 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to enable keyboard backlight on Sony laptops (rhbz 728478)
+
 * Tue Feb 28 2012 Justin M. Forbes <jforbes@redhat.com> 2.6.42.7-3
 - CVE-2012-1090 CIFS: fix dentry refcount leak when opening a FIFO on lookup (rhbz 798296)
 
