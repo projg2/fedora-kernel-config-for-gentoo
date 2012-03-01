@@ -724,6 +724,8 @@ Patch21103: cifs-fix-dentry-refcount-leak-when-opening-a-FIFO.patch
 #rhbz 728478
 Patch21104: sony-laptop-Enable-keyboard-backlight-by-default.patch
 
+Patch21200: unhandled-irqs-switch-to-polling.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1338,6 +1340,8 @@ ApplyPatch cifs-fix-dentry-refcount-leak-when-opening-a-FIFO.patch
 
 #rhbz 728478
 ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
+
+ApplyPatch unhandled-irqs-switch-to-polling.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1986,6 +1990,10 @@ fi
 # and build.
 
 %changelog
+* Thu Mar 01 2012 Dave Jones <davej@redhat.com>
+- temporarily switch to low-performance polling IRQ mode when
+  unexpected IRQs occur.
+
 * Tue Feb 28 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to enable keyboard backlight on Sony laptops (rhbz 728478)
 
