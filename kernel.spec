@@ -1991,6 +1991,11 @@ fi
 
 %changelog
 * Thu Mar 01 2012 Dave Jones <davej@redhat.com>
+- Temporarily enable CONFIG_DEBUG_PAGEALLOC in -debug builds to help track
+  down some long-standing bugs.
+  Note: This will make -debug builds even slower than normal.
+
+* Thu Mar 01 2012 Dave Jones <davej@redhat.com>
 - temporarily switch to low-performance polling IRQ mode when
   unexpected IRQs occur.
 
