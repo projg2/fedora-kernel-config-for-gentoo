@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 4
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 9
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -644,8 +644,6 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 
 Patch12026: bsg-fix-sysfs-link-remove-warning.patch
 
-Patch12030: epoll-limit-paths.patch
-
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch13002: revert-efi-rtclock.patch
@@ -668,8 +666,6 @@ Patch21004: arm-tegra-nvec-kconfig.patch
 
 #rhbz 717735
 Patch21045: nfs-client-freezer.patch
-
-Patch21046: nfs-oops-getacl.patch
 
 #rhbz 590880
 Patch21050: alps.patch
@@ -1266,8 +1262,6 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
-ApplyPatch epoll-limit-paths.patch
-
 ApplyPatch bsg-fix-sysfs-link-remove-warning.patch
 
 # rhbz#605888
@@ -1294,8 +1288,6 @@ ApplyPatch hpsa-add-irqf-shared.patch
 
 #rhbz 717735
 ApplyPatch nfs-client-freezer.patch
-
-ApplyPatch nfs-oops-getacl.patch
 
 #rhbz 590880
 ApplyPatch alps.patch
@@ -1990,6 +1982,9 @@ fi
 # and build.
 
 %changelog
+* Thu Mar 01 2012 Justin M. Forbes <jforbes@redhat.com> 2.6.42.9-1
+- Linux 3.2.9
+
 * Thu Mar 01 2012 Dave Jones <davej@redhat.com>
 - Temporarily enable CONFIG_DEBUG_PAGEALLOC in -debug builds to help track
   down some long-standing bugs.
