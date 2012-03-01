@@ -819,6 +819,8 @@ Patch21241: cifs-fix-dentry-refcount-leak-when-opening-a-FIFO.patch
 #rhbz 728478
 Patch21242: sony-laptop-Enable-keyboard-backlight-by-default.patch
 
+Patch21300: unhandled-irqs-switch-to-polling.patch
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-pr_fmt-warning-avoidance.patch
@@ -1561,6 +1563,8 @@ ApplyPatch cifs-fix-dentry-refcount-leak-when-opening-a-FIFO.patch
 
 #rhbz 728478
 ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
+
+ApplyPatch unhandled-irqs-switch-to-polling.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2378,6 +2382,10 @@ fi
 # and build.
 
 %changelog
+* Thu Mar 01 2012 Dave Jones <davej@redhat.com>
+- temporarily switch to low-performance polling IRQ mode when
+  unexpected IRQs occur.
+
 * Wed Feb 29 2012 Josh Boyer <jwboyer@redhat.com> 3.2.9-1
 - Linux 3.2.9
 
