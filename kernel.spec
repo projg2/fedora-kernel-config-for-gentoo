@@ -717,6 +717,7 @@ Patch1500: fix_xen_guest_on_old_EC2.patch
 
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
+Patch1825: drm-intel-crtc-dpms-fix.patch
 # hush the i915 fbc noise
 Patch1826: drm-i915-fbc-stfu.patch
 
@@ -1473,6 +1474,7 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
+ApplyPatch drm-intel-crtc-dpms-fix.patch
 ApplyPatch drm-i915-fbc-stfu.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
@@ -2382,6 +2384,9 @@ fi
 # and build.
 
 %changelog
+* Fri Mar 02 2012 Adam Jackson <ajax@redhat.com>
+- drm-intel-crtc-dpms-fix.patch: Fix system hang on gen2 kit on DPMS (#730853)
+
 * Thu Mar 01 2012 Dave Jones <davej@redhat.com>
 - Temporarily enable CONFIG_DEBUG_PAGEALLOC in -debug builds to help track
   down some long-standing bugs.
