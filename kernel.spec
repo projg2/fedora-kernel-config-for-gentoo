@@ -1990,6 +1990,9 @@ fi
 # and build.
 
 %changelog
+* Fri Mar 02 2012 Dave Jones <davej@redhat.com>
+- Enable VM debugging in non-debug kernels too.
+
 * Fri Mar 02 2012 Justin M. Forbes <jforbes@redhat.com> 
 - Disable threading in hibernate compression/decompression
 
