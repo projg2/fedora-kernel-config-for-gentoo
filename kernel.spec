@@ -721,6 +721,9 @@ Patch21103: cifs-fix-dentry-refcount-leak-when-opening-a-FIFO.patch
 #rhbz 728478
 Patch21104: sony-laptop-Enable-keyboard-backlight-by-default.patch
 
+# Disable threading in hibernate compression
+Patch21105: disable-threading-in-compression-for-hibernate.patch
+
 Patch21200: unhandled-irqs-switch-to-polling.patch
 
 %endif
@@ -1334,6 +1337,9 @@ ApplyPatch cifs-fix-dentry-refcount-leak-when-opening-a-FIFO.patch
 
 #rhbz 728478
 ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
+
+#Disable threading in hibernate compression
+ApplyPatch disable-threading-in-compression-for-hibernate.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
@@ -1984,6 +1990,9 @@ fi
 # and build.
 
 %changelog
+* Fri Mar 02 2012 Justin M. Forbes <jforbes@redhat.com> 
+- Disable threading in hibernate compression/decompression
+
 * Fri Mar 02 2012 Adam Jackson <ajax@redhat.com>
 - drm-intel-crtc-dpms-fix.patch: Fix system hang on gen2 kit on DPMS (#730853)
 
