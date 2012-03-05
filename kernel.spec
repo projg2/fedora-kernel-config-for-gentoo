@@ -827,6 +827,9 @@ Patch21243: disable-threading-in-compression-for-hibernate.patch
 Patch21244: regset-Prevent-null-pointer-reference-on-readonly-re.patch
 Patch21245: regset-Return-EFAULT-not-EIO-on-host-side-memory-fau.patch
 
+#rhbz 786632
+Patch21246: mm-thp-fix-BUG-on-mm-nr_ptes.patch
+
 Patch21300: unhandled-irqs-switch-to-polling.patch
 
 # compat-wireless patches
@@ -1579,6 +1582,9 @@ ApplyPatch disable-threading-in-compression-for-hibernate.patch
 #rhbz 799782 CVE-2012-1097
 ApplyPatch regset-Prevent-null-pointer-reference-on-readonly-re.patch
 ApplyPatch regset-Return-EFAULT-not-EIO-on-host-side-memory-fau.patch
+
+#rhbz 786632
+ApplyPatch mm-thp-fix-BUG-on-mm-nr_ptes.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
@@ -2400,6 +2406,7 @@ fi
 %changelog
 * Mon Mar 05 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-1097 regset: Prevent null pointer reference on readonly regsets
+- Add patch to fix BUG_ON mm->nr_ptes (rhbz 786632)
 
 * Fri Mar 02 2012 Dave Jones <davej@redhat.com>
 - Enable VM debugging in non-debug kernels too.
