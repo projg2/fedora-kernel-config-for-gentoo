@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -724,6 +724,10 @@ Patch21104: sony-laptop-Enable-keyboard-backlight-by-default.patch
 # Disable threading in hibernate compression
 Patch21105: disable-threading-in-compression-for-hibernate.patch
 
+#rhbz 799782 CVE-2012-1097
+Patch21106: regset-Prevent-null-pointer-reference-on-readonly-re.patch
+Patch21107: regset-Return-EFAULT-not-EIO-on-host-side-memory-fau.patch
+
 Patch21200: unhandled-irqs-switch-to-polling.patch
 
 %endif
@@ -1340,6 +1344,10 @@ ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
 
 #Disable threading in hibernate compression
 ApplyPatch disable-threading-in-compression-for-hibernate.patch
+
+#rhbz 799782 CVE-2012-1097
+ApplyPatch regset-Prevent-null-pointer-reference-on-readonly-re.patch
+ApplyPatch regset-Return-EFAULT-not-EIO-on-host-side-memory-fau.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
@@ -1990,6 +1998,9 @@ fi
 # and build.
 
 %changelog
+* Mon Mar 05 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2012-1097 regset: Prevent null pointer reference on readonly regsets
+
 * Fri Mar 02 2012 Dave Jones <davej@redhat.com>
 - Enable VM debugging in non-debug kernels too.
 
