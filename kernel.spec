@@ -835,6 +835,8 @@ Patch21247: mm-memcg-Correct-unregistring-of-events-attached-to-.patch
 
 Patch21300: unhandled-irqs-switch-to-polling.patch
 
+Patch22000: weird-root-dentry-name-debug.patch
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-pr_fmt-warning-avoidance.patch
@@ -1593,6 +1595,8 @@ ApplyPatch mm-thp-fix-BUG-on-mm-nr_ptes.patch
 ApplyPatch mm-memcg-Correct-unregistring-of-events-attached-to-.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
+
+ApplyPatch weird-root-dentry-name-debug.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2410,6 +2414,9 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 07 2012 Dave Jones <davej@redhat.com>
+- Add debug patch for bugs 787171/766277
+
 * Wed Mar 07 2012 Josh Boye <jwboyer@redhat.com>
 - CVE-2012-1146: memcg: unregister events attached to the same eventfd can
   oops (rhbz 800817)
