@@ -782,6 +782,8 @@ Patch21303: disable-threading-in-compression-for-hibernate.patch
 
 Patch21400: unhandled-irqs-switch-to-polling.patch
 
+Patch22000: weird-root-dentry-name-debug.patch
+
 # compat-wireless patches
 Patch50000: compat-wireless-config-fixups.patch
 Patch50001: compat-wireless-pr_fmt-warning-avoidance.patch
@@ -1505,6 +1507,8 @@ ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
 ApplyPatch disable-threading-in-compression-for-hibernate.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
+
+ApplyPatch weird-root-dentry-name-debug.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2387,6 +2391,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Mar 07 2012 Dave Jones <davej@redhat.com>
+- Add debug patch for bugs 787171/766277
+
 * Wed Mar 07 2012 Dave Jones <davej@redhat.com> - 3.3.0-0.rc6.git2.1
 - Linux v3.3-rc6-132-g55062d0
 
