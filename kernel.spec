@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -731,6 +731,9 @@ Patch21107: regset-Return-EFAULT-not-EIO-on-host-side-memory-fau.patch
 #rhbz 786632
 Patch21108: mm-thp-fix-BUG-on-mm-nr_ptes.patch
 
+#rhbz 800817
+Patch21109: mm-memcg-Correct-unregistring-of-events-attached-to-.patch
+
 Patch21200: unhandled-irqs-switch-to-polling.patch
 
 %endif
@@ -1354,7 +1357,11 @@ ApplyPatch regset-Return-EFAULT-not-EIO-on-host-side-memory-fau.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
+#rhbz 786632
 ApplyPatch mm-thp-fix-BUG-on-mm-nr_ptes.patch
+
+#rhbz 800817
+ApplyPatch mm-memcg-Correct-unregistring-of-events-attached-to-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2003,6 +2010,9 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 07 2012 Josh Boye <jwboyer@redhat.com>
+- memcg: unregister events attached to the same eventfd can oops (rhbz 800817)
+
 * Mon Mar 05 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-1097 regset: Prevent null pointer reference on readonly regsets
 - Add patch to fix BUG_ON mm->nr_ptes (rhbz 786632)
