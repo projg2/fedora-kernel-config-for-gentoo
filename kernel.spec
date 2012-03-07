@@ -2411,7 +2411,8 @@ fi
 
 %changelog
 * Wed Mar 07 2012 Josh Boye <jwboyer@redhat.com>
-- memcg: unregister events attached to the same eventfd can oops (rhbz 800817)
+- CVE-2012-1146: memcg: unregister events attached to the same eventfd can
+  oops (rhbz 800817)
 
 * Mon Mar 05 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-1097 regset: Prevent null pointer reference on readonly regsets
