@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -830,6 +830,9 @@ Patch21245: regset-Return-EFAULT-not-EIO-on-host-side-memory-fau.patch
 #rhbz 786632
 Patch21246: mm-thp-fix-BUG-on-mm-nr_ptes.patch
 
+#rhbz 800817
+Patch21247: mm-memcg-Correct-unregistring-of-events-attached-to-.patch
+
 Patch21300: unhandled-irqs-switch-to-polling.patch
 
 # compat-wireless patches
@@ -1585,6 +1588,9 @@ ApplyPatch regset-Return-EFAULT-not-EIO-on-host-side-memory-fau.patch
 
 #rhbz 786632
 ApplyPatch mm-thp-fix-BUG-on-mm-nr_ptes.patch
+
+#rhbz 800817
+ApplyPatch mm-memcg-Correct-unregistring-of-events-attached-to-.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
@@ -2404,6 +2410,9 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 07 2012 Josh Boye <jwboyer@redhat.com>
+- memcg: unregister events attached to the same eventfd can oops (rhbz 800817)
+
 * Mon Mar 05 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-1097 regset: Prevent null pointer reference on readonly regsets
 - Add patch to fix BUG_ON mm->nr_ptes (rhbz 786632)
