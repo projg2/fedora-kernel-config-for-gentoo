@@ -736,6 +736,8 @@ Patch21109: mm-memcg-Correct-unregistring-of-events-attached-to-.patch
 
 Patch21200: unhandled-irqs-switch-to-polling.patch
 
+Patch22000: weird-root-dentry-name-debug.patch
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
@@ -1356,6 +1358,8 @@ ApplyPatch regset-Prevent-null-pointer-reference-on-readonly-re.patch
 ApplyPatch regset-Return-EFAULT-not-EIO-on-host-side-memory-fau.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
+
+ApplyPatch weird-root-dentry-name-debug.patch
 
 #rhbz 786632
 ApplyPatch mm-thp-fix-BUG-on-mm-nr_ptes.patch
@@ -2010,6 +2014,9 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 07 2012 Dave Jones <davej@redhat.com>
+- Add debug patch for bugs 787171/766277
+
 * Wed Mar 07 2012 Josh Boye <jwboyer@redhat.com>
 - CVE-2012-1146: memcg: unregister events attached to the same eventfd can
   oops (rhbz 800817)
