@@ -1,0 +1,5 @@
+* disable CONFIG_B43_BCMA_EXTRA (799657)
+
+* Check if nfs-utinough for CONFIG_NFS_USE_NEW_IDMAPPER
+
+
