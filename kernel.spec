@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -835,6 +835,8 @@ Patch21247: mm-memcg-Correct-unregistring-of-events-attached-to-.patch
 
 Patch21300: unhandled-irqs-switch-to-polling.patch
 
+Patch21350: x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
+
 Patch22000: weird-root-dentry-name-debug.patch
 
 # compat-wireless patches
@@ -1597,6 +1599,8 @@ ApplyPatch mm-memcg-Correct-unregistring-of-events-attached-to-.patch
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
 ApplyPatch weird-root-dentry-name-debug.patch
+
+ApplyPatch x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2414,6 +2418,9 @@ fi
 # and build.
 
 %changelog
+* Mon Mar 12 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to ignore bogus io-apic entries (rhbz 801501)
+
 * Wed Mar 07 2012 Dave Jones <davej@redhat.com>
 - Add debug patch for bugs 787171/766277
 
