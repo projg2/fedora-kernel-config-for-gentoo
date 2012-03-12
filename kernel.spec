@@ -2418,7 +2418,7 @@ fi
 # and build.
 
 %changelog
-* Mon Mar 12 2012 Josh Boyer <jwboyer@redhat.com>
+* Mon Mar 12 2012 Josh Boyer <jwboyer@redhat.com> - 3.2.9-4
 - Add patch to ignore bogus io-apic entries (rhbz 801501)
 
 * Wed Mar 07 2012 Dave Jones <davej@redhat.com>
