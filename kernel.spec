@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -734,6 +734,8 @@ Patch21108: mm-thp-fix-BUG-on-mm-nr_ptes.patch
 #rhbz 800817
 Patch21109: mm-memcg-Correct-unregistring-of-events-attached-to-.patch
 
+Patch21110: x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
+
 Patch21200: unhandled-irqs-switch-to-polling.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
@@ -1366,6 +1368,8 @@ ApplyPatch mm-thp-fix-BUG-on-mm-nr_ptes.patch
 
 #rhbz 800817
 ApplyPatch mm-memcg-Correct-unregistring-of-events-attached-to-.patch
+
+ApplyPatch x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2014,6 +2018,9 @@ fi
 # and build.
 
 %changelog
+* Mon Mar 12 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to ignore bogus io-apic entries (rhbz 801501)
+
 * Wed Mar 07 2012 Dave Jones <davej@redhat.com>
 - Add debug patch for bugs 787171/766277
 
