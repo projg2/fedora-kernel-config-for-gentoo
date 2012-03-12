@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -717,7 +717,7 @@ Patch1500: fix_xen_guest_on_old_EC2.patch
 
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
-Patch1825: drm-intel-crtc-dpms-fix.patch
+
 # hush the i915 fbc noise
 Patch1826: drm-i915-fbc-stfu.patch
 
@@ -743,8 +743,6 @@ Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 # patches headed upstream
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
-
-Patch12026: bsg-fix-sysfs-link-remove-warning.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
@@ -809,29 +807,14 @@ Patch21234: e1000e-Avoid-wrong-check-on-TX-hang.patch
 #Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 Patch21235: scsi-fix-sd_revalidate_disk-oops.patch
 
-#rhbz 790367
-Patch21239: s390x-enable-keys-compat.patch
-
 #rhbz 727865 730007
 Patch21240: ACPICA-Fix-regression-in-FADT-revision-checks.patch
-
-Patch21241: cifs-fix-dentry-refcount-leak-when-opening-a-FIFO.patch
 
 #rhbz 728478
 Patch21242: sony-laptop-Enable-keyboard-backlight-by-default.patch
 
 # Disable threading in hibernate compression
 Patch21243: disable-threading-in-compression-for-hibernate.patch
-
-#rhbz 799782 CVE-2012-1097
-Patch21244: regset-Prevent-null-pointer-reference-on-readonly-re.patch
-Patch21245: regset-Return-EFAULT-not-EIO-on-host-side-memory-fau.patch
-
-#rhbz 786632
-Patch21246: mm-thp-fix-BUG-on-mm-nr_ptes.patch
-
-#rhbz 800817
-Patch21247: mm-memcg-Correct-unregistring-of-events-attached-to-.patch
 
 Patch21300: unhandled-irqs-switch-to-polling.patch
 
@@ -1491,7 +1474,6 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
-ApplyPatch drm-intel-crtc-dpms-fix.patch
 ApplyPatch drm-i915-fbc-stfu.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
@@ -1509,8 +1491,6 @@ ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
 # Patches headed upstream
 
 ApplyPatch disable-i8042-check-on-apple-mac.patch
-
-ApplyPatch bsg-fix-sysfs-link-remove-warning.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1571,30 +1551,14 @@ ApplyPatch e1000e-Avoid-wrong-check-on-TX-hang.patch
 #ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 ApplyPatch scsi-fix-sd_revalidate_disk-oops.patch
 
-#rhbz 790367
-ApplyPatch s390x-enable-keys-compat.patch
-
 #rhbz 727865 730007
 ApplyPatch ACPICA-Fix-regression-in-FADT-revision-checks.patch
-
-#rhbz 798296
-ApplyPatch cifs-fix-dentry-refcount-leak-when-opening-a-FIFO.patch
 
 #rhbz 728478
 ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
 
 #Disable threading in hibernate compression
 ApplyPatch disable-threading-in-compression-for-hibernate.patch
-
-#rhbz 799782 CVE-2012-1097
-ApplyPatch regset-Prevent-null-pointer-reference-on-readonly-re.patch
-ApplyPatch regset-Return-EFAULT-not-EIO-on-host-side-memory-fau.patch
-
-#rhbz 786632
-ApplyPatch mm-thp-fix-BUG-on-mm-nr_ptes.patch
-
-#rhbz 800817
-ApplyPatch mm-memcg-Correct-unregistring-of-events-attached-to-.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
@@ -2418,6 +2382,9 @@ fi
 # and build.
 
 %changelog
+* Mon Mar 12 2012 Josh Boyer <jwboyer@redhat.com> - 3.2.10-1
+- Linux 3.2.10
+
 * Mon Mar 12 2012 Josh Boyer <jwboyer@redhat.com> - 3.2.9-4
 - Add patch to ignore bogus io-apic entries (rhbz 801501)
 
