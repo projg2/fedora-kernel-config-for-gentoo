@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%define rcrev 6
+%define rcrev 7
 # The git snapshot level
-%define gitrev 2
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 3.%{upstream_sublevel}.0
 %endif
@@ -2391,6 +2391,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Mar 12 2012 Dave Jones <davej@redhat.com> 3.3.0-0.rc7.git0.1
+- Linux 3.3-rc7
+
 * Wed Mar 07 2012 Dave Jones <davej@redhat.com>
 - Add debug patch for bugs 787171/766277
 
