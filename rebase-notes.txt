@@ -2,4 +2,8 @@
 
 * Check if nfs-utinough for CONFIG_NFS_USE_NEW_IDMAPPER
 
+* Turn on the amilo-rfkill driver
+
+* Remove the with_backports/compat-wireless stuff
+
 
