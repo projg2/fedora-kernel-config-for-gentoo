@@ -637,6 +637,8 @@ Patch2901: linux-2.6-v4l-dvb-experimental.patch
 Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 
 # NFSv4
+Patch4000: NFSv4-Reduce-the-footprint-of-the-idmapper.patch
+Patch4001: NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
 
 # patches headed upstream
 
@@ -1174,7 +1176,9 @@ ApplyPatch jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 # eCryptfs
 
 # NFSv4
-
+ApplyPatch NFSv4-Reduce-the-footprint-of-the-idmapper.patch
+ApplyPatch NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
+ 
 # USB
 
 # WMI
@@ -1986,6 +1990,9 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 14 2012 Steve Dickson <steved@redhat.com>
+- Reduce the foot print of the NFSv4 idmapping coda (bz 593035)
+
 * Mon Mar 12 2012 Justin M. Forbes <jforbes@redhat.com> - 2.6.42.10-1
 - Linux 3.2.10
 
