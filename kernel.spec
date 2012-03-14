@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2308,7 +2308,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Wed Mar 14 2012 Steve Dickson <steved@redhat.com>
+* Wed Mar 14 2012 Steve Dickson <steved@redhat.com> - 3.3.0-0.rc7.git1.2
 - Reduce the foot print of the NFSv4 idmapping coda (bz 593035)
 
 * Wed Mar 14 2012 Dave Jones <davej@redhat.com> - 3.3.0-0.rc7.git1.1
