@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -87,7 +87,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %define rcrev 7
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 3.%{upstream_sublevel}.0
 %endif
@@ -2304,6 +2304,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Mar 14 2012 Dave Jones <davej@redhat.com> - 3.3.0-0.rc7.git1.1
+- Linux v3.3-rc7-48-g762ad8a
+
 * Tue Mar 13 2012 John W. Linville <linville@redhat.com>
 - Remove infrastructure related to compat-wireless integration
 
