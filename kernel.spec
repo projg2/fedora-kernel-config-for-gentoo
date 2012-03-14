@@ -698,10 +698,12 @@ Patch2901: linux-2.6-v4l-dvb-experimental.patch
 Patch4000: ext4-fix-resize-when-resizing-within-single-group.patch
 
 # NFSv4
-Patch1101: linux-3.1-keys-remove-special-keyring.patch
-Patch1102: linux-3.3-newidmapper-01.patch
-Patch1103: linux-3.3-newidmapper-02.patch
-Patch1104: linux-3.3-newidmapper-03.patch
+Patch4101: linux-3.1-keys-remove-special-keyring.patch
+Patch4102: linux-3.3-newidmapper-01.patch
+Patch4103: linux-3.3-newidmapper-02.patch
+Patch4104: linux-3.3-newidmapper-03.patch
+Patch4105: NFSv4-Reduce-the-footprint-of-the-idmapper.patch
+Patch4106: NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
 
 # patches headed upstream
 Patch12016: disable-i8042-check-on-apple-mac.patch
@@ -1333,6 +1335,8 @@ ApplyPatch linux-3.1-keys-remove-special-keyring.patch
 ApplyPatch linux-3.3-newidmapper-01.patch
 ApplyPatch linux-3.3-newidmapper-02.patch
 ApplyPatch linux-3.3-newidmapper-03.patch
+ApplyPatch NFSv4-Reduce-the-footprint-of-the-idmapper.patch
+ApplyPatch NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
 
 # USB
 
@@ -2304,6 +2308,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Mar 14 2012 Steve Dickson <steved@redhat.com>
+- Reduce the foot print of the NFSv4 idmapping coda (bz 593035)
+
 * Wed Mar 14 2012 Dave Jones <davej@redhat.com> - 3.3.0-0.rc7.git1.1
 - Linux v3.3-rc7-48-g762ad8a
 
