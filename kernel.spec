@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -720,6 +720,9 @@ Patch21104: sony-laptop-Enable-keyboard-backlight-by-default.patch
 # Disable threading in hibernate compression
 Patch21105: disable-threading-in-compression-for-hibernate.patch
 
+#rhbz 803809 CVE-2012-1179
+Patch21106: mm-thp-fix-pmd_bad-triggering.patch
+
 Patch21110: x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
 
 Patch21200: unhandled-irqs-switch-to-polling.patch
@@ -1337,11 +1340,14 @@ ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
 #Disable threading in hibernate compression
 ApplyPatch disable-threading-in-compression-for-hibernate.patch
 
-ApplyPatch unhandled-irqs-switch-to-polling.patch
+# ApplyPatch unhandled-irqs-switch-to-polling.patch
 
 ApplyPatch weird-root-dentry-name-debug.patch
 
 ApplyPatch x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
+
+#rhbz 803809 CVE-2012-1179
+ApplyPatch mm-thp-fix-pmd_bad-triggering.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1990,6 +1996,9 @@ fi
 # and build.
 
 %changelog
+* Thu Mar 15 2012 Justin M. Forbes <jforbes@redhat.com> - 2.6.42.10-3
+- CVE-2012-1179 fix pmd_bad() triggering in code paths holding mmap_sem read mode (rhbz 803809)
+
 * Wed Mar 14 2012 Josh Boyer <jwboyer@redhat.com>
 - Fixup irqpoll patch to only activate on machines with ASM108x PCI bridge
 
