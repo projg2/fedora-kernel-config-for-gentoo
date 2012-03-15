@@ -2308,6 +2308,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Mar 14 2012 Josh Boyer <jwboyer@redhat.com>
+- Fixup irqpoll patch to only activate on machines with ASM108x PCI bridge
+
 * Wed Mar 14 2012 Steve Dickson <steved@redhat.com> - 3.3.0-0.rc7.git1.2
 - Reduce the foot print of the NFSv4 idmapping coda (bz 593035)
 
