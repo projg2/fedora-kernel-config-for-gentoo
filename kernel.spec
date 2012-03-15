@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2386,6 +2386,9 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 14 2012 Josh Boyer <jwboyer@redhat.com>
+- Fixup irqpoll patch to only activate on machines with ASM108x PCI bridge
+
 * Wed Mar 14 2012 Steve Dickson <steved@redhat.com>
 - Reduce the foot print of the NFSv4 idmapping coda (bz 593035)
 
@@ -2398,7 +2401,7 @@ fi
 * Wed Mar 07 2012 Dave Jones <davej@redhat.com>
 - Add debug patch for bugs 787171/766277
 
-* Wed Mar 07 2012 Josh Boye <jwboyer@redhat.com>
+* Wed Mar 07 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-1146: memcg: unregister events attached to the same eventfd can
   oops (rhbz 800817)
 
