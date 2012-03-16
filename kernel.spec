@@ -757,9 +757,6 @@ Patch21300: ACPICA-Fix-regression-in-FADT-revision-checks.patch
 #rhbz 728478
 Patch21302: sony-laptop-Enable-keyboard-backlight-by-default.patch
 
-# Disable threading in hibernate compression
-Patch21303: disable-threading-in-compression-for-hibernate.patch
-
 #rhbz 803809 CVE-2012-1179
 Patch21304: mm-thp-fix-pmd_bad-triggering.patch
 
@@ -1467,9 +1464,6 @@ ApplyPatch ACPICA-Fix-regression-in-FADT-revision-checks.patch
 
 #rhbz 728478
 ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
-
-#Disable threading in hibernate compression
-ApplyPatch disable-threading-in-compression-for-hibernate.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
@@ -2314,6 +2308,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Mar 16 2012 Justin M. Forbes <jforbes@redhat.com>
+- re-enable threading on hibernate compression/decompression
+
 * Fri Mar 16 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix irqpoll patch to really only apply for ASM108x machines (rhbz 800520)
 
