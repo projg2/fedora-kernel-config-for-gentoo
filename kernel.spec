@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -87,7 +87,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %define rcrev 7
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 3.%{upstream_sublevel}.0
 %endif
@@ -743,7 +743,6 @@ Patch21233: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-Patch21236: scsi-fix-sd_revalidate_disk-oops.patch
 
 Patch21250: mcelog-rcu-splat.patch
 Patch21270: x86-Avoid-invoking-RCU-when-CPU-is-idle.patch
@@ -1452,7 +1451,6 @@ ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-ApplyPatch scsi-fix-sd_revalidate_disk-oops.patch
 
 ApplyPatch mcelog-rcu-splat.patch
 
@@ -2308,6 +2306,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Mar 16 2012 Dave Jones <davej@redhat.com> - 3.3.0-0.rc7.git2.1
+- Linux v3.3-rc7-103-g0c4d067
+
 * Fri Mar 16 2012 Justin M. Forbes <jforbes@redhat.com>
 - re-enable threading on hibernate compression/decompression
 
