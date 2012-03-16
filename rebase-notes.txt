@@ -1,6 +1,7 @@
 * disable CONFIG_B43_BCMA_EXTRA (799657)
 
-* Check if nfs-utils is new enough for CONFIG_NFS_USE_NEW_IDMAPPER
+* Do not turn on CONFIG_NFS_USE_NEW_IDMAPPER in f15/f16.  Steved will hunt you
+  down.
 
 * Turn on the amilo-rfkill driver
 
