@@ -54,19 +54,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 5
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 2.6.22-rc7-git1 starts with a 2.6.21 base,
 # which yields a base_sublevel of 21.
-%define base_sublevel 2
+%define base_sublevel 3
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 0
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -725,7 +725,6 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
-Patch13002: revert-efi-rtclock.patch
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
 Patch14000: hibernate-freeze-filesystems.patch
@@ -738,38 +737,10 @@ Patch20000: utrace.patch
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 
-#rhbz 717735
-Patch21045: nfs-client-freezer.patch
-
-#rhbz 590880
-Patch21050: alps.patch
-
 Patch21070: ext4-Support-check-none-nocheck-mount-options.patch
-Patch21071: ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
 
 #rhbz 769766
 Patch21072: mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
-
-#rhbz 773392
-Patch21073: KVM-x86-extend-struct-x86_emulate_ops-with-get_cpuid.patch
-Patch21074: KVM-x86-fix-missing-checks-in-syscall-emulation.patch
-
-#rhbz 728740
-Patch21076: rtl8192cu-Fix-WARNING-on-suspend-resume.patch
-
-#rhbz752176
-Patch21080: sysfs-msi-irq-per-device.patch
-
-#rhbz 782686
-Patch21082: procfs-parse-mount-options.patch
-Patch21083: procfs-add-hidepid-and-gid-mount-options.patch
-Patch21084: proc-fix-null-pointer-deref-in-proc_pid_permission.patch
-
-#rhbz 771058
-Patch22100: msi-irq-sysfs-warning.patch
-
-# rhbz 754907
-Patch21101: hpsa-add-irqf-shared.patch
 
 Patch21226: pci-crs-blacklist.patch
 
@@ -779,12 +750,8 @@ Patch21232: rt2x00_fix_MCU_request_failures.patch
 #rhbz 788260
 Patch21233: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 
-#rhbz 785806
-Patch21234: e1000e-Avoid-wrong-check-on-TX-hang.patch
-
 #rhbz 754518
 #Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-Patch21235: scsi-fix-sd_revalidate_disk-oops.patch
 
 #rhbz 727865 730007
 Patch21240: ACPICA-Fix-regression-in-FADT-revision-checks.patch
@@ -1302,7 +1269,7 @@ ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 #
 # ARM
 #
-ApplyPatch arm-omap-dt-compat.patch
+# ApplyPatch arm-omap-dt-compat.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 
 ApplyPatch taint-vbox.patch
@@ -1418,7 +1385,6 @@ ApplyPatch disable-i8042-check-on-apple-mac.patch
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
-ApplyPatch revert-efi-rtclock.patch
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
 ApplyPatch hibernate-freeze-filesystems.patch
@@ -1428,38 +1394,9 @@ ApplyPatch lis3-improve-handling-of-null-rate.patch
 # utrace.
 ApplyPatch utrace.patch
 
-#rhbz 752176
-ApplyPatch sysfs-msi-irq-per-device.patch
-
-# rhbz 754907
-ApplyPatch hpsa-add-irqf-shared.patch
-
 #ApplyPatch pci-crs-blacklist.patch
 
-#rhbz 717735
-ApplyPatch nfs-client-freezer.patch
-
-#rhbz 590880
-ApplyPatch alps.patch
-
-#rhbz 771058
-ApplyPatch msi-irq-sysfs-warning.patch
-
 ApplyPatch ext4-Support-check-none-nocheck-mount-options.patch
-
-ApplyPatch ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
-
-#rhbz 773392
-ApplyPatch KVM-x86-extend-struct-x86_emulate_ops-with-get_cpuid.patch
-ApplyPatch KVM-x86-fix-missing-checks-in-syscall-emulation.patch
-
-#rhbz 728740
-ApplyPatch rtl8192cu-Fix-WARNING-on-suspend-resume.patch
-
-#rhbz 782686
-ApplyPatch procfs-parse-mount-options.patch
-ApplyPatch procfs-add-hidepid-and-gid-mount-options.patch
-ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
 
 #rhbz 772772
 ApplyPatch rt2x00_fix_MCU_request_failures.patch
@@ -1467,12 +1404,8 @@ ApplyPatch rt2x00_fix_MCU_request_failures.patch
 #rhbz 788269
 ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 
-#rhbz 785806
-ApplyPatch e1000e-Avoid-wrong-check-on-TX-hang.patch
-
 #rhbz 754518
 #ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-ApplyPatch scsi-fix-sd_revalidate_disk-oops.patch
 
 #rhbz 727865 730007
 ApplyPatch ACPICA-Fix-regression-in-FADT-revision-checks.patch
@@ -2222,6 +2155,7 @@ fi
 
 %changelog
 * Mon Mar 19 2012 Josh Boyer <jwboyer@redhat.com>
+- Linux 3.3
 - Drop compat-wireless infrastructure in preparation for 3.3 rebase
 
 * Fri Mar 16 2012 Justin M. Forbes <jforbes@redhat.com>
