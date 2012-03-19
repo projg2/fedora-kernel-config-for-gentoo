@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -694,6 +694,7 @@ Patch1500: fix_xen_guest_on_old_EC2.patch
 
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
+Patch1825: drm-i915-dp-stfu.patch
 
 # hush the i915 fbc noise
 Patch1826: drm-i915-fbc-stfu.patch
@@ -1364,6 +1365,7 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
+ApplyPatch drm-i915-dp-stfu.patch
 ApplyPatch drm-i915-fbc-stfu.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
@@ -2154,7 +2156,11 @@ fi
 # and build.
 
 %changelog
-* Mon Mar 19 2012 Josh Boyer <jwboyer@redhat.com>
+* Mon Mar 19 2012 Adam Jackson <ajax@redhat.com> - 3.3.0-2
+- drm-i915-dp-stfu.patch: Muzzle a bunch of DP WARN()s.  They're not wrong,
+  but they're not helpful at this point.
+
+* Mon Mar 19 2012 Josh Boyer <jwboyer@redhat.com> - 3.3.0-1
 - Linux 3.3
 - Drop compat-wireless infrastructure in preparation for 3.3 rebase
 
