@@ -2006,7 +2006,7 @@ fi
 - Linux 3.2.10
 - CVE-2012-1568 SHLIB_BASE randomization (rhbz 804947)
 
-* Mon Mar 19 2012 Steve Dickson <steved@redhat.com>
+* Tue Mar 20 2012 Steve Dickson <steved@redhat.com>
 - NFSv4: Save the owner/group name string when doing open (bz 794780)
 
 * Tue Mar 20 2012 Josh Boyer <jwboyer@redhat.com>
