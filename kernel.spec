@@ -734,6 +734,8 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 
 Patch15000: bluetooth-use-after-free.patch
 
+Patch19000: ips-noirq.patch
+
 Patch20000: utrace.patch
 
 # Flattened devicetree support
@@ -1410,6 +1412,8 @@ ApplyPatch hibernate-freeze-filesystems.patch
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 ApplyPatch bluetooth-use-after-free.patch
+
+ApplyPatch ips-noirq.patch
 
 # utrace.
 ApplyPatch utrace.patch
@@ -2194,6 +2198,9 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 28 2012 Dave Jones <davej@redhat.com>
+- Don't bind the IPS driver if no irq is assigned (typically BIOS bug). (rhbz 804353)
+
 * Tue Mar 27 2012 Josh Boyer <jwboyer@redhat.com>
 - Implement xen apic_ops to fix early crash in Xen Dom0 (rhbz 804347)
 - Apply patch to fix MCE rcu splat (rhbz 789644)
