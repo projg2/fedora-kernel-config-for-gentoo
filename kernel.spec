@@ -717,6 +717,8 @@ Patch14000: hibernate-freeze-filesystems.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
+Patch19000: ips-noirq.patch
+
 Patch20000: utrace.patch
 
 # Flattened devicetree support
@@ -1438,6 +1440,8 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 ApplyPatch hibernate-freeze-filesystems.patch
 
 ApplyPatch lis3-improve-handling-of-null-rate.patch
+
+ApplyPatch ips-noirq.patch
 
 # utrace.
 ApplyPatch utrace.patch
@@ -2320,6 +2324,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Mar 20 2012 Dave Jones <davej@redhat.com>
+- Don't bind the IPS driver if no irq is assigned (typically BIOS bug). (rhbz 804353)
+
 * Tue Mar 20 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-1568: execshield: predictable ascii armour base address (rhbz 804957)
 - mac80211: fix possible tid_rx->reorder_timer use after free
