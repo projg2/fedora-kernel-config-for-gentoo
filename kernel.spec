@@ -727,6 +727,9 @@ Patch21110: x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
 
 Patch21200: unhandled-irqs-switch-to-polling.patch
 
+#rhbz 804007
+Patch21305: mac80211-fix-possible-tid_rx-reorder_timer-use-after-free.patch
+
 Patch22000: weird-root-dentry-name-debug.patch
 
 %endif
@@ -1336,6 +1339,9 @@ ApplyPatch ACPICA-Fix-regression-in-FADT-revision-checks.patch
 
 #rhbz 728478
 ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
+
+#rhbz 804007
+ApplyPatch mac80211-fix-possible-tid_rx-reorder_timer-use-after-free.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
@@ -2002,6 +2008,10 @@ fi
 
 * Mon Mar 19 2012 Steve Dickson <steved@redhat.com>
 - NFSv4: Save the owner/group name string when doing open (bz 794780)
+
+* Tue Mar 20 2012 Josh Boyer <jwboyer@redhat.com>
+- mac80211: fix possible tid_rx->reorder_timer use after free
+  from Stanislaw Gruska (rhbz 804007)
 
 * Fri Mar 16 2012 Justin M. Forbes <jforbes@redhat.com>
 - re-enable threading on hibernate compression/decompression
