@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -768,6 +768,9 @@ Patch21300: unhandled-irqs-switch-to-polling.patch
 #rhbz 804007
 Patch21305: mac80211-fix-possible-tid_rx-reorder_timer-use-after-free.patch
 
+#rhbz 804957 CVE-2012-1568
+Patch21306: shlib_base_randomize.patch
+
 Patch21350: x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
@@ -1420,6 +1423,9 @@ ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
 
 #rhbz 804007
 ApplyPatch mac80211-fix-possible-tid_rx-reorder_timer-use-after-free.patch
+
+#rhbz 804957 CVE-2012-1568
+ApplyPatch shlib_base_randomize.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
@@ -2163,6 +2169,7 @@ fi
 
 %changelog
 * Tue Mar 20 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2012-1568: execshield: predictable ascii armour base address (rhbz 804957)
 - mac80211: fix possible tid_rx->reorder_timer use after free
   from Stanislaw Gruska (rhbz 804007)
 
