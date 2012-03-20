@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 4
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 12
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -639,6 +639,7 @@ Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 # NFSv4
 Patch4000: NFSv4-Reduce-the-footprint-of-the-idmapper.patch
 Patch4001: NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
+Patch4003: NFSv4-Save-the-owner-group-name-string-when-doing-op.patch
 
 # patches headed upstream
 
@@ -703,7 +704,6 @@ Patch21092: e1000e-Avoid-wrong-check-on-TX-hang.patch
 
 #rhbz 754518
 #Patch21093: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-Patch21093: scsi-fix-sd_revalidate_disk-oops.patch
 
 #rhbz 771058
 Patch21100: msi-irq-sysfs-warning.patch
@@ -719,6 +719,9 @@ Patch21104: sony-laptop-Enable-keyboard-backlight-by-default.patch
 
 #rhbz 803809 CVE-2012-1179
 Patch21106: mm-thp-fix-pmd_bad-triggering.patch
+
+#rhbz 804947 CVE-2012-1568
+Patch21107: SHLIB_BASE-randomization.patch
 
 Patch21110: x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
 
@@ -1178,6 +1181,7 @@ ApplyPatch jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 # NFSv4
 ApplyPatch NFSv4-Reduce-the-footprint-of-the-idmapper.patch
 ApplyPatch NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
+ApplyPatch NFSv4-Save-the-owner-group-name-string-when-doing-op.patch
  
 # USB
 
@@ -1323,7 +1327,6 @@ ApplyPatch e1000e-Avoid-wrong-check-on-TX-hang.patch
 
 #rhbz 754518
 #ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-ApplyPatch scsi-fix-sd_revalidate_disk-oops.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
@@ -1342,6 +1345,9 @@ ApplyPatch x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
 
 #rhbz 803809 CVE-2012-1179
 ApplyPatch mm-thp-fix-pmd_bad-triggering.patch
+
+#rhbz 804947 CVE-2012-1568
+ApplyPatch SHLIB_BASE-randomization.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1990,6 +1996,13 @@ fi
 # and build.
 
 %changelog
+* Tue Mar 20 2012 Justin M. Forbes <jforbes@redhat.com> 2.6.42.12-1
+- Linux 3.2.10
+- CVE-2012-1568 SHLIB_BASE randomization (rhbz 804947)
+
+* Mon Mar 19 2012 Steve Dickson <steved@redhat.com>
+- NFSv4: Save the owner/group name string when doing open (bz 794780)
+
 * Fri Mar 16 2012 Justin M. Forbes <jforbes@redhat.com>
 - re-enable threading on hibernate compression/decompression
 
