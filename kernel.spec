@@ -717,6 +717,8 @@ Patch14000: hibernate-freeze-filesystems.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
+Patch15000: bluetooth-use-after-free.patch
+
 Patch19000: ips-noirq.patch
 
 Patch20000: utrace.patch
@@ -1440,6 +1442,8 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 ApplyPatch hibernate-freeze-filesystems.patch
 
 ApplyPatch lis3-improve-handling-of-null-rate.patch
+
+ApplyPatch bluetooth-use-after-free.patch
 
 ApplyPatch ips-noirq.patch
 
@@ -2330,6 +2334,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Mar 23 2012 Dave Jones <davej@redhat.com>
+- Apply patches that should solve the bluetooth use-after-free oopses. (rhbz 806033)
+
 * Wed Mar 21 2012 Josh Boyer <jwboyer@redhat.com>
 - Ship hmac file for vmlinuz for FIPS-140 (rhbz 805538)
 
