@@ -727,6 +727,7 @@ Patch20000: utrace.patch
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 Patch21004: arm-tegra-nvec-kconfig.patch
+Patch21005: arm-nosmp-fix-per_cpu-data-type-kallsyms.patch
 
 # highbank patches
 # Highbank clock functions need to be EXPORT for module builds
@@ -1325,6 +1326,7 @@ ApplyPatch linux-2.6-i386-nx-emulation.patch
 #pplyPatch arm-omap-dt-compat.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
+ApplyPatch arm-nosmp-fix-per_cpu-data-type-kallsyms.patch
 
 #
 # bugfixes to drivers and filesystems

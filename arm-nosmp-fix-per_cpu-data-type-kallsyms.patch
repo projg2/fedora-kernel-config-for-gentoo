@@ -1,0 +1,12 @@
+--- linux-3.3.0-0.rc6.git2.3.fc15.armv7hl_percpu_problem/arch/arm/kernel/vmlinux.lds.S	2012-03-24 21:59:47.000000000 -0400
++++ linux-3.3.0-0.rc6.git2.3.fc15.armv7hl_test1/arch/arm/kernel/vmlinux.lds.S	2012-03-24 15:24:50.000000000 -0400
+@@ -183,7 +183,9 @@ SECTIONS
+ 	}
+ #endif
+ 
++#ifdef CONFIG_SMP
+ 	PERCPU_SECTION(L1_CACHE_BYTES)
++#endif
+ 
+ #ifdef CONFIG_XIP_KERNEL
+ 	__data_loc = ALIGN(4);		/* location in binary */
