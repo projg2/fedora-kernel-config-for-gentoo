@@ -31,7 +31,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-# % define buildid .local
+%define buildid .jcm1
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -727,6 +727,7 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 Patch21004: arm-tegra-nvec-kconfig.patch
+Patch21005: arm-nosmp-fix-per_cpu-data-type-kallsyms.patch
 
 # highbank patches
 # Highbank clock functions need to be EXPORT for module builds
@@ -1328,6 +1329,7 @@ ApplyPatch linux-2.6-i386-nx-emulation.patch
 #ApplyPatch arm-omap-dt-compat.patch
 #ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
+ApplyPatch arm-nosmp-fix-per_cpu-data-type-kallsyms.patch
 
 #
 # bugfixes to drivers and filesystems
