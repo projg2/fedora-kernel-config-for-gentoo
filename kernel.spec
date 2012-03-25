@@ -23,7 +23,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-%define buildid .jcm1
+%define buildid .jcm2
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
