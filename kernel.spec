@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2002,6 +2002,9 @@ fi
 # and build.
 
 %changelog
+* Mon Mar 26 2012 Dave Jones <davej@redhat.com>
+- Linux 3.2.13
+
 * Tue Mar 20 2012 Justin M. Forbes <jforbes@redhat.com> 2.6.42.12-1
 - Linux 3.2.10
 - CVE-2012-1568 SHLIB_BASE randomization (rhbz 804947)
