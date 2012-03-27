@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -756,6 +756,9 @@ Patch21233: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 #rhbz 754518
 #Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
+#rhbz 789644
+Patch21237: mcelog-rcu-splat.patch
+
 #rhbz 727865 730007
 Patch21240: ACPICA-Fix-regression-in-FADT-revision-checks.patch
 
@@ -1418,6 +1421,9 @@ ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 
 #rhbz 754518
 #ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+
+#rhbz 789644
+ApplyPatch mcelog-rcu-splat.patch
 
 #rhbz 727865 730007
 ApplyPatch ACPICA-Fix-regression-in-FADT-revision-checks.patch
@@ -2178,6 +2184,9 @@ fi
 # and build.
 
 %changelog
+* Tue Mar 27 2012 Josh Boyer <jwboyer@redhat.com>
+- Apply patch to fix MCE rcu splat (rhbz 789644)
+
 * Fri Mar 23 2012 Dave Jones <davej@redhat.com>
 - Apply patches that should solve the bluetooth use-after-free oopses. (rhbz 806033)
 
