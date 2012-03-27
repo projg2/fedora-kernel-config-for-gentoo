@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -769,6 +769,13 @@ Patch21305: mac80211-fix-possible-tid_rx-reorder_timer-use-after-free.patch
 
 #rhbz 804957 CVE-2012-1568
 Patch21306: shlib_base_randomize.patch
+
+Patch21350: x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
+
+#rhbz 804347
+Patch21351: x86-add-io_apic_ops-to-allow-interception.patch
+Patch21352: x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
+Patch21353: xen-x86-Implement-x86_apic_ops.patch
 
 Patch21400: unhandled-irqs-switch-to-polling.patch
 
@@ -1488,6 +1495,13 @@ ApplyPatch shlib_base_randomize.patch
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
 ApplyPatch weird-root-dentry-name-debug.patch
+
+ApplyPatch x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
+
+#rhbz 804347
+ApplyPatch x86-add-io_apic_ops-to-allow-interception.patch
+ApplyPatch x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
+ApplyPatch xen-x86-Implement-x86_apic_ops.patch
 
 #rhbz 803809 CVE-2012-1179
 ApplyPatch mm-thp-fix-pmd_bad-triggering.patch
@@ -2334,6 +2348,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Mar 27 2012 Josh Boyer <jwboyer@redhat.com>
+- Implement xen apic_ops to fix early crash in Xen Dom0 (rhbz 804347)
+
 * Fri Mar 23 2012 Dave Jones <davej@redhat.com> 3.3.0-5
 - Apply patches that should solve the bluetooth use-after-free oopses. (rhbz 806033)
 
