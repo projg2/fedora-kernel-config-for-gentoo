@@ -785,6 +785,8 @@ Patch21351: x86-add-io_apic_ops-to-allow-interception.patch
 Patch21352: x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
 Patch21353: xen-x86-Implement-x86_apic_ops.patch
 
+Patch21500: ASPM-Fix-pcie-devs-with-non-pcie-children.patch
+
 Patch22000: weird-root-dentry-name-debug.patch
 
 %endif
@@ -1459,6 +1461,8 @@ ApplyPatch xen-x86-Implement-x86_apic_ops.patch
 
 #rhbz 803809 CVE-2012-1179
 ApplyPatch mm-thp-fix-pmd_bad-triggering.patch
+
+ApplyPatch ASPM-Fix-pcie-devs-with-non-pcie-children.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2198,6 +2202,9 @@ fi
 # and build.
 
 %changelog
+* Wed Mar 28 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix disabled ASPM regression
+
 * Wed Mar 28 2012 Dave Jones <davej@redhat.com>
 - Don't bind the IPS driver if no irq is assigned (typically BIOS bug). (rhbz 804353)
 
