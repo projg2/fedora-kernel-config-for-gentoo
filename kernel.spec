@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 6
+%global baserelease 7
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2348,6 +2348,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Mar 28 2012 Josh Boyer <jwboyer@redhat.com>
+- Move 9p modules back to main package for KVM (rhbz 807733)
+
 * Tue Mar 27 2012 Josh Boyer <jwboyer@redhat.com>
 - Implement xen apic_ops to fix early crash in Xen Dom0 (rhbz 804347)
 
