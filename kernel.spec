@@ -691,6 +691,10 @@ Patch21305: mac80211-fix-possible-tid_rx-reorder_timer-use-after-free.patch
 #rhbz 804957 CVE-2012-1568
 Patch21306: shlib_base_randomize.patch
 
+#rhbz 770476
+Patch21370: iwlegacy-do-not-nulify-il-vif-on-reset.patch
+Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
+
 Patch21501: nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
 #rhbz 808207 CVE-2012-1601
@@ -1285,6 +1289,10 @@ ApplyPatch nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
 #rhbz 808207 CVE-2012-1601
 ApplyPatch KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
+
+#rhbz 770476
+ApplyPatch iwlegacy-do-not-nulify-il-vif-on-reset.patch
+ApplyPatch iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1933,6 +1941,10 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 03 2012 Josh Boyer <jwboyer@redhat.com>
+- iwl{wifi,legacy}: Fix warnings on remove interface from Stanislaw Gruszka
+  (rhbz 770467)
+
 * Tue Apr 03 2012 Dave Jones <davej@redhat.com> 2.6.43.1-2
 - Disable CONFIG_DEBUG_PAGEALLOC in -debug builds again.
 
