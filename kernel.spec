@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 7
+%global baserelease 8
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -778,6 +778,8 @@ Patch21352: x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
 Patch21353: xen-x86-Implement-x86_apic_ops.patch
 
 Patch21400: unhandled-irqs-switch-to-polling.patch
+
+Patch21500: ASPM-Fix-pcie-devs-with-non-pcie-children.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
 
@@ -1508,6 +1510,8 @@ ApplyPatch mm-thp-fix-pmd_bad-triggering.patch
 
 #Highbank clock functions
 ApplyPatch highbank-export-clock-functions.patch 
+
+ApplyPatch ASPM-Fix-pcie-devs-with-non-pcie-children.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2349,6 +2353,7 @@ fi
 #              '-'
 %changelog
 * Wed Mar 28 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix disabled ASPM regression
 - Move 9p modules back to main package for KVM (rhbz 807733)
 
 * Tue Mar 27 2012 Josh Boyer <jwboyer@redhat.com>
