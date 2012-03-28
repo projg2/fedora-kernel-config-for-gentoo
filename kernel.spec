@@ -777,6 +777,10 @@ Patch21351: x86-add-io_apic_ops-to-allow-interception.patch
 Patch21352: x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
 Patch21353: xen-x86-Implement-x86_apic_ops.patch
 
+#rhbz 770476
+Patch21370: iwlegacy-do-not-nulify-il-vif-on-reset.patch
+Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
+
 Patch21400: unhandled-irqs-switch-to-polling.patch
 
 Patch21500: ASPM-Fix-pcie-devs-with-non-pcie-children.patch
@@ -1504,6 +1508,10 @@ ApplyPatch x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
 ApplyPatch x86-add-io_apic_ops-to-allow-interception.patch
 ApplyPatch x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
 ApplyPatch xen-x86-Implement-x86_apic_ops.patch
+
+#rhbz 770476
+ApplyPatch iwlegacy-do-not-nulify-il-vif-on-reset.patch
+ApplyPatch iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 
 #rhbz 803809 CVE-2012-1179
 ApplyPatch mm-thp-fix-pmd_bad-triggering.patch
@@ -2352,6 +2360,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Mar 29 2012 Josh Boyer <jwboyer@redhat.com>
+- iwl{wifi,legacy}: Fix warnings on remove interface from Stanislaw Gruszka
+  (rhbz 770467)
+
 * Wed Mar 28 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix disabled ASPM regression
 - Move 9p modules back to main package for KVM (rhbz 807733)
