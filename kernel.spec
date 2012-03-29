@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -579,6 +579,7 @@ Patch09: linux-2.6-upstream-reverts.patch
 Patch100: taint-vbox.patch
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
+Patch162: nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
 
 Patch350: force-version-2.6.patch
 
@@ -1165,6 +1166,7 @@ ApplyPatch taint-vbox.patch
 #
 ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 ApplyPatch linux-2.6-i386-nx-emulation.patch
+ApplyPatch nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -2002,6 +2004,9 @@ fi
 # and build.
 
 %changelog
+* Thu Mar 29 2012 Josh Boyer <jwboyer@redhat.com>
+- Drop __cpuinitdata on disable_nx for x86_32 (rhbz 808075)
+
 * Mon Mar 26 2012 Dave Jones <davej@redhat.com>
 - Linux 3.2.13
 
