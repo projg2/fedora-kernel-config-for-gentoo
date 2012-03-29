@@ -644,6 +644,7 @@ Patch09: linux-2.6-upstream-reverts.patch
 Patch100: taint-vbox.patch
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
+Patch162: nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
 
 Patch383: linux-2.6-defaults-aspm.patch
 
@@ -1331,6 +1332,7 @@ ApplyPatch taint-vbox.patch
 # x86(-64)
 ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
 ApplyPatch linux-2.6-i386-nx-emulation.patch
+ApplyPatch nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
 
 #
 # ARM
@@ -2361,6 +2363,7 @@ fi
 #              '-'
 %changelog
 * Thu Mar 29 2012 Josh Boyer <jwboyer@redhat.com>
+- Drop __cpuinitdata on disable_nx for x86_32 (rhbz 808075)
 - iwl{wifi,legacy}: Fix warnings on remove interface from Stanislaw Gruszka
   (rhbz 770467)
 
