@@ -2362,7 +2362,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Thu Mar 29 2012 Josh Boyer <jwboyer@redhat.com>
+* Thu Mar 29 2012 Josh Boyer <jwboyer@redhat.com> - 3.3.0-8
 - Drop __cpuinitdata on disable_nx for x86_32 (rhbz 808075)
 - iwl{wifi,legacy}: Fix warnings on remove interface from Stanislaw Gruszka
   (rhbz 770467)
