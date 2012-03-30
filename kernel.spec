@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 8
+%global baserelease 9
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -785,6 +785,7 @@ Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 Patch21400: unhandled-irqs-switch-to-polling.patch
 
 Patch21500: ASPM-Fix-pcie-devs-with-non-pcie-children.patch
+Patch21501: nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
 
@@ -1522,6 +1523,8 @@ ApplyPatch mm-thp-fix-pmd_bad-triggering.patch
 ApplyPatch highbank-export-clock-functions.patch 
 
 ApplyPatch ASPM-Fix-pcie-devs-with-non-pcie-children.patch
+
+ApplyPatch nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2362,6 +2365,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Mar 30 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix incorrect buffer length in __nfs4_get_acl_uncached
+
 * Thu Mar 29 2012 Josh Boyer <jwboyer@redhat.com> - 3.3.0-8
 - Drop __cpuinitdata on disable_nx for x86_32 (rhbz 808075)
 - iwl{wifi,legacy}: Fix warnings on remove interface from Stanislaw Gruszka
