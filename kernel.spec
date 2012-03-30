@@ -678,6 +678,7 @@ Patch470: die-floppy-die.patch
 Patch471: floppy-drop-disable_hlt-warning.patch
 
 Patch510: linux-2.6-silence-noise.patch
+Patch511: silence-timekeeping-spew.patch
 Patch520: quite-apm.patch
 Patch530: linux-2.6-silence-fbcon-logo.patch
 
@@ -1373,6 +1374,8 @@ ApplyPatch linux-2.6-serial-460800.patch
 
 # Silence some useless messages that still get printed with 'quiet'
 ApplyPatch linux-2.6-silence-noise.patch
+
+ApplyPatch silence-timekeeping-spew.patch
 
 # Make fbcon not show the penguins with 'quiet'
 ApplyPatch linux-2.6-silence-fbcon-logo.patch
@@ -2224,6 +2227,9 @@ fi
 # and build.
 
 %changelog
+* Fri Mar 30 2012 Dave Jones <davej@redhat.com>
+- Silence the timekeeping "Adjusting tsc more then 11%" spew. (rhbz 798600)
+
 * Fri Mar 30 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix i915 fbdev cursor blink around suspend/hibernate from Dave Airlied
 - CVE-2012-1601: kvm: NULL dereference from irqchip_in_kernel and
