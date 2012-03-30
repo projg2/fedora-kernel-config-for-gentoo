@@ -684,6 +684,7 @@ Patch1800: drm-vgem.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
 Patch1825: drm-i915-dp-stfu.patch
+Patch1827: drm-i915-suspend-fbdev-device-around-suspend-hiberna.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
@@ -1438,6 +1439,8 @@ ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-i915-dp-stfu.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
+
+ApplyPatch drm-i915-suspend-fbdev-device-around-suspend-hiberna.patch
 
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
@@ -2372,6 +2375,7 @@ fi
 #              '-'
 %changelog
 * Fri Mar 30 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix i915 fbdev cursor blink around suspend/hibernate from Dave Airlied
 - CVE-2012-1601: kvm: NULL dereference from irqchip_in_kernel and
   vcpu->arch.apic inconsistency (rhbz 808207)
 - Add patch to fix incorrect buffer length in __nfs4_get_acl_uncached
