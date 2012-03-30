@@ -787,6 +787,9 @@ Patch21400: unhandled-irqs-switch-to-polling.patch
 Patch21500: ASPM-Fix-pcie-devs-with-non-pcie-children.patch
 Patch21501: nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
+#rhbz 808207 CVE-2012-1601
+Patch21520: KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
+
 Patch22000: weird-root-dentry-name-debug.patch
 
 %endif
@@ -1525,6 +1528,9 @@ ApplyPatch highbank-export-clock-functions.patch
 ApplyPatch ASPM-Fix-pcie-devs-with-non-pcie-children.patch
 
 ApplyPatch nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
+
+#rhbz 808207 CVE-2012-1601
+ApplyPatch KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2366,6 +2372,8 @@ fi
 #              '-'
 %changelog
 * Fri Mar 30 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2012-1601: kvm: NULL dereference from irqchip_in_kernel and
+  vcpu->arch.apic inconsistency (rhbz 808207)
 - Add patch to fix incorrect buffer length in __nfs4_get_acl_uncached
 
 * Thu Mar 29 2012 Josh Boyer <jwboyer@redhat.com> - 3.3.0-8
