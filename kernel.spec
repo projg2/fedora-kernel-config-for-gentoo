@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -731,6 +731,8 @@ Patch21200: unhandled-irqs-switch-to-polling.patch
 #rhbz 804007
 Patch21305: mac80211-fix-possible-tid_rx-reorder_timer-use-after-free.patch
 
+Patch21501: nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
+
 Patch22000: weird-root-dentry-name-debug.patch
 
 %endif
@@ -1356,6 +1358,8 @@ ApplyPatch mm-thp-fix-pmd_bad-triggering.patch
 
 #rhbz 804947 CVE-2012-1568
 ApplyPatch SHLIB_BASE-randomization.patch
+
+ApplyPatch nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2004,6 +2008,9 @@ fi
 # and build.
 
 %changelog
+* Fri Mar 30 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix incorrect buffer length in __nfs4_get_acl_uncached
+
 * Thu Mar 29 2012 Josh Boyer <jwboyer@redhat.com>
 - Drop __cpuinitdata on disable_nx for x86_32 (rhbz 808075)
 
