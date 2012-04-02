@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -674,9 +674,6 @@ Patch21091: bcma-brcmsmac-compat.patch
 #rhbz 772772
 Patch21232: rt2x00_fix_MCU_request_failures.patch
 
-#rhbz 788260
-Patch21233: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
-
 #rhbz 789644
 Patch21237: mcelog-rcu-splat.patch
 
@@ -686,9 +683,6 @@ Patch21240: ACPICA-Fix-regression-in-FADT-revision-checks.patch
 #rhbz 728478
 Patch21242: sony-laptop-Enable-keyboard-backlight-by-default.patch
 
-#rhbz 803809 CVE-2012-1179
-Patch21244: mm-thp-fix-pmd_bad-triggering.patch
-
 Patch21300: unhandled-irqs-switch-to-polling.patch
 
 #rhbz 804007
@@ -696,8 +690,6 @@ Patch21305: mac80211-fix-possible-tid_rx-reorder_timer-use-after-free.patch
 
 #rhbz 804957 CVE-2012-1568
 Patch21306: shlib_base_randomize.patch
-
-Patch21350: x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
 
 Patch21501: nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
@@ -1252,7 +1244,8 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
-ApplyPatch hibernate-freeze-filesystems.patch
+# FIXME
+#ApplyPatch hibernate-freeze-filesystems.patch
 
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
@@ -1265,9 +1258,6 @@ ApplyPatch ext4-Support-check-none-nocheck-mount-options.patch
 
 #rhbz 772772
 ApplyPatch rt2x00_fix_MCU_request_failures.patch
-
-#rhbz 788269
-ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
@@ -1290,11 +1280,6 @@ ApplyPatch shlib_base_randomize.patch
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
 ApplyPatch weird-root-dentry-name-debug.patch
-
-ApplyPatch x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
-
-#rhbz 803809 CVE-2012-1179
-ApplyPatch mm-thp-fix-pmd_bad-triggering.patch
 
 ApplyPatch nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
@@ -1948,6 +1933,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 02 2012 Dave Jones <davej@redhat.com>
+- Linux 3.3.1
+
 * Mon Apr 02 2012 Dave Jones <davej@redhat.com>
 - Linux 3.3
 
