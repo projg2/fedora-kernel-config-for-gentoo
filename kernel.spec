@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 9
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -686,7 +686,6 @@ Patch1800: drm-vgem.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
 Patch1825: drm-i915-dp-stfu.patch
-Patch1827: drm-i915-suspend-fbdev-device-around-suspend-hiberna.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
@@ -738,8 +737,6 @@ Patch21010: highbank-export-clock-functions.patch
 
 Patch21070: ext4-Support-check-none-nocheck-mount-options.patch
 
-Patch21092: udlfb-remove-sysfs-framebuffer-device-with-USB-disconnect.patch
-
 Patch21093: rt2x00_fix_MCU_request_failures.patch
 
 Patch21094: power-x86-destdir.patch
@@ -747,17 +744,11 @@ Patch21094: power-x86-destdir.patch
 Patch21095: hfsplus-Change-finder_info-to-u32.patch
 Patch21096: hfsplus-Add-an-ioctl-to-bless-files.patch
 
-#rhbz 788260
-Patch21233: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
-
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
 Patch21250: mcelog-rcu-splat.patch
 Patch21270: x86-Avoid-invoking-RCU-when-CPU-is-idle.patch
-
-#rhbz 795544
-Patch21290: ums_realtek-do-not-use-stack-memory-for-DMA-in-__do_.patch
 
 #rhbz 727865 730007
 Patch21300: ACPICA-Fix-regression-in-FADT-revision-checks.patch
@@ -765,16 +756,11 @@ Patch21300: ACPICA-Fix-regression-in-FADT-revision-checks.patch
 #rhbz 728478
 Patch21302: sony-laptop-Enable-keyboard-backlight-by-default.patch
 
-#rhbz 803809 CVE-2012-1179
-Patch21304: mm-thp-fix-pmd_bad-triggering.patch
-
 #rhbz 804007
 Patch21305: mac80211-fix-possible-tid_rx-reorder_timer-use-after-free.patch
 
 #rhbz 804957 CVE-2012-1568
 Patch21306: shlib_base_randomize.patch
-
-Patch21350: x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
 
 #rhbz 804347
 Patch21351: x86-add-io_apic_ops-to-allow-interception.patch
@@ -787,7 +773,6 @@ Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 
 Patch21400: unhandled-irqs-switch-to-polling.patch
 
-Patch21500: ASPM-Fix-pcie-devs-with-non-pcie-children.patch
 Patch21501: nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
 #rhbz 808207 CVE-2012-1601
@@ -1444,8 +1429,6 @@ ApplyPatch drm-i915-dp-stfu.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
-ApplyPatch drm-i915-suspend-fbdev-device-around-suspend-hiberna.patch
-
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 ApplyPatch quite-apm.patch
@@ -1465,7 +1448,8 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
-ApplyPatch hibernate-freeze-filesystems.patch
+#FIXME
+#ApplyPatch hibernate-freeze-filesystems.patch
 
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
@@ -1478,8 +1462,6 @@ ApplyPatch utrace.patch
 
 ApplyPatch ext4-Support-check-none-nocheck-mount-options.patch
 
-ApplyPatch udlfb-remove-sysfs-framebuffer-device-with-USB-disconnect.patch
-
 #rhbz 772772
 ApplyPatch rt2x00_fix_MCU_request_failures.patch
 
@@ -1488,16 +1470,10 @@ ApplyPatch power-x86-destdir.patch
 ApplyPatch hfsplus-Change-finder_info-to-u32.patch
 ApplyPatch hfsplus-Add-an-ioctl-to-bless-files.patch
 
-#rhbz 788269
-ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
-
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
 ApplyPatch mcelog-rcu-splat.patch
-
-#rhbz 795544
-ApplyPatch ums_realtek-do-not-use-stack-memory-for-DMA-in-__do_.patch
 
 #rhbz 727865 730007
 ApplyPatch ACPICA-Fix-regression-in-FADT-revision-checks.patch
@@ -1515,8 +1491,6 @@ ApplyPatch unhandled-irqs-switch-to-polling.patch
 
 ApplyPatch weird-root-dentry-name-debug.patch
 
-ApplyPatch x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
-
 #rhbz 804347
 ApplyPatch x86-add-io_apic_ops-to-allow-interception.patch
 ApplyPatch x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
@@ -1526,13 +1500,8 @@ ApplyPatch xen-x86-Implement-x86_apic_ops.patch
 ApplyPatch iwlegacy-do-not-nulify-il-vif-on-reset.patch
 ApplyPatch iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 
-#rhbz 803809 CVE-2012-1179
-ApplyPatch mm-thp-fix-pmd_bad-triggering.patch
-
 #Highbank clock functions
 ApplyPatch highbank-export-clock-functions.patch 
-
-ApplyPatch ASPM-Fix-pcie-devs-with-non-pcie-children.patch
 
 ApplyPatch nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
@@ -2378,6 +2347,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Apr 02 2012 Dave Jones <davej@redhat.com> 3.3.1-1
+- Linux 3.3.1
+
 * Fri Mar 30 2012 Dave Jones <davej@redhat.com>
 - Silence the timekeeping "Adjusting tsc more then 11%" spew. (rhbz 798600)
 
