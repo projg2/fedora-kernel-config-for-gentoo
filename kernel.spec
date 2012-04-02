@@ -42,16 +42,16 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
-%define real_sublevel 2
+%define real_sublevel 3
 # fake_sublevel is the 2.6.x version we're faking
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 0
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -600,6 +600,7 @@ Patch470: die-floppy-die.patch
 Patch471: floppy-drop-disable_hlt-warning.patch
 
 Patch510: linux-2.6-silence-noise.patch
+Patch511: silence-timekeeping-spew.patch
 Patch520: quite-apm.patch
 Patch530: linux-2.6-silence-fbcon-logo.patch
 
@@ -614,10 +615,10 @@ Patch1500: fix_xen_guest_on_old_EC2.patch
 
 # DRM
 
-# nouveau + drm fixes
-Patch1810: drm-nouveau-updates.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
+Patch1825: drm-i915-dp-stfu.patch
+
 # hush the i915 fbc noise
 Patch1826: drm-i915-fbc-stfu.patch
 
@@ -640,7 +641,6 @@ Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 # NFSv4
 Patch4000: NFSv4-Reduce-the-footprint-of-the-idmapper.patch
 Patch4001: NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
-Patch4003: NFSv4-Save-the-owner-group-name-string-when-doing-op.patch
 
 # patches headed upstream
 
@@ -648,88 +648,56 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
-Patch13002: revert-efi-rtclock.patch
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
-Patch14000: cdc-acm-tiocgserial.patch
+Patch14000: hibernate-freeze-filesystems.patch
 
-Patch15000: hibernate-freeze-filesystems.patch
+Patch14010: lis3-improve-handling-of-null-rate.patch
 
-Patch15010: lis3-improve-handling-of-null-rate.patch
+Patch15000: bluetooth-use-after-free.patch
 
 Patch20000: utrace.patch
 
 # Flattened devicetree support
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
-Patch21002: arm-build-bug-on.patch
-Patch21003: arm-stmmac-mmc-core.patch
 Patch21004: arm-tegra-nvec-kconfig.patch
 
-#rhbz 717735
-Patch21045: nfs-client-freezer.patch
-
-#rhbz 590880
-Patch21050: alps.patch
-
 Patch21070: ext4-Support-check-none-nocheck-mount-options.patch
-Patch21071: ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
-Patch21072: ext3-Fix-error-handling-on-inode-bitmap-corruption.patch
 
 #rhbz 769766
-Patch21073: mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
-
-#rhbz 773392
-Patch21074: KVM-x86-extend-struct-x86_emulate_ops-with-get_cpuid.patch
-Patch21075: KVM-x86-fix-missing-checks-in-syscall-emulation.patch
-
-#rhbz 728740
-Patch21076: rtl8192cu-Fix-WARNING-on-suspend-resume.patch
-
-#rhbz752176
-Patch21080: sysfs-msi-irq-per-device.patch
-
-#rhbz 782686
-Patch21082: procfs-parse-mount-options.patch
-Patch21083: procfs-add-hidepid-and-gid-mount-options.patch
-Patch21084: proc-fix-null-pointer-deref-in-proc_pid_permission.patch
-
-#rhbz 788260
-Patch21085: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
+Patch21072: mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 Patch21091: bcma-brcmsmac-compat.patch
 
-#rhbz 785806
-Patch21092: e1000e-Avoid-wrong-check-on-TX-hang.patch
+#rhbz 772772
+Patch21232: rt2x00_fix_MCU_request_failures.patch
 
-#rhbz 754518
-#Patch21093: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+#rhbz 788260
+Patch21233: jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
 
-#rhbz 771058
-Patch21100: msi-irq-sysfs-warning.patch
-
-# rhbz 754907
-Patch21101: hpsa-add-irqf-shared.patch
+#rhbz 789644
+Patch21237: mcelog-rcu-splat.patch
 
 #rhbz 727865 730007
-Patch21102: ACPICA-Fix-regression-in-FADT-revision-checks.patch
+Patch21240: ACPICA-Fix-regression-in-FADT-revision-checks.patch
 
 #rhbz 728478
-Patch21104: sony-laptop-Enable-keyboard-backlight-by-default.patch
+Patch21242: sony-laptop-Enable-keyboard-backlight-by-default.patch
 
 #rhbz 803809 CVE-2012-1179
-Patch21106: mm-thp-fix-pmd_bad-triggering.patch
+Patch21244: mm-thp-fix-pmd_bad-triggering.patch
 
-#rhbz 804947 CVE-2012-1568
-Patch21107: SHLIB_BASE-randomization.patch
-
-Patch21110: x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
-
-Patch21200: unhandled-irqs-switch-to-polling.patch
+Patch21300: unhandled-irqs-switch-to-polling.patch
 
 #rhbz 804007
 Patch21305: mac80211-fix-possible-tid_rx-reorder_timer-use-after-free.patch
+
+#rhbz 804957 CVE-2012-1568
+Patch21306: shlib_base_randomize.patch
+
+Patch21350: x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
 
 Patch21501: nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
@@ -1159,10 +1127,8 @@ ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 #
 # ARM
 #
-ApplyPatch arm-omap-dt-compat.patch
+#ApplyPatch arm-omap-dt-compat.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
-ApplyPatch arm-build-bug-on.patch
-ApplyPatch arm-stmmac-mmc-core.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
 
 ApplyPatch taint-vbox.patch
@@ -1191,7 +1157,6 @@ ApplyPatch jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 # NFSv4
 ApplyPatch NFSv4-Reduce-the-footprint-of-the-idmapper.patch
 ApplyPatch NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
-ApplyPatch NFSv4-Save-the-owner-group-name-string-when-doing-op.patch
  
 # USB
 
@@ -1240,6 +1205,8 @@ ApplyPatch linux-2.6-serial-460800.patch
 # Silence some useless messages that still get printed with 'quiet'
 ApplyPatch linux-2.6-silence-noise.patch
 
+ApplyPatch silence-timekeeping-spew.patch
+
 # Make fbcon not show the penguins with 'quiet'
 ApplyPatch linux-2.6-silence-fbcon-logo.patch
 
@@ -1259,11 +1226,9 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # DRM core
 
-# Nouveau DRM
-ApplyOptionalPatch drm-nouveau-updates.patch
-
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
+ApplyPatch drm-i915-dp-stfu.patch
 ApplyPatch drm-i915-fbc-stfu.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
@@ -1285,61 +1250,30 @@ ApplyPatch disable-i8042-check-on-apple-mac.patch
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
-ApplyPatch revert-efi-rtclock.patch
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=787607
-ApplyPatch cdc-acm-tiocgserial.patch
 
 ApplyPatch hibernate-freeze-filesystems.patch
 
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
+ApplyPatch bluetooth-use-after-free.patch
+
 # utrace.
 ApplyPatch utrace.patch
 
-#rhbz 752176
-ApplyPatch sysfs-msi-irq-per-device.patch
-
-# rhbz 754907
-ApplyPatch hpsa-add-irqf-shared.patch
-
-#rhbz 717735
-ApplyPatch nfs-client-freezer.patch
-
-#rhbz 590880
-ApplyPatch alps.patch
-
-#rhbz 771058
-ApplyPatch msi-irq-sysfs-warning.patch
-
 ApplyPatch ext4-Support-check-none-nocheck-mount-options.patch
-ApplyPatch ext4-Fix-error-handling-on-inode-bitmap-corruption.patch
-ApplyPatch ext3-Fix-error-handling-on-inode-bitmap-corruption.patch
 
-#rhbz 773392
-ApplyPatch KVM-x86-extend-struct-x86_emulate_ops-with-get_cpuid.patch
-ApplyPatch KVM-x86-fix-missing-checks-in-syscall-emulation.patch
+#rhbz 772772
+ApplyPatch rt2x00_fix_MCU_request_failures.patch
 
-#rhbz 728740
-ApplyPatch rtl8192cu-Fix-WARNING-on-suspend-resume.patch
-
-#rhbz 782686
-ApplyPatch procfs-parse-mount-options.patch
-ApplyPatch procfs-add-hidepid-and-gid-mount-options.patch
-ApplyPatch proc-fix-null-pointer-deref-in-proc_pid_permission.patch
-
-#rhbz 788260
+#rhbz 788269
 ApplyPatch jbd2-clear-BH_Delay-and-BH_Unwritten-in-journal_unmap_buf.patch
-
-#rhbz 785806
-ApplyPatch e1000e-Avoid-wrong-check-on-TX-hang.patch
-
-#rhbz 754518
-#ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
 # Remove overlap between bcma/b43 and brcmsmac and reenable bcm4331
 ApplyPatch bcma-brcmsmac-compat.patch
+
+#rhbz 789644
+ApplyPatch mcelog-rcu-splat.patch
 
 #rhbz 727865 730007
 ApplyPatch ACPICA-Fix-regression-in-FADT-revision-checks.patch
@@ -1350,6 +1284,9 @@ ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
 #rhbz 804007
 ApplyPatch mac80211-fix-possible-tid_rx-reorder_timer-use-after-free.patch
 
+#rhbz 804957 CVE-2012-1568
+ApplyPatch shlib_base_randomize.patch
+
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
 ApplyPatch weird-root-dentry-name-debug.patch
@@ -1358,9 +1295,6 @@ ApplyPatch x86-ioapic-add-register-checks-for-bogus-io-apic-entries.patch
 
 #rhbz 803809 CVE-2012-1179
 ApplyPatch mm-thp-fix-pmd_bad-triggering.patch
-
-#rhbz 804947 CVE-2012-1568
-ApplyPatch SHLIB_BASE-randomization.patch
 
 ApplyPatch nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
@@ -2014,6 +1948,12 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 02 2012 Dave Jones <davej@redhat.com>
+- Linux 3.3
+
+* Fri Mar 30 2012 Dave Jones <davej@redhat.com>
+- Silence the timekeeping "Adjusting tsc more then 11%" spew. (rhbz 798600)
+
 * Fri Mar 30 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-1601: kvm: NULL dereference from irqchip_in_kernel and
   vcpu->arch.apic inconsistency (rhbz 808207)

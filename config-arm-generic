@@ -186,9 +186,6 @@ CONFIG_LSM_MMAP_MIN_ADDR=32768
 # CONFIG_DRM_NOUVEAU is not set 
 # CONFIG_MLX4_EN is not set
 
-# drivers/input/touchscreen/eeti_ts.c:65:2: error: implicit declaration of function 'irq_to_gpio' [-Werror=implicit-function-declaration]
-# CONFIG_TOUCHSCREEN_EETI is not set
-
 # FIXME: Guesses, need checking
 # CONFIG_MACH_EUKREA_CPUIMX35SD is not set
 CONFIG_ARM_ERRATA_720789=y
@@ -197,3 +194,15 @@ CONFIG_ARM_ERRATA_751472=y
 # CONFIG_MX3_IPU is not set
 # CONFIG_MX3_IPU_IRQS is not set
 
+# CONFIG_OF_SELFTEST is not set
+# CONFIG_TOUCHSCREEN_AUO_PIXCIR is not set
+# CONFIG_INPUT_GP2A is not set
+# CONFIG_INPUT_GPIO_TILT_POLLED is not set
+
+# CONFIG_MACH_IMX51_DT is not set
+# CONFIG_MACH_IMX53_DT is not set
+# CONFIG_MACH_MX53_EVK is not set
+# CONFIG_MACH_MX53_SMD is not set
+# CONFIG_MACH_MX53_LOCO is not set
+# CONFIG_MACH_MX53_ARD is not set
+# CONFIG_ARM_EXYNOS4210_CPUFREQ is not set

@@ -118,3 +118,6 @@ CONFIG_BPF_JIT=y
 # Should be 32bit only, but lacks KConfig depends
 # CONFIG_XO15_EBOOK is not set
 
+# CONFIG_X86_NUMACHIP is not set
+CONFIG_AMD_IOMMU_V2=m
+CONFIG_CRYPTO_SERPENT_SSE2_X86_64=m
