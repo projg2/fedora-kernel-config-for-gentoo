@@ -2211,6 +2211,9 @@ fi
 
 %changelog
 * Mon Apr 02 2012 Dave Jones <davej@redhat.com>
+- Disable CONFIG_DEBUG_PAGEALLOC in -debug builds again.
+
+* Mon Apr 02 2012 Dave Jones <davej@redhat.com>
 - Add patch to display more debug info for bug 808990.
 
 * Mon Apr 02 2012 Dave Jones <davej@redhat.com> 3.3.1-1
