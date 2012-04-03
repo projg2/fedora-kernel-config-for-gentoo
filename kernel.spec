@@ -788,7 +788,9 @@ Patch21501: nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 #rhbz 808207 CVE-2012-1601
 Patch21520: KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
-Patch22000: weird-root-dentry-name-debug.patch
+# Debug patches
+Patch30000: weird-root-dentry-name-debug.patch
+Patch30010: debug-808990.patch
 
 %endif
 
@@ -1452,7 +1454,9 @@ ApplyPatch shlib_base_randomize.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
+# debug patches
 ApplyPatch weird-root-dentry-name-debug.patch
+ApplyPatch debug-808990.patch
 
 #rhbz 804347
 ApplyPatch x86-add-io_apic_ops-to-allow-interception.patch
@@ -2206,6 +2210,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 02 2012 Dave Jones <davej@redhat.com>
+- Add patch to display more debug info for bug 808990.
+
 * Mon Apr 02 2012 Dave Jones <davej@redhat.com> 3.3.1-1
 - Linux 3.3.1
 
