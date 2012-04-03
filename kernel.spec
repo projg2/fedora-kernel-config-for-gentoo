@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -766,6 +766,9 @@ Patch21306: shlib_base_randomize.patch
 Patch21351: x86-add-io_apic_ops-to-allow-interception.patch
 Patch21352: x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
 Patch21353: xen-x86-Implement-x86_apic_ops.patch
+
+#rhbz 806433
+Patch21360: uvcvideo-Fix-race-induced-crash-in-uvc_video_clock_update.patch
 
 #rhbz 770476
 Patch21370: iwlegacy-do-not-nulify-il-vif-on-reset.patch
@@ -1507,6 +1510,9 @@ ApplyPatch nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
 #rhbz 808207 CVE-2012-1601
 ApplyPatch KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
+
+#rhbz 806433
+ApplyPatch uvcvideo-Fix-race-induced-crash-in-uvc_video_clock_update.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2347,6 +2353,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Apr 03 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix crash in uvc_video_clock_update from Laurent Pinchart (rhbz 806433)
+
 * Mon Apr 02 2012 Dave Jones <davej@redhat.com> 3.3.1-1
 - Linux 3.3.1
 
