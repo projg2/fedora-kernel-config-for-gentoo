@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -691,6 +691,9 @@ Patch21305: mac80211-fix-possible-tid_rx-reorder_timer-use-after-free.patch
 #rhbz 804957 CVE-2012-1568
 Patch21306: shlib_base_randomize.patch
 
+#rhbz 806433
+Patch21360: uvcvideo-Fix-race-induced-crash-in-uvc_video_clock_update.patch
+
 #rhbz 770476
 Patch21370: iwlegacy-do-not-nulify-il-vif-on-reset.patch
 Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
@@ -1293,6 +1296,9 @@ ApplyPatch KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 #rhbz 770476
 ApplyPatch iwlegacy-do-not-nulify-il-vif-on-reset.patch
 ApplyPatch iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
+
+#rhbz 806433
+ApplyPatch uvcvideo-Fix-race-induced-crash-in-uvc_video_clock_update.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1942,6 +1948,7 @@ fi
 
 %changelog
 * Tue Apr 03 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix crash in uvc_video_clock_update from Laurent Pinchart (rhbz 806433)
 - iwl{wifi,legacy}: Fix warnings on remove interface from Stanislaw Gruszka
   (rhbz 770467)
 
