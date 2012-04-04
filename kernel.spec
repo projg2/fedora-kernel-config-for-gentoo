@@ -2223,6 +2223,7 @@ fi
 
 %changelog
 * Wed Apr 04 2012 Josh Boyer <jwboyer@redhat.com>
+- Disable MID_PTI driver (rhbz 783561)
 - Fix NULL pointer dereference in i2400m (rhbz 808603)
 
 * Tue Apr 03 2012 Josh Boyer <jwboyer@redhat.com>
