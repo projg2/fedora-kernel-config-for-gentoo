@@ -2228,7 +2228,7 @@ fi
 # and build.
 
 %changelog
-* Wed Apr 04 2012 Josh Boyer <jwboyer@redhat.com>
+* Wed Apr 04 2012 Josh Boyer <jwboyer@redhat.com> - 3.3.1-3
 - Disable runtime PM for hotpluggable ATA ports (rhbz 806676 807632)
 - Disable MID_PTI driver (rhbz 783561)
 - Fix NULL pointer dereference in i2400m (rhbz 808603)
