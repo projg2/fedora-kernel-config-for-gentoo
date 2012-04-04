@@ -689,6 +689,9 @@ Patch1825: drm-i915-dp-stfu.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
+Patch1950: drm-i915-allow-to-select-rc6-modes-via-kernel-parame.patch
+Patch1951: drm-i915-enable-plain-RC6-on-Sandy-Bridge-by-default.patch
+
 # Quiet boot fixes
 # silence the ACPI blacklist code
 Patch2802: linux-2.6-silence-acpi-blacklist.patch
@@ -1437,6 +1440,9 @@ ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-i915-dp-stfu.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
+
+ApplyPatch drm-i915-allow-to-select-rc6-modes-via-kernel-parame.patch
+ApplyPatch drm-i915-enable-plain-RC6-on-Sandy-Bridge-by-default.patch
 
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
@@ -2365,6 +2371,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Apr 04 2012 Josh Boyer <jwboyer@redhat.com> - 3.3.1-3
+- Backport upstream patches to enable i915 RC6 by default on SNB
+
 * Wed Apr 04 2012 Josh Boyer <jwboyer@redhat.com>
 - Disable runtime PM for hotpluggable ATA ports (rhbz 806676 807632)
 - Disable MID_PTI driver (rhbz 783561)
