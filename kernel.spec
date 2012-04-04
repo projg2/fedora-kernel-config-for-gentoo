@@ -698,6 +698,9 @@ Patch21360: uvcvideo-Fix-race-induced-crash-in-uvc_video_clock_update.patch
 Patch21370: iwlegacy-do-not-nulify-il-vif-on-reset.patch
 Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 
+#rhbz 808603
+Patch21380: wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
+
 Patch21501: nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
 #rhbz 808207 CVE-2012-1601
@@ -1299,6 +1302,9 @@ ApplyPatch iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 
 #rhbz 806433
 ApplyPatch uvcvideo-Fix-race-induced-crash-in-uvc_video_clock_update.patch
+
+#rhbz 808603
+ApplyPatch wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1947,6 +1953,9 @@ fi
 # and build.
 
 %changelog
+* Wed Apr 04 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix NULL pointer dereference in i2400m (rhbz 808603)
+
 * Tue Apr 03 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix crash in uvc_video_clock_update from Laurent Pinchart (rhbz 806433)
 - iwl{wifi,legacy}: Fix warnings on remove interface from Stanislaw Gruszka
