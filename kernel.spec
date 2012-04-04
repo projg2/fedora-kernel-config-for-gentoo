@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -773,6 +773,9 @@ Patch21360: uvcvideo-Fix-race-induced-crash-in-uvc_video_clock_update.patch
 #rhbz 770476
 Patch21370: iwlegacy-do-not-nulify-il-vif-on-reset.patch
 Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
+
+#rhbz 808603
+Patch21380: wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
 
 Patch21400: unhandled-irqs-switch-to-polling.patch
 
@@ -1513,6 +1516,9 @@ ApplyPatch KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
 #rhbz 806433
 ApplyPatch uvcvideo-Fix-race-induced-crash-in-uvc_video_clock_update.patch
+
+#rhbz 808603
+ApplyPatch wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2353,6 +2359,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Apr 04 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix NULL pointer dereference in i2400m (rhbz 808603)
+
 * Tue Apr 03 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix crash in uvc_video_clock_update from Laurent Pinchart (rhbz 806433)
 
