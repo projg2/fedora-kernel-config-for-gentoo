@@ -777,6 +777,9 @@ Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 #rhbz 808603
 Patch21380: wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
 
+#rhbz 806676
+Patch21385: libata-disable-runtime-pm-for-hotpluggable-port.patch
+
 Patch21400: unhandled-irqs-switch-to-polling.patch
 
 Patch21501: nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
@@ -1519,6 +1522,9 @@ ApplyPatch uvcvideo-Fix-race-induced-crash-in-uvc_video_clock_update.patch
 
 #rhbz 808603
 ApplyPatch wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
+
+#rhbz 806676
+ApplyPatch libata-disable-runtime-pm-for-hotpluggable-port.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2360,6 +2366,7 @@ fi
 #              '-'
 %changelog
 * Wed Apr 04 2012 Josh Boyer <jwboyer@redhat.com>
+- Disable runtime PM for hotpluggable ATA ports (rhbz 806676)
 - Disable MID_PTI driver (rhbz 783561)
 - Fix NULL pointer dereference in i2400m (rhbz 808603)
 
