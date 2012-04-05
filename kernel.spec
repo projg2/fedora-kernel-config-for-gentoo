@@ -651,6 +651,7 @@ Patch12303: dmar-disable-when-ricoh-multifunction.patch
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
 Patch14000: hibernate-freeze-filesystems.patch
+Patch14001: hibernate-watermark.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
@@ -1259,6 +1260,7 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
 # FIXME
 #ApplyPatch hibernate-freeze-filesystems.patch
+ApplyPatch hibernate-watermark.patch
 
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
@@ -1959,6 +1961,9 @@ fi
 # and build.
 
 %changelog
+* Thu Apr 05 2012 Dave Jones <davej@redhat.com>
+- Better watermark the number of pages used by hibernation I/O (Bojan Smojver) (rhbz 785384)
+
 * Wed Apr 04 2012 Josh Boyer <jwboyer@redhat.com>
 - Disable runtime PM for hotpluggable ATA ports (rhbz 806676 807632)
 - Fix NULL pointer dereference in i2400m (rhbz 808603)
