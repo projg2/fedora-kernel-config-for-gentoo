@@ -32239,26 +32239,6 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/mxl111sf.c
  
  	deb_info("%s(%d)\n", __func__, onoff);
  
-Index: linux-3.3.x86_64/drivers/media/video/pvrusb2/pvrusb2-devattr.c
-===================================================================
---- linux-3.3.x86_64.orig/drivers/media/video/pvrusb2/pvrusb2-devattr.c
-+++ linux-3.3.x86_64/drivers/media/video/pvrusb2/pvrusb2-devattr.c
-@@ -329,6 +329,15 @@ static struct tda18271_std_map hauppauge
-                       .if_lvl = 1, .rfagc_top = 0x37, },
- };
- 
-+static struct tda18271_std_map hauppauge_tda18271_dvbt_std_map = {
-+        .dvbt_6   = { .if_freq = 3300, .agc_mode = 3, .std = 4,
-+                      .if_lvl = 1, .rfagc_top = 0x37, },
-+        .dvbt_7   = { .if_freq = 3800, .agc_mode = 3, .std = 5,
-+                      .if_lvl = 1, .rfagc_top = 0x37, },
-+        .dvbt_8   = { .if_freq = 4300, .agc_mode = 3, .std = 6,
-+                      .if_lvl = 1, .rfagc_top = 0x37, },
-+};
-+
- static struct tda18271_config hauppauge_tda18271_dvb_config = {
- 	.std_map = &hauppauge_tda18271_dvbt_std_map,
- 	.gate    = TDA18271_GATE_ANALOG,
 Index: linux-3.3.x86_64/drivers/media/video/gspca/ov534_9.c
 ===================================================================
 --- linux-3.3.x86_64.orig/drivers/media/video/gspca/ov534_9.c
