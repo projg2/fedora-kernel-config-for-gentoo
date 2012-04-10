@@ -725,6 +725,7 @@ Patch14001: hibernate-watermark.patch
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
 Patch15000: bluetooth-use-after-free.patch
+Patch15001: Bluetooth-Adding-USB-device-13d3-3375-as-an-Atheros-.patch
 
 Patch19000: ips-noirq.patch
 
@@ -1475,6 +1476,7 @@ ApplyPatch hibernate-watermark.patch
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 ApplyPatch bluetooth-use-after-free.patch
+ApplyPatch Bluetooth-Adding-USB-device-13d3-3375-as-an-Atheros-.patch
 
 ApplyPatch ips-noirq.patch
 
@@ -2382,6 +2384,7 @@ fi
 #              '-'
 %changelog
 * Tue Apr 10 2012 Josh Boyer <jwboyer@redhat.com>
+- Apply upstream patch to add USB device 13d3:3375 (rhbz 811087)
 - Disable the PMAC ide driver.  PATA_MACIO seems to work (rhbz 810579)
 - Backport fixes for correct register constraints in cmpxchg.h (rhbz 809014)
 
