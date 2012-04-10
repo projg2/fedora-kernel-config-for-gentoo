@@ -2352,7 +2352,7 @@ Index: linux-3.3.x86_64/drivers/media/video/ivtv/ivtv-ioctl.c
 -		itv->audio_stereo_mode = iarg;
 -		ivtv_vapi(itv, CX2341X_DEC_SET_AUDIO_MODE, 2, itv->audio_bilingual_mode, itv->audio_stereo_mode);
 -		return 0;
-+		return v4l2_ctrl_s_ctrl(itv->ctrl_audio_playback, iarg);
++		return v4l2_ctrl_s_ctrl(itv->ctrl_audio_playback, iarg + 1);
  
  	case AUDIO_BILINGUAL_CHANNEL_SELECT:
  		IVTV_DEBUG_IOCTL("AUDIO_BILINGUAL_CHANNEL_SELECT\n");
@@ -2361,7 +2361,7 @@ Index: linux-3.3.x86_64/drivers/media/video/ivtv/ivtv-ioctl.c
 -		itv->audio_bilingual_mode = iarg;
 -		ivtv_vapi(itv, CX2341X_DEC_SET_AUDIO_MODE, 2, itv->audio_bilingual_mode, itv->audio_stereo_mode);
 -		return 0;
-+		return v4l2_ctrl_s_ctrl(itv->ctrl_audio_multilingual_playback, iarg);
++		return v4l2_ctrl_s_ctrl(itv->ctrl_audio_multilingual_playback, iarg + 1);
  
  	default:
  		return -EINVAL;
@@ -2516,7 +2516,39 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/it913x.c
  };
  
  struct ite_config it913x_config;
-@@ -259,15 +260,16 @@ static u32 it913x_query(struct usb_devic
+@@ -237,12 +238,27 @@ static int it913x_read_reg(struct usb_de
+ 
+ static u32 it913x_query(struct usb_device *udev, u8 pro)
+ {
+-	int ret;
++	int ret, i;
+ 	u8 data[4];
+-	ret = it913x_io(udev, READ_LONG, pro, CMD_DEMOD_READ,
+-		0x1222, 0, &data[0], 3);
++	u8 ver;
++
++	for (i = 0; i < 5; i++) {
++		ret = it913x_io(udev, READ_LONG, pro, CMD_DEMOD_READ,
++			0x1222, 0, &data[0], 3);
++		ver = data[0];
++		if (ver > 0 && ver < 3)
++			break;
++		msleep(100);
++	}
+ 
+-	it913x_config.chip_ver = data[0];
++	if (ver < 1 || ver > 2) {
++		info("Failed to identify chip version applying 1");
++		it913x_config.chip_ver = 0x1;
++		it913x_config.chip_type = 0x9135;
++		return 0;
++	}
++
++	it913x_config.chip_ver = ver;
+ 	it913x_config.chip_type = (u16)(data[2] << 8) + data[1];
+ 
+ 	info("Chip Version=%02x Chip Type=%04x", it913x_config.chip_ver,
+@@ -259,15 +275,16 @@ static u32 it913x_query(struct usb_devic
  
  static int it913x_pid_filter_ctrl(struct dvb_usb_adapter *adap, int onoff)
  {
@@ -2536,7 +2568,7 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/it913x.c
  
  	mutex_unlock(&adap->dev->i2c_mutex);
  	return ret;
-@@ -276,12 +278,13 @@ static int it913x_pid_filter_ctrl(struct
+@@ -276,12 +293,13 @@ static int it913x_pid_filter_ctrl(struct
  static int it913x_pid_filter(struct dvb_usb_adapter *adap,
  		int index, u16 pid, int onoff)
  {
@@ -2552,7 +2584,7 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/it913x.c
  	deb_info(1, "PID_F  (%02x)", onoff);
  
  	ret = it913x_wr_reg(udev, pro, PID_LSB, (u8)(pid & 0xff));
-@@ -292,6 +295,13 @@ static int it913x_pid_filter(struct dvb_
+@@ -292,6 +310,13 @@ static int it913x_pid_filter(struct dvb_
  
  	ret |= it913x_wr_reg(udev, pro, PID_INX, (u8)(index & 0x1f));
  
@@ -2566,7 +2598,7 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/it913x.c
  	mutex_unlock(&adap->dev->i2c_mutex);
  	return 0;
  }
-@@ -316,8 +326,8 @@ static int it913x_i2c_xfer(struct i2c_ad
+@@ -316,8 +341,8 @@ static int it913x_i2c_xfer(struct i2c_ad
  	int ret;
  	u32 reg;
  	u8 pro;
@@ -2577,7 +2609,7 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/it913x.c
  
  	debug_data_snipet(1, "Message out", msg[0].buf);
  	deb_info(2, "num of messages %d address %02x", num, msg[0].addr);
-@@ -358,8 +368,7 @@ static int it913x_rc_query(struct dvb_us
+@@ -358,8 +383,7 @@ static int it913x_rc_query(struct dvb_us
  	int ret;
  	u32 key;
  	/* Avoid conflict with frontends*/
@@ -2587,7 +2619,7 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/it913x.c
  
  	ret = it913x_io(d->udev, READ_LONG, PRO_LINK, CMD_IR_GET,
  		0, 0, &ibuf[0], sizeof(ibuf));
-@@ -388,19 +397,12 @@ static int ite_firmware_select(struct us
+@@ -388,19 +412,12 @@ static int ite_firmware_select(struct us
  {
  	int sw;
  	/* auto switch */
@@ -2611,7 +2643,7 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/it913x.c
  
  	/* force switch */
  	if (dvb_usb_it913x_firmware != IT9135_AUTO)
-@@ -410,41 +412,103 @@ static int ite_firmware_select(struct us
+@@ -410,41 +427,103 @@ static int ite_firmware_select(struct us
  	case IT9135_V1_FW:
  		it913x_config.firmware_ver = 1;
  		it913x_config.adc_x2 = 1;
@@ -2724,7 +2756,7 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/it913x.c
  
  	if (udev->speed != USB_SPEED_HIGH) {
  		props->adapter[0].fe[0].pid_filter_count = 5;
-@@ -459,17 +523,6 @@ static int it913x_identify_state(struct
+@@ -459,17 +538,6 @@ static int it913x_identify_state(struct
  		if(props->adapter[0].fe[0].pid_filter_count == 5)
  			props->adapter[0].fe[0].pid_filter_count = 31;
  
@@ -2742,7 +2774,7 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/it913x.c
  	/* Select Stream Buffer Size and pid filter option*/
  	if (pid_filter) {
  		props->adapter[0].fe[0].stream.u.bulk.buffersize =
-@@ -490,8 +543,29 @@ static int it913x_identify_state(struct
+@@ -490,8 +558,29 @@ static int it913x_identify_state(struct
  	} else
  		props->num_adapters = 1;
  
@@ -2772,7 +2804,7 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/it913x.c
  	if (firm_no > 0) {
  		*cold = 0;
  		return 0;
-@@ -538,18 +612,22 @@ static int it913x_identify_state(struct
+@@ -538,18 +627,22 @@ static int it913x_identify_state(struct
  
  static int it913x_streaming_ctrl(struct dvb_usb_adapter *adap, int onoff)
  {
@@ -2799,7 +2831,58 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/it913x.c
  
  	return ret;
  }
-@@ -789,7 +867,7 @@ static struct dvb_usb_device_properties
+@@ -582,30 +675,41 @@ static int it913x_download_firmware(stru
+ 			if ((packet_size > min_pkt) || (i == fw->size)) {
+ 				fw_data = (u8 *)(fw->data + pos);
+ 				pos += packet_size;
+-				if (packet_size > 0)
+-					ret |= it913x_io(udev, WRITE_DATA,
++				if (packet_size > 0) {
++					ret = it913x_io(udev, WRITE_DATA,
+ 						DEV_0, CMD_SCATTER_WRITE, 0,
+ 						0, fw_data, packet_size);
++					if (ret < 0)
++						break;
++				}
+ 				udelay(1000);
+ 			}
+ 		}
+ 		i++;
+ 	}
+ 
+-	ret |= it913x_io(udev, WRITE_CMD, DEV_0, CMD_BOOT, 0, 0, NULL, 0);
+-
+-	msleep(100);
+-
+ 	if (ret < 0)
+-		info("FRM Firmware Download Failed (%04x)" , ret);
++		info("FRM Firmware Download Failed (%d)" , ret);
+ 	else
+ 		info("FRM Firmware Download Completed - Resetting Device");
+ 
+-	ret |= it913x_return_status(udev);
++	msleep(30);
++
++	ret = it913x_io(udev, WRITE_CMD, DEV_0, CMD_BOOT, 0, 0, NULL, 0);
++	if (ret < 0)
++		info("FRM Device not responding to reboot");
++
++	ret = it913x_return_status(udev);
++	if (ret == 0) {
++		info("FRM Failed to reboot device");
++		return -ENODEV;
++	}
+ 
+ 	msleep(30);
+ 
+-	ret |= it913x_wr_reg(udev, DEV_0,  I2C_CLK, I2C_CLK_400);
++	ret = it913x_wr_reg(udev, DEV_0,  I2C_CLK, I2C_CLK_400);
++
++	msleep(30);
+ 
+ 	/* Tuner function */
+ 	if (it913x_config.dual_mode)
+@@ -789,7 +893,7 @@ static struct dvb_usb_device_properties
  		.rc_query	= it913x_rc_query,
  		.rc_interval	= IT913X_POLL,
  		.allowed_protos	= RC_TYPE_NEC,
@@ -2808,12 +2891,12 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-usb/it913x.c
  	},
  	.i2c_algo         = &it913x_i2c_algo,
  	.num_device_descs = 5,
-@@ -823,5 +901,5 @@ module_usb_driver(it913x_driver);
+@@ -823,5 +927,5 @@ module_usb_driver(it913x_driver);
  
  MODULE_AUTHOR("Malcolm Priestley <tvboxspy@gmail.com>");
  MODULE_DESCRIPTION("it913x USB 2 Driver");
 -MODULE_VERSION("1.22");
-+MODULE_VERSION("1.27");
++MODULE_VERSION("1.28");
  MODULE_LICENSE("GPL");
 Index: linux-3.3.x86_64/drivers/base/driver.c
 ===================================================================
@@ -10356,7 +10439,21 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-core/dvb_frontend.c
 ===================================================================
 --- linux-3.3.x86_64.orig/drivers/media/dvb/dvb-core/dvb_frontend.c
 +++ linux-3.3.x86_64/drivers/media/dvb/dvb-core/dvb_frontend.c
-@@ -655,6 +655,8 @@ restart:
+@@ -143,10 +143,12 @@ struct dvb_frontend_private {
+ static void dvb_frontend_wakeup(struct dvb_frontend *fe);
+ static int dtv_get_frontend(struct dvb_frontend *fe,
+ 			    struct dvb_frontend_parameters *p_out);
++static int dtv_property_legacy_params_sync(struct dvb_frontend *fe,
++					   struct dvb_frontend_parameters *p);
+ 
+ static bool has_get_frontend(struct dvb_frontend *fe)
+ {
+-	return fe->ops.get_frontend;
++	return fe->ops.get_frontend != NULL;
+ }
+ 
+ /*
+@@ -655,6 +657,8 @@ restart:
  					dprintk("%s: Retune requested, FESTATE_RETUNE\n", __func__);
  					re_tune = true;
  					fepriv->state = FESTATE_TUNED;
@@ -10365,6 +10462,28 @@ Index: linux-3.3.x86_64/drivers/media/dvb/dvb-core/dvb_frontend.c
  				}
  
  				if (fe->ops.tune)
+@@ -695,6 +699,7 @@ restart:
+ 					fepriv->algo_status |= DVBFE_ALGO_SEARCH_AGAIN;
+ 					fepriv->delay = HZ / 2;
+ 				}
++				dtv_property_legacy_params_sync(fe, &fepriv->parameters_out);
+ 				fe->ops.read_status(fe, &s);
+ 				if (s != fepriv->status) {
+ 					dvb_frontend_add_event(fe, s); /* update event list */
+@@ -1831,6 +1836,13 @@ static int dtv_set_frontend(struct dvb_f
+ 		return -EINVAL;
+ 
+ 	/*
++	 * Initialize output parameters to match the values given by
++	 * the user. FE_SET_FRONTEND triggers an initial frontend event
++	 * with status = 0, which copies output parameters to userspace.
++	 */
++	dtv_property_legacy_params_sync(fe, &fepriv->parameters_out);
++
++	/*
+ 	 * Be sure that the bandwidth will be filled for all
+ 	 * non-satellite systems, as tuners need to know what
+ 	 * low pass/Nyquist half filter should be applied, in
 Index: linux-3.3.x86_64/drivers/media/common/tuners/xc5000.c
 ===================================================================
 --- linux-3.3.x86_64.orig/drivers/media/common/tuners/xc5000.c
