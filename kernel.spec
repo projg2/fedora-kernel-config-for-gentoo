@@ -708,7 +708,9 @@ Patch1900: linux-2.6-intel-iommu-igfx.patch
 Patch2802: linux-2.6-silence-acpi-blacklist.patch
 
 # media patches
-Patch2903: drivers-media-update.patch
+#   add-poll-requested-events.patch was added for 3.4
+Patch2900: add-poll-requested-events.patch
+Patch2901: drivers-media-update.patch
 
 # fs fixes
 
@@ -1411,8 +1413,9 @@ ApplyPatch linux-2.6-intel-iommu-igfx.patch
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 ApplyPatch quite-apm.patch
 
-# V4L/DVB updates/fixes/experimental drivers
+# Media (V4L/DVB/IR) updates/fixes/experimental drivers
 #  apply if non-empty
+ApplyPatch add-poll-requested-events.patch
 ApplyOptionalPatch drivers-media-update.patch
 
 # Patches headed upstream
