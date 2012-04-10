@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -705,6 +705,10 @@ Patch21380: wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
 #rhbz 806676 807632
 Patch21385: libata-disable-runtime-pm-for-hotpluggable-port.patch
 
+#rhbz 809014
+Patch21390: x86-Use-correct-byte-sized-register-constraint-in-__xchg_op.patch
+Patch21391: x86-Use-correct-byte-sized-register-constraint-in-__add.patch
+
 Patch21501: nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 
 #rhbz 808207 CVE-2012-1601
@@ -1313,6 +1317,10 @@ ApplyPatch wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
 
 #rhbz 806676 807632
 ApplyPatch libata-disable-runtime-pm-for-hotpluggable-port.patch
+
+#rhbz 809014
+ApplyPatch x86-Use-correct-byte-sized-register-constraint-in-__xchg_op.patch
+ApplyPatch x86-Use-correct-byte-sized-register-constraint-in-__add.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1961,6 +1969,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 10 2012 Josh Boyer <jwboyer@redhat.com>
+- Backport fixes for correct register constraints in cmpxchg.h (rhbz 809014)
+
 * Thu Apr 05 2012 Dave Jones <davej@redhat.com>
 - Better watermark the number of pages used by hibernation I/O (Bojan Smojver) (rhbz 785384)
 
