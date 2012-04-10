@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -697,9 +697,8 @@ Patch1951: drm-i915-enable-plain-RC6-on-Sandy-Bridge-by-default.patch
 Patch2802: linux-2.6-silence-acpi-blacklist.patch
 
 # media patches
-Patch2899: linux-2.6-v4l-dvb-fixes.patch
-Patch2900: linux-2.6-v4l-dvb-update.patch
-Patch2901: linux-2.6-v4l-dvb-experimental.patch
+Patch2900: add-poll-requested-events.patch
+Patch2901: drivers-media-update.patch
 
 # fs fixes
 Patch4000: ext4-fix-resize-when-resizing-within-single-group.patch
@@ -1454,11 +1453,10 @@ ApplyPatch drm-i915-enable-plain-RC6-on-Sandy-Bridge-by-default.patch
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
 ApplyPatch quite-apm.patch
 
-# V4L/DVB updates/fixes/experimental drivers
+# Media (V4L/DVB/IR) updates/fixes/experimental drivers
 #  apply if non-empty
-ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
-ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
-ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
+ApplyPatch add-poll-requested-events.patch
+ApplyOptionalPatch drivers-media-update.patch
 
 # Patches headed upstream
 ApplyPatch disable-i8042-check-on-apple-mac.patch
@@ -2383,6 +2381,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Apr 10 2012 Mauro Carvalho Chehab <mchehab@redhat.com> 3.3.1-5
+- Backport dvb-core and a few driver fixes from media tree (rhbz808871)
+
 * Tue Apr 10 2012 Josh Boyer <jwboyer@redhat.com>
 - Apply upstream patch to add USB device 13d3:3375 (rhbz 811087)
 - Disable the PMAC ide driver.  PATA_MACIO seems to work (rhbz 810579)
