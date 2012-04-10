@@ -2382,6 +2382,7 @@ fi
 #              '-'
 %changelog
 * Tue Apr 10 2012 Josh Boyer <jwboyer@redhat.com>
+- Disable the PMAC ide driver.  PATA_MACIO seems to work (rhbz 810579)
 - Backport fixes for correct register constraints in cmpxchg.h (rhbz 809014)
 
 * Thu Apr 05 2012 Dave Jones <davej@redhat.com>
