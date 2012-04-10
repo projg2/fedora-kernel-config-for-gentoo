@@ -656,6 +656,7 @@ Patch14001: hibernate-watermark.patch
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
 Patch15000: bluetooth-use-after-free.patch
+Patch15001: Bluetooth-Adding-USB-device-13d3-3375-as-an-Atheros-.patch
 
 Patch20000: utrace.patch
 
@@ -1269,6 +1270,7 @@ ApplyPatch hibernate-watermark.patch
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 ApplyPatch bluetooth-use-after-free.patch
+ApplyPatch Bluetooth-Adding-USB-device-13d3-3375-as-an-Atheros-.patch
 
 # utrace.
 ApplyPatch utrace.patch
@@ -1970,6 +1972,7 @@ fi
 
 %changelog
 * Tue Apr 10 2012 Josh Boyer <jwboyer@redhat.com>
+- Apply upstream patch to add USB device 13d3:3375 (rhbz 811087)
 - Backport fixes for correct register constraints in cmpxchg.h (rhbz 809014)
 
 * Thu Apr 05 2012 Dave Jones <davej@redhat.com>
