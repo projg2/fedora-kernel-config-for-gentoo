@@ -708,10 +708,7 @@ Patch1900: linux-2.6-intel-iommu-igfx.patch
 Patch2802: linux-2.6-silence-acpi-blacklist.patch
 
 # media patches
-Patch2899: linux-2.6-v4l-dvb-fixes.patch
-Patch2900: linux-2.6-v4l-dvb-update.patch
-Patch2901: linux-2.6-v4l-dvb-experimental.patch
-Patch2902: linux-2.6-v4l-dvb-uvcvideo-update.patch
+Patch2903: drivers-media-update.patch
 
 # fs fixes
 
@@ -1412,9 +1409,7 @@ ApplyPatch quite-apm.patch
 
 # V4L/DVB updates/fixes/experimental drivers
 #  apply if non-empty
-ApplyOptionalPatch linux-2.6-v4l-dvb-fixes.patch
-ApplyOptionalPatch linux-2.6-v4l-dvb-update.patch
-ApplyOptionalPatch linux-2.6-v4l-dvb-experimental.patch
+ApplyOptionalPatch drivers-media-update.patch
 
 # Patches headed upstream
 
@@ -2230,6 +2225,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 10 2012 Mauro Carvalho Chehab <mchehab@redhat.com>
+- Update media tree to what's there at Kernel 3.4-rc2 + fixes for -rc3
+
 * Thu Apr 05 2012 Dave Jones <davej@redhat.com>
 - Better watermark the number of pages used by hibernation I/O (Bojan Smojver) (rhbz 785384)
 
