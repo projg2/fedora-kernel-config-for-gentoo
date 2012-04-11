@@ -2387,6 +2387,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Apr 11 2012 Dennis Gilmore <dennis@ausil.us>
+- set KALLSYMS_EXTRA_PASS=1 on arm arches
+
 * Wed Apr 11 2012 Josh Boyer <jwboyer@redhat.com>
 - SELinux apply a different permission to ptrace a child vs non-child
   (rhbz 802072)
