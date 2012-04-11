@@ -2387,6 +2387,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Apr 11 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- update ARM configs, rename arm-omap
+
 * Wed Apr 11 2012 Dennis Gilmore <dennis@ausil.us>
 - set KALLSYMS_EXTRA_PASS=1 on arm arches
 
