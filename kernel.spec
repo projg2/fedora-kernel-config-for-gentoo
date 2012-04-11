@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -796,6 +796,9 @@ Patch21501: nfs-Fix-length-of-buffer-copied-in-__nfs4_get_acl_uncached.patch
 Patch21520: KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
+
+#selinux ptrace child permissions
+Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
 %endif
 
@@ -1541,6 +1544,9 @@ ApplyPatch libata-disable-runtime-pm-for-hotpluggable-port.patch
 #rhbz 809014
 ApplyPatch x86-Use-correct-byte-sized-register-constraint-in-__xchg_op.patch
 ApplyPatch x86-Use-correct-byte-sized-register-constraint-in-__add.patch
+
+#selinux ptrace child permissions
+ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2381,6 +2387,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Apr 11 2012 Josh Boyer <jwboyer@redhat.com>
+- SELinux apply a different permission to ptrace a child vs non-child
+  (rhbz 802072)
+
 * Tue Apr 10 2012 Mauro Carvalho Chehab <mchehab@redhat.com> 3.3.1-5
 - Backport dvb-core and a few driver fixes from media tree (rhbz808871)
 
