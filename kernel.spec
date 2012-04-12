@@ -1435,7 +1435,12 @@ BuildKernel() {
     echo USING ARCH=$Arch
 
     make -s ARCH=$Arch oldnoconfig >/dev/null
+%ifarch %{arm}
+    # http://lists.infradead.org/pipermail/linux-arm-kernel/2012-March/091404.html
+    make -s ARCH=$Arch V=1 %{?_smp_mflags} $MakeTarget %{?sparse_mflags} KALLSYMS_EXTRA_PASS=1
+%else
     make -s ARCH=$Arch V=1 %{?_smp_mflags} $MakeTarget %{?sparse_mflags}
+%endif
     make -s ARCH=$Arch V=1 %{?_smp_mflags} modules %{?sparse_mflags} || exit 1
 
     # Start installing the results
@@ -1969,6 +1974,9 @@ fi
 # and build.
 
 %changelog
+* Thu Apr 12 2012 Dennis Gilmore <dennis@ausil.us>
+- KALLSYMS_EXTRA_PASS=1 has to be passed in on the command line so do so only for arm
+
 * Tue Apr 10 2012 Mauro Carvalho Chehab <mchehab@redhat.com> 3.3.1-5
 - Backport dvb-core and a few driver fixes from media tree (rhbz808871)
 
