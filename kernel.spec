@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -1236,7 +1236,7 @@ ApplyPatch quite-apm.patch
 # Media (V4L/DVB/IR) updates/fixes/experimental drivers
 #  apply if non-empty
 ApplyPatch add-poll-requested-events.patch
-#ApplyOptionalPatch drivers-media-update.patch
+ApplyOptionalPatch drivers-media-update.patch
 
 # Patches headed upstream
 
@@ -1948,6 +1948,9 @@ fi
 # and build.
 
 %changelog
+* Fri Apr 13 2012 Josh Boyer <jwboyer@redhat.com>
+- Reapply rebased drivers-media-update.patch
+
 * Fri Apr 13 2012 Dave Jones <davej@redhat.com> 2.6.43.2-1
 - Linux 3.3.2
 
