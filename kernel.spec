@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -701,6 +701,9 @@ Patch21391: x86-Use-correct-byte-sized-register-constraint-in-__add.patch
 #rhbz 808207 CVE-2012-1601
 Patch21520: KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
+#rhbz 808559
+Patch21530: ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
+
 Patch22000: weird-root-dentry-name-debug.patch
 
 %endif
@@ -1181,6 +1184,9 @@ ApplyPatch linux-2.6-defaults-aspm.patch
 # ACPI
 
 # ALSA
+
+#rhbz 808559
+ApplyPatch ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
 
 # Networking
 
@@ -1948,6 +1954,9 @@ fi
 # and build.
 
 %changelog
+* Sat Apr 14 2012 Josh Boyer <jwboyer@redhat.com>
+- Add ALSA quirk for MacPro 5,1 machines (rhbz 808559)
+
 * Fri Apr 13 2012 Josh Boyer <jwboyer@redhat.com>
 - Reapply rebased drivers-media-update.patch
 
