@@ -1,0 +1,37 @@
+From a9e1e167d934aa74f48008393ade4f09fc587432 Mon Sep 17 00:00:00 2001
+From: Josh Boyer <jwboyer@redhat.com>
+Date: Thu, 12 Apr 2012 13:55:36 -0400
+Subject: [PATCH] ALSA: hda/realtek - Add quirk for Mac Pro 5,1 machines
+
+A user reported that setting model=imac24 used to allow sound to work on their
+Mac Pro 5,1 machine.  Commit 5671087ffa "Move ALC885 macpro and imac24 models
+to auto-parser" removed this model option.  All Mac machines are now explicitly
+handled with a quirk and the auto-parser.  This adds a quirk for the device
+found on the Mac Pro 5,1 machines.
+
+This (partially) fixes https://bugzilla.redhat.com/show_bug.cgi?id=808559
+
+[sorted the new entry in the ID number order by tiwai]
+
+Reported-by: Gabriel Somlo <somlo@cmu.edu>
+Signed-off-by: Josh Boyer <jwboyer@redhat.com>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 22c73b7..bd34b51 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -4659,6 +4659,7 @@ static const struct snd_pci_quirk alc882_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x106b, 0x2800, "AppleTV", ALC885_FIXUP_MACPRO_GPIO),
+ 	SND_PCI_QUIRK(0x106b, 0x3200, "iMac 7,1 Aluminum", ALC882_FIXUP_EAPD),
+ 	SND_PCI_QUIRK(0x106b, 0x3e00, "iMac 24 Aluminum", ALC885_FIXUP_MACPRO_GPIO),
++	SND_PCI_QUIRK(0x106b, 0x4200, "Mac Pro 5,1", ALC885_FIXUP_MACPRO_GPIO),
+ 
+ 	SND_PCI_QUIRK(0x1071, 0x8258, "Evesham Voyaeger", ALC882_FIXUP_EAPD),
+ 	SND_PCI_QUIRK_VENDOR(0x1462, "MSI", ALC882_FIXUP_GPIO3),
+-- 
+1.7.7.6
+
