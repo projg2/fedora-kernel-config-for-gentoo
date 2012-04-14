@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -782,6 +782,9 @@ Patch21400: unhandled-irqs-switch-to-polling.patch
 #rhbz 808207 CVE-2012-1601
 Patch21520: KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
+#rhbz 808559
+Patch21530: ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
+
 Patch22000: weird-root-dentry-name-debug.patch
 
 #selinux ptrace child permissions
@@ -1385,6 +1388,9 @@ ApplyPatch linux-2.6-defaults-aspm.patch
 # ACPI
 
 # ALSA
+
+#rhbz 808559
+ApplyPatch ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
 
 # Networking
 
@@ -2366,6 +2372,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sat Apr 14 2012 Josh Boyer <jwboyer@redhat.com>
+- Add ALSA quirk for MacPro 5,1 machines (rhbz 808559)
+
 * Fri Apr 13 2012 Josh Boyer <jwboyer@redhat.com> - 3.3.2-1
 - Linux 3.3.2
 
