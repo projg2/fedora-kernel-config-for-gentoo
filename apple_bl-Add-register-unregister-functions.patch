@@ -1,0 +1,99 @@
+From 83e72dd97a25a831ff270ce4437416943a1e4b36 Mon Sep 17 00:00:00 2001
+From: Seth Forshee <seth.forshee@canonical.com>
+Date: Fri, 16 Mar 2012 14:41:21 -0500
+Subject: [PATCH] apple_bl: Add register/unregister functions
+
+Add functions to allow other modules to enable or disable apple_bl. This
+will be used by the gmux driver to disable apple_bl when the gmux is
+present, as it is a better and more reliable option for brightness
+control.
+
+Signed-off-by: Seth Forshee <seth.forshee@canonical.com>
+Signed-off-by: Matthew Garrett <mjg@redhat.com>
+---
+ drivers/video/backlight/apple_bl.c |   23 +++++++++++++++++++++--
+ include/linux/apple_bl.h           |   26 ++++++++++++++++++++++++++
+ 2 files changed, 47 insertions(+), 2 deletions(-)
+ create mode 100644 include/linux/apple_bl.h
+
+diff --git a/drivers/video/backlight/apple_bl.c b/drivers/video/backlight/apple_bl.c
+index be98d15..a523b25 100644
+--- a/drivers/video/backlight/apple_bl.c
++++ b/drivers/video/backlight/apple_bl.c
+@@ -24,6 +24,7 @@
+ #include <linux/io.h>
+ #include <linux/pci.h>
+ #include <linux/acpi.h>
++#include <linux/atomic.h>
+ 
+ static struct backlight_device *apple_backlight_device;
+ 
+@@ -221,14 +222,32 @@ static struct acpi_driver apple_bl_driver = {
+ 	},
+ };
+ 
++static atomic_t apple_bl_registered = ATOMIC_INIT(0);
++
++int apple_bl_register(void)
++{
++	if (atomic_xchg(&apple_bl_registered, 1) == 0)
++		return acpi_bus_register_driver(&apple_bl_driver);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(apple_bl_register);
++
++void apple_bl_unregister(void)
++{
++	if (atomic_xchg(&apple_bl_registered, 0) == 1)
++		acpi_bus_unregister_driver(&apple_bl_driver);
++}
++EXPORT_SYMBOL_GPL(apple_bl_unregister);
++
+ static int __init apple_bl_init(void)
+ {
+-	return acpi_bus_register_driver(&apple_bl_driver);
++	return apple_bl_register();
+ }
+ 
+ static void __exit apple_bl_exit(void)
+ {
+-	acpi_bus_unregister_driver(&apple_bl_driver);
++	apple_bl_unregister();
+ }
+ 
+ module_init(apple_bl_init);
+diff --git a/include/linux/apple_bl.h b/include/linux/apple_bl.h
+new file mode 100644
+index 0000000..47bedc0
+--- /dev/null
++++ b/include/linux/apple_bl.h
+@@ -0,0 +1,26 @@
++/*
++ * apple_bl exported symbols
++ */
++
++#ifndef _LINUX_APPLE_BL_H
++#define _LINUX_APPLE_BL_H
++
++#ifdef CONFIG_BACKLIGHT_APPLE
++
++extern int apple_bl_register(void);
++extern void apple_bl_unregister(void);
++
++#else /* !CONFIG_BACKLIGHT_APPLE */
++
++static inline int apple_bl_register(void)
++{
++	return 0;
++}
++
++static inline void apple_bl_unregister(void)
++{
++}
++
++#endif /* !CONFIG_BACKLIGHT_APPLE */
++
++#endif /* _LINUX_APPLE_BL_H */
+-- 
+1.7.7.6

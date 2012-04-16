@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -784,6 +784,9 @@ Patch21520: KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
 #rhbz 808559
 Patch21530: ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
+
+Patch21600: apple_bl-Add-register-unregister-functions.patch
+Patch21601: platform-x86-Add-driver-for-Apple-gmux-device.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
 
@@ -1527,6 +1530,10 @@ ApplyPatch x86-Use-correct-byte-sized-register-constraint-in-__add.patch
 
 #selinux ptrace child permissions
 ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
+
+#apple gmux.  blame mjg59
+ApplyPatch apple_bl-Add-register-unregister-functions.patch
+ApplyPatch platform-x86-Add-driver-for-Apple-gmux-device.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2372,6 +2379,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Apr 16 2012 Josh Boyer <jwboyer@redhat.com>
+- Add platform driver for Apple GMUX device (requested by Matthew Garrett)
+
 * Sat Apr 14 2012 Josh Boyer <jwboyer@redhat.com>
 - Add ALSA quirk for MacPro 5,1 machines (rhbz 808559)
 

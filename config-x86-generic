@@ -405,3 +405,4 @@ CONFIG_DRM_GMA500=m
 # Maybe enable in debug kernels?
 # CONFIG_DEBUG_NMI_SELFTEST is not set
 
+CONFIG_APPLE_GMUX=m
