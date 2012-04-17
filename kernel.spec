@@ -719,6 +719,7 @@ Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 # NFSv4
 Patch4000: NFSv4-Reduce-the-footprint-of-the-idmapper.patch
 Patch4001: NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
+Patch4107: NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 
 # patches headed upstream
 
@@ -1331,6 +1332,7 @@ ApplyPatch jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 # NFSv4
 ApplyPatch NFSv4-Reduce-the-footprint-of-the-idmapper.patch
 ApplyPatch NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
+ApplyPatch NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 
 # USB
 
@@ -2228,6 +2230,7 @@ fi
 
 %changelog
 * Tue Apr 17 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix oops in nfs_have_delegation (rhbz 811138)
 - Fix oops on invalid AMD microcode load (rhbz 797559)
 
 * Sat Apr 14 2012 Josh Boyer <jwboyer@redhat.com>
