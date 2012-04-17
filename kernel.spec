@@ -788,6 +788,8 @@ Patch21530: ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
 Patch21600: apple_bl-Add-register-unregister-functions.patch
 Patch21601: platform-x86-Add-driver-for-Apple-gmux-device.patch
 
+Patch21620: vgaarb-vga_default_device.patch
+
 Patch22000: weird-root-dentry-name-debug.patch
 
 #selinux ptrace child permissions
@@ -1534,6 +1536,9 @@ ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 #apple gmux.  blame mjg59
 ApplyPatch apple_bl-Add-register-unregister-functions.patch
 ApplyPatch platform-x86-Add-driver-for-Apple-gmux-device.patch
+
+#vgaarb patches.  blame mjg59
+ApplyPatch vgaarb-vga_default_device.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2380,6 +2385,7 @@ fi
 #              '-'
 %changelog
 * Mon Apr 16 2012 Josh Boyer <jwboyer@redhat.com>
+- Add and use vga_default_device patches (requested by Matthew Garrett)
 - Add platform driver for Apple GMUX device (requested by Matthew Garrett)
 
 * Sat Apr 14 2012 Josh Boyer <jwboyer@redhat.com>
