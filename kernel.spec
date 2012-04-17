@@ -709,6 +709,7 @@ Patch4103: linux-3.3-newidmapper-02.patch
 Patch4104: linux-3.3-newidmapper-03.patch
 Patch4105: NFSv4-Reduce-the-footprint-of-the-idmapper.patch
 Patch4106: NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
+Patch4107: NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 
 # patches headed upstream
 Patch12016: disable-i8042-check-on-apple-mac.patch
@@ -1374,6 +1375,7 @@ ApplyPatch linux-3.3-newidmapper-02.patch
 ApplyPatch linux-3.3-newidmapper-03.patch
 ApplyPatch NFSv4-Reduce-the-footprint-of-the-idmapper.patch
 ApplyPatch NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
+ApplyPatch NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 
 # USB
 
@@ -2394,6 +2396,7 @@ fi
 #              '-'
 %changelog
 * Tue Apr 17 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix oops in nfs_have_delegation (rhbz 811138)
 - Fix oops on invalid AMD microcode load (rhbz 797559)
 
 * Mon Apr 16 2012 Josh Boyer <jwboyer@redhat.com>
