@@ -710,6 +710,7 @@ Patch2802: linux-2.6-silence-acpi-blacklist.patch
 #   add-poll-requested-events.patch was added for 3.4
 Patch2900: add-poll-requested-events.patch
 Patch2901: drivers-media-update.patch
+Patch2902: dvb_frontend_switch_regression_fix.patch
 
 # fs fixes
 
@@ -1417,6 +1418,7 @@ ApplyPatch quite-apm.patch
 #  apply if non-empty
 ApplyPatch add-poll-requested-events.patch
 ApplyOptionalPatch drivers-media-update.patch
+ApplyPatch dvb_frontend_switch_regression_fix.patch
 
 # Patches headed upstream
 
@@ -2229,6 +2231,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 17 2012 Mauro Carvalho Chehab <mchehab@redhat.com>
+- Fix DVB-S2->DVB-S switch regression (rhbz 812895)
+
 * Tue Apr 17 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix oops in nfs_have_delegation (rhbz 811138)
 - Fix oops on invalid AMD microcode load (rhbz 797559)
