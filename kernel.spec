@@ -1843,7 +1843,7 @@ BuildKernel() {
       for mod in `echo $depends | sed -e 's/,/ /g'`
       do
         match=`grep "^$mod.ko" mod-extra.list` ||:
-        if [ -z "$match" ]
+        if [ -n "$match" ]
         then
           continue
         else
@@ -2396,6 +2396,7 @@ fi
 #              '-'
 %changelog
 * Tue Apr 17 2012 Josh Boyer <jwboyer@redhat.com>
+- Move the dlm module to modules-extra (rhbz 811547)
 - Fix oops in nfs_have_delegation (rhbz 811138)
 - Fix oops on invalid AMD microcode load (rhbz 797559)
 
