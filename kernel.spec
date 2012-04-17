@@ -704,6 +704,9 @@ Patch21520: KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 #rhbz 808559
 Patch21530: ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
 
+Patch21700: x86-microcode-Fix-sysfs-warning-during-module-unload-on-unsupported-CPUs.patch
+Patch21701: x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPUs.patch
+
 Patch22000: weird-root-dentry-name-debug.patch
 
 %endif
@@ -1301,6 +1304,10 @@ ApplyPatch libata-disable-runtime-pm-for-hotpluggable-port.patch
 #rhbz 809014
 ApplyPatch x86-Use-correct-byte-sized-register-constraint-in-__xchg_op.patch
 ApplyPatch x86-Use-correct-byte-sized-register-constraint-in-__add.patch
+
+#rhbz 797559
+ApplyPatch x86-microcode-Fix-sysfs-warning-during-module-unload-on-unsupported-CPUs.patch
+ApplyPatch x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPUs.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1954,6 +1961,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 17 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix oops on invalid AMD microcode load (rhbz 797559)
+
 * Sat Apr 14 2012 Josh Boyer <jwboyer@redhat.com>
 - Add ALSA quirk for MacPro 5,1 machines (rhbz 808559)
 
