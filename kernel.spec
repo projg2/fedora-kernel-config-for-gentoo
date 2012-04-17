@@ -709,6 +709,8 @@ Patch21701: x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CP
 
 Patch22000: weird-root-dentry-name-debug.patch
 
+# END OF PATCH DEFINITIONS
+
 %endif
 
 BuildRoot: %{_tmppath}/kernel-%{KVERREL}-root
