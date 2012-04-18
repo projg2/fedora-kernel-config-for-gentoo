@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -747,6 +747,8 @@ Patch21094: power-x86-destdir.patch
 
 Patch21095: hfsplus-Change-finder_info-to-u32.patch
 Patch21096: hfsplus-Add-an-ioctl-to-bless-files.patch
+Patch21097: hfsplus-initialise-userflags.patch
+
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -1497,6 +1499,7 @@ ApplyPatch power-x86-destdir.patch
 
 ApplyPatch hfsplus-Change-finder_info-to-u32.patch
 ApplyPatch hfsplus-Add-an-ioctl-to-bless-files.patch
+ApplyPatch hfsplus-initialise-userflags.patch
 
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -2396,6 +2399,7 @@ fi
 #              '-'
 %changelog
 * Wed Apr 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Make sure userflags is initialized in hfsplus files (from Matthew Garrett)
 - Change patch to resolve libata hotplug (rhbz 807632)
 
 * Tue Apr 17 2012 Josh Boyer <jwboyer@redhat.com>
