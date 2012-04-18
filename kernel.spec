@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -708,6 +708,9 @@ Patch21530: ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
 Patch21700: x86-microcode-Fix-sysfs-warning-during-module-unload-on-unsupported-CPUs.patch
 Patch21701: x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPUs.patch
 
+#rhbz 806295
+Patch21710: disable-hid-battery.patch
+
 Patch22000: weird-root-dentry-name-debug.patch
 
 # END OF PATCH DEFINITIONS
@@ -1312,6 +1315,9 @@ ApplyPatch x86-Use-correct-byte-sized-register-constraint-in-__add.patch
 #rhbz 797559
 ApplyPatch x86-microcode-Fix-sysfs-warning-during-module-unload-on-unsupported-CPUs.patch
 ApplyPatch x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPUs.patch
+
+#rhbz 806295
+ApplyPatch disable-hid-battery.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1965,6 +1971,9 @@ fi
 # and build.
 
 %changelog
+* Wed Apr 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Disable CONFIG_HID_BATTERY_STRENGTH (rhbz 806295)
+
 * Tue Apr 17 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix oops in nfs_have_delegation (rhbz 811138)
 - Fix oops on invalid AMD microcode load (rhbz 797559)
