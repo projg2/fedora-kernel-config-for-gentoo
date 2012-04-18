@@ -771,8 +771,8 @@ Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 #rhbz 808603
 Patch21380: wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
 
-#rhbz 806676 807632
-Patch21385: libata-disable-runtime-pm-for-hotpluggable-port.patch
+#rhbz 807632
+Patch21385: libata-forbid-port-runtime-pm-by-default.patch
 
 #rhbz 809014
 Patch21390: x86-Use-correct-byte-sized-register-constraint-in-__xchg_op.patch
@@ -1530,8 +1530,8 @@ ApplyPatch KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 #rhbz 808603
 ApplyPatch wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
 
-#rhbz 806676 807632
-ApplyPatch libata-disable-runtime-pm-for-hotpluggable-port.patch
+#rhbz 807632
+ApplyPatch libata-forbid-port-runtime-pm-by-default.patch
 
 #rhbz 809014
 ApplyPatch x86-Use-correct-byte-sized-register-constraint-in-__xchg_op.patch
@@ -2395,6 +2395,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Apr 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Change patch to resolve libata hotplug (rhbz 807632)
+
 * Tue Apr 17 2012 Josh Boyer <jwboyer@redhat.com>
 - Move the dlm module to modules-extra (rhbz 811547)
 - Fix oops in nfs_have_delegation (rhbz 811138)
