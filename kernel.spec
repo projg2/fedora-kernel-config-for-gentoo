@@ -748,7 +748,7 @@ Patch21094: power-x86-destdir.patch
 Patch21095: hfsplus-Change-finder_info-to-u32.patch
 Patch21096: hfsplus-Add-an-ioctl-to-bless-files.patch
 Patch21097: hfsplus-initialise-userflags.patch
-
+Patch21098: hfsplus-Fix-bless-ioctl-when-used-with-hardlinks.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -1500,6 +1500,7 @@ ApplyPatch power-x86-destdir.patch
 ApplyPatch hfsplus-Change-finder_info-to-u32.patch
 ApplyPatch hfsplus-Add-an-ioctl-to-bless-files.patch
 ApplyPatch hfsplus-initialise-userflags.patch
+ApplyPatch hfsplus-Fix-bless-ioctl-when-used-with-hardlinks.patch
 
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -2399,6 +2400,7 @@ fi
 #              '-'
 %changelog
 * Wed Apr 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix hfsplus bless ioctl with hardlinks (from Matthew Garrett)
 - Make sure userflags is initialized in hfsplus files (from Matthew Garrett)
 - Change patch to resolve libata hotplug (rhbz 807632)
 
