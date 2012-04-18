@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -797,6 +797,9 @@ Patch21530: ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
 Patch21700: x86-microcode-Fix-sysfs-warning-during-module-unload-on-unsupported-CPUs.patch
 Patch21701: x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPUs.patch
 
+#rhbz 806295
+Patch21710: disable-hid-battery.patch
+
 # Debug patches
 Patch30000: weird-root-dentry-name-debug.patch
 Patch30010: debug-808990.patch
@@ -1492,6 +1495,9 @@ ApplyPatch x86-Use-correct-byte-sized-register-constraint-in-__add.patch
 #rhbz 797559
 ApplyPatch x86-microcode-Fix-sysfs-warning-during-module-unload-on-unsupported-CPUs.patch
 ApplyPatch x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPUs.patch
+
+#rhbz 806295
+ApplyPatch disable-hid-battery.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2231,6 +2237,9 @@ fi
 # and build.
 
 %changelog
+* Wed Apr 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Disable CONFIG_HID_BATTERY_STRENGTH (rhbz 806295)
+
 * Tue Apr 17 2012 Mauro Carvalho Chehab <mchehab@redhat.com>
 - Fix DVB-S2->DVB-S switch regression (rhbz 812895)
 
