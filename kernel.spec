@@ -804,8 +804,11 @@ Patch21710: disable-hid-battery.patch
 Patch30000: weird-root-dentry-name-debug.patch
 Patch30010: debug-808990.patch
 
-#rhbz 814149 814155
+#rhbz 814149 814155 CVE-2012-2121
 Patch22006: KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
+
+#rhbz 814278 814289 CVE-2012-2119
+Patch22007: macvtap-zerocopy-validate-vector-length.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1502,8 +1505,11 @@ ApplyPatch x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPU
 #rhbz 806295
 ApplyPatch disable-hid-battery.patch
 
-#rhbz 814149 814155
+#rhbz 814149 814155 CVE-2012-2121
 ApplyPatch KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
+
+#rhbz 814278 814289 CVE-2012-2119
+ApplyPatch macvtap-zerocopy-validate-vector-length.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2243,6 +2249,10 @@ fi
 # and build.
 
 %changelog
+* Thu Apr 19 2012 Justin M. Forbes <jforbes@redhat.com> - 3.3.2-4
+- CVE-2012-2119 macvtap: zerocopy: vector length is not validated before
+  pinning user pages (rhbz 814278 814289)
+
 * Thu Apr 19 2012 Justin M. Forbes <jforbes@redhat.com>
 - Fix KVM device assignment page leak (rhbz 814149 814155)
 
