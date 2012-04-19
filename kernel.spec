@@ -804,6 +804,9 @@ Patch21710: disable-hid-battery.patch
 Patch30000: weird-root-dentry-name-debug.patch
 Patch30010: debug-808990.patch
 
+#rhbz 814149 814155
+Patch22006: KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1498,6 +1501,9 @@ ApplyPatch x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPU
 
 #rhbz 806295
 ApplyPatch disable-hid-battery.patch
+
+#rhbz 814149 814155
+ApplyPatch KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2237,6 +2243,9 @@ fi
 # and build.
 
 %changelog
+* Thu Apr 19 2012 Justin M. Forbes <jforbes@redhat.com>
+- Fix KVM device assignment page leak (rhbz 814149 814155)
+
 * Wed Apr 18 2012 Josh Boyer <jwboyer@redhat.com>
 - Change patch to resolve libata hotplug (rhbz 807632)
 - Disable CONFIG_HID_BATTERY_STRENGTH (rhbz 806295)
