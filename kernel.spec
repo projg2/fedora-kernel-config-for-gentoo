@@ -801,9 +801,11 @@ Patch22000: weird-root-dentry-name-debug.patch
 #selinux ptrace child permissions
 Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
-#rhbz 814149 814155
+#rhbz 814149 814155 CVE-2012-2121
 Patch22006: KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
 
+#rhbz 814278 814289 CVE-2012-2119
+Patch22007: macvtap-zerocopy-validate-vector-length.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1559,8 +1561,11 @@ ApplyPatch vgaarb-vga_default_device.patch
 ApplyPatch x86-microcode-Fix-sysfs-warning-during-module-unload-on-unsupported-CPUs.patch
 ApplyPatch x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPUs.patch
 
-#rhbz 814149 814155
+#rhbz 814149 814155 CVE-2012-2121
 ApplyPatch KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
+
+#rhbz 814278 814289 CVE-2012-2119
+ApplyPatch macvtap-zerocopy-validate-vector-length.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1854,7 +1859,7 @@ BuildKernel() {
       for mod in `echo $depends | sed -e 's/,/ /g'`
       do
         match=`grep "^$mod.ko" mod-extra.list` ||:
-        if [ -n "$match" ]
+        if [ -z "$match" ]
         then
           continue
         else
@@ -2407,7 +2412,12 @@ fi
 #              '-'
 %changelog
 * Thu Apr 19 2012 Justin M. Forbes <jforbes@redhat.com>
-- Fix KVM device assignment page leak
+- CVE-2012-2119 macvtap: zerocopy: vector length is not validated before
+  pinning user pages (rhbz 814278 814289)
+- Back out dlm module move (rhbz 811547)
+
+* Thu Apr 19 2012 Justin M. Forbes <jforbes@redhat.com>
+- Fix KVM device assignment page leak (rhbz 814149 814155)
 
 * Wed Apr 18 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix hfsplus bless ioctl with hardlinks (from Matthew Garrett)
