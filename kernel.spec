@@ -801,6 +801,10 @@ Patch22000: weird-root-dentry-name-debug.patch
 #selinux ptrace child permissions
 Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
+#rhbz 814149 814155
+Patch22006: KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
+
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1554,6 +1558,9 @@ ApplyPatch vgaarb-vga_default_device.patch
 #rhbz 797559
 ApplyPatch x86-microcode-Fix-sysfs-warning-during-module-unload-on-unsupported-CPUs.patch
 ApplyPatch x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPUs.patch
+
+#rhbz 814149 814155
+ApplyPatch KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2399,6 +2406,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Apr 19 2012 Justin M. Forbes <jforbes@redhat.com>
+- Fix KVM device assignment page leak
+
 * Wed Apr 18 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix hfsplus bless ioctl with hardlinks (from Matthew Garrett)
 - Make sure userflags is initialized in hfsplus files (from Matthew Garrett)
