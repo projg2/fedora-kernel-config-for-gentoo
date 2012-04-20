@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -810,6 +810,10 @@ Patch22006: KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
 #rhbz 814278 814289 CVE-2012-2119
 Patch22007: macvtap-zerocopy-validate-vector-length.patch
 
+#rhbz 814523 806722 CVE-2012-2123
+Patch22008: fcaps-clear-the-same-personality-flags-as-suid-when-.patch
+Patch22009: security-fix-compile-error-in-commoncap.c.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1510,6 +1514,10 @@ ApplyPatch KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
 
 #rhbz 814278 814289 CVE-2012-2119
 ApplyPatch macvtap-zerocopy-validate-vector-length.patch
+
+#rhbz 814523 806722 CVE-2012-2123
+ApplyPatch fcaps-clear-the-same-personality-flags-as-suid-when-.patch
+ApplyPatch security-fix-compile-error-in-commoncap.c.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2249,6 +2257,10 @@ fi
 # and build.
 
 %changelog
+* Fri Apr 20 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2012-2123 fcaps: clear the same personality flags as suid when fcaps
+  are used (rhbz 814523 806722)
+
 * Thu Apr 19 2012 Justin M. Forbes <jforbes@redhat.com> - 3.3.2-4
 - CVE-2012-2119 macvtap: zerocopy: vector length is not validated before
   pinning user pages (rhbz 814278 814289)
