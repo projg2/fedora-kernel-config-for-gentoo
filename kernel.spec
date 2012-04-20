@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 6
+%global baserelease 7
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1871,7 +1871,17 @@ BuildKernel() {
         then
           continue
         else
-          echo $mod.ko >> req.list
+          # check if the module we're looking at is in mod-extra too.  if so
+          # we don't need to mark the dep as required
+          mod2=`basename $dep`
+          match2=`grep "^$mod2" mod-extra.list` ||:
+          if [ -n "$match2" ]
+          then
+            continue
+            #echo $mod2 >> notreq.list
+          else
+            echo $mod.ko >> req.list
+          fi
         fi
       done
     done
@@ -2420,6 +2430,7 @@ fi
 #              '-'
 %changelog
 * Fri Apr 20 2012 Josh Boyer <jwboyer@redhat.com>
+- Move the dlm module to modules-extra and do additional cleanup (rhbz 811547)
 - CVE-2012-2123 fcaps: clear the same personality flags as suid when fcaps
   are used (rhbz 814523 806722)
 
