@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -719,6 +719,10 @@ Patch22006: KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
 #rhbz 814278 814289 CVE-2012-2119
 Patch22007: macvtap-zerocopy-validate-vector-length.patch
 
+#rhbz 814523 806722 CVE-2012-2123
+Patch22008: fcaps-clear-the-same-personality-flags-as-suid-when-.patch
+Patch22009: security-fix-compile-error-in-commoncap.c.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1330,6 +1334,10 @@ ApplyPatch KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
 
 #rhbz 814278 814289 CVE-2012-2119
 ApplyPatch macvtap-zerocopy-validate-vector-length.patch
+
+#rhbz 814523 806722 CVE-2012-2123
+ApplyPatch fcaps-clear-the-same-personality-flags-as-suid-when-.patch
+ApplyPatch security-fix-compile-error-in-commoncap.c.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1983,6 +1991,10 @@ fi
 # and build.
 
 %changelog
+* Fri Apr 20 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2012-2123 fcaps: clear the same personality flags as suid when fcaps
+  are used (rhbz 814523 806722)
+
 * Thu Apr 19 2012 Justin M. Forbes <jforbes@redhat.com> 2.6.43.2-4
 - CVE-2012-2119 macvtap: zerocopy: vector length is not validated before
   pinning user pages (rhbz 814278 814289)
