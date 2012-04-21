@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 7
+%global baserelease 8
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -810,6 +810,9 @@ Patch22007: macvtap-zerocopy-validate-vector-length.patch
 #rhbz 814523 806722 CVE-2012-2123
 Patch22008: fcaps-clear-the-same-personality-flags-as-suid-when-.patch
 Patch22009: security-fix-compile-error-in-commoncap.c.patch
+
+#rhbz 811225
+Patch22010: memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1574,6 +1577,9 @@ ApplyPatch macvtap-zerocopy-validate-vector-length.patch
 #rhbz 814523 806722 CVE-2012-2123
 ApplyPatch fcaps-clear-the-same-personality-flags-as-suid-when-.patch
 ApplyPatch security-fix-compile-error-in-commoncap.c.patch
+
+#rhbz 811225
+ApplyPatch memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2429,6 +2435,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sat Apr 21 2012 Josh Boyer <jwboyer@redhat.com> - 3.3.2-8
+- Fix error check in memblock that prevented boot on various Dells (rhbz 811225)
+
 * Fri Apr 20 2012 Josh Boyer <jwboyer@redhat.com>
 - Move the dlm module to modules-extra and do additional cleanup (rhbz 811547)
 - CVE-2012-2123 fcaps: clear the same personality flags as suid when fcaps
