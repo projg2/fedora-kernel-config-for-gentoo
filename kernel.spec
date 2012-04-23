@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 6
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -736,7 +736,6 @@ Patch14001: hibernate-watermark.patch
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
 Patch15000: bluetooth-use-after-free.patch
-Patch15001: Bluetooth-Adding-USB-device-13d3-3375-as-an-Atheros-.patch
 
 Patch19000: ips-noirq.patch
 
@@ -784,10 +783,6 @@ Patch21380: wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
 #rhbz 807632
 Patch21385: libata-forbid-port-runtime-pm-by-default.patch
 
-#rhbz 809014
-Patch21390: x86-Use-correct-byte-sized-register-constraint-in-__xchg_op.patch
-Patch21391: x86-Use-correct-byte-sized-register-constraint-in-__add.patch
-
 #rhbz 808207 CVE-2012-1601
 Patch21520: KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
@@ -809,10 +804,6 @@ Patch22006: KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
 
 #rhbz 814278 814289 CVE-2012-2119
 Patch22007: macvtap-zerocopy-validate-vector-length.patch
-
-#rhbz 814523 806722 CVE-2012-2123
-Patch22008: fcaps-clear-the-same-personality-flags-as-suid-when-.patch
-Patch22009: security-fix-compile-error-in-commoncap.c.patch
 
 #rhbz 811225
 Patch22010: memblock-memblock-should-be-able-to-handle-zero-leng.patch
@@ -1452,7 +1443,6 @@ ApplyPatch hibernate-watermark.patch
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 ApplyPatch bluetooth-use-after-free.patch
-ApplyPatch Bluetooth-Adding-USB-device-13d3-3375-as-an-Atheros-.patch
 
 ApplyPatch ips-noirq.patch
 
@@ -1501,10 +1491,6 @@ ApplyPatch wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
 #rhbz 807632
 ApplyPatch libata-forbid-port-runtime-pm-by-default.patch
 
-#rhbz 809014
-ApplyPatch x86-Use-correct-byte-sized-register-constraint-in-__xchg_op.patch
-ApplyPatch x86-Use-correct-byte-sized-register-constraint-in-__add.patch
-
 #rhbz 797559
 ApplyPatch x86-microcode-Fix-sysfs-warning-during-module-unload-on-unsupported-CPUs.patch
 ApplyPatch x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPUs.patch
@@ -1517,10 +1503,6 @@ ApplyPatch KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
 
 #rhbz 814278 814289 CVE-2012-2119
 ApplyPatch macvtap-zerocopy-validate-vector-length.patch
-
-#rhbz 814523 806722 CVE-2012-2123
-ApplyPatch fcaps-clear-the-same-personality-flags-as-suid-when-.patch
-ApplyPatch security-fix-compile-error-in-commoncap.c.patch
 
 #rhbz 811225
 ApplyPatch memblock-memblock-should-be-able-to-handle-zero-leng.patch
@@ -2263,6 +2245,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 23 2012 Josh Boyer <jwboyer@redhat.com>
+- Linux 3.3.3
+
 * Sat Apr 21 2012 Josh Boyer <jwboyer@redhat.com> - 3.3.2-6
 - Fix error check in memblock that prevented boot on various Dells (rhbz 811225)
 
