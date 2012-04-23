@@ -814,6 +814,8 @@ Patch22009: security-fix-compile-error-in-commoncap.c.patch
 #rhbz 811225
 Patch22010: memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
+Patch22011: input-synaptics-fix-regression-with-image-sensor-trackpads.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1580,6 +1582,8 @@ ApplyPatch security-fix-compile-error-in-commoncap.c.patch
 
 #rhbz 811225
 ApplyPatch memblock-memblock-should-be-able-to-handle-zero-leng.patch
+
+ApplyPatch input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2435,6 +2439,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Apr 23 2012 Peter Hutterer <peter.hutterer@redhat.com>
+- Fix regression on clickpads
+
 * Sat Apr 21 2012 Josh Boyer <jwboyer@redhat.com> - 3.3.2-8
 - Fix error check in memblock that prevented boot on various Dells (rhbz 811225)
 
