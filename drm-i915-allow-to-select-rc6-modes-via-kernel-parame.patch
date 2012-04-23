@@ -1,7 +1,7 @@
-From 639c55c706fbff840d95ea807a2949adf3779455 Mon Sep 17 00:00:00 2001
+From 268671ffd23264564a62c0893135e2e42e8c4f66 Mon Sep 17 00:00:00 2001
 From: Eugeni Dodonov <eugeni.dodonov@intel.com>
 Date: Fri, 23 Mar 2012 11:57:18 -0300
-Subject: [PATCH 1/2] drm/i915: allow to select rc6 modes via kernel parameter
+Subject: [PATCH] drm/i915: allow to select rc6 modes via kernel parameter
 
 This allows to select which rc6 modes are to be used via kernel parameter,
 via a bitmask parameter. E.g.:
@@ -35,12 +35,12 @@ Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
  3 files changed, 42 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
-index 308f819..abb2248 100644
+index 84ecbb9..7990e27 100644
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
 @@ -66,7 +66,11 @@ MODULE_PARM_DESC(semaphores,
  int i915_enable_rc6 __read_mostly = -1;
- module_param_named(i915_enable_rc6, i915_enable_rc6, int, 0600);
+ module_param_named(i915_enable_rc6, i915_enable_rc6, int, 0400);
  MODULE_PARM_DESC(i915_enable_rc6,
 -		"Enable power-saving render C-state 6 (default: -1 (use per-chip default)");
 +		"Enable power-saving render C-state 6. "
@@ -84,10 +84,10 @@ index 9689ca3..a7d488e 100644
  extern int i915_max_ioctl;
  extern unsigned int i915_fbpercrtc __always_unused;
 diff --git a/drivers/gpu/drm/i915/intel_display.c b/drivers/gpu/drm/i915/intel_display.c
-index 397087c..1430f09 100644
+index 2163818..dc90644 100644
 --- a/drivers/gpu/drm/i915/intel_display.c
 +++ b/drivers/gpu/drm/i915/intel_display.c
-@@ -8132,7 +8132,7 @@ void intel_init_emon(struct drm_device *dev)
+@@ -8138,7 +8138,7 @@ void intel_init_emon(struct drm_device *dev)
  	dev_priv->corr = (lcfuse & LCFUSE_HIV_MASK);
  }
  
@@ -96,7 +96,7 @@ index 397087c..1430f09 100644
  {
  	/*
  	 * Respect the kernel parameter if it is set
-@@ -8163,6 +8163,7 @@ void gen6_enable_rps(struct drm_i915_private *dev_priv)
+@@ -8169,6 +8169,7 @@ void gen6_enable_rps(struct drm_i915_private *dev_priv)
  	u32 gt_perf_status = I915_READ(GEN6_GT_PERF_STATUS);
  	u32 pcu_mbox, rc6_mask = 0;
  	int cur_freq, min_freq, max_freq;
@@ -104,7 +104,7 @@ index 397087c..1430f09 100644
  	int i;
  
  	/* Here begins a magic sequence of register writes to enable
-@@ -8193,9 +8194,20 @@ void gen6_enable_rps(struct drm_i915_private *dev_priv)
+@@ -8199,9 +8200,20 @@ void gen6_enable_rps(struct drm_i915_private *dev_priv)
  	I915_WRITE(GEN6_RC6p_THRESHOLD, 100000);
  	I915_WRITE(GEN6_RC6pp_THRESHOLD, 64000); /* unused */
  
@@ -129,5 +129,5 @@ index 397087c..1430f09 100644
  	I915_WRITE(GEN6_RC_CONTROL,
  		   rc6_mask |
 -- 
-1.7.9.3
+1.7.7.6
 
