@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -810,6 +810,9 @@ Patch22010: memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
 Patch22011: input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
+#rhbz 783708 
+Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1510,6 +1513,9 @@ ApplyPatch macvtap-zerocopy-validate-vector-length.patch
 ApplyPatch memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
 ApplyPatch input-synaptics-fix-regression-with-image-sensor-trackpads.patch
+
+#rhbz 783708
+ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2249,6 +2255,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 24 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix ipw2200 (rhbz 783708)
+
 * Mon Apr 23 2012 Peter Hutterer <peter.hutterer@redhat.com>
 - Fix regression on clickpads
 
