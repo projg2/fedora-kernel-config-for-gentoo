@@ -722,6 +722,8 @@ Patch22011: input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 #rhbz 783708 
 Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
 
+Patch22013: perf-fix-build-breakage.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1336,6 +1338,8 @@ ApplyPatch input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
 #rhbz 783708
 ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
+
+ApplyPatch perf-fix-build-breakage.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1990,6 +1994,7 @@ fi
 
 %changelog
 * Tue Apr 24 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix perf build due to incorrect cherry-pick in 3.3.3
 - Add patch to fix ipw2200 (rhbz 783708)
 
 * Mon Apr 23 2012 Josh Boyer <jwboyer@redhat.com>
