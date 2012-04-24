@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -719,6 +719,9 @@ Patch22010: memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
 Patch22011: input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
+#rhbz 783708 
+Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1330,6 +1333,9 @@ ApplyPatch macvtap-zerocopy-validate-vector-length.patch
 ApplyPatch memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
 ApplyPatch input-synaptics-fix-regression-with-image-sensor-trackpads.patch
+
+#rhbz 783708
+ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1983,6 +1989,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 24 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix ipw2200 (rhbz 783708)
+
 * Mon Apr 23 2012 Josh Boyer <jwboyer@redhat.com>
 - Linux 3.3.3
 
