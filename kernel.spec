@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -710,7 +710,6 @@ Patch2802: linux-2.6-silence-acpi-blacklist.patch
 #   add-poll-requested-events.patch was added for 3.4
 Patch2900: add-poll-requested-events.patch
 Patch2901: drivers-media-update.patch
-Patch2902: dvb_frontend_switch_regression_fix.patch
 
 # fs fixes
 
@@ -777,9 +776,6 @@ Patch21353: xen-x86-Implement-x86_apic_ops.patch
 #rhbz 770476
 Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 
-#rhbz 808603
-Patch21380: wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
-
 #rhbz 807632
 Patch21385: libata-forbid-port-runtime-pm-by-default.patch
 
@@ -799,21 +795,13 @@ Patch21710: disable-hid-battery.patch
 Patch30000: weird-root-dentry-name-debug.patch
 Patch30010: debug-808990.patch
 
-#rhbz 814149 814155 CVE-2012-2121
-Patch22006: KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
-
 #rhbz 814278 814289 CVE-2012-2119
 Patch22007: macvtap-zerocopy-validate-vector-length.patch
-
-#rhbz 811225
-Patch22010: memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
 Patch22011: input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
 #rhbz 783708 
 Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
-
-Patch22013: perf-fix-build-breakage.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1432,7 +1420,6 @@ ApplyPatch quite-apm.patch
 #  apply if non-empty
 ApplyPatch add-poll-requested-events.patch
 ApplyOptionalPatch drivers-media-update.patch
-ApplyPatch dvb_frontend_switch_regression_fix.patch
 
 # Patches headed upstream
 
@@ -1492,9 +1479,6 @@ ApplyPatch iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 #rhbz 808207 CVE-2012-1601
 ApplyPatch KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
-#rhbz 808603
-ApplyPatch wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
-
 #rhbz 807632
 ApplyPatch libata-forbid-port-runtime-pm-by-default.patch
 
@@ -1505,21 +1489,13 @@ ApplyPatch x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPU
 #rhbz 806295
 ApplyPatch disable-hid-battery.patch
 
-#rhbz 814149 814155 CVE-2012-2121
-ApplyPatch KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
-
 #rhbz 814278 814289 CVE-2012-2119
 ApplyPatch macvtap-zerocopy-validate-vector-length.patch
-
-#rhbz 811225
-ApplyPatch memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
 ApplyPatch input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
 #rhbz 783708
 ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
-
-ApplyPatch perf-fix-build-breakage.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2259,6 +2235,9 @@ fi
 # and build.
 
 %changelog
+* Fri Apr 27 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.4-1
+- Linux 3.3.4
+
 * Tue Apr 24 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix perf build due to incorrect cherry-pick in 3.3.3
 - Add patch to fix ipw2200 (rhbz 783708)
