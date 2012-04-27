@@ -812,6 +812,8 @@ Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.pat
 
 Patch22013: perf-fix-build-breakage.patch
 
+Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1576,6 +1578,8 @@ ApplyPatch input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
 
 ApplyPatch perf-fix-build-breakage.patch
+
+ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2431,6 +2435,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Apr 27 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.3-3
+- Skip DMI checks if the bootloader knows what it's doing
+
 * Tue Apr 24 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix perf build due to incorrect cherry-pick in 3.3.3
 - Add patch to fix ipw2200 (rhbz 802106)
