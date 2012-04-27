@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -769,9 +769,6 @@ Patch21353: xen-x86-Implement-x86_apic_ops.patch
 #rhbz 770476
 Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 
-#rhbz 808603
-Patch21380: wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
-
 #rhbz 807632
 Patch21385: libata-forbid-port-runtime-pm-by-default.patch
 
@@ -796,21 +793,13 @@ Patch22000: weird-root-dentry-name-debug.patch
 #selinux ptrace child permissions
 Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
-#rhbz 814149 814155 CVE-2012-2121
-Patch22006: KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
-
 #rhbz 814278 814289 CVE-2012-2119
 Patch22007: macvtap-zerocopy-validate-vector-length.patch
-
-#rhbz 811225
-Patch22010: memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
 Patch22011: input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
 #rhbz 802106
 Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
-
-Patch22013: perf-fix-build-breakage.patch
 
 Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 
@@ -1543,9 +1532,6 @@ ApplyPatch highbank-export-clock-functions.patch
 #rhbz 808207 CVE-2012-1601
 ApplyPatch KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
-#rhbz 808603
-ApplyPatch wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
-
 #rhbz 807632
 ApplyPatch libata-forbid-port-runtime-pm-by-default.patch
 
@@ -1563,21 +1549,13 @@ ApplyPatch vgaarb-vga_default_device.patch
 ApplyPatch x86-microcode-Fix-sysfs-warning-during-module-unload-on-unsupported-CPUs.patch
 ApplyPatch x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPUs.patch
 
-#rhbz 814149 814155 CVE-2012-2121
-ApplyPatch KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
-
 #rhbz 814278 814289 CVE-2012-2119
 ApplyPatch macvtap-zerocopy-validate-vector-length.patch
-
-#rhbz 811225
-ApplyPatch memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
 ApplyPatch input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
 #rhbz 802106
 ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
-
-ApplyPatch perf-fix-build-breakage.patch
 
 ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 
@@ -2435,6 +2413,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Apr 27 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.4-1
+- Linux 3.3.4
+
 * Fri Apr 27 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.3-3
 - Skip DMI checks if the bootloader knows what it's doing
 
