@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -688,9 +688,6 @@ Patch21306: shlib_base_randomize.patch
 #rhbz 770476
 Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 
-#rhbz 808603
-Patch21380: wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
-
 #rhbz 807632
 Patch21385: libata-forbid-port-runtime-pm-by-default.patch
 
@@ -708,21 +705,13 @@ Patch21710: disable-hid-battery.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
 
-#rhbz 814149 814155 CVE-2012-2121
-Patch22006: KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
-
 #rhbz 814278 814289 CVE-2012-2119
 Patch22007: macvtap-zerocopy-validate-vector-length.patch
-
-#rhbz 811225
-Patch22010: memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
 Patch22011: input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
 #rhbz 783708 
 Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
-
-Patch22013: perf-fix-build-breakage.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1312,9 +1301,6 @@ ApplyPatch KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 #rhbz 770476
 ApplyPatch iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
 
-#rhbz 808603
-ApplyPatch wimax-i2400m-prevent-a-possible-kernel-bug-due-to-mi.patch
-
 #rhbz 807632
 ApplyPatch libata-forbid-port-runtime-pm-by-default.patch
 
@@ -1325,21 +1311,13 @@ ApplyPatch x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPU
 #rhbz 806295
 ApplyPatch disable-hid-battery.patch
 
-#rhbz 814149 814155 CVE-2012-2121
-ApplyPatch KVM-unmap-pages-from-the-iommu-when-slots-are-removed.patch
-
 #rhbz 814278 814289 CVE-2012-2119
 ApplyPatch macvtap-zerocopy-validate-vector-length.patch
-
-#rhbz 811225
-ApplyPatch memblock-memblock-should-be-able-to-handle-zero-leng.patch
 
 ApplyPatch input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
 #rhbz 783708
 ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
-
-ApplyPatch perf-fix-build-breakage.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1993,6 +1971,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 30 2012 Justin M. Forbes <jforbes@redhat.com> 2.6.43.4-1
+- Linux 3.3.4
+
 * Tue Apr 24 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix perf build due to incorrect cherry-pick in 3.3.3
 - Add patch to fix ipw2200 (rhbz 783708)
