@@ -1971,6 +1971,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 30 2012 Dave Jones <davej@redhat.com>
+- Disable CONFIG_RCU_FAST_NO_HZ for now. (rhbz 806548)
+
 * Mon Apr 30 2012 Justin M. Forbes <jforbes@redhat.com> 2.6.43.4-1
 - Linux 3.3.4
 
