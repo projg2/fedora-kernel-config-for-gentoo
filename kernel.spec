@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -800,6 +800,9 @@ Patch22011: input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
 #rhbz 802106
 Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
+
+#rhbz 817298
+Patch22013: ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
 
 Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 
@@ -1556,6 +1559,9 @@ ApplyPatch input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
 #rhbz 802106
 ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
+
+#rhbz 817298
+ApplyPatch ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
 
 ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 
@@ -2413,6 +2419,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Apr 30 2012 Josh Boyer <jwboyer@redhat.com>
+- Backport ipw2x00 nl80211 cipher suite reporting (rhbz 817298)
+
 * Mon Apr 30 2012 Dave Jones <davej@redhat.com>
 - Disable CONFIG_RCU_FAST_NO_HZ for now. (rhbz 806548)
 
