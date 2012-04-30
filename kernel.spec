@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -713,6 +713,9 @@ Patch22011: input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 #rhbz 783708 
 Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
 
+#rhbz 817298
+Patch22013: ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1318,6 +1321,9 @@ ApplyPatch input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
 #rhbz 783708
 ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
+
+#rhbz 817298
+ApplyPatch ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1971,6 +1977,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 30 2012 Josh Boyer <jwboyer@redhat.com>
+- Backport ipw2x00 nl80211 cipher suite reporting (rhbz 817298)
+
 * Mon Apr 30 2012 Dave Jones <davej@redhat.com>
 - Disable CONFIG_RCU_FAST_NO_HZ for now. (rhbz 806548)
 
