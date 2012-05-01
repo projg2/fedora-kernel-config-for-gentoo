@@ -711,6 +711,16 @@ Patch4105: NFSv4-Reduce-the-footprint-of-the-idmapper.patch
 Patch4106: NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
 Patch4107: NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 
+# NFS Client Patch set from Upstream
+Patch4111: NFSv4-ensure-that-the-LOCK-code-sets-exception-inode.patch
+Patch4112: NFSv4-check-lock-exclusive-shared-type-against-open-modes.patch
+Patch4113: NFS-optimise-away-unnecessary-setattrs-for-open-O_TRUNC.patch
+Patch4114: NFSv4-fix-open-O_TRUNC-and-ftruncate-error-handling.patch
+Patch4115: NFS-put-open-context-on-error-in-nfs_pagein_multi.patch
+Patch4116: NFS-put-open-context-on-error-in-nfs_flush_multi.patch
+Patch4117: nfs-enclose-host-name-in-brackets-in-nfs_do_root_mount.patch
+
+
 # patches headed upstream
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
@@ -1383,6 +1393,15 @@ ApplyPatch linux-3.3-newidmapper-03.patch
 ApplyPatch NFSv4-Reduce-the-footprint-of-the-idmapper.patch
 ApplyPatch NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
 ApplyPatch NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
+
+# NFS Client Patch set from Upstream
+ApplyPatch NFSv4-ensure-that-the-LOCK-code-sets-exception-inode.patch
+ApplyPatch NFSv4-check-lock-exclusive-shared-type-against-open-modes.patch
+ApplyPatch NFS-optimise-away-unnecessary-setattrs-for-open-O_TRUNC.patch
+ApplyPatch NFSv4-fix-open-O_TRUNC-and-ftruncate-error-handling.patch
+ApplyPatch NFS-put-open-context-on-error-in-nfs_pagein_multi.patch
+ApplyPatch NFS-put-open-context-on-error-in-nfs_flush_multi.patch
+ApplyPatch nfs-enclose-host-name-in-brackets-in-nfs_do_root_mount.patch
 
 # USB
 
@@ -2419,6 +2438,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue May 01 2012 Justin M. Forbes <jforbes@redhat.com>
+- NFS Bugfixes from upstream
+
 * Mon Apr 30 2012 Josh Boyer <jwboyer@redhat.com>
 - Backport ipw2x00 nl80211 cipher suite reporting (rhbz 817298)
 

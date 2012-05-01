@@ -1,0 +1,47 @@
+From: Jan Kara <jack@suse.cz>
+
+When hostname contains colon (e.g. when it is an IPv6 address) it needs
+to be enclosed in brackets to make parsing of NFS device string possible.
+Fix nfs_do_root_mount() to enclose hostname properly when needed. NFS code
+actually does not need this as it does not parse the string passed by
+nfs_do_root_mount() but the device string is exposed to userspace in
+/proc/mounts.
+
+CC: Josh Boyer <jwboyer@redhat.com>
+CC: Trond Myklebust <Trond.Myklebust@netapp.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Cc: stable@vger.kernel.org
+Signed-off-by: Trond Myklebust <Trond.Myklebust@netapp.com>
+---
+ fs/nfs/super.c |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/fs/nfs/super.c b/fs/nfs/super.c
+index 3dfa4f1..e4622ee 100644
+--- a/fs/nfs/super.c
++++ b/fs/nfs/super.c
+@@ -2707,11 +2707,15 @@ static struct vfsmount *nfs_do_root_mount(struct file_system_type *fs_type,
+ 	char *root_devname;
+ 	size_t len;
+ 
+-	len = strlen(hostname) + 3;
++	len = strlen(hostname) + 5;
+ 	root_devname = kmalloc(len, GFP_KERNEL);
+ 	if (root_devname == NULL)
+ 		return ERR_PTR(-ENOMEM);
+-	snprintf(root_devname, len, "%s:/", hostname);
++	/* Does hostname needs to be enclosed in brackets? */
++	if (strchr(hostname, ':'))
++		snprintf(root_devname, len, "[%s]:/", hostname);
++	else
++		snprintf(root_devname, len, "%s:/", hostname);
+ 	root_mnt = vfs_kern_mount(fs_type, flags, root_devname, data);
+ 	kfree(root_devname);
+ 	return root_mnt;
+-- 
+1.7.7.6
+
+_______________________________________________
+kernel mailing list
+kernel@lists.fedoraproject.org
+https://admin.fedoraproject.org/mailman/listinfo/kernel
