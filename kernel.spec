@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -712,14 +712,8 @@ Patch4106: NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
 Patch4107: NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 
 # NFS Client Patch set from Upstream
-Patch4111: NFSv4-ensure-that-the-LOCK-code-sets-exception-inode.patch
-Patch4112: NFSv4-check-lock-exclusive-shared-type-against-open-modes.patch
 Patch4113: NFS-optimise-away-unnecessary-setattrs-for-open-O_TRUNC.patch
 Patch4114: NFSv4-fix-open-O_TRUNC-and-ftruncate-error-handling.patch
-Patch4115: NFS-put-open-context-on-error-in-nfs_pagein_multi.patch
-Patch4116: NFS-put-open-context-on-error-in-nfs_flush_multi.patch
-Patch4117: nfs-enclose-host-name-in-brackets-in-nfs_do_root_mount.patch
-
 
 # patches headed upstream
 Patch12016: disable-i8042-check-on-apple-mac.patch
@@ -795,9 +789,6 @@ Patch21601: platform-x86-Add-driver-for-Apple-gmux-device.patch
 
 Patch21620: vgaarb-vga_default_device.patch
 
-Patch21700: x86-microcode-Fix-sysfs-warning-during-module-unload-on-unsupported-CPUs.patch
-Patch21701: x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPUs.patch
-
 Patch22000: weird-root-dentry-name-debug.patch
 
 #selinux ptrace child permissions
@@ -806,8 +797,6 @@ Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 #rhbz 814278 814289 CVE-2012-2119
 Patch22007: macvtap-zerocopy-validate-vector-length.patch
 
-Patch22011: input-synaptics-fix-regression-with-image-sensor-trackpads.patch
-
 #rhbz 802106
 Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
 
@@ -815,6 +804,9 @@ Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.pat
 Patch22013: ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
 
 Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
+
+#Lots of fixes from 3.3.5 stable queue
+Patch22015: stable-queue-3.3.5-0502.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1355,7 +1347,6 @@ ApplyOptionalPatch linux-2.6-compile-fixes.patch
 # revert patches from upstream that conflict or that we get via other means
 ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 
-
 ApplyPatch taint-vbox.patch
 
 # Architecture patches
@@ -1395,13 +1386,8 @@ ApplyPatch NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
 ApplyPatch NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 
 # NFS Client Patch set from Upstream
-ApplyPatch NFSv4-ensure-that-the-LOCK-code-sets-exception-inode.patch
-ApplyPatch NFSv4-check-lock-exclusive-shared-type-against-open-modes.patch
 ApplyPatch NFS-optimise-away-unnecessary-setattrs-for-open-O_TRUNC.patch
 ApplyPatch NFSv4-fix-open-O_TRUNC-and-ftruncate-error-handling.patch
-ApplyPatch NFS-put-open-context-on-error-in-nfs_pagein_multi.patch
-ApplyPatch NFS-put-open-context-on-error-in-nfs_flush_multi.patch
-ApplyPatch nfs-enclose-host-name-in-brackets-in-nfs_do_root_mount.patch
 
 # USB
 
@@ -1567,14 +1553,8 @@ ApplyPatch platform-x86-Add-driver-for-Apple-gmux-device.patch
 #vgaarb patches.  blame mjg59
 ApplyPatch vgaarb-vga_default_device.patch
 
-#rhbz 797559
-ApplyPatch x86-microcode-Fix-sysfs-warning-during-module-unload-on-unsupported-CPUs.patch
-ApplyPatch x86-microcode-Ensure-that-module-is-only-loaded-for-supported-AMD-CPUs.patch
-
 #rhbz 814278 814289 CVE-2012-2119
 ApplyPatch macvtap-zerocopy-validate-vector-length.patch
-
-ApplyPatch input-synaptics-fix-regression-with-image-sensor-trackpads.patch
 
 #rhbz 802106
 ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
@@ -1583,6 +1563,9 @@ ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patc
 ApplyPatch ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
 
 ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
+
+#Lots of fixes from 3.3.5 stable queue
+ApplyPatch stable-queue-3.3.5-0502.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2438,6 +2421,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed May 02 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.4-3
+- Many patches from 3.3.5 stable queue
+
 * Tue May 01 2012 Justin M. Forbes <jforbes@redhat.com>
 - NFS Bugfixes from upstream
 
