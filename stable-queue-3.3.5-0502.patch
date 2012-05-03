@@ -1,0 +1,2804 @@
+From 5ac57550f279c3d991ef0b398681bcaca18169f7 Mon Sep 17 00:00:00 2001
+From: David Henningsson <david.henningsson@canonical.com>
+Date: Fri, 20 Apr 2012 10:01:46 +0200
+Subject: ALSA: HDA: Add external mic quirk for Asus Zenbook UX31E
+
+From: David Henningsson <david.henningsson@canonical.com>
+
+commit 5ac57550f279c3d991ef0b398681bcaca18169f7 upstream.
+
+According to the reporter, external mic starts to work if the
+laptop-dmic model is used. According to BIOS pin config, all
+pins are consistent with the alc269vb_laptop_dmic fixup, except
+for the external mic, which is not present.
+
+BugLink: https://bugs.launchpad.net/bugs/950490
+Signed-off-by: David Henningsson <david.henningsson@canonical.com>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -5402,6 +5402,7 @@ static const struct alc_fixup alc269_fix
+ };
+ 
+ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
++	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_DMIC),
+ 	SND_PCI_QUIRK(0x1043, 0x1a13, "Asus G73Jw", ALC269_FIXUP_ASUS_G73JW),
+ 	SND_PCI_QUIRK(0x1043, 0x16e3, "ASUS UX50", ALC269_FIXUP_STEREO_DMIC),
+ 	SND_PCI_QUIRK(0x1043, 0x831a, "ASUS P901", ALC269_FIXUP_STEREO_DMIC),
+From 7e1f7c8a6e517900cd84da1b8ae020f08f286c3b Mon Sep 17 00:00:00 2001
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+Date: Thu, 12 Apr 2012 17:29:36 +0100
+Subject: ASoC: dapm: Ensure power gets managed for line widgets
+
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+
+commit 7e1f7c8a6e517900cd84da1b8ae020f08f286c3b upstream.
+
+Line widgets had not been included in either the power up or power down
+sequences so if a widget had an event associated with it that event would
+never be run. Fix this minimally by adding them to the sequences, we
+should probably be doing away with the specific widget types as they all
+have the same priority anyway.
+
+Signed-off-by: Mark Brown <broonie@opensource.wolfsonmicro.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ sound/soc/soc-dapm.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/sound/soc/soc-dapm.c
++++ b/sound/soc/soc-dapm.c
+@@ -70,6 +70,7 @@ static int dapm_up_seq[] = {
+ 	[snd_soc_dapm_out_drv] = 10,
+ 	[snd_soc_dapm_hp] = 10,
+ 	[snd_soc_dapm_spk] = 10,
++	[snd_soc_dapm_line] = 10,
+ 	[snd_soc_dapm_post] = 11,
+ };
+ 
+@@ -78,6 +79,7 @@ static int dapm_down_seq[] = {
+ 	[snd_soc_dapm_adc] = 1,
+ 	[snd_soc_dapm_hp] = 2,
+ 	[snd_soc_dapm_spk] = 2,
++	[snd_soc_dapm_line] = 2,
+ 	[snd_soc_dapm_out_drv] = 2,
+ 	[snd_soc_dapm_pga] = 4,
+ 	[snd_soc_dapm_mixer_named_ctl] = 5,
+From 1a38336b8611a04f0a624330c1f815421f4bf5f4 Mon Sep 17 00:00:00 2001
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+Date: Thu, 12 Apr 2012 19:47:11 +0100
+Subject: ASoC: wm8994: Improve sequencing of AIF channel enables
+
+From: Mark Brown <broonie@opensource.wolfsonmicro.com>
+
+commit 1a38336b8611a04f0a624330c1f815421f4bf5f4 upstream.
+
+This ensures a clean startup of the channels, without this change some
+use cases could result in issues in a small proportion of cases.
+
+Signed-off-by: Mark Brown <broonie@opensource.wolfsonmicro.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ sound/soc/codecs/wm8994.c |  276 +++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 222 insertions(+), 54 deletions(-)
+
+--- a/sound/soc/codecs/wm8994.c
++++ b/sound/soc/codecs/wm8994.c
+@@ -929,61 +929,170 @@ static void wm8994_update_class_w(struct
+ 	}
+ }
+ 
+-static int late_enable_ev(struct snd_soc_dapm_widget *w,
+-			  struct snd_kcontrol *kcontrol, int event)
++static int aif1clk_ev(struct snd_soc_dapm_widget *w,
++		      struct snd_kcontrol *kcontrol, int event)
+ {
+ 	struct snd_soc_codec *codec = w->codec;
+-	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
++	struct wm8994 *control = codec->control_data;
++	int mask = WM8994_AIF1DAC1L_ENA | WM8994_AIF1DAC1R_ENA;
++	int dac;
++	int adc;
++	int val;
++
++	switch (control->type) {
++	case WM8994:
++	case WM8958:
++		mask |= WM8994_AIF1DAC2L_ENA | WM8994_AIF1DAC2R_ENA;
++		break;
++	default:
++		break;
++	}
+ 
+ 	switch (event) {
+ 	case SND_SOC_DAPM_PRE_PMU:
+-		if (wm8994->aif1clk_enable) {
+-			snd_soc_update_bits(codec, WM8994_AIF1_CLOCKING_1,
+-					    WM8994_AIF1CLK_ENA_MASK,
+-					    WM8994_AIF1CLK_ENA);
+-			wm8994->aif1clk_enable = 0;
+-		}
+-		if (wm8994->aif2clk_enable) {
+-			snd_soc_update_bits(codec, WM8994_AIF2_CLOCKING_1,
+-					    WM8994_AIF2CLK_ENA_MASK,
+-					    WM8994_AIF2CLK_ENA);
+-			wm8994->aif2clk_enable = 0;
+-		}
++		val = snd_soc_read(codec, WM8994_AIF1_CONTROL_1);
++		if ((val & WM8994_AIF1ADCL_SRC) &&
++		    (val & WM8994_AIF1ADCR_SRC))
++			adc = WM8994_AIF1ADC1R_ENA | WM8994_AIF1ADC2R_ENA;
++		else if (!(val & WM8994_AIF1ADCL_SRC) &&
++			 !(val & WM8994_AIF1ADCR_SRC))
++			adc = WM8994_AIF1ADC1L_ENA | WM8994_AIF1ADC2L_ENA;
++		else
++			adc = WM8994_AIF1ADC1R_ENA | WM8994_AIF1ADC2R_ENA |
++				WM8994_AIF1ADC1L_ENA | WM8994_AIF1ADC2L_ENA;
++
++		val = snd_soc_read(codec, WM8994_AIF1_CONTROL_2);
++		if ((val & WM8994_AIF1DACL_SRC) &&
++		    (val & WM8994_AIF1DACR_SRC))
++			dac = WM8994_AIF1DAC1R_ENA | WM8994_AIF1DAC2R_ENA;
++		else if (!(val & WM8994_AIF1DACL_SRC) &&
++			 !(val & WM8994_AIF1DACR_SRC))
++			dac = WM8994_AIF1DAC1L_ENA | WM8994_AIF1DAC2L_ENA;
++		else
++			dac = WM8994_AIF1DAC1R_ENA | WM8994_AIF1DAC2R_ENA |
++				WM8994_AIF1DAC1L_ENA | WM8994_AIF1DAC2L_ENA;
++
++		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_4,
++				    mask, adc);
++		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_5,
++				    mask, dac);
++		snd_soc_update_bits(codec, WM8994_CLOCKING_1,
++				    WM8994_AIF1DSPCLK_ENA |
++				    WM8994_SYSDSPCLK_ENA,
++				    WM8994_AIF1DSPCLK_ENA |
++				    WM8994_SYSDSPCLK_ENA);
++		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_4, mask,
++				    WM8994_AIF1ADC1R_ENA |
++				    WM8994_AIF1ADC1L_ENA |
++				    WM8994_AIF1ADC2R_ENA |
++				    WM8994_AIF1ADC2L_ENA);
++		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_5, mask,
++				    WM8994_AIF1DAC1R_ENA |
++				    WM8994_AIF1DAC1L_ENA |
++				    WM8994_AIF1DAC2R_ENA |
++				    WM8994_AIF1DAC2L_ENA);
+ 		break;
+-	}
+ 
+-	/* We may also have postponed startup of DSP, handle that. */
+-	wm8958_aif_ev(w, kcontrol, event);
++	case SND_SOC_DAPM_PRE_PMD:
++	case SND_SOC_DAPM_POST_PMD:
++		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_5,
++				    mask, 0);
++		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_4,
++				    mask, 0);
++
++		val = snd_soc_read(codec, WM8994_CLOCKING_1);
++		if (val & WM8994_AIF2DSPCLK_ENA)
++			val = WM8994_SYSDSPCLK_ENA;
++		else
++			val = 0;
++		snd_soc_update_bits(codec, WM8994_CLOCKING_1,
++				    WM8994_SYSDSPCLK_ENA |
++				    WM8994_AIF1DSPCLK_ENA, val);
++		break;
++	}
+ 
+ 	return 0;
+ }
+ 
+-static int late_disable_ev(struct snd_soc_dapm_widget *w,
+-			   struct snd_kcontrol *kcontrol, int event)
++static int aif2clk_ev(struct snd_soc_dapm_widget *w,
++		      struct snd_kcontrol *kcontrol, int event)
+ {
+ 	struct snd_soc_codec *codec = w->codec;
+-	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
++	int dac;
++	int adc;
++	int val;
+ 
+ 	switch (event) {
++	case SND_SOC_DAPM_PRE_PMU:
++		val = snd_soc_read(codec, WM8994_AIF2_CONTROL_1);
++		if ((val & WM8994_AIF2ADCL_SRC) &&
++		    (val & WM8994_AIF2ADCR_SRC))
++			adc = WM8994_AIF2ADCR_ENA;
++		else if (!(val & WM8994_AIF2ADCL_SRC) &&
++			 !(val & WM8994_AIF2ADCR_SRC))
++			adc = WM8994_AIF2ADCL_ENA;
++		else
++			adc = WM8994_AIF2ADCL_ENA | WM8994_AIF2ADCR_ENA;
++
++
++		val = snd_soc_read(codec, WM8994_AIF2_CONTROL_2);
++		if ((val & WM8994_AIF2DACL_SRC) &&
++		    (val & WM8994_AIF2DACR_SRC))
++			dac = WM8994_AIF2DACR_ENA;
++		else if (!(val & WM8994_AIF2DACL_SRC) &&
++			 !(val & WM8994_AIF2DACR_SRC))
++			dac = WM8994_AIF2DACL_ENA;
++		else
++			dac = WM8994_AIF2DACL_ENA | WM8994_AIF2DACR_ENA;
++
++		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_4,
++				    WM8994_AIF2ADCL_ENA |
++				    WM8994_AIF2ADCR_ENA, adc);
++		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_5,
++				    WM8994_AIF2DACL_ENA |
++				    WM8994_AIF2DACR_ENA, dac);
++		snd_soc_update_bits(codec, WM8994_CLOCKING_1,
++				    WM8994_AIF2DSPCLK_ENA |
++				    WM8994_SYSDSPCLK_ENA,
++				    WM8994_AIF2DSPCLK_ENA |
++				    WM8994_SYSDSPCLK_ENA);
++		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_4,
++				    WM8994_AIF2ADCL_ENA |
++				    WM8994_AIF2ADCR_ENA,
++				    WM8994_AIF2ADCL_ENA |
++				    WM8994_AIF2ADCR_ENA);
++		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_5,
++				    WM8994_AIF2DACL_ENA |
++				    WM8994_AIF2DACR_ENA,
++				    WM8994_AIF2DACL_ENA |
++				    WM8994_AIF2DACR_ENA);
++		break;
++
++	case SND_SOC_DAPM_PRE_PMD:
+ 	case SND_SOC_DAPM_POST_PMD:
+-		if (wm8994->aif1clk_disable) {
+-			snd_soc_update_bits(codec, WM8994_AIF1_CLOCKING_1,
+-					    WM8994_AIF1CLK_ENA_MASK, 0);
+-			wm8994->aif1clk_disable = 0;
+-		}
+-		if (wm8994->aif2clk_disable) {
+-			snd_soc_update_bits(codec, WM8994_AIF2_CLOCKING_1,
+-					    WM8994_AIF2CLK_ENA_MASK, 0);
+-			wm8994->aif2clk_disable = 0;
+-		}
++		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_5,
++				    WM8994_AIF2DACL_ENA |
++				    WM8994_AIF2DACR_ENA, 0);
++		snd_soc_update_bits(codec, WM8994_POWER_MANAGEMENT_5,
++				    WM8994_AIF2ADCL_ENA |
++				    WM8994_AIF2ADCR_ENA, 0);
++
++		val = snd_soc_read(codec, WM8994_CLOCKING_1);
++		if (val & WM8994_AIF1DSPCLK_ENA)
++			val = WM8994_SYSDSPCLK_ENA;
++		else
++			val = 0;
++		snd_soc_update_bits(codec, WM8994_CLOCKING_1,
++				    WM8994_SYSDSPCLK_ENA |
++				    WM8994_AIF2DSPCLK_ENA, val);
+ 		break;
+ 	}
+ 
+ 	return 0;
+ }
+ 
+-static int aif1clk_ev(struct snd_soc_dapm_widget *w,
+-		      struct snd_kcontrol *kcontrol, int event)
++static int aif1clk_late_ev(struct snd_soc_dapm_widget *w,
++			   struct snd_kcontrol *kcontrol, int event)
+ {
+ 	struct snd_soc_codec *codec = w->codec;
+ 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
+@@ -1000,8 +1109,8 @@ static int aif1clk_ev(struct snd_soc_dap
+ 	return 0;
+ }
+ 
+-static int aif2clk_ev(struct snd_soc_dapm_widget *w,
+-		      struct snd_kcontrol *kcontrol, int event)
++static int aif2clk_late_ev(struct snd_soc_dapm_widget *w,
++			   struct snd_kcontrol *kcontrol, int event)
+ {
+ 	struct snd_soc_codec *codec = w->codec;
+ 	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
+@@ -1018,6 +1127,63 @@ static int aif2clk_ev(struct snd_soc_dap
+ 	return 0;
+ }
+ 
++static int late_enable_ev(struct snd_soc_dapm_widget *w,
++			  struct snd_kcontrol *kcontrol, int event)
++{
++	struct snd_soc_codec *codec = w->codec;
++	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
++
++	switch (event) {
++	case SND_SOC_DAPM_PRE_PMU:
++		if (wm8994->aif1clk_enable) {
++			aif1clk_ev(w, kcontrol, event);
++			snd_soc_update_bits(codec, WM8994_AIF1_CLOCKING_1,
++					    WM8994_AIF1CLK_ENA_MASK,
++					    WM8994_AIF1CLK_ENA);
++			wm8994->aif1clk_enable = 0;
++		}
++		if (wm8994->aif2clk_enable) {
++			aif2clk_ev(w, kcontrol, event);
++			snd_soc_update_bits(codec, WM8994_AIF2_CLOCKING_1,
++					    WM8994_AIF2CLK_ENA_MASK,
++					    WM8994_AIF2CLK_ENA);
++			wm8994->aif2clk_enable = 0;
++		}
++		break;
++	}
++
++	/* We may also have postponed startup of DSP, handle that. */
++	wm8958_aif_ev(w, kcontrol, event);
++
++	return 0;
++}
++
++static int late_disable_ev(struct snd_soc_dapm_widget *w,
++			   struct snd_kcontrol *kcontrol, int event)
++{
++	struct snd_soc_codec *codec = w->codec;
++	struct wm8994_priv *wm8994 = snd_soc_codec_get_drvdata(codec);
++
++	switch (event) {
++	case SND_SOC_DAPM_POST_PMD:
++		if (wm8994->aif1clk_disable) {
++			snd_soc_update_bits(codec, WM8994_AIF1_CLOCKING_1,
++					    WM8994_AIF1CLK_ENA_MASK, 0);
++			aif1clk_ev(w, kcontrol, event);
++			wm8994->aif1clk_disable = 0;
++		}
++		if (wm8994->aif2clk_disable) {
++			snd_soc_update_bits(codec, WM8994_AIF2_CLOCKING_1,
++					    WM8994_AIF2CLK_ENA_MASK, 0);
++			aif2clk_ev(w, kcontrol, event);
++			wm8994->aif2clk_disable = 0;
++		}
++		break;
++	}
++
++	return 0;
++}
++
+ static int adc_mux_ev(struct snd_soc_dapm_widget *w,
+ 		      struct snd_kcontrol *kcontrol, int event)
+ {
+@@ -1314,9 +1480,9 @@ static const struct snd_kcontrol_new aif
+ 	SOC_DAPM_ENUM("AIF2DACR Mux", aif2dacr_src_enum);
+ 
+ static const struct snd_soc_dapm_widget wm8994_lateclk_revd_widgets[] = {
+-SND_SOC_DAPM_SUPPLY("AIF1CLK", SND_SOC_NOPM, 0, 0, aif1clk_ev,
++SND_SOC_DAPM_SUPPLY("AIF1CLK", SND_SOC_NOPM, 0, 0, aif1clk_late_ev,
+ 	SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
+-SND_SOC_DAPM_SUPPLY("AIF2CLK", SND_SOC_NOPM, 0, 0, aif2clk_ev,
++SND_SOC_DAPM_SUPPLY("AIF2CLK", SND_SOC_NOPM, 0, 0, aif2clk_late_ev,
+ 	SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
+ 
+ SND_SOC_DAPM_PGA_E("Late DAC1L Enable PGA", SND_SOC_NOPM, 0, 0, NULL, 0,
+@@ -1345,8 +1511,10 @@ SND_SOC_DAPM_POST("Late Disable PGA", la
+ };
+ 
+ static const struct snd_soc_dapm_widget wm8994_lateclk_widgets[] = {
+-SND_SOC_DAPM_SUPPLY("AIF1CLK", WM8994_AIF1_CLOCKING_1, 0, 0, NULL, 0),
+-SND_SOC_DAPM_SUPPLY("AIF2CLK", WM8994_AIF2_CLOCKING_1, 0, 0, NULL, 0),
++SND_SOC_DAPM_SUPPLY("AIF1CLK", WM8994_AIF1_CLOCKING_1, 0, 0, aif1clk_ev,
++		    SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_PRE_PMD),
++SND_SOC_DAPM_SUPPLY("AIF2CLK", WM8994_AIF2_CLOCKING_1, 0, 0, aif2clk_ev,
++		    SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_PRE_PMD),
+ SND_SOC_DAPM_PGA("Direct Voice", SND_SOC_NOPM, 0, 0, NULL, 0),
+ SND_SOC_DAPM_MIXER("SPKL", WM8994_POWER_MANAGEMENT_3, 8, 0,
+ 		   left_speaker_mixer, ARRAY_SIZE(left_speaker_mixer)),
+@@ -1399,30 +1567,30 @@ SND_SOC_DAPM_SUPPLY("VMID", SND_SOC_NOPM
+ SND_SOC_DAPM_SUPPLY("CLK_SYS", SND_SOC_NOPM, 0, 0, clk_sys_event,
+ 		    SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD),
+ 
+-SND_SOC_DAPM_SUPPLY("DSP1CLK", WM8994_CLOCKING_1, 3, 0, NULL, 0),
+-SND_SOC_DAPM_SUPPLY("DSP2CLK", WM8994_CLOCKING_1, 2, 0, NULL, 0),
+-SND_SOC_DAPM_SUPPLY("DSPINTCLK", WM8994_CLOCKING_1, 1, 0, NULL, 0),
++SND_SOC_DAPM_SUPPLY("DSP1CLK", SND_SOC_NOPM, 3, 0, NULL, 0),
++SND_SOC_DAPM_SUPPLY("DSP2CLK", SND_SOC_NOPM, 2, 0, NULL, 0),
++SND_SOC_DAPM_SUPPLY("DSPINTCLK", SND_SOC_NOPM, 1, 0, NULL, 0),
+ 
+ SND_SOC_DAPM_AIF_OUT("AIF1ADC1L", NULL,
+-		     0, WM8994_POWER_MANAGEMENT_4, 9, 0),
++		     0, SND_SOC_NOPM, 9, 0),
+ SND_SOC_DAPM_AIF_OUT("AIF1ADC1R", NULL,
+-		     0, WM8994_POWER_MANAGEMENT_4, 8, 0),
++		     0, SND_SOC_NOPM, 8, 0),
+ SND_SOC_DAPM_AIF_IN_E("AIF1DAC1L", NULL, 0,
+-		      WM8994_POWER_MANAGEMENT_5, 9, 0, wm8958_aif_ev,
++		      SND_SOC_NOPM, 9, 0, wm8958_aif_ev,
+ 		      SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
+ SND_SOC_DAPM_AIF_IN_E("AIF1DAC1R", NULL, 0,
+-		      WM8994_POWER_MANAGEMENT_5, 8, 0, wm8958_aif_ev,
++		      SND_SOC_NOPM, 8, 0, wm8958_aif_ev,
+ 		      SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
+ 
+ SND_SOC_DAPM_AIF_OUT("AIF1ADC2L", NULL,
+-		     0, WM8994_POWER_MANAGEMENT_4, 11, 0),
++		     0, SND_SOC_NOPM, 11, 0),
+ SND_SOC_DAPM_AIF_OUT("AIF1ADC2R", NULL,
+-		     0, WM8994_POWER_MANAGEMENT_4, 10, 0),
++		     0, SND_SOC_NOPM, 10, 0),
+ SND_SOC_DAPM_AIF_IN_E("AIF1DAC2L", NULL, 0,
+-		      WM8994_POWER_MANAGEMENT_5, 11, 0, wm8958_aif_ev,
++		      SND_SOC_NOPM, 11, 0, wm8958_aif_ev,
+ 		      SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
+ SND_SOC_DAPM_AIF_IN_E("AIF1DAC2R", NULL, 0,
+-		      WM8994_POWER_MANAGEMENT_5, 10, 0, wm8958_aif_ev,
++		      SND_SOC_NOPM, 10, 0, wm8958_aif_ev,
+ 		      SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
+ 
+ SND_SOC_DAPM_MIXER("AIF1ADC1L Mixer", SND_SOC_NOPM, 0, 0,
+@@ -1449,14 +1617,14 @@ SND_SOC_DAPM_MIXER("DAC1R Mixer", SND_SO
+ 		   dac1r_mix, ARRAY_SIZE(dac1r_mix)),
+ 
+ SND_SOC_DAPM_AIF_OUT("AIF2ADCL", NULL, 0,
+-		     WM8994_POWER_MANAGEMENT_4, 13, 0),
++		     SND_SOC_NOPM, 13, 0),
+ SND_SOC_DAPM_AIF_OUT("AIF2ADCR", NULL, 0,
+-		     WM8994_POWER_MANAGEMENT_4, 12, 0),
++		     SND_SOC_NOPM, 12, 0),
+ SND_SOC_DAPM_AIF_IN_E("AIF2DACL", NULL, 0,
+-		      WM8994_POWER_MANAGEMENT_5, 13, 0, wm8958_aif_ev,
++		      SND_SOC_NOPM, 13, 0, wm8958_aif_ev,
+ 		      SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD),
+ SND_SOC_DAPM_AIF_IN_E("AIF2DACR", NULL, 0,
+-		      WM8994_POWER_MANAGEMENT_5, 12, 0, wm8958_aif_ev,
++		      SND_SOC_NOPM, 12, 0, wm8958_aif_ev,
+ 		      SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD),
+ 
+ SND_SOC_DAPM_AIF_IN("AIF1DACDAT", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
+From 64f371bc3107e69efce563a3d0f0e6880de0d537 Mon Sep 17 00:00:00 2001
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Sun, 29 Apr 2012 13:30:08 -0700
+Subject: autofs: make the autofsv5 packet file descriptor use a packetized pipe
+
+From: Linus Torvalds <torvalds@linux-foundation.org>
+
+commit 64f371bc3107e69efce563a3d0f0e6880de0d537 upstream.
+
+The autofs packet size has had a very unfortunate size problem on x86:
+because the alignment of 'u64' differs in 32-bit and 64-bit modes, and
+because the packet data was not 8-byte aligned, the size of the autofsv5
+packet structure differed between 32-bit and 64-bit modes despite
+looking otherwise identical (300 vs 304 bytes respectively).
+
+We first fixed that up by making the 64-bit compat mode know about this
+problem in commit a32744d4abae ("autofs: work around unhappy compat
+problem on x86-64"), and that made a 32-bit 'systemd' work happily on a
+64-bit kernel because everything then worked the same way as on a 32-bit
+kernel.
+
+But it turned out that 'automount' had actually known and worked around
+this problem in user space, so fixing the kernel to do the proper 32-bit
+compatibility handling actually *broke* 32-bit automount on a 64-bit
+kernel, because it knew that the packet sizes were wrong and expected
+those incorrect sizes.
+
+As a result, we ended up reverting that compatibility mode fix, and
+thus breaking systemd again, in commit fcbf94b9dedd.
+
+With both automount and systemd doing a single read() system call, and
+verifying that they get *exactly* the size they expect but using
+different sizes, it seemed that fixing one of them inevitably seemed to
+break the other.  At one point, a patch I seriously considered applying
+from Michael Tokarev did a "strcmp()" to see if it was automount that
+was doing the operation.  Ugly, ugly.
+
+However, a prettier solution exists now thanks to the packetized pipe
+mode.  By marking the communication pipe as being packetized (by simply
+setting the O_DIRECT flag), we can always just write the bigger packet
+size, and if user-space does a smaller read, it will just get that
+partial end result and the extra alignment padding will simply be thrown
+away.
+
+This makes both automount and systemd happy, since they now get the size
+they asked for, and the kernel side of autofs simply no longer needs to
+care - it could pad out the packet arbitrarily.
+
+Of course, if there is some *other* user of autofs (please, please,
+please tell me it ain't so - and we haven't heard of any) that tries to
+read the packets with multiple writes, that other user will now be
+broken - the whole point of the packetized mode is that one system call
+gets exactly one packet, and you cannot read a packet in pieces.
+
+Tested-by: Michael Tokarev <mjt@tls.msk.ru>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: David Miller <davem@davemloft.net>
+Cc: Ian Kent <raven@themaw.net>
+Cc: Thomas Meyer <thomas@m3y3r.de>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ fs/autofs4/autofs_i.h  |   11 +++++++++++
+ fs/autofs4/dev-ioctl.c |    2 +-
+ fs/autofs4/inode.c     |    2 +-
+ 3 files changed, 13 insertions(+), 2 deletions(-)
+
+--- a/fs/autofs4/autofs_i.h
++++ b/fs/autofs4/autofs_i.h
+@@ -269,6 +269,17 @@ int autofs4_fill_super(struct super_bloc
+ struct autofs_info *autofs4_new_ino(struct autofs_sb_info *);
+ void autofs4_clean_ino(struct autofs_info *);
+ 
++static inline int autofs_prepare_pipe(struct file *pipe)
++{
++	if (!pipe->f_op || !pipe->f_op->write)
++		return -EINVAL;
++	if (!S_ISFIFO(pipe->f_dentry->d_inode->i_mode))
++		return -EINVAL;
++	/* We want a packet pipe */
++	pipe->f_flags |= O_DIRECT;
++	return 0;
++}
++
+ /* Queue management functions */
+ 
+ int autofs4_wait(struct autofs_sb_info *,struct dentry *, enum autofs_notify);
+--- a/fs/autofs4/dev-ioctl.c
++++ b/fs/autofs4/dev-ioctl.c
+@@ -376,7 +376,7 @@ static int autofs_dev_ioctl_setpipefd(st
+ 			err = -EBADF;
+ 			goto out;
+ 		}
+-		if (!pipe->f_op || !pipe->f_op->write) {
++		if (autofs_prepare_pipe(pipe) < 0) {
+ 			err = -EPIPE;
+ 			fput(pipe);
+ 			goto out;
+--- a/fs/autofs4/inode.c
++++ b/fs/autofs4/inode.c
+@@ -293,7 +293,7 @@ int autofs4_fill_super(struct super_bloc
+ 		printk("autofs: could not open pipe file descriptor\n");
+ 		goto fail_dput;
+ 	}
+-	if (!pipe->f_op || !pipe->f_op->write)
++	if (autofs_prepare_pipe(pipe) < 0)
+ 		goto fail_fput;
+ 	sbi->pipe = pipe;
+ 	sbi->pipefd = pipefd;
+From 511d63cb19329235bc9298b64010ec494b5e1408 Mon Sep 17 00:00:00 2001
+From: Horia Geanta <horia.geanta@freescale.com>
+Date: Fri, 30 Mar 2012 17:49:53 +0300
+Subject: crypto: talitos - properly lock access to global talitos registers
+
+From: Horia Geanta <horia.geanta@freescale.com>
+
+commit 511d63cb19329235bc9298b64010ec494b5e1408 upstream.
+
+Access to global talitos registers must be protected for the case when
+affinities are configured such that primary and secondary talitos irqs
+run on different cpus.
+
+Signed-off-by: Horia Geanta <horia.geanta@freescale.com>
+Signed-off-by: Kim Phillips <kim.phillips@freescale.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/crypto/talitos.c |   20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
+
+--- a/drivers/crypto/talitos.c
++++ b/drivers/crypto/talitos.c
+@@ -124,6 +124,9 @@ struct talitos_private {
+ 	void __iomem *reg;
+ 	int irq[2];
+ 
++	/* SEC global registers lock  */
++	spinlock_t reg_lock ____cacheline_aligned;
++
+ 	/* SEC version geometry (from device tree node) */
+ 	unsigned int num_channels;
+ 	unsigned int chfifo_len;
+@@ -412,6 +415,7 @@ static void talitos_done_##name(unsigned
+ {									\
+ 	struct device *dev = (struct device *)data;			\
+ 	struct talitos_private *priv = dev_get_drvdata(dev);		\
++	unsigned long flags;						\
+ 									\
+ 	if (ch_done_mask & 1)						\
+ 		flush_channel(dev, 0, 0, 0);				\
+@@ -427,8 +431,10 @@ static void talitos_done_##name(unsigned
+ out:									\
+ 	/* At this point, all completed channels have been processed */	\
+ 	/* Unmask done interrupts for channels completed later on. */	\
++	spin_lock_irqsave(&priv->reg_lock, flags);			\
+ 	setbits32(priv->reg + TALITOS_IMR, ch_done_mask);		\
+ 	setbits32(priv->reg + TALITOS_IMR_LO, TALITOS_IMR_LO_INIT);	\
++	spin_unlock_irqrestore(&priv->reg_lock, flags);			\
+ }
+ DEF_TALITOS_DONE(4ch, TALITOS_ISR_4CHDONE)
+ DEF_TALITOS_DONE(ch0_2, TALITOS_ISR_CH_0_2_DONE)
+@@ -619,22 +625,28 @@ static irqreturn_t talitos_interrupt_##n
+ 	struct device *dev = data;					       \
+ 	struct talitos_private *priv = dev_get_drvdata(dev);		       \
+ 	u32 isr, isr_lo;						       \
++	unsigned long flags;						       \
+ 									       \
++	spin_lock_irqsave(&priv->reg_lock, flags);			       \
+ 	isr = in_be32(priv->reg + TALITOS_ISR);				       \
+ 	isr_lo = in_be32(priv->reg + TALITOS_ISR_LO);			       \
+ 	/* Acknowledge interrupt */					       \
+ 	out_be32(priv->reg + TALITOS_ICR, isr & (ch_done_mask | ch_err_mask)); \
+ 	out_be32(priv->reg + TALITOS_ICR_LO, isr_lo);			       \
+ 									       \
+-	if (unlikely((isr & ~TALITOS_ISR_4CHDONE) & ch_err_mask || isr_lo))    \
+-		talitos_error(dev, isr, isr_lo);			       \
+-	else								       \
++	if (unlikely(isr & ch_err_mask || isr_lo)) {			       \
++		spin_unlock_irqrestore(&priv->reg_lock, flags);		       \
++		talitos_error(dev, isr & ch_err_mask, isr_lo);		       \
++	}								       \
++	else {								       \
+ 		if (likely(isr & ch_done_mask)) {			       \
+ 			/* mask further done interrupts. */		       \
+ 			clrbits32(priv->reg + TALITOS_IMR, ch_done_mask);      \
+ 			/* done_task will unmask done interrupts at exit */    \
+ 			tasklet_schedule(&priv->done_task[tlet]);	       \
+ 		}							       \
++		spin_unlock_irqrestore(&priv->reg_lock, flags);		       \
++	}								       \
+ 									       \
+ 	return (isr & (ch_done_mask | ch_err_mask) || isr_lo) ? IRQ_HANDLED :  \
+ 								IRQ_NONE;      \
+@@ -2718,6 +2730,8 @@ static int talitos_probe(struct platform
+ 
+ 	priv->ofdev = ofdev;
+ 
++	spin_lock_init(&priv->reg_lock);
++
+ 	err = talitos_probe_irq(ofdev);
+ 	if (err)
+ 		goto err_out;
+From d62d421b071b08249361044d8e56c8b5c3ed6aa7 Mon Sep 17 00:00:00 2001
+From: Martin Nyhus <martin.nyhus@gmx.com>
+Date: Thu, 15 Mar 2012 18:25:48 +0100
+Subject: dell-laptop: Terminate quirks list properly
+
+From: Martin Nyhus <martin.nyhus@gmx.com>
+
+commit d62d421b071b08249361044d8e56c8b5c3ed6aa7 upstream.
+
+Add missing DMI_NONE entry to end of the quirks list so
+dmi_check_system() won't read past the end of the list.
+
+Signed-off-by: Martin Nyhus <martin.nyhus@gmx.com>
+Signed-off-by: Matthew Garrett <mjg@redhat.com>
+Cc: Guenter Roeck <guenter.roeck@ericsson.com>
+Tested-by: Jens Gustedt <Jens.Gustedt@loria.fr>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/platform/x86/dell-laptop.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/drivers/platform/x86/dell-laptop.c
++++ b/drivers/platform/x86/dell-laptop.c
+@@ -211,6 +211,7 @@ static struct dmi_system_id __devinitdat
+ 		},
+ 		.driver_data = &quirk_dell_vostro_v130,
+ 	},
++	{ }
+ };
+ 
+ static struct calling_interface_buffer *buffer;
+From ed8b0d67f33518a16c6b2450fe5ebebf180c2d04 Mon Sep 17 00:00:00 2001
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+Date: Mon, 16 Apr 2012 14:46:30 +0200
+Subject: dmaengine: at_hdmac: remove clear-on-read in atc_dostart()
+
+From: Nicolas Ferre <nicolas.ferre@atmel.com>
+
+commit ed8b0d67f33518a16c6b2450fe5ebebf180c2d04 upstream.
+
+This loop on EBCISR register was designed to clear IRQ sources before enabling
+a DMA channel. This register is clear-on-read so a race condition can appear if
+another channel is already active and has just finished its transfer.
+Removing this read on EBCISR is fixing the issue as there is no case where an IRQ
+could be pending: we already make sure that this register is drained at probe()
+time and during resume.
+
+Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Signed-off-by: Vinod Koul <vinod.koul@linux.intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/dma/at_hdmac.c |    4 ----
+ 1 file changed, 4 deletions(-)
+
+--- a/drivers/dma/at_hdmac.c
++++ b/drivers/dma/at_hdmac.c
+@@ -241,10 +241,6 @@ static void atc_dostart(struct at_dma_ch
+ 
+ 	vdbg_dump_regs(atchan);
+ 
+-	/* clear any pending interrupt */
+-	while (dma_readl(atdma, EBCISR))
+-		cpu_relax();
+-
+ 	channel_writel(atchan, SADDR, 0);
+ 	channel_writel(atchan, DADDR, 0);
+ 	channel_writel(atchan, CTRLA, 0);
+From 44afb3a04391a74309d16180d1e4f8386fdfa745 Mon Sep 17 00:00:00 2001
+From: Xi Wang <xi.wang@gmail.com>
+Date: Mon, 23 Apr 2012 04:06:42 -0400
+Subject: drm/i915: fix integer overflow in i915_gem_do_execbuffer()
+
+From: Xi Wang <xi.wang@gmail.com>
+
+commit 44afb3a04391a74309d16180d1e4f8386fdfa745 upstream.
+
+On 32-bit systems, a large args->num_cliprects from userspace via ioctl
+may overflow the allocation size, leading to out-of-bounds access.
+
+This vulnerability was introduced in commit 432e58ed ("drm/i915: Avoid
+allocation for execbuffer object list").
+
+Signed-off-by: Xi Wang <xi.wang@gmail.com>
+Reviewed-by: Chris Wilson <chris@chris-wilson.co.uk>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/gpu/drm/i915/i915_gem_execbuffer.c |    5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/drivers/gpu/drm/i915/i915_gem_execbuffer.c
++++ b/drivers/gpu/drm/i915/i915_gem_execbuffer.c
+@@ -1082,6 +1082,11 @@ i915_gem_do_execbuffer(struct drm_device
+ 			return -EINVAL;
+ 		}
+ 
++		if (args->num_cliprects > UINT_MAX / sizeof(*cliprects)) {
++			DRM_DEBUG("execbuf with %u cliprects\n",
++				  args->num_cliprects);
++			return -EINVAL;
++		}
+ 		cliprects = kmalloc(args->num_cliprects * sizeof(*cliprects),
+ 				    GFP_KERNEL);
+ 		if (cliprects == NULL) {
+From ed8cd3b2cd61004cab85380c52b1817aca1ca49b Mon Sep 17 00:00:00 2001
+From: Xi Wang <xi.wang@gmail.com>
+Date: Mon, 23 Apr 2012 04:06:41 -0400
+Subject: drm/i915: fix integer overflow in i915_gem_execbuffer2()
+
+From: Xi Wang <xi.wang@gmail.com>
+
+commit ed8cd3b2cd61004cab85380c52b1817aca1ca49b upstream.
+
+On 32-bit systems, a large args->buffer_count from userspace via ioctl
+may overflow the allocation size, leading to out-of-bounds access.
+
+This vulnerability was introduced in commit 8408c282 ("drm/i915:
+First try a normal large kmalloc for the temporary exec buffers").
+
+Signed-off-by: Xi Wang <xi.wang@gmail.com>
+Reviewed-by: Chris Wilson <chris@chris-wilson.co.uk>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/gpu/drm/i915/i915_gem_execbuffer.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/i915/i915_gem_execbuffer.c
++++ b/drivers/gpu/drm/i915/i915_gem_execbuffer.c
+@@ -1353,7 +1353,8 @@ i915_gem_execbuffer2(struct drm_device *
+ 	struct drm_i915_gem_exec_object2 *exec2_list = NULL;
+ 	int ret;
+ 
+-	if (args->buffer_count < 1) {
++	if (args->buffer_count < 1 ||
++	    args->buffer_count > UINT_MAX / sizeof(*exec2_list)) {
+ 		DRM_ERROR("execbuf2 with %d buffers\n", args->buffer_count);
+ 		return -EINVAL;
+ 	}
+From 6651819b4b4fc3caa6964c5d825eb4bb996f3905 Mon Sep 17 00:00:00 2001
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
+Date: Sun, 1 Apr 2012 19:16:18 +0200
+Subject: drm/i915: handle input/output sdvo timings separately in mode_set
+
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
+
+commit 6651819b4b4fc3caa6964c5d825eb4bb996f3905 upstream.
+
+We seem to have a decent confusion between the output timings and the
+input timings of the sdvo encoder. If I understand the code correctly,
+we use the original mode unchanged for the output timings, safe for
+the lvds case. And we should use the adjusted mode for input timings.
+
+Clarify the situation by adding an explicit output_dtd to the sdvo
+mode_set function and streamline the code-flow by moving the input and
+output mode setting in the sdvo encode together.
+
+Furthermore testing showed that the sdvo input timing needs the
+unadjusted dotclock, the sdvo chip will automatically compute the
+required pixel multiplier to get a dotclock above 100 MHz.
+
+Fix this up when converting a drm mode to an sdvo dtd.
+
+This regression was introduced in
+
+commit c74696b9c890074c1e1ee3d7496fc71eb3680ced
+Author: Pavel Roskin <proski@gnu.org>
+Date:   Thu Sep 2 14:46:34 2010 -0400
+
+    i915: revert some checks added by commit 32aad86f
+
+particularly the following hunk:
+
+#	diff --git a/drivers/gpu/drm/i915/intel_sdvo.c
+#	b/drivers/gpu/drm/i915/intel_sdvo.c
+#	index 093e914..62d22ae 100644
+#	--- a/drivers/gpu/drm/i915/intel_sdvo.c
+#	+++ b/drivers/gpu/drm/i915/intel_sdvo.c
+#	@@ -1122,11 +1123,9 @@ static void intel_sdvo_mode_set(struct drm_encoder *encoder,
+#
+#	     /* We have tried to get input timing in mode_fixup, and filled into
+#		adjusted_mode */
+#	-    if (intel_sdvo->is_tv || intel_sdvo->is_lvds) {
+#	-        intel_sdvo_get_dtd_from_mode(&input_dtd, adjusted_mode);
+#	+    intel_sdvo_get_dtd_from_mode(&input_dtd, adjusted_mode);
+#	+    if (intel_sdvo->is_tv || intel_sdvo->is_lvds)
+#		 input_dtd.part2.sdvo_flags = intel_sdvo->sdvo_flags;
+#	-    } else
+#	-        intel_sdvo_get_dtd_from_mode(&input_dtd, mode);
+#
+#	     /* If it's a TV, we already set the output timing in mode_fixup.
+#	      * Otherwise, the output timing is equal to the input timing.
+
+Due to questions raised in review, below a more elaborate analysis of
+the bug at hand:
+
+Sdvo seems to have two timings, one is the output timing which will be
+sent over whatever is connected on the other side of the sdvo chip (panel,
+hdmi screen, tv), the other is the input timing which will be generated by
+the gmch pipe. It looks like sdvo is expected to scale between the two.
+
+To make things slightly more complicated, we have a bunch of special
+cases:
+- For lvds panel we always use a fixed output timing, namely
+  intel_sdvo->sdvo_lvds_fixed_mode, hence that special case.
+- Sdvo has an interface to generate a preferred input timing for a given
+  output timing. This is the confusing thing that I've tried to clear up
+  with the follow-on patches.
+- A special requirement is that the input pixel clock needs to be between
+  100MHz and 200MHz (likely to keep it within the electromechanical design
+  range of PCIe), 270MHz on later gen4+. Lower pixel clocks are
+  doubled/quadrupled.
+
+The thing this patch tries to fix is that the pipe needs to be
+explicitly instructed to double/quadruple the pixels and needs the
+correspondingly higher pixel clock, whereas the sdvo adaptor seems to
+do that itself and needs the unadjusted pixel clock. For the sdvo
+encode side we already set the pixel mutliplier with a different
+command (0x21).
+
+This patch tries to fix this mess by:
+- Keeping the output mode timing in the unadjusted plain mode, safe
+  for the lvds case.
+- Storing the input timing in the adjusted_mode with the adjusted
+  pixel clock. This way we don't need to frob around with the core
+  crtc mode set code.
+- Fixing up the pixelclock when constructing the sdvo dtd timing
+  struct. This is why the first hunk of the patch is an integral part
+  of the series.
+- Dropping the is_tv special case because input_dtd is equivalent to
+  adjusted_mode after these changes. Follow-up patches clear this up
+  further (by simply ripping out intel_sdvo->input_dtd because it's
+  not needed).
+
+v2: Extend commit message with an in-depth bug analysis.
+
+Reported-and-Tested-by: Bernard Blackham <b-linuxgit@largestprime.net>
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=48157
+Reviewed-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/gpu/drm/i915/intel_sdvo.c |   34 ++++++++++++++++++----------------
+ 1 file changed, 18 insertions(+), 16 deletions(-)
+
+--- a/drivers/gpu/drm/i915/intel_sdvo.c
++++ b/drivers/gpu/drm/i915/intel_sdvo.c
+@@ -731,6 +731,7 @@ static void intel_sdvo_get_dtd_from_mode
+ 	uint16_t width, height;
+ 	uint16_t h_blank_len, h_sync_len, v_blank_len, v_sync_len;
+ 	uint16_t h_sync_offset, v_sync_offset;
++	int mode_clock;
+ 
+ 	width = mode->crtc_hdisplay;
+ 	height = mode->crtc_vdisplay;
+@@ -745,7 +746,11 @@ static void intel_sdvo_get_dtd_from_mode
+ 	h_sync_offset = mode->crtc_hsync_start - mode->crtc_hblank_start;
+ 	v_sync_offset = mode->crtc_vsync_start - mode->crtc_vblank_start;
+ 
+-	dtd->part1.clock = mode->clock / 10;
++	mode_clock = mode->clock;
++	mode_clock /= intel_mode_get_pixel_multiplier(mode) ?: 1;
++	mode_clock /= 10;
++	dtd->part1.clock = mode_clock;
++
+ 	dtd->part1.h_active = width & 0xff;
+ 	dtd->part1.h_blank = h_blank_len & 0xff;
+ 	dtd->part1.h_high = (((width >> 8) & 0xf) << 4) |
+@@ -997,7 +1002,7 @@ static void intel_sdvo_mode_set(struct d
+ 	struct intel_sdvo *intel_sdvo = to_intel_sdvo(encoder);
+ 	u32 sdvox;
+ 	struct intel_sdvo_in_out_map in_out;
+-	struct intel_sdvo_dtd input_dtd;
++	struct intel_sdvo_dtd input_dtd, output_dtd;
+ 	int pixel_multiplier = intel_mode_get_pixel_multiplier(adjusted_mode);
+ 	int rate;
+ 
+@@ -1022,20 +1027,13 @@ static void intel_sdvo_mode_set(struct d
+ 					  intel_sdvo->attached_output))
+ 		return;
+ 
+-	/* We have tried to get input timing in mode_fixup, and filled into
+-	 * adjusted_mode.
+-	 */
+-	if (intel_sdvo->is_tv || intel_sdvo->is_lvds) {
+-		input_dtd = intel_sdvo->input_dtd;
+-	} else {
+-		/* Set the output timing to the screen */
+-		if (!intel_sdvo_set_target_output(intel_sdvo,
+-						  intel_sdvo->attached_output))
+-			return;
+-
+-		intel_sdvo_get_dtd_from_mode(&input_dtd, adjusted_mode);
+-		(void) intel_sdvo_set_output_timing(intel_sdvo, &input_dtd);
+-	}
++	/* lvds has a special fixed output timing. */
++	if (intel_sdvo->is_lvds)
++		intel_sdvo_get_dtd_from_mode(&output_dtd,
++					     intel_sdvo->sdvo_lvds_fixed_mode);
++	else
++		intel_sdvo_get_dtd_from_mode(&output_dtd, mode);
++	(void) intel_sdvo_set_output_timing(intel_sdvo, &output_dtd);
+ 
+ 	/* Set the input timing to the screen. Assume always input 0. */
+ 	if (!intel_sdvo_set_target_input(intel_sdvo))
+@@ -1053,6 +1051,10 @@ static void intel_sdvo_mode_set(struct d
+ 	    !intel_sdvo_set_tv_format(intel_sdvo))
+ 		return;
+ 
++	/* We have tried to get input timing in mode_fixup, and filled into
++	 * adjusted_mode.
++	 */
++	intel_sdvo_get_dtd_from_mode(&input_dtd, adjusted_mode);
+ 	(void) intel_sdvo_set_input_timing(intel_sdvo, &input_dtd);
+ 
+ 	switch (pixel_multiplier) {
+From 3a69ddd6f872180b6f61fda87152b37202118fbc Mon Sep 17 00:00:00 2001
+From: Kenneth Graunke <kenneth@whitecape.org>
+Date: Fri, 27 Apr 2012 12:44:41 -0700
+Subject: drm/i915: Set the Stencil Cache eviction policy to non-LRA mode.
+
+From: Kenneth Graunke <kenneth@whitecape.org>
+
+commit 3a69ddd6f872180b6f61fda87152b37202118fbc upstream.
+
+Clearing bit 5 of CACHE_MODE_0 is necessary to prevent GPU hangs in
+OpenGL programs such as Google MapsGL, Google Earth, and gzdoom when
+using separate stencil buffers.  Without it, the GPU tries to use the
+LRA eviction policy, which isn't supported.  This was supposed to be off
+by default, but seems to be on for many machines.
+
+This cannot be done in gen6_init_clock_gating with most of the other
+workaround bits; the render ring needs to exist.  Otherwise, the
+register write gets dropped on the floor (one printk will show it
+changed, but a second printk immediately following shows the value
+reverts to the old one).
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=47535
+Cc: Rob Castle <futuredub@gmail.com>
+Cc: Eric Appleman <erappleman@gmail.com>
+Cc: aaron667@gmx.net
+Cc: Keith Packard <keithp@keithp.com>
+Signed-off-by: Kenneth Graunke <kenneth@whitecape.org>
+Reviewed-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/gpu/drm/i915/i915_reg.h         |    1 +
+ drivers/gpu/drm/i915/intel_ringbuffer.c |    8 ++++++++
+ 2 files changed, 9 insertions(+)
+
+--- a/drivers/gpu/drm/i915/i915_reg.h
++++ b/drivers/gpu/drm/i915/i915_reg.h
+@@ -523,6 +523,7 @@
+ #define   CM0_MASK_SHIFT          16
+ #define   CM0_IZ_OPT_DISABLE      (1<<6)
+ #define   CM0_ZR_OPT_DISABLE      (1<<5)
++#define	  CM0_STC_EVICT_DISABLE_LRA_SNB	(1<<5)
+ #define   CM0_DEPTH_EVICT_DISABLE (1<<4)
+ #define   CM0_COLOR_EVICT_DISABLE (1<<3)
+ #define   CM0_DEPTH_WRITE_DISABLE (1<<1)
+--- a/drivers/gpu/drm/i915/intel_ringbuffer.c
++++ b/drivers/gpu/drm/i915/intel_ringbuffer.c
+@@ -417,6 +417,14 @@ static int init_render_ring(struct intel
+ 	if (INTEL_INFO(dev)->gen >= 6) {
+ 		I915_WRITE(INSTPM,
+ 			   INSTPM_FORCE_ORDERING << 16 | INSTPM_FORCE_ORDERING);
++
++		/* From the Sandybridge PRM, volume 1 part 3, page 24:
++		 * "If this bit is set, STCunit will have LRA as replacement
++		 *  policy. [...] This bit must be reset.  LRA replacement
++		 *  policy is not supported."
++		 */
++		I915_WRITE(CACHE_MODE_0,
++			   CM0_STC_EVICT_DISABLE_LRA_SNB << CM0_MASK_SHIFT);
+ 	}
+ 
+ 	return ret;
+From 700698e7c303f5095107c62a81872c2c3dad1702 Mon Sep 17 00:00:00 2001
+From: Alex Deucher <alexander.deucher@amd.com>
+Date: Fri, 27 Apr 2012 17:18:59 -0400
+Subject: drm/radeon/kms: need to set up ss on DP bridges as well
+
+From: Alex Deucher <alexander.deucher@amd.com>
+
+commit 700698e7c303f5095107c62a81872c2c3dad1702 upstream.
+
+Makes Nutmeg DP to VGA bridges work for me.
+
+Fixes:
+https://bugs.freedesktop.org/show_bug.cgi?id=42490
+
+Noticed by Jerome Glisse (after weeks of debugging).
+
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/gpu/drm/radeon/atombios_crtc.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+--- a/drivers/gpu/drm/radeon/atombios_crtc.c
++++ b/drivers/gpu/drm/radeon/atombios_crtc.c
+@@ -912,8 +912,8 @@ static void atombios_crtc_set_pll(struct
+ 		break;
+ 	}
+ 
+-	if (radeon_encoder->active_device &
+-	    (ATOM_DEVICE_LCD_SUPPORT | ATOM_DEVICE_DFP_SUPPORT)) {
++	if ((radeon_encoder->active_device & (ATOM_DEVICE_LCD_SUPPORT | ATOM_DEVICE_DFP_SUPPORT)) ||
++	    (radeon_encoder_get_dp_bridge_encoder_id(encoder) != ENCODER_OBJECT_ID_NONE)) {
+ 		struct radeon_encoder_atom_dig *dig = radeon_encoder->enc_priv;
+ 		struct drm_connector *connector =
+ 			radeon_get_connector_for_encoder(encoder);
+From 00250ec90963b7ef6678438888f3244985ecde14 Mon Sep 17 00:00:00 2001
+From: Andre Przywara <andre.przywara@amd.com>
+Date: Mon, 9 Apr 2012 18:16:34 -0400
+Subject: hwmon: fam15h_power: fix bogus values with current BIOSes
+
+From: Andre Przywara <andre.przywara@amd.com>
+
+commit 00250ec90963b7ef6678438888f3244985ecde14 upstream.
+
+Newer BKDG[1] versions recommend a different initialization value for
+the running average range register in the northbridge. This improves
+the power reading by avoiding counter saturations resulting in bogus
+values for anything below about 80% of TDP power consumption.
+Updated BIOSes will have this new value set up from the beginning,
+but meanwhile we correct this value ourselves.
+This needs to be done on all northbridges, even on those where the
+driver itself does not register at.
+
+This fixes the driver on all current machines to provide proper
+values for idle load.
+
+[1]
+http://support.amd.com/us/Processor_TechDocs/42301_15h_Mod_00h-0Fh_BKDG.pdf
+Chapter 3.8: D18F5xE0 Processor TDP Running Average (p. 452)
+
+Signed-off-by: Andre Przywara <andre.przywara@amd.com>
+Acked-by: Jean Delvare <khali@linux-fr.org>
+[guenter.roeck@ericsson.com: Removed unnecessary return statement]
+Signed-off-by: Guenter Roeck <guenter.roeck@ericsson.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/hwmon/fam15h_power.c |   39 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
+
+--- a/drivers/hwmon/fam15h_power.c
++++ b/drivers/hwmon/fam15h_power.c
+@@ -122,6 +122,38 @@ static bool __devinit fam15h_power_is_in
+ 	return true;
+ }
+ 
++/*
++ * Newer BKDG versions have an updated recommendation on how to properly
++ * initialize the running average range (was: 0xE, now: 0x9). This avoids
++ * counter saturations resulting in bogus power readings.
++ * We correct this value ourselves to cope with older BIOSes.
++ */
++static void __devinit tweak_runavg_range(struct pci_dev *pdev)
++{
++	u32 val;
++	const struct pci_device_id affected_device = {
++		PCI_VDEVICE(AMD, PCI_DEVICE_ID_AMD_15H_NB_F4) };
++
++	/*
++	 * let this quirk apply only to the current version of the
++	 * northbridge, since future versions may change the behavior
++	 */
++	if (!pci_match_id(&affected_device, pdev))
++		return;
++
++	pci_bus_read_config_dword(pdev->bus,
++		PCI_DEVFN(PCI_SLOT(pdev->devfn), 5),
++		REG_TDP_RUNNING_AVERAGE, &val);
++	if ((val & 0xf) != 0xe)
++		return;
++
++	val &= ~0xf;
++	val |=  0x9;
++	pci_bus_write_config_dword(pdev->bus,
++		PCI_DEVFN(PCI_SLOT(pdev->devfn), 5),
++		REG_TDP_RUNNING_AVERAGE, val);
++}
++
+ static void __devinit fam15h_power_init_data(struct pci_dev *f4,
+ 					     struct fam15h_power_data *data)
+ {
+@@ -155,6 +187,13 @@ static int __devinit fam15h_power_probe(
+ 	struct device *dev;
+ 	int err;
+ 
++	/*
++	 * though we ignore every other northbridge, we still have to
++	 * do the tweaking on _each_ node in MCM processors as the counters
++	 * are working hand-in-hand
++	 */
++	tweak_runavg_range(pdev);
++
+ 	if (!fam15h_power_is_internal_node0(pdev)) {
+ 		err = -ENODEV;
+ 		goto exit;
+From c3e40a9972428d6e2d8e287ed0233a57a218c30f Mon Sep 17 00:00:00 2001
+From: Guenter Roeck <guenter.roeck@ericsson.com>
+Date: Wed, 25 Apr 2012 13:44:20 -0700
+Subject: hwmon: (fam15h_power) Fix pci_device_id array
+
+From: Guenter Roeck <guenter.roeck@ericsson.com>
+
+commit c3e40a9972428d6e2d8e287ed0233a57a218c30f upstream.
+
+pci_match_id() takes an *array* of IDs which must be properly zero-
+terminated.
+
+Reported-by: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Guenter Roeck <guenter.roeck@ericsson.com>
+Acked-by: Jean Delvare <khali@linux-fr.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/hwmon/fam15h_power.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+--- a/drivers/hwmon/fam15h_power.c
++++ b/drivers/hwmon/fam15h_power.c
+@@ -128,17 +128,20 @@ static bool __devinit fam15h_power_is_in
+  * counter saturations resulting in bogus power readings.
+  * We correct this value ourselves to cope with older BIOSes.
+  */
++static DEFINE_PCI_DEVICE_TABLE(affected_device) = {
++	{ PCI_VDEVICE(AMD, PCI_DEVICE_ID_AMD_15H_NB_F4) },
++	{ 0 }
++};
++
+ static void __devinit tweak_runavg_range(struct pci_dev *pdev)
+ {
+ 	u32 val;
+-	const struct pci_device_id affected_device = {
+-		PCI_VDEVICE(AMD, PCI_DEVICE_ID_AMD_15H_NB_F4) };
+ 
+ 	/*
+ 	 * let this quirk apply only to the current version of the
+ 	 * northbridge, since future versions may change the behavior
+ 	 */
+-	if (!pci_match_id(&affected_device, pdev))
++	if (!pci_match_id(affected_device, pdev))
+ 		return;
+ 
+ 	pci_bus_read_config_dword(pdev->bus,
+From 089f9fba56faf33cc6dd2a6442b7ac92c58b8209 Mon Sep 17 00:00:00 2001
+From: Oleg Nesterov <oleg@redhat.com>
+Date: Mon, 16 Apr 2012 22:48:15 +0200
+Subject: i387: ptrace breaks the lazy-fpu-restore logic
+
+From: Oleg Nesterov <oleg@redhat.com>
+
+commit 089f9fba56faf33cc6dd2a6442b7ac92c58b8209 upstream.
+
+Starting from 7e16838d "i387: support lazy restore of FPU state"
+we assume that fpu_owner_task doesn't need restore_fpu_checking()
+on the context switch, its FPU state should match what we already
+have in the FPU on this CPU.
+
+However, debugger can change the tracee's FPU state, in this case
+we should reset fpu.last_cpu to ensure fpu_lazy_restore() can't
+return true.
+
+Change init_fpu() to do this, it is called by user_regset->set()
+methods.
+
+Reported-by: Jan Kratochvil <jan.kratochvil@redhat.com>
+Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Oleg Nesterov <oleg@redhat.com>
+Link: http://lkml.kernel.org/r/20120416204815.GB24884@redhat.com
+Signed-off-by: H. Peter Anvin <hpa@linux.intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/x86/kernel/i387.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/arch/x86/kernel/i387.c
++++ b/arch/x86/kernel/i387.c
+@@ -154,6 +154,7 @@ int init_fpu(struct task_struct *tsk)
+ 	if (tsk_used_math(tsk)) {
+ 		if (HAVE_HWFP && tsk == current)
+ 			unlazy_fpu(tsk);
++		tsk->thread.fpu.last_cpu = ~0;
+ 		return 0;
+ 	}
+ 
+From 899c612d74d4a242158a4db20367388d6299c028 Mon Sep 17 00:00:00 2001
+From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Date: Fri, 20 Apr 2012 22:34:49 -0700
+Subject: Input: synaptics - fix regression with "image sensor" trackpads
+
+From: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+
+commit 899c612d74d4a242158a4db20367388d6299c028 upstream.
+
+commit 7968a5dd492ccc38345013e534ad4c8d6eb60ed1
+Input: synaptics - add support for Relative mode
+
+Accidentally broke support for advanced gestures (multitouch)
+on some trackpads such as the one in my ThinkPad X220 by
+incorretly changing the condition for enabling them. This
+restores it.
+
+Signed-off-by: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Signed-off-by: Dmitry Torokhov <dtor@mail.ru>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/input/mouse/synaptics.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/drivers/input/mouse/synaptics.c
++++ b/drivers/input/mouse/synaptics.c
+@@ -274,7 +274,8 @@ static int synaptics_set_advanced_gestur
+ 	static unsigned char param = 0xc8;
+ 	struct synaptics_data *priv = psmouse->private;
+ 
+-	if (!SYN_CAP_ADV_GESTURE(priv->ext_cap_0c))
++	if (!(SYN_CAP_ADV_GESTURE(priv->ext_cap_0c) ||
++	      SYN_CAP_IMAGE_SENSOR(priv->ext_cap_0c)))
+ 		return 0;
+ 
+ 	if (psmouse_sliced_command(psmouse, SYN_QUE_MODEL))
+From 98a2139f4f4d7b5fcc3a54c7fddbe88612abed20 Mon Sep 17 00:00:00 2001
+From: Jan Kara <jack@suse.cz>
+Date: Sat, 3 Sep 2011 01:09:43 +0200
+Subject: nfs: Enclose hostname in brackets when needed in
+ nfs_do_root_mount
+
+From: Jan Kara <jack@suse.cz>
+
+commit 98a2139f4f4d7b5fcc3a54c7fddbe88612abed20 upstream.
+
+When hostname contains colon (e.g. when it is an IPv6 address) it needs
+to be enclosed in brackets to make parsing of NFS device string possible.
+Fix nfs_do_root_mount() to enclose hostname properly when needed. NFS code
+actually does not need this as it does not parse the string passed by
+nfs_do_root_mount() but the device string is exposed to userspace in
+/proc/mounts.
+
+CC: Josh Boyer <jwboyer@redhat.com>
+CC: Trond Myklebust <Trond.Myklebust@netapp.com>
+Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Trond Myklebust <Trond.Myklebust@netapp.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ fs/nfs/super.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+--- a/fs/nfs/super.c
++++ b/fs/nfs/super.c
+@@ -2707,11 +2707,15 @@ static struct vfsmount *nfs_do_root_moun
+ 	char *root_devname;
+ 	size_t len;
+ 
+-	len = strlen(hostname) + 3;
++	len = strlen(hostname) + 5;
+ 	root_devname = kmalloc(len, GFP_KERNEL);
+ 	if (root_devname == NULL)
+ 		return ERR_PTR(-ENOMEM);
+-	snprintf(root_devname, len, "%s:/", hostname);
++	/* Does hostname needs to be enclosed in brackets? */
++	if (strchr(hostname, ':'))
++		snprintf(root_devname, len, "[%s]:/", hostname);
++	else
++		snprintf(root_devname, len, "%s:/", hostname);
+ 	root_mnt = vfs_kern_mount(fs_type, flags, root_devname, data);
+ 	kfree(root_devname);
+ 	return root_mnt;
+From 8ccd271f7a3a846ce6f85ead0760d9d12994a611 Mon Sep 17 00:00:00 2001
+From: Fred Isaman <iisaman@netapp.com>
+Date: Fri, 20 Apr 2012 14:47:35 -0400
+Subject: NFS: put open context on error in nfs_flush_multi
+
+From: Fred Isaman <iisaman@netapp.com>
+
+commit 8ccd271f7a3a846ce6f85ead0760d9d12994a611 upstream.
+
+Signed-off-by: Fred Isaman <iisaman@netapp.com>
+Signed-off-by: Trond Myklebust <Trond.Myklebust@netapp.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ fs/nfs/write.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -974,7 +974,7 @@ out_bad:
+ 	while (!list_empty(res)) {
+ 		data = list_entry(res->next, struct nfs_write_data, list);
+ 		list_del(&data->list);
+-		nfs_writedata_free(data);
++		nfs_writedata_release(data);
+ 	}
+ 	nfs_redirty_request(req);
+ 	return -ENOMEM;
+From 73fb7bc7c57d971b11f2e00536ac2d3e316e0609 Mon Sep 17 00:00:00 2001
+From: Fred Isaman <iisaman@netapp.com>
+Date: Fri, 20 Apr 2012 14:47:34 -0400
+Subject: NFS: put open context on error in nfs_pagein_multi
+
+From: Fred Isaman <iisaman@netapp.com>
+
+commit 73fb7bc7c57d971b11f2e00536ac2d3e316e0609 upstream.
+
+Signed-off-by: Fred Isaman <iisaman@netapp.com>
+Signed-off-by: Trond Myklebust <Trond.Myklebust@netapp.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ fs/nfs/read.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/fs/nfs/read.c
++++ b/fs/nfs/read.c
+@@ -324,7 +324,7 @@ out_bad:
+ 	while (!list_empty(res)) {
+ 		data = list_entry(res->next, struct nfs_read_data, list);
+ 		list_del(&data->list);
+-		nfs_readdata_free(data);
++		nfs_readdata_release(data);
+ 	}
+ 	nfs_readpage_release(req);
+ 	return -ENOMEM;
+From 05ffe24f5290dc095f98fbaf84afe51ef404ccc5 Mon Sep 17 00:00:00 2001
+From: Trond Myklebust <Trond.Myklebust@netapp.com>
+Date: Wed, 18 Apr 2012 12:20:10 -0400
+Subject: NFSv4: Ensure that the LOCK code sets exception->inode
+
+From: Trond Myklebust <Trond.Myklebust@netapp.com>
+
+commit 05ffe24f5290dc095f98fbaf84afe51ef404ccc5 upstream.
+
+All callers of nfs4_handle_exception() that need to handle
+NFS4ERR_OPENMODE correctly should set exception->inode
+
+Signed-off-by: Trond Myklebust <Trond.Myklebust@netapp.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ fs/nfs/nfs4proc.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -4460,7 +4460,9 @@ static int _nfs4_do_setlk(struct nfs4_st
+ static int nfs4_lock_reclaim(struct nfs4_state *state, struct file_lock *request)
+ {
+ 	struct nfs_server *server = NFS_SERVER(state->inode);
+-	struct nfs4_exception exception = { };
++	struct nfs4_exception exception = {
++		.inode = state->inode,
++	};
+ 	int err;
+ 
+ 	do {
+@@ -4478,7 +4480,9 @@ static int nfs4_lock_reclaim(struct nfs4
+ static int nfs4_lock_expired(struct nfs4_state *state, struct file_lock *request)
+ {
+ 	struct nfs_server *server = NFS_SERVER(state->inode);
+-	struct nfs4_exception exception = { };
++	struct nfs4_exception exception = {
++		.inode = state->inode,
++	};
+ 	int err;
+ 
+ 	err = nfs4_set_lock_state(state, request);
+@@ -4558,6 +4562,7 @@ static int nfs4_proc_setlk(struct nfs4_s
+ {
+ 	struct nfs4_exception exception = {
+ 		.state = state,
++		.inode = state->inode,
+ 	};
+ 	int err;
+ 
+From 55725513b5ef9d462aa3e18527658a0362aaae83 Mon Sep 17 00:00:00 2001
+From: Trond Myklebust <Trond.Myklebust@netapp.com>
+Date: Wed, 18 Apr 2012 12:48:35 -0400
+Subject: NFSv4: Ensure that we check lock exclusive/shared type against open modes
+
+From: Trond Myklebust <Trond.Myklebust@netapp.com>
+
+commit 55725513b5ef9d462aa3e18527658a0362aaae83 upstream.
+
+Since we may be simulating flock() locks using NFS byte range locks,
+we can't rely on the VFS having checked the file open mode for us.
+
+Signed-off-by: Trond Myklebust <Trond.Myklebust@netapp.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ fs/nfs/nfs4proc.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -4608,6 +4608,20 @@ nfs4_proc_lock(struct file *filp, int cm
+ 
+ 	if (state == NULL)
+ 		return -ENOLCK;
++	/*
++	 * Don't rely on the VFS having checked the file open mode,
++	 * since it won't do this for flock() locks.
++	 */
++	switch (request->fl_type & (F_RDLCK|F_WRLCK|F_UNLCK)) {
++	case F_RDLCK:
++		if (!(filp->f_mode & FMODE_READ))
++			return -EBADF;
++		break;
++	case F_WRLCK:
++		if (!(filp->f_mode & FMODE_WRITE))
++			return -EBADF;
++	}
++
+ 	do {
+ 		status = nfs4_proc_setlk(state, cmd, request);
+ 		if ((status != -EAGAIN) || IS_SETLK(cmd))
+From 2b5f8b0b44e17e625cfba1e7b88db44f4dcc0441 Mon Sep 17 00:00:00 2001
+From: Johannes Berg <johannes.berg@intel.com>
+Date: Mon, 2 Apr 2012 10:51:55 +0200
+Subject: nl80211: ensure interface is up in various APIs
+
+From: Johannes Berg <johannes.berg@intel.com>
+
+commit 2b5f8b0b44e17e625cfba1e7b88db44f4dcc0441 upstream.
+[backported by Ben Greear]
+
+The nl80211 handling code should ensure as much as
+it can that the interface is in a valid state, it
+can certainly ensure the interface is running.
+
+Not doing so can cause calls through mac80211 into
+the driver that result in warnings and unspecified
+behaviour in the driver.
+
+Reported-by: Ben Greear <greearb@candelatech.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: John W. Linville <linville@tuxdriver.com>
+Signed-off-by: Ben Greear <greearb@candelatech.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ net/wireless/nl80211.c |   29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
+
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -1293,6 +1293,11 @@ static int nl80211_set_wiphy(struct sk_b
+ 			goto bad_res;
+ 		}
+ 
++		if (!netif_running(netdev)) {
++			result = -ENETDOWN;
++			goto bad_res;
++		}
++
+ 		nla_for_each_nested(nl_txq_params,
+ 				    info->attrs[NL80211_ATTR_WIPHY_TXQ_PARAMS],
+ 				    rem_txq_params) {
+@@ -6262,7 +6267,7 @@ static struct genl_ops nl80211_ops[] = {
+ 		.doit = nl80211_get_key,
+ 		.policy = nl80211_policy,
+ 		.flags = GENL_ADMIN_PERM,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV |
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+ 				  NL80211_FLAG_NEED_RTNL,
+ 	},
+ 	{
+@@ -6294,7 +6299,7 @@ static struct genl_ops nl80211_ops[] = {
+ 		.policy = nl80211_policy,
+ 		.flags = GENL_ADMIN_PERM,
+ 		.doit = nl80211_addset_beacon,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV |
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+ 				  NL80211_FLAG_NEED_RTNL,
+ 	},
+ 	{
+@@ -6302,7 +6307,7 @@ static struct genl_ops nl80211_ops[] = {
+ 		.policy = nl80211_policy,
+ 		.flags = GENL_ADMIN_PERM,
+ 		.doit = nl80211_addset_beacon,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV |
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+ 				  NL80211_FLAG_NEED_RTNL,
+ 	},
+ 	{
+@@ -6326,7 +6331,7 @@ static struct genl_ops nl80211_ops[] = {
+ 		.doit = nl80211_set_station,
+ 		.policy = nl80211_policy,
+ 		.flags = GENL_ADMIN_PERM,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV |
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+ 				  NL80211_FLAG_NEED_RTNL,
+ 	},
+ 	{
+@@ -6342,7 +6347,7 @@ static struct genl_ops nl80211_ops[] = {
+ 		.doit = nl80211_del_station,
+ 		.policy = nl80211_policy,
+ 		.flags = GENL_ADMIN_PERM,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV |
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+ 				  NL80211_FLAG_NEED_RTNL,
+ 	},
+ 	{
+@@ -6375,7 +6380,7 @@ static struct genl_ops nl80211_ops[] = {
+ 		.doit = nl80211_del_mpath,
+ 		.policy = nl80211_policy,
+ 		.flags = GENL_ADMIN_PERM,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV |
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+ 				  NL80211_FLAG_NEED_RTNL,
+ 	},
+ 	{
+@@ -6383,7 +6388,7 @@ static struct genl_ops nl80211_ops[] = {
+ 		.doit = nl80211_set_bss,
+ 		.policy = nl80211_policy,
+ 		.flags = GENL_ADMIN_PERM,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV |
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+ 				  NL80211_FLAG_NEED_RTNL,
+ 	},
+ 	{
+@@ -6409,7 +6414,7 @@ static struct genl_ops nl80211_ops[] = {
+ 		.doit = nl80211_get_mesh_config,
+ 		.policy = nl80211_policy,
+ 		/* can be retrieved by unprivileged users */
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV |
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+ 				  NL80211_FLAG_NEED_RTNL,
+ 	},
+ 	{
+@@ -6542,7 +6547,7 @@ static struct genl_ops nl80211_ops[] = {
+ 		.doit = nl80211_setdel_pmksa,
+ 		.policy = nl80211_policy,
+ 		.flags = GENL_ADMIN_PERM,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV |
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+ 				  NL80211_FLAG_NEED_RTNL,
+ 	},
+ 	{
+@@ -6550,7 +6555,7 @@ static struct genl_ops nl80211_ops[] = {
+ 		.doit = nl80211_setdel_pmksa,
+ 		.policy = nl80211_policy,
+ 		.flags = GENL_ADMIN_PERM,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV |
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+ 				  NL80211_FLAG_NEED_RTNL,
+ 	},
+ 	{
+@@ -6558,7 +6563,7 @@ static struct genl_ops nl80211_ops[] = {
+ 		.doit = nl80211_flush_pmksa,
+ 		.policy = nl80211_policy,
+ 		.flags = GENL_ADMIN_PERM,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV |
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+ 				  NL80211_FLAG_NEED_RTNL,
+ 	},
+ 	{
+@@ -6718,7 +6723,7 @@ static struct genl_ops nl80211_ops[] = {
+ 		.doit = nl80211_probe_client,
+ 		.policy = nl80211_policy,
+ 		.flags = GENL_ADMIN_PERM,
+-		.internal_flags = NL80211_FLAG_NEED_NETDEV |
++		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
+ 				  NL80211_FLAG_NEED_RTNL,
+ 	},
+ 	{
+From 9883035ae7edef3ec62ad215611cb8e17d6a1a5d Mon Sep 17 00:00:00 2001
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Sun, 29 Apr 2012 13:12:42 -0700
+Subject: pipes: add a "packetized pipe" mode for writing
+
+From: Linus Torvalds <torvalds@linux-foundation.org>
+
+commit 9883035ae7edef3ec62ad215611cb8e17d6a1a5d upstream.
+
+The actual internal pipe implementation is already really about
+individual packets (called "pipe buffers"), and this simply exposes that
+as a special packetized mode.
+
+When we are in the packetized mode (marked by O_DIRECT as suggested by
+Alan Cox), a write() on a pipe will not merge the new data with previous
+writes, so each write will get a pipe buffer of its own.  The pipe
+buffer is then marked with the PIPE_BUF_FLAG_PACKET flag, which in turn
+will tell the reader side to break the read at that boundary (and throw
+away any partial packet contents that do not fit in the read buffer).
+
+End result: as long as you do writes less than PIPE_BUF in size (so that
+the pipe doesn't have to split them up), you can now treat the pipe as a
+packet interface, where each read() system call will read one packet at
+a time.  You can just use a sufficiently big read buffer (PIPE_BUF is
+sufficient, since bigger than that doesn't guarantee atomicity anyway),
+and the return value of the read() will naturally give you the size of
+the packet.
+
+NOTE! We do not support zero-sized packets, and zero-sized reads and
+writes to a pipe continue to be no-ops.  Also note that big packets will
+currently be split at write time, but that the size at which that
+happens is not really specified (except that it's bigger than PIPE_BUF).
+Currently that limit is the system page size, but we might want to
+explicitly support bigger packets some day.
+
+The main user for this is going to be the autofs packet interface,
+allowing us to stop having to care so deeply about exact packet sizes
+(which have had bugs with 32/64-bit compatibility modes).  But user
+space can create packetized pipes with "pipe2(fd, O_DIRECT)", which will
+fail with an EINVAL on kernels that do not support this interface.
+
+Tested-by: Michael Tokarev <mjt@tls.msk.ru>
+Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+Cc: David Miller <davem@davemloft.net>
+Cc: Ian Kent <raven@themaw.net>
+Cc: Thomas Meyer <thomas@m3y3r.de>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ fs/pipe.c                 |   31 +++++++++++++++++++++++++++++--
+ include/linux/pipe_fs_i.h |    1 +
+ 2 files changed, 30 insertions(+), 2 deletions(-)
+
+--- a/fs/pipe.c
++++ b/fs/pipe.c
+@@ -345,6 +345,16 @@ static const struct pipe_buf_operations
+ 	.get = generic_pipe_buf_get,
+ };
+ 
++static const struct pipe_buf_operations packet_pipe_buf_ops = {
++	.can_merge = 0,
++	.map = generic_pipe_buf_map,
++	.unmap = generic_pipe_buf_unmap,
++	.confirm = generic_pipe_buf_confirm,
++	.release = anon_pipe_buf_release,
++	.steal = generic_pipe_buf_steal,
++	.get = generic_pipe_buf_get,
++};
++
+ static ssize_t
+ pipe_read(struct kiocb *iocb, const struct iovec *_iov,
+ 	   unsigned long nr_segs, loff_t pos)
+@@ -406,6 +416,13 @@ redo:
+ 			ret += chars;
+ 			buf->offset += chars;
+ 			buf->len -= chars;
++
++			/* Was it a packet buffer? Clean up and exit */
++			if (buf->flags & PIPE_BUF_FLAG_PACKET) {
++				total_len = chars;
++				buf->len = 0;
++			}
++
+ 			if (!buf->len) {
+ 				buf->ops = NULL;
+ 				ops->release(pipe, buf);
+@@ -458,6 +475,11 @@ redo:
+ 	return ret;
+ }
+ 
++static inline int is_packetized(struct file *file)
++{
++	return (file->f_flags & O_DIRECT) != 0;
++}
++
+ static ssize_t
+ pipe_write(struct kiocb *iocb, const struct iovec *_iov,
+ 	    unsigned long nr_segs, loff_t ppos)
+@@ -592,6 +614,11 @@ redo2:
+ 			buf->ops = &anon_pipe_buf_ops;
+ 			buf->offset = 0;
+ 			buf->len = chars;
++			buf->flags = 0;
++			if (is_packetized(filp)) {
++				buf->ops = &packet_pipe_buf_ops;
++				buf->flags = PIPE_BUF_FLAG_PACKET;
++			}
+ 			pipe->nrbufs = ++bufs;
+ 			pipe->tmp_page = NULL;
+ 
+@@ -1012,7 +1039,7 @@ struct file *create_write_pipe(int flags
+ 		goto err_dentry;
+ 	f->f_mapping = inode->i_mapping;
+ 
+-	f->f_flags = O_WRONLY | (flags & O_NONBLOCK);
++	f->f_flags = O_WRONLY | (flags & (O_NONBLOCK | O_DIRECT));
+ 	f->f_version = 0;
+ 
+ 	return f;
+@@ -1056,7 +1083,7 @@ int do_pipe_flags(int *fd, int flags)
+ 	int error;
+ 	int fdw, fdr;
+ 
+-	if (flags & ~(O_CLOEXEC | O_NONBLOCK))
++	if (flags & ~(O_CLOEXEC | O_NONBLOCK | O_DIRECT))
+ 		return -EINVAL;
+ 
+ 	fw = create_write_pipe(flags);
+--- a/include/linux/pipe_fs_i.h
++++ b/include/linux/pipe_fs_i.h
+@@ -8,6 +8,7 @@
+ #define PIPE_BUF_FLAG_LRU	0x01	/* page is on the LRU */
+ #define PIPE_BUF_FLAG_ATOMIC	0x02	/* was atomically mapped */
+ #define PIPE_BUF_FLAG_GIFT	0x04	/* page is a gift */
++#define PIPE_BUF_FLAG_PACKET	0x08	/* read() as a packet */
+ 
+ /**
+  *	struct pipe_buffer - a linux kernel pipe buffer
+From fcbf94b9dedd2ce08e798a99aafc94fec8668161 Mon Sep 17 00:00:00 2001
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Sat, 28 Apr 2012 08:29:56 -0700
+Subject: Revert "autofs: work around unhappy compat problem on x86-64"
+
+From: Linus Torvalds <torvalds@linux-foundation.org>
+
+commit fcbf94b9dedd2ce08e798a99aafc94fec8668161 upstream.
+
+This reverts commit a32744d4abae24572eff7269bc17895c41bd0085.
+
+While that commit was technically the right thing to do, and made the
+x86-64 compat mode work identically to native 32-bit mode (and thus
+fixing the problem with a 32-bit systemd install on a 64-bit kernel), it
+turns out that the automount binaries had workarounds for this compat
+problem.
+
+Now, the workarounds are disgusting: doing an "uname()" to find out the
+architecture of the kernel, and then comparing it for the 64-bit cases
+and fixing up the size of the read() in automount for those.  And they
+were confused: it's not actually a generic 64-bit issue at all, it's
+very much tied to just x86-64, which has different alignment for an
+'u64' in 64-bit mode than in 32-bit mode.
+
+But the end result is that fixing the compat layer actually breaks the
+case of a 32-bit automount on a x86-64 kernel.
+
+There are various approaches to fix this (including just doing a
+"strcmp()" on current->comm and comparing it to "automount"), but I
+think that I will do the one that teaches pipes about a special "packet
+mode", which will allow user space to not have to care too deeply about
+the padding at the end of the autofs packet.
+
+That change will make the compat workaround unnecessary, so let's revert
+it first, and get automount working again in compat mode.  The
+packetized pipes will then fix autofs for systemd.
+
+Reported-and-requested-by: Michael Tokarev <mjt@tls.msk.ru>
+Cc: Ian Kent <raven@themaw.net>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ fs/autofs4/autofs_i.h  |    1 -
+ fs/autofs4/dev-ioctl.c |    1 -
+ fs/autofs4/inode.c     |    2 --
+ fs/autofs4/waitq.c     |   22 +++-------------------
+ 4 files changed, 3 insertions(+), 23 deletions(-)
+
+--- a/fs/autofs4/autofs_i.h
++++ b/fs/autofs4/autofs_i.h
+@@ -110,7 +110,6 @@ struct autofs_sb_info {
+ 	int sub_version;
+ 	int min_proto;
+ 	int max_proto;
+-	int compat_daemon;
+ 	unsigned long exp_timeout;
+ 	unsigned int type;
+ 	int reghost_enabled;
+--- a/fs/autofs4/dev-ioctl.c
++++ b/fs/autofs4/dev-ioctl.c
+@@ -385,7 +385,6 @@ static int autofs_dev_ioctl_setpipefd(st
+ 		sbi->pipefd = pipefd;
+ 		sbi->pipe = pipe;
+ 		sbi->catatonic = 0;
+-		sbi->compat_daemon = is_compat_task();
+ 	}
+ out:
+ 	mutex_unlock(&sbi->wq_mutex);
+--- a/fs/autofs4/inode.c
++++ b/fs/autofs4/inode.c
+@@ -19,7 +19,6 @@
+ #include <linux/parser.h>
+ #include <linux/bitops.h>
+ #include <linux/magic.h>
+-#include <linux/compat.h>
+ #include "autofs_i.h"
+ #include <linux/module.h>
+ 
+@@ -225,7 +224,6 @@ int autofs4_fill_super(struct super_bloc
+ 	set_autofs_type_indirect(&sbi->type);
+ 	sbi->min_proto = 0;
+ 	sbi->max_proto = 0;
+-	sbi->compat_daemon = is_compat_task();
+ 	mutex_init(&sbi->wq_mutex);
+ 	mutex_init(&sbi->pipe_mutex);
+ 	spin_lock_init(&sbi->fs_lock);
+--- a/fs/autofs4/waitq.c
++++ b/fs/autofs4/waitq.c
+@@ -91,24 +91,7 @@ static int autofs4_write(struct autofs_s
+ 
+ 	return (bytes > 0);
+ }
+-
+-/*
+- * The autofs_v5 packet was misdesigned.
+- *
+- * The packets are identical on x86-32 and x86-64, but have different
+- * alignment. Which means that 'sizeof()' will give different results.
+- * Fix it up for the case of running 32-bit user mode on a 64-bit kernel.
+- */
+-static noinline size_t autofs_v5_packet_size(struct autofs_sb_info *sbi)
+-{
+-	size_t pktsz = sizeof(struct autofs_v5_packet);
+-#if defined(CONFIG_X86_64) && defined(CONFIG_COMPAT)
+-	if (sbi->compat_daemon > 0)
+-		pktsz -= 4;
+-#endif
+-	return pktsz;
+-}
+-
++
+ static void autofs4_notify_daemon(struct autofs_sb_info *sbi,
+ 				 struct autofs_wait_queue *wq,
+ 				 int type)
+@@ -172,7 +155,8 @@ static void autofs4_notify_daemon(struct
+ 	{
+ 		struct autofs_v5_packet *packet = &pkt.v5_pkt.v5_packet;
+ 
+-		pktsz = autofs_v5_packet_size(sbi);
++		pktsz = sizeof(*packet);
++
+ 		packet->wait_queue_token = wq->wait_queue_token;
+ 		packet->len = wq->name.len;
+ 		memcpy(packet->name, wq->name.name, wq->name.len);
+From fb2cf2c660971bea0ad86a9a5c19ad39eab61344 Mon Sep 17 00:00:00 2001
+From: "he, bo" <bo.he@intel.com>
+Date: Wed, 25 Apr 2012 19:59:21 +0800
+Subject: sched: Fix OOPS when build_sched_domains() percpu allocation fails
+
+From: "he, bo" <bo.he@intel.com>
+
+commit fb2cf2c660971bea0ad86a9a5c19ad39eab61344 upstream.
+
+Under extreme memory used up situations, percpu allocation
+might fail. We hit it when system goes to suspend-to-ram,
+causing a kworker panic:
+
+ EIP: [<c124411a>] build_sched_domains+0x23a/0xad0
+ Kernel panic - not syncing: Fatal exception
+ Pid: 3026, comm: kworker/u:3
+ 3.0.8-137473-gf42fbef #1
+
+ Call Trace:
+  [<c18cc4f2>] panic+0x66/0x16c
+  [...]
+  [<c1244c37>] partition_sched_domains+0x287/0x4b0
+  [<c12a77be>] cpuset_update_active_cpus+0x1fe/0x210
+  [<c123712d>] cpuset_cpu_inactive+0x1d/0x30
+  [...]
+
+With this fix applied build_sched_domains() will return -ENOMEM and
+the suspend attempt fails.
+
+Signed-off-by: he, bo <bo.he@intel.com>
+Reviewed-by: Zhang, Yanmin <yanmin.zhang@intel.com>
+Reviewed-by: Srivatsa S. Bhat <srivatsa.bhat@linux.vnet.ibm.com>
+Signed-off-by: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Link: http://lkml.kernel.org/r/1335355161.5892.17.camel@hebo
+[ So, we fail to deallocate a CPU because we cannot allocate RAM :-/
+  I don't like that kind of sad behavior but nevertheless it should
+  not crash under high memory load. ]
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ kernel/sched/core.c |   22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
+
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6334,16 +6334,26 @@ static void __sdt_free(const struct cpum
+ 		struct sd_data *sdd = &tl->data;
+ 
+ 		for_each_cpu(j, cpu_map) {
+-			struct sched_domain *sd = *per_cpu_ptr(sdd->sd, j);
+-			if (sd && (sd->flags & SD_OVERLAP))
+-				free_sched_groups(sd->groups, 0);
+-			kfree(*per_cpu_ptr(sdd->sd, j));
+-			kfree(*per_cpu_ptr(sdd->sg, j));
+-			kfree(*per_cpu_ptr(sdd->sgp, j));
++			struct sched_domain *sd;
++
++			if (sdd->sd) {
++				sd = *per_cpu_ptr(sdd->sd, j);
++				if (sd && (sd->flags & SD_OVERLAP))
++					free_sched_groups(sd->groups, 0);
++				kfree(*per_cpu_ptr(sdd->sd, j));
++			}
++
++			if (sdd->sg)
++				kfree(*per_cpu_ptr(sdd->sg, j));
++			if (sdd->sgp)
++				kfree(*per_cpu_ptr(sdd->sgp, j));
+ 		}
+ 		free_percpu(sdd->sd);
++		sdd->sd = NULL;
+ 		free_percpu(sdd->sg);
++		sdd->sg = NULL;
+ 		free_percpu(sdd->sgp);
++		sdd->sgp = NULL;
+ 	}
+ }
+ 
+From db4c75cbebd7e5910cd3bcb6790272fcc3042857 Mon Sep 17 00:00:00 2001
+From: Steven Rostedt <srostedt@redhat.com>
+Date: Thu, 19 Apr 2012 10:31:47 -0400
+Subject: tracing: Fix stacktrace of latency tracers (irqsoff and friends)
+
+From: Steven Rostedt <srostedt@redhat.com>
+
+commit db4c75cbebd7e5910cd3bcb6790272fcc3042857 upstream.
+
+While debugging a latency with someone on IRC (mirage335) on #linux-rt (OFTC),
+we discovered that the stacktrace output of the latency tracers
+(preemptirqsoff) was empty.
+
+This bug was caused by the creation of the dynamic length stack trace
+again (like commit 12b5da3 "tracing: Fix ent_size in trace output" was).
+
+This bug is caused by the latency tracers requiring the next event
+to determine the time between the current event and the next. But by
+grabbing the next event, the iter->ent_size is set to the next event
+instead of the current one. As the stacktrace event is the last event,
+this makes the ent_size zero and causes nothing to be printed for
+the stack trace. The dynamic stacktrace uses the ent_size to determine
+how much of the stack can be printed. The ent_size of zero means
+no stack.
+
+The simple fix is to save the iter->ent_size before finding the next event.
+
+Note, mirage335 asked to remain anonymous from LKML and git, so I will
+not add the Reported-by and Tested-by tags, even though he did report
+the issue and tested the fix.
+
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ kernel/trace/trace_output.c |    5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/kernel/trace/trace_output.c
++++ b/kernel/trace/trace_output.c
+@@ -650,6 +650,8 @@ int trace_print_lat_context(struct trace
+ {
+ 	u64 next_ts;
+ 	int ret;
++	/* trace_find_next_entry will reset ent_size */
++	int ent_size = iter->ent_size;
+ 	struct trace_seq *s = &iter->seq;
+ 	struct trace_entry *entry = iter->ent,
+ 			   *next_entry = trace_find_next_entry(iter, NULL,
+@@ -658,6 +660,9 @@ int trace_print_lat_context(struct trace
+ 	unsigned long abs_usecs = ns2usecs(iter->ts - iter->tr->time_start);
+ 	unsigned long rel_usecs;
+ 
++	/* Restore the original ent_size */
++	iter->ent_size = ent_size;
++
+ 	if (!next_entry)
+ 		next_ts = iter->ts;
+ 	rel_usecs = ns2usecs(next_ts - iter->ts);
+From 5c22837adca7c30b66121cf18ad3e160134268d4 Mon Sep 17 00:00:00 2001
+From: Oliver Neukum <oliver@neukum.org>
+Date: Thu, 26 Apr 2012 21:59:10 +0200
+Subject: USB: cdc-wdm: fix race leading leading to memory corruption
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From: Oliver Neukum <oliver@neukum.org>
+
+commit 5c22837adca7c30b66121cf18ad3e160134268d4 upstream.
+
+This patch fixes a race whereby a pointer to a buffer
+would be overwritten while the buffer was in use leading
+to a double free and a memory leak. This causes crashes.
+This bug was introduced in 2.6.34
+
+Signed-off-by: Oliver Neukum <oneukum@suse.de>
+Tested-by: Bjørn Mork <bjorn@mork.no>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/usb/class/cdc-wdm.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+--- a/drivers/usb/class/cdc-wdm.c
++++ b/drivers/usb/class/cdc-wdm.c
+@@ -108,8 +108,9 @@ static void wdm_out_callback(struct urb
+ 	spin_lock(&desc->iuspin);
+ 	desc->werr = urb->status;
+ 	spin_unlock(&desc->iuspin);
+-	clear_bit(WDM_IN_USE, &desc->flags);
+ 	kfree(desc->outbuf);
++	desc->outbuf = NULL;
++	clear_bit(WDM_IN_USE, &desc->flags);
+ 	wake_up(&desc->wait);
+ }
+ 
+@@ -312,7 +313,7 @@ static ssize_t wdm_write
+ 	if (we < 0)
+ 		return -EIO;
+ 
+-	desc->outbuf = buf = kmalloc(count, GFP_KERNEL);
++	buf = kmalloc(count, GFP_KERNEL);
+ 	if (!buf) {
+ 		rv = -ENOMEM;
+ 		goto outnl;
+@@ -376,10 +377,12 @@ static ssize_t wdm_write
+ 	req->wIndex = desc->inum;
+ 	req->wLength = cpu_to_le16(count);
+ 	set_bit(WDM_IN_USE, &desc->flags);
++	desc->outbuf = buf;
+ 
+ 	rv = usb_submit_urb(desc->command, GFP_KERNEL);
+ 	if (rv < 0) {
+ 		kfree(buf);
++		desc->outbuf = NULL;
+ 		clear_bit(WDM_IN_USE, &desc->flags);
+ 		dev_err(&desc->intf->dev, "Tx URB error: %d\n", rv);
+ 	} else {
+From 151b61284776be2d6f02d48c23c3625678960b97 Mon Sep 17 00:00:00 2001
+From: Alan Stern <stern@rowland.harvard.edu>
+Date: Tue, 24 Apr 2012 14:07:22 -0400
+Subject: USB: EHCI: fix crash during suspend on ASUS computers
+
+From: Alan Stern <stern@rowland.harvard.edu>
+
+commit 151b61284776be2d6f02d48c23c3625678960b97 upstream.
+
+This patch (as1545) fixes a problem affecting several ASUS computers:
+The machine crashes or corrupts memory when going into suspend if the
+ehci-hcd driver is bound to any controllers.  Users have been forced
+to unbind or unload ehci-hcd before putting their systems to sleep.
+
+After extensive testing, it was determined that the machines don't
+like going into suspend when any EHCI controllers are in the PCI D3
+power state.  Presumably this is a firmware bug, but there's nothing
+we can do about it except to avoid putting the controllers in D3
+during system sleep.
+
+The patch adds a new flag to indicate whether the problem is present,
+and avoids changing the controller's power state if the flag is set.
+Runtime suspend is unaffected; this matters only for system suspend.
+However as a side effect, the controller will not respond to remote
+wakeup requests while the system is asleep.  Hence USB wakeup is not
+functional -- but of course, this is already true in the current state
+of affairs.
+
+This fixes Bugzilla #42728.
+
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Tested-by: Steven Rostedt <rostedt@goodmis.org>
+Tested-by: Andrey Rahmatullin <wrar@wrar.name>
+Tested-by: Oleksij Rempel (fishor) <bug-track@fisher-privat.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/usb/core/hcd-pci.c  |    9 +++++++++
+ drivers/usb/host/ehci-pci.c |    8 ++++++++
+ include/linux/usb/hcd.h     |    2 ++
+ 3 files changed, 19 insertions(+)
+
+--- a/drivers/usb/core/hcd-pci.c
++++ b/drivers/usb/core/hcd-pci.c
+@@ -491,6 +491,15 @@ static int hcd_pci_suspend_noirq(struct
+ 
+ 	pci_save_state(pci_dev);
+ 
++	/*
++	 * Some systems crash if an EHCI controller is in D3 during
++	 * a sleep transition.  We have to leave such controllers in D0.
++	 */
++	if (hcd->broken_pci_sleep) {
++		dev_dbg(dev, "Staying in PCI D0\n");
++		return retval;
++	}
++
+ 	/* If the root hub is dead rather than suspended, disallow remote
+ 	 * wakeup.  usb_hc_died() should ensure that both hosts are marked as
+ 	 * dying, so we only need to check the primary roothub.
+--- a/drivers/usb/host/ehci-pci.c
++++ b/drivers/usb/host/ehci-pci.c
+@@ -144,6 +144,14 @@ static int ehci_pci_setup(struct usb_hcd
+ 			hcd->has_tt = 1;
+ 			tdi_reset(ehci);
+ 		}
++		if (pdev->subsystem_vendor == PCI_VENDOR_ID_ASUSTEK) {
++			/* EHCI #1 or #2 on 6 Series/C200 Series chipset */
++			if (pdev->device == 0x1c26 || pdev->device == 0x1c2d) {
++				ehci_info(ehci, "broken D3 during system sleep on ASUS\n");
++				hcd->broken_pci_sleep = 1;
++				device_set_wakeup_capable(&pdev->dev, false);
++			}
++		}
+ 		break;
+ 	case PCI_VENDOR_ID_TDI:
+ 		if (pdev->device == PCI_DEVICE_ID_TDI_EHCI) {
+--- a/include/linux/usb/hcd.h
++++ b/include/linux/usb/hcd.h
+@@ -126,6 +126,8 @@ struct usb_hcd {
+ 	unsigned		wireless:1;	/* Wireless USB HCD */
+ 	unsigned		authorized_default:1;
+ 	unsigned		has_tt:1;	/* Integrated TT in root hub */
++	unsigned		broken_pci_sleep:1;	/* Don't put the
++			controller in PCI-D3 for system sleep */
+ 
+ 	int			irq;		/* irq allocated */
+ 	void __iomem		*regs;		/* device memory/io */
+From 15b120d67019d691e4389372967332d74a80522a Mon Sep 17 00:00:00 2001
+From: Felipe Balbi <balbi@ti.com>
+Date: Wed, 18 Apr 2012 13:59:30 +0300
+Subject: usb: gadget: dummy: do not call pullup() on udc_stop()
+
+From: Felipe Balbi <balbi@ti.com>
+
+commit 15b120d67019d691e4389372967332d74a80522a upstream.
+
+pullup() is already called properly by udc-core.c and
+there's no need to call it from udc_stop(), in fact that
+will cause issues.
+
+Reviewed-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Felipe Balbi <balbi@ti.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/usb/gadget/dummy_hcd.c |    1 -
+ 1 file changed, 1 deletion(-)
+
+--- a/drivers/usb/gadget/dummy_hcd.c
++++ b/drivers/usb/gadget/dummy_hcd.c
+@@ -924,7 +924,6 @@ static int dummy_udc_stop(struct usb_gad
+ 
+ 	dum->driver = NULL;
+ 
+-	dummy_pullup(&dum->gadget, 0);
+ 	return 0;
+ }
+ 
+From c85dcdac5852295cf6822f5c4331a6ddab72581f Mon Sep 17 00:00:00 2001
+From: Alan Stern <stern@rowland.harvard.edu>
+Date: Wed, 11 Apr 2012 16:09:10 -0400
+Subject: USB: gadget: storage gadgets send wrong error code for unknown commands
+
+From: Alan Stern <stern@rowland.harvard.edu>
+
+commit c85dcdac5852295cf6822f5c4331a6ddab72581f upstream.
+
+This patch (as1539) fixes a minor bug in the mass-storage gadget
+drivers.  When an unknown command is received, the error code sent
+back is "Invalid Field in CDB" rather than "Invalid Command".  This is
+because the bitmask of CDB bytes allowed to be nonzero is incorrect.
+
+When handling an unknown command, we don't care which command bytes
+are nonzero.  All the bits in the mask should be set, not just eight
+of them.
+
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+CC: <Michal Nazarewicz <mina86@mina86.com>
+Signed-off-by: Felipe Balbi <balbi@ti.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/usb/gadget/f_mass_storage.c |    2 +-
+ drivers/usb/gadget/file_storage.c   |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+--- a/drivers/usb/gadget/f_mass_storage.c
++++ b/drivers/usb/gadget/f_mass_storage.c
+@@ -2190,7 +2190,7 @@ unknown_cmnd:
+ 		common->data_size_from_cmnd = 0;
+ 		sprintf(unknown, "Unknown x%02x", common->cmnd[0]);
+ 		reply = check_command(common, common->cmnd_size,
+-				      DATA_DIR_UNKNOWN, 0xff, 0, unknown);
++				      DATA_DIR_UNKNOWN, ~0, 0, unknown);
+ 		if (reply == 0) {
+ 			common->curlun->sense_data = SS_INVALID_COMMAND;
+ 			reply = -EINVAL;
+--- a/drivers/usb/gadget/file_storage.c
++++ b/drivers/usb/gadget/file_storage.c
+@@ -2579,7 +2579,7 @@ static int do_scsi_command(struct fsg_de
+ 		fsg->data_size_from_cmnd = 0;
+ 		sprintf(unknown, "Unknown x%02x", fsg->cmnd[0]);
+ 		if ((reply = check_command(fsg, fsg->cmnd_size,
+-				DATA_DIR_UNKNOWN, 0xff, 0, unknown)) == 0) {
++				DATA_DIR_UNKNOWN, ~0, 0, unknown)) == 0) {
+ 			fsg->curlun->sense_data = SS_INVALID_COMMAND;
+ 			reply = -EINVAL;
+ 		}
+From 6f6543f53f9ce136e01d7114bf6f0818ca54fb41 Mon Sep 17 00:00:00 2001
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Date: Tue, 24 Apr 2012 11:29:42 +0200
+Subject: usb gadget: uvc: uvc_request_data::length field must be signed
+
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+commit 6f6543f53f9ce136e01d7114bf6f0818ca54fb41 upstream.
+
+The field is used to pass the UVC request data length, but can also be
+used to signal an error when setting it to a negative value. Switch from
+unsigned int to __s32.
+
+Reported-by: Fernandez Gonzalo <gfernandez@copreci.es>
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/usb/gadget/uvc.h      |    2 +-
+ drivers/usb/gadget/uvc_v4l2.c |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+--- a/drivers/usb/gadget/uvc.h
++++ b/drivers/usb/gadget/uvc.h
+@@ -28,7 +28,7 @@
+ 
+ struct uvc_request_data
+ {
+-	unsigned int length;
++	__s32 length;
+ 	__u8 data[60];
+ };
+ 
+--- a/drivers/usb/gadget/uvc_v4l2.c
++++ b/drivers/usb/gadget/uvc_v4l2.c
+@@ -39,7 +39,7 @@ uvc_send_response(struct uvc_device *uvc
+ 	if (data->length < 0)
+ 		return usb_ep_set_halt(cdev->gadget->ep0);
+ 
+-	req->length = min(uvc->event_length, data->length);
++	req->length = min_t(unsigned int, uvc->event_length, data->length);
+ 	req->zero = data->length < uvc->event_length;
+ 	req->dma = DMA_ADDR_INVALID;
+ 
+From cbf2829b61c136edcba302a5e1b6b40e97d32c00 Mon Sep 17 00:00:00 2001
+From: Bryan O'Donoghue <bryan.odonoghue@linux.intel.com>
+Date: Wed, 18 Apr 2012 17:37:39 +0100
+Subject: x86, apic: APIC code touches invalid MSR on P5 class machines
+
+From: Bryan O'Donoghue <bryan.odonoghue@linux.intel.com>
+
+commit cbf2829b61c136edcba302a5e1b6b40e97d32c00 upstream.
+
+Current APIC code assumes MSR_IA32_APICBASE is present for all systems.
+Pentium Classic P5 and friends didn't have this MSR. MSR_IA32_APICBASE
+was introduced as an architectural MSR by Intel @ P6.
+
+Code paths that can touch this MSR invalidly are when vendor == Intel &&
+cpu-family == 5 and APIC bit is set in CPUID - or when you simply pass
+lapic on the kernel command line, on a P5.
+
+The below patch stops Linux incorrectly interfering with the
+MSR_IA32_APICBASE for P5 class machines. Other code paths exist that
+touch the MSR - however those paths are not currently reachable for a
+conformant P5.
+
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linux.intel.com>
+Link: http://lkml.kernel.org/r/4F8EEDD3.1080404@linux.intel.com
+Signed-off-by: H. Peter Anvin <hpa@linux.intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/x86/kernel/apic/apic.c |   34 ++++++++++++++++++++--------------
+ 1 file changed, 20 insertions(+), 14 deletions(-)
+
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -1632,9 +1632,11 @@ static int __init apic_verify(void)
+ 	mp_lapic_addr = APIC_DEFAULT_PHYS_BASE;
+ 
+ 	/* The BIOS may have set up the APIC at some other address */
+-	rdmsr(MSR_IA32_APICBASE, l, h);
+-	if (l & MSR_IA32_APICBASE_ENABLE)
+-		mp_lapic_addr = l & MSR_IA32_APICBASE_BASE;
++	if (boot_cpu_data.x86 >= 6) {
++		rdmsr(MSR_IA32_APICBASE, l, h);
++		if (l & MSR_IA32_APICBASE_ENABLE)
++			mp_lapic_addr = l & MSR_IA32_APICBASE_BASE;
++	}
+ 
+ 	pr_info("Found and enabled local APIC!\n");
+ 	return 0;
+@@ -1652,13 +1654,15 @@ int __init apic_force_enable(unsigned lo
+ 	 * MSR. This can only be done in software for Intel P6 or later
+ 	 * and AMD K7 (Model > 1) or later.
+ 	 */
+-	rdmsr(MSR_IA32_APICBASE, l, h);
+-	if (!(l & MSR_IA32_APICBASE_ENABLE)) {
+-		pr_info("Local APIC disabled by BIOS -- reenabling.\n");
+-		l &= ~MSR_IA32_APICBASE_BASE;
+-		l |= MSR_IA32_APICBASE_ENABLE | addr;
+-		wrmsr(MSR_IA32_APICBASE, l, h);
+-		enabled_via_apicbase = 1;
++	if (boot_cpu_data.x86 >= 6) {
++		rdmsr(MSR_IA32_APICBASE, l, h);
++		if (!(l & MSR_IA32_APICBASE_ENABLE)) {
++			pr_info("Local APIC disabled by BIOS -- reenabling.\n");
++			l &= ~MSR_IA32_APICBASE_BASE;
++			l |= MSR_IA32_APICBASE_ENABLE | addr;
++			wrmsr(MSR_IA32_APICBASE, l, h);
++			enabled_via_apicbase = 1;
++		}
+ 	}
+ 	return apic_verify();
+ }
+@@ -2204,10 +2208,12 @@ static void lapic_resume(void)
+ 		 * FIXME! This will be wrong if we ever support suspend on
+ 		 * SMP! We'll need to do this as part of the CPU restore!
+ 		 */
+-		rdmsr(MSR_IA32_APICBASE, l, h);
+-		l &= ~MSR_IA32_APICBASE_BASE;
+-		l |= MSR_IA32_APICBASE_ENABLE | mp_lapic_addr;
+-		wrmsr(MSR_IA32_APICBASE, l, h);
++		if (boot_cpu_data.x86 >= 6) {
++			rdmsr(MSR_IA32_APICBASE, l, h);
++			l &= ~MSR_IA32_APICBASE_BASE;
++			l |= MSR_IA32_APICBASE_ENABLE | mp_lapic_addr;
++			wrmsr(MSR_IA32_APICBASE, l, h);
++		}
+ 	}
+ 
+ 	maxlvt = lapic_get_maxlvt();
+From 283c1f2558ef4a4411fe908364b15b73b6ab44cf Mon Sep 17 00:00:00 2001
+From: Andreas Herrmann <andreas.herrmann3@amd.com>
+Date: Thu, 12 Apr 2012 16:51:57 +0200
+Subject: x86, microcode: Ensure that module is only loaded on supported AMD CPUs
+
+From: Andreas Herrmann <andreas.herrmann3@amd.com>
+
+commit 283c1f2558ef4a4411fe908364b15b73b6ab44cf upstream.
+
+Exit early when there's no support for a particular CPU family. Also,
+fixup the "no support for this CPU vendor" to be issued only when the
+driver is attempted to be loaded on an unsupported vendor.
+
+Cc: Tigran Aivazian <tigran@aivazian.fsnet.co.uk>
+Signed-off-by: Andreas Herrmann <andreas.herrmann3@amd.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: http://lkml.kernel.org/r/20120411163849.GE4794@alberich.amd.com
+[Boris: add a commit msg because Andreas is lazy]
+Signed-off-by: Borislav Petkov <borislav.petkov@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/x86/kernel/microcode_amd.c  |   12 +++++++-----
+ arch/x86/kernel/microcode_core.c |    6 +++---
+ 2 files changed, 10 insertions(+), 8 deletions(-)
+
+--- a/arch/x86/kernel/microcode_amd.c
++++ b/arch/x86/kernel/microcode_amd.c
+@@ -82,11 +82,6 @@ static int collect_cpu_info_amd(int cpu,
+ {
+ 	struct cpuinfo_x86 *c = &cpu_data(cpu);
+ 
+-	if (c->x86_vendor != X86_VENDOR_AMD || c->x86 < 0x10) {
+-		pr_warning("CPU%d: family %d not supported\n", cpu, c->x86);
+-		return -1;
+-	}
+-
+ 	csig->rev = c->microcode;
+ 	pr_info("CPU%d: patch_level=0x%08x\n", cpu, csig->rev);
+ 
+@@ -380,6 +375,13 @@ static struct microcode_ops microcode_am
+ 
+ struct microcode_ops * __init init_amd_microcode(void)
+ {
++	struct cpuinfo_x86 *c = &cpu_data(0);
++
++	if (c->x86_vendor != X86_VENDOR_AMD || c->x86 < 0x10) {
++		pr_warning("AMD CPU family 0x%x not supported\n", c->x86);
++		return NULL;
++	}
++
+ 	patch = (void *)get_zeroed_page(GFP_KERNEL);
+ 	if (!patch)
+ 		return NULL;
+--- a/arch/x86/kernel/microcode_core.c
++++ b/arch/x86/kernel/microcode_core.c
+@@ -511,11 +511,11 @@ static int __init microcode_init(void)
+ 		microcode_ops = init_intel_microcode();
+ 	else if (c->x86_vendor == X86_VENDOR_AMD)
+ 		microcode_ops = init_amd_microcode();
+-
+-	if (!microcode_ops) {
++	else
+ 		pr_err("no support for this CPU vendor\n");
++
++	if (!microcode_ops)
+ 		return -ENODEV;
+-	}
+ 
+ 	microcode_pdev = platform_device_register_simple("microcode", -1,
+ 							 NULL, 0);
+From a956bd6f8583326b18348ab1452b4686778f785d Mon Sep 17 00:00:00 2001
+From: Andreas Herrmann <andreas.herrmann3@amd.com>
+Date: Thu, 12 Apr 2012 16:48:01 +0200
+Subject: x86, microcode: Fix sysfs warning during module unload on unsupported CPUs
+
+From: Andreas Herrmann <andreas.herrmann3@amd.com>
+
+commit a956bd6f8583326b18348ab1452b4686778f785d upstream.
+
+Loading the microcode driver on an unsupported CPU and subsequently
+unloading the driver causes
+
+ WARNING: at fs/sysfs/group.c:138 mc_device_remove+0x5f/0x70 [microcode]()
+ Hardware name: 01972NG
+ sysfs group ffffffffa00013d0 not found for kobject 'cpu0'
+ Modules linked in: snd_hda_codec_hdmi snd_hda_codec_conexant snd_hda_intel btusb snd_hda_codec bluetooth thinkpad_acpi rfkill microcode(-) [last unloaded: cfg80211]
+ Pid: 4560, comm: modprobe Not tainted 3.4.0-rc2-00002-g258f742 #5
+ Call Trace:
+  [<ffffffff8103113b>] ? warn_slowpath_common+0x7b/0xc0
+  [<ffffffff81031235>] ? warn_slowpath_fmt+0x45/0x50
+  [<ffffffff81120e74>] ? sysfs_remove_group+0x34/0x120
+  [<ffffffffa00000ef>] ? mc_device_remove+0x5f/0x70 [microcode]
+  [<ffffffff81331eb9>] ? subsys_interface_unregister+0x69/0xa0
+  [<ffffffff81563526>] ? mutex_lock+0x16/0x40
+  [<ffffffffa0000c3e>] ? microcode_exit+0x50/0x92 [microcode]
+  [<ffffffff8107051d>] ? sys_delete_module+0x16d/0x260
+  [<ffffffff810a0065>] ? wait_iff_congested+0x45/0x110
+  [<ffffffff815656af>] ? page_fault+0x1f/0x30
+  [<ffffffff81565ba2>] ? system_call_fastpath+0x16/0x1b
+
+on recent kernels.
+
+This is due to commit 8a25a2fd126c ("cpu: convert 'cpu' and
+'machinecheck' sysdev_class to a regular subsystem") which renders
+commit 6c53cbfced04 ("x86, microcode: Correct sysdev_add error path")
+useless.
+
+See http://marc.info/?l=linux-kernel&m=133416246406478
+
+Avoid above warning by restoring the old driver behaviour before
+6c53cbfced04 ("x86, microcode: Correct sysdev_add error path").
+
+Cc: Tigran Aivazian <tigran@aivazian.fsnet.co.uk>
+Signed-off-by: Andreas Herrmann <andreas.herrmann3@amd.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: http://lkml.kernel.org/r/20120411163849.GE4794@alberich.amd.com
+Signed-off-by: Borislav Petkov <borislav.petkov@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/x86/kernel/microcode_core.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+--- a/arch/x86/kernel/microcode_core.c
++++ b/arch/x86/kernel/microcode_core.c
+@@ -418,10 +418,8 @@ static int mc_device_add(struct device *
+ 	if (err)
+ 		return err;
+ 
+-	if (microcode_init_cpu(cpu) == UCODE_ERROR) {
+-		sysfs_remove_group(&dev->kobj, &mc_attr_group);
++	if (microcode_init_cpu(cpu) == UCODE_ERROR)
+ 		return -EINVAL;
+-	}
+ 
+ 	return err;
+ }
+From 68894632afb2729a1d8785c877840953894c7283 Mon Sep 17 00:00:00 2001
+From: Andreas Herrmann <andreas.herrmann3@amd.com>
+Date: Mon, 2 Apr 2012 18:06:48 +0200
+Subject: x86/platform: Remove incorrect error message in x86_default_fixup_cpu_id()
+
+From: Andreas Herrmann <andreas.herrmann3@amd.com>
+
+commit 68894632afb2729a1d8785c877840953894c7283 upstream.
+
+It's only called from amd.c:srat_detect_node(). The introduced
+condition for calling the fixup code is true for all AMD
+multi-node processors, e.g. Magny-Cours and Interlagos. There we
+have 2 NUMA nodes on one socket. Thus there are cores having
+different numa-node-id but with equal phys_proc_id.
+
+There is no point to print error messages in such a situation.
+
+The confusing/misleading error message was introduced with
+commit 64be4c1c2428e148de6081af235e2418e6a66dda ("x86: Add
+x86_init platform override to fix up NUMA core numbering").
+
+Remove the default fixup function (especially the error message)
+and replace it by a NULL pointer check, move the
+Numascale-specific condition for calling the fixup into the
+fixup-function itself and slightly adapt the comment.
+
+Signed-off-by: Andreas Herrmann <andreas.herrmann3@amd.com>
+Acked-by: Borislav Petkov <borislav.petkov@amd.com>
+Cc: <sp@numascale.com>
+Cc: <bp@amd64.org>
+Cc: <daniel@numascale-asia.com>
+Link: http://lkml.kernel.org/r/20120402160648.GR27684@alberich.amd.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/x86/include/asm/x86_init.h      |    1 -
+ arch/x86/kernel/apic/apic_numachip.c |    7 +++++--
+ arch/x86/kernel/cpu/amd.c            |    7 ++++---
+ arch/x86/kernel/cpu/common.c         |    9 ---------
+ arch/x86/kernel/x86_init.c           |    1 -
+ 5 files changed, 9 insertions(+), 16 deletions(-)
+
+--- a/arch/x86/include/asm/x86_init.h
++++ b/arch/x86/include/asm/x86_init.h
+@@ -189,6 +189,5 @@ extern struct x86_msi_ops x86_msi;
+ 
+ extern void x86_init_noop(void);
+ extern void x86_init_uint_noop(unsigned int unused);
+-extern void x86_default_fixup_cpu_id(struct cpuinfo_x86 *c, int node);
+ 
+ #endif
+--- a/arch/x86/kernel/apic/apic_numachip.c
++++ b/arch/x86/kernel/apic/apic_numachip.c
+@@ -201,8 +201,11 @@ static void __init map_csrs(void)
+ 
+ static void fixup_cpu_id(struct cpuinfo_x86 *c, int node)
+ {
+-	c->phys_proc_id = node;
+-	per_cpu(cpu_llc_id, smp_processor_id()) = node;
++
++	if (c->phys_proc_id != node) {
++		c->phys_proc_id = node;
++		per_cpu(cpu_llc_id, smp_processor_id()) = node;
++	}
+ }
+ 
+ static int __init numachip_system_init(void)
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -352,10 +352,11 @@ static void __cpuinit srat_detect_node(s
+ 		node = per_cpu(cpu_llc_id, cpu);
+ 
+ 	/*
+-	 * If core numbers are inconsistent, it's likely a multi-fabric platform,
+-	 * so invoke platform-specific handler
++	 * On multi-fabric platform (e.g. Numascale NumaChip) a
++	 * platform-specific handler needs to be called to fixup some
++	 * IDs of the CPU.
+ 	 */
+-	if (c->phys_proc_id != node)
++	if (x86_cpuinit.fixup_cpu_id)
+ 		x86_cpuinit.fixup_cpu_id(c, node);
+ 
+ 	if (!node_online(node)) {
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1163,15 +1163,6 @@ static void dbg_restore_debug_regs(void)
+ #endif /* ! CONFIG_KGDB */
+ 
+ /*
+- * Prints an error where the NUMA and configured core-number mismatch and the
+- * platform didn't override this to fix it up
+- */
+-void __cpuinit x86_default_fixup_cpu_id(struct cpuinfo_x86 *c, int node)
+-{
+-	pr_err("NUMA core number %d differs from configured core number %d\n", node, c->phys_proc_id);
+-}
+-
+-/*
+  * cpu_init() initializes state that is per-CPU. Some data is already
+  * initialized (naturally) in the bootstrap process, such as the GDT
+  * and IDT. We reload them nevertheless, this function acts as a
+--- a/arch/x86/kernel/x86_init.c
++++ b/arch/x86/kernel/x86_init.c
+@@ -92,7 +92,6 @@ struct x86_init_ops x86_init __initdata
+ 
+ struct x86_cpuinit_ops x86_cpuinit __cpuinitdata = {
+ 	.setup_percpu_clockev		= setup_secondary_APIC_clock,
+-	.fixup_cpu_id			= x86_default_fixup_cpu_id,
+ };
+ 
+ static void default_nmi_init(void) { };
+From 7eb7ce4d2e8991aff4ecb71a81949a907ca755ac Mon Sep 17 00:00:00 2001
+From: David Vrabel <david.vrabel@citrix.com>
+Date: Thu, 26 Apr 2012 19:44:06 +0100
+Subject: xen: correctly check for pending events when restoring irq flags
+
+From: David Vrabel <david.vrabel@citrix.com>
+
+commit 7eb7ce4d2e8991aff4ecb71a81949a907ca755ac upstream.
+
+In xen_restore_fl_direct(), xen_force_evtchn_callback() was being
+called even if no events were pending.  This resulted in (depending on
+workload) about a 100 times as many xen_version hypercalls as
+necessary.
+
+Fix this by correcting the sense of the conditional jump.
+
+This seems to give a significant performance benefit for some
+workloads.
+
+There is some subtle tricksy "..since the check here is trying to
+check both pending and masked in a single cmpw, but I think this is
+correct. It will call check_events now only when the combined
+mask+pending word is 0x0001 (aka unmasked, pending)." (Ian)
+
+Acked-by: Ian Campbell <ian.campbell@citrix.com>
+Signed-off-by: David Vrabel <david.vrabel@citrix.com>
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/x86/xen/xen-asm.S |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/x86/xen/xen-asm.S
++++ b/arch/x86/xen/xen-asm.S
+@@ -96,7 +96,7 @@ ENTRY(xen_restore_fl_direct)
+ 
+ 	/* check for unmasked and pending */
+ 	cmpw $0x0001, PER_CPU_VAR(xen_vcpu_info) + XEN_vcpu_info_pending
+-	jz 1f
++	jnz 1f
+ 2:	call check_events
+ 1:
+ ENDPATCH(xen_restore_fl_direct)
+From cf405ae612b0f7e2358db7ff594c0e94846137aa Mon Sep 17 00:00:00 2001
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Date: Thu, 26 Apr 2012 13:50:03 -0400
+Subject: xen/smp: Fix crash when booting with ACPI hotplug CPUs.
+
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+
+commit cf405ae612b0f7e2358db7ff594c0e94846137aa upstream.
+
+When we boot on a machine that can hotplug CPUs and we
+are using 'dom0_max_vcpus=X' on the Xen hypervisor line
+to clip the amount of CPUs available to the initial domain,
+we get this:
+
+(XEN) Command line: com1=115200,8n1 dom0_mem=8G noreboot dom0_max_vcpus=8 sync_console mce_verbosity=verbose console=com1,vga loglvl=all guest_loglvl=all
+.. snip..
+DMI: Intel Corporation S2600CP/S2600CP, BIOS SE5C600.86B.99.99.x032.072520111118 07/25/2011
+.. snip.
+SMP: Allowing 64 CPUs, 32 hotplug CPUs
+installing Xen timer for CPU 7
+cpu 7 spinlock event irq 361
+NMI watchdog: disabled (cpu7): hardware events not enabled
+Brought up 8 CPUs
+.. snip..
+	[acpi processor finds the CPUs are not initialized and starts calling
+	arch_register_cpu, which creates /sys/devices/system/cpu/cpu8/online]
+CPU 8 got hotplugged
+CPU 9 got hotplugged
+CPU 10 got hotplugged
+.. snip..
+initcall 1_acpi_battery_init_async+0x0/0x1b returned 0 after 406 usecs
+calling  erst_init+0x0/0x2bb @ 1
+
+	[and the scheduler sticks newly started tasks on the new CPUs, but
+	said CPUs cannot be initialized b/c the hypervisor has limited the
+	amount of vCPUS to 8 - as per the dom0_max_vcpus=8 flag.
+	The spinlock tries to kick the other CPU, but the structure for that
+	is not initialized and we crash.]
+BUG: unable to handle kernel paging request at fffffffffffffed8
+IP: [<ffffffff81035289>] xen_spin_lock+0x29/0x60
+PGD 180d067 PUD 180e067 PMD 0
+Oops: 0002 [#1] SMP
+CPU 7
+Modules linked in:
+
+Pid: 1, comm: swapper/0 Not tainted 3.4.0-rc2upstream-00001-gf5154e8 #1 Intel Corporation S2600CP/S2600CP
+RIP: e030:[<ffffffff81035289>]  [<ffffffff81035289>] xen_spin_lock+0x29/0x60
+RSP: e02b:ffff8801fb9b3a70  EFLAGS: 00010282
+
+With this patch, we cap the amount of vCPUS that the initial domain
+can run, to exactly what dom0_max_vcpus=X has specified.
+
+In the future, if there is a hypercall that will allow a running
+domain to expand past its initial set of vCPUS, this patch should
+be re-evaluated.
+
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/x86/xen/smp.c |   15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+--- a/arch/x86/xen/smp.c
++++ b/arch/x86/xen/smp.c
+@@ -172,6 +172,7 @@ static void __init xen_fill_possible_map
+ static void __init xen_filter_cpu_maps(void)
+ {
+ 	int i, rc;
++	unsigned int subtract = 0;
+ 
+ 	if (!xen_initial_domain())
+ 		return;
+@@ -186,8 +187,22 @@ static void __init xen_filter_cpu_maps(v
+ 		} else {
+ 			set_cpu_possible(i, false);
+ 			set_cpu_present(i, false);
++			subtract++;
+ 		}
+ 	}
++#ifdef CONFIG_HOTPLUG_CPU
++	/* This is akin to using 'nr_cpus' on the Linux command line.
++	 * Which is OK as when we use 'dom0_max_vcpus=X' we can only
++	 * have up to X, while nr_cpu_ids is greater than X. This
++	 * normally is not a problem, except when CPU hotplugging
++	 * is involved and then there might be more than X CPUs
++	 * in the guest - which will not work as there is no
++	 * hypercall to expand the max number of VCPUs an already
++	 * running guest has. So cap it up to X. */
++	if (subtract)
++		nr_cpu_ids = nr_cpu_ids - subtract;
++#endif
++
+ }
+ 
+ static void __init xen_smp_prepare_boot_cpu(void)
