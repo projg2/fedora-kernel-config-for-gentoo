@@ -2426,6 +2426,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu May 03 2012 Dennis Gilmore <dennis@ausil.us>
+- enable the kms omap driver
+
 * Thu May  3 2012 Peter Robinson <pbrobinson@fedoraproject.org>
 - Patch for disconnect issues with storage attached to a tegra-ehci controller
 
