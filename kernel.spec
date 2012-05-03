@@ -2245,6 +2245,9 @@ fi
 
 %changelog
 * Thu May 03 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.4-3
+- Reenable slip for F16 (rhbz 818308)
+
+* Thu May 03 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.4-3
 - Many patches from 3.3.5 stable queue
 - NFS Bugfixes from upstream
 
