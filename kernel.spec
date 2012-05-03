@@ -2421,6 +2421,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed May 02 2012 Josh Boyer <jwboyer@redhat.com>
+- Disable PCIEPORTBUS on ppc64 per IBM request
+
 * Wed May 02 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.4-3
 - Many patches from 3.3.5 stable queue
 
