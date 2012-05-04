@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -716,6 +716,9 @@ Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.pat
 #rhbz 817298
 Patch22013: ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
 
+#rhbz 818820
+Patch22016: dl2k-Clean-up-rio_ioctl.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1324,6 +1327,9 @@ ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patc
 
 #rhbz 817298
 ApplyPatch ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
+
+#rhbz 818820
+ApplyPatch dl2k-Clean-up-rio_ioctl.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1977,6 +1983,9 @@ fi
 # and build.
 
 %changelog
+* Fri May 04 2012 Josh Boyer <jwboyer@redhat.com>
+- unfiltered netdev rio_ioctl access by users (rhbz 818820)
+
 * Mon Apr 30 2012 Josh Boyer <jwboyer@redhat.com>
 - Backport ipw2x00 nl80211 cipher suite reporting (rhbz 817298)
 
