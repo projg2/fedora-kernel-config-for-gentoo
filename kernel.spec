@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -811,6 +811,9 @@ Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 
 #Lots of fixes from 3.3.5 stable queue
 Patch22015: stable-queue-3.3.5-0502.patch
+
+#rhbz 818820
+Patch22016: dl2k-Clean-up-rio_ioctl.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1571,6 +1574,9 @@ ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 
 #Lots of fixes from 3.3.5 stable queue
 ApplyPatch stable-queue-3.3.5-0502.patch
+
+#rhbz 818820
+ApplyPatch dl2k-Clean-up-rio_ioctl.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2426,6 +2432,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri May 04 2012 Josh Boyer <jwboyer@redhat.com>
+- unfiltered netdev rio_ioctl access by users (rhbz 818820)
+
 * Thu May 03 2012 Dennis Gilmore <dennis@ausil.us>
 - enable the kms omap driver
 
