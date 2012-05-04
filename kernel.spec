@@ -815,6 +815,9 @@ Patch22015: stable-queue-3.3.5-0502.patch
 #rhbz 818820
 Patch22016: dl2k-Clean-up-rio_ioctl.patch
 
+#rhbz 726143
+Patch22017: 0001-drm-radeon-don-t-mess-with-hot-plug-detect-for-eDP-o.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1577,6 +1580,9 @@ ApplyPatch stable-queue-3.3.5-0502.patch
 
 #rhbz 818820
 ApplyPatch dl2k-Clean-up-rio_ioctl.patch
+
+#rhbz 726143
+ApplyPatch 0001-drm-radeon-don-t-mess-with-hot-plug-detect-for-eDP-o.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2432,6 +2438,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri May 04 2012 Justin M. Forbes <jforbes@redhat.com>
+- drm/radeon: don't mess with hot plug detect for eDP or LVDS (rhbz 726143)
+
 * Fri May 04 2012 Josh Boyer <jwboyer@redhat.com>
 - unfiltered netdev rio_ioctl access by users (rhbz 818820)
 
