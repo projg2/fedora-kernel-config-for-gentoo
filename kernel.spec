@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -724,6 +724,7 @@ Patch4107: NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 # NFS Client Patch set from Upstream
 Patch4113: NFS-optimise-away-unnecessary-setattrs-for-open-O_TRUNC.patch
 Patch4114: NFSv4-fix-open-O_TRUNC-and-ftruncate-error-handling.patch
+Patch4115: NFSv4-Rate-limit-the-state-manager-for-lock-reclaim-.patch
 
 # patches headed upstream
 
@@ -732,9 +733,6 @@ Patch12016: disable-i8042-check-on-apple-mac.patch
 Patch12303: dmar-disable-when-ricoh-multifunction.patch
 
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
-
-Patch14000: hibernate-freeze-filesystems.patch
-Patch14001: hibernate-watermark.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
@@ -777,9 +775,6 @@ Patch21351: x86-add-io_apic_ops-to-allow-interception.patch
 Patch21352: x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
 Patch21353: xen-x86-Implement-x86_apic_ops.patch
 
-#rhbz 770476
-Patch21371: iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
-
 #rhbz 807632
 Patch21385: libata-forbid-port-runtime-pm-by-default.patch
 
@@ -799,14 +794,8 @@ Patch30010: debug-808990.patch
 #rhbz 814278 814289 CVE-2012-2119
 Patch22007: macvtap-zerocopy-validate-vector-length.patch
 
-#rhbz 783708 
-Patch22012: ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
-
 #rhbz 817298
 Patch22013: ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
-
-#Lots of fixes from 3.3.5 stable queue
-Patch22015: stable-queue-3.3.5-0502.patch
 
 #rhbz 818820
 Patch22016: dl2k-Clean-up-rio_ioctl.patch
@@ -1348,6 +1337,7 @@ ApplyPatch NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 # NFS Client Patch set from Upstream
 ApplyPatch NFS-optimise-away-unnecessary-setattrs-for-open-O_TRUNC.patch
 ApplyPatch NFSv4-fix-open-O_TRUNC-and-ftruncate-error-handling.patch
+ApplyPatch NFSv4-Rate-limit-the-state-manager-for-lock-reclaim-.patch
 
 # USB
 
@@ -1442,10 +1432,6 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
-# FIXME
-#ApplyPatch hibernate-freeze-filesystems.patch
-ApplyPatch hibernate-watermark.patch
-
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 ApplyPatch bluetooth-use-after-free.patch
@@ -1485,9 +1471,6 @@ ApplyPatch x86-add-io_apic_ops-to-allow-interception.patch
 ApplyPatch x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
 ApplyPatch xen-x86-Implement-x86_apic_ops.patch
 
-#rhbz 770476
-ApplyPatch iwlwifi-do-not-nulify-ctx-vif-on-reset.patch
-
 #rhbz 808207 CVE-2012-1601
 ApplyPatch KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
@@ -1500,14 +1483,8 @@ ApplyPatch disable-hid-battery.patch
 #rhbz 814278 814289 CVE-2012-2119
 ApplyPatch macvtap-zerocopy-validate-vector-length.patch
 
-#rhbz 783708
-ApplyPatch ipw2200-Fix-race-condition-in-the-command-completion-acknowledge.patch
-
 #rhbz 817298
 ApplyPatch ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
-
-#Lots of fixes from 3.3.5 stable queue
-ApplyPatch stable-queue-3.3.5-0502.patch
 
 #rhbz 818820
 ApplyPatch dl2k-Clean-up-rio_ioctl.patch
@@ -2250,6 +2227,10 @@ fi
 # and build.
 
 %changelog
+* Mon May 07 2012 Josh Boyer <jwboyer@redat.com> 3.3.5-1
+- Linux 3.3.5
+- Add patch to rate limit NFSv4 message (rhbz 732748)
+
 * Fri May 04 2012 Josh Boyer <jwboyer@redhat.com>
 - unfiltered netdev rio_ioctl access by users (rhbz 818820)
 
