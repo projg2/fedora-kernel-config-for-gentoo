@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -630,6 +630,7 @@ Patch2802: linux-2.6-silence-acpi-blacklist.patch
 # media patches
 Patch2900: add-poll-requested-events.patch
 Patch2901: drivers-media-update.patch
+Patch2902: dvbs-fix-zigzag.patch
 
 # fs fixes
 
@@ -1246,6 +1247,7 @@ ApplyPatch quite-apm.patch
 # Media (V4L/DVB/IR) updates/fixes/experimental drivers
 #  apply if non-empty
 ApplyPatch add-poll-requested-events.patch
+ApplyPatch dvbs-fix-zigzag.patch
 ApplyOptionalPatch drivers-media-update.patch
 
 # Patches headed upstream
@@ -1955,6 +1957,9 @@ fi
 # and build.
 
 %changelog
+* Mon May 07 2012 Mauro Carvalho Chehab <mchehab@redhat.com> 2.6.43.5-2
+- Add patch to fix DVB-S zigzag (rhbz 814404)
+
 * Mon May 07 2012 Josh Boyer <jwboyer@redhat.com> 2.6.43.5-1
 - Linux 3.3.5
 - Add patch to rate limit NFSv4 message (rhbz 732748)
