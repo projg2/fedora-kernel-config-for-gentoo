@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -676,9 +676,6 @@ Patch21232: rt2x00_fix_MCU_request_failures.patch
 #rhbz 789644
 Patch21237: mcelog-rcu-splat.patch
 
-#rhbz 728478
-Patch21242: sony-laptop-Enable-keyboard-backlight-by-default.patch
-
 Patch21300: unhandled-irqs-switch-to-polling.patch
 
 #rhbz 804957 CVE-2012-1568
@@ -686,9 +683,6 @@ Patch21306: shlib_base_randomize.patch
 
 #rhbz 807632
 Patch21385: libata-forbid-port-runtime-pm-by-default.patch
-
-#rhbz 808207 CVE-2012-1601
-Patch21520: KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
 #rhbz 808559
 Patch21530: ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
@@ -1277,18 +1271,12 @@ ApplyPatch bcma-brcmsmac-compat.patch
 #rhbz 789644
 ApplyPatch mcelog-rcu-splat.patch
 
-#rhbz 728478
-ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
-
 #rhbz 804957 CVE-2012-1568
 ApplyPatch shlib_base_randomize.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
 ApplyPatch weird-root-dentry-name-debug.patch
-
-#rhbz 808207 CVE-2012-1601
-ApplyPatch KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
 #rhbz 807632
 ApplyPatch libata-forbid-port-runtime-pm-by-default.patch
@@ -1957,6 +1945,9 @@ fi
 # and build.
 
 %changelog
+* Mon May 14 2012 Justin M. Forbes <jforbes@redhat.com> 2.6.43.6-1
+- Linux 3.3.6
+
 * Mon May 07 2012 Mauro Carvalho Chehab <mchehab@redhat.com> 2.6.43.5-2
 - Add patch to fix DVB-S zigzag (rhbz 814404)
 
