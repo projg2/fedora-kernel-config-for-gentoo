@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2421,6 +2421,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon May 14 2012 Josh Boyer <jwboyer@redhat.com>
+- Enable DRM_VIA again per Adam Jackson
+
 * Mon May 07 2012 Mauro Carvalho Chehab <mchehab@redhat.com> 3.3.5-2
 - Add patch to fix DVB-S zigzag (rhbz 814404)
 
