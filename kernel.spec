@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -764,9 +764,6 @@ Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 Patch21250: mcelog-rcu-splat.patch
 Patch21270: x86-Avoid-invoking-RCU-when-CPU-is-idle.patch
 
-#rhbz 728478
-Patch21302: sony-laptop-Enable-keyboard-backlight-by-default.patch
-
 #rhbz 804957 CVE-2012-1568
 Patch21306: shlib_base_randomize.patch
 
@@ -779,9 +776,6 @@ Patch21353: xen-x86-Implement-x86_apic_ops.patch
 Patch21385: libata-forbid-port-runtime-pm-by-default.patch
 
 Patch21400: unhandled-irqs-switch-to-polling.patch
-
-#rhbz 808207 CVE-2012-1601
-Patch21520: KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
 #rhbz 808559
 Patch21530: ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
@@ -1519,9 +1513,6 @@ ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
 ApplyPatch mcelog-rcu-splat.patch
 
-#rhbz 728478
-ApplyPatch sony-laptop-Enable-keyboard-backlight-by-default.patch
-
 #rhbz 804957 CVE-2012-1568
 ApplyPatch shlib_base_randomize.patch
 
@@ -1536,9 +1527,6 @@ ApplyPatch xen-x86-Implement-x86_apic_ops.patch
 
 #Highbank clock functions
 ApplyPatch highbank-export-clock-functions.patch 
-
-#rhbz 808207 CVE-2012-1601
-ApplyPatch KVM-Ensure-all-vcpus-are-consistent-with-in-kernel-i.patch
 
 #rhbz 807632
 ApplyPatch libata-forbid-port-runtime-pm-by-default.patch
@@ -2421,6 +2409,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon May 14 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.6-1
+- Linux 3.3.6
+
 * Mon May 14 2012 Josh Boyer <jwboyer@redhat.com>
 - Enable DRM_VIA again per Adam Jackson
 
