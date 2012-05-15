@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -795,6 +795,9 @@ Patch22013: ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
 #rhbz 818820
 Patch22016: dl2k-Clean-up-rio_ioctl.patch
 
+#rhbz 749276
+Patch22018: atl1c_net_next_update-3.3.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1478,6 +1481,9 @@ ApplyPatch ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
 
 #rhbz 818820
 ApplyPatch dl2k-Clean-up-rio_ioctl.patch
+
+#rhbz 749276
+ApplyPatch atl1c_net_next_update-3.3.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2217,6 +2223,9 @@ fi
 # and build.
 
 %changelog
+* Tue May 15 2012 Josh Boyer <jwboyer@redhat.com>
+- Fixup atl1c register programming (rhbz 749276)
+
 * Mon May 14 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.6-1
 - Linux 3.3.6
 
