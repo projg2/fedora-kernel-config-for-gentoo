@@ -742,6 +742,7 @@ Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 # ARM tegra
 Patch21004: arm-tegra-nvec-kconfig.patch
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
+Patch21006: arm-beagle-usb-init.patch
 
 # ARM highbank patches
 # Highbank clock functions need to be EXPORT for module builds
@@ -1361,6 +1362,7 @@ ApplyPatch nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
 ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
+ApplyPatch arm-beagle-usb-init.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -2415,6 +2417,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue May 15 2012 Dennis Gilmore <dennis@ausil.us>
+- add patch to setup usb correctly on beagleboards
+- allows networking to work
+
 * Tue May 15 2012 Josh Boyer <jwboyer@redhat.com>
 - Fixup atl1c register programming (rhbz 749276)
 
