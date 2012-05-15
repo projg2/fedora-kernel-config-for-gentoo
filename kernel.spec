@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -701,6 +701,9 @@ Patch22013: ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
 #rhbz 818820
 Patch22016: dl2k-Clean-up-rio_ioctl.patch
 
+#rhbz 749276
+Patch22018: atl1c_net_next_update-3.3.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1292,6 +1295,9 @@ ApplyPatch ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
 
 #rhbz 818820
 ApplyPatch dl2k-Clean-up-rio_ioctl.patch
+
+#rhbz 749276
+ApplyPatch atl1c_net_next_update-3.3.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1945,6 +1951,9 @@ fi
 # and build.
 
 %changelog
+* Tue May 15 2012 Josh Boyer <jwboyer@redhat.com>
+- Fixup atl1c register programming (rhbz 749276)
+
 * Mon May 14 2012 Justin M. Forbes <jforbes@redhat.com> 2.6.43.6-1
 - Linux 3.3.6
 
