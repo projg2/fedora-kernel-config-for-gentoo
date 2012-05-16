@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2417,6 +2417,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed May 16 2012 Josh Boyer <jwboyer@redhat.com>
+- Update the vgaarb patches to pick up a small switcheroo fix from airlied
+
 * Tue May 15 2012 Dennis Gilmore <dennis@ausil.us>
 - add patch to setup usb correctly on beagleboards
 - allows networking to work
