@@ -808,6 +808,9 @@ Patch22017: 0001-drm-radeon-don-t-mess-with-hot-plug-detect-for-eDP-o.patch
 #rhbz 749276
 Patch22018: atl1c_net_next_update-3.3.patch
 
+#rhbz 795176
+Patch22019: rtl818x-fix-sleeping-function-called-from-invalid-context.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1562,6 +1565,9 @@ ApplyPatch 0001-drm-radeon-don-t-mess-with-hot-plug-detect-for-eDP-o.patch
 
 #rhbz 749276
 ApplyPatch atl1c_net_next_update-3.3.patch
+
+#rhbz 795176
+ApplyPatch rtl818x-fix-sleeping-function-called-from-invalid-context.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2417,6 +2423,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed May 16 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.6-3
+- fix rtl8187: ->brightness_set can not sleep (rhbz 795176)
+
 * Wed May 16 2012 Josh Boyer <jwboyer@redhat.com>
 - Update the vgaarb patches to pick up a small switcheroo fix from airlied
 
