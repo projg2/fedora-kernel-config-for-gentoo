@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -810,6 +810,9 @@ Patch22018: atl1c_net_next_update-3.3.patch
 
 #rhbz 795176
 Patch22019: rtl818x-fix-sleeping-function-called-from-invalid-context.patch
+
+#rhbz 822120
+Patch22020: rtlwifi-fix-for-race-condition-when-firmware-is-cach.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1568,6 +1571,9 @@ ApplyPatch atl1c_net_next_update-3.3.patch
 
 #rhbz 795176
 ApplyPatch rtl818x-fix-sleeping-function-called-from-invalid-context.patch
+
+#rhbz 822120
+ApplyPatch rtlwifi-fix-for-race-condition-when-firmware-is-cach.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2424,6 +2430,7 @@ fi
 #              '-'
 %changelog
 * Thu May 17 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix rtlwifi async firmware load race condition (rhbz 822120)
 - Enable cpu_idle drivers for ppc64/pseries (requested by Ben Herrenschmidt)
 
 * Wed May 16 2012 Dennis Gilmore <dennis@ausil.us>
