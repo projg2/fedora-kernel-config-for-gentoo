@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -801,6 +801,9 @@ Patch22018: atl1c_net_next_update-3.3.patch
 #rhbz 795176
 Patch22019: rtl818x-fix-sleeping-function-called-from-invalid-context.patch
 
+#rhbz 822120
+Patch22020: rtlwifi-fix-for-race-condition-when-firmware-is-cach.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1490,6 +1493,9 @@ ApplyPatch atl1c_net_next_update-3.3.patch
 
 #rhbz 795176
 ApplyPatch rtl818x-fix-sleeping-function-called-from-invalid-context.patch
+
+#rhbz 822120
+ApplyPatch rtlwifi-fix-for-race-condition-when-firmware-is-cach.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2229,6 +2235,9 @@ fi
 # and build.
 
 %changelog
+* Thu May 17 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix rtlwifi async firmware load race condition (rhbz 822120)
+
 * Wed May 16 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.6-3
 - fix rtl8187: ->brightness_set can not sleep (rhbz 795176)
 
