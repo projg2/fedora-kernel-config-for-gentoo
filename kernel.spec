@@ -2423,6 +2423,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu May 17 2012 Josh Boyer <jwboyer@redhat.com>
+- Enable cpu_idle drivers for ppc64/pseries (requested by Ben Herrenschmidt)
+
 * Wed May 16 2012 Dennis Gilmore <dennis@ausil.us>
 - set arch for arm kernel to VEXPRESS allows v7 emulation
 - enable SMP everywhere but disable on kirkwood as its up only
