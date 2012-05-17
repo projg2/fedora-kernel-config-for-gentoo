@@ -43,3 +43,8 @@ CONFIG_CRYPTO_DEV_MV_CESA=m
 # CONFIG_INPUT_GP2A is not set
 # CONFIG_INPUT_GPIO_TILT_POLLED is not set
 
+
+# CONFIG_VFP is not set
+# CONFIG_VFPv3 is not set
+# CONFIG_NEON is not set
+# CONFIG_SMP is not set

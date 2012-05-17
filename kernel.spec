@@ -2423,6 +2423,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed May 16 2012 Dennis Gilmore <dennis@ausil.us>
+- set arch for arm kernel to VEXPRESS allows v7 emulation
+- enable SMP everywhere but disable on kirkwood as its up only
+
 * Wed May 16 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.6-3
 - fix rtl8187: ->brightness_set can not sleep (rhbz 795176)
 
