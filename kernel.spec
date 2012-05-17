@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -704,6 +704,9 @@ Patch22016: dl2k-Clean-up-rio_ioctl.patch
 #rhbz 749276
 Patch22018: atl1c_net_next_update-3.3.patch
 
+#rhbz 795176
+Patch22019: rtl818x-fix-sleeping-function-called-from-invalid-context.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1298,6 +1301,9 @@ ApplyPatch dl2k-Clean-up-rio_ioctl.patch
 
 #rhbz 749276
 ApplyPatch atl1c_net_next_update-3.3.patch
+
+#rhbz 795176
+ApplyPatch rtl818x-fix-sleeping-function-called-from-invalid-context.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1951,6 +1957,9 @@ fi
 # and build.
 
 %changelog
+* Wed May 16 2012 Justin M. Forbes <jforbes@redhat.com> 2.6.43.6-3
+- fix rtl8187: ->brightness_set can not sleep (rhbz 795176)
+
 * Tue May 15 2012 Josh Boyer <jwboyer@redhat.com>
 - Fixup atl1c register programming (rhbz 749276)
 
