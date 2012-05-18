@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -643,6 +643,10 @@ Patch4001: NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
 Patch4107: NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 Patch4115: NFSv4-Rate-limit-the-state-manager-for-lock-reclaim-.patch
 
+#rhbz 822874
+Patch4116: nfs-Avoid-reading-past-buffer-when-calling-GETACL.patch
+Patch4117: nfs-Avoid-beyond-bounds-copy-while-caching-ACL.patch
+
 # patches headed upstream
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
@@ -1165,6 +1169,9 @@ ApplyPatch NFSv4-Reduce-the-footprint-of-the-idmapper.patch
 ApplyPatch NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
 ApplyPatch NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 ApplyPatch NFSv4-Rate-limit-the-state-manager-for-lock-reclaim-.patch
+
+ApplyPatch nfs-Avoid-reading-past-buffer-when-calling-GETACL.patch
+ApplyPatch nfs-Avoid-beyond-bounds-copy-while-caching-ACL.patch
 
 # USB
 
@@ -1963,6 +1970,9 @@ fi
 # and build.
 
 %changelog
+* Fri May 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Additional fixes for CVE-2011-4131 (rhbz 822874 822869)
+
 * Thu May 17 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix rtlwifi async firmware load race condition (rhbz 822120)
 
