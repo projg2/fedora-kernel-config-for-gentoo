@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -716,6 +716,10 @@ Patch4107: NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 Patch4113: NFS-optimise-away-unnecessary-setattrs-for-open-O_TRUNC.patch
 Patch4114: NFSv4-fix-open-O_TRUNC-and-ftruncate-error-handling.patch
 Patch4115: NFSv4-Rate-limit-the-state-manager-for-lock-reclaim-.patch
+
+#rhbz 822874
+Patch4116: nfs-Avoid-reading-past-buffer-when-calling-GETACL.patch
+Patch4117: nfs-Avoid-beyond-bounds-copy-while-caching-ACL.patch
 
 # patches headed upstream
 Patch10000: fs-proc-devtree-remove_proc_entry.patch
@@ -1397,6 +1401,9 @@ ApplyPatch NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 ApplyPatch NFS-optimise-away-unnecessary-setattrs-for-open-O_TRUNC.patch
 ApplyPatch NFSv4-fix-open-O_TRUNC-and-ftruncate-error-handling.patch
 ApplyPatch NFSv4-Rate-limit-the-state-manager-for-lock-reclaim-.patch
+
+ApplyPatch nfs-Avoid-reading-past-buffer-when-calling-GETACL.patch
+ApplyPatch nfs-Avoid-beyond-bounds-copy-while-caching-ACL.patch
 
 # USB
 
@@ -2429,6 +2436,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri May 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Additional fixes for CVE-2011-4131 (rhbz 822874 822869)
+
 * Thu May 17 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix rtlwifi async firmware load race condition (rhbz 822120)
 - Enable cpu_idle drivers for ppc64/pseries (requested by Ben Herrenschmidt)
