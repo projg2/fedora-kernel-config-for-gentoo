@@ -88,6 +88,9 @@ CONFIG_X86_LONGRUN=y
 CONFIG_X86_HT=y
 CONFIG_X86_TRAMPOLINE=y
 
+# Turn back on in 3.4
+# CONFIG_RELOCATABLE is not set
+
 
 # CONFIG_4KSTACKS is not set
 

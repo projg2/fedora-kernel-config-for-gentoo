@@ -1,5 +1,6 @@
 Config TODOs:
 * review & disable a bunch of the I2C, RTC, DVB, SOUND options.
+* Re-enable CONFIG_RELOCATABLE for 32bit builds with 3.4
 
 
 Spec file TODOs:
