@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 5
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -51,7 +51,7 @@ Summary: The Linux kernel
 %define fake_sublevel %(echo $((40 + %{real_sublevel})))
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -630,7 +630,6 @@ Patch2802: linux-2.6-silence-acpi-blacklist.patch
 # media patches
 Patch2900: add-poll-requested-events.patch
 Patch2901: drivers-media-update.patch
-Patch2902: dvbs-fix-zigzag.patch
 
 # fs fixes
 
@@ -642,10 +641,6 @@ Patch4000: NFSv4-Reduce-the-footprint-of-the-idmapper.patch
 Patch4001: NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
 Patch4107: NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 Patch4115: NFSv4-Rate-limit-the-state-manager-for-lock-reclaim-.patch
-
-#rhbz 822874
-Patch4116: nfs-Avoid-reading-past-buffer-when-calling-GETACL.patch
-Patch4117: nfs-Avoid-beyond-bounds-copy-while-caching-ACL.patch
 
 # patches headed upstream
 
@@ -701,9 +696,6 @@ Patch22007: macvtap-zerocopy-validate-vector-length.patch
 
 #rhbz 817298
 Patch22013: ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
-
-#rhbz 818820
-Patch22016: dl2k-Clean-up-rio_ioctl.patch
 
 #rhbz 749276
 Patch22018: atl1c_net_next_update-3.3.patch
@@ -1170,9 +1162,6 @@ ApplyPatch NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
 ApplyPatch NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 ApplyPatch NFSv4-Rate-limit-the-state-manager-for-lock-reclaim-.patch
 
-ApplyPatch nfs-Avoid-reading-past-buffer-when-calling-GETACL.patch
-ApplyPatch nfs-Avoid-beyond-bounds-copy-while-caching-ACL.patch
-
 # USB
 
 # WMI
@@ -1257,7 +1246,6 @@ ApplyPatch quite-apm.patch
 # Media (V4L/DVB/IR) updates/fixes/experimental drivers
 #  apply if non-empty
 ApplyPatch add-poll-requested-events.patch
-ApplyPatch dvbs-fix-zigzag.patch
 ApplyOptionalPatch drivers-media-update.patch
 
 # Patches headed upstream
@@ -1305,9 +1293,6 @@ ApplyPatch macvtap-zerocopy-validate-vector-length.patch
 
 #rhbz 817298
 ApplyPatch ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
-
-#rhbz 818820
-ApplyPatch dl2k-Clean-up-rio_ioctl.patch
 
 #rhbz 749276
 ApplyPatch atl1c_net_next_update-3.3.patch
@@ -1970,6 +1955,9 @@ fi
 # and build.
 
 %changelog
+* Mon May 21 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.7-1
+- Linux 3.3.7
+
 * Fri May 18 2012 Josh Boyer <jwboyer@redhat.com>
 - Additional fixes for CVE-2011-4131 (rhbz 822874 822869)
 
