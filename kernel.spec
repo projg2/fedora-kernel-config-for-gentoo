@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 5
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -710,7 +710,6 @@ Patch2802: linux-2.6-silence-acpi-blacklist.patch
 #   add-poll-requested-events.patch was added for 3.4
 Patch2900: add-poll-requested-events.patch
 Patch2901: drivers-media-update.patch
-Patch2902: dvbs-fix-zigzag.patch
 
 # fs fixes
 
@@ -726,10 +725,6 @@ Patch4107: NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
 Patch4113: NFS-optimise-away-unnecessary-setattrs-for-open-O_TRUNC.patch
 Patch4114: NFSv4-fix-open-O_TRUNC-and-ftruncate-error-handling.patch
 Patch4115: NFSv4-Rate-limit-the-state-manager-for-lock-reclaim-.patch
-
-#rhbz 822874
-Patch4116: nfs-Avoid-reading-past-buffer-when-calling-GETACL.patch
-Patch4117: nfs-Avoid-beyond-bounds-copy-while-caching-ACL.patch
 
 # patches headed upstream
 
@@ -795,9 +790,6 @@ Patch22007: macvtap-zerocopy-validate-vector-length.patch
 
 #rhbz 817298
 Patch22013: ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
-
-#rhbz 818820
-Patch22016: dl2k-Clean-up-rio_ioctl.patch
 
 #rhbz 749276
 Patch22018: atl1c_net_next_update-3.3.patch
@@ -1347,9 +1339,6 @@ ApplyPatch NFS-optimise-away-unnecessary-setattrs-for-open-O_TRUNC.patch
 ApplyPatch NFSv4-fix-open-O_TRUNC-and-ftruncate-error-handling.patch
 ApplyPatch NFSv4-Rate-limit-the-state-manager-for-lock-reclaim-.patch
 
-ApplyPatch nfs-Avoid-reading-past-buffer-when-calling-GETACL.patch
-ApplyPatch nfs-Avoid-beyond-bounds-copy-while-caching-ACL.patch
-
 # USB
 
 # WMI
@@ -1432,7 +1421,6 @@ ApplyPatch quite-apm.patch
 # Media (V4L/DVB/IR) updates/fixes/experimental drivers
 #  apply if non-empty
 ApplyPatch add-poll-requested-events.patch
-ApplyPatch dvbs-fix-zigzag.patch
 ApplyOptionalPatch drivers-media-update.patch
 
 # Patches headed upstream
@@ -1491,9 +1479,6 @@ ApplyPatch macvtap-zerocopy-validate-vector-length.patch
 
 #rhbz 817298
 ApplyPatch ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
-
-#rhbz 818820
-ApplyPatch dl2k-Clean-up-rio_ioctl.patch
 
 #rhbz 749276
 ApplyPatch atl1c_net_next_update-3.3.patch
@@ -2242,6 +2227,9 @@ fi
 # and build.
 
 %changelog
+* Mon May 21 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.7-1
+- Linux 3.3.7
+
 * Fri May 18 2012 Josh Boyer <jwboyer@redhat.com>
 - Additional fixes for CVE-2011-4131 (rhbz 822874 822869)
 
