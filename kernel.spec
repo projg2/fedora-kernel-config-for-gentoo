@@ -690,6 +690,7 @@ Patch1900: linux-2.6-intel-iommu-igfx.patch
 
 Patch1950: drm-i915-allow-to-select-rc6-modes-via-kernel-parame.patch
 Patch1951: drm-i915-enable-plain-RC6-on-Sandy-Bridge-by-default.patch
+Patch1952: drm-i915-lvds-dual-channel.patch
 
 # Quiet boot fixes
 # silence the ACPI blacklist code
@@ -1472,6 +1473,7 @@ ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
 ApplyPatch drm-i915-allow-to-select-rc6-modes-via-kernel-parame.patch
 ApplyPatch drm-i915-enable-plain-RC6-on-Sandy-Bridge-by-default.patch
+ApplyPatch drm-i915-lvds-dual-channel.patch
 
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
@@ -2421,6 +2423,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed May 23 2012 Adam Jackson <ajax@redhat.com>
+- drm-i915-lvds-dual-channel.patch: Scrape dual-channel-ness for LVDS out
+  of the VBT, rather than just making things up. (#819343)
+
 * Mon May 21 2012 Justin M. Forbes <jforbes@redhat.com> 3.3.7-1
 - Linux 3.3.7
 - Disable CONFIG_RELOCATABLE for 32bit builds. Turn back on for 3.4
