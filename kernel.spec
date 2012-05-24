@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -810,6 +810,10 @@ Patch22019: rtl818x-fix-sleeping-function-called-from-invalid-context.patch
 
 #rhbz 822120
 Patch22020: rtlwifi-fix-for-race-condition-when-firmware-is-cach.patch
+
+#rhbz 822825 822821 CVE-2012-2372
+Patch22021: mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
+
 
 # END OF PATCH DEFINITIONS
 
@@ -1568,6 +1572,9 @@ ApplyPatch rtl818x-fix-sleeping-function-called-from-invalid-context.patch
 
 #rhbz 822120
 ApplyPatch rtlwifi-fix-for-race-condition-when-firmware-is-cach.patch
+
+#rhbz 822825 822821 CVE-2012-2372
+ApplyPatch mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2423,6 +2430,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu May 24 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2012-2372 mm: 32bit PAE pmd walk vs populate SMP race (rhbz 822821 822825)
+
 * Wed May 23 2012 Adam Jackson <ajax@redhat.com>
 - drm-i915-lvds-dual-channel.patch: Scrape dual-channel-ness for LVDS out
   of the VBT, rather than just making things up. (#819343)
