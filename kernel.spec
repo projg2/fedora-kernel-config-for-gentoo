@@ -2234,6 +2234,9 @@ fi
 # and build.
 
 %changelog
+* Fri May 25 2012 Mauro      Carvalho Chehab <mchehab@redhat.com>
+- Don't      manually customise tuners/frontends (rhbz 825203)
+
 * Thu May 24 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-2372 mm: 32bit PAE pmd walk vs populate SMP race (rhbz 822821 822825)
 
