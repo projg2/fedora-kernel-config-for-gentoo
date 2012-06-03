@@ -54,19 +54,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 2.6.22-rc7-git1 starts with a 2.6.21 base,
 # which yields a base_sublevel of 21.
-%define base_sublevel 3
+%define base_sublevel 4
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 0
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -646,8 +646,6 @@ Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
 Patch162: nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
 
-Patch383: linux-2.6-defaults-aspm.patch
-
 Patch390: linux-2.6-defaults-acpi-video.patch
 Patch391: linux-2.6-acpi-video-dos.patch
 Patch394: linux-2.6-acpi-debug-infinite-loop.patch
@@ -659,10 +657,8 @@ Patch452: linux-2.6.30-no-pcspkr-modalias.patch
 Patch460: linux-2.6-serial-460800.patch
 
 Patch470: die-floppy-die.patch
-Patch471: floppy-Remove-_hlt-related-functions.patch
 
 Patch510: linux-2.6-silence-noise.patch
-Patch511: silence-timekeeping-spew.patch
 Patch520: quite-apm.patch
 
 Patch530: linux-2.6-silence-fbcon-logo.patch
@@ -675,7 +671,6 @@ Patch800: linux-2.6-crash-driver.patch
 
 # virt + ksm patches
 Patch1555: fix_xen_guest_on_old_EC2.patch
-Patch1556: linux-3.3-virtio-scsi.patch
 
 # DRM
 #atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
@@ -688,8 +683,6 @@ Patch1825: drm-i915-dp-stfu.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
-Patch1950: drm-i915-allow-to-select-rc6-modes-via-kernel-parame.patch
-Patch1951: drm-i915-enable-plain-RC6-on-Sandy-Bridge-by-default.patch
 Patch1952: drm-i915-lvds-dual-channel.patch
 
 # Quiet boot fixes
@@ -697,25 +690,11 @@ Patch1952: drm-i915-lvds-dual-channel.patch
 Patch2802: linux-2.6-silence-acpi-blacklist.patch
 
 # media patches
-Patch2900: add-poll-requested-events.patch
 Patch2901: drivers-media-update.patch
 
 # fs fixes
-Patch4000: ext4-fix-resize-when-resizing-within-single-group.patch
 
 # NFSv4
-Patch4101: linux-3.1-keys-remove-special-keyring.patch
-Patch4102: linux-3.3-newidmapper-01.patch
-Patch4103: linux-3.3-newidmapper-02.patch
-Patch4104: linux-3.3-newidmapper-03.patch
-Patch4105: NFSv4-Reduce-the-footprint-of-the-idmapper.patch
-Patch4106: NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
-Patch4107: NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
-
-# NFS Client Patch set from Upstream
-Patch4113: NFS-optimise-away-unnecessary-setattrs-for-open-O_TRUNC.patch
-Patch4114: NFSv4-fix-open-O_TRUNC-and-ftruncate-error-handling.patch
-Patch4115: NFSv4-Rate-limit-the-state-manager-for-lock-reclaim-.patch
 
 # patches headed upstream
 Patch10000: fs-proc-devtree-remove_proc_entry.patch
@@ -728,11 +707,7 @@ Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
-Patch15000: bluetooth-use-after-free.patch
-
 Patch19000: ips-noirq.patch
-
-Patch20000: utrace.patch
 
 # ARM
 # Flattened devicetree support
@@ -748,41 +723,19 @@ Patch21006: arm-beagle-usb-init.patch
 # Highbank clock functions need to be EXPORT for module builds
 Patch21010: highbank-export-clock-functions.patch
 
-Patch21070: ext4-Support-check-none-nocheck-mount-options.patch
-
-Patch21093: rt2x00_fix_MCU_request_failures.patch
-
 Patch21094: power-x86-destdir.patch
 
-Patch21095: hfsplus-Change-finder_info-to-u32.patch
-Patch21096: hfsplus-Add-an-ioctl-to-bless-files.patch
-Patch21097: hfsplus-initialise-userflags.patch
 Patch21098: hfsplus-Fix-bless-ioctl-when-used-with-hardlinks.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
-Patch21250: mcelog-rcu-splat.patch
 Patch21270: x86-Avoid-invoking-RCU-when-CPU-is-idle.patch
 
 #rhbz 804957 CVE-2012-1568
 Patch21306: shlib_base_randomize.patch
 
-#rhbz 804347
-Patch21351: x86-add-io_apic_ops-to-allow-interception.patch
-Patch21352: x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
-Patch21353: xen-x86-Implement-x86_apic_ops.patch
-
-#rhbz 807632
-Patch21385: libata-forbid-port-runtime-pm-by-default.patch
-
 Patch21400: unhandled-irqs-switch-to-polling.patch
-
-#rhbz 808559
-Patch21530: ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
-
-Patch21600: apple_bl-Add-register-unregister-functions.patch
-Patch21601: platform-x86-Add-driver-for-Apple-gmux-device.patch
 
 Patch21620: vgaarb-vga_default_device.patch
 
@@ -803,19 +756,19 @@ Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 Patch22017: 0001-drm-radeon-don-t-mess-with-hot-plug-detect-for-eDP-o.patch
 
 #rhbz 749276
-Patch22018: atl1c_net_next_update-3.3.patch
+Patch22018: atl1c_net_next_update-3.4.patch
 
 #rhbz 795176
 Patch22019: rtl818x-fix-sleeping-function-called-from-invalid-context.patch
-
-#rhbz 822120
-Patch22020: rtlwifi-fix-for-race-condition-when-firmware-is-cach.patch
 
 #rhbz 822825 822821 CVE-2012-2372
 Patch22021: mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
 
 #rhbz 824352 824345 CVE-2012-2390
 Patch22022: hugetlb-fix-resv_map-leak-in-error-path.patch
+
+#Stable Queue for 3.4.1
+Patch22023: 3.4.1-stable-queue.patch.xz
 
 # END OF PATCH DEFINITIONS
 
@@ -1358,6 +1311,9 @@ ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 
 ApplyPatch taint-vbox.patch
 
+#Stable Queue for 3.4.1
+ApplyPatch 3.4.1-stable-queue.patch.xz
+
 # Architecture patches
 # x86(-64)
 ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
@@ -1368,7 +1324,7 @@ ApplyPatch nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
 # ARM
 #
 #pplyPatch arm-omap-dt-compat.patch
-ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
+# ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 ApplyPatch arm-beagle-usb-init.patch
@@ -1378,7 +1334,6 @@ ApplyPatch arm-beagle-usb-init.patch
 #
 
 # ext4
-ApplyPatch ext4-fix-resize-when-resizing-within-single-group.patch
 
 # xfs
 
@@ -1388,18 +1343,6 @@ ApplyPatch ext4-fix-resize-when-resizing-within-single-group.patch
 # eCryptfs
 
 # NFSv4
-ApplyPatch linux-3.1-keys-remove-special-keyring.patch
-ApplyPatch linux-3.3-newidmapper-01.patch
-ApplyPatch linux-3.3-newidmapper-02.patch
-ApplyPatch linux-3.3-newidmapper-03.patch
-ApplyPatch NFSv4-Reduce-the-footprint-of-the-idmapper.patch
-ApplyPatch NFSv4-Further-reduce-the-footprint-of-the-idmapper.patch
-ApplyPatch NFSv4-Minor-cleanups-for-nfs4_handle_exception-and-n.patch
-
-# NFS Client Patch set from Upstream
-ApplyPatch NFS-optimise-away-unnecessary-setattrs-for-open-O_TRUNC.patch
-ApplyPatch NFSv4-fix-open-O_TRUNC-and-ftruncate-error-handling.patch
-ApplyPatch NFSv4-Rate-limit-the-state-manager-for-lock-reclaim-.patch
 
 # USB
 
@@ -1414,8 +1357,6 @@ ApplyPatch acpi-sony-nonvs-blacklist.patch
 #
 # PCI
 #
-# enable ASPM by default on hardware we expect to work
-ApplyPatch linux-2.6-defaults-aspm.patch
 
 #
 # SCSI Bits.
@@ -1425,9 +1366,6 @@ ApplyPatch linux-2.6-defaults-aspm.patch
 
 # ALSA
 
-#rhbz 808559
-ApplyPatch ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
-
 # Networking
 
 # Misc fixes
@@ -1436,7 +1374,6 @@ ApplyPatch linux-2.6-input-kill-stupid-messages.patch
 
 # stop floppy.ko from autoloading during udev...
 ApplyPatch die-floppy-die.patch
-ApplyPatch floppy-Remove-_hlt-related-functions.patch
 
 ApplyPatch linux-2.6.30-no-pcspkr-modalias.patch
 
@@ -1445,8 +1382,6 @@ ApplyPatch linux-2.6-serial-460800.patch
 
 # Silence some useless messages that still get printed with 'quiet'
 ApplyPatch linux-2.6-silence-noise.patch
-
-ApplyPatch silence-timekeeping-spew.patch
 
 # Make fbcon not show the penguins with 'quiet'
 ApplyPatch linux-2.6-silence-fbcon-logo.patch
@@ -1477,8 +1412,6 @@ ApplyPatch drm-i915-dp-stfu.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
-ApplyPatch drm-i915-allow-to-select-rc6-modes-via-kernel-parame.patch
-ApplyPatch drm-i915-enable-plain-RC6-on-Sandy-Bridge-by-default.patch
 ApplyPatch drm-i915-lvds-dual-channel.patch
 
 # silence the ACPI blacklist code
@@ -1487,14 +1420,12 @@ ApplyPatch quite-apm.patch
 
 # Media (V4L/DVB/IR) updates/fixes/experimental drivers
 #  apply if non-empty
-ApplyPatch add-poll-requested-events.patch
 ApplyOptionalPatch drivers-media-update.patch
 
 # Patches headed upstream
 ApplyPatch fs-proc-devtree-remove_proc_entry.patch
 
 ApplyPatch disable-i8042-check-on-apple-mac.patch
-ApplyPatch linux-3.3-virtio-scsi.patch
 
 # rhbz#605888
 ApplyPatch dmar-disable-when-ricoh-multifunction.patch
@@ -1503,29 +1434,14 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
-ApplyPatch bluetooth-use-after-free.patch
-
 ApplyPatch ips-noirq.patch
-
-# utrace.
-ApplyPatch utrace.patch
-
-ApplyPatch ext4-Support-check-none-nocheck-mount-options.patch
-
-#rhbz 772772
-ApplyPatch rt2x00_fix_MCU_request_failures.patch
 
 ApplyPatch power-x86-destdir.patch
 
-ApplyPatch hfsplus-Change-finder_info-to-u32.patch
-ApplyPatch hfsplus-Add-an-ioctl-to-bless-files.patch
-ApplyPatch hfsplus-initialise-userflags.patch
 ApplyPatch hfsplus-Fix-bless-ioctl-when-used-with-hardlinks.patch
 
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-
-ApplyPatch mcelog-rcu-splat.patch
 
 #rhbz 804957 CVE-2012-1568
 ApplyPatch shlib_base_randomize.patch
@@ -1534,23 +1450,11 @@ ApplyPatch unhandled-irqs-switch-to-polling.patch
 
 ApplyPatch weird-root-dentry-name-debug.patch
 
-#rhbz 804347
-ApplyPatch x86-add-io_apic_ops-to-allow-interception.patch
-ApplyPatch x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
-ApplyPatch xen-x86-Implement-x86_apic_ops.patch
-
 #Highbank clock functions
 ApplyPatch highbank-export-clock-functions.patch 
 
-#rhbz 807632
-ApplyPatch libata-forbid-port-runtime-pm-by-default.patch
-
 #selinux ptrace child permissions
 ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
-
-#apple gmux.  blame mjg59
-ApplyPatch apple_bl-Add-register-unregister-functions.patch
-ApplyPatch platform-x86-Add-driver-for-Apple-gmux-device.patch
 
 #vgaarb patches.  blame mjg59
 ApplyPatch vgaarb-vga_default_device.patch
@@ -1567,13 +1471,10 @@ ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 ApplyPatch 0001-drm-radeon-don-t-mess-with-hot-plug-detect-for-eDP-o.patch
 
 #rhbz 749276
-ApplyPatch atl1c_net_next_update-3.3.patch
+ApplyPatch atl1c_net_next_update-3.4.patch
 
 #rhbz 795176
 ApplyPatch rtl818x-fix-sleeping-function-called-from-invalid-context.patch
-
-#rhbz 822120
-ApplyPatch rtlwifi-fix-for-race-condition-when-firmware-is-cach.patch
 
 #rhbz 822825 822821 CVE-2012-2372
 ApplyPatch mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
@@ -2435,6 +2336,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sun Jun 02 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.0-1
+- Linux 3.4
+- Stable queue updates
+
 * Wed May 30 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-2390 huge pages: memory leak on mmap failure (rhbz 824352 824345)
 

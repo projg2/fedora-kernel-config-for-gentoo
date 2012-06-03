@@ -119,9 +119,9 @@ index 198d1e6..043b251 100644
 --- a/arch/arm/plat-omap/include/plat/serial.h
 +++ b/arch/arm/plat-omap/include/plat/serial.h
 @@ -111,7 +111,8 @@ struct omap_uart_port_info;
+ struct omap_uart_port_info;
  
  extern void omap_serial_init(void);
- extern int omap_uart_can_sleep(void);
 -extern void omap_serial_board_init(struct omap_uart_port_info *platform_data);
 +extern void omap_serial_board_init(struct omap_uart_port_info *platform_data,
 +		u8 port_id);
