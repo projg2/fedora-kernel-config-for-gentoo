@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -772,9 +772,6 @@ Patch21351: x86-add-io_apic_ops-to-allow-interception.patch
 Patch21352: x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
 Patch21353: xen-x86-Implement-x86_apic_ops.patch
 
-#rhbz 807632
-Patch21385: libata-forbid-port-runtime-pm-by-default.patch
-
 #rhbz 808559
 Patch21530: ALSA-hda-realtek-Add-quirk-for-Mac-Pro-5-1-machines.patch
 
@@ -796,9 +793,6 @@ Patch22018: atl1c_net_next_update-3.3.patch
 
 #rhbz 795176
 Patch22019: rtl818x-fix-sleeping-function-called-from-invalid-context.patch
-
-#rhbz 822120
-Patch22020: rtlwifi-fix-for-race-condition-when-firmware-is-cach.patch
 
 #rhbz 822825 822821 CVE-2012-2372
 Patch22021: mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
@@ -1474,9 +1468,6 @@ ApplyPatch x86-add-io_apic_ops-to-allow-interception.patch
 ApplyPatch x86-apic_ops-Replace-apic_ops-with-x86_apic_ops.patch
 ApplyPatch xen-x86-Implement-x86_apic_ops.patch
 
-#rhbz 807632
-ApplyPatch libata-forbid-port-runtime-pm-by-default.patch
-
 #rhbz 806295
 ApplyPatch disable-hid-battery.patch
 
@@ -1491,9 +1482,6 @@ ApplyPatch atl1c_net_next_update-3.3.patch
 
 #rhbz 795176
 ApplyPatch rtl818x-fix-sleeping-function-called-from-invalid-context.patch
-
-#rhbz 822120
-ApplyPatch rtlwifi-fix-for-race-condition-when-firmware-is-cach.patch
 
 #rhbz 822825 822821 CVE-2012-2372
 ApplyPatch mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
@@ -2239,6 +2227,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jun 04 2012 Josh Boyer <jwboyer@redhat.com> 3.3.8-1
+- Linux v3.3.8
+
 * Mon Jun 04 2012 Dave Jones <davej@redhat.com>
 - Disable 32bit NX emulation.
 
