@@ -1316,9 +1316,12 @@ ApplyPatch 3.4.1-stable-queue.patch.xz
 
 # Architecture patches
 # x86(-64)
-ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
-ApplyPatch linux-2.6-i386-nx-emulation.patch
-ApplyPatch nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
+#ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
+#ApplyPatch linux-2.6-i386-nx-emulation.patch
+#ApplyPatch nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
+#rhbz 804957 CVE-2012-1568
+#ApplyPatch shlib_base_randomize.patch
+
 
 #
 # ARM
@@ -1442,9 +1445,6 @@ ApplyPatch hfsplus-Fix-bless-ioctl-when-used-with-hardlinks.patch
 
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-
-#rhbz 804957 CVE-2012-1568
-ApplyPatch shlib_base_randomize.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
@@ -2336,6 +2336,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Jun 04 2012 Dave Jones <davej@redhat.com>
+- Disable 32bit NX emulation.
+
 * Sun Jun 02 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.0-1
 - Linux 3.4
 - Stable queue updates
