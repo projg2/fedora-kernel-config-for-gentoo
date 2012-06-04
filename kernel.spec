@@ -1316,9 +1316,12 @@ ApplyPatch taint-vbox.patch
 #
 # NX Emulation
 #
-ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
-ApplyPatch linux-2.6-i386-nx-emulation.patch
-ApplyPatch nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
+#ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
+#ApplyPatch linux-2.6-i386-nx-emulation.patch
+#ApplyPatch nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
+#rhbz 804957 CVE-2012-1568
+#ApplyPatch shlib_base_randomize.patch
+
 
 #
 # bugfixes to drivers and filesystems
@@ -1459,9 +1462,6 @@ ApplyPatch rt2x00_fix_MCU_request_failures.patch
 
 #rhbz 789644
 ApplyPatch mcelog-rcu-splat.patch
-
-#rhbz 804957 CVE-2012-1568
-ApplyPatch shlib_base_randomize.patch
 
 ApplyPatch unhandled-irqs-switch-to-polling.patch
 
@@ -2239,6 +2239,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jun 04 2012 Dave Jones <davej@redhat.com>
+- Disable 32bit NX emulation.
+
 * Wed May 30 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-2390 huge pages: memory leak on mmap failure (rhbz 824352 824345)
 
