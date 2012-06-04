@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -767,9 +767,6 @@ Patch22021: mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-c
 #rhbz 824352 824345 CVE-2012-2390
 Patch22022: hugetlb-fix-resv_map-leak-in-error-path.patch
 
-#Stable Queue for 3.4.1
-Patch22023: 3.4.1-stable-queue.patch.xz
-
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1310,9 +1307,6 @@ ApplyOptionalPatch linux-2.6-compile-fixes.patch
 ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 
 ApplyPatch taint-vbox.patch
-
-#Stable Queue for 3.4.1
-ApplyPatch 3.4.1-stable-queue.patch.xz
 
 # Architecture patches
 # x86(-64)
@@ -2336,6 +2330,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Jun 04 2012 Josh Boyer <jwboyer@redhat.com> 3.4.1-1
+- Linux v3.4.1
+
 * Mon Jun 04 2012 Dave Jones <davej@redhat.com>
 - Disable 32bit NX emulation.
 
