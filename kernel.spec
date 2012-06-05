@@ -1327,7 +1327,7 @@ ApplyPatch taint-vbox.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 ApplyPatch arm-beagle-usb-init.patch
-ApplyPAtch arm-omap-drm-register.patch
+ApplyPatch arm-omap-drm-register.patch
 
 #
 # bugfixes to drivers and filesystems
