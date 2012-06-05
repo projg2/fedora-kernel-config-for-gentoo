@@ -2330,6 +2330,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Jun  5 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update ARM config options for 3.4
+- Enable MTD/UBI/JFFS2 on ARM platforms
+
 * Mon Jun 04 2012 Josh Boyer <jwboyer@redhat.com> 3.4.1-1
 - Linux v3.4.1
 
