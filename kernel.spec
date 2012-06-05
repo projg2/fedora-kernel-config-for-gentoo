@@ -713,6 +713,8 @@ Patch19000: ips-noirq.patch
 # Flattened devicetree support
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
+# drm register derived from http://www.digipedia.pl/usenet/thread/19013/36923/ 
+Patch21002: arm-omap-drm-register.patch
 
 # ARM tegra
 Patch21004: arm-tegra-nvec-kconfig.patch
@@ -1325,6 +1327,7 @@ ApplyPatch taint-vbox.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 ApplyPatch arm-beagle-usb-init.patch
+ApplyPAtch arm-omap-drm-register.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -2330,6 +2333,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Jun 05 2012 Dennis Gilmore <dennis@ausil.us>
+- add patch to register omapdrm to the platforms so that we get
+- working console framebuffer and X on panda and beagle boards
+
 * Tue Jun  5 2012 Peter Robinson <pbrobinson@fedoraproject.org>
 - Update ARM config options for 3.4
 - Enable MTD/UBI/JFFS2 on ARM platforms
