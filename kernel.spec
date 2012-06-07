@@ -724,6 +724,8 @@ Patch21006: arm-beagle-usb-init.patch
 # ARM highbank patches
 # Highbank clock functions need to be EXPORT for module builds
 Patch21010: highbank-export-clock-functions.patch
+# http://lists.arm.linux.org.uk/lurker/message/20120605.031140.e7d9b601.en.html
+Patch21011: highbank-secure-smc.patch
 
 Patch21094: power-x86-destdir.patch
 
@@ -1449,6 +1451,7 @@ ApplyPatch weird-root-dentry-name-debug.patch
 
 #Highbank clock functions
 ApplyPatch highbank-export-clock-functions.patch 
+ApplyPatch highbank-secure-smc.patch
 
 #selinux ptrace child permissions
 ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
@@ -2333,6 +2336,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Jun 06 2012 Dennis Gilmore <dennis@ausil.us> 3.4.1-2
+- add patch from calxeda to enable the highbank kernel to boot
+- on real hardware
+
 * Tue Jun 05 2012 Dennis Gilmore <dennis@ausil.us>
 - add patch to register omapdrm to the platforms so that we get
 - working console framebuffer and X on panda and beagle boards
