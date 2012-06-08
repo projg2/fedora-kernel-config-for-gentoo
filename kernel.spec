@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -675,6 +675,7 @@ Patch1555: fix_xen_guest_on_old_EC2.patch
 # DRM
 #atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
 Patch1800: drm-vgem.patch
+Patch1810: drm-edid-Make-the-header-fixup-threshold-tunable.patch
 
 # nouveau + drm fixes
 # intel drm is all merged upstream
@@ -1405,6 +1406,7 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 # DRM core
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
 ApplyPatch drm-vgem.patch
+ApplyPatch drm-edid-Make-the-header-fixup-threshold-tunable.patch
 
 # Nouveau DRM
 
@@ -2336,6 +2338,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Jun 08 2012 Josh Boyer <jwboyer@redhat.com>
+- Backport edid header fixup threashold patch from Adam Jackson (rhbz 582559)
+
 * Wed Jun 06 2012 Dennis Gilmore <dennis@ausil.us> 3.4.1-2
 - add patch from calxeda to enable the highbank kernel to boot
 - on real hardware
