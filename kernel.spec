@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -768,9 +768,6 @@ Patch22019: rtl818x-fix-sleeping-function-called-from-invalid-context.patch
 
 #rhbz 822825 822821 CVE-2012-2372
 Patch22021: mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
-
-#rhbz 824352 824345 CVE-2012-2390
-Patch22022: hugetlb-fix-resv_map-leak-in-error-path.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1480,9 +1477,6 @@ ApplyPatch rtl818x-fix-sleeping-function-called-from-invalid-context.patch
 
 #rhbz 822825 822821 CVE-2012-2372
 ApplyPatch mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
-
-#rhbz 824352 824345 CVE-2012-2390
-ApplyPatch hugetlb-fix-resv_map-leak-in-error-path.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2338,6 +2332,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sat Jun 09 2012 Josh Boyer <jwboyer@redhat.com> 3.4.2-1
+- Linux v3.4.2
+
 * Fri Jun 08 2012 Josh Boyer <jwboyer@redhat.com>
 - Enable HV assisted KVM on ppc64
 
