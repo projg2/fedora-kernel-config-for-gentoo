@@ -2339,6 +2339,9 @@ fi
 #              '-'
 %changelog
 * Fri Jun 08 2012 Josh Boyer <jwboyer@redhat.com>
+- Enable HV assisted KVM on ppc64
+
+* Fri Jun 08 2012 Josh Boyer <jwboyer@redhat.com>
 - Backport edid header fixup threashold patch from Adam Jackson (rhbz 582559)
 
 * Wed Jun 06 2012 Dennis Gilmore <dennis@ausil.us> 3.4.1-2
