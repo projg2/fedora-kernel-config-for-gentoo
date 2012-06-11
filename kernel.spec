@@ -769,6 +769,9 @@ Patch22019: rtl818x-fix-sleeping-function-called-from-invalid-context.patch
 #rhbz 822825 822821 CVE-2012-2372
 Patch22021: mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
 
+#rhbz 829016
+Patch22022: thp-avoid-atomic64_read-in-pmd_read_atomic-for-32bit-PAE.patch
+
 #rhbz 825491
 Patch22023: iwlwifi-disable-the-buggy-chain-extension-feature-in-HW.patch
 Patch22024: iwlwifi-dont-mess-up-the-SCD-when-removing-a-key.patch
@@ -1481,6 +1484,7 @@ ApplyPatch rtl818x-fix-sleeping-function-called-from-invalid-context.patch
 
 #rhbz 822825 822821 CVE-2012-2372
 ApplyPatch mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
+ApplyPatch thp-avoid-atomic64_read-in-pmd_read_atomic-for-32bit-PAE.patch
 
 #rhbz 825491
 ApplyPatch iwlwifi-disable-the-buggy-chain-extension-feature-in-HW.patch
@@ -2341,6 +2345,7 @@ fi
 #              '-'
 %changelog
 * Mon Jun 11 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix xen domU 32bit (rhbz 829016)
 - Add two upstream commits to fix flaky iwlwifi (rhbz 825491)
 
 * Sat Jun 09 2012 Josh Boyer <jwboyer@redhat.com> 3.4.2-1
