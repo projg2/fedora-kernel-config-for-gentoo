@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # When changing real_sublevel below, reset this by hand to 1
 # (or to 0 and then use rpmdev-bumpspec).
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # real_sublevel is the 3.x kernel version we're starting with
@@ -703,8 +703,11 @@ Patch22019: rtl818x-fix-sleeping-function-called-from-invalid-context.patch
 #rhbz 822825 822821 CVE-2012-2372
 Patch22021: mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
 
+#rhbz 829016
+Patch22022: thp-avoid-atomic64_read-in-pmd_read_atomic-for-32bit-PAE.patch
+
 #rhbz 824352 824345 CVE-2012-2390
-Patch22022: hugetlb-fix-resv_map-leak-in-error-path.patch
+Patch22023: hugetlb-fix-resv_map-leak-in-error-path.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1299,6 +1302,7 @@ ApplyPatch rtl818x-fix-sleeping-function-called-from-invalid-context.patch
 
 #rhbz 822825 822821 CVE-2012-2372
 ApplyPatch mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
+ApplyPatch thp-avoid-atomic64_read-in-pmd_read_atomic-for-32bit-PAE.patch
 
 #rhbz 824352 824345 CVE-2012-2390
 ApplyPatch hugetlb-fix-resv_map-leak-in-error-path.patch
@@ -1955,6 +1959,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jun 22 2012 Josh Boyer <jwboyer@redhat.com> 2.6.43.8-2
+- Add patch to fix xen domU 32bit (rhbz 834671)
+
 * Mon Jun 04 2012 Josh Boyer <jwboyer@redhat.com> 2.6.43.8-1
 - Linux v3.3.8
 
