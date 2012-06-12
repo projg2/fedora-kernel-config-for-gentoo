@@ -2345,6 +2345,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Jun 12 2012 Dennis Gilmore <dennis@ausil.us>
+- build in RTC modules on arm boards as the module gets loaded after the rtc is read
+
 * Mon Jun 11 2012 Josh Boyer <jwboyer@redhat.com>
 - Add virtual provides for kernel-module to kernel-modules-extra (rhbz 770444)
 - Add patch to fix xen domU 32bit (rhbz 829016)
