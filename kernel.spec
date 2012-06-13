@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -776,6 +776,10 @@ Patch22022: thp-avoid-atomic64_read-in-pmd_read_atomic-for-32bit-PAE.patch
 Patch22023: iwlwifi-disable-the-buggy-chain-extension-feature-in-HW.patch
 Patch22024: iwlwifi-dont-mess-up-the-SCD-when-removing-a-key.patch
 
+#rhbz 830862
+Patch22030: SUNRPC-new-svc_bind-routine-introduced.patch
+Patch22031: SUNRPC-move-per-net-operations-from-svc_destroy.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1490,6 +1494,10 @@ ApplyPatch thp-avoid-atomic64_read-in-pmd_read_atomic-for-32bit-PAE.patch
 #rhbz 825491
 ApplyPatch iwlwifi-disable-the-buggy-chain-extension-feature-in-HW.patch
 ApplyPatch iwlwifi-dont-mess-up-the-SCD-when-removing-a-key.patch
+
+#rhbz 830862
+ApplyPatch SUNRPC-new-svc_bind-routine-introduced.patch
+ApplyPatch SUNRPC-move-per-net-operations-from-svc_destroy.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2345,6 +2353,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Jun 13 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patches to fix NFS shutdown panic (rhbz 830862)
+
 * Tue Jun 12 2012 Dennis Gilmore <dennis@ausil.us>
 - build in RTC modules on arm boards as the module gets loaded after the rtc is read
 
