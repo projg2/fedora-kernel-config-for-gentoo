@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -764,10 +764,6 @@ Patch22021: mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-c
 #rhbz 829016
 Patch22022: thp-avoid-atomic64_read-in-pmd_read_atomic-for-32bit-PAE.patch
 
-#rhbz 825491
-Patch22023: iwlwifi-disable-the-buggy-chain-extension-feature-in-HW.patch
-Patch22024: iwlwifi-dont-mess-up-the-SCD-when-removing-a-key.patch
-
 #rhbz 830862
 Patch22030: SUNRPC-new-svc_bind-routine-introduced.patch
 Patch22031: SUNRPC-move-per-net-operations-from-svc_destroy.patch
@@ -1427,10 +1423,6 @@ ApplyPatch rtl818x-fix-sleeping-function-called-from-invalid-context.patch
 ApplyPatch mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
 
 ApplyPatch thp-avoid-atomic64_read-in-pmd_read_atomic-for-32bit-PAE.patch
-
-#rhbz 825491
-ApplyPatch iwlwifi-disable-the-buggy-chain-extension-feature-in-HW.patch
-ApplyPatch iwlwifi-dont-mess-up-the-SCD-when-removing-a-key.patch
 
 #rhbz 830862
 ApplyPatch SUNRPC-new-svc_bind-routine-introduced.patch
@@ -2180,6 +2172,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jun 18 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.3-1
+- Linux 3.4.3
+
 * Mon Jun 18 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix CIFS password mount option parsing (rhbz 832741)
 - Add patch to fix udl device binding (rhbz 832188)
