@@ -642,6 +642,8 @@ Patch09: linux-2.6-upstream-reverts.patch
 # Standalone patches
 
 Patch100: taint-vbox.patch
+Patch101: taint-rss.patch
+
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
 Patch162: nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
@@ -1323,6 +1325,7 @@ ApplyOptionalPatch linux-2.6-compile-fixes.patch
 ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 
 ApplyPatch taint-vbox.patch
+ApplyPatch taint-rss.patch
 
 # Architecture patches
 # x86(-64)
@@ -2357,6 +2360,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Jun 18 2012 Dave Jones <davej@redhat.com>
+- Output taint info when the RSS counter check trips up.
+
 * Mon Jun 18 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.3-1
 - Linux 3.4.3
 
