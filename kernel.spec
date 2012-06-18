@@ -60,7 +60,7 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 2.6.22-rc7-git1 starts with a 2.6.21 base,
 # which yields a base_sublevel of 21.
-%define base_sublevel 4
+%define base_sublevel 1
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
@@ -2357,6 +2357,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Jun 18 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.3-1
+- Linux 3.4.3
+
 * Mon Jun 18 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix CIFS password mount option parsing (rhbz 832741)
 - Add patch to fix udl device binding (rhbz 832188)
