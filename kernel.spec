@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -772,6 +772,12 @@ Patch22024: iwlwifi-dont-mess-up-the-SCD-when-removing-a-key.patch
 Patch22030: SUNRPC-new-svc_bind-routine-introduced.patch
 Patch22031: SUNRPC-move-per-net-operations-from-svc_destroy.patch
 
+#rhbz 832741
+Patch22032: cifs-fix-parsing-of-password-mount-option.patch
+
+#rhbz 832188
+Patch22033: udl-bind-fix.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1429,6 +1435,12 @@ ApplyPatch iwlwifi-dont-mess-up-the-SCD-when-removing-a-key.patch
 #rhbz 830862
 ApplyPatch SUNRPC-new-svc_bind-routine-introduced.patch
 ApplyPatch SUNRPC-move-per-net-operations-from-svc_destroy.patch
+
+#rhbz 832741
+ApplyPatch cifs-fix-parsing-of-password-mount-option.patch
+
+#rhbz 832188
+ApplyPatch udl-bind-fix.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2168,6 +2180,10 @@ fi
 # and build.
 
 %changelog
+* Mon Jun 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix CIFS password mount option parsing (rhbz 832741)
+- Add patch to fix udl device binding (rhbz 832188)
+
 * Thu Jun 14 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.2-1
 - Linux 3.4.2
 
