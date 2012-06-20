@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -784,6 +784,9 @@ Patch22032: cifs-fix-parsing-of-password-mount-option.patch
 #rhbz 832188
 Patch22033: udl-bind-fix.patch
 
+#rhbz 831807
+Patch22034: usb-storage-try-read_capacity-10-first.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1505,6 +1508,9 @@ ApplyPatch cifs-fix-parsing-of-password-mount-option.patch
 
 #rhbz 832188
 ApplyPatch udl-bind-fix.patch
+
+#rhbz 831807
+ApplyPatch usb-storage-try-read_capacity-10-first.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2360,6 +2366,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Jun 19 2012 Josh Boyer <jwboyer@redhat.com>
+- Add proposed patch to fix READ_CAPACITY command on usb keys (rhbz 831807)
+
 * Mon Jun 18 2012 Dave Jones <davej@redhat.com>
 - Output taint info when the RSS counter check trips up.
 
