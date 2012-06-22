@@ -712,6 +712,10 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 
 Patch19000: ips-noirq.patch
 
+# Uprobes (rhbz 832083)
+Patch20000: uprobes-3.4-backport.patch
+Patch20001: uprobes-3.4-tip.patch
+
 # ARM
 # Flattened devicetree support
 Patch21000: arm-omap-dt-compat.patch
@@ -1456,6 +1460,10 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 ApplyPatch ips-noirq.patch
+
+# Uprobes (rhbz 832083)
+ApplyPatch uprobes-3.4-backport.patch
+ApplyPatch uprobes-3.4-tip.patch
 
 ApplyPatch power-x86-destdir.patch
 
@@ -2367,6 +2375,7 @@ fi
 #              '-'
 %changelog
 * Fri Jun 22 2012 Josh Boyer <jwboyer@redhat.com>
+- Add uprobe backports from Anton Arapov (rhbz 832083)
 - Disable UDL DRM driver per Dave Airlie
 
 * Wed Jun 20 2012 Josh Boyer <jwboyer@redhat.com>
