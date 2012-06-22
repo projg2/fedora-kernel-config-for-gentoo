@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -775,9 +775,6 @@ Patch22031: SUNRPC-move-per-net-operations-from-svc_destroy.patch
 #rhbz 832741
 Patch22032: cifs-fix-parsing-of-password-mount-option.patch
 
-#rhbz 832188
-Patch22033: udl-bind-fix.patch
-
 #rhbz 831807
 Patch22034: usb-storage-try-read_capacity-10-first.patch
 
@@ -1441,9 +1438,6 @@ ApplyPatch SUNRPC-move-per-net-operations-from-svc_destroy.patch
 
 #rhbz 832741
 ApplyPatch cifs-fix-parsing-of-password-mount-option.patch
-
-#rhbz 832188
-ApplyPatch udl-bind-fix.patch
 
 #rhbz 831807
 ApplyPatch usb-storage-try-read_capacity-10-first.patch
@@ -2186,6 +2180,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jun 22 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.4-1
+- Linux 3.4.4
+
 * Fri Jun 22 2012 Josh Boyer <jwboyer@redhat.com>
 - Add uprobe backports from Anton Arapov (rhbz 832083)
 - Disable UDL DRM driver per Dave Airlie
