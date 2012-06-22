@@ -725,6 +725,10 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 
 Patch19000: ips-noirq.patch
 
+# Uprobes (rhbz 832083)
+Patch20000: uprobes-3.4-backport.patch
+Patch20001: uprobes-3.4-tip.patch
+
 # Flattened devicetree support
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
@@ -1400,6 +1404,10 @@ ApplyPatch lis3-improve-handling-of-null-rate.patch
 ApplyPatch ips-noirq.patch
 
 #ApplyPatch pci-crs-blacklist.patch
+
+# Uprobes (rhbz 832083)
+ApplyPatch uprobes-3.4-backport.patch
+ApplyPatch uprobes-3.4-tip.patch
 
 #rhbz 754518
 #ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -2179,6 +2187,7 @@ fi
 
 %changelog
 * Fri Jun 22 2012 Josh Boyer <jwboyer@redhat.com>
+- Add uprobe backports from Anton Arapov (rhbz 832083)
 - Disable UDL DRM driver per Dave Airlie
 
 * Wed Jun 20 2012 Josh Boyer <jwboyer@redhat.com>
