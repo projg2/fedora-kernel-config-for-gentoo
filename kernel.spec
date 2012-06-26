@@ -2384,7 +2384,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Tue Jun 26 2012 Dave Jones <davej@redhat.com>
+* Tue Jun 26 2012 Dave Jones <davej@redhat.com> 3.4.4-3
 - Add mm-correctly-synchronize-rss-counters-at-exit-exec.patch (rhbz 832867)
 
 * Tue Jun 26 2012 Josh Boyer <jwboyer@redhat.com>
