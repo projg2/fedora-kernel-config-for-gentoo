@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -789,6 +789,9 @@ Patch22034: usb-storage-try-read_capacity-10-first.patch
 #rhbz 828731
 Patch22035: ath9k_htc-configure-bssid-on-ASSOC-IBSS-change.patch
 
+#rhbz 835019
+Patch22036: block-fix-infinite-loop-in-__getblk_slow.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1515,6 +1518,9 @@ ApplyPatch usb-storage-try-read_capacity-10-first.patch
 
 #rhbz 828731
 ApplyPatch ath9k_htc-configure-bssid-on-ASSOC-IBSS-change.patch
+
+#rhbz 835019
+ApplyPatch block-fix-infinite-loop-in-__getblk_slow.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2370,6 +2376,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Jun 26 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix mount hangs (rhbz 835019)
+
 * Tue Jun 26 2012 John W. Linville <linville@redhat.com>
 - ath9k_htc: configure bssid on ASSOC/IBSS change (rhbz 828731)
 
