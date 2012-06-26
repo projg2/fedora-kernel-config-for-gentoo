@@ -778,6 +778,9 @@ Patch22032: cifs-fix-parsing-of-password-mount-option.patch
 #rhbz 831807
 Patch22034: usb-storage-try-read_capacity-10-first.patch
 
+#rhbz 828731
+Patch22035: ath9k_htc-configure-bssid-on-ASSOC-IBSS-change.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1441,6 +1444,9 @@ ApplyPatch cifs-fix-parsing-of-password-mount-option.patch
 
 #rhbz 831807
 ApplyPatch usb-storage-try-read_capacity-10-first.patch
+
+#rhbz 828731
+ApplyPatch ath9k_htc-configure-bssid-on-ASSOC-IBSS-change.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2180,6 +2186,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jun 26 2012 John W. Linville <linville@redhat.com>
+- ath9k_htc: configure bssid on ASSOC/IBSS change (rhbz 828731)
+
 * Fri Jun 22 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.4-1
 - Linux 3.4.4
 
