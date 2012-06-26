@@ -793,6 +793,9 @@ Patch22035: ath9k_htc-configure-bssid-on-ASSOC-IBSS-change.patch
 #rhbz 835019
 Patch22036: block-fix-infinite-loop-in-__getblk_slow.patch
 
+#rhbz 832867
+Patch22040: mm-correctly-synchronize-rss-counters-at-exit-exec.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1523,6 +1526,9 @@ ApplyPatch ath9k_htc-configure-bssid-on-ASSOC-IBSS-change.patch
 
 #rhbz 835019
 ApplyPatch block-fix-infinite-loop-in-__getblk_slow.patch
+
+#rhbz 832867
+ApplyPatch mm-correctly-synchronize-rss-counters-at-exit-exec.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2378,6 +2384,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Jun 26 2012 Dave Jones <davej@redhat.com>
+- Add mm-correctly-synchronize-rss-counters-at-exit-exec.patch (rhbz 832867)
+
 * Tue Jun 26 2012 Josh Boyer <jwboyer@redhat.com>
 - Add task_work_add backport from Anton Arapov
 - Add patch to fix mount hangs (rhbz 835019)
