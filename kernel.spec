@@ -710,6 +710,8 @@ Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
+Patch14015: team-update-from-net-next.patch
+
 Patch19000: ips-noirq.patch
 
 # Uprobes (rhbz 832083)
@@ -1463,6 +1465,8 @@ ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
 ApplyPatch lis3-improve-handling-of-null-rate.patch
+
+ApplyPatch team-update-from-net-next.patch
 
 ApplyPatch ips-noirq.patch
 
@@ -2384,6 +2388,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Jun 28 2012 Justin M. Forbes <jforbes@redhat.com>
+- Team driver update
+
 * Tue Jun 26 2012 Dave Jones <davej@redhat.com> 3.4.4-3
 - Add mm-correctly-synchronize-rss-counters-at-exit-exec.patch (rhbz 832867)
 
