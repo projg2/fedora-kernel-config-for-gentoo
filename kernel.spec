@@ -798,6 +798,9 @@ Patch22036: block-fix-infinite-loop-in-__getblk_slow.patch
 #rhbz 832867
 Patch22040: mm-correctly-synchronize-rss-counters-at-exit-exec.patch
 
+#rhbz 832927
+Patch22041: ath9k-fix-panic-caused-by-returning-a-descriptor-we-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1533,6 +1536,9 @@ ApplyPatch block-fix-infinite-loop-in-__getblk_slow.patch
 
 #rhbz 832867
 ApplyPatch mm-correctly-synchronize-rss-counters-at-exit-exec.patch
+
+#rhbz 832927
+ApplyPatch ath9k-fix-panic-caused-by-returning-a-descriptor-we-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2394,6 +2400,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Jun 29 2012 John W. Linville <linville@redhat.com>
+- ath9k: fix panic caused by returning a descriptor we have... (rhbz 832927)
+
 * Thu Jun 28 2012 Dennis Gilmore <dennis@ausil.us>
 - include the mach- headers on arm arches if they are available
 
