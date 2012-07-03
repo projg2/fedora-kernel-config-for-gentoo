@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -791,6 +791,9 @@ Patch22040: mm-correctly-synchronize-rss-counters-at-exit-exec.patch
 #rhbz 832927
 Patch22041: ath9k-fix-panic-caused-by-returning-a-descriptor-we-.patch
 
+#rhbz 834910
+Patch22042: ACPI-video-Still-use-ACPI-backlight-control-if-_DOS-doesnt-exist.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1467,6 +1470,9 @@ ApplyPatch mm-correctly-synchronize-rss-counters-at-exit-exec.patch
 
 #rhbz 832927
 ApplyPatch ath9k-fix-panic-caused-by-returning-a-descriptor-we-.patch
+
+#rhbz 834910
+ApplyPatch ACPI-video-Still-use-ACPI-backlight-control-if-_DOS-doesnt-exist.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2206,6 +2212,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jul 3 2012 Josh Boyer <jwboyer@redhat.com>
+- Allow ACPI backlight to still work if _DOS isn't present (rhbz 834910)
+
 * Fri Jun 29 2012 John W. Linville <linville@redhat.com>
 - ath9k: fix panic caused by returning a descriptor we have... (rhbz 832927)
 
