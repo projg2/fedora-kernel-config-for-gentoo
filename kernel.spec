@@ -794,6 +794,9 @@ Patch22041: ath9k-fix-panic-caused-by-returning-a-descriptor-we-.patch
 #rhbz 834910
 Patch22042: ACPI-video-Still-use-ACPI-backlight-control-if-_DOS-doesnt-exist.patch
 
+#rhbz 828824
+Patch22043: rt2x00usb-fix-indexes-ordering-on-RX-queue-kick.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1473,6 +1476,9 @@ ApplyPatch ath9k-fix-panic-caused-by-returning-a-descriptor-we-.patch
 
 #rhbz 834910
 ApplyPatch ACPI-video-Still-use-ACPI-backlight-control-if-_DOS-doesnt-exist.patch
+
+#rhbz 828824
+ApplyPatch rt2x00usb-fix-indexes-ordering-on-RX-queue-kick.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2212,6 +2218,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jul 4 2012 Josh Boyer <jwboyer@redhat.com>
+- Patch from Stanislaw Gruszka to fix rt2x00 USB access point (rhbz 828824)
+
 * Tue Jul 3 2012 Josh Boyer <jwboyer@redhat.com>
 - Allow ACPI backlight to still work if _DOS isn't present (rhbz 834910)
 
