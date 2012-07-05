@@ -2412,6 +2412,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Jul  5 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable OMAP freq scaling driver
+- Initial support for Beaglebone in OMAP kernel
+
 * Wed Jul 4 2012 Josh Boyer <jwboyer@redhat.com>
 - Patch from Stanislaw Gruszka to fix rt2x00 USB access point (rhbz 828824)
 
