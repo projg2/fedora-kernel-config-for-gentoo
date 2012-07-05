@@ -797,6 +797,9 @@ Patch22042: ACPI-video-Still-use-ACPI-backlight-control-if-_DOS-doesnt-exist.pat
 #rhbz 828824
 Patch22043: rt2x00usb-fix-indexes-ordering-on-RX-queue-kick.patch
 
+#rhbz 825123
+Patch22044: tg3-Apply-short-DMA-frag-workaround-to-5906.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1479,6 +1482,9 @@ ApplyPatch ACPI-video-Still-use-ACPI-backlight-control-if-_DOS-doesnt-exist.patc
 
 #rhbz 828824
 ApplyPatch rt2x00usb-fix-indexes-ordering-on-RX-queue-kick.patch
+
+#rhbz 825123
+ApplyPatch tg3-Apply-short-DMA-frag-workaround-to-5906.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2218,6 +2224,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jul 05 2012 Josh Boyer <jwboyer@redhat.com>
+- Apply patch to fix tg3 watchdog hangs on BCM5906 devices (rhbz 825123)
+
 * Wed Jul 4 2012 Josh Boyer <jwboyer@redhat.com>
 - Patch from Stanislaw Gruszka to fix rt2x00 USB access point (rhbz 828824)
 
