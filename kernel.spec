@@ -803,6 +803,11 @@ Patch22044: tg3-Apply-short-DMA-frag-workaround-to-5906.patch
 #rhbz 830359
 Patch22045: drm-nouveau-fbcon-using-nv_two_heads-is-not-a-good-i.patch
 
+#rhbz 829880
+Patch22046: USB-qmi_wwan-Make-forced-int-4-whitelist-generic.patch
+Patch22047: USB-qmi_wwan-Add-ZTE-Vodafone-K3520-Z.patch
+Patch22048: net-qmi_wwan-fix-Gobi-device-probing.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1491,6 +1496,11 @@ ApplyPatch tg3-Apply-short-DMA-frag-workaround-to-5906.patch
 
 #rhbz 830359
 ApplyPatch drm-nouveau-fbcon-using-nv_two_heads-is-not-a-good-i.patch
+
+#rhbz 829880
+ApplyPatch USB-qmi_wwan-Make-forced-int-4-whitelist-generic.patch
+ApplyPatch USB-qmi_wwan-Add-ZTE-Vodafone-K3520-Z.patch
+ApplyPatch net-qmi_wwan-fix-Gobi-device-probing.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2231,6 +2241,7 @@ fi
 
 %changelog
 * Thu Jul 05 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix device misprobe for Gobi devices (rhbz 829880)
 - Fix breakage in nouveau with nv_two_heads (rhbz 830359)
 - Apply patch to fix tg3 watchdog hangs on BCM5906 devices (rhbz 825123)
 
