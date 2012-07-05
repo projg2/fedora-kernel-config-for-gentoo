@@ -810,6 +810,9 @@ Patch22043: rt2x00usb-fix-indexes-ordering-on-RX-queue-kick.patch
 #rhbz 825123
 Patch22044: tg3-Apply-short-DMA-frag-workaround-to-5906.patch
 
+#rhbz 830359
+Patch22045: drm-nouveau-fbcon-using-nv_two_heads-is-not-a-good-i.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1557,6 +1560,9 @@ ApplyPatch rt2x00usb-fix-indexes-ordering-on-RX-queue-kick.patch
 
 #rhbz 825123
 ApplyPatch tg3-Apply-short-DMA-frag-workaround-to-5906.patch
+
+#rhbz 830359
+ApplyPatch drm-nouveau-fbcon-using-nv_two_heads-is-not-a-good-i.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2419,6 +2425,7 @@ fi
 #              '-'
 %changelog
 * Thu Jul 05 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix breakage in nouveau with nv_two_heads (rhbz 830359)
 - Apply patch to fix tg3 watchdog hangs on BCM5906 devices (rhbz 825123)
 - Move sch_htb module into main kernel package (rhbz 836185)
 
