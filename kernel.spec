@@ -818,6 +818,8 @@ Patch22046: USB-qmi_wwan-Make-forced-int-4-whitelist-generic.patch
 Patch22047: USB-qmi_wwan-Add-ZTE-Vodafone-K3520-Z.patch
 Patch22048: net-qmi_wwan-fix-Gobi-device-probing.patch
 
+Patch22050: ACPI-APEI-Avoid-too-much-error-reporting.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1573,6 +1575,8 @@ ApplyPatch drm-nouveau-fbcon-using-nv_two_heads-is-not-a-good-i.patch
 ApplyPatch USB-qmi_wwan-Make-forced-int-4-whitelist-generic.patch
 ApplyPatch USB-qmi_wwan-Add-ZTE-Vodafone-K3520-Z.patch
 ApplyPatch net-qmi_wwan-fix-Gobi-device-probing.patch
+
+ApplyPatch ACPI-APEI-Avoid-too-much-error-reporting.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2434,6 +2438,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Jul 06 2012 Justin M. Forbes <jforbes@redhat.com>
+- ACPI, APEI, Avoid too much error reporting in runtime
+
 * Fri Jul  6 2012 Peter Robinson <pbrobinson@fedoraproject.org>
 - disable TI_CPSW
 
