@@ -2434,6 +2434,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Jul  6 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- disable TI_CPSW
+
 * Thu Jul 05 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix device misprobe for Gobi devices (rhbz 829880)
 - Fix breakage in nouveau with nv_two_heads (rhbz 830359)
