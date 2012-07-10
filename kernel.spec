@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -820,6 +820,9 @@ Patch22048: net-qmi_wwan-fix-Gobi-device-probing.patch
 
 Patch22050: ACPI-APEI-Avoid-too-much-error-reporting.patch
 
+#rhbz 824641
+Patch22051: xen-blkback-Copy-id-field-when-doing-BLKIF_DISCARD.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1577,6 +1580,9 @@ ApplyPatch USB-qmi_wwan-Add-ZTE-Vodafone-K3520-Z.patch
 ApplyPatch net-qmi_wwan-fix-Gobi-device-probing.patch
 
 ApplyPatch ACPI-APEI-Avoid-too-much-error-reporting.patch
+
+#rhbz 824641
+ApplyPatch xen-blkback-Copy-id-field-when-doing-BLKIF_DISCARD.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2438,6 +2444,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Jul 10 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix xen dom0 crash when using BLKDISCARD (rhbz 824641)
+
 * Fri Jul 06 2012 Justin M. Forbes <jforbes@redhat.com>
 - ACPI, APEI, Avoid too much error reporting in runtime
 
