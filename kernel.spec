@@ -823,6 +823,10 @@ Patch22050: ACPI-APEI-Avoid-too-much-error-reporting.patch
 #rhbz 824641
 Patch22051: xen-blkback-Copy-id-field-when-doing-BLKIF_DISCARD.patch
 
+#Fix FIPS for aesni hardare
+Patch22055: crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
+Patch22056: crypto-aesni-intel-fix-wrong-kfree-pointer.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1583,6 +1587,10 @@ ApplyPatch ACPI-APEI-Avoid-too-much-error-reporting.patch
 
 #rhbz 824641
 ApplyPatch xen-blkback-Copy-id-field-when-doing-BLKIF_DISCARD.patch
+
+#Fix FIPS for aesni hardare
+ApplyPatch crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
+ApplyPatch crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2444,6 +2452,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Jul 11 2012 Justin M. Forbes <jforbes@redhat.com>
+- Fix FIPS for aesni hardware (rhbz 839239)
+
 * Tue Jul 10 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix xen dom0 crash when using BLKDISCARD (rhbz 824641)
 
