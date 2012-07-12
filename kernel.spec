@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 6
+%global baserelease 7
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -827,6 +827,9 @@ Patch22051: xen-blkback-Copy-id-field-when-doing-BLKIF_DISCARD.patch
 Patch22055: crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
 Patch22056: crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 
+#rhbz 834318
+Patch22057: ACPICA-Fix-possible-fault-in-return-package-object-repair-code.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1591,6 +1594,9 @@ ApplyPatch xen-blkback-Copy-id-field-when-doing-BLKIF_DISCARD.patch
 #Fix FIPS for aesni hardare
 ApplyPatch crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
 ApplyPatch crypto-aesni-intel-fix-wrong-kfree-pointer.patch
+
+#rhbz 834318
+ApplyPatch ACPICA-Fix-possible-fault-in-return-package-object-repair-code.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2452,6 +2458,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Jul 12 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix ACPICA null pointer exception regression (rhbz 834318)
+
 * Wed Jul 11 2012 Justin M. Forbes <jforbes@redhat.com>
 - Fix FIPS for aesni hardware (rhbz 839239)
 
