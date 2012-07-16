@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 7
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -756,12 +756,6 @@ Patch22000: weird-root-dentry-name-debug.patch
 #selinux ptrace child permissions
 Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
-#rhbz 814278 814289 CVE-2012-2119
-Patch22007: macvtap-zerocopy-validate-vector-length.patch
-
-#rhbz 817298
-Patch22013: ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
-
 Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 
 #rhbz 726143
@@ -770,58 +764,11 @@ Patch22017: 0001-drm-radeon-don-t-mess-with-hot-plug-detect-for-eDP-o.patch
 #rhbz 749276
 Patch22018: atl1c_net_next_update-3.4.patch
 
-#rhbz 795176
-Patch22019: rtl818x-fix-sleeping-function-called-from-invalid-context.patch
-
-#rhbz 822825 822821 CVE-2012-2372
-Patch22021: mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
-
-#rhbz 829016
-Patch22022: thp-avoid-atomic64_read-in-pmd_read_atomic-for-32bit-PAE.patch
-
-#rhbz 830862
-Patch22030: SUNRPC-new-svc_bind-routine-introduced.patch
-Patch22031: SUNRPC-move-per-net-operations-from-svc_destroy.patch
-
-#rhbz 832741
-Patch22032: cifs-fix-parsing-of-password-mount-option.patch
-
-#rhbz 831807
-Patch22034: usb-storage-try-read_capacity-10-first.patch
-
-#rhbz 828731
-Patch22035: ath9k_htc-configure-bssid-on-ASSOC-IBSS-change.patch
-
 #rhbz 835019
 Patch22036: block-fix-infinite-loop-in-__getblk_slow.patch
 
-#rhbz 832867
-Patch22040: mm-correctly-synchronize-rss-counters-at-exit-exec.patch
-
-#rhbz 832927
-Patch22041: ath9k-fix-panic-caused-by-returning-a-descriptor-we-.patch
-
-#rhbz 834910
-Patch22042: ACPI-video-Still-use-ACPI-backlight-control-if-_DOS-doesnt-exist.patch
-
 #rhbz 828824
 Patch22043: rt2x00usb-fix-indexes-ordering-on-RX-queue-kick.patch
-
-#rhbz 825123
-Patch22044: tg3-Apply-short-DMA-frag-workaround-to-5906.patch
-
-#rhbz 830359
-Patch22045: drm-nouveau-fbcon-using-nv_two_heads-is-not-a-good-i.patch
-
-#rhbz 829880
-Patch22046: USB-qmi_wwan-Make-forced-int-4-whitelist-generic.patch
-Patch22047: USB-qmi_wwan-Add-ZTE-Vodafone-K3520-Z.patch
-Patch22048: net-qmi_wwan-fix-Gobi-device-probing.patch
-
-Patch22050: ACPI-APEI-Avoid-too-much-error-reporting.patch
-
-#rhbz 824641
-Patch22051: xen-blkback-Copy-id-field-when-doing-BLKIF_DISCARD.patch
 
 #Fix FIPS for aesni hardare
 Patch22055: crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
@@ -1526,12 +1473,6 @@ ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 #vgaarb patches.  blame mjg59
 ApplyPatch vgaarb-vga_default_device.patch
 
-#rhbz 814278 814289 CVE-2012-2119
-ApplyPatch macvtap-zerocopy-validate-vector-length.patch
-
-#rhbz 817298
-ApplyPatch ipw2x00-add-supported-cipher-suites-to-wiphy-initialization.patch
-
 ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 
 #rhbz 726143
@@ -1540,56 +1481,11 @@ ApplyPatch 0001-drm-radeon-don-t-mess-with-hot-plug-detect-for-eDP-o.patch
 #rhbz 749276
 ApplyPatch atl1c_net_next_update-3.4.patch
 
-#rhbz 795176
-ApplyPatch rtl818x-fix-sleeping-function-called-from-invalid-context.patch
-
-#rhbz 822825 822821 CVE-2012-2372
-ApplyPatch mm-pmd_read_atomic-fix-32bit-PAE-pmd-walk-vs-pmd_populate-SMP-race-condition.patch
-ApplyPatch thp-avoid-atomic64_read-in-pmd_read_atomic-for-32bit-PAE.patch
-
-#rhbz 830862
-ApplyPatch SUNRPC-new-svc_bind-routine-introduced.patch
-ApplyPatch SUNRPC-move-per-net-operations-from-svc_destroy.patch
-
-#rhbz 832741
-ApplyPatch cifs-fix-parsing-of-password-mount-option.patch
-
-#rhbz 831807
-ApplyPatch usb-storage-try-read_capacity-10-first.patch
-
-#rhbz 828731
-ApplyPatch ath9k_htc-configure-bssid-on-ASSOC-IBSS-change.patch
-
 #rhbz 835019
 ApplyPatch block-fix-infinite-loop-in-__getblk_slow.patch
 
-#rhbz 832867
-ApplyPatch mm-correctly-synchronize-rss-counters-at-exit-exec.patch
-
-#rhbz 832927
-ApplyPatch ath9k-fix-panic-caused-by-returning-a-descriptor-we-.patch
-
-#rhbz 834910
-ApplyPatch ACPI-video-Still-use-ACPI-backlight-control-if-_DOS-doesnt-exist.patch
-
 #rhbz 828824
 ApplyPatch rt2x00usb-fix-indexes-ordering-on-RX-queue-kick.patch
-
-#rhbz 825123
-ApplyPatch tg3-Apply-short-DMA-frag-workaround-to-5906.patch
-
-#rhbz 830359
-ApplyPatch drm-nouveau-fbcon-using-nv_two_heads-is-not-a-good-i.patch
-
-#rhbz 829880
-ApplyPatch USB-qmi_wwan-Make-forced-int-4-whitelist-generic.patch
-ApplyPatch USB-qmi_wwan-Add-ZTE-Vodafone-K3520-Z.patch
-ApplyPatch net-qmi_wwan-fix-Gobi-device-probing.patch
-
-ApplyPatch ACPI-APEI-Avoid-too-much-error-reporting.patch
-
-#rhbz 824641
-ApplyPatch xen-blkback-Copy-id-field-when-doing-BLKIF_DISCARD.patch
 
 #Fix FIPS for aesni hardare
 ApplyPatch crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
@@ -2458,6 +2354,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Jul 16 2012 Josh Boyer <jwboyer@redhat.com> - 3.4.5-1
+- Linux v3.4.5
+
 * Thu Jul 12 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix ACPICA null pointer exception regression (rhbz 834318)
 
