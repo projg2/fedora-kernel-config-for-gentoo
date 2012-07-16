@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2354,7 +2354,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Mon Jul 16 2012 Josh Boyer <jwboyer@redhat.com> - 3.4.5-1
+* Mon Jul 16 2012 Josh Boyer <jwboyer@redhat.com> - 3.4.5-2
 - Linux v3.4.5
 
 * Thu Jul 12 2012 Josh Boyer <jwboyer@redhat.com>
