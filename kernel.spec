@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -767,6 +767,9 @@ Patch22056: crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 #rhbz 834318
 Patch22057: ACPICA-Fix-possible-fault-in-return-package-object-repair-code.patch
 
+#rhbz 772730
+Patch22058: ACPI-AC-check-the-return-value-of-power_supply_register.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1420,6 +1423,9 @@ ApplyPatch crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 
 #rhbz 834318
 ApplyPatch ACPICA-Fix-possible-fault-in-return-package-object-repair-code.patch
+
+#rhbz 772730
+ApplyPatch ACPI-AC-check-the-return-value-of-power_supply_register.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2159,6 +2165,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jul 18 2012 Josh Boyer <jwboyer@redhat.com>
+- check return value of power_supply_register from Lan Tianyu (rhbz 772730)
+
 * Mon Jul 16 2012 Josh Boyer <jwboyer@redhat.com> - 3.4.5-1
 - Linux v3.4.5
 
