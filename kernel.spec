@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -754,18 +754,9 @@ Patch30010: debug-808990.patch
 #rhbz 749276
 Patch22018: atl1c_net_next_update-3.4.patch
 
-#rhbz 835019
-Patch22036: block-fix-infinite-loop-in-__getblk_slow.patch
-
-#rhbz 828824
-Patch22043: rt2x00usb-fix-indexes-ordering-on-RX-queue-kick.patch
-
 #Fix FIPS for aesni hardare
 Patch22055: crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
 Patch22056: crypto-aesni-intel-fix-wrong-kfree-pointer.patch
-
-#rhbz 834318
-Patch22057: ACPICA-Fix-possible-fault-in-return-package-object-repair-code.patch
 
 #rhbz 772730
 Patch22058: ACPI-AC-check-the-return-value-of-power_supply_register.patch
@@ -1411,18 +1402,9 @@ ApplyPatch debug-808990.patch
 #rhbz 749276
 ApplyPatch atl1c_net_next_update-3.4.patch
 
-#rhbz 835019
-ApplyPatch block-fix-infinite-loop-in-__getblk_slow.patch
-
-#rhbz 828824
-ApplyPatch rt2x00usb-fix-indexes-ordering-on-RX-queue-kick.patch
-
 #Fix FIPS for aesni hardare
 ApplyPatch crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
 ApplyPatch crypto-aesni-intel-fix-wrong-kfree-pointer.patch
-
-#rhbz 834318
-ApplyPatch ACPICA-Fix-possible-fault-in-return-package-object-repair-code.patch
 
 #rhbz 772730
 ApplyPatch ACPI-AC-check-the-return-value-of-power_supply_register.patch
@@ -2165,6 +2147,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jul 19 2012 Josh Boyer <jwboyer@redhat.com> - 3.4.6-1
+- Linux v3.4.6
+
 * Wed Jul 18 2012 Josh Boyer <jwboyer@redhat.com>
 - check return value of power_supply_register from Lan Tianyu (rhbz 772730)
 
