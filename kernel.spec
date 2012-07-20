@@ -1772,6 +1772,7 @@ BuildKernel() {
     # our list into the list as well.
     rm -rf dep.list dep2.list
     rm -rf req.list req2.list
+    touch dep.list req.list
     cp %{SOURCE16} .
     for dep in `cat modnames`
     do
