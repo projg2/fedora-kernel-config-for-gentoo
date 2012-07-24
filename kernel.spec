@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -771,6 +771,9 @@ Patch22056: crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 #rhbz 772730
 Patch22058: ACPI-AC-check-the-return-value-of-power_supply_register.patch
 
+#rhbz 714271
+Patch22060: CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1481,6 +1484,9 @@ ApplyPatch crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 
 #rhbz 772730
 ApplyPatch ACPI-AC-check-the-return-value-of-power_supply_register.patch
+
+#rhbz 714271
+ApplyPatch CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2343,6 +2349,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Jul 25 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix cpu pinning after suspend/resume (rhbz 714271)
+
 * Fri Jul 20 2012 Josh Boyer <jwboyer@redhat.com>
 - Update vga_default_device.patch to fix build failures (rhbz 830446)
 
