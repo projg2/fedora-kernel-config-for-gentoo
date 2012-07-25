@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -124,16 +124,6 @@ Summary: The Linux kernel
 %define with_bootwrapper %{?_without_bootwrapper: 0} %{?!_without_bootwrapper: 1}
 # Want to build a the vsdo directories installed
 %define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 1}
-# ARM OMAP (Beagle/Panda Board)
-%define with_omap      %{?_without_omap:      0} %{?!_without_omap:      1}
-# kernel-tegra (only valid for arm)
-%define with_tegra       %{?_without_tegra:       0} %{?!_without_tegra:       1}
-# kernel-kirkwood (only valid for arm)
-%define with_kirkwood       %{?_without_kirkwood:       0} %{?!_without_kirkwood:       1}
-# kernel-imx (only valid for arm)
-%define with_imx       %{?_without_imx:       0} %{?!_without_imx:       1}
-# kernel-highbank (only valid for arm)
-%define with_highbank       %{?_without_highbank:       0} %{?!_without_highbank:       1}
 
 # Build the kernel-doc package, but don't fail the build if it botches.
 # Here "true" means "continue" and "false" means "fail the build".
@@ -242,19 +232,6 @@ Summary: The Linux kernel
 # kernel-PAE is only built on i686.
 %ifnarch i686
 %define with_pae 0
-%endif
-
-# kernel-tegra, omap, imx and highbank are only built on armv7 hard and softfp
-%ifnarch armv7hl armv7l
-%define with_tegra 0
-%define with_omap 0
-%define with_imx 0
-%define with_highbank 0
-%endif
-
-# kernel-kirkwood is only built for armv5
-%ifnarch armv5tel
-%define with_kirkwood 0
 %endif
 
 # if requested, only build base kernel
@@ -399,26 +376,6 @@ Summary: The Linux kernel
 %define kernel_image vmlinux
 %endif
 
-%ifarch %{arm}
-%define all_arch_configs kernel-%{version}-arm*.config
-%define image_install_path boot
-%define asmarch arm
-%define hdrarch arm
-%define make_target bzImage
-%define kernel_image arch/arm/boot/zImage
-# we build a up kernel on armv5tel. its used for qemu.
-%ifnarch armv5tel
-%define with_up 0
-%endif
-# we only build headers on the base arm arches
-# just like we used to only build them on i386 for x86
-%ifnarch armv5tel armv7hl
-%define with_headers 0
-%define with_perf 0
-%define with_tools 0
-%endif
-%endif
-
 %if %{nopatches}
 # XXX temporary until last vdso patches are upstream
 %define vdso_arches ppc ppc64
@@ -530,7 +487,7 @@ Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
-ExclusiveArch: noarch %{all_x86} x86_64 ppc ppc64 %{sparc} s390 s390x alpha alphaev56 %{arm}
+ExclusiveArch: noarch %{all_x86} x86_64 ppc ppc64 %{sparc} s390 s390x alpha alphaev56
 ExclusiveOS: Linux
 
 %kernel_reqprovconf
@@ -590,13 +547,6 @@ Source53: config-powerpc64
 Source70: config-s390x
 
 Source90: config-sparc64-generic
-
-Source100: config-arm-generic
-Source110: config-arm-omap-generic
-Source111: config-arm-tegra
-Source112: config-arm-kirkwood
-Source113: config-arm-imx
-Source114: config-arm-highbank
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -729,10 +679,6 @@ Patch19000: ips-noirq.patch
 Patch20000: uprobes-3.4-backport.patch
 Patch20001: uprobes-3.4-tip.patch
 Patch20002: uprobes-task_work_add-generic-process-context-callbacks.patch
-
-# Flattened devicetree support
-Patch21000: arm-omap-dt-compat.patch
-Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 
 #rhbz 769766
 Patch21072: mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
@@ -977,36 +923,6 @@ input and output, etc.
 This variant of the kernel has numerous debugging options enabled.
 It should only be installed when trying to gather additional information
 on kernel bugs, as some of these options impact performance noticably.
-
-%define variant_summary The Linux kernel compiled for marvell kirkwood boards
-%kernel_variant_package kirkwood
-%description kirkwood
-This package includes a version of the Linux kernel with support for
-marvell kirkwood based systems, i.e., guruplug, sheevaplug
-
-%define variant_summary The Linux kernel compiled for freescale boards
-%kernel_variant_package imx
-%description imx
-This package includes a version of the Linux kernel with support for
-freescale based systems, i.e., efika smartbook.
-
-%define variant_summary The Linux kernel compiled for Calxeda boards
-%kernel_variant_package highbank
-%description highbank
-This package includes a version of the Linux kernel with support for
-Calxeda based systems, i.e., HP arm servers.
-
-%define variant_summary The Linux kernel compiled for TI-OMAP boards
-%kernel_variant_package omap
-%description omap
-This package includes a version of the Linux kernel with support for
-TI-OMAP based systems, i.e., BeagleBoard-xM.
-
-%define variant_summary The Linux kernel compiled for tegra boards
-%kernel_variant_package tegra
-%description tegra
-This package includes a version of the Linux kernel with support for
-nvidia tegra based systems, i.e., trimslice, ac-100.
 
 
 %prep
@@ -1263,12 +1179,6 @@ ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 
 # Architecture patches
 # x86(-64)
-
-#
-# ARM
-#
-# ApplyPatch arm-omap-dt-compat.patch
-# ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 
 ApplyPatch taint-vbox.patch
 #
@@ -1734,26 +1644,6 @@ BuildKernel %make_target %kernel_image PAEdebug
 BuildKernel %make_target %kernel_image PAE
 %endif
 
-%if %{with_kirkwood}
-BuildKernel %make_target %kernel_image kirkwood
-%endif
-
-%if %{with_imx}
-BuildKernel %make_target %kernel_image imx
-%endif
-
-%if %{with_highbank}
-BuildKernel %make_target %kernel_image highbank
-%endif
-
-%if %{with_omap}
-BuildKernel %make_target %kernel_image omap
-%endif
-
-%if %{with_tegra}
-BuildKernel %make_target %kernel_image tegra
-%endif
-
 %if %{with_up}
 BuildKernel %make_target %kernel_image
 %endif
@@ -1999,21 +1889,6 @@ fi}\
 %kernel_variant_post -v PAEdebug -r (kernel|kernel-smp)
 %kernel_variant_preun PAEdebug
 
-%kernel_variant_preun kirkwood
-%kernel_variant_post -v kirkwood
-
-%kernel_variant_preun imx
-%kernel_variant_post -v imx
-
-%kernel_variant_preun highbank
-%kernel_variant_post -v highbank
-
-%kernel_variant_preun omap
-%kernel_variant_post -v omap
-
-%kernel_variant_preun tegra
-%kernel_variant_post -v tegra
-
 if [ -x /sbin/ldconfig ]
 then
     /sbin/ldconfig -X || exit $?
@@ -2143,17 +2018,13 @@ fi
 %kernel_variant_files %{with_debug} debug
 %kernel_variant_files %{with_pae} PAE
 %kernel_variant_files %{with_pae_debug} PAEdebug
-%kernel_variant_files %{with_kirkwood} kirkwood
-%kernel_variant_files %{with_imx} imx
-%kernel_variant_files %{with_highbank} highbank
-%kernel_variant_files %{with_omap} omap
-%kernel_variant_files %{with_tegra} tegra
 
 # plz don't put in a version string unless you're going to tag
 # and build.
 
 %changelog
 * Wed Jul 25 2012 Josh Boyer <jwboyer@redhat.com>
+- Drop ARM support.  It isn't built in F16.
 - Add patch to fix cpu pinning after suspend/resume (rhbz 714271)
 
 * Thu Jul 19 2012 Josh Boyer <jwboyer@redhat.com> - 3.4.6-1
