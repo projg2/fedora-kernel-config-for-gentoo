@@ -707,6 +707,9 @@ Patch22056: crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 #rhbz 772730
 Patch22058: ACPI-AC-check-the-return-value-of-power_supply_register.patch
 
+#rhbz 836742
+Patch22059: uvcvideo-Reset-bytesused-field-when-recycling-erroneous-buffer.patch
+
 #rhbz 714271
 Patch22060: CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
 
@@ -1321,6 +1324,9 @@ ApplyPatch crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 
 #rhbz 772730
 ApplyPatch ACPI-AC-check-the-return-value-of-power_supply_register.patch
+
+#rhbz 836742
+ApplyPatch uvcvideo-Reset-bytesused-field-when-recycling-erroneous-buffer.patch
 
 #rhbz 714271
 ApplyPatch CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
@@ -2023,6 +2029,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jul 26 2012 Josh Boyer <jwboyer@redhat.com>
+- Apply patch to fix uvcvideo crash (rhbz 836742)
+
 * Wed Jul 25 2012 Josh Boyer <jwboyer@redhat.com>
 - Drop ARM support.  It isn't built in F16.
 - Add patch to fix cpu pinning after suspend/resume (rhbz 714271)
