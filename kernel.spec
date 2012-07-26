@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -765,6 +765,9 @@ Patch22060: CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
 #rhbz 820039 843554
 Patch22061: rds-set-correct-msg_namelen.patch
 
+# 3.5 stable patches
+Patch23000: 3.5-git-stable.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1469,6 +1472,8 @@ ApplyPatch CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
 
 #rhbz 820039 843554
 ApplyPatch rds-set-correct-msg_namelen.patch
+
+ApplyPatch 3.5-git-stable.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2331,10 +2336,13 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Thu Jul 26 2012 Josh Boyer <jwboyer@redhat.com>
+* Thu Jul 26 2012 Josh Boyer <jwboyer@redhat.com> - 3.5.0-2
+- Add patch series queued for 3.5.1
+
+* Thu Jul 26 2012 Josh Boyer <jwboyer@redhat.com> - 3.5.0-1
 - Rebase to Linux v3.5
 
-* Thu Jul 26 2012 Josh Boyer <jwboyer@redhat.com>
+* Thu Jul 26 2012 Josh Boyer <jwboyer@redhat.com> - 3.4.6-4
 - kernel: recv{from,msg}() on an rds socket can leak kernel
   memory (rhbz 820039 843554)
 - Apply patch to fix uvcvideo crash (rhbz 836742)
