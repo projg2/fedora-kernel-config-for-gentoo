@@ -777,6 +777,9 @@ Patch22059: uvcvideo-Reset-bytesused-field-when-recycling-erroneous-buffer.patch
 #rhbz 714271
 Patch22060: CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
 
+#rhbz 820039 843554
+Patch22061: rds-set-correct-msg_namelen.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1493,6 +1496,9 @@ ApplyPatch uvcvideo-Reset-bytesused-field-when-recycling-erroneous-buffer.patch
 
 #rhbz 714271
 ApplyPatch CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
+
+#rhbz 820039 843554
+ApplyPatch rds-set-correct-msg_namelen.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2356,6 +2362,8 @@ fi
 #              '-'
 %changelog
 * Thu Jul 26 2012 Josh Boyer <jwboyer@redhat.com>
+- kernel: recv{from,msg}() on an rds socket can leak kernel
+  memory (rhbz 820039 843554)
 - Apply patch to fix uvcvideo crash (rhbz 836742)
 
 * Wed Jul 25 2012 Josh Boyer <jwboyer@redhat.com>
