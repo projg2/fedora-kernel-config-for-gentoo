@@ -52,9 +52,11 @@ Signed-off-by: Ingo Molnar <mingo@kernel.org>
  kernel/sched/core.c |   40 ++++++++++++++++++++++++++++++++++++----
  2 files changed, 39 insertions(+), 4 deletions(-)
 
---- linux-3.4.6-3.1.fc17.noarch.orig/kernel/cpuset.c
-+++ linux-3.4.6-3.1.fc17.noarch/kernel/cpuset.c
-@@ -2065,6 +2065,9 @@ static void scan_for_empty_cpusets(struc
+diff --git a/kernel/cpuset.c b/kernel/cpuset.c
+index 47de450..77abe1a 100644
+--- a/kernel/cpuset.c
++++ b/kernel/cpuset.c
+@@ -2054,6 +2054,9 @@ static void scan_for_empty_cpusets(struct cpuset *root)
   * (of no affect) on systems that are actively using CPU hotplug
   * but making no active use of cpusets.
   *
@@ -64,11 +66,13 @@ Signed-off-by: Ingo Molnar <mingo@kernel.org>
   * This routine ensures that top_cpuset.cpus_allowed tracks
   * cpu_active_mask on each CPU hotplug (cpuhp) event.
   *
---- linux-3.4.6-3.1.fc17.noarch.orig/kernel/sched/core.c
-+++ linux-3.4.6-3.1.fc17.noarch/kernel/sched/core.c
-@@ -6931,34 +6931,66 @@ int __init sched_create_sysfs_power_savi
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index ca07ee0..e368731 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -7014,34 +7014,66 @@ match2:
+ 	mutex_unlock(&sched_domains_mutex);
  }
- #endif /* CONFIG_SCHED_MC || CONFIG_SCHED_SMT */
  
 +static int num_cpus_frozen;	/* used to mark begin/end of suspend/resume */
 +
@@ -137,3 +141,6 @@ Signed-off-by: Ingo Molnar <mingo@kernel.org>
  }
  
  void __init sched_init_smp(void)
+-- 
+1.7.7.6
+

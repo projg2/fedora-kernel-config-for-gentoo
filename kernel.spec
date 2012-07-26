@@ -54,19 +54,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 2.6.22-rc7-git1 starts with a 2.6.21 base,
 # which yields a base_sublevel of 21.
-%define base_sublevel 4
+%define base_sublevel 5
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 0
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -677,7 +677,6 @@ Patch1555: fix_xen_guest_on_old_EC2.patch
 # DRM
 #atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
 Patch1800: drm-vgem.patch
-Patch1810: drm-edid-Make-the-header-fixup-threshold-tunable.patch
 
 # nouveau + drm fixes
 # intel drm is all merged upstream
@@ -685,8 +684,6 @@ Patch1824: drm-intel-next.patch
 Patch1825: drm-i915-dp-stfu.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
-
-Patch1952: drm-i915-lvds-dual-channel.patch
 
 # Quiet boot fixes
 # silence the ACPI blacklist code
@@ -715,27 +712,23 @@ Patch14015: team-update-from-net-next.patch
 Patch19000: ips-noirq.patch
 
 # Uprobes (rhbz 832083)
-Patch20000: uprobes-3.4-backport.patch
 Patch20001: uprobes-3.4-tip.patch
-Patch20002: uprobes-task_work_add-generic-process-context-callbacks.patch
 
 # ARM
 # Flattened devicetree support
 Patch21000: arm-omap-dt-compat.patch
 Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
 # drm register derived from http://www.digipedia.pl/usenet/thread/19013/36923/ 
-Patch21002: arm-omap-drm-register.patch
+#atch21002: arm-omap-drm-register.patch
 
 # ARM tegra
 Patch21004: arm-tegra-nvec-kconfig.patch
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
-Patch21006: arm-beagle-usb-init.patch
+#atch21006: arm-beagle-usb-init.patch
 
 # ARM highbank patches
 # Highbank clock functions need to be EXPORT for module builds
 Patch21010: highbank-export-clock-functions.patch
-# http://lists.arm.linux.org.uk/lurker/message/20120605.031140.e7d9b601.en.html
-Patch21011: highbank-secure-smc.patch
 
 Patch21094: power-x86-destdir.patch
 
@@ -749,20 +742,12 @@ Patch21306: shlib_base_randomize.patch
 
 Patch21400: unhandled-irqs-switch-to-polling.patch
 
-Patch21620: vgaarb-vga_default_device.patch
-
 Patch22000: weird-root-dentry-name-debug.patch
 
 #selinux ptrace child permissions
 Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
 Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
-
-#rhbz 726143
-Patch22017: 0001-drm-radeon-don-t-mess-with-hot-plug-detect-for-eDP-o.patch
-
-#rhbz 749276
-Patch22018: atl1c_net_next_update-3.4.patch
 
 #Fix FIPS for aesni hardare
 Patch22055: crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
@@ -1339,8 +1324,8 @@ ApplyPatch taint-rss.patch
 # ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
-ApplyPatch arm-beagle-usb-init.patch
-ApplyPatch arm-omap-drm-register.patch
+#pplyPatch arm-beagle-usb-init.patch
+#pplyPatch arm-omap-drm-register.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -1416,7 +1401,6 @@ ApplyPatch fix_xen_guest_on_old_EC2.patch
 # DRM core
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
 ApplyPatch drm-vgem.patch
-ApplyPatch drm-edid-Make-the-header-fixup-threshold-tunable.patch
 
 # Nouveau DRM
 
@@ -1425,8 +1409,6 @@ ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-i915-dp-stfu.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
-
-ApplyPatch drm-i915-lvds-dual-channel.patch
 
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
@@ -1453,9 +1435,7 @@ ApplyPatch team-update-from-net-next.patch
 ApplyPatch ips-noirq.patch
 
 # Uprobes (rhbz 832083)
-ApplyPatch uprobes-3.4-backport.patch
 ApplyPatch uprobes-3.4-tip.patch
-ApplyPatch uprobes-task_work_add-generic-process-context-callbacks.patch
 
 ApplyPatch power-x86-destdir.patch
 
@@ -1468,21 +1448,11 @@ ApplyPatch weird-root-dentry-name-debug.patch
 
 #Highbank clock functions
 ApplyPatch highbank-export-clock-functions.patch 
-ApplyPatch highbank-secure-smc.patch
 
 #selinux ptrace child permissions
 ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 
-#vgaarb patches.  blame mjg59
-ApplyPatch vgaarb-vga_default_device.patch
-
 ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
-
-#rhbz 726143
-ApplyPatch 0001-drm-radeon-don-t-mess-with-hot-plug-detect-for-eDP-o.patch
-
-#rhbz 749276
-ApplyPatch atl1c_net_next_update-3.4.patch
 
 #Fix FIPS for aesni hardare
 ApplyPatch crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
@@ -2361,6 +2331,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Jul 26 2012 Josh Boyer <jwboyer@redhat.com>
+- Rebase to Linux v3.5
+
 * Thu Jul 26 2012 Josh Boyer <jwboyer@redhat.com>
 - kernel: recv{from,msg}() on an rds socket can leak kernel
   memory (rhbz 820039 843554)

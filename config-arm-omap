@@ -1085,3 +1085,24 @@ CONFIG_USB_RENESAS_USBHS_HCD=m
 # CONFIG_VIDEO_AS3645A is not set
 #
 # CONFIG_TI_CPSW is not set
+# CONFIG_SOC_TI81XX is not set
+# CONFIG_SOC_AM33XX is not set
+# CONFIG_MTD_NAND_OMAP_BCH is not set
+# CONFIG_BMP085_SPI is not set
+# CONFIG_MDIO_BUS_MUX_GPIO is not set
+# CONFIG_GPIO_EM is not set
+# CONFIG_MFD_MAX77693 is not set
+# CONFIG_MFD_MC13XXX_SPI is not set
+# CONFIG_MFD_PALMAS is not set
+# CONFIG_VIDEO_SMIAPP is not set
+# CONFIG_PANEL_TFP410 is not set
+# CONFIG_SND_OMAP_SOC_OMAP_HDMI is not set
+# CONFIG_USB_FUSB300 is not set
+# CONFIG_USB_OMAP is not set
+# CONFIG_USB_R8A66597 is not set
+# CONFIG_USB_RENESAS_USBHS_UDC is not set
+# CONFIG_USB_MV_UDC is not set
+# CONFIG_USB_M66592 is not set
+# CONFIG_USB_NET2272 is not set
+# CONFIG_USB_DUMMY_HCD is not set
+#
