@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2035,6 +2035,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jul 30 2012 Dave Jones <davej@redhat.com> 3.4.7-1
+- Linux 3.4.7
+
 * Thu Jul 26 2012 Josh Boyer <jwboyer@redhat.com>
 - kernel: recv{from,msg}() on an rds socket can leak kernel
   memory (rhbz 820039 843554)
