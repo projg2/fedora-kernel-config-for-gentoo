@@ -644,6 +644,8 @@ Patch09: linux-2.6-upstream-reverts.patch
 Patch100: taint-vbox.patch
 Patch101: taint-rss.patch
 
+Patch110: vmbugon-warnon.patch
+
 Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
 Patch161: linux-2.6-i386-nx-emulation.patch
 Patch162: nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
@@ -1310,6 +1312,8 @@ ApplyOptionalPatch linux-2.6-upstream-reverts.patch -R
 
 ApplyPatch taint-vbox.patch
 ApplyPatch taint-rss.patch
+
+ApplyPatch vmbugon-warnon.patch
 
 # Architecture patches
 # x86(-64)
@@ -2336,6 +2340,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Jul 31 2012 Dave Jones <davej@redhat.com>
+- Change VM_BUG_ON's to be WARN_ONs instead.
+
 * Tue Jul 31 2012 Josh Boyer <jwboyer@redhat.com>
 - Move modules needed by Shorewall back to main kernel package (rhbz 844436)
 
