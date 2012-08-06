@@ -1905,7 +1905,7 @@ BuildKernel %make_target %kernel_image smp
 %endif
 
 %global perf_make \
-  make %{?_smp_mflags} -C tools/perf -s V=1 EXTRA_CFLAGS="-Wno-error=array-bounds" HAVE_CPLUS_DEMANGLE=1 prefix=%{_prefix}
+  make %{?_smp_mflags} -C tools/perf -s V=1 WERROR=0 EXTRA_CFLAGS="-Wno-error=array-bounds" HAVE_CPLUS_DEMANGLE=1 prefix=%{_prefix}
 %if %{with_perf}
 # perf
 %{perf_make} all
@@ -2350,6 +2350,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Aug 06 2012 Dave Jones <davej@redhat.com>
+- Don't treat warnings as errors when building perf. (rhbz 845758)
+
 * Fri Aug 03 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-3412 sfc: potential rDOS through TCP MSS option (rhbz 844714 845558)
 
