@@ -714,7 +714,7 @@ Patch14015: team-update-from-net-next.patch
 Patch19000: ips-noirq.patch
 
 # Uprobes (rhbz 832083)
-Patch20001: uprobes-3.4-tip.patch
+Patch20001: uprobes-backport.patch
 
 # ARM
 # Flattened devicetree support
@@ -1447,7 +1447,7 @@ ApplyPatch team-update-from-net-next.patch
 ApplyPatch ips-noirq.patch
 
 # Uprobes (rhbz 832083)
-ApplyPatch uprobes-3.4-tip.patch
+ApplyPatch uprobes-backport.patch
 
 ApplyPatch power-x86-destdir.patch
 
@@ -2350,6 +2350,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Aug 07 2012 Dave Jones <davej@redhat.com>
+- Update the uprobes backport. (Anton Arapov)
+
 * Mon Aug 06 2012 Dave Jones <davej@redhat.com>
 - Don't treat warnings as errors when building perf. (rhbz 845758)
 
