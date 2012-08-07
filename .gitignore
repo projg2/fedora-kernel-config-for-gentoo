@@ -4,3 +4,4 @@ clog
 *.rpm
 *.orig
 kernel-[23].*/
+/patch-3.5.1-rc1.gz

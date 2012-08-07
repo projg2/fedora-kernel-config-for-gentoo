@@ -755,9 +755,6 @@ Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 Patch22055: crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
 Patch22056: crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 
-#rhbz 772730
-Patch22058: ACPI-AC-check-the-return-value-of-power_supply_register.patch
-
 #rhbz 836742
 Patch22059: uvcvideo-Reset-bytesused-field-when-recycling-erroneous-buffer.patch
 
@@ -773,7 +770,7 @@ Patch22071: sfc-Fix-maximum-number-of-TSO-segments-and-minimum-TX-queue-size.pat
 Patch22072: tcp-Apply-device-TSO-segment-limit-earlier.patch
 
 # 3.5 stable patches
-Patch23000: 3.5-git-stable.patch
+Patch23000: patch-3.5.1-rc1.gz
 
 # END OF PATCH DEFINITIONS
 
@@ -1470,9 +1467,6 @@ ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 ApplyPatch crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
 ApplyPatch crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 
-#rhbz 772730
-ApplyPatch ACPI-AC-check-the-return-value-of-power_supply_register.patch
-
 #rhbz 836742
 ApplyPatch uvcvideo-Reset-bytesused-field-when-recycling-erroneous-buffer.patch
 
@@ -1482,7 +1476,7 @@ ApplyPatch CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
 #rhbz 820039 843554
 ApplyPatch rds-set-correct-msg_namelen.patch
 
-ApplyPatch 3.5-git-stable.patch
+ApplyPatch patch-3.5.1-rc1.gz
 
 #rhbz 845558 844714
 ApplyPatch net-Allow-driver-to-limit-number-of-GSO-segments-per-skb.patch
@@ -2350,6 +2344,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Aug 07 2012 Dave Jones <davej@redhat.com> 3.5.0-4
+- Update to 3.5.1-rc1
+
 * Tue Aug 07 2012 Dave Jones <davej@redhat.com>
 - Update the uprobes backport. (Anton Arapov)
 
