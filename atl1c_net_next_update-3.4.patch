@@ -2221,7 +2221,7 @@ index 1ef0c92..9cc1570 100644
  			return 0;
  		msleep(1);
  	}
-@@ -261,15 +260,16 @@ static void atl1c_check_link_status(struct atl1c_adapter *adapter)
+@@ -261,14 +260,15 @@ static void atl1c_check_link_status(struct atl1c_adapter *adapter)
  
  	if ((phy_data & BMSR_LSTATUS) == 0) {
  		/* link down */
@@ -2231,7 +2231,6 @@ index 1ef0c92..9cc1570 100644
 -				dev_warn(&pdev->dev, "stop mac failed\n");
 -		atl1c_set_aspm(hw, false);
  		netif_carrier_off(netdev);
- 		netif_stop_queue(netdev);
 -		atl1c_phy_reset(hw);
 -		atl1c_phy_init(&adapter->hw);
 +		hw->hibernate = true;
