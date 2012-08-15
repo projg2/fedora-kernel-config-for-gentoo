@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2339,6 +2339,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Aug 15 2012 Dave Jones <davej@redhat.com> 3.5.2-1
+- Linux 3.5.2
+
 * Thu Aug 09 2012 Dave Jones <davej@redhat.com> 3.5.1-1
 - Linux 3.5.1
 
