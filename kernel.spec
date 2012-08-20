@@ -2339,6 +2339,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Aug 20 2012 Dave Jones <davej@redhat.com>
+- Reenable W1 drivers. (rhbz 849430)
+
 * Wed Aug 15 2012 Dave Jones <davej@redhat.com> 3.5.2-1
 - Linux 3.5.2
 
