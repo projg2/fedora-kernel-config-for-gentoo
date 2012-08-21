@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -646,10 +646,6 @@ Patch101: taint-rss.patch
 
 Patch110: vmbugon-warnon.patch
 
-Patch160: linux-2.6-32bit-mmap-exec-randomization.patch
-Patch161: linux-2.6-i386-nx-emulation.patch
-Patch162: nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
-
 Patch390: linux-2.6-defaults-acpi-video.patch
 Patch391: linux-2.6-acpi-video-dos.patch
 Patch394: linux-2.6-acpi-debug-infinite-loop.patch
@@ -767,6 +763,8 @@ Patch22071: sfc-Fix-maximum-number-of-TSO-segments-and-minimum-TX-queue-size.pat
 Patch22072: tcp-Apply-device-TSO-segment-limit-earlier.patch
 
 Patch23000: fbcon-fix-race-condition-between-console-lock-and-cursor-timer.patch
+
+Patch24000: af_netlink-credentials-cve-2012-3520.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1472,6 +1470,8 @@ ApplyPatch sfc-Fix-maximum-number-of-TSO-segments-and-minimum-TX-queue-size.patc
 ApplyPatch tcp-Apply-device-TSO-segment-limit-earlier.patch
 
 ApplyPatch fbcon-fix-race-condition-between-console-lock-and-cursor-timer.patch
+
+ApplyPatch af_netlink-credentials-cve-2012-3520.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2334,7 +2334,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Tue Aug 21 2012 Dave Jones <davej@redhat.com>
+* Tue Aug 21 2012 Dave Jones <davej@redhat.com> 3.5.2-3
+- af_netlink: force credentials passing [CVE-2012-3520]
+
+* Tue Aug 21 2012 Dave Jones <davej@redhat.com> 3.5.2-2
 - Add patch from Dave Airlie to fix fb cursor vs grub2 gfxterm hang
 
 * Mon Aug 20 2012 Dave Jones <davej@redhat.com>
