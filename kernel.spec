@@ -739,9 +739,6 @@ Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
 Patch21270: x86-Avoid-invoking-RCU-when-CPU-is-idle.patch
 
-#rhbz 804957 CVE-2012-1568
-Patch21306: shlib_base_randomize.patch
-
 Patch21400: unhandled-irqs-switch-to-polling.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
@@ -1318,12 +1315,6 @@ ApplyPatch vmbugon-warnon.patch
 
 # Architecture patches
 # x86(-64)
-#ApplyPatch linux-2.6-32bit-mmap-exec-randomization.patch
-#ApplyPatch linux-2.6-i386-nx-emulation.patch
-#ApplyPatch nx-emu-remove-cpuinitdata-for-disable_nx-on-x86_32.patch
-#rhbz 804957 CVE-2012-1568
-#ApplyPatch shlib_base_randomize.patch
-
 
 #
 # ARM
