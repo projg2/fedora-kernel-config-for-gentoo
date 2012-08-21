@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -769,6 +769,8 @@ Patch22070: net-Allow-driver-to-limit-number-of-GSO-segments-per-skb.patch
 Patch22071: sfc-Fix-maximum-number-of-TSO-segments-and-minimum-TX-queue-size.patch
 Patch22072: tcp-Apply-device-TSO-segment-limit-earlier.patch
 
+Patch23000: fbcon-fix-race-condition-between-console-lock-and-cursor-timer.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1477,6 +1479,8 @@ ApplyPatch rds-set-correct-msg_namelen.patch
 ApplyPatch net-Allow-driver-to-limit-number-of-GSO-segments-per-skb.patch
 ApplyPatch sfc-Fix-maximum-number-of-TSO-segments-and-minimum-TX-queue-size.patch
 ApplyPatch tcp-Apply-device-TSO-segment-limit-earlier.patch
+
+ApplyPatch fbcon-fix-race-condition-between-console-lock-and-cursor-timer.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2339,6 +2343,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Aug 21 2012 Dave Jones <davej@redhat.com>
+- Add patch from Dave Airlie to fix fb cursor vs grub2 gfxterm hang
+
 * Mon Aug 20 2012 Dave Jones <davej@redhat.com>
 - Reenable W1 drivers. (rhbz 849430)
 
