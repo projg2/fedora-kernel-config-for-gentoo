@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -718,6 +718,11 @@ Patch22070: net-Allow-driver-to-limit-number-of-GSO-segments-per-skb.patch
 Patch22071: sfc-Fix-maximum-number-of-TSO-segments-and-minimum-TX-queue-size.patch
 Patch22072: tcp-Apply-device-TSO-segment-limit-earlier.patch
 
+Patch22075: af_netlink-credentials-cve-2012-3520.patch
+
+#Patches from the 3.4.10 stable queue
+Patch22100: linux-3.4.10-queue.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1340,6 +1345,11 @@ ApplyPatch rds-set-correct-msg_namelen.patch
 ApplyPatch net-Allow-driver-to-limit-number-of-GSO-segments-per-skb.patch
 ApplyPatch sfc-Fix-maximum-number-of-TSO-segments-and-minimum-TX-queue-size.patch
 ApplyPatch tcp-Apply-device-TSO-segment-limit-earlier.patch
+
+ApplyPatch af_netlink-credentials-cve-2012-3520.patch
+
+#Patches from the 3.4.10 stable queue
+ApplyPatch linux-3.4.10-queue.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2039,6 +2049,10 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 23 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.9-2
+- af_netlink: force credentials passing [CVE-2012-3520]
+- Add patches from 3.4.10 queue
+
 * Wed Aug 15 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.9-1
 - Linux 3.4.9
 
