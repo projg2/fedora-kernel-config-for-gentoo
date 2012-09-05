@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -720,9 +720,6 @@ Patch22072: tcp-Apply-device-TSO-segment-limit-earlier.patch
 
 Patch22075: af_netlink-credentials-cve-2012-3520.patch
 
-#Patches from the 3.4.10 stable queue
-Patch22100: linux-3.4.10-queue.patch
-
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1347,9 +1344,6 @@ ApplyPatch sfc-Fix-maximum-number-of-TSO-segments-and-minimum-TX-queue-size.patc
 ApplyPatch tcp-Apply-device-TSO-segment-limit-earlier.patch
 
 ApplyPatch af_netlink-credentials-cve-2012-3520.patch
-
-#Patches from the 3.4.10 stable queue
-ApplyPatch linux-3.4.10-queue.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2049,6 +2043,9 @@ fi
 # and build.
 
 %changelog
+* Wed Sep 05 2012 Josh Boyer <jwboyer@redhat.com> 3.4.10-1
+- Linux v3.4.10
+
 * Thu Aug 23 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.9-2
 - af_netlink: force credentials passing [CVE-2012-3520]
 - Add patches from 3.4.10 queue
