@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -635,7 +635,6 @@ Patch800: linux-2.6-crash-driver.patch
 # crypto/
 
 # virt + ksm patches
-Patch1500: fix_xen_guest_on_old_EC2.patch
 
 # DRM
 #atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
@@ -1273,7 +1272,6 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 # crypto/
 
 # Assorted Virt Fixes
-ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # DRM core
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
@@ -2043,6 +2041,9 @@ fi
 # and build.
 
 %changelog
+* Tue Sep 11 2012 Josh Boyer <jwboyer@redhat.com> 3.4.10-2
+- Drop old Xen EC2 patch.  It is no longer needed per Matt Wilson
+
 * Wed Sep 05 2012 Josh Boyer <jwboyer@redhat.com> 3.4.10-1
 - Linux v3.4.10
 
