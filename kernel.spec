@@ -670,7 +670,6 @@ Patch800: linux-2.6-crash-driver.patch
 # crypto/
 
 # virt + ksm patches
-Patch1555: fix_xen_guest_on_old_EC2.patch
 
 # DRM
 #atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
@@ -1393,7 +1392,6 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 # crypto/
 
 # Assorted Virt Fixes
-ApplyPatch fix_xen_guest_on_old_EC2.patch
 
 # DRM core
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
@@ -2334,6 +2332,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Sep 11 2012 Justin M. Forbes <jforbes@redhat.com> 
+- Drop xen EC2 work around, it is no longer needed.
+
 * Mon Aug 27 2012 Justin M. Forbes <jforbes@redhat.com> 3.5.3-1
 - Linux 3.5.3
 
