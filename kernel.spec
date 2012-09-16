@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -703,9 +703,6 @@ Patch22018: atl1c_net_next_update-3.4.patch
 Patch22055: crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
 Patch22056: crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 
-#rhbz 836742
-Patch22059: uvcvideo-Reset-bytesused-field-when-recycling-erroneous-buffer.patch
-
 #rhbz 714271
 Patch22060: CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
 
@@ -1326,9 +1323,6 @@ ApplyPatch atl1c_net_next_update-3.4.patch
 #Fix FIPS for aesni hardare
 ApplyPatch crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
 ApplyPatch crypto-aesni-intel-fix-wrong-kfree-pointer.patch
-
-#rhbz 836742
-ApplyPatch uvcvideo-Reset-bytesused-field-when-recycling-erroneous-buffer.patch
 
 #rhbz 714271
 ApplyPatch CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
@@ -2041,6 +2035,9 @@ fi
 # and build.
 
 %changelog
+* Sun Sep 16 2012 Josh Boyer <jwboyer@redhat.com> 3.4.11-1
+- Linux v3.4.11
+
 * Tue Sep 11 2012 Josh Boyer <jwboyer@redhat.com> 3.4.10-2
 - Drop old Xen EC2 patch.  It is no longer needed per Matt Wilson
 
