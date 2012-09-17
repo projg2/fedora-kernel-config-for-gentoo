@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -746,9 +746,6 @@ Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 #Fix FIPS for aesni hardare
 Patch22055: crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
 Patch22056: crypto-aesni-intel-fix-wrong-kfree-pointer.patch
-
-#rhbz 836742
-Patch22059: uvcvideo-Reset-bytesused-field-when-recycling-erroneous-buffer.patch
 
 #rhbz 714271
 Patch22060: CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
@@ -1452,9 +1449,6 @@ ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 #Fix FIPS for aesni hardare
 ApplyPatch crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
 ApplyPatch crypto-aesni-intel-fix-wrong-kfree-pointer.patch
-
-#rhbz 836742
-ApplyPatch uvcvideo-Reset-bytesused-field-when-recycling-erroneous-buffer.patch
 
 #rhbz 714271
 ApplyPatch CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
@@ -2332,6 +2326,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Sep 17 2012 Justin M. Forbes <jforbes@redhat.com>
+- Linux 3.5.4
+
 * Tue Sep 11 2012 Justin M. Forbes <jforbes@redhat.com> 
 - Drop xen EC2 work around, it is no longer needed.
 
