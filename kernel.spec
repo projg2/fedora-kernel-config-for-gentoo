@@ -2326,7 +2326,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Mon Sep 17 2012 Justin M. Forbes <jforbes@redhat.com>
+* Tue Sep 18 2012 Justin M. Forbes <jforbes@redhat.com>
+- Enable POWER7+ crypto modules (rhbz 857971)
+
+* Mon Sep 17 2012 Justin M. Forbes <jforbes@redhat.com> 3.5.4-1
 - Linux 3.5.4
 
 * Tue Sep 11 2012 Justin M. Forbes <jforbes@redhat.com> 
