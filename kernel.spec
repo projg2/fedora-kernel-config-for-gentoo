@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -673,6 +673,8 @@ Patch800: linux-2.6-crash-driver.patch
 
 # DRM
 #atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
+Patch1701: drm-radeon-force-dma32-to-fix-regression-rs4xx-rs6xx.patch
+
 Patch1800: drm-vgem.patch
 
 # nouveau + drm fixes
@@ -1392,6 +1394,7 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # DRM core
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
+ApplyPatch drm-radeon-force-dma32-to-fix-regression-rs4xx-rs6xx.patch
 ApplyPatch drm-vgem.patch
 
 # Nouveau DRM
@@ -2326,6 +2329,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Sep 21 2012 Josh Boyer <jwboyer@redhat.com> 3.4.11-2
+- Add patch to fix radeon regression from Jerome Glisse (rhbz 785375)
+
 * Tue Sep 18 2012 Justin M. Forbes <jforbes@redhat.com>
 - Enable POWER7+ crypto modules (rhbz 857971)
 
