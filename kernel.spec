@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -638,6 +638,7 @@ Patch800: linux-2.6-crash-driver.patch
 
 # DRM
 #atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
+Patch1701: drm-radeon-force-dma32-to-fix-regression-rs4xx-rs6xx.patch
 
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -1272,6 +1273,7 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # DRM core
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
+ApplyPatch drm-radeon-force-dma32-to-fix-regression-rs4xx-rs6xx.patch
 
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
@@ -2035,6 +2037,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 21 2012 Josh Boyer <jwboyer@redhat.com> 3.4.11-2
+- Add patch to fix radeon regression from Jerome Glisse (rhbz 785375)
+
 * Sun Sep 16 2012 Josh Boyer <jwboyer@redhat.com> 3.4.11-1
 - Linux v3.4.11
 
