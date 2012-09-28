@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -877,18 +877,28 @@ Provides:  cpufrequtils = 1:009-0.6.p1
 Obsoletes: cpufreq-utils < 1:009-0.6.p1
 Obsoletes: cpufrequtils < 1:009-0.6.p1
 Obsoletes: cpuspeed < 1:1.5-16
+Requires: kernel-tools-libs = %{version}-%{release}
 %description -n kernel-tools
 This package contains the tools/ directory from the kernel source
 and the supporting documentation.
 
-%package -n kernel-tools-devel
+%package -n kernel-tools-libs
+Summary: Libraries for the kernels-tools
+Group: Development/System
+License: GPLv2
+%description -n kernel-tools-libs
+This package contains the libraries built from the tools/ directory
+from the kernel source.
+
+%package -n kernel-tools-libs-devel
 Summary: Assortment of tools for the Linux kernel
 Group: Development/System
 License: GPLv2
 Requires: kernel-tools = %{version}-%{release}
 Provides:  cpupowerutils-devel = 1:009-0.6.p1
 Obsoletes: cpupowerutils-devel < 1:009-0.6.p1
-%description -n kernel-tools-devel
+Requires: kernel-tools-libs = %{version}-%{release}
+%description -n kernel-tools-libs-devel
 This package contains the development files for the tools/ directory from
 the kernel source.
 
@@ -2230,8 +2240,6 @@ fi
 %{_bindir}/centrino-decode
 %{_bindir}/powernow-k8-decode
 %endif
-%{_libdir}/libcpupower.so.0
-%{_libdir}/libcpupower.so.0.0.0
 %{_unitdir}/cpupower.service
 %{_mandir}/man[1-8]/cpupower*
 %config(noreplace) %{_sysconfdir}/sysconfig/cpupower
@@ -2249,7 +2257,11 @@ fi
 %endif
 
 %ifarch %{cpupowerarchs}
-%files -n kernel-tools-devel
+%files -n kernel-tools-libs
+%{_libdir}/libcpupower.so.0
+%{_libdir}/libcpupower.so.0.0.0
+
+%files -n kernel-tools-libs-devel
 %{_libdir}/libcpupower.so
 %{_includedir}/cpufreq.h
 %endif
@@ -2333,12 +2345,15 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Sep 28 2012 Josh Boyer <jwboyer@redhat.com> - 3.5.4-3
+- Split out kernel-tools-libs (rhbz 859943)
+
 * Wed Sep 26 2012 Justin M. Forbes <jforbes@redhat.com> 3.5.4-2
 - xen Restore the PCI config space after an FLR (rhbz 850350)
 - drm/radeon make 64bit fences more robust (rhbz 846505 845639)
 - Apply current 3.5.5 stable queue
 
-* Fri Sep 21 2012 Josh Boyer <jwboyer@redhat.com> 3.4.11-2
+* Fri Sep 21 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix radeon regression from Jerome Glisse (rhbz 785375)
 
 * Tue Sep 18 2012 Justin M. Forbes <jforbes@redhat.com>
