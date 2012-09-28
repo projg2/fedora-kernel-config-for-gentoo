@@ -755,6 +755,9 @@ Patch22060: CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
 #rhbz 820039 843554
 Patch22061: rds-set-correct-msg_namelen.patch
 
+#rhbz 857324
+Patch22070: net-tcp-bz857324.patch
+
 Patch23000: fbcon-fix-race-condition-between-console-lock-and-cursor-timer.patch
 
 #rhbz 850350
@@ -1470,6 +1473,9 @@ ApplyPatch CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
 
 #rhbz 820039 843554
 ApplyPatch rds-set-correct-msg_namelen.patch
+
+#rhbz 857324
+ApplyPatch net-tcp-bz857324.patch
 
 ApplyPatch fbcon-fix-race-condition-between-console-lock-and-cursor-timer.patch
 
@@ -2345,6 +2351,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Sep 28 2012 Dave Jones <davej@redhat.com>
+- Apply potential fix for bogus WARN_ON in tcp. (rhbz 857324)
+
 * Fri Sep 28 2012 Josh Boyer <jwboyer@redhat.com> - 3.5.4-3
 - Split out kernel-tools-libs (rhbz 859943)
 
