@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -638,7 +638,6 @@ Patch800: linux-2.6-crash-driver.patch
 
 # DRM
 #atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
-Patch1701: drm-radeon-force-dma32-to-fix-regression-rs4xx-rs6xx.patch
 
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -706,16 +705,6 @@ Patch22056: crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 
 #rhbz 714271
 Patch22060: CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
-
-#rhbz 820039 843554
-Patch22061: rds-set-correct-msg_namelen.patch
-
-#rhbz 845558 844714
-Patch22070: net-Allow-driver-to-limit-number-of-GSO-segments-per-skb.patch
-Patch22071: sfc-Fix-maximum-number-of-TSO-segments-and-minimum-TX-queue-size.patch
-Patch22072: tcp-Apply-device-TSO-segment-limit-earlier.patch
-
-Patch22075: af_netlink-credentials-cve-2012-3520.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1283,7 +1272,6 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # DRM core
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
-ApplyPatch drm-radeon-force-dma32-to-fix-regression-rs4xx-rs6xx.patch
 
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
@@ -1338,16 +1326,6 @@ ApplyPatch crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 
 #rhbz 714271
 ApplyPatch CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
-
-#rhbz 820039 843554
-ApplyPatch rds-set-correct-msg_namelen.patch
-
-#rhbz 845558 844714
-ApplyPatch net-Allow-driver-to-limit-number-of-GSO-segments-per-skb.patch
-ApplyPatch sfc-Fix-maximum-number-of-TSO-segments-and-minimum-TX-queue-size.patch
-ApplyPatch tcp-Apply-device-TSO-segment-limit-earlier.patch
-
-ApplyPatch af_netlink-credentials-cve-2012-3520.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2049,6 +2027,15 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 02 2012 Dave Jones <davej@redhat.com> 3.4.12-1
+- Linux v3.4.12
+  merged: drm-radeon-force-dma32-to-fix-regression-rs4xx-rs6xx.patch
+  merged: rds-set-correct-msg_namelen.patch
+  merged: net-Allow-driver-to-limit-number-of-GSO-segments-per-skb.patch
+  merged: sfc-Fix-maximum-number-of-TSO-segments-and-minimum-TX-queue-size.patch
+  merged: tcp-Apply-device-TSO-segment-limit-earlier.patch
+  merged: af_netlink-credentials-cve-2012-3520.patch
+
 * Fri Sep 28 2012 Josh Boyer <jwboyer@redhat.com> - 3.4.11-3
 - Split out kernel-tools-libs (rhbz 859943)
 
