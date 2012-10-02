@@ -759,6 +759,9 @@ Patch22066: virtio-scsi-Initialize-scatterlist-structure.patch
 #rhbz 846037
 Patch22067: selinux-Fix-sel_netnode_insert-suspicious-rcu-dereference.patch
 
+#rhbz 862420
+Patch22068: powerpc-fix-VMX-fix-for-memcpy-case.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1467,6 +1470,9 @@ ApplyPatch virtio-scsi-Initialize-scatterlist-structure.patch
 
 #rhbz 846037
 ApplyPatch selinux-Fix-sel_netnode_insert-suspicious-rcu-dereference.patch
+
+#rhbz 862420
+ApplyPatch powerpc-fix-VMX-fix-for-memcpy-case.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2320,6 +2326,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Oct 02 2012 Justin M. Forbes <jforbes@redhat.com> - 3.6.0-2
+- Power: Fix VMX fix for memcpy case (rhbz 862420)
+
 * Tue Oct 02 2012 Josh Boyer <jwboyer@redhat.com>
 - Patch from David Howells to fix overflow on 32-bit X.509 certs (rhbz 861322)
 
