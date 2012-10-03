@@ -693,7 +693,7 @@ Patch1100: handle-efi-roms.patch
 
 # DRM
 #atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
-Patch1800: drm-vgem.patch
+#Patch1800: drm-vgem.patch
 
 # nouveau + drm fixes
 # intel drm is all merged upstream
@@ -1421,7 +1421,7 @@ ApplyPatch handle-efi-roms.patch
 
 # DRM core
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
-ApplyPatch drm-vgem.patch
+#ApplyPatch drm-vgem.patch
 
 # Nouveau DRM
 
@@ -2327,6 +2327,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Oct 03 2012 Adam Jackson <ajax@redhat.com>
+- Drop vgem patches, not doing anything yet.
+
 * Wed Oct 03 2012 Josh Boyer <jwboyer@redhat.com>
 - Make sure kernel-tools-libs-devel provides kernel-tools-devel
 
