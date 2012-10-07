@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -753,9 +753,6 @@ Patch22060: CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
 
 #rhbz 857324
 Patch22070: net-tcp-bz857324.patch
-
-#rhbz 850350
-Patch24050: xen-pciback-restore-pci-config-space-after-FLR.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1461,9 +1458,6 @@ ApplyPatch CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
 
 #rhbz 857324
 ApplyPatch net-tcp-bz857324.patch
-
-#rhbz 850350
-ApplyPatch xen-pciback-restore-pci-config-space-after-FLR.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2328,6 +2322,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sun Oct 07 2012 Josh Boyer <jwboyer@redhat.com> - 3.5.6-1
+- Linux v3.5.6
+
 * Wed Oct 03 2012 Josh Boyer <jwboyer@redhat.com>
 - Make sure kernel-tools-libs-devel provides kernel-tools-devel
 
