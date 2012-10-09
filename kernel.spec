@@ -60,13 +60,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 2.6.22-rc7-git1 starts with a 2.6.21 base,
 # which yields a base_sublevel of 21.
-%define base_sublevel 5
+%define base_sublevel 6
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -705,12 +705,7 @@ Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
-Patch14015: team-update-from-net-next.patch
-
 Patch19000: ips-noirq.patch
-
-# Uprobes (rhbz 832083)
-Patch20001: uprobes-backport.patch
 
 # ARM
 # Flattened devicetree support
@@ -726,7 +721,7 @@ Patch21005: arm-tegra-usb-no-reset-linux33.patch
 
 # ARM highbank patches
 # Highbank clock functions need to be EXPORT for module builds
-Patch21010: highbank-export-clock-functions.patch
+#atch21010: highbank-export-clock-functions.patch
 
 Patch21094: power-x86-destdir.patch
 
@@ -735,8 +730,6 @@ Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
 Patch21270: x86-Avoid-invoking-RCU-when-CPU-is-idle.patch
 
-Patch21400: unhandled-irqs-switch-to-polling.patch
-
 Patch22000: weird-root-dentry-name-debug.patch
 
 #selinux ptrace child permissions
@@ -744,15 +737,10 @@ Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
 Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 
-#Fix FIPS for aesni hardare
-Patch22055: crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
-Patch22056: crypto-aesni-intel-fix-wrong-kfree-pointer.patch
-
-#rhbz 714271
-Patch22060: CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
-
 #rhbz 857324
 Patch22070: net-tcp-bz857324.patch
+
+Patch22071: 3.6.2-stable-queue.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1425,39 +1413,27 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
-ApplyPatch team-update-from-net-next.patch
-
 ApplyPatch ips-noirq.patch
-
-# Uprobes (rhbz 832083)
-ApplyPatch uprobes-backport.patch
 
 ApplyPatch power-x86-destdir.patch
 
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
-ApplyPatch unhandled-irqs-switch-to-polling.patch
-
 ApplyPatch weird-root-dentry-name-debug.patch
 
 #Highbank clock functions
-ApplyPatch highbank-export-clock-functions.patch 
+# pplyPatch highbank-export-clock-functions.patch 
 
 #selinux ptrace child permissions
 ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 
 ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 
-#Fix FIPS for aesni hardare
-ApplyPatch crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
-ApplyPatch crypto-aesni-intel-fix-wrong-kfree-pointer.patch
-
-#rhbz 714271
-ApplyPatch CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
-
 #rhbz 857324
 ApplyPatch net-tcp-bz857324.patch
+
+ApplyPatch 3.6.2-stable-queue.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2322,6 +2298,11 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Oct 09 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.1-1
+- Linux v3.6.1
+- Include patches from 3.6.2 stable queue
+- Drop unhandled irq patch.  Proving to be not worthwhile
+
 * Sun Oct 07 2012 Josh Boyer <jwboyer@redhat.com> - 3.5.6-1
 - Linux v3.5.6
 
