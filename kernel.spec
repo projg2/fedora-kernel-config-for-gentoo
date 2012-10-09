@@ -2298,6 +2298,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Oct  9 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update ARM configurations
+
 * Tue Oct 09 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.1-1
 - Linux v3.6.1
 - Include patches from 3.6.2 stable queue
