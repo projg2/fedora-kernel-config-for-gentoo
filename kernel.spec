@@ -741,6 +741,10 @@ Patch21006: arm-tegra-sdhci-module-fix.patch
 # ARM highbank patches
 Patch21010: arm-highbank-sata-fix.patch
 
+# ARM exynos4
+Patch21020: arm-smdk310-regulator-fix.patch
+Patch21021: arm-origen-regulator-fix.patch
+
 Patch21094: power-x86-destdir.patch
 
 #rhbz 754518
@@ -1340,6 +1344,9 @@ ApplyPatch arm-fix_radio_shark.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 ApplyPatch arm-tegra-sdhci-module-fix.patch
+
+ApplyPatch arm-smdk310-regulator-fix.patch
+ApplyPatch arm-origen-regulator-fix.patch
 
 #
 # bugfixes to drivers and filesystems
