@@ -724,6 +724,10 @@ Patch21005: arm-tegra-usb-no-reset-linux33.patch
 # Highbank clock functions need to be EXPORT for module builds
 #atch21010: highbank-export-clock-functions.patch
 
+# ARM exynos4
+Patch21020: arm-smdk310-regulator-fix.patch
+Patch21021: arm-origen-regulator-fix.patch
+
 Patch21094: power-x86-destdir.patch
 
 #rhbz 754518
@@ -1311,6 +1315,9 @@ ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 #pplyPatch arm-beagle-usb-init.patch
 #pplyPatch arm-omap-drm-register.patch
+
+ApplyPatch arm-smdk310-regulator-fix.patch
+ApplyPatch arm-origen-regulator-fix.patch
 
 #
 # bugfixes to drivers and filesystems
