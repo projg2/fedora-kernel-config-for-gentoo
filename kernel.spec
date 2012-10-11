@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2028,6 +2028,9 @@ fi
 # and build.
 
 %changelog
+* Thu Oct 11 2012 Dave Jones <davej@redhat.com>
+- Linux 3.4.13
+
 * Wed Oct 03 2012 Josh Boyer <jwboyer@redhat.com>
 - Make sure kernel-tools-libs-devel provides kernel-tools-devel
 
