@@ -2323,6 +2323,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Oct 11 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update ARM config for missing newoption items
+
 * Tue Oct 09 2012 Josh Boyer <jwboyer@redhat.com>
 - Drop unhandled irq polling patch
 
