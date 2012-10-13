@@ -2323,7 +2323,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Thu Oct 11 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+* Thu Oct 11 2012 Peter Robinson <pbrobinson@fedoraproject.org> 3.6.1-2
 - Update ARM config for missing newoption items
 
 * Tue Oct 09 2012 Josh Boyer <jwboyer@redhat.com>
