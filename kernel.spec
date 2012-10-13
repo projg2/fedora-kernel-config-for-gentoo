@@ -747,6 +747,8 @@ Patch22070: net-tcp-bz857324.patch
 
 Patch22071: 3.6.2-stable-queue.patch
 
+Patch22072: linux-3.6-arm-build-fixup.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1309,6 +1311,7 @@ ApplyPatch vmbugon-warnon.patch
 #
 # ARM
 #
+ApplyPatch linux-3.6-arm-build-fixup.patch
 #pplyPatch arm-omap-dt-compat.patch
 # ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
