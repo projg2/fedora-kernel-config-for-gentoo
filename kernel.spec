@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -744,8 +744,6 @@ Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 
 #rhbz 857324
 Patch22070: net-tcp-bz857324.patch
-
-Patch22071: 3.6.2-stable-queue.patch
 
 Patch22072: linux-3.6-arm-build-fixup.patch
 
@@ -1443,8 +1441,6 @@ ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 
 #rhbz 857324
 ApplyPatch net-tcp-bz857324.patch
-
-ApplyPatch 3.6.2-stable-queue.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2310,6 +2306,7 @@ fi
 #              '-'
 %changelog
 * Sat Oct 13 2012 Josh Boyer <jwboyer@redhat.com>
+- Linux v3.6.2
 - Fix whitespace corruption in linux-3.6-arm-build-fixup.patch
 
 * Tue Oct  9 2012 Peter Robinson <pbrobinson@fedoraproject.org>
