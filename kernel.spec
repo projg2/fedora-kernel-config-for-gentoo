@@ -2309,6 +2309,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sat Oct 13 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix whitespace corruption in linux-3.6-arm-build-fixup.patch
+
 * Tue Oct  9 2012 Peter Robinson <pbrobinson@fedoraproject.org>
 - Update ARM configurations
 
