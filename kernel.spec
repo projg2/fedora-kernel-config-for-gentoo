@@ -2305,7 +2305,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Sat Oct 13 2012 Josh Boyer <jwboyer@redhat.com>
+* Sat Oct 13 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.2-2
 - Linux v3.6.2
 - Fix whitespace corruption in linux-3.6-arm-build-fixup.patch
 
