@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -756,9 +756,6 @@ Patch22066: virtio-scsi-Initialize-scatterlist-structure.patch
 
 #rhbz 846037
 Patch22067: selinux-Fix-sel_netnode_insert-suspicious-rcu-dereference.patch
-
-#rhbz 862420
-Patch22068: powerpc-fix-VMX-fix-for-memcpy-case.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1467,9 +1464,6 @@ ApplyPatch virtio-scsi-Initialize-scatterlist-structure.patch
 
 #rhbz 846037
 ApplyPatch selinux-Fix-sel_netnode_insert-suspicious-rcu-dereference.patch
-
-#rhbz 862420
-ApplyPatch powerpc-fix-VMX-fix-for-memcpy-case.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2323,6 +2317,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Oct 15 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.2-1
+- Linux 3.6.2
+
 * Thu Oct 11 2012 Peter Robinson <pbrobinson@fedoraproject.org> 3.6.1-2
 - Update ARM config for missing newoption items
 
