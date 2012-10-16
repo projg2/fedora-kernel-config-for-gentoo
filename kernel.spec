@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -703,9 +703,6 @@ Patch22018: atl1c_net_next_update-3.4.patch
 Patch22055: crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
 Patch22056: crypto-aesni-intel-fix-wrong-kfree-pointer.patch
 
-#rhbz 714271
-Patch22060: CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
-
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1324,9 +1321,6 @@ ApplyPatch atl1c_net_next_update-3.4.patch
 #Fix FIPS for aesni hardare
 ApplyPatch crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
 ApplyPatch crypto-aesni-intel-fix-wrong-kfree-pointer.patch
-
-#rhbz 714271
-ApplyPatch CPU-hotplug-cpusets-suspend-Dont-modify-cpusets-during.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2028,6 +2022,9 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 16 2012 Dave Jones <davej@redhat.com> 3.4.14-1
+- Linux 3.4.14
+
 * Thu Oct 11 2012 Dave Jones <davej@redhat.com> 3.4.13-1
 - Linux 3.4.13
 
