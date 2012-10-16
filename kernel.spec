@@ -2317,6 +2317,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Oct 16 2012 Justin M. Forbes <jforbes@redhat.com>
+- Enable CONFIG_TCM_VHOST (rhbz 866981)
+
 * Mon Oct 15 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.2-1
 - Linux 3.6.2
 
