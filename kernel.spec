@@ -708,6 +708,8 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 
 Patch19000: ips-noirq.patch
 
+Patch19001: i82975x-edac-fix.patch
+
 # ARM
 # Flattened devicetree support
 Patch21000: arm-omap-dt-compat.patch
@@ -1423,6 +1425,8 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 ApplyPatch ips-noirq.patch
+
+ApplyPatch i82975x-edac-fix.patch
 
 ApplyPatch power-x86-destdir.patch
 
@@ -2305,6 +2309,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Oct 15 2012 Mauro Carvalho Chehab <mchehab@redhat.com> - 3.6.2-3
+- Fix i82975x_edac OOPS
+
 * Sat Oct 13 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.2-2
 - Linux v3.6.2
 - Fix whitespace corruption in linux-3.6-arm-build-fixup.patch

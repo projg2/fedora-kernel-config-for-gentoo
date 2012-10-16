@@ -1,0 +1,234 @@
+commit 9370a8d717720f6b17221490fea8d798396d9f2f
+Author: Mauro Carvalho Chehab <mchehab@redhat.com>
+Date:   Mon Oct 15 21:49:35 2012 -0300
+
+    i82975x_edac: Use the edac standard debug macro
+    
+    Instead of declaring its own debug macro, that requires
+    to uncomment part of the code, use the edac standard macro
+    to add the debug code, and the edac debug level to print it,
+    just like any other EDAC driver.
+    
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+diff --git a/drivers/edac/i82975x_edac.c b/drivers/edac/i82975x_edac.c
+index a980204..f998d2c 100644
+--- a/drivers/edac/i82975x_edac.c
++++ b/drivers/edac/i82975x_edac.c
+@@ -435,11 +435,9 @@ static void i82975x_init_csrows(struct mem_ctl_info *mci,
+ 	}
+ }
+ 
+-/* #define  i82975x_DEBUG_IOMEM */
+-
+-#ifdef i82975x_DEBUG_IOMEM
+-static void i82975x_print_dram_timings(void __iomem *mch_window)
++static void i82975x_print_dram_config(void __iomem *mch_window, u32 mchbar, u32 *drc)
+ {
++#ifdef CONFIG_EDAC_DEBUG
+ 	/*
+ 	 * The register meanings are from Intel specs;
+ 	 * (shows 13-5-5-5 for 800-DDR2)
+@@ -448,26 +446,63 @@ static void i82975x_print_dram_timings(void __iomem *mch_window)
+ 	 */
+ 	static const int caslats[4] = { 5, 4, 3, 6 };
+ 	u32	dtreg[2];
++	u8 c0drb[4];
++	u8 c1drb[4];
++
++	if (!edac_debug_level)
++		return;
++
++	i82975x_printk(KERN_INFO, "MCHBAR real = %0x, remapped = %p\n",
++		       mchbar, mch_window);
++
++	c0drb[0] = readb(mch_window + I82975X_DRB_CH0R0);
++	c0drb[1] = readb(mch_window + I82975X_DRB_CH0R1);
++	c0drb[2] = readb(mch_window + I82975X_DRB_CH0R2);
++	c0drb[3] = readb(mch_window + I82975X_DRB_CH0R3);
++	c1drb[0] = readb(mch_window + I82975X_DRB_CH1R0);
++	c1drb[1] = readb(mch_window + I82975X_DRB_CH1R1);
++	c1drb[2] = readb(mch_window + I82975X_DRB_CH1R2);
++	c1drb[3] = readb(mch_window + I82975X_DRB_CH1R3);
++	i82975x_printk(KERN_INFO, "DRBCH0R0 = 0x%02x\n", c0drb[0]);
++	i82975x_printk(KERN_INFO, "DRBCH0R1 = 0x%02x\n", c0drb[1]);
++	i82975x_printk(KERN_INFO, "DRBCH0R2 = 0x%02x\n", c0drb[2]);
++	i82975x_printk(KERN_INFO, "DRBCH0R3 = 0x%02x\n", c0drb[3]);
++	i82975x_printk(KERN_INFO, "DRBCH1R0 = 0x%02x\n", c1drb[0]);
++	i82975x_printk(KERN_INFO, "DRBCH1R1 = 0x%02x\n", c1drb[1]);
++	i82975x_printk(KERN_INFO, "DRBCH1R2 = 0x%02x\n", c1drb[2]);
++	i82975x_printk(KERN_INFO, "DRBCH1R3 = 0x%02x\n", c1drb[3]);
++
++	i82975x_printk(KERN_INFO, "DRC_CH0 = %0x, %s\n", drc[0],
++		       ((drc[0] >> 21) & 3) == 1 ?
++				"ECC enabled" : "ECC disabled");
++	i82975x_printk(KERN_INFO, "DRC_CH1 = %0x, %s\n", drc[1],
++		       ((drc[1] >> 21) & 3) == 1 ?
++		       "ECC enabled" : "ECC disabled");
++
++	i82975x_printk(KERN_INFO, "C0 BNKARC = %0x\n",
++		readw(mch_window + I82975X_C0BNKARC));
++	i82975x_printk(KERN_INFO, "C1 BNKARC = %0x\n",
++		readw(mch_window + I82975X_C1BNKARC));
+ 
+ 	dtreg[0] = readl(mch_window + 0x114);
+ 	dtreg[1] = readl(mch_window + 0x194);
+-	i82975x_printk(KERN_INFO, "DRAM Timings :     Ch0    Ch1\n"
++	i82975x_printk(KERN_INFO,
++		"DRAM Timings :  Ch0    Ch1\n"
+ 		"                RAS Active Min = %d     %d\n"
+ 		"                CAS latency    =  %d      %d\n"
+ 		"                RAS to CAS     =  %d      %d\n"
+ 		"                RAS precharge  =  %d      %d\n",
+ 		(dtreg[0] >> 19 ) & 0x0f,
+-			(dtreg[1] >> 19) & 0x0f,
++		(dtreg[1] >> 19) & 0x0f,
+ 		caslats[(dtreg[0] >> 8) & 0x03],
+-			caslats[(dtreg[1] >> 8) & 0x03],
++		caslats[(dtreg[1] >> 8) & 0x03],
+ 		((dtreg[0] >> 4) & 0x07) + 2,
+-			((dtreg[1] >> 4) & 0x07) + 2,
++		((dtreg[1] >> 4) & 0x07) + 2,
+ 		(dtreg[0] & 0x07) + 2,
+-			(dtreg[1] & 0x07) + 2
++		(dtreg[1] & 0x07) + 2
+ 	);
+-
+-}
+ #endif
++}
+ 
+ static int i82975x_probe1(struct pci_dev *pdev, int dev_idx)
+ {
+@@ -480,10 +515,6 @@ static int i82975x_probe1(struct pci_dev *pdev, int dev_idx)
+ 	u32 drc[2];
+ 	struct i82975x_error_info discard;
+ 	int	chans;
+-#ifdef i82975x_DEBUG_IOMEM
+-	u8 c0drb[4];
+-	u8 c1drb[4];
+-#endif
+ 
+ 	edac_dbg(0, "\n");
+ 
+@@ -495,45 +526,11 @@ static int i82975x_probe1(struct pci_dev *pdev, int dev_idx)
+ 	mchbar &= 0xffffc000;	/* bits 31:14 used for 16K window */
+ 	mch_window = ioremap_nocache(mchbar, 0x1000);
+ 
+-#ifdef i82975x_DEBUG_IOMEM
+-	i82975x_printk(KERN_INFO, "MCHBAR real = %0x, remapped = %p\n",
+-					mchbar, mch_window);
+-
+-	c0drb[0] = readb(mch_window + I82975X_DRB_CH0R0);
+-	c0drb[1] = readb(mch_window + I82975X_DRB_CH0R1);
+-	c0drb[2] = readb(mch_window + I82975X_DRB_CH0R2);
+-	c0drb[3] = readb(mch_window + I82975X_DRB_CH0R3);
+-	c1drb[0] = readb(mch_window + I82975X_DRB_CH1R0);
+-	c1drb[1] = readb(mch_window + I82975X_DRB_CH1R1);
+-	c1drb[2] = readb(mch_window + I82975X_DRB_CH1R2);
+-	c1drb[3] = readb(mch_window + I82975X_DRB_CH1R3);
+-	i82975x_printk(KERN_INFO, "DRBCH0R0 = 0x%02x\n", c0drb[0]);
+-	i82975x_printk(KERN_INFO, "DRBCH0R1 = 0x%02x\n", c0drb[1]);
+-	i82975x_printk(KERN_INFO, "DRBCH0R2 = 0x%02x\n", c0drb[2]);
+-	i82975x_printk(KERN_INFO, "DRBCH0R3 = 0x%02x\n", c0drb[3]);
+-	i82975x_printk(KERN_INFO, "DRBCH1R0 = 0x%02x\n", c1drb[0]);
+-	i82975x_printk(KERN_INFO, "DRBCH1R1 = 0x%02x\n", c1drb[1]);
+-	i82975x_printk(KERN_INFO, "DRBCH1R2 = 0x%02x\n", c1drb[2]);
+-	i82975x_printk(KERN_INFO, "DRBCH1R3 = 0x%02x\n", c1drb[3]);
+-#endif
+-
+ 	drc[0] = readl(mch_window + I82975X_DRC_CH0M0);
+ 	drc[1] = readl(mch_window + I82975X_DRC_CH1M0);
+-#ifdef i82975x_DEBUG_IOMEM
+-	i82975x_printk(KERN_INFO, "DRC_CH0 = %0x, %s\n", drc[0],
+-			((drc[0] >> 21) & 3) == 1 ?
+-				"ECC enabled" : "ECC disabled");
+-	i82975x_printk(KERN_INFO, "DRC_CH1 = %0x, %s\n", drc[1],
+-			((drc[1] >> 21) & 3) == 1 ?
+-				"ECC enabled" : "ECC disabled");
+ 
+-	i82975x_printk(KERN_INFO, "C0 BNKARC = %0x\n",
+-		readw(mch_window + I82975X_C0BNKARC));
+-	i82975x_printk(KERN_INFO, "C1 BNKARC = %0x\n",
+-		readw(mch_window + I82975X_C1BNKARC));
+-	i82975x_print_dram_timings(mch_window);
+-	goto fail1;
+-#endif
++	i82975x_print_dram_config(mch_window, mchbar, drc);
++
+ 	if (!(((drc[0] >> 21) & 3) == 1 || ((drc[1] >> 21) & 3) == 1)) {
+ 		i82975x_printk(KERN_INFO, "ECC disabled on both channels.\n");
+ 		goto fail1;
+
+commit 8992ed2f4295eab137e1713fa16be5546a759373
+Author: Mauro Carvalho Chehab <mchehab@redhat.com>
+Date:   Mon Oct 15 21:48:48 2012 -0300
+
+    i82975x_edac: Fix dimm label initialization
+    
+    The driver has only 4 hardcoded labels, but allows much more memory.
+    Fix it by removing the hardcoded logic, using snprintf() instead.
+    
+    [   19.833972] general protection fault: 0000 [#1] SMP
+    [   19.837733] Modules linked in: i82975x_edac(+) edac_core firewire_ohci firewire_core crc_itu_t nouveau mxm_wmi wmi video i2c_algo_bit drm_kms_helper ttm drm i2c_core
+    [   19.837733] CPU 0
+    [   19.837733] Pid: 390, comm: udevd Not tainted 3.6.1-1.fc17.x86_64.debug #1 Dell Inc.                 Precision WorkStation 390    /0MY510
+    [   19.837733] RIP: 0010:[<ffffffff813463a8>]  [<ffffffff813463a8>] strncpy+0x18/0x30
+    [   19.837733] RSP: 0018:ffff880078535b68  EFLAGS: 00010202
+    [   19.837733] RAX: ffff880069fa9708 RBX: ffff880078588000 RCX: ffff880069fa9708
+    [   19.837733] RDX: 000000000000001f RSI: 5f706f5f63616465 RDI: ffff880069fa9708
+    [   19.837733] RBP: ffff880078535b68 R08: ffff880069fa9727 R09: 000000000000fffe
+    [   19.837733] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000003
+    [   19.837733] R13: 0000000000000000 R14: ffff880069fa9290 R15: ffff880079624a80
+    [   19.837733] FS:  00007f3de01ee840(0000) GS:ffff88007c400000(0000) knlGS:0000000000000000
+    [   19.837733] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+    [   19.837733] CR2: 00007f3de00b9000 CR3: 0000000078dbc000 CR4: 00000000000007f0
+    [   19.837733] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+    [   19.837733] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
+    [   19.837733] Process udevd (pid: 390, threadinfo ffff880078534000, task ffff880079642450)
+    [   19.837733] Stack:
+    [   19.837733]  ffff880078535c18 ffffffffa017c6b8 00040000816d627f ffff880079624a88
+    [   19.837733]  ffffc90004cd6000 ffff880079624520 ffff88007ac21148 0000000000000000
+    [   19.837733]  0000000000000000 0004000000000000 feda000078535bc8 ffffffff810d696d
+    [   19.837733] Call Trace:
+    [   19.837733]  [<ffffffffa017c6b8>] i82975x_init_one+0x2e6/0x3e6 [i82975x_edac]
+    ...
+    
+    Fix bug reported at:
+    	https://bugzilla.redhat.com/show_bug.cgi?id=848149
+    And, very likely:
+    	https://bbs.archlinux.org/viewtopic.php?id=148033
+    	https://bugzilla.kernel.org/show_bug.cgi?id=47171
+    
+    Cc: Alan Cox <alan@lxorguk.ukuu.org.uk>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@redhat.com>
+
+diff --git a/drivers/edac/i82975x_edac.c b/drivers/edac/i82975x_edac.c
+index 069e26c..a980204 100644
+--- a/drivers/edac/i82975x_edac.c
++++ b/drivers/edac/i82975x_edac.c
+@@ -370,10 +370,6 @@ static enum dev_type i82975x_dram_type(void __iomem *mch_window, int rank)
+ static void i82975x_init_csrows(struct mem_ctl_info *mci,
+ 		struct pci_dev *pdev, void __iomem *mch_window)
+ {
+-	static const char *labels[4] = {
+-							"DIMM A1", "DIMM A2",
+-							"DIMM B1", "DIMM B2"
+-						};
+ 	struct csrow_info *csrow;
+ 	unsigned long last_cumul_size;
+ 	u8 value;
+@@ -423,9 +419,10 @@ static void i82975x_init_csrows(struct mem_ctl_info *mci,
+ 			dimm = mci->csrows[index]->channels[chan]->dimm;
+ 
+ 			dimm->nr_pages = nr_pages / csrow->nr_channels;
+-			strncpy(csrow->channels[chan]->dimm->label,
+-					labels[(index >> 1) + (chan * 2)],
+-					EDAC_MC_LABEL_LEN);
++
++			snprintf(csrow->channels[chan]->dimm->label, EDAC_MC_LABEL_LEN, "DIMM %c%d",
++				 (chan == 0) ? 'A' : 'B',
++				 index);
+ 			dimm->grain = 1 << 7;	/* 128Byte cache-line resolution */
+ 			dimm->dtype = i82975x_dram_type(mch_window, index);
+ 			dimm->mtype = MEM_DDR2; /* I82975x supports only DDR2 */
