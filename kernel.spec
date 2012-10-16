@@ -60,13 +60,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 2.6.22-rc7-git1 starts with a 2.6.21 base,
 # which yields a base_sublevel of 21.
-%define base_sublevel 4
+%define base_sublevel 5
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 0
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -643,9 +643,6 @@ Patch800: linux-2.6-crash-driver.patch
 Patch1824: drm-intel-next.patch
 Patch1825: drm-i915-dp-stfu.patch
 
-# hush the i915 fbc noise
-Patch1826: drm-i915-fbc-stfu.patch
-
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
 # Quiet boot fixes
@@ -656,9 +653,6 @@ Patch2802: linux-2.6-silence-acpi-blacklist.patch
 Patch2901: drivers-media-update.patch
 
 # fs fixes
-
-#rhbz 753346
-Patch3500: jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
 
 # NFSv4
 
@@ -675,9 +669,7 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 Patch19000: ips-noirq.patch
 
 # Uprobes (rhbz 832083)
-Patch20000: uprobes-3.4-backport.patch
-Patch20001: uprobes-3.4-tip.patch
-Patch20002: uprobes-task_work_add-generic-process-context-callbacks.patch
+Patch20000: uprobes-backport.patch
 
 #rhbz 769766
 Patch21072: mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
@@ -695,9 +687,6 @@ Patch21306: shlib_base_randomize.patch
 # Debug patches
 Patch30000: weird-root-dentry-name-debug.patch
 Patch30010: debug-808990.patch
-
-#rhbz 749276
-Patch22018: atl1c_net_next_update-3.4.patch
 
 #Fix FIPS for aesni hardare
 Patch22055: crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
@@ -1199,10 +1188,6 @@ ApplyPatch taint-vbox.patch
 # bugfixes to drivers and filesystems
 #
 
-# ext4
-#rhbz 753346
-ApplyPatch jbd-jbd2-validate-sb-s_first-in-journal_get_superblo.patch
-
 # xfs
 
 # btrfs
@@ -1274,7 +1259,6 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-i915-dp-stfu.patch
-ApplyPatch drm-i915-fbc-stfu.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
@@ -1302,9 +1286,7 @@ ApplyPatch ips-noirq.patch
 #ApplyPatch pci-crs-blacklist.patch
 
 # Uprobes (rhbz 832083)
-ApplyPatch uprobes-3.4-backport.patch
-ApplyPatch uprobes-3.4-tip.patch
-ApplyPatch uprobes-task_work_add-generic-process-context-callbacks.patch
+ApplyPatch uprobes-backport.patch
 
 #rhbz 754518
 #ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -1314,9 +1296,6 @@ ApplyPatch unhandled-irqs-switch-to-polling.patch
 # debug patches
 ApplyPatch weird-root-dentry-name-debug.patch
 ApplyPatch debug-808990.patch
-
-#rhbz 749276
-ApplyPatch atl1c_net_next_update-3.4.patch
 
 #Fix FIPS for aesni hardare
 ApplyPatch crypto-testmgr-allow-aesni-intel-and-ghash_clmulni-intel.patch
@@ -2022,6 +2001,9 @@ fi
 # and build.
 
 %changelog
+* Tue Oct 16 2012 Dave Jones <davej@redhat.com> 3.5.0-1
+- Linux 3.5
+
 * Tue Oct 16 2012 Dave Jones <davej@redhat.com> 3.4.14-1
 - Linux 3.4.14
 
