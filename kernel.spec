@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2309,6 +2309,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Oct 17 2012 Josh Boyer <jwboyer@redhat.com>
+- Enable TCM_VHOST module (rhbz 866984)
+
 * Mon Oct 15 2012 Mauro Carvalho Chehab <mchehab@redhat.com> - 3.6.2-4
 - Fix i82975x_edac driver by rewriting most of the logic there
 
