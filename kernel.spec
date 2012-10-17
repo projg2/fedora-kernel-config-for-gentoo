@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -1987,7 +1987,10 @@ fi
 # and build.
 
 %changelog
-* Tue Oct 16 2012 Dave Jones <davej@redhat.com>
+* Tue Oct 16 2012 Dave Jones <davej@redhat.com> 3.6.2-1
+- Linux 3.6.2
+
+* Tue Oct 16 2012 Dave Jones <davej@redhat.com> 3.6.0-1
 - Linux 3.6
 
 * Tue Oct 16 2012 Dave Jones <davej@redhat.com> 3.5.7-1
