@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -726,6 +726,8 @@ Patch14000: hibernate-freeze-filesystems.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
+
+Patch19001: i82975x-edac-fix.patch
 
 # ARM
 Patch21000: arm-read_current_timer.patch
@@ -1448,6 +1450,8 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 #ApplyPatch hibernate-freeze-filesystems.patch
 
 ApplyPatch lis3-improve-handling-of-null-rate.patch
+
+ApplyPatch i82975x-edac-fix.patch
 
 ApplyPatch power-x86-destdir.patch
 
@@ -2317,6 +2321,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Oct 16 2012 Mauro Carvalho Chehab <mchehab@redhat.com> - 3.6.2-2
+- Fix i82975x_edac OOPS
+
 * Tue Oct 16 2012 Justin M. Forbes <jforbes@redhat.com>
 - Enable CONFIG_TCM_VHOST (rhbz 866981)
 
