@@ -2322,6 +2322,7 @@ fi
 #              '-'
 %changelog
 * Thu Oct 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Enable VFIO (rhbz 867152)
 - Apply patch from Stanislaw Gruszka to fix mac80211 issue (rhbz 862168)
 - Apply patch to fix iwlwifi crash (rhbz 770484)
 
