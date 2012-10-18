@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -746,6 +746,9 @@ Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 
 #rhbz 857324
 Patch22070: net-tcp-bz857324.patch
+
+#rhbz 770484
+Patch22071: iwlwifi-fix-6000-ch-switch.patch
 
 Patch22072: linux-3.6-arm-build-fixup.patch
 
@@ -1445,6 +1448,9 @@ ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 
 #rhbz 857324
 ApplyPatch net-tcp-bz857324.patch
+
+#rhbz 770484
+ApplyPatch iwlwifi-fix-6000-ch-switch.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2309,6 +2315,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Oct 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Apply patch to fix iwlwifi crash (rhbz 770484)
+
 * Wed Oct 17 2012 Josh Boyer <jwboyer@redhat.com>
 - Enable TCM_VHOST module (rhbz 866984)
 
