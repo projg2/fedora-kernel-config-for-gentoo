@@ -750,6 +750,9 @@ Patch22070: net-tcp-bz857324.patch
 #rhbz 770484
 Patch22071: iwlwifi-fix-6000-ch-switch.patch
 
+#rhbz 862168
+Patch22073: mac80211_local_deauth_v3.6.patch
+
 Patch22072: linux-3.6-arm-build-fixup.patch
 
 # END OF PATCH DEFINITIONS
@@ -1451,6 +1454,9 @@ ApplyPatch net-tcp-bz857324.patch
 
 #rhbz 770484
 ApplyPatch iwlwifi-fix-6000-ch-switch.patch
+
+#rhbz 862168
+ApplyPatch mac80211_local_deauth_v3.6.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2316,6 +2322,7 @@ fi
 #              '-'
 %changelog
 * Thu Oct 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Apply patch from Stanislaw Gruszka to fix mac80211 issue (rhbz 862168)
 - Apply patch to fix iwlwifi crash (rhbz 770484)
 
 * Wed Oct 17 2012 Josh Boyer <jwboyer@redhat.com>
