@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -681,6 +681,9 @@ Patch21300: unhandled-irqs-switch-to-polling.patch
 #rhbz 804957 CVE-2012-1568
 Patch21306: shlib_base_randomize.patch
 
+#rhbz 770484
+Patch22071: iwlwifi-fix-6000-ch-switch.patch
+
 # Debug patches
 Patch30000: weird-root-dentry-name-debug.patch
 Patch30010: debug-808990.patch
@@ -1286,6 +1289,9 @@ ApplyPatch unhandled-irqs-switch-to-polling.patch
 # debug patches
 ApplyPatch weird-root-dentry-name-debug.patch
 ApplyPatch debug-808990.patch
+
+#rhbz 770484
+ApplyPatch iwlwifi-fix-6000-ch-switch.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1987,6 +1993,9 @@ fi
 # and build.
 
 %changelog
+* Thu Oct 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Apply patch to fix iwlwifi crash (rhbz 770484)
+
 * Tue Oct 16 2012 Dave Jones <davej@redhat.com> 3.6.2-1
 - Linux 3.6.2
 
