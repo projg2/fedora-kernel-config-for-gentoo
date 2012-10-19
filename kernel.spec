@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -766,6 +766,15 @@ Patch22066: virtio-scsi-Initialize-scatterlist-structure.patch
 
 #rhbz 846037
 Patch22067: selinux-Fix-sel_netnode_insert-suspicious-rcu-dereference.patch
+
+#rhbz 770484
+Patch22071: iwlwifi-fix-6000-ch-switch.patch
+
+#rhbz 862168
+Patch22073: mac80211_local_deauth_v3.6.patch
+
+#rhbz 866013
+Patch22074: mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1482,6 +1491,15 @@ ApplyPatch virtio-scsi-Initialize-scatterlist-structure.patch
 
 #rhbz 846037
 ApplyPatch selinux-Fix-sel_netnode_insert-suspicious-rcu-dereference.patch
+
+#rhbz 770484
+ApplyPatch iwlwifi-fix-6000-ch-switch.patch
+
+#rhbz 862168
+ApplyPatch mac80211_local_deauth_v3.6.patch
+
+#rhbz 866013
+ApplyPatch mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2335,6 +2353,12 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Oct 18 2012 Josh Boyer <jwboyer@redhat.com>
+- Patch to have mac80211 connect with HT20 if HT40 is not allowed (rhbz 866013)
+- Enable VFIO (rhbz 867152)
+- Apply patch from Stanislaw Gruszka to fix mac80211 issue (rhbz 862168)
+- Apply patch to fix iwlwifi crash (rhbz 770484)
+
 * Tue Oct 16 2012 Mauro Carvalho Chehab <mchehab@redhat.com> - 3.6.2-2
 - Fix i82975x_edac OOPS
 
