@@ -2327,6 +2327,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sun Oct 21 2012 Josh Boyer <jwboyer@redhat.com>
+- Don't enable UDL per Dave Airlie
+
 * Thu Oct 18 2012 Josh Boyer <jwboyer@redhat.com>
 - Patch to have mac80211 connect with HT20 if HT40 is not allowed (rhbz 866013)
 - Enable VFIO (rhbz 867152)
