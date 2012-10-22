@@ -773,6 +773,9 @@ Patch22074: mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
 #rhbz 856863
 Patch22075: rt2x00-usb-fix-reset-resume.patch
 
+#rhbz 862877 864824 CVE-2012-0957
+Patch22076: fix-stack-memory-content-leak-via-UNAME26.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1495,6 +1498,9 @@ ApplyPatch mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
 
 #rhbz 856863
 ApplyPatch rt2x00-usb-fix-reset-resume.patch
+
+#rhbz 862877 864824 CVE-2012-0957
+ApplyPatch fix-stack-memory-content-leak-via-UNAME26.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2349,6 +2355,7 @@ fi
 #                 ||     ||
 %changelog
 * Mon Oct 22 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2012-0957: uts: stack memory leak in UNAME26 (rhbz 862877 864824)
 - Fix rt2x00 usb reset resume (rhbz 856863)
 
 * Mon Oct 22 2012 Justin M. Forbes <jforbes@linuxtx.org> - 3.6.3-1
