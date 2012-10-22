@@ -2334,7 +2334,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Mon Oct 22 2012 Josh Boyer <jwboyer@redhat.com>
+* Mon Oct 22 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.3-1
 - CVE-2012-0957: uts: stack memory leak in UNAME26 (rhbz 862877 864824)
 - Fix rt2x00 usb reset resume (rhbz 856863)
 - Linux v3.6.3
