@@ -712,10 +712,7 @@ Patch19001: i82975x-edac-fix.patch
 
 # ARM
 # Flattened devicetree support
-Patch21000: arm-omap-dt-compat.patch
-Patch21001: arm-smsc-support-reading-mac-address-from-device-tree.patch
-# drm register derived from http://www.digipedia.pl/usenet/thread/19013/36923/ 
-#atch21002: arm-omap-drm-register.patch
+Patch21003: arm-linux-3.6-revert-missaligned-access-check-on-put_user.patch
 
 # ARM tegra
 Patch21004: arm-tegra-nvec-kconfig.patch
@@ -724,7 +721,7 @@ Patch21005: arm-tegra-usb-no-reset-linux33.patch
 
 # ARM highbank patches
 # Highbank clock functions need to be EXPORT for module builds
-#atch21010: highbank-export-clock-functions.patch
+Patch21010: arm-highbank-sata-fix.patch
 
 # ARM exynos4
 Patch21020: arm-smdk310-regulator-fix.patch
@@ -1321,12 +1318,10 @@ ApplyPatch vmbugon-warnon.patch
 # ARM
 #
 ApplyPatch linux-3.6-arm-build-fixup.patch
-#pplyPatch arm-omap-dt-compat.patch
-# ApplyPatch arm-smsc-support-reading-mac-address-from-device-tree.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
-#pplyPatch arm-beagle-usb-init.patch
-#pplyPatch arm-omap-drm-register.patch
+ApplyPatch arm-highbank-sata-fix.patch
+ApplyPatch arm-linux-3.6-revert-missaligned-access-check-on-put_user.patch
 
 ApplyPatch arm-smdk310-regulator-fix.patch
 ApplyPatch arm-origen-regulator-fix.patch
@@ -2327,6 +2322,11 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Oct 22 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Cleanup ARM patches
+- Add highbank sata patch
+- add patch to revert ARM misaligned access check to stop kernel OOPS
+
 * Thu Oct 18 2012 Josh Boyer <jwboyer@redhat.com>
 - Patch to have mac80211 connect with HT20 if HT40 is not allowed (rhbz 866013)
 - Enable VFIO (rhbz 867152)
