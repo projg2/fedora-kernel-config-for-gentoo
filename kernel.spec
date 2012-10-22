@@ -776,6 +776,9 @@ Patch22075: rt2x00-usb-fix-reset-resume.patch
 #rhbz 862877 864824 CVE-2012-0957
 Patch22076: fix-stack-memory-content-leak-via-UNAME26.patch
 
+#rhbz 867344
+Patch22077: dont-call-cifs_lookup-on-hashed-negative-dentry.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1501,6 +1504,9 @@ ApplyPatch rt2x00-usb-fix-reset-resume.patch
 
 #rhbz 862877 864824 CVE-2012-0957
 ApplyPatch fix-stack-memory-content-leak-via-UNAME26.patch
+
+#rhbz 867344
+ApplyPatch dont-call-cifs_lookup-on-hashed-negative-dentry.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2358,6 +2364,7 @@ fi
 - VIFO fails on ARM at the moment so disable it for the time being
 
 * Mon Oct 22 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix CIFS oops from Jeff Layton (rhbz 867344)
 - CVE-2012-0957: uts: stack memory leak in UNAME26 (rhbz 862877 864824)
 - Fix rt2x00 usb reset resume (rhbz 856863)
 
