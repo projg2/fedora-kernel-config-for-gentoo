@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -769,6 +769,9 @@ Patch22073: mac80211_local_deauth_v3.6.patch
 
 #rhbz 866013
 Patch22074: mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
+
+#rhbz 856863
+Patch22075: rt2x00-usb-fix-reset-resume.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1489,6 +1492,9 @@ ApplyPatch mac80211_local_deauth_v3.6.patch
 
 #rhbz 866013
 ApplyPatch mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
+
+#rhbz 856863
+ApplyPatch rt2x00-usb-fix-reset-resume.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2342,6 +2348,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Oct 22 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix rt2x00 usb reset resume (rhbz 856863)
+
 * Mon Oct 22 2012 Justin M. Forbes <jforbes@linuxtx.org> - 3.6.3-1
 - Linux 3.6.3
 
