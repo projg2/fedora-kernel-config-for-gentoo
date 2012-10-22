@@ -753,6 +753,9 @@ Patch22073: mac80211_local_deauth_v3.6.patch
 #rhbz 866013
 Patch22074: mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
 
+#rhbz 856863
+Patch22075: rt2x00-usb-fix-reset-resume.patch
+
 Patch22072: linux-3.6-arm-build-fixup.patch
 
 # END OF PATCH DEFINITIONS
@@ -1458,6 +1461,9 @@ ApplyPatch mac80211_local_deauth_v3.6.patch
 
 #rhbz 866013
 ApplyPatch mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
+
+#rhbz 856863
+ApplyPatch rt2x00-usb-fix-reset-resume.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2323,6 +2329,7 @@ fi
 #              '-'
 %changelog
 * Mon Oct 22 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix rt2x00 usb reset resume (rhbz 856863)
 - Linux v3.6.3
 
 * Mon Oct 22 2012 Peter Robinson <pbrobinson@fedoraproject.org>
