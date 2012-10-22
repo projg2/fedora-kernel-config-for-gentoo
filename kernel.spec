@@ -690,6 +690,9 @@ Patch22073: mac80211_local_deauth_v3.6.patch
 #rhbz 866013
 Patch22074: mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
 
+#rhbz 856863
+Patch22075: rt2x00-usb-fix-reset-resume.patch
+
 # Debug patches
 Patch30000: weird-root-dentry-name-debug.patch
 Patch30010: debug-808990.patch
@@ -1304,6 +1307,9 @@ ApplyPatch mac80211_local_deauth_v3.6.patch
 
 #rhbz 866013
 ApplyPatch mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
+
+#rhbz 856863
+ApplyPatch rt2x00-usb-fix-reset-resume.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2005,6 +2011,9 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 22 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix rt2x00 usb reset resume (rhbz 856863)
+
 * Thu Oct 18 2012 Josh Boyer <jwboyer@redhat.com>
 - Patch to have mac80211 connect with HT20 if HT40 is not allowed (rhbz 866013)
 - Apply patch from Stanislaw Gruszka to fix mac80211 issue (rhbz 862168)
