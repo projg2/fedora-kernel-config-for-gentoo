@@ -733,6 +733,7 @@ Patch19001: i82975x-edac-fix.patch
 Patch21000: arm-read_current_timer.patch
 Patch21001: arm-fix-omapdrm.patch
 Patch21002: arm-fix_radio_shark.patch
+Patch21003: arm-linux-3.6-revert-missaligned-access-check-on-put_user.patch
 # OMAP
 
 # ARM tegra
@@ -742,10 +743,6 @@ Patch21006: arm-tegra-sdhci-module-fix.patch
 
 # ARM highbank patches
 Patch21010: arm-highbank-sata-fix.patch
-
-# ARM exynos4
-Patch21020: arm-smdk310-regulator-fix.patch
-Patch21021: arm-origen-regulator-fix.patch
 
 # ARM exynos4
 Patch21020: arm-smdk310-regulator-fix.patch
@@ -1356,10 +1353,8 @@ ApplyPatch arm-fix_radio_shark.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 ApplyPatch arm-tegra-sdhci-module-fix.patch
-
-ApplyPatch arm-smdk310-regulator-fix.patch
-ApplyPatch arm-origen-regulator-fix.patch
-
+ApplyPatch arm-highbank-sata-fix.patch
+ApplyPatch arm-linux-3.6-revert-missaligned-access-check-on-put_user.patch
 ApplyPatch arm-smdk310-regulator-fix.patch
 ApplyPatch arm-origen-regulator-fix.patch
 
@@ -2353,6 +2348,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Oct 22 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Revert ARM misaligned access check to stop kernel OOPS
+- Actually apply highbank sata patch
+
 * Thu Oct 18 2012 Josh Boyer <jwboyer@redhat.com>
 - Patch to have mac80211 connect with HT20 if HT40 is not allowed (rhbz 866013)
 - Enable VFIO (rhbz 867152)
