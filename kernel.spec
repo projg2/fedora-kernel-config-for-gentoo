@@ -2334,6 +2334,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Oct 22 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- VIFO fails on ARM at the moment so disable it for the time being
+
 * Mon Oct 22 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-0957: uts: stack memory leak in UNAME26 (rhbz 862877 864824)
 - Fix rt2x00 usb reset resume (rhbz 856863)
