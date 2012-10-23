@@ -2360,6 +2360,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Oct 23 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update OMAP Video config options
+
 * Mon Oct 22 2012 Peter Robinson <pbrobinson@fedoraproject.org>
 - VIFO fails on ARM at the moment so disable it for the time being
 
