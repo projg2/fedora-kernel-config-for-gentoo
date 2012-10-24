@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -778,6 +778,9 @@ Patch22076: fix-stack-memory-content-leak-via-UNAME26.patch
 
 #rhbz 867344
 Patch22077: dont-call-cifs_lookup-on-hashed-negative-dentry.patch
+
+#rhbz 852210
+Patch22078: drm-i915-Use-cpu-relocations-if-the-object-is-in-the.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1507,6 +1510,9 @@ ApplyPatch fix-stack-memory-content-leak-via-UNAME26.patch
 
 #rhbz 867344
 ApplyPatch dont-call-cifs_lookup-on-hashed-negative-dentry.patch
+
+#rhbz 852210
+ApplyPatch drm-i915-Use-cpu-relocations-if-the-object-is-in-the.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2360,6 +2366,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Oct 24 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix corrupted text with i915 (rhbz 852210)
+
 * Tue Oct 23 2012 Peter Robinson <pbrobinson@fedoraproject.org>
 - Update OMAP Video config options
 
