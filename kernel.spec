@@ -699,6 +699,9 @@ Patch22076: fix-stack-memory-content-leak-via-UNAME26.patch
 #rhbz 867344
 Patch22077: dont-call-cifs_lookup-on-hashed-negative-dentry.patch
 
+#rhbz 852210
+Patch22078: drm-i915-Use-cpu-relocations-if-the-object-is-in-the.patch
+
 # Debug patches
 Patch30000: weird-root-dentry-name-debug.patch
 Patch30010: debug-808990.patch
@@ -1322,6 +1325,9 @@ ApplyPatch fix-stack-memory-content-leak-via-UNAME26.patch
 
 #rhbz 867344
 ApplyPatch dont-call-cifs_lookup-on-hashed-negative-dentry.patch
+
+#rhbz 852210
+ApplyPatch drm-i915-Use-cpu-relocations-if-the-object-is-in-the.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2023,6 +2029,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 24 2012 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix corrupted text with i915 (rhbz 852210)
+
 * Mon Oct 22 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix CIFS oops from Jeff Layton (rhbz 867344)
 - CVE-2012-0957: uts: stack memory leak in UNAME26 (rhbz 862877 864824)
