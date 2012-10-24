@@ -2360,6 +2360,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Oct 30 2012 Mauro Carvalho Chehab <mchehab@redhat.com>
+- Fix EDAC memory filling for csrow-based memory controllers
+
 * Tue Oct 30 2012 Josh Boyer <jwboyer@redhat.com>
 - Move power-x86-destdir.patch to apply on vanilla kernels (thanks knurd)
 
