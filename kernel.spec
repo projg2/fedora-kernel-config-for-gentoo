@@ -690,9 +690,6 @@ Patch22073: mac80211_local_deauth_v3.6.patch
 #rhbz 866013
 Patch22074: mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
 
-#rhbz 856863
-Patch22075: rt2x00-usb-fix-reset-resume.patch
-
 #rhbz 862877 864824 CVE-2012-0957
 Patch22076: fix-stack-memory-content-leak-via-UNAME26.patch
 
@@ -1316,9 +1313,6 @@ ApplyPatch mac80211_local_deauth_v3.6.patch
 
 #rhbz 866013
 ApplyPatch mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
-
-#rhbz 856863
-ApplyPatch rt2x00-usb-fix-reset-resume.patch
 
 #rhbz 862877 864824 CVE-2012-0957
 ApplyPatch fix-stack-memory-content-leak-via-UNAME26.patch
@@ -2030,6 +2024,7 @@ fi
 
 %changelog
 * Wed Oct 24 2012 Josh Boyer <jwboyer@redhat.com>
+- Remove patch added for rhbz 856863
 - Add patch to fix corrupted text with i915 (rhbz 852210)
 
 * Mon Oct 22 2012 Josh Boyer <jwboyer@redhat.com>
