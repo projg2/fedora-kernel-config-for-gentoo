@@ -779,6 +779,21 @@ Patch22077: dont-call-cifs_lookup-on-hashed-negative-dentry.patch
 #rhbz 852210
 Patch22078: drm-i915-Use-cpu-relocations-if-the-object-is-in-the.patch
 
+#rhbz 869904 869909 CVE-2012-4508
+Patch22080: 0001-ext4-ext4_inode_info-diet.patch
+Patch22081: 0002-ext4-give-i_aiodio_unwritten-a-more-appropriate-name.patch
+Patch22082: 0003-ext4-fix-unwritten-counter-leakage.patch
+Patch22083: 0004-ext4-completed_io-locking-cleanup.patch
+Patch22084: 0005-ext4-serialize-dio-nonlocked-reads-with-defrag-worke.patch
+Patch22085: 0006-ext4-serialize-unlocked-dio-reads-with-truncate.patch
+Patch22086: 0007-ext4-endless-truncate-due-to-nonlocked-dio-readers.patch
+Patch22087: 0008-ext4-serialize-truncate-with-owerwrite-DIO-workers.patch
+Patch22088: 0009-ext4-punch_hole-should-wait-for-DIO-writers.patch
+Patch22089: 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
+Patch22090: 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
+Patch22091: 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
+Patch22092: 0013-ext4-race-condition-protection-for-ext4_convert_unwr.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1507,6 +1522,21 @@ ApplyPatch dont-call-cifs_lookup-on-hashed-negative-dentry.patch
 
 #rhbz 852210
 ApplyPatch drm-i915-Use-cpu-relocations-if-the-object-is-in-the.patch
+
+#rhbz 869904 869909 CVE-2012-4508
+ApplyPatch 0001-ext4-ext4_inode_info-diet.patch
+ApplyPatch 0002-ext4-give-i_aiodio_unwritten-a-more-appropriate-name.patch
+ApplyPatch 0003-ext4-fix-unwritten-counter-leakage.patch
+ApplyPatch 0004-ext4-completed_io-locking-cleanup.patch
+ApplyPatch 0005-ext4-serialize-dio-nonlocked-reads-with-defrag-worke.patch
+ApplyPatch 0006-ext4-serialize-unlocked-dio-reads-with-truncate.patch
+ApplyPatch 0007-ext4-endless-truncate-due-to-nonlocked-dio-readers.patch
+ApplyPatch 0008-ext4-serialize-truncate-with-owerwrite-DIO-workers.patch
+ApplyPatch 0009-ext4-punch_hole-should-wait-for-DIO-writers.patch
+ApplyPatch 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
+ApplyPatch 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
+ApplyPatch 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
+ApplyPatch 0013-ext4-race-condition-protection-for-ext4_convert_unwr.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2360,6 +2390,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Oct 25 2012 Justin M. Forbes <jforbes@redhat.com>
+- CVE-2012-4508: ext4: AIO vs fallocate stale data exposure (rhbz 869904 869909)
+
 * Wed Oct 24 2012 Josh Boyer <jwboyer@redhat.com>
 - Remove patch added for rhbz 856863
 - Add patch to fix corrupted text with i915 (rhbz 852210)
