@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -770,14 +770,8 @@ Patch22073: mac80211_local_deauth_v3.6.patch
 #rhbz 866013
 Patch22074: mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
 
-#rhbz 862877 864824 CVE-2012-0957
-Patch22076: fix-stack-memory-content-leak-via-UNAME26.patch
-
 #rhbz 867344
 Patch22077: dont-call-cifs_lookup-on-hashed-negative-dentry.patch
-
-#rhbz 852210
-Patch22078: drm-i915-Use-cpu-relocations-if-the-object-is-in-the.patch
 
 #rhbz 869904 869909 CVE-2012-4508
 Patch22080: 0001-ext4-ext4_inode_info-diet.patch
@@ -792,7 +786,6 @@ Patch22088: 0009-ext4-punch_hole-should-wait-for-DIO-writers.patch
 Patch22089: 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
 Patch22090: 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
 Patch22091: 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
-Patch22092: 0013-ext4-race-condition-protection-for-ext4_convert_unwr.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1514,14 +1507,8 @@ ApplyPatch mac80211_local_deauth_v3.6.patch
 #rhbz 866013
 ApplyPatch mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
 
-#rhbz 862877 864824 CVE-2012-0957
-ApplyPatch fix-stack-memory-content-leak-via-UNAME26.patch
-
 #rhbz 867344
 ApplyPatch dont-call-cifs_lookup-on-hashed-negative-dentry.patch
-
-#rhbz 852210
-ApplyPatch drm-i915-Use-cpu-relocations-if-the-object-is-in-the.patch
 
 #rhbz 869904 869909 CVE-2012-4508
 ApplyPatch 0001-ext4-ext4_inode_info-diet.patch
@@ -1536,7 +1523,6 @@ ApplyPatch 0009-ext4-punch_hole-should-wait-for-DIO-writers.patch
 ApplyPatch 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
 ApplyPatch 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
 ApplyPatch 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
-ApplyPatch 0013-ext4-race-condition-protection-for-ext4_convert_unwr.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2390,6 +2376,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Oct 29 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.4-1
+- Linux 3.6.4
+
 * Thu Oct 25 2012 Justin M. Forbes <jforbes@redhat.com>
 - CVE-2012-4508: ext4: AIO vs fallocate stale data exposure (rhbz 869904 869909)
 
