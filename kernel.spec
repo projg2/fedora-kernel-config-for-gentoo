@@ -733,7 +733,7 @@ Patch19001: i82975x-edac-fix.patch
 Patch21000: arm-read_current_timer.patch
 Patch21001: arm-fix-omapdrm.patch
 Patch21002: arm-fix_radio_shark.patch
-Patch21003: arm-linux-3.6-revert-missaligned-access-check-on-put_user.patch
+Patch21003: arm-alignment-faults.patch
 # OMAP
 
 # ARM tegra
@@ -1368,7 +1368,7 @@ ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 ApplyPatch arm-tegra-sdhci-module-fix.patch
 ApplyPatch arm-highbank-sata-fix.patch
-ApplyPatch arm-linux-3.6-revert-missaligned-access-check-on-put_user.patch
+ApplyPatch arm-alignment-faults.patch
 ApplyPatch arm-smdk310-regulator-fix.patch
 ApplyPatch arm-origen-regulator-fix.patch
 
@@ -2376,6 +2376,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Oct 29 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update ARM alignment patch to upstream
+
 * Mon Oct 29 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.4-1
 - Linux 3.6.4
 
