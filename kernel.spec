@@ -644,6 +644,8 @@ Patch04: linux-2.6-compile-fixes.patch
 # build tweak for build ID magic, even for -vanilla
 Patch05: linux-2.6-makefile-after_link.patch
 
+Patch06: power-x86-destdir.patch
+
 %if !%{nopatches}
 
 
@@ -747,8 +749,6 @@ Patch21010: arm-highbank-sata-fix.patch
 # ARM exynos4
 Patch21020: arm-smdk310-regulator-fix.patch
 Patch21021: arm-origen-regulator-fix.patch
-
-Patch21094: power-x86-destdir.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -1344,6 +1344,8 @@ ApplyPatch linux-2.6-makefile-after_link.patch
 #
 ApplyOptionalPatch linux-2.6-compile-fixes.patch
 
+ApplyPatch power-x86-destdir.patch
+
 %if !%{nopatches}
 
 # revert patches from upstream that conflict or that we get via other means
@@ -1486,8 +1488,6 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 ApplyPatch i82975x-edac-fix.patch
-
-ApplyPatch power-x86-destdir.patch
 
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -2380,6 +2380,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Oct 30 2012 Josh Boyer <jwboyer@redhat.com>
+- Move power-x86-destdir.patch to apply on vanilla kernels (thanks knurd)
+
 * Mon Oct 29 2012 Justin M. Forbes <jforbes@redhat.com>
 - Uprobes backports from upstream
 
