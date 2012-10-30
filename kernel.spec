@@ -772,6 +772,8 @@ Patch22089: 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
 Patch22090: 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
 Patch22091: 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
 
+Patch22100: uprobes-upstream-backport.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1492,6 +1494,8 @@ ApplyPatch 0009-ext4-punch_hole-should-wait-for-DIO-writers.patch
 ApplyPatch 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
 ApplyPatch 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
 ApplyPatch 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
+
+ApplyPatch uprobes-upstream-backport.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2356,6 +2360,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Oct 29 2012 Justin M. Forbes <jforbes@redhat.com>
+- Uprobes backports from upstream
+
 * Mon Oct 29 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.4-1
 - Linux 3.6.4
 
