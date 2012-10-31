@@ -787,6 +787,9 @@ Patch22089: 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
 Patch22090: 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
 Patch22091: 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
 
+#rhbz 871923 871848 CVE-2012-4565
+Patch22092: net-fix-divide-by-zero-in-tcp-algorithm-illinois.patch
+
 Patch22100: uprobes-upstream-backport.patch
 
 # END OF PATCH DEFINITIONS
@@ -1525,6 +1528,9 @@ ApplyPatch 0009-ext4-punch_hole-should-wait-for-DIO-writers.patch
 ApplyPatch 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
 ApplyPatch 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
 ApplyPatch 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
+
+#rhbz 871923 871848 CVE-2012-4565
+ApplyPatch net-fix-divide-by-zero-in-tcp-algorithm-illinois.patch
 
 ApplyPatch uprobes-upstream-backport.patch
 
@@ -2380,6 +2386,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Oct 30 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2012-4565 net: divide by zero in tcp algorithm illinois (rhbz 871848 871923)
+
 * Tue Oct 30 2012 Josh Boyer <jwboyer@redhat.com>
 - Move power-x86-destdir.patch to apply on vanilla kernels (thanks knurd)
 
