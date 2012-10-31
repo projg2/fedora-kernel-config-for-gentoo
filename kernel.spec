@@ -707,6 +707,9 @@ Patch22089: 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
 Patch22090: 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
 Patch22091: 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
 
+#rhbz 871923 871848 CVE-2012-4565
+Patch22092: net-fix-divide-by-zero-in-tcp-algorithm-illinois.patch
+
 # Debug patches
 Patch30000: weird-root-dentry-name-debug.patch
 Patch30010: debug-808990.patch
@@ -1338,6 +1341,9 @@ ApplyPatch 0009-ext4-punch_hole-should-wait-for-DIO-writers.patch
 ApplyPatch 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
 ApplyPatch 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
 ApplyPatch 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
+
+#rhbz 871923 871848 CVE-2012-4565
+ApplyPatch net-fix-divide-by-zero-in-tcp-algorithm-illinois.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2039,6 +2045,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 30 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2012-4565 net: divide by zero in tcp algorithm illinois (rhbz 871848 871923)
+
 * Mon Oct 29 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.4-1
 - Linux 3.6.4
 
