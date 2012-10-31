@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -760,15 +760,6 @@ Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
 #rhbz 846037
 Patch22067: selinux-Fix-sel_netnode_insert-suspicious-rcu-dereference.patch
-
-#rhbz 770484
-Patch22071: iwlwifi-fix-6000-ch-switch.patch
-
-#rhbz 862168
-Patch22073: mac80211_local_deauth_v3.6.patch
-
-#rhbz 866013
-Patch22074: mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
 
 #rhbz 867344
 Patch22077: dont-call-cifs_lookup-on-hashed-negative-dentry.patch
@@ -1502,15 +1493,6 @@ ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 
 #rhbz 846037
 ApplyPatch selinux-Fix-sel_netnode_insert-suspicious-rcu-dereference.patch
-
-#rhbz 770484
-ApplyPatch iwlwifi-fix-6000-ch-switch.patch
-
-#rhbz 862168
-ApplyPatch mac80211_local_deauth_v3.6.patch
-
-#rhbz 866013
-ApplyPatch mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
 
 #rhbz 867344
 ApplyPatch dont-call-cifs_lookup-on-hashed-negative-dentry.patch
@@ -2386,7 +2368,8 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Wed Oct 30 2012 Josh Boyer <jwboyer@redhat.com>
+* Wed Oct 30 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.5-1
+- Linux v3.6.5
 - CVE-2012-4565 net: divide by zero in tcp algorithm illinois (rhbz 871848 871923)
 
 * Tue Oct 30 2012 Josh Boyer <jwboyer@redhat.com>
