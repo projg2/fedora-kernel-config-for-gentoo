@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -677,8 +677,6 @@ Patch21226: pci-crs-blacklist.patch
 
 #rhbz 754518
 #Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-
-Patch21300: unhandled-irqs-switch-to-polling.patch
 
 #rhbz 804957 CVE-2012-1568
 Patch21306: shlib_base_randomize.patch
@@ -1304,8 +1302,6 @@ ApplyPatch i82975x-edac-fix.patch
 
 #rhbz 754518
 #ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-
-ApplyPatch unhandled-irqs-switch-to-polling.patch
 
 # debug patches
 ApplyPatch weird-root-dentry-name-debug.patch
@@ -2031,6 +2027,9 @@ fi
 # and build.
 
 %changelog
+* Thu Nov 01 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.5-3
+- Drop unhandled irq patch. (rhbz 845211)
+
 * Wed Oct 30 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.5-2
 - Fix i82975x_edac OOPS (BZ#848149)
 
