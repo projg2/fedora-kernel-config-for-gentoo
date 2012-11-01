@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -667,6 +667,8 @@ Patch13003: efi-dont-map-boot-services-on-32bit.patch
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
 Patch19000: ips-noirq.patch
+
+Patch19001: i82975x-edac-fix.patch
 
 #rhbz 769766
 Patch21072: mac80211-fix-rx-key-NULL-ptr-deref-in-promiscuous-mode.patch
@@ -1295,6 +1297,8 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 ApplyPatch ips-noirq.patch
+
+ApplyPatch i82975x-edac-fix.patch
 
 #ApplyPatch pci-crs-blacklist.patch
 
@@ -2027,6 +2031,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 30 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.5-2
+- Fix i82975x_edac OOPS (BZ#848149)
+
 * Wed Oct 30 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.5-1
 - Linux 3.6.5
 
