@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2027,6 +2027,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 05 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.6-1
+- Linux 3.6.6
+
 * Thu Nov 01 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.5-3
 - Drop unhandled irq patch. (rhbz 845211)
 
