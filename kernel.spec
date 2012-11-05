@@ -732,6 +732,9 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 
 Patch19001: i82975x-edac-fix.patch
 
+Patch20000: 0001-efifb-Skip-DMI-checks-if-the-bootloader-knows-what-i.patch
+Patch20001: 0002-x86-EFI-Calculate-the-EFI-framebuffer-size-instead-o.patch
+
 # ARM
 Patch21000: arm-read_current_timer.patch
 Patch21001: arm-fix-omapdrm.patch
@@ -1484,6 +1487,9 @@ ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 ApplyPatch i82975x-edac-fix.patch
+
+ApplyPatch 0001-efifb-Skip-DMI-checks-if-the-bootloader-knows-what-i.patch
+ApplyPatch 0002-x86-EFI-Calculate-the-EFI-framebuffer-size-instead-o.patch
 
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -2372,6 +2378,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Nov 05 2012 David Woodhouse <David.Woodhouse@intel.com> - 3.6.5-3
+- Fix EFI framebuffer handling
+
 * Wed Oct 31 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.5-2
 - Update modsign to what is currently in 3.7-rc2
 - Update secure boot support for UEFI cert importing.
