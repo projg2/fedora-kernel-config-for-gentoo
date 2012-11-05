@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -688,6 +688,7 @@ Patch901: modsign-post-KS-jwb.patch
 
 # secure boot
 Patch1000: secure-boot-20121105.patch
+Patch1001: efivarfs-3.6.patch
 
 # Improve PCI support on UEFI
 Patch1100: handle-efi-roms.patch
@@ -1444,6 +1445,7 @@ ApplyPatch modsign-upstream-3.7.patch
 ApplyPatch modsign-post-KS-jwb.patch
 
 # secure boot
+ApplyPatch efivarfs-3.6.patch
 ApplyPatch secure-boot-20121105.patch
 
 # Improved PCI support for UEFI
@@ -2378,7 +2380,8 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Mon Nov 05 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.6-2
+* Mon Nov 05 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.6-3
+- Backport efivarfs from efi/next for moktools
 - Fix build break without CONFIG_EFI set (reported by Peter W. Bowey)
 - Linux v3.6.6
 
