@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -223,6 +223,9 @@ Summary: The Linux kernel
 %endif
 
 %if %{with_vanilla}
+# Vanilla kernels before 3.7 don't contain modsign support.  Remove this when
+# we rebase to 3.7
+%define signmodules 0
 %define nopatches 1
 %endif
 
@@ -1644,9 +1647,8 @@ BuildKernel() {
 
     %if %{signmodules}
     cp %{SOURCE11} .
-    %endif
-
     chmod +x scripts/sign-file
+    %endif
 
     Arch=`head -1 .config | cut -b 3-`
     echo USING ARCH=$Arch
@@ -2380,6 +2382,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Nov 09 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix vanilla kernel builds (reported by Thorsten Leemhuis)
+
 * Wed Nov 07 2012 Josh Boyer <jwboyer@redhat.com>
 - Add patch to not break modules_install for external module builds
 
