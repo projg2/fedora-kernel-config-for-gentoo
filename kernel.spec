@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -767,6 +767,11 @@ Patch22091: 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
 Patch22092: net-fix-divide-by-zero-in-tcp-algorithm-illinois.patch
 
 Patch22100: uprobes-upstream-backport.patch
+
+#rhbz 871078
+Patch22110: usb-audio-fix-crash-at-re-preparing-the-PCM-stream.patch
+Patch22111: USB-EHCI-urb-hcpriv-should-not-be-NULL.patch
+Patch22112: USB-report-submission-of-active-URBs.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1484,6 +1489,11 @@ ApplyPatch 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
 ApplyPatch net-fix-divide-by-zero-in-tcp-algorithm-illinois.patch
 
 ApplyPatch uprobes-upstream-backport.patch
+
+#rhbz 871078
+ApplyPatch usb-audio-fix-crash-at-re-preparing-the-PCM-stream.patch
+ApplyPatch USB-EHCI-urb-hcpriv-should-not-be-NULL.patch
+ApplyPatch USB-report-submission-of-active-URBs.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2348,6 +2358,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Nov 12 2012 Justin M. Forbes <jforbes@redhat.com>
+- fix list_del corruption warning on USB audio with twinkle (rhbz 871078)
+
 * Mon Nov 05 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.6-1
 - Linux 3.6.6
 
