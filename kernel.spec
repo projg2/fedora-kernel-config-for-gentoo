@@ -710,6 +710,8 @@ Patch22110: usb-audio-fix-crash-at-re-preparing-the-PCM-stream.patch
 Patch22111: USB-EHCI-urb-hcpriv-should-not-be-NULL.patch
 Patch22112: USB-report-submission-of-active-URBs.patch
 
+Patch22113: smp_irq_move_cleanup_interrupt.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1336,6 +1338,8 @@ ApplyPatch net-fix-divide-by-zero-in-tcp-algorithm-illinois.patch
 ApplyPatch usb-audio-fix-crash-at-re-preparing-the-PCM-stream.patch
 ApplyPatch USB-EHCI-urb-hcpriv-should-not-be-NULL.patch
 ApplyPatch USB-report-submission-of-active-URBs.patch
+
+ApplyPatch smp_irq_move_cleanup_interrupt.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2037,6 +2041,9 @@ fi
 # and build.
 
 %changelog
+* Thu Nov 15 2012 Justin M. Forbes <jforbes@redhat.com>
+- Fix panic in  panic in smp_irq_move_cleanup_interrupt
+
 * Mon Nov 12 2012 Justin M. Forbes <jforbes@redhat.com>
 - fix list_del corruption warning on USB audio with twinkle (rhbz 871078)
 
