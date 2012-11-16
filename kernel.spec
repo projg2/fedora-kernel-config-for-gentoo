@@ -2422,7 +2422,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Fri Nov 16 2012 Josh Boyer <jwboyer@redhat.com>
+* Fri Nov 16 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.6-9
 - Fix oops causing typo in keyspan driver (rhbz 870562)
 - Don't WARN_ON empty queues in iwlwifi (rhbz 873001)
 
