@@ -802,6 +802,9 @@ Patch22113: smp_irq_move_cleanup_interrupt.patch
 #rhbz 873001
 Patch22114: iwlwifi-remove-queue-empty-warn-3.6.patch
 
+#rhbz 870562
+Patch22115: keyspan.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1550,6 +1553,9 @@ ApplyPatch smp_irq_move_cleanup_interrupt.patch
 
 #rhbz 873001
 ApplyPatch iwlwifi-remove-queue-empty-warn-3.6.patch
+
+#rhbz 870562
+ApplyPatch keyspan.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2417,6 +2423,7 @@ fi
 #                 ||     ||
 %changelog
 * Fri Nov 16 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix oops causing typo in keyspan driver (rhbz 870562)
 - Don't WARN_ON empty queues in iwlwifi (rhbz 873001)
 
 * Thu Nov 15 2012 Justin M. Forbes <jforbes@redhat.com>
