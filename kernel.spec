@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 8
+%global baserelease 9
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -796,7 +796,11 @@ Patch22110: usb-audio-fix-crash-at-re-preparing-the-PCM-stream.patch
 Patch22111: USB-EHCI-urb-hcpriv-should-not-be-NULL.patch
 Patch22112: USB-report-submission-of-active-URBs.patch
 
+#rhbz 869341
 Patch22113: smp_irq_move_cleanup_interrupt.patch
+
+#rhbz 873001
+Patch22114: iwlwifi-remove-queue-empty-warn-3.6.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1541,7 +1545,11 @@ ApplyPatch usb-audio-fix-crash-at-re-preparing-the-PCM-stream.patch
 ApplyPatch USB-EHCI-urb-hcpriv-should-not-be-NULL.patch
 ApplyPatch USB-report-submission-of-active-URBs.patch
 
+#rhbz 869341
 ApplyPatch smp_irq_move_cleanup_interrupt.patch
+
+#rhbz 873001
+ApplyPatch iwlwifi-remove-queue-empty-warn-3.6.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2408,8 +2416,11 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Nov 16 2012 Josh Boyer <jwboyer@redhat.com>
+- Don't WARN_ON empty queues in iwlwifi (rhbz 873001)
+
 * Thu Nov 15 2012 Justin M. Forbes <jforbes@redhat.com>
-- Fix panic in  panic in smp_irq_move_cleanup_interrupt
+- Fix panic in  panic in smp_irq_move_cleanup_interrupt (rhbz 869341)
 
 * Wed Nov 14 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix module signing of kernel flavours
