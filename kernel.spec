@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -697,9 +697,6 @@ Patch22088: 0009-ext4-punch_hole-should-wait-for-DIO-writers.patch
 Patch22089: 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
 Patch22090: 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
 Patch22091: 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
-
-#rhbz 871923 871848 CVE-2012-4565
-Patch22092: net-fix-divide-by-zero-in-tcp-algorithm-illinois.patch
 
 # Debug patches
 Patch30000: weird-root-dentry-name-debug.patch
@@ -1337,9 +1334,6 @@ ApplyPatch 0009-ext4-punch_hole-should-wait-for-DIO-writers.patch
 ApplyPatch 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
 ApplyPatch 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
 ApplyPatch 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
-
-#rhbz 871923 871848 CVE-2012-4565
-ApplyPatch net-fix-divide-by-zero-in-tcp-algorithm-illinois.patch
 
 #rhbz 871078
 ApplyPatch usb-audio-fix-crash-at-re-preparing-the-PCM-stream.patch
@@ -2055,6 +2049,9 @@ fi
 # and build.
 
 %changelog
+* Sat Nov 17 2012 Justin M. Forbes <jforbes@linuxtx.org> - 3.6.7-1
+- linux 3.6.7
+
 * Fri Nov 16 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix oops causing typo in keyspan driver (rhbz 870562)
 - Don't WARN_ON empty queues in iwlwifi (rhbz 873001)
