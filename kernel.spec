@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -801,6 +801,11 @@ Patch22114: iwlwifi-remove-queue-empty-warn-3.6.patch
 
 #rhbz 870562
 Patch22115: keyspan.patch
+
+#rhbz 812129
+Patch22120: block-fix-a-crash-when-block-device-is.patch
+Patch22121: blockdev-turn-a-rw-semaphore-into-a-percpu-rw-sem.patch
+Patch22122: fs-lock-splice_read-and-splice_write-functions.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1550,6 +1555,11 @@ ApplyPatch iwlwifi-remove-queue-empty-warn-3.6.patch
 
 #rhbz 870562
 ApplyPatch keyspan.patch
+
+#rhbz 812129
+ApplyPatch block-fix-a-crash-when-block-device-is.patch
+ApplyPatch blockdev-turn-a-rw-semaphore-into-a-percpu-rw-sem.patch
+ApplyPatch fs-lock-splice_read-and-splice_write-functions.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2416,6 +2426,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Nov 19 2012 Josh Boyer <jwboyer@redhat.com>
+- Apply patches from Jeff Moyer to fix direct-io oops (rhbz 812129)
+
 * Sat Nov 17 2012 Justin M. Forbes <jforbes@linuxtx.org> - 3.6.7-1
 - linux 3.6.7
 
