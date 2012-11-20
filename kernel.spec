@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -809,6 +809,9 @@ Patch22122: fs-lock-splice_read-and-splice_write-functions.patch
 
 #rhbz 874791
 Patch22125: Bluetooth-Add-support-for-BCM20702A0.patch
+
+#rhbz 859485
+Patch21226: vt-Drop-K_OFF-for-VC_MUTE.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1566,6 +1569,9 @@ ApplyPatch fs-lock-splice_read-and-splice_write-functions.patch
 
 #rhbz 874791
 ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
+
+#rhbz 859485
+ApplyPatch vt-Drop-K_OFF-for-VC_MUTE.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2433,6 +2439,7 @@ fi
 #                 ||     ||
 %changelog
 * Tue Nov 20 2012 Josh Boyer <jwboyer@redhat.com>
+- Add VC_MUTE ioctl (rhbz 859485)
 - Add support for BCM20702A0 (rhbz 874791)
 
 * Tue Nov 20 2012 Peter Robinson <pbrobinson@fedoraproject.org>
