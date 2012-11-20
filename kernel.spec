@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -806,6 +806,9 @@ Patch22115: keyspan.patch
 Patch22120: block-fix-a-crash-when-block-device-is.patch
 Patch22121: blockdev-turn-a-rw-semaphore-into-a-percpu-rw-sem.patch
 Patch22122: fs-lock-splice_read-and-splice_write-functions.patch
+
+#rhbz 874791
+Patch22125: Bluetooth-Add-support-for-BCM20702A0.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1560,6 +1563,9 @@ ApplyPatch keyspan.patch
 ApplyPatch block-fix-a-crash-when-block-device-is.patch
 ApplyPatch blockdev-turn-a-rw-semaphore-into-a-percpu-rw-sem.patch
 ApplyPatch fs-lock-splice_read-and-splice_write-functions.patch
+
+#rhbz 874791
+ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2426,6 +2432,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Nov 20 2012 Josh Boyer <jwboyer@redhat.com>
+- Add support for BCM20702A0 (rhbz 874791)
+
 * Tue Nov 20 2012 Peter Robinson <pbrobinson@fedoraproject.org>
 - Change the minimum mmap address back to 32768 on ARM systems (thanks to Jon Masters)
 
