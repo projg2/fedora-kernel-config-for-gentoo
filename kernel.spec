@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -812,6 +812,9 @@ Patch22125: Bluetooth-Add-support-for-BCM20702A0.patch
 
 #rhbz 859485
 Patch21226: vt-Drop-K_OFF-for-VC_MUTE.patch
+
+#rhbz CVE-2012-4461 862900 878518
+Patch21227: KVM-x86-invalid-opcode-oops-on-SET_SREGS-with-OSXSAV.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1572,6 +1575,9 @@ ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
 
 #rhbz 859485
 ApplyPatch vt-Drop-K_OFF-for-VC_MUTE.patch
+
+#rhbz CVE-2012-4461 862900 878518
+ApplyPatch KVM-x86-invalid-opcode-oops-on-SET_SREGS-with-OSXSAV.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2439,6 +2445,7 @@ fi
 #                 ||     ||
 %changelog
 * Tue Nov 20 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2012-4461: kvm: invalid opcode oops on SET_SREGS with OSXSAVE bit set (rhbz 878518 862900)
 - Add VC_MUTE ioctl (rhbz 859485)
 - Add support for BCM20702A0 (rhbz 874791)
 
