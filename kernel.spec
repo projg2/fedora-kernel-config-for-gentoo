@@ -2444,7 +2444,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Tue Nov 20 2012 Josh Boyer <jwboyer@redhat.com>
+* Tue Nov 20 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.7-5
 - CVE-2012-4461: kvm: invalid opcode oops on SET_SREGS with OSXSAVE bit set (rhbz 878518 862900)
 - Add VC_MUTE ioctl (rhbz 859485)
 - Add support for BCM20702A0 (rhbz 874791)
