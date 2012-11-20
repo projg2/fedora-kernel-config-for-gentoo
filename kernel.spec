@@ -2426,6 +2426,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Nov 20 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Change the minimum mmap address back to 32768 on ARM systems (thanks to Jon Masters)
+
 * Mon Nov 19 2012 Josh Boyer <jwboyer@redhat.com>
 - Apply patches from Jeff Moyer to fix direct-io oops (rhbz 812129)
 
