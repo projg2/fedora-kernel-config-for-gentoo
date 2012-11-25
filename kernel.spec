@@ -713,21 +713,19 @@ Patch19000: ips-noirq.patch
 Patch19001: i82975x-edac-fix.patch
 
 # ARM
-# Flattened devicetree support
-Patch21003: arm-linux-3.6-revert-missaligned-access-check-on-put_user.patch
+Patch21000: arm-read_current_timer.patch
+Patch21001: arm-fix-omapdrm.patch
+Patch21002: arm-fix_radio_shark.patch
+Patch21003: arm-alignment-faults.patch
+# OMAP
 
 # ARM tegra
 Patch21004: arm-tegra-nvec-kconfig.patch
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
-#atch21006: arm-beagle-usb-init.patch
+Patch21006: arm-tegra-sdhci-module-fix.patch
 
 # ARM highbank patches
-# Highbank clock functions need to be EXPORT for module builds
 Patch21010: arm-highbank-sata-fix.patch
-
-# ARM exynos4
-Patch21020: arm-smdk310-regulator-fix.patch
-Patch21021: arm-origen-regulator-fix.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -743,8 +741,6 @@ Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 
 #rhbz 857324
 Patch22070: net-tcp-bz857324.patch
-
-Patch22072: linux-3.6-arm-build-fixup.patch
 
 #rhbz 867344
 Patch22077: dont-call-cifs_lookup-on-hashed-negative-dentry.patch
@@ -1354,14 +1350,14 @@ ApplyPatch vmbugon-warnon.patch
 #
 # ARM
 #
-ApplyPatch linux-3.6-arm-build-fixup.patch
+ApplyPatch arm-read_current_timer.patch
+ApplyPatch arm-fix-omapdrm.patch
+ApplyPatch arm-fix_radio_shark.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
+ApplyPatch arm-tegra-sdhci-module-fix.patch
 ApplyPatch arm-highbank-sata-fix.patch
-ApplyPatch arm-linux-3.6-revert-missaligned-access-check-on-put_user.patch
-
-ApplyPatch arm-smdk310-regulator-fix.patch
-ApplyPatch arm-origen-regulator-fix.patch
+ApplyPatch arm-alignment-faults.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -2392,6 +2388,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sun Nov 25 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update ARM kernel config and patches to fix F-17 build
+
 * Tue Nov 20 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-4461: kvm: invalid opcode oops on SET_SREGS with OSXSAVE bit set (rhbz 878518 862900)
 - Add support for BCM20702A0 (rhbz 874791)
