@@ -247,12 +247,12 @@ Summary: The Linux kernel
 %define with_pae 0
 %endif
 
-# kernel-tegra, omap, imx and highbank are only built on armv7 hard and softfp
+# kernel up (versatile express), tegra, omap, imx and highbank are only built on armv7 hfp/sfp
 %ifnarch armv7hl armv7l
-%define with_tegra 0
-%define with_omap 0
 %define with_imx 0
 %define with_highbank 0
+%define with_omap 0
+%define with_tegra 0
 %endif
 
 # kernel-kirkwood is only built for armv5
@@ -403,12 +403,11 @@ Summary: The Linux kernel
 %define hdrarch arm
 %define make_target bzImage
 %define kernel_image arch/arm/boot/zImage
-# we build a up kernel on base softfp/hardfp platforms. its used for qemu.
+# we only build headers/perf/tools on the base arm arches
+# just like we used to only build them on i386 for x86
 %ifnarch armv5tel armv7hl
 %define with_up 0
 %endif
-# we only build headers/perf/tools on the base arm arches
-# just like we used to only build them on i386 for x86
 %ifnarch armv5tel armv7hl
 %define with_headers 0
 %define with_perf 0
