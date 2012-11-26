@@ -766,9 +766,6 @@ Patch22000: weird-root-dentry-name-debug.patch
 #selinux ptrace child permissions
 Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
-#rhbz 846037
-Patch22067: selinux-Fix-sel_netnode_insert-suspicious-rcu-dereference.patch
-
 #rhbz 869904 869909 CVE-2012-4508
 Patch22080: 0001-ext4-ext4_inode_info-diet.patch
 Patch22081: 0002-ext4-give-i_aiodio_unwritten-a-more-appropriate-name.patch
@@ -1531,9 +1528,6 @@ ApplyPatch weird-root-dentry-name-debug.patch
 
 #selinux ptrace child permissions
 ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
-
-#rhbz 846037
-ApplyPatch selinux-Fix-sel_netnode_insert-suspicious-rcu-dereference.patch
 
 #rhbz 869904 869909 CVE-2012-4508
 ApplyPatch 0001-ext4-ext4_inode_info-diet.patch
