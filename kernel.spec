@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 6
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -741,9 +741,6 @@ Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 #rhbz 857324
 Patch22070: net-tcp-bz857324.patch
 
-#rhbz 867344
-Patch22077: dont-call-cifs_lookup-on-hashed-negative-dentry.patch
-
 #rhbz 869904 869909 CVE-2012-4508
 Patch22080: 0001-ext4-ext4_inode_info-diet.patch
 Patch22081: 0002-ext4-give-i_aiodio_unwritten-a-more-appropriate-name.patch
@@ -761,7 +758,6 @@ Patch22091: 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
 Patch22100: uprobes-upstream-backport.patch
 
 #rhbz 871078
-Patch22110: usb-audio-fix-crash-at-re-preparing-the-PCM-stream.patch
 Patch22111: USB-EHCI-urb-hcpriv-should-not-be-NULL.patch
 Patch22112: USB-report-submission-of-active-URBs.patch
 
@@ -770,9 +766,6 @@ Patch22113: smp_irq_move_cleanup_interrupt.patch
 
 #rhbz 873001
 Patch22114: iwlwifi-remove-queue-empty-warn-3.6.patch
-
-#rhbz 870562
-Patch22115: keyspan.patch
 
 #rhbz 812129
 Patch22120: block-fix-a-crash-when-block-device-is.patch
@@ -791,9 +784,6 @@ Patch21229: exec-use-eloop-for-max-recursion-depth.patch
 
 #rhbz 869629
 Patch21230: SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
-
-#rhbz 869383
-Patch21231: ACPI-video-Ignore-errors-after-_DOD-evaluation.patch
 
 #rhbz 851278
 Patch21232: 8139cp-revert-set-ring-address-before-enabling-recei.patch
@@ -1493,9 +1483,6 @@ ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 #rhbz 857324
 ApplyPatch net-tcp-bz857324.patch
 
-#rhbz 867344
-ApplyPatch dont-call-cifs_lookup-on-hashed-negative-dentry.patch
-
 #rhbz 869904 869909 CVE-2012-4508
 ApplyPatch 0001-ext4-ext4_inode_info-diet.patch
 ApplyPatch 0002-ext4-give-i_aiodio_unwritten-a-more-appropriate-name.patch
@@ -1513,7 +1500,6 @@ ApplyPatch 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
 ApplyPatch uprobes-upstream-backport.patch
 
 #rhbz 871078
-ApplyPatch usb-audio-fix-crash-at-re-preparing-the-PCM-stream.patch
 ApplyPatch USB-EHCI-urb-hcpriv-should-not-be-NULL.patch
 ApplyPatch USB-report-submission-of-active-URBs.patch
 
@@ -1522,9 +1508,6 @@ ApplyPatch smp_irq_move_cleanup_interrupt.patch
 
 #rhbz 873001
 ApplyPatch iwlwifi-remove-queue-empty-warn-3.6.patch
-
-#rhbz 870562
-ApplyPatch keyspan.patch
 
 #rhbz 812129
 ApplyPatch block-fix-a-crash-when-block-device-is.patch
@@ -1543,9 +1526,6 @@ ApplyPatch exec-use-eloop-for-max-recursion-depth.patch
 
 #rhbz 869629
 ApplyPatch SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
-
-#rhbz 869383
-ApplyPatch ACPI-video-Ignore-errors-after-_DOD-evaluation.patch
 
 #rhbz 851278
 ApplyPatch 8139cp-revert-set-ring-address-before-enabling-recei.patch
@@ -2413,6 +2393,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Nov 26 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.8-1
+- Linux 3.6.8
+
 * Mon Nov 26 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix regression in 8139cp driver, debugged by William J. Eaton (rhbz 851278)
 - Fix ACPI video after _DOD errors (rhbz 869383)
