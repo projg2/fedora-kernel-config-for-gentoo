@@ -2396,6 +2396,7 @@ fi
 #              '-'
 %changelog
 * Mon Nov 26 2012 Josh Boyer <jwboyer@redhat.com>
+- Enable CONFIG_UIO_PDRV on ppc64 (rhbz 878180)
 - CVE-2012-4530: stack disclosure binfmt_script load_script (rhbz 868285 880147)
 
 * Sun Nov 25 2012 Peter Robinson <pbrobinson@fedoraproject.org>
