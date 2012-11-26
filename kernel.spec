@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -727,6 +727,10 @@ Patch22125: Bluetooth-Add-support-for-BCM20702A0.patch
 #rhbz CVE-2012-4461 862900 878518
 Patch21227: KVM-x86-invalid-opcode-oops-on-SET_SREGS-with-OSXSAV.patch
 
+#rhbz CVE-2012-4530 868285 880147
+Patch21228: exec-do-not-leave-bprm-interp-on-stack.patch
+Patch21229: exec-use-eloop-for-max-recursion-depth.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1370,6 +1374,10 @@ ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
 
 #rhbz CVE-2012-4461 862900 878518
 ApplyPatch KVM-x86-invalid-opcode-oops-on-SET_SREGS-with-OSXSAV.patch
+
+#rhbz CVE-2012-4530 868285 880147
+ApplyPatch exec-do-not-leave-bprm-interp-on-stack.patch
+ApplyPatch exec-use-eloop-for-max-recursion-depth.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2071,6 +2079,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 26 2012 Josh Boyer <jwboyer@redhat.com>
+- CVE-2012-4530: stack disclosure binfmt_script load_script (rhbz 868285 880147)
+
 * Tue Nov 20 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-4461: kvm: invalid opcode oops on SET_SREGS with OSXSAVE bit set (rhbz 878518 862900)
 - Add support for BCM20702A0 (rhbz 874791)
