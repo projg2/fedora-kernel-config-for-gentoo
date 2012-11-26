@@ -792,6 +792,9 @@ Patch21229: exec-use-eloop-for-max-recursion-depth.patch
 #rhbz 869629
 Patch21230: SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
 
+#rhbz 869383
+Patch21231: ACPI-video-Ignore-errors-after-_DOD-evaluation.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1537,6 +1540,9 @@ ApplyPatch exec-use-eloop-for-max-recursion-depth.patch
 
 #rhbz 869629
 ApplyPatch SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
+
+#rhbz 869383
+ApplyPatch ACPI-video-Ignore-errors-after-_DOD-evaluation.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2402,6 +2408,7 @@ fi
 #              '-'
 %changelog
 * Mon Nov 26 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix ACPI video after _DOD errors (rhbz 869383)
 - Fix ata command timeout oops in mvsas (rhbz 869629)
 - Enable CONFIG_UIO_PDRV on ppc64 (rhbz 878180)
 - CVE-2012-4530: stack disclosure binfmt_script load_script (rhbz 868285 880147)
