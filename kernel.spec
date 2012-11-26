@@ -795,6 +795,9 @@ Patch21230: SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
 #rhbz 869383
 Patch21231: ACPI-video-Ignore-errors-after-_DOD-evaluation.patch
 
+#rhbz 851278
+Patch21232: 8139cp-revert-set-ring-address-before-enabling-recei.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1543,6 +1546,9 @@ ApplyPatch SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
 
 #rhbz 869383
 ApplyPatch ACPI-video-Ignore-errors-after-_DOD-evaluation.patch
+
+#rhbz 851278
+ApplyPatch 8139cp-revert-set-ring-address-before-enabling-recei.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2408,6 +2414,7 @@ fi
 #              '-'
 %changelog
 * Mon Nov 26 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix regression in 8139cp driver, debugged by William J. Eaton (rhbz 851278)
 - Fix ACPI video after _DOD errors (rhbz 869383)
 - Fix ata command timeout oops in mvsas (rhbz 869629)
 - Enable CONFIG_UIO_PDRV on ppc64 (rhbz 878180)
