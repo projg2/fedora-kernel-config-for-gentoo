@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -731,6 +731,9 @@ Patch21227: KVM-x86-invalid-opcode-oops-on-SET_SREGS-with-OSXSAV.patch
 Patch21228: exec-do-not-leave-bprm-interp-on-stack.patch
 Patch21229: exec-use-eloop-for-max-recursion-depth.patch
 
+#rhbz 869629
+Patch21230: SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1378,6 +1381,9 @@ ApplyPatch KVM-x86-invalid-opcode-oops-on-SET_SREGS-with-OSXSAV.patch
 #rhbz CVE-2012-4530 868285 880147
 ApplyPatch exec-do-not-leave-bprm-interp-on-stack.patch
 ApplyPatch exec-use-eloop-for-max-recursion-depth.patch
+
+#rhbz 869629
+ApplyPatch SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2080,6 +2086,7 @@ fi
 
 %changelog
 * Mon Nov 26 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix ata command timeout oops in mvsas (rhbz 869629)
 - CVE-2012-4530: stack disclosure binfmt_script load_script (rhbz 868285 880147)
 
 * Tue Nov 20 2012 Josh Boyer <jwboyer@redhat.com>
