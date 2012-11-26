@@ -2097,7 +2097,7 @@ fi
 # and build.
 
 %changelog
-* Mon Nov 26 2012 Josh Boyer <jwboyer@redhat.com>
+* Mon Nov 26 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.7-6
 - Fix regression in 8139cp driver, debugged by William J. Eaton (rhbz 851278)
 - Fix ACPI video after _DOD errors (rhbz 869383)
 - Fix ata command timeout oops in mvsas (rhbz 869629)
