@@ -2079,7 +2079,7 @@ fi
 # and build.
 
 %changelog
-* Tue Nov 27 2012 Josh Boyer <jwboyer@redhat.com>
+* Tue Nov 27 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.8-2
 - Update patches for 8139cp issues from David Woodhouse (rhbz 851278)
 
 * Mon Nov 26 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.8-1
