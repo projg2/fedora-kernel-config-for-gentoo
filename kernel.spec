@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -814,7 +814,8 @@ Patch21229: exec-use-eloop-for-max-recursion-depth.patch
 Patch21230: SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
 
 #rhbz 851278
-Patch21232: 8139cp-revert-set-ring-address-before-enabling-recei.patch
+Patch21232: 8139cp-set-ring-address-after-enabling-C-mode.patch
+Patch21233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1577,7 +1578,8 @@ ApplyPatch exec-use-eloop-for-max-recursion-depth.patch
 ApplyPatch SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
 
 #rhbz 851278
-ApplyPatch 8139cp-revert-set-ring-address-before-enabling-recei.patch
+ApplyPatch 8139cp-set-ring-address-after-enabling-C-mode.patch
+ApplyPatch 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2444,6 +2446,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Nov 27 2012 Josh Boyer <jwboyer@redhat.com>
+- Update patches for 8139cp issues from David Woodhouse (rhbz 851278)
+
 * Mon Nov 26 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.8-1
 - Linux v3.6.8
 
