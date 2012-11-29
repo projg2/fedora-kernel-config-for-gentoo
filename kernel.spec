@@ -2446,6 +2446,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Nov 29 2012 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update some ARM GPIO and I2C configs
+
 * Tue Nov 27 2012 Josh Boyer <jwboyer@redhat.com>
 - Update patches for 8139cp issues from David Woodhouse (rhbz 851278)
 
