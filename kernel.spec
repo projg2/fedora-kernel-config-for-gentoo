@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -725,6 +725,9 @@ Patch21230: SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
 Patch21232: 8139cp-set-ring-address-after-enabling-C-mode.patch
 Patch21233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
+#rhbz 855275
+Patch21235: radeon-evergreen-3.6.9-fixes.mbox
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1366,6 +1369,9 @@ ApplyPatch SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
 #rhbz 851278
 ApplyPatch 8139cp-set-ring-address-after-enabling-C-mode.patch
 ApplyPatch 8139cp-re-enable-interrupts-after-tx-timeout.patch
+
+#rhbz 855275
+ApplyPatch radeon-evergreen-3.6.9-fixes.mbox
 
 # END OF PATCH APPLICATIONS
 
@@ -2067,6 +2073,9 @@ fi
 # and build.
 
 %changelog
+* Mon Dec 03 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.9-2
+- Backport 3 upstream fixes to resolve radeon schedule IB errors (rhbz 855275)
+
 * Mon Dec 03 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.9-1
 - Linux v3.6.9
 
