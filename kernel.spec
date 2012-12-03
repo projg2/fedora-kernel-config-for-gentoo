@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -764,9 +764,6 @@ Patch22112: USB-report-submission-of-active-URBs.patch
 #rhbz 869341
 Patch22113: smp_irq_move_cleanup_interrupt.patch
 
-#rhbz 873001
-Patch22114: iwlwifi-remove-queue-empty-warn-3.6.patch
-
 #rhbz 812129
 Patch22120: block-fix-a-crash-when-block-device-is.patch
 Patch22121: blockdev-turn-a-rw-semaphore-into-a-percpu-rw-sem.patch
@@ -774,9 +771,6 @@ Patch22122: fs-lock-splice_read-and-splice_write-functions.patch
 
 #rhbz 874791
 Patch22125: Bluetooth-Add-support-for-BCM20702A0.patch
-
-#rhbz CVE-2012-4461 862900 878518
-Patch21227: KVM-x86-invalid-opcode-oops-on-SET_SREGS-with-OSXSAV.patch
 
 #rhbz CVE-2012-4530 868285 880147
 Patch21228: exec-do-not-leave-bprm-interp-on-stack.patch
@@ -1507,9 +1501,6 @@ ApplyPatch USB-report-submission-of-active-URBs.patch
 #rhbz 869341
 ApplyPatch smp_irq_move_cleanup_interrupt.patch
 
-#rhbz 873001
-ApplyPatch iwlwifi-remove-queue-empty-warn-3.6.patch
-
 #rhbz 812129
 ApplyPatch block-fix-a-crash-when-block-device-is.patch
 ApplyPatch blockdev-turn-a-rw-semaphore-into-a-percpu-rw-sem.patch
@@ -1517,9 +1508,6 @@ ApplyPatch fs-lock-splice_read-and-splice_write-functions.patch
 
 #rhbz 874791
 ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
-
-#rhbz CVE-2012-4461 862900 878518
-ApplyPatch KVM-x86-invalid-opcode-oops-on-SET_SREGS-with-OSXSAV.patch
 
 #rhbz CVE-2012-4530 868285 880147
 ApplyPatch exec-do-not-leave-bprm-interp-on-stack.patch
@@ -2395,6 +2383,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Dec 03 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.9-1
+- Linux 3.6.9
+
 * Tue Nov 27 2012 Josh Boyer <jwboyer@redhat.com>
 - Update patches for 8139cp issues from David Woodhouse (rhbz 851278)
 
