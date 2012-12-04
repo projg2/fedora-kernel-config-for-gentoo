@@ -31,7 +31,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-# % define buildid .local
+%define buildid .lnfs37rc2
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -719,6 +719,8 @@ Patch2901: linux-2.6-v4l-dvb-experimental.patch
 # fs fixes
 
 # NFSv4
+Patch3000: lnfs-3.7.0-0.rc7.git1.2.fc19.patch
+Patch3001: lnfs-unset-3.7.0-0.rc7.git1.2.fc19.patch
 
 # patches headed upstream
 Patch10000: fs-proc-devtree-remove_proc_entry.patch
@@ -1370,6 +1372,8 @@ ApplyPatch arm-tegra-sdhci-module-fix.patch
 # eCryptfs
 
 # NFSv4
+ApplyPatch lnfs-3.7.0-0.rc7.git1.2.fc19.patch
+ApplyPatch lnfs-unset-3.7.0-0.rc7.git1.2.fc19.patch
 
 # USB
 

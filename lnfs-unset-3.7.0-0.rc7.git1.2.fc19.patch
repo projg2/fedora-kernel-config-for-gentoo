@@ -1,0 +1,124 @@
+diff -up linux-3.7.0-0.rc7.git1.2.lnfs37rc2.fc17.x86_64/fs/nfs/nfs4proc.c.orig linux-3.7.0-0.rc7.git1.2.lnfs37rc2.fc17.x86_64/fs/nfs/nfs4proc.c
+--- linux-3.7.0-0.rc7.git1.2.lnfs37rc2.fc17.x86_64/fs/nfs/nfs4proc.c.orig	2012-12-03 10:58:51.086841436 -0500
++++ linux-3.7.0-0.rc7.git1.2.lnfs37rc2.fc17.x86_64/fs/nfs/nfs4proc.c	2012-12-03 11:34:01.065752872 -0500
+@@ -925,8 +925,8 @@ err_free_label:
+ #ifdef CONFIG_NFS_V4_SECURITY_LABEL
+ 	if (server->caps & NFS_CAP_SECURITY_LABEL)
+ 		nfs4_label_free(p->f_label);
+-#endif
+ err_free_p:
++#endif
+ 	kfree(p);
+ err:
+ 	dput(parent);
+@@ -2440,9 +2440,10 @@ static struct inode *
+ nfs4_atomic_open(struct inode *dir, struct nfs_open_context *ctx, int open_flags, struct iattr *attr)
+ {
+ 	struct nfs4_state *state;
+-	struct nfs4_label l, *label = NULL;
+-
++	struct nfs4_label *label = NULL;
+ #ifdef CONFIG_NFS_V4_SECURITY_LABEL
++	struct nfs4_label l;
++
+ 	if (nfs_server_capable(dir, NFS_CAP_SECURITY_LABEL)) {
+ 		struct dentry *dentry = ctx->dentry;
+ 		int error;
+@@ -3028,8 +3029,8 @@ static int _nfs4_proc_access(struct inod
+ #ifdef CONFIG_NFS_V4_SECURITY_LABEL
+ 	if (server->caps & NFS_CAP_SECURITY_LABEL)
+ 		nfs4_label_free(res.label);
+-#endif
+ out:
++#endif
+ 	nfs_free_fattr(res.fattr);
+ 	return status;
+ }
+@@ -3107,7 +3108,10 @@ static int
+ nfs4_proc_create(struct inode *dir, struct dentry *dentry, struct iattr *sattr,
+ 		 int flags)
+ {
+-	struct nfs4_label l, *ilabel = NULL;
++	struct nfs4_label *ilabel = NULL;
++#ifdef CONFIG_NFS_V4_SECURITY_LABEL
++	struct nfs4_label l;
++#endif
+ 	struct nfs_open_context *ctx;
+ 	struct nfs4_state *state;
+ 	int status = 0;
+@@ -3300,8 +3304,8 @@ static int _nfs4_proc_rename(struct inod
+ 		nfs4_label_free(res.old_label);
+ 		nfs4_label_free(res.new_label);
+ 	}
+-#endif
+ out:
++#endif
+ 	return status;
+ }
+ 
+@@ -3420,7 +3424,9 @@ static struct nfs4_createdata *nfs4_allo
+ 		nfs_fattr_init(data->res.fattr);
+ 	}
+ 	return data;
++#ifdef CONFIG_NFS_V4_SECURITY_LABEL
+ out_free:
++#endif
+ 	kfree(data);
+ 	return NULL;
+ }
+@@ -3476,11 +3482,11 @@ static int nfs4_proc_symlink(struct inod
+ 		struct page *page, unsigned int len, struct iattr *sattr)
+ {
+ 	struct nfs4_exception exception = { };
+-	struct nfs4_label l, *label = NULL;
+ 	int err;
+-
+-
++	struct nfs4_label *label = NULL;
+ #ifdef CONFIG_NFS_V4_SECURITY_LABEL
++	struct nfs4_label l;
++
+ 	if (nfs_server_capable(dir, NFS_CAP_SECURITY_LABEL)) {
+ 		err = security_dentry_init_security(dentry, sattr->ia_mode,
+ 					&dentry->d_name, &l.label, &l.len);
+@@ -3524,7 +3530,10 @@ static int nfs4_proc_mkdir(struct inode
+ 		struct iattr *sattr)
+ {
+ 	struct nfs4_exception exception = { };
+-	struct nfs4_label l, *label = NULL;
++	struct nfs4_label *label = NULL;
++#ifdef CONFIG_NFS_V4_SECURITY_LABEL
++	struct nfs4_label l;
++#endif
+ 	int err;
+ 
+ #ifdef CONFIG_NFS_V4_SECURITY_LABEL
+@@ -3642,9 +3651,12 @@ out:
+ static int nfs4_proc_mknod(struct inode *dir, struct dentry *dentry,
+ 		struct iattr *sattr, dev_t rdev)
+ {
+-	struct nfs4_exception exception = { };
+-	struct nfs4_label l, *label = NULL;
+ 	int err;
++	struct nfs4_exception exception = { };
++	struct nfs4_label *label = NULL;
++#ifdef CONFIG_NFS_V4_SECURITY_LABEL
++	struct nfs4_label l;
++#endif
+ 
+ #ifdef CONFIG_NFS_V4_SECURITY_LABEL
+ 	if (nfs_server_capable(dir, NFS_CAP_SECURITY_LABEL)) {
+diff -up linux-3.7.0-0.rc7.git1.2.lnfs37rc2.fc17.x86_64/include/linux/nfs_fs.h.orig linux-3.7.0-0.rc7.git1.2.lnfs37rc2.fc17.x86_64/include/linux/nfs_fs.h
+--- linux-3.7.0-0.rc7.git1.2.lnfs37rc2.fc17.x86_64/include/linux/nfs_fs.h.orig	2012-12-03 11:08:32.524060597 -0500
++++ linux-3.7.0-0.rc7.git1.2.lnfs37rc2.fc17.x86_64/include/linux/nfs_fs.h	2012-12-03 11:09:38.431071109 -0500
+@@ -502,8 +502,8 @@ extern void nfs4_label_init(struct nfs4_
+ extern void nfs4_label_free(struct nfs4_label *);
+ #else
+ static inline struct nfs4_label *nfs4_label_alloc(gfp_t flags) { return NULL; }
+-static inline void nfs4_label_init(struct nfs4_label *) {}
+-static inline void nfs4_label_free(struct nfs4_label *label) {}
++static inline void nfs4_label_init(void *label) {}
++static inline void nfs4_label_free(void *label) {}
+ #endif
+ 
+ /*
