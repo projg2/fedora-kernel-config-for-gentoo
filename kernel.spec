@@ -664,6 +664,7 @@ Patch110: vmbugon-warnon.patch
 
 Patch150: team-net-next-20120808.patch
 Patch151: team-net-next-update-20120927.patch
+Patch152: team-net-next-20121205.patch
 
 Patch390: linux-2.6-defaults-acpi-video.patch
 Patch391: linux-2.6-acpi-video-dos.patch
@@ -1383,6 +1384,7 @@ ApplyPatch vmbugon-warnon.patch
 
 ApplyPatch team-net-next-20120808.patch
 ApplyPatch team-net-next-update-20120927.patch
+ApplyPatch team-net-next-20121205.patch
 
 # Architecture patches
 # x86(-64)
@@ -2440,6 +2442,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Dec 05 2012 Dave Jones <davej@redhat.com>
+- Team driver updates (Jiri Pirko)
+
 * Mon Dec 03 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.9-2
 - Backport 3 upstream fixes to resolve radeon schedule IB errors (rhbz 855275)
 
