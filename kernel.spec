@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -691,7 +691,7 @@ Patch900: modsign-upstream-3.7.patch
 Patch901: modsign-post-KS-jwb.patch
 
 # secure boot
-Patch1000: secure-boot-20121105.patch
+Patch1000: secure-boot-20121210.patch
 Patch1001: efivarfs-3.6.patch
 
 # Improve PCI support on UEFI
@@ -1475,7 +1475,7 @@ ApplyPatch modsign-post-KS-jwb.patch
 
 # secure boot
 ApplyPatch efivarfs-3.6.patch
-ApplyPatch secure-boot-20121105.patch
+ApplyPatch secure-boot-20121210.patch
 
 # Improved PCI support for UEFI
 ApplyPatch handle-efi-roms.patch
@@ -2445,7 +2445,8 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Tue Dec 11 2012 Josh Boyer <jwboyer@redhat.com>
+* Tue Dec 11 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.10-4
+- Update secure boot patches to include MoK support
 - Fix IBSS scanning in mac80211 (rhbz 883414)
 
 * Tue Dec 11 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.10-1
