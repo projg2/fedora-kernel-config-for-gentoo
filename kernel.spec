@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -812,6 +812,9 @@ Patch21230: SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
 Patch21231: 8139cp-revert-set-ring-address-before-enabling-receiver.patch
 Patch21232: 8139cp-set-ring-address-after-enabling-C-mode.patch
 Patch21233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
+
+#rhbz 883414
+Patch21234: mac80211-fix-ibss-scanning.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1572,6 +1575,10 @@ ApplyPatch SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
 ApplyPatch 8139cp-revert-set-ring-address-before-enabling-receiver.patch -R
 ApplyPatch 8139cp-set-ring-address-after-enabling-C-mode.patch
 ApplyPatch 8139cp-re-enable-interrupts-after-tx-timeout.patch
+
+#rhbz 883414
+ApplyPatch mac80211-fix-ibss-scanning.patch
+
 
 # END OF PATCH APPLICATIONS
 
@@ -2438,6 +2445,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Dec 11 2012 Josh Boyer <jwboyer@redhat.com>
+- Fix IBSS scanning in mac80211 (rhbz 883414)
+
 * Tue Dec 11 2012 Justin M. Forbes <jforbes@redhat.com> 3.6.10-1
 - Linux 3.6.10
 
