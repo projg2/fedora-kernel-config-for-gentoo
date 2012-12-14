@@ -2445,7 +2445,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Wed Dec 12 2012 Josh Boyer <jwboyer@redhat.com>
+* Wed Dec 12 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.10-5
 - Fix infinite loop in efi signature parser
 - Don't error out if db doesn't exist
 
