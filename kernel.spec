@@ -2451,6 +2451,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Dec 17 2012 Dennis Gilmore <dennis@ausil.us>
+- disable gpiolib on vexpress
+
 * Mon Dec 17 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix oops in sony-laptop setup (rhbz 873107)
 

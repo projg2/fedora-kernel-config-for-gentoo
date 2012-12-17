@@ -93,3 +93,5 @@ CONFIG_PATA_PLATFORM=m
 CONFIG_PATA_OF_PLATFORM=m
 # CONFIG_NET_VENDOR_BROADCOM is not set
 
+# unset on versatille for jon masters
+# CONFIG_GPIOLIB is not set
