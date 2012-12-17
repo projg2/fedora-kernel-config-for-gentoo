@@ -2076,7 +2076,7 @@ fi
 # and build.
 
 %changelog
-* Mon Dec 17 2012 Josh Boyer <jwboyer@redhat.com>
+* Mon Dec 17 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.11-1
 - Linux v3.6.11
 - Fix oops in sony-laptop setup (rhbz 873107)
 
