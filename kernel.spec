@@ -2445,7 +2445,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Mon Dec 17 2012 Josh Boyer <jwboyer@redhat.com>
+* Mon Dec 17 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.11-3
 - Linux v3.6.11
 
 * Mon Dec 17 2012 Dennis Gilmore <dennis@ausil.us>
