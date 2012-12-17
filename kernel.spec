@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -709,8 +709,6 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 
 Patch19000: ips-noirq.patch
 
-Patch19001: i82975x-edac-fix.patch
-
 # ARM
 Patch21000: arm-read_current_timer.patch
 Patch21001: arm-fix-omapdrm.patch
@@ -758,7 +756,6 @@ Patch22091: 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
 Patch22100: uprobes-upstream-backport.patch
 
 #rhbz 871078
-Patch22111: USB-EHCI-urb-hcpriv-should-not-be-NULL.patch
 Patch22112: USB-report-submission-of-active-URBs.patch
 
 #rhbz 869341
@@ -1467,8 +1464,6 @@ ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 ApplyPatch ips-noirq.patch
 
-ApplyPatch i82975x-edac-fix.patch
-
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
@@ -1502,7 +1497,6 @@ ApplyPatch 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
 ApplyPatch uprobes-upstream-backport.patch
 
 #rhbz 871078
-ApplyPatch USB-EHCI-urb-hcpriv-should-not-be-NULL.patch
 ApplyPatch USB-report-submission-of-active-URBs.patch
 
 #rhbz 869341
@@ -2398,6 +2392,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Dec 17 2012 Justin M. Forbes <jforbes@redhat.com>
+- Linux 3.6.11
+
 * Mon Dec 17 2012 Josh Boyer <jwboyer@redhat.com>
 - Fix oops in sony-laptop setup (rhbz 873107)
 
