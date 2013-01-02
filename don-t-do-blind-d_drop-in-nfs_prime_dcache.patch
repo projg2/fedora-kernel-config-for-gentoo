@@ -1,0 +1,27 @@
+From 696199f8ccf7fc6d17ef89c296ad3b6c78c52d9c Mon Sep 17 00:00:00 2001
+From: Al Viro <viro@zeniv.linux.org.uk>
+Date: Thu, 29 Nov 2012 22:00:51 -0500
+Subject: [PATCH] don't do blind d_drop() in nfs_prime_dcache()
+
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+---
+ fs/nfs/dir.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
+index ce8cb92..99489cf 100644
+--- a/fs/nfs/dir.c
++++ b/fs/nfs/dir.c
+@@ -450,7 +450,8 @@ void nfs_prime_dcache(struct dentry *parent, struct nfs_entry *entry)
+ 			nfs_refresh_inode(dentry->d_inode, entry->fattr);
+ 			goto out;
+ 		} else {
+-			d_drop(dentry);
++			if (d_invalidate(dentry) != 0)
++				goto out;
+ 			dput(dentry);
+ 		}
+ 	}
+-- 
+1.8.0.1
+
