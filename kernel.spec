@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -529,7 +529,7 @@ ExclusiveOS: Linux
 BuildRequires: module-init-tools, patch >= 2.5.4, bash >= 2.03, sh-utils, tar
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl, make >= 3.78, diffutils, gawk
 BuildRequires: gcc >= 3.4.2, binutils >= 2.12, redhat-rpm-config, hmaccalc
-BuildRequires: net-tools
+BuildRequires: net-tools, hostname
 BuildRequires: xmlto, asciidoc
 %if %{with_sparse}
 BuildRequires: sparse >= 0.4.1
@@ -2392,6 +2392,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Jan 02 2013 Josh Boyer <jwboyer@redhat.com>
+- BR the hostname package (rhbz 886113)
+
 * Mon Dec 17 2012 Justin M. Forbes <jforbes@redhat.com>
 - Linux 3.6.11
 
