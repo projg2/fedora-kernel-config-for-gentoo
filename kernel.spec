@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -815,6 +815,9 @@ Patch21234: mac80211-fix-ibss-scanning.patch
 
 #rhbz 873107
 Patch21237: 0001-ACPI-sony-laptop-do-proper-memcpy-for-ACPI_TYPE_INTE.patch
+
+#rhbz 874372
+Patch21238: don-t-do-blind-d_drop-in-nfs_prime_dcache.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1578,6 +1581,9 @@ ApplyPatch mac80211-fix-ibss-scanning.patch
 
 #rhbz 873107
 ApplyPatch 0001-ACPI-sony-laptop-do-proper-memcpy-for-ACPI_TYPE_INTE.patch
+
+#rhbz 874372
+ApplyPatch don-t-do-blind-d_drop-in-nfs_prime_dcache.patch
 
 
 # END OF PATCH APPLICATIONS
@@ -2446,6 +2452,7 @@ fi
 #                 ||     ||
 %changelog
 * Wed Jan 02 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix autofs issue in 3.6 (rhbz 874372)
 - BR the hostname package (rhbz 886113)
 
 * Mon Dec 17 2012 Josh Boyer <jwboyer@redhat.com> - 3.6.11-3
