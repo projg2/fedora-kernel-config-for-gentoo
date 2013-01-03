@@ -59,4 +59,7 @@ CONFIG_OC_ETM=y
 # CONFIG_MEDIA_SUPPORT is not set
 # CONFIG_DRM is not set
 # CONFIG_SND is not set
+# CONFIG_ARCH_MULTI_V4 is not set
+# CONFIG_ARCH_MULTI_V4T is not set
+# CONFIG_ARCH_MULTI_V6 is not set
 # end of list of requested disabled options

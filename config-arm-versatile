@@ -95,3 +95,8 @@ CONFIG_PATA_OF_PLATFORM=m
 
 # unset on versatille for jon masters
 # CONFIG_GPIOLIB is not set
+# CONFIG_ARCH_MULTI_V4 is not set
+# CONFIG_ARCH_MULTI_V4T is not set
+# CONFIG_ARCH_MULTI_V6 is not set
+# CONFIG_DRM_EXYNOS is not set
+
