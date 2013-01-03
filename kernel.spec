@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1442,7 +1442,7 @@ ApplyPatch modsign-post-KS-jwb.patch
 
 # secure boot
 ApplyPatch efivarfs-3.7.patch
-#ApplyPatch secure-boot-20121212.patch
+ApplyPatch secure-boot-20121212.patch
 
 # Improved PCI support for UEFI
 ApplyPatch handle-efi-roms.patch
@@ -2272,6 +2272,7 @@ fi
 %dir %{_libexecdir}/perf-core
 %{_libexecdir}/perf-core/*
 %{_mandir}/man[1-8]/perf*
+%{_sysconfdir}/bash_completion.d/perf
 %doc linux-%{KVERREL}/tools/perf/Documentation/examples.txt
 
 %files -n python-perf
@@ -2391,6 +2392,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Jan 03 2013 Josh Boyer <jwboyer@redhat.com> - 3.7.1-2
+- Fixup secure boot patchset for 3.7 rebase
+- Package bash completion script for perf
+
 * Thu Jan 03 2013 Dave Jones <davej@redhat.com>
 - Rebase to 3.7.1
 

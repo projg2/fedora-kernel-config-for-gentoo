@@ -1,4 +1,4 @@
-From 925befaba2477067aa12fa1fdc9fcc135c80b4fd Mon Sep 17 00:00:00 2001
+From d510ea864f470d96aafb75d0de7f09450407095e Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:40:56 -0400
 Subject: [PATCH 01/20] Secure boot: Add new capability
@@ -11,14 +11,14 @@ capability set if required.
 
 Signed-off-by: Matthew Garrett <mjg@redhat.com>
 ---
- include/linux/capability.h | 6 +++++-
+ include/uapi/linux/capability.h | 6 +++++-
  1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/capability.h b/include/linux/capability.h
-index d10b7ed..4345bc8 100644
---- a/include/linux/capability.h
-+++ b/include/linux/capability.h
-@@ -364,7 +364,11 @@ struct cpu_vfs_cap_data {
+diff --git a/include/uapi/linux/capability.h b/include/uapi/linux/capability.h
+index ba478fa..7109e65 100644
+--- a/include/uapi/linux/capability.h
++++ b/include/uapi/linux/capability.h
+@@ -343,7 +343,11 @@ struct vfs_cap_data {
  
  #define CAP_BLOCK_SUSPEND    36
  
@@ -35,7 +35,7 @@ index d10b7ed..4345bc8 100644
 1.8.0.1
 
 
-From 1c5873679d750bda038d22210d9fd40c8673211f Mon Sep 17 00:00:00 2001
+From a07ae01ac4b304ac7f0e2b5d4193519f1a9eee8d Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:40:57 -0400
 Subject: [PATCH 02/20] PCI: Lock down BAR access in secure boot environments
@@ -87,7 +87,7 @@ index f39378d..1db1e74 100644
  }
  
 diff --git a/drivers/pci/proc.c b/drivers/pci/proc.c
-index af028c7..53372eb 100644
+index 9b8505c..35580bc 100644
 --- a/drivers/pci/proc.c
 +++ b/drivers/pci/proc.c
 @@ -139,6 +139,9 @@ proc_bus_pci_write(struct file *file, const char __user *buf, size_t nbytes, lof
@@ -136,7 +136,7 @@ index e1c1ec5..97e785f 100644
 1.8.0.1
 
 
-From f067c7702f46b85d06da6c34dd907b44e594c2cf Mon Sep 17 00:00:00 2001
+From 1b5a1b53577992b32a3f51b18aa07cb9b300a3b1 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:40:58 -0400
 Subject: [PATCH 03/20] x86: Lock down IO port access in secure boot
@@ -176,7 +176,7 @@ index 8c96897..a2578c4 100644
  	}
  	regs->flags = (regs->flags & ~X86_EFLAGS_IOPL) | (level << 12);
 diff --git a/drivers/char/mem.c b/drivers/char/mem.c
-index e5eedfa..1e0a660 100644
+index 0537903..47501fc 100644
 --- a/drivers/char/mem.c
 +++ b/drivers/char/mem.c
 @@ -597,6 +597,9 @@ static ssize_t write_port(struct file *file, const char __user *buf,
@@ -193,7 +193,7 @@ index e5eedfa..1e0a660 100644
 1.8.0.1
 
 
-From 95b440833e9002bc7e1950f403f2fb2953b69317 Mon Sep 17 00:00:00 2001
+From 09c266136915eb1f4a9b36423b7ba65e3d024de4 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:40:59 -0400
 Subject: [PATCH 04/20] ACPI: Limit access to custom_method
@@ -225,7 +225,7 @@ index 5d42c24..247d58b 100644
 1.8.0.1
 
 
-From fd40b868d55992f71acffa74b559923ffde81638 Mon Sep 17 00:00:00 2001
+From f3e9cb16e5ab3e680ec3ef464682c52371bbbbe3 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:00 -0400
 Subject: [PATCH 05/20] asus-wmi: Restrict debugfs interface
@@ -278,7 +278,7 @@ index c0e9ff4..3c10167 100644
 1.8.0.1
 
 
-From 470e4dbf6215d40a340b3ad7fd6d4533ffbf6a6d Mon Sep 17 00:00:00 2001
+From 23372d2a40135aca7a6d73511bd88790b598b489 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:01 -0400
 Subject: [PATCH 06/20] Restrict /dev/mem and /dev/kmem in secure boot setups
@@ -292,7 +292,7 @@ Signed-off-by: Matthew Garrett <mjg@redhat.com>
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/char/mem.c b/drivers/char/mem.c
-index 1e0a660..33eb947 100644
+index 47501fc..8817cdc 100644
 --- a/drivers/char/mem.c
 +++ b/drivers/char/mem.c
 @@ -158,6 +158,9 @@ static ssize_t write_mem(struct file *file, const char __user *buf,
@@ -319,7 +319,7 @@ index 1e0a660..33eb947 100644
 1.8.0.1
 
 
-From fdb24af2d20faea8bae60058f0cda8db8be9394d Mon Sep 17 00:00:00 2001
+From a0c80b01e80a1f6484a2a2811b4a212322494614 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:02 -0400
 Subject: [PATCH 07/20] Secure boot: Add a dummy kernel parameter that will
@@ -336,10 +336,10 @@ Signed-off-by: Josh Boyer <jwboyer@redhat.com>
  2 files changed, 24 insertions(+)
 
 diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 9b2b8d3..93978d5 100644
+index 9776f06..0d6c28d 100644
 --- a/Documentation/kernel-parameters.txt
 +++ b/Documentation/kernel-parameters.txt
-@@ -2562,6 +2562,13 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+@@ -2599,6 +2599,13 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
  			Note: increases power consumption, thus should only be
  			enabled if running jitter sensitive (HPC/RT) workloads.
  
@@ -354,7 +354,7 @@ index 9b2b8d3..93978d5 100644
  			If this boot parameter is not specified, only the first
  			security module asking for security registration will be
 diff --git a/kernel/cred.c b/kernel/cred.c
-index de728ac..7e6e83f 100644
+index 48cea3d..3f5be65 100644
 --- a/kernel/cred.c
 +++ b/kernel/cred.c
 @@ -623,6 +623,23 @@ void __init cred_init(void)
@@ -385,7 +385,7 @@ index de728ac..7e6e83f 100644
 1.8.0.1
 
 
-From 033a0db83fe140b040a5f5a5754ba326b0d4f587 Mon Sep 17 00:00:00 2001
+From 640f088c49da87a344417f58d3faa72d63a4f6ed Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:03 -0400
 Subject: [PATCH 08/20] efi: Enable secure boot lockdown automatically when
@@ -418,10 +418,10 @@ index cf5437d..7f9ed48 100644
  2D0/A00	ALL	e820_map	E820 memory map table
  				(array of struct e820entry)
 diff --git a/arch/x86/boot/compressed/eboot.c b/arch/x86/boot/compressed/eboot.c
-index 90201aa..bdf0eb7 100644
+index e87b0ca..260cace 100644
 --- a/arch/x86/boot/compressed/eboot.c
 +++ b/arch/x86/boot/compressed/eboot.c
-@@ -726,6 +726,36 @@ fail:
+@@ -732,6 +732,36 @@ fail:
  	return status;
  }
  
@@ -458,7 +458,7 @@ index 90201aa..bdf0eb7 100644
  /*
   * Because the x86 boot code expects to be passed a boot_params we
   * need to create one ourselves (usually the bootloader would create
-@@ -1020,6 +1050,8 @@ struct boot_params *efi_main(void *handle, efi_system_table_t *_table,
+@@ -1026,6 +1056,8 @@ struct boot_params *efi_main(void *handle, efi_system_table_t *_table,
  	if (sys_table->hdr.signature != EFI_SYSTEM_TABLE_SIGNATURE)
  		goto fail;
  
@@ -482,10 +482,10 @@ index 2ad874c..c7338e0 100644
  	__u8  _pad7[0x290-0x1f1-sizeof(struct setup_header)];
  	__u32 edd_mbr_sig_buffer[EDD_MBR_SIG_MAX];	/* 0x290 */
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 5cee802..b4f4666 100644
+index ca45696..800673d 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -961,6 +961,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -962,6 +962,9 @@ void __init setup_arch(char **cmdline_p)
  
  	io_delay_init();
  
@@ -512,7 +512,7 @@ index ebbed2c..a24faf1 100644
 1.8.0.1
 
 
-From 7a24fb283b72797e219a3283c5cf880ebb80443f Mon Sep 17 00:00:00 2001
+From 994d895b5b684fc53c3b43dda9aee460c1f526f2 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:04 -0400
 Subject: [PATCH 09/20] acpi: Ignore acpi_rsdp kernel parameter in a secure
@@ -544,7 +544,7 @@ index 9eaf708..f94341b 100644
 1.8.0.1
 
 
-From a21ccbd8461fd9780c348faa78bbd3d13db04e3d Mon Sep 17 00:00:00 2001
+From c80aaf3eee3cb6b0d1a051e418ee99cd238c868c Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:05 -0400
 Subject: [PATCH 10/20] SELinux: define mapping for new Secure Boot capability
@@ -577,7 +577,7 @@ index df2de54..70e2834 100644
 1.8.0.1
 
 
-From 01af02988477c4bde39436adec1edfd1499709d9 Mon Sep 17 00:00:00 2001
+From 26352bcb92468233dd960b5d02ba1db344df72b9 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Tue, 4 Sep 2012 11:55:13 -0400
 Subject: [PATCH 11/20] kexec: Disable in a secure boot environment
@@ -593,10 +593,10 @@ Signed-off-by: Matthew Garrett <mjg@redhat.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/kexec.c b/kernel/kexec.c
-index 0668d58..8b976a5 100644
+index 5e4bd78..dd464e0 100644
 --- a/kernel/kexec.c
 +++ b/kernel/kexec.c
-@@ -944,7 +944,7 @@ SYSCALL_DEFINE4(kexec_load, unsigned long, entry, unsigned long, nr_segments,
+@@ -943,7 +943,7 @@ SYSCALL_DEFINE4(kexec_load, unsigned long, entry, unsigned long, nr_segments,
  	int result;
  
  	/* We only trust the superuser with rebooting the system. */
@@ -609,7 +609,7 @@ index 0668d58..8b976a5 100644
 1.8.0.1
 
 
-From 883409d0fadeefe2c44d7034d2acc0e366c339f3 Mon Sep 17 00:00:00 2001
+From c03c68adceaec9656c55c47190fb4243bf903b40 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Mon, 25 Jun 2012 21:29:46 -0400
 Subject: [PATCH 12/20] Documentation: kernel-parameters.txt remove
@@ -630,7 +630,7 @@ Signed-off-by: Josh Boyer <jwboyer@redhat.com>
  1 file changed, 6 deletions(-)
 
 diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index 93978d5..e3e5f8c 100644
+index 0d6c28d..d9af501 100644
 --- a/Documentation/kernel-parameters.txt
 +++ b/Documentation/kernel-parameters.txt
 @@ -446,12 +446,6 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
@@ -650,7 +650,7 @@ index 93978d5..e3e5f8c 100644
 1.8.0.1
 
 
-From b2ee7008ee39d04b3439f81e42586ee8e16af2e9 Mon Sep 17 00:00:00 2001
+From 3f1bda64d2c7b369e2833bd32cd1f3ba6c90348f Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Fri, 5 Oct 2012 10:12:48 -0400
 Subject: [PATCH 13/20] modsign: Always enforce module signing in a Secure Boot
@@ -669,7 +669,7 @@ Signed-off-by: Josh Boyer <jwboyer@redhat.com>
  2 files changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/cred.c b/kernel/cred.c
-index 7e6e83f..6e828e2 100644
+index 3f5be65..a381e27 100644
 --- a/kernel/cred.c
 +++ b/kernel/cred.c
 @@ -623,11 +623,19 @@ void __init cred_init(void)
@@ -693,7 +693,7 @@ index 7e6e83f..6e828e2 100644
  
  /* Dummy Secure Boot enable option to fake out UEFI SB=1 */
 diff --git a/kernel/module.c b/kernel/module.c
-index e0785b3..b964a03 100644
+index 6e48c3a..6d5d2aa 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -106,9 +106,9 @@ struct list_head *kdb_modules = &modules; /* kdb needs the list of modules */
@@ -712,7 +712,7 @@ index e0785b3..b964a03 100644
 1.8.0.1
 
 
-From 4fe6ecce3e9168f538fc8970fe8a964438beabbb Mon Sep 17 00:00:00 2001
+From e6e3ec77b2fa037b32829e7f5ee468ad8a62dd05 Mon Sep 17 00:00:00 2001
 From: Dave Howells <dhowells@redhat.com>
 Date: Tue, 23 Oct 2012 09:30:54 -0400
 Subject: [PATCH 14/20] Add EFI signature data types, such as are used for
@@ -724,7 +724,7 @@ Signed-off-by: David Howells <dhowells@redhat.com>
  1 file changed, 20 insertions(+)
 
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index bff4b5e..52ce2c4 100644
+index 337aefb..a01f8a7 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -317,6 +317,12 @@ typedef efi_status_t efi_query_capsule_caps_t(efi_capsule_header_t **capsules,
@@ -765,7 +765,7 @@ index bff4b5e..52ce2c4 100644
 1.8.0.1
 
 
-From 768ab9ef88b2caa9588e577fe547792dfe513fca Mon Sep 17 00:00:00 2001
+From c2542256f632a22232cf02d5fd64568a5afa4516 Mon Sep 17 00:00:00 2001
 From: Dave Howells <dhowells@redhat.com>
 Date: Tue, 23 Oct 2012 09:36:28 -0400
 Subject: [PATCH 15/20] Add an EFI signature blob parser and key loader. X.509
@@ -922,10 +922,10 @@ index 0000000..59b859a
 +	return 0;
 +}
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 52ce2c4..54b5936 100644
+index a01f8a7..44a7faa 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
-@@ -538,6 +538,10 @@ extern int efi_set_rtc_mmss(unsigned long nowtime);
+@@ -541,6 +541,10 @@ extern int efi_set_rtc_mmss(unsigned long nowtime);
  extern void efi_reserve_boot_services(void);
  extern struct efi_memory_map memmap;
  
@@ -940,7 +940,7 @@ index 52ce2c4..54b5936 100644
 1.8.0.1
 
 
-From 967a1b02af199f07fd7603bda2f0aeec50b412b9 Mon Sep 17 00:00:00 2001
+From a418e6fdd2aa946a30cf1bee5c9540d03d626981 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Fri, 26 Oct 2012 12:29:49 -0400
 Subject: [PATCH 16/20] EFI: Add in-kernel variable to determine if Secure Boot
@@ -959,10 +959,10 @@ Signed-off-by: Josh Boyer <jwboyer@redhat.com>
  3 files changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index b4f4666..db74940 100644
+index 800673d..cf8823b 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -961,8 +961,12 @@ void __init setup_arch(char **cmdline_p)
+@@ -962,8 +962,12 @@ void __init setup_arch(char **cmdline_p)
  
  	io_delay_init();
  
@@ -977,10 +977,10 @@ index b4f4666..db74940 100644
  	/*
  	 * Parse the ACPI tables for possible boot-time SMP configuration.
 diff --git a/arch/x86/platform/efi/efi.c b/arch/x86/platform/efi/efi.c
-index 72d8899..882d794 100644
+index ad44391..d22bfeb 100644
 --- a/arch/x86/platform/efi/efi.c
 +++ b/arch/x86/platform/efi/efi.c
-@@ -53,6 +53,8 @@
+@@ -54,6 +54,8 @@
  int efi_enabled;
  EXPORT_SYMBOL(efi_enabled);
  
@@ -990,10 +990,10 @@ index 72d8899..882d794 100644
  	.mps        = EFI_INVALID_TABLE_ADDR,
  	.acpi       = EFI_INVALID_TABLE_ADDR,
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 54b5936..411997f 100644
+index 44a7faa..b5403ae 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
-@@ -575,11 +575,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -578,11 +578,14 @@ extern int __init efi_setup_pcdp_console(char *);
  # ifdef CONFIG_X86
     extern int efi_enabled;
     extern bool efi_64bit;
@@ -1012,7 +1012,7 @@ index 54b5936..411997f 100644
 1.8.0.1
 
 
-From 6e946d64dc843d9caa587780801de035b38fd4b3 Mon Sep 17 00:00:00 2001
+From f6d05f0974f6a7667ebbbf91624678bcf32169ae Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Fri, 26 Oct 2012 12:36:24 -0400
 Subject: [PATCH 17/20] MODSIGN: Add module certificate blacklist keyring
@@ -1031,10 +1031,10 @@ Signed-off-by: Josh Boyer <jwboyer@redhat.com>
  4 files changed, 41 insertions(+), 1 deletion(-)
 
 diff --git a/init/Kconfig b/init/Kconfig
-index abc6e63..78f3e280 100644
+index 6fdd6e3..7a9bf00 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1613,6 +1613,14 @@ config MODULE_SIG_FORCE
+@@ -1602,6 +1602,14 @@ config MODULE_SIG_FORCE
  	  Reject unsigned modules or signed modules for which we don't have a
  	  key.  Without this, such modules will simply taint the kernel.
  
@@ -1050,7 +1050,7 @@ index abc6e63..78f3e280 100644
  	prompt "Which hash algorithm should modules be signed with?"
  	depends on MODULE_SIG
 diff --git a/kernel/modsign_pubkey.c b/kernel/modsign_pubkey.c
-index 4646eb2..6d70783 100644
+index 767e559..3bfb7ed 100644
 --- a/kernel/modsign_pubkey.c
 +++ b/kernel/modsign_pubkey.c
 @@ -17,6 +17,9 @@
@@ -1098,7 +1098,7 @@ index 24f9247..51a8380 100644
  
  extern int mod_verify_sig(const void *mod, unsigned long *_modlen);
 diff --git a/kernel/module_signing.c b/kernel/module_signing.c
-index d492a23..39131d3 100644
+index f2970bd..8ab83a6 100644
 --- a/kernel/module_signing.c
 +++ b/kernel/module_signing.c
 @@ -132,7 +132,7 @@ static int mod_extract_mpi_array(struct public_key_signature *pks,
@@ -1133,7 +1133,7 @@ index d492a23..39131d3 100644
 1.8.0.1
 
 
-From 02905ddf41b18af3c3dd5d99771eba4e453d24ca Mon Sep 17 00:00:00 2001
+From ff0ed221fe8d5a46a9bc36323ca8fb6f75c22a83 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Fri, 26 Oct 2012 12:42:16 -0400
 Subject: [PATCH 18/20] MODSIGN: Import certificates from UEFI Secure Boot
@@ -1161,7 +1161,7 @@ Signed-off-by: Josh Boyer <jwboyer@redhat.com>
  create mode 100644 kernel/modsign_uefi.c
 
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 411997f..31f84ff 100644
+index b5403ae..bba53e3 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -323,6 +323,12 @@ typedef efi_status_t efi_query_capsule_caps_t(efi_capsule_header_t **capsules,
@@ -1178,10 +1178,10 @@ index 411997f..31f84ff 100644
  	efi_guid_t guid;
  	u64 table;
 diff --git a/init/Kconfig b/init/Kconfig
-index 78f3e280..754ee66 100644
+index 7a9bf00..51aa170 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1621,6 +1621,15 @@ config MODULE_SIG_BLACKLIST
+@@ -1610,6 +1610,15 @@ config MODULE_SIG_BLACKLIST
  	  should not pass module signature verification.  If a module is
  	  signed with something in this keyring, the load will be rejected.
  
@@ -1198,10 +1198,10 @@ index 78f3e280..754ee66 100644
  	prompt "Which hash algorithm should modules be signed with?"
  	depends on MODULE_SIG
 diff --git a/kernel/Makefile b/kernel/Makefile
-index d3611c8..927a264 100644
+index 86e3285..12e17ab 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
-@@ -56,6 +56,7 @@ obj-$(CONFIG_PROVE_LOCKING) += spinlock.o
+@@ -55,6 +55,7 @@ obj-$(CONFIG_PROVE_LOCKING) += spinlock.o
  obj-$(CONFIG_UID16) += uid16.o
  obj-$(CONFIG_MODULES) += module.o
  obj-$(CONFIG_MODULE_SIG) += module_signing.o modsign_pubkey.o
@@ -1209,7 +1209,7 @@ index d3611c8..927a264 100644
  obj-$(CONFIG_KALLSYMS) += kallsyms.o
  obj-$(CONFIG_BSD_PROCESS_ACCT) += acct.o
  obj-$(CONFIG_KEXEC) += kexec.o
-@@ -114,6 +115,8 @@ obj-$(CONFIG_JUMP_LABEL) += jump_label.o
+@@ -113,6 +114,8 @@ obj-$(CONFIG_JUMP_LABEL) += jump_label.o
  
  $(obj)/configs.o: $(obj)/config_data.h
  
@@ -1318,7 +1318,7 @@ index 0000000..76a5a34
 1.8.0.1
 
 
-From b1bc4417dcec5c603baae2de2523bdf3a0c96b11 Mon Sep 17 00:00:00 2001
+From 7d5629a2000d9dc92da91d2f1258af748e89cfd7 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Fri, 26 Oct 2012 14:02:09 -0400
 Subject: [PATCH 19/20] hibernate: Disable in a Secure Boot environment
@@ -1414,7 +1414,7 @@ index 4ed81e7..b11a0f4 100644
 1.8.0.1
 
 
-From 96c9c61996828908833b680149525b4b7acff664 Mon Sep 17 00:00:00 2001
+From 81adc779dba0f45f10b5ff307bd55832305f1112 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Wed, 12 Dec 2012 11:48:49 -0500
 Subject: [PATCH 20/20] Don't soft lockup on bad EFI signature lists
