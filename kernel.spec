@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -789,6 +789,9 @@ Patch21234: mac80211-fix-ibss-scanning.patch
 
 #rhbz 873107
 Patch21237: 0001-ACPI-sony-laptop-do-proper-memcpy-for-ACPI_TYPE_INTE.patch
+
+#rhbz 853064
+Patch21239: aoe-remove-vestigial-request-queue-allocation.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1518,6 +1521,9 @@ ApplyPatch mac80211-fix-ibss-scanning.patch
 
 #rhbz 873107
 ApplyPatch 0001-ACPI-sony-laptop-do-proper-memcpy-for-ACPI_TYPE_INTE.patch
+
+#rhbz 853064
+ApplyPatch aoe-remove-vestigial-request-queue-allocation.patch
 
 
 # END OF PATCH APPLICATIONS
@@ -2392,6 +2398,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Jan 04 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix oops on aoe module removal (rhbz 853064)
+
 * Thu Jan 03 2013 Josh Boyer <jwboyer@redhat.com> - 3.7.1-2
 - Fixup secure boot patchset for 3.7 rebase
 - Package bash completion script for perf
