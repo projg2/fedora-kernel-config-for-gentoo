@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -789,6 +789,9 @@ Patch21237: 0001-ACPI-sony-laptop-do-proper-memcpy-for-ACPI_TYPE_INTE.patch
 
 #rhbz 874372
 Patch21238: don-t-do-blind-d_drop-in-nfs_prime_dcache.patch
+
+#rhbz 853064
+Patch21239: aoe-remove-extra-bdi_init.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1533,6 +1536,9 @@ ApplyPatch 0001-ACPI-sony-laptop-do-proper-memcpy-for-ACPI_TYPE_INTE.patch
 
 #rhbz 874372
 ApplyPatch don-t-do-blind-d_drop-in-nfs_prime_dcache.patch
+
+#rhbz 853064
+ApplyPatch aoe-remove-extra-bdi_init.patch
 
 
 # END OF PATCH APPLICATIONS
@@ -2398,6 +2404,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Jan 04 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix oops on aoe module removal (rhbz 853064)
+
 * Wed Jan 02 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix autofs issue in 3.6 (rhbz 874372)
 - BR the hostname package (rhbz 886113)
