@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 4
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1761,7 +1761,7 @@ BuildKernel() {
 
     # Make sure the Makefile and version.h have a matching timestamp so that
     # external modules can be built
-    touch -r $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Makefile $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/linux/version.h
+    touch -r $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Makefile $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/generated/uapi/linux/version.h
 
     # Copy .config to include/config/auto.conf so "make prepare" is unnecessary.
     cp $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/.config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/config/auto.conf
@@ -2398,6 +2398,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Sun Jan 06 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix version.h include due to UAPI change in 3.7 (rhbz 892372)
+
 * Fri Jan 04 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix oops on aoe module removal (rhbz 853064)
 
