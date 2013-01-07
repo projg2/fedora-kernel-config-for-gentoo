@@ -2398,6 +2398,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Jan 07 2013 Josh Boyer <jwboyer@redhat.com>
+- Patch to fix efivarfs underflow from Lingzhu Xiang (rhbz 888163)
+
 * Sun Jan 06 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix version.h include due to UAPI change in 3.7 (rhbz 892373)
 
