@@ -2399,7 +2399,7 @@ fi
 #                 ||     ||
 %changelog
 * Sun Jan 06 2013 Josh Boyer <jwboyer@redhat.com>
-- Fix version.h include due to UAPI change in 3.7 (rhbz 892372)
+- Fix version.h include due to UAPI change in 3.7 (rhbz 892373)
 
 * Fri Jan 04 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix oops on aoe module removal (rhbz 853064)
