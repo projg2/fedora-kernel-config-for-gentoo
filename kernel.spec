@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -792,6 +792,9 @@ Patch21237: 0001-ACPI-sony-laptop-do-proper-memcpy-for-ACPI_TYPE_INTE.patch
 
 #rhbz 853064
 Patch21239: aoe-remove-vestigial-request-queue-allocation.patch
+
+#rhbz 890547
+Patch21240: ACPI-do-not-use-Lid-and-Sleep-button-for-S5-wakeup.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1524,6 +1527,9 @@ ApplyPatch 0001-ACPI-sony-laptop-do-proper-memcpy-for-ACPI_TYPE_INTE.patch
 
 #rhbz 853064
 ApplyPatch aoe-remove-vestigial-request-queue-allocation.patch
+
+#rhbz 890547
+ApplyPatch ACPI-do-not-use-Lid-and-Sleep-button-for-S5-wakeup.patch
 
 
 # END OF PATCH APPLICATIONS
@@ -2398,6 +2404,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Jan 08 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix shutdown on some machines (rhbz 890547)
+
 * Mon Jan 07 2013 Josh Boyer <jwboyer@redhat.com>
 - Patch to fix efivarfs underflow from Lingzhu Xiang (rhbz 888163)
 
