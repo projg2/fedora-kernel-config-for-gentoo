@@ -2094,7 +2094,7 @@ fi
 # and build.
 
 %changelog
-* Tue Jan 08 2013 Josh Boyer <jwboyer@redhat.com>
+* Tue Jan 08 2013 Josh Boyer <jwboyer@redhat.com> - 3.6.11-4
 - Add patch to fix shutdown on some machines (rhbz 890547)
 
 * Fri Jan 04 2013 Josh Boyer <jwboyer@redhat.com>
