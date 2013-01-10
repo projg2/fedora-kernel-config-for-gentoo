@@ -546,7 +546,7 @@ BuildRequires: xmlto, asciidoc
 BuildRequires: sparse >= 0.4.1
 %endif
 %if %{with_perf}
-BuildRequires: elfutils-devel zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison
+BuildRequires: elfutils-devel zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison audit-libs-devel
 %endif
 %if %{with_tools}
 BuildRequires: pciutils-devel gettext
@@ -2404,6 +2404,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Jan 10 2013 Dave Jones <davej@redhat.com>
+- Add audit-libs-devel to perf build-deps to enable trace command. (rhbz 892893)
+
 * Tue Jan 08 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix shutdown on some machines (rhbz 890547)
 
