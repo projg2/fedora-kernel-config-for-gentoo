@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 5
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -769,14 +769,10 @@ Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 #rhbz 871078
 Patch22112: USB-report-submission-of-active-URBs.patch
 
-#rhbz 874791
-Patch22125: Bluetooth-Add-support-for-BCM20702A0.patch
-
 #rhbz 859485
 Patch21226: vt-Drop-K_OFF-for-VC_MUTE.patch
 
 #rhbz CVE-2012-4530 868285 880147
-Patch21228: exec-do-not-leave-bprm-interp-on-stack.patch
 Patch21229: exec-use-eloop-for-max-recursion-depth.patch
 
 #rhbz 851278
@@ -1504,14 +1500,10 @@ ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 #rhbz 871078
 ApplyPatch USB-report-submission-of-active-URBs.patch
 
-#rhbz 874791
-ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
-
 #rhbz 859485
 ApplyPatch vt-Drop-K_OFF-for-VC_MUTE.patch
 
 #rhbz CVE-2012-4530 868285 880147
-ApplyPatch exec-do-not-leave-bprm-interp-on-stack.patch
 ApplyPatch exec-use-eloop-for-max-recursion-depth.patch
 
 #rhbz 851278
@@ -2404,6 +2396,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Jan 11 2013 Justin M. Forbes <jforbes@redhat.com> 3.7.1-1
+- Linux v3.7.2
+- Enable Intel IOMMU by default
+
 * Thu Jan 10 2013 Dave Jones <davej@redhat.com>
 - Add audit-libs-devel to perf build-deps to enable trace command. (rhbz 892893)
 
