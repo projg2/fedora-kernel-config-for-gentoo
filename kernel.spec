@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 5
+%global baserelease 6
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2410,6 +2410,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Jan 14 2013 Josh Boyer <jwboyer@redhat.com>
+- Enable Orinoco drivers in kernel-modules-extra (rhbz 894069)
+
 * Tue Jan 08 2013 Josh Boyer <jwboyer@redhat.com> - 3.6.11-5
 - Add patch to fix shutdown on some machines (rhbz 890547)
 
