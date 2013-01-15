@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 202
+%global baserelease 203
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -780,17 +780,8 @@ Patch21231: 8139cp-revert-set-ring-address-before-enabling-receiver.patch
 Patch21232: 8139cp-set-ring-address-after-enabling-C-mode.patch
 Patch21233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
-#rhbz 883414
-Patch21234: mac80211-fix-ibss-scanning.patch
-
-#rhbz 873107
-Patch21237: 0001-ACPI-sony-laptop-do-proper-memcpy-for-ACPI_TYPE_INTE.patch
-
-#rhbz 853064
-Patch21239: aoe-remove-vestigial-request-queue-allocation.patch
-
-#rhbz 890547
-Patch21240: ACPI-do-not-use-Lid-and-Sleep-button-for-S5-wakeup.patch
+#3.7.3 stable queue
+Patch2150: 3.7.3-stable-queue.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1511,18 +1502,8 @@ ApplyPatch 8139cp-revert-set-ring-address-before-enabling-receiver.patch -R
 ApplyPatch 8139cp-set-ring-address-after-enabling-C-mode.patch
 ApplyPatch 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
-#rhbz 883414
-ApplyPatch mac80211-fix-ibss-scanning.patch
-
-#rhbz 873107
-ApplyPatch 0001-ACPI-sony-laptop-do-proper-memcpy-for-ACPI_TYPE_INTE.patch
-
-#rhbz 853064
-ApplyPatch aoe-remove-vestigial-request-queue-allocation.patch
-
-#rhbz 890547
-ApplyPatch ACPI-do-not-use-Lid-and-Sleep-button-for-S5-wakeup.patch
-
+#3.7.3 stable qeueu
+ApplyPatch 3.7.3-stable-queue.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2396,6 +2377,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Jan 15 2013 Justin M. Forbes <jforbes@redhat.com> 3.7.2-203
+- Turn off Intel IOMMU by default
+- Stable queue from 3.7.3 with many relevant fixes
+
 * Tue Jan 15 2013 Josh Boyer <jwboyer@redhat.com>
 - Enable CONFIG_DVB_USB_V2 (rhbz 895460)
 
