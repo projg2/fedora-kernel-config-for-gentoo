@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 4
+%global baserelease 5
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -738,6 +738,9 @@ Patch21239: aoe-remove-extra-bdi_init.patch
 #rhbz 890547
 Patch21240: ACPI-do-not-use-Lid-and-Sleep-button-for-S5-wakeup.patch
 
+#rhbz 886946
+Patch21241: iwlegacy-fix-IBSS-cleanup.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1392,6 +1395,9 @@ ApplyPatch aoe-remove-extra-bdi_init.patch
 
 #rhbz 890547
 ApplyPatch ACPI-do-not-use-Lid-and-Sleep-button-for-S5-wakeup.patch
+
+#rhbz 886946
+ApplyPatch iwlegacy-fix-IBSS-cleanup.patch
 
 
 # END OF PATCH APPLICATIONS
@@ -2094,6 +2100,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 16 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch from Stanislaw Gruszka to fix iwlegacy IBSS cleanup (rhbz 886946)
+
 * Tue Jan 08 2013 Josh Boyer <jwboyer@redhat.com> - 3.6.11-4
 - Add patch to fix shutdown on some machines (rhbz 890547)
 
