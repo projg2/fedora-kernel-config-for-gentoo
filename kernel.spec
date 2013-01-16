@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 6
+%global baserelease 7
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -795,6 +795,9 @@ Patch21239: aoe-remove-extra-bdi_init.patch
 
 #rhbz 890547
 Patch21240: ACPI-do-not-use-Lid-and-Sleep-button-for-S5-wakeup.patch
+
+#rhbz 886946
+Patch21241: iwlegacy-fix-IBSS-cleanup.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1545,6 +1548,9 @@ ApplyPatch aoe-remove-extra-bdi_init.patch
 
 #rhbz 890547
 ApplyPatch ACPI-do-not-use-Lid-and-Sleep-button-for-S5-wakeup.patch
+
+#rhbz 886946
+ApplyPatch iwlegacy-fix-IBSS-cleanup.patch
 
 
 # END OF PATCH APPLICATIONS
@@ -2410,6 +2416,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Jan 16 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch from Stanislaw Gruszka to fix iwlegacy IBSS cleanup (rhbz 886946)
+
 * Mon Jan 14 2013 Josh Boyer <jwboyer@redhat.com>
 - Enable Orinoco drivers in kernel-modules-extra (rhbz 894069)
 
