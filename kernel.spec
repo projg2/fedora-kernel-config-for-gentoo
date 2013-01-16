@@ -786,6 +786,9 @@ Patch2150: 3.7.3-stable-queue.patch
 #rhbz 886946
 Patch21234: iwlegacy-fix-IBSS-cleanup.patch
 
+#rhbz 896051 896038 CVE-2013-0190
+Patch21250: xen-fix-stack-corruption-in-xen_failsafe_callback.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1510,6 +1513,9 @@ ApplyPatch 3.7.3-stable-queue.patch
 
 #rhbz 886948
 ApplyPatch iwlegacy-fix-IBSS-cleanup.patch
+
+#rhbz 896051 896038 CVE-2013-0190
+ApplyPatch xen-fix-stack-corruption-in-xen_failsafe_callback.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2383,6 +2389,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Jan 16 2013 Justin M. Forbes <jforbes@redhat.com>  3.7.2-204
+- Fix for CVE-2013-0190 xen corruption with 32bit pvops (rhbz 896051 896038)
+
 * Wed Jan 16 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch from Stanislaw Gruszka to fix iwlegacy IBSS cleanup (rhbz 886946)
 
