@@ -2427,7 +2427,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Wed Jan 16 2013 Justin M. Forbes <jforbes@redhat.com>
+* Wed Jan 16 2013 Justin M. Forbes <jforbes@redhat.com> - 3.6.11-8
 - Fix for CVE-2013-0190 xen corruption with 32bit pvops (rhbz 896051 896038)
 - Fix resize2fs issue with ext4 (rhbz 852833)
 
