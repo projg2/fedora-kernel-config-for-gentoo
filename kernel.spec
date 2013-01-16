@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 7
+%global baserelease 8
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -798,6 +798,12 @@ Patch21240: ACPI-do-not-use-Lid-and-Sleep-button-for-S5-wakeup.patch
 
 #rhbz 886946
 Patch21241: iwlegacy-fix-IBSS-cleanup.patch
+
+#rhbz 852833
+Patch21245: ext4-set-bg_itable_unused-when-resizing.patch
+
+#rhbz 896051 896038 CVE-2013-0190
+Patch21250: xen-fix-stack-corruption-in-xen_failsafe_callback.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1552,6 +1558,11 @@ ApplyPatch ACPI-do-not-use-Lid-and-Sleep-button-for-S5-wakeup.patch
 #rhbz 886946
 ApplyPatch iwlegacy-fix-IBSS-cleanup.patch
 
+#rhbz 852833
+ApplyPatch ext4-set-bg_itable_unused-when-resizing.patch
+
+#rhbz 896051 896038 CVE-2013-0190
+ApplyPatch xen-fix-stack-corruption-in-xen_failsafe_callback.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2416,6 +2427,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Jan 16 2013 Justin M. Forbes <jforbes@redhat.com>
+- Fix for CVE-2013-0190 xen corruption with 32bit pvops (rhbz 896051 896038)
+- Fix resize2fs issue with ext4 (rhbz 852833)
+
 * Wed Jan 16 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch from Stanislaw Gruszka to fix iwlegacy IBSS cleanup (rhbz 886946)
 
