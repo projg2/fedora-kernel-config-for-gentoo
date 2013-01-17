@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 204
+%global baserelease 205
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2389,6 +2389,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Jan 16 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix power management sysfs on non-secure boot machines (rhbz 896243)
+
 * Wed Jan 16 2013 Justin M. Forbes <jforbes@redhat.com>  3.7.2-204
 - Fix for CVE-2013-0190 xen corruption with 32bit pvops (rhbz 896051 896038)
 

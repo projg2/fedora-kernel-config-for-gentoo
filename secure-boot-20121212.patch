@@ -1318,10 +1318,10 @@ index 0000000..76a5a34
 1.8.0.1
 
 
-From 7d5629a2000d9dc92da91d2f1258af748e89cfd7 Mon Sep 17 00:00:00 2001
+From e45330362517d08579cdaddc718febe68e2cae06 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Fri, 26 Oct 2012 14:02:09 -0400
-Subject: [PATCH 19/20] hibernate: Disable in a Secure Boot environment
+Subject: [PATCH] hibernate: Disable in a Secure Boot environment
 
 There is currently no way to verify the resume image when returning
 from hibernate.  This might compromise the secure boot trust model,
@@ -1330,16 +1330,24 @@ a Secure Boot environment.
 
 Signed-off-by: Josh Boyer <jwboyer@redhat.com>
 ---
- kernel/power/hibernate.c | 14 +++++++++++++-
- kernel/power/main.c      |  4 +++-
+ kernel/power/hibernate.c | 15 ++++++++++++++-
+ kernel/power/main.c      |  7 ++++++-
  kernel/power/user.c      |  3 +++
- 3 files changed, 19 insertions(+), 2 deletions(-)
+ 3 files changed, 23 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/power/hibernate.c b/kernel/power/hibernate.c
-index b26f5f1..f04343b 100644
+index b26f5f1..26bdfa8 100644
 --- a/kernel/power/hibernate.c
 +++ b/kernel/power/hibernate.c
-@@ -632,6 +632,10 @@ int hibernate(void)
+@@ -28,6 +28,7 @@
+ #include <linux/syscore_ops.h>
+ #include <linux/ctype.h>
+ #include <linux/genhd.h>
++#include <linux/efi.h>
+ 
+ #include "power.h"
+ 
+@@ -632,6 +633,10 @@ int hibernate(void)
  {
  	int error;
  
@@ -1350,7 +1358,7 @@ index b26f5f1..f04343b 100644
  	lock_system_sleep();
  	/* The snapshot device should not be opened while we're running */
  	if (!atomic_add_unless(&snapshot_device_available, -1, 0)) {
-@@ -723,7 +727,7 @@ static int software_resume(void)
+@@ -723,7 +728,7 @@ static int software_resume(void)
  	/*
  	 * If the user said "noresume".. bail out early.
  	 */
@@ -1359,11 +1367,11 @@ index b26f5f1..f04343b 100644
  		return 0;
  
  	/*
-@@ -889,6 +893,11 @@ static ssize_t disk_show(struct kobject *kobj, struct kobj_attribute *attr,
+@@ -889,6 +894,11 @@ static ssize_t disk_show(struct kobject *kobj, struct kobj_attribute *attr,
  	int i;
  	char *start = buf;
  
-+	if (!capable(CAP_COMPROMISE_KERNEL)) {
++	if (secure_boot_enabled) {
 +		buf += sprintf(buf, "[%s]\n", "disabled");
 +		return buf-start;
 +	}
@@ -1371,7 +1379,7 @@ index b26f5f1..f04343b 100644
  	for (i = HIBERNATION_FIRST; i <= HIBERNATION_MAX; i++) {
  		if (!hibernation_modes[i])
  			continue;
-@@ -923,6 +932,9 @@ static ssize_t disk_store(struct kobject *kobj, struct kobj_attribute *attr,
+@@ -923,6 +933,9 @@ static ssize_t disk_store(struct kobject *kobj, struct kobj_attribute *attr,
  	char *p;
  	int mode = HIBERNATION_INVALID;
  
@@ -1382,16 +1390,26 @@ index b26f5f1..f04343b 100644
  	len = p ? p - buf : n;
  
 diff --git a/kernel/power/main.c b/kernel/power/main.c
-index f458238..72580c1 100644
+index 1c16f91..8e3456d 100644
 --- a/kernel/power/main.c
 +++ b/kernel/power/main.c
-@@ -301,7 +301,9 @@ static ssize_t state_show(struct kobject *kobj, struct kobj_attribute *attr,
+@@ -15,6 +15,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/debugfs.h>
+ #include <linux/seq_file.h>
++#include <linux/efi.h>
+ 
+ #include "power.h"
+ 
+@@ -301,7 +302,11 @@ static ssize_t state_show(struct kobject *kobj, struct kobj_attribute *attr,
  	}
  #endif
  #ifdef CONFIG_HIBERNATION
 -	s += sprintf(s, "%s\n", "disk");
-+	if (capable(CAP_COMPROMISE_KERNEL)) {
++	if (!secure_boot_enabled) {
 +		s += sprintf(s, "%s\n", "disk");
++	} else {
++		s += sprintf(s, "\n");
 +	}
  #else
  	if (s != buf)
@@ -1411,7 +1429,7 @@ index 4ed81e7..b11a0f4 100644
  
  	if (!atomic_add_unless(&snapshot_device_available, -1, 0)) {
 -- 
-1.8.0.1
+1.8.0.2
 
 
 From 81adc779dba0f45f10b5ff307bd55832305f1112 Mon Sep 17 00:00:00 2001
