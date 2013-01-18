@@ -138,10 +138,6 @@ Summary: The Linux kernel
 %define with_tegra       %{?_without_tegra:       0} %{?!_without_tegra:       1}
 # kernel-kirkwood (only valid for arm)
 %define with_kirkwood       %{?_without_kirkwood:       0} %{?!_without_kirkwood:       1}
-# kernel-imx (only valid for arm)
-%define with_imx       %{?_without_imx:       0} %{?!_without_imx:       1}
-# kernel-highbank (only valid for arm)
-%define with_highbank       %{?_without_highbank:       0} %{?!_without_highbank:       1}
 #
 # Additional options for user-friendly one-off kernel building:
 #
@@ -258,10 +254,8 @@ Summary: The Linux kernel
 %define with_pae 0
 %endif
 
-# kernel up (versatile express), tegra, omap, imx and highbank are only built on armv7 hfp/sfp
+# kernel up (versatile express), tegra and  omap are only built on armv7 hfp/sfp
 %ifnarch armv7hl armv7l
-%define with_imx 0
-%define with_highbank 0
 %define with_omap 0
 %define with_tegra 0
 %endif
@@ -534,6 +528,11 @@ ExclusiveOS: Linux
 
 %kernel_reqprovconf
 
+%ifarch %{arm}
+Obsoletes: kernel-highbank
+Obsoletes: kernel-imx
+%endif
+
 #
 # List the packages used during the kernel build
 #
@@ -599,13 +598,14 @@ Source70: config-s390x
 
 Source90: config-sparc64-generic
 
-Source100: config-arm-generic
+# Unified ARM kernels
+Source100: config-armv7
+
+# Legacy ARM kernels
+Source105: config-arm-generic
 Source110: config-arm-omap
 Source111: config-arm-tegra
 Source112: config-arm-kirkwood
-Source113: config-arm-imx
-Source114: config-arm-highbank
-Source115: config-arm-versatile
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -751,12 +751,6 @@ Patch21003: arm-alignment-faults.patch
 Patch21004: arm-tegra-nvec-kconfig.patch
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
 Patch21006: arm-tegra-sdhci-module-fix.patch
-
-# ARM highbank patches
-
-# ARM exynos4
-Patch21020: arm-smdk310-regulator-fix.patch
-Patch21021: arm-origen-regulator-fix.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -1074,18 +1068,6 @@ on kernel bugs, as some of these options impact performance noticably.
 This package includes a version of the Linux kernel with support for
 marvell kirkwood based systems, i.e., guruplug, sheevaplug
 
-%define variant_summary The Linux kernel compiled for freescale boards
-%kernel_variant_package imx
-%description imx
-This package includes a version of the Linux kernel with support for
-freescale based systems, i.e., efika smartbook.
-
-%define variant_summary The Linux kernel compiled for Calxeda boards
-%kernel_variant_package highbank
-%description highbank
-This package includes a version of the Linux kernel with support for
-Calxeda based systems, i.e., HP arm servers.
-
 %define variant_summary The Linux kernel compiled for TI-OMAP boards
 %kernel_variant_package omap
 %description omap
@@ -1368,8 +1350,6 @@ ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 ApplyPatch arm-tegra-sdhci-module-fix.patch
 ApplyPatch arm-alignment-faults.patch
-ApplyPatch arm-smdk310-regulator-fix.patch
-ApplyPatch arm-origen-regulator-fix.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -1871,14 +1851,6 @@ BuildKernel %make_target %kernel_image PAE
 BuildKernel %make_target %kernel_image kirkwood
 %endif
 
-%if %{with_imx}
-BuildKernel %make_target %kernel_image imx
-%endif
-
-%if %{with_highbank}
-BuildKernel %make_target %kernel_image highbank
-%endif
-
 %if %{with_omap}
 BuildKernel %make_target %kernel_image omap
 %endif
@@ -2218,12 +2190,6 @@ fi}\
 %kernel_variant_preun kirkwood
 %kernel_variant_post -v kirkwood
 
-%kernel_variant_preun imx
-%kernel_variant_post -v imx
-
-%kernel_variant_preun highbank
-%kernel_variant_post -v highbank
-
 %kernel_variant_preun omap
 %kernel_variant_post -v omap
 
@@ -2371,8 +2337,6 @@ fi
 %kernel_variant_files %{with_pae} PAE
 %kernel_variant_files %{with_pae_debug} PAEdebug
 %kernel_variant_files %{with_kirkwood} kirkwood
-%kernel_variant_files %{with_imx} imx
-%kernel_variant_files %{with_highbank} highbank
 %kernel_variant_files %{with_omap} omap
 %kernel_variant_files %{with_tegra} tegra
 
@@ -2389,6 +2353,11 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Jan 17 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Merge 3.7 ARM kernel including unified kernel
+- Drop separate IMX and highbank kernels
+- Disable ARM PL310 errata that crash highbank
+
 * Wed Jan 16 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix power management sysfs on non-secure boot machines (rhbz 896243)
 
