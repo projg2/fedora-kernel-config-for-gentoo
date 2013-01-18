@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 205
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -773,9 +773,6 @@ Patch21229: exec-use-eloop-for-max-recursion-depth.patch
 Patch21231: 8139cp-revert-set-ring-address-before-enabling-receiver.patch
 Patch21232: 8139cp-set-ring-address-after-enabling-C-mode.patch
 Patch21233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
-
-#3.7.3 stable queue
-Patch2150: 3.7.3-stable-queue.patch
 
 #rhbz 886946
 Patch21234: iwlegacy-fix-IBSS-cleanup.patch
@@ -1487,9 +1484,6 @@ ApplyPatch exec-use-eloop-for-max-recursion-depth.patch
 ApplyPatch 8139cp-revert-set-ring-address-before-enabling-receiver.patch -R
 ApplyPatch 8139cp-set-ring-address-after-enabling-C-mode.patch
 ApplyPatch 8139cp-re-enable-interrupts-after-tx-timeout.patch
-
-#3.7.3 stable qeueu
-ApplyPatch 3.7.3-stable-queue.patch
 
 #rhbz 886948
 ApplyPatch iwlegacy-fix-IBSS-cleanup.patch
@@ -2353,6 +2347,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Jan 18 2013 Justin M. Forbes <jforbes@redhat.com> 3.7.3-201
+- Linux v3.7.3
+
 * Thu Jan 17 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Merge 3.7 ARM kernel including unified kernel
 - Drop separate IMX and highbank kernels
