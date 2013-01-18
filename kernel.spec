@@ -54,19 +54,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 8
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 2.6.22-rc7-git1 starts with a 2.6.21 base,
 # which yields a base_sublevel of 21.
-%define base_sublevel 6
+%define base_sublevel 7
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -712,7 +712,6 @@ Patch19000: ips-noirq.patch
 # ARM
 Patch21000: arm-read_current_timer.patch
 Patch21001: arm-fix-omapdrm.patch
-Patch21002: arm-fix_radio_shark.patch
 Patch21003: arm-alignment-faults.patch
 # OMAP
 
@@ -722,7 +721,6 @@ Patch21005: arm-tegra-usb-no-reset-linux33.patch
 Patch21006: arm-tegra-sdhci-module-fix.patch
 
 # ARM highbank patches
-Patch21010: arm-highbank-sata-fix.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -739,68 +737,19 @@ Patch22014: efifb-skip-DMI-checks-if-bootloader-knows.patch
 #rhbz 857324
 Patch22070: net-tcp-bz857324.patch
 
-#rhbz 869904 869909 CVE-2012-4508
-Patch22080: 0001-ext4-ext4_inode_info-diet.patch
-Patch22081: 0002-ext4-give-i_aiodio_unwritten-a-more-appropriate-name.patch
-Patch22082: 0003-ext4-fix-unwritten-counter-leakage.patch
-Patch22083: 0004-ext4-completed_io-locking-cleanup.patch
-Patch22084: 0005-ext4-serialize-dio-nonlocked-reads-with-defrag-worke.patch
-Patch22085: 0006-ext4-serialize-unlocked-dio-reads-with-truncate.patch
-Patch22086: 0007-ext4-endless-truncate-due-to-nonlocked-dio-readers.patch
-Patch22087: 0008-ext4-serialize-truncate-with-owerwrite-DIO-workers.patch
-Patch22088: 0009-ext4-punch_hole-should-wait-for-DIO-writers.patch
-Patch22089: 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
-Patch22090: 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
-Patch22091: 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
-
-Patch22100: uprobes-upstream-backport.patch
-
 #rhbz 871078
 Patch22112: USB-report-submission-of-active-URBs.patch
 
-#rhbz 869341
-Patch22113: smp_irq_move_cleanup_interrupt.patch
-
-#rhbz 812129
-Patch22120: block-fix-a-crash-when-block-device-is.patch
-Patch22121: blockdev-turn-a-rw-semaphore-into-a-percpu-rw-sem.patch
-Patch22122: fs-lock-splice_read-and-splice_write-functions.patch
-
-#rhbz 874791
-Patch22125: Bluetooth-Add-support-for-BCM20702A0.patch
-
 #rhbz CVE-2012-4530 868285 880147
-Patch21228: exec-do-not-leave-bprm-interp-on-stack.patch
 Patch21229: exec-use-eloop-for-max-recursion-depth.patch
-
-#rhbz 869629
-Patch21230: SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
 
 #rhbz 851278
 Patch21231: 8139cp-revert-set-ring-address-before-enabling-receiver.patch
 Patch21232: 8139cp-set-ring-address-after-enabling-C-mode.patch
 Patch21233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
-#rhbz 883414
-Patch21234: mac80211-fix-ibss-scanning.patch
-
-#rhbz 873107
-Patch21237: 0001-ACPI-sony-laptop-do-proper-memcpy-for-ACPI_TYPE_INTE.patch
-
-#rhbz 874372
-Patch21238: don-t-do-blind-d_drop-in-nfs_prime_dcache.patch
-
-#rhbz 853064
-Patch21239: aoe-remove-extra-bdi_init.patch
-
-#rhbz 890547
-Patch21240: ACPI-do-not-use-Lid-and-Sleep-button-for-S5-wakeup.patch
-
 #rhbz 886946
 Patch21241: iwlegacy-fix-IBSS-cleanup.patch
-
-#rhbz 852833
-Patch21245: ext4-set-bg_itable_unused-when-resizing.patch
 
 #rhbz 896051 896038 CVE-2013-0190
 Patch21250: xen-fix-stack-corruption-in-xen_failsafe_callback.patch
@@ -1369,13 +1318,11 @@ ApplyPatch vmbugon-warnon.patch
 #
 # ARM
 #
-ApplyPatch arm-read_current_timer.patch
-ApplyPatch arm-fix-omapdrm.patch
-ApplyPatch arm-fix_radio_shark.patch
+#ApplyPatch arm-read_current_timer.patch
+#ApplyPatch arm-fix-omapdrm.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 ApplyPatch arm-tegra-sdhci-module-fix.patch
-ApplyPatch arm-highbank-sata-fix.patch
 ApplyPatch arm-alignment-faults.patch
 
 #
@@ -1450,7 +1397,7 @@ ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # DRM core
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
-ApplyPatch drm-vgem.patch
+#ApplyPatch drm-vgem.patch
 
 # Nouveau DRM
 
@@ -1493,73 +1440,24 @@ ApplyPatch weird-root-dentry-name-debug.patch
 #selinux ptrace child permissions
 ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 
-ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
+# ApplyPatch efifb-skip-DMI-checks-if-bootloader-knows.patch
 
 #rhbz 857324
 ApplyPatch net-tcp-bz857324.patch
 
-#rhbz 869904 869909 CVE-2012-4508
-ApplyPatch 0001-ext4-ext4_inode_info-diet.patch
-ApplyPatch 0002-ext4-give-i_aiodio_unwritten-a-more-appropriate-name.patch
-ApplyPatch 0003-ext4-fix-unwritten-counter-leakage.patch
-ApplyPatch 0004-ext4-completed_io-locking-cleanup.patch
-ApplyPatch 0005-ext4-serialize-dio-nonlocked-reads-with-defrag-worke.patch
-ApplyPatch 0006-ext4-serialize-unlocked-dio-reads-with-truncate.patch
-ApplyPatch 0007-ext4-endless-truncate-due-to-nonlocked-dio-readers.patch
-ApplyPatch 0008-ext4-serialize-truncate-with-owerwrite-DIO-workers.patch
-ApplyPatch 0009-ext4-punch_hole-should-wait-for-DIO-writers.patch
-ApplyPatch 0010-ext4-fix-ext_remove_space-for-punch_hole-case.patch
-ApplyPatch 0011-ext4-fix-ext4_flush_completed_IO-wait-semantics.patch
-ApplyPatch 0012-ext4-serialize-fallocate-with-ext4_convert_unwritten.patch
-
-ApplyPatch uprobes-upstream-backport.patch
-
 #rhbz 871078
 ApplyPatch USB-report-submission-of-active-URBs.patch
 
-#rhbz 869341
-ApplyPatch smp_irq_move_cleanup_interrupt.patch
-
-#rhbz 812129
-ApplyPatch block-fix-a-crash-when-block-device-is.patch
-ApplyPatch blockdev-turn-a-rw-semaphore-into-a-percpu-rw-sem.patch
-ApplyPatch fs-lock-splice_read-and-splice_write-functions.patch
-
-#rhbz 874791
-ApplyPatch Bluetooth-Add-support-for-BCM20702A0.patch
-
 #rhbz CVE-2012-4530 868285 880147
-ApplyPatch exec-do-not-leave-bprm-interp-on-stack.patch
 ApplyPatch exec-use-eloop-for-max-recursion-depth.patch
-
-#rhbz 869629
-ApplyPatch SCSI-mvsas-Fix-oops-when-ata-commond-timeout.patch
 
 #rhbz 851278
 ApplyPatch 8139cp-revert-set-ring-address-before-enabling-receiver.patch -R
 ApplyPatch 8139cp-set-ring-address-after-enabling-C-mode.patch
 ApplyPatch 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
-#rhbz 883414
-ApplyPatch mac80211-fix-ibss-scanning.patch
-
-#rhbz 873107
-ApplyPatch 0001-ACPI-sony-laptop-do-proper-memcpy-for-ACPI_TYPE_INTE.patch
-
-#rhbz 874372
-ApplyPatch don-t-do-blind-d_drop-in-nfs_prime_dcache.patch
-
-#rhbz 853064
-ApplyPatch aoe-remove-extra-bdi_init.patch
-
-#rhbz 890547
-ApplyPatch ACPI-do-not-use-Lid-and-Sleep-button-for-S5-wakeup.patch
-
 #rhbz 886946
 ApplyPatch iwlegacy-fix-IBSS-cleanup.patch
-
-#rhbz 852833
-ApplyPatch ext4-set-bg_itable_unused-when-resizing.patch
 
 #rhbz 896051 896038 CVE-2013-0190
 ApplyPatch xen-fix-stack-corruption-in-xen_failsafe_callback.patch
@@ -1788,8 +1686,8 @@ BuildKernel() {
 
     # Make sure the Makefile and version.h have a matching timestamp so that
     # external modules can be built
-    touch -r $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Makefile $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/linux/version.h
-    touch -r $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/.config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/linux/autoconf.h
+    touch -r $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Makefile $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/generated/uapi/linux/version.h
+
     # Copy .config to include/config/auto.conf so "make prepare" is unnecessary.
     cp $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/.config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/config/auto.conf
 
@@ -2298,6 +2196,7 @@ fi
 %dir %{_libexecdir}/perf-core
 %{_libexecdir}/perf-core/*
 %{_mandir}/man[1-8]/perf*
+%{_sysconfdir}/bash_completion.d/perf
 %doc linux-%{KVERREL}/tools/perf/Documentation/examples.txt
 
 %files -n python-perf
@@ -2427,6 +2326,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Jan 18 2013 Josh Boyer <jwboyer@redhat.com> - 3.7.3-101
+- Linux v3.7.3
+
 * Wed Jan 16 2013 Justin M. Forbes <jforbes@redhat.com> - 3.6.11-8
 - Fix for CVE-2013-0190 xen corruption with 32bit pvops (rhbz 896051 896038)
 - Fix resize2fs issue with ext4 (rhbz 852833)
