@@ -130,10 +130,6 @@ Summary: The Linux kernel
 %define with_tegra       %{?_without_tegra:       0} %{?!_without_tegra:       1}
 # kernel-kirkwood (only valid for arm)
 %define with_kirkwood       %{?_without_kirkwood:       0} %{?!_without_kirkwood:       1}
-# kernel-imx (only valid for arm)
-%define with_imx       %{?_without_imx:       0} %{?!_without_imx:       1}
-# kernel-highbank (only valid for arm)
-%define with_highbank       %{?_without_highbank:       0} %{?!_without_highbank:       1}
 #
 # Additional options for user-friendly one-off kernel building:
 #
@@ -247,10 +243,8 @@ Summary: The Linux kernel
 %define with_pae 0
 %endif
 
-# kernel up (versatile express), tegra, omap, imx and highbank are only built on armv7 hfp/sfp
+# kernel up (versatile express), tegra and omap are only built on armv7 hfp/sfp
 %ifnarch armv7hl armv7l
-%define with_imx 0
-%define with_highbank 0
 %define with_omap 0
 %define with_tegra 0
 %endif
@@ -405,7 +399,7 @@ Summary: The Linux kernel
 %define kernel_image arch/arm/boot/zImage
 # we only build headers/perf/tools on the base arm arches
 # just like we used to only build them on i386 for x86
-%ifnarch armv5tel armv7hl
+%ifarch armv5tel
 %define with_up 0
 %endif
 %ifnarch armv5tel armv7hl
@@ -576,13 +570,14 @@ Source70: config-s390x
 
 Source90: config-sparc64-generic
 
-Source100: config-arm-generic
+# Unified ARM kernels
+Source100: config-armv7
+
+# Legacy ARM kernels
+Source105: config-arm-generic
 Source110: config-arm-omap
 Source111: config-arm-tegra
 Source112: config-arm-kirkwood
-Source113: config-arm-imx
-Source114: config-arm-highbank
-Source115: config-arm-versatile
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -1038,18 +1033,6 @@ on kernel bugs, as some of these options impact performance noticably.
 %description kirkwood
 This package includes a version of the Linux kernel with support for
 marvell kirkwood based systems, i.e., guruplug, sheevaplug
-
-%define variant_summary The Linux kernel compiled for freescale boards
-%kernel_variant_package imx
-%description imx
-This package includes a version of the Linux kernel with support for
-freescale based systems, i.e., efika smartbook.
-
-%define variant_summary The Linux kernel compiled for Calxeda boards
-%kernel_variant_package highbank
-%description highbank
-This package includes a version of the Linux kernel with support for
-Calxeda based systems, i.e., HP arm servers.
 
 %define variant_summary The Linux kernel compiled for TI-OMAP boards
 %kernel_variant_package omap
@@ -1853,14 +1836,6 @@ BuildKernel %make_target %kernel_image PAE
 BuildKernel %make_target %kernel_image kirkwood
 %endif
 
-%if %{with_imx}
-BuildKernel %make_target %kernel_image imx
-%endif
-
-%if %{with_highbank}
-BuildKernel %make_target %kernel_image highbank
-%endif
-
 %if %{with_omap}
 BuildKernel %make_target %kernel_image omap
 %endif
@@ -2145,12 +2120,6 @@ fi}\
 %kernel_variant_preun kirkwood
 %kernel_variant_post -v kirkwood
 
-%kernel_variant_preun imx
-%kernel_variant_post -v imx
-
-%kernel_variant_preun highbank
-%kernel_variant_post -v highbank
-
 %kernel_variant_preun omap
 %kernel_variant_post -v omap
 
@@ -2298,8 +2267,6 @@ fi
 %kernel_variant_files %{with_pae} PAE
 %kernel_variant_files %{with_pae_debug} PAEdebug
 %kernel_variant_files %{with_kirkwood} kirkwood
-%kernel_variant_files %{with_imx} imx
-%kernel_variant_files %{with_highbank} highbank
 %kernel_variant_files %{with_omap} omap
 %kernel_variant_files %{with_tegra} tegra
 
@@ -2326,6 +2293,11 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sun Jan 20 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Merge ARM changes back to fix ARMv5 kernel build and update for 3.7
+- Drop highbank, versatile kernel as it's now unified
+- Drop imx as the previously supported HW platforms don't work with 3.7
+
 * Fri Jan 18 2013 Josh Boyer <jwboyer@redhat.com> - 3.7.3-101
 - Linux v3.7.3
 
