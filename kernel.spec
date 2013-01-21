@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -776,9 +776,6 @@ Patch21233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
 #rhbz 886946
 Patch21234: iwlegacy-fix-IBSS-cleanup.patch
-
-#rhbz 896051 896038 CVE-2013-0190
-Patch21250: xen-fix-stack-corruption-in-xen_failsafe_callback.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1487,9 +1484,6 @@ ApplyPatch 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
 #rhbz 886948
 ApplyPatch iwlegacy-fix-IBSS-cleanup.patch
-
-#rhbz 896051 896038 CVE-2013-0190
-ApplyPatch xen-fix-stack-corruption-in-xen_failsafe_callback.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2347,6 +2341,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Jan 21 2013 Josh Boyer <jwboyer@redhat.com> - 3.7.4-201
+- Linux v3.7.4
+
 * Fri Jan 18 2013 Justin M. Forbes <jforbes@redhat.com> 3.7.3-201
 - Linux v3.7.3
 
