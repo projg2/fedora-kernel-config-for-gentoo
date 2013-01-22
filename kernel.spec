@@ -743,9 +743,12 @@ Patch20001: 0002-x86-EFI-Calculate-the-EFI-framebuffer-size-instead-o.patch
 
 # ARM
 Patch21000: arm-read_current_timer.patch
-Patch21001: arm-fix-omapdrm.patch
-Patch21003: arm-alignment-faults.patch
+# http://lists.infradead.org/pipermail/linux-arm-kernel/2012-December/137164.html
+Patch21001: arm-l2x0-only-set-set_debug-on-pl310-r3p0-and-earlier.patch
+Patch21002: arm-alignment-faults.patch
+
 # OMAP
+Patch21003: arm-fix-omapdrm.patch
 
 # ARM tegra
 Patch21004: arm-tegra-nvec-kconfig.patch
@@ -1343,6 +1346,8 @@ ApplyPatch vmbugon-warnon.patch
 #
 #ApplyPatch arm-read_current_timer.patch
 #ApplyPatch arm-fix-omapdrm.patch
+
+ApplyPatch arm-l2x0-only-set-set_debug-on-pl310-r3p0-and-earlier.patch
 ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 ApplyPatch arm-tegra-sdhci-module-fix.patch
@@ -2347,6 +2352,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Jan 22 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Apply ARM errata fix
+- disable HVC_DCC and VIRTIO_CONSOLE on ARM
+
 * Tue Jan 22 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix libata settings bug (rhbz 902523)
 
