@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 102
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -745,6 +745,9 @@ Patch21233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
 #rhbz 886946
 Patch21241: iwlegacy-fix-IBSS-cleanup.patch
+
+#rhbz 902523
+Patch21236: libata-replace-sata_settings-with-devslp_timing.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1438,6 +1441,9 @@ ApplyPatch 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
 #rhbz 886946
 ApplyPatch iwlegacy-fix-IBSS-cleanup.patch
+
+#rhbz 902523
+ApplyPatch libata-replace-sata_settings-with-devslp_timing.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2287,6 +2293,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Jan 22 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix libata settings bug (rhbz 902523)
+
 * Mon Jan 21 2013 Josh Boyer <jwboyer@redhat.com> - 3.7.4-101
 - Linux v3.7.4
 
