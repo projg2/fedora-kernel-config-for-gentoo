@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 202
+%global baserelease 203
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -783,6 +783,9 @@ Patch21234: iwlegacy-fix-IBSS-cleanup.patch
 #rhbz 902523
 Patch21236: libata-replace-sata_settings-with-devslp_timing.patch
 
+# i915 hang fixes
+Patch21237: drm-invalidate-relocation-presumed_offsets-along-slow-patch.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1495,6 +1498,9 @@ ApplyPatch iwlegacy-fix-IBSS-cleanup.patch
 
 #rhbz 902523
 ApplyPatch libata-replace-sata_settings-with-devslp_timing.patch
+
+#i915
+ApplyPatch drm-invalidate-relocation-presumed_offsets-along-slow-patch.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2352,6 +2358,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Jan 22 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.4-203
+- Add i915 bugfix from airlied
+
 * Tue Jan 22 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Apply ARM errata fix
 - disable HVC_DCC and VIRTIO_CONSOLE on ARM
