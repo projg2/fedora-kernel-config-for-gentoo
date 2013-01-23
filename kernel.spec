@@ -659,6 +659,7 @@ Patch510: linux-2.6-silence-noise.patch
 Patch520: quite-apm.patch
 
 Patch530: linux-2.6-silence-fbcon-logo.patch
+Patch540: silence-empty-ipi-mask-warning.patch
 
 Patch700: linux-2.6-e1000-ich9-montevina.patch
 
@@ -1367,6 +1368,9 @@ ApplyPatch linux-2.6-silence-noise.patch
 
 # Make fbcon not show the penguins with 'quiet'
 ApplyPatch linux-2.6-silence-fbcon-logo.patch
+
+# No-one cares about these warnings
+ApplyPatch silence-empty-ipi-mask-warning.patch
 
 # Changes to upstream defaults.
 
@@ -2299,6 +2303,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Jan 23 2013 Dave Jones <davej@redhat.com>
+- Remove empty IPI mask warnings.
+
 * Tue Jan 22 2013 Justin M. Forbes <jforbes@redhat.com>
 - Add i915 bugfix from airlied
 
