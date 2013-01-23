@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 103
+%global baserelease 104
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -752,6 +752,9 @@ Patch21236: libata-replace-sata_settings-with-devslp_timing.patch
 
 #i915 hang fixes
 Patch21237: drm-invalidate-relocation-presumed_offsets-along-slow-patch.patch
+
+#rhbz 892428
+Patch21238: brcmsmac-updates-rhbz892428.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1454,6 +1457,9 @@ ApplyPatch libata-replace-sata_settings-with-devslp_timing.patch
 
 #i915
 ApplyPatch drm-invalidate-relocation-presumed_offsets-along-slow-patch.patch
+
+#rhbz 892428
+ApplyPatch brcmsmac-updates-rhbz892428.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2303,6 +2309,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Jan 23 2013 Justin M. Forbes <jforbes@redhat.com>
+- brcmsmac fixes from upstream (rhbz 892428)
+
 * Wed Jan 23 2013 Dave Jones <davej@redhat.com>
 - Remove empty IPI mask warnings.
 
