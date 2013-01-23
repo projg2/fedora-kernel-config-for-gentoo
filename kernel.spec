@@ -2309,7 +2309,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Wed Jan 23 2013 Justin M. Forbes <jforbes@redhat.com>
+* Wed Jan 23 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.4-104
 - brcmsmac fixes from upstream (rhbz 892428)
 
 * Wed Jan 23 2013 Dave Jones <davej@redhat.com>
