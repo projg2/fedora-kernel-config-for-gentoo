@@ -2309,6 +2309,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Jan 25 2013 Justin M. Forbes <jforbes@redhat.com>
+- Turn off THP for 32bit
+
 * Wed Jan 23 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.4-104
 - brcmsmac fixes from upstream (rhbz 892428)
 
