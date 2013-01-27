@@ -528,11 +528,6 @@ ExclusiveOS: Linux
 
 %kernel_reqprovconf
 
-%ifarch %{arm}
-Obsoletes: kernel-highbank
-Obsoletes: kernel-imx
-%endif
-
 #
 # List the packages used during the kernel build
 #
