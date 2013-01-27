@@ -1590,6 +1590,10 @@ BuildKernel() {
 %ifarch %{arm}
     # http://lists.infradead.org/pipermail/linux-arm-kernel/2012-March/091404.html
     make -s ARCH=$Arch V=1 %{?_smp_mflags} $MakeTarget %{?sparse_mflags} KALLSYMS_EXTRA_PASS=1
+
+    make -s ARCH=$Arch V=1 dtbs
+    mkdir -p $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
+    install -m 644 arch/arm/boot/*.dtb $RPM_BUILD_ROOT/boot/dtb-$KernelVer/
 %else
     make -s ARCH=$Arch V=1 %{?_smp_mflags} $MakeTarget %{?sparse_mflags}
 %endif
@@ -2248,6 +2252,9 @@ fi
 %defattr(-,root,root)\
 /%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?2:.%{2}}\
 /%{image_install_path}/.vmlinuz-%{KVERREL}%{?2:.%{2}}.hmac \
+%ifarch %{arm}\
+/%{image_install_path}/dtb-%{KVERREL}%{?2:.%{2}} \
+%endif\
 %attr(600,root,root) /boot/System.map-%{KVERREL}%{?2:.%{2}}\
 /boot/config-%{KVERREL}%{?2:.%{2}}\
 %dir /lib/modules/%{KVERREL}%{?2:.%{2}}\
@@ -2309,6 +2316,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sun Jan 27 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Build and package dtbs on ARM
+
 * Fri Jan 25 2013 Justin M. Forbes <jforbes@redhat.com>
 - Turn off THP for 32bit
 
