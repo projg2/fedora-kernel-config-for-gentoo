@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 204
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -775,12 +775,6 @@ Patch21233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
 #rhbz 886946
 Patch21234: iwlegacy-fix-IBSS-cleanup.patch
-
-#rhbz 902523
-Patch21236: libata-replace-sata_settings-with-devslp_timing.patch
-
-#i915 hang fixes
-Patch21237: drm-invalidate-relocation-presumed_offsets-along-slow-patch.patch
 
 #rhbz 892428
 Patch21238: brcmsmac-updates-rhbz892428.patch
@@ -1497,12 +1491,6 @@ ApplyPatch 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
 #rhbz 886948
 ApplyPatch iwlegacy-fix-IBSS-cleanup.patch
-
-#rhbz 902523
-ApplyPatch libata-replace-sata_settings-with-devslp_timing.patch
-
-#i915
-ApplyPatch drm-invalidate-relocation-presumed_offsets-along-slow-patch.patch
 
 #rhbz 892428
 ApplyPatch brcmsmac-updates-rhbz892428.patch
@@ -2370,6 +2358,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Jan 28 2013 Josh Boyer <jwboyer@redhat.com>
+- Linux v3.7.5
+
 * Sun Jan 27 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Build and package dtbs on ARM
 - Enable FB options for qemu vexpress on unified
