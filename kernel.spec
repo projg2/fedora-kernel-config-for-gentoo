@@ -2364,7 +2364,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Mon Jan 28 2013 Josh Boyer <jwboyer@redhat.com>
+* Mon Jan 28 2013 Josh Boyer <jwboyer@redhat.com> - 3.7.5-201
 - Linux v3.7.5
 - Add patch to fix iwlwifi issues (rhbz 863424)
 
