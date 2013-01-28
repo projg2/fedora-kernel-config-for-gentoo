@@ -756,6 +756,9 @@ Patch21237: drm-invalidate-relocation-presumed_offsets-along-slow-patch.patch
 #rhbz 892428
 Patch21238: brcmsmac-updates-rhbz892428.patch
 
+#rhbz 863424
+Patch21239: Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1460,6 +1463,9 @@ ApplyPatch drm-invalidate-relocation-presumed_offsets-along-slow-patch.patch
 
 #rhbz 892428
 ApplyPatch brcmsmac-updates-rhbz892428.patch
+
+#rhbz 863424
+ApplyPatch Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2316,6 +2322,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Jan 28 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix iwlwifi issues (rhbz 863424)
+
 * Sun Jan 27 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Build and package dtbs on ARM
 - Enable FB options for qemu vexpress on unified
