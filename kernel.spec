@@ -2318,6 +2318,7 @@ fi
 %changelog
 * Sun Jan 27 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Build and package dtbs on ARM
+- Enable FB options for qemu vexpress on unified
 
 * Fri Jan 25 2013 Justin M. Forbes <jforbes@redhat.com>
 - Turn off THP for 32bit
