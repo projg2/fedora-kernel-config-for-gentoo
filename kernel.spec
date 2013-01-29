@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 202
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -782,6 +782,10 @@ Patch21238: brcmsmac-updates-rhbz892428.patch
 #rhbz 863424
 Patch21239: Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
 
+#rhbz 799564
+Patch21240: Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
+Patch21241: Input-add-support-for-Cypress-PS2-Trackpads.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1500,6 +1504,10 @@ ApplyPatch brcmsmac-updates-rhbz892428.patch
 
 #rhbz 863424
 ApplyPatch Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
+
+#rhbz 799564
+ApplyPatch Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
+ApplyPatch Input-add-support-for-Cypress-PS2-Trackpads.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2364,6 +2372,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Jan 29 2013 Josh Boyer <jwboyer@redhat.com>
+- Backport driver for Cypress PS/2 trackpad (rhbz 799564)
+
 * Mon Jan 28 2013 Josh Boyer <jwboyer@redhat.com> - 3.7.5-201
 - Linux v3.7.5
 - Add patch to fix iwlwifi issues (rhbz 863424)
