@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 102
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -743,9 +743,6 @@ Patch21229: exec-use-eloop-for-max-recursion-depth.patch
 Patch21231: 8139cp-revert-set-ring-address-before-enabling-receiver.patch
 Patch21232: 8139cp-set-ring-address-after-enabling-C-mode.patch
 Patch21233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
-
-#rhbz 886946
-Patch21241: iwlegacy-fix-IBSS-cleanup.patch
 
 #rhbz 892428
 Patch21238: brcmsmac-updates-rhbz892428.patch
@@ -1449,9 +1446,6 @@ ApplyPatch exec-use-eloop-for-max-recursion-depth.patch
 ApplyPatch 8139cp-revert-set-ring-address-before-enabling-receiver.patch -R
 ApplyPatch 8139cp-set-ring-address-after-enabling-C-mode.patch
 ApplyPatch 8139cp-re-enable-interrupts-after-tx-timeout.patch
-
-#rhbz 886946
-ApplyPatch iwlegacy-fix-IBSS-cleanup.patch
 
 #rhbz 892428
 ApplyPatch brcmsmac-updates-rhbz892428.patch
@@ -2318,6 +2312,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Feb 04 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.6-101
+- Linux v3.7.6
+
 * Tue Jan 29 2013 Josh Boyer <jwboyer@redhat.com>
 - Backport driver for Cypress PS/2 trackpad (rhbz 799564)
 
