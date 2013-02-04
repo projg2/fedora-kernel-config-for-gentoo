@@ -783,6 +783,9 @@ Patch21239: Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
 Patch21240: Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
 Patch21241: Input-add-support-for-Cypress-PS2-Trackpads.patch
 
+#rhbz 903881
+Patch21246: rtlwifi-Fix-scheduling-while-atomic-bug.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1502,6 +1505,9 @@ ApplyPatch Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
 #rhbz 799564
 ApplyPatch Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
 ApplyPatch Input-add-support-for-Cypress-PS2-Trackpads.patch
+
+#rhbz 903881
+ApplyPatch rtlwifi-Fix-scheduling-while-atomic-bug.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2369,6 +2375,7 @@ fi
 * Mon Feb 04 2013 Josh Boyer <jwboyer@redhat.com>
 - Linux v3.7.6
 - Update secure-boot patchset
+- Fix rtlwifi scheduling while atomic from Larry Finger (rhbz 903881)
 
 * Tue Jan 29 2013 Josh Boyer <jwboyer@redhat.com>
 - Backport driver for Cypress PS/2 trackpad (rhbz 799564)
