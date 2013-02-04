@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 102
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -753,6 +753,9 @@ Patch21239: Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
 #rhbz 799564
 Patch21240: Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
 Patch21242: Input-add-support-for-Cypress-PS2-Trackpads.patch
+
+#rhbz 903881
+Patch21246: rtlwifi-Fix-scheduling-while-atomic-bug.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1456,6 +1459,9 @@ ApplyPatch Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
 #rhbz 799564
 ApplyPatch Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
 ApplyPatch Input-add-support-for-Cypress-PS2-Trackpads.patch
+
+#rhbz 903881
+ApplyPatch rtlwifi-Fix-scheduling-while-atomic-bug.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2312,6 +2318,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Feb 04 2013 Josh Boyer <jwboyer@redhat.com> - 3.7.6-102
+- Fix rtlwifi scheduling while atomic from Larry Finger (rhbz 903881)
+
 * Mon Feb 04 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.6-101
 - Linux v3.7.6
 
