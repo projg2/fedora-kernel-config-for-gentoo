@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 202
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -786,6 +786,9 @@ Patch21241: Input-add-support-for-Cypress-PS2-Trackpads.patch
 #rhbz 903881
 Patch21246: rtlwifi-Fix-scheduling-while-atomic-bug.patch
 
+#rhbz 892811
+Patch21247: ath9k_rx_dma_stop_check.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1508,6 +1511,9 @@ ApplyPatch Input-add-support-for-Cypress-PS2-Trackpads.patch
 
 #rhbz 903881
 ApplyPatch rtlwifi-Fix-scheduling-while-atomic-bug.patch
+
+#rhbz 892811
+ApplyPatch ath9k_rx_dma_stop_check.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2372,6 +2378,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Feb 06 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix ath9k dma stop checks (rhbz 892811)
+
 * Mon Feb 04 2013 Josh Boyer <jwboyer@redhat.com>
 - Linux v3.7.6
 - Update secure-boot patchset
