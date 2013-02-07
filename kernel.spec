@@ -2324,6 +2324,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Feb  7 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Minor ARM build fixes
+
 * Wed Feb 06 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix ath9k dma stop checks (rhbz 892811)
 
