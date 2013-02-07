@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 6
+%global baserelease 7
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -748,6 +748,9 @@ Patch21245: ext4-set-bg_itable_unused-when-resizing.patch
 #rhbz 896051 896038 CVE-2013-0190
 Patch21250: xen-fix-stack-corruption-in-xen_failsafe_callback.patch
 
+#rhbz 908693 908706
+Patch21251: x86-msr-Add-capabilities-check.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1414,6 +1417,9 @@ ApplyPatch ext4-set-bg_itable_unused-when-resizing.patch
 
 #rhbz 896051 896038 CVE-2013-0190
 ApplyPatch xen-fix-stack-corruption-in-xen_failsafe_callback.patch
+
+#rhbz 908693 908706
+ApplyPatch x86-msr-Add-capabilities-check.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2115,6 +2121,9 @@ fi
 # and build.
 
 %changelog
+* Thu Feb 07 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix local privilege escalation in MSR code (rhbz 908693 908706)
+
 * Wed Jan 23 2013 Dave Jones <davej@redhat.com>
 - Remove warning about empty IPI mask.
 
