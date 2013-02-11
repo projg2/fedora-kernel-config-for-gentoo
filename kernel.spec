@@ -2379,6 +2379,7 @@ fi
 #                 ||     ||
 %changelog
 * Mon Feb 11 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch from Kees Cook to restrict MSR writting in secure boot mode
 - Add patch to honor MokSBState (rhbz 907406)
 
 * Thu Feb  7 2013 Peter Robinson <pbrobinson@fedoraproject.org>
