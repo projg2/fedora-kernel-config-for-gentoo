@@ -791,6 +791,8 @@ Patch22247: ath9k_rx_dma_stop_check.patch
 
 Patch23000: silence-brcmsmac-warning.patch
 
+Patch23100: validate-pud-largepage.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1518,6 +1520,8 @@ ApplyPatch rtlwifi-Fix-scheduling-while-atomic-bug.patch
 ApplyPatch ath9k_rx_dma_stop_check.patch
 
 ApplyPatch silence-brcmsmac-warning.patch
+
+ApplyPatch validate-pud-largepage.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2382,6 +2386,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Feb 12 2013 Dave Jones <davej@redhat.com>
+- mm: Check if PUD is large when validating a kernel address
+
 * Tue Feb 12 2013 Dave Jones <davej@redhat.com>
 - Silence brcmsmac warnings. (Fixed in 3.8, but not backporting to 3.7)
 
