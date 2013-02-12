@@ -793,6 +793,8 @@ Patch23000: silence-brcmsmac-warning.patch
 
 Patch23100: validate-pud-largepage.patch
 
+Patch23200: net_37.mbox
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1522,6 +1524,8 @@ ApplyPatch ath9k_rx_dma_stop_check.patch
 ApplyPatch silence-brcmsmac-warning.patch
 
 ApplyPatch validate-pud-largepage.patch
+
+ApplyPatch net_37.mbox
 
 # END OF PATCH APPLICATIONS
 
@@ -2386,6 +2390,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Feb 12 2013 Dave Jones <davej@redhat.com>
+- Add networking queue for next stable release.
+
 * Tue Feb 12 2013 Dave Jones <davej@redhat.com>
 - mm: Check if PUD is large when validating a kernel address
 
