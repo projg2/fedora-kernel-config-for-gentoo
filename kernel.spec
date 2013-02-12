@@ -763,31 +763,31 @@ Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 Patch22112: USB-report-submission-of-active-URBs.patch
 
 #rhbz 859485
-Patch21226: vt-Drop-K_OFF-for-VC_MUTE.patch
+Patch22226: vt-Drop-K_OFF-for-VC_MUTE.patch
 
 #rhbz CVE-2012-4530 868285 880147
-Patch21229: exec-use-eloop-for-max-recursion-depth.patch
+Patch22229: exec-use-eloop-for-max-recursion-depth.patch
 
 #rhbz 851278
-Patch21231: 8139cp-revert-set-ring-address-before-enabling-receiver.patch
-Patch21232: 8139cp-set-ring-address-after-enabling-C-mode.patch
-Patch21233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
+Patch22231: 8139cp-revert-set-ring-address-before-enabling-receiver.patch
+Patch22232: 8139cp-set-ring-address-after-enabling-C-mode.patch
+Patch22233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
 #rhbz 892428
-Patch21238: brcmsmac-updates-rhbz892428.patch
+Patch22238: brcmsmac-updates-rhbz892428.patch
 
 #rhbz 863424
-Patch21239: Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
+Patch22239: Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
 
 #rhbz 799564
-Patch21240: Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
-Patch21241: Input-add-support-for-Cypress-PS2-Trackpads.patch
+Patch22240: Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
+Patch22241: Input-add-support-for-Cypress-PS2-Trackpads.patch
 
 #rhbz 903881
-Patch21246: rtlwifi-Fix-scheduling-while-atomic-bug.patch
+Patch22246: rtlwifi-Fix-scheduling-while-atomic-bug.patch
 
 #rhbz 892811
-Patch21247: ath9k_rx_dma_stop_check.patch
+Patch22247: ath9k_rx_dma_stop_check.patch
 
 Patch23000: silence-brcmsmac-warning.patch
 
