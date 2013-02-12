@@ -789,6 +789,8 @@ Patch21246: rtlwifi-Fix-scheduling-while-atomic-bug.patch
 #rhbz 892811
 Patch21247: ath9k_rx_dma_stop_check.patch
 
+Patch23000: silence-brcmsmac-warning.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1514,6 +1516,8 @@ ApplyPatch rtlwifi-Fix-scheduling-while-atomic-bug.patch
 
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
+
+ApplyPatch silence-brcmsmac-warning.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2378,6 +2382,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Feb 12 2013 Dave Jones <davej@redhat.com>
+- Silence brcmsmac warnings. (Fixed in 3.8, but not backporting to 3.7)
+
 * Tue Feb 12 2013 Justin M. Forbes <jforbes@redhat.com>
 - Linux v3.7.7
 
