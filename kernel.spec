@@ -766,6 +766,9 @@ Patch21251: xen-netback-don-t-leak-pages-on-failure-in-xen_netbk_tx_check_gop.pa
 Patch21252: xen-netback-free-already-allocated-memory-on-failure-in-xen_netbk_get_requests.patch
 Patch21253: netback-correct-netbk_tx_err-to-handle-wrap-around.patch
 
+#rhbz 906309 910848 CVE-2013-0228
+Patch21254: xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1480,6 +1483,9 @@ ApplyPatch xen-netback-shutdown-the-ring-if-it-contains-garbage.patch
 ApplyPatch xen-netback-don-t-leak-pages-on-failure-in-xen_netbk_tx_check_gop.patch
 ApplyPatch xen-netback-free-already-allocated-memory-on-failure-in-xen_netbk_get_requests.patch
 ApplyPatch netback-correct-netbk_tx_err-to-handle-wrap-around.patch
+
+#rhbz 906309 910848 CVE-2013-0228
+ApplyPatch xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2337,6 +2343,7 @@ fi
 #              '-'
 %changelog
 * Thu Feb 14 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-0228 xen: xen_iret() invalid %ds local DoS (rhbz 910848 906309)
 - CVE-2013-0216/0127 xen: netback DoS via malicious guest ring (rhbz 910886)
 
 * Mon Feb 11 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.7-101
