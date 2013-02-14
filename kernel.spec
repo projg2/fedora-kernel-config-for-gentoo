@@ -769,6 +769,9 @@ Patch21253: netback-correct-netbk_tx_err-to-handle-wrap-around.patch
 #rhbz 906309 910848 CVE-2013-0228
 Patch21254: xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
 
+#rhbz 909591
+Patch21255: usb-cypress-supertop.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1486,6 +1489,9 @@ ApplyPatch netback-correct-netbk_tx_err-to-handle-wrap-around.patch
 
 #rhbz 906309 910848 CVE-2013-0228
 ApplyPatch xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
+
+#rhbz 909591
+ApplyPatch usb-cypress-supertop.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2343,6 +2349,7 @@ fi
 #              '-'
 %changelog
 * Thu Feb 14 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix corruption on newer M6116 SATA bridges (rhbz 909591)
 - CVE-2013-0228 xen: xen_iret() invalid %ds local DoS (rhbz 910848 906309)
 - CVE-2013-0216/0127 xen: netback DoS via malicious guest ring (rhbz 910886)
 
