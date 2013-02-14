@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 102
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -752,24 +752,12 @@ Patch22233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
 #rhbz 892428
 Patch22238: brcmsmac-updates-rhbz892428.patch
 
-#rhbz 863424
-Patch22239: Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
-
 #rhbz 799564
 Patch22240: Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
 Patch22242: Input-add-support-for-Cypress-PS2-Trackpads.patch
 
-#rhbz 903881
-Patch22246: rtlwifi-Fix-scheduling-while-atomic-bug.patch
-
 #rhbz 892811
 Patch22247: ath9k_rx_dma_stop_check.patch
-
-#rhbz 910886 CVE-2013-0216/CVE-2013-0217
-Patch22250: xen-netback-shutdown-the-ring-if-it-contains-garbage.patch
-Patch22251: xen-netback-don-t-leak-pages-on-failure-in-xen_netbk_tx_check_gop.patch
-Patch22252: xen-netback-free-already-allocated-memory-on-failure-in-xen_netbk_get_requests.patch
-Patch22253: netback-correct-netbk_tx_err-to-handle-wrap-around.patch
 
 #rhbz 906309 910848 CVE-2013-0228
 Patch22254: xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
@@ -1479,15 +1467,9 @@ ApplyPatch 8139cp-re-enable-interrupts-after-tx-timeout.patch
 #rhbz 892428
 ApplyPatch brcmsmac-updates-rhbz892428.patch
 
-#rhbz 863424
-ApplyPatch Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
-
 #rhbz 799564
 ApplyPatch Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
 ApplyPatch Input-add-support-for-Cypress-PS2-Trackpads.patch
-
-#rhbz 903881
-ApplyPatch rtlwifi-Fix-scheduling-while-atomic-bug.patch
 
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
@@ -1495,12 +1477,6 @@ ApplyPatch ath9k_rx_dma_stop_check.patch
 ApplyPatch silence-brcmsmac-warning.patch
 
 ApplyPatch validate-pud-largepage.patch
-
-#rhbz 910886 CVE-2013-0216/CVE-2013-0217
-ApplyPatch xen-netback-shutdown-the-ring-if-it-contains-garbage.patch
-ApplyPatch xen-netback-don-t-leak-pages-on-failure-in-xen_netbk_tx_check_gop.patch
-ApplyPatch xen-netback-free-already-allocated-memory-on-failure-in-xen_netbk_get_requests.patch
-ApplyPatch netback-correct-netbk_tx_err-to-handle-wrap-around.patch
 
 #rhbz 906309 910848 CVE-2013-0228
 ApplyPatch xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
@@ -2363,6 +2339,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Feb 14 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.8-101
+- Linux v3.7.8
+
 * Thu Feb 14 2013 Adam Jackson <ajax@redhat.com>
 - i915: Hush asserts during TV detection, just useless noise
 - i915: Fix LVDS downclock to not cripple performance (#901951)
