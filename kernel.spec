@@ -798,6 +798,9 @@ Patch23100: validate-pud-largepage.patch
 
 Patch23200: net_37.mbox
 
+#rhbz 909591
+Patch21255: usb-cypress-supertop.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1532,6 +1535,9 @@ ApplyPatch net_37.mbox
 
 #rhbz 906309 910848 CVE-2013-0228
 ApplyPatch xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
+
+#rhbz 909591
+ApplyPatch usb-cypress-supertop.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2397,6 +2403,7 @@ fi
 #                 ||     ||
 %changelog
 * Thu Feb 14 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix corruption on newer M6116 SATA bridges (rhbz 909591)
 - CVE-2013-0228 xen: xen_iret() invalid %ds local DoS (rhbz 910848 906309)
 
 * Tue Feb 12 2013 Dave Jones <davej@redhat.com>
