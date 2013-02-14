@@ -706,6 +706,11 @@ Patch1100: handle-efi-roms.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
 Patch1825: drm-i915-dp-stfu.patch
+# mustard patch to shut abrt up. please drop (and notify ajax) whenever it
+# fails to apply
+Patch1826: drm-i915-tv-detect-hush.patch
+# d-i-n backport for https://bugzilla.redhat.com/show_bug.cgi?id=901951
+Patch1827: drm-i915-lvds-reclock-fix.patch
 
 # Quiet boot fixes
 # silence the ACPI blacklist code
@@ -1460,6 +1465,8 @@ ApplyPatch handle-efi-roms.patch
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-i915-dp-stfu.patch
+ApplyPatch drm-i915-tv-detect-hush.patch
+ApplyPatch drm-i915-lvds-reclock-fix.patch
 
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
@@ -2402,6 +2409,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Feb 14 2013 Adam Jackson <ajax@redhat.com>
+- i915: Hush asserts during TV detection, just useless noise
+- i915: Fix LVDS downclock to not cripple performance (#901951)
+
 * Thu Feb 14 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix corruption on newer M6116 SATA bridges (rhbz 909591)
 - CVE-2013-0228 xen: xen_iret() invalid %ds local DoS (rhbz 910848 906309)
