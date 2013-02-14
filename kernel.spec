@@ -769,6 +769,10 @@ Patch21253: netback-correct-netbk_tx_err-to-handle-wrap-around.patch
 #rhbz 906309 910848 CVE-2013-0228
 Patch21254: xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
 
+Patch23000: silence-brcmsmac-warning.patch
+
+Patch23100: validate-pud-largepage.patch
+
 #rhbz 909591
 Patch21255: usb-cypress-supertop.patch
 
@@ -1480,6 +1484,10 @@ ApplyPatch rtlwifi-Fix-scheduling-while-atomic-bug.patch
 
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
+
+ApplyPatch silence-brcmsmac-warning.patch
+
+ApplyPatch validate-pud-largepage.patch
 
 #rhbz 910886 CVE-2013-0216/CVE-2013-0217
 ApplyPatch xen-netback-shutdown-the-ring-if-it-contains-garbage.patch
@@ -2348,10 +2356,17 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+
 * Thu Feb 14 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix corruption on newer M6116 SATA bridges (rhbz 909591)
 - CVE-2013-0228 xen: xen_iret() invalid %ds local DoS (rhbz 910848 906309)
 - CVE-2013-0216/0127 xen: netback DoS via malicious guest ring (rhbz 910886)
+
+* Tue Feb 12 2013 Dave Jones <davej@redhat.com>
+- mm: Check if PUD is large when validating a kernel address
+
+* Tue Feb 12 2013 Dave Jones <davej@redhat.com>
+- Silence brcmsmac warnings. (Fixed in 3.8, but not backporting to 3.7)
 
 * Mon Feb 11 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.7-101
 - Linux v3.7.7
