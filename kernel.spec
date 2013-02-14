@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 202
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -788,6 +788,9 @@ Patch22246: rtlwifi-Fix-scheduling-while-atomic-bug.patch
 
 #rhbz 892811
 Patch22247: ath9k_rx_dma_stop_check.patch
+
+#rhbz 906309 910848 CVE-2013-0228
+Patch21248: xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
 
 Patch23000: silence-brcmsmac-warning.patch
 
@@ -1526,6 +1529,9 @@ ApplyPatch silence-brcmsmac-warning.patch
 ApplyPatch validate-pud-largepage.patch
 
 ApplyPatch net_37.mbox
+
+#rhbz 906309 910848 CVE-2013-0228
+ApplyPatch xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2390,6 +2396,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Feb 14 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-0228 xen: xen_iret() invalid %ds local DoS (rhbz 910848 906309)
+
 * Tue Feb 12 2013 Dave Jones <davej@redhat.com>
 - Add networking queue for next stable release.
 
