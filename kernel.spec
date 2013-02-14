@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 102
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -759,6 +759,12 @@ Patch21246: rtlwifi-Fix-scheduling-while-atomic-bug.patch
 
 #rhbz 892811
 Patch21247: ath9k_rx_dma_stop_check.patch
+
+#rhbz 910886 CVE-2013-0216/CVE-2013-0217
+Patch21250: xen-netback-shutdown-the-ring-if-it-contains-garbage.patch
+Patch21251: xen-netback-don-t-leak-pages-on-failure-in-xen_netbk_tx_check_gop.patch
+Patch21252: xen-netback-free-already-allocated-memory-on-failure-in-xen_netbk_get_requests.patch
+Patch21253: netback-correct-netbk_tx_err-to-handle-wrap-around.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1468,6 +1474,12 @@ ApplyPatch rtlwifi-Fix-scheduling-while-atomic-bug.patch
 
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
+
+#rhbz 910886 CVE-2013-0216/CVE-2013-0217
+ApplyPatch xen-netback-shutdown-the-ring-if-it-contains-garbage.patch
+ApplyPatch xen-netback-don-t-leak-pages-on-failure-in-xen_netbk_tx_check_gop.patch
+ApplyPatch xen-netback-free-already-allocated-memory-on-failure-in-xen_netbk_get_requests.patch
+ApplyPatch netback-correct-netbk_tx_err-to-handle-wrap-around.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2324,6 +2336,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Feb 14 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-0216/0127 xen: netback DoS via malicious guest ring (rhbz 910886)
+
 * Mon Feb 11 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.7-101
 - Linux v3.7.7
 
