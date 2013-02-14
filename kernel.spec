@@ -737,44 +737,44 @@ Patch22070: net-tcp-bz857324.patch
 Patch22112: USB-report-submission-of-active-URBs.patch
 
 #rhbz CVE-2012-4530 868285 880147
-Patch21229: exec-use-eloop-for-max-recursion-depth.patch
+Patch22229: exec-use-eloop-for-max-recursion-depth.patch
 
 #rhbz 851278
-Patch21231: 8139cp-revert-set-ring-address-before-enabling-receiver.patch
-Patch21232: 8139cp-set-ring-address-after-enabling-C-mode.patch
-Patch21233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
+Patch22231: 8139cp-revert-set-ring-address-before-enabling-receiver.patch
+Patch22232: 8139cp-set-ring-address-after-enabling-C-mode.patch
+Patch22233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
 
 #rhbz 892428
-Patch21238: brcmsmac-updates-rhbz892428.patch
+Patch22238: brcmsmac-updates-rhbz892428.patch
 
 #rhbz 863424
-Patch21239: Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
+Patch22239: Revert-iwlwifi-fix-the-reclaimed-packet-tracking-upon.patch
 
 #rhbz 799564
-Patch21240: Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
-Patch21242: Input-add-support-for-Cypress-PS2-Trackpads.patch
+Patch22240: Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
+Patch22242: Input-add-support-for-Cypress-PS2-Trackpads.patch
 
 #rhbz 903881
-Patch21246: rtlwifi-Fix-scheduling-while-atomic-bug.patch
+Patch22246: rtlwifi-Fix-scheduling-while-atomic-bug.patch
 
 #rhbz 892811
-Patch21247: ath9k_rx_dma_stop_check.patch
+Patch22247: ath9k_rx_dma_stop_check.patch
 
 #rhbz 910886 CVE-2013-0216/CVE-2013-0217
-Patch21250: xen-netback-shutdown-the-ring-if-it-contains-garbage.patch
-Patch21251: xen-netback-don-t-leak-pages-on-failure-in-xen_netbk_tx_check_gop.patch
-Patch21252: xen-netback-free-already-allocated-memory-on-failure-in-xen_netbk_get_requests.patch
-Patch21253: netback-correct-netbk_tx_err-to-handle-wrap-around.patch
+Patch22250: xen-netback-shutdown-the-ring-if-it-contains-garbage.patch
+Patch22251: xen-netback-don-t-leak-pages-on-failure-in-xen_netbk_tx_check_gop.patch
+Patch22252: xen-netback-free-already-allocated-memory-on-failure-in-xen_netbk_get_requests.patch
+Patch22253: netback-correct-netbk_tx_err-to-handle-wrap-around.patch
 
 #rhbz 906309 910848 CVE-2013-0228
-Patch21254: xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
+Patch22254: xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
+
+#rhbz 909591
+Patch22255: usb-cypress-supertop.patch
 
 Patch23000: silence-brcmsmac-warning.patch
 
 Patch23100: validate-pud-largepage.patch
-
-#rhbz 909591
-Patch21255: usb-cypress-supertop.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2356,6 +2356,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+
+* Thu Feb 14 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.7-102
+- Fix patch numbering
 
 * Thu Feb 14 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix corruption on newer M6116 SATA bridges (rhbz 909591)
