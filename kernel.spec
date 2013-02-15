@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 102
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -764,6 +764,9 @@ Patch22254: xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
 
 #rhbz 909591
 Patch22255: usb-cypress-supertop.patch
+
+#rhbz 911479 911473 CVE-2013-0290
+Patch22256: net-fix-infinite-loop-in-__skb_recv_datagram.patch
 
 Patch23000: silence-brcmsmac-warning.patch
 
@@ -1483,6 +1486,9 @@ ApplyPatch xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
 
 #rhbz 909591
 ApplyPatch usb-cypress-supertop.patch
+
+#rhbz 911479 911473 CVE-2013-0290
+ApplyPatch net-fix-infinite-loop-in-__skb_recv_datagram.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2339,6 +2345,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Feb 15 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-0290 net: infinite loop in __skb_recv_datagram (rhbz 911479 911473)
+
 * Thu Feb 14 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.8-101
 - Linux v3.7.8
 
