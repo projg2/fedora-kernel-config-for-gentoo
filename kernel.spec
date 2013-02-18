@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 102
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -761,9 +761,6 @@ Patch22242: Input-add-support-for-Cypress-PS2-Trackpads.patch
 #rhbz 892811
 Patch22247: ath9k_rx_dma_stop_check.patch
 
-#rhbz 906309 910848 CVE-2013-0228
-Patch22254: xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
-
 #rhbz 909591
 Patch22255: usb-cypress-supertop.patch
 
@@ -771,8 +768,6 @@ Patch22255: usb-cypress-supertop.patch
 Patch22256: net-fix-infinite-loop-in-__skb_recv_datagram.patch
 
 Patch23000: silence-brcmsmac-warning.patch
-
-Patch23100: validate-pud-largepage.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1481,11 +1476,6 @@ ApplyPatch Input-add-support-for-Cypress-PS2-Trackpads.patch
 ApplyPatch ath9k_rx_dma_stop_check.patch
 
 ApplyPatch silence-brcmsmac-warning.patch
-
-ApplyPatch validate-pud-largepage.patch
-
-#rhbz 906309 910848 CVE-2013-0228
-ApplyPatch xen-dont-assume-ds-is-usable-in-xen_iret-for-32-bit-PVOPS.patch
 
 #rhbz 909591
 ApplyPatch usb-cypress-supertop.patch
@@ -2348,6 +2338,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Feb 18 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.9-101
+- Linux v3.7.9
+
 * Mon Feb 18 2013 Adam Jackson <ajax@redhat.com>
 - i915: Fix a mismerge in 3.7.y that leads to divide-by-zero in i9xx_update_wm
 
