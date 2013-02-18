@@ -31,7 +31,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-# % define buildid .local
+%define buildid .lnfs
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -694,6 +694,7 @@ Patch2901: v4l-dvb-experimental.patch
 # fs fixes
 
 # NFSv4
+Patch4000: lnfs-3.8.0-0.rc7.git3.1.patch
 
 # patches headed upstream
 Patch10000: fs-proc-devtree-remove_proc_entry.patch
@@ -1336,6 +1337,7 @@ ApplyPatch arm-imx-fixdrm.patch
 # eCryptfs
 
 # NFSv4
+ApplyPatch lnfs-3.8.0-0.rc7.git3.1.patch
 
 # USB
 
@@ -2334,6 +2336,9 @@ fi
 
 * Mon Feb 18 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.0-0.rc7.git4.1
 - Linux v3.8-rc7-93-gf741656
+
+* Sat Feb 16 2013 Steve Dickson <steved@redhat.com> 3.8.0-0.rc7.git3.1-lnfs
+* Added Label NFS support.
 
 * Thu Feb 14 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.0-0.rc7.git3.1
 - Linux v3.8-rc7-73-g323a72d
