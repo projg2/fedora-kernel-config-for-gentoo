@@ -683,6 +683,8 @@ Patch1825: drm-i915-dp-stfu.patch
 Patch1826: drm-i915-tv-detect-hush.patch
 # d-i-n backport for https://bugzilla.redhat.com/show_bug.cgi?id=901951
 Patch1827: drm-i915-lvds-reclock-fix.patch
+# Fix a mismerge in 3.7.y
+Patch1828: drm-i915-Fix-up-mismerge-of-3490ea5d-in-3.7.y.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
@@ -1415,6 +1417,7 @@ ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-i915-dp-stfu.patch
 ApplyPatch drm-i915-tv-detect-hush.patch
 ApplyPatch drm-i915-lvds-reclock-fix.patch
+ApplyPatch drm-i915-Fix-up-mismerge-of-3490ea5d-in-3.7.y.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
@@ -2345,6 +2348,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Feb 18 2013 Adam Jackson <ajax@redhat.com>
+- i915: Fix a mismerge in 3.7.y that leads to divide-by-zero in i9xx_update_wm
+
 * Fri Feb 15 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-0290 net: infinite loop in __skb_recv_datagram (rhbz 911479 911473)
 
