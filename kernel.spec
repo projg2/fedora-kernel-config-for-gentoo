@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 102
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -769,6 +769,9 @@ Patch22256: net-fix-infinite-loop-in-__skb_recv_datagram.patch
 
 Patch23000: silence-brcmsmac-warning.patch
 
+#rhbz 812111
+Patch24000: alps-v2-3.7.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1482,6 +1485,9 @@ ApplyPatch usb-cypress-supertop.patch
 
 #rhbz 911479 911473 CVE-2013-0290
 ApplyPatch net-fix-infinite-loop-in-__skb_recv_datagram.patch
+
+#rhbz 812111
+ApplyPatch alps-v2-3.7.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2338,6 +2344,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Feb 19 2013 Josh Boyer <jwboyer@redhat.com>
+- Backport support for newer ALPS touchpads (rhbz 812111)
+
 * Mon Feb 18 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.9-101
 - Linux v3.7.9
 
