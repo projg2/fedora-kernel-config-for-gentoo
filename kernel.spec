@@ -767,6 +767,9 @@ Patch22255: usb-cypress-supertop.patch
 #rhbz 911479 911473 CVE-2013-0290
 Patch22256: net-fix-infinite-loop-in-__skb_recv_datagram.patch
 
+#rhbz 844750
+Patch22257: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
+
 Patch23000: silence-brcmsmac-warning.patch
 
 #rhbz 812111
@@ -1485,6 +1488,9 @@ ApplyPatch usb-cypress-supertop.patch
 
 #rhbz 911479 911473 CVE-2013-0290
 ApplyPatch net-fix-infinite-loop-in-__skb_recv_datagram.patch
+
+#rhbz 844750
+ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 #rhbz 812111
 ApplyPatch alps-v2-3.7.patch
@@ -2345,6 +2351,7 @@ fi
 #              '-'
 %changelog
 * Tue Feb 19 2013 Josh Boyer <jwboyer@redhat.com>
+- Add support for Atheros 04ca:3004 bluetooth devices (rhbz 844750)
 - Backport support for newer ALPS touchpads (rhbz 812111)
 
 * Mon Feb 18 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.9-101
