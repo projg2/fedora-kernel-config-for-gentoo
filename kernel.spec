@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 202
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -798,6 +798,9 @@ Patch23000: silence-brcmsmac-warning.patch
 #rhbz 909591
 Patch21255: usb-cypress-supertop.patch
 
+#rhbz 812111
+Patch24000: alps-v2-3.7.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1528,6 +1531,9 @@ ApplyPatch usb-cypress-supertop.patch
 
 #rhbz 911479 911473 CVE-2013-0290
 ApplyPatch net-fix-infinite-loop-in-__skb_recv_datagram.patch
+
+#rhbz 812111
+ApplyPatch alps-v2-3.7.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2392,6 +2398,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Feb 19 2013 Josh Boyer <jwboyer@redhat.com>
+- Backport support for newer ALPS touchpads (rhbz 812111)
+
 * Tue Feb 19 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fix OMAP thermal driver by building it in (seems it doesn't auto load when a module)
 
