@@ -2392,6 +2392,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Feb 19 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix OMAP thermal driver by building it in (seems it doesn't auto load when a module)
+
 * Mon Feb 18 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.9-201
 - Linux v3.7.9
 

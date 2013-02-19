@@ -143,6 +143,8 @@ CONFIG_PM_SLEEP_SMP=y
 CONFIG_ARCH_HAS_OPP=y
 CONFIG_PM_OPP=y
 
+# OMAP thermal temp. Can likely be built as module but doesn't autoload so build in to ensure performance on PandaES
+CONFIG_OMAP_BANDGAP=y
 CONFIG_OMAP4_THERMAL=y
 CONFIG_OMAP5_THERMAL=y
 
@@ -312,7 +314,6 @@ CONFIG_IR_RX51=m
 # CONFIG_TIDSPBRIDGE_BACKTRACE is not set
 
 # CONFIG_OMAP_REMOTEPROC is not set
-# CONFIG_OMAP_BANDGAP is not set
 # CONFIG_OMAP_IOVMM is not set
 
 CONFIG_CRYPTO_DEV_OMAP_SHAM=m
