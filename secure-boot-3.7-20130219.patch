@@ -1,7 +1,7 @@
-From 428db98d65770561ec5b8e9fc1931acf2210c5dd Mon Sep 17 00:00:00 2001
+From 33ecf899ae618a163e553c24674a48bd0cb4dd17 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:40:56 -0400
-Subject: [PATCH 01/17] Secure boot: Add new capability
+Subject: [PATCH 01/19] Secure boot: Add new capability
 
 Secure boot adds certain policy requirements, including that root must not
 be able to do anything that could cause the kernel to execute arbitrary code.
@@ -32,13 +32,13 @@ index ba478fa..7109e65 100644
  #define cap_valid(x) ((x) >= 0 && (x) <= CAP_LAST_CAP)
  
 -- 
-1.8.1
+1.8.1.2
 
 
-From 57902a5335b6f1f0aad56c669c874b45e9dd4ee8 Mon Sep 17 00:00:00 2001
+From 0867a7288326c109ac3f1a52a342f577e1f77618 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:05 -0400
-Subject: [PATCH 02/17] SELinux: define mapping for new Secure Boot capability
+Subject: [PATCH 02/19] SELinux: define mapping for new Secure Boot capability
 
 Add the name of the new Secure Boot capability.  This allows SELinux
 policies to properly map CAP_COMPROMISE_KERNEL to the appropriate
@@ -65,13 +65,13 @@ index df2de54..70e2834 100644
  	{ "tun_socket",
  	  { COMMON_SOCK_PERMS, NULL } },
 -- 
-1.8.1
+1.8.1.2
 
 
-From 7e2d1d442399258426c0724e7fd6adc6fd8a8590 Mon Sep 17 00:00:00 2001
+From 23873817d2cec32d4af90fc7038b53c949e3f5a6 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:02 -0400
-Subject: [PATCH 03/17] Secure boot: Add a dummy kernel parameter that will
+Subject: [PATCH 03/19] Secure boot: Add a dummy kernel parameter that will
  switch on Secure Boot mode
 
 This forcibly drops CAP_COMPROMISE_KERNEL from both cap_permitted and cap_bset
@@ -131,13 +131,13 @@ index 48cea3d..3f5be65 100644
   * prepare_kernel_cred - Prepare a set of credentials for a kernel service
   * @daemon: A userspace daemon to be used as a reference
 -- 
-1.8.1
+1.8.1.2
 
 
-From 6be9cea6bf2cf06898efa300644ea9e6ad9c5a18 Mon Sep 17 00:00:00 2001
+From 6e786fc19b3dc3aa53e6f556af2baf261573321f Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:03 -0400
-Subject: [PATCH 04/17] efi: Enable secure boot lockdown automatically when
+Subject: [PATCH 04/19] efi: Enable secure boot lockdown automatically when
  enabled in firmware
 
 The firmware has a set of flags that indicate whether secure boot is enabled
@@ -275,13 +275,13 @@ index b424f64..fef4ca6 100644
  #ifdef CONFIG_EFI
  # ifdef CONFIG_X86
 -- 
-1.8.1
+1.8.1.2
 
 
-From 2d03e24bded4e30a14656795eb8e052bbaa5ee27 Mon Sep 17 00:00:00 2001
+From 7f17830b2d2e02a1d8614ed06d2eaf37f4a2b9d1 Mon Sep 17 00:00:00 2001
 From: Dave Howells <dhowells@redhat.com>
 Date: Tue, 23 Oct 2012 09:30:54 -0400
-Subject: [PATCH 05/17] Add EFI signature data types
+Subject: [PATCH 05/19] Add EFI signature data types
 
 Add the data types that are used for containing hashes, keys and certificates
 for cryptographic verification.
@@ -330,13 +330,13 @@ index fef4ca6..a5dab3c 100644
   * All runtime access to EFI goes through this structure:
   */
 -- 
-1.8.1
+1.8.1.2
 
 
-From 2152dae45a6f98592ed5a6da8416a4a799bda3dd Mon Sep 17 00:00:00 2001
+From f6e6bcac73c2c4dd0295a528f80d3c6660e9e279 Mon Sep 17 00:00:00 2001
 From: Dave Howells <dhowells@redhat.com>
 Date: Tue, 23 Oct 2012 09:36:28 -0400
-Subject: [PATCH 06/17] Add an EFI signature blob parser and key loader.
+Subject: [PATCH 06/19] Add an EFI signature blob parser and key loader.
 
 X.509 certificates are loaded into the specified keyring as asymmetric type
 keys.
@@ -509,13 +509,13 @@ index a5dab3c..7bfc4f2 100644
   * efi_range_is_wc - check the WC bit on an address range
   * @start: starting kvirt address
 -- 
-1.8.1
+1.8.1.2
 
 
-From bb1024f03b0a4cb05bac6503b933279a905bc5fb Mon Sep 17 00:00:00 2001
+From 26e3eaf96f1433fbb5f0d617b80b5d00e16aeb2c Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Fri, 26 Oct 2012 12:36:24 -0400
-Subject: [PATCH 07/17] MODSIGN: Add module certificate blacklist keyring
+Subject: [PATCH 07/19] MODSIGN: Add module certificate blacklist keyring
 
 This adds an additional keyring that is used to store certificates that
 are blacklisted.  This keyring is searched first when loading signed modules
@@ -621,13 +621,13 @@ index f2970bd..5423195 100644
  			     &key_type_asymmetric, id);
  	if (IS_ERR(key))
 -- 
-1.8.1
+1.8.1.2
 
 
-From 10f89ba8724e88046cd05aef20e80a935d3968f6 Mon Sep 17 00:00:00 2001
+From ec7d8de0b4b29fa052dd9408fab20ce46857b486 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Fri, 26 Oct 2012 12:42:16 -0400
-Subject: [PATCH 08/17] MODSIGN: Import certificates from UEFI Secure Boot
+Subject: [PATCH 08/19] MODSIGN: Import certificates from UEFI Secure Boot
 
 Secure Boot stores a list of allowed certificates in the 'db' variable.
 This imports those certificates into the module signing keyring.  This
@@ -806,13 +806,13 @@ index 0000000..b9237d7
 +}
 +late_initcall(load_uefi_certs);
 -- 
-1.8.1
+1.8.1.2
 
 
-From db76f49f8ded0df6aaff8ae2531ff1aaeff04440 Mon Sep 17 00:00:00 2001
+From ff5f0af5e29e73ba00c04bc67978086d5ed811bd Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:40:57 -0400
-Subject: [PATCH 09/17] PCI: Lock down BAR access in secure boot environments
+Subject: [PATCH 09/19] PCI: Lock down BAR access in secure boot environments
 
 Any hardware that can potentially generate DMA has to be locked down from
 userspace in order to avoid it being possible for an attacker to cause
@@ -907,13 +907,13 @@ index e1c1ec5..97e785f 100644
  
  	dev = pci_get_bus_and_slot(bus, dfn);
 -- 
-1.8.1
+1.8.1.2
 
 
-From 0d71d1586db8d8f6f2f362953fc747528f0dbb2a Mon Sep 17 00:00:00 2001
+From f6a7b0b3c9ca8b0814d03daed9f98fb009a57cc7 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:40:58 -0400
-Subject: [PATCH 10/17] x86: Lock down IO port access in secure boot
+Subject: [PATCH 10/19] x86: Lock down IO port access in secure boot
  environments
 
 IO port access would permit users to gain access to PCI configuration
@@ -964,13 +964,13 @@ index 0537903..47501fc 100644
  		return -EFAULT;
  	while (count-- > 0 && i < 65536) {
 -- 
-1.8.1
+1.8.1.2
 
 
-From cbe40e9c220c6c49774e04d6e4df437a2f450aba Mon Sep 17 00:00:00 2001
+From 014664ed0733041ae2e6ddacd21f8eb8ed94d6e9 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:40:59 -0400
-Subject: [PATCH 11/17] ACPI: Limit access to custom_method
+Subject: [PATCH 11/19] ACPI: Limit access to custom_method
 
 It must be impossible for even root to get code executed in kernel context
 under a secure boot environment. custom_method effectively allows arbitrary
@@ -996,13 +996,13 @@ index 5d42c24..247d58b 100644
  		/* parse the table header to get the table length */
  		if (count <= sizeof(struct acpi_table_header))
 -- 
-1.8.1
+1.8.1.2
 
 
-From 48da61f5b2a04df0a7df6d9e443a6705e2bc6ef9 Mon Sep 17 00:00:00 2001
+From f1262b9e78f41307e0be23aa6c54f79dfc5c8d39 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:00 -0400
-Subject: [PATCH 12/17] asus-wmi: Restrict debugfs interface
+Subject: [PATCH 12/19] asus-wmi: Restrict debugfs interface
 
 We have no way of validating what all of the Asus WMI methods do on a
 given machine, and there's a risk that some will allow hardware state to
@@ -1049,13 +1049,13 @@ index c0e9ff4..3c10167 100644
  				     1, asus->debug.method_id,
  				     &input, &output);
 -- 
-1.8.1
+1.8.1.2
 
 
-From 293d2f88602d7d951c23e379c66d0adc440de47c Mon Sep 17 00:00:00 2001
+From f31dc86516ee8088177a5a82869a3633a6e555b1 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:01 -0400
-Subject: [PATCH 13/17] Restrict /dev/mem and /dev/kmem in secure boot setups
+Subject: [PATCH 13/19] Restrict /dev/mem and /dev/kmem in secure boot setups
 
 Allowing users to write to address space makes it possible for the kernel
 to be subverted. Restrict this when we need to protect the kernel.
@@ -1090,18 +1090,21 @@ index 47501fc..8817cdc 100644
  		unsigned long to_write = min_t(unsigned long, count,
  					       (unsigned long)high_memory - p);
 -- 
-1.8.1
+1.8.1.2
 
 
-From ca1c6f1c294f4ca76599603b801e84945d6f0277 Mon Sep 17 00:00:00 2001
+From e5724ed32b15d5dec9a239036598d9273b105506 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:04 -0400
-Subject: [PATCH 14/17] acpi: Ignore acpi_rsdp kernel parameter in a secure
+Subject: [PATCH 14/19] acpi: Ignore acpi_rsdp kernel parameter in a secure
  boot environment
 
 This option allows userspace to pass the RSDP address to the kernel.  This
 could potentially be used to circumvent the secure boot trust model.
-We ignore the setting if we don't have the CAP_COMPROMISE_KERNEL capability.
+This is setup through the setup_arch function, which is called before the
+security_init function sets up the security_ops, so we cannot use a
+capable call here.  We ignore the setting if we are booted in Secure Boot
+mode.
 
 Signed-off-by: Josh Boyer <jwboyer@redhat.com>
 ---
@@ -1109,7 +1112,7 @@ Signed-off-by: Josh Boyer <jwboyer@redhat.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
-index 251435a..b67cf29 100644
+index 251435a..eef0b89 100644
 --- a/drivers/acpi/osl.c
 +++ b/drivers/acpi/osl.c
 @@ -246,7 +246,7 @@ early_param("acpi_rsdp", setup_acpi_rsdp);
@@ -1117,18 +1120,18 @@ index 251435a..b67cf29 100644
  {
  #ifdef CONFIG_KEXEC
 -	if (acpi_rsdp)
-+	if (acpi_rsdp && capable(CAP_COMPROMISE_KERNEL))
++	if (acpi_rsdp && !efi_enabled(EFI_SECURE_BOOT))
  		return acpi_rsdp;
  #endif
  
 -- 
-1.8.1
+1.8.1.2
 
 
-From 1e5b3f2c3ea547cd281bf5754fbc7717431db5fe Mon Sep 17 00:00:00 2001
+From 1bc68fa7cb2ea5983ab1de20fd881eed74e214cb Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Tue, 4 Sep 2012 11:55:13 -0400
-Subject: [PATCH 15/17] kexec: Disable in a secure boot environment
+Subject: [PATCH 15/19] kexec: Disable in a secure boot environment
 
 kexec could be used as a vector for a malicious user to use a signed kernel
 to circumvent the secure boot trust model. In the long run we'll want to
@@ -1154,13 +1157,13 @@ index 5e4bd78..dd464e0 100644
  
  	/*
 -- 
-1.8.1
+1.8.1.2
 
 
-From c399cdb725681eba45239b3ae9218f0fc813e678 Mon Sep 17 00:00:00 2001
+From b6ec4b0890d4cb00c17b4a1dee6da84bb5fff597 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Fri, 5 Oct 2012 10:12:48 -0400
-Subject: [PATCH 16/17] MODSIGN: Always enforce module signing in a Secure Boot
+Subject: [PATCH 16/19] MODSIGN: Always enforce module signing in a Secure Boot
  environment
 
 If a machine is booted into a Secure Boot environment, we need to
@@ -1216,13 +1219,13 @@ index 3e544f4..7a9a802 100644
  static int param_set_bool_enable_only(const char *val,
  				      const struct kernel_param *kp)
 -- 
-1.8.1
+1.8.1.2
 
 
-From 8e236de2ec08dceb9ce1e8ab07926e85440deb6b Mon Sep 17 00:00:00 2001
+From 19d340a563439ab3892159510bb3ba7730bf9ea9 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Fri, 26 Oct 2012 14:02:09 -0400
-Subject: [PATCH 17/17] hibernate: Disable in a Secure Boot environment
+Subject: [PATCH 17/19] hibernate: Disable in a Secure Boot environment
 
 There is currently no way to verify the resume image when returning
 from hibernate.  This might compromise the secure boot trust model,
@@ -1330,12 +1333,13 @@ index 4ed81e7..b11a0f4 100644
  
  	if (!atomic_add_unless(&snapshot_device_available, -1, 0)) {
 -- 
-1.8.1
+1.8.1.2
 
-From 04a46ceeb9eb2dca0364ce836614de722e988c81 Mon Sep 17 00:00:00 2001
+
+From a0f61de745510aade63ef7694cecf11cb98559cf Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Tue, 5 Feb 2013 19:25:05 -0500
-Subject: [PATCH] efi: Disable secure boot if shim is in insecure mode
+Subject: [PATCH 18/19] efi: Disable secure boot if shim is in insecure mode
 
 A user can manually tell the shim boot loader to disable validation of
 images it loads.  When a user does this, it creates a UEFI variable called
@@ -1349,10 +1353,10 @@ Signed-off-by: Josh Boyer <jwboyer@redhat.com>
  1 file changed, 19 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/boot/compressed/eboot.c b/arch/x86/boot/compressed/eboot.c
-index 96bd86b..6e1331c 100644
+index 4983e43..eea615a 100644
 --- a/arch/x86/boot/compressed/eboot.c
 +++ b/arch/x86/boot/compressed/eboot.c
-@@ -851,8 +851,9 @@ fail:
+@@ -733,8 +733,9 @@ fail:
  
  static int get_secure_boot(efi_system_table_t *_table)
  {
@@ -1363,7 +1367,7 @@ index 96bd86b..6e1331c 100644
  	efi_guid_t var_guid = EFI_GLOBAL_VARIABLE_GUID;
  	efi_status_t status;
  
-@@ -876,6 +877,23 @@ static int get_secure_boot(efi_system_table_t *_table)
+@@ -758,6 +759,23 @@ static int get_secure_boot(efi_system_table_t *_table)
  	if (setup == 1)
  		return 0;
  
@@ -1388,61 +1392,20 @@ index 96bd86b..6e1331c 100644
  }
  
 -- 
-1.8.1
+1.8.1.2
 
-                                                                                                                                                                                                                                                               
-Delivered-To: jwboyer@gmail.com
-Received: by 10.76.99.210 with SMTP id es18csp140114oab;
-        Fri, 8 Feb 2013 11:12:52 -0800 (PST)
-X-Received: by 10.66.86.71 with SMTP id n7mr19917975paz.77.1360350771724;
-        Fri, 08 Feb 2013 11:12:51 -0800 (PST)
-Return-Path: <linux-efi-owner@vger.kernel.org>
-Received: from vger.kernel.org (vger.kernel.org. [209.132.180.67])
-        by mx.google.com with ESMTP id e5si41603022pax.261.2013.02.08.11.12.50;
-        Fri, 08 Feb 2013 11:12:51 -0800 (PST)
-Received-SPF: pass (google.com: best guess record for domain of linux-efi-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) client-ip=209.132.180.67;
-Authentication-Results: mx.google.com;
-       spf=pass (google.com: best guess record for domain of linux-efi-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) smtp.mail=linux-efi-owner@vger.kernel.org
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-	id S1760288Ab3BHTM0 (ORCPT <rfc822;sangshuduo@gmail.com>
-	+ 14 others); Fri, 8 Feb 2013 14:12:26 -0500
-Received: from smtp.outflux.net ([198.145.64.163]:49396 "EHLO smtp.outflux.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1760349Ab3BHTMY (ORCPT <rfc822;linux-efi@vger.kernel.org>);
-	Fri, 8 Feb 2013 14:12:24 -0500
-Received: from www.outflux.net (serenity-end.outflux.net [10.2.0.2])
-	by vinyl.outflux.net (8.14.4/8.14.4/Debian-2ubuntu2) with ESMTP id r18JCEtT006197;
-	Fri, 8 Feb 2013 11:12:14 -0800
-Date:	Fri, 8 Feb 2013 11:12:13 -0800
-From:	Kees Cook <keescook@chromium.org>
-To:	linux-kernel@vger.kernel.org
-Cc:	Matthew Garrett <matthew.garrett@nebula.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
-	linux-efi@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: [PATCH] x86: Lock down MSR writing in secure boot
-Message-ID: <20130208191213.GA25081@www.outflux.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-MIMEDefang-Filter: outflux$Revision: 1.316 $
-X-HELO:	www.outflux.net
-X-Scanned-By: MIMEDefang 2.71 on 10.2.0.1
-Sender:	linux-efi-owner@vger.kernel.org
-Precedence: bulk
-List-ID: <linux-efi.vger.kernel.org>
-X-Mailing-List:	linux-efi@vger.kernel.org
+
+From 5467b18cc9b3475658328a38ad6922d6b32c87ca Mon Sep 17 00:00:00 2001
+From: Kees Cook <keescook@chromium.org>
+Date: Fri, 8 Feb 2013 11:12:13 -0800
+Subject: [PATCH 19/19] x86: Lock down MSR writing in secure boot
 
 Writing to MSRs should not be allowed unless CAP_COMPROMISE_KERNEL is
 set since it could lead to execution of arbitrary code in kernel mode.
 
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
-This would be used on top of Matthew Garrett's existing "Secure boot
-policy support" patch series.
----
- arch/x86/kernel/msr.c |    7 +++++++
+ arch/x86/kernel/msr.c | 7 +++++++
  1 file changed, 7 insertions(+)
 
 diff --git a/arch/x86/kernel/msr.c b/arch/x86/kernel/msr.c
@@ -1471,13 +1434,5 @@ index 4929502..adaab3d 100644
  			err = -EFAULT;
  			break;
 -- 
-1.7.9.5
+1.8.1.2
 
-
--- 
-Kees Cook
-Chrome OS Security
---
-To unsubscribe from this list: send the line "unsubscribe linux-efi" in
-the body of a message to majordomo@vger.kernel.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html

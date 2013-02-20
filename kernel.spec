@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 202
+%global baserelease 203
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -690,7 +690,7 @@ Patch800: linux-2.6-crash-driver.patch
 Patch901: modsign-post-KS-jwb.patch
 
 # secure boot
-Patch1000: secure-boot-3.7-20130204.patch
+Patch1000: secure-boot-3.7-20130219.patch
 Patch1001: efivarfs-3.7.patch
 
 # Improve PCI support on UEFI
@@ -1447,7 +1447,7 @@ ApplyPatch modsign-post-KS-jwb.patch
 
 # secure boot
 ApplyPatch efivarfs-3.7.patch
-ApplyPatch secure-boot-3.7-20130204.patch
+ApplyPatch secure-boot-3.7-20130219.patch
 
 # Improved PCI support for UEFI
 ApplyPatch handle-efi-roms.patch
@@ -2404,6 +2404,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Feb 20 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix oops from acpi_rsdp setup in secure-boot patchset (rhbz 906225)
+
 * Tue Feb 19 2013 Josh Boyer <jwboyer@redhat.com>
 - Add support for Atheros 04ca:3004 bluetooth devices (rhbz 844750)
 - Backport support for newer ALPS touchpads (rhbz 812111)
