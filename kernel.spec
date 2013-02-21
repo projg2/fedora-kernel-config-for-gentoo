@@ -807,6 +807,9 @@ Patch23000: silence-brcmsmac-warning.patch
 #rhbz 812111
 Patch24000: alps-v2-3.7.patch
 
+#rhbz 892060
+Patch24001: ipv6-dst-from-ptr-race.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1546,6 +1549,9 @@ ApplyPatch perf-hists-Fix-period-symbol_conf.field_sep-display.patch
 
 #rhbz 812111
 ApplyPatch alps-v2-3.7.patch
+
+#rhbz 892060
+ApplyPatch ipv6-dst-from-ptr-race.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2410,6 +2416,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Feb 21 2013 Neil Horman <nhorman@redhat.com>
+- Fix crash from race in ipv6 dst entries (rhbz 892060)
+
 * Wed Feb 20 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix perf report field separator issue (rhbz 906055)
 - Fix oops from acpi_rsdp setup in secure-boot patchset (rhbz 906225)

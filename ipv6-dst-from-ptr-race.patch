@@ -1,0 +1,134 @@
+diff -up ./include/net/dst.h.orig ./include/net/dst.h
+--- ./include/net/dst.h.orig	2012-12-10 22:30:57.000000000 -0500
++++ ./include/net/dst.h	2013-02-20 09:42:49.541777989 -0500
+@@ -36,13 +36,9 @@ struct dst_entry {
+ 	struct net_device       *dev;
+ 	struct  dst_ops	        *ops;
+ 	unsigned long		_metrics;
+-	union {
+-		unsigned long           expires;
+-		/* point to where the dst_entry copied from */
+-		struct dst_entry        *from;
+-	};
++	unsigned long           expires;
+ 	struct dst_entry	*path;
+-	void			*__pad0;
++	struct dst_entry	*from;
+ #ifdef CONFIG_XFRM
+ 	struct xfrm_state	*xfrm;
+ #else
+diff -up ./include/net/ip6_fib.h.orig ./include/net/ip6_fib.h
+--- ./include/net/ip6_fib.h.orig	2012-12-10 22:30:57.000000000 -0500
++++ ./include/net/ip6_fib.h	2013-02-20 09:42:49.597779552 -0500
+@@ -157,50 +157,35 @@ static inline struct inet6_dev *ip6_dst_
+ 
+ static inline void rt6_clean_expires(struct rt6_info *rt)
+ {
+-	if (!(rt->rt6i_flags & RTF_EXPIRES) && rt->dst.from)
+-		dst_release(rt->dst.from);
+-
+ 	rt->rt6i_flags &= ~RTF_EXPIRES;
+-	rt->dst.from = NULL;
+ }
+ 
+ static inline void rt6_set_expires(struct rt6_info *rt, unsigned long expires)
+ {
+-	if (!(rt->rt6i_flags & RTF_EXPIRES) && rt->dst.from)
+-		dst_release(rt->dst.from);
+-
+-	rt->rt6i_flags |= RTF_EXPIRES;
+ 	rt->dst.expires = expires;
++	rt->rt6i_flags |= RTF_EXPIRES;
+ }
+ 
+-static inline void rt6_update_expires(struct rt6_info *rt, int timeout)
++static inline void rt6_update_expires(struct rt6_info *rt0, int timeout)
+ {
+-	if (!(rt->rt6i_flags & RTF_EXPIRES)) {
+-		if (rt->dst.from)
+-			dst_release(rt->dst.from);
+-		/* dst_set_expires relies on expires == 0 
+-		 * if it has not been set previously.
+-		 */
+-		rt->dst.expires = 0;
+-	}
++	struct rt6_info *rt;
+ 
+-	dst_set_expires(&rt->dst, timeout);
+-	rt->rt6i_flags |= RTF_EXPIRES;
++	for (rt = rt0; rt && !(rt->rt6i_flags & RTF_EXPIRES);
++	     rt = (struct rt6_info *)rt->dst.from);
++	if (rt && rt != rt0)
++		rt0->dst.expires = rt->dst.expires;
++
++	dst_set_expires(&rt0->dst, timeout);
++	rt0->rt6i_flags |= RTF_EXPIRES;
+ }
+ 
+ static inline void rt6_set_from(struct rt6_info *rt, struct rt6_info *from)
+ {
+ 	struct dst_entry *new = (struct dst_entry *) from;
+ 
+-	if (!(rt->rt6i_flags & RTF_EXPIRES) && rt->dst.from) {
+-		if (new == rt->dst.from)
+-			return;
+-		dst_release(rt->dst.from);
+-	}
+-
+ 	rt->rt6i_flags &= ~RTF_EXPIRES;
+-	rt->dst.from = new;
+ 	dst_hold(new);
++	rt->dst.from = new;
+ }
+ 
+ struct fib6_walker_t {
+diff -up ./net/core/dst.c.orig ./net/core/dst.c
+--- ./net/core/dst.c.orig	2012-12-10 22:30:57.000000000 -0500
++++ ./net/core/dst.c	2013-02-20 09:42:49.984790357 -0500
+@@ -179,6 +179,7 @@ void *dst_alloc(struct dst_ops *ops, str
+ 	dst_init_metrics(dst, dst_default_metrics, true);
+ 	dst->expires = 0UL;
+ 	dst->path = dst;
++	dst->from = NULL;
+ #ifdef CONFIG_XFRM
+ 	dst->xfrm = NULL;
+ #endif
+diff -up ./net/ipv6/route.c.orig ./net/ipv6/route.c
+--- ./net/ipv6/route.c.orig	2012-12-10 22:30:57.000000000 -0500
++++ ./net/ipv6/route.c	2013-02-20 09:42:50.238797449 -0500
+@@ -297,6 +297,7 @@ static void ip6_dst_destroy(struct dst_e
+ {
+ 	struct rt6_info *rt = (struct rt6_info *)dst;
+ 	struct inet6_dev *idev = rt->rt6i_idev;
++	struct dst_entry *from = dst->from;
+ 
+ 	if (rt->n)
+ 		neigh_release(rt->n);
+@@ -309,8 +310,8 @@ static void ip6_dst_destroy(struct dst_e
+ 		in6_dev_put(idev);
+ 	}
+ 
+-	if (!(rt->rt6i_flags & RTF_EXPIRES) && dst->from)
+-		dst_release(dst->from);
++	dst->from = NULL;
++	dst_release(from);
+ 
+ 	if (rt6_has_peer(rt)) {
+ 		struct inet_peer *peer = rt6_peer_ptr(rt);
+@@ -998,7 +999,6 @@ struct dst_entry *ip6_blackhole_route(st
+ 
+ 		rt->rt6i_gateway = ort->rt6i_gateway;
+ 		rt->rt6i_flags = ort->rt6i_flags;
+-		rt6_clean_expires(rt);
+ 		rt->rt6i_metric = 0;
+ 
+ 		memcpy(&rt->rt6i_dst, &ort->rt6i_dst, sizeof(struct rt6key));
+@@ -1814,8 +1814,6 @@ static struct rt6_info *ip6_rt_copy(stru
+ 		if ((ort->rt6i_flags & (RTF_DEFAULT | RTF_ADDRCONF)) ==
+ 		    (RTF_DEFAULT | RTF_ADDRCONF))
+ 			rt6_set_from(rt, ort);
+-		else
+-			rt6_clean_expires(rt);
+ 		rt->rt6i_metric = 0;
+ 
+ #ifdef CONFIG_IPV6_SUBTREES
