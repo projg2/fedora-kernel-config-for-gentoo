@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 203
+%global baserelease 204
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -801,6 +801,9 @@ Patch22257: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 #rhbz 906055
 Patch22258: perf-hists-Fix-period-symbol_conf.field_sep-display.patch
+
+#rhbz 879408
+Patch22259: Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
 
 Patch23000: silence-brcmsmac-warning.patch
 
@@ -1552,6 +1555,9 @@ ApplyPatch alps-v2-3.7.patch
 
 #rhbz 892060
 ApplyPatch ipv6-dst-from-ptr-race.patch
+
+#rhbz 879408
+ApplyPatch Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2416,6 +2422,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Feb 22 2013 Josh Boyer <jwboyer@redhat.com>
+- Add support for bluetooth in Acer Aspire S7 (rhbz 879408)
+
 * Thu Feb 21 2013 Neil Horman <nhorman@redhat.com>
 - Fix crash from race in ipv6 dst entries (rhbz 892060)
 
