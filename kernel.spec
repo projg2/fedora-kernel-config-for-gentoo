@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 103
+%global baserelease 104
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -772,6 +772,9 @@ Patch22257: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 #rhbz 906055
 Patch22258: perf-hists-Fix-period-symbol_conf.field_sep-display.patch
+
+#CVE-2013-1763 rhbz 915052,915057
+Patch22259: sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
 
 Patch23000: silence-brcmsmac-warning.patch
 
@@ -1500,6 +1503,9 @@ ApplyPatch perf-hists-Fix-period-symbol_conf.field_sep-display.patch
 
 #rhbz 812111
 ApplyPatch alps-v2-3.7.patch
+
+#CVE-2013-1763 rhbz 915052,915057
+ApplyPatch sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2356,6 +2362,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sun Feb 24 2013 Josh Boyer <jwboyer@redhat.com> - 3.7.9-104
+- CVE-2013-1763 sock_diag: out-of-bounds access to sock_diag_handlers (rhbz 915052,915057)
+
 * Wed Feb 20 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix perf report field separator issue (rhbz 906055)
  
