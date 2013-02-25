@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 104
+%global baserelease 105
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -775,6 +775,9 @@ Patch22258: perf-hists-Fix-period-symbol_conf.field_sep-display.patch
 
 #CVE-2013-1763 rhbz 915052,915057
 Patch22259: sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
+
+#rhbz 903192
+Patch22261: 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 
 Patch23000: silence-brcmsmac-warning.patch
 
@@ -1506,6 +1509,9 @@ ApplyPatch alps-v2-3.7.patch
 
 #CVE-2013-1763 rhbz 915052,915057
 ApplyPatch sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
+
+#rhbz 903192
+ApplyPatch 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2362,6 +2368,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Feb 25 2013 Josh Boyer <jwboyer@redhat.com>
+- Honor dmesg_restrict for /dev/kmsg (rhbz 903192)
+
 * Sun Feb 24 2013 Josh Boyer <jwboyer@redhat.com> - 3.7.9-104
 - CVE-2013-1763 sock_diag: out-of-bounds access to sock_diag_handlers (rhbz 915052,915057)
 
