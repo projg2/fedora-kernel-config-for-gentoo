@@ -814,6 +814,9 @@ Patch22261: 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 #rhbz 914737
 Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 
+#CVE-2013-1767 rhbz 915592,915716
+Patch22263: tmpfs-fix-use-after-free-of-mempolicy-object.patch
+
 Patch23000: silence-brcmsmac-warning.patch
 
 #rhbz 812111
@@ -1576,6 +1579,9 @@ ApplyPatch 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 
 #rhbz 914737
 ApplyPatch x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
+
+#CVE-2013-1767 rhbz 915592,915716
+ApplyPatch tmpfs-fix-use-after-free-of-mempolicy-object.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2441,6 +2447,7 @@ fi
 #                 ||     ||
 %changelog
 * Tue Feb 26 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-1767 tmpfs: fix use-after-free of mempolicy obj (rhbz 915592,915716)
 - Fix vmalloc_fault oops during lazy MMU (rhbz 914737)
 
 * Mon Feb 25 2013 Josh Boyer <jwboyer@redhat.com>
