@@ -779,6 +779,9 @@ Patch22259: sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
 #rhbz 903192
 Patch22261: 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 
+#rhbz 914737
+Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
+
 Patch23000: silence-brcmsmac-warning.patch
 
 #rhbz 812111
@@ -1512,6 +1515,9 @@ ApplyPatch sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
 
 #rhbz 903192
 ApplyPatch 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
+
+#rhbz 914737
+ApplyPatch x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2368,6 +2374,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Feb 26 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix vmalloc_fault oops during lazy MMU (rhbz 914737)
+
 * Mon Feb 25 2013 Josh Boyer <jwboyer@redhat.com>
 - Honor dmesg_restrict for /dev/kmsg (rhbz 903192)
 
