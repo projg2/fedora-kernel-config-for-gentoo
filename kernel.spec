@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 105
+%global baserelease 106
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -790,6 +790,8 @@ Patch23000: silence-brcmsmac-warning.patch
 #rhbz 812111
 Patch24000: alps-v2-3.7.patch
 
+Patch24100: userns-avoid-recursion-in-put_user_ns.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1524,6 +1526,8 @@ ApplyPatch x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 
 #CVE-2013-1767 rhbz 915592,915716
 ApplyPatch tmpfs-fix-use-after-free-of-mempolicy-object.patch
+
+ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2380,6 +2384,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Feb 26 2013 Justin M. Forbes <jforbes@redhat.com>
+- Avoid recursion in put_user_ns, potential overflow
+
 * Tue Feb 26 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-1767 tmpfs: fix use-after-free of mempolicy obj (rhbz 915592,915716)
 - Fix vmalloc_fault oops during lazy MMU (rhbz 914737)
