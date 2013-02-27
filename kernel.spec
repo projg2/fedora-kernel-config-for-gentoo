@@ -1525,7 +1525,7 @@ ApplyPatch x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 #CVE-2013-1767 rhbz 915592,915716
 ApplyPatch tmpfs-fix-use-after-free-of-mempolicy-object.patch
 
-#ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
+ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
 
 
 
