@@ -685,7 +685,7 @@ Patch700: linux-2.6-e1000-ich9-montevina.patch
 Patch800: linux-2.6-crash-driver.patch
 
 # secure boot
-Patch1000: secure-boot-20130219.patch
+Patch1000: secure-boot-20130218.patch
 
 # virt + ksm patches
 
@@ -1433,7 +1433,7 @@ ApplyPatch linux-2.6-crash-driver.patch
 ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
 # secure boot
-#ApplyPatch secure-boot-20130219.patch
+ApplyPatch secure-boot-20130218.patch
 
 # Assorted Virt Fixes
 
@@ -2413,7 +2413,6 @@ fi
   - arm-tegra-nvec-kconfig.patch
   - arm-tegra-sdhci-module-fix.patch
   Needs reworking:
-  - secure-boot
   - alps-v2-3.7.patch
   - usb-cypress-supertop.patch
   - Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
