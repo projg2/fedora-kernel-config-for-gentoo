@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 106
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -683,8 +683,6 @@ Patch1825: drm-i915-dp-stfu.patch
 Patch1826: drm-i915-tv-detect-hush.patch
 # d-i-n backport for https://bugzilla.redhat.com/show_bug.cgi?id=901951
 Patch1827: drm-i915-lvds-reclock-fix.patch
-# Fix a mismerge in 3.7.y
-Patch1828: drm-i915-Fix-up-mismerge-of-3490ea5d-in-3.7.y.patch
 
 Patch1900: linux-2.6-intel-iommu-igfx.patch
 
@@ -770,20 +768,11 @@ Patch22256: net-fix-infinite-loop-in-__skb_recv_datagram.patch
 #rhbz 844750
 Patch22257: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
-#rhbz 906055
-Patch22258: perf-hists-Fix-period-symbol_conf.field_sep-display.patch
-
-#CVE-2013-1763 rhbz 915052,915057
-Patch22259: sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
-
 #rhbz 903192
 Patch22261: 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 
 #rhbz 914737
 Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
-
-#CVE-2013-1767 rhbz 915592,915716
-Patch22263: tmpfs-fix-use-after-free-of-mempolicy-object.patch
 
 Patch23000: silence-brcmsmac-warning.patch
 
@@ -1435,7 +1424,6 @@ ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-i915-dp-stfu.patch
 ApplyPatch drm-i915-tv-detect-hush.patch
 ApplyPatch drm-i915-lvds-reclock-fix.patch
-ApplyPatch drm-i915-Fix-up-mismerge-of-3490ea5d-in-3.7.y.patch
 
 ApplyPatch linux-2.6-intel-iommu-igfx.patch
 
@@ -1509,23 +1497,14 @@ ApplyPatch net-fix-infinite-loop-in-__skb_recv_datagram.patch
 #rhbz 844750
 ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
-#rhbz 906055
-ApplyPatch perf-hists-Fix-period-symbol_conf.field_sep-display.patch
-
 #rhbz 812111
 ApplyPatch alps-v2-3.7.patch
-
-#CVE-2013-1763 rhbz 915052,915057
-ApplyPatch sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
 
 #rhbz 903192
 ApplyPatch 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 
 #rhbz 914737
 ApplyPatch x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
-
-#CVE-2013-1767 rhbz 915592,915716
-ApplyPatch tmpfs-fix-use-after-free-of-mempolicy-object.patch
 
 ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
 
@@ -2384,6 +2363,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Feb 27 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.10-101
+- Linux v3.7.10
+
 * Tue Feb 26 2013 Justin M. Forbes <jforbes@redhat.com>
 - Avoid recursion in put_user_ns, potential overflow
 
