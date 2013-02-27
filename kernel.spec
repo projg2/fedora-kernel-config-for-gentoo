@@ -2363,6 +2363,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Feb 27 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update ARM config to enable SPI and a few other cleanups
+
 * Wed Feb 27 2013 Justin M. Forbes <jforbes@redhat.com> - 3.7.10-101
 - Linux v3.7.10
 
