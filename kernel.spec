@@ -789,7 +789,7 @@ Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 Patch22263: tmpfs-fix-use-after-free-of-mempolicy-object.patch
 
 #rhbz 812111
-Patch24000: alps-v2-3.7.patch
+Patch24000: alps.patch
 
 #rhbz 892060
 Patch24001: ipv6-dst-from-ptr-race.patch
@@ -1505,7 +1505,7 @@ ApplyPatch ath9k_rx_dma_stop_check.patch
 ApplyPatch perf-hists-Fix-period-symbol_conf.field_sep-display.patch
 
 #rhbz 812111
-#ApplyPatch alps-v2-3.7.patch
+ApplyPatch alps.patch
 
 #rhbz 892060
 ApplyPatch ipv6-dst-from-ptr-race.patch
@@ -2393,6 +2393,9 @@ fi
 #                 ||     ||
 %changelog
 * Wed Feb 27 2013 Dave Jones <davej@redhat.com>
+- Update ALPS patch to what got merged in 3.9-rc
+
+* Wed Feb 27 2013 Dave Jones <davej@redhat.com>
 - 3.8.0
   Dropped (merged in 3.8)
   - arm-l2x0-only-set-set_debug-on-pl310-r3p0-and-earlier.patch
@@ -2413,11 +2416,9 @@ fi
   - arm-tegra-nvec-kconfig.patch
   - arm-tegra-sdhci-module-fix.patch
   Needs reworking:
-  - alps-v2-3.7.patch
   - usb-cypress-supertop.patch
   - Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
   - 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
-  - userns-avoid-recursion-in-put_user_ns.patch
 
 * Tue Feb 26 2013 Justin M. Forbes <jforbes@redhat.com>
 - Avoid recursion in put_user_ns, potential overflow
