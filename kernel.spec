@@ -62,19 +62,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 207
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 7
+%define base_sublevel 8
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 0
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -650,8 +650,6 @@ Patch04: linux-2.6-compile-fixes.patch
 # build tweak for build ID magic, even for -vanilla
 Patch05: linux-2.6-makefile-after_link.patch
 
-Patch06: power-x86-destdir.patch
-
 %if !%{nopatches}
 
 
@@ -686,15 +684,8 @@ Patch700: linux-2.6-e1000-ich9-montevina.patch
 
 Patch800: linux-2.6-crash-driver.patch
 
-# crypto/
-Patch901: modsign-post-KS-jwb.patch
-
 # secure boot
-Patch1000: secure-boot-3.7-20130219.patch
-Patch1001: efivarfs-3.7.patch
-
-# Improve PCI support on UEFI
-Patch1100: handle-efi-roms.patch
+Patch1000: secure-boot-20130219.patch
 
 # virt + ksm patches
 
@@ -711,8 +702,6 @@ Patch1825: drm-i915-dp-stfu.patch
 Patch1826: drm-i915-tv-detect-hush.patch
 # d-i-n backport for https://bugzilla.redhat.com/show_bug.cgi?id=901951
 Patch1827: drm-i915-lvds-reclock-fix.patch
-# Fix a mismerge in 3.7.y
-Patch1828: drm-i915-Fix-up-mismerge-of-3490ea5d-in-3.7.y.patch
 
 # Quiet boot fixes
 # silence the ACPI blacklist code
@@ -747,7 +736,6 @@ Patch20001: 0002-x86-EFI-Calculate-the-EFI-framebuffer-size-instead-o.patch
 # ARM
 Patch21000: arm-read_current_timer.patch
 # http://lists.infradead.org/pipermail/linux-arm-kernel/2012-December/137164.html
-Patch21001: arm-l2x0-only-set-set_debug-on-pl310-r3p0-and-earlier.patch
 Patch21002: arm-alignment-faults.patch
 
 # OMAP
@@ -766,22 +754,8 @@ Patch22000: weird-root-dentry-name-debug.patch
 #selinux ptrace child permissions
 Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
-#rhbz 871078
-Patch22112: USB-report-submission-of-active-URBs.patch
-
 #rhbz 859485
 Patch22226: vt-Drop-K_OFF-for-VC_MUTE.patch
-
-#rhbz CVE-2012-4530 868285 880147
-Patch22229: exec-use-eloop-for-max-recursion-depth.patch
-
-#rhbz 851278
-Patch22231: 8139cp-revert-set-ring-address-before-enabling-receiver.patch
-Patch22232: 8139cp-set-ring-address-after-enabling-C-mode.patch
-Patch22233: 8139cp-re-enable-interrupts-after-tx-timeout.patch
-
-#rhbz 892428
-Patch22238: brcmsmac-updates-rhbz892428.patch
 
 #rhbz 799564
 Patch22240: Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
@@ -789,9 +763,6 @@ Patch22241: Input-add-support-for-Cypress-PS2-Trackpads.patch
 
 #rhbz 892811
 Patch22247: ath9k_rx_dma_stop_check.patch
-
-#rhbz 911479 911473 CVE-2013-0290
-Patch22256: net-fix-infinite-loop-in-__skb_recv_datagram.patch
 
 #rhbz 909591
 Patch22255: usb-cypress-supertop.patch
@@ -817,8 +788,6 @@ Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 #CVE-2013-1767 rhbz 915592,915716
 Patch22263: tmpfs-fix-use-after-free-of-mempolicy-object.patch
 
-Patch23000: silence-brcmsmac-warning.patch
-
 #rhbz 812111
 Patch24000: alps-v2-3.7.patch
 
@@ -826,6 +795,7 @@ Patch24000: alps-v2-3.7.patch
 Patch24001: ipv6-dst-from-ptr-race.patch
 
 Patch24100: userns-avoid-recursion-in-put_user_ns.patch
+
 
 # END OF PATCH DEFINITIONS
 
@@ -1370,8 +1340,6 @@ ApplyPatch linux-2.6-makefile-after_link.patch
 #
 ApplyOptionalPatch linux-2.6-compile-fixes.patch
 
-ApplyPatch power-x86-destdir.patch
-
 %if !%{nopatches}
 
 # revert patches from upstream that conflict or that we get via other means
@@ -1391,10 +1359,9 @@ ApplyPatch vmbugon-warnon.patch
 #ApplyPatch arm-read_current_timer.patch
 #ApplyPatch arm-fix-omapdrm.patch
 
-ApplyPatch arm-l2x0-only-set-set_debug-on-pl310-r3p0-and-earlier.patch
-ApplyPatch arm-tegra-nvec-kconfig.patch
+#ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
-ApplyPatch arm-tegra-sdhci-module-fix.patch
+#ApplyPatch arm-tegra-sdhci-module-fix.patch
 ApplyPatch arm-alignment-faults.patch
 
 #
@@ -1465,15 +1432,8 @@ ApplyPatch linux-2.6-crash-driver.patch
 # Hack e1000e to work on Montevina SDV
 ApplyPatch linux-2.6-e1000-ich9-montevina.patch
 
-# crypto/
-ApplyPatch modsign-post-KS-jwb.patch
-
 # secure boot
-ApplyPatch efivarfs-3.7.patch
-ApplyPatch secure-boot-3.7-20130219.patch
-
-# Improved PCI support for UEFI
-ApplyPatch handle-efi-roms.patch
+#ApplyPatch secure-boot-20130219.patch
 
 # Assorted Virt Fixes
 
@@ -1488,7 +1448,6 @@ ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-i915-dp-stfu.patch
 ApplyPatch drm-i915-tv-detect-hush.patch
 ApplyPatch drm-i915-lvds-reclock-fix.patch
-ApplyPatch drm-i915-Fix-up-mismerge-of-3490ea5d-in-3.7.y.patch
 
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
@@ -1526,22 +1485,8 @@ ApplyPatch weird-root-dentry-name-debug.patch
 #selinux ptrace child permissions
 ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 
-#rhbz 871078
-ApplyPatch USB-report-submission-of-active-URBs.patch
-
 #rhbz 859485
 ApplyPatch vt-Drop-K_OFF-for-VC_MUTE.patch
-
-#rhbz CVE-2012-4530 868285 880147
-ApplyPatch exec-use-eloop-for-max-recursion-depth.patch
-
-#rhbz 851278
-ApplyPatch 8139cp-revert-set-ring-address-before-enabling-receiver.patch -R
-ApplyPatch 8139cp-set-ring-address-after-enabling-C-mode.patch
-ApplyPatch 8139cp-re-enable-interrupts-after-tx-timeout.patch
-
-#rhbz 892428
-ApplyPatch brcmsmac-updates-rhbz892428.patch
 
 #rhbz 799564
 ApplyPatch Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
@@ -1550,28 +1495,23 @@ ApplyPatch Input-add-support-for-Cypress-PS2-Trackpads.patch
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
 
-ApplyPatch silence-brcmsmac-warning.patch
-
 #rhbz 909591
-ApplyPatch usb-cypress-supertop.patch
-
-#rhbz 911479 911473 CVE-2013-0290
-ApplyPatch net-fix-infinite-loop-in-__skb_recv_datagram.patch
+#ApplyPatch usb-cypress-supertop.patch
 
 #rhbz 844750
-ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
+#ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 #rhbz 906055
 ApplyPatch perf-hists-Fix-period-symbol_conf.field_sep-display.patch
 
 #rhbz 812111
-ApplyPatch alps-v2-3.7.patch
+#ApplyPatch alps-v2-3.7.patch
 
 #rhbz 892060
 ApplyPatch ipv6-dst-from-ptr-race.patch
 
 #rhbz 879408
-ApplyPatch Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
+#ApplyPatch Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
 
 #CVE-2013-1763 rhbz 915052,915057
 ApplyPatch sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
@@ -1585,7 +1525,9 @@ ApplyPatch x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 #CVE-2013-1767 rhbz 915592,915716
 ApplyPatch tmpfs-fix-use-after-free-of-mempolicy-object.patch
 
-ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
+#ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
+
+
 
 # END OF PATCH APPLICATIONS
 
@@ -2450,6 +2392,34 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Feb 27 2013 Dave Jones <davej@redhat.com>
+- 3.8.0
+  Dropped (merged in 3.8)
+  - arm-l2x0-only-set-set_debug-on-pl310-r3p0-and-earlier.patch
+  - power-x86-destdir.patch
+  - modsign-post-KS-jwb.patch
+  - efivarfs-3.7.patch
+  - handle-efi-roms.patch
+  - drm-i915-Fix-up-mismerge-of-3490ea5d-in-3.7.y.patch
+  - USB-report-submission-of-active-URBs.patch
+  - exec-use-eloop-for-max-recursion-depth.patch
+  - 8139cp-revert-set-ring-address-before-enabling-receiver.patch
+  - 8139cp-set-ring-address-after-enabling-C-mode.patch
+  - 8139cp-re-enable-interrupts-after-tx-timeout.patch
+  - brcmsmac-updates-rhbz892428.patch
+  - silence-brcmsmac-warning.patch
+  - net-fix-infinite-loop-in-__skb_recv_datagram.patch
+  Needs checking:
+  - arm-tegra-nvec-kconfig.patch
+  - arm-tegra-sdhci-module-fix.patch
+  Needs reworking:
+  - secure-boot
+  - alps-v2-3.7.patch
+  - usb-cypress-supertop.patch
+  - Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
+  - 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
+  - userns-avoid-recursion-in-put_user_ns.patch
+
 * Tue Feb 26 2013 Justin M. Forbes <jforbes@redhat.com>
 - Avoid recursion in put_user_ns, potential overflow
 
