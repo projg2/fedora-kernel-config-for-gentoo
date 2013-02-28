@@ -2320,6 +2320,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Feb 28 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update ARM config for 3.8
+
 * Thu Feb 28 2013 Dave Jones <davej@redhat.com>
 - Remove no longer needed E1000 hack.
 
