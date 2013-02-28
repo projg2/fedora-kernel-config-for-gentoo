@@ -336,8 +336,8 @@ Summary: The Linux kernel
 %define with_bootwrapper 0
 %endif
 
-# sparse blows up on ppc64 and sparc64
-%ifarch ppc64 ppc sparc64 ppc64p7
+# sparse blows up on ppc64
+%ifarch ppc64 ppc ppc64p7
 %define with_sparse 0
 %endif
 
@@ -376,19 +376,6 @@ Summary: The Linux kernel
 %define make_target image
 %define kernel_image arch/s390/boot/image
 %define with_tools 0
-%endif
-
-%ifarch sparc64
-%define asmarch sparc
-%define all_arch_configs kernel-%{version}-sparc64*.config
-%define make_target vmlinux
-%define kernel_image vmlinux
-%define image_install_path boot
-%define with_tools 0
-%endif
-
-%ifarch sparcv9
-%define hdrarch sparc
 %endif
 
 %ifarch ppc
@@ -435,7 +422,7 @@ Summary: The Linux kernel
 # Which is a BadThing(tm).
 
 # We only build kernel-headers on the following...
-%define nobuildarches i386 s390 sparc sparcv9
+%define nobuildarches i386 s390
 
 %ifarch %nobuildarches
 %define with_up 0
@@ -523,7 +510,7 @@ Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
-ExclusiveArch: noarch %{all_x86} x86_64 ppc ppc64 ppc64p7 %{sparc} s390 s390x %{arm}
+ExclusiveArch: noarch %{all_x86} x86_64 ppc ppc64 ppc64p7 s390 s390x %{arm}
 ExclusiveOS: Linux
 
 %kernel_reqprovconf
@@ -590,8 +577,6 @@ Source53: config-powerpc64
 Source54: config-powerpc64p7
 
 Source70: config-s390x
-
-Source90: config-sparc64-generic
 
 # Unified ARM kernels
 Source100: config-armv7
@@ -2347,6 +2332,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Feb 28 2013 Dave Jones <davej@redhat.com>
+- Drop SPARC64 support.
+
 * Thu Feb 28 2013 Dave Jones <davej@redhat.com>
 - Linux 3.8.1
   Dropped (merged in 3.8.1)
