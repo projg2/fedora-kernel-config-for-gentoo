@@ -665,8 +665,6 @@ Patch520: quite-apm.patch
 Patch530: silence-fbcon-logo.patch
 Patch540: silence-empty-ipi-mask-warning.patch
 
-Patch700: e1000-ich9-montevina.patch
-
 Patch800: crash-driver.patch
 
 # secure boot
@@ -1390,9 +1388,6 @@ ApplyPatch silence-empty-ipi-mask-warning.patch
 
 # /dev/crash driver.
 ApplyPatch crash-driver.patch
-
-# Hack e1000e to work on Montevina SDV
-ApplyPatch e1000-ich9-montevina.patch
 
 # secure boot
 ApplyPatch secure-boot-20130218.patch
@@ -2325,6 +2320,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Feb 28 2013 Dave Jones <davej@redhat.com>
+- Remove no longer needed E1000 hack.
+
 * Thu Feb 28 2013 Dave Jones <davej@redhat.com>
 - Drop SPARC64 support.
 
