@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -700,8 +700,6 @@ Patch1825: drm-i915-dp-stfu.patch
 # mustard patch to shut abrt up. please drop (and notify ajax) whenever it
 # fails to apply
 Patch1826: drm-i915-tv-detect-hush.patch
-# d-i-n backport for https://bugzilla.redhat.com/show_bug.cgi?id=901951
-Patch1827: drm-i915-lvds-reclock-fix.patch
 
 # Quiet boot fixes
 # silence the ACPI blacklist code
@@ -764,29 +762,14 @@ Patch22241: Input-add-support-for-Cypress-PS2-Trackpads.patch
 #rhbz 892811
 Patch22247: ath9k_rx_dma_stop_check.patch
 
-#rhbz 909591
-Patch22255: usb-cypress-supertop.patch
-
-#rhbz 906055
-Patch22258: perf-hists-Fix-period-symbol_conf.field_sep-display.patch
-
-#CVE-2013-1763 rhbz 915052,915057
-Patch22260: sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
-
 #rhbz 903192
 Patch22261: 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 
 #rhbz 914737
 Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 
-#CVE-2013-1767 rhbz 915592,915716
-Patch22263: tmpfs-fix-use-after-free-of-mempolicy-object.patch
-
 #rhbz 812111
 Patch24000: alps.patch
-
-#rhbz 892060
-Patch24001: ipv6-dst-from-ptr-race.patch
 
 Patch24100: userns-avoid-recursion-in-put_user_ns.patch
 
@@ -1441,7 +1424,6 @@ ApplyPatch secure-boot-20130218.patch
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-i915-dp-stfu.patch
 ApplyPatch drm-i915-tv-detect-hush.patch
-ApplyPatch drm-i915-lvds-reclock-fix.patch
 
 # silence the ACPI blacklist code
 ApplyPatch linux-2.6-silence-acpi-blacklist.patch
@@ -1489,29 +1471,14 @@ ApplyPatch Input-add-support-for-Cypress-PS2-Trackpads.patch
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
 
-#rhbz 909591
-ApplyPatch usb-cypress-supertop.patch
-
-#rhbz 906055
-ApplyPatch perf-hists-Fix-period-symbol_conf.field_sep-display.patch
-
 #rhbz 812111
 ApplyPatch alps.patch
-
-#rhbz 892060
-ApplyPatch ipv6-dst-from-ptr-race.patch
-
-#CVE-2013-1763 rhbz 915052,915057
-ApplyPatch sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
 
 #rhbz 903192
 ApplyPatch 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 
 #rhbz 914737
 ApplyPatch x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
-
-#CVE-2013-1767 rhbz 915592,915716
-ApplyPatch tmpfs-fix-use-after-free-of-mempolicy-object.patch
 
 ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
 
@@ -2380,6 +2347,16 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Feb 28 2013 Dave Jones <davej@redhat.com>
+- Linux 3.8.1
+  Dropped (merged in 3.8.1)
+  - drm-i915-lvds-reclock-fix.patch
+  - usb-cypress-supertop.patch
+  - perf-hists-Fix-period-symbol_conf.field_sep-display.patch
+  - ipv6-dst-from-ptr-race.patch
+  - sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
+  - tmpfs-fix-use-after-free-of-mempolicy-object.patch
+
 * Thu Feb 28 2013 Dave Jones <davej@redhat.com>
 - Update usb-cypress-supertop.patch
 
