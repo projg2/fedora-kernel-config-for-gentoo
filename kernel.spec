@@ -773,9 +773,6 @@ Patch22257: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 #rhbz 906055
 Patch22258: perf-hists-Fix-period-symbol_conf.field_sep-display.patch
 
-#rhbz 879408
-Patch22259: Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
-
 #CVE-2013-1763 rhbz 915052,915057
 Patch22260: sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
 
@@ -1509,9 +1506,6 @@ ApplyPatch alps.patch
 
 #rhbz 892060
 ApplyPatch ipv6-dst-from-ptr-race.patch
-
-#rhbz 879408
-#ApplyPatch Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
 
 #CVE-2013-1763 rhbz 915052,915057
 ApplyPatch sock_diag-Fix-out-of-bounds-access-to-sock_diag_handlers.patch
@@ -2415,11 +2409,11 @@ fi
   - brcmsmac-updates-rhbz892428.patch
   - silence-brcmsmac-warning.patch
   - net-fix-infinite-loop-in-__skb_recv_datagram.patch
+  - Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
   Needs checking:
   - arm-tegra-nvec-kconfig.patch
   - arm-tegra-sdhci-module-fix.patch
   Needs reworking:
-  - Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
   - 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 * Tue Feb 26 2013 Justin M. Forbes <jforbes@redhat.com>
