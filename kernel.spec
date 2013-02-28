@@ -1496,7 +1496,7 @@ ApplyPatch Input-add-support-for-Cypress-PS2-Trackpads.patch
 ApplyPatch ath9k_rx_dma_stop_check.patch
 
 #rhbz 909591
-#ApplyPatch usb-cypress-supertop.patch
+ApplyPatch usb-cypress-supertop.patch
 
 #rhbz 844750
 #ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
@@ -2392,6 +2392,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Feb 28 2013 Dave Jones <davej@redhat.com>
+- Update usb-cypress-supertop.patch
+
 * Wed Feb 27 2013 Dave Jones <davej@redhat.com>
 - Update ALPS patch to what got merged in 3.9-rc
 
@@ -2416,7 +2419,6 @@ fi
   - arm-tegra-nvec-kconfig.patch
   - arm-tegra-sdhci-module-fix.patch
   Needs reworking:
-  - usb-cypress-supertop.patch
   - Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
   - 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
