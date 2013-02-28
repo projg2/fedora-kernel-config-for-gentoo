@@ -7,5 +7,5 @@
 -MODULE_DEVICE_TABLE(of, sdhci_dt_ids);
 +MODULE_DEVICE_TABLE(of, sdhci_tegra_dt_match);
  
- static struct tegra_sdhci_platform_data * __devinit sdhci_tegra_dt_parse_pdata(
+ static struct tegra_sdhci_platform_data * sdhci_tegra_dt_parse_pdata(
  						struct platform_device *pdev)
