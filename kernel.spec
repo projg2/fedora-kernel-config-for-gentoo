@@ -767,9 +767,6 @@ Patch22247: ath9k_rx_dma_stop_check.patch
 #rhbz 909591
 Patch22255: usb-cypress-supertop.patch
 
-#rhbz 844750
-Patch22257: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
-
 #rhbz 906055
 Patch22258: perf-hists-Fix-period-symbol_conf.field_sep-display.patch
 
@@ -1494,9 +1491,6 @@ ApplyPatch ath9k_rx_dma_stop_check.patch
 
 #rhbz 909591
 ApplyPatch usb-cypress-supertop.patch
-
-#rhbz 844750
-#ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 #rhbz 906055
 ApplyPatch perf-hists-Fix-period-symbol_conf.field_sep-display.patch
@@ -2410,11 +2404,10 @@ fi
   - silence-brcmsmac-warning.patch
   - net-fix-infinite-loop-in-__skb_recv_datagram.patch
   - Bluetooth-Add-support-for-Foxconn-Hon-Hai-0489-e056.patch
+  - 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
   Needs checking:
   - arm-tegra-nvec-kconfig.patch
   - arm-tegra-sdhci-module-fix.patch
-  Needs reworking:
-  - 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 * Tue Feb 26 2013 Justin M. Forbes <jforbes@redhat.com>
 - Avoid recursion in put_user_ns, potential overflow
