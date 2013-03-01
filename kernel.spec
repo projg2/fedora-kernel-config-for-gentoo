@@ -664,6 +664,7 @@ Patch510: silence-noise.patch
 Patch520: quiet-apm.patch
 Patch530: silence-fbcon-logo.patch
 Patch540: silence-empty-ipi-mask-warning.patch
+Patch541: silence-tty-null.patch
 
 Patch800: crash-driver.patch
 
@@ -1386,6 +1387,7 @@ ApplyPatch silence-fbcon-logo.patch
 
 # no-one cares about these warnings.
 ApplyPatch silence-empty-ipi-mask-warning.patch
+ApplyPatch silence-tty-null.patch
 
 # Changes to upstream defaults.
 
@@ -2328,6 +2330,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Mar 01 2013 Dave Jones <davej@redhat.com>
+- Silence "tty is NULL" trace.
+
 * Fri Mar 01 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patches to fix sunrpc panic (rhbz 904870)
 
