@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 202
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -750,6 +750,10 @@ Patch22261: 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 
 #rhbz 914737
 Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
+
+#rhbz 904870
+Patch22263: 0001-svcrpc-make-svc_age_temp_xprts-enqueue-under-sv_lock.patch
+Patch22264: 0002-svcrpc-fix-rpc-server-shutdown-races.patch
 
 #rhbz 812111
 Patch24000: alps.patch
@@ -1461,6 +1465,10 @@ ApplyPatch 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 ApplyPatch x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 
 ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
+
+#rhbz 904870
+ApplyPatch 0001-svcrpc-make-svc_age_temp_xprts-enqueue-under-sv_lock.patch
+ApplyPatch 0002-svcrpc-fix-rpc-server-shutdown-races.patch
 
 
 
@@ -2320,6 +2328,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Mar 01 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patches to fix sunrpc panic (rhbz 904870)
+
 * Thu Feb 28 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Update ARM config for 3.8
 
