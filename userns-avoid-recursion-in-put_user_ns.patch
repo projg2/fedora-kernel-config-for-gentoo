@@ -27,8 +27,10 @@ Date:   Fri Dec 28 18:58:39 2012 -0800
     Pointed-out-by: Vasily Kulikov <segoon@openwall.com>
     Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 
---- linux-3.7.9-105.fc17.noarch/include/linux/user_namespace.h	2013-02-14 11:29:49.757652513 -0600
-+++ linux-3.7.9-105.fc17.user_ns/include/linux/user_namespace.h	2013-02-26 15:19:40.696782035 -0600
+diff --git a/include/linux/user_namespace.h b/include/linux/user_namespace.h
+index b9bd2e6..4ce0093 100644
+--- a/include/linux/user_namespace.h
++++ b/include/linux/user_namespace.h
 @@ -21,7 +21,7 @@ struct user_namespace {
  	struct uid_gid_map	uid_map;
  	struct uid_gid_map	gid_map;
@@ -38,7 +40,7 @@ Date:   Fri Dec 28 18:58:39 2012 -0800
  	struct user_namespace	*parent;
  	kuid_t			owner;
  	kgid_t			group;
-@@ -34,17 +34,17 @@ extern struct user_namespace init_user_n
+@@ -35,18 +35,18 @@ extern struct user_namespace init_user_ns;
  static inline struct user_namespace *get_user_ns(struct user_namespace *ns)
  {
  	if (ns)
@@ -46,11 +48,12 @@ Date:   Fri Dec 28 18:58:39 2012 -0800
 +		atomic_inc(&ns->count);
  	return ns;
  }
- 
+
  extern int create_user_ns(struct cred *new);
+ extern int unshare_userns(unsigned long unshare_flags, struct cred **new_cred);
 -extern void free_user_ns(struct kref *kref);
 +extern void free_user_ns(struct user_namespace *ns);
- 
+
  static inline void put_user_ns(struct user_namespace *ns)
  {
 -	if (ns)
@@ -58,11 +61,13 @@ Date:   Fri Dec 28 18:58:39 2012 -0800
 +	if (ns && atomic_dec_and_test(&ns->count))
 +		free_user_ns(ns);
  }
- 
+
  struct seq_operations;
---- linux-3.7.9-105.fc17.noarch/kernel/user.c	2013-02-14 11:29:46.675652732 -0600
-+++ linux-3.7.9-105.fc17.user_ns/kernel/user.c	2013-02-26 15:16:12.347796824 -0600
-@@ -46,9 +46,7 @@ struct user_namespace init_user_ns = {
+diff --git a/kernel/user.c b/kernel/user.c
+index 33acb5e..57ebfd4 100644
+--- a/kernel/user.c
++++ b/kernel/user.c
+@@ -47,9 +47,7 @@ struct user_namespace init_user_ns = {
  			.count = 4294967295U,
  		},
  	},
@@ -72,37 +77,41 @@ Date:   Fri Dec 28 18:58:39 2012 -0800
 +	.count = ATOMIC_INIT(3),
  	.owner = GLOBAL_ROOT_UID,
  	.group = GLOBAL_ROOT_GID,
- };
---- linux-3.7.9-105.fc17.noarch/kernel/user_namespace.c	2013-02-14 11:29:46.690652731 -0600
-+++ linux-3.7.9-105.fc17.user_ns/kernel/user_namespace.c	2013-02-26 15:24:47.984760224 -0600
-@@ -52,7 +52,7 @@ int create_user_ns(struct cred *new)
- 	if (!ns)
- 		return -ENOMEM;
- 
+ 	.proc_inum = PROC_USER_INIT_INO,
+diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
+index 2b042c4..24f8ec3 100644
+--- a/kernel/user_namespace.c
++++ b/kernel/user_namespace.c
+@@ -78,7 +78,7 @@ int create_user_ns(struct cred *new)
+ 		return ret;
+ 	}
+
 -	kref_init(&ns->kref);
 +	atomic_set(&ns->count, 1);
+ 	/* Leave the new->user_ns reference with the new user namespace. */
  	ns->parent = parent_ns;
  	ns->owner = owner;
- 	ns->group = group;
-@@ -78,14 +78,15 @@ int create_user_ns(struct cred *new)
- 	return 0;
+@@ -104,15 +104,16 @@ int unshare_userns(unsigned long unshare_flags, struct cred **new_cred)
+ 	return create_user_ns(cred);
  }
- 
+
 -void free_user_ns(struct kref *kref)
 +void free_user_ns(struct user_namespace *ns)
  {
 -	struct user_namespace *parent, *ns =
 -		container_of(kref, struct user_namespace, kref);
 +	struct user_namespace *parent;
- 
+
 -	parent = ns->parent;
+-	proc_free_inum(ns->proc_inum);
 -	kmem_cache_free(user_ns_cachep, ns);
 -	put_user_ns(parent);
 +	do {
 +		parent = ns->parent;
++		proc_free_inum(ns->proc_inum);
 +		kmem_cache_free(user_ns_cachep, ns);
 +		ns = parent;
 +	} while (atomic_dec_and_test(&parent->count));
  }
  EXPORT_SYMBOL(free_user_ns);
- 
+
