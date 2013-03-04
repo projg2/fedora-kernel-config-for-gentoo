@@ -1604,7 +1604,7 @@ BuildKernel() {
 
     make -s ARCH=$Arch V=1 dtbs
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
-    install -m 644 arch/arm/boot/*.dtb $RPM_BUILD_ROOT/boot/dtb-$KernelVer/
+    install -m 644 arch/arm/boot/dts/*.dtb $RPM_BUILD_ROOT/boot/dtb-$KernelVer/
 %else
     make -s ARCH=$Arch V=1 %{?_smp_mflags} $MakeTarget %{?sparse_mflags}
 %endif
@@ -2330,6 +2330,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Mar  4 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix DTB generation on ARM
+
 * Fri Mar 01 2013 Dave Jones <davej@redhat.com>
 - Silence "tty is NULL" trace.
 
