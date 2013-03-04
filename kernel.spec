@@ -516,7 +516,7 @@ BuildRequires: xmlto, asciidoc
 BuildRequires: sparse >= 0.4.1
 %endif
 %if %{with_perf}
-BuildRequires: elfutils-devel zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison
+BuildRequires: elfutils-devel zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison audit-libs-devel
 %endif
 %if %{with_tools}
 BuildRequires: pciutils-devel gettext
@@ -2288,6 +2288,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Mar 04 2013 Justin M. Forbes <jforbes@redhat.com>
+- Add audit-libs-devel to perf build-deps to enable trace command. (rhbz 892893)
+
 * Mon Mar 04 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.2-101
 - Linux v3.8.2
 
