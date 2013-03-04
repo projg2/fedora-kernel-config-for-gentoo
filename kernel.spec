@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -730,10 +730,6 @@ Patch22261: 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 
 #rhbz 914737
 Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
-
-#rhbz 904870
-Patch22263: 0001-svcrpc-make-svc_age_temp_xprts-enqueue-under-sv_lock.patch
-Patch22264: 0002-svcrpc-fix-rpc-server-shutdown-races.patch
 
 #rhbz 812111
 Patch24000: alps.patch
@@ -1436,10 +1432,6 @@ ApplyPatch 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 ApplyPatch x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 
 ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
-
-#rhbz 904870
-ApplyPatch 0001-svcrpc-make-svc_age_temp_xprts-enqueue-under-sv_lock.patch
-ApplyPatch 0002-svcrpc-fix-rpc-server-shutdown-races.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2296,6 +2288,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Mar 04 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.2-101
+- Linux v3.8.2
+
 * Fri Mar 01 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.1-101
 - Linux v3.8.1
 - Drop SPARC64 support
