@@ -2328,6 +2328,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Mar 05 2013 Josh Boyer <jwboyer@redhat.com>
+- Enable CONFIG_IP6_NF_TARGET_MASQUERADE
+
 * Mon Mar 04 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix issues in nx crypto driver from Kent Yoder (rhbz 916544)
 
