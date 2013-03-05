@@ -1609,6 +1609,7 @@ BuildKernel() {
     make -s ARCH=$Arch V=1 dtbs
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
     install -m 644 arch/arm/boot/dts/*.dtb $RPM_BUILD_ROOT/boot/dtb-$KernelVer/
+    rm -f arch/arm/boot/dts/*.dtb
 %else
     make -s ARCH=$Arch V=1 %{?_smp_mflags} $MakeTarget %{?sparse_mflags}
 %endif
@@ -2334,6 +2335,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Mar  5 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix Beagle (omap), update vexpress
+
 * Tue Mar 05 2013 Josh Boyer <jwboyer@redhat.com>
 - Backport 4 fixes for efivarfs (rhbz 917984)
 - Enable CONFIG_IP6_NF_TARGET_MASQUERADE
