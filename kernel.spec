@@ -1577,7 +1577,8 @@ BuildKernel() {
 
     make -s ARCH=$Arch V=1 dtbs
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
-    install -m 644 arch/arm/boot/*.dtb $RPM_BUILD_ROOT/boot/dtb-$KernelVer/
+    install -m 644 arch/arm/boot/dts/*.dtb $RPM_BUILD_ROOT/boot/dtb-$KernelVer/
+    rm -f arch/arm/boot/dts/*.dtb
 %else
     make -s ARCH=$Arch V=1 %{?_smp_mflags} $MakeTarget %{?sparse_mflags}
 %endif
@@ -2300,6 +2301,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Mar  5 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update ARM configs for 3.8. Fix beagle (OMAP), update vexpress
+
 * Tue Mar 05 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-1819 xfs: _xfs_buf_find oops on blocks beyond the filesystem end
   (rhbz 918009,918070)
