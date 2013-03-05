@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 102
+%global baserelease 103
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -733,6 +733,9 @@ Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 
 #rhbz 916544
 Patch22263: 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
+
+#rhbz 917984
+Patch22264: efi-fixes-3.8.patch
 
 #rhbz 812111
 Patch24000: alps.patch
@@ -1436,6 +1439,9 @@ ApplyPatch x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 
 #rhbz 916544
 ApplyPatch 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
+
+#rhbz 917984
+ApplyPatch efi-fixes-3.8.patch
 
 ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
 
@@ -2294,6 +2300,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Mar 05 2013 Josh Boyer <jwboyer@redhat.com>
+- Backport 4 fixes for efivarfs (rhbz 917984)
+
 * Mon Mar 04 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix issues in nx crypto driver from Kent Yoder (rhbz 916544)
 
