@@ -2301,6 +2301,8 @@ fi
 #              '-'
 %changelog
 * Tue Mar 05 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-1819 xfs: _xfs_buf_find oops on blocks beyond the filesystem end
+  (rhbz 918009,918070)
 - Backport 4 fixes for efivarfs (rhbz 917984)
 
 * Mon Mar 04 2013 Josh Boyer <jwboyer@redhat.com>
