@@ -669,7 +669,7 @@ Patch541: silence-tty-null.patch
 Patch800: crash-driver.patch
 
 # secure boot
-Patch1000: secure-boot-20130218.patch
+Patch1000: secure-boot-20130219.patch
 
 # virt + ksm patches
 
@@ -1401,7 +1401,7 @@ ApplyPatch silence-tty-null.patch
 ApplyPatch crash-driver.patch
 
 # secure boot
-ApplyPatch secure-boot-20130218.patch
+ApplyPatch secure-boot-20130219.patch
 
 # Assorted Virt Fixes
 
@@ -2342,6 +2342,7 @@ fi
 #                 ||     ||
 %changelog
 * Wed Mar 06 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix regression in secure-boot acpi_rsdp patch (rhbz 906225)
 - crypto: info leaks in report API (rhbz 918512 918521)
 
 * Tue Mar  5 2013 Peter Robinson <pbrobinson@fedoraproject.org>

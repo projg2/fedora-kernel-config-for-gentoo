@@ -1092,7 +1092,7 @@ index fc28099..b5df7a8 100644
 1.8.1.2
 
 
-From fe27dd192ef250abcbaba973a14d43b21d7be497 Mon Sep 17 00:00:00 2001
+From 19640bebdcabe48ce1789ce7a6a0d0d5b925f0b5 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Thu, 20 Sep 2012 10:41:04 -0400
 Subject: [PATCH 14/19] acpi: Ignore acpi_rsdp kernel parameter in a secure
@@ -1100,7 +1100,10 @@ Subject: [PATCH 14/19] acpi: Ignore acpi_rsdp kernel parameter in a secure
 
 This option allows userspace to pass the RSDP address to the kernel.  This
 could potentially be used to circumvent the secure boot trust model.
-We ignore the setting if we don't have the CAP_COMPROMISE_KERNEL capability.
+This is setup through the setup_arch function, which is called before the
+security_init function sets up the security_ops, so we cannot use a
+capable call here.  We ignore the setting if we are booted in Secure Boot
+mode.
 
 Signed-off-by: Josh Boyer <jwboyer@redhat.com>
 ---
@@ -1108,7 +1111,7 @@ Signed-off-by: Josh Boyer <jwboyer@redhat.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/acpi/osl.c b/drivers/acpi/osl.c
-index bd22f86..88251d2 100644
+index bd22f86..d68c04f 100644
 --- a/drivers/acpi/osl.c
 +++ b/drivers/acpi/osl.c
 @@ -246,7 +246,7 @@ early_param("acpi_rsdp", setup_acpi_rsdp);
@@ -1116,7 +1119,7 @@ index bd22f86..88251d2 100644
  {
  #ifdef CONFIG_KEXEC
 -	if (acpi_rsdp)
-+	if (acpi_rsdp && capable(CAP_COMPROMISE_KERNEL))
++	if (acpi_rsdp && !efi_enabled(EFI_SECURE_BOOT))
  		return acpi_rsdp;
  #endif
  
@@ -1124,7 +1127,7 @@ index bd22f86..88251d2 100644
 1.8.1.2
 
 
-From c937b2c8e179bfdadb6617c0028f558e4d701e46 Mon Sep 17 00:00:00 2001
+From b9ab9c0b3356d9cde36f3ef3a0719623df2ee2d3 Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <mjg@redhat.com>
 Date: Tue, 4 Sep 2012 11:55:13 -0400
 Subject: [PATCH 15/19] kexec: Disable in a secure boot environment
@@ -1156,7 +1159,7 @@ index 5e4bd78..dd464e0 100644
 1.8.1.2
 
 
-From f08e390045266d53543a55afa16ca4be5a1c6316 Mon Sep 17 00:00:00 2001
+From 23e0646e1df8a0b4c31333b71796294801355032 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Fri, 5 Oct 2012 10:12:48 -0400
 Subject: [PATCH 16/19] MODSIGN: Always enforce module signing in a Secure Boot
@@ -1218,7 +1221,7 @@ index eab0827..93a16dc 100644
 1.8.1.2
 
 
-From 54ba1eec5847d964b1d458a240b50271b9a356a4 Mon Sep 17 00:00:00 2001
+From 833c54471c85e70e46d76f9f7ffa30197b9f135d Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Fri, 26 Oct 2012 14:02:09 -0400
 Subject: [PATCH 17/19] hibernate: Disable in a Secure Boot environment
@@ -1332,7 +1335,7 @@ index 4ed81e7..b11a0f4 100644
 1.8.1.2
 
 
-From 686090054f6c3784218b318c7adcc3c1f0ca5069 Mon Sep 17 00:00:00 2001
+From 1a9afaa05489b817ebe84c61d22e958856aa0737 Mon Sep 17 00:00:00 2001
 From: Josh Boyer <jwboyer@redhat.com>
 Date: Tue, 5 Feb 2013 19:25:05 -0500
 Subject: [PATCH 18/19] efi: Disable secure boot if shim is in insecure mode
@@ -1391,7 +1394,7 @@ index 96bd86b..6e1331c 100644
 1.8.1.2
 
 
-From df607d2d5061b04f8a686cd74edd72c1f2836d8c Mon Sep 17 00:00:00 2001
+From 763f18d6a1e2d5f4d84ce3382ef91434240c80d6 Mon Sep 17 00:00:00 2001
 From: Kees Cook <keescook@chromium.org>
 Date: Fri, 8 Feb 2013 11:12:13 -0800
 Subject: [PATCH 19/19] x86: Lock down MSR writing in secure boot
