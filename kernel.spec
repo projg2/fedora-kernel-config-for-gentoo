@@ -743,6 +743,9 @@ Patch24000: alps.patch
 
 Patch24100: userns-avoid-recursion-in-put_user_ns.patch
 
+#rhbz 859346
+Patch24101: fix-destroy_conntrack-GPF.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1445,6 +1448,9 @@ ApplyPatch efi-fixes-3.8.patch
 ApplyPatch crypto-user-fix-info-leaks-in-report-API.patch
 
 ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
+
+#rhbz 859346
+ApplyPatch fix-destroy_conntrack-GPF.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2304,6 +2310,7 @@ fi
 %changelog
 * Wed Mar 06 2013 Justin M. Forbes <jforbes@redhat.com>
 - Remove Ricoh multifunction DMAR patch as it's no longer needed (rhbz 880051)
+- Fix destroy_conntrack GPF (rhbz 859346)
 
 * Wed Mar 06 2013 Josh Boyer <jwboyer@redhat.com>
 - crypto: info leaks in report API (rhbz 918512 918521)
