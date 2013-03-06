@@ -703,8 +703,6 @@ Patch10000: fs-proc-devtree-remove_proc_entry.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch12303: dmar-disable-when-ricoh-multifunction.patch
-
 Patch13003: efi-dont-map-boot-services-on-32bit.patch
 
 Patch14000: hibernate-freeze-filesystems.patch
@@ -1430,9 +1428,6 @@ ApplyOptionalPatch v4l-dvb-experimental.patch
 ApplyPatch fs-proc-devtree-remove_proc_entry.patch
 
 ApplyPatch disable-i8042-check-on-apple-mac.patch
-
-# rhbz#605888
-ApplyPatch dmar-disable-when-ricoh-multifunction.patch
 
 ApplyPatch efi-dont-map-boot-services-on-32bit.patch
 
@@ -2341,6 +2336,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Mar 06 2013 Justin M. Forbes <jforbes@redhat.com>
+- Remove Ricoh multifunction DMAR patch as it's no longer needed (rhbz 880051)
+
 * Wed Mar 06 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix regression in secure-boot acpi_rsdp patch (rhbz 906225)
 - crypto: info leaks in report API (rhbz 918512 918521)
