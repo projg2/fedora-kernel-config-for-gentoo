@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 103
+%global baserelease 104
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -736,6 +736,9 @@ Patch22263: 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
 #rhbz 917984
 Patch22264: efi-fixes-3.8.patch
+
+#rhbz 918512 918521
+Patch22265: crypto-user-fix-info-leaks-in-report-API.patch
 
 #rhbz 812111
 Patch24000: alps.patch
@@ -1442,6 +1445,9 @@ ApplyPatch 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
 #rhbz 917984
 ApplyPatch efi-fixes-3.8.patch
+
+#rhbz 918512 918521
+ApplyPatch crypto-user-fix-info-leaks-in-report-API.patch
 
 ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
 
@@ -2301,6 +2307,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Mar 06 2013 Josh Boyer <jwboyer@redhat.com>
+- crypto: info leaks in report API (rhbz 918512 918521)
+
 * Tue Mar  5 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Update ARM configs for 3.8. Fix beagle (OMAP), update vexpress
 
