@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 204
+%global baserelease 205
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -758,6 +758,9 @@ Patch22264: efi-fixes-3.8.patch
 
 #rhbz 918512 918521
 Patch22265: crypto-user-fix-info-leaks-in-report-API.patch
+
+# CVE-2013-1792 rhbz 916646,919021
+Patch22266: keys-fix-race-with-concurrent-install_user_keyrings.patch
 
 #rhbz 812111
 Patch24000: alps.patch
@@ -1483,6 +1486,8 @@ ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
 #rhbz 859346
 ApplyPatch fix-destroy_conntrack-GPF.patch
 
+# CVE-2013-1792 rhbz 916646,919021
+ApplyPatch keys-fix-race-with-concurrent-install_user_keyrings.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2341,6 +2346,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Mar 07 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-1792 keys: race condition in install_user_keyrings (rhbz 916646 919021)
+
 * Wed Mar 06 2013 Justin M. Forbes <jforbes@redhat.com>
 - Remove Ricoh multifunction DMAR patch as it's no longer needed (rhbz 880051)
 - Fix destroy_conntrack GPF (rhbz 859346)
