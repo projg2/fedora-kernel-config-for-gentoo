@@ -762,6 +762,9 @@ Patch22265: crypto-user-fix-info-leaks-in-report-API.patch
 # CVE-2013-1792 rhbz 916646,919021
 Patch22266: keys-fix-race-with-concurrent-install_user_keyrings.patch
 
+#rhbz 840391
+Patch22267: logitech-dj-do-not-directly-call-hid_output_raw_report-during-probe.patch
+
 #rhbz 812111
 Patch24000: alps.patch
 
@@ -1488,6 +1491,9 @@ ApplyPatch fix-destroy_conntrack-GPF.patch
 
 # CVE-2013-1792 rhbz 916646,919021
 ApplyPatch keys-fix-race-with-concurrent-install_user_keyrings.patch
+
+#rhbz 840391
+ApplyPatch logitech-dj-do-not-directly-call-hid_output_raw_report-during-probe.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2347,6 +2353,7 @@ fi
 #                 ||     ||
 %changelog
 * Thu Mar 07 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix logitech-dj HID bug from Benjamin Tissoires (rhbz 840391)
 - CVE-2013-1792 keys: race condition in install_user_keyrings (rhbz 916646 919021)
 
 * Wed Mar 06 2013 Justin M. Forbes <jforbes@redhat.com>
