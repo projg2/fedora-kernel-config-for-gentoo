@@ -765,6 +765,9 @@ Patch22266: keys-fix-race-with-concurrent-install_user_keyrings.patch
 #rhbz 840391
 Patch22267: logitech-dj-do-not-directly-call-hid_output_raw_report-during-probe.patch
 
+#rhbz 916444
+Patch22268: dmi_scan-fix-missing-check-for-_dmi_-signature-in-smbios_present.patch
+
 #rhbz 812111
 Patch24000: alps.patch
 
@@ -1494,6 +1497,9 @@ ApplyPatch keys-fix-race-with-concurrent-install_user_keyrings.patch
 
 #rhbz 840391
 ApplyPatch logitech-dj-do-not-directly-call-hid_output_raw_report-during-probe.patch
+
+#rhbz 916444
+ApplyPatch dmi_scan-fix-missing-check-for-_dmi_-signature-in-smbios_present.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2353,6 +2359,7 @@ fi
 #                 ||     ||
 %changelog
 * Thu Mar 07 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix DMI regression (rhbz 916444)
 - Fix logitech-dj HID bug from Benjamin Tissoires (rhbz 840391)
 - CVE-2013-1792 keys: race condition in install_user_keyrings (rhbz 916646 919021)
 
