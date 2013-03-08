@@ -711,6 +711,8 @@ Patch14000: hibernate-freeze-filesystems.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
+Patch14011: team-net-next-update-20130307.patch
+
 
 Patch20000: 0001-efifb-Skip-DMI-checks-if-the-bootloader-knows-what-i.patch
 Patch20001: 0002-x86-EFI-Calculate-the-EFI-framebuffer-size-instead-o.patch
@@ -1507,6 +1509,9 @@ ApplyPatch net-sctp-Validate-parameter-size-for-SCTP_GET_ASSOC_.patch
 
 #rhbz 917353
 ApplyPatch backlight_revert.patch -R
+
+#Team Driver update
+ApplyPatch team-net-next-update-20130307.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2367,6 +2372,7 @@ fi
 %changelog
 * Fri Mar 08 2013 Justin M. Forbes <jforbes@redhat.com>
 - Revert "write backlight harder" until better solution is found (rhbz 917353)
+- Update team driver from net-next from Jiri Pirko
 
 * Fri Mar 08 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-1828 sctp: SCTP_GET_ASSOC_STATS stack buffer overflow (rhbz 919315 919316)
