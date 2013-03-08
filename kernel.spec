@@ -747,6 +747,9 @@ Patch22267: logitech-dj-do-not-directly-call-hid_output_raw_report-during-probe.
 #rhbz 916444
 Patch22268: dmi_scan-fix-missing-check-for-_dmi_-signature-in-smbios_present.patch
 
+#CVE-2013-1828 rhbz 919315 919316
+Patch22269: net-sctp-Validate-parameter-size-for-SCTP_GET_ASSOC_.patch
+
 #rhbz 812111
 Patch24000: alps.patch
 
@@ -1467,6 +1470,9 @@ ApplyPatch logitech-dj-do-not-directly-call-hid_output_raw_report-during-probe.p
 
 #rhbz 916444
 ApplyPatch dmi_scan-fix-missing-check-for-_dmi_-signature-in-smbios_present.patch
+
+#CVE-2013-1828 rhbz 919315 919316
+ApplyPatch net-sctp-Validate-parameter-size-for-SCTP_GET_ASSOC_.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2324,6 +2330,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Mar 08 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-1828 sctp: SCTP_GET_ASSOC_STATS stack buffer overflow (rhbz 919315 919316)
+
 * Fri Mar  8 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Have kernel provide kernel-highbank for upgrade to unified
 - Update mvebu configs
