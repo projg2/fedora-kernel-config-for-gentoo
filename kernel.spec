@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 205
+%global baserelease 206
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -777,6 +777,8 @@ Patch24100: userns-avoid-recursion-in-put_user_ns.patch
 #rhbz 859346
 Patch24101: fix-destroy_conntrack-GPF.patch
 
+#rhbz 917353
+Patch24102: backlight_revert.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1502,6 +1504,9 @@ ApplyPatch dmi_scan-fix-missing-check-for-_dmi_-signature-in-smbios_present.patc
 
 #CVE-2013-1828 rhbz 919315 919316
 ApplyPatch net-sctp-Validate-parameter-size-for-SCTP_GET_ASSOC_.patch
+
+#rhbz 917353
+ApplyPatch backlight_revert.patch -R
 
 # END OF PATCH APPLICATIONS
 
@@ -2360,6 +2365,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Mar 08 2013 Justin M. Forbes <jforbes@redhat.com>
+- Revert "write backlight harder" until better solution is found (rhbz 917353)
+
 * Fri Mar 08 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-1828 sctp: SCTP_GET_ASSOC_STATS stack buffer overflow (rhbz 919315 919316)
 
