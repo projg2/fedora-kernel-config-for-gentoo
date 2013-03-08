@@ -245,9 +245,9 @@ Summary: The Linux kernel
 
 # kernel up (versatile express), tegra and omap are only built on armv7 hfp/sfp
 %ifnarch armv7hl armv7l
+%endif
 %define with_omap 0
 %define with_tegra 0
-%endif
 
 # kernel-kirkwood is only built for armv5
 %ifnarch armv5tel
@@ -474,6 +474,8 @@ Provides: kernel-drm = 4.3.0\
 Provides: kernel-drm-nouveau = 16\
 Provides: kernel-modeset = 1\
 Provides: kernel-uname-r = %{KVERREL}%{?1:.%{1}}\
+Provides: kernel-highbank\
+Provides: kernel-highbank-uname-r = %{KVERREL}%{?1:.%{1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
 Requires(pre): linux-firmware >= 20120206-0.1.git06c8f81\
@@ -689,8 +691,6 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 Patch19000: ips-noirq.patch
 
 # ARM
-Patch21000: arm-read_current_timer.patch
-Patch21001: arm-fix-omapdrm.patch
 Patch21003: arm-alignment-faults.patch
 # OMAP
 
@@ -1305,8 +1305,6 @@ ApplyPatch vmbugon-warnon.patch
 #
 # ARM
 #
-#ApplyPatch arm-read_current_timer.patch
-#ApplyPatch arm-fix-omapdrm.patch
 #ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 #ApplyPatch arm-tegra-sdhci-module-fix.patch
@@ -2326,6 +2324,11 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Mar  8 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Have kernel provide kernel-highbank for upgrade to unified
+- Update mvebu configs
+- Drop unused ARM patches
+
 * Thu Mar 07 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix DMI regression (rhbz 916444)
 - Fix logitech-dj HID bug from Benjamin Tissoires (rhbz 840391)
