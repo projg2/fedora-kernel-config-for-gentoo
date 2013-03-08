@@ -2336,7 +2336,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Fri Mar 08 2013 Justin M. Forbes <jforbes@redhat.com>
+* Fri Mar 08 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.2-105
 - Revert "write backlight harder" until better solution is found (rhbz 917353)
 
 * Fri Mar 08 2013 Josh Boyer <jwboyer@redhat.com>
