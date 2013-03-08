@@ -1,0 +1,11 @@
+--- a/tools/power/x86/turbostat/Makefile	2013-03-08 15:42:39.274393369 -0500
++++ b/tools/power/x86/turbostat/Makefile	2013-03-08 15:41:59.162486862 -0500
+@@ -5,7 +5,7 @@ DESTDIR		:=
+ 
+ turbostat : turbostat.c
+ CFLAGS +=	-Wall
+-CFLAGS +=	-I../../../../arch/x86/include/uapi/
++CFLAGS +=	-I../../../../arch/x86/include/uapi/ -idirafter ../../../../include/
+ 
+ %: %.c
+ 	@mkdir -p $(BUILD_OUTPUT)

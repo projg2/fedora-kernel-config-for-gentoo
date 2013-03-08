@@ -761,6 +761,8 @@ Patch24101: fix-destroy_conntrack-GPF.patch
 #rhbz 917353
 Patch24102: backlight_revert.patch
 
+Patch24103: turbostat-makefile.diff
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1479,6 +1481,8 @@ ApplyPatch net-sctp-Validate-parameter-size-for-SCTP_GET_ASSOC_.patch
 
 #rhbz 917353
 ApplyPatch backlight_revert.patch -R
+
+ApplyPatch turbostat-makefile.diff
 
 # END OF PATCH APPLICATIONS
 
@@ -2336,7 +2340,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Fri Mar 08 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.2-105
+* Fri Mar 08 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.2-105
+- Add patch to fix 32-bit turbostat build with older glibc-headers
+
+* Fri Mar 08 2013 Justin M. Forbes <jforbes@redhat.com>
 - Revert "write backlight harder" until better solution is found (rhbz 917353)
 
 * Fri Mar 08 2013 Josh Boyer <jwboyer@redhat.com>
