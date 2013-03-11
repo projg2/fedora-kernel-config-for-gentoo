@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 106
+%global baserelease 107
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -762,6 +762,9 @@ Patch24101: fix-destroy_conntrack-GPF.patch
 Patch24102: backlight_revert.patch
 
 Patch24103: turbostat-makefile.diff
+
+#rhbz 904182
+Patch24104: TTY-do-not-reset-master-s-packet-mode.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1483,6 +1486,9 @@ ApplyPatch net-sctp-Validate-parameter-size-for-SCTP_GET_ASSOC_.patch
 ApplyPatch backlight_revert.patch -R
 
 ApplyPatch turbostat-makefile.diff
+
+#rhbz 904182
+ApplyPatch TTY-do-not-reset-master-s-packet-mode.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2340,6 +2346,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Mar 11 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix broken tty handling (rhbz 904182)
+
 * Fri Mar 08 2013 Josh Boyer <jwboyer@redhat.com>
 - Add turbostat and x86_engery_perf_policy debuginfo to kernel-tools-debuginfo
 
