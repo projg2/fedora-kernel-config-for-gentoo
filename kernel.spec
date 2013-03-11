@@ -772,6 +772,9 @@ Patch24105: w1-fix-oops-when-w1_search-is-called-from.patch
 #rhbz 911771
 Patch24106: serial-8250-Keep-8250.-xxxx-module-options-functiona.patch
 
+#rhbz 879462
+Patch24107: uvcvideo-suspend-fix.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1501,6 +1504,10 @@ ApplyPatch w1-fix-oops-when-w1_search-is-called-from.patch
 
 #rhbz 911771
 ApplyPatch serial-8250-Keep-8250.-xxxx-module-options-functiona.patch
+
+#rhbz 879462
+ApplyPatch uvcvideo-suspend-fix.patch
+
 
 # END OF PATCH APPLICATIONS
 
@@ -2359,6 +2366,7 @@ fi
 #              '-'
 %changelog
 * Mon Mar 11 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix usb_submit_urb error in uvcvideo (rhbz 879462)
 - Add patch to allow "8250." prefix to keep working (rhbz 911771)
 - Add patch to fix w1_search oops (rhbz 857954)
 - Add patch to fix broken tty handling (rhbz 904182)
