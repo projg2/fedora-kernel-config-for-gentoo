@@ -785,6 +785,9 @@ Patch24102: backlight_revert.patch
 #rhbz 904182
 Patch24103: TTY-do-not-reset-master-s-packet-mode.patch
 
+#rhbz 857954
+Patch24105: w1-fix-oops-when-w1_search-is-called-from.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1518,6 +1521,9 @@ ApplyPatch team-net-next-update-20130307.patch
 
 #rhbz 904182
 ApplyPatch TTY-do-not-reset-master-s-packet-mode.patch
+
+#rhbz 857954
+ApplyPatch w1-fix-oops-when-w1_search-is-called-from.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2377,6 +2383,7 @@ fi
 #                 ||     ||
 %changelog
 * Mon Mar 11 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix w1_search oops (rhbz 857954)
 - Add patch to fix broken tty handling (rhbz 904182)
 
 * Fri Mar 08 2013 Josh Boyer <jwboyer@redhat.com>
