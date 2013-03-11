@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 207
+%global baserelease 208
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -781,6 +781,9 @@ Patch24101: fix-destroy_conntrack-GPF.patch
 
 #rhbz 917353
 Patch24102: backlight_revert.patch
+
+#rhbz 904182
+Patch24103: TTY-do-not-reset-master-s-packet-mode.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1512,6 +1515,9 @@ ApplyPatch backlight_revert.patch -R
 
 #Team Driver update
 ApplyPatch team-net-next-update-20130307.patch
+
+#rhbz 904182
+ApplyPatch TTY-do-not-reset-master-s-packet-mode.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2370,6 +2376,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Mar 11 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix broken tty handling (rhbz 904182)
+
 * Fri Mar 08 2013 Josh Boyer <jwboyer@redhat.com>
 - Add turbostat and x86_engery_perf_policy debuginfo to kernel-tools-debuginfo
 
