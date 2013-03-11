@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 208
+%global baserelease 209
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -794,6 +794,9 @@ Patch24106: serial-8250-Keep-8250.-xxxx-module-options-functiona.patch
 #rhbz 879462
 Patch24107: uvcvideo-suspend-fix.patch
 
+# AMD64 EDAC reports a wrong dimm count with new API. Fix it
+Patch25000: amd64_edac_fix_rank_count.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1521,6 +1524,8 @@ ApplyPatch net-sctp-Validate-parameter-size-for-SCTP_GET_ASSOC_.patch
 
 #rhbz 917353
 ApplyPatch backlight_revert.patch -R
+
+ApplyPatch amd64_edac_fix_rank_count.patch
 
 #Team Driver update
 ApplyPatch team-net-next-update-20130307.patch
@@ -2395,6 +2400,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Mar 11 2013 Mauro Carvalho Chehab <mchehab@redhat.com> - 3.8.2-209
+- fix amd64_edac twice-mem-size-report on dual-channel machines and new EDAC API
+
 * Mon Mar 11 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix usb_submit_urb error in uvcvideo (rhbz 879462)
 - Add patch to allow "8250." prefix to keep working (rhbz 911771)
