@@ -775,6 +775,9 @@ Patch24106: serial-8250-Keep-8250.-xxxx-module-options-functiona.patch
 #rhbz 879462
 Patch24107: uvcvideo-suspend-fix.patch
 
+#CVE-2013-0914 rhbz 920499 920510
+Patch24108: signal-always-clear-sa_restorer-on-execve.patch
+
 # AMD64 EDAC reports a wrong dimm count with new API. Fix it
 Patch25000: amd64_edac_fix_rank_count.patch
 
@@ -1512,6 +1515,9 @@ ApplyPatch serial-8250-Keep-8250.-xxxx-module-options-functiona.patch
 
 #rhbz 879462
 ApplyPatch uvcvideo-suspend-fix.patch
+
+#CVE-2013-0914 rhbz 920499 920510
+ApplyPatch signal-always-clear-sa_restorer-on-execve.patch
 
 
 # END OF PATCH APPLICATIONS
@@ -2370,6 +2376,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Mar 12 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-0914 sa_restorer information leak (rhbz 920499 920510)
+
 * Mon Mar 11 2013 Mauro Carvalho Chehab <mchehab@redhat.com> 
 - fix amd64_edac twice-mem-size-report on dual-channel machines and new EDAC API
 
