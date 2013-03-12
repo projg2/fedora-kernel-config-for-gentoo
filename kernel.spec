@@ -797,6 +797,9 @@ Patch24107: uvcvideo-suspend-fix.patch
 #CVE-2013-0914 rhbz 920499 920510
 Patch24108: signal-always-clear-sa_restorer-on-execve.patch
 
+#CVE-2013-0913 rhbz 920471 920529
+Patch24109: drm-i915-bounds-check-execbuffer-relocation-count.patch
+
 # AMD64 EDAC reports a wrong dimm count with new API. Fix it
 Patch25000: amd64_edac_fix_rank_count.patch
 
@@ -1547,6 +1550,9 @@ ApplyPatch uvcvideo-suspend-fix.patch
 
 #CVE-2013-0914 rhbz 920499 920510
 ApplyPatch signal-always-clear-sa_restorer-on-execve.patch
+
+#CVE-2013-0913 rhbz 920471 920529
+ApplyPatch drm-i915-bounds-check-execbuffer-relocation-count.patch
 
 
 # END OF PATCH APPLICATIONS
@@ -2407,6 +2413,7 @@ fi
 #                 ||     ||
 %changelog
 * Tue Mar 12 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-0913 drm/i915: head writing overflow (rhbz 920471 920529)
 - CVE-2013-0914 sa_restorer information leak (rhbz 920499 920510)
 
 * Mon Mar 11 2013 Mauro Carvalho Chehab <mchehab@redhat.com> - 3.8.2-209
