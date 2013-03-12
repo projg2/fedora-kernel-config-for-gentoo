@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 209
+%global baserelease 210
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -740,6 +740,9 @@ Patch22226: vt-Drop-K_OFF-for-VC_MUTE.patch
 #rhbz 799564
 Patch22240: Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
 Patch22241: Input-add-support-for-Cypress-PS2-Trackpads.patch
+
+#rhbz 912166
+Patch22243: Input-cypress_ps2-fix-trackpadi-found-in-Dell-XPS12.patch
 
 #rhbz 892811
 Patch22247: ath9k_rx_dma_stop_check.patch
@@ -1489,6 +1492,9 @@ ApplyPatch vt-Drop-K_OFF-for-VC_MUTE.patch
 #rhbz 799564
 ApplyPatch Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
 ApplyPatch Input-add-support-for-Cypress-PS2-Trackpads.patch
+
+#rhbz 912166
+ApplyPatch Input-cypress_ps2-fix-trackpadi-found-in-Dell-XPS12.patch
 
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
@@ -2413,6 +2419,7 @@ fi
 #                 ||     ||
 %changelog
 * Tue Mar 12 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix Cypress trackpad on XPS 12 machines (rhbz 912166)
 - CVE-2013-0913 drm/i915: head writing overflow (rhbz 920471 920529)
 - CVE-2013-0914 sa_restorer information leak (rhbz 920499 920510)
 
