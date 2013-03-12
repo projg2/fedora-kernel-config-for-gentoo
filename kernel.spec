@@ -2273,15 +2273,6 @@ fi
 # plz don't put in a version string unless you're going to tag
 # and build.
 
-#  ___________________________________________________________
-# / This branch is for Fedora 19. You probably want to commit \
-# \ to the F-18 branch instead, or in addition to this one.   /
-#  -----------------------------------------------------------
-#         \   ^__^
-#          \  (@@)\_______
-#             (__)\       )\/\
-#                 ||----w |
-#                 ||     ||
 %changelog
 * Tue Mar 12 2013 Dave Airlie <airlied@redhat.com>
 - add QXL driver (f19 only)
