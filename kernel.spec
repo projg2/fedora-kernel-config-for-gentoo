@@ -803,9 +803,10 @@ Patch24108: signal-always-clear-sa_restorer-on-execve.patch
 #CVE-2013-0913 rhbz 920471 920529
 Patch24109: drm-i915-bounds-check-execbuffer-relocation-count.patch
 
-#rhbz 865863
+#rhbz 856863 892599
 Patch24110: mac80211-Fix-crash-due-to-un-canceled-work-items.patch
 Patch24111: cfg80211-mac80211-disconnect-on-suspend.patch
+Patch24112: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 
 # AMD64 EDAC reports a wrong dimm count with new API. Fix it
 Patch25000: amd64_edac_fix_rank_count.patch
@@ -1564,9 +1565,10 @@ ApplyPatch signal-always-clear-sa_restorer-on-execve.patch
 #CVE-2013-0913 rhbz 920471 920529
 ApplyPatch drm-i915-bounds-check-execbuffer-relocation-count.patch
 
-#rhbz 856863
+#rhbz 856863 892599
 ApplyPatch mac80211-Fix-crash-due-to-un-canceled-work-items.patch
 ApplyPatch cfg80211-mac80211-disconnect-on-suspend.patch
+ApplyPatch mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2426,6 +2428,7 @@ fi
 #                 ||     ||
 %changelog
 * Tue Mar 12 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix ieee80211_do_stop (rhbz 892599)
 - Add patches to fix cfg80211 issues with suspend (rhbz 856863)
 - Add patch to fix Cypress trackpad on XPS 12 machines (rhbz 912166)
 - CVE-2013-0913 drm/i915: head writing overflow (rhbz 920471 920529)
