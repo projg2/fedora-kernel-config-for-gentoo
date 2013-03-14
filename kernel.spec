@@ -808,8 +808,11 @@ Patch24110: mac80211-Fix-crash-due-to-un-canceled-work-items.patch
 Patch24111: cfg80211-mac80211-disconnect-on-suspend.patch
 Patch24112: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 
-# AMD64 EDAC reports a wrong dimm count with new API. Fix it
+#rhbz 920586
 Patch25000: amd64_edac_fix_rank_count.patch
+
+#rhbz 921500
+Patch25001: i7300_edac_single_mode_fixup.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1542,7 +1545,11 @@ ApplyPatch net-sctp-Validate-parameter-size-for-SCTP_GET_ASSOC_.patch
 #rhbz 917353
 ApplyPatch backlight_revert.patch -R
 
+#rhbz 920586
 ApplyPatch amd64_edac_fix_rank_count.patch
+
+#rhbz 921500
+ApplyPatch i7300_edac_single_mode_fixup.patch
 
 #Team Driver update
 ApplyPatch team-net-next-update-20130307.patch
@@ -2427,6 +2434,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Mar 14 2013 Mauro Carvalho Chehab <mchehab@redhat.com>
+- fix i7300_edac twice-mem-size-report via EDAC API (rhbz 921500)
+
 * Tue Mar 12 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix ieee80211_do_stop (rhbz 892599)
 - Add patches to fix cfg80211 issues with suspend (rhbz 856863)
@@ -2434,8 +2444,8 @@ fi
 - CVE-2013-0913 drm/i915: head writing overflow (rhbz 920471 920529)
 - CVE-2013-0914 sa_restorer information leak (rhbz 920499 920510)
 
-* Mon Mar 11 2013 Mauro Carvalho Chehab <mchehab@redhat.com> - 3.8.2-209
-- fix amd64_edac twice-mem-size-report on dual-channel machines and new EDAC API
+* Mon Mar 11 2013 Mauro Carvalho Chehab <mchehab@redhat.com>
+- fix amd64_edac twice-mem-size-report via EDAC API (rhbz 920586)
 
 * Mon Mar 11 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix usb_submit_urb error in uvcvideo (rhbz 879462)
