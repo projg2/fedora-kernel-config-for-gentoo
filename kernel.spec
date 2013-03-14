@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 109
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -691,7 +691,6 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 Patch19000: ips-noirq.patch
 
 # ARM
-Patch21003: arm-alignment-faults.patch
 # OMAP
 
 # ARM tegra
@@ -735,21 +734,6 @@ Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 #rhbz 916544
 Patch22263: 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
-#rhbz 917984
-Patch22264: efi-fixes-3.8.patch
-
-#rhbz 918512 918521
-Patch22265: crypto-user-fix-info-leaks-in-report-API.patch
-
-# CVE-2013-1792 rhbz 916646,919021
-Patch22266: keys-fix-race-with-concurrent-install_user_keyrings.patch
-
-#rhbz 840391
-Patch22267: logitech-dj-do-not-directly-call-hid_output_raw_report-during-probe.patch
-
-#rhbz 916444
-Patch22268: dmi_scan-fix-missing-check-for-_dmi_-signature-in-smbios_present.patch
-
 #CVE-2013-1828 rhbz 919315 919316
 Patch22269: net-sctp-Validate-parameter-size-for-SCTP_GET_ASSOC_.patch
 
@@ -785,7 +769,6 @@ Patch24108: signal-always-clear-sa_restorer-on-execve.patch
 Patch24109: drm-i915-bounds-check-execbuffer-relocation-count.patch
 
 #rhbz 856863 892599
-Patch24110: mac80211-Fix-crash-due-to-un-canceled-work-items.patch
 Patch24111: cfg80211-mac80211-disconnect-on-suspend.patch
 Patch24112: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 
@@ -1351,7 +1334,6 @@ ApplyPatch vmbugon-warnon.patch
 #ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 #ApplyPatch arm-tegra-sdhci-module-fix.patch
-ApplyPatch arm-alignment-faults.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -1494,25 +1476,10 @@ ApplyPatch x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 #rhbz 916544
 ApplyPatch 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
-#rhbz 917984
-ApplyPatch efi-fixes-3.8.patch
-
-#rhbz 918512 918521
-ApplyPatch crypto-user-fix-info-leaks-in-report-API.patch
-
 ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
 
 #rhbz 859346
 ApplyPatch fix-destroy_conntrack-GPF.patch
-
-# CVE-2013-1792 rhbz 916646,919021
-ApplyPatch keys-fix-race-with-concurrent-install_user_keyrings.patch
-
-#rhbz 840391
-ApplyPatch logitech-dj-do-not-directly-call-hid_output_raw_report-during-probe.patch
-
-#rhbz 916444
-ApplyPatch dmi_scan-fix-missing-check-for-_dmi_-signature-in-smbios_present.patch
 
 #CVE-2013-1828 rhbz 919315 919316
 ApplyPatch net-sctp-Validate-parameter-size-for-SCTP_GET_ASSOC_.patch
@@ -1547,7 +1514,6 @@ ApplyPatch signal-always-clear-sa_restorer-on-execve.patch
 ApplyPatch drm-i915-bounds-check-execbuffer-relocation-count.patch
 
 #rhbz 856863 892599
-ApplyPatch mac80211-Fix-crash-due-to-un-canceled-work-items.patch
 ApplyPatch cfg80211-mac80211-disconnect-on-suspend.patch
 ApplyPatch mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 
@@ -2411,6 +2377,7 @@ fi
 #              '-'
 %changelog
 * Thu Mar 14 2013 Josh Boyer <jwboyer@redhat.com>
+- Linux v3.8.3
 - Fix divide by zero on host TSC calibration failure (rhbz 859282)
 
 * Thu Mar 14 2013 Mauro Carvalho Chehab <mchehab@redhat.com>
