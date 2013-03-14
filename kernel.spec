@@ -808,6 +808,9 @@ Patch24110: mac80211-Fix-crash-due-to-un-canceled-work-items.patch
 Patch24111: cfg80211-mac80211-disconnect-on-suspend.patch
 Patch24112: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 
+#rhbz 859282
+Patch24113: VMX-x86-handle-host-TSC-calibration-failure.patch
+
 #rhbz 920586
 Patch25000: amd64_edac_fix_rank_count.patch
 
@@ -1576,6 +1579,9 @@ ApplyPatch drm-i915-bounds-check-execbuffer-relocation-count.patch
 ApplyPatch mac80211-Fix-crash-due-to-un-canceled-work-items.patch
 ApplyPatch cfg80211-mac80211-disconnect-on-suspend.patch
 ApplyPatch mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
+
+#rhbz 859282
+ApplyPatch VMX-x86-handle-host-TSC-calibration-failure.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2434,6 +2440,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Mar 14 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix divide by zero on host TSC calibration failure (rhbz 859282)
+
 * Thu Mar 14 2013 Mauro Carvalho Chehab <mchehab@redhat.com>
 - fix i7300_edac twice-mem-size-report via EDAC API (rhbz 921500)
 
