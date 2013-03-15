@@ -245,9 +245,9 @@ Summary: The Linux kernel
 
 # kernel up (versatile express), tegra and omap are only built on armv7 hfp/sfp
 %ifnarch armv7hl armv7l
-%endif
 %define with_omap 0
 %define with_tegra 0
+%endif
 
 # kernel-kirkwood is only built for armv5
 %ifnarch armv5tel
