@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 102
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -774,6 +774,9 @@ Patch24112: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 
 #rhbz 859282
 Patch24113: VMX-x86-handle-host-TSC-calibration-failure.patch
+
+#CVE-2013-1860 rhbz 921970 922004
+Patch24114: USB-cdc-wdm-fix-buffer-overflow.patch
 
 #rhbz 920586
 Patch25000: amd64_edac_fix_rank_count.patch
@@ -1519,6 +1522,9 @@ ApplyPatch mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 
 #rhbz 859282
 ApplyPatch VMX-x86-handle-host-TSC-calibration-failure.patch
+
+#CVE-2013-1860 rhbz 921970 922004
+ApplyPatch USB-cdc-wdm-fix-buffer-overflow.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2376,6 +2382,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Mar 15 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-1860 usb: cdc-wdm buf overflow triggered by dev (rhbz 921970 922004) 
+
 * Thu Mar 14 2013 Josh Boyer <jwboyer@redhat.com>
 - Linux v3.8.3
 - Fix divide by zero on host TSC calibration failure (rhbz 859282)
