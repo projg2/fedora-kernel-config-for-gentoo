@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 202
+%global baserelease 203
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -801,6 +801,9 @@ Patch25000: amd64_edac_fix_rank_count.patch
 
 #rhbz 921500
 Patch25001: i7300_edac_single_mode_fixup.patch
+
+#rhbz 922304
+Patch25002: drm-ilk-rc6-reverts.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1553,6 +1556,9 @@ ApplyPatch VMX-x86-handle-host-TSC-calibration-failure.patch
 
 #CVE-2013-1860 rhbz 921970 922004
 ApplyPatch USB-cdc-wdm-fix-buffer-overflow.patch
+
+#rhbz 922304
+ApplyPatch drm-ilk-rc6-reverts.patch -R
 
 # END OF PATCH APPLICATIONS
 
@@ -2411,6 +2417,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Mar 18 2013 Justin M. Forbes
+- Revert rc6 ilk changes from 3.8.3 stable (rhbz 922304)
+
 * Mon Mar 18 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable OMAP RNG and mvebu dove configs
 
