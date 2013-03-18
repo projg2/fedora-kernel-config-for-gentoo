@@ -2276,7 +2276,8 @@ fi
 # and build.
 
 %changelog
-* s390x config option changes from Dan Horák <dan@danny.cz> - 3.9.0-0.rc3.git0.3
+* Mon Mar 18 2013 Dave Jones <davej@redhat.com> - 3.9.0-0.rc3.git0.3
+- s390x config option changes from Dan Horák <dan@danny.cz>
   - enable PCI
   - disable few useless drivers
   - disable drivers conflicting with s390x
