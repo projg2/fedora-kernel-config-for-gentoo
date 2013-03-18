@@ -2388,7 +2388,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Mon Mar 18 2013 Justin M. Forbes
+* Mon Mar 18 2013 Justin M. Forbes - 3.8.3-103
 - Revert rc6 ilk changes from 3.8.3 stable (rhbz 922304)
 
 * Mon Mar 18 2013 Peter Robinson <pbrobinson@fedoraproject.org>
