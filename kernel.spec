@@ -2411,6 +2411,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Mar 18 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable OMAP RNG and mvebu dove configs
+
 * Fri Mar 15 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-1860 usb: cdc-wdm buf overflow triggered by dev (rhbz 921970 922004) 
 
