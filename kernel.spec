@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 104
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -645,7 +645,6 @@ Patch520: quite-apm.patch
 
 Patch530: silence-fbcon-logo.patch
 Patch540: silence-empty-ipi-mask-warning.patch
-Patch541: silence-tty-null.patch
 
 Patch800: crash-driver.patch
 
@@ -734,36 +733,18 @@ Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 #rhbz 916544
 Patch22263: 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
-#CVE-2013-1828 rhbz 919315 919316
-Patch22269: net-sctp-Validate-parameter-size-for-SCTP_GET_ASSOC_.patch
-
 #rhbz 812111
 Patch24000: alps.patch
 
 Patch24100: userns-avoid-recursion-in-put_user_ns.patch
-
-#rhbz 859346
-Patch24101: fix-destroy_conntrack-GPF.patch
 
 #rhbz 917353
 Patch24102: backlight_revert.patch
 
 Patch24103: turbostat-makefile.diff
 
-#rhbz 904182
-Patch24104: TTY-do-not-reset-master-s-packet-mode.patch
-
-#rhbz 857954
-Patch24105: w1-fix-oops-when-w1_search-is-called-from.patch
-
-#rhbz 911771
-Patch24106: serial-8250-Keep-8250.-xxxx-module-options-functiona.patch
-
 #rhbz 879462
 Patch24107: uvcvideo-suspend-fix.patch
-
-#CVE-2013-0914 rhbz 920499 920510
-Patch24108: signal-always-clear-sa_restorer-on-execve.patch
 
 #CVE-2013-0913 rhbz 920471 920529
 Patch24109: drm-i915-bounds-check-execbuffer-relocation-count.patch
@@ -775,17 +756,11 @@ Patch24112: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 #rhbz 859282
 Patch24113: VMX-x86-handle-host-TSC-calibration-failure.patch
 
-#CVE-2013-1860 rhbz 921970 922004
-Patch24114: USB-cdc-wdm-fix-buffer-overflow.patch
-
 #rhbz 920586
 Patch25000: amd64_edac_fix_rank_count.patch
 
 #rhbz 921500
 Patch25001: i7300_edac_single_mode_fixup.patch
-
-#rhbz 922304
-Patch25002: drm-ilk-rc6-reverts.patch
 
 #CVE-2013-1798 rhbz 917017 923968
 Patch25003: 0001-KVM-Fix-bounds-checking-in-ioapic-indirect-register-.patch
@@ -1409,7 +1384,6 @@ ApplyPatch silence-fbcon-logo.patch
 
 # No-one cares about these warnings
 ApplyPatch silence-empty-ipi-mask-warning.patch
-ApplyPatch silence-tty-null.patch
 
 # Changes to upstream defaults.
 
@@ -1493,12 +1467,6 @@ ApplyPatch 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
 ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
 
-#rhbz 859346
-ApplyPatch fix-destroy_conntrack-GPF.patch
-
-#CVE-2013-1828 rhbz 919315 919316
-ApplyPatch net-sctp-Validate-parameter-size-for-SCTP_GET_ASSOC_.patch
-
 #rhbz 917353
 ApplyPatch backlight_revert.patch -R
 
@@ -1510,20 +1478,8 @@ ApplyPatch amd64_edac_fix_rank_count.patch
 #rhbz 921500
 ApplyPatch i7300_edac_single_mode_fixup.patch
 
-#rhbz 904182
-ApplyPatch TTY-do-not-reset-master-s-packet-mode.patch
-
-#rhbz 857954
-ApplyPatch w1-fix-oops-when-w1_search-is-called-from.patch
-
-#rhbz 911771
-ApplyPatch serial-8250-Keep-8250.-xxxx-module-options-functiona.patch
-
 #rhbz 879462
 ApplyPatch uvcvideo-suspend-fix.patch
-
-#CVE-2013-0914 rhbz 920499 920510
-ApplyPatch signal-always-clear-sa_restorer-on-execve.patch
 
 #CVE-2013-0913 rhbz 920471 920529
 ApplyPatch drm-i915-bounds-check-execbuffer-relocation-count.patch
@@ -1534,12 +1490,6 @@ ApplyPatch mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 
 #rhbz 859282
 ApplyPatch VMX-x86-handle-host-TSC-calibration-failure.patch
-
-#CVE-2013-1860 rhbz 921970 922004
-ApplyPatch USB-cdc-wdm-fix-buffer-overflow.patch
-
-#rhbz 922304
-ApplyPatch drm-ilk-rc6-reverts.patch -R
 
 #CVE-2013-1798 rhbz 917017 923968
 ApplyPatch 0001-KVM-Fix-bounds-checking-in-ioapic-indirect-register-.patch
@@ -2406,6 +2356,10 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Mar 20 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.4-101
+- Linux v3.8.4
+- CVE-2013-1873 information leaks via netlink interface (rhbz 923652 923662)
+
 * Wed Mar 20 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-1796 kvm: buffer overflow in handling of MSR_KVM_SYSTEM_TIME
   (rhbz 917012 923966)
