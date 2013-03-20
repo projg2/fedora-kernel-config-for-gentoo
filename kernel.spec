@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 203
+%global baserelease 204
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -804,6 +804,15 @@ Patch25001: i7300_edac_single_mode_fixup.patch
 
 #rhbz 922304
 Patch25002: drm-ilk-rc6-reverts.patch
+
+#CVE-2013-1798 rhbz 917017 923968
+Patch25003: 0001-KVM-Fix-bounds-checking-in-ioapic-indirect-register-.patch
+
+#CVE-2013-1796 rhbz 917012 923966
+Patch25004: 0002-KVM-x86-fix-for-buffer-overflow-in-handling-of-MSR_K.patch
+
+#CVE-2013-1797 rhbz 917013 923967
+Patch25005: 0003-KVM-x86-Convert-MSR_KVM_SYSTEM_TIME-to-use-gfn_to_hv.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1559,6 +1568,15 @@ ApplyPatch USB-cdc-wdm-fix-buffer-overflow.patch
 
 #rhbz 922304
 ApplyPatch drm-ilk-rc6-reverts.patch -R
+
+#CVE-2013-1798 rhbz 917017 923968
+ApplyPatch 0001-KVM-Fix-bounds-checking-in-ioapic-indirect-register-.patch
+
+#CVE-2013-1796 rhbz 917012 923966
+ApplyPatch 0002-KVM-x86-fix-for-buffer-overflow-in-handling-of-MSR_K.patch
+
+#CVE-2013-1797 rhbz 917013 923967
+ApplyPatch 0003-KVM-x86-Convert-MSR_KVM_SYSTEM_TIME-to-use-gfn_to_hv.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2417,6 +2435,14 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Mar 20 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-1796 kvm: buffer overflow in handling of MSR_KVM_SYSTEM_TIME
+  (rhbz 917012 923966)
+- CVE-2013-1797 kvm: after free issue with the handling of MSR_KVM_SYSTEM_TIME
+  (rhbz 917013 923967)
+- CVE-2013-1798 kvm: out-of-bounds access in ioapic indirect register reads
+  (rhbz 917017 923968)
+
 * Mon Mar 18 2013 Justin M. Forbes
 - Revert rc6 ilk changes from 3.8.3 stable (rhbz 922304)
 
