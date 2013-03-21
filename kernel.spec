@@ -2385,6 +2385,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Mar 21 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Minor ARM config updates
+
 * Wed Mar 20 2013 Justin M. Forbes <jforbes@redhat.com> 3.8.4-201
 - Linux v3.8.4
 - CVE-2013-1873 information leaks via netlink interface (rhbz 923652 923662)
