@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 102
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -770,6 +770,9 @@ Patch25004: 0002-KVM-x86-fix-for-buffer-overflow-in-handling-of-MSR_K.patch
 
 #CVE-2013-1797 rhbz 917013 923967
 Patch25005: 0003-KVM-x86-Convert-MSR_KVM_SYSTEM_TIME-to-use-gfn_to_hv.patch
+
+#rhbz 920218
+Patch25006: mac80211-Dont-restart-sta-timer-if-not-running.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1499,6 +1502,9 @@ ApplyPatch 0002-KVM-x86-fix-for-buffer-overflow-in-handling-of-MSR_K.patch
 
 #CVE-2013-1797 rhbz 917013 923967
 ApplyPatch 0003-KVM-x86-Convert-MSR_KVM_SYSTEM_TIME-to-use-gfn_to_hv.patch
+
+#rhbz 920218
+ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2356,6 +2362,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Mar 21 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix workqueue crash in mac80211 (rhbz 920218)
+
 * Wed Mar 20 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.4-101
 - Linux v3.8.4
 - CVE-2013-1873 information leaks via netlink interface (rhbz 923652 923662)
