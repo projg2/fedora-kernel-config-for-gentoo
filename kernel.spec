@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -747,6 +747,7 @@ Patch21276: mac80211-Dont-restart-sta-timer-if-not-running.patch
 Patch21275: VMX-x86-handle-host-TSC-calibration-failure.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
+Patch22010: debug-idle-sched-warn-once.patch
 
 #selinux ptrace child permissions
 Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
@@ -1414,6 +1415,7 @@ ApplyPatch lis3-improve-handling-of-null-rate.patch
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
 ApplyPatch weird-root-dentry-name-debug.patch
+ApplyPatch debug-idle-sched-warn-once.patch
 
 #selinux ptrace child permissions
 ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
@@ -2281,6 +2283,9 @@ fi
 # and build.
 
 %changelog
+* Thu Mar 21 2013 Dave Jones <davej@redhat.com> - 3.9.0-0.rc3.git1.2
+- Only print "bad: scheduling from the idle thread" warning once.
+
 * Thu Mar 21 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix workqueue crash in mac80211 (rhbz 920218)
 
