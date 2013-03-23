@@ -2362,6 +2362,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sat Mar 23 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Disable Marvell Dove support for the moment as it breaks other SoCs
+
 * Thu Mar 21 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Minor ARM config updates
 
