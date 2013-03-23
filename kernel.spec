@@ -2391,6 +2391,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Sat Mar 23 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Disable Marvell Dove support for the moment as it breaks other SoCs
+
 * Thu Mar 21 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix workqueue crash in mac80211 (rhbz 920218)
 
