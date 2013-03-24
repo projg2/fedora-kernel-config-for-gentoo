@@ -2362,7 +2362,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Sat Mar 23 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+* Sat Mar 23 2013 Peter Robinson <pbrobinson@fedoraproject.org> - 3.8.4-102
 - Disable Marvell Dove support for the moment as it breaks other SoCs
 
 * Thu Mar 21 2013 Peter Robinson <pbrobinson@fedoraproject.org>
