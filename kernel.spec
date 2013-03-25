@@ -2391,6 +2391,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Mar 25 2013 Justin M. Forbes <jforbes@redhat.com>
+- enable CONFIG_DRM_VMWGFX_FBCON (rhbz 927022)
+
 * Sat Mar 23 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Disable Marvell Dove support for the moment as it breaks other SoCs
 
