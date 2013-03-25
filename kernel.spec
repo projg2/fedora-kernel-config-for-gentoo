@@ -2362,6 +2362,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Mar 25 2013 Justin M. Forbes <jforbes@redhat.com>
+- disable whci-hcd since it doesnt seem to have users (rhbz 919289)
+
 * Sat Mar 23 2013 Peter Robinson <pbrobinson@fedoraproject.org> - 3.8.4-102
 - Disable Marvell Dove support for the moment as it breaks other SoCs
 
