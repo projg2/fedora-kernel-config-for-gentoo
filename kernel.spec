@@ -759,6 +759,9 @@ Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 Patch23000: cpufreq-intel-pstate-validate-msrs.patch
 Patch23001: cpufreq-intel-pstate-max-is-in-the-max-variable-who-knew.patch
 
+#rhbz 927469
+Patch23006: fix-child-thread-introspection.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1461,6 +1464,9 @@ ApplyPatch HID-usbhid-quirk-for-MSI-GX680R-led-panel.patch
 
 #rhbz 806587
 ApplyPatch HID-usbhid-quirk-for-Realtek-Multi-card-reader.patch
+
+#rhbz 927469
+ApplyPatch fix-child-thread-introspection.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2294,6 +2300,9 @@ fi
 # and build.
 
 %changelog
+* Tue Mar 26 2013 Justin M. Forbes <jforbes@redhat.com>
+- Fix child thread introspection of of /proc/self/exe (rhbz 927469)
+
 * Tue Mar 26 2013 Dave Jones <davej@redhat.com>
 - Enable CONFIG_DM_CACHE (rhbz 924325)
 
