@@ -756,6 +756,9 @@ Patch24112: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 #rhbz 859282
 Patch24113: VMX-x86-handle-host-TSC-calibration-failure.patch
 
+#rhbz 806587
+Patch24115: HID-usbhid-quirk-for-Realtek-Multi-card-reader.patch
+
 #rhbz 907221
 Patch24116: HID-usbhid-quirk-for-MSI-GX680R-led-panel.patch
 
@@ -1511,6 +1514,9 @@ ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
 
 #rhbz 907221
 ApplyPatch HID-usbhid-quirk-for-MSI-GX680R-led-panel.patch
+
+#rhbz 806587
+ApplyPatch HID-usbhid-quirk-for-Realtek-Multi-card-reader.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2369,6 +2375,7 @@ fi
 #              '-'
 %changelog
 * Tue Mar 26 2013 Josh Boyer <jwboyer@redhat.com>
+- Add quirk for Realtek card reader to avoid 10 sec boot delay (rhbz 806587)
 - Add quirk for MSI keyboard backlight to avoid 10 sec boot delay (rhbz 907221)
 
 * Mon Mar 25 2013 Justin M. Forbes <jforbes@redhat.com>
