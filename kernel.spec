@@ -780,6 +780,9 @@ Patch25005: 0003-KVM-x86-Convert-MSR_KVM_SYSTEM_TIME-to-use-gfn_to_hv.patch
 #rhbz 920218
 Patch25006: mac80211-Dont-restart-sta-timer-if-not-running.patch
 
+#rhbz 927469
+Patch25007: fix-child-thread-introspection.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1517,6 +1520,9 @@ ApplyPatch HID-usbhid-quirk-for-MSI-GX680R-led-panel.patch
 
 #rhbz 806587
 ApplyPatch HID-usbhid-quirk-for-Realtek-Multi-card-reader.patch
+
+#rhbz 927469
+ApplyPatch fix-child-thread-introspection.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2374,6 +2380,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Mar 26 2013 Justin M. Forbes <jforbes@redhat.com>
+- Fix child thread introspection of of /proc/self/exe (rhbz 927469)
+
 * Tue Mar 26 2013 Josh Boyer <jwboyer@redhat.com>
 - Add quirk for Realtek card reader to avoid 10 sec boot delay (rhbz 806587)
 - Add quirk for MSI keyboard backlight to avoid 10 sec boot delay (rhbz 907221)
