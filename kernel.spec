@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 202
+%global baserelease 203
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -773,6 +773,9 @@ Patch24112: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 
 #rhbz 859282
 Patch24113: VMX-x86-handle-host-TSC-calibration-failure.patch
+
+#rhbz 907221
+Patch24116: HID-usbhid-quirk-for-MSI-GX680R-led-panel.patch
 
 #rhbz 920586
 Patch25000: amd64_edac_fix_rank_count.patch
@@ -1533,6 +1536,9 @@ ApplyPatch 0003-KVM-x86-Convert-MSR_KVM_SYSTEM_TIME-to-use-gfn_to_hv.patch
 
 #rhbz 920218
 ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
+
+#rhbz 907221
+ApplyPatch HID-usbhid-quirk-for-MSI-GX680R-led-panel.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2391,6 +2397,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Mar 26 2013 Josh Boyer <jwboyer@redhat.com>
+- Add quirk for MSI keyboard backlight to avoid 10 sec boot delay (rhbz 907221)
+
 * Mon Mar 25 2013 Justin M. Forbes <jforbes@redhat.com>
 - enable CONFIG_DRM_VMWGFX_FBCON (rhbz 927022)
 - disable whci-hcd since it doesnt seem to have users (rhbz 919289)
