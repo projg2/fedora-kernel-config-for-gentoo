@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 103
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -738,16 +738,10 @@ Patch24000: alps.patch
 
 Patch24100: userns-avoid-recursion-in-put_user_ns.patch
 
-#rhbz 917353
-Patch24102: backlight_revert.patch
-
 Patch24103: turbostat-makefile.diff
 
 #rhbz 879462
 Patch24107: uvcvideo-suspend-fix.patch
-
-#CVE-2013-0913 rhbz 920471 920529
-Patch24109: drm-i915-bounds-check-execbuffer-relocation-count.patch
 
 #rhbz 856863 892599
 Patch24111: cfg80211-mac80211-disconnect-on-suspend.patch
@@ -1479,9 +1473,6 @@ ApplyPatch 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
 ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
 
-#rhbz 917353
-ApplyPatch backlight_revert.patch -R
-
 ApplyPatch turbostat-makefile.diff
 
 #rhbz 920586
@@ -1492,9 +1483,6 @@ ApplyPatch i7300_edac_single_mode_fixup.patch
 
 #rhbz 879462
 ApplyPatch uvcvideo-suspend-fix.patch
-
-#CVE-2013-0913 rhbz 920471 920529
-ApplyPatch drm-i915-bounds-check-execbuffer-relocation-count.patch
 
 #rhbz 856863 892599
 ApplyPatch cfg80211-mac80211-disconnect-on-suspend.patch
@@ -2380,6 +2368,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Mar 28 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.5-101
+- Linux v3.8.5
+
 * Tue Mar 26 2013 Justin M. Forbes <jforbes@redhat.com>
 - Fix child thread introspection of of /proc/self/exe (rhbz 927469)
 
