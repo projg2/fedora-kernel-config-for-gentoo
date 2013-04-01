@@ -2293,6 +2293,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr  1 2013 Peter Robinson <pbrobinson@fedoraproject.org> 
+- Minor ARM LPAE updates
+
 * Sun Mar 31 2013 Peter Robinson <pbrobinson@fedoraproject.org> 
 - Make tegra inherit armv7-generic, fix and re-enable tegra
 - Enable SPI on ARM
