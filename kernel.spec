@@ -2398,6 +2398,7 @@ fi
 #                 ||     ||
 %changelog
 * Mon Apr 01 2013 Josh Boyer <jwboyer@redhat.com>
+- Enable the rtl8192e driver (rhbz 913753)
 - Enable CONFIG_MCE_INJECT (rhbz 927353)
 
 * Thu Mar 28 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.5-201
