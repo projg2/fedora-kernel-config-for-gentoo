@@ -2293,6 +2293,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 01 2013 Josh Boyer <jwboyer@redhat.com>
+- Enable CONFIG_MCE_INJECT (rhbz 927353)
+
 * Mon Apr  1 2013 Peter Robinson <pbrobinson@fedoraproject.org> 
 - Minor ARM LPAE updates
 
