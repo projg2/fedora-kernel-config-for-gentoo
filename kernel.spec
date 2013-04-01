@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 202
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2397,6 +2397,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Apr 01 2013 Josh Boyer <jwboyer@redhat.com>
+- Enable CONFIG_MCE_INJECT (rhbz 927353)
+
 * Thu Mar 28 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.5-201
 - Linux v3.8.5
 
