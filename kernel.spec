@@ -2397,6 +2397,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Apr 02 2013 Josh Boyer <jwboyer@redhat.com>
+- Enable CONFIG_SCSI_DMX3191D (rhbz 919874)
+
 * Mon Apr 01 2013 Josh Boyer <jwboyer@redhat.com>
 - Enable the rtl8192e driver (rhbz 913753)
 - Enable CONFIG_MCE_INJECT (rhbz 927353)
