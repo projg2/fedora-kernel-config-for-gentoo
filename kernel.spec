@@ -777,6 +777,9 @@ Patch25006: mac80211-Dont-restart-sta-timer-if-not-running.patch
 #rhbz 927469
 Patch25007: fix-child-thread-introspection.patch
 
+#rhbz 844750
+Patch25008: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1511,6 +1514,8 @@ ApplyPatch HID-usbhid-quirk-for-Realtek-Multi-card-reader.patch
 
 #rhbz 927469
 ApplyPatch fix-child-thread-introspection.patch
+
+ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2369,6 +2374,7 @@ fi
 #              '-'
 %changelog
 * Tue Apr 02 2013 Josh Boyer <jwboyer@redhat.com>
+- Add support for Atheros 04ca:3004 bluetooth devices (again) (rhbz 844750)
 - Enable CONFIG_SCSI_DMX3191D (rhbz 919874)
 
 * Mon Apr 01 2013 Josh Boyer <jwboyer@redhat.com>
