@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 301
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -95,7 +95,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %define rcrev 5
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 3.%{upstream_sublevel}.0
 %endif
@@ -730,9 +730,6 @@ Patch21262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 #rhbz 856863 892599
 Patch21273: cfg80211-mac80211-disconnect-on-suspend.patch
 Patch21274: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.9.patch
-
-#rhbz 920218
-Patch21276: mac80211-Dont-restart-sta-timer-if-not-running.patch
 
 #rhbz 859282
 Patch21275: VMX-x86-handle-host-TSC-calibration-failure.patch
@@ -1440,9 +1437,6 @@ ApplyPatch mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.9.patch
 
 #rhbz 859282
 ApplyPatch VMX-x86-handle-host-TSC-calibration-failure.patch
-
-#rhbz 920218
-ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
 
 #rhbz 927469
 ApplyPatch fix-child-thread-introspection.patch
@@ -2284,6 +2278,10 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 02 2013 Justin M. Forbes <jforbes@redhat.com> - 3.9.0-0.rc5.git1.301
+- Linux v3.9-rc5-108-g118c9a4
+- Reenable debugging options.
+
 * Tue Apr 02 2013 Josh Boyer <jwboyer@redhat.com>
 - Enable CONFIG_FB_MATROX_G on powerpc
 
