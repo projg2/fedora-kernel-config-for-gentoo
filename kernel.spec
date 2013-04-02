@@ -2284,6 +2284,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 02 2013 Josh Boyer <jwboyer@redhat.com>
+- Enable CONFIG_FB_MATROX_G on powerpc
+
 * Tue Apr 02 2013 Neil Horman <nhorman@redhat.com>
 - Fix dma debug error on unmap (rhbz 928024)
 
