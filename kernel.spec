@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -93,7 +93,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%define rcrev 4
+%define rcrev 5
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -737,23 +737,16 @@ Patch21276: mac80211-Dont-restart-sta-timer-if-not-running.patch
 #rhbz 859282
 Patch21275: VMX-x86-handle-host-TSC-calibration-failure.patch
 
-#rhbz 907221
-Patch21277: HID-usbhid-quirk-for-MSI-GX680R-led-panel.patch
-
-#rhbz 806587
-Patch21278: HID-usbhid-quirk-for-Realtek-Multi-card-reader.patch
-
 Patch22000: weird-root-dentry-name-debug.patch
 Patch22010: debug-idle-sched-warn-once.patch
 
 #selinux ptrace child permissions
 Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
-Patch23000: cpufreq-intel-pstate-validate-msrs.patch
-Patch23001: cpufreq-intel-pstate-max-is-in-the-max-variable-who-knew.patch
-
 #rhbz 927469
 Patch23006: fix-child-thread-introspection.patch
+
+Patch23007: htmldoc-build-fix.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1423,10 +1416,6 @@ ApplyPatch debug-idle-sched-warn-once.patch
 #selinux ptrace child permissions
 ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 
-# rhbz 922923
-ApplyPatch cpufreq-intel-pstate-validate-msrs.patch
-ApplyPatch cpufreq-intel-pstate-max-is-in-the-max-variable-who-knew.patch
-
 #rhbz 859485
 ApplyPatch vt-Drop-K_OFF-for-VC_MUTE.patch
 
@@ -1452,14 +1441,10 @@ ApplyPatch VMX-x86-handle-host-TSC-calibration-failure.patch
 #rhbz 920218
 ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
 
-#rhbz 907221
-ApplyPatch HID-usbhid-quirk-for-MSI-GX680R-led-panel.patch
-
-#rhbz 806587
-ApplyPatch HID-usbhid-quirk-for-Realtek-Multi-card-reader.patch
-
 #rhbz 927469
 ApplyPatch fix-child-thread-introspection.patch
+
+ApplyPatch htmldoc-build-fix.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2293,6 +2278,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 02 2013 Justin M. Forbes <jforbes@redhat.com> - 3.9.0-0.rc5.git0.1
+- Linux v3.9-rc5
+
 * Mon Apr 01 2013 Josh Boyer <jwboyer@redhat.com>
 - Enable CONFIG_MCE_INJECT (rhbz 927353)
 
