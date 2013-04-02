@@ -748,6 +748,9 @@ Patch23006: fix-child-thread-introspection.patch
 
 Patch23007: htmldoc-build-fix.patch
 
+#rhbz 928024
+Patch23008: forcedeth-dma-error-check.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1445,6 +1448,9 @@ ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
 ApplyPatch fix-child-thread-introspection.patch
 
 ApplyPatch htmldoc-build-fix.patch
+
+#rhbz 928024
+ApplyPatch forcedeth-dma-error-check.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2278,6 +2284,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 02 2013 Neil Horman <nhorman@redhat.com>
+- Fix dma debug error on unmap (rhbz 928024)
+
 * Tue Apr 02 2013 Josh Boyer <jwboyer@redhat.com>
 - Enable CONFIG_SCSI_DMX3191D (rhbz 919874)
 
