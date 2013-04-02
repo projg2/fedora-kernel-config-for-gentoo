@@ -2403,6 +2403,7 @@ fi
 #                 ||     ||
 %changelog
 * Tue Apr 02 2013 Josh Boyer <jwboyer@redhat.com>
+- Enable CONFIG_FB_MATROX_G on powerpc
 - Add support for Atheros 04ca:3004 bluetooth devices (again) (rhbz 844750)
 - Enable CONFIG_SCSI_DMX3191D (rhbz 919874)
 
