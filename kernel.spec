@@ -2402,6 +2402,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Apr 03 2013 Dave Jones <davej@redhat.com>
+- Enable MTD_CHAR/MTD_BLOCK (Needed for SFC)
+  Enable 10gigE on 64-bit only.
+
 * Tue Apr 02 2013 Josh Boyer <jwboyer@redhat.com>
 - Enable CONFIG_FB_MATROX_G on powerpc
 - Add support for Atheros 04ca:3004 bluetooth devices (again) (rhbz 844750)
