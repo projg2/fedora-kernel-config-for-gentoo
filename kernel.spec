@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 301
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -95,7 +95,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %define rcrev 5
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 3.%{upstream_sublevel}.0
 %endif
@@ -2278,6 +2278,10 @@ fi
 # and build.
 
 %changelog
+* Wed Apr 03 2013 Justin M. Forbes <jforbes@redhat.com> - 3.9.0-0.rc5.git2.1
+- Linux v3.9-rc5-146-gda241ef
+- Drop basrelease back to 1 until 3.9 is out of rc
+
 * Wed Apr  3 2013 Peter Robinson <pbrobinson@fedoraproject.org> 
 - Add upstream usb-next OMAP patch to fix usb on omap/mvebu
 
