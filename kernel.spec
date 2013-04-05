@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 102
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -749,12 +749,6 @@ Patch24112: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 
 #rhbz 859282
 Patch24113: VMX-x86-handle-host-TSC-calibration-failure.patch
-
-#rhbz 806587
-Patch24115: HID-usbhid-quirk-for-Realtek-Multi-card-reader.patch
-
-#rhbz 907221
-Patch24116: HID-usbhid-quirk-for-MSI-GX680R-led-panel.patch
 
 #rhbz 920586
 Patch25000: amd64_edac_fix_rank_count.patch
@@ -1505,12 +1499,6 @@ ApplyPatch 0003-KVM-x86-Convert-MSR_KVM_SYSTEM_TIME-to-use-gfn_to_hv.patch
 
 #rhbz 920218
 ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
-
-#rhbz 907221
-ApplyPatch HID-usbhid-quirk-for-MSI-GX680R-led-panel.patch
-
-#rhbz 806587
-ApplyPatch HID-usbhid-quirk-for-Realtek-Multi-card-reader.patch
 
 #rhbz 927469
 ApplyPatch fix-child-thread-introspection.patch
@@ -2373,6 +2361,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Apr 05 2013 Justin M. Forbes <jforbes@redhat.com>
+- Linux v3.8.6
+
 * Wed Apr 03 2013 Dave Jones <davej@redhat.com>
 - Enable MTD_CHAR/MTD_BLOCK (Needed for SFC)
   Enable 10gigE on 64-bit only.
