@@ -30,16 +30,16 @@ index 33c9a44..b9908dd 100644
 --- a/drivers/bluetooth/ath3k.c
 +++ b/drivers/bluetooth/ath3k.c
 @@ -76,6 +76,7 @@ static struct usb_device_id ath3k_table[] = {
- 	{ USB_DEVICE(0x0CF3, 0x3004) },
  	{ USB_DEVICE(0x0CF3, 0x311D) },
+ 	{ USB_DEVICE(0x0CF3, 0x817a) },
  	{ USB_DEVICE(0x13d3, 0x3375) },
 +	{ USB_DEVICE(0x04CA, 0x3004) },
  	{ USB_DEVICE(0x04CA, 0x3005) },
  	{ USB_DEVICE(0x04CA, 0x3006) },
  	{ USB_DEVICE(0x04CA, 0x3008) },
 @@ -108,6 +109,7 @@ static struct usb_device_id ath3k_blist_tbl[] = {
- 	{ USB_DEVICE(0x0cf3, 0x3004), .driver_info = BTUSB_ATH3012 },
  	{ USB_DEVICE(0x0cf3, 0x311D), .driver_info = BTUSB_ATH3012 },
+ 	{ USB_DEVICE(0x0CF3, 0x817a), .driver_info = BTUSB_ATH3012 },
  	{ USB_DEVICE(0x13d3, 0x3375), .driver_info = BTUSB_ATH3012 },
 +	{ USB_DEVICE(0x04ca, 0x3004), .driver_info = BTUSB_ATH3012 },
  	{ USB_DEVICE(0x04ca, 0x3005), .driver_info = BTUSB_ATH3012 },
@@ -50,8 +50,8 @@ index 7e351e3..59cde8e 100644
 --- a/drivers/bluetooth/btusb.c
 +++ b/drivers/bluetooth/btusb.c
 @@ -134,6 +134,7 @@ static struct usb_device_id blacklist_table[] = {
- 	{ USB_DEVICE(0x0cf3, 0x3004), .driver_info = BTUSB_ATH3012 },
  	{ USB_DEVICE(0x0cf3, 0x311d), .driver_info = BTUSB_ATH3012 },
+ 	{ USB_DEVICE(0x0cf3, 0x817a), .driver_info = BTUSB_ATH3012 },
  	{ USB_DEVICE(0x13d3, 0x3375), .driver_info = BTUSB_ATH3012 },
 +	{ USB_DEVICE(0x04ca, 0x3004), .driver_info = BTUSB_ATH3012 },
  	{ USB_DEVICE(0x04ca, 0x3005), .driver_info = BTUSB_ATH3012 },
