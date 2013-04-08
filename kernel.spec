@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 202
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -791,6 +791,9 @@ Patch25007: fix-child-thread-introspection.patch
 
 #rhbz 844750
 Patch25008: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
+
+#rhbz 908604
+Patch25009: HID-magicmouse-fix-race-between-input_register-and-probe.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1532,6 +1535,9 @@ ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
 ApplyPatch fix-child-thread-introspection.patch
 
 ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
+
+#rhbz 908604
+ApplyPatch HID-magicmouse-fix-race-between-input_register-and-probe.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2390,6 +2396,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Apr 08 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch from Benjamin Tissoires to fix race in HID magicmouse (rhbz 908604)
+
 * Fri Apr 05 2013 Justin M. Forbes <jforbes@redhat.com>
 - Linux v3.8.6
 
