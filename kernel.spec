@@ -2396,6 +2396,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Apr  8 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable CMA on ARM tegra
+- Minor tweeks to ARM OMAP
+
 * Mon Apr 08 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch from Benjamin Tissoires to fix race in HID magicmouse (rhbz 908604)
 
