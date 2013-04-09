@@ -2402,7 +2402,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Mon Apr 09 2013 Josh Boyer <jwboyer@redhat.com>
+* Mon Apr 09 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.6-203
 - Temporarily work around pci device assignment issues (rhbz 908888)
 - CVE-2013-1929 tg3: len overflow in VPD firmware parsing (rhbz 949932 949946)
 - Backport intel brightness quirk for emachines (rhbz 871932)
