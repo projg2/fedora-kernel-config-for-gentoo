@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 202
+%global baserelease 203
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -794,6 +794,9 @@ Patch25008: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 #rhbz 908604
 Patch25009: HID-magicmouse-fix-race-between-input_register-and-probe.patch
+
+#rhbz 871932
+Patch25010: 0001-drm-i915-add-quirk-to-invert-brightness-on-eMachines.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1538,6 +1541,9 @@ ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 #rhbz 908604
 ApplyPatch HID-magicmouse-fix-race-between-input_register-and-probe.patch
+
+#rhbz 871932
+ApplyPatch 0001-drm-i915-add-quirk-to-invert-brightness-on-eMachines.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2396,6 +2402,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Apr 09 2013 Josh Boyer <jwboyer@redhat.com>
+- Backport intel brightness quirk for emachines (rhbz 871932)
+
 * Mon Apr  8 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable CMA on ARM tegra
 - Minor tweeks to ARM OMAP
