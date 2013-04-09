@@ -670,7 +670,7 @@ Patch540: silence-empty-ipi-mask-warning.patch
 Patch800: crash-driver.patch
 
 # secure boot
-Patch1000: secure-boot-20130219.patch
+Patch1000: secure-boot-20130409.patch
 
 # virt + ksm patches
 
@@ -1428,7 +1428,7 @@ ApplyPatch silence-empty-ipi-mask-warning.patch
 ApplyPatch crash-driver.patch
 
 # secure boot
-ApplyPatch secure-boot-20130219.patch
+ApplyPatch secure-boot-20130409.patch
 
 # Assorted Virt Fixes
 
@@ -2403,6 +2403,7 @@ fi
 #                 ||     ||
 %changelog
 * Mon Apr 09 2013 Josh Boyer <jwboyer@redhat.com>
+- Temporarily work around pci device assignment issues (rhbz 908888)
 - CVE-2013-1929 tg3: len overflow in VPD firmware parsing (rhbz 949932 949946)
 - Backport intel brightness quirk for emachines (rhbz 871932)
 
