@@ -2374,6 +2374,7 @@ fi
 #              '-'
 %changelog
 * Mon Apr 09 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-1929 tg3: len overflow in VPD firmware parsing (rhbz 949932 949946)
 - Backport intel brightness quirk for emachines (rhbz 871932)
 
 * Mon Apr  8 2013 Peter Robinson <pbrobinson@fedoraproject.org>
