@@ -638,6 +638,9 @@ Patch100: taint-vbox.patch
 
 Patch110: vmbugon-warnon.patch
 
+Patch200: debug-bad-pte-dmi.patch
+Patch201: debug-bad-pte-modules.patch
+
 Patch390: defaults-acpi-video.patch
 Patch391: acpi-video-dos.patch
 Patch396: acpi-sony-nonvs-blacklist.patch
@@ -1294,6 +1297,9 @@ ApplyOptionalPatch upstream-reverts.patch -R
 ApplyPatch taint-vbox.patch
 
 ApplyPatch vmbugon-warnon.patch
+
+ApplyPatch debug-bad-pte-dmi.patch
+ApplyPatch debug-bad-pte-modules.patch
 
 # Architecture patches
 # x86(-64)
@@ -2280,6 +2286,9 @@ fi
 # and build.
 
 %changelog
+* Thu Apr 11 2013 Dave Jones <davej@redhat.com>
+- Print out some extra debug information when we hit bad page tables.
+
 * Tue Apr  9 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add patch to fix building some ARM tegra modules
 - Some minor ARM OMAP updates
