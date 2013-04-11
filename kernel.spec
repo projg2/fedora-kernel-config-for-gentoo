@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 103
+%global baserelease 104
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -734,7 +734,7 @@ Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
 Patch22263: 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
 #rhbz 812111
-Patch24000: alps.patch
+Patch24000: alps-v2.patch
 
 Patch24100: userns-avoid-recursion-in-put_user_ns.patch
 
@@ -1463,7 +1463,7 @@ ApplyPatch Input-cypress_ps2-fix-trackpadi-found-in-Dell-XPS12.patch
 ApplyPatch ath9k_rx_dma_stop_check.patch
 
 #rhbz 812111
-ApplyPatch alps.patch
+ApplyPatch alps-v2.patch
 
 #rhbz 903192
 ApplyPatch 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
@@ -2373,6 +2373,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Apr 11 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix ALPS backport patch (rhbz 812111)
+
 * Mon Apr 09 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-1929 tg3: len overflow in VPD firmware parsing (rhbz 949932 949946)
 - Backport intel brightness quirk for emachines (rhbz 871932)
