@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 205
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -722,9 +722,7 @@ Patch20001: 0002-x86-EFI-Calculate-the-EFI-framebuffer-size-instead-o.patch
 # ARM
 
 # ARM tegra
-Patch21004: arm-tegra-nvec-kconfig.patch
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
-Patch21006: arm-tegra-sdhci-module-fix.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -794,12 +792,6 @@ Patch25007: fix-child-thread-introspection.patch
 
 #rhbz 844750
 Patch25008: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
-
-#rhbz 908604
-Patch25009: HID-magicmouse-fix-race-between-input_register-and-probe.patch
-
-#rhbz 871932
-Patch25010: 0001-drm-i915-add-quirk-to-invert-brightness-on-eMachines.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1365,9 +1357,7 @@ ApplyPatch debug-bad-pte-modules.patch
 # ARM
 #
 
-#ApplyPatch arm-tegra-nvec-kconfig.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
-#ApplyPatch arm-tegra-sdhci-module-fix.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -1545,12 +1535,6 @@ ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
 ApplyPatch fix-child-thread-introspection.patch
 
 ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
-
-#rhbz 908604
-ApplyPatch HID-magicmouse-fix-race-between-input_register-and-probe.patch
-
-#rhbz 871932
-ApplyPatch 0001-drm-i915-add-quirk-to-invert-brightness-on-eMachines.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2409,7 +2393,8 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Fri Apr 12 2013 Josh Boyer <jwboyer@redhat.com>
+* Fri Apr 12 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.7-201
+- Linux v3.8.7
 - Enable CONFIG_LDM_PARTITION (rhbz 948636)
 
 * Thu Apr 11 2013 Dave Jones <davej@redhat.com>
