@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 204
+%global baserelease 205
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2409,6 +2409,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Apr 12 2013 Josh Boyer <jwboyer@redhat.com>
+- Enable CONFIG_LDM_PARTITION (rhbz 948636)
+
 * Thu Apr 11 2013 Dave Jones <davej@redhat.com>
 - Print out some extra debug information when we hit bad page tables.
 
