@@ -1,0 +1,953 @@
+From a6e4d5a03e9e3587e88aba687d8f225f4f04c792 Mon Sep 17 00:00:00 2001
+From: Matt Fleming <matt.fleming@intel.com>
+Date: Mon, 25 Mar 2013 09:14:30 +0000
+Subject: [PATCH] x86, efivars: firmware bug workarounds should be in platform
+ code
+
+Let's not burden ia64 with checks in the common efivars code that we're not
+writing too much data to the variable store. That kind of thing is an x86
+firmware bug, plain and simple.
+
+efi_query_variable_store() provides platforms with a wrapper in which they can
+perform checks and workarounds for EFI variable storage bugs.
+
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Matthew Garrett <mjg59@srcf.ucam.org>
+Signed-off-by: Matt Fleming <matt.fleming@intel.com>
+---
+ arch/x86/platform/efi/efi.c | 25 +++++++++++++++++++++++++
+ drivers/firmware/efivars.c  | 18 +++---------------
+ include/linux/efi.h         |  9 ++++++++-
+ 3 files changed, 36 insertions(+), 16 deletions(-)
+
+diff --git a/arch/x86/platform/efi/efi.c b/arch/x86/platform/efi/efi.c
+index 5f2ecaf..c89c245 100644
+--- a/arch/x86/platform/efi/efi.c
++++ b/arch/x86/platform/efi/efi.c
+@@ -999,3 +999,28 @@ u64 efi_mem_attributes(unsigned long phys_addr)
+ 	}
+ 	return 0;
+ }
++
++/*
++ * Some firmware has serious problems when using more than 50% of the EFI
++ * variable store, i.e. it triggers bugs that can brick machines. Ensure that
++ * we never use more than this safe limit.
++ *
++ * Return EFI_SUCCESS if it is safe to write 'size' bytes to the variable
++ * store.
++ */
++efi_status_t efi_query_variable_store(u32 attributes, unsigned long size)
++{
++	efi_status_t status;
++	u64 storage_size, remaining_size, max_size;
++
++	status = efi.query_variable_info(attributes, &storage_size,
++					 &remaining_size, &max_size);
++	if (status != EFI_SUCCESS)
++		return status;
++
++	if (!storage_size || size > remaining_size || size > max_size ||
++	    (remaining_size - size) < (storage_size / 2))
++		return EFI_OUT_OF_RESOURCES;
++
++	return EFI_SUCCESS;
++}
+diff --git a/drivers/firmware/efivars.c b/drivers/firmware/efivars.c
+index 7acafb8..bf15d81 100644
+--- a/drivers/firmware/efivars.c
++++ b/drivers/firmware/efivars.c
+@@ -436,24 +436,12 @@ static efi_status_t
+ check_var_size_locked(struct efivars *efivars, u32 attributes,
+ 			unsigned long size)
+ {
+-	u64 storage_size, remaining_size, max_size;
+-	efi_status_t status;
+ 	const struct efivar_operations *fops = efivars->ops;
+ 
+-	if (!efivars->ops->query_variable_info)
++	if (!efivars->ops->query_variable_store)
+ 		return EFI_UNSUPPORTED;
+ 
+-	status = fops->query_variable_info(attributes, &storage_size,
+-					   &remaining_size, &max_size);
+-
+-	if (status != EFI_SUCCESS)
+-		return status;
+-
+-	if (!storage_size || size > remaining_size || size > max_size ||
+-	    (remaining_size - size) < (storage_size / 2))
+-		return EFI_OUT_OF_RESOURCES;
+-
+-	return status;
++	return fops->query_variable_store(attributes, size);
+ }
+ 
+ 
+@@ -2131,7 +2119,7 @@ efivars_init(void)
+ 	ops.get_variable = efi.get_variable;
+ 	ops.set_variable = efi.set_variable;
+ 	ops.get_next_variable = efi.get_next_variable;
+-	ops.query_variable_info = efi.query_variable_info;
++	ops.query_variable_store = efi_query_variable_store;
+ 
+ 	error = register_efivars(&__efivars, &ops, efi_kobj);
+ 	if (error)
+diff --git a/include/linux/efi.h b/include/linux/efi.h
+index 9bf2f1f..3d7df3d 100644
+--- a/include/linux/efi.h
++++ b/include/linux/efi.h
+@@ -333,6 +333,7 @@ typedef efi_status_t efi_query_capsule_caps_t(efi_capsule_header_t **capsules,
+ 					      unsigned long count,
+ 					      u64 *max_size,
+ 					      int *reset_type);
++typedef efi_status_t efi_query_variable_store_t(u32 attributes, unsigned long size);
+ 
+ /*
+  *  EFI Configuration Table and GUID definitions
+@@ -575,9 +576,15 @@ extern void efi_enter_virtual_mode (void);	/* switch EFI to virtual mode, if pos
+ #ifdef CONFIG_X86
+ extern void efi_late_init(void);
+ extern void efi_free_boot_services(void);
++extern efi_status_t efi_query_variable_store(u32 attributes, unsigned long size);
+ #else
+ static inline void efi_late_init(void) {}
+ static inline void efi_free_boot_services(void) {}
++
++static inline efi_status_t efi_query_variable_store(u32 attributes, unsigned long size)
++{
++	return EFI_SUCCESS;
++}
+ #endif
+ extern void __iomem *efi_lookup_mapped_addr(u64 phys_addr);
+ extern u64 efi_get_iobase (void);
+@@ -731,7 +738,7 @@ struct efivar_operations {
+ 	efi_get_variable_t *get_variable;
+ 	efi_get_next_variable_t *get_next_variable;
+ 	efi_set_variable_t *set_variable;
+-	efi_query_variable_info_t *query_variable_info;
++	efi_query_variable_store_t *query_variable_store;
+ };
+ 
+ struct efivars {
+-- 
+1.8.1.4
+
+                                                                                                                                                                                                                                                               
+Delivered-To: jwboyer@gmail.com
+Received: by 10.76.92.6 with SMTP id ci6csp30969oab;
+        Mon, 15 Apr 2013 13:11:20 -0700 (PDT)
+X-Received: by 10.66.233.66 with SMTP id tu2mr16310292pac.12.1366056679639;
+        Mon, 15 Apr 2013 13:11:19 -0700 (PDT)
+Return-Path: <linux-efi-owner@vger.kernel.org>
+Received: from vger.kernel.org (vger.kernel.org. [209.132.180.67])
+        by mx.google.com with ESMTP id px5si683046pbb.263.2013.04.15.13.11.18;
+        Mon, 15 Apr 2013 13:11:19 -0700 (PDT)
+Received-SPF: pass (google.com: best guess record for domain of linux-efi-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) client-ip=209.132.180.67;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: best guess record for domain of linux-efi-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) smtp.mail=linux-efi-owner@vger.kernel.org
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+	id S1755430Ab3DOUKG (ORCPT <rfc822;jorge.garcia.gonzalez@gmail.com>
+	+ 14 others); Mon, 15 Apr 2013 16:10:06 -0400
+Received: from cavan.codon.org.uk ([93.93.128.6]:40554 "EHLO
+	cavan.codon.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754223Ab3DOUKF (ORCPT
+	<rfc822;linux-efi@vger.kernel.org>); Mon, 15 Apr 2013 16:10:05 -0400
+Received: from 50-0-250-146.dedicated.static.sonic.net ([50.0.250.146] helo=x230.nebula.com)
+	by cavan.codon.org.uk with esmtpsa (TLS1.0:DHE_RSA_AES_256_CBC_SHA1:32)
+	(Exim 4.72)
+	(envelope-from <matthew.garrett@nebula.com>)
+	id 1URpiv-00027X-TB; Mon, 15 Apr 2013 21:09:58 +0100
+From:	Matthew Garrett <matthew.garrett@nebula.com>
+To:	matt.fleming@intel.com
+Cc:	linux-efi@vger.kernel.org, x86@kernel.org,
+	linux-kernel@vger.kernel.org,
+	Matthew Garrett <matthew.garrett@nebula.com>
+Subject: [PATCH V6 1/3] Move utf16 functions to kernel core and rename
+Date:	Mon, 15 Apr 2013 13:09:45 -0700
+Message-Id: <1366056587-24414-2-git-send-email-matthew.garrett@nebula.com>
+X-Mailer: git-send-email 1.8.1.2
+In-Reply-To: <1366056587-24414-1-git-send-email-matthew.garrett@nebula.com>
+References: <1365561717-12343-1-git-send-email-matthew.garrett@nebula.com>
+ <1366056587-24414-1-git-send-email-matthew.garrett@nebula.com>
+X-SA-Do-Not-Run: Yes
+X-SA-Exim-Connect-IP: 50.0.250.146
+X-SA-Exim-Mail-From: matthew.garrett@nebula.com
+X-SA-Exim-Scanned: No (on cavan.codon.org.uk); SAEximRunCond expanded to false
+Sender:	linux-efi-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-efi.vger.kernel.org>
+X-Mailing-List:	linux-efi@vger.kernel.org
+
+We want to be able to use the utf16 functions that are currently present
+in the EFI variables code in platform-specific code as well. Move them to
+the kernel core, and in the process rename them to accurately describe what
+they do - they don't handle UTF16, only UCS2.
+
+Signed-off-by: Matthew Garrett <matthew.garrett@nebula.com>
+---
+ drivers/firmware/Kconfig    |  1 +
+ drivers/firmware/efivars.c  | 80 ++++++++++-----------------------------------
+ include/linux/ucs2_string.h | 14 ++++++++
+ lib/Kconfig                 |  3 ++
+ lib/Makefile                |  2 ++
+ lib/ucs2_string.c           | 51 +++++++++++++++++++++++++++++
+ 6 files changed, 89 insertions(+), 62 deletions(-)
+ create mode 100644 include/linux/ucs2_string.h
+ create mode 100644 lib/ucs2_string.c
+
+diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
+index 42c759a..3e53200 100644
+--- a/drivers/firmware/Kconfig
++++ b/drivers/firmware/Kconfig
+@@ -39,6 +39,7 @@ config FIRMWARE_MEMMAP
+ config EFI_VARS
+ 	tristate "EFI Variable Support via sysfs"
+ 	depends on EFI
++	select UCS2_STRING
+ 	default n
+ 	help
+ 	  If you say Y here, you are able to get EFI (Extensible Firmware
+diff --git a/drivers/firmware/efivars.c b/drivers/firmware/efivars.c
+index bf15d81..182ce94 100644
+--- a/drivers/firmware/efivars.c
++++ b/drivers/firmware/efivars.c
+@@ -80,6 +80,7 @@
+ #include <linux/slab.h>
+ #include <linux/pstore.h>
+ #include <linux/ctype.h>
++#include <linux/ucs2_string.h>
+ 
+ #include <linux/fs.h>
+ #include <linux/ramfs.h>
+@@ -172,51 +173,6 @@ static void efivar_update_sysfs_entries(struct work_struct *);
+ static DECLARE_WORK(efivar_work, efivar_update_sysfs_entries);
+ static bool efivar_wq_enabled = true;
+ 
+-/* Return the number of unicode characters in data */
+-static unsigned long
+-utf16_strnlen(efi_char16_t *s, size_t maxlength)
+-{
+-	unsigned long length = 0;
+-
+-	while (*s++ != 0 && length < maxlength)
+-		length++;
+-	return length;
+-}
+-
+-static inline unsigned long
+-utf16_strlen(efi_char16_t *s)
+-{
+-	return utf16_strnlen(s, ~0UL);
+-}
+-
+-/*
+- * Return the number of bytes is the length of this string
+- * Note: this is NOT the same as the number of unicode characters
+- */
+-static inline unsigned long
+-utf16_strsize(efi_char16_t *data, unsigned long maxlength)
+-{
+-	return utf16_strnlen(data, maxlength/sizeof(efi_char16_t)) * sizeof(efi_char16_t);
+-}
+-
+-static inline int
+-utf16_strncmp(const efi_char16_t *a, const efi_char16_t *b, size_t len)
+-{
+-	while (1) {
+-		if (len == 0)
+-			return 0;
+-		if (*a < *b)
+-			return -1;
+-		if (*a > *b)
+-			return 1;
+-		if (*a == 0) /* implies *b == 0 */
+-			return 0;
+-		a++;
+-		b++;
+-		len--;
+-	}
+-}
+-
+ static bool
+ validate_device_path(struct efi_variable *var, int match, u8 *buffer,
+ 		     unsigned long len)
+@@ -268,7 +224,7 @@ validate_load_option(struct efi_variable *var, int match, u8 *buffer,
+ 	u16 filepathlength;
+ 	int i, desclength = 0, namelen;
+ 
+-	namelen = utf16_strnlen(var->VariableName, sizeof(var->VariableName));
++	namelen = ucs2_strnlen(var->VariableName, sizeof(var->VariableName));
+ 
+ 	/* Either "Boot" or "Driver" followed by four digits of hex */
+ 	for (i = match; i < match+4; i++) {
+@@ -291,7 +247,7 @@ validate_load_option(struct efi_variable *var, int match, u8 *buffer,
+ 	 * There's no stored length for the description, so it has to be
+ 	 * found by hand
+ 	 */
+-	desclength = utf16_strsize((efi_char16_t *)(buffer + 6), len - 6) + 2;
++	desclength = ucs2_strsize((efi_char16_t *)(buffer + 6), len - 6) + 2;
+ 
+ 	/* Each boot entry must have a descriptor */
+ 	if (!desclength)
+@@ -581,7 +537,7 @@ efivar_store_raw(struct efivar_entry *entry, const char *buf, size_t count)
+ 	spin_lock_irq(&efivars->lock);
+ 
+ 	status = check_var_size_locked(efivars, new_var->Attributes,
+-	       new_var->DataSize + utf16_strsize(new_var->VariableName, 1024));
++	       new_var->DataSize + ucs2_strsize(new_var->VariableName, 1024));
+ 
+ 	if (status == EFI_SUCCESS || status == EFI_UNSUPPORTED)
+ 		status = efivars->ops->set_variable(new_var->VariableName,
+@@ -759,7 +715,7 @@ static ssize_t efivarfs_file_write(struct file *file,
+ 	 * QueryVariableInfo() isn't supported by the firmware.
+ 	 */
+ 
+-	varsize = datasize + utf16_strsize(var->var.VariableName, 1024);
++	varsize = datasize + ucs2_strsize(var->var.VariableName, 1024);
+ 	status = check_var_size(efivars, attributes, varsize);
+ 
+ 	if (status != EFI_SUCCESS) {
+@@ -1211,7 +1167,7 @@ static int efivarfs_fill_super(struct super_block *sb, void *data, int silent)
+ 
+ 		inode = NULL;
+ 
+-		len = utf16_strlen(entry->var.VariableName);
++		len = ucs2_strlen(entry->var.VariableName);
+ 
+ 		/* name, plus '-', plus GUID, plus NUL*/
+ 		name = kmalloc(len + 1 + GUID_LEN + 1, GFP_ATOMIC);
+@@ -1469,8 +1425,8 @@ static int efi_pstore_erase(enum pstore_type_id type, u64 id, int count,
+ 
+ 		if (efi_guidcmp(entry->var.VendorGuid, vendor))
+ 			continue;
+-		if (utf16_strncmp(entry->var.VariableName, efi_name,
+-				  utf16_strlen(efi_name))) {
++		if (ucs2_strncmp(entry->var.VariableName, efi_name,
++				  ucs2_strlen(efi_name))) {
+ 			/*
+ 			 * Check if an old format,
+ 			 * which doesn't support holding
+@@ -1482,8 +1438,8 @@ static int efi_pstore_erase(enum pstore_type_id type, u64 id, int count,
+ 			for (i = 0; i < DUMP_NAME_LEN; i++)
+ 				efi_name_old[i] = name_old[i];
+ 
+-			if (utf16_strncmp(entry->var.VariableName, efi_name_old,
+-					  utf16_strlen(efi_name_old)))
++			if (ucs2_strncmp(entry->var.VariableName, efi_name_old,
++					  ucs2_strlen(efi_name_old)))
+ 				continue;
+ 		}
+ 
+@@ -1561,8 +1517,8 @@ static ssize_t efivar_create(struct file *filp, struct kobject *kobj,
+ 	 * Does this variable already exist?
+ 	 */
+ 	list_for_each_entry_safe(search_efivar, n, &efivars->list, list) {
+-		strsize1 = utf16_strsize(search_efivar->var.VariableName, 1024);
+-		strsize2 = utf16_strsize(new_var->VariableName, 1024);
++		strsize1 = ucs2_strsize(search_efivar->var.VariableName, 1024);
++		strsize2 = ucs2_strsize(new_var->VariableName, 1024);
+ 		if (strsize1 == strsize2 &&
+ 			!memcmp(&(search_efivar->var.VariableName),
+ 				new_var->VariableName, strsize1) &&
+@@ -1578,7 +1534,7 @@ static ssize_t efivar_create(struct file *filp, struct kobject *kobj,
+ 	}
+ 
+ 	status = check_var_size_locked(efivars, new_var->Attributes,
+-	       new_var->DataSize + utf16_strsize(new_var->VariableName, 1024));
++	       new_var->DataSize + ucs2_strsize(new_var->VariableName, 1024));
+ 
+ 	if (status && status != EFI_UNSUPPORTED) {
+ 		spin_unlock_irq(&efivars->lock);
+@@ -1602,7 +1558,7 @@ static ssize_t efivar_create(struct file *filp, struct kobject *kobj,
+ 
+ 	/* Create the entry in sysfs.  Locking is not required here */
+ 	status = efivar_create_sysfs_entry(efivars,
+-					   utf16_strsize(new_var->VariableName,
++					   ucs2_strsize(new_var->VariableName,
+ 							 1024),
+ 					   new_var->VariableName,
+ 					   &new_var->VendorGuid);
+@@ -1632,8 +1588,8 @@ static ssize_t efivar_delete(struct file *filp, struct kobject *kobj,
+ 	 * Does this variable already exist?
+ 	 */
+ 	list_for_each_entry_safe(search_efivar, n, &efivars->list, list) {
+-		strsize1 = utf16_strsize(search_efivar->var.VariableName, 1024);
+-		strsize2 = utf16_strsize(del_var->VariableName, 1024);
++		strsize1 = ucs2_strsize(search_efivar->var.VariableName, 1024);
++		strsize2 = ucs2_strsize(del_var->VariableName, 1024);
+ 		if (strsize1 == strsize2 &&
+ 			!memcmp(&(search_efivar->var.VariableName),
+ 				del_var->VariableName, strsize1) &&
+@@ -1679,9 +1635,9 @@ static bool variable_is_present(efi_char16_t *variable_name, efi_guid_t *vendor)
+ 	unsigned long strsize1, strsize2;
+ 	bool found = false;
+ 
+-	strsize1 = utf16_strsize(variable_name, 1024);
++	strsize1 = ucs2_strsize(variable_name, 1024);
+ 	list_for_each_entry_safe(entry, n, &efivars->list, list) {
+-		strsize2 = utf16_strsize(entry->var.VariableName, 1024);
++		strsize2 = ucs2_strsize(entry->var.VariableName, 1024);
+ 		if (strsize1 == strsize2 &&
+ 			!memcmp(variable_name, &(entry->var.VariableName),
+ 				strsize2) &&
+diff --git a/include/linux/ucs2_string.h b/include/linux/ucs2_string.h
+new file mode 100644
+index 0000000..cbb20af
+--- /dev/null
++++ b/include/linux/ucs2_string.h
+@@ -0,0 +1,14 @@
++#ifndef _LINUX_UCS2_STRING_H_
++#define _LINUX_UCS2_STRING_H_
++
++#include <linux/types.h>	/* for size_t */
++#include <linux/stddef.h>	/* for NULL */
++
++typedef u16 ucs2_char_t;
++
++unsigned long ucs2_strnlen(const ucs2_char_t *s, size_t maxlength);
++unsigned long ucs2_strlen(const ucs2_char_t *s);
++unsigned long ucs2_strsize(const ucs2_char_t *data, unsigned long maxlength);
++int ucs2_strncmp(const ucs2_char_t *a, const ucs2_char_t *b, size_t len);
++
++#endif /* _LINUX_UCS2_STRING_H_ */
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 3958dc4..fe01d41 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -404,4 +404,7 @@ config OID_REGISTRY
+ 	help
+ 	  Enable fast lookup object identifier registry.
+ 
++config UCS2_STRING
++        tristate
++
+ endmenu
+diff --git a/lib/Makefile b/lib/Makefile
+index d7946ff..6e2cc56 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -174,3 +174,5 @@ quiet_cmd_build_OID_registry = GEN     $@
+       cmd_build_OID_registry = perl $(srctree)/$(src)/build_OID_registry $< $@
+ 
+ clean-files	+= oid_registry_data.c
++
++obj-$(CONFIG_UCS2_STRING) += ucs2_string.o
+diff --git a/lib/ucs2_string.c b/lib/ucs2_string.c
+new file mode 100644
+index 0000000..6f500ef
+--- /dev/null
++++ b/lib/ucs2_string.c
+@@ -0,0 +1,51 @@
++#include <linux/ucs2_string.h>
++#include <linux/module.h>
++
++/* Return the number of unicode characters in data */
++unsigned long
++ucs2_strnlen(const ucs2_char_t *s, size_t maxlength)
++{
++        unsigned long length = 0;
++
++        while (*s++ != 0 && length < maxlength)
++                length++;
++        return length;
++}
++EXPORT_SYMBOL(ucs2_strnlen);
++
++unsigned long
++ucs2_strlen(const ucs2_char_t *s)
++{
++        return ucs2_strnlen(s, ~0UL);
++}
++EXPORT_SYMBOL(ucs2_strlen);
++
++/*
++ * Return the number of bytes is the length of this string
++ * Note: this is NOT the same as the number of unicode characters
++ */
++unsigned long
++ucs2_strsize(const ucs2_char_t *data, unsigned long maxlength)
++{
++        return ucs2_strnlen(data, maxlength/sizeof(ucs2_char_t)) * sizeof(ucs2_char_t);
++}
++EXPORT_SYMBOL(ucs2_strsize);
++
++int
++ucs2_strncmp(const ucs2_char_t *a, const ucs2_char_t *b, size_t len)
++{
++        while (1) {
++                if (len == 0)
++                        return 0;
++                if (*a < *b)
++                        return -1;
++                if (*a > *b)
++                        return 1;
++                if (*a == 0) /* implies *b == 0 */
++                        return 0;
++                a++;
++                b++;
++                len--;
++        }
++}
++EXPORT_SYMBOL(ucs2_strncmp);
+-- 
+1.8.1.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-efi" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+                                                                                                                                                                                                                                                               
+Delivered-To: jwboyer@gmail.com
+Received: by 10.76.92.6 with SMTP id ci6csp21932oab;
+        Mon, 15 Apr 2013 08:57:40 -0700 (PDT)
+X-Received: by 10.66.9.7 with SMTP id v7mr30771745paa.216.1366041459856;
+        Mon, 15 Apr 2013 08:57:39 -0700 (PDT)
+Return-Path: <linux-kernel-owner@vger.kernel.org>
+Received: from vger.kernel.org (vger.kernel.org. [209.132.180.67])
+        by mx.google.com with ESMTP id fd8si20555261pad.17.2013.04.15.08.57.37;
+        Mon, 15 Apr 2013 08:57:39 -0700 (PDT)
+Received-SPF: pass (google.com: best guess record for domain of linux-kernel-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) client-ip=209.132.180.67;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: best guess record for domain of linux-kernel-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) smtp.mail=linux-kernel-owner@vger.kernel.org
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+	id S1754718Ab3DOPyZ (ORCPT <rfc822;seanhern@gmail.com> + 99 others);
+	Mon, 15 Apr 2013 11:54:25 -0400
+Received: from cavan.codon.org.uk ([93.93.128.6]:36679 "EHLO
+	cavan.codon.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752817Ab3DOPyU (ORCPT
+	<rfc822;linux-kernel@vger.kernel.org>);
+	Mon, 15 Apr 2013 11:54:20 -0400
+Received: from mb70536d0.tmodns.net ([208.54.5.183] helo=x230.localdomain)
+	by cavan.codon.org.uk with esmtpsa (TLS1.0:DHE_RSA_AES_256_CBC_SHA1:32)
+	(Exim 4.72)
+	(envelope-from <matthew.garrett@nebula.com>)
+	id 1URljM-0005hz-Uk; Mon, 15 Apr 2013 16:54:09 +0100
+From:	Matthew Garrett <matthew.garrett@nebula.com>
+To:	matt.fleming@intel.com
+Cc:	linux-efi@vger.kernel.org, x86@kernel.org,
+	linux-kernel@vger.kernel.org,
+	Matthew Garrett <matthew.garrett@nebula.com>
+Subject: [PATCH V5 1/2] efi: Pass boot services variable info to runtime code
+Date:	Mon, 15 Apr 2013 08:53:46 -0700
+Message-Id: <1366041227-17710-1-git-send-email-matthew.garrett@nebula.com>
+X-Mailer: git-send-email 1.8.1.2
+In-Reply-To: <1365561717-12343-1-git-send-email-matthew.garrett@nebula.com>
+References: <1365561717-12343-1-git-send-email-matthew.garrett@nebula.com>
+X-cavan-blacklisted-at:	zen.spamhaus.org
+X-SA-Do-Not-Run: Yes
+X-SA-Exim-Connect-IP: 208.54.5.183
+X-SA-Exim-Mail-From: matthew.garrett@nebula.com
+X-SA-Exim-Scanned: No (on cavan.codon.org.uk); SAEximRunCond expanded to false
+Sender:	linux-kernel-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-kernel.vger.kernel.org>
+X-Mailing-List:	linux-kernel@vger.kernel.org
+
+EFI variables can be flagged as being accessible only within boot services.
+This makes it awkward for us to figure out how much space they use at
+runtime. In theory we could figure this out by simply comparing the results
+from QueryVariableInfo() to the space used by all of our variables, but
+that fails if the platform doesn't garbage collect on every boot. Thankfully,
+calling QueryVariableInfo() while still inside boot services gives a more
+reliable answer. This patch passes that information from the EFI boot stub
+up to the efi platform code.
+
+Signed-off-by: Matthew Garrett <matthew.garrett@nebula.com>
+---
+ arch/x86/boot/compressed/eboot.c      | 47 +++++++++++++++++++++++++++++++++++
+ arch/x86/include/asm/efi.h            |  7 ++++++
+ arch/x86/include/uapi/asm/bootparam.h |  1 +
+ arch/x86/platform/efi/efi.c           | 21 ++++++++++++++++
+ 4 files changed, 76 insertions(+)
+
+diff --git a/arch/x86/boot/compressed/eboot.c b/arch/x86/boot/compressed/eboot.c
+index c205035..8615f75 100644
+--- a/arch/x86/boot/compressed/eboot.c
++++ b/arch/x86/boot/compressed/eboot.c
+@@ -251,6 +251,51 @@ static void find_bits(unsigned long mask, u8 *pos, u8 *size)
+ 	*size = len;
+ }
+ 
++static efi_status_t setup_efi_vars(struct boot_params *params)
++{
++	struct setup_data *data;
++	struct efi_var_bootdata *efidata;
++	u64 store_size, remaining_size, var_size;
++	efi_status_t status;
++
++	if (!sys_table->runtime->query_variable_info)
++		return EFI_UNSUPPORTED;
++
++	data = (struct setup_data *)(unsigned long)params->hdr.setup_data;
++
++	while (data && data->next)
++		data = (struct setup_data *)(unsigned long)data->next;
++
++	status = efi_call_phys4(sys_table->runtime->query_variable_info,
++				EFI_VARIABLE_NON_VOLATILE |
++				EFI_VARIABLE_BOOTSERVICE_ACCESS |
++				EFI_VARIABLE_RUNTIME_ACCESS, &store_size,
++				&remaining_size, &var_size);
++
++	if (status != EFI_SUCCESS)
++		return status;
++
++	status = efi_call_phys3(sys_table->boottime->allocate_pool,
++				EFI_LOADER_DATA, sizeof(*efidata), &efidata);
++
++	if (status != EFI_SUCCESS)
++		return status;
++
++	efidata->data.type = SETUP_EFI_VARS;
++	efidata->data.len = sizeof(struct efi_var_bootdata) -
++		sizeof(struct setup_data);
++	efidata->data.next = 0;
++	efidata->store_size = store_size;
++	efidata->remaining_size = remaining_size;
++	efidata->max_var_size = var_size;
++
++	if (data)
++		data->next = (unsigned long)efidata;
++	else
++		params->hdr.setup_data = (unsigned long)efidata;
++
++}
++
+ static efi_status_t setup_efi_pci(struct boot_params *params)
+ {
+ 	efi_pci_io_protocol *pci;
+@@ -1157,6 +1202,8 @@ struct boot_params *efi_main(void *handle, efi_system_table_t *_table,
+ 
+ 	setup_graphics(boot_params);
+ 
++	setup_efi_vars(boot_params);
++
+ 	setup_efi_pci(boot_params);
+ 
+ 	status = efi_call_phys3(sys_table->boottime->allocate_pool,
+diff --git a/arch/x86/include/asm/efi.h b/arch/x86/include/asm/efi.h
+index 60c89f3..2fb5d58 100644
+--- a/arch/x86/include/asm/efi.h
++++ b/arch/x86/include/asm/efi.h
+@@ -102,6 +102,13 @@ extern void efi_call_phys_epilog(void);
+ extern void efi_unmap_memmap(void);
+ extern void efi_memory_uc(u64 addr, unsigned long size);
+ 
++struct efi_var_bootdata {
++	struct setup_data data;
++	u64 store_size;
++	u64 remaining_size;
++	u64 max_var_size;
++};
++
+ #ifdef CONFIG_EFI
+ 
+ static inline bool efi_is_native(void)
+diff --git a/arch/x86/include/uapi/asm/bootparam.h b/arch/x86/include/uapi/asm/bootparam.h
+index c15ddaf..0874424 100644
+--- a/arch/x86/include/uapi/asm/bootparam.h
++++ b/arch/x86/include/uapi/asm/bootparam.h
+@@ -6,6 +6,7 @@
+ #define SETUP_E820_EXT			1
+ #define SETUP_DTB			2
+ #define SETUP_PCI			3
++#define SETUP_EFI_VARS			4
+ 
+ /* ram_size flags */
+ #define RAMDISK_IMAGE_START_MASK	0x07FF
+diff --git a/arch/x86/platform/efi/efi.c b/arch/x86/platform/efi/efi.c
+index c89c245..e844d82 100644
+--- a/arch/x86/platform/efi/efi.c
++++ b/arch/x86/platform/efi/efi.c
+@@ -69,6 +69,10 @@ struct efi_memory_map memmap;
+ static struct efi efi_phys __initdata;
+ static efi_system_table_t efi_systab __initdata;
+ 
++static u64 efi_var_store_size;
++static u64 efi_var_remaining_size;
++static u64 efi_var_max_var_size;
++
+ unsigned long x86_efi_facility;
+ 
+ /*
+@@ -682,6 +686,9 @@ void __init efi_init(void)
+ 	char vendor[100] = "unknown";
+ 	int i = 0;
+ 	void *tmp;
++	struct setup_data *data;
++	struct efi_var_bootdata *efi_var_data;
++	u64 pa_data;
+ 
+ #ifdef CONFIG_X86_32
+ 	if (boot_params.efi_info.efi_systab_hi ||
+@@ -699,6 +706,20 @@ void __init efi_init(void)
+ 	if (efi_systab_init(efi_phys.systab))
+ 		return;
+ 
++	pa_data = boot_params.hdr.setup_data;
++	while (pa_data) {
++		data = early_ioremap(pa_data, sizeof(*efi_var_data));
++		if (data->type == SETUP_EFI_VARS) {
++			efi_var_data = (struct efi_var_bootdata *)data;
++
++			efi_var_store_size = efi_var_data->store_size;
++			efi_var_remaining_size = efi_var_data->remaining_size;
++			efi_var_max_var_size = efi_var_data->max_var_size;
++		}
++		pa_data = data->next;
++		early_iounmap(data, sizeof(*efi_var_data));
++	}
++
+ 	set_bit(EFI_SYSTEM_TABLES, &x86_efi_facility);
+ 
+ 	/*
+-- 
+1.8.1.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-kernel" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Please read the FAQ at  http://www.tux.org/lkml/
+                                                                                                                                                                                                                                                               
+Delivered-To: jwboyer@gmail.com
+Received: by 10.76.92.6 with SMTP id ci6csp21956oab;
+        Mon, 15 Apr 2013 08:58:13 -0700 (PDT)
+X-Received: by 10.66.118.201 with SMTP id ko9mr29757383pab.81.1366041492585;
+        Mon, 15 Apr 2013 08:58:12 -0700 (PDT)
+Return-Path: <linux-efi-owner@vger.kernel.org>
+Received: from vger.kernel.org (vger.kernel.org. [209.132.180.67])
+        by mx.google.com with ESMTP id cm3si20556099pad.185.2013.04.15.08.58.11;
+        Mon, 15 Apr 2013 08:58:12 -0700 (PDT)
+Received-SPF: pass (google.com: best guess record for domain of linux-efi-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) client-ip=209.132.180.67;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: best guess record for domain of linux-efi-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) smtp.mail=linux-efi-owner@vger.kernel.org
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+	id S1754177Ab3DOPyX (ORCPT <rfc822;jorge.garcia.gonzalez@gmail.com>
+	+ 14 others); Mon, 15 Apr 2013 11:54:23 -0400
+Received: from cavan.codon.org.uk ([93.93.128.6]:36680 "EHLO
+	cavan.codon.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753076Ab3DOPyU (ORCPT
+	<rfc822;linux-efi@vger.kernel.org>); Mon, 15 Apr 2013 11:54:20 -0400
+Received: from mb70536d0.tmodns.net ([208.54.5.183] helo=x230.localdomain)
+	by cavan.codon.org.uk with esmtpsa (TLS1.0:DHE_RSA_AES_256_CBC_SHA1:32)
+	(Exim 4.72)
+	(envelope-from <matthew.garrett@nebula.com>)
+	id 1URljO-0005hz-NR; Mon, 15 Apr 2013 16:54:11 +0100
+From:	Matthew Garrett <matthew.garrett@nebula.com>
+To:	matt.fleming@intel.com
+Cc:	linux-efi@vger.kernel.org, x86@kernel.org,
+	linux-kernel@vger.kernel.org,
+	Matthew Garrett <matthew.garrett@nebula.com>
+Subject: [PATCH V5 2/2] efi: Distinguish between "remaining space" and actually used space
+Date:	Mon, 15 Apr 2013 08:53:47 -0700
+Message-Id: <1366041227-17710-2-git-send-email-matthew.garrett@nebula.com>
+X-Mailer: git-send-email 1.8.1.2
+In-Reply-To: <1366041227-17710-1-git-send-email-matthew.garrett@nebula.com>
+References: <1365561717-12343-1-git-send-email-matthew.garrett@nebula.com>
+ <1366041227-17710-1-git-send-email-matthew.garrett@nebula.com>
+X-cavan-blacklisted-at:	zen.spamhaus.org
+X-SA-Do-Not-Run: Yes
+X-SA-Exim-Connect-IP: 208.54.5.183
+X-SA-Exim-Mail-From: matthew.garrett@nebula.com
+X-SA-Exim-Scanned: No (on cavan.codon.org.uk); SAEximRunCond expanded to false
+Sender:	linux-efi-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-efi.vger.kernel.org>
+X-Mailing-List:	linux-efi@vger.kernel.org
+
+EFI implementations distinguish between space that is actively used by a
+variable and space that merely hasn't been garbage collected yet. Space
+that hasn't yet been garbage collected isn't available for use and so isn't
+counted in the remaining_space field returned by QueryVariableInfo().
+
+Combined with commit 68d9298 this can cause problems. Some implementations
+don't garbage collect until the remaining space is smaller than the maximum
+variable size, and as a result check_var_size() will always fail once more
+than 50% of the variable store has been used even if most of that space is
+marked as available for garbage collection. The user is unable to create
+new variables, and deleting variables doesn't increase the remaining space.
+
+The problem that 68d9298 was attempting to avoid was one where certain
+platforms fail if the actively used space is greater than 50% of the
+available storage space. We should be able to calculate that by simply
+summing the size of each available variable and subtracting that from
+the total storage space. With luck this will fix the problem described in
+https://bugzilla.kernel.org/show_bug.cgi?id=55471 without permitting
+damage to occur to the machines 68d9298 was attempting to fix.
+
+Signed-off-by: Matthew Garrett <matthew.garrett@nebula.com>
+---
+ arch/x86/platform/efi/efi.c | 109 +++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 102 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/platform/efi/efi.c b/arch/x86/platform/efi/efi.c
+index e844d82..a3f03cd 100644
+--- a/arch/x86/platform/efi/efi.c
++++ b/arch/x86/platform/efi/efi.c
+@@ -41,6 +41,7 @@
+ #include <linux/io.h>
+ #include <linux/reboot.h>
+ #include <linux/bcd.h>
++#include <linux/ucs2_string.h>
+ 
+ #include <asm/setup.h>
+ #include <asm/efi.h>
+@@ -51,6 +52,13 @@
+ 
+ #define EFI_DEBUG	1
+ 
++/*
++ * There's some additional metadata associated with each
++ * variable. Intel's reference implementation is 60 bytes - bump that
++ * to account for potential alignment constraints
++ */
++#define VAR_METADATA_SIZE 64
++
+ struct efi __read_mostly efi = {
+ 	.mps        = EFI_INVALID_TABLE_ADDR,
+ 	.acpi       = EFI_INVALID_TABLE_ADDR,
+@@ -72,6 +80,9 @@ static efi_system_table_t efi_systab __initdata;
+ static u64 efi_var_store_size;
+ static u64 efi_var_remaining_size;
+ static u64 efi_var_max_var_size;
++static u64 boot_used_size;
++static u64 boot_var_size;
++static u64 active_size;
+ 
+ unsigned long x86_efi_facility;
+ 
+@@ -166,8 +177,53 @@ static efi_status_t virt_efi_get_next_variable(unsigned long *name_size,
+ 					       efi_char16_t *name,
+ 					       efi_guid_t *vendor)
+ {
+-	return efi_call_virt3(get_next_variable,
+-			      name_size, name, vendor);
++	efi_status_t status;
++	static bool finished = false;
++	static u64 var_size;
++
++	status = efi_call_virt3(get_next_variable,
++				name_size, name, vendor);
++
++	if (status == EFI_NOT_FOUND) {
++		finished = true;
++		if (var_size < boot_used_size) {
++			boot_var_size = boot_used_size - var_size;
++			active_size += boot_var_size;
++		} else {
++			printk(KERN_WARNING FW_BUG  "efi: Inconsistent initial sizes\n");
++		}
++	}
++
++	if (boot_used_size && !finished) {
++		unsigned long size;
++		u32 attr;
++		efi_status_t s;
++		void *tmp;
++
++		s = virt_efi_get_variable(name, vendor, &attr, &size, NULL);
++
++		if (s != EFI_BUFFER_TOO_SMALL || !size)
++			return status;
++
++		tmp = kmalloc(size, GFP_ATOMIC);
++
++		if (!tmp)
++			return status;
++
++		s = virt_efi_get_variable(name, vendor, &attr, &size, tmp);
++
++		if (s == EFI_SUCCESS && (attr & EFI_VARIABLE_NON_VOLATILE)) {
++			var_size += size;
++			var_size += ucs2_strsize(name, 1024);
++			active_size += size;
++			active_size += VAR_METADATA_SIZE;
++			active_size += ucs2_strsize(name, 1024);
++		}
++
++		kfree(tmp);
++	}
++
++	return status;
+ }
+ 
+ static efi_status_t virt_efi_set_variable(efi_char16_t *name,
+@@ -176,9 +232,34 @@ static efi_status_t virt_efi_set_variable(efi_char16_t *name,
+ 					  unsigned long data_size,
+ 					  void *data)
+ {
+-	return efi_call_virt5(set_variable,
+-			      name, vendor, attr,
+-			      data_size, data);
++	efi_status_t status;
++	u32 orig_attr = 0;
++	unsigned long orig_size = 0;
++
++	status = virt_efi_get_variable(name, vendor, &orig_attr, &orig_size,
++				       NULL);
++
++	if (status != EFI_BUFFER_TOO_SMALL)
++		orig_size = 0;
++
++	status = efi_call_virt5(set_variable,
++				name, vendor, attr,
++				data_size, data);
++
++	if (status == EFI_SUCCESS) {
++		if (orig_size) {
++			active_size -= orig_size;
++			active_size -= ucs2_strsize(name, 1024);
++			active_size -= VAR_METADATA_SIZE;
++		}
++		if (data_size) {
++			active_size += data_size;
++			active_size += ucs2_strsize(name, 1024);
++			active_size += VAR_METADATA_SIZE;
++		}
++	}
++
++	return status;
+ }
+ 
+ static efi_status_t virt_efi_query_variable_info(u32 attr,
+@@ -720,6 +801,8 @@ void __init efi_init(void)
+ 		early_iounmap(data, sizeof(*efi_var_data));
+ 	}
+ 
++	boot_used_size = efi_var_store_size - efi_var_remaining_size;
++
+ 	set_bit(EFI_SYSTEM_TABLES, &x86_efi_facility);
+ 
+ 	/*
+@@ -1039,8 +1122,20 @@ efi_status_t efi_query_variable_store(u32 attributes, unsigned long size)
+ 	if (status != EFI_SUCCESS)
+ 		return status;
+ 
+-	if (!storage_size || size > remaining_size || size > max_size ||
+-	    (remaining_size - size) < (storage_size / 2))
++	/*
++	 * Some firmware implementations refuse to boot if there's insufficient
++	 * space in the variable store. We account for that by refusing the
++	 * write if permitting it would reduce the available space to under
++	 * 50%. However, some firmware won't reclaim variable space until
++	 * after the used (not merely the actively used) space drops below
++	 * a threshold. We can approximate that case with the value calculated
++	 * above. If both the firmware and our calculations indicate that the
++	 * available space would drop below 50%, refuse the write.
++	 */
++
++	if (!storage_size || size > remaining_size ||
++	    ((active_size + size + VAR_METADATA_SIZE > storage_size / 2) &&
++	     (remaining_size - size < storage_size / 2)))
+ 		return EFI_OUT_OF_RESOURCES;
+ 
+ 	return EFI_SUCCESS;
+-- 
+1.8.1.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe linux-efi" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html

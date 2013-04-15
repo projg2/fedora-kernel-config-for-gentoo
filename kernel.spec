@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 3
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -751,6 +751,9 @@ Patch23008: forcedeth-dma-error-check.patch
 
 #rhbz 949875
 Patch23007: libsas-use-right-function-to-alloc-smp-response.patch
+
+#rhbz 947142
+Patch23009: efi-space-fixes.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1453,6 +1456,9 @@ ApplyPatch forcedeth-dma-error-check.patch
 
 #rhbz 949875
 ApplyPatch libsas-use-right-function-to-alloc-smp-response.patch
+
+#rhbz 947142
+ApplyPatch efi-space-fixes.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2286,6 +2292,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 15 2013 Josh Boyer <jwboyer@redhat.com>
+- Grab fixes for UEFI space issues (rhbz 947142)
+
 * Fri Apr 12 2013 Josh Boyer <jwboyer@redhat.com>
 - Enable CONFIG_LDM_PARTITION (rhbz 948636)
 
