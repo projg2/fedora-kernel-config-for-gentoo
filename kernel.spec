@@ -793,6 +793,9 @@ Patch25007: fix-child-thread-introspection.patch
 #rhbz 844750
 Patch25008: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
+#CVE-xxxx-xxxx rhbz 952197 952217
+Patch25009: tracing-Fix-possible-NULL-pointer-dereferences.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1535,6 +1538,9 @@ ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
 ApplyPatch fix-child-thread-introspection.patch
 
 ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
+
+#CVE-xxxx-xxxx rhbz 952197 952217
+ApplyPatch tracing-Fix-possible-NULL-pointer-dereferences.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2393,6 +2399,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Apr 15 2013 Josh Boyer <jwboyer@redhat.com>
+- tracing: NULL pointer dereference (rhbz 952197 952217)
+
 * Fri Apr 12 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.7-201
 - Linux v3.8.7
 - Enable CONFIG_LDM_PARTITION (rhbz 948636)
