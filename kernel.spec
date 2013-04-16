@@ -758,6 +758,9 @@ Patch23009: efi-space-fixes.patch
 #rhbz 919176
 Patch25010: wireless-regulatory-fix-channel-disabling-race-condition.patch
 
+#rhbz 951241
+Patch25011: iwlwifi-fix-freeing-uninitialized-pointer.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1465,6 +1468,9 @@ ApplyPatch efi-space-fixes.patch
 
 #rhbz 919176
 ApplyPatch wireless-regulatory-fix-channel-disabling-race-condition.patch
+
+#rhbz 951241
+ApplyPatch iwlwifi-fix-freeing-uninitialized-pointer.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2299,6 +2305,7 @@ fi
 
 %changelog
 * Tue Apr 16 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix uninitialized variable free in iwlwifi (rhbz 951241)
 - Fix race in regulatory code (rhbz 919176)
 
 * Mon Apr 15 2013 Josh Boyer <jwboyer@redhat.com>
