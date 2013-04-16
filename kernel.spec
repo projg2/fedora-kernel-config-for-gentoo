@@ -780,6 +780,9 @@ Patch25008: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 #CVE-xxxx-xxxx rhbz 952197 952217
 Patch25009: tracing-Fix-possible-NULL-pointer-dereferences.patch
 
+#rhbz 919176
+Patch25010: wireless-regulatory-fix-channel-disabling-race-condition.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1517,6 +1520,9 @@ ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 #CVE-xxxx-xxxx rhbz 952197 952217
 ApplyPatch tracing-Fix-possible-NULL-pointer-dereferences.patch
+
+#rhbz 919176
+ApplyPatch wireless-regulatory-fix-channel-disabling-race-condition.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2374,6 +2380,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Apr 16 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix race in regulatory code (rhbz 919176)
+
 * Mon Apr 15 2013 Josh Boyer <jwboyer@redhat.com>
 - tracing: NULL pointer dereference (rhbz 952197 952217)
 - Fix debug patches to build on s390x/ppc
