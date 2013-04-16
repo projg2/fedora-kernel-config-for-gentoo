@@ -755,6 +755,9 @@ Patch23007: libsas-use-right-function-to-alloc-smp-response.patch
 #rhbz 947142
 Patch23009: efi-space-fixes.patch
 
+#rhbz 919176
+Patch25010: wireless-regulatory-fix-channel-disabling-race-condition.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1459,6 +1462,9 @@ ApplyPatch libsas-use-right-function-to-alloc-smp-response.patch
 
 #rhbz 947142
 ApplyPatch efi-space-fixes.patch
+
+#rhbz 919176
+ApplyPatch wireless-regulatory-fix-channel-disabling-race-condition.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2292,6 +2298,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 16 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix race in regulatory code (rhbz 919176)
+
 * Mon Apr 15 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix debug patches to build on s390x/ppc
 
