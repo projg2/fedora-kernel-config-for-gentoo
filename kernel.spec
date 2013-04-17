@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 202
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -748,9 +748,6 @@ Patch22247: ath9k_rx_dma_stop_check.patch
 #rhbz 903192
 Patch22261: 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 
-#rhbz 914737
-Patch22262: x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
-
 #rhbz 916544
 Patch22263: 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
@@ -792,9 +789,6 @@ Patch25007: fix-child-thread-introspection.patch
 
 #rhbz 844750
 Patch25008: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
-
-#CVE-xxxx-xxxx rhbz 952197 952217
-Patch25009: tracing-Fix-possible-NULL-pointer-dereferences.patch
 
 #rhbz 919176
 Patch25010: wireless-regulatory-fix-channel-disabling-race-condition.patch
@@ -1501,9 +1495,6 @@ ApplyPatch alps-v2.patch
 #rhbz 903192
 ApplyPatch 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 
-#rhbz 914737
-ApplyPatch x86-mm-Fix-vmalloc_fault-oops-during-lazy-MMU-updates.patch
-
 #rhbz 916544
 ApplyPatch 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
@@ -1544,9 +1535,6 @@ ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
 ApplyPatch fix-child-thread-introspection.patch
 
 ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
-
-#CVE-xxxx-xxxx rhbz 952197 952217
-ApplyPatch tracing-Fix-possible-NULL-pointer-dereferences.patch
 
 #rhbz 919176
 ApplyPatch wireless-regulatory-fix-channel-disabling-race-condition.patch
@@ -2411,6 +2399,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Apr 17 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.8-201
+- Linux v3.8.8
+
 * Tue Apr 16 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix uninitialized variable free in iwlwifi (rhbz 951241)
 - Fix race in regulatory code (rhbz 919176)
