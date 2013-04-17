@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 202
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -795,6 +795,9 @@ Patch25010: wireless-regulatory-fix-channel-disabling-race-condition.patch
 
 #rhbz 951241
 Patch25011: iwlwifi-fix-freeing-uninitialized-pointer.patch
+
+#rhbz 947539
+Patch25013: md-raid1-10-Handle-REQ_WRITE_SAME-flag-in-write-bios.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1541,6 +1544,9 @@ ApplyPatch wireless-regulatory-fix-channel-disabling-race-condition.patch
 
 #rhbz 951241
 ApplyPatch iwlwifi-fix-freeing-uninitialized-pointer.patch
+
+#rhbz 947539
+ApplyPatch md-raid1-10-Handle-REQ_WRITE_SAME-flag-in-write-bios.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2399,6 +2405,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Apr 17 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.8-202
+- Fix missing raid REQ_WRITE_SAME flag commit (rhbz 947539)
+
 * Wed Apr 17 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.8-201
 - Linux v3.8.8
 
