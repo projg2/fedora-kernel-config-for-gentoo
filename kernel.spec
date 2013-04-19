@@ -2292,6 +2292,9 @@ fi
 # and build.
 
 %changelog
+* Fri Apr 19 2013 Josh Boyer <jwboyer@redhat.com>
+- Disable Intel HDA and enable RSXX block dev on ppc64/ppc64p7
+
 * Thu Apr 18 2013 Justin M. Forbes <jforbes@redhat.com> - 3.9.0-0.rc7.git3.1
 - Linux v3.9-rc7-70-gd202f05
 - Disable debugging options.
