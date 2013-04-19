@@ -701,12 +701,14 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 
 # ARM
 Patch21000: arm-export-read_current_timer.patch
+# https://lists.ozlabs.org/pipermail/devicetree-discuss/2013-March/029029.html
+Patch21001: arm-of-dma.patch
 
 # lpae
-Patch21001: arm-lpae-ax88796.patch
+Patch21002: arm-lpae-ax88796.patch
 
 # ARM omap
-Patch21002: arm-omap-ehci-fix.patch
+Patch21003: arm-omap-ehci-fix.patch
 
 # ARM tegra
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
@@ -1311,6 +1313,7 @@ ApplyPatch debug-bad-pte-modules.patch
 # ARM
 #
 ApplyPatch arm-export-read_current_timer.patch
+ApplyPatch arm-of-dma.patch
 ApplyPatch arm-lpae-ax88796.patch
 ApplyPatch arm-omap-ehci-fix.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
@@ -2292,6 +2295,11 @@ fi
 # and build.
 
 %changelog
+* Fri Apr 19 2013 Peter Robinson <pbrobinson@fedoraproject.org> 
+- Temporaily disable cpu idle on ARM as it appears to be causing stability issues
+- Minor ARM config updates
+- Add patch for DT DMA issues that affect at least highbank/tegra ARM devices
+
 * Fri Apr 19 2013 Josh Boyer <jwboyer@redhat.com>
 - Disable Intel HDA and enable RSXX block dev on ppc64/ppc64p7
 
