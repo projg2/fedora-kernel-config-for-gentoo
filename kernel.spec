@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 202
+%global baserelease 203
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -798,6 +798,9 @@ Patch25011: iwlwifi-fix-freeing-uninitialized-pointer.patch
 
 #rhbz 947539
 Patch25013: md-raid1-10-Handle-REQ_WRITE_SAME-flag-in-write-bios.patch
+
+#CVE-2013-3222 rhbz 955216 955228
+Patch25014: atm-update-msg_namelen-in-vcc_recvmsg.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1547,6 +1550,9 @@ ApplyPatch iwlwifi-fix-freeing-uninitialized-pointer.patch
 
 #rhbz 947539
 ApplyPatch md-raid1-10-Handle-REQ_WRITE_SAME-flag-in-write-bios.patch
+
+#CVE-2013-3222 rhbz 955216 955228
+ApplyPatch atm-update-msg_namelen-in-vcc_recvmsg.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2405,6 +2411,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Apr 22 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-3222 atm: update msg_namelen in vcc_recvmsg (rhbz 955216 955228)
+
 * Wed Apr 17 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.8-202
 - Fix missing raid REQ_WRITE_SAME flag commit (rhbz 947539)
 
