@@ -93,9 +93,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%define rcrev 7
+%define rcrev 8
 # The git snapshot level
-%define gitrev 3
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 3.%{upstream_sublevel}.0
 %endif
@@ -692,8 +692,6 @@ Patch10000: fs-proc-devtree-remove_proc_entry.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch13003: efi-dont-map-boot-services-on-32bit.patch
-
 Patch14000: hibernate-freeze-filesystems.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
@@ -747,9 +745,6 @@ Patch23006: fix-child-thread-introspection.patch
 
 #rhbz 928024
 Patch23008: forcedeth-dma-error-check.patch
-
-#rhbz 947142
-Patch23009: efi-space-fixes.patch
 
 #rhbz 919176
 Patch25010: wireless-regulatory-fix-channel-disabling-race-condition.patch
@@ -1415,8 +1410,6 @@ ApplyPatch fs-proc-devtree-remove_proc_entry.patch
 
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
-ApplyPatch efi-dont-map-boot-services-on-32bit.patch
-
 # FIXME: REBASE
 #ApplyPatch hibernate-freeze-filesystems.patch
 
@@ -1455,9 +1448,6 @@ ApplyPatch fix-child-thread-introspection.patch
 
 #rhbz 928024
 ApplyPatch forcedeth-dma-error-check.patch
-
-#rhbz 947142
-ApplyPatch efi-space-fixes.patch
 
 #rhbz 919176
 ApplyPatch wireless-regulatory-fix-channel-disabling-race-condition.patch
@@ -2299,6 +2289,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 22 2013 Justin M. Forbes <jforbes@redhat.com> - 3.9.0-0.rc8.git0.1
+- Linux v3.9-rc8
+
 * Mon Apr 22 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Minor ARM updates
 
