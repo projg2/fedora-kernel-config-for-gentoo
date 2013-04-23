@@ -2435,7 +2435,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Tue Apr 23 2013 Josh Boyer <jwboyer@redhat.com>
+* Tue Apr 23 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.8-203
 - CVE-2013-3223 ax25: information leak via msg_name in ax25_recvmsg (rhbz 955662 955666)
 - CVE-2013-3225 Bluetooth: RFCOMM missing msg_namelen update in rfcomm_sock_recvmsg (rhbz 955649 955658)
 - CVE-2013-1979 net: incorrect SCM_CREDENTIALS passing (rhbz 955629 955647)
