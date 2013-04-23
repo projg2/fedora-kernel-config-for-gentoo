@@ -805,6 +805,9 @@ Patch25014: atm-update-msg_namelen-in-vcc_recvmsg.patch
 #CVE-2013-3224 rhbz 955599 955607
 Patch25015: Bluetooth-fix-possible-info-leak-in-bt_sock_recvmsg.patch
 
+#CVE-2013-1979 rhbz 955629 955647
+Patch25016: net-fix-incorrect-credentials-passing.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1559,6 +1562,9 @@ ApplyPatch atm-update-msg_namelen-in-vcc_recvmsg.patch
 
 #CVE-2013-3224 rhbz 955599 955607
 ApplyPatch Bluetooth-fix-possible-info-leak-in-bt_sock_recvmsg.patch
+
+#CVE-2013-1979 rhbz 955629 955647
+ApplyPatch net-fix-incorrect-credentials-passing.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2418,6 +2424,7 @@ fi
 #                 ||     ||
 %changelog
 * Tue Apr 23 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-1979 net: incorrect SCM_CREDENTIALS passing (rhbz 955629 955647)
 - CVE-2013-3224 Bluetooth: possible info leak in bt_sock_recvmsg (rhbz 955599 955607)
 
 * Mon Apr 22 2013 Josh Boyer <jwboyer@redhat.com>
