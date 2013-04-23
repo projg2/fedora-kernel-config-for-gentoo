@@ -786,6 +786,9 @@ Patch25013: md-raid1-10-Handle-REQ_WRITE_SAME-flag-in-write-bios.patch
 #CVE-2013-3222 rhbz 955216 955228
 Patch25014: atm-update-msg_namelen-in-vcc_recvmsg.patch
 
+#CVE-2013-3224 rhbz 955599 955607
+Patch25015: Bluetooth-fix-possible-info-leak-in-bt_sock_recvmsg.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1529,6 +1532,9 @@ ApplyPatch md-raid1-10-Handle-REQ_WRITE_SAME-flag-in-write-bios.patch
 
 #CVE-2013-3222 rhbz 955216 955228
 ApplyPatch atm-update-msg_namelen-in-vcc_recvmsg.patch
+
+#CVE-2013-3224 rhbz 955599 955607
+ApplyPatch Bluetooth-fix-possible-info-leak-in-bt_sock_recvmsg.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2386,6 +2392,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Apr 23 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-3224 Bluetooth: possible info leak in bt_sock_recvmsg (rhbz 955599 955607)
+
 * Mon Apr 22 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-3222 atm: update msg_namelen in vcc_recvmsg (rhbz 955216 955228)
 
