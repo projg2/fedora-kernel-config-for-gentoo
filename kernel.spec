@@ -2477,7 +2477,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Wed Apr 24 2013 Josh Boyer <jwboyer@redhat.com>
+* Wed Apr 24 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.8-203
 - CVE-2013-3228 irda: missing msg_namelen update in irda_recvmsg_dgram (rhbz 956069 956071)
 - CVE-2013-3230 l2tp: info leak in l2tp_ip6_recvmsg (rhbz 956088 956089)
 - CVE-2013-3231 llc: Fix missing msg_namelen update in llc_ui_recvmsg (rhbz 956094 956104)
