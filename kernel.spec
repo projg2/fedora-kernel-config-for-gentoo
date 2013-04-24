@@ -807,6 +807,9 @@ Patch25020: rose-fix-info-leak-via-msg_name-in-rose_recvmsg.patch
 #CVE-2013-3233 956125 956129
 Patch25021: NFC-llcp-fix-info-leaks-via-msg_name-in-llcp_sock_re.patch
 
+#CVE-2013-3232 956110 956113
+Patch25022: netrom-fix-invalid-use-of-sizeof-in-nr_recvmsg.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1571,6 +1574,9 @@ ApplyPatch rose-fix-info-leak-via-msg_name-in-rose_recvmsg.patch
 
 #CVE-2013-3233 956125 956129
 ApplyPatch NFC-llcp-fix-info-leaks-via-msg_name-in-llcp_sock_re.patch
+
+#CVE-2013-3232 956110 956113
+ApplyPatch netrom-fix-invalid-use-of-sizeof-in-nr_recvmsg.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2429,6 +2435,7 @@ fi
 #              '-'
 %changelog
 * Wed Apr 24 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-3232 netrom: information leak via msg_name in nr_recvmsg (rhbz 956110 956113)
 - CVE-2013-3233 NFC: llcp: info leaks via msg_name in llcp_sock_recvmsg (rhbz 956125 956129)
 - CVE-2013-3234 rose: info leak via msg_name in rose_recvmsg (rhbz 956135 956139)
 - CVE-2013-3076 crypto: algif suppress sending src addr info in recvmsg (rhbz 956162 956168)
