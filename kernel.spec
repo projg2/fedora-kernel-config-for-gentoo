@@ -816,6 +816,9 @@ Patch25023: llc-Fix-missing-msg_namelen-update-in-llc_ui_recvmsg.patch
 #CVE-2013-3230 956088 956089
 Patch25024: l2tp-fix-info-leak-in-l2tp_ip6_recvmsg.patch
 
+#CVE-2013-3228 956069 956071
+Patch25025: irda-Fix-missing-msg_namelen-update-in-irda_recvmsg_.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1589,6 +1592,9 @@ ApplyPatch llc-Fix-missing-msg_namelen-update-in-llc_ui_recvmsg.patch
 
 #CVE-2013-3230 956088 956089
 ApplyPatch l2tp-fix-info-leak-in-l2tp_ip6_recvmsg.patch
+
+#CVE-2013-3228 956069 956071
+ApplyPatch irda-Fix-missing-msg_namelen-update-in-irda_recvmsg_.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2447,6 +2453,7 @@ fi
 #              '-'
 %changelog
 * Wed Apr 24 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-3228 irda: missing msg_namelen update in irda_recvmsg_dgram (rhbz 956069 956071)
 - CVE-2013-3230 l2tp: info leak in l2tp_ip6_recvmsg (rhbz 956088 956089)
 - CVE-2013-3231 llc: Fix missing msg_namelen update in llc_ui_recvmsg (rhbz 956094 956104)
 - CVE-2013-3232 netrom: information leak via msg_name in nr_recvmsg (rhbz 956110 956113)
