@@ -2295,7 +2295,7 @@ fi
 # and build.
 
 %changelog
-* Wed Apr 24 2013 Josh Boyer <jwboyer@redhat.com>
+* Wed Apr 24 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.0-0.rc8.git0.2
 - Add patch to fix EFI boot on Macs (rhbz 953447)
 
 * Mon Apr 22 2013 Justin M. Forbes <jforbes@redhat.com> - 3.9.0-0.rc8.git0.1
