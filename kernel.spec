@@ -798,6 +798,9 @@ Patch25017: Bluetooth-RFCOMM-Fix-missing-msg_namelen-update-in-r.patch
 #CVE-2013-3223 rhbz 955662 955666
 Patch25018: ax25-fix-info-leak-via-msg_name-in-ax25_recvmsg.patch
 
+#CVE-2013-3076 956162 956168
+Patch25019: crypto-algif-suppress-sending-source-address-informa.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1553,6 +1556,9 @@ ApplyPatch Bluetooth-RFCOMM-Fix-missing-msg_namelen-update-in-r.patch
 
 #CVE-2013-3223 rhbz 955662 955666
 ApplyPatch ax25-fix-info-leak-via-msg_name-in-ax25_recvmsg.patch
+
+#CVE-2013-3076 956162 956168
+ApplyPatch crypto-algif-suppress-sending-source-address-informa.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2410,6 +2416,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Apr 24 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-3076 crypto: algif suppress sending src addr info in recvmsg (rhbz 956162 956168)
+
 * Tue Apr 23 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-3223 ax25: information leak via msg_name in ax25_recvmsg (rhbz 955662 955666)
 - CVE-2013-3225 Bluetooth: RFCOMM missing msg_namelen update in rfcomm_sock_recvmsg (rhbz 955649 955658)
