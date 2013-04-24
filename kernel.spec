@@ -817,6 +817,9 @@ Patch25018: ax25-fix-info-leak-via-msg_name-in-ax25_recvmsg.patch
 #CVE-2013-3076 956162 956168
 Patch25019: crypto-algif-suppress-sending-source-address-informa.patch
 
+#CVE-2013-3234 956135 956139
+Patch25020: rose-fix-info-leak-via-msg_name-in-rose_recvmsg.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1583,6 +1586,9 @@ ApplyPatch ax25-fix-info-leak-via-msg_name-in-ax25_recvmsg.patch
 
 #CVE-2013-3076 956162 956168
 ApplyPatch crypto-algif-suppress-sending-source-address-informa.patch
+
+#CVE-2013-3234 956135 956139
+ApplyPatch rose-fix-info-leak-via-msg_name-in-rose_recvmsg.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2442,6 +2448,7 @@ fi
 #                 ||     ||
 %changelog
 * Wed Apr 24 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-3234 rose: info leak via msg_name in rose_recvmsg (rhbz 956135 956139)
 - CVE-2013-3076 crypto: algif suppress sending src addr info in recvmsg (rhbz 956162 956168)
 
 * Tue Apr 23 2013 Josh Boyer <jwboyer@redhat.com>
