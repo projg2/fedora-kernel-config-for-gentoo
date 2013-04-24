@@ -804,6 +804,9 @@ Patch25019: crypto-algif-suppress-sending-source-address-informa.patch
 #CVE-2013-3234 956135 956139
 Patch25020: rose-fix-info-leak-via-msg_name-in-rose_recvmsg.patch
 
+#CVE-2013-3233 956125 956129
+Patch25021: NFC-llcp-fix-info-leaks-via-msg_name-in-llcp_sock_re.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1565,6 +1568,9 @@ ApplyPatch crypto-algif-suppress-sending-source-address-informa.patch
 
 #CVE-2013-3234 956135 956139
 ApplyPatch rose-fix-info-leak-via-msg_name-in-rose_recvmsg.patch
+
+#CVE-2013-3233 956125 956129
+ApplyPatch NFC-llcp-fix-info-leaks-via-msg_name-in-llcp_sock_re.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2423,6 +2429,7 @@ fi
 #              '-'
 %changelog
 * Wed Apr 24 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-3233 NFC: llcp: info leaks via msg_name in llcp_sock_recvmsg (rhbz 956125 956129)
 - CVE-2013-3234 rose: info leak via msg_name in rose_recvmsg (rhbz 956135 956139)
 - CVE-2013-3076 crypto: algif suppress sending src addr info in recvmsg (rhbz 956162 956168)
 
