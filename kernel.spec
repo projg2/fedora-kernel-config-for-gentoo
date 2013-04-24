@@ -829,6 +829,9 @@ Patch25022: netrom-fix-invalid-use-of-sizeof-in-nr_recvmsg.patch
 #CVE-2013-3231 956094 956104
 Patch25023: llc-Fix-missing-msg_namelen-update-in-llc_ui_recvmsg.patch
 
+#CVE-2013-3230 956088 956089
+Patch25024: l2tp-fix-info-leak-in-l2tp_ip6_recvmsg.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1607,6 +1610,9 @@ ApplyPatch netrom-fix-invalid-use-of-sizeof-in-nr_recvmsg.patch
 
 #CVE-2013-3231 956094 956104
 ApplyPatch llc-Fix-missing-msg_namelen-update-in-llc_ui_recvmsg.patch
+
+#CVE-2013-3230 956088 956089
+ApplyPatch l2tp-fix-info-leak-in-l2tp_ip6_recvmsg.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2466,6 +2472,7 @@ fi
 #                 ||     ||
 %changelog
 * Wed Apr 24 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-3230 l2tp: info leak in l2tp_ip6_recvmsg (rhbz 956088 956089)
 - CVE-2013-3231 llc: Fix missing msg_namelen update in llc_ui_recvmsg (rhbz 956094 956104)
 - CVE-2013-3232 netrom: information leak via msg_name in nr_recvmsg (rhbz 956110 956113)
 - CVE-2013-3233 NFC: llcp: info leaks via msg_name in llcp_sock_recvmsg (rhbz 956125 956129)
