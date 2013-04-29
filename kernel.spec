@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 102
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 10
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -756,15 +756,6 @@ Patch25000: amd64_edac_fix_rank_count.patch
 #rhbz 921500
 Patch25001: i7300_edac_single_mode_fixup.patch
 
-#CVE-2013-1798 rhbz 917017 923968
-Patch25003: 0001-KVM-Fix-bounds-checking-in-ioapic-indirect-register-.patch
-
-#CVE-2013-1796 rhbz 917012 923966
-Patch25004: 0002-KVM-x86-fix-for-buffer-overflow-in-handling-of-MSR_K.patch
-
-#CVE-2013-1797 rhbz 917013 923967
-Patch25005: 0003-KVM-x86-Convert-MSR_KVM_SYSTEM_TIME-to-use-gfn_to_hv.patch
-
 #rhbz 920218
 Patch25006: mac80211-Dont-restart-sta-timer-if-not-running.patch
 
@@ -780,9 +771,6 @@ Patch25010: wireless-regulatory-fix-channel-disabling-race-condition.patch
 #rhbz 951241
 Patch25011: iwlwifi-fix-freeing-uninitialized-pointer.patch
 
-#rhbz 947539
-Patch25013: md-raid1-10-Handle-REQ_WRITE_SAME-flag-in-write-bios.patch
-
 #CVE-2013-3222 rhbz 955216 955228
 Patch25014: atm-update-msg_namelen-in-vcc_recvmsg.patch
 
@@ -797,9 +785,6 @@ Patch25017: Bluetooth-RFCOMM-Fix-missing-msg_namelen-update-in-r.patch
 
 #CVE-2013-3223 rhbz 955662 955666
 Patch25018: ax25-fix-info-leak-via-msg_name-in-ax25_recvmsg.patch
-
-#CVE-2013-3076 956162 956168
-Patch25019: crypto-algif-suppress-sending-source-address-informa.patch
 
 #CVE-2013-3234 956135 956139
 Patch25020: rose-fix-info-leak-via-msg_name-in-rose_recvmsg.patch
@@ -1534,15 +1519,6 @@ ApplyPatch mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 #rhbz 859282
 ApplyPatch VMX-x86-handle-host-TSC-calibration-failure.patch
 
-#CVE-2013-1798 rhbz 917017 923968
-ApplyPatch 0001-KVM-Fix-bounds-checking-in-ioapic-indirect-register-.patch
-
-#CVE-2013-1796 rhbz 917012 923966
-ApplyPatch 0002-KVM-x86-fix-for-buffer-overflow-in-handling-of-MSR_K.patch
-
-#CVE-2013-1797 rhbz 917013 923967
-ApplyPatch 0003-KVM-x86-Convert-MSR_KVM_SYSTEM_TIME-to-use-gfn_to_hv.patch
-
 #rhbz 920218
 ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
 
@@ -1556,9 +1532,6 @@ ApplyPatch wireless-regulatory-fix-channel-disabling-race-condition.patch
 
 #rhbz 951241
 ApplyPatch iwlwifi-fix-freeing-uninitialized-pointer.patch
-
-#rhbz 947539
-ApplyPatch md-raid1-10-Handle-REQ_WRITE_SAME-flag-in-write-bios.patch
 
 #CVE-2013-3222 rhbz 955216 955228
 ApplyPatch atm-update-msg_namelen-in-vcc_recvmsg.patch
@@ -1574,9 +1547,6 @@ ApplyPatch Bluetooth-RFCOMM-Fix-missing-msg_namelen-update-in-r.patch
 
 #CVE-2013-3223 rhbz 955662 955666
 ApplyPatch ax25-fix-info-leak-via-msg_name-in-ax25_recvmsg.patch
-
-#CVE-2013-3076 956162 956168
-ApplyPatch crypto-algif-suppress-sending-source-address-informa.patch
 
 #CVE-2013-3234 956135 956139
 ApplyPatch rose-fix-info-leak-via-msg_name-in-rose_recvmsg.patch
@@ -2452,6 +2422,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Mon Apr 29 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.10-100
+- Linux v3.8.10
+
 * Wed Apr 24 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.8-102
 - CVE-2013-3228 irda: missing msg_namelen update in irda_recvmsg_dgram (rhbz 956069 956071)
 - CVE-2013-3230 l2tp: info leak in l2tp_ip6_recvmsg (rhbz 956088 956089)
