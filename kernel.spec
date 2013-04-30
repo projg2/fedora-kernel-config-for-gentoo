@@ -2289,6 +2289,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 30 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable CONFIG_SERIAL_8250_DW on ARM
+
 * Mon Apr 29 2013 Neil Horman <nhorman@redhat.com>
 - Enabled CONFIG_PACKET_DIAG (rhbz 956870)
  
