@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -786,39 +786,6 @@ Patch25010: wireless-regulatory-fix-channel-disabling-race-condition.patch
 
 #rhbz 951241
 Patch25011: iwlwifi-fix-freeing-uninitialized-pointer.patch
-
-#CVE-2013-3222 rhbz 955216 955228
-Patch25014: atm-update-msg_namelen-in-vcc_recvmsg.patch
-
-#CVE-2013-3224 rhbz 955599 955607
-Patch25015: Bluetooth-fix-possible-info-leak-in-bt_sock_recvmsg.patch
-
-#CVE-2013-1979 rhbz 955629 955647
-Patch25016: net-fix-incorrect-credentials-passing.patch
-
-#CVE-2013-3225 rhbz 955649 955658
-Patch25017: Bluetooth-RFCOMM-Fix-missing-msg_namelen-update-in-r.patch
-
-#CVE-2013-3223 rhbz 955662 955666
-Patch25018: ax25-fix-info-leak-via-msg_name-in-ax25_recvmsg.patch
-
-#CVE-2013-3234 956135 956139
-Patch25020: rose-fix-info-leak-via-msg_name-in-rose_recvmsg.patch
-
-#CVE-2013-3233 956125 956129
-Patch25021: NFC-llcp-fix-info-leaks-via-msg_name-in-llcp_sock_re.patch
-
-#CVE-2013-3232 956110 956113
-Patch25022: netrom-fix-invalid-use-of-sizeof-in-nr_recvmsg.patch
-
-#CVE-2013-3231 956094 956104
-Patch25023: llc-Fix-missing-msg_namelen-update-in-llc_ui_recvmsg.patch
-
-#CVE-2013-3230 956088 956089
-Patch25024: l2tp-fix-info-leak-in-l2tp_ip6_recvmsg.patch
-
-#CVE-2013-3228 956069 956071
-Patch25025: irda-Fix-missing-msg_namelen-update-in-irda_recvmsg_.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1556,39 +1523,6 @@ ApplyPatch wireless-regulatory-fix-channel-disabling-race-condition.patch
 
 #rhbz 951241
 ApplyPatch iwlwifi-fix-freeing-uninitialized-pointer.patch
-
-#CVE-2013-3222 rhbz 955216 955228
-ApplyPatch atm-update-msg_namelen-in-vcc_recvmsg.patch
-
-#CVE-2013-3224 rhbz 955599 955607
-ApplyPatch Bluetooth-fix-possible-info-leak-in-bt_sock_recvmsg.patch
-
-#CVE-2013-1979 rhbz 955629 955647
-ApplyPatch net-fix-incorrect-credentials-passing.patch
-
-#CVE-2013-3225 rhbz 955649 955658
-ApplyPatch Bluetooth-RFCOMM-Fix-missing-msg_namelen-update-in-r.patch
-
-#CVE-2013-3223 rhbz 955662 955666
-ApplyPatch ax25-fix-info-leak-via-msg_name-in-ax25_recvmsg.patch
-
-#CVE-2013-3234 956135 956139
-ApplyPatch rose-fix-info-leak-via-msg_name-in-rose_recvmsg.patch
-
-#CVE-2013-3233 956125 956129
-ApplyPatch NFC-llcp-fix-info-leaks-via-msg_name-in-llcp_sock_re.patch
-
-#CVE-2013-3232 956110 956113
-ApplyPatch netrom-fix-invalid-use-of-sizeof-in-nr_recvmsg.patch
-
-#CVE-2013-3231 956094 956104
-ApplyPatch llc-Fix-missing-msg_namelen-update-in-llc_ui_recvmsg.patch
-
-#CVE-2013-3230 956088 956089
-ApplyPatch l2tp-fix-info-leak-in-l2tp_ip6_recvmsg.patch
-
-#CVE-2013-3228 956069 956071
-ApplyPatch irda-Fix-missing-msg_namelen-update-in-irda_recvmsg_.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2447,6 +2381,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed May 01 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.11-200
+- Linux v3.8.11
+
 * Mon Apr 29 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.10-200
 - Linux v3.8.10
 
