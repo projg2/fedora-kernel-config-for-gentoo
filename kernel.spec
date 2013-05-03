@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 302
+%global baserelease 303
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -757,6 +757,8 @@ Patch25014: blkcg-fix-scheduling-while-atomic-in-blk_queue_bypass_start.patch
 Patch25015: powerpc-Add-isync-to-copy_and_flush.patch
 Patch25016: powerpc-power8-Fix-secondary-CPUs-hanging-on-boot-for-HV=0.patch
 Patch25017: powerpc-Fix-hardware-IRQs-with-MMU-on-exceptions-when-HV=0.patch
+Patch25018: pci-Set-dev-dev.type-in-alloc_pci_dev.patch
+Patch25019: powerpc-Set-default-VGA-device.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1464,6 +1466,8 @@ ApplyPatch blkcg-fix-scheduling-while-atomic-in-blk_queue_bypass_start.patch
 ApplyPatch powerpc-Add-isync-to-copy_and_flush.patch
 ApplyPatch powerpc-power8-Fix-secondary-CPUs-hanging-on-boot-for-HV=0.patch
 ApplyPatch powerpc-Fix-hardware-IRQs-with-MMU-on-exceptions-when-HV=0.patch
+ApplyPatch pci-Set-dev-dev.type-in-alloc_pci_dev.patch
+ApplyPatch powerpc-Set-default-VGA-device.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2297,6 +2301,9 @@ fi
 # and build.
 
 %changelog
+* Fri May 03 2013 Josh Boyer <jwboyer@redhat.com>
+- Add two more patches for POWER
+
 * Wed May 01 2013 Josh Boyer <jwboyer@redhat.com>
 - Add some powerpc fixes for POWER8
 
