@@ -1987,11 +1987,6 @@ find $RPM_BUILD_ROOT/usr/include \
      \( -name .install -o -name .check -o \
      	-name ..install.cmd -o -name ..check.cmd \) | xargs rm -f
 
-# glibc provides scsi headers for itself, for now
-rm -rf $RPM_BUILD_ROOT/usr/include/scsi
-rm -f $RPM_BUILD_ROOT/usr/include/asm*/atomic.h
-rm -f $RPM_BUILD_ROOT/usr/include/asm*/io.h
-rm -f $RPM_BUILD_ROOT/usr/include/asm*/irq.h
 %endif
 
 %if %{with_perf}
@@ -2301,6 +2296,9 @@ fi
 # and build.
 
 %changelog
+* Mon May 06 2013 Josh Boyer <jwboyer@redhat.com>
+- Don't remove headers explicitly exported via UAPI (rhbz 959467)
+
 * Fri May 03 2013 Josh Boyer <jwboyer@redhat.com>
 - Add two more patches for POWER
 
