@@ -74,9 +74,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -747,12 +747,6 @@ Patch25001: i7300_edac_single_mode_fixup.patch
 
 #rhbz 927469
 Patch25007: fix-child-thread-introspection.patch
-
-#rhbz 919176
-Patch25010: wireless-regulatory-fix-channel-disabling-race-condition.patch
-
-#rhbz 951241
-Patch25011: iwlwifi-fix-freeing-uninitialized-pointer.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1444,12 +1438,6 @@ ApplyPatch VMX-x86-handle-host-TSC-calibration-failure.patch
 
 #rhbz 927469
 ApplyPatch fix-child-thread-introspection.patch
-
-#rhbz 919176
-ApplyPatch wireless-regulatory-fix-channel-disabling-race-condition.patch
-
-#rhbz 951241
-ApplyPatch iwlwifi-fix-freeing-uninitialized-pointer.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2305,6 +2293,11 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon May 06 2013 Dave Jones <davej@redhat.com> - 3.9.1-0.rc1.200
+- Linux 3.9.1-rc1
+  merged: wireless-regulatory-fix-channel-disabling-race-condition.patch
+  merged: iwlwifi-fix-freeing-uninitialized-pointer.patch
+
 * Mon May 06 2013 Josh Boyer <jwboyer@redhat.com>
 - Rebase F18 secure-boot patchset to Linux v3.9
 
