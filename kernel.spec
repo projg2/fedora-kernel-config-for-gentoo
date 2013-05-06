@@ -68,13 +68,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 8
+%define base_sublevel 9
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 0
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -666,9 +666,7 @@ Patch460: serial-460800.patch
 Patch470: die-floppy-die.patch
 
 Patch510: silence-noise.patch
-Patch520: quiet-apm.patch
 Patch530: silence-fbcon-logo.patch
-Patch540: silence-empty-ipi-mask-warning.patch
 
 Patch800: crash-driver.patch
 
@@ -713,8 +711,6 @@ Patch14000: hibernate-freeze-filesystems.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
-Patch14011: team-net-next-update-20130307.patch
-
 
 Patch20000: 0001-efifb-Skip-DMI-checks-if-the-bootloader-knows-what-i.patch
 Patch20001: 0002-x86-EFI-Calculate-the-EFI-framebuffer-size-instead-o.patch
@@ -735,13 +731,6 @@ Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 #rhbz 859485
 Patch22226: vt-Drop-K_OFF-for-VC_MUTE.patch
 
-#rhbz 799564
-Patch22240: Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
-Patch22241: Input-add-support-for-Cypress-PS2-Trackpads.patch
-
-#rhbz 912166
-Patch22243: Input-cypress_ps2-fix-trackpadi-found-in-Dell-XPS12.patch
-
 #rhbz 892811
 Patch22247: ath9k_rx_dma_stop_check.patch
 
@@ -751,35 +740,14 @@ Patch22261: 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 #rhbz 916544
 Patch22263: 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
-#rhbz 812111
-Patch24000: alps-v2.patch
-
-Patch24100: userns-avoid-recursion-in-put_user_ns.patch
-
-#rhbz 879462
-Patch24107: uvcvideo-suspend-fix.patch
-
-#rhbz 856863 892599
-Patch24111: cfg80211-mac80211-disconnect-on-suspend.patch
-Patch24112: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
-
 #rhbz 859282
 Patch24113: VMX-x86-handle-host-TSC-calibration-failure.patch
-
-#rhbz 920586
-Patch25000: amd64_edac_fix_rank_count.patch
 
 #rhbz 921500
 Patch25001: i7300_edac_single_mode_fixup.patch
 
-#rhbz 920218
-Patch25006: mac80211-Dont-restart-sta-timer-if-not-running.patch
-
 #rhbz 927469
 Patch25007: fix-child-thread-introspection.patch
-
-#rhbz 844750
-Patch25008: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 #rhbz 919176
 Patch25010: wireless-regulatory-fix-channel-disabling-race-condition.patch
@@ -1409,9 +1377,6 @@ ApplyPatch silence-noise.patch
 # Make fbcon not show the penguins with 'quiet'
 ApplyPatch silence-fbcon-logo.patch
 
-# no-one cares about these warnings.
-ApplyPatch silence-empty-ipi-mask-warning.patch
-
 # Changes to upstream defaults.
 
 
@@ -1419,7 +1384,7 @@ ApplyPatch silence-empty-ipi-mask-warning.patch
 ApplyPatch crash-driver.patch
 
 # secure boot
-ApplyPatch secure-boot-20130409.patch
+#ApplyPatch secure-boot-20130409.patch
 
 # Assorted Virt Fixes
 
@@ -1436,7 +1401,6 @@ ApplyPatch drm-i915-tv-detect-hush.patch
 
 # silence the ACPI blacklist code
 ApplyPatch silence-acpi-blacklist.patch
-ApplyPatch quiet-apm.patch
 
 # V4L/DVB updates/fixes/experimental drivers
 #  apply if non-empty
@@ -1470,18 +1434,8 @@ ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 #rhbz 859485
 ApplyPatch vt-Drop-K_OFF-for-VC_MUTE.patch
 
-#rhbz 799564
-ApplyPatch Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
-ApplyPatch Input-add-support-for-Cypress-PS2-Trackpads.patch
-
-#rhbz 912166
-ApplyPatch Input-cypress_ps2-fix-trackpadi-found-in-Dell-XPS12.patch
-
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
-
-#rhbz 812111
-ApplyPatch alps-v2.patch
 
 #rhbz 903192
 ApplyPatch 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
@@ -1489,34 +1443,14 @@ ApplyPatch 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
 #rhbz 916544
 ApplyPatch 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
-ApplyPatch userns-avoid-recursion-in-put_user_ns.patch
-
-#rhbz 920586
-ApplyPatch amd64_edac_fix_rank_count.patch
-
 #rhbz 921500
 ApplyPatch i7300_edac_single_mode_fixup.patch
-
-#Team Driver update
-ApplyPatch team-net-next-update-20130307.patch
-
-#rhbz 879462
-ApplyPatch uvcvideo-suspend-fix.patch
-
-#rhbz 856863 892599
-ApplyPatch cfg80211-mac80211-disconnect-on-suspend.patch
-ApplyPatch mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
 
 #rhbz 859282
 ApplyPatch VMX-x86-handle-host-TSC-calibration-failure.patch
 
-#rhbz 920218
-ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
-
 #rhbz 927469
 ApplyPatch fix-child-thread-introspection.patch
-
-ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
 
 #rhbz 919176
 ApplyPatch wireless-regulatory-fix-channel-disabling-race-condition.patch
@@ -1543,6 +1477,11 @@ mkdir configs
 %if !%{debugbuildsenabled}
 rm -f kernel-%{version}-*debug.config
 %endif
+
+
+# FIXME: ARM config broken on 3.9 rebase
+rm -f kernel-%{version}-arm*.config
+
 
 # now run oldconfig over all the config files
 for i in *.config
@@ -2381,6 +2320,25 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon May 06 2013 Dave Jones <davej@redhat.com> - 3.9.0-200
+- Rebase to Linux 3.9
+  merged: silence-empty-ipi-mask-warning.patch
+  merged: quiet-apm.patch
+  merged: Input-increase-struct-ps2dev-cmdbuf-to-8-bytes.patch
+  merged: Input-add-support-for-Cypress-PS2-Trackpads.patch
+  merged: Input-cypress_ps2-fix-trackpadi-found-in-Dell-XPS12.patch
+  merged: alps-v2.patch
+  merged: userns-avoid-recursion-in-put_user_ns.patch
+  merged: amd64_edac_fix_rank_count.patch
+  merged: team-net-next-update-20130307.patch
+  merged: uvcvideo-suspend-fix.patch
+  merged: cfg80211-mac80211-disconnect-on-suspend.patch
+  merged: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.8.patch
+  merged: mac80211-Dont-restart-sta-timer-if-not-running.patch
+  merged: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
+  TODO: secure-boot
+  TODO: ARM configs.
+
 * Wed May 01 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.11-200
 - Linux v3.8.11
 

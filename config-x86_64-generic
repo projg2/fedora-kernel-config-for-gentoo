@@ -130,6 +130,9 @@ CONFIG_BPF_JIT=y
 # Should be 32bit only, but lacks KConfig depends
 # CONFIG_XO15_EBOOK is not set
 
+CONFIG_NTB=m
+CONFIG_NTB_NETDEV=m
+
 # 10GigE
 #
 CONFIG_IP1000=m
