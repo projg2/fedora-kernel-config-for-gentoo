@@ -1966,11 +1966,6 @@ find $RPM_BUILD_ROOT/usr/include \
      \( -name .install -o -name .check -o \
      	-name ..install.cmd -o -name ..check.cmd \) | xargs rm -f
 
-# glibc provides scsi headers for itself, for now
-rm -rf $RPM_BUILD_ROOT/usr/include/scsi
-rm -f $RPM_BUILD_ROOT/usr/include/asm*/atomic.h
-rm -f $RPM_BUILD_ROOT/usr/include/asm*/io.h
-rm -f $RPM_BUILD_ROOT/usr/include/asm*/irq.h
 %endif
 
 %if %{with_perf}
@@ -2289,6 +2284,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed May 08 2013 Josh Boyer <jwboyer@redhat.com>
+- Don't remove headers explicitly exported via UAPI (rhbz 959467)
+
 * Tue May 07 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix dmesg_restrict patch to avoid regression (rhbz 952655)
 
