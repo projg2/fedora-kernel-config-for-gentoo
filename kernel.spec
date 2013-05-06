@@ -487,6 +487,8 @@ Provides: kernel-modeset = 1\
 Provides: kernel-uname-r = %{KVERREL}%{?1:.%{1}}\
 Provides: kernel-highbank\
 Provides: kernel-highbank-uname-r = %{KVERREL}%{?1:.%{1}}\
+Provides: kernel-omap\
+Provides: kernel-omap-uname-r = %{KVERREL}%{?1:.%{1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
 Requires(pre): linux-firmware >= 20120206-0.1.git06c8f81\
@@ -582,12 +584,12 @@ Source70: config-s390x
 
 # Unified ARM kernels
 Source100: config-armv7
+Source101: config-armv7-generic
+Source102: config-armv7-tegra
 
 # Legacy ARM kernels
-Source105: config-arm-generic
-Source110: config-arm-omap
-Source111: config-arm-tegra
-Source112: config-arm-kirkwood
+Source104: config-arm-generic
+Source105: config-arm-kirkwood
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -2320,6 +2322,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon May  6 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Initial rebase of ARM to 3.9
+
 * Mon May 06 2013 Dave Jones <davej@redhat.com> - 3.9.0-200
 - Rebase to Linux 3.9
   merged: silence-empty-ipi-mask-warning.patch
