@@ -2289,6 +2289,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue May 07 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix dmesg_restrict patch to avoid regression (rhbz 952655)
+
 * Mon May 06 2013 Dave Jones <davej@redhat.com> - 3.9.1-0.rc1.201
 - Linux 3.9.1-rc1
   merged: wireless-regulatory-fix-channel-disabling-race-condition.patch
