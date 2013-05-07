@@ -2296,7 +2296,7 @@ fi
 # and build.
 
 %changelog
-* Tue May 07 2013 Josh Boyer <jwboyer@redhat.com>
+* Tue May 07 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.0-303
 - Fix dmesg_restrict patch to avoid regression (rhbz 952655)
 
 * Mon May  6 2013 Peter Robinson <pbrobinson@fedoraproject.org>
