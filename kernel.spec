@@ -2356,6 +2356,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue May 07 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix dmesg_restrict patch to avoid regression (rhbz 952655)
+
 * Wed May 01 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.11-100
 - Linux v3.8.11
 
