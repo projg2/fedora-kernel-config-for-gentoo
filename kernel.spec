@@ -1460,10 +1460,6 @@ rm -f kernel-%{version}-*debug.config
 %endif
 
 
-# FIXME: ARM config broken on 3.9 rebase
-rm -f kernel-%{version}-arm*.config
-
-
 # now run oldconfig over all the config files
 for i in *.config
 do
