@@ -2296,6 +2296,9 @@ fi
 # and build.
 
 %changelog
+* Tue May 07 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix dmesg_restrict patch to avoid regression (rhbz 952655)
+
 * Mon May  6 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable TPS65217 (am33xx) on ARM
 
