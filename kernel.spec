@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 303
+%global baserelease 301
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -746,17 +746,8 @@ Patch23006: fix-child-thread-introspection.patch
 #rhbz 928024
 Patch23008: forcedeth-dma-error-check.patch
 
-#rhbz 919176
-Patch25010: wireless-regulatory-fix-channel-disabling-race-condition.patch
-
-#rhbz 951241
-Patch25011: iwlwifi-fix-freeing-uninitialized-pointer.patch
-
 Patch25014: blkcg-fix-scheduling-while-atomic-in-blk_queue_bypass_start.patch
 
-Patch25015: powerpc-Add-isync-to-copy_and_flush.patch
-Patch25016: powerpc-power8-Fix-secondary-CPUs-hanging-on-boot-for-HV=0.patch
-Patch25017: powerpc-Fix-hardware-IRQs-with-MMU-on-exceptions-when-HV=0.patch
 Patch25018: pci-Set-dev-dev.type-in-alloc_pci_dev.patch
 Patch25019: powerpc-Set-default-VGA-device.patch
 
@@ -1455,17 +1446,8 @@ ApplyPatch fix-child-thread-introspection.patch
 #rhbz 928024
 ApplyPatch forcedeth-dma-error-check.patch
 
-#rhbz 919176
-ApplyPatch wireless-regulatory-fix-channel-disabling-race-condition.patch
-
-#rhbz 951241
-ApplyPatch iwlwifi-fix-freeing-uninitialized-pointer.patch
-
 ApplyPatch blkcg-fix-scheduling-while-atomic-in-blk_queue_bypass_start.patch
 
-ApplyPatch powerpc-Add-isync-to-copy_and_flush.patch
-ApplyPatch powerpc-power8-Fix-secondary-CPUs-hanging-on-boot-for-HV=0.patch
-ApplyPatch powerpc-Fix-hardware-IRQs-with-MMU-on-exceptions-when-HV=0.patch
 ApplyPatch pci-Set-dev-dev.type-in-alloc_pci_dev.patch
 ApplyPatch powerpc-Set-default-VGA-device.patch
 
@@ -2296,6 +2278,9 @@ fi
 # and build.
 
 %changelog
+* Wed May 08 2013 Josh Boyer <jwboyer@redhat.com> - 3.0.1-301
+- Linux v3.9.1
+
 * Tue May 07 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.0-303
 - Fix dmesg_restrict patch to avoid regression (rhbz 952655)
 
