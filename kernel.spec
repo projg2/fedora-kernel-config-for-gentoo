@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -76,7 +76,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 1
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2296,6 +2296,9 @@ fi
 %changelog
 * Wed May  8 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add the ARM patches needed for 3.9 :-/
+
+* Wed May 08 2013 Dave Jones <davej@redhat.com> - 3.9.1-200
+- Linux 3.9.1
 
 * Wed May 08 2013 Josh Boyer <jwboyer@redhat.com>
 - Don't remove headers explicitly exported via UAPI (rhbz 959467)
