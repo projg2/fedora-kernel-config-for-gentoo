@@ -252,7 +252,7 @@ Summary: The Linux kernel
 %define with_pae 0
 %endif
 
-# kernel up (versatile express), and tegra are only built on armv7 hfp/sfp
+# kernel up (mutliplatform inc VExpress, highbank, omap), and tegra are only built on armv7 hfp/sfp
 %ifnarch armv7hl armv7l
 %define with_tegra 0
 %endif
@@ -715,9 +715,16 @@ Patch20000: 0001-efifb-Skip-DMI-checks-if-the-bootloader-knows-what-i.patch
 Patch20001: 0002-x86-EFI-Calculate-the-EFI-framebuffer-size-instead-o.patch
 
 # ARM
+Patch21000: arm-export-read_current_timer.patch
+# https://lists.ozlabs.org/pipermail/devicetree-discuss/2013-March/029029.html
+Patch21001: arm-of-dma.patch
+
+# ARM omap
+Patch21003: arm-omap-ehci-fix.patch
 
 # ARM tegra
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
+Patch21006: arm-tegra-fixclk.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -1305,8 +1312,11 @@ ApplyPatch debug-bad-pte-modules.patch
 #
 # ARM
 #
-
+ApplyPatch arm-export-read_current_timer.patch
+ApplyPatch arm-of-dma.patch
+ApplyPatch arm-omap-ehci-fix.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
+ApplyPatch arm-tegra-fixclk.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -2284,6 +2294,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed May  8 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add the ARM patches needed for 3.9 :-/
+
 * Wed May 08 2013 Josh Boyer <jwboyer@redhat.com>
 - Don't remove headers explicitly exported via UAPI (rhbz 959467)
 
