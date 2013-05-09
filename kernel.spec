@@ -2294,6 +2294,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu May 9 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Disable PL330 on ARM as it's broken on highbank
+
 * Wed May  8 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add the ARM patches needed for 3.9 :-/
 
