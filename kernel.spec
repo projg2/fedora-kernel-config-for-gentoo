@@ -2278,6 +2278,9 @@ fi
 # and build.
 
 %changelog
+* Thu May  9 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Disable PL330 on ARM as it's broken on highbank
+
 * Wed May 08 2013 Josh Boyer <jwboyer@redhat.com> - 3.0.1-301
 - Linux v3.9.1
 
