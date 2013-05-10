@@ -74,9 +74,9 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
-%define stable_rc 0
+%define stable_rc 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2294,6 +2294,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri May 10 2013 Dave Jones <davej@redhat.com> - 3.9.2-0.rc1.200
+- Linux 3.9.2-rc1
+
 * Thu May 9 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Disable PL330 on ARM as it's broken on highbank
 
