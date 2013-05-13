@@ -76,7 +76,7 @@ Summary: The Linux kernel
 # Do we have a -stable update to apply?
 %define stable_update 2
 # Is it a -stable RC?
-%define stable_rc 1
+%define stable_rc 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2294,6 +2294,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon May 13 2013 Dave Jones <davej@redhat.com> - 3.9.2-200
+- Linux 3.9.2
+
 * Fri May 10 2013 Dave Jones <davej@redhat.com> - 3.9.2-0.rc1.200
 - Linux 3.9.2-rc1
 
