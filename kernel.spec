@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 301
+%global baserelease 302
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -748,6 +748,10 @@ Patch23008: forcedeth-dma-error-check.patch
 
 Patch25018: pci-Set-dev-dev.type-in-alloc_pci_dev.patch
 Patch25019: powerpc-Set-default-VGA-device.patch
+
+#rhbz 961527
+Patch25020: powerpc-pseries-Perform-proper-max_bus_speed-detecti.patch
+Patch25021: radeon-use-max_bus-speed-to-activate-gen2-speeds.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1446,6 +1450,10 @@ ApplyPatch forcedeth-dma-error-check.patch
 
 ApplyPatch pci-Set-dev-dev.type-in-alloc_pci_dev.patch
 ApplyPatch powerpc-Set-default-VGA-device.patch
+
+#rhbz 961527
+ApplyPatch powerpc-pseries-Perform-proper-max_bus_speed-detecti.patch
+ApplyPatch radeon-use-max_bus-speed-to-activate-gen2-speeds.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2274,6 +2282,9 @@ fi
 # and build.
 
 %changelog
+* Mon May 13 2013 Josh Boyer <jwboyer@redhat.com>
+- Add radeon fixes for PCI-e gen2 speed issues (rhbz 961527)
+
 * Mon May 13 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.2-301
 - Linux v3.9.2
 
