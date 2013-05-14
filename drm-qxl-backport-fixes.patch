@@ -1,0 +1,154 @@
+diff --git a/drivers/gpu/drm/qxl/qxl_cmd.c b/drivers/gpu/drm/qxl/qxl_cmd.c
+index 08b0823..f867714 100644
+--- a/drivers/gpu/drm/qxl/qxl_cmd.c
++++ b/drivers/gpu/drm/qxl/qxl_cmd.c
+@@ -277,7 +277,7 @@ out_unref:
+ 	return 0;
+ }
+ 
+-static int wait_for_io_cmd_user(struct qxl_device *qdev, uint8_t val, long port)
++static int wait_for_io_cmd_user(struct qxl_device *qdev, uint8_t val, long port, bool intr)
+ {
+ 	int irq_num;
+ 	long addr = qdev->io_base + port;
+@@ -285,20 +285,29 @@ static int wait_for_io_cmd_user(struct qxl_device *qdev, uint8_t val, long port)
+ 
+ 	mutex_lock(&qdev->async_io_mutex);
+ 	irq_num = atomic_read(&qdev->irq_received_io_cmd);
+-
+-
+ 	if (qdev->last_sent_io_cmd > irq_num) {
+-		ret = wait_event_interruptible(qdev->io_cmd_event,
+-					       atomic_read(&qdev->irq_received_io_cmd) > irq_num);
+-		if (ret)
++		if (intr)
++			ret = wait_event_interruptible_timeout(qdev->io_cmd_event,
++							       atomic_read(&qdev->irq_received_io_cmd) > irq_num, 5*HZ);
++		else
++			ret = wait_event_timeout(qdev->io_cmd_event,
++						 atomic_read(&qdev->irq_received_io_cmd) > irq_num, 5*HZ);
++		/* 0 is timeout, just bail the "hw" has gone away */
++		if (ret <= 0)
+ 			goto out;
+ 		irq_num = atomic_read(&qdev->irq_received_io_cmd);
+ 	}
+ 	outb(val, addr);
+ 	qdev->last_sent_io_cmd = irq_num + 1;
+-	ret = wait_event_interruptible(qdev->io_cmd_event,
+-				       atomic_read(&qdev->irq_received_io_cmd) > irq_num);
++	if (intr)
++		ret = wait_event_interruptible_timeout(qdev->io_cmd_event,
++						       atomic_read(&qdev->irq_received_io_cmd) > irq_num, 5*HZ);
++	else
++		ret = wait_event_timeout(qdev->io_cmd_event,
++					 atomic_read(&qdev->irq_received_io_cmd) > irq_num, 5*HZ);
+ out:
++	if (ret > 0)
++		ret = 0;
+ 	mutex_unlock(&qdev->async_io_mutex);
+ 	return ret;
+ }
+@@ -308,7 +317,7 @@ static void wait_for_io_cmd(struct qxl_device *qdev, uint8_t val, long port)
+ 	int ret;
+ 
+ restart:
+-	ret = wait_for_io_cmd_user(qdev, val, port);
++	ret = wait_for_io_cmd_user(qdev, val, port, false);
+ 	if (ret == -ERESTARTSYS)
+ 		goto restart;
+ }
+@@ -340,7 +349,7 @@ int qxl_io_update_area(struct qxl_device *qdev, struct qxl_bo *surf,
+ 	mutex_lock(&qdev->update_area_mutex);
+ 	qdev->ram_header->update_area = *area;
+ 	qdev->ram_header->update_surface = surface_id;
+-	ret = wait_for_io_cmd_user(qdev, 0, QXL_IO_UPDATE_AREA_ASYNC);
++	ret = wait_for_io_cmd_user(qdev, 0, QXL_IO_UPDATE_AREA_ASYNC, true);
+ 	mutex_unlock(&qdev->update_area_mutex);
+ 	return ret;
+ }
+diff --git a/drivers/gpu/drm/qxl/qxl_display.c b/drivers/gpu/drm/qxl/qxl_display.c
+index fcfd443..823d29e 100644
+--- a/drivers/gpu/drm/qxl/qxl_display.c
++++ b/drivers/gpu/drm/qxl/qxl_display.c
+@@ -428,10 +428,10 @@ static int qxl_framebuffer_surface_dirty(struct drm_framebuffer *fb,
+ 	int inc = 1;
+ 
+ 	qobj = gem_to_qxl_bo(qxl_fb->obj);
+-	if (qxl_fb != qdev->active_user_framebuffer) {
+-		DRM_INFO("%s: qxl_fb 0x%p != qdev->active_user_framebuffer 0x%p\n",
+-			__func__, qxl_fb, qdev->active_user_framebuffer);
+-	}
++	/* if we aren't primary surface ignore this */
++	if (!qobj->is_primary)
++		return 0;
++
+ 	if (!num_clips) {
+ 		num_clips = 1;
+ 		clips = &norect;
+@@ -604,7 +604,6 @@ static int qxl_crtc_mode_set(struct drm_crtc *crtc,
+ 					       mode->hdisplay,
+ 					       mode->vdisplay);
+ 	}
+-	qdev->mode_set = true;
+ 	return 0;
+ }
+ 
+@@ -893,7 +892,6 @@ qxl_user_framebuffer_create(struct drm_device *dev,
+ {
+ 	struct drm_gem_object *obj;
+ 	struct qxl_framebuffer *qxl_fb;
+-	struct qxl_device *qdev = dev->dev_private;
+ 	int ret;
+ 
+ 	obj = drm_gem_object_lookup(dev, file_priv, mode_cmd->handles[0]);
+@@ -909,13 +907,6 @@ qxl_user_framebuffer_create(struct drm_device *dev,
+ 		return NULL;
+ 	}
+ 
+-	if (qdev->active_user_framebuffer) {
+-		DRM_INFO("%s: active_user_framebuffer %p -> %p\n",
+-			 __func__,
+-			 qdev->active_user_framebuffer, qxl_fb);
+-	}
+-	qdev->active_user_framebuffer = qxl_fb;
+-
+ 	return &qxl_fb->base;
+ }
+ 
+diff --git a/drivers/gpu/drm/qxl/qxl_drv.h b/drivers/gpu/drm/qxl/qxl_drv.h
+index 52b582c..43d06ab 100644
+--- a/drivers/gpu/drm/qxl/qxl_drv.h
++++ b/drivers/gpu/drm/qxl/qxl_drv.h
+@@ -255,12 +255,6 @@ struct qxl_device {
+ 	struct qxl_gem		gem;
+ 	struct qxl_mode_info mode_info;
+ 
+-	/*
+-	 * last created framebuffer with fb_create
+-	 * only used by debugfs dumbppm
+-	 */
+-	struct qxl_framebuffer *active_user_framebuffer;
+-
+ 	struct fb_info			*fbdev_info;
+ 	struct qxl_framebuffer	*fbdev_qfb;
+ 	void *ram_physical;
+@@ -270,7 +264,6 @@ struct qxl_device {
+ 	struct qxl_ring *cursor_ring;
+ 
+ 	struct qxl_ram_header *ram_header;
+-	bool mode_set;
+ 
+ 	bool primary_created;
+ 
+diff --git a/drivers/gpu/drm/qxl/qxl_ioctl.c b/drivers/gpu/drm/qxl/qxl_ioctl.c
+index 04b64f9..6db7370 100644
+--- a/drivers/gpu/drm/qxl/qxl_ioctl.c
++++ b/drivers/gpu/drm/qxl/qxl_ioctl.c
+@@ -294,6 +294,7 @@ static int qxl_update_area_ioctl(struct drm_device *dev, void *data,
+ 		goto out;
+ 
+ 	if (!qobj->pin_count) {
++		qxl_ttm_placement_from_domain(qobj, qobj->type);
+ 		ret = ttm_bo_validate(&qobj->tbo, &qobj->placement,
+ 				      true, false);
+ 		if (unlikely(ret))
