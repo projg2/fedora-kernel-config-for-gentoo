@@ -674,6 +674,9 @@ Patch1702: drm-qxl-backport-fixes.patch
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
 Patch1825: drm-i915-dp-stfu.patch
+# radeon drm fix
+# 924507
+Patch1900: drm-radeon-fix-nomodeset.patch
 
 # Quiet boot fixes
 # silence the ACPI blacklist code
@@ -1396,6 +1399,8 @@ ApplyPatch drm-qxl-backport-fixes.patch
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-i915-dp-stfu.patch
+
+ApplyPatch drm-radeon-fix-nomodeset.patch
 
 # silence the ACPI blacklist code
 ApplyPatch silence-acpi-blacklist.patch
@@ -2284,6 +2289,9 @@ fi
 # and build.
 
 %changelog
+* Wed May 15 2013 Dave Airlie <airlied@redhat.com>
+- fix nomodeset on radeon (rhbz 924507)
+
 * Tue May 14 2013 Dave Airlie <airlied@redhat.com>
 - backport upstream qxl fixes, fixes VM crash on X exit or randr.
 
