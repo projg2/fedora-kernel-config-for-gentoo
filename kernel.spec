@@ -2291,6 +2291,7 @@ fi
 %changelog
 * Mon May 20 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.3-200
 - Linux 3.9.3
+- Update s390x config
 
 * Thu May 16 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix config-local usage (rhbz 950841)
