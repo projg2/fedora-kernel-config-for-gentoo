@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 302
+%global baserelease 301
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -675,8 +675,6 @@ Patch1702: drm-qxl-backport-fixes.patch
 Patch1824: drm-intel-next.patch
 Patch1825: drm-i915-dp-stfu.patch
 # radeon drm fix
-# 924507
-Patch1900: drm-radeon-fix-nomodeset.patch
 
 # Quiet boot fixes
 # silence the ACPI blacklist code
@@ -703,8 +701,6 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 
 # ARM
 Patch21000: arm-export-read_current_timer.patch
-# https://lists.ozlabs.org/pipermail/devicetree-discuss/2013-March/029029.html
-Patch21001: arm-of-dma.patch
 
 # lpae
 Patch21002: arm-lpae-ax88796.patch
@@ -1311,7 +1307,6 @@ ApplyPatch debug-bad-pte-modules.patch
 # ARM
 #
 ApplyPatch arm-export-read_current_timer.patch
-ApplyPatch arm-of-dma.patch
 ApplyPatch arm-lpae-ax88796.patch
 ApplyPatch arm-omap-ehci-fix.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
@@ -1397,8 +1392,6 @@ ApplyPatch drm-qxl-backport-fixes.patch
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
 ApplyPatch drm-i915-dp-stfu.patch
-
-ApplyPatch drm-radeon-fix-nomodeset.patch
 
 # silence the ACPI blacklist code
 ApplyPatch silence-acpi-blacklist.patch
@@ -2287,6 +2280,9 @@ fi
 # and build.
 
 %changelog
+* Mon May 20 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.3-301
+- Linux v3.9.3
+
 * Thu May 16 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix config-local usage (rhbz 950841)
 
