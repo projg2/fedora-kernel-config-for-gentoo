@@ -2280,6 +2280,9 @@ fi
 # and build.
 
 %changelog
+* Tue May 21 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable OMAP5 on ARM multiplatform
+
 * Mon May 20 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.3-301
 - Linux v3.9.3
 
