@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -764,6 +764,8 @@ Patch25007: fix-child-thread-introspection.patch
 
 #rhbz 844750
 Patch25008: 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
+
+Patch25022: iwlwifi-dvm-fix-memset.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1487,6 +1489,8 @@ ApplyPatch mac80211-Dont-restart-sta-timer-if-not-running.patch
 ApplyPatch fix-child-thread-introspection.patch
 
 ApplyPatch 0001-bluetooth-Add-support-for-atheros-04ca-3004-device-t.patch
+
+ApplyPatch iwlwifi-dvm-fix-memset.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2344,6 +2348,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed May 22 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix memset error in iwlwifi
+
 * Wed May 13 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.13-100
 - Linux v3.8.13
 
