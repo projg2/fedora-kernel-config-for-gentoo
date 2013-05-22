@@ -1,0 +1,39 @@
+From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+
+In 63b77bf489881747c5118476918cc8c29378ee63
+
+	iwlwifi: dvm: don't send zeroed LQ cmd
+
+I tried to avoid to send zeroed LQ cmd, but I made a (very)
+stupid mistake in the memcmp.
+Since this patch has been ported to stable, the fix should
+go to stable too.
+
+This fixes https://bugzilla.kernel.org/show_bug.cgi?id=58341
+
+Change-Id: I0af4b3fdd537a1f674e85eb02dc0f5b5ac1ee7ac
+Cc: stable@vger.kernel.org
+Reported-by: Hinnerk van Bruinehsen <h.v.bruinehsen@fu-berlin.de>
+Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+---
+Josh, this fix ugly -stable 3.8, 3.9 regression, please apply.
+
+ drivers/net/wireless/iwlwifi/dvm/sta.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/iwlwifi/dvm/sta.c b/drivers/net/wireless/iwlwifi/dvm/sta.c
+index 5175368..8212097 100644
+--- a/drivers/net/wireless/iwlwifi/dvm/sta.c
++++ b/drivers/net/wireless/iwlwifi/dvm/sta.c
+@@ -735,7 +735,7 @@ void iwl_restore_stations(struct iwl_priv *priv, struct iwl_rxon_context *ctx)
+ 					memcpy(&lq, priv->stations[i].lq,
+ 					       sizeof(struct iwl_link_quality_cmd));
+ 
+-				if (!memcmp(&lq, &zero_lq, sizeof(lq)))
++				if (memcmp(&lq, &zero_lq, sizeof(lq)))
+ 					send_lq = true;
+ 			}
+ 			spin_unlock_bh(&priv->sta_lock);
+-- 
+1.7.10.4
+
