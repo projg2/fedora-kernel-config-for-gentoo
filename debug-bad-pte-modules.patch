@@ -9,13 +9,13 @@ diff -durpN '--exclude-from=/home/davej/.exclude' /home/davej/src/kernel/git-tre
  #include <linux/migrate.h>
  #include <linux/string.h>
  
---- linux-3.8.6-104.fc17.noarch/mm/memory.c~	2013-04-11 11:48:54.024470277 -0400
-+++ linux-3.8.6-104.fc17.noarch/mm/memory.c	2013-04-11 11:49:15.770425274 -0400
-@@ -718,6 +718,7 @@ static void print_bad_pte(struct vm_area
+--- linux-3.9.0-200.fc18.x86_64/mm/memory.c~	2013-05-06 15:04:30.324416922 -0400
++++ linux-3.9.0-200.fc18.x86_64/mm/memory.c	2013-05-06 15:04:43.933398227 -0400
+@@ -723,6 +723,7 @@ static void print_bad_pte(struct vm_area
  	if (vma->vm_file && vma->vm_file->f_op)
  		print_symbol(KERN_ALERT "vma->vm_file->f_op->mmap: %s\n",
  				(unsigned long)vma->vm_file->f_op->mmap);
 +	print_modules();
  	dump_stack();
- 	add_taint(TAINT_BAD_PAGE);
+ 	add_taint(TAINT_BAD_PAGE, LOCKDEP_NOW_UNRELIABLE);
  }

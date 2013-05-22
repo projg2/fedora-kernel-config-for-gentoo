@@ -11,15 +11,15 @@ index 296cfc2..516e1e2 100644
  		DRM_DEBUG_KMS("Status 0x%08x Control 0x%08x\n",
  			      I915_READ(PCH_PP_STATUS),
  			      I915_READ(PCH_PP_CONTROL));
-@@ -400,7 +400,7 @@ intel_dp_aux_ch(struct intel_dp *intel_dp,
+@@ -447,7 +447,7 @@ intel_dp_aux_ch(struct intel_dp *intel_d
  	}
  
  	if (try == 3) {
 -		WARN(1, "dp_aux_ch not started status 0x%08x\n",
 +		DRM_ERROR("dp_aux_ch not started status 0x%08x\n",
  		     I915_READ(ch_ctl));
- 		return -EBUSY;
- 	}
+ 		ret = -EBUSY;
+ 		goto out;
 @@ -1024,8 +1024,8 @@ static void ironlake_edp_panel_vdd_on(struct intel_dp *intel_dp)
  		return;
  	DRM_DEBUG_KMS("Turn eDP VDD on\n");
