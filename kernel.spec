@@ -476,6 +476,8 @@ Provides: kernel-modeset = 1\
 Provides: kernel-uname-r = %{KVERREL}%{?1:.%{1}}\
 Provides: kernel-highbank\
 Provides: kernel-highbank-uname-r = %{KVERREL}%{?1:.%{1}}\
+Provides: kernel-omap\
+Provides: kernel-omap-uname-r = %{KVERREL}%{?1:.%{1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
 Requires(pre): linux-firmware >= 20120206-0.1.git06c8f81\
@@ -691,14 +693,14 @@ Patch14010: lis3-improve-handling-of-null-rate.patch
 Patch19000: ips-noirq.patch
 
 # ARM
-# OMAP
+Patch21000: arm-export-read_current_timer.patch
+
+# ARM omap
+Patch21003: arm-omap-ehci-fix.patch
 
 # ARM tegra
-Patch21004: arm-tegra-nvec-kconfig.patch
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
-Patch21006: arm-tegra-sdhci-module-fix.patch
-
-# ARM highbank patches
+Patch21006: arm-tegra-fixclk.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -1289,9 +1291,10 @@ ApplyPatch debug-bad-pte-modules.patch
 #
 # ARM
 #
-#ApplyPatch arm-tegra-nvec-kconfig.patch
+ApplyPatch arm-export-read_current_timer.patch
+ApplyPatch arm-omap-ehci-fix.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
-#ApplyPatch arm-tegra-sdhci-module-fix.patch
+ApplyPatch arm-tegra-fixclk.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -2280,6 +2283,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed May 22 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update ARM configs for 3.9
+
 * Wed May 22 2013 Justin M. Forbes <jforbes@redhat.com>
 - Initial 3.9.3 rebase
 - Don't remove headers explicitly exported via UAPI (rhbz 959467)
