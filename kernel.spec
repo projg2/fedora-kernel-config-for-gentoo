@@ -2285,7 +2285,7 @@ fi
 
 %changelog
 * Wed May 22 2013 Josh Boyer <jwboyer@redhat.com>
-- Fix memset error in iwlwifi
+- Fix memcmp error in iwlwifi
 
 * Tue May 21 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable OMAP5 on ARM multiplatform
