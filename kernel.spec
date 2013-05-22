@@ -2294,7 +2294,7 @@ fi
 #                 ||     ||
 %changelog
 * Wed May 22 2013 Josh Boyer <jwboyer@redhat.com>
-- Fix memset error in iwlwifi
+- Fix memcmp error in iwlwifi
 
 * Tue May 21 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.3-201
 - Fix modules-extra signing with 3.9 kernels (rhbz 965181)
