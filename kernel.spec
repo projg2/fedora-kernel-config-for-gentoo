@@ -2349,7 +2349,7 @@ fi
 #              '-'
 %changelog
 * Wed May 22 2013 Josh Boyer <jwboyer@redhat.com>
-- Fix memset error in iwlwifi
+- Fix memcmp error in iwlwifi
 
 * Wed May 13 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.13-100
 - Linux v3.8.13
