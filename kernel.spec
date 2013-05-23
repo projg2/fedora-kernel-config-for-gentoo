@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 302
+%global baserelease 303
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -754,6 +754,9 @@ Patch25020: powerpc-pseries-Perform-proper-max_bus_speed-detecti.patch
 Patch25021: radeon-use-max_bus-speed-to-activate-gen2-speeds.patch
 
 Patch25022: iwlwifi-dvm-fix-memset.patch
+
+#rhbz 964367
+Patch25023: hp-wmi-fix-incorrect-rfkill-set-hw-state.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1456,6 +1459,9 @@ ApplyPatch powerpc-pseries-Perform-proper-max_bus_speed-detecti.patch
 ApplyPatch radeon-use-max_bus-speed-to-activate-gen2-speeds.patch
 
 ApplyPatch iwlwifi-dvm-fix-memset.patch
+
+#rhbz 964367
+ApplyPatch hp-wmi-fix-incorrect-rfkill-set-hw-state.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2284,6 +2290,9 @@ fi
 # and build.
 
 %changelog
+* Thu May 23 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix oops from incorrect rfkill set in hp-wmi (rhbz 964367)
+
 * Wed May 22 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix memcmp error in iwlwifi
 
