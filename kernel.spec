@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -738,6 +738,9 @@ Patch25001: i7300_edac_single_mode_fixup.patch
 Patch25007: fix-child-thread-introspection.patch
 
 Patch25022: iwlwifi-dvm-fix-memset.patch
+
+#rhbz 964367
+Patch25023: hp-wmi-fix-incorrect-rfkill-set-hw-state.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1431,6 +1434,9 @@ ApplyPatch VMX-x86-handle-host-TSC-calibration-failure.patch
 ApplyPatch fix-child-thread-introspection.patch
 
 ApplyPatch iwlwifi-dvm-fix-memset.patch
+
+#rhbz 964367
+ApplyPatch hp-wmi-fix-incorrect-rfkill-set-hw-state.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2283,6 +2289,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu May 23 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix oops from incorrect rfkill set in hp-wmi (rhbz 964367)
+
 * Wed May 22 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Update ARM configs for 3.9
 
