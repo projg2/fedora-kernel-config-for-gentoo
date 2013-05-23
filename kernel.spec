@@ -561,12 +561,12 @@ Source70: config-s390x
 
 # Unified ARM kernels
 Source100: config-armv7
+Source101: config-armv7-generic
+Source102: config-armv7-tegra
 
 # Legacy ARM kernels
-Source105: config-arm-generic
-Source110: config-arm-omap
-Source111: config-arm-tegra
-Source112: config-arm-kirkwood
+Source104: config-arm-generic
+Source105: config-arm-kirkwood
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
