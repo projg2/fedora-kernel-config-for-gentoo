@@ -2296,7 +2296,7 @@ fi
 # and build.
 
 %changelog
-* Fri May 24 2013 Justin M. Forbes <jforbes@redhat.com>
+* Fri May 24 2013 Justin M. Forbes <jforbes@redhat.com> - 3.9.3-300
 - Linux v3.9.4
 
 * Fri May 24 2013 Josh Boyer <jwboyer@redhat.com>
