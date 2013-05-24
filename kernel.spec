@@ -758,6 +758,9 @@ Patch25022: iwlwifi-dvm-fix-memset.patch
 #rhbz 964367
 Patch25023: hp-wmi-fix-incorrect-rfkill-set-hw-state.patch
 
+#rhbz 948262
+Patch25024: intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1462,6 +1465,9 @@ ApplyPatch iwlwifi-dvm-fix-memset.patch
 
 #rhbz 964367
 ApplyPatch hp-wmi-fix-incorrect-rfkill-set-hw-state.patch
+
+#rhbz 948262
+ApplyPatch intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2290,6 +2296,9 @@ fi
 # and build.
 
 %changelog
+* Fri May 24 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to quiet irq remapping failures (rhbz 948262)
+
 * Thu May 23 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix oops from incorrect rfkill set in hp-wmi (rhbz 964367)
 
