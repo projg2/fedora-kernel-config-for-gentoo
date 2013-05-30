@@ -2296,6 +2296,9 @@ fi
 # and build.
 
 %changelog
+* Thu May 30 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update ARM tegra config
+
 * Fri May 24 2013 Justin M. Forbes <jforbes@redhat.com> - 3.9.3-300
 - Linux v3.9.4
 
