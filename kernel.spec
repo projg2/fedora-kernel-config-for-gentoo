@@ -761,6 +761,9 @@ Patch25023: hp-wmi-fix-incorrect-rfkill-set-hw-state.patch
 #rhbz 948262
 Patch25024: intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
 
+#CVE-2013-2850 rhbz 968036 969272
+Patch25025: iscsi-target-fix-heap-buffer-overflow-on-error.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1468,6 +1471,9 @@ ApplyPatch hp-wmi-fix-incorrect-rfkill-set-hw-state.patch
 
 #rhbz 948262
 ApplyPatch intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
+
+#CVE-2013-2850 rhbz 968036 969272
+ApplyPatch iscsi-target-fix-heap-buffer-overflow-on-error.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2296,6 +2302,9 @@ fi
 # and build.
 
 %changelog
+* Fri May 31 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-2850 iscsi-target: heap buffer overflow on large key error (rhbz 968036 969272)
+
 * Thu May 30 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Update ARM tegra config
 
