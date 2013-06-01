@@ -708,6 +708,7 @@ Patch21001: arm-lpae-ax88796.patch
 # ARM omap
 Patch21002: arm-omap-ehci-fix.patch
 Patch21003: arm-omap-load-tfp410.patch
+# https://patchwork.kernel.org/patch/2414881/
 Patch21004: arm-omap-fixdrm.patch
 
 # ARM tegra
