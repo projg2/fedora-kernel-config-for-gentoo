@@ -707,6 +707,7 @@ Patch21002: arm-lpae-ax88796.patch
 
 # ARM omap
 Patch21003: arm-omap-ehci-fix.patch
+Patch21004: arm-omap-load-tfp410.patch
 
 # ARM tegra
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
@@ -1317,6 +1318,7 @@ ApplyPatch debug-bad-pte-modules.patch
 ApplyPatch arm-export-read_current_timer.patch
 ApplyPatch arm-lpae-ax88796.patch
 ApplyPatch arm-omap-ehci-fix.patch
+ApplyPatch arm-omap-load-tfp410.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 ApplyPatch arm-tegra-fixclk.patch
 
@@ -2296,8 +2298,10 @@ fi
 # and build.
 
 %changelog
-* Thu May 30 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+* Sat June 1 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Update ARM tegra config
+- Add patch to fix DRM/X on omap (panda)
+- Enable Cortex-A8 errata on multiplatform kernels (omap3)
 
 * Fri May 24 2013 Justin M. Forbes <jforbes@redhat.com> - 3.9.3-300
 - Linux v3.9.4
