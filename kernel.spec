@@ -756,6 +756,10 @@ Patch25019: powerpc-Set-default-VGA-device.patch
 Patch25020: powerpc-pseries-Perform-proper-max_bus_speed-detecti.patch
 Patch25021: radeon-use-max_bus-speed-to-activate-gen2-speeds.patch
 
+#rhbz 962496
+Patch25027: powerpc-pseries-Force-32-bit-MSIs-for-devices-that-r.patch
+Patch25029: powerpc-pseries-Make-32-bit-MSI-quirk-work-on-system.patch
+
 Patch25022: iwlwifi-dvm-fix-memset.patch
 
 #rhbz 964367
@@ -1468,6 +1472,10 @@ ApplyPatch powerpc-Set-default-VGA-device.patch
 #rhbz 961527
 ApplyPatch powerpc-pseries-Perform-proper-max_bus_speed-detecti.patch
 ApplyPatch radeon-use-max_bus-speed-to-activate-gen2-speeds.patch
+
+#rhbz 962496
+ApplyPatch powerpc-pseries-Force-32-bit-MSIs-for-devices-that-r.patch
+ApplyPatch powerpc-pseries-Make-32-bit-MSI-quirk-work-on-system.patch
 
 ApplyPatch iwlwifi-dvm-fix-memset.patch
 
@@ -2307,6 +2315,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jun 03 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patches to fix PowerPC MSI handling (rhbz 962496)
+
 * Sat Jun  1 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add patch to fix DRM/X on omap (panda)
 - Enable Cortex-A8 errata on multiplatform kernels (omap3)
