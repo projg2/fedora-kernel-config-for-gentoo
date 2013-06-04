@@ -2321,7 +2321,10 @@ fi
 # and build.
 
 %changelog
-* Mon Jun 03 2013 Josh Boyer <jwboyer@redhat.com>
+* Tue Jun 04 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix build issue with PowerPC MSI patches (rhbz 962496)
+
+* Mon Jun 03 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.4-301
 - Fix UEFI anti-bricking code (rhbz 964335)
 - Add patches to fix PowerPC MSI handling (rhbz 962496)
 
