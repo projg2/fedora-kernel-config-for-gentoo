@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 302
+%global baserelease 303
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -776,6 +776,9 @@ Patch25026: Modify-UEFI-anti-bricking-code.patch
 
 # Needed for F19 gssproxy feature
 Patch25030: gssproxy-backport.patch
+
+#CVE-2013-2140 rhbz 971146 971148
+Patch25031: xen-blkback-Check-device-permissions-before-allowing.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1499,6 +1502,9 @@ ApplyPatch Modify-UEFI-anti-bricking-code.patch
 
 # Needed for F19 gssproxy feature
 ApplyPatch gssproxy-backport.patch
+
+#CVE-2013-2140 rhbz 971146 971148
+ApplyPatch xen-blkback-Check-device-permissions-before-allowing.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2327,6 +2333,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jun 05 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-2140 xen: blkback: insufficient permission checks for BLKIF_OP_DISCARD (rhbz 971146 971148)
+
 * Tue Jun 04 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.4-302
 - Add gssproxy backport from J. Bruce Fields
 - Fix build issue with PowerPC MSI patches (rhbz 962496)
