@@ -2307,7 +2307,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Mon Jun 03 2013 Josh Boyer <jwboyer@redhat.com>
+* Mon Jun 03 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.4-101
 - Fix UEFI anti-bricking code (rhbz 964335)
 
 * Fri May 31 2013 Josh Boyer <jwboyer@redhat.com>
