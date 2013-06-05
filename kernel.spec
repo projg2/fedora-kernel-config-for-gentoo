@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 202
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -766,6 +766,9 @@ Patch25025: iscsi-target-fix-heap-buffer-overflow-on-error.patch
 
 #rhbz 964335
 Patch25026: Modify-UEFI-anti-bricking-code.patch
+
+#CVE-2013-2140 rhbz 971146 971148
+Patch25031: xen-blkback-Check-device-permissions-before-allowing.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1471,6 +1474,9 @@ ApplyPatch iscsi-target-fix-heap-buffer-overflow-on-error.patch
 
 #rhbz 964335
 ApplyPatch Modify-UEFI-anti-bricking-code.patch
+
+#CVE-2013-2140 rhbz 971146 971148
+ApplyPatch xen-blkback-Check-device-permissions-before-allowing.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2317,6 +2323,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Jun 05 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-2140 xen: blkback: insufficient permission checks for BLKIF_OP_DISCARD (rhbz 971146 971148)
+
 * Mon Jun 03 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix UEFI anti-bricking code (rhbz 964335)
 
