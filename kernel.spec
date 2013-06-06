@@ -780,6 +780,9 @@ Patch25030: gssproxy-backport.patch
 #CVE-2013-2140 rhbz 971146 971148
 Patch25031: xen-blkback-Check-device-permissions-before-allowing.patch
 
+#CVE-2013-2147 rhbz 971242 971249
+Patch25032: cve-2013-2147-ciss-info-leak.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1505,6 +1508,9 @@ ApplyPatch gssproxy-backport.patch
 
 #CVE-2013-2140 rhbz 971146 971148
 ApplyPatch xen-blkback-Check-device-permissions-before-allowing.patch
+
+#CVE-2013-2147 rhbz 971242 971249
+ApplyPatch cve-2013-2147-ciss-info-leak.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2333,6 +2339,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jun 06 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-2147 cpqarray/cciss: information leak via ioctl (rhbz 971242 971249)
+
 * Wed Jun 05 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-2140 xen: blkback: insufficient permission checks for BLKIF_OP_DISCARD (rhbz 971146 971148)
 
