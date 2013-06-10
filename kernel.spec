@@ -777,6 +777,9 @@ Patch25034: b43-stop-format-string-leaking-into-error-msgs.patch
 #CVE-2013-2851 rhbz 969515 971662
 Patch25035: block-do-not-pass-disk-names-as-format-strings.patch
 
+# Fix for build failure on powerpc in 3.9.5
+Patch25037: powerpc-3.9.5-fix.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1491,6 +1494,9 @@ ApplyPatch b43-stop-format-string-leaking-into-error-msgs.patch
 
 #CVE-2013-2851 rhbz 969515 971662
 ApplyPatch block-do-not-pass-disk-names-as-format-strings.patch
+
+# Fix for build failure on powerpc in 3.9.5
+ApplyPatch powerpc-3.9.5-fix.patch
 
 # END OF PATCH APPLICATIONS
 
