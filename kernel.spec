@@ -2333,7 +2333,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Mon Jun 10 2013 Josh Boyer <jwboyer@redhat.com>
+* Mon Jun 10 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.5-100
 - Linux v3.9.5
 
 * Fri Jun 07 2013 Josh Boyer <jwboyer@redhat.com>
