@@ -790,6 +790,9 @@ Patch25035: block-do-not-pass-disk-names-as-format-strings.patch
 #rhbz 954252
 Patch25036: scsi-ipr-possible-irq-lock-inversion-dependency-detected.patch
 
+# Fix for build failure on powerpc in 3.9.5
+Patch25037: powerpc-3.9.5-fix.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1525,6 +1528,9 @@ ApplyPatch block-do-not-pass-disk-names-as-format-strings.patch
 
 #rhbz 954252
 ApplyPatch scsi-ipr-possible-irq-lock-inversion-dependency-detected.patch
+
+# Fix for build failure on powerpc in 3.9.5
+ApplyPatch powerpc-3.9.5-fix.patch
 
 # END OF PATCH APPLICATIONS
 
