@@ -787,6 +787,9 @@ Patch25034: b43-stop-format-string-leaking-into-error-msgs.patch
 #CVE-2013-2851 rhbz 969515 971662
 Patch25035: block-do-not-pass-disk-names-as-format-strings.patch
 
+#rhbz 954252
+Patch25036: scsi-ipr-possible-irq-lock-inversion-dependency-detected.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1519,6 +1522,9 @@ ApplyPatch b43-stop-format-string-leaking-into-error-msgs.patch
 
 #CVE-2013-2851 rhbz 969515 971662
 ApplyPatch block-do-not-pass-disk-names-as-format-strings.patch
+
+#rhbz 954252
+ApplyPatch scsi-ipr-possible-irq-lock-inversion-dependency-detected.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2348,6 +2354,7 @@ fi
 
 %changelog
 * Mon Jun 10 2013 Josh Boyer <jwboyer@redhat.com>
+- Apply scsi lockdep patch for powerpc IPR issues (rhbz 954252)
 - Linux v3.9.5
 
 * Fri Jun 07 2013 Josh Boyer <jwboyer@redhat.com>
