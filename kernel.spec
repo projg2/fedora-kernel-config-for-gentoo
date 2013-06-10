@@ -2359,7 +2359,7 @@ fi
 # and build.
 
 %changelog
-* Mon Jun 10 2013 Josh Boyer <jwboyer@redhat.com>
+* Mon Jun 10 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.5-300
 - Apply scsi lockdep patch for powerpc IPR issues (rhbz 954252)
 - Linux v3.9.5
 
