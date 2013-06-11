@@ -2389,7 +2389,7 @@ fi
 # and build.
 
 %changelog
-* Tue Jun 11 2013 Josh Boyer <jwboyer@redhat.com>
+* Tue Jun 11 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.5-301
 - Temporarily disable gssproxy patches
 - Add two patches to fix vfio device permissions (rhbz 967230)
 - Add patches to fix MTRR issues in 3.9.5 (rhbz 973185)
