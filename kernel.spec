@@ -804,6 +804,10 @@ Patch25040: tuntap-set-SOCK_ZEROCOPY-flag-during-open.patch
 Patch25041: x86-mtrr-Fix-original-mtrr-range-get-for-mtrr_cleanup.patch
 Patch25042: x86-range-make-add_range-use-blank-slot.patch
 
+#rhbz 967230
+Patch25043: vfio-Set-container-device-mode.patch
+Patch25044: vfio-fix-crash-on-rmmod.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1553,6 +1557,10 @@ ApplyPatch tuntap-set-SOCK_ZEROCOPY-flag-during-open.patch
 #rhbz 973185
 ApplyPatch x86-mtrr-Fix-original-mtrr-range-get-for-mtrr_cleanup.patch
 ApplyPatch x86-range-make-add_range-use-blank-slot.patch
+
+#rhbz 967230
+ApplyPatch vfio-Set-container-device-mode.patch
+ApplyPatch vfio-fix-crash-on-rmmod.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2382,6 +2390,7 @@ fi
 
 %changelog
 * Tue Jun 11 2013 Josh Boyer <jwboyer@redhat.com>
+- Add two patches to fix vfio device permissions (rhbz 967230)
 - Add patches to fix MTRR issues in 3.9.5 (rhbz 973185)
 - Add two patches to fix issues with vhost_net and macvlan (rhbz 954181)
 - CVE-2013-2164 information leak in cdrom driver (rhbz 973100 973109)
