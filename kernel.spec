@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -763,6 +763,9 @@ Patch25035: block-do-not-pass-disk-names-as-format-strings.patch
 
 # Fix for build failure on powerpc in 3.9.5
 Patch25037: powerpc-3.9.5-fix.patch
+
+#CVE-2013-2164 rhbz 973100 973109
+Patch25038: cdrom-use-kzalloc-for-failing-hardware.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1481,6 +1484,9 @@ ApplyPatch block-do-not-pass-disk-names-as-format-strings.patch
 
 # Fix for build failure on powerpc in 3.9.5
 ApplyPatch powerpc-3.9.5-fix.patch
+
+#CVE-2013-2164 rhbz 973100 973109
+ApplyPatch cdrom-use-kzalloc-for-failing-hardware.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2333,6 +2339,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Tue Jun 11 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-2164 information leak in cdrom driver (rhbz 973100 973109)
+
 * Mon Jun 10 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.5-100
 - Linux v3.9.5
 
