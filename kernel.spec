@@ -800,6 +800,9 @@ Patch25038: cdrom-use-kzalloc-for-failing-hardware.patch
 Patch25039: vhost_net-clear-msg.control-for-non-zerocopy-case-during-tx.patch
 Patch25040: tuntap-set-SOCK_ZEROCOPY-flag-during-open.patch
 
+#rhbz 973185
+Patch25041: x86-mtrr-Fix-original-mtrr-range-get-for-mtrr_cleanup.patch
+Patch25042: x86-range-make-add_range-use-blank-slot.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1546,6 +1549,10 @@ ApplyPatch cdrom-use-kzalloc-for-failing-hardware.patch
 #rhbz 954181
 ApplyPatch vhost_net-clear-msg.control-for-non-zerocopy-case-during-tx.patch
 ApplyPatch tuntap-set-SOCK_ZEROCOPY-flag-during-open.patch
+
+#rhbz 973185
+ApplyPatch x86-mtrr-Fix-original-mtrr-range-get-for-mtrr_cleanup.patch
+ApplyPatch x86-range-make-add_range-use-blank-slot.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2375,6 +2382,7 @@ fi
 
 %changelog
 * Tue Jun 11 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patches to fix MTRR issues in 3.9.5 (rhbz 973185)
 - Add two patches to fix issues with vhost_net and macvlan (rhbz 954181)
 - CVE-2013-2164 information leak in cdrom driver (rhbz 973100 973109)
 
