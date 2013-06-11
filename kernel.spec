@@ -2365,7 +2365,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Tue Jun 11 2013 Josh Boyer <jwboyer@redhat.com>
+* Tue Jun 11 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.5-201
 - Add patches to fix MTRR issues in 3.9.5 (rhbz 973185)
 - Add two patches to fix issues with vhost_net and macvlan (rhbz 954181)
 - CVE-2013-2164 information leak in cdrom driver (rhbz 973100 973109)
