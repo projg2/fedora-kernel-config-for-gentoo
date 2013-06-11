@@ -1524,7 +1524,7 @@ ApplyPatch intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.pat
 ApplyPatch Modify-UEFI-anti-bricking-code.patch
 
 # Needed for F19 gssproxy feature
-ApplyPatch gssproxy-backport.patch
+#pplyPatch gssproxy-backport.patch
 
 #CVE-2013-2140 rhbz 971146 971148
 ApplyPatch xen-blkback-Check-device-permissions-before-allowing.patch
@@ -2390,6 +2390,7 @@ fi
 
 %changelog
 * Tue Jun 11 2013 Josh Boyer <jwboyer@redhat.com>
+- Temporarily disable gssproxy patches
 - Add two patches to fix vfio device permissions (rhbz 967230)
 - Add patches to fix MTRR issues in 3.9.5 (rhbz 973185)
 - Add two patches to fix issues with vhost_net and macvlan (rhbz 954181)
