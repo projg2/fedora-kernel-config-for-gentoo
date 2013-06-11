@@ -767,6 +767,11 @@ Patch25037: powerpc-3.9.5-fix.patch
 #CVE-2013-2164 rhbz 973100 973109
 Patch25038: cdrom-use-kzalloc-for-failing-hardware.patch
 
+#rhbz 954181
+Patch25039: vhost_net-clear-msg.control-for-non-zerocopy-case-during-tx.patch
+Patch25040: tuntap-set-SOCK_ZEROCOPY-flag-during-open.patch
+
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1487,6 +1492,10 @@ ApplyPatch powerpc-3.9.5-fix.patch
 
 #CVE-2013-2164 rhbz 973100 973109
 ApplyPatch cdrom-use-kzalloc-for-failing-hardware.patch
+
+#rhbz 954181
+ApplyPatch vhost_net-clear-msg.control-for-non-zerocopy-case-during-tx.patch
+ApplyPatch tuntap-set-SOCK_ZEROCOPY-flag-during-open.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2340,6 +2349,7 @@ fi
 #              '-'
 %changelog
 * Tue Jun 11 2013 Josh Boyer <jwboyer@redhat.com>
+- Add two patches to fix issues with vhost_net and macvlan (rhbz 954181)
 - CVE-2013-2164 information leak in cdrom driver (rhbz 973100 973109)
 
 * Mon Jun 10 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.5-100
