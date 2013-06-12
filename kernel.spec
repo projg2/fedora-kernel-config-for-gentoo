@@ -812,6 +812,9 @@ Patch25044: vfio-fix-crash-on-rmmod.patch
 #rhbz 950735
 Patch25045: rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 
+#rhbz 969644
+Patch25046: KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1571,6 +1574,9 @@ ApplyPatch vfio-fix-crash-on-rmmod.patch
 
 #rhbz 950735
 ApplyPatch rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
+
+#rhbz 969644
+ApplyPatch KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2400,6 +2406,7 @@ fi
 
 %changelog
 * Wed Jun 12 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix KVM divide by zero error (rhbz 969644)
 - Add fix for rt5390/rt3290 regression (rhbz 950735)
 
 * Tue Jun 11 2013 Dave Jones <davej@redhat.com>
