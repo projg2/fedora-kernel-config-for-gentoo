@@ -114,7 +114,7 @@ Summary: The Linux kernel
 %define with_up        %{?_without_up:        0} %{?!_without_up:        1}
 # kernel-smp (only valid for ppc 32-bit)
 %define with_smp       %{?_without_smp:       0} %{?!_without_smp:       1}
-# kernel-PAE (only valid for i686)
+# kernel PAE (only valid for i686 (PAE) and ARM (lpae))
 %define with_pae       %{?_without_pae:       0} %{?!_without_pae:       1}
 # kernel-debug
 %define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
@@ -132,8 +132,6 @@ Summary: The Linux kernel
 %define with_bootwrapper %{?_without_bootwrapper: 0} %{?!_without_bootwrapper: 1}
 # Want to build a the vsdo directories installed
 %define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 1}
-# ARM Cortex-A15 support with LPAE and HW Virtualisation
-%define with_lpae      %{?_without_lpae:      0} %{?!_without_lpae:      1}
 # kernel-tegra (only valid for arm)
 %define with_tegra       %{?_without_tegra:       0} %{?!_without_tegra:       1}
 #
@@ -244,14 +242,13 @@ Summary: The Linux kernel
 %endif
 %define debuginfodir /usr/lib/debug
 
-# kernel-PAE is only built on i686.
-%ifnarch i686
+# kernel PAE is only built on i686 and ARMv7.
+%ifnarch i686 armv7hl
 %define with_pae 0
 %endif
 
 # kernel up (unified kernel target), unified LPAE, tegra are only built on armv7 hfp
 %ifnarch armv7hl
-%define with_lpae 0
 %define with_tegra 0
 %endif
 
@@ -336,6 +333,7 @@ Summary: The Linux kernel
 %ifarch %{all_x86}
 %define asmarch x86
 %define hdrarch i386
+%define pae PAE
 %define all_arch_configs kernel-%{version}-i?86*.config
 %define image_install_path boot
 %define kernel_image arch/x86/boot/bzImage
@@ -383,6 +381,7 @@ Summary: The Linux kernel
 %define image_install_path boot
 %define asmarch arm
 %define hdrarch arm
+%define pae lpae
 %define make_target bzImage
 %define kernel_image arch/arm/boot/zImage
 # we only build headers/perf/tools on the base arm arches
@@ -1059,19 +1058,29 @@ hyperthreading technology.
 Install the kernel-smp package if your machine uses two or more CPUs.
 
 
+%ifarch %{ix86}
 %define variant_summary The Linux kernel compiled for PAE capable machines
-%kernel_variant_package PAE
-%description PAE
+%kernel_variant_package %{pae}
+%description %{pae}
 This package includes a version of the Linux kernel with support for up to
 64GB of high memory. It requires a CPU with Physical Address Extensions (PAE).
 The non-PAE kernel can only address up to 4GB of memory.
 Install the kernel-PAE package if your machine has more than 4GB of memory.
+%endif
+%ifarch armv7hl
+%define variant_summary The Linux kernel compiled for Cortex-A15
+%kernel_variant_package %{pae}
+%description %{pae}
+This package includes a version of the Linux kernel with support for
+Cortex-A15 devices with LPAE and HW virtualisation support
+%endif
+%endif
 
 
 %define variant_summary The Linux kernel compiled with extra debugging enabled for PAE capable machines
-%kernel_variant_package PAEdebug
+%kernel_variant_package %{pae}debug
 Obsoletes: kernel-PAE-debug
-%description PAEdebug
+%description %{pae}debug
 This package includes a version of the Linux kernel with support for up to
 64GB of high memory. It requires a CPU with Physical Address Extensions (PAE).
 The non-PAE kernel can only address up to 4GB of memory.
@@ -1093,12 +1102,6 @@ input and output, etc.
 This variant of the kernel has numerous debugging options enabled.
 It should only be installed when trying to gather additional information
 on kernel bugs, as some of these options impact performance noticably.
-
-%define variant_summary The Linux kernel compiled for Cortex-A15
-%kernel_variant_package lpae
-%description lpae
-This package includes a version of the Linux kernel with support for
-Cortex-A15 devices with LPAE and HW virtualisation support
 
 %define variant_summary The Linux kernel compiled for tegra boards
 %kernel_variant_package tegra
@@ -1917,15 +1920,11 @@ BuildKernel %make_target %kernel_image debug
 %endif
 
 %if %{with_pae_debug}
-BuildKernel %make_target %kernel_image PAEdebug
+BuildKernel %make_target %kernel_image %{pae}debug
 %endif
 
 %if %{with_pae}
-BuildKernel %make_target %kernel_image PAE
-%endif
-
-%if %{with_lpae}
-BuildKernel %make_target %kernel_image lpae
+BuildKernel %make_target %kernel_image %{pae}
 %endif
 
 %if %{with_tegra}
@@ -1998,9 +1997,9 @@ find Documentation -type d | xargs chmod u+w
 %define __modsign_install_post \
   if [ "%{signmodules}" == "1" ]; then \
     if [ "%{with_pae}" != "0" ]; then \
-      mv signing_key.priv.sign.PAE signing_key.priv \
-      mv signing_key.x509.sign.PAE signing_key.x509 \
-      %{modsign_cmd} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.PAE/ \
+      mv signing_key.priv.sign.%{pae} signing_key.priv \
+      mv signing_key.x509.sign.%{pae} signing_key.x509 \
+      %{modsign_cmd} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.%{pae}/ \
     fi \
     if [ "%{with_debug}" != "0" ]; then \
       mv signing_key.priv.sign.debug signing_key.priv \
@@ -2008,9 +2007,9 @@ find Documentation -type d | xargs chmod u+w
       %{modsign_cmd} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.debug/ \
     fi \
     if [ "%{with_pae_debug}" != "0" ]; then \
-      mv signing_key.priv.sign.PAEdebug signing_key.priv \
-      mv signing_key.x509.sign.PAEdebug signing_key.x509 \
-      %{modsign_cmd} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.PAEdebug/ \
+      mv signing_key.priv.sign.%{pae}debug signing_key.priv \
+      mv signing_key.x509.sign.%{pae}debug signing_key.x509 \
+      %{modsign_cmd} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.%{pae}debug/ \
     fi \
     if [ "%{with_up}" != "0" ]; then \
       mv signing_key.priv.sign signing_key.priv \
@@ -2240,17 +2239,14 @@ fi}\
 %kernel_variant_preun smp
 %kernel_variant_post -v smp
 
-%kernel_variant_preun PAE
-%kernel_variant_post -v PAE -r (kernel|kernel-smp)
+%kernel_variant_preun %{pae}
+%kernel_variant_post -v %{pae} -r (kernel|kernel-smp)
+
+%kernel_variant_post -v %{pae}debug -r (kernel|kernel-smp)
+%kernel_variant_preun %{pae}debug
 
 %kernel_variant_preun debug
 %kernel_variant_post -v debug
-
-%kernel_variant_post -v PAEdebug -r (kernel|kernel-smp)
-%kernel_variant_preun PAEdebug
-
-%kernel_variant_preun lpae
-%kernel_variant_post -v lpae
 
 %kernel_variant_preun tegra
 %kernel_variant_post -v tegra
@@ -2396,15 +2392,19 @@ fi
 %kernel_variant_files %{with_up}
 %kernel_variant_files %{with_smp} smp
 %kernel_variant_files %{with_debug} debug
-%kernel_variant_files %{with_pae} PAE
-%kernel_variant_files %{with_pae_debug} PAEdebug
-%kernel_variant_files %{with_lpae} lpae
+%kernel_variant_files %{with_pae} %{pae}
+%kernel_variant_files %{with_pae_debug} %{pae}debug
 %kernel_variant_files %{with_tegra} tegra
 
 # plz don't put in a version string unless you're going to tag
 # and build.
 
 %changelog
+* Wed Jun 12 2013 Kyle McMartin <kmcmarti@redhat.com>
+- Merge %{with_pae} and %{with_lpae} so both ARM and i686 use the same
+  flavours. Set %{pae} to the flavour name {lpae, PAE}. Merging
+  the descriptions would be nice, but is somewhat irrelevant...
+
 * Wed Jun 12 2013 Josh Boyer <jwboyer@redhat.com>
 - Update gssproxy patches
 - Fix KVM divide by zero error (rhbz 969644)
