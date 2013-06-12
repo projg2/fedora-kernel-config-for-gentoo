@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 301
+%global baserelease 302
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1534,7 +1534,7 @@ ApplyPatch intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.pat
 ApplyPatch Modify-UEFI-anti-bricking-code.patch
 
 # Needed for F19 gssproxy feature
-#pplyPatch gssproxy-backport.patch
+ApplyPatch gssproxy-backport.patch
 
 #CVE-2013-2140 rhbz 971146 971148
 ApplyPatch xen-blkback-Check-device-permissions-before-allowing.patch
@@ -2406,6 +2406,7 @@ fi
 
 %changelog
 * Wed Jun 12 2013 Josh Boyer <jwboyer@redhat.com>
+- Update gssproxy patches
 - Fix KVM divide by zero error (rhbz 969644)
 - Add fix for rt5390/rt3290 regression (rhbz 950735)
 

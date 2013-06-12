@@ -1,7 +1,7 @@
 From 7e5eee0a24ea886a0b68a8521117c5ef97668443 Mon Sep 17 00:00:00 2001
 From: Trond Myklebust <Trond.Myklebust@netapp.com>
 Date: Sun, 14 Apr 2013 11:42:00 -0400
-Subject: [PATCH 01/13] SUNRPC: Allow rpc_create() to request that TCP slots be
+Subject: [PATCH 01/16] SUNRPC: Allow rpc_create() to request that TCP slots be
  unlimited
 
 This is mainly for use by NFSv4.1, where the session negotiation
@@ -87,7 +87,7 @@ index 3d02130..b08d314 100644
 From 932c7301413eb94f7b60efaa1a80cb8cf0264459 Mon Sep 17 00:00:00 2001
 From: "J. Bruce Fields" <bfields@redhat.com>
 Date: Thu, 21 Feb 2013 10:14:22 -0500
-Subject: [PATCH 02/13] SUNRPC: attempt AF_LOCAL connect on setup
+Subject: [PATCH 02/16] SUNRPC: attempt AF_LOCAL connect on setup
 
 In the gss-proxy case, setup time is when I know I'll have the right
 namespace for the connect.
@@ -122,7 +122,7 @@ index b08d314..867ce36 100644
 From 915d3592cc8718cc3e83164bb78c532d3a7d1f00 Mon Sep 17 00:00:00 2001
 From: "J. Bruce Fields" <bfields@redhat.com>
 Date: Thu, 11 Apr 2013 15:06:36 -0400
-Subject: [PATCH 03/13] SUNRPC: allow disabling idle timeout
+Subject: [PATCH 03/16] SUNRPC: allow disabling idle timeout
 
 In the gss-proxy case we don't want to have to reconnect at random--we
 want to connect only on gss-proxy startup when we can steal gss-proxy's
@@ -196,7 +196,7 @@ index b7478d5..33fac38 100644
 From faa25a9e80ab40a0e923011771aca6a1ddeea30d Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Fri, 25 May 2012 18:09:53 -0400
-Subject: [PATCH 04/13] SUNRPC: conditionally return endtime from
+Subject: [PATCH 04/16] SUNRPC: conditionally return endtime from
  import_sec_context
 
 We expose this parameter for a future caller.
@@ -315,7 +315,7 @@ index 5ead605..20eedec 100644
 From ffc614331a36038700b7bc13bc2da6b8f120b9d6 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Fri, 25 May 2012 18:09:55 -0400
-Subject: [PATCH 05/13] SUNRPC: Add RPC based upcall mechanism for RPCGSS auth
+Subject: [PATCH 05/16] SUNRPC: Add RPC based upcall mechanism for RPCGSS auth
 
 This patch implements a sunrpc client to use the services of the gssproxy
 userspace daemon.
@@ -1925,7 +1925,7 @@ index ce7bd44..e9f8895 100644
 From f682043df7bb81715124c82e9cea8bc68ded9667 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Fri, 25 May 2012 18:09:56 -0400
-Subject: [PATCH 06/13] SUNRPC: Use gssproxy upcall for server RPCGSS
+Subject: [PATCH 06/16] SUNRPC: Use gssproxy upcall for server RPCGSS
  authentication.
 
 The main advantge of this new upcall mechanism is that it can handle
@@ -2516,7 +2516,7 @@ index e9f8895..7111a4c 100644
 From 06404241b88b51c50427b833268d7cad7dec30f5 Mon Sep 17 00:00:00 2001
 From: "J. Bruce Fields" <bfields@redhat.com>
 Date: Mon, 29 Apr 2013 17:03:31 -0400
-Subject: [PATCH 07/13] SUNRPC: define
+Subject: [PATCH 07/16] SUNRPC: define
  {create,destroy}_use_gss_proxy_proc_entry in !PROC case
 
 Though I wonder whether we should really just depend on CONFIG_PROC_FS
@@ -2570,7 +2570,7 @@ index 58f5bc3..71446b6 100644
 From 3cc961ce9784f0b4a9cb21217dd4a8403efc220d Mon Sep 17 00:00:00 2001
 From: Fengguang Wu <fengguang.wu@intel.com>
 Date: Mon, 29 Apr 2013 17:19:48 -0400
-Subject: [PATCH 08/13] SUNRPC: gssp_procedures[] can be static
+Subject: [PATCH 08/16] SUNRPC: gssp_procedures[] can be static
 
 Cc: Simo Sorce <simo@redhat.com>
 Signed-off-by: Fengguang Wu <fengguang.wu@intel.com>
@@ -2598,7 +2598,7 @@ index 3f874d7..98818d6 100644
 From d6afcafd515bbf16e39817170cd212a7debd8959 Mon Sep 17 00:00:00 2001
 From: "J. Bruce Fields" <bfields@redhat.com>
 Date: Mon, 29 Apr 2013 18:21:29 -0400
-Subject: [PATCH 09/13] svcrpc: fix gss-proxy to respect user namespaces
+Subject: [PATCH 09/16] svcrpc: fix gss-proxy to respect user namespaces
 
 Signed-off-by: J. Bruce Fields <bfields@redhat.com>
 ---
@@ -2659,7 +2659,7 @@ index d0ccdff..5c4c61d 100644
 From e4f7a037aa575bdbe6d1e42e58283cb4d663b000 Mon Sep 17 00:00:00 2001
 From: Geert Uytterhoeven <geert@linux-m68k.org>
 Date: Mon, 6 May 2013 09:21:03 +0200
-Subject: [PATCH 10/13] SUNRPC: Refactor gssx_dec_option_array() to kill
+Subject: [PATCH 10/16] SUNRPC: Refactor gssx_dec_option_array() to kill
  uninitialized warning
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -2731,7 +2731,7 @@ index 5c4c61d..a1e1b1a 100644
 From f174f54afb853cd818e2121a0b5dc66012a4a3eb Mon Sep 17 00:00:00 2001
 From: "J. Bruce Fields" <bfields@redhat.com>
 Date: Tue, 7 May 2013 17:45:20 -0400
-Subject: [PATCH 11/13] SUNRPC: fix decoding of optional gss-proxy xdr fields
+Subject: [PATCH 11/16] SUNRPC: fix decoding of optional gss-proxy xdr fields
 
 The current code works, but sort of by accident: it obviously didn't
 intend the error return to be interpreted as "true".
@@ -2814,7 +2814,7 @@ index a1e1b1a..357f613 100644
 From 653ba539c4d845b004c7d29416c9083cb74f8270 Mon Sep 17 00:00:00 2001
 From: Dan Carpenter <dan.carpenter@oracle.com>
 Date: Sat, 11 May 2013 19:13:49 +0300
-Subject: [PATCH 12/13] svcauth_gss: fix error code in use_gss_proxy()
+Subject: [PATCH 12/16] svcauth_gss: fix error code in use_gss_proxy()
 
 This should return zero on success and -EBUSY on error so the type
 needs to be int instead of bool.
@@ -2845,7 +2845,7 @@ index 71446b6..141902e 100644
 From 66a26c8c42ebbdfb7dbf297b3d7f404f0dc86ed8 Mon Sep 17 00:00:00 2001
 From: "J. Bruce Fields" <bfields@redhat.com>
 Date: Fri, 24 May 2013 09:47:49 -0400
-Subject: [PATCH 13/13] svcrpc: implement O_NONBLOCK behavior for use-gss-proxy
+Subject: [PATCH 13/16] svcrpc: implement O_NONBLOCK behavior for use-gss-proxy
 
 Somebody noticed LTP was complaining about O_NONBLOCK opens of
 /proc/net/rpc/use-gss-proxy succeeding and then a following read
@@ -2891,6 +2891,168 @@ index 141902e..a7d4dfa 100644
  	if (ret)
  		return ret;
  
+-- 
+1.8.1.4
+
+
+From 30e8ac5e689fb6de9d27eeeca080fa46ed59c856 Mon Sep 17 00:00:00 2001
+From: "J. Bruce Fields" <bfields@redhat.com>
+Date: Mon, 10 Jun 2013 16:06:44 -0400
+Subject: [PATCH 14/16] svcrpc: fix gss_rpc_upcall create error
+
+Signed-off-by: J. Bruce Fields <bfields@redhat.com>
+---
+ net/sunrpc/auth_gss/gss_rpc_upcall.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/sunrpc/auth_gss/gss_rpc_upcall.c b/net/sunrpc/auth_gss/gss_rpc_upcall.c
+index 98818d6..aed11b7 100644
+--- a/net/sunrpc/auth_gss/gss_rpc_upcall.c
++++ b/net/sunrpc/auth_gss/gss_rpc_upcall.c
+@@ -120,7 +120,7 @@ static int gssp_rpc_create(struct net *net, struct rpc_clnt **_clnt)
+ 	if (IS_ERR(clnt)) {
+ 		dprintk("RPC:       failed to create AF_LOCAL gssproxy "
+ 				"client (errno %ld).\n", PTR_ERR(clnt));
+-		result = -PTR_ERR(clnt);
++		result = PTR_ERR(clnt);
+ 		*_clnt = NULL;
+ 		goto out;
+ 	}
+-- 
+1.8.1.4
+
+
+From aca1b52cdbef080ed3963810d2f41baeb746b8b2 Mon Sep 17 00:00:00 2001
+From: "J. Bruce Fields" <bfields@redhat.com>
+Date: Fri, 7 Jun 2013 10:11:19 -0400
+Subject: [PATCH 15/16] svcrpc: fix gss-proxy xdr decoding oops
+
+Uninitialized stack data was being used as the destination for memcpy's.
+
+Longer term we'll just delete some of this code; all we're doing is
+skipping over xdr that we don't care about.
+
+Signed-off-by: J. Bruce Fields <bfields@redhat.com>
+---
+ net/sunrpc/auth_gss/gss_rpc_xdr.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/net/sunrpc/auth_gss/gss_rpc_xdr.c b/net/sunrpc/auth_gss/gss_rpc_xdr.c
+index 357f613..3c85d1c 100644
+--- a/net/sunrpc/auth_gss/gss_rpc_xdr.c
++++ b/net/sunrpc/auth_gss/gss_rpc_xdr.c
+@@ -430,7 +430,7 @@ static int dummy_enc_nameattr_array(struct xdr_stream *xdr,
+ static int dummy_dec_nameattr_array(struct xdr_stream *xdr,
+ 				    struct gssx_name_attr_array *naa)
+ {
+-	struct gssx_name_attr dummy;
++	struct gssx_name_attr dummy = { .attr = {.len = 0} };
+ 	u32 count, i;
+ 	__be32 *p;
+ 
+@@ -493,12 +493,13 @@ static int gssx_enc_name(struct xdr_stream *xdr,
+ 	return err;
+ }
+ 
++
+ static int gssx_dec_name(struct xdr_stream *xdr,
+ 			 struct gssx_name *name)
+ {
+-	struct xdr_netobj dummy_netobj;
+-	struct gssx_name_attr_array dummy_name_attr_array;
+-	struct gssx_option_array dummy_option_array;
++	struct xdr_netobj dummy_netobj = { .len = 0 };
++	struct gssx_name_attr_array dummy_name_attr_array = { .count = 0 };
++	struct gssx_option_array dummy_option_array = { .count = 0 };
+ 	int err;
+ 
+ 	/* name->display_name */
+-- 
+1.8.1.4
+
+
+From 127f9cd74d532b5189b767e803eaaf6d0c5015bf Mon Sep 17 00:00:00 2001
+From: Chuck Lever <chuck.lever@oracle.com>
+Date: Sat, 16 Mar 2013 15:54:52 -0400
+Subject: [PATCH 16/16] SUNRPC: Load GSS kernel module by OID
+
+The current GSS mech switch can find and load GSS pseudoflavor
+modules by name ("krb5") or pseudoflavor number ("390003"), but
+cannot find GSS modules by GSS tuple:
+
+  [ "1.2.840.113554.1.2.2", GSS_C_QOP_DEFAULT, RPC_GSS_SVC_NONE ]
+
+This is important when dealing with a SECINFO request.  A SECINFO
+reply contains a list of flavors the server supports for the
+requested export, but GSS flavors also have a GSS tuple that maps
+to a pseudoflavor (like 390003 for krb5).
+
+If the GSS module that supports the OID in the tuple is not loaded,
+our client is not able to load that module dynamically to support
+that pseudoflavor.
+
+Add a way for the GSS mech switch to load GSS pseudoflavor support
+by OID before searching for the pseudoflavor that matches the OID
+and service.
+
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Cc: David Howells <dhowells@redhat.com>
+Signed-off-by: Trond Myklebust <Trond.Myklebust@netapp.com>
+---
+ net/sunrpc/Kconfig                    | 1 +
+ net/sunrpc/auth_gss/gss_krb5_mech.c   | 1 +
+ net/sunrpc/auth_gss/gss_mech_switch.c | 7 +++++++
+ 3 files changed, 9 insertions(+)
+
+diff --git a/net/sunrpc/Kconfig b/net/sunrpc/Kconfig
+index 516fe2c..804f4f6 100644
+--- a/net/sunrpc/Kconfig
++++ b/net/sunrpc/Kconfig
+@@ -3,6 +3,7 @@ config SUNRPC
+ 
+ config SUNRPC_GSS
+ 	tristate
++	select OID_REGISTRY
+ 
+ config SUNRPC_BACKCHANNEL
+ 	bool
+diff --git a/net/sunrpc/auth_gss/gss_krb5_mech.c b/net/sunrpc/auth_gss/gss_krb5_mech.c
+index 3bc4a23..69be03f 100644
+--- a/net/sunrpc/auth_gss/gss_krb5_mech.c
++++ b/net/sunrpc/auth_gss/gss_krb5_mech.c
+@@ -753,6 +753,7 @@ MODULE_ALIAS("rpc-auth-gss-krb5p");
+ MODULE_ALIAS("rpc-auth-gss-390003");
+ MODULE_ALIAS("rpc-auth-gss-390004");
+ MODULE_ALIAS("rpc-auth-gss-390005");
++MODULE_ALIAS("rpc-auth-gss-1.2.840.113554.1.2.2");
+ 
+ static struct gss_api_mech gss_kerberos_mech = {
+ 	.gm_name	= "krb5",
+diff --git a/net/sunrpc/auth_gss/gss_mech_switch.c b/net/sunrpc/auth_gss/gss_mech_switch.c
+index 43fd5bb..f921647 100644
+--- a/net/sunrpc/auth_gss/gss_mech_switch.c
++++ b/net/sunrpc/auth_gss/gss_mech_switch.c
+@@ -36,6 +36,7 @@
+ #include <linux/types.h>
+ #include <linux/slab.h>
+ #include <linux/module.h>
++#include <linux/oid_registry.h>
+ #include <linux/sunrpc/msg_prot.h>
+ #include <linux/sunrpc/gss_asn1.h>
+ #include <linux/sunrpc/auth_gss.h>
+@@ -175,6 +176,12 @@ struct gss_api_mech *
+ gss_mech_get_by_OID(struct xdr_netobj *obj)
+ {
+ 	struct gss_api_mech	*pos, *gm = NULL;
++	char buf[32];
++
++	if (sprint_oid(obj->data, obj->len, buf, sizeof(buf)) < 0)
++		return NULL;
++	dprintk("RPC:       %s(%s)\n", __func__, buf);
++	request_module("rpc-auth-gss-%s", buf);
+ 
+ 	spin_lock(&registered_mechs_lock);
+ 	list_for_each_entry(pos, &registered_mechs, gm_list) {
 -- 
 1.8.1.4
 
