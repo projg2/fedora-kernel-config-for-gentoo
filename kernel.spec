@@ -809,6 +809,9 @@ Patch25042: x86-range-make-add_range-use-blank-slot.patch
 Patch25043: vfio-Set-container-device-mode.patch
 Patch25044: vfio-fix-crash-on-rmmod.patch
 
+#rhbz 950735
+Patch25045: rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1565,6 +1568,9 @@ ApplyPatch x86-range-make-add_range-use-blank-slot.patch
 #rhbz 967230
 ApplyPatch vfio-Set-container-device-mode.patch
 ApplyPatch vfio-fix-crash-on-rmmod.patch
+
+#rhbz 950735
+ApplyPatch rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2393,6 +2399,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jun 12 2013 Josh Boyer <jwboyer@redhat.com>
+- Add fix for rt5390/rt3290 regression (rhbz 950735)
+
 * Tue Jun 11 2013 Dave Jones <davej@redhat.com>
 - Disable soft lockup detector on virtual machines. (rhbz 971139)
 
