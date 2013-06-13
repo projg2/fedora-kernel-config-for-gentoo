@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 302
+%global baserelease 300
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -751,20 +751,6 @@ Patch23006: fix-child-thread-introspection.patch
 #rhbz 928024
 Patch23008: forcedeth-dma-error-check.patch
 
-Patch25018: pci-Set-dev-dev.type-in-alloc_pci_dev.patch
-Patch25019: powerpc-Set-default-VGA-device.patch
-
-#rhbz 961527
-Patch25020: powerpc-pseries-Perform-proper-max_bus_speed-detecti.patch
-Patch25021: radeon-use-max_bus-speed-to-activate-gen2-speeds.patch
-
-#rhbz 962496
-Patch25027: powerpc-pseries-Force-32-bit-MSIs-for-devices-that-r.patch
-Patch25029: powerpc-pseries-Make-32-bit-MSI-quirk-work-on-system.patch
-
-#rhbz 964367
-Patch25023: hp-wmi-fix-incorrect-rfkill-set-hw-state.patch
-
 #rhbz 948262
 Patch25024: intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
 
@@ -791,9 +777,6 @@ Patch25035: block-do-not-pass-disk-names-as-format-strings.patch
 
 #rhbz 954252
 Patch25036: scsi-ipr-possible-irq-lock-inversion-dependency-detected.patch
-
-# Fix for build failure on powerpc in 3.9.5
-Patch25037: powerpc-3.9.5-fix.patch
 
 #CVE-2013-2164 rhbz 973100 973109
 Patch25038: cdrom-use-kzalloc-for-failing-hardware.patch
@@ -1516,20 +1499,6 @@ ApplyPatch fix-child-thread-introspection.patch
 #rhbz 928024
 ApplyPatch forcedeth-dma-error-check.patch
 
-ApplyPatch pci-Set-dev-dev.type-in-alloc_pci_dev.patch
-ApplyPatch powerpc-Set-default-VGA-device.patch
-
-#rhbz 961527
-ApplyPatch powerpc-pseries-Perform-proper-max_bus_speed-detecti.patch
-ApplyPatch radeon-use-max_bus-speed-to-activate-gen2-speeds.patch
-
-#rhbz 962496
-ApplyPatch powerpc-pseries-Force-32-bit-MSIs-for-devices-that-r.patch
-ApplyPatch powerpc-pseries-Make-32-bit-MSI-quirk-work-on-system.patch
-
-#rhbz 964367
-ApplyPatch hp-wmi-fix-incorrect-rfkill-set-hw-state.patch
-
 #rhbz 948262
 ApplyPatch intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
 
@@ -1556,9 +1525,6 @@ ApplyPatch block-do-not-pass-disk-names-as-format-strings.patch
 
 #rhbz 954252
 ApplyPatch scsi-ipr-possible-irq-lock-inversion-dependency-detected.patch
-
-# Fix for build failure on powerpc in 3.9.5
-ApplyPatch powerpc-3.9.5-fix.patch
 
 #CVE-2013-2164 rhbz 973100 973109
 ApplyPatch cdrom-use-kzalloc-for-failing-hardware.patch
@@ -2397,6 +2363,10 @@ fi
 # and build.
 
 %changelog
+* Thu Jun 13 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.6-300
+- Linux v3.9.6
+- Drop a bunch of powerpc patches that were includes in 3.9.6.  Yay!
+
 * Wed Jun 12 2013 Kyle McMartin <kmcmarti@redhat.com>
 - Merge %{with_pae} and %{with_lpae} so both ARM and i686 use the same
   flavours. Set %{pae} to the flavour name {lpae, PAE}. Merging
