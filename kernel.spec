@@ -801,6 +801,9 @@ Patch25046: KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
 Patch25047: drm-radeon-Disable-writeback-by-default-on-ppc.patch
 
+#rhbz 956732
+Patch25048: tulip-dma-debug-error.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1550,6 +1553,9 @@ ApplyPatch rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 ApplyPatch KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
 ApplyPatch drm-radeon-Disable-writeback-by-default-on-ppc.patch
+
+#rhbz 956732
+ApplyPatch tulip-dma-debug-error.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2367,6 +2373,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jun 18 2013 Neil Horman <nhorman@redhat.com>
+- Fix dma debug error in tulip driver (rhbz 956732)
+
 * Tue Jun 18 2013 Dave Jones <davej@redhat.com>
 - Disable MTRR sanitizer by default.
 
