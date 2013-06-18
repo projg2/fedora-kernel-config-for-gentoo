@@ -2365,6 +2365,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Jun 18 2013 Dave Jones <davej@redhat.com>
+- Disable MTRR sanitizer by default.
+
 * Thu Jun 13 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.6-200
 - Linux v3.9.6
 
