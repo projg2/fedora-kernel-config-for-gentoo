@@ -791,6 +791,9 @@ Patch25045: rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 #rhbz 969644
 Patch25046: KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
+#rhbz 975995
+Patch25047: drivers-hwmon-nct6775.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1519,6 +1522,9 @@ ApplyPatch rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 
 #rhbz 969644
 ApplyPatch KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
+
+#rhbz 975995
+ApplyPatch drivers-hwmon-nct6775.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2365,6 +2371,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Jun 19 2013 Mauro Carvalho Chehab
+- Add and enable upstream kernel driver for nct6775 sensors
+
 * Tue Jun 18 2013 Dave Jones <davej@redhat.com>
 - Disable MTRR sanitizer by default.
 
