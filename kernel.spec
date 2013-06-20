@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -720,9 +720,6 @@ Patch22070: net-tcp-bz857324.patch
 #rhbz 892811
 Patch22247: ath9k_rx_dma_stop_check.patch
 
-#rhbz 903192
-Patch22261: 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
-
 #rhbz 916544
 Patch22263: 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
@@ -740,9 +737,6 @@ Patch25007: fix-child-thread-introspection.patch
 #rhbz 948262
 Patch25024: intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
 
-#rhbz 964335
-Patch25026: Modify-UEFI-anti-bricking-code.patch
-
 #CVE-2013-2140 rhbz 971146 971148
 Patch25031: xen-blkback-Check-device-permissions-before-allowing.patch
 
@@ -751,9 +745,6 @@ Patch25032: cve-2013-2147-ciss-info-leak.patch
 
 #CVE-2013-2148 rhbz 971258 971261
 Patch25033: fanotify-info-leak-in-copy_event_to_user.patch
-
-#CVE-2013-2852 rhbz 969518 971665
-Patch25034: b43-stop-format-string-leaking-into-error-msgs.patch
 
 #CVE-2013-2851 rhbz 969515 971662
 Patch25035: block-do-not-pass-disk-names-as-format-strings.patch
@@ -1449,9 +1440,6 @@ ApplyPatch net-tcp-bz857324.patch
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
 
-#rhbz 903192
-ApplyPatch 0001-kmsg-Honor-dmesg_restrict-sysctl-on-dev-kmsg.patch
-
 #rhbz 916544
 ApplyPatch 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
 
@@ -1469,9 +1457,6 @@ ApplyPatch fix-child-thread-introspection.patch
 #rhbz 948262
 ApplyPatch intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
 
-#rhbz 964335
-ApplyPatch Modify-UEFI-anti-bricking-code.patch
-
 #CVE-2013-2140 rhbz 971146 971148
 ApplyPatch xen-blkback-Check-device-permissions-before-allowing.patch
 
@@ -1480,9 +1465,6 @@ ApplyPatch cve-2013-2147-ciss-info-leak.patch
 
 #CVE-2013-2148 rhbz 971258 971261
 ApplyPatch fanotify-info-leak-in-copy_event_to_user.patch
-
-#CVE-2013-2852 rhbz 969518 971665
-ApplyPatch b43-stop-format-string-leaking-into-error-msgs.patch
 
 #CVE-2013-2851 rhbz 969515 971662
 ApplyPatch block-do-not-pass-disk-names-as-format-strings.patch
@@ -2355,6 +2337,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Jun 20 2013 Justin M. Forbes <jforbes@redhat.com>
+- Linux v3.9.7
+
 * Tue Jun 18 2013 Dave Jones <davej@redhat.com>
 - Disable MTRR sanitizer by default.
 
