@@ -766,6 +766,9 @@ Patch25045: rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 #rhbz 969644
 Patch25046: KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
+#rhbz 967271
+Patch25049: carl9170-fix-frame-drop-and-WARN-due-to-minstrel_ht-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1485,6 +1488,9 @@ ApplyPatch rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 
 #rhbz 969644
 ApplyPatch KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
+
+#rhbz 967271
+ApplyPatch carl9170-fix-frame-drop-and-WARN-due-to-minstrel_ht-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2337,6 +2343,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Fri Jun 21 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix carl9170 oops (rhbz 967271)
+
 * Thu Jun 20 2013 Justin M. Forbes <jforbes@redhat.com>
 - Linux v3.9.7
 
