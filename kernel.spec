@@ -788,6 +788,9 @@ Patch25047: drivers-hwmon-nct6775.patch
 #rhbz 967271
 Patch25049: carl9170-fix-frame-drop-and-WARN-due-to-minstrel_ht-.patch
 
+Patch25050: iwlwifi-pcie-fix-race-in-queue-unmapping.patch
+Patch25051: iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1513,6 +1516,9 @@ ApplyPatch drivers-hwmon-nct6775.patch
 
 #rhbz 967271
 ApplyPatch carl9170-fix-frame-drop-and-WARN-due-to-minstrel_ht-.patch
+
+ApplyPatch iwlwifi-pcie-fix-race-in-queue-unmapping.patch
+ApplyPatch iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2360,6 +2366,7 @@ fi
 #                 ||     ||
 %changelog
 * Fri Jun 21 2013 Josh Boyer <jwboyer@redhat.com>
+- Add two patches to fix iwlwifi issues in unmapping
 - Add patch to fix carl9170 oops (rhbz 967271)
 
 * Thu Jun 20 2013 Justin M. Forbes <jforbes@redhat.com> - 3.9.7-200
