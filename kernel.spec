@@ -795,6 +795,9 @@ Patch25047: drm-radeon-Disable-writeback-by-default-on-ppc.patch
 #rhbz 956732
 Patch25048: tulip-dma-debug-error.patch
 
+#rhbz 967271
+Patch25049: carl9170-fix-frame-drop-and-WARN-due-to-minstrel_ht-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1538,6 +1541,9 @@ ApplyPatch drm-radeon-Disable-writeback-by-default-on-ppc.patch
 
 #rhbz 956732
 ApplyPatch tulip-dma-debug-error.patch
+
+#rhbz 967271
+ApplyPatch carl9170-fix-frame-drop-and-WARN-due-to-minstrel_ht-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2355,6 +2361,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jun 21 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix carl9170 oops (rhbz 967271)
+
 * Thu Jun 20 2013 Justin M. Forbes <jforbes@redhat.com>
 - Linux v3.9.7
 
