@@ -2349,7 +2349,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Fri Jun 21 2013 Josh Boyer <jwboyer@redhat.com>
+* Fri Jun 21 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.7-100
 - Add two patches to fix iwlwifi issues in unmapping
 - Add patch to fix carl9170 oops (rhbz 967271)
 
