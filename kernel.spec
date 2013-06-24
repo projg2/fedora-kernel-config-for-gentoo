@@ -801,6 +801,9 @@ Patch25049: carl9170-fix-frame-drop-and-WARN-due-to-minstrel_ht-.patch
 Patch25050: iwlwifi-pcie-fix-race-in-queue-unmapping.patch
 Patch25051: iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
 
+#rhbz 903741
+Patch25052: HID-input-return-ENODATA-if-reading-battery-attrs-fails.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1550,6 +1553,9 @@ ApplyPatch carl9170-fix-frame-drop-and-WARN-due-to-minstrel_ht-.patch
 
 ApplyPatch iwlwifi-pcie-fix-race-in-queue-unmapping.patch
 ApplyPatch iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
+
+#rhbz 903741
+ApplyPatch HID-input-return-ENODATA-if-reading-battery-attrs-fails.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2367,6 +2373,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jun 24 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix battery issue with bluetooth keyboards (rhbz 903741)
+
 * Fri Jun 21 2013 Josh Boyer <jwboyer@redhat.com>
 - Add two patches to fix iwlwifi issues in unmapping
 - Add patch to fix carl9170 oops (rhbz 967271)
