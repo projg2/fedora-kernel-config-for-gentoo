@@ -1969,22 +1969,22 @@ find Documentation -type d | xargs chmod u+w
 
 %define __modsign_install_post \
   if [ "%{signmodules}" == "1" ]; then \
-    if [ "%{with_pae}" != "0" ]; then \
+    if [ "%{with_pae}" -ne "0" ]; then \
       mv signing_key.priv.sign.%{pae} signing_key.priv \
       mv signing_key.x509.sign.%{pae} signing_key.x509 \
       %{modsign_cmd} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.%{pae}/ \
     fi \
-    if [ "%{with_debug}" != "0" ]; then \
+    if [ "%{with_debug}" -ne "0" ]; then \
       mv signing_key.priv.sign.debug signing_key.priv \
       mv signing_key.x509.sign.debug signing_key.x509 \
       %{modsign_cmd} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.debug/ \
     fi \
-    if [ "%{with_pae_debug}" != "0" ]; then \
+    if [ "%{with_pae_debug}" -ne "0" ]; then \
       mv signing_key.priv.sign.%{pae}debug signing_key.priv \
       mv signing_key.x509.sign.%{pae}debug signing_key.x509 \
       %{modsign_cmd} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.%{pae}debug/ \
     fi \
-    if [ "%{with_up}" != "0" ]; then \
+    if [ "%{with_up}" -ne "0" ]; then \
       mv signing_key.priv.sign signing_key.priv \
       mv signing_key.x509.sign signing_key.x509 \
       %{modsign_cmd} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}/ \
@@ -2373,6 +2373,10 @@ fi
 # and build.
 
 %changelog
+* Tue Jun 25 2013 Kyle McMartin <kyle@redhat.com>
+- Cherry pick fix out of rawhide for %{with_*} tests in module
+  signing from Jan Stancek.
+
 * Mon Jun 24 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix battery issue with bluetooth keyboards (rhbz 903741)
 
