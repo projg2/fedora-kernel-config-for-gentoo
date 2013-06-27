@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -752,22 +752,11 @@ Patch25035: block-do-not-pass-disk-names-as-format-strings.patch
 #CVE-2013-2164 rhbz 973100 973109
 Patch25038: cdrom-use-kzalloc-for-failing-hardware.patch
 
-#rhbz 954181
-Patch25039: vhost_net-clear-msg.control-for-non-zerocopy-case-during-tx.patch
-Patch25040: tuntap-set-SOCK_ZEROCOPY-flag-during-open.patch
-
-#rhbz 973185
-Patch25041: x86-mtrr-Fix-original-mtrr-range-get-for-mtrr_cleanup.patch
-Patch25042: x86-range-make-add_range-use-blank-slot.patch
-
 #rhbz 950735
 Patch25045: rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 
 #rhbz 969644
 Patch25046: KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
-
-#rhbz 967271
-Patch25049: carl9170-fix-frame-drop-and-WARN-due-to-minstrel_ht-.patch
 
 Patch25050: iwlwifi-pcie-fix-race-in-queue-unmapping.patch
 Patch25051: iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
@@ -1488,22 +1477,11 @@ ApplyPatch block-do-not-pass-disk-names-as-format-strings.patch
 #CVE-2013-2164 rhbz 973100 973109
 ApplyPatch cdrom-use-kzalloc-for-failing-hardware.patch
 
-#rhbz 954181
-ApplyPatch vhost_net-clear-msg.control-for-non-zerocopy-case-during-tx.patch
-ApplyPatch tuntap-set-SOCK_ZEROCOPY-flag-during-open.patch
-
-#rhbz 973185
-ApplyPatch x86-mtrr-Fix-original-mtrr-range-get-for-mtrr_cleanup.patch
-ApplyPatch x86-range-make-add_range-use-blank-slot.patch
-
 #rhbz 950735
 ApplyPatch rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 
 #rhbz 969644
 ApplyPatch KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
-
-#rhbz 967271
-ApplyPatch carl9170-fix-frame-drop-and-WARN-due-to-minstrel_ht-.patch
 
 ApplyPatch iwlwifi-pcie-fix-race-in-queue-unmapping.patch
 ApplyPatch iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
@@ -2369,6 +2347,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Thu Jun 27 2013 Josh Boyer <jwboyer@redhat.com>
+- Linux v3.9.8
+
 * Thu Jun 27 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix stack memory usage for DMA in ath3k (rhbz 977558)
 
