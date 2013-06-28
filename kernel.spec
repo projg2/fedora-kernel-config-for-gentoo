@@ -671,6 +671,7 @@ Patch1000: devel-pekey-secure-boot-20130306.patch
 Patch1700: drm-ttm-exports-for-qxl.patch
 Patch1701: drm-qxl-driver.patch
 Patch1702: drm-qxl-backport-fixes.patch
+Patch1703: drm-qxl-access-fix.patch
 # nouveau + drm fixes
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -1435,6 +1436,7 @@ ApplyPatch devel-pekey-secure-boot-20130306.patch
 ApplyPatch drm-ttm-exports-for-qxl.patch
 ApplyPatch drm-qxl-driver.patch
 ApplyPatch drm-qxl-backport-fixes.patch
+ApplyPatch drm-qxl-access-fix.patch
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
 #ApplyPatch drm-vgem.patch
 
@@ -2365,6 +2367,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jun 28 2013 Dave Airlie <airlied@redhat.com> 
+- add qxl fix for missing access ok macro.
+
 * Thu Jun 27 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.8-300
 - Linux v3.9.8
 
