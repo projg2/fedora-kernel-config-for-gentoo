@@ -2367,6 +2367,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jun 28 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Only enable ARM A15 errata on the LPAE kernel as it breaks A8
+
 * Fri Jun 28 2013 Dave Airlie <airlied@redhat.com> 
 - add qxl fix for missing access ok macro.
 
