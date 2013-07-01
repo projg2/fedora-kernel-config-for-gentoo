@@ -672,6 +672,7 @@ Patch1700: drm-ttm-exports-for-qxl.patch
 Patch1701: drm-qxl-driver.patch
 Patch1702: drm-qxl-backport-fixes.patch
 Patch1703: drm-qxl-access-fix.patch
+Patch1704: drm-qxl-cursor-and-dynamic-resize-fixes.patch
 # nouveau + drm fixes
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -1437,6 +1438,7 @@ ApplyPatch drm-ttm-exports-for-qxl.patch
 ApplyPatch drm-qxl-driver.patch
 ApplyPatch drm-qxl-backport-fixes.patch
 ApplyPatch drm-qxl-access-fix.patch
+ApplyPatch drm-qxl-cursor-and-dynamic-resize-fixes.patch
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
 #ApplyPatch drm-vgem.patch
 
@@ -2367,6 +2369,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jul 01 2013 Dave Airlie <airlied@redhat.com>
+- kernel portion of qxl cursor and dynamic resize fixes.
+
 * Fri Jun 28 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Only enable ARM A15 errata on the LPAE kernel as it breaks A8
 

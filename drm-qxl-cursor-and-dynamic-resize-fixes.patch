@@ -1,0 +1,263 @@
+diff --git a/drivers/gpu/drm/drm_crtc.c b/drivers/gpu/drm/drm_crtc.c
+index e7e9242..cc9eada 100644
+--- a/drivers/gpu/drm/drm_crtc.c
++++ b/drivers/gpu/drm/drm_crtc.c
+@@ -2099,10 +2099,10 @@ out:
+ 	return ret;
+ }
+ 
+-int drm_mode_cursor_ioctl(struct drm_device *dev,
+-			void *data, struct drm_file *file_priv)
++static int drm_mode_cursor_common(struct drm_device *dev,
++				  struct drm_mode_cursor2 *req,
++				  struct drm_file *file_priv)
+ {
+-	struct drm_mode_cursor *req = data;
+ 	struct drm_mode_object *obj;
+ 	struct drm_crtc *crtc;
+ 	int ret = 0;
+@@ -2122,13 +2122,17 @@ int drm_mode_cursor_ioctl(struct drm_device *dev,
+ 
+ 	mutex_lock(&crtc->mutex);
+ 	if (req->flags & DRM_MODE_CURSOR_BO) {
+-		if (!crtc->funcs->cursor_set) {
++		if (!crtc->funcs->cursor_set && !crtc->funcs->cursor_set2) {
+ 			ret = -ENXIO;
+ 			goto out;
+ 		}
+ 		/* Turns off the cursor if handle is 0 */
+-		ret = crtc->funcs->cursor_set(crtc, file_priv, req->handle,
+-					      req->width, req->height);
++		if (crtc->funcs->cursor_set2)
++			ret = crtc->funcs->cursor_set2(crtc, file_priv, req->handle,
++						      req->width, req->height, req->hot_x, req->hot_y);
++		else
++			ret = crtc->funcs->cursor_set(crtc, file_priv, req->handle,
++						      req->width, req->height);
+ 	}
+ 
+ 	if (req->flags & DRM_MODE_CURSOR_MOVE) {
+@@ -2143,6 +2147,25 @@ out:
+ 	mutex_unlock(&crtc->mutex);
+ 
+ 	return ret;
++
++}
++int drm_mode_cursor_ioctl(struct drm_device *dev,
++			void *data, struct drm_file *file_priv)
++{
++	struct drm_mode_cursor *req = data;
++	struct drm_mode_cursor2 new_req;
++
++	memcpy(&new_req, req, sizeof(struct drm_mode_cursor));
++	new_req.hot_x = new_req.hot_y = 0;
++
++	return drm_mode_cursor_common(dev, &new_req, file_priv);
++}
++
++int drm_mode_cursor2_ioctl(struct drm_device *dev,
++			   void *data, struct drm_file *file_priv)
++{
++	struct drm_mode_cursor2 *req = data;
++	return drm_mode_cursor_common(dev, req, file_priv);
+ }
+ 
+ /* Original addfb only supported RGB formats, so figure out which one */
+diff --git a/drivers/gpu/drm/drm_drv.c b/drivers/gpu/drm/drm_drv.c
+index 9cc247f..99fcd7c 100644
+--- a/drivers/gpu/drm/drm_drv.c
++++ b/drivers/gpu/drm/drm_drv.c
+@@ -166,6 +166,7 @@ static const struct drm_ioctl_desc drm_ioctls[] = {
+ 	DRM_IOCTL_DEF(DRM_IOCTL_MODE_DESTROY_DUMB, drm_mode_destroy_dumb_ioctl, DRM_CONTROL_ALLOW|DRM_UNLOCKED),
+ 	DRM_IOCTL_DEF(DRM_IOCTL_MODE_OBJ_GETPROPERTIES, drm_mode_obj_get_properties_ioctl, DRM_CONTROL_ALLOW|DRM_UNLOCKED),
+ 	DRM_IOCTL_DEF(DRM_IOCTL_MODE_OBJ_SETPROPERTY, drm_mode_obj_set_property_ioctl, DRM_MASTER|DRM_CONTROL_ALLOW|DRM_UNLOCKED),
++	DRM_IOCTL_DEF(DRM_IOCTL_MODE_CURSOR2, drm_mode_cursor2_ioctl, DRM_MASTER|DRM_CONTROL_ALLOW|DRM_UNLOCKED),
+ };
+ 
+ #define DRM_CORE_IOCTL_COUNT	ARRAY_SIZE( drm_ioctls )
+diff --git a/drivers/gpu/drm/qxl/qxl_display.c b/drivers/gpu/drm/qxl/qxl_display.c
+index 823d29e..026a374 100644
+--- a/drivers/gpu/drm/qxl/qxl_display.c
++++ b/drivers/gpu/drm/qxl/qxl_display.c
+@@ -30,55 +30,6 @@
+ #include "qxl_object.h"
+ #include "drm_crtc_helper.h"
+ 
+-static void qxl_crtc_set_to_mode(struct qxl_device *qdev,
+-				 struct drm_connector *connector,
+-				 struct qxl_head *head)
+-{
+-	struct drm_device *dev = connector->dev;
+-	struct drm_display_mode *mode, *t;
+-	int width = head->width;
+-	int height = head->height;
+-
+-	if (width < 320 || height < 240) {
+-		qxl_io_log(qdev, "%s: bad head: %dx%d", width, height);
+-		width = 1024;
+-		height = 768;
+-	}
+-	if (width * height * 4 > 16*1024*1024) {
+-		width = 1024;
+-		height = 768;
+-	}
+-	/* TODO: go over regular modes and removed preferred? */
+-	list_for_each_entry_safe(mode, t, &connector->probed_modes, head)
+-		drm_mode_remove(connector, mode);
+-	mode = drm_cvt_mode(dev, width, height, 60, false, false, false);
+-	mode->type |= DRM_MODE_TYPE_PREFERRED;
+-	mode->status = MODE_OK;
+-	drm_mode_probed_add(connector, mode);
+-	qxl_io_log(qdev, "%s: %d x %d\n", __func__, width, height);
+-}
+-
+-void qxl_crtc_set_from_monitors_config(struct qxl_device *qdev)
+-{
+-	struct drm_connector *connector;
+-	int i;
+-	struct drm_device *dev = qdev->ddev;
+-
+-	i = 0;
+-	qxl_io_log(qdev, "%s: %d, %d\n", __func__,
+-		   dev->mode_config.num_connector,
+-		   qdev->monitors_config->count);
+-	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
+-		if (i > qdev->monitors_config->count) {
+-			/* crtc will be reported as disabled */
+-			continue;
+-		}
+-		qxl_crtc_set_to_mode(qdev, connector,
+-				     &qdev->monitors_config->heads[i]);
+-		++i;
+-	}
+-}
+-
+ void qxl_alloc_client_monitors_config(struct qxl_device *qdev, unsigned count)
+ {
+ 	if (qdev->client_monitors_config &&
+@@ -117,8 +68,8 @@ static int qxl_display_copy_rom_client_monitors_config(struct qxl_device *qdev)
+ 		return 1;
+ 	}
+ 	if (num_monitors > qdev->monitors_config->max_allowed) {
+-		DRM_INFO("client monitors list will be truncated: %d < %d\n",
+-			 qdev->monitors_config->max_allowed, num_monitors);
++		DRM_DEBUG_KMS("client monitors list will be truncated: %d < %d\n",
++			      qdev->monitors_config->max_allowed, num_monitors);
+ 		num_monitors = qdev->monitors_config->max_allowed;
+ 	} else {
+ 		num_monitors = qdev->rom->client_monitors_config.count;
+@@ -142,7 +93,7 @@ static int qxl_display_copy_rom_client_monitors_config(struct qxl_device *qdev)
+ 		client_head->surface_id = head->surface_id = 0;
+ 		client_head->id = head->id = i;
+ 		client_head->flags = head->flags = 0;
+-		QXL_DEBUG(qdev, "read %dx%d+%d+%d\n", head->width, head->height,
++		DRM_DEBUG_KMS("read %dx%d+%d+%d\n", head->width, head->height,
+ 			  head->x, head->y);
+ 	}
+ 	return 0;
+@@ -155,9 +106,6 @@ void qxl_display_read_client_monitors_config(struct qxl_device *qdev)
+ 		qxl_io_log(qdev, "failed crc check for client_monitors_config,"
+ 				 " retrying\n");
+ 	}
+-	qxl_crtc_set_from_monitors_config(qdev);
+-	/* fire off a uevent and let userspace tell us what to do */
+-	qxl_io_log(qdev, "calling drm_sysfs_hotplug_event\n");
+ 	drm_sysfs_hotplug_event(qdev->ddev);
+ }
+ 
+@@ -255,11 +203,11 @@ qxl_hide_cursor(struct qxl_device *qdev)
+ 	qxl_release_unreserve(qdev, release);
+ }
+ 
+-static int qxl_crtc_cursor_set(struct drm_crtc *crtc,
+-			       struct drm_file *file_priv,
+-			       uint32_t handle,
+-			       uint32_t width,
+-			       uint32_t height)
++static int qxl_crtc_cursor_set2(struct drm_crtc *crtc,
++				struct drm_file *file_priv,
++				uint32_t handle,
++				uint32_t width,
++				uint32_t height, int32_t hot_x, int32_t hot_y)
+ {
+ 	struct drm_device *dev = crtc->dev;
+ 	struct qxl_device *qdev = dev->dev_private;
+@@ -315,8 +263,8 @@ static int qxl_crtc_cursor_set(struct drm_crtc *crtc,
+ 	cursor->header.type = SPICE_CURSOR_TYPE_ALPHA;
+ 	cursor->header.width = 64;
+ 	cursor->header.height = 64;
+-	cursor->header.hot_spot_x = 0;
+-	cursor->header.hot_spot_y = 0;
++	cursor->header.hot_spot_x = hot_x;
++	cursor->header.hot_spot_y = hot_y;
+ 	cursor->data_size = size;
+ 	cursor->chunk.next_chunk = 0;
+ 	cursor->chunk.prev_chunk = 0;
+@@ -397,7 +345,7 @@ static int qxl_crtc_cursor_move(struct drm_crtc *crtc,
+ 
+ 
+ static const struct drm_crtc_funcs qxl_crtc_funcs = {
+-	.cursor_set = qxl_crtc_cursor_set,
++	.cursor_set2 = qxl_crtc_cursor_set2,
+ 	.cursor_move = qxl_crtc_cursor_move,
+ 	.gamma_set = qxl_crtc_gamma_set,
+ 	.set_config = drm_crtc_helper_set_config,
+diff --git a/include/drm/drm_crtc.h b/include/drm/drm_crtc.h
+index adb3f9b..093c030 100644
+--- a/include/drm/drm_crtc.h
++++ b/include/drm/drm_crtc.h
+@@ -339,6 +339,9 @@ struct drm_crtc_funcs {
+ 	/* cursor controls */
+ 	int (*cursor_set)(struct drm_crtc *crtc, struct drm_file *file_priv,
+ 			  uint32_t handle, uint32_t width, uint32_t height);
++	int (*cursor_set2)(struct drm_crtc *crtc, struct drm_file *file_priv,
++			   uint32_t handle, uint32_t width, uint32_t height,
++			   int32_t hot_x, int32_t hot_y);
+ 	int (*cursor_move)(struct drm_crtc *crtc, int x, int y);
+ 
+ 	/* Set gamma on the CRTC */
+@@ -1022,6 +1025,8 @@ extern int drm_mode_setplane(struct drm_device *dev,
+ 			       void *data, struct drm_file *file_priv);
+ extern int drm_mode_cursor_ioctl(struct drm_device *dev,
+ 				void *data, struct drm_file *file_priv);
++extern int drm_mode_cursor2_ioctl(struct drm_device *dev,
++				void *data, struct drm_file *file_priv);
+ extern int drm_mode_addfb(struct drm_device *dev,
+ 			  void *data, struct drm_file *file_priv);
+ extern int drm_mode_addfb2(struct drm_device *dev,
+diff --git a/include/uapi/drm/drm.h b/include/uapi/drm/drm.h
+index 5a57be6..238a166 100644
+--- a/include/uapi/drm/drm.h
++++ b/include/uapi/drm/drm.h
+@@ -732,6 +732,7 @@ struct drm_prime_handle {
+ #define DRM_IOCTL_MODE_ADDFB2		DRM_IOWR(0xB8, struct drm_mode_fb_cmd2)
+ #define DRM_IOCTL_MODE_OBJ_GETPROPERTIES	DRM_IOWR(0xB9, struct drm_mode_obj_get_properties)
+ #define DRM_IOCTL_MODE_OBJ_SETPROPERTY	DRM_IOWR(0xBA, struct drm_mode_obj_set_property)
++#define DRM_IOCTL_MODE_CURSOR2		DRM_IOWR(0xBB, struct drm_mode_cursor2)
+ 
+ /**
+  * Device specific ioctls should only be in their respective headers
+diff --git a/include/uapi/drm/drm_mode.h b/include/uapi/drm/drm_mode.h
+index 090e533..53db7ce 100644
+--- a/include/uapi/drm/drm_mode.h
++++ b/include/uapi/drm/drm_mode.h
+@@ -388,6 +388,19 @@ struct drm_mode_cursor {
+ 	__u32 handle;
+ };
+ 
++struct drm_mode_cursor2 {
++	__u32 flags;
++	__u32 crtc_id;
++	__s32 x;
++	__s32 y;
++	__u32 width;
++	__u32 height;
++	/* driver specific handle */
++	__u32 handle;
++	__s32 hot_x;
++	__s32 hot_y;
++};
++
+ struct drm_mode_crtc_lut {
+ 	__u32 crtc_id;
+ 	__u32 gamma_size;
