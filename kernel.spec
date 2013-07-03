@@ -669,10 +669,11 @@ Patch1000: devel-pekey-secure-boot-20130306.patch
 #atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
 #Patch1800: drm-vgem.patch
 Patch1700: drm-ttm-exports-for-qxl.patch
-Patch1701: drm-qxl-driver.patch
-Patch1702: drm-qxl-backport-fixes.patch
-Patch1703: drm-qxl-access-fix.patch
-Patch1704: drm-qxl-cursor-and-dynamic-resize-fixes.patch
+Patch1701: drm-hotspot-cursor-backport.patch
+Patch1702: drm-qxl-driver.patch
+Patch1703: drm-qxl-3.10-rc7-diff.patch
+Patch1704: drm-qxl-access-fix.patch
+Patch1705: drm-qxl-post-3.10-feature-fixes.patch
 # nouveau + drm fixes
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -1435,10 +1436,11 @@ ApplyPatch devel-pekey-secure-boot-20130306.patch
 
 # DRM core
 ApplyPatch drm-ttm-exports-for-qxl.patch
+ApplyPatch drm-hotspot-cursor-backport.patch
 ApplyPatch drm-qxl-driver.patch
-ApplyPatch drm-qxl-backport-fixes.patch
+ApplyPatch drm-qxl-3.10-rc7-diff.patch
 ApplyPatch drm-qxl-access-fix.patch
-ApplyPatch drm-qxl-cursor-and-dynamic-resize-fixes.patch
+ApplyPatch drm-qxl-post-3.10-feature-fixes.patch
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
 #ApplyPatch drm-vgem.patch
 
@@ -2369,6 +2371,10 @@ fi
 # and build.
 
 %changelog
+* Wed Jul 03 2013 Dave Airlie <airlied@redhat.com>
+- fixup QXL driver patches to make it easier to rebase
+- add qxl driver dynamic resize + multiple heads support
+
 * Mon Jul 01 2013 Dave Airlie <airlied@redhat.com>
 - kernel portion of qxl cursor and dynamic resize fixes.
 
