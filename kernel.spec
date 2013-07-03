@@ -803,6 +803,10 @@ Patch25054: bridge-send-query-as-soon-as-leave-is-received.patch
 #rhbz 977558
 Patch25055: ath3k-dont-use-stack-memory-for-DMA.patch
 
+#rhbz 977040
+Patch25056: iwl3945-better-skb-management-in-rx-path.patch
+Patch25057: iwl4965-better-skb-management-in-rx-path.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1554,6 +1558,10 @@ ApplyPatch bridge-send-query-as-soon-as-leave-is-received.patch
 
 #rhbz 977558
 ApplyPatch ath3k-dont-use-stack-memory-for-DMA.patch
+
+#rhbz 977040
+ApplyPatch iwl3945-better-skb-management-in-rx-path.patch
+ApplyPatch iwl4965-better-skb-management-in-rx-path.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2371,6 +2379,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patches to fix iwl skb managment (rhbz 977040)
+
 * Wed Jul 03 2013 Dave Airlie <airlied@redhat.com>
 - fixup QXL driver patches to make it easier to rebase
 - add qxl driver dynamic resize + multiple heads support
