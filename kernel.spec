@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -751,9 +751,6 @@ Patch25035: block-do-not-pass-disk-names-as-format-strings.patch
 
 #CVE-2013-2164 rhbz 973100 973109
 Patch25038: cdrom-use-kzalloc-for-failing-hardware.patch
-
-#rhbz 950735
-Patch25045: rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 
 #rhbz 969644
 Patch25046: KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
@@ -1480,9 +1477,6 @@ ApplyPatch block-do-not-pass-disk-names-as-format-strings.patch
 
 #CVE-2013-2164 rhbz 973100 973109
 ApplyPatch cdrom-use-kzalloc-for-failing-hardware.patch
-
-#rhbz 950735
-ApplyPatch rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 
 #rhbz 969644
 ApplyPatch KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
@@ -2355,6 +2349,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com>
+- Linux v3.9.9
+
 * Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patches to fix iwl skb managment (rhbz 977040)
 
