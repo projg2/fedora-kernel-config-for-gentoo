@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -767,9 +767,6 @@ Patch25035: block-do-not-pass-disk-names-as-format-strings.patch
 
 #CVE-2013-2164 rhbz 973100 973109
 Patch25038: cdrom-use-kzalloc-for-failing-hardware.patch
-
-#rhbz 950735
-Patch25045: rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 
 #rhbz 969644
 Patch25046: KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
@@ -1499,9 +1496,6 @@ ApplyPatch block-do-not-pass-disk-names-as-format-strings.patch
 
 #CVE-2013-2164 rhbz 973100 973109
 ApplyPatch cdrom-use-kzalloc-for-failing-hardware.patch
-
-#rhbz 950735
-ApplyPatch rt2800-fix-RT5390-RT3290-TX-power-settings-regression.patch
 
 #rhbz 969644
 ApplyPatch KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
@@ -2372,6 +2366,9 @@ fi
 #                 ||     ||
 %changelog
 * Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com>
+- Linux v3.9.9
+
+* Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patches to fix iwl skb managment (rhbz 977040)
 
 * Thu Jun 27 2013 Justin M. Forbes <jforbes@redhat.com> - 3.9.8-200
@@ -2555,7 +2552,7 @@ fi
 * Thu Apr 11 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix ALPS backport patch (rhbz 812111)
 
-* Mon Apr 09 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.6-203
+* Tue Apr 09 2013 Josh Boyer <jwboyer@redhat.com> - 3.8.6-203
 - Temporarily work around pci device assignment issues (rhbz 908888)
 - CVE-2013-1929 tg3: len overflow in VPD firmware parsing (rhbz 949932 949946)
 - Backport intel brightness quirk for emachines (rhbz 871932)
