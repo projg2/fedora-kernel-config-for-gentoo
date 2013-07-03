@@ -794,6 +794,9 @@ Patch25057: iwl4965-better-skb-management-in-rx-path.patch
 #CVE-2013-2234 rhbz 980995 981007
 Patch25058: af_key-fix-info-leaks-in-notify-messages.patch
 
+#CVE-2013-1059 rhbz 977356 980341
+Patch25059: ceph-fix.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1525,6 +1528,9 @@ ApplyPatch iwl4965-better-skb-management-in-rx-path.patch
 
 #CVE-2013-2234 rhbz 980995 981007
 ApplyPatch af_key-fix-info-leaks-in-notify-messages.patch
+
+#CVE-2013-1059 rhbz 977356 980341
+ApplyPatch ceph-fix.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2372,6 +2378,7 @@ fi
 #                 ||     ||
 %changelog
 * Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-1059 libceph: Fix NULL pointer dereference in auth client code (rhbz 977356 980341)
 - CVE-2013-2234 net: information leak in AF_KEY notify (rhbz 980995 981007)
 - Linux v3.9.9
 
