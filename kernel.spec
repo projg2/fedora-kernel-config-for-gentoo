@@ -2377,7 +2377,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com>
+* Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.9-200
 - CVE-2013-1059 libceph: Fix NULL pointer dereference in auth client code (rhbz 977356 980341)
 - CVE-2013-2234 net: information leak in AF_KEY notify (rhbz 980995 981007)
 - Linux v3.9.9
