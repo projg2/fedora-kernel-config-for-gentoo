@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 301
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2385,7 +2385,7 @@ fi
 # and build.
 
 %changelog
-* Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com>
+* Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com> 3.9.9-301
 - CVE-2013-1059 libceph: Fix NULL pointer dereference in auth client code (rhbz 977356 980341)
 - CVE-2013-2234 net: information leak in AF_KEY notify (rhbz 980995 981007)
 
