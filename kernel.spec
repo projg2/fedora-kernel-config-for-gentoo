@@ -2361,7 +2361,7 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
-* Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com>
+* Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.9-100
 - CVE-2013-1059 libceph: Fix NULL pointer dereference in auth client code (rhbz 977356 980341)
 - CVE-2013-2234 net: information leak in AF_KEY notify (rhbz 980995 981007)
 - Linux v3.9.9
@@ -2443,7 +2443,7 @@ fi
 * Wed May 22 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix memcmp error in iwlwifi
 
-* Wed May 13 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.13-100
+* Mon May 13 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.13-100
 - Linux v3.8.13
 
 * Wed May 08 2013 Justin M. Forbes <jforbes@redhat.com> - 3.8.12-100
@@ -2506,7 +2506,7 @@ fi
 * Thu Apr 11 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix ALPS backport patch (rhbz 812111)
 
-* Mon Apr 09 2013 Josh Boyer <jwboyer@redhat.com>
+* Tue Apr 09 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-1929 tg3: len overflow in VPD firmware parsing (rhbz 949932 949946)
 - Backport intel brightness quirk for emachines (rhbz 871932)
 
@@ -2845,7 +2845,7 @@ fi
   - mac80211_local_deauth_v3.6.patch
   - mac80211-connect-with-HT20-if-HT40-is-not-permitted.patch
 
-* Wed Oct 30 2012 Josh Boyer <jwboyer@redhat.com>
+* Wed Oct 31 2012 Josh Boyer <jwboyer@redhat.com>
 - CVE-2012-4565 net: divide by zero in tcp algorithm illinois (rhbz 871848 871923)
 
 * Tue Oct 30 2012 Mauro Carvalho Chehab <mchehab@redhat.com>
@@ -3118,7 +3118,7 @@ fi
 * Mon Jun 04 2012 Dave Jones <davej@redhat.com>
 - Disable 32bit NX emulation.
 
-* Sun Jun 02 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.0-1
+* Sat Jun 02 2012 Justin M. Forbes <jforbes@redhat.com> 3.4.0-1
 - Linux 3.4
 - Stable queue updates
 
