@@ -802,6 +802,9 @@ Patch25059: ceph-fix.patch
 #CVE-2013-2232 rhbz 981552 981564
 Patch25060: ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
 
+#rhbz 976789 980643
+Patch25062: vhost-net-fix-use-after-free-in-vhost_net_flush.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1540,6 +1543,9 @@ ApplyPatch ceph-fix.patch
 
 #CVE-2013-2232 rhbz 981552 981564
 ApplyPatch ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
+
+#rhbz 976789 980643
+ApplyPatch vhost-net-fix-use-after-free-in-vhost_net_flush.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2387,6 +2393,7 @@ fi
 #                 ||     ||
 %changelog
 * Fri Jul 05 2013 Josh Boyer <jwboyer@redhat.com>
+- Add vhost-net use-after-free fix (rhbz 976789 980643)
 - Add fix for timer issue in bridge code (rhbz 980254)
 - CVE-2013-2232 ipv6: using ipv4 vs ipv6 structure during routing lookup in sendmsg (rhbz 981552 981564)
 
