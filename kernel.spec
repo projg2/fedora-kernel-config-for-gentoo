@@ -674,6 +674,7 @@ Patch1702: drm-qxl-driver.patch
 Patch1703: drm-qxl-3.10-rc7-diff.patch
 Patch1704: drm-qxl-access-fix.patch
 Patch1705: drm-qxl-post-3.10-feature-fixes.patch
+Patch1706: drm-qxl-post-3.10-features-part-2.patch
 # nouveau + drm fixes
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
@@ -1448,6 +1449,7 @@ ApplyPatch drm-qxl-driver.patch
 ApplyPatch drm-qxl-3.10-rc7-diff.patch
 ApplyPatch drm-qxl-access-fix.patch
 ApplyPatch drm-qxl-post-3.10-feature-fixes.patch
+ApplyPatch drm-qxl-post-3.10-features-part-2.patch
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
 #ApplyPatch drm-vgem.patch
 
@@ -2385,6 +2387,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jul 04 2013 Dave Airlie <airlied@redhat.com>
+- qxl: add suspend/resume and hibernate support
+
 * Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com> 3.9.9-301
 - CVE-2013-1059 libceph: Fix NULL pointer dereference in auth client code (rhbz 977356 980341)
 - CVE-2013-2234 net: information leak in AF_KEY notify (rhbz 980995 981007)

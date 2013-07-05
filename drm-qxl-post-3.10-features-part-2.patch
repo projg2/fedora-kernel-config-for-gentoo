@@ -1,0 +1,483 @@
+From db21a217f7de4f173aa0fb4c7a296cc9cffbd6bf Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@redhat.com>
+Date: Thu, 4 Jul 2013 14:46:46 +1000
+Subject: [PATCH] drm/qxl: post 3.10 features part 2
+
+qxl: split monitors_config object creation out.
+qxl: prepare memslot code for suspend/resume
+qxl: add ring prep code for s/r
+qxl: add fb and ttm entry points for use by suspend/resume.
+qxl: add suspend/resume/hibernate support.
+qxl: use drm helper hotplug support
+
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+---
+ drivers/gpu/drm/qxl/qxl_cmd.c     |   9 ++-
+ drivers/gpu/drm/qxl/qxl_display.c |  58 +++++++++++++++--
+ drivers/gpu/drm/qxl/qxl_drv.c     | 134 +++++++++++++++++++++++++++++++++++---
+ drivers/gpu/drm/qxl/qxl_drv.h     |  10 +++
+ drivers/gpu/drm/qxl/qxl_fb.c      |  10 +++
+ drivers/gpu/drm/qxl/qxl_kms.c     |  24 +++++--
+ drivers/gpu/drm/qxl/qxl_object.c  |  10 +++
+ 7 files changed, 236 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/gpu/drm/qxl/qxl_cmd.c b/drivers/gpu/drm/qxl/qxl_cmd.c
+index 0ec55e7..0ca2999 100644
+--- a/drivers/gpu/drm/qxl/qxl_cmd.c
++++ b/drivers/gpu/drm/qxl/qxl_cmd.c
+@@ -49,6 +49,11 @@ void qxl_ring_free(struct qxl_ring *ring)
+ 	kfree(ring);
+ }
+ 
++void qxl_ring_init_hdr(struct qxl_ring *ring)
++{
++	ring->ring->header.notify_on_prod = ring->n_elements;
++}
++
+ struct qxl_ring *
+ qxl_ring_create(struct qxl_ring_header *header,
+ 		int element_size,
+@@ -69,7 +74,7 @@ qxl_ring_create(struct qxl_ring_header *header,
+ 	ring->prod_notify = prod_notify;
+ 	ring->push_event = push_event;
+ 	if (set_prod_notify)
+-		header->notify_on_prod = ring->n_elements;
++		qxl_ring_init_hdr(ring);
+ 	spin_lock_init(&ring->lock);
+ 	return ring;
+ }
+@@ -87,7 +92,7 @@ static int qxl_check_header(struct qxl_ring *ring)
+ 	return ret;
+ }
+ 
+-static int qxl_check_idle(struct qxl_ring *ring)
++int qxl_check_idle(struct qxl_ring *ring)
+ {
+ 	int ret;
+ 	struct qxl_ring_header *header = &(ring->ring->header);
+diff --git a/drivers/gpu/drm/qxl/qxl_display.c b/drivers/gpu/drm/qxl/qxl_display.c
+index a127a97..b03fe6d 100644
+--- a/drivers/gpu/drm/qxl/qxl_display.c
++++ b/drivers/gpu/drm/qxl/qxl_display.c
+@@ -107,7 +107,7 @@ void qxl_display_read_client_monitors_config(struct qxl_device *qdev)
+ 		qxl_io_log(qdev, "failed crc check for client_monitors_config,"
+ 				 " retrying\n");
+ 	}
+-	drm_sysfs_hotplug_event(qdev->ddev);
++	drm_helper_hpd_irq_event(qdev->ddev);
+ }
+ 
+ static int qxl_add_monitors_config_modes(struct drm_connector *connector)
+@@ -846,6 +846,8 @@ static int qdev_output_init(struct drm_device *dev, int num_output)
+ 	drm_encoder_init(dev, &qxl_output->enc, &qxl_enc_funcs,
+ 			 DRM_MODE_ENCODER_VIRTUAL);
+ 
++	/* we get HPD via client monitors config */
++	connector->polled = DRM_CONNECTOR_POLL_HPD;
+ 	encoder->possible_crtcs = 1 << num_output;
+ 	drm_mode_connector_attach_encoder(&qxl_output->base,
+ 					  &qxl_output->enc);
+@@ -885,16 +887,14 @@ static const struct drm_mode_config_funcs qxl_mode_funcs = {
+ 	.fb_create = qxl_user_framebuffer_create,
+ };
+ 
+-int qxl_modeset_init(struct qxl_device *qdev)
++int qxl_create_monitors_object(struct qxl_device *qdev)
+ {
+-	int i;
+ 	int ret;
+ 	struct drm_gem_object *gobj;
+ 	int max_allowed = qxl_num_crtc;
+ 	int monitors_config_size = sizeof(struct qxl_monitors_config) +
+-				   max_allowed * sizeof(struct qxl_head);
++		max_allowed * sizeof(struct qxl_head);
+ 
+-	drm_mode_config_init(qdev->ddev);
+ 	ret = qxl_gem_object_create(qdev, monitors_config_size, 0,
+ 				    QXL_GEM_DOMAIN_VRAM,
+ 				    false, false, NULL, &gobj);
+@@ -903,13 +903,59 @@ int qxl_modeset_init(struct qxl_device *qdev)
+ 		return -ENOMEM;
+ 	}
+ 	qdev->monitors_config_bo = gem_to_qxl_bo(gobj);
++
++	ret = qxl_bo_reserve(qdev->monitors_config_bo, false);
++	if (ret)
++		return ret;
++
++	ret = qxl_bo_pin(qdev->monitors_config_bo, QXL_GEM_DOMAIN_VRAM, NULL);
++	if (ret) {
++		qxl_bo_unreserve(qdev->monitors_config_bo);
++		return ret;
++	}
++
++	qxl_bo_unreserve(qdev->monitors_config_bo);
++
+ 	qxl_bo_kmap(qdev->monitors_config_bo, NULL);
++
+ 	qdev->monitors_config = qdev->monitors_config_bo->kptr;
+ 	qdev->ram_header->monitors_config =
+ 		qxl_bo_physical_address(qdev, qdev->monitors_config_bo, 0);
+ 
+ 	memset(qdev->monitors_config, 0, monitors_config_size);
+ 	qdev->monitors_config->max_allowed = max_allowed;
++	return 0;
++}
++
++int qxl_destroy_monitors_object(struct qxl_device *qdev)
++{
++	int ret;
++
++	qdev->monitors_config = NULL;
++	qdev->ram_header->monitors_config = 0;
++
++	qxl_bo_kunmap(qdev->monitors_config_bo);
++	ret = qxl_bo_reserve(qdev->monitors_config_bo, false);
++	if (ret)
++		return ret;
++
++	qxl_bo_unpin(qdev->monitors_config_bo);
++	qxl_bo_unreserve(qdev->monitors_config_bo);
++
++	qxl_bo_unref(&qdev->monitors_config_bo);
++	return 0;
++}
++
++int qxl_modeset_init(struct qxl_device *qdev)
++{
++	int i;
++	int ret;
++
++	drm_mode_config_init(qdev->ddev);
++
++	ret = qxl_create_monitors_object(qdev);
++	if (ret)
++		return ret;
+ 
+ 	qdev->ddev->mode_config.funcs = (void *)&qxl_mode_funcs;
+ 
+@@ -937,6 +983,8 @@ int qxl_modeset_init(struct qxl_device *qdev)
+ void qxl_modeset_fini(struct qxl_device *qdev)
+ {
+ 	qxl_fbdev_fini(qdev);
++
++	qxl_destroy_monitors_object(qdev);
+ 	if (qdev->mode_info.mode_config_initialized) {
+ 		drm_mode_config_cleanup(qdev->ddev);
+ 		qdev->mode_info.mode_config_initialized = false;
+diff --git a/drivers/gpu/drm/qxl/qxl_drv.c b/drivers/gpu/drm/qxl/qxl_drv.c
+index 00e57b76..df0b577 100644
+--- a/drivers/gpu/drm/qxl/qxl_drv.c
++++ b/drivers/gpu/drm/qxl/qxl_drv.c
+@@ -33,8 +33,9 @@
+ 
+ #include "drmP.h"
+ #include "drm/drm.h"
+-
++#include "drm_crtc_helper.h"
+ #include "qxl_drv.h"
++#include "qxl_object.h"
+ 
+ extern int qxl_max_ioctls;
+ static DEFINE_PCI_DEVICE_TABLE(pciidlist) = {
+@@ -77,13 +78,6 @@ qxl_pci_remove(struct pci_dev *pdev)
+ 	drm_put_dev(dev);
+ }
+ 
+-static struct pci_driver qxl_pci_driver = {
+-	 .name = DRIVER_NAME,
+-	 .id_table = pciidlist,
+-	 .probe = qxl_pci_probe,
+-	 .remove = qxl_pci_remove,
+-};
+-
+ static const struct file_operations qxl_fops = {
+ 	.owner = THIS_MODULE,
+ 	.open = drm_open,
+@@ -94,6 +88,130 @@ static const struct file_operations qxl_fops = {
+ 	.mmap = qxl_mmap,
+ };
+ 
++static int qxl_drm_freeze(struct drm_device *dev)
++{
++	struct pci_dev *pdev = dev->pdev;
++	struct qxl_device *qdev = dev->dev_private;
++	struct drm_crtc *crtc;
++
++	drm_kms_helper_poll_disable(dev);
++
++	console_lock();
++	qxl_fbdev_set_suspend(qdev, 1);
++	console_unlock();
++
++	/* unpin the front buffers */
++	list_for_each_entry(crtc, &dev->mode_config.crtc_list, head) {
++		struct drm_crtc_helper_funcs *crtc_funcs = crtc->helper_private;
++		if (crtc->enabled)
++			(*crtc_funcs->disable)(crtc);
++	}
++
++	qxl_destroy_monitors_object(qdev);
++	qxl_surf_evict(qdev);
++	qxl_vram_evict(qdev);
++
++	while (!qxl_check_idle(qdev->command_ring));
++	while (!qxl_check_idle(qdev->release_ring))
++		qxl_queue_garbage_collect(qdev, 1);
++
++	pci_save_state(pdev);
++
++	return 0;
++}
++
++static int qxl_drm_resume(struct drm_device *dev, bool thaw)
++{
++	struct qxl_device *qdev = dev->dev_private;
++
++	qdev->ram_header->int_mask = QXL_INTERRUPT_MASK;
++	if (!thaw) {
++		qxl_reinit_memslots(qdev);
++		qxl_ring_init_hdr(qdev->release_ring);
++	}
++
++	qxl_create_monitors_object(qdev);
++	drm_helper_resume_force_mode(dev);
++
++	console_lock();
++	qxl_fbdev_set_suspend(qdev, 0);
++	console_unlock();
++
++	drm_kms_helper_poll_enable(dev);
++	return 0;
++}
++
++static int qxl_pm_suspend(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct drm_device *drm_dev = pci_get_drvdata(pdev);
++	int error;
++
++	error = qxl_drm_freeze(drm_dev);
++	if (error)
++		return error;
++
++	pci_disable_device(pdev);
++	pci_set_power_state(pdev, PCI_D3hot);
++	return 0;
++}
++
++static int qxl_pm_resume(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct drm_device *drm_dev = pci_get_drvdata(pdev);
++
++	pci_set_power_state(pdev, PCI_D0);
++	pci_restore_state(pdev);
++	if (pci_enable_device(pdev)) {
++		return -EIO;
++	}
++
++	return qxl_drm_resume(drm_dev, false);
++}
++
++static int qxl_pm_thaw(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct drm_device *drm_dev = pci_get_drvdata(pdev);
++
++	return qxl_drm_resume(drm_dev, true);
++}
++
++static int qxl_pm_freeze(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct drm_device *drm_dev = pci_get_drvdata(pdev);
++
++	return qxl_drm_freeze(drm_dev);
++}
++
++static int qxl_pm_restore(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct drm_device *drm_dev = pci_get_drvdata(pdev);
++	struct qxl_device *qdev = drm_dev->dev_private;
++
++	qxl_io_reset(qdev);
++	return qxl_drm_resume(drm_dev, false);
++}
++
++static const struct dev_pm_ops qxl_pm_ops = {
++	.suspend = qxl_pm_suspend,
++	.resume = qxl_pm_resume,
++	.freeze = qxl_pm_freeze,
++	.thaw = qxl_pm_thaw,
++	.poweroff = qxl_pm_freeze,
++	.restore = qxl_pm_restore,
++};
++static struct pci_driver qxl_pci_driver = {
++	 .name = DRIVER_NAME,
++	 .id_table = pciidlist,
++	 .probe = qxl_pci_probe,
++	 .remove = qxl_pci_remove,
++	 .driver.pm = &qxl_pm_ops,
++};
++
+ static struct drm_driver qxl_driver = {
+ 	.driver_features = DRIVER_GEM | DRIVER_MODESET |
+ 			   DRIVER_HAVE_IRQ | DRIVER_IRQ_SHARED,
+diff --git a/drivers/gpu/drm/qxl/qxl_drv.h b/drivers/gpu/drm/qxl/qxl_drv.h
+index 42ef0e2..aacb791 100644
+--- a/drivers/gpu/drm/qxl/qxl_drv.h
++++ b/drivers/gpu/drm/qxl/qxl_drv.h
+@@ -331,6 +331,10 @@ void qxl_modeset_fini(struct qxl_device *qdev);
+ int qxl_bo_init(struct qxl_device *qdev);
+ void qxl_bo_fini(struct qxl_device *qdev);
+ 
++void qxl_reinit_memslots(struct qxl_device *qdev);
++int qxl_surf_evict(struct qxl_device *qdev);
++int qxl_vram_evict(struct qxl_device *qdev);
++
+ struct qxl_ring *qxl_ring_create(struct qxl_ring_header *header,
+ 				 int element_size,
+ 				 int n_elements,
+@@ -338,6 +342,8 @@ struct qxl_ring *qxl_ring_create(struct qxl_ring_header *header,
+ 				 bool set_prod_notify,
+ 				 wait_queue_head_t *push_event);
+ void qxl_ring_free(struct qxl_ring *ring);
++void qxl_ring_init_hdr(struct qxl_ring *ring);
++int qxl_check_idle(struct qxl_ring *ring);
+ 
+ static inline void *
+ qxl_fb_virtual_address(struct qxl_device *qdev, unsigned long physical)
+@@ -365,6 +371,7 @@ void qxl_fbdev_fini(struct qxl_device *qdev);
+ int qxl_get_handle_for_primary_fb(struct qxl_device *qdev,
+ 				  struct drm_file *file_priv,
+ 				  uint32_t *handle);
++void qxl_fbdev_set_suspend(struct qxl_device *qdev, int state);
+ 
+ /* qxl_display.c */
+ int
+@@ -374,6 +381,8 @@ qxl_framebuffer_init(struct drm_device *dev,
+ 		     struct drm_gem_object *obj);
+ void qxl_display_read_client_monitors_config(struct qxl_device *qdev);
+ void qxl_send_monitors_config(struct qxl_device *qdev);
++int qxl_create_monitors_object(struct qxl_device *qdev);
++int qxl_destroy_monitors_object(struct qxl_device *qdev);
+ 
+ /* used by qxl_debugfs only */
+ void qxl_crtc_set_from_monitors_config(struct qxl_device *qdev);
+@@ -528,6 +537,7 @@ irqreturn_t qxl_irq_handler(DRM_IRQ_ARGS);
+ 
+ /* qxl_fb.c */
+ int qxl_fb_init(struct qxl_device *qdev);
++bool qxl_fbdev_qobj_is_fb(struct qxl_device *qdev, struct qxl_bo *qobj);
+ 
+ int qxl_debugfs_add_files(struct qxl_device *qdev,
+ 			  struct drm_info_list *files,
+diff --git a/drivers/gpu/drm/qxl/qxl_fb.c b/drivers/gpu/drm/qxl/qxl_fb.c
+index 11ef7cb..2c3970a 100644
+--- a/drivers/gpu/drm/qxl/qxl_fb.c
++++ b/drivers/gpu/drm/qxl/qxl_fb.c
+@@ -564,4 +564,14 @@ void qxl_fbdev_fini(struct qxl_device *qdev)
+ 	qdev->mode_info.qfbdev = NULL;
+ }
+ 
++void qxl_fbdev_set_suspend(struct qxl_device *qdev, int state)
++{
++	fb_set_suspend(qdev->mode_info.qfbdev->helper.fbdev, state);
++}
+ 
++bool qxl_fbdev_qobj_is_fb(struct qxl_device *qdev, struct qxl_bo *qobj)
++{
++	if (qobj == gem_to_qxl_bo(qdev->mode_info.qfbdev->qfb.obj))
++		return true;
++	return false;
++}
+diff --git a/drivers/gpu/drm/qxl/qxl_kms.c b/drivers/gpu/drm/qxl/qxl_kms.c
+index e27ce2a..9e8da9e 100644
+--- a/drivers/gpu/drm/qxl/qxl_kms.c
++++ b/drivers/gpu/drm/qxl/qxl_kms.c
+@@ -26,6 +26,7 @@
+ #include "qxl_drv.h"
+ #include "qxl_object.h"
+ 
++#include <drm/drm_crtc_helper.h>
+ #include <linux/io-mapping.h>
+ 
+ int qxl_log_level;
+@@ -72,21 +73,28 @@ static bool qxl_check_device(struct qxl_device *qdev)
+ 	return true;
+ }
+ 
++static void setup_hw_slot(struct qxl_device *qdev, int slot_index,
++			  struct qxl_memslot *slot)
++{
++	qdev->ram_header->mem_slot.mem_start = slot->start_phys_addr;
++	qdev->ram_header->mem_slot.mem_end = slot->end_phys_addr;
++	qxl_io_memslot_add(qdev, slot_index);
++}
++
+ static uint8_t setup_slot(struct qxl_device *qdev, uint8_t slot_index_offset,
+ 	unsigned long start_phys_addr, unsigned long end_phys_addr)
+ {
+ 	uint64_t high_bits;
+ 	struct qxl_memslot *slot;
+ 	uint8_t slot_index;
+-	struct qxl_ram_header *ram_header = qdev->ram_header;
+ 
+ 	slot_index = qdev->rom->slots_start + slot_index_offset;
+ 	slot = &qdev->mem_slots[slot_index];
+ 	slot->start_phys_addr = start_phys_addr;
+ 	slot->end_phys_addr = end_phys_addr;
+-	ram_header->mem_slot.mem_start = slot->start_phys_addr;
+-	ram_header->mem_slot.mem_end = slot->end_phys_addr;
+-	qxl_io_memslot_add(qdev, slot_index);
++
++	setup_hw_slot(qdev, slot_index, slot);
++
+ 	slot->generation = qdev->rom->slot_generation;
+ 	high_bits = slot_index << qdev->slot_gen_bits;
+ 	high_bits |= slot->generation;
+@@ -95,6 +103,12 @@ static uint8_t setup_slot(struct qxl_device *qdev, uint8_t slot_index_offset,
+ 	return slot_index;
+ }
+ 
++void qxl_reinit_memslots(struct qxl_device *qdev)
++{
++	setup_hw_slot(qdev, qdev->main_mem_slot, &qdev->mem_slots[qdev->main_mem_slot]);
++	setup_hw_slot(qdev, qdev->surfaces_mem_slot, &qdev->mem_slots[qdev->surfaces_mem_slot]);
++}
++
+ static void qxl_gc_work(struct work_struct *work)
+ {
+ 	struct qxl_device *qdev = container_of(work, struct qxl_device, gc_work);
+@@ -294,6 +308,8 @@ int qxl_driver_load(struct drm_device *dev, unsigned long flags)
+ 		goto out;
+ 	}
+ 
++	drm_kms_helper_poll_init(qdev->ddev);
++
+ 	return 0;
+ out:
+ 	kfree(qdev);
+diff --git a/drivers/gpu/drm/qxl/qxl_object.c b/drivers/gpu/drm/qxl/qxl_object.c
+index d9b12e7..1191fe7 100644
+--- a/drivers/gpu/drm/qxl/qxl_object.c
++++ b/drivers/gpu/drm/qxl/qxl_object.c
+@@ -363,3 +363,13 @@ int qxl_bo_list_add(struct qxl_reloc_list *reloc_list, struct qxl_bo *bo)
+ 		return ret;
+ 	return 0;
+ }
++
++int qxl_surf_evict(struct qxl_device *qdev)
++{
++	return ttm_bo_evict_mm(&qdev->mman.bdev, TTM_PL_PRIV0);
++}
++
++int qxl_vram_evict(struct qxl_device *qdev)
++{
++	return ttm_bo_evict_mm(&qdev->mman.bdev, TTM_PL_VRAM);
++}
+-- 
+1.8.3.1
+
