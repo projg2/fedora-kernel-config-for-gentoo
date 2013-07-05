@@ -811,6 +811,9 @@ Patch25058: af_key-fix-info-leaks-in-notify-messages.patch
 #CVE-2013-1059 rhbz 977356 980341
 Patch25059: ceph-fix.patch
 
+#CVE-2013-2232 rhbz 981552 981564
+Patch25060: ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1570,6 +1573,9 @@ ApplyPatch af_key-fix-info-leaks-in-notify-messages.patch
 
 #CVE-2013-1059 rhbz 977356 980341
 ApplyPatch ceph-fix.patch
+
+#CVE-2013-2232 rhbz 981552 981564
+ApplyPatch ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2387,6 +2393,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jul 05 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-2232 ipv6: using ipv4 vs ipv6 structure during routing lookup in sendmsg (rhbz 981552 981564)
+
 * Thu Jul 04 2013 Dave Airlie <airlied@redhat.com>
 - qxl: add suspend/resume and hibernate support
 
