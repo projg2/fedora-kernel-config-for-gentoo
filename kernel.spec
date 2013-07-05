@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -783,6 +783,8 @@ Patch25052: HID-input-return-ENODATA-if-reading-battery-attrs-fails.patch
 #rhbz 880035
 Patch25053: bridge-only-expire-the-mdb-entry-when-query-is-received.patch
 Patch25054: bridge-send-query-as-soon-as-leave-is-received.patch
+#rhbz 980254
+Patch25061: bridge-timer-fix.patch
 
 #rhbz 977558
 Patch25055: ath3k-dont-use-stack-memory-for-DMA.patch
@@ -1521,6 +1523,7 @@ ApplyPatch HID-input-return-ENODATA-if-reading-battery-attrs-fails.patch
 #rhbz 880035
 ApplyPatch bridge-only-expire-the-mdb-entry-when-query-is-received.patch
 ApplyPatch bridge-send-query-as-soon-as-leave-is-received.patch
+ApplyPatch bridge-timer-fix.patch
 
 #rhbz 977558
 ApplyPatch ath3k-dont-use-stack-memory-for-DMA.patch
@@ -2384,6 +2387,7 @@ fi
 #                 ||     ||
 %changelog
 * Fri Jul 05 2013 Josh Boyer <jwboyer@redhat.com>
+- Add fix for timer issue in bridge code (rhbz 980254)
 - CVE-2013-2232 ipv6: using ipv4 vs ipv6 structure during routing lookup in sendmsg (rhbz 981552 981564)
 
 * Wed Jul 03 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.9-200
