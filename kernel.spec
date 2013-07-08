@@ -124,8 +124,6 @@ Summary: The Linux kernel
 %define with_bootwrapper %{?_without_bootwrapper: 0} %{?!_without_bootwrapper: 1}
 # Want to build a the vsdo directories installed
 %define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 1}
-# ARM OMAP (Beagle/Panda Board)
-%define with_omap      %{?_without_omap:      0} %{?!_without_omap:      1}
 # kernel-tegra (only valid for arm)
 %define with_tegra       %{?_without_tegra:       0} %{?!_without_tegra:       1}
 # kernel-kirkwood (only valid for arm)
@@ -243,9 +241,8 @@ Summary: The Linux kernel
 %define with_pae 0
 %endif
 
-# kernel up (versatile express), tegra and omap are only built on armv7 hfp/sfp
+# kernel up (versatile express) and tegra are only built on armv7 hfp/sfp
 %ifnarch armv7hl armv7l
-%define with_omap 0
 %define with_tegra 0
 %endif
 
@@ -1073,12 +1070,6 @@ on kernel bugs, as some of these options impact performance noticably.
 %description kirkwood
 This package includes a version of the Linux kernel with support for
 marvell kirkwood based systems, i.e., guruplug, sheevaplug
-
-%define variant_summary The Linux kernel compiled for TI-OMAP boards
-%kernel_variant_package omap
-%description omap
-This package includes a version of the Linux kernel with support for
-TI-OMAP based systems, i.e., BeagleBoard-xM.
 
 %define variant_summary The Linux kernel compiled for tegra boards
 %kernel_variant_package tegra
@@ -1927,10 +1918,6 @@ BuildKernel %make_target %kernel_image PAE
 BuildKernel %make_target %kernel_image kirkwood
 %endif
 
-%if %{with_omap}
-BuildKernel %make_target %kernel_image omap
-%endif
-
 %if %{with_tegra}
 BuildKernel %make_target %kernel_image tegra
 %endif
@@ -2206,9 +2193,6 @@ fi}\
 %kernel_variant_preun kirkwood
 %kernel_variant_post -v kirkwood
 
-%kernel_variant_preun omap
-%kernel_variant_post -v omap
-
 %kernel_variant_preun tegra
 %kernel_variant_post -v tegra
 
@@ -2356,7 +2340,6 @@ fi
 %kernel_variant_files %{with_pae} PAE
 %kernel_variant_files %{with_pae_debug} PAEdebug
 %kernel_variant_files %{with_kirkwood} kirkwood
-%kernel_variant_files %{with_omap} omap
 %kernel_variant_files %{with_tegra} tegra
 
 # plz don't put in a version string unless you're going to tag
@@ -2382,6 +2365,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sun Jul  7 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix building ARM kernel by dropping OMAP subpackage
+
 * Fri Jul 05 2013 Josh Boyer <jwboyer@redhat.com>
 - Add report fixup for Genius Gila mouse from Benjamin Tissoires (rhbz 959721)
 - Add vhost-net use-after-free fix (rhbz 976789 980643)
