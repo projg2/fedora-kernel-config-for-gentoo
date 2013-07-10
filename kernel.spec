@@ -2320,6 +2320,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Oct 14 2013 Kyle McMartin <kyle@redhat.com>
+- Fix crash-driver.patch to properly use page_is_ram. 
+
 * Mon Oct 14 2013 Justin M. Forbes <jforbes@fedoraproject.org> - 3.11.5-100
 - Linux v3.11.5
 
