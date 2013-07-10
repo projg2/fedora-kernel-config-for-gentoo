@@ -2274,6 +2274,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 13 2013 Kyle McMartin <kyle@redhat.com>
+- Fix crash-driver.patch to properly use page_is_ram. 
+
 * Fri Sep 13 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2013-XXXX net: sctp: ipv6 ipsec encryption bug in sctp_v6_xmit (rhbz 1007872 1007903)
 - CVE-2013-4343 net: use-after-free TUNSETIFF (rhbz 1007733 1007741)
