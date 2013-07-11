@@ -2408,6 +2408,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jul 11 2013 Kyle McMartin <kyle@redhat.com>
+- Enable USB on i.MX based boards, patch from Niels de Vos.
+
 * Fri Jul 05 2013 Josh Boyer <jwboyer@redhat.com>
 - Add report fixup for Genius Gila mouse from Benjamin Tissoires (rhbz 959721)
 - Add vhost-net use-after-free fix (rhbz 976789 980643)
