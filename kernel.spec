@@ -811,6 +811,9 @@ Patch25063: HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 #rhbz 885407
 Patch25064: iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
+#rhbz 976837
+Patch25065: fix-ext4-overflows.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1558,6 +1561,9 @@ ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 
 #rhbz 885407
 ApplyPatch iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
+
+#rhbz 976837
+ApplyPatch fix-ext4-overflows.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2405,6 +2411,7 @@ fi
 #                 ||     ||
 %changelog
 * Fri Jul 12 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix various overflow issues in ext4 (rhbz 976837)
 - Add iwlwifi fix for connection issue (rhbz 885407)
 
 * Fri Jul 05 2013 Josh Boyer <jwboyer@redhat.com>

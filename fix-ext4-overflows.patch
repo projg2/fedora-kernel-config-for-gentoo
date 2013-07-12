@@ -1,0 +1,207 @@
+From 93f6b57df5d9dd8c0327cebc01f6c00dbcd6d2ff Mon Sep 17 00:00:00 2001
+From: Jan Kara <jack@suse.cz>
+Date: Fri, 31 May 2013 19:33:42 -0400
+Subject: [PATCH 1/4] ext4: fix data offset overflow on 32-bit archs in
+ ext4_inline_data_fiemap()
+
+On 32-bit archs when sector_t is defined as 32-bit the logic computing
+data offset in ext4_inline_data_fiemap(). Fix that by properly typing
+the shifted value.
+
+Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ fs/ext4/inline.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index c0fd1a1..c46a01e 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -1702,7 +1702,7 @@ int ext4_inline_data_fiemap(struct inode *inode,
+ 	if (error)
+ 		goto out;
+ 
+-	physical = iloc.bh->b_blocknr << inode->i_sb->s_blocksize_bits;
++	physical = (__u64)iloc.bh->b_blocknr << inode->i_sb->s_blocksize_bits;
+ 	physical += (char *)ext4_raw_inode(&iloc) - iloc.bh->b_data;
+ 	physical += offsetof(struct ext4_inode, i_block);
+ 	length = i_size_read(inode);
+-- 
+1.8.3.1
+
+
+From 4d2cedb535bae3ada76a335540657e948f99d9c0 Mon Sep 17 00:00:00 2001
+From: Jan Kara <jack@suse.cz>
+Date: Fri, 31 May 2013 19:37:56 -0400
+Subject: [PATCH 2/4] ext4: fix overflows in SEEK_HOLE, SEEK_DATA
+ implementations
+
+ext4_lblk_t is just u32 so multiplying it by blocksize can easily
+overflow for files larger than 4 GB. Fix that by properly typing the
+block offsets before shifting.
+
+Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Zheng Liu <wenqing.lz@taobao.com>
+---
+ fs/ext4/file.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/fs/ext4/file.c b/fs/ext4/file.c
+index 64848b5..b47ccf9 100644
+--- a/fs/ext4/file.c
++++ b/fs/ext4/file.c
+@@ -311,7 +311,7 @@ static int ext4_find_unwritten_pgoff(struct inode *inode,
+ 	blkbits = inode->i_sb->s_blocksize_bits;
+ 	startoff = *offset;
+ 	lastoff = startoff;
+-	endoff = (map->m_lblk + map->m_len) << blkbits;
++	endoff = (loff_t)(map->m_lblk + map->m_len) << blkbits;
+ 
+ 	index = startoff >> PAGE_CACHE_SHIFT;
+ 	end = endoff >> PAGE_CACHE_SHIFT;
+@@ -456,7 +456,7 @@ static loff_t ext4_seek_data(struct file *file, loff_t offset, loff_t maxsize)
+ 		ret = ext4_map_blocks(NULL, inode, &map, 0);
+ 		if (ret > 0 && !(map.m_flags & EXT4_MAP_UNWRITTEN)) {
+ 			if (last != start)
+-				dataoff = last << blkbits;
++				dataoff = (loff_t)last << blkbits;
+ 			break;
+ 		}
+ 
+@@ -467,7 +467,7 @@ static loff_t ext4_seek_data(struct file *file, loff_t offset, loff_t maxsize)
+ 		ext4_es_find_delayed_extent(inode, last, &es);
+ 		if (es.es_len != 0 && in_range(last, es.es_lblk, es.es_len)) {
+ 			if (last != start)
+-				dataoff = last << blkbits;
++				dataoff = (loff_t)last << blkbits;
+ 			break;
+ 		}
+ 
+@@ -485,7 +485,7 @@ static loff_t ext4_seek_data(struct file *file, loff_t offset, loff_t maxsize)
+ 		}
+ 
+ 		last++;
+-		dataoff = last << blkbits;
++		dataoff = (loff_t)last << blkbits;
+ 	} while (last <= end);
+ 
+ 	mutex_unlock(&inode->i_mutex);
+@@ -539,7 +539,7 @@ static loff_t ext4_seek_hole(struct file *file, loff_t offset, loff_t maxsize)
+ 		ret = ext4_map_blocks(NULL, inode, &map, 0);
+ 		if (ret > 0 && !(map.m_flags & EXT4_MAP_UNWRITTEN)) {
+ 			last += ret;
+-			holeoff = last << blkbits;
++			holeoff = (loff_t)last << blkbits;
+ 			continue;
+ 		}
+ 
+@@ -550,7 +550,7 @@ static loff_t ext4_seek_hole(struct file *file, loff_t offset, loff_t maxsize)
+ 		ext4_es_find_delayed_extent(inode, last, &es);
+ 		if (es.es_len != 0 && in_range(last, es.es_lblk, es.es_len)) {
+ 			last = es.es_lblk + es.es_len;
+-			holeoff = last << blkbits;
++			holeoff = (loff_t)last << blkbits;
+ 			continue;
+ 		}
+ 
+@@ -565,7 +565,7 @@ static loff_t ext4_seek_hole(struct file *file, loff_t offset, loff_t maxsize)
+ 							      &map, &holeoff);
+ 			if (!unwritten) {
+ 				last += ret;
+-				holeoff = last << blkbits;
++				holeoff = (loff_t)last << blkbits;
+ 				continue;
+ 			}
+ 		}
+-- 
+1.8.3.1
+
+
+From 114fe3b7fc9ca3ca00f774dd8705e8c802f39f14 Mon Sep 17 00:00:00 2001
+From: Jan Kara <jack@suse.cz>
+Date: Fri, 31 May 2013 19:38:56 -0400
+Subject: [PATCH 3/4] ext4: fix data offset overflow in ext4_xattr_fiemap() on
+ 32-bit archs
+
+On 32-bit architectures with 32-bit sector_t computation of data offset
+in ext4_xattr_fiemap() can overflow resulting in reporting bogus data
+location. Fix the problem by typing block number to proper type before
+shifting.
+
+Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ fs/ext4/extents.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/ext4/extents.c b/fs/ext4/extents.c
+index 9c6d06d..6bb303c 100644
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -4605,7 +4605,7 @@ static int ext4_xattr_fiemap(struct inode *inode,
+ 		error = ext4_get_inode_loc(inode, &iloc);
+ 		if (error)
+ 			return error;
+-		physical = iloc.bh->b_blocknr << blockbits;
++		physical = (__u64)iloc.bh->b_blocknr << blockbits;
+ 		offset = EXT4_GOOD_OLD_INODE_SIZE +
+ 				EXT4_I(inode)->i_extra_isize;
+ 		physical += offset;
+@@ -4613,7 +4613,7 @@ static int ext4_xattr_fiemap(struct inode *inode,
+ 		flags |= FIEMAP_EXTENT_DATA_INLINE;
+ 		brelse(iloc.bh);
+ 	} else { /* external block */
+-		physical = EXT4_I(inode)->i_file_acl << blockbits;
++		physical = (__u64)EXT4_I(inode)->i_file_acl << blockbits;
+ 		length = inode->i_sb->s_blocksize;
+ 	}
+ 
+-- 
+1.8.3.1
+
+
+From aeb72ff4b7fe084b4373d4a91d77d3bea8089627 Mon Sep 17 00:00:00 2001
+From: Jan Kara <jack@suse.cz>
+Date: Fri, 31 May 2013 19:39:56 -0400
+Subject: [PATCH 4/4] ext4: fix overflow when counting used blocks on 32-bit
+ architectures
+
+The arithmetics adding delalloc blocks to the number of used blocks in
+ext4_getattr() can easily overflow on 32-bit archs as we first multiply
+number of blocks by blocksize and then divide back by 512. Make the
+arithmetics more clever and also use proper type (unsigned long long
+instead of unsigned long).
+
+Signed-off-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+---
+ fs/ext4/inode.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index d69e954..e33e2d2 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -4616,7 +4616,7 @@ int ext4_getattr(struct vfsmount *mnt, struct dentry *dentry,
+ 		 struct kstat *stat)
+ {
+ 	struct inode *inode;
+-	unsigned long delalloc_blocks;
++	unsigned long long delalloc_blocks;
+ 
+ 	inode = dentry->d_inode;
+ 	generic_fillattr(inode, stat);
+@@ -4634,7 +4634,7 @@ int ext4_getattr(struct vfsmount *mnt, struct dentry *dentry,
+ 	delalloc_blocks = EXT4_C2B(EXT4_SB(inode->i_sb),
+ 				EXT4_I(inode)->i_reserved_data_blocks);
+ 
+-	stat->blocks += (delalloc_blocks << inode->i_sb->s_blocksize_bits)>>9;
++	stat->blocks += delalloc_blocks << (inode->i_sb->s_blocksize_bits-9);
+ 	return 0;
+ }
+ 
+-- 
+1.8.3.1
+
