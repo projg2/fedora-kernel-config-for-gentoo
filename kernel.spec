@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 302
+%global baserelease 303
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -821,6 +821,9 @@ Patch25062: vhost-net-fix-use-after-free-in-vhost_net_flush.patch
 
 #rhbz 959721
 Patch25063: HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
+
+#rhbz 885407
+Patch25064: iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1591,6 +1594,9 @@ ApplyPatch vhost-net-fix-use-after-free-in-vhost_net_flush.patch
 
 #rhbz 959721
 ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
+
+#rhbz 885407
+ApplyPatch iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2408,6 +2414,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jul 12 2013 Josh Boyer <jwboyer@redhat.com>
+- Add iwlwifi fix for connection issue (rhbz 885407)
+
 * Thu Jul 11 2013 Kyle McMartin <kyle@redhat.com>
 - Enable USB on i.MX based boards, patch from Niels de Vos.
 
