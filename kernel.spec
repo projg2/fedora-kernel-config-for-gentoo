@@ -54,7 +54,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 103
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -66,7 +66,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -743,12 +743,6 @@ Patch25032: cve-2013-2147-ciss-info-leak.patch
 #CVE-2013-2148 rhbz 971258 971261
 Patch25033: fanotify-info-leak-in-copy_event_to_user.patch
 
-#CVE-2013-2851 rhbz 969515 971662
-Patch25035: block-do-not-pass-disk-names-as-format-strings.patch
-
-#CVE-2013-2164 rhbz 973100 973109
-Patch25038: cdrom-use-kzalloc-for-failing-hardware.patch
-
 #rhbz 969644
 Patch25046: KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
@@ -773,9 +767,6 @@ Patch25057: iwl4965-better-skb-management-in-rx-path.patch
 
 #CVE-2013-2234 rhbz 980995 981007
 Patch25058: af_key-fix-info-leaks-in-notify-messages.patch
-
-#CVE-2013-1059 rhbz 977356 980341
-Patch25059: ceph-fix.patch
 
 #CVE-2013-2232 rhbz 981552 981564
 Patch25060: ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
@@ -1486,12 +1477,6 @@ ApplyPatch cve-2013-2147-ciss-info-leak.patch
 #CVE-2013-2148 rhbz 971258 971261
 ApplyPatch fanotify-info-leak-in-copy_event_to_user.patch
 
-#CVE-2013-2851 rhbz 969515 971662
-ApplyPatch block-do-not-pass-disk-names-as-format-strings.patch
-
-#CVE-2013-2164 rhbz 973100 973109
-ApplyPatch cdrom-use-kzalloc-for-failing-hardware.patch
-
 #rhbz 969644
 ApplyPatch KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
@@ -1515,9 +1500,6 @@ ApplyPatch iwl4965-better-skb-management-in-rx-path.patch
 
 #CVE-2013-2234 rhbz 980995 981007
 ApplyPatch af_key-fix-info-leaks-in-notify-messages.patch
-
-#CVE-2013-1059 rhbz 977356 980341
-ApplyPatch ceph-fix.patch
 
 #CVE-2013-2232 rhbz 981552 981564
 ApplyPatch ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
@@ -2377,6 +2359,9 @@ fi
 #    '-'      |  |
 #              '-'
 %changelog
+* Sat Jul 13 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.10-100
+- Linux v3.9.10
+
 * Fri Jul 12 2013 Dave Jones <davej@redhat.com> - 3.9.9-103
 - Disable LATENCYTOP/SCHEDSTATS in non-debug builds.
 
