@@ -24,7 +24,7 @@ index 3952ddf..1531a4f 100644
  		if (ret)
  			return ret;
 -	} else {
-+	} else if (priv->lib->bt_params) {
++	} else if (priv->cfg->bt_params) {
  		/*
  		 * default is 2-wire BT coexexistence support
  		 */
