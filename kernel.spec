@@ -2322,6 +2322,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jul 31 2013 Josh Boyer <jwboyer@redhat.com>
+- update s390x config [Dan Horák]
+
 * Tue Jul 30 2013 Josh Boyer <jwboyer@redhat.com> - 3.10.4-300
 - Revert some changes to make Logitech devices function properly (rhbz 989138)
 
