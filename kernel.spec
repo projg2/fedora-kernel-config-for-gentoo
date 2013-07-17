@@ -62,19 +62,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 304
+%global baserelease 300
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 9
+%define base_sublevel 10
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -639,9 +639,6 @@ Patch100: taint-vbox.patch
 
 Patch110: vmbugon-warnon.patch
 
-Patch200: debug-bad-pte-dmi.patch
-Patch201: debug-bad-pte-modules.patch
-
 Patch390: defaults-acpi-video.patch
 Patch391: acpi-video-dos.patch
 Patch396: acpi-sony-nonvs-blacklist.patch
@@ -668,11 +665,7 @@ Patch1000: devel-pekey-secure-boot-20130306.patch
 # DRM
 #atch1700: drm-edid-try-harder-to-fix-up-broken-headers.patch
 #Patch1800: drm-vgem.patch
-Patch1700: drm-ttm-exports-for-qxl.patch
 Patch1701: drm-hotspot-cursor-backport.patch
-Patch1702: drm-qxl-driver.patch
-Patch1703: drm-qxl-3.10-rc7-diff.patch
-Patch1704: drm-qxl-access-fix.patch
 Patch1705: drm-qxl-post-3.10-feature-fixes.patch
 Patch1706: drm-qxl-post-3.10-features-part-2.patch
 # nouveau + drm fixes
@@ -712,10 +705,7 @@ Patch21000: arm-export-read_current_timer.patch
 Patch21001: arm-lpae-ax88796.patch
 
 # ARM omap
-Patch21002: arm-omap-ehci-fix.patch
 Patch21003: arm-omap-load-tfp410.patch
-# https://patchwork.kernel.org/patch/2414881/
-Patch21004: arm-omap-fixdrm.patch
 
 # ARM tegra
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
@@ -737,9 +727,6 @@ Patch21247: ath9k_rx_dma_stop_check.patch
 Patch21273: cfg80211-mac80211-disconnect-on-suspend.patch
 Patch21274: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.9.patch
 
-#rhbz 859282
-Patch21275: VMX-x86-handle-host-TSC-calibration-failure.patch
-
 Patch22000: weird-root-dentry-name-debug.patch
 Patch22010: debug-idle-sched-warn-once.patch
 
@@ -748,9 +735,6 @@ Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
 #rhbz 927469
 Patch23006: fix-child-thread-introspection.patch
-
-#rhbz 928024
-Patch23008: forcedeth-dma-error-check.patch
 
 #rhbz 948262
 Patch25024: intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
@@ -767,26 +751,13 @@ Patch25032: cve-2013-2147-ciss-info-leak.patch
 #CVE-2013-2148 rhbz 971258 971261
 Patch25033: fanotify-info-leak-in-copy_event_to_user.patch
 
-#CVE-2013-2851 rhbz 969515 971662
-Patch25035: block-do-not-pass-disk-names-as-format-strings.patch
-
 #rhbz 954252
 Patch25036: scsi-ipr-possible-irq-lock-inversion-dependency-detected.patch
-
-#CVE-2013-2164 rhbz 973100 973109
-Patch25038: cdrom-use-kzalloc-for-failing-hardware.patch
-
-#rhbz 967230
-Patch25043: vfio-Set-container-device-mode.patch
-Patch25044: vfio-fix-crash-on-rmmod.patch
 
 #rhbz 969644
 Patch25046: KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
 Patch25047: drm-radeon-Disable-writeback-by-default-on-ppc.patch
-
-#rhbz 956732
-Patch25048: tulip-dma-debug-error.patch
 
 Patch25050: iwlwifi-pcie-fix-race-in-queue-unmapping.patch
 Patch25051: iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
@@ -807,14 +778,8 @@ Patch25055: ath3k-dont-use-stack-memory-for-DMA.patch
 Patch25056: iwl3945-better-skb-management-in-rx-path.patch
 Patch25057: iwl4965-better-skb-management-in-rx-path.patch
 
-#CVE-2013-2234 rhbz 980995 981007
-Patch25058: af_key-fix-info-leaks-in-notify-messages.patch
-
 #CVE-2013-1059 rhbz 977356 980341
 Patch25059: ceph-fix.patch
-
-#CVE-2013-2232 rhbz 981552 981564
-Patch25060: ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
 
 #rhbz 976789 980643
 Patch25062: vhost-net-fix-use-after-free-in-vhost_net_flush.patch
@@ -1374,9 +1339,6 @@ ApplyPatch taint-vbox.patch
 
 ApplyPatch vmbugon-warnon.patch
 
-ApplyPatch debug-bad-pte-dmi.patch
-ApplyPatch debug-bad-pte-modules.patch
-
 # Architecture patches
 # x86(-64)
 
@@ -1385,11 +1347,9 @@ ApplyPatch debug-bad-pte-modules.patch
 #
 ApplyPatch arm-export-read_current_timer.patch
 ApplyPatch arm-lpae-ax88796.patch
-ApplyPatch arm-omap-ehci-fix.patch
 ApplyPatch arm-omap-load-tfp410.patch
-ApplyPatch arm-omap-fixdrm.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
-ApplyPatch arm-tegra-fixclk.patch
+#ApplyPatch arm-tegra-fixclk.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -1460,11 +1420,7 @@ ApplyPatch devel-pekey-secure-boot-20130306.patch
 # Assorted Virt Fixes
 
 # DRM core
-ApplyPatch drm-ttm-exports-for-qxl.patch
 ApplyPatch drm-hotspot-cursor-backport.patch
-ApplyPatch drm-qxl-driver.patch
-ApplyPatch drm-qxl-3.10-rc7-diff.patch
-ApplyPatch drm-qxl-access-fix.patch
 ApplyPatch drm-qxl-post-3.10-feature-fixes.patch
 ApplyPatch drm-qxl-post-3.10-features-part-2.patch
 #ApplyPatch drm-edid-try-harder-to-fix-up-broken-headers.patch
@@ -1517,23 +1473,17 @@ ApplyPatch criu-no-expert.patch
 ApplyPatch ath9k_rx_dma_stop_check.patch
 
 #rhbz 856863 892599
-ApplyPatch cfg80211-mac80211-disconnect-on-suspend.patch
-ApplyPatch mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.9.patch
-
-#rhbz 859282
-ApplyPatch VMX-x86-handle-host-TSC-calibration-failure.patch
+#ApplyPatch cfg80211-mac80211-disconnect-on-suspend.patch
+#ApplyPatch mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.9.patch
 
 #rhbz 927469
 ApplyPatch fix-child-thread-introspection.patch
-
-#rhbz 928024
-ApplyPatch forcedeth-dma-error-check.patch
 
 #rhbz 948262
 ApplyPatch intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
 
 # Needed for F19 gssproxy feature
-ApplyPatch gssproxy-backport.patch
+#ApplyPatch gssproxy-backport.patch
 
 #CVE-2013-2140 rhbz 971146 971148
 ApplyPatch xen-blkback-Check-device-permissions-before-allowing.patch
@@ -1544,26 +1494,13 @@ ApplyPatch cve-2013-2147-ciss-info-leak.patch
 #CVE-2013-2148 rhbz 971258 971261
 ApplyPatch fanotify-info-leak-in-copy_event_to_user.patch
 
-#CVE-2013-2851 rhbz 969515 971662
-ApplyPatch block-do-not-pass-disk-names-as-format-strings.patch
-
 #rhbz 954252
 ApplyPatch scsi-ipr-possible-irq-lock-inversion-dependency-detected.patch
-
-#CVE-2013-2164 rhbz 973100 973109
-ApplyPatch cdrom-use-kzalloc-for-failing-hardware.patch
-
-#rhbz 967230
-ApplyPatch vfio-Set-container-device-mode.patch
-ApplyPatch vfio-fix-crash-on-rmmod.patch
 
 #rhbz 969644
 ApplyPatch KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
 ApplyPatch drm-radeon-Disable-writeback-by-default-on-ppc.patch
-
-#rhbz 956732
-ApplyPatch tulip-dma-debug-error.patch
 
 ApplyPatch iwlwifi-pcie-fix-race-in-queue-unmapping.patch
 ApplyPatch iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
@@ -1583,17 +1520,11 @@ ApplyPatch ath3k-dont-use-stack-memory-for-DMA.patch
 ApplyPatch iwl3945-better-skb-management-in-rx-path.patch
 ApplyPatch iwl4965-better-skb-management-in-rx-path.patch
 
-#CVE-2013-2234 rhbz 980995 981007
-ApplyPatch af_key-fix-info-leaks-in-notify-messages.patch
-
 #CVE-2013-1059 rhbz 977356 980341
-ApplyPatch ceph-fix.patch
-
-#CVE-2013-2232 rhbz 981552 981564
-ApplyPatch ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
+#ApplyPatch ceph-fix.patch
 
 #rhbz 976789 980643
-ApplyPatch vhost-net-fix-use-after-free-in-vhost_net_flush.patch
+#ApplyPatch vhost-net-fix-use-after-free-in-vhost_net_flush.patch
 
 #rhbz 959721
 ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
@@ -1623,6 +1554,9 @@ mkdir configs
 %if !%{debugbuildsenabled}
 rm -f kernel-%{version}-*debug.config
 %endif
+
+# FIXME: ARM needs fixing.
+rm -f kernel*arm*.config
 
 # now run oldconfig over all the config files
 for i in *.config
@@ -2420,6 +2354,35 @@ fi
 # and build.
 
 %changelog
+* Wed Jul 17 2013 Dave Jones <davej@redhat.com>
+- Rebase to 3.10.1
+  dropped:
+   debug-bad-pte-dmi.patch
+   debug-bad-pte-modules.patch
+   arm-omap-ehci-fix.patch
+   arm-omap-fixdrm.patch
+   drm-ttm-exports-for-qxl.patch
+   drm-qxl-driver.patch
+   drm-qxl-3.10-rc7-diff.patch
+   drm-qxl-access-fix.patch
+   VMX-x86-handle-host-TSC-calibration-failure.patch
+   forcedeth-dma-error-check.patch
+   block-do-not-pass-disk-names-as-format-strings.patch
+   cdrom-use-kzalloc-for-failing-hardware.patch
+   vfio-Set-container-device-mode.patch
+   vfio-fix-crash-on-rmmod.patch
+   tulip-dma-debug-error.patch
+   af_key-fix-info-leaks-in-notify-messages.patch
+   ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
+  needs fixing:
+   arm-tegra-fixclk.patch
+   cfg80211-mac80211-disconnect-on-suspend.patch
+   mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.9.patch
+   gssproxy-backport.patch
+   ceph-fix.patch
+   vhost-net-fix-use-after-free-in-vhost_net_flush.patch
+  ARM currently disabled, requires config changes. (See line 1558)
+
 * Fri Jul 12 2013 Dave Jones <davej@redhat.com> - 3.9.9-304
 - Disable LATENCYTOP/SCHEDSTATS in non-debug builds.
 
