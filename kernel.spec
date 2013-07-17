@@ -132,8 +132,6 @@ Summary: The Linux kernel
 %define with_bootwrapper %{?_without_bootwrapper: 0} %{?!_without_bootwrapper: 1}
 # Want to build a the vsdo directories installed
 %define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 1}
-# kernel-tegra (only valid for arm)
-%define with_tegra       %{?_without_tegra:       0} %{?!_without_tegra:       1}
 #
 # Additional options for user-friendly one-off kernel building:
 #
@@ -245,11 +243,6 @@ Summary: The Linux kernel
 # kernel PAE is only built on i686 and ARMv7.
 %ifnarch i686 armv7hl
 %define with_pae 0
-%endif
-
-# kernel up (unified kernel target), unified LPAE, tegra are only built on armv7 hfp
-%ifnarch armv7hl
-%define with_tegra 0
 %endif
 
 # if requested, only build base kernel
@@ -477,6 +470,9 @@ Provides: kernel-highbank\
 Provides: kernel-highbank-uname-r = %{KVERREL}%{?1:.%{1}}\
 Provides: kernel-omap\
 Provides: kernel-omap-uname-r = %{KVERREL}%{?1:.%{1}}\
+Provides: kernel-tegra\
+Provides: kernel-tegra-uname-r = %{KVERREL}%{?1:.%{1}}\
+Provides: kernel-omap\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
 Requires(pre): linux-firmware >= 20120206-0.1.git06c8f81\
@@ -573,10 +569,10 @@ Source54: config-powerpc64p7
 Source70: config-s390x
 
 # Unified ARM kernels
-Source100: config-armv7-generic
-Source101: config-armv7
-Source102: config-armv7-lpae
-Source103: config-armv7-tegra
+Source100: config-arm-generic
+Source101: config-armv7-generic
+Source102: config-armv7
+Source103: config-armv7-lpae
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -1080,12 +1076,6 @@ This variant of the kernel has numerous debugging options enabled.
 It should only be installed when trying to gather additional information
 on kernel bugs, as some of these options impact performance noticably.
 
-%define variant_summary The Linux kernel compiled for tegra boards
-%kernel_variant_package tegra
-%description tegra
-This package includes a version of the Linux kernel with support for
-nvidia tegra based systems, i.e., trimslice, ac-100.
-
 
 %prep
 # do a few sanity-checks for --with *only builds
@@ -1555,9 +1545,6 @@ mkdir configs
 rm -f kernel-%{version}-*debug.config
 %endif
 
-# FIXME: ARM needs fixing.
-rm -f kernel*arm*.config
-
 # now run oldconfig over all the config files
 for i in *.config
 do
@@ -1881,10 +1868,6 @@ BuildKernel %make_target %kernel_image %{pae}debug
 BuildKernel %make_target %kernel_image %{pae}
 %endif
 
-%if %{with_tegra}
-BuildKernel %make_target %kernel_image tegra
-%endif
-
 %if %{with_up}
 BuildKernel %make_target %kernel_image
 %endif
@@ -2202,9 +2185,6 @@ fi}\
 %kernel_variant_preun debug
 %kernel_variant_post -v debug
 
-%kernel_variant_preun tegra
-%kernel_variant_post -v tegra
-
 if [ -x /sbin/ldconfig ]
 then
     /sbin/ldconfig -X || exit $?
@@ -2348,12 +2328,16 @@ fi
 %kernel_variant_files %{with_debug} debug
 %kernel_variant_files %{with_pae} %{pae}
 %kernel_variant_files %{with_pae_debug} %{pae}debug
-%kernel_variant_files %{with_tegra} tegra
 
 # plz don't put in a version string unless you're going to tag
 # and build.
 
 %changelog
+* Wed Jul 17 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Re-enable ARM
+- Drop tegra subkernel as it's now multi-platform
+- Enable i.MX SoC support
+
 * Wed Jul 17 2013 Dave Jones <davej@redhat.com>
 - Rebase to 3.10.1
   dropped:
