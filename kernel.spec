@@ -718,10 +718,6 @@ Patch21242: criu-no-expert.patch
 #rhbz 892811
 Patch21247: ath9k_rx_dma_stop_check.patch
 
-#rhbz 856863 892599
-Patch21273: cfg80211-mac80211-disconnect-on-suspend.patch
-Patch21274: mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.9.patch
-
 Patch22000: weird-root-dentry-name-debug.patch
 Patch22010: debug-idle-sched-warn-once.patch
 
@@ -733,9 +729,6 @@ Patch23006: fix-child-thread-introspection.patch
 
 #rhbz 948262
 Patch25024: intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
-
-# Needed for F19 gssproxy feature
-Patch25030: gssproxy-backport.patch
 
 #CVE-2013-2140 rhbz 971146 971148
 Patch25031: xen-blkback-Check-device-permissions-before-allowing.patch
@@ -772,9 +765,6 @@ Patch25055: ath3k-dont-use-stack-memory-for-DMA.patch
 #rhbz 977040
 Patch25056: iwl3945-better-skb-management-in-rx-path.patch
 Patch25057: iwl4965-better-skb-management-in-rx-path.patch
-
-#CVE-2013-1059 rhbz 977356 980341
-Patch25059: ceph-fix.patch
 
 #rhbz 976789 980643
 Patch25062: vhost-net-fix-use-after-free-in-vhost_net_flush.patch
@@ -1460,18 +1450,11 @@ ApplyPatch criu-no-expert.patch
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
 
-#rhbz 856863 892599
-#ApplyPatch cfg80211-mac80211-disconnect-on-suspend.patch
-#ApplyPatch mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.9.patch
-
 #rhbz 927469
 ApplyPatch fix-child-thread-introspection.patch
 
 #rhbz 948262
 ApplyPatch intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
-
-# Needed for F19 gssproxy feature
-#ApplyPatch gssproxy-backport.patch
 
 #CVE-2013-2140 rhbz 971146 971148
 ApplyPatch xen-blkback-Check-device-permissions-before-allowing.patch
@@ -1508,11 +1491,8 @@ ApplyPatch ath3k-dont-use-stack-memory-for-DMA.patch
 ApplyPatch iwl3945-better-skb-management-in-rx-path.patch
 ApplyPatch iwl4965-better-skb-management-in-rx-path.patch
 
-#CVE-2013-1059 rhbz 977356 980341
-#ApplyPatch ceph-fix.patch
-
 #rhbz 976789 980643
-#ApplyPatch vhost-net-fix-use-after-free-in-vhost_net_flush.patch
+ApplyPatch vhost-net-fix-use-after-free-in-vhost_net_flush.patch
 
 #rhbz 959721
 ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
@@ -2357,14 +2337,11 @@ fi
    tulip-dma-debug-error.patch
    af_key-fix-info-leaks-in-notify-messages.patch
    ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
-  needs fixing:
    arm-tegra-fixclk.patch
    cfg80211-mac80211-disconnect-on-suspend.patch
    mac80211_fixes_for_ieee80211_do_stop_while_suspend_v3.9.patch
    gssproxy-backport.patch
    ceph-fix.patch
-   vhost-net-fix-use-after-free-in-vhost_net_flush.patch
-  ARM currently disabled, requires config changes. (See line 1558)
 
 * Fri Jul 12 2013 Dave Jones <davej@redhat.com> - 3.9.9-304
 - Disable LATENCYTOP/SCHEDSTATS in non-debug builds.
