@@ -705,7 +705,6 @@ Patch21003: arm-omap-load-tfp410.patch
 
 # ARM tegra
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
-Patch21006: arm-tegra-fixclk.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -1339,7 +1338,6 @@ ApplyPatch arm-export-read_current_timer.patch
 ApplyPatch arm-lpae-ax88796.patch
 ApplyPatch arm-omap-load-tfp410.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
-#ApplyPatch arm-tegra-fixclk.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -2337,6 +2335,7 @@ fi
 - Re-enable ARM
 - Drop tegra subkernel as it's now multi-platform
 - Enable i.MX SoC support
+- Drop old ARM patches
 
 * Wed Jul 17 2013 Dave Jones <davej@redhat.com>
 - Rebase to 3.10.1
