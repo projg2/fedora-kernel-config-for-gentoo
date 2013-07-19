@@ -778,6 +778,8 @@ Patch25064: iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 #rhbz 976837
 Patch25065: fix-ext4-overflows.patch
 
+Patch26000: cve-2013-4125.patch 
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1502,6 +1504,8 @@ ApplyPatch iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
 #rhbz 976837
 ApplyPatch fix-ext4-overflows.patch
+
+ApplyPatch cve-2013-4125.patch 
 
 # END OF PATCH APPLICATIONS
 
@@ -2311,6 +2315,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jul 19 2013 Dave Jones <davej@redhat.com>
+- CVE-2013-4125  ipv6: BUG_ON in fib6_add_rt2node() (rhbz 984664)
+
 * Wed Jul 17 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Re-enable ARM
 - Drop tegra subkernel as it's now multi-platform
