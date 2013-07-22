@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -801,9 +801,6 @@ Patch25063: HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 
 #rhbz 885407
 Patch25064: iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
-
-#rhbz 976837
-Patch25065: fix-ext4-overflows.patch
 
 Patch26000: cve-2013-4125.patch
 
@@ -1545,9 +1542,6 @@ ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 
 #rhbz 885407
 ApplyPatch iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
-
-#rhbz 976837
-ApplyPatch fix-ext4-overflows.patch
 
 ApplyPatch cve-2013-4125.patch
 
@@ -2396,6 +2390,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Jul 22 2013 Josh Boyer <jwboyer@redhat.com>
+- Linux v3.9.11
+
 * Fri Jul 19 2013 Dave Jones <davej@redhat.com>
 - CVE-2013-4125  ipv6: BUG_ON in fib6_add_rt2node() (rhbz 984664)
 
