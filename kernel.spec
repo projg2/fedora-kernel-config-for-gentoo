@@ -755,6 +755,7 @@ Patch25053: bridge-only-expire-the-mdb-entry-when-query-is-received.patch
 Patch25054: bridge-send-query-as-soon-as-leave-is-received.patch
 #rhbz 980254
 Patch25061: bridge-timer-fix.patch
+Patch25066: bridge-do-not-call-setup_timer-multiple-times.patch
 
 #rhbz 977558
 Patch25055: ath3k-dont-use-stack-memory-for-DMA.patch
@@ -1475,7 +1476,9 @@ ApplyPatch HID-input-return-ENODATA-if-reading-battery-attrs-fails.patch
 #rhbz 880035
 ApplyPatch bridge-only-expire-the-mdb-entry-when-query-is-received.patch
 ApplyPatch bridge-send-query-as-soon-as-leave-is-received.patch
+#rhbz 980254
 ApplyPatch bridge-timer-fix.patch
+ApplyPatch bridge-do-not-call-setup_timer-multiple-times.patch
 
 #rhbz 977558
 ApplyPatch ath3k-dont-use-stack-memory-for-DMA.patch
@@ -2303,6 +2306,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jul 22 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix timer issue in bridge code (rhbz 980254)
+
 * Mon Jul 22 2013 Justin M. Forbes <jforbes@redhat.com> 3.10.2-300
 - Linux v3.10.2
 
