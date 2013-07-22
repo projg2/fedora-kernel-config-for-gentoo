@@ -1,0 +1,29 @@
+From 20ecf9fd3bebc4147e2996c08a75d6f0229b90df Mon Sep 17 00:00:00 2001
+From: Shuduo Sang <sangshuduo@gmail.com>
+Date: Sat, 30 Mar 2013 06:26:37 +0000
+Subject: iwlwifi: add new pci id for 6x35 series
+
+some new thinkpad laptops use intel chip with new pci id need be added
+lspci -vnn output:
+ Network controller [0280]: Intel Corporation Centrino Advanced-N 6235
+ [8086:088f] (rev 24)
+ Subsystem: Intel Corporation Device [8086:5260]
+
+Signed-off-by: Shuduo Sang <sangshuduo@gmail.com>
+Reviewed-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+---
+diff --git a/drivers/net/wireless/iwlwifi/pcie/drv.c b/drivers/net/wireless/iwlwifi/pcie/drv.c
+index 46ca91f..0016bb2 100644
+--- a/drivers/net/wireless/iwlwifi/pcie/drv.c
++++ b/drivers/net/wireless/iwlwifi/pcie/drv.c
+@@ -241,6 +241,7 @@ static DEFINE_PCI_DEVICE_TABLE(iwl_hw_card_ids) = {
+ 	{IWL_PCI_DEVICE(0x088F, 0x4260, iwl6035_2agn_cfg)},
+ 	{IWL_PCI_DEVICE(0x088E, 0x4460, iwl6035_2agn_cfg)},
+ 	{IWL_PCI_DEVICE(0x088E, 0x4860, iwl6035_2agn_cfg)},
++	{IWL_PCI_DEVICE(0x088F, 0x5260, iwl6035_2agn_cfg)},
+ 
+ /* 105 Series */
+ 	{IWL_PCI_DEVICE(0x0894, 0x0022, iwl105_bgn_cfg)},
+--
+cgit v0.9.2

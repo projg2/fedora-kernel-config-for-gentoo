@@ -802,6 +802,9 @@ Patch25063: HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 #rhbz 885407
 Patch25064: iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
+#rhbz 986538
+Patch25065: iwlwifi-add-new-pci-id-for-6x35-series.patch
+
 Patch26000: cve-2013-4125.patch
 
 # END OF PATCH DEFINITIONS
@@ -1544,6 +1547,9 @@ ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 ApplyPatch iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
 ApplyPatch cve-2013-4125.patch
+
+#rhbz 986538
+ApplyPatch iwlwifi-add-new-pci-id-for-6x35-series.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2391,6 +2397,7 @@ fi
 #                 ||     ||
 %changelog
 * Mon Jul 22 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch for iwlwifi 6x35 devices (rhbz 986538)
 - Linux v3.9.11
 
 * Fri Jul 19 2013 Dave Jones <davej@redhat.com>
