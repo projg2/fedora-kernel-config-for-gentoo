@@ -2399,7 +2399,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Mon Jul 22 2013 Josh Boyer <jwboyer@redhat.com>
+* Mon Jul 22 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.11-200
 - Fix timer issue in bridge code (rhbz 980254)
 - Add patch for iwlwifi 6x35 devices (rhbz 986538)
 - Linux v3.9.11
