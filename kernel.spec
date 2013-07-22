@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -747,9 +747,6 @@ Patch25046: KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
 Patch25047: drm-radeon-Disable-writeback-by-default-on-ppc.patch
 
-Patch25050: iwlwifi-pcie-fix-race-in-queue-unmapping.patch
-Patch25051: iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
-
 #rhbz 903741
 Patch25052: HID-input-return-ENODATA-if-reading-battery-attrs-fails.patch
 
@@ -775,10 +772,7 @@ Patch25063: HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 #rhbz 885407
 Patch25064: iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
-#rhbz 976837
-Patch25065: fix-ext4-overflows.patch
-
-Patch26000: cve-2013-4125.patch 
+Patch26000: cve-2013-4125.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1475,9 +1469,6 @@ ApplyPatch KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
 ApplyPatch drm-radeon-Disable-writeback-by-default-on-ppc.patch
 
-ApplyPatch iwlwifi-pcie-fix-race-in-queue-unmapping.patch
-ApplyPatch iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
-
 #rhbz 903741
 ApplyPatch HID-input-return-ENODATA-if-reading-battery-attrs-fails.patch
 
@@ -1501,9 +1492,6 @@ ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 
 #rhbz 885407
 ApplyPatch iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
-
-#rhbz 976837
-ApplyPatch fix-ext4-overflows.patch
 
 ApplyPatch cve-2013-4125.patch 
 
@@ -2315,6 +2303,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jul 22 2013 Justin M. Forbes <jforbes@redhat.com> 3.10.2-300
+- Linux v3.10.2
+
 * Fri Jul 19 2013 Dave Jones <davej@redhat.com>
 - CVE-2013-4125  ipv6: BUG_ON in fib6_add_rt2node() (rhbz 984664)
 
