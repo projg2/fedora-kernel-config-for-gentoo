@@ -806,6 +806,9 @@ Patch25064: iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 #rhbz 986538
 Patch25065: iwlwifi-add-new-pci-id-for-6x35-series.patch
 
+#CVE-2013-4163 rhbz 987633 987639
+Patch25067: ipv6-ip6_append_data_mtu-did-not-care-about-pmtudisc-and_frag_size.patch
+
 Patch26000: cve-2013-4125.patch
 
 # END OF PATCH DEFINITIONS
@@ -1553,6 +1556,9 @@ ApplyPatch cve-2013-4125.patch
 
 #rhbz 986538
 ApplyPatch iwlwifi-add-new-pci-id-for-6x35-series.patch
+
+#CVE-2013-4163 rhbz 987633 987639
+ApplyPatch ipv6-ip6_append_data_mtu-did-not-care-about-pmtudisc-and_frag_size.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2399,6 +2405,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Jul 24 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-4163 net: panic while appending data to a corked IPv6 socket in ip6_append_data_mtu (rhbz 987633 987639)
+
 * Mon Jul 22 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.11-200
 - Fix timer issue in bridge code (rhbz 980254)
 - Add patch for iwlwifi 6x35 devices (rhbz 986538)
