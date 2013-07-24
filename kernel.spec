@@ -809,6 +809,9 @@ Patch25065: iwlwifi-add-new-pci-id-for-6x35-series.patch
 #CVE-2013-4163 rhbz 987633 987639
 Patch25067: ipv6-ip6_append_data_mtu-did-not-care-about-pmtudisc-and_frag_size.patch
 
+#CVE-2013-4162 rhbz 987627 987656
+Patch25068: ipv6-call-udp_push_pending_frames-when-uncorking-a-socket-with-AF_INET-pending-data.patch
+
 Patch26000: cve-2013-4125.patch
 
 # END OF PATCH DEFINITIONS
@@ -1559,6 +1562,9 @@ ApplyPatch iwlwifi-add-new-pci-id-for-6x35-series.patch
 
 #CVE-2013-4163 rhbz 987633 987639
 ApplyPatch ipv6-ip6_append_data_mtu-did-not-care-about-pmtudisc-and_frag_size.patch
+
+#CVE-2013-4162 rhbz 987627 987656
+ApplyPatch ipv6-call-udp_push_pending_frames-when-uncorking-a-socket-with-AF_INET-pending-data.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2406,6 +2412,7 @@ fi
 #                 ||     ||
 %changelog
 * Wed Jul 24 2013 Josh Boyer <jwboyer@redhat.com>
+- CVE-2013-4162 net: panic while pushing pending data out of a IPv6 socket with UDP_CORK enabled (rhbz 987627 987656)
 - CVE-2013-4163 net: panic while appending data to a corked IPv6 socket in ip6_append_data_mtu (rhbz 987633 987639)
 
 * Mon Jul 22 2013 Josh Boyer <jwboyer@redhat.com> - 3.9.11-200
