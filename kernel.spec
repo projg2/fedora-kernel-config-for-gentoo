@@ -764,16 +764,14 @@ Patch25055: ath3k-dont-use-stack-memory-for-DMA.patch
 Patch25056: iwl3945-better-skb-management-in-rx-path.patch
 Patch25057: iwl4965-better-skb-management-in-rx-path.patch
 
-#rhbz 976789 980643
-Patch25062: vhost-net-fix-use-after-free-in-vhost_net_flush.patch
-
 #rhbz 959721
 Patch25063: HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 
 #rhbz 885407
 Patch25064: iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
-Patch26000: cve-2013-4125.patch
+#rhbz 987639 987656
+Patch25065: net_310.mbox
 
 # END OF PATCH DEFINITIONS
 
@@ -1487,16 +1485,14 @@ ApplyPatch ath3k-dont-use-stack-memory-for-DMA.patch
 ApplyPatch iwl3945-better-skb-management-in-rx-path.patch
 ApplyPatch iwl4965-better-skb-management-in-rx-path.patch
 
-#rhbz 976789 980643
-ApplyPatch vhost-net-fix-use-after-free-in-vhost_net_flush.patch
-
 #rhbz 959721
 ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 
 #rhbz 885407
 ApplyPatch iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
-ApplyPatch cve-2013-4125.patch 
+#rhbz 987639 987656
+ApplyPatch net_310.mbox
 
 # END OF PATCH APPLICATIONS
 
@@ -2306,6 +2302,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jul 24 2013 Justin M. Forbes <jforbes@redhat.com>
+- Net stable queue from davem (rhbz 987639 987656)
+
 * Mon Jul 22 2013 Justin M. Forbes <jforbes@redhat.com> 3.10.2-301
 - Update secureboot patch for 3.10
 

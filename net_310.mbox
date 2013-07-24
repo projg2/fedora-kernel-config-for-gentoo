@@ -1,0 +1,3429 @@
+From 79339ba50702248d19a8825906ceb527d547444f Mon Sep 17 00:00:00 2001
+From: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Date: Thu, 27 Jun 2013 22:46:04 +0200
+Subject: [PATCH 01/40] ipv6: only apply anti-spoofing checks to
+ not-pointopoint tunnels
+
+[ Upstream commit 5c29fb12e8fb8a8105ea048cb160fd79a85a52bb ]
+
+Because of commit 218774dc341f219bfcf940304a081b121a0e8099 ("ipv6: add
+anti-spoofing checks for 6to4 and 6rd") the sit driver dropped packets
+for 2002::/16 destinations and sources even when configured to work as a
+tunnel with fixed endpoint. We may only apply the 6rd/6to4 anti-spoofing
+checks if the device is not in pointopoint mode.
+
+This was an oversight from me in the above commit, sorry.  Thanks to
+Roman Mamedov for reporting this!
+
+Reported-by: Roman Mamedov <rm@romanrm.ru>
+Cc: David Miller <davem@davemloft.net>
+Cc: YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
+Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv6/sit.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
+index 3353634..60df36d 100644
+--- a/net/ipv6/sit.c
++++ b/net/ipv6/sit.c
+@@ -589,7 +589,7 @@ static int ipip6_rcv(struct sk_buff *skb)
+ 				tunnel->dev->stats.rx_errors++;
+ 				goto out;
+ 			}
+-		} else {
++		} else if (!(tunnel->dev->flags&IFF_POINTOPOINT)) {
+ 			if (is_spoofed_6rd(tunnel, iph->saddr,
+ 					   &ipv6_hdr(skb)->saddr) ||
+ 			    is_spoofed_6rd(tunnel, iph->daddr,
+-- 
+1.7.11.7
+
+
+From d605a92bd29513e01af93275527252e7423b2ac7 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <eric.dumazet@gmail.com>
+Date: Fri, 28 Jun 2013 02:37:42 -0700
+Subject: [PATCH 02/40] neighbour: fix a race in neigh_destroy()
+
+[ Upstream commit c9ab4d85de222f3390c67aedc9c18a50e767531e ]
+
+There is a race in neighbour code, because neigh_destroy() uses
+skb_queue_purge(&neigh->arp_queue) without holding neighbour lock,
+while other parts of the code assume neighbour rwlock is what
+protects arp_queue
+
+Convert all skb_queue_purge() calls to the __skb_queue_purge() variant
+
+Use __skb_queue_head_init() instead of skb_queue_head_init()
+to make clear we do not use arp_queue.lock
+
+And hold neigh->lock in neigh_destroy() to close the race.
+
+Reported-by: Joe Jin <joe.jin@oracle.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/core/neighbour.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 5c56b21..ce90b02 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -231,7 +231,7 @@ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev)
+ 				   we must kill timers etc. and move
+ 				   it to safe state.
+ 				 */
+-				skb_queue_purge(&n->arp_queue);
++				__skb_queue_purge(&n->arp_queue);
+ 				n->arp_queue_len_bytes = 0;
+ 				n->output = neigh_blackhole;
+ 				if (n->nud_state & NUD_VALID)
+@@ -286,7 +286,7 @@ static struct neighbour *neigh_alloc(struct neigh_table *tbl, struct net_device
+ 	if (!n)
+ 		goto out_entries;
+ 
+-	skb_queue_head_init(&n->arp_queue);
++	__skb_queue_head_init(&n->arp_queue);
+ 	rwlock_init(&n->lock);
+ 	seqlock_init(&n->ha_lock);
+ 	n->updated	  = n->used = now;
+@@ -708,7 +708,9 @@ void neigh_destroy(struct neighbour *neigh)
+ 	if (neigh_del_timer(neigh))
+ 		pr_warn("Impossible event\n");
+ 
+-	skb_queue_purge(&neigh->arp_queue);
++	write_lock_bh(&neigh->lock);
++	__skb_queue_purge(&neigh->arp_queue);
++	write_unlock_bh(&neigh->lock);
+ 	neigh->arp_queue_len_bytes = 0;
+ 
+ 	if (dev->netdev_ops->ndo_neigh_destroy)
+@@ -858,7 +860,7 @@ static void neigh_invalidate(struct neighbour *neigh)
+ 		neigh->ops->error_report(neigh, skb);
+ 		write_lock(&neigh->lock);
+ 	}
+-	skb_queue_purge(&neigh->arp_queue);
++	__skb_queue_purge(&neigh->arp_queue);
+ 	neigh->arp_queue_len_bytes = 0;
+ }
+ 
+@@ -1210,7 +1212,7 @@ int neigh_update(struct neighbour *neigh, const u8 *lladdr, u8 new,
+ 
+ 			write_lock_bh(&neigh->lock);
+ 		}
+-		skb_queue_purge(&neigh->arp_queue);
++		__skb_queue_purge(&neigh->arp_queue);
+ 		neigh->arp_queue_len_bytes = 0;
+ 	}
+ out:
+-- 
+1.7.11.7
+
+
+From ebae8ce31e1b43d3bcf62d5e906cc9ece42428ab Mon Sep 17 00:00:00 2001
+From: Dave Jones <davej@redhat.com>
+Date: Fri, 28 Jun 2013 12:13:52 -0400
+Subject: [PATCH 03/40] x25: Fix broken locking in ioctl error paths.
+
+[ Upstream commit 4ccb93ce7439b63c31bc7597bfffd13567fa483d ]
+
+Two of the x25 ioctl cases have error paths that break out of the function without
+unlocking the socket, leading to this warning:
+
+================================================
+[ BUG: lock held when returning to user space! ]
+3.10.0-rc7+ #36 Not tainted
+------------------------------------------------
+trinity-child2/31407 is leaving the kernel with locks still held!
+1 lock held by trinity-child2/31407:
+ #0:  (sk_lock-AF_X25){+.+.+.}, at: [<ffffffffa024b6da>] x25_ioctl+0x8a/0x740 [x25]
+
+Signed-off-by: Dave Jones <davej@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/x25/af_x25.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+index 37ca969..22c88d2 100644
+--- a/net/x25/af_x25.c
++++ b/net/x25/af_x25.c
+@@ -1583,11 +1583,11 @@ out_cud_release:
+ 	case SIOCX25CALLACCPTAPPRV: {
+ 		rc = -EINVAL;
+ 		lock_sock(sk);
+-		if (sk->sk_state != TCP_CLOSE)
+-			break;
+-		clear_bit(X25_ACCPT_APPRV_FLAG, &x25->flags);
++		if (sk->sk_state == TCP_CLOSE) {
++			clear_bit(X25_ACCPT_APPRV_FLAG, &x25->flags);
++			rc = 0;
++		}
+ 		release_sock(sk);
+-		rc = 0;
+ 		break;
+ 	}
+ 
+@@ -1595,14 +1595,15 @@ out_cud_release:
+ 		rc = -EINVAL;
+ 		lock_sock(sk);
+ 		if (sk->sk_state != TCP_ESTABLISHED)
+-			break;
++			goto out_sendcallaccpt_release;
+ 		/* must call accptapprv above */
+ 		if (test_bit(X25_ACCPT_APPRV_FLAG, &x25->flags))
+-			break;
++			goto out_sendcallaccpt_release;
+ 		x25_write_internal(sk, X25_CALL_ACCEPTED);
+ 		x25->state = X25_STATE_3;
+-		release_sock(sk);
+ 		rc = 0;
++out_sendcallaccpt_release:
++		release_sock(sk);
+ 		break;
+ 	}
+ 
+-- 
+1.7.11.7
+
+
+From 7da0d57c053a603f3cac04587ecdab2b3072d769 Mon Sep 17 00:00:00 2001
+From: Changli Gao <xiaosuo@gmail.com>
+Date: Sat, 29 Jun 2013 00:15:51 +0800
+Subject: [PATCH 04/40] net: Swap ver and type in pppoe_hdr
+
+[ Upstream commit b1a5a34bd0b8767ea689e68f8ea513e9710b671e ]
+
+Ver and type in pppoe_hdr should be swapped as defined by RFC2516
+section-4.
+
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ include/uapi/linux/if_pppox.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/uapi/linux/if_pppox.h b/include/uapi/linux/if_pppox.h
+index 0b46fd5..e36a4ae 100644
+--- a/include/uapi/linux/if_pppox.h
++++ b/include/uapi/linux/if_pppox.h
+@@ -135,11 +135,11 @@ struct pppoe_tag {
+ 
+ struct pppoe_hdr {
+ #if defined(__LITTLE_ENDIAN_BITFIELD)
+-	__u8 ver : 4;
+ 	__u8 type : 4;
++	__u8 ver : 4;
+ #elif defined(__BIG_ENDIAN_BITFIELD)
+-	__u8 type : 4;
+ 	__u8 ver : 4;
++	__u8 type : 4;
+ #else
+ #error	"Please fix <asm/byteorder.h>"
+ #endif
+-- 
+1.7.11.7
+
+
+From d9b54511307e46a8f144b20af88e9279966725f1 Mon Sep 17 00:00:00 2001
+From: Cong Wang <amwang@redhat.com>
+Date: Sat, 29 Jun 2013 12:02:59 +0800
+Subject: [PATCH 05/40] gre: fix a regression in ioctl
+
+[ Upstream commit 6c734fb8592f6768170e48e7102cb2f0a1bb9759 ]
+
+When testing GRE tunnel, I got:
+
+ # ip tunnel show
+ get tunnel gre0 failed: Invalid argument
+ get tunnel gre1 failed: Invalid argument
+
+This is a regression introduced by commit c54419321455631079c7d
+("GRE: Refactor GRE tunneling code.") because previously we
+only check the parameters for SIOCADDTUNNEL and SIOCCHGTUNNEL,
+after that commit, the check is moved for all commands.
+
+So, just check for SIOCADDTUNNEL and SIOCCHGTUNNEL.
+
+After this patch I got:
+
+ # ip tunnel show
+ gre0: gre/ip  remote any  local any  ttl inherit  nopmtudisc
+ gre1: gre/ip  remote 192.168.122.101  local 192.168.122.45  ttl inherit
+
+Cc: Pravin B Shelar <pshelar@nicira.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Signed-off-by: Cong Wang <amwang@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv4/ip_gre.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index 2a83591..855004f 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -503,10 +503,11 @@ static int ipgre_tunnel_ioctl(struct net_device *dev,
+ 
+ 	if (copy_from_user(&p, ifr->ifr_ifru.ifru_data, sizeof(p)))
+ 		return -EFAULT;
+-	if (p.iph.version != 4 || p.iph.protocol != IPPROTO_GRE ||
+-	    p.iph.ihl != 5 || (p.iph.frag_off&htons(~IP_DF)) ||
+-	    ((p.i_flags|p.o_flags)&(GRE_VERSION|GRE_ROUTING))) {
+-		return -EINVAL;
++	if (cmd == SIOCADDTUNNEL || cmd == SIOCCHGTUNNEL) {
++		if (p.iph.version != 4 || p.iph.protocol != IPPROTO_GRE ||
++		    p.iph.ihl != 5 || (p.iph.frag_off&htons(~IP_DF)) ||
++		    ((p.i_flags|p.o_flags)&(GRE_VERSION|GRE_ROUTING)))
++			return -EINVAL;
+ 	}
+ 	p.i_flags = gre_flags_to_tnl_flags(p.i_flags);
+ 	p.o_flags = gre_flags_to_tnl_flags(p.o_flags);
+-- 
+1.7.11.7
+
+
+From 9df2226e2e019b405e6320599a6c07ef1e4be799 Mon Sep 17 00:00:00 2001
+From: Cong Wang <amwang@redhat.com>
+Date: Sat, 29 Jun 2013 13:00:57 +0800
+Subject: [PATCH 06/40] vti: remove duplicated code to fix a memory leak
+
+[ Upstream commit ab6c7a0a43c2eaafa57583822b619b22637b49c7 ]
+
+vti module allocates dev->tstats twice: in vti_fb_tunnel_init()
+and in vti_tunnel_init(), this lead to a memory leak of
+dev->tstats.
+
+Just remove the duplicated operations in vti_fb_tunnel_init().
+
+(candidate for -stable)
+
+Cc: Stephen Hemminger <stephen@networkplumber.org>
+Cc: Saurabh Mohan <saurabh.mohan@vyatta.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Signed-off-by: Cong Wang <amwang@redhat.com>
+Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv4/ip_vti.c | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
+index c118f6b..17cc0ff 100644
+--- a/net/ipv4/ip_vti.c
++++ b/net/ipv4/ip_vti.c
+@@ -606,17 +606,10 @@ static int __net_init vti_fb_tunnel_init(struct net_device *dev)
+ 	struct iphdr *iph = &tunnel->parms.iph;
+ 	struct vti_net *ipn = net_generic(dev_net(dev), vti_net_id);
+ 
+-	tunnel->dev = dev;
+-	strcpy(tunnel->parms.name, dev->name);
+-
+ 	iph->version		= 4;
+ 	iph->protocol		= IPPROTO_IPIP;
+ 	iph->ihl		= 5;
+ 
+-	dev->tstats = alloc_percpu(struct pcpu_tstats);
+-	if (!dev->tstats)
+-		return -ENOMEM;
+-
+ 	dev_hold(dev);
+ 	rcu_assign_pointer(ipn->tunnels_wc[0], tunnel);
+ 	return 0;
+-- 
+1.7.11.7
+
+
+From 5be3a4ef6d4ada70eee9dddf402f09d5771f071b Mon Sep 17 00:00:00 2001
+From: Amerigo Wang <amwang@redhat.com>
+Date: Sat, 29 Jun 2013 21:30:49 +0800
+Subject: [PATCH 07/40] ipv6,mcast: always hold idev->lock before mca_lock
+
+[ Upstream commit 8965779d2c0e6ab246c82a405236b1fb2adae6b2, with
+  some bits from commit b7b1bfce0bb68bd8f6e62a28295922785cc63781
+  ("ipv6: split duplicate address detection and router solicitation timer")
+  to get the __ipv6_get_lladdr() used by this patch. ]
+
+dingtianhong reported the following deadlock detected by lockdep:
+
+ ======================================================
+ [ INFO: possible circular locking dependency detected ]
+ 3.4.24.05-0.1-default #1 Not tainted
+ -------------------------------------------------------
+ ksoftirqd/0/3 is trying to acquire lock:
+  (&ndev->lock){+.+...}, at: [<ffffffff8147f804>] ipv6_get_lladdr+0x74/0x120
+
+ but task is already holding lock:
+  (&mc->mca_lock){+.+...}, at: [<ffffffff8149d130>] mld_send_report+0x40/0x150
+
+ which lock already depends on the new lock.
+
+ the existing dependency chain (in reverse order) is:
+
+ -> #1 (&mc->mca_lock){+.+...}:
+        [<ffffffff810a8027>] validate_chain+0x637/0x730
+        [<ffffffff810a8417>] __lock_acquire+0x2f7/0x500
+        [<ffffffff810a8734>] lock_acquire+0x114/0x150
+        [<ffffffff814f691a>] rt_spin_lock+0x4a/0x60
+        [<ffffffff8149e4bb>] igmp6_group_added+0x3b/0x120
+        [<ffffffff8149e5d8>] ipv6_mc_up+0x38/0x60
+        [<ffffffff81480a4d>] ipv6_find_idev+0x3d/0x80
+        [<ffffffff81483175>] addrconf_notify+0x3d5/0x4b0
+        [<ffffffff814fae3f>] notifier_call_chain+0x3f/0x80
+        [<ffffffff81073471>] raw_notifier_call_chain+0x11/0x20
+        [<ffffffff813d8722>] call_netdevice_notifiers+0x32/0x60
+        [<ffffffff813d92d4>] __dev_notify_flags+0x34/0x80
+        [<ffffffff813d9360>] dev_change_flags+0x40/0x70
+        [<ffffffff813ea627>] do_setlink+0x237/0x8a0
+        [<ffffffff813ebb6c>] rtnl_newlink+0x3ec/0x600
+        [<ffffffff813eb4d0>] rtnetlink_rcv_msg+0x160/0x310
+        [<ffffffff814040b9>] netlink_rcv_skb+0x89/0xb0
+        [<ffffffff813eb357>] rtnetlink_rcv+0x27/0x40
+        [<ffffffff81403e20>] netlink_unicast+0x140/0x180
+        [<ffffffff81404a9e>] netlink_sendmsg+0x33e/0x380
+        [<ffffffff813c4252>] sock_sendmsg+0x112/0x130
+        [<ffffffff813c537e>] __sys_sendmsg+0x44e/0x460
+        [<ffffffff813c5544>] sys_sendmsg+0x44/0x70
+        [<ffffffff814feab9>] system_call_fastpath+0x16/0x1b
+
+ -> #0 (&ndev->lock){+.+...}:
+        [<ffffffff810a798e>] check_prev_add+0x3de/0x440
+        [<ffffffff810a8027>] validate_chain+0x637/0x730
+        [<ffffffff810a8417>] __lock_acquire+0x2f7/0x500
+        [<ffffffff810a8734>] lock_acquire+0x114/0x150
+        [<ffffffff814f6c82>] rt_read_lock+0x42/0x60
+        [<ffffffff8147f804>] ipv6_get_lladdr+0x74/0x120
+        [<ffffffff8149b036>] mld_newpack+0xb6/0x160
+        [<ffffffff8149b18b>] add_grhead+0xab/0xc0
+        [<ffffffff8149d03b>] add_grec+0x3ab/0x460
+        [<ffffffff8149d14a>] mld_send_report+0x5a/0x150
+        [<ffffffff8149f99e>] igmp6_timer_handler+0x4e/0xb0
+        [<ffffffff8105705a>] call_timer_fn+0xca/0x1d0
+        [<ffffffff81057b9f>] run_timer_softirq+0x1df/0x2e0
+        [<ffffffff8104e8c7>] handle_pending_softirqs+0xf7/0x1f0
+        [<ffffffff8104ea3b>] __do_softirq_common+0x7b/0xf0
+        [<ffffffff8104f07f>] __thread_do_softirq+0x1af/0x210
+        [<ffffffff8104f1c1>] run_ksoftirqd+0xe1/0x1f0
+        [<ffffffff8106c7de>] kthread+0xae/0xc0
+        [<ffffffff814fff74>] kernel_thread_helper+0x4/0x10
+
+actually we can just hold idev->lock before taking pmc->mca_lock,
+and avoid taking idev->lock again when iterating idev->addr_list,
+since the upper callers of mld_newpack() already take
+read_lock_bh(&idev->lock).
+
+Reported-by: dingtianhong <dingtianhong@huawei.com>
+Cc: dingtianhong <dingtianhong@huawei.com>
+Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Tested-by: Ding Tianhong <dingtianhong@huawei.com>
+Tested-by: Chen Weilong <chenweilong@huawei.com>
+Signed-off-by: Cong Wang <amwang@redhat.com>
+Acked-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ include/net/addrconf.h |  3 +++
+ net/ipv6/addrconf.c    | 28 ++++++++++++++++++----------
+ net/ipv6/mcast.c       | 18 ++++++++++--------
+ 3 files changed, 31 insertions(+), 18 deletions(-)
+
+diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+index 21f70270..01b1a1a 100644
+--- a/include/net/addrconf.h
++++ b/include/net/addrconf.h
+@@ -86,6 +86,9 @@ extern int			ipv6_dev_get_saddr(struct net *net,
+ 					       const struct in6_addr *daddr,
+ 					       unsigned int srcprefs,
+ 					       struct in6_addr *saddr);
++extern int			__ipv6_get_lladdr(struct inet6_dev *idev,
++						  struct in6_addr *addr,
++						  unsigned char banned_flags);
+ extern int			ipv6_get_lladdr(struct net_device *dev,
+ 						struct in6_addr *addr,
+ 						unsigned char banned_flags);
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 4ab4c38..fb8c94c 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -1448,6 +1448,23 @@ try_nextdev:
+ }
+ EXPORT_SYMBOL(ipv6_dev_get_saddr);
+ 
++int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
++		      unsigned char banned_flags)
++{
++	struct inet6_ifaddr *ifp;
++	int err = -EADDRNOTAVAIL;
++
++	list_for_each_entry(ifp, &idev->addr_list, if_list) {
++		if (ifp->scope == IFA_LINK &&
++		    !(ifp->flags & banned_flags)) {
++			*addr = ifp->addr;
++			err = 0;
++			break;
++		}
++	}
++	return err;
++}
++
+ int ipv6_get_lladdr(struct net_device *dev, struct in6_addr *addr,
+ 		    unsigned char banned_flags)
+ {
+@@ -1457,17 +1474,8 @@ int ipv6_get_lladdr(struct net_device *dev, struct in6_addr *addr,
+ 	rcu_read_lock();
+ 	idev = __in6_dev_get(dev);
+ 	if (idev) {
+-		struct inet6_ifaddr *ifp;
+-
+ 		read_lock_bh(&idev->lock);
+-		list_for_each_entry(ifp, &idev->addr_list, if_list) {
+-			if (ifp->scope == IFA_LINK &&
+-			    !(ifp->flags & banned_flags)) {
+-				*addr = ifp->addr;
+-				err = 0;
+-				break;
+-			}
+-		}
++		err = __ipv6_get_lladdr(idev, addr, banned_flags);
+ 		read_unlock_bh(&idev->lock);
+ 	}
+ 	rcu_read_unlock();
+diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
+index bfa6cc3..c3998c2 100644
+--- a/net/ipv6/mcast.c
++++ b/net/ipv6/mcast.c
+@@ -1343,8 +1343,9 @@ static void ip6_mc_hdr(struct sock *sk, struct sk_buff *skb,
+ 	hdr->daddr = *daddr;
+ }
+ 
+-static struct sk_buff *mld_newpack(struct net_device *dev, int size)
++static struct sk_buff *mld_newpack(struct inet6_dev *idev, int size)
+ {
++	struct net_device *dev = idev->dev;
+ 	struct net *net = dev_net(dev);
+ 	struct sock *sk = net->ipv6.igmp_sk;
+ 	struct sk_buff *skb;
+@@ -1369,7 +1370,7 @@ static struct sk_buff *mld_newpack(struct net_device *dev, int size)
+ 
+ 	skb_reserve(skb, hlen);
+ 
+-	if (ipv6_get_lladdr(dev, &addr_buf, IFA_F_TENTATIVE)) {
++	if (__ipv6_get_lladdr(idev, &addr_buf, IFA_F_TENTATIVE)) {
+ 		/* <draft-ietf-magma-mld-source-05.txt>:
+ 		 * use unspecified address as the source address
+ 		 * when a valid link-local address is not available.
+@@ -1465,7 +1466,7 @@ static struct sk_buff *add_grhead(struct sk_buff *skb, struct ifmcaddr6 *pmc,
+ 	struct mld2_grec *pgr;
+ 
+ 	if (!skb)
+-		skb = mld_newpack(dev, dev->mtu);
++		skb = mld_newpack(pmc->idev, dev->mtu);
+ 	if (!skb)
+ 		return NULL;
+ 	pgr = (struct mld2_grec *)skb_put(skb, sizeof(struct mld2_grec));
+@@ -1485,7 +1486,8 @@ static struct sk_buff *add_grhead(struct sk_buff *skb, struct ifmcaddr6 *pmc,
+ static struct sk_buff *add_grec(struct sk_buff *skb, struct ifmcaddr6 *pmc,
+ 	int type, int gdeleted, int sdeleted)
+ {
+-	struct net_device *dev = pmc->idev->dev;
++	struct inet6_dev *idev = pmc->idev;
++	struct net_device *dev = idev->dev;
+ 	struct mld2_report *pmr;
+ 	struct mld2_grec *pgr = NULL;
+ 	struct ip6_sf_list *psf, *psf_next, *psf_prev, **psf_list;
+@@ -1514,7 +1516,7 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ifmcaddr6 *pmc,
+ 		    AVAILABLE(skb) < grec_size(pmc, type, gdeleted, sdeleted)) {
+ 			if (skb)
+ 				mld_sendpack(skb);
+-			skb = mld_newpack(dev, dev->mtu);
++			skb = mld_newpack(idev, dev->mtu);
+ 		}
+ 	}
+ 	first = 1;
+@@ -1541,7 +1543,7 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ifmcaddr6 *pmc,
+ 				pgr->grec_nsrcs = htons(scount);
+ 			if (skb)
+ 				mld_sendpack(skb);
+-			skb = mld_newpack(dev, dev->mtu);
++			skb = mld_newpack(idev, dev->mtu);
+ 			first = 1;
+ 			scount = 0;
+ 		}
+@@ -1596,8 +1598,8 @@ static void mld_send_report(struct inet6_dev *idev, struct ifmcaddr6 *pmc)
+ 	struct sk_buff *skb = NULL;
+ 	int type;
+ 
++	read_lock_bh(&idev->lock);
+ 	if (!pmc) {
+-		read_lock_bh(&idev->lock);
+ 		for (pmc=idev->mc_list; pmc; pmc=pmc->next) {
+ 			if (pmc->mca_flags & MAF_NOREPORT)
+ 				continue;
+@@ -1609,7 +1611,6 @@ static void mld_send_report(struct inet6_dev *idev, struct ifmcaddr6 *pmc)
+ 			skb = add_grec(skb, pmc, type, 0, 0);
+ 			spin_unlock_bh(&pmc->mca_lock);
+ 		}
+-		read_unlock_bh(&idev->lock);
+ 	} else {
+ 		spin_lock_bh(&pmc->mca_lock);
+ 		if (pmc->mca_sfcount[MCAST_EXCLUDE])
+@@ -1619,6 +1620,7 @@ static void mld_send_report(struct inet6_dev *idev, struct ifmcaddr6 *pmc)
+ 		skb = add_grec(skb, pmc, type, 0, 0);
+ 		spin_unlock_bh(&pmc->mca_lock);
+ 	}
++	read_unlock_bh(&idev->lock);
+ 	if (skb)
+ 		mld_sendpack(skb);
+ }
+-- 
+1.7.11.7
+
+
+From e85dcba98ae899b9e6d26625a86750eb92c9fadc Mon Sep 17 00:00:00 2001
+From: Pravin B Shelar <pshelar@nicira.com>
+Date: Tue, 2 Jul 2013 10:57:33 -0700
+Subject: [PATCH 08/40] ip_tunnels: Use skb-len to PMTU check.
+
+[ Upstream commit 23a3647bc4f93bac3776c66dc2c7f7f68b3cd662 ]
+
+In path mtu check, ip header total length works for gre device
+but not for gre-tap device.  Use skb len which is consistent
+for all tunneling types.  This is old bug in gre.
+This also fixes mtu calculation bug introduced by
+commit c54419321455631079c7d (GRE: Refactor GRE tunneling code).
+
+Reported-by: Timo Teras <timo.teras@iki.fi>
+Signed-off-by: Pravin B Shelar <pshelar@nicira.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv4/ip_tunnel.c | 97 +++++++++++++++++++++++++++++-----------------------
+ 1 file changed, 54 insertions(+), 43 deletions(-)
+
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index 7fa8f08..d05bd02 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -486,6 +486,53 @@ drop:
+ }
+ EXPORT_SYMBOL_GPL(ip_tunnel_rcv);
+ 
++static int tnl_update_pmtu(struct net_device *dev, struct sk_buff *skb,
++			    struct rtable *rt, __be16 df)
++{
++	struct ip_tunnel *tunnel = netdev_priv(dev);
++	int pkt_size = skb->len - tunnel->hlen;
++	int mtu;
++
++	if (df)
++		mtu = dst_mtu(&rt->dst) - dev->hard_header_len
++					- sizeof(struct iphdr) - tunnel->hlen;
++	else
++		mtu = skb_dst(skb) ? dst_mtu(skb_dst(skb)) : dev->mtu;
++
++	if (skb_dst(skb))
++		skb_dst(skb)->ops->update_pmtu(skb_dst(skb), NULL, skb, mtu);
++
++	if (skb->protocol == htons(ETH_P_IP)) {
++		if (!skb_is_gso(skb) &&
++		    (df & htons(IP_DF)) && mtu < pkt_size) {
++			icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED, htonl(mtu));
++			return -E2BIG;
++		}
++	}
++#if IS_ENABLED(CONFIG_IPV6)
++	else if (skb->protocol == htons(ETH_P_IPV6)) {
++		struct rt6_info *rt6 = (struct rt6_info *)skb_dst(skb);
++
++		if (rt6 && mtu < dst_mtu(skb_dst(skb)) &&
++			   mtu >= IPV6_MIN_MTU) {
++			if ((tunnel->parms.iph.daddr &&
++			    !ipv4_is_multicast(tunnel->parms.iph.daddr)) ||
++			    rt6->rt6i_dst.plen == 128) {
++				rt6->rt6i_flags |= RTF_MODIFIED;
++				dst_metric_set(skb_dst(skb), RTAX_MTU, mtu);
++			}
++		}
++
++		if (!skb_is_gso(skb) && mtu >= IPV6_MIN_MTU &&
++					mtu < pkt_size) {
++			icmpv6_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
++			return -E2BIG;
++		}
++	}
++#endif
++	return 0;
++}
++
+ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 		    const struct iphdr *tnl_params)
+ {
+@@ -499,7 +546,6 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	struct net_device *tdev;	/* Device to other host */
+ 	unsigned int max_headroom;	/* The extra header space needed */
+ 	__be32 dst;
+-	int mtu;
+ 
+ 	inner_iph = (const struct iphdr *)skb_inner_network_header(skb);
+ 
+@@ -579,50 +625,11 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 		goto tx_error;
+ 	}
+ 
+-	df = tnl_params->frag_off;
+ 
+-	if (df)
+-		mtu = dst_mtu(&rt->dst) - dev->hard_header_len
+-					- sizeof(struct iphdr);
+-	else
+-		mtu = skb_dst(skb) ? dst_mtu(skb_dst(skb)) : dev->mtu;
+-
+-	if (skb_dst(skb))
+-		skb_dst(skb)->ops->update_pmtu(skb_dst(skb), NULL, skb, mtu);
+-
+-	if (skb->protocol == htons(ETH_P_IP)) {
+-		df |= (inner_iph->frag_off&htons(IP_DF));
+-
+-		if (!skb_is_gso(skb) &&
+-		    (inner_iph->frag_off&htons(IP_DF)) &&
+-		     mtu < ntohs(inner_iph->tot_len)) {
+-			icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED, htonl(mtu));
+-			ip_rt_put(rt);
+-			goto tx_error;
+-		}
+-	}
+-#if IS_ENABLED(CONFIG_IPV6)
+-	else if (skb->protocol == htons(ETH_P_IPV6)) {
+-		struct rt6_info *rt6 = (struct rt6_info *)skb_dst(skb);
+-
+-		if (rt6 && mtu < dst_mtu(skb_dst(skb)) &&
+-		    mtu >= IPV6_MIN_MTU) {
+-			if ((tunnel->parms.iph.daddr &&
+-			    !ipv4_is_multicast(tunnel->parms.iph.daddr)) ||
+-			    rt6->rt6i_dst.plen == 128) {
+-				rt6->rt6i_flags |= RTF_MODIFIED;
+-				dst_metric_set(skb_dst(skb), RTAX_MTU, mtu);
+-			}
+-		}
+-
+-		if (!skb_is_gso(skb) && mtu >= IPV6_MIN_MTU &&
+-		    mtu < skb->len) {
+-			icmpv6_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
+-			ip_rt_put(rt);
+-			goto tx_error;
+-		}
++	if (tnl_update_pmtu(dev, skb, rt, tnl_params->frag_off)) {
++		ip_rt_put(rt);
++		goto tx_error;
+ 	}
+-#endif
+ 
+ 	if (tunnel->err_count > 0) {
+ 		if (time_before(jiffies,
+@@ -646,6 +653,10 @@ void ip_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 			ttl = ip4_dst_hoplimit(&rt->dst);
+ 	}
+ 
++	df = tnl_params->frag_off;
++	if (skb->protocol == htons(ETH_P_IP))
++		df |= (inner_iph->frag_off&htons(IP_DF));
++
+ 	max_headroom = LL_RESERVED_SPACE(tdev) + sizeof(struct iphdr)
+ 					       + rt->dst.header_len;
+ 	if (max_headroom > dev->needed_headroom) {
+-- 
+1.7.11.7
+
+
+From c6ad7374aa71d0201f266963d9b5e2cf254ad22b Mon Sep 17 00:00:00 2001
+From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+Date: Tue, 2 Jul 2013 09:02:07 +0800
+Subject: [PATCH 09/40] l2tp: add missing .owner to struct pppox_proto
+
+[ Upstream commit e1558a93b61962710733dc8c11a2bc765607f1cd ]
+
+Add missing .owner of struct pppox_proto. This prevents the
+module from being removed from underneath its users.
+
+Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/l2tp/l2tp_ppp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
+index 8dec687..5ebee2d 100644
+--- a/net/l2tp/l2tp_ppp.c
++++ b/net/l2tp/l2tp_ppp.c
+@@ -1793,7 +1793,8 @@ static const struct proto_ops pppol2tp_ops = {
+ 
+ static const struct pppox_proto pppol2tp_proto = {
+ 	.create		= pppol2tp_create,
+-	.ioctl		= pppol2tp_ioctl
++	.ioctl		= pppol2tp_ioctl,
++	.owner		= THIS_MODULE,
+ };
+ 
+ #ifdef CONFIG_L2TP_V3
+-- 
+1.7.11.7
+
+
+From 675b9402488074d7081811cb67055fb1e1f515b3 Mon Sep 17 00:00:00 2001
+From: Cong Wang <amwang@redhat.com>
+Date: Tue, 2 Jul 2013 14:49:34 +0800
+Subject: [PATCH 10/40] ipip: fix a regression in ioctl
+
+[ Upstream commit 3b7b514f44bff05d26a6499c4d4fac2a83938e6e ]
+
+This is a regression introduced by
+commit fd58156e456d9f68fe0448 (IPIP: Use ip-tunneling code.)
+
+Similar to GRE tunnel, previously we only check the parameters
+for SIOCADDTUNNEL and SIOCCHGTUNNEL, after that commit, the
+check is moved for all commands.
+
+So, just check for SIOCADDTUNNEL and SIOCCHGTUNNEL.
+
+Also, the check for i_key, o_key etc. is suspicious too,
+which did not exist before, reset them before passing
+to ip_tunnel_ioctl().
+
+Cc: Pravin B Shelar <pshelar@nicira.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Signed-off-by: Cong Wang <amwang@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv4/ipip.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/net/ipv4/ipip.c b/net/ipv4/ipip.c
+index 77bfcce..7cfc456 100644
+--- a/net/ipv4/ipip.c
++++ b/net/ipv4/ipip.c
+@@ -240,11 +240,13 @@ ipip_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	if (copy_from_user(&p, ifr->ifr_ifru.ifru_data, sizeof(p)))
+ 		return -EFAULT;
+ 
+-	if (p.iph.version != 4 || p.iph.protocol != IPPROTO_IPIP ||
+-			p.iph.ihl != 5 || (p.iph.frag_off&htons(~IP_DF)))
+-		return -EINVAL;
+-	if (p.i_key || p.o_key || p.i_flags || p.o_flags)
+-		return -EINVAL;
++	if (cmd == SIOCADDTUNNEL || cmd == SIOCCHGTUNNEL) {
++		if (p.iph.version != 4 || p.iph.protocol != IPPROTO_IPIP ||
++		    p.iph.ihl != 5 || (p.iph.frag_off&htons(~IP_DF)))
++			return -EINVAL;
++	}
++
++	p.i_key = p.o_key = p.i_flags = p.o_flags = 0;
+ 	if (p.iph.ttl)
+ 		p.iph.frag_off |= htons(IP_DF);
+ 
+-- 
+1.7.11.7
+
+
+From 0e3f585c132e7716b8b96c20c59b15a24ec2790e Mon Sep 17 00:00:00 2001
+From: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Date: Mon, 1 Jul 2013 20:21:30 +0200
+Subject: [PATCH 11/40] ipv6: call udp_push_pending_frames when uncorking a
+ socket with AF_INET pending data
+
+[ Upstream commit 8822b64a0fa64a5dd1dfcf837c5b0be83f8c05d1 ]
+
+We accidentally call down to ip6_push_pending_frames when uncorking
+pending AF_INET data on a ipv6 socket. This results in the following
+splat (from Dave Jones):
+
+skbuff: skb_under_panic: text:ffffffff816765f6 len:48 put:40 head:ffff88013deb6df0 data:ffff88013deb6dec tail:0x2c end:0xc0 dev:<NULL>
+------------[ cut here ]------------
+kernel BUG at net/core/skbuff.c:126!
+invalid opcode: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC
+Modules linked in: dccp_ipv4 dccp 8021q garp bridge stp dlci mpoa snd_seq_dummy sctp fuse hidp tun bnep nfnetlink scsi_transport_iscsi rfcomm can_raw can_bcm af_802154 appletalk caif_socket can caif ipt_ULOG x25 rose af_key pppoe pppox ipx phonet irda llc2 ppp_generic slhc p8023 psnap p8022 llc crc_ccitt atm bluetooth
++netrom ax25 nfc rfkill rds af_rxrpc coretemp hwmon kvm_intel kvm crc32c_intel snd_hda_codec_realtek ghash_clmulni_intel microcode pcspkr snd_hda_codec_hdmi snd_hda_intel snd_hda_codec snd_hwdep usb_debug snd_seq snd_seq_device snd_pcm e1000e snd_page_alloc snd_timer ptp snd pps_core soundcore xfs libcrc32c
+CPU: 2 PID: 8095 Comm: trinity-child2 Not tainted 3.10.0-rc7+ #37
+task: ffff8801f52c2520 ti: ffff8801e6430000 task.ti: ffff8801e6430000
+RIP: 0010:[<ffffffff816e759c>]  [<ffffffff816e759c>] skb_panic+0x63/0x65
+RSP: 0018:ffff8801e6431de8  EFLAGS: 00010282
+RAX: 0000000000000086 RBX: ffff8802353d3cc0 RCX: 0000000000000006
+RDX: 0000000000003b90 RSI: ffff8801f52c2ca0 RDI: ffff8801f52c2520
+RBP: ffff8801e6431e08 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000001 R12: ffff88022ea0c800
+R13: ffff88022ea0cdf8 R14: ffff8802353ecb40 R15: ffffffff81cc7800
+FS:  00007f5720a10740(0000) GS:ffff880244c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000005862000 CR3: 000000022843c000 CR4: 00000000001407e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000600
+Stack:
+ ffff88013deb6dec 000000000000002c 00000000000000c0 ffffffff81a3f6e4
+ ffff8801e6431e18 ffffffff8159a9aa ffff8801e6431e90 ffffffff816765f6
+ ffffffff810b756b 0000000700000002 ffff8801e6431e40 0000fea9292aa8c0
+Call Trace:
+ [<ffffffff8159a9aa>] skb_push+0x3a/0x40
+ [<ffffffff816765f6>] ip6_push_pending_frames+0x1f6/0x4d0
+ [<ffffffff810b756b>] ? mark_held_locks+0xbb/0x140
+ [<ffffffff81694919>] udp_v6_push_pending_frames+0x2b9/0x3d0
+ [<ffffffff81694660>] ? udplite_getfrag+0x20/0x20
+ [<ffffffff8162092a>] udp_lib_setsockopt+0x1aa/0x1f0
+ [<ffffffff811cc5e7>] ? fget_light+0x387/0x4f0
+ [<ffffffff816958a4>] udpv6_setsockopt+0x34/0x40
+ [<ffffffff815949f4>] sock_common_setsockopt+0x14/0x20
+ [<ffffffff81593c31>] SyS_setsockopt+0x71/0xd0
+ [<ffffffff816f5d54>] tracesys+0xdd/0xe2
+Code: 00 00 48 89 44 24 10 8b 87 d8 00 00 00 48 89 44 24 08 48 8b 87 e8 00 00 00 48 c7 c7 c0 04 aa 81 48 89 04 24 31 c0 e8 e1 7e ff ff <0f> 0b 55 48 89 e5 0f 0b 55 48 89 e5 0f 0b 55 48 89 e5 0f 0b 55
+RIP  [<ffffffff816e759c>] skb_panic+0x63/0x65
+ RSP <ffff8801e6431de8>
+
+This patch adds a check if the pending data is of address family AF_INET
+and directly calls udp_push_ending_frames from udp_v6_push_pending_frames
+if that is the case.
+
+This bug was found by Dave Jones with trinity.
+
+(Also move the initialization of fl6 below the AF_INET check, even if
+not strictly necessary.)
+
+Cc: Dave Jones <davej@redhat.com>
+Cc: YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
+Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ include/net/udp.h | 1 +
+ net/ipv4/udp.c    | 3 ++-
+ net/ipv6/udp.c    | 7 ++++++-
+ 3 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/include/net/udp.h b/include/net/udp.h
+index 065f379..ad99eed 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -181,6 +181,7 @@ extern int udp_get_port(struct sock *sk, unsigned short snum,
+ extern void udp_err(struct sk_buff *, u32);
+ extern int udp_sendmsg(struct kiocb *iocb, struct sock *sk,
+ 			    struct msghdr *msg, size_t len);
++extern int udp_push_pending_frames(struct sock *sk);
+ extern void udp_flush_pending_frames(struct sock *sk);
+ extern int udp_rcv(struct sk_buff *skb);
+ extern int udp_ioctl(struct sock *sk, int cmd, unsigned long arg);
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 0bf5d39..93b731d 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -799,7 +799,7 @@ send:
+ /*
+  * Push out all pending data as one UDP datagram. Socket is locked.
+  */
+-static int udp_push_pending_frames(struct sock *sk)
++int udp_push_pending_frames(struct sock *sk)
+ {
+ 	struct udp_sock  *up = udp_sk(sk);
+ 	struct inet_sock *inet = inet_sk(sk);
+@@ -818,6 +818,7 @@ out:
+ 	up->pending = 0;
+ 	return err;
+ }
++EXPORT_SYMBOL(udp_push_pending_frames);
+ 
+ int udp_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg,
+ 		size_t len)
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 42923b1..e7b28f9 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -955,11 +955,16 @@ static int udp_v6_push_pending_frames(struct sock *sk)
+ 	struct udphdr *uh;
+ 	struct udp_sock  *up = udp_sk(sk);
+ 	struct inet_sock *inet = inet_sk(sk);
+-	struct flowi6 *fl6 = &inet->cork.fl.u.ip6;
++	struct flowi6 *fl6;
+ 	int err = 0;
+ 	int is_udplite = IS_UDPLITE(sk);
+ 	__wsum csum = 0;
+ 
++	if (up->pending == AF_INET)
++		return udp_push_pending_frames(sk);
++
++	fl6 = &inet->cork.fl.u.ip6;
++
+ 	/* Grab the skbuff where UDP header space exists. */
+ 	if ((skb = skb_peek(&sk->sk_write_queue)) == NULL)
+ 		goto out;
+-- 
+1.7.11.7
+
+
+From 1fcbda94eb3ababc95eff46548962ceb14de638e Mon Sep 17 00:00:00 2001
+From: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Date: Tue, 2 Jul 2013 08:04:05 +0200
+Subject: [PATCH 12/40] ipv6: ip6_append_data_mtu did not care about pmtudisc
+ and frag_size
+
+[ Upstream commit 75a493e60ac4bbe2e977e7129d6d8cbb0dd236be ]
+
+If the socket had an IPV6_MTU value set, ip6_append_data_mtu lost track
+of this when appending the second frame on a corked socket. This results
+in the following splat:
+
+[37598.993962] ------------[ cut here ]------------
+[37598.994008] kernel BUG at net/core/skbuff.c:2064!
+[37598.994008] invalid opcode: 0000 [#1] SMP
+[37598.994008] Modules linked in: tcp_lp uvcvideo videobuf2_vmalloc videobuf2_memops videobuf2_core videodev media vfat fat usb_storage fuse ebtable_nat xt_CHECKSUM bridge stp llc ipt_MASQUERADE nf_conntrack_netbios_ns nf_conntrack_broadcast ip6table_mangle ip6t_REJECT nf_conntrack_ipv6 nf_defrag_ipv6 iptable_nat
++nf_nat_ipv4 nf_nat iptable_mangle nf_conntrack_ipv4 nf_defrag_ipv4 xt_conntrack nf_conntrack ebtable_filter ebtables ip6table_filter ip6_tables be2iscsi iscsi_boot_sysfs bnx2i cnic uio cxgb4i cxgb4 cxgb3i cxgb3 mdio libcxgbi ib_iser rdma_cm ib_addr iw_cm ib_cm ib_sa ib_mad ib_core iscsi_tcp libiscsi_tcp libiscsi
++scsi_transport_iscsi rfcomm bnep iTCO_wdt iTCO_vendor_support snd_hda_codec_conexant arc4 iwldvm mac80211 snd_hda_intel acpi_cpufreq mperf coretemp snd_hda_codec microcode cdc_wdm cdc_acm
+[37598.994008]  snd_hwdep cdc_ether snd_seq snd_seq_device usbnet mii joydev btusb snd_pcm bluetooth i2c_i801 e1000e lpc_ich mfd_core ptp iwlwifi pps_core snd_page_alloc mei cfg80211 snd_timer thinkpad_acpi snd tpm_tis soundcore rfkill tpm tpm_bios vhost_net tun macvtap macvlan kvm_intel kvm uinput binfmt_misc
++dm_crypt i915 i2c_algo_bit drm_kms_helper drm i2c_core wmi video
+[37598.994008] CPU 0
+[37598.994008] Pid: 27320, comm: t2 Not tainted 3.9.6-200.fc18.x86_64 #1 LENOVO 27744PG/27744PG
+[37598.994008] RIP: 0010:[<ffffffff815443a5>]  [<ffffffff815443a5>] skb_copy_and_csum_bits+0x325/0x330
+[37598.994008] RSP: 0018:ffff88003670da18  EFLAGS: 00010202
+[37598.994008] RAX: ffff88018105c018 RBX: 0000000000000004 RCX: 00000000000006c0
+[37598.994008] RDX: ffff88018105a6c0 RSI: ffff88018105a000 RDI: ffff8801e1b0aa00
+[37598.994008] RBP: ffff88003670da78 R08: 0000000000000000 R09: ffff88018105c040
+[37598.994008] R10: ffff8801e1b0aa00 R11: 0000000000000000 R12: 000000000000fff8
+[37598.994008] R13: 00000000000004fc R14: 00000000ffff0504 R15: 0000000000000000
+[37598.994008] FS:  00007f28eea59740(0000) GS:ffff88023bc00000(0000) knlGS:0000000000000000
+[37598.994008] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+[37598.994008] CR2: 0000003d935789e0 CR3: 00000000365cb000 CR4: 00000000000407f0
+[37598.994008] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[37598.994008] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
+[37598.994008] Process t2 (pid: 27320, threadinfo ffff88003670c000, task ffff88022c162ee0)
+[37598.994008] Stack:
+[37598.994008]  ffff88022e098a00 ffff88020f973fc0 0000000000000008 00000000000004c8
+[37598.994008]  ffff88020f973fc0 00000000000004c4 ffff88003670da78 ffff8801e1b0a200
+[37598.994008]  0000000000000018 00000000000004c8 ffff88020f973fc0 00000000000004c4
+[37598.994008] Call Trace:
+[37598.994008]  [<ffffffff815fc21f>] ip6_append_data+0xccf/0xfe0
+[37598.994008]  [<ffffffff8158d9f0>] ? ip_copy_metadata+0x1a0/0x1a0
+[37598.994008]  [<ffffffff81661f66>] ? _raw_spin_lock_bh+0x16/0x40
+[37598.994008]  [<ffffffff8161548d>] udpv6_sendmsg+0x1ed/0xc10
+[37598.994008]  [<ffffffff812a2845>] ? sock_has_perm+0x75/0x90
+[37598.994008]  [<ffffffff815c3693>] inet_sendmsg+0x63/0xb0
+[37598.994008]  [<ffffffff812a2973>] ? selinux_socket_sendmsg+0x23/0x30
+[37598.994008]  [<ffffffff8153a450>] sock_sendmsg+0xb0/0xe0
+[37598.994008]  [<ffffffff810135d1>] ? __switch_to+0x181/0x4a0
+[37598.994008]  [<ffffffff8153d97d>] sys_sendto+0x12d/0x180
+[37598.994008]  [<ffffffff810dfb64>] ? __audit_syscall_entry+0x94/0xf0
+[37598.994008]  [<ffffffff81020ed1>] ? syscall_trace_enter+0x231/0x240
+[37598.994008]  [<ffffffff8166a7e7>] tracesys+0xdd/0xe2
+[37598.994008] Code: fe 07 00 00 48 c7 c7 04 28 a6 81 89 45 a0 4c 89 4d b8 44 89 5d a8 e8 1b ac b1 ff 44 8b 5d a8 4c 8b 4d b8 8b 45 a0 e9 cf fe ff ff <0f> 0b 66 0f 1f 84 00 00 00 00 00 66 66 66 66 90 55 48 89 e5 48
+[37598.994008] RIP  [<ffffffff815443a5>] skb_copy_and_csum_bits+0x325/0x330
+[37598.994008]  RSP <ffff88003670da18>
+[37599.007323] ---[ end trace d69f6a17f8ac8eee ]---
+
+While there, also check if path mtu discovery is activated for this
+socket. The logic was adapted from ip6_append_data when first writing
+on the corked socket.
+
+This bug was introduced with commit
+0c1833797a5a6ec23ea9261d979aa18078720b74 ("ipv6: fix incorrect ipsec
+fragment").
+
+v2:
+a) Replace IPV6_PMTU_DISC_DO with IPV6_PMTUDISC_PROBE.
+b) Don't pass ipv6_pinfo to ip6_append_data_mtu (suggestion by Gao
+   feng, thanks!).
+c) Change mtu to unsigned int, else we get a warning about
+   non-matching types because of the min()-macro type-check.
+
+Acked-by: Gao feng <gaofeng@cn.fujitsu.com>
+Cc: YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
+Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv6/ip6_output.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index d5d20cd..6e3ddf8 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1098,11 +1098,12 @@ static inline struct ipv6_rt_hdr *ip6_rthdr_dup(struct ipv6_rt_hdr *src,
+ 	return src ? kmemdup(src, (src->hdrlen + 1) * 8, gfp) : NULL;
+ }
+ 
+-static void ip6_append_data_mtu(int *mtu,
++static void ip6_append_data_mtu(unsigned int *mtu,
+ 				int *maxfraglen,
+ 				unsigned int fragheaderlen,
+ 				struct sk_buff *skb,
+-				struct rt6_info *rt)
++				struct rt6_info *rt,
++				bool pmtuprobe)
+ {
+ 	if (!(rt->dst.flags & DST_XFRM_TUNNEL)) {
+ 		if (skb == NULL) {
+@@ -1114,7 +1115,9 @@ static void ip6_append_data_mtu(int *mtu,
+ 			 * this fragment is not first, the headers
+ 			 * space is regarded as data space.
+ 			 */
+-			*mtu = dst_mtu(rt->dst.path);
++			*mtu = min(*mtu, pmtuprobe ?
++				   rt->dst.dev->mtu :
++				   dst_mtu(rt->dst.path));
+ 		}
+ 		*maxfraglen = ((*mtu - fragheaderlen) & ~7)
+ 			      + fragheaderlen - sizeof(struct frag_hdr);
+@@ -1131,11 +1134,10 @@ int ip6_append_data(struct sock *sk, int getfrag(void *from, char *to,
+ 	struct ipv6_pinfo *np = inet6_sk(sk);
+ 	struct inet_cork *cork;
+ 	struct sk_buff *skb, *skb_prev = NULL;
+-	unsigned int maxfraglen, fragheaderlen;
++	unsigned int maxfraglen, fragheaderlen, mtu;
+ 	int exthdrlen;
+ 	int dst_exthdrlen;
+ 	int hh_len;
+-	int mtu;
+ 	int copy;
+ 	int err;
+ 	int offset = 0;
+@@ -1292,7 +1294,9 @@ alloc_new_skb:
+ 			/* update mtu and maxfraglen if necessary */
+ 			if (skb == NULL || skb_prev == NULL)
+ 				ip6_append_data_mtu(&mtu, &maxfraglen,
+-						    fragheaderlen, skb, rt);
++						    fragheaderlen, skb, rt,
++						    np->pmtudisc ==
++						    IPV6_PMTUDISC_PROBE);
+ 
+ 			skb_prev = skb;
+ 
+-- 
+1.7.11.7
+
+
+From bd10a3abbed1d5542a0930dcdfc121973276275e Mon Sep 17 00:00:00 2001
+From: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Date: Wed, 3 Jul 2013 20:45:04 +0200
+Subject: [PATCH 13/40] ipv6: rt6_check_neigh should successfully verify neigh
+ if no NUD information are available
+
+[ Upstream commit 3630d40067a21d4dfbadc6002bb469ce26ac5d52 ]
+
+After the removal of rt->n we do not create a neighbour entry at route
+insertion time (rt6_bind_neighbour is gone). As long as no neighbour is
+created because of "useful traffic" we skip this routing entry because
+rt6_check_neigh cannot pick up a valid neighbour (neigh == NULL) and
+thus returns false.
+
+This change was introduced by commit
+887c95cc1da53f66a5890fdeab13414613010097 ("ipv6: Complete neighbour
+entry removal from dst_entry.")
+
+To quote RFC4191:
+"If the host has no information about the router's reachability, then
+the host assumes the router is reachable."
+
+and also:
+"A host MUST NOT probe a router's reachability in the absence of useful
+traffic that the host would have sent to the router if it were reachable."
+
+So, just assume the router is reachable and let's rt6_probe do the
+rest. We don't need to create a neighbour on route insertion time.
+
+If we don't compile with CONFIG_IPV6_ROUTER_PREF (RFC4191 support)
+a neighbour is only valid if its nud_state is NUD_VALID. I did not find
+any references that we should probe the router on route insertion time
+via the other RFCs. So skip this route in that case.
+
+v2:
+a) use IS_ENABLED instead of #ifdefs (thanks to Sergei Shtylyov)
+
+Reported-by: Pierre Emeriaud <petrus.lt@gmail.com>
+Cc: YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
+Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv6/route.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index ad0aa6b..7f1332f 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -547,6 +547,8 @@ static inline bool rt6_check_neigh(struct rt6_info *rt)
+ 			ret = true;
+ #endif
+ 		read_unlock(&neigh->lock);
++	} else if (IS_ENABLED(CONFIG_IPV6_ROUTER_PREF)) {
++		ret = true;
+ 	}
+ 	rcu_read_unlock_bh();
+ 
+-- 
+1.7.11.7
+
+
+From 8db99edc36ca323408ba5c5bcb8952b01be50225 Mon Sep 17 00:00:00 2001
+From: Ben Hutchings <bhutchings@solarflare.com>
+Date: Thu, 4 Jul 2013 23:48:46 +0100
+Subject: [PATCH 14/40] sfc: Fix memory leak when discarding scattered packets
+
+[ Upstream commit 734d4e159b283a4ae4d007b7e7a91d84398ccb92 ]
+
+Commit 2768935a4660 ('sfc: reuse pages to avoid DMA mapping/unmapping
+costs') did not fully take account of DMA scattering which was
+introduced immediately before.  If a received packet is invalid and
+must be discarded, we only drop a reference to the first buffer's
+page, but we need to drop a reference for each buffer the packet
+used.
+
+I think this bug was missed partly because efx_recycle_rx_buffers()
+was not renamed and so no longer does what its name says.  It does not
+change the state of buffers, but only prepares the underlying pages
+for recycling.  Rename it accordingly.
+
+Signed-off-by: Ben Hutchings <bhutchings@solarflare.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/sfc/rx.c | 27 ++++++++++++++++++++-------
+ 1 file changed, 20 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
+index a7dfe36..5173eaa 100644
+--- a/drivers/net/ethernet/sfc/rx.c
++++ b/drivers/net/ethernet/sfc/rx.c
+@@ -282,9 +282,9 @@ static void efx_fini_rx_buffer(struct efx_rx_queue *rx_queue,
+ }
+ 
+ /* Recycle the pages that are used by buffers that have just been received. */
+-static void efx_recycle_rx_buffers(struct efx_channel *channel,
+-				   struct efx_rx_buffer *rx_buf,
+-				   unsigned int n_frags)
++static void efx_recycle_rx_pages(struct efx_channel *channel,
++				 struct efx_rx_buffer *rx_buf,
++				 unsigned int n_frags)
+ {
+ 	struct efx_rx_queue *rx_queue = efx_channel_get_rx_queue(channel);
+ 
+@@ -294,6 +294,20 @@ static void efx_recycle_rx_buffers(struct efx_channel *channel,
+ 	} while (--n_frags);
+ }
+ 
++static void efx_discard_rx_packet(struct efx_channel *channel,
++				  struct efx_rx_buffer *rx_buf,
++				  unsigned int n_frags)
++{
++	struct efx_rx_queue *rx_queue = efx_channel_get_rx_queue(channel);
++
++	efx_recycle_rx_pages(channel, rx_buf, n_frags);
++
++	do {
++		efx_free_rx_buffer(rx_buf);
++		rx_buf = efx_rx_buf_next(rx_queue, rx_buf);
++	} while (--n_frags);
++}
++
+ /**
+  * efx_fast_push_rx_descriptors - push new RX descriptors quickly
+  * @rx_queue:		RX descriptor queue
+@@ -533,8 +547,7 @@ void efx_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
+ 	 */
+ 	if (unlikely(rx_buf->flags & EFX_RX_PKT_DISCARD)) {
+ 		efx_rx_flush_packet(channel);
+-		put_page(rx_buf->page);
+-		efx_recycle_rx_buffers(channel, rx_buf, n_frags);
++		efx_discard_rx_packet(channel, rx_buf, n_frags);
+ 		return;
+ 	}
+ 
+@@ -570,9 +583,9 @@ void efx_rx_packet(struct efx_rx_queue *rx_queue, unsigned int index,
+ 		efx_sync_rx_buffer(efx, rx_buf, rx_buf->len);
+ 	}
+ 
+-	/* All fragments have been DMA-synced, so recycle buffers and pages. */
++	/* All fragments have been DMA-synced, so recycle pages. */
+ 	rx_buf = efx_rx_buffer(rx_queue, index);
+-	efx_recycle_rx_buffers(channel, rx_buf, n_frags);
++	efx_recycle_rx_pages(channel, rx_buf, n_frags);
+ 
+ 	/* Pipeline receives so that we give time for packet headers to be
+ 	 * prefetched into cache.
+-- 
+1.7.11.7
+
+
+From 35e568df646dc23bd2d00c8865c3118794d1835a Mon Sep 17 00:00:00 2001
+From: Jongsung Kim <neidhard.kim@lge.com>
+Date: Tue, 9 Jul 2013 17:36:00 +0900
+Subject: [PATCH 15/40] net/cadence/macb: fix bug/typo in extracting
+ gem_irq_read_clear bit
+
+[ Upstream commit 01276ed2424eb78c95461545410923d5da154d31 ]
+
+Signed-off-by: Jongsung Kim <neidhard.kim@lge.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/cadence/macb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/cadence/macb.c b/drivers/net/ethernet/cadence/macb.c
+index c89aa41..b4e0dc8 100644
+--- a/drivers/net/ethernet/cadence/macb.c
++++ b/drivers/net/ethernet/cadence/macb.c
+@@ -1070,7 +1070,7 @@ static void macb_configure_dma(struct macb *bp)
+ static void macb_configure_caps(struct macb *bp)
+ {
+ 	if (macb_is_gem(bp)) {
+-		if (GEM_BF(IRQCOR, gem_readl(bp, DCFG1)) == 0)
++		if (GEM_BFEXT(IRQCOR, gem_readl(bp, DCFG1)) == 0)
+ 			bp->caps |= MACB_CAPS_ISR_CLEAR_ON_WRITE;
+ 	}
+ }
+-- 
+1.7.11.7
+
+
+From 3af0cf8b6b161daea120a84ad3d525a121670947 Mon Sep 17 00:00:00 2001
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Date: Tue, 9 Jul 2013 13:19:18 +0300
+Subject: [PATCH 16/40] virtio: support unlocked queue poll
+
+[ Upstream commit cc229884d3f77ec3b1240e467e0236c3e0647c0c ]
+
+This adds a way to check ring empty state after enable_cb outside any
+locks. Will be used by virtio_net.
+
+Note: there's room for more optimization: caller is likely to have a
+memory barrier already, which means we might be able to get rid of a
+barrier here.  Deferring this optimization until we do some
+benchmarking.
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/virtio/virtio_ring.c | 56 ++++++++++++++++++++++++++++++++++----------
+ include/linux/virtio.h       |  4 ++++
+ 2 files changed, 48 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index 5217baf..37d58f8 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -607,19 +607,21 @@ void virtqueue_disable_cb(struct virtqueue *_vq)
+ EXPORT_SYMBOL_GPL(virtqueue_disable_cb);
+ 
+ /**
+- * virtqueue_enable_cb - restart callbacks after disable_cb.
++ * virtqueue_enable_cb_prepare - restart callbacks after disable_cb
+  * @vq: the struct virtqueue we're talking about.
+  *
+- * This re-enables callbacks; it returns "false" if there are pending
+- * buffers in the queue, to detect a possible race between the driver
+- * checking for more work, and enabling callbacks.
++ * This re-enables callbacks; it returns current queue state
++ * in an opaque unsigned value. This value should be later tested by
++ * virtqueue_poll, to detect a possible race between the driver checking for
++ * more work, and enabling callbacks.
+  *
+  * Caller must ensure we don't call this with other virtqueue
+  * operations at the same time (except where noted).
+  */
+-bool virtqueue_enable_cb(struct virtqueue *_vq)
++unsigned virtqueue_enable_cb_prepare(struct virtqueue *_vq)
+ {
+ 	struct vring_virtqueue *vq = to_vvq(_vq);
++	u16 last_used_idx;
+ 
+ 	START_USE(vq);
+ 
+@@ -629,15 +631,45 @@ bool virtqueue_enable_cb(struct virtqueue *_vq)
+ 	 * either clear the flags bit or point the event index at the next
+ 	 * entry. Always do both to keep code simple. */
+ 	vq->vring.avail->flags &= ~VRING_AVAIL_F_NO_INTERRUPT;
+-	vring_used_event(&vq->vring) = vq->last_used_idx;
++	vring_used_event(&vq->vring) = last_used_idx = vq->last_used_idx;
++	END_USE(vq);
++	return last_used_idx;
++}
++EXPORT_SYMBOL_GPL(virtqueue_enable_cb_prepare);
++
++/**
++ * virtqueue_poll - query pending used buffers
++ * @vq: the struct virtqueue we're talking about.
++ * @last_used_idx: virtqueue state (from call to virtqueue_enable_cb_prepare).
++ *
++ * Returns "true" if there are pending used buffers in the queue.
++ *
++ * This does not need to be serialized.
++ */
++bool virtqueue_poll(struct virtqueue *_vq, unsigned last_used_idx)
++{
++	struct vring_virtqueue *vq = to_vvq(_vq);
++
+ 	virtio_mb(vq->weak_barriers);
+-	if (unlikely(more_used(vq))) {
+-		END_USE(vq);
+-		return false;
+-	}
++	return (u16)last_used_idx != vq->vring.used->idx;
++}
++EXPORT_SYMBOL_GPL(virtqueue_poll);
+ 
+-	END_USE(vq);
+-	return true;
++/**
++ * virtqueue_enable_cb - restart callbacks after disable_cb.
++ * @vq: the struct virtqueue we're talking about.
++ *
++ * This re-enables callbacks; it returns "false" if there are pending
++ * buffers in the queue, to detect a possible race between the driver
++ * checking for more work, and enabling callbacks.
++ *
++ * Caller must ensure we don't call this with other virtqueue
++ * operations at the same time (except where noted).
++ */
++bool virtqueue_enable_cb(struct virtqueue *_vq)
++{
++	unsigned last_used_idx = virtqueue_enable_cb_prepare(_vq);
++	return !virtqueue_poll(_vq, last_used_idx);
+ }
+ EXPORT_SYMBOL_GPL(virtqueue_enable_cb);
+ 
+diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+index 9ff8645..72398ee 100644
+--- a/include/linux/virtio.h
++++ b/include/linux/virtio.h
+@@ -70,6 +70,10 @@ void virtqueue_disable_cb(struct virtqueue *vq);
+ 
+ bool virtqueue_enable_cb(struct virtqueue *vq);
+ 
++unsigned virtqueue_enable_cb_prepare(struct virtqueue *vq);
++
++bool virtqueue_poll(struct virtqueue *vq, unsigned);
++
+ bool virtqueue_enable_cb_delayed(struct virtqueue *vq);
+ 
+ void *virtqueue_detach_unused_buf(struct virtqueue *vq);
+-- 
+1.7.11.7
+
+
+From e6a032bca44cd54a168939ee66be707c9b679bec Mon Sep 17 00:00:00 2001
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Date: Tue, 9 Jul 2013 08:13:04 +0300
+Subject: [PATCH 17/40] virtio_net: fix race in RX VQ processing
+
+[ Upstream commit cbdadbbf0c790f79350a8f36029208944c5487d0 ]
+
+virtio net called virtqueue_enable_cq on RX path after napi_complete, so
+with NAPI_STATE_SCHED clear - outside the implicit napi lock.
+This violates the requirement to synchronize virtqueue_enable_cq wrt
+virtqueue_add_buf.  In particular, used event can move backwards,
+causing us to lose interrupts.
+In a debug build, this can trigger panic within START_USE.
+
+Jason Wang reports that he can trigger the races artificially,
+by adding udelay() in virtqueue_enable_cb() after virtio_mb().
+
+However, we must call napi_complete to clear NAPI_STATE_SCHED before
+polling the virtqueue for used buffers, otherwise napi_schedule_prep in
+a callback will fail, causing us to lose RX events.
+
+To fix, call virtqueue_enable_cb_prepare with NAPI_STATE_SCHED
+set (under napi lock), later call virtqueue_poll with
+NAPI_STATE_SCHED clear (outside the lock).
+
+Reported-by: Jason Wang <jasowang@redhat.com>
+Tested-by: Jason Wang <jasowang@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/virtio_net.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index c9e0038..42d670a 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -602,7 +602,7 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
+ 		container_of(napi, struct receive_queue, napi);
+ 	struct virtnet_info *vi = rq->vq->vdev->priv;
+ 	void *buf;
+-	unsigned int len, received = 0;
++	unsigned int r, len, received = 0;
+ 
+ again:
+ 	while (received < budget &&
+@@ -619,8 +619,9 @@ again:
+ 
+ 	/* Out of packets? */
+ 	if (received < budget) {
++		r = virtqueue_enable_cb_prepare(rq->vq);
+ 		napi_complete(napi);
+-		if (unlikely(!virtqueue_enable_cb(rq->vq)) &&
++		if (unlikely(virtqueue_poll(rq->vq, r)) &&
+ 		    napi_schedule_prep(napi)) {
+ 			virtqueue_disable_cb(rq->vq);
+ 			__napi_schedule(napi);
+-- 
+1.7.11.7
+
+
+From d0347c6cbf229fe352006a5463eb2d0cb2150afb Mon Sep 17 00:00:00 2001
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Date: Tue, 25 Jun 2013 17:29:46 +0300
+Subject: [PATCH 18/40] vhost-net: fix use-after-free in vhost_net_flush
+
+[ Upstream commit c38e39c378f46f00ce922dd40a91043a9925c28d ]
+
+vhost_net_ubuf_put_and_wait has a confusing name:
+it will actually also free it's argument.
+Thus since commit 1280c27f8e29acf4af2da914e80ec27c3dbd5c01
+    "vhost-net: flush outstanding DMAs on memory change"
+vhost_net_flush tries to use the argument after passing it
+to vhost_net_ubuf_put_and_wait, this results
+in use after free.
+To fix, don't free the argument in vhost_net_ubuf_put_and_wait,
+add an new API for callers that want to free ubufs.
+
+Acked-by: Asias He <asias@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
+ drivers/vhost/net.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index f80d3dd..8ca5ac7 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -150,6 +150,11 @@ static void vhost_net_ubuf_put_and_wait(struct vhost_net_ubuf_ref *ubufs)
+ {
+ 	kref_put(&ubufs->kref, vhost_net_zerocopy_done_signal);
+ 	wait_event(ubufs->wait, !atomic_read(&ubufs->kref.refcount));
++}
++
++static void vhost_net_ubuf_put_wait_and_free(struct vhost_net_ubuf_ref *ubufs)
++{
++	vhost_net_ubuf_put_and_wait(ubufs);
+ 	kfree(ubufs);
+ }
+ 
+@@ -948,7 +953,7 @@ static long vhost_net_set_backend(struct vhost_net *n, unsigned index, int fd)
+ 	mutex_unlock(&vq->mutex);
+ 
+ 	if (oldubufs) {
+-		vhost_net_ubuf_put_and_wait(oldubufs);
++		vhost_net_ubuf_put_wait_and_free(oldubufs);
+ 		mutex_lock(&vq->mutex);
+ 		vhost_zerocopy_signal_used(n, vq);
+ 		mutex_unlock(&vq->mutex);
+@@ -966,7 +971,7 @@ err_used:
+ 	rcu_assign_pointer(vq->private_data, oldsock);
+ 	vhost_net_enable_vq(n, vq);
+ 	if (ubufs)
+-		vhost_net_ubuf_put_and_wait(ubufs);
++		vhost_net_ubuf_put_wait_and_free(ubufs);
+ err_ubufs:
+ 	fput(sock->file);
+ err_vq:
+-- 
+1.7.11.7
+
+
+From b1036ae16395f14a4e50b96bf09cc36d4bb5c802 Mon Sep 17 00:00:00 2001
+From: Dave Kleikamp <dave.kleikamp@oracle.com>
+Date: Mon, 1 Jul 2013 16:49:22 -0500
+Subject: [PATCH 19/40] sunvnet: vnet_port_remove must call unregister_netdev
+
+[ Upstream commit aabb9875d02559ab9b928cd6f259a5cc4c21a589 ]
+
+The missing call to unregister_netdev() leaves the interface active
+after the driver is unloaded by rmmod.
+
+Signed-off-by: Dave Kleikamp <dave.kleikamp@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/sun/sunvnet.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/sun/sunvnet.c b/drivers/net/ethernet/sun/sunvnet.c
+index 1df0ff3..3df5684 100644
+--- a/drivers/net/ethernet/sun/sunvnet.c
++++ b/drivers/net/ethernet/sun/sunvnet.c
+@@ -1239,6 +1239,8 @@ static int vnet_port_remove(struct vio_dev *vdev)
+ 		dev_set_drvdata(&vdev->dev, NULL);
+ 
+ 		kfree(port);
++
++		unregister_netdev(vp->dev);
+ 	}
+ 	return 0;
+ }
+-- 
+1.7.11.7
+
+
+From b99eebace35b3d3ae6ddcc2af5659e3ab7a2921c Mon Sep 17 00:00:00 2001
+From: dingtianhong <dingtianhong@huawei.com>
+Date: Wed, 10 Jul 2013 12:04:02 +0800
+Subject: [PATCH 20/40] ifb: fix rcu_sched self-detected stalls
+
+[ Upstream commit 440d57bc5ff55ec1efb3efc9cbe9420b4bbdfefa ]
+
+According to the commit 16b0dc29c1af9df341428f4c49ada4f626258082
+(dummy: fix rcu_sched self-detected stalls)
+
+Eric Dumazet fix the problem in dummy, but the ifb will occur the
+same problem like the dummy modules.
+
+Trying to "modprobe ifb numifbs=30000" triggers :
+
+INFO: rcu_sched self-detected stall on CPU
+
+After this splat, RTNL is locked and reboot is needed.
+
+We must call cond_resched() to avoid this, even holding RTNL.
+
+Signed-off-by: Ding Tianhong <dingtianhong@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ifb.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ifb.c b/drivers/net/ifb.c
+index dc9f6a4..a11f7a4 100644
+--- a/drivers/net/ifb.c
++++ b/drivers/net/ifb.c
+@@ -292,8 +292,10 @@ static int __init ifb_init_module(void)
+ 	rtnl_lock();
+ 	err = __rtnl_link_register(&ifb_link_ops);
+ 
+-	for (i = 0; i < numifbs && !err; i++)
++	for (i = 0; i < numifbs && !err; i++) {
+ 		err = ifb_init_one(i);
++		cond_resched();
++	}
+ 	if (err)
+ 		__rtnl_link_unregister(&ifb_link_ops);
+ 	rtnl_unlock();
+-- 
+1.7.11.7
+
+
+From 4782f7d41346ac49c6aa58ee9da6a7ff896cbe4c Mon Sep 17 00:00:00 2001
+From: Jason Wang <jasowang@redhat.com>
+Date: Wed, 10 Jul 2013 13:43:27 +0800
+Subject: [PATCH 21/40] tuntap: correctly linearize skb when zerocopy is used
+
+[ Upstream commit 3dd5c3308e8b671e8e8882ba972f51cefbe9fd0d ]
+
+Userspace may produce vectors greater than MAX_SKB_FRAGS. When we try to
+linearize parts of the skb to let the rest of iov to be fit in
+the frags, we need count copylen into linear when calling tun_alloc_skb()
+instead of partly counting it into data_len. Since this breaks
+zerocopy_sg_from_iovec() since its inner counter assumes nr_frags should
+be zero at beginning. This cause nr_frags to be increased wrongly without
+setting the correct frags.
+
+This bug were introduced from 0690899b4d4501b3505be069b9a687e68ccbe15b
+(tun: experimental zero copy tx support)
+
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/tun.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 9c61f87..c3cb60b 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -1044,7 +1044,7 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ {
+ 	struct tun_pi pi = { 0, cpu_to_be16(ETH_P_IP) };
+ 	struct sk_buff *skb;
+-	size_t len = total_len, align = NET_SKB_PAD;
++	size_t len = total_len, align = NET_SKB_PAD, linear;
+ 	struct virtio_net_hdr gso = { 0 };
+ 	int offset = 0;
+ 	int copylen;
+@@ -1108,10 +1108,13 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 			copylen = gso.hdr_len;
+ 		if (!copylen)
+ 			copylen = GOODCOPY_LEN;
+-	} else
++		linear = copylen;
++	} else {
+ 		copylen = len;
++		linear = gso.hdr_len;
++	}
+ 
+-	skb = tun_alloc_skb(tfile, align, copylen, gso.hdr_len, noblock);
++	skb = tun_alloc_skb(tfile, align, copylen, linear, noblock);
+ 	if (IS_ERR(skb)) {
+ 		if (PTR_ERR(skb) != -EAGAIN)
+ 			tun->dev->stats.rx_dropped++;
+-- 
+1.7.11.7
+
+
+From ebf6764da166478c0c059e5083b12f0f577decdc Mon Sep 17 00:00:00 2001
+From: Jason Wang <jasowang@redhat.com>
+Date: Wed, 10 Jul 2013 13:43:28 +0800
+Subject: [PATCH 22/40] macvtap: correctly linearize skb when zerocopy is used
+
+[ Upstream commit 61d46bf979d5cd7c164709a80ad5676a35494aae ]
+
+Userspace may produce vectors greater than MAX_SKB_FRAGS. When we try to
+linearize parts of the skb to let the rest of iov to be fit in
+the frags, we need count copylen into linear when calling macvtap_alloc_skb()
+instead of partly counting it into data_len. Since this breaks
+zerocopy_sg_from_iovec() since its inner counter assumes nr_frags should
+be zero at beginning. This cause nr_frags to be increased wrongly without
+setting the correct frags.
+
+This bug were introduced from b92946e2919134ebe2a4083e4302236295ea2a73
+(macvtap: zerocopy: validate vectors before building skb).
+
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/macvtap.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index b6dd6a7..502d948 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -647,6 +647,7 @@ static ssize_t macvtap_get_user(struct macvtap_queue *q, struct msghdr *m,
+ 	int vnet_hdr_len = 0;
+ 	int copylen = 0;
+ 	bool zerocopy = false;
++	size_t linear;
+ 
+ 	if (q->flags & IFF_VNET_HDR) {
+ 		vnet_hdr_len = q->vnet_hdr_sz;
+@@ -701,11 +702,14 @@ static ssize_t macvtap_get_user(struct macvtap_queue *q, struct msghdr *m,
+ 			copylen = vnet_hdr.hdr_len;
+ 		if (!copylen)
+ 			copylen = GOODCOPY_LEN;
+-	} else
++		linear = copylen;
++	} else {
+ 		copylen = len;
++		linear = vnet_hdr.hdr_len;
++	}
+ 
+ 	skb = macvtap_alloc_skb(&q->sk, NET_IP_ALIGN, copylen,
+-				vnet_hdr.hdr_len, noblock, &err);
++				linear, noblock, &err);
+ 	if (!skb)
+ 		goto err;
+ 
+-- 
+1.7.11.7
+
+
+From 3e86a493305637e79d72541f571ec4f852ef2024 Mon Sep 17 00:00:00 2001
+From: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Date: Wed, 10 Jul 2013 23:00:57 +0200
+Subject: [PATCH 23/40] ipv6: in case of link failure remove route directly
+ instead of letting it expire
+
+[ Upstream commit 1eb4f758286884e7566627164bca4c4a16952a83 ]
+
+We could end up expiring a route which is part of an ecmp route set. Doing
+so would invalidate the rt->rt6i_nsiblings calculations and could provoke
+the following panic:
+
+[   80.144667] ------------[ cut here ]------------
+[   80.145172] kernel BUG at net/ipv6/ip6_fib.c:733!
+[   80.145172] invalid opcode: 0000 [#1] SMP
+[   80.145172] Modules linked in: 8021q nf_conntrack_netbios_ns nf_conntrack_broadcast ipt_MASQUERADE ip6table_mangle ip6t_REJECT nf_conntrack_ipv6 nf_defrag_ipv6 iptable_nat nf_nat_ipv4 nf_nat iptable_mangle nf_conntrack_ipv4 nf_defrag_ipv4 xt_conntrack nf_conntrack ebtable_filter ebtables ip6table_filter ip6_tables
++snd_hda_intel snd_hda_codec snd_hwdep snd_seq snd_seq_device snd_pcm snd_page_alloc snd_timer virtio_balloon snd soundcore i2c_piix4 i2c_core virtio_net virtio_blk
+[   80.145172] CPU: 1 PID: 786 Comm: ping6 Not tainted 3.10.0+ #118
+[   80.145172] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[   80.145172] task: ffff880117fa0000 ti: ffff880118770000 task.ti: ffff880118770000
+[   80.145172] RIP: 0010:[<ffffffff815f3b5d>]  [<ffffffff815f3b5d>] fib6_add+0x75d/0x830
+[   80.145172] RSP: 0018:ffff880118771798  EFLAGS: 00010202
+[   80.145172] RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffff88011350e480
+[   80.145172] RDX: ffff88011350e238 RSI: 0000000000000004 RDI: ffff88011350f738
+[   80.145172] RBP: ffff880118771848 R08: ffff880117903280 R09: 0000000000000001
+[   80.145172] R10: 0000000000000000 R11: 0000000000000000 R12: ffff88011350f680
+[   80.145172] R13: ffff880117903280 R14: ffff880118771890 R15: ffff88011350ef90
+[   80.145172] FS:  00007f02b5127740(0000) GS:ffff88011fd00000(0000) knlGS:0000000000000000
+[   80.145172] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+[   80.145172] CR2: 00007f981322a000 CR3: 00000001181b1000 CR4: 00000000000006e0
+[   80.145172] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   80.145172] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
+[   80.145172] Stack:
+[   80.145172]  0000000000000001 ffff880100000000 ffff880100000000 ffff880117903280
+[   80.145172]  0000000000000000 ffff880119a4cf00 0000000000000400 00000000000007fa
+[   80.145172]  0000000000000000 0000000000000000 0000000000000000 ffff88011350f680
+[   80.145172] Call Trace:
+[   80.145172]  [<ffffffff815eeceb>] ? rt6_bind_peer+0x4b/0x90
+[   80.145172]  [<ffffffff815ed985>] __ip6_ins_rt+0x45/0x70
+[   80.145172]  [<ffffffff815eee35>] ip6_ins_rt+0x35/0x40
+[   80.145172]  [<ffffffff815ef1e4>] ip6_pol_route.isra.44+0x3a4/0x4b0
+[   80.145172]  [<ffffffff815ef34a>] ip6_pol_route_output+0x2a/0x30
+[   80.145172]  [<ffffffff81616077>] fib6_rule_action+0xd7/0x210
+[   80.145172]  [<ffffffff815ef320>] ? ip6_pol_route_input+0x30/0x30
+[   80.145172]  [<ffffffff81553026>] fib_rules_lookup+0xc6/0x140
+[   80.145172]  [<ffffffff81616374>] fib6_rule_lookup+0x44/0x80
+[   80.145172]  [<ffffffff815ef320>] ? ip6_pol_route_input+0x30/0x30
+[   80.145172]  [<ffffffff815edea3>] ip6_route_output+0x73/0xb0
+[   80.145172]  [<ffffffff815dfdf3>] ip6_dst_lookup_tail+0x2c3/0x2e0
+[   80.145172]  [<ffffffff813007b1>] ? list_del+0x11/0x40
+[   80.145172]  [<ffffffff81082a4c>] ? remove_wait_queue+0x3c/0x50
+[   80.145172]  [<ffffffff815dfe4d>] ip6_dst_lookup_flow+0x3d/0xa0
+[   80.145172]  [<ffffffff815fda77>] rawv6_sendmsg+0x267/0xc20
+[   80.145172]  [<ffffffff815a8a83>] inet_sendmsg+0x63/0xb0
+[   80.145172]  [<ffffffff8128eb93>] ? selinux_socket_sendmsg+0x23/0x30
+[   80.145172]  [<ffffffff815218d6>] sock_sendmsg+0xa6/0xd0
+[   80.145172]  [<ffffffff81524a68>] SYSC_sendto+0x128/0x180
+[   80.145172]  [<ffffffff8109825c>] ? update_curr+0xec/0x170
+[   80.145172]  [<ffffffff81041d09>] ? kvm_clock_get_cycles+0x9/0x10
+[   80.145172]  [<ffffffff810afd1e>] ? __getnstimeofday+0x3e/0xd0
+[   80.145172]  [<ffffffff8152509e>] SyS_sendto+0xe/0x10
+[   80.145172]  [<ffffffff8164efd9>] system_call_fastpath+0x16/0x1b
+[   80.145172] Code: fe ff ff 41 f6 45 2a 06 0f 85 ca fe ff ff 49 8b 7e 08 4c 89 ee e8 94 ef ff ff e9 b9 fe ff ff 48 8b 82 28 05 00 00 e9 01 ff ff ff <0f> 0b 49 8b 54 24 30 0d 00 00 40 00 89 83 14 01 00 00 48 89 53
+[   80.145172] RIP  [<ffffffff815f3b5d>] fib6_add+0x75d/0x830
+[   80.145172]  RSP <ffff880118771798>
+[   80.387413] ---[ end trace 02f20b7a8b81ed95 ]---
+[   80.390154] Kernel panic - not syncing: Fatal exception in interrupt
+
+Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc: YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
+Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv6/route.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 7f1332f..262d6d8 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -1076,10 +1076,13 @@ static void ip6_link_failure(struct sk_buff *skb)
+ 
+ 	rt = (struct rt6_info *) skb_dst(skb);
+ 	if (rt) {
+-		if (rt->rt6i_flags & RTF_CACHE)
+-			rt6_update_expires(rt, 0);
+-		else if (rt->rt6i_node && (rt->rt6i_flags & RTF_DEFAULT))
++		if (rt->rt6i_flags & RTF_CACHE) {
++			dst_hold(&rt->dst);
++			if (ip6_del_rt(rt))
++				dst_free(&rt->dst);
++		} else if (rt->rt6i_node && (rt->rt6i_flags & RTF_DEFAULT)) {
+ 			rt->rt6i_node->fn_sernum = -1;
++		}
+ 	}
+ }
+ 
+-- 
+1.7.11.7
+
+
+From db75617408ddf6d4fa8a65c030861ad0cd7e92ea Mon Sep 17 00:00:00 2001
+From: Sasha Levin <sasha.levin@oracle.com>
+Date: Thu, 11 Jul 2013 13:16:54 -0400
+Subject: [PATCH 24/40] 9p: fix off by one causing access violations and
+ memory corruption
+
+[ Upstream commit 110ecd69a9feea82a152bbf9b12aba57e6396883 ]
+
+p9_release_pages() would attempt to dereference one value past the end of
+pages[]. This would cause the following crashes:
+
+[ 6293.171817] BUG: unable to handle kernel paging request at ffff8807c96f3000
+[ 6293.174146] IP: [<ffffffff8412793b>] p9_release_pages+0x3b/0x60
+[ 6293.176447] PGD 79c5067 PUD 82c1e3067 PMD 82c197067 PTE 80000007c96f3060
+[ 6293.180060] Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC
+[ 6293.180060] Modules linked in:
+[ 6293.180060] CPU: 62 PID: 174043 Comm: modprobe Tainted: G        W    3.10.0-next-20130710-sasha #3954
+[ 6293.180060] task: ffff8807b803b000 ti: ffff880787dde000 task.ti: ffff880787dde000
+[ 6293.180060] RIP: 0010:[<ffffffff8412793b>]  [<ffffffff8412793b>] p9_release_pages+0x3b/0x60
+[ 6293.214316] RSP: 0000:ffff880787ddfc28  EFLAGS: 00010202
+[ 6293.214316] RAX: 0000000000000001 RBX: ffff8807c96f2ff8 RCX: 0000000000000000
+[ 6293.222017] RDX: ffff8807b803b000 RSI: 0000000000000001 RDI: ffffea001c7e3d40
+[ 6293.222017] RBP: ffff880787ddfc48 R08: 0000000000000000 R09: 0000000000000000
+[ 6293.222017] R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000001
+[ 6293.222017] R13: 0000000000000001 R14: ffff8807cc50c070 R15: ffff8807cc50c070
+[ 6293.222017] FS:  00007f572641d700(0000) GS:ffff8807f3600000(0000) knlGS:0000000000000000
+[ 6293.256784] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+[ 6293.256784] CR2: ffff8807c96f3000 CR3: 00000007c8e81000 CR4: 00000000000006e0
+[ 6293.256784] Stack:
+[ 6293.256784]  ffff880787ddfcc8 ffff880787ddfcc8 0000000000000000 ffff880787ddfcc8
+[ 6293.256784]  ffff880787ddfd48 ffffffff84128be8 ffff880700000002 0000000000000001
+[ 6293.256784]  ffff8807b803b000 ffff880787ddfce0 0000100000000000 0000000000000000
+[ 6293.256784] Call Trace:
+[ 6293.256784]  [<ffffffff84128be8>] p9_virtio_zc_request+0x598/0x630
+[ 6293.256784]  [<ffffffff8115c610>] ? wake_up_bit+0x40/0x40
+[ 6293.256784]  [<ffffffff841209b1>] p9_client_zc_rpc+0x111/0x3a0
+[ 6293.256784]  [<ffffffff81174b78>] ? sched_clock_cpu+0x108/0x120
+[ 6293.256784]  [<ffffffff84122a21>] p9_client_read+0xe1/0x2c0
+[ 6293.256784]  [<ffffffff81708a90>] v9fs_file_read+0x90/0xc0
+[ 6293.256784]  [<ffffffff812bd073>] vfs_read+0xc3/0x130
+[ 6293.256784]  [<ffffffff811a78bd>] ? trace_hardirqs_on+0xd/0x10
+[ 6293.256784]  [<ffffffff812bd5a2>] SyS_read+0x62/0xa0
+[ 6293.256784]  [<ffffffff841a1a00>] tracesys+0xdd/0xe2
+[ 6293.256784] Code: 66 90 48 89 fb 41 89 f5 48 8b 3f 48 85 ff 74 29 85 f6 74 25 45 31 e4 66 0f 1f 84 00 00 00 00 00 e8 eb 14 12 fd 41 ff c4 49 63 c4 <48> 8b 3c c3 48 85 ff 74 05 45 39 e5 75 e7 48 83 c4 08 5b 41 5c
+[ 6293.256784] RIP  [<ffffffff8412793b>] p9_release_pages+0x3b/0x60
+[ 6293.256784]  RSP <ffff880787ddfc28>
+[ 6293.256784] CR2: ffff8807c96f3000
+[ 6293.256784] ---[ end trace 50822ee72cd360fc ]---
+
+Signed-off-by: Sasha Levin <sasha.levin@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/9p/trans_common.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/net/9p/trans_common.c b/net/9p/trans_common.c
+index de8df95..2ee3879 100644
+--- a/net/9p/trans_common.c
++++ b/net/9p/trans_common.c
+@@ -24,11 +24,11 @@
+  */
+ void p9_release_pages(struct page **pages, int nr_pages)
+ {
+-	int i = 0;
+-	while (pages[i] && nr_pages--) {
+-		put_page(pages[i]);
+-		i++;
+-	}
++	int i;
++
++	for (i = 0; i < nr_pages; i++)
++		if (pages[i])
++			put_page(pages[i]);
+ }
+ EXPORT_SYMBOL(p9_release_pages);
+ 
+-- 
+1.7.11.7
+
+
+From d0772a6314c2ed4d04ab0163c50b3ef6ff9eba40 Mon Sep 17 00:00:00 2001
+From: Maarten Lankhorst <maarten.lankhorst@canonical.com>
+Date: Thu, 11 Jul 2013 15:53:21 +0200
+Subject: [PATCH 25/40] alx: fix lockdep annotation
+
+[ Upstream commit a8798a5c77c9981e88caef1373a3310bf8aed219 ]
+
+Move spin_lock_init to be called before the spinlocks are used, preventing a lockdep splat.
+
+Signed-off-by: Maarten Lankhorst <maarten.lankhorst@canonical.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/atheros/alx/main.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/alx/main.c b/drivers/net/ethernet/atheros/alx/main.c
+index 418de8b..d30085c 100644
+--- a/drivers/net/ethernet/atheros/alx/main.c
++++ b/drivers/net/ethernet/atheros/alx/main.c
+@@ -1303,6 +1303,8 @@ static int alx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	SET_NETDEV_DEV(netdev, &pdev->dev);
+ 	alx = netdev_priv(netdev);
++	spin_lock_init(&alx->hw.mdio_lock);
++	spin_lock_init(&alx->irq_lock);
+ 	alx->dev = netdev;
+ 	alx->hw.pdev = pdev;
+ 	alx->msg_enable = NETIF_MSG_LINK | NETIF_MSG_HW | NETIF_MSG_IFUP |
+@@ -1385,9 +1387,6 @@ static int alx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	INIT_WORK(&alx->link_check_wk, alx_link_check);
+ 	INIT_WORK(&alx->reset_wk, alx_reset);
+-	spin_lock_init(&alx->hw.mdio_lock);
+-	spin_lock_init(&alx->irq_lock);
+-
+ 	netif_carrier_off(netdev);
+ 
+ 	err = register_netdev(netdev);
+-- 
+1.7.11.7
+
+
+From 1ea4568e699d6f1a231c14d5f084b4eb97298b7b Mon Sep 17 00:00:00 2001
+From: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Date: Thu, 11 Jul 2013 12:43:42 +0200
+Subject: [PATCH 26/40] ipv6: fix route selection if kernel is not compiled
+ with CONFIG_IPV6_ROUTER_PREF
+
+[ Upstream commit afc154e978de1eb11c555bc8bcec1552f75ebc43 ]
+
+This is a follow-up patch to 3630d40067a21d4dfbadc6002bb469ce26ac5d52
+("ipv6: rt6_check_neigh should successfully verify neigh if no NUD
+information are available").
+
+Since the removal of rt->n in rt6_info we can end up with a dst ==
+NULL in rt6_check_neigh. In case the kernel is not compiled with
+CONFIG_IPV6_ROUTER_PREF we should also select a route with unkown
+NUD state but we must not avoid doing round robin selection on routes
+with the same target. So introduce and pass down a boolean ``do_rr'' to
+indicate when we should update rt->rr_ptr. As soon as no route is valid
+we do backtracking and do a lookup on a higher level in the fib trie.
+
+v2:
+a) Improved rt6_check_neigh logic (no need to create neighbour there)
+   and documented return values.
+
+v3:
+a) Introduce enum rt6_nud_state to get rid of the magic numbers
+   (thanks to David Miller).
+b) Update and shorten commit message a bit to actualy reflect
+   the source.
+
+Reported-by: Pierre Emeriaud <petrus.lt@gmail.com>
+Cc: YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
+Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv6/route.c | 63 +++++++++++++++++++++++++++++++++++---------------------
+ 1 file changed, 40 insertions(+), 23 deletions(-)
+
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 262d6d8..bacce6c 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -65,6 +65,12 @@
+ #include <linux/sysctl.h>
+ #endif
+ 
++enum rt6_nud_state {
++	RT6_NUD_FAIL_HARD = -2,
++	RT6_NUD_FAIL_SOFT = -1,
++	RT6_NUD_SUCCEED = 1
++};
++
+ static struct rt6_info *ip6_rt_copy(struct rt6_info *ort,
+ 				    const struct in6_addr *dest);
+ static struct dst_entry	*ip6_dst_check(struct dst_entry *dst, u32 cookie);
+@@ -527,28 +533,29 @@ static inline int rt6_check_dev(struct rt6_info *rt, int oif)
+ 	return 0;
+ }
+ 
+-static inline bool rt6_check_neigh(struct rt6_info *rt)
++static inline enum rt6_nud_state rt6_check_neigh(struct rt6_info *rt)
+ {
+ 	struct neighbour *neigh;
+-	bool ret = false;
++	enum rt6_nud_state ret = RT6_NUD_FAIL_HARD;
+ 
+ 	if (rt->rt6i_flags & RTF_NONEXTHOP ||
+ 	    !(rt->rt6i_flags & RTF_GATEWAY))
+-		return true;
++		return RT6_NUD_SUCCEED;
+ 
+ 	rcu_read_lock_bh();
+ 	neigh = __ipv6_neigh_lookup_noref(rt->dst.dev, &rt->rt6i_gateway);
+ 	if (neigh) {
+ 		read_lock(&neigh->lock);
+ 		if (neigh->nud_state & NUD_VALID)
+-			ret = true;
++			ret = RT6_NUD_SUCCEED;
+ #ifdef CONFIG_IPV6_ROUTER_PREF
+ 		else if (!(neigh->nud_state & NUD_FAILED))
+-			ret = true;
++			ret = RT6_NUD_SUCCEED;
+ #endif
+ 		read_unlock(&neigh->lock);
+-	} else if (IS_ENABLED(CONFIG_IPV6_ROUTER_PREF)) {
+-		ret = true;
++	} else {
++		ret = IS_ENABLED(CONFIG_IPV6_ROUTER_PREF) ?
++		      RT6_NUD_SUCCEED : RT6_NUD_FAIL_SOFT;
+ 	}
+ 	rcu_read_unlock_bh();
+ 
+@@ -562,43 +569,52 @@ static int rt6_score_route(struct rt6_info *rt, int oif,
+ 
+ 	m = rt6_check_dev(rt, oif);
+ 	if (!m && (strict & RT6_LOOKUP_F_IFACE))
+-		return -1;
++		return RT6_NUD_FAIL_HARD;
+ #ifdef CONFIG_IPV6_ROUTER_PREF
+ 	m |= IPV6_DECODE_PREF(IPV6_EXTRACT_PREF(rt->rt6i_flags)) << 2;
+ #endif
+-	if (!rt6_check_neigh(rt) && (strict & RT6_LOOKUP_F_REACHABLE))
+-		return -1;
++	if (strict & RT6_LOOKUP_F_REACHABLE) {
++		int n = rt6_check_neigh(rt);
++		if (n < 0)
++			return n;
++	}
+ 	return m;
+ }
+ 
+ static struct rt6_info *find_match(struct rt6_info *rt, int oif, int strict,
+-				   int *mpri, struct rt6_info *match)
++				   int *mpri, struct rt6_info *match,
++				   bool *do_rr)
+ {
+ 	int m;
++	bool match_do_rr = false;
+ 
+ 	if (rt6_check_expired(rt))
+ 		goto out;
+ 
+ 	m = rt6_score_route(rt, oif, strict);
+-	if (m < 0)
++	if (m == RT6_NUD_FAIL_SOFT && !IS_ENABLED(CONFIG_IPV6_ROUTER_PREF)) {
++		match_do_rr = true;
++		m = 0; /* lowest valid score */
++	} else if (m < 0) {
+ 		goto out;
++	}
++
++	if (strict & RT6_LOOKUP_F_REACHABLE)
++		rt6_probe(rt);
+ 
+ 	if (m > *mpri) {
+-		if (strict & RT6_LOOKUP_F_REACHABLE)
+-			rt6_probe(match);
++		*do_rr = match_do_rr;
+ 		*mpri = m;
+ 		match = rt;
+-	} else if (strict & RT6_LOOKUP_F_REACHABLE) {
+-		rt6_probe(rt);
+ 	}
+-
+ out:
+ 	return match;
+ }
+ 
+ static struct rt6_info *find_rr_leaf(struct fib6_node *fn,
+ 				     struct rt6_info *rr_head,
+-				     u32 metric, int oif, int strict)
++				     u32 metric, int oif, int strict,
++				     bool *do_rr)
+ {
+ 	struct rt6_info *rt, *match;
+ 	int mpri = -1;
+@@ -606,10 +622,10 @@ static struct rt6_info *find_rr_leaf(struct fib6_node *fn,
+ 	match = NULL;
+ 	for (rt = rr_head; rt && rt->rt6i_metric == metric;
+ 	     rt = rt->dst.rt6_next)
+-		match = find_match(rt, oif, strict, &mpri, match);
++		match = find_match(rt, oif, strict, &mpri, match, do_rr);
+ 	for (rt = fn->leaf; rt && rt != rr_head && rt->rt6i_metric == metric;
+ 	     rt = rt->dst.rt6_next)
+-		match = find_match(rt, oif, strict, &mpri, match);
++		match = find_match(rt, oif, strict, &mpri, match, do_rr);
+ 
+ 	return match;
+ }
+@@ -618,15 +634,16 @@ static struct rt6_info *rt6_select(struct fib6_node *fn, int oif, int strict)
+ {
+ 	struct rt6_info *match, *rt0;
+ 	struct net *net;
++	bool do_rr = false;
+ 
+ 	rt0 = fn->rr_ptr;
+ 	if (!rt0)
+ 		fn->rr_ptr = rt0 = fn->leaf;
+ 
+-	match = find_rr_leaf(fn, rt0, rt0->rt6i_metric, oif, strict);
++	match = find_rr_leaf(fn, rt0, rt0->rt6i_metric, oif, strict,
++			     &do_rr);
+ 
+-	if (!match &&
+-	    (strict & RT6_LOOKUP_F_REACHABLE)) {
++	if (do_rr) {
+ 		struct rt6_info *next = rt0->dst.rt6_next;
+ 
+ 		/* no entries matched; do round-robin */
+-- 
+1.7.11.7
+
+
+From a3bd2b75636d9e8ce1105521a210039fca6433c2 Mon Sep 17 00:00:00 2001
+From: dingtianhong <dingtianhong@huawei.com>
+Date: Thu, 11 Jul 2013 19:04:02 +0800
+Subject: [PATCH 27/40] dummy: fix oops when loading the dummy failed
+
+[ Upstream commit 2c8a01894a12665d8059fad8f0a293c98a264121 ]
+
+We rename the dummy in modprobe.conf like this:
+
+install dummy0 /sbin/modprobe -o dummy0 --ignore-install dummy
+install dummy1 /sbin/modprobe -o dummy1 --ignore-install dummy
+
+We got oops when we run the command:
+
+modprobe dummy0
+modprobe dummy1
+
+------------[ cut here ]------------
+
+[ 3302.187584] BUG: unable to handle kernel NULL pointer dereference at 0000000000000008
+[ 3302.195411] IP: [<ffffffff813fe62a>] __rtnl_link_unregister+0x9a/0xd0
+[ 3302.201844] PGD 85c94a067 PUD 8517bd067 PMD 0
+[ 3302.206305] Oops: 0002 [#1] SMP
+[ 3302.299737] task: ffff88105ccea300 ti: ffff880eba4a0000 task.ti: ffff880eba4a0000
+[ 3302.307186] RIP: 0010:[<ffffffff813fe62a>]  [<ffffffff813fe62a>] __rtnl_link_unregister+0x9a/0xd0
+[ 3302.316044] RSP: 0018:ffff880eba4a1dd8  EFLAGS: 00010246
+[ 3302.321332] RAX: 0000000000000000 RBX: ffffffff81a9d738 RCX: 0000000000000002
+[ 3302.328436] RDX: 0000000000000000 RSI: ffffffffa04d602c RDI: ffff880eba4a1dd8
+[ 3302.335541] RBP: ffff880eba4a1e18 R08: dead000000200200 R09: dead000000100100
+[ 3302.342644] R10: 0000000000000080 R11: 0000000000000003 R12: ffffffff81a9d788
+[ 3302.349748] R13: ffffffffa04d7020 R14: ffffffff81a9d670 R15: ffff880eba4a1dd8
+[ 3302.364910] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 3302.370630] CR2: 0000000000000008 CR3: 000000085e15e000 CR4: 00000000000427e0
+[ 3302.377734] DR0: 0000000000000003 DR1: 00000000000000b0 DR2: 0000000000000001
+[ 3302.384838] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
+[ 3302.391940] Stack:
+[ 3302.393944]  ffff880eba4a1dd8 ffff880eba4a1dd8 ffff880eba4a1e18 ffffffffa04d70c0
+[ 3302.401350]  00000000ffffffef ffffffffa01a8000 0000000000000000 ffffffff816111c8
+[ 3302.408758]  ffff880eba4a1e48 ffffffffa01a80be ffff880eba4a1e48 ffffffffa04d70c0
+[ 3302.416164] Call Trace:
+[ 3302.418605]  [<ffffffffa01a8000>] ? 0xffffffffa01a7fff
+[ 3302.423727]  [<ffffffffa01a80be>] dummy_init_module+0xbe/0x1000 [dummy0]
+[ 3302.430405]  [<ffffffffa01a8000>] ? 0xffffffffa01a7fff
+[ 3302.435535]  [<ffffffff81000322>] do_one_initcall+0x152/0x1b0
+[ 3302.441263]  [<ffffffff810ab24b>] do_init_module+0x7b/0x200
+[ 3302.446824]  [<ffffffff810ad3d2>] load_module+0x4e2/0x530
+[ 3302.452215]  [<ffffffff8127ae40>] ? ddebug_dyndbg_boot_param_cb+0x60/0x60
+[ 3302.458979]  [<ffffffff810ad5f1>] SyS_init_module+0xd1/0x130
+[ 3302.464627]  [<ffffffff814b9652>] system_call_fastpath+0x16/0x1b
+[ 3302.490090] RIP  [<ffffffff813fe62a>] __rtnl_link_unregister+0x9a/0xd0
+[ 3302.496607]  RSP <ffff880eba4a1dd8>
+[ 3302.500084] CR2: 0000000000000008
+[ 3302.503466] ---[ end trace 8342d49cd49f78ed ]---
+
+The reason is that when loading dummy, if __rtnl_link_register() return failed,
+the init_module should return and avoid take the wrong path.
+
+Signed-off-by: Tan Xiaojun <tanxiaojun@huawei.com>
+Signed-off-by: Ding Tianhong <dingtianhong@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/dummy.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/dummy.c b/drivers/net/dummy.c
+index 42aa54a..b710c6b 100644
+--- a/drivers/net/dummy.c
++++ b/drivers/net/dummy.c
+@@ -185,6 +185,8 @@ static int __init dummy_init_module(void)
+ 
+ 	rtnl_lock();
+ 	err = __rtnl_link_register(&dummy_link_ops);
++	if (err < 0)
++		goto out;
+ 
+ 	for (i = 0; i < numdummies && !err; i++) {
+ 		err = dummy_init_one();
+@@ -192,6 +194,8 @@ static int __init dummy_init_module(void)
+ 	}
+ 	if (err < 0)
+ 		__rtnl_link_unregister(&dummy_link_ops);
++
++out:
+ 	rtnl_unlock();
+ 
+ 	return err;
+-- 
+1.7.11.7
+
+
+From 44780fa991640ee8c5fc4f4c47d5033a5c98895d Mon Sep 17 00:00:00 2001
+From: dingtianhong <dingtianhong@huawei.com>
+Date: Thu, 11 Jul 2013 19:04:06 +0800
+Subject: [PATCH 28/40] ifb: fix oops when loading the ifb failed
+
+[ Upstream commit f2966cd5691058b8674a20766525bedeaea9cbcf ]
+
+If __rtnl_link_register() return faild when loading the ifb, it will
+take the wrong path and get oops, so fix it just like dummy.
+
+Signed-off-by: Ding Tianhong <dingtianhong@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ifb.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/ifb.c b/drivers/net/ifb.c
+index a11f7a4..a3bed28 100644
+--- a/drivers/net/ifb.c
++++ b/drivers/net/ifb.c
+@@ -291,6 +291,8 @@ static int __init ifb_init_module(void)
+ 
+ 	rtnl_lock();
+ 	err = __rtnl_link_register(&ifb_link_ops);
++	if (err < 0)
++		goto out;
+ 
+ 	for (i = 0; i < numifbs && !err; i++) {
+ 		err = ifb_init_one(i);
+@@ -298,6 +300,8 @@ static int __init ifb_init_module(void)
+ 	}
+ 	if (err)
+ 		__rtnl_link_unregister(&ifb_link_ops);
++
++out:
+ 	rtnl_unlock();
+ 
+ 	return err;
+-- 
+1.7.11.7
+
+
+From 60731ca136b36cde13dd6b021711f031d70e061f Mon Sep 17 00:00:00 2001
+From: Alexander Duyck <alexander.h.duyck@intel.com>
+Date: Thu, 11 Jul 2013 13:12:22 -0700
+Subject: [PATCH 29/40] gre: Fix MTU sizing check for gretap tunnels
+
+[ Upstream commit 8c91e162e058bb91b7766f26f4d5823a21941026 ]
+
+This change fixes an MTU sizing issue seen with gretap tunnels when non-gso
+packets are sent from the interface.
+
+In my case I was able to reproduce the issue by simply sending a ping of
+1421 bytes with the gretap interface created on a device with a standard
+1500 mtu.
+
+This fix is based on the fact that the tunnel mtu is already adjusted by
+dev->hard_header_len so it would make sense that any packets being compared
+against that mtu should also be adjusted by hard_header_len and the tunnel
+header instead of just the tunnel header.
+
+Signed-off-by: Alexander Duyck <alexander.h.duyck@intel.com>
+Reported-by: Cong Wang <amwang@redhat.com>
+Acked-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv4/ip_tunnel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index d05bd02..cbfc37f 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -490,7 +490,7 @@ static int tnl_update_pmtu(struct net_device *dev, struct sk_buff *skb,
+ 			    struct rtable *rt, __be16 df)
+ {
+ 	struct ip_tunnel *tunnel = netdev_priv(dev);
+-	int pkt_size = skb->len - tunnel->hlen;
++	int pkt_size = skb->len - tunnel->hlen - dev->hard_header_len;
+ 	int mtu;
+ 
+ 	if (df)
+-- 
+1.7.11.7
+
+
+From 8bd8eef9c03de3dc458d95069adaecc5960f9f66 Mon Sep 17 00:00:00 2001
+From: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Date: Fri, 12 Jul 2013 23:46:33 +0200
+Subject: [PATCH 30/40] ipv6: only static routes qualify for equal cost
+ multipathing
+
+[ Upstream commit 307f2fb95e9b96b3577916e73d92e104f8f26494 ]
+
+Static routes in this case are non-expiring routes which did not get
+configured by autoconf or by icmpv6 redirects.
+
+To make sure we actually get an ecmp route while searching for the first
+one in this fib6_node's leafs, also make sure it matches the ecmp route
+assumptions.
+
+v2:
+a) Removed RTF_EXPIRE check in dst.from chain. The check of RTF_ADDRCONF
+   already ensures that this route, even if added again without
+   RTF_EXPIRES (in case of a RA announcement with infinite timeout),
+   does not cause the rt6i_nsiblings logic to go wrong if a later RA
+   updates the expiration time later.
+
+v3:
+a) Allow RTF_EXPIRES routes to enter the ecmp route set. We have to do so,
+   because an pmtu event could update the RTF_EXPIRES flag and we would
+   not count this route, if another route joins this set. We now filter
+   only for RTF_GATEWAY|RTF_ADDRCONF|RTF_DYNAMIC, which are flags that
+   don't get changed after rt6_info construction.
+
+Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv6/ip6_fib.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+index 192dd1a..5fc9c7a 100644
+--- a/net/ipv6/ip6_fib.c
++++ b/net/ipv6/ip6_fib.c
+@@ -632,6 +632,12 @@ insert_above:
+ 	return ln;
+ }
+ 
++static inline bool rt6_qualify_for_ecmp(struct rt6_info *rt)
++{
++	return (rt->rt6i_flags & (RTF_GATEWAY|RTF_ADDRCONF|RTF_DYNAMIC)) ==
++	       RTF_GATEWAY;
++}
++
+ /*
+  *	Insert routing information in a node.
+  */
+@@ -646,6 +652,7 @@ static int fib6_add_rt2node(struct fib6_node *fn, struct rt6_info *rt,
+ 	int add = (!info->nlh ||
+ 		   (info->nlh->nlmsg_flags & NLM_F_CREATE));
+ 	int found = 0;
++	bool rt_can_ecmp = rt6_qualify_for_ecmp(rt);
+ 
+ 	ins = &fn->leaf;
+ 
+@@ -691,9 +698,8 @@ static int fib6_add_rt2node(struct fib6_node *fn, struct rt6_info *rt,
+ 			 * To avoid long list, we only had siblings if the
+ 			 * route have a gateway.
+ 			 */
+-			if (rt->rt6i_flags & RTF_GATEWAY &&
+-			    !(rt->rt6i_flags & RTF_EXPIRES) &&
+-			    !(iter->rt6i_flags & RTF_EXPIRES))
++			if (rt_can_ecmp &&
++			    rt6_qualify_for_ecmp(iter))
+ 				rt->rt6i_nsiblings++;
+ 		}
+ 
+@@ -715,7 +721,8 @@ static int fib6_add_rt2node(struct fib6_node *fn, struct rt6_info *rt,
+ 		/* Find the first route that have the same metric */
+ 		sibling = fn->leaf;
+ 		while (sibling) {
+-			if (sibling->rt6i_metric == rt->rt6i_metric) {
++			if (sibling->rt6i_metric == rt->rt6i_metric &&
++			    rt6_qualify_for_ecmp(sibling)) {
+ 				list_add_tail(&rt->rt6i_siblings,
+ 					      &sibling->rt6i_siblings);
+ 				break;
+-- 
+1.7.11.7
+
+
+From bf6a9aa8649eefee6a93b18d827bd2bbee2dd1ae Mon Sep 17 00:00:00 2001
+From: Neil Horman <nhorman@tuxdriver.com>
+Date: Fri, 12 Jul 2013 10:58:48 -0400
+Subject: [PATCH 31/40] atl1e: fix dma mapping warnings
+
+[ Upstream commit 352900b583b2852152a1e05ea0e8b579292e731e ]
+
+Recently had this backtrace reported:
+WARNING: at lib/dma-debug.c:937 check_unmap+0x47d/0x930()
+Hardware name: System Product Name
+ATL1E 0000:02:00.0: DMA-API: device driver failed to check map error[device
+address=0x00000000cbfd1000] [size=90 bytes] [mapped as single]
+Modules linked in: xt_conntrack nf_conntrack ebtable_filter ebtables
+ip6table_filter ip6_tables snd_hda_codec_hdmi snd_hda_codec_realtek iTCO_wdt
+iTCO_vendor_support snd_hda_intel acpi_cpufreq mperf coretemp btrfs zlib_deflate
+snd_hda_codec snd_hwdep microcode raid6_pq libcrc32c snd_seq usblp serio_raw xor
+snd_seq_device joydev snd_pcm snd_page_alloc snd_timer snd lpc_ich i2c_i801
+soundcore mfd_core atl1e asus_atk0110 ata_generic pata_acpi radeon i2c_algo_bit
+drm_kms_helper ttm drm i2c_core pata_marvell uinput
+Pid: 314, comm: systemd-journal Not tainted 3.9.0-0.rc6.git2.3.fc19.x86_64 #1
+Call Trace:
+ <IRQ>  [<ffffffff81069106>] warn_slowpath_common+0x66/0x80
+ [<ffffffff8106916c>] warn_slowpath_fmt+0x4c/0x50
+ [<ffffffff8138151d>] check_unmap+0x47d/0x930
+ [<ffffffff810ad048>] ? sched_clock_cpu+0xa8/0x100
+ [<ffffffff81381a2f>] debug_dma_unmap_page+0x5f/0x70
+ [<ffffffff8137ce30>] ? unmap_single+0x20/0x30
+ [<ffffffffa01569a1>] atl1e_intr+0x3a1/0x5b0 [atl1e]
+ [<ffffffff810d53fd>] ? trace_hardirqs_off+0xd/0x10
+ [<ffffffff81119636>] handle_irq_event_percpu+0x56/0x390
+ [<ffffffff811199ad>] handle_irq_event+0x3d/0x60
+ [<ffffffff8111cb6a>] handle_fasteoi_irq+0x5a/0x100
+ [<ffffffff8101c36f>] handle_irq+0xbf/0x150
+ [<ffffffff811dcb2f>] ? file_sb_list_del+0x3f/0x50
+ [<ffffffff81073b10>] ? irq_enter+0x50/0xa0
+ [<ffffffff8172738d>] do_IRQ+0x4d/0xc0
+ [<ffffffff811dcb2f>] ? file_sb_list_del+0x3f/0x50
+ [<ffffffff8171c6b2>] common_interrupt+0x72/0x72
+ <EOI>  [<ffffffff810db5b2>] ? lock_release+0xc2/0x310
+ [<ffffffff8109ea04>] lg_local_unlock_cpu+0x24/0x50
+ [<ffffffff811dcb2f>] file_sb_list_del+0x3f/0x50
+ [<ffffffff811dcb6d>] fput+0x2d/0xc0
+ [<ffffffff811d8ea1>] filp_close+0x61/0x90
+ [<ffffffff811fae4d>] __close_fd+0x8d/0x150
+ [<ffffffff811d8ef0>] sys_close+0x20/0x50
+ [<ffffffff81725699>] system_call_fastpath+0x16/0x1b
+
+The usual straighforward failure to check for dma_mapping_error after a map
+operation is completed.
+
+This patch should fix it, the reporter wandered off after filing this bz:
+https://bugzilla.redhat.com/show_bug.cgi?id=954170
+
+and I don't have hardware to test, but the fix is pretty straightforward, so I
+figured I'd post it for review.
+
+Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+CC: Jay Cliburn <jcliburn@gmail.com>
+CC: Chris Snook <chris.snook@gmail.com>
+CC: "David S. Miller" <davem@davemloft.net>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/atheros/atl1e/atl1e_main.c | 28 ++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/atheros/atl1e/atl1e_main.c b/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
+index 0688bb8..8116cb8 100644
+--- a/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
++++ b/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
+@@ -1665,8 +1665,8 @@ check_sum:
+ 	return 0;
+ }
+ 
+-static void atl1e_tx_map(struct atl1e_adapter *adapter,
+-		      struct sk_buff *skb, struct atl1e_tpd_desc *tpd)
++static int atl1e_tx_map(struct atl1e_adapter *adapter,
++			struct sk_buff *skb, struct atl1e_tpd_desc *tpd)
+ {
+ 	struct atl1e_tpd_desc *use_tpd = NULL;
+ 	struct atl1e_tx_buffer *tx_buffer = NULL;
+@@ -1677,6 +1677,7 @@ static void atl1e_tx_map(struct atl1e_adapter *adapter,
+ 	u16 nr_frags;
+ 	u16 f;
+ 	int segment;
++	int ring_start = adapter->tx_ring.next_to_use;
+ 
+ 	nr_frags = skb_shinfo(skb)->nr_frags;
+ 	segment = (tpd->word3 >> TPD_SEGMENT_EN_SHIFT) & TPD_SEGMENT_EN_MASK;
+@@ -1689,6 +1690,9 @@ static void atl1e_tx_map(struct atl1e_adapter *adapter,
+ 		tx_buffer->length = map_len;
+ 		tx_buffer->dma = pci_map_single(adapter->pdev,
+ 					skb->data, hdr_len, PCI_DMA_TODEVICE);
++		if (dma_mapping_error(&adapter->pdev->dev, tx_buffer->dma))
++			return -ENOSPC;
++
+ 		ATL1E_SET_PCIMAP_TYPE(tx_buffer, ATL1E_TX_PCIMAP_SINGLE);
+ 		mapped_len += map_len;
+ 		use_tpd->buffer_addr = cpu_to_le64(tx_buffer->dma);
+@@ -1715,6 +1719,13 @@ static void atl1e_tx_map(struct atl1e_adapter *adapter,
+ 		tx_buffer->dma =
+ 			pci_map_single(adapter->pdev, skb->data + mapped_len,
+ 					map_len, PCI_DMA_TODEVICE);
++
++		if (dma_mapping_error(&adapter->pdev->dev, tx_buffer->dma)) {
++			/* Reset the tx rings next pointer */
++			adapter->tx_ring.next_to_use = ring_start;
++			return -ENOSPC;
++		}
++
+ 		ATL1E_SET_PCIMAP_TYPE(tx_buffer, ATL1E_TX_PCIMAP_SINGLE);
+ 		mapped_len  += map_len;
+ 		use_tpd->buffer_addr = cpu_to_le64(tx_buffer->dma);
+@@ -1750,6 +1761,13 @@ static void atl1e_tx_map(struct atl1e_adapter *adapter,
+ 							  (i * MAX_TX_BUF_LEN),
+ 							  tx_buffer->length,
+ 							  DMA_TO_DEVICE);
++
++			if (dma_mapping_error(&adapter->pdev->dev, tx_buffer->dma)) {
++				/* Reset the ring next to use pointer */
++				adapter->tx_ring.next_to_use = ring_start;
++				return -ENOSPC;
++			}
++
+ 			ATL1E_SET_PCIMAP_TYPE(tx_buffer, ATL1E_TX_PCIMAP_PAGE);
+ 			use_tpd->buffer_addr = cpu_to_le64(tx_buffer->dma);
+ 			use_tpd->word2 = (use_tpd->word2 & (~TPD_BUFLEN_MASK)) |
+@@ -1767,6 +1785,7 @@ static void atl1e_tx_map(struct atl1e_adapter *adapter,
+ 	/* The last buffer info contain the skb address,
+ 	   so it will be free after unmap */
+ 	tx_buffer->skb = skb;
++	return 0;
+ }
+ 
+ static void atl1e_tx_queue(struct atl1e_adapter *adapter, u16 count,
+@@ -1834,10 +1853,13 @@ static netdev_tx_t atl1e_xmit_frame(struct sk_buff *skb,
+ 		return NETDEV_TX_OK;
+ 	}
+ 
+-	atl1e_tx_map(adapter, skb, tpd);
++	if (atl1e_tx_map(adapter, skb, tpd))
++		goto out;
++
+ 	atl1e_tx_queue(adapter, tpd_req, tpd);
+ 
+ 	netdev->trans_start = jiffies; /* NETIF_F_LLTX driver :( */
++out:
+ 	spin_unlock_irqrestore(&adapter->tx_lock, flags);
+ 	return NETDEV_TX_OK;
+ }
+-- 
+1.7.11.7
+
+
+From 326eb306b8445bccf894e99ccde478eb4731b726 Mon Sep 17 00:00:00 2001
+From: Neil Horman <nhorman@tuxdriver.com>
+Date: Tue, 16 Jul 2013 10:49:41 -0400
+Subject: [PATCH 32/40] atl1e: unmap partially mapped skb on dma error and
+ free skb
+
+[ Upstream commit 584ec4355355ffac43571b02a314d43eb2f7fcbf ]
+
+Ben Hutchings pointed out that my recent update to atl1e
+in commit 352900b583b2852152a1e05ea0e8b579292e731e
+("atl1e: fix dma mapping warnings") was missing a bit of code.
+
+Specifically it reset the hardware tx ring to its origional state when
+we hit a dma error, but didn't unmap any exiting mappings from the
+operation.  This patch fixes that up.  It also remembers to free the
+skb in the event that an error occurs, so we don't leak.  Untested, as
+I don't have hardware.  I think its pretty straightforward, but please
+review closely.
+
+Signed-off-by: Neil Horman <nhorman@tuxdriver.com>
+CC: Ben Hutchings <bhutchings@solarflare.com>
+CC: Jay Cliburn <jcliburn@gmail.com>
+CC: Chris Snook <chris.snook@gmail.com>
+CC: "David S. Miller" <davem@davemloft.net>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/atheros/atl1e/atl1e_main.c | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/atheros/atl1e/atl1e_main.c b/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
+index 8116cb8..c23bb02 100644
+--- a/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
++++ b/drivers/net/ethernet/atheros/atl1e/atl1e_main.c
+@@ -1678,6 +1678,7 @@ static int atl1e_tx_map(struct atl1e_adapter *adapter,
+ 	u16 f;
+ 	int segment;
+ 	int ring_start = adapter->tx_ring.next_to_use;
++	int ring_end;
+ 
+ 	nr_frags = skb_shinfo(skb)->nr_frags;
+ 	segment = (tpd->word3 >> TPD_SEGMENT_EN_SHIFT) & TPD_SEGMENT_EN_MASK;
+@@ -1721,6 +1722,15 @@ static int atl1e_tx_map(struct atl1e_adapter *adapter,
+ 					map_len, PCI_DMA_TODEVICE);
+ 
+ 		if (dma_mapping_error(&adapter->pdev->dev, tx_buffer->dma)) {
++			/* We need to unwind the mappings we've done */
++			ring_end = adapter->tx_ring.next_to_use;
++			adapter->tx_ring.next_to_use = ring_start;
++			while (adapter->tx_ring.next_to_use != ring_end) {
++				tpd = atl1e_get_tpd(adapter);
++				tx_buffer = atl1e_get_tx_buffer(adapter, tpd);
++				pci_unmap_single(adapter->pdev, tx_buffer->dma,
++						 tx_buffer->length, PCI_DMA_TODEVICE);
++			}
+ 			/* Reset the tx rings next pointer */
+ 			adapter->tx_ring.next_to_use = ring_start;
+ 			return -ENOSPC;
+@@ -1763,6 +1773,16 @@ static int atl1e_tx_map(struct atl1e_adapter *adapter,
+ 							  DMA_TO_DEVICE);
+ 
+ 			if (dma_mapping_error(&adapter->pdev->dev, tx_buffer->dma)) {
++				/* We need to unwind the mappings we've done */
++				ring_end = adapter->tx_ring.next_to_use;
++				adapter->tx_ring.next_to_use = ring_start;
++				while (adapter->tx_ring.next_to_use != ring_end) {
++					tpd = atl1e_get_tpd(adapter);
++					tx_buffer = atl1e_get_tx_buffer(adapter, tpd);
++					dma_unmap_page(&adapter->pdev->dev, tx_buffer->dma,
++						       tx_buffer->length, DMA_TO_DEVICE);
++				}
++
+ 				/* Reset the ring next to use pointer */
+ 				adapter->tx_ring.next_to_use = ring_start;
+ 				return -ENOSPC;
+@@ -1853,8 +1873,10 @@ static netdev_tx_t atl1e_xmit_frame(struct sk_buff *skb,
+ 		return NETDEV_TX_OK;
+ 	}
+ 
+-	if (atl1e_tx_map(adapter, skb, tpd))
++	if (atl1e_tx_map(adapter, skb, tpd)) {
++		dev_kfree_skb_any(skb);
+ 		goto out;
++	}
+ 
+ 	atl1e_tx_queue(adapter, tpd_req, tpd);
+ 
+-- 
+1.7.11.7
+
+
+From 4ff552ad9b0463045a9211c5548288fa70649474 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Mon, 15 Jul 2013 20:03:19 -0700
+Subject: [PATCH 33/40] ipv4: set transport header earlier
+
+[ Upstream commit 21d1196a35f5686c4323e42a62fdb4b23b0ab4a3 ]
+
+commit 45f00f99d6e ("ipv4: tcp: clean up tcp_v4_early_demux()") added a
+performance regression for non GRO traffic, basically disabling
+IP early demux.
+
+IPv6 stack resets transport header in ip6_rcv() before calling
+IP early demux in ip6_rcv_finish(), while IPv4 does this only in
+ip_local_deliver_finish(), _after_ IP early demux.
+
+GRO traffic happened to enable IP early demux because transport header
+is also set in inet_gro_receive()
+
+Instead of reverting the faulty commit, we can make IPv4/IPv6 behave the
+same : transport_header should be set in ip_rcv() instead of
+ip_local_deliver_finish()
+
+ip_local_deliver_finish() can also use skb_network_header_len() which is
+faster than ip_hdrlen()
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Neal Cardwell <ncardwell@google.com>
+Cc: Tom Herbert <therbert@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv4/ip_input.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
+index 3da817b..15e3e68 100644
+--- a/net/ipv4/ip_input.c
++++ b/net/ipv4/ip_input.c
+@@ -190,10 +190,7 @@ static int ip_local_deliver_finish(struct sk_buff *skb)
+ {
+ 	struct net *net = dev_net(skb->dev);
+ 
+-	__skb_pull(skb, ip_hdrlen(skb));
+-
+-	/* Point into the IP datagram, just past the header. */
+-	skb_reset_transport_header(skb);
++	__skb_pull(skb, skb_network_header_len(skb));
+ 
+ 	rcu_read_lock();
+ 	{
+@@ -437,6 +434,8 @@ int ip_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt,
+ 		goto drop;
+ 	}
+ 
++	skb->transport_header = skb->network_header + iph->ihl*4;
++
+ 	/* Remove any debris in the socket control block */
+ 	memset(IPCB(skb), 0, sizeof(struct inet_skb_parm));
+ 
+-- 
+1.7.11.7
+
+
+From b88b4272651cb4ee68c7a32cfc256fd4e8fdf735 Mon Sep 17 00:00:00 2001
+From: Sarveshwar Bandi <sarveshwar.bandi@emulex.com>
+Date: Tue, 16 Jul 2013 12:44:02 +0530
+Subject: [PATCH 34/40] be2net: Fix to avoid hardware workaround when not
+ needed
+
+[ Upstream commit 52fe29e4bb614367c108b717c6d7fe5953eb7af3 ]
+
+Hardware workaround requesting hardware to skip vlan insertion is necessary
+only when umc or qnq is enabled. Enabling this workaround in other scenarios
+could cause controller to stall.
+
+Signed-off-by: Sarveshwar Bandi <sarveshwar.bandi@emulex.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/emulex/benet/be_main.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
+index a0b4be5..6e43426 100644
+--- a/drivers/net/ethernet/emulex/benet/be_main.c
++++ b/drivers/net/ethernet/emulex/benet/be_main.c
+@@ -782,16 +782,22 @@ static struct sk_buff *be_insert_vlan_in_pkt(struct be_adapter *adapter,
+ 
+ 	if (vlan_tx_tag_present(skb))
+ 		vlan_tag = be_get_tx_vlan_tag(adapter, skb);
+-	else if (qnq_async_evt_rcvd(adapter) && adapter->pvid)
+-		vlan_tag = adapter->pvid;
++
++	if (qnq_async_evt_rcvd(adapter) && adapter->pvid) {
++		if (!vlan_tag)
++			vlan_tag = adapter->pvid;
++		/* f/w workaround to set skip_hw_vlan = 1, informs the F/W to
++		 * skip VLAN insertion
++		 */
++		if (skip_hw_vlan)
++			*skip_hw_vlan = true;
++	}
+ 
+ 	if (vlan_tag) {
+ 		skb = __vlan_put_tag(skb, htons(ETH_P_8021Q), vlan_tag);
+ 		if (unlikely(!skb))
+ 			return skb;
+ 		skb->vlan_tci = 0;
+-		if (skip_hw_vlan)
+-			*skip_hw_vlan = true;
+ 	}
+ 
+ 	/* Insert the outer VLAN, if any */
+-- 
+1.7.11.7
+
+
+From fe7d570e2db88a8b10c61122d17cb0effd04e3c0 Mon Sep 17 00:00:00 2001
+From: Haiyang Zhang <haiyangz@microsoft.com>
+Date: Tue, 16 Jul 2013 23:01:20 -0700
+Subject: [PATCH 35/40] hyperv: Fix the NETIF_F_SG flag setting in netvsc
+
+[ Upstream commit f45708209dc445bac0844f6ce86e315a2ffe8a29 ]
+
+SG mode is not currently supported by netvsc, so remove this flag for now.
+Otherwise, it will be unconditionally enabled by commit ec5f0615642
+    "Kill link between CSUM and SG features"
+Previously, the SG feature is disabled because CSUM is not set here.
+
+Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+Reviewed-by: K. Y. Srinivasan <kys@microsoft.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/hyperv/netvsc_drv.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+index 4dccead..23a0fff 100644
+--- a/drivers/net/hyperv/netvsc_drv.c
++++ b/drivers/net/hyperv/netvsc_drv.c
+@@ -431,8 +431,8 @@ static int netvsc_probe(struct hv_device *dev,
+ 	net->netdev_ops = &device_ops;
+ 
+ 	/* TODO: Add GSO and Checksum offload */
+-	net->hw_features = NETIF_F_SG;
+-	net->features = NETIF_F_SG | NETIF_F_HW_VLAN_CTAG_TX;
++	net->hw_features = 0;
++	net->features = NETIF_F_HW_VLAN_CTAG_TX;
+ 
+ 	SET_ETHTOOL_OPS(net, &ethtool_ops);
+ 	SET_NETDEV_DEV(net, &dev->device);
+-- 
+1.7.11.7
+
+
+From 5f65eb80604e70df56b97008538069892bb81205 Mon Sep 17 00:00:00 2001
+From: Paolo Valente <paolo.valente@unimore.it>
+Date: Tue, 16 Jul 2013 08:52:30 +0200
+Subject: [PATCH 36/40] pkt_sched: sch_qfq: remove a source of high packet
+ delay/jitter
+
+[ Upstream commit 87f40dd6ce7042caca0b3b557e8923127f51f902 ]
+
+QFQ+ inherits from QFQ a design choice that may cause a high packet
+delay/jitter and a severe short-term unfairness. As QFQ, QFQ+ uses a
+special quantity, the system virtual time, to track the service
+provided by the ideal system it approximates. When a packet is
+dequeued, this quantity must be incremented by the size of the packet,
+divided by the sum of the weights of the aggregates waiting to be
+served. Tracking this sum correctly is a non-trivial task, because, to
+preserve tight service guarantees, the decrement of this sum must be
+delayed in a special way [1]: this sum can be decremented only after
+that its value would decrease also in the ideal system approximated by
+QFQ+. For efficiency, QFQ+ keeps track only of the 'instantaneous'
+weight sum, increased and decreased immediately as the weight of an
+aggregate changes, and as an aggregate is created or destroyed (which,
+in its turn, happens as a consequence of some class being
+created/destroyed/changed). However, to avoid the problems caused to
+service guarantees by these immediate decreases, QFQ+ increments the
+system virtual time using the maximum value allowed for the weight
+sum, 2^10, in place of the dynamic, instantaneous value. The
+instantaneous value of the weight sum is used only to check whether a
+request of weight increase or a class creation can be satisfied.
+
+Unfortunately, the problems caused by this choice are worse than the
+temporary degradation of the service guarantees that may occur, when a
+class is changed or destroyed, if the instantaneous value of the
+weight sum was used to update the system virtual time. In fact, the
+fraction of the link bandwidth guaranteed by QFQ+ to each aggregate is
+equal to the ratio between the weight of the aggregate and the sum of
+the weights of the competing aggregates. The packet delay guaranteed
+to the aggregate is instead inversely proportional to the guaranteed
+bandwidth. By using the maximum possible value, and not the actual
+value of the weight sum, QFQ+ provides each aggregate with the worst
+possible service guarantees, and not with service guarantees related
+to the actual set of competing aggregates. To see the consequences of
+this fact, consider the following simple example.
+
+Suppose that only the following aggregates are backlogged, i.e., that
+only the classes in the following aggregates have packets to transmit:
+one aggregate with weight 10, say A, and ten aggregates with weight 1,
+say B1, B2, ..., B10. In particular, suppose that these aggregates are
+always backlogged. Given the weight distribution, the smoothest and
+fairest service order would be:
+A B1 A B2 A B3 A B4 A B5 A B6 A B7 A B8 A B9 A B10 A B1 A B2 ...
+
+QFQ+ would provide exactly this optimal service if it used the actual
+value for the weight sum instead of the maximum possible value, i.e.,
+11 instead of 2^10. In contrast, since QFQ+ uses the latter value, it
+serves aggregates as follows (easy to prove and to reproduce
+experimentally):
+A B1 B2 B3 B4 B5 B6 B7 B8 B9 B10 A A A A A A A A A A B1 B2 ... B10 A A ...
+
+By replacing 10 with N in the above example, and by increasing N, one
+can increase at will the maximum packet delay and the jitter
+experienced by the classes in aggregate A.
+
+This patch addresses this issue by just using the above
+'instantaneous' value of the weight sum, instead of the maximum
+possible value, when updating the system virtual time.  After the
+instantaneous weight sum is decreased, QFQ+ may deviate from the ideal
+service for a time interval in the order of the time to serve one
+maximum-size packet for each backlogged class. The worst-case extent
+of the deviation exhibited by QFQ+ during this time interval [1] is
+basically the same as of the deviation described above (but, without
+this patch, QFQ+ suffers from such a deviation all the time). Finally,
+this patch modifies the comment to the function qfq_slot_insert, to
+make it coherent with the fact that the weight sum used by QFQ+ can
+now be lower than the maximum possible value.
+
+[1] P. Valente, "Extending WF2Q+ to support a dynamic traffic mix",
+Proceedings of AAA-IDEA'05, June 2005.
+
+Signed-off-by: Paolo Valente <paolo.valente@unimore.it>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/sched/sch_qfq.c | 85 +++++++++++++++++++++++++++++++++++------------------
+ 1 file changed, 56 insertions(+), 29 deletions(-)
+
+diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
+index d51852b..5792252 100644
+--- a/net/sched/sch_qfq.c
++++ b/net/sched/sch_qfq.c
+@@ -113,7 +113,6 @@
+ 
+ #define FRAC_BITS		30	/* fixed point arithmetic */
+ #define ONE_FP			(1UL << FRAC_BITS)
+-#define IWSUM			(ONE_FP/QFQ_MAX_WSUM)
+ 
+ #define QFQ_MTU_SHIFT		16	/* to support TSO/GSO */
+ #define QFQ_MIN_LMAX		512	/* see qfq_slot_insert */
+@@ -189,6 +188,7 @@ struct qfq_sched {
+ 	struct qfq_aggregate	*in_serv_agg;   /* Aggregate being served. */
+ 	u32			num_active_agg; /* Num. of active aggregates */
+ 	u32			wsum;		/* weight sum */
++	u32			iwsum;		/* inverse weight sum */
+ 
+ 	unsigned long bitmaps[QFQ_MAX_STATE];	    /* Group bitmaps. */
+ 	struct qfq_group groups[QFQ_MAX_INDEX + 1]; /* The groups. */
+@@ -314,6 +314,7 @@ static void qfq_update_agg(struct qfq_sched *q, struct qfq_aggregate *agg,
+ 
+ 	q->wsum +=
+ 		(int) agg->class_weight * (new_num_classes - agg->num_classes);
++	q->iwsum = ONE_FP / q->wsum;
+ 
+ 	agg->num_classes = new_num_classes;
+ }
+@@ -340,6 +341,10 @@ static void qfq_destroy_agg(struct qfq_sched *q, struct qfq_aggregate *agg)
+ {
+ 	if (!hlist_unhashed(&agg->nonfull_next))
+ 		hlist_del_init(&agg->nonfull_next);
++	q->wsum -= agg->class_weight;
++	if (q->wsum != 0)
++		q->iwsum = ONE_FP / q->wsum;
++
+ 	if (q->in_serv_agg == agg)
+ 		q->in_serv_agg = qfq_choose_next_agg(q);
+ 	kfree(agg);
+@@ -827,38 +832,60 @@ static void qfq_make_eligible(struct qfq_sched *q)
+ 	}
+ }
+ 
+-
+ /*
+- * The index of the slot in which the aggregate is to be inserted must
+- * not be higher than QFQ_MAX_SLOTS-2. There is a '-2' and not a '-1'
+- * because the start time of the group may be moved backward by one
+- * slot after the aggregate has been inserted, and this would cause
+- * non-empty slots to be right-shifted by one position.
++ * The index of the slot in which the input aggregate agg is to be
++ * inserted must not be higher than QFQ_MAX_SLOTS-2. There is a '-2'
++ * and not a '-1' because the start time of the group may be moved
++ * backward by one slot after the aggregate has been inserted, and
++ * this would cause non-empty slots to be right-shifted by one
++ * position.
++ *
++ * QFQ+ fully satisfies this bound to the slot index if the parameters
++ * of the classes are not changed dynamically, and if QFQ+ never
++ * happens to postpone the service of agg unjustly, i.e., it never
++ * happens that the aggregate becomes backlogged and eligible, or just
++ * eligible, while an aggregate with a higher approximated finish time
++ * is being served. In particular, in this case QFQ+ guarantees that
++ * the timestamps of agg are low enough that the slot index is never
++ * higher than 2. Unfortunately, QFQ+ cannot provide the same
++ * guarantee if it happens to unjustly postpone the service of agg, or
++ * if the parameters of some class are changed.
++ *
++ * As for the first event, i.e., an out-of-order service, the
++ * upper bound to the slot index guaranteed by QFQ+ grows to
++ * 2 +
++ * QFQ_MAX_AGG_CLASSES * ((1<<QFQ_MTU_SHIFT)/QFQ_MIN_LMAX) *
++ * (current_max_weight/current_wsum) <= 2 + 8 * 128 * 1.
+  *
+- * If the weight and lmax (max_pkt_size) of the classes do not change,
+- * then QFQ+ does meet the above contraint according to the current
+- * values of its parameters. In fact, if the weight and lmax of the
+- * classes do not change, then, from the theory, QFQ+ guarantees that
+- * the slot index is never higher than
+- * 2 + QFQ_MAX_AGG_CLASSES * ((1<<QFQ_MTU_SHIFT)/QFQ_MIN_LMAX) *
+- * (QFQ_MAX_WEIGHT/QFQ_MAX_WSUM) = 2 + 8 * 128 * (1 / 64) = 18
++ * The following function deals with this problem by backward-shifting
++ * the timestamps of agg, if needed, so as to guarantee that the slot
++ * index is never higher than QFQ_MAX_SLOTS-2. This backward-shift may
++ * cause the service of other aggregates to be postponed, yet the
++ * worst-case guarantees of these aggregates are not violated.  In
++ * fact, in case of no out-of-order service, the timestamps of agg
++ * would have been even lower than they are after the backward shift,
++ * because QFQ+ would have guaranteed a maximum value equal to 2 for
++ * the slot index, and 2 < QFQ_MAX_SLOTS-2. Hence the aggregates whose
++ * service is postponed because of the backward-shift would have
++ * however waited for the service of agg before being served.
+  *
+- * When the weight of a class is increased or the lmax of the class is
+- * decreased, a new aggregate with smaller slot size than the original
+- * parent aggregate of the class may happen to be activated. The
+- * activation of this aggregate should be properly delayed to when the
+- * service of the class has finished in the ideal system tracked by
+- * QFQ+. If the activation of the aggregate is not delayed to this
+- * reference time instant, then this aggregate may be unjustly served
+- * before other aggregates waiting for service. This may cause the
+- * above bound to the slot index to be violated for some of these
+- * unlucky aggregates.
++ * The other event that may cause the slot index to be higher than 2
++ * for agg is a recent change of the parameters of some class. If the
++ * weight of a class is increased or the lmax (max_pkt_size) of the
++ * class is decreased, then a new aggregate with smaller slot size
++ * than the original parent aggregate of the class may happen to be
++ * activated. The activation of this aggregate should be properly
++ * delayed to when the service of the class has finished in the ideal
++ * system tracked by QFQ+. If the activation of the aggregate is not
++ * delayed to this reference time instant, then this aggregate may be
++ * unjustly served before other aggregates waiting for service. This
++ * may cause the above bound to the slot index to be violated for some
++ * of these unlucky aggregates.
+  *
+  * Instead of delaying the activation of the new aggregate, which is
+- * quite complex, the following inaccurate but simple solution is used:
+- * if the slot index is higher than QFQ_MAX_SLOTS-2, then the
+- * timestamps of the aggregate are shifted backward so as to let the
+- * slot index become equal to QFQ_MAX_SLOTS-2.
++ * quite complex, the above-discussed capping of the slot index is
++ * used to handle also the consequences of a change of the parameters
++ * of a class.
+  */
+ static void qfq_slot_insert(struct qfq_group *grp, struct qfq_aggregate *agg,
+ 			    u64 roundedS)
+@@ -1077,7 +1104,7 @@ static struct sk_buff *qfq_dequeue(struct Qdisc *sch)
+ 	else
+ 		in_serv_agg->budget -= len;
+ 
+-	q->V += (u64)len * IWSUM;
++	q->V += (u64)len * q->iwsum;
+ 	pr_debug("qfq dequeue: len %u F %lld now %lld\n",
+ 		 len, (unsigned long long) in_serv_agg->F,
+ 		 (unsigned long long) q->V);
+-- 
+1.7.11.7
+
+
+From 9055660d71ce3255b6e2f3ce0050ce722ac4e594 Mon Sep 17 00:00:00 2001
+From: Jason Wang <jasowang@redhat.com>
+Date: Thu, 18 Jul 2013 10:55:15 +0800
+Subject: [PATCH 37/40] tuntap: do not zerocopy if iov needs more pages than
+ MAX_SKB_FRAGS
+
+[ Upstream commit 885291761dba2bfe04df4c0f7bb75e4c920ab82e ]
+
+We try to linearize part of the skb when the number of iov is greater than
+MAX_SKB_FRAGS. This is not enough since each single vector may occupy more than
+one pages, so zerocopy_sg_fromiovec() may still fail and may break the guest
+network.
+
+Solve this problem by calculate the pages needed for iov before trying to do
+zerocopy and switch to use copy instead of zerocopy if it needs more than
+MAX_SKB_FRAGS.
+
+This is done through introducing a new helper to count the pages for iov, and
+call uarg->callback() manually when switching from zerocopy to copy to notify
+vhost.
+
+We can do further optimization on top.
+
+The bug were introduced from commit 0690899b4d4501b3505be069b9a687e68ccbe15b
+(tun: experimental zero copy tx support)
+
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/tun.c | 62 ++++++++++++++++++++++++++++++++++---------------------
+ 1 file changed, 38 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index c3cb60b..2491eb2 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -1037,6 +1037,29 @@ static int zerocopy_sg_from_iovec(struct sk_buff *skb, const struct iovec *from,
+ 	return 0;
+ }
+ 
++static unsigned long iov_pages(const struct iovec *iv, int offset,
++			       unsigned long nr_segs)
++{
++	unsigned long seg, base;
++	int pages = 0, len, size;
++
++	while (nr_segs && (offset >= iv->iov_len)) {
++		offset -= iv->iov_len;
++		++iv;
++		--nr_segs;
++	}
++
++	for (seg = 0; seg < nr_segs; seg++) {
++		base = (unsigned long)iv[seg].iov_base + offset;
++		len = iv[seg].iov_len - offset;
++		size = ((base & ~PAGE_MASK) + len + ~PAGE_MASK) >> PAGE_SHIFT;
++		pages += size;
++		offset = 0;
++	}
++
++	return pages;
++}
++
+ /* Get packet from user space buffer */
+ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 			    void *msg_control, const struct iovec *iv,
+@@ -1084,32 +1107,18 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 			return -EINVAL;
+ 	}
+ 
+-	if (msg_control)
+-		zerocopy = true;
+-
+-	if (zerocopy) {
+-		/* Userspace may produce vectors with count greater than
+-		 * MAX_SKB_FRAGS, so we need to linearize parts of the skb
+-		 * to let the rest of data to be fit in the frags.
+-		 */
+-		if (count > MAX_SKB_FRAGS) {
+-			copylen = iov_length(iv, count - MAX_SKB_FRAGS);
+-			if (copylen < offset)
+-				copylen = 0;
+-			else
+-				copylen -= offset;
+-		} else
+-				copylen = 0;
+-		/* There are 256 bytes to be copied in skb, so there is enough
+-		 * room for skb expand head in case it is used.
++	if (msg_control) {
++		/* There are 256 bytes to be copied in skb, so there is
++		 * enough room for skb expand head in case it is used.
+ 		 * The rest of the buffer is mapped from userspace.
+ 		 */
+-		if (copylen < gso.hdr_len)
+-			copylen = gso.hdr_len;
+-		if (!copylen)
+-			copylen = GOODCOPY_LEN;
++		copylen = gso.hdr_len ? gso.hdr_len : GOODCOPY_LEN;
+ 		linear = copylen;
+-	} else {
++		if (iov_pages(iv, offset + copylen, count) <= MAX_SKB_FRAGS)
++			zerocopy = true;
++	}
++
++	if (!zerocopy) {
+ 		copylen = len;
+ 		linear = gso.hdr_len;
+ 	}
+@@ -1123,8 +1132,13 @@ static ssize_t tun_get_user(struct tun_struct *tun, struct tun_file *tfile,
+ 
+ 	if (zerocopy)
+ 		err = zerocopy_sg_from_iovec(skb, iv, offset, count);
+-	else
++	else {
+ 		err = skb_copy_datagram_from_iovec(skb, 0, iv, offset, len);
++		if (!err && msg_control) {
++			struct ubuf_info *uarg = msg_control;
++			uarg->callback(uarg, false);
++		}
++	}
+ 
+ 	if (err) {
+ 		tun->dev->stats.rx_dropped++;
+-- 
+1.7.11.7
+
+
+From 8270a0a6bfec886971fdece9d4087d4f5e4f62b6 Mon Sep 17 00:00:00 2001
+From: Jason Wang <jasowang@redhat.com>
+Date: Thu, 18 Jul 2013 10:55:16 +0800
+Subject: [PATCH 38/40] macvtap: do not zerocopy if iov needs more pages than
+ MAX_SKB_FRAGS
+
+[ Upstream commit ece793fcfc417b3925844be88a6a6dc82ae8f7c6 ]
+
+We try to linearize part of the skb when the number of iov is greater than
+MAX_SKB_FRAGS. This is not enough since each single vector may occupy more than
+one pages, so zerocopy_sg_fromiovec() may still fail and may break the guest
+network.
+
+Solve this problem by calculate the pages needed for iov before trying to do
+zerocopy and switch to use copy instead of zerocopy if it needs more than
+MAX_SKB_FRAGS.
+
+This is done through introducing a new helper to count the pages for iov, and
+call uarg->callback() manually when switching from zerocopy to copy to notify
+vhost.
+
+We can do further optimization on top.
+
+This bug were introduced from b92946e2919134ebe2a4083e4302236295ea2a73
+(macvtap: zerocopy: validate vectors before building skb).
+
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/macvtap.c | 62 ++++++++++++++++++++++++++++++---------------------
+ 1 file changed, 37 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index 502d948..523d6b2 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -633,6 +633,28 @@ static int macvtap_skb_to_vnet_hdr(const struct sk_buff *skb,
+ 	return 0;
+ }
+ 
++static unsigned long iov_pages(const struct iovec *iv, int offset,
++			       unsigned long nr_segs)
++{
++	unsigned long seg, base;
++	int pages = 0, len, size;
++
++	while (nr_segs && (offset >= iv->iov_len)) {
++		offset -= iv->iov_len;
++		++iv;
++		--nr_segs;
++	}
++
++	for (seg = 0; seg < nr_segs; seg++) {
++		base = (unsigned long)iv[seg].iov_base + offset;
++		len = iv[seg].iov_len - offset;
++		size = ((base & ~PAGE_MASK) + len + ~PAGE_MASK) >> PAGE_SHIFT;
++		pages += size;
++		offset = 0;
++	}
++
++	return pages;
++}
+ 
+ /* Get packet from user space buffer */
+ static ssize_t macvtap_get_user(struct macvtap_queue *q, struct msghdr *m,
+@@ -679,31 +701,15 @@ static ssize_t macvtap_get_user(struct macvtap_queue *q, struct msghdr *m,
+ 	if (unlikely(count > UIO_MAXIOV))
+ 		goto err;
+ 
+-	if (m && m->msg_control && sock_flag(&q->sk, SOCK_ZEROCOPY))
+-		zerocopy = true;
+-
+-	if (zerocopy) {
+-		/* Userspace may produce vectors with count greater than
+-		 * MAX_SKB_FRAGS, so we need to linearize parts of the skb
+-		 * to let the rest of data to be fit in the frags.
+-		 */
+-		if (count > MAX_SKB_FRAGS) {
+-			copylen = iov_length(iv, count - MAX_SKB_FRAGS);
+-			if (copylen < vnet_hdr_len)
+-				copylen = 0;
+-			else
+-				copylen -= vnet_hdr_len;
+-		}
+-		/* There are 256 bytes to be copied in skb, so there is enough
+-		 * room for skb expand head in case it is used.
+-		 * The rest buffer is mapped from userspace.
+-		 */
+-		if (copylen < vnet_hdr.hdr_len)
+-			copylen = vnet_hdr.hdr_len;
+-		if (!copylen)
+-			copylen = GOODCOPY_LEN;
++	if (m && m->msg_control && sock_flag(&q->sk, SOCK_ZEROCOPY)) {
++		copylen = vnet_hdr.hdr_len ? vnet_hdr.hdr_len : GOODCOPY_LEN;
+ 		linear = copylen;
+-	} else {
++		if (iov_pages(iv, vnet_hdr_len + copylen, count)
++		    <= MAX_SKB_FRAGS)
++			zerocopy = true;
++	}
++
++	if (!zerocopy) {
+ 		copylen = len;
+ 		linear = vnet_hdr.hdr_len;
+ 	}
+@@ -715,9 +721,15 @@ static ssize_t macvtap_get_user(struct macvtap_queue *q, struct msghdr *m,
+ 
+ 	if (zerocopy)
+ 		err = zerocopy_sg_from_iovec(skb, iv, vnet_hdr_len, count);
+-	else
++	else {
+ 		err = skb_copy_datagram_from_iovec(skb, 0, iv, vnet_hdr_len,
+ 						   len);
++		if (!err && m && m->msg_control) {
++			struct ubuf_info *uarg = m->msg_control;
++			uarg->callback(uarg, false);
++		}
++	}
++
+ 	if (err)
+ 		goto err_kfree;
+ 
+-- 
+1.7.11.7
+
+
+From d001214123790aea1c3e77dd0b92136f0443a93a Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Thu, 18 Jul 2013 07:19:26 -0700
+Subject: [PATCH 39/40] vlan: mask vlan prio bits
+
+[ Upstream commit d4b812dea4a236f729526facf97df1a9d18e191c ]
+
+In commit 48cc32d38a52d0b68f91a171a8d00531edc6a46e
+("vlan: don't deliver frames for unknown vlans to protocols")
+Florian made sure we set pkt_type to PACKET_OTHERHOST
+if the vlan id is set and we could find a vlan device for this
+particular id.
+
+But we also have a problem if prio bits are set.
+
+Steinar reported an issue on a router receiving IPv6 frames with a
+vlan tag of 4000 (id 0, prio 2), and tunneled into a sit device,
+because skb->vlan_tci is set.
+
+Forwarded frame is completely corrupted : We can see (8100:4000)
+being inserted in the middle of IPv6 source address :
+
+16:48:00.780413 IP6 2001:16d8:8100:4000:ee1c:0:9d9:bc87 >
+9f94:4d95:2001:67c:29f4::: ICMP6, unknown icmp6 type (0), length 64
+       0x0000:  0000 0029 8000 c7c3 7103 0001 a0ae e651
+       0x0010:  0000 0000 ccce 0b00 0000 0000 1011 1213
+       0x0020:  1415 1617 1819 1a1b 1c1d 1e1f 2021 2223
+       0x0030:  2425 2627 2829 2a2b 2c2d 2e2f 3031 3233
+
+It seems we are not really ready to properly cope with this right now.
+
+We can probably do better in future kernels :
+vlan_get_ingress_priority() should be a netdev property instead of
+a per vlan_dev one.
+
+For stable kernels, lets clear vlan_tci to fix the bugs.
+
+Reported-by: Steinar H. Gunderson <sesse@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ include/linux/if_vlan.h |  3 +--
+ net/8021q/vlan_core.c   |  2 +-
+ net/core/dev.c          | 11 +++++++++--
+ 3 files changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/include/linux/if_vlan.h b/include/linux/if_vlan.h
+index 637fa71d..0b34988 100644
+--- a/include/linux/if_vlan.h
++++ b/include/linux/if_vlan.h
+@@ -79,9 +79,8 @@ static inline int is_vlan_dev(struct net_device *dev)
+ }
+ 
+ #define vlan_tx_tag_present(__skb)	((__skb)->vlan_tci & VLAN_TAG_PRESENT)
+-#define vlan_tx_nonzero_tag_present(__skb) \
+-	(vlan_tx_tag_present(__skb) && ((__skb)->vlan_tci & VLAN_VID_MASK))
+ #define vlan_tx_tag_get(__skb)		((__skb)->vlan_tci & ~VLAN_TAG_PRESENT)
++#define vlan_tx_tag_get_id(__skb)	((__skb)->vlan_tci & VLAN_VID_MASK)
+ 
+ #if defined(CONFIG_VLAN_8021Q) || defined(CONFIG_VLAN_8021Q_MODULE)
+ 
+diff --git a/net/8021q/vlan_core.c b/net/8021q/vlan_core.c
+index 8a15eaa..4a78c4d 100644
+--- a/net/8021q/vlan_core.c
++++ b/net/8021q/vlan_core.c
+@@ -9,7 +9,7 @@ bool vlan_do_receive(struct sk_buff **skbp)
+ {
+ 	struct sk_buff *skb = *skbp;
+ 	__be16 vlan_proto = skb->vlan_proto;
+-	u16 vlan_id = skb->vlan_tci & VLAN_VID_MASK;
++	u16 vlan_id = vlan_tx_tag_get_id(skb);
+ 	struct net_device *vlan_dev;
+ 	struct vlan_pcpu_stats *rx_stats;
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index faebb39..7ddbb31 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3513,8 +3513,15 @@ ncls:
+ 		}
+ 	}
+ 
+-	if (vlan_tx_nonzero_tag_present(skb))
+-		skb->pkt_type = PACKET_OTHERHOST;
++	if (unlikely(vlan_tx_tag_present(skb))) {
++		if (vlan_tx_tag_get_id(skb))
++			skb->pkt_type = PACKET_OTHERHOST;
++		/* Note: we might in the future use prio bits
++		 * and set skb->priority like in vlan_do_receive()
++		 * For the time being, just ignore Priority Code Point
++		 */
++		skb->vlan_tci = 0;
++	}
+ 
+ 	/* deliver only exact match when indicated */
+ 	null_or_dev = deliver_exact ? skb->dev : NULL;
+-- 
+1.7.11.7
+
+
+From d766645d1d1f64631ef50df36c47c37bded82051 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Thu, 18 Jul 2013 09:35:10 -0700
+Subject: [PATCH 40/40] vlan: fix a race in egress prio management
+
+[ Upstream commit 3e3aac497513c669e1c62c71e1d552ea85c1d974 ]
+
+egress_priority_map[] hash table updates are protected by rtnl,
+and we never remove elements until device is dismantled.
+
+We have to make sure that before inserting an new element in hash table,
+all its fields are committed to memory or else another cpu could
+find corrupt values and crash.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Patrick McHardy <kaber@trash.net>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/8021q/vlan_dev.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
+index 3a8c8fd..1cd3d2a 100644
+--- a/net/8021q/vlan_dev.c
++++ b/net/8021q/vlan_dev.c
+@@ -73,6 +73,8 @@ vlan_dev_get_egress_qos_mask(struct net_device *dev, struct sk_buff *skb)
+ {
+ 	struct vlan_priority_tci_mapping *mp;
+ 
++	smp_rmb(); /* coupled with smp_wmb() in vlan_dev_set_egress_priority() */
++
+ 	mp = vlan_dev_priv(dev)->egress_priority_map[(skb->priority & 0xF)];
+ 	while (mp) {
+ 		if (mp->priority == skb->priority) {
+@@ -249,6 +251,11 @@ int vlan_dev_set_egress_priority(const struct net_device *dev,
+ 	np->next = mp;
+ 	np->priority = skb_prio;
+ 	np->vlan_qos = vlan_qos;
++	/* Before inserting this element in hash table, make sure all its fields
++	 * are committed to memory.
++	 * coupled with smp_rmb() in vlan_dev_get_egress_qos_mask()
++	 */
++	smp_wmb();
+ 	vlan->egress_priority_map[skb_prio & 0xF] = np;
+ 	if (vlan_qos)
+ 		vlan->nr_egress_mappings++;
+-- 
+1.7.11.7
+
