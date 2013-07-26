@@ -814,6 +814,9 @@ Patch25068: ipv6-call-udp_push_pending_frames-when-uncorking-a-socket-with-AF_IN
 
 Patch26000: cve-2013-4125.patch
 
+#rhbz 979581
+Patch25069: iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1565,6 +1568,9 @@ ApplyPatch ipv6-ip6_append_data_mtu-did-not-care-about-pmtudisc-and_frag_size.pa
 
 #CVE-2013-4162 rhbz 987627 987656
 ApplyPatch ipv6-call-udp_push_pending_frames-when-uncorking-a-socket-with-AF_INET-pending-data.patch
+
+#rhbz 979581
+ApplyPatch iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2411,6 +2417,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Jul 26 2013 Josh Boyer <jwboyer@redhat.com>
+- Add patch to fix NULL deref in iwlwifi (rhbz 979581)
+
 * Wed Jul 24 2013 Josh Boyer <jwboyer@redhat.com>
 - CVE-2013-4162 net: panic while pushing pending data out of a IPv6 socket with UDP_CORK enabled (rhbz 987627 987656)
 - CVE-2013-4163 net: panic while appending data to a corked IPv6 socket in ip6_append_data_mtu (rhbz 987633 987639)
