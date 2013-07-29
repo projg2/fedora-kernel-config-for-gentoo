@@ -776,6 +776,9 @@ Patch25069: iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 #rhbz 969473
 Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
 
+#rhbz 989093
+Patch25071: drm-i915-correctly-restore-fences-with-objects-attac.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1499,6 +1502,9 @@ ApplyPatch iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
 #rhbz 969473
 ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
+
+#rhbz 989093
+ApplyPatch drm-i915-correctly-restore-fences-with-objects-attac.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2309,6 +2315,7 @@ fi
 
 %changelog
 * Mon Jul 29 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix i915 suspend/resume regression in 3.10 (rhbz 989093)
 - Linux v3.10.4
 - Add support for elantech v7 devices (rhbz 969473)
 
