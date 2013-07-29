@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -769,9 +769,6 @@ Patch25063: HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 
 #rhbz 885407
 Patch25064: iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
-
-#rhbz 987639 987656
-Patch25065: net_310.mbox
 
 #rhbz 979581
 Patch25069: iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
@@ -1496,9 +1493,6 @@ ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 
 #rhbz 885407
 ApplyPatch iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
-
-#rhbz 987639 987656
-ApplyPatch net_310.mbox
 
 #rhbz 979581
 ApplyPatch iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
@@ -2315,6 +2309,7 @@ fi
 
 %changelog
 * Mon Jul 29 2013 Josh Boyer <jwboyer@redhat.com>
+- Linux v3.10.4
 - Add support for elantech v7 devices (rhbz 969473)
 
 * Fri Jul 26 2013 Josh Boyer <jwboyer@redhat.com>
