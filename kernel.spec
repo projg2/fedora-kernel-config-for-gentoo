@@ -817,6 +817,9 @@ Patch26000: cve-2013-4125.patch
 #rhbz 979581
 Patch25069: iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
+#rhbz 969473
+Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1571,6 +1574,9 @@ ApplyPatch ipv6-call-udp_push_pending_frames-when-uncorking-a-socket-with-AF_INE
 
 #rhbz 979581
 ApplyPatch iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
+
+#rhbz 969473
+ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2417,6 +2423,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Jul 29 2013 Josh Boyer <jwboyer@redhat.com>
+- Add support for elantech v7 devices (rhbz 969473)
+
 * Fri Jul 26 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix NULL deref in iwlwifi (rhbz 979581)
 
