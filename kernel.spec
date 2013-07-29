@@ -776,6 +776,9 @@ Patch25065: net_310.mbox
 #rhbz 979581
 Patch25069: iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
+#rhbz 969473
+Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1499,6 +1502,9 @@ ApplyPatch net_310.mbox
 
 #rhbz 979581
 ApplyPatch iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
+
+#rhbz 969473
+ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2308,6 +2314,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jul 29 2013 Josh Boyer <jwboyer@redhat.com>
+- Add support for elantech v7 devices (rhbz 969473)
+
 * Fri Jul 26 2013 Josh Boyer <jwboyer@redhat.com>
 - Add patch to fix NULL deref in iwlwifi (rhbz 979581)
 
