@@ -2322,7 +2322,7 @@ fi
 # and build.
 
 %changelog
-* Tue Jul 30 2013 Josh Boyer <jwboyer@redhat.com>
+* Tue Jul 30 2013 Josh Boyer <jwboyer@redhat.com> - 3.10.4-300
 - Revert some changes to make Logitech devices function properly (rhbz 989138)
 
 * Mon Jul 29 2013 Josh Boyer <jwboyer@redhat.com>
