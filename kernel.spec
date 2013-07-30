@@ -779,6 +779,10 @@ Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
 #rhbz 989093
 Patch25071: drm-i915-correctly-restore-fences-with-objects-attac.patch
 
+#rhbz 989138
+Patch25072: HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.patch
+Patch25073: HID-hid-logitech-dj-querying_devices-was-never-set.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1505,6 +1509,10 @@ ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
 
 #rhbz 989093
 ApplyPatch drm-i915-correctly-restore-fences-with-objects-attac.patch
+
+#rhbz 989138
+ApplyPatch HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.patch
+ApplyPatch HID-hid-logitech-dj-querying_devices-was-never-set.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2314,6 +2322,9 @@ fi
 # and build.
 
 %changelog
+* Tue Jul 30 2013 Josh Boyer <jwboyer@redhat.com>
+- Revert some changes to make Logitech devices function properly (rhbz 989138)
+
 * Mon Jul 29 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix i915 suspend/resume regression in 3.10 (rhbz 989093)
 - Linux v3.10.4
