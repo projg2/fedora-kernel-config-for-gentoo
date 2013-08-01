@@ -132,8 +132,6 @@ Summary: The Linux kernel
 %define with_bootwrapper %{?_without_bootwrapper: 0} %{?!_without_bootwrapper: 1}
 # Want to build a the vsdo directories installed
 %define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 1}
-# kernel-tegra (only valid for arm)
-%define with_tegra       %{?_without_tegra:       0} %{?!_without_tegra:       1}
 # kernel-kirkwood (only valid for arm)
 %define with_kirkwood       %{?_without_kirkwood:       0} %{?!_without_kirkwood:       1}
 #
@@ -250,11 +248,6 @@ Summary: The Linux kernel
 # kernel-PAE is only built on i686.
 %ifnarch i686
 %define with_pae 0
-%endif
-
-# kernel up (mutliplatform inc VExpress, highbank, omap), and tegra are only built on armv7 hfp/sfp
-%ifnarch armv7hl armv7l
-%define with_tegra 0
 %endif
 
 # kernel-kirkwood is only built for armv5
@@ -486,6 +479,8 @@ Provides: kernel-highbank\
 Provides: kernel-highbank-uname-r = %{KVERREL}%{?1:.%{1}}\
 Provides: kernel-omap\
 Provides: kernel-omap-uname-r = %{KVERREL}%{?1:.%{1}}\
+Provides: kernel-tegra\
+Provides: kernel-tegra-uname-r = %{KVERREL}%{?1:.%{1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
 Requires(pre): linux-firmware >= 20120206-0.1.git06c8f81\
@@ -580,13 +575,12 @@ Source54: config-powerpc64p7
 Source70: config-s390x
 
 # Unified ARM kernels
-Source100: config-armv7
-Source101: config-armv7-generic
-Source102: config-armv7-tegra
+Source100: config-arm-generic
+Source101: config-armv7
+Source102: config-armv7-generic
 
 # Legacy ARM kernels
-Source104: config-arm-generic
-Source105: config-arm-kirkwood
+Source103: config-arm-kirkwood
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -714,7 +708,11 @@ Patch20001: 0002-x86-EFI-Calculate-the-EFI-framebuffer-size-instead-o.patch
 # ARM
 Patch21000: arm-export-read_current_timer.patch
 
+# lpae
+Patch21001: arm-lpae-ax88796.patch
+
 # ARM omap
+Patch21003: arm-omap-load-tfp410.patch
 
 # ARM tegra
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
@@ -1076,12 +1074,6 @@ on kernel bugs, as some of these options impact performance noticably.
 This package includes a version of the Linux kernel with support for
 marvell kirkwood based systems, i.e., guruplug, sheevaplug
 
-%define variant_summary The Linux kernel compiled for tegra boards
-%kernel_variant_package tegra
-%description tegra
-This package includes a version of the Linux kernel with support for
-nvidia tegra based systems, i.e., trimslice, ac-100.
-
 
 %prep
 # do a few sanity-checks for --with *only builds
@@ -1343,6 +1335,8 @@ ApplyPatch vmbugon-warnon.patch
 # ARM
 #
 ApplyPatch arm-export-read_current_timer.patch
+ApplyPatch arm-lpae-ax88796.patch
+ApplyPatch arm-omap-load-tfp410.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 
 #
@@ -1872,10 +1866,6 @@ BuildKernel %make_target %kernel_image PAE
 BuildKernel %make_target %kernel_image kirkwood
 %endif
 
-%if %{with_tegra}
-BuildKernel %make_target %kernel_image tegra
-%endif
-
 %if %{with_up}
 BuildKernel %make_target %kernel_image
 %endif
@@ -2202,9 +2192,6 @@ fi}\
 %kernel_variant_preun kirkwood
 %kernel_variant_post -v kirkwood
 
-%kernel_variant_preun tegra
-%kernel_variant_post -v tegra
-
 if [ -x /sbin/ldconfig ]
 then
     /sbin/ldconfig -X || exit $?
@@ -2349,7 +2336,6 @@ fi
 %kernel_variant_files %{with_pae} PAE
 %kernel_variant_files %{with_pae_debug} PAEdebug
 %kernel_variant_files %{with_kirkwood} kirkwood
-%kernel_variant_files %{with_tegra} tegra
 
 # plz don't put in a version string unless you're going to tag
 # and build.
@@ -2364,6 +2350,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Aug  1 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Rebase ARM config
+
 * Thu Aug 01 2013 Justin M. Forbes <jforbes@redhat.com>
 - Rebase to 3.10.4
   dropped:
