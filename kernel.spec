@@ -2365,6 +2365,9 @@ fi
 #                 ||     ||
 %changelog
 * Thu Aug 01 2013 Justin M. Forbes <jforbes@redhat.com>
+- Update s390x config
+
+* Thu Aug 01 2013 Justin M. Forbes <jforbes@redhat.com>
 - Rebase to 3.10.4
   dropped:
    debug-bad-pte-dmi.patch
