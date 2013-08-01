@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 301
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -781,7 +781,6 @@ Patch25071: drm-i915-correctly-restore-fences-with-objects-attac.patch
 
 #rhbz 989138
 Patch25072: HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.patch
-Patch25073: HID-hid-logitech-dj-querying_devices-was-never-set.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1512,7 +1511,6 @@ ApplyPatch drm-i915-correctly-restore-fences-with-objects-attac.patch
 
 #rhbz 989138
 ApplyPatch HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.patch
-ApplyPatch HID-hid-logitech-dj-querying_devices-was-never-set.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2322,6 +2320,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 01 2013 Josh Boyer <jwboyer@redhat.com>
+- Drop hid-logitech-dj patch that was breaking enumeration (rhbz 989138)
+
 * Wed Jul 31 2013 Josh Boyer <jwboyer@redhat.com>
 - update s390x config [Dan Horák]
 
