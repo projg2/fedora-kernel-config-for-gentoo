@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -819,6 +819,9 @@ Patch25069: iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
 #rhbz 969473
 Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
+
+#rhbz 977053
+Patch25073: iwl4965-reset-firmware-after-rfkill-off.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1577,6 +1580,9 @@ ApplyPatch iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
 #rhbz 969473
 ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
+
+#rhbz 977053
+ApplyPatch iwl4965-reset-firmware-after-rfkill-off.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2423,6 +2429,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Aug 01 2013 Josh Boyer <jwboyer@redhat.com>
+- Fix firmware issues with iwl4965 and rfkill (rhbz 977053)
+
 * Mon Jul 29 2013 Josh Boyer <jwboyer@redhat.com>
 - Add support for elantech v7 devices (rhbz 969473)
 
