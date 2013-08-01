@@ -62,19 +62,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 9
+%define base_sublevel 10
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -649,9 +649,6 @@ Patch100: taint-vbox.patch
 
 Patch110: vmbugon-warnon.patch
 
-Patch200: debug-bad-pte-dmi.patch
-Patch201: debug-bad-pte-modules.patch
-
 Patch390: defaults-acpi-video.patch
 Patch391: acpi-video-dos.patch
 Patch394: acpi-debug-infinite-loop.patch
@@ -670,7 +667,7 @@ Patch530: silence-fbcon-logo.patch
 Patch800: crash-driver.patch
 
 # secure boot
-Patch1000: secure-boot-20130506.patch
+Patch1000: devel-pekey-secure-boot-20130502.patch
 
 # virt + ksm patches
 
@@ -718,11 +715,9 @@ Patch20001: 0002-x86-EFI-Calculate-the-EFI-framebuffer-size-instead-o.patch
 Patch21000: arm-export-read_current_timer.patch
 
 # ARM omap
-Patch21003: arm-omap-ehci-fix.patch
 
 # ARM tegra
 Patch21005: arm-tegra-usb-no-reset-linux33.patch
-Patch21006: arm-tegra-fixclk.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -737,15 +732,6 @@ Patch22226: vt-Drop-K_OFF-for-VC_MUTE.patch
 
 #rhbz 892811
 Patch22247: ath9k_rx_dma_stop_check.patch
-
-#rhbz 916544
-Patch22263: 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
-
-#rhbz 859282
-Patch24113: VMX-x86-handle-host-TSC-calibration-failure.patch
-
-#rhbz 921500
-Patch25001: i7300_edac_single_mode_fixup.patch
 
 #rhbz 927469
 Patch25007: fix-child-thread-introspection.patch
@@ -765,12 +751,6 @@ Patch25033: fanotify-info-leak-in-copy_event_to_user.patch
 #rhbz 969644
 Patch25046: KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
-#rhbz 975995
-Patch25047: drivers-hwmon-nct6775.patch
-
-Patch25050: iwlwifi-pcie-fix-race-in-queue-unmapping.patch
-Patch25051: iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
-
 #rhbz 903741
 Patch25052: HID-input-return-ENODATA-if-reading-battery-attrs-fails.patch
 
@@ -788,37 +768,20 @@ Patch25055: ath3k-dont-use-stack-memory-for-DMA.patch
 Patch25056: iwl3945-better-skb-management-in-rx-path.patch
 Patch25057: iwl4965-better-skb-management-in-rx-path.patch
 
-#CVE-2013-2234 rhbz 980995 981007
-Patch25058: af_key-fix-info-leaks-in-notify-messages.patch
-
-#CVE-2013-2232 rhbz 981552 981564
-Patch25060: ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
-
-#rhbz 976789 980643
-Patch25062: vhost-net-fix-use-after-free-in-vhost_net_flush.patch
-
 #rhbz 959721
 Patch25063: HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 
 #rhbz 885407
 Patch25064: iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
-#rhbz 986538
-Patch25065: iwlwifi-add-new-pci-id-for-6x35-series.patch
-
-#CVE-2013-4163 rhbz 987633 987639
-Patch25067: ipv6-ip6_append_data_mtu-did-not-care-about-pmtudisc-and_frag_size.patch
-
-#CVE-2013-4162 rhbz 987627 987656
-Patch25068: ipv6-call-udp_push_pending_frames-when-uncorking-a-socket-with-AF_INET-pending-data.patch
-
-Patch26000: cve-2013-4125.patch
-
 #rhbz 979581
 Patch25069: iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
 #rhbz 969473
 Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
+
+#rhbz 989093
+Patch25071: drm-i915-correctly-restore-fences-with-objects-attac.patch
 
 #rhbz 977053
 Patch25073: iwl4965-reset-firmware-after-rfkill-off.patch
@@ -1373,10 +1336,6 @@ ApplyPatch taint-vbox.patch
 
 ApplyPatch vmbugon-warnon.patch
 
-ApplyPatch debug-bad-pte-dmi.patch
-ApplyPatch debug-bad-pte-modules.patch
-
-
 # Architecture patches
 # x86(-64)
 
@@ -1384,9 +1343,7 @@ ApplyPatch debug-bad-pte-modules.patch
 # ARM
 #
 ApplyPatch arm-export-read_current_timer.patch
-ApplyPatch arm-omap-ehci-fix.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
-ApplyPatch arm-tegra-fixclk.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -1451,7 +1408,7 @@ ApplyPatch silence-fbcon-logo.patch
 ApplyPatch crash-driver.patch
 
 # secure boot
-ApplyPatch secure-boot-20130506.patch
+ApplyPatch devel-pekey-secure-boot-20130502.patch
 
 # Assorted Virt Fixes
 
@@ -1504,15 +1461,6 @@ ApplyPatch vt-Drop-K_OFF-for-VC_MUTE.patch
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
 
-#rhbz 916544
-ApplyPatch 0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
-
-#rhbz 921500
-ApplyPatch i7300_edac_single_mode_fixup.patch
-
-#rhbz 859282
-ApplyPatch VMX-x86-handle-host-TSC-calibration-failure.patch
-
 #rhbz 927469
 ApplyPatch fix-child-thread-introspection.patch
 
@@ -1531,12 +1479,6 @@ ApplyPatch fanotify-info-leak-in-copy_event_to_user.patch
 #rhbz 969644
 ApplyPatch KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
 
-#rhbz 975995
-ApplyPatch drivers-hwmon-nct6775.patch
-
-ApplyPatch iwlwifi-pcie-fix-race-in-queue-unmapping.patch
-ApplyPatch iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
-
 #rhbz 903741
 ApplyPatch HID-input-return-ENODATA-if-reading-battery-attrs-fails.patch
 
@@ -1554,37 +1496,20 @@ ApplyPatch ath3k-dont-use-stack-memory-for-DMA.patch
 ApplyPatch iwl3945-better-skb-management-in-rx-path.patch
 ApplyPatch iwl4965-better-skb-management-in-rx-path.patch
 
-#CVE-2013-2234 rhbz 980995 981007
-ApplyPatch af_key-fix-info-leaks-in-notify-messages.patch
-
-#CVE-2013-2232 rhbz 981552 981564
-ApplyPatch ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
-
-#rhbz 976789 980643
-ApplyPatch vhost-net-fix-use-after-free-in-vhost_net_flush.patch
-
 #rhbz 959721
 ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
 
 #rhbz 885407
 ApplyPatch iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
-ApplyPatch cve-2013-4125.patch
-
-#rhbz 986538
-ApplyPatch iwlwifi-add-new-pci-id-for-6x35-series.patch
-
-#CVE-2013-4163 rhbz 987633 987639
-ApplyPatch ipv6-ip6_append_data_mtu-did-not-care-about-pmtudisc-and_frag_size.patch
-
-#CVE-2013-4162 rhbz 987627 987656
-ApplyPatch ipv6-call-udp_push_pending_frames-when-uncorking-a-socket-with-AF_INET-pending-data.patch
-
 #rhbz 979581
 ApplyPatch iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
 #rhbz 969473
 ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
+
+#rhbz 989093
+ApplyPatch drm-i915-correctly-restore-fences-with-objects-attac.patch
 
 #rhbz 977053
 ApplyPatch iwl4965-reset-firmware-after-rfkill-off.patch
@@ -2439,6 +2364,26 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Aug 01 2013 Justin M. Forbes <jforbes@redhat.com>
+- Rebase to 3.10.4
+  dropped:
+   debug-bad-pte-dmi.patch
+   debug-bad-pte-modules.patch
+   VMX-x86-handle-host-TSC-calibration-failure.patch
+   ipv6-ip6_sk_dst_check-must-not-assume-ipv6-dst.patch
+   af_key-fix-info-leaks-in-notify-messages.patch
+   arm-tegra-fixclk.patch
+   vhost-net-fix-use-after-free-in-vhost_net_flush.patch
+   0001-drivers-crypto-nx-fix-init-race-alignmasks-and-GCM-b.patch
+   i7300_edac_single_mode_fixup.patch
+   drivers-hwmon-nct6775.patch
+   iwlwifi-pcie-fix-race-in-queue-unmapping.patch
+   iwlwifi-pcie-wake-the-queue-if-stopped-when-being-unmapped.patch
+   cve-2013-4125.patch
+   iwlwifi-add-new-pci-id-for-6x35-series.patch
+   ipv6-ip6_append_data_mtu-did-not-care-about-pmtudisc-and_frag_size.patch
+   ipv6-call-udp_push_pending_frames-when-uncorking-a-socket-with-AF_INET-pending-data.patch
+
 * Thu Aug 01 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix mac80211 connection issues (rhbz 981445)
 - Fix firmware issues with iwl4965 and rfkill (rhbz 977053)
