@@ -2350,7 +2350,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Thu Aug  1 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+* Thu Aug  1 2013 Peter Robinson <pbrobinson@fedoraproject.org> - 3.10.4-100
 - Rebase ARM config
 
 * Thu Aug 01 2013 Justin M. Forbes <jforbes@redhat.com>
