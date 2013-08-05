@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 301
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -730,9 +730,6 @@ Patch23006: fix-child-thread-introspection.patch
 #rhbz 948262
 Patch25024: intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
 
-#CVE-2013-2140 rhbz 971146 971148
-Patch25031: xen-blkback-Check-device-permissions-before-allowing.patch
-
 #CVE-2013-2147 rhbz 971242 971249
 Patch25032: cve-2013-2147-ciss-info-leak.patch
 
@@ -775,9 +772,6 @@ Patch25069: iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
 #rhbz 969473
 Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
-
-#rhbz 989093
-Patch25071: drm-i915-correctly-restore-fences-with-objects-attac.patch
 
 #rhbz 989138
 Patch25072: HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.patch
@@ -1468,9 +1462,6 @@ ApplyPatch fix-child-thread-introspection.patch
 #rhbz 948262
 ApplyPatch intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
 
-#CVE-2013-2140 rhbz 971146 971148
-ApplyPatch xen-blkback-Check-device-permissions-before-allowing.patch
-
 #CVE-2013-2147 rhbz 971242 971249
 ApplyPatch cve-2013-2147-ciss-info-leak.patch
 
@@ -1513,9 +1504,6 @@ ApplyPatch iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
 #rhbz 969473
 ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
-
-#rhbz 989093
-ApplyPatch drm-i915-correctly-restore-fences-with-objects-attac.patch
 
 #rhbz 989138
 ApplyPatch HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.patch
@@ -2336,6 +2324,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 04 2013 Justin M. Forbes <jforbes@redhat.com>
+- Linux v3.10.5
+
 * Thu Aug 01 2013 Josh Boyer <jwboyer@redhat.com>
 - Fix mac80211 connection issues (rhbz 981445)
 - Fix firmware issues with iwl4965 and rfkill (rhbz 977053)
