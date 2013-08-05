@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -737,9 +737,6 @@ Patch25007: fix-child-thread-introspection.patch
 #rhbz 948262
 Patch25024: intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
 
-#CVE-2013-2140 rhbz 971146 971148
-Patch25031: xen-blkback-Check-device-permissions-before-allowing.patch
-
 #CVE-2013-2147 rhbz 971242 971249
 Patch25032: cve-2013-2147-ciss-info-leak.patch
 
@@ -777,9 +774,6 @@ Patch25069: iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
 #rhbz 969473
 Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
-
-#rhbz 989093
-Patch25071: drm-i915-correctly-restore-fences-with-objects-attac.patch
 
 #rhbz 977053
 Patch25073: iwl4965-reset-firmware-after-rfkill-off.patch
@@ -1461,9 +1455,6 @@ ApplyPatch fix-child-thread-introspection.patch
 #rhbz 948262
 ApplyPatch intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
 
-#CVE-2013-2140 rhbz 971146 971148
-ApplyPatch xen-blkback-Check-device-permissions-before-allowing.patch
-
 #CVE-2013-2147 rhbz 971242 971249
 ApplyPatch cve-2013-2147-ciss-info-leak.patch
 
@@ -1501,9 +1492,6 @@ ApplyPatch iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
 #rhbz 969473
 ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
-
-#rhbz 989093
-ApplyPatch drm-i915-correctly-restore-fences-with-objects-attac.patch
 
 #rhbz 977053
 ApplyPatch iwl4965-reset-firmware-after-rfkill-off.patch
@@ -2350,6 +2338,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Aug 04 2013 Justin M. Forbes <jforbes@redhat.com>
+- Linux v3.10.5
+
 * Thu Aug  1 2013 Peter Robinson <pbrobinson@fedoraproject.org> - 3.10.4-100
 - Rebase ARM config
 
