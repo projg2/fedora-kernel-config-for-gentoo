@@ -2338,6 +2338,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Aug 06 2013 Justin M. Forbes <jforbes@redhat.com> 3.10.5-100
+- update s390x config [Dan Horák]
+
 * Mon Aug 04 2013 Justin M. Forbes <jforbes@redhat.com>
 - Linux v3.10.5
 
