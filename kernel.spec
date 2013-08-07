@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2342,6 +2342,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Aug 07 2013 Justin M. Forbes <jforbes@redhat.com> 3.10.5-101
+- Bump for rebuild after koji hiccup
+
 * Wed Aug 07 2013 Josh Boyer <jwboyer@redhat.com>
 - Add zero file length check to make sure pesign didn't fail (rhbz 991808)
 
