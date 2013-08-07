@@ -1671,6 +1671,10 @@ BuildKernel() {
     %if %{signmodules}
     # Sign the image if we're using EFI
     %pesign -s -i $KernelImage -o vmlinuz.signed
+    if [ ! -s vmlinuz.signed ]; then
+        echo "pesigning failed"
+        exit 1
+    fi
     mv vmlinuz.signed $KernelImage
     %endif
     $CopyKernel $KernelImage \
@@ -2324,6 +2328,9 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 07 2013 Josh Boyer <jwboyer@redhat.com>
+- Add zero file length check to make sure pesign didn't fail (rhbz 991808)
+
 * Tue Aug 06 2013 Justin M. Forbes <jforbes@redhat.com> 3.10.5-200
 - update s390x config [Dan Horák]
 
