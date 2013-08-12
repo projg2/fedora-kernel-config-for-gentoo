@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -733,9 +733,6 @@ Patch25024: intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.pa
 #CVE-2013-2147 rhbz 971242 971249
 Patch25032: cve-2013-2147-ciss-info-leak.patch
 
-#CVE-2013-2148 rhbz 971258 971261
-Patch25033: fanotify-info-leak-in-copy_event_to_user.patch
-
 #rhbz 954252
 Patch25036: scsi-ipr-possible-irq-lock-inversion-dependency-detected.patch
 
@@ -754,18 +751,12 @@ Patch25054: bridge-send-query-as-soon-as-leave-is-received.patch
 Patch25061: bridge-timer-fix.patch
 Patch25066: bridge-do-not-call-setup_timer-multiple-times.patch
 
-#rhbz 977558
-Patch25055: ath3k-dont-use-stack-memory-for-DMA.patch
-
 #rhbz 977040
 Patch25056: iwl3945-better-skb-management-in-rx-path.patch
 Patch25057: iwl4965-better-skb-management-in-rx-path.patch
 
 #rhbz 959721
 Patch25063: HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
-
-#rhbz 885407
-Patch25064: iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
 #rhbz 979581
 Patch25069: iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
@@ -1465,9 +1456,6 @@ ApplyPatch intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.pat
 #CVE-2013-2147 rhbz 971242 971249
 ApplyPatch cve-2013-2147-ciss-info-leak.patch
 
-#CVE-2013-2148 rhbz 971258 971261
-ApplyPatch fanotify-info-leak-in-copy_event_to_user.patch
-
 #rhbz 954252
 ApplyPatch scsi-ipr-possible-irq-lock-inversion-dependency-detected.patch
 
@@ -1486,18 +1474,12 @@ ApplyPatch bridge-send-query-as-soon-as-leave-is-received.patch
 ApplyPatch bridge-timer-fix.patch
 ApplyPatch bridge-do-not-call-setup_timer-multiple-times.patch
 
-#rhbz 977558
-ApplyPatch ath3k-dont-use-stack-memory-for-DMA.patch
-
 #rhbz 977040
 ApplyPatch iwl3945-better-skb-management-in-rx-path.patch
 ApplyPatch iwl4965-better-skb-management-in-rx-path.patch
 
 #rhbz 959721
 ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
-
-#rhbz 885407
-ApplyPatch iwlwifi-dvm-dont-send-BT_CONFIG-on-devices-wo-Bluetooth.patch
 
 #rhbz 979581
 ApplyPatch iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
@@ -2328,6 +2310,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 12 2013 Justin M. Forbes <jforbes@redhat.com> 3.10.6-200
+- Linux v3.10.6
+
 * Wed Aug 07 2013 Justin M. Forbes <jforbes@redhat.com> 3.10.5-201
 - Bump for rebuild after koji hiccup
 
