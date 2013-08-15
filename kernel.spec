@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2310,6 +2310,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 15 2013 Josh Boyer <jwboyer@redhat.com> - 3.6.10.7-200
+- Linux v3.10.7
+
 * Mon Aug 12 2013 Justin M. Forbes <jforbes@redhat.com> 3.10.6-200
 - Linux v3.10.6
 
