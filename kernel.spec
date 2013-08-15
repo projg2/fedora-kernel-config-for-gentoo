@@ -2317,6 +2317,7 @@ fi
 
 %changelog
 * Thu Aug 15 2013 Josh Boyer <jwboyer@redhat.com> - 3.6.10.7-200
+- Enable memory cgroup swap accounting (rhbz 982808)
 - Add patch to fix regression on TeVII S471 devices (rhbz 963715)
 - Linux v3.10.7
 
