@@ -777,6 +777,9 @@ Patch25076: mac80211-continue-using-disabled-channels-while-connected.patch
 #rhbz 963715
 Patch25077: media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020.patch
 
+#rhbz 845699
+Patch25078: ALSA-hda-Add-a-fixup-for-Gateway-LT27.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1488,6 +1491,9 @@ ApplyPatch mac80211-continue-using-disabled-channels-while-connected.patch
 
 #rhbz 963715
 ApplyPatch media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020.patch
+
+#rhbz 845699
+ApplyPatch ALSA-hda-Add-a-fixup-for-Gateway-LT27.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2330,6 +2336,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Aug 16 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch from Nathanael Noblet to fix mic on Gateway LT27 (rhbz 845699)
+
 * Thu Aug 15 2013 Josh Boyer <jwboyer@redhat.com> - 3.10.7-100
 - Add patch to fix regression on TeVII S471 devices (rhbz 963715)
 - Linux v3.10.7
