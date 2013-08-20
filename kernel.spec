@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -766,19 +766,8 @@ Patch25069: iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 #rhbz 969473
 Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
 
-#rhbz 977053
-Patch25073: iwl4965-reset-firmware-after-rfkill-off.patch
-
-#rhbz 981445
-Patch25074: mac80211-fix-infinite-loop-in-ieee80211_determine_chantype.patch
-Patch25075: mac80211-ignore-HT-primary-channel-while-connected.patch
-Patch25076: mac80211-continue-using-disabled-channels-while-connected.patch
-
 #rhbz 963715
 Patch25077: media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020.patch
-
-#rhbz 845699
-Patch25078: ALSA-hda-Add-a-fixup-for-Gateway-LT27.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1481,19 +1470,8 @@ ApplyPatch iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 #rhbz 969473
 ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
 
-#rhbz 977053
-ApplyPatch iwl4965-reset-firmware-after-rfkill-off.patch
-
-#rhbz 981445
-ApplyPatch mac80211-fix-infinite-loop-in-ieee80211_determine_chantype.patch
-ApplyPatch mac80211-ignore-HT-primary-channel-while-connected.patch
-ApplyPatch mac80211-continue-using-disabled-channels-while-connected.patch
-
 #rhbz 963715
 ApplyPatch media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020.patch
-
-#rhbz 845699
-ApplyPatch ALSA-hda-Add-a-fixup-for-Gateway-LT27.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2336,6 +2314,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Aug 20 2013 Josh Boyer <jwboyer@fedoraproject.org> - 3.10.8-10
+- Linux v3.10.8
+- CVE-2013-4254 ARM: perf: NULL pointer dereference in validate_event (rhbz 998878 998881)
+
 * Fri Aug 16 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patch from Nathanael Noblet to fix mic on Gateway LT27 (rhbz 845699)
 
