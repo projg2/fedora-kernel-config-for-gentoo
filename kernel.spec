@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2314,7 +2314,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Tue Aug 20 2013 Josh Boyer <jwboyer@fedoraproject.org> - 3.10.8-10
+* Tue Aug 20 2013 Josh Boyer <jwboyer@fedoraproject.org> - 3.10.9-200
+- Linux v3.10.9
+
+* Tue Aug 20 2013 Josh Boyer <jwboyer@fedoraproject.org> - 3.10.8-100
 - Linux v3.10.8
 - CVE-2013-4254 ARM: perf: NULL pointer dereference in validate_event (rhbz 998878 998881)
 
