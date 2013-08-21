@@ -769,6 +769,10 @@ Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
 #rhbz 963715
 Patch25077: media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020.patch
 
+#CVE-2013-0343 rhbz 914664 999380
+Patch25078: ipv6-remove-max_addresses-check-from-ipv6_create_tempaddr.patch
+
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1472,6 +1476,9 @@ ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
 
 #rhbz 963715
 ApplyPatch media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020.patch
+
+#CVE-2013-0343 rhbz 914664 999380
+ApplyPatch ipv6-remove-max_addresses-check-from-ipv6_create_tempaddr.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2314,7 +2321,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Tue Aug 20 2013 Josh Boyer <jwboyer@fedoraproject.org> - 3.10.9-200
+* Wed Aug 21 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2013-0343 handling of IPv6 temporary addresses (rhbz 914664 999380)
+
+* Tue Aug 20 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v3.10.9
 
 * Tue Aug 20 2013 Josh Boyer <jwboyer@fedoraproject.org> - 3.10.8-100
