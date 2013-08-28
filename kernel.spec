@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -775,6 +775,8 @@ Patch25078: ipv6-remove-max_addresses-check-from-ipv6_create_tempaddr.patch
 #rhbz 989269
 Patch25079: 3.10.-6-7-crashes-on-network-activity.patch
 
+Patch25090: mei-3.10.y.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1484,6 +1486,8 @@ ApplyPatch ipv6-remove-max_addresses-check-from-ipv6_create_tempaddr.patch
 
 #rhbz 989269
 ApplyPatch 3.10.-6-7-crashes-on-network-activity.patch
+
+ApplyPatch mei-3.10.y.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2326,6 +2330,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Aug 28 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add mei patches that fix various s/r issues (rhbz 994824 989373)
+
 * Wed Aug 21 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patch to fix brcmsmac oops (rhbz 989269)
 - CVE-2013-0343 handling of IPv6 temporary addresses (rhbz 914664 999380)

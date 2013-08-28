@@ -1,0 +1,357 @@
+                                                                                                                                                                                                                                                               
+Delivered-To: jwboyer@gmail.com
+Received: by 10.76.168.104 with SMTP id zv8csp116476oab;
+        Sun, 25 Aug 2013 02:53:05 -0700 (PDT)
+X-Received: by 10.68.212.37 with SMTP id nh5mr9408188pbc.16.1377424384710;
+        Sun, 25 Aug 2013 02:53:04 -0700 (PDT)
+Return-Path: <stable-owner@vger.kernel.org>
+Received: from vger.kernel.org (vger.kernel.org. [209.132.180.67])
+        by mx.google.com with ESMTP id qf5si6944869pac.66.1969.12.31.16.00.00;
+        Sun, 25 Aug 2013 02:53:04 -0700 (PDT)
+Received-SPF: pass (google.com: best guess record for domain of stable-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) client-ip=209.132.180.67;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: best guess record for domain of stable-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) smtp.mail=stable-owner@vger.kernel.org
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+	id S1756376Ab3HYJwV (ORCPT <rfc822;outmanzhao@gmail.com>
+	+ 58 others); Sun, 25 Aug 2013 05:52:21 -0400
+Received: from mga03.intel.com ([143.182.124.21]:34236 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756234Ab3HYJwM (ORCPT <rfc822;stable@vger.kernel.org>);
+	Sun, 25 Aug 2013 05:52:12 -0400
+Received: from azsmga001.ch.intel.com ([10.2.17.19])
+  by azsmga101.ch.intel.com with ESMTP; 25 Aug 2013 02:52:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="4.89,951,1367996400"; 
+   d="scan'208";a="351301658"
+Received: from twinkler-dhg.jer.intel.com ([10.12.87.84])
+  by azsmga001.ch.intel.com with ESMTP; 25 Aug 2013 02:52:10 -0700
+From:	Tomas Winkler <tomas.winkler@intel.com>
+To:	gregkh@linuxfoundation.org
+Cc:	arnd@arndb.de, linux-kernel@vger.kernel.org,
+	Tomas Winkler <tomas.winkler@intel.com>, stable@vger.kernel.org
+Subject: [3.10][PATCH 1/4] mei: me: fix reset state machine
+Date:	Sun, 25 Aug 2013 12:49:46 +0300
+Message-Id: <1377424189-5508-2-git-send-email-tomas.winkler@intel.com>
+X-Mailer: git-send-email 1.8.1.2
+In-Reply-To: <1377424189-5508-1-git-send-email-tomas.winkler@intel.com>
+References: <1377424189-5508-1-git-send-email-tomas.winkler@intel.com>
+Sender:	stable-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <stable.vger.kernel.org>
+X-Mailing-List:	stable@vger.kernel.org
+
+stable: 3.10
+commit  315a383ad7dbd484fafb93ef08038e3dbafbb7a8 upstream
+
+
+ME HW ready bit is down after hw reset was asserted or on error.
+Only on error we need to enter the reset flow, additional reset
+need to be prevented when reset was triggered during
+initialization , power up/down or a reset is already in progress
+
+Cc: stable@vger.kernel.org
+Tested-by: Shuah Khan <shuah.kh@samsung.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/misc/mei/hw-me.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
+index 822170f..0310859 100644
+--- a/drivers/misc/mei/hw-me.c
++++ b/drivers/misc/mei/hw-me.c
+@@ -482,7 +482,9 @@ irqreturn_t mei_me_irq_thread_handler(int irq, void *dev_id)
+ 	/* check if ME wants a reset */
+ 	if (!mei_hw_is_ready(dev) &&
+ 	    dev->dev_state != MEI_DEV_RESETTING &&
+-	    dev->dev_state != MEI_DEV_INITIALIZING) {
++	    dev->dev_state != MEI_DEV_INITIALIZING &&
++	    dev->dev_state != MEI_DEV_POWER_DOWN &&
++	    dev->dev_state != MEI_DEV_POWER_UP) {
+ 		dev_dbg(&dev->pdev->dev, "FW not ready.\n");
+ 		mei_reset(dev, 1);
+ 		mutex_unlock(&dev->device_lock);
+-- 
+1.8.1.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe stable" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+                                                                                                                                                                                                                                                               
+Delivered-To: jwboyer@gmail.com
+Received: by 10.76.168.104 with SMTP id zv8csp116479oab;
+        Sun, 25 Aug 2013 02:53:12 -0700 (PDT)
+X-Received: by 10.68.219.104 with SMTP id pn8mr9271522pbc.81.1377424392029;
+        Sun, 25 Aug 2013 02:53:12 -0700 (PDT)
+Return-Path: <stable-owner@vger.kernel.org>
+Received: from vger.kernel.org (vger.kernel.org. [209.132.180.67])
+        by mx.google.com with ESMTP id ut10si6347816pbc.210.1969.12.31.16.00.00;
+        Sun, 25 Aug 2013 02:53:12 -0700 (PDT)
+Received-SPF: pass (google.com: best guess record for domain of stable-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) client-ip=209.132.180.67;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: best guess record for domain of stable-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) smtp.mail=stable-owner@vger.kernel.org
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+	id S1756385Ab3HYJwW (ORCPT <rfc822;outmanzhao@gmail.com>
+	+ 58 others); Sun, 25 Aug 2013 05:52:22 -0400
+Received: from mga03.intel.com ([143.182.124.21]:34236 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756301Ab3HYJwO (ORCPT <rfc822;stable@vger.kernel.org>);
+	Sun, 25 Aug 2013 05:52:14 -0400
+Received: from azsmga001.ch.intel.com ([10.2.17.19])
+  by azsmga101.ch.intel.com with ESMTP; 25 Aug 2013 02:52:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="4.89,951,1367996400"; 
+   d="scan'208";a="351301662"
+Received: from twinkler-dhg.jer.intel.com ([10.12.87.84])
+  by azsmga001.ch.intel.com with ESMTP; 25 Aug 2013 02:52:12 -0700
+From:	Tomas Winkler <tomas.winkler@intel.com>
+To:	gregkh@linuxfoundation.org
+Cc:	arnd@arndb.de, linux-kernel@vger.kernel.org,
+	Tomas Winkler <tomas.winkler@intel.com>, stable@vger.kernel.org
+Subject: [3.10][PATCH 2/4] mei: don't have to clean the state on power up
+Date:	Sun, 25 Aug 2013 12:49:47 +0300
+Message-Id: <1377424189-5508-3-git-send-email-tomas.winkler@intel.com>
+X-Mailer: git-send-email 1.8.1.2
+In-Reply-To: <1377424189-5508-1-git-send-email-tomas.winkler@intel.com>
+References: <1377424189-5508-1-git-send-email-tomas.winkler@intel.com>
+Sender:	stable-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <stable.vger.kernel.org>
+X-Mailing-List:	stable@vger.kernel.org
+
+stable: 3.10
+commit 99f22c4ef24cf87b0dae6aabe6b5e620b62961d9 upstream
+
+When powering up, we don't have to clean up the device state
+nothing is connected.
+
+Cc: stable@vger.kernel.org
+Tested-by: Shuah Khan <shuah.kh@samsung.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/misc/mei/init.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/misc/mei/init.c b/drivers/misc/mei/init.c
+index f580d30..6eec689 100644
+--- a/drivers/misc/mei/init.c
++++ b/drivers/misc/mei/init.c
+@@ -143,7 +143,8 @@ void mei_reset(struct mei_device *dev, int interrupts_enabled)
+ 
+ 	dev->hbm_state = MEI_HBM_IDLE;
+ 
+-	if (dev->dev_state != MEI_DEV_INITIALIZING) {
++	if (dev->dev_state != MEI_DEV_INITIALIZING &&
++	    dev->dev_state != MEI_DEV_POWER_UP) {
+ 		if (dev->dev_state != MEI_DEV_DISABLED &&
+ 		    dev->dev_state != MEI_DEV_POWER_DOWN)
+ 			dev->dev_state = MEI_DEV_RESETTING;
+-- 
+1.8.1.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe stable" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+                                                                                                                                                                                                                                                               
+Delivered-To: jwboyer@gmail.com
+Received: by 10.76.168.104 with SMTP id zv8csp116502oab;
+        Sun, 25 Aug 2013 02:54:30 -0700 (PDT)
+X-Received: by 10.68.102.165 with SMTP id fp5mr9198656pbb.83.1377424469866;
+        Sun, 25 Aug 2013 02:54:29 -0700 (PDT)
+Return-Path: <stable-owner@vger.kernel.org>
+Received: from vger.kernel.org (vger.kernel.org. [209.132.180.67])
+        by mx.google.com with ESMTP id yk3si6904106pac.244.1969.12.31.16.00.00;
+        Sun, 25 Aug 2013 02:54:29 -0700 (PDT)
+Received-SPF: pass (google.com: best guess record for domain of stable-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) client-ip=209.132.180.67;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: best guess record for domain of stable-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) smtp.mail=stable-owner@vger.kernel.org
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+	id S1756437Ab3HYJwo (ORCPT <rfc822;outmanzhao@gmail.com>
+	+ 58 others); Sun, 25 Aug 2013 05:52:44 -0400
+Received: from mga03.intel.com ([143.182.124.21]:34236 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756338Ab3HYJwQ (ORCPT <rfc822;stable@vger.kernel.org>);
+	Sun, 25 Aug 2013 05:52:16 -0400
+Received: from azsmga001.ch.intel.com ([10.2.17.19])
+  by azsmga101.ch.intel.com with ESMTP; 25 Aug 2013 02:52:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="4.89,951,1367996400"; 
+   d="scan'208";a="351301665"
+Received: from twinkler-dhg.jer.intel.com ([10.12.87.84])
+  by azsmga001.ch.intel.com with ESMTP; 25 Aug 2013 02:52:14 -0700
+From:	Tomas Winkler <tomas.winkler@intel.com>
+To:	gregkh@linuxfoundation.org
+Cc:	arnd@arndb.de, linux-kernel@vger.kernel.org,
+	Tomas Winkler <tomas.winkler@intel.com>, stable@vger.kernel.org
+Subject: [3.10][PATCH 3/4] mei: me: fix waiting for hw ready
+Date:	Sun, 25 Aug 2013 12:49:48 +0300
+Message-Id: <1377424189-5508-4-git-send-email-tomas.winkler@intel.com>
+X-Mailer: git-send-email 1.8.1.2
+In-Reply-To: <1377424189-5508-1-git-send-email-tomas.winkler@intel.com>
+References: <1377424189-5508-1-git-send-email-tomas.winkler@intel.com>
+Sender:	stable-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <stable.vger.kernel.org>
+X-Mailing-List:	stable@vger.kernel.org
+
+stable: 3.10
+commit dab9bf41b23fe700c4a74133e41eb6a21706031e upstream
+
+
+1. MEI_INTEROP_TIMEOUT is in seconds not in jiffies
+so we use mei_secs_to_jiffies macro
+While cold boot is fast this is relevant in resume
+2. wait_event_interruptible_timeout can return with
+-ERESTARTSYS so do not override it with -ETIMEDOUT
+3.Adjust error message
+
+Cc: stable@vger.kernel.org
+Tested-by: Shuah Khan <shuah.kh@samsung.com>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/misc/mei/hw-me.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
+index 0310859..700fe55 100644
+--- a/drivers/misc/mei/hw-me.c
++++ b/drivers/misc/mei/hw-me.c
+@@ -238,14 +238,18 @@ static int mei_me_hw_ready_wait(struct mei_device *dev)
+ 	if (mei_me_hw_is_ready(dev))
+ 		return 0;
+ 
++	dev->recvd_hw_ready = false;
+ 	mutex_unlock(&dev->device_lock);
+ 	err = wait_event_interruptible_timeout(dev->wait_hw_ready,
+-			dev->recvd_hw_ready, MEI_INTEROP_TIMEOUT);
++			dev->recvd_hw_ready,
++			mei_secs_to_jiffies(MEI_INTEROP_TIMEOUT));
+ 	mutex_lock(&dev->device_lock);
+ 	if (!err && !dev->recvd_hw_ready) {
++		if (!err)
++			err = -ETIMEDOUT;
+ 		dev_err(&dev->pdev->dev,
+-			"wait hw ready failed. status = 0x%x\n", err);
+-		return -ETIMEDOUT;
++			"wait hw ready failed. status = %d\n", err);
++		return err;
+ 	}
+ 
+ 	dev->recvd_hw_ready = false;
+-- 
+1.8.1.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe stable" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
+                                                                                                                                                                                                                                                               
+Delivered-To: jwboyer@gmail.com
+Received: by 10.76.168.104 with SMTP id zv8csp116477oab;
+        Sun, 25 Aug 2013 02:53:06 -0700 (PDT)
+X-Received: by 10.66.146.42 with SMTP id sz10mr8515943pab.78.1377424384757;
+        Sun, 25 Aug 2013 02:53:04 -0700 (PDT)
+Return-Path: <stable-owner@vger.kernel.org>
+Received: from vger.kernel.org (vger.kernel.org. [209.132.180.67])
+        by mx.google.com with ESMTP id zu9si6326866pbc.308.1969.12.31.16.00.00;
+        Sun, 25 Aug 2013 02:53:04 -0700 (PDT)
+Received-SPF: pass (google.com: best guess record for domain of stable-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) client-ip=209.132.180.67;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: best guess record for domain of stable-owner@vger.kernel.org designates 209.132.180.67 as permitted sender) smtp.mail=stable-owner@vger.kernel.org
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+	id S1756391Ab3HYJwW (ORCPT <rfc822;outmanzhao@gmail.com>
+	+ 58 others); Sun, 25 Aug 2013 05:52:22 -0400
+Received: from mga03.intel.com ([143.182.124.21]:34236 "EHLO mga03.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1756361Ab3HYJwT (ORCPT <rfc822;stable@vger.kernel.org>);
+	Sun, 25 Aug 2013 05:52:19 -0400
+Received: from azsmga001.ch.intel.com ([10.2.17.19])
+  by azsmga101.ch.intel.com with ESMTP; 25 Aug 2013 02:52:18 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="4.89,951,1367996400"; 
+   d="scan'208";a="351301674"
+Received: from twinkler-dhg.jer.intel.com ([10.12.87.84])
+  by azsmga001.ch.intel.com with ESMTP; 25 Aug 2013 02:52:16 -0700
+From:	Tomas Winkler <tomas.winkler@intel.com>
+To:	gregkh@linuxfoundation.org
+Cc:	arnd@arndb.de, linux-kernel@vger.kernel.org,
+	Tomas Winkler <tomas.winkler@intel.com>,
+	stable@vger.kernel.org, Shuah Khan <shuah.kh@samsung.com>,
+	Konstantin Khlebnikov <khlebnikov@openvz.org>
+Subject: [3.10][PATCH 4/4] mei: me: fix hardware reset flow
+Date:	Sun, 25 Aug 2013 12:49:49 +0300
+Message-Id: <1377424189-5508-5-git-send-email-tomas.winkler@intel.com>
+X-Mailer: git-send-email 1.8.1.2
+In-Reply-To: <1377424189-5508-1-git-send-email-tomas.winkler@intel.com>
+References: <1377424189-5508-1-git-send-email-tomas.winkler@intel.com>
+Sender:	stable-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <stable.vger.kernel.org>
+X-Mailing-List:	stable@vger.kernel.org
+
+stable: 3.10
+commit ff96066e3171acdea356b331163495957cb833d0 char-misc
+
+
+Both H_IS and H_IE needs to be set to receive H_RDY
+interrupt
+
+1. Assert H_IS to clear the interrupts during hw reset
+and use mei_me_reg_write instead of mei_hcsr_set as the later
+strips down the H_IS
+
+2. fix interrupt disablement embarrassing typo
+  hcsr |= ~H_IE -> hcsr &= ~H_IE;
+this will remove the unwanted interrupt on power down
+
+3. remove useless debug print outs
+
+Cc: stable@vger.kernel.org
+Cc: Shuah Khan <shuah.kh@samsung.com>
+Cc: Konstantin Khlebnikov <khlebnikov@openvz.org>
+Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Conflicts:
+	drivers/misc/mei/hw-me.c
+
+---
+ drivers/misc/mei/hw-me.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/misc/mei/hw-me.c b/drivers/misc/mei/hw-me.c
+index 700fe55..1bf3f8b 100644
+--- a/drivers/misc/mei/hw-me.c
++++ b/drivers/misc/mei/hw-me.c
+@@ -176,16 +176,14 @@ static void mei_me_hw_reset(struct mei_device *dev, bool intr_enable)
+ 	struct mei_me_hw *hw = to_me_hw(dev);
+ 	u32 hcsr = mei_hcsr_read(hw);
+ 
+-	dev_dbg(&dev->pdev->dev, "before reset HCSR = 0x%08x.\n", hcsr);
+-
+-	hcsr |= (H_RST | H_IG);
++	hcsr |= H_RST | H_IG | H_IS;
+ 
+ 	if (intr_enable)
+ 		hcsr |= H_IE;
+ 	else
+-		hcsr |= ~H_IE;
++		hcsr &= ~H_IE;
+ 
+-	mei_hcsr_set(hw, hcsr);
++	mei_me_reg_write(hw, H_CSR, hcsr);
+ 
+ 	if (dev->dev_state == MEI_DEV_POWER_DOWN)
+ 		mei_me_hw_reset_release(dev);
+-- 
+1.8.1.2
+
+--
+To unsubscribe from this list: send the line "unsubscribe stable" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
