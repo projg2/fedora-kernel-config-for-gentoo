@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -759,9 +759,6 @@ Patch25057: iwl4965-better-skb-management-in-rx-path.patch
 
 #rhbz 959721
 Patch25063: HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
-
-#rhbz 979581
-Patch25069: iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
 #rhbz 969473
 Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
@@ -1471,9 +1468,6 @@ ApplyPatch iwl4965-better-skb-management-in-rx-path.patch
 
 #rhbz 959721
 ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
-
-#rhbz 979581
-ApplyPatch iwlwifi-dvm-fix-calling-ieee80211_chswitch_done-with-NULL.patch
 
 #rhbz 969473
 ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
@@ -2330,6 +2324,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Aug 29 2013 Justin M. Forbes <jforbes@fedoraproject.org> 3.10.10-100
+- Linux v3.10.10
+
 * Wed Aug 28 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add mei patches that fix various s/r issues (rhbz 994824 989373)
 

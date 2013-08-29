@@ -4670,9 +4670,9 @@ index 653668d..69a6c08 100644
 --- a/arch/x86/include/asm/bootparam_utils.h
 +++ b/arch/x86/include/asm/bootparam_utils.h
 @@ -38,9 +38,13 @@ static void sanitize_boot_params(struct boot_params *boot_params)
- 		memset(&boot_params->olpc_ofw_header, 0,
+ 		memset(&boot_params->ext_ramdisk_image, 0,
  		       (char *)&boot_params->efi_info -
- 			(char *)&boot_params->olpc_ofw_header);
+ 			(char *)&boot_params->ext_ramdisk_image);
 -		memset(&boot_params->kbd_status, 0,
 +		memset(&boot_params->kbd_status, 0, sizeof(boot_params->kbd_status));
 +		/* don't clear boot_params->secure_boot.  we set that ourselves
