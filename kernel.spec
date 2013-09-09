@@ -2334,10 +2334,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Mon Sep 09 2013 Josh Boyer <jwboyer@fedoraproject.org>
+* Mon Sep 09 2013 Josh Boyer <jwboyer@fedoraproject.org> 3.10.11-100
 - Fix system freeze due to incorrect rt2800 initialization (rhbz 1000679)
 
-* Thu Sep 09 2013 Justin M. Forbes <jforbes@fedoraproject.org> 3.10.11-100
+* Mon Sep 09 2013 Justin M. Forbes <jforbes@fedoraproject.org>
 - Linux v3.10.11
 
 * Fri Aug 30 2013 Josh Boyer <jwboyer@fedoraproject.org>
