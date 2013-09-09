@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -769,11 +769,6 @@ Patch25077: media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020
 
 #CVE-2013-0343 rhbz 914664 999380
 Patch25078: ipv6-remove-max_addresses-check-from-ipv6_create_tempaddr.patch
-
-#rhbz 989269
-Patch25079: 3.10.-6-7-crashes-on-network-activity.patch
-
-Patch25090: mei-3.10.y.patch
 
 #CVE-2013-2888 rhbz 1000451 1002543 CVE-2013-2889 rhbz 999890 1002548
 #CVE-2013-2891 rhbz 999960 1002555  CVE-2013-2892 rhbz 1000429 1002570
@@ -1499,11 +1494,6 @@ ApplyPatch media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020.
 
 #CVE-2013-0343 rhbz 914664 999380
 ApplyPatch ipv6-remove-max_addresses-check-from-ipv6_create_tempaddr.patch
-
-#rhbz 989269
-ApplyPatch 3.10.-6-7-crashes-on-network-activity.patch
-
-ApplyPatch mei-3.10.y.patch
 
 #CVE-2013-2888 rhbz 1000451 1002543 CVE-2013-2889 rhbz 999890 1002548
 #CVE-2013-2891 rhbz 999960 1002555  CVE-2013-2892 rhbz 1000429 1002570
@@ -2324,6 +2314,9 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 09 2013 Justin M. Forbes <jforbes@fedoraproject.org> 3.10.11-200
+- Linux v3.10.11
+
 * Fri Aug 30 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix HID CVEs.  Absurd.
 - CVE-2013-2888 rhbz 1000451 1002543 CVE-2013-2889 rhbz 999890 1002548
