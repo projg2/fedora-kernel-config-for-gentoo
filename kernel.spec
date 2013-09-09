@@ -769,6 +769,9 @@ Patch25077: media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020
 #CVE-2013-0343 rhbz 914664 999380
 Patch25078: ipv6-remove-max_addresses-check-from-ipv6_create_tempaddr.patch
 
+#rhbz 1000679
+Patch25079: rt2800-rearrange-bbp-rfcsr-initialization.patch
+
 #CVE-2013-2888 rhbz 1000451 1002543 CVE-2013-2889 rhbz 999890 1002548
 #CVE-2013-2891 rhbz 999960 1002555  CVE-2013-2892 rhbz 1000429 1002570
 #CVE-2013-2893 rhbz 1000414 1002575 CVE-2013-2894 rhbz 1000137 1002579
@@ -1486,6 +1489,9 @@ ApplyPatch ipv6-remove-max_addresses-check-from-ipv6_create_tempaddr.patch
 #CVE-2013-2895 rhbz 1000360 1002581 CVE-2013-2896 rhbz 1000494 1002594
 #CVE-2013-2897 rhbz 1000536 1002600 CVE-2013-2899 rhbz 1000373 1002604
 ApplyPatch HID-CVE-fixes.patch
+
+#rhbz 1000679
+ApplyPatch rt2800-rearrange-bbp-rfcsr-initialization.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2328,6 +2334,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Sep 09 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix system freeze due to incorrect rt2800 initialization (rhbz 1000679)
+
 * Thu Sep 09 2013 Justin M. Forbes <jforbes@fedoraproject.org> 3.10.11-100
 - Linux v3.10.11
 
