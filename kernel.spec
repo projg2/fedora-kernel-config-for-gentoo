@@ -748,6 +748,9 @@ Patch25099: HID-CVE-fixes.patch
 #rhbz 963991
 Patch26000: acpi-pcie-hotplug-conflict.patch
 
+#rhbz 1002351
+Patch25100: crypto-fix-race-in-larval-lookup.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1443,6 +1446,9 @@ ApplyPatch rt2800-rearrange-bbp-rfcsr-initialization.patch
 
 #rhbz 963991
 ApplyPatch acpi-pcie-hotplug-conflict.patch
+
+#rhbz1002351
+ApplyPatch crypto-fix-race-in-larval-lookup.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2258,6 +2264,7 @@ fi
 %changelog
 * Wed Sep 11 2013 Neil Horman <nhorman@redhat.com>
 - Fix pcie/acpi hotplug conflict (rhbz 963991)
+- Fix race in crypto larval lookup
 
 * Wed Sep 11 2013 Justin M. Forbes <jforbes@fedoraproject.org>
 - Linux v3.11 rebase
