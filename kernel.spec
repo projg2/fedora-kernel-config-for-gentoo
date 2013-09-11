@@ -779,6 +779,9 @@ Patch25079: rt2800-rearrange-bbp-rfcsr-initialization.patch
 #CVE-2013-2897 rhbz 1000536 1002600 CVE-2013-2899 rhbz 1000373 1002604
 Patch25099: HID-CVE-fixes.patch
 
+#rhbz 1002351
+Patch25100: crypto-fix-race-in-larval-lookup.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1492,6 +1495,9 @@ ApplyPatch HID-CVE-fixes.patch
 
 #rhbz 1000679
 ApplyPatch rt2800-rearrange-bbp-rfcsr-initialization.patch
+
+#rhbz1002351
+ApplyPatch crypto-fix-race-in-larval-lookup.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2334,6 +2340,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Sep 11 2013 Neil Horman <nhorman@redhat.com>
+- Fix race in crypto larval lookup
+
 * Mon Sep 09 2013 Josh Boyer <jwboyer@fedoraproject.org> 3.10.11-100
 - Fix system freeze due to incorrect rt2800 initialization (rhbz 1000679)
 
