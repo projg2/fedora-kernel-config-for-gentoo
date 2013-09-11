@@ -745,6 +745,9 @@ Patch25079: rt2800-rearrange-bbp-rfcsr-initialization.patch
 #CVE-2013-2897 rhbz 1000536 1002600 CVE-2013-2899 rhbz 1000373 1002604
 Patch25099: HID-CVE-fixes.patch
 
+#rhbz 963991
+Patch26000: acpi-pcie-hotplug-conflict.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1437,6 +1440,9 @@ ApplyPatch HID-CVE-fixes.patch
 
 #rhbz 1000679
 ApplyPatch rt2800-rearrange-bbp-rfcsr-initialization.patch
+
+#rhbz 963991
+ApplyPatch acpi-pcie-hotplug-conflict.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2250,6 +2256,9 @@ fi
 # and build.
 
 %changelog
+* Wed Sep 11 2013 Neil Horman <nhorman@redhat.com>
+- Fix pcie/acpi hotplug conflict (rhbz 963991)
+
 * Wed Sep 11 2013 Justin M. Forbes <jforbes@fedoraproject.org>
 - Linux v3.11 rebase
 
