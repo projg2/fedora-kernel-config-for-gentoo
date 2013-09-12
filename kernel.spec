@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -743,7 +743,7 @@ Patch25079: rt2800-rearrange-bbp-rfcsr-initialization.patch
 #CVE-2013-2893 rhbz 1000414 1002575 CVE-2013-2894 rhbz 1000137 1002579
 #CVE-2013-2895 rhbz 1000360 1002581 CVE-2013-2896 rhbz 1000494 1002594
 #CVE-2013-2897 rhbz 1000536 1002600 CVE-2013-2899 rhbz 1000373 1002604
-Patch25099: HID-CVE-fixes.patch
+Patch25099: HID-CVE-fixes-3.11.patch
 
 #rhbz 963991
 Patch26000: acpi-pcie-hotplug-conflict.patch
@@ -1439,7 +1439,7 @@ ApplyPatch media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020.
 #CVE-2013-2893 rhbz 1000414 1002575 CVE-2013-2894 rhbz 1000137 1002579
 #CVE-2013-2895 rhbz 1000360 1002581 CVE-2013-2896 rhbz 1000494 1002594
 #CVE-2013-2897 rhbz 1000536 1002600 CVE-2013-2899 rhbz 1000373 1002604
-ApplyPatch HID-CVE-fixes.patch
+ApplyPatch HID-CVE-fixes-3.11.patch
 
 #rhbz 1000679
 ApplyPatch rt2800-rearrange-bbp-rfcsr-initialization.patch
@@ -2262,6 +2262,9 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 12 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Update HID CVE fixes to fix crash from lenovo-tpkbd driver (rhbz 1003998)
+
 * Wed Sep 11 2013 Neil Horman <nhorman@redhat.com>
 - Fix pcie/acpi hotplug conflict (rhbz 963991)
 - Fix race in crypto larval lookup
