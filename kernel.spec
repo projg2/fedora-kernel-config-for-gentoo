@@ -2340,6 +2340,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Sep 12 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Update HID CVE fixes to fix crash from lenovo-tpkbd driver (rhbz 1003998)
+
 * Wed Sep 11 2013 Neil Horman <nhorman@redhat.com>
 - Fix race in crypto larval lookup
 
