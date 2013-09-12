@@ -944,9 +944,9 @@ against the %{?2:%{2} }kernel package.\
 
 #
 # This macro creates a kernel-<subpackage>-modules-extra package.
-#	%%kernel_modules-extra_package <subpackage> <pretty-name>
+#	%%kernel_modules_extra_package <subpackage> <pretty-name>
 #
-%define kernel_modules-extra_package() \
+%define kernel_modules_extra_package() \
 %package %{?1:%{1}-}modules-extra\
 Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
 Group: System Environment/Kernel\
@@ -972,14 +972,14 @@ Summary: %{variant_summary}\
 Group: System Environment/Kernel\
 %kernel_reqprovconf\
 %{expand:%%kernel_devel_package %1 %{!?-n:%1}%{?-n:%{-n*}}}\
-%{expand:%%kernel_modules-extra_package %1 %{!?-n:%1}%{?-n:%{-n*}}}\
+%{expand:%%kernel_modules_extra_package %1 %{!?-n:%1}%{?-n:%{-n*}}}\
 %{expand:%%kernel_debuginfo_package %1}\
 %{nil}
 
 
 # First the auxiliary packages of the main kernel package.
 %kernel_devel_package
-%kernel_modules-extra_package
+%kernel_modules_extra_package
 %kernel_debuginfo_package
 
 
@@ -2053,7 +2053,7 @@ fi\
 
 #
 # This macro defines a %%post script for a kernel*-modules-extra package.
-#	%%kernel_modules-extra_post [<subpackage>]
+#	%%kernel_modules_extra_post [<subpackage>]
 #
 %define kernel_modules_extra_post() \
 %{expand:%%post %{?1:%{1}-}modules-extra}\
