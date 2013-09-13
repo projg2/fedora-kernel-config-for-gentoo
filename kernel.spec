@@ -782,6 +782,9 @@ Patch25099: HID-CVE-fixes.patch
 #rhbz 1002351
 Patch25100: crypto-fix-race-in-larval-lookup.patch
 
+#CVE-2013-4343 rhbz 1007733 1007741
+Patch25101: tuntap-correctly-handle-error-in-tun_set_iff.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1498,6 +1501,9 @@ ApplyPatch rt2800-rearrange-bbp-rfcsr-initialization.patch
 
 #rhbz1002351
 ApplyPatch crypto-fix-race-in-larval-lookup.patch
+
+#CVE-2013-4343 rhbz 1007733 1007741
+ApplyPatch tuntap-correctly-handle-error-in-tun_set_iff.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2340,6 +2346,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Sep 13 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2013-4343 net: use-after-free TUNSETIFF (rhbz 1007733 1007741)
+
 * Thu Sep 12 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Update HID CVE fixes to fix crash from lenovo-tpkbd driver (rhbz 1003998)
 
