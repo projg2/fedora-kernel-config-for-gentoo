@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2274,6 +2274,9 @@ fi
 # and build.
 
 %changelog
+* Sat Sep 14 2013 Josh Boyer <jwboyer@fedoraproject.org> - 3.11.1-200
+- Linux v3.11.1
+
 * Fri Sep 13 2013 Kyle McMartin <kyle@redhat.com>
 - Fix crash-driver.patch to properly use page_is_ram. 
 
