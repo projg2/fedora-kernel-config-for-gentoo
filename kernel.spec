@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -765,9 +765,6 @@ Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
 
 #rhbz 963715
 Patch25077: media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020.patch
-
-#CVE-2013-0343 rhbz 914664 999380
-Patch25078: ipv6-remove-max_addresses-check-from-ipv6_create_tempaddr.patch
 
 #rhbz 1000679
 Patch25079: rt2800-rearrange-bbp-rfcsr-initialization.patch
@@ -1488,9 +1485,6 @@ ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
 
 #rhbz 963715
 ApplyPatch media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020.patch
-
-#CVE-2013-0343 rhbz 914664 999380
-ApplyPatch ipv6-remove-max_addresses-check-from-ipv6_create_tempaddr.patch
 
 #CVE-2013-2888 rhbz 1000451 1002543 CVE-2013-2889 rhbz 999890 1002548
 #CVE-2013-2891 rhbz 999960 1002555  CVE-2013-2892 rhbz 1000429 1002570
@@ -2352,6 +2346,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Sep 16 2013 Justin M. Forbes <jforbes@fedoraproject.org> 3.10.12-100
+- Linux v3.10.12
+
 * Fri Sep 13 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2013-4350 net: sctp: ipv6 ipsec encryption bug in sctp_v6_xmit (rhbz 1007872 1007903)
 - CVE-2013-4343 net: use-after-free TUNSETIFF (rhbz 1007733 1007741)
