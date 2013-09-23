@@ -791,6 +791,9 @@ Patch25104: ansi_cprng-Fix-off-by-one-error-in-non-block-size-request.patch
 #rhbz 928561
 Patch25105: 0001-HID-kye-Add-report-fixup-for-Genius-Gx-Imperator-Key.patch
 
+#rhbz 971893
+Patch25106: bonding-driver-alb-learning.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1516,6 +1519,9 @@ ApplyPatch ansi_cprng-Fix-off-by-one-error-in-non-block-size-request.patch
 
 #rhbz 928561
 ApplyPatch 0001-HID-kye-Add-report-fixup-for-Genius-Gx-Imperator-Key.patch
+
+#rhbz 971893
+ApplyPatch bonding-driver-alb-learning.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2358,6 +2364,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Sep 23 2013 Neil Horman <nhorman@redhat.com>
+- Add alb learning packet config knob (rhbz 971893)
+
 * Fri Sep 20 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix multimedia keys on Genius GX keyboard (rhbz 928561)
 
