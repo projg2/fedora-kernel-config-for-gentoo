@@ -791,6 +791,10 @@ Patch25105: 0001-HID-kye-Add-report-fixup-for-Genius-Gx-Imperator-Key.patch
 #rhbz 971893
 Patch25106: bonding-driver-alb-learning.patch
 
+#rhbz 902012
+Patch25114: elevator-Fix-a-race-in-elevator-switching-and-md.patch
+Patch25115: elevator-acquire-q-sysfs_lock-in-elevator_change.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1516,6 +1520,10 @@ ApplyPatch 0001-HID-kye-Add-report-fixup-for-Genius-Gx-Imperator-Key.patch
 
 #rhbz 971893
 ApplyPatch bonding-driver-alb-learning.patch
+
+#rhbz 902012
+ApplyPatch elevator-Fix-a-race-in-elevator-switching-and-md.patch
+ApplyPatch elevator-acquire-q-sysfs_lock-in-elevator_change.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2358,6 +2366,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Sep 27 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patches to fix soft lockup from elevator changes (rhbz 902012)
+
 * Fri Sep 27 2013 Justin M. Forbes <jforbes@fedoraproject.org> 3.10.13-100
 - Linux v3.10.13
 
