@@ -795,6 +795,9 @@ Patch25106: bonding-driver-alb-learning.patch
 Patch25114: elevator-Fix-a-race-in-elevator-switching-and-md.patch
 Patch25115: elevator-acquire-q-sysfs_lock-in-elevator_change.patch
 
+#rhbz 1013000
+Patch25116: HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1524,6 +1527,9 @@ ApplyPatch bonding-driver-alb-learning.patch
 #rhbz 902012
 ApplyPatch elevator-Fix-a-race-in-elevator-switching-and-md.patch
 ApplyPatch elevator-acquire-q-sysfs_lock-in-elevator_change.patch
+
+#rhbz 1013000
+ApplyPatch HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2367,6 +2373,7 @@ fi
 #                 ||     ||
 %changelog
 * Fri Sep 27 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add HID revert patch to fix logitech unifying devices (rhbz 1013000)
 - Add patches to fix soft lockup from elevator changes (rhbz 902012)
 
 * Fri Sep 27 2013 Justin M. Forbes <jforbes@fedoraproject.org> 3.10.13-100
