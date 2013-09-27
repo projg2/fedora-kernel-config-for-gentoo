@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2372,6 +2372,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Sep 27 2013 Justin M. Forbes <jforbes@fedoraproject.org> 3.10.13-101
+- Bump and tag for build
+
 * Fri Sep 27 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add HID revert patch to fix logitech unifying devices (rhbz 1013000)
 - Add patches to fix soft lockup from elevator changes (rhbz 902012)
