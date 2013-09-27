@@ -773,6 +773,10 @@ Patch25111: rpc-comment-on-linux_cred-encoding-treat-all-as-unsigned.patch
 Patch25112: rpc-fix-huge-kmallocs-in-gss-proxy.patch
 Patch25113: rpc-let-xdr-layer-allocate-gssproxy-receieve-pages.patch
 
+#rhbz 902012
+Patch25114: elevator-Fix-a-race-in-elevator-switching-and-md.patch
+Patch25115: elevator-acquire-q-sysfs_lock-in-elevator_change.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1493,6 +1497,10 @@ ApplyPatch rpc-let-xdr-layer-allocate-gssproxy-receieve-pages.patch
 #rhbz 1008323
 ApplyPatch 0001-skge-fix-broken-driver.patch
 ApplyPatch skge-fix-invalid-value-passed-to-pci_unmap_sigle.patch
+
+#rhbz 902012
+ApplyPatch elevator-Fix-a-race-in-elevator-switching-and-md.patch
+ApplyPatch elevator-acquire-q-sysfs_lock-in-elevator_change.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2306,6 +2314,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 27 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patches to fix soft lockup from elevator changes (rhbz 902012)
+
 * Fri Sep 27 2013 Justin M. Forbes <jforbes@fedoraproject.org> - 3.11.2-200
 - Linux v3.11.2
 
