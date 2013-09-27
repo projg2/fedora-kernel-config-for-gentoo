@@ -45,6 +45,7 @@ index 945b815..c526a3c 100644
 -			if (ret >= 0)
 -				ret = -EINVAL;
 +			ret = -ENODATA;
+ 			kfree(buf);
  			break;
  		}
 +		ret = 0;

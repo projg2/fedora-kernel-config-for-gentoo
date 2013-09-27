@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -775,9 +775,6 @@ Patch25079: rt2800-rearrange-bbp-rfcsr-initialization.patch
 #CVE-2013-2895 rhbz 1000360 1002581 CVE-2013-2896 rhbz 1000494 1002594
 #CVE-2013-2897 rhbz 1000536 1002600 CVE-2013-2899 rhbz 1000373 1002604
 Patch25099: HID-CVE-fixes.patch
-
-#rhbz 1002351
-Patch25100: crypto-fix-race-in-larval-lookup.patch
 
 #CVE-2013-4343 rhbz 1007733 1007741
 Patch25101: tuntap-correctly-handle-error-in-tun_set_iff.patch
@@ -1504,9 +1501,6 @@ ApplyPatch HID-CVE-fixes.patch
 
 #rhbz 1000679
 ApplyPatch rt2800-rearrange-bbp-rfcsr-initialization.patch
-
-#rhbz1002351
-ApplyPatch crypto-fix-race-in-larval-lookup.patch
 
 #CVE-2013-4343 rhbz 1007733 1007741
 ApplyPatch tuntap-correctly-handle-error-in-tun_set_iff.patch
@@ -2364,6 +2358,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Sep 27 2013 Justin M. Forbes <jforbes@fedoraproject.org> 3.10.13-100
+- Linux v3.10.13
+
 * Mon Sep 23 2013 Neil Horman <nhorman@redhat.com>
 - Add alb learning packet config knob (rhbz 971893)
 
