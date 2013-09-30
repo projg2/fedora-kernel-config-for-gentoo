@@ -725,9 +725,6 @@ Patch22000: weird-root-dentry-name-debug.patch
 #selinux ptrace child permissions
 Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
 
-#rhbz 859485
-Patch22226: vt-Drop-K_OFF-for-VC_MUTE.patch
-
 #rhbz 892811
 Patch22247: ath9k_rx_dma_stop_check.patch
 
@@ -1457,9 +1454,6 @@ ApplyPatch weird-root-dentry-name-debug.patch
 
 #selinux ptrace child permissions
 ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
-
-#rhbz 859485
-ApplyPatch vt-Drop-K_OFF-for-VC_MUTE.patch
 
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
@@ -2372,6 +2366,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Sep 30 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Drop VC_MUTE patch (rhbz 859485)
+
 * Fri Sep 27 2013 Justin M. Forbes <jforbes@fedoraproject.org> 3.10.13-101
 - Bump and tag for build
 
