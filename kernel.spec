@@ -705,9 +705,6 @@ Patch21005: arm-tegra-usb-no-reset-linux33.patch
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
-#rhbz 859485
-Patch21226: vt-Drop-K_OFF-for-VC_MUTE.patch
-
 # https://fedoraproject.org/wiki/Features/Checkpoint_Restore
 Patch21242: criu-no-expert.patch
 
@@ -1438,9 +1435,6 @@ ApplyPatch debug-idle-sched-warn-once.patch
 
 #selinux ptrace child permissions
 ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
-
-#rhbz 859485
-ApplyPatch vt-Drop-K_OFF-for-VC_MUTE.patch
 
 # https://fedoraproject.org/wiki/Features/Checkpoint_Restore
 ApplyPatch criu-no-expert.patch
@@ -2320,6 +2314,9 @@ fi
 # and build.
 
 %changelog
+* Mon Sep 30 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Drop VC_MUTE patch (rhbz 859485)
+
 * Fri Sep 27 2013 Justin M. Forbes <jforbes@fedoraproject.org> - 3.11.2-201
 - Bump and tag for build
 
