@@ -780,6 +780,9 @@ Patch25116: hwmon-applesmc-Check-key-count-before-proceeding.patch
 #rhbz 974072
 Patch25117: rt2800-add-support-for-rf3070.patch
 
+#rhbz 1005567
+Patch25118: bonding-driver-promisc.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1507,6 +1510,9 @@ ApplyPatch hwmon-applesmc-Check-key-count-before-proceeding.patch
 
 #rhbz 974072
 ApplyPatch rt2800-add-support-for-rf3070.patch
+
+#rhbz 1005567
+ApplyPatch bonding-driver-promisc.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2320,6 +2326,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 02 2013 Neil Horman <nhorman@redhat.com>
+- Add promiscuity fix for vlans plus bonding (rhbz 1005567)
+
 * Mon Sep 30 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add support for rf3070 devices from Stanislaw Gruszka (rhbz 974072)
 - Drop VC_MUTE patch (rhbz 859485)
