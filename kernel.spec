@@ -795,6 +795,9 @@ Patch25115: elevator-acquire-q-sysfs_lock-in-elevator_change.patch
 #rhbz 1013000
 Patch25116: HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.patch
 
+#CVE-2013-4387 rhbz 1011927 1015166
+Patch25121: ipv6-udp-packets-following-an-UFO-enqueued-packet-ne.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1524,6 +1527,9 @@ ApplyPatch elevator-acquire-q-sysfs_lock-in-elevator_change.patch
 
 #rhbz 1013000
 ApplyPatch HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.patch
+
+#CVE-2013-4387 rhbz 1011927 1015166
+ApplyPatch ipv6-udp-packets-following-an-UFO-enqueued-packet-ne.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2366,6 +2372,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Oct 3 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2013-4387 ipv6: panic when UFO=On for an interface (rhbz 1011927 1015166)
+
 * Mon Sep 30 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Drop VC_MUTE patch (rhbz 859485)
 
