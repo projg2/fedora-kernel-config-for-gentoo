@@ -769,6 +769,9 @@ Patch25118: bonding-driver-promisc.patch
 #rhbz 1013814
 Patch25119: drm-radeon-dont-set-default-clocks-for-SI-when-DPM-is-disabled.patch
 
+#CVE-2013-4387 rhbz 1011927 1015166
+Patch25121: ipv6-udp-packets-following-an-UFO-enqueued-packet-ne.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1485,6 +1488,9 @@ ApplyPatch bonding-driver-promisc.patch
 
 #rhbz 1013814
 ApplyPatch drm-radeon-dont-set-default-clocks-for-SI-when-DPM-is-disabled.patch
+
+#CVE-2013-4387 rhbz 1011927 1015166
+ApplyPatch ipv6-udp-packets-following-an-UFO-enqueued-packet-ne.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2298,6 +2304,9 @@ fi
 # and build.
 
 %changelog
+* Thu Oct 3 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2013-4387 ipv6: panic when UFO=On for an interface (rhbz 1011927 1015166)
+
 * Wed Oct 2 2013 Justin M. Forbes <jforbes@fedoraproject.org> 
 - drm/radeon: don't set default clocks for SI when DPM is disabled (rhbz 1013814)
 
