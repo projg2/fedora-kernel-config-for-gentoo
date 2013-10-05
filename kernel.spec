@@ -714,9 +714,6 @@ Patch21247: ath9k_rx_dma_stop_check.patch
 Patch22000: weird-root-dentry-name-debug.patch
 Patch22010: debug-idle-sched-warn-once.patch
 
-#selinux ptrace child permissions
-Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
-
 #rhbz 927469
 Patch23006: fix-child-thread-introspection.patch
 
@@ -1427,9 +1424,6 @@ ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
 ApplyPatch weird-root-dentry-name-debug.patch
 ApplyPatch debug-idle-sched-warn-once.patch
-
-#selinux ptrace child permissions
-ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 
 # https://fedoraproject.org/wiki/Features/Checkpoint_Restore
 ApplyPatch criu-no-expert.patch
