@@ -722,9 +722,6 @@ Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
 
-#selinux ptrace child permissions
-Patch22001: selinux-apply-different-permission-to-ptrace-child.patch
-
 #rhbz 892811
 Patch22247: ath9k_rx_dma_stop_check.patch
 
@@ -1444,9 +1441,6 @@ ApplyPatch lis3-improve-handling-of-null-rate.patch
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
 ApplyPatch weird-root-dentry-name-debug.patch
-
-#selinux ptrace child permissions
-ApplyPatch selinux-apply-different-permission-to-ptrace-child.patch
 
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
