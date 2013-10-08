@@ -62,19 +62,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 10
+%define base_sublevel 11
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -483,7 +483,7 @@ Provides: kernel-tegra\
 Provides: kernel-tegra-uname-r = %{KVERREL}%{?1:.%{1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
-Requires(pre): linux-firmware >= 20120206-0.1.git06c8f81\
+Requires(pre): linux-firmware >= 20130724-29.git31f6b30\
 Requires(post): /sbin/new-kernel-pkg\
 Requires(preun): /sbin/new-kernel-pkg\
 Conflicts: %{kernel_dot_org_conflicts}\
@@ -644,7 +644,6 @@ Patch100: taint-vbox.patch
 Patch110: vmbugon-warnon.patch
 
 Patch390: defaults-acpi-video.patch
-Patch391: acpi-video-dos.patch
 Patch394: acpi-debug-infinite-loop.patch
 Patch396: acpi-sony-nonvs-blacklist.patch
 
@@ -695,8 +694,6 @@ Patch10000: fs-proc-devtree-remove_proc_entry.patch
 
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
-Patch13003: efi-dont-map-boot-services-on-32bit.patch
-
 Patch14000: hibernate-freeze-filesystems.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
@@ -728,34 +725,12 @@ Patch22247: ath9k_rx_dma_stop_check.patch
 #rhbz 927469
 Patch25007: fix-child-thread-introspection.patch
 
-#rhbz 948262
-Patch25024: intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
-
 #CVE-2013-2147 rhbz 971242 971249
 Patch25032: cve-2013-2147-ciss-info-leak.patch
-
-#rhbz 969644
-Patch25046: KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
-
-#rhbz 903741
-Patch25052: HID-input-return-ENODATA-if-reading-battery-attrs-fails.patch
-
-#rhbz 880035
-Patch25053: bridge-only-expire-the-mdb-entry-when-query-is-received.patch
-Patch25054: bridge-send-query-as-soon-as-leave-is-received.patch
-#rhbz 980254
-Patch25061: bridge-timer-fix.patch
-Patch25066: bridge-do-not-call-setup_timer-multiple-times.patch
 
 #rhbz 977040
 Patch25056: iwl3945-better-skb-management-in-rx-path.patch
 Patch25057: iwl4965-better-skb-management-in-rx-path.patch
-
-#rhbz 959721
-Patch25063: HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
-
-#rhbz 969473
-Patch25070: Input-elantech-fix-for-newer-hardware-versions-v7.patch
 
 #rhbz 963715
 Patch25077: media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020.patch
@@ -769,18 +744,12 @@ Patch25102: net-sctp-fix-ipv6-ipsec-encryption-bug-in-sctp_v6_xmit.patch
 #CVE-2013-4345 rhbz 1007690 1009136
 Patch25104: ansi_cprng-Fix-off-by-one-error-in-non-block-size-request.patch
 
-#rhbz 928561
-Patch25105: 0001-HID-kye-Add-report-fixup-for-Genius-Gx-Imperator-Key.patch
-
 #rhbz 971893
 Patch25106: bonding-driver-alb-learning.patch
 
 #rhbz 902012
 Patch25114: elevator-Fix-a-race-in-elevator-switching-and-md.patch
 Patch25115: elevator-acquire-q-sysfs_lock-in-elevator_change.patch
-
-#rhbz 1013000
-Patch25116: HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.patch
 
 #CVE-2013-4387 rhbz 1011927 1015166
 Patch25121: ipv6-udp-packets-following-an-UFO-enqueued-packet-ne.patch
@@ -1361,7 +1330,6 @@ ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 
 # ACPI
 ApplyPatch defaults-acpi-video.patch
-ApplyPatch acpi-video-dos.patch
 ApplyPatch acpi-debug-infinite-loop.patch
 ApplyPatch acpi-sony-nonvs-blacklist.patch
 
@@ -1433,8 +1401,6 @@ ApplyPatch fs-proc-devtree-remove_proc_entry.patch
 
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
-ApplyPatch efi-dont-map-boot-services-on-32bit.patch
-
 # FIXME: REBASE
 #ApplyPatch hibernate-freeze-filesystems.patch
 
@@ -1454,34 +1420,12 @@ ApplyPatch ath9k_rx_dma_stop_check.patch
 #rhbz 927469
 ApplyPatch fix-child-thread-introspection.patch
 
-#rhbz 948262
-ApplyPatch intel_iommu-Downgrade-the-warning-if-enabling-irq-remapping-fails.patch
-
 #CVE-2013-2147 rhbz 971242 971249
 ApplyPatch cve-2013-2147-ciss-info-leak.patch
-
-#rhbz 969644
-ApplyPatch KVM-x86-handle-idiv-overflow-at-kvm_write_tsc.patch
-
-#rhbz 903741
-ApplyPatch HID-input-return-ENODATA-if-reading-battery-attrs-fails.patch
-
-#rhbz 880035
-ApplyPatch bridge-only-expire-the-mdb-entry-when-query-is-received.patch
-ApplyPatch bridge-send-query-as-soon-as-leave-is-received.patch
-#rhbz 980254
-ApplyPatch bridge-timer-fix.patch
-ApplyPatch bridge-do-not-call-setup_timer-multiple-times.patch
 
 #rhbz 977040
 ApplyPatch iwl3945-better-skb-management-in-rx-path.patch
 ApplyPatch iwl4965-better-skb-management-in-rx-path.patch
-
-#rhbz 959721
-ApplyPatch HID-kye-Add-report-fixup-for-Genius-Gila-Gaming-mouse.patch
-
-#rhbz 969473
-ApplyPatch Input-elantech-fix-for-newer-hardware-versions-v7.patch
 
 #rhbz 963715
 ApplyPatch media-cx23885-Fix-TeVii-S471-regression-since-introduction-of-ts2020.patch
@@ -1495,18 +1439,12 @@ ApplyPatch net-sctp-fix-ipv6-ipsec-encryption-bug-in-sctp_v6_xmit.patch
 #CVE-2013-4345 rhbz 1007690 1009136
 ApplyPatch ansi_cprng-Fix-off-by-one-error-in-non-block-size-request.patch
 
-#rhbz 928561
-ApplyPatch 0001-HID-kye-Add-report-fixup-for-Genius-Gx-Imperator-Key.patch
-
 #rhbz 971893
 ApplyPatch bonding-driver-alb-learning.patch
 
 #rhbz 902012
 ApplyPatch elevator-Fix-a-race-in-elevator-switching-and-md.patch
 ApplyPatch elevator-acquire-q-sysfs_lock-in-elevator_change.patch
-
-#rhbz 1013000
-ApplyPatch HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.patch
 
 #CVE-2013-4387 rhbz 1011927 1015166
 ApplyPatch ipv6-udp-packets-following-an-UFO-enqueued-packet-ne.patch
@@ -2358,6 +2296,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Oct 08 2013 Justin M. Forbes <jforbes@fedoraproject.org>
+- Linux v3.11.4
+
 * Tue Oct 08 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Quiet irq remapping stack trace (rhbz 982153)
 - Use RCU safe kfree for conntrack (rhbz 1015989)
