@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -785,6 +785,9 @@ Patch25116: HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.
 #CVE-2013-4387 rhbz 1011927 1015166
 Patch25121: ipv6-udp-packets-following-an-UFO-enqueued-packet-ne.patch
 
+#rhbz 1015989
+Patch25122: netfilter-nf_conntrack-use-RCU-safe-kfree-for-conntr.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1504,6 +1507,9 @@ ApplyPatch HID-Revert-Revert-HID-Fix-logitech-dj-missing-Unifying-device-issue.p
 
 #CVE-2013-4387 rhbz 1011927 1015166
 ApplyPatch ipv6-udp-packets-following-an-UFO-enqueued-packet-ne.patch
+
+#rhbz 1015989
+ApplyPatch netfilter-nf_conntrack-use-RCU-safe-kfree-for-conntr.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2346,6 +2352,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Oct 08 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Use RCU safe kfree for conntrack (rhbz 1015989)
+
 * Fri Oct 4 2013 Justin M. Forbes <jforbes@fedoraproject.org> 3.10.14-100
 - Linux v3.10.14
 
