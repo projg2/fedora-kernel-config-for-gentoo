@@ -788,6 +788,9 @@ Patch25121: ipv6-udp-packets-following-an-UFO-enqueued-packet-ne.patch
 #rhbz 1015989
 Patch25122: netfilter-nf_conntrack-use-RCU-safe-kfree-for-conntr.patch
 
+#rhbz 982153
+Patch25123: iommu-Remove-stack-trace-from-broken-irq-remapping-warning.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1510,6 +1513,9 @@ ApplyPatch ipv6-udp-packets-following-an-UFO-enqueued-packet-ne.patch
 
 #rhbz 1015989
 ApplyPatch netfilter-nf_conntrack-use-RCU-safe-kfree-for-conntr.patch
+
+#rhbz 982153
+ApplyPatch iommu-Remove-stack-trace-from-broken-irq-remapping-warning.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2353,6 +2359,7 @@ fi
 #                 ||     ||
 %changelog
 * Tue Oct 08 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Quiet irq remapping stack trace (rhbz 982153)
 - Use RCU safe kfree for conntrack (rhbz 1015989)
 
 * Fri Oct 4 2013 Justin M. Forbes <jforbes@fedoraproject.org> 3.10.14-100
