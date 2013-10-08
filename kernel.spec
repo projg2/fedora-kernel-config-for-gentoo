@@ -698,6 +698,7 @@ Patch14000: hibernate-freeze-filesystems.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
+Patch15000: nowatchdog-on-virt.patch
 
 Patch20000: 0001-efifb-Skip-DMI-checks-if-the-bootloader-knows-what-i.patch
 Patch20001: 0002-x86-EFI-Calculate-the-EFI-framebuffer-size-instead-o.patch
@@ -747,9 +748,24 @@ Patch25104: ansi_cprng-Fix-off-by-one-error-in-non-block-size-request.patch
 #rhbz 971893
 Patch25106: bonding-driver-alb-learning.patch
 
+#rhbz 985522
+Patch25107: ntp-Make-periodic-RTC-update-more-reliable.patch
+
+#rhbz 1010431
+Patch25108: Revert-rt2x00pci-Use-PCI-MSIs-whenever-possible.patch
+
+#rhbz 1008323
+Patch25120: skge-fix-invalid-value-passed-to-pci_unmap_sigle.patch
+
 #rhbz 902012
 Patch25114: elevator-Fix-a-race-in-elevator-switching-and-md.patch
 Patch25115: elevator-acquire-q-sysfs_lock-in-elevator_change.patch
+
+#rhbz 974072
+Patch25117: rt2800-add-support-for-rf3070.patch
+
+#rhbz 1005567
+Patch25118: bonding-driver-promisc.patch
 
 #CVE-2013-4387 rhbz 1011927 1015166
 Patch25121: ipv6-udp-packets-following-an-UFO-enqueued-packet-ne.patch
@@ -1406,6 +1422,9 @@ ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
+# Disable watchdog on virtual machines.
+ApplyPatch nowatchdog-on-virt.patch
+
 #ApplyPatch 0001-efifb-Skip-DMI-checks-if-the-bootloader-knows-what-i.patch
 #ApplyPatch 0002-x86-EFI-Calculate-the-EFI-framebuffer-size-instead-o.patch
 
@@ -1439,12 +1458,27 @@ ApplyPatch net-sctp-fix-ipv6-ipsec-encryption-bug-in-sctp_v6_xmit.patch
 #CVE-2013-4345 rhbz 1007690 1009136
 ApplyPatch ansi_cprng-Fix-off-by-one-error-in-non-block-size-request.patch
 
+#rhbz 985522
+ApplyPatch ntp-Make-periodic-RTC-update-more-reliable.patch
+
+#rhbz 1010431
+ApplyPatch Revert-rt2x00pci-Use-PCI-MSIs-whenever-possible.patch
+
 #rhbz 971893
 ApplyPatch bonding-driver-alb-learning.patch
+
+#rhbz 1008323
+ApplyPatch skge-fix-invalid-value-passed-to-pci_unmap_sigle.patch
 
 #rhbz 902012
 ApplyPatch elevator-Fix-a-race-in-elevator-switching-and-md.patch
 ApplyPatch elevator-acquire-q-sysfs_lock-in-elevator_change.patch
+
+#rhbz 974072
+ApplyPatch rt2800-add-support-for-rf3070.patch
+
+#rhbz 1005567
+ApplyPatch bonding-driver-promisc.patch
 
 #CVE-2013-4387 rhbz 1011927 1015166
 ApplyPatch ipv6-udp-packets-following-an-UFO-enqueued-packet-ne.patch
@@ -2298,6 +2332,7 @@ fi
 %changelog
 * Tue Oct 08 2013 Justin M. Forbes <jforbes@fedoraproject.org>
 - Linux v3.11.4
+- Add missing 3.11 patches from F19
 
 * Tue Oct 08 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Quiet irq remapping stack trace (rhbz 982153)
