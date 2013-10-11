@@ -782,6 +782,9 @@ Patch25127: 0002-iwlwifi-don-t-WARN-on-bad-firmware-state.patch
 #rhbz 993744
 Patch25128: dm-cache-policy-mq_fix-large-scale-table-allocation-bug.patch
 
+#rhbz 1000439
+Patch25129: cpupower-Fix-segfault-due-to-incorrect-getopt_long-a.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1511,6 +1514,9 @@ ApplyPatch 0002-iwlwifi-don-t-WARN-on-bad-firmware-state.patch
 
 #rhbz 993744
 ApplyPatch dm-cache-policy-mq_fix-large-scale-table-allocation-bug.patch
+
+#rhbz 1000439
+ApplyPatch cpupower-Fix-segfault-due-to-incorrect-getopt_long-a.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2324,6 +2330,9 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 11 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix segfault in cpupower set (rhbz 1000439)
+
 * Thu Oct 10 2013 Justin M. Forbes <jforbes@fedoraproject.org> - 3.11.4-201
 - Tag for build
 
