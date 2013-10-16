@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -774,6 +774,9 @@ Patch25129: cpupower-Fix-segfault-due-to-incorrect-getopt_long-a.patch
 #rhbz 1010679
 Patch25130: fix-radeon-sound.patch
 
+#rhbz 1011714
+Patch25131: btrfs-relocate-csums-properly-with-prealloc-ext.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1484,6 +1487,9 @@ ApplyPatch cpupower-Fix-segfault-due-to-incorrect-getopt_long-a.patch
 
 #rhbz 1010679
 ApplyPatch fix-radeon-sound.patch
+
+#rhbz 1011714
+ApplyPatch btrfs-relocate-csums-properly-with-prealloc-ext.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2326,6 +2332,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Oct 16 2013 Josh Boyer <jwboyer@fedoraproject.org> 
+- Fix btrfs balance/scrub issue (rhbz 1011714)
+
 * Tue Oct 15 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix regression in radeon sound (rhbz 1010679)
 
