@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -778,9 +778,6 @@ Patch25133: fix-buslogic.patch
 
 #rhbz 1023413
 Patch25135: alps-Support-for-Dell-XT2-model.patch
-
-#CVE-2013-4470 rhbz 1023477 1023495
-Patch25136: net_311.mbox
 
 #rhbz 1011621
 Patch25137: cifs-Allow-LANMAN-auth-for-unencapsulated-auth-methods.patch
@@ -1521,9 +1518,6 @@ ApplyPatch fix-buslogic.patch
 
 #rhbz 1023413
 ApplyPatch alps-Support-for-Dell-XT2-model.patch
-
-#CVE-2013-4470 rhbz 1023477 1023495
-ApplyPatch net_311.mbox
 
 #rhbz 1011621
 ApplyPatch cifs-Allow-LANMAN-auth-for-unencapsulated-auth-methods.patch
@@ -2350,6 +2344,9 @@ fi
 # and build.
 
 %changelog
+* Mon Nov 04 2013 Justin M. Forbes <jforbes@fedoraproject.org> - 3.11.7-200
+- Linux v3.11.7
+
 * Fri Nov 01 2013 Josh Boyer <jwboyer@fedoraproject.org> - 3.11.6-201
 - Revert blocking patches causing systemd to crash on resume (rhbz 1010603)
 - CVE-2013-4348 net: deadloop path in skb_flow_dissect (rhbz 1007939 1025647)
