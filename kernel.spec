@@ -795,6 +795,8 @@ Patch25141: 0001-Revert-select-use-freezable-blocking-call.patch
 #rhbz 1025769
 Patch25142: iwlwifi-dvm-dont-override-mac80211-queue-setting.patch
 
+Patch25143: drm-qxl-backport-fixes-for-Fedora.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1537,6 +1539,8 @@ ApplyPatch 0001-Revert-select-use-freezable-blocking-call.patch
 
 #rhbz 1025769
 ApplyPatch iwlwifi-dvm-dont-override-mac80211-queue-setting.patch
+
+ApplyPatch drm-qxl-backport-fixes-for-Fedora.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2350,6 +2354,9 @@ fi
 # and build.
 
 %changelog
+* Sat Nov 09 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add qxl backport fixes from Dave Airlie
+
 * Mon Nov 04 2013 Josh Boyer <jwboyer@fedoraproject.org> - 3.11.7-200
 - Add patch to fix iwlwifi queue settings backtrace (rhbz 1025769)
 
