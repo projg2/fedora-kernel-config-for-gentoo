@@ -797,6 +797,8 @@ Patch25142: iwlwifi-dvm-dont-override-mac80211-queue-setting.patch
 
 Patch25143: drm-qxl-backport-fixes-for-Fedora.patch
 
+Patch25144: Input-evdev-fall-back-to-vmalloc-for-client-event-buffer.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1541,6 +1543,8 @@ ApplyPatch 0001-Revert-select-use-freezable-blocking-call.patch
 ApplyPatch iwlwifi-dvm-dont-override-mac80211-queue-setting.patch
 
 ApplyPatch drm-qxl-backport-fixes-for-Fedora.patch
+
+ApplyPatch Input-evdev-fall-back-to-vmalloc-for-client-event-buffer.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2355,6 +2359,7 @@ fi
 
 %changelog
 * Sat Nov 09 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch from Daniel Stone to avoid high order allocations in evdev
 - Add qxl backport fixes from Dave Airlie
 
 * Mon Nov 04 2013 Josh Boyer <jwboyer@fedoraproject.org> - 3.11.7-200
