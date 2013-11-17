@@ -2261,6 +2261,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Sun Nov 17 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix up ARM usb gadget config to make it useful
+
 * Thu Nov 14 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2013-4563: net: large udp packet over IPv6 over UFO-enabled device with TBF qdisc panic (rhbz 1030015 1030017)
 
