@@ -755,6 +755,9 @@ Patch25148: alx-Reset-phy-speed-after-resume.patch
 #rhbz 1010679
 Patch25149: drm-radeon-24hz-audio-fixes.patch
 
+#rhbz 967652
+Patch25151: KVM-x86-fix-emulation-of-movzbl-bpl-eax.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1477,6 +1480,9 @@ ApplyPatch alx-Reset-phy-speed-after-resume.patch
 
 #rhbz 1010679
 ApplyPatch drm-radeon-24hz-audio-fixes.patch
+
+#rhbz 967652
+ApplyPatch KVM-x86-fix-emulation-of-movzbl-bpl-eax.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2282,6 +2288,7 @@ fi
 #                                    ||     ||
 %changelog
 * Mon Nov 18 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch to fix rhel5.9 KVM guests (rhbz 967652)
 - Add patches from Pierre Ossman to fix 24Hz/24p radeon audio (rhbz 1010679)
 - Add patch to fix ALX phy issues after resume (rhbz 1011362)
 - Fix ipv6 sit panic with packet size > mtu (from Michele Baldessari) (rbhz 1015905)
