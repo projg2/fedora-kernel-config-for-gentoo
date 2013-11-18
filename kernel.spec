@@ -752,6 +752,9 @@ Patch25147: 0002-netfilter-push-reasm-skb-through-instead-of-original.patch
 #rhbz 1011362
 Patch25148: alx-Reset-phy-speed-after-resume.patch
 
+#rhbz 1010679
+Patch25149: drm-radeon-24hz-audio-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1471,6 +1474,9 @@ ApplyPatch 0002-netfilter-push-reasm-skb-through-instead-of-original.patch
 
 #rhbz 1011362
 ApplyPatch alx-Reset-phy-speed-after-resume.patch
+
+#rhbz 1010679
+ApplyPatch drm-radeon-24hz-audio-fixes.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2276,6 +2282,7 @@ fi
 #                                    ||     ||
 %changelog
 * Mon Nov 18 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patches from Pierre Ossman to fix 24Hz/24p radeon audio (rhbz 1010679)
 - Add patch to fix ALX phy issues after resume (rhbz 1011362)
 - Fix ipv6 sit panic with packet size > mtu (from Michele Baldessari) (rbhz 1015905)
 
