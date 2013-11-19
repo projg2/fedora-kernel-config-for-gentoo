@@ -2287,6 +2287,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Tue Nov 19 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Enable CGROUP_HUGETLB on ppc64/ppc64p7 and x86_64 (rhbz 1031984)
+
 * Mon Nov 18 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patch to fix rhel5.9 KVM guests (rhbz 967652)
 - Add patches from Pierre Ossman to fix 24Hz/24p radeon audio (rhbz 1010679)
