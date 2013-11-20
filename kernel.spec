@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -776,12 +776,6 @@ Patch25135: alps-Support-for-Dell-XT2-model.patch
 
 #rhbz 1011621
 Patch25137: cifs-Allow-LANMAN-auth-for-unencapsulated-auth-methods.patch
-
-#rhbz 995782
-Patch25138: intel-3.12-stable-fixes.patch
-
-#CVE-2013-4348 rhbz 1007939 1025647
-Patch25139: net-flow_dissector-fail-on-evil-iph-ihl.patch
 
 #rhbz 1025769
 Patch25142: iwlwifi-dvm-dont-override-mac80211-queue-setting.patch
@@ -1530,12 +1524,6 @@ ApplyPatch alps-Support-for-Dell-XT2-model.patch
 
 #rhbz 1011621
 ApplyPatch cifs-Allow-LANMAN-auth-for-unencapsulated-auth-methods.patch
-
-#rhbz 995782
-ApplyPatch intel-3.12-stable-fixes.patch
-
-#CVE-2013-4348 rhbz 1007939 1025647
-ApplyPatch net-flow_dissector-fail-on-evil-iph-ihl.patch
 
 #rhbz 1025769
 ApplyPatch iwlwifi-dvm-dont-override-mac80211-queue-setting.patch
@@ -2372,6 +2360,9 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 20 2013 Josh Boyer <jwboyer@fedoraproject.org> - 3.11.9-200
+- Linux v3.11.9
+
 * Mon Nov 18 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patch to fix rhel5.9 KVM guests (rhbz 967652)
 - Add patch to fix crash from slab when using md-raid mirrors (rhbz 1031086)
