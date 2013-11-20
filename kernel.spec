@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -734,9 +734,6 @@ Patch25131: btrfs-relocate-csums-properly-with-prealloc-ext.patch
 
 #rhbz 984696
 Patch25132: rt2800usb-slow-down-TX-status-polling.patch
-
-#CVE-2013-4348 rhbz 1007939 1025647
-Patch25139: net-flow_dissector-fail-on-evil-iph-ihl.patch
 
 Patch25140: drm-qxl-backport-fixes-for-Fedora.patch
 
@@ -1460,9 +1457,6 @@ ApplyPatch btrfs-relocate-csums-properly-with-prealloc-ext.patch
 
 #rhbz 984696
 ApplyPatch rt2800usb-slow-down-TX-status-polling.patch
-
-#CVE-2013-4348 rhbz 1007939 1025647
-ApplyPatch net-flow_dissector-fail-on-evil-iph-ihl.patch
 
 ApplyPatch drm-qxl-backport-fixes-for-Fedora.patch
 
@@ -2287,6 +2281,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Wed Nov 20 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v3.12.1
+
 * Tue Nov 19 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Enable CGROUP_HUGETLB on ppc64/ppc64p7 and x86_64 (rhbz 1031984)
 
