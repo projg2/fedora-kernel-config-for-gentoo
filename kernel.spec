@@ -2281,6 +2281,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Fri Nov 22 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Minor ARM config update
+
 * Wed Nov 20 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v3.12.1
 
