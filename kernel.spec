@@ -2291,6 +2291,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Fri Nov 22 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix ARM Utilite DTB
+
 * Fri Nov 22 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patches from Jeff Layton to fix 15sec NFS mount hang
 
