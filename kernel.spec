@@ -2291,8 +2291,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
-* Fri Nov 22 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+* Sat Nov 23 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fix ARM Utilite DTB
+- Enable FSL RTC (for i.MX6)
 
 * Fri Nov 22 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patches from Jeff Layton to fix 15sec NFS mount hang
