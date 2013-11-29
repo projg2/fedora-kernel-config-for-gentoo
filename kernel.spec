@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -701,9 +701,6 @@ Patch22000: weird-root-dentry-name-debug.patch
 
 Patch25047: drm-radeon-Disable-writeback-by-default-on-ppc.patch
 
-#CVE-2013-4345 rhbz 1007690 1009136
-Patch25104: ansi_cprng-Fix-off-by-one-error-in-non-block-size-request.patch
-
 #rhbz 985522
 Patch25107: ntp-Make-periodic-RTC-update-more-reliable.patch
 
@@ -729,12 +726,6 @@ Patch25128: dm-cache-policy-mq_fix-large-scale-table-allocation-bug.patch
 #rhbz 1000439
 Patch25129: cpupower-Fix-segfault-due-to-incorrect-getopt_long-a.patch
 
-#rhbz 1011714
-Patch25131: btrfs-relocate-csums-properly-with-prealloc-ext.patch
-
-#rhbz 984696
-Patch25132: rt2800usb-slow-down-TX-status-polling.patch
-
 Patch25140: drm-qxl-backport-fixes-for-Fedora.patch
 Patch25160: drm-qxl-fix-memory-leak-in-release-list-handling.patch
 
@@ -753,19 +744,10 @@ Patch25148: alx-Reset-phy-speed-after-resume.patch
 #rhbz 1010679
 Patch25149: drm-radeon-24hz-audio-fixes.patch
 
-#rhbz 967652
-Patch25151: KVM-x86-fix-emulation-of-movzbl-bpl-eax.patch
-
 # Fix 15sec NFS mount delay
 Patch25152: sunrpc-create-a-new-dummy-pipe-for-gssd-to-hold-open.patch
 Patch25153: sunrpc-replace-gssd_running-with-more-reliable-check.patch
 Patch25154: nfs-check-gssd-running-before-krb5i-auth.patch
-
-#CVE-2013-6378 rhbz 1033578 1034183
-Patch25155: libertas-potential-oops-in-debugfs.patch
-
-#CVE-2013-6380 rhbz 1033593 1034304
-Patch25156: aacraid-prevent-invalid-pointer-dereference.patch
 
 #CVE-2013-6382 rhbz 1033603 1034670
 Patch25157: xfs-underflow-bug-in-xfs_attrlist_by_handle.patch
@@ -1445,9 +1427,6 @@ ApplyPatch ath9k_rx_dma_stop_check.patch
 
 ApplyPatch drm-radeon-Disable-writeback-by-default-on-ppc.patch
 
-#CVE-2013-4345 rhbz 1007690 1009136
-ApplyPatch ansi_cprng-Fix-off-by-one-error-in-non-block-size-request.patch
-
 #rhbz 985522
 ApplyPatch ntp-Make-periodic-RTC-update-more-reliable.patch
 
@@ -1473,12 +1452,6 @@ ApplyPatch dm-cache-policy-mq_fix-large-scale-table-allocation-bug.patch
 #rhbz 1000439
 ApplyPatch cpupower-Fix-segfault-due-to-incorrect-getopt_long-a.patch
 
-#rhbz 1011714
-ApplyPatch btrfs-relocate-csums-properly-with-prealloc-ext.patch
-
-#rhbz 984696
-ApplyPatch rt2800usb-slow-down-TX-status-polling.patch
-
 ApplyPatch drm-qxl-backport-fixes-for-Fedora.patch
 ApplyPatch drm-qxl-fix-memory-leak-in-release-list-handling.patch
 
@@ -1497,19 +1470,10 @@ ApplyPatch alx-Reset-phy-speed-after-resume.patch
 #rhbz 1010679
 ApplyPatch drm-radeon-24hz-audio-fixes.patch
 
-#rhbz 967652
-ApplyPatch KVM-x86-fix-emulation-of-movzbl-bpl-eax.patch
-
 # Fix 15sec NFS mount delay
 ApplyPatch sunrpc-create-a-new-dummy-pipe-for-gssd-to-hold-open.patch
 ApplyPatch sunrpc-replace-gssd_running-with-more-reliable-check.patch
 ApplyPatch nfs-check-gssd-running-before-krb5i-auth.patch
-
-#CVE-2013-6378 rhbz 1033578 1034183
-ApplyPatch libertas-potential-oops-in-debugfs.patch
-
-#CVE-2013-6380 rhbz 1033593 1034304
-ApplyPatch aacraid-prevent-invalid-pointer-dereference.patch
 
 #CVE-2013-6382 rhbz 1033603 1034670
 ApplyPatch xfs-underflow-bug-in-xfs_attrlist_by_handle.patch
@@ -2324,6 +2288,7 @@ fi
 #                                    ||     ||
 %changelog
 * Fri Nov 29 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v3.12.2
 - Fix memory leak in qxl (from Dave Airlie)
 
 * Tue Nov 26 2013 Josh Boyer <jwboyer@fedoraproject.org>
