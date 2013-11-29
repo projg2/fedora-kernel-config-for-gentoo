@@ -736,6 +736,7 @@ Patch25131: btrfs-relocate-csums-properly-with-prealloc-ext.patch
 Patch25132: rt2800usb-slow-down-TX-status-polling.patch
 
 Patch25140: drm-qxl-backport-fixes-for-Fedora.patch
+Patch25160: drm-qxl-fix-memory-leak-in-release-list-handling.patch
 
 Patch25141: Input-evdev-fall-back-to-vmalloc-for-client-event-buffer.patch
 
@@ -1479,6 +1480,7 @@ ApplyPatch btrfs-relocate-csums-properly-with-prealloc-ext.patch
 ApplyPatch rt2800usb-slow-down-TX-status-polling.patch
 
 ApplyPatch drm-qxl-backport-fixes-for-Fedora.patch
+ApplyPatch drm-qxl-fix-memory-leak-in-release-list-handling.patch
 
 ApplyPatch Input-evdev-fall-back-to-vmalloc-for-client-event-buffer.patch
 
@@ -2321,6 +2323,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Fri Nov 29 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix memory leak in qxl (from Dave Airlie)
+
 * Tue Nov 26 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patch to fix usbnet URB handling (rhbz 998342)
 - Fix crash in via-velocity driver (rhbz 1022733)
