@@ -762,6 +762,9 @@ Patch25159: usbnet-fix-status-interrupt-urb-handling.patch
 Patch25161: inet-prevent-leakage-of-uninitialized-memory-to-user.patch
 Patch25162: inet-fix-addr_len-msg_namelen-assignment-in-recv_error-and-rxpmtu-functions.patch
 
+#rhbz 1033971
+Patch25163: md-test-mddev-flags-more-safely-in-md_check_recovery.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1491,6 +1494,9 @@ ApplyPatch usbnet-fix-status-interrupt-urb-handling.patch
 #CVE-2013-6405 rhbz 1035875 1035887
 ApplyPatch inet-prevent-leakage-of-uninitialized-memory-to-user.patch
 ApplyPatch inet-fix-addr_len-msg_namelen-assignment-in-recv_error-and-rxpmtu-functions.patch
+
+#rhbz 1033971
+ApplyPatch md-test-mddev-flags-more-safely-in-md_check_recovery.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2296,6 +2302,7 @@ fi
 #                                    ||     ||
 %changelog
 * Sat Nov 30 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix mdadm soft lockup and crash (rhbz 1033971)
 - CVE-2013-6405 net: leak of uninited mem to userspace via recv syscalls (rhbz 1035875 1035887)
 
 * Fri Nov 29 2013 Josh Boyer <jwboyer@fedoraproject.org>
