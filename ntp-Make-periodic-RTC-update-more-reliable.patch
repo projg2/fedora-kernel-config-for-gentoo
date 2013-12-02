@@ -1,3 +1,6 @@
+Bugzilla: 985522
+Upstream-status: 3.13
+
 From a97ad0c4b447a132a322cedc3a5f7fa4cab4b304 Mon Sep 17 00:00:00 2001
 From: Miroslav Lichvar <mlichvar@redhat.com>
 Date: Thu, 1 Aug 2013 19:31:35 +0200

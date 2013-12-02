@@ -1,3 +1,6 @@
+Bugzilla: 974072
+Upstream-status: 3.13
+
 Add support for new RF chip ID: 3070. It seems to be the same as 5370,
 maybe vendor just put wrong value on the eeprom, but add this id anyway
 since devices with it showed on the marked.

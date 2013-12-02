@@ -1,3 +1,6 @@
+Bugzilla: 1030015
+Upstream-status: 3.13
+
 From 0e033e04c2678dbbe74a46b23fffb7bb918c288e Mon Sep 17 00:00:00 2001
 From: Hannes Frederic Sowa <hannes@stressinduktion.org>
 Date: Tue, 5 Nov 2013 02:41:27 +0100

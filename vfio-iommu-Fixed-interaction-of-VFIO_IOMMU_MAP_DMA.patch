@@ -1,3 +1,6 @@
+Bugzilla: 998732
+Upstream-status: 3.13
+
 From: Julian Stecklina <jsteckli@os.info.tu-dresden.de>
 Subject: [PATCH] vfio, iommu: Fixed interaction of VFIO_IOMMU_MAP_DMA with IOMMU address limits
 

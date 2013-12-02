@@ -1,3 +1,6 @@
+Bugzilla: 998342
+Upstream-status: 3.13
+
 From 52f48d0d9aaa621ffa5e08d79da99a3f8c93b848 Mon Sep 17 00:00:00 2001
 From: Felix Fietkau <nbd@openwrt.org>
 Date: Tue, 12 Nov 2013 16:34:41 +0100

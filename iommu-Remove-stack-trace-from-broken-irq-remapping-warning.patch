@@ -1,3 +1,6 @@
+Bugzilla: 982153
+Upstream-status: 3.13
+
 From 05104a4e8713b27291c7bb49c1e7e68b4e243571 Mon Sep 17 00:00:00 2001
 From: Neil Horman <nhorman@tuxdriver.com>
 Date: Fri, 27 Sep 2013 16:53:35 +0000
