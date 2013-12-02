@@ -686,7 +686,14 @@ Patch21020: arm-tegra-usb-no-reset-linux33.patch
 
 # ARM i.MX6
 # http://www.spinics.net/lists/devicetree/msg08276.html
-Patch21030: arm-imx6-utilite.patch
+Patch21025: arm-imx6-utilite.patch
+
+# am33xx (BeagleBone)
+# https://github.com/beagleboard/kernel
+# Pulled primarily from the above git repo. First patch is all in arm-soc
+# scheduled for 3.13. The others should be landing via other trees
+Patch21030: arm-am33xx-arm-soc-upstream.patch
+Patch21031: arm-am33xx-bblack.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -1319,6 +1326,9 @@ ApplyPatch arm-sound-soc-samsung-dma-avoid-another-64bit-division.patch
 ApplyPatch arm-omap-load-tfp410.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 ApplyPatch arm-imx6-utilite.patch
+
+ApplyPatch arm-am33xx-arm-soc-upstream.patch
+ApplyPatch arm-am33xx-bblack.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -2301,6 +2311,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Mon Dec  2 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add patch set for AM33xx BeagleBones
+
 * Mon Dec 02 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix crash driver build and re-enable on s390x (from Dan Horák)
 
