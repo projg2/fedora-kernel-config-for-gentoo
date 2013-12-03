@@ -2319,6 +2319,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Tue Dec  3 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Minor ARM cleanups and remove obsolete options
+
 * Tue Dec 03 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patches to fix rfkill switch on Dell machines (rhbz 958826)
 
