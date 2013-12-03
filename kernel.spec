@@ -772,6 +772,10 @@ Patch25162: inet-fix-addr_len-msg_namelen-assignment-in-recv_error-and-rxpmtu-fu
 #rhbz 1033971
 Patch25163: md-test-mddev-flags-more-safely-in-md_check_recovery.patch
 
+#rhbz 958826
+Patch25164: 0001-Revert-dell-laptop-Remove-rfkill-code.patch
+Patch25165: 0002-dell-laptop-Only-enable-rfkill-on-Latitudes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1507,6 +1511,10 @@ ApplyPatch inet-fix-addr_len-msg_namelen-assignment-in-recv_error-and-rxpmtu-fun
 
 #rhbz 1033971
 ApplyPatch md-test-mddev-flags-more-safely-in-md_check_recovery.patch
+
+#rhbz 958826
+ApplyPatch 0001-Revert-dell-laptop-Remove-rfkill-code.patch
+ApplyPatch 0002-dell-laptop-Only-enable-rfkill-on-Latitudes.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2311,6 +2319,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Tue Dec 03 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patches to fix rfkill switch on Dell machines (rhbz 958826)
+
 * Mon Dec  2 2013 Justin M. Forbes <jforbes@fedoraproject.org> - 3.12.2-3
 - bump for build
 
