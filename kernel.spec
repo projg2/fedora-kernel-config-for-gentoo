@@ -820,6 +820,10 @@ Patch25159: usbnet-fix-status-interrupt-urb-handling.patch
 Patch25161: inet-prevent-leakage-of-uninitialized-memory-to-user.patch
 Patch25162: inet-fix-addr_len-msg_namelen-assignment-in-recv_error-and-rxpmtu-functions.patch
 
+#rhbz 958826
+Patch25164: 0001-Revert-dell-laptop-Remove-rfkill-code.patch
+Patch25165: 0002-dell-laptop-Only-enable-rfkill-on-Latitudes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1576,6 +1580,10 @@ ApplyPatch usbnet-fix-status-interrupt-urb-handling.patch
 #CVE-2013-6405 rhbz 1035875 1035887
 ApplyPatch inet-prevent-leakage-of-uninitialized-memory-to-user.patch
 ApplyPatch inet-fix-addr_len-msg_namelen-assignment-in-recv_error-and-rxpmtu-functions.patch
+
+#rhbz 958826
+ApplyPatch 0001-Revert-dell-laptop-Remove-rfkill-code.patch
+ApplyPatch 0002-dell-laptop-Only-enable-rfkill-on-Latitudes.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2418,6 +2426,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Dec 03 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patches to fix rfkill switch on Dell machines (rhbz 958826)
+
 * Sat Nov 30 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2013-6405 net: leak of uninited mem to userspace via recv syscalls (rhbz 1035875 1035887)
 
