@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -734,9 +734,6 @@ Patch25128: dm-cache-policy-mq_fix-large-scale-table-allocation-bug.patch
 Patch25129: cpupower-Fix-segfault-due-to-incorrect-getopt_long-a.patch
 
 Patch25140: drm-qxl-backport-fixes-for-Fedora.patch
-Patch25160: drm-qxl-fix-memory-leak-in-release-list-handling.patch
-
-Patch25141: Input-evdev-fall-back-to-vmalloc-for-client-event-buffer.patch
 
 #CVE-2013-4563 rhbz 1030015 1030017
 Patch25145: ipv6-fix-headroom-calculation-in-udp6_ufo_fragment.patch
@@ -768,9 +765,6 @@ Patch25159: usbnet-fix-status-interrupt-urb-handling.patch
 #CVE-2013-6405 rhbz 1035875 1035887
 Patch25161: inet-prevent-leakage-of-uninitialized-memory-to-user.patch
 Patch25162: inet-fix-addr_len-msg_namelen-assignment-in-recv_error-and-rxpmtu-functions.patch
-
-#rhbz 1033971
-Patch25163: md-test-mddev-flags-more-safely-in-md_check_recovery.patch
 
 #rhbz 958826
 Patch25164: dell-laptop.patch
@@ -1473,9 +1467,6 @@ ApplyPatch dm-cache-policy-mq_fix-large-scale-table-allocation-bug.patch
 ApplyPatch cpupower-Fix-segfault-due-to-incorrect-getopt_long-a.patch
 
 ApplyPatch drm-qxl-backport-fixes-for-Fedora.patch
-ApplyPatch drm-qxl-fix-memory-leak-in-release-list-handling.patch
-
-ApplyPatch Input-evdev-fall-back-to-vmalloc-for-client-event-buffer.patch
 
 #CVE-2013-4563 rhbz 1030015 1030017
 ApplyPatch ipv6-fix-headroom-calculation-in-udp6_ufo_fragment.patch
@@ -1507,9 +1498,6 @@ ApplyPatch usbnet-fix-status-interrupt-urb-handling.patch
 #CVE-2013-6405 rhbz 1035875 1035887
 ApplyPatch inet-prevent-leakage-of-uninitialized-memory-to-user.patch
 ApplyPatch inet-fix-addr_len-msg_namelen-assignment-in-recv_error-and-rxpmtu-functions.patch
-
-#rhbz 1033971
-ApplyPatch md-test-mddev-flags-more-safely-in-md_check_recovery.patch
 
 #rhbz 958826
 ApplyPatch dell-laptop.patch
@@ -2317,6 +2305,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Wed Dec 04 2013 Justin M. Forbes <jforbes@fedoraproject.org> - 3.12.3-1
+- Linux v3.12.3
+
 * Tue Dec  3 2013 Peter Robinson <pbrobinson@fedoraproject.org>
 - Minor ARM cleanups and remove obsolete options
 
