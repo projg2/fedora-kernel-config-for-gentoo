@@ -635,7 +635,7 @@ Patch800: crash-driver.patch
 Patch900: keys-expand-keyring.patch
 Patch901: keys-krb-support.patch
 Patch902: keys-x509-improv.patch
-Patch903: keyring-quota.patch
+Patch903: keys-fixes.patch
 
 # secure boot
 Patch1000: secure-modules.patch
@@ -1393,7 +1393,7 @@ ApplyPatch crash-driver.patch
 ApplyPatch keys-expand-keyring.patch
 ApplyPatch keys-krb-support.patch
 ApplyPatch keys-x509-improv.patch
-ApplyPatch keyring-quota.patch
+ApplyPatch keys-fixes.patch
 
 # secure boot
 ApplyPatch secure-modules.patch
@@ -2305,6 +2305,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Thu Dec 05 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add various fixes for keys crashes and an SELinux issue (rhbz 1035000)
+
 * Wed Dec 04 2013 Justin M. Forbes <jforbes@fedoraproject.org> - 3.12.3-1
 - Linux v3.12.3
 
