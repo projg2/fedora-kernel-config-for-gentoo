@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -708,22 +708,6 @@ Patch22000: weird-root-dentry-name-debug.patch
 
 Patch25047: drm-radeon-Disable-writeback-by-default-on-ppc.patch
 
-#rhbz 985522
-Patch25107: ntp-Make-periodic-RTC-update-more-reliable.patch
-
-#rhbz 902012
-Patch25114: elevator-Fix-a-race-in-elevator-switching-and-md.patch
-Patch25115: elevator-acquire-q-sysfs_lock-in-elevator_change.patch
-
-#rhbz 974072
-Patch25116: rt2800-add-support-for-rf3070.patch
-
-#rhbz 982153
-Patch25123: iommu-Remove-stack-trace-from-broken-irq-remapping-warning.patch
-
-#rhbz 998732
-Patch25124: vfio-iommu-Fixed-interaction-of-VFIO_IOMMU_MAP_DMA.patch
-
 #rhbz 896695
 Patch25127: 0002-iwlwifi-don-t-WARN-on-bad-firmware-state.patch
 
@@ -735,18 +719,8 @@ Patch25129: cpupower-Fix-segfault-due-to-incorrect-getopt_long-a.patch
 
 Patch25140: drm-qxl-backport-fixes-for-Fedora.patch
 
-#CVE-2013-4563 rhbz 1030015 1030017
-Patch25145: ipv6-fix-headroom-calculation-in-udp6_ufo_fragment.patch
-
-#rhbz 1015905
-Patch25146: 0001-ip6_output-fragment-outgoing-reassembled-skb-properl.patch
-Patch25147: 0002-netfilter-push-reasm-skb-through-instead-of-original.patch
-
 #rhbz 1011362
 Patch25148: alx-Reset-phy-speed-after-resume.patch
-
-#rhbz 1010679
-Patch25149: drm-radeon-24hz-audio-fixes.patch
 
 # Fix 15sec NFS mount delay
 Patch25152: sunrpc-create-a-new-dummy-pipe-for-gssd-to-hold-open.patch
@@ -755,16 +729,6 @@ Patch25154: nfs-check-gssd-running-before-krb5i-auth.patch
 
 #CVE-2013-6382 rhbz 1033603 1034670
 Patch25157: xfs-underflow-bug-in-xfs_attrlist_by_handle.patch
-
-#rhbz 1022733
-Patch25158: via-velocity-fix-netif_receive_skb-use-in-irq-disable.patch
-
-#rhbz 998342
-Patch25159: usbnet-fix-status-interrupt-urb-handling.patch
-
-#CVE-2013-6405 rhbz 1035875 1035887
-Patch25161: inet-prevent-leakage-of-uninitialized-memory-to-user.patch
-Patch25162: inet-fix-addr_len-msg_namelen-assignment-in-recv_error-and-rxpmtu-functions.patch
 
 #rhbz 958826
 Patch25164: dell-laptop.patch
@@ -1441,22 +1405,6 @@ ApplyPatch ath9k_rx_dma_stop_check.patch
 
 ApplyPatch drm-radeon-Disable-writeback-by-default-on-ppc.patch
 
-#rhbz 985522
-ApplyPatch ntp-Make-periodic-RTC-update-more-reliable.patch
-
-#rhbz 902012
-ApplyPatch elevator-Fix-a-race-in-elevator-switching-and-md.patch
-ApplyPatch elevator-acquire-q-sysfs_lock-in-elevator_change.patch
-
-#rhbz 974072
-ApplyPatch rt2800-add-support-for-rf3070.patch
-
-#rhbz 982153
-ApplyPatch iommu-Remove-stack-trace-from-broken-irq-remapping-warning.patch
-
-#rhbz 998732
-ApplyPatch vfio-iommu-Fixed-interaction-of-VFIO_IOMMU_MAP_DMA.patch
-
 #rhbz 896695
 ApplyPatch 0002-iwlwifi-don-t-WARN-on-bad-firmware-state.patch
 
@@ -1468,18 +1416,8 @@ ApplyPatch cpupower-Fix-segfault-due-to-incorrect-getopt_long-a.patch
 
 ApplyPatch drm-qxl-backport-fixes-for-Fedora.patch
 
-#CVE-2013-4563 rhbz 1030015 1030017
-ApplyPatch ipv6-fix-headroom-calculation-in-udp6_ufo_fragment.patch
-
-#rhbz 1015905
-ApplyPatch 0001-ip6_output-fragment-outgoing-reassembled-skb-properl.patch
-ApplyPatch 0002-netfilter-push-reasm-skb-through-instead-of-original.patch
-
 #rhbz 1011362
 ApplyPatch alx-Reset-phy-speed-after-resume.patch
-
-#rhbz 1010679
-ApplyPatch drm-radeon-24hz-audio-fixes.patch
 
 # Fix 15sec NFS mount delay
 ApplyPatch sunrpc-create-a-new-dummy-pipe-for-gssd-to-hold-open.patch
@@ -1488,16 +1426,6 @@ ApplyPatch nfs-check-gssd-running-before-krb5i-auth.patch
 
 #CVE-2013-6382 rhbz 1033603 1034670
 ApplyPatch xfs-underflow-bug-in-xfs_attrlist_by_handle.patch
-
-#rhbz 1022733
-ApplyPatch via-velocity-fix-netif_receive_skb-use-in-irq-disable.patch
-
-#rhbz 998342
-ApplyPatch usbnet-fix-status-interrupt-urb-handling.patch
-
-#CVE-2013-6405 rhbz 1035875 1035887
-ApplyPatch inet-prevent-leakage-of-uninitialized-memory-to-user.patch
-ApplyPatch inet-fix-addr_len-msg_namelen-assignment-in-recv_error-and-rxpmtu-functions.patch
 
 #rhbz 958826
 ApplyPatch dell-laptop.patch
@@ -2305,6 +2233,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Mon Dec 09 2013 Justin M. Forbes <jforbes@fedoraproject.org> - 3.12.4-1
+- Linux v3.12.4
+
 * Thu Dec 05 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add various fixes for keys crashes and an SELinux issue (rhbz 1035000)
 
