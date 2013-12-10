@@ -823,6 +823,10 @@ Patch25162: inet-fix-addr_len-msg_namelen-assignment-in-recv_error-and-rxpmtu-fu
 #rhbz 958826
 Patch25164: dell-laptop.patch
 
+#CVE-2013-XXXX rhbz 1039845 1039874
+Patch25165: net-rework-recvmsg-handler-msg_name-and-msg_namelen-.patch
+
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1582,6 +1586,9 @@ ApplyPatch inet-fix-addr_len-msg_namelen-assignment-in-recv_error-and-rxpmtu-fun
 
 #rhbz 958826
 ApplyPatch dell-laptop.patch
+
+#CVE-2013-XXXX rhbz 1039845 1039874
+ApplyPatch net-rework-recvmsg-handler-msg_name-and-msg_namelen-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2424,6 +2431,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Dec 10 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2013-XXXX net: memory leak in recvmsg (rhbz 1039845 1039874)
+
 * Tue Dec 03 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patches to fix rfkill switch on Dell machines (rhbz 958826)
 
