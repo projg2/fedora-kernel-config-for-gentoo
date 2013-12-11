@@ -733,6 +733,10 @@ Patch25157: xfs-underflow-bug-in-xfs_attrlist_by_handle.patch
 #rhbz 958826
 Patch25164: dell-laptop.patch
 
+#rhbz 1030802
+Patch25170: Input-elantech-add-support-for-newer-August-2013-dev.patch
+Patch25171: elantech-Properly-differentiate-between-clickpads-an.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1429,6 +1433,10 @@ ApplyPatch xfs-underflow-bug-in-xfs_attrlist_by_handle.patch
 
 #rhbz 958826
 ApplyPatch dell-laptop.patch
+
+#rhbz 1030802
+ApplyPatch Input-elantech-add-support-for-newer-August-2013-dev.patch
+ApplyPatch elantech-Properly-differentiate-between-clickpads-an.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2233,6 +2241,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Wed Dec 11 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patches to support ETPS/2 Elantech touchpads (rhbz 1030802)
+
 * Mon Dec 09 2013 Justin M. Forbes <jforbes@fedoraproject.org> - 3.12.4-1
 - Linux v3.12.4
 
