@@ -694,6 +694,7 @@ Patch21025: arm-imx6-utilite.patch
 # scheduled for 3.13. The others should be landing via other trees
 Patch21030: arm-am33xx-arm-soc-upstream.patch
 Patch21031: arm-am33xx-bblack.patch
+Patch21032: arm-am33xx-cpsw.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -1294,6 +1295,7 @@ ApplyPatch arm-imx6-utilite.patch
 
 ApplyPatch arm-am33xx-arm-soc-upstream.patch
 ApplyPatch arm-am33xx-bblack.patch
+ApplyPatch arm-am33xx-cpsw.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -2241,6 +2243,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Wed Dec 11 2013 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix am33xx cpsw ethernet (Beagle Bone)
+
 * Wed Dec 11 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patches to support ETPS/2 Elantech touchpads (rhbz 1030802)
 
