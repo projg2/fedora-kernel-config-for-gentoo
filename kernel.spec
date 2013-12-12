@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2267,6 +2267,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Thu Dec 12 2013 Justin M. Forbes <jforbes@fedoraproject.org> - 3.12.5-1
+- Linux v3.12.5
+
 * Thu Dec 12 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2013-4587 kvm: out-of-bounds access (rhbz 1030986 1042071)
 - CVE-2013-6376 kvm: BUG_ON in apic_cluster_id (rhbz 1033106 1042099)
