@@ -842,6 +842,9 @@ Patch25174: KVM-x86-fix-guest-initiated-crash-with-x2apic.patch
 #CVE-2013-4587 rhbz 1030986 1042071
 Patch25175: KVM-Improve-create-VCPU-parameter.patch
 
+#rhbz 1025770
+Patch25176: br-fix-use-of-rx_handler_data-in-code-executed-on-no.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1620,6 +1623,9 @@ ApplyPatch KVM-x86-fix-guest-initiated-crash-with-x2apic.patch
 
 #CVE-2013-4587 rhbz 1030986 1042071
 ApplyPatch KVM-Improve-create-VCPU-parameter.patch
+
+#rhbz 1025770
+ApplyPatch br-fix-use-of-rx_handler_data-in-code-executed-on-no.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2462,6 +2468,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Dec 16 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix host lockup in bridge code when starting from virt guest (rhbz 1025770)
+
 * Thu Dec 12 2013 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2013-4587 kvm: out-of-bounds access (rhbz 1030986 1042071)
 - CVE-2013-6376 kvm: BUG_ON in apic_cluster_id (rhbz 1033106 1042099)
