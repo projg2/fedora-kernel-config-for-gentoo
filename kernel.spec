@@ -671,7 +671,6 @@ Patch1000: devel-pekey-secure-boot-20130502.patch
 # nouveau + drm fixes
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
-Patch1825: drm-i915-dp-stfu.patch
 # mustard patch to shut abrt up. please drop (and notify ajax) whenever it
 # fails to apply
 Patch1826: drm-i915-tv-detect-hush.patch
@@ -1468,7 +1467,6 @@ ApplyPatch devel-pekey-secure-boot-20130502.patch
 
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
-ApplyPatch drm-i915-dp-stfu.patch
 ApplyPatch drm-i915-tv-detect-hush.patch
 
 # silence the ACPI blacklist code
