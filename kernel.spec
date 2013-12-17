@@ -662,7 +662,6 @@ Patch1000: devel-pekey-secure-boot-20130502.patch
 # nouveau + drm fixes
 # intel drm is all merged upstream
 Patch1824: drm-intel-next.patch
-Patch1825: drm-i915-dp-stfu.patch
 # radeon drm fix
 
 # Quiet boot fixes
@@ -1462,7 +1461,6 @@ ApplyPatch devel-pekey-secure-boot-20130502.patch
 
 # Intel DRM
 ApplyOptionalPatch drm-intel-next.patch
-ApplyPatch drm-i915-dp-stfu.patch
 
 # silence the ACPI blacklist code
 ApplyPatch silence-acpi-blacklist.patch
