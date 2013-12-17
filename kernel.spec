@@ -644,8 +644,8 @@ Patch100: taint-vbox.patch
 Patch110: vmbugon-warnon.patch
 
 Patch390: defaults-acpi-video.patch
+
 Patch394: acpi-debug-infinite-loop.patch
-Patch396: acpi-sony-nonvs-blacklist.patch
 
 Patch450: input-kill-stupid-messages.patch
 Patch452: no-pcspkr-modalias.patch
@@ -1416,7 +1416,6 @@ ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 # ACPI
 ApplyPatch defaults-acpi-video.patch
 ApplyPatch acpi-debug-infinite-loop.patch
-ApplyPatch acpi-sony-nonvs-blacklist.patch
 
 #
 # PCI
