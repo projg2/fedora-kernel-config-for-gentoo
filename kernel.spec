@@ -2283,6 +2283,9 @@ fi
 # and build.
 
 %changelog
+* Wed Dec 18 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix nowatchdog-on-virt.patch to actually work in KVM guests
+
 * Tue Dec 17 2013 Justin M. Forbes <jforbes@fedoraproject.org - 3.12.5-200
 - Linux v3.12.5 rebase
 
