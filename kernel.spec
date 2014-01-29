@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -762,6 +762,7 @@ Patch25183: ipv6-introduce-IFA_F_NOPREFIXROUTE-and-IFA_F_MANAGETEMPADDR-flags.pa
 
 #rhbz 1057533
 Patch25184: i915-remove-pm_qos-request-on-error.patch
+Patch25155: ipv6-addrconf-revert-if_inet6ifa_flag-format.patch
 
 #rhbz 990955
 Patch25185: ath9k_htc-make-sta_rc_update-atomic-for-most-calls.patch
@@ -1464,6 +1465,7 @@ ApplyPatch Input-ALPS-add-support-for-Dolphin-devices.patch
 
 #rhbz 1056711
 ApplyPatch ipv6-introduce-IFA_F_NOPREFIXROUTE-and-IFA_F_MANAGETEMPADDR-flags.patch
+ApplyPatch ipv6-addrconf-revert-if_inet6ifa_flag-format.patch
 
 #rhbz 1057533
 ApplyPatch i915-remove-pm_qos-request-on-error.patch
@@ -2283,6 +2285,9 @@ fi
 # and build.
 
 %changelog
+* Wed Jan 29 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.12.9-201
+- ipv6 addrconf: revert /proc/net/if_inet6 ifa_flag format (rhbz 1056711)
+
 * Tue Jan 28 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patch from Stanislaw Gruszka to fix ath9k BUG (rhbz 990955)
 
