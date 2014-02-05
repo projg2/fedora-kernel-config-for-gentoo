@@ -767,6 +767,9 @@ Patch25155: ipv6-addrconf-revert-if_inet6ifa_flag-format.patch
 #rhbz 990955
 Patch25185: ath9k_htc-make-sta_rc_update-atomic-for-most-calls.patch
 
+#rhbz 950630
+Patch25186: xhci-fix-resume-issues-on-renesas-chips-in-samsung-laptops.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1472,6 +1475,9 @@ ApplyPatch i915-remove-pm_qos-request-on-error.patch
 
 #rhbz 990955
 ApplyPatch ath9k_htc-make-sta_rc_update-atomic-for-most-calls.patch
+
+#rhbz 950630
+ApplyPatch xhci-fix-resume-issues-on-renesas-chips-in-samsung-laptops.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2285,6 +2291,9 @@ fi
 # and build.
 
 %changelog
+* Wed Feb 05 2014 Justin M. Forbes <jforbes@fedoraproject.org> 
+- fix resume issues on Renesas chips in Samsung laptops (rhbz 950630)
+
 * Wed Jan 29 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.12.9-201
 - ipv6 addrconf: revert /proc/net/if_inet6 ifa_flag format (rhbz 1056711)
 
