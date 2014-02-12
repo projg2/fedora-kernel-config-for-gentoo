@@ -779,6 +779,9 @@ Patch25189: tick-Clear-broadcast-pending-bit-when-switching-to-oneshot.patch
 #rhbz 1045755
 Patch25195: cgroup-fixes.patch
 
+#rhbz 1051918
+Patch25198: pinctrl-protect-pinctrl_list-add.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1496,6 +1499,10 @@ ApplyPatch tick-Clear-broadcast-pending-bit-when-switching-to-oneshot.patch
 
 #rhbz 1045755
 ApplyPatch cgroup-fixes.patch
+
+#rhbz 1051918
+ApplyPatch pinctrl-protect-pinctrl_list-add.patch
+
 
 # END OF PATCH APPLICATIONS
 
@@ -2310,6 +2317,7 @@ fi
 
 %changelog
 * Wed Feb 12 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch to fix list corruption from pinctrl (rhbz 1051918)
 - Fix cgroup destroy oops (rhbz 1045755)
 - Fix backtrace in amd_e400_idle (rhbz 1031296)
 - CVE-2014-1874 SELinux: local denial of service (rhbz 1062356 1062507)
