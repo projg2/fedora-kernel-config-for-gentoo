@@ -770,6 +770,9 @@ Patch25185: ath9k_htc-make-sta_rc_update-atomic-for-most-calls.patch
 #rhbz 950630
 Patch25186: xhci-fix-resume-issues-on-renesas-chips-in-samsung-laptops.patch
 
+#CVE-2014-1874 rhbz 1062356 1062507
+Patch25188: SELinux-Fix-kernel-BUG-on-empty-security-contexts.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1478,6 +1481,9 @@ ApplyPatch ath9k_htc-make-sta_rc_update-atomic-for-most-calls.patch
 
 #rhbz 950630
 ApplyPatch xhci-fix-resume-issues-on-renesas-chips-in-samsung-laptops.patch
+
+#CVE-2014-1874 rhbz 1062356 1062507
+ApplyPatch SELinux-Fix-kernel-BUG-on-empty-security-contexts.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2291,6 +2297,9 @@ fi
 # and build.
 
 %changelog
+* Wed Feb 12 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-1874 SELinux: local denial of service (rhbz 1062356 1062507)
+
 * Thu Feb 06 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.12.10-200
 - Linux v3.12.10
 
