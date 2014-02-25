@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1908,13 +1908,13 @@ find Documentation -type d | xargs chmod u+w
 %define __modsign_install_post \
   if [ "%{signmodules}" -eq "1" ]; then \
     if [ "%{with_pae}" -ne "0" ]; then \
-      %{modsign_cmd} signing_key.priv.sign.%{pae} signing_key.x509.sign+%{pae} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.%{pae}/ \
+      %{modsign_cmd} signing_key.priv.sign.%{pae} signing_key.x509.sign.%{pae} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.%{pae}/ \
     fi \
     if [ "%{with_debug}" -ne "0" ]; then \
-      %{modsign_cmd} signing_key.priv.sign.debug signing_key.x509.sign+debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.debug/ \
+      %{modsign_cmd} signing_key.priv.sign.debug signing_key.x509.sign.debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.debug/ \
     fi \
     if [ "%{with_pae_debug}" -ne "0" ]; then \
-      %{modsign_cmd} signing_key.priv.sign.%{pae}debug signing_key.x509.sign+%{pae}debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.%{pae}debug/ \
+      %{modsign_cmd} signing_key.priv.sign.%{pae}debug signing_key.x509.sign.%{pae}debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}.%{pae}debug/ \
     fi \
     if [ "%{with_up}" -ne "0" ]; then \
       %{modsign_cmd} signing_key.priv.sign signing_key.x509.sign $RPM_BUILD_ROOT/lib/modules/%{KVERREL}/ \
@@ -2305,6 +2305,9 @@ fi
 # and build.
 
 %changelog
+* Tue Feb 25 2015 Justin M. Forbes <jforbes@fedoraproject.org> - 3.13.5-101
+* Fix module signing so secure boot works again
+
 * Tue Feb 25 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix mounting issues on cifs (rhbz 1068862)
 

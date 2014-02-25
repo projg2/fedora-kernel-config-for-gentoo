@@ -9,20 +9,28 @@
 # This essentially duplicates the 'modules_sign' Kbuild target and runs the
 # same commands for those modules.
 
-moddir=$1
+MODSECKEY=$1
+MODPUBKEY=$2
+
+moddir=$3
 
 modules=`find $moddir -name *.ko`
-
-MODSECKEY="./signing_key.priv"
-MODPUBKEY="./signing_key.x509"
 
 for mod in $modules
 do
     dir=`dirname $mod`
     file=`basename $mod`
 
-    ./scripts/sign-file sha256 ${MODSECKEY} ${MODPUBKEY} ${dir}/${file} \
-       ${dir}/${file}.signed
-    mv ${dir}/${file}.signed ${dir}/${file}
+    ./scripts/sign-file sha256 ${MODSECKEY} ${MODPUBKEY} ${dir}/${file}
     rm -f ${dir}/${file}.{sig,dig}
 done
+
+RANDOMMOD=$(find $moddir -type f -name '*.ko' | sort -R | head -n 1)
+if [ "~Module signature appended~" != "$(tail -c 28 $RANDOMMOD)" ]; then
+    echo "*****************************"
+    echo "*** Modules are unsigned! ***"
+    echo "*****************************"
+    exit 1
+fi
+
+exit 0
