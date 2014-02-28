@@ -770,6 +770,9 @@ Patch25024: e100-Fix-disabling-already-disabled-device-warning.patch
 #rhbz 1056170
 Patch25025: usb-ehci-fix-deadlock-when-threadirqs-option-is-used.patch
 
+#CVE-2014-0102 rhbz 1071396
+Patch25026: keyring-fix.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1486,6 +1489,8 @@ ApplyPatch e100-Fix-disabling-already-disabled-device-warning.patch
 #rhbz 1056170
 ApplyPatch usb-ehci-fix-deadlock-when-threadirqs-option-is-used.patch
 
+#CVE-2014-0102 rhbz 1071396
+ApplyPatch keyring-fix.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2299,6 +2304,9 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 28 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-0102 keyctl_link can be used to cause an oops (rhbz 1071396)
+
 * Fri Feb 28 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Drop alx phy reset patch that is already in 3.13
 
