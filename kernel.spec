@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 102
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2316,7 +2316,7 @@ fi
 # and build.
 
 %changelog
-* Mon Mar 03 2014 Josh Boyer <jwboyer@fedoraproject.org>
+* Mon Mar 03 2014 Josh Boyer <jwboyer@fedoraproject.org> - 3.13.5-102
 - CVE-2014-0049 kvm: mmio_fragments out-of-bounds access (rhbz 1062368 1071837)
 - Fix atomic sched BUG in tty low_latency (rhbz 1065087)
 
@@ -2326,7 +2326,7 @@ fi
 * Fri Feb 28 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Drop alx phy reset patch that is already in 3.13
 
-* Tue Feb 25 2015 Justin M. Forbes <jforbes@fedoraproject.org> - 3.13.5-101
+* Tue Feb 25 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.13.5-101
 * Fix module signing so secure boot works again
 
 * Tue Feb 25 2014 Josh Boyer <jwboyer@fedoraproject.org>
