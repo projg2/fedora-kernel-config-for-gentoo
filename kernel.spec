@@ -773,6 +773,9 @@ Patch25025: usb-ehci-fix-deadlock-when-threadirqs-option-is-used.patch
 #CVE-2014-0102 rhbz 1071396
 Patch25026: keyring-fix.patch
 
+#CVE-2014-0049 rhbz 1062368 1071837
+Patch25027: kvm-x86-fix-emulator-buffer-overflow.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1491,6 +1494,9 @@ ApplyPatch usb-ehci-fix-deadlock-when-threadirqs-option-is-used.patch
 
 #CVE-2014-0102 rhbz 1071396
 ApplyPatch keyring-fix.patch
+
+#CVE-2014-0049 rhbz 1062368 1071837
+ApplyPatch kvm-x86-fix-emulator-buffer-overflow.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2304,6 +2310,9 @@ fi
 # and build.
 
 %changelog
+* Mon Mar 03 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-0049 kvm: mmio_fragments out-of-bounds access (rhbz 1062368 1071837)
+
 * Fri Feb 28 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-0102 keyctl_link can be used to cause an oops (rhbz 1071396)
 
