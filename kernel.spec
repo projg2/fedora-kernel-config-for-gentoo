@@ -2358,7 +2358,7 @@ fi
 # and build.
 
 %changelog
-* Fri Mar 07 2014 Justin M. Forbes <jforbes@fedoraproject.org>
+* Fri Mar 07 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.13.6-100
 - Linux v3.13.6
 
 * Fri Mar 07 2014 Josh Boyer <jwboyer@fedoraproject.org>
