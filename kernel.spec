@@ -787,6 +787,10 @@ Patch25052: net-xen-netback-disable-rogue-vif-in-kthread-context.patch
 #will go upstream for 3.15, and will be backported to stable releases
 Patch25053: input-cypress_ps2-Don-t-report-the-cypress-PS-2-trac.patch
 
+#CVE-2014-2678 rhbz 1083274 1083280
+Patch25054: rds-prevent-dereference-of-a-NULL-device-in-rds_iw_laddr_check.patch
+
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1518,6 +1522,9 @@ ApplyPatch net-xen-netback-disable-rogue-vif-in-kthread-context.patch
 
 #https://bugs.freedesktop.org/show_bug.cgi?id=76341
 ApplyPatch input-cypress_ps2-Don-t-report-the-cypress-PS-2-trac.patch
+
+#CVE-2014-2678 rhbz 1083274 1083280
+ApplyPatch rds-prevent-dereference-of-a-NULL-device-in-rds_iw_laddr_check.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2331,6 +2338,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 01 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-2678 net: rds: deref of NULL dev in rds_iw_laddr_check (rhbz 1083274 1083280)
+
 * Mon Mar 31 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.13.8-100
 - Linux v3.13.8
 
