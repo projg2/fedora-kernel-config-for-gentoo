@@ -780,6 +780,8 @@ Patch25052: net-xen-netback-disable-rogue-vif-in-kthread-context.patch
 #CVE-2014-2678 rhbz 1083274 1083280
 Patch25054: rds-prevent-dereference-of-a-NULL-device-in-rds_iw_laddr_check.patch
 
+#rhbz 1074235
+Patch25055: lib-percpu_counter.c-fix-bad-percpu-counter-state-du.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1506,6 +1508,9 @@ ApplyPatch net-xen-netback-disable-rogue-vif-in-kthread-context.patch
 
 #CVE-2014-2678 rhbz 1083274 1083280
 ApplyPatch rds-prevent-dereference-of-a-NULL-device-in-rds_iw_laddr_check.patch
+
+#rhbz 1074235
+ApplyPatch lib-percpu_counter.c-fix-bad-percpu-counter-state-du.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2319,6 +2324,9 @@ fi
 # and build.
 
 %changelog
+* Wed Apr 09 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch to fix S3 in KVM guests (rhbz 1074235)
+
 * Thu Apr 03 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.13.9-100
 - Linux v3.13.9
 
