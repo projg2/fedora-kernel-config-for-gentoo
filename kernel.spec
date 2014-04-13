@@ -2203,6 +2203,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Sat Apr 12 2013 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v3.14.1-rc1
+
 * Thu Dec 12 2013 Justin M. Forbes <jforbes@fedoraproject.org> - 3.12.5-1
 - Linux v3.12.5
 
