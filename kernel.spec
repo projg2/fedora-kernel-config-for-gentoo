@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -653,8 +653,6 @@ Patch1826: drm-i915-hush-check-crtc-state.patch
 # NFSv4
 
 # patches headed upstream
-Patch12015: 3.14.1-rc1.patch
-
 Patch12016: disable-i8042-check-on-apple-mac.patch
 
 Patch14000: hibernate-freeze-filesystems.patch
@@ -1357,8 +1355,6 @@ ApplyPatch drm-i915-hush-check-crtc-state.patch
 # Radeon DRM
 
 # Patches headed upstream
-ApplyPatch 3.14.1-rc1.patch
-
 ApplyPatch disable-i8042-check-on-apple-mac.patch
 
 # FIXME: REBASE
@@ -2215,6 +2211,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Mon Apr 14 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v3.14.1
+
 * Mon Apr 14 2014 Hans de Goede <hdegoede@redhat.com>
 - Add min/max quirks for various new Thinkpad touchpads (rhbz 1085582 1085697)
 
