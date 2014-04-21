@@ -774,6 +774,9 @@ Patch25059: net-ipv4-current-group_info-should-be-put-after-using.patch
 #rhbz 1085582 1085697
 Patch25060: 0001-synaptics-Add-min-max-quirk-for-ThinkPad-T431s-L440-.patch
 
+#rhbz 1071914
+Patch25063: USB-serial-ftdi_sio-add-id-for-Brainboxes-serial-car.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1493,6 +1496,9 @@ ApplyPatch net-ipv4-current-group_info-should-be-put-after-using.patch
 
 #rhbz 1085582 1085697
 ApplyPatch 0001-synaptics-Add-min-max-quirk-for-ThinkPad-T431s-L440-.patch
+
+#rhbz 1071914
+ApplyPatch USB-serial-ftdi_sio-add-id-for-Brainboxes-serial-car.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2306,6 +2312,9 @@ fi
 # and build.
 
 %changelog
+* Mon Apr 21 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix Brainboxes Express Cards (rhbz 1071914)
+
 * Thu Apr 17 2014 Hans de Goede <hdegoede@redhat.com>
 - Update min/max quirk patch to add a quirk for the ThinkPad L540 (rhbz1088588)
 
