@@ -765,9 +765,6 @@ Patch25055: lib-percpu_counter.c-fix-bad-percpu-counter-state-du.patch
 #CVE-2014-0155 rhbz 1081589 1085016
 Patch25057: KVM-ioapic-fix-assignment-of-ioapic-rtc_status-pending_eoi.patch
 
-#rhbz 1048314
-Patch25058: 0001-HID-rmi-introduce-RMI-driver-for-Synaptics-touchpads.patch
-
 #CVE-2014-2851 rhbz 1086730 1087420
 Patch25059: net-ipv4-current-group_info-should-be-put-after-using.patch
 
@@ -776,6 +773,12 @@ Patch25060: 0001-synaptics-Add-min-max-quirk-for-ThinkPad-T431s-L440-.patch
 
 #rhbz 1071914
 Patch25063: USB-serial-ftdi_sio-add-id-for-Brainboxes-serial-car.patch
+
+#rhbz 1048314
+Patch25062: 0001-HID-rmi-introduce-RMI-driver-for-Synaptics-touchpads.patch
+
+#rhbz 1089583
+Patch25064: 0001-HID-rmi-do-not-handle-touchscreens-through-hid-rmi.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1490,6 +1493,8 @@ ApplyPatch KVM-ioapic-fix-assignment-of-ioapic-rtc_status-pending_eoi.patch
 
 #rhbz 1048314
 ApplyPatch 0001-HID-rmi-introduce-RMI-driver-for-Synaptics-touchpads.patch
+#rhbz 1089583
+ApplyPatch 0001-HID-rmi-do-not-handle-touchscreens-through-hid-rmi.patch
 
 #CVE-2014-2851 rhbz 1086730 1087420
 ApplyPatch net-ipv4-current-group_info-should-be-put-after-using.patch
@@ -2312,6 +2317,9 @@ fi
 # and build.
 
 %changelog
+* Tue Apr 22 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch to fix Synaptics touchscreens and HID rmi driver (rhbz 1089583)
+
 * Mon Apr 21 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix Brainboxes Express Cards (rhbz 1071914)
 
