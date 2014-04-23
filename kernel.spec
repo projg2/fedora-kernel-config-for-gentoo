@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -737,9 +737,6 @@ Patch25002: cifs-mask-off-top-byte-in-get_rfc1002_length.patch
 
 #CVE-2014-0102 rhbz 1071396
 Patch25026: keyring-fix.patch
-
-#rhbz 1065087
-Patch25028: tty-Fix-low_latency-BUG.patch
 
 #rhbz 1027465
 Patch25032: HID-Bluetooth-hidp-make-sure-input-buffers-are-big-e.patch
@@ -1463,9 +1460,6 @@ ApplyPatch cifs-mask-off-top-byte-in-get_rfc1002_length.patch
 
 #CVE-2014-0102 rhbz 1071396
 ApplyPatch keyring-fix.patch
-
-#rhbz 1065087
-ApplyPatch tty-Fix-low_latency-BUG.patch
 
 #rhbz 1027465
 ApplyPatch HID-Bluetooth-hidp-make-sure-input-buffers-are-big-e.patch
@@ -2317,6 +2311,9 @@ fi
 # and build.
 
 %changelog
+* Wed Apr 23 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.13.11-100
+- Linux v3.13.11
+
 * Tue Apr 22 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patch to fix Synaptics touchscreens and HID rmi driver (rhbz 1089583)
 
