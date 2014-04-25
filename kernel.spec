@@ -777,6 +777,9 @@ Patch25062: 0001-HID-rmi-introduce-RMI-driver-for-Synaptics-touchpads.patch
 #rhbz 1089583
 Patch25064: 0001-HID-rmi-do-not-handle-touchscreens-through-hid-rmi.patch
 
+#rhbz 1089689
+Patch25065: 0001-synaptics-Add-min-max-quirk-for-ThinkPad-Edge-E431.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1498,6 +1501,9 @@ ApplyPatch 0001-synaptics-Add-min-max-quirk-for-ThinkPad-T431s-L440-.patch
 
 #rhbz 1071914
 ApplyPatch USB-serial-ftdi_sio-add-id-for-Brainboxes-serial-car.patch
+
+#rhbz 1089689
+ApplyPatch 0001-synaptics-Add-min-max-quirk-for-ThinkPad-Edge-E431.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2311,6 +2317,9 @@ fi
 # and build.
 
 %changelog
+* Fri Apr 25 2014 Hans de Goede <hdegoede@redhat.com>
+- Add synaptics min-max quirk for ThinkPad Edge E431 (rhbz#1089689)
+
 * Wed Apr 23 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.13.11-100
 - Linux v3.13.11
 
