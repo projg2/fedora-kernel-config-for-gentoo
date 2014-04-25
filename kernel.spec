@@ -714,8 +714,11 @@ Patch25055: lib-percpu_counter.c-fix-bad-percpu-counter-state-du.patch
 #CVE-2014-2851 rhbz 1086730 1087420
 Patch25059: net-ipv4-current-group_info-should-be-put-after-using.patch
 
-#rhbz 1085582 1085697
+#rhbz 1085582 1085697 1088588
 Patch25060: 0001-synaptics-Add-min-max-quirk-for-ThinkPad-T431s-L440-.patch
+
+#rhbz 1089689
+Patch25061: 0001-synaptics-Add-min-max-quirk-for-ThinkPad-Edge-E431.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1398,6 +1401,9 @@ ApplyPatch net-ipv4-current-group_info-should-be-put-after-using.patch
 
 #rhbz 1085582 1085697
 ApplyPatch 0001-synaptics-Add-min-max-quirk-for-ThinkPad-T431s-L440-.patch
+
+#rhbz 1089689
+ApplyPatch 0001-synaptics-Add-min-max-quirk-for-ThinkPad-Edge-E431.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2211,6 +2217,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Fri Apr 25 2014 Hans de Goede <hdegoede@redhat.com>
+- Add synaptics min-max quirk for ThinkPad Edge E431 (rhbz#1089689)
+
 * Thu Apr 17 2014 Hans de Goede <hdegoede@redhat.com>
 - Update min/max quirk patch to add a quirk for the ThinkPad L540 (rhbz1088588)
 
