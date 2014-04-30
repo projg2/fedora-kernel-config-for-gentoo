@@ -2317,6 +2317,9 @@ fi
 # and build.
 
 %changelog
+* Wed Apr 30 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Enable CONFIG_MEMORY_HOTPLUG (rhbz 1092948)
+
 * Fri Apr 25 2014 Hans de Goede <hdegoede@redhat.com>
 - Add synaptics min-max quirk for ThinkPad Edge E431 (rhbz#1089689)
 
