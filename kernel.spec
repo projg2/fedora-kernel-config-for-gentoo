@@ -780,7 +780,7 @@ Patch25064: 0001-HID-rmi-do-not-handle-touchscreens-through-hid-rmi.patch
 #rhbz 1089689
 Patch25065: 0001-synaptics-Add-min-max-quirk-for-ThinkPad-Edge-E431.patch
 
-#CVE-2014-XXXX rhbz 1093076 1093084
+#CVE-2014-3122 rhbz 1093076 1093084
 Patch25069: mm-try_to_unmap_cluster-should-lock_page-before-mloc.patch
 
 # END OF PATCH DEFINITIONS
@@ -1508,7 +1508,7 @@ ApplyPatch USB-serial-ftdi_sio-add-id-for-Brainboxes-serial-car.patch
 #rhbz 1089689
 ApplyPatch 0001-synaptics-Add-min-max-quirk-for-ThinkPad-Edge-E431.patch
 
-#CVE-2014-XXXX rhbz 1093076 1093084
+#CVE-2014-3122 rhbz 1093076 1093084
 ApplyPatch mm-try_to_unmap_cluster-should-lock_page-before-mloc.patch
 
 # END OF PATCH APPLICATIONS
@@ -2324,7 +2324,7 @@ fi
 
 %changelog
 * Wed Apr 30 2014 Josh Boyer <jwboyer@fedoraproject.org>
-- CVE-2014-XXXX: mm: fix locking DoS issue (rhbz 1093084 1093076)
+- CVE-2014-3122: mm: fix locking DoS issue (rhbz 1093084 1093076)
 - Enable CONFIG_MEMORY_HOTPLUG (rhbz 1092948)
 
 * Fri Apr 25 2014 Hans de Goede <hdegoede@redhat.com>
