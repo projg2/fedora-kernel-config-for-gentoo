@@ -777,6 +777,9 @@ Patch25062: 0001-HID-rmi-introduce-RMI-driver-for-Synaptics-touchpads.patch
 #rhbz 1089583
 Patch25064: 0001-HID-rmi-do-not-handle-touchscreens-through-hid-rmi.patch
 
+#rhbz 1090161
+Patch25072: HID-rmi-do-not-fetch-more-than-16-bytes-in-a-query.patch
+
 #rhbz 1089689
 Patch25065: 0001-synaptics-Add-min-max-quirk-for-ThinkPad-Edge-E431.patch
 
@@ -1495,6 +1498,8 @@ ApplyPatch KVM-ioapic-fix-assignment-of-ioapic-rtc_status-pending_eoi.patch
 ApplyPatch 0001-HID-rmi-introduce-RMI-driver-for-Synaptics-touchpads.patch
 #rhbz 1089583
 ApplyPatch 0001-HID-rmi-do-not-handle-touchscreens-through-hid-rmi.patch
+#rhbz 1090161
+ApplyPatch HID-rmi-do-not-fetch-more-than-16-bytes-in-a-query.patch
 
 #CVE-2014-2851 rhbz 1086730 1087420
 ApplyPatch net-ipv4-current-group_info-should-be-put-after-using.patch
@@ -2323,6 +2328,9 @@ fi
 # and build.
 
 %changelog
+* Sat May 03 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch to fix HID rmi driver from Benjamin Tissoires (rhbz 1090161)
+
 * Wed Apr 30 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-3122: mm: fix locking DoS issue (rhbz 1093084 1093076)
 - Enable CONFIG_MEMORY_HOTPLUG (rhbz 1092948)
