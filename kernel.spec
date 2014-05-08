@@ -793,6 +793,9 @@ Patch25084: 3-5-net-Add-variants-of-capable-for-use-on-on-sockets.patch
 Patch25085: 4-5-net-Add-variants-of-capable-for-use-on-netlink-messages.patch
 Patch25086: 5-5-net-Use-netlink_ns_capable-to-verify-the-permisions-of-netlink-messages.patch
 
+#rhbz 1082266
+Patch25087: jme-fix-dma-unmap-error.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1529,6 +1532,8 @@ ApplyPatch 3-5-net-Add-variants-of-capable-for-use-on-on-sockets.patch
 ApplyPatch 4-5-net-Add-variants-of-capable-for-use-on-netlink-messages.patch
 ApplyPatch 5-5-net-Use-netlink_ns_capable-to-verify-the-permisions-of-netlink-messages.patch
 
+#rhbz 1082266
+ApplyPatch jme-fix-dma-unmap-error.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2342,6 +2347,9 @@ fi
 # and build.
 
 %changelog
+* Thu May 08 2014 Neil Horman <nhorman@redhat.com> - 3.14.3-101
+- Fix dma unmap error in jme driver (rhbz 1082266)
+
 * Thu May 08 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.3-100
 - Linux v3.14.3
 
