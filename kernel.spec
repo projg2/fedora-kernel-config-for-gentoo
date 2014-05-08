@@ -68,13 +68,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 13
+%define base_sublevel 14
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 3
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -691,14 +691,13 @@ Patch21010: arm-omap-load-tfp410.patch
 # ARM tegra
 Patch21020: arm-tegra-usb-no-reset-linux33.patch
 
+# Add panel support for tegra paz00
+# Backported from linux-next scheduled for 3.15
+Patch21021: arm-tegra-paz00-panel-dts.patch
+
 # ARM i.MX6
 # http://www.spinics.net/lists/devicetree/msg08276.html
 Patch21025: arm-imx6-utilite.patch
-
-# am33xx (BeagleBone)
-# https://github.com/beagleboard/kernel
-# Pulled primarily from the above git repo and should be landing upstream
-Patch21031: arm-am33xx-bblack.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -713,60 +712,26 @@ Patch22000: weird-root-dentry-name-debug.patch
 
 Patch25047: drm-radeon-Disable-writeback-by-default-on-ppc.patch
 
-# Fix 15sec NFS mount delay
-Patch25152: sunrpc-create-a-new-dummy-pipe-for-gssd-to-hold-open.patch
-Patch25153: sunrpc-replace-gssd_running-with-more-reliable-check.patch
-Patch25154: nfs-check-gssd-running-before-krb5i-auth.patch
-#rhbz 1037793
-Patch25166: sunrpc-add-an-info-file-for-the-dummy-gssd-pipe.patch
-Patch25167: rpc_pipe-remove-the-clntXX-dir-if-creating-the-pipe-fails.patch
-Patch25168: rpc_pipe-fix-cleanup-of-dummy-gssd-directory-when-notification-fails.patch
-
-#rhbz 953211
-Patch25184: Input-ALPS-add-support-for-Dolphin-devices.patch
-
-#rhbz 1064430 1056711
-Patch25196: ipv6-introduce-IFA_F_NOPREFIXROUTE-and-IFA_F_MANAGETEMPADDR-flags.patch
-Patch25197: ipv6-addrconf-revert-if_inet6ifa_flag-format.patch
-
-#CVE-2014-0069 rhbz 1064253 1062584
-Patch25201: cifs-sanity-check-length-of-data-to-send-before-sending.patch
-
-#rhbz 1068862
-Patch25002: cifs-mask-off-top-byte-in-get_rfc1002_length.patch
-
-#CVE-2014-0102 rhbz 1071396
-Patch25026: keyring-fix.patch
-
-#rhbz 1027465
-Patch25032: HID-Bluetooth-hidp-make-sure-input-buffers-are-big-e.patch
-
-#rhbz 1013466
-Patch25033: selinux-put-the-mmap-DAC-controls-before-the-MAC-controls.patch
-
 #rhbz 1051748
 Patch25035: Bluetooth-allocate-static-minor-for-vhci.patch
-
-#rhbz 1065663
-Patch25040: iwlwifi-dvm-clear-IWL_STA_UCODE_INPROGRESS-when-asso.patch
 
 #rhbz 1046495
 Patch25044: iwlwifi-dvm-take-mutex-when-sending-SYNC-BT-config-command.patch
 
-#CVE-2014-2568 rhbz 1079012 1079013
-Patch25049: nfqueue-Orphan-frags-in-nfqnl_zcopy-and-handle-error.patch
+#CVE-2014-0155 rhbz 1081589 1085016
+Patch25036: KVM-ioapic-fix-assignment-of-ioapic-rtc_status-pending_eoi.patch
 
 #rhbz 1074235
 Patch25055: lib-percpu_counter.c-fix-bad-percpu-counter-state-du.patch
 
-#CVE-2014-0155 rhbz 1081589 1085016
-Patch25057: KVM-ioapic-fix-assignment-of-ioapic-rtc_status-pending_eoi.patch
-
 #CVE-2014-2851 rhbz 1086730 1087420
 Patch25059: net-ipv4-current-group_info-should-be-put-after-using.patch
 
-#rhbz 1085582 1085697
+#rhbz 1085582 1085697 1088588
 Patch25060: 0001-synaptics-Add-min-max-quirk-for-ThinkPad-T431s-L440-.patch
+
+#rhbz 1074710
+Patch25061: mm-page_alloc.c-change-mm-debug-routines-back-to-EXP.patch
 
 #rhbz 1071914
 Patch25063: USB-serial-ftdi_sio-add-id-for-Brainboxes-serial-car.patch
@@ -780,11 +745,53 @@ Patch25064: 0001-HID-rmi-do-not-handle-touchscreens-through-hid-rmi.patch
 #rhbz 1090161
 Patch25072: HID-rmi-do-not-fetch-more-than-16-bytes-in-a-query.patch
 
-#rhbz 1089689
-Patch25065: 0001-synaptics-Add-min-max-quirk-for-ThinkPad-Edge-E431.patch
+#rhbz 1013466
+Patch25065: selinux-put-the-mmap-DAC-controls-before-the-MAC-controls.patch
 
-#CVE-2014-3122 rhbz 1093076 1093084
-Patch25069: mm-try_to_unmap_cluster-should-lock_page-before-mloc.patch
+#rhbz 1089689
+Patch25066: 0001-synaptics-Add-min-max-quirk-for-ThinkPad-Edge-E431.patch
+
+#rhbz 1090746
+Patch25067: ACPICA-Tables-Fix-bad-pointer-issue-in-acpi_tb_parse_root_table.patch
+
+#rhbz 696821
+Patch25068: fanotify-fix-EOVERFLOW-on-64-bit.patch
+
+#rhbz 983342 1093120
+Patch25070: 0001-acpi-video-Add-4-new-models-to-the-use_native_backli.patch
+
+#rhbz 1060327
+Patch25071: drm-fix-qxl-mode-flags-backport.patch
+
+#rhbz 1093931
+Patch25073: net-Start-with-correct-mac_len-in-skb_network_protoc.patch
+
+#rhbz 1089545
+Patch25074: 0001-acpi-video-Add-use_native_backlight-quirks-for-Think.patch
+
+#rhbz 1082586
+Patch25075: locks-allow-__break_lease-to-sleep-even-when-break_t.patch
+
+#CVE-2014-0196 rhbz 1094232 1094240
+Patch25076: n_tty-Fix-n_tty_write-crash-when-echoing-in-raw-mode.patch
+
+#misc input fixes
+Patch25077: 0001-hid-quirks-Add-NO_INIT_REPORTS-quirk-for-Synaptics-T.patch
+Patch25078: 0002-elantech-Fix-elantech-on-Gigabyte-U2442.patch
+
+#rhbz 861573
+Patch25079: 0003-samsung-laptop-Add-broken-acpi-video-quirk-for-NC210.patch
+
+#rhbz 1067181
+Patch25080: 0004-acpi-blacklist-Add-dmi_enable_osi_linux-quirk-for-As.patch
+
+#CVE-2014-0181 rhbz 1094270 1094265
+Patch25081: net-Fix-ns_capable-check-in-sock_diag_put_filterinfo.patch
+Patch25082: 1-5-netlink-Rename-netlink_capable-netlink_allowed.patch
+Patch25083: 2-5-net-Move-the-permission-check-in-sock_diag_put_filterinfo-to-packet_diag_dump.patch
+Patch25084: 3-5-net-Add-variants-of-capable-for-use-on-on-sockets.patch
+Patch25085: 4-5-net-Add-variants-of-capable-for-use-on-netlink-messages.patch
+Patch25086: 5-5-net-Use-netlink_ns_capable-to-verify-the-permisions-of-netlink-messages.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1335,9 +1342,9 @@ ApplyPatch arm-lpae-ax88796.patch
 ApplyPatch arm-sound-soc-samsung-dma-avoid-another-64bit-division.patch
 ApplyPatch arm-omap-load-tfp410.patch
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
+ApplyPatch arm-tegra-paz00-panel-dts.patch
 ApplyPatch arm-imx6-utilite.patch
 
-ApplyPatch arm-am33xx-bblack.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -1402,8 +1409,6 @@ ApplyPatch crash-driver.patch
 
 # crypto/
 
-# keys
-
 # secure boot
 ApplyPatch secure-modules.patch
 ApplyPatch modsign-uefi.patch
@@ -1445,51 +1450,11 @@ ApplyPatch ath9k_rx_dma_stop_check.patch
 
 ApplyPatch drm-radeon-Disable-writeback-by-default-on-ppc.patch
 
-# Fix 15sec NFS mount delay
-ApplyPatch sunrpc-create-a-new-dummy-pipe-for-gssd-to-hold-open.patch
-ApplyPatch sunrpc-replace-gssd_running-with-more-reliable-check.patch
-ApplyPatch nfs-check-gssd-running-before-krb5i-auth.patch
-#rhbz 1037793
-ApplyPatch rpc_pipe-remove-the-clntXX-dir-if-creating-the-pipe-fails.patch
-ApplyPatch sunrpc-add-an-info-file-for-the-dummy-gssd-pipe.patch
-ApplyPatch rpc_pipe-fix-cleanup-of-dummy-gssd-directory-when-notification-fails.patch
-
-#rhbz 953211
-ApplyPatch Input-ALPS-add-support-for-Dolphin-devices.patch
-
-#rhbz 1064430 1056711
-ApplyPatch ipv6-introduce-IFA_F_NOPREFIXROUTE-and-IFA_F_MANAGETEMPADDR-flags.patch
-ApplyPatch ipv6-addrconf-revert-if_inet6ifa_flag-format.patch
-
-#CVE-2014-0069 rhbz 1064253 1062584
-ApplyPatch cifs-sanity-check-length-of-data-to-send-before-sending.patch
-
-#rhbz 1068862
-ApplyPatch cifs-mask-off-top-byte-in-get_rfc1002_length.patch
-
-#CVE-2014-0102 rhbz 1071396
-ApplyPatch keyring-fix.patch
-
-#rhbz 1027465
-ApplyPatch HID-Bluetooth-hidp-make-sure-input-buffers-are-big-e.patch
-
-#rhbz 1013466
-ApplyPatch selinux-put-the-mmap-DAC-controls-before-the-MAC-controls.patch
-
 #rhbz 1051748
 ApplyPatch Bluetooth-allocate-static-minor-for-vhci.patch
 
-#rhbz 1065663
-ApplyPatch iwlwifi-dvm-clear-IWL_STA_UCODE_INPROGRESS-when-asso.patch
-
 #rhbz 1046495
 ApplyPatch iwlwifi-dvm-take-mutex-when-sending-SYNC-BT-config-command.patch
-
-#CVE-2014-2568 rhbz 1079012 1079013
-ApplyPatch nfqueue-Orphan-frags-in-nfqnl_zcopy-and-handle-error.patch
-
-#rhbz 1074235
-ApplyPatch lib-percpu_counter.c-fix-bad-percpu-counter-state-du.patch
 
 #CVE-2014-0155 rhbz 1081589 1085016
 ApplyPatch KVM-ioapic-fix-assignment-of-ioapic-rtc_status-pending_eoi.patch
@@ -1501,20 +1466,69 @@ ApplyPatch 0001-HID-rmi-do-not-handle-touchscreens-through-hid-rmi.patch
 #rhbz 1090161
 ApplyPatch HID-rmi-do-not-fetch-more-than-16-bytes-in-a-query.patch
 
+#rhbz 1074235
+ApplyPatch lib-percpu_counter.c-fix-bad-percpu-counter-state-du.patch
+
 #CVE-2014-2851 rhbz 1086730 1087420
 ApplyPatch net-ipv4-current-group_info-should-be-put-after-using.patch
 
 #rhbz 1085582 1085697
 ApplyPatch 0001-synaptics-Add-min-max-quirk-for-ThinkPad-T431s-L440-.patch
 
+#rhbz 1074710
+ApplyPatch mm-page_alloc.c-change-mm-debug-routines-back-to-EXP.patch
+
 #rhbz 1071914
 ApplyPatch USB-serial-ftdi_sio-add-id-for-Brainboxes-serial-car.patch
+
+#rhbz 1013466
+ApplyPatch selinux-put-the-mmap-DAC-controls-before-the-MAC-controls.patch
 
 #rhbz 1089689
 ApplyPatch 0001-synaptics-Add-min-max-quirk-for-ThinkPad-Edge-E431.patch
 
-#CVE-2014-3122 rhbz 1093076 1093084
-ApplyPatch mm-try_to_unmap_cluster-should-lock_page-before-mloc.patch
+#rhbz 1090746
+ApplyPatch ACPICA-Tables-Fix-bad-pointer-issue-in-acpi_tb_parse_root_table.patch
+
+#rhbz 696821
+ApplyPatch fanotify-fix-EOVERFLOW-on-64-bit.patch
+
+#rhbz 983342 1093120
+ApplyPatch 0001-acpi-video-Add-4-new-models-to-the-use_native_backli.patch
+
+#rhbz 1060327
+ApplyPatch drm-fix-qxl-mode-flags-backport.patch
+
+#rhbz 1093931
+ApplyPatch net-Start-with-correct-mac_len-in-skb_network_protoc.patch
+
+#rhbz 1089545
+ApplyPatch 0001-acpi-video-Add-use_native_backlight-quirks-for-Think.patch
+
+#rhbz 1082586
+ApplyPatch locks-allow-__break_lease-to-sleep-even-when-break_t.patch
+
+#CVE-2014-0196 rhbz 1094232 1094240
+ApplyPatch n_tty-Fix-n_tty_write-crash-when-echoing-in-raw-mode.patch
+
+#misc input fixes
+ApplyPatch 0001-hid-quirks-Add-NO_INIT_REPORTS-quirk-for-Synaptics-T.patch
+ApplyPatch 0002-elantech-Fix-elantech-on-Gigabyte-U2442.patch
+
+#rhbz 861573
+ApplyPatch 0003-samsung-laptop-Add-broken-acpi-video-quirk-for-NC210.patch
+
+#rhbz 1067181
+ApplyPatch 0004-acpi-blacklist-Add-dmi_enable_osi_linux-quirk-for-As.patch
+
+#CVE-2014-0181 rhbz 1094270 1094265
+ApplyPatch net-Fix-ns_capable-check-in-sock_diag_put_filterinfo.patch
+ApplyPatch 1-5-netlink-Rename-netlink_capable-netlink_allowed.patch
+ApplyPatch 2-5-net-Move-the-permission-check-in-sock_diag_put_filterinfo-to-packet_diag_dump.patch
+ApplyPatch 3-5-net-Add-variants-of-capable-for-use-on-on-sockets.patch
+ApplyPatch 4-5-net-Add-variants-of-capable-for-use-on-netlink-messages.patch
+ApplyPatch 5-5-net-Use-netlink_ns_capable-to-verify-the-permisions-of-netlink-messages.patch
+
 
 # END OF PATCH APPLICATIONS
 
@@ -2025,7 +2039,7 @@ find $RPM_BUILD_ROOT/usr/include \
 
 %if %{with_perf}
 # perf tool binary and supporting scripts/binaries
-%{perf_make} DESTDIR=$RPM_BUILD_ROOT install
+%{perf_make} DESTDIR=$RPM_BUILD_ROOT install-bin
 # remove the 'trace' symlink.
 rm -f %{buildroot}%{_bindir}/trace
 
@@ -2033,7 +2047,7 @@ rm -f %{buildroot}%{_bindir}/trace
 %{perf_make} DESTDIR=$RPM_BUILD_ROOT install-python_ext
 
 # perf man pages (note: implicit rpm magic compresses them later)
-%{perf_make} DESTDIR=$RPM_BUILD_ROOT install-man || %{doc_build_fail}
+%{perf_make} DESTDIR=$RPM_BUILD_ROOT try-install-man || %{doc_build_fail}
 %endif
 
 %if %{with_tools}
@@ -2328,6 +2342,9 @@ fi
 # and build.
 
 %changelog
+* Thu May 08 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.3-100
+- Linux v3.14.3
+
 * Sat May 03 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patch to fix HID rmi driver from Benjamin Tissoires (rhbz 1090161)
 
