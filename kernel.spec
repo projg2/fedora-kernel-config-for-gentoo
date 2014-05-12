@@ -800,6 +800,9 @@ Patch25087: jme-fix-dma-unmap-error.patch
 Patch25088: floppy-ignore-kernel-only-members-in-fdrawcmd-ioctl-input.patch
 Patch25089: floppy-don-t-write-kernel-only-members-to-fdrawcmd-ioctl-output.patch
 
+# CVE-2014-3144 CVE-2014-3145 rhbz 1096775, 1096784
+Patch25090: filter-prevent-nla-extensions-to-peek-beyond-the-end.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1542,6 +1545,9 @@ ApplyPatch jme-fix-dma-unmap-error.patch
 #CVE-2014-1738 CVE-2014-1737 rhbz 1094299 1096195
 ApplyPatch floppy-ignore-kernel-only-members-in-fdrawcmd-ioctl-input.patch
 ApplyPatch floppy-don-t-write-kernel-only-members-to-fdrawcmd-ioctl-output.patch
+
+# CVE-2014-3144 CVE-2014-3145 rhbz 1096775, 1096784
+ApplyPatch filter-prevent-nla-extensions-to-peek-beyond-the-end.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2355,6 +2361,9 @@ fi
 # and build.
 
 %changelog
+* Mon May 12 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-3144/CVE-2014-3145 filter: prevent nla from peeking beyond eom (rhbz 1096775, 1096784)
+
 * Fri May 09 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-1738 CVE-2014-1737 floppy: priv esclation (rhbz 1094299 1096195)
 
