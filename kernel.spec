@@ -736,9 +736,6 @@ Patch25072: HID-rmi-do-not-fetch-more-than-16-bytes-in-a-query.patch
 #rhbz 1013466
 Patch25065: selinux-put-the-mmap-DAC-controls-before-the-MAC-controls.patch
 
-#rhbz 1089689
-Patch25066: 0001-synaptics-Add-min-max-quirk-for-ThinkPad-Edge-E431.patch
-
 #rhbz 1090746
 Patch25067: ACPICA-Tables-Fix-bad-pointer-issue-in-acpi_tb_parse_root_table.patch
 
@@ -1459,9 +1456,6 @@ ApplyPatch USB-serial-ftdi_sio-add-id-for-Brainboxes-serial-car.patch
 
 #rhbz 1013466
 ApplyPatch selinux-put-the-mmap-DAC-controls-before-the-MAC-controls.patch
-
-#rhbz 1089689
-ApplyPatch 0001-synaptics-Add-min-max-quirk-for-ThinkPad-Edge-E431.patch
 
 #rhbz 1090746
 ApplyPatch ACPICA-Tables-Fix-bad-pointer-issue-in-acpi_tb_parse_root_table.patch
