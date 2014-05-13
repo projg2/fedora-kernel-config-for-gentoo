@@ -2317,7 +2317,7 @@ fi
 # and build.
 
 %changelog
-* Tue May 13 2014 Justin M. Forbes <jforbes@fedoraproject.org>
+* Tue May 13 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.4-100
 - Linux v3.14.4
 
 * Mon May 12 2014 Josh Boyer <jwboyer@fedoraproject.org>
