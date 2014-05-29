@@ -784,6 +784,9 @@ Patch25091: 0001-synaptics-Add-min-max-quirk-for-the-ThinkPad-W540.patch
 #rhbz 1051668
 Patch25092: Input-elantech-add-support-for-newer-elantech-touchpads.patch
 
+# CVE-2014-3917 rhbz 1102571 1102715
+Patch25093: auditsc-audit_krule-mask-accesses-need-bounds-checking.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1510,6 +1513,9 @@ ApplyPatch 0001-synaptics-Add-min-max-quirk-for-the-ThinkPad-W540.patch
 
 #rhbz 1051668
 ApplyPatch Input-elantech-add-support-for-newer-elantech-touchpads.patch
+
+# CVE-2014-3917 rhbz 1102571 1102715
+ApplyPatch auditsc-audit_krule-mask-accesses-need-bounds-checking.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2323,6 +2329,9 @@ fi
 # and build.
 
 %changelog
+* Thu May 29 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-3917 DoS with syscall auditing (rhbz 1102571 1102715)
+
 * Tue May 20 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Backport patch to add new elantech touchpad support (rhbz 1051668)
 
