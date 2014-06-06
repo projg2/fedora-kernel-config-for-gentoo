@@ -778,6 +778,9 @@ Patch25093: auditsc-audit_krule-mask-accesses-need-bounds-checking.patch
 #rhbz 1099857
 Patch25095: team-fix-mtu-setting.patch
 
+# CVE-2014-3940 rhbz 1104097 1105042
+Patch25096: mm-add-pte_present-check-on-existing-hugetlb_entry-callbacks.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1498,6 +1501,9 @@ ApplyPatch auditsc-audit_krule-mask-accesses-need-bounds-checking.patch
 
 #rhbz 1099857
 ApplyPatch team-fix-mtu-setting.patch
+
+# CVE-2014-3940 rhbz 1104097 1105042
+ApplyPatch mm-add-pte_present-check-on-existing-hugetlb_entry-callbacks.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2311,6 +2317,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jun 06 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-3940 missing check during hugepage migration (rhbz 1104097 1105042)
+
 * Tue Jun 03 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Add fix for team MTU settings from Jiri Pirko (rhbz 1099857)
 - Backport fix for issues with Quagga introduced by CVE fixes (rhbz 1097684)
