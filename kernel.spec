@@ -722,6 +722,9 @@ Patch26012: acpi-video-Unregister-the-backlight-device-if-a-raw-.patch
 Patch26013: acpi-video-Add-use-native-backlight-quirk-for-the-Th.patch
 Patch26014: acpi-video-Add-use_native_backlight-quirk-for-HP-Pro.patch
 
+#rhbz 1094066
+Patch25096: drm-i915-set-backlight-duty-cycle-after-backlight-enable-for-gen4.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1411,6 +1414,9 @@ ApplyPatch backlight-Add-backlight-device-un-registration-notif.patch
 ApplyPatch acpi-video-Unregister-the-backlight-device-if-a-raw-.patch
 ApplyPatch acpi-video-Add-use-native-backlight-quirk-for-the-Th.patch
 ApplyPatch acpi-video-Add-use_native_backlight-quirk-for-HP-Pro.patch
+
+#rhbz 1094066
+ApplyPatch drm-i915-set-backlight-duty-cycle-after-backlight-enable-for-gen4.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2224,6 +2230,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Wed Jun 11 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix i915 backlight issue on gen4 (rhbz 1094066)
+
 * Mon Jun 09 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Update to Linux v3.15
 
