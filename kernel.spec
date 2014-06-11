@@ -734,6 +734,9 @@ Patch25099: NFS-populate-net-in-mount-data-when-remounting.patch
 #rhbz 1106856
 Patch25100: dm-thin-update-discard_granularity-to-reflect-the-thin-pool-blocksize.patch
 
+#rhbz 1103528
+Patch25101: elantech-Deal-with-clickpads-reporting-right-button-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1435,6 +1438,9 @@ ApplyPatch NFS-populate-net-in-mount-data-when-remounting.patch
 
 #rhbz 1106856
 ApplyPatch dm-thin-update-discard_granularity-to-reflect-the-thin-pool-blocksize.patch
+
+#rhbz 1103528
+ApplyPatch elantech-Deal-with-clickpads-reporting-right-button-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2249,6 +2255,7 @@ fi
 #                                    ||     ||
 %changelog
 * Wed Jun 11 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix elantech right click on Dell vostro 5470 (rhbz 1103528)
 - Fix fstrim on dm-thin volume data (rhbz 1106856)
 - Fix NFS NULL pointer deref with ipv6 (rhbz 1099761)
 - Fix promisc mode on certain e1000e cards (rhbz 1064516)
