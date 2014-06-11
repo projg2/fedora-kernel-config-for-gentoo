@@ -2313,7 +2313,7 @@ fi
 # and build.
 
 %changelog
-* Wed Jun 11 2014 Josh Boyer <jwboyer@fedoraproject.org>
+* Wed Jun 11 2014 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.7-100
 - Fix elantech right click on Dell vostro 5470 (rhbz 1103528)
 - Fix fstrim on dm-thin volume data (rhbz 1106856)
 - Fix NFS NULL pointer deref with ipv6 (rhbz 1099761)
