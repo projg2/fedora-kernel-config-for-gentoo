@@ -725,6 +725,9 @@ Patch26014: acpi-video-Add-use_native_backlight-quirk-for-HP-Pro.patch
 #rhbz 1094066
 Patch25096: drm-i915-set-backlight-duty-cycle-after-backlight-enable-for-gen4.patch
 
+#rhbz 1064516
+Patch25098: e1000e-Failure-to-write-SHRA-turns-on-PROMISC-mode.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1417,6 +1420,9 @@ ApplyPatch acpi-video-Add-use_native_backlight-quirk-for-HP-Pro.patch
 
 #rhbz 1094066
 ApplyPatch drm-i915-set-backlight-duty-cycle-after-backlight-enable-for-gen4.patch
+
+#rhbz 1064516
+ApplyPatch e1000e-Failure-to-write-SHRA-turns-on-PROMISC-mode.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2231,6 +2237,7 @@ fi
 #                                    ||     ||
 %changelog
 * Wed Jun 11 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix promisc mode on certain e1000e cards (rhbz 1064516)
 - Fix i915 backlight issue on gen4 (rhbz 1094066)
 
 * Mon Jun 09 2014 Josh Boyer <jwboyer@fedoraproject.org>
