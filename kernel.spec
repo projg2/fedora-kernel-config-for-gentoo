@@ -779,6 +779,9 @@ Patch25100: dm-thin-update-discard_granularity-to-reflect-the-thin-pool-blocksiz
 #rhbz 1103528
 Patch25101: elantech-Deal-with-clickpads-reporting-right-button-.patch
 
+#CVE-2014-4014 rhbz 1107966 1109836
+Patch25102: fs-userns-Change-inode_capable-to-capable_wrt_inode_.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1500,6 +1503,9 @@ ApplyPatch dm-thin-update-discard_granularity-to-reflect-the-thin-pool-blocksize
 
 #rhbz 1103528
 ApplyPatch elantech-Deal-with-clickpads-reporting-right-button-.patch
+
+#CVE-2014-4014 rhbz 1107966 1109836
+ApplyPatch fs-userns-Change-inode_capable-to-capable_wrt_inode_.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2313,6 +2319,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jun 16 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-4014 possible priv escalation in userns (rhbz 1107966 1109836)
+
 * Wed Jun 11 2014 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.7-100
 - Fix elantech right click on Dell vostro 5470 (rhbz 1103528)
 - Fix fstrim on dm-thin volume data (rhbz 1106856)
