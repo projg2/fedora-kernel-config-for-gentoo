@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -703,9 +703,6 @@ Patch25069: 0001-acpi-video-Add-4-new-models-to-the-use_native_backli.patch
 
 Patch25071: s390-appldata-add-slab.h-for-kzalloc-kfree.patch
 
-# CVE-2014-3917 rhbz 1102571 1102715
-Patch25093: auditsc-audit_krule-mask-accesses-need-bounds-checking.patch
-
 # Patch series from Hans for various backlight and platform driver fixes
 Patch26001: thinkpad_acpi-Add-mappings-for-F9-F12-hotkeys-on-X24.patch
 Patch26002: samsung-laptop-Add-broken-acpi-video-quirk-for-NC210.patch
@@ -736,9 +733,6 @@ Patch25100: dm-thin-update-discard_granularity-to-reflect-the-thin-pool-blocksiz
 
 #rhbz 1103528
 Patch25101: elantech-Deal-with-clickpads-reporting-right-button-.patch
-
-#CVE-2014-4014 rhbz 1107966 1109836
-Patch25102: fs-userns-Change-inode_capable-to-capable_wrt_inode_.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1411,9 +1405,6 @@ ApplyPatch 0001-acpi-video-Add-4-new-models-to-the-use_native_backli.patch
 
 ApplyPatch s390-appldata-add-slab.h-for-kzalloc-kfree.patch
 
-# CVE-2014-3917 rhbz 1102571 1102715
-ApplyPatch auditsc-audit_krule-mask-accesses-need-bounds-checking.patch
-
 # Patch series from Hans for various backlight and platform driver fixes
 ApplyPatch thinkpad_acpi-Add-mappings-for-F9-F12-hotkeys-on-X24.patch
 ApplyPatch samsung-laptop-Add-broken-acpi-video-quirk-for-NC210.patch
@@ -1444,9 +1435,6 @@ ApplyPatch dm-thin-update-discard_granularity-to-reflect-the-thin-pool-blocksize
 
 #rhbz 1103528
 ApplyPatch elantech-Deal-with-clickpads-reporting-right-button-.patch
-
-#CVE-2014-4014 rhbz 1107966 1109836
-ApplyPatch fs-userns-Change-inode_capable-to-capable_wrt_inode_.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2260,6 +2248,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Tue Jun 17 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v3.15.1
+
 * Mon Jun 16 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-4014 possible priv escalation in userns (rhbz 1107966 1109836)
 
