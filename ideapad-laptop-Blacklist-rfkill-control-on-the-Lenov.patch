@@ -1,5 +1,5 @@
-Bugzilla: N/A
-Upstream-status: Sent upstream for 3.16
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1021036
+Upstream-status: Accepted into 3.16
 
 From ec5a006650d13c183124bd4279b95625f85efc6d Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
