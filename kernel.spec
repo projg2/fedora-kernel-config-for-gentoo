@@ -747,6 +747,9 @@ Patch25108: aio-fix-aio-request-leak-when-events-are-reaped-by-u.patch
 
 Patch25109: revert-input-wacom-testing-result-shows-get_report-is-unnecessary.patch
 
+#rhbz 1021036, submitted upstream
+Patch25110: 0001-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1461,6 +1464,9 @@ ApplyPatch aio-fix-kernel-memory-disclosure-in-io_getevents-int.patch
 ApplyPatch aio-fix-aio-request-leak-when-events-are-reaped-by-u.patch
 
 ApplyPatch revert-input-wacom-testing-result-shows-get_report-is-unnecessary.patch
+
+#rhbz 1021036, submitted upstream
+ApplyPatch 0001-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2274,6 +2280,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Fri Jun 27 2014 Hans de Goede <hdegoede@redhat.com>
+- Add patch to fix wifi on lenove yoga 2 series (rhbz#1021036)
+
 * Wed Jun 25 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Revert commit that breaks Wacom Intuos4 from Benjamin Tissoires
 - CVE-2014-0206 aio: insufficient head sanitization in aio_read_events_ring (rhbz 1094602 1112975)
