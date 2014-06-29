@@ -669,6 +669,8 @@ Patch15000: nowatchdog-on-virt.patch
 Patch21020: arm-tegra-usb-no-reset-linux33.patch
 
 # ARM i.MX6
+Patch21021: arm-beagle.patch
+Patch21022: arm-imx6-utilite.patch
 
 # ARM sunxi (AllWinner)
 Patch21025: 0001-ARM-sunxi-Add-driver-for-SD-MMC-hosts-found-on-Allwi.patch
@@ -1301,6 +1303,8 @@ ApplyPatch 0001-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 #
 ApplyPatch arm-tegra-usb-no-reset-linux33.patch
 ApplyPatch 0001-ARM-sunxi-Add-driver-for-SD-MMC-hosts-found-on-Allwi.patch
+ApplyPatch arm-imx6-utilite.patch
+ApplyPatch arm-beagle.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -2280,6 +2284,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Sun Jun 29 2014 Peter Robinson <pbrobinson@fedoraproject.org>
+- Rebase ARM based BeagleBone and Utilite stable patches
+
 * Fri Jun 27 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v3.15.2
 
