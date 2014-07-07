@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 11
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -755,25 +755,12 @@ Patch25096: drm-i915-set-backlight-duty-cycle-after-backlight-enable-for-gen4.pa
 Patch25097: e1000e-Fix-SHRA-register-access-for-82579.patch
 Patch25098: e1000e-Failure-to-write-SHRA-turns-on-PROMISC-mode.patch
 
-#rhbz 1099761
-Patch25099: NFS-populate-net-in-mount-data-when-remounting.patch
-
 #rhbz 1106856
 Patch25100: dm-thin-update-discard_granularity-to-reflect-the-thin-pool-blocksize.patch
-
-#rhbz 1103528
-Patch25101: elantech-Deal-with-clickpads-reporting-right-button-.patch
 
 Patch25102: intel_pstate-Fix-setting-VID.patch
 Patch25103: intel_pstate-dont-touch-turbo-bit-if-turbo-disabled-or-unavailable.patch
 Patch25104: intel_pstate-Update-documentation-of-max-min_perf_pct-sysfs-files.patch
-
-#CVE-2014-4508 rhbz 1111590 1112073
-Patch25106: x86_32-entry-Do-syscall-exit-work-on-badsys.patch
-
-#CVE-2014-0206 rhbz 1094602 1112975
-Patch25107: aio-fix-kernel-memory-disclosure-in-io_getevents-int.patch
-Patch25108: aio-fix-aio-request-leak-when-events-are-reaped-by-u.patch
 
 Patch25109: revert-input-wacom-testing-result-shows-get_report-is-unnecessary.patch
 
@@ -1479,25 +1466,12 @@ ApplyPatch drm-i915-set-backlight-duty-cycle-after-backlight-enable-for-gen4.pat
 ApplyPatch e1000e-Fix-SHRA-register-access-for-82579.patch
 ApplyPatch e1000e-Failure-to-write-SHRA-turns-on-PROMISC-mode.patch
 
-#rhbz 1099761
-ApplyPatch NFS-populate-net-in-mount-data-when-remounting.patch
-
 #rhbz 1106856
 ApplyPatch dm-thin-update-discard_granularity-to-reflect-the-thin-pool-blocksize.patch
-
-#rhbz 1103528
-ApplyPatch elantech-Deal-with-clickpads-reporting-right-button-.patch
 
 ApplyPatch intel_pstate-Fix-setting-VID.patch
 ApplyPatch intel_pstate-dont-touch-turbo-bit-if-turbo-disabled-or-unavailable.patch
 ApplyPatch intel_pstate-Update-documentation-of-max-min_perf_pct-sysfs-files.patch
-
-#CVE-2014-4508 rhbz 1111590 1112073
-ApplyPatch x86_32-entry-Do-syscall-exit-work-on-badsys.patch
-
-#CVE-2014-0206 rhbz 1094602 1112975
-ApplyPatch aio-fix-kernel-memory-disclosure-in-io_getevents-int.patch
-ApplyPatch aio-fix-aio-request-leak-when-events-are-reaped-by-u.patch
 
 ApplyPatch revert-input-wacom-testing-result-shows-get_report-is-unnecessary.patch
 
@@ -2317,6 +2291,11 @@ fi
 # and build.
 
 %changelog
+* Mon Jul 7 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.11-100
+- Linux v3.14.11
+- Fixes CVE-2014-4715 (rhbz 1115767 1116362)
+- Fixes CVE-2014-4699 (rhbz 1115927 1116477)
+
 * Fri Jun 27 2014 Hans de Goede <hdegoede@redhat.com>
 - Add patch to fix wifi on lenove yoga 2 series (rhbz#1021036)
 
