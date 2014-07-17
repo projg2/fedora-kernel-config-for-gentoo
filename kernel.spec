@@ -762,6 +762,9 @@ Patch25109: revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pa
 Patch25110: 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
+#CVE-2014-4943 rhbz 1119458 1120542
+Patch25115: net-l2tp-don-t-fall-back-on-UDP-get-set-sockopt.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1466,6 +1469,9 @@ ApplyPatch revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pat
 #rhbz 1021036
 ApplyPatch 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
+
+#CVE-2014-4943 rhbz 1119458 1120542
+ApplyPatch net-l2tp-don-t-fall-back-on-UDP-get-set-sockopt.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2279,6 +2285,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jul 17 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-4943 pppol2tp level handling (rhbz 1119458 1120542)
+
 * Mon Jul 14 2014 Josh Boyer <jwboyer@fedoraproject.rog> - 3.14.12-100
 - Linux v3.14.12
 
