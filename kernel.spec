@@ -761,6 +761,10 @@ Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 #CVE-2014-4943 rhbz 1119458 1120542
 Patch25115: net-l2tp-don-t-fall-back-on-UDP-get-set-sockopt.patch
 
+#CVE-2014-3534 rhbz 1114089 1122612
+Patch25117: s390-ptrace-fix-PSW-mask-check.patch
+
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1464,6 +1468,9 @@ ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 #CVE-2014-4943 rhbz 1119458 1120542
 ApplyPatch net-l2tp-don-t-fall-back-on-UDP-get-set-sockopt.patch
+
+#CVE-2014-3534 rhbz 1114089 1122612
+ApplyPatch s390-ptrace-fix-PSW-mask-check.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2277,6 +2284,9 @@ fi
 # and build.
 
 %changelog
+* Thu Jul 24 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-3534 s390: ptrace: insufficient sanitization with psw mask (rhbz 1114089 1122612)
+
 * Thu Jul 17 2014 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.13-100
 - Linux v3.14.13
 - CVE-2014-4943 pppol2tp level handling (rhbz 1119458 1120542)
