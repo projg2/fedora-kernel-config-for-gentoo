@@ -776,6 +776,9 @@ Patch25121: shmem-fix-faulting-into-a-hole-not-taking-i_mutex.patch
 Patch25122: shmem-fix-splicing-from-a-hole-while-it-s-punched.patch
 
 
+#CVE-2014-5077 rhbz 1122982 1123696
+Patch25124: net-v2-net-sctp-inherit-auth_capable-on-INIT-collisions.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1493,6 +1496,9 @@ ApplyPatch fs-umount-on-symlink-leaks-mnt-count.patch
 ApplyPatch shmem-fix-faulting-into-a-hole-while-it-s-punched.patch
 ApplyPatch shmem-fix-faulting-into-a-hole-not-taking-i_mutex.patch
 ApplyPatch shmem-fix-splicing-from-a-hole-while-it-s-punched.patch
+
+#CVE-2014-5077 rhbz 1122982 1123696
+ApplyPatch net-v2-net-sctp-inherit-auth_capable-on-INIT-collisions.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2306,6 +2312,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jul 28 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-5077 sctp: fix NULL ptr dereference (rhbz 1122982 1123696)
+
 * Thu Jul 24 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-4171 shmem: denial of service (rhbz 1111180 1118247)
 - CVE-2014-5045 vfs: refcount issues during lazy umount on symlink (rhbz 1122471 1122482)
