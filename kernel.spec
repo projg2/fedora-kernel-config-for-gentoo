@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -749,7 +749,6 @@ Patch25087: jme-fix-dma-unmap-error.patch
 Patch25092: Input-elantech-add-support-for-newer-elantech-touchpads.patch
 
 #rhbz 1064516
-Patch25097: e1000e-Fix-SHRA-register-access-for-82579.patch
 Patch25098: e1000e-Failure-to-write-SHRA-turns-on-PROMISC-mode.patch
 
 Patch25109: revert-input-wacom-testing-result-shows-get_report-is-unnecessary.patch
@@ -769,11 +768,6 @@ Patch25118: sched-fix-sched_setparam-policy-1-logic.patch
 
 #CVE-2014-5045 rhbz 1122472 1122482
 Patch25119: fs-umount-on-symlink-leaks-mnt-count.patch
-
-#CVE-2014-4171 rhbz 1111180 1118247
-Patch25120: shmem-fix-faulting-into-a-hole-while-it-s-punched.patch
-Patch25121: shmem-fix-faulting-into-a-hole-not-taking-i_mutex.patch
-Patch25122: shmem-fix-splicing-from-a-hole-while-it-s-punched.patch
 
 
 #CVE-2014-5077 rhbz 1122982 1123696
@@ -1471,7 +1465,6 @@ ApplyPatch jme-fix-dma-unmap-error.patch
 ApplyPatch Input-elantech-add-support-for-newer-elantech-touchpads.patch
 
 #rhbz 1064516
-ApplyPatch e1000e-Fix-SHRA-register-access-for-82579.patch
 ApplyPatch e1000e-Failure-to-write-SHRA-turns-on-PROMISC-mode.patch
 
 ApplyPatch revert-input-wacom-testing-result-shows-get_report-is-unnecessary.patch
@@ -1491,11 +1484,6 @@ ApplyPatch sched-fix-sched_setparam-policy-1-logic.patch
 
 #CVE-2014-5045 rhbz 1122472 1122482
 ApplyPatch fs-umount-on-symlink-leaks-mnt-count.patch
-
-#CVE-2014-4171 rhbz 1111180 1118247
-ApplyPatch shmem-fix-faulting-into-a-hole-while-it-s-punched.patch
-ApplyPatch shmem-fix-faulting-into-a-hole-not-taking-i_mutex.patch
-ApplyPatch shmem-fix-splicing-from-a-hole-while-it-s-punched.patch
 
 #CVE-2014-5077 rhbz 1122982 1123696
 ApplyPatch net-v2-net-sctp-inherit-auth_capable-on-INIT-collisions.patch
@@ -2312,6 +2300,9 @@ fi
 # and build.
 
 %changelog
+* Mon Jul 28 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.14-100
+- Linux v3.14.14
+
 * Mon Jul 28 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-5077 sctp: fix NULL ptr dereference (rhbz 1122982 1123696)
 
