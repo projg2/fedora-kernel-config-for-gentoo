@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 16
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -756,9 +756,6 @@ Patch25109: revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pa
 #rhbz 1021036
 Patch25110: 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
-
-#CVE-2014-4943 rhbz 1119458 1120542
-Patch25115: net-l2tp-don-t-fall-back-on-UDP-get-set-sockopt.patch
 
 #rhbz 1117942
 Patch25118: sched-fix-sched_setparam-policy-1-logic.patch
@@ -1465,9 +1462,6 @@ ApplyPatch revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pat
 #rhbz 1021036
 ApplyPatch 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
-
-#CVE-2014-4943 rhbz 1119458 1120542
-ApplyPatch net-l2tp-don-t-fall-back-on-UDP-get-set-sockopt.patch
 
 #rhbz 1117942
 ApplyPatch sched-fix-sched_setparam-policy-1-logic.patch
@@ -2287,6 +2281,9 @@ fi
 # and build.
 
 %changelog
+* Mon Aug 11 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.16-100
+- Linux v3.14.16
+
 * Thu Jul 31 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.15-100
 - Linux v3.14.15
 
