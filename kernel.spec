@@ -763,6 +763,9 @@ Patch25118: sched-fix-sched_setparam-policy-1-logic.patch
 #CVE-2014-5077 rhbz 1122982 1123696
 Patch25124: net-v2-net-sctp-inherit-auth_capable-on-INIT-collisions.patch
 
+#CVE-2014-{5206,5207} rhbz 1129662 1129669
+Patch25130: namespaces-remount-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1468,6 +1471,9 @@ ApplyPatch sched-fix-sched_setparam-policy-1-logic.patch
 
 #CVE-2014-5077 rhbz 1122982 1123696
 ApplyPatch net-v2-net-sctp-inherit-auth_capable-on-INIT-collisions.patch
+
+#CVE-2014-{5206,5207} rhbz 1129662 1129669
+ApplyPatch namespaces-remount-fixes.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2281,6 +2287,9 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 13 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-{5206,5207} ro bind mount bypass with namespaces (rhbz 1129662 1129669)
+
 * Mon Aug 11 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.16-100
 - Linux v3.14.16
 
