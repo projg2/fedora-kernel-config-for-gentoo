@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 17
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -759,9 +759,6 @@ Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 #rhbz 1117942
 Patch25118: sched-fix-sched_setparam-policy-1-logic.patch
-
-#CVE-2014-5077 rhbz 1122982 1123696
-Patch25124: net-v2-net-sctp-inherit-auth_capable-on-INIT-collisions.patch
 
 #CVE-2014-{5206,5207} rhbz 1129662 1129669
 Patch25130: namespaces-remount-fixes.patch
@@ -1468,9 +1465,6 @@ ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 #rhbz 1117942
 ApplyPatch sched-fix-sched_setparam-policy-1-logic.patch
-
-#CVE-2014-5077 rhbz 1122982 1123696
-ApplyPatch net-v2-net-sctp-inherit-auth_capable-on-INIT-collisions.patch
 
 #CVE-2014-{5206,5207} rhbz 1129662 1129669
 ApplyPatch namespaces-remount-fixes.patch
@@ -2287,6 +2281,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 14 2014 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.17-100
+- Linux v3.14.17
+
 * Wed Aug 13 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.16-101
 - Bump for build
 
