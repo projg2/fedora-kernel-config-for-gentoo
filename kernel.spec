@@ -710,8 +710,6 @@ Patch21247: ath9k_rx_dma_stop_check.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
 
-Patch25047: drm-radeon-Disable-writeback-by-default-on-ppc.patch
-
 #rhbz 1051748
 Patch25035: Bluetooth-allocate-static-minor-for-vhci.patch
 
@@ -1420,8 +1418,6 @@ ApplyPatch criu-no-expert.patch
 
 #rhbz 892811
 ApplyPatch ath9k_rx_dma_stop_check.patch
-
-ApplyPatch drm-radeon-Disable-writeback-by-default-on-ppc.patch
 
 #rhbz 1051748
 ApplyPatch Bluetooth-allocate-static-minor-for-vhci.patch
