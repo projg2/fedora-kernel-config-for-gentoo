@@ -763,6 +763,9 @@ Patch25118: sched-fix-sched_setparam-policy-1-logic.patch
 #CVE-2014-{5206,5207} rhbz 1129662 1129669
 Patch25130: namespaces-remount-fixes.patch
 
+#rhbz 1131551
+Patch25132: nfs3_list_one_acl-check-get_acl-result-with-IS_ERR_O.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1468,6 +1471,9 @@ ApplyPatch sched-fix-sched_setparam-policy-1-logic.patch
 
 #CVE-2014-{5206,5207} rhbz 1129662 1129669
 ApplyPatch namespaces-remount-fixes.patch
+
+#rhbz 1131551
+ApplyPatch nfs3_list_one_acl-check-get_acl-result-with-IS_ERR_O.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2281,6 +2287,9 @@ fi
 # and build.
 
 %changelog
+* Tue Aug 19 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix NFSv3 oops (rhbz 1131551)
+
 * Thu Aug 14 2014 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.17-100
 - Linux v3.14.17
 
