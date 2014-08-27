@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -761,6 +761,9 @@ Patch25130: namespaces-remount-fixes.patch
 
 #rhbz 1131551
 Patch25132: nfs3_list_one_acl-check-get_acl-result-with-IS_ERR_O.patch
+
+#CVE-2014-{5471,5472} rhbz 1134099 1134101
+Patch26017: isofs-Fix-unbounded-recursion-when-processing-relocated-directories.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1465,6 +1468,9 @@ ApplyPatch namespaces-remount-fixes.patch
 
 #rhbz 1131551
 ApplyPatch nfs3_list_one_acl-check-get_acl-result-with-IS_ERR_O.patch
+
+#CVE-2014-{5471,5472} rhbz 1134099 1134101
+ApplyPatch isofs-Fix-unbounded-recursion-when-processing-relocated-directories.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2278,6 +2284,10 @@ fi
 # and build.
 
 %changelog
+* Wed Aug 27 2014 Justin M. Forbes <jforbes@fedoraproject.org>
+- CVE-2014-{5471,5472} isofs: Fix unbounded recursion when processing relocated
+  directories (rhbz 1134099 1134101)
+
 * Tue Aug 19 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix NFSv3 oops (rhbz 1131551)
 
