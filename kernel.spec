@@ -765,6 +765,9 @@ Patch25132: nfs3_list_one_acl-check-get_acl-result-with-IS_ERR_O.patch
 #CVE-2014-{5471,5472} rhbz 1134099 1134101
 Patch26017: isofs-Fix-unbounded-recursion-when-processing-relocated-directories.patch
 
+#rhbz 1132786
+Patch26018: NFSv3-Fix-another-acl-regression.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1471,6 +1474,9 @@ ApplyPatch nfs3_list_one_acl-check-get_acl-result-with-IS_ERR_O.patch
 
 #CVE-2014-{5471,5472} rhbz 1134099 1134101
 ApplyPatch isofs-Fix-unbounded-recursion-when-processing-relocated-directories.patch
+
+#rhbz 1132786
+ApplyPatch NFSv3-Fix-another-acl-regression.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2284,6 +2290,9 @@ fi
 # and build.
 
 %changelog
+* Thu Aug 28 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix NFSv3 ACL regression (rhbz 1132786)
+
 * Wed Aug 27 2014 Justin M. Forbes <jforbes@fedoraproject.org>
 - CVE-2014-{5471,5472} isofs: Fix unbounded recursion when processing relocated
   directories (rhbz 1134099 1134101)
