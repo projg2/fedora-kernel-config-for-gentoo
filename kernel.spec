@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 17
+%define stable_update 18
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -753,20 +753,8 @@ Patch25109: revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pa
 Patch25110: 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
-#rhbz 1117942
-Patch25118: sched-fix-sched_setparam-policy-1-logic.patch
-
 #CVE-2014-{5206,5207} rhbz 1129662 1129669
 Patch25130: namespaces-remount-fixes.patch
-
-#rhbz 1131551
-Patch25132: nfs3_list_one_acl-check-get_acl-result-with-IS_ERR_O.patch
-
-#CVE-2014-{5471,5472} rhbz 1134099 1134101
-Patch26017: isofs-Fix-unbounded-recursion-when-processing-relocated-directories.patch
-
-#rhbz 1132786
-Patch26018: NFSv3-Fix-another-acl-regression.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1463,20 +1451,8 @@ ApplyPatch revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pat
 ApplyPatch 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
-#rhbz 1117942
-ApplyPatch sched-fix-sched_setparam-policy-1-logic.patch
-
 #CVE-2014-{5206,5207} rhbz 1129662 1129669
 ApplyPatch namespaces-remount-fixes.patch
-
-#rhbz 1131551
-ApplyPatch nfs3_list_one_acl-check-get_acl-result-with-IS_ERR_O.patch
-
-#CVE-2014-{5471,5472} rhbz 1134099 1134101
-ApplyPatch isofs-Fix-unbounded-recursion-when-processing-relocated-directories.patch
-
-#rhbz 1132786
-ApplyPatch NFSv3-Fix-another-acl-regression.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2290,6 +2266,9 @@ fi
 # and build.
 
 %changelog
+* Tue Sep 09 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.16-100
+- Linux v3.14.18
+
 * Thu Aug 28 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix NFSv3 ACL regression (rhbz 1132786)
 
