@@ -756,6 +756,9 @@ Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 #CVE-2014-{5206,5207} rhbz 1129662 1129669
 Patch25130: namespaces-remount-fixes.patch
 
+#CVE-2014-3631 rhbz 1116347
+Patch26020: KEYS-Fix-termination-condition-in-assoc-array-garbag.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1453,6 +1456,9 @@ ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 #CVE-2014-{5206,5207} rhbz 1129662 1129669
 ApplyPatch namespaces-remount-fixes.patch
+
+#CVE-2014-3631 rhbz 1116347
+ApplyPatch KEYS-Fix-termination-condition-in-assoc-array-garbag.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2266,6 +2272,9 @@ fi
 # and build.
 
 %changelog
+* Wed Sep 10 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-3631 Add patch to fix oops on keyring gc (rhbz 1116347)
+
 * Tue Sep 09 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.16-100
 - Linux v3.14.18
 
