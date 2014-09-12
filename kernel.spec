@@ -2284,7 +2284,7 @@ fi
 * Wed Sep 10 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-3631 Add patch to fix oops on keyring gc (rhbz 1116347)
 
-* Tue Sep 09 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.16-100
+* Tue Sep 09 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.18-100
 - Linux v3.14.18
 
 * Thu Aug 28 2014 Josh Boyer <jwboyer@fedoraproject.org>
