@@ -759,6 +759,9 @@ Patch25130: namespaces-remount-fixes.patch
 #CVE-2014-3631 rhbz 1116347
 Patch26020: KEYS-Fix-termination-condition-in-assoc-array-garbag.patch
 
+#CVE-2014-3181 rhbz 1141179 1141173
+Patch26024: HID-magicmouse-sanity-check-report-size-in-raw_event.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1459,6 +1462,9 @@ ApplyPatch namespaces-remount-fixes.patch
 
 #CVE-2014-3631 rhbz 1116347
 ApplyPatch KEYS-Fix-termination-condition-in-assoc-array-garbag.patch
+
+#CVE-2014-3181 rhbz 1141179 1141173
+ApplyPatch HID-magicmouse-sanity-check-report-size-in-raw_event.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2272,6 +2278,9 @@ fi
 # and build.
 
 %changelog
+* Fri Sep 12 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-3181 HID: OOB write in magicmouse driver (rhbz 1141173 1141179)
+
 * Wed Sep 10 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-3631 Add patch to fix oops on keyring gc (rhbz 1116347)
 
