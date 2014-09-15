@@ -762,6 +762,9 @@ Patch26020: KEYS-Fix-termination-condition-in-assoc-array-garbag.patch
 #CVE-2014-3181 rhbz 1141179 1141173
 Patch26024: HID-magicmouse-sanity-check-report-size-in-raw_event.patch
 
+#CVE-2014-3186 rhbz 1141407 1141410
+Patch26025: HID-picolcd-sanity-check-report-size-in-raw_event-ca.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1465,6 +1468,9 @@ ApplyPatch KEYS-Fix-termination-condition-in-assoc-array-garbag.patch
 
 #CVE-2014-3181 rhbz 1141179 1141173
 ApplyPatch HID-magicmouse-sanity-check-report-size-in-raw_event.patch
+
+#CVE-2014-3186 rhbz 1141407 1141410
+ApplyPatch HID-picolcd-sanity-check-report-size-in-raw_event-ca.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2278,6 +2284,9 @@ fi
 # and build.
 
 %changelog
+* Mon Sep 15 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-3186 HID: memory corruption via OOB write (rhbz 1141407 1141410)
+
 * Fri Sep 12 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-3181 HID: OOB write in magicmouse driver (rhbz 1141173 1141179)
 
