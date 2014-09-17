@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 19
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -752,12 +752,6 @@ Patch25109: revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pa
 #rhbz 1021036
 Patch25110: 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
-
-#CVE-2014-{5206,5207} rhbz 1129662 1129669
-Patch25130: namespaces-remount-fixes.patch
-
-#CVE-2014-3631 rhbz 1116347
-Patch26020: KEYS-Fix-termination-condition-in-assoc-array-garbag.patch
 
 #CVE-2014-3181 rhbz 1141179 1141173
 Patch26024: HID-magicmouse-sanity-check-report-size-in-raw_event.patch
@@ -1462,12 +1456,6 @@ ApplyPatch revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pat
 #rhbz 1021036
 ApplyPatch 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
-
-#CVE-2014-{5206,5207} rhbz 1129662 1129669
-ApplyPatch namespaces-remount-fixes.patch
-
-#CVE-2014-3631 rhbz 1116347
-ApplyPatch KEYS-Fix-termination-condition-in-assoc-array-garbag.patch
 
 #CVE-2014-3181 rhbz 1141179 1141173
 ApplyPatch HID-magicmouse-sanity-check-report-size-in-raw_event.patch
@@ -2290,6 +2278,9 @@ fi
 # and build.
 
 %changelog
+* Thu Sep 17 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.19-100
+- Linux v3.14.19
+
 * Mon Sep 15 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-6410 udf: avoid infinite loop on indirect ICBs (rhbz 1141809 1141810)
 - CVE-2014-3186 HID: memory corruption via OOB write (rhbz 1141407 1141410)
