@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 19
+%define stable_update 20
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -752,12 +752,6 @@ Patch25109: revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pa
 #rhbz 1021036
 Patch25110: 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
-
-#CVE-2014-3181 rhbz 1141179 1141173
-Patch26024: HID-magicmouse-sanity-check-report-size-in-raw_event.patch
-
-#CVE-2014-3186 rhbz 1141407 1141410
-Patch26025: HID-picolcd-sanity-check-report-size-in-raw_event-ca.patch
 
 #CVE-2014-6410 rhbz 1141809 1141810
 Patch26026: udf-Avoid-infinite-loop-when-processing-indirect-ICB.patch
@@ -1456,12 +1450,6 @@ ApplyPatch revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pat
 #rhbz 1021036
 ApplyPatch 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
-
-#CVE-2014-3181 rhbz 1141179 1141173
-ApplyPatch HID-magicmouse-sanity-check-report-size-in-raw_event.patch
-
-#CVE-2014-3186 rhbz 1141407 1141410
-ApplyPatch HID-picolcd-sanity-check-report-size-in-raw_event-ca.patch
 
 #CVE-2014-6410 rhbz 1141809 1141810
 ApplyPatch udf-Avoid-infinite-loop-when-processing-indirect-ICB.patch
@@ -2278,6 +2266,9 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 06 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.20-100
+- Linux v3.14.20
+
 * Thu Sep 17 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.19-100
 - Linux v3.14.19
 
