@@ -753,6 +753,9 @@ Patch25109: revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pa
 Patch25110: 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
+#CVE-2014-7970 rhbz 1151095 1151484
+Patch26032: mnt-Prevent-pivot_root-from-creating-a-loop-in-the-m.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1447,6 +1450,9 @@ ApplyPatch revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pat
 #rhbz 1021036
 ApplyPatch 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
+
+#CVE-2014-7970 rhbz 1151095 1151484
+ApplyPatch mnt-Prevent-pivot_root-from-creating-a-loop-in-the-m.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2260,6 +2266,9 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 10 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-7970 VFS: DoS with USER_NS (rhbz 1151095 1151484)
+
 * Thu Oct 09 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.21-100
 - Linux v3.14.21
 
