@@ -756,6 +756,9 @@ Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 #CVE-2014-7970 rhbz 1151095 1151484
 Patch26032: mnt-Prevent-pivot_root-from-creating-a-loop-in-the-m.patch
 
+#CVE-2014-7975 rhbz 1151108 1152025
+Patch26042: fs-Add-a-missing-permission-check-to-do_umount.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1453,6 +1456,9 @@ ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 #CVE-2014-7970 rhbz 1151095 1151484
 ApplyPatch mnt-Prevent-pivot_root-from-creating-a-loop-in-the-m.patch
+
+#CVE-2014-7975 rhbz 1151108 1152025
+ApplyPatch fs-Add-a-missing-permission-check-to-do_umount.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2266,6 +2272,9 @@ fi
 # and build.
 
 %changelog
+* Mon Oct 13 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-7975 fs: umount DoS (rhbz 1151108 1152025)
+
 * Fri Oct 10 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-7970 VFS: DoS with USER_NS (rhbz 1151095 1151484)
 
