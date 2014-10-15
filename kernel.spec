@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 21
+%define stable_update 22
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2272,6 +2272,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 15 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.22-100
+- Linux v3.14.22
+
 * Mon Oct 13 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-7975 fs: umount DoS (rhbz 1151108 1152025)
 
