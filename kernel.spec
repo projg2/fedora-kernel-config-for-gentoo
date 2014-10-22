@@ -759,6 +759,9 @@ Patch26032: mnt-Prevent-pivot_root-from-creating-a-loop-in-the-m.patch
 #CVE-2014-7975 rhbz 1151108 1152025
 Patch26042: fs-Add-a-missing-permission-check-to-do_umount.patch
 
+# CVE-2014-3690 rhbz 1153322 1155372
+Patch26060: x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1459,6 +1462,9 @@ ApplyPatch mnt-Prevent-pivot_root-from-creating-a-loop-in-the-m.patch
 
 #CVE-2014-7975 rhbz 1151108 1152025
 ApplyPatch fs-Add-a-missing-permission-check-to-do_umount.patch
+
+# CVE-2014-3690 rhbz 1153322 1155372
+ApplyPatch x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2272,6 +2278,9 @@ fi
 # and build.
 
 %changelog
+* Wed Oct 22 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-3690 kvm: invalid host cr4 handling (rhbz 1153322 1155372)
+
 * Wed Oct 15 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.22-100
 - Linux v3.14.22
 
@@ -2287,7 +2296,7 @@ fi
 * Mon Oct 06 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.20-100
 - Linux v3.14.20
 
-* Thu Sep 17 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.19-100
+* Thu Sep 18 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.19-100
 - Linux v3.14.19
 
 * Mon Sep 15 2014 Josh Boyer <jwboyer@fedoraproject.org>
