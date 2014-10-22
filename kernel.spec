@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2296,7 +2296,7 @@ fi
 # and build.
 
 %changelog
-* Wed Oct 22 2014 Josh Boyer <jwboyer@fedoraproject.org>
+* Wed Oct 22 2014 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.22-101
 - CVE-2014-3688 sctp: remote memory pressure from excessive queuing (rhbz 1155745 1155751)
 - CVE-2014-3687 sctp: panic on duplicate ASCONF chunks (rhbz 1155731 1155738)
 - CVE-2014-3673 sctp: panic with malformed ASCONF chunks (rhbz 1147850 1155727)
