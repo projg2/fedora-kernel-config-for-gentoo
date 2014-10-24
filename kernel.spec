@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 102
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -770,6 +770,20 @@ Patch26062: net-sctp-fix-panic-on-duplicate-ASCONF-chunks.patch
 
 #CVE-2014-3673 rhbz 1147850 1155727
 Patch26063: net-sctp-fix-remote-memory-pressure-from-excessive-q.patch
+
+# CVE-2014-3610 kvm: noncanonical MSR writes (rhbz 1144883 1156543)
+# CVE-2014-3611 kvm: PIT timer race condition (rhbz 1144878 1156537)
+# CVE-2014-3646 kvm: vmx: invvpid vm exit not handled (rhbz 1144825 1156534)
+# CVE-2014-8369 kvm: excessive pages un-pinning in kvm_iommu_map error path (rhbz 1156518 1156522)
+Patch26070: KVM-x86-Check-non-canonical-addresses-upon-WRMSR.patch
+Patch26071: KVM-x86-Prevent-host-from-panicking-on-shared-MSR-wr.patch
+Patch26072: KVM-x86-Improve-thread-safety-in-pit.patch
+Patch26073: KVM-x86-Fix-wrong-masking-on-relative-jump-call.patch
+Patch26074: KVM-x86-Emulator-fixes-for-eip-canonical-checks-on-n.patch
+Patch26075: KVM-x86-Handle-errors-when-RIP-is-set-during-far-jum.patch
+Patch26076: kvm-vmx-handle-invvpid-vm-exit-gracefully.patch
+Patch26077: kvm-x86-don-t-kill-guest-on-unknown-exit-reason.patch
+Patch26082: kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1483,6 +1497,20 @@ ApplyPatch net-sctp-fix-panic-on-duplicate-ASCONF-chunks.patch
 
 #CVE-2014-3673 rhbz 1147850 1155727
 ApplyPatch net-sctp-fix-remote-memory-pressure-from-excessive-q.patch
+
+# CVE-2014-3610 kvm: noncanonical MSR writes (rhbz 1144883 1156543)
+# CVE-2014-3611 kvm: PIT timer race condition (rhbz 1144878 1156537)
+# CVE-2014-3646 kvm: vmx: invvpid vm exit not handled (rhbz 1144825 1156534)
+# CVE-2014-8369 kvm: excessive pages un-pinning in kvm_iommu_map error path (rhbz 1156518 1156522)
+ApplyPatch KVM-x86-Check-non-canonical-addresses-upon-WRMSR.patch
+ApplyPatch KVM-x86-Prevent-host-from-panicking-on-shared-MSR-wr.patch
+ApplyPatch KVM-x86-Improve-thread-safety-in-pit.patch
+ApplyPatch KVM-x86-Fix-wrong-masking-on-relative-jump-call.patch
+ApplyPatch KVM-x86-Emulator-fixes-for-eip-canonical-checks-on-n.patch
+ApplyPatch KVM-x86-Handle-errors-when-RIP-is-set-during-far-jum.patch
+ApplyPatch kvm-vmx-handle-invvpid-vm-exit-gracefully.patch
+ApplyPatch kvm-x86-don-t-kill-guest-on-unknown-exit-reason.patch
+ApplyPatch kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2296,6 +2324,12 @@ fi
 # and build.
 
 %changelog
+* Fri Oct 24 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-3610 kvm: noncanonical MSR writes (rhbz 1144883 1156543)
+- CVE-2014-3611 kvm: PIT timer race condition (rhbz 1144878 1156537)
+- CVE-2014-3646 kvm: vmx: invvpid vm exit not handled (rhbz 1144825 1156534)
+- CVE-2014-8369 kvm: excessive pages un-pinning in kvm_iommu_map error path (rhbz 1156518 1156522)
+
 * Wed Oct 22 2014 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.22-101
 - CVE-2014-3688 sctp: remote memory pressure from excessive queuing (rhbz 1155745 1155751)
 - CVE-2014-3687 sctp: panic on duplicate ASCONF chunks (rhbz 1155731 1155738)
