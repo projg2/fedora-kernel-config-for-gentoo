@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 202
+%global baserelease 203
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -759,6 +759,20 @@ Patch26063: net-sctp-fix-remote-memory-pressure-from-excessive-q.patch
 
 #rhbz 1111138
 Patch26064: i8042-Add-notimeout-quirk-for-Fujitsu-Lifebook-A544-.patch
+
+# CVE-2014-3610 kvm: noncanonical MSR writes (rhbz 1144883 1156543)
+# CVE-2014-3611 kvm: PIT timer race condition (rhbz 1144878 1156537)
+# CVE-2014-3646 kvm: vmx: invvpid vm exit not handled (rhbz 1144825 1156534)
+# CVE-2014-8369 kvm: excessive pages un-pinning in kvm_iommu_map error path (rhbz 1156518 1156522)
+Patch26070: KVM-x86-Check-non-canonical-addresses-upon-WRMSR.patch
+Patch26071: KVM-x86-Prevent-host-from-panicking-on-shared-MSR-wr.patch
+Patch26072: KVM-x86-Improve-thread-safety-in-pit.patch
+Patch26073: KVM-x86-Fix-wrong-masking-on-relative-jump-call.patch
+Patch26074: KVM-x86-Emulator-fixes-for-eip-canonical-checks-on-n.patch
+Patch26075: KVM-x86-Handle-errors-when-RIP-is-set-during-far-jum.patch
+Patch26076: kvm-vmx-handle-invvpid-vm-exit-gracefully.patch
+Patch26077: kvm-x86-don-t-kill-guest-on-unknown-exit-reason.patch
+Patch26082: kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
 
 # git clone ssh://git.fedorahosted.org/git/kernel-arm64.git, git diff master...devel
 Patch30000: kernel-arm64.patch
@@ -1487,6 +1501,20 @@ ApplyPatch net-sctp-fix-remote-memory-pressure-from-excessive-q.patch
 
 #rhbz 1111138
 ApplyPatch i8042-Add-notimeout-quirk-for-Fujitsu-Lifebook-A544-.patch
+
+# CVE-2014-3610 kvm: noncanonical MSR writes (rhbz 1144883 1156543)
+# CVE-2014-3611 kvm: PIT timer race condition (rhbz 1144878 1156537)
+# CVE-2014-3646 kvm: vmx: invvpid vm exit not handled (rhbz 1144825 1156534)
+# CVE-2014-8369 kvm: excessive pages un-pinning in kvm_iommu_map error path (rhbz 1156518 1156522)
+ApplyPatch KVM-x86-Check-non-canonical-addresses-upon-WRMSR.patch
+ApplyPatch KVM-x86-Prevent-host-from-panicking-on-shared-MSR-wr.patch
+ApplyPatch KVM-x86-Improve-thread-safety-in-pit.patch
+ApplyPatch KVM-x86-Fix-wrong-masking-on-relative-jump-call.patch
+ApplyPatch KVM-x86-Emulator-fixes-for-eip-canonical-checks-on-n.patch
+ApplyPatch KVM-x86-Handle-errors-when-RIP-is-set-during-far-jum.patch
+ApplyPatch kvm-vmx-handle-invvpid-vm-exit-gracefully.patch
+ApplyPatch kvm-x86-don-t-kill-guest-on-unknown-exit-reason.patch
+ApplyPatch kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2307,6 +2335,10 @@ fi
 #                 ||     ||
 %changelog
 * Fri Oct 24 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-3610 kvm: noncanonical MSR writes (rhbz 1144883 1156543)
+- CVE-2014-3611 kvm: PIT timer race condition (rhbz 1144878 1156537)
+- CVE-2014-3646 kvm: vmx: invvpid vm exit not handled (rhbz 1144825 1156534)
+- CVE-2014-8369 kvm: excessive pages un-pinning in kvm_iommu_map error path (rhbz 1156518 1156522)
 - Add touchpad quirk for Fujitsu Lifebook A544/AH544 models (rhbz 1111138)
 
 * Wed Oct 22 2014 Josh Boyer <jwboyer@fedoraproject.org> - 3.16.6-202
