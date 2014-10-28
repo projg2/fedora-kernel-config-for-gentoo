@@ -774,6 +774,9 @@ Patch26076: kvm-vmx-handle-invvpid-vm-exit-gracefully.patch
 Patch26077: kvm-x86-don-t-kill-guest-on-unknown-exit-reason.patch
 Patch26082: kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
 
+#rhbz 1157327
+Patch26083: quirk-for-Lenovo-Yoga-3-no-rfkill-switch.patch
+
 # git clone ssh://git.fedorahosted.org/git/kernel-arm64.git, git diff master...devel
 Patch30000: kernel-arm64.patch
 
@@ -1515,6 +1518,9 @@ ApplyPatch KVM-x86-Handle-errors-when-RIP-is-set-during-far-jum.patch
 ApplyPatch kvm-vmx-handle-invvpid-vm-exit-gracefully.patch
 ApplyPatch kvm-x86-don-t-kill-guest-on-unknown-exit-reason.patch
 ApplyPatch kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
+
+#rhbz 1157327
+ApplyPatch quirk-for-Lenovo-Yoga-3-no-rfkill-switch.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2334,6 +2340,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Oct 28 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Add quirk for rfkill on Yoga 3 machines (rhbz 1157327)
+
 * Fri Oct 24 2014 Josh Boyer <jwboyer@fedoraproject.org> - 3.16.6-203
 - CVE-2014-3610 kvm: noncanonical MSR writes (rhbz 1144883 1156543)
 - CVE-2014-3611 kvm: PIT timer race condition (rhbz 1144878 1156537)
