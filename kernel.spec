@@ -777,6 +777,9 @@ Patch26082: kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
 #rhbz 1157327
 Patch26083: quirk-for-Lenovo-Yoga-3-no-rfkill-switch.patch
 
+#rhbz 1154454
+Patch26084: media-cxusb-increase-buffer-length-to-80-bytes.patch
+
 # git clone ssh://git.fedorahosted.org/git/kernel-arm64.git, git diff master...devel
 Patch30000: kernel-arm64.patch
 
@@ -1521,6 +1524,9 @@ ApplyPatch kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
 
 #rhbz 1157327
 ApplyPatch quirk-for-Lenovo-Yoga-3-no-rfkill-switch.patch
+
+#rhbz 1154454
+ApplyPatch media-cxusb-increase-buffer-length-to-80-bytes.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2340,6 +2346,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Oct 29 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix DVB-T cxusb firmware loading (rhbz 1154454)
+
 * Tue Oct 28 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Add quirk for rfkill on Yoga 3 machines (rhbz 1157327)
 
