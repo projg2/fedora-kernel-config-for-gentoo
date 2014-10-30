@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 203
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -712,9 +712,6 @@ Patch26023: psmouse-Add-support-for-detecting-FocalTech-PS-2-tou.patch
 #rhbz 1143812
 Patch26027: HID-i2c-hid-call-the-hid-driver-s-suspend-and-resume.patch
 
-#rhbz 1123584
-Patch26028: HID-rmi-check-sanity-of-incoming-report.patch
-
 Patch26030: GFS2-Make-rename-not-save-dirent-location.patch
 
 #CVE-2014-7970 rhbz 1151095 1151484
@@ -733,9 +730,6 @@ Patch26039: HID-usbhid-always-poll-quirk-for-Elan-Touchscreen-00.patch
 Patch26040: USB-quirks-device-qualifier-quirk-for-another-Elan-t.patch
 Patch26041: HID-usbhid-always-poll-quirk-for-Elan-Touchscreen-01.patch
 
-#CVE-2014-7975 rhbz 1151108 1152025
-Patch26042: fs-Add-a-missing-permission-check-to-do_umount.patch
-
 #CVE-2014-8086 rhbz 1151353 1152608
 Patch26056: ext4-fix-race-between-write-and-fcntl-F_SETFL.patch
 
@@ -744,9 +738,6 @@ Patch26058: asus-nb-wmi-Add-wapf4-quirk-for-the-X550VB.patch
 
 #rhbz 1153381
 Patch26059: Input-synaptics-gate-forcepad-support-by-DMI-check.patch
-
-# CVE-2014-3690 rhbz 1153322 1155372
-Patch26060: x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
 
 #CVE-2014-3688 rhbz 1155745 1155751
 Patch26061: net-sctp-fix-skb_over_panic-when-receiving-malformed.patch
@@ -1460,9 +1451,6 @@ ApplyPatch psmouse-Add-support-for-detecting-FocalTech-PS-2-tou.patch
 #rhbz 1143812
 ApplyPatch HID-i2c-hid-call-the-hid-driver-s-suspend-and-resume.patch
 
-#rhbz 1123584
-ApplyPatch HID-rmi-check-sanity-of-incoming-report.patch
-
 ApplyPatch GFS2-Make-rename-not-save-dirent-location.patch
 
 #CVE-2014-7970 rhbz 1151095 1151484
@@ -1481,9 +1469,6 @@ ApplyPatch HID-usbhid-always-poll-quirk-for-Elan-Touchscreen-00.patch
 ApplyPatch USB-quirks-device-qualifier-quirk-for-another-Elan-t.patch
 ApplyPatch HID-usbhid-always-poll-quirk-for-Elan-Touchscreen-01.patch
 
-#CVE-2014-7975 rhbz 1151108 1152025
-ApplyPatch fs-Add-a-missing-permission-check-to-do_umount.patch
-
 #CVE-2014-8086 rhbz 1151353 1152608
 ApplyPatch ext4-fix-race-between-write-and-fcntl-F_SETFL.patch
 
@@ -1492,9 +1477,6 @@ ApplyPatch asus-nb-wmi-Add-wapf4-quirk-for-the-X550VB.patch
 
 #rhbz 1153381
 ApplyPatch Input-synaptics-gate-forcepad-support-by-DMI-check.patch
-
-#CVE-2014-3690 rhbz 1153322 1155372
-ApplyPatch x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
 
 #CVE-2014-3688 rhbz 1155745 1155751
 ApplyPatch net-sctp-fix-skb_over_panic-when-receiving-malformed.patch
@@ -2346,6 +2328,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Oct 30 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.16.7-200
+- Linux v3.16.7
+
 * Wed Oct 29 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix DVB-T cxusb firmware loading (rhbz 1154454)
 
