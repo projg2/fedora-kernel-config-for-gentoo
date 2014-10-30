@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 102
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 22
+%define stable_update 23
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -755,9 +755,6 @@ Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 #CVE-2014-7970 rhbz 1151095 1151484
 Patch26032: mnt-Prevent-pivot_root-from-creating-a-loop-in-the-m.patch
-
-#CVE-2014-7975 rhbz 1151108 1152025
-Patch26042: fs-Add-a-missing-permission-check-to-do_umount.patch
 
 # CVE-2014-3690 rhbz 1153322 1155372
 Patch26060: x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
@@ -1482,9 +1479,6 @@ ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 #CVE-2014-7970 rhbz 1151095 1151484
 ApplyPatch mnt-Prevent-pivot_root-from-creating-a-loop-in-the-m.patch
-
-#CVE-2014-7975 rhbz 1151108 1152025
-ApplyPatch fs-Add-a-missing-permission-check-to-do_umount.patch
 
 # CVE-2014-3690 rhbz 1153322 1155372
 ApplyPatch x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
@@ -2324,6 +2318,9 @@ fi
 # and build.
 
 %changelog
+* Thu Oct 30 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.23-100
+- Linux v3.14.23
+
 * Fri Oct 24 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-3610 kvm: noncanonical MSR writes (rhbz 1144883 1156543)
 - CVE-2014-3611 kvm: PIT timer race condition (rhbz 1144878 1156537)
