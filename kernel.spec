@@ -68,13 +68,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 16
+%define base_sublevel 17
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 2
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -610,7 +610,7 @@ Patch00: patch-3.%{base_sublevel}-git%{gitrev}.xz
 Patch04: compile-fixes.patch
 
 # build tweak for build ID magic, even for -vanilla
-Patch05: makefile-after_link.patch
+Patch05: kbuild-AFTER_LINK.patch
 
 %if !%{nopatches}
 
@@ -628,20 +628,38 @@ Patch470: die-floppy-die.patch
 
 Patch500: Revert-Revert-ACPI-video-change-acpi-video-brightnes.patch
 
-Patch510: silence-noise.patch
+Patch510: input-silence-i8042-noise.patch
 Patch530: silence-fbcon-logo.patch
 
-Patch600: 0001-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
+Patch600: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
 Patch800: crash-driver.patch
 
 # crypto/
 
 # secure boot
-Patch1000: secure-modules.patch
-Patch1001: modsign-uefi.patch
-# atch1002: sb-hibernate.patch
-Patch1003: sysrq-secure-boot.patch
+Patch1000: Add-secure_modules-call.patch
+Patch1001: PCI-Lock-down-BAR-access-when-module-security-is-ena.patch
+Patch1002: x86-Lock-down-IO-port-access-when-module-security-is.patch
+Patch1003: ACPI-Limit-access-to-custom_method.patch
+Patch1004: asus-wmi-Restrict-debugfs-interface-when-module-load.patch
+Patch1005: Restrict-dev-mem-and-dev-kmem-when-module-loading-is.patch
+Patch1006: acpi-Ignore-acpi_rsdp-kernel-parameter-when-module-l.patch
+Patch1007: kexec-Disable-at-runtime-if-the-kernel-enforces-modu.patch
+Patch1008: x86-Restrict-MSR-access-when-module-loading-is-restr.patch
+Patch1009: Add-option-to-automatically-enforce-module-signature.patch
+Patch1010: efi-Disable-secure-boot-if-shim-is-in-insecure-mode.patch
+Patch1011: efi-Make-EFI_SECURE_BOOT_SIG_ENFORCE-depend-on-EFI.patch
+Patch1012: efi-Add-EFI_SECURE_BOOT-bit.patch
+Patch1013: hibernate-Disable-in-a-signed-modules-environment.patch
+
+Patch1014: Add-EFI-signature-data-types.patch
+Patch1015: Add-an-EFI-signature-blob-parser-and-key-loader.patch
+Patch1016: KEYS-Add-a-system-blacklist-keyring.patch
+Patch1017: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
+Patch1018: MODSIGN-Support-not-importing-certs-from-db.patch
+
+Patch1019: Add-sysrq-option-to-disable-secure-boot-mode.patch
 
 # virt + ksm patches
 
@@ -664,16 +682,25 @@ Patch14000: hibernate-freeze-filesystems.patch
 
 Patch14010: lis3-improve-handling-of-null-rate.patch
 
-Patch15000: nowatchdog-on-virt.patch
+Patch15000: watchdog-Disable-watchdog-on-virtual-machines.patch
 
+# PPC
+Patch18000: ppc64-fixtools.patch
 # ARM64
 
 # ARMv7
-Patch21020: arm-tegra-usb-no-reset-linux33.patch
-Patch21021: arm-beagle.patch
-Patch21022: arm-imx6-utilite.patch
-# http://www.spinics.net/lists/linux-tegra/msg17948.html
-Patch21024: arm-qemu-fixdisplay.patch
+Patch21020: ARM-tegra-usb-no-reset.patch
+Patch21021: arm-dts-am335x-boneblack-lcdc-add-panel-info.patch
+Patch21022: arm-dts-am335x-boneblack-add-cpu0-opp-points.patch
+Patch21023: arm-dts-am335x-bone-common-enable-and-use-i2c2.patch
+Patch21024: arm-dts-am335x-bone-common-setup-default-pinmux-http.patch
+Patch21025: arm-dts-am335x-bone-common-add-uart2_pins-uart4_pins.patch
+Patch21026: pinctrl-pinctrl-single-must-be-initialized-early.patch
+
+Patch21028: arm-i.MX6-Utilite-device-dtb.patch
+Patch21029: arm-dts-sun7i-bananapi.patch
+
+Patch21100: arm-highbank-l2-reverts.patch
 
 #rhbz 754518
 Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -682,43 +709,35 @@ Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 Patch21242: criu-no-expert.patch
 
 #rhbz 892811
-Patch21247: ath9k_rx_dma_stop_check.patch
+Patch21247: ath9k-rx-dma-stop-check.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
 
 #rhbz 1025603
 Patch25063: disable-libdw-unwind-on-non-x86.patch
 
-Patch26000: perf-lib64.patch
+Patch26000: perf-install-trace-event-plugins.patch
 
 # Patch series from Hans for various backlight and platform driver fixes
 Patch26002: samsung-laptop-Add-broken-acpi-video-quirk-for-NC210.patch
-Patch26004: asus-wmi-Add-a-no-backlight-quirk.patch
-Patch26005: eeepc-wmi-Add-no-backlight-quirk-for-Asus-H87I-PLUS-.patch
-
-Patch25109: revert-input-wacom-testing-result-shows-get_report-is-unnecessary.patch
-
-#rhbz 1021036, submitted upstream
-Patch25110: 0001-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 #rhbz 1134969
-Patch26019: Input-wacom-Add-support-for-the-Cintiq-Companion.patch
+Patch26016: HID-wacom-Add-support-for-the-Cintiq-Companion.patch
 
 #rhbz 1110011
-Patch26021: i8042-Also-store-the-aux-firmware-id-in-multi-plexed.patch
-Patch26022: psmouse-Add-psmouse_matches_pnp_id-helper-function.patch
-Patch26023: psmouse-Add-support-for-detecting-FocalTech-PS-2-tou.patch
+Patch26019: psmouse-Add-psmouse_matches_pnp_id-helper-function.patch
+Patch26020: psmouse-Add-support-for-detecting-FocalTech-PS-2-tou.patch
 
-#rhbz 1143812
-Patch26027: HID-i2c-hid-call-the-hid-driver-s-suspend-and-resume.patch
+#rhbz 1138759
+Patch26021: drm-vmwgfx-Fix-drm.h-include.patch
+
+#rhbz 1145318
+Patch26029: KEYS-Reinstate-EPERM-for-a-key-type-name-beginning-w.patch
 
 Patch26030: GFS2-Make-rename-not-save-dirent-location.patch
 
 #CVE-2014-7970 rhbz 1151095 1151484
 Patch26032: mnt-Prevent-pivot_root-from-creating-a-loop-in-the-m.patch
-
-#rhbz 1149414
-Patch26033: bcache-Make-sure-to-pass-GFP_WAIT-to-mempool_alloc.patch
 
 #rhbz 1149509
 Patch26034: USB-core-add-device-qualifier-quirk.patch
@@ -755,6 +774,7 @@ Patch26064: i8042-Add-notimeout-quirk-for-Fujitsu-Lifebook-A544-.patch
 # CVE-2014-3611 kvm: PIT timer race condition (rhbz 1144878 1156537)
 # CVE-2014-3646 kvm: vmx: invvpid vm exit not handled (rhbz 1144825 1156534)
 # CVE-2014-8369 kvm: excessive pages un-pinning in kvm_iommu_map error path (rhbz 1156518 1156522)
+# CVE-2014-8480 CVE-2014-8481 kvm: NULL pointer dereference during rip relative instruction emulation (rhbz 1156615 1156616)
 Patch26070: KVM-x86-Check-non-canonical-addresses-upon-WRMSR.patch
 Patch26071: KVM-x86-Prevent-host-from-panicking-on-shared-MSR-wr.patch
 Patch26072: KVM-x86-Improve-thread-safety-in-pit.patch
@@ -763,13 +783,17 @@ Patch26074: KVM-x86-Emulator-fixes-for-eip-canonical-checks-on-n.patch
 Patch26075: KVM-x86-Handle-errors-when-RIP-is-set-during-far-jum.patch
 Patch26076: kvm-vmx-handle-invvpid-vm-exit-gracefully.patch
 Patch26077: kvm-x86-don-t-kill-guest-on-unknown-exit-reason.patch
+Patch26078: KVM-x86-Decoding-guest-instructions-which-cross-page.patch
+Patch26079: KVM-emulate-avoid-accessing-NULL-ctxt-memopp.patch
+Patch26080: KVM-x86-Emulator-does-not-decode-clflush-well.patch
+Patch26081: KVM-x86-PREFETCH-and-HINT_NOP-should-have-SrcMem-fla.patch
 Patch26082: kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
 
 #rhbz 1157327
 Patch26083: quirk-for-Lenovo-Yoga-3-no-rfkill-switch.patch
 
-#rhbz 1154454
-Patch26084: media-cxusb-increase-buffer-length-to-80-bytes.patch
+#rhbz 1159592
+Patch26084: x86-microcode-AMD-Fix-early-ucode-loading-on-32-bit.patch
 
 # git clone ssh://git.fedorahosted.org/git/kernel-arm64.git, git diff master...devel
 Patch30000: kernel-arm64.patch
@@ -1302,7 +1326,7 @@ do
   rm $i.tmp
 done
 
-ApplyPatch makefile-after_link.patch
+ApplyPatch kbuild-AFTER_LINK.patch
 
 #
 # misc small stuff to make things compile
@@ -1316,17 +1340,29 @@ ApplyOptionalPatch upstream-reverts.patch -R
 
 # Architecture patches
 # x86(-64)
-ApplyPatch 0001-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
+ApplyPatch lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
+
+# PPC
+ApplyPatch ppc64-fixtools.patch
 
 # ARM64
 
 #
 # ARM
 #
-ApplyPatch arm-tegra-usb-no-reset-linux33.patch
-ApplyPatch arm-beagle.patch
-ApplyPatch arm-imx6-utilite.patch
-ApplyPatch arm-qemu-fixdisplay.patch
+ApplyPatch ARM-tegra-usb-no-reset.patch
+
+ApplyPatch arm-dts-am335x-boneblack-lcdc-add-panel-info.patch
+ApplyPatch arm-dts-am335x-boneblack-add-cpu0-opp-points.patch
+ApplyPatch arm-dts-am335x-bone-common-enable-and-use-i2c2.patch
+ApplyPatch arm-dts-am335x-bone-common-setup-default-pinmux-http.patch
+ApplyPatch arm-dts-am335x-bone-common-add-uart2_pins-uart4_pins.patch
+ApplyPatch pinctrl-pinctrl-single-must-be-initialized-early.patch
+
+ApplyPatch arm-i.MX6-Utilite-device-dtb.patch
+ApplyPatch arm-dts-sun7i-bananapi.patch
+
+ApplyPatch arm-highbank-l2-reverts.patch
 
 #
 # bugfixes to drivers and filesystems
@@ -1374,7 +1410,7 @@ ApplyPatch die-floppy-die.patch
 ApplyPatch no-pcspkr-modalias.patch
 
 # Silence some useless messages that still get printed with 'quiet'
-ApplyPatch silence-noise.patch
+ApplyPatch input-silence-i8042-noise.patch
 
 # Make fbcon not show the penguins with 'quiet'
 ApplyPatch silence-fbcon-logo.patch
@@ -1387,10 +1423,28 @@ ApplyPatch crash-driver.patch
 # crypto/
 
 # secure boot
-ApplyPatch secure-modules.patch
-ApplyPatch modsign-uefi.patch
-# pplyPatch sb-hibernate.patch
-ApplyPatch sysrq-secure-boot.patch
+ApplyPatch Add-secure_modules-call.patch
+ApplyPatch PCI-Lock-down-BAR-access-when-module-security-is-ena.patch
+ApplyPatch x86-Lock-down-IO-port-access-when-module-security-is.patch
+ApplyPatch ACPI-Limit-access-to-custom_method.patch
+ApplyPatch asus-wmi-Restrict-debugfs-interface-when-module-load.patch
+ApplyPatch Restrict-dev-mem-and-dev-kmem-when-module-loading-is.patch
+ApplyPatch acpi-Ignore-acpi_rsdp-kernel-parameter-when-module-l.patch
+ApplyPatch kexec-Disable-at-runtime-if-the-kernel-enforces-modu.patch
+ApplyPatch x86-Restrict-MSR-access-when-module-loading-is-restr.patch
+ApplyPatch Add-option-to-automatically-enforce-module-signature.patch
+ApplyPatch efi-Disable-secure-boot-if-shim-is-in-insecure-mode.patch
+ApplyPatch efi-Make-EFI_SECURE_BOOT_SIG_ENFORCE-depend-on-EFI.patch
+ApplyPatch efi-Add-EFI_SECURE_BOOT-bit.patch
+ApplyPatch hibernate-Disable-in-a-signed-modules-environment.patch
+
+ApplyPatch Add-EFI-signature-data-types.patch
+ApplyPatch Add-an-EFI-signature-blob-parser-and-key-loader.patch
+ApplyPatch KEYS-Add-a-system-blacklist-keyring.patch
+ApplyPatch MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
+ApplyPatch MODSIGN-Support-not-importing-certs-from-db.patch
+
+ApplyPatch Add-sysrq-option-to-disable-secure-boot-mode.patch
 
 # Assorted Virt Fixes
 
@@ -1412,7 +1466,7 @@ ApplyPatch disable-i8042-check-on-apple-mac.patch
 ApplyPatch lis3-improve-handling-of-null-rate.patch
 
 # Disable watchdog on virtual machines.
-ApplyPatch nowatchdog-on-virt.patch
+ApplyPatch watchdog-Disable-watchdog-on-virtual-machines.patch
 
 #rhbz 754518
 ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
@@ -1423,41 +1477,33 @@ ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 ApplyPatch criu-no-expert.patch
 
 #rhbz 892811
-ApplyPatch ath9k_rx_dma_stop_check.patch
+ApplyPatch ath9k-rx-dma-stop-check.patch
 
 #rhbz 1025603
 ApplyPatch disable-libdw-unwind-on-non-x86.patch
 
-ApplyPatch perf-lib64.patch
+ApplyPatch perf-install-trace-event-plugins.patch
 
 # Patch series from Hans for various backlight and platform driver fixes
 ApplyPatch samsung-laptop-Add-broken-acpi-video-quirk-for-NC210.patch
-ApplyPatch asus-wmi-Add-a-no-backlight-quirk.patch
-ApplyPatch eeepc-wmi-Add-no-backlight-quirk-for-Asus-H87I-PLUS-.patch
-
-ApplyPatch revert-input-wacom-testing-result-shows-get_report-is-unnecessary.patch
-
-#rhbz 1021036, submitted upstream
-ApplyPatch 0001-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 #rhbz 1134969
-ApplyPatch Input-wacom-Add-support-for-the-Cintiq-Companion.patch
+ApplyPatch HID-wacom-Add-support-for-the-Cintiq-Companion.patch
 
 #rhbz 1110011
-ApplyPatch i8042-Also-store-the-aux-firmware-id-in-multi-plexed.patch
 ApplyPatch psmouse-Add-psmouse_matches_pnp_id-helper-function.patch
 ApplyPatch psmouse-Add-support-for-detecting-FocalTech-PS-2-tou.patch
 
-#rhbz 1143812
-ApplyPatch HID-i2c-hid-call-the-hid-driver-s-suspend-and-resume.patch
+#rhbz 1138759
+ApplyPatch drm-vmwgfx-Fix-drm.h-include.patch
+
+#rhbz 1145318
+ApplyPatch KEYS-Reinstate-EPERM-for-a-key-type-name-beginning-w.patch
 
 ApplyPatch GFS2-Make-rename-not-save-dirent-location.patch
 
 #CVE-2014-7970 rhbz 1151095 1151484
 ApplyPatch mnt-Prevent-pivot_root-from-creating-a-loop-in-the-m.patch
-
-#rhbz 1149414
-ApplyPatch bcache-Make-sure-to-pass-GFP_WAIT-to-mempool_alloc.patch
 
 #rhbz 1149509
 ApplyPatch USB-core-add-device-qualifier-quirk.patch
@@ -1494,6 +1540,7 @@ ApplyPatch i8042-Add-notimeout-quirk-for-Fujitsu-Lifebook-A544-.patch
 # CVE-2014-3611 kvm: PIT timer race condition (rhbz 1144878 1156537)
 # CVE-2014-3646 kvm: vmx: invvpid vm exit not handled (rhbz 1144825 1156534)
 # CVE-2014-8369 kvm: excessive pages un-pinning in kvm_iommu_map error path (rhbz 1156518 1156522)
+# CVE-2014-8480 CVE-2014-8481 kvm: NULL pointer dereference during rip relative instruction emulation (rhbz 1156615 1156616)
 ApplyPatch KVM-x86-Check-non-canonical-addresses-upon-WRMSR.patch
 ApplyPatch KVM-x86-Prevent-host-from-panicking-on-shared-MSR-wr.patch
 ApplyPatch KVM-x86-Improve-thread-safety-in-pit.patch
@@ -1502,13 +1549,17 @@ ApplyPatch KVM-x86-Emulator-fixes-for-eip-canonical-checks-on-n.patch
 ApplyPatch KVM-x86-Handle-errors-when-RIP-is-set-during-far-jum.patch
 ApplyPatch kvm-vmx-handle-invvpid-vm-exit-gracefully.patch
 ApplyPatch kvm-x86-don-t-kill-guest-on-unknown-exit-reason.patch
+ApplyPatch KVM-x86-Decoding-guest-instructions-which-cross-page.patch
+ApplyPatch KVM-emulate-avoid-accessing-NULL-ctxt-memopp.patch
+ApplyPatch KVM-x86-Emulator-does-not-decode-clflush-well.patch
+ApplyPatch KVM-x86-PREFETCH-and-HINT_NOP-should-have-SrcMem-fla.patch
 ApplyPatch kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
 
 #rhbz 1157327
 ApplyPatch quirk-for-Lenovo-Yoga-3-no-rfkill-switch.patch
 
-#rhbz 1154454
-ApplyPatch media-cxusb-increase-buffer-length-to-80-bytes.patch
+#rhbz 1159592
+ApplyPatch x86-microcode-AMD-Fix-early-ucode-loading-on-32-bit.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2328,6 +2379,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Nov 04 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.17.2-200
+- Linux v3.17.2
+
 * Thu Oct 30 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.16.7-200
 - Linux v3.16.7
 
