@@ -795,6 +795,9 @@ Patch26083: quirk-for-Lenovo-Yoga-3-no-rfkill-switch.patch
 #rhbz 1159592
 Patch26084: x86-microcode-AMD-Fix-early-ucode-loading-on-32-bit.patch
 
+# CVE-2014-7826 CVE-2014-7825 rhbz 1161565 1161572
+Patch26085: tracing-syscalls-Ignore-numbers-outside-NR_syscalls-.patch
+
 # git clone ssh://git.fedorahosted.org/git/kernel-arm64.git, git diff master...devel
 Patch30000: kernel-arm64.patch
 
@@ -1560,6 +1563,9 @@ ApplyPatch quirk-for-Lenovo-Yoga-3-no-rfkill-switch.patch
 
 #rhbz 1159592
 ApplyPatch x86-microcode-AMD-Fix-early-ucode-loading-on-32-bit.patch
+
+# CVE-2014-7826 CVE-2014-7825 rhbz 1161565 1161572
+ApplyPatch tracing-syscalls-Ignore-numbers-outside-NR_syscalls-.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2379,6 +2385,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Nov 07 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-7826 CVE-2014-7825 insufficient syscall number validation in perf and ftrace subsystems (rhbz 1161565 1161572)
+
 * Tue Nov 04 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.17.2-200
 - Linux v3.17.2
 
