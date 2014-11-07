@@ -782,6 +782,9 @@ Patch26076: kvm-vmx-handle-invvpid-vm-exit-gracefully.patch
 Patch26077: kvm-x86-don-t-kill-guest-on-unknown-exit-reason.patch
 Patch26082: kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
 
+# CVE-2014-7826 CVE-2014-7825 rhbz 1161565 1161572
+Patch26085: tracing-syscalls-Ignore-numbers-outside-NR_syscalls-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1505,6 +1508,9 @@ ApplyPatch KVM-x86-Handle-errors-when-RIP-is-set-during-far-jum.patch
 ApplyPatch kvm-vmx-handle-invvpid-vm-exit-gracefully.patch
 ApplyPatch kvm-x86-don-t-kill-guest-on-unknown-exit-reason.patch
 ApplyPatch kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
+
+# CVE-2014-7826 CVE-2014-7825 rhbz 1161565 1161572
+ApplyPatch tracing-syscalls-Ignore-numbers-outside-NR_syscalls-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2318,6 +2324,9 @@ fi
 # and build.
 
 %changelog
+* Fri Nov 07 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-7826 CVE-2014-7825 insufficient syscall number validation in perf and ftrace subsystems (rhbz 1161565 1161572)
+
 * Thu Oct 30 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.23-100
 - Linux v3.14.23
 
