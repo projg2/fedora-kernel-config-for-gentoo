@@ -798,6 +798,9 @@ Patch26084: x86-microcode-AMD-Fix-early-ucode-loading-on-32-bit.patch
 # CVE-2014-7826 CVE-2014-7825 rhbz 1161565 1161572
 Patch26085: tracing-syscalls-Ignore-numbers-outside-NR_syscalls-.patch
 
+#rhbz 1151836
+Patch26086: Revert-iwlwifi-mvm-treat-EAPOLs-like-mgmt-frames-wrt.patch
+
 # git clone ssh://git.fedorahosted.org/git/kernel-arm64.git, git diff master...devel
 Patch30000: kernel-arm64.patch
 
@@ -1566,6 +1569,9 @@ ApplyPatch x86-microcode-AMD-Fix-early-ucode-loading-on-32-bit.patch
 
 # CVE-2014-7826 CVE-2014-7825 rhbz 1161565 1161572
 ApplyPatch tracing-syscalls-Ignore-numbers-outside-NR_syscalls-.patch
+
+#rhbz 1151836
+ApplyPatch Revert-iwlwifi-mvm-treat-EAPOLs-like-mgmt-frames-wrt.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2386,6 +2392,7 @@ fi
 #                 ||     ||
 %changelog
 * Fri Nov 07 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix iwlwifi oops (rhbz 1151836)
 - CVE-2014-7826 CVE-2014-7825 insufficient syscall number validation in perf and ftrace subsystems (rhbz 1161565 1161572)
 
 * Tue Nov 04 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.17.2-200
