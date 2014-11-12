@@ -785,6 +785,9 @@ Patch26082: kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
 # CVE-2014-7826 CVE-2014-7825 rhbz 1161565 1161572
 Patch26085: tracing-syscalls-Ignore-numbers-outside-NR_syscalls-.patch
 
+#CVE-2014-7841 rhbz 1163087 1163095
+Patch26067: net-sctp-fix-NULL-pointer-dereference-in-af-from_add.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1511,6 +1514,9 @@ ApplyPatch kvm-fix-excessive-pages-un-pinning-in-kvm_iommu_map-.patch
 
 # CVE-2014-7826 CVE-2014-7825 rhbz 1161565 1161572
 ApplyPatch tracing-syscalls-Ignore-numbers-outside-NR_syscalls-.patch
+
+#CVE-2014-7841 rhbz 1163087 1163095
+ApplyPatch net-sctp-fix-NULL-pointer-dereference-in-af-from_add.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2324,6 +2330,9 @@ fi
 # and build.
 
 %changelog
+* Wed Nov 12 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-7841 sctp: NULL ptr deref on malformed packet (rhbz 1163087 1163095)
+
 * Fri Nov 07 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-7826 CVE-2014-7825 insufficient syscall number validation in perf and ftrace subsystems (rhbz 1161565 1161572)
 
