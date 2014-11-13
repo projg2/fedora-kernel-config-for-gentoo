@@ -788,6 +788,9 @@ Patch26085: tracing-syscalls-Ignore-numbers-outside-NR_syscalls-.patch
 #CVE-2014-7841 rhbz 1163087 1163095
 Patch26067: net-sctp-fix-NULL-pointer-dereference-in-af-from_add.patch
 
+#CVE-2014-7842 rhbz 1163762 1163767
+Patch26068: KVM-x86-Don-t-report-guest-userspace-emulation-error.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1517,6 +1520,9 @@ ApplyPatch tracing-syscalls-Ignore-numbers-outside-NR_syscalls-.patch
 
 #CVE-2014-7841 rhbz 1163087 1163095
 ApplyPatch net-sctp-fix-NULL-pointer-dereference-in-af-from_add.patch
+
+#CVE-2014-7842 rhbz 1163762 1163767
+ApplyPatch KVM-x86-Don-t-report-guest-userspace-emulation-error.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2330,6 +2336,9 @@ fi
 # and build.
 
 %changelog
+* Thu Nov 13 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-7842 kvm: reporting emulation failures to userspace (rhbz 1163762 1163767)
+
 * Wed Nov 12 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-7841 sctp: NULL ptr deref on malformed packet (rhbz 1163087 1163095)
 
