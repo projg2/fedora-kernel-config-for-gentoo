@@ -2324,6 +2324,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Nov 19 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Disable SERIAL_8250 on s390x (rhbz 1158848)
+
 * Fri Nov 14 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.17.3-200
 - Linux v3.17.3
 
