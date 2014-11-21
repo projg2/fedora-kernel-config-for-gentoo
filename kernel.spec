@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 24
+%define stable_update 25
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -755,21 +755,6 @@ Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 # CVE-2014-3690 rhbz 1153322 1155372
 Patch26060: x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
-
-#CVE-2014-3688 rhbz 1155745 1155751
-Patch26061: net-sctp-fix-skb_over_panic-when-receiving-malformed.patch
-
-#CVE-2014-3687 rhbz 1155731 1155738
-Patch26062: net-sctp-fix-panic-on-duplicate-ASCONF-chunks.patch
-
-#CVE-2014-3673 rhbz 1147850 1155727
-Patch26063: net-sctp-fix-remote-memory-pressure-from-excessive-q.patch
-
-#CVE-2014-7841 rhbz 1163087 1163095
-Patch26067: net-sctp-fix-NULL-pointer-dereference-in-af-from_add.patch
-
-#CVE-2014-7842 rhbz 1163762 1163767
-Patch26068: KVM-x86-Don-t-report-guest-userspace-emulation-error.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1468,21 +1453,6 @@ ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 # CVE-2014-3690 rhbz 1153322 1155372
 ApplyPatch x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
-
-#CVE-2014-3688 rhbz 1155745 1155751
-ApplyPatch net-sctp-fix-skb_over_panic-when-receiving-malformed.patch
-
-#CVE-2014-3687 rhbz 1155731 1155738
-ApplyPatch net-sctp-fix-panic-on-duplicate-ASCONF-chunks.patch
-
-#CVE-2014-3673 rhbz 1147850 1155727
-ApplyPatch net-sctp-fix-remote-memory-pressure-from-excessive-q.patch
-
-#CVE-2014-7841 rhbz 1163087 1163095
-ApplyPatch net-sctp-fix-NULL-pointer-dereference-in-af-from_add.patch
-
-#CVE-2014-7842 rhbz 1163762 1163767
-ApplyPatch KVM-x86-Don-t-report-guest-userspace-emulation-error.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2296,6 +2266,9 @@ fi
 # and build.
 
 %changelog
+* Fri Nov 21 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.25-100
+- Linux v3.14.25
+
 * Fri Nov 14 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.24-100
 - Linux v3.14.24
 
