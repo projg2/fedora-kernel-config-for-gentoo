@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -737,6 +737,9 @@ Patch26090: HID-add-support-for-MS-Surface-Pro-3-Type-Cover.patch
 
 #rhbz 1165206
 Patch26071: usb-quirks-Add-reset-resume-quirk-for-MS-Wireless-La.patch
+
+#rhbz 1167511
+Patch26072: drm-radeon-initialize-sadb-to-NULL-in-the-audio-code.patch
 
 # git clone ssh://git.fedorahosted.org/git/kernel-arm64.git, git diff master...devel
 Patch30000: kernel-arm64.patch
@@ -1446,6 +1449,9 @@ ApplyPatch HID-add-support-for-MS-Surface-Pro-3-Type-Cover.patch
 
 #rhbz 1165206
 ApplyPatch usb-quirks-Add-reset-resume-quirk-for-MS-Wireless-La.patch
+
+#rhbz 1167511
+ApplyPatch drm-radeon-initialize-sadb-to-NULL-in-the-audio-code.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2265,6 +2271,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Nov 27 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch to fix radeon HDMI issues (rhbz 1167511)
+
 * Mon Nov 24 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Add quirk for Laser Mouse 6000 (rhbz 1165206)
 
