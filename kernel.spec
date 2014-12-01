@@ -741,6 +741,9 @@ Patch26071: usb-quirks-Add-reset-resume-quirk-for-MS-Wireless-La.patch
 #rhbz 1167511
 Patch26072: drm-radeon-initialize-sadb-to-NULL-in-the-audio-code.patch
 
+#rhbz 1094048
+Patch26073: Input-xpad-use-proper-endpoint-type.patch
+
 # git clone ssh://git.fedorahosted.org/git/kernel-arm64.git, git diff master...devel
 Patch30000: kernel-arm64.patch
 
@@ -1452,6 +1455,9 @@ ApplyPatch usb-quirks-Add-reset-resume-quirk-for-MS-Wireless-La.patch
 
 #rhbz 1167511
 ApplyPatch drm-radeon-initialize-sadb-to-NULL-in-the-audio-code.patch
+
+#rhbz 1094048
+ApplyPatch Input-xpad-use-proper-endpoint-type.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2271,6 +2277,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Dec 01 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch to fix oops when using xpad (rhbz 1094048)
+
 * Thu Nov 27 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patch to fix radeon HDMI issues (rhbz 1167511)
 
