@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 25
+%define stable_update 26
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -755,9 +755,6 @@ Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 # CVE-2014-3690 rhbz 1153322 1155372
 Patch26060: x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
-
-#CVE-2014-9090 rhbz 1170691
-Patch26075: x86_64-traps-Stop-using-IST-for-SS.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1456,9 +1453,6 @@ ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 # CVE-2014-3690 rhbz 1153322 1155372
 ApplyPatch x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
-
-#CVE-2014-9090 rhbz 1170691
-ApplyPatch x86_64-traps-Stop-using-IST-for-SS.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2272,6 +2266,9 @@ fi
 # and build.
 
 %changelog
+* Mon Dec 08 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.26-100
+- Linux v3.14.26
+
 * Thu Dec 04 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-9090 local DoS via do_double_fault due to improper SS faults (rhbz 1170691)
 
