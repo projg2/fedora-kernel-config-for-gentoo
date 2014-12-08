@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 6
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -734,20 +734,6 @@ Patch26058: asus-nb-wmi-Add-wapf4-quirk-for-the-X550VB.patch
 
 #rhbz 1135338
 Patch26090: HID-add-support-for-MS-Surface-Pro-3-Type-Cover.patch
-
-#rhbz 1165206
-Patch26071: usb-quirks-Add-reset-resume-quirk-for-MS-Wireless-La.patch
-
-#rhbz 1167511
-Patch26072: drm-radeon-initialize-sadb-to-NULL-in-the-audio-code.patch
-
-#rhbz 1094048
-Patch26073: Input-xpad-use-proper-endpoint-type.patch
-
-Patch26074: drm-i915-Ignore-long-hpds-on-eDP-ports.patch
-
-#CVE-2014-9090 rhbz 1170691
-Patch26075: x86_64-traps-Stop-using-IST-for-SS.patch
 
 # git clone ssh://git.fedorahosted.org/git/kernel-arm64.git, git diff master...devel
 Patch30000: kernel-arm64.patch
@@ -1454,20 +1440,6 @@ ApplyPatch asus-nb-wmi-Add-wapf4-quirk-for-the-X550VB.patch
 
 #rhbz 1135338
 ApplyPatch HID-add-support-for-MS-Surface-Pro-3-Type-Cover.patch
-
-#rhbz 1165206
-ApplyPatch usb-quirks-Add-reset-resume-quirk-for-MS-Wireless-La.patch
-
-#rhbz 1167511
-ApplyPatch drm-radeon-initialize-sadb-to-NULL-in-the-audio-code.patch
-
-#rhbz 1094048
-ApplyPatch Input-xpad-use-proper-endpoint-type.patch
-
-ApplyPatch drm-i915-Ignore-long-hpds-on-eDP-ports.patch
-
-#CVE-2014-9090 rhbz 1170691
-ApplyPatch x86_64-traps-Stop-using-IST-for-SS.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2287,6 +2259,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Dec 08 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.17.6-200
+- Linux v3.17.6
+
 * Thu Dec 04 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-9090 local DoS via do_double_fault due to improper SS faults (rhbz 1170691)
 
