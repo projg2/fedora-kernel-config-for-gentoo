@@ -752,6 +752,9 @@ Patch26096: cfg80211-don-t-WARN-about-two-consecutive-Country-IE.patch
 #CVE-2014-8133 rhbz 1172797 1174374
 Patch26100: x86-tls-Validate-TLS-entries-to-protect-espfix.patch
 
+#rhbz 1173806
+Patch26101: powerpc-powernv-force-all-CPUs-to-be-bootable.patch
+
 # git clone ssh://git.fedorahosted.org/git/kernel-arm64.git, git diff master...devel
 Patch30000: kernel-arm64.patch
 
@@ -1474,6 +1477,9 @@ ApplyPatch cfg80211-don-t-WARN-about-two-consecutive-Country-IE.patch
 
 #CVE-2014-8133 rhbz 1172797 1174374
 ApplyPatch x86-tls-Validate-TLS-entries-to-protect-espfix.patch
+
+#rhbz 1173806
+ApplyPatch powerpc-powernv-force-all-CPUs-to-be-bootable.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2294,6 +2300,7 @@ fi
 #                 ||     ||
 %changelog
 * Mon Dec 15 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix ppc64 boot with smt-enabled=off (rhbz 1173806)
 - CVE-2014-8133 x86: espfix(64) bypass via set_thread_area and CLONE_SETTLS (rhbz 1172797 1174374)
 
 * Fri Dec 12 2014 Josh Boyer <jwboyer@fedoraproject.org>
