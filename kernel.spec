@@ -759,6 +759,9 @@ Patch26101: powerpc-powernv-force-all-CPUs-to-be-bootable.patch
 Patch26098: move-d_rcu-from-overlapping-d_child-to-overlapping-d.patch
 Patch26099: deal-with-deadlock-in-d_walk.patch
 
+#CVE-2014-XXXX rhbz 1175235 1175250
+Patch26102: isofs-Fix-infinite-looping-over-CE-entries.patch
+
 # git clone ssh://git.fedorahosted.org/git/kernel-arm64.git, git diff master...devel
 Patch30000: kernel-arm64.patch
 
@@ -1487,6 +1490,9 @@ ApplyPatch powerpc-powernv-force-all-CPUs-to-be-bootable.patch
 #CVE-2014-8559 rhbz 1159313 1173814
 ApplyPatch move-d_rcu-from-overlapping-d_child-to-overlapping-d.patch
 ApplyPatch deal-with-deadlock-in-d_walk.patch
+
+#CVE-2014-XXXX rhbz 1175235 1175250
+ApplyPatch isofs-Fix-infinite-looping-over-CE-entries.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2306,6 +2312,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Dec 17 2014 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-XXXX isofs: infinite loop in CE record entries (rhbz 1175235 1175250)
+
 * Tue Dec 16 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.17.7-200
 - Linux v3.17.7
 
