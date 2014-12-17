@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 26
+%define stable_update 27
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2272,6 +2272,9 @@ fi
 # and build.
 
 %changelog
+* Wed Dec 17 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.27-100
+- Linux v3.14.27
+
 * Wed Dec 10 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-8134 fix espfix for 32-bit KVM paravirt guests (rhbz 1172765 1172769)
 
