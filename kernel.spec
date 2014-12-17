@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -745,9 +745,6 @@ Patch26091: x86-kvm-Clear-paravirt_enabled-on-KVM-guests-for-esp.patch
 Patch26092: xhci-Add-broken-streams-quirk-for-Fresco-Logic-FL100.patch
 Patch26093: uas-Add-US_FL_NO_ATA_1X-for-Seagate-devices-with-usb.patch
 Patch26094: uas-Add-US_FL_NO_REPORT_OPCODES-for-JMicron-JMS566-w.patch
-
-#rhbz 1084928
-Patch26095: ahci-disable-MSI-on-SAMSUNG-0xa800-SSD.patch
 
 #rhbz 1172543
 Patch26096: cfg80211-don-t-WARN-about-two-consecutive-Country-IE.patch
@@ -1477,9 +1474,6 @@ ApplyPatch x86-kvm-Clear-paravirt_enabled-on-KVM-guests-for-esp.patch
 ApplyPatch xhci-Add-broken-streams-quirk-for-Fresco-Logic-FL100.patch
 ApplyPatch uas-Add-US_FL_NO_ATA_1X-for-Seagate-devices-with-usb.patch
 ApplyPatch uas-Add-US_FL_NO_REPORT_OPCODES-for-JMicron-JMS566-w.patch
-
-#rhbz 1084928
-ApplyPatch ahci-disable-MSI-on-SAMSUNG-0xa800-SSD.patch
 
 #rhbz 1172543
 ApplyPatch cfg80211-don-t-WARN-about-two-consecutive-Country-IE.patch
@@ -2312,6 +2306,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Dec 16 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.17.7-200
+- Linux v3.17.7
+
 * Tue Dec 16 2014 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-8559 deadlock due to incorrect usage of rename_lock (rhbz 1159313 1173814)
 - Add patch from Josh Stone to restore var-tracking via Kconfig (rhbz 1126580)
