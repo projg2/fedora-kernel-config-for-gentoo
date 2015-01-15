@@ -783,6 +783,9 @@ Patch26131: acpi-video-Add-disable_native_backlight-quirk-for-Sa.patch
 #CVE-2014-9585 rhbz 1181054 1181056
 Patch26132: x86_64-vdso-Fix-the-vdso-address-randomization-algor.patch
 
+#CVE-2014-8160 rhbz 1182059 1182063
+Patch26133: netfilter-conntrack-disable-generic-tracking-for-kno.patch
+
 # git clone ssh://git.fedorahosted.org/git/kernel-arm64.git, git diff master...devel
 Patch30000: kernel-arm64.patch
 
@@ -1535,6 +1538,9 @@ ApplyPatch acpi-video-Add-disable_native_backlight-quirk-for-Sa.patch
 
 #CVE-2014-9585 rhbz 1181054 1181056
 ApplyPatch x86_64-vdso-Fix-the-vdso-address-randomization-algor.patch
+
+#CVE-2014-8160 rhbz 1182059 1182063
+ApplyPatch netfilter-conntrack-disable-generic-tracking-for-kno.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2354,6 +2360,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu Jan 15 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2014-8160 iptables restriction bypass (rhbz 1182059 1182063)
+
 * Mon Jan 12 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2014-9585 ASLR brute-force possible for vdso (rhbz 1181054 1181056)
 - Backlight fixes for Samsung and Dell machines (rhbz 1094948 1115713 1163574)
