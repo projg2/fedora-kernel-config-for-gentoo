@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2360,7 +2360,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Thu Jan 15 2015 Josh Boyer <jwboyer@fedoraproject.org>
+* Thu Jan 15 2015 Josh Boyer <jwboyer@fedoraproject.org> - 3.17.8-201
 - CVE-2014-8160 iptables restriction bypass (rhbz 1182059 1182063)
 
 * Mon Jan 12 2015 Josh Boyer <jwboyer@fedoraproject.org>
@@ -2369,7 +2369,7 @@ fi
 - Add various UAS quirks (rhbz 1124119)
 - Add patch to fix loop in VDSO (rhbz 1178975)
 
-* Thu Jan 08 2015 Justin M. Forbes <jforbes@fedoraproject.org> - 3.17.8-300
+* Thu Jan 08 2015 Justin M. Forbes <jforbes@fedoraproject.org> - 3.17.8-200
 - Linux v3.17.8
 
 * Wed Jan 07 2015 Josh Boyer <jwboyer@fedoraproject.org>
