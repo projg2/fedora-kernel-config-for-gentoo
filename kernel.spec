@@ -31,7 +31,7 @@ Summary: The Linux kernel
 #
 # (Uncomment the '#' and both spaces below to set the buildid.)
 #
-# % define buildid .local
+%define buildid .eol
 ###################################################################
 
 # The buildid can also be specified on the rpmbuild command line
@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 27
+%define stable_update 29
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -755,9 +755,6 @@ Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 # CVE-2014-3690 rhbz 1153322 1155372
 Patch26060: x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
-
-#CVE-2014-8134 rhbz 1172765 1172769
-Patch26091: x86-kvm-Clear-paravirt_enabled-on-KVM-guests-for-esp.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1456,9 +1453,6 @@ ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
 
 # CVE-2014-3690 rhbz 1153322 1155372
 ApplyPatch x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
-
-#CVE-2014-8134 rhbz 1172765 1172769
-ApplyPatch x86-kvm-Clear-paravirt_enabled-on-KVM-guests-for-esp.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2272,6 +2266,9 @@ fi
 # and build.
 
 %changelog
+* Fri Jan 16 2015 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.29-100
+- Linux v3.14.29
+
 * Wed Dec 17 2014 Justin M. Forbes <jforbes@fedoraproject.org> - 3.14.27-100
 - Linux v3.14.27
 
