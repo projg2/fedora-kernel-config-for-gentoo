@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2291,6 +2291,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Feb 11 2015 Justin M. Forbes <jforbes@fedoraproject.org> - 3.18.7-100
+- Linux v3.18.7
+
 * Fri Feb 06 2015 Justin M. Forbes <jforbes@fedoraproject.org> - 3.18.6-100
 - Linux v3.18.6
 
