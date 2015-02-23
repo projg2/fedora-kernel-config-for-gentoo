@@ -767,6 +767,9 @@ Patch26136: vhost-scsi-potential-memory-corruption.patch
 #CVE-2015-0275 rhbz 1193907 1195178
 Patch26138: ext4-Allocate-entire-range-in-zero-range.patch
 
+#rhbz 1188439
+Patch26139: HID-i2c-hid-Limit-reads-to-wMaxInputLength-bytes-for.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1496,6 +1499,9 @@ ApplyPatch vhost-scsi-potential-memory-corruption.patch
 
 #CVE-2015-0275 rhbz 1193907 1195178
 ApplyPatch ext4-Allocate-entire-range-in-zero-range.patch
+
+#rhbz 1188439
+ApplyPatch HID-i2c-hid-Limit-reads-to-wMaxInputLength-bytes-for.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2316,6 +2322,7 @@ fi
 #                 ||     ||
 %changelog
 * Mon Feb 23 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch for HID i2c from Seth Forshee (rhbz 1188439)
 - CVE-2015-0275 ext4: fallocate zero range page size > block size BUG (rhbz 1193907 1195178)
 
 * Mon Feb 16 2015 Josh Boyer <jwboyer@fedoraproject.org>
