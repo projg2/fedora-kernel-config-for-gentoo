@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 29
+%define stable_update 32
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -2266,6 +2266,12 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 06 2015 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.32-100
+- Linux v3.14.32
+
+* Tue Jan 27 2015 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.30-100
+- Linux v3.14.30
+
 * Fri Jan 16 2015 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.29-100
 - Linux v3.14.29
 
