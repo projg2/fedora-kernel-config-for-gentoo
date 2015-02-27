@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -749,9 +749,6 @@ Patch30000: kernel-arm64.patch
 # Fix for big-endian arches, already upstream
 Patch30001: mpssd-x86-only.patch
 
-# rhbz 1183744 1188347
-Patch30002: ipv4-try-to-cache-dst_entries-which-would-cause-a-re.patch
-
 #rhbz 1188074
 Patch30003: 0001-ntp-Fixup-adjtimex-freq-validation-on-32bit-systems.patch
 
@@ -770,14 +767,8 @@ Patch26138: ext4-Allocate-entire-range-in-zero-range.patch
 #rhbz 1188439
 Patch26139: HID-i2c-hid-Limit-reads-to-wMaxInputLength-bytes-for.patch
 
-#rhbz 1190933
-Patch26140: ext4-ignore-journal-checksum-on-remount-don-t-fail.patch
-
 #rhbz 1190947
 Patch26141: Bluetooth-ath3k-Add-support-Atheros-AR5B195-combo-Mi.patch
-
-#CVE-2015-1421 rhbz 1196581 1196595
-Patch26142: net-sctp-fix-slab-corruption-from-use-after-free-on-.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1491,9 +1482,6 @@ ApplyPatch acpi-video-Add-disable_native_backlight-quirk-for-Sa.patch
 # Fix for big-endian arches, already upstream
 ApplyPatch mpssd-x86-only.patch
 
-# rhbz 1183744 1188347
-ApplyPatch ipv4-try-to-cache-dst_entries-which-would-cause-a-re.patch
-
 #rhbz 1188074
 ApplyPatch 0001-ntp-Fixup-adjtimex-freq-validation-on-32bit-systems.patch
 
@@ -1512,14 +1500,8 @@ ApplyPatch ext4-Allocate-entire-range-in-zero-range.patch
 #rhbz 1188439
 ApplyPatch HID-i2c-hid-Limit-reads-to-wMaxInputLength-bytes-for.patch
 
-#rhbz 1190933
-ApplyPatch ext4-ignore-journal-checksum-on-remount-don-t-fail.patch
-
 #rhbz 1190947
 ApplyPatch Bluetooth-ath3k-Add-support-Atheros-AR5B195-combo-Mi.patch
-
-#CVE-2015-1421 rhbz 1196581 1196595
-ApplyPatch net-sctp-fix-slab-corruption-from-use-after-free-on-.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2339,6 +2321,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Fri Feb 27 2015 Josh Boyer <jwboyer@fedoraproject.org - 3.18.8-100
+- Linux v3.18.8
+
 * Thu Feb 26 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-1421 sctp: slab corruption from use after free on INIT collisions (rhbz 1196581 1196595)
 
