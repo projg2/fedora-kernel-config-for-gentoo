@@ -2321,6 +2321,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Sat Feb 28 2015 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix Panda on ARMv7 crash on boot
+
 * Fri Feb 27 2015 Josh Boyer <jwboyer@fedoraproject.org - 3.18.8-100
 - Linux v3.18.8
 
