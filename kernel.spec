@@ -761,6 +761,9 @@ Patch26135: ASLR-fix-stack-randomization-on-64-bit-systems.patch
 #CVE-XXXX-XXXX rhbz 1189864 1192079
 Patch26136: vhost-scsi-potential-memory-corruption.patch
 
+#rhbz 1185519
+Patch26142: NFS-fix-clp-cl_revoked-list-deletion-causing-softloc.patch
+
 #CVE-2015-0275 rhbz 1193907 1195178
 Patch26138: ext4-Allocate-entire-range-in-zero-range.patch
 
@@ -1502,6 +1505,9 @@ ApplyPatch HID-i2c-hid-Limit-reads-to-wMaxInputLength-bytes-for.patch
 
 #rhbz 1190947
 ApplyPatch Bluetooth-ath3k-Add-support-Atheros-AR5B195-combo-Mi.patch
+
+#rhbz 1185519
+ApplyPatch NFS-fix-clp-cl_revoked-list-deletion-causing-softloc.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2322,6 +2328,7 @@ fi
 #                 ||     ||
 %changelog
 * Mon Mar 02 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch to fix nfsd soft lockup (rhbz 1185519)
 - Enable ET131X driver (rhbz 1197842)
 
 * Sat Feb 28 2015 Peter Robinson <pbrobinson@fedoraproject.org>
