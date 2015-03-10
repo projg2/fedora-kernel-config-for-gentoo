@@ -762,6 +762,9 @@ Patch26138: ext4-Allocate-entire-range-in-zero-range.patch
 #rhbz 1190947
 Patch26141: Bluetooth-ath3k-Add-support-Atheros-AR5B195-combo-Mi.patch
 
+#CVE-2015-2042 rhbz 1195355 1199365
+Patch26143: net-rds-use-correct-size-for-max-unacked-packets-and.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1486,6 +1489,9 @@ ApplyPatch Bluetooth-ath3k-Add-support-Atheros-AR5B195-combo-Mi.patch
 
 #rhbz 1185519
 ApplyPatch NFS-fix-clp-cl_revoked-list-deletion-causing-softloc.patch
+
+#CVE-2015-2042 rhbz 1195355 1199365
+ApplyPatch net-rds-use-correct-size-for-max-unacked-packets-and.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2305,6 +2311,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Mar 10 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-2042 rds: information handling flaw in sysctl (rhbz 1195355 1199365)
+
 * Mon Mar 09 2015 Justin M. Forbes <jforbes@fedoraproject.org> - 3.18.9-100
 - Linux v3.18.9
 
