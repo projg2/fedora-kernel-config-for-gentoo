@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 32
+%define stable_update 34
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -752,9 +752,6 @@ Patch25109: revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pa
 #rhbz 1021036
 Patch25110: 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 Patch25111: 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
-
-# CVE-2014-3690 rhbz 1153322 1155372
-Patch26060: x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1450,9 +1447,6 @@ ApplyPatch revert-input-wacom-testing-result-shows-get_report-is-unnecessary.pat
 #rhbz 1021036
 ApplyPatch 0001-ideapad-laptop-Blacklist-rfkill-control-on-the-Lenov.patch
 ApplyPatch 0002-ideapad-laptop-Change-Lenovo-Yoga-2-series-rfkill-ha.patch
-
-# CVE-2014-3690 rhbz 1153322 1155372
-ApplyPatch x86-kvm-vmx-Preserve-CR4-across-VM-entry.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2266,6 +2260,9 @@ fi
 # and build.
 
 %changelog
+* Fri Feb 27 2015 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.34-100
+- Linux v3.14.34
+
 * Fri Feb 06 2015 Josh Boyer <jwboyer@fedoraproject.org> - 3.14.32-100
 - Linux v3.14.32
 
