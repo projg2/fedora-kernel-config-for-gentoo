@@ -720,9 +720,6 @@ Patch22000: weird-root-dentry-name-debug.patch
 # Patch series from Hans for various backlight and platform driver fixes
 Patch26002: samsung-laptop-Add-broken-acpi-video-quirk-for-NC210.patch
 
-#rhbz 1089731
-Patch26058: asus-nb-wmi-Add-wapf4-quirk-for-the-X550VB.patch
-
 #rhbz 1135338
 Patch26090: HID-add-support-for-MS-Surface-Pro-3-Type-Cover.patch
 
@@ -738,6 +735,7 @@ Patch26127: uas-Add-US_FL_NO_ATA_1X-for-2-more-Seagate-disk-encl.patch
 
 #rhbz 1163574
 Patch26130: acpi-video-Add-disable_native_backlight-quirk-for-De.patch
+
 #rhbz 1094948
 Patch26131: acpi-video-Add-disable_native_backlight-quirk-for-Sa.patch
 
@@ -1479,9 +1477,6 @@ ApplyPatch ath9k-rx-dma-stop-check.patch
 # Patch series from Hans for various backlight and platform driver fixes
 ApplyPatch samsung-laptop-Add-broken-acpi-video-quirk-for-NC210.patch
 
-#rhbz 1089731
-ApplyPatch asus-nb-wmi-Add-wapf4-quirk-for-the-X550VB.patch
-
 #rhbz 1135338
 ApplyPatch HID-add-support-for-MS-Surface-Pro-3-Type-Cover.patch
 
@@ -1497,6 +1492,7 @@ ApplyPatch uas-Add-US_FL_NO_ATA_1X-for-2-more-Seagate-disk-encl.patch
 
 #rhbz 1163574
 ApplyPatch acpi-video-Add-disable_native_backlight-quirk-for-De.patch
+
 #rhbz 1094948
 ApplyPatch acpi-video-Add-disable_native_backlight-quirk-for-Sa.patch
 
