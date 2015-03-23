@@ -795,6 +795,9 @@ Patch26168: HID-multitouch-add-support-of-clickpads.patch
 Patch26170: acpi-video-Allow-forcing-native-backlight-on-non-win.patch
 Patch26171: acpi-video-Add-force-native-backlight-quirk-for-Leno.patch
 
+#CVE-2015-2666 rhbz 1204724 1204722
+Patch26172: x86-microcode-intel-Guard-against-stack-overflow-in-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1552,6 +1555,9 @@ ApplyPatch HID-multitouch-add-support-of-clickpads.patch
 #rhbz 1187004
 ApplyPatch acpi-video-Allow-forcing-native-backlight-on-non-win.patch
 ApplyPatch acpi-video-Add-force-native-backlight-quirk-for-Leno.patch
+
+#CVE-2015-2666 rhbz 1204724 1204722
+ApplyPatch x86-microcode-intel-Guard-against-stack-overflow-in-.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2371,6 +2377,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Mar 23 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-2666 execution in the early microcode loader (rhbz 1204724 1204722)
+
 * Fri Mar 20 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix brightness on Lenovo Ideapad Z570 (rhbz 1187004)
 
