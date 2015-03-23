@@ -798,6 +798,9 @@ Patch26171: acpi-video-Add-force-native-backlight-quirk-for-Leno.patch
 #CVE-2015-2666 rhbz 1204724 1204722
 Patch26172: x86-microcode-intel-Guard-against-stack-overflow-in-.patch
 
+#CVE-2015-2672 rhbz 1204724 1204729
+Patch26173: x86-fpu-xsaves-Fix-improper-uses-of-__ex_table.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1558,6 +1561,9 @@ ApplyPatch acpi-video-Add-force-native-backlight-quirk-for-Leno.patch
 
 #CVE-2015-2666 rhbz 1204724 1204722
 ApplyPatch x86-microcode-intel-Guard-against-stack-overflow-in-.patch
+
+#CVE-2015-2672 rhbz 1204724 1204729
+ApplyPatch x86-fpu-xsaves-Fix-improper-uses-of-__ex_table.patch
 
 %if 0%{?aarch64patches}
 ApplyPatch kernel-arm64.patch
@@ -2378,6 +2384,7 @@ fi
 #                 ||     ||
 %changelog
 * Mon Mar 23 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-2672 unprivileged DoS du to mis-protected xsave/xstor instructions (rhbz 1204724 1204729)
 - CVE-2015-2666 execution in the early microcode loader (rhbz 1204724 1204722)
 
 * Fri Mar 20 2015 Josh Boyer <jwboyer@fedoraproject.org>
