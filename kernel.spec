@@ -772,6 +772,9 @@ Patch30000: kernel-arm64.patch
 #rhbz 1204512
 Patch26174: tun-return-proper-error-code-from-tun_do_read.patch
 
+#CVE-2015-2150 rhbz 1196266 1200397
+Patch26175: xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1512,6 +1515,9 @@ ApplyPatch kernel-arm64.patch -R
 
 #rhbz 1204512
 ApplyPatch tun-return-proper-error-code-from-tun_do_read.patch
+
+#CVE-2015-2150 rhbz 1196266 1200397
+ApplyPatch xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2324,6 +2330,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed Apr 01 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-2150 xen: NMIs triggerable by guests (rhbz 1196266 1200397)
+
 * Fri Mar 27 2015 Justin M. Forbes <jforbes@fedoraproject.org> - 3.19.3-100
 - Linux v3.19.3 rebase (rhbz 1205088)
 
