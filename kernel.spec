@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -738,15 +738,6 @@ Patch26138: ext4-Allocate-entire-range-in-zero-range.patch
 Patch26141: Bluetooth-ath3k-Add-support-Atheros-AR5B195-combo-Mi.patch
 
 #rhbz 1200777 1200778
-Patch26150: Input-synaptics-split-synaptics_resolution-query-fir.patch
-Patch26151: Input-synaptics-log-queried-and-quirked-dimension-va.patch
-Patch26152: Input-synaptics-query-min-dimensions-for-fw-v8.1.patch
-Patch26153: Input-synaptics-remove-obsolete-min-max-quirk-for-X2.patch
-Patch26154: Input-synaptics-support-min-max-board-id-in-min_max_.patch
-Patch26155: Input-synaptics-skip-quirks-when-post-2013-dimension.patch
-Patch26156: Input-synaptics-fix-middle-button-on-Lenovo-2015-pro.patch
-Patch26157: Input-synaptics-handle-spurious-release-of-trackstic.patch
-Patch26158: Input-synaptics-do-not-retrieve-the-board-id-on-old-.patch
 Patch26159: Input-synaptics-retrieve-the-extended-capabilities-i.patch
 Patch26160: Input-synaptics-remove-TOPBUTTONPAD-property-for-Len.patch
 Patch26161: Input-synaptics-re-route-tracksticks-buttons-on-the-.patch
@@ -1487,15 +1478,6 @@ ApplyPatch ext4-Allocate-entire-range-in-zero-range.patch
 ApplyPatch Bluetooth-ath3k-Add-support-Atheros-AR5B195-combo-Mi.patch
 
 #rhbz 1200777 1200778
-ApplyPatch Input-synaptics-split-synaptics_resolution-query-fir.patch
-ApplyPatch Input-synaptics-log-queried-and-quirked-dimension-va.patch
-ApplyPatch Input-synaptics-query-min-dimensions-for-fw-v8.1.patch
-ApplyPatch Input-synaptics-remove-obsolete-min-max-quirk-for-X2.patch
-ApplyPatch Input-synaptics-support-min-max-board-id-in-min_max_.patch
-ApplyPatch Input-synaptics-skip-quirks-when-post-2013-dimension.patch
-ApplyPatch Input-synaptics-fix-middle-button-on-Lenovo-2015-pro.patch
-ApplyPatch Input-synaptics-handle-spurious-release-of-trackstic.patch
-ApplyPatch Input-synaptics-do-not-retrieve-the-board-id-on-old-.patch
 ApplyPatch Input-synaptics-retrieve-the-extended-capabilities-i.patch
 ApplyPatch Input-synaptics-remove-TOPBUTTONPAD-property-for-Len.patch
 ApplyPatch Input-synaptics-re-route-tracksticks-buttons-on-the-.patch
@@ -2348,6 +2330,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Apr 13 2015 Justin M. Forbes <jforbes@fedoraproject.org> - 3.19.4-100
+- Linux v3.19.4
+
 * Thu Apr 02 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - DoS against IPv6 stacks due to improper handling of RA (rhbz 1203712 1208491)
 
