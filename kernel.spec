@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -744,9 +744,6 @@ Patch26161: Input-synaptics-re-route-tracksticks-buttons-on-the-.patch
 Patch26162: Input-synaptics-remove-X1-Carbon-3rd-gen-from-the-to.patch
 Patch26163: Input-synaptics-remove-X250-from-the-topbuttonpad-li.patch
 
-#CVE-2014-8159 rhbz 1181166 1200950
-Patch26167: IB-core-Prevent-integer-overflow-in-ib_umem_get-addr.patch
-
 #rhbz 1201532
 Patch26168: HID-multitouch-add-support-of-clickpads.patch
 
@@ -765,9 +762,6 @@ Patch26174: tun-return-proper-error-code-from-tun_do_read.patch
 
 #CVE-2015-2150 rhbz 1196266 1200397
 Patch26175: xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
-
-#rhbz 1203913
-Patch26176: sunrpc-make-debugfs-file-creation-failure-non-fatal.patch
 
 #rhbz 1207789
 Patch26177: tg3-Hold-tp-lock-before-calling-tg3_halt-from-tg3_in.patch
@@ -1490,9 +1484,6 @@ ApplyPatch Input-synaptics-re-route-tracksticks-buttons-on-the-.patch
 ApplyPatch Input-synaptics-remove-X1-Carbon-3rd-gen-from-the-to.patch
 ApplyPatch Input-synaptics-remove-X250-from-the-topbuttonpad-li.patch
 
-#CVE-2014-8159 rhbz 1181166 1200950
-ApplyPatch IB-core-Prevent-integer-overflow-in-ib_umem_get-addr.patch
-
 #rhbz 1201532
 ApplyPatch HID-multitouch-add-support-of-clickpads.patch
 
@@ -1515,9 +1506,6 @@ ApplyPatch tun-return-proper-error-code-from-tun_do_read.patch
 
 #CVE-2015-2150 rhbz 1196266 1200397
 ApplyPatch xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
-
-#rhbz 1203913
-ApplyPatch sunrpc-make-debugfs-file-creation-failure-non-fatal.patch
 
 #rhbz 1207789
 ApplyPatch tg3-Hold-tp-lock-before-calling-tg3_halt-from-tg3_in.patch
@@ -2342,6 +2330,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Mon Apr 20 2015 Justin M. Forbes <jforbes@fedoraproject.org> - 3.19.5-100
+- Linux v3.19.5
+
 * Fri Apr 17 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Allow disabling raw mode in logitech-hidpp (rhbz 1210801)
 
