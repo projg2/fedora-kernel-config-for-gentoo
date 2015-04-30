@@ -2337,7 +2337,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Thu Apr 30 2015 Laura Abbott <labbott@fedoraproject.org> - 3.19.6-200
+* Thu Apr 30 2015 Laura Abbott <labbott@fedoraproject.org> - 3.19.6-100
 - Linux v3.19.6
 
 * Thu Apr 30 2015 Josh Boyer <jwboyer@fedoraproject.org>
