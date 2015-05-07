@@ -74,7 +74,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Is it a -stable RC?
 %define stable_rc 0
 # Set rpm version accordingly
@@ -733,9 +733,6 @@ Patch26136: vhost-scsi-potential-memory-corruption.patch
 
 #CVE-2015-0275 rhbz 1193907 1195178
 Patch26138: ext4-Allocate-entire-range-in-zero-range.patch
-
-#rhbz 1190947
-Patch26141: Bluetooth-ath3k-Add-support-Atheros-AR5B195-combo-Mi.patch
 
 #rhbz 1200777 1200778
 Patch26159: Input-synaptics-retrieve-the-extended-capabilities-i.patch
@@ -1482,9 +1479,6 @@ ApplyPatch vhost-scsi-potential-memory-corruption.patch
 
 #CVE-2015-0275 rhbz 1193907 1195178
 ApplyPatch ext4-Allocate-entire-range-in-zero-range.patch
-
-#rhbz 1190947
-ApplyPatch Bluetooth-ath3k-Add-support-Atheros-AR5B195-combo-Mi.patch
 
 #rhbz 1200777 1200778
 ApplyPatch Input-synaptics-retrieve-the-extended-capabilities-i.patch
@@ -2348,6 +2342,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Thu May 07 2015 Laura Abbott <labbott@fedoraproject.org> - 3.19.7-100
+- Linux v3.19.7
+
 * Tue May 05 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Backport patch to blacklist TRIM on all Samsung 8xx series SSDs (rhbz 1218662)
 - CVE-2015-3636 ping-sockets use-after-free privilege escalation (rhbz 1218074 1218110)
