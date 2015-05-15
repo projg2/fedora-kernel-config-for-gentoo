@@ -781,6 +781,9 @@ Patch26199: libata-Blacklist-queued-TRIM-on-all-Samsung-800-seri.patch
 #rhbz 1219343
 Patch26200: 0001-HID-usbhid-Add-HID_QUIRK_NOGET-for-Aten-DVI-KVM-swit.patch
 
+#rhbz 1220118
+Patch26201: 0001-media-media-Fix-regression-in-some-more-dib0700-base.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1530,6 +1533,9 @@ ApplyPatch libata-Blacklist-queued-TRIM-on-all-Samsung-800-seri.patch
 
 #rhbz 1219343
 ApplyPatch 0001-HID-usbhid-Add-HID_QUIRK_NOGET-for-Aten-DVI-KVM-swit.patch
+
+#rhbz 1220118
+ApplyPatch 0001-media-media-Fix-regression-in-some-more-dib0700-base.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2342,6 +2348,10 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+
+* Wed May 13 2015 Laura Abbott <labbott@fedoraproject.org>
+- Fix DVB oops (rhbz 1220118)
+
 * Wed May 13 2015 Laura Abbott <labbott@fedoraproject.org>
 - Fix spew from KVM switch (rhbz 1219343)
 
