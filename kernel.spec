@@ -2349,7 +2349,7 @@ fi
 #                 ||     ||
 %changelog
 
-* Wed May 13 2015 Laura Abbott <labbott@fedoraproject.org>
+* Fri May 15 2015 Laura Abbott <labbott@fedoraproject.org>
 - Fix DVB oops (rhbz 1220118)
 
 * Wed May 13 2015 Laura Abbott <labbott@fedoraproject.org>
