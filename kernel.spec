@@ -780,6 +780,9 @@ Patch26203: v4l-uvcvideo-Fix-incorrect-bandwidth-with-Chicony-de.patch
 #rhbz 1223332
 Patch26207: md-raid0-fix-restore-to-sector-variable-in-raid0_mak.patch
 
+#rhbz 1218688
+Patch26205: drm-i915-Fix-ilk-watermarks-calculation-when-primary.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1528,6 +1531,9 @@ ApplyPatch toshiba_acpi-Do-not-register-vendor-backlight-when-a.patch
 
 #rhbz 1218662
 ApplyPatch libata-Blacklist-queued-TRIM-on-all-Samsung-800-seri.patch
+
+#rhbz 1218688
+ApplyPatch drm-i915-Fix-ilk-watermarks-calculation-when-primary.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2340,6 +2346,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue May 26 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Add submitted stable fix for i915 flickering on ilk (rhbz 1218688)
+
 * Thu May 21 2015 Laura Abbott <labbott@fedoraproject.org> - 4.0.4-100
 - Linux v4.0.4
 
