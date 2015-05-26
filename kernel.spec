@@ -783,6 +783,9 @@ Patch26207: md-raid0-fix-restore-to-sector-variable-in-raid0_mak.patch
 #rhbz 1218688
 Patch26205: drm-i915-Fix-ilk-watermarks-calculation-when-primary.patch
 
+#rhbz 1220519
+Patch26208: sched-always-use-blk_schedule_flush_plug-in-io_sched.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1534,6 +1537,9 @@ ApplyPatch libata-Blacklist-queued-TRIM-on-all-Samsung-800-seri.patch
 
 #rhbz 1218688
 ApplyPatch drm-i915-Fix-ilk-watermarks-calculation-when-primary.patch
+
+#rhbz 1220519
+ApplyPatch sched-always-use-blk_schedule_flush_plug-in-io_sched.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2347,6 +2353,7 @@ fi
 #                 ||     ||
 %changelog
 * Tue May 26 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Backport patch to fix might_sleep splat (rhbz 1220519)
 - Add submitted stable fix for i915 flickering on ilk (rhbz 1218688)
 
 * Thu May 21 2015 Laura Abbott <labbott@fedoraproject.org> - 4.0.4-100
