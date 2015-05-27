@@ -62,7 +62,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2366,7 +2366,7 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
-* Wed May 27 2015 Josh Boyer <jwboyer@fedoraproject.org>
+* Wed May 27 2015 Josh Boyer <jwboyer@fedoraproject.org> - 4.0.4-101
 - Apply queued fixes for crasher reported by Alex Larsson
 
 * Tue May 26 2015 Laura Abbott <labbott@fedoraproject.org>
