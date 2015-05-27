@@ -789,6 +789,10 @@ Patch26208: sched-always-use-blk_schedule_flush_plug-in-io_sched.patch
 #rhbz 1200353
 Patch26209: 0001-ktime-Fix-ktime_divns-to-do-signed-division.patch
 
+# Apply queued fixes for crasher reported by Alex Larsson
+Patch26211: mnt-Fail-collect_mounts-when-applied-to-unmounted-mo.patch
+Patch26212: fs_pin-Allow-for-the-possibility-that-m_list-or-s_li.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1546,6 +1550,10 @@ ApplyPatch sched-always-use-blk_schedule_flush_plug-in-io_sched.patch
 
 #rhbz 1200353
 ApplyPatch 0001-ktime-Fix-ktime_divns-to-do-signed-division.patch
+
+# Apply queued fixes for crasher reported by Alex Larsson
+ApplyPatch mnt-Fail-collect_mounts-when-applied-to-unmounted-mo.patch
+ApplyPatch fs_pin-Allow-for-the-possibility-that-m_list-or-s_li.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2358,6 +2366,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Wed May 27 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Apply queued fixes for crasher reported by Alex Larsson
+
 * Tue May 26 2015 Laura Abbott <labbott@fedoraproject.org>
 - Fix signed division error (rhbz 1200353)
 
