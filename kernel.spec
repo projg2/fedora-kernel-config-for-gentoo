@@ -723,9 +723,6 @@ Patch21247: ath9k-rx-dma-stop-check.patch
 
 Patch22000: weird-root-dentry-name-debug.patch
 
-#rhbz 1094948
-Patch26131: acpi-video-Add-disable_native_backlight-quirk-for-Sa.patch
-
 #rhbz 1186097
 Patch26135: acpi-video-add-disable_native_backlight_quirk_for_samsung_510r.patch
 
@@ -1486,9 +1483,6 @@ ApplyPatch criu-no-expert.patch
 
 #rhbz 892811
 ApplyPatch ath9k-rx-dma-stop-check.patch
-
-#rhbz 1094948
-ApplyPatch acpi-video-Add-disable_native_backlight-quirk-for-Sa.patch
 
 #rhbz 1186097
 ApplyPatch acpi-video-add-disable_native_backlight_quirk_for_samsung_510r.patch
