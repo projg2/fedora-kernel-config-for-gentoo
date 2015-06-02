@@ -796,6 +796,9 @@ Patch26212: fs_pin-Allow-for-the-possibility-that-m_list-or-s_li.patch
 #rhbz 1217249
 Patch26214: acpi_video-Add-enable_native_backlight-quirk-for-Mac.patch
 
+#rhbz 1225563
+Patch26215: HID-lenovo-set-INPUT_PROP_POINTING_STICK.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1560,6 +1563,9 @@ ApplyPatch fs_pin-Allow-for-the-possibility-that-m_list-or-s_li.patch
 
 #rhbz 1217249
 ApplyPatch acpi_video-Add-enable_native_backlight-quirk-for-Mac.patch
+
+#rhbz 1225563
+ApplyPatch HID-lenovo-set-INPUT_PROP_POINTING_STICK.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2372,6 +2378,9 @@ fi
 #                 ||----w |
 #                 ||     ||
 %changelog
+* Tue Jun 02 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix middle button issues on external Lenovo keyboards (rhbz 1225563)
+
 * Thu May 28 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Add quirk for Mac Pro backlight (rhbz 1217249)
 
