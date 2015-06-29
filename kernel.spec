@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -674,9 +674,6 @@ Patch26220: 0001-mwifiex-use-del_timer-variant-in-interrupt-context.patch
 
 #rhbz 1226743
 Patch26221: drm-i915-turn-off-wc-mmaps.patch
-
-#rhbz 1227877
-Patch26222: powerpc-powernv-Restore-non-volatile-CRs-after-nap.patch
 
 #rhbz 1212230
 Patch26238: Input-Revert-Revert-synaptics-use-dmax-in-input_mt_a.patch
@@ -1466,9 +1463,6 @@ ApplyPatch 0001-mwifiex-use-del_timer-variant-in-interrupt-context.patch
 
 #rhbz 1226743
 ApplyPatch drm-i915-turn-off-wc-mmaps.patch
-
-#rhbz 1227877
-ApplyPatch powerpc-powernv-Restore-non-volatile-CRs-after-nap.patch
 
 #rhbz 1212230
 ApplyPatch Input-Revert-Revert-synaptics-use-dmax-in-input_mt_a.patch
@@ -2340,6 +2334,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Mon Jun 29 2015 Laura Abbott <labbott@fedoraproject.org> - 4.0.7-200
+- Linux v4.0.7
+
 * Tue Jun 23 2015 Justin M. Forbes <jforbes@fedoraproject.org> - 4.0.6-200
 - Linux v4.0.6
 
