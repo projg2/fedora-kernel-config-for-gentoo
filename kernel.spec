@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2334,6 +2334,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Fri Jul 10 2015 Laura Abbott <labbott@redhat.com> - 4.0.8-200
+- Linux v4.0.8
+
 * Tue Jul 07 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Drop incorrect patches for now (rhbz 1212230)
 
