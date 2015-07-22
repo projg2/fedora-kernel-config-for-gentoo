@@ -2344,9 +2344,12 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Wed Jul 22 2015 Laura Abbott <labbott@fedoraproject.org> - 4.0.9-200
+- Linux v4.0.9
+- Add patches for Ideapad RF switches (rhbz 1192270)
+
 * Fri Jul 10 2015 Laura Abbott <labbott@redhat.com> - 4.0.8-200
 - Linux v4.0.8
-- Add patches for Ideapad RF switches (rhbz 1192270)
 
 * Tue Jul 07 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Drop incorrect patches for now (rhbz 1212230)
