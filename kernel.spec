@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -685,6 +685,11 @@ Patch26241: kvm-x86-fix-kvm_apic_has_events-to-check-for-NULL-po.patch
 
 # rhbz 1227891
 Patch26250: HID-rmi-Disable-populating-F30-when-the-touchpad-has.patch
+
+# rhbz 1192270
+Patch26251: ideapad_laptop-Add-Lenovo-G40-30-to-devices-without-.patch
+Patch26252: ideapad_laptop-Lenovo-G50-30-fix-rfkill-reports-wire.patch
+
 
 # END OF PATCH DEFINITIONS
 
@@ -1474,6 +1479,11 @@ ApplyPatch kvm-x86-fix-kvm_apic_has_events-to-check-for-NULL-po.patch
 
 #rhbz 1227891
 ApplyPatch HID-rmi-Disable-populating-F30-when-the-touchpad-has.patch
+
+# rhbz 1192270
+ApplyPatch ideapad_laptop-Add-Lenovo-G40-30-to-devices-without-.patch
+ApplyPatch ideapad_laptop-Lenovo-G50-30-fix-rfkill-reports-wire.patch
+
 
 # END OF PATCH APPLICATIONS
 
@@ -2336,6 +2346,7 @@ fi
 %changelog
 * Fri Jul 10 2015 Laura Abbott <labbott@redhat.com> - 4.0.8-200
 - Linux v4.0.8
+- Add patches for Ideapad RF switches (rhbz 1192270)
 
 * Tue Jul 07 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Drop incorrect patches for now (rhbz 1212230)
