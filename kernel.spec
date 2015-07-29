@@ -2267,13 +2267,16 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Wed Jul 29 2015 Laura Abbott <labbott@fedoraproject.org> - 4.1.3-100
+- Change tag for build since a previous build never happened
+
 * Mon Jul 27 2015 Laura Abbott <labbott@fedoraproject.org>
 - CVE-2015-3290 CVE-2015-3291 NMI issues (rhbz 1243465 1245927)
 
 * Mon Jul 27 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-1333 add_key memory leak (rhbz 1244171)
 
-* Thu Jul 23 2015 Laura Abbott <labbott@fedoraproject.org> - 4.1.3-100
+* Thu Jul 23 2015 Laura Abbott <labbott@fedoraproject.org>
 - Linux v4.1.3 rebase
 - Fix warning from pcmcia (rhbz 1180920 1206724)
 
