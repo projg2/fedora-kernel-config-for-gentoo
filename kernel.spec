@@ -643,7 +643,7 @@ Patch26262: x86-nmi-64-Reorder-nested-NMI-checks.patch
 Patch26263: x86-nmi-64-Use-DF-to-avoid-userspace-RSP-confusing-n.patch
 
 # CVE-2015-5697 (rhbz 1249011 1249013)
-Patch26263: md-use-kzalloc-when-bitmap-is-disabled.patch
+Patch26264: md-use-kzalloc-when-bitmap-is-disabled.patch
 
 # END OF PATCH DEFINITIONS
 
