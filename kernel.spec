@@ -2255,6 +2255,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Tue Aug  4 2015 Peter Robinson <pbrobinson@fedoraproject.org>
+- Back port AMD Seattle a0 4.1 NIC driver update
+
 * Mon Aug 03 2015 Josh Boyer <jwboyer@fedoraproject.org> - 4.1.4-100
 - Linux v4.1.4
 - CVE-2015-5697 info leak in md driver (rhbz 1249011 1249013)
