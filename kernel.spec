@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2268,6 +2268,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Mon Aug 10 2015 Laura Abbott <labbott@fedoraproject.org> - 4.1.5-100
+- Linux v4.1.5
+
 * Mon Aug 10 2015 Laura Abbott <labbott@fedoraproject.org>
 - Fix use after free in HID input (rhbz 1251877 1251880 1250279 1248741)
 
