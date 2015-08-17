@@ -655,6 +655,9 @@ Patch26265: HID-hid-input-Fix-accessing-freed-memory-during-devi.patch
 #rhbz 1239050
 Patch509: ideapad-laptop-Add-Lenovo-Yoga-3-14-to-no_hw_rfkill-.patch
 
+#rhbz 1253789
+Patch511: iSCSI-let-session-recovery_tmo-sysfs-writes-persist.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2274,6 +2277,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Mon Aug 17 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix iscsi issue (rhbz 1253789)
+
 * Sat Aug 15 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Patch from Hans de Goede to add yoga 3 rfkill quirk (rhbz 1239050)
 
