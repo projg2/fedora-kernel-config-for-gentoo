@@ -2270,6 +2270,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Wed Aug 26 2015 Peter Robinson <pbrobinson@fedoraproject.org>
+- Disable CRYPTO_DEV_VMX_ENCRYPT on PPC for now to fix Power 8 boot (rhbz 1237089)
+
 * Tue Aug 25 2015 Laura Abbott <labbott@fedoraproject.org>
 - Fix x2apic refactoring breakage (rhbz 1224764)
 
