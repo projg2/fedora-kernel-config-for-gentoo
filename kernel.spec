@@ -650,6 +650,9 @@ Patch513: Revert-sched-x86_64-Don-t-save-flags-on-context-swit.patch
 #rhbz 1256281
 Patch26266: mmc-sdhci-fix-dma-memory-leak-in-sdhci_pre_req.patch
 
+#rhbz 1224764
+Patch26267: x86-apic-Fix-fallout-from-x2apic-cleanup.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1404,6 +1407,9 @@ ApplyPatch Revert-sched-x86_64-Don-t-save-flags-on-context-swit.patch
 
 #rhbz 1256281
 ApplyPatch mmc-sdhci-fix-dma-memory-leak-in-sdhci_pre_req.patch
+
+#rhbz 1224764
+ApplyPatch x86-apic-Fix-fallout-from-x2apic-cleanup.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2264,6 +2270,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Tue Aug 25 2015 Laura Abbott <labbott@fedoraproject.org>
+- Fix x2apic refactoring breakage (rhbz 1224764)
+
 * Tue Aug 25 2015 Laura Abbott <labbott@fedoraproject.org>
 - Correct the sdhci DMA leak patch to actually compile (oops)
 
