@@ -26,14 +26,13 @@ extremedebug:
 	@perl -pi -e 's/# CONFIG_DEBUG_PAGEALLOC is not set/CONFIG_DEBUG_PAGEALLOC=y/' config-nodebug
 
 debug:
-	@perl -pi -e 's/# CONFIG_SLUB_DEBUG_ON is not set/CONFIG_SLUB_DEBUG_ON=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_LOCK_STAT is not set/CONFIG_LOCK_STAT=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_STACK_USAGE is not set/CONFIG_DEBUG_STACK_USAGE=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_SLAB is not set/CONFIG_DEBUG_SLAB=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_MUTEXES is not set/CONFIG_DEBUG_MUTEXES=y/' config-nodebug
-	@perl -pi -e 's/# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set/CONFIG_DEBUG_WW_MUTEX_SLOWPATH=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_RT_MUTEXES is not set/CONFIG_DEBUG_RT_MUTEXES=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_LOCK_ALLOC is not set/CONFIG_DEBUG_LOCK_ALLOC=y/' config-nodebug
+	@perl -pi -e 's/# CONFIG_LOCK_TORTURE_TEST is not set/CONFIG_LOCK_TORTURE_TEST=m/' config-nodebug
 	@perl -pi -e 's/# CONFIG_PROVE_LOCKING is not set/CONFIG_PROVE_LOCKING=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_PROVE_RCU is not set/CONFIG_PROVE_RCU=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_SPINLOCK is not set/CONFIG_DEBUG_SPINLOCK=y/' config-nodebug
@@ -47,7 +46,7 @@ debug:
 	@perl -pi -e 's/# CONFIG_FAULT_INJECTION_DEBUG_FS is not set/CONFIG_FAULT_INJECTION_DEBUG_FS=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_FAULT_INJECTION_STACKTRACE_FILTER is not set/CONFIG_FAULT_INJECTION_STACKTRACE_FILTER=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_SG is not set/CONFIG_DEBUG_SG=y/' config-nodebug
-	@perl -pi -e 's/# CONFIG_DEBUG_WRITECOUNT is not set/CONFIG_DEBUG_WRITECOUNT=y/' config-nodebug
+	@perl -pi -e 's/# CONFIG_DEBUG_PI_LIST is not set/CONFIG_DEBUG_PI_LIST=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_OBJECTS is not set/CONFIG_DEBUG_OBJECTS=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_OBJECTS_FREE is not set/CONFIG_DEBUG_OBJECTS_FREE=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_OBJECTS_TIMERS is not set/CONFIG_DEBUG_OBJECTS_TIMERS=y/' config-nodebug
@@ -55,9 +54,10 @@ debug:
 	@perl -pi -e 's/# CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER is not set/CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_OBJECTS_RCU_HEAD is not set/CONFIG_DEBUG_OBJECTS_RCU_HEAD=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_X86_PTDUMP is not set/CONFIG_X86_PTDUMP=y/' config-nodebug
+	@perl -pi -e 's/# CONFIG_ARM64_PTDUMP is not set/CONFIG_ARM64_PTDUMP=y/' config-nodebug
+	@perl -pi -e 's/# CONFIG_EFI_PGT_DUMP is not set/CONFIG_EFI_PGT_DUMP=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_CAN_DEBUG_DEVICES is not set/CONFIG_CAN_DEBUG_DEVICES=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_MODULE_FORCE_UNLOAD is not set/CONFIG_MODULE_FORCE_UNLOAD=y/' config-nodebug
-	@perl -pi -e 's/# CONFIG_SYSCTL_SYSCALL_CHECK is not set/CONFIG_SYSCTL_SYSCALL_CHECK=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_NOTIFIERS is not set/CONFIG_DEBUG_NOTIFIERS=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DMA_API_DEBUG is not set/CONFIG_DMA_API_DEBUG=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_PM_TEST_SUSPEND is not set/CONFIG_PM_TEST_SUSPEND=y/' config-generic
@@ -98,11 +98,7 @@ debug:
 
 	@perl -pi -e 's/# CONFIG_MAXSMP is not set/CONFIG_MAXSMP=y/' config-x86-generic
 
-	@# Try out UAS in rawhide builds.
-	@perl -pi -e 's/# CONFIG_USB_UAS is not set/CONFIG_USB_UAS=m/' config-generic
-
 	@perl -pi -e 's/^%define debugbuildsenabled 1/%define debugbuildsenabled 0/' kernel.spec
-	@perl -pi -e 's/^%define rawhide_skip_docs 0/%define rawhide_skip_docs 1/' kernel.spec
 	@rpmdev-bumpspec -c "Reenable debugging options." kernel.spec
 
 nodebuginfo:
@@ -111,7 +107,6 @@ nodebug: release
 	@perl -pi -e 's/^%define debugbuildsenabled 1/%define debugbuildsenabled 0/' kernel.spec
 release: config-release
 	@perl -pi -e 's/^%define debugbuildsenabled 0/%define debugbuildsenabled 1/' kernel.spec
-	@perl -pi -e 's/^%define rawhide_skip_docs 1/%define rawhide_skip_docs 0/' kernel.spec
 	@rpmdev-bumpspec -c "Disable debugging options." kernel.spec
 
 include Makefile.release
