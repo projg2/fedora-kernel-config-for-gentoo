@@ -625,6 +625,9 @@ Patch514: drm-qxl-validate-monitors-config-modes.patch
 Patch517: vmwgfx-Rework-device-initialization.patch
 Patch518: drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
 
+#rhbz 1259231
+Patch519: make-flush-workqueue-available-to-non-GPL-modules.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1367,6 +1370,9 @@ ApplyPatch drm-qxl-validate-monitors-config-modes.patch
 #rhbz 1257500
 ApplyPatch vmwgfx-Rework-device-initialization.patch
 ApplyPatch drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
+
+#rhbz 1259231
+ApplyPatch make-flush-workqueue-available-to-non-GPL-modules.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2218,6 +2224,9 @@ fi
 #
 # 
 %changelog
+* Wed Sep 02 2015 Justin M. Forbes <jforbes@fedoraproject.org>
+- Make flush_workqueue() available again to non GPL modules (rhbz 1259231)
+
 * Tue Sep  1 2015 Laura Abbott <labbott@fedoraproject.org> - 4.2.0-200
 - Linux v4.2
 
