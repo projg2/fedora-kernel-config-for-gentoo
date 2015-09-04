@@ -650,7 +650,7 @@ Provides: kernel-drm-nouveau = 16\
 Provides: kernel-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
-Requires(pre): linux-firmware >= 20130724-29.git31f6b30\
+Requires(pre): linux-firmware >= 20150904-56.git6ebf5d57\
 Requires(preun): systemd >= 200\
 Conflicts: xorg-x11-drv-vmmouse < 13.0.99\
 %{expand:%%{?kernel%{?1:_%{1}}_conflicts:Conflicts: %%{kernel%{?1:_%{1}}_conflicts}}}\
@@ -2224,6 +2224,9 @@ fi
 #
 # 
 %changelog
+* Fri Sep 04 2015 Justin M. Forbes <jforbes@fedoraproject.org>
+- Bump linux-firmware require for amdgpu (rhbz 1259542)
+
 * Wed Sep 02 2015 Justin M. Forbes <jforbes@fedoraproject.org>
 - Make flush_workqueue() available again to non GPL modules (rhbz 1259231)
 
