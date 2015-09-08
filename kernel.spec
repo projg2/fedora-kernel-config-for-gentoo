@@ -628,6 +628,9 @@ Patch518: drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
 #rhbz 1259231
 Patch519: make-flush-workqueue-available-to-non-GPL-modules.patch
 
+#rhbz 1237136
+Patch522: block-blkg_destroy_all-should-clear-q-root_blkg-and-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1373,6 +1376,9 @@ ApplyPatch drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
 
 #rhbz 1259231
 ApplyPatch make-flush-workqueue-available-to-non-GPL-modules.patch
+
+#rhbz 1237136
+ApplyPatch block-blkg_destroy_all-should-clear-q-root_blkg-and-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2224,6 +2230,9 @@ fi
 #
 # 
 %changelog
+* Tue Sep 08 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix oops in blk layer (rhbz 1237136)
+
 * Fri Sep 04 2015 Justin M. Forbes <jforbes@fedoraproject.org>
 - Bump linux-firmware require for amdgpu (rhbz 1259542)
 
