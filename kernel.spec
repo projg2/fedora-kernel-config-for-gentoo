@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -648,9 +648,6 @@ Patch26266: mmc-sdhci-fix-dma-memory-leak-in-sdhci_pre_req.patch
 
 #rhbz 1257534
 Patch515: nv46-Change-mc-subdev-oclass-from-nv44-to-nv4c.patch
-
-#rhbz 1212201
-Patch514: drm-qxl-validate-monitors-config-modes.patch
 
 #rhbz 1257500
 Patch517: vmwgfx-Rework-device-initialization.patch
@@ -1416,9 +1413,6 @@ ApplyPatch mmc-sdhci-fix-dma-memory-leak-in-sdhci_pre_req.patch
 
 #rhbz 1257534
 ApplyPatch nv46-Change-mc-subdev-oclass-from-nv44-to-nv4c.patch
-
-#rhbz 1212201
-ApplyPatch drm-qxl-validate-monitors-config-modes.patch
 
 #rhbz 1257500
 ApplyPatch vmwgfx-Rework-device-initialization.patch
@@ -2289,6 +2283,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Mon Sep 21 2015 Josh Boyer <jwboyer@fedoraproject.org> - 4.1.8-100
+- Linux v4.1.8
+
 * Fri Sep 18 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix oops in 32-bit kernel on 64-bit AMD cpus (rhbz 1263762)
 
