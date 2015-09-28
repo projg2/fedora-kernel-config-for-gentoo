@@ -499,6 +499,7 @@ Patch05: kbuild-AFTER_LINK.patch
 Patch450: input-kill-stupid-messages.patch
 Patch452: no-pcspkr-modalias.patch
 
+Patch458: regulator-axp20x-module-alias.patch
 Patch470: die-floppy-die.patch
 
 Patch510: input-silence-i8042-noise.patch
@@ -1392,6 +1393,8 @@ ApplyPatch 0001-x86-cpu-cacheinfo-Fix-teardown-path.patch
 #CVE-2015-5257 rhbz 1265607 1265612
 ApplyPatch USB-whiteheat-fix-potential-null-deref-at-probe.patch
 
+ApplyPatch regulator-axp20x-module-alias.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2242,6 +2245,9 @@ fi
 #
 # 
 %changelog
+* Mon Sep 28 2015 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add upstream patch to fix a Allwinner regulator loading as a module
+
 * Thu Sep 24 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-5257 Null ptr deref in usb whiteheat driver (rhbz 1265607 1265612)
 
