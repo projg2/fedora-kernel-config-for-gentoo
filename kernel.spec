@@ -610,9 +610,6 @@ Patch509: ideapad-laptop-Add-Lenovo-Yoga-3-14-to-no_hw_rfkill-.patch
 #rhbz 1253789
 Patch511: iSCSI-let-session-recovery_tmo-sysfs-writes-persist.patch
 
-#rhbz 1256281
-Patch26265: mmc-sdhci-fix-dma-memory-leak-in-sdhci_pre_req.patch
-
 #rhbz 1257534
 Patch515: nv46-Change-mc-subdev-oclass-from-nv44-to-nv4c.patch
 
@@ -631,6 +628,10 @@ Patch526: 0001-x86-cpu-cacheinfo-Fix-teardown-path.patch
 
 #CVE-2015-5257 rhbz 1265607 1265612
 Patch527: USB-whiteheat-fix-potential-null-deref-at-probe.patch
+
+#CVE-2015-2925 rhbz 1209367 1209373
+Patch528: dcache-Handle-escaped-paths-in-prepend_path.patch
+Patch529: vfs-Test-for-and-handle-paths-that-are-unreachable-f.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1359,21 +1360,12 @@ ApplyPatch ideapad-laptop-Add-Lenovo-Yoga-3-14-to-no_hw_rfkill-.patch
 #rhbz 1253789
 ApplyPatch iSCSI-let-session-recovery_tmo-sysfs-writes-persist.patch
 
-#rhbz 1250717
-ApplyPatch ext4-dont-manipulate-recovery-flag-when-freezing.patch
-
-#rhbz 1256281
-ApplyPatch mmc-sdhci-fix-dma-memory-leak-in-sdhci_pre_req.patch
-
 #rhbz 1257534
 ApplyPatch nv46-Change-mc-subdev-oclass-from-nv44-to-nv4c.patch
 
 #rhbz 1257500
 ApplyPatch vmwgfx-Rework-device-initialization.patch
 ApplyPatch drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
-
-#rhbz 1259231
-ApplyPatch make-flush-workqueue-available-to-non-GPL-modules.patch
 
 #rhbz 1237136
 ApplyPatch block-blkg_destroy_all-should-clear-q-root_blkg-and-.patch
@@ -1388,6 +1380,10 @@ ApplyPatch 0001-x86-cpu-cacheinfo-Fix-teardown-path.patch
 ApplyPatch USB-whiteheat-fix-potential-null-deref-at-probe.patch
 
 ApplyPatch regulator-axp20x-module-alias.patch
+
+#CVE-2015-2925 rhbz 1209367 1209373
+ApplyPatch dcache-Handle-escaped-paths-in-prepend_path.patch
+ApplyPatch vfs-Test-for-and-handle-paths-that-are-unreachable-f.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2239,6 +2235,9 @@ fi
 #
 # 
 %changelog
+* Thu Oct 01 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-2925 Don't allow bind mount escape (rhbz 1209367 1209373)
+
 * Tue Sep 29 2015 Justin M. Forbes <jforbes@fedoraproject.org>
 - - Linux v4.2.2
 
