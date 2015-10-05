@@ -636,6 +636,8 @@ Patch529: vfs-Test-for-and-handle-paths-that-are-unreachable-f.patch
 #CVE-2015-7613 rhbz 1268270 1268273
 Patch532: Initialize-msg-shm-IPC-objects-before-doing-ipc_addi.patch
 
+Patch533: net-inet-fix-race-in-reqsk_queue_unlink.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1390,6 +1392,8 @@ ApplyPatch vfs-Test-for-and-handle-paths-that-are-unreachable-f.patch
 
 #CVE-2015-7613 rhbz 1268270 1268273
 ApplyPatch Initialize-msg-shm-IPC-objects-before-doing-ipc_addi.patch
+
+ApplyPatch net-inet-fix-race-in-reqsk_queue_unlink.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2243,6 +2247,7 @@ fi
 %changelog
 * Mon Oct 05 2015 Justin M. Forbes <jforbes@fedoraproject.org>
 - Linux v4.2.3
+- Netdev fix race in resq_queue_unlink
 
 * Fri Oct 02 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-7613 Unauthorized access to IPC via SysV shm (rhbz 1268270 1268273)
