@@ -638,6 +638,13 @@ Patch532: Initialize-msg-shm-IPC-objects-before-doing-ipc_addi.patch
 
 Patch533: net-inet-fix-race-in-reqsk_queue_unlink.patch
 
+#rhbz 1265978
+Patch536: si2168-Bounds-check-firmware.patch
+Patch537: si2157-Bounds-check-firmware.patch
+
+#rhbz 1268037
+Patch538: ALSA-hda-Add-dock-support-for-ThinkPad-T550.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1394,6 +1401,13 @@ ApplyPatch vfs-Test-for-and-handle-paths-that-are-unreachable-f.patch
 ApplyPatch Initialize-msg-shm-IPC-objects-before-doing-ipc_addi.patch
 
 ApplyPatch net-inet-fix-race-in-reqsk_queue_unlink.patch
+
+#rhbz 1265978
+ApplyPatch si2168-Bounds-check-firmware.patch
+ApplyPatch si2157-Bounds-check-firmware.patch
+
+#rhbz 1268037
+ApplyPatch ALSA-hda-Add-dock-support-for-ThinkPad-T550.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2245,6 +2259,14 @@ fi
 #
 # 
 %changelog
+* Wed Oct 07 2015 Justin M. Forbes <jforbes@fedoraproject.org>
+- Enable CONFIG_ACPI_REV_OVERRIDE_POSSIBLE for Dell XPS sound (rhbz 1255070)
+- Enable CONFIG_X86_NUMACHIP
+
+* Mon Oct 05 2015 Laura Abbott <labbott@fedoraproject.org>
+- Stop stack smash for several DVB devices (rhbz 1265978)
+- Make headphone work with with T550 + Dock (rhbz 1268037)
+
 * Mon Oct 05 2015 Justin M. Forbes <jforbes@fedoraproject.org>
 - Linux v4.2.3
 - Netdev fix race in resq_queue_unlink
