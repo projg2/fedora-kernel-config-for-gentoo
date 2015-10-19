@@ -680,6 +680,10 @@ Patch538: ALSA-hda-Add-dock-support-for-ThinkPad-T550.patch
 #CVE-2015-5156 rhbz 1243852 1266515
 Patch539: virtio-net-drop-NETIF_F_FRAGLIST.patch
 
+#rhbz 1272172
+Patch540: 0001-KEYS-Fix-crash-when-attempt-to-garbage-collect-an-un.patch
+Patch541: 0002-KEYS-Don-t-permit-request_key-to-construct-a-new-key.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1465,6 +1469,10 @@ ApplyPatch ALSA-hda-Add-dock-support-for-ThinkPad-T550.patch
 
 #CVE-2015-5156 rhbz 1243852 1266515
 ApplyPatch virtio-net-drop-NETIF_F_FRAGLIST.patch
+
+#rhbz 1272172
+ApplyPatch 0001-KEYS-Fix-crash-when-attempt-to-garbage-collect-an-un.patch
+ApplyPatch 0002-KEYS-Don-t-permit-request_key-to-construct-a-new-key.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2325,6 +2333,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Mon Oct 19 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix crash in key garbage collector when using request_key (rhbz 1272172)
+
 * Wed Oct 07 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-5156 virtio-net: bug overflow with large fraglist (rhbz 1243852 1266515)
 
