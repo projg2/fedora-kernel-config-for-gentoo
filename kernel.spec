@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -649,9 +649,6 @@ Patch518: drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
 
 #CVE-2015-6937 rhbz 1263139 1263140
 Patch523: RDS-verify-the-underlying-transport-exists-before-cr.patch
-
-#rhbz 1266691
-Patch535: inet-fix-race-in-reqsk_queue_unlink.patch
 
 #rhbz 1265978
 Patch536: si2168-Bounds-check-firmware.patch
@@ -1419,9 +1416,6 @@ ApplyPatch drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
 
 #CVE-2015-6937 rhbz 1263139 1263140
 ApplyPatch RDS-verify-the-underlying-transport-exists-before-cr.patch
-
-#rhbz 1266691
-ApplyPatch inet-fix-race-in-reqsk_queue_unlink.patch
 
 #rhbz 1265978
 ApplyPatch si2168-Bounds-check-firmware.patch
@@ -2293,6 +2287,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Tue Oct 27 2015 Josh Boyer <jwboyer@fedoraproject.org> - 4.1.12
+- Linux v4.1.12
+
 * Fri Oct 23 2015 Josh Boyer <jwboyer@fedoraproject.org> - 4.1.11
 - Linux v4.1.11
 
