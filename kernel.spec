@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2290,7 +2290,7 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
-* Tue Oct 27 2015 Peter Robinson <pbrobinson@fedoraproject.org>
+* Tue Oct 27 2015 Peter Robinson <pbrobinson@fedoraproject.org> - 4.1.12-101
 - CMA memory patch to fix aarch64 builder lockups
 
 * Tue Oct 27 2015 Josh Boyer <jwboyer@fedoraproject.org> - 4.1.12
