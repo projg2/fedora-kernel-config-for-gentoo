@@ -650,6 +650,8 @@ Patch518: drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
 
 #CVE-2015-6937 rhbz 1263139 1263140
 Patch523: RDS-verify-the-underlying-transport-exists-before-cr.patch
+#CVE-2015-7990 rhbz 1276437 1276438
+Patch524: RDS-fix-race-condition-when-sending-a-message-on-unb.patch
 
 #rhbz 1265978
 Patch536: si2168-Bounds-check-firmware.patch
@@ -1419,6 +1421,8 @@ ApplyPatch drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
 
 #CVE-2015-6937 rhbz 1263139 1263140
 ApplyPatch RDS-verify-the-underlying-transport-exists-before-cr.patch
+#CVE-2015-7990 rhbz 1276437 1276438
+ApplyPatch RDS-fix-race-condition-when-sending-a-message-on-unb.patch
 
 #rhbz 1265978
 ApplyPatch si2168-Bounds-check-firmware.patch
@@ -2290,6 +2294,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Thu Oct 29 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-7099 RDS: race condition on unbound socket null deref (rhbz 1276437 1276438)
+
 * Tue Oct 27 2015 Peter Robinson <pbrobinson@fedoraproject.org> - 4.1.12-101
 - CMA memory patch to fix aarch64 builder lockups
 
