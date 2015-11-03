@@ -502,9 +502,11 @@ Patch455: usb-make-xhci-platform-driver-use-64-bit-or-32-bit-D.patch
 
 Patch456: arm64-acpi-drop-expert-patch.patch
 
-Patch458: ARM-tegra-usb-no-reset.patch
+Patch457: ARM-tegra-usb-no-reset.patch
 
-Patch461: ARM-dts-Add-am335x-bonegreen.patch
+Patch458: ARM-dts-Add-am335x-bonegreen.patch
+
+Patch459: 0001-watchdog-omap_wdt-fix-null-pointer-dereference.patch
 
 Patch463: arm-i.MX6-Utilite-device-dtb.patch
 
@@ -2039,6 +2041,9 @@ fi
 %changelog
 * Wed Nov 11 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v4.3
+- Add patch to fix crash in omap_wdt (headed upstream)
+- Build in ARM generic crypto optomisation modules
+- Minor ARM updates
 
 * Wed Oct 07 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Increase the default number of runtime UARTS (rhbz 1264383)
