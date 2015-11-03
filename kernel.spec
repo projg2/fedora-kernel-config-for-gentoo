@@ -595,6 +595,10 @@ Patch510: 0001-iwlwifi-Add-new-PCI-IDs-for-the-8260-series.patch
 #CVE-2015-7990 rhbz 1276437 1276438
 Patch524: RDS-fix-race-condition-when-sending-a-message-on-unb.patch
 
+#CVE-2015-7799 rhbz 1271134 1271135
+Patch512: isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
+Patch513: ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2041,6 +2045,7 @@ fi
 %changelog
 * Wed Nov 11 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v4.3
+- CVE-2015-7799 slip:crash when using PPP char dev driver (rhbz 1271134 1271135)
 - Add patch to fix crash in omap_wdt (headed upstream)
 - Build in ARM generic crypto optomisation modules
 - Minor ARM updates
