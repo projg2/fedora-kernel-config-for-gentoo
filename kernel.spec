@@ -384,7 +384,7 @@ BuildRequires: net-tools, hostname, bc
 BuildRequires: sparse
 %endif
 %if %{with_perf}
-BuildRequires: elfutils-devel zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison flex
+BuildRequires: elfutils-devel zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel
 %ifnarch s390 s390x %{arm}
 BuildRequires: numactl-devel
@@ -2310,6 +2310,9 @@ fi
 %changelog
 * Tue Nov 03 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-7799 slip:crash when using PPP char dev driver (rhbz 1271134 1271135)
+
+* Tue Nov 03 2015 Justin M. Forbes <jforbes@fedoraproject.org>
+- Add xz-devel builreq for perf (rhbz 1167457)
 
 * Mon Nov 02 2015 Laura Abbott <labbott@fedoraproject.org>
 - Add spurious wakeup quirk for LynxPoint-LP controllers (rhbz 1257131)
