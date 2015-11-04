@@ -2045,6 +2045,7 @@ fi
 %changelog
 * Wed Nov 11 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v4.3
+- Enable some IIO sensors (temp/humidity) on ARMv7
 - Move iscsi_tcp and related modules to kernel-core (rhbz 1249424)
 - CVE-2015-7799 slip:crash when using PPP char dev driver (rhbz 1271134 1271135)
 - Add patch to fix crash in omap_wdt (headed upstream)
