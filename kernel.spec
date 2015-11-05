@@ -671,6 +671,10 @@ Patch542: 0001-xhci-Add-spurious-wakeup-quirk-for-LynxPoint-LP-cont.patch
 Patch543: isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
 Patch544: ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
 
+#rhbz 1278407
+Patch545: drm-radeon-move-bl-encoder-assignment-into-bl-init.patch
+Patch546: drm-radeon-fix-dpms-when-driver-backlight-control-is.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1448,6 +1452,10 @@ ApplyPatch 0001-xhci-Add-spurious-wakeup-quirk-for-LynxPoint-LP-cont.patch
 #CVE-2015-7799 rhbz 1271134 1271135
 ApplyPatch isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
 ApplyPatch ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
+
+#rhbz 1278407
+ApplyPatch drm-radeon-move-bl-encoder-assignment-into-bl-init.patch
+ApplyPatch drm-radeon-fix-dpms-when-driver-backlight-control-is.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2308,6 +2316,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Thu Nov 05 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix backlight regression on older radeon devices (rhbz 1278407)
+
 * Tue Nov 03 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-7799 slip:crash when using PPP char dev driver (rhbz 1271134 1271135)
 
