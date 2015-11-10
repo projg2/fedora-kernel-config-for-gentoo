@@ -599,6 +599,9 @@ Patch524: RDS-fix-race-condition-when-sending-a-message-on-unb.patch
 Patch512: isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
 Patch513: ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
 
+#CVE-2015-5307 rhbz 1277172 1279688
+Patch550: KVM-x86-work-around-infinite-loop-in-microcode-when-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2045,6 +2048,7 @@ fi
 %changelog
 * Wed Nov 11 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v4.3
+- CVE-2015-5307 kvm: DoS infinite loop in microcode AC exception (rhbz 1277172 1279688)
 - Disable Exynos IOMMU as it crashes
 - Enable some IIO sensors (temp/humidity) on ARMv7
 - Move iscsi_tcp and related modules to kernel-core (rhbz 1249424)
