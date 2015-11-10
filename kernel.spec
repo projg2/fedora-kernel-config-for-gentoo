@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -653,10 +653,6 @@ Patch523: RDS-verify-the-underlying-transport-exists-before-cr.patch
 #CVE-2015-7990 rhbz 1276437 1276438
 Patch524: RDS-fix-race-condition-when-sending-a-message-on-unb.patch
 
-#rhbz 1265978
-Patch536: si2168-Bounds-check-firmware.patch
-Patch537: si2157-Bounds-check-firmware.patch
-
 #CVE-2015-5156 rhbz 1243852 1266515
 Patch539: virtio-net-drop-NETIF_F_FRAGLIST.patch
 
@@ -664,16 +660,9 @@ Patch539: virtio-net-drop-NETIF_F_FRAGLIST.patch
 Patch540: 0001-KEYS-Fix-crash-when-attempt-to-garbage-collect-an-un.patch
 Patch541: 0002-KEYS-Don-t-permit-request_key-to-construct-a-new-key.patch
 
-#rhbz 1257131
-Patch542: 0001-xhci-Add-spurious-wakeup-quirk-for-LynxPoint-LP-cont.patch
-
 #CVE-2015-7799 rhbz 1271134 1271135
 Patch543: isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
 Patch544: ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
-
-#rhbz 1278407
-Patch545: drm-radeon-move-bl-encoder-assignment-into-bl-init.patch
-Patch546: drm-radeon-fix-dpms-when-driver-backlight-control-is.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1435,10 +1424,6 @@ ApplyPatch RDS-verify-the-underlying-transport-exists-before-cr.patch
 #CVE-2015-7990 rhbz 1276437 1276438
 ApplyPatch RDS-fix-race-condition-when-sending-a-message-on-unb.patch
 
-#rhbz 1265978
-ApplyPatch si2168-Bounds-check-firmware.patch
-ApplyPatch si2157-Bounds-check-firmware.patch
-
 #CVE-2015-5156 rhbz 1243852 1266515
 ApplyPatch virtio-net-drop-NETIF_F_FRAGLIST.patch
 
@@ -1446,16 +1431,9 @@ ApplyPatch virtio-net-drop-NETIF_F_FRAGLIST.patch
 ApplyPatch 0001-KEYS-Fix-crash-when-attempt-to-garbage-collect-an-un.patch
 ApplyPatch 0002-KEYS-Don-t-permit-request_key-to-construct-a-new-key.patch
 
-#rhbz 1257131
-ApplyPatch 0001-xhci-Add-spurious-wakeup-quirk-for-LynxPoint-LP-cont.patch
-
 #CVE-2015-7799 rhbz 1271134 1271135
 ApplyPatch isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
 ApplyPatch ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
-
-#rhbz 1278407
-ApplyPatch drm-radeon-move-bl-encoder-assignment-into-bl-init.patch
-ApplyPatch drm-radeon-fix-dpms-when-driver-backlight-control-is.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2316,6 +2294,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Tue Nov 10 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v4.1.13
+
 * Thu Nov 05 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix backlight regression on older radeon devices (rhbz 1278407)
 
