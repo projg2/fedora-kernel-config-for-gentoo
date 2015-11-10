@@ -641,6 +641,9 @@ Patch544: ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
 Patch545: drm-radeon-move-bl-encoder-assignment-into-bl-init.patch
 Patch546: drm-radeon-fix-dpms-when-driver-backlight-control-is.patch
 
+#CVE-2015-5307 rhbz 1277172 1279688
+Patch550: KVM-x86-work-around-infinite-loop-in-microcode-when-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1401,6 +1404,9 @@ ApplyPatch ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
 #rhbz 1278407
 ApplyPatch drm-radeon-move-bl-encoder-assignment-into-bl-init.patch
 ApplyPatch drm-radeon-fix-dpms-when-driver-backlight-control-is.patch
+
+#CVE-2015-5307 rhbz 1277172 1279688
+ApplyPatch KVM-x86-work-around-infinite-loop-in-microcode-when-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2252,6 +2258,9 @@ fi
 #
 # 
 %changelog
+* Tue Nov 10 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-5307 kvm: DoS infinite loop in microcode AC exception (rhbz 1277172 1279688)
+
 * Thu Nov  5 2015 Peter Robinson <pbrobinson@fedoraproject.org>
 - Disable Exynos IOMMU as it crashes
 
