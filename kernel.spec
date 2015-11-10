@@ -670,6 +670,9 @@ Patch550: KVM-x86-work-around-infinite-loop-in-microcode-when-.patch
 #CVE-2015-8104 rhbz 1278496 1279691
 Patch551: KVM-svm-unconditionally-intercept-DB.patch
 
+#rhbz 1275490
+Patch553: ideapad-laptop-Add-Lenovo-Yoga-900-to-no_hw_rfkill-d.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1446,6 +1449,9 @@ ApplyPatch KVM-x86-work-around-infinite-loop-in-microcode-when-.patch
 
 #CVE-2015-8104 rhbz 1278496 1279691
 ApplyPatch KVM-svm-unconditionally-intercept-DB.patch
+
+#rhbz 1275490
+ApplyPatch ideapad-laptop-Add-Lenovo-Yoga-900-to-no_hw_rfkill-d.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2306,6 +2312,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Tue Nov 10 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix Yoga 900 rfkill switch issues (rhbz 1275490)
+
 * Tue Nov 10 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v4.1.13
 - CVE-2015-8104 kvm: DoS infinite loop in microcode DB exception (rhbz 1278496 1279691)
