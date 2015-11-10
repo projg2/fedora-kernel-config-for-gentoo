@@ -664,6 +664,9 @@ Patch541: 0002-KEYS-Don-t-permit-request_key-to-construct-a-new-key.patch
 Patch543: isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
 Patch544: ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
 
+#CVE-2015-5307 rhbz 1277172 1279688
+Patch550: KVM-x86-work-around-infinite-loop-in-microcode-when-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1434,6 +1437,9 @@ ApplyPatch 0002-KEYS-Don-t-permit-request_key-to-construct-a-new-key.patch
 #CVE-2015-7799 rhbz 1271134 1271135
 ApplyPatch isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
 ApplyPatch ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
+
+#CVE-2015-5307 rhbz 1277172 1279688
+ApplyPatch KVM-x86-work-around-infinite-loop-in-microcode-when-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2296,6 +2302,7 @@ fi
 %changelog
 * Tue Nov 10 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v4.1.13
+- CVE-2015-5307 kvm: DoS infinite loop in microcode AC exception (rhbz 1277172 1279688)
 
 * Thu Nov 05 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix backlight regression on older radeon devices (rhbz 1278407)
