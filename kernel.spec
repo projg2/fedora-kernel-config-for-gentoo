@@ -22,7 +22,7 @@ Summary: The Linux kernel
 %global zipsed -e 's/\.ko$/\.ko.xz/'
 %endif
 
-# % define buildid .local
+# define buildid .local
 
 # baserelease defines which build revision of this kernel version we're
 # building.  We used to call this fedora_build, but the magical name
@@ -40,19 +40,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 300
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 2
+%define base_sublevel 3
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -153,6 +153,7 @@ Summary: The Linux kernel
 %define kversion 4.%{base_sublevel}
 
 %define make_target bzImage
+%define image_install_path boot
 
 %define KVERREL %{version}-%{release}.%{_target_cpu}
 %define hdrarch %_target_cpu
@@ -245,21 +246,18 @@ Summary: The Linux kernel
 %define hdrarch i386
 %define pae PAE
 %define all_arch_configs kernel-%{version}-i?86*.config
-%define image_install_path boot
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
 %ifarch x86_64
 %define asmarch x86
 %define all_arch_configs kernel-%{version}-x86_64*.config
-%define image_install_path boot
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
 %ifarch %{power64}
 %define asmarch powerpc
 %define hdrarch powerpc
-%define image_install_path boot
 %define make_target vmlinux
 %define kernel_image vmlinux
 %define kernel_image_elf 1
@@ -275,7 +273,6 @@ Summary: The Linux kernel
 %define asmarch s390
 %define hdrarch s390
 %define all_arch_configs kernel-%{version}-s390x.config
-%define image_install_path boot
 %define make_target image
 %define kernel_image arch/s390/boot/image
 %define with_tools 0
@@ -283,7 +280,6 @@ Summary: The Linux kernel
 
 %ifarch %{arm}
 %define all_arch_configs kernel-%{version}-arm*.config
-%define image_install_path boot
 %define asmarch arm
 %define hdrarch arm
 %define pae lpae
@@ -306,7 +302,6 @@ Summary: The Linux kernel
 %define hdrarch arm64
 %define make_target Image.gz
 %define kernel_image arch/arm64/boot/Image.gz
-%define image_install_path boot
 %endif
 
 # Should make listnewconfig fail if there's config options
@@ -370,7 +365,7 @@ Requires: kernel-modules-uname-r = %{KVERREL}%{?variant}
 #
 # List the packages used during the kernel build
 #
-BuildRequires: kmod, patch, bash, sh-utils, tar
+BuildRequires: kmod, patch, bash, sh-utils, tar, git
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl, perl-Carp, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
 BuildRequires: net-tools, hostname, bc
@@ -378,7 +373,7 @@ BuildRequires: net-tools, hostname, bc
 BuildRequires: sparse
 %endif
 %if %{with_perf}
-BuildRequires: elfutils-devel zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison flex
+BuildRequires: elfutils-devel zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel
 %ifnarch s390 s390x %{arm}
 BuildRequires: numactl-devel
@@ -466,7 +461,7 @@ Source2001: cpupower.config
 %if 0%{?stable_update}
 %if 0%{?stable_base}
 %define    stable_patch_00  patch-4.%{base_sublevel}.%{stable_base}.xz
-Patch00: %{stable_patch_00}
+Source5000: %{stable_patch_00}
 %endif
 
 # non-released_kernel case
@@ -474,176 +469,129 @@ Patch00: %{stable_patch_00}
 # near the top of this spec file.
 %else
 %if 0%{?rcrev}
-Patch00: patch-4.%{upstream_sublevel}-rc%{rcrev}.xz
+Source5000: patch-4.%{upstream_sublevel}-rc%{rcrev}.xz
 %if 0%{?gitrev}
-Patch01: patch-4.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
+Source5001: patch-4.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
 %endif
 %else
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
-Patch00: patch-4.%{base_sublevel}-git%{gitrev}.xz
+Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
 %endif
 %endif
 %endif
 
 # build tweak for build ID magic, even for -vanilla
-Patch05: kbuild-AFTER_LINK.patch
+Source5005: kbuild-AFTER_LINK.patch
 
 %if !%{nopatches}
-
 
 # Git trees.
 
 # Standalone patches
 
-Patch450: input-kill-stupid-messages.patch
-Patch452: no-pcspkr-modalias.patch
+Patch451: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
-Patch458: regulator-axp20x-module-alias.patch
-Patch470: die-floppy-die.patch
+Patch452: amd-xgbe-a0-Add-support-for-XGBE-on-A0.patch
 
-Patch510: input-silence-i8042-noise.patch
-Patch530: silence-fbcon-logo.patch
+Patch453: amd-xgbe-phy-a0-Add-support-for-XGBE-PHY-on-A0.patch
 
-Patch600: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
+Patch454: arm64-avoid-needing-console-to-enable-serial-console.patch
 
-#rhbz 1126580
-Patch601: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
+Patch455: usb-make-xhci-platform-driver-use-64-bit-or-32-bit-D.patch
 
-Patch800: crash-driver.patch
+Patch456: arm64-acpi-drop-expert-patch.patch
 
-# crypto/
+Patch458: ARM-tegra-usb-no-reset.patch
 
-# secure boot
-Patch1000: Add-secure_modules-call.patch
-Patch1001: PCI-Lock-down-BAR-access-when-module-security-is-ena.patch
-Patch1002: x86-Lock-down-IO-port-access-when-module-security-is.patch
-Patch1003: ACPI-Limit-access-to-custom_method.patch
-Patch1004: asus-wmi-Restrict-debugfs-interface-when-module-load.patch
-Patch1005: Restrict-dev-mem-and-dev-kmem-when-module-loading-is.patch
-Patch1006: acpi-Ignore-acpi_rsdp-kernel-parameter-when-module-l.patch
-Patch1007: kexec-Disable-at-runtime-if-the-kernel-enforces-modu.patch
-Patch1008: x86-Restrict-MSR-access-when-module-loading-is-restr.patch
-Patch1009: Add-option-to-automatically-enforce-module-signature.patch
-Patch1010: efi-Disable-secure-boot-if-shim-is-in-insecure-mode.patch
-Patch1011: efi-Make-EFI_SECURE_BOOT_SIG_ENFORCE-depend-on-EFI.patch
-Patch1012: efi-Add-EFI_SECURE_BOOT-bit.patch
-Patch1013: hibernate-Disable-in-a-signed-modules-environment.patch
+Patch461: ARM-dts-Add-am335x-bonegreen.patch
 
-Patch1014: Add-EFI-signature-data-types.patch
-Patch1015: Add-an-EFI-signature-blob-parser-and-key-loader.patch
-Patch1016: KEYS-Add-a-system-blacklist-keyring.patch
-Patch1017: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
-Patch1018: MODSIGN-Support-not-importing-certs-from-db.patch
+Patch463: arm-i.MX6-Utilite-device-dtb.patch
 
-Patch1019: Add-sysrq-option-to-disable-secure-boot-mode.patch
+Patch466: input-kill-stupid-messages.patch
 
-# virt + ksm patches
+Patch467: die-floppy-die.patch
 
-# DRM
+Patch468: no-pcspkr-modalias.patch
 
-# nouveau + drm fixes
-# intel drm is all merged upstream
-Patch1826: drm-i915-hush-check-crtc-state.patch
+Patch470: silence-fbcon-logo.patch
 
-# Quiet boot fixes
+Patch471: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
 
-# fs fixes
+Patch472: crash-driver.patch
 
-# NFSv4
+Patch473: Add-secure_modules-call.patch
 
-# patches headed upstream
-Patch12016: disable-i8042-check-on-apple-mac.patch
+Patch474: PCI-Lock-down-BAR-access-when-module-security-is-ena.patch
 
-Patch14010: lis3-improve-handling-of-null-rate.patch
+Patch475: x86-Lock-down-IO-port-access-when-module-security-is.patch
 
-Patch15000: watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch476: ACPI-Limit-access-to-custom_method.patch
 
-# PPC
+Patch477: asus-wmi-Restrict-debugfs-interface-when-module-load.patch
 
-# ARM64
-Patch16000: amd-xgbe-a0-Add-support-for-XGBE-on-A0.patch
-Patch16001: amd-xgbe-phy-a0-Add-support-for-XGBE-PHY-on-A0.patch
-Patch16002: arm64-avoid-needing-console-to-enable-serial-console.patch
-Patch16003: usb-make-xhci-platform-driver-use-64-bit-or-32-bit-D.patch
+Patch478: Restrict-dev-mem-and-dev-kmem-when-module-loading-is.patch
 
-# ARMv7
-Patch16020: ARM-tegra-usb-no-reset.patch
-Patch16021: arm-dts-am335x-boneblack-lcdc-add-panel-info.patch
-Patch16022: arm-dts-am335x-boneblack-add-cpu0-opp-points.patch
-Patch16024: arm-dts-am335x-bone-common-setup-default-pinmux-http.patch
-Patch16025: arm-dts-am335x-bone-common-add-uart2_pins-uart4_pins.patch
-Patch16026: pinctrl-pinctrl-single-must-be-initialized-early.patch
+Patch479: acpi-Ignore-acpi_rsdp-kernel-parameter-when-module-l.patch
 
-Patch16028: arm-i.MX6-Utilite-device-dtb.patch
+Patch480: kexec-Disable-at-runtime-if-the-kernel-enforces-modu.patch
 
-#rhbz 754518
-Patch21235: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+Patch481: x86-Restrict-MSR-access-when-module-loading-is-restr.patch
 
-# https://fedoraproject.org/wiki/Features/Checkpoint_Restore
-Patch21242: criu-no-expert.patch
+Patch482: Add-option-to-automatically-enforce-module-signature.patch
 
-#rhbz 892811
-Patch21247: ath9k-rx-dma-stop-check.patch
+Patch483: efi-Disable-secure-boot-if-shim-is-in-insecure-mode.patch
 
-#CVE-2015-2150 rhbz 1196266 1200397
-Patch26175: xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
+Patch484: efi-Make-EFI_SECURE_BOOT_SIG_ENFORCE-depend-on-EFI.patch
 
-#rhbz 1212230
-Patch26176: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
+Patch485: efi-Add-EFI_SECURE_BOOT-bit.patch
 
-#rhbz 1133378
-Patch26219: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
+Patch486: hibernate-Disable-in-a-signed-modules-environment.patch
 
-#rhbz 1226743
-Patch26221: drm-i915-turn-off-wc-mmaps.patch
+Patch487: Add-EFI-signature-data-types.patch
 
+Patch488: Add-an-EFI-signature-blob-parser-and-key-loader.patch
 
-#rhbz 1244511
-Patch507: HID-chicony-Add-support-for-Acer-Aspire-Switch-12.patch
+Patch489: KEYS-Add-a-system-blacklist-keyring.patch
+
+Patch490: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
+
+Patch491: MODSIGN-Support-not-importing-certs-from-db.patch
+
+Patch492: Add-sysrq-option-to-disable-secure-boot-mode.patch
+
+Patch493: drm-i915-hush-check-crtc-state.patch
+
+Patch494: disable-i8042-check-on-apple-mac.patch
+
+Patch495: lis3-improve-handling-of-null-rate.patch
+
+Patch496: watchdog-Disable-watchdog-on-virtual-machines.patch
+
+Patch497: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+
+Patch498: criu-no-expert.patch
+
+Patch499: ath9k-rx-dma-stop-check.patch
+
+Patch500: xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
+
+Patch501: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
+
+Patch502: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
+
+Patch503: drm-i915-turn-off-wc-mmaps.patch
 
 Patch508: kexec-uefi-copy-secure_boot-flag-in-boot-params.patch
 
 #rhbz 1239050
 Patch509: ideapad-laptop-Add-Lenovo-Yoga-3-14-to-no_hw_rfkill-.patch
 
-#rhbz 1253789
-Patch511: iSCSI-let-session-recovery_tmo-sysfs-writes-persist.patch
+#rhbz 1275490
+Patch510: 0001-iwlwifi-Add-new-PCI-IDs-for-the-8260-series.patch
 
-#rhbz 1257534
-Patch515: nv46-Change-mc-subdev-oclass-from-nv44-to-nv4c.patch
-
-#rhbz 1257500
-Patch517: vmwgfx-Rework-device-initialization.patch
-Patch518: drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
-
-#rhbz 1237136
-Patch522: block-blkg_destroy_all-should-clear-q-root_blkg-and-.patch
-
-#CVE-2015-6937 rhbz 1263139 1263140
-Patch523: RDS-verify-the-underlying-transport-exists-before-cr.patch
-
-#rhbz 1263762
-Patch526: 0001-x86-cpu-cacheinfo-Fix-teardown-path.patch
-
-#CVE-2015-5257 rhbz 1265607 1265612
-Patch527: USB-whiteheat-fix-potential-null-deref-at-probe.patch
-
-#CVE-2015-2925 rhbz 1209367 1209373
-Patch528: dcache-Handle-escaped-paths-in-prepend_path.patch
-Patch529: vfs-Test-for-and-handle-paths-that-are-unreachable-f.patch
-
-#CVE-2015-7613 rhbz 1268270 1268273
-Patch532: Initialize-msg-shm-IPC-objects-before-doing-ipc_addi.patch
-
-Patch533: net-inet-fix-race-in-reqsk_queue_unlink.patch
-
-#rhbz 1265978
-Patch536: si2168-Bounds-check-firmware.patch
-Patch537: si2157-Bounds-check-firmware.patch
-
-#rhbz 1268037
-Patch538: ALSA-hda-Add-dock-support-for-ThinkPad-T550.patch
+#CVE-2015-7990 rhbz 1276437 1276438
+Patch524: RDS-fix-race-condition-when-sending-a-message-on-unb.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1145,16 +1093,22 @@ if [ ! -d kernel-%{kversion}%{?dist}/vanilla-%{vanillaversion} ]; then
 # Update vanilla to the latest upstream.
 # (non-released_kernel case only)
 %if 0%{?rcrev}
-    ApplyPatch patch-4.%{upstream_sublevel}-rc%{rcrev}.xz
+    xzcat %{SOURCE5000} | patch -p1 -F1 -s
 %if 0%{?gitrev}
-    ApplyPatch patch-4.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
+    xzcat %{SOURCE5001} | patch -p1 -F1 -s
 %endif
 %else
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
-    ApplyPatch patch-4.%{base_sublevel}-git%{gitrev}.xz
+    xzcat %{SOURCE5000} | patch -p1 -F1 -s
 %endif
 %endif
+    git init
+    git config user.email "kernel-team@fedoraproject.org"
+    git config user.name "Fedora Kernel Team"
+    git config gc.auto 0
+    git add .
+    git commit -a -q -m "baseline"
 
     cd ..
 
@@ -1173,10 +1127,21 @@ fi
 cp -al vanilla-%{vanillaversion} linux-%{KVERREL}
 
 cd linux-%{KVERREL}
+if [ ! -d .git ]; then
+    git init
+    git config user.email "kernel-team@fedoraproject.org"
+    git config user.name "Fedora Kernel Team"
+    git config gc.auto 0
+    git add .
+    git commit -a -q -m "baseline"
+fi
+
 
 # released_kernel with possible stable updates
 %if 0%{?stable_base}
-ApplyPatch %{stable_patch_00}
+# This is special because the kernel spec is hell and nothing is consistent
+xzcat %{SOURCE5000} | patch -p1 -F1 -s
+git commit -a -m "Stable update"
 %endif
 
 # Drop some necessary files from the source dir into the buildroot
@@ -1204,210 +1169,13 @@ do
 done
 %endif
 
-ApplyPatch kbuild-AFTER_LINK.patch
-
+# The kbuild-AFTER_LINK patch is needed regardless so we list it as a Source
+# file and apply it separately from the rest.
+git am %{SOURCE5005}
 
 %if !%{nopatches}
 
-# Architecture patches
-# x86(-64)
-ApplyPatch lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
-
-# PPC
-
-# ARM64
-ApplyPatch amd-xgbe-a0-Add-support-for-XGBE-on-A0.patch
-ApplyPatch amd-xgbe-phy-a0-Add-support-for-XGBE-PHY-on-A0.patch
-ApplyPatch arm64-avoid-needing-console-to-enable-serial-console.patch
-ApplyPatch usb-make-xhci-platform-driver-use-64-bit-or-32-bit-D.patch
-
-#
-# ARM
-#
-ApplyPatch ARM-tegra-usb-no-reset.patch
-
-ApplyPatch arm-dts-am335x-boneblack-lcdc-add-panel-info.patch
-ApplyPatch arm-dts-am335x-boneblack-add-cpu0-opp-points.patch
-ApplyPatch arm-dts-am335x-bone-common-setup-default-pinmux-http.patch
-ApplyPatch arm-dts-am335x-bone-common-add-uart2_pins-uart4_pins.patch
-ApplyPatch pinctrl-pinctrl-single-must-be-initialized-early.patch
-
-ApplyPatch arm-i.MX6-Utilite-device-dtb.patch
-
-#
-# bugfixes to drivers and filesystems
-#
-
-# ext4
-
-# xfs
-
-# btrfs
-
-# eCryptfs
-
-# NFSv4
-
-# USB
-
-# WMI
-
-# ACPI
-
-#
-# PCI
-#
-
-#
-# SCSI Bits.
-#
-
-# ACPI
-
-# ALSA
-
-# Networking
-
-# Misc fixes
-# The input layer spews crap no-one cares about.
-ApplyPatch input-kill-stupid-messages.patch
-
-# stop floppy.ko from autoloading during udev...
-ApplyPatch die-floppy-die.patch
-
-ApplyPatch no-pcspkr-modalias.patch
-
-# Silence some useless messages that still get printed with 'quiet'
-ApplyPatch input-silence-i8042-noise.patch
-
-# Make fbcon not show the penguins with 'quiet'
-ApplyPatch silence-fbcon-logo.patch
-
-# Changes to upstream defaults.
-#rhbz 1126580
-ApplyPatch Kbuild-Add-an-option-to-enable-GCC-VTA.patch
-
-# /dev/crash driver.
-ApplyPatch crash-driver.patch
-
-# crypto/
-
-# secure boot
-ApplyPatch Add-secure_modules-call.patch
-ApplyPatch PCI-Lock-down-BAR-access-when-module-security-is-ena.patch
-ApplyPatch x86-Lock-down-IO-port-access-when-module-security-is.patch
-ApplyPatch ACPI-Limit-access-to-custom_method.patch
-ApplyPatch asus-wmi-Restrict-debugfs-interface-when-module-load.patch
-ApplyPatch Restrict-dev-mem-and-dev-kmem-when-module-loading-is.patch
-ApplyPatch acpi-Ignore-acpi_rsdp-kernel-parameter-when-module-l.patch
-ApplyPatch kexec-Disable-at-runtime-if-the-kernel-enforces-modu.patch
-ApplyPatch x86-Restrict-MSR-access-when-module-loading-is-restr.patch
-ApplyPatch Add-option-to-automatically-enforce-module-signature.patch
-ApplyPatch efi-Disable-secure-boot-if-shim-is-in-insecure-mode.patch
-ApplyPatch efi-Make-EFI_SECURE_BOOT_SIG_ENFORCE-depend-on-EFI.patch
-ApplyPatch efi-Add-EFI_SECURE_BOOT-bit.patch
-ApplyPatch hibernate-Disable-in-a-signed-modules-environment.patch
-
-ApplyPatch Add-EFI-signature-data-types.patch
-ApplyPatch Add-an-EFI-signature-blob-parser-and-key-loader.patch
-ApplyPatch KEYS-Add-a-system-blacklist-keyring.patch
-ApplyPatch MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
-ApplyPatch MODSIGN-Support-not-importing-certs-from-db.patch
-
-ApplyPatch Add-sysrq-option-to-disable-secure-boot-mode.patch
-
-# Assorted Virt Fixes
-
-# DRM core
-
-# Nouveau DRM
-
-# Intel DRM
-ApplyPatch drm-i915-hush-check-crtc-state.patch
-
-# Radeon DRM
-
-# Patches headed upstream
-ApplyPatch disable-i8042-check-on-apple-mac.patch
-
-ApplyPatch lis3-improve-handling-of-null-rate.patch
-
-# Disable watchdog on virtual machines.
-ApplyPatch watchdog-Disable-watchdog-on-virtual-machines.patch
-
-#rhbz 754518
-ApplyPatch scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-
-# https://fedoraproject.org/wiki/Features/Checkpoint_Restore
-ApplyPatch criu-no-expert.patch
-
-#rhbz 892811
-ApplyPatch ath9k-rx-dma-stop-check.patch
-
-#CVE-2015-2150 rhbz 1196266 1200397
-ApplyPatch xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
-
-#rhbz 1212230
-ApplyPatch Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
-
-#rhbz 1133378
-ApplyPatch firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
-
-#rhbz 1226743
-ApplyPatch drm-i915-turn-off-wc-mmaps.patch
-
-#rhbz 1212230
-# pplyPatch Input-Revert-Revert-synaptics-use-dmax-in-input_mt_a.patch
-# pplyPatch Input-synaptics-allocate-3-slots-to-keep-stability-i.patch
-# pplyPatch Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
-
-#rhbz 1244511
-ApplyPatch HID-chicony-Add-support-for-Acer-Aspire-Switch-12.patch
-
-ApplyPatch kexec-uefi-copy-secure_boot-flag-in-boot-params.patch
-
-#rhbz 1239050
-ApplyPatch ideapad-laptop-Add-Lenovo-Yoga-3-14-to-no_hw_rfkill-.patch
-
-#rhbz 1253789
-ApplyPatch iSCSI-let-session-recovery_tmo-sysfs-writes-persist.patch
-
-#rhbz 1257534
-ApplyPatch nv46-Change-mc-subdev-oclass-from-nv44-to-nv4c.patch
-
-#rhbz 1257500
-ApplyPatch vmwgfx-Rework-device-initialization.patch
-ApplyPatch drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
-
-#rhbz 1237136
-ApplyPatch block-blkg_destroy_all-should-clear-q-root_blkg-and-.patch
-
-#CVE-2015-6937 rhbz 1263139 1263140
-ApplyPatch RDS-verify-the-underlying-transport-exists-before-cr.patch
-
-#rhbz 1263762
-ApplyPatch 0001-x86-cpu-cacheinfo-Fix-teardown-path.patch
-
-#CVE-2015-5257 rhbz 1265607 1265612
-ApplyPatch USB-whiteheat-fix-potential-null-deref-at-probe.patch
-
-ApplyPatch regulator-axp20x-module-alias.patch
-
-#CVE-2015-2925 rhbz 1209367 1209373
-ApplyPatch dcache-Handle-escaped-paths-in-prepend_path.patch
-ApplyPatch vfs-Test-for-and-handle-paths-that-are-unreachable-f.patch
-
-#CVE-2015-7613 rhbz 1268270 1268273
-ApplyPatch Initialize-msg-shm-IPC-objects-before-doing-ipc_addi.patch
-
-ApplyPatch net-inet-fix-race-in-reqsk_queue_unlink.patch
-
-#rhbz 1265978
-ApplyPatch si2168-Bounds-check-firmware.patch
-ApplyPatch si2157-Bounds-check-firmware.patch
-
-#rhbz 1268037
-ApplyPatch ALSA-hda-Add-dock-support-for-ThinkPad-T550.patch
+git am %{patches}
 
 # END OF PATCH APPLICATIONS
 
@@ -1540,19 +1308,23 @@ BuildKernel() {
     %{make} -s ARCH=$Arch V=1 %{?_smp_mflags} $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
     %{make} -s ARCH=$Arch V=1 %{?_smp_mflags} modules %{?sparse_mflags} || exit 1
 
+    mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer
+%if %{with_debuginfo}
+    mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/%{image_install_path}
+%endif
+
 %ifarch %{arm} aarch64
     %{make} -s ARCH=$Arch V=1 dtbs dtbs_install INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
+    cp -r $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/dtb
     find arch/$Arch/boot/dts -name '*.dtb' -type f | xargs rm -f
 %endif
 
     # Start installing the results
-%if %{with_debuginfo}
-    mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/boot
-    mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/%{image_install_path}
-%endif
-    mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
     install -m 644 .config $RPM_BUILD_ROOT/boot/config-$KernelVer
+    install -m 644 .config $RPM_BUILD_ROOT/lib/modules/$KernelVer/config
     install -m 644 System.map $RPM_BUILD_ROOT/boot/System.map-$KernelVer
+    install -m 644 System.map $RPM_BUILD_ROOT/lib/modules/$KernelVer/System.map
 
     # We estimate the size of the initramfs because rpm needs to take this size
     # into consideration when performing disk space calculations. (See bz #530778)
@@ -1560,6 +1332,7 @@ BuildKernel() {
 
     if [ -f arch/$Arch/boot/zImage.stub ]; then
       cp arch/$Arch/boot/zImage.stub $RPM_BUILD_ROOT/%{image_install_path}/zImage.stub-$KernelVer || :
+      cp arch/$Arch/boot/zImage.stub $RPM_BUILD_ROOT/lib/modules/$KernelVer/zImage.stub-$KernelVer || :
     fi
     %if %{signmodules}
     # Sign the image if we're using EFI
@@ -1573,13 +1346,14 @@ BuildKernel() {
     $CopyKernel $KernelImage \
     		$RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
     chmod 755 $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
+    cp $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/$InstallName
 
     # hmac sign the kernel for FIPS
     echo "Creating hmac file: $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac"
     ls -l $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
     sha512hmac $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer | sed -e "s,$RPM_BUILD_ROOT,," > $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac;
+    cp $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac $RPM_BUILD_ROOT/lib/modules/$KernelVer/.vmlinuz.hmac
 
-    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer
     # Override $(mod-fw) because we don't want it to install any firmware
     # we'll get it from the linux-firmware package and we don't want conflicts
     %{make} -s ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
@@ -1814,7 +1588,7 @@ BuildKernel %make_target %kernel_image
 %endif
 
 %global perf_make \
-  make -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} %{?_smp_mflags} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix}
+  make -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} %{?_smp_mflags} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix}
 %if %{with_perf}
 # perf
 %{perf_make} DESTDIR=$RPM_BUILD_ROOT all
@@ -1992,7 +1766,6 @@ popd
 make DESTDIR=$RPM_BUILD_ROOT bootwrapper_install WRAPPER_OBJDIR=%{_libdir}/kernel-wrapper WRAPPER_DTSDIR=%{_libdir}/kernel-wrapper/dts
 %endif
 
-
 ###
 ### clean
 ###
@@ -2005,10 +1778,10 @@ rm -rf $RPM_BUILD_ROOT
 ###
 
 %if %{with_tools}
-%post -n kernel-tools
+%post -n kernel-tools-libs
 /sbin/ldconfig
 
-%postun -n kernel-tools
+%postun -n kernel-tools-libs
 /sbin/ldconfig
 %endif
 
@@ -2063,7 +1836,7 @@ fi\
 #
 %define kernel_variant_posttrans() \
 %{expand:%%posttrans %{?1:%{1}-}core}\
-/bin/kernel-install add %{KVERREL}%{?1:+%{1}} /%{image_install_path}/vmlinuz-%{KVERREL}%{?1:+%{1}} || exit $?\
+/bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
 #
@@ -2090,7 +1863,7 @@ fi}\
 #
 %define kernel_variant_preun() \
 %{expand:%%preun %{?1:%{1}-}core}\
-/bin/kernel-install remove %{KVERREL}%{?1:+%{1}} /%{image_install_path}/vmlinuz-%{KVERREL}%{?1:+%{1}} || exit $?\
+/bin/kernel-install remove %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
 %kernel_variant_preun
@@ -2208,13 +1981,18 @@ fi
 %defattr(-,root,root)\
 %{!?_licensedir:%global license %%doc}\
 %license linux-%{KVERREL}/COPYING\
-/%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?2:+%{2}}\
-/%{image_install_path}/.vmlinuz-%{KVERREL}%{?2:+%{2}}.hmac \
+/lib/modules/%{KVERREL}%{?2:+%{2}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}\
+%ghost /%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?2:+%{2}}\
+/lib/modules/%{KVERREL}%{?2:+%{2}}/.vmlinuz.hmac \
+%ghost /%{image_install_path}/.vmlinuz-%{KVERREL}%{?2:+%{2}}.hmac \
 %ifarch %{arm} aarch64\
-/%{image_install_path}/dtb-%{KVERREL}%{?2:+%{2}} \
+/lib/modules/%{KVERREL}%{?2:+%{2}}/dtb \
+%ghost /%{image_install_path}/dtb-%{KVERREL}%{?2:+%{2}} \
 %endif\
-%attr(600,root,root) /boot/System.map-%{KVERREL}%{?2:+%{2}}\
-/boot/config-%{KVERREL}%{?2:+%{2}}\
+%attr(600,root,root) /lib/modules/%{KVERREL}%{?2:+%{2}}/System.map\
+%ghost /boot/System.map-%{KVERREL}%{?2:+%{2}}\
+/lib/modules/%{KVERREL}%{?2:+%{2}}/config\
+%ghost /boot/config-%{KVERREL}%{?2:+%{2}}\
 %ghost /boot/initramfs-%{KVERREL}%{?2:+%{2}}.img\
 %dir /lib/modules\
 %dir /lib/modules/%{KVERREL}%{?2:+%{2}}\
@@ -2259,6 +2037,9 @@ fi
 #
 # 
 %changelog
+* Wed Nov 11 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v4.3
+
 * Wed Oct 07 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Increase the default number of runtime UARTS (rhbz 1264383)
 
