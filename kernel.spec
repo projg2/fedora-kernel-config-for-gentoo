@@ -608,6 +608,9 @@ Patch552: megaraid_sas-Do-not-use-PAGE_SIZE-for-max_sectors.patch
 #rhbz 1275490
 Patch553: ideapad-laptop-Add-Lenovo-Yoga-900-to-no_hw_rfkill-d.patch
 
+#CVE-2015-5327
+Patch554: X.509-Fix-the-time-validation-ver-3.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2051,6 +2054,9 @@ fi
 #
 # 
 %changelog
+* Thu Nov 12 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-5327 x509 time validation
+
 * Wed Nov 11 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v4.3
 - Fix Yoga 900 rfkill switch issues (rhbz 1275490)
