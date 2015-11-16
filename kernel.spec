@@ -642,6 +642,11 @@ Patch552: megaraid_sas-Do-not-use-PAGE_SIZE-for-max_sectors.patch
 #rhbz 1275490
 Patch553: ideapad-laptop-Add-Lenovo-Yoga-900-to-no_hw_rfkill-d.patch
 
+#rhbz 1279189
+Patch556: netfilter-ipset-Fix-extension-alignment.patch
+Patch557: netfilter-ipset-Fix-hash-type-expiration.patch
+Patch558: netfilter-ipset-Fix-hash-type-expire-release-empty-h.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1403,6 +1408,11 @@ ApplyPatch megaraid_sas-Do-not-use-PAGE_SIZE-for-max_sectors.patch
 
 #rhbz 1275490
 ApplyPatch ideapad-laptop-Add-Lenovo-Yoga-900-to-no_hw_rfkill-d.patch
+
+#rhbz 1279189
+ApplyPatch netfilter-ipset-Fix-extension-alignment.patch
+ApplyPatch netfilter-ipset-Fix-hash-type-expiration.patch
+ApplyPatch netfilter-ipset-Fix-hash-type-expire-release-empty-h.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2254,6 +2264,9 @@ fi
 #
 # 
 %changelog
+* Mon Nov 16 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix ipset netfilter issues (rhbz 1279189)
+
 * Tue Nov 10 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix Yoga 900 rfkill switch issues (rhbz 1275490)
 
