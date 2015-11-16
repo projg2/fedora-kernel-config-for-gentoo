@@ -653,9 +653,6 @@ Patch523: RDS-verify-the-underlying-transport-exists-before-cr.patch
 #CVE-2015-7990 rhbz 1276437 1276438
 Patch524: RDS-fix-race-condition-when-sending-a-message-on-unb.patch
 
-#CVE-2015-5156 rhbz 1243852 1266515
-Patch539: virtio-net-drop-NETIF_F_FRAGLIST.patch
-
 #rhbz 1272172
 Patch540: 0001-KEYS-Fix-crash-when-attempt-to-garbage-collect-an-un.patch
 Patch541: 0002-KEYS-Don-t-permit-request_key-to-construct-a-new-key.patch
@@ -672,6 +669,8 @@ Patch551: KVM-svm-unconditionally-intercept-DB.patch
 
 #rhbz 1275490
 Patch553: ideapad-laptop-Add-Lenovo-Yoga-900-to-no_hw_rfkill-d.patch
+
+Patch555: net_41.mbox
 
 # END OF PATCH DEFINITIONS
 
@@ -1433,9 +1432,6 @@ ApplyPatch RDS-verify-the-underlying-transport-exists-before-cr.patch
 #CVE-2015-7990 rhbz 1276437 1276438
 ApplyPatch RDS-fix-race-condition-when-sending-a-message-on-unb.patch
 
-#CVE-2015-5156 rhbz 1243852 1266515
-ApplyPatch virtio-net-drop-NETIF_F_FRAGLIST.patch
-
 #rhbz 1272172
 ApplyPatch 0001-KEYS-Fix-crash-when-attempt-to-garbage-collect-an-un.patch
 ApplyPatch 0002-KEYS-Don-t-permit-request_key-to-construct-a-new-key.patch
@@ -1452,6 +1448,8 @@ ApplyPatch KVM-svm-unconditionally-intercept-DB.patch
 
 #rhbz 1275490
 ApplyPatch ideapad-laptop-Add-Lenovo-Yoga-900-to-no_hw_rfkill-d.patch
+
+ApplyPatch net_41.mbox
 
 # END OF PATCH APPLICATIONS
 
@@ -2312,6 +2310,9 @@ fi
 #                                    ||----w |
 #                                    ||     ||
 %changelog
+* Mon Nov 16 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Add queued 4.1 net stable fixes
+
 * Tue Nov 10 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix Yoga 900 rfkill switch issues (rhbz 1275490)
 

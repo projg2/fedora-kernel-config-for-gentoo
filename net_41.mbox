@@ -1,0 +1,1427 @@
+From e8003c567592cb70fa56c5a384e2be8e6e8f3997 Mon Sep 17 00:00:00 2001
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Date: Mon, 19 Oct 2015 13:16:49 +0300
+Subject: [PATCH 01/22] irda: precedence bug in irlmp_seq_hb_idx()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+[ Upstream commit 50010c20597d14667eff0fdb628309986f195230 ]
+
+This is decrementing the pointer, instead of the value stored in the
+pointer.  KASan detects it as an out of bounds reference.
+
+Reported-by: "Berry Cheng 程君(成淼)" <chengmiao.cj@alibaba-inc.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/irda/irlmp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/irda/irlmp.c b/net/irda/irlmp.c
+index a26c401..4396459 100644
+--- a/net/irda/irlmp.c
++++ b/net/irda/irlmp.c
+@@ -1839,7 +1839,7 @@ static void *irlmp_seq_hb_idx(struct irlmp_iter_state *iter, loff_t *off)
+ 	for (element = hashbin_get_first(iter->hashbin);
+ 	     element != NULL;
+ 	     element = hashbin_get_next(iter->hashbin)) {
+-		if (!off || *off-- == 0) {
++		if (!off || (*off)-- == 0) {
+ 			/* NB: hashbin left locked */
+ 			return element;
+ 		}
+-- 
+2.4.1
+
+
+From 579522bc1f5bbd8b3fd059cb061f0221a71bf3f4 Mon Sep 17 00:00:00 2001
+From: Jon Paul Maloy <jon.maloy@ericsson.com>
+Date: Mon, 19 Oct 2015 11:33:00 -0400
+Subject: [PATCH 02/22] tipc: allow non-linear first fragment buffer
+
+[ Upstream commit 45c8b7b175ceb2d542e0fe15247377bf3bce29ec ]
+
+The current code for message reassembly is erroneously assuming that
+the the first arriving fragment buffer always is linear, and then goes
+ahead resetting the fragment list of that buffer in anticipation of
+more arriving fragments.
+
+However, if the buffer already happens to be non-linear, we will
+inadvertently drop the already attached fragment list, and later
+on trig a BUG() in __pskb_pull_tail().
+
+We see this happen when running fragmented TIPC multicast across UDP,
+something made possible since
+commit d0f91938bede ("tipc: add ip/udp media type")
+
+We fix this by not resetting the fragment list when the buffer is non-
+linear, and by initiatlizing our private fragment list tail pointer to
+the tail of the existing fragment list.
+
+Fixes: commit d0f91938bede ("tipc: add ip/udp media type")
+Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/tipc/msg.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/net/tipc/msg.c b/net/tipc/msg.c
+index c3e96e8..e933314 100644
+--- a/net/tipc/msg.c
++++ b/net/tipc/msg.c
+@@ -121,7 +121,7 @@ int tipc_buf_append(struct sk_buff **headbuf, struct sk_buff **buf)
+ {
+ 	struct sk_buff *head = *headbuf;
+ 	struct sk_buff *frag = *buf;
+-	struct sk_buff *tail;
++	struct sk_buff *tail = NULL;
+ 	struct tipc_msg *msg;
+ 	u32 fragid;
+ 	int delta;
+@@ -141,9 +141,15 @@ int tipc_buf_append(struct sk_buff **headbuf, struct sk_buff **buf)
+ 		if (unlikely(skb_unclone(frag, GFP_ATOMIC)))
+ 			goto err;
+ 		head = *headbuf = frag;
+-		skb_frag_list_init(head);
+-		TIPC_SKB_CB(head)->tail = NULL;
+ 		*buf = NULL;
++		TIPC_SKB_CB(head)->tail = NULL;
++		if (skb_is_nonlinear(head)) {
++			skb_walk_frags(head, tail) {
++				TIPC_SKB_CB(head)->tail = tail;
++			}
++		} else {
++			skb_frag_list_init(head);
++		}
+ 		return 0;
+ 	}
+ 
+-- 
+2.4.1
+
+
+From a98d52f3ee1168d37accdc5ab2f2bd7cdb15406b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+Date: Thu, 22 Oct 2015 14:15:58 +0200
+Subject: [PATCH 03/22] qmi_wwan: add Sierra Wireless MC74xx/EM74xx
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+[ Upstream commit 0db65fcfcded76fe4f74e3ca9f4e2baf67b683ef ]
+
+New device IDs shamelessly lifted from the vendor driver.
+
+Signed-off-by: Bjørn Mork <bjorn@mork.no>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/usb/qmi_wwan.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index f603f36..4e0470d 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -764,6 +764,10 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x1199, 0x9056, 8)},	/* Sierra Wireless Modem */
+ 	{QMI_FIXED_INTF(0x1199, 0x9057, 8)},
+ 	{QMI_FIXED_INTF(0x1199, 0x9061, 8)},	/* Sierra Wireless Modem */
++	{QMI_FIXED_INTF(0x1199, 0x9070, 8)},	/* Sierra Wireless MC74xx/EM74xx */
++	{QMI_FIXED_INTF(0x1199, 0x9070, 10)},	/* Sierra Wireless MC74xx/EM74xx */
++	{QMI_FIXED_INTF(0x1199, 0x9071, 8)},	/* Sierra Wireless MC74xx/EM74xx */
++	{QMI_FIXED_INTF(0x1199, 0x9071, 10)},	/* Sierra Wireless MC74xx/EM74xx */
+ 	{QMI_FIXED_INTF(0x1bbb, 0x011e, 4)},	/* Telekom Speedstick LTE II (Alcatel One Touch L100V LTE) */
+ 	{QMI_FIXED_INTF(0x1bbb, 0x0203, 2)},	/* Alcatel L800MA */
+ 	{QMI_FIXED_INTF(0x2357, 0x0201, 4)},	/* TP-LINK HSUPA Modem MA180 */
+-- 
+2.4.1
+
+
+From 143e60985cf6b76a3a6710cd0ecc27b118807893 Mon Sep 17 00:00:00 2001
+From: Jason Wang <jasowang@redhat.com>
+Date: Fri, 23 Oct 2015 00:57:05 -0400
+Subject: [PATCH 04/22] macvtap: unbreak receiving of gro skb with frag list
+
+[ Upstream commit f23d538bc24a83c16127c2eb82c9cf1adc2b5149 ]
+
+We don't have fraglist support in TAP_FEATURES. This will lead
+software segmentation of gro skb with frag list. Fixes by having
+frag list support in TAP_FEATURES.
+
+With this patch single session of netperf receiving were restored from
+about 5Gb/s to about 12Gb/s on mlx4.
+
+Fixes a567dd6252 ("macvtap: simplify usage of tap_features")
+Cc: Vlad Yasevich <vyasevic@redhat.com>
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/macvtap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/macvtap.c b/drivers/net/macvtap.c
+index 58858c5..4dba5fb 100644
+--- a/drivers/net/macvtap.c
++++ b/drivers/net/macvtap.c
+@@ -82,7 +82,7 @@ static const struct proto_ops macvtap_socket_ops;
+ #define TUN_OFFLOADS (NETIF_F_HW_CSUM | NETIF_F_TSO_ECN | NETIF_F_TSO | \
+ 		      NETIF_F_TSO6 | NETIF_F_UFO)
+ #define RX_OFFLOADS (NETIF_F_GRO | NETIF_F_LRO)
+-#define TAP_FEATURES (NETIF_F_GSO | NETIF_F_SG)
++#define TAP_FEATURES (NETIF_F_GSO | NETIF_F_SG | NETIF_F_FRAGLIST)
+ 
+ static struct macvlan_dev *macvtap_get_vlan_rcu(const struct net_device *dev)
+ {
+-- 
+2.4.1
+
+
+From 47848c855a8a26b84e5c2619c6aea814fe181ad9 Mon Sep 17 00:00:00 2001
+From: Guillaume Nault <g.nault@alphalink.fr>
+Date: Thu, 22 Oct 2015 16:57:10 +0200
+Subject: [PATCH 05/22] ppp: fix pppoe_dev deletion condition in
+ pppoe_release()
+
+[ Upstream commit 1acea4f6ce1b1c0941438aca75dd2e5c6b09db60 ]
+
+We can't rely on PPPOX_ZOMBIE to decide whether to clear po->pppoe_dev.
+PPPOX_ZOMBIE can be set by pppoe_disc_rcv() even when po->pppoe_dev is
+NULL. So we have no guarantee that (sk->sk_state & PPPOX_ZOMBIE) implies
+(po->pppoe_dev != NULL).
+Since we're releasing a PPPoE socket, we want to release the pppoe_dev
+if it exists and reset sk_state to PPPOX_DEAD, no matter the previous
+value of sk_state. So we can just check for po->pppoe_dev and avoid any
+assumption on sk->sk_state.
+
+Fixes: 2b018d57ff18 ("pppoe: drop PPPOX_ZOMBIEs in pppoe_release")
+Signed-off-by: Guillaume Nault <g.nault@alphalink.fr>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ppp/pppoe.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ppp/pppoe.c b/drivers/net/ppp/pppoe.c
+index db2c3cd..ab33262 100644
+--- a/drivers/net/ppp/pppoe.c
++++ b/drivers/net/ppp/pppoe.c
+@@ -589,7 +589,7 @@ static int pppoe_release(struct socket *sock)
+ 
+ 	po = pppox_sk(sk);
+ 
+-	if (sk->sk_state & (PPPOX_CONNECTED | PPPOX_BOUND | PPPOX_ZOMBIE)) {
++	if (po->pppoe_dev) {
+ 		dev_put(po->pppoe_dev);
+ 		po->pppoe_dev = NULL;
+ 	}
+-- 
+2.4.1
+
+
+From b26b582760604b73b57701c29375c464e7ba8ac7 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Sat, 24 Oct 2015 05:47:44 -0700
+Subject: [PATCH 06/22] ipv6: gre: support SIT encapsulation
+
+[ Upstream commit 7e3b6e7423d5f994257c1de88e06b509673fdbcf ]
+
+gre_gso_segment() chokes if SIT frames were aggregated by GRO engine.
+
+Fixes: 61c1db7fae21e ("ipv6: sit: add GSO/TSO support")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv4/gre_offload.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/gre_offload.c b/net/ipv4/gre_offload.c
+index 5aa46d4..5a8ee32 100644
+--- a/net/ipv4/gre_offload.c
++++ b/net/ipv4/gre_offload.c
+@@ -36,7 +36,8 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
+ 				  SKB_GSO_TCP_ECN |
+ 				  SKB_GSO_GRE |
+ 				  SKB_GSO_GRE_CSUM |
+-				  SKB_GSO_IPIP)))
++				  SKB_GSO_IPIP |
++				  SKB_GSO_SIT)))
+ 		goto out;
+ 
+ 	if (!skb->encapsulation)
+-- 
+2.4.1
+
+
+From 7b4116dd564d2b36d145e66b9b76d88661029018 Mon Sep 17 00:00:00 2001
+From: Alexander Duyck <aduyck@mirantis.com>
+Date: Tue, 27 Oct 2015 15:06:45 -0700
+Subject: [PATCH 07/22] fib_trie: leaf_walk_rcu should not compute key if key
+ is less than pn->key
+
+[ Upstream commit c2229fe1430d4e1c70e36520229dd64a87802b20 ]
+
+We were computing the child index in cases where the key value we were
+looking for was actually less than the base key of the tnode.  As a result
+we were getting incorrect index values that would cause us to skip over
+some children.
+
+To fix this I have added a test that will force us to use child index 0 if
+the key we are looking for is less than the key of the current tnode.
+
+Fixes: 8be33e955cb9 ("fib_trie: Fib walk rcu should take a tnode and key instead of a trie and a leaf")
+Reported-by: Brian Rak <brak@gameservers.com>
+Signed-off-by: Alexander Duyck <aduyck@mirantis.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv4/fib_trie.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+index 0ca933d..93b8029 100644
+--- a/net/ipv4/fib_trie.c
++++ b/net/ipv4/fib_trie.c
+@@ -1547,7 +1547,7 @@ static struct key_vector *leaf_walk_rcu(struct key_vector **tn, t_key key)
+ 	do {
+ 		/* record parent and next child index */
+ 		pn = n;
+-		cindex = key ? get_index(key, pn) : 0;
++		cindex = (key > pn->key) ? get_index(key, pn) : 0;
+ 
+ 		if (cindex >> pn->bits)
+ 			break;
+-- 
+2.4.1
+
+
+From fdb3cd7c03ba7039e8c8be96fdfa847ccfc6d4fa Mon Sep 17 00:00:00 2001
+From: Sowmini Varadhan <sowmini.varadhan@oracle.com>
+Date: Mon, 26 Oct 2015 12:46:37 -0400
+Subject: [PATCH 08/22] RDS-TCP: Recover correctly from pskb_pull()/pksb_trim()
+ failure in rds_tcp_data_recv
+
+[ Upstream commit 8ce675ff39b9958d1c10f86cf58e357efaafc856 ]
+
+Either of pskb_pull() or pskb_trim() may fail under low memory conditions.
+If rds_tcp_data_recv() ignores such failures, the application will
+receive corrupted data because the skb has not been correctly
+carved to the RDS datagram size.
+
+Avoid this by handling pskb_pull/pskb_trim failure in the same
+manner as the skb_clone failure: bail out of rds_tcp_data_recv(), and
+retry via the deferred call to rds_send_worker() that gets set up on
+ENOMEM from rds_tcp_read_sock()
+
+Signed-off-by: Sowmini Varadhan <sowmini.varadhan@oracle.com>
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/rds/tcp_recv.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/net/rds/tcp_recv.c b/net/rds/tcp_recv.c
+index fbc5ef8..27a9921 100644
+--- a/net/rds/tcp_recv.c
++++ b/net/rds/tcp_recv.c
+@@ -214,8 +214,15 @@ static int rds_tcp_data_recv(read_descriptor_t *desc, struct sk_buff *skb,
+ 			}
+ 
+ 			to_copy = min(tc->t_tinc_data_rem, left);
+-			pskb_pull(clone, offset);
+-			pskb_trim(clone, to_copy);
++			if (!pskb_pull(clone, offset) ||
++			    pskb_trim(clone, to_copy)) {
++				pr_warn("rds_tcp_data_recv: pull/trim failed "
++					"left %zu data_rem %zu skb_len %d\n",
++					left, tc->t_tinc_data_rem, skb->len);
++				kfree_skb(clone);
++				desc->error = -ENOMEM;
++				goto out;
++			}
+ 			skb_queue_tail(&tinc->ti_skb_list, clone);
+ 
+ 			rdsdebug("skb %p data %p len %d off %u to_copy %zu -> "
+-- 
+2.4.1
+
+
+From cf6bf07e8fa7f37f4e110b7a9100d0598b596add Mon Sep 17 00:00:00 2001
+From: Carol L Soto <clsoto@linux.vnet.ibm.com>
+Date: Tue, 27 Oct 2015 17:36:20 +0200
+Subject: [PATCH 09/22] net/mlx4: Copy/set only sizeof struct mlx4_eqe bytes
+
+[ Upstream commit c02b05011fadf8e409e41910217ca689f2fc9d91 ]
+
+When doing memcpy/memset of EQEs, we should use sizeof struct
+mlx4_eqe as the base size and not caps.eqe_size which could be bigger.
+
+If caps.eqe_size is bigger than the struct mlx4_eqe then we corrupt
+data in the master context.
+
+When using a 64 byte stride, the memcpy copied over 63 bytes to the
+slave_eq structure.  This resulted in copying over the entire eqe of
+interest, including its ownership bit -- and also 31 bytes of garbage
+into the next WQE in the slave EQ -- which did NOT include the ownership
+bit (and therefore had no impact).
+
+However, once the stride is increased to 128, we are overwriting the
+ownership bits of *three* eqes in the slave_eq struct.  This results
+in an incorrect ownership bit for those eqes, which causes the eq to
+seem to be full. The issue therefore surfaced only once 128-byte EQEs
+started being used in SRIOV and (overarchitectures that have 128/256
+byte cache-lines such as PPC) - e.g after commit 77507aa249ae
+"net/mlx4_core: Enable CQE/EQE stride support".
+
+Fixes: 08ff32352d6f ('mlx4: 64-byte CQE/EQE support')
+Signed-off-by: Carol L Soto <clsoto@linux.vnet.ibm.com>
+Signed-off-by: Jack Morgenstein <jackm@dev.mellanox.co.il>
+Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/mellanox/mlx4/cmd.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx4/eq.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx4/cmd.c b/drivers/net/ethernet/mellanox/mlx4/cmd.c
+index 529ef05..3756e45 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx4/cmd.c
+@@ -2382,7 +2382,7 @@ int mlx4_multi_func_init(struct mlx4_dev *dev)
+ 			}
+ 		}
+ 
+-		memset(&priv->mfunc.master.cmd_eqe, 0, dev->caps.eqe_size);
++		memset(&priv->mfunc.master.cmd_eqe, 0, sizeof(struct mlx4_eqe));
+ 		priv->mfunc.master.cmd_eqe.type = MLX4_EVENT_TYPE_CMD;
+ 		INIT_WORK(&priv->mfunc.master.comm_work,
+ 			  mlx4_master_comm_channel);
+diff --git a/drivers/net/ethernet/mellanox/mlx4/eq.c b/drivers/net/ethernet/mellanox/mlx4/eq.c
+index 983b1d5..337811d 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx4/eq.c
+@@ -185,7 +185,7 @@ static void slave_event(struct mlx4_dev *dev, u8 slave, struct mlx4_eqe *eqe)
+ 		return;
+ 	}
+ 
+-	memcpy(s_eqe, eqe, dev->caps.eqe_size - 1);
++	memcpy(s_eqe, eqe, sizeof(struct mlx4_eqe) - 1);
+ 	s_eqe->slave_id = slave;
+ 	/* ensure all information is written before setting the ownersip bit */
+ 	dma_wmb();
+-- 
+2.4.1
+
+
+From 7b6c8453ebcd69e7ce7daf562b555953f68b5b5b Mon Sep 17 00:00:00 2001
+From: Jon Paul Maloy <jon.maloy@ericsson.com>
+Date: Wed, 28 Oct 2015 13:09:53 -0400
+Subject: [PATCH 10/22] tipc: linearize arriving NAME_DISTR and LINK_PROTO
+ buffers
+
+[ Upstream commit 5cbb28a4bf65c7e4daa6c25b651fed8eb888c620 ]
+
+Testing of the new UDP bearer has revealed that reception of
+NAME_DISTRIBUTOR, LINK_PROTOCOL/RESET and LINK_PROTOCOL/ACTIVATE
+message buffers is not prepared for the case that those may be
+non-linear.
+
+We now linearize all such buffers before they are delivered up to the
+generic reception layer.
+
+In order for the commit to apply cleanly to 'net' and 'stable', we do
+the change in the function tipc_udp_recv() for now. Later, we will post
+a commit to 'net-next' moving the linearization to generic code, in
+tipc_named_rcv() and tipc_link_proto_rcv().
+
+Fixes: commit d0f91938bede ("tipc: add ip/udp media type")
+Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/tipc/udp_media.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/net/tipc/udp_media.c b/net/tipc/udp_media.c
+index 66deebc..f8dfee5 100644
+--- a/net/tipc/udp_media.c
++++ b/net/tipc/udp_media.c
+@@ -48,6 +48,7 @@
+ #include <linux/tipc_netlink.h>
+ #include "core.h"
+ #include "bearer.h"
++#include "msg.h"
+ 
+ /* IANA assigned UDP port */
+ #define UDP_PORT_DEFAULT	6118
+@@ -216,6 +217,10 @@ static int tipc_udp_recv(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct udp_bearer *ub;
+ 	struct tipc_bearer *b;
++	int usr = msg_user(buf_msg(skb));
++
++	if ((usr == LINK_PROTOCOL) || (usr == NAME_DISTRIBUTOR))
++		skb_linearize(skb);
+ 
+ 	ub = rcu_dereference_sk_user_data(sk);
+ 	if (!ub) {
+-- 
+2.4.1
+
+
+From 25543d5411d47272ddeb02445c42e1dd47b002fc Mon Sep 17 00:00:00 2001
+From: Phil Reid <preid@electromag.com.au>
+Date: Fri, 30 Oct 2015 16:43:55 +0800
+Subject: [PATCH 11/22] stmmac: Correctly report PTP capabilities.
+
+[ Upstream commit e6dbe1eb2db0d7a14991c06278dd3030c45fb825 ]
+
+priv->hwts_*_en indicate if timestamping is enabled/disabled at run
+time. But  priv->dma_cap.time_stamp  and priv->dma_cap.atime_stamp
+indicates HW is support for PTPv1/PTPv2.
+
+Signed-off-by: Phil Reid <preid@electromag.com.au>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index 771cda2..2e51b81 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -721,10 +721,13 @@ static int stmmac_get_ts_info(struct net_device *dev,
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 
+-	if ((priv->hwts_tx_en) && (priv->hwts_rx_en)) {
++	if ((priv->dma_cap.time_stamp || priv->dma_cap.atime_stamp)) {
+ 
+-		info->so_timestamping = SOF_TIMESTAMPING_TX_HARDWARE |
++		info->so_timestamping = SOF_TIMESTAMPING_TX_SOFTWARE |
++					SOF_TIMESTAMPING_TX_HARDWARE |
++					SOF_TIMESTAMPING_RX_SOFTWARE |
+ 					SOF_TIMESTAMPING_RX_HARDWARE |
++					SOF_TIMESTAMPING_SOFTWARE |
+ 					SOF_TIMESTAMPING_RAW_HARDWARE;
+ 
+ 		if (priv->ptp_clock)
+-- 
+2.4.1
+
+
+From c5d0de5264e2423df02e64d9ada00066b80564e8 Mon Sep 17 00:00:00 2001
+From: Ani Sinha <ani@arista.com>
+Date: Fri, 30 Oct 2015 16:54:31 -0700
+Subject: [PATCH 12/22] ipmr: fix possible race resulting from improper usage
+ of IP_INC_STATS_BH() in preemptible context.
+
+[ Upstream commit 44f49dd8b5a606870a1f21101522a0f9c4414784 ]
+
+Fixes the following kernel BUG :
+
+BUG: using __this_cpu_add() in preemptible [00000000] code: bash/2758
+caller is __this_cpu_preempt_check+0x13/0x15
+CPU: 0 PID: 2758 Comm: bash Tainted: P           O   3.18.19 #2
+ ffffffff8170eaca ffff880110d1b788 ffffffff81482b2a 0000000000000000
+ 0000000000000000 ffff880110d1b7b8 ffffffff812010ae ffff880007cab800
+ ffff88001a060800 ffff88013a899108 ffff880108b84240 ffff880110d1b7c8
+Call Trace:
+[<ffffffff81482b2a>] dump_stack+0x52/0x80
+[<ffffffff812010ae>] check_preemption_disabled+0xce/0xe1
+[<ffffffff812010d4>] __this_cpu_preempt_check+0x13/0x15
+[<ffffffff81419d60>] ipmr_queue_xmit+0x647/0x70c
+[<ffffffff8141a154>] ip_mr_forward+0x32f/0x34e
+[<ffffffff8141af76>] ip_mroute_setsockopt+0xe03/0x108c
+[<ffffffff810553fc>] ? get_parent_ip+0x11/0x42
+[<ffffffff810e6974>] ? pollwake+0x4d/0x51
+[<ffffffff81058ac0>] ? default_wake_function+0x0/0xf
+[<ffffffff810553fc>] ? get_parent_ip+0x11/0x42
+[<ffffffff810613d9>] ? __wake_up_common+0x45/0x77
+[<ffffffff81486ea9>] ? _raw_spin_unlock_irqrestore+0x1d/0x32
+[<ffffffff810618bc>] ? __wake_up_sync_key+0x4a/0x53
+[<ffffffff8139a519>] ? sock_def_readable+0x71/0x75
+[<ffffffff813dd226>] do_ip_setsockopt+0x9d/0xb55
+[<ffffffff81429818>] ? unix_seqpacket_sendmsg+0x3f/0x41
+[<ffffffff813963fe>] ? sock_sendmsg+0x6d/0x86
+[<ffffffff813959d4>] ? sockfd_lookup_light+0x12/0x5d
+[<ffffffff8139650a>] ? SyS_sendto+0xf3/0x11b
+[<ffffffff810d5738>] ? new_sync_read+0x82/0xaa
+[<ffffffff813ddd19>] compat_ip_setsockopt+0x3b/0x99
+[<ffffffff813fb24a>] compat_raw_setsockopt+0x11/0x32
+[<ffffffff81399052>] compat_sock_common_setsockopt+0x18/0x1f
+[<ffffffff813c4d05>] compat_SyS_setsockopt+0x1a9/0x1cf
+[<ffffffff813c4149>] compat_SyS_socketcall+0x180/0x1e3
+[<ffffffff81488ea1>] cstar_dispatch+0x7/0x1e
+
+Signed-off-by: Ani Sinha <ani@arista.com>
+Acked-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv4/ipmr.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+index 3a2c016..df28693 100644
+--- a/net/ipv4/ipmr.c
++++ b/net/ipv4/ipmr.c
+@@ -1683,8 +1683,8 @@ static inline int ipmr_forward_finish(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct ip_options *opt = &(IPCB(skb)->opt);
+ 
+-	IP_INC_STATS_BH(dev_net(skb_dst(skb)->dev), IPSTATS_MIB_OUTFORWDATAGRAMS);
+-	IP_ADD_STATS_BH(dev_net(skb_dst(skb)->dev), IPSTATS_MIB_OUTOCTETS, skb->len);
++	IP_INC_STATS(dev_net(skb_dst(skb)->dev), IPSTATS_MIB_OUTFORWDATAGRAMS);
++	IP_ADD_STATS(dev_net(skb_dst(skb)->dev), IPSTATS_MIB_OUTOCTETS, skb->len);
+ 
+ 	if (unlikely(opt->optlen))
+ 		ip_forward_options(skb);
+@@ -1746,7 +1746,7 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
+ 		 * to blackhole.
+ 		 */
+ 
+-		IP_INC_STATS_BH(dev_net(dev), IPSTATS_MIB_FRAGFAILS);
++		IP_INC_STATS(dev_net(dev), IPSTATS_MIB_FRAGFAILS);
+ 		ip_rt_put(rt);
+ 		goto out_free;
+ 	}
+-- 
+2.4.1
+
+
+From 0b38d043bf5155129cdf60c21d1bf0c8165a32dc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>
+Date: Sun, 1 Nov 2015 01:34:50 +0100
+Subject: [PATCH 13/22] qmi_wwan: fix entry for HP lt4112 LTE/HSPA+ Gobi 4G
+ Module
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+[ Upstream commit 70910791731b5956171e1bfcad707766b8e18fee ]
+
+The lt4112 is a HP branded Huawei me906e modem. Like other Huawei
+modems, it does not have a fixed interface to function mapping.
+Instead it uses a Huawei specific scheme: functions are mapped by
+subclass and protocol.
+
+However, the HP vendor ID is used for modems from many different
+manufacturers using different schemes, so we cannot apply a generic
+vendor rule like we do for the Huawei vendor ID.
+
+Replace the previous lt4112 entry pointing to an arbitrary interface
+number with a device specific subclass + protocol match.
+
+Reported-and-tested-by: Muri Nicanor <muri+libqmi@immerda.ch>
+Tested-by: Martin Hauke <mardnh@gmx.de>
+Fixes: bb2bdeb83fb1 ("qmi_wwan: Add support for HP lt4112 LTE/HSPA+ Gobi 4G Modem")
+Signed-off-by: Bjørn Mork <bjorn@mork.no>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/usb/qmi_wwan.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 4e0470d..7a95383 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -539,6 +539,10 @@ static const struct usb_device_id products[] = {
+ 					      USB_CDC_PROTO_NONE),
+ 		.driver_info        = (unsigned long)&qmi_wwan_info,
+ 	},
++	{	/* HP lt4112 LTE/HSPA+ Gobi 4G Module (Huawei me906e) */
++		USB_DEVICE_AND_INTERFACE_INFO(0x03f0, 0x581d, USB_CLASS_VENDOR_SPEC, 1, 7),
++		.driver_info = (unsigned long)&qmi_wwan_info,
++	},
+ 
+ 	/* 3. Combined interface devices matching on interface number */
+ 	{QMI_FIXED_INTF(0x0408, 0xea42, 4)},	/* Yota / Megafon M100-1 */
+@@ -788,7 +792,6 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x413c, 0x81a4, 8)},	/* Dell Wireless 5570e HSPA+ (42Mbps) Mobile Broadband Card */
+ 	{QMI_FIXED_INTF(0x413c, 0x81a8, 8)},	/* Dell Wireless 5808 Gobi(TM) 4G LTE Mobile Broadband Card */
+ 	{QMI_FIXED_INTF(0x413c, 0x81a9, 8)},	/* Dell Wireless 5808e Gobi(TM) 4G LTE Mobile Broadband Card */
+-	{QMI_FIXED_INTF(0x03f0, 0x581d, 4)},	/* HP lt4112 LTE/HSPA+ Gobi 4G Module (Huawei me906e) */
+ 
+ 	/* 4. Gobi 1000 devices */
+ 	{QMI_GOBI1K_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
+-- 
+2.4.1
+
+
+From 11c092c2bf13ce8e6c01c35225b5cb5d76e93637 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Mon, 2 Nov 2015 17:08:19 -0800
+Subject: [PATCH 14/22] sit: fix sit0 percpu double allocations
+
+[ Upstream commit 4ece9009774596ee3df0acba65a324b7ea79387c ]
+
+sit0 device allocates its percpu storage twice :
+- One time in ipip6_tunnel_init()
+- One time in ipip6_fb_tunnel_init()
+
+Thus we leak 48 bytes per possible cpu per network namespace dismantle.
+
+ipip6_fb_tunnel_init() can be much simpler and does not
+return an error, and should be called after register_netdev()
+
+Note that ipip6_tunnel_clone_6rd() also needs to be called
+after register_netdev() (calling ipip6_tunnel_init())
+
+Fixes: ebe084aafb7e ("sit: Use ipip6_tunnel_init as the ndo_init function.")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv6/sit.c | 26 ++++----------------------
+ 1 file changed, 4 insertions(+), 22 deletions(-)
+
+diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
+index ac35a28..85c4b2f 100644
+--- a/net/ipv6/sit.c
++++ b/net/ipv6/sit.c
+@@ -1394,34 +1394,20 @@ static int ipip6_tunnel_init(struct net_device *dev)
+ 	return 0;
+ }
+ 
+-static int __net_init ipip6_fb_tunnel_init(struct net_device *dev)
++static void __net_init ipip6_fb_tunnel_init(struct net_device *dev)
+ {
+ 	struct ip_tunnel *tunnel = netdev_priv(dev);
+ 	struct iphdr *iph = &tunnel->parms.iph;
+ 	struct net *net = dev_net(dev);
+ 	struct sit_net *sitn = net_generic(net, sit_net_id);
+ 
+-	tunnel->dev = dev;
+-	tunnel->net = dev_net(dev);
+-
+ 	iph->version		= 4;
+ 	iph->protocol		= IPPROTO_IPV6;
+ 	iph->ihl		= 5;
+ 	iph->ttl		= 64;
+ 
+-	dev->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
+-	if (!dev->tstats)
+-		return -ENOMEM;
+-
+-	tunnel->dst_cache = alloc_percpu(struct ip_tunnel_dst);
+-	if (!tunnel->dst_cache) {
+-		free_percpu(dev->tstats);
+-		return -ENOMEM;
+-	}
+-
+ 	dev_hold(dev);
+ 	rcu_assign_pointer(sitn->tunnels_wc[0], tunnel);
+-	return 0;
+ }
+ 
+ static int ipip6_validate(struct nlattr *tb[], struct nlattr *data[])
+@@ -1831,23 +1817,19 @@ static int __net_init sit_init_net(struct net *net)
+ 	 */
+ 	sitn->fb_tunnel_dev->features |= NETIF_F_NETNS_LOCAL;
+ 
+-	err = ipip6_fb_tunnel_init(sitn->fb_tunnel_dev);
+-	if (err)
+-		goto err_dev_free;
+-
+-	ipip6_tunnel_clone_6rd(sitn->fb_tunnel_dev, sitn);
+ 	err = register_netdev(sitn->fb_tunnel_dev);
+ 	if (err)
+ 		goto err_reg_dev;
+ 
++	ipip6_tunnel_clone_6rd(sitn->fb_tunnel_dev, sitn);
++	ipip6_fb_tunnel_init(sitn->fb_tunnel_dev);
++
+ 	t = netdev_priv(sitn->fb_tunnel_dev);
+ 
+ 	strcpy(t->parms.name, sitn->fb_tunnel_dev->name);
+ 	return 0;
+ 
+ err_reg_dev:
+-	dev_put(sitn->fb_tunnel_dev);
+-err_dev_free:
+ 	ipip6_dev_free(sitn->fb_tunnel_dev);
+ err_alloc_dev:
+ 	return err;
+-- 
+2.4.1
+
+
+From 62009af8f36728b1a90392ead043ddef49e00b49 Mon Sep 17 00:00:00 2001
+From: Martin Habets <mhabets@solarflare.com>
+Date: Mon, 2 Nov 2015 12:51:31 +0000
+Subject: [PATCH 15/22] sfc: push partner queue for skb->xmit_more
+
+[ Upstream commit b2663a4f30e85ec606b806f5135413e6d5c78d1e ]
+
+When the IP stack passes SKBs the sfc driver puts them in 2 different TX
+queues (called partners), one for checksummed and one for not checksummed.
+If the SKB has xmit_more set the driver will delay pushing the work to the
+NIC.
+
+When later it does decide to push the buffers this patch ensures it also
+pushes the partner queue, if that also has any delayed work. Before this
+fix the work in the partner queue would be left for a long time and cause
+a netdev watchdog.
+
+Fixes: 70b33fb ("sfc: add support for skb->xmit_more")
+Reported-by: Jianlin Shi <jishi@redhat.com>
+Signed-off-by: Martin Habets <mhabets@solarflare.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/ethernet/sfc/ef10.c       |  4 +++-
+ drivers/net/ethernet/sfc/farch.c      |  4 +++-
+ drivers/net/ethernet/sfc/net_driver.h |  2 ++
+ drivers/net/ethernet/sfc/tx.c         | 30 ++++++++++++++++++++++++++++--
+ 4 files changed, 36 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index fbb6cfa..feca46e 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -1344,7 +1344,9 @@ static void efx_ef10_tx_write(struct efx_tx_queue *tx_queue)
+ 	unsigned int write_ptr;
+ 	efx_qword_t *txd;
+ 
+-	BUG_ON(tx_queue->write_count == tx_queue->insert_count);
++	tx_queue->xmit_more_available = false;
++	if (unlikely(tx_queue->write_count == tx_queue->insert_count))
++		return;
+ 
+ 	do {
+ 		write_ptr = tx_queue->write_count & tx_queue->ptr_mask;
+diff --git a/drivers/net/ethernet/sfc/farch.c b/drivers/net/ethernet/sfc/farch.c
+index bb89e96..6d4e004 100644
+--- a/drivers/net/ethernet/sfc/farch.c
++++ b/drivers/net/ethernet/sfc/farch.c
+@@ -319,7 +319,9 @@ void efx_farch_tx_write(struct efx_tx_queue *tx_queue)
+ 	unsigned write_ptr;
+ 	unsigned old_write_count = tx_queue->write_count;
+ 
+-	BUG_ON(tx_queue->write_count == tx_queue->insert_count);
++	tx_queue->xmit_more_available = false;
++	if (unlikely(tx_queue->write_count == tx_queue->insert_count))
++		return;
+ 
+ 	do {
+ 		write_ptr = tx_queue->write_count & tx_queue->ptr_mask;
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index 325dd94..0bdef4a 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -218,6 +218,7 @@ struct efx_tx_buffer {
+  * @tso_packets: Number of packets via the TSO xmit path
+  * @pushes: Number of times the TX push feature has been used
+  * @pio_packets: Number of times the TX PIO feature has been used
++ * @xmit_more_available: Are any packets waiting to be pushed to the NIC
+  * @empty_read_count: If the completion path has seen the queue as empty
+  *	and the transmission path has not yet checked this, the value of
+  *	@read_count bitwise-added to %EFX_EMPTY_COUNT_VALID; otherwise 0.
+@@ -250,6 +251,7 @@ struct efx_tx_queue {
+ 	unsigned int tso_packets;
+ 	unsigned int pushes;
+ 	unsigned int pio_packets;
++	bool xmit_more_available;
+ 	/* Statistics to supplement MAC stats */
+ 	unsigned long tx_packets;
+ 
+diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
+index aaf2987..e70edc3 100644
+--- a/drivers/net/ethernet/sfc/tx.c
++++ b/drivers/net/ethernet/sfc/tx.c
+@@ -431,8 +431,20 @@ finish_packet:
+ 	efx_tx_maybe_stop_queue(tx_queue);
+ 
+ 	/* Pass off to hardware */
+-	if (!skb->xmit_more || netif_xmit_stopped(tx_queue->core_txq))
++	if (!skb->xmit_more || netif_xmit_stopped(tx_queue->core_txq)) {
++		struct efx_tx_queue *txq2 = efx_tx_queue_partner(tx_queue);
++
++		/* There could be packets left on the partner queue if those
++		 * SKBs had skb->xmit_more set. If we do not push those they
++		 * could be left for a long time and cause a netdev watchdog.
++		 */
++		if (txq2->xmit_more_available)
++			efx_nic_push_buffers(txq2);
++
+ 		efx_nic_push_buffers(tx_queue);
++	} else {
++		tx_queue->xmit_more_available = skb->xmit_more;
++	}
+ 
+ 	tx_queue->tx_packets++;
+ 
+@@ -721,6 +733,7 @@ void efx_init_tx_queue(struct efx_tx_queue *tx_queue)
+ 	tx_queue->read_count = 0;
+ 	tx_queue->old_read_count = 0;
+ 	tx_queue->empty_read_count = 0 | EFX_EMPTY_COUNT_VALID;
++	tx_queue->xmit_more_available = false;
+ 
+ 	/* Set up TX descriptor ring */
+ 	efx_nic_init_tx(tx_queue);
+@@ -746,6 +759,7 @@ void efx_fini_tx_queue(struct efx_tx_queue *tx_queue)
+ 
+ 		++tx_queue->read_count;
+ 	}
++	tx_queue->xmit_more_available = false;
+ 	netdev_tx_reset_queue(tx_queue->core_txq);
+ }
+ 
+@@ -1301,8 +1315,20 @@ static int efx_enqueue_skb_tso(struct efx_tx_queue *tx_queue,
+ 	efx_tx_maybe_stop_queue(tx_queue);
+ 
+ 	/* Pass off to hardware */
+-	if (!skb->xmit_more || netif_xmit_stopped(tx_queue->core_txq))
++	if (!skb->xmit_more || netif_xmit_stopped(tx_queue->core_txq)) {
++		struct efx_tx_queue *txq2 = efx_tx_queue_partner(tx_queue);
++
++		/* There could be packets left on the partner queue if those
++		 * SKBs had skb->xmit_more set. If we do not push those they
++		 * could be left for a long time and cause a netdev watchdog.
++		 */
++		if (txq2->xmit_more_available)
++			efx_nic_push_buffers(txq2);
++
+ 		efx_nic_push_buffers(tx_queue);
++	} else {
++		tx_queue->xmit_more_available = skb->xmit_more;
++	}
+ 
+ 	tx_queue->tso_bursts++;
+ 	return NETDEV_TX_OK;
+-- 
+2.4.1
+
+
+From 424d45bf9efe356732528dee1edf485983714f2a Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Mon, 2 Nov 2015 07:50:07 -0800
+Subject: [PATCH 16/22] net: avoid NULL deref in inet_ctl_sock_destroy()
+
+[ Upstream commit 8fa677d2706d325d71dab91bf6e6512c05214e37 ]
+
+Under low memory conditions, tcp_sk_init() and icmp_sk_init()
+can both iterate on all possible cpus and call inet_ctl_sock_destroy(),
+with eventual NULL pointer.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ include/net/inet_common.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/inet_common.h b/include/net/inet_common.h
+index 4a92423..82669da 100644
+--- a/include/net/inet_common.h
++++ b/include/net/inet_common.h
+@@ -41,7 +41,8 @@ int inet_recv_error(struct sock *sk, struct msghdr *msg, int len,
+ 
+ static inline void inet_ctl_sock_destroy(struct sock *sk)
+ {
+-	sk_release_kernel(sk);
++	if (sk)
++		sk_release_kernel(sk);
+ }
+ 
+ #endif
+-- 
+2.4.1
+
+
+From 7c114178cbc084b61a723f84e9fae14779be1ecd Mon Sep 17 00:00:00 2001
+From: Sabrina Dubroca <sd@queasysnail.net>
+Date: Wed, 4 Nov 2015 14:47:53 +0100
+Subject: [PATCH 17/22] ipv6: clean up dev_snmp6 proc entry when we fail to
+ initialize inet6_dev
+
+[ Upstream commit 2a189f9e57650e9f310ddf4aad75d66c1233a064 ]
+
+In ipv6_add_dev, when addrconf_sysctl_register fails, we do not clean up
+the dev_snmp6 entry that we have already registered for this device.
+Call snmp6_unregister_dev in this case.
+
+Fixes: a317a2f19da7d ("ipv6: fail early when creating netdev named all or default")
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv6/addrconf.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 37b70e8..fd3aa61 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -411,6 +411,7 @@ static struct inet6_dev *ipv6_add_dev(struct net_device *dev)
+ 	if (err) {
+ 		ipv6_mc_destroy_dev(ndev);
+ 		del_timer(&ndev->regen_timer);
++		snmp6_unregister_dev(ndev);
+ 		goto err_release;
+ 	}
+ 	/* protected by rtnl_lock */
+-- 
+2.4.1
+
+
+From cd3269621fed898f14989389367690b86fd78f1e Mon Sep 17 00:00:00 2001
+From: WANG Cong <xiyou.wangcong@gmail.com>
+Date: Tue, 3 Nov 2015 14:32:57 -0800
+Subject: [PATCH 18/22] ipv4: disable BH when changing ip local port range
+
+[ Upstream commit 4ee3bd4a8c7463cdef0b82ebc33fc94a9170a7e0 ]
+
+This fixes the following lockdep warning:
+
+ [ INFO: inconsistent lock state ]
+ 4.3.0-rc7+ #1197 Not tainted
+ ---------------------------------
+ inconsistent {IN-SOFTIRQ-R} -> {SOFTIRQ-ON-W} usage.
+ sysctl/1019 [HC0[0]:SC0[0]:HE1:SE1] takes:
+  (&(&net->ipv4.ip_local_ports.lock)->seqcount){+.+-..}, at: [<ffffffff81921de7>] ipv4_local_port_range+0xb4/0x12a
+ {IN-SOFTIRQ-R} state was registered at:
+   [<ffffffff810bd682>] __lock_acquire+0x2f6/0xdf0
+   [<ffffffff810be6d5>] lock_acquire+0x11c/0x1a4
+   [<ffffffff818e599c>] inet_get_local_port_range+0x4e/0xae
+   [<ffffffff8166e8e3>] udp_flow_src_port.constprop.40+0x23/0x116
+   [<ffffffff81671cb9>] vxlan_xmit_one+0x219/0xa6a
+   [<ffffffff81672f75>] vxlan_xmit+0xa6b/0xaa5
+   [<ffffffff817f2deb>] dev_hard_start_xmit+0x2ae/0x465
+   [<ffffffff817f35ed>] __dev_queue_xmit+0x531/0x633
+   [<ffffffff817f3702>] dev_queue_xmit_sk+0x13/0x15
+   [<ffffffff818004a5>] neigh_resolve_output+0x12f/0x14d
+   [<ffffffff81959cfa>] ip6_finish_output2+0x344/0x39f
+   [<ffffffff8195bf58>] ip6_finish_output+0x88/0x8e
+   [<ffffffff8195bfef>] ip6_output+0x91/0xe5
+   [<ffffffff819792ae>] dst_output_sk+0x47/0x4c
+   [<ffffffff81979392>] NF_HOOK_THRESH.constprop.30+0x38/0x82
+   [<ffffffff8197981e>] mld_sendpack+0x189/0x266
+   [<ffffffff8197b28b>] mld_ifc_timer_expire+0x1ef/0x223
+   [<ffffffff810de581>] call_timer_fn+0xfb/0x28c
+   [<ffffffff810ded1e>] run_timer_softirq+0x1c7/0x1f1
+
+Fixes: b8f1a55639e6 ("udp: Add function to make source port for UDP tunnels")
+Cc: Tom Herbert <tom@herbertland.com>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv4/sysctl_net_ipv4.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index c3852a7..f0e8297 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -45,10 +45,10 @@ static int ip_ping_group_range_max[] = { GID_T_MAX, GID_T_MAX };
+ /* Update system visible IP port range */
+ static void set_local_port_range(struct net *net, int range[2])
+ {
+-	write_seqlock(&net->ipv4.ip_local_ports.lock);
++	write_seqlock_bh(&net->ipv4.ip_local_ports.lock);
+ 	net->ipv4.ip_local_ports.range[0] = range[0];
+ 	net->ipv4.ip_local_ports.range[1] = range[1];
+-	write_sequnlock(&net->ipv4.ip_local_ports.lock);
++	write_sequnlock_bh(&net->ipv4.ip_local_ports.lock);
+ }
+ 
+ /* Validate changes from /proc interface. */
+-- 
+2.4.1
+
+
+From 75c6770b2f0798d2fafb324fe2c01c8f9f6befe0 Mon Sep 17 00:00:00 2001
+From: Francesco Ruggeri <fruggeri@aristanetworks.com>
+Date: Thu, 5 Nov 2015 08:16:14 -0800
+Subject: [PATCH 19/22] packet: race condition in packet_bind
+
+[ Upstream commit 30f7ea1c2b5f5fb7462c5ae44fe2e40cb2d6a474 ]
+
+There is a race conditions between packet_notifier and packet_bind{_spkt}.
+
+It happens if packet_notifier(NETDEV_UNREGISTER) executes between the
+time packet_bind{_spkt} takes a reference on the new netdevice and the
+time packet_do_bind sets po->ifindex.
+In this case the notification can be missed.
+If this happens during a dev_change_net_namespace this can result in the
+netdevice to be moved to the new namespace while the packet_sock in the
+old namespace still holds a reference on it. When the netdevice is later
+deleted in the new namespace the deletion hangs since the packet_sock
+is not found in the new namespace' &net->packet.sklist.
+It can be reproduced with the script below.
+
+This patch makes packet_do_bind check again for the presence of the
+netdevice in the packet_sock's namespace after the synchronize_net
+in unregister_prot_hook.
+More in general it also uses the rcu lock for the duration of the bind
+to stop dev_change_net_namespace/rollback_registered_many from
+going past the synchronize_net following unlist_netdevice, so that
+no NETDEV_UNREGISTER notifications can happen on the new netdevice
+while the bind is executing. In order to do this some code from
+packet_bind{_spkt} is consolidated into packet_do_dev.
+
+import socket, os, time, sys
+proto=7
+realDev='em1'
+vlanId=400
+if len(sys.argv) > 1:
+   vlanId=int(sys.argv[1])
+dev='vlan%d' % vlanId
+
+os.system('taskset -p 0x10 %d' % os.getpid())
+
+s = socket.socket(socket.PF_PACKET, socket.SOCK_RAW, proto)
+os.system('ip link add link %s name %s type vlan id %d' %
+          (realDev, dev, vlanId))
+os.system('ip netns add dummy')
+
+pid=os.fork()
+
+if pid == 0:
+   # dev should be moved while packet_do_bind is in synchronize net
+   os.system('taskset -p 0x20000 %d' % os.getpid())
+   os.system('ip link set %s netns dummy' % dev)
+   os.system('ip netns exec dummy ip link del %s' % dev)
+   s.close()
+   sys.exit(0)
+
+time.sleep(.004)
+try:
+   s.bind(('%s' % dev, proto+1))
+except:
+   print 'Could not bind socket'
+   s.close()
+   os.system('ip netns del dummy')
+   sys.exit(0)
+
+os.waitpid(pid, 0)
+s.close()
+os.system('ip netns del dummy')
+sys.exit(0)
+
+Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/packet/af_packet.c | 80 +++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 49 insertions(+), 31 deletions(-)
+
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index e1ea5d4..686e601 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2686,22 +2686,40 @@ static int packet_release(struct socket *sock)
+  *	Attach a packet hook.
+  */
+ 
+-static int packet_do_bind(struct sock *sk, struct net_device *dev, __be16 proto)
++static int packet_do_bind(struct sock *sk, const char *name, int ifindex,
++			  __be16 proto)
+ {
+ 	struct packet_sock *po = pkt_sk(sk);
+ 	struct net_device *dev_curr;
+ 	__be16 proto_curr;
+ 	bool need_rehook;
++	struct net_device *dev = NULL;
++	int ret = 0;
++	bool unlisted = false;
+ 
+-	if (po->fanout) {
+-		if (dev)
+-			dev_put(dev);
+-
++	if (po->fanout)
+ 		return -EINVAL;
+-	}
+ 
+ 	lock_sock(sk);
+ 	spin_lock(&po->bind_lock);
++	rcu_read_lock();
++
++	if (name) {
++		dev = dev_get_by_name_rcu(sock_net(sk), name);
++		if (!dev) {
++			ret = -ENODEV;
++			goto out_unlock;
++		}
++	} else if (ifindex) {
++		dev = dev_get_by_index_rcu(sock_net(sk), ifindex);
++		if (!dev) {
++			ret = -ENODEV;
++			goto out_unlock;
++		}
++	}
++
++	if (dev)
++		dev_hold(dev);
+ 
+ 	proto_curr = po->prot_hook.type;
+ 	dev_curr = po->prot_hook.dev;
+@@ -2709,14 +2727,29 @@ static int packet_do_bind(struct sock *sk, struct net_device *dev, __be16 proto)
+ 	need_rehook = proto_curr != proto || dev_curr != dev;
+ 
+ 	if (need_rehook) {
+-		unregister_prot_hook(sk, true);
++		if (po->running) {
++			rcu_read_unlock();
++			__unregister_prot_hook(sk, true);
++			rcu_read_lock();
++			dev_curr = po->prot_hook.dev;
++			if (dev)
++				unlisted = !dev_get_by_index_rcu(sock_net(sk),
++								 dev->ifindex);
++		}
+ 
+ 		po->num = proto;
+ 		po->prot_hook.type = proto;
+-		po->prot_hook.dev = dev;
+ 
+-		po->ifindex = dev ? dev->ifindex : 0;
+-		packet_cached_dev_assign(po, dev);
++		if (unlikely(unlisted)) {
++			dev_put(dev);
++			po->prot_hook.dev = NULL;
++			po->ifindex = -1;
++			packet_cached_dev_reset(po);
++		} else {
++			po->prot_hook.dev = dev;
++			po->ifindex = dev ? dev->ifindex : 0;
++			packet_cached_dev_assign(po, dev);
++		}
+ 	}
+ 	if (dev_curr)
+ 		dev_put(dev_curr);
+@@ -2724,7 +2757,7 @@ static int packet_do_bind(struct sock *sk, struct net_device *dev, __be16 proto)
+ 	if (proto == 0 || !need_rehook)
+ 		goto out_unlock;
+ 
+-	if (!dev || (dev->flags & IFF_UP)) {
++	if (!unlisted && (!dev || (dev->flags & IFF_UP))) {
+ 		register_prot_hook(sk);
+ 	} else {
+ 		sk->sk_err = ENETDOWN;
+@@ -2733,9 +2766,10 @@ static int packet_do_bind(struct sock *sk, struct net_device *dev, __be16 proto)
+ 	}
+ 
+ out_unlock:
++	rcu_read_unlock();
+ 	spin_unlock(&po->bind_lock);
+ 	release_sock(sk);
+-	return 0;
++	return ret;
+ }
+ 
+ /*
+@@ -2747,8 +2781,6 @@ static int packet_bind_spkt(struct socket *sock, struct sockaddr *uaddr,
+ {
+ 	struct sock *sk = sock->sk;
+ 	char name[15];
+-	struct net_device *dev;
+-	int err = -ENODEV;
+ 
+ 	/*
+ 	 *	Check legality
+@@ -2758,19 +2790,13 @@ static int packet_bind_spkt(struct socket *sock, struct sockaddr *uaddr,
+ 		return -EINVAL;
+ 	strlcpy(name, uaddr->sa_data, sizeof(name));
+ 
+-	dev = dev_get_by_name(sock_net(sk), name);
+-	if (dev)
+-		err = packet_do_bind(sk, dev, pkt_sk(sk)->num);
+-	return err;
++	return packet_do_bind(sk, name, 0, pkt_sk(sk)->num);
+ }
+ 
+ static int packet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ {
+ 	struct sockaddr_ll *sll = (struct sockaddr_ll *)uaddr;
+ 	struct sock *sk = sock->sk;
+-	struct net_device *dev = NULL;
+-	int err;
+-
+ 
+ 	/*
+ 	 *	Check legality
+@@ -2781,16 +2807,8 @@ static int packet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len
+ 	if (sll->sll_family != AF_PACKET)
+ 		return -EINVAL;
+ 
+-	if (sll->sll_ifindex) {
+-		err = -ENODEV;
+-		dev = dev_get_by_index(sock_net(sk), sll->sll_ifindex);
+-		if (dev == NULL)
+-			goto out;
+-	}
+-	err = packet_do_bind(sk, dev, sll->sll_protocol ? : pkt_sk(sk)->num);
+-
+-out:
+-	return err;
++	return packet_do_bind(sk, NULL, sll->sll_ifindex,
++			      sll->sll_protocol ? : pkt_sk(sk)->num);
+ }
+ 
+ static struct proto packet_proto = {
+-- 
+2.4.1
+
+
+From fbc9209519d50bfa591405ebe61161bde8027bc2 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Mon, 9 Nov 2015 17:51:23 -0800
+Subject: [PATCH 20/22] net: fix a race in dst_release()
+
+[ Upstream commit d69bbf88c8d0b367cf3e3a052f6daadf630ee566 ]
+
+Only cpu seeing dst refcount going to 0 can safely
+dereference dst->flags.
+
+Otherwise an other cpu might already have freed the dst.
+
+Fixes: 27b75c95f10d ("net: avoid RCU for NOCACHE dst")
+Reported-by: Greg Thelen <gthelen@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/core/dst.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/core/dst.c b/net/core/dst.c
+index e956ce6..f8db403 100644
+--- a/net/core/dst.c
++++ b/net/core/dst.c
+@@ -285,7 +285,7 @@ void dst_release(struct dst_entry *dst)
+ 
+ 		newrefcnt = atomic_dec_return(&dst->__refcnt);
+ 		WARN_ON(newrefcnt < 0);
+-		if (unlikely(dst->flags & DST_NOCACHE) && !newrefcnt)
++		if (!newrefcnt && unlikely(dst->flags & DST_NOCACHE))
+ 			call_rcu(&dst->rcu_head, dst_destroy_rcu);
+ 	}
+ }
+-- 
+2.4.1
+
+
+From 8ffd1e43f749b05c366c2e5ba0bb93fa2e7e17dd Mon Sep 17 00:00:00 2001
+From: Jason Wang <jasowang@redhat.com>
+Date: Wed, 5 Aug 2015 10:34:04 +0800
+Subject: [PATCH 21/22] virtio-net: drop NETIF_F_FRAGLIST
+
+[ Upstream commit 48900cb6af4282fa0fb6ff4d72a81aa3dadb5c39 ]
+
+virtio declares support for NETIF_F_FRAGLIST, but assumes
+that there are at most MAX_SKB_FRAGS + 2 fragments which isn't
+always true with a fraglist.
+
+A longer fraglist in the skb will make the call to skb_to_sgvec overflow
+the sg array, leading to memory corruption.
+
+Drop NETIF_F_FRAGLIST so we only get what we can handle.
+
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/virtio_net.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 7fbca37..237f8e5 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1756,9 +1756,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	/* Do we support "hardware" checksums? */
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_CSUM)) {
+ 		/* This opens up the world of extra features. */
+-		dev->hw_features |= NETIF_F_HW_CSUM|NETIF_F_SG|NETIF_F_FRAGLIST;
++		dev->hw_features |= NETIF_F_HW_CSUM | NETIF_F_SG;
+ 		if (csum)
+-			dev->features |= NETIF_F_HW_CSUM|NETIF_F_SG|NETIF_F_FRAGLIST;
++			dev->features |= NETIF_F_HW_CSUM | NETIF_F_SG;
+ 
+ 		if (virtio_has_feature(vdev, VIRTIO_NET_F_GSO)) {
+ 			dev->hw_features |= NETIF_F_TSO | NETIF_F_UFO
+-- 
+2.4.1
+
+
+From 4662423179e2716f43cdeedbe2d39f80dc70bbb9 Mon Sep 17 00:00:00 2001
+From: Sasha Levin <sasha.levin@oracle.com>
+Date: Tue, 8 Sep 2015 10:53:40 -0400
+Subject: [PATCH 22/22] RDS: verify the underlying transport exists before
+ creating a connection
+
+[ Upstream commit 74e98eb085889b0d2d4908f59f6e00026063014f ]
+
+There was no verification that an underlying transport exists when creating
+a connection, this would cause dereferencing a NULL ptr.
+
+It might happen on sockets that weren't properly bound before attempting to
+send a message, which will cause a NULL ptr deref:
+
+[135546.047719] kasan: GPF could be caused by NULL-ptr deref or user memory accessgeneral protection fault: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC KASAN
+[135546.051270] Modules linked in:
+[135546.051781] CPU: 4 PID: 15650 Comm: trinity-c4 Not tainted 4.2.0-next-20150902-sasha-00041-gbaa1222-dirty #2527
+[135546.053217] task: ffff8800835bc000 ti: ffff8800bc708000 task.ti: ffff8800bc708000
+[135546.054291] RIP: __rds_conn_create (net/rds/connection.c:194)
+[135546.055666] RSP: 0018:ffff8800bc70fab0  EFLAGS: 00010202
+[135546.056457] RAX: dffffc0000000000 RBX: 0000000000000f2c RCX: ffff8800835bc000
+[135546.057494] RDX: 0000000000000007 RSI: ffff8800835bccd8 RDI: 0000000000000038
+[135546.058530] RBP: ffff8800bc70fb18 R08: 0000000000000001 R09: 0000000000000000
+[135546.059556] R10: ffffed014d7a3a23 R11: ffffed014d7a3a21 R12: 0000000000000000
+[135546.060614] R13: 0000000000000001 R14: ffff8801ec3d0000 R15: 0000000000000000
+[135546.061668] FS:  00007faad4ffb700(0000) GS:ffff880252000000(0000) knlGS:0000000000000000
+[135546.062836] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+[135546.063682] CR2: 000000000000846a CR3: 000000009d137000 CR4: 00000000000006a0
+[135546.064723] Stack:
+[135546.065048]  ffffffffafe2055c ffffffffafe23fc1 ffffed00493097bf ffff8801ec3d0008
+[135546.066247]  0000000000000000 00000000000000d0 0000000000000000 ac194a24c0586342
+[135546.067438]  1ffff100178e1f78 ffff880320581b00 ffff8800bc70fdd0 ffff880320581b00
+[135546.068629] Call Trace:
+[135546.069028] ? __rds_conn_create (include/linux/rcupdate.h:856 net/rds/connection.c:134)
+[135546.069989] ? rds_message_copy_from_user (net/rds/message.c:298)
+[135546.071021] rds_conn_create_outgoing (net/rds/connection.c:278)
+[135546.071981] rds_sendmsg (net/rds/send.c:1058)
+[135546.072858] ? perf_trace_lock (include/trace/events/lock.h:38)
+[135546.073744] ? lockdep_init (kernel/locking/lockdep.c:3298)
+[135546.074577] ? rds_send_drop_to (net/rds/send.c:976)
+[135546.075508] ? __might_fault (./arch/x86/include/asm/current.h:14 mm/memory.c:3795)
+[135546.076349] ? __might_fault (mm/memory.c:3795)
+[135546.077179] ? rds_send_drop_to (net/rds/send.c:976)
+[135546.078114] sock_sendmsg (net/socket.c:611 net/socket.c:620)
+[135546.078856] SYSC_sendto (net/socket.c:1657)
+[135546.079596] ? SYSC_connect (net/socket.c:1628)
+[135546.080510] ? trace_dump_stack (kernel/trace/trace.c:1926)
+[135546.081397] ? ring_buffer_unlock_commit (kernel/trace/ring_buffer.c:2479 kernel/trace/ring_buffer.c:2558 kernel/trace/ring_buffer.c:2674)
+[135546.082390] ? trace_buffer_unlock_commit (kernel/trace/trace.c:1749)
+[135546.083410] ? trace_event_raw_event_sys_enter (include/trace/events/syscalls.h:16)
+[135546.084481] ? do_audit_syscall_entry (include/trace/events/syscalls.h:16)
+[135546.085438] ? trace_buffer_unlock_commit (kernel/trace/trace.c:1749)
+[135546.085515] rds_ib_laddr_check(): addr 36.74.25.172 ret -99 node type -1
+
+Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Signed-off-by: Sasha Levin <sasha.levin@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/rds/connection.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/rds/connection.c b/net/rds/connection.c
+index da6da57..9d66705 100644
+--- a/net/rds/connection.c
++++ b/net/rds/connection.c
+@@ -187,6 +187,12 @@ new_conn:
+ 		}
+ 	}
+ 
++	if (trans == NULL) {
++		kmem_cache_free(rds_conn_slab, conn);
++		conn = ERR_PTR(-ENODEV);
++		goto out;
++	}
++
+ 	conn->c_trans = trans;
+ 
+ 	ret = trans->conn_alloc(conn, gfp);
+-- 
+2.4.1
+
