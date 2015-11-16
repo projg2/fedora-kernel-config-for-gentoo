@@ -613,6 +613,11 @@ Patch554: X.509-Fix-the-time-validation-ver-3.patch
 
 Patch555: net_43.mbox
 
+#rhbz 1279189
+Patch556: netfilter-ipset-Fix-extension-alignment.patch
+Patch557: netfilter-ipset-Fix-hash-type-expiration.patch
+Patch558: netfilter-ipset-Fix-hash-type-expire-release-empty-h.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2057,6 +2062,7 @@ fi
 # 
 %changelog
 * Mon Nov 16 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix ipset netfilter issues (rhbz 1279189)
 - Add queued 4.3 net stable fixes
 
 * Thu Nov 12 2015 Josh Boyer <jwboyer@fedoraproject.org>
