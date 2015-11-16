@@ -611,6 +611,8 @@ Patch553: ideapad-laptop-Add-Lenovo-Yoga-900-to-no_hw_rfkill-d.patch
 #CVE-2015-5327
 Patch554: X.509-Fix-the-time-validation-ver-3.patch
 
+Patch555: net_43.mbox
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2054,6 +2056,9 @@ fi
 #
 # 
 %changelog
+* Mon Nov 16 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Add queued 4.3 net stable fixes
+
 * Thu Nov 12 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-5327 x509 time validation
 
