@@ -647,6 +647,9 @@ Patch556: netfilter-ipset-Fix-extension-alignment.patch
 Patch557: netfilter-ipset-Fix-hash-type-expiration.patch
 Patch558: netfilter-ipset-Fix-hash-type-expire-release-empty-h.patch
 
+#rhbz 1272571
+Patch559: 0001-ipv6-Avoid-creating-RTF_CACHE-from-a-rt-that-is-not-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1413,6 +1416,9 @@ ApplyPatch ideapad-laptop-Add-Lenovo-Yoga-900-to-no_hw_rfkill-d.patch
 ApplyPatch netfilter-ipset-Fix-extension-alignment.patch
 ApplyPatch netfilter-ipset-Fix-hash-type-expiration.patch
 ApplyPatch netfilter-ipset-Fix-hash-type-expire-release-empty-h.patch
+
+#rhbz 1272571
+ApplyPatch 0001-ipv6-Avoid-creating-RTF_CACHE-from-a-rt-that-is-not-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2264,6 +2270,9 @@ fi
 #
 # 
 %changelog
+ Fri Nov 20 2015 Justin M. Forbes <jmforbes@fedoraproject.org>
+- Fix for GRE tunnel running in IPSec (rhbz 1272571)
+
 * Mon Nov 16 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix ipset netfilter issues (rhbz 1279189)
 
