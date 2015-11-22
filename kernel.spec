@@ -508,6 +508,8 @@ Patch458: ARM-dts-Add-am335x-bonegreen.patch
 
 Patch459: 0001-watchdog-omap_wdt-fix-null-pointer-dereference.patch
 
+Patch460: mfd-wm8994-Ensure-that-the-whole-MFD-is-built-into-a.patch
+
 Patch463: arm-i.MX6-Utilite-device-dtb.patch
 
 Patch466: input-kill-stupid-messages.patch
@@ -2061,6 +2063,9 @@ fi
 #
 # 
 %changelog
+* Sun Nov 22 2015 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix sound issue on some ARM devices (tested on Arndale)
+
 * Mon Nov 16 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix ipset netfilter issues (rhbz 1279189)
 - Add queued 4.3 net stable fixes
