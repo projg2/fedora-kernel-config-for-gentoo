@@ -658,6 +658,9 @@ Patch562: 0003-KVM-x86-fix-previous-commit-for-32-bit.patch
 #CVE-2015-8374 rhbz 1286261 1286262
 Patch565: Btrfs-fix-truncation-of-compressed-and-inlined-exten.patch
 
+#rhbz 1284059
+Patch566: KEYS-Fix-handling-of-stored-error-in-a-negatively-in.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1435,6 +1438,9 @@ ApplyPatch 0003-KVM-x86-fix-previous-commit-for-32-bit.patch
 
 #CVE-2015-8374 rhbz 1286261 1286262
 ApplyPatch Btrfs-fix-truncation-of-compressed-and-inlined-exten.patch
+
+#rhbz 1284059
+ApplyPatch KEYS-Fix-handling-of-stored-error-in-a-negatively-in.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2287,6 +2293,7 @@ fi
 # 
 %changelog
 * Mon Nov 30 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix crash in add_key (rhbz 1284059)
 - CVE-2015-8374 btrfs: info leak when truncating compressed/inlined extents (rhbz 1286261 1286262)
 
 * Fri Nov 20 2015 Justin M. Forbes <jmforbes@fedoraproject.org>
