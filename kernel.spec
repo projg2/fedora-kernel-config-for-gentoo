@@ -632,6 +632,9 @@ Patch567: usbvision-fix-crash-on-detecting-device-with-invalid.patch
 #CVE-2015-7515 rhbz 1285326 1285331
 Patch568: Input-aiptek-fix-crash-on-detecting-device-without-e.patch
 
+#rhbz 1287819
+Patch570: HID-multitouch-enable-palm-rejection-if-device-imple.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2075,6 +2078,9 @@ fi
 #
 # 
 %changelog
+* Thu Dec 03 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch to fix palm rejection on certain touchpads (rhbz 1287819)
+
 * Tue Dec 01 2015 Laura Abbott <labbott@redhat.com>
 - Enable CONFIG_X86_INTEL_MPX (rhbz 1287279)
 
