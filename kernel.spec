@@ -40,7 +40,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -52,7 +52,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -617,8 +617,6 @@ Patch515: nv46-Change-mc-subdev-oclass-from-nv44-to-nv4c.patch
 Patch517: vmwgfx-Rework-device-initialization.patch
 Patch518: drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
 
-#CVE-2015-6937 rhbz 1263139 1263140
-Patch523: RDS-verify-the-underlying-transport-exists-before-cr.patch
 #CVE-2015-7990 rhbz 1276437 1276438
 Patch524: RDS-fix-race-condition-when-sending-a-message-on-unb.patch
 
@@ -629,9 +627,6 @@ Patch541: 0002-KEYS-Don-t-permit-request_key-to-construct-a-new-key.patch
 #CVE-2015-7799 rhbz 1271134 1271135
 Patch543: isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
 Patch544: ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
-
-#CVE-2015-5307 rhbz 1277172 1279688
-Patch550: KVM-x86-work-around-infinite-loop-in-microcode-when-.patch
 
 #CVE-2015-8104 rhbz 1278496 1279691
 Patch551: KVM-svm-unconditionally-intercept-DB.patch
@@ -666,9 +661,6 @@ Patch567: usbvision-fix-crash-on-detecting-device-with-invalid.patch
 
 #CVE-2015-7515 rhbz 1285326 1285331
 Patch568: Input-aiptek-fix-crash-on-detecting-device-without-e.patch
-
-#rhbz 1275490
-Patch569: 0001-iwlwifi-Add-new-PCI-IDs-for-the-8260-series.patch
 
 #rhbz 1287819
 Patch570: HID-multitouch-enable-palm-rejection-if-device-imple.patch
@@ -1408,8 +1400,6 @@ ApplyPatch nv46-Change-mc-subdev-oclass-from-nv44-to-nv4c.patch
 ApplyPatch vmwgfx-Rework-device-initialization.patch
 ApplyPatch drm-vmwgfx-Allow-dropped-masters-render-node-like-ac.patch
 
-#CVE-2015-6937 rhbz 1263139 1263140
-ApplyPatch RDS-verify-the-underlying-transport-exists-before-cr.patch
 #CVE-2015-7990 rhbz 1276437 1276438
 ApplyPatch RDS-fix-race-condition-when-sending-a-message-on-unb.patch
 
@@ -1422,9 +1412,6 @@ ApplyPatch 0002-KEYS-Don-t-permit-request_key-to-construct-a-new-key.patch
 #CVE-2015-7799 rhbz 1271134 1271135
 ApplyPatch isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
 ApplyPatch ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
-
-#CVE-2015-5307 rhbz 1277172 1279688
-ApplyPatch KVM-x86-work-around-infinite-loop-in-microcode-when-.patch
 
 #CVE-2015-8104 rhbz 1278496 1279691
 ApplyPatch KVM-svm-unconditionally-intercept-DB.patch
@@ -1459,9 +1446,6 @@ ApplyPatch usbvision-fix-crash-on-detecting-device-with-invalid.patch
 
 #CVE-2015-7515 rhbz 1285326 1285331
 ApplyPatch Input-aiptek-fix-crash-on-detecting-device-without-e.patch
-
-#rhbz 1275490
-ApplyPatch 0001-iwlwifi-Add-new-PCI-IDs-for-the-8260-series.patch
 
 #rhbz 1287819
 ApplyPatch HID-multitouch-enable-palm-rejection-if-device-imple.patch
@@ -2316,6 +2300,9 @@ fi
 #
 # 
 %changelog
+* Wed Dec 09 2015 <jmforbes@fedoraproject.org> - 4.2.7-200
+- Linux v4.2.7
+
 * Thu Dec 03 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patch to fix palm rejection on certain touchpads (rhbz 1287819)
 - Add new PCI ids for wireless, including Lenovo Yoga (rhbz 1275490)
