@@ -52,7 +52,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -588,18 +588,12 @@ Patch503: drm-i915-turn-off-wc-mmaps.patch
 
 Patch508: kexec-uefi-copy-secure_boot-flag-in-boot-params.patch
 
-#rhbz 1275490
-Patch510: 0001-iwlwifi-Add-new-PCI-IDs-for-the-8260-series.patch
-
 #CVE-2015-7990 rhbz 1276437 1276438
 Patch524: RDS-fix-race-condition-when-sending-a-message-on-unb.patch
 
 #CVE-2015-7799 rhbz 1271134 1271135
 Patch512: isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
 Patch513: ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
-
-#CVE-2015-5307 rhbz 1277172 1279688
-Patch550: KVM-x86-work-around-infinite-loop-in-microcode-when-.patch
 
 #CVE-2015-8104 rhbz 1278496 1279691
 Patch551: KVM-svm-unconditionally-intercept-DB.patch
@@ -612,8 +606,6 @@ Patch553: ideapad-laptop-Add-Lenovo-Yoga-900-to-no_hw_rfkill-d.patch
 
 #CVE-2015-5327
 Patch554: X.509-Fix-the-time-validation-ver-3.patch
-
-Patch555: net_43.mbox
 
 #rhbz 1279189
 Patch556: netfilter-ipset-Fix-extension-alignment.patch
@@ -2078,6 +2070,9 @@ fi
 #
 # 
 %changelog
+* Wed Dec 09 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v4.3.1
+
 * Thu Dec 03 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Add patch to fix palm rejection on certain touchpads (rhbz 1287819)
 
