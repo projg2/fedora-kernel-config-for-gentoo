@@ -52,7 +52,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -603,9 +603,6 @@ Patch552: megaraid_sas-Do-not-use-PAGE_SIZE-for-max_sectors.patch
 
 #rhbz 1275490
 Patch553: ideapad-laptop-Add-Lenovo-Yoga-900-to-no_hw_rfkill-d.patch
-
-#CVE-2015-5327
-Patch554: X.509-Fix-the-time-validation-ver-3.patch
 
 #rhbz 1279189
 Patch556: netfilter-ipset-Fix-extension-alignment.patch
@@ -2076,6 +2073,9 @@ fi
 #
 # 
 %changelog
+* Fri Dec 11 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v4.3.2
+
 * Thu Dec 10 2015 Laura Abbott <labbott@redhat.com>
 - Ignore errors from scsi_dh_add_device (rhbz 1288687)
 
