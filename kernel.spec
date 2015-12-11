@@ -630,6 +630,9 @@ Patch571: ideapad-laptop-Add-Lenovo-ideapad-Y700-17ISK-to-no_h.patch
 #rhbz 1288687
 Patch572: alua_fix.patch
 
+#CVE-2013-7446 rhbz 1282688 1282712
+Patch573: unix-avoid-use-after-free-in-ep_remove_wait_queue.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2075,6 +2078,7 @@ fi
 %changelog
 * Fri Dec 11 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v4.3.2
+- CVE-2013-7446 unix sockects use after free (rhbz 1282688 1282712)
 
 * Thu Dec 10 2015 Laura Abbott <labbott@redhat.com>
 - Ignore errors from scsi_dh_add_device (rhbz 1288687)
