@@ -52,7 +52,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -592,9 +592,6 @@ Patch503: drm-i915-turn-off-wc-mmaps.patch
 
 Patch508: kexec-uefi-copy-secure_boot-flag-in-boot-params.patch
 
-#CVE-2015-7990 rhbz 1276437 1276438
-Patch524: RDS-fix-race-condition-when-sending-a-message-on-unb.patch
-
 #CVE-2015-7799 rhbz 1271134 1271135
 Patch512: isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
 Patch513: ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
@@ -613,9 +610,6 @@ Patch556: netfilter-ipset-Fix-extension-alignment.patch
 Patch557: netfilter-ipset-Fix-hash-type-expiration.patch
 Patch558: netfilter-ipset-Fix-hash-type-expire-release-empty-h.patch
 
-#CVE-2015-8374 rhbz 1286261 1286262
-Patch565: Btrfs-fix-truncation-of-compressed-and-inlined-exten.patch
-
 #rhbz 1284059
 Patch566: KEYS-Fix-handling-of-stored-error-in-a-negatively-in.patch
 
@@ -633,9 +627,6 @@ Patch571: ideapad-laptop-Add-Lenovo-ideapad-Y700-17ISK-to-no_h.patch
 
 #rhbz 1288687
 Patch572: alua_fix.patch
-
-#CVE-2013-7446 rhbz 1282688 1282712
-Patch573: unix-avoid-use-after-free-in-ep_remove_wait_queue.patch
 
 #CVE-XXXX-XXXX rhbz 1291329 1291332
 Patch574: ovl-fix-permission-checking-for-setattr.patch
@@ -2086,6 +2077,9 @@ fi
 #
 # 
 %changelog
+* Tue Dec 15 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v4.3.3
+
 * Mon Dec 14 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-7550 Race between read and revoke keys (rhbz 1291197 1291198)
 - CVE-XXXX-XXXX permission bypass on overlayfs (rhbz 1291329 1291332)
