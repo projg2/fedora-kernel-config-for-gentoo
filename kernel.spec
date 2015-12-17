@@ -640,6 +640,8 @@ Patch576: net-add-validation-for-the-socket-syscall-protocol-a.patch
 #CVE-2015-8569 rhbz 1292045 1292047
 Patch600: pptp-verify-sockaddr_len-in-pptp_bind-and-pptp_conne.patch
 
+Patch601: vrf-fix-memory-leak-on-registration.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2083,6 +2085,9 @@ fi
 #
 # 
 %changelog
+* Thu Dec 17 2015 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix for memory leak in vrf
+
 * Thu Dec 17 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-8569 info leak from getsockname (rhbz 1292045 1292047)
 
