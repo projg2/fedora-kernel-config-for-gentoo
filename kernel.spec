@@ -668,6 +668,9 @@ Patch575: KEYS-Fix-race-between-read-and-revoke.patch
 #CVE-2015-8543 rhbz 1290475 1290477
 Patch576: net-add-validation-for-the-socket-syscall-protocol-a.patch
 
+#CVE-2015-8569 rhbz 1292045 1292047
+Patch577: pptp-verify-sockaddr_len-in-pptp_bind-and-pptp_conne.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1455,6 +1458,9 @@ ApplyPatch KEYS-Fix-race-between-read-and-revoke.patch
 
 #CVE-2015-8543 rhbz 1290475 1290477
 ApplyPatch net-add-validation-for-the-socket-syscall-protocol-a.patch
+
+#CVE-2015-8569 rhbz 1292045 1292047
+ApplyPatch pptp-verify-sockaddr_len-in-pptp_bind-and-pptp_conne.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2306,6 +2312,9 @@ fi
 #
 # 
 %changelog
+* Thu Dec 17 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-8569 info leak from getsockname (rhbz 1292045 1292047)
+
 * Tue Dec 15 2015 Justin Forbes <jforbes@fedoraproject.org> - 4.2.8-200
 - Linux v4.2.8
 
