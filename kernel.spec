@@ -642,6 +642,9 @@ Patch600: pptp-verify-sockaddr_len-in-pptp_bind-and-pptp_conne.patch
 
 Patch601: vrf-fix-memory-leak-on-registration.patch
 
+#CVE-2015-8575 rhbz 1292840 1292841
+Patch602: bluetooth-Validate-socket-address-length-in-sco_sock.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2085,6 +2088,9 @@ fi
 #
 # 
 %changelog
+* Fri Dec 18 2015 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-8575 information leak in sco_sock_bind (rhbz 1292840 1292841)
+
 * Thu Dec 17 2015 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix for memory leak in vrf
 
