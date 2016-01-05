@@ -674,6 +674,9 @@ Patch577: pptp-verify-sockaddr_len-in-pptp_bind-and-pptp_conne.patch
 #CVE-2015-8575 rhbz 1292840 1292841
 Patch578: bluetooth-Validate-socket-address-length-in-sco_sock.patch
 
+#CVE-2015-8709 rhbz 1295287 1295288
+Patch603: ptrace-being-capable-wrt-a-process-requires-mapped-u.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1467,6 +1470,9 @@ ApplyPatch pptp-verify-sockaddr_len-in-pptp_bind-and-pptp_conne.patch
 
 #CVE-2015-8575 rhbz 1292840 1292841
 ApplyPatch bluetooth-Validate-socket-address-length-in-sco_sock.patch
+
+#CVE-2015-8709 rhbz 1295287 1295288
+ApplyPatch ptrace-being-capable-wrt-a-process-requires-mapped-u.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2318,6 +2324,9 @@ fi
 #
 # 
 %changelog
+* Tue Jan 05 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-8709 ptrace: potential priv escalation with userns (rhbz 1295287 1295288)
+
 * Fri Dec 18 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-8575 information leak in sco_sock_bind (rhbz 1292840 1292841)
 
