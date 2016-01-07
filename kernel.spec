@@ -677,6 +677,9 @@ Patch578: bluetooth-Validate-socket-address-length-in-sco_sock.patch
 #CVE-2015-8709 rhbz 1295287 1295288
 Patch603: ptrace-being-capable-wrt-a-process-requires-mapped-u.patch
 
+#CVE-2015-7513 rhbz 1284847 1296142
+Patch605: KVM-x86-Reload-pit-counters-for-all-channels-when-re.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1473,6 +1476,9 @@ ApplyPatch bluetooth-Validate-socket-address-length-in-sco_sock.patch
 
 #CVE-2015-8709 rhbz 1295287 1295288
 ApplyPatch ptrace-being-capable-wrt-a-process-requires-mapped-u.patch
+
+#CVE-2015-7513 rhbz 1284847 1296142
+ApplyPatch KVM-x86-Reload-pit-counters-for-all-channels-when-re.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2324,6 +2330,9 @@ fi
 #
 # 
 %changelog
+* Thu Jan 07 2016 Josh Boyer <jwboyer@fedorparoject.org>
+- CVE-2015-7513 kvm: divide by zero DoS (rhbz 1284847 1296142)
+
 * Tue Jan 05 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-8709 ptrace: potential priv escalation with userns (rhbz 1295287 1295288)
 
