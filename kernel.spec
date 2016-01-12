@@ -615,6 +615,9 @@ Patch637: tty-Fix-unsafe-ldisc-reference-via-ioctl-TIOCGETD.patch
 #rhbz 1279653
 Patch638: rtlwifi-rtl8821ae-Fix-5G-failure-when-EEPROM-is-inco.patch
 
+#rhbz 1083853
+Patch610: PNP-Add-Broadwell-to-Intel-MCH-size-workaround.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2058,6 +2061,9 @@ fi
 #
 # 
 %changelog
+* Fri Jan 22 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix backtrace from PNP conflict on Broadwell (rhbz 1083853)
+
 * Thu Jan 21 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix incorrect country code issue on RTL8812AE devices (rhbz 1279653)
 
