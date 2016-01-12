@@ -680,6 +680,9 @@ Patch603: ptrace-being-capable-wrt-a-process-requires-mapped-u.patch
 #CVE-2015-7513 rhbz 1284847 1296142
 Patch605: KVM-x86-Reload-pit-counters-for-all-channels-when-re.patch
 
+#rhbz 1083853
+Patch610: PNP-Add-Broadwell-to-Intel-MCH-size-workaround.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1479,6 +1482,9 @@ ApplyPatch ptrace-being-capable-wrt-a-process-requires-mapped-u.patch
 
 #CVE-2015-7513 rhbz 1284847 1296142
 ApplyPatch KVM-x86-Reload-pit-counters-for-all-channels-when-re.patch
+
+#rhbz 1083853
+ApplyPatch PNP-Add-Broadwell-to-Intel-MCH-size-workaround.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2330,6 +2336,9 @@ fi
 #
 # 
 %changelog
+* Tue Jan 12 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix backtrace from PNP conflict on Broadwell (rhbz 1083853)
+
 * Thu Jan 07 2016 Josh Boyer <jwboyer@fedorparoject.org>
 - CVE-2015-7513 kvm: divide by zero DoS (rhbz 1284847 1296142)
 
