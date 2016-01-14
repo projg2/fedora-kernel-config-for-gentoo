@@ -2046,7 +2046,7 @@ fi
 #
 # 
 %changelog
-* Thu Jan 14 2015 Laura Abbott <labbott@fedoraproject.org>
+* Thu Jan 14 2016 Laura Abbott <labbott@fedoraproject.org>
 - Linux v4.4
 
 * Fri Dec 18 2015 Josh Boyer <jwboyer@fedoraproject.org>
