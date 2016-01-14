@@ -46,13 +46,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 3
+%define base_sublevel 4
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -502,15 +502,9 @@ Patch453: amd-xgbe-phy-a0-Add-support-for-XGBE-PHY-on-A0.patch
 
 Patch454: arm64-avoid-needing-console-to-enable-serial-console.patch
 
-Patch455: usb-make-xhci-platform-driver-use-64-bit-or-32-bit-D.patch
-
 Patch456: arm64-acpi-drop-expert-patch.patch
 
 Patch457: ARM-tegra-usb-no-reset.patch
-
-Patch458: ARM-dts-Add-am335x-bonegreen.patch
-
-Patch459: 0001-watchdog-omap_wdt-fix-null-pointer-dereference.patch
 
 Patch460: mfd-wm8994-Ensure-that-the-whole-MFD-is-built-into-a.patch
 
@@ -592,32 +586,8 @@ Patch503: drm-i915-turn-off-wc-mmaps.patch
 
 Patch508: kexec-uefi-copy-secure_boot-flag-in-boot-params.patch
 
-#CVE-2015-7799 rhbz 1271134 1271135
-Patch512: isdn_ppp-Add-checks-for-allocation-failure-in-isdn_p.patch
-Patch513: ppp-slip-Validate-VJ-compression-slot-parameters-com.patch
-
-#CVE-2015-8104 rhbz 1278496 1279691
-Patch551: KVM-svm-unconditionally-intercept-DB.patch
-
-#rhbz 1269300
-Patch552: megaraid_sas-Do-not-use-PAGE_SIZE-for-max_sectors.patch
-
-#rhbz 1275490
-Patch553: ideapad-laptop-Add-Lenovo-Yoga-900-to-no_hw_rfkill-d.patch
-
-#rhbz 1279189
-Patch556: netfilter-ipset-Fix-extension-alignment.patch
-Patch557: netfilter-ipset-Fix-hash-type-expiration.patch
-Patch558: netfilter-ipset-Fix-hash-type-expire-release-empty-h.patch
-
-#rhbz 1284059
-Patch566: KEYS-Fix-handling-of-stored-error-in-a-negatively-in.patch
-
 #CVE-2015-7833 rhbz 1270158 1270160
 Patch567: usbvision-fix-crash-on-detecting-device-with-invalid.patch
-
-#CVE-2015-7515 rhbz 1285326 1285331
-Patch568: Input-aiptek-fix-crash-on-detecting-device-without-e.patch
 
 #rhbz 1287819
 Patch570: HID-multitouch-enable-palm-rejection-if-device-imple.patch
@@ -628,22 +598,10 @@ Patch571: ideapad-laptop-Add-Lenovo-ideapad-Y700-17ISK-to-no_h.patch
 #rhbz 1288687
 Patch572: alua_fix.patch
 
-#CVE-XXXX-XXXX rhbz 1291329 1291332
-Patch574: ovl-fix-permission-checking-for-setattr.patch
+#CVE-2015-8709 rhbz 1295287 1295288
+Patch603: ptrace-being-capable-wrt-a-process-requires-mapped-u.patch
 
-#CVE-2015-7550 rhbz 1291197 1291198
-Patch575: KEYS-Fix-race-between-read-and-revoke.patch
-
-#CVE-2015-8543 rhbz 1290475 1290477
-Patch576: net-add-validation-for-the-socket-syscall-protocol-a.patch
-
-#CVE-2015-8569 rhbz 1292045 1292047
-Patch600: pptp-verify-sockaddr_len-in-pptp_bind-and-pptp_conne.patch
-
-Patch601: vrf-fix-memory-leak-on-registration.patch
-
-#CVE-2015-8575 rhbz 1292840 1292841
-Patch602: bluetooth-Validate-socket-address-length-in-sco_sock.patch
+Patch604: drm-i915-shut-up-gen8-SDE-irq-dmesg-noise-again.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2088,6 +2046,9 @@ fi
 #
 # 
 %changelog
+* Thu Jan 14 2015 Laura Abbott <labbott@fedoraproject.org>
+- Linux v4.4
+
 * Fri Dec 18 2015 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-8575 information leak in sco_sock_bind (rhbz 1292840 1292841)
 
