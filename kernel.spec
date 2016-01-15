@@ -686,6 +686,9 @@ Patch610: PNP-Add-Broadwell-to-Intel-MCH-size-workaround.patch
 #CVE-2015-7566 rhbz 1296466 1297517
 Patch623: usb-serial-visor-fix-crash-on-detecting-device-witho.patch
 
+#CVE-2015-8767 rhbz 1297389 1298437
+Patch624: sctp-Prevent-soft-lockup-when-sctp_accept-is-called-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1491,6 +1494,9 @@ ApplyPatch PNP-Add-Broadwell-to-Intel-MCH-size-workaround.patch
 
 #CVE-2015-7566 rhbz 1296466 1297517
 ApplyPatch usb-serial-visor-fix-crash-on-detecting-device-witho.patch
+
+#CVE-2015-8767 rhbz 1297389 1298437
+ApplyPatch sctp-Prevent-soft-lockup-when-sctp_accept-is-called-.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2342,6 +2348,9 @@ fi
 #
 # 
 %changelog
+* Fri Jan 15 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-8767 sctp: DoS during timeout (rhbz 1297389 1298437)
+
 * Tue Jan 12 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2015-7566 usb: visor: Crash on invalid USB dev descriptors (rhbz 1296466 1297517)
 - Fix backtrace from PNP conflict on Broadwell (rhbz 1083853)
