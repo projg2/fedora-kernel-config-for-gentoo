@@ -603,6 +603,9 @@ Patch603: ptrace-being-capable-wrt-a-process-requires-mapped-u.patch
 
 Patch604: drm-i915-shut-up-gen8-SDE-irq-dmesg-noise-again.patch
 
+#CVE-2016-0728 rhbz 1296623 1297475 
+Patch634: KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2046,6 +2049,9 @@ fi
 #
 # 
 %changelog
+* Tue Jan 19 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-0728 Keys: reference leak in join_session_keyring (rhbz 1296623 1297475)
+
 * Thu Jan 14 2016 Laura Abbott <labbott@fedoraproject.org>
 - Linux v4.4
 
