@@ -606,6 +606,9 @@ Patch604: drm-i915-shut-up-gen8-SDE-irq-dmesg-noise-again.patch
 #CVE-2016-0728 rhbz 1296623 1297475 
 Patch634: KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
 
+#CVE-2013-4312 rhbz 1297813 1300216
+Patch636: unix-properly-account-for-FDs-passed-over-unix-socke.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2049,6 +2052,9 @@ fi
 #
 # 
 %changelog
+* Wed Jan 20 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2013-4312 file descr passed over unix sockects not properly accounted (rhbz 1297813 1300216)
+
 * Tue Jan 19 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-0728 Keys: reference leak in join_session_keyring (rhbz 1296623 1297475)
 
