@@ -609,6 +609,9 @@ Patch634: KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
 #CVE-2013-4312 rhbz 1297813 1300216
 Patch636: unix-properly-account-for-FDs-passed-over-unix-socke.patch
 
+#CVE-2016-0723 rhbz 1296253 1300224
+Patch637: tty-Fix-unsafe-ldisc-reference-via-ioctl-TIOCGETD.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2053,6 +2056,7 @@ fi
 # 
 %changelog
 * Wed Jan 20 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-0723 memory disclosure and crash in tty layer (rhbz 1296253 1300224)
 - CVE-2013-4312 file descr passed over unix sockects not properly accounted (rhbz 1297813 1300216)
 
 * Tue Jan 19 2016 Josh Boyer <jwboyer@fedoraproject.org>
