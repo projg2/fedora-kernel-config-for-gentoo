@@ -618,6 +618,9 @@ Patch638: rtlwifi-rtl8821ae-Fix-5G-failure-when-EEPROM-is-inco.patch
 #rhbz 1083853
 Patch610: PNP-Add-Broadwell-to-Intel-MCH-size-workaround.patch
 
+#rhbz 1300955
+Patch640: PNP-Add-Haswell-ULT-to-Intel-MCH-size-workaround.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2062,6 +2065,7 @@ fi
 # 
 %changelog
 * Fri Jan 22 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix backtrace from PNP conflict on Haswell-ULT (rhbz 1300955)
 - Fix backtrace from PNP conflict on Broadwell (rhbz 1083853)
 
 * Thu Jan 21 2016 Josh Boyer <jwboyer@fedoraproject.org>
