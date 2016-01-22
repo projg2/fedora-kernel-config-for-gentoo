@@ -704,6 +704,9 @@ Patch638: rtlwifi-rtl8821ae-Fix-5G-failure-when-EEPROM-is-inco.patch
 #CVE-XXXX-XXXX rhbz 1300731 1300732
 Patch639: netfilter-nf_nat_redirect-add-missing-NULL-pointer-c.patch
 
+#rhbz 1300955
+Patch640: PNP-Add-Haswell-ULT-to-Intel-MCH-size-workaround.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1471,6 +1474,9 @@ ApplyPatch rtlwifi-rtl8821ae-Fix-5G-failure-when-EEPROM-is-inco.patch
 
 #CVE-XXXX-XXXX rhbz 1300731 1300732
 ApplyPatch netfilter-nf_nat_redirect-add-missing-NULL-pointer-c.patch
+
+#rhbz 1300955
+ApplyPatch PNP-Add-Haswell-ULT-to-Intel-MCH-size-workaround.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2321,6 +2327,9 @@ fi
 #
 # 
 %changelog
+* Fri Jan 22 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Fix backtrace from PNP conflict on Haswell-ULT (rhbz 1300955)
+
 * Thu Jan 21 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-XXXX-XXXX missing null ptr check in nf_nat_redirect_ipv4 (rhbz 1300731 1300732)
 - Fix incorrect country code issue on RTL8812AE devices (rhbz 1279653)
