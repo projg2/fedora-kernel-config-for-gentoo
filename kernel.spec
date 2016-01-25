@@ -603,6 +603,9 @@ Patch603: ptrace-being-capable-wrt-a-process-requires-mapped-u.patch
 
 Patch604: drm-i915-shut-up-gen8-SDE-irq-dmesg-noise-again.patch
 
+#rhbz 1296677
+Patch641: HID-multitouch-fix-input-mode-switching-on-some-Elan.patch
+
 #CVE-2016-0728 rhbz 1296623 1297475 
 Patch634: KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
 
@@ -2064,6 +2067,9 @@ fi
 #
 # 
 %changelog
+* Mon Jan 25 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch to fix some Elan touchpads (rhbz 1296677)
+
 * Fri Jan 22 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix backtrace from PNP conflict on Haswell-ULT (rhbz 1300955)
 - Fix backtrace from PNP conflict on Broadwell (rhbz 1083853)
