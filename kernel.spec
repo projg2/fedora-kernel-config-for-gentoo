@@ -631,6 +631,9 @@ Patch643: media-ivtv-avoid-going-past-input-audio-array.patch
 Patch644: wext-fix-message-delay-ordering.patch
 Patch645: cfg80211-wext-fix-message-ordering.patch
 
+#rhbz 1255325
+Patch646: HID-sony-do-not-bail-out-when-the-sixaxis-refuses-th.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2074,6 +2077,9 @@ fi
 #
 # 
 %changelog
+* Fri Jan 29 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Backport HID sony patch to fix some gamepads (rhbz 1255235)
+
 * Thu Jan 28 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix issues with ivtv driver on PVR350 devices (rhbz 1278942)
 - Add patches to fix suprious NEWLINK netlink messages (rhbz 1302037)
