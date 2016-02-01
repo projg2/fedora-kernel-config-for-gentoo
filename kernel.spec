@@ -52,7 +52,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -605,12 +605,6 @@ Patch604: drm-i915-shut-up-gen8-SDE-irq-dmesg-noise-again.patch
 
 #rhbz 1296677
 Patch641: HID-multitouch-fix-input-mode-switching-on-some-Elan.patch
-
-#CVE-2016-0728 rhbz 1296623 1297475 
-Patch634: KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
-
-#CVE-2013-4312 rhbz 1297813 1300216
-Patch636: unix-properly-account-for-FDs-passed-over-unix-socke.patch
 
 #CVE-2016-0723 rhbz 1296253 1300224
 Patch637: tty-Fix-unsafe-ldisc-reference-via-ioctl-TIOCGETD.patch
@@ -2077,6 +2071,9 @@ fi
 #
 # 
 %changelog
+* Mon Feb 01 2016 Laura Abbott <labbott@fedoraproject.org>
+- Linux v4.4.1
+
 * Fri Jan 29 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - Backport HID sony patch to fix some gamepads (rhbz 1255235)
 
