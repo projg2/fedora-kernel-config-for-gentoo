@@ -699,6 +699,9 @@ Patch645: cfg80211-wext-fix-message-ordering.patch
 #rhbz 1255325
 Patch646: HID-sony-do-not-bail-out-when-the-sixaxis-refuses-th.patch
 
+#rhbz 1303270
+Patch647: rtlwifi-fix-memory-leak-for-USB-device.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1461,6 +1464,9 @@ ApplyPatch cfg80211-wext-fix-message-ordering.patch
 
 #rhbz 1255325
 ApplyPatch HID-sony-do-not-bail-out-when-the-sixaxis-refuses-th.patch
+
+#rhbz 1303270
+ApplyPatch rtlwifi-fix-memory-leak-for-USB-device.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2311,6 +2317,9 @@ fi
 #
 # 
 %changelog
+* Tue Feb 02 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Backport patch to fix memory leak in rtlwifi USB devices (rhbz 1303270)
+
 * Sun Jan 31 2016 Josh Boyer <jwboyer@fedoraproject.org> - 4.3.5-200
 - Linux v4.3.5
 
