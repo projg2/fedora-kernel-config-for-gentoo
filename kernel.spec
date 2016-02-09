@@ -628,6 +628,9 @@ Patch645: cfg80211-wext-fix-message-ordering.patch
 #rhbz 1255325
 Patch646: HID-sony-do-not-bail-out-when-the-sixaxis-refuses-th.patch
 
+#CVE-2016-0617 rhbz 1305803 1305804
+Patch648: fs-hugetlbfs-inode.c-fix-bugs-in-hugetlb_vmtruncate_.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2071,6 +2074,9 @@ fi
 #
 # 
 %changelog
+* Tue Feb 09 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-0617 fix hugetlbfs inode.c issues (rhbz 1305803 1305804)
+
 * Mon Feb 01 2016 Laura Abbott <labbott@fedoraproject.org>
 - Linux v4.4.1
 
