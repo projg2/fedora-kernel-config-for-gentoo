@@ -2074,6 +2074,9 @@ fi
 #
 # 
 %changelog
+* Fri Feb 12 2016 Laura Abbott <labbott@fedoraproject.org>
+- Turn off W+X warnings (rhbz 1306885)
+
 * Tue Feb 09 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-0617 fix hugetlbfs inode.c issues (rhbz 1305803 1305804)
 
