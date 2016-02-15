@@ -631,6 +631,9 @@ Patch646: HID-sony-do-not-bail-out-when-the-sixaxis-refuses-th.patch
 #CVE-2016-0617 rhbz 1305803 1305804
 Patch648: fs-hugetlbfs-inode.c-fix-bugs-in-hugetlb_vmtruncate_.patch
 
+#CVE-2016-2384 rhbz 1308444 1308445
+Patch649: ALSA-usb-audio-avoid-freeing-umidi-object-twice.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2074,6 +2077,9 @@ fi
 #
 # 
 %changelog
+* Mon Feb 15 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-2384 double free in usb-audio from invalid USB descriptor (rhbz 1308444 1308445)
+
 * Fri Feb 12 2016 Laura Abbott <labbott@fedoraproject.org>
 - Turn off W+X warnings (rhbz 1306885)
 
