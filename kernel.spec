@@ -634,6 +634,9 @@ Patch648: fs-hugetlbfs-inode.c-fix-bugs-in-hugetlb_vmtruncate_.patch
 #CVE-2016-2384 rhbz 1308444 1308445
 Patch649: ALSA-usb-audio-avoid-freeing-umidi-object-twice.patch
 
+#CVE-2016-2383 rhbz 1308452 1308453
+Patch650: bpf-fix-branch-offset-adjustment-on-backjumps-after-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2078,6 +2081,7 @@ fi
 # 
 %changelog
 * Mon Feb 15 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-2383 incorrect branch fixups for eBPG allow arbitrary reads (rhbz 1308452 1308453)
 - CVE-2016-2384 double free in usb-audio from invalid USB descriptor (rhbz 1308444 1308445)
 
 * Fri Feb 12 2016 Laura Abbott <labbott@fedoraproject.org>
