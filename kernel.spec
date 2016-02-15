@@ -705,6 +705,9 @@ Patch647: rtlwifi-fix-memory-leak-for-USB-device.patch
 #CVE-2016-0617 rhbz 1305803 1305804
 Patch648: fs-hugetlbfs-inode.c-fix-bugs-in-hugetlb_vmtruncate_.patch
 
+#CVE-2016-2384 rhbz 1308444 1308445
+Patch649: ALSA-usb-audio-avoid-freeing-umidi-object-twice.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1473,6 +1476,9 @@ ApplyPatch rtlwifi-fix-memory-leak-for-USB-device.patch
 
 #CVE-2016-0617 rhbz 1305803 1305804
 ApplyPatch fs-hugetlbfs-inode.c-fix-bugs-in-hugetlb_vmtruncate_.patch
+
+#CVE-2016-2384 rhbz 1308444 1308445
+ApplyPatch ALSA-usb-audio-avoid-freeing-umidi-object-twice.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2323,6 +2329,9 @@ fi
 #
 # 
 %changelog
+* Mon Feb 15 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-2384 double free in usb-audio from invalid USB descriptor (rhbz 1308444 1308445)
+
 * Tue Feb 09 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-0617 fix hugetlbfs inode.c issues (rhbz 1305803 1305804)
 
