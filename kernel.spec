@@ -52,7 +52,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -603,15 +603,6 @@ Patch603: ptrace-being-capable-wrt-a-process-requires-mapped-u.patch
 
 Patch604: drm-i915-shut-up-gen8-SDE-irq-dmesg-noise-again.patch
 
-#rhbz 1296677
-Patch641: HID-multitouch-fix-input-mode-switching-on-some-Elan.patch
-
-#CVE-2016-0723 rhbz 1296253 1300224
-Patch637: tty-Fix-unsafe-ldisc-reference-via-ioctl-TIOCGETD.patch
-
-#rhbz 1279653
-Patch638: rtlwifi-rtl8821ae-Fix-5G-failure-when-EEPROM-is-inco.patch
-
 #rhbz 1083853
 Patch610: PNP-Add-Broadwell-to-Intel-MCH-size-workaround.patch
 
@@ -630,9 +621,6 @@ Patch646: HID-sony-do-not-bail-out-when-the-sixaxis-refuses-th.patch
 
 #CVE-2016-0617 rhbz 1305803 1305804
 Patch648: fs-hugetlbfs-inode.c-fix-bugs-in-hugetlb_vmtruncate_.patch
-
-#CVE-2016-2384 rhbz 1308444 1308445
-Patch649: ALSA-usb-audio-avoid-freeing-umidi-object-twice.patch
 
 #CVE-2016-2383 rhbz 1308452 1308453
 Patch650: bpf-fix-branch-offset-adjustment-on-backjumps-after-.patch
@@ -2083,6 +2071,9 @@ fi
 #
 # 
 %changelog
+* Wed Feb 17 2016 Laura Abbott <labbott@fedoraproject.org>
+- Linux v4.4.2
+
 * Tue Feb 16 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - Backport fix for elantech touchpads (rhbz 1306987)
 
