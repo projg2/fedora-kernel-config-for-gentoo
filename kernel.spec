@@ -714,6 +714,9 @@ Patch650: bpf-fix-branch-offset-adjustment-on-backjumps-after-.patch
 #rhbz 1306987
 Patch651: Input-elantech-mark-protocols-v2-and-v3-as-semi-mt.patch
 
+#rhbz 1305181 1299901
+Patch652: drm-mgag200-fix-kernel-hang-in-cursor-code.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1491,6 +1494,9 @@ ApplyPatch bpf-fix-branch-offset-adjustment-on-backjumps-after-.patch
 
 #rhbz 1306987
 ApplyPatch Input-elantech-mark-protocols-v2-and-v3-as-semi-mt.patch
+
+#rhbz 1305181 1299901
+ApplyPatch drm-mgag200-fix-kernel-hang-in-cursor-code.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2341,6 +2347,9 @@ fi
 #
 # 
 %changelog
+* Wed Feb 17 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Backport mgag200 cursor hang fix (rhbz 1305181 1299901)
+
 * Tue Feb 16 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - Backport fix for elantech touchpads (rhbz 1306987)
 
