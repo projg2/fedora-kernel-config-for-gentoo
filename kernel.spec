@@ -628,6 +628,9 @@ Patch650: bpf-fix-branch-offset-adjustment-on-backjumps-after-.patch
 #rhbz 1306987
 Patch651: Input-elantech-mark-protocols-v2-and-v3-as-semi-mt.patch
 
+#CVE-2015-8812 rhbz 1303532 1309548
+Patch653: iw_cxgb3-Fix-incorrectly-returning-error-on-success.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2071,6 +2074,9 @@ fi
 #
 # 
 %changelog
+* Thu Feb 18 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2015-8812 cxgb3 use after free (rhbz 1303532 1309548)
+
 * Wed Feb 17 2016 Laura Abbott <labbott@fedoraproject.org>
 - Linux v4.4.2
 
