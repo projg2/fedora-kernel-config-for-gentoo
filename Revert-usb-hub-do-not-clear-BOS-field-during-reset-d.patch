@@ -1,0 +1,46 @@
+From 2ea58e6dba5a959e5a7928b866b8ab035c9191a6 Mon Sep 17 00:00:00 2001
+From: Josh Boyer <jwboyer@fedoraproject.org>
+Date: Mon, 22 Feb 2016 08:09:46 -0500
+Subject: [PATCH] Revert "usb: hub: do not clear BOS field during reset device"
+
+This reverts commit 9932571e08f36fdb83d8a29de5a6b6aeae6dbfb8.
+
+This causes memory corruption or oopses if a USB3 device is unplugged
+during operation.
+
+http://thread.gmane.org/gmane.linux.kernel.stable/165813
+
+Signed-off-by: Josh Boyer <jwboyer@fedoraproject.org>
+---
+ drivers/usb/core/hub.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+index a2fef797d553..62084335a608 100644
+--- a/drivers/usb/core/hub.c
++++ b/drivers/usb/core/hub.c
+@@ -5377,6 +5377,7 @@ static int usb_reset_and_verify_device(struct usb_device *udev)
+ 	}
+ 
+ 	bos = udev->bos;
++	udev->bos = NULL;
+ 
+ 	for (i = 0; i < SET_CONFIG_TRIES; ++i) {
+ 
+@@ -5469,11 +5470,8 @@ done:
+ 	usb_set_usb2_hardware_lpm(udev, 1);
+ 	usb_unlocked_enable_lpm(udev);
+ 	usb_enable_ltm(udev);
+-	/* release the new BOS descriptor allocated  by hub_port_init() */
+-	if (udev->bos != bos) {
+-		usb_release_bos_descriptor(udev);
+-		udev->bos = bos;
+-	}
++	usb_release_bos_descriptor(udev);
++	udev->bos = bos;
+ 	return 0;
+ 
+ re_enumerate:
+-- 
+2.5.0
+
