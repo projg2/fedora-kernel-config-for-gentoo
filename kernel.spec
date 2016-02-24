@@ -697,6 +697,9 @@ Patch653: iw_cxgb3-Fix-incorrectly-returning-error-on-success.patch
 
 Patch654: Revert-usb-hub-do-not-clear-BOS-field-during-reset-d.patch
 
+#CVE-2016-2550 rhbz 1311517 1311518
+Patch655: unix-correctly-track-in-flight-fds-in-sending-proces.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1457,6 +1460,9 @@ ApplyPatch drm-mgag200-fix-kernel-hang-in-cursor-code.patch
 ApplyPatch iw_cxgb3-Fix-incorrectly-returning-error-on-success.patch
 
 ApplyPatch Revert-usb-hub-do-not-clear-BOS-field-during-reset-d.patch
+
+#CVE-2016-2550 rhbz 1311517 1311518
+ApplyPatch unix-correctly-track-in-flight-fds-in-sending-proces.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2307,6 +2313,9 @@ fi
 #
 # 
 %changelog
+* Wed Feb 24 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-2550 af_unix: incorrect accounting on in-flight fds (rhbz 1311517 1311518)
+
 * Mon Feb 22 2016 Josh Boyer <jwboyer@fedoraproject.org> - 4.3.6-201
 - Revert broken usb patch
 
