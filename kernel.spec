@@ -502,10 +502,6 @@ Patch05: kbuild-AFTER_LINK.patch
 
 Patch451: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
-Patch452: amd-xgbe-a0-Add-support-for-XGBE-on-A0.patch
-
-Patch453: amd-xgbe-phy-a0-Add-support-for-XGBE-PHY-on-A0.patch
-
 Patch454: arm64-avoid-needing-console-to-enable-serial-console.patch
 
 Patch455: usb-make-xhci-platform-driver-use-64-bit-or-32-bit-D.patch
@@ -1265,10 +1261,6 @@ ApplyPatch kbuild-AFTER_LINK.patch
 %if !%{nopatches}
 
 ApplyPatch lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
-
-ApplyPatch amd-xgbe-a0-Add-support-for-XGBE-on-A0.patch
-
-ApplyPatch amd-xgbe-phy-a0-Add-support-for-XGBE-PHY-on-A0.patch
 
 ApplyPatch arm64-avoid-needing-console-to-enable-serial-console.patch
 
