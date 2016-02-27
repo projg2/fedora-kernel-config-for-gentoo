@@ -508,6 +508,8 @@ Patch456: arm64-acpi-drop-expert-patch.patch
 
 Patch457: ARM-tegra-usb-no-reset.patch
 
+Patch458: drm-nouveau-platform-Fix-deferred-probe.patch
+
 Patch460: mfd-wm8994-Ensure-that-the-whole-MFD-is-built-into-a.patch
 
 Patch463: arm-i.MX6-Utilite-device-dtb.patch
@@ -1208,6 +1210,8 @@ ApplyPatch arm64-avoid-needing-console-to-enable-serial-console.patch
 ApplyPatch arm64-acpi-drop-expert-patch.patch
 
 ApplyPatch ARM-tegra-usb-no-reset.patch
+
+ApplyPatch drm-nouveau-platform-Fix-deferred-probe.patch
 
 ApplyPatch mfd-wm8994-Ensure-that-the-whole-MFD-is-built-into-a.patch
 
@@ -2185,6 +2189,10 @@ fi
 #
 # 
 %changelog
+* Sat Feb 27 2016 Peter Robinson <pbrobinson@fedoraproject.org> 4.4.3-201
+- Bring missed 4.4 ARMv7 fixes from F-23 kernel
+- Fix deferred nouveau module loading on tegra
+
 * Fri Feb 26 2016 Laura Abbott <labbott@fedoraproject.org> - 4.4.3-200
 - Linux v4.4.3
 
