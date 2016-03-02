@@ -639,6 +639,10 @@ Patch656: unix-correctly-track-in-flight-fds-in-sending-proces.patch
 Patch657: 0001-Test-ata-fix.patch
 
 Patch658: nouveau-displayoff-fix.patch
+
+#Mitigates CVE-2013-4312 rhbz 1313428 1313433
+Patch659: pipe-limit-the-per-user-amount-of-pages-allocated-in.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1340,6 +1344,10 @@ ApplyPatch unix-correctly-track-in-flight-fds-in-sending-proces.patch
 ApplyPatch 0001-Test-ata-fix.patch
 
 ApplyPatch nouveau-displayoff-fix.patch
+
+#Mitigates CVE-2013-4312 rhbz 1313428 1313433
+ApplyPatch pipe-limit-the-per-user-amount-of-pages-allocated-in.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2189,6 +2197,9 @@ fi
 #
 # 
 %changelog
+* Wed Mar 02 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- pipe: limit the per-user amount of pages allocated in pipes (rhbz 1313428 1313433)
+
 * Sat Feb 27 2016 Peter Robinson <pbrobinson@fedoraproject.org> 4.4.3-201
 - Bring missed 4.4 ARMv7 fixes from F-23 kernel
 - Fix deferred nouveau module loading on tegra
