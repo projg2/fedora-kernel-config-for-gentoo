@@ -1350,6 +1350,9 @@ ApplyPatch nouveau-displayoff-fix.patch
 #Mitigates CVE-2013-4312 rhbz 1313428 1313433
 ApplyPatch pipe-limit-the-per-user-amount-of-pages-allocated-in.patch
 
+#rhbz 1310252 1313318
+ApplyPatch 0001-drm-i915-Pretend-cursor-is-always-on-for-ILK-style-W.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
