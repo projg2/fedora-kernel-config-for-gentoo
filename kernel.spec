@@ -654,6 +654,7 @@ Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
 Requires(pre): linux-firmware >= 20150904-56.git6ebf5d57\
 Requires(preun): systemd >= 200\
+Conflicts: xfsprogs < 4.3.0-1\
 Conflicts: xorg-x11-drv-vmmouse < 13.0.99\
 %{expand:%%{?kernel%{?1:_%{1}}_conflicts:Conflicts: %%{kernel%{?1:_%{1}}_conflicts}}}\
 %{expand:%%{?kernel%{?1:_%{1}}_obsoletes:Obsoletes: %%{kernel%{?1:_%{1}}_obsoletes}}}\
@@ -2174,7 +2175,10 @@ fi
 #
 # 
 %changelog
-* Thu Mar 03 2016 Laura Abbott <labbott@redhat.com> - 4.4.4-200
+* Fri Mar 04 2016 Laura Abbott <labbott@redhat.com> - 4.4.4-200
+- Require updated XFS utilities
+
+* Thu Mar 03 2016 Laura Abbott <labbott@redhat.com>
 - Linux v4.4.4
 - Switch back to not setting CONFIG_ACPI_REV_OVERRIDE_POSSIBLE
 
