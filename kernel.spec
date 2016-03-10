@@ -52,7 +52,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -619,17 +619,14 @@ Patch646: HID-sony-do-not-bail-out-when-the-sixaxis-refuses-th.patch
 #Known use after free, possibly rhbz 1310579
 Patch654: 0001-usb-hub-fix-panic-in-usb_reset_and_verify_device.patch
 
-#rhbz 1310258
-Patch655: iommu-fix.patch
-
-#rhbz 1310682
-Patch657: 0001-Test-ata-fix.patch
-
 #Mitigates CVE-2013-4312 rhbz 1313428 1313433
 Patch659: pipe-limit-the-per-user-amount-of-pages-allocated-in.patch
 
 #rhbz 1310252 1313318
 Patch660: 0001-drm-i915-Pretend-cursor-is-always-on-for-ILK-style-W.patch
+
+#Fix for known arm64 breakage. No bugzilla becuase proactivity \o/
+Patch661: 0001-arm64-account-for-sparsemem-section-alignment-when-c.patch
 
 # END OF PATCH DEFINITIONS
 %endif
@@ -1314,18 +1311,13 @@ ApplyPatch HID-sony-do-not-bail-out-when-the-sixaxis-refuses-th.patch
 #Known use after free, possibly rhbz 1310579
 ApplyPatch 0001-usb-hub-fix-panic-in-usb_reset_and_verify_device.patch
 
-#rhbz 1310258
-ApplyPatch iommu-fix.patch
-
-#rhbz 1310682
-ApplyPatch 0001-Test-ata-fix.patch
-
 #Mitigates CVE-2013-4312 rhbz 1313428 1313433
 ApplyPatch pipe-limit-the-per-user-amount-of-pages-allocated-in.patch
 
 #rhbz 1310252 1313318
 ApplyPatch 0001-drm-i915-Pretend-cursor-is-always-on-for-ILK-style-W.patch
 
+ApplyPatch 0001-arm64-account-for-sparsemem-section-alignment-when-c.patch
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2175,6 +2167,10 @@ fi
 #
 # 
 %changelog
+* Wed Mar 09 2016 Laura Abbott <labbott@redhat.com> - 4.4.5-200
+- Linux v4.4.5
+- Fix for known arm64 bootup issue
+
 * Fri Mar 04 2016 Laura Abbott <labbott@redhat.com> - 4.4.4-200
 - Require updated XFS utilities
 
