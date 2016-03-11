@@ -631,6 +631,9 @@ Patch661: 0001-arm64-account-for-sparsemem-section-alignment-when-c.patch
 #rhbz 1316719
 Patch662: 0001-cdc-acm-fix-NULL-pointer-reference.patch
 
+#rhbz 1316136
+Patch663: USB-serial-ftdi_sio-Add-support-for-ICP-DAS-I-756xU-.patch
+
 # END OF PATCH DEFINITIONS
 %endif
 
@@ -1323,6 +1326,10 @@ ApplyPatch 0001-drm-i915-Pretend-cursor-is-always-on-for-ILK-style-W.patch
 ApplyPatch 0001-arm64-account-for-sparsemem-section-alignment-when-c.patch
 
 ApplyPatch 0001-cdc-acm-fix-NULL-pointer-reference.patch
+
+#rhbz 1316136
+ApplyPatch USB-serial-ftdi_sio-Add-support-for-ICP-DAS-I-756xU-.patch
+
 # END OF PATCH APPLICATIONS
 
 %endif
@@ -2172,6 +2179,9 @@ fi
 #
 # 
 %changelog
+* Fri Mar 11 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch for ICP DAS I-756xU devices (rhbz 1316136)
+
 * Thu Mar 10 2016 Laura Abbott <labbott@redhat.com>
 - cdc-acm: fix NULL pointer reference (rhbz 1316719)
 
