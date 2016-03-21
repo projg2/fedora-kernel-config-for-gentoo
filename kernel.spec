@@ -660,6 +660,15 @@ Patch677: digi_acceleport-do-sanity-checking-for-the-number-of.patch
 
 Patch678: ims-pcu-sanity-check-against-missing-interfaces.patch
 
+#rhbz 1315013
+Patch679: 0001-uas-Limit-qdepth-at-the-scsi-host-level.patch
+
+#rhbz 1317190
+Patch680: thermal-fix.patch
+
+#rhbz 1318079
+Patch681: 0001-Input-synaptics-handle-spurious-release-of-trackstic.patch
+
 # END OF PATCH DEFINITIONS
 %endif
 
@@ -1382,6 +1391,15 @@ ApplyPatch cdc-acm-more-sanity-checking.patch
 ApplyPatch digi_acceleport-do-sanity-checking-for-the-number-of.patch
 
 ApplyPatch ims-pcu-sanity-check-against-missing-interfaces.patch
+
+#rhbz 1315013
+ApplyPatch 0001-uas-Limit-qdepth-at-the-scsi-host-level.patch
+
+#rhbz 1317190
+ApplyPatch thermal-fix.patch
+
+#rhbz 1318079
+ApplyPatch 0001-Input-synaptics-handle-spurious-release-of-trackstic.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2232,6 +2250,11 @@ fi
 #
 # 
 %changelog
+* Mon Mar 21 2016 Laura Abbott <labbott@fedoraproject.org>
+- uas: Limit qdepth at the scsi-host level (rhbz 1315013)
+- Fix for performance regression caused by thermal (rhbz 1317190)
+- Input: synaptics - handle spurious release of trackstick buttons, again (rhbz 1318079)
+
 * Fri Mar 18 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - ims-pcu: sanity checking on missing interfaces
 - CVE-2016-3140 digi_acceleport: oops on invalid USB descriptors (rhbz 1317010 1316995)
