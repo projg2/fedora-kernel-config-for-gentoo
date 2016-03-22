@@ -669,6 +669,9 @@ Patch680: thermal-fix.patch
 #rhbz 1318079
 Patch681: 0001-Input-synaptics-handle-spurious-release-of-trackstic.patch
 
+#CVE-2016-2187 rhbz 1317017 1317010
+Patch686: input-gtco-fix-crash-on-detecting-device-without-end.patch
+
 # END OF PATCH DEFINITIONS
 %endif
 
@@ -1400,6 +1403,9 @@ ApplyPatch thermal-fix.patch
 
 #rhbz 1318079
 ApplyPatch 0001-Input-synaptics-handle-spurious-release-of-trackstic.patch
+
+#CVE-2016-2187 rhbz 1317017 1317010
+ApplyPatch input-gtco-fix-crash-on-detecting-device-without-end.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2250,6 +2256,9 @@ fi
 #
 # 
 %changelog
+* Tue Mar 22 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-2187 gtco: oops on invalid USB descriptors (rhbz 1317017 1317010)
+
 * Mon Mar 21 2016 Laura Abbott <labbott@fedoraproject.org>
 - uas: Limit qdepth at the scsi-host level (rhbz 1315013)
 - Fix for performance regression caused by thermal (rhbz 1317190)
