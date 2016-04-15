@@ -661,6 +661,9 @@ Patch697: HID-wacom-fix-Bamboo-ONE-oops.patch
 #rhbz 1309980
 Patch698: 0001-ACPI-processor-Request-native-thermal-interrupt-hand.patch
 
+# CVE-2016-3961 rhbz 1327219 1323956
+Patch699: x86-xen-suppress-hugetlbfs-in-PV-guests.patch
+
 # END OF PATCH DEFINITIONS
 %endif
 
@@ -1384,6 +1387,9 @@ ApplyPatch HID-wacom-fix-Bamboo-ONE-oops.patch
 
 #rhbz 1309980
 ApplyPatch 0001-ACPI-processor-Request-native-thermal-interrupt-hand.patch
+
+# CVE-2016-3961 rhbz 1327219 1323956
+ApplyPatch x86-xen-suppress-hugetlbfs-in-PV-guests.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2234,6 +2240,9 @@ fi
 #
 # 
 %changelog
+* Fri Apr 15 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-3961 xen: hugetlbfs use may crash PV guests (rhbz 1327219 1323956)
+
 * Wed Apr 13 2016 Laura Abbott <labbott@fedoraproject.org>
 - Fix for Skylake pstate issues (rhbz 1309980)
 
