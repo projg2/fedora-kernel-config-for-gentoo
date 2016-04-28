@@ -347,7 +347,7 @@ Summary: The Linux kernel
 # Packages that need to be installed before the kernel is, because the %%post
 # scripts use them.
 #
-%define kernel_prereq  fileutils, systemd >= 203-2
+%define kernel_prereq  fileutils, systemd >= 203-2, /usr/bin/kernel-install
 %define initrd_prereq  dracut >= 027
 
 
@@ -2221,6 +2221,9 @@ fi
 #
 # 
 %changelog
+* Thu Apr 28 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Require /usr/bin/kernel-install (rhbz 1331012)
+
 * Tue Apr 26 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - Enable IEEE802154_AT86RF230 on more arches (rhbz 1330356)
 
