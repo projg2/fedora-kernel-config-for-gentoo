@@ -1229,6 +1229,8 @@ ApplyPatch arm64-avoid-needing-console-to-enable-serial-console.patch
 
 ApplyPatch arm64-acpi-drop-expert-patch.patch
 
+ApplyPatch 0001-gpu-ipu-v3-Fix-imx-ipuv3-crtc-module-autoloading.patch
+
 ApplyPatch ARM-tegra-usb-no-reset.patch
 
 ApplyPatch mfd-wm8994-Ensure-that-the-whole-MFD-is-built-into-a.patch
