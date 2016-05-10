@@ -658,6 +658,11 @@ Patch708: propogate_mnt-Handle-the-first-propogated-copy-being.patch
 Patch711: bpf-fix-double-fdput-in-replace_map_fd_with_map_ptr.patch
 Patch712: bpf-fix-refcnt-overflow.patch
 
+#CVE-2016-4569 rhbz 1334643 1334645
+Patch714: ALSA-timer-Fix-leak-in-SNDRV_TIMER_IOCTL_PARAMS.patch
+Patch715: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_cca.patch
+Patch716: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_tin.patch
+
 # END OF PATCH DEFINITIONS
 %endif
 
@@ -1376,6 +1381,11 @@ ApplyPatch propogate_mnt-Handle-the-first-propogated-copy-being.patch
 #CVE-2016-4557 CVE-2016-4558 rhbz 1334307 1334303 1334311
 ApplyPatch bpf-fix-double-fdput-in-replace_map_fd_with_map_ptr.patch
 ApplyPatch bpf-fix-refcnt-overflow.patch
+
+#CVE-2016-4569 rhbz 1334643 1334645
+ApplyPatch ALSA-timer-Fix-leak-in-SNDRV_TIMER_IOCTL_PARAMS.patch
+ApplyPatch ALSA-timer-Fix-leak-in-events-via-snd_timer_user_cca.patch
+ApplyPatch ALSA-timer-Fix-leak-in-events-via-snd_timer_user_tin.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2226,6 +2236,9 @@ fi
 #
 # 
 %changelog
+* Tue May 10 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-4569 info leak in sound module (rhbz 1334643 1334645)
+
 * Mon May 09 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-4557 bpf: Use after free vulnerability via double fdput
   CVE-2016-4558 bpf: refcnt overflow (rhbz 1334307 1334303 1334311)
