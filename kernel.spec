@@ -663,6 +663,9 @@ Patch714: ALSA-timer-Fix-leak-in-SNDRV_TIMER_IOCTL_PARAMS.patch
 Patch715: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_cca.patch
 Patch716: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_tin.patch
 
+#CVE-2016-0758 rhbz 1300257 1335386
+Patch717: KEYS-Fix-ASN.1-indefinite-length-object-parsing.patch
+
 # END OF PATCH DEFINITIONS
 %endif
 
@@ -1386,6 +1389,9 @@ ApplyPatch bpf-fix-refcnt-overflow.patch
 ApplyPatch ALSA-timer-Fix-leak-in-SNDRV_TIMER_IOCTL_PARAMS.patch
 ApplyPatch ALSA-timer-Fix-leak-in-events-via-snd_timer_user_cca.patch
 ApplyPatch ALSA-timer-Fix-leak-in-events-via-snd_timer_user_tin.patch
+
+#CVE-2016-0758 rhbz 1300257 1335386
+ApplyPatch KEYS-Fix-ASN.1-indefinite-length-object-parsing.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2236,6 +2242,9 @@ fi
 #
 # 
 %changelog
+* Fri May 13 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-0758 pointer corruption in asn1 decoder (rhbz 1300257 1335386)
+
 * Tue May 10 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-4569 info leak in sound module (rhbz 1334643 1334645)
 
