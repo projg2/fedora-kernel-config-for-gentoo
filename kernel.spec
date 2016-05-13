@@ -52,7 +52,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -502,8 +502,6 @@ Patch05: kbuild-AFTER_LINK.patch
 
 Patch451: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
-Patch452: 0001-gpu-ipu-v3-Fix-imx-ipuv3-crtc-module-autoloading.patch
-
 Patch454: arm64-avoid-needing-console-to-enable-serial-console.patch
 
 Patch456: arm64-acpi-drop-expert-patch.patch
@@ -632,9 +630,6 @@ Patch690: x86-mm-32-Enable-full-randomization-on-i386-and-X86_.patch
 #CVE-2016-3951 rhbz 1324782 1324815
 Patch695: cdc_ncm-do-not-call-usbnet_link_change-from-cdc_ncm_.patch
 
-#rhbz 1309980
-Patch698: 0001-ACPI-processor-Request-native-thermal-interrupt-hand.patch
-
 #rhbz 1309487
 Patch701: antenna_select.patch
 
@@ -650,9 +645,6 @@ Patch705: USB-usbfs-fix-potential-infoleak-in-devio.patch
 #CVE-2016-4486 CVE-2016-4485 rhbz 1333316 1333309 1333321
 Patch706: net-fix-infoleak-in-llc.patch
 Patch707: net-fix-infoleak-in-rtnetlink.patch
-
-#CVE-2016-xxxx rhbz 1333712 1333713
-Patch708: propogate_mnt-Handle-the-first-propogated-copy-being.patch
 
 #CVE-2016-4557 CVE-2016-4558 rhbz 1334307 1334303 1334311
 Patch711: bpf-fix-double-fdput-in-replace_map_fd_with_map_ptr.patch
@@ -1236,8 +1228,6 @@ ApplyPatch arm64-avoid-needing-console-to-enable-serial-console.patch
 
 ApplyPatch arm64-acpi-drop-expert-patch.patch
 
-ApplyPatch 0001-gpu-ipu-v3-Fix-imx-ipuv3-crtc-module-autoloading.patch
-
 ApplyPatch ARM-tegra-usb-no-reset.patch
 
 ApplyPatch mfd-wm8994-Ensure-that-the-whole-MFD-is-built-into-a.patch
@@ -1362,9 +1352,6 @@ ApplyPatch x86-mm-32-Enable-full-randomization-on-i386-and-X86_.patch
 #CVE-2016-3951 rhbz 1324782 1324815
 ApplyPatch cdc_ncm-do-not-call-usbnet_link_change-from-cdc_ncm_.patch
 
-#rhbz 1309980
-ApplyPatch 0001-ACPI-processor-Request-native-thermal-interrupt-hand.patch
-
 #rhbz 1309487
 ApplyPatch antenna_select.patch
 
@@ -1377,9 +1364,6 @@ ApplyPatch USB-usbfs-fix-potential-infoleak-in-devio.patch
 #CVE-2016-4486 CVE-2016-4485 rhbz 1333316 1333309 1333321
 ApplyPatch net-fix-infoleak-in-llc.patch
 ApplyPatch net-fix-infoleak-in-rtnetlink.patch
-
-#CVE-2016-xxxx rhbz 1333712 1333713
-ApplyPatch propogate_mnt-Handle-the-first-propogated-copy-being.patch
 
 #CVE-2016-4557 CVE-2016-4558 rhbz 1334307 1334303 1334311
 ApplyPatch bpf-fix-double-fdput-in-replace_map_fd_with_map_ptr.patch
@@ -2242,6 +2226,9 @@ fi
 #
 # 
 %changelog
+* Fri May 13 2016 Laura Abbott <labbott@fedoraproject.org> - 4.4.10-200
+- Linux v4.4.10
+
 * Fri May 13 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-0758 pointer corruption in asn1 decoder (rhbz 1300257 1335386)
 
