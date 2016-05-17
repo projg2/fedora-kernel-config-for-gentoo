@@ -19,7 +19,7 @@ noarch:
 	fedpkg -v local --arch=noarch
 
 # 'make local' also needs to build the noarch firmware package
-local: noarch
+local:
 	fedpkg -v local
 
 extremedebug:
@@ -37,6 +37,7 @@ debug:
 	@perl -pi -e 's/# CONFIG_PROVE_RCU is not set/CONFIG_PROVE_RCU=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_SPINLOCK is not set/CONFIG_DEBUG_SPINLOCK=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_VM is not set/CONFIG_DEBUG_VM=y/' config-nodebug
+	@perl -pi -e 's/# CONFIG_DEBUG_VM_PGFLAGS is not set/CONFIG_DEBUG_VM_PGFLAGS=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_FAULT_INJECTION is not set/CONFIG_FAULT_INJECTION=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_FAILSLAB is not set/CONFIG_FAILSLAB=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_FAIL_PAGE_ALLOC is not set/CONFIG_FAIL_PAGE_ALLOC=y/' config-nodebug
@@ -79,7 +80,6 @@ debug:
 	@perl -pi -e 's/# CONFIG_CARL9170_DEBUGFS is not set/CONFIG_CARL9170_DEBUGFS=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_IWLWIFI_DEVICE_TRACING is not set/CONFIG_IWLWIFI_DEVICE_TRACING=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DMADEVICES_DEBUG is not set/CONFIG_DMADEVICES_DEBUG=y/' config-nodebug
-	@perl -pi -e 's/# CONFIG_DMADEVICES_VDEBUG is not set/CONFIG_DMADEVICES_VDEBUG=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_CEPH_LIB_PRETTYDEBUG is not set/CONFIG_CEPH_LIB_PRETTYDEBUG=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_QUOTA_DEBUG is not set/CONFIG_QUOTA_DEBUG=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_KGDB_KDB is not set/CONFIG_KGDB_KDB=y/' config-nodebug
@@ -89,9 +89,9 @@ debug:
 	@perl -pi -e 's/# CONFIG_TEST_LIST_SORT is not set/CONFIG_TEST_LIST_SORT=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_ATOMIC_SLEEP is not set/CONFIG_DEBUG_ATOMIC_SLEEP=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DETECT_HUNG_TASK is not set/CONFIG_DETECT_HUNG_TASK=y/' config-nodebug
+	@perl -pi -e 's/# CONFIG_WQ_WATCHDOG is not set/CONFIG_WQ_WATCHDOG=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_X86_BOOTPARAM_MEMORY_CORRUPTION_CHECK is not set/CONFIG_X86_BOOTPARAM_MEMORY_CORRUPTION_CHECK=y/' config-nodebug
 	@perl -pi -e 's/# CONFIG_DEBUG_KMEMLEAK is not set/CONFIG_DEBUG_KMEMLEAK=y/' config-nodebug
-	@perl -pi -e 's/# CONFIG_X86_DEBUG_STATIC_CPU_HAS is not set/CONFIG_X86_DEBUG_STATIC_CPU_HAS=y/' config-nodebug
 
 	@# just in case we're going from extremedebug -> debug
 	@perl -pi -e 's/CONFIG_DEBUG_PAGEALLOC=y/# CONFIG_DEBUG_PAGEALLOC is not set/' config-nodebug
