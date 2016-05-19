@@ -661,6 +661,9 @@ Patch717: KEYS-Fix-ASN.1-indefinite-length-object-parsing.patch
 #CVE-2016-3713 rhbz 1332139 1336410
 Patch718: KVM-MTRR-remove-MSR-0x2f8.patch
 
+#CVE-2016-4913 rhbz 1337528 1337529
+Patch719: get_rock_ridge_filename-handle-malformed-NM-entries.patch
+
 # END OF PATCH DEFINITIONS
 %endif
 
@@ -1382,6 +1385,9 @@ ApplyPatch KEYS-Fix-ASN.1-indefinite-length-object-parsing.patch
 
 #CVE-2016-3713 rhbz 1332139 1336410
 ApplyPatch KVM-MTRR-remove-MSR-0x2f8.patch
+
+#CVE-2016-4913 rhbz 1337528 1337529
+ApplyPatch get_rock_ridge_filename-handle-malformed-NM-entries.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2232,6 +2238,9 @@ fi
 #
 # 
 %changelog
+* Thu May 19 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-4913 isofs: info leak with malformed NM entries (rhbz 1337528 1337529)
+
 * Mon May 16 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-3713 kvm: out-of-bounds access in set_var_mtrr_msr (rhbz 1332139 1336410)
 
