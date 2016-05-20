@@ -622,6 +622,9 @@ Patch716: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_tin.patch
 #CVE-2016-3713 rhbz 1332139 1336410
 Patch717: KVM-MTRR-remove-MSR-0x2f8.patch
 
+#CVE-2016-4440 rhbz 1337806 1337807
+Patch719: kvm-vmx-more-complete-state-update-on-APICv-on-off.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2147,6 +2150,9 @@ fi
 #
 # 
 %changelog
+* Fri May 20 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-4440 kvm: incorrect state leading to APIC register access (rhbz 1337806 1337807)
+
 * Tue May 17 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v4.6
 - Disable CONFIG_DEBUG_VM_PGFLAGS on non debug kernels (rhbz 1335173)
