@@ -52,7 +52,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -633,22 +633,11 @@ Patch695: cdc_ncm-do-not-call-usbnet_link_change-from-cdc_ncm_.patch
 #rhbz 1309487
 Patch701: antenna_select.patch
 
-# Follow on for CVE-2016-3156
-Patch702: ipv4-fib-don-t-warn-when-primary-address-is-missing-.patch
-
 # Stop splashing crap about broken firmware BGRT
 Patch704: x86-efi-bgrt-Switch-all-pr_err-to-pr_debug-for-inval.patch
 
 #CVE-2016-4482 rhbz 1332931 1332932
 Patch705: USB-usbfs-fix-potential-infoleak-in-devio.patch
-
-#CVE-2016-4486 CVE-2016-4485 rhbz 1333316 1333309 1333321
-Patch706: net-fix-infoleak-in-llc.patch
-Patch707: net-fix-infoleak-in-rtnetlink.patch
-
-#CVE-2016-4557 CVE-2016-4558 rhbz 1334307 1334303 1334311
-Patch711: bpf-fix-double-fdput-in-replace_map_fd_with_map_ptr.patch
-Patch712: bpf-fix-refcnt-overflow.patch
 
 #CVE-2016-4569 rhbz 1334643 1334645
 Patch714: ALSA-timer-Fix-leak-in-SNDRV_TIMER_IOCTL_PARAMS.patch
@@ -660,9 +649,6 @@ Patch717: KEYS-Fix-ASN.1-indefinite-length-object-parsing.patch
 
 #CVE-2016-3713 rhbz 1332139 1336410
 Patch718: KVM-MTRR-remove-MSR-0x2f8.patch
-
-#CVE-2016-4913 rhbz 1337528 1337529
-Patch719: get_rock_ridge_filename-handle-malformed-NM-entries.patch
 
 #CVE-2016-4951 rhbz 1338625 1338626
 Patch720: tipc-check-nl-sock-before-parsing-nested-attributes.patch
@@ -1364,19 +1350,8 @@ ApplyPatch cdc_ncm-do-not-call-usbnet_link_change-from-cdc_ncm_.patch
 #rhbz 1309487
 ApplyPatch antenna_select.patch
 
-# Follow on for CVE-2016-3156
-ApplyPatch ipv4-fib-don-t-warn-when-primary-address-is-missing-.patch
-
 #CVE-2016-4482 rhbz 1332931 1332932
 ApplyPatch USB-usbfs-fix-potential-infoleak-in-devio.patch
-
-#CVE-2016-4486 CVE-2016-4485 rhbz 1333316 1333309 1333321
-ApplyPatch net-fix-infoleak-in-llc.patch
-ApplyPatch net-fix-infoleak-in-rtnetlink.patch
-
-#CVE-2016-4557 CVE-2016-4558 rhbz 1334307 1334303 1334311
-ApplyPatch bpf-fix-double-fdput-in-replace_map_fd_with_map_ptr.patch
-ApplyPatch bpf-fix-refcnt-overflow.patch
 
 #CVE-2016-4569 rhbz 1334643 1334645
 ApplyPatch ALSA-timer-Fix-leak-in-SNDRV_TIMER_IOCTL_PARAMS.patch
@@ -1389,8 +1364,8 @@ ApplyPatch KEYS-Fix-ASN.1-indefinite-length-object-parsing.patch
 #CVE-2016-3713 rhbz 1332139 1336410
 ApplyPatch KVM-MTRR-remove-MSR-0x2f8.patch
 
-#CVE-2016-4913 rhbz 1337528 1337529
-ApplyPatch get_rock_ridge_filename-handle-malformed-NM-entries.patch
+#CVE-2016-4951 rhbz 1338625 1338626
+ApplyPatch tipc-check-nl-sock-before-parsing-nested-attributes.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2241,6 +2216,10 @@ fi
 #
 # 
 %changelog
+* Mon May 23 2016 Laura Abbott <labbott@fedoraproject.org> - 4.4.11-200
+- Linux v4.4.11
+- Actually apply one patch
+
 * Mon May 23 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-4951 null ptr deref in tipc_nl_publ_dump (rhbz 1338625 1338626)
 
