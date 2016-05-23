@@ -664,6 +664,9 @@ Patch718: KVM-MTRR-remove-MSR-0x2f8.patch
 #CVE-2016-4913 rhbz 1337528 1337529
 Patch719: get_rock_ridge_filename-handle-malformed-NM-entries.patch
 
+#CVE-2016-4951 rhbz 1338625 1338626
+Patch720: tipc-check-nl-sock-before-parsing-nested-attributes.patch
+
 # END OF PATCH DEFINITIONS
 %endif
 
@@ -2238,6 +2241,9 @@ fi
 #
 # 
 %changelog
+* Mon May 23 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-4951 null ptr deref in tipc_nl_publ_dump (rhbz 1338625 1338626)
+
 * Thu May 19 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-4913 isofs: info leak with malformed NM entries (rhbz 1337528 1337529)
 
