@@ -2156,6 +2156,7 @@ fi
 * Mon May 30 2016 Peter Robinson <pbrobinson@fedoraproject.org>
 - Minor ARM cleanups and power/cpufreq management tweaks
 - Update Utilite patch
+- Initial Qualcomm ARM64 support (Dragonboard 410c)
 
 * Mon May 23 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-4951 null ptr deref in tipc_nl_publ_dump (rhbz 1338625 1338626)
