@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -618,9 +618,6 @@ Patch706: USB-usbfs-fix-potential-infoleak-in-devio.patch
 Patch714: ALSA-timer-Fix-leak-in-SNDRV_TIMER_IOCTL_PARAMS.patch
 Patch715: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_cca.patch
 Patch716: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_tin.patch
-
-#CVE-2016-3713 rhbz 1332139 1336410
-Patch717: KVM-MTRR-remove-MSR-0x2f8.patch
 
 #CVE-2016-4440 rhbz 1337806 1337807
 Patch719: kvm-vmx-more-complete-state-update-on-APICv-on-off.patch
@@ -2153,6 +2150,9 @@ fi
 #
 # 
 %changelog
+* Wed Jun 01 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v4.6.1
+
 * Mon May 30 2016 Peter Robinson <pbrobinson@fedoraproject.org>
 - Minor ARM cleanups and power/cpufreq management tweaks
 - Update Utilite patch
