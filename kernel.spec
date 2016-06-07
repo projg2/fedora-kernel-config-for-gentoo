@@ -650,6 +650,9 @@ Patch717: KEYS-Fix-ASN.1-indefinite-length-object-parsing.patch
 #CVE-2016-4951 rhbz 1338625 1338626
 Patch720: tipc-check-nl-sock-before-parsing-nested-attributes.patch
 
+#CVE-2016-5243 rhbz 1343338 1343335
+Patch721: tipc-fix-an-infoleak-in-tipc_nl_compat_link_dump.patch
+
 # END OF PATCH DEFINITIONS
 %endif
 
@@ -1360,6 +1363,9 @@ ApplyPatch KEYS-Fix-ASN.1-indefinite-length-object-parsing.patch
 
 #CVE-2016-4951 rhbz 1338625 1338626
 ApplyPatch tipc-check-nl-sock-before-parsing-nested-attributes.patch
+
+#CVE-2016-5243 rhbz 1343338 1343335
+ApplyPatch tipc-fix-an-infoleak-in-tipc_nl_compat_link_dump.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2210,6 +2216,9 @@ fi
 #
 # 
 %changelog
+* Tue Jun 07 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-5243 info leak in tipc (rhbz 1343338 1343335)
+
 * Wed Jun 01 2016 Laura Abbott <labbott@fedoraproject.org> - 4.4.12-200
 - Linux v4.4.12
 
