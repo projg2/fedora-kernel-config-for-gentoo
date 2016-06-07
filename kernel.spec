@@ -653,6 +653,9 @@ Patch720: tipc-check-nl-sock-before-parsing-nested-attributes.patch
 #CVE-2016-5243 rhbz 1343338 1343335
 Patch721: tipc-fix-an-infoleak-in-tipc_nl_compat_link_dump.patch
 
+#CVE-2016-5244 rhbz 1343338 1343337
+Patch722: rds-fix-an-infoleak-in-rds_inc_info_copy.txt
+
 # END OF PATCH DEFINITIONS
 %endif
 
@@ -1366,6 +1369,9 @@ ApplyPatch tipc-check-nl-sock-before-parsing-nested-attributes.patch
 
 #CVE-2016-5243 rhbz 1343338 1343335
 ApplyPatch tipc-fix-an-infoleak-in-tipc_nl_compat_link_dump.patch
+
+#CVE-2016-5244 rhbz 1343338 1343337
+ApplyPatch rds-fix-an-infoleak-in-rds_inc_info_copy.txt
 
 # END OF PATCH APPLICATIONS
 
@@ -2217,6 +2223,7 @@ fi
 # 
 %changelog
 * Tue Jun 07 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-5244 info leak in rds (rhbz 1343338 1343337)
 - CVE-2016-5243 info leak in tipc (rhbz 1343338 1343335)
 
 * Wed Jun 01 2016 Laura Abbott <labbott@fedoraproject.org> - 4.4.12-200
