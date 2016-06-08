@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -607,9 +607,6 @@ Patch641: disable-CONFIG_EXPERT-for-ZONE_DMA.patch
 
 #CVE-2016-3134 rhbz 1317383 1317384
 Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
-
-#rhbz 1309487
-Patch701: antenna_select.patch
 
 #CVE-2016-4482 rhbz 1332931 1332932
 Patch706: USB-usbfs-fix-potential-infoleak-in-devio.patch
@@ -2156,6 +2153,9 @@ fi
 #
 # 
 %changelog
+* Wed Jun 08 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v4.6.2
+
 * Tue Jun 07 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-5244 info leak in rds (rhbz 1343338 1343337)
 - CVE-2016-5243 info leak in tipc (rhbz 1343338 1343335)
