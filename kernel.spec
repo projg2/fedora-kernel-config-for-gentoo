@@ -591,9 +591,6 @@ Patch508: kexec-uefi-copy-secure_boot-flag-in-boot-params.patch
 #rhbz 1287819
 Patch570: HID-multitouch-enable-palm-rejection-if-device-imple.patch
 
-#rhbz 1286293
-Patch571: ideapad-laptop-Add-Lenovo-ideapad-Y700-17ISK-to-no_h.patch
-
 #rhbz 1288687
 Patch572: alua_fix.patch
 
@@ -1304,9 +1301,6 @@ ApplyPatch kexec-uefi-copy-secure_boot-flag-in-boot-params.patch
 
 #rhbz 1287819
 ApplyPatch HID-multitouch-enable-palm-rejection-if-device-imple.patch
-
-#rhbz 1286293
-ApplyPatch ideapad-laptop-Add-Lenovo-ideapad-Y700-17ISK-to-no_h.patch
 
 #rhbz 1288687
 ApplyPatch alua_fix.patch
