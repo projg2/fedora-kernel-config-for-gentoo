@@ -2158,6 +2158,9 @@ fi
 #
 # 
 %changelog
+* Tue Jun 14 2016 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable Infiniband on ARM now we have HW
+
 * Mon Jun 13 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-1583 stack overflow via ecryptfs and /proc (rhbz 1344721 1344722)
 
