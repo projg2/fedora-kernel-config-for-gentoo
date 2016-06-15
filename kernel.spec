@@ -633,6 +633,9 @@ Patch723: proc-prevent-stacking-filesystems-on-top.patch
 Patch725: ecryptfs-forbid-opening-files-without-mmap-handler.patch
 Patch726: sched-panic-on-corrupted-stack-end.patch
 
+#CVE-2016-4470 rhbz 1341716 1346626
+Patch727: KEYS-potential-uninitialized-variable.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2158,6 +2161,9 @@ fi
 #
 # 
 %changelog
+* Wed Jun 15 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-4470 keys: uninitialized variable crash (rhbz 1341716 1346626)
+
 * Tue Jun 14 2016 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable Infiniband on ARM now we have HW
 
