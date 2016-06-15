@@ -653,6 +653,9 @@ Patch724: ecryptfs-fix-handling-of-directory-opening.patch
 Patch725: ecryptfs-forbid-opening-files-without-mmap-handler.patch
 Patch726: sched-panic-on-corrupted-stack-end.patch
 
+#CVE-2016-4470 rhbz 1341716 1346626
+Patch727: KEYS-potential-uninitialized-variable.patch
+
 # END OF PATCH DEFINITIONS
 %endif
 
@@ -1366,6 +1369,9 @@ ApplyPatch proc-prevent-stacking-filesystems-on-top.patch
 ApplyPatch ecryptfs-fix-handling-of-directory-opening.patch
 ApplyPatch ecryptfs-forbid-opening-files-without-mmap-handler.patch
 ApplyPatch sched-panic-on-corrupted-stack-end.patch
+
+#CVE-2016-4470 rhbz 1341716 1346626
+ApplyPatch KEYS-potential-uninitialized-variable.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2216,6 +2222,9 @@ fi
 #
 # 
 %changelog
+* Wed Jun 15 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-4470 keys: uninitialized variable crash (rhbz 1341716 1346626)
+
 * Mon Jun 13 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-1583 stack overflow via ecryptfs and /proc (rhbz 1344721 1344722)
 
