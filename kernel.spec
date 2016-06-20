@@ -639,6 +639,33 @@ Patch727: KEYS-potential-uninitialized-variable.patch
 #rhbz 1338025
 Patch728: hp-wmi-fix-wifi-cannot-be-hard-unblock.patch
 
+#skl_update_other_pipe_wm issue patch-series from drm-next, rhbz 1305038
+Patch801: 0001-drm-i915-Reorganize-WM-structs-unions-in-CRTC-state.patch
+Patch802: 0002-drm-i915-Rename-s-skl_compute_pipe_wm-skl_build_pipe.patch
+Patch803: 0003-drm-i915-gen9-Cache-plane-data-rates-in-CRTC-state.patch
+Patch804: 0004-drm-i915-gen9-Allow-calculation-of-data-rate-for-in-.patch
+Patch805: 0005-drm-i915-gen9-Store-plane-minimum-blocks-in-CRTC-wm-.patch
+Patch806: 0006-drm-i915-Track-whether-an-atomic-transaction-changes.patch
+Patch807: 0007-drm-i915-gen9-Allow-skl_allocate_pipe_ddb-to-operate.patch
+Patch808: 0008-drm-i915-Add-distrust_bios_wm-flag-to-dev_priv-v2.patch
+Patch809: 0009-drm-i915-gen9-Compute-DDB-allocation-at-atomic-check.patch
+Patch810: 0010-drm-i915-gen9-Drop-re-allocation-of-DDB-at-atomic-co.patch
+Patch811: 0011-drm-i915-gen9-Calculate-plane-WM-s-from-state.patch
+Patch812: 0012-drm-i915-gen9-Allow-watermark-calculation-on-in-flig.patch
+Patch813: 0013-drm-i915-gen9-Use-a-bitmask-to-track-dirty-pipe-wate.patch
+Patch814: 0014-drm-i915-gen9-Propagate-watermark-calculation-failur.patch
+Patch815: 0015-drm-i915-gen9-Calculate-watermarks-during-atomic-che.patch
+Patch816: 0016-drm-i915-gen9-Reject-display-updates-that-exceed-wm-.patch
+Patch817: 0017-drm-i915-Remove-wm_config-from-dev_priv-intel_atomic.patch
+
+#other drm/kms fixes (most Cc-ed stable)
+Patch821: 0001-drm-mgag200-Black-screen-fix-for-G200e-rev-4.patch
+Patch822: 0002-drm-nouveau-fbcon-fix-out-of-bounds-memory-accesses.patch
+Patch823: 0003-drm-nouveau-disp-sor-gf119-both-links-use-the-same-t.patch
+Patch824: 0004-drm-nouveau-disp-sor-gm107-training-pattern-register.patch
+Patch825: 0005-i915-fbc-Disable-on-HSW-by-default-for-now.patch
+Patch826: 0006-drm-core-Do-not-preserve-framebuffer-on-rmfb-v4.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2164,6 +2191,11 @@ fi
 #
 # 
 %changelog
+* Mon Jun 20 2016 Hans de Goede <jwrdegoede@fedoraproject.org>
+- Bring in patch-series from drm-next to fix skl_update_other_pipe_wm issues
+  (rhbz 1305038)
+- Cherry pick some other drm / kms fixes from upstream
+
 * Wed Jun 15 2016 Laura Abbott <labbott@fedoraproject.org>
 - hp-wmi: fix wifi cannot be hard-unblock (rhbz 1338025)
 
