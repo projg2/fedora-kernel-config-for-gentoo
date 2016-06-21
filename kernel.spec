@@ -518,8 +518,7 @@ Patch431: Fix-tegra-to-use-stdout-path-for-serial-console.patch
 
 Patch432: arm-i.MX6-Utilite-device-dtb.patch
 
-# mvebu DSA switch fixes
-# http://www.spinics.net/lists/netdev/msg370841.html http://www.spinics.net/lists/netdev/msg370842.html
+Patch433: bcm283x-upstream-fixes.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
@@ -2191,6 +2190,9 @@ fi
 #
 # 
 %changelog
+* Tue Jun 21 2016 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update patch from 4.5 with missing bits for bcm238x support
+
 * Mon Jun 20 2016 Hans de Goede <jwrdegoede@fedoraproject.org>
 - Bring in patch-series from drm-next to fix skl_update_other_pipe_wm issues
   (rhbz 1305038)
