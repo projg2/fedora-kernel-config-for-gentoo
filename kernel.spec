@@ -52,7 +52,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -638,20 +638,11 @@ Patch716: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_tin.patch
 #CVE-2016-0758 rhbz 1300257 1335386
 Patch717: KEYS-Fix-ASN.1-indefinite-length-object-parsing.patch
 
-#CVE-2016-4951 rhbz 1338625 1338626
-Patch720: tipc-check-nl-sock-before-parsing-nested-attributes.patch
-
 #CVE-2016-5243 rhbz 1343338 1343335
 Patch721: tipc-fix-an-infoleak-in-tipc_nl_compat_link_dump.patch
 
 #CVE-2016-5244 rhbz 1343338 1343337
 Patch722: rds-fix-an-infoleak-in-rds_inc_info_copy.txt
-
-#CVE-2016-1583 rhbz 1344721 1344722
-Patch723: proc-prevent-stacking-filesystems-on-top.patch
-Patch724: ecryptfs-fix-handling-of-directory-opening.patch
-Patch725: ecryptfs-forbid-opening-files-without-mmap-handler.patch
-Patch726: sched-panic-on-corrupted-stack-end.patch
 
 #CVE-2016-4470 rhbz 1341716 1346626
 Patch727: KEYS-potential-uninitialized-variable.patch
@@ -1358,20 +1349,11 @@ ApplyPatch ALSA-timer-Fix-leak-in-events-via-snd_timer_user_tin.patch
 #CVE-2016-0758 rhbz 1300257 1335386
 ApplyPatch KEYS-Fix-ASN.1-indefinite-length-object-parsing.patch
 
-#CVE-2016-4951 rhbz 1338625 1338626
-ApplyPatch tipc-check-nl-sock-before-parsing-nested-attributes.patch
-
 #CVE-2016-5243 rhbz 1343338 1343335
 ApplyPatch tipc-fix-an-infoleak-in-tipc_nl_compat_link_dump.patch
 
 #CVE-2016-5244 rhbz 1343338 1343337
 ApplyPatch rds-fix-an-infoleak-in-rds_inc_info_copy.txt
-
-#CVE-2016-1583 rhbz 1344721 1344722
-ApplyPatch proc-prevent-stacking-filesystems-on-top.patch
-ApplyPatch ecryptfs-fix-handling-of-directory-opening.patch
-ApplyPatch ecryptfs-forbid-opening-files-without-mmap-handler.patch
-ApplyPatch sched-panic-on-corrupted-stack-end.patch
 
 #CVE-2016-4470 rhbz 1341716 1346626
 ApplyPatch KEYS-potential-uninitialized-variable.patch
@@ -2228,6 +2210,9 @@ fi
 #
 # 
 %changelog
+* Fri Jun 24 2016 Laura Abbott <labbott@fedoraproject.org> - 4.4.14-200
+- Linux v4.4.14
+
 * Wed Jun 15 2016 Laura Abbott <labbott@fedoraproject.org>
 - hp-wmi: fix wifi cannot be hard-unblock (rhbz 1338025)
 

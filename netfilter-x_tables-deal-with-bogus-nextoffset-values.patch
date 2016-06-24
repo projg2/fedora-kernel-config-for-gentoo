@@ -1,6 +1,7 @@
-Subject:    [PATCH nf] netfilter: x_tables: deal with bogus nextoffset values
-From:       Florian Westphal <fw () strlen ! de>
-Date:       2016-03-10 0:56:02
+From 36d815b56409ca2fb562bb7aec5b17d08db25d8e Mon Sep 17 00:00:00 2001
+From: Florian Westphal <fw () strlen ! de>
+Date: Thu, 10 Mar 2016 00:56:02 -0800
+Subject: [PATCH] netfilter: x_tables: deal with bogus nextoffset values
 
 Ben Hawkes says:
 
@@ -28,10 +29,10 @@ Signed-off-by: Florian Westphal <fw@strlen.de>
  3 files changed, 22 insertions(+), 22 deletions(-)
 
 diff --git a/net/ipv4/netfilter/arp_tables.c b/net/ipv4/netfilter/arp_tables.c
-index b488cac..5a0b591 100644
+index 6e3e0e8..42b87c7 100644
 --- a/net/ipv4/netfilter/arp_tables.c
 +++ b/net/ipv4/netfilter/arp_tables.c
-@@ -437,6 +437,10 @@ static int mark_source_chains(const struct xt_table_info *newinfo,
+@@ -449,6 +449,10 @@ static int mark_source_chains(const struct xt_table_info *newinfo,
  
  				/* Move along one */
  				size = e->next_offset;
@@ -41,8 +42,8 @@ index b488cac..5a0b591 100644
 +
  				e = (struct arpt_entry *)
  					(entry0 + pos + size);
- 				e->counters.pcnt = pos;
-@@ -447,14 +451,6 @@ static int mark_source_chains(const struct xt_table_info *newinfo,
+ 				if (pos + size >= newinfo->size)
+@@ -461,14 +465,6 @@ static int mark_source_chains(const struct xt_table_info *newinfo,
  				if (strcmp(t->target.u.user.name,
  					   XT_STANDARD_TARGET) == 0 &&
  				    newpos >= 0) {
@@ -57,9 +58,9 @@ index b488cac..5a0b591 100644
  					/* This a jump; chase it. */
  					duprintf("Jump rule %u -> %u\n",
  						 pos, newpos);
-@@ -462,6 +458,10 @@ static int mark_source_chains(const struct xt_table_info *newinfo,
- 					/* ... this is a fallthru */
- 					newpos = pos + e->next_offset;
+@@ -482,6 +478,10 @@ static int mark_source_chains(const struct xt_table_info *newinfo,
+ 					if (newpos >= newinfo->size)
+ 						return 0;
  				}
 +
 +				if (newpos > newinfo->size - sizeof(*e))
@@ -69,10 +70,10 @@ index b488cac..5a0b591 100644
  					(entry0 + newpos);
  				e->counters.pcnt = pos;
 diff --git a/net/ipv4/netfilter/ip_tables.c b/net/ipv4/netfilter/ip_tables.c
-index b99affa..ceb995f 100644
+index a399c54..b08e186 100644
 --- a/net/ipv4/netfilter/ip_tables.c
 +++ b/net/ipv4/netfilter/ip_tables.c
-@@ -519,6 +519,10 @@ mark_source_chains(const struct xt_table_info *newinfo,
+@@ -530,6 +530,10 @@ mark_source_chains(const struct xt_table_info *newinfo,
  
  				/* Move along one */
  				size = e->next_offset;
@@ -82,8 +83,8 @@ index b99affa..ceb995f 100644
 +
  				e = (struct ipt_entry *)
  					(entry0 + pos + size);
- 				e->counters.pcnt = pos;
-@@ -529,13 +533,6 @@ mark_source_chains(const struct xt_table_info *newinfo,
+ 				if (pos + size >= newinfo->size)
+@@ -542,13 +546,6 @@ mark_source_chains(const struct xt_table_info *newinfo,
  				if (strcmp(t->target.u.user.name,
  					   XT_STANDARD_TARGET) == 0 &&
  				    newpos >= 0) {
@@ -97,9 +98,9 @@ index b99affa..ceb995f 100644
  					/* This a jump; chase it. */
  					duprintf("Jump rule %u -> %u\n",
  						 pos, newpos);
-@@ -543,6 +540,10 @@ mark_source_chains(const struct xt_table_info *newinfo,
- 					/* ... this is a fallthru */
- 					newpos = pos + e->next_offset;
+@@ -562,6 +559,10 @@ mark_source_chains(const struct xt_table_info *newinfo,
+ 					if (newpos >= newinfo->size)
+ 						return 0;
  				}
 +
 +				if (newpos > newinfo->size - sizeof(*e))
@@ -109,10 +110,10 @@ index b99affa..ceb995f 100644
  					(entry0 + newpos);
  				e->counters.pcnt = pos;
 diff --git a/net/ipv6/netfilter/ip6_tables.c b/net/ipv6/netfilter/ip6_tables.c
-index 99425cf..d88a794 100644
+index 22f39e0..1b6d4e7 100644
 --- a/net/ipv6/netfilter/ip6_tables.c
 +++ b/net/ipv6/netfilter/ip6_tables.c
-@@ -531,6 +531,8 @@ mark_source_chains(const struct xt_table_info *newinfo,
+@@ -542,6 +542,8 @@ mark_source_chains(const struct xt_table_info *newinfo,
  
  				/* Move along one */
  				size = e->next_offset;
@@ -120,8 +121,8 @@ index 99425cf..d88a794 100644
 +					return 0;
  				e = (struct ip6t_entry *)
  					(entry0 + pos + size);
- 				e->counters.pcnt = pos;
-@@ -541,13 +543,6 @@ mark_source_chains(const struct xt_table_info *newinfo,
+ 				if (pos + size >= newinfo->size)
+@@ -554,13 +556,6 @@ mark_source_chains(const struct xt_table_info *newinfo,
  				if (strcmp(t->target.u.user.name,
  					   XT_STANDARD_TARGET) == 0 &&
  				    newpos >= 0) {
@@ -135,9 +136,9 @@ index 99425cf..d88a794 100644
  					/* This a jump; chase it. */
  					duprintf("Jump rule %u -> %u\n",
  						 pos, newpos);
-@@ -555,6 +550,10 @@ mark_source_chains(const struct xt_table_info *newinfo,
- 					/* ... this is a fallthru */
- 					newpos = pos + e->next_offset;
+@@ -574,6 +569,10 @@ mark_source_chains(const struct xt_table_info *newinfo,
+ 					if (newpos >= newinfo->size)
+ 						return 0;
  				}
 +
 +				if (newpos > newinfo->size - sizeof(*e))
@@ -147,4 +148,5 @@ index 99425cf..d88a794 100644
  					(entry0 + newpos);
  				e->counters.pcnt = pos;
 -- 
-2.4.10
+2.5.5
+
