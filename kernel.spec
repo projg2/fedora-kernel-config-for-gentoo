@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -604,9 +604,6 @@ Patch571: ideapad-laptop-Add-Lenovo-ideapad-Y700-17ISK-to-no_h.patch
 #Required for some persistent memory options
 Patch641: disable-CONFIG_EXPERT-for-ZONE_DMA.patch
 
-#CVE-2016-3134 rhbz 1317383 1317384
-Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
-
 #CVE-2016-4482 rhbz 1332931 1332932
 Patch706: USB-usbfs-fix-potential-infoleak-in-devio.patch
 
@@ -618,19 +615,11 @@ Patch716: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_tin.patch
 #CVE-2016-4440 rhbz 1337806 1337807
 Patch719: kvm-vmx-more-complete-state-update-on-APICv-on-off.patch
 
-#CVE-2016-4951 rhbz 1338625 1338626
-Patch720: tipc-check-nl-sock-before-parsing-nested-attributes.patch
-
 #CVE-2016-5243 rhbz 1343338 1343335
 Patch721: tipc-fix-an-infoleak-in-tipc_nl_compat_link_dump.patch
 
 #CVE-2016-5244 rhbz 1343338 1343337
 Patch722: rds-fix-an-infoleak-in-rds_inc_info_copy.txt
-
-#CVE-2016-1583 rhbz 1344721 1344722
-Patch723: proc-prevent-stacking-filesystems-on-top.patch
-Patch725: ecryptfs-forbid-opening-files-without-mmap-handler.patch
-Patch726: sched-panic-on-corrupted-stack-end.patch
 
 #CVE-2016-4470 rhbz 1341716 1346626
 Patch727: KEYS-potential-uninitialized-variable.patch
@@ -663,7 +652,6 @@ Patch822: 0002-drm-nouveau-fbcon-fix-out-of-bounds-memory-accesses.patch
 Patch823: 0003-drm-nouveau-disp-sor-gf119-both-links-use-the-same-t.patch
 Patch824: 0004-drm-nouveau-disp-sor-gm107-training-pattern-register.patch
 Patch825: 0005-i915-fbc-Disable-on-HSW-by-default-for-now.patch
-Patch826: 0006-drm-core-Do-not-preserve-framebuffer-on-rmfb-v4.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2190,6 +2178,9 @@ fi
 #
 # 
 %changelog
+* Fri Jun 24 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v4.6.3
+
 * Tue Jun 21 2016 Peter Robinson <pbrobinson@fedoraproject.org>
 - Update patch from 4.5 with missing bits for bcm238x support
 
