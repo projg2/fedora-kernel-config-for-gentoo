@@ -673,6 +673,9 @@ Patch728: hp-wmi-fix-wifi-cannot-be-hard-unblock.patch
 #CVE-2016-4998 rhbz 1349886 1350316
 Patch729: CVE-2016-4998.patch
 
+#CVE-2016-5829 rhbz 1350509 1350513
+Patch826: HID-hiddev-validate-num_values-for-HIDIOCGUSAGES-HID.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2190,7 +2193,10 @@ fi
 #
 # 
 %changelog
-* Mon Jun 27 2016 Justin M. Forbes <jforbes@fedoraproject.org> 4.5.7-201
+* Mon Jun 27 2016 Josh Boyer <jwboyer@fedoraproject.org> - 4.5.7-201
+- CVE-2016-5829 heap overflow in hiddev (rhbz 1350509 1350513)
+
+* Mon Jun 27 2016 Justin M. Forbes <jforbes@fedoraproject.org>
 - CVE-2016-4998 oob reads when processing IPT_SO_SET_REPLACE setsockopt (rhbz 1349886 1350316)
 
 * Wed Jun 15 2016 Laura Abbott <labbott@fedoraproject.org>
