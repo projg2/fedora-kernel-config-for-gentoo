@@ -650,6 +650,9 @@ Patch727: KEYS-potential-uninitialized-variable.patch
 #rhbz 1338025
 Patch728: hp-wmi-fix-wifi-cannot-be-hard-unblock.patch
 
+#CVE-2016-5829 rhbz 1350509 1350513
+Patch826: HID-hiddev-validate-num_values-for-HIDIOCGUSAGES-HID.patch
+
 # END OF PATCH DEFINITIONS
 %endif
 
@@ -1360,6 +1363,9 @@ ApplyPatch KEYS-potential-uninitialized-variable.patch
 
 #rhbz 1338025
 ApplyPatch hp-wmi-fix-wifi-cannot-be-hard-unblock.patch
+
+#CVE-2016-5829 rhbz 1350509 1350513
+ApplyPatch HID-hiddev-validate-num_values-for-HIDIOCGUSAGES-HID.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -2210,6 +2216,9 @@ fi
 #
 # 
 %changelog
+* Mon Jun 27 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-5829 heap overflow in hiddev (rhbz 1350509 1350513)
+
 * Fri Jun 24 2016 Laura Abbott <labbott@fedoraproject.org> - 4.4.14-200
 - Linux v4.4.14
 
