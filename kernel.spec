@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -669,6 +669,9 @@ Patch727: KEYS-potential-uninitialized-variable.patch
 
 #rhbz 1338025
 Patch728: hp-wmi-fix-wifi-cannot-be-hard-unblock.patch
+
+#CVE-2016-4998 rhbz 1349886 1350316
+Patch729: CVE-2016-4998.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2187,6 +2190,9 @@ fi
 #
 # 
 %changelog
+* Mon Jun 27 2016 Justin M. Forbes <jforbes@fedoraproject.org> 4.5.7-201
+- CVE-2016-4998 oob reads when processing IPT_SO_SET_REPLACE setsockopt (rhbz 1349886 1350316)
+
 * Wed Jun 15 2016 Laura Abbott <labbott@fedoraproject.org>
 - hp-wmi: fix wifi cannot be hard-unblock (rhbz 1338025)
 
