@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 202
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -620,9 +620,6 @@ Patch648: 0001-mm-CONFIG_NR_ZONES_EXTENDED.patch
 #CVE-2016-3135 rhbz 1317386 1317387
 Patch664: netfilter-x_tables-check-for-size-overflow.patch
 
-#CVE-2016-3134 rhbz 1317383 1317384
-Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
-
 # CVE-2016-3672 rhbz 1324749 1324750
 Patch689: x86-mm-32-Enable-full-randomization-on-i386-and-X86_.patch
 
@@ -672,6 +669,9 @@ Patch728: hp-wmi-fix-wifi-cannot-be-hard-unblock.patch
 
 #CVE-2016-4998 rhbz 1349886 1350316
 Patch729: CVE-2016-4998.patch
+
+#CVE-2016-4998 rhbz 1349886 1350316
+Patch730: netfilter-more-fixes.patch
 
 #CVE-2016-5829 rhbz 1350509 1350513
 Patch826: HID-hiddev-validate-num_values-for-HIDIOCGUSAGES-HID.patch
@@ -2200,6 +2200,9 @@ fi
 #
 # 
 %changelog
+* Tue Jun 28 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.5.7-202
+- CVE-2016-4998 oob reads when processing IPT_SO_SET_REPLACE setsockopt (rhbz 1349886 1350316)
+
 * Tue Jun 28 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-1237 missing check for permissions setting ACL (rhbz 1350845 1350847)
 - CVE-2016-5728 race condition in mic driver (rhbz 1350811 1350812)
