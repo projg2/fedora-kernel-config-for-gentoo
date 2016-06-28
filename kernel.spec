@@ -676,6 +676,9 @@ Patch729: CVE-2016-4998.patch
 #CVE-2016-5829 rhbz 1350509 1350513
 Patch826: HID-hiddev-validate-num_values-for-HIDIOCGUSAGES-HID.patch
 
+#CVE-2016-5728 rhbz 1350811 1350812
+Patch827: misc-mic-Fix-for-double-fetch-security-bug-in-mic_co.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2193,6 +2196,9 @@ fi
 #
 # 
 %changelog
+* Tue Jun 28 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-5728 race condition in mic driver (rhbz 1350811 1350812)
+
 * Mon Jun 27 2016 Josh Boyer <jwboyer@fedoraproject.org> - 4.5.7-201
 - CVE-2016-5829 heap overflow in hiddev (rhbz 1350509 1350513)
 
