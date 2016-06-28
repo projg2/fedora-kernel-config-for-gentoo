@@ -679,6 +679,10 @@ Patch826: HID-hiddev-validate-num_values-for-HIDIOCGUSAGES-HID.patch
 #CVE-2016-5728 rhbz 1350811 1350812
 Patch827: misc-mic-Fix-for-double-fetch-security-bug-in-mic_co.patch
 
+#CVE-2016-1237 rhbz 1350845 1350847
+Patch830: posix_acl-Add-set_posix_acl.patch
+Patch831: nfsd-check-permissions-when-setting-ACLs.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2197,6 +2201,7 @@ fi
 # 
 %changelog
 * Tue Jun 28 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-1237 missing check for permissions setting ACL (rhbz 1350845 1350847)
 - CVE-2016-5728 race condition in mic driver (rhbz 1350811 1350812)
 
 * Mon Jun 27 2016 Josh Boyer <jwboyer@fedoraproject.org> - 4.5.7-201
