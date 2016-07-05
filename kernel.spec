@@ -42,19 +42,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 202
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 5
+%define base_sublevel 6
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -506,29 +506,20 @@ Patch422: geekbox-v4-device-tree-support.patch
 # http://www.spinics.net/lists/arm-kernel/msg483898.html
 Patch423: Initial-AllWinner-A64-and-PINE64-support.patch
 
+Patch424: net-smsc911x-Fix-bug-where-PHY-interrupts-are-overwritten-by-0.patch
+
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
 Patch426: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
 # http://patchwork.ozlabs.org/patch/587554/
 Patch430: ARM-tegra-usb-no-reset.patch
 
-Patch431: arm-i.MX6-Utilite-device-dtb.patch
-
 # http://www.spinics.net/lists/linux-tegra/msg25152.html
 Patch432: Fix-tegra-to-use-stdout-path-for-serial-console.patch
 
-Patch433: bcm283x-Pull-upstream-fixes-plus-iproc-mmc-driver.patch
+Patch431: arm-i.MX6-Utilite-device-dtb.patch
 
-# http://www.spinics.net/lists/netdev/msg369442.html
-Patch434: revert-stmmac-Fix-eth0-No-PHY-found-regression.patch
-Patch435: stmmac-fix-MDIO-settings.patch
-
-Patch436: ARM-mvebu-change-order-of-ethernet-DT-nodes-on-Armada-38x.patch
-
-# mvebu DSA switch fixes
-# http://www.spinics.net/lists/netdev/msg370841.html http://www.spinics.net/lists/netdev/msg370842.html
-Patch438: 0001-net-dsa-mv88e6xxx-Introduce-_mv88e6xxx_phy_page_-rea.patch
-Patch439: 0002-net-dsa-mv88e6xxx-Clear-the-PDOWN-bit-on-setup.patch
+Patch433: bcm283x-upstream-fixes.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
@@ -611,27 +602,6 @@ Patch508: kexec-uefi-copy-secure_boot-flag-in-boot-params.patch
 #Required for some persistent memory options
 Patch641: disable-CONFIG_EXPERT-for-ZONE_DMA.patch
 
-#rhbz 1255325
-Patch646: HID-sony-do-not-bail-out-when-the-sixaxis-refuses-th.patch
-
-#rhbz 1309658
-Patch648: 0001-mm-CONFIG_NR_ZONES_EXTENDED.patch
-
-#CVE-2016-3135 rhbz 1317386 1317387
-Patch664: netfilter-x_tables-check-for-size-overflow.patch
-
-# CVE-2016-3672 rhbz 1324749 1324750
-Patch689: x86-mm-32-Enable-full-randomization-on-i386-and-X86_.patch
-
-#rhbz 1302071
-Patch702: x86-build-Build-compressed-x86-kernels-as-PIE.patch
-
-# Stop splashing crap about broken firmware BGRT
-Patch704: x86-efi-bgrt-Switch-all-pr_err-to-pr_debug-for-inval.patch
-
-#rhbz 1331092
-Patch705: mm-thp-kvm-fix-memory-corruption-in-KVM-with-THP-ena.patch
-
 #CVE-2016-4482 rhbz 1332931 1332932
 Patch706: USB-usbfs-fix-potential-infoleak-in-devio.patch
 
@@ -640,14 +610,8 @@ Patch714: ALSA-timer-Fix-leak-in-SNDRV_TIMER_IOCTL_PARAMS.patch
 Patch715: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_cca.patch
 Patch716: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_tin.patch
 
-#CVE-2016-0758 rhbz 1300257 1335386
-Patch717: KEYS-Fix-ASN.1-indefinite-length-object-parsing.patch
-
 #CVE-2016-4440 rhbz 1337806 1337807
 Patch719: kvm-vmx-more-complete-state-update-on-APICv-on-off.patch
-
-#CVE-2016-4951 rhbz 1338625 1338626
-Patch720: tipc-check-nl-sock-before-parsing-nested-attributes.patch
 
 #CVE-2016-5243 rhbz 1343338 1343335
 Patch721: tipc-fix-an-infoleak-in-tipc_nl_compat_link_dump.patch
@@ -655,29 +619,40 @@ Patch721: tipc-fix-an-infoleak-in-tipc_nl_compat_link_dump.patch
 #CVE-2016-5244 rhbz 1343338 1343337
 Patch722: rds-fix-an-infoleak-in-rds_inc_info_copy.txt
 
-#CVE-2016-1583 rhbz 1344721 1344722
-Patch723: proc-prevent-stacking-filesystems-on-top.patch
-Patch724: ecryptfs-fix-handling-of-directory-opening.patch
-Patch725: ecryptfs-forbid-opening-files-without-mmap-handler.patch
-Patch726: sched-panic-on-corrupted-stack-end.patch
-
 #CVE-2016-4470 rhbz 1341716 1346626
 Patch727: KEYS-potential-uninitialized-variable.patch
 
 #rhbz 1338025
 Patch728: hp-wmi-fix-wifi-cannot-be-hard-unblock.patch
 
-#CVE-2016-4998 rhbz 1349886 1350316
-Patch729: CVE-2016-4998.patch
+#skl_update_other_pipe_wm issue patch-series from drm-next, rhbz 1305038
+Patch801: 0001-drm-i915-Reorganize-WM-structs-unions-in-CRTC-state.patch
+Patch802: 0002-drm-i915-Rename-s-skl_compute_pipe_wm-skl_build_pipe.patch
+Patch803: 0003-drm-i915-gen9-Cache-plane-data-rates-in-CRTC-state.patch
+Patch804: 0004-drm-i915-gen9-Allow-calculation-of-data-rate-for-in-.patch
+Patch805: 0005-drm-i915-gen9-Store-plane-minimum-blocks-in-CRTC-wm-.patch
+Patch806: 0006-drm-i915-Track-whether-an-atomic-transaction-changes.patch
+Patch807: 0007-drm-i915-gen9-Allow-skl_allocate_pipe_ddb-to-operate.patch
+Patch808: 0008-drm-i915-Add-distrust_bios_wm-flag-to-dev_priv-v2.patch
+Patch809: 0009-drm-i915-gen9-Compute-DDB-allocation-at-atomic-check.patch
+Patch810: 0010-drm-i915-gen9-Drop-re-allocation-of-DDB-at-atomic-co.patch
+Patch811: 0011-drm-i915-gen9-Calculate-plane-WM-s-from-state.patch
+Patch812: 0012-drm-i915-gen9-Allow-watermark-calculation-on-in-flig.patch
+Patch813: 0013-drm-i915-gen9-Use-a-bitmask-to-track-dirty-pipe-wate.patch
+Patch814: 0014-drm-i915-gen9-Propagate-watermark-calculation-failur.patch
+Patch815: 0015-drm-i915-gen9-Calculate-watermarks-during-atomic-che.patch
+Patch816: 0016-drm-i915-gen9-Reject-display-updates-that-exceed-wm-.patch
+Patch817: 0017-drm-i915-Remove-wm_config-from-dev_priv-intel_atomic.patch
 
-#CVE-2016-4998 rhbz 1349886 1350316
-Patch730: netfilter-more-fixes.patch
+#other drm/kms fixes (most Cc-ed stable)
+Patch821: 0001-drm-mgag200-Black-screen-fix-for-G200e-rev-4.patch
+Patch822: 0002-drm-nouveau-fbcon-fix-out-of-bounds-memory-accesses.patch
+Patch823: 0003-drm-nouveau-disp-sor-gf119-both-links-use-the-same-t.patch
+Patch824: 0004-drm-nouveau-disp-sor-gm107-training-pattern-register.patch
+Patch825: 0005-i915-fbc-Disable-on-HSW-by-default-for-now.patch
 
 #CVE-2016-5829 rhbz 1350509 1350513
 Patch826: HID-hiddev-validate-num_values-for-HIDIOCGUSAGES-HID.patch
-
-#CVE-2016-5728 rhbz 1350811 1350812
-Patch827: misc-mic-Fix-for-double-fetch-security-bug-in-mic_co.patch
 
 #CVE-2016-1237 rhbz 1350845 1350847
 Patch830: posix_acl-Add-set_posix_acl.patch
@@ -2200,6 +2175,10 @@ fi
 #
 # 
 %changelog
+* Tue Jul 05 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Linux v4.6.3
+- CVE-2016-6130 s390x race condition in sclp leads to info leak (rhbz 1352558 1352559)
+
 * Tue Jun 28 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.5.7-202
 - CVE-2016-4998 oob reads when processing IPT_SO_SET_REPLACE setsockopt (rhbz 1349886 1350316)
 
