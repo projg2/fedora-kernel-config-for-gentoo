@@ -658,6 +658,9 @@ Patch826: HID-hiddev-validate-num_values-for-HIDIOCGUSAGES-HID.patch
 Patch830: posix_acl-Add-set_posix_acl.patch
 Patch831: nfsd-check-permissions-when-setting-ACLs.patch
 
+#CVE-2016-6156 rhbz 1353490 1353491
+Patch832: platform-chrome-cros_ec_dev-double-fetch-bug-in-ioct.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2175,6 +2178,9 @@ fi
 #
 # 
 %changelog
+* Thu Jul 07 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-6156 race condition in chrome chardev driver (rhbz 1353490 1353491)
+
 * Tue Jul 05 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - Linux v4.6.3
 - CVE-2016-6130 s390x race condition in sclp leads to info leak (rhbz 1352558 1352559)
