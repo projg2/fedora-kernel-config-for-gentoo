@@ -1480,6 +1480,9 @@ BuildKernel() {
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
     cp .config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp -a scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    if [ -f tools/objtool/objtool ]; then
+      cp -a tools/objtool/objtool $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/objtool/ || :
+    fi
     if [ -d arch/$Arch/scripts ]; then
       cp -a arch/$Arch/scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/arch/%{_arch} || :
     fi
@@ -2184,6 +2187,9 @@ fi
 #
 # 
 %changelog
+* Fri Jul 08 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Make sure to package objtool
+
 * Thu Jul 07 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - Fix oops in qla2xxx driver (rhbz 1346753)
 - Fix blank screen on some nvidia cards (rbhz 1351205)
