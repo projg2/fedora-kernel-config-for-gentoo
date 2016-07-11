@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2187,6 +2187,9 @@ fi
 #
 # 
 %changelog
+* Mon Jul 11 2016 Josh Boyer <jwboyer@fedoraproject.org> - 4.6.4-200
+- Linux v4.6.4
+
 * Fri Jul 08 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - Make sure to package objtool
 
