@@ -667,6 +667,9 @@ Patch833: drm-nouveau-disp-sor-gf119-select-correct-sor-when.patch
 #rhbz 1346753
 Patch834: qla2xxx-Fix-NULL-pointer-deref-in-QLA-interrupt.patch
 
+#CVE-2016-5389 CVE-2016-5969 rhbz 1354708 1355615
+Patch835: tcp-make-challenge-acks-less-predictable.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2187,6 +2190,9 @@ fi
 #
 # 
 %changelog
+* Tue Jul 12 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- CVE-2016-5389 CVE-2016-5969 tcp challenge ack info leak (rhbz 1354708 1355615)
+
 * Mon Jul 11 2016 Josh Boyer <jwboyer@fedoraproject.org> - 4.6.4-200
 - Linux v4.6.4
 
