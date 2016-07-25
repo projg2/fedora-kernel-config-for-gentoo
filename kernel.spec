@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 6
+%define base_sublevel 7
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -371,7 +371,7 @@ Requires: kernel-modules-uname-r = %{KVERREL}%{?variant}
 # List the packages used during the kernel build
 #
 BuildRequires: kmod, patch, bash, sh-utils, tar, git
-BuildRequires: bzip2, xz, findutils, gzip, m4, perl, perl-Carp, make, diffutils, gawk
+BuildRequires: bzip2, xz, findutils, gzip, m4, perl, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
 BuildRequires: net-tools, hostname, bc
 %if %{with_sparse}
@@ -499,13 +499,15 @@ Source5005: kbuild-AFTER_LINK.patch
 
 Patch420: arm64-avoid-needing-console-to-enable-serial-console.patch
 
-Patch421: arm64-acpi-drop-expert-patch.patch
-
 # http://www.spinics.net/lists/arm-kernel/msg490981.html
 Patch422: geekbox-v4-device-tree-support.patch
 
 # http://www.spinics.net/lists/arm-kernel/msg483898.html
-Patch423: Initial-AllWinner-A64-and-PINE64-support.patch
+# This has major conflicts and needs to be rebased
+# Patch423: Initial-AllWinner-A64-and-PINE64-support.patch
+
+Patch424: arm64-pcie-acpi.patch
+Patch425: arm64-pcie-quirks-xgene.patch
 
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
 Patch426: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
@@ -513,12 +515,9 @@ Patch426: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 # http://patchwork.ozlabs.org/patch/587554/
 Patch430: ARM-tegra-usb-no-reset.patch
 
-# http://www.spinics.net/lists/linux-tegra/msg25152.html
-Patch431: Fix-tegra-to-use-stdout-path-for-serial-console.patch
+Patch431: bcm283x-upstream-fixes.patch
 
 Patch432: arm-i.MX6-Utilite-device-dtb.patch
-
-Patch433: bcm283x-upstream-fixes.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
@@ -556,8 +555,6 @@ Patch482: Add-option-to-automatically-enforce-module-signature.patch
 
 Patch483: efi-Disable-secure-boot-if-shim-is-in-insecure-mode.patch
 
-Patch484: efi-Make-EFI_SECURE_BOOT_SIG_ENFORCE-depend-on-EFI.patch
-
 Patch485: efi-Add-EFI_SECURE_BOOT-bit.patch
 
 Patch486: hibernate-Disable-in-a-signed-modules-environment.patch
@@ -566,6 +563,9 @@ Patch487: Add-EFI-signature-data-types.patch
 
 Patch488: Add-an-EFI-signature-blob-parser-and-key-loader.patch
 
+# This doesn't apply. It seems like it could be replaced by
+# https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=5ac7eace2d00eab5ae0e9fdee63e38aee6001f7c
+# which has an explicit line about blacklisting
 Patch489: KEYS-Add-a-system-blacklist-keyring.patch
 
 Patch490: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
@@ -598,31 +598,11 @@ Patch502: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
 
 Patch508: kexec-uefi-copy-secure_boot-flag-in-boot-params.patch
 
-#rhbz 1286293
-Patch571: ideapad-laptop-Add-Lenovo-ideapad-Y700-17ISK-to-no_h.patch
-
 #Required for some persistent memory options
 Patch641: disable-CONFIG_EXPERT-for-ZONE_DMA.patch
 
-#CVE-2016-4482 rhbz 1332931 1332932
-Patch706: USB-usbfs-fix-potential-infoleak-in-devio.patch
-
-#CVE-2016-4569 rhbz 1334643 1334645
-Patch714: ALSA-timer-Fix-leak-in-SNDRV_TIMER_IOCTL_PARAMS.patch
-Patch715: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_cca.patch
-Patch716: ALSA-timer-Fix-leak-in-events-via-snd_timer_user_tin.patch
-
-#CVE-2016-4440 rhbz 1337806 1337807
-Patch719: kvm-vmx-more-complete-state-update-on-APICv-on-off.patch
-
-#CVE-2016-5243 rhbz 1343338 1343335
-Patch721: tipc-fix-an-infoleak-in-tipc_nl_compat_link_dump.patch
-
-#CVE-2016-5244 rhbz 1343338 1343337
-Patch722: rds-fix-an-infoleak-in-rds_inc_info_copy.txt
-
-#CVE-2016-4470 rhbz 1341716 1346626
-Patch727: KEYS-potential-uninitialized-variable.patch
+#CVE-2016-3134 rhbz 1317383 1317384
+Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 
 #rhbz 1338025
 Patch728: hp-wmi-fix-wifi-cannot-be-hard-unblock.patch
@@ -646,12 +626,16 @@ Patch815: 0015-drm-i915-gen9-Calculate-watermarks-during-atomic-che.patch
 Patch816: 0016-drm-i915-gen9-Reject-display-updates-that-exceed-wm-.patch
 Patch817: 0017-drm-i915-Remove-wm_config-from-dev_priv-intel_atomic.patch
 
-#other drm/kms fixes (most Cc-ed stable)
-Patch821: 0001-drm-mgag200-Black-screen-fix-for-G200e-rev-4.patch
-Patch822: 0002-drm-nouveau-fbcon-fix-out-of-bounds-memory-accesses.patch
-Patch823: 0003-drm-nouveau-disp-sor-gf119-both-links-use-the-same-t.patch
-Patch824: 0004-drm-nouveau-disp-sor-gm107-training-pattern-register.patch
-Patch825: 0005-i915-fbc-Disable-on-HSW-by-default-for-now.patch
+#Workaround for glibc update
+Patch835: 0001-Work-around-for-addition-of-metag-def-but-not-reloca.patch
+
+# https://lists.fedoraproject.org/archives/list/kernel@lists.fedoraproject.org/message/A4YCP7OGMX6JLFT5V44H57GOMAQLC3M4/
+Patch837: drm-amdgpu-Disable-RPM-helpers-while-reprobing.patch
+Patch838: drm-i915-skl-Add-support-for-the-SAGV-fix-underrun-hangs.patch
+Patch839: Revert-ALSA-hda-remove-controller-dependency-on-i915.patch
+
+#CVE-2016-6136 rhbz 1353533 1353534
+Patch841: audit-fix-a-double-fetch-in-audit_log_single_execve_arg.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2094,7 +2078,7 @@ fi
 %ifarch %{cpupowerarchs}
 %files -n kernel-tools-libs
 %{_libdir}/libcpupower.so.0
-%{_libdir}/libcpupower.so.0.0.0
+%{_libdir}/libcpupower.so.0.0.1
 
 %files -n kernel-tools-libs-devel
 %{_libdir}/libcpupower.so
