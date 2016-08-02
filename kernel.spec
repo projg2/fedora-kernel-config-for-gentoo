@@ -631,8 +631,7 @@ Patch835: 0001-Work-around-for-addition-of-metag-def-but-not-reloca.patch
 
 # https://lists.fedoraproject.org/archives/list/kernel@lists.fedoraproject.org/message/A4YCP7OGMX6JLFT5V44H57GOMAQLC3M4/
 Patch837: drm-amdgpu-Disable-RPM-helpers-while-reprobing.patch
-Patch838: drm-i915-skl-Add-support-for-the-SAGV-fix-underrun-hangs.patch
-Patch839: Revert-ALSA-hda-remove-controller-dependency-on-i915.patch
+Patch838: drm-i915-Acquire-audio-powerwell-for-HD-Audio-regist.patch
 
 #CVE-2016-6136 rhbz 1353533 1353534
 Patch841: audit-fix-a-double-fetch-in-audit_log_single_execve_arg.patch
@@ -2175,6 +2174,10 @@ fi
 #
 # 
 %changelog
+* Tue Aug  2 2016 Hans de Goede <jwrdegoede@fedoraproject.org>
+- Sync skylake hdaudio __unclaimed_reg WARN_ON fix with latest upstream version
+- Drop drm-i915-skl-Add-support-for-the-SAGV-fix-underrun-hangs.patch for now
+
 * Thu Jul 28 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-5412 powerpc: kvm: Infinite loop in HV mode (rhbz 1349916 1361040)
 
