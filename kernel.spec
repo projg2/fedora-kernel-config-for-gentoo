@@ -642,8 +642,7 @@ Patch839: tcp-enable-per-socket-rate-limiting-of-all-challenge.patch
 
 # https://lists.fedoraproject.org/archives/list/kernel@lists.fedoraproject.org/message/A4YCP7OGMX6JLFT5V44H57GOMAQLC3M4/
 Patch836: drm-amdgpu-Disable-RPM-helpers-while-reprobing.patch
-Patch837: drm-i915-skl-Add-support-for-the-SAGV-fix-underrun-hangs.patch
-Patch838: Revert-ALSA-hda-remove-controller-dependency-on-i915.patch
+Patch837: drm-i915-Acquire-audio-powerwell-for-HD-Audio-regist.patch
 
 #CVE-2016-6136 rhbz 1353533 1353534
 Patch841: audit-fix-a-double-fetch-in-audit_log_single_execve_arg.patch
@@ -2172,6 +2171,11 @@ fi
 #
 # 
 %changelog
+* Fri Aug 11 2016 Laura Abbott <labbott@fedoraproject.org>
+- Bring in fixes from f24
+ - Sync skylake hdaudio __unclaimed_reg WARN_ON fix with latest upstream version
+ - Drop drm-i915-skl-Add-support-for-the-SAGV-fix-underrun-hangs.patch for now
+
 * Wed Aug 10 2016 Laura Abbott <labbott@fedoraproject.org> - 4.6.6-200
 - Linux v4.6.6
 
