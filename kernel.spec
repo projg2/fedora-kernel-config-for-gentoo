@@ -2186,6 +2186,9 @@ fi
 #
 # 
 %changelog
+* Mon Aug 08 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Build CONFIG_POWERNV_CPUFREQ in on ppc64* (rhbz 1351346)
+
 * Thu Jul 28 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - CVE-2016-5412 powerpc: kvm: Infinite loop in HV mode (rhbz 1349916 1361040)
 
