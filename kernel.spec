@@ -519,6 +519,8 @@ Patch431: bcm283x-upstream-fixes.patch
 
 Patch432: arm-i.MX6-Utilite-device-dtb.patch
 
+Patch433: ARM-tegra-fix-erroneous-address-in-dts.patch
+
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
 Patch466: input-kill-stupid-messages.patch
@@ -2174,6 +2176,10 @@ fi
 #
 # 
 %changelog
+* Mon Aug 15 2016 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable Atmel i2c TPM on ARM platforms
+- Add upstream patch to fix boot on Jetson TK1
+
 * Mon Aug 08 2016 Josh Boyer <jwboyer@fedoraproject.org>
 - Build CONFIG_POWERNV_CPUFREQ in on ppc64* (rhbz 1351346)
 
