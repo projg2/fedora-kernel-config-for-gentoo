@@ -2174,7 +2174,7 @@ fi
 - Linux v4.6.7
 - Fix for crash seen with Open Stack (rhbz 1361414)
 
-* Fri Aug 11 2016 Laura Abbott <labbott@fedoraproject.org>
+* Fri Aug 12 2016 Laura Abbott <labbott@fedoraproject.org>
 - Bring in fixes from f24
  - Sync skylake hdaudio __unclaimed_reg WARN_ON fix with latest upstream version
  - Drop drm-i915-skl-Add-support-for-the-SAGV-fix-underrun-hangs.patch for now
