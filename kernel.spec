@@ -2161,7 +2161,7 @@ fi
 #
 # 
 %changelog
-* Wed Sep 07 2017 <labbott@fedoraproject.org> - 4.7.3-100
+* Wed Sep 07 2016 <labbott@fedoraproject.org> - 4.7.3-100
 - Linux v4.7.3
 - Silence KASLR warning (rhbz 1350174)
 
