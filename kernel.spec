@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -621,14 +621,8 @@ Patch817: 0017-drm-i915-Remove-wm_config-from-dev_priv-intel_atomic.patch
 #rhbz 1353558
 Patch844: 0001-selinux-Only-apply-bounds-checking-to-source-types.patch
 
-#rhbz 1365940
-Patch856: 0001-udp-fix-poll-issue-with-zero-sized-packets.patch
-
 #rhbz 13700161
 Patch857: kernel-panic-TPROXY-vanilla-4.7.1.patch
-
-# lkml.kernel.org/r/<20160822093249.GA14916@dhcp22.suse.cz>
-Patch858: 0001-OOM-detection-regressions-since-4.7.patch
 
 #rhbz 1360688
 Patch859: rc-core-fix-repeat-events.patch
@@ -2167,6 +2161,9 @@ fi
 #
 # 
 %changelog
+* Mon Sep 26 2016 Laura Abbott <labbott@fedoraproject.org> - 4.7.5-100
+- Linux v4.7.5
+
 * Mon Sep 19 2016 Justin M. Forbes <jforbes@fedoraproject.org>
 - CVE-2016-7425 SCSI arcmsr buffer overflow (rhbz 1377330 1377331)
 
