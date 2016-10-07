@@ -2167,7 +2167,7 @@ fi
 #
 # 
 %changelog
-* Fri Oct 07 2016 Laura Abbott <labbott@redhat.com> - 4.7.7
+* Fri Oct 07 2016 Laura Abbott <labbott@redhat.com> - 4.7.7-200
 - Linux v4.7.7
 
 * Mon Oct 03 2016 Laura Abbott <labbott@fedoraproject.org> - 4.7.6-200
