@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2167,6 +2167,9 @@ fi
 #
 # 
 %changelog
+* Mon Oct 17 2016 Laura Abbott <labbott@redhat.com> - 4.7.8-200
+- Linux v4.7.8
+
 * Fri Oct 07 2016 Laura Abbott <labbott@redhat.com> - 4.7.7-200
 - Linux v4.7.7
 
