@@ -2161,6 +2161,9 @@ fi
 #
 # 
 %changelog
+* Tue Oct 18 2016 Peter Robinson <pbrobinson@fedoraproject.org>
+- Build in AXP20X_I2C (should fix rhbz 1352140)
+
 * Mon Oct 17 2016 Laura Abbott <labbott@redhat.com> - 4.7.8-100
 - Linux v4.7.8
 
