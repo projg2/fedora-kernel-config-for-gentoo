@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2167,6 +2167,10 @@ fi
 #
 # 
 %changelog
+* Thu Oct 20 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.7.9-200
+- Linux v4.7.9
+- CVE-2016-5195 (rhbz 1384344 1387080)
+
 * Tue Oct 18 2016 Peter Robinson <pbrobinson@fedoraproject.org>
 - Build in AXP20X_I2C (should fix rhbz 1352140)
 
