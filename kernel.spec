@@ -636,6 +636,9 @@ Patch863: 0001-cpupower-Correct-return-type-of-cpu_power_is_cpu_onl.patch
 #ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch864: 0001-iio-Use-event-header-from-kernel-tree.patch
 
+# CVE-2016-9083 CVE-2016-9084 rhbz 1389258 1389259 1389285
+Patch865: v3-vfio-pci-Fix-integer-overflows-bitmask-check.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2158,6 +2161,9 @@ fi
 #
 # 
 %changelog
+* Thu Oct 27 2016 Justin M. Forbes <jforbes@fedoraproject.org>
+- CVE-2016-9083 CVE-2016-9084 vfio multiple flaws (rhbz 1389258 1389259 1389285)
+
 * Wed Oct 26 2016 Laura Abbott <labbott@redhat.com> - 4.7.10-100
 - Linux v4.7.10
 
