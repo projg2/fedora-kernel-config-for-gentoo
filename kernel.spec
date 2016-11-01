@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -513,6 +513,9 @@ Patch425: arm64-pcie-quirks.patch
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
 Patch426: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
+Patch427: ARM-OMAP4-Fix-crashes.patch
+Patch428: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
+
 # http://patchwork.ozlabs.org/patch/587554/
 Patch430: ARM-tegra-usb-no-reset.patch
 
@@ -625,9 +628,6 @@ Patch849: 0001-iio-Use-event-header-from-kernel-tree.patch
 
 # CVE-2016-9083 CVE-2016-9084 rhbz 1389258 1389259 1389285
 Patch850: v3-vfio-pci-Fix-integer-overflows-bitmask-check.patch
-
-# Skylake i915 fixes from 4.9
-Patch851: drm_i915_skl_Backport_watermark_fixes_for_4.8.y.patch
 
 #rhbz 1325354
 Patch852: 0001-HID-input-ignore-System-Control-application-usages-i.patch
@@ -2159,6 +2159,10 @@ fi
 #
 # 
 %changelog
+* Tue Nov  1 2016 Peter Robinson <pbrobinson@fedoraproject.org>
+- Linux v4.8.6
+- Fixes for omap4 (panda board)
+
 * Fri Oct 28 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.8.5-200
 - Linux v4.8.5
 
