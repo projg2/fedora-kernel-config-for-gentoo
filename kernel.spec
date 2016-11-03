@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -631,6 +631,9 @@ Patch850: v3-vfio-pci-Fix-integer-overflows-bitmask-check.patch
 
 #rhbz 1325354
 Patch852: 0001-HID-input-ignore-System-Control-application-usages-i.patch
+
+#rhbz 1391279
+Patch853: 0001-dm-raid-fix-compat_features-validation.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2159,6 +2162,9 @@ fi
 #
 # 
 %changelog
+* Wed Nov  2 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.8.6-201
+- dm raid: fix compat_features validation (rhbz 1391279)
+
 * Tue Nov  1 2016 Peter Robinson <pbrobinson@fedoraproject.org>
 - Linux v4.8.6
 - Fixes for omap4 (panda board)
