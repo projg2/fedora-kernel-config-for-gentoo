@@ -632,6 +632,9 @@ Patch850: v3-vfio-pci-Fix-integer-overflows-bitmask-check.patch
 #rhbz 1325354
 Patch852: 0001-HID-input-ignore-System-Control-application-usages-i.patch
 
+#rhbz 1392885
+Patch853: 0001-drm-i915-Refresh-that-status-of-MST-capable-connecto.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2154,7 +2157,10 @@ fi
 #
 # 
 %changelog
-* Thu Nov 10 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.8.7-100
+* Fri Nov 11 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.8.7-100
+- Refresh status of MST capable connectors (rhbz 1392885)
+
+* Thu Nov 10 2016 Justin M. Forbes <jforbes@fedoraproject.org>
 - Linux v4.8.7
 - Fixes cve-2016-8630 (rhbz 1393350 1393358)
 
