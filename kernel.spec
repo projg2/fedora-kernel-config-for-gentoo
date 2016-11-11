@@ -635,6 +635,9 @@ Patch852: 0001-HID-input-ignore-System-Control-application-usages-i.patch
 #rhbz 1392885
 Patch853: 0001-drm-i915-Refresh-that-status-of-MST-capable-connecto.patch
 
+#rhbz 1390308
+Patch854: nouveau-add-maxwell-to-backlight-init.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2157,6 +2160,9 @@ fi
 #
 # 
 %changelog
+* Fri Nov 11 2016 Justin M. Forbes <jforbes@fedoraproject.org>
+- Nouveau: Add Maxwell to backlight initialization (rhbz 1390308)
+
 * Fri Nov 11 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.8.7-100
 - Refresh status of MST capable connectors (rhbz 1392885)
 
