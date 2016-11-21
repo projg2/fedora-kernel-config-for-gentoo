@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -620,9 +620,6 @@ Patch846: security-selinux-overlayfs-support.patch
 #rhbz 1360688
 Patch847: rc-core-fix-repeat-events.patch
 
-#rhbz 1374212
-Patch848: 0001-cpupower-Correct-return-type-of-cpu_power_is_cpu_onl.patch
-
 #ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch849: 0001-iio-Use-event-header-from-kernel-tree.patch
 
@@ -637,9 +634,6 @@ Patch853: 0001-drm-i915-Refresh-that-status-of-MST-capable-connecto.patch
 
 #rhbz 1390308
 Patch854: nouveau-add-maxwell-to-backlight-init.patch
-
-#CVE-2016-8645 rhbz 1393904 1393908
-Patch856: 0001-tcp-take-care-of-truncations-done-by-sk_filter.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2163,6 +2157,9 @@ fi
 #
 # 
 %changelog
+* Mon Nov 21 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.8.10-100
+- Linux v4.8.10
+
 * Tue Nov 15 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.8.8-100
 - Linux v4.8.8
 - Fix crash in tcp_collapse CVE-2016-8645 (rhbz 1393904 1393908)
