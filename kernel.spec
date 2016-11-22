@@ -2165,6 +2165,9 @@ fi
 #
 # 
 %changelog
+* Tue Nov 22 2016 Josh Boyer <jwboyer@fedoraproject.org>
+- Add patch from Dave Anderson to fix live system crash analysis on Aarch64
+
 * Mon Nov 21 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.8.10-200
 - Linux v4.8.10
 
