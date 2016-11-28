@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -631,11 +631,11 @@ Patch850: v3-vfio-pci-Fix-integer-overflows-bitmask-check.patch
 #rhbz 1325354
 Patch852: 0001-HID-input-ignore-System-Control-application-usages-i.patch
 
-#rhbz 1392885
-Patch853: 0001-drm-i915-Refresh-that-status-of-MST-capable-connecto.patch
-
 #rhbz 1390308
 Patch854: nouveau-add-maxwell-to-backlight-init.patch
+
+# CVE-2016-8650 rhbz 1395187 1398463
+Patch856: 0001-mpi-Fix-NULL-ptr-dereference-in-mpi_powm-ver-3.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2159,6 +2159,10 @@ fi
 #
 # 
 %changelog
+* Mon Nov 28 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.8.11-100
+- Linux v4.8.11
+- CVE-2016-8650 Fix NULL ptr dereference in mpi_powm() (rhbz 1395187 1398463)
+
 * Mon Nov 28 2016 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add upstream patch to fix all ARMv7 devices set to initial 200Mhz
 
