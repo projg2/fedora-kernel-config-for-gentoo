@@ -637,6 +637,9 @@ Patch854: nouveau-add-maxwell-to-backlight-init.patch
 # CVE-2016-9755 rhbz 1400904 1400905
 Patch856: 0001-netfilter-ipv6-nf_defrag-drop-mangled-skb-on-ream-er.patch
 
+# CVE-2016-9588 rhbz 1404924 1404925
+Patch857: kvm-nVMX-allow-L1-to-intercept-software-exceptions.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2159,6 +2162,10 @@ fi
 #
 # 
 %changelog
+* Thu Dec 15 2016 Justin M. Forbes <jforbes@fedoraproject.org> 
+- CVE-2016-9588 fix possible DoS in nVMX (rhbz 1404924 1404925)
+- Turn off CONFIG_IWLWIFI_PCIE_RTPM as it can cause wifi disconnects
+
 * Mon Dec 12 2016 Justin M. Forbes <jforbes@fedoraproject.org> - 4.8.14-100
 - Linux v4.8.14
 - CVE-2016-8399 Fix out OOB stack read in memcpy_fromiovec (rhbz 1403833 1403834)
