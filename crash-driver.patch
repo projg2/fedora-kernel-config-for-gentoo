@@ -1,3 +1,4 @@
+From 973e23bf27b0b2e5021321357fc570cccea3104c Mon Sep 17 00:00:00 2001
 From: Dave Anderson <anderson@redhat.com>
 Date: Tue, 26 Nov 2013 12:42:46 -0500
 Subject: [PATCH] crash-driver
@@ -29,7 +30,7 @@ Upstream-status: Fedora mustard
 
 diff --git a/arch/arm/include/asm/crash-driver.h b/arch/arm/include/asm/crash-driver.h
 new file mode 100644
-index 000000000000..06e7ae916601
+index 0000000..06e7ae9
 --- /dev/null
 +++ b/arch/arm/include/asm/crash-driver.h
 @@ -0,0 +1,6 @@
@@ -41,7 +42,7 @@ index 000000000000..06e7ae916601
 +#endif /* _ARM_CRASH_H */
 diff --git a/arch/arm64/include/asm/crash-driver.h b/arch/arm64/include/asm/crash-driver.h
 new file mode 100644
-index 000000000000..43b26da0c5d6
+index 0000000..43b26da
 --- /dev/null
 +++ b/arch/arm64/include/asm/crash-driver.h
 @@ -0,0 +1,6 @@
@@ -53,7 +54,7 @@ index 000000000000..43b26da0c5d6
 +#endif /* _ARM64_CRASH_H */
 diff --git a/arch/ia64/include/asm/crash-driver.h b/arch/ia64/include/asm/crash-driver.h
 new file mode 100644
-index 000000000000..404bcb93c112
+index 0000000..404bcb9
 --- /dev/null
 +++ b/arch/ia64/include/asm/crash-driver.h
 @@ -0,0 +1,90 @@
@@ -148,22 +149,19 @@ index 000000000000..404bcb93c112
 +
 +#endif /* _ASM_IA64_CRASH_H */
 diff --git a/arch/ia64/kernel/ia64_ksyms.c b/arch/ia64/kernel/ia64_ksyms.c
-index 096731049538..e88887827906 100644
+index d111248..b14b4c6 100644
 --- a/arch/ia64/kernel/ia64_ksyms.c
 +++ b/arch/ia64/kernel/ia64_ksyms.c
-@@ -84,6 +84,9 @@ EXPORT_SYMBOL(ia64_save_scratch_fpregs);
- #include <asm/unwind.h>
- EXPORT_SYMBOL(unw_init_running);
- 
+@@ -9,3 +9,6 @@
+ EXPORT_SYMBOL(min_low_pfn);	/* defined by bootmem.c, but not exported by generic code */
+ EXPORT_SYMBOL(max_low_pfn);	/* defined by bootmem.c, but not exported by generic code */
+ #endif
++
 +#include <linux/efi.h>
 +EXPORT_SYMBOL_GPL(efi_mem_type);
-+
- #if defined(CONFIG_IA64_ESI) || defined(CONFIG_IA64_ESI_MODULE)
- extern void esi_call_phys (void);
- EXPORT_SYMBOL_GPL(esi_call_phys);
 diff --git a/arch/powerpc/include/asm/crash-driver.h b/arch/powerpc/include/asm/crash-driver.h
 new file mode 100644
-index 000000000000..50092d965dc5
+index 0000000..50092d9
 --- /dev/null
 +++ b/arch/powerpc/include/asm/crash-driver.h
 @@ -0,0 +1,6 @@
@@ -175,7 +173,7 @@ index 000000000000..50092d965dc5
 +#endif /* _PPC64_CRASH_H */
 diff --git a/arch/s390/include/asm/crash-driver.h b/arch/s390/include/asm/crash-driver.h
 new file mode 100644
-index 000000000000..552be5e2c571
+index 0000000..552be5e
 --- /dev/null
 +++ b/arch/s390/include/asm/crash-driver.h
 @@ -0,0 +1,60 @@
@@ -240,10 +238,10 @@ index 000000000000..552be5e2c571
 +
 +#endif /* _S390_CRASH_H */
 diff --git a/arch/s390/mm/maccess.c b/arch/s390/mm/maccess.c
-index 8a993a53fcd6..8f511795b52e 100644
+index 792f9c6..3197995 100644
 --- a/arch/s390/mm/maccess.c
 +++ b/arch/s390/mm/maccess.c
-@@ -197,6 +197,7 @@ void *xlate_dev_mem_ptr(phys_addr_t addr)
+@@ -201,6 +201,7 @@ void *xlate_dev_mem_ptr(phys_addr_t addr)
  	put_online_cpus();
  	return bounce;
  }
@@ -251,14 +249,14 @@ index 8a993a53fcd6..8f511795b52e 100644
  
  /*
   * Free converted buffer for /dev/mem access (if necessary)
-@@ -206,3 +207,4 @@ void unxlate_dev_mem_ptr(phys_addr_t addr, void *buf)
+@@ -210,3 +211,4 @@ void unxlate_dev_mem_ptr(phys_addr_t addr, void *buf)
  	if ((void *) addr != buf)
  		free_page((unsigned long) buf);
  }
 +EXPORT_SYMBOL_GPL(unxlate_dev_mem_ptr);
 diff --git a/arch/x86/include/asm/crash-driver.h b/arch/x86/include/asm/crash-driver.h
 new file mode 100644
-index 000000000000..fd4736ec99f5
+index 0000000..fd4736e
 --- /dev/null
 +++ b/arch/x86/include/asm/crash-driver.h
 @@ -0,0 +1,6 @@
@@ -269,7 +267,7 @@ index 000000000000..fd4736ec99f5
 +
 +#endif /* _X86_CRASH_H */
 diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
-index a043107da2af..b272397f306a 100644
+index dcc0973..99b99d5 100644
 --- a/drivers/char/Kconfig
 +++ b/drivers/char/Kconfig
 @@ -4,6 +4,9 @@
@@ -283,18 +281,18 @@ index a043107da2af..b272397f306a 100644
  
  config DEVMEM
 diff --git a/drivers/char/Makefile b/drivers/char/Makefile
-index d8a7579300d2..31c83630f593 100644
+index 6e6c244..29cc9c8 100644
 --- a/drivers/char/Makefile
 +++ b/drivers/char/Makefile
 @@ -60,3 +60,5 @@ js-rtc-y = rtc.o
- 
  obj-$(CONFIG_TILE_SROM)		+= tile-srom.o
  obj-$(CONFIG_XILLYBUS)		+= xillybus/
+ obj-$(CONFIG_POWERNV_OP_PANEL)	+= powernv-op-panel.o
 +
 +obj-$(CONFIG_CRASH)            += crash.o
 diff --git a/drivers/char/crash.c b/drivers/char/crash.c
 new file mode 100644
-index 000000000000..085378a1d539
+index 0000000..085378a
 --- /dev/null
 +++ b/drivers/char/crash.c
 @@ -0,0 +1,128 @@
@@ -428,7 +426,7 @@ index 000000000000..085378a1d539
 +MODULE_LICENSE("GPL");
 diff --git a/include/asm-generic/crash-driver.h b/include/asm-generic/crash-driver.h
 new file mode 100644
-index 000000000000..25ab9869d566
+index 0000000..25ab986
 --- /dev/null
 +++ b/include/asm-generic/crash-driver.h
 @@ -0,0 +1,72 @@
@@ -504,3 +502,221 @@ index 000000000000..25ab9869d566
 +#endif /* __KERNEL__ */
 +
 +#endif /* __CRASH_H__ */
+-- 
+2.7.4
+
+From 23d8bd48303acda2d3a95a3e1a662784a4fa9fcd Mon Sep 17 00:00:00 2001
+From: Fedora Kernel Team <kernel-team@fedoraproject.org>
+Date: Tue, 20 Sep 2016 19:39:46 +0200
+Subject: [PATCH] Update of crash driver to handle CONFIG_HARDENED_USERCOPY and
+ to restrict the supported architectures.
+
+---
+ drivers/char/Kconfig |  1 +
+ drivers/char/crash.c | 33 ++++++++++++++++++++++++++++++---
+ 2 files changed, 31 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
+index 99b99d5..be6a3ae 100644
+--- a/drivers/char/Kconfig
++++ b/drivers/char/Kconfig
+@@ -6,6 +6,7 @@ menu "Character devices"
+ 
+ config CRASH
+ 	tristate "Crash Utility memory driver"
++	depends on X86_32 || X86_64 || ARM || ARM64 || PPC64 || S390
+ 
+ source "drivers/tty/Kconfig"
+ 
+diff --git a/drivers/char/crash.c b/drivers/char/crash.c
+index 085378a..0258bf8 100644
+--- a/drivers/char/crash.c
++++ b/drivers/char/crash.c
+@@ -32,7 +32,7 @@
+ #include <asm/types.h>
+ #include <asm/crash-driver.h>
+ 
+-#define CRASH_VERSION   "1.0"
++#define CRASH_VERSION   "1.2"
+ 
+ /*
+  *  These are the file operation functions that allow crash utility
+@@ -66,6 +66,7 @@ crash_read(struct file *file, char *buf, size_t count, loff_t *poff)
+ 	struct page *page;
+ 	u64 offset;
+ 	ssize_t read;
++	char *buffer = file->private_data;
+ 
+ 	offset = *poff;
+ 	if (offset >> PAGE_SHIFT != (offset+count-1) >> PAGE_SHIFT)
+@@ -74,8 +75,12 @@ crash_read(struct file *file, char *buf, size_t count, loff_t *poff)
+ 	vaddr = map_virtual(offset, &page);
+ 	if (!vaddr)
+ 		return -EFAULT;
+-
+-	if (copy_to_user(buf, vaddr, count)) {
++	/*
++	 * Use bounce buffer to bypass the CONFIG_HARDENED_USERCOPY
++	 * kernel text restriction.
++	*/
++	memcpy(buffer, (char *)vaddr, count);
++	if (copy_to_user(buf, buffer, count)) {
+ 		unmap_virtual(page);
+ 		return -EFAULT;
+ 	}
+@@ -86,10 +91,32 @@ crash_read(struct file *file, char *buf, size_t count, loff_t *poff)
+ 	return read;
+ }
+ 
++static int
++crash_open(struct inode * inode, struct file * filp)
++{
++	if (!capable(CAP_SYS_RAWIO))
++		return -EPERM;
++
++	filp->private_data = (void *)__get_free_page(GFP_KERNEL);
++	if (!filp->private_data)
++		return -ENOMEM;
++
++	return 0;
++}
++
++static int
++crash_release(struct inode *inode, struct file *filp)
++{
++	free_pages((unsigned long)filp->private_data, 0);
++	return 0;
++}
++
+ static struct file_operations crash_fops = {
+ 	.owner = THIS_MODULE,
+ 	.llseek = crash_llseek,
+ 	.read = crash_read,
++	.open = crash_open,
++	.release = crash_release,
+ };
+ 
+ static struct miscdevice crash_dev = {
+-- 
+2.7.4
+
+From: Dave Anderson <anderson@redhat.com>
+Date: Fri, 18 Nov 2016 11:52:35 -0500
+Cc: onestero@redhat.com
+Subject: [PATCH v2] Restore live system crash analysis for ARM64
+
+This v2 version simplifies the copy out of the kimage_voffset value
+to user-space per Oleg's suggestion.
+
+Upstream status: N/A
+
+Test: v2 version tested successfully with a modified crash utility
+
+The following Linux 4.6 commit breaks support for live system
+crash analysis on ARM64:
+
+   commit a7f8de168ace487fa7b88cb154e413cf40e87fc6
+   Author: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+   arm64: allow kernel Image to be loaded anywhere in physical memory
+
+The patchset drastically modified the kernel's virtual memory layout,
+where notably the static kernel text and data image was moved from the
+unity mapped region into the vmalloc region.  Prior to Linux 4.6,
+the kernel's __virt_to_phys() function was this:
+
+ #define __virt_to_phys(x)  (((phys_addr_t)(x) - PAGE_OFFSET + PHYS_OFFSET))
+
+When running on a live system, the crash utility could determine PAGE_OFFSET
+by looking at the virtual addresses compiled into the vmlinux file, and
+PHYS_OFFSET can be determined by looking at /proc/iomem.
+
+As of Linux 4.6, it is done differently:
+
+ #define __virt_to_phys(x) ({                                            \
+        phys_addr_t __x = (phys_addr_t)(x);                             \
+        __x & BIT(VA_BITS - 1) ? (__x & ~PAGE_OFFSET) + PHYS_OFFSET :   \
+                                 (__x - kimage_voffset); })
+
+The PAGE_OFFSET/PHYS_OFFSET section of the conditional expression is for
+traditional unity-mapped virtual addresses, but kernel text and static
+data requires the new "kimage_voffset" variable.  Unfortunately, the
+contents of the new "kimage_voffset" variable is not available or
+calculatable from a user-space perspective, even with root privileges.
+
+At least the ARM64 developers made its contents available to modules
+with an EXPORT_SYMBOL(kimage_voffset) declaration.  Accordingly, with
+a modification to the /dev/crash driver to return its contents, the
+crash utility can run on a live system.
+
+The patch allows for architecture-specific DEV_CRASH_ARCH_DATA ioctls
+to be created, where this is the first instance of one.
+
+
+---
+ arch/arm64/include/asm/crash-driver.h | 16 ++++++++++++++++
+ drivers/char/crash.c                  | 13 ++++++++++++-
+ 2 files changed, 28 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/include/asm/crash-driver.h b/arch/arm64/include/asm/crash-driver.h
+index 43b26da..fe68e7c 100644
+--- a/arch/arm64/include/asm/crash-driver.h
++++ b/arch/arm64/include/asm/crash-driver.h
+@@ -3,4 +3,20 @@
+ 
+ #include <asm-generic/crash-driver.h>
+ 
++#define DEV_CRASH_ARCH_DATA _IOR('c', 1, long)
++
++static long
++crash_arch_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
++{
++	extern u64 kimage_voffset;
++
++	switch (cmd)
++	{
++	case DEV_CRASH_ARCH_DATA:
++		return put_user(kimage_voffset, (unsigned long __user *)arg);
++	default:
++		return -EINVAL;
++	}
++}
++
+ #endif /* _ARM64_CRASH_H */
+diff --git a/drivers/char/crash.c b/drivers/char/crash.c
+index 0258bf8..dfb767c 100644
+--- a/drivers/char/crash.c
++++ b/drivers/char/crash.c
+@@ -32,7 +32,7 @@
+ #include <asm/types.h>
+ #include <asm/crash-driver.h>
+ 
+-#define CRASH_VERSION   "1.2"
++#define CRASH_VERSION   "1.3"
+ 
+ /*
+  *  These are the file operation functions that allow crash utility
+@@ -111,10 +111,21 @@ crash_release(struct inode *inode, struct file *filp)
+ 	return 0;
+ }
+ 
++static long
++crash_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
++{
++#ifdef DEV_CRASH_ARCH_DATA
++	return crash_arch_ioctl(file, cmd, arg);
++#else
++	return -EINVAL;
++#endif
++}
++
+ static struct file_operations crash_fops = {
+ 	.owner = THIS_MODULE,
+ 	.llseek = crash_llseek,
+ 	.read = crash_read,
++	.unlocked_ioctl = crash_ioctl,
+ 	.open = crash_open,
+ 	.release = crash_release,
+ };
+-- 
+1.8.3.1
+
