@@ -2170,6 +2170,10 @@ fi
 #
 # 
 %changelog
+* Tue Dec 20 2016 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update some ARM options
+- Enable some Qualcomm QDF2432 server platform options
+
 * Thu Dec 15 2016 Laura Abbott <labbott@fedoraproject.org>
 - Linux v4.9 rebase
 
