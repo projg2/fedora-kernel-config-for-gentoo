@@ -525,11 +525,13 @@ Patch431: bcm2837-initial-support.patch
 
 Patch432: bcm283x-vc4-fixes.patch
 
-Patch433: AllWinner-net-emac.patch
+Patch433: bcm283x-fixes.patch
 
-Patch434: ARM-Drop-fixed-200-Hz-timer-requirement-from-Samsung-platforms.patch
+Patch434: AllWinner-net-emac.patch
 
-Patch435: imx6sx-Add-UDOO-Neo-support.patch
+Patch435: ARM-Drop-fixed-200-Hz-timer-requirement-from-Samsung-platforms.patch
+
+Patch436: imx6sx-Add-UDOO-Neo-support.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
@@ -2173,6 +2175,7 @@ fi
 * Tue Dec 20 2016 Peter Robinson <pbrobinson@fedoraproject.org>
 - Update some ARM options
 - Enable some Qualcomm QDF2432 server platform options
+- Add upstream bcm283x i2c and clock fixes
 
 * Thu Dec 15 2016 Laura Abbott <labbott@fedoraproject.org>
 - Linux v4.9 rebase
