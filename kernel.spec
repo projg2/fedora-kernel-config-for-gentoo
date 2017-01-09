@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2175,6 +2175,9 @@ fi
 #
 # 
 %changelog
+* Mon Jan 09 2017 Laura Abbott <labbott@fedoraproject.org>
+- Linux v4.9.2
+
 * Mon Jan  9 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add patch to improve MMC/SD speed on Raspberry Pi (bcm283x)
 
