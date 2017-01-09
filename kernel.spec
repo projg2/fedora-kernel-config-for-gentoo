@@ -527,11 +527,14 @@ Patch432: bcm283x-vc4-fixes.patch
 
 Patch433: bcm283x-fixes.patch
 
-Patch434: AllWinner-net-emac.patch
+# http://www.spinics.net/lists/linux-mmc/msg41151.html
+Patch434: bcm283x-mmc-imp-speed.patch
 
-Patch435: ARM-Drop-fixed-200-Hz-timer-requirement-from-Samsung-platforms.patch
+Patch440: AllWinner-net-emac.patch
 
-Patch436: imx6sx-Add-UDOO-Neo-support.patch
+Patch442: ARM-Drop-fixed-200-Hz-timer-requirement-from-Samsung-platforms.patch
+
+Patch443: imx6sx-Add-UDOO-Neo-support.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
@@ -2172,6 +2175,9 @@ fi
 #
 # 
 %changelog
+* Mon Jan  9 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add patch to improve MMC/SD speed on Raspberry Pi (bcm283x)
+
 * Tue Dec 20 2016 Peter Robinson <pbrobinson@fedoraproject.org>
 - Update some ARM options
 - Enable some Qualcomm QDF2432 server platform options
