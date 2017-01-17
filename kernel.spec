@@ -634,6 +634,12 @@ Patch851: selinux-namespace-fix.patch
 #rhbz 1390308
 Patch852: nouveau-add-maxwell-to-backlight-init.patch
 
+# Possible ATI fixes?
+Patch853: drm-amdgpu-drop-verde-dpm-quirks.patch
+Patch854: drm-amdgpu-update-si-kicker-smc-firmware.patch
+Patch855: drm-radeon-drop-verde-dpm-quirks.patch
+Patch856: drm-radeon-update-smc-firmware-selection-for-si.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2163,7 +2169,10 @@ fi
 #
 # 
 %changelog
-* Thu Jan 12 2017 Laura Abbott <labbott@fedoraproject.org> - 4.9.4-100
+* Tue Jan 17 2017 Laura Abbott <labbott@fedoraproject.org> - 4.9.4-100
+- Add possible ATI fixes
+
+* Thu Jan 12 2017 Laura Abbott <labbott@fedoraproject.org>
 - Linux v4.9.4 rebase
 - Minor updates for Raspberry Pi 3 support (thanks pbrobinson)
 
