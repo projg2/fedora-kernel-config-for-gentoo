@@ -2199,6 +2199,9 @@ fi
 #
 #
 %changelog
+* Tue Feb 14 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- CVE-2017-5967 Disable CONFIG_TIMER_STATS (rhbz 1422138 1422140)
+
 * Mon Feb 13 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - CVE-2017-5970 keep skb->dst around in presence of IP options (rhbz 1421638)
 
