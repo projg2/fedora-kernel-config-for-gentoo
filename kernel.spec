@@ -2199,6 +2199,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 15 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable PWRSEQ_SIMPLE module (fixes rhbz 1377816)
+
 * Wed Feb 15 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.9.10-200
 - Linux v4.9.10
 
