@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2199,6 +2199,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 15 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.9.10-200
+- Linux v4.9.10
+
 * Tue Feb 14 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - CVE-2017-5967 Disable CONFIG_TIMER_STATS (rhbz 1422138 1422140)
 
