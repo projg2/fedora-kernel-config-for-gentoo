@@ -646,6 +646,9 @@ Patch861: w1-ds2490-USB-transfer-buffers-need-to-be-DMAable.patch
 #rhbz 1422969
 Patch862: rt2800-warning.patch
 
+#CVE-2017-6074
+Patch863: dccp-fix-freeing-skb-too-early-for-IPV6_RECVPKTINFO.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2175,6 +2178,9 @@ fi
 #
 # 
 %changelog
+* Wed Feb 22 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- CVE-2017-6074 DCCP double-free vulnerability
+
 * Mon Feb 20 2017 Laura Abbott <labbott@fedoraproject.org> - 4.9.11-100
 - Linux v4.9.11
 - Fix rt2800 warning (rhbz 1422969)
