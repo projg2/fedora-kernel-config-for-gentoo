@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2196,6 +2196,9 @@ fi
 #
 #
 %changelog
+* Thu Feb 23 2017 Laura Abbott <labbott@fedoraproject.org> - 4.9.12-200
+- Linux v4.9.12
+
 * Wed Feb 22 2017 Justin M. Forbes <jforbes@fedoraproject.org> 
 - CVE-2017-6074 DCCP double-free vulnerability
 
