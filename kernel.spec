@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2180,6 +2180,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 27 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.1-1
+- Linux v4.10.1
+
 * Mon Feb 20 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.0-1
 - Disable debugging options.
 - Linux v4.10
