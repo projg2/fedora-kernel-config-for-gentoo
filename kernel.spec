@@ -646,6 +646,9 @@ Patch861: w1-ds2490-USB-transfer-buffers-need-to-be-DMAable.patch
 #rhbz 1422969
 Patch862: rt2800-warning.patch
 
+#CVE-2017-5669 rhbz 1427239
+Patch863: ipc-shm-Fix-shmat-mmap-nil-page-protection.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -855,7 +858,6 @@ Summary: Development package for building kernel modules to match the %{?2:%{2} 
 Group: System Environment/Kernel\
 Provides: kernel%{?1:-%{1}}-devel-%{_target_cpu} = %{version}-%{release}\
 Provides: kernel-devel-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel-devel = %{version}-%{release}%{?1:+%{1}}\
 Provides: kernel-devel-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
 Provides: installonlypkg(kernel)\
 AutoReqProv: no\
@@ -2175,6 +2177,10 @@ fi
 #
 # 
 %changelog
+* Tue Feb 28 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- CVE-2017-5669 shmat allows mmap null page protection bypass (rhbz 1427239)
+- Fix kernel-devel virtual provide
+
 * Mon Feb 27 2017 Laura Abbott <labbott@fedoraproject.org> - 4.9.13-100
 - Linux v4.9.13
 
