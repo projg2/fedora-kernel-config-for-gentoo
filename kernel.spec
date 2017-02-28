@@ -819,7 +819,6 @@ Summary: Development package for building kernel modules to match the %{?2:%{2} 
 Group: System Environment/Kernel\
 Provides: kernel%{?1:-%{1}}-devel-%{_target_cpu} = %{version}-%{release}\
 Provides: kernel-devel-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel-devel = %{version}-%{release}%{?1:+%{1}}\
 Provides: kernel-devel-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
 Provides: installonlypkg(kernel)\
 AutoReqProv: no\
@@ -2180,6 +2179,9 @@ fi
 #
 #
 %changelog
+* Tue Feb 28 2017 Justin M. Forbes <jforbes@fedoraproject.org> 
+- Fix kernel-devel virtual provide
+
 * Mon Feb 27 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.1-1
 - Linux v4.10.1
 
