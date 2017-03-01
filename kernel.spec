@@ -531,6 +531,8 @@ Patch433: bcm283x-mmc-imp-speed.patch
 
 Patch434: mm-alloc_contig-re-allow-CMA-to-compact-FS-pages.patch
 
+Patch436: vc4-fix-vblank-cursor-update-issue.patch
+
 Patch440: AllWinner-net-emac.patch
 
 Patch442: ARM-Drop-fixed-200-Hz-timer-requirement-from-Samsung-platforms.patch
@@ -2177,6 +2179,9 @@ fi
 #
 # 
 %changelog
+* Wed Mar  1 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add patch to fix desktop lockups on RPi (vc4) RHBZ# 1389163
+
 * Tue Feb 28 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - CVE-2017-5669 shmat allows mmap null page protection bypass (rhbz 1427239)
 - Fix kernel-devel virtual provide
