@@ -538,6 +538,8 @@ Patch434: 0001-i2c-bcm2835-Debug-test-for-curr_msg.patch
 # Upstream fixes for i2c/serial/ethernet MAC addresses
 Patch435: bcm283x-fixes.patch
 
+Patch436: vc4-fix-vblank-cursor-update-issue.patch
+
 # http://www.spinics.net/lists/arm-kernel/msg552554.html
 Patch438: arm-imx6-hummingboard2.patch
 
@@ -2179,6 +2181,9 @@ fi
 #
 #
 %changelog
+* Wed Mar  1 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add patch to fix desktop lockups on RPi (vc4) RHBZ# 1389163
+
 * Tue Feb 28 2017 Justin M. Forbes <jforbes@fedoraproject.org> 
 - Fix kernel-devel virtual provide
 
