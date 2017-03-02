@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 6
+%define gitrev 8
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -536,6 +536,9 @@ Patch433: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..pa
 # Upstream fixes for i2c/serial/ethernet MAC addresses
 Patch435: bcm283x-fixes.patch
 
+# https://lists.freedesktop.org/archives/dri-devel/2017-February/133823.html
+Patch436: vc4-fix-vblank-cursor-update-issue.patch
+
 # http://www.spinics.net/lists/arm-kernel/msg552554.html
 Patch438: arm-imx6-hummingboard2.patch
 
@@ -595,6 +598,9 @@ Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 
 #rhbz 1427593
 Patch666: ccm-stack.patch
+
+# grabbed from mailing list
+Patch667: v3-Revert-tty-serial-pl011-add-ttyAMA-for-matching-pl011-console.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2160,6 +2166,18 @@ fi
 #
 #
 %changelog
+* Thu Mar 02 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc0.git8.1
+- Linux v4.10-11073-g4977ab6
+
+* Wed Mar 01 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc0.git7.1
+- Linux v4.10-10770-g2d6be4a
+
+* Wed Mar  1 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable Tiny DRM on ARM platforms
+- ARM config updates
+- General config cleanups
+- Add patch to fix desktop lockups on RPi (vc4) RHBZ# 1389163
+
 * Tue Feb 28 2017 Laura Abbott <labbott@fedoraproject.org>
 - Fix for yet another stack variable in crypto (rhbz 1427593)
 
