@@ -2183,6 +2183,7 @@ fi
 %changelog
 * Wed Mar  1 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add patch to fix desktop lockups on RPi (vc4) RHBZ# 1389163
+- Minor config cleanups
 
 * Tue Feb 28 2017 Justin M. Forbes <jforbes@fedoraproject.org> 
 - Fix kernel-devel virtual provide
