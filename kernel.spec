@@ -612,6 +612,9 @@ Patch853: 0001-Work-around-for-gcc7-and-arm64.patch
 #CVE-2017-2596 rhbz 1417812 1417813
 Patch854: kvm-fix-page-struct-leak-in-handle_vmon.patch
 
+#CVE-2017-6353 rhbz 1428907 1428910
+Patch855: sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2181,6 +2184,9 @@ fi
 #
 #
 %changelog
+* Mon Mar  6 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- CVE-2017-6353 Possible double free in stcp_sendmsg (rhbz 1428907 1428910)
+
 * Wed Mar  1 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add patch to fix desktop lockups on RPi (vc4) RHBZ# 1389163
 - Minor config cleanups
