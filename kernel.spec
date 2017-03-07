@@ -654,6 +654,9 @@ Patch863: ipc-shm-Fix-shmat-mmap-nil-page-protection.patch
 #CVE-2017-6353 rhbz 1428907 1428910
 Patch864: sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
 
+# CVE-2017-2636 rhbz 1430049
+Patch668: 0001-tty-n_hdlc-get-rid-of-racy-n_hdlc.tbuf.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2200,6 +2203,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 07 2017 Laura Abbott <labbott@fedoraproject.org>
+- CVE-2017-2636 Race condition access to n_hdlc.tbuf causes double free in n_hdlc_release (rhbz 1430049)
+
 * Tue Mar  7 2017 Laura Abbott <labbott@redhat.com>
 - Disable CONFIG_IWLWIFI_PCIE_RTPM (rhbz 1429135)
 
