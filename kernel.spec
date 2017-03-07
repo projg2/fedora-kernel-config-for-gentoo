@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2185,6 +2185,9 @@ fi
 #
 # 
 %changelog
+* Tue Mar 07 2017 Laura Abbott <labbott@fedoraproject.org> - 4.9.13-101
+- Build for some CVEs
+
 * Tue Mar 07 2017 Laura Abbott <labbott@fedoraproject.org>
 - CVE-2017-2636 Race condition access to n_hdlc.tbuf causes double free in n_hdlc_release (rhbz 1430049)
 
