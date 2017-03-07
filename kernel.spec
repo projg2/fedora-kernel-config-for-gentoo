@@ -2182,6 +2182,9 @@ fi
 #
 # 
 %changelog
+* Tue Mar  7 2017 Laura Abbott <labbott@redhat.com>
+- Disable CONFIG_IWLWIFI_PCIE_RTPM (rhbz 1429135)
+
 * Mon Mar  6 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - CVE-2017-6353 Possible double free in stcp_sendmsg (rhbz 1428907 1428910)
 
