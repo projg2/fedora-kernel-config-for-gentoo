@@ -615,6 +615,9 @@ Patch854: kvm-fix-page-struct-leak-in-handle_vmon.patch
 #CVE-2017-6353 rhbz 1428907 1428910
 Patch855: sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
 
+# CVE-2017-2636 rhbz 1430049
+Patch668: 0001-tty-n_hdlc-get-rid-of-racy-n_hdlc.tbuf.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2184,6 +2187,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 07 2017 Laura Abbott <labbott@fedoraproject.org>
+- CVE-2017-2636 Race condition access to n_hdlc.tbuf causes double free in n_hdlc_release (rhbz 1430049)
+
 * Mon Mar  6 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - CVE-2017-6353 Possible double free in stcp_sendmsg (rhbz 1428907 1428910)
 
