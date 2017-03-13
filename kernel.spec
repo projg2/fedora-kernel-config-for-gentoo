@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -516,9 +516,6 @@ Patch424: arm64-mm-Fix-memmap-to-be-initialized-for-the-entire-section.patch
 Patch425: ARM-tegra-usb-no-reset.patch
 
 Patch426: AllWinner-net-emac.patch
-
-# http://www.spinics.net/lists/arm-kernel/msg557831.html
-Patch427: arm64-dma-mapping-Fix-dma_mapping_error-when-bypassing-SWIOTLB.patch
 
 # http://www.spinics.net/lists/devicetree/msg163238.html
 Patch430: bcm2837-initial-support.patch
@@ -2187,6 +2184,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 13 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.2-200
+- Linux v4.10.2
+
 * Tue Mar 07 2017 Laura Abbott <labbott@fedoraproject.org>
 - CVE-2017-2636 Race condition access to n_hdlc.tbuf causes double free in n_hdlc_release (rhbz 1430049)
 
