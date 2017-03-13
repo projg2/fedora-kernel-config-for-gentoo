@@ -67,9 +67,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 1
+%global rcrev 2
 # The git snapshot level
-%define gitrev 1
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -125,7 +125,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
@@ -407,7 +407,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %define cross_opts CROSS_COMPILE=%{_build_arch}-linux-gnu-
 %endif
 
-Source0: ftp://ftp.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
+Source0: https://www.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
 
 Source10: perf-man-%{kversion}.tar.gz
 Source11: x509.genkey
@@ -530,6 +530,9 @@ Patch430: bcm2837-initial-support.patch
 # http://www.spinics.net/lists/dri-devel/msg132235.html
 Patch433: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
 
+# bcm283x mmc for wifi http://www.spinics.net/lists/arm-kernel/msg567077.html
+Patch434: bcm283x-mmc-bcm2835.patch
+
 # Upstream fixes for i2c/serial/ethernet MAC addresses
 Patch435: bcm283x-fixes.patch
 
@@ -595,9 +598,6 @@ Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 
 # grabbed from mailing list
 Patch667: v3-Revert-tty-serial-pl011-add-ttyAMA-for-matching-pl011-console.patch
-
-# CVE-2017-2636 rhbz 1430049
-Patch668: 0001-tty-n_hdlc-get-rid-of-racy-n_hdlc.tbuf.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2163,6 +2163,27 @@ fi
 #
 #
 %changelog
+* Mon Mar 13 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc2.git0.1
+- Linux v4.11-rc2
+
+* Mon Mar 13 2017 Laura Abbott <labbott@fedoraproject.org>
+- Disable debugging options.
+
+* Sun Mar 12 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update kernel source location now ftp is retired
+- Enable STi h407 SoC
+- Minor ARM config cleanups
+- bcm283x mmc driver improvements
+
+* Fri Mar 10 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc1.git3.1
+- Linux v4.11-rc1-136-gc1aa905
+
+* Thu Mar 09 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc1.git2.1
+- Linux v4.11-rc1-96-gea6200e
+
+* Thu Mar 09 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc1.git1.2
+- Bump and build for updated buildroot
+
 * Wed Mar 08 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc1.git1.1
 - Linux v4.11-rc1-88-gec3b93a
 
