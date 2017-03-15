@@ -2186,6 +2186,7 @@ fi
 %changelog
 * Wed Mar 15 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.3-200
 - Linux v4.10.3 rebase
+- CVE-2017-6874 Fix race condition in ucount.c (rhbz 1432429 1432430)
 
 * Mon Mar 13 2017 Laura Abbott <labbott@fedoraproject.org> - 4.9.14-200
 - Linux v4.9.14
