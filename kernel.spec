@@ -649,6 +649,9 @@ Patch864: sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
 # CVE-2017-2636 rhbz 1430049
 Patch668: 0001-tty-n_hdlc-get-rid-of-racy-n_hdlc.tbuf.patch
 
+#CVE-2017-6874 rhbz 1432429 1432430
+Patch865: ucount-Remove-the-atomicity-from-ucount-count.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2177,6 +2180,9 @@ fi
 #
 # 
 %changelog
+* Wed Mar 15 2017 Justin M. Forbes <jforbes@fedoraproject.org> 
+- CVE-2017-6874 Fix race condition in ucount.c (rhbz 1432429 1432430)
+
 * Mon Mar 13 2017 Laura Abbott <labbott@fedoraproject.org> - 4.9.14-100
 - Linux v4.9.14
 
