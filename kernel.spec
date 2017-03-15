@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -645,9 +645,6 @@ Patch862: rt2800-warning.patch
 
 #CVE-2017-6353 rhbz 1428907 1428910
 Patch864: sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
-
-# CVE-2017-2636 rhbz 1430049
-Patch668: 0001-tty-n_hdlc-get-rid-of-racy-n_hdlc.tbuf.patch
 
 #CVE-2017-6874 rhbz 1432429 1432430
 Patch865: ucount-Remove-the-atomicity-from-ucount-count.patch
@@ -2180,6 +2177,9 @@ fi
 #
 # 
 %changelog
+* Wed Mar 15 2017 Laura Abbott <labbott@fedoraproject.org> - 4.9.15-100
+- Linux v4.9.15
+
 * Wed Mar 15 2017 Justin M. Forbes <jforbes@fedoraproject.org> 
 - CVE-2017-6874 Fix race condition in ucount.c (rhbz 1432429 1432430)
 
