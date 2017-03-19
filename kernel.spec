@@ -517,6 +517,9 @@ Patch425: ARM-tegra-usb-no-reset.patch
 
 Patch426: AllWinner-net-emac.patch
 
+Patch427: xgene_enet-remove-bogus-forward-declarations.patch
+Patch428: xgene-Fix-crash-on-DT-systems.patch
+
 # http://www.spinics.net/lists/devicetree/msg163238.html
 Patch430: bcm2837-initial-support.patch
 
@@ -2184,6 +2187,9 @@ fi
 #
 #
 %changelog
+* Sun Mar 19 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add upstream patches to improve xgene_enet stability a little
+
 * Wed Mar 15 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.3-200
 - Linux v4.10.3 rebase
 - CVE-2017-6874 Fix race condition in ucount.c (rhbz 1432429 1432430)
