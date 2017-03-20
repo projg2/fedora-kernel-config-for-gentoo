@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -67,9 +67,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 2
+%global rcrev 3
 # The git snapshot level
-%define gitrev 2
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -183,6 +183,9 @@ Summary: The Linux kernel
 %define _enable_debug_packages 0
 %endif
 %define debuginfodir /usr/lib/debug
+# Needed because we override almost everything involving build-ids
+# and debuginfo generation. Currently we rely on the old alldebug setting.
+%global _build_id_links alldebug
 
 # kernel PAE is only built on i686 and ARMv7.
 %ifnarch i686 armv7hl
@@ -522,7 +525,8 @@ Patch424: arm64-mm-Fix-memmap-to-be-initialized-for-the-entire-section.patch
 # http://patchwork.ozlabs.org/patch/587554/
 Patch425: ARM-tegra-usb-no-reset.patch
 
-Patch426: AllWinner-net-emac.patch
+Patch426: AllWinner-h3.patch
+Patch427: AllWinner-net-emac.patch
 
 # http://www.spinics.net/lists/devicetree/msg163238.html
 Patch430: bcm2837-initial-support.patch
@@ -2163,7 +2167,29 @@ fi
 #
 #
 %changelog
-* Wed Mar 15 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc2.git2.2
+* Mon Mar 20 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc3.git0.1
+- Linux v4.11-rc3
+- Fix for debuginfo conflicts (rhbz 1431296)
+
+* Mon Mar 20 2017 Laura Abbott <labbott@fedoraproject.org>
+- Disable debugging options.
+
+* Sun Mar 19 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Rebase AllWinner sun8i emac driver to latest proposed upstream
+
+* Fri Mar 17 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc2.git4.1
+- Linux v4.11-rc2-235-gd528ae0
+
+* Thu Mar 16 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable STi Serial Console
+
+* Thu Mar 16 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc2.git3.1
+- Linux v4.11-rc2-208-g69eea5a
+
+* Wed Mar 15 2017 Laura Abbott <labbott@fedoraproject.org>
+- Reenable debugging options like nothing ever happened.
+
+* Wed Mar 15 2017 Laura Abbott <labbott@fedoraproject.org>
 - Disable debugging options for sync to f26
 
 * Wed Mar 15 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc2.git2.1
