@@ -298,6 +298,7 @@ CONFIG_QCOM_COINCELL=m
 # CONFIG_QCOM_WCNSS_PIL is not set
 # CONFIG_QCOM_EBI2 is not set
 # CONFIG_QCOM_TSENS is not set
+# CONFIG_QCOM_QDF2400_ERRATUM_0065 is not set
 
 # mvebu
 # CONFIG_MV_XOR_V2 is not set

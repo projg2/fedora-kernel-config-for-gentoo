@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 17
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2174,6 +2174,9 @@ fi
 #
 # 
 %changelog
+* Wed Mar 22 2017 Laura Abbott <labbott@fedoraproject.org> - 4.9.17-100
+- Linux v4.9.17
+
 * Mon Mar 20 2017 Laura Abbott <labbott@fedoraproject.org> - 4.9.16-100
 - Linux v4.9.16
 
