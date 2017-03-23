@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -602,6 +602,12 @@ Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 
 # grabbed from mailing list
 Patch667: v3-Revert-tty-serial-pl011-add-ttyAMA-for-matching-pl011-console.patch
+
+# Fix crda rhbz 1422247
+Patch668: genetlink-fix-counting-regression-on-ctrl_dumpfamily.patch
+
+# Fix virtio devices rhbz 1430297
+Patch669: virtio_pci-fix-out-of-bound-access-for-msix_names.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2167,6 +2173,10 @@ fi
 #
 #
 %changelog
+* Thu Mar 23 2017 Justin M. Forbes <jforbes@fedoraproject.org> 4.11.0-0.rc3.git0.2
+- Fix virtio devices (rhbz 1430297)
+- Fix crda (rhbz 1422247)
+
 * Mon Mar 20 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc3.git0.1
 - Linux v4.11-rc3
 - Fix for debuginfo conflicts (rhbz 1431296)
