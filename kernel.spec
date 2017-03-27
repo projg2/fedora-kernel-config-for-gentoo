@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 9
+%define base_sublevel 10
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 17
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -67,7 +67,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%define rcrev 0
+%global rcrev 0
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -313,8 +313,10 @@ Summary: The Linux kernel
 # printed out?
 %if %{nopatches}
 %define listnewconfig_fail 0
+%define configmismatch_fail 0
 %else
 %define listnewconfig_fail 1
+%define configmismatch_fail 1
 %endif
 
 # To temporarily exclude an architecture from being built, add it to
@@ -341,7 +343,7 @@ Summary: The Linux kernel
 %endif
 
 # Architectures we build tools/cpupower on
-%define cpupowerarchs %{ix86} x86_64 %{power64} %{arm} aarch64 
+%define cpupowerarchs %{ix86} x86_64 %{power64} %{arm} aarch64
 
 #
 # Packages that need to be installed before the kernel is, because the %%post
@@ -373,12 +375,12 @@ Requires: kernel-modules-uname-r = %{KVERREL}%{?variant}
 BuildRequires: kmod, patch, bash, sh-utils, tar, git
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
-BuildRequires: net-tools, hostname, bc
+BuildRequires: net-tools, hostname, bc, elfutils-devel
 %if %{with_sparse}
 BuildRequires: sparse
 %endif
 %if %{with_perf}
-BuildRequires: elfutils-devel zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison flex xz-devel
+BuildRequires: zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel
 %ifnarch s390 s390x %{arm}
 BuildRequires: numactl-devel
@@ -425,38 +427,35 @@ Source98: filter-ppc64p7.sh
 Source99: filter-modules.sh
 %define modsign_cmd %{SOURCE18}
 
-Source19: Makefile.release
-Source20: Makefile.config
-Source21: config-debug
-Source22: config-nodebug
-Source23: config-generic
-Source24: config-no-extra
+Source20: kernel-aarch64.config
+Source21: kernel-aarch64-debug.config
+Source22: kernel-armv7hl.config
+Source23: kernel-armv7hl-debug.config
+Source24: kernel-armv7hl-lpae.config
+Source25: kernel-armv7hl-lpae-debug.config
+Source26: kernel-i686.config
+Source27: kernel-i686-debug.config
+Source28: kernel-i686-PAE.config
+Source29: kernel-i686-PAEdebug.config
+Source30: kernel-ppc64.config
+Source31: kernel-ppc64-debug.config
+Source32: kernel-ppc64le.config
+Source33: kernel-ppc64le-debug.config
+Source34: kernel-ppc64p7.config
+Source35: kernel-ppc64p7-debug.config
+Source36: kernel-s390x.config
+Source37: kernel-s390x-debug.config
+Source38: kernel-x86_64.config
+Source39: kernel-x86_64-debug.config
 
-Source30: config-x86-generic
-Source31: config-i686-PAE
-Source32: config-x86-32-generic
+Source40: generate_all_configs.sh
+Source41: generate_debug_configs.sh
 
-Source40: config-x86_64-generic
-
-Source50: config-powerpc64-generic
-Source53: config-powerpc64
-Source54: config-powerpc64p7
-Source55: config-powerpc64le
-
-Source70: config-s390x
-
-Source100: config-arm-generic
-
-# Unified ARM kernels
-Source101: config-armv7-generic
-Source102: config-armv7
-Source103: config-armv7-lpae
-
-Source110: config-arm64
+Source42: check_configs.awk
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
-Source1000: config-local
+Source1000: kernel-local
 
 # Sources for kernel-tools
 Source2000: cpupower.service
@@ -498,44 +497,47 @@ Source5005: kbuild-AFTER_LINK.patch
 # Standalone patches
 
 # a tempory patch for QCOM hardware enablement. Will be gone by end of 2016/F-26 GA
-Patch421: qcom-QDF2432-tmp-errata.patch
+Patch420: qcom-QDF2432-tmp-errata.patch
 
 # http://www.spinics.net/lists/arm-kernel/msg490981.html
-Patch422: geekbox-v4-device-tree-support.patch
-
-# http://www.spinics.net/lists/linux-pci/msg53991.html
-# https://patchwork.kernel.org/patch/9337113/
-Patch425: arm64-pcie-quirks.patch
+Patch421: geekbox-v4-device-tree-support.patch
 
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch426: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
+Patch422: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
 # Fix OMAP4 (pandaboard)
-Patch427: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
+Patch423: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
 # Not particularly happy we don't yet have a proper upstream resolution this is the right direction
 # https://www.spinics.net/lists/arm-kernel/msg535191.html
-Patch429: arm64-mm-Fix-memmap-to-be-initialized-for-the-entire-section.patch
+Patch424: arm64-mm-Fix-memmap-to-be-initialized-for-the-entire-section.patch
 
 # http://patchwork.ozlabs.org/patch/587554/
-Patch430: ARM-tegra-usb-no-reset.patch
+Patch425: ARM-tegra-usb-no-reset.patch
 
-Patch431: bcm2837-initial-support.patch
+Patch426: AllWinner-net-emac.patch
 
-Patch432: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
+Patch427: xgene_enet-remove-bogus-forward-declarations.patch
+Patch428: xgene-Fix-crash-on-DT-systems.patch
+
+# http://www.spinics.net/lists/devicetree/msg163238.html
+Patch430: bcm2837-initial-support.patch
 
 # http://www.spinics.net/lists/linux-mmc/msg41151.html
-Patch433: bcm283x-mmc-imp-speed.patch
+Patch431: bcm283x-mmc-imp-speed.patch
 
-Patch434: mm-alloc_contig-re-allow-CMA-to-compact-FS-pages.patch
+Patch432: bcm283x-VEC.patch
+
+# http://www.spinics.net/lists/dri-devel/msg132235.html
+Patch433: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
+
+# Upstream fixes for i2c/serial/ethernet MAC addresses
+Patch435: bcm283x-fixes.patch
 
 Patch436: vc4-fix-vblank-cursor-update-issue.patch
 
-Patch440: AllWinner-net-emac.patch
-
-Patch442: ARM-Drop-fixed-200-Hz-timer-requirement-from-Samsung-platforms.patch
-
-Patch443: imx6sx-Add-UDOO-Neo-support.patch
+# http://www.spinics.net/lists/arm-kernel/msg552554.html
+Patch438: arm-imx6-hummingboard2.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
@@ -551,33 +553,7 @@ Patch471: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
 
 Patch472: crash-driver.patch
 
-Patch473: Add-secure_modules-call.patch
-
-Patch474: PCI-Lock-down-BAR-access-when-module-security-is-ena.patch
-
-Patch475: x86-Lock-down-IO-port-access-when-module-security-is.patch
-
-Patch476: ACPI-Limit-access-to-custom_method.patch
-
-Patch477: asus-wmi-Restrict-debugfs-interface-when-module-load.patch
-
-Patch478: Restrict-dev-mem-and-dev-kmem-when-module-loading-is.patch
-
-Patch479: acpi-Ignore-acpi_rsdp-kernel-parameter-when-module-l.patch
-
-Patch480: kexec-Disable-at-runtime-if-the-kernel-enforces-modu.patch
-
-Patch481: x86-Restrict-MSR-access-when-module-loading-is-restr.patch
-
-Patch482: Add-option-to-automatically-enforce-module-signature.patch
-
-Patch483: efi-Add-SHIM-and-image-security-database-GUID-defini.patch
-
-Patch484: efi-Disable-secure-boot-if-shim-is-in-insecure-mode.patch
-
-Patch485: efi-Add-EFI_SECURE_BOOT-bit.patch
-
-Patch486: hibernate-Disable-in-a-signed-modules-environment.patch
+Patch473: efi-lockdown.patch
 
 Patch487: Add-EFI-signature-data-types.patch
 
@@ -592,16 +568,11 @@ Patch490: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
 
 Patch491: MODSIGN-Support-not-importing-certs-from-db.patch
 
-Patch492: Add-sysrq-option-to-disable-secure-boot-mode.patch
-
 Patch493: drm-i915-hush-check-crtc-state.patch
 
 Patch494: disable-i8042-check-on-apple-mac.patch
 
 Patch495: lis3-improve-handling-of-null-rate.patch
-
-# In theory this has been fixed so should no longer be needed, it also causes problems with aarch64 DMI, so disable to see for sure if it's fixed
-# Patch496: watchdog-Disable-watchdog-on-virtual-machines.patch
 
 Patch497: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
@@ -617,8 +588,6 @@ Patch502: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
 
 # Patch503: drm-i915-turn-off-wc-mmaps.patch
 
-Patch508: kexec-uefi-copy-secure_boot-flag-in-boot-params.patch
-
 Patch509: MODSIGN-Don-t-try-secure-boot-if-EFI-runtime-is-disa.patch
 
 #CVE-2016-3134 rhbz 1317383 1317384
@@ -627,24 +596,17 @@ Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 #ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch849: 0001-iio-Use-event-header-from-kernel-tree.patch
 
-# Request from dwalsh
-Patch851: selinux-namespace-fix.patch
+# Fix build issue with armada_trace
+Patch851: Armada-trace-build-fix.patch
 
-#rhbz 1390308
-Patch852: nouveau-add-maxwell-to-backlight-init.patch
+# selinux: allow context mounts on tmpfs, ramfs, devpts within user namespaces
+Patch852: selinux-allow-context-mounts-on-tmpfs-etc.patch
 
 #CVE-2017-2596 rhbz 1417812 1417813
-Patch855: kvm-fix-page-struct-leak-in-handle_vmon.patch
+Patch854: kvm-fix-page-struct-leak-in-handle_vmon.patch
 
-#rhbz 1417829
-Patch858: 1-2-media-cxusb-Use-a-dma-capable-buffer-also-for-reading.patch
-Patch859: 2-2-media-dvb-usb-firmware-don-t-do-DMA-on-stack.patch
-
-#rhbz 1422969
-Patch862: rt2800-warning.patch
-
-#CVE-2017-6353 rhbz 1428907 1428910
-Patch864: sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
+#Fix crda rhbz 1422247
+Patch856: genetlink-fix-counting-regression-on-ctrl_dumpfamily.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -822,7 +784,7 @@ This package provides debug information for package kernel-tools.
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
-%{expand:%%global debuginfo_args %{?debuginfo_args} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
+%{expand:%%global debuginfo_args %{?debuginfo_args} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
 
 %endif # with_tools
 
@@ -991,7 +953,7 @@ on kernel bugs, as some of these options impact performance noticably.
 # And finally the main -core package
 
 %define variant_summary The Linux kernel
-%kernel_variant_package 
+%kernel_variant_package
 %description core
 The kernel package contains the Linux kernel (vmlinuz), the core of any
 Linux operating system.  The kernel handles the basic functions
@@ -1216,19 +1178,24 @@ git commit -a -m "Stable update"
 %endif
 
 # Drop some necessary files from the source dir into the buildroot
-cp $RPM_SOURCE_DIR/config-* .
+cp $RPM_SOURCE_DIR/kernel-*.config .
+cp %{SOURCE1000} .
 cp %{SOURCE15} .
+cp %{SOURCE40} .
+cp %{SOURCE41} .
 
 %if !%{debugbuildsenabled}
-%if %{with_release}
 # The normal build is a really debug build and the user has explicitly requested
 # a release kernel. Change the config files into non-debug versions.
-make -f %{SOURCE19} config-release
-%endif
+%if !%{with_release}
+VERSION=%{version} ./generate_debug_configs.sh
+%else
+VERSION=%{version} ./generate_all_configs.sh
 %endif
 
-# Dynamically generate kernel .config files from config-* files
-make -f %{SOURCE20} VERSION=%{version} configs
+%else
+VERSION=%{version} ./generate_all_configs.sh
+%endif
 
 # Merge in any user-provided local config option changes
 %ifnarch %nobuildarches
@@ -1270,9 +1237,21 @@ rm -f kernel-%{version}-*debug.config
 
 %define make make %{?cross_opts}
 
+CheckConfigs() {
+     ./check_configs.awk $1 $2 > .mismatches
+     if [ -s .mismatches ]
+     then
+	echo "Error: Mismatches found in configuration files"
+	cat .mismatches
+	exit 1
+     fi
+}
+
+cp %{SOURCE42} .
 # now run oldconfig over all the config files
 for i in *.config
 do
+  cat $i > temp-$i
   mv $i .config
   Arch=`head -1 .config | cut -b 3-`
   make ARCH=$Arch listnewconfig | grep -E '^CONFIG_' >.newoptions || true
@@ -1286,6 +1265,10 @@ do
   make ARCH=$Arch oldnoconfig
   echo "# $Arch" > configs/$i
   cat .config >> configs/$i
+%if %{configmismatch_fail}
+  CheckConfigs configs/$i temp-$i
+%endif
+  rm temp-$i
 done
 # end of kernel config
 %endif
@@ -1316,7 +1299,7 @@ cd ..
 # This affects the vDSO images in vmlinux, and the vmlinux image in bzImage.
 export AFTER_LINK=\
 'sh -xc "/usr/lib/rpm/debugedit -b $$RPM_BUILD_DIR -d /usr/src/debug \
-    				-i $@ > $@.id"'
+                                -i $@ > $@.id"'
 %endif
 
 cp_vmlinux()
@@ -1413,7 +1396,7 @@ BuildKernel() {
     mv vmlinuz.signed $KernelImage
     %endif
     $CopyKernel $KernelImage \
-    		$RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
+                $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
     chmod 755 $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
     cp $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/$InstallName
 
@@ -1564,13 +1547,13 @@ BuildKernel() {
     }
 
     collect_modules_list networking \
-    			 'register_netdev|ieee80211_register_hw|usbnet_probe|phy_driver_register|rt(l_|2x00)(pci|usb)_probe|register_netdevice'
+      'register_netdev|ieee80211_register_hw|usbnet_probe|phy_driver_register|rt(l_|2x00)(pci|usb)_probe|register_netdevice'
     collect_modules_list block \
-    			 'ata_scsi_ioctl|scsi_add_host|scsi_add_host_with_dma|blk_alloc_queue|blk_init_queue|register_mtd_blktrans|scsi_esp_register|scsi_register_device_handler|blk_queue_physical_block_size' 'pktcdvd.ko|dm-mod.ko'
+      'ata_scsi_ioctl|scsi_add_host|scsi_add_host_with_dma|blk_alloc_queue|blk_init_queue|register_mtd_blktrans|scsi_esp_register|scsi_register_device_handler|blk_queue_physical_block_size' 'pktcdvd.ko|dm-mod.ko'
     collect_modules_list drm \
-    			 'drm_open|drm_init'
+      'drm_open|drm_init'
     collect_modules_list modesetting \
-    			 'drm_crtc_init'
+      'drm_crtc_init'
 
     # detect missing or incorrect license tags
     ( find $RPM_BUILD_ROOT/lib/modules/$KernelVer -name '*.ko' | xargs /sbin/modinfo -l | \
@@ -1601,9 +1584,9 @@ BuildKernel() {
     # Find all the module files and filter them out into the core and modules
     # lists.  This actually removes anything going into -modules from the dir.
     find lib/modules/$KernelVer/kernel -name *.ko | sort -n > modules.list
-	cp $RPM_SOURCE_DIR/filter-*.sh .
+    cp $RPM_SOURCE_DIR/filter-*.sh .
     %{SOURCE99} modules.list %{_target_cpu}
-	rm filter-*.sh
+    rm filter-*.sh
 
     # Run depmod on the resulting module tree and make sure it isn't broken
     depmod -b . -aeF ./System.map $KernelVer &> depmod.out
@@ -1621,7 +1604,7 @@ BuildKernel() {
 
     # Go back and find all of the various directories in the tree.  We use this
     # for the dir lists in kernel-core
-    find lib/modules/$KernelVer/kernel -type d | sort -n > module-dirs.list
+    find lib/modules/$KernelVer/kernel -mindepth 1 -type d | sort -n > module-dirs.list
 
     # Cleanup
     rm System.map
@@ -1688,9 +1671,11 @@ BuildKernel %make_target %kernel_image
 %endif
 
 %global perf_make \
-  make -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix}
+  make -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 NO_JVMTI=1 prefix=%{_prefix}
 %if %{with_perf}
 # perf
+# make sure check-headers.sh is executable
+chmod +x tools/perf/check-headers.sh
 %{perf_make} DESTDIR=$RPM_BUILD_ROOT all
 %endif
 
@@ -1720,6 +1705,12 @@ chmod +x tools/power/cpupower/utils/version-gen.sh
 %endif #turbostat/x86_energy_perf_policy
 %endif
 pushd tools/thermal/tmon/
+%{make}
+popd
+pushd tools/iio/
+%{make}
+popd
+pushd tools/gpio/
 %{make}
 popd
 %endif
@@ -1805,7 +1796,7 @@ make ARCH=%{hdrarch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr headers_install
 
 find $RPM_BUILD_ROOT/usr/include \
      \( -name .install -o -name .check -o \
-     	-name ..install.cmd -o -name ..check.cmd \) | xargs rm -f
+        -name ..install.cmd -o -name ..check.cmd \) | xargs rm -f
 
 %endif
 
@@ -1815,7 +1806,7 @@ make ARCH=%{hdrarch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr/tmp-headers headers_in
 
 find $RPM_BUILD_ROOT/usr/tmp-headers/include \
      \( -name .install -o -name .check -o \
-     	-name ..install.cmd -o -name ..check.cmd \) | xargs rm -f
+        -name ..install.cmd -o -name ..check.cmd \) | xargs rm -f
 
 # Copy all the architectures we care about to their respective asm directories
 for arch in arm arm64 powerpc s390 x86 ; do
@@ -1888,6 +1879,12 @@ install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
 %endif #turbostat/x86_energy_perf_policy
 pushd tools/thermal/tmon
 make INSTALL_ROOT=%{buildroot} install
+popd
+pushd tools/iio
+make INSTALL_ROOT=%{buildroot} install
+popd
+pushd tools/gpio
+make DESTDIR=%{buildroot} install
 popd
 %endif
 
@@ -2080,6 +2077,12 @@ fi
 %{_mandir}/man8/turbostat*
 %endif
 %{_bindir}/tmon
+%{_bindir}/iio_event_monitor
+%{_bindir}/iio_generic_buffer
+%{_bindir}/lsiio
+%{_bindir}/lsgpio
+%{_bindir}/gpio-hammer
+%{_bindir}/gpio-event-mon
 %endif
 
 %if %{with_debuginfo}
@@ -2174,6 +2177,9 @@ fi
 #
 # 
 %changelog
+* Mon Mar 27 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.6-100
+- Linux v4.10.6 rebase
+
 * Wed Mar 22 2017 Laura Abbott <labbott@fedoraproject.org> - 4.9.17-100
 - Linux v4.9.17
 
