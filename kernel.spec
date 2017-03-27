@@ -608,6 +608,9 @@ Patch854: kvm-fix-page-struct-leak-in-handle_vmon.patch
 #Fix crda rhbz 1422247
 Patch856: genetlink-fix-counting-regression-on-ctrl_dumpfamily.patch
 
+#CVE-2017-7261 rhbz 1435719 1435740
+Patch857: vmwgfx-check-that-number-of-mip-levels-is-above-zero.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2177,6 +2180,9 @@ fi
 #
 # 
 %changelog
+* Mon Mar 27 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- CVE-2017-7261 vmwgfx: check that number of mip levels is above zero (rhbz 1435719 1435740)
+
 * Mon Mar 27 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.6-100
 - Linux v4.10.6 rebase
 
