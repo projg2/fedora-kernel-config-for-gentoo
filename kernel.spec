@@ -611,6 +611,9 @@ Patch856: genetlink-fix-counting-regression-on-ctrl_dumpfamily.patch
 #CVE-2017-7261 rhbz 1435719 1435740
 Patch857: vmwgfx-check-that-number-of-mip-levels-is-above-zero.patch
 
+#CVE-2017-7277 rhbz 1436629 1436661
+Patch858: tcp-mark-skbs-with-SCM_TIMESTAMPING_OPT_STATS.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2180,6 +2183,9 @@ fi
 #
 # 
 %changelog
+* Tue Mar 28 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- CVE-2017-7277 SCM_TIMESTAMPING_OPT_STATS feature causes out-of-bounds read (rhbz 1436629 1436661)
+
 * Mon Mar 27 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - CVE-2017-7261 vmwgfx: check that number of mip levels is above zero (rhbz 1435719 1435740)
 
