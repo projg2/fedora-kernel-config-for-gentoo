@@ -67,7 +67,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 4
+%global rcrev 5
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -601,9 +601,6 @@ Patch509: MODSIGN-Don-t-try-secure-boot-if-EFI-runtime-is-disa.patch
 
 #CVE-2016-3134 rhbz 1317383 1317384
 Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
-
-# Fix virtio devices rhbz 1430297
-Patch669: virtio_pci-fix-out-of-bound-access-for-msix_names.patch
 
 #CVE-2017-7261 rhbz 1435719 1435740
 Patch670: vmwgfx-check-that-number-of-mip-levels-is-above-zero.patch
@@ -2172,6 +2169,12 @@ fi
 #
 #
 %changelog
+* Mon Apr 03 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc5.git0.1
+- Linux v4.11-rc5
+- Disable 64K pages on aarch64
+- Enable THP on Power (rhbz 1434007)
+- Enable STi DRM driver
+
 * Mon Mar 27 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc4.git0.1
 - Linux v4.11-rc4
 - CVE-2017-7261 vmwgfx: check that number of mip levels is above zero (rhbz 1435719 1435740)
