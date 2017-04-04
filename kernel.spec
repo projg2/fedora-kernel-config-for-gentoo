@@ -2180,6 +2180,9 @@ fi
 #
 # 
 %changelog
+* Tue Apr 04 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- redisable CONFIG_IWLWIFI_PCIE_RTPM (rhbz 1429135)
+
 * Fri Mar 31 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.8-100
 - Linux v4.10.8
 
