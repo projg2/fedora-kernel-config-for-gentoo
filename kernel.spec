@@ -617,6 +617,8 @@ Patch859: 0001-x86-mce-Don-t-print-MCEs-when-mcelog-is-active.patch
 # CVE-2017-2671 rhbz 1436649 1436663
 Patch860: 0001-ping-implement-proper-locking.patch
 
+Patch861: 0001-efi-libstub-Treat-missing-SecureBoot-variable-as-Sec.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2189,6 +2191,7 @@ fi
 * Wed Apr 05 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Don't print MCEs when mcelog is running (rhbz 1438316)
 - CVE-2017-2671 Fix ping locking (rhbz 1436649 1436663)
+- Fix secureboot ERROR
 
 * Tue Apr 04 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - redisable CONFIG_IWLWIFI_PCIE_RTPM (rhbz 1429135)
