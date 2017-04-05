@@ -611,6 +611,12 @@ Patch857: vmwgfx-check-that-number-of-mip-levels-is-above-zero.patch
 #CVE-2017-7277 rhbz 1436629 1436661
 Patch858: tcp-mark-skbs-with-SCM_TIMESTAMPING_OPT_STATS.patch
 
+# rhbz 1438316
+Patch859: 0001-x86-mce-Don-t-print-MCEs-when-mcelog-is-active.patch
+
+# CVE-2017-2671 rhbz 1436649 1436663
+Patch860: 0001-ping-implement-proper-locking.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2180,6 +2186,10 @@ fi
 #
 # 
 %changelog
+* Wed Apr 05 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Don't print MCEs when mcelog is running (rhbz 1438316)
+- CVE-2017-2671 Fix ping locking (rhbz 1436649 1436663)
+
 * Tue Apr 04 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - redisable CONFIG_IWLWIFI_PCIE_RTPM (rhbz 1429135)
 
