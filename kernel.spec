@@ -67,7 +67,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 5
+%global rcrev 6
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -545,7 +545,7 @@ Patch436: vc4-fix-vblank-cursor-update-issue.patch
 
 Patch437: bcm283x-hdmi-audio.patch
 
-# http://www.spinics.net/lists/arm-kernel/msg552554.html
+# https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch438: arm-imx6-hummingboard2.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
@@ -602,8 +602,8 @@ Patch509: MODSIGN-Don-t-try-secure-boot-if-EFI-runtime-is-disa.patch
 #CVE-2016-3134 rhbz 1317383 1317384
 Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 
-#CVE-2017-7261 rhbz 1435719 1435740
-Patch670: vmwgfx-check-that-number-of-mip-levels-is-above-zero.patch
+#rhbz 1435154
+Patch666: powerpc-prom-Increase-RMA-size-to-512MB.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2169,6 +2169,44 @@ fi
 #
 #
 %changelog
+* Mon Apr 10 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc6.git0.1
+- Linux v4.11-rc6
+
+* Mon Apr 10 2017 Laura Abbott <labbott@fedoraproject.org>
+- Disable debugging options.
+
+* Fri Apr 07 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc5.git4.1
+- Linux v4.11-rc5-152-g269c930
+
+* Fri Apr  7 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable VDSO for aarch64 and ARMv7-LPAE
+
+* Thu Apr 06 2017 Laura Abbott <labbott@fedoraproject.org>
+- Fix for powerpc booting with large initrd (rhbz 1435154)
+
+* Thu Apr  6 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Rebase to new HummingBoard 2 DT patch
+- Minor ARM cleanups
+- Enable Serial device TTY port controller
+
+* Thu Apr 06 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc5.git3.1
+- Linux v4.11-rc5-133-gea6b172
+
+* Wed Apr 05 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc5.git2.1
+- Linux v4.11-rc5-41-gaeb4a57
+
+* Tue Apr  4 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update AllWinner configs
+
+* Tue Apr 04 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc5.git1.1
+- Linux v4.11-rc5-11-g08e4e0d
+
+* Tue Apr 04 2017 Laura Abbott <labbott@fedoraproject.org>
+- Reenable debugging options.
+
+* Mon Apr  3 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Update Amlogic meson support
+
 * Mon Apr 03 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc5.git0.1
 - Linux v4.11-rc5
 - Disable 64K pages on aarch64
