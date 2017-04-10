@@ -616,6 +616,9 @@ Patch860: 0001-ping-implement-proper-locking.patch
 
 Patch861: 0001-efi-libstub-Treat-missing-SecureBoot-variable-as-Sec.patch
 
+#rhbz 1439613
+Patch862: 1-2-media-cxusb-Use-a-dma-capable-buffer-also-for-reading.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2185,6 +2188,9 @@ fi
 #
 # 
 %changelog
+* Mon Apr 10 2017 Laura Abbott <labbott@fedoraproject.org>
+- Re-add fix for cxusb DMA on stack (rhbz 1439613)
+
 * Mon Apr 10 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.9-100
 - Linux v4.10.9
 - CVE-2017-7187 (rhbz 1434327 1439045)
