@@ -622,6 +622,12 @@ Patch862: 1-2-media-cxusb-Use-a-dma-capable-buffer-also-for-reading.patch
 #rhbz 1441310
 Patch863: rhbz_1441310.patch
 
+# CVE-2017-7618 rhbz 1441095 1441093
+Patch865: CVE-2017-7618.patch
+
+# CVE-2017-7308 rhbz 1437404 1437406
+Patch866: CVE-2017-7308.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2191,6 +2197,11 @@ fi
 #
 # 
 %changelog
+* Tue Apr 11 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2017-7618 (rhbz 1441095 1441093)
+- Fix CVE-2017-7308 (rhbz 1437404 1437406)
+- Turn on CONFIG_HAMRADIO for arm (rhbz 1425990)
+
 * Tue Apr 11 2017 Laura Abbott <labbott@fedoraproject.org>
 - Fix for openshift networking (rhbz 1441310)
 
