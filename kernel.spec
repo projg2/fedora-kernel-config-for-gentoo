@@ -619,6 +619,9 @@ Patch861: 0001-efi-libstub-Treat-missing-SecureBoot-variable-as-Sec.patch
 #rhbz 1439613
 Patch862: 1-2-media-cxusb-Use-a-dma-capable-buffer-also-for-reading.patch
 
+#rhbz 1441310
+Patch863: rhbz_1441310.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2188,6 +2191,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 11 2017 Laura Abbott <labbott@fedoraproject.org>
+- Fix for openshift networking (rhbz 1441310)
+
 * Mon Apr 10 2017 Laura Abbott <labbott@fedoraproject.org>
 - Re-add fix for cxusb DMA on stack (rhbz 1439613)
 
