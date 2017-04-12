@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -599,17 +599,8 @@ Patch849: 0001-iio-Use-event-header-from-kernel-tree.patch
 # selinux: allow context mounts on tmpfs, ramfs, devpts within user namespaces
 Patch852: selinux-allow-context-mounts-on-tmpfs-etc.patch
 
-#CVE-2017-2596 rhbz 1417812 1417813
-Patch854: kvm-fix-page-struct-leak-in-handle_vmon.patch
-
-#CVE-2017-7261 rhbz 1435719 1435740
-Patch857: vmwgfx-check-that-number-of-mip-levels-is-above-zero.patch
-
 #CVE-2017-7277 rhbz 1436629 1436661
 Patch858: tcp-mark-skbs-with-SCM_TIMESTAMPING_OPT_STATS.patch
-
-# rhbz 1438316
-Patch859: 0001-x86-mce-Don-t-print-MCEs-when-mcelog-is-active.patch
 
 # CVE-2017-2671 rhbz 1436649 1436663
 Patch860: 0001-ping-implement-proper-locking.patch
@@ -2197,6 +2188,10 @@ fi
 #
 #
 %changelog
+* Wed Apr 12 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.10-200
+- Linux v4.10.10
+- CVE-2017-7616 (rhbz 1441088 1441093)
+
 * Tue Apr 11 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2017-7618 (rhbz 1441095 1441093)
 - Fix CVE-2017-7308 (rhbz 1437404 1437406)
