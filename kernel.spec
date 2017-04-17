@@ -67,7 +67,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 6
+%global rcrev 7
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -527,6 +527,12 @@ Patch425: ARM-tegra-usb-no-reset.patch
 
 Patch426: AllWinner-h3.patch
 Patch427: AllWinner-net-emac.patch
+
+# http://www.spinics.net/lists/linux-bluetooth/msg70169.html
+# https://www.spinics.net/lists/devicetree/msg170619.html
+Patch428: ti-bluetooth.patch
+
+Patch429: arm64-hikey-fixes.patch
 
 # http://www.spinics.net/lists/devicetree/msg163238.html
 Patch430: bcm2837-initial-support.patch
@@ -2169,6 +2175,28 @@ fi
 #
 #
 %changelog
+* Mon Apr 17 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc7.git0.1
+- Linux v4.11-rc7
+
+* Mon Apr 17 2017 Laura Abbott <labbott@fedoraproject.org>
+- Disable debugging options.
+
+* Thu Apr 13 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc6.git3.1
+- Linux v4.11-rc6-62-gee921c7
+
+* Wed Apr 12 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc6.git2.1
+- Linux v4.11-rc6-29-gb9b3322
+
+* Wed Apr 12 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add support for TI Bluetooth modules
+- Add fixes for 96boards HiKey
+
+* Tue Apr 11 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc6.git1.1
+- Linux v4.11-rc6-4-gc08e611
+
+* Tue Apr 11 2017 Laura Abbott <labbott@fedoraproject.org>
+- Reenable debugging options.
+
 * Mon Apr 10 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc6.git0.1
 - Linux v4.11-rc6
 
