@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -615,9 +615,6 @@ Patch863: rhbz_1441310.patch
 
 # CVE-2017-7618 rhbz 1441095 1441093
 Patch865: CVE-2017-7618.patch
-
-# CVE-2017-7308 rhbz 1437404 1437406
-Patch866: CVE-2017-7308.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2188,6 +2185,9 @@ fi
 #
 # 
 %changelog
+* Tue Apr 18 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.11-100
+- Linux v4.10.11
+
 * Wed Apr 12 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.10-100
 - Linux v4.10.10
 - CVE-2017-7616 (rhbz 1441088 1441093)
