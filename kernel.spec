@@ -616,6 +616,9 @@ Patch863: rhbz_1441310.patch
 # CVE-2017-7618 rhbz 1441095 1441093
 Patch865: CVE-2017-7618.patch
 
+# CVE-2017-7645 rhbz 1443615 1443617
+Patch866: CVE-2017-7645.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2185,6 +2188,9 @@ fi
 #
 # 
 %changelog
+* Wed Apr 19 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2017-7645 (rhbz 1443615 1443617)
+
 * Tue Apr 18 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.11-100
 - Linux v4.10.11
 
