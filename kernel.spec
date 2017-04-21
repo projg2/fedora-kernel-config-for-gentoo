@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -607,14 +607,8 @@ Patch860: 0001-ping-implement-proper-locking.patch
 
 Patch861: 0001-efi-libstub-Treat-missing-SecureBoot-variable-as-Sec.patch
 
-#rhbz 1439613
-Patch862: 1-2-media-cxusb-Use-a-dma-capable-buffer-also-for-reading.patch
-
 #rhbz 1441310
 Patch863: rhbz_1441310.patch
-
-# CVE-2017-7618.patch rhbz 1441095 1441093
-Patch865: CVE-2017-7618.patch
 
 # CVE-2017-7645 rhbz 1443615 1443617
 Patch866: CVE-2017-7645.patch
@@ -2188,6 +2182,10 @@ fi
 #
 #
 %changelog
+* Fri Apr 21 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.12-200
+- Linux v4.10.12 (rhbz 1438117 1440736)
+- Fixes CVE-2017-7889 (rhbz 1444493 1444496)
+
 * Wed Apr 19 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2017-7645 (rhbz 1443615 1443617)
 
