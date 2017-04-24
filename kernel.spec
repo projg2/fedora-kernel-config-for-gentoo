@@ -67,7 +67,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 7
+%global rcrev 8
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -610,6 +610,9 @@ Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 
 #rhbz 1435154
 Patch666: powerpc-prom-Increase-RMA-size-to-512MB.patch
+
+# CVE-2017-7645 rhbz 1443615 1443617
+Patch667: CVE-2017-7645.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2175,6 +2178,30 @@ fi
 #
 #
 %changelog
+* Mon Apr 24 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc8.git0.1
+- Linux v4.11-rc8
+
+* Mon Apr 24 2017 Laura Abbott <labbott@fedoraproject.org>
+- Disable debugging options.
+
+* Fri Apr 21 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.11.0-0.rc7.git3.1
+- Linux v4.11-rc7-111-g057a650
+
+* Fri Apr 21 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable ADV7533 sub module
+
+* Thu Apr 20 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.11.0-0.rc7.git2.1
+- Linux v4.11-rc7-42-gf61143c
+
+* Wed Apr 19 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2017-7645 (rhbz 1443615 1443617)
+
+* Wed Apr 19 2017 Laura Abbott <labbott@redhat.com> - 4.11.0-0.rc7.git1.1
+- Linux v4.11-rc7-29-g005882e53d62
+
+* Wed Apr 19 2017 Laura Abbott <labbott@redhat.com>
+- Reenable debugging options.
+
 * Mon Apr 17 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc7.git0.1
 - Linux v4.11-rc7
 
