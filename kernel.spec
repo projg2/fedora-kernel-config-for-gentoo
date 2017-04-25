@@ -613,6 +613,9 @@ Patch863: rhbz_1441310.patch
 # CVE-2017-7645 rhbz 1443615 1443617
 Patch866: CVE-2017-7645.patch
 
+# CVE-2017-7477 rhbz 1445207 1445208
+Patch867: CVE-2017-7477.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2182,6 +2185,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 25 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2017-7477 (rhbz 1445207 1445208)
+
 * Fri Apr 21 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.12-200
 - Linux v4.10.12 (rhbz 1438117 1440736)
 - Fixes CVE-2017-7889 (rhbz 1444493 1444496)
