@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2185,6 +2185,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 27 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.13-200
+- Linux v4.10.13
+
 * Tue Apr 25 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2017-7477 (rhbz 1445207 1445208)
 
