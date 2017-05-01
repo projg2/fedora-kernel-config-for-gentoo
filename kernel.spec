@@ -6,7 +6,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1. For rawhide
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
-%global released_kernel 0
+%global released_kernel 1
 
 # Sign modules on x86.  Make sure the config files match this setting if more
 # architectures are added.
@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 10
+%define base_sublevel 11
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
@@ -67,7 +67,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 8
+%global rcrev 0
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -219,7 +219,7 @@ Summary: The Linux kernel
 
 %if %{with_vdso_install}
 # These arches install vdso/ directories.
-%define vdso_arches %{all_x86} x86_64 %{power64} s390 s390x aarch64
+%define vdso_arches %{all_x86} x86_64 %{power64} s390x aarch64
 %endif
 
 # Overrides for generic default options
@@ -329,7 +329,7 @@ Summary: The Linux kernel
 # Which is a BadThing(tm).
 
 # We only build kernel-headers on the following...
-%define nobuildarches i386 s390
+%define nobuildarches i386
 
 %ifarch %nobuildarches
 %define with_up 0
@@ -364,7 +364,7 @@ Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
-ExclusiveArch: %{all_x86} x86_64 ppc64 ppc64p7 s390 s390x %{arm} aarch64 ppc64le
+ExclusiveArch: %{all_x86} x86_64 ppc64 ppc64p7 s390x %{arm} aarch64 ppc64le
 ExclusiveOS: Linux
 %ifnarch %{nobuildarches}
 Requires: kernel-core-uname-r = %{KVERREL}%{?variant}
@@ -385,7 +385,7 @@ BuildRequires: sparse
 %if %{with_perf}
 BuildRequires: zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel
-%ifnarch s390 s390x %{arm}
+%ifnarch s390x %{arm}
 BuildRequires: numactl-devel
 %endif
 %endif
@@ -537,6 +537,8 @@ Patch429: arm64-hikey-fixes.patch
 # http://www.spinics.net/lists/devicetree/msg163238.html
 Patch430: bcm2837-initial-support.patch
 
+Patch431: arm-rk3288-tinker.patch
+
 # http://www.spinics.net/lists/dri-devel/msg132235.html
 Patch433: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
 
@@ -553,6 +555,11 @@ Patch437: bcm283x-hdmi-audio.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch438: arm-imx6-hummingboard2.patch
+
+# https://lkml.org/lkml/2017/4/4/316
+Patch339: media-cec-Fix-runtime-BUG-when-CONFIG_RC_CORE-CEC_CAP_RC.patch
+
+Patch440: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
@@ -613,6 +620,9 @@ Patch666: powerpc-prom-Increase-RMA-size-to-512MB.patch
 
 # CVE-2017-7645 rhbz 1443615 1443617
 Patch667: CVE-2017-7645.patch
+
+# CVE-2017-7477 rhbz 1445207 1445208
+Patch668: CVE-2017-7477.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2178,6 +2188,44 @@ fi
 #
 #
 %changelog
+* Mon May 01 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-1
+- Linux v4.11
+
+* Mon May 01 2017 Laura Abbott <labbott@fedoraproject.org>
+- Disable debugging options.
+
+* Sun Apr 30 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add initial ASUS Tinker board support
+
+* Fri Apr 28 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc8.git4.1
+- Linux v4.11-rc8-87-g8b5d11e
+
+* Fri Apr 28 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Upstream CEC patch to fix STi issues
+
+* Thu Apr 27 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc8.git3.1
+- Linux v4.11-rc8-75-gf832460
+
+* Wed Apr 26 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc8.git2.1
+- Linux v4.11-rc8-17-gea839b4
+
+* Wed Apr 26 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable sound SoC on aarch64
+- Update some ARM patches to latest upstream
+- ARM config updates
+
+* Tue Apr 25 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc8.git1.1
+- Linux v4.11-rc8-14-g8f9cedc
+
+* Tue Apr 25 2017 Laura Abbott <labbott@fedoraproject.org>
+- Reenable debugging options.
+
+* Tue Apr 25 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2017-7477 (rhbz 1445207 1445208)
+
+* Tue Apr 25 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Minor ARM config cleanups
+
 * Mon Apr 24 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-0.rc8.git0.1
 - Linux v4.11-rc8
 
