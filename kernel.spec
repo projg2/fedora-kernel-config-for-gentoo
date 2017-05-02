@@ -2188,6 +2188,9 @@ fi
 #
 #
 %changelog
+* Tue May 02 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Remove incorrect UEFI 2.6 Secure Boot patch (rhbz 1447191)
+
 * Mon May 01 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-1
 - Linux v4.11
 
