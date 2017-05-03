@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -599,22 +599,10 @@ Patch849: 0001-iio-Use-event-header-from-kernel-tree.patch
 # selinux: allow context mounts on tmpfs, ramfs, devpts within user namespaces
 Patch852: selinux-allow-context-mounts-on-tmpfs-etc.patch
 
-#CVE-2017-7277 rhbz 1436629 1436661
-Patch858: tcp-mark-skbs-with-SCM_TIMESTAMPING_OPT_STATS.patch
-
-# CVE-2017-2671 rhbz 1436649 1436663
-Patch860: 0001-ping-implement-proper-locking.patch
-
 Patch861: 0001-efi-libstub-Treat-missing-SecureBoot-variable-as-Sec.patch
 
 #rhbz 1441310
 Patch863: rhbz_1441310.patch
-
-# CVE-2017-7645 rhbz 1443615 1443617
-Patch866: CVE-2017-7645.patch
-
-# CVE-2017-7477 rhbz 1445207 1445208
-Patch867: CVE-2017-7477.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2185,7 +2173,11 @@ fi
 #
 # 
 %changelog
-* Thu Apr 27 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.13-200
+* Wed May 03 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.14-100
+- Linux v4.10.14
+- Fixes CVE-2017-7895 (rhbz 1446103 1446541)
+
+* Thu Apr 27 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.13-100
 - Linux v4.10.13
 
 * Tue Apr 25 2017 Justin M. Forbes <jforbes@fedoraproject.org>
