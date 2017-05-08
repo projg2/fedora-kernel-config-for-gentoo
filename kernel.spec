@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2176,6 +2176,9 @@ fi
 #
 #
 %changelog
+* Mon May 08 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.15-200
+- Linux v4.10.15
+
 * Mon May 08 2017 Laura Abbott <labbott@fedoraproject.org>
 - Fix for Dell Laptop LED errors (rhbz 1436686)
 
