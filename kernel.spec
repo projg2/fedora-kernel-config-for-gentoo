@@ -604,6 +604,9 @@ Patch861: 0001-efi-libstub-Treat-missing-SecureBoot-variable-as-Sec.patch
 #rhbz 1441310
 Patch863: rhbz_1441310.patch
 
+#rhbz 1436686
+Patch864: dell-laptop-Adds-support-for-keyboard-backlight-timeout-AC-settings.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2173,6 +2176,9 @@ fi
 #
 # 
 %changelog
+* Mon May 08 2017 Laura Abbott <labbott@fedoraproject.org>
+- Fix for Dell Laptop LED errors (rhbz 1436686)
+
 * Wed May 03 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.14-100
 - Linux v4.10.14
 - Fixes CVE-2017-7895 (rhbz 1446103 1446541)
