@@ -624,6 +624,9 @@ Patch667: CVE-2017-7645.patch
 # CVE-2017-7477 rhbz 1445207 1445208
 Patch668: CVE-2017-7477.patch
 
+# Needed for compilation of external modules
+Patch669: refcount-change-EXPORT_SYMBOL-markings.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2188,6 +2191,9 @@ fi
 #
 #
 %changelog
+* Tue May 09 2017 Laura Abbott <labbott@fedoraproject.org>
+- Fix EXPORT_SYMBOL for external modules that shall not be named
+
 * Tue May 09 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.0-2
 - Bump for updated gcc (rhbz 1448958)
 
