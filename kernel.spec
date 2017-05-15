@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 10
+%define base_sublevel 11
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -183,6 +183,9 @@ Summary: The Linux kernel
 %define _enable_debug_packages 0
 %endif
 %define debuginfodir /usr/lib/debug
+# Needed because we override almost everything involving build-ids
+# and debuginfo generation. Currently we rely on the old alldebug setting.
+%global _build_id_links alldebug
 
 # kernel PAE is only built on i686 and ARMv7.
 %ifnarch i686 armv7hl
@@ -216,7 +219,7 @@ Summary: The Linux kernel
 
 %if %{with_vdso_install}
 # These arches install vdso/ directories.
-%define vdso_arches %{all_x86} x86_64 %{power64} s390 s390x aarch64
+%define vdso_arches %{all_x86} x86_64 %{power64} s390x aarch64
 %endif
 
 # Overrides for generic default options
@@ -326,7 +329,7 @@ Summary: The Linux kernel
 # Which is a BadThing(tm).
 
 # We only build kernel-headers on the following...
-%define nobuildarches i386 s390
+%define nobuildarches i386
 
 %ifarch %nobuildarches
 %define with_up 0
@@ -361,7 +364,7 @@ Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
-ExclusiveArch: %{all_x86} x86_64 ppc64 ppc64p7 s390 s390x %{arm} aarch64 ppc64le
+ExclusiveArch: %{all_x86} x86_64 ppc64 ppc64p7 s390x %{arm} aarch64 ppc64le
 ExclusiveOS: Linux
 %ifnarch %{nobuildarches}
 Requires: kernel-core-uname-r = %{KVERREL}%{?variant}
@@ -382,7 +385,7 @@ BuildRequires: sparse
 %if %{with_perf}
 BuildRequires: zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel
-%ifnarch s390 s390x %{arm}
+%ifnarch s390x %{arm}
 BuildRequires: numactl-devel
 %endif
 %endif
@@ -407,7 +410,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %define cross_opts CROSS_COMPILE=%{_build_arch}-linux-gnu-
 %endif
 
-Source0: ftp://ftp.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
+Source0: https://www.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
 
 Source10: perf-man-%{kversion}.tar.gz
 Source11: x509.genkey
@@ -487,8 +490,15 @@ Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
 %endif
 %endif
 
+## Patches needed for building this package
+
 # build tweak for build ID magic, even for -vanilla
-Source5005: kbuild-AFTER_LINK.patch
+Patch001: kbuild-AFTER_LINK.patch
+
+## compile fixes
+
+# ongoing complaint, full discussion delayed until ksummit/plumbers
+Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
 
 %if !%{nopatches}
 
@@ -515,30 +525,41 @@ Patch424: arm64-mm-Fix-memmap-to-be-initialized-for-the-entire-section.patch
 # http://patchwork.ozlabs.org/patch/587554/
 Patch425: ARM-tegra-usb-no-reset.patch
 
-Patch426: AllWinner-net-emac.patch
+Patch426: AllWinner-h3.patch
+Patch427: AllWinner-net-emac.patch
+
+# http://www.spinics.net/lists/linux-bluetooth/msg70169.html
+# https://www.spinics.net/lists/devicetree/msg170619.html
+Patch428: ti-bluetooth.patch
+
+Patch429: arm64-hikey-fixes.patch
 
 # http://www.spinics.net/lists/devicetree/msg163238.html
 Patch430: bcm2837-initial-support.patch
 
-# http://www.spinics.net/lists/linux-mmc/msg41151.html
-Patch431: bcm283x-mmc-imp-speed.patch
-
-Patch432: bcm283x-VEC.patch
+Patch431: arm-rk3288-tinker.patch
 
 # http://www.spinics.net/lists/dri-devel/msg132235.html
 Patch433: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
 
-# Fix RPi3 from crashing. Nowhere near a final fix but provides breathing room while that is sorted
-# https://github.com/anholt/linux/issues/89
-Patch434: 0001-i2c-bcm2835-Debug-test-for-curr_msg.patch
+# bcm283x mmc for wifi http://www.spinics.net/lists/arm-kernel/msg567077.html
+Patch434: bcm283x-mmc-bcm2835.patch
 
 # Upstream fixes for i2c/serial/ethernet MAC addresses
 Patch435: bcm283x-fixes.patch
 
+# https://lists.freedesktop.org/archives/dri-devel/2017-February/133823.html
 Patch436: vc4-fix-vblank-cursor-update-issue.patch
 
-# http://www.spinics.net/lists/arm-kernel/msg552554.html
+Patch437: bcm283x-hdmi-audio.patch
+
+# https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch438: arm-imx6-hummingboard2.patch
+
+# https://lkml.org/lkml/2017/4/4/316
+Patch339: media-cec-Fix-runtime-BUG-when-CONFIG_RC_CORE-CEC_CAP_RC.patch
+
+Patch440: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
@@ -594,26 +615,14 @@ Patch509: MODSIGN-Don-t-try-secure-boot-if-EFI-runtime-is-disa.patch
 #CVE-2016-3134 rhbz 1317383 1317384
 Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 
-#ongoing complaint, full discussion delayed until ksummit/plumbers
-Patch849: 0001-iio-Use-event-header-from-kernel-tree.patch
+#rhbz 1435154
+Patch666: powerpc-prom-Increase-RMA-size-to-512MB.patch
 
-# Fix build issue with armada_trace
-Patch851: Armada-trace-build-fix.patch
+# CVE-2017-7645 rhbz 1443615 1443617
+Patch667: CVE-2017-7645.patch
 
-# selinux: allow context mounts on tmpfs, ramfs, devpts within user namespaces
-Patch852: selinux-allow-context-mounts-on-tmpfs-etc.patch
-
-# See http://lists.infradead.org/pipermail/linux-arm-kernel/2016-October/461597.html
-Patch853: 0001-Work-around-for-gcc7-and-arm64.patch
-
-#CVE-2017-2596 rhbz 1417812 1417813
-Patch854: kvm-fix-page-struct-leak-in-handle_vmon.patch
-
-#CVE-2017-6353 rhbz 1428907 1428910
-Patch855: sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
-
-#CVE-2017-6874 rhbz 1432429 1432430
-Patch856: ucount-Remove-the-atomicity-from-ucount-count.patch
+# CVE-2017-7477 rhbz 1445207 1445208
+Patch668: CVE-2017-7477.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1214,17 +1223,12 @@ do
 done
 %endif
 
-# The kbuild-AFTER_LINK patch is needed regardless so we list it as a Source
-# file and apply it separately from the rest.
-git am %{SOURCE5005}
-
-%if !%{nopatches}
+# Note: Even in the "nopatches" path some patches (build tweaks and compile
+# fixes) will always get applied; see patch defition above for details
 
 git am %{patches}
 
 # END OF PATCH APPLICATIONS
-
-%endif
 
 # Any further pre-build tree manipulations happen here.
 
@@ -2184,6 +2188,9 @@ fi
 #
 #
 %changelog
+* Mon May 15 2017 Laura Abbott <labbott@fedoraproject.org>
+- Linux v4.11.1 rebase
+
 * Wed Mar 15 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.3-200
 - Linux v4.10.3
 - CVE-2017-6874 Fix race condition in ucount.c (rhbz 1432429 1432430)
