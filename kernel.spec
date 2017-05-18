@@ -621,6 +621,10 @@ Patch667: CVE-2017-7645.patch
 # CVE-2017-7477 rhbz 1445207 1445208
 Patch668: CVE-2017-7477.patch
 
+#CVE-2017-9059 rhbz 1451386 1451996
+Patch669: 0001-SUNRPC-Refactor-svc_set_num_threads.patch
+Patch670: 0002-NFSv4-Fix-callback-server-shutdown.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2185,6 +2189,9 @@ fi
 #
 #
 %changelog
+* Thu May 18 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2017-9059 (rhbz 1451386 1451996)
+
 * Mon May 15 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.1-300
 - Linux v4.11.1
 
