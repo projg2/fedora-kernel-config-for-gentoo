@@ -607,6 +607,10 @@ Patch864: dell-laptop-Adds-support-for-keyboard-backlight-timeout-AC-settings.pa
 #CVE-2017-7487 rhbz 1447734 1450417
 Patch865: 0001-ipx-call-ipxitf_put-in-ioctl-error-path.patch
 
+#CVE-2017-9059 rhbz 1451386 1451996
+Patch866: 0001-SUNRPC-Refactor-svc_set_num_threads.patch
+Patch867: 0002-NFSv4-Fix-callback-server-shutdown.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2176,6 +2180,9 @@ fi
 #
 # 
 %changelog
+* Thu May 18 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2017-9059 (rhbz 1451386 1451996)
+
 * Mon May 15 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.10.16-100
 - Linux v4.10.16
 - Fix CVE-2017-7487 (rhbz 1447734 1450417)
