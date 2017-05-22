@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2197,6 +2197,9 @@ fi
 #
 #
 %changelog
+* Mon May 22 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.2-300
+- Linux v4.11.2
+
 * Mon May 22 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2017-8890 CVE-2017-9074 CVE-2017-9075 CVE-2017-9076 CVE-2017-9077
   (rhbz 1452688 1450972 1452679 1452691 1452688 1452744)
