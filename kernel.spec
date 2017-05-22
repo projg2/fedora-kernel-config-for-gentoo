@@ -625,6 +625,18 @@ Patch668: CVE-2017-7477.patch
 Patch669: 0001-SUNRPC-Refactor-svc_set_num_threads.patch
 Patch670: 0002-NFSv4-Fix-callback-server-shutdown.patch
 
+#CVE-2017-8890 rhbz 1450972
+Patch671: 0001-dccp-tcp-do-not-inherit-mc_list-from-parent.patch
+
+#CVE-2017-9074 rhbz 1452679
+Patch672: 0001-ipv6-Prevent-overrun-when-parsing-v6-header-options.patch
+
+#CVE-2017-9075 rhbz 1452691
+Patch673: 0001-sctp-do-not-inherit-ipv6_-mc-ac-fl-_list-from-parent.patch
+
+#CVE-2017-9076 CVE-2017-9077 rhbz 1452688 1452744
+Patch674: 0001-ipv6-dccp-do-not-inherit-ipv6_mc_list-from-parent.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2189,6 +2201,10 @@ fi
 #
 #
 %changelog
+* Mon May 22 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2017-8890 CVE-2017-9074 CVE-2017-9075 CVE-2017-9076 CVE-2017-9077
+  (rhbz 1452688 1450972 1452679 1452691 1452688 1452744)
+
 * Thu May 18 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2017-9059 (rhbz 1451386 1451996)
 
