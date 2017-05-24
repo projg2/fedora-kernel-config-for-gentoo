@@ -515,6 +515,9 @@ Patch422: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 # Fix OMAP4 (pandaboard)
 Patch423: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
+# BBWireless Bluetooth
+Patch424: arm-dts-boneblack-wireless-add-WL1835-Bluetooth-device-node.patch
+
 # http://patchwork.ozlabs.org/patch/587554/
 Patch425: ARM-tegra-usb-no-reset.patch
 
@@ -2197,6 +2200,9 @@ fi
 #
 #
 %changelog
+* Wed May 24 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Various ARM updates
+
 * Mon May 22 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.2-300
 - Linux v4.11.2
 
