@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -549,9 +549,6 @@ Patch437: bcm283x-hdmi-audio.patch
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch438: arm-imx6-hummingboard2.patch
 
-# https://lkml.org/lkml/2017/4/4/316
-Patch339: media-cec-Fix-runtime-BUG-when-CONFIG_RC_CORE-CEC_CAP_RC.patch
-
 Patch440: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
@@ -619,9 +616,6 @@ Patch668: CVE-2017-7477.patch
 
 #rhbz 1436686
 Patch864: dell-laptop-Adds-support-for-keyboard-backlight-timeout-AC-settings.patch
-
-#CVE-2017-7487 rhbz 1447734 1450417
-Patch865: 0001-ipx-call-ipxitf_put-in-ioctl-error-path.patch
 
 #CVE-2017-9059 rhbz 1451386 1451996
 Patch866: 0001-SUNRPC-Refactor-svc_set_num_threads.patch
@@ -2203,6 +2197,9 @@ fi
 #
 #
 %changelog
+* Thu May 25 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.3-200
+- Linux v4.11.3
+
 * Mon May 22 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.2-200
 - Linux v4.11.2
 
