@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -551,9 +551,6 @@ Patch437: bcm283x-hdmi-audio.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch438: arm-imx6-hummingboard2.patch
-
-# https://lkml.org/lkml/2017/4/4/316
-Patch339: media-cec-Fix-runtime-BUG-when-CONFIG_RC_CORE-CEC_CAP_RC.patch
 
 Patch440: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
@@ -2200,6 +2197,9 @@ fi
 #
 #
 %changelog
+* Thu May 25 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.3-300
+- Linux v4.11.3
+
 * Wed May 24 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Various ARM updates
 
