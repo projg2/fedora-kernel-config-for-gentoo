@@ -2197,6 +2197,10 @@ fi
 #
 #
 %changelog
+* Mon May 29 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Updates for ARM devices
+- Build ARM Chromebook specifics on all ARM architectures
+
 * Thu May 25 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.3-300
 - Linux v4.11.3
 
