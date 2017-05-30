@@ -633,6 +633,9 @@ Patch673: 0001-sctp-do-not-inherit-ipv6_-mc-ac-fl-_list-from-parent.patch
 #CVE-2017-9076 CVE-2017-9077 rhbz 1452688 1452744
 Patch674: 0001-ipv6-dccp-do-not-inherit-ipv6_mc_list-from-parent.patch
 
+#Fix broadwell issues
+Patch675: drm-i915-Do-not-drop-pagetables-when-empty.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2197,6 +2200,9 @@ fi
 #
 #
 %changelog
+* Tue May 30 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix for some broadwell issues
+
 * Mon May 29 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Updates for ARM devices
 - Build ARM Chromebook specifics on all ARM architectures
