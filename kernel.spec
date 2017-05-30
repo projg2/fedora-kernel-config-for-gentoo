@@ -636,6 +636,12 @@ Patch674: 0001-ipv6-dccp-do-not-inherit-ipv6_mc_list-from-parent.patch
 #Fix broadwell issues
 Patch675: drm-i915-Do-not-drop-pagetables-when-empty.patch
 
+# rhbz 1455780
+Patch676: 2-2-nvme-Quirk-APST-on-Intel-600P-P3100-devices.patch
+
+# Networking fix reported on bodhi
+Patch678: net-v2-ip6_tunnel-ip6_gre-fix-setting-of-DSCP-on-encapsulated-packets.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2200,6 +2206,10 @@ fi
 #
 #
 %changelog
+* Tue May 30 2017 Laura Abbott <labbott@fedoraproject.org>
+- NVME firmware quirk (rhbz 1455780)
+- Fix for IPv6 tunnels reported on bodhi)
+
 * Tue May 30 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix for some broadwell issues
 
