@@ -2206,6 +2206,9 @@ fi
 #
 # 
 %changelog
+* Fri Jun 02 2017 Laura Abbott <labbott@fedoraproject.org>
+- Enable Chromebook keyboard backlight (rhbz 1447031)
+
 * Thu Jun 01 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.3-100
 - Linux v4.11.3
 - Fix for some broadwell issues
