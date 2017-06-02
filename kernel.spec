@@ -2207,6 +2207,9 @@ fi
 #
 %changelog
 * Fri Jun 02 2017 Laura Abbott <labbott@fedoraproject.org>
+- Turn CONFIG_GPIO_SYSFS back on
+
+* Fri Jun 02 2017 Laura Abbott <labbott@fedoraproject.org>
 - Enable Chromebook keyboard backlight (rhbz 1447031)
 
 * Fri Jun 02 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.3-201
