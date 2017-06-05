@@ -642,6 +642,10 @@ Patch676: 2-2-nvme-Quirk-APST-on-Intel-600P-P3100-devices.patch
 # Networking fix reported on bodhi
 Patch678: net-v2-ip6_tunnel-ip6_gre-fix-setting-of-DSCP-on-encapsulated-packets.patch
 
+# rhbz 1458222 1458499
+# As linked from http://marc.info/?l=linux-netdev&m=149336766030175&w=2
+Patch679: actual_udpencap_fix.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2206,6 +2210,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 05 2017 Laura Abbott <labbott@fedoraproject.org>
+- Actually fix ipsec encapsulation problems (rhbz 1458222 1458499)
+
 * Fri Jun 02 2017 Laura Abbott <labbott@fedoraproject.org>
 - Enable Chromebook keyboard backlight (rhbz 1447031)
 
