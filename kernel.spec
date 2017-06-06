@@ -646,6 +646,10 @@ Patch678: net-v2-ip6_tunnel-ip6_gre-fix-setting-of-DSCP-on-encapsulated-packets.
 # As linked from http://marc.info/?l=linux-netdev&m=149336766030175&w=2
 Patch679: actual_udpencap_fix.patch
 
+# rhbz 1459272
+Patch680: 0001-platform-x86-thinkpad_acpi-guard-generic-hotkey-case.patch
+Patch681: 0002-platform-x86-thinkpad_acpi-add-mapping-for-new-hotke.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2210,6 +2214,9 @@ fi
 #
 # 
 %changelog
+* Tue Jun 06 2017 Laura Abbott <labbott@redhat.com>
+- Backport hotkey event support for 2017 thinkpad models (rhbz 1459272)
+
 * Mon Jun 05 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.3-101
 - Bump and build once again
 
