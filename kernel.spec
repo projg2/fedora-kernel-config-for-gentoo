@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -621,26 +621,11 @@ Patch864: dell-laptop-Adds-support-for-keyboard-backlight-timeout-AC-settings.pa
 Patch866: 0001-SUNRPC-Refactor-svc_set_num_threads.patch
 Patch867: 0002-NFSv4-Fix-callback-server-shutdown.patch
 
-#CVE-2017-8890 rhbz 1450972
-Patch868: 0001-dccp-tcp-do-not-inherit-mc_list-from-parent.patch
-
-#CVE-2017-9074 rhbz 1452679
-Patch869: 0001-ipv6-Prevent-overrun-when-parsing-v6-header-options.patch
-
-#CVE-2017-9075 rhbz 1452691
-Patch870: 0001-sctp-do-not-inherit-ipv6_-mc-ac-fl-_list-from-parent.patch
-
-#CVE-2017-9076 CVE-2017-9077 rhbz 1452688 1452744
-Patch871: 0001-ipv6-dccp-do-not-inherit-ipv6_mc_list-from-parent.patch
-
 #Fix broadwell issues
 Patch675: drm-i915-Do-not-drop-pagetables-when-empty.patch
 
 # rhbz 1455780
 Patch676: 2-2-nvme-Quirk-APST-on-Intel-600P-P3100-devices.patch
-
-# Networking fix reported on bodhi
-Patch678: net-v2-ip6_tunnel-ip6_gre-fix-setting-of-DSCP-on-encapsulated-packets.patch
 
 # rhbz 1458222 1458499
 # As linked from http://marc.info/?l=linux-netdev&m=149336766030175&w=2
@@ -2214,6 +2199,9 @@ fi
 #
 # 
 %changelog
+* Wed Jun 07 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.4-200
+- Linux v4.11.4
+
 * Tue Jun 06 2017 Laura Abbott <labbott@redhat.com>
 - Backport hotkey event support for 2017 thinkpad models (rhbz 1459272)
 
