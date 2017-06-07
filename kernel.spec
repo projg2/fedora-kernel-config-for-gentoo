@@ -522,6 +522,9 @@ Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
 # a tempory patch for QCOM hardware enablement. Will be gone by end of 2016/F-26 GA
 Patch420: qcom-QDF2432-tmp-errata.patch
 
+# Upstream (in 4.12) patches to fix HiKey WiFi
+Patch421: arm-hikey-fixWiFi.patch
+
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
 Patch422: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
@@ -2228,6 +2231,9 @@ fi
 #
 #
 %changelog
+* Wed Jun  7 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add upstream patch set to fix WiFi on HiKey
+
 * Tue Jun 06 2017 Laura Abbott <labbott@redhat.com>
 - Backport hotkey event support for 2017 thinkpad models (rhbz 1459272)
 
