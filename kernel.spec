@@ -623,6 +623,9 @@ Patch502: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
 
 Patch509: MODSIGN-Don-t-try-secure-boot-if-EFI-runtime-is-disa.patch
 
+# rhbz 1436686
+Patch600: dell-laptop-Adds-support-for-keyboard-backlight-timeout-AC-settings.patch
+
 #CVE-2016-3134 rhbz 1317383 1317384
 Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 
