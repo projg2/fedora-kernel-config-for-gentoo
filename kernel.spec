@@ -2205,7 +2205,7 @@ fi
 * Wed Jun 14 2017 Laura Abbott <labbott@fedoraproject.org>
 - Add fix for EFI BGRT crash (rhbz 1461337)
 
-* Wed Jun 07 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.4-200
+* Wed Jun 07 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.4-100
 - Linux v4.11.4
 
 * Tue Jun 06 2017 Laura Abbott <labbott@redhat.com>
