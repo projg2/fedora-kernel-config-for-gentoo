@@ -2224,6 +2224,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 14 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Minor fixes for sun8i-dwmac plus extra device support
+
 * Wed Jun 14 2017 Laura Abbott <labbott@fedoraproject.org>
 - Add fix for EFI BGRT crash (rhbz 1461337)
 
