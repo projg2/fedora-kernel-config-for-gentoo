@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2224,6 +2224,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 14 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.5-300
+- Linux v4.11.5
+
 * Wed Jun 14 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Minor fixes for sun8i-dwmac plus extra device support
 - Add patch set to fix Hikey bluetooth
