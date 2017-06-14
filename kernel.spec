@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2202,6 +2202,9 @@ fi
 #
 # 
 %changelog
+* Wed Jun 14 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.5-100
+- Linux v4.11.5
+
 * Wed Jun 14 2017 Laura Abbott <labbott@fedoraproject.org>
 - Add fix for EFI BGRT crash (rhbz 1461337)
 
