@@ -568,6 +568,9 @@ Patch437: bcm283x-hdmi-audio.patch
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch438: arm-imx6-hummingboard2.patch
 
+# Cavium fixes
+Patch439: arm64-cavium-fixes.patch
+
 Patch440: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 Patch441: bcm2835-clk-audio-jitter-issues.patch
@@ -2224,6 +2227,9 @@ fi
 #
 #
 %changelog
+* Thu Jun 15 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Upstream fixes for Cavium platforms
+
 * Wed Jun 14 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.5-300
 - Linux v4.11.5
 
