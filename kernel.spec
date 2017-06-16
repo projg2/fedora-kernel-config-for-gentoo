@@ -662,6 +662,9 @@ Patch681: 0002-platform-x86-thinkpad_acpi-add-mapping-for-new-hotke.patch
 # rhbz 1461337
 Patch682: 0001-efi-Fix-boot-panic-because-of-invalid-BGRT-image-add.patch
 
+# rhbz 1459326
+Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2227,6 +2230,9 @@ fi
 #
 #
 %changelog
+* Fri Jun 16 2017 Laura Abbott <labbott@fedoraproject.org>
+- Fix an auditd race condition (rhbz 1459326)
+
 * Thu Jun 15 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Upstream fixes for Cavium platforms
 
