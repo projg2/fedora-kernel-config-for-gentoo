@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -621,9 +621,6 @@ Patch864: dell-laptop-Adds-support-for-keyboard-backlight-timeout-AC-settings.pa
 Patch866: 0001-SUNRPC-Refactor-svc_set_num_threads.patch
 Patch867: 0002-NFSv4-Fix-callback-server-shutdown.patch
 
-#Fix broadwell issues
-Patch675: drm-i915-Do-not-drop-pagetables-when-empty.patch
-
 # rhbz 1455780
 Patch676: 2-2-nvme-Quirk-APST-on-Intel-600P-P3100-devices.patch
 
@@ -635,11 +632,11 @@ Patch679: actual_udpencap_fix.patch
 Patch680: 0001-platform-x86-thinkpad_acpi-guard-generic-hotkey-case.patch
 Patch681: 0002-platform-x86-thinkpad_acpi-add-mapping-for-new-hotke.patch
 
-# rhbz 1461337
-Patch682: 0001-efi-Fix-boot-panic-because-of-invalid-BGRT-image-add.patch
-
 # rhbz 1459326
 Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
+
+# CVE-2017-1000364 rhbz 1462819 1461333
+Patch684: mm-larger-stack-guard-gap-between-vmas.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2205,6 +2202,10 @@ fi
 #
 #
 %changelog
+* Mon Jun 19 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.6-200
+- Linux v4.11.6
+- Fix CVE-2017-1000364 (rhbz 1462819 1461333)
+
 * Fri Jun 16 2017 Laura Abbott <labbott@fedoraproject.org>
 - Fix an auditd race condition (rhbz 1459326)
 
