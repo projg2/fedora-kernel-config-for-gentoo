@@ -551,9 +551,6 @@ Patch430: bcm2837-initial-support.patch
 
 Patch431: arm-rk3288-tinker.patch
 
-# http://www.spinics.net/lists/dri-devel/msg132235.html
-Patch433: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
-
 # bcm283x mmc for wifi http://www.spinics.net/lists/arm-kernel/msg567077.html
 Patch434: bcm283x-mmc-bcm2835.patch
 
@@ -574,6 +571,11 @@ Patch439: arm64-cavium-fixes.patch
 Patch440: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 Patch441: bcm2835-clk-audio-jitter-issues.patch
+
+# http://www.spinics.net/lists/dri-devel/msg132235.html
+Patch443: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
+# https://lists.freedesktop.org/archives/dri-devel/2017-June/143688.html
+Patch444: vc4-tformat-fixes.patch
 
 Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 
@@ -2230,6 +2232,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 19 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add vc4 T-Format support to improve performance
+
 * Fri Jun 16 2017 Laura Abbott <labbott@fedoraproject.org>
 - Fix an auditd race condition (rhbz 1459326)
 
