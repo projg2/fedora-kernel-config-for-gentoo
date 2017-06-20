@@ -663,6 +663,7 @@ Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
 
 # CVE-2017-1000364 rhbz 1462819 1461333
 Patch684: mm-larger-stack-guard-gap-between-vmas.patch
+Patch685: mm-fix-new-crash-in-unmapped_area_topdown.patch
 
 # END OF PATCH DEFINITIONS
 
