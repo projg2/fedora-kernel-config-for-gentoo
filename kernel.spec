@@ -665,6 +665,11 @@ Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
 Patch684: mm-larger-stack-guard-gap-between-vmas.patch
 Patch685: mm-fix-new-crash-in-unmapped_area_topdown.patch
 
+# rhbz 1459676
+Patch686: 0001-netfilter-xtables-zero-padding-in-data_to_user.patch
+Patch687: 0002-netfilter-xtables-fix-build-failure-from-COMPAT_XT_A.patch
+
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2230,6 +2235,9 @@ fi
 #
 #
 %changelog
+* Tue Jun 20 2017 Laura Abbott <labbott@fedoraproject.org>
+- Add fix for iptables (rhbz 1459676)
+
 * Tue Jun 20 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.6-301
 - bump and build
 
