@@ -556,6 +556,9 @@ Patch432: arm64-cavium-fixes.patch
 
 Patch433: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
+# https://patchwork.kernel.org/patch/9815555/
+Patch434: rpmsg-Make-modalias-work-for-DeviceTree-based-devices.patch
+
 # http://www.spinics.net/lists/devicetree/msg163238.html
 Patch440: bcm2837-initial-support.patch
 
@@ -2238,6 +2241,7 @@ fi
 %changelog
 * Wed Jun 28 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Tweak vc4 vblank for stability
+- Fix for early boot on Dragonboard 410c
 
 * Mon Jun 26 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Config improvements for Qualcomm devices
