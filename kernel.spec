@@ -2236,6 +2236,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 28 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Tweak vc4 vblank for stability
+
 * Mon Jun 26 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Config improvements for Qualcomm devices
 
