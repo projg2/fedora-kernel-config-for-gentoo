@@ -558,7 +558,7 @@ Patch433: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 # https://patchwork.kernel.org/patch/9815555/
 # https://patchwork.kernel.org/patch/9815651/
-Patch434: qcom-rmsg-spmi-fixes.patch
+# Patch434: qcom-rmsg-spmi-fixes.patch
 
 # http://www.spinics.net/lists/devicetree/msg163238.html
 Patch440: bcm2837-initial-support.patch
