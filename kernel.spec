@@ -666,6 +666,9 @@ Patch681: 0002-platform-x86-thinkpad_acpi-add-mapping-for-new-hotke.patch
 # rhbz 1459326
 Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
 
+#CVE-2017-10810 rhbz 1468023 1468024
+Patch684: 0001-drm-virtio-don-t-leak-bo-on-drm_gem_object_init-fail.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2231,6 +2234,9 @@ fi
 #
 #
 %changelog
+* Thu Jul 06 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- CVE-2017-10810 fix virtio-gpu mem leak (rhbz 1468023 1468024)
+
 * Wed Jul 05 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.9-300
 - Linux v4.11.9
 
