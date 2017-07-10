@@ -634,6 +634,9 @@ Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
 #CVE-2017-10810 rhbz 1468023 1468024
 Patch684: 0001-drm-virtio-don-t-leak-bo-on-drm_gem_object_init-fail.patch
 
+# rhbz 1458599
+Patch685: 0001-ACPI-LPSS-Only-call-pwm_add_table-for-the-first-PWM-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2198,6 +2201,9 @@ fi
 #
 # 
 %changelog
+* Mon Jul 10 2017 Laura Abbott <labbott@fedoraproject.org>
+- Only call pwm_add_table for the first PWM controller (rhbz 1458599)
+
 * Thu Jul 06 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - CVE-2017-10810 fix virtio-gpu mem leak (rhbz 1468023 1468024)
 
