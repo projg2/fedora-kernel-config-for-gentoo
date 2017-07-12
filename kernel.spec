@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -630,9 +630,6 @@ Patch681: 0002-platform-x86-thinkpad_acpi-add-mapping-for-new-hotke.patch
 
 # rhbz 1459326
 Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
-
-#CVE-2017-10810 rhbz 1468023 1468024
-Patch684: 0001-drm-virtio-don-t-leak-bo-on-drm_gem_object_init-fail.patch
 
 # rhbz 1458599
 Patch685: 0001-ACPI-LPSS-Only-call-pwm_add_table-for-the-first-PWM-.patch
@@ -2201,6 +2198,9 @@ fi
 #
 # 
 %changelog
+* Wed Jul 12 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.10-100
+- Linux v4.11.10
+
 * Mon Jul 10 2017 Laura Abbott <labbott@fedoraproject.org>
 - Only call pwm_add_table for the first PWM controller (rhbz 1458599)
 
