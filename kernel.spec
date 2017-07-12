@@ -2215,6 +2215,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 12 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Build in i2c-rk3x to fix some device boot
+
 * Tue Jul 11 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Revert debuginfo changes for stable rebases
 
