@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2215,6 +2215,9 @@ fi
 #
 #
 %changelog
+* Sun Jul 16 2017 Peter Robinson <pbrobinson@fedoraproject.org> 4.12.2-1
+- Linux v4.12.2
+
 * Wed Jul 12 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.1-1
 - Linux v4.12.1
 
