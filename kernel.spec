@@ -2219,6 +2219,9 @@ fi
 #
 #
 %changelog
+* Mon Jul 17 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.2-100
+- Linux v4.12.2
+
 * Sun Jul 16 2017 Peter Robinson <pbrobinson@fedoraproject.org> 4.12.2-1
 - Linux v4.12.2
 - Minor ARM fixes
