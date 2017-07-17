@@ -611,6 +611,10 @@ Patch315: bcm283x-vc4-fix-vblank.patch
 # https://patchwork.kernel.org/patch/9821157/
 Patch316: qcom-msm89xx-fixes.patch
 
+Patch317: arm-thermal-fixes.patch
+# https://patchwork.kernel.org/patch/9802555/
+Patch318: pinctrl-bcm2835-Avoid-warning-from-__irq_do_set_handler.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -2217,6 +2221,7 @@ fi
 %changelog
 * Sun Jul 16 2017 Peter Robinson <pbrobinson@fedoraproject.org> 4.12.2-1
 - Linux v4.12.2
+- Minor ARM fixes
 
 * Wed Jul 12 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.1-1
 - Linux v4.12.1
