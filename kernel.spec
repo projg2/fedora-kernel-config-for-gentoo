@@ -615,6 +615,10 @@ Patch317: arm-thermal-fixes.patch
 # https://patchwork.kernel.org/patch/9802555/
 Patch318: pinctrl-bcm2835-Avoid-warning-from-__irq_do_set_handler.patch
 
+# https://patchwork.kernel.org/patch/9831825/
+# https://patchwork.kernel.org/patch/9833721/
+Patch319: arm-tegra-fix-gpu-iommu.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -2219,6 +2223,9 @@ fi
 #
 #
 %changelog
+* Tue Jul 18 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add fix for Tegra GPU display with IOMMU
+
 * Mon Jul 17 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.2-100
 - Linux v4.12.2
 
