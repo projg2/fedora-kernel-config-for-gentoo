@@ -619,6 +619,9 @@ Patch318: pinctrl-bcm2835-Avoid-warning-from-__irq_do_set_handler.patch
 # https://patchwork.kernel.org/patch/9833721/
 Patch319: arm-tegra-fix-gpu-iommu.patch
 
+# https://www.spinics.net/lists/linux-arm-msm/msg28203.html
+Patch320: qcom-display-iommu.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -2225,6 +2228,7 @@ fi
 %changelog
 * Tue Jul 18 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add fix for Tegra GPU display with IOMMU
+- Add QCom IOMMU for Dragonboard display
 
 * Mon Jul 17 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.2-100
 - Linux v4.12.2
