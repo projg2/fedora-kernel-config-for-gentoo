@@ -622,6 +622,10 @@ Patch319: arm-tegra-fix-gpu-iommu.patch
 # https://www.spinics.net/lists/linux-arm-msm/msg28203.html
 Patch320: qcom-display-iommu.patch
 
+# This breaks RPi booting with a LPAE kernel, we don't support the DSI ports currently
+# Revert it while I engage upstream to work out what's going on
+Patch321: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -2229,6 +2233,7 @@ fi
 * Tue Jul 18 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add fix for Tegra GPU display with IOMMU
 - Add QCom IOMMU for Dragonboard display
+- Fix Raspberry Pi booting with LPAE kernel
 
 * Mon Jul 17 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.2-100
 - Linux v4.12.2
