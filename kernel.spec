@@ -634,6 +634,12 @@ Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
 # rhbz 1458599
 Patch685: 0001-ACPI-LPSS-Only-call-pwm_add_table-for-the-first-PWM-.patch
 
+# CVE-2017-7542 rhbz 1473649 1473650
+Patch701: 0001-ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
+
+# CVE-2017-11473 rhbz 1473209 147310
+Patch702: CVE-2017-11473.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2198,6 +2204,10 @@ fi
 #
 # 
 %changelog
+* Fri Jul 21 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2017-7542 (rhbz 1473649 1473650)
+- Fix CVE-2017-11473 (rhbz 1473209 147310)
+
 * Mon Jul 17 2017 Laura Abbott <labbott@fedoraproject.org> - 4.11.11-200
 - Linux v4.11.11
 - Bring back /dev/port (rhbz 1471429 1451220)
