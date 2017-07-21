@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -656,6 +656,12 @@ Patch614: 0014-mmc-sdhci-acpi-Workaround-conflict-with-PCI-wifi-on-.patch
 Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
 # Small workaround patches for issues with a more comprehensive fix in -next
 Patch616: 0016-Input-silead-Do-not-try-to-directly-access-the-GPIO-.patch
+
+# CVE-2017-7542 rhbz 1473649 1473650
+Patch701: 0001-ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
+
+# CVE-2017-11473 rhbz 1473209 147310
+Patch702: CVE-2017-11473.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2230,6 +2236,12 @@ fi
 #
 #
 %changelog
+* Fri Jul 21 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.3-100
+- Linux v4.12.3
+- Fixes CVE-2017-7541 (rhbz 1473198 1473199)
+- Fix CVE-2017-7542 (rhbz 1473649 1473650)
+- Fix CVE-2017-11473 (rhbz 1473209 147310)
+
 * Tue Jul 18 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add fix for Tegra GPU display with IOMMU
 - Add QCom IOMMU for Dragonboard display
