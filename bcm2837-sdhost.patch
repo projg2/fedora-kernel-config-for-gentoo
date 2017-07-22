@@ -1,0 +1,42 @@
+From e199a012a0fb0be11ccd26b4a502ae830eb10db0 Mon Sep 17 00:00:00 2001
+From: Gerd Hoffmann <kraxel@redhat.com>
+Date: Tue, 21 Jun 2016 11:47:56 +0200
+Subject: arm64: dts: bcm2837: add &sdhci and &sdhost
+
+For the raspberry pi 3 we'll need both sdhci (handles sdio wifi) and
+sdhost (handles sdcard).
+
+Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Acked-by: Eric Anholt <eric@anholt.net>
+---
+ arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dts | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dts b/arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dts
+index c309633..972f14d 100644
+--- a/arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dts
++++ b/arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dts
+@@ -22,3 +22,20 @@
+ &uart1 {
+ 	status = "okay";
+ };
++
++/* SDHCI is used to control the SDIO for wireless */
++&sdhci {
++	pinctrl-names = "default";
++	pinctrl-0 = <&emmc_gpio34>;
++	status = "okay";
++	bus-width = <4>;
++	non-removable;
++};
++
++/* SDHOST is used to drive the SD card */
++&sdhost {
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdhost_gpio48>;
++	status = "okay";
++	bus-width = <4>;
++};
+-- 
+cgit v0.12
+

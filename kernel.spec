@@ -614,11 +614,13 @@ Patch320: bcm283x-vc4-fix-vblank.patch
 # https://patchwork.kernel.org/patch/9802555/
 Patch321: bcm2835-pinctrl-Avoid-warning-from-__irq_do_set_handler.patch
 
+Patch322: bcm2837-sdhost.patch
+
 Patch323: bcm2835-clk-audio-jitter-issues.patch
 Patch324: bcm2835-fix-potential-null-pointer-dereferences.patch
 
 # http://www.spinics.net/lists/devicetree/msg163238.html
-Patch325: bcm2837-initial-support.patch
+Patch325: bcm2837-arm32-support.patch
 
 # http://www.spinics.net/lists/dri-devel/msg132235.html
 Patch326: bcm283x-drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
@@ -2237,6 +2239,9 @@ fi
 #
 #
 %changelog
+* Sat Jul 22 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix bcm2837 SDIO (WiFi)
+
 * Fri Jul 21 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.3-100
 - Linux v4.12.3
 - Fixes CVE-2017-7541 (rhbz 1473198 1473199)
