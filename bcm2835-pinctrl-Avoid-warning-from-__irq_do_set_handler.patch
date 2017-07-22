@@ -38,3 +38,33 @@ index 1eb7a1a..2308831 100644
  		/*
  		 * Use the same handler for all groups: this is necessary
  		 * since we use one gpiochip to cover all lines - the
+From 8aa99fe688734f249b07314cdd7c5e25651c9c6d Mon Sep 17 00:00:00 2001
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Thu, 27 Oct 2016 16:21:19 +0100
+Subject: irq-bcm2836: Prevent spurious interrupts, and trap them early
+
+The old arch-specific IRQ macros included a dsb to ensure the
+write to clear the mailbox interrupt completed before returning
+from the interrupt. The BCM2836 irqchip driver needs the same
+precaution to avoid spurious interrupts.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+---
+ drivers/irqchip/irq-bcm2836.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/irqchip/irq-bcm2836.c b/drivers/irqchip/irq-bcm2836.c
+index e7463e3..a8db33b 100644
+--- a/drivers/irqchip/irq-bcm2836.c
++++ b/drivers/irqchip/irq-bcm2836.c
+@@ -175,6 +175,7 @@ __exception_irq_entry bcm2836_arm_irqchip_handle_irq(struct pt_regs *regs)
+ 		u32 ipi = ffs(mbox_val) - 1;
+ 
+ 		writel(1 << ipi, mailbox0);
++		dsb(sy);
+ 		handle_IPI(ipi, regs);
+ #endif
+ 	} else if (stat) {
+-- 
+cgit v0.12
+

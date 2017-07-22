@@ -614,20 +614,21 @@ Patch320: bcm283x-vc4-fix-vblank.patch
 # https://patchwork.kernel.org/patch/9802555/
 Patch321: bcm2835-pinctrl-Avoid-warning-from-__irq_do_set_handler.patch
 
-Patch322: bcm2837-sdhost.patch
-
-Patch323: bcm2835-clk-audio-jitter-issues.patch
-Patch324: bcm2835-fix-potential-null-pointer-dereferences.patch
-
-# http://www.spinics.net/lists/devicetree/msg163238.html
-Patch325: bcm2837-arm32-support.patch
+Patch322: bcm2835-clk-audio-jitter-issues.patch
+Patch323: bcm2835-fix-potential-null-pointer-dereferences.patch
 
 # http://www.spinics.net/lists/dri-devel/msg132235.html
-Patch326: bcm283x-drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
+Patch324: bcm283x-drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
+
+Patch325: bcm2837-sdhost-fixes.patch
+Patch326: bcm283x-Define-UART-pinmuxing-on-board-level.patch
+
+# http://www.spinics.net/lists/devicetree/msg163238.html
+Patch329: bcm2837-arm32-support.patch
 
 # This breaks RPi booting with a LPAE kernel, we don't support the DSI ports currently
 # Revert it while I engage upstream to work out what's going on
-Patch327: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
+Patch330: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -2241,6 +2242,7 @@ fi
 %changelog
 * Sat Jul 22 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fix bcm2837 SDIO (WiFi)
+- Raspberry Pi fixes (UART, mmc controller)
 
 * Fri Jul 21 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.3-100
 - Linux v4.12.3
