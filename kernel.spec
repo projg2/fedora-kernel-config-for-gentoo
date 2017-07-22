@@ -2243,6 +2243,7 @@ fi
 * Sat Jul 22 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fix bcm2837 SDIO (WiFi)
 - Raspberry Pi fixes (UART, mmc controller)
+- Fix random MAC addresss on Pine64, BPi-M64
 
 * Fri Jul 21 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.3-100
 - Linux v4.12.3
