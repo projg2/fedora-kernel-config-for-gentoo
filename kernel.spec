@@ -585,23 +585,13 @@ Patch305: ARM-tegra-usb-no-reset.patch
 
 Patch306: AllWinner-net-emac.patch
 
-# http://www.spinics.net/lists/devicetree/msg163238.html
-Patch308: bcm2837-initial-support.patch
-
-# http://www.spinics.net/lists/dri-devel/msg132235.html
-Patch309: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
-
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
-Patch311: arm-imx6-hummingboard2.patch
+Patch307: arm-imx6-hummingboard2.patch
 
-Patch312: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+Patch308: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
-Patch313: bcm2835-clk-audio-jitter-issues.patch
-Patch314: bcm2835-fix-potential-null-pointer-dereferences.patch
-
-# https://patchwork.freedesktop.org/patch/163300/
-# https://patchwork.freedesktop.org/patch/161978/
-Patch315: bcm283x-vc4-fix-vblank.patch
+# https://www.spinics.net/lists/linux-arm-msm/msg28203.html
+Patch309: qcom-display-iommu.patch
 
 # https://patchwork.kernel.org/patch/9815555/
 # https://patchwork.kernel.org/patch/9815651/
@@ -609,22 +599,33 @@ Patch315: bcm283x-vc4-fix-vblank.patch
 # https://patchwork.kernel.org/patch/9820417/
 # https://patchwork.kernel.org/patch/9821151/
 # https://patchwork.kernel.org/patch/9821157/
-Patch316: qcom-msm89xx-fixes.patch
+Patch310: qcom-msm89xx-fixes.patch
 
-Patch317: arm-thermal-fixes.patch
-# https://patchwork.kernel.org/patch/9802555/
-Patch318: pinctrl-bcm2835-Avoid-warning-from-__irq_do_set_handler.patch
+Patch311: arm-thermal-fixes.patch
 
 # https://patchwork.kernel.org/patch/9831825/
 # https://patchwork.kernel.org/patch/9833721/
-Patch319: arm-tegra-fix-gpu-iommu.patch
+Patch312: arm-tegra-fix-gpu-iommu.patch
 
-# https://www.spinics.net/lists/linux-arm-msm/msg28203.html
-Patch320: qcom-display-iommu.patch
+# https://patchwork.freedesktop.org/patch/163300/
+# https://patchwork.freedesktop.org/patch/161978/
+Patch320: bcm283x-vc4-fix-vblank.patch
+
+# https://patchwork.kernel.org/patch/9802555/
+Patch321: bcm2835-pinctrl-Avoid-warning-from-__irq_do_set_handler.patch
+
+Patch323: bcm2835-clk-audio-jitter-issues.patch
+Patch324: bcm2835-fix-potential-null-pointer-dereferences.patch
+
+# http://www.spinics.net/lists/devicetree/msg163238.html
+Patch325: bcm2837-initial-support.patch
+
+# http://www.spinics.net/lists/dri-devel/msg132235.html
+Patch326: bcm283x-drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
 
 # This breaks RPi booting with a LPAE kernel, we don't support the DSI ports currently
 # Revert it while I engage upstream to work out what's going on
-Patch321: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
+Patch327: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
 
 # 400 - IBM (ppc/s390x) patches
 
