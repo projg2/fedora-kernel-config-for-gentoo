@@ -622,6 +622,7 @@ Patch324: bcm283x-drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructe
 
 Patch325: bcm2837-sdhost-fixes.patch
 Patch326: bcm283x-Define-UART-pinmuxing-on-board-level.patch
+Patch327: bt-bcm.patch
 
 # http://www.spinics.net/lists/devicetree/msg163238.html
 Patch329: bcm2837-arm32-support.patch
