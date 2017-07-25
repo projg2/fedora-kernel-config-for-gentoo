@@ -548,6 +548,9 @@ Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
 Patch123: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
 
+# Because the python 3 transition is fail
+Patch124: force-python3-in-kvm_stat.patch
+
 # 200 - x86 / secureboot
 
 Patch201: efi-lockdown.patch
@@ -2245,6 +2248,9 @@ fi
 #
 #
 %changelog
+* Tue Jul 25 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Force python3 for kvm_stat because we can't dep (rhbz 1456722)
+
 * Tue Jul 25 2017 Peter Robinson <pbrobinson@fedoraproject.org> 4.12.3-301
 - Bring in ARM patches from stabilization branch
 
