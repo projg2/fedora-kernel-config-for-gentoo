@@ -675,6 +675,9 @@ Patch702: CVE-2017-11473.patch
 Patch703: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
 Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
+# rhbz 1471302
+Patch705: bz1471302.patch 
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2248,6 +2251,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 26 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix mtx (rhbz 1471302)
+
 * Tue Jul 25 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Force python3 for kvm_stat because we can't dep (rhbz 1456722)
 
