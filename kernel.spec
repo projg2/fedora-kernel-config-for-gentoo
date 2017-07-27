@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 301
+%global baserelease 300
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -667,9 +667,6 @@ Patch616: 0016-Input-silead-Do-not-try-to-directly-access-the-GPIO-.patch
 
 # CVE-2017-7542 rhbz 1473649 1473650
 Patch701: 0001-ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
-
-# CVE-2017-11473 rhbz 1473209 147310
-Patch702: CVE-2017-11473.patch
 
 # rhbz 1431375
 Patch703: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
@@ -2251,6 +2248,9 @@ fi
 #
 #
 %changelog
+* Thu Jul 27 2017 Justin M. Forbes <jforbes@redhat.com> - 4.12.4-300
+- Linux v4.12.4
+
 * Wed Jul 26 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix mtx (rhbz 1471302)
 
