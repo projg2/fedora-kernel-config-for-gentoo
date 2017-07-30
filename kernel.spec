@@ -2254,6 +2254,9 @@ fi
 #
 #
 %changelog
+* Fri Aug 11 2017 Josh Boyer <jwboyer@fedoraproject.org>
+- Disable MEMORY_HOTPLUG_DEFAULT_ONLINE on ppc64 (rhbz 1476380)
+
 * Mon Aug 07 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.5-300
 - Linux v4.12.5
 - Fixes CVE-2017-7533 (rhbz 1468283 1478086)
