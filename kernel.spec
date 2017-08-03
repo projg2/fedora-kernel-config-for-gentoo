@@ -675,6 +675,12 @@ Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # rhbz 1471302
 Patch705: bz1471302.patch 
 
+# rhbz 1476467
+Patch706: Fix-for-module-sig-verification.patch
+
+# rhbz 1462381
+Patch707: Back-out-qxl-atomic-delay.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2248,6 +2254,10 @@ fi
 #
 #
 %changelog
+* Thu Aug 03 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Temp fix for QXL (rhbz 1462381)
+- Fix for signed module loading (rhbz 1476467)
+
 * Thu Aug 03 2017 Laura Abbott <labbott@redhat.com>
 - Keep UDF in the main kernel package (rhbz 1471314)
 
