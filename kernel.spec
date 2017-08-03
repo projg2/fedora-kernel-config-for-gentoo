@@ -2248,6 +2248,9 @@ fi
 #
 #
 %changelog
+* Thu Aug 03 2017 Laura Abbott <labbott@redhat.com>
+- Keep UDF in the main kernel package (rhbz 1471314)
+
 * Thu Jul 27 2017 Justin M. Forbes <jforbes@redhat.com> - 4.12.4-300
 - Linux v4.12.4
 
