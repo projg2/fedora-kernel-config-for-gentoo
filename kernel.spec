@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 11
+%define base_sublevel 12
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -218,8 +218,7 @@ Summary: The Linux kernel
 %define all_x86 i386 i686
 
 %if %{with_vdso_install}
-# These arches install vdso/ directories.
-%define vdso_arches %{all_x86} x86_64 %{power64} s390x aarch64
+%define use_vdso 1
 %endif
 
 # Overrides for generic default options
@@ -287,6 +286,7 @@ Summary: The Linux kernel
 
 %ifarch %{arm}
 %define all_arch_configs kernel-%{version}-arm*.config
+%define skip_nonpae_vdso 1
 %define asmarch arm
 %define hdrarch arm
 %define pae lpae
@@ -347,6 +347,19 @@ Summary: The Linux kernel
 
 # Architectures we build tools/cpupower on
 %define cpupowerarchs %{ix86} x86_64 %{power64} %{arm} aarch64
+
+%if %{use_vdso}
+
+%if 0%{?skip_nonpae_vdso}
+%define _use_vdso 0
+%else
+%define _use_vdso 1
+%endif
+
+%else
+%define _use_vdso 0
+%endif
+
 
 #
 # Packages that need to be installed before the kernel is, because the %%post
@@ -505,140 +518,168 @@ Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
 # Git trees.
 
 # Standalone patches
+# 100 - Generic long running patches
 
-# a tempory patch for QCOM hardware enablement. Will be gone by end of 2016/F-26 GA
-Patch420: qcom-QDF2432-tmp-errata.patch
+Patch110: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
+
+Patch111: input-kill-stupid-messages.patch
+
+Patch112: die-floppy-die.patch
+
+Patch113: no-pcspkr-modalias.patch
+
+Patch114: silence-fbcon-logo.patch
+
+Patch115: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
+
+Patch116: crash-driver.patch
+
+Patch117: lis3-improve-handling-of-null-rate.patch
+
+Patch118: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
+
+Patch119: criu-no-expert.patch
+
+Patch120: ath9k-rx-dma-stop-check.patch
+
+Patch121: xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
+
+Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
+
+Patch123: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
+
+# Because the python 3 transition is fail
+Patch124: force-python3-in-kvm_stat.patch
+
+# 200 - x86 / secureboot
+
+Patch201: efi-lockdown.patch
+
+Patch202: KEYS-Allow-unrestricted-boot-time-addition-of-keys-t.patch
+
+Patch203: Add-EFI-signature-data-types.patch
+
+Patch204: Add-an-EFI-signature-blob-parser-and-key-loader.patch
+
+Patch205: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
+
+Patch206: MODSIGN-Support-not-importing-certs-from-db.patch
+
+Patch210: disable-i8042-check-on-apple-mac.patch
+
+Patch211: drm-i915-hush-check-crtc-state.patch
+
+# 300 - ARM patches
+
+# a tempory patch for QCOM hardware enablement. Will be gone by F-26 GA
+Patch301: qcom-QDF2432-tmp-errata.patch
 
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch422: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
+Patch302: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
 # Fix OMAP4 (pandaboard)
-Patch423: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
+Patch303: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
+
+# http://www.spinics.net/lists/arm-kernel/msg582772.html
+Patch304: arm-dts-boneblack-wireless-add-WL1835-Bluetooth-device-node.patch
 
 # http://patchwork.ozlabs.org/patch/587554/
-Patch425: ARM-tegra-usb-no-reset.patch
+Patch305: ARM-tegra-usb-no-reset.patch
 
-Patch426: AllWinner-h3.patch
-Patch427: AllWinner-net-emac.patch
-
-# http://www.spinics.net/lists/linux-bluetooth/msg70169.html
-# https://www.spinics.net/lists/devicetree/msg170619.html
-Patch428: ti-bluetooth.patch
-
-Patch429: arm64-hikey-fixes.patch
-
-# http://www.spinics.net/lists/devicetree/msg163238.html
-Patch430: bcm2837-initial-support.patch
-
-Patch431: arm-rk3288-tinker.patch
-
-# http://www.spinics.net/lists/dri-devel/msg132235.html
-Patch433: drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
-
-# bcm283x mmc for wifi http://www.spinics.net/lists/arm-kernel/msg567077.html
-Patch434: bcm283x-mmc-bcm2835.patch
-
-# Upstream fixes for i2c/serial/ethernet MAC addresses
-Patch435: bcm283x-fixes.patch
-
-# https://lists.freedesktop.org/archives/dri-devel/2017-February/133823.html
-Patch436: vc4-fix-vblank-cursor-update-issue.patch
-
-Patch437: bcm283x-hdmi-audio.patch
+Patch306: AllWinner-net-emac.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
-Patch438: arm-imx6-hummingboard2.patch
+Patch307: arm-imx6-hummingboard2.patch
 
-Patch440: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+Patch308: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
-Patch460: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
+# https://www.spinics.net/lists/linux-arm-msm/msg28203.html
+Patch309: qcom-display-iommu.patch
 
-Patch466: input-kill-stupid-messages.patch
+# https://patchwork.kernel.org/patch/9815555/
+# https://patchwork.kernel.org/patch/9815651/
+# https://patchwork.kernel.org/patch/9819885/
+# https://patchwork.kernel.org/patch/9820417/
+# https://patchwork.kernel.org/patch/9821151/
+# https://patchwork.kernel.org/patch/9821157/
+Patch310: qcom-msm89xx-fixes.patch
 
-Patch467: die-floppy-die.patch
+Patch311: arm-thermal-fixes.patch
 
-Patch468: no-pcspkr-modalias.patch
+# https://patchwork.kernel.org/patch/9831825/
+# https://patchwork.kernel.org/patch/9833721/
+Patch312: arm-tegra-fix-gpu-iommu.patch
 
-Patch470: silence-fbcon-logo.patch
+# https://patchwork.freedesktop.org/patch/163300/
+# https://patchwork.freedesktop.org/patch/161978/
+Patch320: bcm283x-vc4-fix-vblank.patch
 
-Patch471: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
+# https://patchwork.kernel.org/patch/9802555/
+Patch321: bcm2835-pinctrl-Avoid-warning-from-__irq_do_set_handler.patch
 
-Patch472: crash-driver.patch
+Patch322: bcm2835-clk-audio-jitter-issues.patch
+Patch323: bcm2835-fix-potential-null-pointer-dereferences.patch
 
-Patch473: efi-lockdown.patch
+# http://www.spinics.net/lists/dri-devel/msg132235.html
+Patch324: bcm283x-drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
 
-Patch487: Add-EFI-signature-data-types.patch
+Patch325: bcm2837-sdhost-fixes.patch
+Patch326: bcm283x-Define-UART-pinmuxing-on-board-level.patch
+Patch327: bt-bcm.patch
 
-Patch488: Add-an-EFI-signature-blob-parser-and-key-loader.patch
+# http://www.spinics.net/lists/devicetree/msg163238.html
+Patch329: bcm2837-arm32-support.patch
 
-# This doesn't apply. It seems like it could be replaced by
-# https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=5ac7eace2d00eab5ae0e9fdee63e38aee6001f7c
-# which has an explicit line about blacklisting
-Patch489: KEYS-Add-a-system-blacklist-keyring.patch
+# This breaks RPi booting with a LPAE kernel, we don't support the DSI ports currently
+# Revert it while I engage upstream to work out what's going on
+Patch330: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
 
-Patch490: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
+# 400 - IBM (ppc/s390x) patches
 
-Patch491: MODSIGN-Support-not-importing-certs-from-db.patch
-
-Patch493: drm-i915-hush-check-crtc-state.patch
-
-Patch494: disable-i8042-check-on-apple-mac.patch
-
-Patch495: lis3-improve-handling-of-null-rate.patch
-
-Patch497: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-
-Patch498: criu-no-expert.patch
-
-Patch499: ath9k-rx-dma-stop-check.patch
-
-Patch500: xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
-
-Patch501: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
-
-Patch502: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
-
-# Patch503: drm-i915-turn-off-wc-mmaps.patch
-
-Patch509: MODSIGN-Don-t-try-secure-boot-if-EFI-runtime-is-disa.patch
-
-#CVE-2016-3134 rhbz 1317383 1317384
-Patch665: netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
-
-#rhbz 1435154
-Patch666: powerpc-prom-Increase-RMA-size-to-512MB.patch
-
-# CVE-2017-7645 rhbz 1443615 1443617
-Patch667: CVE-2017-7645.patch
+# 500 - Temp fixes/CVEs etc
 
 # CVE-2017-7477 rhbz 1445207 1445208
-Patch668: CVE-2017-7477.patch
-
-#rhbz 1436686
-Patch864: dell-laptop-Adds-support-for-keyboard-backlight-timeout-AC-settings.patch
-
-#CVE-2017-9059 rhbz 1451386 1451996
-Patch866: 0001-SUNRPC-Refactor-svc_set_num_threads.patch
-Patch867: 0002-NFSv4-Fix-callback-server-shutdown.patch
-
-# rhbz 1455780
-Patch676: 2-2-nvme-Quirk-APST-on-Intel-600P-P3100-devices.patch
-
-# rhbz 1459272
-Patch680: 0001-platform-x86-thinkpad_acpi-guard-generic-hotkey-case.patch
-Patch681: 0002-platform-x86-thinkpad_acpi-add-mapping-for-new-hotke.patch
+Patch502: CVE-2017-7477.patch
 
 # rhbz 1459326
-Patch683: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
+Patch504: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
 
-# rhbz 1458599
-Patch685: 0001-ACPI-LPSS-Only-call-pwm_add_table-for-the-first-PWM-.patch
+# 600 - Patches for improved Bay and Cherry Trail device support
+# Below patches are pending in -next:
+Patch601: 0001-platform-x86-Add-driver-for-ACPI-INT0002-Virtual-GPI.patch
+Patch602: 0002-mfd-Add-Cherry-Trail-Whiskey-Cove-PMIC-driver.patch
+Patch603: 0003-power-supply-core-Add-support-for-supplied-from-devi.patch
+Patch604: 0004-platform-x86-intel_cht_int33fe-Set-supplied-from-pro.patch
+Patch605: 0005-ACPI-PMIC-xpower-Add-support-for-the-GPI1-regulator-.patch
+Patch606: 0006-Input-axp20x-pek-Add-wakeup-support.patch
+Patch607: 0007-platform-x86-silead_dmi-Add-touchscreen-info-for-GP-.patch
+Patch608: 0008-platform-x86-silead_dmi-Add-touchscreen-info-for-PoV.patch
+Patch609: 0009-platform-x86-silead_dmi-Add-touchscreen-info-for-Pip.patch
+# Below patches are submitted upstream, awaiting review / merging
+Patch610: 0010-Input-silead-Add-support-for-capactive-home-button-f.patch
+Patch611: 0011-Input-goodix-Add-support-for-capacitive-home-button.patch
+Patch612: 0012-Input-gpio_keys-Do-not-report-wake-button-presses-as.patch
+Patch613: 0013-iio-accel-bmc150-Add-support-for-BOSC0200-ACPI-devic.patch
+Patch614: 0014-mmc-sdhci-acpi-Workaround-conflict-with-PCI-wifi-on-.patch
+Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
+# Small workaround patches for issues with a more comprehensive fix in -next
+Patch616: 0016-Input-silead-Do-not-try-to-directly-access-the-GPIO-.patch
 
 # CVE-2017-7542 rhbz 1473649 1473650
 Patch701: 0001-ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
 
-# CVE-2017-11473 rhbz 1473209 147310
-Patch702: CVE-2017-11473.patch
+# rhbz 1431375
+Patch703: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
+Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
+
+# rhbz 1471302
+Patch705: bz1471302.patch 
+
+# rhbz 1476467
+Patch706: Fix-for-module-sig-verification.patch
+
+# rhbz 1462381
+Patch707: Back-out-qxl-atomic-delay.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1337,9 +1378,10 @@ cp_vmlinux()
 BuildKernel() {
     MakeTarget=$1
     KernelImage=$2
-    Flavour=$3
+    Flavour=$4
+    DoVDSO=$3
     Flav=${Flavour:++${Flavour}}
-    InstallName=${4:-vmlinuz}
+    InstallName=${5:-vmlinuz}
 
     # Pick the right config file for the kernel we're building
     Config=kernel-%{version}-%{_target_cpu}${Flavour:+-${Flavour}}.config
@@ -1437,16 +1479,16 @@ BuildKernel() {
     # we'll get it from the linux-firmware package and we don't want conflicts
     %{make} -s ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
 
-%ifarch %{vdso_arches}
-    %{make} -s ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT vdso_install KERNELRELEASE=$KernelVer
-    if [ ! -s ldconfig-kernel.conf ]; then
-      echo > ldconfig-kernel.conf "\
-# Placeholder file, no vDSO hwcap entries used in this kernel."
+    if [ $DoVDSO -ne 0 ]; then
+        %{make} -s ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT vdso_install KERNELRELEASE=$KernelVer
+        if [ ! -s ldconfig-kernel.conf ]; then
+          echo > ldconfig-kernel.conf "\
+    # Placeholder file, no vDSO hwcap entries used in this kernel."
+        fi
+        %{__install} -D -m 444 ldconfig-kernel.conf \
+            $RPM_BUILD_ROOT/etc/ld.so.conf.d/kernel-$KernelVer.conf
+        rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/vdso/.build-id
     fi
-    %{__install} -D -m 444 ldconfig-kernel.conf \
-        $RPM_BUILD_ROOT/etc/ld.so.conf.d/kernel-$KernelVer.conf
-    rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/vdso/.build-id
-%endif
 
     # And save the headers/makefiles etc for building modules against
     #
@@ -1681,20 +1723,21 @@ mkdir -p $RPM_BUILD_ROOT%{_libexecdir}
 
 cd linux-%{KVERREL}
 
+
 %if %{with_debug}
-BuildKernel %make_target %kernel_image debug
+BuildKernel %make_target %kernel_image %{_use_vdso} debug
 %endif
 
 %if %{with_pae_debug}
-BuildKernel %make_target %kernel_image %{pae}debug
+BuildKernel %make_target %kernel_image %{use_vdso} %{pae}debug
 %endif
 
 %if %{with_pae}
-BuildKernel %make_target %kernel_image %{pae}
+BuildKernel %make_target %kernel_image %{use_vdso} %{pae}
 %endif
 
 %if %{with_up}
-BuildKernel %make_target %kernel_image
+BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
 %global perf_make \
@@ -1838,7 +1881,7 @@ find $RPM_BUILD_ROOT/usr/tmp-headers/include \
 # Copy all the architectures we care about to their respective asm directories
 for arch in arm arm64 powerpc s390 x86 ; do
 mkdir -p $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include
-mv $RPM_BUILD_ROOT/usr/tmp-headers/include/asm-${arch} $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include/asm
+mv $RPM_BUILD_ROOT/usr/tmp-headers/include/arch-${arch}/asm $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include/
 cp -a $RPM_BUILD_ROOT/usr/tmp-headers/include/asm-generic $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include/.
 done
 
@@ -1869,6 +1912,9 @@ rm -rf %{buildroot}%{_docdir}/perf-tip
 mkdir -p %{buildroot}/%{_mandir}/man1
 pushd %{buildroot}/%{_mandir}/man1
 tar -xf %{SOURCE10}
+%if !%{with_tools}
+    rm -f kvm_stat.1
+%endif
 popd
 %endif
 
@@ -1912,6 +1958,9 @@ make INSTALL_ROOT=%{buildroot} install
 popd
 pushd tools/gpio
 make DESTDIR=%{buildroot} install
+popd
+pushd tools/kvm/kvm_stat
+make INSTALL_ROOT=%{buildroot} install-tools
 popd
 %endif
 
@@ -2110,6 +2159,8 @@ fi
 %{_bindir}/lsgpio
 %{_bindir}/gpio-hammer
 %{_bindir}/gpio-event-mon
+%{_mandir}/man1/kvm_stat*
+%{_bindir}/kvm_stat
 %endif
 
 %if %{with_debuginfo}
@@ -2142,68 +2193,71 @@ fi
 #	%%kernel_variant_files [-k vmlinux] <condition> <subpackage>
 #
 %define kernel_variant_files(k:) \
-%if %{1}\
-%{expand:%%files -f kernel-%{?2:%{2}-}core.list %{?2:%{2}-}core}\
+%if %{2}\
+%{expand:%%files -f kernel-%{?3:%{3}-}core.list %{?3:%{3}-}core}\
 %defattr(-,root,root)\
 %{!?_licensedir:%global license %%doc}\
 %license linux-%{KVERREL}/COPYING\
-/lib/modules/%{KVERREL}%{?2:+%{2}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}\
-%ghost /%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?2:+%{2}}\
-/lib/modules/%{KVERREL}%{?2:+%{2}}/.vmlinuz.hmac \
-%ghost /%{image_install_path}/.vmlinuz-%{KVERREL}%{?2:+%{2}}.hmac \
+/lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}\
+%ghost /%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/.vmlinuz.hmac \
+%ghost /%{image_install_path}/.vmlinuz-%{KVERREL}%{?3:+%{3}}.hmac \
 %ifarch %{arm} aarch64\
-/lib/modules/%{KVERREL}%{?2:+%{2}}/dtb \
-%ghost /%{image_install_path}/dtb-%{KVERREL}%{?2:+%{2}} \
+/lib/modules/%{KVERREL}%{?3:+%{3}}/dtb \
+%ghost /%{image_install_path}/dtb-%{KVERREL}%{?3:+%{3}} \
 %endif\
-%attr(600,root,root) /lib/modules/%{KVERREL}%{?2:+%{2}}/System.map\
-%ghost /boot/System.map-%{KVERREL}%{?2:+%{2}}\
-/lib/modules/%{KVERREL}%{?2:+%{2}}/config\
-%ghost /boot/config-%{KVERREL}%{?2:+%{2}}\
-%ghost /boot/initramfs-%{KVERREL}%{?2:+%{2}}.img\
+%attr(600,root,root) /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
+%ghost /boot/System.map-%{KVERREL}%{?3:+%{3}}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/config\
+%ghost /boot/config-%{KVERREL}%{?3:+%{3}}\
+%ghost /boot/initramfs-%{KVERREL}%{?3:+%{3}}.img\
 %dir /lib/modules\
-%dir /lib/modules/%{KVERREL}%{?2:+%{2}}\
-%dir /lib/modules/%{KVERREL}%{?2:+%{2}}/kernel\
-/lib/modules/%{KVERREL}%{?2:+%{2}}/build\
-/lib/modules/%{KVERREL}%{?2:+%{2}}/source\
-/lib/modules/%{KVERREL}%{?2:+%{2}}/updates\
-%ifarch %{vdso_arches}\
-/lib/modules/%{KVERREL}%{?2:+%{2}}/vdso\
-/etc/ld.so.conf.d/kernel-%{KVERREL}%{?2:+%{2}}.conf\
+%dir /lib/modules/%{KVERREL}%{?3:+%{3}}\
+%dir /lib/modules/%{KVERREL}%{?3:+%{3}}/kernel\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/build\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/source\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
+%if %{1}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
+/etc/ld.so.conf.d/kernel-%{KVERREL}%{?3:+%{3}}.conf\
 %endif\
-/lib/modules/%{KVERREL}%{?2:+%{2}}/modules.*\
-%{expand:%%files -f kernel-%{?2:%{2}-}modules.list %{?2:%{2}-}modules}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.*\
+%{expand:%%files -f kernel-%{?3:%{3}-}modules.list %{?3:%{3}-}modules}\
 %defattr(-,root,root)\
-%{expand:%%files %{?2:%{2}-}devel}\
+%{expand:%%files %{?3:%{3}-}devel}\
 %defattr(-,root,root)\
 %defverify(not mtime)\
-/usr/src/kernels/%{KVERREL}%{?2:+%{2}}\
-%{expand:%%files %{?2:%{2}-}modules-extra}\
+/usr/src/kernels/%{KVERREL}%{?3:+%{3}}\
+%{expand:%%files %{?3:%{3}-}modules-extra}\
 %defattr(-,root,root)\
-/lib/modules/%{KVERREL}%{?2:+%{2}}/extra\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/extra\
 %if %{with_debuginfo}\
 %ifnarch noarch\
-%{expand:%%files -f debuginfo%{?2}.list %{?2:%{2}-}debuginfo}\
+%{expand:%%files -f debuginfo%{?3}.list %{?3:%{3}-}debuginfo}\
 %defattr(-,root,root)\
 %endif\
 %endif\
-%if %{?2:1} %{!?2:0}\
-%{expand:%%files %{2}}\
+%if %{?3:1} %{!?3:0}\
+%{expand:%%files %{3}}\
 %defattr(-,root,root)\
 %endif\
 %endif\
 %{nil}
 
-
-%kernel_variant_files %{with_up}
-%kernel_variant_files %{with_debug} debug
-%kernel_variant_files %{with_pae} %{pae}
-%kernel_variant_files %{with_pae_debug} %{pae}debug
+%kernel_variant_files  %{_use_vdso} %{with_up}
+%kernel_variant_files  %{_use_vdso} %{with_debug} debug
+%kernel_variant_files %{use_vdso} %{with_pae} %{pae}
+%kernel_variant_files %{use_vdso} %{with_pae_debug} %{pae}debug
 
 # plz don't put in a version string unless you're going to tag
 # and build.
 #
 #
 %changelog
+* Mon Aug 07 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.5-200
+- Linux v4.12.5 rebase
+- Fixes CVE-2017-7533 (rhbz 1468283 1478086)
+
 * Sun Jul 30 2017 Josh Boyer <jwboyer@fedoraproject.org>
 - Disable MEMORY_HOTPLUG_DEFAULT_ONLINE on ppc64 (rhbz 1476380)
 
