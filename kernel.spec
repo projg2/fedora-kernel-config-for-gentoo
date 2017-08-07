@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2254,6 +2254,10 @@ fi
 #
 #
 %changelog
+* Mon Aug 07 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.5-300
+- Linux v4.12.5
+- Fixes CVE-2017-7533 (rhbz 1468283 1478086)
+
 * Thu Aug 03 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Temp fix for QXL (rhbz 1462381)
 - Fix for signed module loading (rhbz 1476467)
