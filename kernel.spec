@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -664,9 +664,6 @@ Patch614: 0014-mmc-sdhci-acpi-Workaround-conflict-with-PCI-wifi-on-.patch
 Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
 # Small workaround patches for issues with a more comprehensive fix in -next
 Patch616: 0016-Input-silead-Do-not-try-to-directly-access-the-GPIO-.patch
-
-# CVE-2017-7542 rhbz 1473649 1473650
-Patch701: 0001-ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
 
 # rhbz 1431375
 Patch703: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
@@ -2254,6 +2251,9 @@ fi
 #
 #
 %changelog
+* Fri Aug 11 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.6-300
+- Linux v4.12.6
+
 * Fri Aug 11 2017 Dan Horak <dan@danny.cz>
 - disable SWIOTLB on Power (#1480380)
 
