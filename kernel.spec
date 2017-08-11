@@ -678,6 +678,12 @@ Patch706: Fix-for-module-sig-verification.patch
 # rhbz 1462381
 Patch707: Back-out-qxl-atomic-delay.patch
 
+# CVE-2017-1000111 rhbz 1479304 1480464
+Patch708: net-packet-fix-tp_reserve-race-in-packet_set_ring.patch
+
+# CVE-2017-1000112 rhbz 1479307 1480465
+Patch709: udp-consistently-apply-ufo-or-fragmentation.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2253,6 +2259,8 @@ fi
 %changelog
 * Fri Aug 11 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.6-200
 - Linux v4.12.6
+- Fix CVE-2017-1000111 (rhbz 1479304 1480464)
+- Fix CVE-2017-1000112 (rhbz 1479307 1480465)
 
 * Mon Aug 07 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.5-200
 - Linux v4.12.5 rebase
