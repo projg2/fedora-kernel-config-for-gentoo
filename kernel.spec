@@ -2254,6 +2254,9 @@ fi
 #
 #
 %changelog
+* Fri Aug 11 2017 Dan Horak <dan@danny.cz>
+- disable SWIOTLB on Power (#1480380)
+
 * Fri Aug 11 2017 Josh Boyer <jwboyer@fedoraproject.org>
 - Disable MEMORY_HOTPLUG_DEFAULT_ONLINE on ppc64 (rhbz 1476380)
 
