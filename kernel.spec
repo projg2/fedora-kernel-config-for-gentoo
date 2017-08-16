@@ -675,6 +675,9 @@ Patch706: Fix-for-module-sig-verification.patch
 # rhbz 1462381
 Patch707: Back-out-qxl-atomic-delay.patch
 
+# CVE-2017-12134 rhbz 1477656 1481786
+Patch708: xsa229.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2248,6 +2251,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 16 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix xen CVE-2017-12134 (rhbz 1477656 1481786)
+
 * Mon Aug 14 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.7-200
 - Linux v4.12.7
 
