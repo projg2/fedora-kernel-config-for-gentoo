@@ -678,6 +678,9 @@ Patch707: Back-out-qxl-atomic-delay.patch
 # CVE-2017-12134 rhbz 1477656 1481786
 Patch708: xsa229.patch
 
+# request for bug fix
+Patch709: iio-race-fix.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2251,6 +2254,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 16 2017 Laura Abbott <labbott@redhat.com>
+- Fix for iio race
+
 * Wed Aug 16 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix xen CVE-2017-12134 (rhbz 1477656 1481786)
 
