@@ -681,6 +681,9 @@ Patch708: xsa229.patch
 # request for bug fix
 Patch709: iio-race-fix.patch
 
+# rhbz 1482249 1482570
+Patch710: 0001-mm-vmalloc-Don-t-unconditonally-use-__GFP_HIGHMEM.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2254,6 +2257,9 @@ fi
 #
 #
 %changelog
+* Thu Aug 17 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix for vmalloc_32 crash (rhbz 1482249 1482570)
+
 * Thu Aug 17 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.8-300
 - Linux v4.12.8
 
