@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -677,6 +677,10 @@ Patch707: Back-out-qxl-atomic-delay.patch
 
 # CVE-2017-12134 rhbz 1477656 1481786
 Patch708: xsa229.patch
+
+# request for bug fix
+Patch709: iio-race-fix.patch
+
 
 # END OF PATCH DEFINITIONS
 
@@ -2251,6 +2255,10 @@ fi
 #
 #
 %changelog
+* Thu Aug 17 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.8-200
+- Linux v4.12.8
+- Fix for iio race
+
 * Wed Aug 16 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix xen CVE-2017-12134 (rhbz 1477656 1481786)
 
