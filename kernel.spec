@@ -2255,7 +2255,7 @@ fi
 #
 #
 %changelog
-* Fri Aug 25 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.9-300
+* Fri Aug 25 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.9-200
 - Linux v4.12.9
 - For for AMD Stoney GPU (rhbz 1485086)
 - Fix for RT3573 regression (rhbz 1480829)
