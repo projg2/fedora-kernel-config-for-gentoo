@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -669,9 +669,6 @@ Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # rhbz 1476467
 Patch706: Fix-for-module-sig-verification.patch
 
-# request for bug fix
-Patch709: iio-race-fix.patch
-
 # rhbz 1485086
 Patch710: pci-mark-amd-stoney-gpu-ats-as-broken.patch
 
@@ -680,6 +677,18 @@ Patch711: rt2800-fix-TX_PIN_CFG-setting-for-non-MT7620-chips.patch
 
 # CVE-2017-7558 rhbz 1480266 1484810
 Patch712: net-sctp-Avoid-out-of-bounds-reads-from-address-storage.patch
+
+# CVE-2017-13693 rhbz 1485346 1485356
+Patch713: acpi-acpica-fix-acpi-operand-cache-leak-in-dsutils.c.patch
+
+# CVE-2017-13694 rhbz 1485348
+Patch714: V4-acpi-acpica-fix-acpi-parse-and-parseext-cache-leaks.patch
+
+# CVE-2017-13695 rhbz 1485349
+Patch715: acpi-acpica-fix-acpi-operand-cache-leak-in-nseval.c.patch
+
+# rhbz 1484587
+Patch716: md-raid-reset-bio-allocated-from-mempool.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2255,6 +2264,13 @@ fi
 #
 #
 %changelog
+* Wed Aug 30 2017 Justin M. Forbes <jforbes@redhat.com> - 4.12.10-200
+- Linux v4.12.10
+- Fix for CVE-2017-13693 (rhbz 1485346 1485356)
+- Fix for CVE-2017-13694 (rhbz 1485348)
+- Fix for CVE-2017-13695 (rhbz 1485349)
+- Fix for raid 1/10 (rhbz 1484587)
+
 * Fri Aug 25 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.9-200
 - Linux v4.12.9
 - For for AMD Stoney GPU (rhbz 1485086)
