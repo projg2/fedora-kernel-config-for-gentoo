@@ -690,6 +690,9 @@ Patch715: acpi-acpica-fix-acpi-operand-cache-leak-in-nseval.c.patch
 # rhbz 1484587
 Patch716: md-raid-reset-bio-allocated-from-mempool.patch
 
+# CVE-2017-14051 rhbz 1487126 1487127
+Patch717: v2-scsi-qla2xxx-Fix-an-integer-overflow-in-sysfs-code.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2264,7 +2267,10 @@ fi
 #
 #
 %changelog
-* Wed Aug 30 2017 Justin M. Forbes <jforbes@redhat.com> - 4.12.10-200
+* Thu Aug 31 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.10-200
+- Fix CVE-2017-14051 (rhbz 1487126 1487127)
+
+* Wed Aug 30 2017 Justin M. Forbes <jforbes@redhat.com>
 - Linux v4.12.10
 - Fix for CVE-2017-13693 (rhbz 1485346 1485356)
 - Fix for CVE-2017-13694 (rhbz 1485348)
