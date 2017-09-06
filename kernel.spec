@@ -42,19 +42,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 12
+%define base_sublevel 13
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -546,7 +546,8 @@ Patch121: xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
 
 Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
-Patch123: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
+# This no longer applies, let's see if it needs to be updated
+# Patch123: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
 
 # 200 - x86 / secureboot
 
@@ -577,21 +578,15 @@ Patch302: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 # Fix OMAP4 (pandaboard)
 Patch303: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
-# http://www.spinics.net/lists/arm-kernel/msg582772.html
-Patch304: arm-dts-boneblack-wireless-add-WL1835-Bluetooth-device-node.patch
-
 # http://patchwork.ozlabs.org/patch/587554/
-Patch305: ARM-tegra-usb-no-reset.patch
+Patch304: ARM-tegra-usb-no-reset.patch
 
-Patch306: AllWinner-net-emac.patch
+Patch305: allwinner-net-emac.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch307: arm-imx6-hummingboard2.patch
 
 Patch308: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-
-# https://www.spinics.net/lists/linux-arm-msm/msg28203.html
-Patch309: qcom-display-iommu.patch
 
 # https://patchwork.kernel.org/patch/9815555/
 # https://patchwork.kernel.org/patch/9815651/
@@ -601,35 +596,29 @@ Patch309: qcom-display-iommu.patch
 # https://patchwork.kernel.org/patch/9821157/
 Patch310: qcom-msm89xx-fixes.patch
 
-Patch311: arm-thermal-fixes.patch
-
 # https://patchwork.kernel.org/patch/9831825/
 # https://patchwork.kernel.org/patch/9833721/
-Patch312: arm-tegra-fix-gpu-iommu.patch
+Patch311: arm-tegra-fix-gpu-iommu.patch
 
-# https://patchwork.freedesktop.org/patch/163300/
-# https://patchwork.freedesktop.org/patch/161978/
-Patch320: bcm283x-vc4-fix-vblank.patch
+# https://www.spinics.net/lists/linux-arm-msm/msg28203.html
+Patch312: qcom-display-iommu.patch
 
-# https://patchwork.kernel.org/patch/9802555/
-Patch321: bcm2835-pinctrl-Avoid-warning-from-__irq_do_set_handler.patch
+# https://patchwork.kernel.org/patch/9839803/
+Patch313: qcom-Force-host-mode-for-USB-on-apq8016-sbc.patch
 
-Patch322: bcm2835-clk-audio-jitter-issues.patch
-Patch323: bcm2835-fix-potential-null-pointer-dereferences.patch
+# https://patchwork.kernel.org/patch/9850189/
+Patch314: qcom-msm-ci_hdrc_msm_probe-missing-of_node_get.patch
 
-# http://www.spinics.net/lists/dri-devel/msg132235.html
-Patch324: bcm283x-drm-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO..patch
+Patch320: bcm283x-vc4-fixes.patch
 
-Patch325: bcm2837-sdhost-fixes.patch
-Patch326: bcm283x-Define-UART-pinmuxing-on-board-level.patch
-Patch327: bt-bcm.patch
+# Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
+Patch321: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
-# http://www.spinics.net/lists/devicetree/msg163238.html
-Patch329: bcm2837-arm32-support.patch
+# Updat3 move of bcm2837, landed in 4.14
+Patch322: bcm2837-move-dt.patch
 
-# This breaks RPi booting with a LPAE kernel, we don't support the DSI ports currently
-# Revert it while I engage upstream to work out what's going on
-Patch330: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
+# https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=next-20170912&id=723288836628bc1c0855f3bb7b64b1803e4b9e4a
+Patch324: arm-of-restrict-dma-configuration.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -638,29 +627,17 @@ Patch330: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
 # CVE-2017-7477 rhbz 1445207 1445208
 Patch502: CVE-2017-7477.patch
 
-# rhbz 1459326
-Patch504: RFC-audit-fix-a-race-condition-with-the-auditd-tracking-code.patch
-
 # 600 - Patches for improved Bay and Cherry Trail device support
-# Below patches are pending in -next:
-Patch601: 0001-platform-x86-Add-driver-for-ACPI-INT0002-Virtual-GPI.patch
-Patch602: 0002-mfd-Add-Cherry-Trail-Whiskey-Cove-PMIC-driver.patch
-Patch603: 0003-power-supply-core-Add-support-for-supplied-from-devi.patch
-Patch604: 0004-platform-x86-intel_cht_int33fe-Set-supplied-from-pro.patch
-Patch605: 0005-ACPI-PMIC-xpower-Add-support-for-the-GPI1-regulator-.patch
-Patch606: 0006-Input-axp20x-pek-Add-wakeup-support.patch
-Patch607: 0007-platform-x86-silead_dmi-Add-touchscreen-info-for-GP-.patch
-Patch608: 0008-platform-x86-silead_dmi-Add-touchscreen-info-for-PoV.patch
-Patch609: 0009-platform-x86-silead_dmi-Add-touchscreen-info-for-Pip.patch
 # Below patches are submitted upstream, awaiting review / merging
+Patch601: 0001-Input-gpio_keys-Allow-suppression-of-input-events-fo.patch
+Patch602: 0002-Input-soc_button_array-Suppress-power-button-presses.patch
 Patch610: 0010-Input-silead-Add-support-for-capactive-home-button-f.patch
 Patch611: 0011-Input-goodix-Add-support-for-capacitive-home-button.patch
-Patch612: 0012-Input-gpio_keys-Do-not-report-wake-button-presses-as.patch
+# These patches are queued for 4.14 and can be dropped on rebase to 4.14-rc1
+Patch603: 0001-power-supply-max17042_battery-Add-support-for-ACPI-e.patch
+Patch604: 0002-power-supply-max17042_battery-Fix-ACPI-interrupt-iss.patch
 Patch613: 0013-iio-accel-bmc150-Add-support-for-BOSC0200-ACPI-devic.patch
-Patch614: 0014-mmc-sdhci-acpi-Workaround-conflict-with-PCI-wifi-on-.patch
 Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
-# Small workaround patches for issues with a more comprehensive fix in -next
-Patch616: 0016-Input-silead-Do-not-try-to-directly-access-the-GPIO-.patch
 
 # rhbz 1431375
 Patch703: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
@@ -687,9 +664,6 @@ Patch717: v2-scsi-qla2xxx-Fix-an-integer-overflow-in-sysfs-code.patch
 # Should fix our QXL issues (Doesn't)
 Patch718: qxl-fixes.patch
 
-# rhbz 1463000
-Patch719: 0001-xen-balloon-don-t-online-new-memory-initially.patch
-
 # CVE-2017-12154 rhbz 1491224 1491231
 Patch720: kvm-nVMX-Don-t-allow-L2-to-access-the-hardware-CR8.patch
 
@@ -698,6 +672,15 @@ Patch721: nl80211-check-for-the-required-netlink-attributes-presence.patch
 
 # rhbz 1493435 1493436
 Patch722: KEYS-prevent-KEYCTL_READ-on-negative-key.patch
+
+# rhbz 1493498
+Patch723: 0001-fs-locks-Remove-fl_nspid-and-use-fs-specific-l_pid-f.patch
+
+# rhbz 1432684
+Patch724: 1-3-net-set-tb--fast_sk_family.patch
+Patch725: 2-3-net-use-inet6_rcv_saddr-to-compare-sockets.patch
+Patch726: 3-3-inet-fix-improper-empty-comparison.patch
+
 
 # END OF PATCH DEFINITIONS
 
@@ -2273,6 +2256,11 @@ fi
 #
 #
 %changelog
+* Thu Sep 21 2017 Laura Abbott <labbott@redhat.com> - 4.13.3-200
+- Linux v4.13.3
+- Fix NFS locks (rhbz 1493498)
+- Fix bindport regression (rhbz 1432684)
+
 * Wed Sep 20 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.14-300
 - Linux v4.12.14
 - Fixes 1493435 1493436
