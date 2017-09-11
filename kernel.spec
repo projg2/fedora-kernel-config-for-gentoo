@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -692,6 +692,12 @@ Patch716: md-raid-reset-bio-allocated-from-mempool.patch
 
 # CVE-2017-14051 rhbz 1487126 1487127
 Patch717: v2-scsi-qla2xxx-Fix-an-integer-overflow-in-sysfs-code.patch
+
+# Should fix our QXL issues
+Patch718: qxl-fix-primary-surface-handling.patch
+
+# rhbz 1463000
+Patch719: 0001-xen-balloon-don-t-online-new-memory-initially.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2267,6 +2273,11 @@ fi
 #
 #
 %changelog
+* Mon Sep 11 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.12-300
+- Linux v4.12.12
+- QXL Fixes
+- Fix for xen ballow with AWS (rhbz 1463000)
+
 * Thu Sep 07 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.11-300
 - Linux v4.12.11
 
