@@ -693,11 +693,20 @@ Patch716: md-raid-reset-bio-allocated-from-mempool.patch
 # CVE-2017-14051 rhbz 1487126 1487127
 Patch717: v2-scsi-qla2xxx-Fix-an-integer-overflow-in-sysfs-code.patch
 
-# Should fix our QXL issues
-Patch718: qxl-fix-primary-surface-handling.patch
+# Should fix our QXL issues (Didn't)
+# Patch718: qxl-fix-primary-surface-handling.patch
 
 # rhbz 1463000
 Patch719: 0001-xen-balloon-don-t-online-new-memory-initially.patch
+
+# CVE-2017-12154 rhbz 1491224 1491231
+Patch720: kvm-nVMX-Don-t-allow-L2-to-access-the-hardware-CR8.patch
+
+# CVE-2017-12153 rhbz 1491046 1491057
+Patch721: nl80211-check-for-the-required-netlink-attributes-presence.patch
+
+# CVE-2017-1000251 rhbz 1489716 1490906
+Patch722: bluetooth-properly-check-l2cap-config-option-output-buffer-length.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2273,6 +2282,11 @@ fi
 #
 #
 %changelog
+* Wed Sep 13 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2017-12154 (rhbz 1491224 1491231)
+- Fix CVE-2017-12153 (rhbz 1491046 1491057)
+- Fix CVE-2017-1000251 (rhbz 1489716 1490906)
+
 * Mon Sep 11 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.12-200
 - Linux v4.12.12
 - QXL Fixes
