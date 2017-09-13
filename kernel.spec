@@ -125,7 +125,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
@@ -615,9 +615,11 @@ Patch320: bcm283x-vc4-Fix-OOPSes-from-trying-to-cache-a-partially-constructed-BO
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch321: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
-# This breaks RPi booting with a LPAE kernel, we don't support the DSI ports currently
-# Revert it while I engage upstream to work out what's going on
-Patch322: Revert-ARM-dts-bcm2835-Add-the-DSI-module-nodes-and-.patch
+# Updat3 move of bcm2837, landed in 4.14
+Patch322: bcm2837-move-dt.patch
+
+# https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=next-20170912&id=723288836628bc1c0855f3bb7b64b1803e4b9e4a
+Patch324: arm-of-restrict-dma-configuration.patch
 
 # 400 - IBM (ppc/s390x) patches
 
