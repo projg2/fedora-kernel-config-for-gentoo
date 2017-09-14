@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -672,9 +672,6 @@ Patch706: Fix-for-module-sig-verification.patch
 # rhbz 1485086
 Patch710: pci-mark-amd-stoney-gpu-ats-as-broken.patch
 
-# rhbz 1480829
-Patch711: rt2800-fix-TX_PIN_CFG-setting-for-non-MT7620-chips.patch
-
 # CVE-2017-7558 rhbz 1480266 1484810
 Patch712: net-sctp-Avoid-out-of-bounds-reads-from-address-storage.patch
 
@@ -704,9 +701,6 @@ Patch720: kvm-nVMX-Don-t-allow-L2-to-access-the-hardware-CR8.patch
 
 # CVE-2017-12153 rhbz 1491046 1491057
 Patch721: nl80211-check-for-the-required-netlink-attributes-presence.patch
-
-# CVE-2017-1000251 rhbz 1489716 1490906
-Patch722: bluetooth-properly-check-l2cap-config-option-output-buffer-length.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2282,6 +2276,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 14 2017 Justin M. Forbes <jforbes@redhat.com> - 4.12.13-200
+- Linux v4.12.13
+
 * Wed Sep 13 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2017-12154 (rhbz 1491224 1491231)
 - Fix CVE-2017-12153 (rhbz 1491046 1491057)
