@@ -691,7 +691,7 @@ Patch716: md-raid-reset-bio-allocated-from-mempool.patch
 Patch717: v2-scsi-qla2xxx-Fix-an-integer-overflow-in-sysfs-code.patch
 
 # Should fix our QXL issues (Doesn't)
-# Patch718: qxl-fix-primary-surface-handling.patch
+Patch718: qxl-fixes.patch
 
 # rhbz 1463000
 Patch719: 0001-xen-balloon-don-t-online-new-memory-initially.patch
@@ -2276,6 +2276,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 18 2017 Justin M. Forbes <jforbes@redhat.com>
+- Fixes for QXL (rhbz 1462381)
+
 * Thu Sep 14 2017 Justin M. Forbes <jforbes@redhat.com> - 4.12.13-300
 - Linux v4.12.13
 
