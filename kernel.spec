@@ -652,6 +652,9 @@ Patch620: kvm-nVMX-Don-t-allow-L2-to-access-the-hardware-CR8.patch
 # CVE-2017-12153 rhbz 1491046 1491057
 Patch621: nl80211-check-for-the-required-netlink-attributes-presence.patch
 
+# Should fix our QXL issues
+Patch622: qxl-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2225,6 +2228,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 18 2017 Justin M. Forbes <jforbes@edoraproject.org>
+- Fixes for QXL (rhbz 1462381)
+
 * Thu Sep 14 2017 Laura Abbott <labbott@redhat.com> - 4.13.2-200
 - Linux v4.13.2
 
