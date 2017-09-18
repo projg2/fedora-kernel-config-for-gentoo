@@ -655,6 +655,10 @@ Patch621: nl80211-check-for-the-required-netlink-attributes-presence.patch
 # Should fix our QXL issues
 Patch622: qxl-fixes.patch
 
+# rhbz 1431375
+Patch623: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
+Patch624: input-rmi4-remove-the-need-for-artifical-IRQ.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2230,6 +2234,7 @@ fi
 %changelog
 * Mon Sep 18 2017 Justin M. Forbes <jforbes@edoraproject.org>
 - Fixes for QXL (rhbz 1462381)
+- Fix rhbz 1431375
 
 * Thu Sep 14 2017 Laura Abbott <labbott@redhat.com> - 4.13.2-200
 - Linux v4.13.2
