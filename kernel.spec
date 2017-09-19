@@ -2231,6 +2231,9 @@ fi
 #
 #
 %changelog
+* Tue Sep 19 2017 Laura Abbott <labbott@redhat.com>
+- Disable CONFIG_VIRTIO_BLK_SCSI
+
 * Mon Sep 18 2017 Justin M. Forbes <jforbes@edoraproject.org>
 - Fixes for QXL (rhbz 1462381)
 - Fix rhbz 1431375
