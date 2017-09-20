@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -672,9 +672,6 @@ Patch706: Fix-for-module-sig-verification.patch
 # rhbz 1485086
 Patch710: pci-mark-amd-stoney-gpu-ats-as-broken.patch
 
-# CVE-2017-7558 rhbz 1480266 1484810
-Patch712: net-sctp-Avoid-out-of-bounds-reads-from-address-storage.patch
-
 # CVE-2017-13693 rhbz 1485346 1485356
 Patch713: acpi-acpica-fix-acpi-operand-cache-leak-in-dsutils.c.patch
 
@@ -683,9 +680,6 @@ Patch714: V4-acpi-acpica-fix-acpi-parse-and-parseext-cache-leaks.patch
 
 # CVE-2017-13695 rhbz 1485349
 Patch715: acpi-acpica-fix-acpi-operand-cache-leak-in-nseval.c.patch
-
-# rhbz 1484587
-Patch716: md-raid-reset-bio-allocated-from-mempool.patch
 
 # CVE-2017-14051 rhbz 1487126 1487127
 Patch717: v2-scsi-qla2xxx-Fix-an-integer-overflow-in-sysfs-code.patch
@@ -701,6 +695,9 @@ Patch720: kvm-nVMX-Don-t-allow-L2-to-access-the-hardware-CR8.patch
 
 # CVE-2017-12153 rhbz 1491046 1491057
 Patch721: nl80211-check-for-the-required-netlink-attributes-presence.patch
+
+# rhbz 1493435 1493436
+Patch722: KEYS-prevent-KEYCTL_READ-on-negative-key.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2276,6 +2273,11 @@ fi
 #
 #
 %changelog
+* Wed Sep 20 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.12.14-200
+- Linux v4.12.14
+- Fixes 1493435 1493436
+- Fixes CVE-2017-14497 (rhbz 1492593 1492594)
+
 * Mon Sep 18 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fixes for QXL (rhbz 1462381)
 
