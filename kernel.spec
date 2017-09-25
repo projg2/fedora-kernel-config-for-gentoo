@@ -583,6 +583,9 @@ Patch304: ARM-tegra-usb-no-reset.patch
 
 Patch305: allwinner-net-emac.patch
 
+# https://patchwork.kernel.org/patch/9967397/
+Patch306: tegra-Use-different-MSI-target-address-for-Tegra20.patch
+
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch307: arm-imx6-hummingboard2.patch
 
@@ -2256,6 +2259,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 25 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add patch to fix PCI on tegra20
+
 * Thu Sep 21 2017 Laura Abbott <labbott@redhat.com> - 4.13.3-200
 - Linux v4.13.3
 - Fix NFS locks (rhbz 1493498)
