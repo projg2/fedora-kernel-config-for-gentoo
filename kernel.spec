@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2259,6 +2259,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 28 2017 Laura Abbott <labbott@redhat.com> - 4.13.4-300
+- Linux v4.13.4
+
 * Mon Sep 25 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add patch to fix PCI on tegra20
 
