@@ -661,9 +661,6 @@ Patch714: V4-acpi-acpica-fix-acpi-parse-and-parseext-cache-leaks.patch
 # CVE-2017-13695 rhbz 1485349
 Patch715: acpi-acpica-fix-acpi-operand-cache-leak-in-nseval.c.patch
 
-# CVE-2017-14051 rhbz 1487126 1487127
-Patch717: v2-scsi-qla2xxx-Fix-an-integer-overflow-in-sysfs-code.patch
-
 # Should fix our QXL issues (Doesn't)
 Patch718: qxl-fixes.patch
 
