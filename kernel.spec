@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -664,15 +664,6 @@ Patch715: acpi-acpica-fix-acpi-operand-cache-leak-in-nseval.c.patch
 # Should fix our QXL issues (Doesn't)
 Patch718: qxl-fixes.patch
 
-# CVE-2017-12154 rhbz 1491224 1491231
-Patch720: kvm-nVMX-Don-t-allow-L2-to-access-the-hardware-CR8.patch
-
-# CVE-2017-12153 rhbz 1491046 1491057
-Patch721: nl80211-check-for-the-required-netlink-attributes-presence.patch
-
-# rhbz 1493435 1493436
-Patch722: KEYS-prevent-KEYCTL_READ-on-negative-key.patch
-
 # rhbz 1493498
 Patch723: 0001-fs-locks-Remove-fl_nspid-and-use-fs-specific-l_pid-f.patch
 
@@ -681,6 +672,9 @@ Patch724: 1-3-net-set-tb--fast_sk_family.patch
 Patch725: 2-3-net-use-inet6_rcv_saddr-to-compare-sockets.patch
 Patch726: 3-3-inet-fix-improper-empty-comparison.patch
 
+
+# rhbz 1497861
+Patch629: 0001-platform-x86-peaq-wmi-Add-DMI-check-before-binding-t.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2256,7 +2250,11 @@ fi
 #
 #
 %changelog
-* Thu Sep 28 2017 Laura Abbott <labbott@redhat.com> - 4.13.4-300
+* Thu Oct 05 2017 Laura Abbott <labbott@fedoraproject.org> - 4.13.5-200
+- Linux v4.13.5
+- Fix for peaq_wmi nul spew (rhbz 1497861)
+
+* Thu Sep 28 2017 Laura Abbott <labbott@redhat.com> - 4.13.4-200
 - Linux v4.13.4
 
 * Mon Sep 25 2017 Peter Robinson <pbrobinson@fedoraproject.org>
