@@ -675,9 +675,11 @@ Patch724: 1-3-net-set-tb--fast_sk_family.patch
 Patch725: 2-3-net-use-inet6_rcv_saddr-to-compare-sockets.patch
 Patch726: 3-3-inet-fix-improper-empty-comparison.patch
 
-
 # rhbz 1497861
 Patch629: 0001-platform-x86-peaq-wmi-Add-DMI-check-before-binding-t.patch
+
+# rhbz 1482648
+Patch630: Input-synaptics---Disable-kernel-tracking-on-SMBus-devices.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2253,6 +2255,9 @@ fi
 #
 #
 %changelog
+* Tue Oct 10 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Disable kernel tracking on SMBus devices (rhbz 1482648)
+
 * Fri Oct  6 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - ARM ACPI fix for x-gene RHBZ #1498117
 
