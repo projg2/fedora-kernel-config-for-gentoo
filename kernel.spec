@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -576,7 +576,6 @@ Patch300: drm-cma-reduce-dmesg-logs.patch
 
 # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c0d8832e78cbfd4a64b7112e34920af4b0b0e60e
 # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ae2e972dae3cea795e9f8f94eb1601213c2d49f0
-Patch301: arm64-ensure-ready-for-userspace.patch
 
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
 Patch302: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
@@ -659,7 +658,6 @@ Patch613: 0013-iio-accel-bmc150-Add-support-for-BOSC0200-ACPI-devic.patch
 Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
 
 # rhbz 1431375
-Patch703: HID-rmi-Make-sure-the-HID-device-is-opened-on-resume.patch
 Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # rhbz 1476467
@@ -693,6 +691,9 @@ Patch629: 0001-platform-x86-peaq-wmi-Add-DMI-check-before-binding-t.patch
 
 # rhbz 1482648
 Patch630: Input-synaptics---Disable-kernel-tracking-on-SMBus-devices.patch
+
+# Headed upstream
+Patch631: drm-i915-boost-GPU-clocks-if-we-miss-the-pageflip.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2268,6 +2269,10 @@ fi
 #
 #
 %changelog
+* Thu Oct 12 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.13.6-200
+- Linux v4.13.6
+- Fixes CVE-2017-1000255 (rhbz 1498067 1500335)
+
 * Thu Oct 12 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Some minor ARM fixes and cleanups
 - Fixes for Cavium ThunderX plaforms
