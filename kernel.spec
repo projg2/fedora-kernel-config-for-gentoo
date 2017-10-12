@@ -632,6 +632,9 @@ Patch324: arm-of-restrict-dma-configuration.patch
 # Upstream ACPI fix
 Patch331: arm64-xgene-acpi-fix.patch
 
+# ThunderX fixes
+Patch332: arm64-cavium-fixes.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -2267,6 +2270,7 @@ fi
 %changelog
 * Thu Oct 12 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Some minor ARM fixes and cleanups
+- Fixes for Cavium ThunderX plaforms
 
 * Wed Oct 11 2017 Jeremy Cline <jeremy@jcline.org>
 - Fix incorrect updates of uninstantiated keys crash the kernel (rhbz 1498016 1498017)
