@@ -569,8 +569,14 @@ Patch211: drm-i915-hush-check-crtc-state.patch
 
 # 300 - ARM patches
 
-# a tempory patch for QCOM hardware enablement. Will be gone by F-26 GA
-Patch301: qcom-QDF2432-tmp-errata.patch
+# Reduces a number of primarily info logs to dmesg
+# https://patchwork.freedesktop.org/patch/180737/
+# https://patchwork.freedesktop.org/patch/180554/
+Patch300: drm-cma-reduce-dmesg-logs.patch
+
+# https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c0d8832e78cbfd4a64b7112e34920af4b0b0e60e
+# https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ae2e972dae3cea795e9f8f94eb1601213c2d49f0
+Patch301: arm64-ensure-ready-for-userspace.patch
 
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
 Patch302: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
@@ -2259,6 +2265,9 @@ fi
 #
 #
 %changelog
+* Thu Oct 12 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+- Some minor ARM fixes and cleanups
+
 * Wed Oct 11 2017 Jeremy Cline <jeremy@jcline.org>
 - Fix incorrect updates of uninstantiated keys crash the kernel (rhbz 1498016 1498017)
 
