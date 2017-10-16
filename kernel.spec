@@ -2264,6 +2264,7 @@ fi
 %changelog
 * Mon Oct 16 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.13.7-100
 - Linux v4.13.7
+- Fixes CVE-2017-5123 (rhbz 1500094 1501762)
 
 * Thu Oct 12 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.13.6-100
 - Linux v4.13.6
