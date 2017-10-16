@@ -695,6 +695,9 @@ Patch630: Input-synaptics---Disable-kernel-tracking-on-SMBus-devices.patch
 # Headed upstream
 Patch631: drm-i915-boost-GPU-clocks-if-we-miss-the-pageflip.patch
 
+# CVE-2017-15265 rhbz 1501878 1501880
+Patch633: 0001-ALSA-seq-Fix-use-after-free-at-creating-a-port.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2272,6 +2275,7 @@ fi
 * Mon Oct 16 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.13.7-200
 - Linux v4.13.7
 - Fixes CVE-2017-5123 (rhbz 1500094 1501762)
+- Fix CVE-2017-15265 (rhbz 1501878 1501880)
 
 * Thu Oct 12 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.13.6-200
 - Linux v4.13.6
