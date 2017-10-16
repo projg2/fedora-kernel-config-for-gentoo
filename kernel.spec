@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2269,6 +2269,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 16 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.13.7-200
+- Linux v4.13.7
+
 * Thu Oct 12 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.13.6-200
 - Linux v4.13.6
 - Fixes CVE-2017-1000255 (rhbz 1498067 1500335)
