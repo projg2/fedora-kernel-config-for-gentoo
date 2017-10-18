@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -588,9 +588,6 @@ Patch304: ARM-tegra-usb-no-reset.patch
 
 Patch305: allwinner-net-emac.patch
 
-# https://patchwork.kernel.org/patch/9967397/
-Patch306: tegra-Use-different-MSI-target-address-for-Tegra20.patch
-
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
 Patch307: arm-imx6-hummingboard2.patch
 
@@ -694,9 +691,6 @@ Patch630: Input-synaptics---Disable-kernel-tracking-on-SMBus-devices.patch
 
 # Headed upstream
 Patch631: drm-i915-boost-GPU-clocks-if-we-miss-the-pageflip.patch
-
-# CVE-2017-15265 rhbz 1501878 1501880
-Patch633: 0001-ALSA-seq-Fix-use-after-free-at-creating-a-port.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2272,6 +2266,9 @@ fi
 #
 #
 %changelog
+* Wed Oct 18 2017 Laura Abbott <labbott@fedoraproject.org> - 4.13.8-200
+- Linux v4.13.8
+
 * Mon Oct 16 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.13.7-200
 - Linux v4.13.7
 - Fixes CVE-2017-5123 (rhbz 1500094 1501762)
