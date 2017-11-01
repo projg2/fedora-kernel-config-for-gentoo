@@ -681,6 +681,9 @@ Patch630: Input-synaptics---Disable-kernel-tracking-on-SMBus-devices.patch
 # Headed upstream
 Patch631: drm-i915-boost-GPU-clocks-if-we-miss-the-pageflip.patch
 
+# http://patchwork.ozlabs.org/patch/831938/
+Patch633: net-mlxsw-reg-Add-high-and-low-temperature-thresholds.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2255,6 +2258,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 01 2017 Laura Abbott <labbott@fedoraproject.org>
+- Add fix for potential mlxsw firmware incompatibility
+
 * Fri Oct 27 2017 Jeremy Cline <jeremy@jcline.org> - 4.13.10-100
 - Linux v4.13.10
 
