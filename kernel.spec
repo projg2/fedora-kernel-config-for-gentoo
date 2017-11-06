@@ -694,6 +694,10 @@ Patch633: net-mlxsw-reg-Add-high-and-low-temperature-thresholds.patch
 # Included in 4.14, backport requested on kernel@
 Patch634: selinux-Generalize-support-for-NNP-nosuid-SELinux-do.patch
 
+# rhbz 1509461
+Patch635: v3-1-2-Input-synaptics-rmi4---RMI4-can-also-use-SMBUS-version-3.patch
+Patch636: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2268,6 +2272,9 @@ fi
 #
 #
 %changelog
+* Mon Nov 06 2017 Laura Abbott <labbott@redhat.com>
+- Patches for ThinkPad X1 Carbon Gen5 Touchpad (rhbz 1509461)
+
 * Thu Nov 02 2017 Jeremy Cline <jeremy@jcline.org> - 4.13.11-200
 - Linux v4.13.11
 - Fix CVE-2017-12193 (rhbz 1501215 1508717)
