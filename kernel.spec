@@ -610,6 +610,8 @@ Patch321: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe
 # bcm2837 bluetooth support
 Patch323: bcm2837-bluetooth-support.patch
 
+Patch324: rpi-graphics-fix.patch
+
 # Generic fixes and enablement for Socionext SoC and 96board
 # https://patchwork.kernel.org/patch/9980861/
 Patch331: PCI-aspm-deal-with-missing-root-ports-in-link-state-handling.patch
