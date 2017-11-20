@@ -2283,6 +2283,9 @@ fi
 #
 #
 %changelog
+* Mon Nov 20 2017 Laura Abbott <labbott@redhat.com>
+- Enable driver for the Behringer BCD 2000 (rhbz 1514945)
+
 * Sun Nov 19 2017 Jeremy Cline <jeremy@jcline.org> - 4.13.14-200
 - Linux v4.13.14
 
