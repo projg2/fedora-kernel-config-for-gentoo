@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -640,14 +640,8 @@ Patch617: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch619: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# fix gnome 3.26+ not working under VirtualBox, submitted upstream, Cc: Stable
-Patch620: 0001-staging-vboxvideo-Fix-reporting-invalid-suggested-of.patch
-
 # Headed upstream
 Patch621: drm-i915-Boost-GPU-clocks-if-we-miss-the-pageflip-s-vblank.patch
-
-# rhbz 1497861, submitted upstream, Cc: Stable
-Patch622: 0001-platform-x86-peaq-wmi-Add-DMI-check-before-binding-t.patch
 
 Patch623: 0001-PATCH-staging-rtl8822be-fix-wrong-dma-unmap-len.patch
 
@@ -2211,6 +2205,9 @@ fi
 #
 #
 %changelog
+* Tue Nov 21 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.1-300
+- Linux v4.14.1
+
 * Wed Nov 15 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.0-300
 - Linux v4.14
 
