@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -675,10 +675,6 @@ Patch723: 0001-fs-locks-Remove-fl_nspid-and-use-fs-specific-l_pid-f.patch
 Patch724: 1-3-net-set-tb--fast_sk_family.patch
 Patch725: 2-3-net-use-inet6_rcv_saddr-to-compare-sockets.patch
 Patch726: 3-3-inet-fix-improper-empty-comparison.patch
-
-
-# rhbz 1497861
-Patch629: 0001-platform-x86-peaq-wmi-Add-DMI-check-before-binding-t.patch
 
 # rhbz 1482648
 Patch630: Input-synaptics---Disable-kernel-tracking-on-SMBus-devices.patch
@@ -2276,6 +2272,9 @@ fi
 #
 #
 %changelog
+* Tue Nov 21 2017 Jeremy Cline <jeremy@jcline.org> - 4.13.15-100
+- Linux v4.13.15
+
 * Mon Nov 20 2017 Laura Abbott <labbott@redhat.com>
 - Enable driver for the Behringer BCD 2000 (rhbz 1514945)
 
