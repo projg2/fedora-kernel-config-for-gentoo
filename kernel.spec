@@ -593,10 +593,12 @@ Patch303: ARM-tegra-usb-no-reset.patch
 
 Patch304: allwinner-net-emac.patch
 
-# https://www.spinics.net/lists/arm-kernel/msg554183.html
-Patch305: arm-imx6-hummingboard2.patch
+Patch305: arm64-Revert-allwinner-a64-pine64-Use-dcdc1-regulato.patch
 
-Patch306: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+# https://www.spinics.net/lists/arm-kernel/msg554183.html
+Patch306: arm-imx6-hummingboard2.patch
+
+Patch307: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 # https://patchwork.kernel.org/patch/9820417/
 Patch310: qcom-msm89xx-fixes.patch
