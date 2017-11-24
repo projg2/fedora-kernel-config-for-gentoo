@@ -2207,7 +2207,7 @@ fi
 #
 #
 %changelog
-* Mon Nov 13 2017 Peter Robinson <pbrobinson@fedoraproject.org>
+* Thu Nov 23 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Compress modules on all arches
 
 * Tue Nov 21 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.1-300
