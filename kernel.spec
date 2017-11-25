@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2207,6 +2207,9 @@ fi
 #
 #
 %changelog
+* Fri Nov 24 2017 Peter Robinson <pbrobinson@fedoraproject.org> 4.14.2-300
+- Linux v4.14.2
+
 * Thu Nov 23 2017 Peter Robinson <pbrobinson@fedoraproject.org>
 - Compress modules on all arches
 
