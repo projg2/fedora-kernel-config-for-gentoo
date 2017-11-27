@@ -653,6 +653,9 @@ Patch625: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 # rhbz 1490803
 Patch626: 1-2-kvm-vmx-Reinstate-support-for-CPUs-without-virtual-NMI.patch
 
+# Fixes for QXL issues
+Patch627: qxl-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
