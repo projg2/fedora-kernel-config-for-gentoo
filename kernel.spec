@@ -650,6 +650,9 @@ Patch625: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 # Fixes for QXL issues
 Patch627: qxl-fixes.patch
 
+# rhbz 1462175
+Patch628: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2204,6 +2207,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 11 2017 Jeremy Cline <jeremy@jcline.org>
+- Re-fix USB null pointer dereference on ThinkPad X1 (rhbz 1462175)
+
 * Mon Dec 11 2017 Jeremy Cline <jeremy@jcline.org> - 4.14.5-300
 - Linux v4.14.5
 - Re-enable driver for the Behringer BCD 2000
