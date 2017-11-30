@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -650,11 +650,11 @@ Patch623: 0001-PATCH-staging-rtl8822be-fix-wrong-dma-unmap-len.patch
 # rhbz 1509461
 Patch625: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
-# rhbz 1490803
-Patch626: 1-2-kvm-vmx-Reinstate-support-for-CPUs-without-virtual-NMI.patch
-
 # Fixes for QXL issues
 Patch627: qxl-fixes.patch
+
+# CVE-2017-1000405 rhbz 1516514 1519115
+Patch628: 0001-mm-thp-Do-not-make-page-table-dirty-unconditionally-.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2210,6 +2210,10 @@ fi
 #
 #
 %changelog
+* Thu Nov 30 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.3-300
+- Linux v4.14.3
+- Fix CVE-2017-1000405 (rhbz 1516514 1519115)
+
 * Fri Nov 24 2017 Peter Robinson <pbrobinson@fedoraproject.org> 4.14.2-300
 - Linux v4.14.2
 
