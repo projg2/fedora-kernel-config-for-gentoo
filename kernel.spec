@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -634,6 +634,9 @@ Patch502: CVE-2017-7477.patch
 
 # CVE-2017-16644 rhbz 1516273 1516274
 Patch503: media-hdpvr-Fix-an-error-handling-path-in-hdpvr_probe.patch
+
+# CVE-2017-1000405 rhbz 1516514 1519115
+Patch504: 0001-mm-thp-Do-not-make-page-table-dirty-unconditionally-.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -2272,6 +2275,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 30 2017 Jeremy Cline <jeremy@jcline.org> - 4.13.16-101
+- Fix CVE-2017-1000405 (rhbz 1516514 1519115)
+
 * Mon Nov 27 2017 Jeremy Cline <jeremy@jcline.org> - 4.13.16-100
 - Linux v4.13.16
 - Fix CVE-2017-16649 (rhbz 1516267 1516274)
