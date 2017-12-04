@@ -1,133 +1,201 @@
-From c463b4ad6b2ac5a40c959e6c636eafc7edb1a63b Mon Sep 17 00:00:00 2001
+From 56cbcb6c41932b19ef0d838f1ff25a662a2e403d Mon Sep 17 00:00:00 2001
 From: Gerd Hoffmann <kraxel@redhat.com>
-Date: Wed, 6 Sep 2017 11:31:51 +0200
-Subject: qxl: fix primary surface handling
-
-The atomic conversion of the qxl driver didn't got the primary surface
-handling completely right.  It works in the common simple cases, but
-fails for example when changing the display resolution using xrandr or
-in multihead setups.
-
-The rules are simple:  There is one primary surface.  Before defining a
-new one you have to destroy the old one.
-
-This patch makes qxl_primary_atomic_update() destroy the primary surface
-before defining a new one.  It fixes is_primary flag updates.  It adds
-is_primary checks so we don't try to update the primary surface in case
-it already has the state we want it being in.
+Date: Thu, 19 Oct 2017 08:21:49 +0200
+Subject: [PATCH] drm/qxl: replace QXL_INFO with DRM_DEBUG_DRIVER
 
 Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/20171019062150.28090-2-kraxel@redhat.com
 ---
- drivers/gpu/drm/qxl/qxl_display.c | 34 +++++++++++++++++++---------------
- 1 file changed, 19 insertions(+), 15 deletions(-)
+ drivers/gpu/drm/qxl/qxl_cmd.c     | 16 +++++++---------
+ drivers/gpu/drm/qxl/qxl_drv.h     | 26 +-------------------------
+ drivers/gpu/drm/qxl/qxl_fb.c      | 13 +++++--------
+ drivers/gpu/drm/qxl/qxl_release.c |  5 ++---
+ drivers/gpu/drm/qxl/qxl_ttm.c     |  4 ++--
+ 5 files changed, 17 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/gpu/drm/qxl/qxl_display.c b/drivers/gpu/drm/qxl/qxl_display.c
-index 03fe182..7babdd8f 100644
---- a/drivers/gpu/drm/qxl/qxl_display.c
-+++ b/drivers/gpu/drm/qxl/qxl_display.c
-@@ -512,23 +512,25 @@ static void qxl_primary_atomic_update(struct drm_plane *plane,
- 	    .y2 = qfb->base.height
- 	};
- 
--	if (!old_state->fb) {
--		qxl_io_log(qdev,
--			   "create primary fb: %dx%d,%d,%d\n",
--			   bo->surf.width, bo->surf.height,
--			   bo->surf.stride, bo->surf.format);
-+	if (old_state->fb) {
-+		qfb_old = to_qxl_framebuffer(old_state->fb);
-+		bo_old = gem_to_qxl_bo(qfb_old->obj);
-+	} else {
-+		bo_old = NULL;
-+	}
- 
--		qxl_io_create_primary(qdev, 0, bo);
--		bo->is_primary = true;
-+	if (bo == bo_old)
- 		return;
- 
--	} else {
--		qfb_old = to_qxl_framebuffer(old_state->fb);
--		bo_old = gem_to_qxl_bo(qfb_old->obj);
-+	if (bo_old && bo_old->is_primary) {
-+		qxl_io_destroy_primary(qdev);
- 		bo_old->is_primary = false;
+diff --git a/drivers/gpu/drm/qxl/qxl_cmd.c b/drivers/gpu/drm/qxl/qxl_cmd.c
+index 74fc9362ecf9..8ec53d5abd62 100644
+--- a/drivers/gpu/drm/qxl/qxl_cmd.c
++++ b/drivers/gpu/drm/qxl/qxl_cmd.c
+@@ -219,7 +219,7 @@ int qxl_garbage_collect(struct qxl_device *qdev)
+ 	union qxl_release_info *info;
+
+ 	while (qxl_ring_pop(qdev->release_ring, &id)) {
+-		QXL_INFO(qdev, "popped %lld\n", id);
++		DRM_DEBUG_DRIVER("popped %lld\n", id);
+ 		while (id) {
+ 			release = qxl_release_from_id_locked(qdev, id);
+ 			if (release == NULL)
+@@ -229,8 +229,8 @@ int qxl_garbage_collect(struct qxl_device *qdev)
+ 			next_id = info->next;
+ 			qxl_release_unmap(qdev, release, info);
+
+-			QXL_INFO(qdev, "popped %lld, next %lld\n", id,
+-				next_id);
++			DRM_DEBUG_DRIVER("popped %lld, next %lld\n", id,
++					 next_id);
+
+ 			switch (release->type) {
+ 			case QXL_RELEASE_DRAWABLE:
+@@ -248,7 +248,7 @@ int qxl_garbage_collect(struct qxl_device *qdev)
+ 		}
  	}
- 
--	bo->is_primary = true;
-+	if (!bo->is_primary) {
-+		qxl_io_create_primary(qdev, 0, bo);
-+		bo->is_primary = true;
-+	}
- 	qxl_draw_dirty_fb(qdev, qfb, bo, 0, 0, &norect, 1, 1);
+
+-	QXL_INFO(qdev, "%s: %d\n", __func__, i);
++	DRM_DEBUG_DRIVER("%d\n", i);
+
+ 	return i;
  }
- 
-@@ -537,13 +539,15 @@ static void qxl_primary_atomic_disable(struct drm_plane *plane,
+@@ -381,8 +381,7 @@ void qxl_io_create_primary(struct qxl_device *qdev,
  {
- 	struct qxl_device *qdev = plane->dev->dev_private;
- 
--	if (old_state->fb)
--	{	struct qxl_framebuffer *qfb =
-+	if (old_state->fb) {
-+		struct qxl_framebuffer *qfb =
- 			to_qxl_framebuffer(old_state->fb);
- 		struct qxl_bo *bo = gem_to_qxl_bo(qfb->obj);
- 
--		qxl_io_destroy_primary(qdev);
--		bo->is_primary = false;
-+		if (bo->is_primary) {
-+			qxl_io_destroy_primary(qdev);
-+			bo->is_primary = false;
-+		}
- 	}
+ 	struct qxl_surface_create *create;
+
+-	QXL_INFO(qdev, "%s: qdev %p, ram_header %p\n", __func__, qdev,
+-		 qdev->ram_header);
++	DRM_DEBUG_DRIVER("qdev %p, ram_header %p\n", qdev, qdev->ram_header);
+ 	create = &qdev->ram_header->create_surface;
+ 	create->format = bo->surf.format;
+ 	create->width = bo->surf.width;
+@@ -390,8 +389,7 @@ void qxl_io_create_primary(struct qxl_device *qdev,
+ 	create->stride = bo->surf.stride;
+ 	create->mem = qxl_bo_physical_address(qdev, bo, offset);
+
+-	QXL_INFO(qdev, "%s: mem = %llx, from %p\n", __func__, create->mem,
+-		 bo->kptr);
++	DRM_DEBUG_DRIVER("mem = %llx, from %p\n", create->mem, bo->kptr);
+
+ 	create->flags = QXL_SURF_FLAG_KEEP_DATA;
+ 	create->type = QXL_SURF_TYPE_PRIMARY;
+@@ -401,7 +399,7 @@ void qxl_io_create_primary(struct qxl_device *qdev,
+
+ void qxl_io_memslot_add(struct qxl_device *qdev, uint8_t id)
+ {
+-	QXL_INFO(qdev, "qxl_memslot_add %d\n", id);
++	DRM_DEBUG_DRIVER("qxl_memslot_add %d\n", id);
+ 	wait_for_io_cmd(qdev, id, QXL_IO_MEMSLOT_ADD_ASYNC);
  }
- 
--- 
-cgit v0.12
 
-From 05026e6e19b29104ddba4e8979e6c7af17944695 Mon Sep 17 00:00:00 2001
-From: Gerd Hoffmann <kraxel@redhat.com>
-Date: Fri, 15 Sep 2017 12:46:15 +0200
-Subject: [testing] qxl: fix pinning
+diff --git a/drivers/gpu/drm/qxl/qxl_drv.h b/drivers/gpu/drm/qxl/qxl_drv.h
+index 3397a1907336..d707b351875c 100644
+--- a/drivers/gpu/drm/qxl/qxl_drv.h
++++ b/drivers/gpu/drm/qxl/qxl_drv.h
+@@ -62,33 +62,9 @@
 
-cleanup_fb() unpins the just activated framebuffer instead of the
-old one.  Oops.
+ #define QXL_DEBUGFS_MAX_COMPONENTS		32
 
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
----
- drivers/gpu/drm/qxl/qxl_display.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+-extern int qxl_log_level;
+ extern int qxl_num_crtc;
+ extern int qxl_max_ioctls;
 
-diff --git a/drivers/gpu/drm/qxl/qxl_display.c b/drivers/gpu/drm/qxl/qxl_display.c
-index 7babdd8f..afc2272 100644
---- a/drivers/gpu/drm/qxl/qxl_display.c
-+++ b/drivers/gpu/drm/qxl/qxl_display.c
-@@ -705,14 +705,15 @@ static void qxl_plane_cleanup_fb(struct drm_plane *plane,
- 	struct drm_gem_object *obj;
- 	struct qxl_bo *user_bo;
- 
--	if (!plane->state->fb) {
--		/* we never executed prepare_fb, so there's nothing to
-+	if (!old_state->fb) {
-+		/*
-+		 * we never executed prepare_fb, so there's nothing to
- 		 * unpin.
- 		 */
- 		return;
- 	}
- 
--	obj = to_qxl_framebuffer(plane->state->fb)->obj;
-+	obj = to_qxl_framebuffer(old_state->fb)->obj;
- 	user_bo = gem_to_qxl_bo(obj);
- 	qxl_bo_unpin(user_bo);
+-enum {
+-	QXL_INFO_LEVEL = 1,
+-	QXL_DEBUG_LEVEL = 2,
+-};
+-
+-#define QXL_INFO(qdev, fmt, ...) do { \
+-		if (qxl_log_level >= QXL_INFO_LEVEL) {	\
+-			qxl_io_log(qdev, fmt, __VA_ARGS__); \
+-		}	\
+-	} while (0)
+-#define QXL_DEBUG(qdev, fmt, ...) do { \
+-		if (qxl_log_level >= QXL_DEBUG_LEVEL) {	\
+-			qxl_io_log(qdev, fmt, __VA_ARGS__); \
+-		}	\
+-	} while (0)
+-#define QXL_INFO_ONCE(qdev, fmt, ...) do { \
+-		static int done;		\
+-		if (!done) {			\
+-			done = 1;			\
+-			QXL_INFO(qdev, fmt, __VA_ARGS__);	\
+-		}						\
+-	} while (0)
+-
+ #define DRM_FILE_OFFSET 0x100000000ULL
+ #define DRM_FILE_PAGE_OFFSET (DRM_FILE_OFFSET >> PAGE_SHIFT)
+
+@@ -351,7 +327,7 @@ int qxl_check_idle(struct qxl_ring *ring);
+ static inline void *
+ qxl_fb_virtual_address(struct qxl_device *qdev, unsigned long physical)
+ {
+-	QXL_INFO(qdev, "not implemented (%lu)\n", physical);
++	DRM_DEBUG_DRIVER("not implemented (%lu)\n", physical);
+ 	return 0;
  }
--- 
-cgit v0.12
 
-From 7a39a01887acc66d9b318d5e5898cf00d323eb8f Mon Sep 17 00:00:00 2001
+diff --git a/drivers/gpu/drm/qxl/qxl_fb.c b/drivers/gpu/drm/qxl/qxl_fb.c
+index 844c4a31ca13..23af3e352673 100644
+--- a/drivers/gpu/drm/qxl/qxl_fb.c
++++ b/drivers/gpu/drm/qxl/qxl_fb.c
+@@ -240,18 +240,15 @@ static int qxlfb_create(struct qxl_fbdev *qfbdev,
+ 		return ret;
+
+ 	qbo = gem_to_qxl_bo(gobj);
+-	QXL_INFO(qdev, "%s: %dx%d %d\n", __func__, mode_cmd.width,
+-		 mode_cmd.height, mode_cmd.pitches[0]);
++	DRM_DEBUG_DRIVER("%dx%d %d\n", mode_cmd.width,
++			 mode_cmd.height, mode_cmd.pitches[0]);
+
+ 	shadow = vmalloc(mode_cmd.pitches[0] * mode_cmd.height);
+ 	/* TODO: what's the usual response to memory allocation errors? */
+ 	BUG_ON(!shadow);
+-	QXL_INFO(qdev,
+-	"surface0 at gpu offset %lld, mmap_offset %lld (virt %p, shadow %p)\n",
+-		 qxl_bo_gpu_offset(qbo),
+-		 qxl_bo_mmap_offset(qbo),
+-		 qbo->kptr,
+-		 shadow);
++	DRM_DEBUG_DRIVER("surface0 at gpu offset %lld, mmap_offset %lld (virt %p, shadow %p)\n",
++			 qxl_bo_gpu_offset(qbo), qxl_bo_mmap_offset(qbo),
++			 qbo->kptr, shadow);
+ 	size = mode_cmd.pitches[0] * mode_cmd.height;
+
+ 	info = drm_fb_helper_alloc_fbi(&qfbdev->helper);
+diff --git a/drivers/gpu/drm/qxl/qxl_release.c b/drivers/gpu/drm/qxl/qxl_release.c
+index e6ec845b5be0..a6da6fa6ad58 100644
+--- a/drivers/gpu/drm/qxl/qxl_release.c
++++ b/drivers/gpu/drm/qxl/qxl_release.c
+@@ -154,7 +154,7 @@ qxl_release_alloc(struct qxl_device *qdev, int type,
+ 		return handle;
+ 	}
+ 	*ret = release;
+-	QXL_INFO(qdev, "allocated release %d\n", handle);
++	DRM_DEBUG_DRIVER("allocated release %d\n", handle);
+ 	release->id = handle;
+ 	return handle;
+ }
+@@ -179,8 +179,7 @@ void
+ qxl_release_free(struct qxl_device *qdev,
+ 		 struct qxl_release *release)
+ {
+-	QXL_INFO(qdev, "release %d, type %d\n", release->id,
+-		 release->type);
++	DRM_DEBUG_DRIVER("release %d, type %d\n", release->id, release->type);
+
+ 	if (release->surface_release_id)
+ 		qxl_surface_id_dealloc(qdev, release->surface_release_id);
+diff --git a/drivers/gpu/drm/qxl/qxl_ttm.c b/drivers/gpu/drm/qxl/qxl_ttm.c
+index 7ecf8a4b9fe6..ab4823875311 100644
+--- a/drivers/gpu/drm/qxl/qxl_ttm.c
++++ b/drivers/gpu/drm/qxl/qxl_ttm.c
+@@ -136,8 +136,8 @@ int qxl_mmap(struct file *filp, struct vm_area_struct *vma)
+ 		 "filp->private_data->minor->dev->dev_private == NULL\n");
+ 		return -EINVAL;
+ 	}
+-	QXL_INFO(qdev, "%s: filp->private_data = 0x%p, vma->vm_pgoff = %lx\n",
+-		 __func__, filp->private_data, vma->vm_pgoff);
++	DRM_DEBUG_DRIVER("filp->private_data = 0x%p, vma->vm_pgoff = %lx\n",
++		  filp->private_data, vma->vm_pgoff);
+
+ 	r = ttm_bo_mmap(filp, vma, &qdev->mman.bdev);
+ 	if (unlikely(r != 0))
+-- 
+2.14.3
+
+From 62676d10b483a2ff6e8b08c5e7c7d63a831343f5 Mon Sep 17 00:00:00 2001
 From: Gerd Hoffmann <kraxel@redhat.com>
-Date: Wed, 18 Oct 2017 13:18:40 +0200
-Subject: qxl: alloc & use shadow for dumb buffers
+Date: Thu, 19 Oct 2017 08:21:50 +0200
+Subject: [PATCH] qxl: alloc & use shadow for dumb buffers
 
 This patch changes the way the primary surface is used for dumb
 framebuffers.  Instead of configuring the bo itself as primary surface
@@ -148,6 +216,8 @@ case qemu is asked to write out a dump of the guest display (screendump
 monitor command).
 
 Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+Link: http://patchwork.freedesktop.org/patch/msgid/20171019062150.28090-3-kraxel@redhat.com
 ---
  drivers/gpu/drm/qxl/qxl_cmd.c     |  6 ++++-
  drivers/gpu/drm/qxl/qxl_display.c | 49 ++++++++++++++++++++++++++++++++++++---
@@ -156,10 +226,10 @@ Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
  4 files changed, 54 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/gpu/drm/qxl/qxl_cmd.c b/drivers/gpu/drm/qxl/qxl_cmd.c
-index 74fc936..3eb9208 100644
+index 8ec53d5abd62..c0fb52c6d4ca 100644
 --- a/drivers/gpu/drm/qxl/qxl_cmd.c
 +++ b/drivers/gpu/drm/qxl/qxl_cmd.c
-@@ -388,7 +388,11 @@ void qxl_io_create_primary(struct qxl_device *qdev,
+@@ -387,7 +387,11 @@ void qxl_io_create_primary(struct qxl_device *qdev,
  	create->width = bo->surf.width;
  	create->height = bo->surf.height;
  	create->stride = bo->surf.stride;
@@ -170,10 +240,10 @@ index 74fc936..3eb9208 100644
 +		create->mem = qxl_bo_physical_address(qdev, bo, offset);
 +	}
 
- 	QXL_INFO(qdev, "%s: mem = %llx, from %p\n", __func__, create->mem,
- 		 bo->kptr);
+ 	DRM_DEBUG_DRIVER("mem = %llx, from %p\n", create->mem, bo->kptr);
+
 diff --git a/drivers/gpu/drm/qxl/qxl_display.c b/drivers/gpu/drm/qxl/qxl_display.c
-index afc2272..da6648e 100644
+index afbf50d0c08f..4756b3c9bf2c 100644
 --- a/drivers/gpu/drm/qxl/qxl_display.c
 +++ b/drivers/gpu/drm/qxl/qxl_display.c
 @@ -305,7 +305,9 @@ static const struct drm_crtc_funcs qxl_crtc_funcs = {
@@ -186,7 +256,7 @@ index afc2272..da6648e 100644
  	drm_gem_object_unreference_unlocked(qxl_fb->obj);
  	drm_framebuffer_cleanup(fb);
  	kfree(qxl_fb);
-@@ -511,6 +513,7 @@ static void qxl_primary_atomic_update(struct drm_plane *plane,
+@@ -508,6 +510,7 @@ static void qxl_primary_atomic_update(struct drm_plane *plane,
  	    .x2 = qfb->base.width,
  	    .y2 = qfb->base.height
  	};
@@ -194,7 +264,7 @@ index afc2272..da6648e 100644
 
  	if (old_state->fb) {
  		qfb_old = to_qxl_framebuffer(old_state->fb);
-@@ -522,15 +525,23 @@ static void qxl_primary_atomic_update(struct drm_plane *plane,
+@@ -519,15 +522,23 @@ static void qxl_primary_atomic_update(struct drm_plane *plane,
  	if (bo == bo_old)
  		return;
 
@@ -220,9 +290,9 @@ index afc2272..da6648e 100644
  	qxl_draw_dirty_fb(qdev, qfb, bo, 0, 0, &norect, 1, 1);
  }
 
-@@ -682,8 +693,9 @@ void qxl_cursor_atomic_disable(struct drm_plane *plane,
- int qxl_plane_prepare_fb(struct drm_plane *plane,
- 			 struct drm_plane_state *new_state)
+@@ -679,8 +690,9 @@ static void qxl_cursor_atomic_disable(struct drm_plane *plane,
+ static int qxl_plane_prepare_fb(struct drm_plane *plane,
+ 				struct drm_plane_state *new_state)
  {
 +	struct qxl_device *qdev = plane->dev->dev_private;
  	struct drm_gem_object *obj;
@@ -231,7 +301,7 @@ index afc2272..da6648e 100644
  	int ret;
 
  	if (!new_state->fb)
-@@ -692,6 +704,32 @@ int qxl_plane_prepare_fb(struct drm_plane *plane,
+@@ -689,6 +701,32 @@ static int qxl_plane_prepare_fb(struct drm_plane *plane,
  	obj = to_qxl_framebuffer(new_state->fb)->obj;
  	user_bo = gem_to_qxl_bo(obj);
 
@@ -264,7 +334,7 @@ index afc2272..da6648e 100644
  	ret = qxl_bo_pin(user_bo, QXL_GEM_DOMAIN_CPU, NULL);
  	if (ret)
  		return ret;
-@@ -716,6 +754,11 @@ static void qxl_plane_cleanup_fb(struct drm_plane *plane,
+@@ -713,6 +751,11 @@ static void qxl_plane_cleanup_fb(struct drm_plane *plane,
  	obj = to_qxl_framebuffer(old_state->fb)->obj;
  	user_bo = gem_to_qxl_bo(obj);
  	qxl_bo_unpin(user_bo);
@@ -277,10 +347,10 @@ index afc2272..da6648e 100644
 
  static const uint32_t qxl_cursor_plane_formats[] = {
 diff --git a/drivers/gpu/drm/qxl/qxl_drv.h b/drivers/gpu/drm/qxl/qxl_drv.h
-index 3591d23..b5e9dc6 100644
+index d707b351875c..08752c0ffb35 100644
 --- a/drivers/gpu/drm/qxl/qxl_drv.h
 +++ b/drivers/gpu/drm/qxl/qxl_drv.h
-@@ -112,6 +112,8 @@ struct qxl_bo {
+@@ -89,6 +89,8 @@ struct qxl_bo {
  	/* Constant after initialization */
  	struct drm_gem_object		gem_base;
  	bool is_primary; /* is this now a primary surface */
@@ -290,7 +360,7 @@ index 3591d23..b5e9dc6 100644
  	struct qxl_surface surf;
  	uint32_t surface_id;
 diff --git a/drivers/gpu/drm/qxl/qxl_dumb.c b/drivers/gpu/drm/qxl/qxl_dumb.c
-index 5e65d5d..11085ab 100644
+index 5e65d5d2d937..11085ab01374 100644
 --- a/drivers/gpu/drm/qxl/qxl_dumb.c
 +++ b/drivers/gpu/drm/qxl/qxl_dumb.c
 @@ -63,6 +63,7 @@ int qxl_mode_dumb_create(struct drm_file *file_priv,
@@ -302,5 +372,5 @@ index 5e65d5d..11085ab 100644
  	args->handle = handle;
  	return 0;
 -- 
-2.13.5
+2.14.3
 
