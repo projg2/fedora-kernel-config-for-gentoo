@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -623,6 +623,8 @@ Patch332: arm64-socionext-96b-enablement.patch
 
 Patch335: arm-exynos-fix-usb3.patch
 
+Patch399: arm64-thunderX-fix-ipv6-checksum-offload.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -652,9 +654,6 @@ Patch625: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
 # Fixes for QXL issues
 Patch627: qxl-fixes.patch
-
-# CVE-2017-1000405 rhbz 1516514 1519115
-Patch628: 0001-mm-thp-Do-not-make-page-table-dirty-unconditionally-.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2210,6 +2209,11 @@ fi
 #
 #
 %changelog
+* Wed Dec  6 2017 Peter Robinson <pbrobinson@fedoraproject.org> 4.14.4-300
+- Linux v4.14.4
+- Fixes for dwmac-sun8i for A64/Pine64
+- Fixes for Cavium ThunderX (rhbz 1521190)
+
 * Mon Dec 04 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.3-300
 - Linux v4.14.3 rebase
 
