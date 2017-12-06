@@ -17,7 +17,7 @@ Summary: The Linux kernel
 %else
 %global signkernel 0
 %global signmodules 1
-%global zipmodules 0
+%global zipmodules 1
 %endif
 
 %if %{zipmodules}
@@ -42,19 +42,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 202
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 13
+%define base_sublevel 14
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -267,7 +267,7 @@ Summary: The Linux kernel
 %define make_target vmlinux
 %define kernel_image vmlinux
 %define kernel_image_elf 1
-%ifarch ppc64 ppc64p7
+%ifarch ppc64
 %define all_arch_configs kernel-%{version}-ppc64*.config
 %endif
 %ifarch ppc64le
@@ -377,7 +377,7 @@ Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
-ExclusiveArch: %{all_x86} x86_64 ppc64 ppc64p7 s390x %{arm} aarch64 ppc64le
+ExclusiveArch: %{all_x86} x86_64 ppc64 s390x %{arm} aarch64 ppc64le
 ExclusiveOS: Linux
 %ifnarch %{nobuildarches}
 Requires: kernel-core-uname-r = %{KVERREL}%{?variant}
@@ -439,7 +439,6 @@ Source93: filter-aarch64.sh
 Source95: filter-ppc64.sh
 Source96: filter-ppc64le.sh
 Source97: filter-s390x.sh
-Source98: filter-ppc64p7.sh
 Source99: filter-modules.sh
 %define modsign_cmd %{SOURCE18}
 
@@ -457,8 +456,6 @@ Source30: kernel-ppc64.config
 Source31: kernel-ppc64-debug.config
 Source32: kernel-ppc64le.config
 Source33: kernel-ppc64le-debug.config
-Source34: kernel-ppc64p7.config
-Source35: kernel-ppc64p7-debug.config
 Source36: kernel-s390x.config
 Source37: kernel-s390x-debug.config
 Source38: kernel-x86_64.config
@@ -574,153 +571,78 @@ Patch211: drm-i915-hush-check-crtc-state.patch
 # https://patchwork.freedesktop.org/patch/180554/
 Patch300: drm-cma-reduce-dmesg-logs.patch
 
-# https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c0d8832e78cbfd4a64b7112e34920af4b0b0e60e
-# https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ae2e972dae3cea795e9f8f94eb1601213c2d49f0
-
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch302: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
+Patch301: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 
 # Fix OMAP4 (pandaboard)
-Patch303: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
+Patch302: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 
 # http://patchwork.ozlabs.org/patch/587554/
-Patch304: ARM-tegra-usb-no-reset.patch
+Patch303: ARM-tegra-usb-no-reset.patch
 
-Patch305: allwinner-net-emac.patch
+Patch304: allwinner-net-emac.patch
+
+Patch305: arm64-Revert-allwinner-a64-pine64-Use-dcdc1-regulato.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg554183.html
-Patch307: arm-imx6-hummingboard2.patch
+Patch306: arm-imx6-hummingboard2.patch
 
-Patch308: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+Patch307: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
-# https://patchwork.kernel.org/patch/9815555/
-# https://patchwork.kernel.org/patch/9815651/
-# https://patchwork.kernel.org/patch/9819885/
 # https://patchwork.kernel.org/patch/9820417/
-# https://patchwork.kernel.org/patch/9821151/
-# https://patchwork.kernel.org/patch/9821157/
 Patch310: qcom-msm89xx-fixes.patch
 
-# https://patchwork.kernel.org/patch/9831825/
-# https://patchwork.kernel.org/patch/9833721/
-Patch311: arm-tegra-fix-gpu-iommu.patch
-
-# https://www.spinics.net/lists/linux-arm-msm/msg28203.html
-Patch312: qcom-display-iommu.patch
-
-# https://patchwork.kernel.org/patch/9839803/
-Patch313: qcom-Force-host-mode-for-USB-on-apq8016-sbc.patch
-
-# https://patchwork.kernel.org/patch/9850189/
-Patch314: qcom-msm-ci_hdrc_msm_probe-missing-of_node_get.patch
-
-Patch320: bcm283x-vc4-fixes.patch
+# https://patchwork.kernel.org/patch/10054387/
+Patch311: USB-ulpi-fix-bus-node-lookup.patch
 
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch321: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
-# Updat3 move of bcm2837, landed in 4.14
-Patch322: bcm2837-move-dt.patch
+# bcm2837 bluetooth support
+Patch323: bcm2837-bluetooth-support.patch
 
-Patch325: rpi-graphics-fix.patch
+Patch324: rpi-graphics-fix.patch
 
-# https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=next-20170912&id=723288836628bc1c0855f3bb7b64b1803e4b9e4a
-Patch324: arm-of-restrict-dma-configuration.patch
+# Generic fixes and enablement for Socionext SoC and 96board
+# https://patchwork.kernel.org/patch/9980861/
+Patch331: PCI-aspm-deal-with-missing-root-ports-in-link-state-handling.patch
 
-# Upstream ACPI fix
-Patch331: arm64-xgene-acpi-fix.patch
+# https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
+Patch332: arm64-socionext-96b-enablement.patch
 
-# ThunderX fixes
-Patch332: arm64-cavium-fixes.patch
+Patch335: arm-exynos-fix-usb3.patch
+
+Patch399: arm64-thunderX-fix-ipv6-checksum-offload.patch
 
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
 
-# CVE-2017-7477 rhbz 1445207 1445208
-Patch502: CVE-2017-7477.patch
-
-# CVE-2017-16644 rhbz 1516273 1516274
-Patch503: media-hdpvr-Fix-an-error-handling-path-in-hdpvr_probe.patch
-
-# CVE-2017-1000405 rhbz 1516514 1519115
-Patch504: 0001-mm-thp-Do-not-make-page-table-dirty-unconditionally-.patch
+# rhbz 1498016 1498017
+#Patch503: KEYS-don-t-let-add_key-update-an-uninstantiated-key.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
 Patch601: 0001-Input-gpio_keys-Allow-suppression-of-input-events-fo.patch
 Patch602: 0002-Input-soc_button_array-Suppress-power-button-presses.patch
 Patch610: 0010-Input-silead-Add-support-for-capactive-home-button-f.patch
-Patch611: 0011-Input-goodix-Add-support-for-capacitive-home-button.patch
-# These patches are queued for 4.14 and can be dropped on rebase to 4.14-rc1
-Patch603: 0001-power-supply-max17042_battery-Add-support-for-ACPI-e.patch
-Patch604: 0002-power-supply-max17042_battery-Fix-ACPI-interrupt-iss.patch
-Patch613: 0013-iio-accel-bmc150-Add-support-for-BOSC0200-ACPI-devic.patch
-Patch615: 0015-i2c-cht-wc-Add-Intel-Cherry-Trail-Whiskey-Cove-SMBUS.patch
-
-# rhbz 1431375
-Patch704: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # rhbz 1476467
-Patch706: Fix-for-module-sig-verification.patch
+Patch617: Fix-for-module-sig-verification.patch
 
-# rhbz 1485086
-Patch710: pci-mark-amd-stoney-gpu-ats-as-broken.patch
-
-# CVE-2017-13693 rhbz 1485346 1485356
-Patch713: acpi-acpica-fix-acpi-operand-cache-leak-in-dsutils.c.patch
-
-# CVE-2017-13694 rhbz 1485348
-Patch714: V4-acpi-acpica-fix-acpi-parse-and-parseext-cache-leaks.patch 
-
-# CVE-2017-13695 rhbz 1485349
-Patch715: acpi-acpica-fix-acpi-operand-cache-leak-in-nseval.c.patch
-
-# Should fix our QXL issues (Doesn't)
-Patch718: qxl-fixes.patch
-
-# rhbz 1493498
-Patch723: 0001-fs-locks-Remove-fl_nspid-and-use-fs-specific-l_pid-f.patch
-
-# rhbz 1432684
-Patch724: 1-3-net-set-tb--fast_sk_family.patch
-Patch725: 2-3-net-use-inet6_rcv_saddr-to-compare-sockets.patch
-Patch726: 3-3-inet-fix-improper-empty-comparison.patch
-
-# rhbz 1482648
-Patch630: Input-synaptics---Disable-kernel-tracking-on-SMBus-devices.patch
+# rhbz 1431375
+Patch619: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # Headed upstream
-Patch631: drm-i915-boost-GPU-clocks-if-we-miss-the-pageflip.patch
+Patch621: drm-i915-Boost-GPU-clocks-if-we-miss-the-pageflip-s-vblank.patch
 
-# http://patchwork.ozlabs.org/patch/831938/
-Patch633: net-mlxsw-reg-Add-high-and-low-temperature-thresholds.patch
-
-# Included in 4.14, backport requested on kernel@
-Patch634: selinux-Generalize-support-for-NNP-nosuid-SELinux-do.patch
+Patch623: 0001-PATCH-staging-rtl8822be-fix-wrong-dma-unmap-len.patch
 
 # rhbz 1509461
-Patch635: v3-1-2-Input-synaptics-rmi4---RMI4-can-also-use-SMBUS-version-3.patch
-Patch636: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
+Patch625: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
-# rhbz 1490803
-Patch637: 1-2-kvm-vmx-Reinstate-support-for-CPUs-without-virtual-NMI.patch
-
-# CVE-2017-16538 rhbz 1510826 1510854
-Patch639: CVE-2017-16538.patch
-
-# rhbz 1507931
-Patch640: qxl_cursor_fix.patch
-
-# rhbz 1462175
-Patch641: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
-
-# rhbz 1518707
-Patch642: 0001-powerpc-64s-radix-Fix-128TB-512TB-virtual-address-bo.patch
-Patch643: 0002-powerpc-64s-hash-Fix-512T-hint-detection-to-use-128T.patch
-Patch644: 0003-powerpc-64s-hash-Fix-128TB-512TB-virtual-address-bou.patch
-Patch645: 0004-powerpc-64s-hash-Fix-fork-with-512TB-process-address.patch
-Patch646: 0005-powerpc-64s-hash-Allow-MAP_FIXED-allocations-to-cros.patch
+# Fixes for QXL issues
+Patch627: qxl-fixes.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1996,7 +1918,7 @@ pushd tools/thermal/tmon
 make INSTALL_ROOT=%{buildroot} install
 popd
 pushd tools/iio
-make INSTALL_ROOT=%{buildroot} install
+make DESTDIR=%{buildroot} install
 popd
 pushd tools/gpio
 make DESTDIR=%{buildroot} install
@@ -2296,6 +2218,11 @@ fi
 #
 #
 %changelog
+* Thu Dec 07 2017 Jeremy Cline <jeremy@jcline.org> - 4.14.4-200
+- Linux v4.14.4 rebase
+- Fixes for dwmac-sun8i for A64/Pine64
+- Fixes for Cavium ThunderX (rhbz 1521190)
+
 * Thu Nov 30 2017 Jeremy Cline <jeremy@jcline.org> - 4.13.16-202
 - Fix CVE-2017-1000405 (rhbz 1516514 1519115)
 
