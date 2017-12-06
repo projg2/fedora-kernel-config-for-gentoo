@@ -5,7 +5,7 @@
 
 # x86_64
 x86_64=baseconfig:baseconfig-x86:baseconfig-x86-x86_64
-x86_64-debug=baseconfig:baseconfig-x86:baseconfig-x86-x86_64:debugconfig:debugconfig-x86
+x86_64-debug=baseconfig:baseconfig-x86:baseconfig-x86-x86_64:debugconfig:debugconfig-x86:debugconfig-x86-x86_64
 
 # i686
 i686=baseconfig:baseconfig-x86:baseconfig-x86-i686
