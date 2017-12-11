@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -592,9 +592,6 @@ Patch307: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 # https://patchwork.kernel.org/patch/9820417/
 Patch310: qcom-msm89xx-fixes.patch
 
-# https://patchwork.kernel.org/patch/10054387/
-Patch311: USB-ulpi-fix-bus-node-lookup.patch
-
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch321: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
@@ -635,8 +632,6 @@ Patch619: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # Headed upstream
 Patch621: drm-i915-Boost-GPU-clocks-if-we-miss-the-pageflip-s-vblank.patch
-
-Patch623: 0001-PATCH-staging-rtl8822be-fix-wrong-dma-unmap-len.patch
 
 # rhbz 1509461
 Patch625: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
@@ -2218,6 +2213,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 11 2017 Jeremy Cline <jeremy@jcline.org> - 4.14.5-200
+- Linux v4.14.5
+
 * Thu Dec 07 2017 Jeremy Cline <jeremy@jcline.org> - 4.14.4-200
 - Linux v4.14.4 rebase
 - Fixes for dwmac-sun8i for A64/Pine64
