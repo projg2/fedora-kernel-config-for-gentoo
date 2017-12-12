@@ -626,8 +626,8 @@ Patch399: arm64-thunderX-fix-ipv6-checksum-offload.patch
 
 # 500 - Temp fixes/CVEs etc
 
-# rhbz 1498016 1498017
-#Patch503: KEYS-don-t-let-add_key-update-an-uninstantiated-key.patch
+# rbhz 1519591 1520764
+Patch500: dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -2207,6 +2207,9 @@ fi
 #
 #
 %changelog
+* Tue Dec 12 2017 Jeremy Cline <jeremy@jcline.org>
+- Fix CVE-2017-8824 (rhbz 1519591 1520764)
+
 * Mon Dec 11 2017 Jeremy Cline <jeremy@jcline.org>
 - Re-fix USB null pointer dereference on ThinkPad X1 (rhbz 1462175)
 
