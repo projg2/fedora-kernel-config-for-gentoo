@@ -618,6 +618,9 @@ Patch399: arm64-thunderX-fix-ipv6-checksum-offload.patch
 # rbhz 1519591 1520764
 Patch500: dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
 
+# rhbz 1525474 1525476
+Patch501: USB-core-prevent-malicious-bNumInterfaces-overflow.patch
+
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
 Patch601: 0001-Input-gpio_keys-Allow-suppression-of-input-events-fo.patch
@@ -2216,6 +2219,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 13 2017 Jeremy Cline <jeremy@jcline.org>
+- Fix CVE-2017-17558 (rhbz 1525474 1525476)
+
 * Tue Dec 12 2017 Jeremy Cline <jeremy@jcline.org>
 - Fix CVE-2017-8824 (rhbz 1519591 1520764)
 
