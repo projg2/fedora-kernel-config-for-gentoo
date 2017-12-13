@@ -632,6 +632,10 @@ Patch500: dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
 # rhbz 1525474 1525476
 Patch501: USB-core-prevent-malicious-bNumInterfaces-overflow.patch
 
+# https://patchwork.kernel.org/patch/10108209/
+# https://marc.info/?l=linux-kernel&m=151307686618795
+Patch502: Revert-exec-avoid-RLIMIT_STACK-races-with-prlimit.patch
+
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
 Patch601: 0001-Input-gpio_keys-Allow-suppression-of-input-events-fo.patch
@@ -2212,6 +2216,7 @@ fi
 %changelog
 * Wed Dec 13 2017 Jeremy Cline <jeremy@jcline.org>
 - Fix CVE-2017-17558 (rhbz 1525474 1525476)
+- Revert exec: avoid RLIMIT_STACK races with prlimit()
 
 * Tue Dec 12 2017 Jeremy Cline <jeremy@jcline.org>
 - Fix CVE-2017-8824 (rhbz 1519591 1520764)
