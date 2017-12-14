@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -624,6 +624,18 @@ Patch501: USB-core-prevent-malicious-bNumInterfaces-overflow.patch
 # https://patchwork.kernel.org/patch/10108209/
 # https://marc.info/?l=linux-kernel&m=151307686618795
 Patch502: Revert-exec-avoid-RLIMIT_STACK-races-with-prlimit.patch
+
+# CVE-2017-17449
+# rhbz 1525762 1525763
+Patch503: netlink-Add-netns-check-on-taps.patch
+
+# CVE-2017-17450
+# rhbz 1525761 1525764
+Patch504: netfilter-xt_osf-Add-missing-permission-checks.patch
+
+# CVE-2017-17448
+# rhbz 1525768 1525769
+Patch505: netfilter-nfnetlink_cthelper-Add-missing-permission-.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -2223,6 +2235,12 @@ fi
 #
 #
 %changelog
+* Thu Dec 14 2017 Jeremy Cline <jeremy@jcline.org> - 4.14.6-200
+- Linux v4.14.6
+- Security fix for CVE-2017-17449 (rhbz 1525762 1525763)
+- Security fix for CVE-2017-17450 (rhbz 1525761 1525764)
+- Security fix for CVE-2017-17448 (rhbz 1525768 1525769)
+
 * Wed Dec 13 2017 Jeremy Cline <jeremy@jcline.org>
 - Fix CVE-2017-17558 (rhbz 1525474 1525476)
 - Revert exec: avoid RLIMIT_STACK races with prlimit()
