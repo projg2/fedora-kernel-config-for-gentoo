@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -619,8 +619,6 @@ Patch331: PCI-aspm-deal-with-missing-root-ports-in-link-state-handling.patch
 Patch332: arm64-socionext-96b-enablement.patch
 
 Patch335: arm-exynos-fix-usb3.patch
-
-Patch399: arm64-thunderX-fix-ipv6-checksum-offload.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -2226,6 +2224,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 18 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.7-300
+- Linux v4.14.7
+
 * Thu Dec 14 2017 Jeremy Cline <jeremy@jcline.org> - 4.14.6-300
 - Linux v4.14.6
 - Security fix for CVE-2017-17449 (rhbz 1525762 1525763)
