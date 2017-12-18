@@ -670,6 +670,9 @@ Patch627: qxl-fixes.patch
 # rhbz 1462175
 Patch628: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
 
+# CVE-2017-17712 rhbz 1526427 1526933 
+Patch629: net-ipv4-fix-for-a-race-condition-in-raw_sendmsg.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2226,6 +2229,7 @@ fi
 %changelog
 * Mon Dec 18 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.7-300
 - Linux v4.14.7
+- Fix CVE-2017-17712 (rhbz 1526427 1526933)
 
 * Thu Dec 14 2017 Jeremy Cline <jeremy@jcline.org> - 4.14.6-300
 - Linux v4.14.6
