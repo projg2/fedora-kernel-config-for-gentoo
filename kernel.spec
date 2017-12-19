@@ -662,6 +662,9 @@ Patch628: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
 # CVE-2017-17712 rhbz 1526427 1526933 
 Patch629: net-ipv4-fix-for-a-race-condition-in-raw_sendmsg.patch
 
+# CVE-2017-17741 rhbz 1527112 1527113
+Patch630: v4-KVM-Fix-stack-out-of-bounds-read-in-write_mmio.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2236,6 +2239,9 @@ fi
 #
 #
 %changelog
+* Tue Dec 19 2017 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2017-17741 (rhbz 1527112 1527113)
+
 * Mon Dec 18 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.7-200
 - Linux v4.14.7
 - Fix CVE-2017-17712 (rhbz 1526427 1526933)
