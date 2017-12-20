@@ -646,6 +646,10 @@ Patch504: netfilter-xt_osf-Add-missing-permission-checks.patch
 # rhbz 1525768 1525769
 Patch505: netfilter-nfnetlink_cthelper-Add-missing-permission-.patch
 
+# rhbz 1525523
+# https://patchwork.kernel.org/patch/10104349/
+Patch506: e1000e-Fix-e1000_check_for_copper_link_ich8lan-return-value..patch
+
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
 Patch601: 0001-Input-gpio_keys-Allow-suppression-of-input-events-fo.patch
@@ -2230,6 +2234,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 20 2017 Jeremy Cline <jeremy@jcline.org>
+- Backport fix e1000_check_for_copper_link_ich8lan return value
+
 * Tue Dec 19 2017 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2017-17741 (rhbz 1527112 1527113)
 
