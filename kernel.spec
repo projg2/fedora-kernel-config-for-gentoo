@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -615,13 +615,6 @@ Patch335: arm-exynos-fix-usb3.patch
 
 # rbhz 1519591 1520764
 Patch500: dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
-
-# rhbz 1525474 1525476
-Patch501: USB-core-prevent-malicious-bNumInterfaces-overflow.patch
-
-# https://patchwork.kernel.org/patch/10108209/
-# https://marc.info/?l=linux-kernel&m=151307686618795
-Patch502: Revert-exec-avoid-RLIMIT_STACK-races-with-prlimit.patch
 
 # CVE-2017-17449
 # rhbz 1525762 1525763
@@ -2243,6 +2236,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 20 2017 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.8-200
+- Linux v4.14.8
+
 * Wed Dec 20 2017 Jeremy Cline <jeremy@jcline.org>
 - Backport fix e1000_check_for_copper_link_ich8lan return value
 
