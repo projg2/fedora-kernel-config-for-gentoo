@@ -669,6 +669,9 @@ Patch630: v4-KVM-Fix-stack-out-of-bounds-read-in-write_mmio.patch
 Patch631: cgroup-for-4.15-fixes-cgroup-fix-css_task_iter-crash-on-CSS_TASK_ITER_PROC.patch
 Patch632: x86-cpu-x86-pti-Do-not-enable-PTI-on-AMD-processors.patch
 
+# rhbz1514969
+Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2224,6 +2227,9 @@ fi
 #
 #
 %changelog
+* Thu Jan 04 2018 Hans de Goede <hdegoede@redhat.com>
+- Add a patch to filter false positive kbd backlight change events (#1514969)
+
 * Wed Jan 03 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.11-300
 - Linux v4.14.11
 
