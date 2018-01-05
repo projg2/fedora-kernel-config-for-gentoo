@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -656,7 +656,9 @@ Patch628: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
 Patch630: v4-KVM-Fix-stack-out-of-bounds-read-in-write_mmio.patch
 
 Patch631: cgroup-for-4.15-fixes-cgroup-fix-css_task_iter-crash-on-CSS_TASK_ITER_PROC.patch
-Patch632: x86-cpu-x86-pti-Do-not-enable-PTI-on-AMD-processors.patch
+
+# rhbz 1514969
+Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2233,6 +2235,10 @@ fi
 #
 #
 %changelog
+* Fri Jan 05 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.12-200
+- Linux v4.14.12
+- Add a patch to filter false positive kbd backlight change events (rhbz 1514969)
+
 * Wed Jan 03 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.11-200
 - Linux v4.14.11
 
