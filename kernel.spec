@@ -1515,6 +1515,8 @@ BuildKernel() {
       cp -a --parents arch/%{asmarch}/include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     fi
 %ifarch aarch64
+    # Needed for systemtap
+    cp -a --parents arch/arm64/kernel/module.lds $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     # arch/arm64/include/asm/xen references arch/arm
     cp -a --parents arch/arm/include/asm/xen $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     # arch/arm64/include/asm/opcodes.h references arch/arm
@@ -2226,6 +2228,9 @@ fi
 #
 #
 %changelog
+* Fri Jan 05 2018 Laura Abbott <labbott@redhat.com>
+- Copy module linker script (rhbz 1531182)
+
 * Fri Jan 05 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.12-300
 - Linux v4.14.12
 
