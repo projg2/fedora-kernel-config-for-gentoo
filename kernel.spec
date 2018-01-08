@@ -2237,6 +2237,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 08 2018 Laura Abbott <labbott@redhat.com>
+- Disable CONFIG_RESET_ATTACK_MITIGATION (rhbz 1532058)
+
 * Fri Jan 05 2018 Laura Abbott <labbott@redhat.com>
 - Copy module linker script (rhbz 1531182)
 
