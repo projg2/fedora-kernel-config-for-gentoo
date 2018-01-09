@@ -571,7 +571,7 @@ Patch205: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
 
 Patch206: MODSIGN-Support-not-importing-certs-from-db.patch
 
-# Make kernel MOKLIST code not error on missing variables
+# bz 1497559 - Make kernel MODSIGN code not error on missing variables
 Patch207: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
 Patch208: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
 Patch209: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
