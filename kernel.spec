@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -632,6 +632,9 @@ Patch505: netfilter-nfnetlink_cthelper-Add-missing-permission-.patch
 # rhbz 1525523
 # https://patchwork.kernel.org/patch/10104349/
 Patch506: e1000e-Fix-e1000_check_for_copper_link_ich8lan-return-value..patch
+
+# 550-600 Meltdown and Spectre Fixes
+Patch550: prevent-bounds-check-bypass-via-speculative-execution.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -2242,6 +2245,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 10 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.13-200
+- Linux v4.14.13
+
 * Mon Jan 08 2018 Laura Abbott <labbott@redhat.com>
 - Disable CONFIG_RESET_ATTACK_MITIGATION (rhbz 1532058)
 
