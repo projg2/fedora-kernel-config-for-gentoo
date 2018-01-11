@@ -646,6 +646,11 @@ Patch506: e1000e-Fix-e1000_check_for_copper_link_ich8lan-return-value..patch
 
 # 550-600 Meltdown and Spectre Fixes
 Patch550: prevent-bounds-check-bypass-via-speculative-execution.patch
+Patch551: 0001-x86-cpufeatures-Add-X86_BUG_SPECTRE_V-12.patch
+Patch552: 0002-sysfs-cpu-Add-vulnerability-folder.patch
+Patch553: 0001-x86-cpu-AMD-Make-LFENCE-a-serializing-instruction.patch
+Patch554: 0002-x86-cpu-AMD-Use-LFENCE_RDTSC-in-preference-to-MFENCE.patch
+Patch555: retpoline.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -2240,6 +2245,7 @@ fi
 %changelog
 * Wed Jan 10 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.13-300
 - Linux v4.14.13
+- Iniital retpoline fixes for Spectre v2
 
 * Mon Jan 08 2018 Laura Abbott <labbott@redhat.com>
 - Disable CONFIG_RESET_ATTACK_MITIGATION (rhbz 1532058)
