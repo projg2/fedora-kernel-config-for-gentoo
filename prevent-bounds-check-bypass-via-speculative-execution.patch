@@ -434,7 +434,7 @@ index 40f5c410fd8c..6384c90e4b72 100644
 +({								\
 +	typeof(*ptr) __nln_val;					\
 +	typeof(*ptr) __failval =				\
-+		(typeof(*ptr)(unsigned long)(failval));		\
++		(typeof(*ptr))(unsigned long)(failval);		\
 +								\
 +	asm volatile (						\
 +	"	cmp	%[c], %[l]\n"				\
