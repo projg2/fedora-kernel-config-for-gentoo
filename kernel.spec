@@ -633,6 +633,9 @@ Patch505: netfilter-nfnetlink_cthelper-Add-missing-permission-.patch
 # https://patchwork.kernel.org/patch/10104349/
 Patch506: e1000e-Fix-e1000_check_for_copper_link_ich8lan-return-value..patch
 
+# CVE-2018-5344 rhbz 1533909 1533911
+Patch507: loop-fix-concurrent-lo_open-lo_release.patch
+
 # 550-600 Meltdown and Spectre Fixes
 Patch550: prevent-bounds-check-bypass-via-speculative-execution.patch
 Patch551: 0001-x86-cpufeatures-Add-X86_BUG_SPECTRE_V-12.patch
@@ -2250,6 +2253,9 @@ fi
 #
 #
 %changelog
+* Fri Jan 12 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix for CVE-2018-5344 (rhbz 1533909 1533911)
+
 * Wed Jan 10 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.13-200
 - Linux v4.14.13
 - Iniital retpoline fixes for Spectre v2
