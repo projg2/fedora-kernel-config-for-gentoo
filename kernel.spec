@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -629,26 +629,11 @@ Patch504: netfilter-xt_osf-Add-missing-permission-checks.patch
 # rhbz 1525768 1525769
 Patch505: netfilter-nfnetlink_cthelper-Add-missing-permission-.patch
 
-# rhbz 1525523
-# https://patchwork.kernel.org/patch/10104349/
-Patch506: e1000e-Fix-e1000_check_for_copper_link_ich8lan-return-value..patch
-
 # CVE-2018-5344 rhbz 1533909 1533911
 Patch507: loop-fix-concurrent-lo_open-lo_release.patch
 
-# CVE-2018-5332 rhbz 1533890 1533895
-Patch508: RDS-Heap-OOB-write-in-rds_message_alloc_sgs.patch
-
-# CVE-2018-5333 rhbz 1533891 1533895
-Patch509: RDS-null-pointer-dereference-in-rds_atomic_free_op.patch
-
 # 550-600 Meltdown and Spectre Fixes
 Patch550: prevent-bounds-check-bypass-via-speculative-execution.patch
-Patch551: 0001-x86-cpufeatures-Add-X86_BUG_SPECTRE_V-12.patch
-Patch552: 0002-sysfs-cpu-Add-vulnerability-folder.patch
-Patch553: 0001-x86-cpu-AMD-Make-LFENCE-a-serializing-instruction.patch
-Patch554: 0002-x86-cpu-AMD-Use-LFENCE_RDTSC-in-preference-to-MFENCE.patch
-Patch555: retpoline.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -673,11 +658,6 @@ Patch627: qxl-fixes.patch
 
 # rhbz 1462175
 Patch628: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
-
-# CVE-2017-17741 rhbz 1527112 1527113
-Patch630: v4-KVM-Fix-stack-out-of-bounds-read-in-write_mmio.patch
-
-Patch631: cgroup-for-4.15-fixes-cgroup-fix-css_task_iter-crash-on-CSS_TASK_ITER_PROC.patch
 
 # rhbz 1514969
 Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
@@ -2259,6 +2239,10 @@ fi
 #
 #
 %changelog
+* Wed Jan 17 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.14-200
+- Linux v4.14.14
+- Fixes (rhbz 1532458)
+
 * Fri Jan 12 2018 Jeremy Cline <jeremy@jcline.org>
 - Fix for CVE-2018-5344 (rhbz 1533909 1533911)
 - Fix for CVE-2018-5332 (rhbz 1533890 1533895)
