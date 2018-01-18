@@ -1,0 +1,1309 @@
+From 191eccb1580939fb0d47deb405b82a85b0379070 Mon Sep 17 00:00:00 2001
+From: Michael Neuling <mikey@neuling.org>
+Date: Tue, 9 Jan 2018 03:52:05 +1100
+Subject: powerpc/pseries: Add H_GET_CPU_CHARACTERISTICS flags & wrapper
+
+From: Michael Neuling <mikey@neuling.org>
+
+commit 191eccb1580939fb0d47deb405b82a85b0379070 upstream.
+
+A new hypervisor call has been defined to communicate various
+characteristics of the CPU to guests. Add definitions for the hcall
+number, flags and a wrapper function.
+
+Signed-off-by: Michael Neuling <mikey@neuling.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/powerpc/include/asm/hvcall.h         |   17 +++++++++++++++++
+ arch/powerpc/include/asm/plpar_wrappers.h |   14 ++++++++++++++
+ 2 files changed, 31 insertions(+)
+
+--- a/arch/powerpc/include/asm/hvcall.h
++++ b/arch/powerpc/include/asm/hvcall.h
+@@ -241,6 +241,7 @@
+ #define H_GET_HCA_INFO          0x1B8
+ #define H_GET_PERF_COUNT        0x1BC
+ #define H_MANAGE_TRACE          0x1C0
++#define H_GET_CPU_CHARACTERISTICS 0x1C8
+ #define H_FREE_LOGICAL_LAN_BUFFER 0x1D4
+ #define H_QUERY_INT_STATE       0x1E4
+ #define H_POLL_PENDING		0x1D8
+@@ -330,6 +331,17 @@
+ #define H_SIGNAL_SYS_RESET_ALL_OTHERS		-2
+ /* >= 0 values are CPU number */
+ 
++/* H_GET_CPU_CHARACTERISTICS return values */
++#define H_CPU_CHAR_SPEC_BAR_ORI31	(1ull << 63) // IBM bit 0
++#define H_CPU_CHAR_BCCTRL_SERIALISED	(1ull << 62) // IBM bit 1
++#define H_CPU_CHAR_L1D_FLUSH_ORI30	(1ull << 61) // IBM bit 2
++#define H_CPU_CHAR_L1D_FLUSH_TRIG2	(1ull << 60) // IBM bit 3
++#define H_CPU_CHAR_L1D_THREAD_PRIV	(1ull << 59) // IBM bit 4
++
++#define H_CPU_BEHAV_FAVOUR_SECURITY	(1ull << 63) // IBM bit 0
++#define H_CPU_BEHAV_L1D_FLUSH_PR	(1ull << 62) // IBM bit 1
++#define H_CPU_BEHAV_BNDS_CHK_SPEC_BAR	(1ull << 61) // IBM bit 2
++
+ /* Flag values used in H_REGISTER_PROC_TBL hcall */
+ #define PROC_TABLE_OP_MASK	0x18
+ #define PROC_TABLE_DEREG	0x10
+@@ -436,6 +448,11 @@ static inline unsigned int get_longbusy_
+ 	}
+ }
+ 
++struct h_cpu_char_result {
++	u64 character;
++	u64 behaviour;
++};
++
+ #endif /* __ASSEMBLY__ */
+ #endif /* __KERNEL__ */
+ #endif /* _ASM_POWERPC_HVCALL_H */
+--- a/arch/powerpc/include/asm/plpar_wrappers.h
++++ b/arch/powerpc/include/asm/plpar_wrappers.h
+@@ -326,4 +326,18 @@ static inline long plapr_signal_sys_rese
+ 	return plpar_hcall_norets(H_SIGNAL_SYS_RESET, cpu);
+ }
+ 
++static inline long plpar_get_cpu_characteristics(struct h_cpu_char_result *p)
++{
++	unsigned long retbuf[PLPAR_HCALL_BUFSIZE];
++	long rc;
++
++	rc = plpar_hcall(H_GET_CPU_CHARACTERISTICS, retbuf);
++	if (rc == H_SUCCESS) {
++		p->character = retbuf[0];
++		p->behaviour = retbuf[1];
++	}
++
++	return rc;
++}
++
+ #endif /* _ASM_POWERPC_PLPAR_WRAPPERS_H */
+From 50e51c13b3822d14ff6df4279423e4b7b2269bc3 Mon Sep 17 00:00:00 2001
+From: Nicholas Piggin <npiggin@gmail.com>
+Date: Wed, 10 Jan 2018 03:07:15 +1100
+Subject: powerpc/64: Add macros for annotating the destination of rfid/hrfid
+
+From: Nicholas Piggin <npiggin@gmail.com>
+
+commit 50e51c13b3822d14ff6df4279423e4b7b2269bc3 upstream.
+
+The rfid/hrfid ((Hypervisor) Return From Interrupt) instruction is
+used for switching from the kernel to userspace, and from the
+hypervisor to the guest kernel. However it can and is also used for
+other transitions, eg. from real mode kernel code to virtual mode
+kernel code, and it's not always clear from the code what the
+destination context is.
+
+To make it clearer when reading the code, add macros which encode the
+expected destination context.
+
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/powerpc/include/asm/exception-64e.h |    6 ++++++
+ arch/powerpc/include/asm/exception-64s.h |   29 +++++++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+)
+
+--- a/arch/powerpc/include/asm/exception-64e.h
++++ b/arch/powerpc/include/asm/exception-64e.h
+@@ -209,5 +209,11 @@ exc_##label##_book3e:
+ 	ori	r3,r3,vector_offset@l;		\
+ 	mtspr	SPRN_IVOR##vector_number,r3;
+ 
++#define RFI_TO_KERNEL							\
++	rfi
++
++#define RFI_TO_USER							\
++	rfi
++
+ #endif /* _ASM_POWERPC_EXCEPTION_64E_H */
+ 
+--- a/arch/powerpc/include/asm/exception-64s.h
++++ b/arch/powerpc/include/asm/exception-64s.h
+@@ -69,6 +69,35 @@
+  */
+ #define EX_R3		EX_DAR
+ 
++/* Macros for annotating the expected destination of (h)rfid */
++
++#define RFI_TO_KERNEL							\
++	rfid
++
++#define RFI_TO_USER							\
++	rfid
++
++#define RFI_TO_USER_OR_KERNEL						\
++	rfid
++
++#define RFI_TO_GUEST							\
++	rfid
++
++#define HRFI_TO_KERNEL							\
++	hrfid
++
++#define HRFI_TO_USER							\
++	hrfid
++
++#define HRFI_TO_USER_OR_KERNEL						\
++	hrfid
++
++#define HRFI_TO_GUEST							\
++	hrfid
++
++#define HRFI_TO_UNKNOWN							\
++	hrfid
++
+ #ifdef CONFIG_RELOCATABLE
+ #define __EXCEPTION_RELON_PROLOG_PSERIES_1(label, h)			\
+ 	mfspr	r11,SPRN_##h##SRR0;	/* save SRR0 */			\
+From 222f20f140623ef6033491d0103ee0875fe87d35 Mon Sep 17 00:00:00 2001
+From: Nicholas Piggin <npiggin@gmail.com>
+Date: Wed, 10 Jan 2018 03:07:15 +1100
+Subject: powerpc/64s: Simple RFI macro conversions
+
+From: Nicholas Piggin <npiggin@gmail.com>
+
+commit 222f20f140623ef6033491d0103ee0875fe87d35 upstream.
+
+This commit does simple conversions of rfi/rfid to the new macros that
+include the expected destination context. By simple we mean cases
+where there is a single well known destination context, and it's
+simply a matter of substituting the instruction for the appropriate
+macro.
+
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+
+---
+ arch/powerpc/include/asm/exception-64s.h |    4 ++--
+ arch/powerpc/kernel/entry_64.S           |   14 +++++++++-----
+ arch/powerpc/kernel/exceptions-64s.S     |   22 +++++++++++-----------
+ arch/powerpc/kvm/book3s_hv_rmhandlers.S  |    7 +++----
+ arch/powerpc/kvm/book3s_rmhandlers.S     |    7 +++++--
+ arch/powerpc/kvm/book3s_segment.S        |    4 ++--
+ 6 files changed, 32 insertions(+), 26 deletions(-)
+
+--- a/arch/powerpc/include/asm/exception-64s.h
++++ b/arch/powerpc/include/asm/exception-64s.h
+@@ -242,7 +242,7 @@ END_FTR_SECTION_NESTED(ftr,ftr,943)
+ 	mtspr	SPRN_##h##SRR0,r12;					\
+ 	mfspr	r12,SPRN_##h##SRR1;	/* and SRR1 */			\
+ 	mtspr	SPRN_##h##SRR1,r10;					\
+-	h##rfid;							\
++	h##RFI_TO_KERNEL;						\
+ 	b	.	/* prevent speculative execution */
+ #define EXCEPTION_PROLOG_PSERIES_1(label, h)				\
+ 	__EXCEPTION_PROLOG_PSERIES_1(label, h)
+@@ -256,7 +256,7 @@ END_FTR_SECTION_NESTED(ftr,ftr,943)
+ 	mtspr	SPRN_##h##SRR0,r12;					\
+ 	mfspr	r12,SPRN_##h##SRR1;	/* and SRR1 */			\
+ 	mtspr	SPRN_##h##SRR1,r10;					\
+-	h##rfid;							\
++	h##RFI_TO_KERNEL;						\
+ 	b	.	/* prevent speculative execution */
+ 
+ #define EXCEPTION_PROLOG_PSERIES_1_NORI(label, h)			\
+--- a/arch/powerpc/kernel/entry_64.S
++++ b/arch/powerpc/kernel/entry_64.S
+@@ -37,6 +37,11 @@
+ #include <asm/tm.h>
+ #include <asm/ppc-opcode.h>
+ #include <asm/export.h>
++#ifdef CONFIG_PPC_BOOK3S
++#include <asm/exception-64s.h>
++#else
++#include <asm/exception-64e.h>
++#endif
+ 
+ /*
+  * System calls.
+@@ -397,8 +402,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_HAS_PPR)
+ 	mtmsrd	r10, 1
+ 	mtspr	SPRN_SRR0, r11
+ 	mtspr	SPRN_SRR1, r12
+-
+-	rfid
++	RFI_TO_USER
+ 	b	.	/* prevent speculative execution */
+ #endif
+ _ASM_NOKPROBE_SYMBOL(system_call_common);
+@@ -1073,7 +1077,7 @@ __enter_rtas:
+ 	
+ 	mtspr	SPRN_SRR0,r5
+ 	mtspr	SPRN_SRR1,r6
+-	rfid
++	RFI_TO_KERNEL
+ 	b	.	/* prevent speculative execution */
+ 
+ rtas_return_loc:
+@@ -1098,7 +1102,7 @@ rtas_return_loc:
+ 
+ 	mtspr	SPRN_SRR0,r3
+ 	mtspr	SPRN_SRR1,r4
+-	rfid
++	RFI_TO_KERNEL
+ 	b	.	/* prevent speculative execution */
+ _ASM_NOKPROBE_SYMBOL(__enter_rtas)
+ _ASM_NOKPROBE_SYMBOL(rtas_return_loc)
+@@ -1171,7 +1175,7 @@ _GLOBAL(enter_prom)
+ 	LOAD_REG_IMMEDIATE(r12, MSR_SF | MSR_ISF | MSR_LE)
+ 	andc	r11,r11,r12
+ 	mtsrr1	r11
+-	rfid
++	RFI_TO_KERNEL
+ #endif /* CONFIG_PPC_BOOK3E */
+ 
+ 1:	/* Return from OF */
+--- a/arch/powerpc/kernel/exceptions-64s.S
++++ b/arch/powerpc/kernel/exceptions-64s.S
+@@ -254,7 +254,7 @@ BEGIN_FTR_SECTION
+ 	LOAD_HANDLER(r12, machine_check_handle_early)
+ 1:	mtspr	SPRN_SRR0,r12
+ 	mtspr	SPRN_SRR1,r11
+-	rfid
++	RFI_TO_KERNEL
+ 	b	.	/* prevent speculative execution */
+ 2:
+ 	/* Stack overflow. Stay on emergency stack and panic.
+@@ -443,7 +443,7 @@ EXC_COMMON_BEGIN(machine_check_handle_ea
+ 	li	r3,MSR_ME
+ 	andc	r10,r10,r3		/* Turn off MSR_ME */
+ 	mtspr	SPRN_SRR1,r10
+-	rfid
++	RFI_TO_KERNEL
+ 	b	.
+ 2:
+ 	/*
+@@ -461,7 +461,7 @@ EXC_COMMON_BEGIN(machine_check_handle_ea
+ 	 */
+ 	bl	machine_check_queue_event
+ 	MACHINE_CHECK_HANDLER_WINDUP
+-	rfid
++	RFI_TO_USER_OR_KERNEL
+ 9:
+ 	/* Deliver the machine check to host kernel in V mode. */
+ 	MACHINE_CHECK_HANDLER_WINDUP
+@@ -649,7 +649,7 @@ END_MMU_FTR_SECTION_IFCLR(MMU_FTR_TYPE_R
+ 	mtspr	SPRN_SRR0,r10
+ 	ld	r10,PACAKMSR(r13)
+ 	mtspr	SPRN_SRR1,r10
+-	rfid
++	RFI_TO_KERNEL
+ 	b	.
+ 
+ 8:	std     r3,PACA_EXSLB+EX_DAR(r13)
+@@ -660,7 +660,7 @@ END_MMU_FTR_SECTION_IFCLR(MMU_FTR_TYPE_R
+ 	mtspr	SPRN_SRR0,r10
+ 	ld	r10,PACAKMSR(r13)
+ 	mtspr	SPRN_SRR1,r10
+-	rfid
++	RFI_TO_KERNEL
+ 	b	.
+ 
+ EXC_COMMON_BEGIN(unrecov_slb)
+@@ -905,7 +905,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_REAL_LE)
+ 	mtspr	SPRN_SRR0,r10 ; 				\
+ 	ld	r10,PACAKMSR(r13) ;				\
+ 	mtspr	SPRN_SRR1,r10 ; 				\
+-	rfid ; 							\
++	RFI_TO_KERNEL ;						\
+ 	b	. ;	/* prevent speculative execution */
+ 
+ #define SYSCALL_FASTENDIAN					\
+@@ -914,7 +914,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_REAL_LE)
+ 	xori	r12,r12,MSR_LE ;				\
+ 	mtspr	SPRN_SRR1,r12 ;					\
+ 	mr	r13,r9 ;					\
+-	rfid ;		/* return to userspace */		\
++	RFI_TO_USER ;	/* return to userspace */		\
+ 	b	. ;	/* prevent speculative execution */
+ 
+ #if defined(CONFIG_RELOCATABLE)
+@@ -1299,7 +1299,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_CFAR)
+ 	ld	r11,PACA_EXGEN+EX_R11(r13)
+ 	ld	r12,PACA_EXGEN+EX_R12(r13)
+ 	ld	r13,PACA_EXGEN+EX_R13(r13)
+-	HRFID
++	HRFI_TO_UNKNOWN
+ 	b	.
+ #endif
+ 
+@@ -1403,7 +1403,7 @@ masked_##_H##interrupt:					\
+ 	ld	r10,PACA_EXGEN+EX_R10(r13);		\
+ 	ld	r11,PACA_EXGEN+EX_R11(r13);		\
+ 	/* returns to kernel where r13 must be set up, so don't restore it */ \
+-	##_H##rfid;					\
++	##_H##RFI_TO_KERNEL;				\
+ 	b	.;					\
+ 	MASKED_DEC_HANDLER(_H)
+ 
+@@ -1426,7 +1426,7 @@ TRAMP_REAL_BEGIN(kvmppc_skip_interrupt)
+ 	addi	r13, r13, 4
+ 	mtspr	SPRN_SRR0, r13
+ 	GET_SCRATCH0(r13)
+-	rfid
++	RFI_TO_KERNEL
+ 	b	.
+ 
+ TRAMP_REAL_BEGIN(kvmppc_skip_Hinterrupt)
+@@ -1438,7 +1438,7 @@ TRAMP_REAL_BEGIN(kvmppc_skip_Hinterrupt)
+ 	addi	r13, r13, 4
+ 	mtspr	SPRN_HSRR0, r13
+ 	GET_SCRATCH0(r13)
+-	hrfid
++	HRFI_TO_KERNEL
+ 	b	.
+ #endif
+ 
+--- a/arch/powerpc/kvm/book3s_hv_rmhandlers.S
++++ b/arch/powerpc/kvm/book3s_hv_rmhandlers.S
+@@ -78,7 +78,7 @@ _GLOBAL_TOC(kvmppc_hv_entry_trampoline)
+ 	mtmsrd	r0,1		/* clear RI in MSR */
+ 	mtsrr0	r5
+ 	mtsrr1	r6
+-	RFI
++	RFI_TO_KERNEL
+ 
+ kvmppc_call_hv_entry:
+ 	ld	r4, HSTATE_KVM_VCPU(r13)
+@@ -187,7 +187,7 @@ END_FTR_SECTION_IFCLR(CPU_FTR_ARCH_300)
+ 	mtmsrd	r6, 1			/* Clear RI in MSR */
+ 	mtsrr0	r8
+ 	mtsrr1	r7
+-	RFI
++	RFI_TO_KERNEL
+ 
+ 	/* Virtual-mode return */
+ .Lvirt_return:
+@@ -1131,8 +1131,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_ARCH_300)
+ 
+ 	ld	r0, VCPU_GPR(R0)(r4)
+ 	ld	r4, VCPU_GPR(R4)(r4)
+-
+-	hrfid
++	HRFI_TO_GUEST
+ 	b	.
+ 
+ secondary_too_late:
+--- a/arch/powerpc/kvm/book3s_rmhandlers.S
++++ b/arch/powerpc/kvm/book3s_rmhandlers.S
+@@ -46,6 +46,9 @@
+ 
+ #define FUNC(name)		name
+ 
++#define RFI_TO_KERNEL	RFI
++#define RFI_TO_GUEST	RFI
++
+ .macro INTERRUPT_TRAMPOLINE intno
+ 
+ .global kvmppc_trampoline_\intno
+@@ -141,7 +144,7 @@ kvmppc_handler_skip_ins:
+ 	GET_SCRATCH0(r13)
+ 
+ 	/* And get back into the code */
+-	RFI
++	RFI_TO_KERNEL
+ #endif
+ 
+ /*
+@@ -164,6 +167,6 @@ _GLOBAL_TOC(kvmppc_entry_trampoline)
+ 	ori	r5, r5, MSR_EE
+ 	mtsrr0	r7
+ 	mtsrr1	r6
+-	RFI
++	RFI_TO_KERNEL
+ 
+ #include "book3s_segment.S"
+--- a/arch/powerpc/kvm/book3s_segment.S
++++ b/arch/powerpc/kvm/book3s_segment.S
+@@ -156,7 +156,7 @@ no_dcbz32_on:
+ 	PPC_LL	r9, SVCPU_R9(r3)
+ 	PPC_LL	r3, (SVCPU_R3)(r3)
+ 
+-	RFI
++	RFI_TO_GUEST
+ kvmppc_handler_trampoline_enter_end:
+ 
+ 
+@@ -407,5 +407,5 @@ END_FTR_SECTION_IFSET(CPU_FTR_HVMODE)
+ 	cmpwi	r12, BOOK3S_INTERRUPT_DOORBELL
+ 	beqa	BOOK3S_INTERRUPT_DOORBELL
+ 
+-	RFI
++	RFI_TO_KERNEL
+ kvmppc_handler_trampoline_exit_end:
+From b8e90cb7bc04a509e821e82ab6ed7a8ef11ba333 Mon Sep 17 00:00:00 2001
+From: Nicholas Piggin <npiggin@gmail.com>
+Date: Wed, 10 Jan 2018 03:07:15 +1100
+Subject: powerpc/64: Convert the syscall exit path to use RFI_TO_USER/KERNEL
+
+From: Nicholas Piggin <npiggin@gmail.com>
+
+commit b8e90cb7bc04a509e821e82ab6ed7a8ef11ba333 upstream.
+
+In the syscall exit path we may be returning to user or kernel
+context. We already have a test for that, because we conditionally
+restore r13. So use that existing test and branch, and bifurcate the
+return based on that.
+
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/powerpc/kernel/entry_64.S |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+--- a/arch/powerpc/kernel/entry_64.S
++++ b/arch/powerpc/kernel/entry_64.S
+@@ -267,13 +267,23 @@ BEGIN_FTR_SECTION
+ END_FTR_SECTION_IFSET(CPU_FTR_HAS_PPR)
+ 
+ 	ld	r13,GPR13(r1)	/* only restore r13 if returning to usermode */
++	ld	r2,GPR2(r1)
++	ld	r1,GPR1(r1)
++	mtlr	r4
++	mtcr	r5
++	mtspr	SPRN_SRR0,r7
++	mtspr	SPRN_SRR1,r8
++	RFI_TO_USER
++	b	.	/* prevent speculative execution */
++
++	/* exit to kernel */
+ 1:	ld	r2,GPR2(r1)
+ 	ld	r1,GPR1(r1)
+ 	mtlr	r4
+ 	mtcr	r5
+ 	mtspr	SPRN_SRR0,r7
+ 	mtspr	SPRN_SRR1,r8
+-	RFI
++	RFI_TO_KERNEL
+ 	b	.	/* prevent speculative execution */
+ 
+ .Lsyscall_error:
+From a08f828cf47e6c605af21d2cdec68f84e799c318 Mon Sep 17 00:00:00 2001
+From: Nicholas Piggin <npiggin@gmail.com>
+Date: Wed, 10 Jan 2018 03:07:15 +1100
+Subject: powerpc/64: Convert fast_exception_return to use RFI_TO_USER/KERNEL
+
+From: Nicholas Piggin <npiggin@gmail.com>
+
+commit a08f828cf47e6c605af21d2cdec68f84e799c318 upstream.
+
+Similar to the syscall return path, in fast_exception_return we may be
+returning to user or kernel context. We already have a test for that,
+because we conditionally restore r13. So use that existing test and
+branch, and bifurcate the return based on that.
+
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/powerpc/kernel/entry_64.S |   18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+--- a/arch/powerpc/kernel/entry_64.S
++++ b/arch/powerpc/kernel/entry_64.S
+@@ -892,7 +892,7 @@ BEGIN_FTR_SECTION
+ END_FTR_SECTION_IFSET(CPU_FTR_HAS_PPR)
+ 	ACCOUNT_CPU_USER_EXIT(r13, r2, r4)
+ 	REST_GPR(13, r1)
+-1:
++
+ 	mtspr	SPRN_SRR1,r3
+ 
+ 	ld	r2,_CCR(r1)
+@@ -905,8 +905,22 @@ END_FTR_SECTION_IFSET(CPU_FTR_HAS_PPR)
+ 	ld	r3,GPR3(r1)
+ 	ld	r4,GPR4(r1)
+ 	ld	r1,GPR1(r1)
++	RFI_TO_USER
++	b	.	/* prevent speculative execution */
+ 
+-	rfid
++1:	mtspr	SPRN_SRR1,r3
++
++	ld	r2,_CCR(r1)
++	mtcrf	0xFF,r2
++	ld	r2,_NIP(r1)
++	mtspr	SPRN_SRR0,r2
++
++	ld	r0,GPR0(r1)
++	ld	r2,GPR2(r1)
++	ld	r3,GPR3(r1)
++	ld	r4,GPR4(r1)
++	ld	r1,GPR1(r1)
++	RFI_TO_KERNEL
+ 	b	.	/* prevent speculative execution */
+ 
+ #endif /* CONFIG_PPC_BOOK3E */
+From c7305645eb0c1621351cfc104038831ae87c0053 Mon Sep 17 00:00:00 2001
+From: Nicholas Piggin <npiggin@gmail.com>
+Date: Wed, 10 Jan 2018 03:07:15 +1100
+Subject: powerpc/64s: Convert slb_miss_common to use RFI_TO_USER/KERNEL
+
+From: Nicholas Piggin <npiggin@gmail.com>
+
+commit c7305645eb0c1621351cfc104038831ae87c0053 upstream.
+
+In the SLB miss handler we may be returning to user or kernel. We need
+to add a check early on and save the result in the cr4 register, and
+then we bifurcate the return path based on that.
+
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/powerpc/kernel/exceptions-64s.S |   29 ++++++++++++++++++++++++++++-
+ 1 file changed, 28 insertions(+), 1 deletion(-)
+
+--- a/arch/powerpc/kernel/exceptions-64s.S
++++ b/arch/powerpc/kernel/exceptions-64s.S
+@@ -596,6 +596,9 @@ EXC_COMMON_BEGIN(slb_miss_common)
+ 	stw	r9,PACA_EXSLB+EX_CCR(r13)	/* save CR in exc. frame */
+ 	std	r10,PACA_EXSLB+EX_LR(r13)	/* save LR */
+ 
++	andi.	r9,r11,MSR_PR	// Check for exception from userspace
++	cmpdi	cr4,r9,MSR_PR	// And save the result in CR4 for later
++
+ 	/*
+ 	 * Test MSR_RI before calling slb_allocate_realmode, because the
+ 	 * MSR in r11 gets clobbered. However we still want to allocate
+@@ -622,9 +625,32 @@ END_MMU_FTR_SECTION_IFCLR(MMU_FTR_TYPE_R
+ 
+ 	/* All done -- return from exception. */
+ 
++	bne	cr4,1f		/* returning to kernel */
++
++.machine	push
++.machine	"power4"
++	mtcrf	0x80,r9
++	mtcrf	0x08,r9		/* MSR[PR] indication is in cr4 */
++	mtcrf	0x04,r9		/* MSR[RI] indication is in cr5 */
++	mtcrf	0x02,r9		/* I/D indication is in cr6 */
++	mtcrf	0x01,r9		/* slb_allocate uses cr0 and cr7 */
++.machine	pop
++
++	RESTORE_CTR(r9, PACA_EXSLB)
++	RESTORE_PPR_PACA(PACA_EXSLB, r9)
++	mr	r3,r12
++	ld	r9,PACA_EXSLB+EX_R9(r13)
++	ld	r10,PACA_EXSLB+EX_R10(r13)
++	ld	r11,PACA_EXSLB+EX_R11(r13)
++	ld	r12,PACA_EXSLB+EX_R12(r13)
++	ld	r13,PACA_EXSLB+EX_R13(r13)
++	RFI_TO_USER
++	b	.	/* prevent speculative execution */
++1:
+ .machine	push
+ .machine	"power4"
+ 	mtcrf	0x80,r9
++	mtcrf	0x08,r9		/* MSR[PR] indication is in cr4 */
+ 	mtcrf	0x04,r9		/* MSR[RI] indication is in cr5 */
+ 	mtcrf	0x02,r9		/* I/D indication is in cr6 */
+ 	mtcrf	0x01,r9		/* slb_allocate uses cr0 and cr7 */
+@@ -638,9 +664,10 @@ END_MMU_FTR_SECTION_IFCLR(MMU_FTR_TYPE_R
+ 	ld	r11,PACA_EXSLB+EX_R11(r13)
+ 	ld	r12,PACA_EXSLB+EX_R12(r13)
+ 	ld	r13,PACA_EXSLB+EX_R13(r13)
+-	rfid
++	RFI_TO_KERNEL
+ 	b	.	/* prevent speculative execution */
+ 
++
+ 2:	std     r3,PACA_EXSLB+EX_DAR(r13)
+ 	mr	r3,r12
+ 	mfspr	r11,SPRN_SRR0
+From aa8a5e0062ac940f7659394f4817c948dc8c0667 Mon Sep 17 00:00:00 2001
+From: Michael Ellerman <mpe@ellerman.id.au>
+Date: Wed, 10 Jan 2018 03:07:15 +1100
+Subject: powerpc/64s: Add support for RFI flush of L1-D cache
+
+From: Michael Ellerman <mpe@ellerman.id.au>
+
+commit aa8a5e0062ac940f7659394f4817c948dc8c0667 upstream.
+
+On some CPUs we can prevent the Meltdown vulnerability by flushing the
+L1-D cache on exit from kernel to user mode, and from hypervisor to
+guest.
+
+This is known to be the case on at least Power7, Power8 and Power9. At
+this time we do not know the status of the vulnerability on other CPUs
+such as the 970 (Apple G5), pasemi CPUs (AmigaOne X1000) or Freescale
+CPUs. As more information comes to light we can enable this, or other
+mechanisms on those CPUs.
+
+The vulnerability occurs when the load of an architecturally
+inaccessible memory region (eg. userspace load of kernel memory) is
+speculatively executed to the point where its result can influence the
+address of a subsequent speculatively executed load.
+
+In order for that to happen, the first load must hit in the L1,
+because before the load is sent to the L2 the permission check is
+performed. Therefore if no kernel addresses hit in the L1 the
+vulnerability can not occur. We can ensure that is the case by
+flushing the L1 whenever we return to userspace. Similarly for
+hypervisor vs guest.
+
+In order to flush the L1-D cache on exit, we add a section of nops at
+each (h)rfi location that returns to a lower privileged context, and
+patch that with some sequence. Newer firmwares are able to advertise
+to us that there is a special nop instruction that flushes the L1-D.
+If we do not see that advertised, we fall back to doing a displacement
+flush in software.
+
+For guest kernels we support migration between some CPU versions, and
+different CPUs may use different flush instructions. So that we are
+prepared to migrate to a machine with a different flush instruction
+activated, we may have to patch more than one flush instruction at
+boot if the hypervisor tells us to.
+
+In the end this patch is mostly the work of Nicholas Piggin and
+Michael Ellerman. However a cast of thousands contributed to analysis
+of the issue, earlier versions of the patch, back ports testing etc.
+Many thanks to all of them.
+
+Tested-by: Jon Masters <jcm@redhat.com>
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/powerpc/include/asm/exception-64s.h  |   40 +++++++++++---
+ arch/powerpc/include/asm/feature-fixups.h |   13 ++++
+ arch/powerpc/include/asm/paca.h           |   10 +++
+ arch/powerpc/include/asm/setup.h          |   13 ++++
+ arch/powerpc/kernel/asm-offsets.c         |    5 +
+ arch/powerpc/kernel/exceptions-64s.S      |   84 ++++++++++++++++++++++++++++++
+ arch/powerpc/kernel/setup_64.c            |   79 ++++++++++++++++++++++++++++
+ arch/powerpc/kernel/vmlinux.lds.S         |    9 +++
+ arch/powerpc/lib/feature-fixups.c         |   41 ++++++++++++++
+ 9 files changed, 286 insertions(+), 8 deletions(-)
+
+--- a/arch/powerpc/include/asm/exception-64s.h
++++ b/arch/powerpc/include/asm/exception-64s.h
+@@ -69,34 +69,58 @@
+  */
+ #define EX_R3		EX_DAR
+ 
+-/* Macros for annotating the expected destination of (h)rfid */
++/*
++ * Macros for annotating the expected destination of (h)rfid
++ *
++ * The nop instructions allow us to insert one or more instructions to flush the
++ * L1-D cache when returning to userspace or a guest.
++ */
++#define RFI_FLUSH_SLOT							\
++	RFI_FLUSH_FIXUP_SECTION;					\
++	nop;								\
++	nop;								\
++	nop
+ 
+ #define RFI_TO_KERNEL							\
+ 	rfid
+ 
+ #define RFI_TO_USER							\
+-	rfid
++	RFI_FLUSH_SLOT;							\
++	rfid;								\
++	b	rfi_flush_fallback
+ 
+ #define RFI_TO_USER_OR_KERNEL						\
+-	rfid
++	RFI_FLUSH_SLOT;							\
++	rfid;								\
++	b	rfi_flush_fallback
+ 
+ #define RFI_TO_GUEST							\
+-	rfid
++	RFI_FLUSH_SLOT;							\
++	rfid;								\
++	b	rfi_flush_fallback
+ 
+ #define HRFI_TO_KERNEL							\
+ 	hrfid
+ 
+ #define HRFI_TO_USER							\
+-	hrfid
++	RFI_FLUSH_SLOT;							\
++	hrfid;								\
++	b	hrfi_flush_fallback
+ 
+ #define HRFI_TO_USER_OR_KERNEL						\
+-	hrfid
++	RFI_FLUSH_SLOT;							\
++	hrfid;								\
++	b	hrfi_flush_fallback
+ 
+ #define HRFI_TO_GUEST							\
+-	hrfid
++	RFI_FLUSH_SLOT;							\
++	hrfid;								\
++	b	hrfi_flush_fallback
+ 
+ #define HRFI_TO_UNKNOWN							\
+-	hrfid
++	RFI_FLUSH_SLOT;							\
++	hrfid;								\
++	b	hrfi_flush_fallback
+ 
+ #ifdef CONFIG_RELOCATABLE
+ #define __EXCEPTION_RELON_PROLOG_PSERIES_1(label, h)			\
+--- a/arch/powerpc/include/asm/feature-fixups.h
++++ b/arch/powerpc/include/asm/feature-fixups.h
+@@ -187,7 +187,20 @@ label##3:					       	\
+ 	FTR_ENTRY_OFFSET label##1b-label##3b;		\
+ 	.popsection;
+ 
++#define RFI_FLUSH_FIXUP_SECTION				\
++951:							\
++	.pushsection __rfi_flush_fixup,"a";		\
++	.align 2;					\
++952:							\
++	FTR_ENTRY_OFFSET 951b-952b;			\
++	.popsection;
++
++
+ #ifndef __ASSEMBLY__
++#include <linux/types.h>
++
++extern long __start___rfi_flush_fixup, __stop___rfi_flush_fixup;
++
+ void apply_feature_fixups(void);
+ void setup_feature_keys(void);
+ #endif
+--- a/arch/powerpc/include/asm/paca.h
++++ b/arch/powerpc/include/asm/paca.h
+@@ -231,6 +231,16 @@ struct paca_struct {
+ 	struct sibling_subcore_state *sibling_subcore_state;
+ #endif
+ #endif
++#ifdef CONFIG_PPC_BOOK3S_64
++	/*
++	 * rfi fallback flush must be in its own cacheline to prevent
++	 * other paca data leaking into the L1d
++	 */
++	u64 exrfi[EX_SIZE] __aligned(0x80);
++	void *rfi_flush_fallback_area;
++	u64 l1d_flush_congruence;
++	u64 l1d_flush_sets;
++#endif
+ };
+ 
+ extern void copy_mm_to_paca(struct mm_struct *mm);
+--- a/arch/powerpc/include/asm/setup.h
++++ b/arch/powerpc/include/asm/setup.h
+@@ -39,6 +39,19 @@ static inline void pseries_big_endian_ex
+ static inline void pseries_little_endian_exceptions(void) {}
+ #endif /* CONFIG_PPC_PSERIES */
+ 
++void rfi_flush_enable(bool enable);
++
++/* These are bit flags */
++enum l1d_flush_type {
++	L1D_FLUSH_NONE		= 0x1,
++	L1D_FLUSH_FALLBACK	= 0x2,
++	L1D_FLUSH_ORI		= 0x4,
++	L1D_FLUSH_MTTRIG	= 0x8,
++};
++
++void __init setup_rfi_flush(enum l1d_flush_type, bool enable);
++void do_rfi_flush_fixups(enum l1d_flush_type types);
++
+ #endif /* !__ASSEMBLY__ */
+ 
+ #endif	/* _ASM_POWERPC_SETUP_H */
+--- a/arch/powerpc/kernel/asm-offsets.c
++++ b/arch/powerpc/kernel/asm-offsets.c
+@@ -237,6 +237,11 @@ int main(void)
+ 	OFFSET(PACA_NMI_EMERG_SP, paca_struct, nmi_emergency_sp);
+ 	OFFSET(PACA_IN_MCE, paca_struct, in_mce);
+ 	OFFSET(PACA_IN_NMI, paca_struct, in_nmi);
++	OFFSET(PACA_RFI_FLUSH_FALLBACK_AREA, paca_struct, rfi_flush_fallback_area);
++	OFFSET(PACA_EXRFI, paca_struct, exrfi);
++	OFFSET(PACA_L1D_FLUSH_CONGRUENCE, paca_struct, l1d_flush_congruence);
++	OFFSET(PACA_L1D_FLUSH_SETS, paca_struct, l1d_flush_sets);
++
+ #endif
+ 	OFFSET(PACAHWCPUID, paca_struct, hw_cpu_id);
+ 	OFFSET(PACAKEXECSTATE, paca_struct, kexec_state);
+--- a/arch/powerpc/kernel/exceptions-64s.S
++++ b/arch/powerpc/kernel/exceptions-64s.S
+@@ -1434,6 +1434,90 @@ masked_##_H##interrupt:					\
+ 	b	.;					\
+ 	MASKED_DEC_HANDLER(_H)
+ 
++TRAMP_REAL_BEGIN(rfi_flush_fallback)
++	SET_SCRATCH0(r13);
++	GET_PACA(r13);
++	std	r9,PACA_EXRFI+EX_R9(r13)
++	std	r10,PACA_EXRFI+EX_R10(r13)
++	std	r11,PACA_EXRFI+EX_R11(r13)
++	std	r12,PACA_EXRFI+EX_R12(r13)
++	std	r8,PACA_EXRFI+EX_R13(r13)
++	mfctr	r9
++	ld	r10,PACA_RFI_FLUSH_FALLBACK_AREA(r13)
++	ld	r11,PACA_L1D_FLUSH_SETS(r13)
++	ld	r12,PACA_L1D_FLUSH_CONGRUENCE(r13)
++	/*
++	 * The load adresses are at staggered offsets within cachelines,
++	 * which suits some pipelines better (on others it should not
++	 * hurt).
++	 */
++	addi	r12,r12,8
++	mtctr	r11
++	DCBT_STOP_ALL_STREAM_IDS(r11) /* Stop prefetch streams */
++
++	/* order ld/st prior to dcbt stop all streams with flushing */
++	sync
++1:	li	r8,0
++	.rept	8 /* 8-way set associative */
++	ldx	r11,r10,r8
++	add	r8,r8,r12
++	xor	r11,r11,r11	// Ensure r11 is 0 even if fallback area is not
++	add	r8,r8,r11	// Add 0, this creates a dependency on the ldx
++	.endr
++	addi	r10,r10,128 /* 128 byte cache line */
++	bdnz	1b
++
++	mtctr	r9
++	ld	r9,PACA_EXRFI+EX_R9(r13)
++	ld	r10,PACA_EXRFI+EX_R10(r13)
++	ld	r11,PACA_EXRFI+EX_R11(r13)
++	ld	r12,PACA_EXRFI+EX_R12(r13)
++	ld	r8,PACA_EXRFI+EX_R13(r13)
++	GET_SCRATCH0(r13);
++	rfid
++
++TRAMP_REAL_BEGIN(hrfi_flush_fallback)
++	SET_SCRATCH0(r13);
++	GET_PACA(r13);
++	std	r9,PACA_EXRFI+EX_R9(r13)
++	std	r10,PACA_EXRFI+EX_R10(r13)
++	std	r11,PACA_EXRFI+EX_R11(r13)
++	std	r12,PACA_EXRFI+EX_R12(r13)
++	std	r8,PACA_EXRFI+EX_R13(r13)
++	mfctr	r9
++	ld	r10,PACA_RFI_FLUSH_FALLBACK_AREA(r13)
++	ld	r11,PACA_L1D_FLUSH_SETS(r13)
++	ld	r12,PACA_L1D_FLUSH_CONGRUENCE(r13)
++	/*
++	 * The load adresses are at staggered offsets within cachelines,
++	 * which suits some pipelines better (on others it should not
++	 * hurt).
++	 */
++	addi	r12,r12,8
++	mtctr	r11
++	DCBT_STOP_ALL_STREAM_IDS(r11) /* Stop prefetch streams */
++
++	/* order ld/st prior to dcbt stop all streams with flushing */
++	sync
++1:	li	r8,0
++	.rept	8 /* 8-way set associative */
++	ldx	r11,r10,r8
++	add	r8,r8,r12
++	xor	r11,r11,r11	// Ensure r11 is 0 even if fallback area is not
++	add	r8,r8,r11	// Add 0, this creates a dependency on the ldx
++	.endr
++	addi	r10,r10,128 /* 128 byte cache line */
++	bdnz	1b
++
++	mtctr	r9
++	ld	r9,PACA_EXRFI+EX_R9(r13)
++	ld	r10,PACA_EXRFI+EX_R10(r13)
++	ld	r11,PACA_EXRFI+EX_R11(r13)
++	ld	r12,PACA_EXRFI+EX_R12(r13)
++	ld	r8,PACA_EXRFI+EX_R13(r13)
++	GET_SCRATCH0(r13);
++	hrfid
++
+ /*
+  * Real mode exceptions actually use this too, but alternate
+  * instruction code patches (which end up in the common .text area)
+--- a/arch/powerpc/kernel/setup_64.c
++++ b/arch/powerpc/kernel/setup_64.c
+@@ -784,3 +784,82 @@ static int __init disable_hardlockup_det
+ 	return 0;
+ }
+ early_initcall(disable_hardlockup_detector);
++
++#ifdef CONFIG_PPC_BOOK3S_64
++static enum l1d_flush_type enabled_flush_types;
++static void *l1d_flush_fallback_area;
++bool rfi_flush;
++
++static void do_nothing(void *unused)
++{
++	/*
++	 * We don't need to do the flush explicitly, just enter+exit kernel is
++	 * sufficient, the RFI exit handlers will do the right thing.
++	 */
++}
++
++void rfi_flush_enable(bool enable)
++{
++	if (rfi_flush == enable)
++		return;
++
++	if (enable) {
++		do_rfi_flush_fixups(enabled_flush_types);
++		on_each_cpu(do_nothing, NULL, 1);
++	} else
++		do_rfi_flush_fixups(L1D_FLUSH_NONE);
++
++	rfi_flush = enable;
++}
++
++static void init_fallback_flush(void)
++{
++	u64 l1d_size, limit;
++	int cpu;
++
++	l1d_size = ppc64_caches.l1d.size;
++	limit = min(safe_stack_limit(), ppc64_rma_size);
++
++	/*
++	 * Align to L1d size, and size it at 2x L1d size, to catch possible
++	 * hardware prefetch runoff. We don't have a recipe for load patterns to
++	 * reliably avoid the prefetcher.
++	 */
++	l1d_flush_fallback_area = __va(memblock_alloc_base(l1d_size * 2, l1d_size, limit));
++	memset(l1d_flush_fallback_area, 0, l1d_size * 2);
++
++	for_each_possible_cpu(cpu) {
++		/*
++		 * The fallback flush is currently coded for 8-way
++		 * associativity. Different associativity is possible, but it
++		 * will be treated as 8-way and may not evict the lines as
++		 * effectively.
++		 *
++		 * 128 byte lines are mandatory.
++		 */
++		u64 c = l1d_size / 8;
++
++		paca[cpu].rfi_flush_fallback_area = l1d_flush_fallback_area;
++		paca[cpu].l1d_flush_congruence = c;
++		paca[cpu].l1d_flush_sets = c / 128;
++	}
++}
++
++void __init setup_rfi_flush(enum l1d_flush_type types, bool enable)
++{
++	if (types & L1D_FLUSH_FALLBACK) {
++		pr_info("rfi-flush: Using fallback displacement flush\n");
++		init_fallback_flush();
++	}
++
++	if (types & L1D_FLUSH_ORI)
++		pr_info("rfi-flush: Using ori type flush\n");
++
++	if (types & L1D_FLUSH_MTTRIG)
++		pr_info("rfi-flush: Using mttrig type flush\n");
++
++	enabled_flush_types = types;
++
++	rfi_flush_enable(enable);
++}
++#endif /* CONFIG_PPC_BOOK3S_64 */
+--- a/arch/powerpc/kernel/vmlinux.lds.S
++++ b/arch/powerpc/kernel/vmlinux.lds.S
+@@ -132,6 +132,15 @@ SECTIONS
+ 	/* Read-only data */
+ 	RO_DATA(PAGE_SIZE)
+ 
++#ifdef CONFIG_PPC64
++	. = ALIGN(8);
++	__rfi_flush_fixup : AT(ADDR(__rfi_flush_fixup) - LOAD_OFFSET) {
++		__start___rfi_flush_fixup = .;
++		*(__rfi_flush_fixup)
++		__stop___rfi_flush_fixup = .;
++	}
++#endif
++
+ 	EXCEPTION_TABLE(0)
+ 
+ 	NOTES :kernel :notes
+--- a/arch/powerpc/lib/feature-fixups.c
++++ b/arch/powerpc/lib/feature-fixups.c
+@@ -116,6 +116,47 @@ void do_feature_fixups(unsigned long val
+ 	}
+ }
+ 
++#ifdef CONFIG_PPC_BOOK3S_64
++void do_rfi_flush_fixups(enum l1d_flush_type types)
++{
++	unsigned int instrs[3], *dest;
++	long *start, *end;
++	int i;
++
++	start = PTRRELOC(&__start___rfi_flush_fixup),
++	end = PTRRELOC(&__stop___rfi_flush_fixup);
++
++	instrs[0] = 0x60000000; /* nop */
++	instrs[1] = 0x60000000; /* nop */
++	instrs[2] = 0x60000000; /* nop */
++
++	if (types & L1D_FLUSH_FALLBACK)
++		/* b .+16 to fallback flush */
++		instrs[0] = 0x48000010;
++
++	i = 0;
++	if (types & L1D_FLUSH_ORI) {
++		instrs[i++] = 0x63ff0000; /* ori 31,31,0 speculation barrier */
++		instrs[i++] = 0x63de0000; /* ori 30,30,0 L1d flush*/
++	}
++
++	if (types & L1D_FLUSH_MTTRIG)
++		instrs[i++] = 0x7c12dba6; /* mtspr TRIG2,r0 (SPR #882) */
++
++	for (i = 0; start < end; start++, i++) {
++		dest = (void *)start + *start;
++
++		pr_devel("patching dest %lx\n", (unsigned long)dest);
++
++		patch_instruction(dest, instrs[0]);
++		patch_instruction(dest + 1, instrs[1]);
++		patch_instruction(dest + 2, instrs[2]);
++	}
++
++	printk(KERN_DEBUG "rfi-flush: patched %d locations\n", i);
++}
++#endif /* CONFIG_PPC_BOOK3S_64 */
++
+ void do_lwsync_fixups(unsigned long value, void *fixup_start, void *fixup_end)
+ {
+ 	long *start, *end;
+From bc9c9304a45480797e13a8e1df96ffcf44fb62fe Mon Sep 17 00:00:00 2001
+From: Michael Ellerman <mpe@ellerman.id.au>
+Date: Wed, 10 Jan 2018 03:07:15 +1100
+Subject: powerpc/64s: Support disabling RFI flush with no_rfi_flush and nopti
+
+From: Michael Ellerman <mpe@ellerman.id.au>
+
+commit bc9c9304a45480797e13a8e1df96ffcf44fb62fe upstream.
+
+Because there may be some performance overhead of the RFI flush, add
+kernel command line options to disable it.
+
+We add a sensibly named 'no_rfi_flush' option, but we also hijack the
+x86 option 'nopti'. The RFI flush is not the same as KPTI, but if we
+see 'nopti' we can guess that the user is trying to avoid any overhead
+of Meltdown mitigations, and it means we don't have to educate every
+one about a different command line option.
+
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/powerpc/kernel/setup_64.c |   24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
+
+--- a/arch/powerpc/kernel/setup_64.c
++++ b/arch/powerpc/kernel/setup_64.c
+@@ -788,8 +788,29 @@ early_initcall(disable_hardlockup_detect
+ #ifdef CONFIG_PPC_BOOK3S_64
+ static enum l1d_flush_type enabled_flush_types;
+ static void *l1d_flush_fallback_area;
++static bool no_rfi_flush;
+ bool rfi_flush;
+ 
++static int __init handle_no_rfi_flush(char *p)
++{
++	pr_info("rfi-flush: disabled on command line.");
++	no_rfi_flush = true;
++	return 0;
++}
++early_param("no_rfi_flush", handle_no_rfi_flush);
++
++/*
++ * The RFI flush is not KPTI, but because users will see doco that says to use
++ * nopti we hijack that option here to also disable the RFI flush.
++ */
++static int __init handle_no_pti(char *p)
++{
++	pr_info("rfi-flush: disabling due to 'nopti' on command line.\n");
++	handle_no_rfi_flush(NULL);
++	return 0;
++}
++early_param("nopti", handle_no_pti);
++
+ static void do_nothing(void *unused)
+ {
+ 	/*
+@@ -860,6 +881,7 @@ void __init setup_rfi_flush(enum l1d_flu
+ 
+ 	enabled_flush_types = types;
+ 
+-	rfi_flush_enable(enable);
++	if (!no_rfi_flush)
++		rfi_flush_enable(enable);
+ }
+ #endif /* CONFIG_PPC_BOOK3S_64 */
+From 8989d56878a7735dfdb234707a2fee6faf631085 Mon Sep 17 00:00:00 2001
+From: Michael Neuling <mikey@neuling.org>
+Date: Wed, 10 Jan 2018 03:07:15 +1100
+Subject: powerpc/pseries: Query hypervisor for RFI flush settings
+
+From: Michael Neuling <mikey@neuling.org>
+
+commit 8989d56878a7735dfdb234707a2fee6faf631085 upstream.
+
+A new hypervisor call is available which tells the guest settings
+related to the RFI flush. Use it to query the appropriate flush
+instruction(s), and whether the flush is required.
+
+Signed-off-by: Michael Neuling <mikey@neuling.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/powerpc/platforms/pseries/setup.c |   35 +++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+--- a/arch/powerpc/platforms/pseries/setup.c
++++ b/arch/powerpc/platforms/pseries/setup.c
+@@ -459,6 +459,39 @@ static void __init find_and_init_phbs(vo
+ 	of_pci_check_probe_only();
+ }
+ 
++static void pseries_setup_rfi_flush(void)
++{
++	struct h_cpu_char_result result;
++	enum l1d_flush_type types;
++	bool enable;
++	long rc;
++
++	/* Enable by default */
++	enable = true;
++
++	rc = plpar_get_cpu_characteristics(&result);
++	if (rc == H_SUCCESS) {
++		types = L1D_FLUSH_NONE;
++
++		if (result.character & H_CPU_CHAR_L1D_FLUSH_TRIG2)
++			types |= L1D_FLUSH_MTTRIG;
++		if (result.character & H_CPU_CHAR_L1D_FLUSH_ORI30)
++			types |= L1D_FLUSH_ORI;
++
++		/* Use fallback if nothing set in hcall */
++		if (types == L1D_FLUSH_NONE)
++			types = L1D_FLUSH_FALLBACK;
++
++		if (!(result.behaviour & H_CPU_BEHAV_L1D_FLUSH_PR))
++			enable = false;
++	} else {
++		/* Default to fallback if case hcall is not available */
++		types = L1D_FLUSH_FALLBACK;
++	}
++
++	setup_rfi_flush(types, enable);
++}
++
+ static void __init pSeries_setup_arch(void)
+ {
+ 	set_arch_panic_timeout(10, ARCH_PANIC_TIMEOUT);
+@@ -476,6 +509,8 @@ static void __init pSeries_setup_arch(vo
+ 
+ 	fwnmi_init();
+ 
++	pseries_setup_rfi_flush();
++
+ 	/* By default, only probe PCI (can be overridden by rtas_pci) */
+ 	pci_add_flags(PCI_PROBE_ONLY);
+ 
+From 6e032b350cd1fdb830f18f8320ef0e13b4e24094 Mon Sep 17 00:00:00 2001
+From: Oliver O'Halloran <oohall@gmail.com>
+Date: Wed, 10 Jan 2018 03:07:15 +1100
+Subject: powerpc/powernv: Check device-tree for RFI flush settings
+
+From: Oliver O'Halloran <oohall@gmail.com>
+
+commit 6e032b350cd1fdb830f18f8320ef0e13b4e24094 upstream.
+
+New device-tree properties are available which tell the hypervisor
+settings related to the RFI flush. Use them to determine the
+appropriate flush instruction to use, and whether the flush is
+required.
+
+Signed-off-by: Oliver O'Halloran <oohall@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/powerpc/platforms/powernv/setup.c |   49 +++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+
+--- a/arch/powerpc/platforms/powernv/setup.c
++++ b/arch/powerpc/platforms/powernv/setup.c
+@@ -36,13 +36,62 @@
+ #include <asm/opal.h>
+ #include <asm/kexec.h>
+ #include <asm/smp.h>
++#include <asm/setup.h>
+ 
+ #include "powernv.h"
+ 
++static void pnv_setup_rfi_flush(void)
++{
++	struct device_node *np, *fw_features;
++	enum l1d_flush_type type;
++	int enable;
++
++	/* Default to fallback in case fw-features are not available */
++	type = L1D_FLUSH_FALLBACK;
++	enable = 1;
++
++	np = of_find_node_by_name(NULL, "ibm,opal");
++	fw_features = of_get_child_by_name(np, "fw-features");
++	of_node_put(np);
++
++	if (fw_features) {
++		np = of_get_child_by_name(fw_features, "inst-l1d-flush-trig2");
++		if (np && of_property_read_bool(np, "enabled"))
++			type = L1D_FLUSH_MTTRIG;
++
++		of_node_put(np);
++
++		np = of_get_child_by_name(fw_features, "inst-l1d-flush-ori30,30,0");
++		if (np && of_property_read_bool(np, "enabled"))
++			type = L1D_FLUSH_ORI;
++
++		of_node_put(np);
++
++		/* Enable unless firmware says NOT to */
++		enable = 2;
++		np = of_get_child_by_name(fw_features, "needs-l1d-flush-msr-hv-1-to-0");
++		if (np && of_property_read_bool(np, "disabled"))
++			enable--;
++
++		of_node_put(np);
++
++		np = of_get_child_by_name(fw_features, "needs-l1d-flush-msr-pr-0-to-1");
++		if (np && of_property_read_bool(np, "disabled"))
++			enable--;
++
++		of_node_put(np);
++		of_node_put(fw_features);
++	}
++
++	setup_rfi_flush(type, enable > 0);
++}
++
+ static void __init pnv_setup_arch(void)
+ {
+ 	set_arch_panic_timeout(10, ARCH_PANIC_TIMEOUT);
+ 
++	pnv_setup_rfi_flush();
++
+ 	/* Initialize SMP */
+ 	pnv_smp_init();
+ 
