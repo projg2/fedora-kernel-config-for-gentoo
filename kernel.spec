@@ -634,6 +634,7 @@ Patch507: loop-fix-concurrent-lo_open-lo_release.patch
 
 # 550-600 Meltdown and Spectre Fixes
 Patch550: prevent-bounds-check-bypass-via-speculative-execution.patch
+Patch551: ppc-mitigations.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -2239,7 +2240,10 @@ fi
 #
 #
 %changelog
-* Wed Jan 17 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.14-200
+* Thu Jan 18 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.14-300
+- Add some ppc mitigations from upstream
+
+* Wed Jan 17 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Linux v4.14.14
 - Fixes (rhbz 1532458)
 
