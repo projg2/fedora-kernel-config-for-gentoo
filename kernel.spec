@@ -663,6 +663,9 @@ Patch628: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
 # rhbz 1514969
 Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
 
+# rhbz 1513150
+Patch634: drm-nouveau-disp-gf119-add-missing-drive-vfunc-ptr.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2240,6 +2243,9 @@ fi
 #
 #
 %changelog
+* Tue Jan 23 2018 Laura Abbott <labbott@fedoraproject.org>
+- Fix for nouveau crash (rhbz 1513150)
+
 * Thu Jan 18 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.14-300
 - Add some ppc mitigations from upstream
 
