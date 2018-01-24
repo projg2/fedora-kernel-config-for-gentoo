@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -634,7 +634,6 @@ Patch507: loop-fix-concurrent-lo_open-lo_release.patch
 
 # 550-600 Meltdown and Spectre Fixes
 Patch550: prevent-bounds-check-bypass-via-speculative-execution.patch
-Patch551: ppc-mitigations.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -663,8 +662,8 @@ Patch628: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
 # rhbz 1514969
 Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
 
-# rhbz 1513150
-Patch634: drm-nouveau-disp-gf119-add-missing-drive-vfunc-ptr.patch
+# Fix crash on Xwayland using nouveau
+Patch634: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2243,6 +2242,10 @@ fi
 #
 #
 %changelog
+* Wed Jan 24 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.15-200
+- Linux v4.14.15
+- Fix CVE-2018-1000004 (rhbz 1535315 1535316)
+
 * Tue Jan 23 2018 Laura Abbott <labbott@fedoraproject.org>
 - Fix for nouveau crash (rhbz 1513150)
 
