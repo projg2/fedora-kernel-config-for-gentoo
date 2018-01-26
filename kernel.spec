@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -634,6 +634,7 @@ Patch507: loop-fix-concurrent-lo_open-lo_release.patch
 
 # 550-600 Meltdown and Spectre Fixes
 Patch550: prevent-bounds-check-bypass-via-speculative-execution.patch
+Patch551: revert-module-add-retpoline-tag-to-vermagic.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -2242,6 +2243,9 @@ fi
 #
 #
 %changelog
+* Fri Jan 26 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.15-201
+- Revert retpoline vermagic tag
+
 * Wed Jan 24 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.15-200
 - Linux v4.14.15
 - Fix CVE-2018-1000004 (rhbz 1535315 1535316)
