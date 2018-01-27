@@ -666,6 +666,9 @@ Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
 # Fix crash on Xwayland using nouveau
 Patch634: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
 
+# rhbz 1539238
+Patch635: Add-support-for-One-by-Wacom-CTL-472-CTL-672.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2243,6 +2246,9 @@ fi
 #
 #
 %changelog
+* Sat Jan 27 2018 Laura Abbott <labbott@fedoraproject.org>
+- Add support for Wacom tablet (rhbz 1539238)
+
 * Fri Jan 26 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.15-201
 - Revert retpoline vermagic tag
 
