@@ -672,6 +672,9 @@ Patch635: Add-support-for-One-by-Wacom-CTL-472-CTL-672.patch
 # CVE-2018-5750 rhbz 1539706 1539708
 Patch636: ACPI-sbshc-remove-raw-pointer-from-printk-message.patch
 
+# rhbz 1492664 1492665
+Patch637: 0001-mm-don-t-warn-about-allocations-which-stall-for-too-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2251,6 +2254,7 @@ fi
 %changelog
 * Mon Jan 29 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-5750 (rhbz 1539706 1539708)
+- Fix softlockup (rhbz 1492664 1492665)
 
 * Sat Jan 27 2018 Laura Abbott <labbott@fedoraproject.org>
 - Add support for Wacom tablet (rhbz 1539238)
