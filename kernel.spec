@@ -680,6 +680,9 @@ Patch634: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
 # rhbz 1539238
 Patch635: Add-support-for-One-by-Wacom-CTL-472-CTL-672.patch
 
+# CVE-2018-5750 rhbz 1539706 1539708
+Patch636: ACPI-sbshc-remove-raw-pointer-from-printk-message.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2237,6 +2240,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 29 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-5750 (rhbz 1539706 1539708)
+
 * Sat Jan 27 2018 Laura Abbott <labbott@fedoraproject.org>
 - Add support for Wacom tablet (rhbz 1539238)
 
