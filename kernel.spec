@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 301
+%global baserelease 300
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 16
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -632,20 +632,11 @@ Patch335: arm-exynos-fix-usb3.patch
 # rbhz 1519591 1520764
 Patch500: dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
 
-# CVE-2017-17450
-# rhbz 1525761 1525764
-Patch504: netfilter-xt_osf-Add-missing-permission-checks.patch
-
-# CVE-2017-17448
-# rhbz 1525768 1525769
-Patch505: netfilter-nfnetlink_cthelper-Add-missing-permission-.patch
-
 # CVE-2018-5344 rhbz 1533909 1533911
 Patch507: loop-fix-concurrent-lo_open-lo_release.patch
 
 # 550-600 Meltdown and Spectre Fixes
 Patch550: prevent-bounds-check-bypass-via-speculative-execution.patch
-Patch551: revert-module-add-retpoline-tag-to-vermagic.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -2243,6 +2234,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 31 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.16-300
+- Linux v4.14.16
+
 * Mon Jan 29 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-5750 (rhbz 1539706 1539708)
 - Fix softlockup (rhbz 1492664 1492665)
