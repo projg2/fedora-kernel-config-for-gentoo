@@ -1,1 +1,1 @@
-CONFIG_IRDA=m
+# CONFIG_IRDA is not set

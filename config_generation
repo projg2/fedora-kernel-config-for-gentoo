@@ -26,8 +26,8 @@ s390x=baseconfig:baseconfig-s390x
 s390x-debug=baseconfig:baseconfig-s390x:debugconfig
 
 # aarch64
-aarch64=baseconfig:baseconfig-arm:baseconfig-arm-arm64
-aarch64-debug=baseconfig:baseconfig-arm:baseconfig-arm-arm64:debugconfig:debugconfig-arm
+aarch64=baseconfig:baseconfig-arm:baseconfig-arm-aarch64
+aarch64-debug=baseconfig:baseconfig-arm:baseconfig-arm-aarch64:debugconfig:debugconfig-arm
 
 # arm
 armv7hl=baseconfig:baseconfig-arm:baseconfig-arm-armv7:baseconfig-arm-armv7-armv7
