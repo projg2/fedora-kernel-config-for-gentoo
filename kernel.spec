@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 14
+%define base_sublevel 15
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -93,10 +93,6 @@ Summary: The Linux kernel
 # kernel-headers
 %define with_headers   %{?_without_headers:   0} %{?!_without_headers:   1}
 %define with_cross_headers   %{?_without_cross_headers:   0} %{?!_without_cross_headers:   1}
-# perf
-%define with_perf      %{?_without_perf:      0} %{?!_without_perf:      1}
-# tools
-%define with_tools     %{?_without_tools:     0} %{?!_without_tools:     1}
 # kernel-debuginfo
 %define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
 # kernel-bootwrapper (for creating zImages from kernel + initrd)
@@ -122,10 +118,19 @@ Summary: The Linux kernel
 # build a release kernel on rawhide
 %define with_release   %{?_with_release:      1} %{?!_with_release:      0}
 
+# verbose build, i.e. no silent rules and V=1
+%define with_verbose %{?_with_verbose:        1} %{?!_with_verbose:      0}
+
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
 %define debugbuildsenabled 1
+
+%if %{with_verbose}
+%define make_opts V=1
+%else
+%define make_opts -s
+%endif
 
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
@@ -213,8 +218,6 @@ Summary: The Linux kernel
 %define with_pae 0
 %endif
 %define with_pae 0
-%define with_tools 0
-%define with_perf 0
 %endif
 
 %define all_x86 i386 i686
@@ -235,8 +238,6 @@ Summary: The Linux kernel
 %define with_up 0
 %define with_headers 0
 %define with_cross_headers 0
-%define with_tools 0
-%define with_perf 0
 %define all_arch_configs kernel-%{version}-*.config
 %endif
 
@@ -283,7 +284,6 @@ Summary: The Linux kernel
 %define all_arch_configs kernel-%{version}-s390x.config
 %define make_target image
 %define kernel_image arch/s390/boot/image
-%define with_tools 0
 %endif
 
 %ifarch %{arm}
@@ -301,8 +301,6 @@ Summary: The Linux kernel
 %ifnarch armv7hl
 %define with_headers 0
 %define with_cross_headers 0
-%define with_perf 0
-%define with_tools 0
 %endif
 %endif
 
@@ -337,8 +335,6 @@ Summary: The Linux kernel
 %define with_up 0
 %define with_pae 0
 %define with_debuginfo 0
-%define with_perf 0
-%define with_tools 0
 %define _enable_debug_packages 0
 %endif
 
@@ -397,16 +393,6 @@ BuildRequires: net-tools, hostname, bc, elfutils-devel
 %if %{with_sparse}
 BuildRequires: sparse
 %endif
-%if %{with_perf}
-BuildRequires: zlib-devel binutils-devel newt-devel python-devel perl(ExtUtils::Embed) bison flex xz-devel
-BuildRequires: audit-libs-devel
-%ifnarch s390x %{arm}
-BuildRequires: numactl-devel
-%endif
-%endif
-%if %{with_tools}
-BuildRequires: pciutils-devel gettext ncurses-devel
-%endif
 BuildConflicts: rhbuildsys(DiskFree) < 500Mb
 %if %{with_debuginfo}
 BuildRequires: rpm-build, elfutils
@@ -439,7 +425,6 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 
 Source0: https://www.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
 
-Source10: perf-man-%{kversion}.tar.gz
 Source11: x509.genkey
 Source12: remove-binary-diff.pl
 Source15: merge.pl
@@ -581,11 +566,7 @@ Patch210: disable-i8042-check-on-apple-mac.patch
 Patch211: drm-i915-hush-check-crtc-state.patch
 
 # 300 - ARM patches
-
-# Reduces a number of primarily info logs to dmesg
-# https://patchwork.freedesktop.org/patch/180737/
-# https://patchwork.freedesktop.org/patch/180554/
-Patch300: drm-cma-reduce-dmesg-logs.patch
+Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
 Patch301: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
@@ -596,46 +577,34 @@ Patch302: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 # http://patchwork.ozlabs.org/patch/587554/
 Patch303: ARM-tegra-usb-no-reset.patch
 
-Patch304: allwinner-net-emac.patch
+# https://www.spinics.net/lists/arm-kernel/msg554183.html
+Patch304: arm-imx6-hummingboard2.patch
 
 Patch305: arm64-Revert-allwinner-a64-pine64-Use-dcdc1-regulato.patch
 
-# https://www.spinics.net/lists/arm-kernel/msg554183.html
-Patch306: arm-imx6-hummingboard2.patch
-
-Patch307: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-
 # https://patchwork.kernel.org/patch/9820417/
-Patch310: qcom-msm89xx-fixes.patch
+Patch306: qcom-msm89xx-fixes.patch
+
+# https://patchwork.kernel.org/patch/10173115/
+Patch307: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
 
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
-Patch321: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
-
-# bcm2837 bluetooth support
-Patch323: bcm2837-bluetooth-support.patch
-
-# Generic fixes and enablement for Socionext SoC and 96board
-# https://patchwork.kernel.org/patch/9980861/
-Patch331: PCI-aspm-deal-with-missing-root-ports-in-link-state-handling.patch
+Patch308: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
 # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
-Patch332: arm64-socionext-96b-enablement.patch
+Patch330: arm64-socionext-96b-enablement.patch
 
-Patch335: arm-exynos-fix-usb3.patch
+# https://patchwork.kernel.org/patch/10149775/ MMC support for Synquacer
+Patch331: arm64-mmc-sdhci_f_sdh30-add-ACPI-support.patch
 
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
 
-# rbhz 1519591 1520764
-Patch500: dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
-
 # 550-600 Meltdown and Spectre Fixes
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
-Patch601: 0001-Input-gpio_keys-Allow-suppression-of-input-events-fo.patch
-Patch602: 0002-Input-soc_button_array-Suppress-power-button-presses.patch
 Patch610: 0010-Input-silead-Add-support-for-capactive-home-button-f.patch
 
 # rhbz 1476467
@@ -644,32 +613,35 @@ Patch617: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch619: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# Headed upstream
-Patch621: drm-i915-Boost-GPU-clocks-if-we-miss-the-pageflip-s-vblank.patch
-
 # rhbz 1509461
 Patch625: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
-# Fixes for QXL issues
-Patch627: qxl-fixes.patch
+# For https://fedoraproject.org/wiki/Changes/ImprovedLaptopBatteryLife
+# Queued in bluetooth-next for merging into 4.16
+Patch628: 0001-Bluetooth-btusb-Add-a-Kconfig-option-to-enable-USB-a.patch
 
-# rhbz 1462175
-Patch628: HID-rmi-Check-that-a-device-is-a-RMI-device-before-c.patch
+# Fix left-button not working with some hid-multitouch touchpads
+# Adding these suggested by Benjamin Tissoires
+# Queued in hid.git/for-4.16/hid-quirks-cleanup/multitouch for merging into 4.16
+Patch630: 0001-HID-multitouch-Properly-deal-with-Win8-PTP-reports-w.patch
+Patch631: 0002-HID-multitouch-Only-look-at-non-touch-fields-in-firs.patch
+Patch632: 0003-HID-multitouch-Combine-all-left-button-events-in-a-f.patch
 
-# rhbz1514969
-Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
+# Make SATA link powermanagement policy configurable for:
+# https://fedoraproject.org/wiki/Changes/ImprovedLaptopBatteryLife
+# Queued upstream for merging into 4.16
+Patch636: 0001-ahci-Annotate-PCI-ids-for-mobile-Intel-chipsets-as-s.patch
+Patch637: 0002-ahci-Add-PCI-ids-for-Intel-Bay-Trail-Cherry-Trail-an.patch
+Patch638: 0003-ahci-Allow-setting-a-default-LPM-policy-for-mobile-c.patch
+
+# rhbz1514969, submitted upstream
+Patch640: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
+
+# rhbz1514836, submitted upstream
+Patch641: 0001-Bluetooth-btusb-Disable-autosuspend-on-QCA-Rome-devi.patch
 
 # Fix crash on Xwayland using nouveau
-Patch634: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
-
-# rhbz 1539238
-Patch635: Add-support-for-One-by-Wacom-CTL-472-CTL-672.patch
-
-# CVE-2018-5750 rhbz 1539706 1539708
-Patch636: ACPI-sbshc-remove-raw-pointer-from-printk-message.patch
-
-# rhbz 1492664 1492665
-Patch637: 0001-mm-don-t-warn-about-allocations-which-stall-for-too-.patch
+Patch650: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -749,109 +721,6 @@ Provides: installonlypkg(kernel)
 %description debuginfo-common-%{_target_cpu}
 This package is required by %{name}-debuginfo subpackages.
 It provides the kernel source files common to all builds.
-
-%if %{with_perf}
-%package -n perf
-Summary: Performance monitoring for the Linux kernel
-Group: Development/System
-License: GPLv2
-%description -n perf
-This package contains the perf tool, which enables performance monitoring
-of the Linux kernel.
-
-%package -n perf-debuginfo
-Summary: Debug information for package perf
-Group: Development/Debug
-Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
-AutoReqProv: no
-%description -n perf-debuginfo
-This package provides debug information for the perf package.
-
-# Note that this pattern only works right to match the .build-id
-# symlinks because of the trailing nonmatching alternation and
-# the leading .*, because of find-debuginfo.sh's buggy handling
-# of matching the pattern against the symlinks file.
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/perf(\.debug)?|.*%%{_libexecdir}/perf-core/.*|.*%%{_libdir}/traceevent/plugins/.*|XXX' -o perf-debuginfo.list}
-
-%package -n python-perf
-Summary: Python bindings for apps which will manipulate perf events
-Group: Development/Libraries
-%description -n python-perf
-The python-perf package contains a module that permits applications
-written in the Python programming language to use the interface
-to manipulate perf events.
-
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
-
-%package -n python-perf-debuginfo
-Summary: Debug information for package perf python bindings
-Group: Development/Debug
-Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
-AutoReqProv: no
-%description -n python-perf-debuginfo
-This package provides debug information for the perf python bindings.
-
-# the python_sitearch macro should already be defined from above
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{python_sitearch}/perf.so(\.debug)?|XXX' -o python-perf-debuginfo.list}
-
-
-%endif # with_perf
-
-%if %{with_tools}
-%package -n kernel-tools
-Summary: Assortment of tools for the Linux kernel
-Group: Development/System
-License: GPLv2
-Provides:  cpupowerutils = 1:009-0.6.p1
-Obsoletes: cpupowerutils < 1:009-0.6.p1
-Provides:  cpufreq-utils = 1:009-0.6.p1
-Provides:  cpufrequtils = 1:009-0.6.p1
-Obsoletes: cpufreq-utils < 1:009-0.6.p1
-Obsoletes: cpufrequtils < 1:009-0.6.p1
-Obsoletes: cpuspeed < 1:1.5-16
-Requires: kernel-tools-libs = %{version}-%{release}
-%define __requires_exclude ^%{_bindir}/python
-%description -n kernel-tools
-This package contains the tools/ directory from the kernel source
-and the supporting documentation.
-
-%package -n kernel-tools-libs
-Summary: Libraries for the kernels-tools
-Group: Development/System
-License: GPLv2
-%description -n kernel-tools-libs
-This package contains the libraries built from the tools/ directory
-from the kernel source.
-
-%package -n kernel-tools-libs-devel
-Summary: Assortment of tools for the Linux kernel
-Group: Development/System
-License: GPLv2
-Requires: kernel-tools = %{version}-%{release}
-Provides:  cpupowerutils-devel = 1:009-0.6.p1
-Obsoletes: cpupowerutils-devel < 1:009-0.6.p1
-Requires: kernel-tools-libs = %{version}-%{release}
-Provides: kernel-tools-devel
-%description -n kernel-tools-libs-devel
-This package contains the development files for the tools/ directory from
-the kernel source.
-
-%package -n kernel-tools-debuginfo
-Summary: Debug information for package kernel-tools
-Group: Development/Debug
-Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
-AutoReqProv: no
-%description -n kernel-tools-debuginfo
-This package provides debug information for package kernel-tools.
-
-# Note that this pattern only works right to match the .build-id
-# symlinks because of the trailing nonmatching alternation and
-# the leading .*, because of find-debuginfo.sh's buggy handling
-# of matching the pattern against the symlinks file.
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
-
-%endif # with_tools
-
 
 #
 # This macro creates a kernel-<subpackage>-debuginfo package.
@@ -971,6 +840,7 @@ Provides: installonlypkg(kernel)\
 
 # Now, each variant package.
 
+%if %{with_pae}
 %ifnarch armv7hl
 %define variant_summary The Linux kernel compiled for PAE capable machines
 %kernel_variant_package %{pae}
@@ -1000,7 +870,7 @@ Install the kernel-PAE package if your machine has more than 4GB of memory.
 This variant of the kernel has numerous debugging options enabled.
 It should only be installed when trying to gather additional information
 on kernel bugs, as some of these options impact performance noticably.
-
+%endif
 
 %define variant_summary The Linux kernel compiled with extra debugging enabled
 %kernel_variant_package debug
@@ -1395,7 +1265,7 @@ BuildKernel() {
 
     # and now to start the build process
 
-    make -s mrproper
+    make %{?make_opts} mrproper
     cp configs/$Config .config
 
     %if %{signkernel}%{signmodules}
@@ -1405,9 +1275,9 @@ BuildKernel() {
     Arch=`head -1 .config | cut -b 3-`
     echo USING ARCH=$Arch
 
-    make -s ARCH=$Arch oldnoconfig >/dev/null
-    %{make} -s ARCH=$Arch V=1 %{?_smp_mflags} $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
-    %{make} -s ARCH=$Arch V=1 %{?_smp_mflags} modules %{?sparse_mflags} || exit 1
+    make %{?make_opts} ARCH=$Arch olddefconfig >/dev/null
+    %{make} %{?make_opts} ARCH=$Arch %{?_smp_mflags} $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
+    %{make} %{?make_opts} ARCH=$Arch %{?_smp_mflags} modules %{?sparse_mflags} || exit 1
 
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer
@@ -1416,7 +1286,7 @@ BuildKernel() {
 %endif
 
 %ifarch %{arm} aarch64
-    %{make} -s ARCH=$Arch V=1 dtbs dtbs_install INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
+    %{make} %{?make_opts} ARCH=$Arch dtbs dtbs_install INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
     cp -r $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/dtb
     find arch/$Arch/boot/dts -name '*.dtb' -type f | xargs rm -f
 %endif
@@ -1457,10 +1327,10 @@ BuildKernel() {
 
     # Override $(mod-fw) because we don't want it to install any firmware
     # we'll get it from the linux-firmware package and we don't want conflicts
-    %{make} -s ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
+    %{make} %{?make_opts} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
 
     if [ $DoVDSO -ne 0 ]; then
-        %{make} -s ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT vdso_install KERNELRELEASE=$KernelVer
+        %{make} %{?make_opts} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT vdso_install KERNELRELEASE=$KernelVer
         if [ ! -s ldconfig-kernel.conf ]; then
           echo > ldconfig-kernel.conf "\
     # Placeholder file, no vDSO hwcap entries used in this kernel."
@@ -1718,51 +1588,6 @@ BuildKernel %make_target %kernel_image %{use_vdso} %{pae}
 BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
-%global perf_make \
-  make -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 NO_JVMTI=1 prefix=%{_prefix}
-%if %{with_perf}
-# perf
-# make sure check-headers.sh is executable
-chmod +x tools/perf/check-headers.sh
-%{perf_make} DESTDIR=$RPM_BUILD_ROOT all
-%endif
-
-%if %{with_tools}
-%ifarch %{cpupowerarchs}
-# cpupower
-# make sure version-gen.sh is executable.
-chmod +x tools/power/cpupower/utils/version-gen.sh
-%{make} %{?_smp_mflags} -C tools/power/cpupower CPUFREQ_BENCH=false
-%ifarch %{ix86}
-    pushd tools/power/cpupower/debug/i386
-    %{make} %{?_smp_mflags} centrino-decode powernow-k8-decode
-    popd
-%endif
-%ifarch x86_64
-    pushd tools/power/cpupower/debug/x86_64
-    %{make} %{?_smp_mflags} centrino-decode powernow-k8-decode
-    popd
-%endif
-%ifarch %{ix86} x86_64
-   pushd tools/power/x86/x86_energy_perf_policy/
-   %{make}
-   popd
-   pushd tools/power/x86/turbostat
-   %{make}
-   popd
-%endif #turbostat/x86_energy_perf_policy
-%endif
-pushd tools/thermal/tmon/
-%{make}
-popd
-pushd tools/iio/
-%{make}
-popd
-pushd tools/gpio/
-%{make}
-popd
-%endif
-
 # In the modsign case, we do 3 things.  1) We check the "flavour" and hard
 # code the value in the following invocations.  This is somewhat sub-optimal
 # but we're doing this inside of an RPM macro and it isn't as easy as it
@@ -1871,73 +1696,6 @@ done
 rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
 %endif
 
-%if %{with_perf}
-# perf tool binary and supporting scripts/binaries
-%{perf_make} DESTDIR=$RPM_BUILD_ROOT lib=%{_lib} install-bin install-traceevent-plugins
-# remove the 'trace' symlink.
-rm -f %{buildroot}%{_bindir}/trace
-# remove the perf-tips
-rm -rf %{buildroot}%{_docdir}/perf-tip
-
-# python-perf extension
-%{perf_make} DESTDIR=$RPM_BUILD_ROOT install-python_ext
-
-# perf man pages (note: implicit rpm magic compresses them later)
-mkdir -p %{buildroot}/%{_mandir}/man1
-pushd %{buildroot}/%{_mandir}/man1
-tar -xf %{SOURCE10}
-%if !%{with_tools}
-    rm -f kvm_stat.1
-%endif
-popd
-%endif
-
-%if %{with_tools}
-%ifarch %{cpupowerarchs}
-%{make} -C tools/power/cpupower DESTDIR=$RPM_BUILD_ROOT libdir=%{_libdir} mandir=%{_mandir} CPUFREQ_BENCH=false install
-rm -f %{buildroot}%{_libdir}/*.{a,la}
-%find_lang cpupower
-mv cpupower.lang ../
-%ifarch %{ix86}
-    pushd tools/power/cpupower/debug/i386
-    install -m755 centrino-decode %{buildroot}%{_bindir}/centrino-decode
-    install -m755 powernow-k8-decode %{buildroot}%{_bindir}/powernow-k8-decode
-    popd
-%endif
-%ifarch x86_64
-    pushd tools/power/cpupower/debug/x86_64
-    install -m755 centrino-decode %{buildroot}%{_bindir}/centrino-decode
-    install -m755 powernow-k8-decode %{buildroot}%{_bindir}/powernow-k8-decode
-    popd
-%endif
-chmod 0755 %{buildroot}%{_libdir}/libcpupower.so*
-mkdir -p %{buildroot}%{_unitdir} %{buildroot}%{_sysconfdir}/sysconfig
-install -m644 %{SOURCE2000} %{buildroot}%{_unitdir}/cpupower.service
-install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
-%endif
-%ifarch %{ix86} x86_64
-   mkdir -p %{buildroot}%{_mandir}/man8
-   pushd tools/power/x86/x86_energy_perf_policy
-   make DESTDIR=%{buildroot} install
-   popd
-   pushd tools/power/x86/turbostat
-   make DESTDIR=%{buildroot} install
-   popd
-%endif #turbostat/x86_energy_perf_policy
-pushd tools/thermal/tmon
-make INSTALL_ROOT=%{buildroot} install
-popd
-pushd tools/iio
-make DESTDIR=%{buildroot} install
-popd
-pushd tools/gpio
-make DESTDIR=%{buildroot} install
-popd
-pushd tools/kvm/kvm_stat
-make INSTALL_ROOT=%{buildroot} install-tools
-popd
-%endif
-
 %if %{with_bootwrapper}
 make DESTDIR=$RPM_BUILD_ROOT bootwrapper_install WRAPPER_OBJDIR=%{_libdir}/kernel-wrapper WRAPPER_DTSDIR=%{_libdir}/kernel-wrapper/dts
 %endif
@@ -1952,14 +1710,6 @@ rm -rf $RPM_BUILD_ROOT
 ###
 ### scripts
 ###
-
-%if %{with_tools}
-%post -n kernel-tools-libs
-/sbin/ldconfig
-
-%postun -n kernel-tools-libs
-/sbin/ldconfig
-%endif
 
 #
 # This macro defines a %%post script for a kernel*-devel package.
@@ -2045,11 +1795,13 @@ fi}\
 %kernel_variant_preun
 %kernel_variant_post -r kernel-smp
 
+%if %{with_pae}
 %kernel_variant_preun %{pae}
 %kernel_variant_post -v %{pae} -r (kernel|kernel-smp)
 
 %kernel_variant_post -v %{pae}debug -r (kernel|kernel-smp)
 %kernel_variant_preun %{pae}debug
+%endif
 
 %kernel_variant_preun debug
 %kernel_variant_post -v debug
@@ -2081,77 +1833,6 @@ fi
 /usr/sbin/*
 %{_libdir}/kernel-wrapper
 %endif
-
-%if %{with_perf}
-%files -n perf
-%defattr(-,root,root)
-%{_bindir}/perf
-%dir %{_libdir}/traceevent/plugins
-%{_libdir}/traceevent/plugins/*
-%dir %{_libexecdir}/perf-core
-%{_libexecdir}/perf-core/*
-%{_datadir}/perf-core/*
-%{_mandir}/man[1-8]/perf*
-%{_sysconfdir}/bash_completion.d/perf
-%doc linux-%{KVERREL}/tools/perf/Documentation/examples.txt
-
-%files -n python-perf
-%defattr(-,root,root)
-%{python_sitearch}
-
-%if %{with_debuginfo}
-%files -f perf-debuginfo.list -n perf-debuginfo
-%defattr(-,root,root)
-
-%files -f python-perf-debuginfo.list -n python-perf-debuginfo
-%defattr(-,root,root)
-%endif
-%endif # with_perf
-
-%if %{with_tools}
-%files -n kernel-tools -f cpupower.lang
-%defattr(-,root,root)
-%ifarch %{cpupowerarchs}
-%{_bindir}/cpupower
-%ifarch %{ix86} x86_64
-%{_bindir}/centrino-decode
-%{_bindir}/powernow-k8-decode
-%endif
-%{_unitdir}/cpupower.service
-%{_mandir}/man[1-8]/cpupower*
-%config(noreplace) %{_sysconfdir}/sysconfig/cpupower
-%ifarch %{ix86} x86_64
-%{_bindir}/x86_energy_perf_policy
-%{_mandir}/man8/x86_energy_perf_policy*
-%{_bindir}/turbostat
-%{_mandir}/man8/turbostat*
-%endif
-%{_bindir}/tmon
-%{_bindir}/iio_event_monitor
-%{_bindir}/iio_generic_buffer
-%{_bindir}/lsiio
-%{_bindir}/lsgpio
-%{_bindir}/gpio-hammer
-%{_bindir}/gpio-event-mon
-%{_mandir}/man1/kvm_stat*
-%{_bindir}/kvm_stat
-%endif
-
-%if %{with_debuginfo}
-%files -f kernel-tools-debuginfo.list -n kernel-tools-debuginfo
-%defattr(-,root,root)
-%endif
-
-%ifarch %{cpupowerarchs}
-%files -n kernel-tools-libs
-%{_libdir}/libcpupower.so.0
-%{_libdir}/libcpupower.so.0.0.1
-
-%files -n kernel-tools-libs-devel
-%{_libdir}/libcpupower.so
-%{_includedir}/cpufreq.h
-%endif
-%endif # with_perf
 
 # empty meta-package
 %files
@@ -2228,6 +1909,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 07 2018 Laura Abbott <labbott@redhat.com> - 4.15.2-300
+- Linux v4.15.2 rebase
+
 * Wed Feb 07 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.18-300
 - Linux v4.14.18
 
