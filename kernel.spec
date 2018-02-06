@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1909,6 +1909,9 @@ fi
 #
 #
 %changelog
+* Tue Feb 06 2018 Laura Abbott <labbott@redhat.com> - 4.15.1-300
+- Linux v4.15.1
+
 * Mon Feb 05 2018 Laura Abbott <labbott@redhat.com> - 4.15.0-300
 - Linux v4.15
 
