@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 17
+%define stable_update 18
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -631,7 +631,6 @@ Patch335: arm-exynos-fix-usb3.patch
 Patch500: dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
 
 # 550-600 Meltdown and Spectre Fixes
-Patch550: prevent-bounds-check-bypass-via-speculative-execution.patch
 
 # 600 - Patches for improved Bay and Cherry Trail device support
 # Below patches are submitted upstream, awaiting review / merging
@@ -2229,6 +2228,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 07 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.18-300
+- Linux v4.14.18
+
 * Mon Feb 05 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.17-300
 - Linux v4.14.17
 
