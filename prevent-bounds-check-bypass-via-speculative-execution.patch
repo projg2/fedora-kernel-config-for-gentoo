@@ -336,7 +336,7 @@ index 574dff4d2913..9b6f20cfaeb9 100644
 +	if (__builtin_constant_p(size)) {
 +		if (unlikely(addr > limit - size))
 +			return true;
-+		nospec_barrier();
++		barrier_nospec();
 +		return false;
 +	}
 
@@ -346,7 +346,7 @@ index 574dff4d2913..9b6f20cfaeb9 100644
 +	if (unlikely(addr < size || addr > limit))
  		return true;
 -	return unlikely(addr > limit);
-+	nospec_barrier();
++	barrier_nospec();
 +	return false;
  }
 
