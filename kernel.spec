@@ -643,6 +643,9 @@ Patch641: 0001-Bluetooth-btusb-Disable-autosuspend-on-QCA-Rome-devi.patch
 # Fix crash on Xwayland using nouveau
 Patch650: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
 
+# rhbz 1543326
+Patch651: dock-sound.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1911,6 +1914,7 @@ fi
 %changelog
 * Wed Feb 07 2018 Laura Abbott <labbott@redhat.com> - 4.15.2-300
 - Linux v4.15.2 rebase
+- Enable Jack sound on Thinkpad Dock (rhbz 1543326)
 
 * Wed Feb 07 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.14.18-300
 - Linux v4.14.18
