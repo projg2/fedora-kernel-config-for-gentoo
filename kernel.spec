@@ -591,6 +591,8 @@ Patch307: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch308: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
+Patch309: arm-exynos-fix-dwc3-neg.patch
+
 # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
 Patch330: arm64-socionext-96b-enablement.patch
 
@@ -1912,6 +1914,10 @@ fi
 #
 #
 %changelog
+* Thu Feb  8 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add Exynos5 patch (second part of series) to fix USB-3 devices on some Odroid devices
+- Fix up and re-enable adv7511
+
 * Wed Feb 07 2018 Laura Abbott <labbott@redhat.com> - 4.15.2-300
 - Linux v4.15.2 rebase
 - Enable Jack sound on Thinkpad Dock (rhbz 1543326)
