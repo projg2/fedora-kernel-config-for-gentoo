@@ -593,6 +593,8 @@ Patch308: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe
 
 Patch309: arm-exynos-fix-dwc3-neg.patch
 
+Patch310: arm-imx6-cpufreq-fix-loading.patch
+
 # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
 Patch330: arm64-socionext-96b-enablement.patch
 
@@ -1917,6 +1919,7 @@ fi
 * Thu Feb  8 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add Exynos5 patch (second part of series) to fix USB-3 devices on some Odroid devices
 - Fix up and re-enable adv7511
+- Fix loading of i.MX6 cpufreq driver (rhbz 1466991)
 
 * Wed Feb 07 2018 Laura Abbott <labbott@redhat.com> - 4.15.2-300
 - Linux v4.15.2 rebase
