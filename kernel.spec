@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 301
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1928,7 +1928,7 @@ fi
 #
 #
 %changelog
-* Sun Feb 11 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+* Sun Feb 11 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.15.2-301
 - Add Exynos5 patch (second part of series) to fix USB-3 devices on some Odroid devices
 - Fix up and re-enable adv7511
 - Fix loading of i.MX6 cpufreq driver (rhbz 1466991)
