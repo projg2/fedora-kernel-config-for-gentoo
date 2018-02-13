@@ -659,6 +659,9 @@ Patch641: 0001-Bluetooth-btusb-Disable-autosuspend-on-QCA-Rome-devi.patch
 # Fix crash on Xwayland using nouveau
 Patch650: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
 
+# rhbz 1544821
+Patch651: ssb-Do-not-disable-PCI-host-on-non-Mips.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1927,6 +1930,8 @@ fi
 %changelog
 * Tue Feb 13 2018 Laura Abbott <labbott@redhat.com> - 4.15.3-300
 - Linux v4.15.3
+- Fix for b43 wifi (rhbz 1544821)
+- Turn off a few powersave options for rebase
 
 * Sun Feb 11 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.15.2-301
 - Add Exynos5 patch (second part of series) to fix USB-3 devices on some Odroid devices
