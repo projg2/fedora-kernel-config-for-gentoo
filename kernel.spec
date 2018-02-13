@@ -662,6 +662,9 @@ Patch650: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
 # rhbz 1544821
 Patch651: ssb-Do-not-disable-PCI-host-on-non-Mips.patch
 
+# https://bugzilla.kernel.org/show_bug.cgi?id=198351
+Patch652: iwlwifi-mvn.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
