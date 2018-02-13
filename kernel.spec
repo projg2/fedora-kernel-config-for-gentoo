@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 301
+%global baserelease 300
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1925,6 +1925,9 @@ fi
 #
 #
 %changelog
+* Tue Feb 13 2018 Laura Abbott <labbott@redhat.com> - 4.15.3-300
+- Linux v4.15.3
+
 * Sun Feb 11 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.15.2-301
 - Add Exynos5 patch (second part of series) to fix USB-3 devices on some Odroid devices
 - Fix up and re-enable adv7511
