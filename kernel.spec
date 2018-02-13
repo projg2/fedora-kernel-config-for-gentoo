@@ -659,9 +659,6 @@ Patch641: 0001-Bluetooth-btusb-Disable-autosuspend-on-QCA-Rome-devi.patch
 # Fix crash on Xwayland using nouveau
 Patch650: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
 
-# rhbz 1543326
-Patch651: dock-sound.patch
-
 # END OF PATCH DEFINITIONS
 
 %endif
