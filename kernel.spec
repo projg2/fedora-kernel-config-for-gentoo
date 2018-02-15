@@ -1931,6 +1931,9 @@ fi
 #
 #
 %changelog
+* Thu Feb 15 2018 François Cami <fcami@fedoraproject.org>
+- Enable CONFIG_DRM_AMDGPU_SI
+
 * Tue Feb 13 2018 Laura Abbott <labbott@redhat.com> - 4.15.3-300
 - Linux v4.15.3
 - Fix for b43 wifi (rhbz 1544821)
