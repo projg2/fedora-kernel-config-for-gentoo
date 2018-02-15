@@ -616,9 +616,6 @@ Patch630: 0001-HID-multitouch-Properly-deal-with-Win8-PTP-reports-w.patch
 Patch631: 0002-HID-multitouch-Only-look-at-non-touch-fields-in-firs.patch
 Patch632: 0003-HID-multitouch-Combine-all-left-button-events-in-a-f.patch
 
-# rhbz 1514969
-Patch633: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
-
 # Make SATA link powermanagement policy configurable for:
 # https://fedoraproject.org/wiki/Changes/ImprovedLaptopBatteryLife
 # Queued upstream for merging into 4.16
