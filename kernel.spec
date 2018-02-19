@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -646,21 +646,13 @@ Patch632: 0003-HID-multitouch-Combine-all-left-button-events-in-a-f.patch
 # Make SATA link powermanagement policy configurable for:
 # https://fedoraproject.org/wiki/Changes/ImprovedLaptopBatteryLife
 # Queued upstream for merging into 4.16
-Patch636: 0001-ahci-Annotate-PCI-ids-for-mobile-Intel-chipsets-as-s.patch
-Patch637: 0002-ahci-Add-PCI-ids-for-Intel-Bay-Trail-Cherry-Trail-an.patch
 Patch638: 0003-ahci-Allow-setting-a-default-LPM-policy-for-mobile-c.patch
 
 # rhbz1514969, submitted upstream
 Patch640: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
 
-# rhbz1514836, submitted upstream
-Patch641: 0001-Bluetooth-btusb-Disable-autosuspend-on-QCA-Rome-devi.patch
-
 # Fix crash on Xwayland using nouveau
 Patch650: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
-
-# rhbz 1544821
-Patch651: ssb-Do-not-disable-PCI-host-on-non-Mips.patch
 
 # https://bugzilla.kernel.org/show_bug.cgi?id=198351
 Patch652: iwlwifi-mvn.patch
@@ -1934,6 +1926,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 19 2018 Laura Abbott <labbott@redhat.com> - 4.15.4-300
+- Linux v4.15.4
+
 * Mon Feb 19 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-1000026 (rhbz 1541846 1546744)
 
