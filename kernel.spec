@@ -638,6 +638,9 @@ Patch651: ssb-Do-not-disable-PCI-host-on-non-Mips.patch
 # https://bugzilla.kernel.org/show_bug.cgi?id=198351
 Patch652: iwlwifi-mvn.patch
 
+# CVE-2018-1000026 rhbz 1541846 1546744
+Patch653: CVE-2018-1000026.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1924,6 +1927,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 19 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-1000026 (rhbz 1541846 1546744)
+
 * Tue Feb 13 2018 Laura Abbott <labbott@redhat.com> - 4.15.3-300
 - Linux v4.15.3 rebase
 
