@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -623,9 +623,6 @@ Patch638: 0003-ahci-Allow-setting-a-default-LPM-policy-for-mobile-c.patch
 
 # rhbz1514969, submitted upstream
 Patch640: 0001-platform-x86-dell-laptop-Filter-out-spurious-keyboar.patch
-
-# Fix crash on Xwayland using nouveau
-Patch650: dma-buf-fix-reservation_object_wait_timeout_rcu-once-more-v2.patch
 
 # https://bugzilla.kernel.org/show_bug.cgi?id=198351
 Patch652: iwlwifi-mvn.patch
@@ -1919,6 +1916,9 @@ fi
 #
 #
 %changelog
+* Fri Feb 23 2018 Laura Abbott <labbott@redhat.com> - 4.15.5-200
+- Linux v4.15.5
+
 * Mon Feb 19 2018 Laura Abbott <labbott@redhat.com> - 4.15.4-200
 - Linux v4.15.4
 
