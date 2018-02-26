@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -602,9 +602,6 @@ Patch311: arm-clk-bcm2835-hdmi-fixes.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg632925.html
 Patch313: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
-
-# In 4.16
-Patch314: arm64-qcom-fix-rmtfs.patch
 
 # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
 Patch330: arm64-socionext-96b-enablement.patch
@@ -1922,6 +1919,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 26 2018 Laura Abbott <labbott@redhat.com> - 4.15.6-300
+- Linux v4.15.6
+
 * Fri Feb 23 2018 Laura Abbott <labbott@redhat.com> - 4.15.5-300
 - Linux v4.15.5
 
