@@ -580,6 +580,10 @@ Patch307: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch308: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
+# Found on the db410c on 4.15.4
+# https://www.spinics.net/lists/arm-kernel/msg636489.html
+Patch320: arm64-mm-dont-write-garbage-into-TTBR1_EL1-register.patch
+
 # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
 Patch330: arm64-socionext-96b-enablement.patch
 
