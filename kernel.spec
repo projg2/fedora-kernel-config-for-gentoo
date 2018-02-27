@@ -603,6 +603,10 @@ Patch311: arm-clk-bcm2835-hdmi-fixes.patch
 # https://www.spinics.net/lists/arm-kernel/msg632925.html
 Patch313: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
 
+# Found on the db410c on 4.15.4
+# https://www.spinics.net/lists/arm-kernel/msg636489.html
+Patch320: arm64-mm-dont-write-garbage-into-TTBR1_EL1-register.patch
+
 # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
 Patch330: arm64-socionext-96b-enablement.patch
 

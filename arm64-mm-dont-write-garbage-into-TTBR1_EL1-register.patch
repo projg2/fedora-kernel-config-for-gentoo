@@ -1,0 +1,48 @@
+From patchwork Mon Feb 26 20:21:39 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [4.15,02/64] arm64: mm: dont write garbage into TTBR1_EL1 register
+From: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+X-Patchwork-Id: 10243307
+Message-Id: <20180226202153.550888076@linuxfoundation.org>
+To: linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Cc: Nicolas Dechesne <nicolas.dechesne@linaro.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Will Deacon <will.deacon@arm.com>, stable@vger.kernel.org,
+ Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Date: Mon, 26 Feb 2018 21:21:39 +0100
+
+4.15-stable review patch.  If anyone has any objections, please let me know.
+
+------------------
+
+From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+
+Stable backport commit 173358a49173 ("arm64: kpti: Add ->enable callback
+to remap swapper using nG mappings") of upstream commit f992b4dfd58b did
+not survive the backporting process unscathed, and ends up writing garbage
+into the TTBR1_EL1 register, rather than pointing it to the zero page to
+disable translations. Fix that.
+
+Cc: <stable@vger.kernel.org> #v4.14
+Reported-by: Nicolas Dechesne <nicolas.dechesne@linaro.org>
+Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Acked-by: Will Deacon <will.deacon@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/mm/proc.S |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/arm64/mm/proc.S
++++ b/arch/arm64/mm/proc.S
+@@ -155,7 +155,7 @@ ENDPROC(cpu_do_switch_mm)
+ 
+ .macro	__idmap_cpu_set_reserved_ttbr1, tmp1, tmp2
+ 	adrp	\tmp1, empty_zero_page
+-	msr	ttbr1_el1, \tmp2
++	msr	ttbr1_el1, \tmp1
+ 	isb
+ 	tlbi	vmalle1
+ 	dsb	nsh
