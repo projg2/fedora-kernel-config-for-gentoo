@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -580,10 +580,6 @@ Patch307: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch308: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
-# Found on the db410c on 4.15.4
-# https://www.spinics.net/lists/arm-kernel/msg636489.html
-Patch320: arm64-mm-dont-write-garbage-into-TTBR1_EL1-register.patch
-
 # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=synquacer-netsec
 Patch330: arm64-socionext-96b-enablement.patch
 
@@ -633,6 +629,9 @@ Patch652: iwlwifi-mvn.patch
 
 # CVE-2018-1000026 rhbz 1541846 1546744
 Patch653: CVE-2018-1000026.patch
+
+# rhbz 1549316
+Patch654: 0001-ipmi_si-Fix-error-handling-of-platform-device.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1920,6 +1919,10 @@ fi
 #
 #
 %changelog
+* Wed Feb 28 2018 Laura Abbott <labbott@redhat.com> - 4.15.7-200
+- Linux v4.15.7
+- Fix IPMI crash (rhbz 1549316)
+
 * Mon Feb 26 2018 Laura Abbott <labbott@redhat.com> - 4.15.6-200
 - Linux v4.15.6
 
