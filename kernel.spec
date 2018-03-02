@@ -633,6 +633,9 @@ Patch653: CVE-2018-1000026.patch
 # rhbz 1549316
 Patch654: 0001-ipmi_si-Fix-error-handling-of-platform-device.patch
 
+# CVE-2018-1065 rhbz 1547824 1547831
+Patch655: 0001-netfilter-add-back-stackpointer-size-checks.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1931,6 +1934,9 @@ fi
 #
 #
 %changelog
+* Fri Mar 02 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-1065 (rhbz 1547824 1547831)
+
 * Wed Feb 28 2018 Laura Abbott <labbott@redhat.com> - 4.15.7-200
 - Linux v4.15.7
 - Fix IPMI crash (rhbz 1549316)
