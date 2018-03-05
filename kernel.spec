@@ -662,6 +662,9 @@ Patch655: 0001-netfilter-add-back-stackpointer-size-checks.patch
 # CVE-2018-5803 rhbz 1551051 1551053
 Patch656: 0001-sctp-verify-size-of-a-new-chunk-in-_sctp_make_chunk.patch
 
+# rhbz 1549316
+Patch657: ipmi-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1940,6 +1943,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 06 2018 Laura Abbott <labbott@redhat.com>
+- Fixes for IPMI crash (rbhz 1549316)
+
 * Mon Mar 05 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-5803 (rhbz 1551051 1551053)
 
