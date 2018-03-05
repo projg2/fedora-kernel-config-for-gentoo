@@ -636,6 +636,9 @@ Patch654: 0001-ipmi_si-Fix-error-handling-of-platform-device.patch
 # CVE-2018-1065 rhbz 1547824 1547831
 Patch655: 0001-netfilter-add-back-stackpointer-size-checks.patch
 
+# CVE-2018-5803 rhbz 1551051 1551053
+Patch656: 0001-sctp-verify-size-of-a-new-chunk-in-_sctp_make_chunk.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1934,6 +1937,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 05 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-5803 (rhbz 1551051 1551053)
+
 * Fri Mar 02 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-1065 (rhbz 1547824 1547831)
 
