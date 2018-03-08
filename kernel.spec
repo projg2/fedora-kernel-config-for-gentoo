@@ -665,6 +665,9 @@ Patch656: 0001-sctp-verify-size-of-a-new-chunk-in-_sctp_make_chunk.patch
 # rhbz 1549316
 Patch657: ipmi-fixes.patch
 
+# CVE-2018-7757 rhbz 1553361 1553363
+Patch658: 0001-scsi-libsas-fix-memory-leak-in-sas_smp_get_phy_event.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1943,6 +1946,9 @@ fi
 #
 #
 %changelog
+* Thu Mar 08 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-7757 (rhbz 1553361 1553363)
+
 * Tue Mar 06 2018 Laura Abbott <labbott@redhat.com>
 - Fixes for IPMI crash (rbhz 1549316)
 
