@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -630,14 +630,8 @@ Patch652: iwlwifi-mvn.patch
 # CVE-2018-1000026 rhbz 1541846 1546744
 Patch653: CVE-2018-1000026.patch
 
-# rhbz 1549316
-Patch654: 0001-ipmi_si-Fix-error-handling-of-platform-device.patch
-
 # CVE-2018-1065 rhbz 1547824 1547831
 Patch655: 0001-netfilter-add-back-stackpointer-size-checks.patch
-
-# CVE-2018-5803 rhbz 1551051 1551053
-Patch656: 0001-sctp-verify-size-of-a-new-chunk-in-_sctp_make_chunk.patch
 
 # rhbz 1549316
 Patch657: ipmi-fixes.patch
@@ -1943,6 +1937,9 @@ fi
 #
 #
 %changelog
+* Fri Mar 09 2018 Laura Abbott <labbott@redhat.com> - 4.15.8-300
+- Linux v4.15.8
+
 * Thu Mar 08 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-7757 (rhbz 1553361 1553363)
 
