@@ -1873,6 +1873,7 @@ fi
 %changelog
 * Mon Mar 12 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.0-0.rc5.git0.1
 - Linux v4.16-rc5
+- Disable IMA (rhbz 790008)
 
 * Mon Mar 12 2018 Jeremy Cline <jeremy@jcline.org>
 - Disable debugging options.

@@ -1,6 +1,3 @@
-Linux 4.16 rebase notes:
-- Consider turning off all the IMA features?
-
 Linux 4.15 rebase notes:
 - Disable power-management features enabled for F28+
  -Set CONFIG_SND_HDA_POWER_SAVE_DEFAULT=0
