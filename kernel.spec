@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1943,11 +1943,14 @@ fi
 #
 #
 %changelog
+* Mon Mar 12 2018 Laura Abbott <labbott@redhat.com> - 4.15.9-200
+- Linux v4.15.9
+
 * Mon Mar 12 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-7995 (rhbz 1553911 1553918)
 - Fix CVE-2018-8043 (rhbz 1554199 1554200)
 
-* Fri Mar 09 2018 Laura Abbott <labbott@redhat.com> - 4.15.8-300
+* Fri Mar 09 2018 Laura Abbott <labbott@redhat.com> - 4.15.8-200
 - Linux v4.15.8
 
 * Thu Mar 08 2018 Justin M. Forbes <jforbes@fedoraproject.org>
