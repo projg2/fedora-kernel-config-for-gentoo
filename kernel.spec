@@ -639,6 +639,12 @@ Patch657: ipmi-fixes.patch
 # CVE-2018-7757 rhbz 1553361 1553363
 Patch658: 0001-scsi-libsas-fix-memory-leak-in-sas_smp_get_phy_event.patch
 
+# CVE-2018-7995 rhbz 1553911 1553918
+Patch659: 0001-x86-MCE-Serialize-sysfs-changes.patch
+
+# CVE-2018-8043 rhbz 1554199 1554200
+Patch660: 0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1937,6 +1943,10 @@ fi
 #
 #
 %changelog
+* Mon Mar 12 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-7995 (rhbz 1553911 1553918)
+- Fix CVE-2018-8043 (rhbz 1554199 1554200)
+
 * Fri Mar 09 2018 Laura Abbott <labbott@redhat.com> - 4.15.8-300
 - Linux v4.15.8
 
