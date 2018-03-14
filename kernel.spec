@@ -506,6 +506,8 @@ Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
 # ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
 
+# gcc -Werror=aliasing workaround
+Patch003: 0001-Temporarily-work-around-gcc-aliasing-warning-error.patch
 
 %if !%{nopatches}
 
