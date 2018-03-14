@@ -622,6 +622,9 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # rhbz 1509461
 Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
+# rhbz 1554954
+Patch504: mm-page_alloc-fix-boot-hang-in-memmap_init_zone.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
