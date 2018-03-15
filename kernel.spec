@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -653,20 +653,20 @@ Patch652: iwlwifi-mvn.patch
 # CVE-2018-1000026 rhbz 1541846 1546744
 Patch653: CVE-2018-1000026.patch
 
-# CVE-2018-1065 rhbz 1547824 1547831
-Patch655: 0001-netfilter-add-back-stackpointer-size-checks.patch
-
 # rhbz 1549316
 Patch657: ipmi-fixes.patch
 
 # CVE-2018-7757 rhbz 1553361 1553363
 Patch658: 0001-scsi-libsas-fix-memory-leak-in-sas_smp_get_phy_event.patch
 
-# CVE-2018-7995 rhbz 1553911 1553918
-Patch659: 0001-x86-MCE-Serialize-sysfs-changes.patch
-
 # CVE-2018-8043 rhbz 1554199 1554200
 Patch660: 0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
+
+# rhbz 1549042
+Patch661: drm-i915-dp-Write-to-SET_POWER-dpcd-to-enable-MST-hub..patch
+
+# rhbz 1546709
+Patch662: mm-khugepaged-Convert-VM_BUG_ON-to-collapse-fail.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1946,6 +1946,11 @@ fi
 #
 #
 %changelog
+* Thu Mar 15 2018 Laura Abbott <labbott@redhat.com> - 4.15.10-300
+- Linux v4.15.10
+- Fix for dock booting (rhbz 1549042)
+- Fix THP bug (rhbz 1546709)
+
 * Mon Mar 12 2018 Laura Abbott <labbott@redhat.com> - 4.15.9-300
 - Linux v4.15.9
 
