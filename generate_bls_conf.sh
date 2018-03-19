@@ -18,6 +18,7 @@ fi
 
 cat >${output} <<EOF
 title ${NAME} (${kernelver}) ${VERSION}${debugname}
+version ${kernelver}
 linux ${bootprefix}/vmlinuz-${kernelver}
 initrd ${bootprefix}/initramfs-${kernelver}.img
 options \$kernelopts

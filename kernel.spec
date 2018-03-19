@@ -1875,6 +1875,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 19 2018 Javier Martinez Canillas <javierm@redhat.com>
+- Include version field to generated BLS configuration fragment
+
 * Mon Mar 19 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.0-0.rc6.git0.1
 - Linux v4.16-rc6
 
