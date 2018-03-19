@@ -668,6 +668,9 @@ Patch661: drm-i915-dp-Write-to-SET_POWER-dpcd-to-enable-MST-hub..patch
 # rhbz 1546709
 Patch662: mm-khugepaged-Convert-VM_BUG_ON-to-collapse-fail.patch
 
+# CVE-2017-18232 rhbz 1558066 1558067
+Patch663: 0001-scsi-libsas-direct-call-probe-and-destruct.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1946,6 +1949,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 19 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2017-18232 (rhbz 1558066 1558067)
+
 * Thu Mar 15 2018 Laura Abbott <labbott@redhat.com> - 4.15.10-300
 - Linux v4.15.10
 - Fix for dock booting (rhbz 1549042)
