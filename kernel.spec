@@ -608,6 +608,8 @@ Patch316: mmc-sdhci-iproc-Disable-preset-values-for-BCM2835.patch
 # https://www.spinics.net/lists/arm-kernel/msg633945.html
 Patch317: bcm2835-hwrng-Handle-deferred-clock-properly.patch
 
+Patch318: bcm2837-rpi-initial-support-for-the-3.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -1876,6 +1878,9 @@ fi
 #
 #
 %changelog
+* Sun Mar 18 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Initial Raspberry Pi 3+ support
+
 * Wed Mar 14 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.0-0.rc5.git0.2
 - Fix boot hang on aarch64
 

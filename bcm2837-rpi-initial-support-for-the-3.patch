@@ -1,0 +1,215 @@
+From 383c32f69af61774ff3414f98c9bc29f28dca8fa Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Mon, 19 Mar 2018 09:26:57 +0000
+Subject: [PATCH] rpi: initial support for the 3+
+
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+---
+ arch/arm/boot/dts/Makefile                         |  1 +
+ arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts         | 62 ++++++++++++++++++++++
+ arch/arm/boot/dts/bcm283x-rpi-lan7515.dtsi         | 36 +++++++++++++
+ arch/arm64/boot/dts/broadcom/Makefile              |  4 +-
+ .../boot/dts/broadcom/bcm2837-rpi-3-b-plus.dts     |  2 +
+ 5 files changed, 104 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+ create mode 100644 arch/arm/boot/dts/bcm283x-rpi-lan7515.dtsi
+ create mode 100644 arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b-plus.dts
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index ade7a38543dc..05b49935d84b 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -75,6 +75,7 @@ dtb-$(CONFIG_ARCH_BCM2835) += \
+ 	bcm2835-rpi-a-plus.dtb \
+ 	bcm2836-rpi-2-b.dtb \
+ 	bcm2837-rpi-3-b.dtb \
++	bcm2837-rpi-3-b-plus.dtb \
+ 	bcm2835-rpi-zero.dtb \
+ 	bcm2835-rpi-zero-w.dtb
+ dtb-$(CONFIG_ARCH_BCM_5301X) += \
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+new file mode 100644
+index 000000000000..63ff6bc56e36
+--- /dev/null
++++ b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+@@ -0,0 +1,62 @@
++// SPDX-License-Identifier: GPL-2.0
++/dts-v1/;
++#include "bcm2837.dtsi"
++#include "bcm2835-rpi.dtsi"
++#include "bcm283x-rpi-lan7515.dtsi"
++#include "bcm283x-rpi-usb-host.dtsi"
++
++/ {
++	compatible = "raspberrypi,3-model-b-plus", "brcm,bcm2837";
++	model = "Raspberry Pi 3 Model B+";
++
++	chosen {
++		/* 8250 auxiliary UART instead of pl011 */
++		stdout-path = "serial1:115200n8";
++	};
++
++	memory {
++		reg = <0 0x40000000>;
++	};
++
++	leds {
++		act {
++			gpios = <&gpio 47 GPIO_ACTIVE_HIGH>;
++		};
++	};
++};
++
++/* uart0 communicates with the BT module */
++&uart0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart0_gpio32 &gpclk2_gpio43>;
++	status = "okay";
++
++	bluetooth {
++		compatible = "brcm,bcm43438-bt";
++		max-speed = <2000000>;
++	};
++};
++
++/* uart1 is mapped to the pin header */
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1_gpio14>;
++	status = "okay";
++};
++
++/* SDHCI is used to control the SDIO for wireless */
++&sdhci {
++	pinctrl-names = "default";
++	pinctrl-0 = <&emmc_gpio34>;
++	status = "okay";
++	bus-width = <4>;
++	non-removable;
++};
++
++/* SDHOST is used to drive the SD card */
++&sdhost {
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdhost_gpio48>;
++	status = "okay";
++	bus-width = <4>;
++};
+diff --git a/arch/arm/boot/dts/bcm283x-rpi-lan7515.dtsi b/arch/arm/boot/dts/bcm283x-rpi-lan7515.dtsi
+new file mode 100644
+index 000000000000..1b1075d4aa5c
+--- /dev/null
++++ b/arch/arm/boot/dts/bcm283x-rpi-lan7515.dtsi
+@@ -0,0 +1,36 @@
++/ {
++	aliases {
++		ethernet0 = &ethernet;
++	};
++};
++
++&usb {
++	usb1@1 {
++		compatible = "usb424,2514";
++		reg = <1>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		usb1_1@1 {
++			compatible = "usb424,2514";
++			reg = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			ethernet: usbether@1 {
++				compatible = "usb424,7800";
++				reg = <1>;
++				microchip,eee-enabled;
++				microchip,tx-lpi-timer = <600>; /* non-aggressive*/
++			};
++		};
++	};
++};
++
++
++/ {
++	__overrides__ {
++		eee = <&ethernet>,"microchip,eee-enabled?";
++		tx_lpi_timer = <&ethernet>,"microchip,tx-lpi-timer:0";
++	};
++};
+diff --git a/arch/arm64/boot/dts/broadcom/Makefile b/arch/arm64/boot/dts/broadcom/Makefile
+index 2a2591ef1fee..6b5b70542dad 100644
+--- a/arch/arm64/boot/dts/broadcom/Makefile
++++ b/arch/arm64/boot/dts/broadcom/Makefile
+@@ -1,5 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+-dtb-$(CONFIG_ARCH_BCM2835) += bcm2837-rpi-3-b.dtb
++dtb-$(CONFIG_ARCH_BCM2835) += \
++	bcm2837-rpi-3-b.dtb \
++	bcm2837-rpi-3-b-plus.dtb
+ 
+ subdir-y	+= northstar2
+ subdir-y	+= stingray
+diff --git a/arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b-plus.dts b/arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b-plus.dts
+new file mode 100644
+index 000000000000..46ad2023cccf
+--- /dev/null
++++ b/arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b-plus.dts
+@@ -0,0 +1,2 @@
++// SPDX-License-Identifier: GPL-2.0
++#include "arm/bcm2837-rpi-3-b-plus.dts"
+-- 
+2.16.2
+From patchwork Tue Feb 20 12:19:35 2018
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: [v5,5/5] ARM: dts: bcm2837-rpi-3-b: add GPIO expander
+From: Baruch Siach <baruch@tkos.co.il>
+X-Patchwork-Id: 10229995
+Message-Id: <a6d59692dc4847e0b1639a26542e28c95ad5240f.1519128054.git.baruch@tkos.co.il>
+To: Linus Walleij <linus.walleij@linaro.org>,
+ Dave Stevenson <dave.stevenson@raspberrypi.org>,
+ Eric Anholt <eric@anholt.net>, Stefan Wahren <stefan.wahren@i2se.com>
+Cc: devicetree@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
+ linux-gpio@vger.kernel.org, Michael Zoran <mzoran@crowfest.net>,
+ Rob Herring <robh+dt@kernel.org>, linux-rpi-kernel@lists.infradead.org,
+ Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
+Date: Tue, 20 Feb 2018 14:19:35 +0200
+
+Add a description of the RPi3 GPIO expander that the VC4 firmware controls.
+
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+---
+ arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+index 3e4ed7c5b0b3..0b31d995a066 100644
+--- a/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
++++ b/arch/arm/boot/dts/bcm2837-rpi-3-b-plus.dts
+@@ -25,6 +25,23 @@
+ 	};
+ };
+ 
++&firmware {
++	expgpio: gpio {
++		compatible = "raspberrypi,firmware-gpio";
++		gpio-controller;
++		#gpio-cells = <2>;
++		gpio-line-names = "BT_ON",
++				  "WL_ON",
++				  "STATUS_LED",
++				  "LAN_RUN",
++				  "HPD_N",
++				  "CAM_GPIO0",
++				  "CAM_GPIO1",
++				  "PWR_LOW_N";
++		status = "okay";
++	};
++};
++
+ /* uart0 communicates with the BT module */
+ &uart0 {
+ 	pinctrl-names = "default";
+
