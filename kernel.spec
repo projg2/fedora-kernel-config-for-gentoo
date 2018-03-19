@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -613,7 +613,6 @@ Patch628: 0001-Bluetooth-btusb-Add-a-Kconfig-option-to-enable-USB-a.patch
 # Adding these suggested by Benjamin Tissoires
 # Queued in hid.git/for-4.16/hid-quirks-cleanup/multitouch for merging into 4.16
 Patch630: 0001-HID-multitouch-Properly-deal-with-Win8-PTP-reports-w.patch
-Patch631: 0002-HID-multitouch-Only-look-at-non-touch-fields-in-firs.patch
 Patch632: 0003-HID-multitouch-Combine-all-left-button-events-in-a-f.patch
 
 # Make SATA link powermanagement policy configurable for:
@@ -647,6 +646,9 @@ Patch662: mm-khugepaged-Convert-VM_BUG_ON-to-collapse-fail.patch
 
 # CVE-2017-18232 rhbz 1558066 1558067
 Patch663: 0001-scsi-libsas-direct-call-probe-and-destruct.patch
+
+# rhbz 1547037
+Patch664: mmu-ALIGN_DOWN-correct-variable.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1946,6 +1948,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 19 2018 Laura Abbott <labbott@redhat.com> - 4.15.11-200
+- Linux v4.15.11
+
 * Mon Mar 19 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2017-18232 (rhbz 1558066 1558067)
 
