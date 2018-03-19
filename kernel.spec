@@ -1878,6 +1878,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 19 2018 Jeremy Cline <jeremy@jcline.org>
+- Disable debugging options.
+
 * Sun Mar 18 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Initial Raspberry Pi 3+ support
 
