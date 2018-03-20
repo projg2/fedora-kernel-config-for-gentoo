@@ -12,17 +12,19 @@ date=$(date -u +%Y%m%d%H%M%S)
 
 if [ "${variant:-5}" = "debug" ]; then
     debugname=" with debugging"
+    debugid="-debug"
 else
     debugname=""
+    debugid=""
 fi
 
 cat >${output} <<EOF
 title ${NAME} (${kernelver}) ${VERSION}${debugname}
-version ${kernelver}
+version ${kernelver}${debugid}
 linux ${bootprefix}/vmlinuz-${kernelver}
 initrd ${bootprefix}/initramfs-${kernelver}.img
 options \$kernelopts
-id ${ID}-${date}-${kernelver}
+id ${ID}-${date}-${kernelver}${debugid}
 grub_users \$grub_users
 grub_arg --unrestricted
 grub_class kernel${variant}
