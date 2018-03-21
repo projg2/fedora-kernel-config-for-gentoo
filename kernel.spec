@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -646,9 +646,6 @@ Patch662: mm-khugepaged-Convert-VM_BUG_ON-to-collapse-fail.patch
 
 # CVE-2017-18232 rhbz 1558066 1558067
 Patch663: 0001-scsi-libsas-direct-call-probe-and-destruct.patch
-
-# rhbz 1547037
-Patch664: mmu-ALIGN_DOWN-correct-variable.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2000,6 +1997,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 21 2018 Laura Abbott <labbott@redhat.com> - 4.15.12-200
+- Linux v4.15.12
+
 * Mon Mar 19 2018 Laura Abbott <labbott@redhat.com> - 4.15.11-200
 - Linux v4.15.11
 
