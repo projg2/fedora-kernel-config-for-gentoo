@@ -580,19 +580,22 @@ Patch302: arm-revert-mmc-omap_hsmmc-Use-dma_request_chan-for-reque.patch
 # http://patchwork.ozlabs.org/patch/587554/
 Patch303: ARM-tegra-usb-no-reset.patch
 
-Patch305: arm64-Revert-allwinner-a64-pine64-Use-dcdc1-regulato.patch
+Patch304: arm64-Revert-allwinner-a64-pine64-Use-dcdc1-regulato.patch
 
 # https://patchwork.kernel.org/patch/9820417/
-Patch306: qcom-msm89xx-fixes.patch
+Patch305: qcom-msm89xx-fixes.patch
 
 # https://patchwork.kernel.org/patch/10173115/
-Patch307: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
+Patch306: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
 
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
-Patch308: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
+Patch307: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
-# https://www.spinics.net/lists/stable/msg214527.html
-Patch311: arm-clk-bcm2835-hdmi-fixes.patch
+# http://patches.linaro.org/patch/131764/
+Patch308: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
+
+# https://patchwork.kernel.org/patch/10245303/
+Patch309: wcn36xx-reduce-verbosity-of-drivers-messages.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg632925.html
 Patch313: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
@@ -1875,6 +1878,9 @@ fi
 #
 #
 %changelog
+* Thu Mar 22 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Wifi fixes for QCom DragonBoard 410c
+
 * Mon Mar 19 2018 Javier Martinez Canillas <javierm@redhat.com>
 - Include version field to generated BLS configuration fragment
 
