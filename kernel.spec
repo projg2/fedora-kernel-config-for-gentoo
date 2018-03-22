@@ -670,6 +670,9 @@ Patch662: mm-khugepaged-Convert-VM_BUG_ON-to-collapse-fail.patch
 # CVE-2017-18232 rhbz 1558066 1558067
 Patch663: 0001-scsi-libsas-direct-call-probe-and-destruct.patch
 
+# rhbz 1511786
+Patch 664: drm-nouveau-bl-fix-backlight-regression.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2000,6 +2003,9 @@ fi
 #
 #
 %changelog
+* Thu Mar 22 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix for nouveau backlight regression (rhbz 1511786)
+
 * Wed Mar 21 2018 Laura Abbott <labbott@redhat.com> - 4.15.12-300
 - Linux v4.15.12
 
