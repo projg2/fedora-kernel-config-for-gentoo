@@ -1846,7 +1846,7 @@ index e24aa3241387..3ea87a004771 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -1848,6 +1848,9 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, siz
- 	if (!capable(CAP_SYS_ADMIN) && sysctl_unprivileged_bpf_disabled)
+ 	if (sysctl_unprivileged_bpf_disabled && !capable(CAP_SYS_ADMIN))
  		return -EPERM;
 
 +	if (kernel_is_locked_down("BPF"))
