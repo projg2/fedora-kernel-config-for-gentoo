@@ -1878,6 +1878,9 @@ fi
 #
 #
 %changelog
+* Sun Mar 25 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable initial config for Xilinx ZynqMP platforms
+
 * Thu Mar 22 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Wifi fixes for QCom DragonBoard 410c
 
