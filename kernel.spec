@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1948,6 +1948,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 26 2018 Laura Abbott <labbott@redhat.com> - 4.15.13-200
+- Linux v4.15.13
+
 * Thu Mar 22 2018 Laura Abbott <labbott@redhat.com> - 4.15.12-201
 - Rebuild for kernel-devel fix
 
