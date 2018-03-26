@@ -67,7 +67,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 6
+%global rcrev 7
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -616,9 +616,6 @@ Patch318: bcm2837-rpi-initial-support-for-the-3.patch
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
-
-# CVE-2018-7273 rhbz 1547384 1547386
-Patch500: floppy-Don-t-print-kernel-addresses-to-log-in-show_f.patch
 
 # rhbz 1476467
 Patch501: Fix-for-module-sig-verification.patch
@@ -1878,6 +1875,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 26 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.0-0.rc7.git0.1
+- Linux v4.16-rc7
+
 * Sun Mar 25 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable initial config for Xilinx ZynqMP platforms
 
