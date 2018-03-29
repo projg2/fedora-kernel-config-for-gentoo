@@ -648,7 +648,10 @@ Patch662: mm-khugepaged-Convert-VM_BUG_ON-to-collapse-fail.patch
 Patch663: 0001-scsi-libsas-direct-call-probe-and-destruct.patch
 
 # rhbz 1511786
-Patch 664: drm-nouveau-bl-fix-backlight-regression.patch
+Patch664: drm-nouveau-bl-fix-backlight-regression.patch
+
+# rhbz 1558977
+Patch665: sunrpc-remove-incorrect-HMAC-request-initialization.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1948,6 +1951,9 @@ fi
 #
 #
 %changelog
+* Thu Mar 29 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix mounting NFS with kerberos (rhbz 1558977)
+
 * Mon Mar 26 2018 Laura Abbott <labbott@redhat.com> - 4.15.13-200
 - Linux v4.15.13
 
