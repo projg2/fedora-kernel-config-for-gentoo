@@ -626,6 +626,9 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # rhbz 1509461
 Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
+# rhbz 1558977
+Patch504: sunrpc-remove-incorrect-HMAC-request-initialization.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1875,6 +1878,9 @@ fi
 #
 #
 %changelog
+* Thu Mar 29 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix for NFS mounts with Kerberos (rhbz 1558977)
+
 * Mon Mar 26 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.0-0.rc7.git0.1
 - Linux v4.16-rc7
 
