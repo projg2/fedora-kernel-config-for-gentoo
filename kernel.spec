@@ -605,6 +605,9 @@ Patch311: bcm2835-hwrng-Handle-deferred-clock-properly.patch
 
 Patch312: bcm283x-clk-audio-fixes.patch
 
+# https://marc.info/?l=linux-kernel&m=152328880417846&w=2
+Patch313: arm64-thunderx-crypto-zip-fixes.patch
+
 # Enabling Patches for the RPi3+
 Patch320: bcm2837-rpi-initial-support-for-the-3.patch
 Patch321: bcm2837-gpio-expander.patch
@@ -1879,6 +1882,10 @@ fi
 #
 #
 %changelog
+* Mon Apr  9 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- More fixes for Raspberry Pi 3+ lan78xx ethernet interface
+- Fixes for Cavium ThunderX ZIP driver stability
+
 * Mon Apr 09 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.1-200
 - Linux v4.16.1
 
