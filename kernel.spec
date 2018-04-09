@@ -592,6 +592,9 @@ Patch306: wcn36xx-reduce-verbosity-of-drivers-messages.patch
 # https://www.spinics.net/lists/arm-kernel/msg632925.html
 Patch307: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
 
+# https://marc.info/?l=linux-kernel&m=152328880417846&w=2
+Patch308: arm64-thunderx-crypto-zip-fixes.patch
+
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
 Patch320: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
@@ -1877,6 +1880,10 @@ fi
 #
 #
 %changelog
+* Mon Apr  9 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- More fixes for Raspberry Pi 3+ lan78xx ethernet interface
+- Fixes for Cavium ThunderX ZIP driver stability
+
 * Mon Apr 09 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.1-300
 - Linux v4.16.1
 
