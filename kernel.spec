@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1877,6 +1877,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 09 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.1-300
+- Linux v4.16.1
+
 * Mon Apr  2 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.16.0-300
 - Improvements for the Raspberry Pi 3+
 - Fixes and minor improvements to Raspberry Pi 2/3
