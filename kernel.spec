@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1879,6 +1879,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 09 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.1-200
+- Linux v4.16.1
+
 * Thu Apr 05 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.0-200
 - Linux v4.16
 
