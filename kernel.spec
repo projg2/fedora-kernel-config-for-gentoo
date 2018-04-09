@@ -631,6 +631,10 @@ Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 # rhbz 1558977
 Patch504: sunrpc-remove-incorrect-HMAC-request-initialization.patch
 
+# In v4.17
+# rhbz 1549316
+Patch505: ipmi-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1880,6 +1884,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 09 2018 Jeremy Cline <jeremy@jcline.org>
+- Include the KCS IPMI BMC driver that's in F27
+
 * Mon Apr  9 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - More fixes for Raspberry Pi 3+ lan78xx ethernet interface
 - Fixes for Cavium ThunderX ZIP driver stability
