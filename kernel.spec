@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1889,6 +1889,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 12 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.2-300
+- Linux v4.16.2
+
 * Thu Apr 12 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Patch to fix nouveau on Tegra platforms
 - Enable IOMMU on Exynos now upstream does
