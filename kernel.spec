@@ -613,6 +613,12 @@ Patch314: crypto-testmgr-Allow-different-compression-results.patch
 
 Patch315: arm-tegra-fix-nouveau-crash.patch
 
+# https://www.spinics.net/lists/arm-kernel/msg630629.html
+Patch316: arm-sunxi-nvmem-fixH3.patch
+
+# Upstream 4.17 back port
+Patch317: of-i2c-fix-module-aliases.patch
+
 # Enabling Patches for the RPi3+
 Patch320: bcm2837-rpi-initial-support-for-the-3.patch
 Patch321: bcm2837-gpio-expander.patch
@@ -1895,6 +1901,8 @@ fi
 - Patch to fix nouveau on Tegra platforms
 - Enable IOMMU on Exynos now upstream does
 - Further fix for ThunderX ZIP driver
+- Fix for OF i2c module aliases
+- Fix for nvmem on AllWinner H3/H5 SoCs
 
 * Mon Apr 09 2018 Jeremy Cline <jeremy@jcline.org>
 - Include the KCS IPMI BMC driver that's in F27
