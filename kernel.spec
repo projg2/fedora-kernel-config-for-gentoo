@@ -647,6 +647,9 @@ Patch664: drm-nouveau-bl-fix-backlight-regression.patch
 # rhbz 1558977
 Patch665: sunrpc-remove-incorrect-HMAC-request-initialization.patch
 
+# CVE-2018-10021 rhbz 1566407 1566409
+Patch666: 0001-scsi-libsas-defer-ata-device-eh-commands-to-libata.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1945,6 +1948,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 12 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-10021 (rhbz 1566407 1566409)
+
 * Mon Apr 09 2018 Laura Abbott <labbott@redhat.com> - 4.15.16-200
 - Linux v4.15.16
 
