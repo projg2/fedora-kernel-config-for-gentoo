@@ -619,6 +619,9 @@ Patch316: arm-sunxi-nvmem-fixH3.patch
 # Upstream 4.17 back port
 Patch317: of-i2c-fix-module-aliases.patch
 
+# https://patchwork.kernel.org/patch/10311335/
+Patch318: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
+
 # Enabling Patches for the RPi3+
 Patch320: bcm2837-rpi-initial-support-for-the-3.patch
 Patch321: bcm2837-gpio-expander.patch
@@ -1903,6 +1906,7 @@ fi
 - Further fix for ThunderX ZIP driver
 - Fix for OF i2c module aliases
 - Fix for nvmem on AllWinner H3/H5 SoCs
+- Add fix for the BeagleBone boot failure
 
 * Mon Apr 09 2018 Jeremy Cline <jeremy@jcline.org>
 - Include the KCS IPMI BMC driver that's in F27
