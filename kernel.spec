@@ -608,7 +608,10 @@ Patch312: bcm283x-clk-audio-fixes.patch
 # https://marc.info/?l=linux-kernel&m=152328880417846&w=2
 Patch313: arm64-thunderx-crypto-zip-fixes.patch
 
-Patch314: arm-tegra-fix-nouveau-crash.patch
+# https://www.spinics.net/lists/linux-crypto/msg32725.html
+Patch314: crypto-testmgr-Allow-different-compression-results.patch
+
+Patch315: arm-tegra-fix-nouveau-crash.patch
 
 # Enabling Patches for the RPi3+
 Patch320: bcm2837-rpi-initial-support-for-the-3.patch
@@ -1891,6 +1894,7 @@ fi
 * Thu Apr 12 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Patch to fix nouveau on Tegra platforms
 - Enable IOMMU on Exynos now upstream does
+- Further fix for ThunderX ZIP driver
 
 * Mon Apr 09 2018 Jeremy Cline <jeremy@jcline.org>
 - Include the KCS IPMI BMC driver that's in F27
