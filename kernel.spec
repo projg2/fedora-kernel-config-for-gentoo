@@ -603,6 +603,9 @@ Patch310: arm-tegra-fix-nouveau-crash.patch
 # https://www.spinics.net/lists/arm-kernel/msg630629.html
 Patch311: arm-sunxi-nvmem-fixH3.patch
 
+# https://patchwork.kernel.org/patch/10311335/
+Patch312: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
+
 # Upstream 4.17 back port
 Patch319: of-i2c-fix-module-aliases.patch
 
@@ -1904,6 +1907,7 @@ fi
 - Further fix for ThunderX ZIP driver
 - Fix for OF i2c module aliases
 - Fix for nvmem on AllWinner H3/H5 SoCs
+- Add fix for the BeagleBone boot failure
 
 * Mon Apr 09 2018 Jeremy Cline <jeremy@jcline.org>
 - Include the KCS IPMI BMC driver that's in F27
