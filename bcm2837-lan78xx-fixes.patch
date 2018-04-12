@@ -1,0 +1,463 @@
+From 6ed88d188a8240ba44da6578eab7d17e036d0e61 Mon Sep 17 00:00:00 2001
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Tue, 17 Oct 2017 15:04:29 +0100
+Subject: [PATCH] lan78xx: Enable LEDs if no valid EEPROM or OTP
+
+For applications of the LAN78xx that don't have valid programmed
+EEPROMs or OTPs, enabling both LEDs by default seems reasonable.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+---
+ drivers/net/usb/lan78xx.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index a21039852f8d..cd20ce4ed87d 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2414,6 +2414,12 @@ static int lan78xx_reset(struct lan78xx_net *dev)
+ 
+ 	ret = lan78xx_read_reg(dev, HW_CFG, &buf);
+ 	buf |= HW_CFG_MEF_;
++
++	/* If no valid EEPROM and no valid OTP, enable the LEDs by default */
++	if (lan78xx_read_eeprom(dev, 0, 0, NULL) &&
++	    lan78xx_read_otp(dev, 0, 0, NULL))
++	    buf |= HW_CFG_LED0_EN_ | HW_CFG_LED1_EN_;
++
+ 	ret = lan78xx_write_reg(dev, HW_CFG, buf);
+ 
+ 	ret = lan78xx_read_reg(dev, USB_CFG0, &buf);
+From f8a798bb45ae15cbec980c8e921eb377fd1a3df6 Mon Sep 17 00:00:00 2001
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Tue, 28 Nov 2017 12:02:37 +0000
+Subject: [PATCH] lan78xx: Correctly indicate invalid OTP
+
+lan78xx_read_otp tries to return -EINVAL in the event of invalid OTP
+content, but the value gets overwritten before it is returned and the
+read goes ahead anyway. Make the read conditional as it should be
+and preserve the error code.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+---
+ drivers/net/usb/lan78xx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index cd20ce4ed87d..b270935f3f8d 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -929,7 +929,8 @@ static int lan78xx_read_otp(struct lan78xx_net *dev, u32 offset,
+ 			offset += 0x100;
+ 		else
+ 			ret = -EINVAL;
+-		ret = lan78xx_read_raw_otp(dev, offset, length, data);
++		if (!ret)
++			ret = lan78xx_read_raw_otp(dev, offset, length, data);
+ 	}
+ 
+ 	return ret;
+From 4a4710f3847cd087e150f83382dffd92e09d9914 Mon Sep 17 00:00:00 2001
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Sat, 17 Mar 2018 00:10:02 +0100
+Subject: [PATCH] lan78xx: Read MAC address from DT if present
+
+There is a standard mechanism for locating and using a MAC address from
+the Device Tree. Use this facility in the lan78xx driver to support
+applications without programmed EEPROM or OTP.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+---
+ drivers/net/usb/lan78xx.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 60a604cc7647..a21039852f8d 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -36,6 +36,7 @@
+ #include <linux/irq.h>
+ #include <linux/irqchip/chained_irq.h>
+ #include <linux/microchipphy.h>
++#include <linux/of_net.h>
+ #include <linux/phy.h>
+ #include "lan78xx.h"
+ 
+@@ -1639,6 +1640,14 @@ static void lan78xx_init_mac_address(struct lan78xx_net *dev)
+ 	u32 addr_lo, addr_hi;
+ 	int ret;
+ 	u8 addr[6];
++	const u8 *mac_addr;
++
++	/* maybe the boot loader passed the MAC address in devicetree */
++	mac_addr = of_get_mac_address(dev->udev->dev.of_node);
++	if (mac_addr) {
++		ether_addr_copy(addr, mac_addr);
++		goto set_mac_addr;
++	}
+ 
+ 	ret = lan78xx_read_reg(dev, RX_ADDRL, &addr_lo);
+ 	ret = lan78xx_read_reg(dev, RX_ADDRH, &addr_hi);
+@@ -1667,6 +1676,7 @@ static void lan78xx_init_mac_address(struct lan78xx_net *dev)
+ 					  "MAC address set to random addr");
+ 			}
+ 
++set_mac_addr:
+ 			addr_lo = addr[0] | (addr[1] << 8) |
+ 				  (addr[2] << 16) | (addr[3] << 24);
+ 			addr_hi = addr[4] | (addr[5] << 8);
+From b5284e5d2d3562dac311443969a538b7fecb9848 Mon Sep 17 00:00:00 2001
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Wed, 28 Mar 2018 12:18:13 +0100
+Subject: [PATCH 1/5] lan78xx: Ignore DT MAC address if already valid
+
+The patch to set the lan78xx MAC address from DT does so regardless of
+whether or not the interface already has a valid address. As the
+initialisation function is called from the reset handler when the
+interface is brought up, it is impossible to change the MAC address
+in a way that persists across the interface being brought up.
+
+Fix the problem by moving the DT reading code after the check for a
+valid address.
+
+See: https://www.raspberrypi.org/forums/viewtopic.php?f=28&t=209309
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+---
+ drivers/net/usb/lan78xx.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index b43b16b6e7ee..97ee7d3f749d 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -1641,14 +1641,6 @@ static void lan78xx_init_mac_address(struct lan78xx_net *dev)
+ 	u32 addr_lo, addr_hi;
+ 	int ret;
+ 	u8 addr[6];
+-	const u8 *mac_addr;
+-
+-	/* maybe the boot loader passed the MAC address in devicetree */
+-	mac_addr = of_get_mac_address(dev->udev->dev.of_node);
+-	if (mac_addr) {
+-		ether_addr_copy(addr, mac_addr);
+-		goto set_mac_addr;
+-	}
+ 
+ 	ret = lan78xx_read_reg(dev, RX_ADDRL, &addr_lo);
+ 	ret = lan78xx_read_reg(dev, RX_ADDRH, &addr_hi);
+@@ -1661,6 +1653,15 @@ static void lan78xx_init_mac_address(struct lan78xx_net *dev)
+ 	addr[5] = (addr_hi >> 8) & 0xFF;
+ 
+ 	if (!is_valid_ether_addr(addr)) {
++		const u8 *mac_addr;
++
++		/* maybe the boot loader passed the MAC address in devicetree */
++		mac_addr = of_get_mac_address(dev->udev->dev.of_node);
++		if (mac_addr) {
++			ether_addr_copy(addr, mac_addr);
++			goto set_mac_addr;
++		}
++
+ 		/* reading mac address from EEPROM or OTP */
+ 		if ((lan78xx_read_eeprom(dev, EEPROM_MAC_OFFSET, ETH_ALEN,
+ 					 addr) == 0) ||
+-- 
+2.17.0
+
+From 2c5d6ac9133cbfed05b97b34246121bddaf2aea4 Mon Sep 17 00:00:00 2001
+From: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date: Wed, 4 Apr 2018 16:34:24 +0100
+Subject: [PATCH 2/5] net: lan78xx: Allow for VLAN headers in timeout.
+
+The frame abort timeout being set by lan78xx_set_rx_max_frame_length
+didn't account for any VLAN headers, resulting in very low
+throughput if used with tagged VLANs.
+Use VLAN_ETH_HLEN instead of ETH_HLEN to correct for this.
+
+See https://github.com/raspberrypi/linux/issues/2458
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+---
+ drivers/net/usb/lan78xx.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 97ee7d3f749d..5fd7b8569cba 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2193,7 +2193,7 @@ static int lan78xx_change_mtu(struct net_device *netdev, int new_mtu)
+ 	if ((ll_mtu % dev->maxpacket) == 0)
+ 		return -EDOM;
+ 
+-	ret = lan78xx_set_rx_max_frame_length(dev, new_mtu + ETH_HLEN);
++	ret = lan78xx_set_rx_max_frame_length(dev, new_mtu + VLAN_ETH_HLEN);
+ 
+ 	netdev->mtu = new_mtu;
+ 
+@@ -2488,7 +2488,8 @@ static int lan78xx_reset(struct lan78xx_net *dev)
+ 	buf |= FCT_TX_CTL_EN_;
+ 	ret = lan78xx_write_reg(dev, FCT_TX_CTL, buf);
+ 
+-	ret = lan78xx_set_rx_max_frame_length(dev, dev->net->mtu + ETH_HLEN);
++	ret = lan78xx_set_rx_max_frame_length(dev,
++					      dev->net->mtu + VLAN_ETH_HLEN);
+ 
+ 	ret = lan78xx_read_reg(dev, MAC_RX, &buf);
+ 	buf |= MAC_RX_RXEN_;
+-- 
+2.17.0
+
+From 833315351413d94d7db407847448dfeddfafe127 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Mon, 9 Apr 2018 17:51:35 +0100
+Subject: [PATCH 3/5] lan78xx: Connect phy early
+
+When using wicked with a lan78xx device attached to the system, we
+end up with ethtool commands issued on the device before an ifup
+got issued. That lead to the following crash:
+
+    Unable to handle kernel NULL pointer dereference at virtual address 0000039c
+    pgd = ffff800035b30000
+    [0000039c] *pgd=0000000000000000
+    Internal error: Oops: 96000004 [#1] SMP
+    Modules linked in: [...]
+    Supported: Yes
+    CPU: 3 PID: 638 Comm: wickedd Tainted: G            E      4.12.14-0-default #1
+    Hardware name: raspberrypi rpi/rpi, BIOS 2018.03-rc2 02/21/2018
+    task: ffff800035e74180 task.stack: ffff800036718000
+    PC is at phy_ethtool_ksettings_get+0x20/0x98
+    LR is at lan78xx_get_link_ksettings+0x44/0x60 [lan78xx]
+    pc : [<ffff0000086f7f30>] lr : [<ffff000000dcca84>] pstate: 20000005
+    sp : ffff80003671bb20
+    x29: ffff80003671bb20 x28: ffff800035e74180
+    x27: ffff000008912000 x26: 000000000000001d
+    x25: 0000000000000124 x24: ffff000008f74d00
+    x23: 0000004000114809 x22: 0000000000000000
+    x21: ffff80003671bbd0 x20: 0000000000000000
+    x19: ffff80003671bbd0 x18: 000000000000040d
+    x17: 0000000000000001 x16: 0000000000000000
+    x15: 0000000000000000 x14: ffffffffffffffff
+    x13: 0000000000000000 x12: 0000000000000020
+    x11: 0101010101010101 x10: fefefefefefefeff
+    x9 : 7f7f7f7f7f7f7f7f x8 : fefefeff31677364
+    x7 : 0000000080808080 x6 : ffff80003671bc9c
+    x5 : ffff80003671b9f8 x4 : ffff80002c296190
+    x3 : 0000000000000000 x2 : 0000000000000000
+    x1 : ffff80003671bbd0 x0 : ffff80003671bc00
+    Process wickedd (pid: 638, stack limit = 0xffff800036718000)
+    Call trace:
+    Exception stack(0xffff80003671b9e0 to 0xffff80003671bb20)
+    b9e0: ffff80003671bc00 ffff80003671bbd0 0000000000000000 0000000000000000
+    ba00: ffff80002c296190 ffff80003671b9f8 ffff80003671bc9c 0000000080808080
+    ba20: fefefeff31677364 7f7f7f7f7f7f7f7f fefefefefefefeff 0101010101010101
+    ba40: 0000000000000020 0000000000000000 ffffffffffffffff 0000000000000000
+    ba60: 0000000000000000 0000000000000001 000000000000040d ffff80003671bbd0
+    ba80: 0000000000000000 ffff80003671bbd0 0000000000000000 0000004000114809
+    baa0: ffff000008f74d00 0000000000000124 000000000000001d ffff000008912000
+    bac0: ffff800035e74180 ffff80003671bb20 ffff000000dcca84 ffff80003671bb20
+    bae0: ffff0000086f7f30 0000000020000005 ffff80002c296000 ffff800035223900
+    bb00: 0000ffffffffffff 0000000000000000 ffff80003671bb20 ffff0000086f7f30
+    [<ffff0000086f7f30>] phy_ethtool_ksettings_get+0x20/0x98
+    [<ffff000000dcca84>] lan78xx_get_link_ksettings+0x44/0x60 [lan78xx]
+    [<ffff0000087cbc40>] ethtool_get_settings+0x68/0x210
+    [<ffff0000087cc0d4>] dev_ethtool+0x214/0x2180
+    [<ffff0000087e5008>] dev_ioctl+0x400/0x630
+    [<ffff00000879dd00>] sock_do_ioctl+0x70/0x88
+    [<ffff00000879f5f8>] sock_ioctl+0x208/0x368
+    [<ffff0000082cde10>] do_vfs_ioctl+0xb0/0x848
+    [<ffff0000082ce634>] SyS_ioctl+0x8c/0xa8
+    Exception stack(0xffff80003671bec0 to 0xffff80003671c000)
+    bec0: 0000000000000009 0000000000008946 0000fffff4e841d0 0000aa0032687465
+    bee0: 0000aaaafa2319d4 0000fffff4e841d4 0000000032687465 0000000032687465
+    bf00: 000000000000001d 7f7fff7f7f7f7f7f 72606b622e71ff4c 7f7f7f7f7f7f7f7f
+    bf20: 0101010101010101 0000000000000020 ffffffffffffffff 0000ffff7f510c68
+    bf40: 0000ffff7f6a9d18 0000ffff7f44ce30 000000000000040d 0000ffff7f6f98f0
+    bf60: 0000fffff4e842c0 0000000000000001 0000aaaafa2c2e00 0000ffff7f6ab000
+    bf80: 0000fffff4e842c0 0000ffff7f62a000 0000aaaafa2b9f20 0000aaaafa2c2e00
+    bfa0: 0000fffff4e84818 0000fffff4e841a0 0000ffff7f5ad0cc 0000fffff4e841a0
+    bfc0: 0000ffff7f44ce3c 0000000080000000 0000000000000009 000000000000001d
+    bfe0: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+
+The culprit is quite simple: The driver tries to access the phy left and right,
+but only actually has a working reference to it when the device is up.
+
+The fix thus is quite simple too: Get a reference to the phy on probe already
+and keep it even when the device is going down.
+
+With this patch applied, I can successfully run wicked on my system and bring
+the interface up and down as many times as I want, without getting NULL pointer
+dereferences in between.
+
+Signed-off-by: Alexander Graf <agraf@suse.de>
+---
+ drivers/net/usb/lan78xx.c | 34 ++++++++++++++++++----------------
+ 1 file changed, 18 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 5fd7b8569cba..60fa1257721c 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2094,10 +2094,6 @@ static int lan78xx_phy_init(struct lan78xx_net *dev)
+ 
+ 	dev->fc_autoneg = phydev->autoneg;
+ 
+-	phy_start(phydev);
+-
+-	netif_dbg(dev, ifup, dev->net, "phy initialised successfully");
+-
+ 	return 0;
+ 
+ error:
+@@ -2541,9 +2537,9 @@ static int lan78xx_open(struct net_device *net)
+ 	if (ret < 0)
+ 		goto done;
+ 
+-	ret = lan78xx_phy_init(dev);
+-	if (ret < 0)
+-		goto done;
++	phy_start(net->phydev);
++
++	netif_dbg(dev, ifup, dev->net, "phy initialised successfully");
+ 
+ 	/* for Link Check */
+ 	if (dev->urb_intr) {
+@@ -2604,13 +2600,8 @@ static int lan78xx_stop(struct net_device *net)
+ 	if (timer_pending(&dev->stat_monitor))
+ 		del_timer_sync(&dev->stat_monitor);
+ 
+-	phy_unregister_fixup_for_uid(PHY_KSZ9031RNX, 0xfffffff0);
+-	phy_unregister_fixup_for_uid(PHY_LAN8835, 0xfffffff0);
+-
+-	phy_stop(net->phydev);
+-	phy_disconnect(net->phydev);
+-
+-	net->phydev = NULL;
++	if (net->phydev)
++		phy_stop(net->phydev);
+ 
+ 	clear_bit(EVENT_DEV_OPEN, &dev->flags);
+ 	netif_stop_queue(net);
+@@ -3525,8 +3516,13 @@ static void lan78xx_disconnect(struct usb_interface *intf)
+ 		return;
+ 
+ 	udev = interface_to_usbdev(intf);
+-
+ 	net = dev->net;
++
++	phy_unregister_fixup_for_uid(PHY_KSZ9031RNX, 0xfffffff0);
++	phy_unregister_fixup_for_uid(PHY_LAN8835, 0xfffffff0);
++
++	phy_disconnect(net->phydev);
++
+ 	unregister_netdev(net);
+ 
+ 	cancel_delayed_work_sync(&dev->wq);
+@@ -3682,8 +3678,14 @@ static int lan78xx_probe(struct usb_interface *intf,
+ 	pm_runtime_set_autosuspend_delay(&udev->dev,
+ 					 DEFAULT_AUTOSUSPEND_DELAY);
+ 
++	ret = lan78xx_phy_init(dev);
++	if (ret < 0)
++		goto out4;
++
+ 	return 0;
+ 
++out4:
++	unregister_netdev(netdev);
+ out3:
+ 	lan78xx_unbind(dev, intf);
+ out2:
+@@ -4031,7 +4033,7 @@ static int lan78xx_reset_resume(struct usb_interface *intf)
+ 
+ 	lan78xx_reset(dev);
+ 
+-	lan78xx_phy_init(dev);
++	phy_start(dev->net->phydev);
+ 
+ 	return lan78xx_resume(intf);
+ }
+-- 
+2.17.0
+
+From 7b4cc4a0af02c0d798007a143efa7509711d52d7 Mon Sep 17 00:00:00 2001
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Wed, 4 Apr 2018 16:39:44 +0100
+Subject: [PATCH 4/5] lan78xx: Don't reset the interface on open
+
+With Alexander Graf's patch ("lan78xx: Connect phy early") applied,
+the call to lan78xx_reset within lan78xx_open prevents the phy
+interrupt from being generated (even though the link is up).
+
+Avoid this issue by removing the lan78xx_reset call.
+
+See: https://github.com/raspberrypi/linux/issues/2437
+     https://github.com/raspberrypi/linux/issues/2442
+     https://github.com/raspberrypi/linux/issues/2457
+---
+ drivers/net/usb/lan78xx.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 60fa1257721c..293ed1847932 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2533,10 +2533,6 @@ static int lan78xx_open(struct net_device *net)
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	ret = lan78xx_reset(dev);
+-	if (ret < 0)
+-		goto done;
+-
+ 	phy_start(net->phydev);
+ 
+ 	netif_dbg(dev, ifup, dev->net, "phy initialised successfully");
+-- 
+2.17.0
+
+From ddbd11509f01c388b968872aeabf630654275b0a Mon Sep 17 00:00:00 2001
+From: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date: Mon, 9 Apr 2018 14:31:54 +0100
+Subject: [PATCH 5/5] net: lan78xx: Request s/w csum check on VLAN tagged
+ packets.
+
+There appears to be some issue in the LAN78xx where the checksum
+computed on a VLAN tagged packet is incorrect, or at least not
+in the form that the kernel is after. This is most easily shown
+by pinging a device via a VLAN tagged interface and it will dump
+out the error message and stack trace from netdev_rx_csum_fault.
+It has also been seen with standard TCP and UDP packets.
+
+Until this is fully understood, request that the network stack
+computes the checksum on packets signalled as having a VLAN tag
+applied.
+
+See https://github.com/raspberrypi/linux/issues/2458
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+---
+ drivers/net/usb/lan78xx.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 293ed1847932..44cabda17bb6 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2937,8 +2937,12 @@ static void lan78xx_rx_csum_offload(struct lan78xx_net *dev,
+ 				    struct sk_buff *skb,
+ 				    u32 rx_cmd_a, u32 rx_cmd_b)
+ {
++	/* Checksum offload appears to be flawed if used with VLANs.
++	 * Elect for sw checksum check instead.
++	 */
+ 	if (!(dev->net->features & NETIF_F_RXCSUM) ||
+-	    unlikely(rx_cmd_a & RX_CMD_A_ICSM_)) {
++	    unlikely(rx_cmd_a & RX_CMD_A_ICSM_) ||
++	    (rx_cmd_a & RX_CMD_A_FVTG_)) {
+ 		skb->ip_summed = CHECKSUM_NONE;
+ 	} else {
+ 		skb->csum = ntohs((u16)(rx_cmd_b >> RX_CMD_B_CSUM_SHIFT_));
+-- 
+2.17.0
+
