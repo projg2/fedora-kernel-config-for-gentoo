@@ -1900,6 +1900,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 12 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Disable tps65217-charger on BeagleBone to fix USB-OTG port rhbz 1487399
+
 * Thu Apr 12 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.2-300
 - Linux v4.16.2
 
