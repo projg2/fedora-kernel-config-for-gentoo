@@ -649,6 +649,9 @@ Patch504: sunrpc-remove-incorrect-HMAC-request-initialization.patch
 # rhbz 1549316
 Patch505: ipmi-fixes.patch
 
+# rhbz 1566510
+Patch506: net-Revert-macsec-missing-dev_put-on-error-in-macsec_newlink.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1898,6 +1901,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 16 2018 Laura Abbott <labbott@fedoraproject.org>
+- Fix for hang on removal of macsec module (rhbz 1566410)
+
 * Thu Apr 12 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Disable tps65217-charger on BeagleBone to fix USB-OTG port rhbz 1487399
 
