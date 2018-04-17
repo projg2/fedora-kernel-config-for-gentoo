@@ -1901,6 +1901,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 17 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable drivers for Xilinx ZYMQ-MP Ultra96
+
 * Mon Apr 16 2018 Laura Abbott <labbott@fedoraproject.org>
 - Fix for hang on removal of macsec module (rhbz 1566410)
 
