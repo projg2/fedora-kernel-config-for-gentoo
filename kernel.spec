@@ -622,6 +622,8 @@ Patch317: of-i2c-fix-module-aliases.patch
 # https://patchwork.kernel.org/patch/10311335/
 Patch318: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
 
+Patch319: arm-dts-Add-am335x-pocketbeagle.patch
+
 # Enabling Patches for the RPi3+
 Patch320: bcm2837-rpi-initial-support-for-the-3.patch
 Patch321: bcm2837-gpio-expander.patch
@@ -1904,6 +1906,7 @@ fi
 %changelog
 * Thu Apr 19 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable UFS storage options on ARM
+- Add support for Pocket Beagle
 
 * Tue Apr 17 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable drivers for Xilinx ZYMQ-MP Ultra96
