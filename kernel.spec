@@ -606,6 +606,8 @@ Patch311: arm-sunxi-nvmem-fixH3.patch
 # https://patchwork.kernel.org/patch/10311335/
 Patch312: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
 
+Patch313: arm-dts-Add-am335x-pocketbeagle.patch
+
 # Upstream 4.17 back port
 Patch319: of-i2c-fix-module-aliases.patch
 
@@ -1903,6 +1905,7 @@ fi
 %changelog
 * Thu Apr 19 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable UFS storage options on ARM
+- Add support for Pocket Beagle
 
 * Tue Apr 17 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable drivers for Xilinx ZYMQ-MP Ultra96
