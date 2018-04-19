@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -643,14 +643,12 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # rhbz 1509461
 Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
-# rhbz 1558977
-Patch504: sunrpc-remove-incorrect-HMAC-request-initialization.patch
-
+# In v4.17
 # rhbz 1549316
-Patch505: ipmi-fixes.patch
+Patch504: ipmi-fixes.patch
 
 # rhbz 1566510
-Patch506: net-Revert-macsec-missing-dev_put-on-error-in-macsec_newlink.patch
+Patch505: net-Revert-macsec-missing-dev_put-on-error-in-macsec_newlink.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1904,6 +1902,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 19 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.3-200
+- Linux v4.16.3
+
 * Thu Apr 19 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable UFS storage options on ARM
 - Add support for Pocket Beagle
