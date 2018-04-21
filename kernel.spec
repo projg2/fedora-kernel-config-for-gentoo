@@ -580,25 +580,26 @@ Patch302: ARM-tegra-usb-no-reset.patch
 # https://patchwork.kernel.org/patch/9820417/
 Patch303: qcom-msm89xx-fixes.patch
 
+# https://patchwork.kernel.org/patch/10351797/
+Patch304: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
+
 # https://patchwork.kernel.org/patch/10173115/
-Patch304: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
+Patch305: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
 
 # http://patches.linaro.org/patch/131764/
-Patch305: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
+Patch306: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
 
 # https://patchwork.kernel.org/patch/10245303/
-Patch306: wcn36xx-reduce-verbosity-of-drivers-messages.patch
+Patch307: wcn36xx-reduce-verbosity-of-drivers-messages.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg632925.html
-Patch307: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
+Patch308: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
 
 # https://marc.info/?l=linux-kernel&m=152328880417846&w=2
-Patch308: arm64-thunderx-crypto-zip-fixes.patch
+Patch309: arm64-thunderx-crypto-zip-fixes.patch
 
 # https://www.spinics.net/lists/linux-crypto/msg32725.html
-Patch309: crypto-testmgr-Allow-different-compression-results.patch
-
-Patch310: arm-tegra-fix-nouveau-crash.patch
+Patch310: crypto-testmgr-Allow-different-compression-results.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg630629.html
 Patch311: arm-sunxi-nvmem-fixH3.patch
@@ -607,6 +608,8 @@ Patch311: arm-sunxi-nvmem-fixH3.patch
 Patch312: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
 
 Patch313: arm-dts-Add-am335x-pocketbeagle.patch
+
+Patch314: arm-tegra-fix-nouveau-crash.patch
 
 # Upstream 4.17 back port
 Patch319: of-i2c-fix-module-aliases.patch
@@ -1900,6 +1903,9 @@ fi
 #
 #
 %changelog
+* Sun Apr 22 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add quirk patch to fix X-Gene 1 console on HP m400/Mustang (RHBZ 1531140)
+
 * Thu Apr 19 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.3-300
 - Linux v4.16.3
 
