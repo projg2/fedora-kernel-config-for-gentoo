@@ -579,56 +579,59 @@ Patch302: ARM-tegra-usb-no-reset.patch
 # https://patchwork.kernel.org/patch/9820417/
 Patch303: qcom-msm89xx-fixes.patch
 
+# https://patchwork.kernel.org/patch/10351797/
+Patch304: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
+
 # https://patchwork.kernel.org/patch/10173115/
-Patch304: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
+Patch305: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
 
 # http://patches.linaro.org/patch/131764/
-Patch305: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
+Patch306: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
 
 # https://patchwork.kernel.org/patch/10245303/
-Patch306: wcn36xx-reduce-verbosity-of-drivers-messages.patch
+Patch307: wcn36xx-reduce-verbosity-of-drivers-messages.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg632925.html
-Patch307: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
+Patch308: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
 
 # Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
-Patch308: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
+Patch309: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg621982.html
-Patch309: bcm283x-Fix-probing-of-bcm2835-i2s.patch
+Patch310: bcm283x-Fix-probing-of-bcm2835-i2s.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg633942.html
-Patch310: mmc-sdhci-iproc-Disable-preset-values-for-BCM2835.patch
+Patch311: mmc-sdhci-iproc-Disable-preset-values-for-BCM2835.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg633945.html
-Patch311: bcm2835-hwrng-Handle-deferred-clock-properly.patch
+Patch312: bcm2835-hwrng-Handle-deferred-clock-properly.patch
 
-Patch312: bcm283x-clk-audio-fixes.patch
+Patch313: bcm283x-clk-audio-fixes.patch
 
 # https://marc.info/?l=linux-kernel&m=152328880417846&w=2
-Patch313: arm64-thunderx-crypto-zip-fixes.patch
+Patch314: arm64-thunderx-crypto-zip-fixes.patch
 
 # https://www.spinics.net/lists/linux-crypto/msg32725.html
-Patch314: crypto-testmgr-Allow-different-compression-results.patch
+Patch315: crypto-testmgr-Allow-different-compression-results.patch
 
-Patch315: arm-tegra-fix-nouveau-crash.patch
+Patch316: arm-tegra-fix-nouveau-crash.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg630629.html
-Patch316: arm-sunxi-nvmem-fixH3.patch
+Patch317: arm-sunxi-nvmem-fixH3.patch
 
 # Upstream 4.17 back port
-Patch317: of-i2c-fix-module-aliases.patch
+Patch318: of-i2c-fix-module-aliases.patch
 
 # https://patchwork.kernel.org/patch/10311335/
-Patch318: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
+Patch319: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
 
-Patch319: arm-dts-Add-am335x-pocketbeagle.patch
+Patch320: arm-dts-Add-am335x-pocketbeagle.patch
 
 # Enabling Patches for the RPi3+
-Patch320: bcm2837-rpi-initial-support-for-the-3.patch
-Patch321: bcm2837-gpio-expander.patch
-Patch322: bcm2837-enable-pmu.patch
-Patch323: bcm2837-lan78xx-fixes.patch
+Patch330: bcm2837-rpi-initial-support-for-the-3.patch
+Patch331: bcm2837-gpio-expander.patch
+Patch332: bcm2837-enable-pmu.patch
+Patch333: bcm2837-lan78xx-fixes.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1902,6 +1905,9 @@ fi
 #
 #
 %changelog
+* Sun Apr 22 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add quirk patch to fix X-Gene 1 console on HP m400/Mustang (RHBZ 1531140)
+
 * Thu Apr 19 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.3-200
 - Linux v4.16.3
 
