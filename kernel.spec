@@ -627,9 +627,19 @@ Patch319: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
 
 Patch320: arm-dts-Add-am335x-pocketbeagle.patch
 
+# https://patchwork.kernel.org/patch/10354521/
+# https://patchwork.kernel.org/patch/10354187/
+# https://patchwork.kernel.org/patch/10306793/
+# https://patchwork.kernel.org/patch/10133165/
+Patch321: mvebu-a37xx-fixes.patch
+
+# in 4.17, headed to stable
+Patch329: bcm283x-drm-vc4-fix-mem-leak.patch
+
 # Enabling Patches for the RPi3+
-Patch330: bcm2837-rpi-initial-support-for-the-3.patch
-Patch331: bcm2837-gpio-expander.patch
+Patch330: bcm2837-gpio-expander.patch
+# http://www.spinics.net/lists/arm-kernel/msg647617.html
+Patch331: bcm2837-rpi-initial-3plus-support.patch
 Patch332: bcm2837-enable-pmu.patch
 Patch333: bcm2837-lan78xx-fixes.patch
 
@@ -1907,6 +1917,9 @@ fi
 %changelog
 * Sun Apr 22 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add quirk patch to fix X-Gene 1 console on HP m400/Mustang (RHBZ 1531140)
+- Add fixes for Marvell a37xx EspressoBin
+- Update to latest Raspberry Pi 3+ fixes
+- More fixes for lan78xx on the Raspberry Pi 3+
 
 * Thu Apr 19 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.3-200
 - Linux v4.16.3
