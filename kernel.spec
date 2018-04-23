@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 301
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1913,7 +1913,7 @@ fi
 #
 #
 %changelog
-* Sun Apr 22 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+* Sun Apr 22 2018 Peter Robinson <pbrobinson@fedoraproject.org> - 4.16.3-301
 - Add quirk patch to fix X-Gene 1 console on HP m400/Mustang (RHBZ 1531140)
 - Add fixes for Marvell a37xx EspressoBin
 - Update to latest Raspberry Pi 3+ fixes
