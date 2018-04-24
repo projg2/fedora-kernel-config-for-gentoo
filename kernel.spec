@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 301
+%global baserelease 300
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1913,6 +1913,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 24 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.4-300
+- Linux v4.16.4
+
 * Sun Apr 22 2018 Peter Robinson <pbrobinson@fedoraproject.org> - 4.16.3-301
 - Add quirk patch to fix X-Gene 1 console on HP m400/Mustang (RHBZ 1531140)
 - Add fixes for Marvell a37xx EspressoBin
