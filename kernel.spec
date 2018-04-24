@@ -663,6 +663,10 @@ Patch504: ipmi-fixes.patch
 # rhbz 1566510
 Patch505: net-Revert-macsec-missing-dev_put-on-error-in-macsec_newlink.patch
 
+# rhbz 1571036
+# https://patchwork.kernel.org/patch/10345845/
+Patch506: ACPI-video-Only-default-only_lcd-to-true-on-Win8-ready-_desktops_.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1915,6 +1919,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 24 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix a regression in backlight interfaces for some laptops (rhbz 1571036)
+
 * Sun Apr 22 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add quirk patch to fix X-Gene 1 console on HP m400/Mustang (RHBZ 1531140)
 - Add fixes for Marvell a37xx EspressoBin
