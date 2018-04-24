@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1919,8 +1919,9 @@ fi
 #
 #
 %changelog
-* Tue Apr 24 2018 Jeremy Cline <jeremy@jcline.org>
+* Tue Apr 24 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.4-200
 - Fix a regression in backlight interfaces for some laptops (rhbz 1571036)
+- Linux v4.16.4
 
 * Sun Apr 22 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add quirk patch to fix X-Gene 1 console on HP m400/Mustang (RHBZ 1531140)
