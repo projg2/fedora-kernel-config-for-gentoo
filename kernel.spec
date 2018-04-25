@@ -656,6 +656,9 @@ Patch505: net-Revert-macsec-missing-dev_put-on-error-in-macsec_newlink.patch
 # https://patchwork.kernel.org/patch/10345845/
 Patch506: ACPI-video-Only-default-only_lcd-to-true-on-Win8-ready-_desktops_.patch
 
+# rhbz 1565131
+Patch507: xhci-Fix-Kernel-oops-in-xhci-dbgtty.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1928,6 +1931,9 @@ fi
 #
 #
 %changelog
+* Wed Apr 25 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix a kernel oops when using Thunderbolt 3 docks (rhbz 1565131)
+
 * Wed Apr 25 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.4-100
 - Linux v4.16.4 rebase
 - Fix a regression in backlight interfaces for some laptops (rhbz 1571036)
