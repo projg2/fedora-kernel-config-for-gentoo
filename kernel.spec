@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -632,9 +632,6 @@ Patch320: arm-dts-Add-am335x-pocketbeagle.patch
 # https://patchwork.kernel.org/patch/10306793/
 # https://patchwork.kernel.org/patch/10133165/
 Patch321: mvebu-a37xx-fixes.patch
-
-# in 4.17, headed to stable
-Patch329: bcm283x-drm-vc4-fix-mem-leak.patch
 
 # Enabling Patches for the RPi3+
 Patch330: bcm2837-gpio-expander.patch
@@ -1925,8 +1922,10 @@ fi
 #
 #
 %changelog
-* Fri Apr 27 2018 Jeremy Cline <jeremy@jcline.org>
+* Fri Apr 27 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.5-200
 - Fix an issue with bluetooth autosupsend on some XPS 13 9360 (rhbz 1514836)
+- Fix prlimit64 with RLIMIT_CPU ignored (rhbz 1568337)
+- Linux v4.16.5
 
 * Fri Apr 27 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable QLogic NICs on ARM
