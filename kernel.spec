@@ -659,6 +659,9 @@ Patch506: ACPI-video-Only-default-only_lcd-to-true-on-Win8-ready-_desktops_.patc
 # rhbz 1565131
 Patch507: xhci-Fix-Kernel-oops-in-xhci-dbgtty.patch
 
+# rhbz 1514836
+Patch508: Bluetooth-btusb-autosuspend-XPS-13-9360-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1931,6 +1934,9 @@ fi
 #
 #
 %changelog
+* Fri Apr 27 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix an issue with bluetooth autosupsend on some XPS 13 9360 (rhbz 1514836)
+
 * Fri Apr 27 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable QLogic NICs on ARM
 
