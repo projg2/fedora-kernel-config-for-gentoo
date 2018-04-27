@@ -1920,6 +1920,9 @@ fi
 #
 #
 %changelog
+* Fri Apr 27 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable QLogic NICs on ARM
+
 * Wed Apr 25 2018 Jeremy Cline <jeremy@jcline.org>
 - Fix a kernel oops when using Thunderbolt 3 docks (rhbz 1565131)
 
