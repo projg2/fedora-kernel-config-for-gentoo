@@ -620,9 +620,6 @@ Patch315: mvebu-a37xx-fixes.patch
 # Upstream 4.17 back port
 Patch319: of-i2c-fix-module-aliases.patch
 
-# Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
-Patch320: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
-
 # https://www.spinics.net/lists/arm-kernel/msg621982.html
 Patch321: bcm283x-Fix-probing-of-bcm2835-i2s.patch
 
