@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -645,13 +645,6 @@ Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 # In v4.17
 # rhbz 1549316
 Patch504: ipmi-fixes.patch
-
-# rhbz 1566510
-Patch505: net-Revert-macsec-missing-dev_put-on-error-in-macsec_newlink.patch
-
-# rhbz 1571036
-# https://patchwork.kernel.org/patch/10345845/
-Patch506: ACPI-video-Only-default-only_lcd-to-true-on-Win8-ready-_desktops_.patch
 
 # rhbz 1565131
 Patch507: xhci-Fix-Kernel-oops-in-xhci-dbgtty.patch
@@ -1931,6 +1924,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 30 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.6-100
+- Linux v4.16.6
+
 * Fri Apr 27 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.5-100
 - Fix an issue with bluetooth autosupsend on some XPS 13 9360 (rhbz 1514836)
 - Fix prlimit64 with RLIMIT_CPU ignored (rhbz 1568337)
