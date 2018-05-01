@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 202
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -664,7 +664,7 @@ Patch507: xhci-Fix-Kernel-oops-in-xhci-dbgtty.patch
 Patch508: Bluetooth-btusb-autosuspend-XPS-13-9360-fixes.patch
 
 # rhbz 1572944
-Patch509: Revert-random-fix-crng_ready-test.patch
+Patch509: Revert-the-random-series-for-4.16.4.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1918,6 +1918,9 @@ fi
 #
 #
 %changelog
+* Tue May 01 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.6-202
+- Revert the entire random series from 4.16.4 (rhbz 1572944)
+
 * Tue May 01 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.6-201
 - Revert the fix for CVE-2018-1108 (rhbz 1572944)
 
