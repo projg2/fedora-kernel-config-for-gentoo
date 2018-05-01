@@ -655,6 +655,9 @@ Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
 # CVE-2018-12714 rhbz 1595835 1595837
 Patch516: CVE-2018-12714.patch
 
+# rhbz 1572944
+Patch517: Revert-the-random-series-for-4.16.4.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1904,6 +1907,9 @@ fi
 #
 #
 %changelog
+* Fri Jun 29 2018 Jeremy Cline <jeremy@jcline.org>
+- Revert the CRNG init patches (rhbz 1572944)
+
 * Thu Jun 28 2018 Jeremy Cline <jeremy@jcline.org>
 - Fix CVE-2018-12714 (rhbz 1595835 1595837)
 
