@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -651,6 +651,9 @@ Patch507: xhci-Fix-Kernel-oops-in-xhci-dbgtty.patch
 
 # rhbz 1514836
 Patch508: Bluetooth-btusb-autosuspend-XPS-13-9360-fixes.patch
+
+# rhbz 1572944
+Patch509: Revert-random-fix-crng_ready-test.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1924,6 +1927,9 @@ fi
 #
 #
 %changelog
+* Tue May 01 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.6-101
+- Revert the fix for CVE-2018-1108 (rhbz 1572944)
+
 * Mon Apr 30 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.6-100
 - Linux v4.16.6
 
