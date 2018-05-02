@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 202
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -505,9 +505,6 @@ Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
 # ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
 
-# gcc -Werror=aliasing workaround
-Patch003: 0001-Temporarily-work-around-gcc-aliasing-warning-error.patch
-
 %if !%{nopatches}
 
 # Git trees.
@@ -656,9 +653,6 @@ Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 # In v4.17
 # rhbz 1549316
 Patch504: ipmi-fixes.patch
-
-# rhbz 1565131
-Patch507: xhci-Fix-Kernel-oops-in-xhci-dbgtty.patch
 
 # rhbz 1514836
 Patch508: Bluetooth-btusb-autosuspend-XPS-13-9360-fixes.patch
@@ -1918,6 +1912,9 @@ fi
 #
 #
 %changelog
+* Wed May 02 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.7-200
+- Linux v4.16.7
+
 * Tue May 01 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.6-202
 - Revert the entire random series from 4.16.4 (rhbz 1572944)
 
