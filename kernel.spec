@@ -660,6 +660,12 @@ Patch508: Bluetooth-btusb-autosuspend-XPS-13-9360-fixes.patch
 # rhbz 1572944
 Patch509: Revert-the-random-series-for-4.16.4.patch
 
+# CVE-2018-10322 rhbz 1571623 1571624
+Patch510: 0001-xfs-enhance-dinode-verifier.patch
+
+# CVE-2018-10323 rhbz 1571627 1571630
+Patch511: 0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1912,6 +1918,10 @@ fi
 #
 #
 %changelog
+* Fri May 04 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-10322 (rhbz 1571623 1571624)
+- Fix CVE-2018-10323 (rhbz 1571627 1571630)
+
 * Wed May 02 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.7-200
 - Linux v4.16.7
 
