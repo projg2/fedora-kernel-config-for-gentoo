@@ -629,12 +629,18 @@ Patch320: arm-dts-Add-am335x-pocketbeagle.patch
 # https://patchwork.kernel.org/patch/10133165/
 Patch321: mvebu-a37xx-fixes.patch
 
+# https://www.spinics.net/lists/arm-kernel/msg643991.html
+Patch322: arm64-fix-usercopy-whitelist.patch
+
 # Enabling Patches for the RPi3+
 Patch330: bcm2837-gpio-expander.patch
 # http://www.spinics.net/lists/arm-kernel/msg647617.html
 Patch331: bcm2837-rpi-initial-3plus-support.patch
 Patch332: bcm2837-enable-pmu.patch
 Patch333: bcm2837-lan78xx-fixes.patch
+
+# https://patchwork.freedesktop.org/patch/219644/
+Patch334: vc4-Make-sure-vc4_bo_-inc-dec-_usecnt-calls-are-balanced.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1918,6 +1924,9 @@ fi
 #
 #
 %changelog
+* Sat May  5 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- ARM and Raspberry Pi fixes
+
 * Fri May 04 2018 Laura Abbott <labbott@redhat.com>
 - Fix for building out of tree modules on powerpc (rhbz 1574604)
 
