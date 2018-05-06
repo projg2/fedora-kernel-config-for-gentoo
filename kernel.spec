@@ -613,6 +613,9 @@ Patch314: arm-tegra-fix-nouveau-crash.patch
 # https://patchwork.kernel.org/patch/10133165/
 Patch315: mvebu-a37xx-fixes.patch
 
+# https://www.spinics.net/lists/arm-kernel/msg643991.html
+Patch316: arm64-fix-usercopy-whitelist.patch
+
 # Upstream 4.17 back port
 Patch319: of-i2c-fix-module-aliases.patch
 
@@ -633,6 +636,9 @@ Patch330: bcm2837-gpio-expander.patch
 Patch331: bcm2837-rpi-initial-3plus-support.patch
 Patch332: bcm2837-enable-pmu.patch
 Patch333: bcm2837-lan78xx-fixes.patch
+
+# https://patchwork.freedesktop.org/patch/219644/
+Patch334: vc4-Make-sure-vc4_bo_-inc-dec-_usecnt-calls-are-balanced.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1913,6 +1919,9 @@ fi
 #
 #
 %changelog
+* Sat May  5 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- ARM and Raspberry Pi fixes
+
 * Fri May 04 2018 Laura Abbott <labbott@redhat.com>
 - Fix for building out of tree modules on powerpc (rhbz 1574604)
 
