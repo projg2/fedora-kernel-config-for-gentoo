@@ -616,6 +616,9 @@ Patch315: mvebu-a37xx-fixes.patch
 # https://www.spinics.net/lists/arm-kernel/msg643991.html
 Patch316: arm64-fix-usercopy-whitelist.patch
 
+# https://www.spinics.net/lists/linux-tegra/msg32920.html
+Patch318: arm-tegra-USB-driver-dependency-fix.patch
+
 # Upstream 4.17 back port
 Patch319: of-i2c-fix-module-aliases.patch
 
@@ -1921,6 +1924,7 @@ fi
 %changelog
 * Sat May  5 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - ARM and Raspberry Pi fixes
+- Fix USB-2 on Tegra devices
 
 * Fri May 04 2018 Laura Abbott <labbott@redhat.com>
 - Fix for building out of tree modules on powerpc (rhbz 1574604)
