@@ -672,6 +672,9 @@ Patch510: 0001-xfs-enhance-dinode-verifier.patch
 # CVE-2018-10323 rhbz 1571627 1571630
 Patch511: 0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 
+# rhbz 1566258
+Patch512: KVM-vmx-update-sec-exec-controls-for-UMIP-iff-emulating-UMIP.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1922,6 +1925,9 @@ fi
 #
 #
 %changelog
+* Mon May 07 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix issue with KVM on older Core 2 processors (rhbz 1566258)
+
 * Sat May  5 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - ARM and Raspberry Pi fixes
 - Fix USB-2 on Tegra devices
