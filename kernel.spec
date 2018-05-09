@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -630,9 +630,6 @@ Patch330: bcm2837-gpio-expander.patch
 Patch331: bcm2837-rpi-initial-3plus-support.patch
 Patch332: bcm2837-enable-pmu.patch
 Patch333: bcm2837-lan78xx-fixes.patch
-
-# https://patchwork.freedesktop.org/patch/219644/
-Patch334: vc4-Make-sure-vc4_bo_-inc-dec-_usecnt-calls-are-balanced.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1939,6 +1936,9 @@ fi
 #
 #
 %changelog
+* Wed May 09 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.8-200
+- Linux v4.16.8
+
 * Mon May 07 2018 Jeremy Cline <jeremy@jcline.org>
 - Fix issue with KVM on older Core 2 processors (rhbz 1566258)
 
