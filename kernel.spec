@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1939,10 +1939,13 @@ fi
 #
 #
 %changelog
+* Thu May 10 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.8-101
+- Bump the release for a rebuild
+
 * Wed May 09 2018 Jeremy Cline <jeremy@jcline.org>
 - Workaround for m400 uart irq firmware description (rhbz 1574718)
 
-* Wed May 09 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.8-200
+* Wed May 09 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.8-100
 - Linux v4.16.8
 
 * Mon May 07 2018 Jeremy Cline <jeremy@jcline.org>
