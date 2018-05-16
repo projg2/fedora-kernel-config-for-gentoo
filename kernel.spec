@@ -675,6 +675,9 @@ Patch511: 0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 # rhbz 1566258
 Patch512: KVM-vmx-update-sec-exec-controls-for-UMIP-iff-emulating-UMIP.patch
 
+# rhbz 1556797
+Patch513: swiotlb-silent-unwanted-warning-buffer-is-full.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1925,6 +1928,9 @@ fi
 #
 #
 %changelog
+* Tue May 15 2018 Jeremy Cline <jeremy@jcline.org>
+- Silence unwanted "swiotlb buffer is full" warnings (rhbz 1556797)
+
 * Wed May 09 2018 Jeremy Cline <jeremy@jcline.org>
 - Workaround for m400 uart irq firmware description (rhbz 1574718)
 
