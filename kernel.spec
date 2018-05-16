@@ -666,6 +666,9 @@ Patch511: 0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 # rhbz 1566258
 Patch512: KVM-vmx-update-sec-exec-controls-for-UMIP-iff-emulating-UMIP.patch
 
+# rhbz 1556797
+Patch513: swiotlb-silent-unwanted-warning-buffer-is-full.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1939,6 +1942,9 @@ fi
 #
 #
 %changelog
+* Tue May 15 2018 Jeremy Cline <jeremy@jcline.org>
+- Silence unwanted "swiotlb buffer is full" warnings (rhbz 1556797)
+
 * Thu May 10 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.8-101
 - Bump the release for a rebuild
 
