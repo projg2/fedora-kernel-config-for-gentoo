@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -607,9 +607,6 @@ Patch317: arm-sunxi-nvmem-fixH3.patch
 # Upstream 4.17 back port
 Patch318: of-i2c-fix-module-aliases.patch
 
-# https://patchwork.kernel.org/patch/10311335/
-Patch319: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
-
 Patch320: arm-dts-Add-am335x-pocketbeagle.patch
 
 # https://patchwork.kernel.org/patch/10354521/
@@ -651,9 +648,6 @@ Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 # rhbz 1549316
 Patch504: ipmi-fixes.patch
 
-# rhbz 1514836
-Patch508: Bluetooth-btusb-autosuspend-XPS-13-9360-fixes.patch
-
 # rhbz 1572944
 Patch509: Revert-the-random-series-for-4.16.4.patch
 
@@ -665,9 +659,6 @@ Patch511: 0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 
 # rhbz 1566258
 Patch512: KVM-vmx-update-sec-exec-controls-for-UMIP-iff-emulating-UMIP.patch
-
-# rhbz 1556797
-Patch513: swiotlb-silent-unwanted-warning-buffer-is-full.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1942,7 +1933,8 @@ fi
 #
 #
 %changelog
-* Tue May 15 2018 Jeremy Cline <jeremy@jcline.org>
+* Thu May 17 2018 Jeremy Cline <jcline@redhat.com> - 4.16.9-100
+- Linux v4.16.9
 - Silence unwanted "swiotlb buffer is full" warnings (rhbz 1556797)
 
 * Thu May 10 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.8-101
