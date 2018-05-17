@@ -669,6 +669,9 @@ Patch511: 0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 # rhbz 1566258
 Patch512: KVM-vmx-update-sec-exec-controls-for-UMIP-iff-emulating-UMIP.patch
 
+# CVE-2018-1120 rhbz 1575472 1579542
+Patch513: 0001-proc-do-not-access-cmdline-nor-environ-from-file-bac.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1919,6 +1922,9 @@ fi
 #
 #
 %changelog
+* Thu May 17 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-1120 (rhbz 1575472 1579542)
+
 * Thu May 17 2018 Jeremy Cline <jcline@redhat.com> - 4.16.9-300
 - Linux v4.16.9
 - Silence unwanted "swiotlb buffer is full" warnings (rhbz 1556797)
