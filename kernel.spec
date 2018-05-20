@@ -1922,6 +1922,10 @@ fi
 #
 #
 %changelog
+* Sun May 20 2018 Hans de Goede <hdegoede@redhat.com>
+- Enable GPIO_AMDPT, PINCTRL_AMD and X86_AMD_PLATFORM_DEVICE Kconfig options
+  to fix i2c and GPIOs not working on AMD based laptops (rhbz#1510649)
+
 * Thu May 17 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-1120 (rhbz 1575472 1579542)
 
