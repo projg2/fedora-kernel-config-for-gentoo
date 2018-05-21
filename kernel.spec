@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -659,9 +659,6 @@ Patch511: 0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 
 # rhbz 1566258
 Patch512: KVM-vmx-update-sec-exec-controls-for-UMIP-iff-emulating-UMIP.patch
-
-# CVE-2018-1120 rhbz 1575472 1579542
-Patch513: 0001-proc-do-not-access-cmdline-nor-environ-from-file-bac.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1936,6 +1933,9 @@ fi
 #
 #
 %changelog
+* Mon May 21 2018 Jeremy Cline <jcline@redhat.com> - 4.16.10-100
+- Linux v4.16.10
+
 * Sun May 20 2018 Hans de Goede <hdegoede@redhat.com>
 - Enable GPIO_AMDPT, PINCTRL_AMD and X86_AMD_PLATFORM_DEVICE Kconfig options
   to fix i2c and GPIOs not working on AMD based laptops (rhbz#1510649)
