@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -588,9 +588,6 @@ Patch306: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
 # https://patchwork.kernel.org/patch/10245303/
 Patch307: wcn36xx-reduce-verbosity-of-drivers-messages.patch
 
-# https://www.spinics.net/lists/arm-kernel/msg632925.html
-Patch308: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
-
 # https://marc.info/?l=linux-kernel&m=152328880417846&w=2
 Patch309: arm64-thunderx-crypto-zip-fixes.patch
 
@@ -669,6 +666,9 @@ Patch511: 0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 # rbhz 1435837
 # https://www.spinics.net/lists/linux-acpi/msg82405.html
 Patch512: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
+
+# CVE-2018-10840 rhbz 1582346 1582348
+Patch513: ext4-correctly-handle-a-zero-length-xattr-with-a-non.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1920,7 +1920,9 @@ fi
 #
 #
 %changelog
-* Fri May 25 2018 Jeremy Cline <jeremy@jcline.org>
+* Fri May 25 2018 Jeremy Cline <jcline@redhat.com> - 4.16.12-300
+- Linux v4.16.12
+- Fix CVE-2018-10840 (rhbz 1582346 1582348)
 - Fix for incorrect error message about parsing PCCT (rhbz 1435837)
 
 * Tue May 22 2018 Jeremy Cline <jcline@redhat.com> - 4.16.11-300
