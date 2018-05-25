@@ -668,6 +668,10 @@ Patch510: 0001-xfs-enhance-dinode-verifier.patch
 # CVE-2018-10323 rhbz 1571627 1571630
 Patch511: 0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 
+# rbhz 1435837
+# https://www.spinics.net/lists/linux-acpi/msg82405.html
+Patch512: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1921,6 +1925,9 @@ fi
 #
 #
 %changelog
+* Fri May 25 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix for incorrect error message about parsing PCCT (rhbz 1435837)
+
 * Tue May 22 2018 Jeremy Cline <jcline@redhat.com> - 4.16.11-200
 - Linux v4.16.11
 
