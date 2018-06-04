@@ -667,6 +667,10 @@ Patch512: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
 # CVE-2018-10840 rhbz 1582346 1582348
 Patch513: ext4-correctly-handle-a-zero-length-xattr-with-a-non.patch
 
+# rhbz 1583207
+# https://www.spinics.net/lists/kernel/msg2818652.html applies cleanly to 4.17
+Patch514: libata-Drop-SanDisk-SD7UB3Q-G1001-NOLPM-quirk.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1917,6 +1921,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 04 2018 Jeremy Cline <jeremy@jcline.org>
+- Drop SanDisk SD7UB3Q*G1001 NOLPM quirk (rhbz 1583207)
+
 * Wed May 30 2018 Jeremy Cline <jcline@redhat.com> - 4.16.13-300
 - Linux v4.16.13
 - Fixes CVE-2018-11506 (rhbz 1583210 1583213)
