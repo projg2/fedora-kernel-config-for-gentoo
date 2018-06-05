@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -643,9 +643,6 @@ Patch501: Fix-for-module-sig-verification.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# rhbz 1509461
-Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
 
 # In v4.17
 # rhbz 1549316
@@ -1921,6 +1918,9 @@ fi
 #
 #
 %changelog
+* Tue Jun 05 2018 Jeremy Cline <jcline@redhat.com> - 4.16.14-300
+- Linux v4.16.14
+
 * Mon Jun 04 2018 Jeremy Cline <jeremy@jcline.org>
 - Drop SanDisk SD7UB3Q*G1001 NOLPM quirk (rhbz 1583207)
 
