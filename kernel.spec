@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 16
+%define base_sublevel 17
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -194,8 +194,8 @@ Summary: The Linux kernel
 
 # kernel PAE is only built on ARMv7 in rawhide.
 # Fedora 27 and earlier still support PAE, so change this on rebases.
-# %ifnarch armv7hl
-%ifnarch i686 armv7hl
+# %ifnarch i686 armv7hl
+%ifnarch armv7hl
 %define with_pae 0
 %endif
 
@@ -462,7 +462,8 @@ Source39: kernel-x86_64-debug.config
 Source40: generate_all_configs.sh
 Source41: generate_debug_configs.sh
 
-Source42: check_configs.awk
+Source42: process_configs.sh
+Source43: generate_bls_conf.sh
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -504,9 +505,6 @@ Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
 
 # ongoing complaint, full discussion delayed until ksummit/plumbers
 Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
-
-# gcc -Werror=aliasing workaround
-Patch003: 0001-Temporarily-work-around-gcc-aliasing-warning-error.patch
 
 %if !%{nopatches}
 
@@ -572,61 +570,48 @@ Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
 Patch301: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
-
 # http://patchwork.ozlabs.org/patch/587554/
 Patch302: ARM-tegra-usb-no-reset.patch
 
+# https://patchwork.kernel.org/patch/10351797/
+Patch303: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
+# rhbz 1574718
+Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
+
 # https://patchwork.kernel.org/patch/9820417/
-Patch303: qcom-msm89xx-fixes.patch
+Patch305: qcom-msm89xx-fixes.patch
 
 # https://patchwork.kernel.org/patch/10173115/
-Patch304: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
-
-# http://patches.linaro.org/patch/131764/
-Patch305: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
-
-# https://patchwork.kernel.org/patch/10245303/
-Patch306: wcn36xx-reduce-verbosity-of-drivers-messages.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg632925.html
-Patch307: arm-crypto-sunxi-ss-Add-MODULE_ALIAS-to-sun4i-ss.patch
-
-# Fix USB on the RPi https://patchwork.kernel.org/patch/9879371/
-Patch308: bcm283x-dma-mapping-skip-USB-devices-when-configuring-DMA-during-probe.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg621982.html
-Patch309: bcm283x-Fix-probing-of-bcm2835-i2s.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg633942.html
-Patch310: mmc-sdhci-iproc-Disable-preset-values-for-BCM2835.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg633945.html
-Patch311: bcm2835-hwrng-Handle-deferred-clock-properly.patch
-
-Patch312: bcm283x-clk-audio-fixes.patch
+Patch306: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
 
 # https://marc.info/?l=linux-kernel&m=152328880417846&w=2
-Patch313: arm64-thunderx-crypto-zip-fixes.patch
+Patch307: arm64-thunderx-crypto-zip-fixes.patch
 
 # https://www.spinics.net/lists/linux-crypto/msg32725.html
-Patch314: crypto-testmgr-Allow-different-compression-results.patch
+Patch308: crypto-testmgr-Allow-different-compression-results.patch
 
-Patch315: arm-tegra-fix-nouveau-crash.patch
+Patch309: arm-tegra-fix-nouveau-crash.patch
 
-# https://www.spinics.net/lists/arm-kernel/msg630629.html
-Patch316: arm-sunxi-nvmem-fixH3.patch
+# https://patchwork.kernel.org/patch/10346089/
+Patch310: arm-dts-Add-am335x-pocketbeagle.patch
 
-# Upstream 4.17 back port
-Patch317: of-i2c-fix-module-aliases.patch
+# https://www.spinics.net/lists/linux-tegra/msg32920.html
+Patch311: arm-tegra-USB-driver-dependency-fix.patch
 
-# https://patchwork.kernel.org/patch/10311335/
-Patch318: clk-ti-fix-flag-space-conflict-with-clkctrl-clocks.patch
+# https://patchwork.kernel.org/patch/10354521/
+# https://patchwork.kernel.org/patch/10354187/
+# https://patchwork.kernel.org/patch/10306793/
+# https://patchwork.kernel.org/patch/10133165/
+Patch313: mvebu-a37xx-fixes.patch
+
+Patch324: bcm283x-clk-audio-fixes.patch
 
 # Enabling Patches for the RPi3+
-Patch320: bcm2837-rpi-initial-support-for-the-3.patch
-Patch321: bcm2837-gpio-expander.patch
-Patch322: bcm2837-enable-pmu.patch
-Patch323: bcm2837-lan78xx-fixes.patch
+Patch330: bcm2837-rpi-initial-3plus-support.patch
+Patch332: bcm2837-enable-pmu.patch
+Patch333: bcm2837-lan78xx-fixes.patch
+
+Patch335: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -638,15 +623,9 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# rhbz 1509461
-Patch503: v3-2-2-Input-synaptics---Lenovo-X1-Carbon-5-should-use-SMBUS-RMI.patch
-
-# rhbz 1558977
-Patch504: sunrpc-remove-incorrect-HMAC-request-initialization.patch
-
-# In v4.17
-# rhbz 1549316
-Patch505: ipmi-fixes.patch
+# rbhz 1435837
+# https://www.spinics.net/lists/linux-acpi/msg82405.html
+Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -707,13 +686,6 @@ header files define structures and constants that are needed for
 building most standard programs and are also needed for rebuilding the
 cross-glibc package.
 
-
-%package bootwrapper
-Summary: Boot wrapper files for generating combined kernel + initrd images
-Requires: gzip binutils
-%description bootwrapper
-Kernel-bootwrapper contains the wrapper code which makes bootable "zImage"
-files combining both kernel and initial ramdisk.
 
 %package debuginfo-common-%{_target_cpu}
 Summary: Kernel source files used by %{name}-debuginfo packages
@@ -822,6 +794,9 @@ The meta-package for the %{1} kernel\
 Summary: %{variant_summary}\
 Provides: kernel-%{?1:%{1}-}core-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
 Provides: installonlypkg(kernel)\
+%ifarch %{power64}\
+Obsoletes: kernel-bootwrapper\
+%endif\
 %{expand:%%kernel_reqprovconf}\
 %if %{?1:1} %{!?1:0} \
 %{expand:%%kernel_meta_package %{?1:%{1}}}\
@@ -1105,12 +1080,33 @@ xzcat %{SOURCE5000} | patch -p1 -F1 -s
 git commit -a -m "Stable update"
 %endif
 
+# Note: Even in the "nopatches" path some patches (build tweaks and compile
+# fixes) will always get applied; see patch defition above for details
+
+git am %{patches}
+
+# END OF PATCH APPLICATIONS
+
+# Any further pre-build tree manipulations happen here.
+
+chmod +x scripts/checkpatch.pl
+chmod +x tools/objtool/sync-check.sh
+mv COPYING COPYING-%{version}
+
+# This Prevents scripts/setlocalversion from mucking with our version numbers.
+touch .scmversion
+
+# Deal with configs stuff
+mkdir configs
+cd configs
+
 # Drop some necessary files from the source dir into the buildroot
 cp $RPM_SOURCE_DIR/kernel-*.config .
 cp %{SOURCE1000} .
 cp %{SOURCE15} .
 cp %{SOURCE40} .
 cp %{SOURCE41} .
+cp %{SOURCE43} .
 
 %if !%{debugbuildsenabled}
 # The normal build is a really debug build and the user has explicitly requested
@@ -1135,25 +1131,8 @@ do
 done
 %endif
 
-# Note: Even in the "nopatches" path some patches (build tweaks and compile
-# fixes) will always get applied; see patch defition above for details
-
-git am %{patches}
-
-# END OF PATCH APPLICATIONS
-
-# Any further pre-build tree manipulations happen here.
-
-chmod +x scripts/checkpatch.pl
-chmod +x tools/objtool/sync-check.sh
-
-# This Prevents scripts/setlocalversion from mucking with our version numbers.
-touch .scmversion
-
 # only deal with configs if we are going to build for the arch
 %ifnarch %nobuildarches
-
-mkdir configs
 
 %if !%{debugbuildsenabled}
 rm -f kernel-%{version}-*debug.config
@@ -1172,30 +1151,20 @@ CheckConfigs() {
 }
 
 cp %{SOURCE42} .
-# now run oldconfig over all the config files
-for i in *.config
-do
-  cat $i > temp-$i
-  mv $i .config
-  Arch=`head -1 .config | cut -b 3-`
-  make ARCH=$Arch listnewconfig | grep -E '^CONFIG_' >.newoptions || true
+OPTS=""
 %if %{listnewconfig_fail}
-  if [ -s .newoptions ]; then
-    cat .newoptions
-    exit 1
-  fi
+	OPTS="$OPTS -n"
 %endif
-  rm -f .newoptions
-  make ARCH=$Arch oldnoconfig
-  echo "# $Arch" > configs/$i
-  cat .config >> configs/$i
 %if %{configmismatch_fail}
-  CheckConfigs configs/$i temp-$i
+	OPTS="$OPTS -c"
 %endif
-  rm temp-$i
-done
+./process_configs.sh $OPTS kernel %{rpmversion}
+
 # end of kernel config
 %endif
+
+cd ..
+# End of Configs stuff
 
 # get rid of unwanted files resulting from patch fuzz
 find . \( -name "*.orig" -o -name "*~" \) -exec rm -f {} \; >/dev/null
@@ -1323,14 +1292,15 @@ BuildKernel() {
     # we'll get it from the linux-firmware package and we don't want conflicts
     %{make} %{?make_opts} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
 
+    # add an a noop %%defattr statement 'cause rpm doesn't like empty file list files
+    echo '%%defattr(-,-,-)' > ../kernel${Flavour:+-${Flavour}}-ldsoconf.list
     if [ $DoVDSO -ne 0 ]; then
         %{make} %{?make_opts} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT vdso_install KERNELRELEASE=$KernelVer
-        if [ ! -s ldconfig-kernel.conf ]; then
-          echo > ldconfig-kernel.conf "\
-    # Placeholder file, no vDSO hwcap entries used in this kernel."
+        if [ -s ldconfig-kernel.conf ]; then
+            install -D -m 444 ldconfig-kernel.conf \
+                $RPM_BUILD_ROOT/etc/ld.so.conf.d/kernel-$KernelVer.conf
+            echo /etc/ld.so.conf.d/kernel-$KernelVer.conf >> ../kernel${Flavour:+-${Flavour}}-ldsoconf.list
         fi
-        %{__install} -D -m 444 ldconfig-kernel.conf \
-            $RPM_BUILD_ROOT/etc/ld.so.conf.d/kernel-$KernelVer.conf
         rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/vdso/.build-id
     fi
 
@@ -1380,6 +1350,9 @@ BuildKernel() {
     if [ -f arch/$Arch/*lds ]; then
       cp -a arch/$Arch/*lds $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/arch/%{_arch}/ || :
     fi
+    if [ -f arch/%{asmarch}/kernel/module.lds ]; then
+      cp -a --parents arch/%{asmarch}/kernel/module.lds $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+    fi
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/*.o
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/*/*.o
 %ifarch %{power64}
@@ -1389,8 +1362,6 @@ BuildKernel() {
       cp -a --parents arch/%{asmarch}/include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     fi
 %ifarch aarch64
-    # Needed for systemtap
-    cp -a --parents arch/arm64/kernel/module.lds $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     # arch/arm64/include/asm/xen references arch/arm
     cp -a --parents arch/arm/include/asm/xen $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     # arch/arm64/include/asm/opcodes.h references arch/arm
@@ -1422,8 +1393,6 @@ BuildKernel() {
     # dependencies if you so choose.
     cp -a --parents tools/include/* $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/purgatory.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents arch/x86/purgatory/sha256.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents arch/x86/purgatory/sha256.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/stack.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/string.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/setup-x86_64.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
@@ -1564,6 +1533,9 @@ BuildKernel() {
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
+
+    # build a BLS config for this kernel
+    %{SOURCE43} "$KernelVer" "$RPM_BUILD_ROOT" "%{?variant}"
 }
 
 ###
@@ -1701,10 +1673,6 @@ done
 rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
 %endif
 
-%if %{with_bootwrapper}
-make DESTDIR=$RPM_BUILD_ROOT bootwrapper_install WRAPPER_OBJDIR=%{_libdir}/kernel-wrapper WRAPPER_DTSDIR=%{_libdir}/kernel-wrapper/dts
-%endif
-
 ###
 ### clean
 ###
@@ -1827,12 +1795,6 @@ fi
 /usr/*-linux-gnu/include/*
 %endif
 
-%if %{with_bootwrapper}
-%files bootwrapper
-/usr/sbin/*
-%{_libdir}/kernel-wrapper
-%endif
-
 # empty meta-package
 %files
 # This is %%{image_install_path} on an arch where that includes ELF files,
@@ -1846,9 +1808,9 @@ fi
 #
 %define kernel_variant_files(k:) \
 %if %{2}\
-%{expand:%%files -f kernel-%{?3:%{3}-}core.list %{?3:%{3}-}core}\
+%{expand:%%files -f kernel-%{?3:%{3}-}core.list %{?1:-f kernel-%{?3:%{3}-}ldsoconf.list} %{?3:%{3}-}core}\
 %{!?_licensedir:%global license %%doc}\
-%license linux-%{KVERREL}/COPYING\
+%license linux-%{KVERREL}/COPYING-%{version}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}\
 %ghost /%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/.vmlinuz.hmac \
@@ -1868,9 +1830,9 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/build\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
-/etc/ld.so.conf.d/kernel-%{KVERREL}%{?3:+%{3}}.conf\
 %endif\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.*\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules.list %{?3:%{3}-}modules}\
@@ -1900,6 +1862,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 06 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.0-1
+- Linux v4.17
+
 * Thu Apr 12 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Disable tps65217-charger on BeagleBone to fix USB-OTG port rhbz 1487399
 
