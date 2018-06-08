@@ -611,8 +611,6 @@ Patch330: bcm2837-rpi-initial-3plus-support.patch
 Patch332: bcm2837-enable-pmu.patch
 Patch333: bcm2837-lan78xx-fixes.patch
 
-Patch335: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
-
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
