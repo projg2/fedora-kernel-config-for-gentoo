@@ -565,6 +565,9 @@ Patch210: disable-i8042-check-on-apple-mac.patch
 
 Patch211: drm-i915-hush-check-crtc-state.patch
 
+Patch212: efi-secureboot.patch
+Patch213: lockdown-fix-coordination-of-kernel-module-signature-verification.patch
+
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
@@ -1860,6 +1863,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 06 2018 Justin M. Forbes <jforbes@fedoraproject.org>A
+- Secure Boot updates for 4.17 stable
+
 * Wed Jun 06 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.0-1
 - Linux v4.17
 
