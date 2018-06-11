@@ -623,12 +623,22 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
+# rhbz 1470995
+Patch503: kexec-bzimage-verify-pe-signature-fix.patch
+
 # rbhz 1435837
 # https://www.spinics.net/lists/linux-acpi/msg82405.html
 Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
 
 # CVE-2018-12232 rhbz 1590215 1590216
 Patch506: 0001-socket-close-race-condition-between-sock_close-and-s.patch
+
+# https://www.spinics.net/lists/platform-driver-x86/msg15719.html
+Patch507: platform-x86-dell-laptop-Fix-keyboard-backlight-time.patch
+
+# rhbz 1577106
+# http://lists.infradead.org/pipermail/ath10k/2018-June/011582.html
+Patch508: ath10k-Update-the-phymode-along-with-bandwidth-change.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1879,6 +1889,9 @@ fi
 #
 #
 %changelog
+* Tue Jun 19 2018 Jeremy Cline <jeremy@jcline.org>
+- Re-apply the XPS 13 9370 backlight, ath10k bandwidth, and kexec patches
+
 * Mon Jun 18 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.2-200
 - Linux v4.17.2 Rebase
 
