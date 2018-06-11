@@ -302,7 +302,7 @@ index 2c6b00f0c229..527f7e51dc8d 100644
  #endif
 +#ifdef CONFIG_LOCK_DOWN_IN_EFI_SECURE_BOOT
 +	if (efi_enabled(EFI_SECURE_BOOT))
-+		ock_kernel_down("EFI secure boot");
++		lock_kernel_down("EFI secure boot");
 +#endif
  }
 
