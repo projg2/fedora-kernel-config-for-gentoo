@@ -673,6 +673,9 @@ Patch514: libata-Drop-SanDisk-SD7UB3Q-G1001-NOLPM-quirk.patch
 # CVE-2018-10853 rhbz 1589890 1589892
 Patch515: kvm-x86-Check-CPL-in-segmented_write_std.patch
 
+# https://www.spinics.net/lists/platform-driver-x86/msg15719.html
+Patch516: platform-x86-dell-laptop-Fix-keyboard-backlight-time.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1926,6 +1929,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 11 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix for the keyboard backlight on Dell XPS 13 9370
+
 * Mon Jun 11 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-10853 (rhbz 1589890 1589892)
 
