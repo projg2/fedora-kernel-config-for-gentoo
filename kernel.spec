@@ -628,6 +628,9 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # https://www.spinics.net/lists/linux-acpi/msg82405.html
 Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
 
+# CVE-2018-10853 rhbz 1589890 1589892
+Patch505: kvm-x86-Check-CPL-in-segmented_write_std.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1863,7 +1866,10 @@ fi
 #
 #
 %changelog
-* Wed Jun 06 2018 Justin M. Forbes <jforbes@fedoraproject.org>A
+* Mon Jun 11 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-10853 (rhbz 1589890 1589892)
+
+* Wed Jun 06 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Secure Boot updates for 4.17 stable
 
 * Wed Jun 06 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.0-1
