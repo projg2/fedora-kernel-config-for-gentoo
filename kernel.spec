@@ -668,6 +668,9 @@ Patch513: ext4-correctly-handle-a-zero-length-xattr-with-a-non.patch
 # https://www.spinics.net/lists/kernel/msg2818652.html applies cleanly to 4.17
 Patch514: libata-Drop-SanDisk-SD7UB3Q-G1001-NOLPM-quirk.patch
 
+# CVE-2018-10853 rhbz 1589890 1589892
+Patch515: kvm-x86-Check-CPL-in-segmented_write_std.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1918,6 +1921,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 11 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-10853 (rhbz 1589890 1589892)
+
 * Tue Jun 05 2018 Jeremy Cline <jeremy@jcline.org>
 - Enable CONFIG_SCSI_DH on s390x (rhbz 1586189)
 
