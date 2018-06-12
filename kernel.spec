@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1929,8 +1929,9 @@ fi
 #
 #
 %changelog
-* Mon Jun 11 2018 Jeremy Cline <jeremy@jcline.org>
+* Mon Jun 11 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.15-200
 - Fix for the keyboard backlight on Dell XPS 13 9370
+- Linux v4.16.15
 
 * Mon Jun 11 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-10853 (rhbz 1589890 1589892)
