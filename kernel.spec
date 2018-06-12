@@ -631,6 +631,9 @@ Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
 # CVE-2018-10853 rhbz 1589890 1589892
 Patch505: kvm-x86-Check-CPL-in-segmented_write_std.patch
 
+# CVE-2018-12232 rhbz 1590215 1590216
+Patch506: 0001-socket-close-race-condition-between-sock_close-and-s.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1868,6 +1871,7 @@ fi
 %changelog
 * Tue Jun 12 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.1-200
 - Linux v4.17.1
+- Fix CVE-2018-12232 (rhbz 1590215 1590216)
 
 * Mon Jun 11 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-10853 (rhbz 1589890 1589892)
