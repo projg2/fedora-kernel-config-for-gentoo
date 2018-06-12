@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1866,6 +1866,9 @@ fi
 #
 #
 %changelog
+* Tue Jun 12 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.1-200
+- Linux v4.17.1
+
 * Mon Jun 11 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-10853 (rhbz 1589890 1589892)
 
