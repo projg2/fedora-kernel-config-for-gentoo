@@ -677,6 +677,10 @@ Patch516: platform-x86-dell-laptop-Fix-keyboard-backlight-time.patch
 # CVE-2018-12232 rhbz 1590215 1590216
 Patch517: 0001-socket-close-race-condition-between-sock_close-and-s.patch
 
+# rhbz 1577106
+# http://lists.infradead.org/pipermail/ath10k/2018-June/011582.html
+Patch518: ath10k-Update-the-phymode-along-with-bandwidth-change.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1927,6 +1931,9 @@ fi
 #
 #
 %changelog
+* Tue Jun 12 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix a crash in ath10k when bandwidth changes (rhbz 1577106)
+
 * Tue Jun 12 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-12232 (rhbz 1590215 1590216)
 
