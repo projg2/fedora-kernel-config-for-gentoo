@@ -676,6 +676,9 @@ Patch515: kvm-x86-Check-CPL-in-segmented_write_std.patch
 # https://www.spinics.net/lists/platform-driver-x86/msg15719.html
 Patch516: platform-x86-dell-laptop-Fix-keyboard-backlight-time.patch
 
+# CVE-2018-12232 rhbz 1590215 1590216
+Patch517: 0001-socket-close-race-condition-between-sock_close-and-s.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1929,6 +1932,9 @@ fi
 #
 #
 %changelog
+* Tue Jun 12 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-12232 (rhbz 1590215 1590216)
+
 * Mon Jun 11 2018 Jeremy Cline <jeremy@jcline.org> - 4.16.15-200
 - Fix for the keyboard backlight on Dell XPS 13 9370
 - Linux v4.16.15
