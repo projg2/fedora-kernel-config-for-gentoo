@@ -644,6 +644,9 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
+# rhbz 1470995
+Patch503: kexec-bzimage-verify-pe-signature-fix.patch
+
 # In v4.17
 # rhbz 1549316
 Patch504: ipmi-fixes.patch
@@ -1933,6 +1936,7 @@ fi
 %changelog
 * Tue Jun 12 2018 Jeremy Cline <jeremy@jcline.org>
 - Fix a crash in ath10k when bandwidth changes (rhbz 1577106)
+- Fix kexec_file_load pefile signature verification (rhbz 1470995)
 
 * Tue Jun 12 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-12232 (rhbz 1590215 1590216)
