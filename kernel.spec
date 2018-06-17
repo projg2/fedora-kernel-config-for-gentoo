@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -627,9 +627,6 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # rbhz 1435837
 # https://www.spinics.net/lists/linux-acpi/msg82405.html
 Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
-
-# CVE-2018-10853 rhbz 1589890 1589892
-Patch505: kvm-x86-Check-CPL-in-segmented_write_std.patch
 
 # CVE-2018-12232 rhbz 1590215 1590216
 Patch506: 0001-socket-close-race-condition-between-sock_close-and-s.patch
@@ -1869,6 +1866,9 @@ fi
 #
 #
 %changelog
+* Sun Jun 17 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.17.2-200
+- Linux v4.17.2
+
 * Tue Jun 12 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.1-200
 - Linux v4.17.1
 - Fix CVE-2018-12232 (rhbz 1590215 1590216)
