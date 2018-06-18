@@ -42,19 +42,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 16
+%define base_sublevel 17
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -564,75 +564,54 @@ Patch210: disable-i8042-check-on-apple-mac.patch
 
 Patch211: drm-i915-hush-check-crtc-state.patch
 
+Patch212: efi-secureboot.patch
+Patch213: lockdown-fix-coordination-of-kernel-module-signature-verification.patch
+
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
 # http://www.spinics.net/lists/linux-tegra/msg26029.html
 Patch301: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
-
 # http://patchwork.ozlabs.org/patch/587554/
 Patch302: ARM-tegra-usb-no-reset.patch
 
-# https://patchwork.kernel.org/patch/9820417/
-Patch303: qcom-msm89xx-fixes.patch
-
 # https://patchwork.kernel.org/patch/10351797/
-Patch304: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
+Patch303: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
+# rhbz 1574718
+Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
+
+# https://patchwork.kernel.org/patch/9820417/
+Patch305: qcom-msm89xx-fixes.patch
 
 # https://patchwork.kernel.org/patch/10173115/
-Patch305: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
-
-# http://patches.linaro.org/patch/131764/
-Patch306: wcn36xx-Fix-firmware-crash-due-to-corrupted-buffer-address.patch
-
-# https://patchwork.kernel.org/patch/10245303/
-Patch307: wcn36xx-reduce-verbosity-of-drivers-messages.patch
+Patch306: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
 
 # https://marc.info/?l=linux-kernel&m=152328880417846&w=2
-Patch309: arm64-thunderx-crypto-zip-fixes.patch
+Patch307: arm64-thunderx-crypto-zip-fixes.patch
 
 # https://www.spinics.net/lists/linux-crypto/msg32725.html
-Patch310: crypto-testmgr-Allow-different-compression-results.patch
+Patch308: crypto-testmgr-Allow-different-compression-results.patch
 
-# https://www.spinics.net/lists/arm-kernel/msg630629.html
-Patch311: arm-sunxi-nvmem-fixH3.patch
+Patch309: arm-tegra-fix-nouveau-crash.patch
 
-Patch313: arm-dts-Add-am335x-pocketbeagle.patch
+# https://patchwork.kernel.org/patch/10346089/
+Patch310: arm-dts-Add-am335x-pocketbeagle.patch
 
-Patch314: arm-tegra-fix-nouveau-crash.patch
+# https://www.spinics.net/lists/linux-tegra/msg32920.html
+Patch311: arm-tegra-USB-driver-dependency-fix.patch
 
 # https://patchwork.kernel.org/patch/10354521/
 # https://patchwork.kernel.org/patch/10354187/
 # https://patchwork.kernel.org/patch/10306793/
 # https://patchwork.kernel.org/patch/10133165/
-Patch315: mvebu-a37xx-fixes.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg643991.html
-Patch316: arm64-fix-usercopy-whitelist.patch
-
-# https://www.spinics.net/lists/linux-tegra/msg32920.html
-Patch318: arm-tegra-USB-driver-dependency-fix.patch
-
-# Upstream 4.17 back port
-Patch319: of-i2c-fix-module-aliases.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg621982.html
-Patch321: bcm283x-Fix-probing-of-bcm2835-i2s.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg633942.html
-Patch322: mmc-sdhci-iproc-Disable-preset-values-for-BCM2835.patch
+Patch313: mvebu-a37xx-fixes.patch
 
 Patch324: bcm283x-clk-audio-fixes.patch
 
 # Enabling Patches for the RPi3+
-Patch330: bcm2837-gpio-expander.patch
-# http://www.spinics.net/lists/arm-kernel/msg647617.html
-Patch331: bcm2837-rpi-initial-3plus-support.patch
+Patch330: bcm2837-rpi-initial-3plus-support.patch
 Patch332: bcm2837-enable-pmu.patch
 Patch333: bcm2837-lan78xx-fixes.patch
-
-# rhbz 1574718
-Patch340: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -644,42 +623,12 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# rhbz 1470995
-Patch503: kexec-bzimage-verify-pe-signature-fix.patch
-
-# In v4.17
-# rhbz 1549316
-Patch504: ipmi-fixes.patch
-
-# rhbz 1572944
-Patch509: Revert-the-random-series-for-4.16.4.patch
-
-# CVE-2018-10322 rhbz 1571623 1571624
-Patch510: 0001-xfs-enhance-dinode-verifier.patch
-
-# CVE-2018-10323 rhbz 1571627 1571630
-Patch511: 0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
-
 # rbhz 1435837
 # https://www.spinics.net/lists/linux-acpi/msg82405.html
-Patch512: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
-
-# CVE-2018-10840 rhbz 1582346 1582348
-Patch513: ext4-correctly-handle-a-zero-length-xattr-with-a-non.patch
-
-# rhbz 1583207
-# https://www.spinics.net/lists/kernel/msg2818652.html applies cleanly to 4.17
-Patch514: libata-Drop-SanDisk-SD7UB3Q-G1001-NOLPM-quirk.patch
-
-# https://www.spinics.net/lists/platform-driver-x86/msg15719.html
-Patch516: platform-x86-dell-laptop-Fix-keyboard-backlight-time.patch
+Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
 
 # CVE-2018-12232 rhbz 1590215 1590216
-Patch517: 0001-socket-close-race-condition-between-sock_close-and-s.patch
-
-# rhbz 1577106
-# http://lists.infradead.org/pipermail/ath10k/2018-June/011582.html
-Patch518: ath10k-Update-the-phymode-along-with-bandwidth-change.patch
+Patch506: 0001-socket-close-race-condition-between-sock_close-and-s.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1149,6 +1098,7 @@ git am %{patches}
 
 chmod +x scripts/checkpatch.pl
 chmod +x tools/objtool/sync-check.sh
+mv COPYING COPYING-%{version}
 
 # This Prevents scripts/setlocalversion from mucking with our version numbers.
 touch .scmversion
@@ -1450,8 +1400,6 @@ BuildKernel() {
     # dependencies if you so choose.
     cp -a --parents tools/include/* $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/purgatory.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents arch/x86/purgatory/sha256.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents arch/x86/purgatory/sha256.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/stack.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/string.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/setup-x86_64.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
@@ -1879,7 +1827,7 @@ fi
 %if %{2}\
 %{expand:%%files -f kernel-%{?3:%{3}-}core.list %{?1:-f kernel-%{?3:%{3}-}ldsoconf.list} %{?3:%{3}-}core}\
 %{!?_licensedir:%global license %%doc}\
-%license linux-%{KVERREL}/COPYING\
+%license linux-%{KVERREL}/COPYING-%{version}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}\
 %ghost /%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/.vmlinuz.hmac \
@@ -1931,6 +1879,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 18 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.2-200
+- Linux v4.17.2 Rebase
+
 * Sun Jun 17 2018 Jeremy Cline <jcline@redhat.com> - 4.16.16-300
 - Linux v4.16.16
 
