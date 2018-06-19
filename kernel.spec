@@ -640,6 +640,10 @@ Patch507: platform-x86-dell-laptop-Fix-keyboard-backlight-time.patch
 # http://lists.infradead.org/pipermail/ath10k/2018-June/011582.html
 Patch508: ath10k-Update-the-phymode-along-with-bandwidth-change.patch
 
+# rhbz 1568276
+# In 4.18
+Patch509: rtc-nvmem-don-t-return-an-error-when-not-enabled.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1891,6 +1895,7 @@ fi
 %changelog
 * Tue Jun 19 2018 Jeremy Cline <jeremy@jcline.org>
 - Re-apply the XPS 13 9370 backlight, ath10k bandwidth, and kexec patches
+- Don't log an error if RTC_NVMEM isn't enabled (rhbz 1568276)
 
 * Mon Jun 18 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.2-200
 - Linux v4.17.2 Rebase
