@@ -647,6 +647,10 @@ Patch508: ath10k-Update-the-phymode-along-with-bandwidth-change.patch
 # In 4.18
 Patch509: rtc-nvmem-don-t-return-an-error-when-not-enabled.patch
 
+# rhbz 1584216
+Patch510: 1-2-xen-netfront-Fix-mismatched-rtnl_unlock.patch
+Patch511: 2-2-xen-netfront-Update-features-after-registering-netdev.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1896,6 +1900,9 @@ fi
 #
 #
 %changelog
+* Thu Jun 21 2018 Laura Abbott <labbott@fedoraproject.org>
+- Fix for Xen MTU issue (rhbz 1584216)
+
 * Thu Jun 21 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add fix for 96boards DB410c
 
