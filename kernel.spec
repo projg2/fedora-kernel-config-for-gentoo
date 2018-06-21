@@ -600,6 +600,9 @@ Patch310: arm-dts-Add-am335x-pocketbeagle.patch
 # https://www.spinics.net/lists/linux-tegra/msg32920.html
 Patch311: arm-tegra-USB-driver-dependency-fix.patch
 
+# https://patchwork.kernel.org/patch/10348701/
+Patch312: arm64-msm8916-fix-gic_irq_domain_translate-warnings.patch
+
 # https://patchwork.kernel.org/patch/10354521/
 # https://patchwork.kernel.org/patch/10354187/
 # https://patchwork.kernel.org/patch/10306793/
@@ -1893,6 +1896,9 @@ fi
 #
 #
 %changelog
+* Thu Jun 21 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add fix for 96boards DB410c
+
 * Tue Jun 19 2018 Jeremy Cline <jeremy@jcline.org>
 - Re-apply the XPS 13 9370 backlight, ath10k bandwidth, and kexec patches
 - Don't log an error if RTC_NVMEM isn't enabled (rhbz 1568276)
