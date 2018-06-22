@@ -15,4 +15,4 @@ ethdrvs="3com adaptec alteon altera amd atheros broadcom cadence chelsio cisco d
 
 drmdrvs="amd armada bridge ast exynos etnaviv hisilicon i2c imx meson mgag200 msm omapdrm panel nouveau radeon rockchip sti sun4i sun4i-drm-hdmi tegra tilcdc tinydrm via vc4"
 
-singlemods="ntb_netdev iscsi_ibft iscsi_boot_sysfs megaraid pmcraid qedi qla1280 9pnet_rdma rpcrdma nvmet-rdma nvme-rdma hid-picolcd hid-prodikeys hwa-hc hwpoison-inject target_core_user sbp_target cxgbit iw_cxgb3 iw_cxgb4 cxgb3i cxgb3i cxgb3i_ddp cxgb4i chcr bq27xxx_battery_hdq"
+singlemods="ntb_netdev iscsi_ibft iscsi_boot_sysfs megaraid pmcraid qedi qla1280 9pnet_rdma rpcrdma nvmet-rdma nvme-rdma hid-picolcd hid-prodikeys hwa-hc hwpoison-inject target_core_user sbp_target cxgbit iw_cxgb3 iw_cxgb4 cxgb3i cxgb3i cxgb3i_ddp cxgb4i chcr chtls bq27xxx_battery_hdq"
