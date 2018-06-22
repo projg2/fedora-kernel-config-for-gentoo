@@ -651,6 +651,9 @@ Patch509: rtc-nvmem-don-t-return-an-error-when-not-enabled.patch
 Patch510: 1-2-xen-netfront-Fix-mismatched-rtnl_unlock.patch
 Patch511: 2-2-xen-netfront-Update-features-after-registering-netdev.patch
 
+# CVE-2018-12633 rhbz 1594170 1594172
+Patch512: 0001-virt-vbox-Only-copy_from_user-the-request-header-onc.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1900,6 +1903,9 @@ fi
 #
 #
 %changelog
+* Fri Jun 22 2018 Justin M. Forbes <jforbes@fedoraproject.org> 
+- Fix CVE-2018-12633 (rhbz 1594170 1594172)
+
 * Thu Jun 21 2018 Laura Abbott <labbott@fedoraproject.org>
 - Fix for Xen MTU issue (rhbz 1584216)
 
