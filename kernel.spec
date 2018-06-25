@@ -660,6 +660,9 @@ Patch513: 0001-media-uvcvideo-Prevent-setting-unavailable-flags.patch
 # rhbz 1592454
 Patch514: 0001-media-uvcvideo-Support-realtek-s-UVC-1.5-device.patch
 
+# rhbz 1591516
+Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1911,6 +1914,7 @@ fi
 %changelog
 * Mon Jun 25 2018 Laura Abbott <labbott@fedoraproject.org>
 - Some webcam fixes (rhbz 1592454 1590304)
+- Fix for armv7 siginfo ABI regression (rhbz 1591516)
 
 * Fri Jun 22 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-12633 (rhbz 1594170 1594172)
