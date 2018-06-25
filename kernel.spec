@@ -654,6 +654,12 @@ Patch511: 2-2-xen-netfront-Update-features-after-registering-netdev.patch
 # CVE-2018-12633 rhbz 1594170 1594172
 Patch512: 0001-virt-vbox-Only-copy_from_user-the-request-header-onc.patch
 
+# rhbz 1590304
+Patch513: 0001-media-uvcvideo-Prevent-setting-unavailable-flags.patch
+
+# rhbz 1592454
+Patch514: 0001-media-uvcvideo-Support-realtek-s-UVC-1.5-device.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1903,7 +1909,10 @@ fi
 #
 #
 %changelog
-* Fri Jun 22 2018 Justin M. Forbes <jforbes@fedoraproject.org> 
+* Mon Jun 25 2018 Laura Abbott <labbott@fedoraproject.org>
+- Some webcam fixes (rhbz 1592454 1590304)
+
+* Fri Jun 22 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-12633 (rhbz 1594170 1594172)
 
 * Thu Jun 21 2018 Laura Abbott <labbott@fedoraproject.org>
