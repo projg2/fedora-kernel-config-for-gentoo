@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -633,9 +633,6 @@ Patch503: kexec-bzimage-verify-pe-signature-fix.patch
 # https://www.spinics.net/lists/linux-acpi/msg82405.html
 Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
 
-# CVE-2018-12232 rhbz 1590215 1590216
-Patch506: 0001-socket-close-race-condition-between-sock_close-and-s.patch
-
 # https://www.spinics.net/lists/platform-driver-x86/msg15719.html
 Patch507: platform-x86-dell-laptop-Fix-keyboard-backlight-time.patch
 
@@ -653,9 +650,6 @@ Patch511: 2-2-xen-netfront-Update-features-after-registering-netdev.patch
 
 # CVE-2018-12633 rhbz 1594170 1594172
 Patch512: 0001-virt-vbox-Only-copy_from_user-the-request-header-onc.patch
-
-# rhbz 1590304
-Patch513: 0001-media-uvcvideo-Prevent-setting-unavailable-flags.patch
 
 # rhbz 1592454
 Patch514: 0001-media-uvcvideo-Support-realtek-s-UVC-1.5-device.patch
@@ -1912,6 +1906,10 @@ fi
 #
 #
 %changelog
+* Tue Jun 26 2018 Jeremy Cline <jcline@redhat.com> - 4.17.3-100
+- Linux v4.17.3
+- Don't log an error if RTC_NVMEM isn't enabled (rhbz 1568276)
+
 * Mon Jun 25 2018 Laura Abbott <labbott@fedoraproject.org>
 - Some webcam fixes (rhbz 1592454 1590304)
 - Fix for armv7 siginfo ABI regression (rhbz 1591516)
