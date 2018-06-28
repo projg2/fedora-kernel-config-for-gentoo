@@ -657,6 +657,9 @@ Patch514: 0001-media-uvcvideo-Support-realtek-s-UVC-1.5-device.patch
 # rhbz 1591516
 Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
 
+# CVE-2018-12714 rhbz 1595835 1595837
+Patch516: CVE-2018-12714.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1906,6 +1909,9 @@ fi
 #
 #
 %changelog
+* Thu Jun 28 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix CVE-2018-12714 (rhbz 1595835 1595837)
+
 * Tue Jun 26 2018 Jeremy Cline <jcline@redhat.com> - 4.17.3-200
 - Linux v4.17.3
 
