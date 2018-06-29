@@ -583,9 +583,6 @@ Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 # https://patchwork.kernel.org/patch/9820417/
 Patch305: qcom-msm89xx-fixes.patch
 
-# https://patchwork.kernel.org/patch/10173115/
-Patch306: arm-dts-imx6qdl-udoo-Disable-usbh1-to-avoid-kernel-hang.patch
-
 # https://marc.info/?l=linux-kernel&m=152328880417846&w=2
 Patch307: arm64-thunderx-crypto-zip-fixes.patch
 
@@ -608,8 +605,6 @@ Patch312: arm64-msm8916-fix-gic_irq_domain_translate-warnings.patch
 # https://patchwork.kernel.org/patch/10306793/
 # https://patchwork.kernel.org/patch/10133165/
 Patch313: mvebu-a37xx-fixes.patch
-
-Patch324: bcm283x-clk-audio-fixes.patch
 
 # Enabling Patches for the RPi3+
 Patch330: bcm2837-rpi-initial-3plus-support.patch
