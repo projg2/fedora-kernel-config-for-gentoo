@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -643,17 +643,8 @@ Patch509: rtc-nvmem-don-t-return-an-error-when-not-enabled.patch
 Patch510: 1-2-xen-netfront-Fix-mismatched-rtnl_unlock.patch
 Patch511: 2-2-xen-netfront-Update-features-after-registering-netdev.patch
 
-# CVE-2018-12633 rhbz 1594170 1594172
-Patch512: 0001-virt-vbox-Only-copy_from_user-the-request-header-onc.patch
-
-# rhbz 1592454
-Patch514: 0001-media-uvcvideo-Support-realtek-s-UVC-1.5-device.patch
-
 # rhbz 1591516
 Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
-
-# CVE-2018-12714 rhbz 1595835 1595837
-Patch516: CVE-2018-12714.patch
 
 # rhbz 1572944
 Patch517: Revert-the-random-series-for-4.16.4.patch
@@ -1907,6 +1898,9 @@ fi
 #
 #
 %changelog
+* Tue Jul 03 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.4-200
+- Linux v4.17.4
+
 * Fri Jun 29 2018 Jeremy Cline <jeremy@jcline.org>
 - Revert the CRNG init patches (rhbz 1572944)
 
