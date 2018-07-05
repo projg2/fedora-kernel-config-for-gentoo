@@ -649,6 +649,22 @@ Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
 # rhbz 1572944
 Patch517: Revert-the-random-series-for-4.16.4.patch
 
+# CVE-2018-13053 rhbz 1597747 1597748
+Patch518: alarmtimer-prevent-overflow-for-relative-nanosleep.patch
+
+# CVE-2018-12896 rhbz 1597759 1597760
+Patch519: 1-2-posix-timers-Make-forward-callback-return-s64.patch
+Patch520: 2-2-posix-timers-Sanitize-overrun-handling.patch
+
+# CVE-2018-13093 rhbz 1597766 1597767
+Patch521: 0001-xfs-validate-cached-inodes-are-free-when-allocated.patch
+
+# CVE-2018-13094 rhbz 1597771 1597772
+Patch522: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
+
+# CVE-2018-13095 rhbz 1597775 1597777
+Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1898,6 +1914,13 @@ fi
 #
 #
 %changelog
+* Thu Jul 05 2018 Justin M. Forbes <jforbes@fedoraproject.org> 
+- Fix CVE-2018-13053 (rhbz 1597747 1597748)
+- Fix CVE-2018-12896 (rhbz 1597759 1597760)
+- Fix CVE-2018-13093 (rhbz 1597766 1597767)
+- Fix CVE-2018-13094 (rhbz 1597771 1597772)
+- Fix CVE-2018-13095 (rhbz 1597775 1597777)
+
 * Tue Jul 03 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.4-200
 - Linux v4.17.4
 
