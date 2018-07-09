@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -664,6 +664,9 @@ Patch522: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 
 # CVE-2018-13095 rhbz 1597775 1597777
 Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
+
+# CVE-2018-13405 rhbz 1599161 1599162
+Patch524: CVE-2018-13405.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1914,6 +1917,10 @@ fi
 #
 #
 %changelog
+* Mon Jul 09 2018 Jeremy Cline <jcline@redhat.com> - 4.17.5-100
+- Linux v4.17.5
+- Fix CVE-2018-13405 (rhbz 1599161 1599162)
+
 * Thu Jul 05 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-13053 (rhbz 1597747 1597748)
 - Fix CVE-2018-12896 (rhbz 1597759 1597760) 
