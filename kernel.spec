@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1920,6 +1920,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 11 2018 Jeremy Cline <jcline@redhat.com> - 4.17.6-100
+- Linux v4.17.6
+
 * Wed Jul 11 2018 Jeremy Cline <jeremy@jcline.org>
 - Add device ID for RTL8822BE in the Asus ROG GL702ZC (rhbz 1599917)
 
