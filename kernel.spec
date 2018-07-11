@@ -646,6 +646,9 @@ Patch511: 2-2-xen-netfront-Update-features-after-registering-netdev.patch
 # rhbz 1591516
 Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
 
+# rhbz 1599917
+Patch516: Bluetooth-btusb-Add-additional-device-ID-for-RTL8822.patch
+
 # rhbz 1572944
 Patch517: Revert-the-random-series-for-4.16.4.patch
 
@@ -1917,6 +1920,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 11 2018 Jeremy Cline <jeremy@jcline.org>
+- Add device ID for RTL8822BE in the Asus ROG GL702ZC (rhbz 1599917)
+
 * Mon Jul 09 2018 Jeremy Cline <jcline@redhat.com> - 4.17.5-200
 - Linux v4.17.5
 - Fix CVE-2018-13405 (rhbz 1599161 1599162)
