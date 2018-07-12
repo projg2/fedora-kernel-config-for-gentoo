@@ -1920,6 +1920,9 @@ fi
 #
 #
 %changelog
+* Thu Jul 12 2018 Dan Horák <dan@danny.cz>
+- Enable HDA sound drivers on PPC
+
 * Wed Jul 11 2018 Jeremy Cline <jcline@redhat.com> - 4.17.6-100
 - Linux v4.17.6
 
