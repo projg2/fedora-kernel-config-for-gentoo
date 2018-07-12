@@ -671,6 +671,9 @@ Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 # CVE-2018-13405 rhbz 1599161 1599162
 Patch524: CVE-2018-13405.patch
 
+# rhbz 1592976
+Patch 525: xen-remove-global-bit-from-__default_kernel_pte_mask.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1920,6 +1923,9 @@ fi
 #
 #
 %changelog
+* Thu Jul 12 2018 Jeremy Cline <jeremy@jcline.org>
+- Avoid an early WARN_ON in Xen (rhbz 1592976)
+
 * Thu Jul 12 2018 Dan Horák <dan@danny.cz>
 - Enable HDA sound drivers on PPC
 
