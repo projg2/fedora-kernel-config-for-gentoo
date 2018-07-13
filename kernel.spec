@@ -672,7 +672,10 @@ Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 Patch524: CVE-2018-13405.patch
 
 # rhbz 1592976
-Patch 525: xen-remove-global-bit-from-__default_kernel_pte_mask.patch
+Patch525: xen-remove-global-bit-from-__default_kernel_pte_mask.patch
+
+# rhbz 1597333
+Patch526: xhci-Fix-perceived-dead-host-due-to-runtime-suspend-.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1925,6 +1928,7 @@ fi
 %changelog
 * Thu Jul 12 2018 Jeremy Cline <jeremy@jcline.org>
 - Avoid an early WARN_ON in Xen (rhbz 1592976)
+- Fix perceived dead xhci host (rhbz 1597333)
 
 * Thu Jul 12 2018 Dan Horák <dan@danny.cz>
 - Enable HDA sound drivers on PPC
