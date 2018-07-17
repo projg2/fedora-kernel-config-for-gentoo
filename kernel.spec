@@ -669,7 +669,7 @@ Patch522: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 
 # rhbz 1597333
-Patch526: xhci-Fix-perceived-dead-host-due-to-runtime-suspend-.patch
+# Patch526: xhci-Fix-perceived-dead-host-due-to-runtime-suspend-.patch
 
 # i686 patch that will eventually be 4.17.8
 Patch527: mm-don-t-do-zero_resv_unavail-if-memmap-is-not-allocated.patch
