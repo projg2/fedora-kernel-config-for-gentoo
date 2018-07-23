@@ -639,10 +639,6 @@ Patch508: ath10k-Update-the-phymode-along-with-bandwidth-change.patch
 # In 4.18
 Patch509: rtc-nvmem-don-t-return-an-error-when-not-enabled.patch
 
-# rhbz 1584216
-Patch510: 1-2-xen-netfront-Fix-mismatched-rtnl_unlock.patch
-Patch511: 2-2-xen-netfront-Update-features-after-registering-netdev.patch
-
 # rhbz 1591516
 Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
 
@@ -671,11 +667,12 @@ Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 # rhbz 1597333
 # Patch526: xhci-Fix-perceived-dead-host-due-to-runtime-suspend-.patch
 
-# i686 patch that will eventually be 4.17.8
-Patch527: mm-don-t-do-zero_resv_unavail-if-memmap-is-not-allocated.patch
-
 # rbhz 1607092
 Patch528: Revert-iommu-intel-iommu-Enable-CONFIG_DMA_DIRECT_OP.patch
+
+# rhbz 1602971
+Patch529: ext4-fix-false-negative-and-false-positives.patch
+
 
 # END OF PATCH DEFINITIONS
 
@@ -1926,6 +1923,10 @@ fi
 #
 #
 %changelog
+* Mon Jul 23 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.9-200
+- Linux v4.17.9
+- Fix emergency shell with ext4 rootfs (rhbz 1602971)
+
 * Mon Jul 23 2018 Jeremy Cline <jeremy@jcline.org>
 - Fix iwlwifi module load failure (rhbz 1607092)
 
