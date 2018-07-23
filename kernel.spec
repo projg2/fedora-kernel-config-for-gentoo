@@ -674,6 +674,9 @@ Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 # i686 patch that will eventually be 4.17.8
 Patch527: mm-don-t-do-zero_resv_unavail-if-memmap-is-not-allocated.patch
 
+# rbhz 1607092
+Patch528: Revert-iommu-intel-iommu-Enable-CONFIG_DMA_DIRECT_OP.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1923,6 +1926,9 @@ fi
 #
 #
 %changelog
+* Mon Jul 23 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix iwlwifi module load failure (rhbz 1607092)
+
 * Tue Jul 17 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.7-200
 - Linux v4.17.7
 
