@@ -674,6 +674,9 @@ Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 # rhbz 1602971
 Patch529: ext4-fix-false-negative-and-false-positives.patch
 
+# CVE-2018-14678 rhbz 1608559 1608560
+Patch530: xsa274-linux-4_17.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1926,6 +1929,7 @@ fi
 * Mon Jul 30 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.11-200
 - Linux v4.17.11
 - Turn off kernel-headers for the split
+- Fix CVE-2018-14678 (rhbz 1608559 1608560)
 
 * Wed Jul 25 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.10-200
 - Linux v4.17.10
