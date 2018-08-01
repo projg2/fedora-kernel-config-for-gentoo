@@ -615,6 +615,9 @@ Patch330: bcm2837-rpi-initial-3plus-support.patch
 Patch332: bcm2837-enable-pmu.patch
 Patch333: bcm2837-lan78xx-fixes.patch
 
+# https://patchwork.kernel.org/patch/10547897/
+Patch334: net-lan78xx-fix-rx-handling-before-first-packet-is-send.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -1926,6 +1929,9 @@ fi
 #
 #
 %changelog
+* Wed Aug  1 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add fix for lan78xx RX packets (Raspberry Pi 3B+)
+
 * Mon Jul 30 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.11-200
 - Linux v4.17.11
 - Turn off kernel-headers for the split
