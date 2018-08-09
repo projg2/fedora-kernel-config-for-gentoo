@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -658,12 +658,6 @@ Patch518: alarmtimer-prevent-overflow-for-relative-nanosleep.patch
 # CVE-2018-12896 rhbz 1597759 1597760
 Patch519: 1-2-posix-timers-Make-forward-callback-return-s64.patch
 Patch520: 2-2-posix-timers-Sanitize-overrun-handling.patch
-
-# CVE-2018-13093 rhbz 1597766 1597767
-Patch521: 0001-xfs-validate-cached-inodes-are-free-when-allocated.patch
-
-# CVE-2018-13094 rhbz 1597771 1597772
-Patch522: 0001-xfs-don-t-call-xfs_da_shrink_inode-with-NULL-bp.patch
 
 # CVE-2018-13095 rhbz 1597775 1597777
 Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
@@ -1920,6 +1914,9 @@ fi
 #
 #
 %changelog
+* Thu Aug 09 2018 Justin M. Forbes <jforbes@redhat.com> - 4.17.14-200
+- Linux v4.17.14
+
 * Wed Aug 08 2018 Justin M. Forbes <jforbes@redhat.com> - 4.17.13-200
 - Linux v4.17.13
 
