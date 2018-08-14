@@ -22,7 +22,7 @@ Signed-off-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
  1 file changed, 140 insertions(+)
 
 diff --git a/drivers/video/fbdev/efifb.c b/drivers/video/fbdev/efifb.c
-index c6f78d27947b..67684412ba8a 100644
+index 46a4484e3da7..fa01eecc0a55 100644
 --- a/drivers/video/fbdev/efifb.c
 +++ b/drivers/video/fbdev/efifb.c
 @@ -9,16 +9,39 @@
@@ -63,7 +63,7 @@ index c6f78d27947b..67684412ba8a 100644
 +} __packed;
 +
  static bool request_mem_succeeded = false;
- static u64 mem_flags = EFI_MEMORY_WC | EFI_MEMORY_UC;
+ static bool nowc = false;
  
 @@ -66,6 +89,121 @@ static int efifb_setcolreg(unsigned regno, unsigned red, unsigned green,
  	return 0;
@@ -186,8 +186,8 @@ index c6f78d27947b..67684412ba8a 100644
 +
  static void efifb_destroy(struct fb_info *info)
  {
- 	if (info->screen_base) {
-@@ -311,6 +449,8 @@ static int efifb_probe(struct platform_device *dev)
+ 	if (info->screen_base)
+@@ -283,6 +421,8 @@ static int efifb_probe(struct platform_device *dev)
  		goto err_release_fb;
  	}
  
