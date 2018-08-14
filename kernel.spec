@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -664,6 +664,9 @@ Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 
 # rhbz 1597333
 # Patch526: xhci-Fix-perceived-dead-host-due-to-runtime-suspend-.patch
+
+# CVE-2018-3620 CVE-2018-3646 rhbz 1585005 1615998
+Patch524: foreshadow.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1914,6 +1917,9 @@ fi
 #
 #
 %changelog
+* Tue Aug 14 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.14-101
+- Fix "Foreshadow" CVE-2018-3620 CVE-2018-3646 (rhbz 1585005 1615998)
+
 * Thu Aug 09 2018 Justin M. Forbes <jforbes@redhat.com> - 4.17.14-100
 - Linux v4.17.14
 

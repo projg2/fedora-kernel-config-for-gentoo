@@ -1,0 +1,1668 @@
+From 66509a276c8c1d19ee3f661a41b418d101c57d29 Mon Sep 17 00:00:00 2001
+From: Helge Deller <deller@gmx.de>
+Date: Sat, 28 Jul 2018 11:47:17 +0200
+Subject: parisc: Enable CONFIG_MLONGCALLS by default
+
+From: Helge Deller <deller@gmx.de>
+
+commit 66509a276c8c1d19ee3f661a41b418d101c57d29 upstream.
+
+Enable the -mlong-calls compiler option by default, because otherwise in most
+cases linking the vmlinux binary fails due to truncations of R_PARISC_PCREL22F
+relocations. This fixes building the 64-bit defconfig.
+
+Cc: stable@vger.kernel.org # 4.0+
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/parisc/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/parisc/Kconfig
++++ b/arch/parisc/Kconfig
+@@ -199,7 +199,7 @@ config PREFETCH
+ 
+ config MLONGCALLS
+ 	bool "Enable the -mlong-calls compiler option for big kernels"
+-	def_bool y if (!MODULES)
++	default y
+ 	depends on PA8X00
+ 	help
+ 	  If you configure the kernel to include many drivers built-in instead
+From fedb8da96355f5f64353625bf96dc69423ad1826 Mon Sep 17 00:00:00 2001
+From: John David Anglin <dave.anglin@bell.net>
+Date: Sun, 5 Aug 2018 13:30:31 -0400
+Subject: parisc: Define mb() and add memory barriers to assembler unlock sequences
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From: John David Anglin <dave.anglin@bell.net>
+
+commit fedb8da96355f5f64353625bf96dc69423ad1826 upstream.
+
+For years I thought all parisc machines executed loads and stores in
+order. However, Jeff Law recently indicated on gcc-patches that this is
+not correct. There are various degrees of out-of-order execution all the
+way back to the PA7xxx processor series (hit-under-miss). The PA8xxx
+series has full out-of-order execution for both integer operations, and
+loads and stores.
+
+This is described in the following article:
+http://web.archive.org/web/20040214092531/http://www.cpus.hp.com/technical_references/advperf.shtml
+
+For this reason, we need to define mb() and to insert a memory barrier
+before the store unlocking spinlocks. This ensures that all memory
+accesses are complete prior to unlocking. The ldcw instruction performs
+the same function on entry.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Cc: stable@vger.kernel.org # 4.0+
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/parisc/include/asm/barrier.h |   32 ++++++++++++++++++++++++++++++++
+ arch/parisc/kernel/entry.S        |    2 ++
+ arch/parisc/kernel/pacache.S      |    1 +
+ arch/parisc/kernel/syscall.S      |    4 ++++
+ 4 files changed, 39 insertions(+)
+
+--- /dev/null
++++ b/arch/parisc/include/asm/barrier.h
+@@ -0,0 +1,32 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __ASM_BARRIER_H
++#define __ASM_BARRIER_H
++
++#ifndef __ASSEMBLY__
++
++/* The synchronize caches instruction executes as a nop on systems in
++   which all memory references are performed in order. */
++#define synchronize_caches() __asm__ __volatile__ ("sync" : : : "memory")
++
++#if defined(CONFIG_SMP)
++#define mb()		do { synchronize_caches(); } while (0)
++#define rmb()		mb()
++#define wmb()		mb()
++#define dma_rmb()	mb()
++#define dma_wmb()	mb()
++#else
++#define mb()		barrier()
++#define rmb()		barrier()
++#define wmb()		barrier()
++#define dma_rmb()	barrier()
++#define dma_wmb()	barrier()
++#endif
++
++#define __smp_mb()	mb()
++#define __smp_rmb()	mb()
++#define __smp_wmb()	mb()
++
++#include <asm-generic/barrier.h>
++
++#endif /* !__ASSEMBLY__ */
++#endif /* __ASM_BARRIER_H */
+--- a/arch/parisc/kernel/entry.S
++++ b/arch/parisc/kernel/entry.S
+@@ -482,6 +482,8 @@
+ 	.macro		tlb_unlock0	spc,tmp
+ #ifdef CONFIG_SMP
+ 	or,COND(=)	%r0,\spc,%r0
++	sync
++	or,COND(=)	%r0,\spc,%r0
+ 	stw             \spc,0(\tmp)
+ #endif
+ 	.endm
+--- a/arch/parisc/kernel/pacache.S
++++ b/arch/parisc/kernel/pacache.S
+@@ -353,6 +353,7 @@ ENDPROC_CFI(flush_data_cache_local)
+ 	.macro	tlb_unlock	la,flags,tmp
+ #ifdef CONFIG_SMP
+ 	ldi		1,\tmp
++	sync
+ 	stw		\tmp,0(\la)
+ 	mtsm		\flags
+ #endif
+--- a/arch/parisc/kernel/syscall.S
++++ b/arch/parisc/kernel/syscall.S
+@@ -633,6 +633,7 @@ cas_action:
+ 	sub,<>	%r28, %r25, %r0
+ 2:	stw,ma	%r24, 0(%r26)
+ 	/* Free lock */
++	sync
+ 	stw,ma	%r20, 0(%sr2,%r20)
+ #if ENABLE_LWS_DEBUG
+ 	/* Clear thread register indicator */
+@@ -647,6 +648,7 @@ cas_action:
+ 3:		
+ 	/* Error occurred on load or store */
+ 	/* Free lock */
++	sync
+ 	stw	%r20, 0(%sr2,%r20)
+ #if ENABLE_LWS_DEBUG
+ 	stw	%r0, 4(%sr2,%r20)
+@@ -848,6 +850,7 @@ cas2_action:
+ 
+ cas2_end:
+ 	/* Free lock */
++	sync
+ 	stw,ma	%r20, 0(%sr2,%r20)
+ 	/* Enable interrupts */
+ 	ssm	PSW_SM_I, %r0
+@@ -858,6 +861,7 @@ cas2_end:
+ 22:
+ 	/* Error occurred on load or store */
+ 	/* Free lock */
++	sync
+ 	stw	%r20, 0(%sr2,%r20)
+ 	ssm	PSW_SM_I, %r0
+ 	ldo	1(%r0),%r28
+From 3c53776e29f81719efcf8f7a6e30cdf753bee94d Mon Sep 17 00:00:00 2001
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Mon, 8 Jan 2018 11:51:04 -0800
+Subject: Mark HI and TASKLET softirq synchronous
+
+From: Linus Torvalds <torvalds@linux-foundation.org>
+
+commit 3c53776e29f81719efcf8f7a6e30cdf753bee94d upstream.
+
+Way back in 4.9, we committed 4cd13c21b207 ("softirq: Let ksoftirqd do
+its job"), and ever since we've had small nagging issues with it.  For
+example, we've had:
+
+  1ff688209e2e ("watchdog: core: make sure the watchdog_worker is not deferred")
+  8d5755b3f77b ("watchdog: softdog: fire watchdog even if softirqs do not get to run")
+  217f69743681 ("net: busy-poll: allow preemption in sk_busy_loop()")
+
+all of which worked around some of the effects of that commit.
+
+The DVB people have also complained that the commit causes excessive USB
+URB latencies, which seems to be due to the USB code using tasklets to
+schedule USB traffic.  This seems to be an issue mainly when already
+living on the edge, but waiting for ksoftirqd to handle it really does
+seem to cause excessive latencies.
+
+Now Hanna Hawa reports that this issue isn't just limited to USB URB and
+DVB, but also causes timeout problems for the Marvell SoC team:
+
+ "I'm facing kernel panic issue while running raid 5 on sata disks
+  connected to Macchiatobin (Marvell community board with Armada-8040
+  SoC with 4 ARMv8 cores of CA72) Raid 5 built with Marvell DMA engine
+  and async_tx mechanism (ASYNC_TX_DMA [=y]); the DMA driver (mv_xor_v2)
+  uses a tasklet to clean the done descriptors from the queue"
+
+The latency problem causes a panic:
+
+  mv_xor_v2 f0400000.xor: dma_sync_wait: timeout!
+  Kernel panic - not syncing: async_tx_quiesce: DMA error waiting for transaction
+
+We've discussed simply just reverting the original commit entirely, and
+also much more involved solutions (with per-softirq threads etc).  This
+patch is intentionally stupid and fairly limited, because the issue
+still remains, and the other solutions either got sidetracked or had
+other issues.
+
+We should probably also consider the timer softirqs to be synchronous
+and not be delayed to ksoftirqd (since they were the issue with the
+earlier watchdog problems), but that should be done as a separate patch.
+This does only the tasklet cases.
+
+Reported-and-tested-by: Hanna Hawa <hannah@marvell.com>
+Reported-and-tested-by: Josef Griebichler <griebichler.josef@gmx.at>
+Reported-by: Mauro Carvalho Chehab <mchehab@s-opensource.com>
+Cc: Alan Stern <stern@rowland.harvard.edu>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ kernel/softirq.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -79,12 +79,16 @@ static void wakeup_softirqd(void)
+ 
+ /*
+  * If ksoftirqd is scheduled, we do not want to process pending softirqs
+- * right now. Let ksoftirqd handle this at its own rate, to get fairness.
++ * right now. Let ksoftirqd handle this at its own rate, to get fairness,
++ * unless we're doing some of the synchronous softirqs.
+  */
+-static bool ksoftirqd_running(void)
++#define SOFTIRQ_NOW_MASK ((1 << HI_SOFTIRQ) | (1 << TASKLET_SOFTIRQ))
++static bool ksoftirqd_running(unsigned long pending)
+ {
+ 	struct task_struct *tsk = __this_cpu_read(ksoftirqd);
+ 
++	if (pending & SOFTIRQ_NOW_MASK)
++		return false;
+ 	return tsk && (tsk->state == TASK_RUNNING);
+ }
+ 
+@@ -329,7 +333,7 @@ asmlinkage __visible void do_softirq(voi
+ 
+ 	pending = local_softirq_pending();
+ 
+-	if (pending && !ksoftirqd_running())
++	if (pending && !ksoftirqd_running(pending))
+ 		do_softirq_own_stack();
+ 
+ 	local_irq_restore(flags);
+@@ -356,7 +360,7 @@ void irq_enter(void)
+ 
+ static inline void invoke_softirq(void)
+ {
+-	if (ksoftirqd_running())
++	if (ksoftirqd_running(local_softirq_pending()))
+ 		return;
+ 
+ 	if (!force_irqthreads) {
+From 2610e88946632afb78aa58e61f11368ac4c0af7b Mon Sep 17 00:00:00 2001
+From: "Isaac J. Manjarres" <isaacm@codeaurora.org>
+Date: Tue, 17 Jul 2018 12:35:29 -0700
+Subject: stop_machine: Disable preemption after queueing stopper threads
+
+From: Isaac J. Manjarres <isaacm@codeaurora.org>
+
+commit 2610e88946632afb78aa58e61f11368ac4c0af7b upstream.
+
+This commit:
+
+  9fb8d5dc4b64 ("stop_machine, Disable preemption when waking two stopper threads")
+
+does not fully address the race condition that can occur
+as follows:
+
+On one CPU, call it CPU 3, thread 1 invokes
+cpu_stop_queue_two_works(2, 3,...), and the execution is such
+that thread 1 queues the works for migration/2 and migration/3,
+and is preempted after releasing the locks for migration/2 and
+migration/3, but before waking the threads.
+
+Then, On CPU 2, a kworker, call it thread 2, is running,
+and it invokes cpu_stop_queue_two_works(1, 2,...), such that
+thread 2 queues the works for migration/1 and migration/2.
+Meanwhile, on CPU 3, thread 1 resumes execution, and wakes
+migration/2 and migration/3. This means that when CPU 2
+releases the locks for migration/1 and migration/2, but before
+it wakes those threads, it can be preempted by migration/2.
+
+If thread 2 is preempted by migration/2, then migration/2 will
+execute the first work item successfully, since migration/3
+was woken up by CPU 3, but when it goes to execute the second
+work item, it disables preemption, calls multi_cpu_stop(),
+and thus, CPU 2 will wait forever for migration/1, which should
+have been woken up by thread 2. However migration/1 cannot be
+woken up by thread 2, since it is a kworker, so it is affine to
+CPU 2, but CPU 2 is running migration/2 with preemption
+disabled, so thread 2 will never run.
+
+Disable preemption after queueing works for stopper threads
+to ensure that the operation of queueing the works and waking
+the stopper threads is atomic.
+
+Co-Developed-by: Prasad Sodagudi <psodagud@codeaurora.org>
+Co-Developed-by: Pavankumar Kondeti <pkondeti@codeaurora.org>
+Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
+Signed-off-by: Prasad Sodagudi <psodagud@codeaurora.org>
+Signed-off-by: Pavankumar Kondeti <pkondeti@codeaurora.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: bigeasy@linutronix.de
+Cc: gregkh@linuxfoundation.org
+Cc: matt@codeblueprint.co.uk
+Fixes: 9fb8d5dc4b64 ("stop_machine, Disable preemption when waking two stopper threads")
+Link: http://lkml.kernel.org/r/1531856129-9871-1-git-send-email-isaacm@codeaurora.org
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ kernel/stop_machine.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+--- a/kernel/stop_machine.c
++++ b/kernel/stop_machine.c
+@@ -260,6 +260,15 @@ retry:
+ 	err = 0;
+ 	__cpu_stop_queue_work(stopper1, work1, &wakeq);
+ 	__cpu_stop_queue_work(stopper2, work2, &wakeq);
++	/*
++	 * The waking up of stopper threads has to happen
++	 * in the same scheduling context as the queueing.
++	 * Otherwise, there is a possibility of one of the
++	 * above stoppers being woken up by another CPU,
++	 * and preempting us. This will cause us to n ot
++	 * wake up the other stopper forever.
++	 */
++	preempt_disable();
+ unlock:
+ 	raw_spin_unlock(&stopper2->lock);
+ 	raw_spin_unlock_irq(&stopper1->lock);
+@@ -271,7 +280,6 @@ unlock:
+ 	}
+ 
+ 	if (!err) {
+-		preempt_disable();
+ 		wake_up_q(&wakeq);
+ 		preempt_enable();
+ 	}
+From 840d719604b0925ca23dde95f1767e4528668369 Mon Sep 17 00:00:00 2001
+From: Daniel Bristot de Oliveira <bristot@redhat.com>
+Date: Fri, 20 Jul 2018 11:16:30 +0200
+Subject: sched/deadline: Update rq_clock of later_rq when pushing a task
+
+From: Daniel Bristot de Oliveira <bristot@redhat.com>
+
+commit 840d719604b0925ca23dde95f1767e4528668369 upstream.
+
+Daniel Casini got this warn while running a DL task here at RetisLab:
+
+  [  461.137582] ------------[ cut here ]------------
+  [  461.137583] rq->clock_update_flags < RQCF_ACT_SKIP
+  [  461.137599] WARNING: CPU: 4 PID: 2354 at kernel/sched/sched.h:967 assert_clock_updated.isra.32.part.33+0x17/0x20
+      [a ton of modules]
+  [  461.137646] CPU: 4 PID: 2354 Comm: label_image Not tainted 4.18.0-rc4+ #3
+  [  461.137647] Hardware name: ASUS All Series/Z87-K, BIOS 0801 09/02/2013
+  [  461.137649] RIP: 0010:assert_clock_updated.isra.32.part.33+0x17/0x20
+  [  461.137649] Code: ff 48 89 83 08 09 00 00 eb c6 66 0f 1f 84 00 00 00 00 00 55 48 c7 c7 98 7a 6c a5 c6 05 bc 0d 54 01 01 48 89 e5 e8 a9 84 fb ff <0f> 0b 5d c3 0f 1f 44 00 00 0f 1f 44 00 00 83 7e 60 01 74 0a 48 3b
+  [  461.137673] RSP: 0018:ffffa77e08cafc68 EFLAGS: 00010082
+  [  461.137674] RAX: 0000000000000000 RBX: ffff8b3fc1702d80 RCX: 0000000000000006
+  [  461.137674] RDX: 0000000000000007 RSI: 0000000000000096 RDI: ffff8b3fded164b0
+  [  461.137675] RBP: ffffa77e08cafc68 R08: 0000000000000026 R09: 0000000000000339
+  [  461.137676] R10: ffff8b3fd060d410 R11: 0000000000000026 R12: ffffffffa4e14e20
+  [  461.137677] R13: ffff8b3fdec22940 R14: ffff8b3fc1702da0 R15: ffff8b3fdec22940
+  [  461.137678] FS:  00007efe43ee5700(0000) GS:ffff8b3fded00000(0000) knlGS:0000000000000000
+  [  461.137679] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  [  461.137680] CR2: 00007efe30000010 CR3: 0000000301744003 CR4: 00000000001606e0
+  [  461.137680] Call Trace:
+  [  461.137684]  push_dl_task.part.46+0x3bc/0x460
+  [  461.137686]  task_woken_dl+0x60/0x80
+  [  461.137689]  ttwu_do_wakeup+0x4f/0x150
+  [  461.137690]  ttwu_do_activate+0x77/0x80
+  [  461.137692]  try_to_wake_up+0x1d6/0x4c0
+  [  461.137693]  wake_up_q+0x32/0x70
+  [  461.137696]  do_futex+0x7e7/0xb50
+  [  461.137698]  __x64_sys_futex+0x8b/0x180
+  [  461.137701]  do_syscall_64+0x5a/0x110
+  [  461.137703]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+  [  461.137705] RIP: 0033:0x7efe4918ca26
+  [  461.137705] Code: 00 00 00 74 17 49 8b 48 20 44 8b 59 10 41 83 e3 30 41 83 fb 20 74 1e be 85 00 00 00 41 ba 01 00 00 00 41 b9 01 00 00 04 0f 05 <48> 3d 01 f0 ff ff 73 1f 31 c0 c3 be 8c 00 00 00 49 89 c8 4d 31 d2
+  [  461.137738] RSP: 002b:00007efe43ee4928 EFLAGS: 00000283 ORIG_RAX: 00000000000000ca
+  [  461.137739] RAX: ffffffffffffffda RBX: 0000000005094df0 RCX: 00007efe4918ca26
+  [  461.137740] RDX: 0000000000000001 RSI: 0000000000000085 RDI: 0000000005094e24
+  [  461.137741] RBP: 00007efe43ee49c0 R08: 0000000005094e20 R09: 0000000004000001
+  [  461.137741] R10: 0000000000000001 R11: 0000000000000283 R12: 0000000000000000
+  [  461.137742] R13: 0000000005094df8 R14: 0000000000000001 R15: 0000000000448a10
+  [  461.137743] ---[ end trace 187df4cad2bf7649 ]---
+
+This warning happened in the push_dl_task(), because
+__add_running_bw()->cpufreq_update_util() is getting the rq_clock of
+the later_rq before its update, which takes place at activate_task().
+The fix then is to update the rq_clock before calling add_running_bw().
+
+To avoid double rq_clock_update() call, we set ENQUEUE_NOCLOCK flag to
+activate_task().
+
+Reported-by: Daniel Casini <daniel.casini@santannapisa.it>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Juri Lelli <juri.lelli@redhat.com>
+Cc: Clark Williams <williams@redhat.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Luca Abeni <luca.abeni@santannapisa.it>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Tommaso Cucinotta <tommaso.cucinotta@santannapisa.it>
+Fixes: e0367b12674b sched/deadline: Move CPU frequency selection triggering points
+Link: http://lkml.kernel.org/r/ca31d073a4788acf0684a8b255f14fea775ccf20.1532077269.git.bristot@redhat.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ kernel/sched/deadline.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -2090,8 +2090,14 @@ retry:
+ 	sub_rq_bw(&next_task->dl, &rq->dl);
+ 	set_task_cpu(next_task, later_rq->cpu);
+ 	add_rq_bw(&next_task->dl, &later_rq->dl);
++
++	/*
++	 * Update the later_rq clock here, because the clock is used
++	 * by the cpufreq_update_util() inside __add_running_bw().
++	 */
++	update_rq_clock(later_rq);
+ 	add_running_bw(&next_task->dl, &later_rq->dl);
+-	activate_task(later_rq, next_task, 0);
++	activate_task(later_rq, next_task, ENQUEUE_NOCLOCK);
+ 	ret = 1;
+ 
+ 	resched_curr(later_rq);
+From 4f7a7beaee77275671654f7b9f3f9e73ca16ec65 Mon Sep 17 00:00:00 2001
+From: Minchan Kim <minchan@kernel.org>
+Date: Fri, 10 Aug 2018 17:23:10 -0700
+Subject: zram: remove BD_CAP_SYNCHRONOUS_IO with writeback feature
+
+From: Minchan Kim <minchan@kernel.org>
+
+commit 4f7a7beaee77275671654f7b9f3f9e73ca16ec65 upstream.
+
+If zram supports writeback feature, it's no longer a
+BD_CAP_SYNCHRONOUS_IO device beause zram does asynchronous IO operations
+for incompressible pages.
+
+Do not pretend to be synchronous IO device.  It makes the system very
+sluggish due to waiting for IO completion from upper layers.
+
+Furthermore, it causes a user-after-free problem because swap thinks the
+opearion is done when the IO functions returns so it can free the page
+(e.g., lock_page_or_retry and goto out_release in do_swap_page) but in
+fact, IO is asynchronous so the driver could access a just freed page
+afterward.
+
+This patch fixes the problem.
+
+  BUG: Bad page state in process qemu-system-x86  pfn:3dfab21
+  page:ffffdfb137eac840 count:0 mapcount:0 mapping:0000000000000000 index:0x1
+  flags: 0x17fffc000000008(uptodate)
+  raw: 017fffc000000008 dead000000000100 dead000000000200 0000000000000000
+  raw: 0000000000000001 0000000000000000 00000000ffffffff 0000000000000000
+  page dumped because: PAGE_FLAGS_CHECK_AT_PREP flag set
+  bad because of flags: 0x8(uptodate)
+  CPU: 4 PID: 1039 Comm: qemu-system-x86 Tainted: G    B 4.18.0-rc5+ #1
+  Hardware name: Supermicro Super Server/X10SRL-F, BIOS 2.0b 05/02/2017
+  Call Trace:
+    dump_stack+0x5c/0x7b
+    bad_page+0xba/0x120
+    get_page_from_freelist+0x1016/0x1250
+    __alloc_pages_nodemask+0xfa/0x250
+    alloc_pages_vma+0x7c/0x1c0
+    do_swap_page+0x347/0x920
+    __handle_mm_fault+0x7b4/0x1110
+    handle_mm_fault+0xfc/0x1f0
+    __get_user_pages+0x12f/0x690
+    get_user_pages_unlocked+0x148/0x1f0
+    __gfn_to_pfn_memslot+0xff/0x3c0 [kvm]
+    try_async_pf+0x87/0x230 [kvm]
+    tdp_page_fault+0x132/0x290 [kvm]
+    kvm_mmu_page_fault+0x74/0x570 [kvm]
+    kvm_arch_vcpu_ioctl_run+0x9b3/0x1990 [kvm]
+    kvm_vcpu_ioctl+0x388/0x5d0 [kvm]
+    do_vfs_ioctl+0xa2/0x630
+    ksys_ioctl+0x70/0x80
+    __x64_sys_ioctl+0x16/0x20
+    do_syscall_64+0x55/0x100
+    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Link: https://lore.kernel.org/lkml/0516ae2d-b0fd-92c5-aa92-112ba7bd32fc@contabo.de/
+Link: http://lkml.kernel.org/r/20180802051112.86174-1-minchan@kernel.org
+[minchan@kernel.org: fix changelog, add comment]
+ Link: https://lore.kernel.org/lkml/0516ae2d-b0fd-92c5-aa92-112ba7bd32fc@contabo.de/
+ Link: http://lkml.kernel.org/r/20180802051112.86174-1-minchan@kernel.org
+ Link: http://lkml.kernel.org/r/20180805233722.217347-1-minchan@kernel.org
+[akpm@linux-foundation.org: coding-style fixes]
+Signed-off-by: Minchan Kim <minchan@kernel.org>
+Reported-by: Tino Lehnig <tino.lehnig@contabo.de>
+Tested-by: Tino Lehnig <tino.lehnig@contabo.de>
+Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: <stable@vger.kernel.org>	[4.15+]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/block/zram/zram_drv.c |   15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+--- a/drivers/block/zram/zram_drv.c
++++ b/drivers/block/zram/zram_drv.c
+@@ -280,7 +280,8 @@ static void reset_bdev(struct zram *zram
+ 	zram->backing_dev = NULL;
+ 	zram->old_block_size = 0;
+ 	zram->bdev = NULL;
+-
++	zram->disk->queue->backing_dev_info->capabilities |=
++				BDI_CAP_SYNCHRONOUS_IO;
+ 	kvfree(zram->bitmap);
+ 	zram->bitmap = NULL;
+ }
+@@ -382,6 +383,18 @@ static ssize_t backing_dev_store(struct
+ 	zram->backing_dev = backing_dev;
+ 	zram->bitmap = bitmap;
+ 	zram->nr_pages = nr_pages;
++	/*
++	 * With writeback feature, zram does asynchronous IO so it's no longer
++	 * synchronous device so let's remove synchronous io flag. Othewise,
++	 * upper layer(e.g., swap) could wait IO completion rather than
++	 * (submit and return), which will cause system sluggish.
++	 * Furthermore, when the IO function returns(e.g., swap_readpage),
++	 * upper layer expects IO was done so it could deallocate the page
++	 * freely but in fact, IO is going on so finally could cause
++	 * use-after-free when the IO is really done.
++	 */
++	zram->disk->queue->backing_dev_info->capabilities &=
++			~BDI_CAP_SYNCHRONOUS_IO;
+ 	up_write(&zram->init_lock);
+ 
+ 	pr_info("setup backing device %s\n", file_name);
+From d472b3a6cf63cd31cae1ed61930f07e6cd6671b5 Mon Sep 17 00:00:00 2001
+From: Juergen Gross <jgross@suse.com>
+Date: Thu, 9 Aug 2018 16:42:16 +0200
+Subject: xen/netfront: don't cache skb_shinfo()
+
+From: Juergen Gross <jgross@suse.com>
+
+commit d472b3a6cf63cd31cae1ed61930f07e6cd6671b5 upstream.
+
+skb_shinfo() can change when calling __pskb_pull_tail(): Don't cache
+its return value.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Wei Liu <wei.liu2@citrix.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/net/xen-netfront.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -894,7 +894,6 @@ static RING_IDX xennet_fill_frags(struct
+ 				  struct sk_buff *skb,
+ 				  struct sk_buff_head *list)
+ {
+-	struct skb_shared_info *shinfo = skb_shinfo(skb);
+ 	RING_IDX cons = queue->rx.rsp_cons;
+ 	struct sk_buff *nskb;
+ 
+@@ -903,15 +902,16 @@ static RING_IDX xennet_fill_frags(struct
+ 			RING_GET_RESPONSE(&queue->rx, ++cons);
+ 		skb_frag_t *nfrag = &skb_shinfo(nskb)->frags[0];
+ 
+-		if (shinfo->nr_frags == MAX_SKB_FRAGS) {
++		if (skb_shinfo(skb)->nr_frags == MAX_SKB_FRAGS) {
+ 			unsigned int pull_to = NETFRONT_SKB_CB(skb)->pull_to;
+ 
+ 			BUG_ON(pull_to <= skb_headlen(skb));
+ 			__pskb_pull_tail(skb, pull_to - skb_headlen(skb));
+ 		}
+-		BUG_ON(shinfo->nr_frags >= MAX_SKB_FRAGS);
++		BUG_ON(skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS);
+ 
+-		skb_add_rx_frag(skb, shinfo->nr_frags, skb_frag_page(nfrag),
++		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
++				skb_frag_page(nfrag),
+ 				rx->offset, rx->status, PAGE_SIZE);
+ 
+ 		skb_shinfo(nskb)->nr_frags = 0;
+From 7c81c71730456845e6212dccbf00098faa66740f Mon Sep 17 00:00:00 2001
+From: Daniel Borkmann <daniel@iogearbox.net>
+Date: Wed, 8 Aug 2018 19:23:14 +0200
+Subject: bpf, sockmap: fix leak in bpf_tcp_sendmsg wait for mem path
+
+From: Daniel Borkmann <daniel@iogearbox.net>
+
+commit 7c81c71730456845e6212dccbf00098faa66740f upstream.
+
+In bpf_tcp_sendmsg() the sk_alloc_sg() may fail. In the case of
+ENOMEM, it may also mean that we've partially filled the scatterlist
+entries with pages. Later jumping to sk_stream_wait_memory()
+we could further fail with an error for several reasons, however
+we miss to call free_start_sg() if the local sk_msg_buff was used.
+
+Fixes: 4f738adba30a ("bpf: create tcp_bpf_ulp allowing BPF to monitor socket TX/RX data")
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ kernel/bpf/sockmap.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+--- a/kernel/bpf/sockmap.c
++++ b/kernel/bpf/sockmap.c
+@@ -947,7 +947,7 @@ static int bpf_tcp_sendmsg(struct sock *
+ 	timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
+ 
+ 	while (msg_data_left(msg)) {
+-		struct sk_msg_buff *m;
++		struct sk_msg_buff *m = NULL;
+ 		bool enospc = false;
+ 		int copy;
+ 
+@@ -1015,8 +1015,11 @@ wait_for_sndbuf:
+ 		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
+ wait_for_memory:
+ 		err = sk_stream_wait_memory(sk, &timeo);
+-		if (err)
++		if (err) {
++			if (m && m != psock->cork)
++				free_start_sg(sk, m);
+ 			goto out_err;
++		}
+ 	}
+ out_err:
+ 	if (err < 0)
+From 5121700b346b6160ccc9411194e3f1f417c340d1 Mon Sep 17 00:00:00 2001
+From: Daniel Borkmann <daniel@iogearbox.net>
+Date: Wed, 8 Aug 2018 19:23:13 +0200
+Subject: bpf, sockmap: fix bpf_tcp_sendmsg sock error handling
+
+From: Daniel Borkmann <daniel@iogearbox.net>
+
+commit 5121700b346b6160ccc9411194e3f1f417c340d1 upstream.
+
+While working on bpf_tcp_sendmsg() code, I noticed that when a
+sk->sk_err is set we error out with err = sk->sk_err. However
+this is problematic since sk->sk_err is a positive error value
+and therefore we will neither go into sk_stream_error() nor will
+we report an error back to user space. I had this case with EPIPE
+and user space was thinking sendmsg() succeeded since EPIPE is
+a positive value, thinking we submitted 32 bytes. Fix it by
+negating the sk->sk_err value.
+
+Fixes: 4f738adba30a ("bpf: create tcp_bpf_ulp allowing BPF to monitor socket TX/RX data")
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ kernel/bpf/sockmap.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/kernel/bpf/sockmap.c
++++ b/kernel/bpf/sockmap.c
+@@ -952,7 +952,7 @@ static int bpf_tcp_sendmsg(struct sock *
+ 		int copy;
+ 
+ 		if (sk->sk_err) {
+-			err = sk->sk_err;
++			err = -sk->sk_err;
+ 			goto out_err;
+ 		}
+ 
+From 1214fd7b497400d200e3f4e64e2338b303a20949 Mon Sep 17 00:00:00 2001
+From: Bart Van Assche <bart.vanassche@wdc.com>
+Date: Thu, 2 Aug 2018 10:44:42 -0700
+Subject: scsi: sr: Avoid that opening a CD-ROM hangs with runtime power management enabled
+
+From: Bart Van Assche <bart.vanassche@wdc.com>
+
+commit 1214fd7b497400d200e3f4e64e2338b303a20949 upstream.
+
+Surround scsi_execute() calls with scsi_autopm_get_device() and
+scsi_autopm_put_device(). Note: removing sr_mutex protection from the
+scsi_cd_get() and scsi_cd_put() calls is safe because the purpose of
+sr_mutex is to serialize cdrom_*() calls.
+
+This patch avoids that complaints similar to the following appear in the
+kernel log if runtime power management is enabled:
+
+INFO: task systemd-udevd:650 blocked for more than 120 seconds.
+     Not tainted 4.18.0-rc7-dbg+ #1
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+systemd-udevd   D28176   650    513 0x00000104
+Call Trace:
+__schedule+0x444/0xfe0
+schedule+0x4e/0xe0
+schedule_preempt_disabled+0x18/0x30
+__mutex_lock+0x41c/0xc70
+mutex_lock_nested+0x1b/0x20
+__blkdev_get+0x106/0x970
+blkdev_get+0x22c/0x5a0
+blkdev_open+0xe9/0x100
+do_dentry_open.isra.19+0x33e/0x570
+vfs_open+0x7c/0xd0
+path_openat+0x6e3/0x1120
+do_filp_open+0x11c/0x1c0
+do_sys_open+0x208/0x2d0
+__x64_sys_openat+0x59/0x70
+do_syscall_64+0x77/0x230
+entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Signed-off-by: Bart Van Assche <bart.vanassche@wdc.com>
+Cc: Maurizio Lombardi <mlombard@redhat.com>
+Cc: Johannes Thumshirn <jthumshirn@suse.de>
+Cc: Alan Stern <stern@rowland.harvard.edu>
+Cc: <stable@vger.kernel.org>
+Tested-by: Johannes Thumshirn <jthumshirn@suse.de>
+Reviewed-by: Johannes Thumshirn <jthumshirn@suse.de>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/scsi/sr.c |   29 +++++++++++++++++++++--------
+ 1 file changed, 21 insertions(+), 8 deletions(-)
+
+--- a/drivers/scsi/sr.c
++++ b/drivers/scsi/sr.c
+@@ -523,18 +523,26 @@ static int sr_init_command(struct scsi_c
+ static int sr_block_open(struct block_device *bdev, fmode_t mode)
+ {
+ 	struct scsi_cd *cd;
++	struct scsi_device *sdev;
+ 	int ret = -ENXIO;
+ 
++	cd = scsi_cd_get(bdev->bd_disk);
++	if (!cd)
++		goto out;
++
++	sdev = cd->device;
++	scsi_autopm_get_device(sdev);
+ 	check_disk_change(bdev);
+ 
+ 	mutex_lock(&sr_mutex);
+-	cd = scsi_cd_get(bdev->bd_disk);
+-	if (cd) {
+-		ret = cdrom_open(&cd->cdi, bdev, mode);
+-		if (ret)
+-			scsi_cd_put(cd);
+-	}
++	ret = cdrom_open(&cd->cdi, bdev, mode);
+ 	mutex_unlock(&sr_mutex);
++
++	scsi_autopm_put_device(sdev);
++	if (ret)
++		scsi_cd_put(cd);
++
++out:
+ 	return ret;
+ }
+ 
+@@ -562,6 +570,8 @@ static int sr_block_ioctl(struct block_d
+ 	if (ret)
+ 		goto out;
+ 
++	scsi_autopm_get_device(sdev);
++
+ 	/*
+ 	 * Send SCSI addressing ioctls directly to mid level, send other
+ 	 * ioctls to cdrom/block level.
+@@ -570,15 +580,18 @@ static int sr_block_ioctl(struct block_d
+ 	case SCSI_IOCTL_GET_IDLUN:
+ 	case SCSI_IOCTL_GET_BUS_NUMBER:
+ 		ret = scsi_ioctl(sdev, cmd, argp);
+-		goto out;
++		goto put;
+ 	}
+ 
+ 	ret = cdrom_ioctl(&cd->cdi, bdev, mode, cmd, arg);
+ 	if (ret != -ENOSYS)
+-		goto out;
++		goto put;
+ 
+ 	ret = scsi_ioctl(sdev, cmd, argp);
+ 
++put:
++	scsi_autopm_put_device(sdev);
++
+ out:
+ 	mutex_unlock(&sr_mutex);
+ 	return ret;
+From 5e53be8e476a3397ed5383c23376f299555a2b43 Mon Sep 17 00:00:00 2001
+From: Quinn Tran <quinn.tran@cavium.com>
+Date: Thu, 26 Jul 2018 16:34:44 -0700
+Subject: scsi: qla2xxx: Fix memory leak for allocating abort IOCB
+
+From: Quinn Tran <quinn.tran@cavium.com>
+
+commit 5e53be8e476a3397ed5383c23376f299555a2b43 upstream.
+
+In the case of IOCB QFull, Initiator code can leave behind a stale pointer
+to an SRB structure on the outstanding command array.
+
+Fixes: 82de802ad46e ("scsi: qla2xxx: Preparation for Target MQ.")
+Cc: stable@vger.kernel.org #v4.16+
+Signed-off-by: Quinn Tran <quinn.tran@cavium.com>
+Signed-off-by: Himanshu Madhani <himanshu.madhani@cavium.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ drivers/scsi/qla2xxx/qla_iocb.c |   53 ++++++++++++++++++++--------------------
+ 1 file changed, 27 insertions(+), 26 deletions(-)
+
+--- a/drivers/scsi/qla2xxx/qla_iocb.c
++++ b/drivers/scsi/qla2xxx/qla_iocb.c
+@@ -2130,34 +2130,11 @@ __qla2x00_alloc_iocbs(struct qla_qpair *
+ 	req_cnt = 1;
+ 	handle = 0;
+ 
+-	if (!sp)
+-		goto skip_cmd_array;
+-
+-	/* Check for room in outstanding command list. */
+-	handle = req->current_outstanding_cmd;
+-	for (index = 1; index < req->num_outstanding_cmds; index++) {
+-		handle++;
+-		if (handle == req->num_outstanding_cmds)
+-			handle = 1;
+-		if (!req->outstanding_cmds[handle])
+-			break;
+-	}
+-	if (index == req->num_outstanding_cmds) {
+-		ql_log(ql_log_warn, vha, 0x700b,
+-		    "No room on outstanding cmd array.\n");
+-		goto queuing_error;
+-	}
+-
+-	/* Prep command array. */
+-	req->current_outstanding_cmd = handle;
+-	req->outstanding_cmds[handle] = sp;
+-	sp->handle = handle;
+-
+-	/* Adjust entry-counts as needed. */
+-	if (sp->type != SRB_SCSI_CMD)
++	if (sp && (sp->type != SRB_SCSI_CMD)) {
++		/* Adjust entry-counts as needed. */
+ 		req_cnt = sp->iocbs;
++	}
+ 
+-skip_cmd_array:
+ 	/* Check for room on request queue. */
+ 	if (req->cnt < req_cnt + 2) {
+ 		if (qpair->use_shadow_reg)
+@@ -2183,6 +2160,28 @@ skip_cmd_array:
+ 	if (req->cnt < req_cnt + 2)
+ 		goto queuing_error;
+ 
++	if (sp) {
++		/* Check for room in outstanding command list. */
++		handle = req->current_outstanding_cmd;
++		for (index = 1; index < req->num_outstanding_cmds; index++) {
++			handle++;
++			if (handle == req->num_outstanding_cmds)
++				handle = 1;
++			if (!req->outstanding_cmds[handle])
++				break;
++		}
++		if (index == req->num_outstanding_cmds) {
++			ql_log(ql_log_warn, vha, 0x700b,
++			    "No room on outstanding cmd array.\n");
++			goto queuing_error;
++		}
++
++		/* Prep command array. */
++		req->current_outstanding_cmd = handle;
++		req->outstanding_cmds[handle] = sp;
++		sp->handle = handle;
++	}
++
+ 	/* Prep packet */
+ 	req->cnt -= req_cnt;
+ 	pkt = req->ring_ptr;
+@@ -2195,6 +2194,8 @@ skip_cmd_array:
+ 		pkt->handle = handle;
+ 	}
+ 
++	return pkt;
++
+ queuing_error:
+ 	qpair->tgt_counters.num_alloc_iocb_failed++;
+ 	return pkt;
+From b5b1404d0815894de0690de8a1ab58269e56eae6 Mon Sep 17 00:00:00 2001
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Sun, 12 Aug 2018 12:19:42 -0700
+Subject: init: rename and re-order boot_cpu_state_init()
+
+From: Linus Torvalds <torvalds@linux-foundation.org>
+
+commit b5b1404d0815894de0690de8a1ab58269e56eae6 upstream.
+
+This is purely a preparatory patch for upcoming changes during the 4.19
+merge window.
+
+We have a function called "boot_cpu_state_init()" that isn't really
+about the bootup cpu state: that is done much earlier by the similarly
+named "boot_cpu_init()" (note lack of "state" in name).
+
+This function initializes some hotplug CPU state, and needs to run after
+the percpu data has been properly initialized.  It even has a comment to
+that effect.
+
+Except it _doesn't_ actually run after the percpu data has been properly
+initialized.  On x86 it happens to do that, but on at least arm and
+arm64, the percpu base pointers are initialized by the arch-specific
+'smp_prepare_boot_cpu()' hook, which ran _after_ boot_cpu_state_init().
+
+This had some unexpected results, and in particular we have a patch
+pending for the merge window that did the obvious cleanup of using
+'this_cpu_write()' in the cpu hotplug init code:
+
+  -       per_cpu_ptr(&cpuhp_state, smp_processor_id())->state = CPUHP_ONLINE;
+  +       this_cpu_write(cpuhp_state.state, CPUHP_ONLINE);
+
+which is obviously the right thing to do.  Except because of the
+ordering issue, it actually failed miserably and unexpectedly on arm64.
+
+So this just fixes the ordering, and changes the name of the function to
+be 'boot_cpu_hotplug_init()' to make it obvious that it's about cpu
+hotplug state, because the core CPU state was supposed to have already
+been done earlier.
+
+Marked for stable, since the (not yet merged) patch that will show this
+problem is marked for stable.
+
+Reported-by: Vlastimil Babka <vbabka@suse.cz>
+Reported-by: Mian Yousaf Kaukab <yousaf.kaukab@suse.com>
+Suggested-by: Catalin Marinas <catalin.marinas@arm.com>
+Acked-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: stable@kernel.org
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ include/linux/cpu.h |    2 +-
+ init/main.c         |    2 +-
+ kernel/cpu.c        |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+--- a/include/linux/cpu.h
++++ b/include/linux/cpu.h
+@@ -30,7 +30,7 @@ struct cpu {
+ };
+ 
+ extern void boot_cpu_init(void);
+-extern void boot_cpu_state_init(void);
++extern void boot_cpu_hotplug_init(void);
+ extern void cpu_init(void);
+ extern void trap_init(void);
+ 
+--- a/init/main.c
++++ b/init/main.c
+@@ -561,8 +561,8 @@ asmlinkage __visible void __init start_k
+ 	setup_command_line(command_line);
+ 	setup_nr_cpu_ids();
+ 	setup_per_cpu_areas();
+-	boot_cpu_state_init();
+ 	smp_prepare_boot_cpu();	/* arch-specific boot-cpu hooks */
++	boot_cpu_hotplug_init();
+ 
+ 	build_all_zonelists(NULL);
+ 	page_alloc_init();
+--- a/kernel/cpu.c
++++ b/kernel/cpu.c
+@@ -2010,7 +2010,7 @@ void __init boot_cpu_init(void)
+ /*
+  * Must be called _AFTER_ setting up the per_cpu areas
+  */
+-void __init boot_cpu_state_init(void)
++void __init boot_cpu_hotplug_init(void)
+ {
+ 	per_cpu_ptr(&cpuhp_state, smp_processor_id())->state = CPUHP_ONLINE;
+ }
+From 90bad5e05bcdb0308cfa3d3a60f5c0b9c8e2efb3 Mon Sep 17 00:00:00 2001
+From: Al Viro <viro@zeniv.linux.org.uk>
+Date: Mon, 6 Aug 2018 09:03:58 -0400
+Subject: root dentries need RCU-delayed freeing
+
+From: Al Viro <viro@zeniv.linux.org.uk>
+
+commit 90bad5e05bcdb0308cfa3d3a60f5c0b9c8e2efb3 upstream.
+
+Since mountpoint crossing can happen without leaving lazy mode,
+root dentries do need the same protection against having their
+memory freed without RCU delay as everything else in the tree.
+
+It's partially hidden by RCU delay between detaching from the
+mount tree and dropping the vfsmount reference, but the starting
+point of pathwalk can be on an already detached mount, in which
+case umount-caused RCU delay has already passed by the time the
+lazy pathwalk grabs rcu_read_lock().  If the starting point
+happens to be at the root of that vfsmount *and* that vfsmount
+covers the entire filesystem, we get trouble.
+
+Fixes: 48a066e72d97 ("RCU'd vsfmounts")
+Cc: stable@vger.kernel.org
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ fs/dcache.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+--- a/fs/dcache.c
++++ b/fs/dcache.c
+@@ -1954,10 +1954,12 @@ struct dentry *d_make_root(struct inode
+ 
+ 	if (root_inode) {
+ 		res = d_alloc_anon(root_inode->i_sb);
+-		if (res)
++		if (res) {
++			res->d_flags |= DCACHE_RCUACCESS;
+ 			d_instantiate(res, root_inode);
+-		else
++		} else {
+ 			iput(root_inode);
++		}
+ 	}
+ 	return res;
+ }
+From 4c0d7cd5c8416b1ef41534d19163cb07ffaa03ab Mon Sep 17 00:00:00 2001
+From: Al Viro <viro@zeniv.linux.org.uk>
+Date: Thu, 9 Aug 2018 10:15:54 -0400
+Subject: make sure that __dentry_kill() always invalidates d_seq, unhashed or not
+
+From: Al Viro <viro@zeniv.linux.org.uk>
+
+commit 4c0d7cd5c8416b1ef41534d19163cb07ffaa03ab upstream.
+
+RCU pathwalk relies upon the assumption that anything that changes
+->d_inode of a dentry will invalidate its ->d_seq.  That's almost
+true - the one exception is that the final dput() of already unhashed
+dentry does *not* touch ->d_seq at all.  Unhashing does, though,
+so for anything we'd found by RCU dcache lookup we are fine.
+Unfortunately, we can *start* with an unhashed dentry or jump into
+it.
+
+We could try and be careful in the (few) places where that could
+happen.  Or we could just make the final dput() invalidate the damn
+thing, unhashed or not.  The latter is much simpler and easier to
+backport, so let's do it that way.
+
+Reported-by: "Dae R. Jeong" <threeearcat@gmail.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ fs/dcache.c |    7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+--- a/fs/dcache.c
++++ b/fs/dcache.c
+@@ -358,14 +358,11 @@ static void dentry_unlink_inode(struct d
+ 	__releases(dentry->d_inode->i_lock)
+ {
+ 	struct inode *inode = dentry->d_inode;
+-	bool hashed = !d_unhashed(dentry);
+ 
+-	if (hashed)
+-		raw_write_seqcount_begin(&dentry->d_seq);
++	raw_write_seqcount_begin(&dentry->d_seq);
+ 	__d_clear_type_and_inode(dentry);
+ 	hlist_del_init(&dentry->d_u.d_alias);
+-	if (hashed)
+-		raw_write_seqcount_end(&dentry->d_seq);
++	raw_write_seqcount_end(&dentry->d_seq);
+ 	spin_unlock(&dentry->d_lock);
+ 	spin_unlock(&inode->i_lock);
+ 	if (!inode->i_nlink)
+From 9ea0a46ca2c318fcc449c1e6b62a7230a17888f1 Mon Sep 17 00:00:00 2001
+From: Al Viro <viro@zeniv.linux.org.uk>
+Date: Thu, 9 Aug 2018 17:21:17 -0400
+Subject: fix mntput/mntput race
+
+From: Al Viro <viro@zeniv.linux.org.uk>
+
+commit 9ea0a46ca2c318fcc449c1e6b62a7230a17888f1 upstream.
+
+mntput_no_expire() does the calculation of total refcount under mount_lock;
+unfortunately, the decrement (as well as all increments) are done outside
+of it, leading to false positives in the "are we dropping the last reference"
+test.  Consider the following situation:
+	* mnt is a lazy-umounted mount, kept alive by two opened files.  One
+of those files gets closed.  Total refcount of mnt is 2.  On CPU 42
+mntput(mnt) (called from __fput()) drops one reference, decrementing component
+	* After it has looked at component #0, the process on CPU 0 does
+mntget(), incrementing component #0, gets preempted and gets to run again -
+on CPU 69.  There it does mntput(), which drops the reference (component #69)
+and proceeds to spin on mount_lock.
+	* On CPU 42 our first mntput() finishes counting.  It observes the
+decrement of component #69, but not the increment of component #0.  As the
+result, the total it gets is not 1 as it should've been - it's 0.  At which
+point we decide that vfsmount needs to be killed and proceed to free it and
+shut the filesystem down.  However, there's still another opened file
+on that filesystem, with reference to (now freed) vfsmount, etc. and we are
+screwed.
+
+It's not a wide race, but it can be reproduced with artificial slowdown of
+the mnt_get_count() loop, and it should be easier to hit on SMP KVM setups.
+
+Fix consists of moving the refcount decrement under mount_lock; the tricky
+part is that we want (and can) keep the fast case (i.e. mount that still
+has non-NULL ->mnt_ns) entirely out of mount_lock.  All places that zero
+mnt->mnt_ns are dropping some reference to mnt and they call synchronize_rcu()
+before that mntput().  IOW, if mntput() observes (under rcu_read_lock())
+a non-NULL ->mnt_ns, it is guaranteed that there is another reference yet to
+be dropped.
+
+Reported-by: Jann Horn <jannh@google.com>
+Tested-by: Jann Horn <jannh@google.com>
+Fixes: 48a066e72d97 ("RCU'd vsfmounts")
+Cc: stable@vger.kernel.org
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ fs/namespace.c |   14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+--- a/fs/namespace.c
++++ b/fs/namespace.c
+@@ -1195,12 +1195,22 @@ static DECLARE_DELAYED_WORK(delayed_mntp
+ static void mntput_no_expire(struct mount *mnt)
+ {
+ 	rcu_read_lock();
+-	mnt_add_count(mnt, -1);
+-	if (likely(mnt->mnt_ns)) { /* shouldn't be the last one */
++	if (likely(READ_ONCE(mnt->mnt_ns))) {
++		/*
++		 * Since we don't do lock_mount_hash() here,
++		 * ->mnt_ns can change under us.  However, if it's
++		 * non-NULL, then there's a reference that won't
++		 * be dropped until after an RCU delay done after
++		 * turning ->mnt_ns NULL.  So if we observe it
++		 * non-NULL under rcu_read_lock(), the reference
++		 * we are dropping is not the final one.
++		 */
++		mnt_add_count(mnt, -1);
+ 		rcu_read_unlock();
+ 		return;
+ 	}
+ 	lock_mount_hash();
++	mnt_add_count(mnt, -1);
+ 	if (mnt_get_count(mnt)) {
+ 		rcu_read_unlock();
+ 		unlock_mount_hash();
+From 119e1ef80ecfe0d1deb6378d4ab41f5b71519de1 Mon Sep 17 00:00:00 2001
+From: Al Viro <viro@zeniv.linux.org.uk>
+Date: Thu, 9 Aug 2018 17:51:32 -0400
+Subject: fix __legitimize_mnt()/mntput() race
+
+From: Al Viro <viro@zeniv.linux.org.uk>
+
+commit 119e1ef80ecfe0d1deb6378d4ab41f5b71519de1 upstream.
+
+__legitimize_mnt() has two problems - one is that in case of success
+the check of mount_lock is not ordered wrt preceding increment of
+refcount, making it possible to have successful __legitimize_mnt()
+on one CPU just before the otherwise final mntpu() on another,
+with __legitimize_mnt() not seeing mntput() taking the lock and
+mntput() not seeing the increment done by __legitimize_mnt().
+Solved by a pair of barriers.
+
+Another is that failure of __legitimize_mnt() on the second
+read_seqretry() leaves us with reference that'll need to be
+dropped by caller; however, if that races with final mntput()
+we can end up with caller dropping rcu_read_lock() and doing
+mntput() to release that reference - with the first mntput()
+having freed the damn thing just as rcu_read_lock() had been
+dropped.  Solution: in "do mntput() yourself" failure case
+grab mount_lock, check if MNT_DOOMED has been set by racing
+final mntput() that has missed our increment and if it has -
+undo the increment and treat that as "failure, caller doesn't
+need to drop anything" case.
+
+It's not easy to hit - the final mntput() has to come right
+after the first read_seqretry() in __legitimize_mnt() *and*
+manage to miss the increment done by __legitimize_mnt() before
+the second read_seqretry() in there.  The things that are almost
+impossible to hit on bare hardware are not impossible on SMP
+KVM, though...
+
+Reported-by: Oleg Nesterov <oleg@redhat.com>
+Fixes: 48a066e72d97 ("RCU'd vsfmounts")
+Cc: stable@vger.kernel.org
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ fs/namespace.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+--- a/fs/namespace.c
++++ b/fs/namespace.c
+@@ -659,12 +659,21 @@ int __legitimize_mnt(struct vfsmount *ba
+ 		return 0;
+ 	mnt = real_mount(bastard);
+ 	mnt_add_count(mnt, 1);
++	smp_mb();			// see mntput_no_expire()
+ 	if (likely(!read_seqretry(&mount_lock, seq)))
+ 		return 0;
+ 	if (bastard->mnt_flags & MNT_SYNC_UMOUNT) {
+ 		mnt_add_count(mnt, -1);
+ 		return 1;
+ 	}
++	lock_mount_hash();
++	if (unlikely(bastard->mnt_flags & MNT_DOOMED)) {
++		mnt_add_count(mnt, -1);
++		unlock_mount_hash();
++		return 1;
++	}
++	unlock_mount_hash();
++	/* caller will mntput() */
+ 	return -1;
+ }
+ 
+@@ -1210,6 +1219,11 @@ static void mntput_no_expire(struct moun
+ 		return;
+ 	}
+ 	lock_mount_hash();
++	/*
++	 * make sure that if __legitimize_mnt() has not seen us grab
++	 * mount_lock, we'll see their refcount increment here.
++	 */
++	smp_mb();
+ 	mnt_add_count(mnt, -1);
+ 	if (mnt_get_count(mnt)) {
+ 		rcu_read_unlock();
+From 1bcfe0564044be578841744faea1c2f46adc8178 Mon Sep 17 00:00:00 2001
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+Date: Fri, 15 Jun 2018 09:41:29 +0200
+Subject: ARM: dts: imx6sx: fix irq for pcie bridge
+
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+
+commit 1bcfe0564044be578841744faea1c2f46adc8178 upstream.
+
+Use the correct IRQ line for the MSI controller in the PCIe host
+controller. Apparently a different IRQ line is used compared to other
+i.MX6 variants. Without this change MSI IRQs aren't properly propagated
+to the upstream interrupt controller.
+
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+Fixes: b1d17f68e5c5 ("ARM: dts: imx: add initial imx6sx device tree source")
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Amit Pundir <amit.pundir@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/arm/boot/dts/imx6sx.dtsi |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/arch/arm/boot/dts/imx6sx.dtsi
++++ b/arch/arm/boot/dts/imx6sx.dtsi
+@@ -1351,7 +1351,7 @@
+ 			ranges = <0x81000000 0 0          0x08f80000 0 0x00010000 /* downstream I/O */
+ 				  0x82000000 0 0x08000000 0x08000000 0 0x00f00000>; /* non-prefetchable memory */
+ 			num-lanes = <1>;
+-			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
++			interrupts = <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "msi";
+ 			#interrupt-cells = <1>;
+ 			interrupt-map-mask = <0 0 0 0x7>;
+From 5800dc5c19f34e6e03b5adab1282535cb102fafd Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 3 Aug 2018 16:41:39 +0200
+Subject: x86/paravirt: Fix spectre-v2 mitigations for paravirt guests
+
+From: Peter Zijlstra <peterz@infradead.org>
+
+commit 5800dc5c19f34e6e03b5adab1282535cb102fafd upstream.
+
+Nadav reported that on guests we're failing to rewrite the indirect
+calls to CALLEE_SAVE paravirt functions. In particular the
+pv_queued_spin_unlock() call is left unpatched and that is all over the
+place. This obviously wrecks Spectre-v2 mitigation (for paravirt
+guests) which relies on not actually having indirect calls around.
+
+The reason is an incorrect clobber test in paravirt_patch_call(); this
+function rewrites an indirect call with a direct call to the _SAME_
+function, there is no possible way the clobbers can be different
+because of this.
+
+Therefore remove this clobber check. Also put WARNs on the other patch
+failure case (not enough room for the instruction) which I've not seen
+trigger in my (limited) testing.
+
+Three live kernel image disassemblies for lock_sock_nested (as a small
+function that illustrates the problem nicely). PRE is the current
+situation for guests, POST is with this patch applied and NATIVE is with
+or without the patch for !guests.
+
+PRE:
+
+(gdb) disassemble lock_sock_nested
+Dump of assembler code for function lock_sock_nested:
+   0xffffffff817be970 <+0>:     push   %rbp
+   0xffffffff817be971 <+1>:     mov    %rdi,%rbp
+   0xffffffff817be974 <+4>:     push   %rbx
+   0xffffffff817be975 <+5>:     lea    0x88(%rbp),%rbx
+   0xffffffff817be97c <+12>:    callq  0xffffffff819f7160 <_cond_resched>
+   0xffffffff817be981 <+17>:    mov    %rbx,%rdi
+   0xffffffff817be984 <+20>:    callq  0xffffffff819fbb00 <_raw_spin_lock_bh>
+   0xffffffff817be989 <+25>:    mov    0x8c(%rbp),%eax
+   0xffffffff817be98f <+31>:    test   %eax,%eax
+   0xffffffff817be991 <+33>:    jne    0xffffffff817be9ba <lock_sock_nested+74>
+   0xffffffff817be993 <+35>:    movl   $0x1,0x8c(%rbp)
+   0xffffffff817be99d <+45>:    mov    %rbx,%rdi
+   0xffffffff817be9a0 <+48>:    callq  *0xffffffff822299e8
+   0xffffffff817be9a7 <+55>:    pop    %rbx
+   0xffffffff817be9a8 <+56>:    pop    %rbp
+   0xffffffff817be9a9 <+57>:    mov    $0x200,%esi
+   0xffffffff817be9ae <+62>:    mov    $0xffffffff817be993,%rdi
+   0xffffffff817be9b5 <+69>:    jmpq   0xffffffff81063ae0 <__local_bh_enable_ip>
+   0xffffffff817be9ba <+74>:    mov    %rbp,%rdi
+   0xffffffff817be9bd <+77>:    callq  0xffffffff817be8c0 <__lock_sock>
+   0xffffffff817be9c2 <+82>:    jmp    0xffffffff817be993 <lock_sock_nested+35>
+End of assembler dump.
+
+POST:
+
+(gdb) disassemble lock_sock_nested
+Dump of assembler code for function lock_sock_nested:
+   0xffffffff817be970 <+0>:     push   %rbp
+   0xffffffff817be971 <+1>:     mov    %rdi,%rbp
+   0xffffffff817be974 <+4>:     push   %rbx
+   0xffffffff817be975 <+5>:     lea    0x88(%rbp),%rbx
+   0xffffffff817be97c <+12>:    callq  0xffffffff819f7160 <_cond_resched>
+   0xffffffff817be981 <+17>:    mov    %rbx,%rdi
+   0xffffffff817be984 <+20>:    callq  0xffffffff819fbb00 <_raw_spin_lock_bh>
+   0xffffffff817be989 <+25>:    mov    0x8c(%rbp),%eax
+   0xffffffff817be98f <+31>:    test   %eax,%eax
+   0xffffffff817be991 <+33>:    jne    0xffffffff817be9ba <lock_sock_nested+74>
+   0xffffffff817be993 <+35>:    movl   $0x1,0x8c(%rbp)
+   0xffffffff817be99d <+45>:    mov    %rbx,%rdi
+   0xffffffff817be9a0 <+48>:    callq  0xffffffff810a0c20 <__raw_callee_save___pv_queued_spin_unlock>
+   0xffffffff817be9a5 <+53>:    xchg   %ax,%ax
+   0xffffffff817be9a7 <+55>:    pop    %rbx
+   0xffffffff817be9a8 <+56>:    pop    %rbp
+   0xffffffff817be9a9 <+57>:    mov    $0x200,%esi
+   0xffffffff817be9ae <+62>:    mov    $0xffffffff817be993,%rdi
+   0xffffffff817be9b5 <+69>:    jmpq   0xffffffff81063aa0 <__local_bh_enable_ip>
+   0xffffffff817be9ba <+74>:    mov    %rbp,%rdi
+   0xffffffff817be9bd <+77>:    callq  0xffffffff817be8c0 <__lock_sock>
+   0xffffffff817be9c2 <+82>:    jmp    0xffffffff817be993 <lock_sock_nested+35>
+End of assembler dump.
+
+NATIVE:
+
+(gdb) disassemble lock_sock_nested
+Dump of assembler code for function lock_sock_nested:
+   0xffffffff817be970 <+0>:     push   %rbp
+   0xffffffff817be971 <+1>:     mov    %rdi,%rbp
+   0xffffffff817be974 <+4>:     push   %rbx
+   0xffffffff817be975 <+5>:     lea    0x88(%rbp),%rbx
+   0xffffffff817be97c <+12>:    callq  0xffffffff819f7160 <_cond_resched>
+   0xffffffff817be981 <+17>:    mov    %rbx,%rdi
+   0xffffffff817be984 <+20>:    callq  0xffffffff819fbb00 <_raw_spin_lock_bh>
+   0xffffffff817be989 <+25>:    mov    0x8c(%rbp),%eax
+   0xffffffff817be98f <+31>:    test   %eax,%eax
+   0xffffffff817be991 <+33>:    jne    0xffffffff817be9ba <lock_sock_nested+74>
+   0xffffffff817be993 <+35>:    movl   $0x1,0x8c(%rbp)
+   0xffffffff817be99d <+45>:    mov    %rbx,%rdi
+   0xffffffff817be9a0 <+48>:    movb   $0x0,(%rdi)
+   0xffffffff817be9a3 <+51>:    nopl   0x0(%rax)
+   0xffffffff817be9a7 <+55>:    pop    %rbx
+   0xffffffff817be9a8 <+56>:    pop    %rbp
+   0xffffffff817be9a9 <+57>:    mov    $0x200,%esi
+   0xffffffff817be9ae <+62>:    mov    $0xffffffff817be993,%rdi
+   0xffffffff817be9b5 <+69>:    jmpq   0xffffffff81063ae0 <__local_bh_enable_ip>
+   0xffffffff817be9ba <+74>:    mov    %rbp,%rdi
+   0xffffffff817be9bd <+77>:    callq  0xffffffff817be8c0 <__lock_sock>
+   0xffffffff817be9c2 <+82>:    jmp    0xffffffff817be993 <lock_sock_nested+35>
+End of assembler dump.
+
+
+Fixes: 63f70270ccd9 ("[PATCH] i386: PARAVIRT: add common patching machinery")
+Fixes: 3010a0663fd9 ("x86/paravirt, objtool: Annotate indirect calls")
+Reported-by: Nadav Amit <namit@vmware.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/x86/kernel/paravirt.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+--- a/arch/x86/kernel/paravirt.c
++++ b/arch/x86/kernel/paravirt.c
+@@ -88,10 +88,12 @@ unsigned paravirt_patch_call(void *insnb
+ 	struct branch *b = insnbuf;
+ 	unsigned long delta = (unsigned long)target - (addr+5);
+ 
+-	if (tgt_clobbers & ~site_clobbers)
+-		return len;	/* target would clobber too much for this site */
+-	if (len < 5)
++	if (len < 5) {
++#ifdef CONFIG_RETPOLINE
++		WARN_ONCE("Failing to patch indirect CALL in %ps\n", (void *)addr);
++#endif
+ 		return len;	/* call too long for patch site */
++	}
+ 
+ 	b->opcode = 0xe8; /* call */
+ 	b->delta = delta;
+@@ -106,8 +108,12 @@ unsigned paravirt_patch_jmp(void *insnbu
+ 	struct branch *b = insnbuf;
+ 	unsigned long delta = (unsigned long)target - (addr+5);
+ 
+-	if (len < 5)
++	if (len < 5) {
++#ifdef CONFIG_RETPOLINE
++		WARN_ONCE("Failing to patch indirect JMP in %ps\n", (void *)addr);
++#endif
+ 		return len;	/* call too long for patch site */
++	}
+ 
+ 	b->opcode = 0xe9;	/* jmp */
+ 	b->delta = delta;
+From fdf82a7856b32d905c39afc85e34364491e46346 Mon Sep 17 00:00:00 2001
+From: Jiri Kosina <jkosina@suse.cz>
+Date: Thu, 26 Jul 2018 13:14:55 +0200
+Subject: x86/speculation: Protect against userspace-userspace spectreRSB
+
+From: Jiri Kosina <jkosina@suse.cz>
+
+commit fdf82a7856b32d905c39afc85e34364491e46346 upstream.
+
+The article "Spectre Returns! Speculation Attacks using the Return Stack
+Buffer" [1] describes two new (sub-)variants of spectrev2-like attacks,
+making use solely of the RSB contents even on CPUs that don't fallback to
+BTB on RSB underflow (Skylake+).
+
+Mitigate userspace-userspace attacks by always unconditionally filling RSB on
+context switch when the generic spectrev2 mitigation has been enabled.
+
+[1] https://arxiv.org/pdf/1807.07940.pdf
+
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Acked-by: Tim Chen <tim.c.chen@linux.intel.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/nycvar.YFH.7.76.1807261308190.997@cbobk.fhfr.pm
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/x86/kernel/cpu/bugs.c |   38 +++++++-------------------------------
+ 1 file changed, 7 insertions(+), 31 deletions(-)
+
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -311,23 +311,6 @@ static enum spectre_v2_mitigation_cmd __
+ 	return cmd;
+ }
+ 
+-/* Check for Skylake-like CPUs (for RSB handling) */
+-static bool __init is_skylake_era(void)
+-{
+-	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL &&
+-	    boot_cpu_data.x86 == 6) {
+-		switch (boot_cpu_data.x86_model) {
+-		case INTEL_FAM6_SKYLAKE_MOBILE:
+-		case INTEL_FAM6_SKYLAKE_DESKTOP:
+-		case INTEL_FAM6_SKYLAKE_X:
+-		case INTEL_FAM6_KABYLAKE_MOBILE:
+-		case INTEL_FAM6_KABYLAKE_DESKTOP:
+-			return true;
+-		}
+-	}
+-	return false;
+-}
+-
+ static void __init spectre_v2_select_mitigation(void)
+ {
+ 	enum spectre_v2_mitigation_cmd cmd = spectre_v2_parse_cmdline();
+@@ -388,22 +371,15 @@ retpoline_auto:
+ 	pr_info("%s\n", spectre_v2_strings[mode]);
+ 
+ 	/*
+-	 * If neither SMEP nor PTI are available, there is a risk of
+-	 * hitting userspace addresses in the RSB after a context switch
+-	 * from a shallow call stack to a deeper one. To prevent this fill
+-	 * the entire RSB, even when using IBRS.
++	 * If spectre v2 protection has been enabled, unconditionally fill
++	 * RSB during a context switch; this protects against two independent
++	 * issues:
+ 	 *
+-	 * Skylake era CPUs have a separate issue with *underflow* of the
+-	 * RSB, when they will predict 'ret' targets from the generic BTB.
+-	 * The proper mitigation for this is IBRS. If IBRS is not supported
+-	 * or deactivated in favour of retpolines the RSB fill on context
+-	 * switch is required.
++	 *	- RSB underflow (and switch to BTB) on Skylake+
++	 *	- SpectreRSB variant of spectre v2 on X86_BUG_SPECTRE_V2 CPUs
+ 	 */
+-	if ((!boot_cpu_has(X86_FEATURE_PTI) &&
+-	     !boot_cpu_has(X86_FEATURE_SMEP)) || is_skylake_era()) {
+-		setup_force_cpu_cap(X86_FEATURE_RSB_CTXSW);
+-		pr_info("Spectre v2 mitigation: Filling RSB on context switch\n");
+-	}
++	setup_force_cpu_cap(X86_FEATURE_RSB_CTXSW);
++	pr_info("Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch\n");
+ 
+ 	/* Initialize Indirect Branch Prediction Barrier if supported */
+ 	if (boot_cpu_has(X86_FEATURE_IBPB)) {
+From 0ea063306eecf300fcf06d2f5917474b580f666f Mon Sep 17 00:00:00 2001
+From: Masami Hiramatsu <mhiramat@kernel.org>
+Date: Sat, 28 Apr 2018 21:37:03 +0900
+Subject: kprobes/x86: Fix %p uses in error messages
+
+From: Masami Hiramatsu <mhiramat@kernel.org>
+
+commit 0ea063306eecf300fcf06d2f5917474b580f666f upstream.
+
+Remove all %p uses in error messages in kprobes/x86.
+
+Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Ananth N Mavinakayanahalli <ananth@in.ibm.com>
+Cc: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: David Howells <dhowells@redhat.com>
+Cc: David S . Miller <davem@davemloft.net>
+Cc: Heiko Carstens <heiko.carstens@de.ibm.com>
+Cc: Jon Medhurst <tixy@linaro.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Thomas Richter <tmricht@linux.ibm.com>
+Cc: Tobin C . Harding <me@tobin.cc>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: acme@kernel.org
+Cc: akpm@linux-foundation.org
+Cc: brueckner@linux.vnet.ibm.com
+Cc: linux-arch@vger.kernel.org
+Cc: rostedt@goodmis.org
+Cc: schwidefsky@de.ibm.com
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/lkml/152491902310.9916.13355297638917767319.stgit@devbox
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/x86/kernel/kprobes/core.c |    5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+--- a/arch/x86/kernel/kprobes/core.c
++++ b/arch/x86/kernel/kprobes/core.c
+@@ -395,8 +395,6 @@ int __copy_instruction(u8 *dest, u8 *src
+ 			  - (u8 *) real;
+ 		if ((s64) (s32) newdisp != newdisp) {
+ 			pr_err("Kprobes error: new displacement does not fit into s32 (%llx)\n", newdisp);
+-			pr_err("\tSrc: %p, Dest: %p, old disp: %x\n",
+-				src, real, insn->displacement.value);
+ 			return 0;
+ 		}
+ 		disp = (u8 *) dest + insn_offset_displacement(insn);
+@@ -640,8 +638,7 @@ static int reenter_kprobe(struct kprobe
+ 		 * Raise a BUG or we'll continue in an endless reentering loop
+ 		 * and eventually a stack overflow.
+ 		 */
+-		printk(KERN_WARNING "Unrecoverable kprobe detected at %p.\n",
+-		       p->addr);
++		pr_err("Unrecoverable kprobe detected.\n");
+ 		dump_kprobe(p);
+ 		BUG();
+ 	default:
+From 208cbb32558907f68b3b2a081ca2337ac3744794 Mon Sep 17 00:00:00 2001
+From: Nick Desaulniers <ndesaulniers@google.com>
+Date: Fri, 3 Aug 2018 10:05:50 -0700
+Subject: x86/irqflags: Provide a declaration for native_save_fl
+
+From: Nick Desaulniers <ndesaulniers@google.com>
+
+commit 208cbb32558907f68b3b2a081ca2337ac3744794 upstream.
+
+It was reported that the commit d0a8d9378d16 is causing users of gcc < 4.9
+to observe -Werror=missing-prototypes errors.
+
+Indeed, it seems that:
+extern inline unsigned long native_save_fl(void) { return 0; }
+
+compiled with -Werror=missing-prototypes produces this warning in gcc <
+4.9, but not gcc >= 4.9.
+
+Fixes: d0a8d9378d16 ("x86/paravirt: Make native_save_fl() extern inline").
+Reported-by: David Laight <david.laight@aculab.com>
+Reported-by: Jean Delvare <jdelvare@suse.de>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: hpa@zytor.com
+Cc: jgross@suse.com
+Cc: kstewart@linuxfoundation.org
+Cc: gregkh@linuxfoundation.org
+Cc: boris.ostrovsky@oracle.com
+Cc: astrachan@google.com
+Cc: mka@chromium.org
+Cc: arnd@arndb.de
+Cc: tstellar@redhat.com
+Cc: sedat.dilek@gmail.com
+Cc: David.Laight@aculab.com
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20180803170550.164688-1-ndesaulniers@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ arch/x86/include/asm/irqflags.h |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/arch/x86/include/asm/irqflags.h
++++ b/arch/x86/include/asm/irqflags.h
+@@ -13,6 +13,8 @@
+  * Interrupt control:
+  */
+ 
++/* Declaration required for gcc < 4.9 to prevent -Werror=missing-prototypes */
++extern inline unsigned long native_save_fl(void);
+ extern inline unsigned long native_save_fl(void)
+ {
+ 	unsigned long flags;
