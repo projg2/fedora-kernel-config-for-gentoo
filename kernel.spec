@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 17
+%define base_sublevel 18
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 19
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -587,33 +587,29 @@ Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 # https://patchwork.kernel.org/patch/9820417/
 Patch305: qcom-msm89xx-fixes.patch
 
-# https://marc.info/?l=linux-kernel&m=152328880417846&w=2
-Patch307: arm64-thunderx-crypto-zip-fixes.patch
+# https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
+Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-# https://www.spinics.net/lists/linux-crypto/msg32725.html
-Patch308: crypto-testmgr-Allow-different-compression-results.patch
+Patch307: arm-tegra-fix-nouveau-crash.patch
 
-Patch309: arm-tegra-fix-nouveau-crash.patch
+# https://patchwork.kernel.org/patch/10539291/
+Patch308: mmc-sunxi-allow-3.3V-DDR-when-DDR-is-available.patch
+# https://patchwork.kernel.org/patch/10540521/
+Patch309: mmc-sunxi-remove-output-of-virtual-base-address.patch
 
-# https://patchwork.kernel.org/patch/10346089/
-Patch310: arm-dts-Add-am335x-pocketbeagle.patch
-
-# https://www.spinics.net/lists/linux-tegra/msg32920.html
-Patch311: arm-tegra-USB-driver-dependency-fix.patch
-
-# https://patchwork.kernel.org/patch/10348701/
-Patch312: arm64-msm8916-fix-gic_irq_domain_translate-warnings.patch
-
-# https://patchwork.kernel.org/patch/10354521/
-# https://patchwork.kernel.org/patch/10354187/
-# https://patchwork.kernel.org/patch/10306793/
-# https://patchwork.kernel.org/patch/10133165/
-Patch313: mvebu-a37xx-fixes.patch
+# https://www.spinics.net/lists/arm-kernel/msg670137.html
+Patch311: arm64-ZynqMP-firmware-clock-drivers-core.patch
 
 # Enabling Patches for the RPi3+
-Patch330: bcm2837-rpi-initial-3plus-support.patch
-Patch332: bcm2837-enable-pmu.patch
-Patch333: bcm2837-lan78xx-fixes.patch
+Patch330: bcm2837-enable-pmu.patch
+
+# https://patchwork.freedesktop.org/patch/240917/
+Patch334: drm-vc4-Fix-the-no-scaling-case-on-multi-planar-YUV-formats.patch
+
+# Fix for AllWinner A64 Timer Errata, still not final
+# https://patchwork.kernel.org/patch/10392891/
+Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
+Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -625,44 +621,8 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# rhbz 1470995
-Patch503: kexec-bzimage-verify-pe-signature-fix.patch
-
-# rbhz 1435837
-# https://www.spinics.net/lists/linux-acpi/msg82405.html
-Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
-
-# https://www.spinics.net/lists/platform-driver-x86/msg15719.html
-Patch507: platform-x86-dell-laptop-Fix-keyboard-backlight-time.patch
-
-# rhbz 1568276
-# In 4.18
-Patch509: rtc-nvmem-don-t-return-an-error-when-not-enabled.patch
-
-# rhbz 1591516
-Patch515: 0001-signal-Stop-special-casing-TRAP_FIXME-and-FPE_FIXME-.patch
-
-# rhbz 1599917
-Patch516: Bluetooth-btusb-Add-additional-device-ID-for-RTL8822.patch
-
-# rhbz 1572944
-Patch517: Revert-the-random-series-for-4.16.4.patch
-
-# CVE-2018-13053 rhbz 1597747 1597748
-Patch518: alarmtimer-prevent-overflow-for-relative-nanosleep.patch
-
-# CVE-2018-12896 rhbz 1597759 1597760
-Patch519: 1-2-posix-timers-Make-forward-callback-return-s64.patch
-Patch520: 2-2-posix-timers-Sanitize-overrun-handling.patch
-
-# CVE-2018-13095 rhbz 1597775 1597777
-Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
-
-# rhbz 1597333
-# Patch526: xhci-Fix-perceived-dead-host-due-to-runtime-suspend-.patch
-
 # CVE-2018-15471 rhbz 1610555 1618414
-Patch524: xsa270.patch
+Patch504: xsa270.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1913,6 +1873,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 10 2018 Laura Abbott <labbott@redhat.com> - 4.18.7-100
+- Linux v4.18.7
+
 * Fri Aug 24 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.19-100
 - Linux v4.17.19
 
