@@ -269,9 +269,6 @@ Summary: The Linux kernel
 %define make_target vmlinux
 %define kernel_image vmlinux
 %define kernel_image_elf 1
-%ifarch ppc64
-%define all_arch_configs kernel-%{version}-ppc64*.config
-%endif
 %ifarch ppc64le
 %define all_arch_configs kernel-%{version}-ppc64le*.config
 %endif
@@ -373,7 +370,7 @@ Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
-ExclusiveArch: %{all_x86} x86_64 ppc64 s390x %{arm} aarch64 ppc64le
+ExclusiveArch: %{all_x86} x86_64 s390x %{arm} aarch64 ppc64le
 ExclusiveOS: Linux
 %ifnarch %{nobuildarches}
 Requires: kernel-core-uname-r = %{KVERREL}%{?variant}
@@ -433,9 +430,8 @@ Source90: filter-x86_64.sh
 Source91: filter-armv7hl.sh
 Source92: filter-i686.sh
 Source93: filter-aarch64.sh
-Source95: filter-ppc64.sh
-Source96: filter-ppc64le.sh
-Source97: filter-s390x.sh
+Source94: filter-ppc64le.sh
+Source95: filter-s390x.sh
 Source99: filter-modules.sh
 %define modsign_cmd %{SOURCE18}
 
@@ -449,14 +445,12 @@ Source26: kernel-i686.config
 Source27: kernel-i686-debug.config
 Source28: kernel-i686-PAE.config
 Source29: kernel-i686-PAEdebug.config
-Source30: kernel-ppc64.config
-Source31: kernel-ppc64-debug.config
-Source32: kernel-ppc64le.config
-Source33: kernel-ppc64le-debug.config
-Source36: kernel-s390x.config
-Source37: kernel-s390x-debug.config
-Source38: kernel-x86_64.config
-Source39: kernel-x86_64-debug.config
+Source30: kernel-ppc64le.config
+Source31: kernel-ppc64le-debug.config
+Source32: kernel-s390x.config
+Source33: kernel-s390x-debug.config
+Source34: kernel-x86_64.config
+Source35: kernel-x86_64-debug.config
 
 Source40: generate_all_configs.sh
 Source41: generate_debug_configs.sh
@@ -1910,6 +1904,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 15 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Drop PPC64 (Big Endian) configs
+
 * Mon Aug 13 2018 Laura Abbott <labbott@redhat.com> - 4.18.0-1
 - Linux v4.18
 - Disable debugging options.
