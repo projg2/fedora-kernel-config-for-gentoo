@@ -607,6 +607,8 @@ Patch334: drm-vc4-Fix-the-no-scaling-case-on-multi-planar-YUV-formats.patch
 Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
 Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
 
+Patch399: arm-fix-bpf-jit.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -1904,6 +1906,9 @@ fi
 #
 #
 %changelog
+* Fri Aug 17 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add fix and re-enable BPF JIT on ARMv7
+
 * Thu Aug 16 2018 Laura Abbott <labbott@redhat.com> - 4.18.1-300
 - Linux v4.18.1
 
