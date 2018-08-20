@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1909,6 +1909,9 @@ fi
 #
 #
 %changelog
+* Mon Aug 20 2018 Laura Abbott <labbott@redhat.com> - 4.18.3-300
+- Linux v4.18.3
+
 * Mon Aug 20 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-15471 (rhbz 1610555 1618414)
 
