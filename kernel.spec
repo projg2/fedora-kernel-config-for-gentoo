@@ -665,6 +665,9 @@ Patch523: 0001-xfs-More-robust-inode-extent-count-validation.patch
 # rhbz 1597333
 # Patch526: xhci-Fix-perceived-dead-host-due-to-runtime-suspend-.patch
 
+# CVE-2018-15471 rhbz 1610555 1618414
+Patch524: xsa270.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1916,6 +1919,7 @@ fi
 %changelog
 * Mon Aug 20 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.17-100
 - Linux v4.17.17
+- Fix CVE-2018-15471 (rhbz 1610555 1618414)
 
 * Wed Aug 15 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.14-102
 - Include missing Forshadow patches
