@@ -647,6 +647,9 @@ Patch528: 0008-console-dummycon-export-dummycon_-un-register_output.patch
 Patch529: 0009-fbcon-Only-defer-console-takeover-if-the-current-con.patch
 Patch530: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
 
+# CVE-2018-15471 rhbz 1610555 1618414
+Patch531: xsa270.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1906,6 +1909,9 @@ fi
 #
 #
 %changelog
+* Mon Aug 20 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-15471 (rhbz 1610555 1618414)
+
 * Fri Aug 17 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add fix and re-enable BPF JIT on ARMv7
 
