@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1914,6 +1914,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 22 2018 Laura Abbott <labbott@redhat.com> - 4.18.4-300
+- Linux v4.18.4
+
 * Wed Aug 22 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Re-add mvebu a3700 ATF memory exclusion
 - Upstream fix for dwc2 on some ARM platforms
