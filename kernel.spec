@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 19
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -634,10 +634,6 @@ Patch504: mailbox-ACPI-erroneous-error-message-when-parsing-ACPI.patch
 
 # https://www.spinics.net/lists/platform-driver-x86/msg15719.html
 Patch507: platform-x86-dell-laptop-Fix-keyboard-backlight-time.patch
-
-# rhbz 1577106
-# http://lists.infradead.org/pipermail/ath10k/2018-June/011582.html
-Patch508: ath10k-Update-the-phymode-along-with-bandwidth-change.patch
 
 # rhbz 1568276
 # In 4.18
@@ -1917,6 +1913,9 @@ fi
 #
 #
 %changelog
+* Fri Aug 24 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.19-100
+- Linux v4.17.19
+
 * Wed Aug 22 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.18-100
 - Linux v4.17.18
 
