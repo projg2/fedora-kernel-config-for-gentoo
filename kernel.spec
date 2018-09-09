@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1876,7 +1876,10 @@ fi
 #
 #
 %changelog
-* Fri Aug 24 2018 Laura Abbott <labbott@redhat.com> - 4.18.5-300
+* Sun Sep 09 2018 Laura Abbott <labbott@redhat.com> - 4.18.6-200
+- Linux v4.18.6
+
+* Fri Aug 24 2018 Laura Abbott <labbott@redhat.com> - 4.18.5-200
 - Linux v4.18.5
 
 * Fri Aug 24 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.17.19-200
