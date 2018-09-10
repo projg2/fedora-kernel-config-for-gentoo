@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -621,9 +621,6 @@ Patch501: Fix-for-module-sig-verification.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# rhbz 1470995
-Patch504: kexec-bzimage-verify-pe-signature-fix.patch
 
 # Support for unique build ids
 # All queued in the kbuild tree
@@ -1912,6 +1909,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 10 2018 Laura Abbott <labbott@redhat.com> - 4.18.7-300
+- Linux v4.18.7
+
 * Wed Sep 05 2018 Laura Abbott <labbott@redhat.com> - 4.18.6-300
 - Linux v4.18.6
 
