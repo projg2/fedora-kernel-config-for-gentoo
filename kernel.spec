@@ -597,6 +597,9 @@ Patch312: usb-dwc2-Turn-on-uframe-sched-everywhere.patch
 
 Patch313: arm64-dts-marvell-a3700-reserve-ATF-memory.patch
 
+Patch315: arm64-96boards-RK3399-Ficus-board.patch
+Patch316: arm64-96boards-Rock960-CE-board-support.patch
+
 # Enabling Patches for the RPi3+
 Patch330: bcm2837-enable-pmu.patch
 
@@ -1909,6 +1912,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 10 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add 96boards rk3399 Ficus and Rock960 support
+
 * Mon Sep 10 2018 Laura Abbott <labbott@redhat.com> - 4.18.7-300
 - Linux v4.18.7
 
