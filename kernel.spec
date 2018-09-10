@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -620,9 +620,6 @@ Patch501: Fix-for-module-sig-verification.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# rhbz 1470995
-Patch503: kexec-bzimage-verify-pe-signature-fix.patch
 
 # CVE-2018-15471 rhbz 1610555 1618414
 Patch504: xsa270.patch
@@ -1876,6 +1873,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 10 2018 Laura Abbott <labbott@redhat.com> - 4.18.7-200
+- Linux v4.18.7
+
 * Sun Sep 09 2018 Laura Abbott <labbott@redhat.com> - 4.18.6-200
 - Linux v4.18.6
 
