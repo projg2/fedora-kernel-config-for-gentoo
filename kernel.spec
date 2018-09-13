@@ -367,7 +367,7 @@ Name: kernel%{?variant}
 License: GPLv2 and Redistributable, no modification permitted
 URL: https://www.kernel.org/
 Version: %{rpmversion}
-Release: %{pkg_release}
+Release: %{pkg_release}.op.1
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
 ExclusiveArch: %{all_x86} x86_64 s390x %{arm} aarch64 ppc64le
@@ -593,6 +593,7 @@ Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
 Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
 
 # 400 - IBM (ppc/s390x) patches
+Patch400: ppc64-talos.patch
 
 # 500 - Temp fixes/CVEs etc
 
