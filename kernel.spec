@@ -561,6 +561,10 @@ Patch211: drm-i915-hush-check-crtc-state.patch
 Patch212: efi-secureboot.patch
 Patch213: lockdown-fix-coordination-of-kernel-module-signature-verification.patch
 
+# Fix printing of "EFI stub: UEFI Secure Boot is enabled.",
+# queued upstream in efi.git/next
+Patch214: efi-x86-call-parse-options-from-efi-main.patch
+
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
@@ -1912,6 +1916,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 13 2018 Hans de Goede <hdegoede@redhat.com>
+- Add patch silencing "EFI stub: UEFI Secure Boot is enabled." at boot
+
 * Mon Sep 10 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add 96boards rk3399 Ficus and Rock960 support
 
