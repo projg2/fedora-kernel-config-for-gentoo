@@ -627,6 +627,10 @@ Patch504: xsa270.patch
 # rhbz 1627963 1628715
 Patch505: HID-fixes.patch
 
+# rhbz 1572944
+Patch506: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
+Patch507: 0001-random-make-CPU-trust-a-boot-parameter.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1876,6 +1880,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 13 2018 Laura Abbott <labbott@redhat.com>
+- Use the CPU RNG for entropy (rhbz 1572944)
+
 * Thu Sep 13 2018 Laura Abbott <labbott@redhat.com>
 - HID fixes (rhbz 1627963 1628715)
 
