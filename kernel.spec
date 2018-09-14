@@ -600,6 +600,8 @@ Patch313: arm64-dts-marvell-a3700-reserve-ATF-memory.patch
 Patch315: arm64-96boards-RK3399-Ficus-board.patch
 Patch316: arm64-96boards-Rock960-CE-board-support.patch
 
+Patch317: arm64-drm-msm-fix-missing-CTL-flush.patch
+
 # Enabling Patches for the RPi3+
 Patch330: bcm2837-enable-pmu.patch
 
