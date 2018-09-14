@@ -664,6 +664,9 @@ Patch532: HID-fixes.patch
 Patch533: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
 Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
 
+# Additional Fixes for CVE-2018-5391
+# Patch535: CVE-2018-5391-additional.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1923,6 +1926,9 @@ fi
 #
 #
 %changelog
+* Fri Sep 14 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Additional Fixes for CVE-2018-5391 (rhbz 1616059)
+
 * Thu Sep 13 2018 Laura Abbott <labbott@redhat.com>
 - Use the CPU RNG for entropy (rhbz 1572944)
 
