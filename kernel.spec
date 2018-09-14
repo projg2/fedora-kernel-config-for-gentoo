@@ -624,6 +624,9 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # CVE-2018-15471 rhbz 1610555 1618414
 Patch504: xsa270.patch
 
+# rhbz 1627963 1628715
+Patch505: HID-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1873,6 +1876,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 13 2018 Laura Abbott <labbott@redhat.com>
+- HID fixes (rhbz 1627963 1628715)
+
 * Mon Sep 10 2018 Laura Abbott <labbott@redhat.com> - 4.18.7-200
 - Linux v4.18.7
 
