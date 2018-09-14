@@ -657,6 +657,9 @@ Patch530: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
 # CVE-2018-15471 rhbz 1610555 1618414
 Patch531: xsa270.patch
 
+# rhbz 1627963 1628715
+Patch532: HID-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1916,6 +1919,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 13 2018 Laura Abbott <labbott@redhat.com>
+- HID fixes (rhbz 1627963 1628715)
+
 * Thu Sep 13 2018 Hans de Goede <hdegoede@redhat.com>
 - Add patch silencing "EFI stub: UEFI Secure Boot is enabled." at boot
 
