@@ -606,6 +606,8 @@ Patch316: arm64-96boards-Rock960-CE-board-support.patch
 
 Patch317: arm64-drm-msm-fix-missing-CTL-flush.patch
 
+Patch318: gpio-pxa-handle-corner-case-of-unprobed-device.patch
+
 # Enabling Patches for the RPi3+
 Patch330: bcm2837-enable-pmu.patch
 
