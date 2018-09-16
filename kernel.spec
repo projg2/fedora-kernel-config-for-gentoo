@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1930,6 +1930,9 @@ fi
 #
 #
 %changelog
+* Sun Sep 16 2018 Laura Abbott <labbott@redhat.com> - 4.18.8-300
+- Linux v4.18.8
+
 * Fri Sep 14 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Additional Fixes for CVE-2018-5391 (rhbz 1616059)
 
