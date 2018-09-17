@@ -601,8 +601,8 @@ Patch312: usb-dwc2-Turn-on-uframe-sched-everywhere.patch
 
 Patch313: arm64-dts-marvell-a3700-reserve-ATF-memory.patch
 
-Patch315: arm64-96boards-RK3399-Ficus-board.patch
-Patch316: arm64-96boards-Rock960-CE-board-support.patch
+#Patch315: arm64-96boards-RK3399-Ficus-board.patch
+#Patch316: arm64-96boards-Rock960-CE-board-support.patch
 
 Patch317: arm64-drm-msm-fix-missing-CTL-flush.patch
 
