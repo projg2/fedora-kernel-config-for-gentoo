@@ -665,9 +665,6 @@ Patch531: xsa270.patch
 Patch533: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
 Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
 
-# Additional Fixes for CVE-2018-5391
-# Patch535: CVE-2018-5391-additional.patch
-
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1929,6 +1926,7 @@ fi
 %changelog
 * Thu Sep 20 2018 Laura Abbott <labbott@redhat.com> - 4.18.9-300
 - Linux v4.18.9
+- Fixes CVE-2018-17182 (rhbz 1631205 1631206)
 
 * Sun Sep 16 2018 Laura Abbott <labbott@redhat.com> - 4.18.8-300
 - Linux v4.18.8
