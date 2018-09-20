@@ -1879,6 +1879,7 @@ fi
 %changelog
 * Thu Sep 20 2018 Laura Abbott <labbott@redhat.com> - 4.18.9-100
 - Linux v4.18.9
+- Fixes CVE-2018-17182 (rhbz 1631205 1631206)
 
 * Sun Sep 16 2018 Laura Abbott <labbott@redhat.com> - 4.18.8-100
 - Linux v4.18.8
