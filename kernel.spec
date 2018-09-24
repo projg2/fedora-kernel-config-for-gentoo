@@ -665,6 +665,9 @@ Patch531: xsa270.patch
 Patch533: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
 Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
 
+# CVE-2018-14633 rhbz 1626035 1632185
+Patch535: CVE-2018-14633.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1924,6 +1927,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 24 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-14633 (rhbz 1626035 1632185)
+
 * Thu Sep 20 2018 Laura Abbott <labbott@redhat.com> - 4.18.9-300
 - Linux v4.18.9
 - Fixes CVE-2018-17182 (rhbz 1631205 1631206)
