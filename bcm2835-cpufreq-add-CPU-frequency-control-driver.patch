@@ -299,3 +299,98 @@ index 4adb85e66be3..aaefb078f391 100644
 -- 
 2.17.1
 
+From d00bd46b40001d3500b8a7207dcfe1d66600e47e Mon Sep 17 00:00:00 2001
+From: Stefan Wahren <stefan.wahren@i2se.com>
+Date: Wed, 26 Sep 2018 21:13:22 +0200
+Subject: [PATCH] ARM: bcm2837: Use CPU0 as cooling device
+
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ arch/arm/boot/dts/bcm2837.dtsi | 25 +++++++++++++++++++++++++
+ arch/arm/boot/dts/bcm283x.dtsi |  2 +-
+ 2 files changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/bcm2837.dtsi b/arch/arm/boot/dts/bcm2837.dtsi
+index 9cfc553..1590d94 100644
+--- a/arch/arm/boot/dts/bcm2837.dtsi
++++ b/arch/arm/boot/dts/bcm2837.dtsi
+@@ -1,4 +1,5 @@
+ #include "bcm283x.dtsi"
++#include <dt-bindings/thermal/thermal.h>
+ 
+ / {
+ 	compatible = "brcm,bcm2837";
+@@ -47,6 +48,7 @@
+ 			clocks = <&arm_clk>;
+ 			clock-names = "cpu";
+ 			operating-points-v2 = <&cpu0_opp_table>;
++			#cooling-cells = <2>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -58,6 +60,7 @@
+ 			clocks = <&arm_clk>;
+ 			clock-names = "cpu";
+ 			operating-points-v2 = <&cpu0_opp_table>;
++			#cooling-cells = <2>;
+ 		};
+ 
+ 		cpu2: cpu@2 {
+@@ -69,6 +72,7 @@
+ 			clocks = <&arm_clk>;
+ 			clock-names = "cpu";
+ 			operating-points-v2 = <&cpu0_opp_table>;
++			#cooling-cells = <2>;
+ 		};
+ 
+ 		cpu3: cpu@3 {
+@@ -80,6 +84,7 @@
+ 			clocks = <&arm_clk>;
+ 			clock-names = "cpu";
+ 			operating-points-v2 = <&cpu0_opp_table>;
++			#cooling-cells = <2>;
+ 		};
+ 	};
+ 
+@@ -117,6 +122,26 @@
+ 
+ &cpu_thermal {
+ 	coefficients = <(-538)	412000>;
++
++	trips {
++		cpu_alert0: cpu-alert0 {
++			temperature	= <70000>;
++			hysteresis	= <0>;
++			type		= "passive";
++		};
++	};
++
++	cooling-maps {
++		map0 {
++			trip = <&cpu_alert0>;
++			cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
++		};
++
++		map1 {
++			trip = <&cpu_crit>;
++			cooling-device = <&cpu0 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
++		};
++	};
+ };
+ 
+ /* enable thermal sensor with the correct compatible property set */
+diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
+index 31b2964..2def068 100644
+--- a/arch/arm/boot/dts/bcm283x.dtsi
++++ b/arch/arm/boot/dts/bcm283x.dtsi
+@@ -38,7 +38,7 @@
+ 			thermal-sensors = <&thermal>;
+ 
+ 			trips {
+-				cpu-crit {
++				cpu_crit: cpu-crit {
+ 					temperature	= <80000>;
+ 					hysteresis	= <0>;
+ 					type		= "critical";
+-- 
+2.7.4
