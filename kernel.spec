@@ -631,6 +631,9 @@ Patch507: 0001-random-make-CPU-trust-a-boot-parameter.patch
 # CVE-2018-14633 rhbz 1626035 1632185
 Patch508: CVE-2018-14633.patch
 
+# rhbz 1628394
+Patch509: powerpc-ipv6.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1880,6 +1883,9 @@ fi
 #
 #
 %changelog
+* Wed Sep 26 2018 Laura Abbott <labbott@redhat.com>
+- Fix powerpc IPv6 (rhbz 1628394)
+
 * Mon Sep 24 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-14633 (rhbz 1626035 1632185)
 
