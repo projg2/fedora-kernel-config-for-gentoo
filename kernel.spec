@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -583,8 +583,6 @@ Patch305: qcom-msm89xx-fixes.patch
 
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
-
-Patch307: arm-tegra-fix-nouveau-crash.patch
 
 # https://patchwork.kernel.org/patch/10539291/
 Patch308: mmc-sunxi-allow-3.3V-DDR-when-DDR-is-available.patch
@@ -1930,6 +1928,9 @@ fi
 #
 #
 %changelog
+* Wed Sep 26 2018 Laura Abbott <labbott@redhat.com> - 4.18.10-300
+- Linux v4.18.10
+
 * Wed Sep 26 2018 Laura Abbott <labbott@redhat.com>
 - Fix powerpc IPv6 (rhbz 1628394)
 
