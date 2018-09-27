@@ -601,10 +601,11 @@ Patch313: arm64-dts-marvell-a3700-reserve-ATF-memory.patch
 
 Patch315: arm64-96boards-RK3399-Ficus-board.patch
 Patch316: arm64-96boards-Rock960-CE-board-support.patch
+Patch317: arm64-rockchip-add-initial-Rockpro64.patch
 
-Patch317: arm64-drm-msm-fix-missing-CTL-flush.patch
+Patch318: arm64-drm-msm-fix-missing-CTL-flush.patch
 
-Patch318: gpio-pxa-handle-corner-case-of-unprobed-device.patch
+Patch319: gpio-pxa-handle-corner-case-of-unprobed-device.patch
 
 # Enabling Patches for the RPi3+
 Patch330: bcm2837-enable-pmu.patch
@@ -1930,6 +1931,7 @@ fi
 %changelog
 * Wed Sep 26 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add thermal trip to bcm283x (Raspberry Pi) cpufreq
+- Add initial RockPro64 DT support
 
 * Wed Sep 26 2018 Laura Abbott <labbott@redhat.com> - 4.18.10-300
 - Linux v4.18.10
