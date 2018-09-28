@@ -621,6 +621,7 @@ Patch334: drm-vc4-Fix-the-no-scaling-case-on-multi-planar-YUV-formats.patch
 # https://patchwork.kernel.org/patch/10392891/
 Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
 Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
+Patch352: arm64-allwinner-fixes.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1932,6 +1933,7 @@ fi
 * Wed Sep 26 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add thermal trip to bcm283x (Raspberry Pi) cpufreq
 - Add initial RockPro64 DT support
+- Add Pine64-LTS support and some other AllWinner-A64 fixes
 
 * Wed Sep 26 2018 Laura Abbott <labbott@redhat.com> - 4.18.10-300
 - Linux v4.18.10
