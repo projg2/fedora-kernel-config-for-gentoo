@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -614,9 +614,6 @@ Patch331: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 Patch332: bcm2835-hwmon-Add-support-for-RPi-voltage-sensor.patch
 
-# https://patchwork.freedesktop.org/patch/240917/
-Patch334: drm-vc4-Fix-the-no-scaling-case-on-multi-planar-YUV-formats.patch
-
 # Fix for AllWinner A64 Timer Errata, still not final
 # https://patchwork.kernel.org/patch/10392891/
 Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
@@ -664,9 +661,6 @@ Patch531: xsa270.patch
 # rhbz 1572944
 Patch533: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
 Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
-
-# CVE-2018-14633 rhbz 1626035 1632185
-Patch535: CVE-2018-14633.patch
 
 # rhbz 1628394
 Patch536: powerpc-ipv6.patch
@@ -1930,6 +1924,9 @@ fi
 #
 #
 %changelog
+* Sun Sep 30 2018 Laura Abbott <labbott@redhat.com> - 4.18.11-300
+- Linux v4.18.11
+
 * Wed Sep 26 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Add thermal trip to bcm283x (Raspberry Pi) cpufreq
 - Add initial RockPro64 DT support
