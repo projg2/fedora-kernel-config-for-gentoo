@@ -1,3 +1,325 @@
+From 5828729bebbb69d0743488e742bed8a9727b0b71 Mon Sep 17 00:00:00 2001
+From: Icenowy Zheng <icenowy@aosc.io>
+Date: Wed, 11 Apr 2018 22:16:40 +0800
+Subject: soc: sunxi: export a regmap for EMAC clock reg on A64
+
+The A64 SRAM controller memory zone has a EMAC clock register, which is
+needed by the Ethernet MAC driver (dwmac-sun8i).
+
+Export a regmap for this register on A64.
+
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+[wens@csie.org: export whole address range with only EMAC register
+		accessible and drop regmap name]
+Acked-by: Maxime Ripard <maxime.ripard@bootlin.com>
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+---
+ drivers/soc/sunxi/sunxi_sram.c | 57 ++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 55 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/soc/sunxi/sunxi_sram.c b/drivers/soc/sunxi/sunxi_sram.c
+index 882be5ed7e84..eec7fc6e9f66 100644
+--- a/drivers/soc/sunxi/sunxi_sram.c
++++ b/drivers/soc/sunxi/sunxi_sram.c
+@@ -17,6 +17,7 @@
+ #include <linux/of_address.h>
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
++#include <linux/regmap.h>
+ 
+ #include <linux/soc/sunxi/sunxi_sram.h>
+ 
+@@ -281,13 +282,51 @@ int sunxi_sram_release(struct device *dev)
+ }
+ EXPORT_SYMBOL(sunxi_sram_release);
+ 
++struct sunxi_sramc_variant {
++	bool has_emac_clock;
++};
++
++static const struct sunxi_sramc_variant sun4i_a10_sramc_variant = {
++	/* Nothing special */
++};
++
++static const struct sunxi_sramc_variant sun50i_a64_sramc_variant = {
++	.has_emac_clock = true,
++};
++
++#define SUNXI_SRAM_EMAC_CLOCK_REG	0x30
++static bool sunxi_sram_regmap_accessible_reg(struct device *dev,
++					     unsigned int reg)
++{
++	if (reg == SUNXI_SRAM_EMAC_CLOCK_REG)
++		return true;
++	return false;
++}
++
++static struct regmap_config sunxi_sram_emac_clock_regmap = {
++	.reg_bits       = 32,
++	.val_bits       = 32,
++	.reg_stride     = 4,
++	/* last defined register */
++	.max_register   = SUNXI_SRAM_EMAC_CLOCK_REG,
++	/* other devices have no business accessing other registers */
++	.readable_reg	= sunxi_sram_regmap_accessible_reg,
++	.writeable_reg	= sunxi_sram_regmap_accessible_reg,
++};
++
+ static int sunxi_sram_probe(struct platform_device *pdev)
+ {
+ 	struct resource *res;
+ 	struct dentry *d;
++	struct regmap *emac_clock;
++	const struct sunxi_sramc_variant *variant;
+ 
+ 	sram_dev = &pdev->dev;
+ 
++	variant = of_device_get_match_data(&pdev->dev);
++	if (!variant)
++		return -EINVAL;
++
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	base = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(base))
+@@ -300,12 +339,26 @@ static int sunxi_sram_probe(struct platform_device *pdev)
+ 	if (!d)
+ 		return -ENOMEM;
+ 
++	if (variant->has_emac_clock) {
++		emac_clock = devm_regmap_init_mmio(&pdev->dev, base,
++						   &sunxi_sram_emac_clock_regmap);
++
++		if (IS_ERR(emac_clock))
++			return PTR_ERR(emac_clock);
++	}
++
+ 	return 0;
+ }
+ 
+ static const struct of_device_id sunxi_sram_dt_match[] = {
+-	{ .compatible = "allwinner,sun4i-a10-sram-controller" },
+-	{ .compatible = "allwinner,sun50i-a64-sram-controller" },
++	{
++		.compatible = "allwinner,sun4i-a10-sram-controller",
++		.data = &sun4i_a10_sramc_variant,
++	},
++	{
++		.compatible = "allwinner,sun50i-a64-sram-controller",
++		.data = &sun50i_a64_sramc_variant,
++	},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, sunxi_sram_dt_match);
+-- 
+cgit 1.2-0.3.lf.el7
+From ede18ae31202256824b47cfbebc8c0dc219354ef Mon Sep 17 00:00:00 2001
+From: Chen-Yu Tsai <wens@csie.org>
+Date: Tue, 22 May 2018 01:02:41 +0800
+Subject: soc: sunxi: sram: Add updated compatible string for A64 system
+ control
+
+The SRAM mapping controls on Allwinner SoCs is located in a block called
+"System Controls". This block also has registers for identifying the SoC,
+reading the state of an external boot-related pin, and on some newer SoCs,
+glue layer controls for the EMAC Ethernet controller.
+
+The A64 variant compatible is renamed to "allwinner,a64-system-control"
+to reflect this. The old A64 compatible is deprecated. So far we haven't
+seen any actual use of it.
+
+Acked-by: Maxime Ripard <maxime.ripard@bootlin.com>
+Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+---
+ drivers/soc/sunxi/sunxi_sram.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/soc/sunxi/sunxi_sram.c b/drivers/soc/sunxi/sunxi_sram.c
+index eec7fc6e9f66..7fec1b160dbb 100644
+--- a/drivers/soc/sunxi/sunxi_sram.c
++++ b/drivers/soc/sunxi/sunxi_sram.c
+@@ -359,6 +359,10 @@ static const struct of_device_id sunxi_sram_dt_match[] = {
+ 		.compatible = "allwinner,sun50i-a64-sram-controller",
+ 		.data = &sun50i_a64_sramc_variant,
+ 	},
++	{
++		.compatible = "allwinner,sun50i-a64-system-control",
++		.data = &sun50i_a64_sramc_variant,
++	},
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, sunxi_sram_dt_match);
+-- 
+cgit 1.2-0.3.lf.el7
+From acc26f59f835142a48f495caf80b86592c4af1f5 Mon Sep 17 00:00:00 2001
+From: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Date: Tue, 10 Jul 2018 10:00:58 +0200
+Subject: soc: sunxi: sram: Add dt match for the A10 system-control compatible
+
+This binds the new A10 system-control compatible to the associated
+driver, with the same driver data as the previous compatible.
+
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+---
+ drivers/soc/sunxi/sunxi_sram.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/soc/sunxi/sunxi_sram.c b/drivers/soc/sunxi/sunxi_sram.c
+index 7fec1b160dbb..236f34307c0f 100644
+--- a/drivers/soc/sunxi/sunxi_sram.c
++++ b/drivers/soc/sunxi/sunxi_sram.c
+@@ -355,6 +355,10 @@ static const struct of_device_id sunxi_sram_dt_match[] = {
+ 		.compatible = "allwinner,sun4i-a10-sram-controller",
+ 		.data = &sun4i_a10_sramc_variant,
+ 	},
++	{
++		.compatible = "allwinner,sun4i-a10-system-control",
++		.data = &sun4i_a10_sramc_variant,
++	},
+ 	{
+ 		.compatible = "allwinner,sun50i-a64-sram-controller",
+ 		.data = &sun50i_a64_sramc_variant,
+-- 
+cgit 1.2-0.3.lf.el7
+From 5fdec16b69da273d5654c2c3be01246a59e1bcba Mon Sep 17 00:00:00 2001
+From: Maxime Ripard <maxime.ripard@bootlin.com>
+Date: Tue, 10 Jul 2018 10:00:59 +0200
+Subject: drivers: soc: sunxi: Add support for the C1 SRAM region
+
+This introduces support for the SRAM C1 section, that is controlled by
+the system controller. This SRAM area can be muxed either to the CPU
+or the Video Engine, that needs this area to store various tables (e.g.
+the Huffman VLD decoding tables).
+
+This only supports devices with the same layout as the A10 (which also
+includes the A13, A20, A33 and other SoCs).
+
+Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+---
+ drivers/soc/sunxi/sunxi_sram.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/soc/sunxi/sunxi_sram.c b/drivers/soc/sunxi/sunxi_sram.c
+index 236f34307c0f..b19fa2cc67c2 100644
+--- a/drivers/soc/sunxi/sunxi_sram.c
++++ b/drivers/soc/sunxi/sunxi_sram.c
+@@ -64,6 +64,12 @@ static struct sunxi_sram_desc sun4i_a10_sram_a3_a4 = {
+ 				  SUNXI_SRAM_MAP(1, 1, "emac")),
+ };
+ 
++static struct sunxi_sram_desc sun4i_a10_sram_c1 = {
++	.data	= SUNXI_SRAM_DATA("C1", 0x0, 0x0, 31,
++				  SUNXI_SRAM_MAP(0, 0, "cpu"),
++				  SUNXI_SRAM_MAP(0x7fffffff, 1, "ve")),
++};
++
+ static struct sunxi_sram_desc sun4i_a10_sram_d = {
+ 	.data	= SUNXI_SRAM_DATA("D", 0x4, 0x0, 1,
+ 				  SUNXI_SRAM_MAP(0, 0, "cpu"),
+@@ -81,6 +87,10 @@ static const struct of_device_id sunxi_sram_dt_ids[] = {
+ 		.compatible	= "allwinner,sun4i-a10-sram-a3-a4",
+ 		.data		= &sun4i_a10_sram_a3_a4.data,
+ 	},
++	{
++		.compatible	= "allwinner,sun4i-a10-sram-c1",
++		.data		= &sun4i_a10_sram_c1.data,
++	},
+ 	{
+ 		.compatible	= "allwinner,sun4i-a10-sram-d",
+ 		.data		= &sun4i_a10_sram_d.data,
+-- 
+cgit 1.2-0.3.lf.el7
+From 7377330a1ed2e9bb5a97758bdadcdb37e2201b2a Mon Sep 17 00:00:00 2001
+From: Maxime Ripard <maxime.ripard@bootlin.com>
+Date: Wed, 11 Jul 2018 11:25:07 +0200
+Subject: soc: sunxi: Add the A13, A23 and H3 system control compatibles
+
+The A13, A23 and H3 have variations of the system controls, in part due to
+the SRAM that are available (and can be mapped) in the SoC.
+
+In order to make it future proof, let's add compatibles for these SoCs in
+the driver.
+
+Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+---
+ drivers/soc/sunxi/sunxi_sram.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/soc/sunxi/sunxi_sram.c b/drivers/soc/sunxi/sunxi_sram.c
+index b19fa2cc67c2..b4b0f3480bd3 100644
+--- a/drivers/soc/sunxi/sunxi_sram.c
++++ b/drivers/soc/sunxi/sunxi_sram.c
+@@ -369,6 +369,18 @@ static const struct of_device_id sunxi_sram_dt_match[] = {
+ 		.compatible = "allwinner,sun4i-a10-system-control",
+ 		.data = &sun4i_a10_sramc_variant,
+ 	},
++	{
++		.compatible = "allwinner,sun5i-a13-system-control",
++		.data = &sun4i_a10_sramc_variant,
++	},
++	{
++		.compatible = "allwinner,sun8i-a23-system-control",
++		.data = &sun4i_a10_sramc_variant,
++	},
++	{
++		.compatible = "allwinner,sun8i-h3-system-control",
++		.data = &sun4i_a10_sramc_variant,
++	},
+ 	{
+ 		.compatible = "allwinner,sun50i-a64-sram-controller",
+ 		.data = &sun50i_a64_sramc_variant,
+-- 
+cgit 1.2-0.3.lf.el7
+From 0195156340d365540c7dfa239232065826904f59 Mon Sep 17 00:00:00 2001
+From: Icenowy Zheng <icenowy@aosc.io>
+Date: Fri, 22 Jun 2018 20:45:37 +0800
+Subject: clk: sunxi-ng: add A64 compatible string
+
+As claiming Allwinner A64 SRAM C is a prerequisite for all sub-blocks of
+the A64 DE2, not only the CCU sub-block, a bus driver is then written for
+enabling the access to the whole DE2 part by claiming the SRAM.
+
+In this situation, the A64 compatible string will be just added with no
+other requirments, as they're processed by the parent bus driver.
+
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+---
+ drivers/clk/sunxi-ng/ccu-sun8i-de2.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/clk/sunxi-ng/ccu-sun8i-de2.c b/drivers/clk/sunxi-ng/ccu-sun8i-de2.c
+index 468d1abaf0ee..bae5ee67a797 100644
+--- a/drivers/clk/sunxi-ng/ccu-sun8i-de2.c
++++ b/drivers/clk/sunxi-ng/ccu-sun8i-de2.c
+@@ -288,17 +288,14 @@ static const struct of_device_id sunxi_de2_clk_ids[] = {
+ 		.compatible = "allwinner,sun8i-v3s-de2-clk",
+ 		.data = &sun8i_v3s_de2_clk_desc,
+ 	},
++	{
++		.compatible = "allwinner,sun50i-a64-de2-clk",
++		.data = &sun50i_a64_de2_clk_desc,
++	},
+ 	{
+ 		.compatible = "allwinner,sun50i-h5-de2-clk",
+ 		.data = &sun50i_a64_de2_clk_desc,
+ 	},
+-	/*
+-	 * The Allwinner A64 SoC needs some bit to be poke in syscon to make
+-	 * DE2 really working.
+-	 * So there's currently no A64 compatible here.
+-	 * H5 shares the same reset line with A64, so here H5 is using the
+-	 * clock description of A64.
+-	 */
+ 	{ }
+ };
+ 
+-- 
+cgit 1.2-0.3.lf.el7
 From 2c740e6ab4b66e5bb1cd3c75f00f4ca7e5765037 Mon Sep 17 00:00:00 2001
 From: Emmanuel Vadot <manu@freebsd.org>
 Date: Mon, 21 May 2018 13:54:13 +0200
