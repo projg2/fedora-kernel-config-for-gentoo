@@ -1879,6 +1879,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 01 2018 Laura Abbott <labbott@redhat.com>
+- Disable CONFIG_CRYPTO_DEV_SP_PSP (rhbz 1608242)
+
 * Mon Oct  1 2018 Laura Abbott <labbott@redhat.com>
 - Fix for Intel Sensor Hub (rhbz 1634250)
 
