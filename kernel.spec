@@ -671,6 +671,9 @@ Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
 # rhbz 1628394
 Patch536: powerpc-ipv6.patch
 
+# rhbz 1634250
+Patch537: HID-intel-ish-hid-Enable-Sunrise-Point-H-ish-driver.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1930,6 +1933,9 @@ fi
 #
 #
 %changelog
+* Mon Oct  1 2018 Laura Abbott <labbott@redhat.com>
+- Fix for Intel Sensor Hub (rhbz 1634250)
+
 * Mon Oct  1 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.18.11-301
 - Support loading device specific NVRAM files on brcm WiFi devices
 
