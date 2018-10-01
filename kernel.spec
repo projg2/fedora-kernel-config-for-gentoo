@@ -627,6 +627,9 @@ Patch507: 0001-random-make-CPU-trust-a-boot-parameter.patch
 # rhbz 1628394
 Patch509: powerpc-ipv6.patch
 
+# rhbz 1634250
+Patch510: HID-intel-ish-hid-Enable-Sunrise-Point-H-ish-driver.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1876,6 +1879,9 @@ fi
 #
 #
 %changelog
+* Mon Oct  1 2018 Laura Abbott <labbott@redhat.com>
+- Fix for Intel Sensor Hub (rhbz 1634250)
+
 * Sun Sep 30 2018 Laura Abbott <labbott@redhat.com> - 4.18.11-100
 - Linux v4.18.11
 
