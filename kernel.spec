@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 301
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1930,7 +1930,7 @@ fi
 #
 #
 %changelog
-* Mon Oct  1 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+* Mon Oct  1 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.18.11-301
 - Support loading device specific NVRAM files on brcm WiFi devices
 
 * Sun Sep 30 2018 Peter Robinson <pbrobinson@fedoraproject.org>
