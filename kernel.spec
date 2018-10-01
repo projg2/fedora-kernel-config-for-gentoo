@@ -614,6 +614,12 @@ Patch331: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 Patch332: bcm2835-hwmon-Add-support-for-RPi-voltage-sensor.patch
 
+# Patches enabling device specific brcm firmware nvram
+Patch340: 0001-brcmfmac-Remove-firmware-loading-code-duplication.patch
+Patch341: 0002-brcmfmac-Remove-recursion-from-firmware-load-error-h.patch
+Patch342: 0003-brcmfmac-Add-support-for-first-trying-to-get-a-board.patch
+Patch343: 0004-brcmfmac-Set-board_type-used-for-nvram-file-selectio.patch
+
 # Fix for AllWinner A64 Timer Errata, still not final
 # https://patchwork.kernel.org/patch/10392891/
 Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
@@ -1924,6 +1930,9 @@ fi
 #
 #
 %changelog
+* Mon Oct  1 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Support loading device specific NVRAM files on brcm WiFi devices
+
 * Sun Sep 30 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fixes for AllWinner A64 NICs
 
