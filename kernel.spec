@@ -630,6 +630,9 @@ Patch509: powerpc-ipv6.patch
 # rhbz 1634250
 Patch510: HID-intel-ish-hid-Enable-Sunrise-Point-H-ish-driver.patch
 
+# rhbz 1635475 1635476
+Patch511: arm64_kvm_security.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1879,6 +1882,9 @@ fi
 #
 #
 %changelog
+* Wed Oct 03 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix arm64 kvm priv escalation (rhbz 1635475 1635476)
+
 * Mon Oct 01 2018 Laura Abbott <labbott@redhat.com>
 - Disable CONFIG_CRYPTO_DEV_SP_PSP (rhbz 1608242)
 
