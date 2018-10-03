@@ -626,6 +626,12 @@ Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
 Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
 Patch352: arm64-allwinner-fixes.patch
 
+# Patch series is in 4.19, needed for Ampere eMAG platform
+# first patch fixes a bug in OF/DT seen on some devices with series
+# http://git.infradead.org/users/hch/dma-mapping.git/commitdiff/a5516219b10218a87abb3352c82248ce3088e94a
+# https://www.spinics.net/lists/linux-acpi/msg83312.html
+Patch360: dma-stop-losing-firmware-set-dma-masks.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -1936,6 +1942,9 @@ fi
 #
 #
 %changelog
+* Wed Oct  3 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fixes for Ampere platforms
+
 * Wed Oct 03 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix arm64 kvm priv escalation (rhbz 1635475 1635476)
 
