@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -624,14 +624,8 @@ Patch504: xsa270.patch
 Patch506: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
 Patch507: 0001-random-make-CPU-trust-a-boot-parameter.patch
 
-# rhbz 1628394
-Patch509: powerpc-ipv6.patch
-
 # rhbz 1634250
 Patch510: HID-intel-ish-hid-Enable-Sunrise-Point-H-ish-driver.patch
-
-# rhbz 1635475 1635476
-Patch511: arm64_kvm_security.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1882,6 +1876,9 @@ fi
 #
 #
 %changelog
+* Thu Oct 04 2018 Laura Abbott <labbott@redhat.com> - 4.18.12-100
+- Linux v4.18.12
+
 * Wed Oct 03 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix arm64 kvm priv escalation (rhbz 1635475 1635476)
 
