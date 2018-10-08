@@ -677,6 +677,9 @@ Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
 # rhbz 1634250
 Patch537: HID-intel-ish-hid-Enable-Sunrise-Point-H-ish-driver.patch
 
+#rhbz 1636249
+Patch538: 0001-Revert-drm-amd-pp-Send-khz-clock-values-to-DC-for-sm.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1936,6 +1939,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 08 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Revert drm/amd/pp: Send khz clock values to DC for smu7/8 (rhbz 1636249)
+
 * Thu Oct 04 2018 Laura Abbott <labbott@redhat.com> - 4.18.12-300
 - Linux v4.18.12
 
