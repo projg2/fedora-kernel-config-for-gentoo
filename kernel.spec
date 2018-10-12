@@ -674,6 +674,9 @@ Patch531: xsa270.patch
 Patch533: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
 Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
 
+# rhbz 1249364, patch accepted upstream and CCed for stable
+Patch535: ALSA-hda-Add-mic-quirk-for-the-Lenovo-G50-30-17aa-39.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1933,6 +1936,9 @@ fi
 #
 #
 %changelog
+* Fri Oct 12 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix the microphone on Lenovo G50-30s (rhbz 1249364)
+
 * Wed Oct 10 2018 Laura Abbott <labbott@redhat.com> - 4.18.13-300
 - Linux v4.18.13
 
