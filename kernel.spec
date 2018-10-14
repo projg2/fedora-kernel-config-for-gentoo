@@ -1604,7 +1604,7 @@ BuildKernel() {
     ln -sf $DevelDir $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
     # prune junk from kernel-devel
-    find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
+    find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
 
     # build a BLS config for this kernel
     %{SOURCE43} "$KernelVer" "$RPM_BUILD_ROOT" "%{?variant}"
