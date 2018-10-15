@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -616,9 +616,6 @@ Patch501: Fix-for-module-sig-verification.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# CVE-2018-15471 rhbz 1610555 1618414
-Patch504: xsa270.patch
 
 # rhbz 1572944
 Patch506: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
@@ -1876,6 +1873,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 15 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.18.14-200
+- Linux v4.18.14
+
 * Fri Oct 12 2018 Jeremy Cline <jeremy@jcline.org>
 - Fix the microphone on Lenovo G50-30s (rhbz 1249364)
 
