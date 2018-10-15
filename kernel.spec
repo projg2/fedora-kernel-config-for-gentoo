@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -664,9 +664,6 @@ Patch528: 0008-console-dummycon-export-dummycon_-un-register_output.patch
 # Deferred fbcon takeover bugfix, pending upstream
 Patch529: 0009-fbcon-Only-defer-console-takeover-if-the-current-con.patch
 Patch530: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
-
-# CVE-2018-15471 rhbz 1610555 1618414
-Patch531: xsa270.patch
 
 # rhbz 1572944
 Patch533: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
@@ -1934,6 +1931,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 15 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.18.14-300
+- Linux v4.18.14
+
 * Fri Oct 12 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Rebase device specific NVRAM files on brcm WiFi devices to latest
 
