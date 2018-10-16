@@ -1931,6 +1931,9 @@ fi
 #
 #
 %changelog
+* Tue Oct 16 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fixes to Rock960 series of devices, improves stability considerably
+
 * Mon Oct 15 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.18.14-300
 - Linux v4.18.14
 
