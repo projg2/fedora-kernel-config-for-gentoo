@@ -614,6 +614,8 @@ Patch331: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 Patch332: bcm2835-hwmon-Add-support-for-RPi-voltage-sensor.patch
 
+Patch334: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
+
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
 Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
@@ -1933,6 +1935,7 @@ fi
 %changelog
 * Tue Oct 16 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fixes to Rock960 series of devices, improves stability considerably
+- Raspberry Pi graphics fix
 
 * Mon Oct 15 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.18.14-300
 - Linux v4.18.14
