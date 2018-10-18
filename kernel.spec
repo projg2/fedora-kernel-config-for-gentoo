@@ -607,6 +607,8 @@ Patch318: arm64-drm-msm-fix-missing-CTL-flush.patch
 
 Patch319: gpio-pxa-handle-corner-case-of-unprobed-device.patch
 
+Patch320: hikey-mmc-softdeps.patch
+
 # Enabling Patches for the RPi3+
 Patch330: bcm2837-enable-pmu.patch
 
@@ -1933,6 +1935,9 @@ fi
 #
 #
 %changelog
+* Thu Oct 18 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Add patch to fix mSD on 96boards Hikey
+
 * Tue Oct 16 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fixes to Rock960 series of devices, improves stability considerably
 - Raspberry Pi graphics fix
