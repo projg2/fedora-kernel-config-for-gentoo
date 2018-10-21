@@ -1870,6 +1870,9 @@ fi
 #
 #
 %changelog
+* Sat Oct 20 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix network on some i.MX6 devices (rhbz 1628209)
+
 * Thu Oct 18 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.18.15-100
 - Linux v4.18.15
 
