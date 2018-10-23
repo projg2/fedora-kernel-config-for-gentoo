@@ -676,6 +676,10 @@ Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
 # rhbz 1249364, patch accepted upstream and CCed for stable
 Patch535: ALSA-hda-Add-mic-quirk-for-the-Lenovo-G50-30-17aa-39.patch
 
+# Fix known regression
+Patch536: CI-1-6-drm-i915-dp-Fix-link-retraining-comment-in-intel_dp_long_pulse.patch
+Patch537: CI-2-6-drm-i915-dp-Restrict-link-retrain-workaround-to-external-monitors.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1935,6 +1939,9 @@ fi
 #
 #
 %changelog
+* Tue Oct 23 2018 Laura Abbott <labbott@redhat.com>
+- Add i915 eDP fixes
+
 * Sat Oct 20 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.18.16-300
 - Linux v4.18.16
 - Fix network on some i.MX6 devices (rhbz 1628209)
