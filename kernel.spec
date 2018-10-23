@@ -48,13 +48,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 18
+%define base_sublevel 19
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -125,8 +125,10 @@ Summary: The Linux kernel
 %define debugbuildsenabled 1
 
 # Kernel headers are being split out into a separate package
+%if 0%{fedora}
 %define with_headers 0
 %define with_cross_headers 0
+%endif
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -443,8 +445,6 @@ Source24: kernel-armv7hl-lpae.config
 Source25: kernel-armv7hl-lpae-debug.config
 Source26: kernel-i686.config
 Source27: kernel-i686-debug.config
-Source28: kernel-i686-PAE.config
-Source29: kernel-i686-PAEdebug.config
 Source30: kernel-ppc64le.config
 Source31: kernel-ppc64le-debug.config
 Source32: kernel-s390x.config
@@ -524,7 +524,7 @@ Patch117: lis3-improve-handling-of-null-rate.patch
 
 Patch118: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 
-Patch119: criu-no-expert.patch
+Patch119: namespaces-no-expert.patch
 
 Patch120: ath9k-rx-dma-stop-check.patch
 
@@ -559,11 +559,6 @@ Patch210: disable-i8042-check-on-apple-mac.patch
 Patch211: drm-i915-hush-check-crtc-state.patch
 
 Patch212: efi-secureboot.patch
-Patch213: lockdown-fix-coordination-of-kernel-module-signature-verification.patch
-
-# Fix printing of "EFI stub: UEFI Secure Boot is enabled.",
-# queued upstream in efi.git/next
-Patch214: efi-x86-call-parse-options-from-efi-main.patch
 
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
@@ -584,39 +579,17 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-# https://patchwork.kernel.org/patch/10539291/
-Patch308: mmc-sunxi-allow-3.3V-DDR-when-DDR-is-available.patch
-# https://patchwork.kernel.org/patch/10540521/
-Patch309: mmc-sunxi-remove-output-of-virtual-base-address.patch
-
-Patch310: arm-dts-armada388-helios4.patch
-
 # https://www.spinics.net/lists/arm-kernel/msg670137.html
-Patch311: arm64-ZynqMP-firmware-clock-drivers-core.patch
+Patch307: arm64-ZynqMP-firmware-clock-drivers-core.patch
 
-# https://www.spinics.net/lists/linux-usb/msg171314.html
-Patch312: usb-dwc2-Turn-on-uframe-sched-everywhere.patch
+Patch308: arm64-96boards-Rock960-CE-board-support.patch
+Patch309: arm64-rockchip-add-initial-Rockpro64.patch
 
-Patch313: arm64-dts-marvell-a3700-reserve-ATF-memory.patch
+Patch310: gpio-pxa-handle-corner-case-of-unprobed-device.patch
 
-Patch315: arm64-96boards-RK3399-Ficus-board.patch
-Patch316: arm64-96boards-Rock960-CE-board-support.patch
-Patch317: arm64-rockchip-add-initial-Rockpro64.patch
+Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
-Patch318: arm64-drm-msm-fix-missing-CTL-flush.patch
-
-Patch319: gpio-pxa-handle-corner-case-of-unprobed-device.patch
-
-Patch320: hikey-mmc-softdeps.patch
-
-# Enabling Patches for the RPi3+
-Patch330: bcm2837-enable-pmu.patch
-
-Patch331: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
-
-Patch332: bcm2835-hwmon-Add-support-for-RPi-voltage-sensor.patch
-
-Patch334: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
+Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
 
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
@@ -626,13 +599,6 @@ Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
 # https://patchwork.kernel.org/patch/10392891/
 Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
 Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
-Patch352: arm64-allwinner-fixes.patch
-
-# Patch series is in 4.19, needed for Ampere eMAG platform
-# first patch fixes a bug in OF/DT seen on some devices with series
-# http://git.infradead.org/users/hch/dma-mapping.git/commitdiff/a5516219b10218a87abb3352c82248ce3088e94a
-# https://www.spinics.net/lists/linux-acpi/msg83312.html
-Patch360: dma-stop-losing-firmware-set-dma-masks.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -644,41 +610,9 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# Support for unique build ids
-# All queued in the kbuild tree
-Patch506: 0001-kbuild-Add-build-salt-to-the-kernel-and-modules.patch
-Patch507: 0002-x86-Add-build-salt-to-the-vDSO.patch
-Patch508: 0003-powerpc-Add-build-salt-to-the-vDSO.patch
-Patch509: 0004-arm64-Add-build-salt-to-the-vDSO.patch
-Patch512: 0003-treewide-Rename-HOSTCFLAGS-KBUILD_HOSTCFLAGS.patch
-Patch513: 0004-treewide-Rename-HOSTCXXFLAGS-to-KBUILD_HOSTCXXFLAGS.patch
-Patch514: 0005-treewide-Rename-HOSTLDFLAGS-to-KBUILD_HOSTLDFLAGS.patch
-Patch515: 0006-treewide-Rename-HOST_LOADLIBES-to-KBUILD_HOSTLDLIBS.patch
-Patch516: 0007-Kbuild-Use-HOST-FLAGS-options-from-the-command-line.patch
-
-# For quiet / flickerfree boot, all queued for merging into 4.19-rc1
-Patch521: 0001-printk-Make-CONSOLE_LOGLEVEL_QUIET-configurable.patch
-Patch522: 0002-printk-Export-is_console_locked.patch
-Patch523: 0003-fbcon-Call-WARN_CONSOLE_UNLOCKED-where-applicable.patch
-Patch524: 0004-console-fbcon-Add-support-for-deferred-console-takeo.patch
-Patch525: 0005-efi-bgrt-Drop-__initdata-from-bgrt_image_size.patch
-Patch526: 0006-efifb-Copy-the-ACPI-BGRT-boot-graphics-to-the-frameb.patch
-Patch527: 0007-efifb-BGRT-Do-not-copy-the-boot-graphics-for-non-nat.patch
-Patch528: 0008-console-dummycon-export-dummycon_-un-register_output.patch
-# Deferred fbcon takeover bugfix, pending upstream
-Patch529: 0009-fbcon-Only-defer-console-takeover-if-the-current-con.patch
-Patch530: 0010-fbcon-Do-not-takeover-the-console-from-atomic-contex.patch
-
-# rhbz 1572944
-Patch533: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
-Patch534: 0001-random-make-CPU-trust-a-boot-parameter.patch
-
-# rhbz 1249364, patch accepted upstream and CCed for stable
-Patch535: ALSA-hda-Add-mic-quirk-for-the-Lenovo-G50-30-17aa-39.patch
-
 # Fix known regression
-Patch536: CI-1-6-drm-i915-dp-Fix-link-retraining-comment-in-intel_dp_long_pulse.patch
-Patch537: CI-2-6-drm-i915-dp-Restrict-link-retrain-workaround-to-external-monitors.patch
+Patch504: CI-1-6-drm-i915-dp-Fix-link-retraining-comment-in-intel_dp_long_pulse.patch
+Patch505: CI-2-6-drm-i915-dp-Restrict-link-retrain-workaround-to-external-monitors.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1258,8 +1192,8 @@ cp_vmlinux()
 # from redhat-rpm-config assume that host == target so target arch
 # flags cause issues with the host compiler.
 %if !%{with_cross}
-%define build_hostcflags  %{build_cflags}
-%define build_hostldflags %{build_ldflags} -Wl,--build-id=uuid
+%define build_hostcflags  %{?build_cflags}
+%define build_hostldflags %{?build_ldflags} -Wl,--build-id=uuid
 %endif
 
 BuildKernel() {
@@ -1291,7 +1225,9 @@ BuildKernel() {
     %endif
 
     # make sure EXTRAVERSION says what we want it to say
-    perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -%{release}.%{_target_cpu}${Flav}/" Makefile
+    # Trim the release if this is a CI build, since KERNELVERSION is limited to 64 characters
+    ShortRel=$(python3 -c "import re; print(re.sub(r'\.pr\.[0-9A-Fa-f]{32}', '', '%{release}'))")
+    perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${ShortRel}.%{_target_cpu}${Flav}/" Makefile
 
     # if pre-rc1 devel kernel, must fix up PATCHLEVEL for our versioning scheme
     %if !0%{?rcrev}
@@ -1939,6 +1875,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 14 2018 Jeremy Cline <jcline@redhat.com> - 4.19.2-300
+- Linux v4.19.2
+
 * Mon Nov 12 2018 Laura Abbott <labbott@redhat.com> - 4.18.18-300
 - Linux v4.18.18
 
