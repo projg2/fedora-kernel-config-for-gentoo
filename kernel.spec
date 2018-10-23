@@ -621,6 +621,10 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 Patch506: 0001-random-add-a-config-option-to-trust-the-CPU-s-hwrng.patch
 Patch507: 0001-random-make-CPU-trust-a-boot-parameter.patch
 
+# Fix known regression
+Patch509: CI-1-6-drm-i915-dp-Fix-link-retraining-comment-in-intel_dp_long_pulse.patch
+Patch510: CI-2-6-drm-i915-dp-Restrict-link-retrain-workaround-to-external-monitors.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1870,6 +1874,9 @@ fi
 #
 #
 %changelog
+* Tue Oct 23 2018 Laura Abbott <labbott@redhat.com>
+- Add i915 eDP fixes
+
 * Sat Oct 20 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.18.16-100
 - Linux v4.18.16
 - Fix network on some i.MX6 devices (rhbz 1628209)
