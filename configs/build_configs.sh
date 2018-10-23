@@ -11,6 +11,8 @@ SCRIPT="$(readlink -f $0)"
 OUTPUT_DIR="$PWD"
 SCRIPT_DIR="$(dirname $SCRIPT)"
 
+LANG=en_US.UTF-8
+
 # to handle this script being a symlink
 cd $SCRIPT_DIR
 
@@ -77,8 +79,6 @@ function merge_configs()
 	done
 	if [ "x$arch" == "xaarch64" ]; then
 		echo "# arm64" > $name
-	elif [ "x$arch" == "xppc64" ]; then
-		echo "# powerpc" > $name
 	elif [ "x$arch" == "xppc64le" ]; then
 		echo "# powerpc" > $name
 	elif [ "x$arch" == "xs390x" ]; then
