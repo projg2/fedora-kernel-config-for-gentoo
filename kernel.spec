@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -1881,6 +1881,9 @@ fi
 #
 #
 %changelog
+* Wed Oct 24 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git2.1
+- Linux v4.19-4345-g638820d8da8e
+
 * Tue Oct 23 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git1.1
 - Linux v4.19-1676-g0d1b82cd8ac2
 - Reenable debugging options.
