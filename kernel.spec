@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 6
+%define gitrev 7
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -603,6 +603,9 @@ Patch501: Fix-for-module-sig-verification.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
+
+# Fix build on s390
+Patch503: 0001-s390-mm-Fix-ERROR-__node_distance-undefined.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1876,6 +1879,9 @@ fi
 #
 #
 %changelog
+* Wed Oct 31 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git7.1
+- Linux v4.19-11807-g310c7585e830
+
 * Tue Oct 30 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git6.1
 - Linux v4.19-11706-g11743c56785c
 
