@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1882,6 +1882,9 @@ fi
 #
 #
 %changelog
+* Sun Nov 04 2018 Jeremy Cline <jcline@redhat.com> - 4.19.1-300
+- Linux v4.19.1
+
 * Tue Oct 23 2018 Laura Abbott <labbott@redhat.com>
 - Add i915 eDP fixes
 
