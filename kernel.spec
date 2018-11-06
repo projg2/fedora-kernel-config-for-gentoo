@@ -464,10 +464,6 @@ Source43: generate_bls_conf.sh
 # added for those wanting to do custom rebuilds with altered config opts.
 Source1000: kernel-local
 
-# Sources for kernel-tools
-Source2000: cpupower.service
-Source2001: cpupower.config
-
 # Here should be only the patches up to the upstream canonical Linus tree.
 
 # For a stable release kernel
