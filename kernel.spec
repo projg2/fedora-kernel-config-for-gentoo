@@ -1875,6 +1875,9 @@ fi
 #
 #
 %changelog
+* Wed Nov  7 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Initial Arm config updates for 4.20
+
 * Tue Nov 06 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc1.git1.1
 - Linux v4.20-rc1-62-g8053e5b93eca
 - Reenable debugging options.
