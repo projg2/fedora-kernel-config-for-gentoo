@@ -74,7 +74,7 @@ sub main {
 		my (@tmp) = parse_shipped( $shipped );
 		foreach my $ref ( @tmp ) {
 			say( STDERR "$shipped:$ref->[0]: No Kconfig symbol matches 'CONFIG_$ref->[1]'" )
-				unless (grep( /$ref->[1]/, keys( %configs )));
+				unless (grep( /^$ref->[1]$/, keys( %configs )));
 		}
 	}
 
