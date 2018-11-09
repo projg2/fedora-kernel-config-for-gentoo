@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 1
 # The git snapshot level
-%define gitrev 3
+%define gitrev 4
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -599,9 +599,6 @@ Patch501: Fix-for-module-sig-verification.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# Fix build on s390
-Patch503: 0001-s390-mm-Fix-ERROR-__node_distance-undefined.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1875,6 +1872,9 @@ fi
 #
 #
 %changelog
+* Fri Nov 09 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc1.git4.1
+- Linux v4.20-rc1-145-gaa4330e15c26
+
 * Thu Nov  8 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Initial Qualcomm SD845 enablement
 
