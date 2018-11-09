@@ -1875,6 +1875,9 @@ fi
 #
 #
 %changelog
+* Thu Nov  8 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Initial Qualcomm SD845 enablement
+
 * Thu Nov 08 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc1.git3.1
 - Linux v4.20-rc1-98-gb00d209241ff
 
