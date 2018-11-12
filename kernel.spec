@@ -621,6 +621,9 @@ Patch503: ALSA-hda-Add-mic-quirk-for-the-Lenovo-G50-30-17aa-39.patch
 Patch504: CI-1-6-drm-i915-dp-Fix-link-retraining-comment-in-intel_dp_long_pulse.patch
 Patch505: CI-2-6-drm-i915-dp-Restrict-link-retrain-workaround-to-external-monitors.patch
 
+# rhbz 1526312, patch is in 4.20, can be dropped on rebase
+Patch506: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1882,6 +1885,9 @@ fi
 #
 #
 %changelog
+* Sun Nov 11 2018 Hans de Goede <hdegoede@redhat.com>
+- Add patch fixing touchpads on some Apollo Lake devices not working (#1526312)
+
 * Sun Nov 04 2018 Jeremy Cline <jcline@redhat.com> - 4.19.1-300
 - Linux v4.19.1
 
