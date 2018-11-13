@@ -1872,6 +1872,12 @@ fi
 #
 #
 %changelog
+* Mon Nov 12 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Further updates for ARM
+- More Qualcomm SD845 enablement
+- FPGA Device Feature List (DFL) support
+- Minor cleanups
+
 * Sun Nov 11 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc2.git0.1
 - Linux v4.20-rc2
 - Disable debugging options.
