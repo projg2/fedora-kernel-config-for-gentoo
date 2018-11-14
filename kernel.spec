@@ -614,6 +614,9 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 Patch504: CI-1-6-drm-i915-dp-Fix-link-retraining-comment-in-intel_dp_long_pulse.patch
 Patch505: CI-2-6-drm-i915-dp-Restrict-link-retrain-workaround-to-external-monitors.patch
 
+# CVE-2018-18710 rhbz 1645140 1648485
+Patch506: cdrom-fix-improper-type-cast-which-can-leat-to-information-leak.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1877,6 +1880,7 @@ fi
 %changelog
 * Wed Nov 14 2018 Jeremy Cline <jcline@redhat.com> - 4.19.2-300
 - Linux v4.19.2
+- Fix CVE-2018-18710 (rhbz 1645140 1648485)
 
 * Mon Nov 12 2018 Laura Abbott <labbott@redhat.com> - 4.18.18-300
 - Linux v4.18.18
