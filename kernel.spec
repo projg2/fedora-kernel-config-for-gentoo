@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 19
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1877,6 +1877,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 14 2018 Jeremy Cline <jcline@redhat.com> - 4.18.19-100
+- Linux v4.18.19
+
 * Wed Nov 14 2018 Jeremy Cline <jcline@redhat.com>
 - Fix CVE-2018-18710 (rhbz 1645140 1648485)
 
