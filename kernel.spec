@@ -125,7 +125,7 @@ Summary: The Linux kernel
 %define debugbuildsenabled 1
 
 # Kernel headers are being split out into a separate package
-%if 0%{fedora}
+%if 0%{?fedora}
 %define with_headers 0
 %define with_cross_headers 0
 %endif
