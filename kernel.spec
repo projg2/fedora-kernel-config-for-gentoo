@@ -625,6 +625,9 @@ Patch507: 0001-random-make-CPU-trust-a-boot-parameter.patch
 Patch509: CI-1-6-drm-i915-dp-Fix-link-retraining-comment-in-intel_dp_long_pulse.patch
 Patch510: CI-2-6-drm-i915-dp-Restrict-link-retrain-workaround-to-external-monitors.patch
 
+# CVE-2018-18710 rhbz 1645140 1648485
+Patch511: cdrom-fix-improper-type-cast-which-can-leat-to-information-leak.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1874,6 +1877,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 14 2018 Jeremy Cline <jcline@redhat.com>
+- Fix CVE-2018-18710 (rhbz 1645140 1648485)
+
 * Mon Nov 12 2018 Laura Abbott <labbott@redhat.com> - 4.18.18-100
 - Linux v4.18.18
 
