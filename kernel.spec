@@ -627,6 +627,9 @@ Patch505: CI-2-6-drm-i915-dp-Restrict-link-retrain-workaround-to-external-monito
 # CVE-2018-18710 rhbz 1645140 1648485
 Patch506: cdrom-fix-improper-type-cast-which-can-leat-to-information-leak.patch
 
+# rhbz 1526312, patch is in 4.20, can be dropped on rebase
+Patch507: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1878,6 +1881,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 15 2018 Hans de Goede <hdegoede@redhat.com>
+- Add patch fixing touchpads on some Apollo Lake devices not working (#1526312)
+
 * Wed Nov 14 2018 Jeremy Cline <jcline@redhat.com> - 4.19.2-200
 - Linux v4.19.2
 - Fix CVE-2018-18710 (rhbz 1645140 1648485)
