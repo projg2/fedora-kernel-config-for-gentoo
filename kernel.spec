@@ -620,6 +620,9 @@ Patch506: cdrom-fix-improper-type-cast-which-can-leat-to-information-leak.patch
 # rhbz 1526312, patch is in 4.20, can be dropped on rebase
 Patch507: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
 
+# Patches from 4.20 fixing black screen on CHT devices with i915.fastboot=1
+Patch508: cherrytrail-pwm-lpss-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1881,6 +1884,9 @@ fi
 #
 #
 %changelog
+* Fri Nov 16 2018 Hans de Goede <hdegoede@redhat.com>
+- Add patches from 4.20 fixing black screen on CHT devices with i915.fastboot=1
+
 * Thu Nov 15 2018 Hans de Goede <hdegoede@redhat.com>
 - Add patch fixing touchpads on some Apollo Lake devices not working (#1526312)
 
