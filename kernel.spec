@@ -1872,6 +1872,10 @@ fi
 #
 #
 %changelog
+* Fri Nov 16 2018 Hans de Goede <hdegoede@redhat.com>
+- Enable a few modules needed for accelerometer and other sensor support
+  on some HP X2 2-in-1s
+
 * Thu Nov 15 2018 Justin M. Forbes <jforbes@redhat.com> - 4.20.0-0.rc2.git2.1
 - Linux v4.20-rc2-52-g5929a1f0ff30
 
