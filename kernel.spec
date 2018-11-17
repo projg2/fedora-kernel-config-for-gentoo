@@ -581,6 +581,12 @@ Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
 
+# https://patchwork.kernel.org/patch/10686407/
+Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
+
+# https://patchwork.kernel.org/patch/10677591/
+Patch333: hwmon-rpi-Fix-initial-notify.patch
+
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
 Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
@@ -1872,6 +1878,10 @@ fi
 #
 #
 %changelog
+* Sat Nov 17 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix WiFi on Raspberry Pi 3 on aarch64 (rhbz 1649344)
+- Fixes for Raspberry Pi hwmon driver and firmware interface
+
 * Fri Nov 16 2018 Hans de Goede <hdegoede@redhat.com>
 - Enable a few modules needed for accelerometer and other sensor support
   on some HP X2 2-in-1s
