@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 301
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -590,6 +590,12 @@ Patch310: gpio-pxa-handle-corner-case-of-unprobed-device.patch
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
+
+# https://patchwork.kernel.org/patch/10686407/
+Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
+
+# https://patchwork.kernel.org/patch/10677591/
+Patch333: hwmon-rpi-Fix-initial-notify.patch
 
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
@@ -1884,6 +1890,10 @@ fi
 #
 #
 %changelog
+* Sat Nov 17 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.19.2-301
+- Fix WiFi on Raspberry Pi 3 on aarch64 (rhbz 1649344)
+- Fixes for Raspberry Pi hwmon driver and firmware interface
+
 * Fri Nov 16 2018 Hans de Goede <hdegoede@redhat.com>
 - Add patches from 4.20 fixing black screen on CHT devices with i915.fastboot=1
 
