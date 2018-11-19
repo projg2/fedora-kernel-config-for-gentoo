@@ -122,7 +122,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -1878,6 +1878,9 @@ fi
 #
 #
 %changelog
+* Mon Nov 19 2018 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
+
 * Sat Nov 17 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fix WiFi on Raspberry Pi 3 on aarch64 (rhbz 1649344)
 - Fixes for Raspberry Pi hwmon driver and firmware interface
