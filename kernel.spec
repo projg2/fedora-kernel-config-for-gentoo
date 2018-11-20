@@ -609,6 +609,9 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # rhbz 1644013, patch pending upstream
 Patch503: 0001-ACPI-platform-Add-SMB0001-HID-to-forbidden_id_list.patch
 
+# rhbz 1526312 (accelerometer part of the bug), patches pending upstream
+Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1884,6 +1887,7 @@ fi
 * Tue Nov 20 2018 Hans de Goede <hdegoede@redhat.com>
 - Turn on CONFIG_PINCTRL_GEMINILAKE on x86_64 (rhbz#1639155)
 - Add a patch fixing touchscreens on HP AMD based laptops (rhbz#1644013)
+- Add a patch fixing KIOX010A accelerometers (rhbz#1526312)
 
 * Mon Nov 19 2018 Jeremy Cline <jcline@redhat.com> - 4.20.0-0.rc3.git0.1
 - Linux v4.20-rc3
