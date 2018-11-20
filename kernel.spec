@@ -606,6 +606,9 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
+# rhbz 1644013, patch pending upstream
+Patch503: 0001-ACPI-platform-Add-SMB0001-HID-to-forbidden_id_list.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1880,6 +1883,7 @@ fi
 %changelog
 * Tue Nov 20 2018 Hans de Goede <hdegoede@redhat.com>
 - Turn on CONFIG_PINCTRL_GEMINILAKE on x86_64 (rhbz#1639155)
+- Add a patch fixing touchscreens on HP AMD based laptops (rhbz#1644013)
 
 * Mon Nov 19 2018 Jeremy Cline <jcline@redhat.com> - 4.20.0-0.rc3.git0.1
 - Linux v4.20-rc3
