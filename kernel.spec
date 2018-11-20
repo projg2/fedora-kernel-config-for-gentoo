@@ -1879,6 +1879,9 @@ fi
 #
 #
 %changelog
+* Tue Nov 20 2018 Hans de Goede <hdegoede@redhat.com>
+- Turn on CONFIG_PINCTRL_GEMINILAKE on x86_64 (rhbz#1639155)
+
 * Sat Nov 17 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fix WiFi on Raspberry Pi 3 on aarch64 (rhbz 1649344)
 - Fixes for Raspberry Pi hwmon driver and firmware interface
