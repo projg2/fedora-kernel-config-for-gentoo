@@ -629,6 +629,9 @@ Patch507: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
 # Patches from 4.20 fixing black screen on CHT devices with i915.fastboot=1
 Patch508: cherrytrail-pwm-lpss-fixes.patch
 
+# rhbz 1644013, patch pending upstream
+Patch509: 0001-ACPI-platform-Add-SMB0001-HID-to-forbidden_id_list.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1892,6 +1895,7 @@ fi
 %changelog
 * Tue Nov 20 2018 Hans de Goede <hdegoede@redhat.com>
 - Turn on CONFIG_PINCTRL_GEMINILAKE on x86_64 (rhbz#1639155)
+- Add a patch fixing touchscreens on HP AMD based laptops (rhbz#1644013)
 
 * Sat Nov 17 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.19.2-301
 - Fix WiFi on Raspberry Pi 3 on aarch64 (rhbz 1649344)
