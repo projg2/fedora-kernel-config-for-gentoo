@@ -631,6 +631,9 @@ Patch507: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
 # rhbz 1644013, patch pending upstream
 Patch509: 0001-ACPI-platform-Add-SMB0001-HID-to-forbidden_id_list.patch
 
+# rhbz 1526312 (accelerometer part of the bug), patches pending upstream
+Patch510: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1885,6 +1888,7 @@ fi
 * Tue Nov 20 2018 Hans de Goede <hdegoede@redhat.com>
 - Turn on CONFIG_PINCTRL_GEMINILAKE on x86_64 (rhbz#1639155)
 - Add a patch fixing touchscreens on HP AMD based laptops (rhbz#1644013)
+- Add a patch fixing KIOX010A accelerometers (rhbz#1526312)
 
 * Sat Nov 17 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fix WiFi on Raspberry Pi 3 on aarch64 (rhbz 1649344)
