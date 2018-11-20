@@ -1878,6 +1878,9 @@ fi
 #
 #
 %changelog
+* Tue Nov 20 2018 Hans de Goede <hdegoede@redhat.com>
+- Turn on CONFIG_PINCTRL_GEMINILAKE on x86_64 (rhbz#1639155)
+
 * Mon Nov 19 2018 Jeremy Cline <jcline@redhat.com> - 4.20.0-0.rc3.git0.1
 - Linux v4.20-rc3
 
