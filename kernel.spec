@@ -122,7 +122,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -1884,6 +1884,9 @@ fi
 #
 #
 %changelog
+* Tue Nov 20 2018 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
 * Tue Nov 20 2018 Hans de Goede <hdegoede@redhat.com>
 - Turn on CONFIG_PINCTRL_GEMINILAKE on x86_64 (rhbz#1639155)
 - Add a patch fixing touchscreens on HP AMD based laptops (rhbz#1644013)
