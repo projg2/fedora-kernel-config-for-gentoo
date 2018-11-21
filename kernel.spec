@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -617,13 +617,6 @@ Patch501: Fix-for-module-sig-verification.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# Fix known regression
-Patch504: CI-1-6-drm-i915-dp-Fix-link-retraining-comment-in-intel_dp_long_pulse.patch
-Patch505: CI-2-6-drm-i915-dp-Restrict-link-retrain-workaround-to-external-monitors.patch
-
-# CVE-2018-18710 rhbz 1645140 1648485
-Patch506: cdrom-fix-improper-type-cast-which-can-leat-to-information-leak.patch
 
 # rhbz 1526312, patch is in 4.20, can be dropped on rebase
 Patch507: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
@@ -1885,6 +1878,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 21 2018 Jeremy Cline <jcline@redhat.com> - 4.19.3-300
+- Linux v4.19.3
+
 * Tue Nov 20 2018 Hans de Goede <hdegoede@redhat.com>
 - Turn on CONFIG_PINCTRL_GEMINILAKE on x86_64 (rhbz#1639155)
 - Add a patch fixing touchscreens on HP AMD based laptops (rhbz#1644013)
