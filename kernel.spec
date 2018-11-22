@@ -584,8 +584,9 @@ Patch307: arm64-ZynqMP-firmware-clock-drivers-core.patch
 
 Patch308: arm64-96boards-Rock960-CE-board-support.patch
 Patch309: arm64-rockchip-add-initial-Rockpro64.patch
+Patch310: arm64-rk3399-add-idle-states.patch
 
-Patch310: gpio-pxa-handle-corner-case-of-unprobed-device.patch
+Patch311: gpio-pxa-handle-corner-case-of-unprobed-device.patch
 
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
@@ -1889,6 +1890,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 22 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fixes for Rockchips 3399 devices
+
 * Wed Nov 21 2018 Jeremy Cline <jcline@redhat.com> - 4.19.3-300
 - Linux v4.19.3
 
