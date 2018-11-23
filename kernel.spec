@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1878,6 +1878,9 @@ fi
 #
 #
 %changelog
+* Fri Nov 23 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.19.4-200
+- Linux v4.19.4
+
 * Wed Nov 21 2018 Jeremy Cline <jcline@redhat.com> - 4.19.3-300
 - Linux v4.19.3
 
