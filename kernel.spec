@@ -67,9 +67,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 3
+%global rcrev 4
 # The git snapshot level
-%define gitrev 1
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -607,9 +607,6 @@ Patch501: Fix-for-module-sig-verification.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# rhbz 1644013, patch pending upstream
-Patch503: 0001-ACPI-platform-Add-SMB0001-HID-to-forbidden_id_list.patch
 
 # rhbz 1526312 (accelerometer part of the bug), patches pending upstream
 Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
@@ -1886,7 +1883,8 @@ fi
 #
 #
 %changelog
-* Mon Nov 26 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+* Mon Nov 26 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc4.git0.1
+- Linux v4.20-rc4
 - Disable debugging options.
 
 * Tue Nov 20 2018 Jeremy Cline <jcline@redhat.com> - 4.20.0-0.rc3.git1.1
