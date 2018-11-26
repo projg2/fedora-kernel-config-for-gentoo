@@ -632,6 +632,9 @@ Patch509: 0001-ACPI-platform-Add-SMB0001-HID-to-forbidden_id_list.patch
 # rhbz 1526312 (accelerometer part of the bug), patches pending upstream
 Patch510: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
+# rhbz 1650224, patch in subsystem tree and Cc'd for stable
+Patch511: drm-set-is_master-to-0-upon-drm_new_set_master-failure.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1893,6 +1896,9 @@ fi
 #
 #
 %changelog
+* Mon Nov 26 2018 Jeremy Cline <jeremy@jcline.org>
+- Fixes a null pointer dereference with Nvidia and vmwgfx drivers (rhbz 1650224)
+
 * Fri Nov 23 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.19.4-300
 - Linux v4.19.4
 
