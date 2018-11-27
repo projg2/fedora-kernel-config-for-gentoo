@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -626,14 +626,17 @@ Patch507: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
 # Patches from 4.20 fixing black screen on CHT devices with i915.fastboot=1
 Patch508: cherrytrail-pwm-lpss-fixes.patch
 
-# rhbz 1644013, patch pending upstream
-Patch509: 0001-ACPI-platform-Add-SMB0001-HID-to-forbidden_id_list.patch
-
 # rhbz 1526312 (accelerometer part of the bug), patches pending upstream
 Patch510: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
 # rhbz 1650224, patch in subsystem tree and Cc'd for stable
 Patch511: drm-set-is_master-to-0-upon-drm_new_set_master-failure.patch
+
+# CVE-2018-16862 (rhbz 1649017 1653122)
+Patch512: mm-cleancache-fix-corruption-on-missed-inode-invalidation.patch
+
+# CVE-2018-19407 (rhbz 1652656 1652658)
+Patch513: CVE-2018-19407.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1896,10 +1899,15 @@ fi
 #
 #
 %changelog
+* Tue Nov 27 2018 Jeremy Cline <jcline@redhat.com> - 4.19.5-300
+- Linux v4.19.5
+- Fix CVE-2018-16862 (rhbz 1649017 1653122)
+- Fix CVE-2018-19407 (rhbz 1652656 1652658)
+
 * Mon Nov 26 2018 Jeremy Cline <jeremy@jcline.org>
 - Fixes a null pointer dereference with Nvidia and vmwgfx drivers (rhbz 1650224)
 
-* Fri Nov 23 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.19.4-300
+* Fri Nov 23 2018 Peter Robinson <pbrobinson@fedoraproject.org> - 4.19.4-300
 - Linux v4.19.4
 
 * Thu Nov 22 2018 Peter Robinson <pbrobinson@fedoraproject.org>
