@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 4
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -122,7 +122,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -585,9 +585,6 @@ Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
 
 # https://patchwork.kernel.org/patch/10686407/
 Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
-
-# https://patchwork.kernel.org/patch/10677591/
-Patch333: hwmon-rpi-Fix-initial-notify.patch
 
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
@@ -1883,6 +1880,10 @@ fi
 #
 #
 %changelog
+* Wed Nov 28 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc4.git1.1
+- Linux v4.20-rc4-35-g121b018f8c74
+- Reenable debugging options.
+
 * Mon Nov 26 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc4.git0.1
 - Linux v4.20-rc4
 - Disable debugging options.
