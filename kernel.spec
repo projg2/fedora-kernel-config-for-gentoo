@@ -638,6 +638,9 @@ Patch512: mm-cleancache-fix-corruption-on-missed-inode-invalidation.patch
 # CVE-2018-19407 (rhbz 1652656 1652658)
 Patch513: CVE-2018-19407.patch
 
+# rhbz 1650984, in linux-next and Cc'd for stable
+Patch514: net-phy-add-workaround-for-issue-where-PHY-driver-do.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1899,6 +1902,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 29 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix a problem with some rtl8168 chips (rhbz 1650984)
+
 * Tue Nov 27 2018 Jeremy Cline <jcline@redhat.com> - 4.19.5-300
 - Linux v4.19.5
 - Fix CVE-2018-16862 (rhbz 1649017 1653122)
