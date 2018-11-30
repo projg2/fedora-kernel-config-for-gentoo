@@ -641,6 +641,10 @@ Patch513: CVE-2018-19407.patch
 # rhbz 1650984, in linux-next and Cc'd for stable
 Patch514: net-phy-add-workaround-for-issue-where-PHY-driver-do.patch
 
+# In the PCI tree and Cc'd for stable, fixes an issue with amdgpu
+# https://patchwork.freedesktop.org/patch/259364/
+Patch515: PCI-Fix-incorrect-value-returned-from-pcie_get_speed.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1904,6 +1908,7 @@ fi
 %changelog
 * Thu Nov 29 2018 Jeremy Cline <jeremy@jcline.org>
 - Fix a problem with some rtl8168 chips (rhbz 1650984)
+- Fix slowdowns and crashes for AMD GPUs in pre-PCIe-v3 slots
 
 * Tue Nov 27 2018 Jeremy Cline <jcline@redhat.com> - 4.19.5-300
 - Linux v4.19.5
