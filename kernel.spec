@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1891,11 +1891,14 @@ fi
 #
 #
 %changelog
+* Sun Dec 02 2018 Jeremy Cline <jcline@redhat.com> - 4.19.6-200
+- Linux v4.19.6
+
 * Thu Nov 29 2018 Jeremy Cline <jeremy@jcline.org>
 - Fix a problem with some rtl8168 chips (rhbz 1650984)
 - Fix slowdowns and crashes for AMD GPUs in pre-PCIe-v3 slots
 
-* Tue Nov 27 2018 Jeremy Cline <jcline@redhat.com> - 4.19.5-300
+* Tue Nov 27 2018 Jeremy Cline <jcline@redhat.com> - 4.19.5-200
 - Linux v4.19.5
 - Fix CVE-2018-16862 (rhbz 1649017 1653122)
 - Fix CVE-2018-19407 (rhbz 1652656 1652658)
