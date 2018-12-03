@@ -1,0 +1,99 @@
+From 330c27ee59fb76db02c671ac4cb32914565aa609 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Fri, 23 Nov 2018 13:31:00 +0100
+Subject: [PATCH 1/2] HID: asus: Add event handler to catch unmapped Asus
+ Vendor UsagePage codes
+
+Various Asus devices generate HID events using the Asus Vendor specific
+UsagePage 0xff31 and hid-asus will map these in its input_mapping for all
+devices to which it binds (independent of any quirks).
+
+Add an event callback which check for unmapped (because sofar unknown)
+usages within the Asus Vendor UsagePage and log a warning for these.
+
+The purpose of this patch is to help debugging / find such unmapped codes
+and add them to the asus_input_mapping() function.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/hid/hid-asus.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
+index a1fa2fc8c9b5..043120cc4b97 100644
+--- a/drivers/hid/hid-asus.c
++++ b/drivers/hid/hid-asus.c
+@@ -241,6 +241,17 @@ static int asus_report_input(struct asus_drvdata *drvdat, u8 *data, int size)
+ 	return 1;
+ }
+ 
++static int asus_event(struct hid_device *hdev, struct hid_field *field,
++		      struct hid_usage *usage, __s32 value)
++{
++	if ((usage->hid & HID_USAGE_PAGE) == 0xff310000 && !usage->type) {
++		hid_warn(hdev, "Unmapped Asus vendor usagepage code 0x%02x\n",
++			 usage->hid & HID_USAGE);
++	}
++
++	return 0;
++}
++
+ static int asus_raw_event(struct hid_device *hdev,
+ 		struct hid_report *report, u8 *data, int size)
+ {
+@@ -832,6 +843,7 @@ static struct hid_driver asus_driver = {
+ #ifdef CONFIG_PM
+ 	.reset_resume           = asus_reset_resume,
+ #endif
++	.event			= asus_event,
+ 	.raw_event		= asus_raw_event
+ };
+ module_hid_driver(asus_driver);
+-- 
+2.19.1
+
+From 71256aaf9979072c9bd99fb08db586731e3ccf55 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Fri, 23 Nov 2018 13:44:27 +0100
+Subject: [PATCH 2/2] HID: asus: Add USB-id for the ASUS FX503VD laptop
+
+The ASUS FX503VD laptop uses an USB keyboard with several hotkeys
+which use the Asus Vendor specific UsagePage.
+
+At the USB-id for this keyboard to the hid-asus driver so that these
+custom usages get properly mapped.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/hid/hid-asus.c | 2 ++
+ drivers/hid/hid-ids.h  | 1 +
+ 2 files changed, 3 insertions(+)
+
+diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
+index 043120cc4b97..6e9470e00c69 100644
+--- a/drivers/hid/hid-asus.c
++++ b/drivers/hid/hid-asus.c
+@@ -806,6 +806,8 @@ static __u8 *asus_report_fixup(struct hid_device *hdev, __u8 *rdesc,
+ }
+ 
+ static const struct hid_device_id asus_devices[] = {
++	{ HID_USB_DEVICE(USB_VENDOR_ID_ASUSTEK,
++		USB_DEVICE_ID_ASUSTEK_FX503VD_KEYBOARD) },
+ 	{ HID_I2C_DEVICE(USB_VENDOR_ID_ASUSTEK,
+ 		USB_DEVICE_ID_ASUSTEK_I2C_KEYBOARD), I2C_KEYBOARD_QUIRKS},
+ 	{ HID_I2C_DEVICE(USB_VENDOR_ID_ASUSTEK,
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index c0d668944dbe..5ae1db6fa5c8 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -190,6 +190,7 @@
+ #define USB_DEVICE_ID_ASUSTEK_ROG_KEYBOARD1 0x1854
+ #define USB_DEVICE_ID_ASUSTEK_ROG_KEYBOARD2 0x1837
+ #define USB_DEVICE_ID_ASUSTEK_ROG_KEYBOARD3 0x1822
++#define USB_DEVICE_ID_ASUSTEK_FX503VD_KEYBOARD	0x1869
+ 
+ #define USB_VENDOR_ID_ATEN		0x0557
+ #define USB_DEVICE_ID_ATEN_UC100KM	0x2004
+-- 
+2.19.1
+

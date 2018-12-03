@@ -608,6 +608,9 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # rhbz 1526312 (accelerometer part of the bug), patches pending upstream
 Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
+# rhbz 1645070 patch queued upstream for merging into 4.21
+Patch505: asus-fx503-keyb.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1880,6 +1883,9 @@ fi
 #
 #
 %changelog
+* Mon Dec  3 2018 Hans de Goede <hdegoede@redhat.com>
+- Fix non functional hotkeys on Asus FX503VD (#1645070)
+
 * Fri Nov 30 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc4.git2.1
 - Linux v4.20-rc4-156-g94f371cb7394
 
