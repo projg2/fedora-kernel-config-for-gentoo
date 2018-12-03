@@ -67,9 +67,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 4
+%global rcrev 5
 # The git snapshot level
-%define gitrev 2
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -576,8 +576,6 @@ Patch305: qcom-msm89xx-fixes.patch
 
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
-
-Patch307: arm64-96boards-Rock960-CE-board-support.patch
 
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
@@ -1883,6 +1881,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 03 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc5.git0.1
+- Linux v4.20-rc5
+
 * Mon Dec 03 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Disable debugging options.
 
