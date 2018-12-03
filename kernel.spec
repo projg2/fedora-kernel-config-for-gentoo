@@ -648,6 +648,9 @@ Patch515: PCI-Fix-incorrect-value-returned-from-pcie_get_speed.patch
 # rhbz 1645070 patch queued upstream for merging into 4.21
 Patch516: asus-fx503-keyb.patch
 
+# rbhz 1554304 patch in the sound tree and Cc'd for stable
+Patch517: ALSA-hda-realtek-Fix-speaker-output-regression-on-Thinkpad.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1909,6 +1912,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 03 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix very quiet speakers on the Thinkpad T570 (rhbz 1554304)
+
 * Mon Dec  3 2018 Hans de Goede <hdegoede@redhat.com>
 - Fix non functional hotkeys on Asus FX503VD (#1645070)
 
