@@ -645,6 +645,9 @@ Patch514: net-phy-add-workaround-for-issue-where-PHY-driver-do.patch
 # https://patchwork.freedesktop.org/patch/259364/
 Patch515: PCI-Fix-incorrect-value-returned-from-pcie_get_speed.patch
 
+# rhbz 1645070 patch queued upstream for merging into 4.21
+Patch516: asus-fx503-keyb.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1906,6 +1909,9 @@ fi
 #
 #
 %changelog
+* Mon Dec  3 2018 Hans de Goede <hdegoede@redhat.com>
+- Fix non functional hotkeys on Asus FX503VD (#1645070)
+
 * Sun Dec 02 2018 Jeremy Cline <jcline@redhat.com> - 4.19.6-300
 - Linux v4.19.6
 
