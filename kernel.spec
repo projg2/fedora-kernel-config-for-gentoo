@@ -646,6 +646,9 @@ Patch516: asus-fx503-keyb.patch
 # rbhz 1554304 patch in the sound tree and Cc'd for stable
 Patch517: ALSA-hda-realtek-Fix-speaker-output-regression-on-Thinkpad.patch
 
+# CVE-2018-19824 rhbz 1655816 1655817
+Patch518: alsa-usb-audio-fix-UAF-decrement-if-card-has-no-live.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1897,6 +1900,9 @@ fi
 #
 #
 %changelog
+* Tue Dec 04 2018 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2018-19824 (rhbz 1655816 1655817)
+
 * Mon Dec 03 2018 Jeremy Cline <jeremy@jcline.org>
 - Fix very quiet speakers on the Thinkpad T570 (rhbz 1554304)
 
