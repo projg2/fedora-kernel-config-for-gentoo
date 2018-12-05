@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 5
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -1884,6 +1884,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 05 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc5.git2.1
+- Linux v4.20-rc5-44-gd08970904582
+
 * Wed Dec 05 2018 Jeremy Cline <jeremy@jcline.org>
 - Fix corruption bug in direct dispatch for blk-mq
 
