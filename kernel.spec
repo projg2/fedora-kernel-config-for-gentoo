@@ -609,6 +609,9 @@ Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 # rhbz 1645070 patch queued upstream for merging into 4.21
 Patch505: asus-fx503-keyb.patch
 
+# https://bugzilla.kernel.org/show_bug.cgi?id=201685
+Patch506: blk-mq-fix-corruption-with-direct-issue.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1881,6 +1884,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 05 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix corruption bug in direct dispatch for blk-mq
+
 * Tue Dec 04 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc5.git1.1
 - Linux v4.20-rc5-21-g0072a0c14d5b
 - Reenable debugging options.
