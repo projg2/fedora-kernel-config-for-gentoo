@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -631,19 +631,6 @@ Patch510: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
 # rhbz 1650224, patch in subsystem tree and Cc'd for stable
 Patch511: drm-set-is_master-to-0-upon-drm_new_set_master-failure.patch
-
-# CVE-2018-16862 (rhbz 1649017 1653122)
-Patch512: mm-cleancache-fix-corruption-on-missed-inode-invalidation.patch
-
-# CVE-2018-19407 (rhbz 1652656 1652658)
-Patch513: CVE-2018-19407.patch
-
-# rhbz 1650984, in linux-next and Cc'd for stable
-Patch514: net-phy-add-workaround-for-issue-where-PHY-driver-do.patch
-
-# In the PCI tree and Cc'd for stable, fixes an issue with amdgpu
-# https://patchwork.freedesktop.org/patch/259364/
-Patch515: PCI-Fix-incorrect-value-returned-from-pcie_get_speed.patch
 
 # rhbz 1645070 patch queued upstream for merging into 4.21
 Patch516: asus-fx503-keyb.patch
@@ -1918,6 +1905,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 05 2018 Jeremy Cline <jcline@redhat.com> - 4.19.7-300
+- Linux v4.19.7
+
 * Wed Dec 05 2018 Jeremy Cline <jeremy@jcline.org>
 - Fix corruption bug in direct dispatch for blk-mq
 
