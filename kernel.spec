@@ -649,6 +649,9 @@ Patch517: ALSA-hda-realtek-Fix-speaker-output-regression-on-Thinkpad.patch
 # CVE-2018-19824 rhbz 1655816 1655817
 Patch518: alsa-usb-audio-fix-UAF-decrement-if-card-has-no-live.patch
 
+# https://bugzilla.kernel.org/show_bug.cgi?id=201685
+Patch519: blk-mq-fix-corruption-with-direct-issue.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1900,6 +1903,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 05 2018 Jeremy Cline <jeremy@jcline.org>
+- Fix corruption bug in direct dispatch for blk-mq
+
 * Tue Dec 04 2018 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2018-19824 (rhbz 1655816 1655817)
 
