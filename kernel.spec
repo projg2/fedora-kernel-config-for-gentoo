@@ -598,6 +598,9 @@ Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 # https://patchwork.kernel.org/patch/10677591/
 Patch333: hwmon-rpi-Fix-initial-notify.patch
 
+# From 4.20, fix eth link/act lights on 3B+
+Patch334: bcm2837-fix-eth-leds.patch
+
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
 Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
@@ -1905,6 +1908,9 @@ fi
 #
 #
 %changelog
+* Thu Dec  6 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix for ethernet LEDs on Raspberry Pi 3B+
+
 * Wed Dec 05 2018 Jeremy Cline <jcline@redhat.com> - 4.19.7-300
 - Linux v4.19.7
 
