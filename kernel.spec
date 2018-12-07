@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 5
 # The git snapshot level
-%define gitrev 2
+%define gitrev 3
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -608,9 +608,6 @@ Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
 # rhbz 1645070 patch queued upstream for merging into 4.21
 Patch505: asus-fx503-keyb.patch
-
-# https://bugzilla.kernel.org/show_bug.cgi?id=201685
-Patch506: blk-mq-fix-corruption-with-direct-issue.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1884,6 +1881,9 @@ fi
 #
 #
 %changelog
+* Fri Dec 07 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc5.git3.1
+- Linux v4.20-rc5-86-gb72f711a4efa
+
 * Wed Dec 05 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc5.git2.1
 - Linux v4.20-rc5-44-gd08970904582
 
