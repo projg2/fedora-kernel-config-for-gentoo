@@ -1902,6 +1902,9 @@ fi
 #
 #
 %changelog
+* Tue Dec 11 2018 Hans de Goede <hdegoede@redhat.com>
+- Really fix non functional hotkeys on Asus FX503VD (#1645070)
+
 * Mon Dec 10 2018 Jeremy Cline <jcline@redhat.com> - 4.19.8-300
 - Linux v4.19.8
 
