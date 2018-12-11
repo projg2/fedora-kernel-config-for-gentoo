@@ -1881,6 +1881,9 @@ fi
 #
 #
 %changelog
+* Tue Dec 11 2018 Hans de Goede <hdegoede@redhat.com>
+- Really fix non functional hotkeys on Asus FX503VD (#1645070)
+
 * Mon Dec 10 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc6.git0.1
 - Linux v4.20-rc6
 
