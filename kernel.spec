@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -634,12 +634,6 @@ Patch510: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
 # rhbz 1645070 patch queued upstream for merging into 4.21
 Patch516: asus-fx503-keyb.patch
-
-# rbhz 1554304 patch in the sound tree and Cc'd for stable
-Patch517: ALSA-hda-realtek-Fix-speaker-output-regression-on-Thinkpad.patch
-
-# CVE-2018-19824 rhbz 1655816 1655817
-Patch518: alsa-usb-audio-fix-UAF-decrement-if-card-has-no-live.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1902,6 +1896,9 @@ fi
 #
 #
 %changelog
+* Thu Dec 13 2018 Jeremy Cline <jcline@redhat.com> - 4.19.9-300
+- Linux v4.19.9
+
 * Tue Dec 11 2018 Hans de Goede <hdegoede@redhat.com>
 - Really fix non functional hotkeys on Asus FX503VD (#1645070)
 
