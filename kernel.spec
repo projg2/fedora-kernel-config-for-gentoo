@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 301
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -600,6 +600,9 @@ Patch333: hwmon-rpi-Fix-initial-notify.patch
 
 # From 4.20, fix eth link/act lights on 3B+
 Patch334: bcm2837-fix-eth-leds.patch
+
+# From 4.20, fix wifi gpio polarity
+Patch335: bcm2837-fix-wifi-gpio-polarity.patch
 
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
@@ -1896,6 +1899,9 @@ fi
 #
 #
 %changelog
+* Fri Dec 14 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.19.9-301
+- Fix Raspberry Pi issues affecting WiFi (rhbz 1652093)
+
 * Thu Dec 13 2018 Jeremy Cline <jcline@redhat.com> - 4.19.9-300
 - Linux v4.19.9
 
