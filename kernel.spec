@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -596,10 +596,7 @@ Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
 # https://patchwork.kernel.org/patch/10686407/
 Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
-# https://patchwork.kernel.org/patch/10677591/
-Patch333: hwmon-rpi-Fix-initial-notify.patch
-
-# From 4.20, fix RPi3B+ eth leds
+# From 4.20, fix eth link/act lights on 3B+
 Patch334: bcm2837-fix-eth-leds.patch
 
 # From 4.20, fix wifi gpio polarity
@@ -1884,6 +1881,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 17 2018 Jeremy Cline <jcline@redhat.com> - 4.19.10-200
+- Linux v4.19.10
+
 * Fri Dec 14 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.19.9-201
 - Fix Raspberry Pi issues affecting WiFi (rhbz 1652093)
 
