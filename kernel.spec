@@ -584,6 +584,9 @@ Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
 # https://patchwork.kernel.org/patch/10686407/
 Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
+# Improve raspberry pi camera and analog audio
+Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
+
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
 Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
@@ -1881,6 +1884,9 @@ fi
 #
 #
 %changelog
+* Fri Dec 14 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enhancements for Raspberrp Pi Camera
+
 * Thu Dec 13 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc6.git2.1
 - Linux v4.20-rc6-82-g65e08c5e8631
 
