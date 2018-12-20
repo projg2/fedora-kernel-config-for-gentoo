@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -597,9 +597,6 @@ Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
 # From 4.20, fix eth link/act lights on 3B+
 Patch334: bcm2837-fix-eth-leds.patch
-
-# From 4.20, fix wifi gpio polarity
-Patch335: bcm2837-fix-wifi-gpio-polarity.patch
 
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
@@ -1896,6 +1893,9 @@ fi
 #
 #
 %changelog
+* Thu Dec 20 2018 Jeremy Cline <jcline@redhat.com> - 4.19.11-300
+- Linux v4.19.11
+
 * Mon Dec 17 2018 Jeremy Cline <jcline@redhat.com> - 4.19.10-300
 - Linux v4.19.10
 
