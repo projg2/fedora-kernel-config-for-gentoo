@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 7
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -617,9 +617,6 @@ Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
 # rhbz 1645070 patch queued upstream for merging into 4.21
 Patch505: asus-fx503-keyb.patch
-
-# rhbz 1647947
-Patch506: bpf-fix-bpf_jit_limit-knob.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1893,6 +1890,9 @@ fi
 #
 #
 %changelog
+* Thu Dec 20 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc7.git2.1
+- Linux v4.20-rc7-202-g1d51b4b1d3f2
+
 * Wed Dec 19 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Initial support for Raspberry Pi model 3A+
 - Stability fixes for Raspberry Pi MMC (sdcard) driver
