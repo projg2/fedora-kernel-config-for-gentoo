@@ -590,6 +590,9 @@ Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
 # Initall support for the 3A+
 Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
 
+# Fixes for bcm2835 mmc (sdcard) driver
+Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
+
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
 Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
@@ -1892,6 +1895,7 @@ fi
 %changelog
 * Wed Dec 19 2018 Peter Robinson <pbrobinson@fedoraproject.org>
 - Initial support for Raspberry Pi model 3A+
+- Stability fixes for Raspberry Pi MMC (sdcard) driver
 
 * Tue Dec 18 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc7.git1.1
 - Linux v4.20-rc7-6-gddfbab46539f
