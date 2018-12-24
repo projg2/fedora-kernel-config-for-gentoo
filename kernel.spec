@@ -593,6 +593,9 @@ Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
 # Fixes for bcm2835 mmc (sdcard) driver
 Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
 
+# https://patchwork.kernel.org/patch/10741809/
+Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
+
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
 Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
@@ -1890,6 +1893,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 24 2018 Peter Robinson <pbrobinson@fedoraproject.org>
+- Another fix for issue affecting Raspberry Pi 3-series WiFi (rhbz 1652093)
+
 * Fri Dec 21 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc7.git3.1
 - Linux v4.20-rc7-214-g9097a058d49e
 
