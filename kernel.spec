@@ -1430,7 +1430,6 @@ BuildKernel() {
     cp -a --parents arch/x86/boot/string.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/string.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/ctype.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents arch/x86/kernel/macros.s $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
 %endif
     # Make sure the Makefile and version.h have a matching timestamp so that
     # external modules can be built
