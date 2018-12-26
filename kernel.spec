@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -578,8 +578,6 @@ Patch305: qcom-msm89xx-fixes.patch
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
-
-Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
 
 # https://patchwork.kernel.org/patch/10686407/
 Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
@@ -1892,6 +1890,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 26 2018 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git1.1
+- Linux v4.20-3117-ga5f2bd479f58
+
 * Wed Dec 26 2018 Laura Abbott <labbott@redhat.com>
 - Reenable debugging options.
 
