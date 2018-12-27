@@ -1890,6 +1890,9 @@ fi
 #
 #
 %changelog
+* Thu Dec 27 2018 Hans de Goede <hdegoede@redhat.com>
+- Set CONFIG_REALTEK_PHY=y to workaround realtek ethernet issues (rhbz 1650984)
+
 * Wed Dec 26 2018 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git1.1
 - Linux v4.20-3117-ga5f2bd479f58
 
