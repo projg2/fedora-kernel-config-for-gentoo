@@ -1896,6 +1896,9 @@ fi
 #
 #
 %changelog
+* Thu Dec 27 2018 Hans de Goede <hdegoede@redhat.com>
+- Set CONFIG_REALTEK_PHY=y to workaround realtek ethernet issues (rhbz 1650984)
+
 * Mon Dec 24 2018 Peter Robinson <pbrobinson@fedoraproject.org> 4.19.12-301
 - Another fix for issue affecting Raspberry Pi 3-series WiFi (rhbz 1652093)
 
