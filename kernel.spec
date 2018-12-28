@@ -1883,6 +1883,9 @@ fi
 #
 #
 %changelog
+* Fri Dec 28 2018 Laura Abbott <labbott@redhat.com>
+- Enable CONFIG_BPF_LIRC_MODE2 (rhbz 1628151)
+
 * Fri Dec 28 2018 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git2.1
 - Linux v4.20-6428-g00c569b567c7
 
