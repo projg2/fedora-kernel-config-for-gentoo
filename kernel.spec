@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -594,10 +594,6 @@ Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
 # https://patchwork.kernel.org/patch/10741809/
 Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
 
-# Patches enabling device specific brcm firmware nvram
-# https://www.spinics.net/lists/linux-wireless/msg178827.html
-Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
-
 # Fix for AllWinner A64 Timer Errata, still not final
 # https://patchwork.kernel.org/patch/10392891/
 Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
@@ -606,9 +602,6 @@ Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
-
-# rhbz 1476467
-Patch501: Fix-for-module-sig-verification.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
@@ -1890,6 +1883,9 @@ fi
 #
 #
 %changelog
+* Fri Dec 28 2018 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git2.1
+- Linux v4.20-6428-g00c569b567c7
+
 * Thu Dec 27 2018 Hans de Goede <hdegoede@redhat.com>
 - Set CONFIG_REALTEK_PHY=y to workaround realtek ethernet issues (rhbz 1650984)
 
