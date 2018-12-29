@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1881,6 +1881,9 @@ fi
 #
 #
 %changelog
+* Sat Dec 29 2018 Jeremy Cline <jcline@redhat.com> - 4.19.13-200
+- Linux v4.19.13
+
 * Thu Dec 27 2018 Hans de Goede <hdegoede@redhat.com>
 - Set CONFIG_REALTEK_PHY=y to workaround realtek ethernet issues (rhbz 1650984)
 
