@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 2
+%define gitrev 3
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -583,13 +583,11 @@ Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
 # Improve raspberry pi camera and analog audio
-Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
+# Needs to be rebased
+# Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
 
 # Initall support for the 3A+
 Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
-
-# Fixes for bcm2835 mmc (sdcard) driver
-Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
 
 # https://patchwork.kernel.org/patch/10741809/
 Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
@@ -605,9 +603,6 @@ Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# rhbz 1526312 (accelerometer part of the bug), patches pending upstream
-Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
 # rhbz 1645070 patch queued upstream for merging into 4.21
 Patch505: asus-fx503-keyb.patch
@@ -1883,6 +1878,9 @@ fi
 #
 #
 %changelog
+* Sun Dec 30 2018 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git3.1
+- Linux v4.20-9163-g195303136f19
+
 * Fri Dec 28 2018 Laura Abbott <labbott@redhat.com>
 - Enable CONFIG_BPF_LIRC_MODE2 (rhbz 1628151)
 - Enable CONFIG_NET_SCH_CAKE (rhbz 1655155)

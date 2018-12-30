@@ -285,8 +285,8 @@ index 461d5acc3616..13fdada1ffc2 100644
 +	  triggered if EFI Secure Boot is set.
 +
 
- source security/selinux/Kconfig
- source security/smack/Kconfig
+ source "security/selinux/Kconfig"
+ source "security/smack/Kconfig"
 diff --git a/security/lock_down.c b/security/lock_down.c
 index 2c6b00f0c229..527f7e51dc8d 100644
 --- a/security/lock_down.c

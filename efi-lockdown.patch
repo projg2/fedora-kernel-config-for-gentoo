@@ -136,9 +136,9 @@ index c4302067a3ad..a68e5bdebad5 100644
 +	  Makes the lockdown non-negotiable.  It is always on and cannot be
 +	  disabled.
 +
- source security/selinux/Kconfig
- source security/smack/Kconfig
- source security/tomoyo/Kconfig
+ source "security/selinux/Kconfig"
+ source "security/smack/Kconfig"
+ source "security/tomoyo/Kconfig"
 @@ -278,4 +300,3 @@ config DEFAULT_SECURITY
  	default "" if DEFAULT_SECURITY_DAC
 
@@ -447,9 +447,9 @@ index a68e5bdebad5..46967ee77dfd 100644
 +	  combination on a wired keyboard.  On x86, this is SysRq+x.
 +
 +
- source security/selinux/Kconfig
- source security/smack/Kconfig
- source security/tomoyo/Kconfig
+ source "security/selinux/Kconfig"
+ source "security/smack/Kconfig"
+ source "security/tomoyo/Kconfig"
 diff --git a/security/lock_down.c b/security/lock_down.c
 index f35ffdd096ad..2615669dbf03 100644
 --- a/security/lock_down.c
