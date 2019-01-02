@@ -42,19 +42,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 19
+%define base_sublevel 20
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -67,7 +67,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 0
+%global rcrev 7
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -125,7 +125,7 @@ Summary: The Linux kernel
 %define debugbuildsenabled 1
 
 # Kernel headers are being split out into a separate package
-%if 0%{fedora}
+%if 0%{?fedora}
 %define with_headers 0
 %define with_cross_headers 0
 %endif
@@ -386,7 +386,9 @@ Requires: kernel-modules-uname-r = %{KVERREL}%{?variant}
 BuildRequires: kmod, patch, bash, tar, git-core
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
-BuildRequires: net-tools, hostname, bc, elfutils-devel
+BuildRequires: net-tools, hostname, bc, elfutils-devel, gcc-plugin-devel
+# Used to mangle unversioned shebangs to be Python 3
+BuildRequires: /usr/bin/pathfix.py
 %if %{with_sparse}
 BuildRequires: sparse
 %endif
@@ -461,10 +463,6 @@ Source43: generate_bls_conf.sh
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
 Source1000: kernel-local
-
-# Sources for kernel-tools
-Source2000: cpupower.service
-Source2001: cpupower.config
 
 # Here should be only the patches up to the upstream canonical Linus tree.
 
@@ -560,10 +558,6 @@ Patch211: drm-i915-hush-check-crtc-state.patch
 
 Patch212: efi-secureboot.patch
 
-# Fix printing of "EFI stub: UEFI Secure Boot is enabled.",
-# queued upstream in efi.git/next
-Patch213: efi-x86-call-parse-options-from-efi-main.patch
-
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
@@ -583,17 +577,24 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-# https://www.spinics.net/lists/arm-kernel/msg670137.html
-Patch307: arm64-ZynqMP-firmware-clock-drivers-core.patch
-
-Patch308: arm64-96boards-Rock960-CE-board-support.patch
-Patch309: arm64-rockchip-add-initial-Rockpro64.patch
-
-Patch310: gpio-pxa-handle-corner-case-of-unprobed-device.patch
-
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
+
+# https://patchwork.kernel.org/patch/10686407/
+Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
+
+# Improve raspberry pi camera and analog audio
+Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
+
+# Initall support for the 3A+
+Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
+
+# Fixes for bcm2835 mmc (sdcard) driver
+Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
+
+# https://patchwork.kernel.org/patch/10741809/
+Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
 
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
@@ -614,15 +615,11 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# rhbz 1249364, patch accepted upstream and CCed for stable
-Patch503: ALSA-hda-Add-mic-quirk-for-the-Lenovo-G50-30-17aa-39.patch
+# rhbz 1526312 (accelerometer part of the bug), patches pending upstream
+Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
-# Fix known regression
-Patch504: CI-1-6-drm-i915-dp-Fix-link-retraining-comment-in-intel_dp_long_pulse.patch
-Patch505: CI-2-6-drm-i915-dp-Restrict-link-retrain-workaround-to-external-monitors.patch
-
-# rhbz 1526312, patch is in 4.20, can be dropped on rebase
-Patch506: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
+# rhbz 1645070 patch queued upstream for merging into 4.21
+Patch505: asus-fx503-keyb.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1169,6 +1166,16 @@ find . \( -name "*.orig" -o -name "*~" \) -delete >/dev/null
 # remove unnecessary SCM files
 find . -name .gitignore -delete >/dev/null
 
+# Mangle /usr/bin/python shebangs to /usr/bin/python3
+# Mangle all Python shebangs to be Python 3 explicitly
+# -p preserves timestamps
+# -n prevents creating ~backup files
+# -i specifies the interpreter for the shebang
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/diffconfig
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/bloat-o-meter
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/show_delta
+
 cd ..
 
 ###
@@ -1423,6 +1430,7 @@ BuildKernel() {
     cp -a --parents arch/x86/boot/string.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/string.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/ctype.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+    cp -a --parents arch/x86/kernel/macros.s $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
 %endif
     # Make sure the Makefile and version.h have a matching timestamp so that
     # external modules can be built
@@ -1885,6 +1893,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 02 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-200
+- Linux v4.20.0
+
 * Sun Nov 11 2018 Hans de Goede <hdegoede@redhat.com>
 - Add patch fixing touchpads on some Apollo Lake devices not working (#1526312)
 
