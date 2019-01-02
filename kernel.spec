@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 4
+%define gitrev 5
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -579,9 +579,6 @@ Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
-# https://patchwork.kernel.org/patch/10686407/
-Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
-
 # Improve raspberry pi camera and analog audio
 # Needs to be rebased
 # Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
@@ -606,6 +603,9 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # rhbz 1645070 patch queued upstream for merging into 4.21
 Patch505: asus-fx503-keyb.patch
+
+# nvlink failure
+Patch506: 0001-Drop-that-def_bool.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1878,6 +1878,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 02 2019 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git5.1
+- Linux v4.20-10595-g8e143b90e4d4
+
 * Mon Dec 31 2018 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git4.1
 - Linux v4.20-9221-gf12e840c819b
 
