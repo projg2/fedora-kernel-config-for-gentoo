@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 5
+%define gitrev 6
 # Set rpm version accordingly
 %define rpmversion 4.%{upstream_sublevel}.0
 %endif
@@ -538,8 +538,6 @@ Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 Patch201: efi-lockdown.patch
 
 Patch202: KEYS-Allow-unrestricted-boot-time-addition-of-keys-t.patch
-
-Patch203: Add-EFI-signature-data-types.patch
 
 Patch204: Add-an-EFI-signature-blob-parser-and-key-loader.patch
 
@@ -1878,6 +1876,9 @@ fi
 #
 #
 %changelog
+* Thu Jan 03 2019 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git6.1
+- Linux v4.20-10911-g645ff1e8e704
+
 * Wed Jan 02 2019 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git5.1
 - Linux v4.20-10595-g8e143b90e4d4
 

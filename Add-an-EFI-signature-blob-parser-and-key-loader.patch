@@ -1,7 +1,7 @@
-From e4c62c12635a371e43bd17e8d33a936668264491 Mon Sep 17 00:00:00 2001
+From 73e105771858bf39aeabcbcd2f7b002c24ac4bb0 Mon Sep 17 00:00:00 2001
 From: Dave Howells <dhowells@redhat.com>
 Date: Fri, 5 May 2017 08:21:58 +0100
-Subject: [PATCH 2/4] efi: Add an EFI signature blob parser
+Subject: [PATCH] efi: Add an EFI signature blob parser
 
 Add a function to parse an EFI signature blob looking for elements of
 interest.  A list is made up of a series of sublists, where all the
@@ -18,21 +18,20 @@ function in turn.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
 ---
- certs/Kconfig       |   8 ++++
- certs/Makefile      |   1 +
- certs/efi_parser.c  | 112 ++++++++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/efi.h |   9 +++++
- 4 files changed, 130 insertions(+)
+ certs/Kconfig      |   8 ++++
+ certs/Makefile     |   1 +
+ certs/efi_parser.c | 112 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 121 insertions(+)
  create mode 100644 certs/efi_parser.c
 
 diff --git a/certs/Kconfig b/certs/Kconfig
-index 6ce51ed..630ae09 100644
+index c94e93d8bccf..650ffcb8db79 100644
 --- a/certs/Kconfig
 +++ b/certs/Kconfig
-@@ -82,4 +82,12 @@ config SYSTEM_BLACKLIST_HASH_LIST
+@@ -83,4 +83,12 @@ config SYSTEM_BLACKLIST_HASH_LIST
  	  wrapper to incorporate the list into the kernel.  Each <hash> should
  	  be a string of hex digits.
-
+ 
 +config EFI_SIGNATURE_LIST_PARSER
 +	bool "EFI signature list parser"
 +	depends on EFI
@@ -43,20 +42,20 @@ index 6ce51ed..630ae09 100644
 +
  endmenu
 diff --git a/certs/Makefile b/certs/Makefile
-index 4119bb3..738151a 100644
+index 5d0999b9e21b..7e5e179ac685 100644
 --- a/certs/Makefile
 +++ b/certs/Makefile
-@@ -9,6 +9,7 @@ obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_hashes.o
+@@ -10,6 +10,7 @@ obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_hashes.o
  else
  obj-$(CONFIG_SYSTEM_BLACKLIST_KEYRING) += blacklist_nohashes.o
  endif
 +obj-$(CONFIG_EFI_SIGNATURE_LIST_PARSER) += efi_parser.o
-
+ 
  ifeq ($(CONFIG_SYSTEM_TRUSTED_KEYRING),y)
-
+ 
 diff --git a/certs/efi_parser.c b/certs/efi_parser.c
 new file mode 100644
-index 0000000..4e396f9
+index 000000000000..4e396f98f5c7
 --- /dev/null
 +++ b/certs/efi_parser.c
 @@ -0,0 +1,112 @@
@@ -172,26 +171,6 @@ index 0000000..4e396f9
 +
 +	return 0;
 +}
-diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 3259ad6..08024c6 100644
---- a/include/linux/efi.h
-+++ b/include/linux/efi.h
-@@ -1055,6 +1055,15 @@ extern int efi_memattr_apply_permissions(struct mm_struct *mm,
- char * __init efi_md_typeattr_format(char *buf, size_t size,
- 				     const efi_memory_desc_t *md);
-
-+
-+typedef void (*efi_element_handler_t)(const char *source,
-+				      const void *element_data,
-+				      size_t element_size);
-+extern int __init parse_efi_signature_list(
-+	const char *source,
-+	const void *data, size_t size,
-+	efi_element_handler_t (*get_handler_for_guid)(const efi_guid_t *));
-+
- /**
-  * efi_range_is_wc - check the WC bit on an address range
-  * @start: starting kvirt address
 -- 
-2.9.3
+2.20.1
 
