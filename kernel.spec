@@ -1876,6 +1876,10 @@ fi
 #
 #
 %changelog
+* Fri Jan  4 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Updates for Arm plaforms
+- IoT related updates
+
 * Thu Jan 03 2019 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git6.1
 - Linux v4.20-10911-g645ff1e8e704
 
