@@ -60,7 +60,7 @@ Summary: The Linux kernel
 %define stablerev %{stable_update}
 %define stable_base %{stable_update}
 %endif
-%define rpmversion 4.%{base_sublevel}.%{stable_update}
+%define rpmversion 5%{base_sublevel}.%{stable_update}
 
 ## The not-released-kernel case ##
 %else
@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The git snapshot level
 %define gitrev 7
 # Set rpm version accordingly
-%define rpmversion 4.%{upstream_sublevel}.0
+%define rpmversion 5.%{upstream_sublevel}.0
 %endif
 # Nb: The above rcrev and gitrev values automagically define Patch00 and Patch01 below.
 
@@ -162,7 +162,7 @@ Summary: The Linux kernel
 %endif
 
 # The kernel tarball/base version
-%define kversion 4.%{base_sublevel}
+%define kversion 5.%{base_sublevel}
 
 %define make_target bzImage
 %define image_install_path boot
@@ -422,7 +422,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %define cross_opts CROSS_COMPILE=%{_build_arch}-linux-gnu-
 %endif
 
-Source0: https://www.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
+Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
 
 Source11: x509.genkey
 Source12: remove-binary-diff.pl
@@ -469,7 +469,7 @@ Source1000: kernel-local
 # For a stable release kernel
 %if 0%{?stable_update}
 %if 0%{?stable_base}
-%define    stable_patch_00  patch-4.%{base_sublevel}.%{stable_base}.xz
+%define    stable_patch_00  patch-5.%{base_sublevel}.%{stable_base}.xz
 Source5000: %{stable_patch_00}
 %endif
 
@@ -478,14 +478,14 @@ Source5000: %{stable_patch_00}
 # near the top of this spec file.
 %else
 %if 0%{?rcrev}
-Source5000: patch-4.%{upstream_sublevel}-rc%{rcrev}.xz
+Source5000: patch-5.%{upstream_sublevel}-rc%{rcrev}.xz
 %if 0%{?gitrev}
-Source5001: patch-4.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
+Source5001: patch-5.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
 %endif
 %else
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
-Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
+Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 %endif
 %endif
 %endif
@@ -875,7 +875,7 @@ ApplyPatch()
     exit 1
   fi
   if ! grep -E "^Patch[0-9]+: $patch\$" %{_specdir}/${RPM_PACKAGE_NAME%%%%%{?variant}}.spec ; then
-    if [ "${patch:0:8}" != "patch-4." ] ; then
+    if [ "${patch:0:8}" != "patch-5." ] ; then
       echo "ERROR: Patch  $patch  not listed as a source patch in specfile"
       exit 1
     fi
@@ -908,20 +908,20 @@ ApplyOptionalPatch()
 
 # Update to latest upstream.
 %if 0%{?released_kernel}
-%define vanillaversion 4.%{base_sublevel}
+%define vanillaversion 5.%{base_sublevel}
 # non-released_kernel case
 %else
 %if 0%{?rcrev}
-%define vanillaversion 4.%{upstream_sublevel}-rc%{rcrev}
+%define vanillaversion 5.%{upstream_sublevel}-rc%{rcrev}
 %if 0%{?gitrev}
-%define vanillaversion 4.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}
+%define vanillaversion 5.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}
 %endif
 %else
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
-%define vanillaversion 4.%{base_sublevel}-git%{gitrev}
+%define vanillaversion 5.%{base_sublevel}-git%{gitrev}
 %else
-%define vanillaversion 4.%{base_sublevel}
+%define vanillaversion 5.%{base_sublevel}
 %endif
 %endif
 %endif
@@ -934,7 +934,7 @@ ApplyOptionalPatch()
 
 # Build a list of the other top-level kernel tree directories.
 # This will be used to hardlink identical vanilla subdirs.
-sharedirs=$(find "$PWD" -maxdepth 1 -type d -name 'kernel-4.*' \
+sharedirs=$(find "$PWD" -maxdepth 1 -type d -name 'kernel-5.*' \
             | grep -x -v "$PWD"/kernel-%{kversion}%{?dist}) ||:
 
 # Delete all old stale trees.
