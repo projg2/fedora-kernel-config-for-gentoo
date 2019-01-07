@@ -48,7 +48,7 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 20
+%define base_sublevel 0
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
@@ -65,11 +65,13 @@ Summary: The Linux kernel
 ## The not-released-kernel case ##
 %else
 # The next upstream release sublevel (base_sublevel+1)
-%define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
+# %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
+# Work around for major version bump
+%define upstream_sublevel 0
 # The rc snapshot level
-%global rcrev 0
+%global rcrev 1
 # The git snapshot level
-%define gitrev 7
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -162,7 +164,8 @@ Summary: The Linux kernel
 %endif
 
 # The kernel tarball/base version
-%define kversion 5.%{base_sublevel}
+# %define kversion 5.%{base_sublevel}
+%define kversion 5.%{base_sublevel}-rc%rcrev
 
 %define make_target bzImage
 %define image_install_path boot
@@ -422,7 +425,8 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %define cross_opts CROSS_COMPILE=%{_build_arch}-linux-gnu-
 %endif
 
-Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
+# Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
+Source0: https://git.kernel.org/torvalds/t/linux-5.0-rc1.tar.gz
 
 Source11: x509.genkey
 Source12: remove-binary-diff.pl
@@ -598,9 +602,6 @@ Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
 
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# rhbz 1645070 patch queued upstream for merging into 4.21
-Patch505: asus-fx503-keyb.patch
 
 # nvlink failure
 Patch506: 0001-Drop-that-def_bool.patch
@@ -1876,6 +1877,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 07 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc1.git0.1
+- Linux v5.0-rc1
+
 * Mon Jan 07 2019 Laura Abbott <labbott@redhat.com>
 - Disable debugging options.
 
