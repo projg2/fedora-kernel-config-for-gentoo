@@ -544,12 +544,6 @@ Patch201: efi-lockdown.patch
 
 Patch202: KEYS-Allow-unrestricted-boot-time-addition-of-keys-t.patch
 
-Patch204: Add-an-EFI-signature-blob-parser-and-key-loader.patch
-
-Patch205: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
-
-Patch206: MODSIGN-Support-not-importing-certs-from-db.patch
-
 # bz 1497559 - Make kernel MODSIGN code not error on missing variables
 Patch207: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
 Patch208: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
@@ -1878,6 +1872,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 07 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Updates for secure boot
+
 * Mon Jan 07 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc1.git0.1
 - Linux v5.0-rc1
 
