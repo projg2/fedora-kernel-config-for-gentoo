@@ -635,6 +635,9 @@ Patch510: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 # rhbz 1645070 patch queued upstream for merging into 4.21
 Patch516: asus-fx503-keyb.patch
 
+# rhbz 1661961 patch merged upstream in 4.20
+Patch517: 0001-Bluetooth-btsdio-Do-not-bind-to-non-removable-BCM434.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1896,6 +1899,9 @@ fi
 #
 #
 %changelog
+* Mon Jan  7 2019 Hans de Goede <hdegoede@redhat.com>
+- Add patch to fix bluetooth on RPI 3B+ registering twice (rhbz#1661961)
+
 * Sat Dec 29 2018 Jeremy Cline <jcline@redhat.com> - 4.19.13-300
 - Linux v4.19.13
 
