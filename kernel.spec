@@ -482,7 +482,8 @@ Source5000: %{stable_patch_00}
 # near the top of this spec file.
 %else
 %if 0%{?rcrev}
-Source5000: patch-5.%{upstream_sublevel}-rc%{rcrev}.xz
+# One more fixup apparently?
+# Source5000: patch-5.%{upstream_sublevel}-rc%{rcrev}.xz
 %if 0%{?gitrev}
 Source5001: patch-5.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
 %endif
