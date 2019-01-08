@@ -19,7 +19,7 @@ if [ ! -f $PKGLOC/kernel-headers.spec ]; then
 fi
 
 # Kernel version information taken from kernel.spec and change to prepared sources directory
-MAJORVER='4'
+MAJORVER='5'
 RELEASED=`grep "%global released_kernel" kernel.spec| cut -d ' ' -f 3`
 BASERELEASE=`cat kernel.spec | grep "%global baserelease" | cut -d ' ' -f 3`
 BASE=`grep "%define base_sublevel" kernel.spec| cut -d ' ' -f 3`
@@ -27,8 +27,10 @@ STABLE=`grep "%define stable_update" kernel.spec| cut -d ' ' -f 3`
 RC=`grep "%global rcrev" kernel.spec| cut -d ' ' -f 3`
 GITREV=`grep "%define gitrev" kernel.spec| cut -d ' ' -f 3`
 if [ $RELEASED -eq 0 ]; then
-	cd kernel-$MAJORVER.$BASE.fc??
-	NEWBASE=$(($BASE+1))
+	#cd kernel-$MAJORVER.$BASE.fc??
+	cd kernel-5.0-rc$RC.fc??
+	#NEWBASE=$(($BASE+1))
+	NEWBASE=0
 	KVER=$MAJORVER.$NEWBASE.0-0.rc$RC.git$GITREV.$BASERELEASE
 	cd linux-$MAJORVER.$NEWBASE.0-0.rc$RC.git$GITREV.$BASERELEASE.fc*/
 else
