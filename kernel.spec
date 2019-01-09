@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1890,6 +1890,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 09 2019 Jeremy Cline <jcline@redhat.com> - 4.19.14-300
+- Linux v4.19.14
+
 * Wed Jan 09 2019 Jeremy Cline <jeremy@jcline.org>
 - Fix CVE-2018-16884 (rhbz 1660375 1660825)
 
