@@ -601,6 +601,9 @@ Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # nvlink failure
 Patch506: 0001-Drop-that-def_bool.patch
 
+# CVE-2019-3701 rhbz 1663729 1663730
+Patch507: CVE-2019-3701.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1872,6 +1875,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 09 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-3701 (rhbz 1663729 1663730)
+
 * Tue Jan 08 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc1.git1.1
 - Linux v5.0-rc1-2-g7b5585136713
 
