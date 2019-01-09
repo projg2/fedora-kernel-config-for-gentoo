@@ -641,9 +641,6 @@ Patch517: 0001-Bluetooth-btsdio-Do-not-bind-to-non-removable-BCM434.patch
 # CVE-2019-3701 rhbz 1663729 1663730
 Patch518: CVE-2019-3701.patch
 
-# CVE-2018-16884 rhbz 1660375 1660825
-Patch519: CVE-2018-16884.patch
-
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1907,9 +1904,6 @@ fi
 %changelog
 * Wed Jan 09 2019 Jeremy Cline <jcline@redhat.com> - 4.19.14-300
 - Linux v4.19.14
-
-* Wed Jan 09 2019 Jeremy Cline <jeremy@jcline.org>
-- Fix CVE-2018-16884 (rhbz 1660375 1660825)
 
 * Wed Jan 09 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-3701 (rhbz 1663729 1663730)
