@@ -621,6 +621,9 @@ Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 # rhbz 1645070 patch queued upstream for merging into 4.21
 Patch505: asus-fx503-keyb.patch
 
+# CVE-2019-3701 rhbz 1663729 1663730
+Patch506: CVE-2019-3701.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1892,6 +1895,9 @@ fi
 #
 #
 %changelog
+* Tue Jan 07 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-3701 (rhbz 1663729 1663730)
+
 * Wed Jan 02 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-200
 - Linux v4.20.0
 
