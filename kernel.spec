@@ -1895,7 +1895,7 @@ fi
 #
 #
 %changelog
-* Tue Jan 07 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+* Wed Jan 09 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-3701 (rhbz 1663729 1663730)
 
 * Wed Jan 02 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-200
