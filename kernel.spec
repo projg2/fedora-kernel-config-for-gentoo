@@ -638,6 +638,9 @@ Patch516: asus-fx503-keyb.patch
 # rhbz 1661961 patch merged upstream in 4.20
 Patch517: 0001-Bluetooth-btsdio-Do-not-bind-to-non-removable-BCM434.patch
 
+# CVE-2019-3701 rhbz 1663729 1663730
+Patch518: CVE-2019-3701.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1899,6 +1902,9 @@ fi
 #
 #
 %changelog
+* Tue Jan 07 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-3701 (rhbz 1663729 1663730)
+
 * Mon Jan  7 2019 Hans de Goede <hdegoede@redhat.com>
 - Add patch to fix bluetooth on RPI 3B+ registering twice (rhbz#1661961)
 
