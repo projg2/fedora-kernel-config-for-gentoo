@@ -576,10 +576,6 @@ Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
-# Improve raspberry pi camera and analog audio
-# Needs to be rebased
-# Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
-
 # Initall support for the 3A+
 Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
 
