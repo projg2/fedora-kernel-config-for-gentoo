@@ -596,13 +596,16 @@ Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
 # 500 - Temp fixes/CVEs etc
 
 # rhbz 1431375
-Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
+Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # nvlink failure
-Patch506: 0001-Drop-that-def_bool.patch
+Patch502: 0001-Drop-that-def_bool.patch
 
 # CVE-2019-3701 rhbz 1663729 1663730
-Patch507: CVE-2019-3701.patch
+Patch503: CVE-2019-3701.patch
+
+# https://patchwork.kernel.org/patch/10752253/
+Patch504: efi-use-32-bit-alignment-for-efi_guid_t.patch
 
 # END OF PATCH DEFINITIONS
 
