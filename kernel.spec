@@ -577,14 +577,13 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
-
-Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
+Patch330: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
 
 # https://patchwork.kernel.org/patch/10686407/
-Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
+Patch331: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
 # Improve raspberry pi camera and analog audio
+Patch332: bcm2836-Improve-VCHIQ-cache-line-size-handling.patch
 Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
 
 # Initall support for the 3A+
@@ -595,6 +594,8 @@ Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
 
 # https://patchwork.kernel.org/patch/10741809/
 Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
+
+Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
@@ -1895,6 +1896,9 @@ fi
 #
 #
 %changelog
+* Wed Jan  9 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Updates for Raspberry Pi
+
 * Wed Jan 09 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.1-200
 - Linux v4.20.1
 
