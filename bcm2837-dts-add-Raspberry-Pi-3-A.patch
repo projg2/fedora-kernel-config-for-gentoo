@@ -267,7 +267,7 @@ index 0000000..b2df7cf
 +// SPDX-License-Identifier: GPL-2.0
 +/dts-v1/;
 +#include "bcm2837.dtsi"
-+#include "bcm2835-rpi.dtsi"
++#include "bcm2836-rpi.dtsi"
 +#include "bcm283x-rpi-usb-host.dtsi"
 +
 +/ {

@@ -574,13 +574,15 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
-
 # Initall support for the 3A+
-Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
+Patch330: bcm2837-dts-add-Raspberry-Pi-3-A.patch
 
 # https://patchwork.kernel.org/patch/10741809/
-Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
+Patch331: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
+
+Patch332: bcm283x-Add-missing-GPIO-line-names.patch
+
+Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 # Fix for AllWinner A64 Timer Errata, still not final
 # https://patchwork.kernel.org/patch/10392891/
