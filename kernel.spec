@@ -580,14 +580,14 @@ Patch330: bcm2837-dts-add-Raspberry-Pi-3-A.patch
 # https://patchwork.kernel.org/patch/10741809/
 Patch331: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
 
-Patch332: bcm283x-Add-missing-GPIO-line-names.patch
+# https://www.spinics.net/lists/arm-kernel/msg699583.html
+Patch332: ARM-dts-bcm283x-Several-DTS-improvements.patch
 
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 # Fix for AllWinner A64 Timer Errata, still not final
-# https://patchwork.kernel.org/patch/10392891/
-Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
-Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
+# https://www.spinics.net/lists/arm-kernel/msg699622.html
+Patch350: Allwinner-A64-timer-workaround.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1876,6 +1876,10 @@ fi
 #
 #
 %changelog
+* Sun Jan 13 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Raspberry Pi updates
+- Update AllWinner A64 timer errata workaround
+
 * Fri Jan 11 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc1.git4.1
 - Linux v5.0-rc1-43-g1bdbe2274920
 
