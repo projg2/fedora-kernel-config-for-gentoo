@@ -1873,6 +1873,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 14 2019 Laura Abbott <labbott@redhat.com>
+- Enable CONFIG_GPIO_LEDS and CONFIG_GPIO_PCA953X  (rhbz 1601623)
+
 * Mon Jan 14 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc2.git0.1
 - Linux v5.0-rc2
 
