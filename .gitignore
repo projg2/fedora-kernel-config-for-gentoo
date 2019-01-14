@@ -9,3 +9,4 @@ perf-man-*.tar.gz
 kernel-headers/
 kernel-tools/
 /linux-5.0-rc1.tar.gz
+/linux-5.0-rc2.tar.gz

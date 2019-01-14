@@ -69,9 +69,9 @@ Summary: The Linux kernel
 # Work around for major version bump
 %define upstream_sublevel 0
 # The rc snapshot level
-%global rcrev 1
+%global rcrev 2
 # The git snapshot level
-%define gitrev 4
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -426,7 +426,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %endif
 
 # Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
-Source0: https://git.kernel.org/torvalds/t/linux-5.0-rc1.tar.gz
+Source0: https://git.kernel.org/torvalds/t/linux-5.0-rc2.tar.gz
 
 Source11: x509.genkey
 Source12: remove-binary-diff.pl
@@ -595,9 +595,6 @@ Patch350: Allwinner-A64-timer-workaround.patch
 
 # rhbz 1431375
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# nvlink failure
-Patch502: 0001-Drop-that-def_bool.patch
 
 # CVE-2019-3701 rhbz 1663729 1663730
 Patch503: CVE-2019-3701.patch
@@ -1876,6 +1873,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 14 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc2.git0.1
+- Linux v5.0-rc2
+
 * Mon Jan 14 2019 Laura Abbott <labbott@redhat.com>
 - Disable debugging options.
 
