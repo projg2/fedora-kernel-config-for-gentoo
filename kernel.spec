@@ -627,6 +627,9 @@ Patch505: asus-fx503-keyb.patch
 # CVE-2019-3701 rhbz 1663729 1663730
 Patch506: CVE-2019-3701.patch
 
+# CVE-2019-3459 and CVE-2019-3460 rhbz 1663176 1663179 1665925
+Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1898,6 +1901,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 16 2019 Jeremy Cline <jeremy@jcline.org>
+- Fix CVE-2019-3459 and CVE-2019-3460 (rhbz 1663176 1663179 1665925)
+
 * Wed Jan 16 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.3-200
 - Linux v4.20.3
 
