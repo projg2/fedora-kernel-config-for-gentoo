@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -591,8 +591,6 @@ Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
 Patch310: gpio-pxa-handle-corner-case-of-unprobed-device.patch
 
-Patch331: bcm283x-drm-vc4-set-is_yuv-to-false-when-num_planes-1.patch
-
 # https://patchwork.kernel.org/patch/10686407/
 Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
@@ -635,6 +633,9 @@ Patch517: 0001-Bluetooth-btsdio-Do-not-bind-to-non-removable-BCM434.patch
 
 # CVE-2019-3701 rhbz 1663729 1663730
 Patch518: CVE-2019-3701.patch
+
+# CVE-2019-3459 and CVE-2019-3460 rbhz 1663176 1663179 1665925
+Patch519: CVE-2019-3459-and-CVE-2019-3460.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1887,6 +1888,10 @@ fi
 #
 #
 %changelog
+* Mon Jan 14 2019 Jeremy Cline <jcline@redhat.com> - 4.19.15-200
+- Linux v4.19.15
+- Fix CVE-2019-3459 and CVE-2019-3460 (rbhz 1663176 1663179 1665925)
+
 * Wed Jan 09 2019 Jeremy Cline <jcline@redhat.com> - 4.19.14-200
 - Linux v4.19.14
 
