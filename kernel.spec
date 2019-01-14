@@ -602,6 +602,8 @@ Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
 Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
 
+Patch341: brcmfmac-Call-brcmf_dmi_probe-before-brcmf_of_probe.patch
+
 # Fix for AllWinner A64 Timer Errata, still not final
 # https://www.spinics.net/lists/arm-kernel/msg699622.html
 Patch350: Allwinner-A64-timer-workaround.patch
