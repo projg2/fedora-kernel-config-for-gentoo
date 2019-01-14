@@ -595,6 +595,9 @@ Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
 # https://patchwork.kernel.org/patch/10741809/
 Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
 
+# https://www.spinics.net/lists/arm-kernel/msg699583.html
+Patch337: ARM-dts-bcm283x-Several-DTS-improvements.patch
+
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 # Patches enabling device specific brcm firmware nvram
@@ -602,9 +605,8 @@ Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
 
 # Fix for AllWinner A64 Timer Errata, still not final
-# https://patchwork.kernel.org/patch/10392891/
-Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
-Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
+# https://www.spinics.net/lists/arm-kernel/msg699622.html
+Patch350: Allwinner-A64-timer-workaround.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1896,6 +1898,10 @@ fi
 #
 #
 %changelog
+* Mon Jan 14 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- DT updates for Raspbery Pi
+- Update to AllWinner A64 SoC timer errata
+
 * Wed Jan  9 2019 Peter Robinson <pbrobinson@fedoraproject.org>
 - Updates for Raspberry Pi
 
