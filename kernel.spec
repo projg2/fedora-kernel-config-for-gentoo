@@ -1899,7 +1899,7 @@ fi
 #
 %changelog
 * Mon Jan 14 2019 Peter Robinson <pbrobinson@fedoraproject.org> 4.20.2-200
-- Linux v4.20.1
+- Linux v4.20.2
 - DT updates for Raspbery Pi
 - Update to AllWinner A64 SoC timer errata
 
