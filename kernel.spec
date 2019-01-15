@@ -390,8 +390,10 @@ BuildRequires: kmod, patch, bash, tar, git-core
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
 BuildRequires: net-tools, hostname, bc, elfutils-devel, gcc-plugin-devel
+%if 0%{?fedora}
 # Used to mangle unversioned shebangs to be Python 3
 BuildRequires: /usr/bin/pathfix.py
+%endif
 %if %{with_sparse}
 BuildRequires: sparse
 %endif
@@ -1144,6 +1146,7 @@ find . \( -name "*.orig" -o -name "*~" \) -delete >/dev/null
 # remove unnecessary SCM files
 find . -name .gitignore -delete >/dev/null
 
+%if 0%{?fedora}
 # Mangle /usr/bin/python shebangs to /usr/bin/python3
 # Mangle all Python shebangs to be Python 3 explicitly
 # -p preserves timestamps
@@ -1153,6 +1156,7 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/diffconfig
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/bloat-o-meter
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/show_delta
+%endif
 
 cd ..
 
