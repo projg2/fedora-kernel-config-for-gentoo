@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 2
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -595,9 +595,6 @@ Patch350: Allwinner-A64-timer-workaround.patch
 
 # rhbz 1431375
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# CVE-2019-3701 rhbz 1663729 1663730
-Patch503: CVE-2019-3701.patch
 
 # https://patchwork.kernel.org/patch/10752253/
 Patch504: efi-use-32-bit-alignment-for-efi_guid_t.patch
@@ -1873,6 +1870,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 16 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc2.git2.1
+- Linux v5.0-rc2-141-g47bfa6d9dc8c
+
 * Tue Jan 15 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc2.git1.1
 - Linux v5.0-rc2-36-gfe76fc6aaf53
 
