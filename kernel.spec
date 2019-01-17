@@ -42,19 +42,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 19
+%define base_sublevel 20
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -67,7 +67,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 0
+%global rcrev 7
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -125,7 +125,7 @@ Summary: The Linux kernel
 %define debugbuildsenabled 1
 
 # Kernel headers are being split out into a separate package
-%if 0%{fedora}
+%if 0%{?fedora}
 %define with_headers 0
 %define with_cross_headers 0
 %endif
@@ -386,7 +386,9 @@ Requires: kernel-modules-uname-r = %{KVERREL}%{?variant}
 BuildRequires: kmod, patch, bash, tar, git-core
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
-BuildRequires: net-tools, hostname, bc, elfutils-devel
+BuildRequires: net-tools, hostname, bc, elfutils-devel, gcc-plugin-devel
+# Used to mangle unversioned shebangs to be Python 3
+BuildRequires: /usr/bin/pathfix.py
 %if %{with_sparse}
 BuildRequires: sparse
 %endif
@@ -461,10 +463,6 @@ Source43: generate_bls_conf.sh
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
 Source1000: kernel-local
-
-# Sources for kernel-tools
-Source2000: cpupower.service
-Source2001: cpupower.config
 
 # Here should be only the patches up to the upstream canonical Linus tree.
 
@@ -579,34 +577,36 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-# https://www.spinics.net/lists/arm-kernel/msg670137.html
-Patch307: arm64-ZynqMP-firmware-clock-drivers-core.patch
-
-Patch308: arm64-96boards-Rock960-CE-board-support.patch
-Patch309: arm64-rockchip-add-initial-Rockpro64.patch
-Patch310: arm64-rk3399-add-idle-states.patch
-
-Patch311: gpio-pxa-handle-corner-case-of-unprobed-device.patch
-
-Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
-
 # https://patchwork.kernel.org/patch/10686407/
-Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
+Patch331: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
-# From 4.20, fix eth link/act lights on 3B+
-Patch334: bcm2837-fix-eth-leds.patch
+# Improve raspberry pi camera and analog audio
+Patch332: bcm2836-Improve-VCHIQ-cache-line-size-handling.patch
+Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
+
+# Initall support for the 3A+
+Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
+
+# Fixes for bcm2835 mmc (sdcard) driver
+Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
 
 # https://patchwork.kernel.org/patch/10741809/
-Patch335: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
+Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
+
+# https://www.spinics.net/lists/arm-kernel/msg699583.html
+Patch337: ARM-dts-bcm283x-Several-DTS-improvements.patch
+
+Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
 Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
 
+Patch341: brcmfmac-Call-brcmf_dmi_probe-before-brcmf_of_probe.patch
+
 # Fix for AllWinner A64 Timer Errata, still not final
-# https://patchwork.kernel.org/patch/10392891/
-Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
-Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
+# https://www.spinics.net/lists/arm-kernel/msg699622.html
+Patch350: Allwinner-A64-timer-workaround.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -618,29 +618,17 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# Ena fixes from 4.20
-Patch503: ena-fixes.patch
-
-# rhbz 1526312, patch is in 4.20, can be dropped on rebase
-Patch507: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
-
-# Patches from 4.20 fixing black screen on CHT devices with i915.fastboot=1
-Patch508: cherrytrail-pwm-lpss-fixes.patch
-
 # rhbz 1526312 (accelerometer part of the bug), patches pending upstream
-Patch510: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
+Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
 # rhbz 1645070 patch queued upstream for merging into 4.21
-Patch516: asus-fx503-keyb.patch
-
-# rhbz 1661961 patch merged upstream in 4.20
-Patch517: 0001-Bluetooth-btsdio-Do-not-bind-to-non-removable-BCM434.patch
+Patch505: asus-fx503-keyb.patch
 
 # CVE-2019-3701 rhbz 1663729 1663730
-Patch518: CVE-2019-3701.patch
+Patch506: CVE-2019-3701.patch
 
-# CVE-2019-3459 and CVE-2019-3460 rbhz 1663176 1663179 1665925
-Patch519: CVE-2019-3459-and-CVE-2019-3460.patch
+# CVE-2019-3459 and CVE-2019-3460 rhbz 1663176 1663179 1665925
+Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1186,6 +1174,16 @@ find . \( -name "*.orig" -o -name "*~" \) -delete >/dev/null
 
 # remove unnecessary SCM files
 find . -name .gitignore -delete >/dev/null
+
+# Mangle /usr/bin/python shebangs to /usr/bin/python3
+# Mangle all Python shebangs to be Python 3 explicitly
+# -p preserves timestamps
+# -n prevents creating ~backup files
+# -i specifies the interpreter for the shebang
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/diffconfig
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/bloat-o-meter
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/show_delta
 
 cd ..
 
@@ -1903,6 +1901,9 @@ fi
 #
 #
 %changelog
+* Thu Jan 17 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.3-200
+- Linux v4.20.3 rebase
+
 * Mon Jan 14 2019 Jeremy Cline <jcline@redhat.com> - 4.19.15-300
 - Linux v4.19.15
 - Fix CVE-2019-3459 and CVE-2019-3460 (rbhz 1663176 1663179 1665925)
