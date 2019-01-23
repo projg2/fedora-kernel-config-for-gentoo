@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -623,9 +623,6 @@ Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
 # rhbz 1645070 patch queued upstream for merging into 4.21
 Patch505: asus-fx503-keyb.patch
-
-# CVE-2019-3701 rhbz 1663729 1663730
-Patch506: CVE-2019-3701.patch
 
 # CVE-2019-3459 and CVE-2019-3460 rhbz 1663176 1663179 1665925
 Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
@@ -1901,6 +1898,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 23 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.4-200
+- Linux v4.20.4
+
 * Thu Jan 17 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.3-200
 - Linux v4.20.3 rebase
 
