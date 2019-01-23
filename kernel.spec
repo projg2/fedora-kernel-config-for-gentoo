@@ -42,19 +42,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 19
+%define base_sublevel 20
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -127,7 +127,7 @@ Summary: The Linux kernel
 %define debugbuildsenabled 1
 
 # Kernel headers are being split out into a separate package
-%if 0%{fedora}
+%if 0%{?fedora}
 %define with_headers 0
 %define with_cross_headers 0
 %endif
@@ -340,6 +340,7 @@ Summary: The Linux kernel
 %define with_up 0
 %define with_pae 0
 %define with_debuginfo 0
+%define with_debug 0
 %define _enable_debug_packages 0
 %endif
 
@@ -390,10 +391,12 @@ Requires: kernel-modules-uname-r = %{KVERREL}%{?variant}
 #
 # List the packages used during the kernel build
 #
-BuildRequires: kmod, patch, bash, tar, git
+BuildRequires: kmod, patch, bash, tar, git-core
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
-BuildRequires: net-tools, hostname, bc, elfutils-devel
+BuildRequires: net-tools, hostname, bc, elfutils-devel, gcc-plugin-devel
+# Used to mangle unversioned shebangs to be Python 3
+BuildRequires: /usr/bin/pathfix.py
 %if %{with_sparse}
 BuildRequires: sparse
 %endif
@@ -471,10 +474,6 @@ Source43: generate_bls_conf.sh
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
 Source1000: kernel-local
-
-# Sources for kernel-tools
-Source2000: cpupower.service
-Source2001: cpupower.config
 
 # Here should be only the patches up to the upstream canonical Linus tree.
 
@@ -589,25 +588,36 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-Patch310: gpio-pxa-handle-corner-case-of-unprobed-device.patch
-
 # https://patchwork.kernel.org/patch/10686407/
-Patch332: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
+Patch331: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
-# From 4.20, fix eth link/act lights on 3B+
-Patch334: bcm2837-fix-eth-leds.patch
+# Improve raspberry pi camera and analog audio
+Patch332: bcm2836-Improve-VCHIQ-cache-line-size-handling.patch
+Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
+
+# Initall support for the 3A+
+Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
+
+# Fixes for bcm2835 mmc (sdcard) driver
+Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
 
 # https://patchwork.kernel.org/patch/10741809/
-Patch335: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
+Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
+
+# https://www.spinics.net/lists/arm-kernel/msg699583.html
+Patch337: ARM-dts-bcm283x-Several-DTS-improvements.patch
+
+Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 # Patches enabling device specific brcm firmware nvram
 # https://www.spinics.net/lists/linux-wireless/msg178827.html
 Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
 
+Patch341: brcmfmac-Call-brcmf_dmi_probe-before-brcmf_of_probe.patch
+
 # Fix for AllWinner A64 Timer Errata, still not final
-# https://patchwork.kernel.org/patch/10392891/
-Patch350: arm64-arch_timer-Workaround-for-Allwinner-A64-timer-instability.patch
-Patch351: arm64-dts-allwinner-a64-Enable-A64-timer-workaround.patch
+# https://www.spinics.net/lists/arm-kernel/msg699622.html
+Patch350: Allwinner-A64-timer-workaround.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -619,23 +629,14 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
-# rhbz 1526312, patch is in 4.20, can be dropped on rebase
-Patch507: 0001-HID-i2c-hid-override-HID-descriptors-for-certain-dev.patch
-
 # rhbz 1526312 (accelerometer part of the bug), patches pending upstream
-Patch510: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
+Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
 # rhbz 1645070 patch queued upstream for merging into 4.21
-Patch516: asus-fx503-keyb.patch
+Patch505: asus-fx503-keyb.patch
 
-# rhbz 1661961 patch merged upstream in 4.20
-Patch517: 0001-Bluetooth-btsdio-Do-not-bind-to-non-removable-BCM434.patch
-
-# CVE-2019-3701 rhbz 1663729 1663730
-Patch518: CVE-2019-3701.patch
-
-# CVE-2019-3459 and CVE-2019-3460 rbhz 1663176 1663179 1665925
-Patch519: CVE-2019-3459-and-CVE-2019-3460.patch
+# CVE-2019-3459 and CVE-2019-3460 rhbz 1663176 1663179 1665925
+Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1181,10 +1182,20 @@ cd ..
 # End of Configs stuff
 
 # get rid of unwanted files resulting from patch fuzz
-find . \( -name "*.orig" -o -name "*~" \) -exec rm -f {} \; >/dev/null
+find . \( -name "*.orig" -o -name "*~" \) -delete >/dev/null
 
 # remove unnecessary SCM files
-find . -name .gitignore -exec rm -f {} \; >/dev/null
+find . -name .gitignore -delete >/dev/null
+
+# Mangle /usr/bin/python shebangs to /usr/bin/python3
+# Mangle all Python shebangs to be Python 3 explicitly
+# -p preserves timestamps
+# -n prevents creating ~backup files
+# -i specifies the interpreter for the shebang
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/diffconfig
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/bloat-o-meter
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/show_delta
 
 cd ..
 
@@ -1201,6 +1212,27 @@ cp_vmlinux()
 {
   eu-strip --remove-comment -o "$2" "$1"
 }
+
+# These are for host programs that get built as part of the kernel and
+# are required to be packaged in kernel-devel for building external modules.
+# Since they are userspace binaries, they are required to pickup the hardening
+# flags defined in the macros. The --build-id=uuid is a trick to get around
+# debuginfo limitations: Typically, find-debuginfo.sh will update the build
+# id of all binaries to allow for parllel debuginfo installs. The kernel
+# can't use this because it breaks debuginfo for the vDSO so we have to
+# use a special mechanism for kernel and modules to be unique. Unfortunately,
+# we still have userspace binaries which need unique debuginfo and because
+# they come from the kernel package, we can't just use find-debuginfo.sh to
+# rewrite only those binaries. The easiest option right now is just to have
+# the build id be a uuid for the host programs.
+#
+# Note we need to disable these flags for cross builds because the flags
+# from redhat-rpm-config assume that host == target so target arch
+# flags cause issues with the host compiler.
+%if !%{with_cross}
+%define build_hostcflags  %{?build_cflags}
+%define build_hostldflags %{?build_ldflags} -Wl,--build-id=uuid
+%endif
 
 BuildKernel() {
     MakeTarget=$1
@@ -1254,9 +1286,12 @@ BuildKernel() {
     Arch=`head -1 .config | cut -b 3-`
     echo USING ARCH=$Arch
 
-    make %{?make_opts} ARCH=$Arch olddefconfig >/dev/null
-    %{make} %{?make_opts} ARCH=$Arch %{?_smp_mflags} $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
-    %{make} %{?make_opts} ARCH=$Arch %{?_smp_mflags} modules %{?sparse_mflags} || exit 1
+    make %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch olddefconfig
+
+    # This ensures build-ids are unique to allow parallel debuginfo
+    perl -p -i -e "s/^CONFIG_BUILD_SALT.*/CONFIG_BUILD_SALT=\"%{KVERREL}\"/" .config
+    %{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
+    %{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} modules %{?sparse_mflags} || exit 1
 
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer
@@ -1267,7 +1302,7 @@ BuildKernel() {
 %ifarch %{arm} aarch64
     %{make} %{?make_opts} ARCH=$Arch dtbs dtbs_install INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
     cp -r $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/dtb
-    find arch/$Arch/boot/dts -name '*.dtb' -type f | xargs rm -f
+    find arch/$Arch/boot/dts -name '*.dtb' -type f -delete
 %endif
 
     # Start installing the results
@@ -1548,7 +1583,7 @@ BuildKernel() {
     ln -sf $DevelDir $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
     # prune junk from kernel-devel
-    find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
+    find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
 
     # build a BLS config for this kernel
     %{SOURCE43} "$KernelVer" "$RPM_BUILD_ROOT" "%{?variant}"
@@ -1658,7 +1693,7 @@ make ARCH=%{hdrarch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr headers_install
 
 find $RPM_BUILD_ROOT/usr/include \
      \( -name .install -o -name .check -o \
-        -name ..install.cmd -o -name ..check.cmd \) | xargs rm -f
+        -name ..install.cmd -o -name ..check.cmd \) -delete
 
 %endif
 
@@ -1668,7 +1703,7 @@ make ARCH=%{hdrarch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr/tmp-headers headers_in
 
 find $RPM_BUILD_ROOT/usr/tmp-headers/include \
      \( -name .install -o -name .check -o \
-        -name ..install.cmd -o -name ..check.cmd \) | xargs rm -f
+        -name ..install.cmd -o -name ..check.cmd \) -delete
 
 # Copy all the architectures we care about to their respective asm directories
 for arch in arm arm64 powerpc s390 x86 ; do
@@ -1888,6 +1923,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 23 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.4-100
+- Linux v4.20.4 rebase
+
 * Wed Jan 16 2019 Jeremy Cline <jcline@redhat.com> - 4.19.16-200
 - Linux v4.19.16
 
