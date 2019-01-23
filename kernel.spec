@@ -601,6 +601,11 @@ Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # https://patchwork.kernel.org/patch/10752253/
 Patch504: efi-use-32-bit-alignment-for-efi_guid_t.patch
 
+# gcc9 fixes
+Patch505: 0001-Correct-warning-with-gcc9.patch
+Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
+
+
 # END OF PATCH DEFINITIONS
 
 %endif

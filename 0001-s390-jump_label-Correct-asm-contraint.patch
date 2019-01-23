@@ -1,0 +1,50 @@
+From dc6aae3ea5041f47d2445ba2ce086f9e8679861e Mon Sep 17 00:00:00 2001
+From: Laura Abbott <labbott@redhat.com>
+Date: Wed, 23 Jan 2019 13:50:24 +0100
+Subject: [PATCH] s390/jump_label: Correct asm contraint
+To: Martin Schwidefsky <schwidefsky@de.ibm.com>
+To: Heiko Carstens <heiko.carstens@de.ibm.com>
+Cc: linux-s390@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+
+There's a build failure with gcc9:
+
+ ./arch/s390/include/asm/jump_label.h: Assembler messages:
+ ./arch/s390/include/asm/jump_label.h:23: Error: bad expression
+ ./arch/s390/include/asm/jump_label.h:23: Error: junk at end of line, first unrecognized character is `r'
+ make[1]: *** [scripts/Makefile.build:277: init/main.o] Error 1
+
+According to the toolchain people, the actual issue is the use of
+"X" constraint which is too permissive. Switch to using "i" instead.
+
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1668703
+Signed-off-by: Laura Abbott <labbott@redhat.com>
+---
+ arch/s390/include/asm/jump_label.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/s390/include/asm/jump_label.h b/arch/s390/include/asm/jump_label.h
+index e2d3e6c43395..41dabfd8518d 100644
+--- a/arch/s390/include/asm/jump_label.h
++++ b/arch/s390/include/asm/jump_label.h
+@@ -22,7 +22,7 @@ static inline bool arch_static_branch(struct static_key *key, bool branch)
+ 			  ".long	0b-.,%l[label]-.\n"
+ 			  ".quad	%0-.\n"
+ 			  ".popsection\n"
+-			  : : "X" (&((char *)key)[branch]) : : label);
++			  : : "i" (&((char *)key)[branch]) : : label);
+ 	return false;
+ label:
+ 	return true;
+@@ -36,7 +36,7 @@ static inline bool arch_static_branch_jump(struct static_key *key, bool branch)
+ 			  ".long	0b-.,%l[label]-.\n"
+ 			  ".quad	%0-.\n"
+ 			  ".popsection\n"
+-			  : : "X" (&((char *)key)[branch]) : : label);
++			  : : "i" (&((char *)key)[branch]) : : label);
+ 	return false;
+ label:
+ 	return true;
+-- 
+2.20.1
+
