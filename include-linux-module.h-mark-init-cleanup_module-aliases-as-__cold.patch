@@ -1,0 +1,149 @@
+From patchwork Wed Jan 23 17:37:07 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+X-Patchwork-Id: 1034989
+Return-Path: <SRS0=drEb=P7=vger.kernel.org=linux-kernel-owner@kernel.org>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D50C282C0
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Jan 2019 17:38:31 +0000 (UTC)
+Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
+	by mail.kernel.org (Postfix) with ESMTP id 7CE1F20870
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Jan 2019 17:38:31 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com
+ header.b="qdRA7oPl"
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S1726152AbfAWRi3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Jan 2019 12:38:29 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:52719 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725896AbfAWRi3 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 23 Jan 2019 12:38:29 -0500
+Received: by mail-wm1-f67.google.com with SMTP id m1so242485wml.2
+        for <linux-kernel@vger.kernel.org>;
+ Wed, 23 Jan 2019 09:38:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=1joVTuHcQFv5PhIFvZBlpu1jeKwRQi2Ty1HKsqzNx+0=;
+        b=qdRA7oPloipduZyiYE/EECaW/vCZup5EXmE5a1XgE9mc55H+TTPNNRTt44QJbQgbnn
+         wTNksIkBx8Gs0k3pJI9QIDO2J5AipLN8OOoxkPiDIJtAC8buHzQrdTxFG/4Uxw7tRf8X
+         A6PNyuUGr+02itkYIlALzEuDHvZna8yZx0zCeCDXF2IrGt0NBHZVTzz1XfX8LeQlCh9L
+         hleyVdDQnDvwxA7dXqrA4UugXUlEqT8HnIAUdg8+/xubsXOSz9T/22+zc9pZ9uSHm2uq
+         DpO/hgx1e5DONDN8T+sjjKCO0LnJ8Z9ZS0Huf+8W2XH1uxo48jSgXUOsygPQ36+8R/7t
+         ng6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=1joVTuHcQFv5PhIFvZBlpu1jeKwRQi2Ty1HKsqzNx+0=;
+        b=ZQrXdTIYsCSUGNJS1C0dn+gibvoSHb2o+kcUMGTbH6G2tag3Zy4vnfIcBT0xhmvPLq
+         5pU8jskcufXp0qQ0sivNsBpJYJCbsqqiChoivTs9WC4rxoM5G62Wi0pAZL59fGGDnmyV
+         xjSTkSoxe8CiB+26BDzg52zkynkWC2v0OHgaM7/1lTeTqNxdYIvQ+hC4LXdy40bAP64/
+         JIC1nET+KwewpPHJQc2u87ah4xp6nEjzO/4wTP3CUi4zbZPTU17oH007IAXhObL7JO0r
+         XkRBJAgpcTKexfAJB7HnAUc4KLSv5L5Uz+Z14TusskTuK6njE11PE9GSJ7Z7lqufqJNZ
+         Z4GQ==
+X-Gm-Message-State: AJcUukdaW+EjUkHLIrpaLWRYCoF9XYWdpSiPfNnJgu3VB9CW8t9xYlZJ
+        NDU6hJ2AXvnDR+awfdjm6IU=
+X-Google-Smtp-Source: 
+ ALg8bN59XklA0HTVEDaLFI+8dguNdipIQWTlgIi23N78PjaLBzniLMXowf2nCpIra7boIidjtFvfYg==
+X-Received: by 2002:a1c:7c05:: with SMTP id x5mr3525198wmc.54.1548265106544;
+        Wed, 23 Jan 2019 09:38:26 -0800 (PST)
+Received: from gmail.com (79.108.96.12.dyn.user.ono.com. [79.108.96.12])
+        by smtp.gmail.com with ESMTPSA id
+ r77sm74200791wmd.22.2019.01.23.09.38.25
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 23 Jan 2019 09:38:25 -0800 (PST)
+Date: Wed, 23 Jan 2019 18:37:07 +0100
+From: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+To: Jessica Yu <jeyu@kernel.org>
+Cc: Laura Abbott <labbott@redhat.com>,
+        Martin Sebor <msebor@gcc.gnu.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH] include/linux/module.h: mark init/cleanup_module aliases as
+ __cold
+Message-ID: <20190123173707.GA16603@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: elm/2
+Sender: linux-kernel-owner@vger.kernel.org
+Precedence: bulk
+List-ID: <linux-kernel.vger.kernel.org>
+X-Mailing-List: linux-kernel@vger.kernel.org
+
+The upcoming GCC 9 release adds the -Wmissing-attributes warnings
+(enabled by -Wall), which trigger for all the init/cleanup_module
+aliases in the kernel (defined by the module_init/exit macros),
+ending up being very noisy.
+
+These aliases point to the __init/__exit functions of a module,
+which are defined as __cold (among other attributes). However,
+the aliases themselves do not have the __cold attribute.
+
+Since the compiler behaves differently when compiling a __cold
+function as well as when compiling paths leading to calls
+to __cold functions, the warning is trying to point out
+the possibly-forgotten attribute in the alias.
+
+In order to keep the warning enabled, we choose to silence
+the warning by marking the aliases as __cold. This is possible
+marking either the extern declaration, the definition, or both.
+In order to avoid changing the behavior of callers, we do it
+only in the definition of the aliases (since those are not
+seen by any other TU).
+
+Suggested-by: Martin Sebor <msebor@gcc.gnu.org>
+Signed-off-by: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+---
+Note that an alternative is using the new copy attribute
+introduced by GCC 9 (Martin told me about it, as well as the
+new warning).
+
+What I am concerned about using __copy is that I am not sure
+we should be copying all the attributes (even if some are
+blacklisted by the copy itself), since:
+  - We have unknown-to-GCC attributes (e.g. from plugins).
+  - We wouldn't enjoy the fix for older compilers
+    (e.g. if the fix had an actual impact).
+
+So here I took the conservative approach for the moment,
+and we can discuss/apply whether another solution is best.
+
+Jessica: please review what I explain in the commit message.
+Do we actually want the __cold attribute in the declaration
+as well? If yes, AFAIK, GCC would assume paths that end up
+calling the __init/__exit functions are not meant to be taken
+(but when we are asked to load modules, that is the expected
+path, no?).
+
+I will put this in the compiler-attributes tree and get
+some time in linux-next, unless you want to pick it up!
+
+ include/linux/module.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 8fa38d3e7538..c4e805e87628 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -129,13 +129,13 @@ extern void cleanup_module(void);
+ #define module_init(initfn)					\
+ 	static inline initcall_t __maybe_unused __inittest(void)		\
+ 	{ return initfn; }					\
+-	int init_module(void) __attribute__((alias(#initfn)));
++	int init_module(void) __cold __attribute__((alias(#initfn)));
+ 
+ /* This is only required if you want to be unloadable. */
+ #define module_exit(exitfn)					\
+ 	static inline exitcall_t __maybe_unused __exittest(void)		\
+ 	{ return exitfn; }					\
+-	void cleanup_module(void) __attribute__((alias(#exitfn)));
++	void cleanup_module(void) __cold __attribute__((alias(#exitfn)));
+ 
+ #endif
+ 

@@ -329,7 +329,7 @@ Summary: The Linux kernel
 # Which is a BadThing(tm).
 
 # We only build kernel-headers on the following...
-%define nobuildarches i386
+%define nobuildarches i386 s390x
 
 %ifarch %nobuildarches
 %define with_up 0
@@ -602,9 +602,9 @@ Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 Patch504: efi-use-32-bit-alignment-for-efi_guid_t.patch
 
 # gcc9 fixes
-Patch505: 0001-Correct-warning-with-gcc9.patch
-Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
-
+Patch505: include-linux-module.h-mark-init-cleanup_module-aliases-as-__cold.patch
+Patch506: lib-crc32.c-mark-crc32_le_base-__crc32c_le_base-aliases-as-__pure.patch
+Patch507: 0001-Drop-that-for-now.patch
 
 # END OF PATCH DEFINITIONS
 
