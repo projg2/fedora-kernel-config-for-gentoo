@@ -630,6 +630,9 @@ Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
 # rhbz 1663613 patch merged into 5.0-rc#
 Patch508: 0001-drm-nouveau-register-backlight-on-pascal-and-newer.patch
 
+# CVE-2018-16880 rhbz 1656472 1669545
+Patch509: CVE-2018-16880.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1903,6 +1906,7 @@ fi
 %changelog
 * Mon Jan 28 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.5-200
 - Linux v4.20.5
+- Fix CVE-2018-16880 (rhbz 1656472 1669545)
 
 * Wed Jan 23 2019 Hans de Goede <hdegoede@redhat.com>
 - Add upstream patch fixing backlight control not working on some laptops
