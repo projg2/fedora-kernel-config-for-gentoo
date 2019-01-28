@@ -69,9 +69,9 @@ Summary: The Linux kernel
 # Work around for major version bump
 %define upstream_sublevel 0
 # The rc snapshot level
-%global rcrev 3
+%global rcrev 4
 # The git snapshot level
-%define gitrev 1
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -124,7 +124,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -428,7 +428,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %endif
 
 # Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
-Source0: https://git.kernel.org/torvalds/t/linux-5.0-rc3.tar.gz
+Source0: https://git.kernel.org/torvalds/t/linux-5.0-rc4.tar.gz
 
 Source11: x509.genkey
 Source12: remove-binary-diff.pl
@@ -578,9 +578,6 @@ Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
 # Initall support for the 3A+
 Patch330: bcm2837-dts-add-Raspberry-Pi-3-A.patch
-
-# https://patchwork.kernel.org/patch/10741809/
-Patch331: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg699583.html
 Patch332: ARM-dts-bcm283x-Several-DTS-improvements.patch
@@ -1879,6 +1876,10 @@ fi
 #
 #
 %changelog
+* Mon Jan 28 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc4.git0.1
+- Linux v5.0-rc4
+- Disable debugging options.
+
 * Wed Jan 23 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc3.git1.1
 - Linux v5.0-rc3-53-g333478a7eb21
 
