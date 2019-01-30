@@ -329,7 +329,7 @@ Summary: The Linux kernel
 # Which is a BadThing(tm).
 
 # We only build kernel-headers on the following...
-%define nobuildarches i386 s390x
+%define nobuildarches i386
 
 %ifarch %nobuildarches
 %define with_up 0
