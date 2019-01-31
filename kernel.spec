@@ -603,6 +603,14 @@ Patch505: include-linux-module.h-mark-init-cleanup_module-aliases-as-__cold.patc
 Patch506: lib-crc32.c-mark-crc32_le_base-__crc32c_le_base-aliases-as-__pure.patch
 Patch507: 0001-Drop-that-for-now.patch
 
+# patches for https://fedoraproject.org/wiki/Changes/FlickerFreeBoot
+# fixes, queued in -next for merging into 5.1
+Patch508: i915-fixes-for-fastboot.patch
+# fastboot by default on Skylake and newer, queued in -next for merging into 5.1
+Patch509: i915-enable-fastboot-on-skylake.patch
+# fastboot by default on VLV/CHV (BYT/CHT), pending upstream
+Patch510: i915-enable-fastboot-on-vlv-chv.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1876,6 +1884,10 @@ fi
 #
 #
 %changelog
+* Thu Jan 31 2019 Hans de Goede <hdegoede@redhat.com>
+- Add patches from -next to enable i915.fastboot by default on Skylake+ for
+  https://fedoraproject.org/wiki/Changes/FlickerFreeBoot
+
 * Wed Jan 30 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc4.git2.1
 - Linux v5.0-rc4-59-g62967898789d
 
