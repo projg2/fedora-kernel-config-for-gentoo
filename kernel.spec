@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -600,9 +600,6 @@ Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
 
 # Fixes for bcm2835 mmc (sdcard) driver
 Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
-
-# https://patchwork.kernel.org/patch/10741809/
-Patch336: bcm2835-mmc-sdhci-iproc-handle-mmc_of_parse-errors-during-probe.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg699583.html
 Patch337: ARM-dts-bcm283x-Several-DTS-improvements.patch
@@ -1929,6 +1926,9 @@ fi
 #
 #
 %changelog
+* Thu Jan 31 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.6-100
+- Linux v4.20.6
+
 * Mon Jan 28 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.5-100
 - Linux v4.20.5
 - Fix CVE-2018-16880 (rhbz 1656472 1669545)
