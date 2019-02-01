@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 4
 # The git snapshot level
-%define gitrev 2
+%define gitrev 3
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -1884,6 +1884,9 @@ fi
 #
 #
 %changelog
+* Fri Feb 01 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc4.git3.1
+- Linux v5.0-rc4-106-g5b4746a03199
+
 * Thu Jan 31 2019 Hans de Goede <hdegoede@redhat.com>
 - Add patches from -next to enable i915.fastboot by default on Skylake+ for
   https://fedoraproject.org/wiki/Changes/FlickerFreeBoot
