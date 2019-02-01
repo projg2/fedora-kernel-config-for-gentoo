@@ -608,7 +608,7 @@ Patch507: 0001-Drop-that-for-now.patch
 Patch508: i915-fixes-for-fastboot.patch
 # fastboot by default on Skylake and newer, queued in -next for merging into 5.1
 Patch509: i915-enable-fastboot-on-skylake.patch
-# fastboot by default on VLV/CHV (BYT/CHT), pending upstream
+# fastboot by default on VLV/CHV (BYT/CHT), queued in -next for merging into 5.1
 Patch510: i915-enable-fastboot-on-vlv-chv.patch
 
 # END OF PATCH DEFINITIONS
