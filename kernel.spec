@@ -69,9 +69,9 @@ Summary: The Linux kernel
 # Work around for major version bump
 %define upstream_sublevel 0
 # The rc snapshot level
-%global rcrev 4
+%global rcrev 5
 # The git snapshot level
-%define gitrev 3
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -428,7 +428,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %endif
 
 # Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
-Source0: https://git.kernel.org/torvalds/t/linux-5.0-rc4.tar.gz
+Source0: https://git.kernel.org/torvalds/t/linux-5.0-rc5.tar.gz
 
 Source11: x509.genkey
 Source12: remove-binary-diff.pl
