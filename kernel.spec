@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -637,9 +637,6 @@ Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
 
 # rhbz 1663613 patch merged into 5.0-rc#
 Patch508: 0001-drm-nouveau-register-backlight-on-pascal-and-newer.patch
-
-# CVE-2018-16880 rhbz 1656472 1669545
-Patch509: CVE-2018-16880.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1926,6 +1923,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 06 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.7-100
+- Linux v4.20.7
+
 * Thu Jan 31 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.6-100
 - Linux v4.20.6
 
