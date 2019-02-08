@@ -576,6 +576,12 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
+# https://patchwork.kernel.org/patch/10765783/
+Patch307: wlcore-sdio-Fixup-power-on-off-sequence.patch
+
+# https://patchwork.kernel.org/patch/10778815/
+Patch308: drm-enable-uncached-DMA-optimization-for-ARM-and-arm64.patch
+
 # Initall support for the 3A+
 Patch330: bcm2837-dts-add-Raspberry-Pi-3-A.patch
 
