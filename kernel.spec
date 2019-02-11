@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # Work around for major version bump
 %define upstream_sublevel 0
 # The rc snapshot level
-%global rcrev 5
+%global rcrev 6
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -428,7 +428,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %endif
 
 # Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
-Source0: https://git.kernel.org/torvalds/t/linux-5.0-rc5.tar.gz
+Source0: https://git.kernel.org/torvalds/t/linux-5.0-rc6.tar.gz
 
 Source11: x509.genkey
 Source12: remove-binary-diff.pl
@@ -576,9 +576,6 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-# https://patchwork.kernel.org/patch/10765783/
-Patch307: wlcore-sdio-Fixup-power-on-off-sequence.patch
-
 # https://patchwork.kernel.org/patch/10778815/
 Patch308: drm-enable-uncached-DMA-optimization-for-ARM-and-arm64.patch
 
@@ -605,8 +602,8 @@ Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 Patch504: efi-use-32-bit-alignment-for-efi_guid_t.patch
 
 # gcc9 fixes
-Patch505: include-linux-module.h-mark-init-cleanup_module-aliases-as-__cold.patch
-Patch506: lib-crc32.c-mark-crc32_le_base-__crc32c_le_base-aliases-as-__pure.patch
+Patch505: Clean-the-new-GCC-9--Wmissing-attributes-warnings.patch
+Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
 Patch507: 0001-Drop-that-for-now.patch
 
 # patches for https://fedoraproject.org/wiki/Changes/FlickerFreeBoot
@@ -1890,6 +1887,15 @@ fi
 #
 #
 %changelog
+* Mon Feb 11 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc6.git0.1
+- Linux v5.0-rc6
+- Disable debugging options.
+- Tweaks to gcc9 fixes
+
+* Mon Feb 04 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc5.git0.1
+- Linux v5.0-rc5
+- Disable debugging options.
+
 * Fri Feb 01 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc4.git3.1
 - Linux v5.0-rc4-106-g5b4746a03199
 
