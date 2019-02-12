@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1923,6 +1923,12 @@ fi
 #
 #
 %changelog
+* Tue Feb 12 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.8-100
+- Linux v4.20.8
+- Fixes CVE-2019-7221 (rhbz 1671904 1673676)
+- Fixes CVE-2019-6974 (rhbz 1671913 1673681)
+- Fixes CVE-2019-7222 (rhbz 1671930 1673686)
+
 * Wed Feb 06 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.7-100
 - Linux v4.20.7
 
