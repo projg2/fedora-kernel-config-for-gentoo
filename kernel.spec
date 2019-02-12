@@ -577,6 +577,12 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
+# https://patchwork.kernel.org/patch/10765783/
+Patch307: wlcore-sdio-Fixup-power-on-off-sequence.patch
+
+# https://patchwork.kernel.org/patch/10778815/
+Patch308: drm-enable-uncached-DMA-optimization-for-ARM-and-arm64.patch
+
 # https://patchwork.kernel.org/patch/10686407/
 Patch331: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
@@ -1898,6 +1904,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 11 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Minor Arm fixes and enhancements
+
 * Wed Feb 06 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.7-200
 - Linux v4.20.7
 

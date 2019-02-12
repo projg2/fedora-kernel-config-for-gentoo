@@ -1,10 +1,11 @@
 clog
 *.xz
 *.bz2
+*.gz
 *.rpm
 *.orig
 *.sign
-kernel-[234].*/
+kernel-[45].*/
 perf-man-*.tar.gz
 kernel-headers/
 kernel-tools/
