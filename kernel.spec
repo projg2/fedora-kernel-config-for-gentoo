@@ -1887,6 +1887,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 13 2019 Laura Abbott <labbott@redhat.com>
+- Reenable debugging options.
+
 * Wed Feb 13 2019 Peter Robinson <pbrobinson@fedoraproject.org>
 - Enable NXP Freescale Layerscape platform
 
