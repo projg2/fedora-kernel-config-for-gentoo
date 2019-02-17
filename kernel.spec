@@ -583,6 +583,10 @@ Patch307: wlcore-sdio-Fixup-power-on-off-sequence.patch
 # https://patchwork.kernel.org/patch/10778815/
 Patch308: drm-enable-uncached-DMA-optimization-for-ARM-and-arm64.patch
 
+# omap4 fixes
+Patch309: arm-omap4-fix-lack-of-time-interupts-after-hotplug.patch
+Patch310: arm-omap4-fix-omap4_dsi_mux_pads-uninitialized-variable.patch
+
 # https://patchwork.kernel.org/patch/10686407/
 Patch331: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
 
