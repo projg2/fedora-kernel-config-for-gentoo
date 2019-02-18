@@ -69,9 +69,9 @@ Summary: The Linux kernel
 # Work around for major version bump
 %define upstream_sublevel 0
 # The rc snapshot level
-%global rcrev 6
+%global rcrev 7
 # The git snapshot level
-%define gitrev 1
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -124,7 +124,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -428,7 +428,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %endif
 
 # Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
-Source0: https://git.kernel.org/torvalds/t/linux-5.0-rc6.tar.gz
+Source0: https://git.kernel.org/torvalds/t/linux-5.0-rc7.tar.gz
 
 Source11: x509.genkey
 Source12: remove-binary-diff.pl
@@ -602,7 +602,6 @@ Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 Patch504: efi-use-32-bit-alignment-for-efi_guid_t.patch
 
 # gcc9 fixes
-Patch505: Clean-the-new-GCC-9--Wmissing-attributes-warnings.patch
 Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
 Patch507: 0001-Drop-that-for-now.patch
 
@@ -1887,6 +1886,10 @@ fi
 #
 #
 %changelog
+* Mon Feb 18 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc7.git0.1
+- Linux v5.0-rc7
+- Disable debugging options.
+
 * Wed Feb 13 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc6.git1.1
 - Linux v5.0-rc6-42-g1f947a7a011f
 
