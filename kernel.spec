@@ -638,6 +638,9 @@ Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
 # rhbz 1663613 patch merged into 5.0-rc#
 Patch508: 0001-drm-nouveau-register-backlight-on-pascal-and-newer.patch
 
+# CVE-2019-8912 rhbz 1678685 1678686
+Patch509: net-crypto-set-sk-to-NULL-when-af_alg_release.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1923,6 +1926,9 @@ fi
 #
 #
 %changelog
+* Tue Feb 19 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-8912 (rhbz 1678685 1678686)
+
 * Fri Feb 15 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.10-100
 - Linux v4.20.10
 
