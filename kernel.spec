@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1911,6 +1911,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 20 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.11-200
+- Linux v4.20.11
+
 * Tue Feb 19 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-8912 (rhbz 1678685 1678686)
 
