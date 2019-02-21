@@ -579,6 +579,10 @@ Patch306: arm-sdhci-esdhc-imx-fixes.patch
 # https://patchwork.kernel.org/patch/10778815/
 Patch308: drm-enable-uncached-DMA-optimization-for-ARM-and-arm64.patch
 
+Patch310: arm64-rock960-enable-hdmi-audio.patch
+Patch311: arm64-rock960-add-onboard-wifi-bt.patch
+Patch312: arm64-rock960-enable-tsadc.patch
+
 # Initall support for the 3A+
 Patch330: bcm2837-dts-add-Raspberry-Pi-3-A.patch
 
@@ -1886,6 +1890,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 20 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Improvements to 96boards Rock960
+
 * Wed Feb 20 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc7.git2.1
 - Linux v5.0-rc7-85-g2137397c92ae
 
