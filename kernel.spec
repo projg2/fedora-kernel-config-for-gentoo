@@ -641,6 +641,9 @@ Patch508: 0001-drm-nouveau-register-backlight-on-pascal-and-newer.patch
 # CVE-2019-8912 rhbz 1678685 1678686
 Patch509: net-crypto-set-sk-to-NULL-when-af_alg_release.patch
 
+# CVE-2019-8980 rhbz 1679972 1679974
+Patch510: CVE-2019-8980.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1926,6 +1929,9 @@ fi
 #
 #
 %changelog
+* Fri Feb 22 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-8980 (rhbz 1679972 1679974)
+
 * Wed Feb 20 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.11-200
 - Linux v4.20.11
 
