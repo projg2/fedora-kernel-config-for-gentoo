@@ -165,17 +165,17 @@ index 100ce4a4aff6..62361b647a75 100644
  #ifdef CONFIG_EFI
  /*
 @@ -1169,6 +1177,8 @@ extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
- extern bool efi_is_table_address(unsigned long phys_addr);
+ extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
  
- extern int efi_apply_persistent_mem_reservations(void);
+ extern bool efi_is_table_address(unsigned long phys_addr);
 +
 +extern void __init efi_set_secure_boot(enum efi_secureboot_mode mode);
  #else
  static inline bool efi_enabled(int feature)
  {
-@@ -1192,6 +1202,8 @@ static inline int efi_apply_persistent_mem_reservations(void)
+@@ -1192,6 +1202,8 @@ static inline bool efi_is_table_address(unsigned long phys_addr)
  {
- 	return 0;
+ 	return false;
  }
 +
 +static inline void efi_set_secure_boot(enum efi_secureboot_mode mode) {}
