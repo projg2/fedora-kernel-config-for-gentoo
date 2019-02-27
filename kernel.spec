@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -639,6 +639,9 @@ Patch508: 0001-drm-nouveau-register-backlight-on-pascal-and-newer.patch
 
 # CVE-2019-8980 rhbz 1679972 1679974
 Patch510: CVE-2019-8980.patch
+
+# rhbz 1683382
+Patch511: nfsv4.1-avoid-false-retries.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1911,6 +1914,10 @@ fi
 #
 #
 %changelog
+* Wed Feb 27 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.13-200
+- Linux v4.20.13
+- Fix for NFS issue (rhbz 1683382)
+
 * Mon Feb 25 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.12-200
 - Linux v4.20.12
 
