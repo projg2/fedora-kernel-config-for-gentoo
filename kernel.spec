@@ -6,7 +6,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1. For rawhide
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
-%global released_kernel 0
+%global released_kernel 1
 
 # Sign modules on x86.  Make sure the config files match this setting if more
 # architectures are added.
@@ -60,18 +60,18 @@ Summary: The Linux kernel
 %define stablerev %{stable_update}
 %define stable_base %{stable_update}
 %endif
-%define rpmversion 5%{base_sublevel}.%{stable_update}
+%define rpmversion 5.%{base_sublevel}.%{stable_update}
 
 ## The not-released-kernel case ##
 %else
 # The next upstream release sublevel (base_sublevel+1)
-# %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
+%define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # Work around for major version bump
 %define upstream_sublevel 0
 # The rc snapshot level
-%global rcrev 8
+%global rcrev 0
 # The git snapshot level
-%define gitrev 1
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -124,7 +124,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -164,8 +164,7 @@ Summary: The Linux kernel
 %endif
 
 # The kernel tarball/base version
-# %define kversion 5.%{base_sublevel}
-%define kversion 5.%{base_sublevel}-rc%rcrev
+%define kversion 5.%{base_sublevel}
 
 %define make_target bzImage
 %define image_install_path boot
@@ -427,8 +426,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %define cross_opts CROSS_COMPILE=%{_build_arch}-linux-gnu-
 %endif
 
-# Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
-Source0: https://git.kernel.org/torvalds/t/linux-5.0-rc8.tar.gz
+Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
 
 Source11: x509.genkey
 Source12: remove-binary-diff.pl
@@ -484,8 +482,7 @@ Source5000: %{stable_patch_00}
 # near the top of this spec file.
 %else
 %if 0%{?rcrev}
-# One more fixup apparently?
-# Source5000: patch-5.%{upstream_sublevel}-rc%{rcrev}.xz
+Source5000: patch-5.%{upstream_sublevel}-rc%{rcrev}.xz
 %if 0%{?gitrev}
 Source5001: patch-5.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
 %endif
@@ -1890,6 +1887,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 04 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-1
+- Linux v5.0.0
+
 * Tue Feb 26 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc8.git1.1
 - Linux v5.0-rc8-3-g7d762d69145a
 
