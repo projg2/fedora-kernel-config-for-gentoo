@@ -48,30 +48,30 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 20
+%define base_sublevel 0
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
 %define stable_base %{stable_update}
 %endif
-%define rpmversion 4.%{base_sublevel}.%{stable_update}
+%define rpmversion 5.%{base_sublevel}.%{stable_update}
 
 ## The not-released-kernel case ##
 %else
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 7
+%global rcrev 0
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
-%define rpmversion 4.%{upstream_sublevel}.0
+%define rpmversion 5.%{upstream_sublevel}.0
 %endif
 # Nb: The above rcrev and gitrev values automagically define Patch00 and Patch01 below.
 
@@ -162,7 +162,7 @@ Summary: The Linux kernel
 %endif
 
 # The kernel tarball/base version
-%define kversion 4.%{base_sublevel}
+%define kversion 5.%{base_sublevel}
 
 %define make_target bzImage
 %define image_install_path boot
@@ -387,8 +387,10 @@ BuildRequires: kmod, patch, bash, tar, git-core
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
 BuildRequires: net-tools, hostname, bc, elfutils-devel, gcc-plugin-devel
+%if 0%{?fedora}
 # Used to mangle unversioned shebangs to be Python 3
 BuildRequires: /usr/bin/pathfix.py
+%endif
 %if %{with_sparse}
 BuildRequires: sparse
 %endif
@@ -422,7 +424,7 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %define cross_opts CROSS_COMPILE=%{_build_arch}-linux-gnu-
 %endif
 
-Source0: https://www.kernel.org/pub/linux/kernel/v4.x/linux-%{kversion}.tar.xz
+Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
 
 Source11: x509.genkey
 Source12: remove-binary-diff.pl
@@ -469,7 +471,7 @@ Source1000: kernel-local
 # For a stable release kernel
 %if 0%{?stable_update}
 %if 0%{?stable_base}
-%define    stable_patch_00  patch-4.%{base_sublevel}.%{stable_base}.xz
+%define    stable_patch_00  patch-5.%{base_sublevel}.%{stable_base}.xz
 Source5000: %{stable_patch_00}
 %endif
 
@@ -478,14 +480,14 @@ Source5000: %{stable_patch_00}
 # near the top of this spec file.
 %else
 %if 0%{?rcrev}
-Source5000: patch-4.%{upstream_sublevel}-rc%{rcrev}.xz
+Source5000: patch-5.%{upstream_sublevel}-rc%{rcrev}.xz
 %if 0%{?gitrev}
-Source5001: patch-4.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
+Source5001: patch-5.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
 %endif
 %else
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
-Source5000: patch-4.%{base_sublevel}-git%{gitrev}.xz
+Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 %endif
 %endif
 %endif
@@ -539,14 +541,6 @@ Patch201: efi-lockdown.patch
 
 Patch202: KEYS-Allow-unrestricted-boot-time-addition-of-keys-t.patch
 
-Patch203: Add-EFI-signature-data-types.patch
-
-Patch204: Add-an-EFI-signature-blob-parser-and-key-loader.patch
-
-Patch205: MODSIGN-Import-certificates-from-UEFI-Secure-Boot.patch
-
-Patch206: MODSIGN-Support-not-importing-certs-from-db.patch
-
 # bz 1497559 - Make kernel MODSIGN code not error on missing variables
 Patch207: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
 Patch208: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
@@ -577,33 +571,22 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-# omap4 fixes
-Patch309: arm-omap4-fix-lack-of-time-interupts-after-hotplug.patch
-Patch310: arm-omap4-fix-omap4_dsi_mux_pads-uninitialized-variable.patch
-
-# https://patchwork.kernel.org/patch/10686407/
-Patch331: raspberrypi-Fix-firmware-calls-with-large-buffers.patch
-
-# Improve raspberry pi camera and analog audio
-Patch332: bcm2836-Improve-VCHIQ-cache-line-size-handling.patch
-Patch333: bcm2835-vc04_services-Improve-driver-load-unload.patch
+Patch310: arm64-rock960-enable-hdmi-audio.patch
+Patch311: arm64-rock960-add-onboard-wifi-bt.patch
+Patch312: arm64-rock960-enable-tsadc.patch
 
 # Initall support for the 3A+
-Patch334: bcm2837-dts-add-Raspberry-Pi-3-A.patch
-
-# Fixes for bcm2835 mmc (sdcard) driver
-Patch335: bcm2835-mmc-Several-fixes-for-bcm2835-driver.patch
+Patch330: bcm2837-dts-add-Raspberry-Pi-3-A.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg699583.html
-Patch337: ARM-dts-bcm283x-Several-DTS-improvements.patch
+Patch331: ARM-dts-bcm283x-Several-DTS-improvements.patch
+
+# https://patchwork.freedesktop.org/patch/290632/
+Patch332: drm-vc4-Use-16bpp-by-default-for-the-fbdev-buffer.patch
+
+Patch333: iio-chemical-bme680-device-tree-support.patch
 
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
-
-# Patches enabling device specific brcm firmware nvram
-# https://www.spinics.net/lists/linux-wireless/msg178827.html
-Patch340: brcmfmac-Remove-firmware-loading-code-duplication.patch
-
-Patch341: brcmfmac-Call-brcmf_dmi_probe-before-brcmf_of_probe.patch
 
 # Fix for AllWinner A64 Timer Errata, still not final
 # https://www.spinics.net/lists/arm-kernel/msg699622.html
@@ -613,29 +596,11 @@ Patch350: Allwinner-A64-timer-workaround.patch
 
 # 500 - Temp fixes/CVEs etc
 
-# rhbz 1476467
-Patch501: Fix-for-module-sig-verification.patch
-
 # rhbz 1431375
-Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
+Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # https://patchwork.kernel.org/patch/10752253/
-Patch503: efi-use-32-bit-alignment-for-efi_guid_t.patch
-
-# rhbz 1526312 patch merged into 5.0-rc#
-Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
-
-# rhbz 1645070 patch merged into 5.0-rc#
-Patch505: asus-fx503-keyb.patch
-
-# CVE-2019-3459 and CVE-2019-3460 rhbz 1663176 1663179 1665925
-Patch507: CVE-2019-3459-and-CVE-2019-3460.patch
-
-# rhbz 1663613 patch merged into 5.0-rc#
-Patch508: 0001-drm-nouveau-register-backlight-on-pascal-and-newer.patch
-
-# rhbz 1683382
-Patch511: nfsv4.1-avoid-false-retries.patch
+Patch504: efi-use-32-bit-alignment-for-efi_guid_t.patch
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=109806
 Patch512: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
@@ -910,7 +875,7 @@ ApplyPatch()
     exit 1
   fi
   if ! grep -E "^Patch[0-9]+: $patch\$" %{_specdir}/${RPM_PACKAGE_NAME%%%%%{?variant}}.spec ; then
-    if [ "${patch:0:8}" != "patch-4." ] ; then
+    if [ "${patch:0:8}" != "patch-5." ] ; then
       echo "ERROR: Patch  $patch  not listed as a source patch in specfile"
       exit 1
     fi
@@ -943,20 +908,20 @@ ApplyOptionalPatch()
 
 # Update to latest upstream.
 %if 0%{?released_kernel}
-%define vanillaversion 4.%{base_sublevel}
+%define vanillaversion 5.%{base_sublevel}
 # non-released_kernel case
 %else
 %if 0%{?rcrev}
-%define vanillaversion 4.%{upstream_sublevel}-rc%{rcrev}
+%define vanillaversion 5.%{upstream_sublevel}-rc%{rcrev}
 %if 0%{?gitrev}
-%define vanillaversion 4.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}
+%define vanillaversion 5.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}
 %endif
 %else
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
-%define vanillaversion 4.%{base_sublevel}-git%{gitrev}
+%define vanillaversion 5.%{base_sublevel}-git%{gitrev}
 %else
-%define vanillaversion 4.%{base_sublevel}
+%define vanillaversion 5.%{base_sublevel}
 %endif
 %endif
 %endif
@@ -969,7 +934,7 @@ ApplyOptionalPatch()
 
 # Build a list of the other top-level kernel tree directories.
 # This will be used to hardlink identical vanilla subdirs.
-sharedirs=$(find "$PWD" -maxdepth 1 -type d -name 'kernel-4.*' \
+sharedirs=$(find "$PWD" -maxdepth 1 -type d -name 'kernel-5.*' \
             | grep -x -v "$PWD"/kernel-%{kversion}%{?dist}) ||:
 
 # Delete all old stale trees.
@@ -1185,6 +1150,7 @@ find . \( -name "*.orig" -o -name "*~" \) -delete >/dev/null
 # remove unnecessary SCM files
 find . -name .gitignore -delete >/dev/null
 
+%if 0%{?fedora}
 # Mangle /usr/bin/python shebangs to /usr/bin/python3
 # Mangle all Python shebangs to be Python 3 explicitly
 # -p preserves timestamps
@@ -1194,6 +1160,7 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/diffconfig
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/bloat-o-meter
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/show_delta
+%endif
 
 cd ..
 
@@ -1262,7 +1229,7 @@ BuildKernel() {
 
     # make sure EXTRAVERSION says what we want it to say
     # Trim the release if this is a CI build, since KERNELVERSION is limited to 64 characters
-    ShortRel=$(python3 -c "import re; print(re.sub(r'\.pr\.[0-9A-Fa-f]{32}', '', '%{release}'))")
+    ShortRel=$(perl -e "print \"%{release}\" =~ s/\.pr\.[0-9A-Fa-f]{32}//r")
     perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${ShortRel}.%{_target_cpu}${Flav}/" Makefile
 
     # if pre-rc1 devel kernel, must fix up PATCHLEVEL for our versioning scheme
@@ -1911,6 +1878,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 19 2019 Laura Abbott <labbott@redhat.com> - 5.0.3-200
+- Linux v5.0.3
+
 * Thu Mar 14 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.16-200
 - Linux v4.20.16
 
