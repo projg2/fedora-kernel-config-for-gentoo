@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 2
+%define gitrev 3
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -574,21 +574,9 @@ Patch306: arm-sdhci-esdhc-imx-fixes.patch
 # https://patchwork.kernel.org/patch/10778815/
 Patch308: drm-enable-uncached-DMA-optimization-for-ARM-and-arm64.patch
 
-Patch310: arm64-rock960-enable-hdmi-audio.patch
-Patch311: arm64-rock960-add-onboard-wifi-bt.patch
 Patch312: arm64-rock960-enable-tsadc.patch
 
-# Initall support for the 3A+
-Patch330: bcm2837-dts-add-Raspberry-Pi-3-A.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg699583.html
-Patch332: ARM-dts-bcm283x-Several-DTS-improvements.patch
-
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
-
-# Fix for AllWinner A64 Timer Errata, still not final
-# https://www.spinics.net/lists/arm-kernel/msg699622.html
-Patch350: Allwinner-A64-timer-workaround.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -596,9 +584,6 @@ Patch350: Allwinner-A64-timer-workaround.patch
 
 # rhbz 1431375
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# https://patchwork.kernel.org/patch/10752253/
-Patch504: efi-use-32-bit-alignment-for-efi_guid_t.patch
 
 # gcc9 fixes
 Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
@@ -1888,6 +1873,9 @@ fi
 #
 #
 %changelog
+* Thu Mar 07 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git3.1
+- Linux v5.0-6399-gf90d64483ebd
+
 * Wed Mar 06 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git2.1
 - Linux v5.0-3452-g3717f613f48d
 
