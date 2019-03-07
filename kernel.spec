@@ -612,6 +612,9 @@ Patch509: i915-enable-fastboot-on-skylake.patch
 # fastboot by default on VLV/CHV (BYT/CHT), queued in -next for merging into 5.1
 Patch510: i915-enable-fastboot-on-vlv-chv.patch
 
+# rhbz 1686419
+Patch511: 0001-Fix-from-Arnd-for-compilation-error.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
