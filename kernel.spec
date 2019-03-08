@@ -496,9 +496,6 @@ Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 
 ## compile fixes
 
-# ongoing complaint, full discussion delayed until ksummit/plumbers
-Patch002: 0001-iio-Use-event-header-from-kernel-tree.patch
-
 %if !%{nopatches}
 
 # Git trees.
