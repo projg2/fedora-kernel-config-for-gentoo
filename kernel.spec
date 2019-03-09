@@ -584,7 +584,10 @@ Patch312: arm64-rock960-enable-tsadc.patch
 Patch330: bcm2837-dts-add-Raspberry-Pi-3-A.patch
 
 # https://www.spinics.net/lists/arm-kernel/msg699583.html
-Patch332: ARM-dts-bcm283x-Several-DTS-improvements.patch
+Patch331: ARM-dts-bcm283x-Several-DTS-improvements.patch
+
+# https://patchwork.freedesktop.org/patch/290632/
+Patch332: drm-vc4-Use-16bpp-by-default-for-the-fbdev-buffer.patch
 
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
