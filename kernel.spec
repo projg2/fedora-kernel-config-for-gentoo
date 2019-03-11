@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 4
+%define gitrev 5
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -568,9 +568,6 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-# https://patchwork.kernel.org/patch/10778815/
-Patch308: drm-enable-uncached-DMA-optimization-for-ARM-and-arm64.patch
-
 Patch312: arm64-rock960-enable-tsadc.patch
 
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
@@ -585,14 +582,6 @@ Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # gcc9 fixes
 Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
 Patch507: 0001-Drop-that-for-now.patch
-
-# patches for https://fedoraproject.org/wiki/Changes/FlickerFreeBoot
-# fixes, queued in -next for merging into 5.1
-Patch508: i915-fixes-for-fastboot.patch
-# fastboot by default on Skylake and newer, queued in -next for merging into 5.1
-Patch509: i915-enable-fastboot-on-skylake.patch
-# fastboot by default on VLV/CHV (BYT/CHT), queued in -next for merging into 5.1
-Patch510: i915-enable-fastboot-on-vlv-chv.patch
 
 # rhbz 1686419
 Patch511: 0001-Fix-from-Arnd-for-compilation-error.patch
@@ -1870,6 +1859,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 11 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git5.1
+- Linux v5.0-10360-g12ad143e1b80
+
 * Fri Mar 08 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git4.1
 - Linux v5.0-7001-g610cd4eadec4
 
