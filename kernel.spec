@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1890,6 +1890,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 11 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.0.1-300
+- Linux v5.0.1
+
 * Mon Mar 04 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-1
 - Linux v5.0.0
 
