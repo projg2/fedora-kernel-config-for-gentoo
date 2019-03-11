@@ -625,6 +625,9 @@ Patch501: Fix-for-module-sig-verification.patch
 # rhbz 1431375
 Patch502: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
+# https://patchwork.kernel.org/patch/10752253/
+Patch503: efi-use-32-bit-alignment-for-efi_guid_t.patch
+
 # rhbz 1526312 patch merged into 5.0-rc#
 Patch504: iio-accel-kxcjk1013-Add-more-hardware-ids.patch
 
