@@ -1859,6 +1859,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 12 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Arm config updates and fixes
+
 * Mon Mar 11 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git5.1
 - Linux v5.0-10360-g12ad143e1b80
 
