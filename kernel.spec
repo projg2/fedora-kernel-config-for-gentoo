@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 5
+%define gitrev 6
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -524,8 +524,6 @@ Patch118: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
 Patch119: namespaces-no-expert.patch
 
 Patch120: ath9k-rx-dma-stop-check.patch
-
-Patch121: xen-pciback-Don-t-disable-PCI_COMMAND-on-PCI-device-.patch
 
 Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
@@ -1859,6 +1857,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 12 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git6.1
+- Linux v5.0-10742-gea295481b6e3
+
 * Tue Mar 12 2019 Peter Robinson <pbrobinson@fedoraproject.org>
 - Arm config updates and fixes
 

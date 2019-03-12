@@ -1,4 +1,4 @@
-From fb2ac204a70da565de9ef9a9d6d69a40c2d59727 Mon Sep 17 00:00:00 2001
+From 7ec379c439ea60507804f96910d25196ab838ec4 Mon Sep 17 00:00:00 2001
 From: David Howells <dhowells@redhat.com>
 Date: Fri, 5 May 2017 08:21:56 +0100
 Subject: [PATCH] KEYS: Allow unrestricted boot-time addition of keys to
@@ -12,6 +12,7 @@ This allows keys in the UEFI database to be added in secure boot mode for
 the purposes of module signing.
 
 Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Jeremy Cline <jcline@redhat.com>
 ---
  certs/internal.h       | 18 ++++++++++++++++++
  certs/system_keyring.c | 33 +++++++++++++++++++++++++++++++++
@@ -20,7 +21,7 @@ Signed-off-by: David Howells <dhowells@redhat.com>
 
 diff --git a/certs/internal.h b/certs/internal.h
 new file mode 100644
-index 0000000..5dcbefb
+index 000000000000..5dcbefb0c23a
 --- /dev/null
 +++ b/certs/internal.h
 @@ -0,0 +1,18 @@
@@ -43,21 +44,21 @@ index 0000000..5dcbefb
 +					     const void *data, size_t len);
 +#endif
 diff --git a/certs/system_keyring.c b/certs/system_keyring.c
-index 6251d1b..5ac8ba6 100644
+index c05c29ae4d5d..183e73cc81f7 100644
 --- a/certs/system_keyring.c
 +++ b/certs/system_keyring.c
-@@ -18,6 +18,7 @@
+@@ -19,6 +19,7 @@
  #include <keys/asymmetric-type.h>
  #include <keys/system_keyring.h>
  #include <crypto/pkcs7.h>
 +#include "internal.h"
-
+ 
  static struct key *builtin_trusted_keys;
  #ifdef CONFIG_SECONDARY_TRUSTED_KEYRING
-@@ -265,3 +266,35 @@ int verify_pkcs7_signature(const void *data, size_t len,
- EXPORT_SYMBOL_GPL(verify_pkcs7_signature);
-
- #endif /* CONFIG_SYSTEM_DATA_VERIFICATION */
+@@ -287,3 +288,35 @@ void __init set_platform_trusted_keys(struct key *keyring)
+ 	platform_trusted_keys = keyring;
+ }
+ #endif
 +
 +#ifdef CONFIG_SECONDARY_TRUSTED_KEYRING
 +/**
@@ -91,5 +92,5 @@ index 6251d1b..5ac8ba6 100644
 +}
 +#endif /* CONFIG_SECONDARY_TRUSTED_KEYRING */
 -- 
-2.9.3
+2.20.1
 
