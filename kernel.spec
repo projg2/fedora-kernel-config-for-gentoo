@@ -589,6 +589,8 @@ Patch331: ARM-dts-bcm283x-Several-DTS-improvements.patch
 # https://patchwork.freedesktop.org/patch/290632/
 Patch332: drm-vc4-Use-16bpp-by-default-for-the-fbdev-buffer.patch
 
+Patch333: iio-chemical-bme680-device-tree-support.patch
+
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 # Fix for AllWinner A64 Timer Errata, still not final
@@ -1890,6 +1892,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 12 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Arm config updates and fixes
+
 * Mon Mar 11 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.0.1-300
 - Linux v5.0.1
 
