@@ -66,8 +66,6 @@ Summary: The Linux kernel
 %else
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
-# Work around for major version bump
-%define upstream_sublevel 0
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
