@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -570,9 +570,6 @@ Patch305: qcom-msm89xx-fixes.patch
 
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
-
-# https://patchwork.kernel.org/patch/10778815/
-Patch308: drm-enable-uncached-DMA-optimization-for-ARM-and-arm64.patch
 
 Patch310: arm64-rock960-enable-hdmi-audio.patch
 Patch311: arm64-rock960-add-onboard-wifi-bt.patch
@@ -1890,6 +1887,9 @@ fi
 #
 #
 %changelog
+* Thu Mar 14 2019 Laura Abbott <labbott@redhat.com> - 5.0.2-300
+- Linux v5.0.2
+
 * Tue Mar 12 2019 Peter Robinson <pbrobinson@fedoraproject.org>
 - Arm config updates and fixes
 
