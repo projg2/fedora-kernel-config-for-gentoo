@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 8
+%define gitrev 9
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -580,9 +580,6 @@ Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # gcc9 fixes
 Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
 Patch507: 0001-Drop-that-for-now.patch
-
-# rhbz 1686419
-Patch511: 0001-Fix-from-Arnd-for-compilation-error.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1857,6 +1854,9 @@ fi
 #
 #
 %changelog
+* Fri Mar 15 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git9.1
+- Linux v5.0-11520-gf261c4e529da
+
 * Thu Mar 14 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git8.1
 - Linux v5.0-11139-gfa3d493f7a57
 
