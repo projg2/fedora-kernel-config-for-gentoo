@@ -644,6 +644,9 @@ Patch511: nfsv4.1-avoid-false-retries.patch
 # https://bugs.freedesktop.org/show_bug.cgi?id=109806
 Patch512: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
 
+# rhbz 1689750, patch submitted upstream
+Patch513: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1929,6 +1932,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 20 2019 Hans de Goede <hdegoede@redhat.com>
+- Make the mainline vboxguest drv feature set match VirtualBox 6.0.x (#1689750)
+
 * Tue Mar 19 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.17-100
 - Linux v4.20.17
 
