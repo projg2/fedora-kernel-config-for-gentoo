@@ -614,6 +614,9 @@ Patch509: i915-enable-fastboot-on-skylake.patch
 # fastboot by default on VLV/CHV (BYT/CHT), queued in -next for merging into 5.1
 Patch510: i915-enable-fastboot-on-vlv-chv.patch
 
+# rhbz 1689750, patch submitted upstream
+Patch511: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1887,6 +1890,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 20 2019 Hans de Goede <hdegoede@redhat.com>
+- Make the mainline vboxguest drv feature set match VirtualBox 6.0.x (#1689750)
+
 * Tue Mar 19 2019 Laura Abbott <labbott@redhat.com> - 5.0.3-300
 - Linux v5.0.3
 
