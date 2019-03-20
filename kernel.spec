@@ -579,6 +579,9 @@ Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
 Patch507: 0001-Drop-that-for-now.patch
 
+# rhbz 1689750, patch submitted upstream
+Patch508: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1852,6 +1855,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 20 2019 Hans de Goede <hdegoede@redhat.com>
+- Make the mainline vboxguest drv feature set match VirtualBox 6.0.x (#1689750)
+
 * Mon Mar 18 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc1.git0.1
 - Linux v5.1-rc1
 
