@@ -608,6 +608,9 @@ Patch512: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
 # rhbz 1689750, patch submitted upstream
 Patch513: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
 
+# rhbz 1688283
+Patch514: v3-tpm-fix-an-invalid-condition-in-tpm_common_poll.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1881,6 +1884,9 @@ fi
 #
 #
 %changelog
+* Fri Mar 22 2019 Laura Abbott <labbott@redhat.com>
+- TPM fix (rhbz 1688283)
+
 * Wed Mar 20 2019 Hans de Goede <hdegoede@redhat.com>
 - Make the mainline vboxguest drv feature set match VirtualBox 6.0.x (#1689750)
 
