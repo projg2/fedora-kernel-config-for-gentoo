@@ -588,6 +588,12 @@ Patch333: iio-chemical-bme680-device-tree-support.patch
 
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
+# Tegra bits
+Patch340: arm64-tegra-jetson-tx1-fixes.patch
+
+# https://patchwork.kernel.org/patch/10858639/
+Patch341: arm64-tegra-Add-NVIDIA-Jetson-Nano-Developer-Kit-support.patch
+
 # Fix for AllWinner A64 Timer Errata, still not final
 # https://www.spinics.net/lists/arm-kernel/msg699622.html
 Patch350: Allwinner-A64-timer-workaround.patch
@@ -1893,6 +1899,10 @@ fi
 #
 #
 %changelog
+* Sat Mar 23 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fixes for Tegra Jetson TX series
+- Initial support for NVIDIA Jetson Nano
+
 * Fri Mar 22 2019 Laura Abbott <labbott@redhat.com>
 - TPM fix (rhbz 1688283)
 
