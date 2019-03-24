@@ -568,6 +568,12 @@ Patch312: arm64-rock960-enable-tsadc.patch
 
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
+# Tegra bits
+Patch340: arm64-tegra-jetson-tx1-fixes.patch
+
+# https://patchwork.kernel.org/patch/10858639/
+Patch341: arm64-tegra-Add-NVIDIA-Jetson-Nano-Developer-Kit-support.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -1855,6 +1861,10 @@ fi
 #
 #
 %changelog
+* Sat Mar 23 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fixes for Tegra Jetson TX series
+- Initial support for NVIDIA Jetson Nano
+
 * Fri Mar 22 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc1.git2.1
 - Linux v5.1-rc1-66-gfd1f297b794c
 
