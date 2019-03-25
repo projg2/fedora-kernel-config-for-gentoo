@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -593,10 +593,6 @@ Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
 # https://patchwork.kernel.org/patch/10858639/
 Patch341: arm64-tegra-Add-NVIDIA-Jetson-Nano-Developer-Kit-support.patch
-
-# Fix for AllWinner A64 Timer Errata, still not final
-# https://www.spinics.net/lists/arm-kernel/msg699622.html
-Patch350: Allwinner-A64-timer-workaround.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1899,6 +1895,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 25 2019 Laura Abbott <labbott@redhat.com> - 5.0.4-300
+- Linux v5.0.4
+
 * Sat Mar 23 2019 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fixes for Tegra Jetson TX series
 - Initial support for NVIDIA Jetson Nano
