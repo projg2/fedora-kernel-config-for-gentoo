@@ -588,6 +588,9 @@ Patch507: 0001-Drop-that-for-now.patch
 # rhbz 1689750, patch submitted upstream
 Patch508: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
 
+# rhbz 1688283
+Patch512: v3-tpm-fix-an-invalid-condition-in-tpm_common_poll.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
