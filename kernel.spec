@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -588,9 +588,6 @@ Patch333: iio-chemical-bme680-device-tree-support.patch
 
 Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
-# Fix for AllWinner A64 Timer Errata, still not final
-# https://www.spinics.net/lists/arm-kernel/msg699622.html
-Patch350: Allwinner-A64-timer-workaround.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1884,6 +1881,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 25 2019 Laura Abbott <labbott@redhat.com> - 5.0.4-200
+- Linux v5.0.4
+
 * Fri Mar 22 2019 Laura Abbott <labbott@redhat.com>
 - TPM fix (rhbz 1688283)
 
