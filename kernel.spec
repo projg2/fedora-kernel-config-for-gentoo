@@ -122,7 +122,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -1864,6 +1864,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 26 2019 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
 * Tue Mar 26 2019 Peter Robinson <pbrobinson@fedoraproject.org>
 - Initial NXP i.MX8 enablement
 
