@@ -1895,6 +1895,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 26 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Initial NXP i.MX8 enablement
+
 * Mon Mar 25 2019 Laura Abbott <labbott@redhat.com> - 5.0.4-300
 - Linux v5.0.4
 
