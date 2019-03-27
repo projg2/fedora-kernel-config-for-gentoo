@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 2
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -1864,6 +1864,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 27 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc2.git2.1
+- Linux v5.1-rc2-24-g14c741de9386
+
 * Wed Mar 27 2019 Jeremy Cline <jeremy@jcline.org>
 - Build iptable_filter as module
 
