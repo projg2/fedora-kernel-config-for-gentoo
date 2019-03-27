@@ -1,4 +1,4 @@
-From d72ad5fe4c2206458d127cc31e690318cf2e2731 Mon Sep 17 00:00:00 2001
+From 675f11241a9f5b434effc7aee9eb84bf3d17d685 Mon Sep 17 00:00:00 2001
 From: Trond Myklebust <trond.myklebust@hammerspace.com>
 Date: Wed, 20 Jun 2018 17:53:34 -0400
 Subject: [PATCH] NFSv4.1: Avoid false retries when RPC calls are interrupted
@@ -28,7 +28,7 @@ Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
  3 files changed, 55 insertions(+), 60 deletions(-)
 
 diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index 867457d..c11e059 100644
+index 64ac80ec6b7b..3a6a9c9ee369 100644
 --- a/fs/nfs/nfs4proc.c
 +++ b/fs/nfs/nfs4proc.c
 @@ -730,13 +730,25 @@ static void nfs41_sequence_free_slot(struct nfs4_sequence_res *res)
@@ -151,7 +151,7 @@ index 867457d..c11e059 100644
  
 -static void
 -nfs4_sequence_process_interrupted(struct nfs_client *client,
--		struct nfs4_slot *slot, struct rpc_cred *cred)
+-		struct nfs4_slot *slot, const struct cred *cred)
 -{
 -	struct rpc_task *task;
 -
@@ -169,7 +169,7 @@ index 867457d..c11e059 100644
  
 -static void
 -nfs4_sequence_process_interrupted(struct nfs_client *client,
--		struct nfs4_slot *slot, struct rpc_cred *cred)
+-		struct nfs4_slot *slot, const struct cred *cred)
 -{
 -	WARN_ON_ONCE(1);
 -	slot->interrupted = 0;
@@ -177,8 +177,8 @@ index 867457d..c11e059 100644
 -
  #endif	/* !CONFIG_NFS_V4_1 */
  
- static
-@@ -982,26 +980,19 @@ int nfs4_setup_sequence(struct nfs_client *client,
+ static void nfs41_sequence_res_init(struct nfs4_sequence_res *res)
+@@ -985,26 +983,19 @@ int nfs4_setup_sequence(struct nfs_client *client,
  		task->tk_timeout = 0;
  	}
  
@@ -217,7 +217,7 @@ index 867457d..c11e059 100644
  	nfs4_sequence_attach_slot(args, res, slot);
  
 diff --git a/fs/nfs/nfs4session.c b/fs/nfs/nfs4session.c
-index 769b856..fdb75da 100644
+index a5489d70a724..39962c19744f 100644
 --- a/fs/nfs/nfs4session.c
 +++ b/fs/nfs/nfs4session.c
 @@ -110,6 +110,8 @@ static struct nfs4_slot *nfs4_new_slot(struct nfs4_slot_table  *tbl,
@@ -240,7 +240,7 @@ index 769b856..fdb75da 100644
  	}
  	tbl->highest_used_slotid = NFS4_NO_SLOT;
 diff --git a/fs/nfs/nfs4session.h b/fs/nfs/nfs4session.h
-index 3c550f2..230509b 100644
+index 3c550f297561..230509b77121 100644
 --- a/fs/nfs/nfs4session.h
 +++ b/fs/nfs/nfs4session.h
 @@ -23,8 +23,9 @@ struct nfs4_slot {
@@ -257,11 +257,4 @@ index 3c550f2..230509b 100644
  
 -- 
 2.20.1
-
--- 
-Trond Myklebust
-Linux NFS client maintainer, Hammerspace
-trond.myklebust@hammerspace.com
-
-
 
