@@ -616,6 +616,9 @@ Patch512: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
 # rhbz 1689750, patch submitted upstream
 Patch513: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
 
+# rhbz 1683382
+Patch515: nfsv4.1-avoid-false-retries.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
