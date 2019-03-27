@@ -1864,6 +1864,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 27 2019 Jeremy Cline <jeremy@jcline.org>
+- Build iptable_filter as module
+
 * Tue Mar 26 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc2.git1.1
 - Linux v5.1-rc2-16-g65ae689329c5
 
