@@ -1686,6 +1686,9 @@ rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
 #
 # This macro defines a %%post script for a kernel*-devel package.
 #	%%kernel_devel_post [<subpackage>]
+# Note we don't run hardlink if ostree is in use, as ostree is
+# a far more sophisticated hardlink implementation.
+# https://github.com/projectatomic/rpm-ostree/commit/58a79056a889be8814aa51f507b2c7a4dccee526
 #
 %define kernel_devel_post() \
 %{expand:%%post %{?1:%{1}-}devel}\
@@ -1693,7 +1696,7 @@ if [ -f /etc/sysconfig/kernel ]\
 then\
     . /etc/sysconfig/kernel || exit $?\
 fi\
-if [ "$HARDLINK" != "no" -a -x /usr/sbin/hardlink ]\
+if [ "$HARDLINK" != "no" -a -x /usr/sbin/hardlink -a ! -e /run/ostree-booted ] \
 then\
     (cd /usr/src/kernels/%{KVERREL}%{?1:+%{1}} &&\
      /usr/bin/find . -type f | while read f; do\
