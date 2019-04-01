@@ -619,6 +619,9 @@ Patch513: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
 # rhbz 1683382
 Patch515: nfsv4.1-avoid-false-retries.patch
 
+# CVE-2019-9857 rhbz 1694758 1694759
+Patch516: 0001-inotify-Fix-fsnotify_mark-refcount-leak-in-inotify_u.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1906,6 +1909,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 01 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-9857 (rhbz 1694758 1694759)
+
 * Mon Apr 01 2019 Laura Abbott <labbott@redhat.com>
 - Ensure ioschedulers are built in (rhbz 1690604)
 
