@@ -1884,6 +1884,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 01 2019 Laura Abbott <labbott@redhat.com>
+- Ensure ioschedulers are built in (rhbz 1690604)
+
 * Wed Mar 27 2019 Laura Abbott <labbott@redhat.com> - 5.0.5-200
 - Linux v5.0.5
 
