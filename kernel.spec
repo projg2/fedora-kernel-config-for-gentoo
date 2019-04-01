@@ -67,9 +67,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 2
+%global rcrev 3
 # The git snapshot level
-%define gitrev 4
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -584,9 +584,6 @@ Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # gcc9 fixes
 Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
 Patch507: 0001-Drop-that-for-now.patch
-
-# rhbz 1689750, patch submitted upstream
-Patch508: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
 
 # rhbz 1688283
 Patch512: v3-tpm-fix-an-invalid-condition-in-tpm_common_poll.patch
@@ -1867,6 +1864,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 01 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc3.git0.1
+- Linux v5.1-rc3
+
 * Mon Apr 01 2019 Jeremy Cline <jcline@redhat.com>
 - Disable debugging options.
 
