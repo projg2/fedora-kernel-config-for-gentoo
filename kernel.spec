@@ -67,9 +67,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 3
+%global rcrev 4
 # The git snapshot level
-%define gitrev 3
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -122,7 +122,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -587,9 +587,6 @@ Patch507: 0001-Drop-that-for-now.patch
 
 # rhbz 1688283
 Patch512: v3-tpm-fix-an-invalid-condition-in-tpm_common_poll.patch
-
-# https://patchwork.kernel.org/patch/10872997/
-Patch513: Correct-zone-boundary-handling-when-resetting-pageblock-skip-hints.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1864,6 +1861,12 @@ fi
 #
 #
 %changelog
+* Mon Apr 08 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc4.git0.1
+- Linux v5.1-rc4
+
+* Mon Apr 08 2019 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
+
 * Fri Apr 05 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc3.git3.1
 - Linux v5.1-rc3-206-gea2cec24c8d4
 
