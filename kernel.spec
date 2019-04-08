@@ -635,6 +635,9 @@ Patch517: vfio-type1-limit-dma-mappings-per-container.patch
 Patch518: 0001-KVM-x86-nVMX-close-leak-of-L0-s-x2APIC-MSRs-CVE-2019.patch
 Patch519: 0001-KVM-x86-nVMX-fix-x2APIC-VTPR-read-intercept.patch
 
+# drm fix
+Patch520: 0001-drm-i915-dp-revert-back-to-max-link-rate-and-lane-co.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1908,11 +1911,11 @@ fi
 #
 #
 %changelog
-* Mon Apr 08 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Fix CVE-2019 (rhbz 1695044 1697187)
-
 * Mon Apr 08 2019 Laura Abbott <labbott@redhat.com> - 5.0.7-300
 - Linux v5.0.7
+
+* Mon Apr 08 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019 (rhbz 1695044 1697187)
 
 * Wed Apr 03 2019 Laura Abbott <labbott@redhat.com> - 5.0.6-300
 - Linux v5.0.6
