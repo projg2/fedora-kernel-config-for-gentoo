@@ -631,6 +631,10 @@ Patch516: 0001-inotify-Fix-fsnotify_mark-refcount-leak-in-inotify_u.patch
 # CVE-2019-3882 rhbz 1689426 1695571
 Patch517: vfio-type1-limit-dma-mappings-per-container.patch
 
+# CVE-2019 rhbz 1695044 1697187
+Patch518: 0001-KVM-x86-nVMX-close-leak-of-L0-s-x2APIC-MSRs-CVE-2019.patch
+Patch519: 0001-KVM-x86-nVMX-fix-x2APIC-VTPR-read-intercept.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1904,6 +1908,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 08 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019 (rhbz 1695044 1697187)
+
 * Mon Apr 08 2019 Laura Abbott <labbott@redhat.com> - 5.0.7-300
 - Linux v5.0.7
 
