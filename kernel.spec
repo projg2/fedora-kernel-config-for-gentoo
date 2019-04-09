@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 4
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -584,9 +584,6 @@ Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # gcc9 fixes
 Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
 Patch507: 0001-Drop-that-for-now.patch
-
-# rhbz 1688283
-Patch512: v3-tpm-fix-an-invalid-condition-in-tpm_common_poll.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1861,6 +1858,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 09 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc4.git1.1
+- Linux v5.1-rc4-34-g869e3305f23d
+
 * Tue Apr 09 2019 Jeremy Cline <jcline@redhat.com>
 - Reenable debugging options.
 
