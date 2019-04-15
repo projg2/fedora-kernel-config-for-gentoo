@@ -198,7 +198,7 @@ index adeee6329f55..27a54ec878bd 100644
  
 +	efi_set_secure_boot(boot_params.secure_boot);
 +
-+	init_lockdown()
++	init_lockdown();
 +
  	dmi_scan_machine();
  	dmi_memdev_walk();

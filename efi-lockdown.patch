@@ -1660,7 +1660,7 @@ This is restricted to cases where CONFIG_INTEGRITY_TRUSTED_KEYRING is set
 in order to prevent an attacker from loading additional keys at runtime.
 
 Signed-off-by: Matthew Garrett <mjg59@google.com>
-Cc: Mimi Zohar <zohar@linux.ibm.com>
+Acked-by: Mimi Zohar <zohar@linux.ibm.com>
 Cc: Dmitry Kasatkin <dmitry.kasatkin@gmail.com>
 Cc: linux-integrity@vger.kernel.org
 ---
@@ -1672,7 +1672,7 @@ Cc: linux-integrity@vger.kernel.org
  5 files changed, 68 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/ima.h b/include/linux/ima.h
-index b5e16b8c50b7..05921227d700 100644
+index b5e16b8c50b7..60007b86f4fc 100644
 --- a/include/linux/ima.h
 +++ b/include/linux/ima.h
 @@ -127,4 +127,13 @@ static inline int ima_inode_removexattr(struct dentry *dentry,
@@ -1683,14 +1683,14 @@ index b5e16b8c50b7..05921227d700 100644
 +#if defined(CONFIG_IMA_APPRAISE) && defined(CONFIG_INTEGRITY_TRUSTED_KEYRING)
 +extern bool ima_appraise_signature(enum kernel_read_file_id func);
 +#else
-+static inline bool ima_appraise_kexec_signature(enum kernel_read_file_id func)
++static inline bool ima_appraise_signature(enum kernel_read_file_id func)
 +{
 +	return false;
 +}
 +#endif /* CONFIG_IMA_APPRAISE && CONFIG_INTEGRITY_TRUSTED_KEYRING */
  #endif /* _LINUX_IMA_H */
 diff --git a/kernel/kexec_file.c b/kernel/kexec_file.c
-index 0cfe4f6f7f85..8ffa4b75c620 100644
+index a1cc37c8b43b..7599039623a7 100644
 --- a/kernel/kexec_file.c
 +++ b/kernel/kexec_file.c
 @@ -240,7 +240,12 @@ kimage_file_prepare_segments(struct kimage *image, int kernel_fd, int initrd_fd,
