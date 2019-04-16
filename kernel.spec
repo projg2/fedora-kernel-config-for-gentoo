@@ -122,7 +122,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -1858,6 +1858,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 16 2019 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
 * Mon Apr 15 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc5.git0.1
 - Linux v5.1-rc5
 
