@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -630,13 +630,6 @@ Patch516: 0001-inotify-Fix-fsnotify_mark-refcount-leak-in-inotify_u.patch
 
 # CVE-2019-3882 rhbz 1689426 1695571
 Patch517: vfio-type1-limit-dma-mappings-per-container.patch
-
-# CVE-2019 rhbz 1695044 1697187
-Patch518: 0001-KVM-x86-nVMX-close-leak-of-L0-s-x2APIC-MSRs-CVE-2019.patch
-Patch519: 0001-KVM-x86-nVMX-fix-x2APIC-VTPR-read-intercept.patch
-
-# drm fix
-Patch520: 0001-drm-i915-dp-revert-back-to-max-link-rate-and-lane-co.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1911,6 +1904,9 @@ fi
 #
 #
 %changelog
+* Wed Apr 17 2019 Laura Abbott <labbott@redhat.com> - 5.0.8-300
+- Linux v5.0.8
+
 * Mon Apr 08 2019 Laura Abbott <labbott@redhat.com> - 5.0.7-300
 - Linux v5.0.7
 
