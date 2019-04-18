@@ -625,6 +625,9 @@ Patch516: 0001-inotify-Fix-fsnotify_mark-refcount-leak-in-inotify_u.patch
 # CVE-2019-3882 rhbz 1689426 1695571
 Patch517: vfio-type1-limit-dma-mappings-per-container.patch
 
+# CVE-2019-9500 rhbz 1701224 1701226
+Patch518: 0001-brcmfmac-assure-SSID-length-from-firmware-is-limited.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1912,6 +1915,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 18 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-9500 (rhbz 1701224 1701226)
+
 * Wed Apr 17 2019 Laura Abbott <labbott@redhat.com> - 5.0.8-100
 - Linux v5.0.8
 
