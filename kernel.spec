@@ -532,8 +532,6 @@ Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
 Patch201: efi-lockdown.patch
 
-Patch202: KEYS-Allow-unrestricted-boot-time-addition-of-keys-t.patch
-
 # bz 1497559 - Make kernel MODSIGN code not error on missing variables
 Patch207: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
 Patch208: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
@@ -584,6 +582,10 @@ Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # gcc9 fixes
 Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
 Patch507: 0001-Drop-that-for-now.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1701096
+# Submitted upstream at https://lkml.org/lkml/2019/4/23/89
+Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1858,6 +1860,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 23 2019 Jeremy Cline <jcline@redhat.com>
+- Allow modules signed by keys in the platform keyring (rbhz 1701096)
+
 * Mon Apr 22 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc6.git0.1
 - Linux v5.1-rc6
 
