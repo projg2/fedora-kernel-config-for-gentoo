@@ -122,7 +122,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -1860,6 +1860,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 23 2019 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
 * Tue Apr 23 2019 Jeremy Cline <jcline@redhat.com>
 - Allow modules signed by keys in the platform keyring (rbhz 1701096)
 
