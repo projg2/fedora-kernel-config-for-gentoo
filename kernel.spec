@@ -620,6 +620,9 @@ Patch518: 0001-brcmfmac-assure-SSID-length-from-firmware-is-limited.patch
 # rhbz 1701077
 Patch519: nfsd-wake-waiters-blocked-on-file_lock-before-deleting-it.patch
 
+# CVE-2019-9503 rhbz 1701842 1701843
+Patch520: 0001-brcmfmac-add-subtype-check-for-event-handling-in-dat.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1893,6 +1896,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 23 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-9503 rhbz 1701842 1701843
+
 * Mon Apr 22 2019 Laura Abbott <labbott@redhat.com> - 5.0.9-200
 - Linux v5.0.9
 - Fix NFS server crash (rhbz 1701077)
