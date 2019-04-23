@@ -1912,7 +1912,7 @@ fi
 - Fix NFS server crash (rhbz 1701077)
 
 * Thu Apr 18 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Fix CVE-2019-9500 (rhbz 1701224 1701226)
+- Fix CVE-2019-9500 (rhbz 1701224 1701225)
 
 * Wed Apr 17 2019 Laura Abbott <labbott@redhat.com> - 5.0.8-300
 - Linux v5.0.8
