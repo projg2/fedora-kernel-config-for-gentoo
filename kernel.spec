@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 301
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -622,6 +622,9 @@ Patch512: v3-tpm-fix-an-invalid-condition-in-tpm_common_poll.patch
 
 # rhbz 1683382
 Patch515: nfsv4.1-avoid-false-retries.patch
+
+# https://bugs.freedesktop.org/show_bug.cgi?id=109806
+Patch516: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
 
 # CVE-2019-3882 rhbz 1689426 1695571
 Patch517: vfio-type1-limit-dma-mappings-per-container.patch
@@ -1912,6 +1915,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 23 2019 Laura Abbott <labbott@redhat.com> - 5.0.9-301
+- Bring in DRM workaround
+
 * Tue Apr 23 2019 Jeremy Cline <jcline@redhat.com>
 - Allow modules signed by keys in the platform keyring (rbhz 1701096)
 
