@@ -639,8 +639,10 @@ Patch519: nfsd-wake-waiters-blocked-on-file_lock-before-deleting-it.patch
 Patch520: 0001-brcmfmac-add-subtype-check-for-event-handling-in-dat.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
+Patch521: 0001-integrity-KEYS-add-a-reference-to-platform-keyring.patch
+Patch522: 0001-kexec-KEYS-Make-use-of-platform-keyring-for-signatur.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
-Patch521: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
+Patch523: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # END OF PATCH DEFINITIONS
 
