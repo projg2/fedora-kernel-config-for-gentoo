@@ -86,7 +86,7 @@ Summary: The Linux kernel
 #
 # standard kernel
 %define with_up        %{?_without_up:        0} %{?!_without_up:        1}
-# kernel PAE (only valid for i686 (PAE) and ARM (lpae))
+# kernel PAE (only valid for ARM (lpae))
 %define with_pae       %{?_without_pae:       0} %{?!_without_pae:       1}
 # kernel-debug
 %define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
@@ -195,9 +195,7 @@ Summary: The Linux kernel
 # and debuginfo generation. Currently we rely on the old alldebug setting.
 %global _build_id_links alldebug
 
-# kernel PAE is only built on ARMv7 in rawhide.
-# Fedora 27 and earlier still support PAE, so change this on rebases.
-# %ifnarch i686 armv7hl
+# kernel PAE is only built on ARMv7
 %ifnarch armv7hl
 %define with_pae 0
 %endif
@@ -254,7 +252,6 @@ Summary: The Linux kernel
 %ifarch %{all_x86}
 %define asmarch x86
 %define hdrarch i386
-%define pae PAE
 %define all_arch_configs kernel-%{version}-i?86*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
@@ -288,7 +285,6 @@ Summary: The Linux kernel
 %define skip_nonpae_vdso 1
 %define asmarch arm
 %define hdrarch arm
-%define pae lpae
 %define make_target bzImage
 %define kernel_image arch/arm/boot/zImage
 # http://lists.infradead.org/pipermail/linux-arm-kernel/2012-March/091404.html
@@ -334,11 +330,6 @@ Summary: The Linux kernel
 %define with_debuginfo 0
 %define with_debug 0
 %define _enable_debug_packages 0
-%endif
-
-%define with_pae_debug 0
-%if %{with_pae}
-%define with_pae_debug %{with_debug}
 %endif
 
 # Architectures we build tools/cpupower on
@@ -773,35 +764,11 @@ Obsoletes: kernel-bootwrapper\
 # Now, each variant package.
 
 %if %{with_pae}
-%ifnarch armv7hl
-%define variant_summary The Linux kernel compiled for PAE capable machines
-%kernel_variant_package %{pae}
-%description %{pae}-core
-This package includes a version of the Linux kernel with support for up to
-64GB of high memory. It requires a CPU with Physical Address Extensions (PAE).
-The non-PAE kernel can only address up to 4GB of memory.
-Install the kernel-PAE package if your machine has more than 4GB of memory.
-%else
 %define variant_summary The Linux kernel compiled for Cortex-A15
-%kernel_variant_package %{pae}
-%description %{pae}-core
+%kernel_variant_package lpae
+%description lpae-core
 This package includes a version of the Linux kernel with support for
 Cortex-A15 devices with LPAE and HW virtualisation support
-%endif
-
-
-%define variant_summary The Linux kernel compiled with extra debugging enabled for PAE capable machines
-%kernel_variant_package %{pae}debug
-Obsoletes: kernel-PAE-debug
-%description %{pae}debug-core
-This package includes a version of the Linux kernel with support for up to
-64GB of high memory. It requires a CPU with Physical Address Extensions (PAE).
-The non-PAE kernel can only address up to 4GB of memory.
-Install the kernel-PAE package if your machine has more than 4GB of memory.
-
-This variant of the kernel has numerous debugging options enabled.
-It should only be installed when trying to gather additional information
-on kernel bugs, as some of these options impact performance noticably.
 %endif
 
 %define variant_summary The Linux kernel compiled with extra debugging enabled
@@ -1555,12 +1522,8 @@ cd linux-%{KVERREL}
 BuildKernel %make_target %kernel_image %{_use_vdso} debug
 %endif
 
-%if %{with_pae_debug}
-BuildKernel %make_target %kernel_image %{use_vdso} %{pae}debug
-%endif
-
 %if %{with_pae}
-BuildKernel %make_target %kernel_image %{use_vdso} %{pae}
+BuildKernel %make_target %kernel_image %{use_vdso} lpae
 %endif
 
 %if %{with_up}
@@ -1581,13 +1544,10 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %define __modsign_install_post \
   if [ "%{signmodules}" -eq "1" ]; then \
     if [ "%{with_pae}" -ne "0" ]; then \
-      %{modsign_cmd} certs/signing_key.pem.sign+%{pae} certs/signing_key.x509.sign+%{pae} $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+%{pae}/ \
+      %{modsign_cmd} certs/signing_key.pem.sign+lpae certs/signing_key.x509.sign+lpae $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+lpae/ \
     fi \
     if [ "%{with_debug}" -ne "0" ]; then \
       %{modsign_cmd} certs/signing_key.pem.sign+debug certs/signing_key.x509.sign+debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+debug/ \
-    fi \
-    if [ "%{with_pae_debug}" -ne "0" ]; then \
-      %{modsign_cmd} certs/signing_key.pem.sign+%{pae}debug certs/signing_key.x509.sign+%{pae}debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+%{pae}debug/ \
     fi \
     if [ "%{with_up}" -ne "0" ]; then \
       %{modsign_cmd} certs/signing_key.pem.sign certs/signing_key.x509.sign $RPM_BUILD_ROOT/lib/modules/%{KVERREL}/ \
@@ -1767,11 +1727,8 @@ fi}\
 %kernel_variant_post -r kernel-smp
 
 %if %{with_pae}
-%kernel_variant_preun %{pae}
-%kernel_variant_post -v %{pae} -r (kernel|kernel-smp)
-
-%kernel_variant_post -v %{pae}debug -r (kernel|kernel-smp)
-%kernel_variant_preun %{pae}debug
+%kernel_variant_preun lpae
+%kernel_variant_post -v lpae -r (kernel|kernel-smp)
 %endif
 
 %kernel_variant_preun debug
@@ -1855,8 +1812,7 @@ fi
 
 %kernel_variant_files %{_use_vdso} %{with_up}
 %kernel_variant_files %{_use_vdso} %{with_debug} debug
-%kernel_variant_files %{use_vdso} %{with_pae} %{pae}
-%kernel_variant_files %{use_vdso} %{with_pae_debug} %{pae}debug
+%kernel_variant_files %{use_vdso} %{with_pae} lpae
 
 # plz don't put in a version string unless you're going to tag
 # and build.
