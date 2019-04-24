@@ -245,7 +245,7 @@ Summary: The Linux kernel
 %endif
 
 # sparse blows up on ppc
-%ifnarch %{power64}
+%ifnarch ppc64le
 %define with_sparse 0
 %endif
 
@@ -265,7 +265,7 @@ Summary: The Linux kernel
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
-%ifarch %{power64}
+%ifarch ppc64le
 %define asmarch powerpc
 %define hdrarch powerpc
 %define make_target vmlinux
@@ -342,7 +342,7 @@ Summary: The Linux kernel
 %endif
 
 # Architectures we build tools/cpupower on
-%define cpupowerarchs %{ix86} x86_64 %{power64} %{arm} aarch64
+%define cpupowerarchs %{ix86} x86_64 ppc64le %{arm} aarch64
 
 %if %{use_vdso}
 
@@ -757,7 +757,7 @@ The meta-package for the %{1} kernel\
 Summary: %{variant_summary}\
 Provides: kernel-%{?1:%{1}-}core-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
 Provides: installonlypkg(kernel)\
-%ifarch %{power64}\
+%ifarch ppc64le\
 Obsoletes: kernel-bootwrapper\
 %endif\
 %{expand:%%kernel_reqprovconf}\
@@ -1356,7 +1356,7 @@ BuildKernel() {
     fi
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/*.o
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/*/*.o
-%ifarch %{power64}
+%ifarch ppc64le
     cp -a --parents arch/powerpc/lib/crtsavres.[So] $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
 %endif
     if [ -d arch/%{asmarch}/include ]; then
