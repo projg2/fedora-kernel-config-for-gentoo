@@ -587,6 +587,9 @@ Patch507: 0001-Drop-that-for-now.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
+# CVE-2019-3900 rhbz 1698757 1702940
+Patch524: net-vhost_net-fix-possible-infinite-loop.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1860,6 +1863,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 25 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-3900 (rhbz 1698757 1702940)
+
 * Wed Apr 24 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc6.git2.1
 - Linux v5.1-rc6-15-gba25b50d582f
 
