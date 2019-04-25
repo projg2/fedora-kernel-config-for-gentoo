@@ -633,6 +633,9 @@ Patch520: 0001-brcmfmac-add-subtype-check-for-event-handling-in-dat.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch521: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
+# CVE-2019-3900 rhbz 1698757 1702940
+Patch524: net-vhost_net-fix-possible-infinite-loop.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1920,6 +1923,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 25 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-3900 (rhbz 1698757 1702940)
+
 * Tue Apr 23 2019 Jeremy Cline <jcline@redhat.com>
 - Allow modules signed by keys in the platform keyring (rbhz 1701096)
 
