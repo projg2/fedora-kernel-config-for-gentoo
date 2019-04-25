@@ -644,6 +644,9 @@ Patch522: 0001-kexec-KEYS-Make-use-of-platform-keyring-for-signatur.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch523: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
+# CVE-2019-3900 rhbz 1698757 1702940
+Patch524: net-vhost_net-fix-possible-infinite-loop.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1917,6 +1920,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 25 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-3900 (rhbz 1698757 1702940)
+
 * Tue Apr 23 2019 Laura Abbott <labbott@redhat.com> - 5.0.9-301
 - Bring in DRM workaround
 
