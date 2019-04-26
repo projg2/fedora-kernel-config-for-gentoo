@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 6
 # The git snapshot level
-%define gitrev 3
+%define gitrev 4
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -1819,6 +1819,9 @@ fi
 #
 #
 %changelog
+* Fri Apr 26 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc6.git4.1
+- Linux v5.1-rc6-72-g8113a85f8720
+
 * Thu Apr 25 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc6.git3.1
 - Linux v5.1-rc6-64-gcd8dead0c394
 
