@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 301
+%global baserelease 300
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -616,9 +616,6 @@ Patch510: i915-enable-fastboot-on-vlv-chv.patch
 
 # rhbz 1689750, patch submitted upstream
 Patch511: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
-
-# rhbz 1688283
-Patch512: v3-tpm-fix-an-invalid-condition-in-tpm_common_poll.patch
 
 # rhbz 1683382
 Patch515: nfsv4.1-avoid-false-retries.patch
@@ -1923,6 +1920,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 30 2019 Laura Abbott <labbott@redhat.com> - 5.0.10-300
+- Linux v5.0.10
+
 * Tue Apr 30 2019 Hans de Goede <hdegoede@redhat.com>
 - Fix wifi on various ideapad models not working (rhbz#1703338)
 
