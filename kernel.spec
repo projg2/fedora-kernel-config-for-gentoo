@@ -581,6 +581,9 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # CVE-2019-3900 rhbz 1698757 1702940
 Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 
+# S390x build failure fix
+Patch525: 0001-RDMA-uverbs-Fix-compilation-error-on-s390-and-mips-p.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
