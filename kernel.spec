@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1923,6 +1923,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 29 2019 Laura Abbott <labbott@redhat.com> - 5.0.10-100
+- Linux v5.0.10
+
 * Thu Apr 25 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-3900 (rhbz 1698757 1702940)
 
