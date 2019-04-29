@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -602,9 +602,6 @@ Patch512: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
 
 # rhbz 1689750, patch submitted upstream
 Patch513: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
-
-# rhbz 1688283
-Patch514: v3-tpm-fix-an-invalid-condition-in-tpm_common_poll.patch
 
 # rhbz 1683382
 Patch515: nfsv4.1-avoid-false-retries.patch
@@ -1901,6 +1898,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 29 2019 Laura Abbott <labbott@redhat.com> - 5.0.10-200
+- Linux v5.0.10
+
 * Thu Apr 25 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-3900 (rhbz 1698757 1702940)
 
