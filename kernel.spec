@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 7
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -580,9 +580,6 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # CVE-2019-3900 rhbz 1698757 1702940
 Patch524: net-vhost_net-fix-possible-infinite-loop.patch
-
-# S390x build failure fix
-Patch525: 0001-RDMA-uverbs-Fix-compilation-error-on-s390-and-mips-p.patch
 
 # Fix wifi on various ideapad models not working (rhbz#1703338)
 Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
@@ -1825,6 +1822,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 30 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc7.git1.1
+- Linux v5.1-rc7-5-g83a50840e72a
+
 * Tue Apr 30 2019 Jeremy Cline <jcline@redhat.com>
 - Reenable debugging options.
 
