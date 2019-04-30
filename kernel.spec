@@ -638,6 +638,9 @@ Patch523: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # CVE-2019-3900 rhbz 1698757 1702940
 Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 
+# Fix wifi on various ideapad models not working (rhbz#1703338)
+Patch525: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1925,6 +1928,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 30 2019 Hans de Goede <hdegoede@redhat.com>
+- Fix wifi on various ideapad models not working (rhbz#1703338)
+
 * Mon Apr 29 2019 Laura Abbott <labbott@redhat.com> - 5.0.10-100
 - Linux v5.0.10
 
