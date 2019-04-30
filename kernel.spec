@@ -122,7 +122,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -1825,6 +1825,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 30 2019 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
 * Tue Apr 30 2019 Hans de Goede <hdegoede@redhat.com>
 - Fix wifi on various ideapad models not working (rhbz#1703338)
 
