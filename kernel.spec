@@ -584,6 +584,9 @@ Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 # S390x build failure fix
 Patch525: 0001-RDMA-uverbs-Fix-compilation-error-on-s390-and-mips-p.patch
 
+# Fix wifi on various ideapad models not working (rhbz#1703338)
+Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1822,6 +1825,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 30 2019 Hans de Goede <hdegoede@redhat.com>
+- Fix wifi on various ideapad models not working (rhbz#1703338)
+
 * Mon Apr 29 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc7.git0.1
 - Linux v5.1-rc7
 
