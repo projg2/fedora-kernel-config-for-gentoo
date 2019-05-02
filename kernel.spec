@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -608,23 +608,14 @@ Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 # https://patchwork.kernel.org/patch/10752253/
 Patch504: efi-use-32-bit-alignment-for-efi_guid_t.patch
 
-# https://bugs.freedesktop.org/show_bug.cgi?id=109806
-Patch512: 0001-Revert-drm-i915-fbdev-Actually-configure-untiled-dis.patch
-
 # rhbz 1689750, patch submitted upstream
 Patch513: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
 
 # rhbz 1683382
 Patch515: nfsv4.1-avoid-false-retries.patch
 
-# CVE-2019-3882 rhbz 1689426 1695571
-Patch517: vfio-type1-limit-dma-mappings-per-container.patch
-
 # CVE-2019-9500 rhbz 1701224 1701226
 Patch518: 0001-brcmfmac-assure-SSID-length-from-firmware-is-limited.patch
-
-# rhbz 1701077
-Patch519: nfsd-wake-waiters-blocked-on-file_lock-before-deleting-it.patch
 
 # CVE-2019-9503 rhbz 1701842 1701843
 Patch520: 0001-brcmfmac-add-subtype-check-for-event-handling-in-dat.patch
@@ -1928,6 +1919,9 @@ fi
 #
 #
 %changelog
+* Thu May 02 2019 Laura Abbott <labbott@redhat.com> - 5.0.11-100
+- Linux v5.0.11
+
 * Tue Apr 30 2019 Hans de Goede <hdegoede@redhat.com>
 - Fix wifi on various ideapad models not working (rhbz#1703338)
 
