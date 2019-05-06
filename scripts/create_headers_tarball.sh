@@ -7,6 +7,8 @@
 # Author: Herton R. Krzesinski <herton@redhat.com>
 # Author: Justin M. Forbes <jforbes@redhat.com>
 
+set -e
+
 # Location of kernel-headers checkout
 CURRENTDIR=`pwd`
 PKGLOC='kernel-headers'
@@ -17,7 +19,7 @@ if [ ! -f $PKGLOC/kernel-headers.spec ]; then
 fi
 
 # Kernel version information taken from kernel.spec and change to prepared sources directory
-MAJORVER='4'
+MAJORVER='5'
 RELEASED=`grep "%global released_kernel" kernel.spec| cut -d ' ' -f 3`
 BASERELEASE=`cat kernel.spec | grep "%global baserelease" | cut -d ' ' -f 3`
 BASE=`grep "%define base_sublevel" kernel.spec| cut -d ' ' -f 3`
