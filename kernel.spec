@@ -1821,6 +1821,9 @@ fi
 #
 #
 %changelog
+* Mon May  6 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Enable Arm STM32MP1
+
 * Mon May 06 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-1
 - Linux v5.1
 
