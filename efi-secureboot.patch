@@ -201,9 +201,9 @@ index adeee6329f55..27a54ec878bd 100644
 +
 +	init_lockdown();
 +
- 	dmi_scan_machine();
- 	dmi_memdev_walk();
- 	dmi_set_dump_stack_arch_desc();
+ 	dmi_setup();
+ 
+ 	/*
 @@ -1159,8 +1164,6 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
