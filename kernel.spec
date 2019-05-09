@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1911,6 +1911,9 @@ fi
 #
 #
 %changelog
+* Thu May 09 2019 Laura Abbott <labbott@redhat.com> - 5.0.14-300
+- Linux v5.0.14
+
 * Mon May 06 2019 Laura Abbott <labbott@redhat.com> - 5.0.13-300
 - Linux v5.0.13
 
