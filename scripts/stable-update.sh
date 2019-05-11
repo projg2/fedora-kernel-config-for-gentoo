@@ -35,7 +35,7 @@ if [ -z $VERSION ]; then
 fi
 
 if [ ! -f patch-$1.xz ]; then
-	wget https://cdn.kernel.org/pub/linux/kernel/v4.x/patch-$1.xz
+	wget https://cdn.kernel.org/pub/linux/kernel/v5.x/patch-$1.xz
 	if [ ! $? -eq 0 ]; then
 		echo "Download fail"
 		exit 1
