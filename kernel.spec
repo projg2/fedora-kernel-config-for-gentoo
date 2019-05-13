@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 4
+%define gitrev 5
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -579,9 +579,6 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # CVE-2019-3900 rhbz 1698757 1702940
 Patch524: net-vhost_net-fix-possible-infinite-loop.patch
-
-# Fix wifi on various ideapad models not working (rhbz#1703338)
-Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1821,6 +1818,9 @@ fi
 #
 #
 %changelog
+* Mon May 13 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git5.1
+- Linux v5.1-10135-ga13f0655503a
+
 * Fri May 10 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git4.1
 - Linux v5.1-9573-gb970afcfcabd
 
