@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1821,6 +1821,13 @@ fi
 #
 #
 %changelog
+* Tue May 14 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.1.2-300
+- Linux v5.1.2
+- Fixes CVE-2018-12126 (rhbz 1646781 1709976)
+- Fixes CVE-2018-12127 (rhbz 1667782 1709978)
+- Fixes CVE-2018-12130 (rhbz 1646784 1709989 1709996)
+- Fixes CVE-2019-11091 (rhbz 1705312 1709983)
+
 * Sat May 11 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.1.1-300
 - Linux v5.1.1
 
