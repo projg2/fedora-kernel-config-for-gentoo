@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 5
+%define gitrev 6
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -1818,6 +1818,9 @@ fi
 #
 #
 %changelog
+* Tue May 14 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git6.1
+- Linux v5.1-10326-g7e9890a3500d
+
 * Mon May 13 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git5.1
 - Linux v5.1-10135-ga13f0655503a
 
