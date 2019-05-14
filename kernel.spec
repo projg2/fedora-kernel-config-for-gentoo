@@ -1896,6 +1896,7 @@ fi
 %changelog
 * Mon May 13 2019 Laura Abbott <labbott@redhat.com> - 5.0.15-200
 - Linux v5.0.15
+- Fixes CVE-2019-11884 (rhbz 1709837 1709838)
 
 * Thu May 09 2019 Laura Abbott <labbott@redhat.com> - 5.0.14-200
 - Linux v5.0.14
