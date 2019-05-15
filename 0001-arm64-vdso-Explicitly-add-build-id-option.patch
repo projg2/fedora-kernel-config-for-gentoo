@@ -1,0 +1,34 @@
+From a45c8a275e5e4120f4f657379ff7b805d37eac3c Mon Sep 17 00:00:00 2001
+From: Laura Abbott <labbott@redhat.com>
+Date: Wed, 15 May 2019 10:54:48 -0700
+Subject: [PATCH] arm64: vdso: Explicitly add build-id option
+To: Masahiro Yamada <yamada.masahiro@socionext.com>
+To: Will Deacon <will.deacon@arm.com>
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+
+Commit 691efbedc60d ("arm64: vdso: use $(LD) instead of $(CC) to
+link VDSO") switched to using LD explicitly. The --build-id option
+needs to be passed explicitly, similar to x86. Add this option.
+
+Fixes: 691efbedc60d ("arm64: vdso: use $(LD) instead of $(CC) to link VDSO")
+Signed-off-by: Laura Abbott <labbott@redhat.com>
+---
+ arch/arm64/kernel/vdso/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/kernel/vdso/Makefile b/arch/arm64/kernel/vdso/Makefile
+index 744b9dbaba03..ca209103cd06 100644
+--- a/arch/arm64/kernel/vdso/Makefile
++++ b/arch/arm64/kernel/vdso/Makefile
+@@ -13,6 +13,7 @@ targets := $(obj-vdso) vdso.so vdso.so.dbg
+ obj-vdso := $(addprefix $(obj)/, $(obj-vdso))
+ 
+ ldflags-y := -shared -nostdlib -soname=linux-vdso.so.1 \
++		$(call ld-option, --build-id) \
+ 		$(call ld-option, --hash-style=sysv) -n -T
+ 
+ # Disable gcov profiling for VDSO code
+-- 
+2.21.0
+

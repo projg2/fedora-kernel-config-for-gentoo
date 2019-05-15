@@ -580,6 +580,9 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # CVE-2019-3900 rhbz 1698757 1702940
 Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 
+# build fix
+Patch525: 0001-arm64-vdso-Explicitly-add-build-id-option.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
