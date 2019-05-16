@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 7
+%define gitrev 8
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -546,9 +546,6 @@ Patch303: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
 # rhbz 1574718
 Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
-# https://patchwork.kernel.org/patch/9820417/
-Patch305: qcom-msm89xx-fixes.patch
-
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
@@ -558,9 +555,6 @@ Patch339: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
-
-# https://patchwork.kernel.org/patch/10858639/
-Patch341: arm64-tegra-Add-NVIDIA-Jetson-Nano-Developer-Kit-support.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1821,6 +1815,9 @@ fi
 #
 #
 %changelog
+* Thu May 16 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git8.1
+- Linux v5.1-12065-g8c05f3b965da
+
 * Wed May 15 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git7.1
 - Linux v5.1-10909-g2bbacd1a9278
 
