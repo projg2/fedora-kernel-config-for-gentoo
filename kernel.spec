@@ -67,9 +67,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 0
+%global rcrev 1
 # The git snapshot level
-%define gitrev 9
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -122,7 +122,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -1817,6 +1817,10 @@ fi
 #
 #
 %changelog
+* Mon May 20 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc1.git0.1
+- Disable debugging options.
+- Linux V5.2-rc1
+
 * Sun May 19 2019 Peter Robinson <pbrobinson@fedoraproject.org>
 - Arm config updates
 
