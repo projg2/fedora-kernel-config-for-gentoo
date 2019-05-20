@@ -554,6 +554,8 @@ Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
 Patch307: arm64-rock960-enable-tsadc.patch
 
+Patch308: ARM-dts-imx-Fix-the-AR803X-p-mode.patch
+
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
