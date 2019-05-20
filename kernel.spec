@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 17
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1919,7 +1919,10 @@ fi
 #
 #
 %changelog
-* Tue May 14 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.0.16-300
+* Mon May 20 2019 Laura Abbott <labbott@redhat.com> - 5.0.17-100
+- Linux v5.0.17
+
+* Tue May 14 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.0.16-100
 - Linux v5.0.16
 - Fixes CVE-2018-12126 (rhbz 1646781 1709976)
 - Fixes CVE-2018-12127 (rhbz 1667782 1709978)
