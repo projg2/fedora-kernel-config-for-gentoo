@@ -1817,6 +1817,9 @@ fi
 #
 #
 %changelog
+* Sun May 19 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Arm config updates
+
 * Fri May 17 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git9.1
 - Linux v5.1-12505-g0ef0fd351550
 

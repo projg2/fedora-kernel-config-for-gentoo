@@ -1,1 +1,1 @@
-CONFIG_MFD_STMFX=m
+# CONFIG_MFD_STMFX is not set
