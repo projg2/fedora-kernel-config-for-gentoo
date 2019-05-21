@@ -579,6 +579,7 @@ Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 # build fix
 Patch525: 0001-arm64-vdso-Explicitly-add-build-id-option.patch
 Patch526: s390-mark-__cpacf_check_opcode-and-cpacf_query_func-as-__always_inline.patch
+Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
 
 # END OF PATCH DEFINITIONS
 
