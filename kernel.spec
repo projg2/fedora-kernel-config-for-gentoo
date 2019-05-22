@@ -585,6 +585,10 @@ Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 # Fix wifi on various ideapad models not working (rhbz#1703338)
 Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
 
+# rhbz 1711468
+# https://lore.kernel.org/linux-bluetooth/20190522070540.48895-1-marcel@holtmann.org/
+Patch527: Bluetooth-Check-key-sizes-only-when-Secure-Simple-Pa.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1825,6 +1829,7 @@ fi
 %changelog
 * Wed May 22 2019 Jeremy Cline <jcline@redhat.com> - 5.1.4-300
 - Linux v5.1.4
+- Fix an issue with Bluetooth 2.0 and earlier devices (rhbz 1711468)
 
 * Mon May 20 2019 Laura Abbott <labbott@redhat.com> - 5.0.17-300
 - Linux v5.0.17
