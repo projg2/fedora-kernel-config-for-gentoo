@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 1
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -577,7 +577,6 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 
 # build fix
-Patch525: 0001-arm64-vdso-Explicitly-add-build-id-option.patch
 Patch526: s390-mark-__cpacf_check_opcode-and-cpacf_query_func-as-__always_inline.patch
 Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
 
@@ -1819,6 +1818,9 @@ fi
 #
 #
 %changelog
+* Wed May 22 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc1.git2.1
+- Linux v5.2-rc1-165-g54dee406374c
+
 * Tue May 21 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc1.git1.1
 - Linux v5.2-rc1-129-g9c7db5004280
 
