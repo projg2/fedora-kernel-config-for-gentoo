@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -553,8 +553,6 @@ Patch305: qcom-msm89xx-fixes.patch
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
 Patch307: arm64-rock960-enable-tsadc.patch
-
-Patch308: ARM-dts-imx-Fix-the-AR803X-p-mode.patch
 
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
@@ -1825,6 +1823,9 @@ fi
 #
 #
 %changelog
+* Wed May 22 2019 Jeremy Cline <jcline@redhat.com> - 5.1.4-300
+- Linux v5.1.4
+
 * Thu May 16 2019 Jeremy Cline <jcline@redhat.com> - 5.1.3-300
 - Linux v5.1.3
 
