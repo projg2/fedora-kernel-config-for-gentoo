@@ -632,6 +632,9 @@ Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 # Fix wifi on various ideapad models not working (rhbz#1703338)
 Patch525: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
 
+# Add missing backport to fix build on s390
+Patch526: 0001-mm-gup-Remove-the-write-parameter-from-gup_fast_perm.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1919,7 +1922,10 @@ fi
 #
 #
 %changelog
-* Wed May 22 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.0.18-100
+* Thu May 23 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.0.18-100
+- Bring back ad8cfb9c42ef83ecf4079bc7d77e6557648e952b to fix s390 build
+
+* Wed May 22 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Linux v5.0.18
 - Fixes CVE-2019-11833 (rhbz 1712072 1712073)
 
