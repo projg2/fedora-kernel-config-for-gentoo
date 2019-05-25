@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 301
+%global baserelease 300
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -588,9 +588,6 @@ Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
 # rhbz 1711468
 # https://lore.kernel.org/linux-bluetooth/20190522070540.48895-1-marcel@holtmann.org/
 Patch527: Bluetooth-Check-key-sizes-only-when-Secure-Simple-Pa.patch
-
-# Coming in v5.1.5
-Patch528: dm-make-sure-to-obey-max_io_len_target_boundary.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1830,6 +1827,9 @@ fi
 #
 #
 %changelog
+* Sat May 25 2019 Jeremy Cline <jcline@redhat.com> - 5.1.5-300
+- Linux v5.1.5
+
 * Fri May 24 2019 Jeremy Cline <jcline@redhat.com> - 5.1.4-301
 - Fix fstrim discarding too many blocks
 
