@@ -561,7 +561,6 @@ Patch340: arm64-tegra-jetson-tx1-fixes.patch
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
-
 # rhbz 1431375
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
@@ -579,6 +578,8 @@ Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 # build fix
 Patch526: s390-mark-__cpacf_check_opcode-and-cpacf_query_func-as-__always_inline.patch
 Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
+
+Patch530: 0001-Revert-crypto-run-initcalls-for-generic-implementati.patch
 
 # END OF PATCH DEFINITIONS
 
