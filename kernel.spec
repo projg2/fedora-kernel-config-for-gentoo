@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 19
+%define stable_update 20
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -602,12 +602,6 @@ Patch513: 0001-virt-vbox-Implement-passing-requestor-info-to-the-ho.patch
 
 # rhbz 1683382
 Patch515: nfsv4.1-avoid-false-retries.patch
-
-# CVE-2019-9500 rhbz 1701224 1701226
-Patch518: 0001-brcmfmac-assure-SSID-length-from-firmware-is-limited.patch
-
-# CVE-2019-9503 rhbz 1701842 1701843
-Patch520: 0001-brcmfmac-add-subtype-check-for-event-handling-in-dat.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
 Patch521: 0001-integrity-KEYS-add-a-reference-to-platform-keyring.patch
@@ -1894,6 +1888,9 @@ fi
 #
 #
 %changelog
+* Fri May 31 2019 Laura Abbott <labbott@redhat.com> - 5.0.20-200
+- Linux v5.0.20
+
 * Tue May 28 2019 Laura Abbott <labbott@redhat.com> - 5.0.19-200
 - Linux v5.0.19
 
