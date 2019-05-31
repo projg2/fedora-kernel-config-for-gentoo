@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1827,6 +1827,9 @@ fi
 #
 #
 %changelog
+* Fri May 31 2019 Laura Abbott <labbott@redhat.com> - 5.1.6-300
+- Linux v5.1.6
+
 * Sat May 25 2019 Jeremy Cline <jcline@redhat.com> - 5.1.5-300
 - Linux v5.1.5
 
