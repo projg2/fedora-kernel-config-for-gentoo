@@ -579,7 +579,7 @@ Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 Patch526: s390-mark-__cpacf_check_opcode-and-cpacf_query_func-as-__always_inline.patch
 Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
 
-Patch530: 0001-Revert-crypto-run-initcalls-for-generic-implementati.patch
+Patch530: crypto-ghash-fix-unaligned-memory-access-in-ghash_setkey.patch
 
 # END OF PATCH DEFINITIONS
 
