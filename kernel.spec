@@ -42,7 +42,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -67,9 +67,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 2
+%global rcrev 3
 # The git snapshot level
-%define gitrev 1
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -576,7 +576,6 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 
 # build fix
-Patch526: s390-mark-__cpacf_check_opcode-and-cpacf_query_func-as-__always_inline.patch
 Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
 
 Patch530: crypto-ghash-fix-unaligned-memory-access-in-ghash_setkey.patch
@@ -1819,6 +1818,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 03 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc3.git0.1
+- Linux v5.2-rc3
+
 * Mon Jun 03 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Disable debugging options.
 
