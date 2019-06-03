@@ -589,6 +589,24 @@ Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
 # https://lore.kernel.org/linux-bluetooth/20190522070540.48895-1-marcel@holtmann.org/
 Patch527: Bluetooth-Check-key-sizes-only-when-Secure-Simple-Pa.patch
 
+# CVE-2019-12378 rhbz 1715459 1715460
+Patch528: ipv6_sockglue-fix-missing-check-bug-in-ip6_ra_control.patch
+
+# CVE-2019-3846 rhbz 1713059 1715475
+Patch529: Buffer-overflow-read-checks-in-mwifiex.patch
+
+# CVE-2019-12380 rhbz 1715494 1715495
+Patch530: 0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
+
+# CVE-2019-12381 rhbz 1715501 1715502
+Patch531: 0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
+
+# CVE-2019-12382 rhbz 1715554 1715556
+Patch532: drm-edid-fix-missing-check-bug-in-drm_load_edid_firmware.patch
+
+# CVE-2019-12379 rhbz 1715491 1715706
+Patch533: consolemap-fix-memory-leaking-bug.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1827,6 +1845,14 @@ fi
 #
 #
 %changelog
+* Mon Jun 03 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-12378 (rhbz 1715459 1715460)
+- Fix CVE-2019-3846 (rhbz 1713059 1715475)
+- Fix CVE-2019-12380 (rhbz 1715494 1715495)
+- Fix CVE-2019-12381 (rhbz 1715501 1715502)
+- Fix CVE-2019-12382 (rhbz 1715554 1715556)
+- Fix CVE-2019-12379 (rhbz 1715491 1715706)
+
 * Fri May 31 2019 Laura Abbott <labbott@redhat.com> - 5.1.6-300
 - Linux v5.1.6
 
