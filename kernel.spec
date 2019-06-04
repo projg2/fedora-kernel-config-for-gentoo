@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -606,6 +606,12 @@ Patch532: drm-edid-fix-missing-check-bug-in-drm_load_edid_firmware.patch
 
 # CVE-2019-12379 rhbz 1715491 1715706
 Patch533: consolemap-fix-memory-leaking-bug.patch
+
+# CVE-2019-12455 rhbz 1716990 1717003
+Patch534: clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_setup.patch
+
+# CVE-2019-12454 rhbz 1716996 1717003
+Patch535: wcd9335-fix-a-incorrect-use-of-kstrndup.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1845,6 +1851,11 @@ fi
 #
 #
 %changelog
+* Tue Jun 04 2019 Jeremy Cline <jcline@redhat.com> - 5.1.7-200
+- Linux v5.1.7
+- Fix CVE-2019-12455 (rhbz 1716990 1717003)
+- Fix CVE-2019-12454 (rhbz 1716996 1717003)
+
 * Mon Jun 03 2019 Jeremy Cline <jcline@redhat.com> - 5.1.6-200
 - Linux v5.1.6
 - Fix CVE-2019-12378 (rhbz 1715459 1715460)
