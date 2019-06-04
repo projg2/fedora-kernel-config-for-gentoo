@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 3
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -122,7 +122,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # Kernel headers are being split out into a separate package
 %if 0%{?fedora}
@@ -571,9 +571,6 @@ Patch507: 0001-Drop-that-for-now.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
-
-# CVE-2019-3900 rhbz 1698757 1702940
-Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 
 # build fix
 Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
@@ -1818,6 +1815,10 @@ fi
 #
 #
 %changelog
+* Tue Jun 04 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc3.git1.1
+- Linux v5.2-rc3-24-g788a024921c4
+- Reenable debugging options.
+
 * Mon Jun 03 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc3.git0.1
 - Linux v5.2-rc3
 
