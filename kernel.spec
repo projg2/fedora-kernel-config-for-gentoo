@@ -613,6 +613,9 @@ Patch534: clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_setup.patch
 # CVE-2019-12454 rhbz 1716996 1717003
 Patch535: wcd9335-fix-a-incorrect-use-of-kstrndup.patch
 
+# CVE-2019-12456 rhbz 1717182 1717183
+Patch536: scsi-mpt3sas_ctl-fix-double-fetch-bug-in_ctl_ioctl_main.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1851,6 +1854,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 05 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-12456 (rhbz 1717182 1717183)
+
 * Tue Jun 04 2019 Jeremy Cline <jcline@redhat.com> - 5.1.7-200
 - Linux v5.1.7
 - Fix CVE-2019-12455 (rhbz 1716990 1717003)
