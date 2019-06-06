@@ -1815,6 +1815,9 @@ fi
 #
 #
 %changelog
+* Thu Jun 06 2019 Jeremy Cline <jcline@redhat.com>
+- Fix incorrect permission denied with lock down off (rhbz 1658675)
+
 * Thu Jun 06 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc3.git2.1
 - Linux v5.2-rc3-37-g156c05917e09
 
