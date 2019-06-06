@@ -616,6 +616,9 @@ Patch535: wcd9335-fix-a-incorrect-use-of-kstrndup.patch
 # CVE-2019-12456 rhbz 1717182 1717183
 Patch536: scsi-mpt3sas_ctl-fix-double-fetch-bug-in_ctl_ioctl_main.patch
 
+# rhbz 1708717
+Patch537: neighbor-Reset-gc_entries-counter-if-new-entry-is-re.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1856,6 +1859,7 @@ fi
 %changelog
 * Thu Jun 06 2019 Jeremy Cline <jcline@redhat.com>
 - Fix incorrect permission denied with lock down off (rhbz 1658675)
+- Fix an issue with the IPv6 neighbor table (rhbz 1708717)
 
 * Wed Jun 05 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-12456 (rhbz 1717182 1717183)
