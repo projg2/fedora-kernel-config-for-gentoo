@@ -1854,6 +1854,9 @@ fi
 #
 #
 %changelog
+* Thu Jun 06 2019 Jeremy Cline <jcline@redhat.com>
+- Fix incorrect permission denied with lock down off (rhbz 1658675)
+
 * Wed Jun 05 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-12456 (rhbz 1717182 1717183)
 
