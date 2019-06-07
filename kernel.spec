@@ -69,7 +69,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 3
 # The git snapshot level
-%define gitrev 2
+%define gitrev 3
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -1815,6 +1815,9 @@ fi
 #
 #
 %changelog
+* Fri Jun 07 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc3.git3.1
+- Linux v5.2-rc3-77-g16d72dd4891f
+
 * Thu Jun 06 2019 Jeremy Cline <jcline@redhat.com>
 - Fix incorrect permission denied with lock down off (rhbz 1658675)
 
