@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1860,6 +1860,9 @@ fi
 #
 #
 %changelog
+* Sun Jun 09 2019 Jeremy Cline <jcline@redhat.com> - 5.1.8-300
+- Linux v5.1.8
+
 * Fri Jun 07 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-12614 (rhbz 1718176 1718185)
 
