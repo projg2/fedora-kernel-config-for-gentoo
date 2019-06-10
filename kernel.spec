@@ -622,6 +622,9 @@ Patch537: neighbor-Reset-gc_entries-counter-if-new-entry-is-re.patch
 # CVE-2019-12614 rhbz 1718176 1718185
 Patch538: powerpc-fix-a-missing-check-in-dlpar_parse_cc_property.patch
 
+# https://patchwork.kernel.org/patch/10817377/
+Patch539: usb-dwc2-Fix-DMA-cache-alignment-issues.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
