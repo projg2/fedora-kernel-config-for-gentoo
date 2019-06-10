@@ -558,6 +558,9 @@ Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
+# qcom bits
+Patch350: qcom-Provide-support-for-ACPI.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
