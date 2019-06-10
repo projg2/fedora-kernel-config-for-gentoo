@@ -580,6 +580,9 @@ Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
 
 Patch530: crypto-ghash-fix-unaligned-memory-access-in-ghash_setkey.patch
 
+# https://patchwork.kernel.org/patch/10817377/
+Patch532: usb-dwc2-Fix-DMA-cache-alignment-issues.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
