@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -587,7 +587,8 @@ Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
 
 # rhbz 1711468
 # https://lore.kernel.org/linux-bluetooth/20190522070540.48895-1-marcel@holtmann.org/
-Patch527: Bluetooth-Check-key-sizes-only-when-Secure-Simple-Pa.patch
+# https://lore.kernel.org/linux-bluetooth/af8cf6f4-4979-2f6f-68ed-e5b368b17ec7@redhat.com/
+Patch527: Revert-Bluetooth-Align-minimum-encryption-key-size.patch
 
 # CVE-2019-12378 rhbz 1715459 1715460
 Patch528: ipv6_sockglue-fix-missing-check-bug-in-ip6_ra_control.patch
@@ -616,14 +617,14 @@ Patch535: wcd9335-fix-a-incorrect-use-of-kstrndup.patch
 # CVE-2019-12456 rhbz 1717182 1717183
 Patch536: scsi-mpt3sas_ctl-fix-double-fetch-bug-in_ctl_ioctl_main.patch
 
-# rhbz 1708717
-Patch537: neighbor-Reset-gc_entries-counter-if-new-entry-is-re.patch
-
 # CVE-2019-12614 rhbz 1718176 1718185
 Patch538: powerpc-fix-a-missing-check-in-dlpar_parse_cc_property.patch
 
 # https://patchwork.kernel.org/patch/10817377/
 Patch539: usb-dwc2-Fix-DMA-cache-alignment-issues.patch
+
+# Mainlined, https://bugzilla.redhat.com/show_bug.cgi?id=1716289
+Patch540: 0001-netfilter-nat-fix-udp-checksum-corruption.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1863,6 +1864,10 @@ fi
 #
 #
 %changelog
+* Tue Jun 11 2019 Jeremy Cline <jcline@redhat.com> - 5.1.9-200
+- Linux v5.1.9
+- Fix UDP checkshums for SIP packets (rhbz 1716289)
+
 * Sun Jun 09 2019 Jeremy Cline <jcline@redhat.com> - 5.1.8-200
 - Linux v5.1.8
 
