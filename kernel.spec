@@ -626,6 +626,9 @@ Patch539: usb-dwc2-Fix-DMA-cache-alignment-issues.patch
 # Mainlined, https://bugzilla.redhat.com/show_bug.cgi?id=1716289
 Patch540: 0001-netfilter-nat-fix-udp-checksum-corruption.patch
 
+# CVE-2019-10126 rhbz 1716992 1720122
+Patch541: mwifiex-Fix-heap-overflow-in-mwifiex_uap_parse_tail_ies.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1864,6 +1867,9 @@ fi
 #
 #
 %changelog
+* Thu Jun 13 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-10126 (rhbz 1716992 1720122)
+
 * Tue Jun 11 2019 Jeremy Cline <jcline@redhat.com> - 5.1.9-300
 - Linux v5.1.9
 - Fix UDP checkshums for SIP packets (rhbz 1716289)
