@@ -551,7 +551,7 @@ Patch305: arm-sdhci-esdhc-imx-fixes.patch
 
 Patch306: arm64-rock960-enable-tsadc.patch
 
-Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
+Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
 
 Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 
@@ -1821,6 +1821,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 12 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Raspberry Pi: move to cpufreq driver accepted for upstream \o/
+
 * Wed Jun 12 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc4.git1.1
 - Linux v5.2-rc4-20-gaa7235483a83
 - Reenable debugging options.
