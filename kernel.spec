@@ -583,6 +583,12 @@ Patch530: crypto-ghash-fix-unaligned-memory-access-in-ghash_setkey.patch
 # https://patchwork.kernel.org/patch/10817377/
 Patch532: usb-dwc2-Fix-DMA-cache-alignment-issues.patch
 
+# 1697069 LCD panel an Asus EeePC 1025C not lighting up, submitted upstream
+Patch533: 0001-platform-x86-asus-wmi-Only-Tell-EC-the-OS-will-handl.patch
+
+# Fix for new Logitech wireless keyboard support in 5.2, submitted upstream
+Patch534: 0001-HID-logitech-dj-Fix-forwarding-of-very-long-HID-repo.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1821,6 +1827,10 @@ fi
 #
 #
 %changelog
+* Fri Jun 14 2019 Hans de Goede <hdegoede@redhat.com>
+- Fix the LCD panel an Asus EeePC 1025C not lighting up (rhbz#1697069)
+- Add small bugfix for new Logitech wireless keyboard support
+
 * Thu Jun 13 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc4.git2.1
 - Linux v5.2-rc4-45-gc11fb13a117e
 
