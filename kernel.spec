@@ -589,6 +589,9 @@ Patch533: 0001-platform-x86-asus-wmi-Only-Tell-EC-the-OS-will-handl.patch
 # Fix for new Logitech wireless keyboard support in 5.2, submitted upstream
 Patch534: 0001-HID-logitech-dj-Fix-forwarding-of-very-long-HID-repo.patch
 
+# Fix for broken bluetooth, reverted in upstream stable, not yet in Torvald's tree
+Patch535: Revert-Bluetooth-Align-minimum-encryption-key-size.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1827,6 +1830,9 @@ fi
 #
 #
 %changelog
+* Fri Jun 14 2019 Jeremy Cline <jcline@redhat.com>
+- Fix the long-standing bluetooth breakage
+
 * Fri Jun 14 2019 Hans de Goede <hdegoede@redhat.com>
 - Fix the LCD panel an Asus EeePC 1025C not lighting up (rhbz#1697069)
 - Add small bugfix for new Logitech wireless keyboard support
