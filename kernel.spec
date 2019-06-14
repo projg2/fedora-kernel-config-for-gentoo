@@ -629,6 +629,14 @@ Patch540: 0001-netfilter-nat-fix-udp-checksum-corruption.patch
 # CVE-2019-10126 rhbz 1716992 1720122
 Patch541: mwifiex-Fix-heap-overflow-in-mwifiex_uap_parse_tail_ies.patch
 
+# 1697069 LCD panel an Asus EeePC 1025C not lighting up, submitted upstream
+Patch542: 0001-platform-x86-asus-wmi-Only-Tell-EC-the-OS-will-handl.patch
+
+# Fix the LCD panel on the GPD MicroPC not working, pending as fixes for 5.2
+Patch543: 0001-drm-i915-dsi-Use-a-fuzzy-check-for-burst-mode-clock-.patch
+Patch544: drm-panel-orientation-quirks.patch
+Patch545: efi-bgrt-acpi6.2-support.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1867,6 +1875,10 @@ fi
 #
 #
 %changelog
+* Fri Jun 14 2019 Hans de Goede <hdegoede@redhat.com>
+- Fix the LCD panel an Asus EeePC 1025C not lighting up (rhbz#1697069)
+- Fix the LCD panel on the GPD MicroPC not working
+
 * Thu Jun 13 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-10126 (rhbz 1716992 1720122)
 
