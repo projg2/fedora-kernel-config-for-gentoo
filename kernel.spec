@@ -1872,6 +1872,9 @@ fi
 %changelog
 * Mon Jun 17 2019 Jeremy Cline <jcline@redhat.com> - 5.1.11-200
 - Linux v5.1.11
+- Fixes CVE-2019-11477  (rhbz 1719123 1721254)
+- Fixes CVE-2019-11479  (rhbz 1719129 1721255)
+- Fixes CVE-2019-11478  (rhbz 1719128 1721256)
 
 * Mon Jun 17 2019 Jeremy Cline <jcline@redhat.com> - 5.1.10-200
 - Linux v5.1.10
