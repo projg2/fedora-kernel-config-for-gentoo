@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1870,6 +1870,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 17 2019 Jeremy Cline <jcline@redhat.com> - 5.1.11-200
+- Linux v5.1.11
+
 * Mon Jun 17 2019 Jeremy Cline <jcline@redhat.com> - 5.1.10-200
 - Linux v5.1.10
 
