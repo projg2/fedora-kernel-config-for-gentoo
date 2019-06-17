@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -584,11 +584,6 @@ Patch524: net-vhost_net-fix-possible-infinite-loop.patch
 
 # Fix wifi on various ideapad models not working (rhbz#1703338)
 Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
-
-# rhbz 1711468
-# https://lore.kernel.org/linux-bluetooth/20190522070540.48895-1-marcel@holtmann.org/
-# https://lore.kernel.org/linux-bluetooth/af8cf6f4-4979-2f6f-68ed-e5b368b17ec7@redhat.com/
-Patch527: Revert-Bluetooth-Align-minimum-encryption-key-size.patch
 
 # CVE-2019-12378 rhbz 1715459 1715460
 Patch528: ipv6_sockglue-fix-missing-check-bug-in-ip6_ra_control.patch
@@ -1875,6 +1870,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 17 2019 Jeremy Cline <jcline@redhat.com> - 5.1.10-200
+- Linux v5.1.10
+
 * Fri Jun 14 2019 Hans de Goede <hdegoede@redhat.com>
 - Fix the LCD panel an Asus EeePC 1025C not lighting up (rhbz#1697069)
 - Fix the LCD panel on the GPD MicroPC not working
