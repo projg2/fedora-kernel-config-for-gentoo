@@ -67,9 +67,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 4
+%global rcrev 5
 # The git snapshot level
-%define gitrev 3
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -579,12 +579,6 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
 
 Patch530: crypto-ghash-fix-unaligned-memory-access-in-ghash_setkey.patch
-
-# https://patchwork.kernel.org/patch/10817377/
-Patch532: usb-dwc2-Fix-DMA-cache-alignment-issues.patch
-
-# 1697069 LCD panel an Asus EeePC 1025C not lighting up, submitted upstream
-Patch533: 0001-platform-x86-asus-wmi-Only-Tell-EC-the-OS-will-handl.patch
 
 # Fix for new Logitech wireless keyboard support in 5.2, submitted upstream
 Patch534: 0001-HID-logitech-dj-Fix-forwarding-of-very-long-HID-repo.patch
@@ -1830,6 +1824,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 17 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc5.git0.1
+- Linux v5.2-rc5
+
 * Mon Jun 17 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Disable debugging options.
 
