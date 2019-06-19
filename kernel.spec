@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -615,9 +615,6 @@ Patch536: scsi-mpt3sas_ctl-fix-double-fetch-bug-in_ctl_ioctl_main.patch
 # CVE-2019-12614 rhbz 1718176 1718185
 Patch538: powerpc-fix-a-missing-check-in-dlpar_parse_cc_property.patch
 
-# https://patchwork.kernel.org/patch/10817377/
-Patch539: usb-dwc2-Fix-DMA-cache-alignment-issues.patch
-
 # Mainlined, https://bugzilla.redhat.com/show_bug.cgi?id=1716289
 Patch540: 0001-netfilter-nat-fix-udp-checksum-corruption.patch
 
@@ -628,7 +625,6 @@ Patch541: mwifiex-Fix-heap-overflow-in-mwifiex_uap_parse_tail_ies.patch
 Patch542: 0001-platform-x86-asus-wmi-Only-Tell-EC-the-OS-will-handl.patch
 
 # Fix the LCD panel on the GPD MicroPC not working, pending as fixes for 5.2
-Patch543: 0001-drm-i915-dsi-Use-a-fuzzy-check-for-burst-mode-clock-.patch
 Patch544: drm-panel-orientation-quirks.patch
 Patch545: efi-bgrt-acpi6.2-support.patch
 
@@ -1870,6 +1866,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 19 2019 Jeremy Cline <jcline@redhat.com> - 5.1.12-200
+- Linux v5.1.12
+
 * Mon Jun 17 2019 Jeremy Cline <jcline@redhat.com> - 5.1.11-200
 - Linux v5.1.11
 - Fixes CVE-2019-11477  (rhbz 1719123 1721254)
