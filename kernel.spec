@@ -553,6 +553,7 @@ Patch305: arm-sdhci-esdhc-imx-fixes.patch
 
 Patch306: arm64-rock960-enable-tsadc.patch
 
+# Raspberry Pi bits
 Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
 
 Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
@@ -560,8 +561,12 @@ Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
-# qcom bits
-Patch350: qcom-Provide-support-for-ACPI.patch
+# QCom ACPI device support pieces
+Patch350: arm64-qcom-pinctrl-support-for-ACPI.patch
+Patch351: arm64-acpi-ignore-5.1-fadts-reported-as-5.0.patch
+Patch352: arm64-acpi-make-ac-and-battery-drivers-available-on-non-x86.patch
+Patch353: arm64-qcom-DWC3-USB-Add-support-for-ACPI-based-AArch64-Laptops.patch
+
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1826,6 +1831,9 @@ fi
 #
 #
 %changelog
+* Sat Jun 22 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- QCom ACPI fixes
+
 * Fri Jun 21 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc5.git4.1
 - Linux v5.2-rc5-290-g4ae004a9bca8
 
