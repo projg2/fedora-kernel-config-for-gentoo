@@ -628,6 +628,10 @@ Patch542: 0001-platform-x86-asus-wmi-Only-Tell-EC-the-OS-will-handl.patch
 Patch544: drm-panel-orientation-quirks.patch
 Patch545: efi-bgrt-acpi6.2-support.patch
 
+# https://github.com/ValveSoftware/steam-for-linux/issues/6326#issuecomment-504606826
+# https://patchwork.ozlabs.org/patch/1120222/
+Patch546: net-tcp-refine-memory-limit-test-in-tcp_fragment.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
