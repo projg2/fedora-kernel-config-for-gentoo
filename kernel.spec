@@ -1863,6 +1863,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 24 2019 Hans de Goede <hdegoede@redhat.com>
+- Extend GPD MicroPC LCD panel quirk to also apply to newer BIOS versions
+
 * Mon Jun 24 2019 Jeremy Cline <jcline@redhat.com> - 5.1.14-300
 - Linux v5.1.14
 
