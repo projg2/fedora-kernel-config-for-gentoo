@@ -69,9 +69,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 5
+%global rcrev 6
 # The git snapshot level
-%define gitrev 4
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -589,9 +589,6 @@ Patch530: crypto-ghash-fix-unaligned-memory-access-in-ghash_setkey.patch
 
 # Fix for new Logitech wireless keyboard support in 5.2, submitted upstream
 Patch534: 0001-HID-logitech-dj-Fix-forwarding-of-very-long-HID-repo.patch
-
-# Fix for broken bluetooth, reverted in upstream stable, not yet in Torvald's tree
-Patch535: Revert-Bluetooth-Align-minimum-encryption-key-size.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1831,6 +1828,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 24 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc6.git0.1
+- Linux v5.2-rc6
+
 * Mon Jun 24 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Disable debugging options.
 
