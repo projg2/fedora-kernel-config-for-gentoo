@@ -560,6 +560,8 @@ Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 
 Patch332: bcm2835-camera-Restore-return-behavior-of-ctrl_set_bitrate.patch
 
+Patch333: bcm2835-vchiq-use-interruptible-waits.patch
+
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
