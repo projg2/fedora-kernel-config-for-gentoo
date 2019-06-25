@@ -558,6 +558,8 @@ Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
 
 Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 
+Patch332: bcm2835-camera-Restore-return-behavior-of-ctrl_set_bitrate.patch
+
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
