@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1863,6 +1863,10 @@ fi
 #
 #
 %changelog
+* Tue Jun 25 2019 Jeremy Cline <jcline@redhat.com> - 5.1.15-300
+- Linux v5.1.15
+- Fixes CVE-2019-12817 (rhbz 1720616 1723697)
+
 * Mon Jun 24 2019 Hans de Goede <hdegoede@redhat.com>
 - Extend GPD MicroPC LCD panel quirk to also apply to newer BIOS versions
 
