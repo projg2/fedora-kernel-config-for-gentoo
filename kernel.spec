@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 6
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -590,9 +590,6 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
 
 Patch530: crypto-ghash-fix-unaligned-memory-access-in-ghash_setkey.patch
-
-# Fix for new Logitech wireless keyboard support in 5.2, submitted upstream
-Patch534: 0001-HID-logitech-dj-Fix-forwarding-of-very-long-HID-repo.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1832,6 +1829,9 @@ fi
 #
 #
 %changelog
+* Fri Jun 28 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc6.git2.1
+- Linux v5.2-rc6-93-g556e2f6020bf
+
 * Tue Jun 25 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc6.git1.1
 - Linux v5.2-rc6-15-g249155c20f9b
 - Reenable debugging options.
