@@ -551,8 +551,6 @@ Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch305: arm-sdhci-esdhc-imx-fixes.patch
 
-Patch306: arm64-rock960-enable-tsadc.patch
-
 # Raspberry Pi bits
 Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
 
