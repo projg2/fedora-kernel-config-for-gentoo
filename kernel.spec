@@ -552,8 +552,6 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-Patch307: arm64-rock960-enable-tsadc.patch
-
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
