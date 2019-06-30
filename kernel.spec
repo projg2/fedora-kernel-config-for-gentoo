@@ -551,6 +551,9 @@ Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch305: arm-sdhci-esdhc-imx-fixes.patch
 
+# Fix accepted for 5.3 https://patchwork.kernel.org/patch/10992783/
+Patch306: arm64-dts-rockchip-Update-DWC3-modules-on-RK3399-SoCs.patch
+
 # Raspberry Pi bits
 Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
 
