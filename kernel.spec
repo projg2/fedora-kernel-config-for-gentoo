@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 16
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -622,6 +622,9 @@ Patch542: 0001-platform-x86-asus-wmi-Only-Tell-EC-the-OS-will-handl.patch
 # Fix the LCD panel on the GPD MicroPC not working, pending as fixes for 5.2
 Patch544: drm-panel-orientation-quirks.patch
 Patch545: efi-bgrt-acpi6.2-support.patch
+
+# Accepted upstream; rhbz 1724357
+Patch546: netfilter-ctnetlink-Fix-regression-in-conntrack-entry.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1861,6 +1864,10 @@ fi
 #
 #
 %changelog
+* Wed Jul 03 2019 Jeremy Cline <jcline@redhat.com> - 5.1.16-300
+- Linux v5.1.16
+- Fix an issue with deleting singular conntrack entries (rhbz 1724357)
+
 * Tue Jun 25 2019 Jeremy Cline <jcline@redhat.com> - 5.1.15-300
 - Linux v5.1.15
 - Fixes CVE-2019-12817 (rhbz 1720616 1723697)
