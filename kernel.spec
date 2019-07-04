@@ -552,9 +552,17 @@ Patch305: qcom-msm89xx-fixes.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
+# Raspberry Pi bits
 Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
 
 Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
+
+# Fix spurious "load avg 4" issue
+Patch333: bcm2835-vchiq-use-interruptible-waits.patch
+
+# The new power driver has regressed display so disable it until the problem is diagnosed
+Patch334: 0001-Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-d.patch
+Patch335: 0002-Revert-ARM-bcm283x-Extend-the-WDT-DT-node-out-to-cov.patch
 
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
@@ -1864,6 +1872,9 @@ fi
 #
 #
 %changelog
+* Thu Jul  4 2019 Peter Robinson <pbrobinson@fedoraproject.org> 
+- Fixes for load avg and display on Raspberry Pi
+
 * Wed Jul 03 2019 Jeremy Cline <jcline@redhat.com> - 5.1.16-200
 - Linux v5.1.16
 - Fix an issue with deleting singular conntrack entries (rhbz 1724357)
