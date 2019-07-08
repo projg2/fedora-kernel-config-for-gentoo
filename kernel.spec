@@ -580,6 +580,10 @@ Patch507: 0001-Drop-that-for-now.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
+# rhbz 1716334
+# https://patchwork.kernel.org/patch/11029027/
+Patch509: iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1818,6 +1822,9 @@ fi
 #
 #
 %changelog
+* Tue Jul 16 2019 Jeremy Cline <jcline@redhat.com>
+- Fix a firmware crash in Intel 7000 and 8000 devices (rhbz 1716334)
+
 * Tue Jul 16 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git5.1
 - Linux v5.2-10808-g9637d517347e
 
