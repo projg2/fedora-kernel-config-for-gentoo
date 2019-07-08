@@ -634,6 +634,10 @@ Patch545: efi-bgrt-acpi6.2-support.patch
 # Accepted upstream; rhbz 1724357
 Patch546: netfilter-ctnetlink-Fix-regression-in-conntrack-entry.patch
 
+# rhbz 1716334
+# https://patchwork.kernel.org/patch/11029027/
+Patch547: iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1872,7 +1876,10 @@ fi
 #
 #
 %changelog
-* Thu Jul  4 2019 Peter Robinson <pbrobinson@fedoraproject.org> 
+* Mon Jul 08 2019 Jeremy Cline <jcline@redhat.com>
+- Fix a firmware crash in Intel 7000 and 8000 devices (rhbz 1716334)
+
+* Thu Jul  4 2019 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fixes for load avg and display on Raspberry Pi
 
 * Wed Jul 03 2019 Jeremy Cline <jcline@redhat.com> - 5.1.16-200
