@@ -22,6 +22,8 @@ Summary: The Linux kernel
 
 %if %{zipmodules}
 %global zipsed -e 's/\.ko$/\.ko.xz/'
+# for parallel xz processes, replace with 1 to go back to single process
+%global zcpu `nproc --all`
 %endif
 
 # define buildid .local
@@ -42,19 +44,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 1
+%define base_sublevel 2
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -546,28 +548,34 @@ Patch303: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
 # rhbz 1574718
 Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
-# https://patchwork.kernel.org/patch/9820417/
-Patch305: qcom-msm89xx-fixes.patch
-
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
-Patch306: arm-sdhci-esdhc-imx-fixes.patch
+Patch305: arm-sdhci-esdhc-imx-fixes.patch
 
-Patch307: arm64-rock960-enable-tsadc.patch
+# Fix accepted for 5.3 https://patchwork.kernel.org/patch/10992783/
+Patch306: arm64-dts-rockchip-Update-DWC3-modules-on-RK3399-SoCs.patch
 
-Patch330: bcm2835-cpufreq-add-CPU-frequency-control-driver.patch
+# Raspberry Pi bits
+Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
 
 Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
+
+Patch332: bcm2835-camera-Restore-return-behavior-of-ctrl_set_bitrate.patch
+
+Patch333: bcm2835-vchiq-use-interruptible-waits.patch
 
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
-# https://patchwork.kernel.org/patch/10858639/
-Patch341: arm64-tegra-Add-NVIDIA-Jetson-Nano-Developer-Kit-support.patch
+# QCom ACPI device support pieces
+Patch350: arm64-qcom-pinctrl-support-for-ACPI.patch
+Patch351: arm64-acpi-ignore-5.1-fadts-reported-as-5.0.patch
+Patch352: arm64-acpi-make-ac-and-battery-drivers-available-on-non-x86.patch
+Patch353: arm64-qcom-DWC3-USB-Add-support-for-ACPI-based-AArch64-Laptops.patch
+Patch354: arm64-ufs-qcom-Add-support-for-platforms-booting-ACPI.patch
 
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
-
 # rhbz 1431375
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
@@ -579,11 +587,10 @@ Patch507: 0001-Drop-that-for-now.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
-# CVE-2019-3900 rhbz 1698757 1702940
-Patch524: net-vhost_net-fix-possible-infinite-loop.patch
+# build fix
+Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
 
-# Fix wifi on various ideapad models not working (rhbz#1703338)
-Patch526: 0001-platform-x86-ideapad-laptop-Remove-no_hw_rfkill_list.patch
+Patch530: crypto-ghash-fix-unaligned-memory-access-in-ghash_setkey.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1558,7 +1565,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
     fi \
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
-    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs xz; \
+    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -P%{zcpu} xz; \
   fi \
 %{nil}
 
@@ -1823,6 +1830,9 @@ fi
 #
 #
 %changelog
+* Tue Jul 09 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-200
+- Linux v5.2.0
+
 * Wed May 22 2019 Jeremy Cline <jcline@redhat.com> - 5.1.4-300
 - Linux v5.1.4
 
