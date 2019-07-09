@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -568,7 +568,6 @@ Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
 # QCom ACPI device support pieces
 Patch350: arm64-qcom-pinctrl-support-for-ACPI.patch
-Patch351: arm64-acpi-ignore-5.1-fadts-reported-as-5.0.patch
 Patch352: arm64-acpi-make-ac-and-battery-drivers-available-on-non-x86.patch
 Patch353: arm64-qcom-DWC3-USB-Add-support-for-ACPI-based-AArch64-Laptops.patch
 Patch354: arm64-ufs-qcom-Add-support-for-platforms-booting-ACPI.patch
@@ -580,7 +579,6 @@ Patch354: arm64-ufs-qcom-Add-support-for-platforms-booting-ACPI.patch
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # gcc9 fixes
-Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
 Patch507: 0001-Drop-that-for-now.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
@@ -589,8 +587,6 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # build fix
 Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
-
-Patch530: crypto-ghash-fix-unaligned-memory-access-in-ghash_setkey.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1830,6 +1826,9 @@ fi
 #
 #
 %changelog
+* Tue Jul 09 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git1.1
+- Linux v5.2-915-g5ad18b2e60b7
+
 * Tue Jul 09 2019 Laura Abbott <labbott@redhat.com>
 - Reenable debugging options.
 
