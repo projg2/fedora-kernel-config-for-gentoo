@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -568,7 +568,7 @@ Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
 # QCom ACPI device support pieces
 Patch350: arm64-qcom-pinctrl-support-for-ACPI.patch
-Patch352: arm64-acpi-make-ac-and-battery-drivers-available-on-non-x86.patch
+# Patch352: arm64-acpi-make-ac-and-battery-drivers-available-on-non-x86.patch
 Patch353: arm64-qcom-DWC3-USB-Add-support-for-ACPI-based-AArch64-Laptops.patch
 Patch354: arm64-ufs-qcom-Add-support-for-platforms-booting-ACPI.patch
 
@@ -1826,6 +1826,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 10 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git2.1
+- Linux v5.2-3135-ge9a83bd23220
+
 * Tue Jul 09 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git1.1
 - Linux v5.2-915-g5ad18b2e60b7
 
