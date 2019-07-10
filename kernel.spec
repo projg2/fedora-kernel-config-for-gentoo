@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 17
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -623,9 +623,6 @@ Patch538: powerpc-fix-a-missing-check-in-dlpar_parse_cc_property.patch
 
 # CVE-2019-10126 rhbz 1716992 1720122
 Patch541: mwifiex-Fix-heap-overflow-in-mwifiex_uap_parse_tail_ies.patch
-
-# 1697069 LCD panel an Asus EeePC 1025C not lighting up, submitted upstream
-Patch542: 0001-platform-x86-asus-wmi-Only-Tell-EC-the-OS-will-handl.patch
 
 # Fix the LCD panel on the GPD MicroPC not working, pending as fixes for 5.2
 Patch544: drm-panel-orientation-quirks.patch
@@ -1876,6 +1873,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 10 2019 Jeremy Cline <jcline@redhat.com> - 5.1.17-300
+- Linux v5.1.17
+
 * Mon Jul 08 2019 Jeremy Cline <jcline@redhat.com>
 - Fix a firmware crash in Intel 7000 and 8000 devices (rhbz 1716334)
 
