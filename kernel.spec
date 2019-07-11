@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 2
+%define gitrev 3
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -1826,6 +1826,9 @@ fi
 #
 #
 %changelog
+* Thu Jul 11 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git3.1
+- Linux v5.2-3311-g5450e8a316a6
+
 * Wed Jul 10 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git2.1
 - Linux v5.2-3135-ge9a83bd23220
 
