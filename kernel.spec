@@ -365,7 +365,7 @@ Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
-ExclusiveArch: %{all_x86} x86_64 s390x %{arm} aarch64 ppc64le
+ExclusiveArch: x86_64 s390x %{arm} aarch64 ppc64le
 ExclusiveOS: Linux
 %ifnarch %{nobuildarches}
 Requires: kernel-core-uname-r = %{KVERREL}%{?variant}
@@ -1820,6 +1820,9 @@ fi
 #
 #
 %changelog
+* Fri Jul 12 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Turn off i686 builds
+
 * Fri Jul 12 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git4.1
 - Linux v5.2-7109-gd7d170a8e357
 
