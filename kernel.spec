@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 4
+%define gitrev 5
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -563,7 +563,8 @@ Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
 # QCom ACPI device support pieces
-Patch350: arm64-qcom-pinctrl-support-for-ACPI.patch
+# I think both of these may be merged?
+# Patch350: arm64-qcom-pinctrl-support-for-ACPI.patch
 # Patch352: arm64-acpi-make-ac-and-battery-drivers-available-on-non-x86.patch
 
 # 400 - IBM (ppc/s390x) patches
@@ -578,9 +579,6 @@ Patch507: 0001-Drop-that-for-now.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
-
-# build fix
-Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1820,6 +1818,9 @@ fi
 #
 #
 %changelog
+* Tue Jul 16 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git5.1
+- Linux v5.2-10808-g9637d517347e
+
 * Fri Jul 12 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Turn off i686 builds
 
