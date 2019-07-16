@@ -563,9 +563,6 @@ Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
 # QCom ACPI device support pieces
-# I think both of these may be merged?
-# Patch350: arm64-qcom-pinctrl-support-for-ACPI.patch
-# Patch352: arm64-acpi-make-ac-and-battery-drivers-available-on-non-x86.patch
 
 # 400 - IBM (ppc/s390x) patches
 
