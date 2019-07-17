@@ -44,7 +44,7 @@ ARCH_LIST="arm arm64 powerpc s390 x86"
 headers_dir=$(mktemp -d)
 trap 'rm -rf "$headers_dir"' SIGHUP SIGINT SIGTERM EXIT
 
-make HDR_ARCH_LIST="$ARCH_LIST" INSTALL_HDR_PATH=$headers_dir headers_install_all
+make HDR_ARCH_LIST="$ARCH_LIST" INSTALL_HDR_PATH=$headers_dir headers_install
 find $headers_dir \
 	\( -name .install -o -name .check -o \
 	-name ..install.cmd -o -name ..check.cmd \) | xargs rm -f
