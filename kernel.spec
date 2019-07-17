@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 5
+%define gitrev 6
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -1819,6 +1819,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 17 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git6.1
+- Linux v5.2-11043-g0a8ad0ffa4d8
+
 * Tue Jul 16 2019 Jeremy Cline <jcline@redhat.com>
 - Fix a firmware crash in Intel 7000 and 8000 devices (rhbz 1716334)
 
