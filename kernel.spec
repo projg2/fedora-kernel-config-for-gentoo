@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 6
+%define gitrev 7
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -555,7 +555,7 @@ Patch305: arm-sdhci-esdhc-imx-fixes.patch
 Patch306: arm64-dts-rockchip-Update-DWC3-modules-on-RK3399-SoCs.patch
 
 # Raspberry Pi bits
-Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
+# Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
 
 Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 
@@ -1819,6 +1819,9 @@ fi
 #
 #
 %changelog
+* Thu Jul 18 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git7.1
+- Linux v5.2-11564-g22051d9c4a57
+
 * Wed Jul 17 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git6.1
 - Linux v5.2-11043-g0a8ad0ffa4d8
 
