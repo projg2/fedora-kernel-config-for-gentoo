@@ -629,6 +629,9 @@ Patch546: netfilter-ctnetlink-Fix-regression-in-conntrack-entry.patch
 # https://patchwork.kernel.org/patch/11029027/
 Patch547: iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
 
+# CVE-2019-13631 rhbz 1731000 1731001
+Patch548: Input-gtco-bounds-check-collection-indent-level.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1867,6 +1870,9 @@ fi
 #
 #
 %changelog
+* Thu Jul 18 2019 Jeremy Cline <jcline@redhat.com>
+- Fix CVE-2019-13631 (rhbz 1731000 1731001)
+
 * Mon Jul 15 2019 Jeremy Cline <jcline@redhat.com> - 5.1.18-300
 - Linux v5.1.18
 
