@@ -554,6 +554,9 @@ Patch305: arm-sdhci-esdhc-imx-fixes.patch
 # Fix accepted for 5.3 https://patchwork.kernel.org/patch/10992783/
 Patch306: arm64-dts-rockchip-Update-DWC3-modules-on-RK3399-SoCs.patch
 
+# RHBZ Bug 1576593 - work around while vendor investigates
+Patch307: arm-make-highpte-not-expert.patch
+
 # Raspberry Pi bits
 Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
 
@@ -1830,6 +1833,9 @@ fi
 #
 #
 %changelog
+* Fri Jul 19 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- RHBZ Bug 1576593 - work around while vendor investigates
+
 * Tue Jul 09 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-200
 - Linux v5.2.0
 
