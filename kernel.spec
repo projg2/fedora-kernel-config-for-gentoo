@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -561,10 +561,6 @@ Patch307: arm-make-highpte-not-expert.patch
 Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
 
 Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
-
-Patch332: bcm2835-camera-Restore-return-behavior-of-ctrl_set_bitrate.patch
-
-Patch333: bcm2835-vchiq-use-interruptible-waits.patch
 
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
@@ -1836,6 +1832,9 @@ fi
 #
 #
 %changelog
+* Sat Jul 20 2019 Justin M. Forbes <jforbes@redhat.com> - 5.2.1-200
+- Linux v5.2.1
+
 * Sat Jul 20 2019 Hans de Goede <hdegoede@redhat.com>
 - Fix the LCD panel orientation on the GPD MicroPC
 
