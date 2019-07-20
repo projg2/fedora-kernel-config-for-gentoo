@@ -595,6 +595,9 @@ Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
 
 Patch530: crypto-ghash-fix-unaligned-memory-access-in-ghash_setkey.patch
 
+# Fix the LCD panel orientation on the GPD MicroPC, pending as fix for 5.3
+Patch531: drm-panel-orientation-quirks.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1833,6 +1836,9 @@ fi
 #
 #
 %changelog
+* Sat Jul 20 2019 Hans de Goede <hdegoede@redhat.com>
+- Fix the LCD panel orientation on the GPD MicroPC
+
 * Fri Jul 19 2019 Peter Robinson <pbrobinson@fedoraproject.org>
 - RHBZ Bug 1576593 - work around while vendor investigates
 
