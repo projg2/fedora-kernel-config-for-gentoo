@@ -69,9 +69,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 0
+%global rcrev 1
 # The git snapshot level
-%define gitrev 7
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -552,15 +552,13 @@ Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 Patch305: arm-sdhci-esdhc-imx-fixes.patch
 
 # Fix accepted for 5.3 https://patchwork.kernel.org/patch/10992783/
-Patch306: arm64-dts-rockchip-Update-DWC3-modules-on-RK3399-SoCs.patch
+# Patch306: arm64-dts-rockchip-Update-DWC3-modules-on-RK3399-SoCs.patch
 
 # RHBZ Bug 1576593 - work around while vendor investigates
 Patch307: arm-make-highpte-not-expert.patch
 
 # Raspberry Pi bits
 # Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
-
-Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
@@ -1822,6 +1820,9 @@ fi
 #
 #
 %changelog
+* Sun Jul 21 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc1.git0.1
+- Linux v5.3-rc1
+
 * Sun Jul 21 2019 Laura Abbott <labbott@redhat.com>
 - Disable debugging options.
 
