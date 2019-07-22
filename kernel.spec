@@ -565,13 +565,6 @@ Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
-# QCom ACPI device support pieces
-Patch350: arm64-qcom-pinctrl-support-for-ACPI.patch
-Patch351: arm64-acpi-ignore-5.1-fadts-reported-as-5.0.patch
-Patch352: arm64-acpi-make-ac-and-battery-drivers-available-on-non-x86.patch
-Patch353: arm64-qcom-DWC3-USB-Add-support-for-ACPI-based-AArch64-Laptops.patch
-Patch354: arm64-ufs-qcom-Add-support-for-platforms-booting-ACPI.patch
-
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
