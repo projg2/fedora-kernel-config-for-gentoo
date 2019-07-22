@@ -638,6 +638,9 @@ Patch549: xen-let-alloc_xenballooned_pages-fail-if-not-enough-.patch
 # CVE-2019-????? rhbz 1731784
 Patch550: 8250_lpss-check-null-return-when-calling-pci_ioremap.patch
 
+# rhbz 1732045
+Patch551: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1876,6 +1879,9 @@ fi
 #
 #
 %changelog
+* Mon Jul 22 2019 Laura Abbott <labbott@redhat.com>
+- Bring in DMA fix (rhbz 1732045)
+
 * Mon Jul 22 2019 Jeremy Cline <jcline@redhat.com> - 5.1.19-200
 - Linux v5.1.19
 - Fix Xen Security Advisory 300 (rhbz 1731862 1731864)
