@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 19
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -620,7 +620,6 @@ Patch538: powerpc-fix-a-missing-check-in-dlpar_parse_cc_property.patch
 
 # Fix the LCD panel on the GPD MicroPC not working, pending as fixes for 5.2
 Patch544: drm-panel-orientation-quirks.patch
-Patch545: efi-bgrt-acpi6.2-support.patch
 
 # Accepted upstream; rhbz 1724357
 Patch546: netfilter-ctnetlink-Fix-regression-in-conntrack-entry.patch
@@ -631,6 +630,13 @@ Patch547: iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
 
 # CVE-2019-13631 rhbz 1731000 1731001
 Patch548: Input-gtco-bounds-check-collection-indent-level.patch
+
+# XSA-300 rhbz 1731862 1731864
+# https://xenbits.xen.org/xsa/advisory-300.html
+Patch549: xen-let-alloc_xenballooned_pages-fail-if-not-enough-.patch
+
+# CVE-2019-????? rhbz 1731784
+Patch550: 8250_lpss-check-null-return-when-calling-pci_ioremap.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1870,6 +1876,11 @@ fi
 #
 #
 %changelog
+* Mon Jul 22 2019 Jeremy Cline <jcline@redhat.com> - 5.1.19-300
+- Linux v5.1.19
+- Fix Xen Security Advisory 300 (rhbz 1731862 1731864)
+- Fix a null pointer dereference in the 8250_lpss serial driver (rhbz 1731784)
+
 * Thu Jul 18 2019 Jeremy Cline <jcline@redhat.com>
 - Fix CVE-2019-13631 (rhbz 1731000 1731001)
 
