@@ -582,6 +582,8 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # https://patchwork.kernel.org/patch/11029027/
 Patch509: iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
 
+Patch510: scsi-fix-the-dma_max_mapping_size-call.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
