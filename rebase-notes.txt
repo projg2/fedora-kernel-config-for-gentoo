@@ -1,3 +1,6 @@
+Linux 5.3 rebase notes:
+- Need to re-enable ISDN
+
 For all F29 and F30 builds:
 - Re-enable i686
 
