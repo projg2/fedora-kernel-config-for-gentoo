@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -581,8 +581,6 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # build fix
 Patch527: v2-powerpc-mm-mark-more-tlb-functions-as-__always_inline.patch
-
-Patch530: crypto-ghash-fix-unaligned-memory-access-in-ghash_setkey.patch
 
 # Fix the LCD panel orientation on the GPD MicroPC, pending as fix for 5.3
 Patch531: drm-panel-orientation-quirks.patch
@@ -1828,6 +1826,9 @@ fi
 #
 #
 %changelog
+* Fri Jul 26 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.3-200
+- Linux v5.2.3
+
 * Mon Jul 22 2019 Laura Abbott <labbott@redhat.com>
 - Bring in DMA fix (rhbz 1732045)
 
