@@ -588,6 +588,9 @@ Patch531: drm-panel-orientation-quirks.patch
 # rhbz 1732045
 Patch532: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 
+# This should make stable soon
+Patch533: for-v5.2-iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1826,6 +1829,9 @@ fi
 #
 #
 %changelog
+* Fri Jul 26 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix for older iwlwifi NICs.
+
 * Fri Jul 26 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.3-200
 - Linux v5.2.3
 
