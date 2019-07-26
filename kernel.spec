@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 19
+%define stable_update 20
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -621,19 +621,9 @@ Patch538: powerpc-fix-a-missing-check-in-dlpar_parse_cc_property.patch
 # Fix the LCD panel on the GPD MicroPC not working, pending as fixes for 5.2
 Patch544: drm-panel-orientation-quirks.patch
 
-# Accepted upstream; rhbz 1724357
-Patch546: netfilter-ctnetlink-Fix-regression-in-conntrack-entry.patch
-
 # rhbz 1716334
 # https://patchwork.kernel.org/patch/11029027/
 Patch547: iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
-
-# CVE-2019-13631 rhbz 1731000 1731001
-Patch548: Input-gtco-bounds-check-collection-indent-level.patch
-
-# XSA-300 rhbz 1731862 1731864
-# https://xenbits.xen.org/xsa/advisory-300.html
-Patch549: xen-let-alloc_xenballooned_pages-fail-if-not-enough-.patch
 
 # CVE-2019-????? rhbz 1731784
 Patch550: 8250_lpss-check-null-return-when-calling-pci_ioremap.patch
@@ -1879,6 +1869,9 @@ fi
 #
 #
 %changelog
+* Fri Jul 26 2019 Jeremy Cline <jcline@redhat.com> - 5.1.20-200
+- Linux v5.1.20
+
 * Mon Jul 22 2019 Laura Abbott <labbott@redhat.com>
 - Bring in DMA fix (rhbz 1732045)
 
