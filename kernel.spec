@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 1
 # The git snapshot level
-%define gitrev 3
+%define gitrev 4
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -1822,6 +1822,10 @@ fi
 #
 #
 %changelog
+* Fri Jul 26 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc1.git4.1
+- Linux v5.3-rc1-96-g6789f873ed37
+- Enable nvram driver (rhbz 1732612)
+
 * Thu Jul 25 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc1.git3.1
 - Linux v5.3-rc1-82-gbed38c3e2dca
 
