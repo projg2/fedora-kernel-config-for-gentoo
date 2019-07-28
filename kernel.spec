@@ -562,6 +562,9 @@ Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
 
 Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 
+Patch334: 0001-Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-d.patch
+Patch335: 0002-Revert-ARM-bcm283x-Extend-the-WDT-DT-node-out-to-cov.patch
+
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
 
