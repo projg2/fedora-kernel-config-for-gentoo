@@ -69,9 +69,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 1
+%global rcrev 2
 # The git snapshot level
-%define gitrev 4
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -581,8 +581,6 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # rhbz 1716334
 # https://patchwork.kernel.org/patch/11029027/
 Patch509: iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
-
-Patch510: scsi-fix-the-dma_max_mapping_size-call.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1822,6 +1820,9 @@ fi
 #
 #
 %changelog
+* Mon Jul 29 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc2.git0.1
+- Linux v5.3-rc2
+
 * Mon Jul 29 2019 Laura Abbott <labbott@redhat.com>
 - Disable debugging options.
 
