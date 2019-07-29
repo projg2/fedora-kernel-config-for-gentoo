@@ -54,7 +54,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 20
+%define stable_update 21
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1869,6 +1869,9 @@ fi
 #
 #
 %changelog
+* Mon Jul 29 2019 Jeremy Cline <jcline@redhat.com> - 5.1.21-200
+- Linux v5.1.21
+
 * Fri Jul 26 2019 Jeremy Cline <jcline@redhat.com> - 5.1.20-200
 - Linux v5.1.20
 
