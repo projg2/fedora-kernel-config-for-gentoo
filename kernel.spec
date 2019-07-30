@@ -591,8 +591,9 @@ Patch531: drm-panel-orientation-quirks.patch
 # rhbz 1732045
 Patch532: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 
-# This should make stable soon
+# These should make stable soon
 Patch533: for-v5.2-iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
+Patch534: stable-v5.2-drm-i915-vbt-Fix-VBT-parsing-for-the-PSR-section.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1832,6 +1833,9 @@ fi
 #
 #
 %changelog
+* Tue Jul 30 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix for screen freezes with i915
+
 * Mon Jul 29 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.4-200
 - Linux v5.2.4 Rebase
 
