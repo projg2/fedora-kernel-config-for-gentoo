@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 2
 # The git snapshot level
-%define gitrev 2
+%define gitrev 3
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -1820,6 +1820,10 @@ fi
 #
 #
 %changelog
+* Thu Aug 01 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc2.git3.1
+- Linux v5.3-rc2-60-g5c6207539aea
+- Enable 8250 serial ports on powerpc
+
 * Wed Jul 31 2019 Peter Robinson <pbrobinson@fedoraproject.org> 5.3.0-0.rc2.git2.2
 - Enable IMA Appraisal
 
