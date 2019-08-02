@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 2
 # The git snapshot level
-%define gitrev 3
+%define gitrev 4
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -1820,6 +1820,9 @@ fi
 #
 #
 %changelog
+* Fri Aug 02 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc2.git4.1
+- Linux v5.3-rc2-70-g1e78030e5e5b
+
 * Thu Aug 01 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc2.git3.1
 - Linux v5.3-rc2-60-g5c6207539aea
 - Enable 8250 serial ports on powerpc
