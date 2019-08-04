@@ -562,6 +562,8 @@ Patch307: arm-make-highpte-not-expert.patch
 
 # Tegra bits
 Patch340: arm64-tegra-jetson-tx1-fixes.patch
+# https://www.spinics.net/lists/linux-tegra/msg43110.html
+Patch341: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
 
 # QCom ACPI device support pieces
 
