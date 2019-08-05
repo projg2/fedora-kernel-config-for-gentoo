@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -592,8 +592,11 @@ Patch532: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 Patch533: for-v5.2-iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
 Patch534: stable-v5.2-drm-i915-vbt-Fix-VBT-parsing-for-the-PSR-section.patch
 
-# CVE-2019-10207 rhbz 1733874 1734242
-Patch535: bluetooth-hci_uart-check-for-missing-tty-operations.patch
+# rhbz 1737046 temporary revert until issue is fixed upstream
+Patch535: 0001-Revert-for-bz-1737046.patch
+
+# rhbz 1730762
+Patch526: HID-input-fix-a4tech-horizontal-wheel-custom-usage.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1833,6 +1836,10 @@ fi
 #
 #
 %changelog
+* Mon Aug 05 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.6-200
+- Linux v5.2.6
+- Temporary fixes for (rhbz 1737046 1730762)
+
 * Wed Jul 31 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.5-200
 - Linux v5.2.5
 - Fix CVE-2019-10207 (rhbz 1733874 1734242)
