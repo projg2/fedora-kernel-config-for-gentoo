@@ -598,6 +598,9 @@ Patch535: 0001-Revert-for-bz-1737046.patch
 # rhbz 1730762
 Patch526: HID-input-fix-a4tech-horizontal-wheel-custom-usage.patch
 
+# rhbz 1737171
+Patch527: 1-1-netfilter-nf_tables-fix-module-autoload-for-redir.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1836,6 +1839,9 @@ fi
 #
 #
 %changelog
+* Tue Aug 06 2019 Laura Abbott <labbott@redhat.com>
+- Fix netfilter regression (rhbz 1737171)
+
 * Mon Aug 05 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.6-200
 - Linux v5.2.6
 - Temporary fixes for (rhbz 1737046 1730762)
