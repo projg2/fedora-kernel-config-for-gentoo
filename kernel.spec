@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 3
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -579,10 +579,6 @@ Patch507: 0001-Drop-that-for-now.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
-
-# rhbz 1716334
-# https://patchwork.kernel.org/patch/11029027/
-Patch509: iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1822,6 +1818,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 07 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc3.git1.1
+- Linux v5.3-rc3-282-g33920f1ec5bf
+
 * Wed Aug 07 2019 Laura Abbott <labbott@redhat.com>
 - Reenable debugging options.
 
