@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1839,6 +1839,9 @@ fi
 #
 #
 %changelog
+* Thu Aug 08 2019 Justin M. Forbes <jforbes@redhat.com> - 5.2.7-200
+- Linux v5.2.7
+
 * Tue Aug 06 2019 Laura Abbott <labbott@redhat.com>
 - Fix netfilter regression (rhbz 1737171)
 
