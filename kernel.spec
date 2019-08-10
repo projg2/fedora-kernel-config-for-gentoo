@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -590,7 +590,6 @@ Patch532: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 
 # These should make stable soon
 Patch533: for-v5.2-iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
-Patch534: stable-v5.2-drm-i915-vbt-Fix-VBT-parsing-for-the-PSR-section.patch
 
 # rhbz 1737046 temporary revert until issue is fixed upstream
 Patch535: 0001-Revert-for-bz-1737046.patch
@@ -1839,6 +1838,9 @@ fi
 #
 #
 %changelog
+* Sat Aug 10 2019 Justin M. Forbes <jforbes@redhat.com> - 5.2.8-200
+- Linux v5.2.8
+
 * Thu Aug 08 2019 Justin M. Forbes <jforbes@redhat.com> - 5.2.7-200
 - Linux v5.2.7
 
