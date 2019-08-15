@@ -495,8 +495,6 @@ Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 # Standalone patches
 # 100 - Generic long running patches
 
-Patch110: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
-
 Patch111: input-kill-stupid-messages.patch
 
 Patch112: die-floppy-die.patch
