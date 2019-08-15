@@ -497,10 +497,6 @@ Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 
 Patch111: input-kill-stupid-messages.patch
 
-Patch112: die-floppy-die.patch
-
-Patch113: no-pcspkr-modalias.patch
-
 Patch115: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
 
 Patch116: crash-driver.patch
