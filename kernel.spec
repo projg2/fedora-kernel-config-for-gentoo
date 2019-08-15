@@ -505,8 +505,6 @@ Patch115: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
 
 Patch116: crash-driver.patch
 
-Patch117: lis3-improve-handling-of-null-rate.patch
-
 Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
 # This no longer applies, let's see if it needs to be updated
