@@ -495,8 +495,6 @@ Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 # Standalone patches
 # 100 - Generic long running patches
 
-Patch115: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
-
 Patch116: crash-driver.patch
 
 Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
