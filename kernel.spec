@@ -507,8 +507,6 @@ Patch116: crash-driver.patch
 
 Patch117: lis3-improve-handling-of-null-rate.patch
 
-Patch118: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-
 Patch120: ath9k-rx-dma-stop-check.patch
 
 Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
