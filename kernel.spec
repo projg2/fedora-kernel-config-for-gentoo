@@ -583,16 +583,20 @@ Patch507: 0001-Drop-that-for-now.patch
 Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # Fix the LCD panel orientation on the GPD MicroPC, pending as fix for 5.3
-Patch531: drm-panel-orientation-quirks.patch
+Patch510: drm-panel-orientation-quirks.patch
 
 # rhbz 1732045
-Patch532: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
-
-# These should make stable soon
-Patch533: for-v5.2-iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
+Patch511: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 
 # rhbz 1730762
-Patch526: HID-input-fix-a4tech-horizontal-wheel-custom-usage.patch
+Patch512: HID-input-fix-a4tech-horizontal-wheel-custom-usage.patch
+
+# These should make stable soon
+Patch513: for-v5.2-iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
+
+# rhbz 1733369
+# https://www.spinics.net/lists/linux-wireless/msg188751.html
+Patch514: iwlwifi-Add-support-for-SAR-South-Korea-limitation.patch
 
 # END OF PATCH DEFINITIONS
 
