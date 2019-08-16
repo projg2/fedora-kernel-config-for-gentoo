@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -591,15 +591,8 @@ Patch532: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 # These should make stable soon
 Patch533: for-v5.2-iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
 
-# rhbz 1737046 temporary revert until issue is fixed upstream
-Patch535: 0001-Revert-for-bz-1737046.patch
-
 # rhbz 1730762
 Patch526: HID-input-fix-a4tech-horizontal-wheel-custom-usage.patch
-
-# rhbz 1737171
-Patch527: 1-1-netfilter-nf_tables-fix-module-autoload-for-redir.patch
-
 
 # END OF PATCH DEFINITIONS
 
@@ -1839,6 +1832,9 @@ fi
 #
 #
 %changelog
+* Fri Aug 16 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.9-100
+- Linux v5.2.9
+
 * Sat Aug 10 2019 Justin M. Forbes <jforbes@redhat.com> - 5.2.8-100
 - Linux v5.2.8
 
