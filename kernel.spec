@@ -598,6 +598,9 @@ Patch513: for-v5.2-iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
 # https://www.spinics.net/lists/linux-wireless/msg188751.html
 Patch514: iwlwifi-Add-support-for-SAR-South-Korea-limitation.patch
 
+# Nouveau fixes headed upstream
+Patch515: v2-drm-nouveau-Only-recalculate-PBN-VCPI-on-mode-connector-changes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
