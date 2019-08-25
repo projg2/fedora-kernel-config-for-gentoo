@@ -538,34 +538,26 @@ Patch212: efi-secureboot.patch
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
-# http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch301: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
-# http://patchwork.ozlabs.org/patch/587554/
-Patch302: ARM-tegra-usb-no-reset.patch
+# RHBZ Bug 1576593 - work around while vendor investigates
+Patch301: arm-make-highpte-not-expert.patch
 
 # https://patchwork.kernel.org/patch/10351797/
-Patch303: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
+Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
 # rhbz 1574718
-Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
+Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
+
+# http://www.spinics.net/lists/linux-tegra/msg26029.html
+Patch304: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
+# http://patchwork.ozlabs.org/patch/587554/
+Patch305: ARM-tegra-usb-no-reset.patch
 
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
-Patch305: arm-sdhci-esdhc-imx-fixes.patch
-
-# Fix accepted for 5.3 https://patchwork.kernel.org/patch/10992783/
-# Patch306: arm64-dts-rockchip-Update-DWC3-modules-on-RK3399-SoCs.patch
-
-# RHBZ Bug 1576593 - work around while vendor investigates
-Patch307: arm-make-highpte-not-expert.patch
-
-# Raspberry Pi bits
-# Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
+Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
 # Tegra bits
-Patch340: arm64-tegra-jetson-tx1-fixes.patch
+Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
-Patch341: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
-
-# QCom ACPI device support pieces
+Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
 
 # 400 - IBM (ppc/s390x) patches
 
