@@ -594,6 +594,10 @@ Patch512: HID-input-fix-a4tech-horizontal-wheel-custom-usage.patch
 # These should make stable soon
 Patch513: for-v5.2-iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
 
+# CVE-2019-14814 CVE-2019-14815 CVE-2019-14816
+# rhbz 1744130 1744137 1744149 1746566 1746567 
+Patch514: mwifiex-Fix-three-heap-overflow-at-parsing-element-in-cfg80211_ap_settings.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1831,6 +1835,10 @@ fi
 #
 #
 %changelog
+* Wed Aug 28 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix mwifiex CVE-2019-14814 CVE-2019-14815 CVE-2019-14816
+- (rhbz 1744130 1744137 1744149 1746566 1746567)
+
 * Mon Aug 26 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.10-100
 - Linux v5.2.10
 
