@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -588,15 +588,15 @@ Patch510: drm-panel-orientation-quirks.patch
 # rhbz 1732045
 Patch511: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 
-# rhbz 1730762
-Patch512: HID-input-fix-a4tech-horizontal-wheel-custom-usage.patch
-
-# These should make stable soon
-Patch513: for-v5.2-iwlwifi-mvm-disable-TX-AMSDU-on-older-NICs.patch
-
 # CVE-2019-14814 CVE-2019-14815 CVE-2019-14816
 # rhbz 1744130 1744137 1744149 1746566 1746567 
 Patch514: mwifiex-Fix-three-heap-overflow-at-parsing-element-in-cfg80211_ap_settings.patch
+
+# CVE-2019-15504 rhbz 1746725 1746726
+Patch515: fix-a-double-free-bug-in-rsi_91x_deinit.patch
+
+# CVE-2019-15505 rhbz 1746732 1746734
+Patch516: technisat-usb2-break-out-of-loop-at-end-of-buffer.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1835,6 +1835,12 @@ fi
 #
 #
 %changelog
+* Thu Aug 29 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.11-200
+- Linux v5.2.11
+- Fix CVE-2019-15504 (rhbz 1746725 1746726)
+- Fix CVE-2019-15505 (rhbz 1746732 1746734)
+- Fix CVE-2019-15538 (rhbz 1746777 1746779)
+
 * Wed Aug 28 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix mwifiex CVE-2019-14814 CVE-2019-14815 CVE-2019-14816
 - (rhbz 1744130 1744137 1744149 1746566 1746567)
