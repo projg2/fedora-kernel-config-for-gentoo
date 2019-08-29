@@ -558,6 +558,8 @@ Patch306: arm-sdhci-esdhc-imx-fixes.patch
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
+# https://patchwork.kernel.org/patch/11084925/
+Patch322: arm64-Revert-mmc-sdhci-tegra-drop---get_ro-implementation.patch
 
 # 400 - IBM (ppc/s390x) patches
 
