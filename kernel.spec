@@ -811,42 +811,6 @@ if [ "%{patches}" != "%%{patches}" ] ; then
   done
 fi 2>/dev/null
 
-patch_command='patch -p1 -F1 -s'
-ApplyPatch()
-{
-  local patch=$1
-  shift
-  if [ ! -f $RPM_SOURCE_DIR/$patch ]; then
-    exit 1
-  fi
-  if ! grep -E "^Patch[0-9]+: $patch\$" %{_specdir}/${RPM_PACKAGE_NAME%%%%%{?variant}}.spec ; then
-    if [ "${patch:0:8}" != "patch-5." ] ; then
-      echo "ERROR: Patch  $patch  not listed as a source patch in specfile"
-      exit 1
-    fi
-  fi 2>/dev/null
-  case "$patch" in
-  *.bz2) bunzip2 < "$RPM_SOURCE_DIR/$patch" | $patch_command ${1+"$@"} ;;
-  *.gz)  gunzip  < "$RPM_SOURCE_DIR/$patch" | $patch_command ${1+"$@"} ;;
-  *.xz)  unxz    < "$RPM_SOURCE_DIR/$patch" | $patch_command ${1+"$@"} ;;
-  *) $patch_command ${1+"$@"} < "$RPM_SOURCE_DIR/$patch" ;;
-  esac
-}
-
-# don't apply patch if it's empty
-ApplyOptionalPatch()
-{
-  local patch=$1
-  shift
-  if [ ! -f $RPM_SOURCE_DIR/$patch ]; then
-    exit 1
-  fi
-  local C=$(wc -l $RPM_SOURCE_DIR/$patch | awk '{print $1}')
-  if [ "$C" -gt 9 ]; then
-    ApplyPatch $patch ${1+"$@"}
-  fi
-}
-
 # First we unpack the kernel tarball.
 # If this isn't the first make prep, we use links to the existing clean tarball
 # which speeds things up quite a bit.
