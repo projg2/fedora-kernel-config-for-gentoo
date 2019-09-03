@@ -69,9 +69,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 6
+%global rcrev 7
 # The git snapshot level
-%define gitrev 2
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -558,8 +558,6 @@ Patch306: arm-sdhci-esdhc-imx-fixes.patch
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
-# https://patchwork.kernel.org/patch/11084925/
-Patch322: arm64-Revert-mmc-sdhci-tegra-drop---get_ro-implementation.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1775,6 +1773,9 @@ fi
 #
 #
 %changelog
+* Tue Sep 03 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc7.git0.1
+- Linux v5.3-rc7
+
 * Tue Sep 03 2019 Laura Abbott <labbott@redhat.com>
 - Disable debugging options.
 
