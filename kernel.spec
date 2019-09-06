@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -559,8 +559,6 @@ Patch307: arm-make-highpte-not-expert.patch
 
 # Raspberry Pi bits
 Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
-
-Patch331: watchdog-bcm2835_wdt-Fix-module-autoload.patch
 
 Patch334: 0001-Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-d.patch
 Patch335: 0002-Revert-ARM-bcm283x-Extend-the-WDT-DT-node-out-to-cov.patch
@@ -1835,6 +1833,9 @@ fi
 #
 #
 %changelog
+* Fri Sep 06 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.13-100
+- Linux v5.2.13
+
 * Thu Aug 29 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.11-100
 - Linux v5.2.11
 - Fix CVE-2019-15504 (rhbz 1746725 1746726)
