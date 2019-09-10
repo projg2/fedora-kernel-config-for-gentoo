@@ -562,8 +562,6 @@ Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
 # QCom laptop bits
 # https://patchwork.kernel.org/patch/11133827/
 Patch330: arm64-qcom-i2c-geni-Disable-DMA-processing-on-the-Lenovo-Yoga-C630.patch
-# https://patchwork.kernel.org/patch/11127947/
-Patch331: arm64-qcom-soc-geni-Provide-parameter-error-checking.patch
 # https://patchwork.kernel.org/patch/11133293/
 Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
 
