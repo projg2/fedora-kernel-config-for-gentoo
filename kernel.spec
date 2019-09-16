@@ -50,13 +50,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 2
+%define base_sublevel 3
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -538,33 +538,43 @@ Patch212: efi-secureboot.patch
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
-# http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch301: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
-# http://patchwork.ozlabs.org/patch/587554/
-Patch302: ARM-tegra-usb-no-reset.patch
+# RHBZ Bug 1576593 - work around while vendor investigates
+Patch301: arm-make-highpte-not-expert.patch
 
 # https://patchwork.kernel.org/patch/10351797/
-Patch303: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
+Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
 # rhbz 1574718
-Patch304: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
+Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
+
+# http://www.spinics.net/lists/linux-tegra/msg26029.html
+Patch304: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
+# http://patchwork.ozlabs.org/patch/587554/
+Patch305: ARM-tegra-usb-no-reset.patch
 
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
-Patch305: arm-sdhci-esdhc-imx-fixes.patch
+Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
-# Fix accepted for 5.3 https://patchwork.kernel.org/patch/10992783/
-Patch306: arm64-dts-rockchip-Update-DWC3-modules-on-RK3399-SoCs.patch
-
-# RHBZ Bug 1576593 - work around while vendor investigates
-Patch307: arm-make-highpte-not-expert.patch
-
-# Raspberry Pi bits
-Patch330: ARM-cpufreq-support-for-Raspberry-Pi.patch
-
-Patch334: 0001-Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-d.patch
-Patch335: 0002-Revert-ARM-bcm283x-Extend-the-WDT-DT-node-out-to-cov.patch
+# https://patchwork.kernel.org/patch/11173461/
+Patch307: arm64-dts-rockchip-fix-RockPro64-vdd-log-regulator-settings.patch
+# https://patchwork.kernel.org/patch/11155461/
+Patch308: arm64-dts-rockchip-fix-Rockpro64-RK808-interrupt-line.patch
 
 # Tegra bits
-Patch340: arm64-tegra-jetson-tx1-fixes.patch
+Patch320: arm64-tegra-jetson-tx1-fixes.patch
+# https://www.spinics.net/lists/linux-tegra/msg43110.html
+Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
+# https://patchwork.kernel.org/patch/11171225/
+Patch322: mfd-max77620-Do-not-allocate-IRQs-upfront.patch
+# https://patchwork.ozlabs.org/patch/1170631/
+Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
+# https://www.spinics.net/lists/linux-tegra/msg44216.html
+Patch325: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
+
+# QCom laptop bits
+# https://patchwork.kernel.org/patch/11133827/
+Patch330: arm64-qcom-i2c-geni-Disable-DMA-processing-on-the-Lenovo-Yoga-C630.patch
+# https://patchwork.kernel.org/patch/11133293/
+Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -573,25 +583,20 @@ Patch340: arm64-tegra-jetson-tx1-fixes.patch
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # gcc9 fixes
-Patch502: 0001-s390-jump_label-Correct-asm-contraint.patch
-Patch503: 0001-Drop-that-for-now.patch
+Patch502: 0001-Drop-that-for-now.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
-Patch504: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
-
-# rhbz 1732045
-Patch505: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
+Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # rhbz 1753099
-Patch506: dwc3-fix.patch
+Patch504: dwc3-fix.patch
 
-# https://patchwork.kernel.org/patch/11158395/
-Patch507: iwlwifi-fw-don-t-send-GEO_TX_POWER_LIMIT-command-to-FW-version-36.patch
+# rhbz 1752961
+Patch507: v2-1-2-efi-tpm-Don-t-access-event--count-when-it-isn-t-mapped..patch
+Patch508: v3-tpm-only-set-efi_tpm_final_log_size-after-successful-event-log-parsing.patch
 
-# CVE-2019-17052 CVE-2019-17053 CVE-2019-17054 CVE-2019-17055 CVE-2019-17056
-# rhbz 1758239 1758240 1758242 1758243 1758245 1758246 1758248 1758249 1758256 1758257
-Patch508: enforce-CAP_NET_RAW-for-raw-sockets.patch
+Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1830,7 +1835,10 @@ fi
 #
 #
 %changelog
-* Wed Oct 03 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+* Tue Oct 08 2019 Laura Abbott <labbott@redhat.com> - 5.3.5-200
+- Linux v5.3.5 Rebase
+
+* Wed Oct 02 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-17052 CVE-2019-17053 CVE-2019-17054 CVE-2019-17055 CVE-2019-17056
   (rhbz 1758239 1758240 1758242 1758243 1758245 1758246 1758248 1758249 1758256 1758257)
 
