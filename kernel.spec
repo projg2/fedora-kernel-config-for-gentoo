@@ -508,8 +508,6 @@ Patch209: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 
 Patch210: disable-i8042-check-on-apple-mac.patch
 
-Patch211: drm-i915-hush-check-crtc-state.patch
-
 Patch212: efi-secureboot.patch
 
 # 300 - ARM patches
