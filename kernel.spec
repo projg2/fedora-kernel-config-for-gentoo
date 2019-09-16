@@ -497,9 +497,6 @@ Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 
 Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
-# This no longer applies, let's see if it needs to be updated
-# Patch123: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
-
 # 200 - x86 / secureboot
 
 Patch201: efi-lockdown.patch
