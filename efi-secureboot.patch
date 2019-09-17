@@ -15,6 +15,7 @@ Suggested-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 Signed-off-by: David Howells <dhowells@redhat.com>
 Reviewed-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 cc: linux-efi@vger.kernel.org
+[Rebased for context; efi_is_table_address was moved to arch/x86]
 Signed-off-by: Jeremy Cline <jcline@redhat.com>
 ---
  arch/x86/kernel/setup.c           | 14 +-----------
@@ -25,10 +26,10 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  create mode 100644 drivers/firmware/efi/secureboot.c
 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index b74e7bfed6ab..7da1712c89c9 100644
+index bbe35bf879f5..7e528b6af86b 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -1158,19 +1158,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1179,19 +1179,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -50,7 +51,7 @@ index b74e7bfed6ab..7da1712c89c9 100644
  	reserve_initrd();
  
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
-index 5f9f5039de50..7a0a6378203e 100644
+index 4ac2de4dfa72..195b078a423c 100644
 --- a/drivers/firmware/efi/Makefile
 +++ b/drivers/firmware/efi/Makefile
 @@ -24,6 +24,7 @@ obj-$(CONFIG_EFI_FAKE_MEMMAP)		+= fake_mem.o
@@ -59,8 +60,8 @@ index 5f9f5039de50..7a0a6378203e 100644
  obj-$(CONFIG_EFI_DEV_PATH_PARSER)	+= dev-path-parser.o
 +obj-$(CONFIG_EFI)			+= secureboot.o
  obj-$(CONFIG_APPLE_PROPERTIES)		+= apple-properties.o
+ obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  
- arm-obj-$(CONFIG_EFI)			:= arm-init.o arm-runtime.o
 diff --git a/drivers/firmware/efi/secureboot.c b/drivers/firmware/efi/secureboot.c
 new file mode 100644
 index 000000000000..9070055de0a1
@@ -106,10 +107,10 @@ index 000000000000..9070055de0a1
 +	}
 +}
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 100ce4a4aff6..62361b647a75 100644
+index 21d81021c1f4..758ec061d03b 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
-@@ -1155,6 +1155,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -1204,6 +1204,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_DBG			8	/* Print additional debug info at runtime */
  #define EFI_NX_PE_DATA		9	/* Can runtime data regions be mapped non-executable? */
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
@@ -124,16 +125,16 @@ index 100ce4a4aff6..62361b647a75 100644
  
  #ifdef CONFIG_EFI
  /*
-@@ -1198,6 +1206,8 @@ static inline bool efi_enabled(int feature)
+@@ -1214,6 +1222,8 @@ static inline bool efi_enabled(int feature)
+ 	return test_bit(feature, &efi.flags) != 0;
+ }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
-
- extern bool efi_is_table_address(unsigned long phys_addr);
 +
 +extern void __init efi_set_secure_boot(enum efi_secureboot_mode mode);
  #else
  static inline bool efi_enabled(int feature)
  {
-@@ -1216,6 +1226,8 @@ static inline bool efi_is_table_address(unsigned long phys_addr)
+@@ -1227,6 +1237,8 @@ efi_capsule_pending(int *reset_type)
  {
  	return false;
  }
@@ -142,9 +143,7 @@ index 100ce4a4aff6..62361b647a75 100644
  #endif
  
  extern int efi_status_to_err(efi_status_t status);
-@@ -1577,12 +1589,6 @@ efi_status_t efi_setup_gop(efi_system_table_t *sys_table_arg,
- #endif
- 
+@@ -1619,12 +1631,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
  
@@ -158,7 +157,8 @@ index 100ce4a4aff6..62361b647a75 100644
  
  #ifdef CONFIG_RESET_ATTACK_MITIGATION
 -- 
-2.19.1
+2.21.0
+
 
 From d78bf678059f83e22bec8ada1a448e22b9b90203 Mon Sep 17 00:00:00 2001
 From: David Howells <dhowells@redhat.com>

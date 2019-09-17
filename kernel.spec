@@ -6,7 +6,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1. For rawhide
 # and/or a kernel built from an rc or git snapshot, released_kernel should
 # be 0.
-%global released_kernel 1
+%global released_kernel 0
 
 # Sign modules on x86.  Make sure the config files match this setting if more
 # architectures are added.
@@ -69,9 +69,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 1
+%global rcrev 0
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -537,8 +537,6 @@ Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
 # QCom laptop bits
 # https://patchwork.kernel.org/patch/11133827/
 Patch330: arm64-qcom-i2c-geni-Disable-DMA-processing-on-the-Lenovo-Yoga-C630.patch
-# https://patchwork.kernel.org/patch/11133293/
-Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1754,6 +1752,9 @@ fi
 #
 #
 %changelog
+* Tue Sep 17 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git1.1
+- Linux v5.3-2061-gad062195731b
+
 * Tue Sep 17 2019 Jeremy Cline <jcline@redhat.com>
 - Reenable debugging options.
 
