@@ -593,6 +593,9 @@ Patch516: technisat-usb2-break-out-of-loop-at-end-of-buffer.patch
 # CVE-2019-14821 rhbz 1746708 1753596
 Patch517: kvm-coalesced_mmio-add-bounds-checking.patch
 
+# rhbz 1753099
+Patch518: dwc3-fix.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1830,6 +1833,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 19 2019 Laura Abbott <labbott@redhat.com>
+- Fix for dwc3 (rhbz 1753099)
+
 * Thu Sep 19 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.16-200
 - Linux v5.2.16
 - Fix CVE-2019-14821 (rhbz 1746708 1753596)
