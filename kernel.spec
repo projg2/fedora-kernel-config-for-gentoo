@@ -578,6 +578,9 @@ Patch507: 0001-Drop-that-for-now.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
+# rhbz 1753099
+Patch509: dwc3-fix.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1779,6 +1782,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 19 2019 Laura Abbott <labbott@redhat.com>
+- Fix for dwc3 (rhbz 1753099)
+
 * Mon Sep 16 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-1
 - Linux v5.3
 
