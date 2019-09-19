@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 16
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -580,9 +580,6 @@ Patch507: 0001-Drop-that-for-now.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
-# Fix the LCD panel orientation on the GPD MicroPC, pending as fix for 5.3
-Patch510: drm-panel-orientation-quirks.patch
-
 # rhbz 1732045
 Patch511: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 
@@ -590,11 +587,11 @@ Patch511: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 # rhbz 1744130 1744137 1744149 1746566 1746567 
 Patch514: mwifiex-Fix-three-heap-overflow-at-parsing-element-in-cfg80211_ap_settings.patch
 
-# CVE-2019-15504 rhbz 1746725 1746726
-Patch515: fix-a-double-free-bug-in-rsi_91x_deinit.patch
-
 # CVE-2019-15505 rhbz 1746732 1746734
 Patch516: technisat-usb2-break-out-of-loop-at-end-of-buffer.patch
+
+# CVE-2019-14821 rhbz 1746708 1753596
+Patch517: kvm-coalesced_mmio-add-bounds-checking.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1833,6 +1830,10 @@ fi
 #
 #
 %changelog
+* Thu Sep 19 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.16-100
+- Linux v5.2.16
+- Fix CVE-2019-14821 (rhbz 1746708 1753596)
+
 * Mon Sep 16 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.15-100
 - Linux v5.2.15
 - Fixes rhbz 1751901
