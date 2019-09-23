@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1782,6 +1782,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 23 2019 Laura Abbott <labbott@redhat.com> - 5.3.1-100
+- Linux v5.3.1
+
 * Thu Sep 19 2019 Laura Abbott <labbott@redhat.com>
 - Fix for dwc3 (rhbz 1753099)
 
