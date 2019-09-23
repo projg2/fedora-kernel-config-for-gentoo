@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 17
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -582,16 +582,6 @@ Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # rhbz 1732045
 Patch511: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
-
-# CVE-2019-14814 CVE-2019-14815 CVE-2019-14816
-# rhbz 1744130 1744137 1744149 1746566 1746567 
-Patch514: mwifiex-Fix-three-heap-overflow-at-parsing-element-in-cfg80211_ap_settings.patch
-
-# CVE-2019-15505 rhbz 1746732 1746734
-Patch516: technisat-usb2-break-out-of-loop-at-end-of-buffer.patch
-
-# CVE-2019-14821 rhbz 1746708 1753596
-Patch517: kvm-coalesced_mmio-add-bounds-checking.patch
 
 # rhbz 1753099
 Patch518: dwc3-fix.patch
@@ -1833,6 +1823,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 23 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.17-200
+- Linux v5.2.17
+
 * Thu Sep 19 2019 Laura Abbott <labbott@redhat.com>
 - Fix for dwc3 (rhbz 1753099)
 
