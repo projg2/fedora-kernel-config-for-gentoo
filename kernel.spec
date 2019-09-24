@@ -573,18 +573,21 @@ Patch340: arm64-tegra-jetson-tx1-fixes.patch
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # gcc9 fixes
-Patch506: 0001-s390-jump_label-Correct-asm-contraint.patch
-Patch507: 0001-Drop-that-for-now.patch
+Patch502: 0001-s390-jump_label-Correct-asm-contraint.patch
+Patch503: 0001-Drop-that-for-now.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
-Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
+Patch504: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # rhbz 1732045
-Patch511: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
+Patch505: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 
 # rhbz 1753099
-Patch518: dwc3-fix.patch
+Patch506: dwc3-fix.patch
+
+# https://patchwork.kernel.org/patch/11158395/
+Patch507: iwlwifi-fw-don-t-send-GEO_TX_POWER_LIMIT-command-to-FW-version-36.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1823,6 +1826,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 23 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Upstream patch for iwlwifi 8000 series FW issues (rhbz: 1749949)
+
 * Mon Sep 23 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.17-200
 - Linux v5.2.17
 
