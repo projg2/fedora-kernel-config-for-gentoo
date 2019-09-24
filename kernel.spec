@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 300
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1785,7 +1785,7 @@ fi
 #
 #
 %changelog
-* Mon Sep 23 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+* Mon Sep 23 2019 Peter Robinson <pbrobinson@fedoraproject.org> 5.3.1-300
 - Upstream patch for iwlwifi 8000 series FW issues (rhbz: 1749949)
 
 * Mon Sep 23 2019 Laura Abbott <labbott@redhat.com> - 5.3.1-100
