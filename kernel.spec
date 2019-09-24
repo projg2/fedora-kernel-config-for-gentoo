@@ -572,14 +572,17 @@ Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
 # gcc9 fixes
-Patch507: 0001-Drop-that-for-now.patch
+Patch502: 0001-Drop-that-for-now.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
-Patch508: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
+Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
 # rhbz 1753099
-Patch509: dwc3-fix.patch
+Patch504: dwc3-fix.patch
+
+# https://patchwork.kernel.org/patch/11158395/
+Patch505: iwlwifi-fw-don-t-send-GEO_TX_POWER_LIMIT-command-to-FW-version-36.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1782,6 +1785,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 23 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Upstream patch for iwlwifi 8000 series FW issues (rhbz: 1749949)
+
 * Mon Sep 23 2019 Laura Abbott <labbott@redhat.com> - 5.3.1-100
 - Linux v5.3.1
 
