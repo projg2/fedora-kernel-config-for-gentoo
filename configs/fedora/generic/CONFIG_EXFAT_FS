@@ -1,1 +1,1 @@
-CONFIG_EXFAT_FS=m
+# CONFIG_EXFAT_FS is not set
