@@ -584,6 +584,9 @@ Patch504: dwc3-fix.patch
 # https://patchwork.kernel.org/patch/11158395/
 Patch505: iwlwifi-fw-don-t-send-GEO_TX_POWER_LIMIT-command-to-FW-version-36.patch
 
+# new ids
+Patch506: 0001-x86-amd_nb-Add-PCI-device-IDs-for-family-17h-model-7.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
