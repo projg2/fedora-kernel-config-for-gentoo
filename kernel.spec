@@ -587,6 +587,10 @@ Patch505: iwlwifi-fw-don-t-send-GEO_TX_POWER_LIMIT-command-to-FW-version-36.patc
 # new ids
 Patch506: 0001-x86-amd_nb-Add-PCI-device-IDs-for-family-17h-model-7.patch
 
+# rhbz 1752961
+Patch507: v2-1-2-efi-tpm-Don-t-access-event--count-when-it-isn-t-mapped..patch
+Patch508: v3-tpm-only-set-efi_tpm_final_log_size-after-successful-event-log-parsing.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1788,6 +1792,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 30 2019 Laura Abbott <labbott@redhat.com>
+- Fix for tpm crashes (rhbz 1752961)
+
 * Mon Sep 23 2019 Peter Robinson <pbrobinson@fedoraproject.org> 5.3.1-300
 - Upstream patch for iwlwifi 8000 series FW issues (rhbz: 1749949)
 
