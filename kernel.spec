@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 8
+%define gitrev 9
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -499,7 +499,7 @@ Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
 # 200 - x86 / secureboot
 
-Patch201: efi-lockdown.patch
+# Patch201: efi-lockdown.patch
 
 # bz 1497559 - Make kernel MODSIGN code not error on missing variables
 Patch207: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
@@ -534,10 +534,6 @@ Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
 
-# QCom laptop bits
-# https://patchwork.kernel.org/patch/11133827/
-Patch330: arm64-qcom-i2c-geni-Disable-DMA-processing-on-the-Lenovo-Yoga-C630.patch
-
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -550,9 +546,6 @@ Patch502: 0001-Drop-that-for-now.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
-
-# https://patchwork.kernel.org/patch/11158395/
-Patch504: iwlwifi-fw-don-t-send-GEO_TX_POWER_LIMIT-command-to-FW-version-36.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1755,6 +1748,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 30 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git9.1
+- Linux v5.3-13236-g97f9a3c4eee5
+
 * Thu Sep 26 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git8.1
 - Linux v5.3-12397-gf41def397161
 
