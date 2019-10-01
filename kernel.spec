@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1792,6 +1792,9 @@ fi
 #
 #
 %changelog
+* Tue Oct 01 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.3.2-300
+- Linux v5.3.2
+
 * Mon Sep 30 2019 Laura Abbott <labbott@redhat.com>
 - Fix for tpm crashes (rhbz 1752961)
 
