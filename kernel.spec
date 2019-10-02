@@ -69,9 +69,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 0
+%global rcrev 1
 # The git snapshot level
-%define gitrev 9
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -546,6 +546,10 @@ Patch502: 0001-Drop-that-for-now.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1701096
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
+
+# Fixes a boot hang on debug kernels
+# https://bugzilla.redhat.com/show_bug.cgi?id=1756655
+Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1748,6 +1752,9 @@ fi
 #
 #
 %changelog
+* Wed Oct 02 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc1.git0.1
+- Linux v5.4-rc1
+
 * Wed Oct 02 2019 Jeremy Cline <jcline@redhat.com>
 - Disable debugging options.
 
