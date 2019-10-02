@@ -499,16 +499,16 @@ Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
 
 # 200 - x86 / secureboot
 
-# Patch201: efi-lockdown.patch
-
 # bz 1497559 - Make kernel MODSIGN code not error on missing variables
-Patch207: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
-Patch208: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
-Patch209: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
+Patch200: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
+Patch201: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
+Patch202: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 
-Patch210: disable-i8042-check-on-apple-mac.patch
+Patch203: disable-i8042-check-on-apple-mac.patch
 
-Patch212: efi-secureboot.patch
+Patch204: efi-secureboot.patch
+
+Patch205: lift-lockdown-sysrq.patch
 
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
