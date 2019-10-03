@@ -591,6 +591,10 @@ Patch506: 0001-x86-amd_nb-Add-PCI-device-IDs-for-family-17h-model-7.patch
 Patch507: v2-1-2-efi-tpm-Don-t-access-event--count-when-it-isn-t-mapped..patch
 Patch508: v3-tpm-only-set-efi_tpm_final_log_size-after-successful-event-log-parsing.patch
 
+# CVE-2019-17052 CVE-2019-17053 CVE-2019-17054 CVE-2019-17055 CVE-2019-17056
+# rhbz 1758239 1758240 1758242 1758243 1758245 1758246 1758248 1758249 1758256 1758257
+Patch509: enforce-CAP_NET_RAW-for-raw-sockets.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1792,6 +1796,10 @@ fi
 #
 #
 %changelog
+* Wed Oct 03 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-17052 CVE-2019-17053 CVE-2019-17054 CVE-2019-17055 CVE-2019-17056
+  (rhbz 1758239 1758240 1758242 1758243 1758245 1758246 1758248 1758249 1758256 1758257)
+
 * Tue Oct 01 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.3.2-300
 - Linux v5.3.2
 
