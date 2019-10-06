@@ -544,6 +544,8 @@ Patch322: mfd-max77620-Do-not-allocate-IRQs-upfront.patch
 Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
 # https://patchwork.freedesktop.org/series/66762/
 Patch324: drm-nouveau-Enable-GP10B-by-default.patch
+# https://www.spinics.net/lists/linux-tegra/msg44216.html
+Patch325: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
 
 # 400 - IBM (ppc/s390x) patches
 
