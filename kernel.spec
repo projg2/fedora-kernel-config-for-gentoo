@@ -538,6 +538,10 @@ Patch308: arm64-dts-rockchip-fix-Rockpro64-RK808-interrupt-line.patch
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
+# https://patchwork.kernel.org/patch/11171225/
+Patch322: mfd-max77620-Do-not-allocate-IRQs-upfront.patch
+# https://patchwork.ozlabs.org/patch/1170631/
+Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -1757,6 +1761,9 @@ fi
 #
 #
 %changelog
+* Sun Oct  6 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fixes for Jetson TX1/TX2 series of devices
+
 * Fri Oct 04 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc1.git1.1
 - Linux v5.4-rc1-14-gcc3a7bfe62b9
 
