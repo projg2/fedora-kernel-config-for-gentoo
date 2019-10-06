@@ -529,6 +529,11 @@ Patch305: ARM-tegra-usb-no-reset.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
+# https://patchwork.kernel.org/patch/11173461/
+Patch307: arm64-dts-rockchip-fix-RockPro64-vdd-log-regulator-settings.patch
+# https://patchwork.kernel.org/patch/11155461/
+Patch308: arm64-dts-rockchip-fix-Rockpro64-RK808-interrupt-line.patch
+
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
