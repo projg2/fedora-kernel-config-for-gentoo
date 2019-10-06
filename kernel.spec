@@ -554,6 +554,11 @@ Patch305: ARM-tegra-usb-no-reset.patch
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
 
+# https://patchwork.kernel.org/patch/11173461/
+Patch307: arm64-dts-rockchip-fix-RockPro64-vdd-log-regulator-settings.patch
+# https://patchwork.kernel.org/patch/11155461/
+Patch308: arm64-dts-rockchip-fix-Rockpro64-RK808-interrupt-line.patch
+
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
@@ -1796,6 +1801,9 @@ fi
 #
 #
 %changelog
+* Sun Oct  6 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fixes for RockPro64
+
 * Wed Oct 03 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-17052 CVE-2019-17053 CVE-2019-17054 CVE-2019-17055 CVE-2019-17056
   (rhbz 1758239 1758240 1758242 1758243 1758245 1758246 1758248 1758249 1758256 1758257)
