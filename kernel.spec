@@ -563,6 +563,14 @@ Patch308: arm64-dts-rockchip-fix-Rockpro64-RK808-interrupt-line.patch
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
+# https://patchwork.kernel.org/patch/11171225/
+Patch322: mfd-max77620-Do-not-allocate-IRQs-upfront.patch
+# https://patchwork.ozlabs.org/patch/1170631/
+Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
+# https://patchwork.freedesktop.org/series/66762/
+Patch324: drm-nouveau-Enable-GP10B-by-default.patch
+# https://www.spinics.net/lists/linux-tegra/msg44216.html
+Patch325: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
 
 # QCom laptop bits
 # https://patchwork.kernel.org/patch/11133827/
@@ -1803,6 +1811,7 @@ fi
 %changelog
 * Sun Oct  6 2019 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fixes for RockPro64
+- Fixes for Jetson-TX series devices
 
 * Wed Oct 03 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-17052 CVE-2019-17053 CVE-2019-17054 CVE-2019-17055 CVE-2019-17056
