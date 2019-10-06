@@ -1813,7 +1813,7 @@ fi
 - Fixes for RockPro64
 - Fixes for Jetson-TX series devices
 
-* Wed Oct 03 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+* Thu Oct 03 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-17052 CVE-2019-17053 CVE-2019-17054 CVE-2019-17055 CVE-2019-17056
   (rhbz 1758239 1758240 1758242 1758243 1758245 1758246 1758248 1758249 1758256 1758257)
 
