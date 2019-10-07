@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -594,19 +594,9 @@ Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # rhbz 1753099
 Patch504: dwc3-fix.patch
 
-# https://patchwork.kernel.org/patch/11158395/
-Patch505: iwlwifi-fw-don-t-send-GEO_TX_POWER_LIMIT-command-to-FW-version-36.patch
-
-# new ids
-Patch506: 0001-x86-amd_nb-Add-PCI-device-IDs-for-family-17h-model-7.patch
-
 # rhbz 1752961
 Patch507: v2-1-2-efi-tpm-Don-t-access-event--count-when-it-isn-t-mapped..patch
 Patch508: v3-tpm-only-set-efi_tpm_final_log_size-after-successful-event-log-parsing.patch
-
-# CVE-2019-17052 CVE-2019-17053 CVE-2019-17054 CVE-2019-17055 CVE-2019-17056
-# rhbz 1758239 1758240 1758242 1758243 1758245 1758246 1758248 1758249 1758256 1758257
-Patch509: enforce-CAP_NET_RAW-for-raw-sockets.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1809,6 +1799,9 @@ fi
 #
 #
 %changelog
+* Mon Oct  7 2019 Peter Robinson <pbrobinson@fedoraproject.org> 5.3.4-300
+- Linux v5.3.4
+
 * Sun Oct  6 2019 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fixes for RockPro64
 - Fixes for Jetson-TX series devices
