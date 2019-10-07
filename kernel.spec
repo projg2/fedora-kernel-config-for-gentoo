@@ -596,6 +596,8 @@ Patch504: dwc3-fix.patch
 Patch507: v2-1-2-efi-tpm-Don-t-access-event--count-when-it-isn-t-mapped..patch
 Patch508: v3-tpm-only-set-efi_tpm_final_log_size-after-successful-event-log-parsing.patch
 
+Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1797,6 +1799,9 @@ fi
 #
 #
 %changelog
+* Mon Oct  7 2019 Laura Abbott <labbott@redhat.com>
+- selinux fix (rhbz 1758597)
+
 * Mon Oct  7 2019 Peter Robinson <pbrobinson@fedoraproject.org> 5.3.4-300
 - Linux v5.3.4
 
