@@ -1763,6 +1763,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 07 2019 Laura Abbott <labbott@redhat.com>
+- Enable a few NFT options (rhbz 1651813)
+
 * Mon Oct 07 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc2.git0.1
 - Linux v5.4-rc2
 
