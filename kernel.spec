@@ -560,6 +560,8 @@ Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1756655
 Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 
+# rhbz 1757104
+Patch505: 0001-mount-on-tmpfs-failing-to-parse-context-option.patch
 # END OF PATCH DEFINITIONS
 
 %endif
