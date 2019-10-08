@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 20
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -585,13 +585,6 @@ Patch505: 0001-dma-direct-correct-the-physical-addr-in-dma_direct_s.patch
 
 # rhbz 1753099
 Patch506: dwc3-fix.patch
-
-# https://patchwork.kernel.org/patch/11158395/
-Patch507: iwlwifi-fw-don-t-send-GEO_TX_POWER_LIMIT-command-to-FW-version-36.patch
-
-# CVE-2019-17052 CVE-2019-17053 CVE-2019-17054 CVE-2019-17055 CVE-2019-17056
-# rhbz 1758239 1758240 1758242 1758243 1758245 1758246 1758248 1758249 1758256 1758257
-Patch508: enforce-CAP_NET_RAW-for-raw-sockets.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1830,7 +1823,10 @@ fi
 #
 #
 %changelog
-* Wed Oct 03 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+* Tue Oct 08 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.20-100
+- Linux v5.2.20
+
+* Wed Oct 02 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-17052 CVE-2019-17053 CVE-2019-17054 CVE-2019-17055 CVE-2019-17056
   (rhbz 1758239 1758240 1758242 1758243 1758245 1758246 1758248 1758249 1758256 1758257)
 
