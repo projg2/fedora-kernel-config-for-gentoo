@@ -63,7 +63,7 @@ index a8d59d612d27..467b9ccdf993 100644
  {
  	return 0;
  }
-+static inline int security_lock_kernel_down(const char *where, enum lockdown_reason level);
++static inline int security_lock_kernel_down(const char *where, enum lockdown_reason level)
 +{
 +	return 0;
 +}
