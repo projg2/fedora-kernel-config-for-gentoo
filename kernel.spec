@@ -71,7 +71,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 2
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -564,8 +564,6 @@ Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1756655
 Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 
-# rhbz 1757104
-Patch505: 0001-mount-on-tmpfs-failing-to-parse-context-option.patch
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1767,6 +1765,9 @@ fi
 #
 #
 %changelog
+* Thu Oct 10 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc2.git2.1
+- Linux v5.4-rc2-96-gfb20da6af705
+
 * Tue Oct 08 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc2.git1.1
 - Linux v5.4-rc2-20-geda57a0e4299
 
