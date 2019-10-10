@@ -508,6 +508,10 @@ Patch204: efi-secureboot.patch
 
 Patch205: lift-lockdown-sysrq.patch
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1759325
+# Submitted upstream at https://lore.kernel.org/patchwork/patch/1136967/
+Patch206: efi-efi_test-lock-down-dev-efi_test-and-require-CAP_.patch
+
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
