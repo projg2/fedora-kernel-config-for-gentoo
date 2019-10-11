@@ -598,6 +598,9 @@ Patch508: v3-tpm-only-set-efi_tpm_final_log_size-after-successful-event-log-pars
 
 Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
 
+# rhbz 1738614
+Patch512: drm-i915-Mark-contents-as-dirty-on-a-write-fault.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1835,6 +1838,9 @@ fi
 #
 #
 %changelog
+* Fri Oct 11 2019 Laura Abbott <labbott@redhat.com>
+- Fix disappearing cursor issue (rhbz 1738614)
+
 * Tue Oct 08 2019 Laura Abbott <labbott@redhat.com> - 5.3.5-200
 - Linux v5.3.5 Rebase
 
