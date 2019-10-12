@@ -598,6 +598,9 @@ Patch508: v3-tpm-only-set-efi_tpm_final_log_size-after-successful-event-log-pars
 
 Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
 
+Patch510: iwlwifi-exclude-GEO-SAR-support-for-3168.patch
+Patch511: iwlwifi-pcie-change-qu-with-jf-devices-to-use-qu-configuration.patch
+
 # rhbz 1738614
 Patch512: drm-i915-Mark-contents-as-dirty-on-a-write-fault.patch
 
@@ -1838,8 +1841,12 @@ fi
 #
 #
 %changelog
+
 * Fri Oct 11 2019 Laura Abbott <labbott@redhat.com>
 - Fix disappearing cursor issue (rhbz 1738614)
+
+* Fri Oct 11 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Last iwlwifi fix for the recent firmware issues (rhbz 1733369)
 
 * Tue Oct 08 2019 Laura Abbott <labbott@redhat.com> - 5.3.5-200
 - Linux v5.3.5 Rebase
