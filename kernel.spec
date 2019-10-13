@@ -559,6 +559,8 @@ Patch307: arm64-dts-rockchip-fix-RockPro64-vdd-log-regulator-settings.patch
 # https://patchwork.kernel.org/patch/11155461/
 Patch308: arm64-dts-rockchip-fix-Rockpro64-RK808-interrupt-line.patch
 
+Patch309: bcm2835-audio-Fix-draining-behavior-regression.patch
+
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
