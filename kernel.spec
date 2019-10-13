@@ -559,8 +559,6 @@ Patch307: arm64-dts-rockchip-fix-RockPro64-vdd-log-regulator-settings.patch
 # https://patchwork.kernel.org/patch/11155461/
 Patch308: arm64-dts-rockchip-fix-Rockpro64-RK808-interrupt-line.patch
 
-Patch309: bcm2835-audio-Fix-draining-behavior-regression.patch
-
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
@@ -577,6 +575,13 @@ Patch325: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
 Patch330: arm64-qcom-i2c-geni-Disable-DMA-processing-on-the-Lenovo-Yoga-C630.patch
 # https://patchwork.kernel.org/patch/11133293/
 Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
+
+# Raspberry Pi bits
+Patch340: bcm2835-audio-Fix-draining-behavior-regression.patch
+
+# This is typical rpi, we have a driver but it has problems because ¯\_(ツ)_/¯ but this revert makes pictures work again.
+# https://patchwork.kernel.org/patch/11136979/
+Patch341: Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-driver-instead-of-firmware.patch
 
 # 400 - IBM (ppc/s390x) patches
 
