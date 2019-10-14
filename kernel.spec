@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -571,8 +571,6 @@ Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
 Patch325: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
 
 # QCom laptop bits
-# https://patchwork.kernel.org/patch/11133827/
-Patch330: arm64-qcom-i2c-geni-Disable-DMA-processing-on-the-Lenovo-Yoga-C630.patch
 # https://patchwork.kernel.org/patch/11133293/
 Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
 
@@ -1812,6 +1810,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 14 2019 Laura Abbott <labbott@redhat.com> - 5.3.6-300
+- Linux v5.3.6
+
 * Fri Oct 11 2019 Laura Abbott <labbott@redhat.com>
 - Fix disappearing cursor issue (rhbz 1738614)
 
