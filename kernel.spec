@@ -495,8 +495,6 @@ Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 # Standalone patches
 # 100 - Generic long running patches
 
-Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
-
 # 200 - x86 / secureboot
 
 # bz 1497559 - Make kernel MODSIGN code not error on missing variables
