@@ -526,9 +526,6 @@ Patch304: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 # http://patchwork.ozlabs.org/patch/587554/
 Patch305: ARM-tegra-usb-no-reset.patch
 
-# https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
-Patch306: arm-sdhci-esdhc-imx-fixes.patch
-
 # https://patchwork.kernel.org/patch/11173461/
 Patch307: arm64-dts-rockchip-fix-RockPro64-vdd-log-regulator-settings.patch
 # https://patchwork.kernel.org/patch/11155461/
@@ -544,6 +541,9 @@ Patch322: mfd-max77620-Do-not-allocate-IRQs-upfront.patch
 Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
 # https://www.spinics.net/lists/linux-tegra/msg44216.html
 Patch324: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
+
+# https://www.spinics.net/lists/arm-kernel/msg761152.html
+Patch342: efi-libstub-arm-account-for-firmware-reserved-memory-at-the-base-of-RAM.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -561,6 +561,11 @@ Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # Fixes a boot hang on debug kernels
 # https://bugzilla.redhat.com/show_bug.cgi?id=1756655
 Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+
+# it seems CONFIG_OPTIMIZE_INLINING has been forced now and is causing issues on ARMv7
+# https://lore.kernel.org/patchwork/patch/1132459/
+# https://lkml.org/lkml/2019/8/29/1772
+Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
 # END OF PATCH DEFINITIONS
 
