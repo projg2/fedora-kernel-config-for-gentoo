@@ -1033,8 +1033,6 @@ done
 rm -f kernel-%{version}-*debug.config
 %endif
 
-%define make make %{?cross_opts}
-
 CheckConfigs() {
      ./check_configs.awk $1 $2 > .mismatches
      if [ -s .mismatches ]
@@ -1124,6 +1122,8 @@ cp_vmlinux()
 %define build_hostldflags %{?build_ldflags} -Wl,--build-id=uuid
 %endif
 
+%define make make %{?cross_opts} %{?make_opts} %{?_smp_mflags} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
+
 BuildKernel() {
     MakeTarget=$1
     KernelImage=$2
@@ -1168,7 +1168,7 @@ BuildKernel() {
 
     # and now to start the build process
 
-    make %{?make_opts} mrproper
+    %{make} mrproper
     cp configs/$Config .config
 
     %if %{signkernel}%{signmodules}
@@ -1180,13 +1180,13 @@ BuildKernel() {
 
     KCFLAGS="%{?kcflags}"
 
-    make %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch olddefconfig
+    %{make} ARCH=$Arch olddefconfig >/dev/null
 
     # This ensures build-ids are unique to allow parallel debuginfo
     perl -p -i -e "s/^CONFIG_BUILD_SALT.*/CONFIG_BUILD_SALT=\"%{KVERREL}\"/" .config
-    %{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} KCFLAGS="$KCFLAGS" WITH_GCOV="%{with_gcov}" $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
+    %{make} ARCH=$Arch KCFLAGS="$KCFLAGS" WITH_GCOV="%{?with_gcov}" $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
     if [ $DoModules -eq 1 ]; then
-	%{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} KCFLAGS="$KCFLAGS" WITH_GCOV="%{with_gcov}" modules %{?sparse_mflags} || exit 1
+	%{make} ARCH=$Arch KCFLAGS="$KCFLAGS" WITH_GCOV="%{?with_gcov}" modules %{?sparse_mflags} || exit 1
     fi
 
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
@@ -1196,7 +1196,8 @@ BuildKernel() {
 %endif
 
 %ifarch %{arm} aarch64
-    %{make} %{?make_opts} ARCH=$Arch dtbs dtbs_install INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
+    %{make} ARCH=$Arch dtbs INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
+    %{make} ARCH=$Arch dtbs_install INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
     cp -r $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/dtb
     find arch/$Arch/boot/dts -name '*.dtb' -type f -delete
 %endif
@@ -1239,7 +1240,7 @@ BuildKernel() {
     if [ $DoModules -eq 1 ]; then
 	# Override $(mod-fw) because we don't want it to install any firmware
 	# we'll get it from the linux-firmware package and we don't want conflicts
-	%{make} %{?make_opts} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
+	%{make} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
     fi
 
 %if %{with_gcov}
@@ -1253,7 +1254,7 @@ BuildKernel() {
     # add an a noop %%defattr statement 'cause rpm doesn't like empty file list files
     echo '%%defattr(-,-,-)' > ../kernel${Flavour:+-${Flavour}}-ldsoconf.list
     if [ $DoVDSO -ne 0 ]; then
-        %{make} %{?make_opts} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT vdso_install KERNELRELEASE=$KernelVer
+        %{make} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT vdso_install KERNELRELEASE=$KernelVer
         if [ -s ldconfig-kernel.conf ]; then
              install -D -m 444 ldconfig-kernel.conf \
                 $RPM_BUILD_ROOT/etc/ld.so.conf.d/kernel-$KernelVer.conf
