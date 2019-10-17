@@ -1178,13 +1178,15 @@ BuildKernel() {
     Arch=`head -1 .config | cut -b 3-`
     echo USING ARCH=$Arch
 
+    KCFLAGS="%{?kcflags}"
+
     make %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch olddefconfig
 
     # This ensures build-ids are unique to allow parallel debuginfo
     perl -p -i -e "s/^CONFIG_BUILD_SALT.*/CONFIG_BUILD_SALT=\"%{KVERREL}\"/" .config
-    %{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} WITH_GCOV="%{with_gcov}" $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
+    %{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} KCFLAGS="$KCFLAGS" WITH_GCOV="%{with_gcov}" $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
     if [ $DoModules -eq 1 ]; then
-	%{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} WITH_GCOV="%{with_gcov}" modules %{?sparse_mflags} || exit 1
+	%{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} KCFLAGS="$KCFLAGS" WITH_GCOV="%{with_gcov}" modules %{?sparse_mflags} || exit 1
     fi
 
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
