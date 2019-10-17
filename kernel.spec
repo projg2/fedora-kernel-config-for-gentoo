@@ -121,6 +121,9 @@ Summary: The Linux kernel
 # verbose build, i.e. no silent rules and V=1
 %define with_verbose %{?_with_verbose:        1} %{?!_with_verbose:      0}
 
+# gcov support
+%define with_gcov %{?_with_gcov: 1} %{?!_with_gcov: 0}
+
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
@@ -165,6 +168,15 @@ Summary: The Linux kernel
 
 # The kernel tarball/base version
 %define kversion 5.%{base_sublevel}
+
+
+# turn off debug kernel and kabichk for gcov builds
+%if %{with_gcov}
+%define with_debug 0
+%define with_kabichk 0
+%define with_kabidupchk 0
+%define with_kabidwchk 0
+%endif
 
 %define make_target bzImage
 %define image_install_path boot
@@ -631,6 +643,13 @@ Provides: installonlypkg(kernel)
 This package is required by %{name}-debuginfo subpackages.
 It provides the kernel source files common to all builds.
 
+%if %{with_gcov}
+%package gcov
+Summary: gcov graph and source files for coverage data collection.
+%description gcov
+kernel-gcov includes the gcov graph and source files for gcov coverage collection.
+%endif
+
 #
 # This macro creates a kernel-<subpackage>-debuginfo package.
 #	%%kernel_debuginfo_package <subpackage>
@@ -775,7 +794,6 @@ The kernel package contains the Linux kernel (vmlinuz), the core of any
 Linux operating system.  The kernel handles the basic functions
 of the operating system: memory allocation, process allocation, device
 input and output, etc.
-
 
 %prep
 # do a few sanity-checks for --with *only builds
@@ -1027,6 +1045,14 @@ CheckConfigs() {
      fi
 }
 
+# enable GCOV kernel config options if gcov is on
+%if %{with_gcov}
+for i in *.config
+do
+  sed -i 's/# CONFIG_GCOV_KERNEL is not set/CONFIG_GCOV_KERNEL=y\nCONFIG_GCOV_PROFILE_ALL=y\n/' $i
+done
+%endif
+
 cp %{SOURCE42} .
 OPTS=""
 %if %{listnewconfig_fail}
@@ -1156,9 +1182,9 @@ BuildKernel() {
 
     # This ensures build-ids are unique to allow parallel debuginfo
     perl -p -i -e "s/^CONFIG_BUILD_SALT.*/CONFIG_BUILD_SALT=\"%{KVERREL}\"/" .config
-    %{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
+    %{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} WITH_GCOV="%{with_gcov}" $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
     if [ $DoModules -eq 1 ]; then
-	%{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} modules %{?sparse_mflags} || exit 1
+	%{make} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" ARCH=$Arch %{?_smp_mflags} WITH_GCOV="%{with_gcov}" modules %{?sparse_mflags} || exit 1
     fi
 
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
@@ -1213,6 +1239,14 @@ BuildKernel() {
 	# we'll get it from the linux-firmware package and we don't want conflicts
 	%{make} %{?make_opts} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
     fi
+
+%if %{with_gcov}
+    # install gcov-needed files to $BUILDROOT/$BUILD/...:
+    #   gcov_info->filename is absolute path
+    #   gcno references to sources can use absolute paths (e.g. in out-of-tree builds)
+    #   sysfs symlink targets (set up at compile time) use absolute paths to BUILD dir
+    find . \( -name '*.gcno' -o -name '*.[chS]' \) -exec install -D '{}' "$RPM_BUILD_ROOT/$(pwd)/{}" \;
+%endif
 
     # add an a noop %%defattr statement 'cause rpm doesn't like empty file list files
     echo '%%defattr(-,-,-)' > ../kernel${Flavour:+-${Flavour}}-ldsoconf.list
@@ -1724,6 +1758,13 @@ fi
 
 # empty meta-package
 %files
+%if %{with_gcov}
+%ifarch x86_64 s390x ppc64le aarch64
+%files gcov
+%{_builddir}
+%endif
+%endif
+
 # This is %%{image_install_path} on an arch where that includes ELF files,
 # or empty otherwise.
 %define elf_image_install_path %{?kernel_image_elf:%{image_install_path}}
