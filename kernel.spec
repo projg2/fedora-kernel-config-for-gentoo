@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -571,9 +571,6 @@ Patch325: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
 # https://patchwork.kernel.org/patch/11133293/
 Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
 
-# Raspberry Pi bits
-Patch340: bcm2835-audio-Fix-draining-behavior-regression.patch
-
 # This is typical rpi, we have a driver but it has problems because ¯\_(ツ)_/¯ but this revert makes pictures work again.
 # https://patchwork.kernel.org/patch/11136979/
 Patch341: Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-driver-instead-of-firmware.patch
@@ -597,17 +594,10 @@ Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # rhbz 1753099
 Patch504: dwc3-fix.patch
 
-# rhbz 1752961
-Patch507: v2-1-2-efi-tpm-Don-t-access-event--count-when-it-isn-t-mapped..patch
-Patch508: v3-tpm-only-set-efi_tpm_final_log_size-after-successful-event-log-parsing.patch
-
 Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
 
 Patch510: iwlwifi-exclude-GEO-SAR-support-for-3168.patch
 Patch511: iwlwifi-pcie-change-qu-with-jf-devices-to-use-qu-configuration.patch
-
-# rhbz 1738614
-Patch512: drm-i915-Mark-contents-as-dirty-on-a-write-fault.patch
 
 # it seems CONFIG_OPTIMIZE_INLINING has been forced now and is causing issues on ARMv7
 # https://lore.kernel.org/patchwork/patch/1132459/
@@ -1815,6 +1805,9 @@ fi
 #
 #
 %changelog
+* Fri Oct 18 2019 Laura Abbott <labbott@redhat.com> - 5.3.7-300
+- Linux v5.3.7
+
 * Mon Oct 14 2019 Laura Abbott <labbott@redhat.com> - 5.3.6-300
 - Linux v5.3.6
 
