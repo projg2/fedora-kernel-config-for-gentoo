@@ -1021,6 +1021,29 @@ mv COPYING COPYING-%{version}
 # This Prevents scripts/setlocalversion from mucking with our version numbers.
 touch .scmversion
 
+%if 0%{?fedora}
+# Mangle /usr/bin/python shebangs to /usr/bin/python3
+# Mangle all Python shebangs to be Python 3 explicitly
+# -p preserves timestamps
+# -n prevents creating ~backup files
+# -i specifies the interpreter for the shebang
+# This fixes errors such as
+# *** ERROR: ambiguous python shebang in /usr/bin/kvm_stat: #!/usr/bin/python. Change it to python3 (or python2) explicitly.
+# We patch all sources below for which we got a report/error.
+pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
+	tools/kvm/kvm_stat/kvm_stat \
+	scripts/show_delta \
+	scripts/diffconfig \
+	scripts/bloat-o-meter \
+	scripts/tracing/draw_functrace.py \
+	scripts/spdxcheck.py \
+	tools/perf/tests/attr.py \
+	tools/perf/scripts/python/stat-cpi.py \
+	tools/perf/scripts/python/sched-migration.py \
+	Documentation \
+	scripts/gen_compile_commands.py
+%endif
+
 # Deal with configs stuff
 mkdir configs
 cd configs
@@ -1092,18 +1115,6 @@ find . \( -name "*.orig" -o -name "*~" \) -delete >/dev/null
 
 # remove unnecessary SCM files
 find . -name .gitignore -delete >/dev/null
-
-%if 0%{?fedora}
-# Mangle /usr/bin/python shebangs to /usr/bin/python3
-# Mangle all Python shebangs to be Python 3 explicitly
-# -p preserves timestamps
-# -n prevents creating ~backup files
-# -i specifies the interpreter for the shebang
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/diffconfig
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/bloat-o-meter
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/show_delta
-%endif
 
 cd ..
 
