@@ -1663,27 +1663,22 @@ find $RPM_BUILD_ROOT/usr/include \
 %endif
 
 %if %{with_cross_headers}
+HDR_ARCH_LIST='arm arm64 powerpc s390 x86'
 mkdir -p $RPM_BUILD_ROOT/usr/tmp-headers
-make ARCH=%{hdrarch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr/tmp-headers headers_install_all
 
-find $RPM_BUILD_ROOT/usr/tmp-headers/include \
+for arch in $HDR_ARCH_LIST; do
+	mkdir $RPM_BUILD_ROOT/usr/tmp-headers/arch-${arch}
+	make ARCH=${arch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr/tmp-headers/arch-${arch} headers_install
+done
+
+find $RPM_BUILD_ROOT/usr/tmp-headers \
      \( -name .install -o -name .check -o \
         -name ..install.cmd -o -name ..check.cmd \) -delete
 
 # Copy all the architectures we care about to their respective asm directories
-for arch in arm arm64 powerpc s390 x86 ; do
-mkdir -p $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include
-mv $RPM_BUILD_ROOT/usr/tmp-headers/include/arch-${arch}/asm $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include/
-cp -a $RPM_BUILD_ROOT/usr/tmp-headers/include/asm-generic $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include/.
-done
-
-# Remove the rest of the architectures
-rm -rf $RPM_BUILD_ROOT/usr/tmp-headers/include/arch*
-rm -rf $RPM_BUILD_ROOT/usr/tmp-headers/include/asm-*
-
-# Copy the rest of the headers over
-for arch in arm arm64 powerpc s390 x86 ; do
-cp -a $RPM_BUILD_ROOT/usr/tmp-headers/include/* $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include/.
+for arch in $HDR_ARCH_LIST ; do
+	mkdir -p $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include
+	mv $RPM_BUILD_ROOT/usr/tmp-headers/arch-${arch}/include/* $RPM_BUILD_ROOT/usr/${arch}-linux-gnu/include/
 done
 
 rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
