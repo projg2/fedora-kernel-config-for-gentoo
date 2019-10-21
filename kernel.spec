@@ -97,6 +97,8 @@ Summary: The Linux kernel
 %define with_pae       %{?_without_pae:       0} %{?!_without_pae:       1}
 # kernel-debug
 %define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
+# kernel-doc
+%define with_doc       %{?_without_doc:       0} %{?!_without_doc:       1}
 # kernel-headers
 %define with_headers   %{?_without_headers:   0} %{?!_without_headers:   1}
 %define with_cross_headers   %{?_without_cross_headers:   0} %{?!_without_cross_headers:   1}
@@ -247,6 +249,12 @@ Summary: The Linux kernel
 %endif
 
 # Overrides for generic default options
+
+# only package docs noarch
+%ifnarch noarch
+%define with_doc 0
+%define doc_build_fail true
+%endif
 
 # don't do debug builds on anything but i686 and x86_64
 %ifnarch i686 x86_64
@@ -400,6 +408,9 @@ BuildRequires: net-tools, hostname, bc, elfutils-devel, gcc-plugin-devel
 %if 0%{?fedora}
 # Used to mangle unversioned shebangs to be Python 3
 BuildRequires: /usr/bin/pathfix.py
+%endif
+%if %{with_doc}
+BuildRequires: xmlto, asciidoc, python3-sphinx
 %endif
 %if %{with_sparse}
 BuildRequires: sparse
@@ -615,6 +626,17 @@ Conflicts: xorg-x11-drv-vmmouse < 13.0.99\
 AutoReq: no\
 AutoProv: yes\
 %{nil}
+
+%package doc
+Summary: Various documentation bits found in the kernel source
+Group: Documentation
+%description doc
+This package contains documentation files from the kernel
+source. Various bits of information about the Linux kernel and the
+device drivers shipped with it are documented in these files.
+
+You'll want to install this package if you need a reference to the
+options that can be passed to Linux kernel modules at load time.
 
 %package headers
 Summary: Header files for the Linux kernel for use by glibc
@@ -1541,6 +1563,15 @@ BuildKernel %make_target %kernel_image %{use_vdso} lpae
 BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
+%if %{with_doc}
+# Make the HTML pages.
+make htmldocs || %{doc_build_fail}
+
+# sometimes non-world-readable files sneak into the kernel source tree
+chmod -R a=rX Documentation
+find Documentation -type d | xargs chmod u+w
+%endif
+
 # In the modsign case, we do 3 things.  1) We check the "flavour" and hard
 # code the value in the following invocations.  This is somewhat sub-optimal
 # but we're doing this inside of an RPM macro and it isn't as easy as it
@@ -1603,6 +1634,15 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %install
 
 cd linux-%{KVERREL}
+
+%if %{with_doc}
+docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{rpmversion}
+
+# copy the source over
+mkdir -p $docdir
+tar -h -f - --exclude=man --exclude='.*' -c Documentation | tar xf - -C $docdir
+
+%endif # with_doc
 
 # We have to do the headers install before the tools install because the
 # kernel headers_install will remove any header files in /usr/include that
@@ -1762,6 +1802,15 @@ fi
 %if %{with_cross_headers}
 %files cross-headers
 /usr/*-linux-gnu/include/*
+%endif
+
+# only some architecture builds need kernel-doc
+%if %{with_doc}
+%files doc
+%defattr(-,root,root)
+%{_datadir}/doc/kernel-doc-%{rpmversion}/Documentation/*
+%dir %{_datadir}/doc/kernel-doc-%{rpmversion}/Documentation
+%dir %{_datadir}/doc/kernel-doc-%{rpmversion}
 %endif
 
 # empty meta-package
