@@ -8,15 +8,20 @@ Summary: The Linux kernel
 # be 0.
 %global released_kernel 0
 
-# Sign modules on x86.  Make sure the config files match this setting if more
-# architectures are added.
+# Signing for secure boot authentication
 %ifarch %{ix86} x86_64
 %global signkernel 1
-%global signmodules 1
-%global zipmodules 1
 %else
 %global signkernel 0
+%endif
+
+# Sign modules on all arches
 %global signmodules 1
+
+# Compress modules only for architectures that build modules
+%ifarch noarch
+%global zipmodules 0
+%else
 %global zipmodules 1
 %endif
 
