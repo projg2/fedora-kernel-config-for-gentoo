@@ -1063,16 +1063,6 @@ done
 rm -f kernel-%{version}-*debug.config
 %endif
 
-CheckConfigs() {
-     ./check_configs.awk $1 $2 > .mismatches
-     if [ -s .mismatches ]
-     then
-	echo "Error: Mismatches found in configuration files"
-	cat .mismatches
-	exit 1
-     fi
-}
-
 # enable GCOV kernel config options if gcov is on
 %if %{with_gcov}
 for i in *.config
