@@ -106,6 +106,8 @@ Summary: The Linux kernel
 %define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
 # Want to build a the vsdo directories installed
 %define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 1}
+# internal samples and selftests
+%define with_selftests %{?_without_selftests: 0} %{?!_without_selftests: 1}
 #
 # Additional options for user-friendly one-off kernel building:
 #
@@ -136,10 +138,12 @@ Summary: The Linux kernel
 # See also 'make debug' and 'make release'.
 %define debugbuildsenabled 1
 
-# Kernel headers are being split out into a separate package
 %if 0%{?fedora}
+# Kernel headers are being split out into a separate package
 %define with_headers 0
 %define with_cross_headers 0
+# no selftests for now
+%define with_selftests 0
 %endif
 
 %if %{with_verbose}
@@ -266,6 +270,8 @@ Summary: The Linux kernel
 %define with_up 0
 %define with_headers 0
 %define with_cross_headers 0
+%define with_selftests 0
+%define with_debug 0
 %define all_arch_configs kernel-%{version}-*.config
 %endif
 
@@ -322,6 +328,8 @@ Summary: The Linux kernel
 %define with_headers 0
 %define with_cross_headers 0
 %endif
+# These currently don't compile on armv7
+%define with_selftests 0
 %endif
 
 %ifarch aarch64
@@ -353,9 +361,10 @@ Summary: The Linux kernel
 
 %ifarch %nobuildarches
 %define with_up 0
-%define with_pae 0
-%define with_debuginfo 0
 %define with_debug 0
+%define with_debuginfo 0
+%define with_selftests 0
+%define with_pae 0
 %define _enable_debug_packages 0
 %endif
 
@@ -417,6 +426,17 @@ BuildRequires: xmlto, asciidoc, python3-sphinx
 %endif
 %if %{with_sparse}
 BuildRequires: sparse
+%endif
+%if %{with_selftests}
+%if 0%{?fedora}
+BuildRequires: clang llvm
+%else
+BuildRequires: llvm-toolset
+%endif
+%ifnarch %{arm}
+BuildRequires: numactl-devel
+%endif
+BuildRequires: libcap-devel libcap-ng-devel rsync
 %endif
 BuildConflicts: rhbuildsys(DiskFree) < 500Mb
 %if %{with_debuginfo}
@@ -667,6 +687,24 @@ Provides: installonlypkg(kernel)
 %description debuginfo-common-%{_target_cpu}
 This package is required by %{name}-debuginfo subpackages.
 It provides the kernel source files common to all builds.
+
+%if %{with_selftests}
+
+%package selftests-internal
+Summary: Kernel samples and selftests
+License: GPLv2
+Requires: binutils, bpftool, iproute-tc, nmap-ncat
+Requires: kernel-modules-internal = %{version}-%{release}
+%description selftests-internal
+Kernel sample programs and selftests.
+
+# Note that this pattern only works right to match the .build-id
+# symlinks because of the trailing nonmatching alternation and
+# the leading .*, because of find-debuginfo.sh's buggy handling
+# of matching the pattern against the symlinks file.
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libexecdir}/(ksamples|kselftests)/.*|XXX' -o selftests-debuginfo.list}
+
+%endif # with_selftests
 
 %if %{with_gcov}
 %package gcov
@@ -1562,6 +1600,15 @@ BuildKernel %make_target %kernel_image %{use_vdso} lpae
 BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
+%if %{with_selftests}
+%{make} -s ARCH=$Arch V=1 samples/bpf/
+pushd tools/testing/selftests
+# We need to install here because we need to call make with ARCH set which
+# doesn't seem possible to do in the install section.
+%{make} -s ARCH=$Arch V=1 TARGETS="bpf livepatch net" INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests install
+popd
+%endif
+
 %if %{with_doc}
 # Make the HTML pages.
 make htmldocs || %{doc_build_fail}
@@ -1615,6 +1662,16 @@ find Documentation -type d | xargs chmod u+w
 
 %endif
 
+# We don't want to package debuginfo for self-tests and samples but
+# we have to delete them to avoid an error messages about unpackaged
+# files.
+%define __remove_unwanted_dbginfo_install_post \
+  if [ "%{with_selftests}" -ne "0" ]; then \
+    rm -rf $RPM_BUILD_ROOT/usr/lib/debug/usr/libexec/ksamples; \
+    rm -rf $RPM_BUILD_ROOT/usr/lib/debug/usr/libexec/kselftests; \
+  fi \
+%{nil}
+
 #
 # Disgusting hack alert! We need to ensure we sign modules *after* all
 # invocations of strip occur, which is in __debug_install_post if
@@ -1624,6 +1681,7 @@ find Documentation -type d | xargs chmod u+w
   %{?__debug_package:%{__debug_install_post}}\
   %{__arch_install_post}\
   %{__os_install_post}\
+  %{__remove_unwanted_dbginfo_install_post}\
   %{__modsign_install_post}
 
 ###
@@ -1677,6 +1735,52 @@ for arch in $HDR_ARCH_LIST ; do
 done
 
 rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
+%endif
+
+%if %{with_selftests}
+pushd samples
+install -d %{buildroot}%{_libexecdir}/ksamples
+# install bpf samples
+pushd bpf
+install -d %{buildroot}%{_libexecdir}/ksamples/bpf
+find -type f -executable -exec install -m755 {} %{buildroot}%{_libexecdir}/ksamples/bpf \;
+install -m755 *.sh %{buildroot}%{_libexecdir}/ksamples/bpf
+# test_lwt_bpf.sh compiles test_lwt_bpf.c when run; this works only from the
+# kernel tree. Just remove it.
+rm %{buildroot}%{_libexecdir}/ksamples/bpf/test_lwt_bpf.sh
+install -m644 tcp_bpf.readme %{buildroot}%{_libexecdir}/ksamples/bpf
+popd
+# install pktgen samples
+pushd pktgen
+install -d %{buildroot}%{_libexecdir}/ksamples/pktgen
+find . -type f -executable -exec install -m755 {} %{buildroot}%{_libexecdir}/ksamples/pktgen/{} \;
+find . -type f ! -executable -exec install -m644 {} %{buildroot}%{_libexecdir}/ksamples/pktgen/{} \;
+popd
+popd
+# install drivers/net/mlxsw selftests
+pushd tools/testing/selftests/drivers/net/mlxsw
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/drivers/net/mlxsw/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/mlxsw/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/mlxsw/{} \;
+popd
+# install net/forwarding selftests
+pushd tools/testing/selftests/net/forwarding
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/net/forwarding/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/net/forwarding/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/net/forwarding/{} \;
+popd
+# install tc-testing selftests
+pushd tools/testing/selftests/tc-testing
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/tc-testing/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/tc-testing/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/tc-testing/{} \;
+popd
+# install livepatch selftests
+pushd tools/testing/selftests/livepatch
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
+popd
 %endif
 
 ###
@@ -1805,6 +1909,12 @@ fi
 %{_datadir}/doc/kernel-doc-%{rpmversion}/Documentation/*
 %dir %{_datadir}/doc/kernel-doc-%{rpmversion}/Documentation
 %dir %{_datadir}/doc/kernel-doc-%{rpmversion}
+%endif
+
+%if %{with_selftests}
+%files selftests-internal
+%{_libexecdir}/ksamples
+%{_libexecdir}/kselftests
 %endif
 
 # empty meta-package
