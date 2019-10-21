@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 300
+%global baserelease 301
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -603,6 +603,10 @@ Patch511: iwlwifi-pcie-change-qu-with-jf-devices-to-use-qu-configuration.patch
 # https://lore.kernel.org/patchwork/patch/1132459/
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
+
+# CVE-2019-17666
+# rhbz 176362
+Patch506: 0001-rtlwifi-Fix-potential-overflow-on-P2P-code.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1805,6 +1809,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 21 2019 Laura Abbott <labbott@redhat.com> - 5.3.7-301
+- Fix CVE-2019-17666 (rhbz 1763692)
+
 * Fri Oct 18 2019 Laura Abbott <labbott@redhat.com> - 5.3.7-300
 - Linux v5.3.7
 
