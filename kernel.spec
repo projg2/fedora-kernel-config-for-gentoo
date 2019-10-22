@@ -1907,7 +1907,7 @@ if [ "$HARDLINK" != "no" -a -x /usr/sbin/hardlink ]\
 then\
     (cd /usr/src/kernels/%{KVERREL}%{?1:+%{1}} &&\
      /usr/bin/find . -type f | while read f; do\
-       hardlink -c /usr/src/kernels/*.fc*.*/$f $f\
+       hardlink -c /usr/src/kernels/*%{?dist}.*/$f $f\
      done)\
 fi\
 %{nil}
