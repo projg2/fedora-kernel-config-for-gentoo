@@ -1313,14 +1313,53 @@ BuildKernel() {
       cp arch/$Arch/boot/zImage.stub $RPM_BUILD_ROOT/%{image_install_path}/zImage.stub-$KernelVer || :
       cp arch/$Arch/boot/zImage.stub $RPM_BUILD_ROOT/lib/modules/$KernelVer/zImage.stub-$KernelVer || :
     fi
+
+
     %if %{signkernel}
+    if [ "$KernelImage" = vmlinux ]; then
+        # We can't strip and sign $KernelImage in place, because
+        # we need to preserve original vmlinux for debuginfo.
+        # Use a copy for signing.
+        $CopyKernel $KernelImage $KernelImage.tosign
+        KernelImage=$KernelImage.tosign
+        CopyKernel=cp
+    fi
+
     # Sign the image if we're using EFI
+    # aarch64 kernels are gziped EFI images
+    KernelExtension=${KernelImage##*.}
+    if [ "$KernelExtension" == "gz" ]; then
+        SignImage=${KernelImage%.*}
+    else
+        SignImage=$KernelImage
+    fi
+
+    %ifarch x86_64 aarch64
+    %if 0%{?fedora}
     %pesign -s -i $KernelImage -o vmlinuz.signed
+    %else
+    %pesign -s -i $SignImage -o vmlinuz.signed -a %{secureboot_ca} -c %{secureboot_key} -n %{pesign_name}
+    %endif # fedora
+    %endif # arches
+    %ifarch s390x ppc64le
+    if [ -x /usr/bin/rpm-sign ]; then
+	rpm-sign --key "%{pesign_name}" --lkmsign $SignImage --output vmlinuz.signed
+    elif [ $DoModules -eq 1 ]; then
+	chmod +x scripts/sign-file
+	./scripts/sign-file -p sha256 certs/signing_key.pem certs/signing_key.x509 $SignImage vmlinuz.signed
+    else
+	mv $SignImage vmlinuz.signed
+    fi
+    %endif
+
     if [ ! -s vmlinuz.signed ]; then
         echo "pesigning failed"
         exit 1
     fi
-    mv vmlinuz.signed $KernelImage
+    mv vmlinuz.signed $SignImage
+    if [ "$KernelExtension" == "gz" ]; then
+        gzip -f9 $SignImage
+    fi
     %endif
     $CopyKernel $KernelImage \
                 $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
@@ -1608,6 +1647,23 @@ BuildKernel() {
 
     # build a BLS config for this kernel
     %{SOURCE43} "$KernelVer" "$RPM_BUILD_ROOT" "%{?variant}"
+
+%if 0
+    # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
+    mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
+    install -m 0644 %{secureboot_ca} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
+    %ifarch s390x ppc64le
+    if [ $DoModules -eq 1 ]; then
+	if [ -x /usr/bin/rpm-sign ]; then
+	    install -m 0644 %{secureboot_key} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
+	else
+	    install -m 0644 certs/signing_key.x509.sign${Flav} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
+	    openssl x509 -in certs/signing_key.pem.sign${Flav} -outform der -out $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
+	    chmod 0644 $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
+	fi
+    fi
+    %endif
+%endif
 
 %if %{with_ipaclones}
     MAXPROCS=$(echo %{?_smp_mflags} | sed -n 's/-j\s*\([0-9]\+\)/\1/p')
