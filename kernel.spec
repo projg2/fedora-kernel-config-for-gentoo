@@ -525,6 +525,7 @@ Source15: merge.pl
 Source16: mod-extra.list
 Source17: mod-extra.sh
 Source18: mod-sign.sh
+Source19: mod-extra-blacklist.sh
 Source90: filter-x86_64.sh
 Source91: filter-armv7hl.sh
 Source92: filter-i686.sh
@@ -554,6 +555,8 @@ Source41: generate_debug_configs.sh
 
 Source42: process_configs.sh
 Source43: generate_bls_conf.sh
+
+Source44: mod-internal.list
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -832,6 +835,27 @@ This package provides *.ipa-clones files.\
 %{nil}
 
 #
+# This macro creates a kernel-<subpackage>-modules-internal package.
+#	%%kernel_modules_internal_package <subpackage> <pretty-name>
+#
+%define kernel_modules_internal_package() \
+%package %{?1:%{1}-}modules-internal\
+Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
+Group: System Environment/Kernel\
+Provides: kernel%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{version}-%{release}\
+Provides: kernel%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
+Provides: kernel%{?1:-%{1}}-modules-internal = %{version}-%{release}%{?1:+%{1}}\
+Provides: installonlypkg(kernel-module)\
+Provides: kernel%{?1:-%{1}}-modules-internal-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
+Requires: kernel-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
+Requires: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
+AutoReq: no\
+AutoProv: yes\
+%description %{?1:%{1}-}modules-internal\
+This package provides kernel modules for the %{?2:%{2} }kernel package for Red Hat internal usage.\
+%{nil}
+
+#
 # This macro creates a kernel-<subpackage>-modules-extra package.
 #	%%kernel_modules_extra_package <subpackage> <pretty-name>
 #
@@ -904,6 +928,7 @@ Obsoletes: kernel-bootwrapper\
 %{expand:%%kernel_devel_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
 %{expand:%%kernel_modules_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
 %{expand:%%kernel_modules_extra_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
+%{expand:%%kernel_modules_internal_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
 %{expand:%%kernel_debuginfo_package %{?1:%{1}}}\
 %{nil}
 
@@ -1464,6 +1489,7 @@ BuildKernel() {
     (cd $RPM_BUILD_ROOT/lib/modules/$KernelVer ; ln -s build source)
     # dirs for additional modules per module-init-tools, kbuild/modules.txt
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/extra
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/internal
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/updates
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/weak-updates
     # first copy everything
@@ -1686,6 +1712,10 @@ BuildKernel() {
 
     # Call the modules-extra script to move things around
     %{SOURCE17} $RPM_BUILD_ROOT/lib/modules/$KernelVer %{SOURCE16}
+    # Blacklist net autoloadable modules in modules-extra
+    %{SOURCE19} $RPM_BUILD_ROOT lib/modules/$KernelVer
+    # Call the modules-extra script for internal modules
+    %{SOURCE17} $RPM_BUILD_ROOT/lib/modules/$KernelVer %{SOURCE44} internal
 
     #
     # Generate the kernel-core and kernel-modules files lists
@@ -1699,7 +1729,7 @@ BuildKernel() {
     cp -r lib/modules/$KernelVer/* restore/.
 
     # don't include anything going into k-m-e in the file lists
-    rm -rf lib/modules/$KernelVer/extra
+    rm -rf lib/modules/$KernelVer/{extra,internal}
 
 
     if [ $DoModules -eq 1 ]; then
@@ -2068,6 +2098,20 @@ fi\
 %{nil}
 
 #
+# This macro defines a %%post script for a kernel*-modules-internal package.
+# It also defines a %%postun script that does the same thing.
+#	%%kernel_modules_internal_post [<subpackage>]
+#
+%define kernel_modules_internal_post() \
+%{expand:%%post %{?1:%{1}-}modules-internal}\
+/sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
+%{nil}\
+%{expand:%%postun %{?1:%{1}-}modules-internal}\
+/sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
+%{nil}
+
+
+#
 # This macro defines a %%post script for a kernel*-modules package.
 # It also defines a %%postun script that does the same thing.
 #	%%kernel_modules_post [<subpackage>]
@@ -2102,6 +2146,7 @@ fi\
 %{expand:%%kernel_devel_post %{?-v*}}\
 %{expand:%%kernel_modules_post %{?-v*}}\
 %{expand:%%kernel_modules_extra_post %{?-v*}}\
+%{expand:%%kernel_modules_internal_post %{?-v*}}\
 %{expand:%%kernel_variant_posttrans %{?-v*}}\
 %{expand:%%post %{?-v*:%{-v*}-}core}\
 %{-r:\
@@ -2237,7 +2282,13 @@ fi
 %defverify(not mtime)\
 /usr/src/kernels/%{KVERREL}%{?3:+%{3}}\
 %{expand:%%files %{?3:%{3}-}modules-extra}\
+%config(noreplace) /etc/modprobe.d/*-blacklist.conf\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/extra\
+%%defattr(-,root,root)\
+%defverify(not mtime)\
+/usr/src/kernels/%{KVERREL}%{?3:+%{3}}\
+%{expand:%%files %{?3:%{3}-}modules-internal}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/internal\
 %if %{with_debuginfo}\
 %ifnarch noarch\
 %{expand:%%files -f debuginfo%{?3}.list %{?3:%{3}-}debuginfo}\
