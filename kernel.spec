@@ -149,6 +149,11 @@ Summary: The Linux kernel
 # verbose build, i.e. no silent rules and V=1
 %define with_verbose %{?_with_verbose:        1} %{?!_with_verbose:      0}
 
+#
+# check for mismatched config options
+%define with_configchecks %{?_without_configchecks:        0} %{?!_without_configchecks:        1}
+
+#
 # gcov support
 %define with_gcov %{?_with_gcov: 1} %{?!_with_gcov: 0}
 
@@ -400,11 +405,7 @@ Summary: The Linux kernel
 # Should make listnewconfig fail if there's config options
 # printed out?
 %if %{nopatches}
-%define listnewconfig_fail 0
-%define configmismatch_fail 0
-%else
-%define listnewconfig_fail 1
-%define configmismatch_fail 1
+%define with_configchecks 0
 %endif
 
 # To temporarily exclude an architecture from being built, add it to
@@ -1261,11 +1262,12 @@ done
 
 cp %{SOURCE42} .
 OPTS=""
-%if %{listnewconfig_fail}
-	OPTS="$OPTS -n"
+%if %{with_configchecks}
+%if 0%{?fedora}
+	OPTS="$OPTS -n -c"
+%else
+	OPTS="$OPTS -w -n -c"
 %endif
-%if %{configmismatch_fail}
-	OPTS="$OPTS -c"
 %endif
 ./process_configs.sh $OPTS kernel %{rpmversion}
 
