@@ -8,8 +8,14 @@ Summary: The Linux kernel
 # be 0.
 %global released_kernel 0
 
+%if 0%{?fedora}
+%define secure_boot_arch x86_64
+%else
+%define secure_boot_arch x86_64 aarch64 s390x ppc64le
+%endif
+
 # Signing for secure boot authentication
-%ifarch %{ix86} x86_64
+%ifarch %{secure_boot_arch}
 %global signkernel 1
 %else
 %global signkernel 0
@@ -166,6 +172,10 @@ Summary: The Linux kernel
 %define with_ipaclones 0
 # no whitelist
 %define with_kernel_abi_whitelists 0
+# Fedora builds these separately
+%define with_perf 0
+%define with_tools 0
+%define with_bpftool 0
 %endif
 
 %if %{with_verbose}
@@ -289,8 +299,6 @@ Summary: The Linux kernel
 %define with_kabidwchk 0
 %endif
 
-%define all_x86 i386 i686
-
 %if %{with_vdso_install}
 %define use_vdso 1
 %endif
@@ -307,9 +315,11 @@ Summary: The Linux kernel
 %define doc_build_fail true
 %endif
 
+%if 0%{?fedora}
 # don't do debug builds on anything but i686 and x86_64
 %ifnarch i686 x86_64
 %define with_debug 0
+%endif
 %endif
 
 # don't build noarch kernels or headers (duh)
@@ -329,7 +339,7 @@ Summary: The Linux kernel
 
 # Per-arch tweaks
 
-%ifarch %{all_x86}
+%ifarch i686
 %define asmarch x86
 %define hdrarch i386
 %define all_arch_configs kernel-%{version}-i?86*.config
@@ -404,7 +414,11 @@ Summary: The Linux kernel
 # Which is a BadThing(tm).
 
 # We only build kernel-headers on the following...
+%if 0%{?fedora}
 %define nobuildarches i386
+%else
+%define nobuildarches i386 i686
+%endif
 
 %ifarch %nobuildarches
 %define with_up 0
@@ -416,7 +430,11 @@ Summary: The Linux kernel
 %endif
 
 # Architectures we build tools/cpupower on
+%if 0%{?fedora}
 %define cpupowerarchs %{ix86} x86_64 ppc64le %{arm} aarch64
+%else
+%define cpupowerarchs i686 x86_64 ppc64le aarch64
+%endif
 
 %if %{use_vdso}
 
@@ -446,7 +464,11 @@ Version: %{rpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
+%if 0%{?fedora}
 ExclusiveArch: x86_64 s390x %{arm} aarch64 ppc64le
+%else
+ExclusiveArch: noarch i386 i686 x86_64 s390x %{arm} aarch64 ppc64le
+%endif
 ExclusiveOS: Linux
 %ifnarch %{nobuildarches}
 Requires: kernel-core-uname-r = %{KVERREL}%{?variant}
