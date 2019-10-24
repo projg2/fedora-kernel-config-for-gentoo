@@ -161,6 +161,9 @@ Summary: The Linux kernel
 # ipa_clone support
 %define with_ipaclones %{?_without_ipaclones: 0} %{?!_without_ipaclones: 1}
 
+# Want to build a vanilla kernel build without any non-upstream patches?
+%define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
+
 
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
@@ -188,9 +191,6 @@ Summary: The Linux kernel
 %else
 %define make_opts -s
 %endif
-
-# Want to build a vanilla kernel build without any non-upstream patches?
-%define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
 
 # pkg_release is what we'll fill in for the rpm Release: field
 %if 0%{?released_kernel}
