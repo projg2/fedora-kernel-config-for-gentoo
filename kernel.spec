@@ -364,9 +364,7 @@ Summary: The Linux kernel
 %define make_target vmlinux
 %define kernel_image vmlinux
 %define kernel_image_elf 1
-%ifarch ppc64le
 %define all_arch_configs kernel-%{version}-ppc64le*.config
-%endif
 %endif
 
 %ifarch s390x
