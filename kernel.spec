@@ -1320,7 +1320,7 @@ cp_vmlinux()
 %define build_hostldflags %{?build_ldflags} -Wl,--build-id=uuid
 %endif
 
-%define make make %{?cross_opts} %{?make_opts} %{?_smp_mflags} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
+%define make make %{?cross_opts} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
 
 BuildKernel() {
     MakeTarget=$1
@@ -1366,7 +1366,7 @@ BuildKernel() {
 
     # and now to start the build process
 
-    %{make} mrproper
+    %{make} %{?_smp_mflags} mrproper
     cp configs/$Config .config
 
     %if %{signkernel}%{signmodules}
@@ -1382,9 +1382,9 @@ BuildKernel() {
 
     # This ensures build-ids are unique to allow parallel debuginfo
     perl -p -i -e "s/^CONFIG_BUILD_SALT.*/CONFIG_BUILD_SALT=\"%{KVERREL}\"/" .config
-    %{make} ARCH=$Arch KCFLAGS="$KCFLAGS" WITH_GCOV="%{?with_gcov}" $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
+    %{make} ARCH=$Arch KCFLAGS="$KCFLAGS" WITH_GCOV="%{?with_gcov}" %{?_smp_mflags} $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
     if [ $DoModules -eq 1 ]; then
-	%{make} ARCH=$Arch KCFLAGS="$KCFLAGS" WITH_GCOV="%{?with_gcov}" modules %{?sparse_mflags} || exit 1
+	%{make} ARCH=$Arch KCFLAGS="$KCFLAGS" WITH_GCOV="%{?with_gcov}" %{?_smp_mflags} modules %{?sparse_mflags} || exit 1
     fi
 
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
@@ -1477,7 +1477,7 @@ BuildKernel() {
     if [ $DoModules -eq 1 ]; then
 	# Override $(mod-fw) because we don't want it to install any firmware
 	# we'll get it from the linux-firmware package and we don't want conflicts
-	%{make} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
+	%{make} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT %{?_smp_mflags} modules_install KERNELRELEASE=$KernelVer mod-fw=
     fi
 
 %if %{with_gcov}
