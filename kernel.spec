@@ -3,9 +3,11 @@
 
 Summary: The Linux kernel
 
-# For a stable, released kernel, released_kernel should be 1. For rawhide
-# and/or a kernel built from an rc or git snapshot, released_kernel should
-# be 0.
+# For a kernel released for public testing, released_kernel should be 1.
+# For internal testing builds during development, it should be 0.
+# For rawhide and/or a kernel built from an rc or git snapshot,
+# released_kernel should be 0.
+# For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
 %if 0%{?fedora}
