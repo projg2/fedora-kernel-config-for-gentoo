@@ -1,6 +1,22 @@
 # We have to override the new %%install behavior because, well... the kernel is special.
 %global __spec_install_pre %{___build_pre}
 
+# At the time of this writing (2019-03), RHEL8 packages use w2.xzdio
+# compression for rpms (xz, level 2).
+# Kernel has several large (hundreds of mbytes) rpms, they take ~5 mins
+# to compress by single-threaded xz. Switch to threaded compression,
+# and from level 2 to 3 to keep compressed sizes close to "w2" results.
+#
+# NB: if default compression in /usr/lib/rpm/redhat/macros ever changes,
+# this one might need tweaking (e.g. if default changes to w3.xzdio,
+# change below to w4T.xzdio):
+#
+# This is disabled on i686 as it triggers oom errors
+
+%ifnarch i686
+%define _binary_payload w3T.xzdio
+%endif
+
 Summary: The Linux kernel
 
 # For a kernel released for public testing, released_kernel should be 1.
