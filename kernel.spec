@@ -74,9 +74,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 4
+%global rcrev 5
 # The git snapshot level
-%define gitrev 3
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -553,11 +553,6 @@ Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
 Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
 Patch305: ARM-tegra-usb-no-reset.patch
-
-# https://patchwork.kernel.org/patch/11173461/
-Patch307: arm64-dts-rockchip-fix-RockPro64-vdd-log-regulator-settings.patch
-# https://patchwork.kernel.org/patch/11155461/
-Patch308: arm64-dts-rockchip-fix-Rockpro64-RK808-interrupt-line.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
@@ -1885,6 +1880,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 28 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc5.git0.1
+- Linux v5.4-rc5
+
 * Mon Oct 28 2019 Jeremy Cline <jcline@redhat.com>
 - Disable debugging options.
 
