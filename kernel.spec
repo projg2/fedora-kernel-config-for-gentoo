@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 301
+%global baserelease 300
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -597,7 +597,6 @@ Patch504: dwc3-fix.patch
 Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
 
 Patch510: iwlwifi-exclude-GEO-SAR-support-for-3168.patch
-Patch511: iwlwifi-pcie-change-qu-with-jf-devices-to-use-qu-configuration.patch
 
 # it seems CONFIG_OPTIMIZE_INLINING has been forced now and is causing issues on ARMv7
 # https://lore.kernel.org/patchwork/patch/1132459/
@@ -1809,6 +1808,9 @@ fi
 #
 #
 %changelog
+* Tue Oct 29 2019 Laura Abbott <labbott@redhat.com> - 5.3.8-300
+- Linux v5.3.8
+
 * Mon Oct 21 2019 Laura Abbott <labbott@redhat.com> - 5.3.7-301
 - Fix CVE-2019-17666 (rhbz 1763692)
 
