@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -597,7 +597,10 @@ Patch504: dwc3-fix.patch
 Patch509: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
 
 Patch510: iwlwifi-exclude-GEO-SAR-support-for-3168.patch
-Patch511: iwlwifi-pcie-change-qu-with-jf-devices-to-use-qu-configuration.patch
+
+# CVE-2019-17666
+# rhbz 176362
+Patch506: 0001-rtlwifi-Fix-potential-overflow-on-P2P-code.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1836,6 +1839,10 @@ fi
 #
 #
 %changelog
+* Tue Oct 29 2019 Laura Abbott <labbott@redhat.com> - 5.3.8-200
+- Linux v5.3.8
+- Fix CVE-2019-17666 (rhbz 1763692)
+
 * Fri Oct 18 2019 Laura Abbott <labbott@redhat.com> - 5.3.7-200
 - Linux v5.3.7
 
