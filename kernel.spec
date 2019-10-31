@@ -184,7 +184,6 @@ Summary: The Linux kernel
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
 
-
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
@@ -328,6 +327,7 @@ Summary: The Linux kernel
 %if %{with_vdso_install}
 %define use_vdso 1
 %endif
+
 
 %ifnarch noarch
 %define with_kernel_abi_whitelists 0
@@ -478,7 +478,6 @@ Summary: The Linux kernel
 %else
 %define _use_vdso 0
 %endif
-
 
 #
 # Packages that need to be installed before the kernel is, because the %%post
@@ -752,6 +751,7 @@ AutoReq: no\
 AutoProv: yes\
 %{nil}
 
+
 %package doc
 Summary: Various documentation bits found in the kernel source
 Group: Documentation
@@ -762,6 +762,7 @@ device drivers shipped with it are documented in these files.
 
 You'll want to install this package if you need a reference to the
 options that can be passed to Linux kernel modules at load time.
+
 
 %package headers
 Summary: Header files for the Linux kernel for use by glibc
@@ -837,7 +838,6 @@ AutoReqProv: no
 The kabidw-base package contains data describing the current ABI of the Red Hat
 Enterprise Linux kernel, suitable for the kabi-dw tool.
 %endif
-
 
 #
 # This macro creates a kernel-<subpackage>-debuginfo package.
@@ -1314,7 +1314,7 @@ OPTS=""
 %endif
 
 cd ..
-# End of Configs stuff
+# # End of Configs stuff
 
 # get rid of unwanted files resulting from patch fuzz
 find . \( -name "*.orig" -o -name "*~" \) -delete >/dev/null
@@ -1457,7 +1457,6 @@ BuildKernel() {
       cp arch/$Arch/boot/zImage.stub $RPM_BUILD_ROOT/lib/modules/$KernelVer/zImage.stub-$KernelVer || :
     fi
 
-
     %if %{signkernel}
     if [ "$KernelImage" = vmlinux ]; then
         # We can't strip and sign $KernelImage in place, because
@@ -1515,7 +1514,6 @@ BuildKernel() {
     sha512hmac $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer | sed -e "s,$RPM_BUILD_ROOT,," > $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac;
     cp $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac $RPM_BUILD_ROOT/lib/modules/$KernelVer/.vmlinuz.hmac
 
-
     if [ $DoModules -eq 1 ]; then
 	# Override $(mod-fw) because we don't want it to install any firmware
 	# we'll get it from the linux-firmware package and we don't want conflicts
@@ -1539,6 +1537,7 @@ BuildKernel() {
                 $RPM_BUILD_ROOT/etc/ld.so.conf.d/kernel-$KernelVer.conf
 	     echo /etc/ld.so.conf.d/kernel-$KernelVer.conf >> ../kernel${Flavour:+-${Flavour}}-ldsoconf.list
         fi
+
         rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/vdso/.build-id
     fi
 
@@ -2183,7 +2182,6 @@ fi\
 %{expand:%%postun %{?1:%{1}-}modules-internal}\
 /sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
 %{nil}
-
 
 #
 # This macro defines a %%post script for a kernel*-modules package.
