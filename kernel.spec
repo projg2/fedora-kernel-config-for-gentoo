@@ -130,6 +130,8 @@ Summary: The Linux kernel
 %define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
 # Want to build a the vsdo directories installed
 %define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 1}
+# kernel-zfcpdump (s390 specific kernel for zfcpdump)
+%define with_zfcpdump  %{?_without_zfcpdump:  0} %{?!_without_zfcpdump:  1}
 # kernel-abi-whitelists
 %define with_kernel_abi_whitelists %{?_without_kernel_abi_whitelists: 0} %{?!_without_kernel_abi_whitelists: 1}
 # internal samples and selftests
@@ -359,6 +361,16 @@ Summary: The Linux kernel
 # sparse blows up on ppc
 %ifnarch ppc64le
 %define with_sparse 0
+%endif
+
+# zfcpdump mechanism is s390 only
+%ifnarch s390x
+%define with_zfcpdump 0
+%endif
+
+%if 0%{?fedora}
+# This is not for Fedora
+%define with_zfcpdump 0
 %endif
 
 # Per-arch tweaks
@@ -984,6 +996,14 @@ This package includes a version of the Linux kernel with support for
 Cortex-A15 devices with LPAE and HW virtualisation support
 %endif
 
+%if %{with_zfcpdump}
+%define variant_summary The Linux kernel compiled for zfcpdump usage
+%kernel_variant_package zfcpdump
+%description zfcpdump-core
+The kernel package contains the Linux kernel (vmlinuz) for use by the
+zfcpdump infrastructure.
+%endif # with_zfcpdump
+
 %define variant_summary The Linux kernel compiled with extra debugging enabled
 %kernel_variant_package debug
 %description debug-core
@@ -1350,6 +1370,9 @@ BuildKernel() {
     InstallName=${5:-vmlinuz}
 
     DoModules=1
+    if [ "$Flavour" = "zfcpdump" ]; then
+	    DoModules=0
+    fi
 
     # Pick the right config file for the kernel we're building
     Config=kernel-%{version}-%{_target_cpu}${Flavour:+-${Flavour}}.config
@@ -1899,6 +1922,10 @@ cd linux-%{KVERREL}
 BuildKernel %make_target %kernel_image %{_use_vdso} debug
 %endif
 
+%if %{with_zfcpdump}
+BuildKernel %make_target %kernel_image %{_use_vdso} zfcpdump
+%endif
+
 %if %{with_pae}
 BuildKernel %make_target %kernel_image %{use_vdso} lpae
 %endif
@@ -1935,6 +1962,8 @@ find Documentation -type d | xargs chmod u+w
 #
 # We have to do all of those things _after_ find-debuginfo runs, otherwise
 # that will strip the signature off of the modules.
+#
+# Don't sign modules for the zfcpdump flavour as it is monolithic.
 
 %define __modsign_install_post \
   if [ "%{signmodules}" -eq "1" ]; then \
@@ -2217,6 +2246,11 @@ fi}\
 %kernel_variant_preun debug
 %kernel_variant_post -v debug
 
+%if %{with_zfcpdump}
+%kernel_variant_preun zfcpdump
+%kernel_variant_post -v zfcpdump
+%endif
+
 if [ -x /sbin/ldconfig ]
 then
     /sbin/ldconfig -X || exit $?
@@ -2339,6 +2373,7 @@ fi
 %kernel_variant_files %{_use_vdso} %{with_up}
 %kernel_variant_files %{_use_vdso} %{with_debug} debug
 %kernel_variant_files %{use_vdso} %{with_pae} lpae
+%kernel_variant_files %{_use_vdso} %{with_zfcpdump} zfcpdump
 
 %define kernel_variant_ipaclones(k:) \
 %if %{1}\
