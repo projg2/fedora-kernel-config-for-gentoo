@@ -561,7 +561,10 @@ BuildRequires: kabi-dw
 %if %{signkernel}%{signmodules}
 BuildRequires: openssl openssl-devel
 %if %{signkernel}
+%ifarch x86_64 aarch64
+BuildRequires: nss-tools
 BuildRequires: pesign >= 0.10-4
+%endif
 %endif
 %endif
 
