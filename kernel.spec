@@ -565,7 +565,9 @@ Patch322: mfd-max77620-Do-not-allocate-IRQs-upfront.patch
 # https://patchwork.ozlabs.org/patch/1170631/
 Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
 # https://www.spinics.net/lists/linux-tegra/msg44216.html
-Patch325: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
+Patch324: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
+# https://patchwork.kernel.org/patch/11224177/
+Patch325: arm64-usb-host-xhci-tegra-set-MODULE_FIRMWARE-for-tegra186.patch
 
 # QCom laptop bits
 # https://patchwork.kernel.org/patch/11133293/
