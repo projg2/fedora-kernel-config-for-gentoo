@@ -73,7 +73,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 3
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -98,9 +98,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 5
+%global rcrev 6
 # The git snapshot level
-%define gitrev 1
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -666,10 +666,6 @@ Patch204: efi-secureboot.patch
 
 Patch205: lift-lockdown-sysrq.patch
 
-# https://bugzilla.redhat.com/show_bug.cgi?id=1759325
-# Submitted upstream at https://lore.kernel.org/patchwork/patch/1136967/
-Patch206: efi-efi_test-lock-down-dev-efi_test-and-require-CAP_.patch
-
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
@@ -695,9 +691,6 @@ Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
 Patch324: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
 # https://patchwork.kernel.org/patch/11224177/
 Patch325: arm64-usb-host-xhci-tegra-set-MODULE_FIRMWARE-for-tegra186.patch
-
-# https://www.spinics.net/lists/arm-kernel/msg761152.html
-Patch342: efi-libstub-arm-account-for-firmware-reserved-memory-at-the-base-of-RAM.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -2420,6 +2413,9 @@ fi
 #
 #
 %changelog
+* Mon Nov 04 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc6.git0.1
+- Linux v5.4-rc6
+
 * Mon Nov 04 2019 Jeremy Cline <jcline@redhat.com>
 - Disable debugging options.
 
