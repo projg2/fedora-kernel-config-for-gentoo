@@ -574,7 +574,6 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
 
 Source11: x509.genkey
-Source12: remove-binary-diff.pl
 Source15: merge.pl
 Source16: mod-extra.list
 Source17: mod-extra.sh
@@ -1189,14 +1188,14 @@ cp %{SOURCE12} .
 # Update vanilla to the latest upstream.
 # (non-released_kernel case only)
 %if 0%{?rcrev}
-    xzcat %{SOURCE5000} | ./remove-binary-diff.pl | patch -p1 -F1 -s
+    xzcat %{SOURCE5000} | patch -p1 -F1 -s
 %if 0%{?gitrev}
-    xzcat %{SOURCE5001} | ./remove-binary-diff.pl | patch -p1 -F1 -s
+    xzcat %{SOURCE5001} | patch -p1 -F1 -s
 %endif
 %else
 # pre-{base_sublevel+1}-rc1 case
 %if 0%{?gitrev}
-    xzcat %{SOURCE5000} | ./remove-binary-diff.pl | patch -p1 -F1 -s
+    xzcat %{SOURCE5000} | patch -p1 -F1 -s
 %endif
 %endif
     git init
