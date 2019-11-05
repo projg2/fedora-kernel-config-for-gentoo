@@ -57,6 +57,12 @@ Summary: The Linux kernel
 
 # define buildid .local
 
+%if 0%{?fedora}
+%define primary_target fedora
+%else
+%define primary_target rhel
+%endif
+
 # baserelease defines which build revision of this kernel version we're
 # building.  We used to call this fedora_build, but the magical name
 # baserelease is matched by the rpmdev-bumpspec tool, which you should use.
@@ -573,43 +579,133 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 
 Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
 
-Source11: x509.genkey
-Source15: merge.pl
-Source16: mod-extra.list
+# Name of the packaged file containing signing key
+%ifarch ppc64le
+%define signing_key_filename kernel-signing-ppc.cer
+%endif
+%ifarch s390x
+%define signing_key_filename kernel-signing-s390.cer
+%endif
+
+Source10: x509.genkey.rhel
+Source11: x509.genkey.fedora
+%if %{?released_kernel}
+
+Source12: securebootca.cer
+Source13: secureboot.cer
+Source14: secureboot_s390.cer
+Source15: secureboot_ppc.cer
+
+%define secureboot_ca %{SOURCE12}
+%ifarch x86_64 aarch64
+%define secureboot_key %{SOURCE13}
+%define pesign_name redhatsecureboot301
+%endif
+%ifarch s390x
+%define secureboot_key %{SOURCE14}
+%define pesign_name redhatsecureboot302
+%endif
+%ifarch ppc64le
+%define secureboot_key %{SOURCE15}
+%define pesign_name redhatsecureboot303
+%endif
+
+%else # released_kernel
+
+Source12: redhatsecurebootca2.cer
+Source13: redhatsecureboot003.cer
+
+%define secureboot_ca %{SOURCE12}
+%define secureboot_key %{SOURCE13}
+%define pesign_name redhatsecureboot003
+
+%endif # released_kernel
+
+Source15: mod-extra.list.rhel
+Source16: mod-extra.list.fedora
 Source17: mod-extra.sh
 Source18: mod-sign.sh
 Source19: mod-extra-blacklist.sh
-Source90: filter-x86_64.sh
-Source91: filter-armv7hl.sh
-Source92: filter-i686.sh
-Source93: filter-aarch64.sh
-Source94: filter-ppc64le.sh
-Source95: filter-s390x.sh
-Source99: filter-modules.sh
+Source79: parallel_xz.sh
+
+Source80: filter-x86_64.sh.fedora
+Source81: filter-armv7hl.sh.fedora
+Source82: filter-i686.sh.fedora
+Source83: filter-aarch64.sh.fedora
+Source86: filter-ppc64le.sh.fedora
+Source87: filter-s390x.sh.fedora
+Source89: filter-modules.sh.fedora
+
+Source90: filter-x86_64.sh.rhel
+Source91: filter-armv7hl.sh.rhel
+Source92: filter-i686.sh.rhel
+Source93: filter-aarch64.sh.rhel
+Source96: filter-ppc64le.sh.rhel
+Source97: filter-s390x.sh.rhel
+Source99: filter-modules.sh.rhel
 %define modsign_cmd %{SOURCE18}
 
-Source20: kernel-aarch64.config
-Source21: kernel-aarch64-debug.config
-Source22: kernel-armv7hl.config
-Source23: kernel-armv7hl-debug.config
-Source24: kernel-armv7hl-lpae.config
-Source25: kernel-armv7hl-lpae-debug.config
-Source26: kernel-i686.config
-Source27: kernel-i686-debug.config
-Source30: kernel-ppc64le.config
-Source31: kernel-ppc64le-debug.config
-Source32: kernel-s390x.config
-Source33: kernel-s390x-debug.config
-Source34: kernel-x86_64.config
-Source35: kernel-x86_64-debug.config
+Source20: kernel-aarch64-rhel.config
+Source21: kernel-aarch64-debug-rhel.config
+Source30: kernel-ppc64le-rhel.config
+Source31: kernel-ppc64le-debug-rhel.config
+Source32: kernel-s390x-rhel.config
+Source33: kernel-s390x-debug-rhel.config
+Source34: kernel-s390x-zfcpdump-rhel.config
+Source35: kernel-x86_64-rhel.config
+Source36: kernel-x86_64-debug-rhel.config
 
-Source40: generate_all_configs.sh
-Source41: generate_debug_configs.sh
+Source37: kernel-aarch64-fedora.config
+Source38: kernel-aarch64-debug-fedora.config
+Source39: kernel-armv7hl-fedora.config
+Source40: kernel-armv7hl-debug-fedora.config
+Source41: kernel-armv7hl-lpae-fedora.config
+Source42: kernel-armv7hl-lpae-debug-fedora.config
+Source43: kernel-i686-fedora.config
+Source44: kernel-i686-debug-fedora.config
+Source45: kernel-ppc64le-fedora.config
+Source46: kernel-ppc64le-debug-fedora.config
+Source47: kernel-s390x-fedora.config
+Source48: kernel-s390x-debug-fedora.config
+Source49: kernel-x86_64-fedora.config
+Source50: kernel-x86_64-debug-fedora.config
 
-Source42: process_configs.sh
-Source43: generate_bls_conf.sh
 
-Source44: mod-internal.list
+
+Source51: generate_all_configs.sh
+
+Source52: process_configs.sh
+Source53: generate_bls_conf.sh
+Source56: update_scripts.sh
+
+Source54: mod-internal.list
+Source55: merge.pl
+
+Source200: check-kabi
+
+Source201: Module.kabi_aarch64
+Source202: Module.kabi_ppc64le
+Source203: Module.kabi_s390x
+Source204: Module.kabi_x86_64
+
+Source210: Module.kabi_dup_aarch64
+Source211: Module.kabi_dup_ppc64le
+Source212: Module.kabi_dup_s390x
+Source213: Module.kabi_dup_x86_64
+
+# Source300: kernel-abi-whitelists-%{rpmversion}-%{distro_build}.tar.bz2
+# Source301: kernel-kabi-dw-%{rpmversion}-%{distro_build}.tar.bz2
+
+# Sources for kernel-tools
+Source2000: cpupower.service
+Source2001: cpupower.config
+
+## Patches needed for building this package
+
+# Patch1: patch-%{rpmversion}-redhat.patch
+
+# empty final patch to facilitate testing of kernel patches
+# Patch999999: linux-kernel-test.patch
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -1281,23 +1377,10 @@ cd configs
 # Drop some necessary files from the source dir into the buildroot
 cp $RPM_SOURCE_DIR/kernel-*.config .
 cp %{SOURCE1000} .
-cp %{SOURCE15} .
-cp %{SOURCE40} .
-cp %{SOURCE41} .
-cp %{SOURCE43} .
+cp %{SOURCE55} .
+cp %{SOURCE51} .
+VERSION=%{version} ./generate_all_configs.sh %{primary_target} %{debugbuildsenabled}
 
-%if !%{debugbuildsenabled}
-# The normal build is a really debug build and the user has explicitly requested
-# a release kernel. Change the config files into non-debug versions.
-%if !%{with_release}
-VERSION=%{version} ./generate_debug_configs.sh
-%else
-VERSION=%{version} ./generate_all_configs.sh
-%endif
-
-%else
-VERSION=%{version} ./generate_all_configs.sh
-%endif
 
 # Merge in any user-provided local config option changes
 %ifnarch %nobuildarches
@@ -1324,16 +1407,15 @@ do
 done
 %endif
 
-cp %{SOURCE42} .
+cp %{SOURCE52} .
 OPTS=""
 %if %{with_configchecks}
-%if 0%{?fedora}
-	OPTS="$OPTS -n -c"
-%else
 	OPTS="$OPTS -w -n -c"
 %endif
-%endif
 ./process_configs.sh $OPTS kernel %{rpmversion}
+
+cp %{SOURCE56} .
+RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
 
 # end of kernel config
 %endif
@@ -1435,7 +1517,7 @@ BuildKernel() {
     cp configs/$Config .config
 
     %if %{signkernel}%{signmodules}
-    cp %{SOURCE11} certs/.
+    cp $RPM_SOURCE_DIR/x509.genkey certs/.
     %endif
 
     Arch=`head -1 .config | cut -b 3-`
@@ -1788,11 +1870,11 @@ BuildKernel() {
     popd
 
     # Call the modules-extra script to move things around
-    %{SOURCE17} $RPM_BUILD_ROOT/lib/modules/$KernelVer %{SOURCE16}
+    %{SOURCE17} $RPM_BUILD_ROOT/lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
     # Blacklist net autoloadable modules in modules-extra
     %{SOURCE19} $RPM_BUILD_ROOT lib/modules/$KernelVer
     # Call the modules-extra script for internal modules
-    %{SOURCE17} $RPM_BUILD_ROOT/lib/modules/$KernelVer %{SOURCE44} internal
+    %{SOURCE17} $RPM_BUILD_ROOT/lib/modules/$KernelVer %{SOURCE54} internal
 
     #
     # Generate the kernel-core and kernel-modules files lists
@@ -1815,7 +1897,7 @@ BuildKernel() {
 	# from the dir.
 	find lib/modules/$KernelVer/kernel -name *.ko | sort -n > modules.list
 	cp $RPM_SOURCE_DIR/filter-*.sh .
-	%{SOURCE99} modules.list %{_target_cpu}
+	./filter-modules.sh modules.list %{_target_cpu}
 	rm filter-*.sh
 
 	# Run depmod on the resulting module tree and make sure it isn't broken
@@ -1886,9 +1968,8 @@ BuildKernel() {
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
 
     # build a BLS config for this kernel
-    %{SOURCE43} "$KernelVer" "$RPM_BUILD_ROOT" "%{?variant}"
+    %{SOURCE53} "$KernelVer" "$RPM_BUILD_ROOT" "%{?variant}"
 
-%if 0
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
     install -m 0644 %{secureboot_ca} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
@@ -1903,7 +1984,6 @@ BuildKernel() {
 	fi
     fi
     %endif
-%endif
 
 %if %{with_ipaclones}
     MAXPROCS=$(echo %{?_smp_mflags} | sed -n 's/-j\s*\([0-9]\+\)/\1/p')
@@ -2324,7 +2404,7 @@ fi
 #
 # This macro defines the %%files sections for a kernel package
 # and its devel and debuginfo packages.
-#	%%kernel_variant_files [-k vmlinux] <condition> <subpackage>
+#	%%kernel_variant_files [-k vmlinux] <condition> <subpackage> <without_modules>
 #
 %define kernel_variant_files(k:) \
 %if %{2}\
@@ -2353,6 +2433,12 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca.cer\
+%ifarch s390x ppc64le\
+%if 0%{!?4:1}\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/%{signing_key_filename} \
+%endif\
+%endif\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
 %endif\
@@ -2383,7 +2469,7 @@ fi
 %kernel_variant_files %{_use_vdso} %{with_up}
 %kernel_variant_files %{_use_vdso} %{with_debug} debug
 %kernel_variant_files %{use_vdso} %{with_pae} lpae
-%kernel_variant_files %{_use_vdso} %{with_zfcpdump} zfcpdump
+%kernel_variant_files %{_use_vdso} %{with_zfcpdump} zfcpdump 1
 
 %define kernel_variant_ipaclones(k:) \
 %if %{1}\
