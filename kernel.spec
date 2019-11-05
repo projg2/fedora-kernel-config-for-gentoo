@@ -513,10 +513,8 @@ BuildRequires: kmod, patch, bash, tar, git-core
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
 BuildRequires: net-tools, hostname, bc, elfutils-devel, dwarves
-%if 0%{?fedora}
 # Used to mangle unversioned shebangs to be Python 3
-BuildRequires: /usr/bin/pathfix.py
-%endif
+BuildRequires: python3-devel
 %if %{with_headers}
 BuildRequires: rsync
 %endif
@@ -1258,7 +1256,6 @@ mv COPYING COPYING-%{version}
 # This Prevents scripts/setlocalversion from mucking with our version numbers.
 touch .scmversion
 
-%if 0%{?fedora}
 # Mangle /usr/bin/python shebangs to /usr/bin/python3
 # Mangle all Python shebangs to be Python 3 explicitly
 # -p preserves timestamps
@@ -1277,7 +1274,6 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 	tools/perf/scripts/python/sched-migration.py \
 	Documentation \
 	scripts/gen_compile_commands.py
-%endif
 
 # Deal with configs stuff
 mkdir configs
