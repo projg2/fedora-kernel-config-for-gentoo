@@ -1368,6 +1368,12 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 	Documentation \
 	scripts/gen_compile_commands.py
 
+# only deal with configs if we are going to build for the arch
+%ifnarch %nobuildarches
+
+if [ -L configs ]; then
+	rm -f configs
+fi
 # Deal with configs stuff
 mkdir configs
 cd configs
@@ -1389,9 +1395,6 @@ do
   rm $i.tmp
 done
 %endif
-
-# only deal with configs if we are going to build for the arch
-%ifnarch %nobuildarches
 
 %if !%{debugbuildsenabled}
 rm -f kernel-%{version}-*debug.config
