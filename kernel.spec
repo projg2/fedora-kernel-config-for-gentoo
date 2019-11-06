@@ -2390,7 +2390,10 @@ fi
 %endif
 
 # empty meta-package
+%ifnarch %nobuildarches noarch
 %files
+%endif
+
 %if %{with_gcov}
 %ifarch x86_64 s390x ppc64le aarch64
 %files gcov
