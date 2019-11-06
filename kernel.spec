@@ -2066,7 +2066,7 @@ find Documentation -type d | xargs chmod u+w
 %define __modsign_install_post \
   if [ "%{signmodules}" -eq "1" ]; then \
     if [ "%{with_pae}" -ne "0" ]; then \
-      %{modsign_cmd} certs/signing_key.pem.sign+lpae certs/signing_key.x509.sign+lpae $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+lpae/ \
+       %{modsign_cmd} certs/signing_key.pem.sign+lpae certs/signing_key.x509.sign+lpae $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+lpae/ \
     fi \
     if [ "%{with_debug}" -ne "0" ]; then \
       %{modsign_cmd} certs/signing_key.pem.sign+debug certs/signing_key.x509.sign+debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+debug/ \
