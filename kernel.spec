@@ -930,6 +930,11 @@ Enterprise Linux kernel, suitable for the kabi-dw tool.
 # This macro creates a kernel-<subpackage>-debuginfo package.
 #	%%kernel_debuginfo_package <subpackage>
 #
+# Explanation of the find_debuginfo_opts: We build multiple kernels (debug
+# pae etc.) so the regex filters those kernels appropriately. We also
+# have to package several binaries as part of kernel-devel but getting
+# unique build-ids is tricky for these userspace binaries. We don't really
+# care about debugging those so we just filter those out and remove it.
 %define kernel_debuginfo_package() \
 %package %{?1:%{1}-}debuginfo\
 Summary: Debug information for package %{name}%{?1:-%{1}}\
@@ -940,7 +945,9 @@ AutoReqProv: no\
 %description %{?1:%{1}-}debuginfo\
 This package provides debug information for package %{name}%{?1:-%{1}}.\
 This is required to use SystemTap with %{name}%{?1:-%{1}}-%{KVERREL}.\
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '/.*/%%{KVERREL_RE}%{?1:[+]%{1}}/.*|/.*%%{KVERREL_RE}%{?1:\+%{1}}(\.debug)?' -o debuginfo%{?1}.list}\
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*\/usr\/src\/kernels/.*|XXX' -o ignored-debuginfo.list -p '/.*/%%{KVERREL_RE}%{?1:[+]%{1}}/.*|/.*%%{KVERREL_RE}%{?1:\+%{1}}(\.debug)?' -o debuginfo%{?1}.list}\
+
+
 %{nil}
 
 #
@@ -1464,7 +1471,7 @@ cp_vmlinux()
 # flags cause issues with the host compiler.
 %if !%{with_cross}
 %define build_hostcflags  %{?build_cflags}
-%define build_hostldflags %{?build_ldflags} -Wl,--build-id=uuid
+%define build_hostldflags %{?build_ldflags}
 %endif
 
 %define make make %{?cross_opts} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
@@ -2099,11 +2106,13 @@ find Documentation -type d | xargs chmod u+w
 # We don't want to package debuginfo for self-tests and samples but
 # we have to delete them to avoid an error messages about unpackaged
 # files.
+# Delete the debuginfo for for kernel-devel files
 %define __remove_unwanted_dbginfo_install_post \
   if [ "%{with_selftests}" -ne "0" ]; then \
     rm -rf $RPM_BUILD_ROOT/usr/lib/debug/usr/libexec/ksamples; \
     rm -rf $RPM_BUILD_ROOT/usr/lib/debug/usr/libexec/kselftests; \
   fi \
+  rm -rf $RPM_BUILD_ROOT/usr/lib/debug/usr/src; \
 %{nil}
 
 #
