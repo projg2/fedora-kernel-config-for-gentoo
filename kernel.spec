@@ -1526,6 +1526,11 @@ BuildKernel() {
 
     KCFLAGS="%{?kcflags}"
 
+    # add kpatch flags for base kernel
+    if [ "$Flavour" == "" ]; then
+        KCFLAGS="$KCFLAGS %{?kpatch_kcflags}"
+    fi
+
     %{make} ARCH=$Arch olddefconfig >/dev/null
 
     # This ensures build-ids are unique to allow parallel debuginfo
