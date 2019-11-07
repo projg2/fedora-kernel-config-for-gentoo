@@ -1802,6 +1802,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 07 2019 Jeremy Cline <jcline@redhat.com>
+- Add support for a number of Macbook keyboards and touchpads (rhbz 1769465)
+
 * Wed Nov 06 2019 Laura Abbott <labbott@redhat.com> - 5.3.9-300
 - Linux v5.3.9
 
