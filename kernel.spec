@@ -870,6 +870,9 @@ Patch536: powerpc-xive-skip-ioremap-of-ESB-pages-for-LSI-interrupts.patch
 Patch537: 0001-bdev-Factor-out-bdev-revalidation-into-a-common-help.patch
 Patch538: 0002-bdev-Refresh-bdev-size-for-disks-without-partitionin.patch
 
+# ALSA code from v5.5 (Intel ASoC Sound Open Firmware driver support)
+Patch600: alsa-5.5.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
