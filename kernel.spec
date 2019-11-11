@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -553,11 +553,6 @@ Patch305: ARM-tegra-usb-no-reset.patch
 
 # https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
 Patch306: arm-sdhci-esdhc-imx-fixes.patch
-
-# https://patchwork.kernel.org/patch/11173461/
-Patch307: arm64-dts-rockchip-fix-RockPro64-vdd-log-regulator-settings.patch
-# https://patchwork.kernel.org/patch/11155461/
-Patch308: arm64-dts-rockchip-fix-Rockpro64-RK808-interrupt-line.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
@@ -1827,6 +1822,9 @@ fi
 #
 #
 %changelog
+* Mon Nov 11 2019 Laura Abbott <labbott@redhat.com> - 5.3.10-100
+- Linux v5.3.10
+
 * Wed Nov 06 2019 Laura Abbott <labbott@redhat.com> - 5.3.9-100
 - Linux v5.3.9
 
