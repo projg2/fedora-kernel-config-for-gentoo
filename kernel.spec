@@ -317,7 +317,6 @@ Summary: The Linux kernel
 %if %{with_dbgonly}
 %if %{debugbuildsenabled}
 %define with_up 0
-%define with_pae 0
 %endif
 %define with_pae 0
 %endif
