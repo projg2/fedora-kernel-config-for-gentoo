@@ -146,7 +146,7 @@ Summary: The Linux kernel
 # Only build the debug kernel (--with dbgonly):
 %define with_dbgonly   %{?_with_dbgonly:      1} %{?!_with_dbgonly:      0}
 # Control whether we perform a compat. check against published ABI.
-#%define with_kabichk   %{?_without_kabichk:   0} %{?!_without_kabichk:   1}
+%define with_kabichk   %{?_without_kabichk:   0} %{?!_without_kabichk:   1}
 # Temporarily disable kabi checks until RC.
 %define with_kabichk 0
 # Control whether we perform a compat. check against DUP ABI.
@@ -795,7 +795,6 @@ This package is required by %{name}-debuginfo subpackages.
 It provides the kernel source files common to all builds.
 
 %if %{with_selftests}
-
 %package selftests-internal
 Summary: Kernel samples and selftests
 License: GPLv2
@@ -803,14 +802,13 @@ Requires: binutils, bpftool, iproute-tc, nmap-ncat
 Requires: kernel-modules-internal = %{version}-%{release}
 %description selftests-internal
 Kernel sample programs and selftests.
-
+%{nil}
 # Note that this pattern only works right to match the .build-id
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libexecdir}/(ksamples|kselftests)/.*|XXX' -o selftests-debuginfo.list}
-
-%endif # with_selftests
+%endif
 
 %if %{with_gcov}
 %package gcov
@@ -1000,7 +998,7 @@ Cortex-A15 devices with LPAE and HW virtualisation support
 %description zfcpdump-core
 The kernel package contains the Linux kernel (vmlinuz) for use by the
 zfcpdump infrastructure.
-%endif # with_zfcpdump
+%endif
 
 %define variant_summary The Linux kernel compiled with extra debugging enabled
 %kernel_variant_package debug
@@ -1511,8 +1509,8 @@ BuildKernel() {
     %pesign -s -i $KernelImage -o vmlinuz.signed
     %else
     %pesign -s -i $SignImage -o vmlinuz.signed -a %{secureboot_ca} -c %{secureboot_key} -n %{pesign_name}
-    %endif # fedora
-    %endif # arches
+    %endif
+    %endif
     %ifarch s390x ppc64le
     if [ -x /usr/bin/rpm-sign ]; then
 	rpm-sign --key "%{pesign_name}" --lkmsign $SignImage --output vmlinuz.signed
@@ -2054,7 +2052,7 @@ docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{rpmversion}
 mkdir -p $docdir
 tar -h -f - --exclude=man --exclude='.*' -c Documentation | tar xf - -C $docdir
 
-%endif # with_doc
+%endif
 
 # We have to do the headers install before the tools install because the
 # kernel headers_install will remove any header files in /usr/include that
@@ -2096,10 +2094,9 @@ rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
 # kabi directory
 INSTALL_KABI_PATH=$RPM_BUILD_ROOT/lib/modules/
 mkdir -p $INSTALL_KABI_PATH
-
 # install kabi releases directories
 tar xjvf %{SOURCE300} -C $INSTALL_KABI_PATH
-%endif  # with_kernel_abi_whitelists
+%endif
 
 %if %{with_selftests}
 pushd samples
