@@ -516,7 +516,10 @@ Requires: kernel-modules-uname-r = %{KVERREL}%{?variant}
 BuildRequires: kmod, patch, bash, tar, git-core
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
-BuildRequires: net-tools, hostname, bc, elfutils-devel, dwarves
+BuildRequires: net-tools, hostname, bc, elfutils-devel
+%if 0%{?fedora}
+BuildRequires: dwarves
+%endif
 # Used to mangle unversioned shebangs to be Python 3
 BuildRequires: python3-devel
 %if %{with_headers}
@@ -543,7 +546,9 @@ BuildConflicts: rhbuildsys(DiskFree) < 500Mb
 %if %{with_debuginfo}
 BuildRequires: rpm-build, elfutils
 BuildConflicts: rpm < 4.13.0.1-19
+%if 0%{?fedora}
 BuildConflicts: dwarves < 1.13
+%endif
 # Most of these should be enabled after more investigation
 %undefine _include_minidebuginfo
 %undefine _find_debuginfo_dwz_opts
