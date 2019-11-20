@@ -1600,11 +1600,7 @@ BuildKernel() {
     fi
 
     %ifarch x86_64 aarch64
-    %if 0%{?fedora}
-    %pesign -s -i $KernelImage -o vmlinuz.signed
-    %else
     %pesign -s -i $SignImage -o vmlinuz.signed -a %{secureboot_ca} -c %{secureboot_key} -n %{pesign_name}
-    %endif
     %endif
     %ifarch s390x ppc64le
     if [ -x /usr/bin/rpm-sign ]; then
