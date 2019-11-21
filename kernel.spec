@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1826,6 +1826,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 21 2019 Laura Abbott <labbott@redhat.com> - 5.3.12-200
+- Linux v5.3.12
+
 * Tue Nov 12 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.3.11-200
 - Linux v5.3.11
 - Fixes CVE-2019-11135  (rhbz 1753062 1771649)
