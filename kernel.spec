@@ -647,6 +647,9 @@ Patch523: 0001-nl80211-fix-memory-leak-in-nl80211_get_ftm_responder.patch
 # CVE-2019-19054 rhbz 1775063 1775117
 Patch524: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
 
+# CVE-2019-19077 rhbz 1775724 1775725
+Patch525: 0001-RDMA-Fix-goto-target-to-release-the-allocated-memory.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1884,6 +1887,9 @@ fi
 #
 #
 %changelog
+* Fri Nov 22 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-19077 rhbz 1775724 1775725
+
 * Thu Nov 21 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.3.12-200
 - Fix CVE-2019-19074 (rhbz 1774933 1774934)
 - Fix CVE-2019-19073 (rhbz 1774937 1774939)
