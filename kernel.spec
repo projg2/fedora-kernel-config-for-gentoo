@@ -191,7 +191,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -2548,6 +2548,9 @@ fi
 #
 #
 %changelog
+* Fri Nov 22 2019 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
 * Thu Nov 21 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.3.12-300
 - Fix CVE-2019-19071 (rhbz 1774949 1774950)
 - Fix CVE-2019-19070 (rhbz 1774957 1774958)
