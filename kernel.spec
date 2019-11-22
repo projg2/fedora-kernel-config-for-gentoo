@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -104,7 +104,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 8
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -2548,6 +2548,9 @@ fi
 #
 #
 %changelog
+* Fri Nov 22 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc8.git1.1
+- Linux v5.4-rc8-15-g81429eb8d9ca
+
 * Fri Nov 22 2019 Jeremy Cline <jcline@redhat.com>
 - Reenable debugging options.
 
