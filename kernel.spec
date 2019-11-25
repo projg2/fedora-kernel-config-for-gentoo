@@ -654,6 +654,19 @@ Patch524: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
 # CVE-2019-19077 rhbz 1775724 1775725
 Patch525: 0001-RDMA-Fix-goto-target-to-release-the-allocated-memory.patch
 
+# CVE-2019-14895 rhbz 1774870 1776139
+Patch526: mwifiex-fix-possible-heap-overflow-in-mwifiex_process_country_ie.patch
+
+# CVE-2019-14896 rhbz 1774875 1776143
+# CVE-2019-14897 rhbz 1774879 1776146
+Patch527: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
+
+# CVE-2019-14901 rhbz 1773519 1776184
+Patch528: mwifiex-Fix-heap-overflow-in-mmwifiex_process_tdls_action_frame.patch
+
+# CVE-2019-19078 rhbz 1776354 1776353
+Patch529: ath10k-fix-memory-leak.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1855,7 +1868,14 @@ fi
 #
 #
 %changelog
-* Mon Nov 25 2019 Laura Abbott <labbott@redhat.com> - 5.3.13-300
+* Mon Nov 25 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.3.13-300
+- Fix CVE-2019-14895 (rhbz 1774870 1776139)
+- Fix CVE-2019-14896 (rhbz 1774875 1776143)
+- Fix CVE-2019-14897 (rhbz 1774879 1776146)
+- Fix CVE-2019-14901 (rhbz 1773519 1776184)
+- Fix CVE-2019-19078 (rhbz 1776354 1776353)
+
+* Mon Nov 25 2019 Laura Abbott <labbott@redhat.com>
 - Linux v5.3.13
 
 * Fri Nov 22 2019 Justin M. Forbes <jforbes@fedoraproject.org> 
