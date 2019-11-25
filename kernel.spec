@@ -596,21 +596,11 @@ Source11: x509.genkey.fedora
 
 Source12: securebootca.cer
 Source13: secureboot.cer
-Source14: secureboot_s390.cer
-Source15: secureboot_ppc.cer
 
 %define secureboot_ca %{SOURCE12}
 %ifarch x86_64 aarch64
 %define secureboot_key %{SOURCE13}
 %define pesign_name redhatsecureboot301
-%endif
-%ifarch s390x
-%define secureboot_key %{SOURCE14}
-%define pesign_name redhatsecureboot302
-%endif
-%ifarch ppc64le
-%define secureboot_key %{SOURCE15}
-%define pesign_name redhatsecureboot303
 %endif
 
 %else # released_kernel
@@ -624,7 +614,7 @@ Source13: redhatsecureboot003.cer
 
 %endif # released_kernel
 
-Source22: mod-extra.list.rhel
+Source15: mod-extra.list.rhel
 Source16: mod-extra.list.fedora
 Source17: mod-extra.sh
 Source18: mod-sign.sh
