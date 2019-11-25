@@ -840,6 +840,19 @@ Patch522: mwifiex-pcie-fix-memory-leak-in-mwifiex_pcie_alloc_cmdrsp_buf.patch
 # CVE-2019-19054 rhbz 1775063 1775117
 Patch524: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
 
+# CVE-2019-14895 rhbz 1774870 1776139
+Patch525: mwifiex-fix-possible-heap-overflow-in-mwifiex_process_country_ie.patch
+
+# CVE-2019-14896 rhbz 1774875 1776143
+# CVE-2019-14897 rhbz 1774879 1776146
+Patch526: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
+
+# CVE-2019-14901 rhbz 1773519 1776184
+Patch527: mwifiex-Fix-heap-overflow-in-mmwifiex_process_tdls_action_frame.patch
+
+# CVE-2019-19078 rhbz 1776354 1776353
+Patch528: ath10k-fix-memory-leak.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2538,6 +2551,13 @@ fi
 #
 #
 %changelog
+* Mon Nov 25 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-14895 (rhbz 1774870 1776139)
+- Fix CVE-2019-14896 (rhbz 1774875 1776143)
+- Fix CVE-2019-14897 (rhbz 1774879 1776146)
+- Fix CVE-2019-14901 (rhbz 1773519 1776184)
+- Fix CVE-2019-19078 (rhbz 1776354 1776353)
+
 * Mon Nov 25 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-1
 - Linux v5.4.0
 
