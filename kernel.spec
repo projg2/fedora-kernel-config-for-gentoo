@@ -667,6 +667,9 @@ Patch528: mwifiex-Fix-heap-overflow-in-mmwifiex_process_tdls_action_frame.patch
 # CVE-2019-19078 rhbz 1776354 1776353
 Patch529: ath10k-fix-memory-leak.patch
 
+# CVE-2019-19082 rhbz 1776832 1776833
+Patch530: 0001-drm-amd-display-prevent-memory-leak.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1868,6 +1871,9 @@ fi
 #
 #
 %changelog
+* Tue Nov 26 2019 Justin M. Forbes <jforbes@fedoraproject.org> 
+- Fix CVE-2019-19082 (rhbz 1776832 1776833)
+
 * Mon Nov 25 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.3.13-300
 - Fix CVE-2019-14895 (rhbz 1774870 1776139)
 - Fix CVE-2019-14896 (rhbz 1774875 1776143)
