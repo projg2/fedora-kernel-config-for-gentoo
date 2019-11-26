@@ -24,7 +24,7 @@ Summary: The Linux kernel
 # For rawhide and/or a kernel built from an rc or git snapshot,
 # released_kernel should be 0.
 # For a stable, released kernel, released_kernel should be 1.
-%global released_kernel 1
+%global released_kernel 0
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 2
+%global baserelease 1
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -102,7 +102,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 1
+%global rcrev 0
 # The git snapshot level
 %define gitrev 1
 # Set rpm version accordingly
@@ -191,7 +191,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -810,42 +810,11 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-# CVE-2019-19071 rhbz 1774949 1774950
-Patch509: rsi-release-skb-if-rsi_prepare_beacon-fails.patch
-
-# CVE-2019-19070 rhbz 1774957 1774958
-Patch510: spi-gpio-prevent-memory-leak-in-spi_gpio_probe.patch
-
-# CVE-2019-19068 rhbz 1774963 1774965
-Patch511: rtl8xxxu-prevent-leaking-urb.patch
-
-# CVE-2019-19043 rhbz 1774972 1774973
-Patch512: net-next-v2-9-9-i40e-prevent-memory-leak-in-i40e_setup_macvlans.patch
-
 # CVE-2019-19066 rhbz 1774976 1774978
 Patch513: scsi-bfa-release-allocated-memory-in-case-of-error.patch
 
-# CVE-2019-19046 rhbz 1774988 1774989
-Patch514: ipmi-Fix-memory-leak-in-__ipmi_bmc_register.patch
-
-# CVE-2019-19050 rhbz 1774998 1775002
-# CVE-2019-19062 rhbz 1775021 1775023
-Patch515: crypto-user-fix-memory-leak-in-crypto_reportstat.patch
-
-# CVE-2019-19064 rhbz 1775010 1775011
-Patch516: spi-lpspi-fix-memory-leak-in-fsl_lpspi_probe.patch
-
-# CVE-2019-19063 rhbz 1775015 1775016
-Patch517: rtlwifi-prevent-memory-leak-in-rtl_usb_probe.patch
-
-# CVE-2019-19057 rhbz 1775050 1775051
-Patch520: mwifiex-pcie-Fix-memory-leak-in-mwifiex_pcie_init_evt_ring.patch
-
 # CVE-2019-19053 rhbz 1775956 1775110
 Patch521: rpmsg-char-release-allocated-memory.patch
-
-# CVE-2019-19056 rhbz 1775097 1775115
-Patch522: mwifiex-pcie-fix-memory-leak-in-mwifiex_pcie_alloc_cmdrsp_buf.patch
 
 # CVE-2019-19054 rhbz 1775063 1775117
 Patch524: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
@@ -859,9 +828,6 @@ Patch526: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
 
 # CVE-2019-14901 rhbz 1773519 1776184
 Patch527: mwifiex-Fix-heap-overflow-in-mmwifiex_process_tdls_action_frame.patch
-
-# CVE-2019-19078 rhbz 1776354 1776353
-Patch528: ath10k-fix-memory-leak.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2561,6 +2527,10 @@ fi
 #
 #
 %changelog
+* Tue Nov 26 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git1.1
+- Linux v5.4-3619-gbe2eca94d144
+- Reenable debugging options.
+
 * Mon Nov 25 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-2
 - bump and build to pick up fixes
 
