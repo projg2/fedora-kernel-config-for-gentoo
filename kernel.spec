@@ -104,7 +104,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -815,9 +815,6 @@ Patch513: scsi-bfa-release-allocated-memory-in-case-of-error.patch
 
 # CVE-2019-19053 rhbz 1775956 1775110
 Patch521: rpmsg-char-release-allocated-memory.patch
-
-# CVE-2019-19054 rhbz 1775063 1775117
-Patch524: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
 
 # CVE-2019-14895 rhbz 1774870 1776139
 Patch525: mwifiex-fix-possible-heap-overflow-in-mwifiex_process_country_ie.patch
@@ -2527,6 +2524,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 27 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git2.1
+- Linux v5.4-5280-g89d57dddd7d3
+
 * Tue Nov 26 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git1.1
 - Linux v5.4-3619-gbe2eca94d144
 - Reenable debugging options.
