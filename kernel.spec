@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1918,6 +1918,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 02 2019 Laura Abbott <labbott@redhat.com> - 5.3.14-200
+- Linux v5.3.14
+
 * Mon Dec 02 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-18808 (rhbz 1777418 1777421)
 - Fix CVE-2019-18809 (rhbz 1777449 1777451)
