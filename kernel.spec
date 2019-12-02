@@ -104,7 +104,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 2
+%define gitrev 3
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -779,14 +779,8 @@ Patch305: ARM-tegra-usb-no-reset.patch
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
-# https://patchwork.kernel.org/patch/11171225/
-Patch322: mfd-max77620-Do-not-allocate-IRQs-upfront.patch
-# https://patchwork.ozlabs.org/patch/1170631/
-Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
 # https://www.spinics.net/lists/linux-tegra/msg44216.html
 Patch324: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
-# https://patchwork.kernel.org/patch/11224177/
-Patch325: arm64-usb-host-xhci-tegra-set-MODULE_FIRMWARE-for-tegra186.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -812,9 +806,6 @@ Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
 # CVE-2019-19066 rhbz 1774976 1774978
 Patch513: scsi-bfa-release-allocated-memory-in-case-of-error.patch
-
-# CVE-2019-19053 rhbz 1775956 1775110
-Patch521: rpmsg-char-release-allocated-memory.patch
 
 # CVE-2019-14895 rhbz 1774870 1776139
 Patch525: mwifiex-fix-possible-heap-overflow-in-mwifiex_process_country_ie.patch
@@ -2524,6 +2515,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 02 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git3.1
+- Linux v5.4-10271-g596cf45cbf6e
+
 * Wed Nov 27 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git2.1
 - Linux v5.4-5280-g89d57dddd7d3
 
