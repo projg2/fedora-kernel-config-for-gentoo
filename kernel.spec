@@ -670,6 +670,21 @@ Patch529: ath10k-fix-memory-leak.patch
 # CVE-2019-19082 rhbz 1776832 1776833
 Patch530: 0001-drm-amd-display-prevent-memory-leak.patch
 
+# CVE-2019-18808 rhbz 1777418 1777421
+Patch531: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
+
+# CVE-2019-18809 rhbz 1777449 1777451
+Patch532: 0001-media-usb-fix-memory-leak-in-af9005_identify_state.patch
+
+# CVE-2019-18811 rhbz 1777455 1777456
+Patch533: 0001-ASoC-SOF-ipc-Fix-memory-leak-in-sof_set_get_large_ct.patch
+
+# CVE-2019-18812 rhbz 1777458 1777459
+Patch534: 0001-ASoC-SOF-Fix-memory-leak-in-sof_dfsentry_write.patch
+
+# CVE-2019-16232 rhbz 1760351 1760352
+Patch535: 0001-libertas-fix-a-potential-NULL-pointer-dereference.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1871,6 +1886,13 @@ fi
 #
 #
 %changelog
+* Mon Dec 02 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-18808 (rhbz 1777418 1777421)
+- Fix CVE-2019-18809 (rhbz 1777449 1777451)
+- Fix CVE-2019-18811 (rhbz 1777455 1777456)
+- Fix CVE-2019-18812 (rhbz 1777458 1777459)
+- Fix CVE-2019-16232 (rhbz 1760351 1760352)
+
 * Tue Nov 26 2019 Justin M. Forbes <jforbes@fedoraproject.org> 
 - Fix CVE-2019-19082 (rhbz 1776832 1776833)
 
