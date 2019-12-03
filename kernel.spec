@@ -104,7 +104,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 3
+%define gitrev 4
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -804,9 +804,6 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-# CVE-2019-19066 rhbz 1774976 1774978
-Patch513: scsi-bfa-release-allocated-memory-in-case-of-error.patch
-
 # CVE-2019-14895 rhbz 1774870 1776139
 Patch525: mwifiex-fix-possible-heap-overflow-in-mwifiex_process_country_ie.patch
 
@@ -1381,6 +1378,7 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 	scripts/show_delta \
 	scripts/diffconfig \
 	scripts/bloat-o-meter \
+	scripts/jobserver-exec \
 	tools/perf/tests/attr.py \
 	tools/perf/scripts/python/stat-cpi.py \
 	tools/perf/scripts/python/sched-migration.py \
@@ -2515,6 +2513,9 @@ fi
 #
 #
 %changelog
+* Tue Dec 03 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git4.1
+- Linux v5.4-11180-g76bb8b05960c
+
 * Mon Dec 02 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git3.1
 - Linux v5.4-10271-g596cf45cbf6e
 
