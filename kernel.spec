@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2564,6 +2564,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 04 2019 Jeremy Cline <jcline@redhat.com> - 5.4.2-300
+- Linux v5.4.2
+
 * Wed Dec 04 2019 Jeremy Cline <jcline@redhat.com> - 5.4.1-300
 - Linux v5.4.1
 
