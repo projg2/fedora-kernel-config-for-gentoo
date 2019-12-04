@@ -681,6 +681,9 @@ Patch534: 0001-ASoC-SOF-Fix-memory-leak-in-sof_dfsentry_write.patch
 # CVE-2019-16232 rhbz 1760351 1760352
 Patch535: 0001-libertas-fix-a-potential-NULL-pointer-dereference.patch
 
+# rhbz 1769600
+Patch536: powerpc-xive-skip-ioremap-of-ESB-pages-for-LSI-interrupts.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1918,6 +1921,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 04 2019 Laura Abbott <labbott@redhat.com>
+- Add powerpc virt fix (rhbz 1769600)
+
 * Mon Dec 02 2019 Laura Abbott <labbott@redhat.com> - 5.3.14-200
 - Linux v5.3.14
 
