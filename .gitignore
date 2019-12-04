@@ -9,3 +9,8 @@ kernel-[2345]*/
 perf-man-*.tar.gz
 kernel-headers/
 kernel-tools/
+# because of how we manage having two sets of files we copy these
+# over depending on Fedora vs. RHEL. Just ignore the one that gets
+# used at runtime.
+filter-*.sh
+x509.genkey
