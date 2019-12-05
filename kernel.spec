@@ -461,7 +461,7 @@ Summary: The Linux kernel
 
 # We only build kernel-headers on the following...
 %if 0%{?fedora}
-%define nobuildarches i386 ppc64le
+%define nobuildarches i386
 %else
 %define nobuildarches i386 i686
 %endif
