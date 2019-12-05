@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -671,9 +671,6 @@ Patch531: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
 
 # CVE-2019-18809 rhbz 1777449 1777451
 Patch532: 0001-media-usb-fix-memory-leak-in-af9005_identify_state.patch
-
-# CVE-2019-18811 rhbz 1777455 1777456
-Patch533: 0001-ASoC-SOF-ipc-Fix-memory-leak-in-sof_set_get_large_ct.patch
 
 # CVE-2019-18812 rhbz 1777458 1777459
 Patch534: 0001-ASoC-SOF-Fix-memory-leak-in-sof_dfsentry_write.patch
@@ -1921,6 +1918,9 @@ fi
 #
 #
 %changelog
+* Thu Dec 05 2019 Laura Abbott <labbott@redhat.com> - 5.3.15-200
+- Linux v5.3.15
+
 * Wed Dec 04 2019 Laura Abbott <labbott@redhat.com>
 - Add powerpc virt fix (rhbz 1769600)
 
