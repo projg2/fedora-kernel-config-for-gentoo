@@ -104,7 +104,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 5
+%define gitrev 6
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -461,7 +461,7 @@ Summary: The Linux kernel
 
 # We only build kernel-headers on the following...
 %if 0%{?fedora}
-%define nobuildarches i386
+%define nobuildarches i386 ppc64le
 %else
 %define nobuildarches i386 i686
 %endif
@@ -2889,6 +2889,9 @@ fi
 #
 #
 %changelog
+* Thu Dec 05 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git6.1
+- Linux v5.4-11747-g2f13437b8917
+
 * Wed Dec 04 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git5.1
 - Linux v5.4-11681-g63de37476ebd
 
