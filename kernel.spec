@@ -104,7 +104,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 6
+%define gitrev 7
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -819,8 +819,6 @@ Patch305: ARM-tegra-usb-no-reset.patch
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
-# https://www.spinics.net/lists/linux-tegra/msg44216.html
-Patch324: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -2889,6 +2887,9 @@ fi
 #
 #
 %changelog
+* Fri Dec 06 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git7.1
+- Linux v5.4-12941-gb0d4beaa5a4b
+
 * Thu Dec 05 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git6.1
 - Linux v5.4-11747-g2f13437b8917
 
