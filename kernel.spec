@@ -873,6 +873,9 @@ Patch538: 0002-bdev-Refresh-bdev-size-for-disks-without-partitionin.patch
 # ALSA code from v5.5 (Intel ASoC Sound Open Firmware driver support)
 Patch600: alsa-5.5.patch
 
+# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
+Patch607: alsa-5.6.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
