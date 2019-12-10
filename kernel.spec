@@ -866,6 +866,10 @@ Patch535: 0001-libertas-fix-a-potential-NULL-pointer-dereference.patch
 # rhbz 1769600
 Patch536: powerpc-xive-skip-ioremap-of-ESB-pages-for-LSI-interrupts.patch
 
+# rhbz 1781762
+Patch537: 0001-bdev-Factor-out-bdev-revalidation-into-a-common-help.patch
+Patch538: 0002-bdev-Refresh-bdev-size-for-disks-without-partitionin.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2567,6 +2571,9 @@ fi
 #
 #
 %changelog
+* Tue Dec 10 2019 Laura Abbott <labbott@redhat.com>
+- Fix for DVD reading (rhbz 1781762)
+
 * Wed Dec 04 2019 Jeremy Cline <jcline@redhat.com> - 5.4.2-300
 - Linux v5.4.2
 
