@@ -205,7 +205,7 @@ index 000000000000..9070055de0a1
 +			pr_info("Secure boot enabled\n");
 +			break;
 +		default:
-+			pr_warning("Secure boot could not be determined (mode %u)\n",
++			pr_warn("Secure boot could not be determined (mode %u)\n",
 +				   mode);
 +			break;
 +		}
