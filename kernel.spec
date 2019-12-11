@@ -2890,6 +2890,10 @@ fi
 #
 #
 %changelog
+* Tue Dec 10 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Updates for ARMv7/aarch64
+- Enable newer TI ARMv7 platforms
+
 * Tue Dec 10 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc1.git1.1
 - Linux v5.5-rc1-12-g6794862a16ef
 - Reenable debugging options.
