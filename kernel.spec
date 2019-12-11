@@ -813,7 +813,7 @@ Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
 # rhbz 1574718
 Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
-Patch305: ARM-tegra-usb-no-reset.patch
+Patch304: ARM-tegra-usb-no-reset.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
