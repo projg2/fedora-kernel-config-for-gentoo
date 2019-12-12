@@ -104,7 +104,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 1
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -2890,6 +2890,9 @@ fi
 #
 #
 %changelog
+* Thu Dec 12 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc1.git2.1
+- Linux v5.5-rc1-27-gae4b064e2a61
+
 * Tue Dec 10 2019 Peter Robinson <pbrobinson@fedoraproject.org>
 - Updates for ARMv7/aarch64
 - Enable newer TI ARMv7 platforms
