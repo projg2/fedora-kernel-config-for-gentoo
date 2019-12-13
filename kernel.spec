@@ -815,6 +815,12 @@ Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
 Patch304: ARM-tegra-usb-no-reset.patch
 
+# Raspberry Pi
+# https://patchwork.kernel.org/cover/11271017/
+Patch310: Raspberry-Pi-4-PCIe-support.patch
+# https://patchwork.kernel.org/patch/11223139/
+Patch311: ARM-Enable-thermal-support-for-Raspberry-Pi-4.patch
+
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
