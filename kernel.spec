@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 16
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -602,9 +602,6 @@ Patch507: 0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
 # CVE-2019-19072 rhbz 1774946 1774947
 Patch508: 0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
 
-# CVE-2019-19071 rhbz 1774949 1774950
-Patch509: rsi-release-skb-if-rsi_prepare_beacon-fails.patch
-
 # CVE-2019-19070 rhbz 1774957 1774958
 Patch510: spi-gpio-prevent-memory-leak-in-spi_gpio_probe.patch
 
@@ -619,10 +616,6 @@ Patch513: scsi-bfa-release-allocated-memory-in-case-of-error.patch
 
 # CVE-2019-19046 rhbz 1774988 1774989
 Patch514: ipmi-Fix-memory-leak-in-__ipmi_bmc_register.patch
-
-# CVE-2019-19050 rhbz 1774998 1775002
-# CVE-2019-19062 rhbz 1775021 1775023
-Patch515: crypto-user-fix-memory-leak-in-crypto_reportstat.patch
 
 # CVE-2019-19064 rhbz 1775010 1775011
 Patch516: spi-lpspi-fix-memory-leak-in-fsl_lpspi_probe.patch
@@ -1886,6 +1879,9 @@ fi
 #
 #
 %changelog
+* Fri Dec 13 2019 Laura Abbott <labbott@redhat.com> - 5.3.16-300
+- Linux v5.3.16
+
 * Thu Dec 05 2019 Laura Abbott <labbott@redhat.com> - 5.3.15-300
 - Linux v5.3.15
 
