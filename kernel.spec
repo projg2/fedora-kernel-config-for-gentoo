@@ -820,6 +820,8 @@ Patch304: ARM-tegra-usb-no-reset.patch
 Patch310: Raspberry-Pi-4-PCIe-support.patch
 # https://patchwork.kernel.org/patch/11223139/
 Patch311: ARM-Enable-thermal-support-for-Raspberry-Pi-4.patch
+# https://patchwork.kernel.org/patch/11292523/
+Patch312: ARM-bcm-Fix-support-for-BCM2711-SoC-which-breaks-other-ARM-platforms.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
