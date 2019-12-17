@@ -104,7 +104,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 2
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -820,8 +820,6 @@ Patch304: ARM-tegra-usb-no-reset.patch
 Patch310: Raspberry-Pi-4-PCIe-support.patch
 # https://patchwork.kernel.org/patch/11223139/
 Patch311: ARM-Enable-thermal-support-for-Raspberry-Pi-4.patch
-# https://patchwork.kernel.org/patch/11292523/
-Patch312: ARM-bcm-Fix-support-for-BCM2711-SoC-which-breaks-other-ARM-platforms.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
@@ -2898,6 +2896,11 @@ fi
 #
 #
 %changelog
+* Tue Dec 17 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc2.git1.1
+- Linux v5.5-rc2-56-gea200dec5128
+- Enable NO_HZ_FULL for other arches too.
+- Reenable debugging options.
+
 * Mon Dec 16 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc2.git0.1
 - Linux v5.5-rc2
 
