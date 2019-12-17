@@ -1,27 +1,27 @@
-From patchwork Tue Dec  3 11:47:34 2019
+From patchwork Mon Dec 16 11:01:07 2019
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Patchwork-Submitter: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-X-Patchwork-Id: 11271033
+X-Patchwork-Id: 11293801
 Return-Path: 
- <SRS0=W8tl=ZZ=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+ <SRS0=BOSQ=2G=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
 Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
  [172.30.200.123])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id BBEB3138C
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 1A73D930
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Tue,  3 Dec 2019 11:48:21 +0000 (UTC)
+ Mon, 16 Dec 2019 11:01:44 +0000 (UTC)
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9A70320684
+	by mail.kernel.org (Postfix) with ESMTPS id B59B620700
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Tue,  3 Dec 2019 11:48:21 +0000 (UTC)
+ Mon, 16 Dec 2019 11:01:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
 	dkim=pass (2048-bit key) header.d=lists.infradead.org
- header.i=@lists.infradead.org header.b="YncEePUQ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9A70320684
+ header.i=@lists.infradead.org header.b="cb79RIet"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B59B620700
 Authentication-Results: mail.kernel.org;
  dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org;
@@ -33,48 +33,52 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=IqcL74yj2rL3lcYfU5yMt0a7qtruPl8B1YvyhBXAO0E=; b=YncEePUQvEA7KI
-	vfeP/VIQvIZkG4SHmOI/+tGFzmxINQKLokUc+IqOogE/yFIRPeq62wAQcL8mqGT4056JpLikobyIG
-	5lEuZvJCUd6IkA7sCQIfh5H3Qg7mA1QhAiSOiWi5JJGCtYfo/5kMB0RXwm4xU8pbYmIQeTLEpvnb4
-	9Xqvy75NqsQTTFJzw+iDS83QMDWE26HTQyXQGWzCAdJ2F6ZHgKpeQ2mrzZFr4dVWIRG29s44yXzrq
-	uXZqI2sKKYJgNEkrG99LyDfNyycC69A6MJALYTKZ8tnPPSDk3q2DQuLWgt/QLquI7kd+VP6rFx2/c
-	HCQbZ2CCA2jTGG/pe93g==;
+	List-Owner; bh=BIaxi8TW6/7kc2+ri3jCQvUDcvRqu4DcRQH+PcSrqFE=; b=cb79RIetq9xDMB
+	WjzGeSpWqqJFBoypJgtl/f0hMNvDJo23OqyPAA3XiHnd/1OiFVtIaHj0rl0/7mBUqLfVJzym3AJq8
+	MbvE4H5sbjLxLskuQnjMJoITqCzh1fly6HBgLOQJRHZU3rLBVnkbRPgRv+nRt5Nqi5M3aJp1a3qsL
+	8hPhH1PkGeofP4XjfWvnfl7nhg21+dC3Bxu86pb1aKPogRL6Rw4FGwOawF3ySHMGue4t9OfGcUh+B
+	NI08Au81lvrfZys52Hfb5S7BXmj8vd/1fGqW97GjBdZcHjdUNMfFHHlC4SmLwJqvKdVWpgJH01sdP
+	29RmPOdzQSiBF+WIhx2w==;
 Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
 	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1ic6fE-0001AU-2C; Tue, 03 Dec 2019 11:48:20 +0000
+	id 1igo8E-0003Jg-15; Mon, 16 Dec 2019 11:01:42 +0000
 Received: from mx2.suse.de ([195.135.220.15] helo=mx1.suse.de)
  by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
- id 1ic6en-0000lZ-Es; Tue, 03 Dec 2019 11:47:55 +0000
+ id 1igo80-00036F-By; Mon, 16 Dec 2019 11:01:30 +0000
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx1.suse.de (Postfix) with ESMTP id 78EF7B168;
- Tue,  3 Dec 2019 11:47:50 +0000 (UTC)
+ by mx1.suse.de (Postfix) with ESMTP id 0A418ABF4;
+ Mon, 16 Dec 2019 11:01:27 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 To: andrew.murray@arm.com, maz@kernel.org, linux-kernel@vger.kernel.org,
  Florian Fainelli <f.fainelli@gmail.com>,
- bcm-kernel-feedback-list@broadcom.com, Eric Anholt <eric@anholt.net>,
- Stefan Wahren <wahrenst@gmx.net>, Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v4 1/8] dt-bindings: PCI: Add bindings for brcmstb's PCIe
+ bcm-kernel-feedback-list@broadcom.com,
+ Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+ Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH v5 1/6] dt-bindings: PCI: Add bindings for brcmstb's PCIe
  device
-Date: Tue,  3 Dec 2019 12:47:34 +0100
-Message-Id: <20191203114743.1294-2-nsaenzjulienne@suse.de>
+Date: Mon, 16 Dec 2019 12:01:07 +0100
+Message-Id: <20191216110113.30436-2-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191203114743.1294-1-nsaenzjulienne@suse.de>
-References: <20191203114743.1294-1-nsaenzjulienne@suse.de>
+In-Reply-To: <20191216110113.30436-1-nsaenzjulienne@suse.de>
+References: <20191216110113.30436-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20191203_034753_785244_9E9D53D8 
-X-CRM114-Status: GOOD (  13.14  )
+X-CRM114-CacheID: sfid-20191216_030128_695398_7DDDD9AA 
+X-CRM114-Status: GOOD (  12.44  )
 X-Spam-Score: -2.3 (--)
 X-Spam-Report: SpamAssassin version 3.4.2 on bombadil.infradead.org summary:
  Content analysis details:   (-2.3 points)
  pts rule name              description
  ---- ----------------------
  --------------------------------------------------
+ 0.0 RCVD_IN_MSPIKE_H3      RBL: Good reputation (+3)
+ [195.135.220.15 listed in wl.mailspike.net]
  -2.3 RCVD_IN_DNSWL_MED      RBL: Sender listed at https://www.dnswl.org/,
  medium trust [195.135.220.15 listed in list.dnswl.org]
- -0.0 SPF_PASS               SPF: sender matches SPF record
  0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
+ -0.0 SPF_PASS               SPF: sender matches SPF record
+ 0.0 RCVD_IN_MSPIKE_WL      Mailspike good senders
 X-BeenThere: linux-arm-kernel@lists.infradead.org
 X-Mailman-Version: 2.1.29
 Precedence: list
@@ -92,9 +96,8 @@ Cc: Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh@kernel.org>,
  mbrugger@suse.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
  phil@raspberrypi.org, jeremy.linton@arm.com,
  Rob Herring <robh+dt@kernel.org>,
- linux-rpi-kernel@lists.infradead.org, james.quinlan@broadcom.com,
- Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
- linux-arm-kernel@lists.infradead.org
+ wahrenst@gmx.net, james.quinlan@broadcom.com,
+ linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: 
  linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
@@ -237,30 +240,30 @@ index 000000000000..77d3e81a437b
 +            };
 +    };
 
-From patchwork Tue Dec  3 11:47:35 2019
+From patchwork Mon Dec 16 11:01:08 2019
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Patchwork-Submitter: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-X-Patchwork-Id: 11271055
+X-Patchwork-Id: 11293815
 Return-Path: 
- <SRS0=W8tl=ZZ=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+ <SRS0=BOSQ=2G=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
 Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
  [172.30.200.123])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 1F78D138C
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 72D3D930
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Tue,  3 Dec 2019 11:48:45 +0000 (UTC)
+ Mon, 16 Dec 2019 11:02:03 +0000 (UTC)
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F26BF20684
+	by mail.kernel.org (Postfix) with ESMTPS id 3F7AB207FF
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Tue,  3 Dec 2019 11:48:44 +0000 (UTC)
+ Mon, 16 Dec 2019 11:02:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
 	dkim=pass (2048-bit key) header.d=lists.infradead.org
- header.i=@lists.infradead.org header.b="Jb2E2Yxk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F26BF20684
+ header.i=@lists.infradead.org header.b="ISsHC9fH"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F7AB207FF
 Authentication-Results: mail.kernel.org;
  dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org;
@@ -272,46 +275,49 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=lbEc5f43CNWTBSRh7ktHxJI0VMyQF/ZV0/b7aoR4ZQM=; b=Jb2E2YxkMO3HV5
-	Dt4dl3eesIU4SevvQdWYKySOWuTo+Y/wZdN9rnBXnl9o8/su/7SlvKmtvXcvIdpTNYjFPSfD7YEUL
-	nIK9JjCXvBJMtJ2SY61d7epKC9y4IOUwtEU3VJqY9FjIM647fQ3weos6zZxayJxGvOW1zQAiu4S3q
-	6rohdY987/qCxmnm+T8h1BanFG3h26H/qZi43mus50+/BFWLFPHjtlXRwwEOsq7W2USjdfgu7hcVX
-	9my/VrB6bFhtDEZf8NYqQ7Brl5QkBfCeN1jgNQ67cF/DfnKHDIv7ji+BFoM1+UJ0C5cAvqyBb0t72
-	6ab/Wy6FX2z2WateUZkA==;
+	List-Owner; bh=UdJf8Rwrz/6hs1077s5n/9efhkcR9FHAvuF0K/vLN8Y=; b=ISsHC9fHRq+60M
+	7gtGwBg+WQQOYb9jdFmwMcxGe0qeWpPaGIHMIEsnIe4XD9FwQCB/DOlaEd0YroSKG9wx+ltXjqRP6
+	corbkj+3N2CbLy6xpcmwrU7Mbjs2kt7wAx86+oeF2HHVgt0LIa3b38nMkD9IIKU9cNsE/eBW8QAOz
+	wBlxik6IpMapnTNb5x/QmfGMTJUfmL0t8wz7HK1aJtKRj8U99KmswxLykSrniOXw8EBd+NnZxjV5W
+	6sD8LTIHp/B5zbN06MCX9sggOhONO7PjnEkmJM68Jzwu/O+6k8MHEfGBRdTLXvkoDmW1uFhIt/u79
+	nZo/2ZcH3xzpGMNR//gA==;
 Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
 	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1ic6fX-0001T0-GM; Tue, 03 Dec 2019 11:48:39 +0000
+	id 1igo8W-0003bB-8M; Mon, 16 Dec 2019 11:02:00 +0000
 Received: from mx2.suse.de ([195.135.220.15] helo=mx1.suse.de)
  by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
- id 1ic6eo-0000lm-44; Tue, 03 Dec 2019 11:47:56 +0000
+ id 1igo81-00036I-17; Mon, 16 Dec 2019 11:01:31 +0000
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx1.suse.de (Postfix) with ESMTP id 6B4FCB1E8;
- Tue,  3 Dec 2019 11:47:51 +0000 (UTC)
+ by mx1.suse.de (Postfix) with ESMTP id B9907ACA7;
+ Mon, 16 Dec 2019 11:01:27 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 To: andrew.murray@arm.com, maz@kernel.org, linux-kernel@vger.kernel.org,
  Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
- Eric Anholt <eric@anholt.net>, Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH v4 2/8] ARM: dts: bcm2711: Enable PCIe controller
-Date: Tue,  3 Dec 2019 12:47:35 +0100
-Message-Id: <20191203114743.1294-3-nsaenzjulienne@suse.de>
+ Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: [PATCH v5 2/6] ARM: dts: bcm2711: Enable PCIe controller
+Date: Mon, 16 Dec 2019 12:01:08 +0100
+Message-Id: <20191216110113.30436-3-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191203114743.1294-1-nsaenzjulienne@suse.de>
-References: <20191203114743.1294-1-nsaenzjulienne@suse.de>
+In-Reply-To: <20191216110113.30436-1-nsaenzjulienne@suse.de>
+References: <20191216110113.30436-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20191203_034754_308401_7C0E2CE5 
-X-CRM114-Status: GOOD (  11.69  )
+X-CRM114-CacheID: sfid-20191216_030129_211513_E7F95430 
+X-CRM114-Status: GOOD (  12.22  )
 X-Spam-Score: -2.3 (--)
 X-Spam-Report: SpamAssassin version 3.4.2 on bombadil.infradead.org summary:
  Content analysis details:   (-2.3 points)
  pts rule name              description
  ---- ----------------------
  --------------------------------------------------
+ 0.0 RCVD_IN_MSPIKE_H3      RBL: Good reputation (+3)
+ [195.135.220.15 listed in wl.mailspike.net]
  -2.3 RCVD_IN_DNSWL_MED      RBL: Sender listed at https://www.dnswl.org/,
  medium trust [195.135.220.15 listed in list.dnswl.org]
- -0.0 SPF_PASS               SPF: sender matches SPF record
  0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
+ -0.0 SPF_PASS               SPF: sender matches SPF record
+ 0.0 RCVD_IN_MSPIKE_WL      Mailspike good senders
 X-BeenThere: linux-arm-kernel@lists.infradead.org
 X-Mailman-Version: 2.1.29
 Precedence: list
@@ -325,11 +331,12 @@ List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
 List-Subscribe: 
  <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Cc: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- f.fainelli@gmail.com, linux-pci@vger.kernel.org, phil@raspberrypi.org,
- jeremy.linton@arm.com, mbrugger@suse.com,
- bcm-kernel-feedback-list@broadcom.com, linux-rpi-kernel@lists.infradead.org,
- james.quinlan@broadcom.com, Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc: devicetree@vger.kernel.org, f.fainelli@gmail.com,
+ linux-pci@vger.kernel.org,
+ phil@raspberrypi.org, jeremy.linton@arm.com, mbrugger@suse.com,
+ bcm-kernel-feedback-list@broadcom.com, wahrenst@gmx.net,
+ james.quinlan@broadcom.com, linux-arm-kernel@lists.infradead.org,
+ linux-rpi-kernel@lists.infradead.org
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: 
  linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
@@ -339,6 +346,9 @@ Technologies XHCI USB 3.0 controller.
 
 Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 ---
+
+Changes since v4:
+  - Rebase commit taking into account genet support series
 
 Changes since v3:
   - Remove unwarranted comment
@@ -353,22 +363,20 @@ Changes since v2:
 Changes since v1:
   - remove linux,pci-domain
 
- arch/arm/boot/dts/bcm2711.dtsi | 37 ++++++++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+[1] https://lkml.org/lkml/2019/11/21/235
+
+ arch/arm/boot/dts/bcm2711.dtsi | 31 ++++++++++++++++++++++++++++++-
+ 1 file changed, 30 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/bcm2711.dtsi b/arch/arm/boot/dts/bcm2711.dtsi
-index 667658497898..5b61cd915f2b 100644
+index e2f6ffb00aa9..b56388ce1216 100644
 --- a/arch/arm/boot/dts/bcm2711.dtsi
 +++ b/arch/arm/boot/dts/bcm2711.dtsi
-@@ -288,6 +288,43 @@ IRQ_TYPE_LEVEL_LOW)>,
- 		arm,cpu-registers-not-fw-configured;
- 	};
+@@ -331,7 +331,36 @@ scb {
+ 		#address-cells = <2>;
+ 		#size-cells = <1>;
  
-+	scb {
-+		compatible = "simple-bus";
-+		#address-cells = <2>;
-+		#size-cells = <1>;
-+
+-		ranges = <0x0 0x7c000000  0x0 0xfc000000  0x03800000>;
 +		ranges = <0x0 0x7c000000  0x0 0xfc000000  0x03800000>,
 +			 <0x6 0x00000000  0x6 0x00000000  0x40000000>;
 +
@@ -399,36 +407,34 @@ index 667658497898..5b61cd915f2b 100644
 +				      0x0 0xc0000000>;
 +			brcm,enable-ssc;
 +		};
-+	};
-+
- 	cpus: cpus {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
+ 
+ 		genet: ethernet@7d580000 {
+ 			compatible = "brcm,bcm2711-genet-v5";
 
-From patchwork Tue Dec  3 11:47:36 2019
+From patchwork Mon Dec 16 11:01:09 2019
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Patchwork-Submitter: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-X-Patchwork-Id: 11271061
+X-Patchwork-Id: 11293817
 Return-Path: 
- <SRS0=W8tl=ZZ=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+ <SRS0=BOSQ=2G=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
 Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
  [172.30.200.123])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id E1AB4112B
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 5258B138C
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Tue,  3 Dec 2019 11:49:22 +0000 (UTC)
+ Mon, 16 Dec 2019 11:02:16 +0000 (UTC)
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AA46020684
+	by mail.kernel.org (Postfix) with ESMTPS id 2BC2C206EC
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Tue,  3 Dec 2019 11:49:22 +0000 (UTC)
+ Mon, 16 Dec 2019 11:02:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
 	dkim=pass (2048-bit key) header.d=lists.infradead.org
- header.i=@lists.infradead.org header.b="kdIT4n/v"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AA46020684
+ header.i=@lists.infradead.org header.b="ESaFz97K"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2BC2C206EC
 Authentication-Results: mail.kernel.org;
  dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org;
@@ -440,49 +446,52 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=shr6Ls0N9G51O9bVrsJ5ps7Mg+mbxVJPDece8ROQyCc=; b=kdIT4n/v7H2rjd
-	uW+MOpIDPxFLeKWmdT1Ok9NIm722hMsAx7+JORea3/yaNpub1eM6FBl4FrLKP3z98GU9OEPpwywjM
-	CjwFlOe3hDwWIRiriWoSRYxXoVF6wdH80cYyClNZ63dFWIcwyb0MXeXh1vDagLTIVE7RsGUBw6EvT
-	jEpkjmeR2dX8Cv7hvm/j2qH4wG9ZAuXeuB+AAtbADv1srQ4PesNxSO2hEXiHi8aGws+6HzOYGJudh
-	k/uwaVEIqyEDywVHdKBrFQKTO+honphmVmmlMOb+C6cLlbGPcIFGmM5cQ6YiOTr2zJlGfJwNgiYOE
-	9r8UqBNv4pG4iajGDd5g==;
+	List-Owner; bh=+5ayi0cziQL3ZyCMj3iZr+38A6c8osp+1etjz8lMcs0=; b=ESaFz97K8D7L5Q
+	eP6cOr4xBwD8JGVEOalDJHmTA7YrfsYPlyqEmoV5jf6647ddqM+dXZE2HpqGgiKBSvQmg3bbSh92t
+	DokvbV8Iglu0LlQvliFFakzKq3z/SEtdiQ67DhNsyC8/6150TSWOQ3bgblVRH3pBCettQmRRCdSPG
+	S0nb5uLQ0mpfLJvfcpN6lDJepIxpaCo4My4i5OPN5rCVQgW0b181kKQ0CiOpn6+RHsZ8TZQT3oGLt
+	lXuYTni2GgcysGX3UNYbzsex6v8wqmSxchH+qpnwdJw7G/oxFcNTvVQ5BIjU62CZmX6qC+RjOwwnB
+	LwtY7yRrtR/lXNVBKOFQ==;
 Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
 	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1ic6gA-00029V-9S; Tue, 03 Dec 2019 11:49:18 +0000
+	id 1igo8l-0003rT-Fs; Mon, 16 Dec 2019 11:02:15 +0000
 Received: from mx2.suse.de ([195.135.220.15] helo=mx1.suse.de)
  by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
- id 1ic6eo-0000ln-4H; Tue, 03 Dec 2019 11:47:59 +0000
+ id 1igo82-00036x-Ea; Mon, 16 Dec 2019 11:01:34 +0000
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx1.suse.de (Postfix) with ESMTP id CBCE3B20B;
- Tue,  3 Dec 2019 11:47:52 +0000 (UTC)
+ by mx1.suse.de (Postfix) with ESMTP id 25A22ACC6;
+ Mon, 16 Dec 2019 11:01:29 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 To: andrew.murray@arm.com, maz@kernel.org, linux-kernel@vger.kernel.org,
  Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
  Florian Fainelli <f.fainelli@gmail.com>,
- bcm-kernel-feedback-list@broadcom.com, Eric Anholt <eric@anholt.net>,
- Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH v4 3/8] PCI: brcmstb: Add Broadcom STB PCIe host controller
+ bcm-kernel-feedback-list@broadcom.com,
+ Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: [PATCH v5 3/6] PCI: brcmstb: Add Broadcom STB PCIe host controller
  driver
-Date: Tue,  3 Dec 2019 12:47:36 +0100
-Message-Id: <20191203114743.1294-4-nsaenzjulienne@suse.de>
+Date: Mon, 16 Dec 2019 12:01:09 +0100
+Message-Id: <20191216110113.30436-4-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191203114743.1294-1-nsaenzjulienne@suse.de>
-References: <20191203114743.1294-1-nsaenzjulienne@suse.de>
+In-Reply-To: <20191216110113.30436-1-nsaenzjulienne@suse.de>
+References: <20191216110113.30436-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20191203_034754_459613_1E303696 
-X-CRM114-Status: GOOD (  19.36  )
+X-CRM114-CacheID: sfid-20191216_030130_800432_3B8FE2E4 
+X-CRM114-Status: GOOD (  18.27  )
 X-Spam-Score: -2.3 (--)
 X-Spam-Report: SpamAssassin version 3.4.2 on bombadil.infradead.org summary:
  Content analysis details:   (-2.3 points)
  pts rule name              description
  ---- ----------------------
  --------------------------------------------------
+ 0.0 RCVD_IN_MSPIKE_H3      RBL: Good reputation (+3)
+ [195.135.220.15 listed in wl.mailspike.net]
  -2.3 RCVD_IN_DNSWL_MED      RBL: Sender listed at https://www.dnswl.org/,
  medium trust [195.135.220.15 listed in list.dnswl.org]
- -0.0 SPF_PASS               SPF: sender matches SPF record
  0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
+ -0.0 SPF_PASS               SPF: sender matches SPF record
+ 0.0 RCVD_IN_MSPIKE_WL      Mailspike good senders
 X-BeenThere: linux-arm-kernel@lists.infradead.org
 X-Mailman-Version: 2.1.29
 Precedence: list
@@ -496,11 +505,10 @@ List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
 List-Subscribe: 
  <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Cc: linux-arm-kernel@lists.infradead.org, mbrugger@suse.com,
- linux-pci@vger.kernel.org, phil@raspberrypi.org, jeremy.linton@arm.com,
- linux-rpi-kernel@lists.infradead.org, james.quinlan@broadcom.com,
- Bjorn Helgaas <bhelgaas@google.com>,
- Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc: mbrugger@suse.com, linux-pci@vger.kernel.org, phil@raspberrypi.org,
+ jeremy.linton@arm.com, wahrenst@gmx.net, james.quinlan@broadcom.com,
+ Bjorn Helgaas <bhelgaas@google.com>, linux-arm-kernel@lists.infradead.org,
+ linux-rpi-kernel@lists.infradead.org
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: 
  linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
@@ -514,6 +522,7 @@ Signed-off-by: Jim Quinlan <james.quinlan@broadcom.com>
 Co-developed-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Reviewed-by: Andrew Murray <andrew.murray@arm.com>
+Reviewed-by: Jeremy Linton <jeremy.linton@arm.com>
 ---
 
 Changes since v3:
@@ -1352,30 +1361,30 @@ index 000000000000..dd681164faa0
 +MODULE_DESCRIPTION("Broadcom STB PCIe RC driver");
 +MODULE_AUTHOR("Broadcom");
 
-From patchwork Tue Dec  3 11:47:37 2019
+From patchwork Mon Dec 16 11:01:10 2019
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Patchwork-Submitter: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-X-Patchwork-Id: 11271059
+X-Patchwork-Id: 11293819
 Return-Path: 
- <SRS0=W8tl=ZZ=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+ <SRS0=BOSQ=2G=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
 Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
  [172.30.200.123])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 4B870112B
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 0FB1A930
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Tue,  3 Dec 2019 11:49:08 +0000 (UTC)
+ Mon, 16 Dec 2019 11:02:26 +0000 (UTC)
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 276A420684
+	by mail.kernel.org (Postfix) with ESMTPS id DA5D2206EC
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Tue,  3 Dec 2019 11:49:08 +0000 (UTC)
+ Mon, 16 Dec 2019 11:02:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
 	dkim=pass (2048-bit key) header.d=lists.infradead.org
- header.i=@lists.infradead.org header.b="DhrcwDKH"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 276A420684
+ header.i=@lists.infradead.org header.b="L57a4G/z"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA5D2206EC
 Authentication-Results: mail.kernel.org;
  dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org;
@@ -1387,48 +1396,51 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=iItojdIKeV2oJC/4nHltnSdo0OFytKQEQSG83gc3mIo=; b=DhrcwDKHMZaflU
-	yI43DPEqFYyT8+SytVTZx5IVCBoHmakt562TdqT/pGQjUi7gGSWnUk8AIvjXB0X9sOoPZaRx5yEQX
-	3gLuzTucUFKbZtilrxa+p1qfbAb7lEnvb+zzMUsWykEvptmnIPnl3rkXvr89/YSL+Z0xDCzNDUrJw
-	99ZBjIj+xti44uRHZaPXwz6VCbAkmry+U3yiSW43Bg17c6J9U4Dc7GYfPBJ3R660NuJJa5NGm3cmM
-	n0+IhxQxmdvzii92OXwqunMguIm75deGYlCYy0FSGrCks3U4YBs5hZzaKkTSR5476+3V8eYKqSZ+S
-	9Pei/CZS7yv92DIJpIDg==;
+	List-Owner; bh=iItojdIKeV2oJC/4nHltnSdo0OFytKQEQSG83gc3mIo=; b=L57a4G/zV1L3EX
+	zFjTyLpmW4uweymZSoPuNKRbbLfHfV8GJzdk0+AIcGY8T/0LDSubyqm52QwbEIKIZF6q1tYQMV01x
+	dCx/B3rV8B0EcUM/RedeUUqXgMXKYn7pdmzUYR2jRB1NEOucFv6xZA1Ap8ZF1k7A2oACSkf/SBoXA
+	PKbjs2hB/33AoX7kK98vVxVctzuUBE2CkGB419pPh1eXx3QyybSGYoBsNLsQ1BFfL3YwCV2unHoCx
+	h4QSzJ7vBkuNHDVCdq/t6NRFs98dk6ooDHlISOhJW6F3bdR36Vx1/+5tC1MBjm/Wy1oZmLGR+MeSo
+	0J11yccg2BRitcgEv2gw==;
 Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
 	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1ic6fv-0001uw-IG; Tue, 03 Dec 2019 11:49:03 +0000
+	id 1igo8u-00043K-US; Mon, 16 Dec 2019 11:02:24 +0000
 Received: from mx2.suse.de ([195.135.220.15] helo=mx1.suse.de)
  by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
- id 1ic6ep-0000mf-Ec; Tue, 03 Dec 2019 11:47:59 +0000
+ id 1igo83-00037J-Ob; Mon, 16 Dec 2019 11:01:35 +0000
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx1.suse.de (Postfix) with ESMTP id 254A3AF93;
- Tue,  3 Dec 2019 11:47:54 +0000 (UTC)
+ by mx1.suse.de (Postfix) with ESMTP id 502A3AC7D;
+ Mon, 16 Dec 2019 11:01:30 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 To: andrew.murray@arm.com, maz@kernel.org, linux-kernel@vger.kernel.org,
  Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
- Eric Anholt <eric@anholt.net>, Stefan Wahren <wahrenst@gmx.net>,
  Florian Fainelli <f.fainelli@gmail.com>,
- bcm-kernel-feedback-list@broadcom.com
-Subject: [PATCH v4 4/8] PCI: brcmstb: Add MSI support
-Date: Tue,  3 Dec 2019 12:47:37 +0100
-Message-Id: <20191203114743.1294-5-nsaenzjulienne@suse.de>
+ bcm-kernel-feedback-list@broadcom.com,
+ Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: [PATCH v5 4/6] PCI: brcmstb: Add MSI support
+Date: Mon, 16 Dec 2019 12:01:10 +0100
+Message-Id: <20191216110113.30436-5-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191203114743.1294-1-nsaenzjulienne@suse.de>
-References: <20191203114743.1294-1-nsaenzjulienne@suse.de>
+In-Reply-To: <20191216110113.30436-1-nsaenzjulienne@suse.de>
+References: <20191216110113.30436-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20191203_034755_803049_2EA51CE6 
-X-CRM114-Status: GOOD (  23.81  )
+X-CRM114-CacheID: sfid-20191216_030132_128008_DE7B462C 
+X-CRM114-Status: GOOD (  23.12  )
 X-Spam-Score: -2.3 (--)
 X-Spam-Report: SpamAssassin version 3.4.2 on bombadil.infradead.org summary:
  Content analysis details:   (-2.3 points)
  pts rule name              description
  ---- ----------------------
  --------------------------------------------------
+ 0.0 RCVD_IN_MSPIKE_H3      RBL: Good reputation (+3)
+ [195.135.220.15 listed in wl.mailspike.net]
  -2.3 RCVD_IN_DNSWL_MED      RBL: Sender listed at https://www.dnswl.org/,
  medium trust [195.135.220.15 listed in list.dnswl.org]
- -0.0 SPF_PASS               SPF: sender matches SPF record
  0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
+ -0.0 SPF_PASS               SPF: sender matches SPF record
+ 0.0 RCVD_IN_MSPIKE_WL      Mailspike good senders
 X-BeenThere: linux-arm-kernel@lists.infradead.org
 X-Mailman-Version: 2.1.29
 Precedence: list
@@ -1442,11 +1454,10 @@ List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
 List-Subscribe: 
  <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Cc: linux-arm-kernel@lists.infradead.org, mbrugger@suse.com,
- linux-pci@vger.kernel.org, phil@raspberrypi.org, jeremy.linton@arm.com,
- linux-rpi-kernel@lists.infradead.org, james.quinlan@broadcom.com,
- Bjorn Helgaas <bhelgaas@google.com>,
- Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Cc: mbrugger@suse.com, linux-pci@vger.kernel.org, phil@raspberrypi.org,
+ jeremy.linton@arm.com, wahrenst@gmx.net, james.quinlan@broadcom.com,
+ Bjorn Helgaas <bhelgaas@google.com>, linux-arm-kernel@lists.infradead.org,
+ linux-rpi-kernel@lists.infradead.org
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: 
  linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
@@ -1860,4 +1871,125 @@ index dd681164faa0..7ba06a0e1a71 100644
  	bridge->busnr = 0;
  	bridge->ops = &brcm_pcie_ops;
 
+From patchwork Mon Dec 16 11:01:12 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+X-Patchwork-Id: 11293821
+Return-Path: 
+ <SRS0=BOSQ=2G=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
+ [172.30.200.123])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 224E3930
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Mon, 16 Dec 2019 11:02:45 +0000 (UTC)
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPS id F26AB206EC
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Mon, 16 Dec 2019 11:02:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=lists.infradead.org
+ header.i=@lists.infradead.org header.b="eMDipuhg"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F26AB206EC
+Authentication-Results: mail.kernel.org;
+ dmarc=none (p=none dis=none) header.from=suse.de
+Authentication-Results: mail.kernel.org;
+ spf=none
+ smtp.mailfrom=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=bombadil.20170209; h=Sender:
+	Content-Transfer-Encoding:Content-Type:Cc:List-Subscribe:List-Help:List-Post:
+	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
+	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
+	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+	List-Owner; bh=89gvO/q/aU2KdnEtpUR7fViPlJcU9Hv2PR7UHxNLFTg=; b=eMDipuhg+M9lCx
+	8ENnzwQAiTmaNTilNadUK3F2Z1K6tk8e2VJcgmacOjfEF5yQspDGCxaemBhqrfFpIVaPIgd6D+2Ru
+	5oQaG8pyaOReVRpAa2xgws20vpYXVku0j4jel8gsAEXtyMKIFMqqUgQGKCTatNP4An1aMP6c5EC5z
+	mkmzodfHSJPOATqU55l6AcamhGlfLO/xNXUEIFVQz891R1m8FQO6pnryIa7IYr3d3TkinptRk6hFO
+	60i+H50v2/NzmROaDORveKAO9a6APoqlzLK9sj8ehy3lVItSguKco7jnrBapYOPYcNgdMp2PrnkHq
+	QFDUmvLZNnAqN+ez5NkA==;
+Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
+	id 1igo9D-0004J8-3H; Mon, 16 Dec 2019 11:02:43 +0000
+Received: from mx2.suse.de ([195.135.220.15] helo=mx1.suse.de)
+ by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1igo86-00039m-4x; Mon, 16 Dec 2019 11:01:36 +0000
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+ by mx1.suse.de (Postfix) with ESMTP id BD4CDACD7;
+ Mon, 16 Dec 2019 11:01:32 +0000 (UTC)
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To: andrew.murray@arm.com,
+	maz@kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v5 6/6] arm64: defconfig: Enable Broadcom's STB PCIe
+ controller
+Date: Mon, 16 Dec 2019 12:01:12 +0100
+Message-Id: <20191216110113.30436-7-nsaenzjulienne@suse.de>
+X-Mailer: git-send-email 2.24.0
+In-Reply-To: <20191216110113.30436-1-nsaenzjulienne@suse.de>
+References: <20191216110113.30436-1-nsaenzjulienne@suse.de>
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20191216_030134_339113_ECC8A7D7 
+X-CRM114-Status: UNSURE (   8.26  )
+X-CRM114-Notice: Please train this message.
+X-Spam-Score: -2.3 (--)
+X-Spam-Report: SpamAssassin version 3.4.2 on bombadil.infradead.org summary:
+ Content analysis details:   (-2.3 points)
+ pts rule name              description
+ ---- ----------------------
+ --------------------------------------------------
+ 0.0 RCVD_IN_MSPIKE_H3      RBL: Good reputation (+3)
+ [195.135.220.15 listed in wl.mailspike.net]
+ -2.3 RCVD_IN_DNSWL_MED      RBL: Sender listed at https://www.dnswl.org/,
+ medium trust [195.135.220.15 listed in list.dnswl.org]
+ 0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
+ -0.0 SPF_PASS               SPF: sender matches SPF record
+ 0.0 RCVD_IN_MSPIKE_WL      Mailspike good senders
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: linux-arm-kernel@lists.infradead.org, f.fainelli@gmail.com,
+ linux-pci@vger.kernel.org, phil@raspberrypi.org, jeremy.linton@arm.com,
+ mbrugger@suse.com, wahrenst@gmx.net, james.quinlan@broadcom.com,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+ linux-rpi-kernel@lists.infradead.org
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
 
+For now mainly used in the Raspberry Pi 4.
+
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+---
+ arch/arm64/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 2646fc76b8db..2b80980ef576 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -192,6 +192,7 @@ CONFIG_PCIE_ALTERA_MSI=y
+ CONFIG_PCI_HOST_THUNDER_PEM=y
+ CONFIG_PCI_HOST_THUNDER_ECAM=y
+ CONFIG_PCIE_ROCKCHIP_HOST=m
++CONFIG_PCIE_BRCMSTB=m
+ CONFIG_PCI_LAYERSCAPE=y
+ CONFIG_PCI_HISI=y
+ CONFIG_PCIE_QCOM=y
