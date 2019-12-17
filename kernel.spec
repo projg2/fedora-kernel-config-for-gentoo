@@ -865,6 +865,10 @@ Patch600: alsa-5.5.patch
 # ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
 Patch607: alsa-5.6.patch
 
+# rhbz 1706557, both patches are upstream in v5.5-rc2
+Patch608: 0001-drm-nouveau-Move-the-declaration-of-struct-nouveau_c.patch
+Patch609: 0002-drm-nouveau-Fix-drm-core-using-atomic-code-paths-on-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2566,6 +2570,9 @@ fi
 #
 #
 %changelog
+* Tue Dec 17 2019 Hans de Goede <hdegoede@redhat.com>
+- Add 2 patches from 5.5 to fix some nouveau issues (rhbz#1706557)
+
 * Fri Dec 13 2019 Jeremy Cline <jcline@redhat.com> - 5.4.3-300
 - Linux v5.4.3
 
