@@ -104,7 +104,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 2
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -2898,6 +2898,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 18 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc2.git2.1
+- Linux v5.5-rc2-157-g2187f215ebaa
+
 * Tue Dec 17 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc2.git1.1
 - Linux v5.5-rc2-56-gea200dec5128
 - Enable NO_HZ_FULL for other arches too.
