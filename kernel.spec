@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 17
+%define stable_update 18
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1876,6 +1876,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 18 2019 Laura Abbott <labbott@redhat.com> - 5.3.18-300
+- Linux v5.3.18
+
 * Tue Dec 17 2019 Laura Abbott <labbott@redhat.com> - 5.3.17-300
 - Linux v5.3.17
 
