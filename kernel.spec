@@ -102,9 +102,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 2
+%global rcrev 3
 # The git snapshot level
-%define gitrev 3
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -850,18 +850,9 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-# CVE-2019-14895 rhbz 1774870 1776139
-Patch525: mwifiex-fix-possible-heap-overflow-in-mwifiex_process_country_ie.patch
-
 # CVE-2019-14896 rhbz 1774875 1776143
 # CVE-2019-14897 rhbz 1774879 1776146
 Patch526: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
-
-# CVE-2019-14901 rhbz 1773519 1776184
-Patch527: mwifiex-Fix-heap-overflow-in-mmwifiex_process_tdls_action_frame.patch
-
-# Test fix for PPC build
-Patch528: netfilter_ppc_fix.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2898,6 +2889,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 23 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc3.git0.1
+- Linux v5.5-rc3
+
 * Mon Dec 23 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Disable debugging options.
 
