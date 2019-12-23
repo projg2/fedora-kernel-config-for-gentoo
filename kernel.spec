@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 301
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -866,8 +866,8 @@ Patch607: alsa-5.6.patch
 Patch608: 0001-drm-nouveau-Move-the-declaration-of-struct-nouveau_c.patch
 Patch609: 0002-drm-nouveau-Fix-drm-core-using-atomic-code-paths-on-.patch
 
-# rhbz 1784839
-Patch610: 0007-ALSA-hda-Fix-regression-by-strip-mask-fix.patch
+# rhbz 1781288
+Patch610: 0001-tracing-Do-not-create-directories-if-lockdown-is-in-.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2567,6 +2567,10 @@ fi
 #
 #
 %changelog
+* Mon Dec 23 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.4.6-300
+- Linux v5.4.6
+- Fix rhbz 1781288
+
 * Thu Dec 19 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.4.5-300
 - Linux v5.4.5 rebase
 
