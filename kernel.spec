@@ -2889,6 +2889,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 30 2019 Peter Robinson <pbrobinson@gmail.com>
+- Disable debugging options.
+
 * Mon Dec 23 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc3.git0.1
 - Linux v5.5-rc3
 
