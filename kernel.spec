@@ -102,7 +102,7 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 3
+%global rcrev 4
 # The git snapshot level
 %define gitrev 0
 # Set rpm version accordingly
@@ -2889,6 +2889,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 30 2019 Peter Robinson <pbrobinson@gmail.com> - 5.5.0-0.rc4.git0.1
+- Linux v5.5-rc4
+
 * Mon Dec 30 2019 Peter Robinson <pbrobinson@gmail.com>
 - Disable debugging options.
 
