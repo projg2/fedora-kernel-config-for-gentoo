@@ -44,19 +44,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 3
+%define base_sublevel 4
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -495,45 +495,16 @@ Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 # Standalone patches
 # 100 - Generic long running patches
 
-Patch110: lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
-
-Patch111: input-kill-stupid-messages.patch
-
-Patch112: die-floppy-die.patch
-
-Patch113: no-pcspkr-modalias.patch
-
-Patch115: Kbuild-Add-an-option-to-enable-GCC-VTA.patch
-
-Patch116: crash-driver.patch
-
-Patch117: lis3-improve-handling-of-null-rate.patch
-
-Patch118: scsi-sd_revalidate_disk-prevent-NULL-ptr-deref.patch
-
-Patch119: namespaces-no-expert.patch
-
-Patch120: ath9k-rx-dma-stop-check.patch
-
-Patch122: Input-synaptics-pin-3-touches-when-the-firmware-repo.patch
-
-# This no longer applies, let's see if it needs to be updated
-# Patch123: firmware-Drop-WARN-from-usermodehelper_read_trylock-.patch
-
 # 200 - x86 / secureboot
 
-Patch201: efi-lockdown.patch
-
 # bz 1497559 - Make kernel MODSIGN code not error on missing variables
-Patch207: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
-Patch208: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
-Patch209: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
+Patch200: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
+Patch201: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
+Patch202: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 
-Patch210: disable-i8042-check-on-apple-mac.patch
+Patch204: efi-secureboot.patch
 
-Patch211: drm-i915-hush-check-crtc-state.patch
-
-Patch212: efi-secureboot.patch
+Patch205: lift-lockdown-sysrq.patch
 
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
@@ -551,25 +522,18 @@ Patch304: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
 # http://patchwork.ozlabs.org/patch/587554/
 Patch305: ARM-tegra-usb-no-reset.patch
 
-# https://patchwork.kernel.org/project/linux-mmc/list/?submitter=71861
-Patch306: arm-sdhci-esdhc-imx-fixes.patch
-
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
 # https://patchwork.kernel.org/patch/11171225/
 Patch322: mfd-max77620-Do-not-allocate-IRQs-upfront.patch
+# https://patchwork.ozlabs.org/patch/1170631/
+Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
 # https://www.spinics.net/lists/linux-tegra/msg44216.html
-Patch325: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
-
-# QCom laptop bits
-# https://patchwork.kernel.org/patch/11133293/
-Patch332: arm64-dts-qcom-Add-Lenovo-Yoga-C630.patch
-
-# This is typical rpi, we have a driver but it has problems because ¯\_(ツ)_/¯ but this revert makes pictures work again.
-# https://patchwork.kernel.org/patch/11136979/
-Patch341: Revert-ARM-bcm283x-Switch-V3D-over-to-using-the-PM-driver-instead-of-firmware.patch
+Patch324: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
+# https://patchwork.kernel.org/patch/11224177/
+Patch325: arm64-usb-host-xhci-tegra-set-MODULE_FIRMWARE-for-tegra186.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -584,19 +548,12 @@ Patch502: 0001-Drop-that-for-now.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
-# rhbz 1753099
-Patch504: dwc3-fix.patch
-
 Patch500: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
 
-# CVE-2019-19074 rhbz 1774933 1774934
-Patch506: 0001-ath9k-release-allocated-buffer-if-timed-out.patch
-
-# CVE-2019-19073 rhbz 1774937 1774939
-Patch507: 0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
-
-# CVE-2019-19072 rhbz 1774946 1774947
-Patch508: 0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
+# it seems CONFIG_OPTIMIZE_INLINING has been forced now and is causing issues on ARMv7
+# https://lore.kernel.org/patchwork/patch/1132459/
+# https://lkml.org/lkml/2019/8/29/1772
+Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
 # CVE-2019-19070 rhbz 1774957 1774958
 Patch510: spi-gpio-prevent-memory-leak-in-spi_gpio_probe.patch
@@ -619,12 +576,6 @@ Patch516: spi-lpspi-fix-memory-leak-in-fsl_lpspi_probe.patch
 # CVE-2019-19063 rhbz 1775015 1775016
 Patch517: rtlwifi-prevent-memory-leak-in-rtl_usb_probe.patch
 
-# CVE-2019-19059 rhbz 1775042 1775043
-Patch518: 0001-iwlwifi-pcie-fix-memory-leaks-in-iwl_pcie_ctxt_info_.patch
-
-# CVE-2019-19058 rhbz 1775047 1775048
-Patch519: 0001-iwlwifi-dbg_ini-fix-memory-leak-in-alloc_sgtable.patch
-
 # CVE-2019-19057 rhbz 1775050 1775051
 Patch520: mwifiex-pcie-Fix-memory-leak-in-mwifiex_pcie_init_evt_ring.patch
 
@@ -634,14 +585,8 @@ Patch521: rpmsg-char-release-allocated-memory.patch
 # CVE-2019-19056 rhbz 1775097 1775115
 Patch522: mwifiex-pcie-fix-memory-leak-in-mwifiex_pcie_alloc_cmdrsp_buf.patch
 
-# CVE-2019-19055 rhbz 1775074 1775116
-Patch523: 0001-nl80211-fix-memory-leak-in-nl80211_get_ftm_responder.patch
-
 # CVE-2019-19054 rhbz 1775063 1775117
 Patch524: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
-
-# CVE-2019-19077 rhbz 1775724 1775725
-Patch525: 0001-RDMA-Fix-goto-target-to-release-the-allocated-memory.patch
 
 # CVE-2019-14895 rhbz 1774870 1776139
 Patch526: mwifiex-fix-possible-heap-overflow-in-mwifiex_process_country_ie.patch
@@ -656,20 +601,27 @@ Patch528: mwifiex-Fix-heap-overflow-in-mmwifiex_process_tdls_action_frame.patch
 # CVE-2019-19078 rhbz 1776354 1776353
 Patch529: ath10k-fix-memory-leak.patch
 
-# CVE-2019-19082 rhbz 1776832 1776833
-Patch530: 0001-drm-amd-display-prevent-memory-leak.patch
-
 # CVE-2019-18808 rhbz 1777418 1777421
 Patch531: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
 
 # CVE-2019-18809 rhbz 1777449 1777451
 Patch532: 0001-media-usb-fix-memory-leak-in-af9005_identify_state.patch
 
-# CVE-2019-18812 rhbz 1777458 1777459
-Patch534: 0001-ASoC-SOF-Fix-memory-leak-in-sof_dfsentry_write.patch
-
 # CVE-2019-16232 rhbz 1760351 1760352
 Patch535: 0001-libertas-fix-a-potential-NULL-pointer-dereference.patch
+
+# ALSA code from v5.5 (Intel ASoC Sound Open Firmware driver support)
+Patch600: alsa-5.5.patch
+
+# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
+Patch607: alsa-5.6.patch
+
+# rhbz 1706557, both patches are upstream in v5.5-rc2
+Patch608: 0001-drm-nouveau-Move-the-declaration-of-struct-nouveau_c.patch
+Patch609: 0002-drm-nouveau-Fix-drm-core-using-atomic-code-paths-on-.patch
+
+# rhbz 1781288
+Patch610: 0001-tracing-Do-not-create-directories-if-lockdown-is-in-.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1908,6 +1860,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 30 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.4.6-100
+- Linux v5.4.6 rebase
+
 * Wed Dec 18 2019 Laura Abbott <labbott@redhat.com> - 5.3.18-200
 - Linux v5.3.18
 
