@@ -1848,6 +1848,10 @@ fi
 #
 #
 %changelog
+* Mon Jan 06 2020 Hans de Goede <hdegoede@redhat.com>
+- Make the MFD Intel LPSS driver builtin, some devices require this to be
+  available early during boot (rhbz#1787997)
+
 * Mon Jan 06 2020 Jeremy Cline <jcline@redhat.com> - 5.4.8-100
 - Linux v5.4.8
 - Fix a firmware load issue on some Intel wireless cards (rhbz 1788150)
