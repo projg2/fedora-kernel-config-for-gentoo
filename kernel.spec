@@ -2889,6 +2889,10 @@ fi
 #
 #
 %changelog
+* Mon Jan 06 2020 Hans de Goede <hdegoede@redhat.com>
+- Make the MFD Intel LPSS driver builtin, some devices require this to be
+  available early during boot (rhbz#1787997)
+
 * Mon Jan 06 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc5.git0.1
 - Linux v5.5-rc5
 
