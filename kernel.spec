@@ -844,6 +844,9 @@ Patch531: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
 # CVE-2019-18809 rhbz 1777449 1777451
 Patch532: 0001-media-usb-fix-memory-leak-in-af9005_identify_state.patch
 
+# Arm64 regression fix - rhbz 1788624
+Patch533: arm64-revert-support-for-execute-only-user-mappings.patch
+
 # ALSA code from v5.5 (Intel ASoC Sound Open Firmware driver support)
 Patch600: alsa-5.5.patch
 
