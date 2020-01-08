@@ -104,7 +104,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 5
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -2889,6 +2889,10 @@ fi
 #
 #
 %changelog
+* Wed Jan 08 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc5.git1.1
+- Linux v5.5-rc5-41-gb07f636fca1c
+- Reenable debugging options.
+
 * Mon Jan 06 2020 Hans de Goede <hdegoede@redhat.com>
 - Make the MFD Intel LPSS driver builtin, some devices require this to be
   available early during boot (rhbz#1787997)
