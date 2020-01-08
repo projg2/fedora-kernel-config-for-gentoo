@@ -614,6 +614,9 @@ Patch609: 0002-drm-nouveau-Fix-drm-core-using-atomic-code-paths-on-.patch
 # rhbz 1781288
 Patch610: 0001-tracing-Do-not-create-directories-if-lockdown-is-in-.patch
 
+# rhbz 1788653
+Patch611: tpm-handle-negative-priv--response_len-in-tpm_common_read.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1851,6 +1854,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 06 2020 Laura Abbott <labbott@redhat.com>
+- Fix for tpm usercopy (rhbz 1788653)
+
 * Mon Jan 06 2020 Hans de Goede <hdegoede@redhat.com>
 - Make the MFD Intel LPSS driver builtin, some devices require this to be
   available early during boot (rhbz#1787997)
