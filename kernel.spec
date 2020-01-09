@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -840,16 +840,6 @@ Patch529: ath10k-fix-memory-leak.patch
 
 # CVE-2019-18808 rhbz 1777418 1777421
 Patch531: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
-
-# CVE-2019-18809 rhbz 1777449 1777451
-Patch532: 0001-media-usb-fix-memory-leak-in-af9005_identify_state.patch
-
-# Arm64 regression fix - rhbz 1788624
-Patch533: arm64-revert-support-for-execute-only-user-mappings.patch
-
-# rhbz 1706557, both patches are upstream in v5.5-rc2
-Patch608: 0001-drm-nouveau-Move-the-declaration-of-struct-nouveau_c.patch
-Patch609: 0002-drm-nouveau-Fix-drm-core-using-atomic-code-paths-on-.patch
 
 # rhbz 1781288
 Patch610: 0001-tracing-Do-not-create-directories-if-lockdown-is-in-.patch
@@ -2555,6 +2545,9 @@ fi
 #
 #
 %changelog
+* Thu Jan 09 2020 Jeremy Cline <jcline@redhat.com> - 5.4.10-200
+- Linux v5.4.10
+
 * Mon Jan 06 2020 Laura Abbott <labbott@redhat.com>
 - Fix for tpm usercopy (rhbz 1788653)
 
