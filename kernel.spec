@@ -601,12 +601,6 @@ Patch532: 0001-media-usb-fix-memory-leak-in-af9005_identify_state.patch
 # Arm64 regression fix - rhbz 1788624
 Patch533: arm64-revert-support-for-execute-only-user-mappings.patch
 
-# ALSA code from v5.5 (Intel ASoC Sound Open Firmware driver support)
-Patch600: alsa-5.5.patch
-
-# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
-Patch607: alsa-5.6.patch
-
 # rhbz 1706557, both patches are upstream in v5.5-rc2
 Patch608: 0001-drm-nouveau-Move-the-declaration-of-struct-nouveau_c.patch
 Patch609: 0002-drm-nouveau-Fix-drm-core-using-atomic-code-paths-on-.patch
