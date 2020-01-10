@@ -104,7 +104,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 5
 # The git snapshot level
-%define gitrev 2
+%define gitrev 3
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -2889,6 +2889,9 @@ fi
 #
 #
 %changelog
+* Fri Jan 10 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc5.git3.1
+- Linux v5.5-rc5-215-g4e4cd21c64da
+
 * Thu Jan 09 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc5.git2.1
 - Linux v5.5-rc5-134-ge69ec487b2c7
 
