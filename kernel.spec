@@ -802,6 +802,8 @@ Patch204: efi-secureboot.patch
 
 Patch205: lift-lockdown-sysrq.patch
 
+Patch206: s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
+
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
