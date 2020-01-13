@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -840,6 +840,9 @@ Patch527: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
 
 # rhbz 1788653
 Patch530: tpm-handle-negative-priv--response_len-in-tpm_common_read.patch
+
+# https://gitlab.freedesktop.org/drm/intel/issues/673
+Patch531: drm-i915-gt-Detect-if-we-miss-WaIdleLiteRestore.patch
 
 # END OF PATCH DEFINITIONS
 
