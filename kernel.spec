@@ -102,9 +102,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 5
+%global rcrev 6
 # The git snapshot level
-%define gitrev 3
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -855,6 +855,9 @@ Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 # CVE-2019-14896 rhbz 1774875 1776143
 # CVE-2019-14897 rhbz 1774879 1776146
 Patch526: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
+
+# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
+Patch527: alsa-5.6.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2891,6 +2894,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 13 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc6.git0.1
+- Linux v5.5-rc6
+
 * Mon Jan 13 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Disable debugging options.
 
