@@ -1934,7 +1934,6 @@ BuildKernel() {
 %endif
 
     # then drop all but the needed Makefiles/Kconfig files
-    rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Documentation
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
     cp .config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
@@ -2894,6 +2893,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 13 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Add Documentation back to kernel-devel as it has Kconfig now (rhbz 1789641)
+
 * Mon Jan 13 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc6.git0.1
 - Linux v5.5-rc6
 
