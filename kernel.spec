@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 101
+%global baserelease 102
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -1320,7 +1320,6 @@ BuildKernel() {
       cp Module.markers $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     fi
     # then drop all but the needed Makefiles/Kconfig files
-    rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Documentation
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
     cp .config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
@@ -1844,6 +1843,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 13 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.4.10-102
+- Add Documentation back to kernel-devel as it has Kconfig now (rhbz 1789641)
+
 * Thu Jan 09 2020 Jeremy Cline <jcline@redhat.com> - 5.4.10-100
 - Linux v5.4.10
 
