@@ -602,7 +602,7 @@ Patch610: 0001-tracing-Do-not-create-directories-if-lockdown-is-in-.patch
 Patch611: tpm-handle-negative-priv--response_len-in-tpm_common_read.patch
 
 # https://gitlab.freedesktop.org/drm/intel/issues/673
-Patch531: drm-i915-gt-Detect-if-we-miss-WaIdleLiteRestore.patch
+Patch612: drm-i915-gt-Detect-if-we-miss-WaIdleLiteRestore.patch
 
 # END OF PATCH DEFINITIONS
 
