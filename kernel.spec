@@ -44,7 +44,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -600,6 +600,9 @@ Patch610: 0001-tracing-Do-not-create-directories-if-lockdown-is-in-.patch
 
 # rhbz 1788653
 Patch611: tpm-handle-negative-priv--response_len-in-tpm_common_read.patch
+
+# https://gitlab.freedesktop.org/drm/intel/issues/673
+Patch531: drm-i915-gt-Detect-if-we-miss-WaIdleLiteRestore.patch
 
 # END OF PATCH DEFINITIONS
 
