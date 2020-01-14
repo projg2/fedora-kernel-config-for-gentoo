@@ -104,7 +104,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 6
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -2888,6 +2888,10 @@ fi
 #
 #
 %changelog
+* Tue Jan 14 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc6.git1.1
+- Linux v5.5-rc6-27-g452424cdcbca
+- Reenable debugging options.
+
 * Mon Jan 13 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Add Documentation back to kernel-devel as it has Kconfig now (rhbz 1789641)
 
