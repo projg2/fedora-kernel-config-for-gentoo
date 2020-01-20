@@ -102,9 +102,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 6
+%global rcrev 7
 # The git snapshot level
-%define gitrev 3
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -2890,6 +2890,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 20 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc7.git0.1
+- Linux v5.5-rc7
+
 * Mon Jan 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Disable debugging options.
 
