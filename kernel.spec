@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -806,9 +806,6 @@ Patch512: net-next-v2-9-9-i40e-prevent-memory-leak-in-i40e_setup_macvlans.patch
 
 # CVE-2019-19046 rhbz 1774988 1774989
 Patch514: ipmi-Fix-memory-leak-in-__ipmi_bmc_register.patch
-
-# CVE-2019-19064 rhbz 1775010 1775011
-Patch515: spi-lpspi-fix-memory-leak-in-fsl_lpspi_probe.patch
 
 # CVE-2019-19054 rhbz 1775063 1775117
 Patch523: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
@@ -2520,6 +2517,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 20 2020 Jeremy Cline <jcline@redhat.com> - 5.4.13-200
+- Linux v5.4.13
+
 * Tue Jan 14 2020 Jeremy Cline <jcline@redhat.com> - 5.4.12-200
 - Linux v5.4.12
 
