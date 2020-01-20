@@ -830,6 +830,8 @@ Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
 
+Patch322: arm64-usb-host-xhci-tegra-set-MODULE_FIRMWARE-for-tegra186.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
