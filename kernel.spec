@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -819,6 +819,12 @@ Patch527: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
 
 # https://gitlab.freedesktop.org/drm/intel/issues/673
 Patch531: drm-i915-gt-Detect-if-we-miss-WaIdleLiteRestore.patch
+
+# ALSA code from v5.5 (Intel ASoC Sound Open Firmware driver support)
+Patch600: alsa-5.5.patch
+
+# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
+Patch601: alsa-5.6.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2517,6 +2523,9 @@ fi
 #
 #
 %changelog
+* Tue Jan 21 2020 Jeremy Cline <jcline@redhat.com> - 5.4.13-201
+- Re-add the Intel ASoC Sound Open Firmware driver support
+
 * Mon Jan 20 2020 Jeremy Cline <jcline@redhat.com> - 5.4.13-200
 - Linux v5.4.13
 
