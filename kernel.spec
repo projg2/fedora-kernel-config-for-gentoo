@@ -574,6 +574,9 @@ Patch527: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
 # https://gitlab.freedesktop.org/drm/intel/issues/673
 Patch612: drm-i915-gt-Detect-if-we-miss-WaIdleLiteRestore.patch
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1772498#c101
+Patch602: ASoC-topology-fix-soc_tplg_fe_link_create-link-dobj-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
