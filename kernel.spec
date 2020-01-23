@@ -826,6 +826,9 @@ Patch600: alsa-5.5.patch
 # ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
 Patch601: alsa-5.6.patch
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1772498#c101
+Patch602: ASoC-topology-fix-soc_tplg_fe_link_create-link-dobj-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
