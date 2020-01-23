@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 201
+%global baserelease 200
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -800,9 +800,6 @@ Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # https://lore.kernel.org/patchwork/patch/1132459/
 # https://lkml.org/lkml/2019/8/29/1772
 Patch504: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
-
-# CVE-2019-19043 rhbz 1774972 1774973
-Patch512: net-next-v2-9-9-i40e-prevent-memory-leak-in-i40e_setup_macvlans.patch
 
 # CVE-2019-19046 rhbz 1774988 1774989
 Patch514: ipmi-Fix-memory-leak-in-__ipmi_bmc_register.patch
@@ -2526,6 +2523,9 @@ fi
 #
 #
 %changelog
+* Thu Jan 23 2020 Jeremy Cline <jcline@redhat.com> - 5.4.14-200
+- Linux v5.4.14
+
 * Tue Jan 21 2020 Jeremy Cline <jcline@redhat.com> - 5.4.13-201
 - Re-add the Intel ASoC Sound Open Firmware driver support
 
