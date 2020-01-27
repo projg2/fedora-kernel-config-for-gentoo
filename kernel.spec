@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -800,9 +800,6 @@ Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 # https://lore.kernel.org/patchwork/patch/1132459/
 # https://lkml.org/lkml/2019/8/29/1772
 Patch504: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
-
-# CVE-2019-19046 rhbz 1774988 1774989
-Patch514: ipmi-Fix-memory-leak-in-__ipmi_bmc_register.patch
 
 # CVE-2019-19054 rhbz 1775063 1775117
 Patch523: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
@@ -2523,6 +2520,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 27 2020 Jeremy Cline <jcline@redhat.com> - 5.4.15-200
+- Linux v5.4.15
+
 * Thu Jan 23 2020 Jeremy Cline <jcline@redhat.com> - 5.4.14-200
 - Linux v5.4.14
 
