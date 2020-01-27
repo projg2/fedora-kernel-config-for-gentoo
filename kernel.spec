@@ -27,7 +27,7 @@ Summary: The Linux kernel
 # For rawhide and/or a kernel built from an rc or git snapshot,
 # released_kernel should be 0.
 # For a stable, released kernel, released_kernel should be 1.
-%global released_kernel 0
+%global released_kernel 1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -86,7 +86,7 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 4
+%define base_sublevel 5
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
@@ -105,9 +105,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 7
+%global rcrev 0
 # The git snapshot level
-%define gitrev 2
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -856,10 +856,6 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 # https://lore.kernel.org/patchwork/patch/1132459/
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
-
-# CVE-2019-14896 rhbz 1774875 1776143
-# CVE-2019-14897 rhbz 1774879 1776146
-Patch526: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
 
 # ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
 Patch527: alsa-5.6.patch
@@ -2893,6 +2889,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 27 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-1
+- Linux v5.5
+
 * Fri Jan 24 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc7.git2.1
 - Linux v5.5-rc7-62-g6381b442836e
 
