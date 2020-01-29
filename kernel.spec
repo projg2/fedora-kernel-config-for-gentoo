@@ -571,6 +571,9 @@ Patch612: drm-i915-gt-Detect-if-we-miss-WaIdleLiteRestore.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1772498#c101
 Patch602: ASoC-topology-fix-soc_tplg_fe_link_create-link-dobj-.patch
 
+# This is already in 5.5 rhbz 1794369
+Patch603: 0001-e1000e-Add-support-for-Comet-Lake.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1810,6 +1813,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 29 2020 Justin Forbes <jforbes@fedoraproject.org>
+- Add support for Comet Lake (rhbz 1794369)
+
 * Mon Jan 27 2020 Jeremy Cline <jcline@redhat.com> - 5.4.15-100
 - Linux v5.4.15
 
