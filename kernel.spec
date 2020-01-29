@@ -27,7 +27,7 @@ Summary: The Linux kernel
 # For rawhide and/or a kernel built from an rc or git snapshot,
 # released_kernel should be 0.
 # For a stable, released kernel, released_kernel should be 1.
-%global released_kernel 1
+%global released_kernel 0
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -823,8 +823,6 @@ Patch304: ARM-tegra-usb-no-reset.patch
 # Raspberry Pi
 # https://patchwork.kernel.org/cover/11271017/
 Patch310: Raspberry-Pi-4-PCIe-support.patch
-# https://patchwork.kernel.org/patch/11223139/
-Patch311: ARM-Enable-thermal-support-for-Raspberry-Pi-4.patch
 # https://patchwork.kernel.org/patch/11299997/
 Patch312: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
 
@@ -2892,6 +2890,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 29 2020 Jeremy Cline <jcline@redhat.com> - 5.5.0-1
+- Linux v5.5-3996-gb3a608222336
+
 * Wed Jan 29 2020 Jeremy Cline <jcline@redhat.com>
 - Reenable debugging options.
 
