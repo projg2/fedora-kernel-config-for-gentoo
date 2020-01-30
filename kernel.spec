@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 16
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -803,10 +803,6 @@ Patch504: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
 # CVE-2019-19054 rhbz 1775063 1775117
 Patch523: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
-
-# CVE-2019-14896 rhbz 1774875 1776143
-# CVE-2019-14897 rhbz 1774879 1776146
-Patch525: libertas-Fix-two-buffer-overflows-at-parsing-bss-descriptor.patch
 
 # CVE-2019-18808 rhbz 1777418 1777421
 Patch527: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
@@ -2523,6 +2519,9 @@ fi
 #
 #
 %changelog
+* Thu Jan 30 2020 Jeremy Cline <jcline@redhat.com> - 5.4.16-200
+- Linux v5.4.16
+
 * Wed Jan 29 2020 Justin Forbes <jforbes@fedoraproject.org>
 - Add support for Comet Lake (rhbz 1794369)
 
