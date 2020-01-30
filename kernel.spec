@@ -855,9 +855,6 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
-Patch527: alsa-5.6.patch
-
 # GCC 10 build fix for x86_64
 Patch528: 0001-x86-Don-t-declare-__force_order-in-kaslr_64.c.patch
 
