@@ -824,6 +824,8 @@ Patch310: Raspberry-Pi-4-PCIe-support.patch
 Patch311: ARM-Enable-thermal-support-for-Raspberry-Pi-4.patch
 # https://patchwork.kernel.org/patch/11299997/
 Patch312: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
+# https://patchwork.kernel.org/cover/11353083/
+Patch313: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
