@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -832,8 +832,6 @@ Patch313: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
-
-Patch322: arm64-usb-host-xhci-tegra-set-MODULE_FIRMWARE-for-tegra186.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -2889,6 +2887,9 @@ fi
 #
 #
 %changelog
+* Sat Feb 01 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc0.git2.1
+- Linux v5.5-8686-g14cd0bd04907
+
 * Wed Jan 29 2020 Jeremy Cline <jcline@redhat.com> - 5.5.0-1
 - Linux v5.5-3996-gb3a608222336
 
