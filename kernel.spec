@@ -824,9 +824,11 @@ Patch304: ARM-tegra-usb-no-reset.patch
 # https://patchwork.kernel.org/cover/11271017/
 Patch310: Raspberry-Pi-4-PCIe-support.patch
 # https://patchwork.kernel.org/patch/11299997/
-Patch312: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
+Patch311: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
 # https://patchwork.kernel.org/cover/11353083/
-Patch313: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
+Patch312: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
+# https://github.com/raspberrypi/linux/commit/c74b1b53254016fd83b580b8d49bb02d72ce4836
+Patch313: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
