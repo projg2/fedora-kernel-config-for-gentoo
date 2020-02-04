@@ -860,6 +860,8 @@ Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 # GCC 10 build fix for x86_64
 Patch528: 0001-x86-Don-t-declare-__force_order-in-kaslr_64.c.patch
 
+Patch529: 0001-Include-kvm_asm.h-and-kvm_arm.h-in-kvm-arm-trace.h.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
