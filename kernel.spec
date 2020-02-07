@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 4
+%define gitrev 5
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -2891,6 +2891,11 @@ fi
 #
 #
 %changelog
+* Fri Feb 07 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc0.git5.1
+- Linux v5.5-9824-g90568ecf5615
+- Enable DM_CLONE as a module (rhbz 1799060)
+- Enable PCI Express devices on RockChip SoCs (rhbz 1792564)
+
 * Thu Feb 06 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc0.git4.1
 - Linux v5.5-9737-g4c46bef2e96a
 
