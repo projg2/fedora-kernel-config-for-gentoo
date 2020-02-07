@@ -2888,6 +2888,9 @@ fi
 #
 #
 %changelog
+* Fri Feb 07 2020 Jeremy Cline <jcline@redhat.com>
+- Enable PCI Express devices on RockChip SoCs (rhbz 1792564)
+
 * Wed Feb 05 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.2-200
 - Linux v5.5.2
 
