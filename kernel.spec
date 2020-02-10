@@ -750,8 +750,6 @@ Patch202: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 
 Patch204: efi-secureboot.patch
 
-Patch205: lift-lockdown-sysrq.patch
-
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
@@ -2516,6 +2514,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com>
+- Remove sysrq support to lift lockdown (rhbz 1800859)
+
 * Thu Feb 06 2020 Jeremy Cline <jcline@redhat.com> - 5.4.18-200
 - Linux v5.4.18
 
