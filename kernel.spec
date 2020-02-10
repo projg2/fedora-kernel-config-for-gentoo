@@ -803,8 +803,6 @@ Patch202: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 
 Patch204: efi-secureboot.patch
 
-Patch205: lift-lockdown-sysrq.patch
-
 Patch206: s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 
 # 300 - ARM patches
@@ -2889,6 +2887,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com>
+- Remove sysrq support to lift lockdown (rhbz 1800859)
+
 * Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc1.git0.1
 - Linux v5.6-rc1
 
