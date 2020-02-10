@@ -831,7 +831,7 @@ Patch313: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # http://patchwork.ozlabs.org/patch/1230891/
-Patch322: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
+Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
 
 # 400 - IBM (ppc/s390x) patches
 
