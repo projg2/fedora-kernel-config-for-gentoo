@@ -105,9 +105,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 0
+%global rcrev 1
 # The git snapshot level
-%define gitrev 5
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -821,8 +821,6 @@ Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 Patch304: ARM-tegra-usb-no-reset.patch
 
 # Raspberry Pi
-# https://patchwork.kernel.org/cover/11271017/
-Patch310: Raspberry-Pi-4-PCIe-support.patch
 # https://patchwork.kernel.org/patch/11299997/
 Patch311: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
 # https://patchwork.kernel.org/cover/11353083/
@@ -832,8 +830,6 @@ Patch313: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
-# https://www.spinics.net/lists/linux-tegra/msg43110.html
-Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
 # http://patchwork.ozlabs.org/patch/1230891/
 Patch322: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
 
@@ -2893,6 +2889,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc1.git0.1
+- Linux v5.6-rc1
+
 * Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com>
 - Disable debugging options.
 
