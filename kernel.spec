@@ -200,7 +200,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -2893,6 +2893,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
+
 * Fri Feb 07 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc0.git5.1
 - Linux v5.5-9824-g90568ecf5615
 - Enable DM_CLONE as a module (rhbz 1799060)
