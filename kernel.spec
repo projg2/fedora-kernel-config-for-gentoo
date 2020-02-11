@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 19
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2514,6 +2514,9 @@ fi
 #
 #
 %changelog
+* Tue Feb 11 2020 Jeremy Cline <jcline@redhat.com> - 5.4.19-200
+- Linux v5.4.19
+
 * Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com>
 - Remove sysrq support to lift lockdown (rhbz 1800859)
 
