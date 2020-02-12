@@ -1,7 +1,7 @@
-From 0ac6b457d6e7f945aa84c26effe306b83bcf7ddb Mon Sep 17 00:00:00 2001
+From 79b0618304c9a7512aba223ae187a8405656aa8e Mon Sep 17 00:00:00 2001
 From: Colin Ian King <colin.king@canonical.com>
 Date: Sun, 25 Nov 2018 23:12:08 +0000
-Subject: [PATCH 001/130] ALSA: usb-audio: fix spelling mistake "Frequence" ->
+Subject: [PATCH 001/109] ALSA: usb-audio: fix spelling mistake "Frequence" ->
  "Frequency"
 
 There are spelling mistakes in equalizer name fields, fix them.
@@ -57,13 +57,12 @@ index f0e8e1539450..aea3b4ad7ded 100644
  };
  
 -- 
-2.20.1
+2.24.1
 
-
-From accf87200cc0d1411c40e577f7104c55caac01dc Mon Sep 17 00:00:00 2001
+From 17bbbd02508acda4df32c4f0668434dccb56bdca Mon Sep 17 00:00:00 2001
 From: Saurav Girepunje <saurav.girepunje@gmail.com>
 Date: Tue, 29 Oct 2019 23:22:00 +0530
-Subject: [PATCH 002/130] ALSA: usb-audio: sound: usb: usb true/false for bool
+Subject: [PATCH 002/109] ALSA: usb-audio: sound: usb: usb true/false for bool
  return type
 
 Use true/false for bool type return in uac_clock_source_is_valid().
@@ -122,13 +121,12 @@ index 6b8c14f9b5d4..018b1ecb5404 100644
  
  static int __uac_clock_find_source(struct snd_usb_audio *chip, int entity_id,
 -- 
-2.20.1
+2.24.1
 
-
-From 50704a502a8b9b71ca96de1bd0da70394d9576b3 Mon Sep 17 00:00:00 2001
+From 042dd0cc1f179d52acfea699239b87ef93dbd70d Mon Sep 17 00:00:00 2001
 From: Takashi Iwai <tiwai@suse.de>
 Date: Thu, 14 Nov 2019 17:56:13 +0100
-Subject: [PATCH 003/130] ALSA: usb-audio: Add skip_validation option
+Subject: [PATCH 003/109] ALSA: usb-audio: Add skip_validation option
 
 The unit descriptor validation may lead to a probe error when the
 device provides a buggy descriptor or the validator detected
@@ -171,10 +169,10 @@ index db91dc76cc91..9f743ebae615 100644
  /*
   * we keep the snd_usb_audio_t instances by ourselves for merging
 diff --git a/sound/usb/usbaudio.h b/sound/usb/usbaudio.h
-index feb30f9c1716..ff3cbf653de8 100644
+index e360680f45f3..6fe3ab582ec6 100644
 --- a/sound/usb/usbaudio.h
 +++ b/sound/usb/usbaudio.h
-@@ -120,5 +120,6 @@ int snd_usb_lock_shutdown(struct snd_usb_audio *chip);
+@@ -121,5 +121,6 @@ int snd_usb_lock_shutdown(struct snd_usb_audio *chip);
  void snd_usb_unlock_shutdown(struct snd_usb_audio *chip);
  
  extern bool snd_usb_use_vmalloc;
@@ -182,7 +180,7 @@ index feb30f9c1716..ff3cbf653de8 100644
  
  #endif /* __USBAUDIO_H */
 diff --git a/sound/usb/validate.c b/sound/usb/validate.c
-index 389e8657434a..36ae78c3da3d 100644
+index 5a3c4f7882b0..c43d8c3895a9 100644
 --- a/sound/usb/validate.c
 +++ b/sound/usb/validate.c
 @@ -322,11 +322,28 @@ static bool validate_desc(unsigned char *hdr, int protocol,
@@ -218,13 +216,12 @@ index 389e8657434a..36ae78c3da3d 100644
  }
 -
 -- 
-2.20.1
+2.24.1
 
-
-From 6e6ea1a80e8b33f3908fdfa4ce45c3fa684cda75 Mon Sep 17 00:00:00 2001
+From 8d5568b5492d468acd4a49eefccaaed28dc62d22 Mon Sep 17 00:00:00 2001
 From: Jaroslav Kysela <perex@perex.cz>
 Date: Tue, 22 Oct 2019 19:43:12 +0200
-Subject: [PATCH 006/130] ALSA: hda: add Intel DSP configuration / probe code
+Subject: [PATCH 004/109] ALSA: hda: add Intel DSP configuration / probe code
 
 For distributions, we need one place where we can decide
 which driver will be activated for the auto-configation of the
@@ -644,7 +641,7 @@ index dae47a45b2b8..bd48335d09d7 100644
  	tristate "NVIDIA Tegra HD Audio"
  	depends on ARCH_TEGRA
 diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
-index c52419376c74..2e5742d095ff 100644
+index 85beb172d810..2888f710e7e1 100644
 --- a/sound/pci/hda/hda_intel.c
 +++ b/sound/pci/hda/hda_intel.c
 @@ -46,7 +46,7 @@
@@ -677,7 +674,7 @@ index c52419376c74..2e5742d095ff 100644
  
  #ifdef CONFIG_PM
  static int param_set_xint(const char *val, const struct kernel_param *kp);
-@@ -2020,25 +2021,6 @@ static const struct hda_controller_ops pci_hda_ops = {
+@@ -2030,25 +2031,6 @@ static const struct hda_controller_ops pci_hda_ops = {
  	.position_check = azx_position_check,
  };
  
@@ -703,7 +700,7 @@ index c52419376c74..2e5742d095ff 100644
  static int azx_probe(struct pci_dev *pci,
  		     const struct pci_device_id *pci_id)
  {
-@@ -2056,6 +2038,16 @@ static int azx_probe(struct pci_dev *pci,
+@@ -2066,6 +2048,16 @@ static int azx_probe(struct pci_dev *pci,
  		return -ENOENT;
  	}
  
@@ -720,7 +717,7 @@ index c52419376c74..2e5742d095ff 100644
  	err = snd_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
  			   0, &card);
  	if (err < 0) {
-@@ -2069,17 +2061,6 @@ static int azx_probe(struct pci_dev *pci,
+@@ -2079,17 +2071,6 @@ static int azx_probe(struct pci_dev *pci,
  	card->private_data = chip;
  	hda = container_of(chip, struct hda_intel, chip);
  
@@ -739,10 +736,10 @@ index c52419376c74..2e5742d095ff 100644
  
  	err = register_vga_switcheroo(chip);
 diff --git a/sound/soc/intel/Kconfig b/sound/soc/intel/Kconfig
-index 01c99750212a..9ad89d56092b 100644
+index ef493cae78ff..c15230cec851 100644
 --- a/sound/soc/intel/Kconfig
 +++ b/sound/soc/intel/Kconfig
-@@ -215,7 +215,7 @@ config SND_SOC_INTEL_SKYLAKE_COMMON
+@@ -218,7 +218,7 @@ config SND_SOC_INTEL_SKYLAKE_COMMON
  	select SND_SOC_INTEL_SST
  	select SND_SOC_HDAC_HDA if SND_SOC_INTEL_SKYLAKE_HDAUDIO_CODEC
  	select SND_SOC_ACPI_INTEL_MATCH
@@ -790,10 +787,10 @@ index 141dbbf975ac..58ba3e9469ba 100644
  	case SND_SKL_PCI_BIND_LEGACY:
  		dev_info(&pci->dev, "Module parameter forced binding with HDaudio legacy, aborting probe\n");
 diff --git a/sound/soc/sof/intel/Kconfig b/sound/soc/sof/intel/Kconfig
-index d62f51d33be1..1be28581c328 100644
+index 8421b97d949e..d6d65e70eebb 100644
 --- a/sound/soc/sof/intel/Kconfig
 +++ b/sound/soc/sof/intel/Kconfig
-@@ -296,7 +296,7 @@ config SND_SOC_SOF_HDA
+@@ -304,7 +304,7 @@ config SND_SOC_SOF_HDA
  	tristate
  	select SND_HDA_EXT_CORE if SND_SOC_SOF_HDA_LINK
  	select SND_SOC_HDAC_HDA if SND_SOC_SOF_HDA_AUDIO_CODEC
@@ -827,13 +824,12 @@ index d66412a77873..3a9e0e2a150d 100644
  
  	/* get ops for platform */
 -- 
-2.20.1
+2.24.1
 
-
-From 8f609dd45d5598536e5a1a7a84fe19ff7c13559a Mon Sep 17 00:00:00 2001
+From 08086a70efd7f4db4645e2a7b60b2aba4b620b18 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Tue, 22 Oct 2019 19:43:13 +0200
-Subject: [PATCH 007/130] ALSA: hda: fix intel DSP config
+Subject: [PATCH 005/109] ALSA: hda: fix intel DSP config
 
 Reshuffle list of devices by historical order and add correct
 information as needed.
@@ -1150,13 +1146,12 @@ index d9f6d9e872b4..0b2a7201a46a 100644
  
  static const struct config_entry *snd_intel_dsp_find_config
 -- 
-2.20.1
+2.24.1
 
-
-From 56731f15b8cce801875906ab32fefecd7858ab1a Mon Sep 17 00:00:00 2001
+From 5cd51df6f836090343aadd7ea4eacfde511660ad Mon Sep 17 00:00:00 2001
 From: Jaroslav Kysela <perex@perex.cz>
 Date: Mon, 28 Oct 2019 17:46:24 +0100
-Subject: [PATCH 008/130] ASoC: intel - fix the card names
+Subject: [PATCH 006/109] ASoC: intel - fix the card names
 
 Those strings are exposed to the user space as the
 card name thus used in the GUIs. The common
@@ -1180,10 +1175,10 @@ Bugzilla: 1772498
  3 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c b/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c
-index 74dda8784f1a..d14ca327c684 100644
+index 67b276a65a8d..8ad31c91fc75 100644
 --- a/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c
 +++ b/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c
-@@ -623,7 +623,7 @@ static int kabylake_card_late_probe(struct snd_soc_card *card)
+@@ -626,7 +626,7 @@ static int kabylake_card_late_probe(struct snd_soc_card *card)
   * kabylake audio machine driver for  MAX98927 + RT5514 + RT5663
   */
  static struct snd_soc_card kabylake_audio_card = {
@@ -1219,13 +1214,12 @@ index 4f6e58c3954a..320a9b9273db 100644
  	.controls = sof_controls,
  	.num_controls = ARRAY_SIZE(sof_controls),
 -- 
-2.20.1
+2.24.1
 
-
-From 63d4f97804a1ab4ad9e84843bdee307c2ab9e9b5 Mon Sep 17 00:00:00 2001
+From 6d7c3f54de921a90a4ec08f5c9570222d9f647f3 Mon Sep 17 00:00:00 2001
 From: Takashi Iwai <tiwai@suse.de>
 Date: Mon, 28 Oct 2019 14:06:34 +0100
-Subject: [PATCH 009/130] ALSA: hda: Allow non-Intel device probe gracefully
+Subject: [PATCH 007/109] ALSA: hda: Allow non-Intel device probe gracefully
 
 The recent addition of snd_intel_dsp_driver_probe() check caused a
 spurious kernel warning when the driver is loaded for a non-Intel
@@ -1270,13 +1264,12 @@ index 0b2a7201a46a..be1df80ed013 100644
  	 * detect DSP by checking class/subclass/prog-id information
  	 * class=04 subclass 03 prog-if 00: no DSP, use legacy driver
 -- 
-2.20.1
+2.24.1
 
-
-From fddf95e9cd5e5768e35aa6f60a9686f21e690dc5 Mon Sep 17 00:00:00 2001
+From d1e23b8b780640a6bcf75c854857034c45cd99f2 Mon Sep 17 00:00:00 2001
 From: Takashi Iwai <tiwai@suse.de>
 Date: Tue, 5 Nov 2019 09:18:06 +0100
-Subject: [PATCH 010/130] ALSA: hda: Disable regmap internal locking
+Subject: [PATCH 008/109] ALSA: hda: Disable regmap internal locking
 
 Since we apply the own mutex (bus->cmd_mutex) in HDA core side, the
 internal locking in regmap is superfluous.  This patch adds the flag
@@ -1313,13 +1306,12 @@ index 286361ecd640..906b1e20bae0 100644
  
  /**
 -- 
-2.20.1
+2.24.1
 
-
-From e3eb037a46c5b6771e9336bb493063dbffb90e04 Mon Sep 17 00:00:00 2001
+From 0f9c61a795f0ad4faab0582c7b792cebd85976c2 Mon Sep 17 00:00:00 2001
 From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Date: Tue, 29 Oct 2019 15:40:09 +0200
-Subject: [PATCH 013/130] ALSA: hda/hdmi - implement mst_no_extra_pcms flag
+Subject: [PATCH 009/109] ALSA: hda/hdmi - implement mst_no_extra_pcms flag
 
 To support the DP-MST multiple streams via single connector feature,
 the HDMI driver was extended with the concept of backup PCMs. See
@@ -1371,10 +1363,10 @@ index 9a0393cf024c..ac18f428eda6 100644
  #ifdef CONFIG_PM
  	unsigned long power_on_acct;
 diff --git a/sound/pci/hda/patch_hdmi.c b/sound/pci/hda/patch_hdmi.c
-index d14f6684737d..b8579cd21809 100644
+index 8ac805a634f4..1a29453bc26f 100644
 --- a/sound/pci/hda/patch_hdmi.c
 +++ b/sound/pci/hda/patch_hdmi.c
-@@ -2075,15 +2075,24 @@ static bool is_hdmi_pcm_attached(struct hdac_device *hdac, int pcm_idx)
+@@ -2082,15 +2082,24 @@ static bool is_hdmi_pcm_attached(struct hdac_device *hdac, int pcm_idx)
  static int generic_hdmi_build_pcms(struct hda_codec *codec)
  {
  	struct hdmi_spec *spec = codec->spec;
@@ -1405,13 +1397,12 @@ index d14f6684737d..b8579cd21809 100644
  		struct hda_pcm_stream *pstr;
  
 -- 
-2.20.1
+2.24.1
 
-
-From d396423ca770d10ab33a485f118e80a1a9f70516 Mon Sep 17 00:00:00 2001
+From 33115cd895693c04723026e19a9eee0f34c4b853 Mon Sep 17 00:00:00 2001
 From: Takashi Iwai <tiwai@suse.de>
 Date: Mon, 11 Nov 2019 20:09:37 +0100
-Subject: [PATCH 014/130] ALSA: hda/hdmi - Clean up Intel platform-specific
+Subject: [PATCH 010/109] ALSA: hda/hdmi - Clean up Intel platform-specific
  fixup checks
 
 Introduce a new flag in hdmi_spec to indicate the Intel platform-
@@ -1430,10 +1421,10 @@ Bugzilla: 1772498
  1 file changed, 5 insertions(+), 22 deletions(-)
 
 diff --git a/sound/pci/hda/patch_hdmi.c b/sound/pci/hda/patch_hdmi.c
-index b8579cd21809..ee72d990cef3 100644
+index 1a29453bc26f..3f97a04de197 100644
 --- a/sound/pci/hda/patch_hdmi.c
 +++ b/sound/pci/hda/patch_hdmi.c
-@@ -37,25 +37,6 @@ static bool static_hdmi_pcm;
+@@ -38,25 +38,6 @@ static bool static_hdmi_pcm;
  module_param(static_hdmi_pcm, bool, 0644);
  MODULE_PARM_DESC(static_hdmi_pcm, "Don't restrict PCM parameters per ELD info");
  
@@ -1459,7 +1450,7 @@ index b8579cd21809..ee72d990cef3 100644
  struct hdmi_spec_per_cvt {
  	hda_nid_t cvt_nid;
  	int assigned;
-@@ -162,6 +143,7 @@ struct hdmi_spec {
+@@ -163,6 +144,7 @@ struct hdmi_spec {
  
  	bool dyn_pin_out;
  	bool dyn_pcm_assign;
@@ -1467,7 +1458,7 @@ index b8579cd21809..ee72d990cef3 100644
  	/*
  	 * Non-generic VIA/NVIDIA specific
  	 */
-@@ -925,7 +907,7 @@ static int hdmi_setup_stream(struct hda_codec *codec, hda_nid_t cvt_nid,
+@@ -926,7 +908,7 @@ static int hdmi_setup_stream(struct hda_codec *codec, hda_nid_t cvt_nid,
  		return err;
  	}
  
@@ -1476,7 +1467,7 @@ index b8579cd21809..ee72d990cef3 100644
  
  		/*
  		 * on recent platforms IEC Coding Type is required for HBR
-@@ -1709,7 +1691,7 @@ static int hdmi_add_pin(struct hda_codec *codec, hda_nid_t pin_nid)
+@@ -1714,7 +1696,7 @@ static int hdmi_add_pin(struct hda_codec *codec, hda_nid_t pin_nid)
  	 * To simplify the implementation, malloc all
  	 * the virtual pins in the initialization statically
  	 */
@@ -1485,7 +1476,7 @@ index b8579cd21809..ee72d990cef3 100644
  		/*
  		 * On Intel platforms, device entries number is
  		 * changed dynamically. If there is a DP MST
-@@ -1758,7 +1740,7 @@ static int hdmi_add_pin(struct hda_codec *codec, hda_nid_t pin_nid)
+@@ -1763,7 +1745,7 @@ static int hdmi_add_pin(struct hda_codec *codec, hda_nid_t pin_nid)
  		per_pin->dev_id = i;
  		per_pin->non_pcm = false;
  		snd_hda_set_dev_select(codec, pin_nid, i);
@@ -1494,7 +1485,7 @@ index b8579cd21809..ee72d990cef3 100644
  			intel_haswell_fixup_connect_list(codec, pin_nid);
  		err = hdmi_read_pin_conn(codec, pin_idx);
  		if (err < 0)
-@@ -2825,6 +2807,7 @@ static int intel_hsw_common_init(struct hda_codec *codec, hda_nid_t vendor_nid,
+@@ -2832,6 +2814,7 @@ static int intel_hsw_common_init(struct hda_codec *codec, hda_nid_t vendor_nid,
  	spec->vendor_nid = vendor_nid;
  	spec->port_map = port_map;
  	spec->port_num = port_num;
@@ -1503,13 +1494,12 @@ index b8579cd21809..ee72d990cef3 100644
  	intel_haswell_enable_all_pins(codec, true);
  	intel_haswell_fixup_enable_dp12(codec);
 -- 
-2.20.1
+2.24.1
 
-
-From 3c8372547754addd020cc95c164508fd67cb53b8 Mon Sep 17 00:00:00 2001
+From 75ce7bbf2d5d1de529a07eca217e02a9897d0277 Mon Sep 17 00:00:00 2001
 From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Date: Fri, 15 Nov 2019 14:44:47 +0200
-Subject: [PATCH 015/130] ALSA: hda: hdmi - fix port numbering for ICL and TGL
+Subject: [PATCH 011/109] ALSA: hda: hdmi - fix port numbering for ICL and TGL
  platforms
 
 Semantics of port#0 differ between ICL and TGL:
@@ -1538,10 +1528,10 @@ Bugzilla: 1772498
  1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/sound/pci/hda/patch_hdmi.c b/sound/pci/hda/patch_hdmi.c
-index ee72d990cef3..cc35a8569439 100644
+index 3f97a04de197..75f0d2799847 100644
 --- a/sound/pci/hda/patch_hdmi.c
 +++ b/sound/pci/hda/patch_hdmi.c
-@@ -2664,7 +2664,7 @@ static int intel_pin2port(void *audio_ptr, int pin_nid)
+@@ -2671,7 +2671,7 @@ static int intel_pin2port(void *audio_ptr, int pin_nid)
  	 */
  	for (i = 0; i < spec->port_num; i++) {
  		if (pin_nid == spec->port_map[i])
@@ -1550,7 +1540,7 @@ index ee72d990cef3..cc35a8569439 100644
  	}
  
  	/* return -1 if pin number exceeds our expectation */
-@@ -2684,9 +2684,9 @@ static int intel_port2pin(struct hda_codec *codec, int port)
+@@ -2691,9 +2691,9 @@ static int intel_port2pin(struct hda_codec *codec, int port)
  		return port + intel_base_nid(codec) - 1;
  	}
  
@@ -1562,7 +1552,7 @@ index ee72d990cef3..cc35a8569439 100644
  }
  
  static void intel_pin_eld_notify(void *audio_ptr, int port, int pipe)
-@@ -2838,9 +2838,9 @@ static int patch_i915_icl_hdmi(struct hda_codec *codec)
+@@ -2845,9 +2845,9 @@ static int patch_i915_icl_hdmi(struct hda_codec *codec)
  {
  	/*
  	 * pin to port mapping table where the value indicate the pin number and
@@ -1574,7 +1564,7 @@ index ee72d990cef3..cc35a8569439 100644
  
  	return intel_hsw_common_init(codec, 0x02, map, ARRAY_SIZE(map));
  }
-@@ -2849,7 +2849,7 @@ static int patch_i915_tgl_hdmi(struct hda_codec *codec)
+@@ -2856,7 +2856,7 @@ static int patch_i915_tgl_hdmi(struct hda_codec *codec)
  {
  	/*
  	 * pin to port mapping table where the value indicate the pin number and
@@ -1584,13 +1574,12 @@ index ee72d990cef3..cc35a8569439 100644
  	static const int map[] = {0x4, 0x6, 0x8, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf};
  
 -- 
-2.20.1
+2.24.1
 
-
-From 485ef81d2510635f707bec0fb461b199e0b6cb89 Mon Sep 17 00:00:00 2001
+From a8196a93444f3ff34e15c254f68ee046bef27109 Mon Sep 17 00:00:00 2001
 From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Date: Fri, 15 Nov 2019 14:44:48 +0200
-Subject: [PATCH 016/130] ALSA: hda: hdmi - remove redundant code comments
+Subject: [PATCH 012/109] ALSA: hda: hdmi - remove redundant code comments
 
 Remove unnecessary comments related to pin mapping on
 Intel platforms.
@@ -1607,10 +1596,10 @@ Bugzilla: 1772498
  1 file changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/sound/pci/hda/patch_hdmi.c b/sound/pci/hda/patch_hdmi.c
-index cc35a8569439..71848dce0025 100644
+index 75f0d2799847..2044bbb830f9 100644
 --- a/sound/pci/hda/patch_hdmi.c
 +++ b/sound/pci/hda/patch_hdmi.c
-@@ -2655,7 +2655,7 @@ static int intel_pin2port(void *audio_ptr, int pin_nid)
+@@ -2662,7 +2662,7 @@ static int intel_pin2port(void *audio_ptr, int pin_nid)
  		base_nid = intel_base_nid(codec);
  		if (WARN_ON(pin_nid < base_nid || pin_nid >= base_nid + 3))
  			return -1;
@@ -1619,7 +1608,7 @@ index cc35a8569439..71848dce0025 100644
  	}
  
  	/*
-@@ -2667,7 +2667,6 @@ static int intel_pin2port(void *audio_ptr, int pin_nid)
+@@ -2674,7 +2674,6 @@ static int intel_pin2port(void *audio_ptr, int pin_nid)
  			return i;
  	}
  
@@ -1627,7 +1616,7 @@ index cc35a8569439..71848dce0025 100644
  	codec_info(codec, "Can't find the HDMI/DP port for pin %d\n", pin_nid);
  	return -1;
  }
-@@ -2680,7 +2679,6 @@ static int intel_port2pin(struct hda_codec *codec, int port)
+@@ -2687,7 +2686,6 @@ static int intel_port2pin(struct hda_codec *codec, int port)
  		/* we assume only from port-B to port-D */
  		if (port < 1 || port > 3)
  			return 0;
@@ -1635,7 +1624,7 @@ index cc35a8569439..71848dce0025 100644
  		return port + intel_base_nid(codec) - 1;
  	}
  
-@@ -2856,7 +2854,6 @@ static int patch_i915_tgl_hdmi(struct hda_codec *codec)
+@@ -2863,7 +2861,6 @@ static int patch_i915_tgl_hdmi(struct hda_codec *codec)
  	return intel_hsw_common_init(codec, 0x02, map, ARRAY_SIZE(map));
  }
  
@@ -1644,13 +1633,12 @@ index cc35a8569439..71848dce0025 100644
  static int patch_i915_byt_hdmi(struct hda_codec *codec)
  {
 -- 
-2.20.1
+2.24.1
 
-
-From c581baec7a7479f1767335255a7b7de405bfc707 Mon Sep 17 00:00:00 2001
+From ad0389ef5e486a09a98cbfacd2bf56090b1346f1 Mon Sep 17 00:00:00 2001
 From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Date: Fri, 15 Nov 2019 14:44:49 +0200
-Subject: [PATCH 017/130] ALSA: hda - remove forced polling workaround for CFL
+Subject: [PATCH 013/109] ALSA: hda - remove forced polling workaround for CFL
  and CNL
 
 Remove the workarounds added in commit fa763f1b2858 ("ALSA:
@@ -1678,10 +1666,10 @@ Bugzilla: 1772498
  1 file changed, 6 deletions(-)
 
 diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
-index 8981109e3565..e76a0bb6d3cf 100644
+index 2888f710e7e1..e2c08517a24c 100644
 --- a/sound/pci/hda/hda_intel.c
 +++ b/sound/pci/hda/hda_intel.c
-@@ -369,8 +369,6 @@ enum {
+@@ -370,8 +370,6 @@ enum {
  					((pci)->device == 0x160c))
  
  #define IS_BXT(pci) ((pci)->vendor == 0x8086 && (pci)->device == 0x5a98)
@@ -1690,7 +1678,7 @@ index 8981109e3565..e76a0bb6d3cf 100644
  
  static char *driver_short_names[] = {
  	[AZX_DRIVER_ICH] = "HDA Intel",
-@@ -1763,10 +1761,6 @@ static int azx_create(struct snd_card *card, struct pci_dev *pci,
+@@ -1764,10 +1762,6 @@ static int azx_create(struct snd_card *card, struct pci_dev *pci,
  	if (!azx_snoop(chip))
  		azx_bus(chip)->dma_type = SNDRV_DMA_TYPE_DEV_UC;
  
@@ -1702,13 +1690,12 @@ index 8981109e3565..e76a0bb6d3cf 100644
  		dev_dbg(chip->card->dev, "Enable delay in RIRB handling\n");
  		chip->bus.needs_damn_long_delay = 1;
 -- 
-2.20.1
+2.24.1
 
-
-From 8de79a35aa53df66d5eec899cafff067a0908da4 Mon Sep 17 00:00:00 2001
+From 588faa6b4c0d18c504e6c32863ef82b63b6531ec Mon Sep 17 00:00:00 2001
 From: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 Date: Tue, 15 Oct 2019 14:44:09 +0900
-Subject: [PATCH 018/130] ASoC: sof: include types.h at header.h
+Subject: [PATCH 014/109] ASoC: sof: include types.h at header.h
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -1749,13 +1736,12 @@ index 10f00c08dbb7..332143ff7278 100644
  
  /** \addtogroup sof_uapi uAPI
 -- 
-2.20.1
+2.24.1
 
-
-From eeb591355d00f4e6e077745aca5ff5a2899eca2d Mon Sep 17 00:00:00 2001
+From 0378a1586c604515d4084c29ae689b5700315b7f Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 27 Sep 2019 15:05:28 -0500
-Subject: [PATCH 019/130] ASoC: SOF: trace: move to opt-in with Kconfig and
+Subject: [PATCH 015/109] ASoC: SOF: trace: move to opt-in with Kconfig and
  module parameter
 
 In a number of debug cases, the DMA-based trace can add problems
@@ -1803,7 +1789,7 @@ index bb8036ae567e..cc592bcadae7 100644
  	bool "SOF enable IPC flood test"
  	help
 diff --git a/sound/soc/sof/core.c b/sound/soc/sof/core.c
-index 81f28f7ff1a0..15167b8220ed 100644
+index 12aec140819a..1e7addfc0f61 100644
 --- a/sound/soc/sof/core.c
 +++ b/sound/soc/sof/core.c
 @@ -16,6 +16,11 @@
@@ -1818,7 +1804,7 @@ index 81f28f7ff1a0..15167b8220ed 100644
  /* SOF defaults if not provided by the platform in ms */
  #define TIMEOUT_DEFAULT_IPC_MS  500
  #define TIMEOUT_DEFAULT_BOOT_MS 2000
-@@ -350,12 +355,20 @@ static int sof_probe_continue(struct snd_sof_dev *sdev)
+@@ -397,12 +402,20 @@ static int sof_probe_continue(struct snd_sof_dev *sdev)
  		goto fw_run_err;
  	}
  
@@ -1846,7 +1832,7 @@ index 81f28f7ff1a0..15167b8220ed 100644
  
  	/* hereafter all FW boot flows are for PM reasons */
 diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index 730f3259dd02..d5b1a4f895da 100644
+index 7b329bd99674..e68f3cb78cda 100644
 --- a/sound/soc/sof/sof-priv.h
 +++ b/sound/soc/sof/sof-priv.h
 @@ -28,10 +28,14 @@
@@ -1868,7 +1854,7 @@ index 730f3259dd02..d5b1a4f895da 100644
  
  /* max BARs mmaped devices can use */
  #define SND_SOF_BARS	8
-@@ -434,6 +438,7 @@ struct snd_sof_dev {
+@@ -443,6 +447,7 @@ struct snd_sof_dev {
  	int dma_trace_pages;
  	wait_queue_head_t trace_sleep;
  	u32 host_offset;
@@ -1940,13 +1926,12 @@ index 4c3cff031fd6..b0e4556c8536 100644
  
  	snd_dma_free_pages(&sdev->dmatb);
 -- 
-2.20.1
+2.24.1
 
-
-From f1e8f5f928c09194078db704356af60ddaee6280 Mon Sep 17 00:00:00 2001
+From 2e85462e14f0f736f4cace881c704ac8fa050475 Mon Sep 17 00:00:00 2001
 From: Liam Girdwood <liam.r.girdwood@linux.intel.com>
 Date: Fri, 27 Sep 2019 15:05:29 -0500
-Subject: [PATCH 020/130] ASoC: SOF: ipc: retain DSP context after FW
+Subject: [PATCH 016/109] ASoC: SOF: ipc: retain DSP context after FW
  exception.
 
 Add config option to prevent DSP entering D3 after any FW exception.
@@ -2011,7 +1996,7 @@ index 5529e8eeca46..d2b3b99d3a20 100644
 +}
 +EXPORT_SYMBOL(snd_sof_handle_fw_exception);
 diff --git a/sound/soc/sof/ipc.c b/sound/soc/sof/ipc.c
-index 086eeeab8679..3382a745ba5a 100644
+index 8984d965037d..bc292f071a4f 100644
 --- a/sound/soc/sof/ipc.c
 +++ b/sound/soc/sof/ipc.c
 @@ -210,9 +210,7 @@ static int tx_wait_done(struct snd_sof_ipc *ipc, struct snd_sof_ipc_msg *msg,
@@ -2026,7 +2011,7 @@ index 086eeeab8679..3382a745ba5a 100644
  	} else {
  		/* copy the data returned from DSP */
 diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index d5b1a4f895da..348759035dd0 100644
+index e68f3cb78cda..a769687b576d 100644
 --- a/sound/soc/sof/sof-priv.h
 +++ b/sound/soc/sof/sof-priv.h
 @@ -33,6 +33,7 @@
@@ -2037,7 +2022,7 @@ index d5b1a4f895da..348759035dd0 100644
  
  /* global debug state set by SOF_DBG_ flags */
  extern int sof_core_debug;
-@@ -580,6 +581,7 @@ void snd_sof_get_status(struct snd_sof_dev *sdev, u32 panic_code,
+@@ -589,6 +590,7 @@ void snd_sof_get_status(struct snd_sof_dev *sdev, u32 panic_code,
  			struct sof_ipc_panic_info *panic_info,
  			void *stack, size_t stack_words);
  int snd_sof_init_trace_ipc(struct snd_sof_dev *sdev);
@@ -2046,13 +2031,12 @@ index d5b1a4f895da..348759035dd0 100644
  /*
   * Platform specific ops.
 -- 
-2.20.1
+2.24.1
 
-
-From 9de42cad7a0c02393de0999286b1c2cc2a3ea39f Mon Sep 17 00:00:00 2001
+From d55d009f0d9c4ef5c4b693b1f5ec6a0ae1f84c1d Mon Sep 17 00:00:00 2001
 From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 Date: Fri, 27 Sep 2019 15:05:32 -0500
-Subject: [PATCH 021/130] ASoC: SOF: core: check for mandatory fw_ready op
+Subject: [PATCH 017/109] ASoC: SOF: core: check for mandatory fw_ready op
  during SOF probe
 
 fw_ready should be a mandatory op. Make sure fw_ready ops is set
@@ -2073,10 +2057,10 @@ Bugzilla: 1772498
  3 files changed, 3 insertions(+), 8 deletions(-)
 
 diff --git a/sound/soc/sof/core.c b/sound/soc/sof/core.c
-index 15167b8220ed..5998861a9002 100644
+index 1e7addfc0f61..8a23739aa545 100644
 --- a/sound/soc/sof/core.c
 +++ b/sound/soc/sof/core.c
-@@ -466,7 +466,8 @@ int snd_sof_device_probe(struct device *dev, struct snd_sof_pdata *plat_data)
+@@ -504,7 +504,8 @@ int snd_sof_device_probe(struct device *dev, struct snd_sof_pdata *plat_data)
  	if (!sof_ops(sdev) || !sof_ops(sdev)->probe || !sof_ops(sdev)->run ||
  	    !sof_ops(sdev)->block_read || !sof_ops(sdev)->block_write ||
  	    !sof_ops(sdev)->send_msg || !sof_ops(sdev)->load_firmware ||
@@ -2087,10 +2071,10 @@ index 15167b8220ed..5998861a9002 100644
  
  	INIT_LIST_HEAD(&sdev->pcm_list);
 diff --git a/sound/soc/sof/ipc.c b/sound/soc/sof/ipc.c
-index 3382a745ba5a..5994e1073364 100644
+index bc292f071a4f..dfe429f9e33f 100644
 --- a/sound/soc/sof/ipc.c
 +++ b/sound/soc/sof/ipc.c
-@@ -794,12 +794,6 @@ struct snd_sof_ipc *snd_sof_ipc_init(struct snd_sof_dev *sdev)
+@@ -787,12 +787,6 @@ struct snd_sof_ipc *snd_sof_ipc_init(struct snd_sof_dev *sdev)
  	struct snd_sof_ipc *ipc;
  	struct snd_sof_ipc_msg *msg;
  
@@ -2104,7 +2088,7 @@ index 3382a745ba5a..5994e1073364 100644
  	if (!ipc)
  		return NULL;
 diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index 348759035dd0..44f789bf7fb0 100644
+index a769687b576d..eb919527dd21 100644
 --- a/sound/soc/sof/sof-priv.h
 +++ b/sound/soc/sof/sof-priv.h
 @@ -133,7 +133,7 @@ struct snd_sof_dsp_ops {
@@ -2117,13 +2101,12 @@ index 348759035dd0..44f789bf7fb0 100644
  	/* connect pcm substream to a host stream */
  	int (*pcm_open)(struct snd_sof_dev *sdev,
 -- 
-2.20.1
+2.24.1
 
-
-From 63398beda87ad3d6d43cc5fc90f173540b3fd1b3 Mon Sep 17 00:00:00 2001
+From bed2180906afe06547bc434b4101da52ef5ef912 Mon Sep 17 00:00:00 2001
 From: Marcin Rajwa <marcin.rajwa@linux.intel.com>
 Date: Fri, 27 Sep 2019 15:05:33 -0500
-Subject: [PATCH 022/130] ASoC: SOF: ipc: introduce no_stream_position in
+Subject: [PATCH 018/109] ASoC: SOF: ipc: introduce no_stream_position in
  sof_ipc_stream_params struct
 
 The host period bytes value needs to be passed to firmware.
@@ -2164,13 +2147,12 @@ index 0b71b381b952..7facefb541b3 100644
  } __packed;
  
 -- 
-2.20.1
+2.24.1
 
-
-From 0a637a33ef7f532235b1d972ee54cf8b603730e5 Mon Sep 17 00:00:00 2001
+From 621e4be575f4ab56711478b4306ea7ba78cc922a Mon Sep 17 00:00:00 2001
 From: Marcin Rajwa <marcin.rajwa@linux.intel.com>
 Date: Fri, 27 Sep 2019 15:05:34 -0500
-Subject: [PATCH 023/130] ASoC: SOF: Intel: hda: fix reset of host_period_bytes
+Subject: [PATCH 019/109] ASoC: SOF: Intel: hda: fix reset of host_period_bytes
 
 This patch prevents the reset of host period bytes
 and uses no_stream_position to record requests
@@ -2222,13 +2204,12 @@ index 9b730f183529..575f5f5877d8 100644
  	ipc_params->stream_tag = hstream->stream_tag;
  
 -- 
-2.20.1
+2.24.1
 
-
-From 7f89237bf642c6a090557db68be76c6d67658904 Mon Sep 17 00:00:00 2001
+From 244e3dece4e48b1aac798f9b1bf49565697cba87 Mon Sep 17 00:00:00 2001
 From: Liam Girdwood <liam.r.girdwood@linux.intel.com>
 Date: Fri, 27 Sep 2019 15:05:37 -0500
-Subject: [PATCH 024/130] ASoC: SOF: Intel: Add context data to any IPC
+Subject: [PATCH 020/109] ASoC: SOF: Intel: Add context data to any IPC
  timeout.
 
 Helps with FW debug as it provides DSP IPC processing context.
@@ -2287,10 +2268,10 @@ index 80e2826fb447..f395d0638876 100644
  
  /*
 diff --git a/sound/soc/sof/intel/byt.c b/sound/soc/sof/intel/byt.c
-index a1e514f71739..b2597ecfdc1c 100644
+index 41008c974ac6..3138d9a2c621 100644
 --- a/sound/soc/sof/intel/byt.c
 +++ b/sound/soc/sof/intel/byt.c
-@@ -145,7 +145,7 @@ static void byt_dump(struct snd_sof_dev *sdev, u32 flags)
+@@ -146,7 +146,7 @@ static void byt_dump(struct snd_sof_dev *sdev, u32 flags)
  	struct sof_ipc_dsp_oops_xtensa xoops;
  	struct sof_ipc_panic_info panic_info;
  	u32 stack[BYT_STACK_DUMP_SIZE];
@@ -2299,7 +2280,7 @@ index a1e514f71739..b2597ecfdc1c 100644
  
  	/* now try generic SOF status messages */
  	status = snd_sof_dsp_read(sdev, BYT_DSP_BAR, SHIM_IPCD);
-@@ -154,6 +154,27 @@ static void byt_dump(struct snd_sof_dev *sdev, u32 flags)
+@@ -155,6 +155,27 @@ static void byt_dump(struct snd_sof_dev *sdev, u32 flags)
  			  BYT_STACK_DUMP_SIZE);
  	snd_sof_get_status(sdev, status, panic, &xoops, &panic_info, stack,
  			   BYT_STACK_DUMP_SIZE);
@@ -2328,13 +2309,12 @@ index a1e514f71739..b2597ecfdc1c 100644
  
  /*
 -- 
-2.20.1
+2.24.1
 
-
-From e1cc39fb37b304910435e08907d9bd3f29636b89 Mon Sep 17 00:00:00 2001
+From 2ce45551453d13f25f89c4273934efd179c34195 Mon Sep 17 00:00:00 2001
 From: Jaska Uimonen <jaska.uimonen@linux.intel.com>
 Date: Tue, 8 Oct 2019 11:44:41 -0500
-Subject: [PATCH 026/130] ASoC: SOF: enable dual control for pga
+Subject: [PATCH 021/109] ASoC: SOF: enable dual control for pga
 
 Currently sof pga element supports only 1 kcontrol and you can't create
 for example a mixer element with combined volume slider and mute switch.
@@ -2354,7 +2334,7 @@ Bugzilla: 1772498
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
-index 4452594c2e17..32a70ffc149d 100644
+index fa299e078156..96c20c889fa4 100644
 --- a/sound/soc/sof/topology.c
 +++ b/sound/soc/sof/topology.c
 @@ -1581,7 +1581,7 @@ static int sof_widget_load_pga(struct snd_soc_component *scomp, int index,
@@ -2377,13 +2357,12 @@ index 4452594c2e17..32a70ffc149d 100644
  			max_step = scontrol->max_volume_step;
  			volume->min_value = scontrol->volume_table[min_step];
 -- 
-2.20.1
+2.24.1
 
-
-From 7e68f35584ab3b3242a91431037bc7ed5df568dd Mon Sep 17 00:00:00 2001
+From 1abf144571f2f8791c1d6b5f9242da41e3ed8c2e Mon Sep 17 00:00:00 2001
 From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Date: Tue, 8 Oct 2019 11:44:36 -0500
-Subject: [PATCH 027/130] Revert "ASoC: SOF: Force polling mode on CFL and CNL"
+Subject: [PATCH 022/109] Revert "ASoC: SOF: Force polling mode on CFL and CNL"
 
 This reverts commit 64ca9d9fcb3e3c86b1417e3d17a90b43dd660f81.
 
@@ -2403,7 +2382,7 @@ Bugzilla: 1772498
  1 file changed, 7 deletions(-)
 
 diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
-index 5a5163eef2ef..103f4273c4d3 100644
+index 3c4b604412f0..ff3fa8670fd8 100644
 --- a/sound/soc/sof/intel/hda.c
 +++ b/sound/soc/sof/intel/hda.c
 @@ -32,9 +32,6 @@
@@ -2428,13 +2407,12 @@ index 5a5163eef2ef..103f4273c4d3 100644
  	bus->bdl_pos_adj = 0;
  	bus->sync_write = 1;
 -- 
-2.20.1
+2.24.1
 
-
-From beea344394167f3c1f55422f06646a4faa72e697 Mon Sep 17 00:00:00 2001
+From 7947c07881d4fa46b74c5884d5e0a5ecbd2825b3 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Tue, 8 Oct 2019 11:44:37 -0500
-Subject: [PATCH 028/130] ASoC: SOF: acpi: add debug module param
+Subject: [PATCH 023/109] ASoC: SOF: acpi: add debug module param
 
 Add debug parameter for snd-sof-acpi.
 
@@ -2494,13 +2472,12 @@ index ea7b8b895412..df318f50dd0b 100644
  	/* call sof helper for DSP hardware remove */
  	snd_sof_device_remove(&pdev->dev);
 -- 
-2.20.1
+2.24.1
 
-
-From 34cbc5daae759efa7dd448def5beacd283386cc7 Mon Sep 17 00:00:00 2001
+From 21db8b682a3384a910d054fd8795b6dec380d700 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Tue, 8 Oct 2019 11:44:38 -0500
-Subject: [PATCH 029/130] ASoC: SOF: pci: add debug module param
+Subject: [PATCH 024/109] ASoC: SOF: pci: add debug module param
 
 Add debug parameter for snd-sof-pci.
 
@@ -2560,13 +2537,12 @@ index 3a9e0e2a150d..be5a8da504c5 100644
  	/* release pci regions and disable device */
  	pci_release_regions(pci);
 -- 
-2.20.1
+2.24.1
 
-
-From 39844b2b23b8746263988926996db159a3ebbea7 Mon Sep 17 00:00:00 2001
+From 7b65ba0fedde4554a709dce46318543f07b8fd5a Mon Sep 17 00:00:00 2001
 From: Jaska Uimonen <jaska.uimonen@linux.intel.com>
 Date: Tue, 8 Oct 2019 11:44:43 -0500
-Subject: [PATCH 030/130] ASoC: SOF: acpi led support for switch controls
+Subject: [PATCH 025/109] ASoC: SOF: acpi led support for switch controls
 
 Currently sof doesn't support acpi leds with mute switches. So implement
 acpi leds following quite shamelessly existing HDA implementation by
@@ -2656,7 +2632,7 @@ index 2b8711eda362..b73d4587c5da 100644
  	if (pm_runtime_active(sdev->dev))
  		snd_sof_ipc_set_get_comp_data(sdev->ipc, scontrol,
 diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index 44f789bf7fb0..5a11a8517fa5 100644
+index eb919527dd21..9729deafec08 100644
 --- a/sound/soc/sof/sof-priv.h
 +++ b/sound/soc/sof/sof-priv.h
 @@ -15,6 +15,7 @@
@@ -2690,7 +2666,7 @@ index 44f789bf7fb0..5a11a8517fa5 100644
  
  /* ASoC SOF DAPM widget */
 diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
-index 32a70ffc149d..e150f53d2124 100644
+index 96c20c889fa4..a1493961b51c 100644
 --- a/sound/soc/sof/topology.c
 +++ b/sound/soc/sof/topology.c
 @@ -494,6 +494,11 @@ static int sof_control_load_volume(struct snd_soc_component *scomp,
@@ -2721,13 +2697,12 @@ index 32a70ffc149d..e150f53d2124 100644
  				  void *object,
  				  const struct sof_topology_token *tokens,
 -- 
-2.20.1
+2.24.1
 
-
-From 151d91920fd3e9626541fe9b3d2f6af16f765f8c Mon Sep 17 00:00:00 2001
+From 0017ac5f09b9a689a6f1b2ec3f0aa2f95753a1c1 Mon Sep 17 00:00:00 2001
 From: Daniel Baluta <daniel.baluta@nxp.com>
 Date: Tue, 8 Oct 2019 11:44:39 -0500
-Subject: [PATCH 031/130] ASoC: SOF: imx: Describe ESAI parameters to be sent
+Subject: [PATCH 026/109] ASoC: SOF: imx: Describe ESAI parameters to be sent
  to DSP
 
 Introduce sof_ipc_dai_esai_params to keep information that
@@ -2839,13 +2814,12 @@ index 28ef01a67765..d65406f34361 100644
  /* Led control for mute switches */
  #define SOF_TKN_MUTE_LED_USE			1300
 -- 
-2.20.1
+2.24.1
 
-
-From 631932d09b78a4b8bbc939342d52631749b3e790 Mon Sep 17 00:00:00 2001
+From 8a031dfe901dd997df316c2138153edff7af5731 Mon Sep 17 00:00:00 2001
 From: Daniel Baluta <daniel.baluta@nxp.com>
 Date: Tue, 8 Oct 2019 11:44:40 -0500
-Subject: [PATCH 032/130] ASoC: SOF: imx: Read ESAI parameters and send them to
+Subject: [PATCH 027/109] ASoC: SOF: imx: Read ESAI parameters and send them to
  DSP
 
 ESAI parameters are read for topology file, packed into
@@ -2884,7 +2858,7 @@ index 2b876d497447..b0f4217433e5 100644
  		dev_err(sdev->dev, "error: invalid DAI type %d\n",
  			dai->dai_config->type);
 diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
-index e150f53d2124..0adad3246652 100644
+index a1493961b51c..b2cf450f763f 100644
 --- a/sound/soc/sof/topology.c
 +++ b/sound/soc/sof/topology.c
 @@ -804,6 +804,13 @@ static const struct sof_topology_token dmic_tokens[] = {
@@ -2971,13 +2945,12 @@ index e150f53d2124..0adad3246652 100644
  
  static int sof_link_dmic_load(struct snd_soc_component *scomp, int index,
 -- 
-2.20.1
+2.24.1
 
-
-From 78da07e36b7ae563f64def77a72dc02cf010cd8f Mon Sep 17 00:00:00 2001
+From 752cbeda2b3ac929a9b0891fa3a8fdd9a8bcc5d5 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 11 Oct 2019 11:43:09 -0500
-Subject: [PATCH 033/130] ASoC: SOF: Intel: byt: fix operator precedence
+Subject: [PATCH 028/109] ASoC: SOF: Intel: byt: fix operator precedence
  warnings
 
 Address cppcheck warnings
@@ -3035,10 +3008,10 @@ Bugzilla: 1772498
  1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/sound/soc/sof/intel/byt.c b/sound/soc/sof/intel/byt.c
-index b2597ecfdc1c..07e5efe4945c 100644
+index 3138d9a2c621..84d6069b5075 100644
 --- a/sound/soc/sof/intel/byt.c
 +++ b/sound/soc/sof/intel/byt.c
-@@ -160,20 +160,20 @@ static void byt_dump(struct snd_sof_dev *sdev, u32 flags)
+@@ -161,20 +161,20 @@ static void byt_dump(struct snd_sof_dev *sdev, u32 flags)
  	imrd = snd_sof_dsp_read(sdev, BYT_DSP_BAR, SHIM_IMRD);
  	dev_err(sdev->dev,
  		"error: ipc host -> DSP: pending %s complete %s raw 0x%8.8x\n",
@@ -3068,13 +3041,12 @@ index b2597ecfdc1c..07e5efe4945c 100644
  }
  
 -- 
-2.20.1
+2.24.1
 
-
-From c1b2c6fecd44be2baa21f763e26a2a98d06708e6 Mon Sep 17 00:00:00 2001
+From a825e9f8825891dfd84867f2916b0b69cda0de6a Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 11 Oct 2019 11:43:10 -0500
-Subject: [PATCH 034/130] ASoC: SOF: Intel: bdw: fix operator precedence
+Subject: [PATCH 029/109] ASoC: SOF: Intel: bdw: fix operator precedence
  warnings
 
 Address cppcheck warnings
@@ -3165,13 +3137,12 @@ index f395d0638876..bf961a8798a7 100644
  
  /*
 -- 
-2.20.1
+2.24.1
 
-
-From 2a49b432e13f3820663d2a6210b1782ee17b0348 Mon Sep 17 00:00:00 2001
+From b130f3834c22757c7d8da463e77bc80c31035cd8 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 11 Oct 2019 11:43:11 -0500
-Subject: [PATCH 035/130] ASoC: SOF: topology: remove always-true redundant
+Subject: [PATCH 030/109] ASoC: SOF: topology: remove always-true redundant
  test
 
 Address cppcheck warning:
@@ -3202,7 +3173,7 @@ Bugzilla: 1772498
  1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
-index 0adad3246652..b451e8df77d3 100644
+index b2cf450f763f..4fa38719c703 100644
 --- a/sound/soc/sof/topology.c
 +++ b/sound/soc/sof/topology.c
 @@ -2309,10 +2309,9 @@ static int sof_dai_load(struct snd_soc_component *scomp, int index,
@@ -3220,13 +3191,12 @@ index 0adad3246652..b451e8df77d3 100644
  	list_add(&spcm->list, &sdev->pcm_list);
  
 -- 
-2.20.1
+2.24.1
 
-
-From 3c7ba2805c8c4af4e61d2f40ca078fc0fdc9d17b Mon Sep 17 00:00:00 2001
+From b23994307d4c6bea1226d7d84c78de8f5a5f9afd Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 11 Oct 2019 11:43:12 -0500
-Subject: [PATCH 036/130] ASoC: SOF: topology: check errors when parsing LED
+Subject: [PATCH 031/109] ASoC: SOF: topology: check errors when parsing LED
  tokens
 
 sof_parse_tokens() returns a value that is checked on every call
@@ -3252,7 +3222,7 @@ Bugzilla: 1772498
  1 file changed, 5 insertions(+)
 
 diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
-index b451e8df77d3..8032bb8a709c 100644
+index 4fa38719c703..6a4b59a0d8e6 100644
 --- a/sound/soc/sof/topology.c
 +++ b/sound/soc/sof/topology.c
 @@ -498,6 +498,11 @@ static int sof_control_load_volume(struct snd_soc_component *scomp,
@@ -3268,13 +3238,12 @@ index b451e8df77d3..8032bb8a709c 100644
  	dev_dbg(sdev->dev, "tplg: load kcontrol index %d chans %d\n",
  		scontrol->comp_id, scontrol->num_channels);
 -- 
-2.20.1
+2.24.1
 
-
-From 3450e41ea1124a2ee3a26849cc00a99ac8df8a67 Mon Sep 17 00:00:00 2001
+From 0fce4bacf9c669391c8e149a1d50feeea8e7b45a Mon Sep 17 00:00:00 2001
 From: YueHaibing <yuehaibing@huawei.com>
 Date: Mon, 14 Oct 2019 17:13:08 +0800
-Subject: [PATCH 037/130] ASoC: SOF: Fix randbuild error
+Subject: [PATCH 032/109] ASoC: SOF: Fix randbuild error
 
 When LEDS_TRIGGER_AUDIO is m and SND_SOC_SOF is y,
 
@@ -3314,13 +3283,12 @@ index b73d4587c5da..7baf7f1507c3 100644
  
  static inline u32 mixer_to_ipc(unsigned int value, u32 *volume_map, int size)
 -- 
-2.20.1
+2.24.1
 
-
-From 46c0429ba78df9619b0c845dd0377e812cc0ceca Mon Sep 17 00:00:00 2001
+From c0ad6198c8bf64123877e61ebff462fff7c37402 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Tue, 22 Oct 2019 14:28:43 -0500
-Subject: [PATCH 038/130] ASoC: SOF: Intel: hda-loader: improve error handling
+Subject: [PATCH 033/109] ASoC: SOF: Intel: hda-loader: improve error handling
 
 If a ROM timeout is detected, we still stop the DMA but will return
 the initial error should the DMA stop also fail.
@@ -3340,7 +3308,7 @@ Bugzilla: 1772498
  1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/sound/soc/sof/intel/hda-loader.c b/sound/soc/sof/intel/hda-loader.c
-index 65c2af3fcaab..7956dbf5be88 100644
+index 356bb134ae93..e24b99fd7d39 100644
 --- a/sound/soc/sof/intel/hda-loader.c
 +++ b/sound/soc/sof/intel/hda-loader.c
 @@ -253,10 +253,16 @@ static int cl_copy_fw(struct snd_sof_dev *sdev, struct hdac_ext_stream *stream)
@@ -3361,7 +3329,7 @@ index 65c2af3fcaab..7956dbf5be88 100644
  	}
  
  	return status;
-@@ -341,13 +347,15 @@ int hda_dsp_cl_boot_firmware(struct snd_sof_dev *sdev)
+@@ -340,13 +346,15 @@ int hda_dsp_cl_boot_firmware(struct snd_sof_dev *sdev)
  	/*
  	 * Perform codeloader stream cleanup.
  	 * This should be done even if firmware loading fails.
@@ -3379,13 +3347,12 @@ index 65c2af3fcaab..7956dbf5be88 100644
  
  	/*
 -- 
-2.20.1
+2.24.1
 
-
-From c2f63a4a75f4bd02ec46b58dee7468acc0771576 Mon Sep 17 00:00:00 2001
+From e057b265445a38082f2f566809c98b4615cadbb6 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Tue, 22 Oct 2019 14:28:44 -0500
-Subject: [PATCH 039/130] ASoC: SOF: Intel: hda: add dev_err() traces for
+Subject: [PATCH 034/109] ASoC: SOF: Intel: hda: add dev_err() traces for
  snd_sof_dsp_read_poll_timeout()
 
 Such traces should be extremely rare but extremely useful for debug.
@@ -3481,7 +3448,7 @@ index fb55a3c5afd0..3ea401646e0c 100644
  
  bool hda_dsp_core_is_enabled(struct snd_sof_dev *sdev,
 diff --git a/sound/soc/sof/intel/hda-loader.c b/sound/soc/sof/intel/hda-loader.c
-index 7956dbf5be88..b1783360fe10 100644
+index e24b99fd7d39..1782f5092639 100644
 --- a/sound/soc/sof/intel/hda-loader.c
 +++ b/sound/soc/sof/intel/hda-loader.c
 @@ -126,7 +126,8 @@ static int cl_dsp_init(struct snd_sof_dev *sdev, const void *fwdata,
@@ -3579,13 +3546,12 @@ index 0c11fceb28a7..29ab43281670 100644
  	snd_sof_dsp_update_bits(sdev, HDA_DSP_HDA_BAR,
  				sd_offset + SOF_HDA_ADSP_REG_CL_SD_STS,
 -- 
-2.20.1
+2.24.1
 
-
-From ae6f9d27eca6aa21c2f47b7d22dacc72bc6ff71d Mon Sep 17 00:00:00 2001
+From 9ab29db3973a89c482f1ae7bee4d7800d77f45c2 Mon Sep 17 00:00:00 2001
 From: Pan Xiuli <xiuli.pan@linux.intel.com>
 Date: Tue, 22 Oct 2019 14:47:05 -0500
-Subject: [PATCH 040/130] ASoC: SOF: Intel: initial support to JasperLake.
+Subject: [PATCH 035/109] ASoC: SOF: Intel: initial support to JasperLake.
 
 Add Kconfig, PCI ID and chip info for JSL platform.
 The DSP only has 2 cores for this platform.
@@ -3606,7 +3572,7 @@ Bugzilla: 1772498
  4 files changed, 56 insertions(+)
 
 diff --git a/sound/soc/sof/intel/Kconfig b/sound/soc/sof/intel/Kconfig
-index 1be28581c328..aac8d5deba3d 100644
+index d6d65e70eebb..a40e10dc80d5 100644
 --- a/sound/soc/sof/intel/Kconfig
 +++ b/sound/soc/sof/intel/Kconfig
 @@ -29,6 +29,7 @@ config SND_SOC_SOF_INTEL_PCI
@@ -3617,7 +3583,7 @@ index 1be28581c328..aac8d5deba3d 100644
  	help
  	  This option is not user-selectable but automagically handled by
  	  'select' statements at a higher level
-@@ -244,6 +245,21 @@ config SND_SOC_SOF_ELKHARTLAKE
+@@ -252,6 +253,21 @@ config SND_SOC_SOF_ELKHARTLAKE
            This option is not user-selectable but automagically handled by
  	  'select' statements at a higher level
  
@@ -3716,13 +3682,12 @@ index be5a8da504c5..e0b150f29e81 100644
  	{ PCI_DEVICE(0x8086, 0x02c8),
  		.driver_data = (unsigned long)&cml_desc},
 -- 
-2.20.1
+2.24.1
 
-
-From 7de4b3424a30b11a2ea4d63a6c6d57c9407bf771 Mon Sep 17 00:00:00 2001
+From 8944590a924791652dc14b2e7cffb7102f366ad5 Mon Sep 17 00:00:00 2001
 From: Pan Xiuli <xiuli.pan@linux.intel.com>
 Date: Tue, 22 Oct 2019 14:47:04 -0500
-Subject: [PATCH 041/130] ASoC: Intel: common: add ACPI matching tables for JSL
+Subject: [PATCH 036/109] ASoC: Intel: common: add ACPI matching tables for JSL
 
 There are no upstream machine drivers just yet so just add dummy table
 for compilation in nocodec-mode.
@@ -3790,13 +3755,12 @@ index 000000000000..1c68a04f0c6e
 +MODULE_LICENSE("GPL v2");
 +MODULE_DESCRIPTION("Intel Common ACPI Match module");
 -- 
-2.20.1
+2.24.1
 
-
-From a8fbd7629399a706abe19bbad51f2120a60f5f56 Mon Sep 17 00:00:00 2001
+From 4ab80912a87e828850601ac1d0d2804467e3e7f9 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Thu, 24 Oct 2019 16:03:17 -0500
-Subject: [PATCH 042/130] ASoC: SOF: define INFO_ flags in dsp_ops
+Subject: [PATCH 037/109] ASoC: SOF: define INFO_ flags in dsp_ops
 
 Currently the INFO_ flags such as PAUSE/NO_PERIOD_WAKEUP are defined
 in the SOF PCM core, which doesn't scale. To account for platform
@@ -3825,10 +3789,10 @@ Bugzilla: 1772498
  7 files changed, 56 insertions(+), 6 deletions(-)
 
 diff --git a/sound/soc/sof/imx/imx8.c b/sound/soc/sof/imx/imx8.c
-index 2a22b18e5ec0..cfefcfd92798 100644
+index 69785f688ddf..aef6ca167b9c 100644
 --- a/sound/soc/sof/imx/imx8.c
 +++ b/sound/soc/sof/imx/imx8.c
-@@ -388,6 +388,13 @@ struct snd_sof_dsp_ops sof_imx8_ops = {
+@@ -391,6 +391,13 @@ struct snd_sof_dsp_ops sof_imx8_ops = {
  	/* DAI drivers */
  	.drv = imx8_dai,
  	.num_drv = 1, /* we have only 1 ESAI interface on i.MX8 */
@@ -3881,10 +3845,10 @@ index bf961a8798a7..7b4cd1f456bf 100644
  EXPORT_SYMBOL(sof_bdw_ops);
  
 diff --git a/sound/soc/sof/intel/byt.c b/sound/soc/sof/intel/byt.c
-index 07e5efe4945c..62edb959f1fc 100644
+index 84d6069b5075..514cf4b9ebf4 100644
 --- a/sound/soc/sof/intel/byt.c
 +++ b/sound/soc/sof/intel/byt.c
-@@ -532,6 +532,13 @@ const struct snd_sof_dsp_ops sof_tng_ops = {
+@@ -533,6 +533,13 @@ const struct snd_sof_dsp_ops sof_tng_ops = {
  	/* DAI drivers */
  	.drv = byt_dai,
  	.num_drv = 3, /* we have only 3 SSPs on byt*/
@@ -3898,7 +3862,7 @@ index 07e5efe4945c..62edb959f1fc 100644
  };
  EXPORT_SYMBOL(sof_tng_ops);
  
-@@ -693,6 +700,13 @@ const struct snd_sof_dsp_ops sof_byt_ops = {
+@@ -694,6 +701,13 @@ const struct snd_sof_dsp_ops sof_byt_ops = {
  	/* DAI drivers */
  	.drv = byt_dai,
  	.num_drv = 3, /* we have only 3 SSPs on byt*/
@@ -3912,7 +3876,7 @@ index 07e5efe4945c..62edb959f1fc 100644
  };
  EXPORT_SYMBOL(sof_byt_ops);
  
-@@ -753,6 +767,13 @@ const struct snd_sof_dsp_ops sof_cht_ops = {
+@@ -754,6 +768,13 @@ const struct snd_sof_dsp_ops sof_cht_ops = {
  	.drv = byt_dai,
  	/* all 6 SSPs may be available for cherrytrail */
  	.num_drv = ARRAY_SIZE(byt_dai),
@@ -3971,7 +3935,7 @@ index b0f4217433e5..b33928e1385b 100644
  	runtime->hw.period_bytes_min = le32_to_cpu(caps->period_size_min);
  	runtime->hw.period_bytes_max = le32_to_cpu(caps->period_size_max);
 diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index 5a11a8517fa5..2d40de5ee285 100644
+index 9729deafec08..26ea5099bf4e 100644
 --- a/sound/soc/sof/sof-priv.h
 +++ b/sound/soc/sof/sof-priv.h
 @@ -211,6 +211,9 @@ struct snd_sof_dsp_ops {
@@ -3985,13 +3949,12 @@ index 5a11a8517fa5..2d40de5ee285 100644
  
  /* DSP architecture specific callbacks for oops and stack dumps */
 -- 
-2.20.1
+2.24.1
 
-
-From 67594879a9d4b17f5510ae384b2a7ed77e6d05cc Mon Sep 17 00:00:00 2001
+From 70c1d574a342bb625ac80e233531188121ecb526 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Thu, 24 Oct 2019 16:03:18 -0500
-Subject: [PATCH 043/130] ASoC: SOF: Intel: only support INFO_BATCH for legacy
+Subject: [PATCH 038/109] ASoC: SOF: Intel: only support INFO_BATCH for legacy
  platforms
 
 The current position update is not precise enough for PulseAudio to
@@ -4033,10 +3996,10 @@ index 7b4cd1f456bf..141dad554764 100644
  EXPORT_SYMBOL(sof_bdw_ops);
  
 diff --git a/sound/soc/sof/intel/byt.c b/sound/soc/sof/intel/byt.c
-index 62edb959f1fc..2abf80b3eb52 100644
+index 514cf4b9ebf4..a39a90d61b8f 100644
 --- a/sound/soc/sof/intel/byt.c
 +++ b/sound/soc/sof/intel/byt.c
-@@ -538,7 +538,7 @@ const struct snd_sof_dsp_ops sof_tng_ops = {
+@@ -539,7 +539,7 @@ const struct snd_sof_dsp_ops sof_tng_ops = {
  			SNDRV_PCM_INFO_MMAP_VALID |
  			SNDRV_PCM_INFO_INTERLEAVED |
  			SNDRV_PCM_INFO_PAUSE |
@@ -4045,7 +4008,7 @@ index 62edb959f1fc..2abf80b3eb52 100644
  };
  EXPORT_SYMBOL(sof_tng_ops);
  
-@@ -706,7 +706,7 @@ const struct snd_sof_dsp_ops sof_byt_ops = {
+@@ -707,7 +707,7 @@ const struct snd_sof_dsp_ops sof_byt_ops = {
  			SNDRV_PCM_INFO_MMAP_VALID |
  			SNDRV_PCM_INFO_INTERLEAVED |
  			SNDRV_PCM_INFO_PAUSE |
@@ -4054,7 +4017,7 @@ index 62edb959f1fc..2abf80b3eb52 100644
  };
  EXPORT_SYMBOL(sof_byt_ops);
  
-@@ -773,7 +773,7 @@ const struct snd_sof_dsp_ops sof_cht_ops = {
+@@ -774,7 +774,7 @@ const struct snd_sof_dsp_ops sof_cht_ops = {
  			SNDRV_PCM_INFO_MMAP_VALID |
  			SNDRV_PCM_INFO_INTERLEAVED |
  			SNDRV_PCM_INFO_PAUSE |
@@ -4064,13 +4027,12 @@ index 62edb959f1fc..2abf80b3eb52 100644
  EXPORT_SYMBOL(sof_cht_ops);
  
 -- 
-2.20.1
+2.24.1
 
-
-From af01764721df770ee773faae776429901a9614fe Mon Sep 17 00:00:00 2001
+From ba899e9f4bddd20463b3ba20ba77918ada567e5a Mon Sep 17 00:00:00 2001
 From: Jaroslav Kysela <perex@perex.cz>
 Date: Mon, 28 Oct 2019 18:33:29 +0100
-Subject: [PATCH 044/130] ASoC: SOF - remove the dead code (skylake/kabylake)
+Subject: [PATCH 039/109] ASoC: SOF - remove the dead code (skylake/kabylake)
 
 Appearently the CONFIG_SND_SOC_SOF_KABYLAKE and CONFIG_SND_SOC_SOF_SKYLAKE
 options are not present in Kconfig and 'struct snd_sof_dsp_ops sof_skl_ops'
@@ -4165,13 +4127,12 @@ index e0b150f29e81..067acf389af7 100644
  	{ PCI_DEVICE(0x8086, 0x34C8),
  		.driver_data = (unsigned long)&icl_desc},
 -- 
-2.20.1
+2.24.1
 
-
-From d08a87dcaa98f79927dd564cf6313b6161e33f84 Mon Sep 17 00:00:00 2001
+From daeba620beb2a67339b7043c2804cf7f1833dbef Mon Sep 17 00:00:00 2001
 From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Date: Tue, 29 Oct 2019 15:40:10 +0200
-Subject: [PATCH 045/130] ASoC: hdac_hda: add support for HDMI/DP as a HDA
+Subject: [PATCH 040/109] ASoC: hdac_hda: add support for HDMI/DP as a HDA
  codec
 
 Handle all HDA codecs using same logic, including HDMI/DP.
@@ -4195,7 +4156,7 @@ Bugzilla: 1772498
  2 files changed, 114 insertions(+), 13 deletions(-)
 
 diff --git a/sound/soc/codecs/hdac_hda.c b/sound/soc/codecs/hdac_hda.c
-index 4570f662fb48..6803d39e09a5 100644
+index d78f4d856aaf..43110151e928 100644
 --- a/sound/soc/codecs/hdac_hda.c
 +++ b/sound/soc/codecs/hdac_hda.c
 @@ -14,13 +14,11 @@
@@ -4428,13 +4389,12 @@ index 6b1bd4f428e7..e145cec085b8 100644
  
  #define hdac_to_hda_priv(_hdac) \
 -- 
-2.20.1
+2.24.1
 
-
-From 480f07ccb82555912594c2b6d560fdeb35176b40 Mon Sep 17 00:00:00 2001
+From c8494550b526e38b4db5ad1b3248d5713984ee72 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:30:35 -0500
-Subject: [PATCH 047/130] ASoC: SOF: Intel: Baytrail: clarify mutual exclusion
+Subject: [PATCH 041/109] ASoC: SOF: Intel: Baytrail: clarify mutual exclusion
  with Atom/SST driver
 
 Some distros select all options blindly, which leads to confusion and
@@ -4456,10 +4416,10 @@ Bugzilla: 1772498
  2 files changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/sound/soc/intel/Kconfig b/sound/soc/intel/Kconfig
-index 9ad89d56092b..5fd4be74b7ea 100644
+index c15230cec851..658eff2daf4e 100644
 --- a/sound/soc/intel/Kconfig
 +++ b/sound/soc/intel/Kconfig
-@@ -101,6 +101,9 @@ config SND_SST_ATOM_HIFI2_PLATFORM_ACPI
+@@ -104,6 +104,9 @@ config SND_SST_ATOM_HIFI2_PLATFORM_ACPI
  	  If you have a Intel Baytrail or Cherrytrail platform with an I2S
  	  codec, then enable this option by saying Y or m. This is a
  	  recommended option
@@ -4470,7 +4430,7 @@ index 9ad89d56092b..5fd4be74b7ea 100644
  config SND_SOC_INTEL_SKYLAKE
  	tristate "All Skylake/SST Platforms"
 diff --git a/sound/soc/sof/intel/Kconfig b/sound/soc/sof/intel/Kconfig
-index 95a2d1708dd9..b6b509151b34 100644
+index a40e10dc80d5..6e9a2633871f 100644
 --- a/sound/soc/sof/intel/Kconfig
 +++ b/sound/soc/sof/intel/Kconfig
 @@ -62,10 +62,18 @@ if SND_SOC_SOF_INTEL_ACPI
@@ -4494,13 +4454,12 @@ index 95a2d1708dd9..b6b509151b34 100644
  
  config SND_SOC_SOF_BAYTRAIL
 -- 
-2.20.1
+2.24.1
 
-
-From 95761516cf6f36ea1e2e23ca4470c756dc0acda3 Mon Sep 17 00:00:00 2001
+From a83dca7b0d30f65ef5a06c46ce2140ead3a3443e Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:30:38 -0500
-Subject: [PATCH 049/130] ASoC: SOF: Kconfig: add EXPERT dependency for
+Subject: [PATCH 042/109] ASoC: SOF: Kconfig: add EXPERT dependency for
  developer options, clarify help
 
 Some distros select all possible options, despite existing warnings to
@@ -4595,13 +4554,12 @@ index 56a3ab66b46b..6435eb531668 100644
  config SND_SOC_SOF
  	tristate
 -- 
-2.20.1
+2.24.1
 
-
-From 5efd9ba11e644ef74a0c51d543145f116a886438 Mon Sep 17 00:00:00 2001
+From 43b263fd28a8cae9172f26bc6d35c5cee916f1e0 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:30:40 -0500
-Subject: [PATCH 051/130] ASoC: SOF: Intel: use def_tristate, avoid using
+Subject: [PATCH 043/109] ASoC: SOF: Intel: use def_tristate, avoid using
  select
 
 So far we used select to use the relevant built-in/module options, but
@@ -4643,7 +4601,7 @@ index 6435eb531668..71a0fc075a63 100644
  	help
  	  This adds support for ACPI enumeration. This option is required
 diff --git a/sound/soc/sof/intel/Kconfig b/sound/soc/sof/intel/Kconfig
-index 0db9e80b7cef..f7c30a08ffbf 100644
+index 6e9a2633871f..acc3e91d9244 100644
 --- a/sound/soc/sof/intel/Kconfig
 +++ b/sound/soc/sof/intel/Kconfig
 @@ -10,7 +10,7 @@ config SND_SOC_SOF_INTEL_TOPLEVEL
@@ -4665,13 +4623,12 @@ index 0db9e80b7cef..f7c30a08ffbf 100644
  	select SND_SOC_SOF_APOLLOLAKE  if SND_SOC_SOF_APOLLOLAKE_SUPPORT
  	select SND_SOC_SOF_GEMINILAKE  if SND_SOC_SOF_GEMINILAKE_SUPPORT
 -- 
-2.20.1
+2.24.1
 
-
-From 19b52530d84901fdfb1924862f3f82458ad110bc Mon Sep 17 00:00:00 2001
+From cedd030ba9990481d92f7461439460d1e93ac6f7 Mon Sep 17 00:00:00 2001
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Date: Fri, 4 Oct 2019 16:49:31 +0200
-Subject: [PATCH 052/130] sound: Fix Kconfig indentation
+Subject: [PATCH 044/109] sound: Fix Kconfig indentation
 
 Adjust indentation from spaces to tab (+optional two spaces) as in
 coding style with command like:
@@ -5273,7 +5230,7 @@ index 71f318bc2c74..bae4f7bf5f75 100644
  config SND_SOC_SOF_IMX8
  	def_tristate SND_SOC_SOF_OF
 diff --git a/sound/soc/sof/intel/Kconfig b/sound/soc/sof/intel/Kconfig
-index f7c30a08ffbf..b27fd3fdf335 100644
+index acc3e91d9244..c263a8feff0a 100644
 --- a/sound/soc/sof/intel/Kconfig
 +++ b/sound/soc/sof/intel/Kconfig
 @@ -37,7 +37,7 @@ config SND_SOC_SOF_INTEL_PCI
@@ -5423,13 +5380,12 @@ index e2c53a0841da..059242f15d75 100644
  	  interface.
  
 -- 
-2.20.1
+2.24.1
 
-
-From 83c22d6aef225035385971716098b753ea2d145e Mon Sep 17 00:00:00 2001
+From d18fc5e6651042a56faa06beb92034728b751e7a Mon Sep 17 00:00:00 2001
 From: Naveen M <naveen.m@intel.com>
 Date: Tue, 15 Oct 2019 00:28:00 +0800
-Subject: [PATCH 054/130] ASoC: Intel: eve: Enable mclk and ssp sclk early
+Subject: [PATCH 045/109] ASoC: Intel: eve: Enable mclk and ssp sclk early
 
 rt5663 and rt5514 needs mclk/sclk early to synchronize its internal
 clocks.
@@ -5463,7 +5419,7 @@ index 882ff36a7c9c..778422d36e61 100644
  	  This adds support for ASoC Onboard Codec I2S machine driver. This will
  	  create an alsa sound card for RT5663 + RT5514 + MAX98927.
 diff --git a/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c b/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c
-index d14ca327c684..ea0005d7d3c8 100644
+index 8ad31c91fc75..7b970219f39a 100644
 --- a/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c
 +++ b/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c
 @@ -22,6 +22,9 @@
@@ -5571,7 +5527,7 @@ index d14ca327c684..ea0005d7d3c8 100644
  	{ "IN1P", NULL, "Headset Mic" },
  	{ "IN1N", NULL, "Headset Mic" },
  
-@@ -643,6 +708,7 @@ static int kabylake_audio_probe(struct platform_device *pdev)
+@@ -646,6 +711,7 @@ static int kabylake_audio_probe(struct platform_device *pdev)
  {
  	struct kbl_codec_private *ctx;
  	struct snd_soc_acpi_mach *mach;
@@ -5579,7 +5535,7 @@ index d14ca327c684..ea0005d7d3c8 100644
  
  	ctx = devm_kzalloc(&pdev->dev, sizeof(*ctx), GFP_KERNEL);
  	if (!ctx)
-@@ -658,6 +724,34 @@ static int kabylake_audio_probe(struct platform_device *pdev)
+@@ -661,6 +727,34 @@ static int kabylake_audio_probe(struct platform_device *pdev)
  		dmic_constraints = mach->mach_params.dmic_num == 2 ?
  			&constraints_dmic_2ch : &constraints_dmic_channels;
  
@@ -5615,13 +5571,12 @@ index d14ca327c684..ea0005d7d3c8 100644
  }
  
 -- 
-2.20.1
+2.24.1
 
-
-From f80cddbefe9bca88b832b053587286c56a35a6fc Mon Sep 17 00:00:00 2001
+From 58f6613059870eaa99a493cb3deaf49183b39092 Mon Sep 17 00:00:00 2001
 From: Brent Lu <brent.lu@intel.com>
 Date: Fri, 25 Oct 2019 17:11:31 +0800
-Subject: [PATCH 055/130] ASoC: eve: implement set_bias_level function for
+Subject: [PATCH 046/109] ASoC: eve: implement set_bias_level function for
  rt5514
 
 The first DMIC capture always fail (zero sequence data from PCM port)
@@ -5644,10 +5599,10 @@ Bugzilla: 1772498
  1 file changed, 50 insertions(+)
 
 diff --git a/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c b/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c
-index ea0005d7d3c8..a1056cda3dd7 100644
+index 7b970219f39a..3e5f6bead229 100644
 --- a/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c
 +++ b/sound/soc/intel/boards/kbl_rt5663_rt5514_max98927.c
-@@ -653,6 +653,55 @@ static struct snd_soc_dai_link kabylake_dais[] = {
+@@ -656,6 +656,55 @@ static struct snd_soc_dai_link kabylake_dais[] = {
  	},
  };
  
@@ -5703,7 +5658,7 @@ index ea0005d7d3c8..a1056cda3dd7 100644
  static int kabylake_card_late_probe(struct snd_soc_card *card)
  {
  	struct kbl_codec_private *ctx = snd_soc_card_get_drvdata(card);
-@@ -692,6 +741,7 @@ static struct snd_soc_card kabylake_audio_card = {
+@@ -695,6 +744,7 @@ static struct snd_soc_card kabylake_audio_card = {
  	.owner = THIS_MODULE,
  	.dai_link = kabylake_dais,
  	.num_links = ARRAY_SIZE(kabylake_dais),
@@ -5712,13 +5667,12 @@ index ea0005d7d3c8..a1056cda3dd7 100644
  	.num_controls = ARRAY_SIZE(kabylake_controls),
  	.dapm_widgets = kabylake_widgets,
 -- 
-2.20.1
+2.24.1
 
-
-From 1b41ab23dfde6f139695afbb1cef0846453a8070 Mon Sep 17 00:00:00 2001
+From b8bcd22339ac11192d875837907233f6a5a6e781 Mon Sep 17 00:00:00 2001
 From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Date: Tue, 29 Oct 2019 15:40:11 +0200
-Subject: [PATCH 056/130] ASoC: Intel: skl-hda-dsp-generic: use
+Subject: [PATCH 047/109] ASoC: Intel: skl-hda-dsp-generic: use
  snd-hda-codec-hdmi
 
 Add support for using snd-hda-codec-hdmi driver for HDMI/DP
@@ -5913,7 +5867,7 @@ index 000000000000..431f7f09dccb
 +
 +#endif /* __HDA_DSP_COMMON_H */
 diff --git a/sound/soc/intel/boards/skl_hda_dsp_common.c b/sound/soc/intel/boards/skl_hda_dsp_common.c
-index 58409b6e476e..eb419e1ec42b 100644
+index e3d405e57c5f..78ff5f24c40e 100644
 --- a/sound/soc/intel/boards/skl_hda_dsp_common.c
 +++ b/sound/soc/intel/boards/skl_hda_dsp_common.c
 @@ -14,6 +14,9 @@
@@ -5926,7 +5880,7 @@ index 58409b6e476e..eb419e1ec42b 100644
  #define NAME_SIZE	32
  
  int skl_hda_hdmi_add_pcm(struct snd_soc_card *card, int device)
-@@ -136,6 +139,9 @@ int skl_hda_hdmi_jack_init(struct snd_soc_card *card)
+@@ -139,6 +142,9 @@ int skl_hda_hdmi_jack_init(struct snd_soc_card *card)
  	char jack_name[NAME_SIZE];
  	int err;
  
@@ -5994,13 +5948,12 @@ index e8d676c192f6..4e45901e3a2f 100644
  	hda_soc_card.dev = &pdev->dev;
  	snd_soc_card_set_drvdata(&hda_soc_card, ctx);
 -- 
-2.20.1
+2.24.1
 
-
-From b07481ef39cfbbf0caadac6432121bd4d49bd69f Mon Sep 17 00:00:00 2001
+From 092c14f640de2cfdef47fc3991cb8a6c752cfecd Mon Sep 17 00:00:00 2001
 From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Date: Tue, 29 Oct 2019 15:40:12 +0200
-Subject: [PATCH 057/130] ASoC: Intel: skl-hda-dsp-generic: fix include guard
+Subject: [PATCH 048/109] ASoC: Intel: skl-hda-dsp-generic: fix include guard
  name
 
 Match the include guard define to actual filename. The source
@@ -6037,13 +5990,12 @@ index bbe6e2acfda3..d6150670ca05 100644
  #include <linux/platform_device.h>
  #include <sound/core.h>
 -- 
-2.20.1
+2.24.1
 
-
-From 33d568ce43c1a625611c9680c932607183716854 Mon Sep 17 00:00:00 2001
+From 7abc02e54cfed33f105c33d20e1d9de2cae51978 Mon Sep 17 00:00:00 2001
 From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Date: Tue, 29 Oct 2019 15:40:14 +0200
-Subject: [PATCH 058/130] ASoC: Intel: bxt-da7219-max98357a: common hdmi codec
+Subject: [PATCH 049/109] ASoC: Intel: bxt-da7219-max98357a: common hdmi codec
  support
 
 Add support for using snd-hda-codec-hdmi driver for HDMI/DP
@@ -6121,13 +6073,12 @@ index ac1dea5f9d11..5873abb46441 100644
  }
  
 -- 
-2.20.1
+2.24.1
 
-
-From 555533e73e096583395ce632a80116c059ce97d5 Mon Sep 17 00:00:00 2001
+From 66a2d02030cb6cd534ef17a3fddab4f0ac54838e Mon Sep 17 00:00:00 2001
 From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Date: Tue, 29 Oct 2019 15:40:15 +0200
-Subject: [PATCH 059/130] ASoC: Intel: glk_rt5682_max98357a: common hdmi codec
+Subject: [PATCH 050/109] ASoC: Intel: glk_rt5682_max98357a: common hdmi codec
  support
 
 Add support for using snd-hda-codec-hdmi driver for HDMI/DP
@@ -6205,13 +6156,12 @@ index bd2d371f2acd..b36264d1d1cd 100644
  }
  
 -- 
-2.20.1
+2.24.1
 
-
-From d186922c20154420654a00b8b6186df7c0a9f4f3 Mon Sep 17 00:00:00 2001
+From bac23a9db964cffffb22223e1f1c6cc690c37f7e Mon Sep 17 00:00:00 2001
 From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Date: Tue, 29 Oct 2019 15:40:16 +0200
-Subject: [PATCH 060/130] ASoC: intel: sof_rt5682: common hdmi codec support
+Subject: [PATCH 051/109] ASoC: intel: sof_rt5682: common hdmi codec support
 
 Add support for using snd-hda-codec-hdmi driver for HDMI/DP
 instead of ASoC hdac-hdmi. This is aligned with how other
@@ -6288,13 +6238,12 @@ index 320a9b9273db..751b8ea6ae1f 100644
  
  	return devm_snd_soc_register_card(&pdev->dev,
 -- 
-2.20.1
+2.24.1
 
-
-From 3f4711fbc1d93be2c68d2eff99baef5d1ae7bb54 Mon Sep 17 00:00:00 2001
+From 8526042dff63e9e4f6f6bde4f4b0fd3274240ce1 Mon Sep 17 00:00:00 2001
 From: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Date: Tue, 29 Oct 2019 15:40:17 +0200
-Subject: [PATCH 061/130] ASoC: Intel: bxt_rt298: common hdmi codec support
+Subject: [PATCH 052/109] ASoC: Intel: bxt_rt298: common hdmi codec support
 
 Add support for using snd-hda-codec-hdmi driver for HDMI/DP
 instead of ASoC hdac-hdmi. This is aligned with how other
@@ -6371,13 +6320,12 @@ index adf416a49b48..eabf9d8468ae 100644
  }
  
 -- 
-2.20.1
+2.24.1
 
-
-From 03a37d6f2b29db4c976ede85c9a605471ea405b3 Mon Sep 17 00:00:00 2001
+From 628db9e1d5fea0baf512cfb523d45d81d8dc12f8 Mon Sep 17 00:00:00 2001
 From: Naveen Manohar <naveen.m@intel.com>
 Date: Fri, 1 Nov 2019 12:18:46 -0500
-Subject: [PATCH 062/130] ASoC: Intel: Add acpi match for rt1011 based m/c
+Subject: [PATCH 053/109] ASoC: Intel: Add acpi match for rt1011 based m/c
  driver
 
 Add match for CML m/c with RT1011 and RT5682
@@ -6414,13 +6362,12 @@ index 985aa366c9e8..16d0bae8b316 100644
  		.id = "10EC5682",
  		.drv_name = "sof_rt5682",
 -- 
-2.20.1
+2.24.1
 
-
-From 90dad5c0eeccbe941c5afaca1f60339a5bb31984 Mon Sep 17 00:00:00 2001
+From 97082f367654546944ff5e2be8b8f12ab4ff1929 Mon Sep 17 00:00:00 2001
 From: Naveen Manohar <naveen.m@intel.com>
 Date: Fri, 1 Nov 2019 12:18:47 -0500
-Subject: [PATCH 063/130] ASoC: Intel: boards: Add CML m/c using RT1011 and
+Subject: [PATCH 054/109] ASoC: Intel: boards: Add CML m/c using RT1011 and
  RT5682
 
 Machine driver to enable
@@ -6985,13 +6932,12 @@ index 000000000000..a22f97234201
 +MODULE_LICENSE("GPL v2");
 +MODULE_ALIAS("platform:cml_rt1011_rt5682");
 -- 
-2.20.1
+2.24.1
 
-
-From 0ce85d8a56990759d10305784278be01bb32633b Mon Sep 17 00:00:00 2001
+From 19bae513625e312c4f6a26d967fe6421585aa144 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:30:37 -0500
-Subject: [PATCH 064/130] ASoC: Intel: add mutual exclusion between SOF and
+Subject: [PATCH 055/109] ASoC: Intel: add mutual exclusion between SOF and
  legacy Baytrail driver
 
 This legacy driver is already deprecated, let's make sure there is no
@@ -7022,13 +6968,12 @@ index 7e9feca333b7..d6c5c68b7499 100644
  	select SND_SOC_INTEL_SST_ACPI
  	select SND_SOC_INTEL_SST_FIRMWARE
 -- 
-2.20.1
+2.24.1
 
-
-From 5626167a66bddb85e0a33735c85dfb45781f4bce Mon Sep 17 00:00:00 2001
+From 6d47735bff19d37abfcf32194eb61177209c4eef Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:30:41 -0500
-Subject: [PATCH 065/130] ASoC: Intel: Skylake: mark HDAudio codec support as
+Subject: [PATCH 056/109] ASoC: Intel: Skylake: mark HDAudio codec support as
  deprecated.
 
 This option famously broke audio on Linus' laptop and the problem have
@@ -7071,13 +7016,12 @@ index d6c5c68b7499..c8de0bb5bed9 100644
  config SND_SOC_INTEL_SKYLAKE_COMMON
  	tristate
 -- 
-2.20.1
+2.24.1
 
-
-From 61e12eb73831fdc01c8b251a41ba4851a57c0370 Mon Sep 17 00:00:00 2001
+From e3ba0216af000f40e8578867a3ec02014612fda7 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:30:42 -0500
-Subject: [PATCH 066/130] ASoC: Intel: boards: remove select SND_HDA_DSP_LOADER
+Subject: [PATCH 057/109] ASoC: Intel: boards: remove select SND_HDA_DSP_LOADER
 
 This option is only required with the Skylake platform driver, there
 is no reason to have this option in machine drivers. This is
@@ -7123,13 +7067,12 @@ index ef40f83e0a3b..91952ffc0b67 100644
  	   This adds support for ASoC machine driver for Geminilake platforms
  	   with RT5682 + MAX98357A I2S audio codec.
 -- 
-2.20.1
+2.24.1
 
-
-From 299b13ab242eba943e1d2b54ac43e7148470d435 Mon Sep 17 00:00:00 2001
+From 65ff2363e23c1f5e743b3781b8abf0abd0a4447c Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:30:43 -0500
-Subject: [PATCH 067/130] ASoC: Intel: boards: fix configs for
+Subject: [PATCH 058/109] ASoC: Intel: boards: fix configs for
  bxt-da7219-max98057a
 
 The same driver is reused for 3 different configurations, but the
@@ -7219,13 +7162,12 @@ index 9ae6544c6f3b..ba1aa89db09d 100644
  obj-$(CONFIG_SND_SOC_INTEL_GLK_RT5682_MAX98357A_MACH) += snd-soc-sst-glk-rt5682_max98357a.o
  obj-$(CONFIG_SND_SOC_INTEL_BROADWELL_MACH) += snd-soc-sst-broadwell.o
 -- 
-2.20.1
+2.24.1
 
-
-From 39c98691a7108dbaeb9bab734553207553111ca5 Mon Sep 17 00:00:00 2001
+From 63fe227888be39183df411fc2032181a1d50408a Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:30:44 -0500
-Subject: [PATCH 068/130] ASoC: Intel: boards: Geminilake is only supported by
+Subject: [PATCH 059/109] ASoC: Intel: boards: Geminilake is only supported by
  SOF
 
 Geminilake machine drivers are only tested and recommended with SOF.
@@ -7264,13 +7206,12 @@ index 826694ecfdbf..76d1e6ab30b5 100644
  if SND_SOC_INTEL_SKYLAKE_HDAUDIO_CODEC || SND_SOC_SOF_HDA_AUDIO_CODEC
  
 -- 
-2.20.1
+2.24.1
 
-
-From 7b646af780bfa2e42b8e89856172469a540e7186 Mon Sep 17 00:00:00 2001
+From 400e61db419050e17d2eb05129ed548b2b3a817a Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:30:45 -0500
-Subject: [PATCH 069/130] ASoC: Intel: boards: sof_rt5682: use dependency on
+Subject: [PATCH 060/109] ASoC: Intel: boards: sof_rt5682: use dependency on
  SOF_HDA_LINK
 
 The wrong dependency is used and the build can be broken
@@ -7314,13 +7255,12 @@ index 76d1e6ab30b5..2702aefee775 100644
  if (SND_SOC_SOF_COMETLAKE_LP && SND_SOC_SOF_HDA_LINK)
  
 -- 
-2.20.1
+2.24.1
 
-
-From 02f03f3b08ed85cb5c0b1c270eb91bc714721641 Mon Sep 17 00:00:00 2001
+From dc32112887d49cac7f705357c92a9abf390d438b Mon Sep 17 00:00:00 2001
 From: Takashi Iwai <tiwai@suse.de>
 Date: Fri, 8 Nov 2019 10:46:37 +0100
-Subject: [PATCH 070/130] ASoC: intel: Avoid non-standard macro usage
+Subject: [PATCH 061/109] ASoC: intel: Avoid non-standard macro usage
 
 Pass the device pointer from the PCI pointer directly, instead of a
 non-standard macro.  The macro didn't give any better readability.
@@ -7350,13 +7290,12 @@ index 7f287424af9b..07bc047f077e 100644
  	}
  
 -- 
-2.20.1
+2.24.1
 
-
-From 3541bd9bf269e2df13150125f7e417632967e292 Mon Sep 17 00:00:00 2001
+From 11af41ca977482d5d5f6a312eced0f4e50ef898c Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:09 -0500
-Subject: [PATCH 071/130] ASoC: SOF: ipc: introduce message for DSP power
+Subject: [PATCH 062/109] ASoC: SOF: ipc: introduce message for DSP power
  gating
 
 Add new ipc messages which will be sent from driver to FW, to ask FW to
@@ -7405,13 +7344,117 @@ index 003879401d63..3cf2e0f39d94 100644
 +
  #endif
 -- 
-2.20.1
+2.24.1
 
+From 26ec2e5a52d27d29ea31bdf2fedfa19a76712f12 Mon Sep 17 00:00:00 2001
+From: Keyon Jie <yang.jie@linux.intel.com>
+Date: Fri, 25 Oct 2019 17:40:57 -0500
+Subject: [PATCH 063/109] ASoC: SOF: add a field to store the current D0
+ substate of DSP
 
-From 3cf1bbbb4506efc80e8066c4d40e92264f26eec7 Mon Sep 17 00:00:00 2001
+Add field d0_substate to struct snd_sof_dev to store the current DSP
+D0 sub-state(only meaningful when DSP in D0), which could be D0I0 or
+D0I3.
+
+Signed-off-by: Keyon Jie <yang.jie@linux.intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20191025224122.7718-2-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+Signed-off-by: Jaroslav Kysela <jkysela@redhat.com>
+(cherry picked from commit 4c19030c511fd6eab029bae838f736256d2f43cd)
+Bugzilla: 1772498
+---
+ sound/soc/sof/sof-priv.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
+index 26ea5099bf4e..90a6def3b8d3 100644
+--- a/sound/soc/sof/sof-priv.h
++++ b/sound/soc/sof/sof-priv.h
+@@ -68,6 +68,12 @@ extern int sof_core_debug;
+ 
+ #define DMA_CHAN_INVALID	0xFFFFFFFF
+ 
++/* DSP D0ix sub-state */
++enum sof_d0_substate {
++	SOF_DSP_D0I0 = 0,	/* DSP default D0 substate */
++	SOF_DSP_D0I3,		/* DSP D0i3(low power) substate*/
++};
++
+ struct snd_sof_dev;
+ struct snd_sof_ipc_msg;
+ struct snd_sof_ipc;
+@@ -396,6 +402,9 @@ struct snd_sof_dev {
+ 	 */
+ 	struct snd_soc_component_driver plat_drv;
+ 
++	/* power states related */
++	enum sof_d0_substate d0_substate;
++
+ 	/* DSP firmware boot */
+ 	wait_queue_head_t boot_wait;
+ 	enum snd_sof_fw_state fw_state;
+-- 
+2.24.1
+
+From 88b10cf888bbaccc413dfec7e82a5d642bf0d71f Mon Sep 17 00:00:00 2001
+From: Keyon Jie <yang.jie@linux.intel.com>
+Date: Fri, 25 Oct 2019 17:40:58 -0500
+Subject: [PATCH 064/109] ASoC: SOF: reset default d0_substate at probe() and
+ resume()
+
+We initialize/reset d0_substate to default d0i0 value when doing
+transition D3-->D0, e.g. at success of probing and resuming.
+
+Signed-off-by: Keyon Jie <yang.jie@linux.intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20191025224122.7718-3-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+Signed-off-by: Jaroslav Kysela <jkysela@redhat.com>
+(cherry picked from commit 09fe6b528886c0d07ce539b837749edcc46618d0)
+Bugzilla: 1772498
+---
+ sound/soc/sof/core.c | 3 +++
+ sound/soc/sof/pm.c   | 3 +++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/sound/soc/sof/core.c b/sound/soc/sof/core.c
+index 8a23739aa545..d6b827de26d4 100644
+--- a/sound/soc/sof/core.c
++++ b/sound/soc/sof/core.c
+@@ -495,6 +495,9 @@ int snd_sof_device_probe(struct device *dev, struct snd_sof_pdata *plat_data)
+ 	/* initialize sof device */
+ 	sdev->dev = dev;
+ 
++	/* initialize default D0 sub-state */
++	sdev->d0_substate = SOF_DSP_D0I0;
++
+ 	sdev->pdata = plat_data;
+ 	sdev->first_boot = true;
+ 	sdev->fw_state = SOF_FW_BOOT_NOT_STARTED;
+diff --git a/sound/soc/sof/pm.c b/sound/soc/sof/pm.c
+index 195af259e78e..f13a2eb28732 100644
+--- a/sound/soc/sof/pm.c
++++ b/sound/soc/sof/pm.c
+@@ -337,6 +337,9 @@ static int sof_resume(struct device *dev, bool runtime_resume)
+ 			"error: ctx_restore ipc error during resume %d\n",
+ 			ret);
+ 
++	/* initialize default D0 sub-state */
++	sdev->d0_substate = SOF_DSP_D0I0;
++
+ 	return ret;
+ }
+ 
+-- 
+2.24.1
+
+From f082a124cb84e3a83d8ae35aa201698eea020e3b Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:40:59 -0500
-Subject: [PATCH 074/130] ASoC: SOF: add set_power_state() to dsp_ops for power
+Subject: [PATCH 065/109] ASoC: SOF: add set_power_state() to dsp_ops for power
  state update
 
 D0i3 is a platform-defined substate of D0, so we need a
@@ -7452,7 +7495,7 @@ index 824d36fe59fd..d7c8fc06f961 100644
  static inline void snd_sof_dsp_dbg_dump(struct snd_sof_dev *sdev, u32 flags)
  {
 diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index 481dfe4ee2d0..e9902e4e8e55 100644
+index 90a6def3b8d3..e0adc34d4dec 100644
 --- a/sound/soc/sof/sof-priv.h
 +++ b/sound/soc/sof/sof-priv.h
 @@ -189,6 +189,8 @@ struct snd_sof_dsp_ops {
@@ -7465,13 +7508,12 @@ index 481dfe4ee2d0..e9902e4e8e55 100644
  	/* DSP clocking */
  	int (*set_clk)(struct snd_sof_dev *sof_dev, u32 freq); /* optional */
 -- 
-2.20.1
+2.24.1
 
-
-From 00b28b09cc4fb52852651219ac1369041484770d Mon Sep 17 00:00:00 2001
+From f637c49894fcc4a5f363661c369c17c41c676d58 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:00 -0500
-Subject: [PATCH 075/130] ASoC: SOF: Intel: hda-dsp: Add helper for setting DSP
+Subject: [PATCH 066/109] ASoC: SOF: Intel: hda-dsp: Add helper for setting DSP
  D0ix substate
 
 Adding helper to implement setting dsp to d0i3 or d0i0 status, this will
@@ -7548,7 +7590,7 @@ index 3ea401646e0c..fa2f1f66c72c 100644
  {
  	struct sof_intel_hda_dev *hda = sdev->pdata->hw_pdata;
 diff --git a/sound/soc/sof/intel/hda.h b/sound/soc/sof/intel/hda.h
-index d6ef657b8900..21b0e180017a 100644
+index 8e03d876a0ac..bc8b58ad2704 100644
 --- a/sound/soc/sof/intel/hda.h
 +++ b/sound/soc/sof/intel/hda.h
 @@ -64,6 +64,13 @@
@@ -7576,13 +7618,12 @@ index d6ef657b8900..21b0e180017a 100644
  int hda_dsp_resume(struct snd_sof_dev *sdev);
  int hda_dsp_runtime_suspend(struct snd_sof_dev *sdev);
 -- 
-2.20.1
+2.24.1
 
-
-From d2b397a84c59634c88d3750db429f5be2e3a77ae Mon Sep 17 00:00:00 2001
+From 36bec5216fd616441e694d1793752a83b6e728e3 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:01 -0500
-Subject: [PATCH 076/130] ASoC: SOF: Intel: CNL: add set_power_state() ops
+Subject: [PATCH 067/109] ASoC: SOF: Intel: CNL: add set_power_state() ops
 
 Using hda_dsp_set_power_state() as set_power_state() ops for cnl to do
 d0ix platform configuration updates.
@@ -7612,13 +7653,12 @@ index e9cdcc040fb5..982b81a0b13a 100644
  	/* ALSA HW info flags */
  	.hw_info =	SNDRV_PCM_INFO_MMAP |
 -- 
-2.20.1
+2.24.1
 
-
-From 7cb0adf614bc8d756f22dddd17f9eda4d48d6ee7 Mon Sep 17 00:00:00 2001
+From b094a6b925b36ec414772cf4ac7320597e30f592 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:02 -0500
-Subject: [PATCH 077/130] ASoC: SOF: Intel: APL: add set_power_state() ops
+Subject: [PATCH 068/109] ASoC: SOF: Intel: APL: add set_power_state() ops
 
 Using hda_dsp_set_power_state() as set_power_state() ops for apl to do
 d0ix platform configuration updates.
@@ -7648,13 +7688,12 @@ index 15d26e8d90a9..7daa8eb456c8 100644
  	/* ALSA HW info flags */
  	.hw_info =	SNDRV_PCM_INFO_MMAP |
 -- 
-2.20.1
+2.24.1
 
-
-From e1f3cdb3b898b881acc9465773ff534a26f37cd9 Mon Sep 17 00:00:00 2001
+From 3e61bd7113167792591babd06550cacd30b547d6 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:03 -0500
-Subject: [PATCH 078/130] ASoC: SOF: add flag to snd_sof_pcm_stream for D0i3
+Subject: [PATCH 069/109] ASoC: SOF: add flag to snd_sof_pcm_stream for D0i3
  compatible stream
 
 Add flag d0i3_compatible to struct snd_sof_pcm_stream to denote if the
@@ -7674,7 +7713,7 @@ Bugzilla: 1772498
  1 file changed, 1 insertion(+)
 
 diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index e9902e4e8e55..7a21a45d3635 100644
+index e0adc34d4dec..35cdeb923898 100644
 --- a/sound/soc/sof/sof-priv.h
 +++ b/sound/soc/sof/sof-priv.h
 @@ -310,6 +310,7 @@ struct snd_sof_pcm_stream {
@@ -7686,13 +7725,12 @@ index e9902e4e8e55..7a21a45d3635 100644
  
  /* ALSA SOF PCM device */
 -- 
-2.20.1
+2.24.1
 
-
-From 84bac6cfab76bb8e71b50054d9576aacb6e4c0d2 Mon Sep 17 00:00:00 2001
+From 4a15ac8bae70390fdc72e96468526989be68a818 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:04 -0500
-Subject: [PATCH 079/130] ASoC: SOF: token: add tokens for PCM compatible with
+Subject: [PATCH 070/109] ASoC: SOF: token: add tokens for PCM compatible with
  D0i3 substate
 
 Add stream token SOF_TKN_STREAM_PLAYBACK_COMPATIBLE_D0I3 and
@@ -7728,7 +7766,7 @@ index d65406f34361..76883e6fb750 100644
  #define SOF_TKN_MUTE_LED_USE			1300
  #define SOF_TKN_MUTE_LED_DIRECTION		1301
 diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
-index 8032bb8a709c..c4bc23163497 100644
+index 6a4b59a0d8e6..8f73481fcdae 100644
 --- a/sound/soc/sof/topology.c
 +++ b/sound/soc/sof/topology.c
 @@ -735,6 +735,16 @@ static const struct sof_topology_token pcm_tokens[] = {
@@ -7749,13 +7787,12 @@ index 8032bb8a709c..c4bc23163497 100644
  static const struct sof_topology_token comp_tokens[] = {
  	{SOF_TKN_COMP_PERIOD_SINK_COUNT,
 -- 
-2.20.1
+2.24.1
 
-
-From 178524d176b58f1c218cf1ddf701cfa7fa7a9a04 Mon Sep 17 00:00:00 2001
+From b8955ca3f2a8eaa1130d2d6163bd9e6ad574133b Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:05 -0500
-Subject: [PATCH 080/130] ASoC: SOF: topology: parse and store d0i3_compatible
+Subject: [PATCH 071/109] ASoC: SOF: topology: parse and store d0i3_compatible
  flag
 
 Parses the token from tplg file and store it to snd_sof_pcm_stream
@@ -7775,7 +7812,7 @@ Bugzilla: 1772498
  1 file changed, 16 insertions(+)
 
 diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
-index c4bc23163497..9e3996125d03 100644
+index 8f73481fcdae..58c32e8e478e 100644
 --- a/sound/soc/sof/topology.c
 +++ b/sound/soc/sof/topology.c
 @@ -2308,6 +2308,7 @@ static int sof_dai_load(struct snd_soc_component *scomp, int index,
@@ -7820,13 +7857,12 @@ index c4bc23163497..9e3996125d03 100644
  
  	/* allocate capture page table buffer */
 -- 
-2.20.1
+2.24.1
 
-
-From 99f21fd84280a7fc9a6f33f8f82b757306db97e7 Mon Sep 17 00:00:00 2001
+From c732dc51c229ed52e16df4a7ea41abcc8e07be5e Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:06 -0500
-Subject: [PATCH 081/130] ASoC: SOF: Intel: hda-dsp: align the comments for
+Subject: [PATCH 072/109] ASoC: SOF: Intel: hda-dsp: align the comments for
  D0I3C update
 
 Align the logs for CIP timeout at D0I3C.I3 updating.
@@ -7866,13 +7902,12 @@ index fa2f1f66c72c..74805a066183 100644
  	}
  
 -- 
-2.20.1
+2.24.1
 
-
-From f672aa4a4452ca0d79a8f6b44c76c0139f6f99ec Mon Sep 17 00:00:00 2001
+From b729c392295ac0bbe1c74a0dd2d616eb06be40af Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:07 -0500
-Subject: [PATCH 082/130] ASoC: SOF: Intel: HDA: use macro for register polling
+Subject: [PATCH 073/109] ASoC: SOF: Intel: HDA: use macro for register polling
  retry count
 
 Define macro and use it for the register polling retry count.
@@ -7919,7 +7954,7 @@ index 74805a066183..936361bd25e9 100644
  		dev_err(bus->dev, "CIP timeout after D0I3C update!\n");
  		return ret;
 diff --git a/sound/soc/sof/intel/hda.h b/sound/soc/sof/intel/hda.h
-index 21b0e180017a..5a089efc0e4c 100644
+index bc8b58ad2704..f1054e24cac0 100644
 --- a/sound/soc/sof/intel/hda.h
 +++ b/sound/soc/sof/intel/hda.h
 @@ -214,6 +214,7 @@
@@ -7931,13 +7966,12 @@ index 21b0e180017a..5a089efc0e4c 100644
  #define HDA_DSP_ADSPIC_IPC			1
  #define HDA_DSP_ADSPIS_IPC			1
 -- 
-2.20.1
+2.24.1
 
-
-From e21c6caf57e71006a145a73c117305e0fe2ea512 Mon Sep 17 00:00:00 2001
+From 3ff8fd98199773620f7dda6069019036a734644b Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:08 -0500
-Subject: [PATCH 083/130] ASoC: SOF: PM: rename sof_send_pm_ipc to
+Subject: [PATCH 074/109] ASoC: SOF: PM: rename sof_send_pm_ipc to
  sof_send_pm_ctx_ipc
 
 The helper sof_send_pm_ipc() is only suitable for context save/restore
@@ -7956,7 +7990,7 @@ Bugzilla: 1772498
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/sound/soc/sof/pm.c b/sound/soc/sof/pm.c
-index 81e623dfc7e5..ac900fb3379e 100644
+index f13a2eb28732..76a6785d17aa 100644
 --- a/sound/soc/sof/pm.c
 +++ b/sound/soc/sof/pm.c
 @@ -197,7 +197,7 @@ static int sof_restore_pipelines(struct snd_sof_dev *sdev)
@@ -7968,7 +8002,7 @@ index 81e623dfc7e5..ac900fb3379e 100644
  {
  	struct sof_ipc_pm_ctx pm_ctx;
  	struct sof_ipc_reply reply;
-@@ -320,7 +320,7 @@ static int sof_resume(struct device *dev, bool runtime_resume)
+@@ -331,7 +331,7 @@ static int sof_resume(struct device *dev, bool runtime_resume)
  	}
  
  	/* notify DSP of system resume */
@@ -7977,7 +8011,7 @@ index 81e623dfc7e5..ac900fb3379e 100644
  	if (ret < 0)
  		dev_err(sdev->dev,
  			"error: ctx_restore ipc error during resume %d\n",
-@@ -361,7 +361,7 @@ static int sof_suspend(struct device *dev, bool runtime_suspend)
+@@ -375,7 +375,7 @@ static int sof_suspend(struct device *dev, bool runtime_suspend)
  		sof_cache_debugfs(sdev);
  #endif
  	/* notify DSP of upcoming power down */
@@ -7987,13 +8021,12 @@ index 81e623dfc7e5..ac900fb3379e 100644
  		/*
  		 * runtime PM has logic to handle -EBUSY/-EAGAIN so
 -- 
-2.20.1
+2.24.1
 
-
-From 0852a87eb392f8a9d735b60d3a151332da158519 Mon Sep 17 00:00:00 2001
+From f894ca4b705a92558268b6d828f6a0ac36032dcf Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:10 -0500
-Subject: [PATCH 084/130] ASoC: SOF: Intel: hda-ipc: Don't read mailbox for
+Subject: [PATCH 075/109] ASoC: SOF: Intel: hda-ipc: Don't read mailbox for
  PM_GATE reply
 
 Memory windows could be powered off before receiving PM_GATE IPC reply
@@ -8031,13 +8064,12 @@ index 6aae6f18b3dc..0fd2153c1769 100644
  		reply.error = 0;
  		reply.hdr.cmd = SOF_IPC_GLB_REPLY;
 -- 
-2.20.1
+2.24.1
 
-
-From eee9b23d3c152581249c19f492cf21bd1e023a24 Mon Sep 17 00:00:00 2001
+From 39aecb24d8443afda51fa9d3402a76a422e5c2fd Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:11 -0500
-Subject: [PATCH 085/130] ASoC: SOF: Intel: HDA: add cAVS specific compact IPC
+Subject: [PATCH 076/109] ASoC: SOF: Intel: HDA: add cAVS specific compact IPC
  header file
 
 On cAVS platforms, some IPCs are required to be sent via IPC registers
@@ -8115,13 +8147,12 @@ index 000000000000..aef0ceac9803
 +
 +#endif
 -- 
-2.20.1
+2.24.1
 
-
-From 325dfda7c31d247932c0ec20eda966bf0ca24512 Mon Sep 17 00:00:00 2001
+From faae0bada8e833d6dd8df487cef4b2ede5d6fa6b Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:12 -0500
-Subject: [PATCH 086/130] ASoC: SOF: configure D0ix IPC flags in
+Subject: [PATCH 077/109] ASoC: SOF: configure D0ix IPC flags in
  set_power_state
 
 The configuration for D0ix in FW is platform specific, let's do this and
@@ -8201,13 +8232,12 @@ index 936361bd25e9..b5070409a5e3 100644
  
  static int hda_suspend(struct snd_sof_dev *sdev, bool runtime_suspend)
 -- 
-2.20.1
+2.24.1
 
-
-From 9ade30b8b3cf0e8d73a89b9ded857c50aeb91a37 Mon Sep 17 00:00:00 2001
+From 4cd64496be339c452c3de5602cd5d72e238cc34a Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:13 -0500
-Subject: [PATCH 087/130] ASoC: SOF: PM: add helpers for setting D0 substate
+Subject: [PATCH 078/109] ASoC: SOF: PM: add helpers for setting D0 substate
  for ADSP
 
 Add snd_sof_set_d0_substate() helper for setting ADSP to a specific D0
@@ -8228,10 +8258,10 @@ Bugzilla: 1772498
  2 files changed, 19 insertions(+)
 
 diff --git a/sound/soc/sof/pm.c b/sound/soc/sof/pm.c
-index ac900fb3379e..584241e9734a 100644
+index 76a6785d17aa..86bd2ffadfe5 100644
 --- a/sound/soc/sof/pm.c
 +++ b/sound/soc/sof/pm.c
-@@ -411,6 +411,23 @@ int snd_sof_runtime_resume(struct device *dev)
+@@ -434,6 +434,23 @@ int snd_sof_runtime_resume(struct device *dev)
  }
  EXPORT_SYMBOL(snd_sof_runtime_resume);
  
@@ -8256,10 +8286,10 @@ index ac900fb3379e..584241e9734a 100644
  {
  	return sof_resume(dev, false);
 diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index 7a21a45d3635..2231c673c678 100644
+index 35cdeb923898..548cba7ac571 100644
 --- a/sound/soc/sof/sof-priv.h
 +++ b/sound/soc/sof/sof-priv.h
-@@ -485,6 +485,8 @@ int snd_sof_runtime_resume(struct device *dev);
+@@ -494,6 +494,8 @@ int snd_sof_runtime_resume(struct device *dev);
  int snd_sof_runtime_idle(struct device *dev);
  int snd_sof_resume(struct device *dev);
  int snd_sof_suspend(struct device *dev);
@@ -8269,13 +8299,12 @@ index 7a21a45d3635..2231c673c678 100644
  void snd_sof_new_platform_drv(struct snd_sof_dev *sdev);
  
 -- 
-2.20.1
+2.24.1
 
-
-From cd303b2a36cdc4dd2228147f9a9518da71d88215 Mon Sep 17 00:00:00 2001
+From b6d13fd241298270085e89880958c9d846413116 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:14 -0500
-Subject: [PATCH 088/130] ASoC: SOF: Intel: CNL: add support for sending
+Subject: [PATCH 079/109] ASoC: SOF: Intel: CNL: add support for sending
  compact IPC
 
 For compact IPCs, we will send the IPC header/command via the HIPCIDR
@@ -8359,7 +8388,7 @@ index 982b81a0b13a..0e1e265f3f3b 100644
  	return 0;
  }
 diff --git a/sound/soc/sof/intel/hda.h b/sound/soc/sof/intel/hda.h
-index 5a089efc0e4c..5ad73a34b09c 100644
+index f1054e24cac0..16376f55e420 100644
 --- a/sound/soc/sof/intel/hda.h
 +++ b/sound/soc/sof/intel/hda.h
 @@ -312,6 +312,7 @@
@@ -8371,13 +8400,49 @@ index 5a089efc0e4c..5ad73a34b09c 100644
  
  /*  HIPCI */
 -- 
-2.20.1
+2.24.1
 
+From c4cf471d27ee3a0f30c4bcb894ce1b9a3254c350 Mon Sep 17 00:00:00 2001
+From: Keyon Jie <yang.jie@linux.intel.com>
+Date: Fri, 25 Oct 2019 17:41:15 -0500
+Subject: [PATCH 080/109] ASoC: SOF: add a flag to indicate the system suspend
+ target
 
-From 8d8d925e7051604e82ef12a2dbddf5d77e02e40d Mon Sep 17 00:00:00 2001
+Add flag 's0_suspend' to indicate if the system is entering S0ix or
+not.
+
+Signed-off-by: Keyon Jie <yang.jie@linux.intel.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20191025224122.7718-20-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+
+Signed-off-by: Jaroslav Kysela <jkysela@redhat.com>
+(cherry picked from commit 7367d3096b1443e55a2c730d1966f423b15d5cad)
+Bugzilla: 1772498
+---
+ sound/soc/sof/sof-priv.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
+index 548cba7ac571..f6ecd9f0fbc6 100644
+--- a/sound/soc/sof/sof-priv.h
++++ b/sound/soc/sof/sof-priv.h
+@@ -407,6 +407,8 @@ struct snd_sof_dev {
+ 
+ 	/* power states related */
+ 	enum sof_d0_substate d0_substate;
++	/* flag to track if the intended power target of suspend is S0ix */
++	bool s0_suspend;
+ 
+ 	/* DSP firmware boot */
+ 	wait_queue_head_t boot_wait;
+-- 
+2.24.1
+
+From 30c0391c903f66e9b1b921712900593c64510466 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:16 -0500
-Subject: [PATCH 090/130] ASoC: SOF: add a flag suspend_ignored for sof stream
+Subject: [PATCH 081/109] ASoC: SOF: add a flag suspend_ignored for sof stream
 
 Add a suspend_ignored flag to snd_sof_pcm_stream that will be used to
 decide if the corresponding FW pipeline should be kept active to perform
@@ -8396,7 +8461,7 @@ Bugzilla: 1772498
  1 file changed, 5 insertions(+)
 
 diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index e715673f20e5..c2541d020bde 100644
+index f6ecd9f0fbc6..47420d184b53 100644
 --- a/sound/soc/sof/sof-priv.h
 +++ b/sound/soc/sof/sof-priv.h
 @@ -311,6 +311,11 @@ struct snd_sof_pcm_stream {
@@ -8412,13 +8477,12 @@ index e715673f20e5..c2541d020bde 100644
  
  /* ALSA SOF PCM device */
 -- 
-2.20.1
+2.24.1
 
-
-From 3b92b523982d92ab8944be6c739da55889e44878 Mon Sep 17 00:00:00 2001
+From da323444a5345a0d95fb943b8af039623df2a36c Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:17 -0500
-Subject: [PATCH 091/130] ASoC: SOF: PM: implement prepare/complete callbacks
+Subject: [PATCH 082/109] ASoC: SOF: PM: implement prepare/complete callbacks
 
 Implement the prepare() and complete() callbacks for power management,
 initialize s0_suspend flag at prepare(), and reset it at complete().
@@ -8437,10 +8501,10 @@ Bugzilla: 1772498
  2 files changed, 25 insertions(+)
 
 diff --git a/sound/soc/sof/pm.c b/sound/soc/sof/pm.c
-index 584241e9734a..99e4e6ffff74 100644
+index 86bd2ffadfe5..02189eb2e89a 100644
 --- a/sound/soc/sof/pm.c
 +++ b/sound/soc/sof/pm.c
-@@ -439,3 +439,26 @@ int snd_sof_suspend(struct device *dev)
+@@ -462,3 +462,26 @@ int snd_sof_suspend(struct device *dev)
  	return sof_suspend(dev, false);
  }
  EXPORT_SYMBOL(snd_sof_suspend);
@@ -8468,10 +8532,10 @@ index 584241e9734a..99e4e6ffff74 100644
 +}
 +EXPORT_SYMBOL(snd_sof_complete);
 diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index c2541d020bde..6408ac88a3e5 100644
+index 47420d184b53..9bded2e48fba 100644
 --- a/sound/soc/sof/sof-priv.h
 +++ b/sound/soc/sof/sof-priv.h
-@@ -492,6 +492,8 @@ int snd_sof_runtime_resume(struct device *dev);
+@@ -501,6 +501,8 @@ int snd_sof_runtime_resume(struct device *dev);
  int snd_sof_runtime_idle(struct device *dev);
  int snd_sof_resume(struct device *dev);
  int snd_sof_suspend(struct device *dev);
@@ -8481,13 +8545,12 @@ index c2541d020bde..6408ac88a3e5 100644
  			    enum sof_d0_substate d0_substate);
  
 -- 
-2.20.1
+2.24.1
 
-
-From a8161368f38eb802d5bfc2601420a94076b3527f Mon Sep 17 00:00:00 2001
+From 78ecf411b770ea954e2bcd18b22b7c43ece9f54f Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:18 -0500
-Subject: [PATCH 092/130] ASoC: SOF: ignore suspend/resume for D0ix compatible
+Subject: [PATCH 083/109] ASoC: SOF: ignore suspend/resume for D0ix compatible
  streams
 
 During system suspend, the PM framework will freeze all applications and
@@ -8569,7 +8632,7 @@ index b33928e1385b..927b197c2c8d 100644
  		stream.hdr.cmd |= SOF_IPC_STREAM_TRIG_STOP;
  		ipc_first = true;
 diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
-index 9e3996125d03..ad798fb3bb32 100644
+index 58c32e8e478e..82d8cae44a9c 100644
 --- a/sound/soc/sof/topology.c
 +++ b/sound/soc/sof/topology.c
 @@ -135,7 +135,9 @@ static int sof_keyword_dapm_event(struct snd_soc_dapm_widget *w,
@@ -8616,13 +8679,12 @@ index 9e3996125d03..ad798fb3bb32 100644
  		ret = ipc_trigger(swidget, SOF_IPC_STREAM_TRIG_STOP);
  		if (ret < 0)
 -- 
-2.20.1
+2.24.1
 
-
-From 95a260712df9014813aaeb2e8bf3149bcf82572c Mon Sep 17 00:00:00 2001
+From 86489b5d1ebcdf9e23a2827d82f2fd7506946662 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:19 -0500
-Subject: [PATCH 093/130] ASoC: SOF: Intel: hda-dsp: implement suspend/resume
+Subject: [PATCH 084/109] ASoC: SOF: Intel: hda-dsp: implement suspend/resume
  for S0ix<->S0 transition
 
 Enable system wake up via IPC interrupt from DSP when the system is
@@ -8679,13 +8741,12 @@ index b5070409a5e3..d23573d9e9c4 100644
  	ret = hda_suspend(sdev, false);
  	if (ret < 0) {
 -- 
-2.20.1
+2.24.1
 
-
-From fb1833ed7540f40d3c82371bea470e2802fee2a6 Mon Sep 17 00:00:00 2001
+From 76547aaa1c920a91b99114d24945a2bf17974d0a Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:20 -0500
-Subject: [PATCH 094/130] ASoC: SOF: return -ENOTSUPP if D0I3 is not supported
+Subject: [PATCH 085/109] ASoC: SOF: return -ENOTSUPP if D0I3 is not supported
 
 No set_power_state ops means that the platform doesn't support D0i3,
 return -ENOTSUPP for the case.
@@ -8717,13 +8778,12 @@ index d7c8fc06f961..93512dcbaacd 100644
  
  /* debug */
 -- 
-2.20.1
+2.24.1
 
-
-From a9ff8edc56014d193031b94c32da8d1ca4cd9181 Mon Sep 17 00:00:00 2001
+From 6708194b3b3c49c2bf0370b2a69543c3fa98d513 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:21 -0500
-Subject: [PATCH 095/130] ASoC: SOF: PM: Add support for DSP D0i3 state when
+Subject: [PATCH 086/109] ASoC: SOF: PM: Add support for DSP D0i3 state when
  entering S0ix
 
 When system is entering into S0ix, the PCI device may transition to the
@@ -8745,10 +8805,10 @@ Bugzilla: 1772498
  1 file changed, 46 insertions(+)
 
 diff --git a/sound/soc/sof/pm.c b/sound/soc/sof/pm.c
-index 99e4e6ffff74..560a937e0484 100644
+index 02189eb2e89a..4f8db8367d0a 100644
 --- a/sound/soc/sof/pm.c
 +++ b/sound/soc/sof/pm.c
-@@ -430,12 +430,58 @@ EXPORT_SYMBOL(snd_sof_set_d0_substate);
+@@ -453,12 +453,58 @@ EXPORT_SYMBOL(snd_sof_set_d0_substate);
  
  int snd_sof_resume(struct device *dev)
  {
@@ -8808,13 +8868,12 @@ index 99e4e6ffff74..560a937e0484 100644
  }
  EXPORT_SYMBOL(snd_sof_suspend);
 -- 
-2.20.1
+2.24.1
 
-
-From 57fa7b6018c8497dbc676a7ed19580ce413c1f93 Mon Sep 17 00:00:00 2001
+From 19f37f08da2c5bc26d8f5df3f66fb71cf3d9f831 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 25 Oct 2019 17:41:22 -0500
-Subject: [PATCH 096/130] ASoC: SOF: pci: Add prepare/complete PM callbacks
+Subject: [PATCH 087/109] ASoC: SOF: pci: Add prepare/complete PM callbacks
 
 Use the new implemented snd_sof_prepare() and snd_sof_complete() as the
 power management callbacks for pci probing platforms.
@@ -8845,13 +8904,12 @@ index 067acf389af7..3b58b91e7b9e 100644
  	SET_RUNTIME_PM_OPS(snd_sof_runtime_suspend, snd_sof_runtime_resume,
  			   snd_sof_runtime_idle)
 -- 
-2.20.1
+2.24.1
 
-
-From 275c9af318fdb56701f9c336ecfdcaf8d05e7b03 Mon Sep 17 00:00:00 2001
+From b6a2d55961bfc8c9eafdc520b34109420084b274 Mon Sep 17 00:00:00 2001
 From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:09:16 -0500
-Subject: [PATCH 097/130] ASoC: SOF: Intel: hda: Simplify the
+Subject: [PATCH 088/109] ASoC: SOF: Intel: hda: Simplify the
  hda_dsp_wait_d0i3c_done() function
 
 Remove the retry argument for the hda_dsp_wait_d0i3c_done()
@@ -8905,13 +8963,12 @@ index d23573d9e9c4..8cd5ecc01b62 100644
  		dev_err(bus->dev, "CIP timeout after D0I3C update!\n");
  		return ret;
 -- 
-2.20.1
+2.24.1
 
-
-From a547d2de50bd9993d6b1723ece45ad954c042bb5 Mon Sep 17 00:00:00 2001
+From 4260fe05dea091d2de9257f29c604c8b9530aa47 Mon Sep 17 00:00:00 2001
 From: Jaska Uimonen <jaska.uimonen@linux.intel.com>
 Date: Tue, 8 Oct 2019 11:44:42 -0500
-Subject: [PATCH 098/130] AsoC: SOF: refactor control load code
+Subject: [PATCH 089/109] AsoC: SOF: refactor control load code
 
 Move code around to enable token parsing in control load.
 
@@ -8928,7 +8985,7 @@ Bugzilla: 1772498
  1 file changed, 168 insertions(+), 168 deletions(-)
 
 diff --git a/sound/soc/sof/topology.c b/sound/soc/sof/topology.c
-index ad798fb3bb32..d4aea5422ea8 100644
+index 82d8cae44a9c..143b8259a70a 100644
 --- a/sound/soc/sof/topology.c
 +++ b/sound/soc/sof/topology.c
 @@ -447,174 +447,6 @@ static enum sof_comp_type find_process_comp_type(enum sof_ipc_process_type type)
@@ -9282,13 +9339,12 @@ index ad798fb3bb32..d4aea5422ea8 100644
  static int sof_control_load(struct snd_soc_component *scomp, int index,
  			    struct snd_kcontrol_new *kc,
 -- 
-2.20.1
+2.24.1
 
-
-From 00e0accc297d44a65b09af38a2d6813467f5b8e9 Mon Sep 17 00:00:00 2001
+From 15c0bca54b7988f8f114d48e0b059ac02d729a90 Mon Sep 17 00:00:00 2001
 From: Jaroslav Kysela <perex@perex.cz>
 Date: Tue, 19 Nov 2019 18:49:32 +0100
-Subject: [PATCH 100/130] ASoC: add control components management
+Subject: [PATCH 090/109] ASoC: add control components management
 
 This ASCII string can carry additional information about
 soundcard components or configuration. Add the possibility
@@ -9320,10 +9376,10 @@ index f264c6509f00..efc5fb8f3d64 100644
  	char topology_shortname[32];
  
 diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index 88978a3036c4..fff910fd933e 100644
+index 9d3b546bae7b..da5111985a56 100644
 --- a/sound/soc/soc-core.c
 +++ b/sound/soc/soc-core.c
-@@ -2095,6 +2095,19 @@ static int snd_soc_instantiate_card(struct snd_soc_card *card)
+@@ -2097,6 +2097,19 @@ static int snd_soc_instantiate_card(struct snd_soc_card *card)
  		}
  	}
  
@@ -9344,13 +9400,12 @@ index 88978a3036c4..fff910fd933e 100644
  		ret = card->late_probe(card);
  		if (ret < 0) {
 -- 
-2.20.1
+2.24.1
 
-
-From 15b3f8b52655f2e8eafb5c209c829cd09650ae1f Mon Sep 17 00:00:00 2001
+From 4f4361e40a15f13cf9a8f55121265f34cca25539 Mon Sep 17 00:00:00 2001
 From: Jaroslav Kysela <perex@perex.cz>
 Date: Wed, 20 Nov 2019 18:44:34 +0100
-Subject: [PATCH 101/130] ASoC: improve the DMI long card code in asoc-core
+Subject: [PATCH 091/109] ASoC: improve the DMI long card code in asoc-core
 
 Add append_dmi_string() function and make the code more readable.
 
@@ -9367,7 +9422,7 @@ Bugzilla: 1772498
  1 file changed, 25 insertions(+), 41 deletions(-)
 
 diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index fff910fd933e..2cbd9796a25f 100644
+index da5111985a56..fbe641ef8ed7 100644
 --- a/sound/soc/soc-core.c
 +++ b/sound/soc/soc-core.c
 @@ -1729,6 +1729,23 @@ static int is_dmi_valid(const char *field)
@@ -9482,13 +9537,12 @@ index fff910fd933e..2cbd9796a25f 100644
  	/* set the card long name */
  	card->long_name = card->dmi_longname;
 -- 
-2.20.1
+2.24.1
 
-
-From f77607883b4040fdb1791e4e81402e452a97d1d0 Mon Sep 17 00:00:00 2001
+From f51fdb4ea9b75970096dc818c7737b6c6d611483 Mon Sep 17 00:00:00 2001
 From: Jaroslav Kysela <perex@perex.cz>
 Date: Wed, 20 Nov 2019 18:44:35 +0100
-Subject: [PATCH 102/130] ASoC: DMI long name - avoid to add board name if
+Subject: [PATCH 092/109] ASoC: DMI long name - avoid to add board name if
  matches with product name
 
 Current code:
@@ -9512,7 +9566,7 @@ Bugzilla: 1772498
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index 2cbd9796a25f..d42924ff13f1 100644
+index fbe641ef8ed7..f61e5b50a66f 100644
 --- a/sound/soc/soc-core.c
 +++ b/sound/soc/soc-core.c
 @@ -1809,7 +1809,8 @@ int snd_soc_set_dmi_name(struct snd_soc_card *card, const char *flavour)
@@ -9526,13 +9580,12 @@ index 2cbd9796a25f..d42924ff13f1 100644
  		/* fall back to using legacy name */
  		dev_warn(card->dev, "ASoC: no DMI board/product name!\n");
 -- 
-2.20.1
+2.24.1
 
-
-From 268e8ce52ad4278f6b94792483d3f8510b435b3e Mon Sep 17 00:00:00 2001
+From 2cc756fee053d7a99a683ba0636ce2dc37ef164a Mon Sep 17 00:00:00 2001
 From: Jens Verwiebe <info@jensverwiebe.de>
 Date: Sun, 24 Nov 2019 13:35:44 +0100
-Subject: [PATCH 107/130] ALSA: usb-audio: Fix Focusrite Scarlett 6i6 gen1 -
+Subject: [PATCH 093/109] ALSA: usb-audio: Fix Focusrite Scarlett 6i6 gen1 -
  input handling
 
 The Scarlett 6i6 has no padding on rear inputs 3/4 but a gainstage.
@@ -9609,13 +9662,12 @@ index 83715fd8dfd6..9d10cbf1b5ed 100644
  	}
  
 -- 
-2.20.1
+2.24.1
 
-
-From 98db14f3c44954a5da1239328f4677808d5a3acf Mon Sep 17 00:00:00 2001
+From 217f33a7c631a8bfa8af1d3a3ddf448d614d2c33 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:09:14 -0500
-Subject: [PATCH 108/130] ASoC: SOF: topology: fix missing NULL pointer check
+Subject: [PATCH 094/109] ASoC: SOF: topology: fix missing NULL pointer check
 
 Add check to avoid possible NULL pointer dereference issue.
 
@@ -9652,13 +9704,12 @@ index 143b8259a70a..6096731e89ce 100644
  	/* process events */
  	switch (event) {
 -- 
-2.20.1
+2.24.1
 
-
-From d00288a4c998c445288666abb202808ea2d0dd8b Mon Sep 17 00:00:00 2001
+From 74dfe62b453b1472c56e3b2f9692394212e860e8 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Fri, 1 Nov 2019 12:09:15 -0500
-Subject: [PATCH 109/130] ASoC: SOF: Intel: hda: set L1SEN on S0ix suspend
+Subject: [PATCH 095/109] ASoC: SOF: Intel: hda: set L1SEN on S0ix suspend
 
 Set L1SEN to make sure the system can enter S0ix, and restore it on
 resume.
@@ -9718,7 +9769,7 @@ index 8cd5ecc01b62..4a4d318f97ff 100644
  		enable_irq_wake(pci->irq);
  		pci_save_state(pci);
 diff --git a/sound/soc/sof/intel/hda.h b/sound/soc/sof/intel/hda.h
-index 5ad73a34b09c..18d7e72bf9b7 100644
+index 16376f55e420..50e037f2973f 100644
 --- a/sound/soc/sof/intel/hda.h
 +++ b/sound/soc/sof/intel/hda.h
 @@ -408,6 +408,9 @@ struct sof_intel_hda_dev {
@@ -9732,13 +9783,12 @@ index 5ad73a34b09c..18d7e72bf9b7 100644
  	struct platform_device *dmic_dev;
  };
 -- 
-2.20.1
+2.24.1
 
-
-From d1475f9cebf57b062ca025e4d87ecaa8f0955f8e Mon Sep 17 00:00:00 2001
+From 9298cb2df525d2f7e42fe14a257a2ae758302559 Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Mon, 11 Nov 2019 16:29:01 -0600
-Subject: [PATCH 110/130] ASoC: SOF: Intel: hda: use fallback for firmware name
+Subject: [PATCH 096/109] ASoC: SOF: Intel: hda: use fallback for firmware name
 
 We have platforms such as CFL with no known I2S codec being used, and
 the ACPI tables are currently empty, so fall-back to using the
@@ -9756,10 +9806,10 @@ Bugzilla: 1772498
  1 file changed, 9 insertions(+), 2 deletions(-)
 
 diff --git a/sound/soc/sof/intel/hda.c b/sound/soc/sof/intel/hda.c
-index 7dc0018dc4c3..91bd88fddac7 100644
+index ff3fa8670fd8..78c3de74c401 100644
 --- a/sound/soc/sof/intel/hda.c
 +++ b/sound/soc/sof/intel/hda.c
-@@ -415,9 +415,16 @@ static int hda_init_caps(struct snd_sof_dev *sdev)
+@@ -410,9 +410,16 @@ static int hda_init_caps(struct snd_sof_dev *sdev)
  			pdata->tplg_filename =
  				hda_mach->sof_tplg_filename;
  
@@ -9779,13 +9829,12 @@ index 7dc0018dc4c3..91bd88fddac7 100644
  			dev_info(bus->dev, "using HDA machine driver %s now\n",
  				 hda_mach->drv_name);
 -- 
-2.20.1
+2.24.1
 
-
-From 15f2f0826db2cd13a243fde28d9b7a6fd4b0428e Mon Sep 17 00:00:00 2001
+From d4d3a9762c6ef736427a427f40dac50f8e17f625 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Mon, 11 Nov 2019 16:33:40 -0600
-Subject: [PATCH 111/130] ASoC: SOF: PM: add state machine to comments
+Subject: [PATCH 097/109] ASoC: SOF: PM: add state machine to comments
 
 Add Audio DSP state machine with comments. Note that the
 'D0<-->runtime D0I3' part is not implemented yet.
@@ -9803,10 +9852,10 @@ Bugzilla: 1772498
  1 file changed, 32 insertions(+)
 
 diff --git a/sound/soc/sof/pm.c b/sound/soc/sof/pm.c
-index 560a937e0484..3204c92f0e7d 100644
+index 4f8db8367d0a..420615dff5ae 100644
 --- a/sound/soc/sof/pm.c
 +++ b/sound/soc/sof/pm.c
-@@ -428,6 +428,38 @@ int snd_sof_set_d0_substate(struct snd_sof_dev *sdev,
+@@ -451,6 +451,38 @@ int snd_sof_set_d0_substate(struct snd_sof_dev *sdev,
  }
  EXPORT_SYMBOL(snd_sof_set_d0_substate);
  
@@ -9846,13 +9895,12 @@ index 560a937e0484..3204c92f0e7d 100644
  {
  	struct snd_sof_dev *sdev = dev_get_drvdata(dev);
 -- 
-2.20.1
+2.24.1
 
-
-From a42c0c91a4bb7e180473b81bf98c56384149bd1c Mon Sep 17 00:00:00 2001
+From 2ce44c4ffc5b1ee7b84d53f5d18eefe35a06092d Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Mon, 11 Nov 2019 16:33:41 -0600
-Subject: [PATCH 112/130] ASoC: SOF: PM: add check before setting d0_substate
+Subject: [PATCH 098/109] ASoC: SOF: PM: add check before setting d0_substate
 
 Add check before seeting d0_substate and return success if Audio DSP is
 already in the target substate.
@@ -9870,10 +9918,10 @@ Bugzilla: 1772498
  1 file changed, 3 insertions(+)
 
 diff --git a/sound/soc/sof/pm.c b/sound/soc/sof/pm.c
-index 3204c92f0e7d..b89810bf3230 100644
+index 420615dff5ae..ff966d004692 100644
 --- a/sound/soc/sof/pm.c
 +++ b/sound/soc/sof/pm.c
-@@ -416,6 +416,9 @@ int snd_sof_set_d0_substate(struct snd_sof_dev *sdev,
+@@ -439,6 +439,9 @@ int snd_sof_set_d0_substate(struct snd_sof_dev *sdev,
  {
  	int ret;
  
@@ -9884,13 +9932,12 @@ index 3204c92f0e7d..b89810bf3230 100644
  	ret = snd_sof_dsp_set_power_state(sdev, d0_substate);
  	if (ret < 0)
 -- 
-2.20.1
+2.24.1
 
-
-From bba0301fd9f218213736d2db9368bbc09346cbb5 Mon Sep 17 00:00:00 2001
+From 2dbd8810f4d48ed09aa2be1e53f50fac7045ebc2 Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Mon, 11 Nov 2019 16:33:42 -0600
-Subject: [PATCH 113/130] ASoC: SOF: add helper to check if we should enter
+Subject: [PATCH 099/109] ASoC: SOF: add helper to check if we should enter
  d0i3 suspend
 
 Add helper to check if the DSP should be put in D0i3. This function
@@ -9911,7 +9958,7 @@ Bugzilla: 1772498
  2 files changed, 15 insertions(+)
 
 diff --git a/sound/soc/sof/core.c b/sound/soc/sof/core.c
-index 8661c2cca76b..805918d3bcc0 100644
+index d6b827de26d4..a06a54f423dd 100644
 --- a/sound/soc/sof/core.c
 +++ b/sound/soc/sof/core.c
 @@ -132,6 +132,19 @@ struct snd_sof_dai *snd_sof_find_dai(struct snd_sof_dev *sdev,
@@ -9935,10 +9982,10 @@ index 8661c2cca76b..805918d3bcc0 100644
   * FW Panic/fault handling.
   */
 diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index 6408ac88a3e5..c7c2c70ee4d0 100644
+index 9bded2e48fba..59cc711e99ff 100644
 --- a/sound/soc/sof/sof-priv.h
 +++ b/sound/soc/sof/sof-priv.h
-@@ -553,6 +553,8 @@ struct snd_sof_pcm *snd_sof_find_spcm_dai(struct snd_sof_dev *sdev,
+@@ -562,6 +562,8 @@ struct snd_sof_pcm *snd_sof_find_spcm_dai(struct snd_sof_dev *sdev,
  	return NULL;
  }
  
@@ -9948,13 +9995,12 @@ index 6408ac88a3e5..c7c2c70ee4d0 100644
  					   const char *name);
  struct snd_sof_pcm *snd_sof_find_spcm_comp(struct snd_sof_dev *sdev,
 -- 
-2.20.1
+2.24.1
 
-
-From 37c30238887254ea800b5913475bd444fe0ba46d Mon Sep 17 00:00:00 2001
+From 156227215cacd87bfdeaa27ead855ff2310c1a9d Mon Sep 17 00:00:00 2001
 From: Keyon Jie <yang.jie@linux.intel.com>
 Date: Mon, 11 Nov 2019 16:33:43 -0600
-Subject: [PATCH 114/130] ASoC: SOF: PM: only suspend to D0I3 when needed
+Subject: [PATCH 100/109] ASoC: SOF: PM: only suspend to D0I3 when needed
 
 We should suspend audio to D3 by default, for the sake of power saving,
 change the condition of D0I3 suspending here to that when there is
@@ -9973,10 +10019,10 @@ Bugzilla: 1772498
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/sound/soc/sof/pm.c b/sound/soc/sof/pm.c
-index b89810bf3230..0fd5567237a8 100644
+index ff966d004692..bc09cb5f458b 100644
 --- a/sound/soc/sof/pm.c
 +++ b/sound/soc/sof/pm.c
-@@ -468,7 +468,7 @@ int snd_sof_resume(struct device *dev)
+@@ -491,7 +491,7 @@ int snd_sof_resume(struct device *dev)
  	struct snd_sof_dev *sdev = dev_get_drvdata(dev);
  	int ret;
  
@@ -9985,7 +10031,7 @@ index b89810bf3230..0fd5567237a8 100644
  		/* resume from D0I3 */
  		dev_dbg(sdev->dev, "DSP will exit from D0i3...\n");
  		ret = snd_sof_set_d0_substate(sdev, SOF_DSP_D0I0);
-@@ -497,7 +497,7 @@ int snd_sof_suspend(struct device *dev)
+@@ -520,7 +520,7 @@ int snd_sof_suspend(struct device *dev)
  	struct snd_sof_dev *sdev = dev_get_drvdata(dev);
  	int ret;
  
@@ -9995,13 +10041,12 @@ index b89810bf3230..0fd5567237a8 100644
  		dev_dbg(sdev->dev, "DSP is trying to enter D0i3...\n");
  		ret = snd_sof_set_d0_substate(sdev, SOF_DSP_D0I3);
 -- 
-2.20.1
+2.24.1
 
-
-From 21fa58950c58b8b75e38f4cffac87e6058f0f01f Mon Sep 17 00:00:00 2001
+From 39aa2d2215c31b1b9f6c3e77d00702c9dfa5e66d Mon Sep 17 00:00:00 2001
 From: Dragos Tarcatu <dragos_tarcatu@mentor.com>
 Date: Mon, 11 Nov 2019 16:20:38 -0600
-Subject: [PATCH 115/130] ASoC: SOF: topology: free kcontrol memory on error
+Subject: [PATCH 101/109] ASoC: SOF: topology: free kcontrol memory on error
 
 The volume and bytes kcontrols are currently not freeing their
 memory on initialization failures. When an error occurs, all the
@@ -10195,13 +10240,12 @@ index 6096731e89ce..d82ab981e840 100644
  	list_add(&scontrol->list, &sdev->kcontrol_list);
  	return ret;
 -- 
-2.20.1
+2.24.1
 
-
-From 165ac3fd39d420dc48ff9e05142a6e07dbc249e0 Mon Sep 17 00:00:00 2001
+From 88ecf253337ee8d8f0418e68af64d3dba6df27c1 Mon Sep 17 00:00:00 2001
 From: Liam Girdwood <liam.r.girdwood@linux.intel.com>
 Date: Mon, 11 Nov 2019 16:29:00 -0600
-Subject: [PATCH 116/130] ASoC: SOF: Intel: Fix CFL and CML FW nocodec binary
+Subject: [PATCH 102/109] ASoC: SOF: Intel: Fix CFL and CML FW nocodec binary
  names.
 
 The manifest information is different between CNL, CML and CFL platforms
@@ -10260,13 +10304,12 @@ index 3b58b91e7b9e..bbeffd932de7 100644
  	.ops = &sof_cnl_ops,
  	.arch_ops = &sof_xtensa_arch_ops
 -- 
-2.20.1
+2.24.1
 
-
-From 6f3f161ac71319c1997170719e119f315a2251f6 Mon Sep 17 00:00:00 2001
+From 64f7bbb57783645861b9d05d5f54c590e70f58ab Mon Sep 17 00:00:00 2001
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Date: Wed, 20 Nov 2019 21:32:52 +0800
-Subject: [PATCH 117/130] ASoC: Fix Kconfig indentation
+Subject: [PATCH 103/109] ASoC: Fix Kconfig indentation
 
 Adjust indentation from spaces to tab (+optional two spaces) as in
 coding style with command like:
@@ -10321,7 +10364,7 @@ index 2702aefee775..ef20316e83d1 100644
  endif ## SND_SOC_SOF_COMETLAKE_LP && SND_SOC_SOF_HDA_LINK
  
 diff --git a/sound/soc/sof/intel/Kconfig b/sound/soc/sof/intel/Kconfig
-index b27fd3fdf335..cc09bb606f7d 100644
+index c263a8feff0a..0db92d81ea85 100644
 --- a/sound/soc/sof/intel/Kconfig
 +++ b/sound/soc/sof/intel/Kconfig
 @@ -264,16 +264,16 @@ config SND_SOC_SOF_ELKHARTLAKE
@@ -10347,13 +10390,12 @@ index b27fd3fdf335..cc09bb606f7d 100644
  
  config SND_SOC_SOF_HDA_COMMON
 -- 
-2.20.1
+2.24.1
 
-
-From 716051e31d6ac7c9c195f9f36e9b2d0bb7c1ee39 Mon Sep 17 00:00:00 2001
+From 07dfab3db6e4005c03903fe59c272da69678c40a Mon Sep 17 00:00:00 2001
 From: Ben Zhang <benzh@chromium.org>
 Date: Tue, 5 Nov 2019 17:13:27 -0800
-Subject: [PATCH 118/130] ASoC: bdw-rt5677: Add a DAI link for rt5677 SPI PCM
+Subject: [PATCH 104/109] ASoC: bdw-rt5677: Add a DAI link for rt5677 SPI PCM
  device
 
 This link is needed for the RT5677 DSP to do hotwording
@@ -10410,13 +10452,12 @@ index 4a4d3353e26d..eeb9a11e4e14 100644
  	{
  		/* SSP0 - Codec */
 -- 
-2.20.1
+2.24.1
 
-
-From 0509dabb0d84b34fe4632eabc8aae3bf699dffb4 Mon Sep 17 00:00:00 2001
+From a21e2d41236808ea4fb355aaff8bb4012d539779 Mon Sep 17 00:00:00 2001
 From: Curtis Malainey <cujomalainey@chromium.org>
 Date: Tue, 5 Nov 2019 17:13:34 -0800
-Subject: [PATCH 119/130] ASoC: bdw-rt5677: Turn on MCLK1 for DSP via DAPM
+Subject: [PATCH 105/109] ASoC: bdw-rt5677: Turn on MCLK1 for DSP via DAPM
 
 The RT5677 DSP needs the I2S MCLK1 to run its DSP. Add a dapm route to
 SSP0 CODEC IN so the clock is turned on automatically when the DSP is
@@ -10449,13 +10490,12 @@ index eeb9a11e4e14..b2475e3eff7b 100644
  
  static const struct snd_kcontrol_new bdw_rt5677_controls[] = {
 -- 
-2.20.1
+2.24.1
 
-
-From 0305b5a5db77305fc43a76efd39aed84c5561f96 Mon Sep 17 00:00:00 2001
+From 71fffb28eefd175b6b84026a2d0f5fb79996f84b Mon Sep 17 00:00:00 2001
 From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Date: Mon, 11 Nov 2019 16:28:59 -0600
-Subject: [PATCH 121/130] ASoC: Intel: acpi-match: split CNL tables in three
+Subject: [PATCH 106/109] ASoC: Intel: acpi-match: split CNL tables in three
 
 Due to firmware manifest/signature differences, we have to use
 different firmware names, so split CNL machine table in three (CNL,
@@ -10652,13 +10692,12 @@ index 16d0bae8b316..27588841c8b0 100644
  };
  EXPORT_SYMBOL_GPL(snd_soc_acpi_intel_cnl_machines);
 -- 
-2.20.1
+2.24.1
 
-
-From a7ff4a018897902cb76e6946162f452e99747a0b Mon Sep 17 00:00:00 2001
+From b623e68eabe32651fb346bb3f1d89f3705f051df Mon Sep 17 00:00:00 2001
 From: Takashi Iwai <tiwai@suse.de>
 Date: Fri, 22 Nov 2019 14:26:24 +0100
-Subject: [PATCH 125/130] ALSA: hda/hdmi - Clear codec->relaxed_resume flag at
+Subject: [PATCH 107/109] ALSA: hda/hdmi - Clear codec->relaxed_resume flag at
  unbinding
 
 The HDMI codec may leave codec->relaxed_resume flag set even after
@@ -10679,10 +10718,10 @@ Bugzilla: 1772498
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/sound/pci/hda/patch_hdmi.c b/sound/pci/hda/patch_hdmi.c
-index b35652cae616..5393da45b250 100644
+index 2044bbb830f9..1242fba0da89 100644
 --- a/sound/pci/hda/patch_hdmi.c
 +++ b/sound/pci/hda/patch_hdmi.c
-@@ -2311,8 +2311,8 @@ static void generic_hdmi_free(struct hda_codec *codec)
+@@ -2313,8 +2313,8 @@ static void generic_hdmi_free(struct hda_codec *codec)
  		snd_hdac_acomp_exit(&codec->bus->core);
  	} else if (codec_has_acomp(codec)) {
  		snd_hdac_acomp_register_notifier(&codec->bus->core, NULL);
@@ -10693,13 +10732,12 @@ index b35652cae616..5393da45b250 100644
  	for (pin_idx = 0; pin_idx < spec->num_pins; pin_idx++) {
  		struct hdmi_spec_per_pin *per_pin = get_pin(spec, pin_idx);
 -- 
-2.20.1
+2.24.1
 
-
-From 396bdfdd1a2a119b724148d1e6911c6c1f76722b Mon Sep 17 00:00:00 2001
+From d0b0fa3f390ed93d017767c2b562ad587ecf62d7 Mon Sep 17 00:00:00 2001
 From: Alex Deucher <alexander.deucher@amd.com>
 Date: Fri, 22 Nov 2019 16:43:50 -0500
-Subject: [PATCH 126/130] ALSA: hda/hdmi - fix vgaswitcheroo detection for AMD
+Subject: [PATCH 108/109] ALSA: hda/hdmi - fix vgaswitcheroo detection for AMD
 
 Only enable the vga_switcheroo logic on systems with the
 ATPX ACPI method.  This logic is not needed for asics
@@ -10720,7 +10758,7 @@ Bugzilla: 1772498
  1 file changed, 45 insertions(+)
 
 diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
-index e76a0bb6d3cf..ff098957e30f 100644
+index e2c08517a24c..1803475c6cd2 100644
 --- a/sound/pci/hda/hda_intel.c
 +++ b/sound/pci/hda/hda_intel.c
 @@ -35,6 +35,7 @@
@@ -10731,7 +10769,7 @@ index e76a0bb6d3cf..ff098957e30f 100644
  
  #ifdef CONFIG_X86
  /* for snoop control */
-@@ -1401,6 +1402,34 @@ static int azx_dev_free(struct snd_device *device)
+@@ -1402,6 +1403,34 @@ static int azx_dev_free(struct snd_device *device)
  }
  
  #ifdef SUPPORT_VGA_SWITCHEROO
@@ -10766,7 +10804,7 @@ index e76a0bb6d3cf..ff098957e30f 100644
  /*
   * Check of disabled HDMI controller by vga_switcheroo
   */
-@@ -1412,6 +1441,22 @@ static struct pci_dev *get_bound_vga(struct pci_dev *pci)
+@@ -1413,6 +1442,22 @@ static struct pci_dev *get_bound_vga(struct pci_dev *pci)
  	switch (pci->vendor) {
  	case PCI_VENDOR_ID_ATI:
  	case PCI_VENDOR_ID_AMD:
@@ -10790,13 +10828,12 @@ index e76a0bb6d3cf..ff098957e30f 100644
  		if (pci->devfn == 1) {
  			p = pci_get_domain_bus_and_slot(pci_domain_nr(pci->bus),
 -- 
-2.20.1
+2.24.1
 
-
-From a7347cade76e5cf325b36b01fd40fc8471c770a4 Mon Sep 17 00:00:00 2001
+From 424e3c917da439f446b6398cc9e053890619eac9 Mon Sep 17 00:00:00 2001
 From: Alex Deucher <alexander.deucher@amd.com>
 Date: Fri, 22 Nov 2019 16:43:51 -0500
-Subject: [PATCH 127/130] ALSA: hda/hdmi - Add new pci ids for AMD GPU display
+Subject: [PATCH 109/109] ALSA: hda/hdmi - Add new pci ids for AMD GPU display
  audio
 
 These are needed so we can enable runtime pm in a subsequent
@@ -10815,10 +10852,10 @@ Bugzilla: 1772498
  1 file changed, 14 insertions(+)
 
 diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
-index ff098957e30f..bc64d1565868 100644
+index 1803475c6cd2..91c76ef381c6 100644
 --- a/sound/pci/hda/hda_intel.c
 +++ b/sound/pci/hda/hda_intel.c
-@@ -2599,6 +2599,20 @@ static const struct pci_device_id azx_ids[] = {
+@@ -2604,6 +2604,20 @@ static const struct pci_device_id azx_ids[] = {
  	  .driver_data = AZX_DRIVER_ATIHDMI_NS | AZX_DCAPS_PRESET_ATI_HDMI_NS },
  	{ PCI_DEVICE(0x1002, 0xaaf0),
  	  .driver_data = AZX_DRIVER_ATIHDMI_NS | AZX_DCAPS_PRESET_ATI_HDMI_NS },
@@ -10840,4 +10877,5 @@ index ff098957e30f..bc64d1565868 100644
  	{ PCI_DEVICE(0x1106, 0x3288), .driver_data = AZX_DRIVER_VIA },
  	/* VIA GFX VT7122/VX900 */
 -- 
-2.20.1
+2.24.1
+
