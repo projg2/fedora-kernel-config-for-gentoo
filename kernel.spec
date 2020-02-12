@@ -826,6 +826,8 @@ Patch312: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
 Patch313: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
 # https://github.com/raspberrypi/linux/commit/c74b1b53254016fd83b580b8d49bb02d72ce4836
 Patch314: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
+# https://patchwork.kernel.org/patch/11372935/
+Patch315: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
