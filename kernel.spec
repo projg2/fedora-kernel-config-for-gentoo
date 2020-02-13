@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 1
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -2892,6 +2892,9 @@ fi
 #
 #
 %changelog
+* Thu Feb 13 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc1.git2.1
+- Linux v5.6-rc1-23-g0bf999f9c5e7
+
 * Thu Feb 13 2020 Jeremy Cline <jcline@redhat.com>
 - Pull in cdrom ioctl fix (rhbz 1801353)
 
