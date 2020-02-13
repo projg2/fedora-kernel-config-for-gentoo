@@ -861,6 +861,8 @@ Patch528: 0001-x86-Don-t-declare-__force_order-in-kaslr_64.c.patch
 
 Patch529: 0001-Include-kvm_asm.h-and-kvm_arm.h-in-kvm-arm-trace.h.patch
 
+Patch530: 0001-Replace-.ioctl-with-.compat_ioctl-in-three-appropria.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2890,6 +2892,9 @@ fi
 #
 #
 %changelog
+* Thu Feb 13 2020 Jeremy Cline <jcline@redhat.com>
+- Pull in cdrom ioctl fix (rhbz 1801353)
+
 * Tue Feb 11 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc1.git1.1
 - Linux v5.6-rc1-5-g0a679e13ea30
 

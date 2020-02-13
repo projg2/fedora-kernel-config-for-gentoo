@@ -1,0 +1,59 @@
+From 31218a134206dc0d1d74551852b5f7fc42c3c966 Mon Sep 17 00:00:00 2001
+From: Adam Williamson <awilliam@redhat.com>
+Date: Wed, 12 Feb 2020 08:10:19 -0800
+Subject: [PATCH] Replace .ioctl with .compat_ioctl in three appropriate places
+
+Arnd Bergmann inadvertently typoed these in d320a9551e394 and
+64cbfa96551a; they seem to be the cause of
+https://bugzilla.redhat.com/show_bug.cgi?id=1801353 , invalid
+SCSI commands when udev tries to query a DVD drive.
+
+Signed-off-by: Adam Williamson <awilliam@redhat.com>
+---
+ drivers/block/paride/pcd.c | 2 +-
+ drivers/cdrom/gdrom.c      | 2 +-
+ drivers/scsi/sr.c          | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/block/paride/pcd.c b/drivers/block/paride/pcd.c
+index 117cfc8cd05a..cda5cf917e9a 100644
+--- a/drivers/block/paride/pcd.c
++++ b/drivers/block/paride/pcd.c
+@@ -276,7 +276,7 @@ static const struct block_device_operations pcd_bdops = {
+ 	.release	= pcd_block_release,
+ 	.ioctl		= pcd_block_ioctl,
+ #ifdef CONFIG_COMPAT
+-	.ioctl		= blkdev_compat_ptr_ioctl,
++	.compat_ioctl	= blkdev_compat_ptr_ioctl,
+ #endif
+ 	.check_events	= pcd_block_check_events,
+ };
+diff --git a/drivers/cdrom/gdrom.c b/drivers/cdrom/gdrom.c
+index 886b2638c730..0f3f9558716a 100644
+--- a/drivers/cdrom/gdrom.c
++++ b/drivers/cdrom/gdrom.c
+@@ -519,7 +519,7 @@ static const struct block_device_operations gdrom_bdops = {
+ 	.check_events		= gdrom_bdops_check_events,
+ 	.ioctl			= gdrom_bdops_ioctl,
+ #ifdef CONFIG_COMPAT
+-	.ioctl			= blkdev_compat_ptr_ioctl,
++	.compat_ioctl	= blkdev_compat_ptr_ioctl,
+ #endif
+ };
+ 
+diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
+index 0fbb8fe6e521..e4240e4ae8bb 100644
+--- a/drivers/scsi/sr.c
++++ b/drivers/scsi/sr.c
+@@ -688,7 +688,7 @@ static const struct block_device_operations sr_bdops =
+ 	.release	= sr_block_release,
+ 	.ioctl		= sr_block_ioctl,
+ #ifdef CONFIG_COMPAT
+-	.ioctl		= sr_block_compat_ioctl,
++	.compat_ioctl	= sr_block_compat_ioctl,
+ #endif
+ 	.check_events	= sr_block_check_events,
+ 	.revalidate_disk = sr_block_revalidate_disk,
+-- 
+2.25.0
+
