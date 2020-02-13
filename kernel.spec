@@ -819,19 +819,20 @@ Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 Patch304: ARM-tegra-usb-no-reset.patch
 
 # Raspberry Pi
-# https://patchwork.kernel.org/patch/11299997/
-Patch311: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
 # https://patchwork.kernel.org/cover/11353083/
-Patch312: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
+Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
 # https://github.com/raspberrypi/linux/commit/c74b1b53254016fd83b580b8d49bb02d72ce4836
-Patch313: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
+Patch311: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
 # https://patchwork.kernel.org/patch/11372935/
-Patch314: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
+Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # http://patchwork.ozlabs.org/patch/1230891/
 Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
+
+# Coral
+Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
 
 # 400 - IBM (ppc/s390x) patches
 
