@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2888,6 +2888,9 @@ fi
 #
 #
 %changelog
+* Sat Feb 15 2020 Peter Robinson <pbrobinson@fedoraproject.org> - 5.5.4-200
+- Linux v5.5.4
+
 * Tue Feb 11 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.3-200
 - Linux v5.5.3
 
@@ -2897,7 +2900,7 @@ fi
 * Wed Feb 05 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.2-200
 - Linux v5.5.2
 
-* Sun Feb 02 2020 Peter Robinson <pbrobinson@gmail.com> - 5.5.1-200
+* Sun Feb 02 2020 Peter Robinson <pbrobinson@fedoraproject.org> - 5.5.1-200
 - Linux v5.5.1
 
 * Tue Jan 28 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-200
