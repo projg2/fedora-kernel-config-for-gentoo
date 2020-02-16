@@ -830,6 +830,8 @@ Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # http://patchwork.ozlabs.org/patch/1230891/
 Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
+# https://lkml.org/lkml/2020/2/14/401
+Patch323: arm64-tegra-fix-pcie.patch
 
 # Coral
 Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch

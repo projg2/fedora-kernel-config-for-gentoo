@@ -1,1 +1,1 @@
-# CONFIG_HISI_DMA is not set
+CONFIG_HISI_DMA=m
