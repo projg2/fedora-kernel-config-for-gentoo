@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 19
+%define stable_update 20
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2514,6 +2514,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 17 2020 Jeremy Cline <jcline@redhat.com> - 5.4.20-200
+- Linux v5.4.20
+
 * Tue Feb 11 2020 Jeremy Cline <jcline@redhat.com> - 5.4.19-200
 - Linux v5.4.19
 
