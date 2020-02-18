@@ -1,8 +1,6 @@
 # We have to override the new %%install behavior because, well... the kernel is special.
 %global __spec_install_pre %{___build_pre}
 
-%define pe_signing_token OpenSC Card (Fedora Signer)
-
 Summary: The Linux kernel
 
 # For a stable, released kernel, released_kernel should be 1. For rawhide
