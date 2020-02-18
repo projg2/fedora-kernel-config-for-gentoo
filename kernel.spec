@@ -109,7 +109,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 2
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -2896,6 +2896,10 @@ fi
 #
 #
 %changelog
+* Tue Feb 18 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git1.1
+- Linux v5.6-rc2-8-gb1da3acc781c
+- Enable CONFIG_INET_ESPINTCP (rhbz 1804255)
+
 * Tue Feb 18 2020 Jeremy Cline <jcline@redhat.com>
 - Reenable debugging options.
 
