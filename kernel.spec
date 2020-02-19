@@ -868,7 +868,7 @@ Patch530: 0001-Replace-.ioctl-with-.compat_ioctl-in-three-appropria.patch
 Patch531: 0001-mm-Avoid-creating-virtual-address-aliases-in-brk-mma.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1804330
-Patch531: 0001-include-uapi-Fix-invalid-use-of-BITS_PER_LONG-in-__s.patch
+Patch532: 0001-include-uapi-Fix-invalid-use-of-BITS_PER_LONG-in-__s.patch
 
 # END OF PATCH DEFINITIONS
 
