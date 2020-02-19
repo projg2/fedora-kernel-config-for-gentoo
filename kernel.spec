@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 20
+%define stable_update 21
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -558,6 +558,10 @@ Patch523: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
 
 # CVE-2019-18808 rhbz 1777418 1777421
 Patch527: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1797052
+# http://lists.infradead.org/pipermail/linux-arm-kernel/2020-February/712003.html
+Patch528: 0001-mm-Avoid-creating-virtual-address-aliases-in-brk-mma.patch
 
 # https://gitlab.freedesktop.org/drm/intel/issues/673
 Patch612: drm-i915-gt-Detect-if-we-miss-WaIdleLiteRestore.patch
@@ -1804,6 +1808,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 19 2020 Jeremy Cline <jcline@redhat.com> - 5.4.21-100
+- Linux v5.4.21
+
 * Mon Feb 17 2020 Jeremy Cline <jcline@redhat.com> - 5.4.20-100
 - Linux v5.4.20
 
