@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 2
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -864,6 +864,8 @@ Patch528: 0001-x86-Don-t-declare-__force_order-in-kaslr_64.c.patch
 Patch529: 0001-Include-kvm_asm.h-and-kvm_arm.h-in-kvm-arm-trace.h.patch
 
 Patch530: 0001-Replace-.ioctl-with-.compat_ioctl-in-three-appropria.patch
+
+Patch531: 0001-mm-Avoid-creating-virtual-address-aliases-in-brk-mma.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2894,6 +2896,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 19 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git2.1
+- Linux v5.6-rc2-47-g4b205766d8fc
+
 * Tue Feb 18 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git1.1
 - Linux v5.6-rc2-8-gb1da3acc781c
 - Enable CONFIG_INET_ESPINTCP (rhbz 1804255)
