@@ -867,6 +867,9 @@ Patch530: 0001-Replace-.ioctl-with-.compat_ioctl-in-three-appropria.patch
 
 Patch531: 0001-mm-Avoid-creating-virtual-address-aliases-in-brk-mma.patch
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1804330
+Patch531: 0001-include-uapi-Fix-invalid-use-of-BITS_PER_LONG-in-__s.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2896,6 +2899,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 19 2020 Jeremy Cline <jcline@redhat.com>
+- Pick up a uapi fix for qemu (rhbz 1804330)
+
 * Wed Feb 19 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git2.1
 - Linux v5.6-rc2-47-g4b205766d8fc
 
