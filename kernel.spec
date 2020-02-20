@@ -857,7 +857,13 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
 # ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
-Patch527: alsa-5.6.patch
+Patch506: alsa-5.6.patch
+
+# rhbz 1797052
+Patch507: 0001-mm-Avoid-creating-virtual-address-aliases-in-brk-mma.patch
+
+# i915 "critical" patch from upstream
+Patch508: 0001-drm-i915-Serialise-i915_active_acquire-with-__active.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2888,6 +2894,10 @@ fi
 #
 #
 %changelog
+* Thu Feb 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix aarch64 heap corruption issue (rhbz 1797052)
+- Add i915 fix from upstream
+
 * Wed Feb 19 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.5-200
 - Linux v5.5.5
 
