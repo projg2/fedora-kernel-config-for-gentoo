@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 2
 # The git snapshot level
-%define gitrev 2
+%define gitrev 3
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -2899,6 +2899,9 @@ fi
 #
 #
 %changelog
+* Fri Feb 21 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git3.1
+- Linux v5.6-rc2-55-gca7e1fd1026c
+
 * Wed Feb 19 2020 Jeremy Cline <jcline@redhat.com>
 - Pick up a uapi fix for qemu (rhbz 1804330)
 
