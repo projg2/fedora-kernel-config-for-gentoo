@@ -2894,6 +2894,9 @@ fi
 #
 #
 %changelog
+* Fri Feb 21 2020 Jaroslav Kysela <perex@perex.cz>
+- Update alsa-5.6.patch for better SOF support (rhbz 1772498)
+
 * Thu Feb 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix aarch64 heap corruption issue (rhbz 1797052)
 - Add i915 fix from upstream
