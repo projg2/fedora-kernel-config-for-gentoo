@@ -865,6 +865,9 @@ Patch507: 0001-mm-Avoid-creating-virtual-address-aliases-in-brk-mma.patch
 # i915 "critical" patch from upstream
 Patch508: 0001-drm-i915-Serialise-i915_active_acquire-with-__active.patch
 
+# Backport vboxsf from 5.6, can be dropped when we move to 5.6
+Patch509: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2894,6 +2897,9 @@ fi
 #
 #
 %changelog
+* Fri Feb 21 2020 Hans de Goede <hdegoede@redhat.com>
+- Backport Virtual Box Guest shared folder support from 5.6
+
 * Fri Feb 21 2020 Jaroslav Kysela <perex@perex.cz>
 - Update alsa-5.6.patch for better SOF support (rhbz 1772498)
 
