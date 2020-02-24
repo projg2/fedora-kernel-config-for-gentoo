@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -866,7 +866,7 @@ Patch507: 0001-mm-Avoid-creating-virtual-address-aliases-in-brk-mma.patch
 Patch508: 0001-drm-i915-Serialise-i915_active_acquire-with-__active.patch
 
 # Backport vboxsf from 5.6, can be dropped when we move to 5.6
-Patch509: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
+Patch510: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2897,6 +2897,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 24 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.6-200
+- Linux v5.5.6
+
 * Fri Feb 21 2020 Hans de Goede <hdegoede@redhat.com>
 - Backport Virtual Box Guest shared folder support from 5.6
 
