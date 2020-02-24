@@ -105,9 +105,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 2
+%global rcrev 3
 # The git snapshot level
-%define gitrev 3
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -797,7 +797,6 @@ Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 # 200 - x86 / secureboot
 
 # bz 1497559 - Make kernel MODSIGN code not error on missing variables
-Patch200: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
 Patch201: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
 Patch202: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 
@@ -859,16 +858,9 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
 # GCC 10 build fix for x86_64
-Patch528: 0001-x86-Don-t-declare-__force_order-in-kaslr_64.c.patch
-
 Patch529: 0001-Include-kvm_asm.h-and-kvm_arm.h-in-kvm-arm-trace.h.patch
 
-Patch530: 0001-Replace-.ioctl-with-.compat_ioctl-in-three-appropria.patch
-
-Patch531: 0001-mm-Avoid-creating-virtual-address-aliases-in-brk-mma.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1804330
-Patch532: 0001-include-uapi-Fix-invalid-use-of-BITS_PER_LONG-in-__s.patch
+Patch530: 0001-compat_ioctl-cdrom-Replace-.ioctl-with-.compat_ioctl.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2899,6 +2891,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 24 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git0.1
+- Linux v5.6-rc3
+
 * Mon Feb 24 2020 Jeremy Cline <jcline@redhat.com>
 - Disable debugging options.
 
