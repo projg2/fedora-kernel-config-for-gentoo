@@ -1533,7 +1533,7 @@ git am %{patches}
 
 chmod +x scripts/checkpatch.pl
 chmod +x tools/objtool/sync-check.sh
-mv COPYING COPYING-%{version}
+mv COPYING COPYING-%{version}-%{release}
 
 # This Prevents scripts/setlocalversion from mucking with our version numbers.
 touch .scmversion
@@ -2828,7 +2828,7 @@ fi
 %if %{2}\
 %{expand:%%files -f kernel-%{?3:%{3}-}core.list %{?1:-f kernel-%{?3:%{3}-}ldsoconf.list} %{?3:%{3}-}core}\
 %{!?_licensedir:%global license %%doc}\
-%license linux-%{KVERREL}/COPYING-%{version}\
+%license linux-%{KVERREL}/COPYING-%{version}-%{release}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}\
 %ghost /%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/.vmlinuz.hmac \
