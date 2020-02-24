@@ -379,7 +379,7 @@ Requires: kernel-modules-uname-r = %{KVERREL}%{?variant}
 BuildRequires: kmod, patch, bash, tar, git-core
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
-BuildRequires: net-tools, hostname, bc, elfutils-devel, gcc-plugin-devel
+BuildRequires: net-tools, hostname, bc, elfutils-devel, gcc-plugin-devel, dwarves
 %if 0%{?fedora}
 # Used to mangle unversioned shebangs to be Python 3
 BuildRequires: /usr/bin/pathfix.py
