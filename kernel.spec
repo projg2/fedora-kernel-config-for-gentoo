@@ -50,13 +50,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 4
+%define base_sublevel 5
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 21
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -504,6 +504,8 @@ Patch202: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 
 Patch204: efi-secureboot.patch
 
+Patch206: s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
+
 # 300 - ARM patches
 Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 
@@ -515,29 +517,30 @@ Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
 # rhbz 1574718
 Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
-# http://www.spinics.net/lists/linux-tegra/msg26029.html
-Patch304: usb-phy-tegra-Add-38.4MHz-clock-table-entry.patch
-# http://patchwork.ozlabs.org/patch/587554/
-Patch305: ARM-tegra-usb-no-reset.patch
+Patch304: ARM-tegra-usb-no-reset.patch
+
+# Raspberry Pi
+# https://patchwork.kernel.org/cover/11271017/
+Patch310: Raspberry-Pi-4-PCIe-support.patch
+# https://patchwork.kernel.org/patch/11223139/
+Patch311: ARM-Enable-thermal-support-for-Raspberry-Pi-4.patch
+# https://patchwork.kernel.org/patch/11299997/
+Patch312: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
+# https://patchwork.kernel.org/cover/11353083/
+Patch313: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
+# https://github.com/raspberrypi/linux/commit/c74b1b53254016fd83b580b8d49bb02d72ce4836
+Patch314: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
+# https://patchwork.kernel.org/patch/11372935/
+Patch315: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
 # https://www.spinics.net/lists/linux-tegra/msg43110.html
 Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
-# https://patchwork.kernel.org/patch/11171225/
-Patch322: mfd-max77620-Do-not-allocate-IRQs-upfront.patch
-# https://patchwork.ozlabs.org/patch/1170631/
-Patch323: gpio-max77620-Use-correct-unit-for-debounce-times.patch
-# https://www.spinics.net/lists/linux-tegra/msg44216.html
-Patch324: arm64-tegra186-enable-USB-on-Jetson-TX2.patch
-# https://patchwork.kernel.org/patch/11224177/
-Patch325: arm64-usb-host-xhci-tegra-set-MODULE_FIRMWARE-for-tegra186.patch
 
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
-Patch500: PATCH-v2-selinux-allow-labeling-before-policy-is-loaded.patch
-
 # rhbz 1431375
 Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
 
@@ -548,26 +551,29 @@ Patch502: 0001-Drop-that-for-now.patch
 # Submitted upstream at https://lkml.org/lkml/2019/4/23/89
 Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
 
+# Fixes a boot hang on debug kernels
+# https://bugzilla.redhat.com/show_bug.cgi?id=1756655
+Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+
 # it seems CONFIG_OPTIMIZE_INLINING has been forced now and is causing issues on ARMv7
 # https://lore.kernel.org/patchwork/patch/1132459/
 # https://lkml.org/lkml/2019/8/29/1772
-Patch504: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
+Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-# CVE-2019-19054 rhbz 1775063 1775117
-Patch523: media-rc-prevent-memory-leak-in-cx23888_ir_probe.patch
+# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
+Patch506: alsa-5.6.patch
 
-# CVE-2019-18808 rhbz 1777418 1777421
-Patch527: 0001-crypto-ccp-Release-all-allocated-memory-if-sha-type-.patch
+# rhbz 1797052
+Patch507: 0001-mm-Avoid-creating-virtual-address-aliases-in-brk-mma.patch
 
-# https://bugzilla.redhat.com/show_bug.cgi?id=1797052
-# http://lists.infradead.org/pipermail/linux-arm-kernel/2020-February/712003.html
-Patch528: 0001-mm-Avoid-creating-virtual-address-aliases-in-brk-mma.patch
+# i915 "critical" patch from upstream
+Patch508: 0001-drm-i915-Serialise-i915_active_acquire-with-__active.patch
 
-# https://gitlab.freedesktop.org/drm/intel/issues/673
-Patch612: drm-i915-gt-Detect-if-we-miss-WaIdleLiteRestore.patch
+# Backport vboxsf from 5.6, can be dropped when we move to 5.6
+Patch510: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
 
-# This is already in 5.5 rhbz 1794369
-Patch603: 0001-e1000e-Add-support-for-Comet-Lake.patch
+# rhbz 1800335
+Patch511: v2_20200128_dmoulding_me_com.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1100,6 +1106,7 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/diffconfig
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/bloat-o-meter
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/show_delta
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/jobserver-exec
 %endif
 
 cd ..
@@ -1808,6 +1815,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 24 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.6-100
+- Linux v5.5.6 rebase
+
 * Wed Feb 19 2020 Jeremy Cline <jcline@redhat.com> - 5.4.21-100
 - Linux v5.4.21
 
