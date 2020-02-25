@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 3
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -2948,6 +2948,9 @@ fi
 #
 #
 %changelog
+* Tue Feb 25 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git1.1
+- Linux v5.6-rc3-26-g63623fd44972
+
 * Tue Feb 25 2020 Jeremy Cline <jcline@redhat.com>
 - Reenable debugging options.
 
