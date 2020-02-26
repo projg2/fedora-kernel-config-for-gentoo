@@ -826,6 +826,10 @@ Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
 Patch311: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
 # https://patchwork.kernel.org/patch/11372935/
 Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
+# https://patchwork.kernel.org/patch/11398981/
+Patch313: ARM-dts-bcm283x-Add-missing-properties-to-the-PWR-LED.patch
+# https://patchwork.kernel.org/patch/11406785/
+Patch314: ARM-dts-bcm2711-Add-pcie0-alias.patch
 
 # Tegra bits
 Patch320: arm64-tegra-jetson-tx1-fixes.patch
