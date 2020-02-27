@@ -841,6 +841,17 @@ Patch323: arm64-tegra-fix-pcie.patch
 # Coral
 Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
 
+# Pine64 bits
+# 340-344 queued for 5.7
+Patch340: arm64-pinebook-fixes.patch
+Patch341: arm64-a64-mbus.patch
+# https://patchwork.kernel.org/cover/11405517/
+Patch342: Add-LCD-support-for-Pine64-Pinebook-1080p.patch
+# https://lkml.org/lkml/2020/1/15/1320
+Patch343: arm64-pine64-pinetab.patch
+# https://www.spinics.net/lists/arm-kernel/msg789135.html
+Patch344: arm64-pine64-pinephone.patch
+
 # 400 - IBM (ppc/s390x) patches
 
 # 500 - Temp fixes/CVEs etc
@@ -2952,6 +2963,9 @@ fi
 #
 #
 %changelog
+* Thu Feb 27 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fixes and enhancements to some AllWinner Pine64 devices
+
 * Thu Feb 27 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git2.1
 - Linux v5.6-rc3-71-gbfdc6d91a25f
 
