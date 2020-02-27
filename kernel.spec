@@ -856,6 +856,8 @@ Patch342: Add-LCD-support-for-Pine64-Pinebook-1080p.patch
 Patch343: arm64-pine64-pinetab.patch
 # https://www.spinics.net/lists/arm-kernel/msg789135.html
 Patch344: arm64-pine64-pinephone.patch
+# https://patchwork.kernel.org/cover/11409453/
+Patch345: Add-support-for-the-pine64-Pinebook-Pro.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -2971,6 +2973,7 @@ fi
 * Thu Feb 27 2020 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fixes and enhancements to some AllWinner Pine64 devices
 - Some fixes for Tegra devices
+- Initial support for the Pinebook Pro
 
 * Thu Feb 27 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git2.1
 - Linux v5.6-rc3-71-gbfdc6d91a25f
