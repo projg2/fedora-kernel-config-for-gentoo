@@ -832,11 +832,16 @@ Patch313: ARM-dts-bcm283x-Add-missing-properties-to-the-PWR-LED.patch
 Patch314: ARM-dts-bcm2711-Add-pcie0-alias.patch
 
 # Tegra bits
-Patch320: arm64-tegra-jetson-tx1-fixes.patch
+# https://www.spinics.net/lists/linux-tegra/msg48152.html
+Patch320: ARM64-Tegra-fixes.patch
 # http://patchwork.ozlabs.org/patch/1230891/
 Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
 # https://lkml.org/lkml/2020/2/14/401
 Patch323: arm64-tegra-fix-pcie.patch
+# http://patchwork.ozlabs.org/patch/1243162/
+Patch324: regulator-pwm-Don-t-warn-on-probe-deferral.patch
+# http://patchwork.ozlabs.org/patch/1243112/
+Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
 
 # Coral
 Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
@@ -2965,6 +2970,7 @@ fi
 %changelog
 * Thu Feb 27 2020 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fixes and enhancements to some AllWinner Pine64 devices
+- Some fixes for Tegra devices
 
 * Thu Feb 27 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git2.1
 - Linux v5.6-rc3-71-gbfdc6d91a25f
