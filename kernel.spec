@@ -871,6 +871,9 @@ Patch510: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
 # rhbz 1800335
 Patch511: v2_20200128_dmoulding_me_com.patch
 
+# Fix 5.5.6 sof_hda regression (rhbz#1772498)
+Patch512: 0001-ASoC-SOF-Intel-hda-Add-iDisp4-DAI.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2900,6 +2903,9 @@ fi
 #
 #
 %changelog
+* Thu Feb 27 2020 Hans de Goede <hdegoede@redhat.com>
+- Fix 5.5.6 sof_hda regression (rhbz 1772498)
+
 * Mon Feb 24 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.6-201
 - Fix for some iwlwifi users (rhbz 1800335)
 
