@@ -1,27 +1,27 @@
-From patchwork Fri Feb 28 20:38:05 2020
+From patchwork Sat Feb 29 14:48:16 2020
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Patchwork-Submitter: Tobias Schramm <t.schramm@manjaro.org>
-X-Patchwork-Id: 11413257
+X-Patchwork-Id: 11413869
 Return-Path: 
- <SRS0=MlS+=4Q=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+ <SRS0=5RQY=4R=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
 Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
  [172.30.200.123])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id DA0F314B7
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 9EF2492A
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Fri, 28 Feb 2020 20:38:56 +0000 (UTC)
+ Sat, 29 Feb 2020 14:49:45 +0000 (UTC)
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9907120665
+	by mail.kernel.org (Postfix) with ESMTPS id 77180246B6
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Fri, 28 Feb 2020 20:38:56 +0000 (UTC)
+ Sat, 29 Feb 2020 14:49:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
 	dkim=pass (2048-bit key) header.d=lists.infradead.org
- header.i=@lists.infradead.org header.b="YXWmxAFq"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9907120665
+ header.i=@lists.infradead.org header.b="RHsOi5hi"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 77180246B6
 Authentication-Results: mail.kernel.org;
  dmarc=none (p=none dis=none) header.from=manjaro.org
 Authentication-Results: mail.kernel.org;
@@ -33,37 +33,38 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=h/bjgfr91fZ1KZuzWySbDMgfYlU9zrxcpzCo6rLIKjo=; b=YXWmxAFqAems36
-	AXGi8MWYNoT9dq7RwNKJDcnCq3jLERDKVce2GDjX59H4kgSokPRclZKEw5EvZmz+WTjN+/jkHDNGY
-	iBHgaCj2650G6WDVmo1k4oF4CrayZ82eAR43wa/7VqpUrk1aNlKwj/RmQcMisRXLBwx2z88RtO28K
-	SKWTP8QFTaTMY1RIluUWl66wrhSQ9Yxkl30F8JjwPmF9spOhju9XtwfEIjHxXtDGTB/QTwjINABet
-	hOuietK9SbZ4yRb8I/2VrjtdTX1hWat1lKK7DpBFORfen0P/HTRnrdsgA7i71HgTq2pAJs02m5swg
-	EE7s1n1vWs4iYI8FT6WA==;
+	List-Owner; bh=h/bjgfr91fZ1KZuzWySbDMgfYlU9zrxcpzCo6rLIKjo=; b=RHsOi5hiJBlboe
+	7ru5614nnG35xhPZXrji4oqJJQprDe4ZKdxlD+1WaPtfloPwy9qyrCe+omFdiwajjHHvXqOgYlAXh
+	CSfc6swRfl/U4pVnZ/lUkfVOjMxjOLbhwWtsJTgpVWzrx54MZV3h+GCRhGuyL2ExXv3nTtsWlb+VC
+	5bDLE8YkSZKs89+uuj8Tp9TnIaGRXq0A+gFRFM4AhyrArlH/jBCPCcpjqR0Nlk9lKCxJdAwQFimQh
+	Zm+Ge5Y7MobQdbO97Ajfo50dMMPczxqDZMaTQjYrZCUX1irgZjN6sTqK2gMJXbujfaWB9gYGlBPFU
+	euENlsPFZV3/E3I9tJtw==;
 Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
 	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1j7mPQ-0002jG-7f; Fri, 28 Feb 2020 20:38:56 +0000
+	id 1j83R2-00067V-NF; Sat, 29 Feb 2020 14:49:44 +0000
 Received: from mail.manjaro.org ([176.9.38.148])
  by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
- id 1j7mP0-0002Qa-Ol; Fri, 28 Feb 2020 20:38:32 +0000
+ id 1j83Qp-0005ww-Mw; Sat, 29 Feb 2020 14:49:33 +0000
 Received: from localhost (localhost [127.0.0.1])
- by mail.manjaro.org (Postfix) with ESMTP id 2FEF039410F4;
- Fri, 28 Feb 2020 21:38:29 +0100 (CET)
+ by mail.manjaro.org (Postfix) with ESMTP id 581173C40D8B;
+ Sat, 29 Feb 2020 15:49:30 +0100 (CET)
 X-Virus-Scanned: Debian amavisd-new at manjaro.org
 Received: from mail.manjaro.org ([127.0.0.1])
  by localhost (manjaro.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TL5Jfq-EP7pq; Fri, 28 Feb 2020 21:38:26 +0100 (CET)
+ with ESMTP id LUE0dUV5ZXet; Sat, 29 Feb 2020 15:49:28 +0100 (CET)
 From: Tobias Schramm <t.schramm@manjaro.org>
 To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
- Heiko Stuebner <heiko@sntech.de>, Andy Yan <andy.yan@rock-chips.com>
-Subject: [PATCH v2 1/2] dt-bindings: Add doc for pine64 Pinebook Pro
-Date: Fri, 28 Feb 2020 21:38:05 +0100
-Message-Id: <20200228203806.346299-2-t.schramm@manjaro.org>
-In-Reply-To: <20200228203806.346299-1-t.schramm@manjaro.org>
-References: <20200228203806.346299-1-t.schramm@manjaro.org>
+ Heiko Stuebner <heiko@sntech.de>, Andy Yan <andy.yan@rock-chips.com>,
+ Johan Jonker <jbx6244@gmail.com>
+Subject: [PATCH v3 1/2] dt-bindings: Add doc for pine64 Pinebook Pro
+Date: Sat, 29 Feb 2020 15:48:16 +0100
+Message-Id: <20200229144817.355678-2-t.schramm@manjaro.org>
+In-Reply-To: <20200229144817.355678-1-t.schramm@manjaro.org>
+References: <20200229144817.355678-1-t.schramm@manjaro.org>
 MIME-Version: 1.0
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20200228_123830_980219_43336D2F 
-X-CRM114-Status: UNSURE (   7.19  )
+X-CRM114-CacheID: sfid-20200229_064931_972132_5A8F359D 
+X-CRM114-Status: UNSURE (   7.40  )
 X-CRM114-Notice: Please train this message.
 X-Spam-Score: 0.0 (/)
 X-Spam-Report: SpamAssassin version 3.4.3 on bombadil.infradead.org summary:
@@ -125,30 +126,30 @@ index 874b0eaa2a75..482a0cbfb18a 100644
          items:
            - const: pine64,rock64
 
-From patchwork Fri Feb 28 20:38:06 2020
+From patchwork Sat Feb 29 14:48:17 2020
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Patchwork-Submitter: Tobias Schramm <t.schramm@manjaro.org>
-X-Patchwork-Id: 11413263
+X-Patchwork-Id: 11413875
 Return-Path: 
- <SRS0=MlS+=4Q=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+ <SRS0=5RQY=4R=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
 Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
  [172.30.200.123])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 6B51D14B7
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 8087592A
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Fri, 28 Feb 2020 20:39:22 +0000 (UTC)
+ Sat, 29 Feb 2020 14:50:09 +0000 (UTC)
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3C6E6246A3
+	by mail.kernel.org (Postfix) with ESMTPS id 442A12469C
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Fri, 28 Feb 2020 20:39:22 +0000 (UTC)
+ Sat, 29 Feb 2020 14:50:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
 	dkim=pass (2048-bit key) header.d=lists.infradead.org
- header.i=@lists.infradead.org header.b="f58W4YyN"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C6E6246A3
+ header.i=@lists.infradead.org header.b="FlyBUQCX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 442A12469C
 Authentication-Results: mail.kernel.org;
  dmarc=none (p=none dis=none) header.from=manjaro.org
 Authentication-Results: mail.kernel.org;
@@ -160,38 +161,39 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=oYKf5BXhJeZE84qLT1ML53bJfYsMe7jq5hYDyQbeRSY=; b=f58W4YyNv7bNZ1
-	wZcuXuIhxzCSMr9Zvi66Y3lItXH2mBMtR+TBFFrwztZW5Qz2+kpkBUrGb3DMHPCTugpAUfVIAmzXK
-	6/HnVJDqewj749FqgN0JTEQMZgeee3hWhERcTtvoun+kWGVarfu4cVorkg3EhsfTNWmTd58b7ra2i
-	WQRFS55fpoF6PNjhlw2uAaaUIjnBrPdWayUOdwlAgYd2sLE17AXSZ8ve7aEs53zDpQR8mQP8X4PJv
-	77ELjK2fEERUs6uF+A5NgDpk6RdKEI8E2rBITQbvC58sDdJ6MC8y+4xyumL5pESOKrMt1mq5Rbfgx
-	x1Oe7UJkPGkxyq12+dQA==;
+	List-Owner; bh=mDLDmKMxYTjLx5H/b22LNHT76K+B14bbv7jWdIjIykg=; b=FlyBUQCXysktd8
+	ET9+7KGBQLutUm6LEwJiI9hZoZmM014frNwK6UAv08zPTFTMuBrITLVO4ienTLwEZUHmtpo4t5uUi
+	OGPeWMPGZhFfkU2h3V4Kze+co3lxtBq3brL/O+8fnwX7GI75Jw8wUhzopbPjq9XJsNhrMOB74OGy3
+	qoimmR8pubT3ag0ngt35GX5DIlWNxzfDTz6x8h1JsRov4pD8rfJgQsnEbt3chjz8C8EazS3sdcuEF
+	Ggo7qM7oAVhzc9AUdmtFx5xL+5VDUgTcdMlqyA7qIODAEayc2mNtXuUSK9dvhmdZ2z2QFi8kvZVTN
+	jaRIzBTusM70Wql4uTLQ==;
 Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
 	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1j7mPo-00032L-BE; Fri, 28 Feb 2020 20:39:20 +0000
+	id 1j83RP-0006jj-B8; Sat, 29 Feb 2020 14:50:07 +0000
 Received: from mail.manjaro.org ([176.9.38.148])
  by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
- id 1j7mP7-0002Wp-O2; Fri, 28 Feb 2020 20:38:56 +0000
+ id 1j83R2-00066x-Bh; Sat, 29 Feb 2020 14:49:47 +0000
 Received: from localhost (localhost [127.0.0.1])
- by mail.manjaro.org (Postfix) with ESMTP id 0EA353940DFC;
- Fri, 28 Feb 2020 21:38:36 +0100 (CET)
+ by mail.manjaro.org (Postfix) with ESMTP id 4B9FD3C40D8B;
+ Sat, 29 Feb 2020 15:49:42 +0100 (CET)
 X-Virus-Scanned: Debian amavisd-new at manjaro.org
 Received: from mail.manjaro.org ([127.0.0.1])
  by localhost (manjaro.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rCymrEqjijSV; Fri, 28 Feb 2020 21:38:30 +0100 (CET)
+ with ESMTP id hzqNYgsWfm-j; Sat, 29 Feb 2020 15:49:39 +0100 (CET)
 From: Tobias Schramm <t.schramm@manjaro.org>
 To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
- Heiko Stuebner <heiko@sntech.de>, Andy Yan <andy.yan@rock-chips.com>
-Subject: [PATCH v2 2/2] arm64: dts: rockchip: Add initial support for Pinebook
+ Heiko Stuebner <heiko@sntech.de>, Andy Yan <andy.yan@rock-chips.com>,
+ Johan Jonker <jbx6244@gmail.com>
+Subject: [PATCH v3 2/2] arm64: dts: rockchip: Add initial support for Pinebook
  Pro
-Date: Fri, 28 Feb 2020 21:38:06 +0100
-Message-Id: <20200228203806.346299-3-t.schramm@manjaro.org>
-In-Reply-To: <20200228203806.346299-1-t.schramm@manjaro.org>
-References: <20200228203806.346299-1-t.schramm@manjaro.org>
+Date: Sat, 29 Feb 2020 15:48:17 +0100
+Message-Id: <20200229144817.355678-3-t.schramm@manjaro.org>
+In-Reply-To: <20200229144817.355678-1-t.schramm@manjaro.org>
+References: <20200229144817.355678-1-t.schramm@manjaro.org>
 MIME-Version: 1.0
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20200228_123838_121468_545F1AD7 
-X-CRM114-Status: GOOD (  14.00  )
+X-CRM114-CacheID: sfid-20200229_064944_758882_2960AFAB 
+X-CRM114-Status: GOOD (  13.83  )
 X-Spam-Score: 0.0 (/)
 X-Spam-Report: SpamAssassin version 3.4.3 on bombadil.infradead.org summary:
  Content analysis details:   (0.0 points)
@@ -233,8 +235,8 @@ This commit adds initial dt support for the rk3399 based Pinebook Pro.
 Signed-off-by: Tobias Schramm <t.schramm@manjaro.org>
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |    1 +
- .../boot/dts/rockchip/rk3399-pinebook-pro.dts | 1119 +++++++++++++++++
- 2 files changed, 1120 insertions(+)
+ .../boot/dts/rockchip/rk3399-pinebook-pro.dts | 1105 +++++++++++++++++
+ 2 files changed, 1106 insertions(+)
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
 
 diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
@@ -251,10 +253,10 @@ index 60d9437096c7..ae7621309e92 100644
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-roc-pc-mezzanine.dtb
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
 new file mode 100644
-index 000000000000..3873f6c63dfc
+index 000000000000..dfade7e00051
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
-@@ -0,0 +1,1119 @@
+@@ -0,0 +1,1105 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd.
@@ -286,20 +288,16 @@ index 000000000000..3873f6c63dfc
 +	};
 +
 +	edp_panel: edp-panel {
-+		compatible = "boe,nv140fhmn49", "simple-panel";
++		compatible = "boe,nv140fhmn49";
 +		backlight = <&backlight>;
-+
-+		enable-delay-ms = <20>;
 +		enable-gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&panel_en_gpio>;
-+
 +		power-supply = <&vcc3v3_panel>;
-+		prepare-delay-ms = <20>;
 +
 +		ports {
-+			#address-cells = <0x01>;
-+			#size-cells = <0x00>;
++			#address-cells = <1>;
++			#size-cells = <0>;
 +			port@0 {
 +				panel_in_edp: endpoint@0 {
 +					remote-endpoint = <&edp_out_panel>;
@@ -585,7 +583,7 @@ index 000000000000..3873f6c63dfc
 +		};
 +	};
 +
-+	/* Regualtors supplied by vcc5v0_usb */
++	/* Regulators supplied by vcc5v0_usb */
 +	/* Type C port power supply regulator */
 +	vbus_5vout: vbus_typec: vbus-5vout {
 +		compatible = "regulator-fixed";
@@ -603,7 +601,7 @@ index 000000000000..3873f6c63dfc
 +		};
 +	};
 +
-+	/* Regualtors supplied by vcc_1v8 */
++	/* Regulators supplied by vcc_1v8 */
 +	/* Primary 0.9 V LDO */
 +	vcca0v9_s3: vcca0v9-s3 {
 +		compatible = "regulator-fixed";
@@ -657,10 +655,10 @@ index 000000000000..3873f6c63dfc
 +};
 +
 +&edp {
-+	status = "okay";
 +	force-hpd;
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&edp_hpd>;
++	status = "okay";
 +
 +	ports {
 +		edp_out: port@1 {
@@ -920,11 +918,10 @@ index 000000000000..3873f6c63dfc
 +};
 +
 +&i2c1 {
-+	i2c-scl-rising-time-ns = <168>;
-+	i2c-scl-falling-time-ns = <4>;
-+	status = "okay";
-+
 +	clock-frequency = <100000>;
++	i2c-scl-falling-time-ns = <4>;
++	i2c-scl-rising-time-ns = <168>;
++	status = "okay";
 +
 +	es8316: es8316@11 {
 +		compatible = "everest,es8316";
@@ -936,14 +933,14 @@ index 000000000000..3873f6c63dfc
 +};
 +
 +&i2c3 {
-+	i2c-scl-rising-time-ns = <450>;
 +	i2c-scl-falling-time-ns = <15>;
++	i2c-scl-rising-time-ns = <450>;
 +	status = "okay";
 +};
 +
 +&i2c4 {
-+	i2c-scl-rising-time-ns = <600>;
 +	i2c-scl-falling-time-ns = <20>;
++	i2c-scl-rising-time-ns = <600>;
 +	status = "okay";
 +
 +	fusb0: fusb30x@22 {
@@ -1005,11 +1002,10 @@ index 000000000000..3873f6c63dfc
 +};
 +
 +&io_domains {
-+	status = "okay";
-+
 +	audio-supply = <&vcc_3v0>;
-+	sdmmc-supply = <&vcc_sdio>;
 +	gpio1830-supply = <&vcc_3v0>;
++	sdmmc-supply = <&vcc_sdio>;
++	status = "okay";
 +};
 +
 +&pcie_phy {
@@ -1023,10 +1019,10 @@ index 000000000000..3873f6c63dfc
 +	num-lanes = <4>;
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pcie_clkreqn_cpm>;
-+	status = "okay";
 +	vpcie0v9-supply = <&vcca0v9_s3>;
 +	vpcie1v8-supply = <&vcca1v8_s3>;
 +	vpcie3v3-supply = <&vcc3v3_ssd>;
++	status = "okay";
 +};
 +
 +&pinctrl {
@@ -1047,8 +1043,7 @@ index 000000000000..3873f6c63dfc
 +
 +	es8316 {
 +		hp_det_gpio: hp-det-gpio {
-+			rockchip,pins =
-+				<0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_down>;
++			rockchip,pins = <0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_down>;
 +		};
 +	};
 +
@@ -1060,7 +1055,7 @@ index 000000000000..3873f6c63dfc
 +
 +	i2s1 {
 +		i2s_8ch_mclk_gpio: i2s-8ch-mclk-gpio {
-+			rockchip,pins = <4 0 RK_FUNC_1 &pcfg_pull_none>;
++			rockchip,pins = <4 RK_PA0 1 &pcfg_pull_none>;
 +		};
 +	};
 +
@@ -1133,17 +1128,14 @@ index 000000000000..3873f6c63dfc
 +
 +	wireless-bluetooth {
 +		bt_wake_gpio: bt-wake-gpio {
-+			rockchip,pins =
-+				<2 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
++			rockchip,pins = <2 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +		bt_host_wake_gpio: bt-host-wake-gpio {
-+			rockchip,pins =
-+				<0 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
++			rockchip,pins = <0 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +
 +		bt_reset_gpio: bt-reset-gpio {
-+			rockchip,pins =
-+				<0 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
++			rockchip,pins = <0 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
 +		};
 +	};
 +};
@@ -1172,7 +1164,6 @@ index 000000000000..3873f6c63dfc
 +	cap-sd-highspeed;
 +	cd-gpios = <&gpio0 RK_PA7 GPIO_ACTIVE_LOW>;
 +	disable-wp;
-+	max-frequency = <150000000>;
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_bus4>;
 +	sd-uhs-sdr104;
@@ -1183,7 +1174,6 @@ index 000000000000..3873f6c63dfc
 +	bus-width = <4>;
 +	cap-sd-highspeed;
 +	cap-sdio-irq;
-+	disable-wp;
 +	keep-power-in-suspend;
 +	mmc-pwrseq = <&sdio_pwrseq>;
 +	non-removable;
@@ -1201,15 +1191,13 @@ index 000000000000..3873f6c63dfc
 +};
 +
 +&spi1 {
-+	status = "okay";
 +	max-freq = <10000000>;
++	status = "okay";
 +
-+	spiflash: spi-flash@0 {
-+		#address-cells = <0x1>;
-+		#size-cells = <1>;
++	spiflash: flash@0 {
 +		compatible = "jedec,spi-nor";
 +		m25p,fast-read;
-+		reg = <0x0>;
++		reg = <0>;
 +		spi-max-frequency = <10000000>;
 +		status = "okay";
 +
@@ -1303,8 +1291,8 @@ index 000000000000..3873f6c63dfc
 +&uart0 {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
-+	status = "okay";
 +	uart-has-rtscts;
++	status = "okay";
 +
 +	bluetooth {
 +		compatible = "brcm,bcm4345c5";
