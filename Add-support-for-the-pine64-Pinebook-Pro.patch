@@ -1,27 +1,27 @@
-From patchwork Thu Feb 27 18:06:29 2020
+From patchwork Fri Feb 28 20:38:05 2020
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Patchwork-Submitter: Tobias Schramm <t.schramm@manjaro.org>
-X-Patchwork-Id: 11409455
+X-Patchwork-Id: 11413257
 Return-Path: 
- <SRS0=ziGv=4P=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+ <SRS0=MlS+=4Q=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
 Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
  [172.30.200.123])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id B476514B4
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id DA0F314B7
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Thu, 27 Feb 2020 18:28:38 +0000 (UTC)
+ Fri, 28 Feb 2020 20:38:56 +0000 (UTC)
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7B79120726
+	by mail.kernel.org (Postfix) with ESMTPS id 9907120665
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Thu, 27 Feb 2020 18:28:38 +0000 (UTC)
+ Fri, 28 Feb 2020 20:38:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
 	dkim=pass (2048-bit key) header.d=lists.infradead.org
- header.i=@lists.infradead.org header.b="BktI1SFA"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B79120726
+ header.i=@lists.infradead.org header.b="YXWmxAFq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9907120665
 Authentication-Results: mail.kernel.org;
  dmarc=none (p=none dis=none) header.from=manjaro.org
 Authentication-Results: mail.kernel.org;
@@ -33,37 +33,37 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=h/bjgfr91fZ1KZuzWySbDMgfYlU9zrxcpzCo6rLIKjo=; b=BktI1SFAGxHcSH
-	tt/nX4kJRUacxikYWePV5qIKl6MwMwpcLMv2QEZ6hCo1WiDBQG4HxgTAO+t3xZEQ8+o0SdgnT+GWL
-	9CG/W3KOxcYePKqsFSuis6cLjrsDVSA8+j4hL5UEpwSSAtDFBF2K3f5R4eLcrQueo5VvJ+ou3Pb3Q
-	NOhTL99v162cxrmFr3H51To4ZDwBz4bnEmo+XwidtRpcA6nq7ck3vSOgqqkw5kJZQ2SfTe7XIRQZz
-	RJ54XxNa1lzf8rtsABCHHHy+0evCjlsbKWnSx7/bAsgI7UxTQzxoCUgOMuHrYGQxd/JhdPDzNttsf
-	pLCzuygZ692nwV7LUu6g==;
+	List-Owner; bh=h/bjgfr91fZ1KZuzWySbDMgfYlU9zrxcpzCo6rLIKjo=; b=YXWmxAFqAems36
+	AXGi8MWYNoT9dq7RwNKJDcnCq3jLERDKVce2GDjX59H4kgSokPRclZKEw5EvZmz+WTjN+/jkHDNGY
+	iBHgaCj2650G6WDVmo1k4oF4CrayZ82eAR43wa/7VqpUrk1aNlKwj/RmQcMisRXLBwx2z88RtO28K
+	SKWTP8QFTaTMY1RIluUWl66wrhSQ9Yxkl30F8JjwPmF9spOhju9XtwfEIjHxXtDGTB/QTwjINABet
+	hOuietK9SbZ4yRb8I/2VrjtdTX1hWat1lKK7DpBFORfen0P/HTRnrdsgA7i71HgTq2pAJs02m5swg
+	EE7s1n1vWs4iYI8FT6WA==;
 Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
 	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1j7Ntl-0005ZK-Ai; Thu, 27 Feb 2020 18:28:37 +0000
+	id 1j7mPQ-0002jG-7f; Fri, 28 Feb 2020 20:38:56 +0000
 Received: from mail.manjaro.org ([176.9.38.148])
  by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
- id 1j7NqQ-0001f6-FZ; Thu, 27 Feb 2020 18:25:12 +0000
+ id 1j7mP0-0002Qa-Ol; Fri, 28 Feb 2020 20:38:32 +0000
 Received: from localhost (localhost [127.0.0.1])
- by mail.manjaro.org (Postfix) with ESMTP id 275C938C69BB;
- Thu, 27 Feb 2020 19:07:23 +0100 (CET)
+ by mail.manjaro.org (Postfix) with ESMTP id 2FEF039410F4;
+ Fri, 28 Feb 2020 21:38:29 +0100 (CET)
 X-Virus-Scanned: Debian amavisd-new at manjaro.org
 Received: from mail.manjaro.org ([127.0.0.1])
  by localhost (manjaro.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PSds-qT7qT7D; Thu, 27 Feb 2020 19:07:20 +0100 (CET)
+ with ESMTP id TL5Jfq-EP7pq; Fri, 28 Feb 2020 21:38:26 +0100 (CET)
 From: Tobias Schramm <t.schramm@manjaro.org>
 To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
  Heiko Stuebner <heiko@sntech.de>, Andy Yan <andy.yan@rock-chips.com>
-Subject: [PATCH 1/2] dt-bindings: Add doc for pine64 Pinebook Pro
-Date: Thu, 27 Feb 2020 19:06:29 +0100
-Message-Id: <20200227180630.166982-2-t.schramm@manjaro.org>
-In-Reply-To: <20200227180630.166982-1-t.schramm@manjaro.org>
-References: <20200227180630.166982-1-t.schramm@manjaro.org>
+Subject: [PATCH v2 1/2] dt-bindings: Add doc for pine64 Pinebook Pro
+Date: Fri, 28 Feb 2020 21:38:05 +0100
+Message-Id: <20200228203806.346299-2-t.schramm@manjaro.org>
+In-Reply-To: <20200228203806.346299-1-t.schramm@manjaro.org>
+References: <20200228203806.346299-1-t.schramm@manjaro.org>
 MIME-Version: 1.0
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20200227_102510_737308_00BD468A 
-X-CRM114-Status: UNSURE (   7.55  )
+X-CRM114-CacheID: sfid-20200228_123830_980219_43336D2F 
+X-CRM114-Status: UNSURE (   7.19  )
 X-CRM114-Notice: Please train this message.
 X-Spam-Score: 0.0 (/)
 X-Spam-Report: SpamAssassin version 3.4.3 on bombadil.infradead.org summary:
@@ -125,30 +125,30 @@ index 874b0eaa2a75..482a0cbfb18a 100644
          items:
            - const: pine64,rock64
 
-From patchwork Thu Feb 27 18:06:30 2020
+From patchwork Fri Feb 28 20:38:06 2020
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Patchwork-Submitter: Tobias Schramm <t.schramm@manjaro.org>
-X-Patchwork-Id: 11409461
+X-Patchwork-Id: 11413263
 Return-Path: 
- <SRS0=ziGv=4P=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+ <SRS0=MlS+=4Q=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
 Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
  [172.30.200.123])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id B939692A
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 6B51D14B7
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Thu, 27 Feb 2020 18:29:02 +0000 (UTC)
+ Fri, 28 Feb 2020 20:39:22 +0000 (UTC)
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 87EE720726
+	by mail.kernel.org (Postfix) with ESMTPS id 3C6E6246A3
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Thu, 27 Feb 2020 18:29:02 +0000 (UTC)
+ Fri, 28 Feb 2020 20:39:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
 	dkim=pass (2048-bit key) header.d=lists.infradead.org
- header.i=@lists.infradead.org header.b="cQDTH4+E"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 87EE720726
+ header.i=@lists.infradead.org header.b="f58W4YyN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C6E6246A3
 Authentication-Results: mail.kernel.org;
  dmarc=none (p=none dis=none) header.from=manjaro.org
 Authentication-Results: mail.kernel.org;
@@ -160,38 +160,38 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=DVpXhPNc4G9BqdQVQi+M7lXH02+WvacIjbqFgO6OvxE=; b=cQDTH4+ETNsn/s
-	9VNr4ZVTRDRrU+ip0nQlWd0sA4lrLEt5ERjzA6vARMG0UbGEzUFmv06VpsjbfTGpiUKYsuoctxsfN
-	PxtWlzDyZ+KbPnYI/zFNx7KUZ1jB5EuhTyQnLDoBqESrmqjmKSIT5KDI0uvqDoM18Kt6AI7iKfMEU
-	+mT/w/BAJoK7DQOeKaJ6rneYNy5OglcY4KlzQdFv3oBlJyNQzXtGjrCRV+2OfsYFRSuBd6YukYMlq
-	4GszdUZKQYpVkoFNsBjcGlFt82l/1++LXvb1n+834RmTiJN/lp0SKY1lbhyWfNd8LbxhPXxRrt9Zc
-	fi5otaOoFkTm7/iExhhA==;
+	List-Owner; bh=oYKf5BXhJeZE84qLT1ML53bJfYsMe7jq5hYDyQbeRSY=; b=f58W4YyNv7bNZ1
+	wZcuXuIhxzCSMr9Zvi66Y3lItXH2mBMtR+TBFFrwztZW5Qz2+kpkBUrGb3DMHPCTugpAUfVIAmzXK
+	6/HnVJDqewj749FqgN0JTEQMZgeee3hWhERcTtvoun+kWGVarfu4cVorkg3EhsfTNWmTd58b7ra2i
+	WQRFS55fpoF6PNjhlw2uAaaUIjnBrPdWayUOdwlAgYd2sLE17AXSZ8ve7aEs53zDpQR8mQP8X4PJv
+	77ELjK2fEERUs6uF+A5NgDpk6RdKEI8E2rBITQbvC58sDdJ6MC8y+4xyumL5pESOKrMt1mq5Rbfgx
+	x1Oe7UJkPGkxyq12+dQA==;
 Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
 	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1j7Nu8-0005t6-68; Thu, 27 Feb 2020 18:29:00 +0000
+	id 1j7mPo-00032L-BE; Fri, 28 Feb 2020 20:39:20 +0000
 Received: from mail.manjaro.org ([176.9.38.148])
  by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
- id 1j7NqP-0001fI-SF; Thu, 27 Feb 2020 18:25:16 +0000
+ id 1j7mP7-0002Wp-O2; Fri, 28 Feb 2020 20:38:56 +0000
 Received: from localhost (localhost [127.0.0.1])
- by mail.manjaro.org (Postfix) with ESMTP id D90D638C69C9;
- Thu, 27 Feb 2020 19:07:27 +0100 (CET)
+ by mail.manjaro.org (Postfix) with ESMTP id 0EA353940DFC;
+ Fri, 28 Feb 2020 21:38:36 +0100 (CET)
 X-Virus-Scanned: Debian amavisd-new at manjaro.org
 Received: from mail.manjaro.org ([127.0.0.1])
  by localhost (manjaro.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7d3lcuj0oTJG; Thu, 27 Feb 2020 19:07:24 +0100 (CET)
+ with ESMTP id rCymrEqjijSV; Fri, 28 Feb 2020 21:38:30 +0100 (CET)
 From: Tobias Schramm <t.schramm@manjaro.org>
 To: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
  Heiko Stuebner <heiko@sntech.de>, Andy Yan <andy.yan@rock-chips.com>
-Subject: [PATCH 2/2] arm64: dts: rockchip: Add initial support for Pinebook
+Subject: [PATCH v2 2/2] arm64: dts: rockchip: Add initial support for Pinebook
  Pro
-Date: Thu, 27 Feb 2020 19:06:30 +0100
-Message-Id: <20200227180630.166982-3-t.schramm@manjaro.org>
-In-Reply-To: <20200227180630.166982-1-t.schramm@manjaro.org>
-References: <20200227180630.166982-1-t.schramm@manjaro.org>
+Date: Fri, 28 Feb 2020 21:38:06 +0100
+Message-Id: <20200228203806.346299-3-t.schramm@manjaro.org>
+In-Reply-To: <20200228203806.346299-1-t.schramm@manjaro.org>
+References: <20200228203806.346299-1-t.schramm@manjaro.org>
 MIME-Version: 1.0
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20200227_102510_300198_3DF7A901 
-X-CRM114-Status: GOOD (  13.29  )
+X-CRM114-CacheID: sfid-20200228_123838_121468_545F1AD7 
+X-CRM114-Status: GOOD (  14.00  )
 X-Spam-Score: 0.0 (/)
 X-Spam-Report: SpamAssassin version 3.4.3 on bombadil.infradead.org summary:
  Content analysis details:   (0.0 points)
@@ -233,8 +233,8 @@ This commit adds initial dt support for the rk3399 based Pinebook Pro.
 Signed-off-by: Tobias Schramm <t.schramm@manjaro.org>
 ---
  arch/arm64/boot/dts/rockchip/Makefile         |    1 +
- .../boot/dts/rockchip/rk3399-pinebook-pro.dts | 1191 +++++++++++++++++
- 2 files changed, 1192 insertions(+)
+ .../boot/dts/rockchip/rk3399-pinebook-pro.dts | 1119 +++++++++++++++++
+ 2 files changed, 1120 insertions(+)
  create mode 100644 arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
 
 diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
@@ -251,10 +251,10 @@ index 60d9437096c7..ae7621309e92 100644
  dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-roc-pc-mezzanine.dtb
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
 new file mode 100644
-index 000000000000..5cbb9e1de4be
+index 000000000000..3873f6c63dfc
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
-@@ -0,0 +1,1191 @@
+@@ -0,0 +1,1119 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd.
@@ -276,52 +276,42 @@ index 000000000000..5cbb9e1de4be
 +	compatible = "pine64,pinebook-pro", "rockchip,rk3399";
 +
 +	chosen {
-+		bootargs = "earlycon=uart8250,mmio32,0xff1a0000";
 +		stdout-path = "serial2:1500000n8";
 +	};
 +
-+	leds {
-+		compatible = "gpio-leds";
++	backlight: edp-backlight {
++		compatible = "pwm-backlight";
++		power-supply = <&vcc_12v>;
++		pwms = <&pwm0 0 740740 0>;
++	};
++
++	edp_panel: edp-panel {
++		compatible = "boe,nv140fhmn49", "simple-panel";
++		backlight = <&backlight>;
++
++		enable-delay-ms = <20>;
++		enable-gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
 +		pinctrl-names = "default";
-+		pinctrl-0 = <&pwrled_gpio &slpled_gpio>;
++		pinctrl-0 = <&panel_en_gpio>;
 +
-+		green-led {
-+			color = <LED_COLOR_ID_GREEN>;
-+			default-state = "off";
-+			function = LED_FUNCTION_POWER;
-+			gpios = <&gpio0 RK_PB3 GPIO_ACTIVE_HIGH>;
-+			label = "green:disk-activity";
-+			linux,default-trigger = "mmc2";
-+		};
++		power-supply = <&vcc3v3_panel>;
++		prepare-delay-ms = <20>;
 +
-+		red-led {
-+			color = <LED_COLOR_ID_RED>;
-+			default-state = "off";
-+			function = LED_FUNCTION_STANDBY;
-+			gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
-+			label = "red:standby";
-+			panic-indicator;
-+			retain-state-suspended;
++		ports {
++			#address-cells = <0x01>;
++			#size-cells = <0x00>;
++			port@0 {
++				panel_in_edp: endpoint@0 {
++					remote-endpoint = <&edp_out_panel>;
++				};
++			};
 +		};
 +	};
 +
-+	/* Use separate nodes for gpio-keys to allow for selective deactivation
-+	 * of wakeup sources without disabling the whole key
++	/*
++	 * Use separate nodes for gpio-keys to allow for selective deactivation
++	 * of wakeup sources via sysfs without disabling the whole key
 +	 */
-+	gpio-key-power {
-+		compatible = "gpio-keys";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pwrbtn_gpio>;
-+
-+		power {
-+			debounce-interval = <20>;
-+			gpios = <&gpio0 RK_PA5 GPIO_ACTIVE_LOW>;
-+			label = "Power";
-+			linux,code = <KEY_POWER>;
-+			wakeup-source;
-+		};
-+	};
-+
 +	gpio-key-lid {
 +		compatible = "gpio-keys";
 +		pinctrl-names = "default";
@@ -338,75 +328,43 @@ index 000000000000..5cbb9e1de4be
 +		};
 +	};
 +
-+	/* first 128k(0xff8d0000~0xff8f0000) for ddr and ATF */
-+	sram@ff8d0000 {
-+		compatible = "mmio-sram";
-+		reg = <0x0 0xff8d0000 0x0 0x20000>; /* 128k */
-+	};
-+
-+	edp_panel: edp-panel {
-+		compatible = "boe,nv140fhmn49", "simple-panel";
-+		backlight = <&backlight>;
-+
-+		enable-delay-ms = <20>;
-+		enable-gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
++	gpio-key-power {
++		compatible = "gpio-keys";
 +		pinctrl-names = "default";
-+		pinctrl-0 = <&panel_en_gpio>;
++		pinctrl-0 = <&pwrbtn_gpio>;
 +
-+		power-supply = <&vcc3v3_panel>;
-+		prepare-delay-ms = <20>;
-+		status = "okay";
-+
-+		ports {
-+			#address-cells = <0x01>;
-+			#size-cells = <0x00>;
-+			port@0 {
-+				panel_in_edp: endpoint@0 {
-+					remote-endpoint = <&edp_out_panel>;
-+				};
-+			};
++		power {
++			debounce-interval = <20>;
++			gpios = <&gpio0 RK_PA5 GPIO_ACTIVE_LOW>;
++			label = "Power";
++			linux,code = <KEY_POWER>;
++			wakeup-source;
 +		};
 +	};
 +
-+	backlight: edp-backlight {
-+		compatible = "pwm-backlight";
-+		brightness-levels = <
-+			  0   1   2   3   4   5   6   7
-+			  8   9  10  11  12  13  14  15
-+			 16  17  18  19  20  21  22  23
-+			 24  25  26  27  28  29  30  31
-+			 32  33  34  35  36  37  38  39
-+			 40  41  42  43  44  45  46  47
-+			 48  49  50  51  52  53  54  55
-+			 56  57  58  59  60  61  62  63
-+			 64  65  66  67  68  69  70  71
-+			 72  73  74  75  76  77  78  79
-+			 80  81  82  83  84  85  86  87
-+			 88  89  90  91  92  93  94  95
-+			 96  97  98  99 100 101 102 103
-+			104 105 106 107 108 109 110 111
-+			112 113 114 115 116 117 118 119
-+			120 121 122 123 124 125 126 127
-+			128 129 130 131 132 133 134 135
-+			136 137 138 139 140 141 142 143
-+			144 145 146 147 148 149 150 151
-+			152 153 154 155 156 157 158 159
-+			160 161 162 163 164 165 166 167
-+			168 169 170 171 172 173 174 175
-+			176 177 178 179 180 181 182 183
-+			184 185 186 187 188 189 190 191
-+			192 193 194 195 196 197 198 199
-+			200 201 202 203 204 205 206 207
-+			208 209 210 211 212 213 214 215
-+			216 217 218 219 220 221 222 223
-+			224 225 226 227 228 229 230 231
-+			232 233 234 235 236 237 238 239
-+			240 241 242 243 244 245 246 247
-+			248 249 250 251 252 253 254 255>;
-+		default-brightness-level = <200>;
-+		power-supply = <&vcc_12v>;
-+		pwms = <&pwm0 0 740740 0>;
-+		status = "okay";
++
++	leds {
++		compatible = "gpio-leds";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pwrled_gpio &slpled_gpio>;
++
++		green-led {
++			color = <LED_COLOR_ID_GREEN>;
++			default-state = "on";
++			function = LED_FUNCTION_POWER;
++			gpios = <&gpio0 RK_PB3 GPIO_ACTIVE_HIGH>;
++			label = "green:power";
++		};
++
++		red-led {
++			color = <LED_COLOR_ID_RED>;
++			default-state = "off";
++			function = LED_FUNCTION_STANDBY;
++			gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
++			label = "red:standby";
++			panic-indicator;
++			retain-state-suspended;
++		};
 +	};
 +
 +	/* Power sequence for SDIO WiFi module */
@@ -424,14 +382,6 @@ index 000000000000..5cbb9e1de4be
 +	};
 +
 +	/* Audio components */
-+	speaker_amp: speaker-amplifier {
-+		compatible = "simple-audio-amplifier";
-+		enable-gpios = <&gpio4 RK_PD3 GPIO_ACTIVE_HIGH>;
-+		sound-name-prefix = "Speaker Amplifier";
-+		status = "okay";
-+		VCC-supply = <&pa_5v>;
-+	};
-+
 +	es8316-sound {
 +		compatible = "simple-audio-card";
 +		pinctrl-names = "default";
@@ -456,7 +406,6 @@ index 000000000000..5cbb9e1de4be
 +		simple-audio-card,hp-det-gpio = <&gpio0 RK_PB0 GPIO_ACTIVE_LOW>;
 +		simple-audio-card,aux-devs = <&speaker_amp>;
 +		simple-audio-card,pin-switches = "Speaker";
-+		status = "okay";
 +
 +		simple-audio-card,cpu {
 +			sound-dai = <&i2s1>;
@@ -465,6 +414,13 @@ index 000000000000..5cbb9e1de4be
 +		simple-audio-card,codec {
 +			sound-dai = <&es8316>;
 +		};
++	};
++
++	speaker_amp: speaker-amplifier {
++		compatible = "simple-audio-amplifier";
++		enable-gpios = <&gpio4 RK_PD3 GPIO_ACTIVE_HIGH>;
++		sound-name-prefix = "Speaker Amplifier";
++		VCC-supply = <&pa_5v>;
 +	};
 +
 +	/* Power tree */
@@ -672,29 +628,8 @@ index 000000000000..5cbb9e1de4be
 +	};
 +};
 +
-+&cluster1_opp {
-+	opp08 {
-+		opp-hz = /bits/ 64 <2000000000>;
-+		opp-microvolt = <1300000>;
-+	};
-+};
-+
 +&cdn_dp {
 +	status = "okay";
-+	extcon = <&fusb0>;
-+};
-+
-+/* CPU */
-+&cpu_alert0 {
-+	temperature = <80000>;
-+};
-+
-+&cpu_alert1 {
-+	temperature = <95000>;
-+};
-+
-+&cpu_crit {
-+	temperature = <100000>;
 +};
 +
 +&cpu_l0 {
@@ -772,7 +707,6 @@ index 000000000000..5cbb9e1de4be
 +		rockchip,system-power-controller;
 +		wakeup-source;
 +
-+		vddio-supply = <&vcc_3v0>;
 +		vcc1-supply = <&vcc_sysin>;
 +		vcc2-supply = <&vcc_sysin>;
 +		vcc3-supply = <&vcc_sysin>;
@@ -958,7 +892,6 @@ index 000000000000..5cbb9e1de4be
 +		regulator-name = "vdd_cpu_b";
 +		regulator-ramp-delay = <1000>;
 +		vin-supply = <&vcc_1v8>;
-+		vsel-gpios = <&gpio1 RK_PC1 GPIO_ACTIVE_HIGH>;
 +
 +		regulator-state-mem {
 +			regulator-off-in-suspend;
@@ -979,7 +912,6 @@ index 000000000000..5cbb9e1de4be
 +		regulator-name = "vdd_gpu";
 +		regulator-ramp-delay = <1000>;
 +		vin-supply = <&vcc_1v8>;
-+		vsel-gpios = <&gpio1 RK_PB6 GPIO_ACTIVE_HIGH>;
 +
 +		regulator-state-mem {
 +			regulator-off-in-suspend;
@@ -1255,12 +1187,10 @@ index 000000000000..5cbb9e1de4be
 +	keep-power-in-suspend;
 +	mmc-pwrseq = <&sdio_pwrseq>;
 +	non-removable;
-+	num-slots = <1>;
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&sdio0_bus4 &sdio0_cmd &sdio0_clk>;
 +	sd-uhs-sdr104;
 +	status = "okay";
-+	supports-sdio;
 +};
 +
 +&sdhci {
@@ -1307,7 +1237,6 @@ index 000000000000..5cbb9e1de4be
 +};
 +
 +&tcphy0 {
-+	extcon = <&fusb0>;
 +	status = "okay";
 +};
 +
@@ -1370,7 +1299,6 @@ index 000000000000..5cbb9e1de4be
 +		status = "okay";
 +	};
 +};
-+
 +
 +&uart0 {
 +	pinctrl-names = "default";
