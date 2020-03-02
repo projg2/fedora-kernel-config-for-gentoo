@@ -1872,7 +1872,6 @@ BuildKernel() {
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/extra
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/internal
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/updates
-    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/weak-updates
     # CONFIG_KERNEL_HEADER_TEST generates some extra files in the process of
     # testing so just delete
     find . -name *.h.s -delete
@@ -2667,10 +2666,6 @@ fi\
 #
 %define kernel_variant_posttrans() \
 %{expand:%%posttrans %{?1:%{1}-}core}\
-if [ -x %{_sbindir}/weak-modules ]\
-then\
-    %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
-fi\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
@@ -2700,10 +2695,6 @@ fi}\
 %define kernel_variant_preun() \
 %{expand:%%preun %{?1:%{1}-}core}\
 /bin/kernel-install remove %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
-if [ -x %{_sbindir}/weak-modules ]\
-then\
-    %{_sbindir}/weak-modules --remove-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
-fi\
 %{nil}
 
 %kernel_variant_preun
@@ -2911,7 +2902,6 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca.cer\
 %ifarch s390x ppc64le\
 %if 0%{!?4:1}\
