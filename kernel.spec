@@ -105,9 +105,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 3
+%global rcrev 4
 # The git snapshot level
-%define gitrev 3
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -880,11 +880,6 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 # https://lore.kernel.org/patchwork/patch/1132459/
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
-
-# GCC 10 build fix for x86_64
-Patch529: 0001-Include-kvm_asm.h-and-kvm_arm.h-in-kvm-arm-trace.h.patch
-
-Patch530: 0001-compat_ioctl-cdrom-Replace-.ioctl-with-.compat_ioctl.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2970,6 +2965,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 02 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc4.git0.1
+- Linux v5.6-rc4
+
 * Mon Mar 02 2020 Jeremy Cline <jcline@redhat.com>
 - Disable debugging options.
 
