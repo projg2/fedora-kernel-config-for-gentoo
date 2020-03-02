@@ -1549,7 +1549,6 @@ git am %{patches}
 # Any further pre-build tree manipulations happen here.
 
 chmod +x scripts/checkpatch.pl
-chmod +x tools/objtool/sync-check.sh
 mv COPYING COPYING-%{version}-%{release}
 
 # This Prevents scripts/setlocalversion from mucking with our version numbers.
