@@ -1,99 +1,36 @@
-From patchwork Mon Feb 24 14:40:48 2020
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Patchwork-Submitter: Jon Hunter <jonathanh@nvidia.com>
-X-Patchwork-Id: 1243162
-Return-Path: <linux-tegra-owner@vger.kernel.org>
-X-Original-To: incoming@patchwork.ozlabs.org
-Delivered-To: patchwork-incoming@bilbo.ozlabs.org
-Authentication-Results: ozlabs.org; spf=none (no SPF record)
- smtp.mailfrom=vger.kernel.org (client-ip=209.132.180.67;
- helo=vger.kernel.org;
- envelope-from=linux-tegra-owner@vger.kernel.org;
- receiver=<UNKNOWN>)
-Authentication-Results: ozlabs.org;
- dmarc=pass (p=none dis=none) header.from=nvidia.com
-Authentication-Results: ozlabs.org; dkim=pass (2048-bit key;
- unprotected) header.d=nvidia.com header.i=@nvidia.com
- header.a=rsa-sha256 header.s=n1 header.b=GMucuiiq; 
- dkim-atps=neutral
-Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
- by ozlabs.org (Postfix) with ESMTP id 48R4Vx33rJz9sRf
- for <incoming@patchwork.ozlabs.org>;
- Tue, 25 Feb 2020 01:40:57 +1100 (AEDT)
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
- id S1727498AbgBXOkx (ORCPT <rfc822;incoming@patchwork.ozlabs.org>);
- Mon, 24 Feb 2020 09:40:53 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18372 "EHLO
- hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
- with ESMTP id S1726762AbgBXOkx (ORCPT
- <rfc822;linux-tegra@vger.kernel.org>);
- Mon, 24 Feb 2020 09:40:53 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
- hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
- id <B5e53e0670000>; Mon, 24 Feb 2020 06:40:39 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
- by hqpgpgate101.nvidia.com (PGP Universal service);
- Mon, 24 Feb 2020 06:40:52 -0800
-X-PGP-Universal: processed;
- by hqpgpgate101.nvidia.com on Mon, 24 Feb 2020 06:40:52 -0800
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3;
- Mon, 24 Feb 2020 14:40:52 +0000
-Received: from rnnvemgw01.nvidia.com (10.128.109.123) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via
- Frontend Transport; Mon, 24 Feb 2020 14:40:52 +0000
-Received: from thunderball.nvidia.com (Not Verified[10.21.140.91]) by
- rnnvemgw01.nvidia.com with Trustwave SEG (v7, 5, 8, 10121)
- id <B5e53e0720007>; Mon, 24 Feb 2020 06:40:51 -0800
+From 0cd71b9a43ad80f4d9a8bfde6ec6db8daf447029 Mon Sep 17 00:00:00 2001
 From: Jon Hunter <jonathanh@nvidia.com>
-To: Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
- Thierry Reding <thierry.reding@gmail.com>
-CC: <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
- <linux-tegra@vger.kernel.org>, Jon Hunter <jonathanh@nvidia.com>
-Subject: [PATCH] regulator: pwm: Don't warn on probe deferral
-Date: Mon, 24 Feb 2020 14:40:48 +0000
-Message-ID: <20200224144048.6587-1-jonathanh@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-X-NVConfidentiality: public
-MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1582555239; bh=xX7Mgn1VlNejVzsSKFLhZRbMP4+2YtN6WM4DdeoOEHs=;
- h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
- X-NVConfidentiality:MIME-Version:Content-Type;
- b=GMucuiiqAspPQsWQ1ebM1v5mPEShSHma2lu4iNERqE/uilIy4CUp4eHq6df8Lcsvu
- 11bCdd116mWyRJ5/F69vtHcgJHTbeaaRcf+A1/A3DLTuc6Z/PRb5jcySSX/aRCaPfA
- +au3XaR3dyBeV+xizDks3Ibot8dmHuQWswqibwwVp5Qanoow2Dj75j/Q++AU7PwM6A
- ChvWMkFCBBz6FO8SGi5jCQrCgLTrHtX90cRQZsaaQFrbBYLhLrAsdFkFM2mVLd+xqz
- rc7bwTn707Mpf71vRGfmJgoiBm/Pm1qLnRoyLBakyb0xfmEJkCP99y3nO62z9DIpDm
- DdSZ9ONzuo7vA==
-Sender: linux-tegra-owner@vger.kernel.org
-Precedence: bulk
-List-ID: <linux-tegra.vger.kernel.org>
-X-Mailing-List: linux-tegra@vger.kernel.org
+Date: Mon, 2 Mar 2020 14:14:28 +0000
+Subject: regulator: pwm: Don't warn on probe deferral
 
 Deferred probe is an expected return value for devm_pwm_get(). Given
-that the driver deals with it properly, there's no need to output a
-warning that may potentially confuse users.
+that the driver deals with it properly, rather than warn on probe
+deferral, only output a message on probe deferral if debug level
+prints are enabled.
 
 Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
-Reviewed-by: Thierry Reding <treding@nvidia.com>
+Link: https://lore.kernel.org/r/20200302141428.14119-1-jonathanh@nvidia.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 ---
- drivers/regulator/pwm-regulator.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/regulator/pwm-regulator.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/regulator/pwm-regulator.c b/drivers/regulator/pwm-regulator.c
-index e74e11101fc1..fb25777a7d47 100644
+index e74e11101fc1..638329bd0745 100644
 --- a/drivers/regulator/pwm-regulator.c
 +++ b/drivers/regulator/pwm-regulator.c
-@@ -354,7 +354,8 @@ static int pwm_regulator_probe(struct platform_device *pdev)
+@@ -354,7 +354,11 @@ static int pwm_regulator_probe(struct platform_device *pdev)
  	drvdata->pwm = devm_pwm_get(&pdev->dev, NULL);
  	if (IS_ERR(drvdata->pwm)) {
  		ret = PTR_ERR(drvdata->pwm);
 -		dev_err(&pdev->dev, "Failed to get PWM: %d\n", ret);
-+		if (ret != -EPROBE_DEFER)
++		if (ret == -EPROBE_DEFER)
++			dev_dbg(&pdev->dev,
++				"Failed to get PWM, deferring probe\n");
++		else
 +			dev_err(&pdev->dev, "Failed to get PWM: %d\n", ret);
  		return ret;
  	}
  
+-- 
+cgit 1.2-0.3.lf.el7
