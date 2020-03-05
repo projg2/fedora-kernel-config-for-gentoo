@@ -830,6 +830,8 @@ Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
 Patch313: ARM-dts-bcm283x-Add-missing-properties-to-the-PWR-LED.patch
 # https://patchwork.kernel.org/patch/11406785/
 Patch314: ARM-dts-bcm2711-Add-pcie0-alias.patch
+# https://patchwork.kernel.org/patch/11420129/
+Patch315: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
 
 # Tegra bits
 # https://www.spinics.net/lists/linux-tegra/msg48152.html
