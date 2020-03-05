@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1812,6 +1812,9 @@ fi
 #
 #
 %changelog
+* Thu Mar 05 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.8-100
+- Linux v5.5.8
+
 * Fri Feb 28 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.7-100
 - Linux v5.5.7
 - Fixes CVE-2020-2732 (rhbz 1805135 1806816)
