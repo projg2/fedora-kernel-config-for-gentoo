@@ -572,6 +572,10 @@ Patch510: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
 # rhbz 1800335
 Patch511: v2_20200128_dmoulding_me_com.patch
 
+# Fix backtraces triggered by warnings about buggy BIOS (rhbz 1564895, 1808874)
+# Submitted upstream
+Patch512: iommu-WARN_TAINT-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1812,6 +1816,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 09 2020 Hans de Goede <hdegoede@redhat.com>
+- Fix backtraces on various buggy BIOS-es (rhbz 1564895, 1808874)
+
 * Thu Mar 05 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.8-100
 - Linux v5.5.8
 
