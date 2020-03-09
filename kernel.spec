@@ -105,9 +105,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 4
+%global rcrev 5
 # The git snapshot level
-%define gitrev 1
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -826,12 +826,8 @@ Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
 Patch311: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
 # https://patchwork.kernel.org/patch/11372935/
 Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
-# https://patchwork.kernel.org/patch/11398981/
-Patch313: ARM-dts-bcm283x-Add-missing-properties-to-the-PWR-LED.patch
-# https://patchwork.kernel.org/patch/11406785/
-Patch314: ARM-dts-bcm2711-Add-pcie0-alias.patch
 # https://patchwork.kernel.org/patch/11420129/
-Patch315: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
+Patch313: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
 
 # Tegra bits
 # https://www.spinics.net/lists/linux-tegra/msg48152.html
@@ -2956,6 +2952,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 09 2020 Peter Robinson <pbrobinson@gmail.com> - 5.6.0-0.rc5.git0.1
+- Linux v5.6-rc5
+
 * Mon Mar 09 2020 Peter Robinson <pbrobinson@gmail.com>
 - Disable debugging options.
 
