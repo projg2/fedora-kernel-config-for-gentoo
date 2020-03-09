@@ -879,6 +879,17 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
+# Fix issues with only 1 monitor working on DP-MST docks (rhbz#1809681)
+# These patches should show up in a future 5.6-rc# release
+Patch506: drm-dp-mst-fixes.patch
+
+# More DP-MST fixes, pending for 5.7
+Patch507: drm-dp-mst-error-handling-improvements.patch
+
+# Fix backtraces triggered by warnings about buggy BIOS (rhbz 1564895, 1808874)
+# Submitted upstream
+Patch508: iommu-WARN_TAINT-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2952,6 +2963,12 @@ fi
 #
 #
 %changelog
+* Mon Mar 09 2020 Hans de Goede <hdegoede@redhat.com>
+- Fix only 1 monitor working on DP-MST docking stations (rhbz 1809681)
+- Fix backtraces on various buggy BIOS-es (rhbz 1564895, 1808874)
+- Add /etc/modprobe.d/floppy-blacklist.conf to fix auto-loading of the
+  legacy floppy driver (rhbz 1789155)
+
 * Mon Mar 09 2020 Peter Robinson <pbrobinson@gmail.com> - 5.6.0-0.rc5.git0.1
 - Linux v5.6-rc5
 
