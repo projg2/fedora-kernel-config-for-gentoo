@@ -80,7 +80,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 1
+%global baserelease 2
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -889,6 +889,9 @@ Patch507: drm-dp-mst-error-handling-improvements.patch
 # Fix backtraces triggered by warnings about buggy BIOS (rhbz 1564895, 1808874)
 # Submitted upstream
 Patch508: iommu-WARN_TAINT-fixes.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1811850
+Patch509: drm-i915-backports.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2963,6 +2966,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 10 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc5.git0.2
+- A series of eDP backlight fixes for i915 (rhbz 1811850)
+
 * Mon Mar 09 2020 Hans de Goede <hdegoede@redhat.com>
 - Fix only 1 monitor working on DP-MST docking stations (rhbz 1809681)
 - Fix backtraces on various buggy BIOS-es (rhbz 1564895, 1808874)
