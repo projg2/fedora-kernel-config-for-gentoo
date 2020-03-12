@@ -200,7 +200,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -2988,6 +2988,9 @@ fi
 #
 #
 %changelog
+* Thu Mar 12 2020 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
 * Tue Mar 10 2020 Jeremy Cline <jcline@redhat.com>
 - A series of eDP backlight fixes for i915 (rhbz 1811850)
 
