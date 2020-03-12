@@ -1,27 +1,27 @@
-From patchwork Fri Mar  6 11:43:45 2020
+From patchwork Tue Mar 10 12:52:39 2020
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Patchwork-Submitter: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-X-Patchwork-Id: 11423679
+X-Patchwork-Id: 11429251
 Return-Path: 
- <SRS0=iJpk=4X=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+ <SRS0=oUlM=43=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
 Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
  [172.30.200.123])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 70B5914B7
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 8D720924
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Fri,  6 Mar 2020 11:44:02 +0000 (UTC)
+ Tue, 10 Mar 2020 12:53:32 +0000 (UTC)
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4E4F92072A
+	by mail.kernel.org (Postfix) with ESMTPS id 663C724693
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Fri,  6 Mar 2020 11:44:02 +0000 (UTC)
+ Tue, 10 Mar 2020 12:53:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
 	dkim=pass (2048-bit key) header.d=lists.infradead.org
- header.i=@lists.infradead.org header.b="dGEE0Sg7"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E4F92072A
+ header.i=@lists.infradead.org header.b="brxu2SSp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 663C724693
 Authentication-Results: mail.kernel.org;
  dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org;
@@ -33,39 +33,38 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=ZW8pFtwlUj3q7GZJotB4Rgjtfp9gMy+l74jJQcTab0w=; b=dGEE0Sg7v5PBTu
-	5qGfgXA4+4sJpnFfsp+cAr2DAwAeCgqMmQrm4uAPZLI8efXK5VHLKP6PEX2JrH7D3MfzTF0dU9g6/
-	WQUqXvxsGGnePdDZw5//mlUcq+gml374oe11NwXONXbBo79sEsxrYx25OjFsZt2RxgNXg4bZlQrMy
-	YnqIMx3EPz58Ah2d69LlezGH3br2KiByqaG0B1TUiU6oD2BLFMZE7Z4g8Ndb5AvkxTwsWjFnpacZN
-	95uzRzQy042X9al5ZuSokOeT3hDAaTFHQc0JwQYX+YxpN1aK/AnIYTATOGlsfmCosK5cOsOJk+aSD
-	+zIXNMdtqtSwEzzEk9QA==;
+	List-Owner; bh=ZW8pFtwlUj3q7GZJotB4Rgjtfp9gMy+l74jJQcTab0w=; b=brxu2SSpvrhJNb
+	w5nIpDDyBZwSbCT9/lV2mTMlmQYmRJmzfp6qMUdidNb6M06u9vNMEUs7Ux1xhzZ+2kUiHMGdYmySb
+	2ZTluMYsD0wDWn/cBbbQSTAVeWuM5loKbQx7f6YtApSP/BRhwHyQT2hOCH5FQsO4upkRzvyiu1oDy
+	RFlB4bVwhxeh0DLHk4treOY7PH07MfqozbH1deQqmRPbrtHmPfNqVfuLHJoWQUyHBobxUu8VcPdIN
+	hznwXAVJBLYVLiKMQQ+KFCAaj2Qhv5LbtahIMlTj8qx3PdD4LASzktKkD/iUYd358hJSk43gJpAIe
+	812yC2v21Pex7ZCY06ag==;
 Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
 	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1jABOb-00053O-32; Fri, 06 Mar 2020 11:44:01 +0000
+	id 1jBeO2-0004Ny-7z; Tue, 10 Mar 2020 12:53:30 +0000
 Received: from mx2.suse.de ([195.135.220.15])
  by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
- id 1jABOY-00051E-01; Fri, 06 Mar 2020 11:43:59 +0000
+ id 1jBeNk-00048F-6W; Tue, 10 Mar 2020 12:53:13 +0000
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx2.suse.de (Postfix) with ESMTP id A2B70AEF6;
- Fri,  6 Mar 2020 11:43:55 +0000 (UTC)
+ by mx2.suse.de (Postfix) with ESMTP id DF3D2B149;
+ Tue, 10 Mar 2020 12:53:10 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: linux-kernel@vger.kernel.org,
- Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
- Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>,
- Scott Branden <sbranden@broadcom.com>,
- bcm-kernel-feedback-list@broadcom.com
-Subject: [PATCH v4 1/4] soc: bcm2835: Sync xHCI reset firmware property with
+To: linux-kernel@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+ Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ bcm-kernel-feedback-list@broadcom.com,
+ Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: [PATCH v5 1/4] soc: bcm2835: Sync xHCI reset firmware property with
  downstream
-Date: Fri,  6 Mar 2020 12:43:45 +0100
-Message-Id: <20200306114348.5172-2-nsaenzjulienne@suse.de>
+Date: Tue, 10 Mar 2020 13:52:39 +0100
+Message-Id: <20200310125243.25805-2-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200306114348.5172-1-nsaenzjulienne@suse.de>
-References: <20200306114348.5172-1-nsaenzjulienne@suse.de>
+In-Reply-To: <20200310125243.25805-1-nsaenzjulienne@suse.de>
+References: <20200310125243.25805-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20200306_034358_187314_7B4D5C40 
-X-CRM114-Status: GOOD (  13.62  )
+X-CRM114-CacheID: sfid-20200310_055312_379726_E2DB0CE8 
+X-CRM114-Status: GOOD (  13.79  )
 X-Spam-Score: -2.3 (--)
 X-Spam-Report: SpamAssassin version 3.4.3 on bombadil.infradead.org summary:
  Content analysis details:   (-2.3 points)
@@ -74,10 +73,10 @@ X-Spam-Report: SpamAssassin version 3.4.3 on bombadil.infradead.org summary:
  --------------------------------------------------
  -2.3 RCVD_IN_DNSWL_MED      RBL: Sender listed at https://www.dnswl.org/,
  medium trust [195.135.220.15 listed in list.dnswl.org]
- 0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
- -0.0 SPF_PASS               SPF: sender matches SPF record
  0.0 RCVD_IN_MSPIKE_H3      RBL: Good reputation (+3)
  [195.135.220.15 listed in wl.mailspike.net]
+ 0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
+ -0.0 SPF_PASS               SPF: sender matches SPF record
  0.0 RCVD_IN_MSPIKE_WL      Mailspike good senders
 X-BeenThere: linux-arm-kernel@lists.infradead.org
 X-Mailman-Version: 2.1.29
@@ -92,10 +91,10 @@ List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
 List-Subscribe: 
  <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Cc: tim.gover@raspberrypi.org, gregkh@linuxfoundation.org,
- linux-usb@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
- linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- wahrenst@gmx.net
+Cc: tim.gover@raspberrypi.org, sergei.shtylyov@cogentembedded.com,
+ gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+ linux-rpi-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, wahrenst@gmx.net
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: 
  linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
@@ -124,30 +123,30 @@ index 7800e12ee042..cc9cdbc66403 100644
  	/* Dispmanx TAGS */
  	RPI_FIRMWARE_FRAMEBUFFER_ALLOCATE =                   0x00040001,
 
-From patchwork Fri Mar  6 11:43:46 2020
+From patchwork Tue Mar 10 12:52:40 2020
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Patchwork-Submitter: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-X-Patchwork-Id: 11423697
+X-Patchwork-Id: 11429255
 Return-Path: 
- <SRS0=iJpk=4X=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+ <SRS0=oUlM=43=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
 Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
  [172.30.200.123])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id B5ACE14B7
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id D4796138D
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Fri,  6 Mar 2020 11:44:32 +0000 (UTC)
+ Tue, 10 Mar 2020 12:53:47 +0000 (UTC)
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 91DF92072A
+	by mail.kernel.org (Postfix) with ESMTPS id B22E52468F
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Fri,  6 Mar 2020 11:44:32 +0000 (UTC)
+ Tue, 10 Mar 2020 12:53:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
 	dkim=pass (2048-bit key) header.d=lists.infradead.org
- header.i=@lists.infradead.org header.b="DG1Rd9pv"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 91DF92072A
+ header.i=@lists.infradead.org header.b="UnuFVkmk"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B22E52468F
 Authentication-Results: mail.kernel.org;
  dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org;
@@ -159,48 +158,47 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=3Y9Bl+SWHCBoW9h0wXyUxKrcbYUmxn2lHa+AZSrB9sI=; b=DG1Rd9pvKLqCNK
-	BTo7HtqMLcSMlDp9MBV7S9jQys3aZp0d0DfZzySKxREwIFwG/vrhhs5Wl6fIyF0s/UxzUT0PRv1w8
-	JST/Eeac+0SyEf03QO0muMBhXms+lS7Xj2W5ExGRLjsTRb5fF3tb7VD9yiiyqaaYlnS1pmtpwwBwf
-	fMemr/A/aOYHmcEV3wtSwDyFpKzbn3LGtIVeaPDKZhnkYvyJGD52G4h6pr/KLRQv2oFt8rA/U9QR/
-	R4So9MJxK3FyVioYRdBqwgN7ijrfhh2UtaBLKzk77k59/nMuQoGm19vSwRCus5axiQJisYFNrDwvv
-	kiKbXXrYW68JvUUXZxGQ==;
+	List-Owner; bh=eupkp4tsmm4bLugl948LTwuMnwmoAOiN5fj7gGg2GJM=; b=UnuFVkmkE9iLlT
+	dNztNBOsbtwlARvXfPvQbXyhiNZOH0emv3kmr+XxltWYeAiqH5UzUtJy0KwjF2KunmcjkiSOmBj0b
+	YDxYVIOUXPbof4UrgceWbINbqzOpy703aw8B2pWaXc2Fx+tkQI31pG+fHwB1TSaAXnCU0ClY85soE
+	suAOeomFWgZYxgZBIqem7oslnqdQ6KgACCkliCU3dEKd+XX/hZA9C2J0N/EgEwcNWXEmKB9PdwTli
+	2lAYh1TlEnx1fuRLvs8UyVj+r4BpSYgTcvEoy1eI12XtX708NuiE57pnSZn3Xc+2EI2fzW/7FowQ/
+	edW61tscKfv3VMYGGa4A==;
 Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
 	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1jABP4-0005Wb-RE; Fri, 06 Mar 2020 11:44:30 +0000
+	id 1jBeOE-0004am-Pw; Tue, 10 Mar 2020 12:53:42 +0000
 Received: from mx2.suse.de ([195.135.220.15])
  by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
- id 1jABOY-00051M-46; Fri, 06 Mar 2020 11:44:00 +0000
+ id 1jBeNl-00048m-7v; Tue, 10 Mar 2020 12:53:14 +0000
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx2.suse.de (Postfix) with ESMTP id B52A5AFD8;
- Fri,  6 Mar 2020 11:43:56 +0000 (UTC)
+ by mx2.suse.de (Postfix) with ESMTP id EF846B18F;
+ Tue, 10 Mar 2020 12:53:11 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: linux-kernel@vger.kernel.org,
- Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
- Florian Fainelli <f.fainelli@gmail.com>, Ray Jui <rjui@broadcom.com>,
- Scott Branden <sbranden@broadcom.com>,
- bcm-kernel-feedback-list@broadcom.com
-Subject: [PATCH v4 2/4] firmware: raspberrypi: Introduce vl805 init routine
-Date: Fri,  6 Mar 2020 12:43:46 +0100
-Message-Id: <20200306114348.5172-3-nsaenzjulienne@suse.de>
+To: linux-kernel@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+ Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ bcm-kernel-feedback-list@broadcom.com,
+ Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Subject: [PATCH v5 2/4] firmware: raspberrypi: Introduce vl805 init routine
+Date: Tue, 10 Mar 2020 13:52:40 +0100
+Message-Id: <20200310125243.25805-3-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200306114348.5172-1-nsaenzjulienne@suse.de>
-References: <20200306114348.5172-1-nsaenzjulienne@suse.de>
+In-Reply-To: <20200310125243.25805-1-nsaenzjulienne@suse.de>
+References: <20200310125243.25805-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20200306_034358_450028_ABB3A519 
-X-CRM114-Status: GOOD (  15.23  )
+X-CRM114-CacheID: sfid-20200310_055313_564661_57DD1A42 
+X-CRM114-Status: GOOD (  15.58  )
 X-Spam-Score: -2.3 (--)
 X-Spam-Report: SpamAssassin version 3.4.3 on bombadil.infradead.org summary:
  Content analysis details:   (-2.3 points)
  pts rule name              description
  ---- ----------------------
  --------------------------------------------------
- 0.0 RCVD_IN_MSPIKE_H3      RBL: Good reputation (+3)
- [195.135.220.15 listed in wl.mailspike.net]
  -2.3 RCVD_IN_DNSWL_MED      RBL: Sender listed at https://www.dnswl.org/,
  medium trust [195.135.220.15 listed in list.dnswl.org]
+ 0.0 RCVD_IN_MSPIKE_H3      RBL: Good reputation (+3)
+ [195.135.220.15 listed in wl.mailspike.net]
  0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
  -0.0 SPF_PASS               SPF: sender matches SPF record
  0.0 RCVD_IN_MSPIKE_WL      Mailspike good senders
@@ -217,10 +215,10 @@ List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
 List-Subscribe: 
  <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Cc: tim.gover@raspberrypi.org, gregkh@linuxfoundation.org,
- linux-usb@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
- linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- wahrenst@gmx.net
+Cc: tim.gover@raspberrypi.org, sergei.shtylyov@cogentembedded.com,
+ gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+ linux-rpi-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, wahrenst@gmx.net
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: 
  linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
@@ -235,6 +233,10 @@ Based on Tim Gover's downstream implementation.
 Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
+
+Changes since v4:
+ - Inline function definition when RASPBERRYPI_FIRMWARE is not defined
+
 Changes since v1:
  - Move include into .c file and add forward declaration to .h
 
@@ -299,7 +301,7 @@ index da26a584dca0..cbb495aff6a0 100644
  	{ .compatible = "raspberrypi,bcm2835-firmware", },
  	{},
 diff --git a/include/soc/bcm2835/raspberrypi-firmware.h b/include/soc/bcm2835/raspberrypi-firmware.h
-index cc9cdbc66403..c161bdab759d 100644
+index cc9cdbc66403..3025aca3c358 100644
 --- a/include/soc/bcm2835/raspberrypi-firmware.h
 +++ b/include/soc/bcm2835/raspberrypi-firmware.h
 @@ -10,6 +10,7 @@
@@ -323,7 +325,7 @@ index cc9cdbc66403..c161bdab759d 100644
  	return NULL;
  }
 +
-+static int rpi_firmware_init_vl805(struct pci_dev *pdev)
++static inline int rpi_firmware_init_vl805(struct pci_dev *pdev)
 +{
 +	return 0;
 +}
@@ -331,30 +333,30 @@ index cc9cdbc66403..c161bdab759d 100644
  
  #endif /* __SOC_RASPBERRY_FIRMWARE_H__ */
 
-From patchwork Fri Mar  6 11:43:47 2020
+From patchwork Tue Mar 10 12:52:41 2020
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Patchwork-Submitter: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-X-Patchwork-Id: 11423699
+X-Patchwork-Id: 11429257
 Return-Path: 
- <SRS0=iJpk=4X=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+ <SRS0=oUlM=43=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
 Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
  [172.30.200.123])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id A184A14B7
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id DB7DF924
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Fri,  6 Mar 2020 11:44:49 +0000 (UTC)
+ Tue, 10 Mar 2020 12:54:01 +0000 (UTC)
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6921A2072A
+	by mail.kernel.org (Postfix) with ESMTPS id B8AF22468F
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Fri,  6 Mar 2020 11:44:49 +0000 (UTC)
+ Tue, 10 Mar 2020 12:54:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
 	dkim=pass (2048-bit key) header.d=lists.infradead.org
- header.i=@lists.infradead.org header.b="Y5dY1L75"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6921A2072A
+ header.i=@lists.infradead.org header.b="Pukt5VBt"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8AF22468F
 Authentication-Results: mail.kernel.org;
  dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org;
@@ -366,49 +368,49 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=2ExZWVTw9LuCk0+3FVpp99SpZhZ8GLF00iI2upbbmVU=; b=Y5dY1L75FQ1OgS
-	TFgcuSnOZaeUh5zcKRjkext3cOjhQ8m9HMKNy8qhAxoD092CEriDJrZZ/JJEAzKFBe5ekgjmTiU/q
-	SbhN3NfLpL0N13VD1SZy2PP6nTiTWBxwD6pbF0JewFUqH9koK8EmH7Pd3udj4+kKLWOVH0fP9gZhl
-	ftPrHyJo07K7pMVX0t4bt2OildDgMK3xzHkHl7U8KKttcwMQFAY7xD+eC5GwrccDhlZJMANHZku9N
-	vLsFCNWq7b6z+otqy+7cUEbUSkWqS0KeNKpRlKx0h/j3zxl6eAi2KtQlgD2StgkVrJZGb0plNBch6
-	JZAjf1oTo1/nzgnp1+MA==;
+	List-Owner; bh=BdoGeNn/NWcbYVlSIJeeADhjLPnS4htif3Z9tAGsAwY=; b=Pukt5VBtbAyyHT
+	Fl05OgBfjiC6FzMq3vCA9/PjIVGnDl7+C9Y63M8cdUbsobWVut0YWAFVbxQgaQz235gW9sfpGxt/V
+	mD8vzLqKf6uRRow1iQWGR7cZhKOwWGYd/zGoyQtwE5MR06gK9hYUwfDs7irt11GsjJaAH7uoWvpnV
+	1st3tm/ScoO386zatdiMdGhSNU1I42NGKUCH6evFgkwPeoqs0P4NYMA3W2Xnb4VECrMGeEdZLG1bw
+	5H3WNE1+8q3HSuXB/qNxf1kgajM102CNfhPWAm9FE9nh/PyRbe/6lrUEy+pFEKOXLWCp4sSHVRek5
+	57BW6iK719eKvyQ3iNbg==;
 Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
 	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1jABPH-0005lM-Om; Fri, 06 Mar 2020 11:44:43 +0000
+	id 1jBeOV-0004sJ-68; Tue, 10 Mar 2020 12:53:59 +0000
 Received: from mx2.suse.de ([195.135.220.15])
  by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
- id 1jABOZ-00052G-7b; Fri, 06 Mar 2020 11:44:00 +0000
+ id 1jBeNm-00049C-8J; Tue, 10 Mar 2020 12:53:15 +0000
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx2.suse.de (Postfix) with ESMTP id EA31EAF21;
- Fri,  6 Mar 2020 11:43:57 +0000 (UTC)
+ by mx2.suse.de (Postfix) with ESMTP id E5116B1B1;
+ Tue, 10 Mar 2020 12:53:12 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 To: linux-kernel@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
  bcm-kernel-feedback-list@broadcom.com,
  Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
  Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
  Andrew Murray <amurray@thegoodpenguin.co.uk>
-Subject: [PATCH v4 3/4] PCI: brcmstb: Wait for Raspberry Pi's firmware when
+Subject: [PATCH v5 3/4] PCI: brcmstb: Wait for Raspberry Pi's firmware when
  present
-Date: Fri,  6 Mar 2020 12:43:47 +0100
-Message-Id: <20200306114348.5172-4-nsaenzjulienne@suse.de>
+Date: Tue, 10 Mar 2020 13:52:41 +0100
+Message-Id: <20200310125243.25805-4-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200306114348.5172-1-nsaenzjulienne@suse.de>
-References: <20200306114348.5172-1-nsaenzjulienne@suse.de>
+In-Reply-To: <20200310125243.25805-1-nsaenzjulienne@suse.de>
+References: <20200310125243.25805-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20200306_034359_420497_DC31988D 
-X-CRM114-Status: GOOD (  12.02  )
+X-CRM114-CacheID: sfid-20200310_055314_439377_DE6EBA94 
+X-CRM114-Status: GOOD (  12.27  )
 X-Spam-Score: -2.3 (--)
 X-Spam-Report: SpamAssassin version 3.4.3 on bombadil.infradead.org summary:
  Content analysis details:   (-2.3 points)
  pts rule name              description
  ---- ----------------------
  --------------------------------------------------
- 0.0 RCVD_IN_MSPIKE_H3      RBL: Good reputation (+3)
- [195.135.220.15 listed in wl.mailspike.net]
  -2.3 RCVD_IN_DNSWL_MED      RBL: Sender listed at https://www.dnswl.org/,
  medium trust [195.135.220.15 listed in list.dnswl.org]
+ 0.0 RCVD_IN_MSPIKE_H3      RBL: Good reputation (+3)
+ [195.135.220.15 listed in wl.mailspike.net]
  0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
  -0.0 SPF_PASS               SPF: sender matches SPF record
  0.0 RCVD_IN_MSPIKE_WL      Mailspike good senders
@@ -425,22 +427,27 @@ List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
 List-Subscribe: 
  <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Cc: tim.gover@raspberrypi.org, gregkh@linuxfoundation.org,
- linux-usb@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
- linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
- linux-arm-kernel@lists.infradead.org, wahrenst@gmx.net
+Cc: tim.gover@raspberrypi.org, sergei.shtylyov@cogentembedded.com,
+ gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+ linux-rpi-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, linux-arm-kernel@lists.infradead.org,
+ wahrenst@gmx.net
 Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
 Errors-To: 
  linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
 
 xHCI's PCI fixup, run at the end of pcie-brcmstb's probe, depends on
 RPi4's VideoCore firmware interface to be up and running. It's possible
-for both initializations to race, so make sure it's available prior
+for both initializations to race, so make sure it's available prior to
 starting.
 
 Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
+
+Changes since v4:
+ - Fixed typo in commit description
+
  drivers/pci/controller/pcie-brcmstb.c | 15 +++++++++++++++
  1 file changed, 15 insertions(+)
 
@@ -483,30 +490,30 @@ index 3a10e678c7f4..a3d3070a5832 100644
  	if (!bridge)
  		return -ENOMEM;
 
-From patchwork Fri Mar  6 11:43:48 2020
+From patchwork Tue Mar 10 12:52:42 2020
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 X-Patchwork-Submitter: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-X-Patchwork-Id: 11423701
+X-Patchwork-Id: 11429259
 Return-Path: 
- <SRS0=iJpk=4X=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+ <SRS0=oUlM=43=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
 Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
  [172.30.200.123])
-	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id A07E214B7
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 9C04D924
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Fri,  6 Mar 2020 11:45:15 +0000 (UTC)
+ Tue, 10 Mar 2020 12:54:22 +0000 (UTC)
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7E7512072A
+	by mail.kernel.org (Postfix) with ESMTPS id 7966324698
 	for <patchwork-linux-arm@patchwork.kernel.org>;
- Fri,  6 Mar 2020 11:45:15 +0000 (UTC)
+ Tue, 10 Mar 2020 12:54:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
 	dkim=pass (2048-bit key) header.d=lists.infradead.org
- header.i=@lists.infradead.org header.b="MgZdlxvb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7E7512072A
+ header.i=@lists.infradead.org header.b="QRTrew7I"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7966324698
 Authentication-Results: mail.kernel.org;
  dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org;
@@ -518,45 +525,45 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	List-Archive:List-Unsubscribe:List-Id:MIME-Version:References:In-Reply-To:
 	Message-Id:Date:Subject:To:From:Reply-To:Content-ID:Content-Description:
 	Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-	List-Owner; bh=RSrjVuoil+7Cud9POGvsAcP8PYRf4QKzZ03MsRUZFO4=; b=MgZdlxvbm99qLd
-	l3Hb/jk4OC0RFy13iStY4bzUK9vCP+6Vot5m5wzUVCtDKdxS4kdMx5eQDu3ZidH3fcWhQgbkujlwO
-	TxZisATN94E5Xhi9zD+YUkb8+PGNRY8a0dQ3Ggloj2/GcEIkR2dDFe1Zhf4zIVnA7iEAfBcmFHdz3
-	GP7Ab6fR6jGjs98nJ/vRx+vT6RNArA7Lzg+QthfGGIL//I6DtSigSOYxlnGfKGLU+cEgodxmpLPzf
-	qXxV5iRqCQ6tFmpueyjF2J/OL91jR8MAt5TnWiCSx83x3Ao0lsTd7htOh38t7RDefC86yce98OJdx
-	ku00uNE2FVPvudJC9ScQ==;
+	List-Owner; bh=aEzRVs2pg+6QbUDWQQN1yAPYlnW+XWVwKn2FDiv80JA=; b=QRTrew7IL9vbdM
+	mtuOZU1FJwi43+wuyjiempsm4CcD4i4E2/w4xlW2OIcLT1Grm9thTXmLQIoxXAfg40P9oIqWxPEtz
+	rhv86PkeJMnxEH8qF+wjIQKwccTJyUAhPdShbUZ/SivZsdsqI9hjcuaMW0rwR6cLriXBDt+0cakcT
+	lbhYuhaJVupUPuPdyFV7jiOnkgrBm6i6iXfFQicO3lZtICEl5jCZUl5BCEfIalnyYAqvlbF9gPgmb
+	pbeU1TQCw0Wal6Frhgd0SiHOdo6Q1sx3T/++jMOKa8+Gbk9Vwgi7jggC4L2Njz0PVUrjTdR9/s+jF
+	d2k8KmMvgAcbYk/oKJZQ==;
 Received: from localhost ([127.0.0.1] helo=bombadil.infradead.org)
 	by bombadil.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1jABPl-0007AB-9M; Fri, 06 Mar 2020 11:45:13 +0000
+	id 1jBeOn-0005AX-Nk; Tue, 10 Mar 2020 12:54:17 +0000
 Received: from mx2.suse.de ([195.135.220.15])
  by bombadil.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
- id 1jABOa-00052y-EU; Fri, 06 Mar 2020 11:44:02 +0000
+ id 1jBeNn-0004A1-CM; Tue, 10 Mar 2020 12:53:16 +0000
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx2.suse.de (Postfix) with ESMTP id F3588AF77;
- Fri,  6 Mar 2020 11:43:58 +0000 (UTC)
+ by mx2.suse.de (Postfix) with ESMTP id D2329B134;
+ Tue, 10 Mar 2020 12:53:13 +0000 (UTC)
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 To: linux-kernel@vger.kernel.org,
 	Mathias Nyman <mathias.nyman@intel.com>
-Subject: [PATCH v4 4/4] USB: pci-quirks: Add Raspberry Pi 4 quirk
-Date: Fri,  6 Mar 2020 12:43:48 +0100
-Message-Id: <20200306114348.5172-5-nsaenzjulienne@suse.de>
+Subject: [PATCH v5 4/4] USB: pci-quirks: Add Raspberry Pi 4 quirk
+Date: Tue, 10 Mar 2020 13:52:42 +0100
+Message-Id: <20200310125243.25805-5-nsaenzjulienne@suse.de>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200306114348.5172-1-nsaenzjulienne@suse.de>
-References: <20200306114348.5172-1-nsaenzjulienne@suse.de>
+In-Reply-To: <20200310125243.25805-1-nsaenzjulienne@suse.de>
+References: <20200310125243.25805-1-nsaenzjulienne@suse.de>
 MIME-Version: 1.0
 X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
-X-CRM114-CacheID: sfid-20200306_034400_661945_E65B756F 
-X-CRM114-Status: GOOD (  14.98  )
+X-CRM114-CacheID: sfid-20200310_055315_576152_512D1DE7 
+X-CRM114-Status: GOOD (  14.95  )
 X-Spam-Score: -2.3 (--)
 X-Spam-Report: SpamAssassin version 3.4.3 on bombadil.infradead.org summary:
  Content analysis details:   (-2.3 points)
  pts rule name              description
  ---- ----------------------
  --------------------------------------------------
- 0.0 RCVD_IN_MSPIKE_H3      RBL: Good reputation (+3)
- [195.135.220.15 listed in wl.mailspike.net]
  -2.3 RCVD_IN_DNSWL_MED      RBL: Sender listed at https://www.dnswl.org/,
  medium trust [195.135.220.15 listed in list.dnswl.org]
+ 0.0 RCVD_IN_MSPIKE_H3      RBL: Good reputation (+3)
+ [195.135.220.15 listed in wl.mailspike.net]
  0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
  -0.0 SPF_PASS               SPF: sender matches SPF record
  0.0 RCVD_IN_MSPIKE_WL      Mailspike good senders
@@ -573,8 +580,8 @@ List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
 List-Subscribe: 
  <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
  <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Cc: f.fainelli@gmail.com, gregkh@linuxfoundation.org,
- linux-usb@vger.kernel.org,
+Cc: f.fainelli@gmail.com, sergei.shtylyov@cogentembedded.com,
+ gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
  Nicolas Saenz Julienne <nsaenzjulienne@suse.de>, tim.gover@raspberrypi.org,
  bcm-kernel-feedback-list@broadcom.com, linux-rpi-kernel@lists.infradead.org,
  linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
@@ -593,9 +600,11 @@ firmware interface, reflect that on the firmware interface Kconfg.
 Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 ---
 
+Changes since v4:
+ - Do not split up error message
+
 Changes since v3:
- - Add more complete error message.
- - Add braces around if statement
+ - Add more complete error message
 
 Changes since v1:
  - Make RASPBERRYPI_FIRMWARE dependent on this quirk to make sure it
@@ -618,7 +627,7 @@ index ea869addc89b..40a468d712a5 100644
  	  This option enables support for communicating with the firmware on the
  	  Raspberry Pi.
 diff --git a/drivers/usb/host/pci-quirks.c b/drivers/usb/host/pci-quirks.c
-index beb2efa71341..452f5f12b042 100644
+index beb2efa71341..0dc34668bb2a 100644
 --- a/drivers/usb/host/pci-quirks.c
 +++ b/drivers/usb/host/pci-quirks.c
 @@ -16,6 +16,9 @@
@@ -647,9 +656,9 @@ index beb2efa71341..452f5f12b042 100644
 +		ret = rpi_firmware_init_vl805(pdev);
 +		if (ret) {
 +			/* Firmware might be outdated, or something failed */
-+			dev_warn(&pdev->dev, "Failed to load VL805's firmware: %d\n", ret);
-+			dev_warn(&pdev->dev, "Will continue to attempt to work, "
-+				 "but bad things might happen. You should fix this...\n");
++			dev_warn(&pdev->dev,
++				 "Failed to load VL805's firmware: %d. Will continue to attempt to work, but bad things might happen. You should fix this...\n",
++				 ret);
 +		}
 +	}
 +
