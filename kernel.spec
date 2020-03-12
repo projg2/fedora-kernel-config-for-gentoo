@@ -822,7 +822,7 @@ Patch304: ARM-tegra-usb-no-reset.patch
 # Raspberry Pi
 # https://patchwork.kernel.org/cover/11353083/
 Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
-# https://patchwork.kernel.org/cover/11423693/
+# v5 https://patchwork.kernel.org/cover/11429245/
 Patch311: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
 # https://patchwork.kernel.org/patch/11372935/
 Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
