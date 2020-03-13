@@ -575,6 +575,9 @@ Patch511: v2_20200128_dmoulding_me_com.patch
 # Submitted upstream
 Patch512: iommu-WARN_TAINT-fixes.patch
 
+# Fix some HP x360 models not booting (rhbz 1790115)
+Patch513: 0001-driver-code-clarify-and-fix-platform-device-DMA-mask.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1815,6 +1818,9 @@ fi
 #
 #
 %changelog
+* Fri Mar 13 2020 Hans de Goede <hdegoede@redhat.com>
+- Fix some HP x360 models not booting (rhbz 1790115)
+
 * Thu Mar 12 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.9-100
 - Linux v5.5.9
 
