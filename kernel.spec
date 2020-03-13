@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 5
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -878,10 +878,6 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 # https://lore.kernel.org/patchwork/patch/1132459/
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
-
-# Fix issues with only 1 monitor working on DP-MST docks (rhbz#1809681)
-# These patches should show up in a future 5.6-rc# release
-Patch506: drm-dp-mst-fixes.patch
 
 # More DP-MST fixes, pending for 5.7
 Patch507: drm-dp-mst-error-handling-improvements.patch
@@ -2988,6 +2984,9 @@ fi
 #
 #
 %changelog
+* Fri Mar 13 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc5.git2.1
+- Linux v5.6-rc5-204-g0d81a3f29c0a
+
 * Thu Mar 12 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc5.git1.1
 - Linux v5.6-rc5-53-g3cc6e2c599cd
 
