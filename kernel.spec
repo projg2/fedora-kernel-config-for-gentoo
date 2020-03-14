@@ -575,8 +575,11 @@ Patch511: v2_20200128_dmoulding_me_com.patch
 # Submitted upstream
 Patch512: iommu-WARN_TAINT-fixes.patch
 
-# Fix some HP x360 models not booting (rhbz 1790115)
+# Fix some HP x360 models not booting (rhbz 1790115) (in mainline now)
 Patch513: 0001-driver-code-clarify-and-fix-platform-device-DMA-mask.patch
+
+# Fix UCSI oopses, (rhbz 1785972) (in gkh's usb-linus, heading towards mainline)
+Patch514: ucsi-oops-fixes.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1818,6 +1821,9 @@ fi
 #
 #
 %changelog
+* Sat Mar 14 2020 Hans de Goede <hdegoede@redhat.com>
+- Fix UCSI oopses (rhbz 1785972)
+
 * Fri Mar 13 2020 Hans de Goede <hdegoede@redhat.com>
 - Fix some HP x360 models not booting (rhbz 1790115)
 
