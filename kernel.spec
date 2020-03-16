@@ -845,17 +845,17 @@ Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
 Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
 
 # Pine64 bits
-# 340-344 queued for 5.7
+# 340-345 queued for 5.7
 Patch340: arm64-pinebook-fixes.patch
 Patch341: arm64-a64-mbus.patch
-# https://patchwork.kernel.org/cover/11405517/
-Patch342: Add-LCD-support-for-Pine64-Pinebook-1080p.patch
-# https://lkml.org/lkml/2020/1/15/1320
-Patch343: arm64-pine64-pinetab.patch
-# https://www.spinics.net/lists/arm-kernel/msg789135.html
-Patch344: arm64-pine64-pinephone.patch
 # v4 https://patchwork.kernel.org/cover/11420797/
-Patch345: Add-support-for-the-pine64-Pinebook-Pro.patch
+Patch342: Add-support-for-the-pine64-Pinebook-Pro.patch
+# https://patchwork.kernel.org/cover/11405517/
+Patch343: Add-LCD-support-for-Pine64-Pinebook-1080p.patch
+# https://lkml.org/lkml/2020/1/15/1320
+Patch344: arm64-pine64-pinetab.patch
+# https://www.spinics.net/lists/arm-kernel/msg789135.html
+Patch345: arm64-pine64-pinephone.patch
 
 # 400 - IBM (ppc/s390x) patches
 
