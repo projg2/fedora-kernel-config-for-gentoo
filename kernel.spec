@@ -105,9 +105,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 5
+%global rcrev 6
 # The git snapshot level
-%define gitrev 2
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -881,10 +881,6 @@ Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
 # More DP-MST fixes, pending for 5.7
 Patch507: drm-dp-mst-error-handling-improvements.patch
-
-# Fix backtraces triggered by warnings about buggy BIOS (rhbz 1564895, 1808874)
-# Submitted upstream
-Patch508: iommu-WARN_TAINT-fixes.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1811850
 Patch509: drm-i915-backports.patch
@@ -2984,6 +2980,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 17 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc6.git0.1
+- Linux v5.6-rc6
+
 * Tue Mar 10 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc5.git0.2
 - A series of eDP backlight fixes for i915 (rhbz 1811850)
 
