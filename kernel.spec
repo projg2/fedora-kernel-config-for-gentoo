@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -863,16 +863,6 @@ Patch508: 20200310_chris_chris_wilson_co_uk.patch
 
 # Backport vboxsf from 5.6, can be dropped when we move to 5.6
 Patch510: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
-
-# rhbz 1800335
-Patch511: v2_20200128_dmoulding_me_com.patch
-
-# Fix backtraces triggered by warnings about buggy BIOS (rhbz 1564895, 1808874)
-# Submitted upstream
-Patch512: iommu-WARN_TAINT-fixes.patch
-
-# Fix some HP x360 models not booting (rhbz 1790115) (in mainline now)
-Patch513: 0001-driver-code-clarify-and-fix-platform-device-DMA-mask.patch
 
 # Fix UCSI oopses, (rhbz 1785972) (in gkh's usb-linus, heading towards mainline)
 Patch514: ucsi-oops-fixes.patch
@@ -2906,6 +2896,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 18 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.10-200
+- Linux v5.5.10
+
 * Sat Mar 14 2020 Hans de Goede <hdegoede@redhat.com>
 - Fix UCSI oopses (rhbz 1785972)
 
