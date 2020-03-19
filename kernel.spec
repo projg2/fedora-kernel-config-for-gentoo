@@ -856,6 +856,8 @@ Patch343: Add-LCD-support-for-Pine64-Pinebook-1080p.patch
 Patch344: arm64-pine64-pinetab.patch
 # https://www.spinics.net/lists/arm-kernel/msg789135.html
 Patch345: arm64-pine64-pinephone.patch
+# https://patchwork.kernel.org/cover/11440399/
+Patch346: Add-support-for-PinePhone-LCD-panel.patch
 
 # 400 - IBM (ppc/s390x) patches
 
