@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 6
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -2982,6 +2982,10 @@ fi
 #
 #
 %changelog
+* Fri Mar 20 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc6.git2.1
+- Linux v5.6-rc6-115-g5ad0ec0b8652
+- Switch Secure Boot to lock down to integrity mode (rhbz 1815571)
+
 * Wed Mar 18 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc6.git1.1
 - Linux v5.6-rc6-9-gac309e7744be
 
