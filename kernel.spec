@@ -1815,6 +1815,9 @@ fi
 #
 #
 %changelog
+* Fri Mar 20 2020 Jeremy Cline <jcline@redhat.com>
+- Switch Secure Boot to lock down to integrity mode (rhbz 1815571)
+
 * Fri Mar 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-19769 (rhbz 1786174 1786175)
 
