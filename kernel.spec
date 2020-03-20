@@ -571,6 +571,10 @@ Patch510: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
 # Fix UCSI oopses, (rhbz 1785972) (in gkh's usb-linus, heading towards mainline)
 Patch514: ucsi-oops-fixes.patch
 
+# CVE-2019-19769 rhbz 1786174 1786175
+Patch515: 0001-locks-fix-a-potential-use-after-free-problem-when-wa.patch
+
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1811,6 +1815,9 @@ fi
 #
 #
 %changelog
+* Fri Mar 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2019-19769 (rhbz 1786174 1786175)
+
 * Wed Mar 18 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.10-100
 - Linux v5.5.10
 
