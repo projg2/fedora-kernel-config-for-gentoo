@@ -200,7 +200,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -2982,6 +2982,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 23 2020 Peter Robinson <pbrobinson@gmail.com>
+- Disable debugging options.
+
 * Fri Mar 20 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc6.git2.1
 - Linux v5.6-rc6-115-g5ad0ec0b8652
 - Switch Secure Boot to lock down to integrity mode (rhbz 1815571)
