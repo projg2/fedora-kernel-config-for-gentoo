@@ -840,6 +840,8 @@ Patch323: arm64-tegra-fix-pcie.patch
 Patch324: regulator-pwm-Don-t-warn-on-probe-deferral.patch
 # http://patchwork.ozlabs.org/patch/1243112/
 Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
+# https://patchwork.ozlabs.org/patch/1261638/
+Patch326: arm64-drm-tegra-Fix-SMMU-support-on-Tegra124-and-Tegra210.patch
 
 # Coral
 Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
