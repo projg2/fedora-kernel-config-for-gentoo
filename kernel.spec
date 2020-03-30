@@ -27,7 +27,7 @@ Summary: The Linux kernel
 # For rawhide and/or a kernel built from an rc or git snapshot,
 # released_kernel should be 0.
 # For a stable, released kernel, released_kernel should be 1.
-%global released_kernel 1
+%global released_kernel 0
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 0
+%define gitrev 1
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -200,7 +200,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -2984,6 +2984,10 @@ fi
 #
 #
 %changelog
+* Mon Mar 30 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git1.1
+- Linux v5.6-461-g47acac8cae28
+- Reenable debugging options.
+
 * Mon Mar 30 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-1
 - Linux v5.6
 
