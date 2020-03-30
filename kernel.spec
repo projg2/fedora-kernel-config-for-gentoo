@@ -889,6 +889,8 @@ Patch507: drm-dp-mst-error-handling-improvements.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1811850
 Patch509: drm-i915-backports.patch
 
+Patch510: 0001-mac80211-fix-authentication-with-iwlwifi-mvm.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
