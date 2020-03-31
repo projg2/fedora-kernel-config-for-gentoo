@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 1
+%define gitrev 2
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -824,8 +824,6 @@ Patch304: ARM-tegra-usb-no-reset.patch
 Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
 # v5 https://patchwork.kernel.org/cover/11429245/
 Patch311: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-# https://patchwork.kernel.org/patch/11372935/
-Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
 # https://patchwork.kernel.org/patch/11420129/
 Patch313: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
 
@@ -836,8 +834,6 @@ Patch320: ARM64-Tegra-fixes.patch
 Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
 # https://lkml.org/lkml/2020/2/14/401
 Patch323: arm64-tegra-fix-pcie.patch
-# http://patchwork.ozlabs.org/patch/1243162/
-Patch324: regulator-pwm-Don-t-warn-on-probe-deferral.patch
 # http://patchwork.ozlabs.org/patch/1243112/
 Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
 # https://patchwork.ozlabs.org/patch/1261638/
@@ -888,6 +884,8 @@ Patch507: drm-dp-mst-error-handling-improvements.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1811850
 Patch509: drm-i915-backports.patch
+
+Patch510: 0001-mac80211-fix-authentication-with-iwlwifi-mvm.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2984,6 +2982,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 31 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git2.1
+- Linux v5.6-2405-gcad18da0afb1
+
 * Mon Mar 30 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git1.1
 - Linux v5.6-461-g47acac8cae28
 - Reenable debugging options.
