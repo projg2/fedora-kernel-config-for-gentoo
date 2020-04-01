@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2988,6 +2988,10 @@ fi
 #
 #
 %changelog
+* Wed Apr 01 2020 Jeremy Cline <jcline@redhat.com> - 5.6.1-300
+- Linux v5.6.1
+- Fixes CVE-2020-8835 (rhbz 1818941 1817350)
+
 * Mon Mar 30 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-300
 - Linux v5.6
 
