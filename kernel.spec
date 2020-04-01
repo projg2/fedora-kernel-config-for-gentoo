@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2893,6 +2893,10 @@ fi
 #
 #
 %changelog
+* Wed Apr 01 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.14-200
+- Linux v5.5.14
+- Fixes CVE-2020-8835 (rhbz 1818941 1817350)
+
 * Wed Mar 25 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.13-200
 - Linux v5.5.13
 
