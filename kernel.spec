@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 2
+%define gitrev 3
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -830,8 +830,6 @@ Patch313: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
 # Tegra bits
 # https://www.spinics.net/lists/linux-tegra/msg48152.html
 Patch320: ARM64-Tegra-fixes.patch
-# http://patchwork.ozlabs.org/patch/1230891/
-Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
 # https://lkml.org/lkml/2020/2/14/401
 Patch323: arm64-tegra-fix-pcie.patch
 # http://patchwork.ozlabs.org/patch/1243112/
@@ -884,8 +882,6 @@ Patch507: drm-dp-mst-error-handling-improvements.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1811850
 Patch509: drm-i915-backports.patch
-
-Patch510: 0001-mac80211-fix-authentication-with-iwlwifi-mvm.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2982,6 +2978,9 @@ fi
 #
 #
 %changelog
+* Wed Apr 01 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git3.1
+- Linux v5.6-5611-g1a323ea5356e
+
 * Tue Mar 31 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git2.1
 - Linux v5.6-2405-gcad18da0afb1
 

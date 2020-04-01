@@ -14,39 +14,36 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  security/security.c          | 6 ++++++
  4 files changed, 20 insertions(+)
 
+diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
+index 9cd4455528e5..f79007bf439d 100644
+--- a/include/linux/lsm_hook_defs.h
++++ b/include/linux/lsm_hook_defs.h
+@@ -371,6 +371,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+ #endif /* CONFIG_BPF_SYSCALL */
+
+ LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
++LSM_HOOK(int, 0, lock_kernel_down, const char *where, enum lockdown_reason level);
++
+
+ #ifdef CONFIG_PERF_EVENTS
+ LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index a3763247547c..8d76d1f153ed 100644
+index 988ca0df7824..4ed37b95417c 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1454,6 +1454,12 @@
-  *     code execution in kernel space should be permitted.
+@@ -1476,6 +1476,12 @@
   *
   *     @what: kernel feature being accessed
-+ *
+  *
 + * @lock_kernel_down
-+ *     Put the kernel into lock-down mode.
++ * 	Put the kernel into lock-down mode.
 + *
-+ *     @where: Where the lock-down is originating from (e.g. command line option)
-+ *     @level: The lock-down level (can only increase)
-  */
- union security_list_options {
- 	int (*binder_set_context_mgr)(struct task_struct *mgr);
-@@ -1818,6 +1824,7 @@ union security_list_options {
- 	void (*bpf_prog_free_security)(struct bpf_prog_aux *aux);
- #endif /* CONFIG_BPF_SYSCALL */
- 	int (*locked_down)(enum lockdown_reason what);
-+	int (*lock_kernel_down)(const char *where, enum lockdown_reason level);
- #ifdef CONFIG_PERF_EVENTS
- 	int (*perf_event_open)(struct perf_event_attr *attr, int type);
- 	int (*perf_event_alloc)(struct perf_event *event);
-@@ -2060,6 +2067,7 @@ struct security_hook_heads {
- 	struct hlist_head bpf_prog_free_security;
- #endif /* CONFIG_BPF_SYSCALL */
- 	struct hlist_head locked_down;
-+	struct hlist_head lock_kernel_down;
- #ifdef CONFIG_PERF_EVENTS
- 	struct hlist_head perf_event_open;
- 	struct hlist_head perf_event_alloc;
++ * 	@where: Where the lock-down is originating from (e.g. command line option)
++ * 	@level: The lock-down level (can only increase)
++ *
+  * Security hooks for perf events
+  *
+  * @perf_event_open:
 diff --git a/include/linux/security.h b/include/linux/security.h
 index a8d59d612d27..467b9ccdf993 100644
 --- a/include/linux/security.h
