@@ -893,6 +893,10 @@ Patch509: drm-i915-backports.patch
 
 Patch510: 0001-mac80211-fix-authentication-with-iwlwifi-mvm.patch
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1816621
+# https://patchwork.ozlabs.org/patch/1260523/
+Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2988,6 +2992,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 02 2020 Hans de Goede <hdegoede@redhat.com>
+- Add patch fixing Lenovo X1 7th and 8th gen not suspending (rhbz 1816621)
+
 * Wed Apr 01 2020 Jeremy Cline <jcline@redhat.com> - 5.6.1-300
 - Linux v5.6.1
 - Fixes CVE-2020-8835 (rhbz 1818941 1817350)
