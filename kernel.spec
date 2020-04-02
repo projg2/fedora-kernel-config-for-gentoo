@@ -568,6 +568,9 @@ Patch508: 20200310_chris_chris_wilson_co_uk.patch
 # Backport vboxsf from 5.6, can be dropped when we move to 5.6
 Patch510: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1816621
+# https://patchwork.ozlabs.org/patch/1260523/
+Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1809,6 +1812,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 02 2020 Hans de Goede <hdegoede@redhat.com>
+- Add patch fixing Lenovo X1 7th and 8th gen not suspending (rhbz 1816621)
+
 * Wed Apr 01 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.14-100
 - Linux v5.5.14
 - Fixes CVE-2020-8835 (rhbz 1818941 1817350)
