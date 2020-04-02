@@ -572,6 +572,9 @@ Patch510: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
 # https://patchwork.ozlabs.org/patch/1260523/
 Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1820196
+Patch512: 0001-ALSA-hda-realtek-Add-quirk-for-Lenovo-Carbon-X1-8th-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1814,6 +1817,7 @@ fi
 %changelog
 * Thu Apr 02 2020 Hans de Goede <hdegoede@redhat.com>
 - Add patch fixing Lenovo X1 7th and 8th gen not suspending (rhbz 1816621)
+- Add patch fixing Lenovo X1 8th gen speaker volume control (rhbz 1820196)
 
 * Wed Apr 01 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.14-100
 - Linux v5.5.14
