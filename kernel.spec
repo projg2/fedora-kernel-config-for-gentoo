@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 3
+%define gitrev 4
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -846,8 +846,6 @@ Patch340: arm64-pinebook-fixes.patch
 Patch341: arm64-a64-mbus.patch
 # v4 https://patchwork.kernel.org/cover/11420797/
 Patch342: Add-support-for-the-pine64-Pinebook-Pro.patch
-# https://patchwork.kernel.org/cover/11405517/
-Patch343: Add-LCD-support-for-Pine64-Pinebook-1080p.patch
 # https://lkml.org/lkml/2020/1/15/1320
 Patch344: arm64-pine64-pinetab.patch
 # https://www.spinics.net/lists/arm-kernel/msg789135.html
@@ -876,12 +874,6 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 # https://lore.kernel.org/patchwork/patch/1132459/
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
-
-# More DP-MST fixes, pending for 5.7
-Patch507: drm-dp-mst-error-handling-improvements.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1811850
-Patch509: drm-i915-backports.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1816621
 # https://patchwork.ozlabs.org/patch/1260523/
@@ -2985,6 +2977,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 02 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git4.1
+- Linux v5.6-7632-g919dce24701f
+
 * Thu Apr 02 2020 Hans de Goede <hdegoede@redhat.com>
 - Add patch fixing Lenovo X1 7th and 8th gen not suspending (rhbz 1816621)
 - Add patch fixing Lenovo X1 8th gen speaker volume control (rhbz 1820196)
