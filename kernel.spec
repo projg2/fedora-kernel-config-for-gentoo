@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -1815,6 +1815,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 02 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.15-100
+- Linux v5.5.15
+
 * Thu Apr 02 2020 Hans de Goede <hdegoede@redhat.com>
 - Add patch fixing Lenovo X1 7th and 8th gen not suspending (rhbz 1816621)
 - Add patch fixing Lenovo X1 8th gen speaker volume control (rhbz 1820196)
