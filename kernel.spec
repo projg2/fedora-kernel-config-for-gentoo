@@ -883,6 +883,10 @@ Patch507: drm-dp-mst-error-handling-improvements.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1811850
 Patch509: drm-i915-backports.patch
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1816621
+# https://patchwork.ozlabs.org/patch/1260523/
+Patch510: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2978,6 +2982,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 02 2020 Hans de Goede <hdegoede@redhat.com>
+- Add patch fixing Lenovo X1 7th and 8th gen not suspending (rhbz 1816621)
+
 * Wed Apr 01 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git3.1
 - Linux v5.6-5611-g1a323ea5356e
 
