@@ -1,0 +1,42 @@
+From MAILER-DAEMON Fri Apr  3 19:24:59 2020
+From: Dmitry Safonov <dima@arista.com>
+To: linux-kernel@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Dmitry Safonov <0x7f454c46@gmail.com>, Dmitry Safonov <dima@arista.com>, "kernelci.org bot" <bot@kernelci.org>, Michael Ellerman <mpe@ellerman.id.au>, Jiri Slaby <jslaby@suse.com>
+Subject: [PATCH] tty/sysrq: Export sysrq_mask()
+Date: Wed, 01 Apr 2020 15:39:04 +0100
+Message-Id: <20200401143904.423450-1-dima@arista.com>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-kernel.vger.kernel.org>
+X-Mailing-List: linux-kernel@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Build fix for serial_core being module:
+  ERROR: modpost: "sysrq_mask" [drivers/tty/serial/serial_core.ko] undefined!
+
+Reported-by: Michael Ellerman <mpe@ellerman.id.au>
+Reported-by: "kernelci.org bot" <bot@kernelci.org>
+Signed-off-by: Dmitry Safonov <dima@arista.com>
+Cc: Jiri Slaby <jslaby@suse.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/sysrq.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index 5e0d0813da55..a0760bcd7a97 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -74,6 +74,7 @@ int sysrq_mask(void)
+ 		return 1;
+ 	return sysrq_enabled;
+ }
++EXPORT_SYMBOL_GPL(sysrq_mask);
+ 
+ /*
+  * A value of 1 means 'all', other nonzero values are an op mask:
+-- 
+2.25.1
+
+

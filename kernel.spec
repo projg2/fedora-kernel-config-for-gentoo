@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 4
+%define gitrev 5
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -820,8 +820,6 @@ Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 Patch304: ARM-tegra-usb-no-reset.patch
 
 # Raspberry Pi
-# https://patchwork.kernel.org/cover/11353083/
-Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
 # v5 https://patchwork.kernel.org/cover/11429245/
 Patch311: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
 # https://patchwork.kernel.org/patch/11420129/
@@ -881,6 +879,9 @@ Patch510: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1820196
 Patch511: 0001-ALSA-hda-realtek-Add-quirk-for-Lenovo-Carbon-X1-8th-.patch
+
+# Fixes build on s390 and should be upstream after rc1
+Patch512: export_sysrq_mask.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2977,6 +2978,9 @@ fi
 #
 #
 %changelog
+* Fri Apr 03 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git5.1
+- Linux v5.6-9431-gbef7b2a7be28
+
 * Thu Apr 02 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git4.1
 - Linux v5.6-7632-g919dce24701f
 
