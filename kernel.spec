@@ -828,6 +828,8 @@ Patch311: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
 Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
 # https://patchwork.kernel.org/patch/11420129/
 Patch313: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
+# https://patchwork.freedesktop.org/patch/358980/
+Patch314: drm-vc4-Fix-HDMI-mode-validation.patch
 
 # Tegra bits
 # https://www.spinics.net/lists/linux-tegra/msg48152.html
@@ -2993,6 +2995,9 @@ fi
 #
 #
 %changelog
+* Fri Apr  3 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+- Raspberry Pi HDMI mode validation fix
+
 * Thu Apr 02 2020 Jeremy Cline <jcline@redhat.com> - 5.6.2-300
 - Linux v5.6.2
 
