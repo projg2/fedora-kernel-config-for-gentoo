@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 5
+%define gitrev 6
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -822,32 +822,17 @@ Patch304: ARM-tegra-usb-no-reset.patch
 # Raspberry Pi
 # v5 https://patchwork.kernel.org/cover/11429245/
 Patch311: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-# https://patchwork.kernel.org/patch/11420129/
-Patch313: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
 
 # Tegra bits
-# https://www.spinics.net/lists/linux-tegra/msg48152.html
-Patch320: ARM64-Tegra-fixes.patch
-# https://lkml.org/lkml/2020/2/14/401
-Patch323: arm64-tegra-fix-pcie.patch
 # http://patchwork.ozlabs.org/patch/1243112/
 Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
 # https://patchwork.ozlabs.org/patch/1261638/
 Patch326: arm64-drm-tegra-Fix-SMMU-support-on-Tegra124-and-Tegra210.patch
 
 # Coral
-Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
 
 # Pine64 bits
 # 340-345 queued for 5.7
-Patch340: arm64-pinebook-fixes.patch
-Patch341: arm64-a64-mbus.patch
-# v4 https://patchwork.kernel.org/cover/11420797/
-Patch342: Add-support-for-the-pine64-Pinebook-Pro.patch
-# https://lkml.org/lkml/2020/1/15/1320
-Patch344: arm64-pine64-pinetab.patch
-# https://www.spinics.net/lists/arm-kernel/msg789135.html
-Patch345: arm64-pine64-pinephone.patch
 # https://patchwork.kernel.org/cover/11440399/
 Patch346: Add-support-for-PinePhone-LCD-panel.patch
 
@@ -2978,6 +2963,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 06 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git6.1
+- Linux v5.6-11374-ga10c9c710f9e
+
 * Fri Apr 03 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git5.1
 - Linux v5.6-9431-gbef7b2a7be28
 
