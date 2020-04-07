@@ -865,6 +865,12 @@ Patch511: 0001-ALSA-hda-realtek-Add-quirk-for-Lenovo-Carbon-X1-8th-.patch
 # Fixes build on s390 and should be upstream after rc1
 Patch512: export_sysrq_mask.patch
 
+# nouveau runpm and secboot fixes
+# Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/f5755e7069d4acbcce1a93692421f358241ead7b
+Patch513: 0001-drm-nouveau-workaround-runpm-fail-by-disabling-PCI-p.patch
+# Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/41c6a13e8143af71928749ea9895d2ebc2fb4ffd
+Patch514: 0002-drm-nouveau-gr-gp107-gp108-implement-workaround-for-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2960,6 +2966,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 07 2020 Karol Herbst <kherbst@redhat.com>
+- Add patches to fix nouveau issues preventing booting the installer or system
+
 * Mon Apr 06 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git6.1
 - Linux v5.6-11374-ga10c9c710f9e
 
