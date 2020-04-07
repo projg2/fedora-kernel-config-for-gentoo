@@ -821,20 +821,17 @@ Patch304: ARM-tegra-usb-no-reset.patch
 
 # Raspberry Pi
 # v5 https://patchwork.kernel.org/cover/11429245/
-Patch311: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
+Patch310: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
 
 # Tegra bits
 # http://patchwork.ozlabs.org/patch/1243112/
-Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
+Patch320: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
 # https://patchwork.ozlabs.org/patch/1261638/
-Patch326: arm64-drm-tegra-Fix-SMMU-support-on-Tegra124-and-Tegra210.patch
-
-# Coral
+Patch321: arm64-drm-tegra-Fix-SMMU-support-on-Tegra124-and-Tegra210.patch
 
 # Pine64 bits
-# 340-345 queued for 5.7
 # https://patchwork.kernel.org/cover/11440399/
-Patch346: Add-support-for-PinePhone-LCD-panel.patch
+Patch330: Add-support-for-PinePhone-LCD-panel.patch
 
 # 400 - IBM (ppc/s390x) patches
 
