@@ -904,6 +904,12 @@ Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1820196
 Patch512: 0001-ALSA-hda-realtek-Add-quirk-for-Lenovo-Carbon-X1-8th-.patch
 
+# nouveau runpm and secboot fixes
+# Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/f5755e7069d4acbcce1a93692421f358241ead7b
+Patch513: 0001-drm-nouveau-workaround-runpm-fail-by-disabling-PCI-p.patch
+# Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/41c6a13e8143af71928749ea9895d2ebc2fb4ffd
+Patch514: 0002-drm-nouveau-gr-gp107-gp108-implement-workaround-for-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2999,6 +3005,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 07 2020 Karol Herbst <kherbst@redhat.com>
+- Add patches to fix nouveau issues preventing booting the installer or system
+
 * Fri Apr  3 2020 Peter Robinson <pbrobinson@fedoraproject.org>
 - Raspberry Pi HDMI mode validation fix
 - Raspberry Pi 4 rev 1.2 mmc fix
