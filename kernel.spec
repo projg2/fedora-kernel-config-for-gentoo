@@ -107,7 +107,7 @@ Summary: The Linux kernel
 # The rc snapshot level
 %global rcrev 0
 # The git snapshot level
-%define gitrev 7
+%define gitrev 8
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -864,12 +864,6 @@ Patch511: 0001-ALSA-hda-realtek-Add-quirk-for-Lenovo-Carbon-X1-8th-.patch
 
 # Fixes build on s390 and should be upstream after rc1
 Patch512: export_sysrq_mask.patch
-
-# nouveau runpm and secboot fixes
-# Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/f5755e7069d4acbcce1a93692421f358241ead7b
-Patch513: 0001-drm-nouveau-workaround-runpm-fail-by-disabling-PCI-p.patch
-# Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/41c6a13e8143af71928749ea9895d2ebc2fb4ffd
-Patch514: 0002-drm-nouveau-gr-gp107-gp108-implement-workaround-for-.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2966,6 +2960,9 @@ fi
 #
 #
 %changelog
+* Wed Apr 08 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git8.1
+- Linux v5.6-12046-gae46d2aa6a7f
+
 * Tue Apr 07 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git7.1
 - Linux v5.6-11448-g7e63420847ae
 
