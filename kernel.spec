@@ -105,9 +105,9 @@ Summary: The Linux kernel
 # The next upstream release sublevel (base_sublevel+1)
 %define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
 # The rc snapshot level
-%global rcrev 0
+%global rcrev 1
 # The git snapshot level
-%define gitrev 8
+%define gitrev 0
 # Set rpm version accordingly
 %define rpmversion 5.%{upstream_sublevel}.0
 %endif
@@ -858,9 +858,6 @@ Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1816621
 # https://patchwork.ozlabs.org/patch/1260523/
 Patch510: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1820196
-Patch511: 0001-ALSA-hda-realtek-Add-quirk-for-Lenovo-Carbon-X1-8th-.patch
 
 # Fixes build on s390 and should be upstream after rc1
 Patch512: export_sysrq_mask.patch
@@ -2960,6 +2957,9 @@ fi
 #
 #
 %changelog
+* Mon Apr 13 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc1.git0.1
+- Linux v5.7-rc1
+
 * Mon Apr 13 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Disable debugging options.
 

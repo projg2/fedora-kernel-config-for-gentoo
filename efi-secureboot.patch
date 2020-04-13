@@ -285,8 +285,8 @@ index 1797623b0c3a..fa8ac411bf6e 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -17,6 +17,7 @@
- #include <linux/root_dev.h>
  #include <linux/sfi.h>
+ #include <linux/hugetlb.h>
  #include <linux/tboot.h>
 +#include <linux/security.h>
  #include <linux/usb/xhci-dbgp.h>
