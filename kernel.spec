@@ -1,7 +1,8 @@
 # We have to override the new %%install behavior because, well... the kernel is special.
 %global __spec_install_pre %{___build_pre}
 
-# this should go away soon
+# Short-term fix so the package builds with GCC 10.
+# This should go away soon.
 %define _legacy_common_support 1
 
 # At the time of this writing (2019-03), RHEL8 packages use w2.xzdio
@@ -28,6 +29,8 @@ Summary: The Linux kernel
 # released_kernel should be 0.
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
+
+%global distro_build 0.rc1.20200414git8632e9b5645b.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -58,60 +61,20 @@ Summary: The Linux kernel
 
 # define buildid .local
 
+
 %if 0%{?fedora}
 %define primary_target fedora
 %else
 %define primary_target rhel
 %endif
 
-# baserelease defines which build revision of this kernel version we're
-# building.  We used to call this fedora_build, but the magical name
-# baserelease is matched by the rpmdev-bumpspec tool, which you should use.
-#
-# We used to have some extra magic weirdness to bump this automatically,
-# but now we don't.  Just use: rpmdev-bumpspec -c 'comment for changelog'
-# When changing base_sublevel below or going from rc to a final kernel,
-# reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
-# scripts/rebase.sh should be made to do that for you, actually.
-#
-# NOTE: baserelease must be > 0 or bad things will happen if you switch
-#       to a released kernel (released version will be < rc version)
-#
-# For non-released -rc kernels, this will be appended after the rcX and
-# gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
-#
-%global baserelease 1
-%global fedora_build %{baserelease}
+%define rpmversion 5.7.0
+%define pkgrelease 0.rc1.20200414git8632e9b5645b.1
 
-# base_sublevel is the kernel version we're starting with and patching
-# on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
-# which yields a base_sublevel of 0.
-%define base_sublevel 6
+# allow pkg_release to have configurable %%{?dist} tag
+%define specrelease 0.rc1.20200414git8632e9b5645b.1%{?dist}
 
-## If this is a released kernel ##
-%if 0%{?released_kernel}
-
-# Do we have a -stable update to apply?
-%define stable_update 0
-# Set rpm version accordingly
-%if 0%{?stable_update}
-%define stablerev %{stable_update}
-%define stable_base %{stable_update}
-%endif
-%define rpmversion 5.%{base_sublevel}.%{stable_update}
-
-## The not-released-kernel case ##
-%else
-# The next upstream release sublevel (base_sublevel+1)
-%define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
-# The rc snapshot level
-%global rcrev 1
-# The git snapshot level
-%define gitrev 0
-# Set rpm version accordingly
-%define rpmversion 5.%{upstream_sublevel}.0
-%endif
-# Nb: The above rcrev and gitrev values automagically define Patch00 and Patch01 below.
+%define pkg_release %{specrelease}%{?buildid}
 
 # What parts do we want to build?  We must build at least one kernel.
 # These are the kernels that are built IF the architecture allows it.
@@ -200,7 +163,10 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
+
+# The kernel tarball/base version
+%define kversion 5.7
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -223,32 +189,6 @@ Summary: The Linux kernel
 %else
 %define make_opts -s
 %endif
-
-# pkg_release is what we'll fill in for the rpm Release: field
-%if 0%{?released_kernel}
-
-%define pkg_release %{fedora_build}%{?buildid}%{?dist}
-
-%else
-
-# non-released_kernel
-%if 0%{?rcrev}
-%define rctag .rc%rcrev
-%else
-%define rctag .rc0
-%endif
-%if 0%{?gitrev}
-%define gittag .git%gitrev
-%else
-%define gittag .git0
-%endif
-%define pkg_release 0%{?rctag}%{?gittag}.%{fedora_build}%{?buildid}%{?dist}
-
-%endif
-
-# The kernel tarball/base version
-%define kversion 5.%{base_sublevel}
-
 
 # turn off debug kernel and kabichk for gcov builds
 %if %{with_gcov}
@@ -324,10 +264,7 @@ Summary: The Linux kernel
 
 # if requested, only build debug kernel
 %if %{with_dbgonly}
-%if %{debugbuildsenabled}
 %define with_up 0
-%endif
-%define with_pae 0
 %define with_tools 0
 %define with_perf 0
 %define with_bpftool 0
@@ -466,18 +403,21 @@ Summary: The Linux kernel
 %if 0%{?fedora}
 %define nobuildarches i386
 %else
-%define nobuildarches i386 i686
+%define nobuildarches i386 i686 %{arm}
 %endif
 
 %ifarch %nobuildarches
+# disable BuildKernel commands
 %define with_up 0
 %define with_debug 0
+%define with_pae 0
+%define with_zfcpdump 0
+
 %define with_debuginfo 0
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
 %define with_selftests 0
-%define with_pae 0
 %define _enable_debug_packages 0
 %endif
 
@@ -537,7 +477,6 @@ BuildRequires: net-tools, hostname, bc, elfutils-devel
 %if 0%{?fedora}
 BuildRequires: dwarves
 %endif
-# Used to mangle unversioned shebangs to be Python 3
 BuildRequires: python3-devel
 %if %{with_headers}
 BuildRequires: rsync
@@ -623,7 +562,14 @@ BuildRequires: xmlto
 BuildRequires: asciidoc
 %endif
 
-Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
+# Because this is the kernel, it's hard to get a single upstream URL
+# to represent the base without needing to do a bunch of patching. This
+# tarball is generated from a src-git tree. If you want to see the
+# exact git commit you can run
+#
+# xzcat -qq ${TARBALL} | git get-tar-commit-id
+Source0: linux-20200414git8632e9b5645b.tar.xz
+
 
 # Name of the packaged file containing signing key
 %ifarch ppc64le
@@ -671,9 +617,8 @@ Source13: redhatsecureboot003.cer
 
 Source22: mod-extra.list.rhel
 Source16: mod-extra.list.fedora
-Source17: mod-extra.sh
+Source17: mod-blacklist.sh
 Source18: mod-sign.sh
-Source19: mod-extra-blacklist.sh
 Source79: parallel_xz.sh
 
 Source80: filter-x86_64.sh.fedora
@@ -727,7 +672,6 @@ Source53: generate_bls_conf.sh
 Source56: update_scripts.sh
 
 Source54: mod-internal.list
-Source55: merge.pl
 
 Source200: check-kabi
 
@@ -741,131 +685,27 @@ Source211: Module.kabi_dup_ppc64le
 Source212: Module.kabi_dup_s390x
 Source213: Module.kabi_dup_x86_64
 
-# Source300: kernel-abi-whitelists-%{rpmversion}-%{distro_build}.tar.bz2
-# Source301: kernel-kabi-dw-%{rpmversion}-%{distro_build}.tar.bz2
+Source300: kernel-abi-whitelists-%{rpmversion}-%{distro_build}.tar.bz2
+Source301: kernel-kabi-dw-%{rpmversion}-%{distro_build}.tar.bz2
 
 # Sources for kernel-tools
 Source2000: cpupower.service
 Source2001: cpupower.config
 
+# Some people enjoy building customized kernels from the dist-git in Fedora and
+# use this to override configuration options. One day they may all use the
+# source tree, but in the mean time we carry this to support the legacy workflow
+Source3000: merge.pl
+Source3001: kernel-local
+
 ## Patches needed for building this package
 
-# Patch1: patch-%{rpmversion}-redhat.patch
+Patch1: patch-%{rpmversion}-redhat.patch
 
 # empty final patch to facilitate testing of kernel patches
-# Patch999999: linux-kernel-test.patch
-
-# This file is intentionally left empty in the stock kernel. Its a nicety
-# added for those wanting to do custom rebuilds with altered config opts.
-Source1000: kernel-local
-
-# Here should be only the patches up to the upstream canonical Linus tree.
-
-# For a stable release kernel
-%if 0%{?stable_update}
-%if 0%{?stable_base}
-%define    stable_patch_00  patch-5.%{base_sublevel}.%{stable_base}.xz
-Source5000: %{stable_patch_00}
-%endif
-
-# non-released_kernel case
-# These are automagically defined by the rcrev and gitrev values set up
-# near the top of this spec file.
-%else
-%if 0%{?rcrev}
-Source5000: patch-5.%{upstream_sublevel}-rc%{rcrev}.xz
-%if 0%{?gitrev}
-Source5001: patch-5.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
-%endif
-%else
-# pre-{base_sublevel+1}-rc1 case
-%if 0%{?gitrev}
-Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
-%endif
-%endif
-%endif
-
-## Patches needed for building this package
-
-## compile fixes
-
-%if !%{nopatches}
-
-# Git trees.
-
-# Standalone patches
-# 100 - Generic long running patches
-
-# 200 - x86 / secureboot
-
-# bz 1497559 - Make kernel MODSIGN code not error on missing variables
-Patch201: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
-Patch202: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
-
-Patch204: efi-secureboot.patch
-
-Patch206: s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
-
-# 300 - ARM patches
-Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-
-# RHBZ Bug 1576593 - work around while vendor investigates
-Patch301: arm-make-highpte-not-expert.patch
-
-# https://patchwork.kernel.org/patch/10351797/
-Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
-# rhbz 1574718
-Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
-
-Patch304: ARM-tegra-usb-no-reset.patch
-
-# Raspberry Pi
-# v5 https://patchwork.kernel.org/cover/11429245/
-Patch310: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-
-# Tegra bits
-# http://patchwork.ozlabs.org/patch/1243112/
-Patch320: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
-# https://patchwork.ozlabs.org/patch/1261638/
-Patch321: arm64-drm-tegra-Fix-SMMU-support-on-Tegra124-and-Tegra210.patch
-
-# Pine64 bits
-# https://patchwork.kernel.org/cover/11440399/
-Patch330: Add-support-for-PinePhone-LCD-panel.patch
-
-# 400 - IBM (ppc/s390x) patches
-
-# 500 - Temp fixes/CVEs etc
-# rhbz 1431375
-Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# gcc9 fixes
-Patch502: 0001-Drop-that-for-now.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1701096
-# Submitted upstream at https://lkml.org/lkml/2019/4/23/89
-Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
-
-# Fixes a boot hang on debug kernels
-# https://bugzilla.redhat.com/show_bug.cgi?id=1756655
-Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-
-# it seems CONFIG_OPTIMIZE_INLINING has been forced now and is causing issues on ARMv7
-# https://lore.kernel.org/patchwork/patch/1132459/
-# https://lkml.org/lkml/2019/8/29/1772
-Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1816621
-# https://patchwork.ozlabs.org/patch/1260523/
-Patch510: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
-
-# Fixes build on s390 and should be upstream after rc1
-Patch512: export_sysrq_mask.patch
+Patch999999: linux-kernel-test.patch
 
 # END OF PATCH DEFINITIONS
-
-%endif
-
 
 %description
 The kernel meta package
@@ -1034,7 +874,7 @@ This package provides debug information for package kernel-tools.
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
 
 # with_tools
 %endif
@@ -1125,8 +965,6 @@ AutoReqProv: no\
 This package provides debug information for package %{name}%{?1:-%{1}}.\
 This is required to use SystemTap with %{name}%{?1:-%{1}}-%{KVERREL}.\
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*\/usr\/src\/kernels/.*|XXX' -o ignored-debuginfo.list -p '/.*/%%{KVERREL_RE}%{?1:[+]%{1}}/.*|/.*%%{KVERREL_RE}%{?1:\+%{1}}(\.debug)?' -o debuginfo%{?1}.list}\
-
-
 %{nil}
 
 #
@@ -1245,9 +1083,6 @@ The meta-package for the %{1} kernel\
 Summary: %{variant_summary}\
 Provides: kernel-%{?1:%{1}-}core-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
 Provides: installonlypkg(kernel)\
-%ifarch ppc64le\
-Obsoletes: kernel-bootwrapper\
-%endif\
 %{expand:%%kernel_reqprovconf}\
 %if %{?1:1} %{!?1:0} \
 %{expand:%%kernel_meta_package %{?1:%{1}}}\
@@ -1307,15 +1142,10 @@ input and output, etc.
 %prep
 # do a few sanity-checks for --with *only builds
 %if %{with_baseonly}
-%if !%{with_up}%{with_pae}
+%if !%{with_up}
 echo "Cannot build --with baseonly, up build is disabled"
 exit 1
 %endif
-%endif
-
-%if "%{baserelease}" == "0"
-echo "baserelease must be greater than zero"
-exit 1
 %endif
 
 # more sanity checking; do it quietly
@@ -1364,166 +1194,13 @@ ApplyOptionalPatch()
   fi
 }
 
-# First we unpack the kernel tarball.
-# If this isn't the first make prep, we use links to the existing clean tarball
-# which speeds things up quite a bit.
-
-# Update to latest upstream.
-%if 0%{?released_kernel}
-%define vanillaversion 5.%{base_sublevel}
-# non-released_kernel case
-%else
-%if 0%{?rcrev}
-%define vanillaversion 5.%{upstream_sublevel}-rc%{rcrev}
-%if 0%{?gitrev}
-%define vanillaversion 5.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}
-%endif
-%else
-# pre-{base_sublevel+1}-rc1 case
-%if 0%{?gitrev}
-%define vanillaversion 5.%{base_sublevel}-git%{gitrev}
-%else
-%define vanillaversion 5.%{base_sublevel}
-%endif
-%endif
-%endif
-
-# %%{vanillaversion} : the full version name, e.g. 2.6.35-rc6-git3
-# %%{kversion}       : the base version, e.g. 2.6.34
-
-# Use kernel-%%{kversion}%%{?dist} as the top-level directory name
-# so we can prep different trees within a single git directory.
-
-# Build a list of the other top-level kernel tree directories.
-# This will be used to hardlink identical vanilla subdirs.
-sharedirs=$(find "$PWD" -maxdepth 1 -type d -name 'kernel-5.*' \
-            | grep -x -v "$PWD"/kernel-%{kversion}%{?dist}) ||:
-
-# Delete all old stale trees.
-if [ -d kernel-%{kversion}%{?dist} ]; then
-  cd kernel-%{kversion}%{?dist}
-  for i in linux-*
-  do
-     if [ -d $i ]; then
-       # Just in case we ctrl-c'd a prep already
-       rm -rf deleteme.%{_target_cpu}
-       # Move away the stale away, and delete in background.
-       mv $i deleteme-$i
-       rm -rf deleteme* &
-     fi
-  done
-  cd ..
-fi
-
-# Generate new tree
-if [ ! -d kernel-%{kversion}%{?dist}/vanilla-%{vanillaversion} ]; then
-
-  if [ -d kernel-%{kversion}%{?dist}/vanilla-%{kversion} ]; then
-
-    # The base vanilla version already exists.
-    cd kernel-%{kversion}%{?dist}
-
-    # Any vanilla-* directories other than the base one are stale.
-    for dir in vanilla-*; do
-      [ "$dir" = vanilla-%{kversion} ] || rm -rf $dir &
-    done
-
-  else
-
-    rm -f pax_global_header
-    # Look for an identical base vanilla dir that can be hardlinked.
-    for sharedir in $sharedirs ; do
-      if [[ ! -z $sharedir  &&  -d $sharedir/vanilla-%{kversion} ]] ; then
-        break
-      fi
-    done
-    if [[ ! -z $sharedir  &&  -d $sharedir/vanilla-%{kversion} ]] ; then
-%setup -q -n kernel-%{kversion}%{?dist} -c -T
-      cp -al $sharedir/vanilla-%{kversion} .
-    else
-%setup -q -n kernel-%{kversion}%{?dist} -c
-      mv linux-%{kversion} vanilla-%{kversion}
-    fi
-
-  fi
-
-%if "%{kversion}" != "%{vanillaversion}"
-
-  for sharedir in $sharedirs ; do
-    if [[ ! -z $sharedir  &&  -d $sharedir/vanilla-%{vanillaversion} ]] ; then
-      break
-    fi
-  done
-  if [[ ! -z $sharedir  &&  -d $sharedir/vanilla-%{vanillaversion} ]] ; then
-
-    cp -al $sharedir/vanilla-%{vanillaversion} .
-
-  else
-
-    # Need to apply patches to the base vanilla version.
-    cp -al vanilla-%{kversion} vanilla-%{vanillaversion}
-    cd vanilla-%{vanillaversion}
-
-cp %{SOURCE12} .
-
-# Update vanilla to the latest upstream.
-# (non-released_kernel case only)
-%if 0%{?rcrev}
-    xzcat %{SOURCE5000} | patch -p1 -F1 -s
-%if 0%{?gitrev}
-    xzcat %{SOURCE5001} | patch -p1 -F1 -s
-%endif
-%else
-# pre-{base_sublevel+1}-rc1 case
-%if 0%{?gitrev}
-    xzcat %{SOURCE5000} | patch -p1 -F1 -s
-%endif
-%endif
-    git init
-    git config user.email "kernel-team@fedoraproject.org"
-    git config user.name "Fedora Kernel Team"
-    git config gc.auto 0
-    git add .
-    git commit -a -q -m "baseline"
-
-    cd ..
-
-  fi
-
-%endif
-
-else
-
-  # We already have all vanilla dirs, just change to the top-level directory.
-  cd kernel-%{kversion}%{?dist}
-
-fi
-
-# Now build the fedora kernel tree.
-cp -al vanilla-%{vanillaversion} linux-%{KVERREL}
+%setup -q -n kernel-20200414git8632e9b5645b -c
+mv linux-20200414git8632e9b5645b linux-%{KVERREL}
 
 cd linux-%{KVERREL}
-if [ ! -d .git ]; then
-    git init
-    git config user.email "kernel-team@fedoraproject.org"
-    git config user.name "Fedora Kernel Team"
-    git config gc.auto 0
-    git add .
-    git commit -a -q -m "baseline"
-fi
 
-
-# released_kernel with possible stable updates
-%if 0%{?stable_base}
-# This is special because the kernel spec is hell and nothing is consistent
-xzcat %{SOURCE5000} | patch -p1 -F1 -s
-git commit -a -m "Stable update"
-%endif
-
-# Note: Even in the "nopatches" path some patches (build tweaks and compile
-# fixes) will always get applied; see patch defition above for details
-
-git am %{patches}
+ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
+ApplyOptionalPatch linux-kernel-test.patch
 
 # END OF PATCH APPLICATIONS
 
@@ -1552,6 +1229,7 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 	tools/perf/tests/attr.py \
 	tools/perf/scripts/python/stat-cpi.py \
 	tools/perf/scripts/python/sched-migration.py \
+	tools/testing/selftests/drivers/net/mlxsw/sharedbuffer_configuration.py \
 	Documentation \
 	scripts/gen_compile_commands.py
 
@@ -1561,30 +1239,26 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 if [ -L configs ]; then
 	rm -f configs
 fi
-# Deal with configs stuff
 mkdir configs
 cd configs
 
 # Drop some necessary files from the source dir into the buildroot
 cp $RPM_SOURCE_DIR/kernel-*.config .
-cp %{SOURCE1000} .
-cp %{SOURCE55} .
 cp %{SOURCE51} .
+# merge.pl
+cp %{SOURCE3000} .
+# kernel-local
+cp %{SOURCE3001} .
 VERSION=%{version} ./generate_all_configs.sh %{primary_target} %{debugbuildsenabled}
-
 
 # Merge in any user-provided local config option changes
 %ifnarch %nobuildarches
 for i in %{all_arch_configs}
 do
   mv $i $i.tmp
-  ./merge.pl %{SOURCE1000} $i.tmp > $i
+  ./merge.pl %{SOURCE3001} $i.tmp > $i
   rm $i.tmp
 done
-%endif
-
-%if !%{debugbuildsenabled}
-rm -f kernel-%{version}-*debug.config
 %endif
 
 # enable GCOV kernel config options if gcov is on
@@ -1633,19 +1307,6 @@ cp_vmlinux()
   eu-strip --remove-comment -o "$2" "$1"
 }
 
-# These are for host programs that get built as part of the kernel and
-# are required to be packaged in kernel-devel for building external modules.
-# Since they are userspace binaries, they are required to pickup the hardening
-# flags defined in the macros. The --build-id=uuid is a trick to get around
-# debuginfo limitations: Typically, find-debuginfo.sh will update the build
-# id of all binaries to allow for parllel debuginfo installs. The kernel
-# can't use this because it breaks debuginfo for the vDSO so we have to
-# use a special mechanism for kernel and modules to be unique. Unfortunately,
-# we still have userspace binaries which need unique debuginfo and because
-# they come from the kernel package, we can't just use find-debuginfo.sh to
-# rewrite only those binaries. The easiest option right now is just to have
-# the build id be a uuid for the host programs.
-#
 # Note we need to disable these flags for cross builds because the flags
 # from redhat-rpm-config assume that host == target so target arch
 # flags cause issues with the host compiler.
@@ -1684,20 +1345,10 @@ BuildKernel() {
     KernelVer=%{version}-%{release}.%{_target_cpu}${Flav}
     echo BUILDING A KERNEL FOR ${Flavour} %{_target_cpu}...
 
-    %if 0%{?stable_update}
-    # make sure SUBLEVEL is incremented on a stable release.  Sigh 3.x.
-    perl -p -i -e "s/^SUBLEVEL.*/SUBLEVEL = %{?stablerev}/" Makefile
-    %endif
-
     # make sure EXTRAVERSION says what we want it to say
-    perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -%{release}.%{_target_cpu}${Flav}/" Makefile
-
-    # if pre-rc1 devel kernel, must fix up PATCHLEVEL for our versioning scheme
-    %if !0%{?rcrev}
-    %if 0%{?gitrev}
-    perl -p -i -e 's/^PATCHLEVEL.*/PATCHLEVEL = %{upstream_sublevel}/' Makefile
-    %endif
-    %endif
+    # Trim the release if this is a CI build, since KERNELVERSION is limited to 64 characters
+    ShortRel=$(perl -e "print \"%{release}\" =~ s/\.pr\.[0-9A-Fa-f]{32}//r")
+    perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${ShortRel}.%{_target_cpu}${Flav}/" Makefile
 
     # and now to start the build process
 
@@ -1849,12 +1500,8 @@ BuildKernel() {
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     (cd $RPM_BUILD_ROOT/lib/modules/$KernelVer ; ln -s build source)
     # dirs for additional modules per module-init-tools, kbuild/modules.txt
-    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/extra
-    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/internal
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/updates
-%if 0%{!?fedora:1}
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/weak-updates
-%endif
     # CONFIG_KERNEL_HEADER_TEST generates some extra files in the process of
     # testing so just delete
     find . -name *.h.s -delete
@@ -2069,12 +1716,10 @@ BuildKernel() {
         rm -f modules.{alias*,builtin.bin,dep*,*map,symbols*,devname,softdep}
     popd
 
-    # Call the modules-extra script to move things around
-    %{SOURCE17} $RPM_BUILD_ROOT/lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
-    # Blacklist net autoloadable modules in modules-extra
-    %{SOURCE19} $RPM_BUILD_ROOT lib/modules/$KernelVer
-    # Call the modules-extra script for internal modules
-    %{SOURCE17} $RPM_BUILD_ROOT/lib/modules/$KernelVer %{SOURCE54} internal
+    # Identify modules in the kernel-modules-extras package
+    %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
+    # Identify modules in the kernel-modules-extras package
+    %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE54} internal
 
     #
     # Generate the kernel-core and kernel-modules files lists
@@ -2087,8 +1732,10 @@ BuildKernel() {
     mkdir restore
     cp -r lib/modules/$KernelVer/* restore/.
 
-    # don't include anything going into k-m-e and k-m-i in the file lists
-    rm -rf lib/modules/$KernelVer/{extra,internal}
+    # don't include anything going into kernel-modules-extra in the file lists
+    xargs rm -rf < mod-extra.list
+    # don't include anything going int kernel-modules-internal in the file lists
+    xargs rm -rf < mod-internal.list
 
     if [ $DoModules -eq 1 ]; then
 	# Find all the module files and filter them out into the core and
@@ -2139,11 +1786,15 @@ BuildKernel() {
     sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/k-d.list > ../kernel${Flavour:+-${Flavour}}-modules.list
     sed -e 's/^lib*/%dir \/lib/' %{?zipsed} $RPM_BUILD_ROOT/module-dirs.list > ../kernel${Flavour:+-${Flavour}}-core.list
     sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/modules.list >> ../kernel${Flavour:+-${Flavour}}-core.list
+    sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-extra.list >> ../kernel${Flavour:+-${Flavour}}-modules-extra.list
+    sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-internal.list >> ../kernel${Flavour:+-${Flavour}}-modules-internal.list
 
     # Cleanup
     rm -f $RPM_BUILD_ROOT/k-d.list
     rm -f $RPM_BUILD_ROOT/modules.list
     rm -f $RPM_BUILD_ROOT/module-dirs.list
+    rm -f $RPM_BUILD_ROOT/mod-extra.list
+    rm -f $RPM_BUILD_ROOT/mod-internal.list
 
 %if %{signmodules}
     if [ $DoModules -eq 1 ]; then
@@ -2264,10 +1915,12 @@ pushd tools/thermal/tmon/
 %{tools_make}
 popd
 pushd tools/iio/
-%{make}
+# Needs to be fixed to pick up CFLAGS
+make
 popd
 pushd tools/gpio/
-%{make}
+# Needs to be fixed to pick up CFLAGS
+make
 popd
 %endif
 
@@ -2346,7 +1999,7 @@ find Documentation -type d | xargs chmod u+w
 # We don't want to package debuginfo for self-tests and samples but
 # we have to delete them to avoid an error messages about unpackaged
 # files.
-# Delete the debuginfo for for kernel-devel files
+# Delete the debuginfo for kernel-devel files
 %define __remove_unwanted_dbginfo_install_post \
   if [ "%{with_selftests}" -ne "0" ]; then \
     rm -rf $RPM_BUILD_ROOT/usr/lib/debug/usr/libexec/ksamples; \
@@ -2653,12 +2306,10 @@ fi\
 #
 %define kernel_variant_posttrans() \
 %{expand:%%posttrans %{?1:%{1}-}core}\
-%if 0%{!?fedora:1}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
     %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
 fi\
-%endif\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
@@ -2688,12 +2339,10 @@ fi}\
 %define kernel_variant_preun() \
 %{expand:%%preun %{?1:%{1}-}core}\
 /bin/kernel-install remove %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
-%if 0%{!?fedora:1}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
     %{_sbindir}/weak-modules --remove-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
 fi\
-%endif\
 %{nil}
 
 %kernel_variant_preun
@@ -2840,6 +2489,7 @@ fi
 %{_mandir}/man8/bpftool-net.8.gz
 %{_mandir}/man8/bpftool-feature.8.gz
 %{_mandir}/man8/bpftool-btf.8.gz
+%{_mandir}/man8/bpftool-struct_ops.8.gz
 
 %if %{with_debuginfo}
 %files -f bpftool-debuginfo.list -n bpftool-debuginfo
@@ -2901,9 +2551,7 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
-%if 0%{!?fedora:1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
-%endif\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca.cer\
 %ifarch s390x ppc64le\
 %if 0%{!?4:1}\
@@ -2918,11 +2566,9 @@ fi
 %{expand:%%files %{?3:%{3}-}devel}\
 %defverify(not mtime)\
 /usr/src/kernels/%{KVERREL}%{?3:+%{3}}\
-%{expand:%%files %{?3:%{3}-}modules-extra}\
+%{expand:%%files -f kernel-%{?3:%{3}-}modules-extra.list %{?3:%{3}-}modules-extra}\
 %config(noreplace) /etc/modprobe.d/*-blacklist.conf\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/extra\
-%{expand:%%files %{?3:%{3}-}modules-internal}\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/internal\
+%{expand:%%files -f kernel-%{?3:%{3}-}modules-internal.list %{?3:%{3}-}modules-internal}\
 %if %{with_debuginfo}\
 %ifnarch noarch\
 %{expand:%%files -f debuginfo%{?3}.list %{?3:%{3}-}debuginfo}\
@@ -2957,524 +2603,463 @@ fi
 #
 #
 %changelog
-* Mon Apr 13 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc1.git0.1
-- Linux v5.7-rc1
-
-* Mon Apr 13 2020 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Wed Apr 08 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git8.1
-- Linux v5.6-12046-gae46d2aa6a7f
-
-* Tue Apr 07 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git7.1
-- Linux v5.6-11448-g7e63420847ae
-
-* Tue Apr 07 2020 Karol Herbst <kherbst@redhat.com>
-- Add patches to fix nouveau issues preventing booting the installer or system
-
-* Mon Apr 06 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git6.1
-- Linux v5.6-11374-ga10c9c710f9e
-
-* Fri Apr 03 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git5.1
-- Linux v5.6-9431-gbef7b2a7be28
-
-* Thu Apr 02 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git4.1
-- Linux v5.6-7632-g919dce24701f
-
-* Thu Apr 02 2020 Hans de Goede <hdegoede@redhat.com>
-- Add patch fixing Lenovo X1 7th and 8th gen not suspending (rhbz 1816621)
-- Add patch fixing Lenovo X1 8th gen speaker volume control (rhbz 1820196)
-
-* Wed Apr 01 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git3.1
-- Linux v5.6-5611-g1a323ea5356e
-
-* Tue Mar 31 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git2.1
-- Linux v5.6-2405-gcad18da0afb1
-
-* Mon Mar 30 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.0-0.rc0.git1.1
-- Linux v5.6-461-g47acac8cae28
-- Reenable debugging options.
-
-* Mon Mar 30 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-1
-- Linux v5.6
-
-* Fri Mar 27 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc7.git1.1
-- Linux v5.6-rc7-227-gf3e69428b5e2
-
-* Fri Mar 27 2020 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Mar 23 2020 Peter Robinson <pbrobinson@gmail.com> - 5.6.0-0.rc7.git0.1
-- Linux v5.6-rc7
-
-* Mon Mar 23 2020 Peter Robinson <pbrobinson@gmail.com>
-- Disable debugging options.
-
-* Fri Mar 20 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc6.git2.1
-- Linux v5.6-rc6-115-g5ad0ec0b8652
-- Switch Secure Boot to lock down to integrity mode (rhbz 1815571)
-
-* Wed Mar 18 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc6.git1.1
-- Linux v5.6-rc6-9-gac309e7744be
-
-* Wed Mar 18 2020 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Tue Mar 17 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc6.git0.1
-- Linux v5.6-rc6
-
-* Tue Mar 17 2020 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Mar 13 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc5.git2.1
-- Linux v5.6-rc5-204-g0d81a3f29c0a
-
-* Thu Mar 12 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc5.git1.1
-- Linux v5.6-rc5-53-g3cc6e2c599cd
-
-* Thu Mar 12 2020 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Tue Mar 10 2020 Jeremy Cline <jcline@redhat.com>
-- A series of eDP backlight fixes for i915 (rhbz 1811850)
-
-* Mon Mar 09 2020 Hans de Goede <hdegoede@redhat.com>
-- Fix only 1 monitor working on DP-MST docking stations (rhbz 1809681)
-- Fix backtraces on various buggy BIOS-es (rhbz 1564895, 1808874)
-- Add /etc/modprobe.d/floppy-blacklist.conf to fix auto-loading of the
-  legacy floppy driver (rhbz 1789155)
-
-* Mon Mar 09 2020 Peter Robinson <pbrobinson@gmail.com> - 5.6.0-0.rc5.git0.1
-- Linux v5.6-rc5
-
-* Mon Mar 09 2020 Peter Robinson <pbrobinson@gmail.com>
-- Disable debugging options.
-
-* Fri Mar 06 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc4.git1.1
-- Linux v5.6-rc4-135-gaeb542a1b5c5
-
-* Fri Mar 06 2020 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Mar 02 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc4.git0.1
-- Linux v5.6-rc4
-
-* Mon Mar 02 2020 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Feb 28 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git3.1
-- Linux v5.6-rc3-195-gc60c04021353
-
-* Thu Feb 27 2020 Peter Robinson <pbrobinson@fedoraproject.org>
-- Fixes and enhancements to some AllWinner Pine64 devices
-- Some fixes for Tegra devices
-- Initial support for the Pinebook Pro
-
-* Thu Feb 27 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git2.1
-- Linux v5.6-rc3-71-gbfdc6d91a25f
-
-* Tue Feb 25 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git1.1
-- Linux v5.6-rc3-26-g63623fd44972
-
-* Tue Feb 25 2020 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Feb 24 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git0.1
-- Linux v5.6-rc3
-
-* Mon Feb 24 2020 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Feb 21 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git3.1
-- Linux v5.6-rc2-55-gca7e1fd1026c
-
-* Wed Feb 19 2020 Jeremy Cline <jcline@redhat.com>
-- Pick up a uapi fix for qemu (rhbz 1804330)
-
-* Wed Feb 19 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git2.1
-- Linux v5.6-rc2-47-g4b205766d8fc
-
-* Tue Feb 18 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git1.1
-- Linux v5.6-rc2-8-gb1da3acc781c
-- Enable CONFIG_INET_ESPINTCP (rhbz 1804255)
-
-* Tue Feb 18 2020 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Feb 17 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git0.1
-- Linux v5.6-rc2
-
-* Mon Feb 17 2020 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Feb 14 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc1.git3.1
-- Linux v5.6-rc1-44-gb19e8c684703
-
-* Thu Feb 13 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc1.git2.1
-- Linux v5.6-rc1-23-g0bf999f9c5e7
-
-* Thu Feb 13 2020 Jeremy Cline <jcline@redhat.com>
-- Pull in cdrom ioctl fix (rhbz 1801353)
-
-* Tue Feb 11 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc1.git1.1
-- Linux v5.6-rc1-5-g0a679e13ea30
-
-* Tue Feb 11 2020 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com>
-- Remove sysrq support to lift lockdown (rhbz 1800859)
-
-* Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc1.git0.1
-- Linux v5.6-rc1
-
-* Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Feb 07 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc0.git5.1
-- Linux v5.5-9824-g90568ecf5615
-- Enable DM_CLONE as a module (rhbz 1799060)
-- Enable PCI Express devices on RockChip SoCs (rhbz 1792564)
-
-* Thu Feb 06 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc0.git4.1
-- Linux v5.5-9737-g4c46bef2e96a
-
-* Wed Feb 05 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc0.git3.1
-- Linux v5.5-9402-g6992ca0dd017
-
-* Sat Feb 01 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc0.git2.1
-- Linux v5.5-8686-g14cd0bd04907
-
-* Wed Jan 29 2020 Jeremy Cline <jcline@redhat.com> - 5.5.0-1
-- Linux v5.5-3996-gb3a608222336
-
-* Wed Jan 29 2020 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Jan 27 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-1
-- Linux v5.5
-
-* Fri Jan 24 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc7.git2.1
-- Linux v5.5-rc7-62-g6381b442836e
-
-* Thu Jan 23 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc7.git1.1
-- Linux v5.5-rc7-16-g131701c697e8
-
-* Mon Jan 20 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc7.git0.1
-- Linux v5.5-rc7
-
-* Mon Jan 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Fri Jan 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc6.git3.1
-- Linux v5.5-rc6-143-gab7541c3addd
-
-* Wed Jan 15 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc6.git2.1
-- Linux v5.5-rc6-45-g51d69817519f
-
-* Tue Jan 14 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc6.git1.1
-- Linux v5.5-rc6-27-g452424cdcbca
-- Reenable debugging options.
-
-* Mon Jan 13 2020 Justin M. Forbes <jforbes@fedoraproject.org>
-- Add Documentation back to kernel-devel as it has Kconfig now (rhbz 1789641)
-
-* Mon Jan 13 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc6.git0.1
-- Linux v5.5-rc6
-
-* Mon Jan 13 2020 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Fri Jan 10 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc5.git3.1
-- Linux v5.5-rc5-215-g4e4cd21c64da
-
-* Thu Jan 09 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc5.git2.1
-- Linux v5.5-rc5-134-ge69ec487b2c7
-
-* Wed Jan 08 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc5.git1.1
-- Linux v5.5-rc5-41-gb07f636fca1c
-- Reenable debugging options.
-
-* Mon Jan 06 2020 Hans de Goede <hdegoede@redhat.com>
-- Make the MFD Intel LPSS driver builtin, some devices require this to be
-  available early during boot (rhbz#1787997)
-
-* Mon Jan 06 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc5.git0.1
-- Linux v5.5-rc5
-
-* Mon Jan 06 2020 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Fri Jan 03 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc4.git2.1
-- Linux v5.5-rc4-116-gbed723519a72
-
-* Thu Jan 02 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc4.git1.1
-- Linux v5.5-rc4-66-g738d2902773e
-
-* Mon Dec 30 2019 Peter Robinson <pbrobinson@gmail.com> - 5.5.0-0.rc4.git0.1
-- Linux v5.5-rc4
-
-* Mon Dec 30 2019 Peter Robinson <pbrobinson@gmail.com>
-- Disable debugging options.
-
-* Mon Dec 23 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc3.git0.1
-- Linux v5.5-rc3
-
-* Mon Dec 23 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Thu Dec 19 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc2.git3.1
-- Linux v5.5-rc2-195-g4a94c4332334
-
-* Wed Dec 18 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc2.git2.1
-- Linux v5.5-rc2-157-g2187f215ebaa
-
-* Tue Dec 17 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc2.git1.1
-- Linux v5.5-rc2-56-gea200dec5128
-- Enable NO_HZ_FULL for other arches too.
-- Reenable debugging options.
-
-* Mon Dec 16 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc2.git0.1
-- Linux v5.5-rc2
-
-* Mon Dec 16 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Thu Dec 12 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc1.git2.1
-- Linux v5.5-rc1-27-gae4b064e2a61
-
-* Tue Dec 10 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Updates for ARMv7/aarch64
-- Enable newer TI ARMv7 platforms
-
-* Tue Dec 10 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc1.git1.1
-- Linux v5.5-rc1-12-g6794862a16ef
-- Reenable debugging options.
-
-* Mon Dec 09 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc1.git0.1
-- Linux v5.5-rc1
-
-* Mon Dec 09 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Fri Dec 06 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git7.1
-- Linux v5.4-12941-gb0d4beaa5a4b
-
-* Thu Dec 05 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git6.1
-- Linux v5.4-11747-g2f13437b8917
-
-* Wed Dec 04 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git5.1
-- Linux v5.4-11681-g63de37476ebd
-
-* Tue Dec 03 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git4.1
-- Linux v5.4-11180-g76bb8b05960c
-
-* Mon Dec 02 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git3.1
-- Linux v5.4-10271-g596cf45cbf6e
-
-* Wed Nov 27 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git2.1
-- Linux v5.4-5280-g89d57dddd7d3
-
-* Tue Nov 26 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git1.1
-- Linux v5.4-3619-gbe2eca94d144
-- Reenable debugging options.
-
-* Mon Nov 25 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-2
-- bump and build to pick up fixes
-
-* Mon Nov 25 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Fix CVE-2019-14895 (rhbz 1774870 1776139)
-- Fix CVE-2019-14896 (rhbz 1774875 1776143)
-- Fix CVE-2019-14897 (rhbz 1774879 1776146)
-- Fix CVE-2019-14901 (rhbz 1773519 1776184)
-- Fix CVE-2019-19078 (rhbz 1776354 1776353)
-
-* Mon Nov 25 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-1
-- Linux v5.4.0
-
-* Fri Nov 22 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-0.rc8.git1.2
-- bump and build to test new configs
-
-* Fri Nov 22 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc8.git1.1
-- Linux v5.4-rc8-15-g81429eb8d9ca
-
-* Fri Nov 22 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Thu Nov 21 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.3.12-300
-- Fix CVE-2019-19071 (rhbz 1774949 1774950)
-- Fix CVE-2019-19070 (rhbz 1774957 1774958)
-- Fix CVE-2019-19068 (rhbz 1774963 1774965)
-- Fix CVE-2019-19043 (rhbz 1774972 1774973)
-- Fix CVE-2019-19066 (rhbz 1774976 1774978)
-- Fix CVE-2019-19046 (rhbz 1774988 1774989)
-- Fix CVE-2019-19050 (rhbz 1774998 1775002)
-- Fix CVE-2019-19062 (rhbz 1775021 1775023)
-- Fix CVE-2019-19064 (rhbz 1775010 1775011)
-- Fix CVE-2019-19063 (rhbz 1775015 1775016)
-- Fix CVE-2019-19057 (rhbz 1775050 1775051)
-- Fix CVE-2019-19053 (rhbz 1775956 1775110)
-- Fix CVE-2019-19056 (rhbz 1775097 1775115)
-- Fix CVE-2019-19054 (rhbz 1775063 1775117)
-
-* Wed Nov 20 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-0.rc8.git0.2
-- bump and build to check the pesign
-
-* Mon Nov 18 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc8.git0.1
-- Linux v5.4-rc8
-
-* Mon Nov 18 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Nov 15 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc7.git2.1
-- Linux v5.4-rc7-68-g96b95eff4a59
-
-* Thu Nov 14 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-0.rc7.git1.2
-- bump and build
-
-* Wed Nov 13 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc7.git1.1
-- Linux v5.4-rc7-49-g0e3f1ad80fc8
-
-* Wed Nov 13 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Nov 11 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc7.git0.1
-- Linux v5.4-rc7
-
-* Mon Nov 11 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Nov 08 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc6.git3.1
-- Linux v5.4-rc6-29-g847120f859cc
-
-* Thu Nov 07 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc6.git2.1
-- Linux v5.4-rc6-26-g4dd58158254c
-
-* Tue Nov 05 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc6.git1.1
-- Linux v5.4-rc6-8-g26bc67213424
-
-* Tue Nov 05 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Nov 04 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc6.git0.1
-- Linux v5.4-rc6
-
-* Mon Nov 04 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Nov 01 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-0.rc5.git1.3
-- bump and build again
-
-* Thu Oct 31 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-0.rc5.git1.2
-- bump and build to fix broken weak-updates
-
-* Thu Oct 31 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc5.git1.1
-- Linux v5.4-rc5-49-ge472c64aa4fa
-
-* Thu Oct 31 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Wed Oct 30 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-0.rc5.git0.2
-- bump and build to make sure I haven't broken anything
-
-* Mon Oct 28 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc5.git0.1
-- Linux v5.4-rc5
-
-* Mon Oct 28 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Thu Oct 24 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc4.git3.1
-- Linux v5.4-rc4-85-gf116b96685a0
-
-* Wed Oct 23 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc4.git2.1
-- Linux v5.4-rc4-37-g13b86bc4cd64
-
-* Tue Oct 22 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc4.git1.1
-- Linux v5.4-rc4-18-g3b7c59a1950c
-
-* Tue Oct 22 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Oct 21 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc4.git0.1
-- Linux v5.4-rc4
-
-* Mon Oct 21 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Oct 18 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc3.git2.1
-- Linux v5.4-rc3-99-g0e2adab6cf28
-
-* Tue Oct 15 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc3.git1.1
-- Linux v5.4-rc3-18-g5bc52f64e884
-
-* Tue Oct 15 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Oct 14 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc3.git0.1
-- Linux v5.4-rc3
-
-* Mon Oct 14 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Thu Oct 10 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc2.git2.1
-- Linux v5.4-rc2-96-gfb20da6af705
-
-* Tue Oct 08 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc2.git1.1
-- Linux v5.4-rc2-20-geda57a0e4299
-
-* Tue Oct 08 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Oct 07 2019 Laura Abbott <labbott@redhat.com>
-- Enable a few NFT options (rhbz 1651813)
-
-* Mon Oct 07 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc2.git0.1
-- Linux v5.4-rc2
-
-* Mon Oct 07 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Sun Oct  6 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Fixes for Jetson TX1/TX2 series of devices
-
-* Fri Oct 04 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc1.git1.1
-- Linux v5.4-rc1-14-gcc3a7bfe62b9
-
-* Fri Oct 04 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Wed Oct 02 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc1.git0.1
-- Linux v5.4-rc1
-
-* Wed Oct 02 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Mon Sep 30 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git9.1
-- Linux v5.3-13236-g97f9a3c4eee5
-
-* Thu Sep 26 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git8.1
-- Linux v5.3-12397-gf41def397161
-
-* Wed Sep 25 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git7.1
-- Linux v5.3-12289-g351c8a09b00b
-
-* Tue Sep 24 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git6.1
-- Linux v5.3-12025-g4c07e2ddab5b
-
-* Mon Sep 23 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git5.1
-- Linux v5.3-11768-g619e17cf75dd
-
-* Fri Sep 20 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git4.1
-- Linux v5.3-10169-g574cc4539762
-
-* Thu Sep 19 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git3.1
-- Linux v5.3-7639-gb41dae061bbd
-
-* Wed Sep 18 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git2.1
-- Linux v5.3-3839-g35f7a9526615
-
-* Tue Sep 17 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git1.1
-- Linux v5.3-2061-gad062195731b
-
-* Tue Sep 17 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
+* Tue Apr 14 2020 Jeremy Cline <jcline@redhat.com> [5.7.0-0.rc1.20200414git8632e9b5645b.1]
+- 8632e9b5645b rebase
+- Drop DIST from release commits and tags (Jeremy Cline)
+- Sync up with Fedora arm configuration prior to merging (Jeremy Cline)
+- Disable CONFIG_PROTECTED_VIRTUALIZATION_GUEST for zfcpdump (Jeremy Cline)
+
+* Tue Apr 14 2020 Jeremy Cline <jcline@redhat.com> [5.7.0-0.rc1.3.fc33]
+- Include bpftool-struct_ops man page in the bpftool package (Jeremy Cline)
+
+* Mon Apr 13 2020 Jeremy Cline <jcline@redhat.com> [5.7.0-0.rc1.2.fc33]
+- Add sharedbuffer_configuration.py to the pathfix.py script (Jeremy Cline)
+
+* Mon Apr 13 2020 Jeremy Cline <jcline@redhat.com> [5.7.0-0.rc1.1.fc33]
+- v5.7-rc1 rebase
+- tty/sysrq: Export sysrq_mask() (Dmitry Safonov)
+- e1000e: bump up timeout to wait when ME un-configure ULP mode (Aaron Ma)
+- Drop RH_FEDORA in favor of the now-merged RHEL_DIFFERENCES (Jeremy Cline)
+- Sync up Fedora configs from the first week of the merge window (Jeremy Cline)
+- Add a script to test if all commits are signed off (Jeremy Cline)
+- Fix a painfully obvious YAML syntax error in .gitlab-ci.yml (Jeremy Cline)
+- Migrate blacklisting floppy.ko to mod-blacklist.sh (Don Zickus)
+- kernel packaging: Combine mod-blacklist.sh and mod-extra-blacklist.sh (Don Zickus)
+- kernel packaging: Fix extra namespace collision (Don Zickus)
+- mod-extra.sh: Rename to mod-blacklist.sh (Don Zickus)
+- mod-extra.sh: Make file generic (Don Zickus)
+- Fix make rh-configs-arch (Don Zickus)
+- Add in armv7hl kernel header support (Don Zickus)
+- Disable all BuildKernel commands when only building headers (Don Zickus)
+- Add RHMAINTAINERS file and supporting conf (Don Zickus)
+
+* Mon Mar 30 2020 Jeremy Cline <jcline@redhat.com> [5.6.0-0.rc7.1.elrdy]
+- v5.6-rc7 rebase
+- Drop any gitlab-ci patches from ark-patches (Jeremy Cline)
+- Build the srpm for internal branch CI using the vanilla tree (Jeremy Cline)
+- arm64: allwinner: dts: a64: add LCD-related device nodes for PinePhone (Icenowy Zheng)
+- drm/sun4i: sun6i_mipi_dsi: fix horizontal timing calculation (Icenowy Zheng)
+- drm: panel: add Xingbangda XBD599 panel (Icenowy Zheng)
+- dt-bindings: panel: add binding for Xingbangda XBD599 panel (Icenowy Zheng)
+- Pull in the latest ARM configurations for Fedora (Jeremy Cline)
+- USB: pci-quirks: Add Raspberry Pi 4 quirk (Nicolas Saenz Julienne)
+- PCI: brcmstb: Wait for Raspberry Pi's firmware when present (Nicolas Saenz Julienne)
+- firmware: raspberrypi: Introduce vl805 init routine (Nicolas Saenz Julienne)
+- soc: bcm2835: Sync xHCI reset firmware property with downstream (Nicolas Saenz Julienne)
+- drm/i915: Force DPCD backlight mode for some Dell CML 2020 panels (Lyude Paul)
+- drm/i915: Force DPCD backlight mode on X1 Extreme 2nd Gen 4K AMOLED panel (Lyude Paul)
+- drm/dp: Introduce EDID-based quirks (Lyude Paul)
+- drm/i915: Auto detect DPCD backlight support by default (Lyude Paul)
+- drm/i915: Fix DPCD register order in intel_dp_aux_enable_backlight() (Lyude Paul)
+- drm/i915: Assume 100 brightness when not in DPCD control mode (Lyude Paul)
+- drm/i915: Fix eDP DPCD aux max backlight calculations (Lyude Paul)
+- drm/dp_mst: Fix drm_dp_check_mstb_guid() return code (Lyude Paul)
+- drm/dp_mst: Make drm_dp_mst_dpcd_write() consistent with drm_dp_dpcd_write() (Lyude Paul)
+- drm/dp_mst: Fix W=1 warnings (Benjamin Gaignard)
+- ARM: fix __get_user_check() in case uaccess_* calls are not inlined (Masahiro Yamada)
+- mm/kmemleak: skip late_init if not skip disable (Murphy Zhou)
+- KEYS: Make use of platform keyring for module signature verify (Robert Holmes)
+- Drop that for now (Laura Abbott)
+- Input: rmi4 - remove the need for artificial IRQ in case of HID (Benjamin Tissoires)
+- arm64: dts: rockchip: Add initial support for Pinebook Pro (Tobias Schramm)
+- dt-bindings: Add doc for Pine64 Pinebook Pro (Emmanuel Vadot)
+- arm64: dts: allwinner: Add initial support for Pine64 PinePhone (Ondrej Jirman)
+- dt-bindings: arm: sunxi: Add PinePhone 1.0 and 1.1 bindings (Ondrej Jirman)
+- arm64: dts: sun50i-a64: Add i2c2 pins (Ondrej Jirman)
+- arm64: dts: allwinner: a64: add support for PineTab (Icenowy Zheng)
+- dt-bindings: arm: sunxi: add binding for PineTab tablet (Icenowy Zheng)
+- arm64: allwinner: a64: enable LCD-related hardware for Pinebook (Icenowy Zheng)
+- drm/panel: simple: Add NewEast Optoelectronics CO., LTD WJFH116008A panel support (Vasily Khoruzhick)
+- dt-bindings: display: simple: Add NewEast Optoelectronics WJFH116008A compatible (Vasily Khoruzhick)
+- dt-bindings: Add Guangdong Neweast Optoelectronics CO. LTD vendor prefix (Vasily Khoruzhick)
+- drm/bridge: anx6345: don't print error message if regulator is not ready (Vasily Khoruzhick)
+- drm/bridge: anx6345: Fix getting anx6345 regulators (Samuel Holland)
+- arm64: dts: allwinner: a64: Add MBUS controller node (Jernej Skrabec)
+- dt-bindings: interconnect: sunxi: Add A64 MBUS compatible (Jernej Skrabec)
+- arm64: dts: allwinner: pinebook: Remove unused AXP803 regulators (Samuel Holland)
+- arm64: dts: allwinner: pinebook: Fix 5v0 boost regulator (Samuel Holland)
+- arm64: dts: allwinner: pinebook: Fix backlight regulator (Samuel Holland)
+- arm64: dts: allwinner: pinebook: Add GPIO port regulators (Samuel Holland)
+- arm64: dts: allwinner: pinebook: Document MMC0 CD pin name (Samuel Holland)
+- arm64: dts: allwinner: pinebook: Make simplefb more consistent (Samuel Holland)
+- arm64: dts: allwinner: pinebook: Sort device tree nodes (Samuel Holland)
+- arm64: dts: allwinner: pinebook: Remove unused vcc3v3 regulator (Samuel Holland)
+- arm64: dts: imx8mq-phanbell: Add support for ethernet (Alifer Moraes)
+- backlight: lp855x: Ensure regulators are disabled on probe failure (Jon Hunter)
+- regulator: pwm: Don't warn on probe deferral (Jon Hunter)
+- ARM64: tegra: Fix Tegra194 PCIe compatible string ("Signed-off-by: Jon Hunter")
+- serial: 8250_tegra: Create Tegra specific 8250 driver (Jeff Brasen)
+- ARM64: tegra: Populate LP8557 backlight regulator (Jon Hunter)
+- ARM64: tegra: Fix Tegra186 SOR supply (Jon Hunter)
+- ARM64: tegra: Add EEPROM supplies (Jon Hunter)
+- ARM64: Tegra: Enable I2C controller for EEPROM (Jon Hunter)
+- ARM: dts: bcm2711: Move emmc2 into its own bus (Nicolas Saenz Julienne)
+- irqchip/bcm2835: Quiesce IRQs left enabled by bootloader (Lukas Wunner)
+- ARM: dts: bcm2711-rpi-4-b: Add SoC GPIO labels (Stefan Wahren)
+- pinctrl: bcm2835: Add support for all GPIOs on BCM2711 (Stefan Wahren)
+- pinctrl: bcm2835: Refactor platform data (Stefan Wahren)
+- pinctrl: bcm2835: Drop unused define (Stefan Wahren)
+- ARM: tegra: usb no reset (Peter Robinson)
+- arm: make CONFIG_HIGHPTE optional without CONFIG_EXPERT (Jon Masters)
+- Revert "Add a SysRq option to lift kernel lockdown" (Jeremy Cline)
+- Fix xz memory usage issue (Neil Horman)
+- Use ark-latest instead of master for update script (Jeremy Cline)
+- Move the CI jobs back into the ARK repository (Jeremy Cline)
+- Revert "[redhat] Apply a second patch set in Fedora build roots" (Jeremy Cline)
+- Sync up ARK's Fedora config with the dist-git repository (Jeremy Cline)
+
+* Mon Mar 09 2020 Jeremy Cline <jcline@redhat.com> [5.6.0-0.rc5.1.elrdy]
+- v5.6-rc5 rebase
+- Pull in the latest configuration changes from Fedora (Jeremy Cline)
+- configs: enable CONFIG_NET_SCH_CBS (Marcelo Ricardo Leitner)
+
+* Fri Mar 06 2020 Jeremy Cline <jcline@redhat.com> [5.6.0-0.rc4.2.elrdy]
+- Disable CONFIG_DRM_DP_CEC temporarily (Jeremy Cline)
+
+* Fri Mar 06 2020 Jeremy Cline <jcline@redhat.com> [5.6.0-0.rc4.1.elrdy]
+- v5.6-rc4 rebase
+- redhat: rh_kabi: deduplication friendly structs (Jiri Benc)
+- redhat: rh_kabi add a comment with warning about RH_KABI_EXCLUDE usage (Jiri Benc)
+- redhat: rh_kabi: introduce RH_KABI_EXTEND_WITH_SIZE (Jiri Benc)
+- redhat: rh_kabi: Indirect EXTEND macros so nesting of other macros will resolve. (Don Dutile)
+- redhat: rh_kabi: Fix RH_KABI_SET_SIZE to use dereference operator (Tony Camuso)
+- redhat: rh_kabi: Add macros to size and extend structs (Prarit Bhargava)
+- mptsas: pci-id table changes (Laura Abbott)
+- mptsas: Taint kernel if mptsas is loaded (Laura Abbott)
+- mptspi: pci-id table changes (Laura Abbott)
+- mptspi: Taint kernel if mptspi is loaded (Laura Abbott)
+- kernel: add SUPPORT_REMOVED kernel taint (Tomas Henzl) [1602033]
+- Rename RH_DISABLE_DEPRECATED to RHEL_DIFFERENCES (Don Zickus)
+- Revert "Drop references to SCSI PCI IDs we remove" (Don Zickus)
+- Revert "mpt*: remove certain deprecated pci-ids" (Don Zickus)
+- Revert "megaraid_sas: remove deprecated pci-ids" (Don Zickus)
+- Revert "aacraid: Remove depreciated device and vendor PCI id's" (Don Zickus)
+- Revert "qla4xxx: Remove deprecated PCI IDs from RHEL 8" (Don Zickus)
+- Revert "hpsa: remove old cciss-based smartarray pci ids" (Don Zickus)
+- Revert "hpsa: modify hpsa driver version" (Don Zickus)
+- Revert "Removing Obsolete hba pci-ids from rhel8" (Don Zickus)
+- Revert "be2iscsi: remove unsupported device IDs" (Don Zickus)
+- Revert "be2iscsi: remove BE3 family support" (Don Zickus)
+- Revert "qla2xxx: Remove PCI IDs of deprecated adapter" (Don Zickus)
+- Drop configuration options in fedora/ that no longer exist (Jeremy Cline)
+- Set RH_FEDORA for ARK and Fedora (Jeremy Cline)
+- Add option of 13 for FORCE_MAX_ZONEORDER (Peter Robinson)
+- Introduce RH_FEDORA config for Fedora-specific patches (Jeremy Cline)
+- redhat/kernel.spec: Include the release in the kernel COPYING file (Jeremy Cline)
+
+* Mon Feb 17 2020 Jeremy Cline <jcline@redhat.com> [5.6.0-0.rc2.2.elrdy]
+- Disable CONFIG_DRM_DP_CEC temporarily (Jeremy Cline)
+- Drop references to SCSI PCI IDs we remove (Jeremy Cline)
+
+* Mon Feb 17 2020 Jeremy Cline <jcline@redhat.com> [5.6.0-0.rc2.1.elrdy]
+- v5.6-rc2 rebase
+- redhat/kernel.spec: add scripts/jobserver-exec to py3_shbang_opts list (Jeremy Cline)
+- redhat/kernel.spec: package bpftool-gen man page (Jeremy Cline)
+
+* Thu Feb 13 2020 Jeremy Cline <jcline@redhat.com> [5.6.0-0.rc1.4.elrdy]
+- Package bpftool-gen man page (Jeremy Cline)
+
+* Thu Feb 13 2020 Jeremy Cline <jcline@redhat.com> [5.6.0-0.rc1.3.elrdy]
+- Used Python 3 for scripts/jobserver-exec (Jeremy Cline)
+
+* Wed Feb 12 2020 Jeremy Cline <jcline@redhat.com> [5.6.0-0.rc1.2.elrdy]
+- Disable CONFIG_DRM_DP_CEC temporarily (Jeremy Cline)
+
+* Wed Feb 12 2020 Jeremy Cline <jcline@redhat.com> [5.6.0-0.rc1.1.elrdy]
+- v5.6-rc1 rebase
+- Fix up the EFI secureboot rebase (Jeremy Cline)
+- distgit-changelog: handle multiple y-stream BZ numbers (Bruno Meneguele)
+- redhat/kernel.spec: remove all inline comments (Bruno Meneguele)
+- redhat/genspec: awk unknown whitespace regex pattern (Bruno Meneguele)
+- Improve the readability of gen_config_patches.sh (Jeremy Cline)
+- Fix some awkward edge cases in gen_config_patches.sh (Jeremy Cline)
+- Updated changelog (Jeremy Cline)
+- Update the CI environment to use Fedora 31 (Jeremy Cline)
+
+* Tue Jan 28 2020 Jeremy Cline <jcline@redhat.com> [5.5.0-1.elrdy]
+- v5.5 rebase
+- Revert "Turn off CONFIG_AX25" (Laura Abbott)
+
+* Thu Jan 23 2020 Jeremy Cline <jcline@redhat.com> [5.5.0-0.rc7.1.elrdy]
+- v5.5-rc7 rebase
+
+* Wed Jan 15 2020 Jeremy Cline <jcline@redhat.com> [5.5.0-0.rc6.1.elrdy]
+- v5.5-rc6 rebase
+- s390: Lock down the kernel when the IPL secure flag is set (Jeremy Cline)
+- configs: Enable CONFIG_KEY_DH_OPERATIONS on ARK (Ondrej Mosnacek)
+- redhat: drop whitespace from with_gcov macro (Jan Stancek) [INTERNAL]
+
+* Mon Jan 06 2020 Jeremy Cline <jcline@redhat.com> [5.5.0-0.rc5.1.elrdy]
+- v5.5-rc5 rebase
+
+* Mon Jan 06 2020 Jeremy Cline <jcline@redhat.com> [5.5.0-0.rc4.1.elrdy]
+- v5.5-rc4 rebase
+
+* Fri Jan 03 2020 Jeremy Cline <jcline@redhat.com> [5.5.0-0.rc3.1.elrdy]
+- v5.5-rc3 rebase
+- Turn on BLAKE2B for Fedora (Jeremy Cline)
+- configs: Adjust CONFIG_MPLS_ROUTING and CONFIG_MPLS_IPTUNNEL (Laura Abbott)
+- New configs in lib/crypto (Jeremy Cline)
+- New configs in drivers/char (Jeremy Cline)
+
+* Fri Jan 03 2020 Jeremy Cline <jcline@redhat.com> [5.5.0-0.rc2.1.elrdy]
+- v5.5-rc2 rebase
+- Convert pr_warning to pr_warn in secureboot.c (Jeremy Cline)
+- Enable CRYPTO_BLAKE2B as its being selected automatically (Jeremy Cline)
+- kernel.spec.template: Clean up stray *.h.s files (Laura Abbott)
+- Build the SRPM in the CI job (Jeremy Cline)
+- Fix up released_kernel case (Laura Abbott)
+- Add label so the Gitlab to email bridge ignores the changelog (Jeremy Cline)
+- New configs in net/tls (Jeremy Cline)
+- New configs in net/tipc (Jeremy Cline)
+- New configs in lib/kunit (Jeremy Cline)
+- New configs in lib/Kconfig.debug (Jeremy Cline)
+- New configs in drivers/ptp (Jeremy Cline)
+- New configs in drivers/nvme (Jeremy Cline)
+- New configs in drivers/net/phy (Jeremy Cline)
+- New configs in drivers/crypto (Jeremy Cline)
+- New configs in crypto/Kconfig (Jeremy Cline)
+- New configs in arch/arm64 (Jeremy Cline)
+
+* Fri Dec 13 2019 Jeremy Cline <jcline@redhat.com> [5.5.0-0.rc1.1.elrdy]
+- v5.5-rc1 rebase
+- Used Python 3 for scripts/jobserver-exec (Jeremy Cline)
+- Drop references to SCSI PCI IDs we remove (Jeremy Cline)
+- Disable documentation build, it is broken. (Jeremy Cline)
+- Temporarily switch TUNE_DEFAULT to y (Jeremy Cline)
+- Run config test for merge requests and internal (Jeremy Cline)
+- Turn off CONFIG_AX25 (Laura Abbott)
+- Add missing licensedir line (Laura Abbott)
+
+* Tue Nov 26 2019 Jeremy Cline <jcline@redhat.com> [5.4.0-1.elrdy]
+- v5.4 rebase
+- redhat/scripts: Remove redhat/scripts/rh_get_maintainer.pl (Prarit Bhargava)
+- configs: Take CONFIG_DEFAULT_MMAP_MIN_ADDR from Fedra (Laura Abbott)
+- configs: Turn off ISDN (Laura Abbott)
+- kernel-packaging: Remove kernel files from kernel-modules-extra package (Prarit Bhargava)
+- Add a script to generate configuration patches (Laura Abbott)
+- Introduce rh-configs-commit (Laura Abbott)
+
+* Fri Nov 22 2019 Jeremy Cline <jcline@redhat.com> [5.4.0-0.rc8.1.elrdy]
+- v5.4-rc8 rebase
+- kconfig: Add option to get the full help text with listnewconfig (Laura Abbott)
+- configs: Enable CONFIG_DEBUG_WX (Laura Abbott)
+- configs: Disable wireless USB (Laura Abbott)
+- Clean up some temporary config files (Laura Abbott)
+- configs: New config in drivers/gpu for v5.4-rc1 (Jeremy Cline)
+- configs: New config in arch/powerpc for v5.4-rc1 (Jeremy Cline)
+- configs: New config in crypto for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/usb for v5.4-rc1 (Jeremy Cline)
+- AUTOMATIC: New configs (Jeremy Cline)
+
+* Wed Nov 13 2019 Jeremy Cline <jcline@redhat.com> [5.4.0-0.rc7.1.elrdy]
+- v5.4-rc7 rebase
+- Temporarily add VBOXSF_FS config (Jeremy Cline)
+- Add support for deprecating processors (Laura Abbott)
+- Add Red Hat tainting (Laura Abbott)
+- Introduce CONFIG_RH_DISABLE_DEPRECATED (Laura Abbott)
+- configs: New config in fs/erofs for v5.4-rc1 (Jeremy Cline)
+- configs: New config in mm for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/md for v5.4-rc1 (Jeremy Cline)
+- configs: New config in init for v5.4-rc1 (Jeremy Cline)
+
+* Wed Nov 06 2019 Jeremy Cline <jcline@redhat.com> [5.4.0-0.rc6.2.elrdy]
+- v5.4-rc6 rebase
+- iommu/arm-smmu: workaround DMA mode issues (Laura Abbott)
+- rh_taint: correct loaddable module support dependencies (Philipp Rudo) [1652266]
+- rh_kabi: introduce RH_KABI_EXCLUDE (Jakub Racek) [1652256]
+- mark intel knights landing and knights mill unsupported (David Arcari) [1610493]
+- mark whiskey-lake processor supported (David Arcari) [1609604]
+- ipmi: do not configure ipmi for HPE m400 (Laura Abbott) [https://bugzilla.redhat.com/show_bug.cgi?id=1670017]
+- IB/rxe: Mark Soft-RoCE Transport driver as tech-preview (Don Dutile) [1605216]
+- scsi: smartpqi: add inspur advantech ids (Don Brace) [1503736]
+- ice: mark driver as tech-preview (Jonathan Toppins) [1495347]
+- be2iscsi: remove BE3 family support (Maurizio Lombardi) [1598366]
+- update rh_check_supported processor list (David Arcari) [1595918]
+- kABI: Add generic kABI macros to use for kABI workarounds (Myron Stowe) [1546831]
+- add pci_hw_vendor_status() (Maurizio Lombardi) [1590829]
+- ahci: thunderx2: Fix for errata that affects stop engine (Robert Richter) [1563590]
+- Vulcan: AHCI PCI bar fix for Broadcom Vulcan early silicon (Robert Richter) [1563590]
+- bpf: Add tech preview taint for syscall (Eugene Syromiatnikov) [1559877]
+- bpf: set unprivileged_bpf_disabled to 1 by default, add a boot parameter (Eugene Syromiatnikov) [1561171]
+- add Red Hat-specific taint flags (Eugene Syromiatnikov) [1559877]
+- kdump: fix a grammar issue in a kernel message (Dave Young) [1507353]
+- tags.sh: Ignore redhat/rpm (Jeremy Cline)
+- put RHEL info into generated headers (Laura Abbott) [https://bugzilla.redhat.com/show_bug.cgi?id=1663728]
+- kdump: add support for crashkernel=auto (Jeremy Cline)
+- kdump: round up the total memory size to 128M for crashkernel reservation (Dave Young) [1507353]
+- acpi: prefer booting with ACPI over DTS (Mark Salter) [1576869]
+- aarch64: acpi scan: Fix regression related to X-Gene UARTs (Mark Salter) [1519554]
+- ACPI / irq: Workaround firmware issue on X-Gene based m400 (Mark Salter) [1519554]
+- add rh_check_supported (David Arcari) [1565717]
+- qla2xxx: Remove PCI IDs of deprecated adapter (Jeremy Cline)
+- be2iscsi: remove unsupported device IDs (Chris Leech) [1574502]
+- Removing Obsolete hba pci-ids from rhel8 (Dick Kennedy) [1572321]
+- hpsa: modify hpsa driver version (Jeremy Cline)
+- hpsa: remove old cciss-based smartarray pci ids (Joseph Szczypek) [1471185]
+- rh_taint: add support for marking driver as unsupported (Jonathan Toppins) [1565704]
+- rh_taint: add support (David Arcari) [1565704]
+- qla4xxx: Remove deprecated PCI IDs from RHEL 8 (Chad Dupuis) [1518874]
+- aacraid: Remove depreciated device and vendor PCI id's (Raghava Aditya Renukunta) [1495307]
+- megaraid_sas: remove deprecated pci-ids (Tomas Henzl) [1509329]
+- mpt*: remove certain deprecated pci-ids (Jeremy Cline)
+- modules: add rhelversion MODULE_INFO tag (Laura Abbott)
+- ACPI: APEI: arm64: Ignore broken HPE moonshot APEI support (Al Stone) [1518076]
+- configs: New config in fs/fuse for v5.4-rc1 (Jeremy Cline)
+- merge.pl: Avoid comments but do not skip them (Don Zickus)
+- configs: New config in drivers/net/ethernet/pensando for v5.4-rc1 (Jeremy Cline)
+- Update a comment about what released kernel means (Laura Abbott)
+- Provide both Fedora and RHEL files in the SRPM (Laura Abbott)
+- kernel.spec.template: Trim EXTRAVERSION in the Makefile (Laura Abbott)
+- kernel.spec.template: Add macros for building with nopatches (Laura Abbott)
+- kernel.spec.template: Add some macros for Fedora differences (Laura Abbott)
+- kernel.spec.template: Consolodate the options (Laura Abbott)
+- configs: Add pending direcory to Fedora (Laura Abbott)
+- kernel.spec.template: Don't run hardlink if rpm-ostree is in use (Laura Abbott)
+- configs: New config in net/can for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/net/phy for v5.4-rc1 (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+
+* Mon Oct 28 2019 Jeremy Cline <jcline@redhat.com> [5.4.0-0.rc5.1.elrdy]
+- v5.4-rc5 rebase
+- arm: aarch64: Drop the EXPERT setting from ARM64_FORCE_52BIT (Jeremy Cline)
+- configs: turn on ARM64_FORCE_52BIT for debug builds (Jeremy Cline)
+- kernel.spec.template: Tweak the python3 mangling (Laura Abbott)
+- kernel.spec.template: Add --with verbose option (Laura Abbott)
+- kernel.spec.template: Switch to using install instead of __install (Laura Abbott)
+- kernel.spec.template: Make the kernel.org URL https (Laura Abbott)
+- kernel.spec.template: Update message about secure boot signing (Laura Abbott)
+- kernel.spec.template: Move some with flags definitions up (Laura Abbott)
+- kernel.spec.template: Update some BuildRequires (Laura Abbott)
+- kernel.spec.template: Get rid of clean (Laura Abbott)
+- configs: New config in drivers/char for v5.4-rc1 (Jeremy Cline)
+- configs: New config in net/sched for v5.4-rc1 (Jeremy Cline)
+- configs: New config in lib for v5.4-rc1 (Jeremy Cline)
+- configs: New config in fs/verity for v5.4-rc1 (Jeremy Cline)
+- configs: New config in arch/aarch64 for v5.4-rc4 (Jeremy Cline)
+- configs: New config in arch/arm64 for v5.4-rc1 (Jeremy Cline)
+- Flip off CONFIG_ARM64_VA_BITS_52 so the bundle that turns it on applies (Jeremy Cline)
+- configs: Increase x86_64 NR_UARTS to 64 (Prarit Bhargava) [http://bugzilla.redhat.com/1730649]
+- Update changelog (Laura Abbott)
+- New configuration options for v5.4-rc4 (Jeremy Cline)
+- Correctly name tarball for single tarball builds (Laura Abbott)
+- configs: New config in drivers/pci for v5.4-rc1 (Jeremy Cline)
+- Allow overriding the dist tag on the command line (Laura Abbott)
+- Allow scratch branch target to be overridden (Laura Abbott)
+- Remove long dead BUILD_DEFAULT_TARGET (Laura Abbott)
+
+* Thu Oct 17 2019 Jeremy Cline <jcline@redhat.com> [5.4.0-0.rc3.1.elrdy]
+- v5.4-rc3 rebase
+- Amend the changelog when rebasing (Laura Abbott)
+- configs: New config in drivers/platform for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/pinctrl for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/net/wireless for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/net/ethernet/mellanox for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/net/can for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/hid for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/dma-buf for v5.4-rc1 (Jeremy Cline)
+- configs: New config in block for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/cpuidle for v5.4-rc1 (Jeremy Cline)
+- redhat: configs: Split CONFIG_CRYPTO_SHA512 (Laura Abbott)
+- redhat: Set Fedora options (Laura Abbott)
+
+* Wed Oct 09 2019 Jeremy Cline <jcline@redhat.com> [5.4.0-0.rc2.1.elrdy]
+- Skip ksamples for bpf, they are broken (Jeremy Cline)
+- Add a SysRq option to lift kernel lockdown (Kyle McMartin)
+- efi: Lock down the kernel if booted in secure boot mode (David Howells)
+- efi: Add an EFI_SECURE_BOOT flag to indicate secure boot mode (David Howells)
+- security: lockdown: expose a hook to lock the kernel down (Jeremy Cline)
+- Make get_cert_list() use efi_status_to_str() to print error messages. (Peter Jones)
+- Add efi_status_to_str() and rework efi_status_to_err(). (Peter Jones)
+- Make get_cert_list() not complain about cert lists that aren't present. (Peter Jones)
+- [iommu] iommu/arm-smmu: workaround DMA mode issues (Laura Abbott)
+- [kernel] rh_taint: correct loaddable module support dependencies (Philipp Rudo) [1652266]
+- [kernel] rh_kabi: introduce RH_KABI_EXCLUDE (Jakub Racek) [1652256]
+- [x86] mark intel knights landing and knights mill unsupported (David Arcari) [1610493]
+- [x86] mark whiskey-lake processor supported (David Arcari) [1609604]
+- [char] ipmi: do not configure ipmi for HPE m400 (Laura Abbott) [https://bugzilla.redhat.com/show_bug.cgi?id=1670017]
+- [infiniband] IB/rxe: Mark Soft-RoCE Transport driver as tech-preview (Don Dutile) [1605216]
+- [scsi] scsi: smartpqi: add inspur advantech ids (Don Brace) [1503736]
+- [netdrv] ice: mark driver as tech-preview (Jonathan Toppins) [1495347]
+- [scsi] be2iscsi: remove BE3 family support (Maurizio Lombardi) [1598366]
+- [x86] update rh_check_supported processor list (David Arcari) [1595918]
+- [kernel] kABI: Add generic kABI macros to use for kABI workarounds (Myron Stowe) [1546831]
+- [pci] add pci_hw_vendor_status() (Maurizio Lombardi) [1590829]
+- [ata] ahci: thunderx2: Fix for errata that affects stop engine (Robert Richter) [1563590]
+- [pci] Vulcan: AHCI PCI bar fix for Broadcom Vulcan early silicon (Robert Richter) [1563590]
+- [kernel] bpf: Add tech preview taint for syscall (Eugene Syromiatnikov) [1559877]
+- [kernel] bpf: set unprivileged_bpf_disabled to 1 by default, add a boot parameter (Eugene Syromiatnikov) [1561171]
+- [kernel] add Red Hat-specific taint flags (Eugene Syromiatnikov) [1559877]
+- [kernel] kdump: fix a grammar issue in a kernel message (Dave Young) [1507353]
+- [scripts] tags.sh: Ignore redhat/rpm (Jeremy Cline)
+- [kernel] put RHEL info into generated headers (Laura Abbott) [https://bugzilla.redhat.com/show_bug.cgi?id=1663728]
+- [kernel] kdump: add support for crashkernel=auto (Jeremy Cline)
+- [kernel] kdump: round up the total memory size to 128M for crashkernel reservation (Dave Young) [1507353]
+- [arm64] acpi: prefer booting with ACPI over DTS (Mark Salter) [1576869]
+- [acpi] aarch64: acpi scan: Fix regression related to X-Gene UARTs (Mark Salter) [1519554]
+- [acpi] ACPI / irq: Workaround firmware issue on X-Gene based m400 (Mark Salter) [1519554]
+- [x86] add rh_check_supported (David Arcari) [1565717]
+- [scsi] qla2xxx: Remove PCI IDs of deprecated adapter (Jeremy Cline)
+- [scsi] be2iscsi: remove unsupported device IDs (Chris Leech) [1574502]
+- [scsi] Removing Obsolete hba pci-ids from rhel8 (Dick Kennedy) [1572321]
+- [scsi] hpsa: modify hpsa driver version (Jeremy Cline)
+- [scsi] hpsa: remove old cciss-based smartarray pci ids (Joseph Szczypek) [1471185]
+- [kernel] rh_taint: add support for marking driver as unsupported (Jonathan Toppins) [1565704]
+- [kernel] rh_taint: add support (David Arcari) [1565704]
+- [scsi] qla4xxx: Remove deprecated PCI IDs from RHEL 8 (Chad Dupuis) [1518874]
+- [scsi] aacraid: Remove depreciated device and vendor PCI id's (Raghava Aditya Renukunta) [1495307]
+- [scsi] megaraid_sas: remove deprecated pci-ids (Tomas Henzl) [1509329]
+- [scsi] mpt*: remove certain deprecated pci-ids (Jeremy Cline)
+- [kernel] modules: add rhelversion MODULE_INFO tag (Laura Abbott)
+- [acpi] ACPI: APEI: arm64: Ignore broken HPE moonshot APEI support (Al Stone) [1518076]
+- gitlab: Add CI job for packaging scripts (Major Hayden)
+- Set CRYPTO_SHA3_*_S390 to builtin on zfcpdump (Jeremy Cline)
+- configs: New config in drivers/edac for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/firmware for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/hwmon for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/iio for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/mmc for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/tty for v5.4-rc1 (Jeremy Cline)
+- configs: New config in arch/s390 for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/bus for v5.4-rc1 (Jeremy Cline)
+- Add option to allow mismatched configs on the command line (Laura Abbott)
+- configs: New config in drivers/crypto for v5.4-rc1 (Jeremy Cline)
+- configs: New config in sound/pci for v5.4-rc1 (Jeremy Cline)
+- configs: New config in sound/soc for v5.4-rc1 (Jeremy Cline)
+- Speed up CI with CKI image (Major Hayden)
+- configs: Fix the pending default for CONFIG_ARM64_VA_BITS_52 (Jeremy Cline)
+- configs: Turn on OPTIMIZE_INLINING for everything (Jeremy Cline)
+- configs: Set valid pending defaults for CRYPTO_ESSIV (Jeremy Cline)
+- Add an initial CI configuration for the internal branch (Jeremy Cline)
+- New drop of configuration options for v5.4-rc1 (Jeremy Cline)
+- Disable e1000 driver in ARK (Neil Horman)
+- New drop of configuration options for v5.4-rc1 (Jeremy Cline)
+- configs: Adjust CONFIG_FORCE_MAX_ZONEORDER for Fedora (Laura Abbott)
+- configs: Add README for some other arches (Laura Abbott)
+- configs: Sync up Fedora configs (Laura Abbott)
+- Pull the RHEL version defines out of the Makefile (Jeremy Cline)
+- Sync up the ARK build scripts (Jeremy Cline)
+- Sync up the Fedora Rawhide configs (Jeremy Cline)
+- Sync up the ARK config files (Jeremy Cline)
+- [initial commit] Add structure for building with git (Laura Abbott)
+- [initial commit] Add Red Hat variables in the top level makefile (Laura Abbott)
+- [initial commit] Red Hat gitignore and attributes (Laura Abbott)
+- [initial commit] Add changelog (Laura Abbott)
+- [initial commit] Add makefile (Laura Abbott)
+- [initial commit] Add files for generating the kernel.spec (Laura Abbott)
+- [initial commit] Add rpm directory (Laura Abbott)
+- [initial commit] Add files for packaging (Laura Abbott)
+- [initial commit] Add kabi files (Laura Abbott)
+- [initial commit] Add scripts (Laura Abbott)
+- [initial commit] Add configs (Laura Abbott)
+- [initial commit] Add Makefiles (Laura Abbott)
+
+# The following bit is important for automation so please do not remove
+# END OF CHANGELOG
+
+###
+# The following Emacs magic makes C-c C-e use UTC dates.
+# Local Variables:
+# rpm-change-log-uses-utc: t
+# End:
+###
