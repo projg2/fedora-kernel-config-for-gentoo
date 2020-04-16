@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.20200414git8632e9b5645b.1
+%global distro_build 0.rc1.20200416git9786cab67457.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,12 +69,12 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc1.20200414git8632e9b5645b.1
+%define pkgrelease 0.rc1.20200416git9786cab67457.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20200414git8632e9b5645b.1%{?dist}
+%define specrelease 0.rc1.20200416git9786cab67457.1%{?buildid}%{?dist}
 
-%define pkg_release %{specrelease}%{?buildid}
+%define pkg_release %{specrelease}
 
 # What parts do we want to build?  We must build at least one kernel.
 # These are the kernels that are built IF the architecture allows it.
@@ -568,7 +568,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200414git8632e9b5645b.tar.xz
+Source0: linux-20200416git9786cab67457.tar.xz
 
 
 # Name of the packaged file containing signing key
@@ -1194,8 +1194,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200414git8632e9b5645b -c
-mv linux-20200414git8632e9b5645b linux-%{KVERREL}
+%setup -q -n kernel-20200416git9786cab67457 -c
+mv linux-20200416git9786cab67457 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 
@@ -2603,8 +2603,10 @@ fi
 #
 #
 %changelog
-* Tue Apr 14 2020 Jeremy Cline <jcline@redhat.com> [5.7.0-0.rc1.20200414git8632e9b5645b.1]
-- 8632e9b5645b rebase
+* Thu Apr 16 2020 Jeremy Cline <jcline@redhat.com> [5.7.0-0.rc1.20200416git9786cab67457.1]
+- 9786cab67457 rebase
+- Copy distro files rather than moving them (Jeremy Cline)
+- Place the buildid before the dist in the release (Jeremy Cline)
 - Drop DIST from release commits and tags (Jeremy Cline)
 - Sync up with Fedora arm configuration prior to merging (Jeremy Cline)
 - Disable CONFIG_PROTECTED_VIRTUALIZATION_GUEST for zfcpdump (Jeremy Cline)
