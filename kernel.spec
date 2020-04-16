@@ -3007,7 +3007,7 @@ fi
 #
 %changelog
 * Thu Apr 16 2020 Justin M. Forbes <jforbes@fedoraproject.org>
-- Nouveau Add missing MODULE_FIRMWARE() lines for initramfs generators
+- Nouveau Add missing MODULE_FIRMWARE() lines for initramfs generators (rhbz 1825046)
 
 * Mon Apr 13 2020 Jeremy Cline <jcline@redhat.com> - 5.6.4-300
 - Linux v5.6.4
