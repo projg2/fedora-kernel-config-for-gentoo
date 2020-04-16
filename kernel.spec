@@ -909,6 +909,7 @@ Patch512: 0001-ALSA-hda-realtek-Add-quirk-for-Lenovo-Carbon-X1-8th-.patch
 Patch513: 0001-drm-nouveau-workaround-runpm-fail-by-disabling-PCI-p.patch
 # Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/41c6a13e8143af71928749ea9895d2ebc2fb4ffd
 Patch514: 0002-drm-nouveau-gr-gp107-gp108-implement-workaround-for-.patch
+Patch515: nouveau-add-missing-MODULE_FIRMWARE.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -3005,6 +3006,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 16 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Nouveau Add missing MODULE_FIRMWARE() lines for initramfs generators
+
 * Mon Apr 13 2020 Jeremy Cline <jcline@redhat.com> - 5.6.4-300
 - Linux v5.6.4
 
