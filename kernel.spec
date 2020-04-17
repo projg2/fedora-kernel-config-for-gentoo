@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 17
+%define stable_update 18
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -571,9 +571,6 @@ Patch510: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1816621
 # https://patchwork.ozlabs.org/patch/1260523/
 Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1820196
-Patch512: 0001-ALSA-hda-realtek-Add-quirk-for-Lenovo-Carbon-X1-8th-.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1815,6 +1812,9 @@ fi
 #
 #
 %changelog
+* Fri Apr 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.18-100
+- Linux v5.5.18
+
 * Mon Apr 13 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.17-100
 - Linux v5.5.17
 
