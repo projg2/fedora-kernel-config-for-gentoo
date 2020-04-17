@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -900,9 +900,6 @@ Patch509: drm-i915-backports.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1816621
 # https://patchwork.ozlabs.org/patch/1260523/
 Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1820196
-Patch512: 0001-ALSA-hda-realtek-Add-quirk-for-Lenovo-Carbon-X1-8th-.patch
 
 # nouveau runpm and secboot fixes
 # Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/f5755e7069d4acbcce1a93692421f358241ead7b
@@ -3006,6 +3003,9 @@ fi
 #
 #
 %changelog
+* Fri Apr 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.5-300
+- Linux v5.6.5
+
 * Thu Apr 16 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Nouveau Add missing MODULE_FIRMWARE() lines for initramfs generators (rhbz 1825046)
 
