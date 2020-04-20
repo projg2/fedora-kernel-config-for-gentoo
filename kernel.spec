@@ -868,6 +868,10 @@ Patch344: arm64-pine64-pinetab.patch
 Patch345: arm64-pine64-pinephone.patch
 # https://patchwork.kernel.org/cover/11440399/
 Patch346: Add-support-for-PinePhone-LCD-panel.patch
+# https://www.spinics.net/lists/devicetree/msg346446.html
+Patch347: arm64-Fix-some-GPIO-setup-on-Pinebook-Pro.patch
+# https://www.spinics.net/lists/devicetree/msg347052.html
+Patch348: usb-fusb302-Convert-to-use-GPIO-descriptors.patch
 
 # 400 - IBM (ppc/s390x) patches
 
