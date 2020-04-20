@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.20200416git9786cab67457.1
+%global distro_build 0.rc2.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc1.20200416git9786cab67457.1
+%define pkgrelease 0.rc2.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20200416git9786cab67457.1%{?buildid}%{?dist}
+%define specrelease 0.rc2.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -163,7 +163,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.7
@@ -568,7 +568,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200416git9786cab67457.tar.xz
+Source0: linux-5.7-rc2.tar.xz
 
 
 # Name of the packaged file containing signing key
@@ -697,6 +697,8 @@ Source2001: cpupower.config
 # source tree, but in the mean time we carry this to support the legacy workflow
 Source3000: merge.pl
 Source3001: kernel-local
+
+Source4000: README.rst
 
 ## Patches needed for building this package
 
@@ -1194,8 +1196,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200416git9786cab67457 -c
-mv linux-20200416git9786cab67457 linux-%{KVERREL}
+%setup -q -n kernel-5.7-rc2 -c
+mv linux-5.7-rc2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 
@@ -2603,11 +2605,12 @@ fi
 #
 #
 %changelog
-* Thu Apr 16 2020 Jeremy Cline <jcline@redhat.com> [5.7.0-0.rc1.20200416git9786cab67457.1]
-- 9786cab67457 rebase
+* Mon Apr 20 2020 Jeremy Cline <jcline@redhat.com> [5.7.0-0.rc2.1]
+- v5.7-rc2 rebase
+- Add a README to the dist-git repository (Jeremy Cline)
 - Copy distro files rather than moving them (Jeremy Cline)
-- Place the buildid before the dist in the release (Jeremy Cline)
 - Drop DIST from release commits and tags (Jeremy Cline)
+- Place the buildid before the dist in the release (Jeremy Cline)
 - Sync up with Fedora arm configuration prior to merging (Jeremy Cline)
 - Disable CONFIG_PROTECTED_VIRTUALIZATION_GUEST for zfcpdump (Jeremy Cline)
 

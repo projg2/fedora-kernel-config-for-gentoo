@@ -253,7 +253,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 70def4907036..1b92fd19b0c5 100644
+index 49b2709ff44e..e6e36dcbebfb 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -15,6 +15,10 @@ NAME = Kleptomaniac Octopus
@@ -3167,7 +3167,7 @@ index 4cb4130ced32..b1010f42dd18 100644
  obj-$(CONFIG_MULTIUSER) += groups.o
  
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 64783da34202..146002310855 100644
+index d85f37239540..28ed55c3dd18 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
@@ -3205,7 +3205,7 @@ index 64783da34202..146002310855 100644
  
  static const struct bpf_map_ops * const bpf_map_types[] = {
  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
-@@ -3661,11 +3680,17 @@ static int link_update(union bpf_attr *attr)
+@@ -3659,11 +3678,17 @@ static int link_update(union bpf_attr *attr)
  SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
  {
  	union bpf_attr attr;
