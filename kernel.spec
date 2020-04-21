@@ -83,13 +83,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 5
+%define base_sublevel 6
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -815,23 +815,58 @@ Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 Patch304: ARM-tegra-usb-no-reset.patch
 
 # Raspberry Pi
-# https://patchwork.kernel.org/cover/11271017/
-Patch310: Raspberry-Pi-4-PCIe-support.patch
-# https://patchwork.kernel.org/patch/11223139/
-Patch311: ARM-Enable-thermal-support-for-Raspberry-Pi-4.patch
-# https://patchwork.kernel.org/patch/11299997/
-Patch312: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
 # https://patchwork.kernel.org/cover/11353083/
-Patch313: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
-# https://github.com/raspberrypi/linux/commit/c74b1b53254016fd83b580b8d49bb02d72ce4836
-Patch314: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
+Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
+# v5 https://patchwork.kernel.org/cover/11429245/
+Patch311: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
 # https://patchwork.kernel.org/patch/11372935/
-Patch315: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
+Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
+# https://patchwork.kernel.org/patch/11420129/
+Patch313: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
+# Upstream commit f87391eec2c5 thread: https://www.spinics.net/lists/linux-mmc/msg58036.html
+Patch314: arm-bcm2711-mmc-sdhci-iproc-Add-custom-set_power-callback.patch
+# https://patchwork.freedesktop.org/patch/358980/
+Patch315: drm-vc4-Fix-HDMI-mode-validation.patch
+# Upstream commit 57b76faf1d78
+Patch316: arm-bcm2835-serial-8250_early-support-aux-uart.patch
 
 # Tegra bits
-Patch320: arm64-tegra-jetson-tx1-fixes.patch
-# https://www.spinics.net/lists/linux-tegra/msg43110.html
-Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
+# https://www.spinics.net/lists/linux-tegra/msg48152.html
+Patch320: ARM64-Tegra-fixes.patch
+# http://patchwork.ozlabs.org/patch/1230891/
+Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
+# https://lkml.org/lkml/2020/2/14/401
+Patch323: arm64-tegra-fix-pcie.patch
+# http://patchwork.ozlabs.org/patch/1243162/
+Patch324: regulator-pwm-Don-t-warn-on-probe-deferral.patch
+# http://patchwork.ozlabs.org/patch/1243112/
+Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
+# https://patchwork.ozlabs.org/patch/1261638/
+Patch326: arm64-drm-tegra-Fix-SMMU-support-on-Tegra124-and-Tegra210.patch
+# http://patchwork.ozlabs.org/patch/1221384/
+Patch327: PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+
+# Coral
+Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
+
+# Pine64 bits
+# 340-345 queued for 5.7
+Patch340: arm64-pinebook-fixes.patch
+Patch341: arm64-a64-mbus.patch
+# v4 https://patchwork.kernel.org/cover/11420797/
+Patch342: Add-support-for-the-pine64-Pinebook-Pro.patch
+# https://patchwork.kernel.org/cover/11405517/
+Patch343: Add-LCD-support-for-Pine64-Pinebook-1080p.patch
+# https://lkml.org/lkml/2020/1/15/1320
+Patch344: arm64-pine64-pinetab.patch
+# https://www.spinics.net/lists/arm-kernel/msg789135.html
+Patch345: arm64-pine64-pinephone.patch
+# https://patchwork.kernel.org/cover/11440399/
+Patch346: Add-support-for-PinePhone-LCD-panel.patch
+# https://www.spinics.net/lists/devicetree/msg346446.html
+Patch347: arm64-Fix-some-GPIO-setup-on-Pinebook-Pro.patch
+# https://www.spinics.net/lists/devicetree/msg347052.html
+Patch348: usb-fusb302-Convert-to-use-GPIO-descriptors.patch
 
 # 400 - IBM (ppc/s390x) patches
 
@@ -855,18 +890,21 @@ Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 # https://lkml.org/lkml/2019/8/29/1772
 Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
 
-# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
-Patch506: alsa-5.6.patch
+# More DP-MST fixes, pending for 5.7
+Patch507: drm-dp-mst-error-handling-improvements.patch
 
-# i915 "critical" patch from upstream
-Patch508: 20200310_chris_chris_wilson_co_uk.patch
-
-# Backport vboxsf from 5.6, can be dropped when we move to 5.6
-Patch510: 0001-fs-Add-VirtualBox-guest-shared-folder-vboxsf-support.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1811850
+Patch509: drm-i915-backports.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1816621
 # https://patchwork.ozlabs.org/patch/1260523/
 Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
+
+# nouveau runpm and secboot fixes
+# Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/f5755e7069d4acbcce1a93692421f358241ead7b
+Patch513: 0001-drm-nouveau-workaround-runpm-fail-by-disabling-PCI-p.patch
+# Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/41c6a13e8143af71928749ea9895d2ebc2fb4ffd
+Patch514: 0002-drm-nouveau-gr-gp107-gp108-implement-workaround-for-.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2897,6 +2935,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 21 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.6-200
+- Linux v5.6.6 rebase
+
 * Fri Apr 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.18-200
 - Linux v5.5.18
 
