@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -910,7 +910,6 @@ Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 Patch513: 0001-drm-nouveau-workaround-runpm-fail-by-disabling-PCI-p.patch
 # Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/41c6a13e8143af71928749ea9895d2ebc2fb4ffd
 Patch514: 0002-drm-nouveau-gr-gp107-gp108-implement-workaround-for-.patch
-Patch515: nouveau-add-missing-MODULE_FIRMWARE.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -3007,6 +3006,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 21 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.6-300
+- Linux v5.6.6
+
 * Fri Apr 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.5-300
 - Linux v5.6.5
 
