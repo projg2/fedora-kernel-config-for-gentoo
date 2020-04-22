@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc2.1
+%global distro_build 0.rc2.20200422git18bf34080c4c.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc2.1
+%define pkgrelease 0.rc2.20200422git18bf34080c4c.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.1%{?buildid}%{?dist}
+%define specrelease 0.rc2.20200422git18bf34080c4c.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -163,7 +163,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.7
@@ -568,7 +568,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.7-rc2.tar.xz
+Source0: linux-20200422git18bf34080c4c.tar.xz
 
 
 # Name of the packaged file containing signing key
@@ -1196,8 +1196,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.7-rc2 -c
-mv linux-5.7-rc2 linux-%{KVERREL}
+%setup -q -n kernel-20200422git18bf34080c4c -c
+mv linux-20200422git18bf34080c4c linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 
@@ -1231,7 +1231,6 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 	tools/perf/tests/attr.py \
 	tools/perf/scripts/python/stat-cpi.py \
 	tools/perf/scripts/python/sched-migration.py \
-	tools/testing/selftests/drivers/net/mlxsw/sharedbuffer_configuration.py \
 	Documentation \
 	scripts/gen_compile_commands.py
 
@@ -2491,7 +2490,6 @@ fi
 %{_mandir}/man8/bpftool-net.8.gz
 %{_mandir}/man8/bpftool-feature.8.gz
 %{_mandir}/man8/bpftool-btf.8.gz
-%{_mandir}/man8/bpftool-struct_ops.8.gz
 
 %if %{with_debuginfo}
 %files -f bpftool-debuginfo.list -n bpftool-debuginfo
@@ -2605,6 +2603,14 @@ fi
 #
 #
 %changelog
+* Wed Apr 22 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.7.0-0.rc2.20200422git18bf34080c4c.1]
+- 18bf34080c4c rebase
+- Provide defaults in ark-rebase-patches.sh (Jeremy Cline)
+- Default ark-rebase-patches.sh to not report issues (Jeremy Cline)
+
+* Mon Apr 20 2020 Jeremy Cline <jcline@redhat.com> [5.7.0-0.rc2.2]
+- Package gpio-watch in kernel-tools (Jeremy Cline)
+
 * Mon Apr 20 2020 Jeremy Cline <jcline@redhat.com> [5.7.0-0.rc2.1]
 - v5.7-rc2 rebase
 - Add a README to the dist-git repository (Jeremy Cline)
