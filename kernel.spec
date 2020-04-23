@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc2.20200422git18bf34080c4c.1
+%global distro_build 0.rc2.20200423git7adc4b399952.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc2.20200422git18bf34080c4c.1
+%define pkgrelease 0.rc2.20200423git7adc4b399952.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20200422git18bf34080c4c.1%{?buildid}%{?dist}
+%define specrelease 0.rc2.20200423git7adc4b399952.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -568,7 +568,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200422git18bf34080c4c.tar.xz
+Source0: linux-20200423git7adc4b399952.tar.xz
 
 
 # Name of the packaged file containing signing key
@@ -697,12 +697,93 @@ Source2001: cpupower.config
 # source tree, but in the mean time we carry this to support the legacy workflow
 Source3000: merge.pl
 Source3001: kernel-local
+Source3002: Patchlist
 
 Source4000: README.rst
 
 ## Patches needed for building this package
 
 Patch1: patch-%{rpmversion}-redhat.patch
+
+%if !%{nopatches}
+
+Patch2: 0001-initial-commit-Add-Red-Hat-variables-in-the-top-leve.patch
+Patch3: 0001-Pull-the-RHEL-version-defines-out-of-the-Makefile.patch
+Patch4: 0001-Introduce-CONFIG_RH_DISABLE_DEPRECATED.patch
+Patch5: 0001-Add-Red-Hat-tainting.patch
+Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
+Patch7: 0001-modules-add-rhelversion-MODULE_INFO-tag.patch
+Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
+Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
+Patch10: 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
+Patch11: 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
+Patch12: 0001-kdump-add-support-for-crashkernel-auto.patch
+Patch13: 0001-put-RHEL-info-into-generated-headers.patch
+Patch14: 0001-tags.sh-Ignore-redhat-rpm.patch
+Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
+Patch16: 0001-add-Red-Hat-specific-taint-flags.patch
+Patch17: 0001-bpf-set-unprivileged_bpf_disabled-to-1-by-default-ad.patch
+Patch18: 0001-bpf-Add-tech-preview-taint-for-syscall.patch
+Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
+Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
+Patch21: 0001-add-pci_hw_vendor_status.patch
+Patch22: 0001-kABI-Add-generic-kABI-macros-to-use-for-kABI-workaro.patch
+Patch23: 0001-ice-mark-driver-as-tech-preview.patch
+Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
+Patch25: 0001-IB-rxe-Mark-Soft-RoCE-Transport-driver-as-tech-previ.patch
+Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
+Patch27: 0001-rh_kabi-introduce-RH_KABI_EXCLUDE.patch
+Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
+Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
+Patch30: 0001-Add-support-for-deprecating-processors.patch
+Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
+Patch32: 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
+Patch33: 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
+Patch34: 0001-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
+Patch35: 0001-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
+Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
+Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+Patch38: 0001-Rename-RH_DISABLE_DEPRECATED-to-RHEL_DIFFERENCES.patch
+Patch39: 0001-kernel-add-SUPPORT_REMOVED-kernel-taint.patch
+Patch40: 0001-mpt-remove-certain-deprecated-pci-ids.patch
+Patch41: 0001-megaraid_sas-remove-deprecated-pci-ids.patch
+Patch42: 0001-aacraid-Remove-depreciated-device-and-vendor-PCI-id-.patch
+Patch43: 0001-qla4xxx-Remove-deprecated-PCI-IDs-from-RHEL-8.patch
+Patch44: 0001-hpsa-remove-old-cciss-based-smartarray-pci-ids.patch
+Patch45: 0001-mptspi-Taint-kernel-if-mptspi-is-loaded.patch
+Patch46: 0001-be2iscsi-remove-unsupported-device-IDs.patch
+Patch47: 0001-qla2xxx-Remove-PCI-IDs-of-deprecated-adapter.patch
+Patch48: 0001-mptspi-pci-id-table-changes.patch
+Patch49: 0001-mptsas-Taint-kernel-if-mptsas-is-loaded.patch
+Patch50: 0001-mptsas-pci-id-table-changes.patch
+Patch51: 0001-Removing-Obsolete-hba-pci-ids-from-rhel8.patch
+Patch52: 0001-redhat-rh_kabi-Add-macros-to-size-and-extend-structs.patch
+Patch53: 0001-redhat-rh_kabi-Fix-RH_KABI_SET_SIZE-to-use-dereferen.patch
+Patch54: 0001-redhat-rh_kabi-Indirect-EXTEND-macros-so-nesting-of-.patch
+Patch55: 0001-redhat-rh_kabi-introduce-RH_KABI_EXTEND_WITH_SIZE.patch
+Patch56: 0001-redhat-rh_kabi-add-a-comment-with-warning-about-RH_K.patch
+Patch57: 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
+Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
+Patch59: 0001-ARM-tegra-usb-no-reset.patch
+Patch60: 0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
+Patch61: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
+Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
+Patch63: 0001-Drop-that-for-now.patch
+Patch64: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
+Patch65: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+Patch66: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
+Patch67: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
+Patch68: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
+Patch69: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
+Patch70: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
+Patch71: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
+Patch72: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch73: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
+Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
+Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch76: 0001-tty-sysrq-Export-sysrq_mask.patch
+
+%endif
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -1196,12 +1277,93 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200422git18bf34080c4c -c
-mv linux-20200422git18bf34080c4c linux-%{KVERREL}
+%setup -q -n kernel-20200423git7adc4b399952 -c
+mv linux-20200423git7adc4b399952 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 
 ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
+
+%if !%{nopatches}
+
+ApplyOptionalPatch 0001-initial-commit-Add-Red-Hat-variables-in-the-top-leve.patch
+ApplyOptionalPatch 0001-Pull-the-RHEL-version-defines-out-of-the-Makefile.patch
+ApplyOptionalPatch 0001-Introduce-CONFIG_RH_DISABLE_DEPRECATED.patch
+ApplyOptionalPatch 0001-Add-Red-Hat-tainting.patch
+ApplyOptionalPatch 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
+ApplyOptionalPatch 0001-modules-add-rhelversion-MODULE_INFO-tag.patch
+ApplyOptionalPatch 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
+ApplyOptionalPatch 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
+ApplyOptionalPatch 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
+ApplyOptionalPatch 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
+ApplyOptionalPatch 0001-kdump-add-support-for-crashkernel-auto.patch
+ApplyOptionalPatch 0001-put-RHEL-info-into-generated-headers.patch
+ApplyOptionalPatch 0001-tags.sh-Ignore-redhat-rpm.patch
+ApplyOptionalPatch 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
+ApplyOptionalPatch 0001-add-Red-Hat-specific-taint-flags.patch
+ApplyOptionalPatch 0001-bpf-set-unprivileged_bpf_disabled-to-1-by-default-ad.patch
+ApplyOptionalPatch 0001-bpf-Add-tech-preview-taint-for-syscall.patch
+ApplyOptionalPatch 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
+ApplyOptionalPatch 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
+ApplyOptionalPatch 0001-add-pci_hw_vendor_status.patch
+ApplyOptionalPatch 0001-kABI-Add-generic-kABI-macros-to-use-for-kABI-workaro.patch
+ApplyOptionalPatch 0001-ice-mark-driver-as-tech-preview.patch
+ApplyOptionalPatch 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
+ApplyOptionalPatch 0001-IB-rxe-Mark-Soft-RoCE-Transport-driver-as-tech-previ.patch
+ApplyOptionalPatch 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
+ApplyOptionalPatch 0001-rh_kabi-introduce-RH_KABI_EXCLUDE.patch
+ApplyOptionalPatch 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
+ApplyOptionalPatch 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
+ApplyOptionalPatch 0001-Add-support-for-deprecating-processors.patch
+ApplyOptionalPatch 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
+ApplyOptionalPatch 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
+ApplyOptionalPatch 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
+ApplyOptionalPatch 0001-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
+ApplyOptionalPatch 0001-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
+ApplyOptionalPatch 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
+ApplyOptionalPatch 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+ApplyOptionalPatch 0001-Rename-RH_DISABLE_DEPRECATED-to-RHEL_DIFFERENCES.patch
+ApplyOptionalPatch 0001-kernel-add-SUPPORT_REMOVED-kernel-taint.patch
+ApplyOptionalPatch 0001-mpt-remove-certain-deprecated-pci-ids.patch
+ApplyOptionalPatch 0001-megaraid_sas-remove-deprecated-pci-ids.patch
+ApplyOptionalPatch 0001-aacraid-Remove-depreciated-device-and-vendor-PCI-id-.patch
+ApplyOptionalPatch 0001-qla4xxx-Remove-deprecated-PCI-IDs-from-RHEL-8.patch
+ApplyOptionalPatch 0001-hpsa-remove-old-cciss-based-smartarray-pci-ids.patch
+ApplyOptionalPatch 0001-mptspi-Taint-kernel-if-mptspi-is-loaded.patch
+ApplyOptionalPatch 0001-be2iscsi-remove-unsupported-device-IDs.patch
+ApplyOptionalPatch 0001-qla2xxx-Remove-PCI-IDs-of-deprecated-adapter.patch
+ApplyOptionalPatch 0001-mptspi-pci-id-table-changes.patch
+ApplyOptionalPatch 0001-mptsas-Taint-kernel-if-mptsas-is-loaded.patch
+ApplyOptionalPatch 0001-mptsas-pci-id-table-changes.patch
+ApplyOptionalPatch 0001-Removing-Obsolete-hba-pci-ids-from-rhel8.patch
+ApplyOptionalPatch 0001-redhat-rh_kabi-Add-macros-to-size-and-extend-structs.patch
+ApplyOptionalPatch 0001-redhat-rh_kabi-Fix-RH_KABI_SET_SIZE-to-use-dereferen.patch
+ApplyOptionalPatch 0001-redhat-rh_kabi-Indirect-EXTEND-macros-so-nesting-of-.patch
+ApplyOptionalPatch 0001-redhat-rh_kabi-introduce-RH_KABI_EXTEND_WITH_SIZE.patch
+ApplyOptionalPatch 0001-redhat-rh_kabi-add-a-comment-with-warning-about-RH_K.patch
+ApplyOptionalPatch 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
+ApplyOptionalPatch 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
+ApplyOptionalPatch 0001-ARM-tegra-usb-no-reset.patch
+ApplyOptionalPatch 0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
+ApplyOptionalPatch 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
+ApplyOptionalPatch 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
+ApplyOptionalPatch 0001-Drop-that-for-now.patch
+ApplyOptionalPatch 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
+ApplyOptionalPatch 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+ApplyOptionalPatch 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
+ApplyOptionalPatch 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
+ApplyOptionalPatch 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
+ApplyOptionalPatch 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
+ApplyOptionalPatch 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
+ApplyOptionalPatch 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
+ApplyOptionalPatch 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
+ApplyOptionalPatch 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
+ApplyOptionalPatch 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
+ApplyOptionalPatch 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+ApplyOptionalPatch 0001-tty-sysrq-Export-sysrq_mask.patch
+
+%endif
+
 ApplyOptionalPatch linux-kernel-test.patch
 
 # END OF PATCH APPLICATIONS
@@ -1231,6 +1393,7 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 	tools/perf/tests/attr.py \
 	tools/perf/scripts/python/stat-cpi.py \
 	tools/perf/scripts/python/sched-migration.py \
+	tools/testing/selftests/drivers/net/mlxsw/sharedbuffer_configuration.py \
 	Documentation \
 	scripts/gen_compile_commands.py
 
@@ -2457,6 +2620,7 @@ fi
 %{_bindir}/lsgpio
 %{_bindir}/gpio-hammer
 %{_bindir}/gpio-event-mon
+%{_bindir}/gpio-watch
 %{_mandir}/man1/kvm_stat*
 %{_bindir}/kvm_stat
 
@@ -2490,6 +2654,7 @@ fi
 %{_mandir}/man8/bpftool-net.8.gz
 %{_mandir}/man8/bpftool-feature.8.gz
 %{_mandir}/man8/bpftool-btf.8.gz
+%{_mandir}/man8/bpftool-struct_ops.8.gz
 
 %if %{with_debuginfo}
 %files -f bpftool-debuginfo.list -n bpftool-debuginfo
@@ -2603,8 +2768,14 @@ fi
 #
 #
 %changelog
-* Wed Apr 22 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.7.0-0.rc2.20200422git18bf34080c4c.1]
-- 18bf34080c4c rebase
+* Thu Apr 23 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc2.20200423git7adc4b399952.1]
+- 7adc4b399952 rebase
+- Match template format in kernel.spec.template ("Justin M. Forbes")
+- Break out the Patches into individual files for dist-git ("Justin M. Forbes")
+- Break the Red Hat patch into individual commits (Jeremy Cline)
+- Adjust module filtering so CONFIG_DRM_DP_CEC can be set (Jeremy Cline)
+- Add a script to generate release tags and branches (Jeremy Cline)
+- Set CONFIG_VDPA for fedora ("Justin M. Forbes")
 - Provide defaults in ark-rebase-patches.sh (Jeremy Cline)
 - Default ark-rebase-patches.sh to not report issues (Jeremy Cline)
 

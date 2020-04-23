@@ -14,7 +14,7 @@
 # listed here.
 
 # Set the default dirs/modules to filter out
-driverdirs="atm auxdisplay bcma bluetooth firewire fmc fpga infiniband isdn leds media memstick mfd mmc mtd nfc ntb pcmcia platform power ssb soundwire staging tty uio uwb w1"
+driverdirs="atm auxdisplay bcma bluetooth firewire fmc fpga infiniband isdn leds media/common media/dvb-core media/dvb-frontends media/firewire media/i2c media/mc media/mmc media/pci media/platform media/radio media/rc media/spi media/tuners media/usb media/v4l2-core memstick mfd mmc mtd nfc ntb pcmcia platform power ssb soundwire staging tty uio uwb w1"
 
 chardrvs="mwave pcmcia"
 
