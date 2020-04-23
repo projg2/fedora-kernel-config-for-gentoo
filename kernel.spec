@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -830,8 +830,6 @@ Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
 Patch313: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
 # Upstream commit f87391eec2c5 thread: https://www.spinics.net/lists/linux-mmc/msg58036.html
 Patch314: arm-bcm2711-mmc-sdhci-iproc-Add-custom-set_power-callback.patch
-# https://patchwork.freedesktop.org/patch/358980/
-Patch315: drm-vc4-Fix-HDMI-mode-validation.patch
 # Upstream commit 57b76faf1d78
 Patch316: arm-bcm2835-serial-8250_early-support-aux-uart.patch
 
@@ -840,8 +838,6 @@ Patch316: arm-bcm2835-serial-8250_early-support-aux-uart.patch
 Patch320: ARM64-Tegra-fixes.patch
 # http://patchwork.ozlabs.org/patch/1230891/
 Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
-# https://lkml.org/lkml/2020/2/14/401
-Patch323: arm64-tegra-fix-pcie.patch
 # http://patchwork.ozlabs.org/patch/1243162/
 Patch324: regulator-pwm-Don-t-warn-on-probe-deferral.patch
 # http://patchwork.ozlabs.org/patch/1243112/
@@ -904,12 +900,6 @@ Patch509: drm-i915-backports.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1816621
 # https://patchwork.ozlabs.org/patch/1260523/
 Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
-
-# nouveau runpm and secboot fixes
-# Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/f5755e7069d4acbcce1a93692421f358241ead7b
-Patch513: 0001-drm-nouveau-workaround-runpm-fail-by-disabling-PCI-p.patch
-# Accepted nouveau upstream https://github.com/skeggsb/nouveau/commit/41c6a13e8143af71928749ea9895d2ebc2fb4ffd
-Patch514: 0002-drm-nouveau-gr-gp107-gp108-implement-workaround-for-.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -3006,6 +2996,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 23 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.7-300
+- Linux v5.6.7
+
 * Tue Apr 21 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.6-300
 - Linux v5.6.6
 
