@@ -433,26 +433,36 @@ Source95: filter-s390x.sh
 Source99: filter-modules.sh
 %define modsign_cmd %{SOURCE18}
 
-Source20: kernel-aarch64.config
-Source21: kernel-aarch64-debug.config
-Source22: kernel-armv7hl.config
-Source23: kernel-armv7hl-debug.config
-Source24: kernel-armv7hl-lpae.config
-Source25: kernel-armv7hl-lpae-debug.config
-Source26: kernel-i686.config
-Source27: kernel-i686-debug.config
-Source30: kernel-ppc64le.config
-Source31: kernel-ppc64le-debug.config
-Source32: kernel-s390x.config
-Source33: kernel-s390x-debug.config
-Source34: kernel-x86_64.config
-Source35: kernel-x86_64-debug.config
+Source20: kernel-aarch64-rhel.config
+Source21: kernel-aarch64-debug-rhel.config
+Source30: kernel-ppc64le-rhel.config
+Source31: kernel-ppc64le-debug-rhel.config
+Source32: kernel-s390x-rhel.config
+Source33: kernel-s390x-debug-rhel.config
+Source34: kernel-s390x-zfcpdump-rhel.config
+Source35: kernel-x86_64-rhel.config
+Source36: kernel-x86_64-debug-rhel.config
 
-Source40: generate_all_configs.sh
-Source41: generate_debug_configs.sh
+Source37: kernel-aarch64-fedora.config
+Source38: kernel-aarch64-debug-fedora.config
+Source39: kernel-armv7hl-fedora.config
+Source40: kernel-armv7hl-debug-fedora.config
+Source41: kernel-armv7hl-lpae-fedora.config
+Source42: kernel-armv7hl-lpae-debug-fedora.config
+Source43: kernel-i686-fedora.config
+Source44: kernel-i686-debug-fedora.config
+Source45: kernel-ppc64le-fedora.config
+Source46: kernel-ppc64le-debug-fedora.config
+Source47: kernel-s390x-fedora.config
+Source48: kernel-s390x-debug-fedora.config
+Source49: kernel-x86_64-fedora.config
+Source50: kernel-x86_64-debug-fedora.config
 
-Source42: process_configs.sh
-Source43: generate_bls_conf.sh
+Source60: generate_all_configs.sh
+Source61: generate_debug_configs.sh
+
+Source62: process_configs.sh
+Source63: generate_bls_conf.sh
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -1053,9 +1063,9 @@ cd configs
 cp $RPM_SOURCE_DIR/kernel-*.config .
 cp %{SOURCE1000} .
 cp %{SOURCE15} .
-cp %{SOURCE40} .
-cp %{SOURCE41} .
-cp %{SOURCE43} .
+cp %{SOURCE60} .
+cp %{SOURCE61} .
+cp %{SOURCE63} .
 
 VERSION=%{version} ./generate_all_configs.sh fedora %{debugbuildsenabled}
 
@@ -1088,7 +1098,7 @@ CheckConfigs() {
      fi
 }
 
-cp %{SOURCE42} .
+cp %{SOURCE62} .
 OPTS=""
 %if %{listnewconfig_fail}
 	OPTS="$OPTS -n"
@@ -1513,7 +1523,7 @@ BuildKernel() {
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
 
     # build a BLS config for this kernel
-    %{SOURCE43} "$KernelVer" "$RPM_BUILD_ROOT" "%{?variant}"
+    %{SOURCE63} "$KernelVer" "$RPM_BUILD_ROOT" "%{?variant}"
 }
 
 ###
