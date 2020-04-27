@@ -59,7 +59,7 @@ Summary: The Linux kernel
 %global zipsed -e 's/\.ko$/\.ko.xz/'
 %endif
 
-%define buildid .test
+# define buildid .local
 
 
 %if 0%{?fedora}
@@ -69,7 +69,7 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc3.1.test
+%define pkgrelease 0.rc3.1
 
 # allow pkg_release to have configurable %%{?dist} tag
 %define specrelease 0.rc3.1%{?buildid}%{?dist}
