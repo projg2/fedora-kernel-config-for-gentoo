@@ -1,4 +1,4 @@
-From 0d44204e07c47e50d339c640b74515bee716ef0e Mon Sep 17 00:00:00 2001
+From bf3853bc5e5e63a8ce1473c76eff2ccefd138760 Mon Sep 17 00:00:00 2001
 From: Don Brace <dbrace@redhat.com>
 Date: Mon, 16 Jul 2018 19:20:41 -0400
 Subject: [PATCH] scsi: smartpqi: add inspur advantech ids
@@ -66,5 +66,5 @@ index cd157f11eb22..c5dc6cf57a71 100644
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_DELL, 0x1fe0)
 -- 
-2.26.0
+2.26.2
 

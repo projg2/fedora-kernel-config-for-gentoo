@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc2.20200423git7adc4b399952.1
+%global distro_build 0.rc3.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -59,7 +59,7 @@ Summary: The Linux kernel
 %global zipsed -e 's/\.ko$/\.ko.xz/'
 %endif
 
-# define buildid .local
+%define buildid .test
 
 
 %if 0%{?fedora}
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc2.20200423git7adc4b399952.1
+%define pkgrelease 0.rc3.1.test
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20200423git7adc4b399952.1%{?buildid}%{?dist}
+%define specrelease 0.rc3.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -163,7 +163,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.7
@@ -568,7 +568,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200423git7adc4b399952.tar.xz
+Source0: linux-5.7-rc3.tar.xz
 
 
 # Name of the packaged file containing signing key
@@ -781,7 +781,6 @@ Patch72: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch73: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch76: 0001-tty-sysrq-Export-sysrq_mask.patch
 
 %endif
 
@@ -1277,8 +1276,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200423git7adc4b399952 -c
-mv linux-20200423git7adc4b399952 linux-%{KVERREL}
+%setup -q -n kernel-5.7-rc3 -c
+mv linux-5.7-rc3 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 
@@ -1360,7 +1359,6 @@ ApplyOptionalPatch 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 ApplyOptionalPatch 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 ApplyOptionalPatch 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 ApplyOptionalPatch 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-ApplyOptionalPatch 0001-tty-sysrq-Export-sysrq_mask.patch
 
 %endif
 
@@ -2768,6 +2766,16 @@ fi
 #
 #
 %changelog
+* Sun Apr 26 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc3.1]
+- v5.7-rc3 rebase
+- Add cec to the filter overrides ("Justin M. Forbes")
+- Add overrides to filter-modules.sh ("Justin M. Forbes")
+- Adjust the changelog update script to not push anything (Jeremy Cline)
+- Drop --target noarch from the rh-rpms make target (Jeremy Cline)
+
+* Fri Apr 24 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc2.20200424gitb4f633221f0a.1]
+- b4f633221f0a rebase
+
 * Thu Apr 23 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc2.20200423git7adc4b399952.1]
 - 7adc4b399952 rebase
 - Match template format in kernel.spec.template ("Justin M. Forbes")

@@ -1,4 +1,4 @@
-From 85ef89d4a06f1afc3272d2056c98005971f29026 Mon Sep 17 00:00:00 2001
+From 249c3868b914b0ddd202cc50b430d28a6b23f44c Mon Sep 17 00:00:00 2001
 From: Eugene Syromiatnikov <esyr@redhat.com>
 Date: Thu, 14 Jun 2018 16:36:02 -0400
 Subject: [PATCH] bpf: set unprivileged_bpf_disabled to 1 by default, add a
@@ -34,13 +34,13 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  4 files changed, 30 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index f2a93c8679e8..9af891d5b8eb 100644
+index 7bc83f3d9bdf..6fbbef16ab95 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -5162,6 +5162,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
- 
+
 +	unprivileged_bpf_disabled=
 +			Format: { "0" | "1" }
 +			Sets the initial value of
@@ -64,9 +64,9 @@ index c041d4e950f4..8588bb62e74c 100644
 +#define TAINT_UNPRIVILEGED_BPF		31
  /* End of Red Hat-specific taint flags */
  #define TAINT_FLAGS_COUNT		32
- 
+
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index d85f37239540..39c033265bae 100644
+index 7626b8024471..082d4d5f24fd 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
@@ -76,11 +76,11 @@ index d85f37239540..39c033265bae 100644
 +#include <linux/init.h>
  #include <uapi/linux/btf.h>
  #include <linux/bpf_lsm.h>
- 
+
 @@ -43,7 +44,25 @@ static DEFINE_SPINLOCK(prog_idr_lock);
  static DEFINE_IDR(map_idr);
  static DEFINE_SPINLOCK(map_idr_lock);
- 
+
 -int sysctl_unprivileged_bpf_disabled __read_mostly;
 +/* RHEL-only: default to 1 */
 +int sysctl_unprivileged_bpf_disabled __read_mostly = 1;
@@ -101,7 +101,7 @@ index d85f37239540..39c033265bae 100644
 +	return 1;
 +}
 +__setup("unprivileged_bpf_disabled=", unprivileged_bpf_setup);
- 
+
  static const struct bpf_map_ops * const bpf_map_types[] = {
  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
 diff --git a/kernel/panic.c b/kernel/panic.c
@@ -115,8 +115,8 @@ index 02f9b2c36cc1..fa06b8cbc457 100644
 -	[ TAINT_RESERVED31 ]		= { '?', '-', false },
 +	[ TAINT_UNPRIVILEGED_BPF ]	= { 'u', ' ', false },
  };
- 
+
  /**
 -- 
-2.26.0
+2.26.2
 

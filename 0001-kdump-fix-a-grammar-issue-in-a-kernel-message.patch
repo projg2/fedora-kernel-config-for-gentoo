@@ -1,4 +1,4 @@
-From c6da56678008c035bbce3e9de751e76c5a2ee338 Mon Sep 17 00:00:00 2001
+From 68ceeba82e4fb28b0eaac109be6915a894d9f454 Mon Sep 17 00:00:00 2001
 From: Dave Young <dyoung@redhat.com>
 Date: Tue, 12 Jun 2018 00:54:22 -0400
 Subject: [PATCH] kdump: fix a grammar issue in a kernel message
@@ -36,8 +36,8 @@ index c252221b2f4b..df551fc9034c 100644
 -		pr_info("Using crashkernel=auto, the size choosed is a best effort estimation.\n");
 +		pr_info("Using crashkernel=auto, the size chosen is a best effort estimation.\n");
  	}
- 
+
  	/*
 -- 
-2.26.0
+2.26.2
 

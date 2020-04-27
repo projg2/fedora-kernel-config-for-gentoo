@@ -1,4 +1,4 @@
-From 409748faf955a50dd102ec7e32954d56a67adfd2 Mon Sep 17 00:00:00 2001
+From 519e689bf8697491d31187b3159d1eba7e062bcd Mon Sep 17 00:00:00 2001
 From: Al Stone <ahs3@redhat.com>
 Date: Tue, 27 Feb 2018 00:21:23 -0500
 Subject: [PATCH] ACPI: APEI: arm64: Ignore broken HPE moonshot APEI support
@@ -54,7 +54,7 @@ index 822402480f7d..3f87d8602560 100644
 @@ -88,6 +88,14 @@ int apei_hest_parse(apei_hest_func_t func, void *data)
  	if (hest_disable || !hest_tab)
  		return -EINVAL;
- 
+
 +#ifdef CONFIG_ARM64
 +	/* Ignore broken firmware */
 +	if (!strncmp(hest_tab->header.oem_id, "HPE   ", 6) &&
@@ -67,5 +67,5 @@ index 822402480f7d..3f87d8602560 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 -- 
-2.26.0
+2.26.2
 

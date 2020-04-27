@@ -1,4 +1,4 @@
-From 6cbb2cc0a2a17914fec536d8ec9dd3f3d11971c0 Mon Sep 17 00:00:00 2001
+From 7c3b7f494b20f5c8360817dc46ae37ebc269a0cc Mon Sep 17 00:00:00 2001
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Date: Tue, 10 Mar 2020 13:52:40 +0100
 Subject: [PATCH] firmware: raspberrypi: Introduce vl805 init routine
@@ -27,12 +27,12 @@ index da26a584dca0..cbb495aff6a0 100644
  #include <linux/slab.h>
 +#include <linux/pci.h>
  #include <soc/bcm2835/raspberrypi-firmware.h>
- 
+
  #define MBOX_MSG(chan, data28)		(((data28) & ~0xf) | ((chan) & 0xf))
 @@ -286,6 +287,43 @@ struct rpi_firmware *rpi_firmware_get(struct device_node *firmware_node)
  }
  EXPORT_SYMBOL_GPL(rpi_firmware_get);
- 
+
 +/*
 + * On the Raspberry Pi 4, after a PCI reset, VL805's firmware may either be
 + * loaded directly from an EEPROM or, if not present, by the SoC's VideCore.
@@ -79,10 +79,10 @@ index cc9cdbc66403..3025aca3c358 100644
 +++ b/include/soc/bcm2835/raspberrypi-firmware.h
 @@ -10,6 +10,7 @@
  #include <linux/of_device.h>
- 
+
  struct rpi_firmware;
 +struct pci_dev;
- 
+
  enum rpi_firmware_property_status {
  	RPI_FIRMWARE_STATUS_REQUEST = 0,
 @@ -141,6 +142,7 @@ int rpi_firmware_property(struct rpi_firmware *fw,
@@ -103,8 +103,8 @@ index cc9cdbc66403..3025aca3c358 100644
 +	return 0;
 +}
  #endif
- 
+
  #endif /* __SOC_RASPBERRY_FIRMWARE_H__ */
 -- 
-2.26.0
+2.26.2
 

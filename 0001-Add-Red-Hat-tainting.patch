@@ -1,4 +1,4 @@
-From 7435090005e33aaf9f4d6177efbd677848e11a19 Mon Sep 17 00:00:00 2001
+From fc2eb40cbbcd5ad9281d72e7f8eed578c4203424 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Wed, 13 Nov 2019 14:44:31 -0500
 Subject: [PATCH] Add Red Hat tainting
@@ -130,12 +130,12 @@ index 4cb4130ced32..e62be9e51064 100644
 @@ -12,6 +12,8 @@ obj-y     = fork.o exec_domain.o panic.o \
  	    notifier.o ksysfs.o cred.o reboot.o \
  	    async.o range.o smpboot.o ucount.o
- 
+
 +obj-$(CONFIG_RH_DISABLE_DEPRECATED) += rh_taint.o
 +
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
- 
+
 diff --git a/kernel/rh_taint.c b/kernel/rh_taint.c
 new file mode 100644
 index 000000000000..8d1641710ed7
@@ -236,5 +236,5 @@ index 000000000000..8d1641710ed7
 +}
 +EXPORT_SYMBOL(mark_driver_unsupported);
 -- 
-2.26.0
+2.26.2
 

@@ -1,4 +1,4 @@
-From cedb6dec3b60ec7c9bd8b2c87c4883db9ac53ed8 Mon Sep 17 00:00:00 2001
+From 885d477a0cf6e22a60c043c7b6b27c4667f8a4c3 Mon Sep 17 00:00:00 2001
 From: Prarit Bhargava <prarit@redhat.com>
 Date: Wed, 19 Feb 2020 11:52:16 +0100
 Subject: [PATCH] redhat: rh_kabi: Add macros to size and extend structs
@@ -128,9 +128,9 @@ index 87f2bd530df7..d551df994583 100644
 --- a/include/linux/rh_kabi.h
 +++ b/include/linux/rh_kabi.h
 @@ -186,4 +186,68 @@
- 
+
  #define RH_KABI_EXCLUDE(_elem)		_RH_KABI_EXCLUDE(_elem);
- 
+
 +/*
 + * RHEL macros to extend structs.
 + *
@@ -197,5 +197,5 @@ index 87f2bd530df7..d551df994583 100644
 +
  #endif /* _LINUX_RH_KABI_H */
 -- 
-2.26.0
+2.26.2
 

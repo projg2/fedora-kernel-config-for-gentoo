@@ -1,4 +1,4 @@
-From a59712e1e70f046eef3846ee5a8aebe17c8cc9c4 Mon Sep 17 00:00:00 2001
+From 5822e4d31dcdf6b35fdd37991adff8e20de16c6e Mon Sep 17 00:00:00 2001
 From: Aaron Ma <aaron.ma@canonical.com>
 Date: Tue, 24 Mar 2020 03:16:39 +0800
 Subject: [PATCH] e1000e: bump up timeout to wait when ME un-configure ULP mode
@@ -21,7 +21,7 @@ index 735bf25952fc..15f6c0a4dc63 100644
 @@ -1243,9 +1243,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
  			ew32(H2ME, mac_reg);
  		}
- 
+
 -		/* Poll up to 300msec for ME to clear ULP_CFG_DONE. */
 +		/* Poll up to 2.5sec for ME to clear ULP_CFG_DONE. */
  		while (er32(FWSM) & E1000_FWSM_ULP_CFG_DONE) {
@@ -31,5 +31,5 @@ index 735bf25952fc..15f6c0a4dc63 100644
  				goto out;
  			}
 -- 
-2.26.0
+2.26.2
 

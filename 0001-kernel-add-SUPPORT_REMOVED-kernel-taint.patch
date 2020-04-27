@@ -1,4 +1,4 @@
-From d312a43dd323205fc681cbeaa800da2ada9e16dc Mon Sep 17 00:00:00 2001
+From 42fdbe6622fa8c6d858b51713e5ac092bbbdb4d5 Mon Sep 17 00:00:00 2001
 From: Tomas Henzl <thenzl@redhat.com>
 Date: Thu, 9 Aug 2018 13:44:15 -0400
 Subject: [PATCH] kernel: add SUPPORT_REMOVED kernel taint
@@ -49,5 +49,5 @@ index fa06b8cbc457..4f08e4f4a6b0 100644
  	[ TAINT_RESERVED29 ]		= { '?', '-', false },
  	[ TAINT_RESERVED30 ]		= { '?', '-', false },
 -- 
-2.26.0
+2.26.2
 

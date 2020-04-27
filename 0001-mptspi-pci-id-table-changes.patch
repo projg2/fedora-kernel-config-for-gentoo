@@ -1,4 +1,4 @@
-From 6e16943b6263eebcb9dd43c6ef2127cfce96ae44 Mon Sep 17 00:00:00 2001
+From c34cc2768df77a1b0ad805fd652b88ee18e1219e Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:45 -0500
 Subject: [PATCH] mptspi: pci-id table changes
@@ -35,7 +35,7 @@ index c028f5944694..1f458e35effb 100644
 +++ b/drivers/message/fusion/mptspi.c
 @@ -1238,12 +1238,17 @@ static struct spi_function_template mptspi_transport_functions = {
   */
- 
+
  static struct pci_device_id mptspi_pci_table[] = {
 +#ifdef CONFIG_RHEL_DIFFERENCES
 +	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_53C1030,
@@ -52,5 +52,5 @@ index c028f5944694..1f458e35effb 100644
  };
  MODULE_DEVICE_TABLE(pci, mptspi_pci_table);
 -- 
-2.26.0
+2.26.2
 

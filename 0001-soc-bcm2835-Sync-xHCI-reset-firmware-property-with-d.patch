@@ -1,4 +1,4 @@
-From 9f336599cba799b8e740a336b4c851aee896ce62 Mon Sep 17 00:00:00 2001
+From 9f876b54abed72a602f09b4980435ab173afd8a7 Mon Sep 17 00:00:00 2001
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Date: Tue, 10 Mar 2020 13:52:39 +0100
 Subject: [PATCH] soc: bcm2835: Sync xHCI reset firmware property with
@@ -24,9 +24,9 @@ index 7800e12ee042..cc9cdbc66403 100644
  	RPI_FIRMWARE_SET_POE_HAT_VAL =                        0x00030050,
 -
 +	RPI_FIRMWARE_NOTIFY_XHCI_RESET =                      0x00030058,
- 
+
  	/* Dispmanx TAGS */
  	RPI_FIRMWARE_FRAMEBUFFER_ALLOCATE =                   0x00040001,
 -- 
-2.26.0
+2.26.2
 

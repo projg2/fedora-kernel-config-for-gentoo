@@ -1,4 +1,4 @@
-From 712d5caafb841524ec3a5e9499e5ab9f4818d9ca Mon Sep 17 00:00:00 2001
+From 674381b650bdfefd46ea9e887a7ed28410938a0c Mon Sep 17 00:00:00 2001
 From: Jiri Benc <jbenc@redhat.com>
 Date: Wed, 19 Feb 2020 11:52:21 +0100
 Subject: [PATCH] redhat: rh_kabi: deduplication friendly structs
@@ -36,7 +36,7 @@ index b90601e8a657..ea9c136bf884 100644
 @@ -163,6 +163,8 @@
  # define __RH_KABI_CHECK_SIZE(_item, _size)
  #endif
- 
+
 +#define RH_KABI_UNIQUE_ID	__PASTE(rh_kabi_hidden_, __LINE__)
 +
  # define _RH_KABI_DEPRECATE(_type, _orig)	_type rh_reserved_##_orig
@@ -59,7 +59,7 @@ index b90601e8a657..ea9c136bf884 100644
 +		unsigned long RH_KABI_UNIQUE_ID[_size];			\
  		__RH_KABI_CHECK_SIZE(_new, 8 * (_size));		\
  	})
- 
+
 -- 
-2.26.0
+2.26.2
 

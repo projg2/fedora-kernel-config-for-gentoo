@@ -1,4 +1,4 @@
-From dd15cdb1c47b059a1656d71597f7aad227c927e2 Mon Sep 17 00:00:00 2001
+From 96f4a765f34522402290941defd0426c280a4a05 Mon Sep 17 00:00:00 2001
 From: Joseph Szczypek <jszczype@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:40 -0500
 Subject: [PATCH] hpsa: remove old cciss-based smartarray pci ids
@@ -34,7 +34,7 @@ index 1e9302e99d05..b903580d626f 100644
 +#ifndef CONFIG_RHEL_DIFFERENCES
  MODULE_ALIAS("cciss");
 +#endif
- 
+
  static int hpsa_simple_mode;
  module_param(hpsa_simple_mode, int, S_IRUGO|S_IWUSR);
 @@ -144,10 +146,12 @@ static const struct pci_device_id hpsa_pci_device_id[] = {
@@ -49,7 +49,7 @@ index 1e9302e99d05..b903580d626f 100644
 +#endif
  	{0,}
  };
- 
+
 -- 
-2.26.0
+2.26.2
 

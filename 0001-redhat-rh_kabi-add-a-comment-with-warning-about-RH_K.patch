@@ -1,4 +1,4 @@
-From 597e056b1c23adf4dfc44cb725d1ab30ea227a5c Mon Sep 17 00:00:00 2001
+From f65ddf644cfd9e24df0164dfeadb7f4549431995 Mon Sep 17 00:00:00 2001
 From: Jiri Benc <jbenc@redhat.com>
 Date: Wed, 19 Feb 2020 11:52:20 +0100
 Subject: [PATCH] redhat: rh_kabi add a comment with warning about
@@ -63,5 +63,5 @@ index 4debb7aaad48..b90601e8a657 100644
   *   considered not to be part of the kABI whitelist and may be changed at
   *   will.  Note however that it's the responsibility of the developer
 -- 
-2.26.0
+2.26.2
 

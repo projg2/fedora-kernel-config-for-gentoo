@@ -1,4 +1,4 @@
-From 84d5140022d7531449720990ea6f36e8315c3504 Mon Sep 17 00:00:00 2001
+From 69cb2b9f24b5e1e27935b1cf3aaf4b3ed05df282 Mon Sep 17 00:00:00 2001
 From: David Howells <dhowells@redhat.com>
 Date: Tue, 27 Feb 2018 10:04:55 +0000
 Subject: [PATCH] efi: Add an EFI_SECURE_BOOT flag to indicate secure boot mode
@@ -32,7 +32,7 @@ index e39ec0f88d28..08e9f5fc26a8 100644
 @@ -1250,19 +1250,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
- 
+
 -	if (efi_enabled(EFI_BOOT)) {
 -		switch (boot_params.secure_boot) {
 -		case efi_secureboot_mode_disabled:
@@ -47,9 +47,9 @@ index e39ec0f88d28..08e9f5fc26a8 100644
 -		}
 -	}
 +	efi_set_secure_boot(boot_params.secure_boot);
- 
+
  	reserve_initrd();
- 
+
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
 index 7a216984552b..f0ef02d733af 100644
 --- a/drivers/firmware/efi/Makefile
@@ -122,22 +122,22 @@ index fa8e23680314..a9a9e7e976e7 100644
 +	efi_secureboot_mode_disabled,
 +	efi_secureboot_mode_enabled,
 +};
- 
+
  #ifdef CONFIG_EFI
  /*
 @@ -789,6 +797,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
- 
+
 +extern void __init efi_set_secure_boot(enum efi_secureboot_mode mode);
 +
  bool __pure __efi_soft_reserve_enabled(void);
- 
+
  static inline bool __pure efi_soft_reserve_enabled(void)
 @@ -815,6 +825,8 @@ efi_capsule_pending(int *reset_type)
  	return false;
  }
- 
+
 +static inline void efi_set_secure_boot(enum efi_secureboot_mode mode) {}
 +
  static inline bool efi_soft_reserve_enabled(void)
@@ -146,7 +146,7 @@ index fa8e23680314..a9a9e7e976e7 100644
 @@ -1086,12 +1098,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
- 
+
 -enum efi_secureboot_mode {
 -	efi_secureboot_mode_unset,
 -	efi_secureboot_mode_unknown,
@@ -154,8 +154,8 @@ index fa8e23680314..a9a9e7e976e7 100644
 -	efi_secureboot_mode_enabled,
 -};
  enum efi_secureboot_mode efi_get_secureboot(void);
- 
+
  #ifdef CONFIG_RESET_ATTACK_MITIGATION
 -- 
-2.26.0
+2.26.2
 

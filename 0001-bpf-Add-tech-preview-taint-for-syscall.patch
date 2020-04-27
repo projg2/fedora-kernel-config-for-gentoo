@@ -1,4 +1,4 @@
-From 0126c84a2e7cdad9c0f0f74005c4bf1900ceac9c Mon Sep 17 00:00:00 2001
+From 034a95d055aca8b3c1588eae69c058cf651ae3f7 Mon Sep 17 00:00:00 2001
 From: Eugene Syromiatnikov <esyr@redhat.com>
 Date: Thu, 14 Jun 2018 16:36:08 -0400
 Subject: [PATCH] bpf: Add tech preview taint for syscall
@@ -27,19 +27,19 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 6 insertions(+)
 
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 39c033265bae..28ed55c3dd18 100644
+index 082d4d5f24fd..49b267c5a6af 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
-@@ -3678,11 +3678,17 @@ static int link_update(union bpf_attr *attr)
+@@ -3685,11 +3685,17 @@ static int link_update(union bpf_attr *attr)
  SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
  {
  	union bpf_attr attr;
 +	static int marked;
  	int err;
- 
+
  	if (sysctl_unprivileged_bpf_disabled && !capable(CAP_SYS_ADMIN))
  		return -EPERM;
- 
+
 +	if (!marked) {
 +		mark_tech_preview("eBPF syscall", NULL);
 +		marked = true;
@@ -49,5 +49,5 @@ index 39c033265bae..28ed55c3dd18 100644
  	if (err)
  		return err;
 -- 
-2.26.0
+2.26.2
 

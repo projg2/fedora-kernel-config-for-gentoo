@@ -1,4 +1,4 @@
-From 3e3a0562776eed6e2689d69ff5cd93e77106f2d7 Mon Sep 17 00:00:00 2001
+From 8b8be1d175546789f4572bc6d3134de5695282df Mon Sep 17 00:00:00 2001
 From: Jiri Benc <jbenc@redhat.com>
 Date: Wed, 19 Feb 2020 11:52:19 +0100
 Subject: [PATCH] redhat: rh_kabi: introduce RH_KABI_EXTEND_WITH_SIZE
@@ -77,12 +77,12 @@ index cdc636d3013d..4debb7aaad48 100644
  # define __RH_KABI_CHECK_SIZE_ALIGN(_orig, _new)
 +# define __RH_KABI_CHECK_SIZE(_item, _size)
  #endif
- 
+
  # define _RH_KABI_DEPRECATE(_type, _orig)	_type rh_reserved_##_orig
 @@ -186,6 +203,16 @@
- 
+
  #define RH_KABI_EXCLUDE(_elem)		_RH_KABI_EXCLUDE(_elem);
- 
+
 +/*
 + * Extending a struct while reserving extra space.
 + */
@@ -97,5 +97,5 @@ index cdc636d3013d..4debb7aaad48 100644
   * RHEL macros to extend structs.
   *
 -- 
-2.26.0
+2.26.2
 

@@ -1,4 +1,4 @@
-From 7e99c3732281171daf5f95f604c5b74a12ff247f Mon Sep 17 00:00:00 2001
+From 607a92fa404756d9bc2b78ae9cb5332796e1e997 Mon Sep 17 00:00:00 2001
 From: Jonathan Toppins <jtoppins@redhat.com>
 Date: Tue, 24 Jul 2018 19:17:40 -0400
 Subject: [PATCH] ice: mark driver as tech-preview
@@ -31,13 +31,13 @@ index 5b190c257124..d88fa9c54b16 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
 @@ -3638,6 +3638,7 @@ static int __init ice_module_init(void)
- 
+
  	pr_info("%s - version %s\n", ice_driver_string, ice_drv_ver);
  	pr_info("%s\n", ice_copyright);
 +	mark_tech_preview(DRV_SUMMARY, THIS_MODULE);
- 
+
  	ice_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, KBUILD_MODNAME);
  	if (!ice_wq) {
 -- 
-2.26.0
+2.26.2
 

@@ -1,4 +1,4 @@
-From 6319fc7f2c963314fed1447ad502cf03f98a29b1 Mon Sep 17 00:00:00 2001
+From 252240c61b69db20c44ef2d2d81473dba80ac54f Mon Sep 17 00:00:00 2001
 From: Don Dutile <ddutile@redhat.com>
 Date: Wed, 19 Feb 2020 11:52:18 +0100
 Subject: [PATCH] redhat: rh_kabi: Indirect EXTEND macros so nesting of other
@@ -35,16 +35,16 @@ index 9a4fea93ad99..cdc636d3013d 100644
  	RH_KABI_EXCLUDE(struct _struct##_rh *_struct##_rh)
 +#define RH_KABI_SIZE_AND_EXTEND_PTR(_struct)				\
 +	_RH_KABI_SIZE_AND_EXTEND_PTR(_struct)
- 
+
 -#define RH_KABI_SIZE_AND_EXTEND(_struct)				\
 +#define _RH_KABI_SIZE_AND_EXTEND(_struct)				\
  	size_t _struct##_size_rh;					\
  	RH_KABI_EXCLUDE(struct _struct##_rh _struct##_rh)
 +#define RH_KABI_SIZE_AND_EXTEND(_struct)				\
 +	_RH_KABI_SIZE_AND_EXTEND(_struct)
- 
+
  /*
   * RH_KABI_SET_SIZE calculates and sets the size of the extended struct and
 -- 
-2.26.0
+2.26.2
 

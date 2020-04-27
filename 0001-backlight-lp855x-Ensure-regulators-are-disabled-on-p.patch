@@ -1,4 +1,4 @@
-From 9b408dc1e89cfe36a8f715a7c7624687bb876028 Mon Sep 17 00:00:00 2001
+From 449da32f8ce7146e04b5b5d3d535336900cc4233 Mon Sep 17 00:00:00 2001
 From: Jon Hunter <jonathanh@nvidia.com>
 Date: Mon, 24 Feb 2020 14:07:48 +0000
 Subject: [PATCH] backlight: lp855x: Ensure regulators are disabled on probe
@@ -64,7 +64,7 @@ index f68920131a4a..e94932c69f54 100644
 -			return ret;
 +			goto disable_supply;
  		}
- 
+
  		/*
 @@ -471,24 +471,34 @@ static int lp855x_probe(struct i2c_client *cl, const struct i2c_device_id *id)
  	ret = lp855x_configure(lp);
@@ -73,7 +73,7 @@ index f68920131a4a..e94932c69f54 100644
 -		return ret;
 +		goto disable_vddio;
  	}
- 
+
  	ret = lp855x_backlight_register(lp);
  	if (ret) {
  		dev_err(lp->dev,
@@ -81,14 +81,14 @@ index f68920131a4a..e94932c69f54 100644
 -		return ret;
 +		goto disable_vddio;
  	}
- 
+
  	ret = sysfs_create_group(&lp->dev->kobj, &lp855x_attr_group);
  	if (ret) {
  		dev_err(lp->dev, "failed to register sysfs. err: %d\n", ret);
 -		return ret;
 +		goto disable_vddio;
  	}
- 
+
  	backlight_update_status(lp->bl);
 +
  	return 0;
@@ -102,10 +102,10 @@ index f68920131a4a..e94932c69f54 100644
 +
 +	return ret;
  }
- 
+
  static int lp855x_remove(struct i2c_client *cl)
 @@ -497,6 +507,8 @@ static int lp855x_remove(struct i2c_client *cl)
- 
+
  	lp->bl->props.brightness = 0;
  	backlight_update_status(lp->bl);
 +	if (lp->enable)
@@ -114,5 +114,5 @@ index f68920131a4a..e94932c69f54 100644
  		regulator_disable(lp->supply);
  	sysfs_remove_group(&lp->dev->kobj, &lp855x_attr_group);
 -- 
-2.26.0
+2.26.2
 

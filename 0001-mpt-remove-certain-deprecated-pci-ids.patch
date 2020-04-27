@@ -1,4 +1,4 @@
-From 8cb15c81a1a2180f824da5aad58f252ce23e1bbd Mon Sep 17 00:00:00 2001
+From 4309680a236c46c78de4e8bde634aef0228b8bfd Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:36 -0500
 Subject: [PATCH] mpt*: remove certain deprecated pci-ids
@@ -67,5 +67,5 @@ index 04a40afe60e3..cec7799dc23f 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 -- 
-2.26.0
+2.26.2
 

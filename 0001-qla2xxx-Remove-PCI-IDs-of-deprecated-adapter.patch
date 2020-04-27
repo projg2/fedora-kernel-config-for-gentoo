@@ -1,4 +1,4 @@
-From a5da988261d925878ac5c003c7bfddb795179fef Mon Sep 17 00:00:00 2001
+From 9e03e2adf0bad497cd46bb8d65c76310cf013856 Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:44 -0500
 Subject: [PATCH] qla2xxx: Remove PCI IDs of deprecated adapter
@@ -49,7 +49,7 @@ index d190db5ea7d9..e0e3d300f3be 100644
 +++ b/drivers/scsi/qla2xxx/qla_os.c
 @@ -7759,6 +7759,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
- 
+
  static struct pci_device_id qla2xxx_pci_tbl[] = {
 +#ifndef CONFIG_RHEL_DIFFERENCES
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
@@ -75,5 +75,5 @@ index d190db5ea7d9..e0e3d300f3be 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
 -- 
-2.26.0
+2.26.2
 

@@ -1,4 +1,4 @@
-From 7d89e4813e600130cdb17404ead39e017e45f416 Mon Sep 17 00:00:00 2001
+From aea2e81c9da5b2a191479a93cd586890a266d74f Mon Sep 17 00:00:00 2001
 From: Chris Leech <cleech@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:43 -0500
 Subject: [PATCH] be2iscsi: remove unsupported device IDs
@@ -53,7 +53,7 @@ index 9b81cfbbc5c5..1ca08297939c 100644
 --- a/drivers/scsi/be2iscsi/be_main.c
 +++ b/drivers/scsi/be2iscsi/be_main.c
 @@ -370,11 +370,13 @@ static int beiscsi_eh_device_reset(struct scsi_cmnd *sc)
- 
+
  /*------------------- PCI Driver operations and data ----------------- */
  static const struct pci_device_id beiscsi_pci_id_table[] = {
 +#ifndef CONFIG_RHEL_DIFFERENCES
@@ -67,5 +67,5 @@ index 9b81cfbbc5c5..1ca08297939c 100644
  	{ 0 }
  };
 -- 
-2.26.0
+2.26.2
 

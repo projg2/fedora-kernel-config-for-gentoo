@@ -1,4 +1,4 @@
-From a0353090b0ff53887acffcce47d90f634c12dfc8 Mon Sep 17 00:00:00 2001
+From d8d5b184b7d4dab8d3d7f469e5a0a28a43152c0a Mon Sep 17 00:00:00 2001
 From: Icenowy Zheng <icenowy@aosc.io>
 Date: Mon, 16 Mar 2020 21:35:03 +0800
 Subject: [PATCH] arm64: allwinner: dts: a64: add LCD-related device nodes for
@@ -21,7 +21,7 @@ index cefda145c3c9..96d9150423e0 100644
 @@ -16,6 +16,15 @@ aliases {
  		serial0 = &uart0;
  	};
- 
+
 +	backlight: backlight {
 +		compatible = "pwm-backlight";
 +		pwms = <&r_pwm 0 50000 PWM_POLARITY_INVERTED>;
@@ -37,7 +37,7 @@ index cefda145c3c9..96d9150423e0 100644
 @@ -84,6 +93,30 @@ &dai {
  	status = "okay";
  };
- 
+
 +&de {
 +	status = "okay";
 +};
@@ -68,14 +68,14 @@ index cefda145c3c9..96d9150423e0 100644
 @@ -188,6 +221,10 @@ &r_pio {
  	 */
  };
- 
+
 +&r_pwm {
 +	status = "okay";
 +};
 +
  &r_rsb {
  	status = "okay";
- 
+
 -- 
-2.26.0
+2.26.2
 

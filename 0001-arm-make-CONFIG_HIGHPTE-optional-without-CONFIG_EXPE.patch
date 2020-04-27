@@ -1,4 +1,4 @@
-From a7d3d6106d6dfa3aa6e914d5034821913f7893cc Mon Sep 17 00:00:00 2001
+From f0a79207110a2d3bbb1ff18ed7d44f8adab1e21b Mon Sep 17 00:00:00 2001
 From: Jon Masters <jcm@redhat.com>
 Date: Thu, 18 Jul 2019 15:47:26 -0400
 Subject: [PATCH] arm: make CONFIG_HIGHPTE optional without CONFIG_EXPERT
@@ -16,7 +16,7 @@ index 66a04f6f4775..7b63103f088c 100644
 +++ b/arch/arm/Kconfig
 @@ -1542,9 +1542,9 @@ config HIGHMEM
  	  If unsure, say n.
- 
+
  config HIGHPTE
 -	bool "Allocate 2nd-level pagetables from highmem" if EXPERT
 +	bool "Allocate 2nd-level pagetables from highmem"
@@ -27,5 +27,5 @@ index 66a04f6f4775..7b63103f088c 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 -- 
-2.26.0
+2.26.2
 

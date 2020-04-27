@@ -1,4 +1,4 @@
-From a4b4f429ce8f886677bab6b1bd6f11b44c7c194d Mon Sep 17 00:00:00 2001
+From 436aa4b4622ce6a608bd83e30e02b1ffe5e505a0 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Sun, 10 Feb 2019 01:27:54 +0000
 Subject: [PATCH] ipmi: do not configure ipmi for HPE m400
@@ -64,7 +64,7 @@ index bbf7029e224b..cf7faa970dd6 100644
 @@ -215,6 +215,21 @@ static int __init scan_for_dmi_ipmi(void)
  {
  	const struct dmi_device *dev = NULL;
- 
+
 +#ifdef CONFIG_ARM64
 +	/* RHEL-only
 +	 * If this is ARM-based HPE m400, return now, because that platform
@@ -82,7 +82,7 @@ index bbf7029e224b..cf7faa970dd6 100644
 +
  	while ((dev = dmi_find_device(DMI_DEV_TYPE_IPMI, NULL, dev)))
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
- 
+
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
 index c48d8f086382..0fc980a87ed0 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
@@ -92,13 +92,13 @@ index c48d8f086382..0fc980a87ed0 100644
  #include <linux/uuid.h>
  #include <linux/nospec.h>
 +#include <linux/dmi.h>
- 
+
  #define IPMI_DRIVER_VERSION "39.2"
- 
+
 @@ -5154,8 +5155,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
- 
+
 -	pr_info("version " IPMI_DRIVER_VERSION "\n");
 +#ifdef CONFIG_ARM64
 +	/* RHEL-only
@@ -107,7 +107,7 @@ index c48d8f086382..0fc980a87ed0 100644
 +	 * does not exist in the ARM architecture.
 +	 */
 +	const char *dmistr = dmi_get_system_info(DMI_PRODUCT_NAME);
- 
+
 +	if (dmistr && (strcmp("ProLiant m400 Server", dmistr) == 0)) {
 +		pr_debug("%s does not support host ipmi\n", dmistr);
 +		return -ENOSYS;
@@ -119,5 +119,5 @@ index c48d8f086382..0fc980a87ed0 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 -- 
-2.26.0
+2.26.2
 

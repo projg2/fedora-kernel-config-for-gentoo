@@ -1,4 +1,4 @@
-From 011b97c3927ab43e0d677c7beecff6e23b30c99d Mon Sep 17 00:00:00 2001
+From 3220c7deb535d2ace4e8cba92dca47aa795138e5 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Mon, 7 Jan 2019 20:55:21 +0000
 Subject: [PATCH] put RHEL info into generated headers
@@ -59,7 +59,7 @@ Acked-by: Prarit Bhargava <prarit@redhat.com>
  1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 49b2709ff44e..0808100e660f 100644
+index 679f302a8b8b..57e5c3262659 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1183,7 +1183,13 @@ endef
@@ -75,8 +75,8 @@ index 49b2709ff44e..0808100e660f 100644
 +		$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
 +	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
  endef
- 
+
  $(version_h): FORCE
 -- 
-2.26.0
+2.26.2
 

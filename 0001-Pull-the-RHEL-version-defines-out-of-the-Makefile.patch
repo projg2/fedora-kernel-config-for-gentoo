@@ -17,11 +17,11 @@ index 48a7abae02d2..2d826a14824a 100644
 +++ b/Makefile
 @@ -16,6 +16,7 @@ PHONY := _all
  _all:
- 
+
  # Set RHEL variables
 +# Use this spot to avoid future merge conflicts
  include Makefile.rhelver
- 
+
  # We are using a recursive build, so we need to do a little thinking
 @@ -1172,13 +1173,7 @@ endef
  define filechk_version.h
@@ -36,8 +36,8 @@ index 48a7abae02d2..2d826a14824a 100644
 -	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
 +	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))'
  endef
- 
+
  $(version_h): FORCE
 -- 
-2.26.0
+2.26.2
 

@@ -1,4 +1,4 @@
-From 85b488a5a3ae9caa080e92d147b18125c1838d6e Mon Sep 17 00:00:00 2001
+From f5a0ca1b11d0f51cf7a03908f75ba0c246184cc3 Mon Sep 17 00:00:00 2001
 From: Maurizio Lombardi <mlombard@redhat.com>
 Date: Mon, 18 Jun 2018 12:51:25 -0400
 Subject: [PATCH] add pci_hw_vendor_status()
@@ -40,11 +40,11 @@ index 0454ca0e4e3f..5cc490b821be 100644
 +#include <linux/kernel.h>
  #include "pci.h"
  #include "pcie/portdrv.h"
- 
+
 @@ -278,6 +279,34 @@ static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
  	return found_id;
  }
- 
+
 +/**
 + * pci_hw_vendor_status - Tell if a PCI device is supported by the HW vendor
 + * @ids: array of PCI device id structures to search in
@@ -90,7 +90,7 @@ index 83ce1cdf5676..88397dd562d9 100644
 +						struct pci_dev *dev);
  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
  		    int pass);
- 
+
 -- 
-2.26.0
+2.26.2
 

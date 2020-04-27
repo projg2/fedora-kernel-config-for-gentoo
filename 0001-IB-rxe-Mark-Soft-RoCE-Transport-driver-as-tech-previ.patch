@@ -1,4 +1,4 @@
-From c7b0e055fb9c5384e6abd297f478eb244c077c0a Mon Sep 17 00:00:00 2001
+From fcda00e0c9f4511c33043c1f4321d40380b6f548 Mon Sep 17 00:00:00 2001
 From: Don Dutile <ddutile@redhat.com>
 Date: Tue, 24 Jul 2018 22:29:16 -0400
 Subject: [PATCH] IB/rxe: Mark Soft-RoCE Transport driver as tech-preview
@@ -47,12 +47,12 @@ index 4afdd2e20883..05e637aa0e3d 100644
 @@ -335,6 +335,8 @@ static int __init rxe_module_init(void)
  {
  	int err;
- 
+
 +	mark_tech_preview("Soft-RoCE Transport Driver", THIS_MODULE);
 +
  	/* initialize slab caches for managed objects */
  	err = rxe_cache_init();
  	if (err) {
 -- 
-2.26.0
+2.26.2
 

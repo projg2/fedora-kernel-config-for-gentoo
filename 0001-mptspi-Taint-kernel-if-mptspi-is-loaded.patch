@@ -1,4 +1,4 @@
-From 1452b94264d571fe1675845b9947199539052275 Mon Sep 17 00:00:00 2001
+From 3535a5346cbb8131444887a2ea224f2d31eaaa26 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:48 -0500
 Subject: [PATCH] mptspi: Taint kernel if mptspi is loaded
@@ -35,7 +35,7 @@ index eabc4de5816c..c028f5944694 100644
 +++ b/drivers/message/fusion/mptspi.c
 @@ -1534,6 +1534,12 @@ mptspi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
  		    0, 0, 0, 0, 5);
- 
+
  	scsi_scan_host(sh);
 +
 +#ifdef CONFIG_RHEL_DIFFERENCES
@@ -44,8 +44,8 @@ index eabc4de5816c..c028f5944694 100644
 +#endif
 +
  	return 0;
- 
+
  out_mptspi_probe:
 -- 
-2.26.0
+2.26.2
 

@@ -1,4 +1,4 @@
-From 8d47dd05633e96999b9bcff01544a19dec69094c Mon Sep 17 00:00:00 2001
+From 6c7f46f3b26d95beca77c08f6013eb7de8a66578 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Wed, 13 Nov 2019 14:44:30 -0500
 Subject: [PATCH] Add support for deprecating processors
@@ -140,7 +140,7 @@ index bed0cb83fe24..a15622e0d79f 100644
 +		get_model_name(c); /* RHEL: get model name for unsupported check */
  		get_cpu_address_sizes(c);
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
- 
+
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
 index 4b3fa6cd3106..e39ec0f88d28 100644
 --- a/arch/x86/kernel/setup.c
@@ -150,7 +150,7 @@ index 4b3fa6cd3106..e39ec0f88d28 100644
  #include <asm/vsyscall.h>
  #include <linux/vmalloc.h>
 +#include <asm/intel-family.h>
- 
+
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
 @@ -747,7 +748,132 @@ static void __init trim_low_memory_range(void)
@@ -290,14 +290,14 @@ index 4b3fa6cd3106..e39ec0f88d28 100644
 @@ -1244,6 +1370,10 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
- 
+
 +#ifdef CONFIG_RH_DISABLE_DEPRECATED
 +	rh_check_supported();
 +#endif
 +
  	unwind_init();
  }
- 
+
 -- 
-2.26.0
+2.26.2
 

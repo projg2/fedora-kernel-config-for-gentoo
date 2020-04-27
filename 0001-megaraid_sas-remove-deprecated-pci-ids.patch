@@ -1,4 +1,4 @@
-From efa70639e722576719dfa980da086ab20ba8a3b7 Mon Sep 17 00:00:00 2001
+From 163801c9234a71291913de5edb9989ced25e85e0 Mon Sep 17 00:00:00 2001
 From: Tomas Henzl <thenzl@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:37 -0500
 Subject: [PATCH] megaraid_sas: remove deprecated pci-ids
@@ -29,7 +29,7 @@ index babe85d7b537..9b4df28defd2 100644
 @@ -133,6 +133,7 @@ static void megasas_get_pd_info(struct megasas_instance *instance,
   */
  static struct pci_device_id megasas_pci_table[] = {
- 
+
 +#ifndef CONFIG_RHEL_DIFFERENCES
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1064R)},
  	/* xscale IOP */
@@ -43,5 +43,5 @@ index babe85d7b537..9b4df28defd2 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 -- 
-2.26.0
+2.26.2
 
