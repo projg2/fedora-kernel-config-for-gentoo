@@ -902,6 +902,7 @@ Patch509: drm-i915-backports.patch
 Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
 Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
+Patch513: 0001-drm-i915-gem-Hold-obj-vma.lock-over-for_each_ggtt_vm.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -3000,6 +3001,7 @@ fi
 %changelog
 * Tue Apr 28 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - MST Fix from Lyude Paul
+- drm/i915/gem: Hold obj->vma.lock over for_each_ggtt_vma() (airlied request)
 
 * Thu Apr 23 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.7-300
 - Linux v5.6.7
