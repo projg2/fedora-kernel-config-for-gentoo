@@ -901,6 +901,8 @@ Patch509: drm-i915-backports.patch
 # https://patchwork.ozlabs.org/patch/1260523/
 Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
+Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2996,6 +2998,9 @@ fi
 #
 #
 %changelog
+* Tue Apr 28 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- MST Fix from Lyude Paul
+
 * Thu Apr 23 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.7-300
 - Linux v5.6.7
 
