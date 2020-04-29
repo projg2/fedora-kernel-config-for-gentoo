@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -750,6 +750,7 @@ Provides: kernel-modules = %{version}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
 Provides: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
 Requires: kernel-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
+Recommends: alsa-sof-firmware\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules\
@@ -1842,6 +1843,10 @@ fi
 #
 #
 %changelog
+* Wed Apr 29 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.8-100
+- Linux v5.6.8
+- Fixes CVE-2020-11884 (rhbz 1828149 1829181)
+
 * Tue Apr 28 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - MST Fix from Lyude Paul
 - drm/i915/gem: Hold obj->vma.lock over for_each_ggtt_vma() (airlied request)
