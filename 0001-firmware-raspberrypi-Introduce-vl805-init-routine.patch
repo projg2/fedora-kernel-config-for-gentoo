@@ -1,4 +1,4 @@
-From 6ea30351b01775feef6f14694ac3dd15a8c736e4 Mon Sep 17 00:00:00 2001
+From de6802fd6cbf628d1f047aa19ff0f43557962ebc Mon Sep 17 00:00:00 2001
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Date: Tue, 10 Mar 2020 13:52:40 +0100
 Subject: [PATCH] firmware: raspberrypi: Introduce vl805 init routine

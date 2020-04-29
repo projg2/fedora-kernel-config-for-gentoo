@@ -1,4 +1,4 @@
-From 9d47ca3f7de90d60c6439b7f77d80937bce6e8a7 Mon Sep 17 00:00:00 2001
+From bc75138f332f5af1421cbd818ef0297d6773d2d5 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Wed, 13 Nov 2019 14:44:28 -0500
 Subject: [PATCH] Introduce CONFIG_RH_DISABLE_DEPRECATED

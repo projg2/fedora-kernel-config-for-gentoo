@@ -1,15 +1,5 @@
 0001-initial-commit-Add-Red-Hat-variables-in-the-top-leve.patch
 0001-Pull-the-RHEL-version-defines-out-of-the-Makefile.patch
-0001-Drivers-hv-vmbus-Fix-Suspend-to-Idle-for-Generation-.patch
-0001-btrfs-discard-Use-the-correct-style-for-SPDX-License.patch
-0001-Drivers-hv-Move-AEOI-determination-to-architecture-d.patch
-0001-x86-hyperv-Suspend-resume-the-VP-assist-page-for-hib.patch
-0001-hyper-v-Use-UUID-API-for-exporting-the-GUID.patch
-0001-hyper-v-Remove-internal-types-from-UAPI-header.patch
-0001-btrfs-fix-memory-leak-of-transaction-when-deleting-u.patch
-0001-btrfs-drop-logs-when-we-ve-aborted-a-transaction.patch
-0001-btrfs-fix-block-group-leak-when-removing-fails.patch
-0001-btrfs-fix-transaction-leak-in-btrfs_recover_relocati.patch
 0001-Introduce-CONFIG_RH_DISABLE_DEPRECATED.patch
 0001-Add-Red-Hat-tainting.patch
 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch

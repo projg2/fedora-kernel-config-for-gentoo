@@ -1,4 +1,4 @@
-From a20cfe698ffe588e73e07136b541583b0833234c Mon Sep 17 00:00:00 2001
+From 351e3a04568dc0530910ca5062462d83273be3b0 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:48 -0500
 Subject: [PATCH] mptspi: Taint kernel if mptspi is loaded

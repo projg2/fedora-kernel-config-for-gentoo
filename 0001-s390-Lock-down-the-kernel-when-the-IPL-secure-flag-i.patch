@@ -1,4 +1,4 @@
-From db74f99ab424ca420fab25638f5511773e27367e Mon Sep 17 00:00:00 2001
+From c92ea73c70a3035b7567f4c7454aa635444a4ddf Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Wed, 30 Oct 2019 14:37:49 +0000
 Subject: [PATCH] s390: Lock down the kernel when the IPL secure flag is set

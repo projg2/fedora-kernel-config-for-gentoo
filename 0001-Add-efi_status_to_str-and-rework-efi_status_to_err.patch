@@ -1,4 +1,4 @@
-From 20afc80217c6e57f2d9a5d9fda04b248ae481601 Mon Sep 17 00:00:00 2001
+From c41562f22f17f3bf3f1e5125badb65e123fabba1 Mon Sep 17 00:00:00 2001
 From: Peter Jones <pjones@redhat.com>
 Date: Mon, 2 Oct 2017 18:22:13 -0400
 Subject: [PATCH] Add efi_status_to_str() and rework efi_status_to_err().

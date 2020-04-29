@@ -1,4 +1,4 @@
-From 34fd7679faeb3f9d3b99858605281e6a03f80f4f Mon Sep 17 00:00:00 2001
+From bd652e7924bd75011a512f07906525d639496114 Mon Sep 17 00:00:00 2001
 From: Jakub Racek <jracek@redhat.com>
 Date: Thu, 22 Nov 2018 12:59:45 +0100
 Subject: [PATCH] rh_kabi: introduce RH_KABI_EXCLUDE

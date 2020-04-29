@@ -1,4 +1,4 @@
-From 963a502bcae780f892eb8845cf3e67e323bcfdd2 Mon Sep 17 00:00:00 2001
+From d95d6619d977e100897cc3102d3583c860d61e55 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Sun, 10 Feb 2019 01:27:54 +0000
 Subject: [PATCH] ipmi: do not configure ipmi for HPE m400

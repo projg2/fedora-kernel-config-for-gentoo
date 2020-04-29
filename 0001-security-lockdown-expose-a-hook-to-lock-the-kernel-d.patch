@@ -1,4 +1,4 @@
-From f34de46432880f7257fa0f9a07c98e0e6d900f13 Mon Sep 17 00:00:00 2001
+From 99c68ceb43dae9ad99dd566759d5c0848c561266 Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Mon, 30 Sep 2019 21:22:47 +0000
 Subject: [PATCH] security: lockdown: expose a hook to lock the kernel down

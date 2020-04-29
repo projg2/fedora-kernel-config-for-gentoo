@@ -1,4 +1,4 @@
-From 648db60b577e219a7a60f00f476bd271bd1a3c22 Mon Sep 17 00:00:00 2001
+From a69c4e224e80c1e894246ddb554834b4ea899481 Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Tue, 23 Jul 2019 15:26:09 +0000
 Subject: [PATCH] tags.sh: Ignore redhat/rpm

@@ -1,4 +1,4 @@
-From b8663826ddbaffcdfb85d97b8a418ab883f405f3 Mon Sep 17 00:00:00 2001
+From 1157bb3691e9d5bde5842d517059db850169ed3c Mon Sep 17 00:00:00 2001
 From: Icenowy Zheng <icenowy@aosc.io>
 Date: Mon, 16 Mar 2020 21:35:02 +0800
 Subject: [PATCH] drm/sun4i: sun6i_mipi_dsi: fix horizontal timing calculation

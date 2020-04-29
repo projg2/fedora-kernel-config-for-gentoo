@@ -1,4 +1,4 @@
-From d7668bfafdd5b71462452dd6727834ce606f37fe Mon Sep 17 00:00:00 2001
+From 0299a3501a198a965264ac1908f67005b1b222ad Mon Sep 17 00:00:00 2001
 From: David Howells <dhowells@redhat.com>
 Date: Tue, 27 Feb 2018 10:04:55 +0000
 Subject: [PATCH] efi: Add an EFI_SECURE_BOOT flag to indicate secure boot mode
