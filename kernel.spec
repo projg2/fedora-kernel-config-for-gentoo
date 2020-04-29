@@ -709,78 +709,88 @@ Patch1: patch-%{rpmversion}-redhat.patch
 
 Patch2: 0001-initial-commit-Add-Red-Hat-variables-in-the-top-leve.patch
 Patch3: 0001-Pull-the-RHEL-version-defines-out-of-the-Makefile.patch
-Patch4: 0001-Introduce-CONFIG_RH_DISABLE_DEPRECATED.patch
-Patch5: 0001-Add-Red-Hat-tainting.patch
-Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
-Patch7: 0001-modules-add-rhelversion-MODULE_INFO-tag.patch
-Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
-Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
-Patch10: 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
-Patch11: 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
-Patch12: 0001-kdump-add-support-for-crashkernel-auto.patch
-Patch13: 0001-put-RHEL-info-into-generated-headers.patch
-Patch14: 0001-tags.sh-Ignore-redhat-rpm.patch
-Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
-Patch16: 0001-add-Red-Hat-specific-taint-flags.patch
-Patch17: 0001-bpf-set-unprivileged_bpf_disabled-to-1-by-default-ad.patch
-Patch18: 0001-bpf-Add-tech-preview-taint-for-syscall.patch
-Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
-Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
-Patch21: 0001-add-pci_hw_vendor_status.patch
-Patch22: 0001-kABI-Add-generic-kABI-macros-to-use-for-kABI-workaro.patch
-Patch23: 0001-ice-mark-driver-as-tech-preview.patch
-Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
-Patch25: 0001-IB-rxe-Mark-Soft-RoCE-Transport-driver-as-tech-previ.patch
-Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
-Patch27: 0001-rh_kabi-introduce-RH_KABI_EXCLUDE.patch
-Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
-Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
-Patch30: 0001-Add-support-for-deprecating-processors.patch
-Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
-Patch32: 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
-Patch33: 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
-Patch34: 0001-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
-Patch35: 0001-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
-Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
-Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-Patch38: 0001-Rename-RH_DISABLE_DEPRECATED-to-RHEL_DIFFERENCES.patch
-Patch39: 0001-kernel-add-SUPPORT_REMOVED-kernel-taint.patch
-Patch40: 0001-mpt-remove-certain-deprecated-pci-ids.patch
-Patch41: 0001-megaraid_sas-remove-deprecated-pci-ids.patch
-Patch42: 0001-aacraid-Remove-depreciated-device-and-vendor-PCI-id-.patch
-Patch43: 0001-qla4xxx-Remove-deprecated-PCI-IDs-from-RHEL-8.patch
-Patch44: 0001-hpsa-remove-old-cciss-based-smartarray-pci-ids.patch
-Patch45: 0001-mptspi-Taint-kernel-if-mptspi-is-loaded.patch
-Patch46: 0001-be2iscsi-remove-unsupported-device-IDs.patch
-Patch47: 0001-qla2xxx-Remove-PCI-IDs-of-deprecated-adapter.patch
-Patch48: 0001-mptspi-pci-id-table-changes.patch
-Patch49: 0001-mptsas-Taint-kernel-if-mptsas-is-loaded.patch
-Patch50: 0001-mptsas-pci-id-table-changes.patch
-Patch51: 0001-Removing-Obsolete-hba-pci-ids-from-rhel8.patch
-Patch52: 0001-redhat-rh_kabi-Add-macros-to-size-and-extend-structs.patch
-Patch53: 0001-redhat-rh_kabi-Fix-RH_KABI_SET_SIZE-to-use-dereferen.patch
-Patch54: 0001-redhat-rh_kabi-Indirect-EXTEND-macros-so-nesting-of-.patch
-Patch55: 0001-redhat-rh_kabi-introduce-RH_KABI_EXTEND_WITH_SIZE.patch
-Patch56: 0001-redhat-rh_kabi-add-a-comment-with-warning-about-RH_K.patch
-Patch57: 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
-Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
-Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch60: 0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
-Patch61: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
-Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
-Patch63: 0001-Drop-that-for-now.patch
-Patch64: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
-Patch65: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-Patch66: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
-Patch67: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
-Patch68: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
-Patch69: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
-Patch70: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-Patch71: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
-Patch72: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
-Patch73: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
-Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch4: 0001-Drivers-hv-vmbus-Fix-Suspend-to-Idle-for-Generation-.patch
+Patch5: 0001-btrfs-discard-Use-the-correct-style-for-SPDX-License.patch
+Patch6: 0001-Drivers-hv-Move-AEOI-determination-to-architecture-d.patch
+Patch7: 0001-x86-hyperv-Suspend-resume-the-VP-assist-page-for-hib.patch
+Patch8: 0001-hyper-v-Use-UUID-API-for-exporting-the-GUID.patch
+Patch9: 0001-hyper-v-Remove-internal-types-from-UAPI-header.patch
+Patch10: 0001-btrfs-fix-memory-leak-of-transaction-when-deleting-u.patch
+Patch11: 0001-btrfs-drop-logs-when-we-ve-aborted-a-transaction.patch
+Patch12: 0001-btrfs-fix-block-group-leak-when-removing-fails.patch
+Patch13: 0001-btrfs-fix-transaction-leak-in-btrfs_recover_relocati.patch
+Patch14: 0001-Introduce-CONFIG_RH_DISABLE_DEPRECATED.patch
+Patch15: 0001-Add-Red-Hat-tainting.patch
+Patch16: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
+Patch17: 0001-modules-add-rhelversion-MODULE_INFO-tag.patch
+Patch18: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
+Patch19: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
+Patch20: 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
+Patch21: 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
+Patch22: 0001-kdump-add-support-for-crashkernel-auto.patch
+Patch23: 0001-put-RHEL-info-into-generated-headers.patch
+Patch24: 0001-tags.sh-Ignore-redhat-rpm.patch
+Patch25: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
+Patch26: 0001-add-Red-Hat-specific-taint-flags.patch
+Patch27: 0001-bpf-set-unprivileged_bpf_disabled-to-1-by-default-ad.patch
+Patch28: 0001-bpf-Add-tech-preview-taint-for-syscall.patch
+Patch29: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
+Patch30: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
+Patch31: 0001-add-pci_hw_vendor_status.patch
+Patch32: 0001-kABI-Add-generic-kABI-macros-to-use-for-kABI-workaro.patch
+Patch33: 0001-ice-mark-driver-as-tech-preview.patch
+Patch34: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
+Patch35: 0001-IB-rxe-Mark-Soft-RoCE-Transport-driver-as-tech-previ.patch
+Patch36: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
+Patch37: 0001-rh_kabi-introduce-RH_KABI_EXCLUDE.patch
+Patch38: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
+Patch39: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
+Patch40: 0001-Add-support-for-deprecating-processors.patch
+Patch41: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
+Patch42: 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
+Patch43: 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
+Patch44: 0001-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
+Patch45: 0001-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
+Patch46: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
+Patch47: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+Patch48: 0001-Rename-RH_DISABLE_DEPRECATED-to-RHEL_DIFFERENCES.patch
+Patch49: 0001-kernel-add-SUPPORT_REMOVED-kernel-taint.patch
+Patch50: 0001-mpt-remove-certain-deprecated-pci-ids.patch
+Patch51: 0001-megaraid_sas-remove-deprecated-pci-ids.patch
+Patch52: 0001-aacraid-Remove-depreciated-device-and-vendor-PCI-id-.patch
+Patch53: 0001-qla4xxx-Remove-deprecated-PCI-IDs-from-RHEL-8.patch
+Patch54: 0001-hpsa-remove-old-cciss-based-smartarray-pci-ids.patch
+Patch55: 0001-mptspi-Taint-kernel-if-mptspi-is-loaded.patch
+Patch56: 0001-be2iscsi-remove-unsupported-device-IDs.patch
+Patch57: 0001-qla2xxx-Remove-PCI-IDs-of-deprecated-adapter.patch
+Patch58: 0001-mptspi-pci-id-table-changes.patch
+Patch59: 0001-mptsas-Taint-kernel-if-mptsas-is-loaded.patch
+Patch60: 0001-mptsas-pci-id-table-changes.patch
+Patch61: 0001-Removing-Obsolete-hba-pci-ids-from-rhel8.patch
+Patch62: 0001-redhat-rh_kabi-Add-macros-to-size-and-extend-structs.patch
+Patch63: 0001-redhat-rh_kabi-Fix-RH_KABI_SET_SIZE-to-use-dereferen.patch
+Patch64: 0001-redhat-rh_kabi-Indirect-EXTEND-macros-so-nesting-of-.patch
+Patch65: 0001-redhat-rh_kabi-introduce-RH_KABI_EXTEND_WITH_SIZE.patch
+Patch66: 0001-redhat-rh_kabi-add-a-comment-with-warning-about-RH_K.patch
+Patch67: 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
+Patch68: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
+Patch69: 0001-ARM-tegra-usb-no-reset.patch
+Patch70: 0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
+Patch71: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
+Patch72: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
+Patch73: 0001-Drop-that-for-now.patch
+Patch74: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
+Patch75: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+Patch76: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
+Patch77: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
+Patch78: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
+Patch79: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
+Patch80: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
+Patch81: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
+Patch82: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch83: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
+Patch84: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
+Patch85: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 
 %endif
 
@@ -1287,6 +1297,16 @@ ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
 
 ApplyOptionalPatch 0001-initial-commit-Add-Red-Hat-variables-in-the-top-leve.patch
 ApplyOptionalPatch 0001-Pull-the-RHEL-version-defines-out-of-the-Makefile.patch
+ApplyOptionalPatch 0001-Drivers-hv-vmbus-Fix-Suspend-to-Idle-for-Generation-.patch
+ApplyOptionalPatch 0001-btrfs-discard-Use-the-correct-style-for-SPDX-License.patch
+ApplyOptionalPatch 0001-Drivers-hv-Move-AEOI-determination-to-architecture-d.patch
+ApplyOptionalPatch 0001-x86-hyperv-Suspend-resume-the-VP-assist-page-for-hib.patch
+ApplyOptionalPatch 0001-hyper-v-Use-UUID-API-for-exporting-the-GUID.patch
+ApplyOptionalPatch 0001-hyper-v-Remove-internal-types-from-UAPI-header.patch
+ApplyOptionalPatch 0001-btrfs-fix-memory-leak-of-transaction-when-deleting-u.patch
+ApplyOptionalPatch 0001-btrfs-drop-logs-when-we-ve-aborted-a-transaction.patch
+ApplyOptionalPatch 0001-btrfs-fix-block-group-leak-when-removing-fails.patch
+ApplyOptionalPatch 0001-btrfs-fix-transaction-leak-in-btrfs_recover_relocati.patch
 ApplyOptionalPatch 0001-Introduce-CONFIG_RH_DISABLE_DEPRECATED.patch
 ApplyOptionalPatch 0001-Add-Red-Hat-tainting.patch
 ApplyOptionalPatch 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
@@ -2766,10 +2786,12 @@ fi
 #
 #
 %changelog
-* Sun Apr 26 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc3.1]
-- v5.7-rc3 rebase
+* Wed Apr 29 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.7.0-0.rc3.20200428git51184ae37e05.1]
+- 51184ae37e05 rebase
 - Add cec to the filter overrides ("Justin M. Forbes")
 - Add overrides to filter-modules.sh ("Justin M. Forbes")
+- Move the sed to clear the patch templating outside of conditionals ("Justin M. Forbes")
+- Exit non-zero if the tag already exists for a release (Jeremy Cline)
 - Adjust the changelog update script to not push anything (Jeremy Cline)
 - Drop --target noarch from the rh-rpms make target (Jeremy Cline)
 

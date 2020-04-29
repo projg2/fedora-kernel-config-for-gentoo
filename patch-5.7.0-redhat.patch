@@ -1,6 +1,6 @@
 From 8474ffe83a89d7b5d2c6515875a308ff682df6f9 Mon Sep 17 00:00:00 2001
 From: Kernel Team <kernel-team@fedoraproject.org>
-Date: Mon, 27 Apr 2020 09:11:12 -0500
+Date: Wed, 29 Apr 2020 08:56:58 -0500
 Subject: [PATCH] Include Makefile.rhelver
 
 Used to set the RHEL version.

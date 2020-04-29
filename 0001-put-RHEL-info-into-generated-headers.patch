@@ -1,4 +1,4 @@
-From 3220c7deb535d2ace4e8cba92dca47aa795138e5 Mon Sep 17 00:00:00 2001
+From 3a44134dab941b6ba821e8171b2cdc87c0c2c10b Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Mon, 7 Jan 2019 20:55:21 +0000
 Subject: [PATCH] put RHEL info into generated headers

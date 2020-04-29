@@ -1,0 +1,35 @@
+From 1d3c9c075462e9c5a474248e4b433861572f33e9 Mon Sep 17 00:00:00 2001
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date: Wed, 22 Apr 2020 15:59:37 +0300
+Subject: [PATCH] hyper-v: Use UUID API for exporting the GUID
+
+There is export_guid() function which exports guid_t to the u8 array.
+Use it instead of open coding variant.
+
+This allows to hide the uuid_t internals.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20200422125937.38355-1-andriy.shevchenko@linux.intel.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+---
+ drivers/hv/hv_trace.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/hv/hv_trace.h b/drivers/hv/hv_trace.h
+index e70783e33680..f9d14db980cb 100644
+--- a/drivers/hv/hv_trace.h
++++ b/drivers/hv/hv_trace.h
+@@ -286,8 +286,8 @@ TRACE_EVENT(vmbus_send_tl_connect_request,
+ 		    __field(int, ret)
+ 		    ),
+ 	    TP_fast_assign(
+-		    memcpy(__entry->guest_id, &msg->guest_endpoint_id.b, 16);
+-		    memcpy(__entry->host_id, &msg->host_service_id.b, 16);
++		    export_guid(__entry->guest_id, &msg->guest_endpoint_id);
++		    export_guid(__entry->host_id, &msg->host_service_id);
+ 		    __entry->ret = ret;
+ 		    ),
+ 	    TP_printk("sending guest_endpoint_id %pUl, host_service_id %pUl, "
+-- 
+2.26.2
+

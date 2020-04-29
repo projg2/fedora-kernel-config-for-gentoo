@@ -1,4 +1,4 @@
-From 469d1a22cf8a35b349383316749ca9ac9ccfeae3 Mon Sep 17 00:00:00 2001
+From de17e7604f084f9e9fe3c03e47ca8496026b405e Mon Sep 17 00:00:00 2001
 From: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 Date: Mon, 3 Apr 2017 18:18:21 +0200
 Subject: [PATCH] Input: rmi4 - remove the need for artificial IRQ in case of

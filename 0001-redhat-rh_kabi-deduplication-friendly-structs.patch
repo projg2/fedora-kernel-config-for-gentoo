@@ -1,4 +1,4 @@
-From 674381b650bdfefd46ea9e887a7ed28410938a0c Mon Sep 17 00:00:00 2001
+From 00b2e955dee40b2ad0458db90006133fe2c0206f Mon Sep 17 00:00:00 2001
 From: Jiri Benc <jbenc@redhat.com>
 Date: Wed, 19 Feb 2020 11:52:21 +0100
 Subject: [PATCH] redhat: rh_kabi: deduplication friendly structs

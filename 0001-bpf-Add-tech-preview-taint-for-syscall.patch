@@ -1,4 +1,4 @@
-From 034a95d055aca8b3c1588eae69c058cf651ae3f7 Mon Sep 17 00:00:00 2001
+From 33a5dcb6c174dfe5015c5348da856c27d0de1610 Mon Sep 17 00:00:00 2001
 From: Eugene Syromiatnikov <esyr@redhat.com>
 Date: Thu, 14 Jun 2018 16:36:08 -0400
 Subject: [PATCH] bpf: Add tech preview taint for syscall

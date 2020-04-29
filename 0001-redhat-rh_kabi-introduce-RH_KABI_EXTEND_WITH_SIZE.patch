@@ -1,4 +1,4 @@
-From 8b8be1d175546789f4572bc6d3134de5695282df Mon Sep 17 00:00:00 2001
+From 8000b947964c348483343fb089a602ee0053280f Mon Sep 17 00:00:00 2001
 From: Jiri Benc <jbenc@redhat.com>
 Date: Wed, 19 Feb 2020 11:52:19 +0100
 Subject: [PATCH] redhat: rh_kabi: introduce RH_KABI_EXTEND_WITH_SIZE

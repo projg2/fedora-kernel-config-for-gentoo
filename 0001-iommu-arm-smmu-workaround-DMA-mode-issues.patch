@@ -1,4 +1,4 @@
-From 04e1b16dbb3abd8aa6be8c80b2f9944ca3b323e8 Mon Sep 17 00:00:00 2001
+From 218566d32f39ca1c892774f49dcae85d95fc0eec Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Mon, 20 May 2019 22:21:02 -0400
 Subject: [PATCH] iommu/arm-smmu: workaround DMA mode issues

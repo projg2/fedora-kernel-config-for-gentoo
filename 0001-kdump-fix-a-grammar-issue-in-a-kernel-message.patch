@@ -1,4 +1,4 @@
-From 68ceeba82e4fb28b0eaac109be6915a894d9f454 Mon Sep 17 00:00:00 2001
+From 7f3851416a724ebb9d88a3ef078f287850a5eb8f Mon Sep 17 00:00:00 2001
 From: Dave Young <dyoung@redhat.com>
 Date: Tue, 12 Jun 2018 00:54:22 -0400
 Subject: [PATCH] kdump: fix a grammar issue in a kernel message

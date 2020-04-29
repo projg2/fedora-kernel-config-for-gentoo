@@ -1,4 +1,4 @@
-From fcda00e0c9f4511c33043c1f4321d40380b6f548 Mon Sep 17 00:00:00 2001
+From 83a7529b27e3e82e3af56c7c28725eb094525cb3 Mon Sep 17 00:00:00 2001
 From: Don Dutile <ddutile@redhat.com>
 Date: Tue, 24 Jul 2018 22:29:16 -0400
 Subject: [PATCH] IB/rxe: Mark Soft-RoCE Transport driver as tech-preview

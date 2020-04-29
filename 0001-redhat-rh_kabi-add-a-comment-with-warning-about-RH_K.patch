@@ -1,4 +1,4 @@
-From f65ddf644cfd9e24df0164dfeadb7f4549431995 Mon Sep 17 00:00:00 2001
+From 0217bb42684a8085dcdd3ada4f327c2aaea0c63d Mon Sep 17 00:00:00 2001
 From: Jiri Benc <jbenc@redhat.com>
 Date: Wed, 19 Feb 2020 11:52:20 +0100
 Subject: [PATCH] redhat: rh_kabi add a comment with warning about

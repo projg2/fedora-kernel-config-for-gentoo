@@ -1,4 +1,4 @@
-From ab0040a0431280f631291b013e371d6b55ec70d0 Mon Sep 17 00:00:00 2001
+From f1fb8712d440431c0b221d1d10bdec27550a4a9a Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:46 -0500
 Subject: [PATCH] mptsas: Taint kernel if mptsas is loaded

@@ -1,4 +1,4 @@
-From e005ce3d8f69125a462dc604b26b4e43a406df17 Mon Sep 17 00:00:00 2001
+From 964ec8628e7a23541431bc0c7d0298f21d1e6098 Mon Sep 17 00:00:00 2001
 From: Robert Holmes <robeholmes@gmail.com>
 Date: Tue, 23 Apr 2019 07:39:29 +0000
 Subject: [PATCH] KEYS: Make use of platform keyring for module signature

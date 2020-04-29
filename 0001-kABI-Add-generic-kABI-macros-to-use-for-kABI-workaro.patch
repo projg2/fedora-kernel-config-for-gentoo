@@ -1,4 +1,4 @@
-From 4444ca368d5b60538b03becc186c432fcb22f99f Mon Sep 17 00:00:00 2001
+From 1bc24a4bd4f83a5c889a6d20a0955bc79d1adef0 Mon Sep 17 00:00:00 2001
 From: Myron Stowe <myron.stowe@redhat.com>
 Date: Fri, 29 Jun 2018 20:05:41 -0400
 Subject: [PATCH] kABI: Add generic kABI macros to use for kABI workarounds

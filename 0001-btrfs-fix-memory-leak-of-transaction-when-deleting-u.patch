@@ -1,0 +1,45 @@
+From 5150bf19635c335109542c19f6b84c7813810873 Mon Sep 17 00:00:00 2001
+From: Filipe Manana <fdmanana@suse.com>
+Date: Fri, 17 Apr 2020 16:36:15 +0100
+Subject: [PATCH] btrfs: fix memory leak of transaction when deleting unused
+ block group
+
+When cleaning pinned extents right before deleting an unused block group,
+we check if there's still a previous transaction running and if so we
+increment its reference count before using it for cleaning pinned ranges
+in its pinned extents iotree. However we ended up never decrementing the
+reference count after using the transaction, resulting in a memory leak.
+
+Fix it by decrementing the reference count.
+
+Fixes: fe119a6eeb6705 ("btrfs: switch to per-transaction pinned extents")
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+---
+ fs/btrfs/block-group.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/fs/btrfs/block-group.c b/fs/btrfs/block-group.c
+index 47f66c6a7d7f..af9e9a008724 100644
+--- a/fs/btrfs/block-group.c
++++ b/fs/btrfs/block-group.c
+@@ -1288,11 +1288,15 @@ static bool clean_pinned_extents(struct btrfs_trans_handle *trans,
+ 	if (ret)
+ 		goto err;
+ 	mutex_unlock(&fs_info->unused_bg_unpin_mutex);
++	if (prev_trans)
++		btrfs_put_transaction(prev_trans);
+
+ 	return true;
+
+ err:
+ 	mutex_unlock(&fs_info->unused_bg_unpin_mutex);
++	if (prev_trans)
++		btrfs_put_transaction(prev_trans);
+ 	btrfs_dec_block_group_ro(bg);
+ 	return false;
+ }
+-- 
+2.26.2
+

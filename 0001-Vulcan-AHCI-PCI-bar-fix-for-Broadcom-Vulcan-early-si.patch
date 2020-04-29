@@ -1,4 +1,4 @@
-From 95073ff591ddf911c18609f01c1f048be2a042a5 Mon Sep 17 00:00:00 2001
+From f1450d57ec4a8893d9a199bdb5394da56569a62b Mon Sep 17 00:00:00 2001
 From: Robert Richter <rrichter@redhat.com>
 Date: Thu, 7 Jun 2018 22:59:32 -0400
 Subject: [PATCH] Vulcan: AHCI PCI bar fix for Broadcom Vulcan early silicon

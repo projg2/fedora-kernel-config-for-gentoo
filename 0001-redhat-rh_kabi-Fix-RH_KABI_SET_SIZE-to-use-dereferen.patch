@@ -1,4 +1,4 @@
-From 0ae465f610aaeca5b452ac2d38d2e52d967c0bd8 Mon Sep 17 00:00:00 2001
+From 809f51b4af64f36079bd23cf3e352b8d2a2965f3 Mon Sep 17 00:00:00 2001
 From: Tony Camuso <tcamuso@redhat.com>
 Date: Wed, 19 Feb 2020 11:52:17 +0100
 Subject: [PATCH] redhat: rh_kabi: Fix RH_KABI_SET_SIZE to use dereference

@@ -1,4 +1,4 @@
-From d19cd89056cb9e43fe13d2dd9af91b914c63c6cd Mon Sep 17 00:00:00 2001
+From 6d75d943e2a82cebebb572c0cbe8b3fff6999da2 Mon Sep 17 00:00:00 2001
 From: Mark Salter <msalter@redhat.com>
 Date: Fri, 11 May 2018 21:01:17 -0400
 Subject: [PATCH] acpi: prefer booting with ACPI over DTS
