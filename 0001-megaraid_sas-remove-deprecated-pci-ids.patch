@@ -1,4 +1,4 @@
-From 4f09211c5b6bc3d1cd024318afa0b126186785aa Mon Sep 17 00:00:00 2001
+From 57dfef77b0eeca29cedd688309afb42be0c04b06 Mon Sep 17 00:00:00 2001
 From: Tomas Henzl <thenzl@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:37 -0500
 Subject: [PATCH] megaraid_sas: remove deprecated pci-ids

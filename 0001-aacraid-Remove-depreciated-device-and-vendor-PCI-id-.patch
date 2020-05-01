@@ -1,4 +1,4 @@
-From b928b1a8cdcb15e9ef7f308ef055377bb7354580 Mon Sep 17 00:00:00 2001
+From 7c35f59f3bb361d5fa87e1c8cf6ba25e339cbb38 Mon Sep 17 00:00:00 2001
 From: Raghava Aditya Renukunta <rrenukun@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:38 -0500
 Subject: [PATCH] aacraid: Remove depreciated device and vendor PCI id's

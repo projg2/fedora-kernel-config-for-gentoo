@@ -1,4 +1,4 @@
-From 6d45539329e9fef5662c3eceede6942f3b32a1fe Mon Sep 17 00:00:00 2001
+From 2b3c85e7b8bfffec4730e99b110cb4acd72348d5 Mon Sep 17 00:00:00 2001
 From: Jon Masters <jcm@redhat.com>
 Date: Thu, 18 Jul 2019 15:47:26 -0400
 Subject: [PATCH] arm: make CONFIG_HIGHPTE optional without CONFIG_EXPERT

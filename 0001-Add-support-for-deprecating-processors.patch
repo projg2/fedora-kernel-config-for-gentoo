@@ -1,4 +1,4 @@
-From 52feb7e4b2bfdc929dd588a8cecf89082a8f43da Mon Sep 17 00:00:00 2001
+From f1a33ee7126d8ca961b1a55a2742f4e2059b3b13 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Wed, 13 Nov 2019 14:44:30 -0500
 Subject: [PATCH] Add support for deprecating processors

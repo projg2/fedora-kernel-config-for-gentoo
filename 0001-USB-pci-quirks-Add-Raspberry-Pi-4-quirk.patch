@@ -1,4 +1,4 @@
-From 2395c0a7b3d22fa7788a6131ff0b6c6035c29368 Mon Sep 17 00:00:00 2001
+From c479672691ec6b8464620a0fd10f43c23a8c5ccc Mon Sep 17 00:00:00 2001
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Date: Tue, 10 Mar 2020 13:52:42 +0100
 Subject: [PATCH] USB: pci-quirks: Add Raspberry Pi 4 quirk

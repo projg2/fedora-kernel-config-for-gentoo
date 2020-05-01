@@ -1,4 +1,4 @@
-From e2b70229c9ad987ffe8d504aaa813d4a958d5706 Mon Sep 17 00:00:00 2001
+From 14dfc255b1dcfe20ff50c14e199d769c106fb608 Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Tue, 23 Jul 2019 15:24:30 +0000
 Subject: [PATCH] kdump: add support for crashkernel=auto

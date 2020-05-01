@@ -1,4 +1,4 @@
-From a5499259ef1b4e320f0ad3348976340c93ad30cf Mon Sep 17 00:00:00 2001
+From e7780ab9dc664ea7ab520ecf143bb53277e47351 Mon Sep 17 00:00:00 2001
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Date: Tue, 10 Mar 2020 13:52:41 +0100
 Subject: [PATCH] PCI: brcmstb: Wait for Raspberry Pi's firmware when present
