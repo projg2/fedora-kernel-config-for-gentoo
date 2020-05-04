@@ -1,4 +1,4 @@
-From ef02167af4dc711b49461881e79473f86cf07f03 Mon Sep 17 00:00:00 2001
+From f1ccc9dc0cc4ad19c70678a52167feb1a72f295a Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:47 -0500
 Subject: [PATCH] mptsas: pci-id table changes

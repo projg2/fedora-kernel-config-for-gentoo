@@ -1,4 +1,4 @@
-From 0e2c0f03bb4c028ed59339280872ad0b2476dc66 Mon Sep 17 00:00:00 2001
+From 27fe133f0a5a93e7cd37c7489e8e406e333cb262 Mon Sep 17 00:00:00 2001
 From: Maurizio Lombardi <mlombard@redhat.com>
 Date: Mon, 18 Jun 2018 12:51:25 -0400
 Subject: [PATCH] add pci_hw_vendor_status()

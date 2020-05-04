@@ -1,4 +1,4 @@
-From 13ca8f130c3f5cde74dc1ca5122fede48e11edfe Mon Sep 17 00:00:00 2001
+From 4ffff2ca29102029864932ad02401c670f577ecf Mon Sep 17 00:00:00 2001
 From: Eugene Syromiatnikov <esyr@redhat.com>
 Date: Thu, 14 Jun 2018 16:36:02 -0400
 Subject: [PATCH] bpf: set unprivileged_bpf_disabled to 1 by default, add a

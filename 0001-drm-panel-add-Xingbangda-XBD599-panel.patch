@@ -1,4 +1,4 @@
-From 33acb2d7d690366a865ec683e75c5bad6afddd1c Mon Sep 17 00:00:00 2001
+From c81b1f5b88e6f20bc3e733e42eee9c3b49691922 Mon Sep 17 00:00:00 2001
 From: Icenowy Zheng <icenowy@aosc.io>
 Date: Mon, 16 Mar 2020 21:35:01 +0800
 Subject: [PATCH] drm: panel: add Xingbangda XBD599 panel

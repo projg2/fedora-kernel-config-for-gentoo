@@ -1,4 +1,4 @@
-From 399dac84c093158df705613a02c70c6d26867f40 Mon Sep 17 00:00:00 2001
+From 3db3e2ad490c8268939ba2814543a5b5eb0f9ea2 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Wed, 23 Jan 2019 14:36:37 +0100
 Subject: [PATCH] Drop that for now
@@ -8,7 +8,7 @@ Subject: [PATCH] Drop that for now
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 57e5c3262659..956c3d12289e 100644
+index cd977cfcb8e1..fe985765bca5 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -479,7 +479,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE

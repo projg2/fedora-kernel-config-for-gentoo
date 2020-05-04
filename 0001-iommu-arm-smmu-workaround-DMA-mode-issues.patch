@@ -1,4 +1,4 @@
-From 1fcd2cc0007c520787df181f2b36987c1791aecd Mon Sep 17 00:00:00 2001
+From 754691c9d1eb4c03cbb1de446b519be495d16af2 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Mon, 20 May 2019 22:21:02 -0400
 Subject: [PATCH] iommu/arm-smmu: workaround DMA mode issues
@@ -57,7 +57,7 @@ Signed-off-by: Laura Abbott <labbott@redhat.com>
  1 file changed, 22 insertions(+)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 2b471419e26c..83c8d9845aed 100644
+index 7b375421afba..d4109b5c9705 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -68,7 +68,7 @@ index 2b471419e26c..83c8d9845aed 100644
  #include <linux/kernel.h>
  #include <linux/bug.h>
  #include <linux/types.h>
-@@ -2658,3 +2659,24 @@ int iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -2659,3 +2660,24 @@ int iommu_sva_get_pasid(struct iommu_sva *handle)
  	return ops->sva_get_pasid(handle);
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);

@@ -1,4 +1,4 @@
-From 0d58063cfd9ede6abf15116238cb38e5b38442ff Mon Sep 17 00:00:00 2001
+From 040521a5b93fd0534da671e14281e467c3b8dd03 Mon Sep 17 00:00:00 2001
 From: Don Zickus <dzickus@redhat.com>
 Date: Tue, 3 Mar 2020 09:35:28 -0500
 Subject: [PATCH] Rename RH_DISABLE_DEPRECATED to RHEL_DIFFERENCES

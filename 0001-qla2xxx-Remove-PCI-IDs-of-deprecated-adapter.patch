@@ -1,4 +1,4 @@
-From 2b62e37dc6bcd1a78bd366175c645f901b8d010d Mon Sep 17 00:00:00 2001
+From e4f3509902f19c6d9f001476255ad13d1c9ee7b9 Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:44 -0500
 Subject: [PATCH] qla2xxx: Remove PCI IDs of deprecated adapter
@@ -44,10 +44,10 @@ Note: Simplified backport to just pci-ids
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index d190db5ea7d9..e0e3d300f3be 100644
+index 1d9a4866f9a7..e988251d6eef 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -7759,6 +7759,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -7758,6 +7758,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -55,7 +55,7 @@ index d190db5ea7d9..e0e3d300f3be 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -7771,13 +7772,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -7770,13 +7771,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },

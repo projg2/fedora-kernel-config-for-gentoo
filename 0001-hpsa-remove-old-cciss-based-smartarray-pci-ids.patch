@@ -1,4 +1,4 @@
-From 23c8752f65d53fa06b6d319747134173c2b793b1 Mon Sep 17 00:00:00 2001
+From f502aa3d2fb0ec861a02d02b07faff298dc39d5a Mon Sep 17 00:00:00 2001
 From: Joseph Szczypek <jszczype@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:40 -0500
 Subject: [PATCH] hpsa: remove old cciss-based smartarray pci ids

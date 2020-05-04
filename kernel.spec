@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc3.20200501gitc45e8bccecaf.1
+%global distro_build 0.rc4.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc3.20200501gitc45e8bccecaf.1
+%define pkgrelease 0.rc4.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20200501gitc45e8bccecaf.1%{?buildid}%{?dist}
+%define specrelease 0.rc4.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -163,7 +163,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.7
@@ -568,7 +568,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200501gitc45e8bccecaf.tar.xz
+Source0: linux-5.7-rc4.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1276,8 +1276,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200501gitc45e8bccecaf -c
-mv linux-20200501gitc45e8bccecaf linux-%{KVERREL}
+%setup -q -n kernel-5.7-rc4 -c
+mv linux-5.7-rc4 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2765,6 +2765,20 @@ fi
 #
 #
 %changelog
+* Mon May 04 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc4.1]
+- v5.7-rc4 rebase
+- Updated changelog for the release based on f66ed1ebbfde ("CKI@GitLab")
+
+* Sun May 03 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc3.20200503gitf66ed1ebbfde.1]
+- f66ed1ebbfde rebase
+- Updated changelog for the release based on 690e2aba7beb ("CKI@GitLab")
+
+* Sat May 02 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc3.20200502git690e2aba7beb.1]
+- 690e2aba7beb rebase
+- Updated changelog for the release based on c45e8bccecaf ("CKI@GitLab")
+- Drop the requirement to have a remote called linus (Jeremy Cline)
+- Rename 'internal' branch to 'os-build' (Don Zickus)
+
 * Fri May 01 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc3.20200501gitc45e8bccecaf.1]
 - c45e8bccecaf rebase
 - Updated changelog for the release based on 1d2cc5ac6f66 ("CKI@GitLab")
