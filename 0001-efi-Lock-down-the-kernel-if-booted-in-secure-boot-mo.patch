@@ -1,4 +1,4 @@
-From 4b3b3aed6bec9688189764fe258fa2d135135867 Mon Sep 17 00:00:00 2001
+From 846b4d4df58a1bb57f262810c2db98940b84e7aa Mon Sep 17 00:00:00 2001
 From: David Howells <dhowells@redhat.com>
 Date: Mon, 30 Sep 2019 21:28:16 +0000
 Subject: [PATCH] efi: Lock down the kernel if booted in secure boot mode

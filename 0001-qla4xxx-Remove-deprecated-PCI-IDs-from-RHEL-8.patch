@@ -1,4 +1,4 @@
-From 01ca05eab673103565d09f7c2dbcece11bd91c15 Mon Sep 17 00:00:00 2001
+From 40c00152361bd20f0fa482849c71a9ac0c431b9d Mon Sep 17 00:00:00 2001
 From: Chad Dupuis <cdupuis@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:39 -0500
 Subject: [PATCH] qla4xxx: Remove deprecated PCI IDs from RHEL 8

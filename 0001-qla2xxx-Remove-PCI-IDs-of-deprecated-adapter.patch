@@ -1,4 +1,4 @@
-From e4f3509902f19c6d9f001476255ad13d1c9ee7b9 Mon Sep 17 00:00:00 2001
+From a2b3d8dc2a8364b7288c8f9eea44c20ff9cbabaf Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:44 -0500
 Subject: [PATCH] qla2xxx: Remove PCI IDs of deprecated adapter

@@ -1,4 +1,4 @@
-From 4efcd0e8b37ccd836138d69ff78c39cc70a23357 Mon Sep 17 00:00:00 2001
+From fff84279b37385bbf35a84b92e14063a2fd198e2 Mon Sep 17 00:00:00 2001
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 Date: Tue, 10 Mar 2020 13:52:39 +0100
 Subject: [PATCH] soc: bcm2835: Sync xHCI reset firmware property with

@@ -1,4 +1,4 @@
-From 13ecec479014eb8b3dc4d12674f0104001fab7de Mon Sep 17 00:00:00 2001
+From 71ae2924a70ce0abc3bc9328ac8cf7fdddbf0a5b Mon Sep 17 00:00:00 2001
 From: Icenowy Zheng <icenowy@aosc.io>
 Date: Mon, 16 Mar 2020 21:35:03 +0800
 Subject: [PATCH] arm64: allwinner: dts: a64: add LCD-related device nodes for

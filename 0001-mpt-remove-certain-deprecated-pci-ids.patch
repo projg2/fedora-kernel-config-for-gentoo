@@ -1,4 +1,4 @@
-From 8e8afe5b5b1f8da4aa0692986f8c6b8a96e88583 Mon Sep 17 00:00:00 2001
+From c3aa759c7abe414cfd2476c759bc18faece1f50f Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:36 -0500
 Subject: [PATCH] mpt*: remove certain deprecated pci-ids

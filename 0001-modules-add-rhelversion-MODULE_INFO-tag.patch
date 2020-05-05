@@ -1,4 +1,4 @@
-From 1a3594b4307acb92542819d6fcf5023bf734470d Mon Sep 17 00:00:00 2001
+From 52155b7a7118ab1b2da9e716aaebe64e47ebdb69 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Mon, 7 Jan 2019 21:03:10 +0000
 Subject: [PATCH] modules: add rhelversion MODULE_INFO tag

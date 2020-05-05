@@ -1,4 +1,4 @@
-From 24d115daed690586de5c8f135f28978099c51c29 Mon Sep 17 00:00:00 2001
+From b22126be697a03a56adf5ebb65779d65533d7f0f Mon Sep 17 00:00:00 2001
 From: Jonathan Toppins <jtoppins@redhat.com>
 Date: Tue, 24 Jul 2018 19:17:40 -0400
 Subject: [PATCH] ice: mark driver as tech-preview
