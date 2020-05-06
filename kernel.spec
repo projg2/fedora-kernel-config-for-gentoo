@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -897,8 +897,6 @@ Patch509: drm-i915-backports.patch
 Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
 Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
-Patch513: 0001-drm-i915-gem-Hold-obj-vma.lock-over-for_each_ggtt_vm.patch
-Patch514: drm-scheduler-fix-drm_sched_get_cleanup_job.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2930,6 +2928,9 @@ fi
 #
 #
 %changelog
+* Wed May 06 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.11-200
+- Linux v5.6.11
+
 * Mon May 04 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.10-200
 - Linux v5.6.10
 
