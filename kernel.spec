@@ -611,8 +611,6 @@ Patch509: drm-i915-backports.patch
 Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
 Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
-Patch513: 0001-drm-i915-gem-Hold-obj-vma.lock-over-for_each_ggtt_vm.patch
-Patch514: drm-scheduler-fix-drm_sched_get_cleanup_job.patch
 
 # END OF PATCH DEFINITIONS
 
