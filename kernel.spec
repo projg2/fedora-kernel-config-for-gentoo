@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc4.20200505git47cf1b422e60.1
+%global distro_build 0.rc4.20200507gita811c1fa0a02.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc4.20200505git47cf1b422e60.1
+%define pkgrelease 0.rc4.20200507gita811c1fa0a02.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20200505git47cf1b422e60.1%{?buildid}%{?dist}
+%define specrelease 0.rc4.20200507gita811c1fa0a02.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -506,11 +506,7 @@ BuildRequires: python3-docutils
 BuildRequires: zlib-devel binutils-devel
 %endif
 %if %{with_selftests}
-%if 0%{?el8}
-BuildRequires: llvm-toolset
-%else
 BuildRequires: clang llvm
-%endif
 %ifnarch %{arm}
 BuildRequires: numactl-devel
 %endif
@@ -568,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200505git47cf1b422e60.tar.xz
+Source0: linux-20200507gita811c1fa0a02.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -781,6 +777,7 @@ Patch72: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch73: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
 
 %endif
 
@@ -1276,8 +1273,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200505git47cf1b422e60 -c
-mv linux-20200505git47cf1b422e60 linux-%{KVERREL}
+%setup -q -n kernel-20200507gita811c1fa0a02 -c
+mv linux-20200507gita811c1fa0a02 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1358,6 +1355,7 @@ ApplyOptionalPatch 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 ApplyOptionalPatch 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 ApplyOptionalPatch 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 ApplyOptionalPatch 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+ApplyOptionalPatch 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
 
 %endif
 
@@ -2765,6 +2763,15 @@ fi
 #
 #
 %changelog
+* Thu May 07 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc4.20200507gita811c1fa0a02.1]
+- a811c1fa0a02 rebase
+- perf cs-etm: Move defined of traceid_list (Leo Yan)
+- Updated changelog for the release based on dc56c5acd850 ("CKI@GitLab")
+
+* Wed May 06 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc4.20200506gitdc56c5acd850.1]
+- dc56c5acd850 rebase
+- Updated changelog for the release based on 47cf1b422e60 ("CKI@GitLab")
+
 * Tue May 05 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc4.20200505git47cf1b422e60.1]
 - 47cf1b422e60 rebase
 - Build ARK against ELN (Don Zickus)

@@ -1,4 +1,4 @@
-From c317d1a35b45561eb679c32c43d8c71da0ae2ba9 Mon Sep 17 00:00:00 2001
+From 6f9936d90951573210b2cc79b84139b783c0e561 Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Tue, 1 Oct 2019 15:51:23 +0000
 Subject: [PATCH] arm: aarch64: Drop the EXPERT setting from ARM64_FORCE_52BIT

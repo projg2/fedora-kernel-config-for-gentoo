@@ -1,4 +1,4 @@
-From 6447ccf108290ee73eca5f4e0d227a03b8ff81bb Mon Sep 17 00:00:00 2001
+From 08f9e07879288f70402d48041879b26c1e3fc08a Mon Sep 17 00:00:00 2001
 From: Icenowy Zheng <icenowy@aosc.io>
 Date: Mon, 16 Mar 2020 21:35:00 +0800
 Subject: [PATCH] dt-bindings: panel: add binding for Xingbangda XBD599 panel

@@ -1,4 +1,4 @@
-From 11863bf540a08fd65b0b16ce38576d6b81b9ee80 Mon Sep 17 00:00:00 2001
+From c36120e495f9a749ab395185e369c60fda920d2f Mon Sep 17 00:00:00 2001
 From: Masahiro Yamada <yamada.masahiro@socionext.com>
 Date: Mon, 30 Sep 2019 14:59:25 +0900
 Subject: [PATCH] ARM: fix __get_user_check() in case uaccess_* calls are not

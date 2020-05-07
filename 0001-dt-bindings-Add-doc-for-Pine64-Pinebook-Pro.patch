@@ -1,4 +1,4 @@
-From 799df7df1e55d795b480daccca46f046c26fd7d9 Mon Sep 17 00:00:00 2001
+From ab52da7fce28af107e30eb5e282ead5db200b0ed Mon Sep 17 00:00:00 2001
 From: Emmanuel Vadot <manu@freebsd.org>
 Date: Wed, 4 Mar 2020 22:30:22 +0100
 Subject: [PATCH] dt-bindings: Add doc for Pine64 Pinebook Pro

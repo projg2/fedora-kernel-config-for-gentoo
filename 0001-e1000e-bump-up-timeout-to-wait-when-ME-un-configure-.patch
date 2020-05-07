@@ -1,4 +1,4 @@
-From 95c97610a381fe253371edea24a9805877740004 Mon Sep 17 00:00:00 2001
+From 29063f13480202eafb639a25a4be3959843dab36 Mon Sep 17 00:00:00 2001
 From: Aaron Ma <aaron.ma@canonical.com>
 Date: Tue, 24 Mar 2020 03:16:39 +0800
 Subject: [PATCH] e1000e: bump up timeout to wait when ME un-configure ULP mode

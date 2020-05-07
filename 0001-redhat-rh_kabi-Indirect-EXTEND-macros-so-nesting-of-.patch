@@ -1,4 +1,4 @@
-From 28f071449615f27e5deacae1e6c907a47b52437e Mon Sep 17 00:00:00 2001
+From 60cf29718d5f6b907f8a73f3d10db9b588151101 Mon Sep 17 00:00:00 2001
 From: Don Dutile <ddutile@redhat.com>
 Date: Wed, 19 Feb 2020 11:52:18 +0100
 Subject: [PATCH] redhat: rh_kabi: Indirect EXTEND macros so nesting of other

@@ -1,4 +1,4 @@
-From b048eacbf4cb2170a4944c2a104f26714a56a7f3 Mon Sep 17 00:00:00 2001
+From 894dee6585ebde1237f1a56cc9343393f982626a Mon Sep 17 00:00:00 2001
 From: Jon Hunter <jonathanh@nvidia.com>
 Date: Mon, 24 Feb 2020 14:07:48 +0000
 Subject: [PATCH] backlight: lp855x: Ensure regulators are disabled on probe
