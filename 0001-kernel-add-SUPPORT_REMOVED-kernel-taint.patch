@@ -1,4 +1,4 @@
-From ab21c9f430e6271adac024456abc0f60602c0ecb Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Tomas Henzl <thenzl@redhat.com>
 Date: Thu, 9 Aug 2018 13:44:15 -0400
 Subject: [PATCH] kernel: add SUPPORT_REMOVED kernel taint

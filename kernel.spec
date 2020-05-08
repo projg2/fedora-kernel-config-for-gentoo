@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc4.20200507gita811c1fa0a02.1
+%global distro_build 0.rc4.20200508git79dede78c057.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc4.20200507gita811c1fa0a02.1
+%define pkgrelease 0.rc4.20200508git79dede78c057.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20200507gita811c1fa0a02.1%{?buildid}%{?dist}
+%define specrelease 0.rc4.20200508git79dede78c057.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200507gita811c1fa0a02.tar.xz
+Source0: linux-20200508git79dede78c057.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1273,8 +1273,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200507gita811c1fa0a02 -c
-mv linux-20200507gita811c1fa0a02 linux-%{KVERREL}
+%setup -q -n kernel-20200508git79dede78c057 -c
+mv linux-20200508git79dede78c057 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2763,6 +2763,10 @@ fi
 #
 #
 %changelog
+* Fri May 08 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc4.20200508git79dede78c057.1]
+- 79dede78c057 rebase
+- Updated changelog for the release based on a811c1fa0a02 ("CKI@GitLab")
+
 * Thu May 07 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc4.20200507gita811c1fa0a02.1]
 - a811c1fa0a02 rebase
 - perf cs-etm: Move defined of traceid_list (Leo Yan)

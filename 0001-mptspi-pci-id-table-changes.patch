@@ -1,4 +1,4 @@
-From d485b75e0751ed40fdadbf03b9ee6d7edae5c788 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:45 -0500
 Subject: [PATCH] mptspi: pci-id table changes

@@ -1,4 +1,4 @@
-From 0db6c9e3a4dee6ea5e56320453eff86605ef9f1c Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Leo Yan <leo.yan@linaro.org>
 Date: Tue, 5 May 2020 21:36:42 +0800
 Subject: [PATCH] perf cs-etm: Move defined of traceid_list

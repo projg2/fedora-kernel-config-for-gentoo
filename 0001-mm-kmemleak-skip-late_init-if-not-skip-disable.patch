@@ -1,4 +1,4 @@
-From c8c8bb9e18c5e3590cad7bb941a972f558c0271c Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Murphy Zhou <jencce.kernel@gmail.com>
 Date: Sun, 29 Sep 2019 17:56:59 +0800
 Subject: [PATCH] mm/kmemleak: skip late_init if not skip disable

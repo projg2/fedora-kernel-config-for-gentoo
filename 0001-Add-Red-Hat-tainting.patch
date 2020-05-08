@@ -1,4 +1,4 @@
-From ac3f1ff22fff1da57bd0e4baf0146c3ddaf4e455 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Wed, 13 Nov 2019 14:44:31 -0500
 Subject: [PATCH] Add Red Hat tainting

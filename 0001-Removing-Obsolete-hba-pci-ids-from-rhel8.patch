@@ -1,4 +1,4 @@
-From 24107b24f41c8c9ccaed954d97aceee5ff3aa32c Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Dick Kennedy <dkennedy@redhat.com>
 Date: Fri, 14 Feb 2020 15:09:41 -0500
 Subject: [PATCH] Removing Obsolete hba pci-ids from rhel8

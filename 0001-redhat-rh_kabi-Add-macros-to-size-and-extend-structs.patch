@@ -1,4 +1,4 @@
-From f2d060ea42997f28ac77944a81bbeea442a328ce Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Prarit Bhargava <prarit@redhat.com>
 Date: Wed, 19 Feb 2020 11:52:16 +0100
 Subject: [PATCH] redhat: rh_kabi: Add macros to size and extend structs

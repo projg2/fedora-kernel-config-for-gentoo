@@ -1,4 +1,4 @@
-From ffb9c8903caaaf30ccef9f8fca94bc0cf917fd69 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Chris Leech <cleech@redhat.com>
 Date: Thu, 2 Jan 2020 14:24:43 -0500
 Subject: [PATCH] be2iscsi: remove unsupported device IDs

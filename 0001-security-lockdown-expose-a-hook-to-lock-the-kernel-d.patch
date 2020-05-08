@@ -1,4 +1,4 @@
-From 1eb3ad02d691984c2797e2caa1c51191e50e2e0f Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jeremy Cline <jcline@redhat.com>
 Date: Mon, 30 Sep 2019 21:22:47 +0000
 Subject: [PATCH] security: lockdown: expose a hook to lock the kernel down
@@ -17,7 +17,7 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  5 files changed, 20 insertions(+)
 
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 9cd4455528e5..dfa09696a0e5 100644
+index 1bdd027766d4..5c1d47c41aa0 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -371,6 +371,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)

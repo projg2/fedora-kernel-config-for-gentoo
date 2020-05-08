@@ -1,4 +1,4 @@
-From cd3a5d30570279538623ea8a1255db0ee4b728f7 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Laura Abbott <labbott@redhat.com>
 Date: Tue, 23 Jul 2019 11:39:36 -0400
 Subject: [PATCH] [initial commit] Add Red Hat variables in the top level
