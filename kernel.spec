@@ -819,6 +819,9 @@ Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
 Patch304: ARM-tegra-usb-no-reset.patch
 
+# https://patchwork.kernel.org/patch/11527525/
+Patch305: usb-usbfs-correct-kernel-user-page-attribute-mismatch.patch
+
 # Raspberry Pi
 # https://patchwork.kernel.org/cover/11353083/
 Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
