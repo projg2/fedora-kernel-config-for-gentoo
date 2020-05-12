@@ -898,6 +898,9 @@ Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
 Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
 
+# CVE-2020-10711 rhbz 1825116 1834778
+Patch513: net-netlabel-cope-with-NULL-catmap.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2928,6 +2931,9 @@ fi
 #
 #
 %changelog
+* Tue May 12 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2020-10711 (rhbz 1825116 1834778)
+
 * Mon May 11 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.12-200
 - Linux v5.6.12
 
