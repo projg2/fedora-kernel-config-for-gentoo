@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc5.1
+%global distro_build 0.rc5.20200513git24085f70a6e1.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc5.1
+%define pkgrelease 0.rc5.20200513git24085f70a6e1.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.1%{?buildid}%{?dist}
+%define specrelease 0.rc5.20200513git24085f70a6e1.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -163,7 +163,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.7
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.7-rc5.tar.xz
+Source0: linux-20200513git24085f70a6e1.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1273,8 +1273,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.7-rc5 -c
-mv linux-5.7-rc5 linux-%{KVERREL}
+%setup -q -n kernel-20200513git24085f70a6e1 -c
+mv linux-20200513git24085f70a6e1 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2587,8 +2587,9 @@ fi
 %endif
 
 %if %{with_tools}
+%ifnarch %{cpupowerarchs}
 %files -n kernel-tools
-%ifarch %{cpupowerarchs}
+%else
 %files -n kernel-tools -f cpupower.lang
 %{_bindir}/cpupower
 %{_datadir}/bash-completion/completions/cpupower
@@ -2763,6 +2764,15 @@ fi
 #
 #
 %changelog
+* Wed May 13 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc5.20200513git24085f70a6e1.1]
+- 24085f70a6e1 rebase
+- Updated changelog for the release based on 152036d1379f ("CKI@GitLab")
+
+* Tue May 12 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc5.20200512git152036d1379f.1]
+- 152036d1379f rebase
+- Updated changelog for the release based on v5.7-rc5 ("CKI@GitLab")
+- Fix "multiple files for package kernel-tools" (Pablo Greco)
+
 * Mon May 11 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc5.1]
 - v5.7-rc5 rebase
 - Updated changelog for the release based on e99332e7b4cd ("CKI@GitLab")
