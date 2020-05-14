@@ -849,6 +849,8 @@ Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
 Patch326: arm64-drm-tegra-Fix-SMMU-support-on-Tegra124-and-Tegra210.patch
 # http://patchwork.ozlabs.org/patch/1221384/
 Patch327: PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+# https://patchwork.ozlabs.org/patch/1281134/
+Patch328: arm64-tegra-Fix-ethernet-phy-mode-for-Jetson-Xavier.patch
 
 # Coral
 Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
@@ -3005,6 +3007,9 @@ fi
 #
 #
 %changelog
+* Thu May 12 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix for NIC issues on Jetson Xavier AGX
+
 * Tue May 12 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2020-10711 (rhbz 1825116 1834778)
 
