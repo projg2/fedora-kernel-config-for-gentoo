@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -910,6 +910,12 @@ Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
 
 # CVE-2020-10711 rhbz 1825116 1834778
 Patch513: net-netlabel-cope-with-NULL-catmap.patch
+
+#rhbz 1779611
+Patch514: tpm-check-event-log-version-before-reading-final-eve.patch
+
+# CVE-2020-12655 rhbz 1832543 1832545
+Patch515: 0001-xfs-add-agf-freeblocks-verify-in-xfs_agf_verify.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -3007,7 +3013,12 @@ fi
 #
 #
 %changelog
-* Thu May 12 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+* Thu May 14 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.13-300
+- Linux v5.6.13
+- Fix boot hang caused by buggy TPM support (rhbz 1779611)
+- Fix CVE-2020-12655 (rhbz 1832543 1832545)
+
+* Thu May 14 2020 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fix for NIC issues on Jetson Xavier AGX
 
 * Tue May 12 2020 Justin M. Forbes <jforbes@fedoraproject.org>
