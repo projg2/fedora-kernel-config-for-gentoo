@@ -907,6 +907,9 @@ Patch514: tpm-check-event-log-version-before-reading-final-eve.patch
 # CVE-2020-12655 rhbz 1832543 1832545
 Patch515: 0001-xfs-add-agf-freeblocks-verify-in-xfs_agf_verify.patch
 
+# rhbz 1828927 No backlight control on CHT devices, patch posted upstream
+Patch516: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2937,6 +2940,9 @@ fi
 #
 #
 %changelog
+* Mon May 18 2020 Hans de Goede <hdegoede@redhat.com>
+- Add patch fixing backlight control on Cherry Trail devices (rhbz 1828927)
+
 * Thu May 14 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.13-200
 - Linux v5.6.13
 - Fix boot hang caused by buggy TPM support (rhbz 1779611)
