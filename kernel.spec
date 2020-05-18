@@ -910,6 +910,9 @@ Patch515: 0001-xfs-add-agf-freeblocks-verify-in-xfs_agf_verify.patch
 # rhbz 1828927 No backlight control on CHT devices, patch posted upstream
 Patch516: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
 
+# kernel.org bz 206217
+Patch517: RFC-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2940,6 +2943,9 @@ fi
 #
 #
 %changelog
+* Mon May 18 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix stability issue with the jetson-tk1 NIC
+
 * Mon May 18 2020 Hans de Goede <hdegoede@redhat.com>
 - Add patch fixing backlight control on Cherry Trail devices (rhbz 1828927)
 
