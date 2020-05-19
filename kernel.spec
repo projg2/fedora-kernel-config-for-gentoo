@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc6.1
+%global distro_build 0.rc6.20200519git642b151f45dd.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc6.1
+%define pkgrelease 0.rc6.20200519git642b151f45dd.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.1%{?buildid}%{?dist}
+%define specrelease 0.rc6.20200519git642b151f45dd.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -163,7 +163,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.7
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.7-rc6.tar.xz
+Source0: linux-20200519git642b151f45dd.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -778,6 +778,7 @@ Patch73: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
+Patch77: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
 
 %endif
 
@@ -1273,8 +1274,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.7-rc6 -c
-mv linux-5.7-rc6 linux-%{KVERREL}
+%setup -q -n kernel-20200519git642b151f45dd -c
+mv linux-20200519git642b151f45dd linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1356,6 +1357,7 @@ ApplyOptionalPatch 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.pat
 ApplyOptionalPatch 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 ApplyOptionalPatch 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 ApplyOptionalPatch 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
+ApplyOptionalPatch 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
 
 %endif
 
@@ -2764,6 +2766,11 @@ fi
 #
 #
 %changelog
+* Tue May 19 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc6.20200519git642b151f45dd.1]
+- 642b151f45dd rebase
+- pwm: lpss: Fix get_state runtime-pm reference handling (Hans de Goede)
+- Updated changelog for the release based on v5.7-rc6 ("CKI@GitLab")
+
 * Mon May 18 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc6.1]
 - v5.7-rc6 rebase
 - Updated changelog for the release based on 3d1c1e5931ce ("CKI@GitLab")
