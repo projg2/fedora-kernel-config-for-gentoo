@@ -625,6 +625,12 @@ Patch517: RFC-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 # CVE-2020-12888 rhbz 1836245 1836244
 Patch518: vfio-pci-block-user-access-to-disabled-device-MMIO.patch
 
+# rhbz 1789545
+Patch519: vboxguest-fixes.patch
+
+# rhbz 1830150
+Patch520: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1855,6 +1861,10 @@ fi
 #
 #
 %changelog
+* Wed May 20 2020 Hans de Goede <hdegoede@redhat.com>
+- Fix automatic guest resolution resizing of VirtualBox VMs (rhbz 1789545)
+- Fix Sony laptop hang on resume from suspend (rhbz 1830150)
+
 * Wed May 20 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.14-100
 - Linux v5.6.14
 - Fix CVE-2020-12888 (rhbz 1836245 1836244)
