@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc6.20200519git642b151f45dd.1
+%global distro_build 0.rc6.20200520git115a54162a6c.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc6.20200519git642b151f45dd.1
+%define pkgrelease 0.rc6.20200520git115a54162a6c.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20200519git642b151f45dd.1%{?buildid}%{?dist}
+%define specrelease 0.rc6.20200520git115a54162a6c.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200519git642b151f45dd.tar.xz
+Source0: linux-20200520git115a54162a6c.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -779,6 +779,7 @@ Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
 Patch77: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
+Patch78: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
 
 %endif
 
@@ -1274,8 +1275,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200519git642b151f45dd -c
-mv linux-20200519git642b151f45dd linux-%{KVERREL}
+%setup -q -n kernel-20200520git115a54162a6c -c
+mv linux-20200520git115a54162a6c linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1358,6 +1359,7 @@ ApplyOptionalPatch 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.pat
 ApplyOptionalPatch 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 ApplyOptionalPatch 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
 ApplyOptionalPatch 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
+ApplyOptionalPatch 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
 
 %endif
 
@@ -1758,13 +1760,21 @@ BuildKernel() {
 %endif
 
     # then drop all but the needed Makefiles/Kconfig files
-    rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Documentation
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
     cp .config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp -a scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/tracing
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/spdxcheck.py
+
+    # Files for 'make scripts' to succeed with kernel-devel.
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/security/selinux/include
+    cp -a --parents security/selinux/include/classmap.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents security/selinux/include/initial_sid_to_string.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/include/tools
+    cp -a --parents tools/include/tools/be_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/tools/le_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+
     if [ -f tools/objtool/objtool ]; then
       cp -a tools/objtool/objtool $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/objtool/ || :
     fi
@@ -2766,6 +2776,16 @@ fi
 #
 #
 %changelog
+* Wed May 20 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc6.20200520git115a54162a6c.1]
+- 115a54162a6c rebase
+- kernel.spec: fix 'make scripts' for kernel-devel package (Brian Masney)
+- Makefile: correct help text for dist-cross-<arch>-rpms (Brian Masney)
+- Add Documentation back to kernel-devel as it has Kconfig now ("Justin M. Forbes")
+- x86: Fix compile issues with rh_check_supported() (Don Zickus)
+- Updated changelog for the release based on 642b151f45dd ("CKI@GitLab")
+- redhat: Change Makefile target names to dist- (Prarit Bhargava)
+- configs: Disable Serial IR driver (Prarit Bhargava)
+
 * Tue May 19 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc6.20200519git642b151f45dd.1]
 - 642b151f45dd rebase
 - pwm: lpss: Fix get_state runtime-pm reference handling (Hans de Goede)
