@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -819,9 +819,6 @@ Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
 
 Patch304: ARM-tegra-usb-no-reset.patch
 
-# https://patchwork.kernel.org/patch/11527525/
-Patch305: usb-usbfs-correct-kernel-user-page-attribute-mismatch.patch
-
 # Raspberry Pi
 # https://patchwork.kernel.org/cover/11353083/
 Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
@@ -845,8 +842,6 @@ Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
 Patch324: regulator-pwm-Don-t-warn-on-probe-deferral.patch
 # http://patchwork.ozlabs.org/patch/1243112/
 Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
-# https://patchwork.ozlabs.org/patch/1261638/
-Patch326: arm64-drm-tegra-Fix-SMMU-support-on-Tegra124-and-Tegra210.patch
 # http://patchwork.ozlabs.org/patch/1221384/
 Patch327: PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 # https://patchwork.ozlabs.org/patch/1281134/
@@ -908,9 +903,6 @@ Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
 Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
 
-# CVE-2020-10711 rhbz 1825116 1834778
-Patch513: net-netlabel-cope-with-NULL-catmap.patch
-
 #rhbz 1779611
 Patch514: tpm-check-event-log-version-before-reading-final-eve.patch
 
@@ -922,6 +914,9 @@ Patch516: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
 
 # kernel.org bz 206217
 Patch517: RFC-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
+
+# CVE-2020-12888 rhbz 1836245 1836244
+Patch518: vfio-pci-block-user-access-to-disabled-device-MMIO.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -3019,6 +3014,10 @@ fi
 #
 #
 %changelog
+* Wed May 20 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.14-300
+- Linux v5.6.14
+- Fix CVE-2020-12888 (rhbz 1836245 1836244)
+
 * Mon May 18 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix stability issue with the jetson-tk1 NIC
 
