@@ -3020,11 +3020,11 @@ fi
 #
 #
 %changelog
-* Wed May 20 2020 Hans de Goede <hdegoede@redhat.com>
+* Wed May 20 2020 Hans de Goede <hdegoede@redhat.com> - 5.6.14-300
 - Fix automatic guest resolution resizing of VirtualBox VMs (rhbz 1789545)
 - Fix Sony laptop hang on resume from suspend (rhbz 1830150)
 
-* Wed May 20 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.14-300
+* Wed May 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Linux v5.6.14
 - Fix CVE-2020-12888 (rhbz 1836245 1836244)
 
