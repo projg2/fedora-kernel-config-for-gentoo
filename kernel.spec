@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc6.20200520git115a54162a6c.1
+%global distro_build 0.rc6.20200521gitb85051e755b0.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc6.20200520git115a54162a6c.1
+%define pkgrelease 0.rc6.20200521gitb85051e755b0.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20200520git115a54162a6c.1%{?buildid}%{?dist}
+%define specrelease 0.rc6.20200521gitb85051e755b0.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200520git115a54162a6c.tar.xz
+Source0: linux-20200521gitb85051e755b0.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1275,8 +1275,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200520git115a54162a6c -c
-mv linux-20200520git115a54162a6c linux-%{KVERREL}
+%setup -q -n kernel-20200521gitb85051e755b0 -c
+mv linux-20200521gitb85051e755b0 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2776,8 +2776,8 @@ fi
 #
 #
 %changelog
-* Wed May 20 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc6.20200520git115a54162a6c.1]
-- 115a54162a6c rebase
+* Thu May 21 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc6.20200521gitb85051e755b0.1]
+- b85051e755b0 rebase
 - kernel.spec: fix 'make scripts' for kernel-devel package (Brian Masney)
 - Makefile: correct help text for dist-cross-<arch>-rpms (Brian Masney)
 - Add Documentation back to kernel-devel as it has Kconfig now ("Justin M. Forbes")
