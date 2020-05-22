@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc6.20200521gitb85051e755b0.1
+%global distro_build 0.rc6.20200522git051143e1602d.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc6.20200521gitb85051e755b0.1
+%define pkgrelease 0.rc6.20200522git051143e1602d.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20200521gitb85051e755b0.1%{?buildid}%{?dist}
+%define specrelease 0.rc6.20200522git051143e1602d.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200521gitb85051e755b0.tar.xz
+Source0: linux-20200522git051143e1602d.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1275,8 +1275,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200521gitb85051e755b0 -c
-mv linux-20200521gitb85051e755b0 linux-%{KVERREL}
+%setup -q -n kernel-20200522git051143e1602d -c
+mv linux-20200522git051143e1602d linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2776,12 +2776,13 @@ fi
 #
 #
 %changelog
-* Thu May 21 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc6.20200521gitb85051e755b0.1]
-- b85051e755b0 rebase
-- kernel.spec: fix 'make scripts' for kernel-devel package (Brian Masney)
-- Makefile: correct help text for dist-cross-<arch>-rpms (Brian Masney)
+* Fri May 22 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc6.20200522git051143e1602d.1]
+- 051143e1602d rebase
 - Add Documentation back to kernel-devel as it has Kconfig now ("Justin M. Forbes")
 - x86: Fix compile issues with rh_check_supported() (Don Zickus)
+- redhat/Makefile: Fix RHEL8 python warning (Prarit Bhargava)
+- kernel.spec: fix 'make scripts' for kernel-devel package (Brian Masney)
+- Makefile: correct help text for dist-cross-<arch>-rpms (Brian Masney)
 - Updated changelog for the release based on 642b151f45dd ("CKI@GitLab")
 - redhat: Change Makefile target names to dist- (Prarit Bhargava)
 - configs: Disable Serial IR driver (Prarit Bhargava)
