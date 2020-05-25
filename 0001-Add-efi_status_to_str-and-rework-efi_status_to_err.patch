@@ -15,7 +15,7 @@ Signed-off-by: Peter Jones <pjones@redhat.com>
  2 files changed, 96 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 911a2bd0f6b7..3696e87f19ee 100644
+index 4e3055238f31..36ca9e2943ce 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -26,7 +26,7 @@ index 911a2bd0f6b7..3696e87f19ee 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -831,40 +832,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -828,40 +829,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -160,7 +160,7 @@ index 911a2bd0f6b7..3696e87f19ee 100644
 
  static DEFINE_SPINLOCK(efi_mem_reserve_persistent_lock);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 251f1f783cdf..fa8e23680314 100644
+index 9430d01c0c3d..51503bf118ab 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -42,6 +42,8 @@

@@ -66,7 +66,7 @@ index c041d4e950f4..8588bb62e74c 100644
  #define TAINT_FLAGS_COUNT		32
 
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 2843bbba9ca1..0ef4f2f203fd 100644
+index 4e6dee19a668..77ecd8b47d70 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@

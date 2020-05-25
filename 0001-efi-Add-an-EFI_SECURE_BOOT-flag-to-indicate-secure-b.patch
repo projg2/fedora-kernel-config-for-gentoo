@@ -107,7 +107,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index fa8e23680314..a9a9e7e976e7 100644
+index 51503bf118ab..b35e693f20f3 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -778,6 +778,14 @@ extern int __init efi_setup_pcdp_console(char *);

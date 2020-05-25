@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc6.20200522git051143e1602d.1
+%global distro_build 0.rc7.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc6.20200522git051143e1602d.1
+%define pkgrelease 0.rc7.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20200522git051143e1602d.1%{?buildid}%{?dist}
+%define specrelease 0.rc7.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -163,7 +163,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.7
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200522git051143e1602d.tar.xz
+Source0: linux-5.7-rc7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1275,8 +1275,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200522git051143e1602d -c
-mv linux-20200522git051143e1602d linux-%{KVERREL}
+%setup -q -n kernel-5.7-rc7 -c
+mv linux-5.7-rc7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2776,13 +2776,21 @@ fi
 #
 #
 %changelog
-* Fri May 22 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc6.20200522git051143e1602d.1]
-- 051143e1602d rebase
-- Add Documentation back to kernel-devel as it has Kconfig now ("Justin M. Forbes")
+* Mon May 25 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc7.1]
+- v5.7-rc7 rebase
+- Updated changelog for the release based on caffb99b6929 ("CKI@GitLab")
+
+* Sun May 24 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc6.20200524gitcaffb99b6929.1]
+- caffb99b6929 rebase
+- Updated changelog for the release based on 444565650a5f ("CKI@GitLab")
+
+* Sat May 23 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc6.20200523git444565650a5f.1]
+- 444565650a5f rebase
 - x86: Fix compile issues with rh_check_supported() (Don Zickus)
 - redhat/Makefile: Fix RHEL8 python warning (Prarit Bhargava)
 - kernel.spec: fix 'make scripts' for kernel-devel package (Brian Masney)
 - Makefile: correct help text for dist-cross-<arch>-rpms (Brian Masney)
+- Add Documentation back to kernel-devel as it has Kconfig now ("Justin M. Forbes")
 - Updated changelog for the release based on 642b151f45dd ("CKI@GitLab")
 - redhat: Change Makefile target names to dist- (Prarit Bhargava)
 - configs: Disable Serial IR driver (Prarit Bhargava)
