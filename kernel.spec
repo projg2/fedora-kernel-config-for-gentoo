@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc7.1
+%global distro_build 0.rc7.20200528gitb0c3ba31be3e.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc7.1
+%define pkgrelease 0.rc7.20200528gitb0c3ba31be3e.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.1%{?buildid}%{?dist}
+%define specrelease 0.rc7.20200528gitb0c3ba31be3e.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -163,7 +163,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.7
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.7-rc7.tar.xz
+Source0: linux-20200528gitb0c3ba31be3e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -780,6 +780,34 @@ Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
 Patch77: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
 Patch78: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
+Patch79: 0001-disp-gv100-expose-capabilities-class.patch
+Patch80: 0001-core-memory-remove-redundant-assignments-to-variable.patch
+Patch81: 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
+Patch82: 0001-drm-Use-generic-helper-to-check-_PR3-presence.patch
+Patch83: 0001-mmu-Remove-unneeded-semicolon.patch
+Patch84: 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
+Patch85: 0001-device-detect-if-changing-endianness-failed.patch
+Patch86: 0001-device-detect-vGPUs.patch
+Patch87: 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
+Patch88: 0001-kms-Fix-regression-by-audio-component-transition.patch
+Patch89: 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
+Patch90: 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
+Patch91: 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
+Patch92: 0001-disp-hda-gf119-select-HDA-device-entry-based-on-boun.patch
+Patch93: 0001-disp-hda-gv100-NV_PDISP_SF_AUDIO_CNTRL0-register-mov.patch
+Patch94: 0001-kms-nv50-Initialize-core-channel-in-nouveau_display_.patch
+Patch95: 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
+Patch96: 0001-kms-gv100-Add-support-for-interlaced-modes.patch
+Patch97: 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
+Patch98: 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
+Patch99: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
+Patch100: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
+Patch101: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch106: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
 
 %endif
 
@@ -1275,8 +1303,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.7-rc7 -c
-mv linux-5.7-rc7 linux-%{KVERREL}
+%setup -q -n kernel-20200528gitb0c3ba31be3e -c
+mv linux-20200528gitb0c3ba31be3e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1360,6 +1388,34 @@ ApplyOptionalPatch 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.pat
 ApplyOptionalPatch 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
 ApplyOptionalPatch 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
 ApplyOptionalPatch 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
+ApplyOptionalPatch 0001-disp-gv100-expose-capabilities-class.patch
+ApplyOptionalPatch 0001-core-memory-remove-redundant-assignments-to-variable.patch
+ApplyOptionalPatch 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
+ApplyOptionalPatch 0001-drm-Use-generic-helper-to-check-_PR3-presence.patch
+ApplyOptionalPatch 0001-mmu-Remove-unneeded-semicolon.patch
+ApplyOptionalPatch 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
+ApplyOptionalPatch 0001-device-detect-if-changing-endianness-failed.patch
+ApplyOptionalPatch 0001-device-detect-vGPUs.patch
+ApplyOptionalPatch 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
+ApplyOptionalPatch 0001-kms-Fix-regression-by-audio-component-transition.patch
+ApplyOptionalPatch 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
+ApplyOptionalPatch 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
+ApplyOptionalPatch 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
+ApplyOptionalPatch 0001-disp-hda-gf119-select-HDA-device-entry-based-on-boun.patch
+ApplyOptionalPatch 0001-disp-hda-gv100-NV_PDISP_SF_AUDIO_CNTRL0-register-mov.patch
+ApplyOptionalPatch 0001-kms-nv50-Initialize-core-channel-in-nouveau_display_.patch
+ApplyOptionalPatch 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
+ApplyOptionalPatch 0001-kms-gv100-Add-support-for-interlaced-modes.patch
+ApplyOptionalPatch 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
+ApplyOptionalPatch 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
+ApplyOptionalPatch 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
+ApplyOptionalPatch 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
+ApplyOptionalPatch 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+ApplyOptionalPatch 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+ApplyOptionalPatch 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+ApplyOptionalPatch 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+ApplyOptionalPatch 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+ApplyOptionalPatch 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
 
 %endif
 
@@ -2776,6 +2832,45 @@ fi
 #
 #
 %changelog
+* Thu May 28 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc7.20200528gitb0c3ba31be3e.1]
+- b0c3ba31be3e rebase
+- Updated changelog for the release based on 444fc5cde643 ("CKI@GitLab")
+
+* Wed May 27 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc7.20200527git444fc5cde643.1]
+- 444fc5cde643 rebase
+- platform/x86: sony-laptop: SNC calls should handle BUFFER types (Mattia Dongili)
+- virt: vbox: Log unknown ioctl requests as error (Hans de Goede)
+- virt: vbox: Add a few new vmmdev request types to the userspace whitelist (Hans de Goede)
+- virt: vbox: Add support for the new VBG_IOCTL_ACQUIRE_GUEST_CAPABILITIES ioctl (Hans de Goede)
+- virt: vbox: Add vbg_set_host_capabilities() helper function (Hans de Goede)
+- virt: vbox: Rename guest_caps struct members to set_guest_caps (Hans de Goede)
+- virt: vbox: Fix guest capabilities mask check (Hans de Goede)
+- virt: vbox: Fix VBGL_IOCTL_VMMDEV_REQUEST_BIG and _LOG req numbers to match upstream (Hans de Goede)
+- kms/nv50-: Share DP SST mode_valid() handling with MST (Lyude Paul)
+- kms/nv50-: Move 8BPC limit for MST into nv50_mstc_get_modes() (Lyude Paul)
+- kms/gv100-: Add support for interlaced modes (Lyude Paul)
+- kms/nv50-: Probe SOR and PIOR caps for DP interlacing support (Lyude Paul)
+- kms/nv50-: Initialize core channel in nouveau_display_create() (Lyude Paul)
+- disp/hda/gv100-: NV_PDISP_SF_AUDIO_CNTRL0 register moved (Ben Skeggs)
+- disp/hda/gf119-: select HDA device entry based on bound head (Ben Skeggs)
+- disp/hda/gf119-: add HAL for programming device entry in SF (Ben Skeggs)
+- disp/hda/gt215-: pass head to nvkm_ior.hda.eld() (Ben Skeggs)
+- disp/nv50-: increase timeout on pio channel free() polling (Ben Skeggs)
+- kms: Fix regression by audio component transition (Takashi Iwai)
+- device: use regular PRI accessors in chipset detection (Ben Skeggs)
+- device: detect vGPUs (Karol Herbst)
+- device: detect if changing endianness failed (Karol Herbst)
+- device: rework mmio mapping code to get rid of second map (Karol Herbst)
+- mmu: Remove unneeded semicolon (Zheng Bin)
+- drm: Use generic helper to check _PR3 presence (Kai-Heng Feng)
+- acr: Use kmemdup instead of kmalloc and memcpy (Zou Wei)
+- core/memory: remove redundant assignments to variable ret (Colin Ian King)
+- disp/gv100-: expose capabilities class (Ben Skeggs)
+- Remove typoed config file aarch64CONFIG_SM_GCC_8150 ("Justin M. Forbes")
+- Updated changelog for the release based on v5.7-rc7 ("CKI@GitLab")
+- redhat: Add dummy-module kernel module (Prarit Bhargava)
+- redhat: enable CONFIG_LWTUNNEL_BPF (Jiri Benc)
+
 * Mon May 25 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc7.1]
 - v5.7-rc7 rebase
 - Updated changelog for the release based on caffb99b6929 ("CKI@GitLab")
