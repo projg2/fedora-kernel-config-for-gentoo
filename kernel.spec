@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -902,9 +902,6 @@ Patch509: drm-i915-backports.patch
 Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
 
 Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
-
-#rhbz 1779611
-Patch514: tpm-check-event-log-version-before-reading-final-eve.patch
 
 # CVE-2020-12655 rhbz 1832543 1832545
 Patch515: 0001-xfs-add-agf-freeblocks-verify-in-xfs_agf_verify.patch
@@ -3020,6 +3017,9 @@ fi
 #
 #
 %changelog
+* Thu May 28 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.15-300
+- Linux v5.6.15
+
 * Wed May 20 2020 Hans de Goede <hdegoede@redhat.com> - 5.6.14-300
 - Fix automatic guest resolution resizing of VirtualBox VMs (rhbz 1789545)
 - Fix Sony laptop hang on resume from suspend (rhbz 1830150)
