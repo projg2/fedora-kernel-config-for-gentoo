@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc7.20200529gitb0c3ba31be3e.1
+%global distro_build 1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.7.0
-%define pkgrelease 0.rc7.20200529gitb0c3ba31be3e.1
+%define pkgrelease 1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20200529gitb0c3ba31be3e.1%{?buildid}%{?dist}
+%define specrelease 1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -163,7 +163,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.7
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200529gitb0c3ba31be3e.tar.xz
+Source0: linux-5.7.0.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1303,8 +1303,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200529gitb0c3ba31be3e -c
-mv linux-20200529gitb0c3ba31be3e linux-%{KVERREL}
+%setup -q -n kernel-5.7.0 -c
+mv linux-5.7.0 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1534,7 +1534,7 @@ cp_vmlinux()
 %define build_hostldflags %{?build_ldflags}
 %endif
 
-%define make make %{?cross_opts} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
+%define make %{__make} %{?cross_opts} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
 
 BuildKernel() {
     MakeTarget=$1
@@ -2104,7 +2104,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
 %global perf_make \
-  make -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2143,16 +2143,16 @@ pushd tools/thermal/tmon/
 popd
 pushd tools/iio/
 # Needs to be fixed to pick up CFLAGS
-make
+%{__make}
 popd
 pushd tools/gpio/
 # Needs to be fixed to pick up CFLAGS
-make
+%{__make}
 popd
 %endif
 
 %global bpftool_make \
-  make EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_LDFLAGS="%{__global_ldflags}" DESTDIR=$RPM_BUILD_ROOT V=1
+  %{__make} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_LDFLAGS="%{__global_ldflags}" DESTDIR=$RPM_BUILD_ROOT V=1
 %if %{with_bpftool}
 pushd tools/bpf/bpftool
 %{bpftool_make}
@@ -2170,7 +2170,7 @@ popd
 
 %if %{with_doc}
 # Make the HTML pages.
-make PYTHON=/usr/bin/python3 htmldocs || %{doc_build_fail}
+%{__make} PYTHON=/usr/bin/python3 htmldocs || %{doc_build_fail}
 
 # sometimes non-world-readable files sneak into the kernel source tree
 chmod -R a=rX Documentation
@@ -2271,7 +2271,7 @@ tar -h -f - --exclude=man --exclude='.*' -c Documentation | tar xf - -C $docdir
 
 %if %{with_headers}
 # Install kernel headers
-make ARCH=%{hdrarch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr headers_install
+%{__make} ARCH=%{hdrarch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr headers_install
 
 find $RPM_BUILD_ROOT/usr/include \
      \( -name .install -o -name .check -o \
@@ -2289,7 +2289,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/tmp-headers
 
 for arch in $HDR_ARCH_LIST; do
 	mkdir $RPM_BUILD_ROOT/usr/tmp-headers/arch-${arch}
-	make ARCH=${arch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr/tmp-headers/arch-${arch} headers_install
+	%{__make} ARCH=${arch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr/tmp-headers/arch-${arch} headers_install
 done
 
 find $RPM_BUILD_ROOT/usr/tmp-headers \
@@ -2375,14 +2375,14 @@ pushd tools/thermal/tmon
 %{tools_make} INSTALL_ROOT=%{buildroot} install
 popd
 pushd tools/iio
-make DESTDIR=%{buildroot} install
+%{__make} DESTDIR=%{buildroot} install
 popd
 pushd tools/gpio
-make DESTDIR=%{buildroot} install
+%{__make} DESTDIR=%{buildroot} install
 popd
 pushd tools/kvm/kvm_stat
-make INSTALL_ROOT=%{buildroot} install-tools
-make INSTALL_ROOT=%{buildroot} install-man
+%{__make} INSTALL_ROOT=%{buildroot} install-tools
+%{__make} INSTALL_ROOT=%{buildroot} install-man
 popd
 %endif
 
@@ -2832,6 +2832,15 @@ fi
 #
 #
 %changelog
+* Mon Jun 01 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-1]
+- v5.7 rebase
+- Fix update_scripts.sh unselective pattern sub (David Howells)
+- Updated changelog for the release based on b0c3ba31be3e ("CKI@GitLab")
+- Drop the static path configuration for the Sphinx docs (Jeremy Cline)
+- Sign off generated configuration patches (Jeremy Cline)
+- Use __make macro instead of make (Tom Stellard)
+- redhat/configs: Enable CONFIG_SMC91X and disable CONFIG_SMC911X (Prarit Bhargava) [http://bugzilla.redhat.com/1722136]
+
 * Thu May 28 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-0.rc7.20200528gitb0c3ba31be3e.1]
 - b0c3ba31be3e rebase
 - Updated changelog for the release based on 444fc5cde643 ("CKI@GitLab")

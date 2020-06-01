@@ -57,7 +57,7 @@ Signed-off-by: Laura Abbott <labbott@redhat.com>
  1 file changed, 22 insertions(+)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 1faa08c8bbb4..b64444b1bd1a 100644
+index 03d6a26687bc..86981f228c90 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@

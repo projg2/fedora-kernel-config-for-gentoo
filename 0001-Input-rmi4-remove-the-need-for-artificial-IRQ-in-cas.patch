@@ -122,7 +122,7 @@ index 8cffa84c9650..6c4e3675601a 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
-index 190b9974526b..27a65991de0e 100644
+index 258d5fe3d395..f7298e3dc8f3 100644
 --- a/drivers/input/rmi4/rmi_driver.c
 +++ b/drivers/input/rmi4/rmi_driver.c
 @@ -182,34 +182,47 @@ void rmi_set_attn_data(struct rmi_device *rmi_dev, unsigned long irq_status,
@@ -165,10 +165,10 @@ index 190b9974526b..27a65991de0e 100644
 
 -	if (count) {
 -		kfree(attn_data.data);
--		attn_data.data = NULL;
+-		drvdata->attn_data.data = NULL;
 -	}
 +	kfree(attn_data.data);
-+	attn_data.data = NULL;
++	drvdata->attn_data.data = NULL;
 
  	if (!kfifo_is_empty(&drvdata->attn_fifo))
 -		return rmi_irq_fn(irq, dev_id);
@@ -294,7 +294,7 @@ index 190b9974526b..27a65991de0e 100644
  	rmi_f34_remove_sysfs(rmi_dev);
  	rmi_free_function_list(rmi_dev);
 
-@@ -1218,9 +1236,15 @@ static int rmi_driver_probe(struct device *dev)
+@@ -1219,9 +1237,15 @@ static int rmi_driver_probe(struct device *dev)
  		}
  	}
 
