@@ -34,10 +34,10 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  4 files changed, 30 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 7bc83f3d9bdf..6fbbef16ab95 100644
+index 4379c6ac3265..0344ce405595 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5162,6 +5162,14 @@
+@@ -5188,6 +5188,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 

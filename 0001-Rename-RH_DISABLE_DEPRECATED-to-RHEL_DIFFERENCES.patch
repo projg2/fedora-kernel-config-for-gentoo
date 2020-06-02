@@ -38,10 +38,10 @@ index 733a26bd887a..effb81d04bfd 100644
  	help
  	  Red Hat may choose to deprecate certain features in its kernels.
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index b6f5510f3d91..0fd824c4162d 100644
+index 19d57bfc12f9..e677bb144835 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -1366,7 +1366,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1372,7 +1372,7 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -64,7 +64,7 @@ index 8588bb62e74c..b372b2daae7f 100644
  void mark_hardware_deprecated(const char *msg);
  void mark_tech_preview(const char *msg, struct module *mod);
 diff --git a/kernel/Makefile b/kernel/Makefile
-index e62be9e51064..b1010f42dd18 100644
+index 281e1abbe3b2..8da4dd1bafe0 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,7 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \

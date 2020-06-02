@@ -130,10 +130,10 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  2 files changed, 132 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index bed0cb83fe24..a15622e0d79f 100644
+index d07809286b95..fa3399d25d1e 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1205,6 +1205,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1180,6 +1180,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
@@ -142,7 +142,7 @@ index bed0cb83fe24..a15622e0d79f 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 4b3fa6cd3106..e39ec0f88d28 100644
+index a3767e74c758..a1b8cb9a2579 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -44,6 +44,7 @@
@@ -153,7 +153,7 @@ index 4b3fa6cd3106..e39ec0f88d28 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -747,7 +748,132 @@ static void __init trim_low_memory_range(void)
+@@ -753,7 +754,132 @@ static void __init trim_low_memory_range(void)
  {
  	memblock_reserve(0, ALIGN(reserve_low, PAGE_SIZE));
  }
@@ -287,7 +287,7 @@ index 4b3fa6cd3106..e39ec0f88d28 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -1244,6 +1370,10 @@ void __init setup_arch(char **cmdline_p)
+@@ -1250,6 +1376,10 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 

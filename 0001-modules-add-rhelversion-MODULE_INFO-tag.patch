@@ -82,7 +82,7 @@ Acked-by: Prarit Bhargava <prarit@redhat.com>
  3 files changed, 11 insertions(+)
 
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 1ad393e62bef..3fb19abee033 100644
+index d849d06e4d44..15a1f464ba50 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -371,6 +371,7 @@ struct module {
@@ -94,7 +94,7 @@ index 1ad393e62bef..3fb19abee033 100644
 
  	/* Exported symbols */
 diff --git a/kernel/module.c b/kernel/module.c
-index 646f1e2330d2..aed5b1fcadf8 100644
+index 64a2b4daaaa5..821a1d681971 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -799,6 +799,7 @@ static struct module_attribute modinfo_##field = {                    \
@@ -114,7 +114,7 @@ index 646f1e2330d2..aed5b1fcadf8 100644
  	&modinfo_coresize,
  	&modinfo_initsize,
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 5c3c50c5ec52..188eb460cede 100644
+index 0053d4fea847..a6ccaf207413 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -21,6 +21,7 @@

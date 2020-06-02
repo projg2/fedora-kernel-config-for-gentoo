@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 1
+%global distro_build 0.rc0.20200602gitf359287765c0.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -68,11 +68,11 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.7.0
-%define pkgrelease 1
+%define rpmversion 5.8.0
+%define pkgrelease 0.rc0.20200602gitf359287765c0.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 1%{?buildid}%{?dist}
+%define specrelease 0.rc0.20200602gitf359287765c0.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -163,10 +163,10 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
-%define kversion 5.7
+%define kversion 5.8
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.7.0.tar.xz
+Source0: linux-20200602gitf359287765c0.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -777,37 +777,36 @@ Patch72: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch73: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
-Patch77: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
-Patch78: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
-Patch79: 0001-disp-gv100-expose-capabilities-class.patch
-Patch80: 0001-core-memory-remove-redundant-assignments-to-variable.patch
-Patch81: 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
-Patch82: 0001-drm-Use-generic-helper-to-check-_PR3-presence.patch
-Patch83: 0001-mmu-Remove-unneeded-semicolon.patch
-Patch84: 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
-Patch85: 0001-device-detect-if-changing-endianness-failed.patch
-Patch86: 0001-device-detect-vGPUs.patch
-Patch87: 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
-Patch88: 0001-kms-Fix-regression-by-audio-component-transition.patch
-Patch89: 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
-Patch90: 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
-Patch91: 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
-Patch92: 0001-disp-hda-gf119-select-HDA-device-entry-based-on-boun.patch
-Patch93: 0001-disp-hda-gv100-NV_PDISP_SF_AUDIO_CNTRL0-register-mov.patch
-Patch94: 0001-kms-nv50-Initialize-core-channel-in-nouveau_display_.patch
-Patch95: 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
-Patch96: 0001-kms-gv100-Add-support-for-interlaced-modes.patch
-Patch97: 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
-Patch98: 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
-Patch99: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
-Patch100: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
-Patch101: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
-Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
-Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
-Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
-Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
-Patch106: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
+Patch76: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
+Patch77: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
+Patch78: 0001-disp-gv100-expose-capabilities-class.patch
+Patch79: 0001-core-memory-remove-redundant-assignments-to-variable.patch
+Patch80: 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
+Patch81: 0001-drm-Use-generic-helper-to-check-_PR3-presence.patch
+Patch82: 0001-mmu-Remove-unneeded-semicolon.patch
+Patch83: 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
+Patch84: 0001-device-detect-if-changing-endianness-failed.patch
+Patch85: 0001-device-detect-vGPUs.patch
+Patch86: 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
+Patch87: 0001-kms-Fix-regression-by-audio-component-transition.patch
+Patch88: 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
+Patch89: 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
+Patch90: 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
+Patch91: 0001-disp-hda-gf119-select-HDA-device-entry-based-on-boun.patch
+Patch92: 0001-disp-hda-gv100-NV_PDISP_SF_AUDIO_CNTRL0-register-mov.patch
+Patch93: 0001-kms-nv50-Initialize-core-channel-in-nouveau_display_.patch
+Patch94: 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
+Patch95: 0001-kms-gv100-Add-support-for-interlaced-modes.patch
+Patch96: 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
+Patch97: 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
+Patch98: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
+Patch99: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
+Patch100: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch101: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch102: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch103: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch104: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch105: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
 
 %endif
 
@@ -1303,8 +1302,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.7.0 -c
-mv linux-5.7.0 linux-%{KVERREL}
+%setup -q -n kernel-20200602gitf359287765c0 -c
+mv linux-20200602gitf359287765c0 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1385,7 +1384,6 @@ ApplyOptionalPatch 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 ApplyOptionalPatch 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 ApplyOptionalPatch 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 ApplyOptionalPatch 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-ApplyOptionalPatch 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
 ApplyOptionalPatch 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
 ApplyOptionalPatch 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
 ApplyOptionalPatch 0001-disp-gv100-expose-capabilities-class.patch
@@ -2832,8 +2830,8 @@ fi
 #
 #
 %changelog
-* Mon Jun 01 2020 CKI@GitLab <cki-project@redhat.com> [5.7.0-1]
-- v5.7 rebase
+* Tue Jun 02 2020 CKI@GitLab <cki-project@redhat.com> [5.8.0-0.rc0.20200602gitf359287765c0.1]
+- f359287765c0 rebase
 - Fix update_scripts.sh unselective pattern sub (David Howells)
 - Updated changelog for the release based on b0c3ba31be3e ("CKI@GitLab")
 - Drop the static path configuration for the Sphinx docs (Jeremy Cline)

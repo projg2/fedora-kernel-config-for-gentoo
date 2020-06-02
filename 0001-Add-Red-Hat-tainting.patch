@@ -124,7 +124,7 @@ index 9b7a8d74a9d6..2cb1c4fea0c9 100644
 +
  #endif
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 4cb4130ced32..e62be9e51064 100644
+index c332eb9d4841..281e1abbe3b2 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,8 @@ obj-y     = fork.o exec_domain.o panic.o \

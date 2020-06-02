@@ -18,7 +18,7 @@ Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
  2 files changed, 45 insertions(+)
 
 diff --git a/drivers/firmware/raspberrypi.c b/drivers/firmware/raspberrypi.c
-index da26a584dca0..cbb495aff6a0 100644
+index a3e85186f8e6..89a50f65d498 100644
 --- a/drivers/firmware/raspberrypi.c
 +++ b/drivers/firmware/raspberrypi.c
 @@ -12,6 +12,7 @@
@@ -29,7 +29,7 @@ index da26a584dca0..cbb495aff6a0 100644
  #include <soc/bcm2835/raspberrypi-firmware.h>
 
  #define MBOX_MSG(chan, data28)		(((data28) & ~0xf) | ((chan) & 0xf))
-@@ -286,6 +287,43 @@ struct rpi_firmware *rpi_firmware_get(struct device_node *firmware_node)
+@@ -280,6 +281,43 @@ struct rpi_firmware *rpi_firmware_get(struct device_node *firmware_node)
  }
  EXPORT_SYMBOL_GPL(rpi_firmware_get);
 

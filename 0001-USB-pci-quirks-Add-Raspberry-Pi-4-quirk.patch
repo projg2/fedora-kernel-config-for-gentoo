@@ -17,7 +17,7 @@ Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
  2 files changed, 17 insertions(+)
 
 diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
-index 8007d4aa76dc..7ca346d3d337 100644
+index 4843e94713a4..47aa3a5d23a0 100644
 --- a/drivers/firmware/Kconfig
 +++ b/drivers/firmware/Kconfig
 @@ -180,6 +180,7 @@ config ISCSI_IBFT

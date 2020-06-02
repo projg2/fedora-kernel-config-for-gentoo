@@ -30,7 +30,7 @@ index 5616b2567aa7..bc5caab1413b 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 988ca0df7824..4ed37b95417c 100644
+index 44d5422c18e4..e8c9797994df 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
 @@ -1476,6 +1476,12 @@
