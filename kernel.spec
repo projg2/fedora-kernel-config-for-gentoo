@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 16
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -3017,6 +3017,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 03 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.16-300
+- Linux v5.6.16
+
 * Thu May 28 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.15-300
 - Linux v5.6.15
 
