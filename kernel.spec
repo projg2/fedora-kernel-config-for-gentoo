@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20200602gitf359287765c0.1
+%global distro_build 0.rc0.20200603gitf359287765c0.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc0.20200602gitf359287765c0.1
+%define pkgrelease 0.rc0.20200603gitf359287765c0.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20200602gitf359287765c0.1%{?buildid}%{?dist}
+%define specrelease 0.rc0.20200603gitf359287765c0.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200602gitf359287765c0.tar.xz
+Source0: linux-20200603gitf359287765c0.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1302,8 +1302,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200602gitf359287765c0 -c
-mv linux-20200602gitf359287765c0 linux-%{KVERREL}
+%setup -q -n kernel-20200603gitf359287765c0 -c
+mv linux-20200603gitf359287765c0 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
