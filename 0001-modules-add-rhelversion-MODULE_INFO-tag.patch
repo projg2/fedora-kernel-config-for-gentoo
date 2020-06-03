@@ -94,7 +94,7 @@ index d849d06e4d44..15a1f464ba50 100644
 
  	/* Exported symbols */
 diff --git a/kernel/module.c b/kernel/module.c
-index 64a2b4daaaa5..821a1d681971 100644
+index a0f201d2e184..e8848dd77628 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -799,6 +799,7 @@ static struct module_attribute modinfo_##field = {                    \

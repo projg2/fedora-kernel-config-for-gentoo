@@ -17,12 +17,12 @@ Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
  create mode 100644 drivers/gpu/drm/panel/panel-xingbangda-xbd599.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index a1723c1b5fbf..cf0c59015a44 100644
+index 39055c1f0e2f..1f55a87bb657 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -433,6 +433,15 @@ config DRM_PANEL_TRULY_NT35597_WQXGA
- 	  Say Y here if you want to enable support for Truly NT35597 WQXGA Dual DSI
- 	  Video Mode panel
+@@ -462,6 +462,15 @@ config DRM_PANEL_VISIONOX_RM69299
+ 	  Say Y here if you want to enable support for Visionox
+ 	  RM69299  DSI Video Mode panel.
 
 +config DRM_PANEL_XINGBANGDA_XBD599
 +	tristate "Xingbangda XBD599 panel"
@@ -37,13 +37,13 @@ index a1723c1b5fbf..cf0c59015a44 100644
  	tristate "Xinpeng XPP055C272 panel driver"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index 96a883cd6630..c84ed5215984 100644
+index de74f282c433..7b6b0c0397d6 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -46,4 +46,5 @@ obj-$(CONFIG_DRM_PANEL_TPO_TD028TTEC1) += panel-tpo-td028ttec1.o
- obj-$(CONFIG_DRM_PANEL_TPO_TD043MTEA1) += panel-tpo-td043mtea1.o
+@@ -49,4 +49,5 @@ obj-$(CONFIG_DRM_PANEL_TPO_TD043MTEA1) += panel-tpo-td043mtea1.o
  obj-$(CONFIG_DRM_PANEL_TPO_TPG110) += panel-tpo-tpg110.o
  obj-$(CONFIG_DRM_PANEL_TRULY_NT35597_WQXGA) += panel-truly-nt35597.o
+ obj-$(CONFIG_DRM_PANEL_VISIONOX_RM69299) += panel-visionox-rm69299.o
 +obj-$(CONFIG_DRM_PANEL_XINGBANGDA_XBD599) += panel-xingbangda-xbd599.o
  obj-$(CONFIG_DRM_PANEL_XINPENG_XPP055C272) += panel-xinpeng-xpp055c272.o
 diff --git a/drivers/gpu/drm/panel/panel-xingbangda-xbd599.c b/drivers/gpu/drm/panel/panel-xingbangda-xbd599.c

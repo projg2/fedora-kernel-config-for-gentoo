@@ -39,10 +39,10 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-index a100483b47c4..29f693734edb 100644
+index 46ec402e97ed..be65df48588f 100644
 --- a/arch/arm64/kernel/acpi.c
 +++ b/arch/arm64/kernel/acpi.c
-@@ -39,7 +39,7 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
+@@ -40,7 +40,7 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
  EXPORT_SYMBOL(acpi_pci_disabled);
 
  static bool param_acpi_off __initdata;

@@ -66,7 +66,7 @@ index c041d4e950f4..8588bb62e74c 100644
  #define TAINT_FLAGS_COUNT		32
 
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 4e6dee19a668..77ecd8b47d70 100644
+index 42c7a42fc9c8..cf20a460c82c 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
@@ -75,9 +75,9 @@ index 4e6dee19a668..77ecd8b47d70 100644
  #include <linux/audit.h>
 +#include <linux/init.h>
  #include <uapi/linux/btf.h>
+ #include <asm/pgtable.h>
  #include <linux/bpf_lsm.h>
-
-@@ -43,7 +44,25 @@ static DEFINE_SPINLOCK(prog_idr_lock);
+@@ -44,7 +45,25 @@ static DEFINE_SPINLOCK(prog_idr_lock);
  static DEFINE_IDR(map_idr);
  static DEFINE_SPINLOCK(map_idr_lock);
 

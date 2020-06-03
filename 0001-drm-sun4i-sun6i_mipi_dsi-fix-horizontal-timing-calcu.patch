@@ -13,10 +13,10 @@ Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c b/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
-index 3eb89f1eb0e1..4e415793d155 100644
+index aa67cb037e9d..52e009dc632b 100644
 --- a/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
 +++ b/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
-@@ -555,7 +555,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
+@@ -556,7 +556,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
  		 */
  #define HSA_PACKET_OVERHEAD	10
  		hsa = max((unsigned int)HSA_PACKET_OVERHEAD,
@@ -25,7 +25,7 @@ index 3eb89f1eb0e1..4e415793d155 100644
 
  		/*
  		 * The backporch is set using a blanking packet (4
-@@ -564,7 +564,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
+@@ -565,7 +565,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
  		 */
  #define HBP_PACKET_OVERHEAD	6
  		hbp = max((unsigned int)HBP_PACKET_OVERHEAD,
@@ -34,7 +34,7 @@ index 3eb89f1eb0e1..4e415793d155 100644
 
  		/*
  		 * The frontporch is set using a sync event (4 bytes)
-@@ -574,7 +574,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
+@@ -575,7 +575,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
  		 */
  #define HFP_PACKET_OVERHEAD	16
  		hfp = max((unsigned int)HFP_PACKET_OVERHEAD,
@@ -43,7 +43,7 @@ index 3eb89f1eb0e1..4e415793d155 100644
 
  		/*
  		 * The blanking is set using a sync event (4 bytes)
-@@ -583,8 +583,8 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
+@@ -584,8 +584,8 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
  		 */
  #define HBLK_PACKET_OVERHEAD	10
  		hblk = max((unsigned int)HBLK_PACKET_OVERHEAD,

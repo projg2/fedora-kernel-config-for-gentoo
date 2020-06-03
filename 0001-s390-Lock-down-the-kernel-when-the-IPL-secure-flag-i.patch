@@ -41,7 +41,7 @@ index 4a71061974fd..9baf0b570c3d 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 36445dd40fdb..b338a050c5aa 100644
+index 0f0b140b5558..5554ae03060f 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -52,7 +52,7 @@ index 36445dd40fdb..b338a050c5aa 100644
 
  #include <asm/boot_data.h>
  #include <asm/ipl.h>
-@@ -1093,6 +1094,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -1090,6 +1091,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
