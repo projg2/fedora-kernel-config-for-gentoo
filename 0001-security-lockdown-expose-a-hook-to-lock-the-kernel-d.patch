@@ -47,7 +47,7 @@ index 44d5422c18e4..e8c9797994df 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/security.h b/include/linux/security.h
-index a8d9310472df..381305889d89 100644
+index 6aa229b252ce..97f76aa6c502 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -446,6 +446,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);

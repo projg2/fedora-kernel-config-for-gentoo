@@ -56,7 +56,6 @@
 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 0001-ARM-tegra-usb-no-reset.patch
-0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
 0001-Drop-that-for-now.patch

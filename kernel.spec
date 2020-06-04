@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20200603gitd6f9469a03d8.1
+%global distro_build 0.rc0.20200604git9fb4c5250f10.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc0.20200603gitd6f9469a03d8.1
+%define pkgrelease 0.rc0.20200604git9fb4c5250f10.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20200603gitd6f9469a03d8.1%{?buildid}%{?dist}
+%define specrelease 0.rc0.20200604git9fb4c5250f10.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200603gitd6f9469a03d8.tar.xz
+Source0: linux-20200604git9fb4c5250f10.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -761,31 +761,30 @@ Patch56: 0001-redhat-rh_kabi-add-a-comment-with-warning-about-RH_K.patch
 Patch57: 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch60: 0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
-Patch61: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
-Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
-Patch63: 0001-Drop-that-for-now.patch
-Patch64: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
-Patch65: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-Patch66: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
-Patch67: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
-Patch68: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
-Patch69: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
-Patch70: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-Patch71: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
-Patch72: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
-Patch73: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
-Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch76: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
-Patch77: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
-Patch78: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
-Patch79: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
-Patch80: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
-Patch81: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
-Patch82: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
-Patch83: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
-Patch84: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch60: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
+Patch61: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
+Patch62: 0001-Drop-that-for-now.patch
+Patch63: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
+Patch64: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+Patch65: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
+Patch66: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
+Patch67: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
+Patch68: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
+Patch69: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
+Patch70: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
+Patch71: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch72: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
+Patch73: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
+Patch74: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch75: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
+Patch76: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
+Patch77: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
+Patch78: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
+Patch79: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch80: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch81: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch82: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch83: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 
 %endif
 
@@ -1281,8 +1280,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200603gitd6f9469a03d8 -c
-mv linux-20200603gitd6f9469a03d8 linux-%{KVERREL}
+%setup -q -n kernel-20200604git9fb4c5250f10 -c
+mv linux-20200604git9fb4c5250f10 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1347,7 +1346,6 @@ ApplyOptionalPatch 0001-redhat-rh_kabi-add-a-comment-with-warning-about-RH_K.pat
 ApplyOptionalPatch 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
 ApplyOptionalPatch 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 ApplyOptionalPatch 0001-ARM-tegra-usb-no-reset.patch
-ApplyOptionalPatch 0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
 ApplyOptionalPatch 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 ApplyOptionalPatch 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
 ApplyOptionalPatch 0001-Drop-that-for-now.patch
@@ -2788,8 +2786,16 @@ fi
 #
 #
 %changelog
-* Wed Jun 03 2020 CKI@GitLab <cki-project@redhat.com> [5.8.0-0.rc0.20200603gitd6f9469a03d8.1]
-- d6f9469a03d8 rebase
+* Thu Jun 04 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.8.0-0.rc0.20200604git9fb4c5250f10.1]
+- More Fedora config work ("Justin M. Forbes")
+
+* Thu Jun 04 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc0.20200604git9fb4c5250f10.1]
+- 9fb4c5250f10 rebase
+- RTW88BE and CE have been extracted to their own modules ("Justin M. Forbes")
+- Set CONFIG_BLK_INLINE_ENCRYPTION_FALLBACK for Fedora ("Justin M. Forbes")
+- Arm64 Use Branch Target Identification for kernel ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- Change value of CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE ("Justin M. Forbes")
 - Fix configs for Fedora ("Justin M. Forbes")
 - Fix update_scripts.sh unselective pattern sub (David Howells)
 - Updated changelog for the release based on b0c3ba31be3e ("CKI@GitLab")

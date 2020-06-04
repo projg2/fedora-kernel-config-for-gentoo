@@ -34,10 +34,10 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  4 files changed, 30 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 4379c6ac3265..0344ce405595 100644
+index 89386f6f3ab6..f7ee70888a60 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5188,6 +5188,14 @@
+@@ -5228,6 +5228,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -66,7 +66,7 @@ index c041d4e950f4..8588bb62e74c 100644
  #define TAINT_FLAGS_COUNT		32
 
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 42c7a42fc9c8..cf20a460c82c 100644
+index 4d530b1d5683..8ec44a344455 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
@@ -77,9 +77,9 @@ index 42c7a42fc9c8..cf20a460c82c 100644
  #include <uapi/linux/btf.h>
  #include <asm/pgtable.h>
  #include <linux/bpf_lsm.h>
-@@ -44,7 +45,25 @@ static DEFINE_SPINLOCK(prog_idr_lock);
- static DEFINE_IDR(map_idr);
- static DEFINE_SPINLOCK(map_idr_lock);
+@@ -48,7 +49,25 @@ static DEFINE_SPINLOCK(map_idr_lock);
+ static DEFINE_IDR(link_idr);
+ static DEFINE_SPINLOCK(link_idr_lock);
 
 -int sysctl_unprivileged_bpf_disabled __read_mostly;
 +/* RHEL-only: default to 1 */

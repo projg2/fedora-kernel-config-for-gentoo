@@ -82,7 +82,7 @@ Acked-by: Prarit Bhargava <prarit@redhat.com>
  3 files changed, 11 insertions(+)
 
 diff --git a/include/linux/module.h b/include/linux/module.h
-index d849d06e4d44..15a1f464ba50 100644
+index 2e6670860d27..8c35a5db7d7e 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -371,6 +371,7 @@ struct module {
@@ -94,10 +94,10 @@ index d849d06e4d44..15a1f464ba50 100644
 
  	/* Exported symbols */
 diff --git a/kernel/module.c b/kernel/module.c
-index a0f201d2e184..e8848dd77628 100644
+index bca993c5f1bc..63518d49c823 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -799,6 +799,7 @@ static struct module_attribute modinfo_##field = {                    \
+@@ -802,6 +802,7 @@ static struct module_attribute modinfo_##field = {                    \
 
  MODINFO_ATTR(version);
  MODINFO_ATTR(srcversion);
@@ -105,7 +105,7 @@ index a0f201d2e184..e8848dd77628 100644
 
  static char last_unloaded_module[MODULE_NAME_LEN+1];
 
-@@ -1263,6 +1264,7 @@ static struct module_attribute *modinfo_attrs[] = {
+@@ -1266,6 +1267,7 @@ static struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
@@ -114,7 +114,7 @@ index a0f201d2e184..e8848dd77628 100644
  	&modinfo_coresize,
  	&modinfo_initsize,
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 0053d4fea847..a6ccaf207413 100644
+index 9a98af90e625..9e46ba4a3f25 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -21,6 +21,7 @@
@@ -125,7 +125,7 @@ index 0053d4fea847..a6ccaf207413 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static int modversions = 0;
-@@ -2381,6 +2382,12 @@ static void add_srcversion(struct buffer *b, struct module *mod)
+@@ -2382,6 +2383,12 @@ static void add_srcversion(struct buffer *b, struct module *mod)
  	}
  }
 
@@ -138,7 +138,7 @@ index 0053d4fea847..a6ccaf207413 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2644,6 +2651,7 @@ int main(int argc, char **argv)
+@@ -2645,6 +2652,7 @@ int main(int argc, char **argv)
  		add_depends(&buf, mod);
  		add_moddevtable(&buf, mod);
  		add_srcversion(&buf, mod);
