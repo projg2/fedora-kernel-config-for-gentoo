@@ -12,10 +12,10 @@ Reviewed-by: Rob Herring <robh@kernel.org>
  1 file changed, 5 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/arm/rockchip.yaml b/Documentation/devicetree/bindings/arm/rockchip.yaml
-index 715586dea9bb..fff0439c6b78 100644
+index d4a4045092df..ed808148b6a7 100644
 --- a/Documentation/devicetree/bindings/arm/rockchip.yaml
 +++ b/Documentation/devicetree/bindings/arm/rockchip.yaml
-@@ -420,6 +420,11 @@ properties:
+@@ -425,6 +425,11 @@ properties:
            - const: pine64,rockpro64
            - const: rockchip,rk3399
 

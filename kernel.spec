@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20200604git9fb4c5250f10.1
+%global distro_build 0.rc0.20200605git435faf5c218a.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc0.20200604git9fb4c5250f10.1
+%define pkgrelease 0.rc0.20200605git435faf5c218a.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20200604git9fb4c5250f10.1%{?buildid}%{?dist}
+%define specrelease 0.rc0.20200605git435faf5c218a.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200604git9fb4c5250f10.tar.xz
+Source0: linux-20200605git435faf5c218a.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1280,8 +1280,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200604git9fb4c5250f10 -c
-mv linux-20200604git9fb4c5250f10 linux-%{KVERREL}
+%setup -q -n kernel-20200605git435faf5c218a -c
+mv linux-20200605git435faf5c218a linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2786,11 +2786,13 @@ fi
 #
 #
 %changelog
-* Thu Jun 04 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.8.0-0.rc0.20200604git9fb4c5250f10.1]
-- More Fedora config work ("Justin M. Forbes")
+* Fri Jun 05 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.8.0-0.rc0.20200605git435faf5c218a.1]
+- Fedora config updates ("Justin M. Forbes")
+- Fix up module filtering for 5.8 ("Justin M. Forbes")
 
-* Thu Jun 04 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc0.20200604git9fb4c5250f10.1]
-- 9fb4c5250f10 rebase
+* Fri Jun 05 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc0.20200605git435faf5c218a.1]
+- 435faf5c218a rebase
+- More Fedora config work ("Justin M. Forbes")
 - RTW88BE and CE have been extracted to their own modules ("Justin M. Forbes")
 - Set CONFIG_BLK_INLINE_ENCRYPTION_FALLBACK for Fedora ("Justin M. Forbes")
 - Arm64 Use Branch Target Identification for kernel ("Justin M. Forbes")

@@ -21,10 +21,10 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index d0bc8bae7c8d..2ed6a27d00b3 100644
+index 7f9d38444d6d..2fba78e84d53 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -860,7 +860,7 @@ endchoice
+@@ -861,7 +861,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
