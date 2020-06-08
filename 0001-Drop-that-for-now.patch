@@ -8,10 +8,10 @@ Subject: [PATCH] Drop that for now
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index cee5c5cda7fc..b578e32cce0f 100644
+index d4d2a5c5d003..24ad272d3197 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -479,7 +479,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+@@ -510,7 +510,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
  		   -Werror=implicit-function-declaration -Werror=implicit-int \

@@ -27,7 +27,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/scsi/aacraid/linit.c b/drivers/scsi/aacraid/linit.c
-index 83a60b0a8cd8..9efb63c83234 100644
+index a308e86a97f1..4d84f95a50ce 100644
 --- a/drivers/scsi/aacraid/linit.c
 +++ b/drivers/scsi/aacraid/linit.c
 @@ -78,6 +78,7 @@ char aac_driver_version[] = AAC_DRIVER_FULL_VERSION;

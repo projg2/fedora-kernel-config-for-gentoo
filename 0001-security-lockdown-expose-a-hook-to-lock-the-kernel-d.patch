@@ -82,10 +82,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 11c1a7da4fd1..78cdd36bb5e7 100644
+index 545243fae4a6..3abc2e580c4e 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2473,6 +2473,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2478,6 +2478,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 

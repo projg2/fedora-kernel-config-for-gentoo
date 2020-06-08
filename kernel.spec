@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20200605git435faf5c218a.1
+%global distro_build 0.rc0.20200608gitaf7b4801030c.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,10 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc0.20200605git435faf5c218a.1
+%define pkgrelease 0.rc0.20200608gitaf7b4801030c.1
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20200605git435faf5c218a.1%{?buildid}%{?dist}
+%define specrelease 0.rc0.20200608gitaf7b4801030c.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -564,7 +564,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200605git435faf5c218a.tar.xz
+Source0: linux-20200608gitaf7b4801030c.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -767,24 +767,21 @@ Patch62: 0001-Drop-that-for-now.patch
 Patch63: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
 Patch64: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 Patch65: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
-Patch66: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
-Patch67: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
-Patch68: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
-Patch69: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-Patch70: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
-Patch71: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
-Patch72: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-Patch73: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
-Patch74: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch75: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
-Patch76: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
-Patch77: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
-Patch78: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
-Patch79: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
-Patch80: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
-Patch81: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
-Patch82: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
-Patch83: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
+Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
+Patch69: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
+Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch71: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
+Patch72: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
+Patch73: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
+Patch74: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
+Patch75: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch76: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch77: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch78: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch79: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch80: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 
 %endif
 
@@ -1280,8 +1277,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200605git435faf5c218a -c
-mv linux-20200605git435faf5c218a linux-%{KVERREL}
+%setup -q -n kernel-20200608gitaf7b4801030c -c
+mv linux-20200608gitaf7b4801030c linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1352,10 +1349,6 @@ ApplyOptionalPatch 0001-Drop-that-for-now.patch
 ApplyOptionalPatch 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
 ApplyOptionalPatch 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 ApplyOptionalPatch 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
-ApplyOptionalPatch 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
-ApplyOptionalPatch 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
-ApplyOptionalPatch 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
-ApplyOptionalPatch 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
 ApplyOptionalPatch 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
 ApplyOptionalPatch 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 ApplyOptionalPatch 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
@@ -1370,6 +1363,7 @@ ApplyOptionalPatch 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.pat
 ApplyOptionalPatch 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
 ApplyOptionalPatch 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 ApplyOptionalPatch 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+ApplyOptionalPatch 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 
 %endif
 
@@ -2786,12 +2780,13 @@ fi
 #
 #
 %changelog
-* Fri Jun 05 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.8.0-0.rc0.20200605git435faf5c218a.1]
+* Mon Jun 08 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.8.0-0.rc0.20200608gitaf7b4801030c.1]
 - Fedora config updates ("Justin M. Forbes")
-- Fix up module filtering for 5.8 ("Justin M. Forbes")
 
-* Fri Jun 05 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc0.20200605git435faf5c218a.1]
-- 435faf5c218a rebase
+* Mon Jun 08 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc0.20200608gitaf7b4801030c.1]
+- af7b4801030c rebase
+- PCI: tegra: Revert raw_violation_fixup for tegra124 (Nicolas Chauvet)
+- Fix up module filtering for 5.8 ("Justin M. Forbes")
 - More Fedora config work ("Justin M. Forbes")
 - RTW88BE and CE have been extracted to their own modules ("Justin M. Forbes")
 - Set CONFIG_BLK_INLINE_ENCRYPTION_FALLBACK for Fedora ("Justin M. Forbes")

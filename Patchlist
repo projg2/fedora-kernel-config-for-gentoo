@@ -62,10 +62,6 @@
 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
-0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
-0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
-0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
-0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
@@ -80,3 +76,4 @@
 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
