@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 17
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -920,9 +920,6 @@ Patch519: vboxguest-fixes.patch
 
 # rhbz 1830150
 Patch520: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
-
-# CVE-2020-10757 rhbz 1842525 1843883
-Patch521: mm-fix-mremap-not-considering-huge-pmd-devmap.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -3020,6 +3017,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 08 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.17-300
+- Linux v5.6.17
+
 * Thu Jun 04 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.16-300
 - Fix CVE-2020-10757 (rhbz 1842525 184388)
 
