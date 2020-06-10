@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20200608gitaf7b4801030c.1
+%global distro_build 0.rc0.20200610git84fc461db99b.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,10 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc0.20200608gitaf7b4801030c.1
+%define pkgrelease 0.rc0.20200610git84fc461db99b.1
+
+# This is needed to do merge window version magic
+%define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20200608gitaf7b4801030c.1%{?buildid}%{?dist}
+%define specrelease 0.rc0.20200610git84fc461db99b.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -564,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200608gitaf7b4801030c.tar.xz
+Source0: linux-20200610git84fc461db99b.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1277,8 +1280,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200608gitaf7b4801030c -c
-mv linux-20200608gitaf7b4801030c linux-%{KVERREL}
+%setup -q -n kernel-20200610git84fc461db99b -c
+mv linux-20200610git84fc461db99b linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1516,6 +1519,10 @@ BuildKernel() {
     # Trim the release if this is a CI build, since KERNELVERSION is limited to 64 characters
     ShortRel=$(perl -e "print \"%{release}\" =~ s/\.pr\.[0-9A-Fa-f]{32}//r")
     perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${ShortRel}.%{_target_cpu}${Flav}/" Makefile
+
+    # if pre-rc1 devel kernel, must fix up PATCHLEVEL for our versioning scheme
+    # if we are post rc1 this should match anyway so this won't matter
+    perl -p -i -e 's/^PATCHLEVEL.*/PATCHLEVEL = %{patchlevel}/' Makefile
 
     # and now to start the build process
 
@@ -2780,12 +2787,13 @@ fi
 #
 #
 %changelog
-* Mon Jun 08 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.8.0-0.rc0.20200608gitaf7b4801030c.1]
-- Fedora config updates ("Justin M. Forbes")
-
-* Mon Jun 08 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc0.20200608gitaf7b4801030c.1]
-- af7b4801030c rebase
+* Wed Jun 10 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc0.20200610git84fc461db99b.1]
+- 84fc461db99b rebase
+- Fix PATCHLEVEL for merge window ("Justin M. Forbes")
 - PCI: tegra: Revert raw_violation_fixup for tegra124 (Nicolas Chauvet)
+- Change ark CONFIG_COMMON_CLK to yes, it is selected already by other options ("Justin M. Forbes")
+- More module filtering for Fedora ("Justin M. Forbes")
+- Update filters for rnbd in Fedora ("Justin M. Forbes")
 - Fix up module filtering for 5.8 ("Justin M. Forbes")
 - More Fedora config work ("Justin M. Forbes")
 - RTW88BE and CE have been extracted to their own modules ("Justin M. Forbes")

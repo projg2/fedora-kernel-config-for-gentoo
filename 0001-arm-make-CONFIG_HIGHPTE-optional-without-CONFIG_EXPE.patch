@@ -11,10 +11,10 @@ Signed-off-by: Jon Masters <jcm@redhat.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index fb6c85c5d344..075b1cc342d8 100644
+index bbac2867062d..5a50e9f5a485 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1550,9 +1550,9 @@ config HIGHMEM
+@@ -1549,9 +1549,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE

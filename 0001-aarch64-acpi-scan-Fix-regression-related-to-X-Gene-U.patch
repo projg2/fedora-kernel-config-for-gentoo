@@ -28,10 +28,10 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 9 insertions(+)
 
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 5287ab98b8c1..3b5cc5f281c0 100644
+index 4da23e751bce..fdbf9106be4a 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1563,6 +1563,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1562,6 +1562,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
 

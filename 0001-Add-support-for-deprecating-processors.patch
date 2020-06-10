@@ -130,10 +130,10 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  2 files changed, 132 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 74682b8d09b0..5b25b8fef254 100644
+index 8be042df12c3..a723808f4244 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1203,6 +1203,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1236,6 +1236,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);

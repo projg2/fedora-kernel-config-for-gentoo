@@ -100,10 +100,10 @@ Signed-off-by: Philipp Rudo <prudo@redhat.com>
  create mode 100644 kernel/rh_taint.c
 
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 9b7a8d74a9d6..2cb1c4fea0c9 100644
+index 82d91547d122..b82db0c0caec 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -1029,4 +1029,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -1038,4 +1038,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))

@@ -24,10 +24,10 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  2 files changed, 32 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 2cb1c4fea0c9..c041d4e950f4 100644
+index b82db0c0caec..28be75396242 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -595,7 +595,24 @@ extern enum system_states {
+@@ -603,7 +603,24 @@ extern enum system_states {
  #define TAINT_LIVEPATCH			15
  #define TAINT_AUX			16
  #define TAINT_RANDSTRUCT		17
@@ -50,14 +50,14 @@ index 2cb1c4fea0c9..c041d4e950f4 100644
 +#define TAINT_RESERVED31		31
 +/* End of Red Hat-specific taint flags */
 +#define TAINT_FLAGS_COUNT		32
+ #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
 
  struct taint_flag {
- 	char c_true;	/* character printed when tainted */
 diff --git a/kernel/panic.c b/kernel/panic.c
-index b69ee9e76cb2..02f9b2c36cc1 100644
+index 85568bbfb12b..087392cd7dc8 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -376,6 +376,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -386,6 +386,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },

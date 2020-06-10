@@ -27,7 +27,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 6 insertions(+)
 
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 8ec44a344455..dc862679a5f3 100644
+index 7b23725a1940..4951906e906f 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -4097,11 +4097,17 @@ static int bpf_iter_create(union bpf_attr *attr)
