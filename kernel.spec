@@ -1,6 +1,9 @@
 # We have to override the new %%install behavior because, well... the kernel is special.
 %global __spec_install_pre %{___build_pre}
 
+# this should go away soon
+%define _legacy_common_support 1
+
 # At the time of this writing (2019-03), RHEL8 packages use w2.xzdio
 # compression for rpms (xz, level 2).
 # Kernel has several large (hundreds of mbytes) rpms, they take ~5 mins
@@ -83,13 +86,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 5
+%define base_sublevel 7
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -185,7 +188,7 @@ Summary: The Linux kernel
 
 #
 # gcov support
-%define with_gcov %{?_with_gcov: 1} %{?!_with_gcov: 0}
+%define with_gcov %{?_with_gcov:1}%{?!_with_gcov:0}
 
 #
 # ipa_clone support
@@ -653,7 +656,8 @@ Source15: secureboot_ppc.cer
 %define pesign_name redhatsecureboot303
 %endif
 
-%else # released_kernel
+# released_kernel
+%else
 
 Source12: redhatsecurebootca2.cer
 Source13: redhatsecureboot003.cer
@@ -662,7 +666,8 @@ Source13: redhatsecureboot003.cer
 %define secureboot_key %{SOURCE13}
 %define pesign_name redhatsecureboot003
 
-%endif # released_kernel
+# released_kernel
+%endif
 
 Source22: mod-extra.list.rhel
 Source16: mod-extra.list.fedora
@@ -786,78 +791,77 @@ Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 
 %if !%{nopatches}
 
-# Git trees.
-
-# Standalone patches
-# 100 - Generic long running patches
-
-# 200 - x86 / secureboot
-
-# bz 1497559 - Make kernel MODSIGN code not error on missing variables
-Patch200: 0001-Make-get_cert_list-not-complain-about-cert-lists-tha.patch
-Patch201: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
-Patch202: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
-
-Patch204: efi-secureboot.patch
-
-Patch206: s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
-
-# 300 - ARM patches
-Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-
-# RHBZ Bug 1576593 - work around while vendor investigates
-Patch301: arm-make-highpte-not-expert.patch
-
-# https://patchwork.kernel.org/patch/10351797/
-Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
-# rhbz 1574718
-Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
-
-Patch304: ARM-tegra-usb-no-reset.patch
-
-# Raspberry Pi
-# https://patchwork.kernel.org/cover/11271017/
-Patch310: Raspberry-Pi-4-PCIe-support.patch
-# https://patchwork.kernel.org/patch/11223139/
-Patch311: ARM-Enable-thermal-support-for-Raspberry-Pi-4.patch
-# https://patchwork.kernel.org/patch/11299997/
-Patch312: bcm283x-gpu-drm-v3d-Add-ARCH_BCM2835-to-DRM_V3D-Kconfig.patch
-# https://patchwork.kernel.org/cover/11353083/
-Patch313: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
-# https://github.com/raspberrypi/linux/commit/c74b1b53254016fd83b580b8d49bb02d72ce4836
-Patch314: usb-xhci-Raspberry-Pi-FW-loader-for-VIA-VL805.patch
-# https://patchwork.kernel.org/patch/11372935/
-Patch315: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
-
-# Tegra bits
-Patch320: arm64-tegra-jetson-tx1-fixes.patch
-# https://www.spinics.net/lists/linux-tegra/msg43110.html
-Patch321: arm64-tegra-Jetson-TX2-Allow-bootloader-to-configure.patch
-
-# 400 - IBM (ppc/s390x) patches
-
-# 500 - Temp fixes/CVEs etc
-# rhbz 1431375
-Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# gcc9 fixes
-Patch502: 0001-Drop-that-for-now.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1701096
-# Submitted upstream at https://lkml.org/lkml/2019/4/23/89
-Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
-
-# Fixes a boot hang on debug kernels
-# https://bugzilla.redhat.com/show_bug.cgi?id=1756655
-Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-
-# it seems CONFIG_OPTIMIZE_INLINING has been forced now and is causing issues on ARMv7
-# https://lore.kernel.org/patchwork/patch/1132459/
-# https://lkml.org/lkml/2019/8/29/1772
-Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
-
-# ALSA code from v5.6 (Intel ASoC Sound Open Firmware driver support)
-Patch527: alsa-5.6.patch
+Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
+Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
+Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
+Patch10: 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
+Patch11: 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
+Patch12: 0001-kdump-add-support-for-crashkernel-auto.patch
+Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
+Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
+Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
+Patch21: 0001-add-pci_hw_vendor_status.patch
+Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
+Patch25: 0001-IB-rxe-Mark-Soft-RoCE-Transport-driver-as-tech-previ.patch
+Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
+Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
+Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
+Patch30: 0001-Add-support-for-deprecating-processors.patch
+Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
+Patch32: 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
+Patch33: 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
+Patch34: 0001-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
+Patch35: 0001-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
+Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
+Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
+Patch59: 0001-ARM-tegra-usb-no-reset.patch
+Patch60: 0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
+Patch61: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
+Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
+Patch63: 0001-Drop-that-for-now.patch
+Patch64: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
+Patch65: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+Patch66: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
+Patch67: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
+Patch68: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
+Patch69: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
+Patch70: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
+Patch71: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
+Patch72: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch73: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
+Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
+Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
+Patch77: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
+Patch79: 0001-disp-gv100-expose-capabilities-class.patch
+Patch80: 0001-core-memory-remove-redundant-assignments-to-variable.patch
+Patch81: 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
+Patch82: 0001-drm-Use-generic-helper-to-check-_PR3-presence.patch
+Patch83: 0001-mmu-Remove-unneeded-semicolon.patch
+Patch84: 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
+Patch85: 0001-device-detect-if-changing-endianness-failed.patch
+Patch86: 0001-device-detect-vGPUs.patch
+Patch87: 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
+Patch88: 0001-kms-Fix-regression-by-audio-component-transition.patch
+Patch89: 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
+Patch90: 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
+Patch91: 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
+Patch92: 0001-disp-hda-gf119-select-HDA-device-entry-based-on-boun.patch
+Patch93: 0001-disp-hda-gv100-NV_PDISP_SF_AUDIO_CNTRL0-register-mov.patch
+Patch94: 0001-kms-nv50-Initialize-core-channel-in-nouveau_display_.patch
+Patch95: 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
+Patch96: 0001-kms-gv100-Add-support-for-interlaced-modes.patch
+Patch97: 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
+Patch98: 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
+Patch99: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
+Patch100: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
+Patch101: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch106: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -977,8 +981,8 @@ This package provides debug information for the perf python bindings.
 # the python_sitearch macro should already be defined from above
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{python3_sitearch}/perf.*so(\.debug)?|XXX' -o python3-perf-debuginfo.list}
 
-
-%endif # with_perf
+# with_perf
+%endif
 
 %if %{with_tools}
 %package -n kernel-tools
@@ -1033,7 +1037,8 @@ This package provides debug information for package kernel-tools.
 # of matching the pattern against the symlinks file.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
 
-%endif # with_tools
+# with_tools
+%endif
 
 %if %{with_bpftool}
 
@@ -1054,9 +1059,11 @@ This package provides debug information for the bpftool package.
 
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_sbindir}/bpftool(\.debug)?|XXX' -o bpftool-debuginfo.list}
 
-%endif # with_bpftool
+# with_bpftool
+%endif
 
 %if %{with_selftests}
+
 %package selftests-internal
 Summary: Kernel samples and selftests
 License: GPLv2
@@ -1064,12 +1071,14 @@ Requires: binutils, bpftool, iproute-tc, nmap-ncat
 Requires: kernel-modules-internal = %{version}-%{release}
 %description selftests-internal
 Kernel sample programs and selftests.
-%{nil}
+
 # Note that this pattern only works right to match the .build-id
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libexecdir}/(ksamples|kselftests)/.*|XXX' -o selftests-debuginfo.list}
+
+# with_selftests
 %endif
 
 %if %{with_gcov}
@@ -1207,6 +1216,7 @@ Provides: kernel-modules = %{version}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
 Provides: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
 Requires: kernel-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
+Recommends: alsa-sof-firmware\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules\
@@ -1267,6 +1277,7 @@ Cortex-A15 devices with LPAE and HW virtualisation support
 %description zfcpdump-core
 The kernel package contains the Linux kernel (vmlinuz) for use by the
 zfcpdump infrastructure.
+# with_zfcpdump
 %endif
 
 %define variant_summary The Linux kernel compiled with extra debugging enabled
@@ -1521,8 +1532,7 @@ git am %{patches}
 # Any further pre-build tree manipulations happen here.
 
 chmod +x scripts/checkpatch.pl
-chmod +x tools/objtool/sync-check.sh
-mv COPYING COPYING-%{version}
+mv COPYING COPYING-%{version}-%{release}
 
 # This Prevents scripts/setlocalversion from mucking with our version numbers.
 touch .scmversion
@@ -1788,7 +1798,9 @@ BuildKernel() {
     if [ "$KernelExtension" == "gz" ]; then
         gzip -f9 $SignImage
     fi
+    # signkernel
     %endif
+
     $CopyKernel $KernelImage \
                 $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
     chmod 755 $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
@@ -1803,7 +1815,7 @@ BuildKernel() {
     if [ $DoModules -eq 1 ]; then
 	# Override $(mod-fw) because we don't want it to install any firmware
 	# we'll get it from the linux-firmware package and we don't want conflicts
-	%{make} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT %{?_smp_mflags} modules_install KERNELRELEASE=$KernelVer mod-fw=
+	%{make} %{?_smp_mflags} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT %{?_smp_mflags} modules_install KERNELRELEASE=$KernelVer mod-fw=
     fi
 
 %if %{with_gcov}
@@ -1842,6 +1854,9 @@ BuildKernel() {
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/extra
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/internal
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/updates
+%if 0%{!?fedora:1}
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/weak-updates
+%endif
     # CONFIG_KERNEL_HEADER_TEST generates some extra files in the process of
     # testing so just delete
     find . -name *.h.s -delete
@@ -1862,13 +1877,15 @@ BuildKernel() {
     echo "**** GENERATING kernel ABI metadata ****"
     gzip -c9 < Module.symvers > $RPM_BUILD_ROOT/boot/symvers-$KernelVer.gz
     cp $RPM_BUILD_ROOT/boot/symvers-$KernelVer.gz $RPM_BUILD_ROOT/lib/modules/$KernelVer/symvers.gz
+
 %if %{with_kabichk}
     echo "**** kABI checking is enabled in kernel SPEC file. ****"
     chmod 0755 $RPM_SOURCE_DIR/check-kabi
     if [ -e $RPM_SOURCE_DIR/Module.kabi_%{_target_cpu}$Flavour ]; then
         cp $RPM_SOURCE_DIR/Module.kabi_%{_target_cpu}$Flavour $RPM_BUILD_ROOT/Module.kabi
         $RPM_SOURCE_DIR/check-kabi -k $RPM_BUILD_ROOT/Module.kabi -s Module.symvers || exit 1
-        rm $RPM_BUILD_ROOT/Module.kabi # for now, don't keep it around.
+        # for now, don't keep it around.
+        rm $RPM_BUILD_ROOT/Module.kabi
     else
         echo "**** NOTE: Cannot find reference Module.kabi file. ****"
     fi
@@ -1879,7 +1896,8 @@ BuildKernel() {
     if [ -e $RPM_SOURCE_DIR/Module.kabi_dup_%{_target_cpu}$Flavour ]; then
         cp $RPM_SOURCE_DIR/Module.kabi_dup_%{_target_cpu}$Flavour $RPM_BUILD_ROOT/Module.kabi
         $RPM_SOURCE_DIR/check-kabi -k $RPM_BUILD_ROOT/Module.kabi -s Module.symvers || exit 1
-        rm $RPM_BUILD_ROOT/Module.kabi # for now, don't keep it around.
+        # for now, don't keep it around.
+        rm $RPM_BUILD_ROOT/Module.kabi
     else
         echo "**** NOTE: Cannot find DUP reference Module.kabi file. ****"
     fi
@@ -1934,6 +1952,7 @@ BuildKernel() {
 %endif
 
     # then drop all but the needed Makefiles/Kconfig files
+    rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Documentation
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
     cp .config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
@@ -2070,9 +2089,8 @@ BuildKernel() {
     mkdir restore
     cp -r lib/modules/$KernelVer/* restore/.
 
-    # don't include anything going into k-m-e in the file lists
+    # don't include anything going into k-m-e and k-m-i in the file lists
     rm -rf lib/modules/$KernelVer/{extra,internal}
-
 
     if [ $DoModules -eq 1 ]; then
 	# Find all the module files and filter them out into the core and
@@ -2218,28 +2236,34 @@ chmod +x tools/perf/check-headers.sh
 %{perf_make} DESTDIR=$RPM_BUILD_ROOT all
 %endif
 
+%global tools_make \
+  %{make} CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" V=1
+
 %if %{with_tools}
 %ifarch %{cpupowerarchs}
 # cpupower
 # make sure version-gen.sh is executable.
 chmod +x tools/power/cpupower/utils/version-gen.sh
-%{make} %{?_smp_mflags} -C tools/power/cpupower CPUFREQ_BENCH=false
+%{tools_make} %{?_smp_mflags} -C tools/power/cpupower CPUFREQ_BENCH=false
 %ifarch x86_64
     pushd tools/power/cpupower/debug/x86_64
-    %{make} %{?_smp_mflags} centrino-decode powernow-k8-decode
+    %{tools_make} %{?_smp_mflags} centrino-decode powernow-k8-decode
     popd
 %endif
 %ifarch x86_64
    pushd tools/power/x86/x86_energy_perf_policy/
-   %{make}
+   %{tools_make}
    popd
    pushd tools/power/x86/turbostat
+   %{tools_make}
+   popd
+   pushd tools/power/x86/intel-speed-select
    %{make}
    popd
-%endif #turbostat/x86_energy_perf_policy
+%endif
 %endif
 pushd tools/thermal/tmon/
-%{make}
+%{tools_make}
 popd
 pushd tools/iio/
 %{make}
@@ -2268,7 +2292,7 @@ popd
 
 %if %{with_doc}
 # Make the HTML pages.
-make htmldocs || %{doc_build_fail}
+make PYTHON=/usr/bin/python3 htmldocs || %{doc_build_fail}
 
 # sometimes non-world-readable files sneak into the kernel source tree
 chmod -R a=rX Documentation
@@ -2360,6 +2384,7 @@ docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{rpmversion}
 mkdir -p $docdir
 tar -h -f - --exclude=man --exclude='.*' -c Documentation | tar xf - -C $docdir
 
+# with_doc
 %endif
 
 # We have to do the headers install before the tools install because the
@@ -2377,7 +2402,11 @@ find $RPM_BUILD_ROOT/usr/include \
 %endif
 
 %if %{with_cross_headers}
+%if 0%{?fedora}
 HDR_ARCH_LIST='arm arm64 powerpc s390 x86'
+%else
+HDR_ARCH_LIST='arm64 powerpc s390 x86'
+%endif
 mkdir -p $RPM_BUILD_ROOT/usr/tmp-headers
 
 for arch in $HDR_ARCH_LIST; do
@@ -2402,8 +2431,10 @@ rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
 # kabi directory
 INSTALL_KABI_PATH=$RPM_BUILD_ROOT/lib/modules/
 mkdir -p $INSTALL_KABI_PATH
+
 # install kabi releases directories
 tar xjvf %{SOURCE300} -C $INSTALL_KABI_PATH
+# with_kernel_abi_whitelists
 %endif
 
 %if %{with_perf}
@@ -2453,14 +2484,17 @@ install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
 %ifarch x86_64
    mkdir -p %{buildroot}%{_mandir}/man8
    pushd tools/power/x86/x86_energy_perf_policy
-   make DESTDIR=%{buildroot} install
+   %{tools_make} DESTDIR=%{buildroot} install
    popd
    pushd tools/power/x86/turbostat
-   make DESTDIR=%{buildroot} install
+   %{tools_make} DESTDIR=%{buildroot} install
    popd
-%endif #turbostat/x86_energy_perf_policy
+   pushd tools/power/x86/intel-speed-select
+   %{tools_make} CFLAGS+="-D_GNU_SOURCE -Iinclude" DESTDIR=%{buildroot} install
+   popd
+%endif
 pushd tools/thermal/tmon
-make INSTALL_ROOT=%{buildroot} install
+%{tools_make} INSTALL_ROOT=%{buildroot} install
 popd
 pushd tools/iio
 make DESTDIR=%{buildroot} install
@@ -2524,6 +2558,18 @@ find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/livepatch/{}
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
 popd
+%endif
+
+# We have to do the headers checksum calculation after the tools install because
+# these might end up installing their own set of headers on top of kernel's
+%if %{with_headers}
+# compute a content hash to export as Provides: kernel-headers-checksum
+HEADERS_CHKSUM=$(export LC_ALL=C; find $RPM_BUILD_ROOT/usr/include -type f -name "*.h" \
+			! -path $RPM_BUILD_ROOT/usr/include/linux/version.h | \
+		 sort | xargs cat | sha1sum - | cut -f 1 -d ' ');
+# export the checksum via usr/include/linux/version.h, so the dynamic
+# find-provides can grab the hash to update it accordingly
+echo "#define KERNEL_HEADERS_CHECKSUM \"$HEADERS_CHKSUM\"" >> $RPM_BUILD_ROOT/usr/include/linux/version.h
 %endif
 
 ###
@@ -2609,6 +2655,12 @@ fi\
 #
 %define kernel_variant_posttrans() \
 %{expand:%%posttrans %{?1:%{1}-}core}\
+%if 0%{!?fedora:1}\
+if [ -x %{_sbindir}/weak-modules ]\
+then\
+    %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
+fi\
+%endif\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
@@ -2638,6 +2690,12 @@ fi}\
 %define kernel_variant_preun() \
 %{expand:%%preun %{?1:%{1}-}core}\
 /bin/kernel-install remove %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
+%if 0%{!?fedora:1}\
+if [ -x %{_sbindir}/weak-modules ]\
+then\
+    %{_sbindir}/weak-modules --remove-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
+fi\
+%endif\
 %{nil}
 
 %kernel_variant_preun
@@ -2719,7 +2777,8 @@ fi
 
 %files -f python3-perf-debuginfo.list -n python3-perf-debuginfo
 %endif
-%endif # with_perf
+# with_perf
+%endif
 
 %if %{with_tools}
 %files -n kernel-tools
@@ -2739,8 +2798,10 @@ fi
 %{_mandir}/man8/x86_energy_perf_policy*
 %{_bindir}/turbostat
 %{_mandir}/man8/turbostat*
+%{_bindir}/intel-speed-select
 %endif
-%endif # cpupowerarchs
+# cpupowerarchs
+%endif
 %{_bindir}/tmon
 %{_bindir}/iio_event_monitor
 %{_bindir}/iio_generic_buffer
@@ -2764,13 +2825,15 @@ fi
 %{_libdir}/libcpupower.so
 %{_includedir}/cpufreq.h
 %endif
-%endif # with_tools
+# with_tools
+%endif
 
 %if %{with_bpftool}
 %files -n bpftool
 %{_sbindir}/bpftool
 %{_sysconfdir}/bash_completion.d/bpftool
 %{_mandir}/man8/bpftool-cgroup.8.gz
+%{_mandir}/man8/bpftool-gen.8.gz
 %{_mandir}/man8/bpftool-map.8.gz
 %{_mandir}/man8/bpftool-prog.8.gz
 %{_mandir}/man8/bpftool-perf.8.gz
@@ -2817,7 +2880,7 @@ fi
 %if %{2}\
 %{expand:%%files -f kernel-%{?3:%{3}-}core.list %{?1:-f kernel-%{?3:%{3}-}ldsoconf.list} %{?3:%{3}-}core}\
 %{!?_licensedir:%global license %%doc}\
-%license linux-%{KVERREL}/COPYING-%{version}\
+%license linux-%{KVERREL}/COPYING-%{version}-%{release}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}\
 %ghost /%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/.vmlinuz.hmac \
@@ -2840,7 +2903,15 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
-%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
+%if 0%{!?fedora:1}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
+%endif\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca.cer\
+%ifarch s390x ppc64le\
+%if 0%{!?4:1}\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/%{signing_key_filename} \
+%endif\
+%endif\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
 %endif\
@@ -2888,69 +2959,397 @@ fi
 #
 #
 %changelog
-* Sat Feb 15 2020 Peter Robinson <pbrobinson@fedoraproject.org> - 5.5.4-200
-- Linux v5.5.4
+* Wed Jun 10 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.2-200
+- Linux v5.7.2 rebase
 
-* Tue Feb 11 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.3-200
-- Linux v5.5.3
+* Wed Jun 10 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.18-300
+- Linux v5.6.18
+
+* Mon Jun 08 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.17-300
+- Linux v5.6.17
+
+* Thu Jun 04 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.16-300
+- Fix CVE-2020-10757 (rhbz 1842525 184388)
+
+* Wed Jun 03 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Linux v5.6.16
+
+* Thu May 28 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.15-300
+- Linux v5.6.15
+
+* Wed May 20 2020 Hans de Goede <hdegoede@redhat.com> - 5.6.14-300
+- Fix automatic guest resolution resizing of VirtualBox VMs (rhbz 1789545)
+- Fix Sony laptop hang on resume from suspend (rhbz 1830150)
+
+* Wed May 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Linux v5.6.14
+- Fix CVE-2020-12888 (rhbz 1836245 1836244)
+
+* Mon May 18 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix stability issue with the jetson-tk1 NIC
+
+* Mon May 18 2020 Hans de Goede <hdegoede@redhat.com>
+- Add patch fixing backlight control on Cherry Trail devices (rhbz 1828927)
+
+* Thu May 14 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.13-300
+- Linux v5.6.13
+- Fix boot hang caused by buggy TPM support (rhbz 1779611)
+- Fix CVE-2020-12655 (rhbz 1832543 1832545)
+
+* Thu May 14 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix for NIC issues on Jetson Xavier AGX
+
+* Tue May 12 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2020-10711 (rhbz 1825116 1834778)
+
+* Mon May 11 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.12-300
+- Linux v5.6.12
+
+* Wed May 06 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.11-300
+- Linux v5.6.11
+
+* Mon May 04 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.10-300
+- Linux v5.6.10
+
+* Wed Apr 29 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.8-300
+- Linux v5.6.8
+- Fixes CVE-2020-11884 (rhbz 1828149 1829181)
+
+* Tue Apr 28 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- MST Fix from Lyude Paul
+- drm/i915/gem: Hold obj->vma.lock over for_each_ggtt_vma() (airlied request)
+
+* Thu Apr 23 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.7-300
+- Linux v5.6.7
+
+* Tue Apr 21 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.6-300
+- Linux v5.6.6
+
+* Fri Apr 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.5-300
+- Linux v5.6.5
+
+* Thu Apr 16 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Nouveau Add missing MODULE_FIRMWARE() lines for initramfs generators (rhbz 1825046)
+
+* Mon Apr 13 2020 Jeremy Cline <jcline@redhat.com> - 5.6.4-300
+- Linux v5.6.4
+
+* Wed Apr 08 2020 Jeremy Cline <jcline@redhat.com> - 5.6.3-300
+- Linux v5.6.3
+
+* Tue Apr 07 2020 Karol Herbst <kherbst@redhat.com> - 5.6.2-301
+- Add patches to fix nouveau issues preventing booting the installer or system
+
+* Fri Apr  3 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+- Raspberry Pi HDMI mode validation fix
+- Raspberry Pi 4 rev 1.2 mmc fix
+
+* Thu Apr 02 2020 Jeremy Cline <jcline@redhat.com> - 5.6.2-300
+- Linux v5.6.2
+
+* Thu Apr 02 2020 Hans de Goede <hdegoede@redhat.com>
+- Add patch fixing Lenovo X1 7th and 8th gen not suspending (rhbz 1816621)
+- Add patch fixing Lenovo X1 8th gen speaker volume control (rhbz 1820196)
+
+* Wed Apr 01 2020 Jeremy Cline <jcline@redhat.com> - 5.6.1-300
+- Linux v5.6.1
+- Fixes CVE-2020-8835 (rhbz 1818941 1817350)
+
+* Mon Mar 30 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-300
+- Linux v5.6
+
+* Fri Mar 27 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc7.git1.1
+- Linux v5.6-rc7-227-gf3e69428b5e2
+
+* Fri Mar 27 2020 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
+* Mon Mar 23 2020 Peter Robinson <pbrobinson@gmail.com> - 5.6.0-0.rc7.git0.1
+- Linux v5.6-rc7
+
+* Mon Mar 23 2020 Peter Robinson <pbrobinson@gmail.com>
+- Disable debugging options.
+
+* Fri Mar 20 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc6.git2.1
+- Linux v5.6-rc6-115-g5ad0ec0b8652
+- Switch Secure Boot to lock down to integrity mode (rhbz 1815571)
+
+* Wed Mar 18 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc6.git1.1
+- Linux v5.6-rc6-9-gac309e7744be
+
+* Wed Mar 18 2020 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
+* Tue Mar 17 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc6.git0.1
+- Linux v5.6-rc6
+
+* Tue Mar 10 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc5.git0.2
+- A series of eDP backlight fixes for i915 (rhbz 1811850)
+
+* Mon Mar 09 2020 Hans de Goede <hdegoede@redhat.com>
+- Fix only 1 monitor working on DP-MST docking stations (rhbz 1809681)
+- Fix backtraces on various buggy BIOS-es (rhbz 1564895, 1808874)
+- Add /etc/modprobe.d/floppy-blacklist.conf to fix auto-loading of the
+  legacy floppy driver (rhbz 1789155)
+
+* Mon Mar 09 2020 Peter Robinson <pbrobinson@gmail.com> - 5.6.0-0.rc5.git0.1
+- Linux v5.6-rc5
+
+* Mon Mar 09 2020 Peter Robinson <pbrobinson@gmail.com>
+- Disable debugging options.
+
+* Fri Mar 06 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc4.git1.1
+- Linux v5.6-rc4-135-gaeb542a1b5c5
+
+* Fri Mar 06 2020 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
+* Mon Mar 02 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc4.git0.1
+- Linux v5.6-rc4
+
+* Mon Mar 02 2020 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
+
+* Fri Feb 28 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git3.1
+- Linux v5.6-rc3-195-gc60c04021353
+
+* Thu Feb 27 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fixes and enhancements to some AllWinner Pine64 devices
+- Some fixes for Tegra devices
+- Initial support for the Pinebook Pro
+
+* Thu Feb 27 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git2.1
+- Linux v5.6-rc3-71-gbfdc6d91a25f
+
+* Tue Feb 25 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git1.1
+- Linux v5.6-rc3-26-g63623fd44972
+
+* Tue Feb 25 2020 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
+* Mon Feb 24 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc3.git0.1
+- Linux v5.6-rc3
+
+* Mon Feb 24 2020 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
+
+* Fri Feb 21 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git3.1
+- Linux v5.6-rc2-55-gca7e1fd1026c
+
+* Wed Feb 19 2020 Jeremy Cline <jcline@redhat.com>
+- Pick up a uapi fix for qemu (rhbz 1804330)
+
+* Wed Feb 19 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git2.1
+- Linux v5.6-rc2-47-g4b205766d8fc
+
+* Tue Feb 18 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git1.1
+- Linux v5.6-rc2-8-gb1da3acc781c
+- Enable CONFIG_INET_ESPINTCP (rhbz 1804255)
+
+* Tue Feb 18 2020 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
+* Mon Feb 17 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc2.git0.1
+- Linux v5.6-rc2
+
+* Mon Feb 17 2020 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
+
+* Fri Feb 14 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc1.git3.1
+- Linux v5.6-rc1-44-gb19e8c684703
+
+* Thu Feb 13 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc1.git2.1
+- Linux v5.6-rc1-23-g0bf999f9c5e7
+
+* Thu Feb 13 2020 Jeremy Cline <jcline@redhat.com>
+- Pull in cdrom ioctl fix (rhbz 1801353)
+
+* Tue Feb 11 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc1.git1.1
+- Linux v5.6-rc1-5-g0a679e13ea30
+
+* Tue Feb 11 2020 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
 
 * Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com>
 - Remove sysrq support to lift lockdown (rhbz 1800859)
 
-* Wed Feb 05 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.2-200
-- Linux v5.5.2
+* Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc1.git0.1
+- Linux v5.6-rc1
 
-* Sun Feb 02 2020 Peter Robinson <pbrobinson@fedoraproject.org> - 5.5.1-200
-- Linux v5.5.1
+* Mon Feb 10 2020 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
 
-* Tue Jan 28 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-200
+* Fri Feb 07 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc0.git5.1
+- Linux v5.5-9824-g90568ecf5615
+- Enable DM_CLONE as a module (rhbz 1799060)
+- Enable PCI Express devices on RockChip SoCs (rhbz 1792564)
+
+* Thu Feb 06 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc0.git4.1
+- Linux v5.5-9737-g4c46bef2e96a
+
+* Wed Feb 05 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc0.git3.1
+- Linux v5.5-9402-g6992ca0dd017
+
+* Sat Feb 01 2020 Jeremy Cline <jcline@redhat.com> - 5.6.0-0.rc0.git2.1
+- Linux v5.5-8686-g14cd0bd04907
+
+* Wed Jan 29 2020 Jeremy Cline <jcline@redhat.com> - 5.5.0-1
+- Linux v5.5-3996-gb3a608222336
+
+* Wed Jan 29 2020 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
+* Mon Jan 27 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-1
 - Linux v5.5
 
-* Tue Dec 17 2019 Hans de Goede <hdegoede@redhat.com>
-- Add 2 patches from 5.5 to fix some nouveau issues (rhbz#1706557)
+* Fri Jan 24 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc7.git2.1
+- Linux v5.5-rc7-62-g6381b442836e
 
-* Fri Dec 13 2019 Jeremy Cline <jcline@redhat.com> - 5.4.3-300
-- Linux v5.4.3
+* Thu Jan 23 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc7.git1.1
+- Linux v5.5-rc7-16-g131701c697e8
 
-* Tue Dec 10 2019 Laura Abbott <labbott@redhat.com>
-- Fix for DVD reading (rhbz 1781762)
+* Mon Jan 20 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc7.git0.1
+- Linux v5.5-rc7
 
-* Wed Dec 04 2019 Jeremy Cline <jcline@redhat.com> - 5.4.2-300
-- Linux v5.4.2
+* Mon Jan 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Disable debugging options.
 
-* Wed Dec 04 2019 Jeremy Cline <jcline@redhat.com> - 5.4.1-300
-- Linux v5.4.1
+* Fri Jan 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc6.git3.1
+- Linux v5.5-rc6-143-gab7541c3addd
 
-* Mon Dec 02 2019 Laura Abbott <labbott@redhat.com> - 5.3.14-300
-- Linux v5.3.14
+* Wed Jan 15 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc6.git2.1
+- Linux v5.5-rc6-45-g51d69817519f
 
-* Mon Dec 02 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Fix CVE-2019-18808 (rhbz 1777418 1777421)
-- Fix CVE-2019-18809 (rhbz 1777449 1777451)
-- Fix CVE-2019-18811 (rhbz 1777455 1777456)
-- Fix CVE-2019-18812 (rhbz 1777458 1777459)
-- Fix CVE-2019-16232 (rhbz 1760351 1760352)
+* Tue Jan 14 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc6.git1.1
+- Linux v5.5-rc6-27-g452424cdcbca
+- Reenable debugging options.
 
-* Tue Nov 26 2019 Justin M. Forbes <jforbes@fedoraproject.org> 
-- Fix CVE-2019-19082 (rhbz 1776832 1776833)
+* Mon Jan 13 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Add Documentation back to kernel-devel as it has Kconfig now (rhbz 1789641)
 
-* Mon Nov 25 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.3.13-300
+* Mon Jan 13 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc6.git0.1
+- Linux v5.5-rc6
+
+* Mon Jan 13 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Disable debugging options.
+
+* Fri Jan 10 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc5.git3.1
+- Linux v5.5-rc5-215-g4e4cd21c64da
+
+* Thu Jan 09 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc5.git2.1
+- Linux v5.5-rc5-134-ge69ec487b2c7
+
+* Wed Jan 08 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc5.git1.1
+- Linux v5.5-rc5-41-gb07f636fca1c
+- Reenable debugging options.
+
+* Mon Jan 06 2020 Hans de Goede <hdegoede@redhat.com>
+- Make the MFD Intel LPSS driver builtin, some devices require this to be
+  available early during boot (rhbz#1787997)
+
+* Mon Jan 06 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc5.git0.1
+- Linux v5.5-rc5
+
+* Mon Jan 06 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Disable debugging options.
+
+* Fri Jan 03 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc4.git2.1
+- Linux v5.5-rc4-116-gbed723519a72
+
+* Thu Jan 02 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc4.git1.1
+- Linux v5.5-rc4-66-g738d2902773e
+
+* Mon Dec 30 2019 Peter Robinson <pbrobinson@gmail.com> - 5.5.0-0.rc4.git0.1
+- Linux v5.5-rc4
+
+* Mon Dec 30 2019 Peter Robinson <pbrobinson@gmail.com>
+- Disable debugging options.
+
+* Mon Dec 23 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc3.git0.1
+- Linux v5.5-rc3
+
+* Mon Dec 23 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Disable debugging options.
+
+* Thu Dec 19 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc2.git3.1
+- Linux v5.5-rc2-195-g4a94c4332334
+
+* Wed Dec 18 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc2.git2.1
+- Linux v5.5-rc2-157-g2187f215ebaa
+
+* Tue Dec 17 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc2.git1.1
+- Linux v5.5-rc2-56-gea200dec5128
+- Enable NO_HZ_FULL for other arches too.
+- Reenable debugging options.
+
+* Mon Dec 16 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc2.git0.1
+- Linux v5.5-rc2
+
+* Mon Dec 16 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Disable debugging options.
+
+* Thu Dec 12 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc1.git2.1
+- Linux v5.5-rc1-27-gae4b064e2a61
+
+* Tue Dec 10 2019 Peter Robinson <pbrobinson@fedoraproject.org>
+- Updates for ARMv7/aarch64
+- Enable newer TI ARMv7 platforms
+
+* Tue Dec 10 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc1.git1.1
+- Linux v5.5-rc1-12-g6794862a16ef
+- Reenable debugging options.
+
+* Mon Dec 09 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc1.git0.1
+- Linux v5.5-rc1
+
+* Mon Dec 09 2019 Justin M. Forbes <jforbes@fedoraproject.org>
+- Disable debugging options.
+
+* Fri Dec 06 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git7.1
+- Linux v5.4-12941-gb0d4beaa5a4b
+
+* Thu Dec 05 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git6.1
+- Linux v5.4-11747-g2f13437b8917
+
+* Wed Dec 04 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git5.1
+- Linux v5.4-11681-g63de37476ebd
+
+* Tue Dec 03 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git4.1
+- Linux v5.4-11180-g76bb8b05960c
+
+* Mon Dec 02 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git3.1
+- Linux v5.4-10271-g596cf45cbf6e
+
+* Wed Nov 27 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git2.1
+- Linux v5.4-5280-g89d57dddd7d3
+
+* Tue Nov 26 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.5.0-0.rc0.git1.1
+- Linux v5.4-3619-gbe2eca94d144
+- Reenable debugging options.
+
+* Mon Nov 25 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-2
+- bump and build to pick up fixes
+
+* Mon Nov 25 2019 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2019-14895 (rhbz 1774870 1776139)
 - Fix CVE-2019-14896 (rhbz 1774875 1776143)
 - Fix CVE-2019-14897 (rhbz 1774879 1776146)
 - Fix CVE-2019-14901 (rhbz 1773519 1776184)
 - Fix CVE-2019-19078 (rhbz 1776354 1776353)
 
-* Mon Nov 25 2019 Laura Abbott <labbott@redhat.com>
-- Linux v5.3.13
+* Mon Nov 25 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-1
+- Linux v5.4.0
 
-* Fri Nov 22 2019 Justin M. Forbes <jforbes@fedoraproject.org> 
-- Fix CVE-2019-19077 rhbz 1775724 1775725
+* Fri Nov 22 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-0.rc8.git1.2
+- bump and build to test new configs
+
+* Fri Nov 22 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc8.git1.1
+- Linux v5.4-rc8-15-g81429eb8d9ca
+
+* Fri Nov 22 2019 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
 
 * Thu Nov 21 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.3.12-300
-- Fix CVE-2019-19074 (rhbz 1774933 1774934)
-- Fix CVE-2019-19073 (rhbz 1774937 1774939)
-- Fix CVE-2019-19072 (rhbz 1774946 1774947)
 - Fix CVE-2019-19071 (rhbz 1774949 1774950)
 - Fix CVE-2019-19070 (rhbz 1774957 1774958)
 - Fix CVE-2019-19068 (rhbz 1774963 1774965)
@@ -2961,1164 +3360,169 @@ fi
 - Fix CVE-2019-19062 (rhbz 1775021 1775023)
 - Fix CVE-2019-19064 (rhbz 1775010 1775011)
 - Fix CVE-2019-19063 (rhbz 1775015 1775016)
-- Fix CVE-2019-19059 (rhbz 1775042 1775043)
-- Fix CVE-2019-19058 (rhbz 1775047 1775048)
 - Fix CVE-2019-19057 (rhbz 1775050 1775051)
 - Fix CVE-2019-19053 (rhbz 1775956 1775110)
 - Fix CVE-2019-19056 (rhbz 1775097 1775115)
-- Fix CVE-2019-19055 (rhbz 1775074 1775116)
 - Fix CVE-2019-19054 (rhbz 1775063 1775117)
 
-* Thu Nov 21 2019 Laura Abbott <labbott@redhat.com>
-- Linux v5.3.12
+* Wed Nov 20 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-0.rc8.git0.2
+- bump and build to check the pesign
 
-* Tue Nov 12 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.3.11-300
-- Linux v5.3.11
-- Fixes CVE-2019-11135	(rhbz 1753062 1771649)
-- Fixes CVE-2018-12207	(rhbz 1646768 1771645)
-- Fixes CVE-2019-0154	(rhbz 1724393 1771642)
-- Fixes CVE-2019-0155	(rhbz 1724398 1771644)
+* Mon Nov 18 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc8.git0.1
+- Linux v5.4-rc8
 
-* Mon Nov 11 2019 Laura Abbott <labbott@redhat.com> - 5.3.10-300
-- Linux v5.3.10
+* Mon Nov 18 2019 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
 
-* Thu Nov 07 2019 Jeremy Cline <jcline@redhat.com>
-- Add support for a number of Macbook keyboards and touchpads (rhbz 1769465)
+* Fri Nov 15 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc7.git2.1
+- Linux v5.4-rc7-68-g96b95eff4a59
 
-* Wed Nov 06 2019 Laura Abbott <labbott@redhat.com> - 5.3.9-300
-- Linux v5.3.9
+* Thu Nov 14 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-0.rc7.git1.2
+- bump and build
 
-* Tue Oct 29 2019 Laura Abbott <labbott@redhat.com> - 5.3.8-300
-- Linux v5.3.8
+* Wed Nov 13 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc7.git1.1
+- Linux v5.4-rc7-49-g0e3f1ad80fc8
 
-* Mon Oct 21 2019 Laura Abbott <labbott@redhat.com> - 5.3.7-301
-- Fix CVE-2019-17666 (rhbz 1763692)
+* Wed Nov 13 2019 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
 
-* Fri Oct 18 2019 Laura Abbott <labbott@redhat.com> - 5.3.7-300
-- Linux v5.3.7
+* Mon Nov 11 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc7.git0.1
+- Linux v5.4-rc7
 
-* Mon Oct 14 2019 Laura Abbott <labbott@redhat.com> - 5.3.6-300
-- Linux v5.3.6
+* Mon Nov 11 2019 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
 
-* Fri Oct 11 2019 Laura Abbott <labbott@redhat.com>
-- Fix disappearing cursor issue (rhbz 1738614)
+* Fri Nov 08 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc6.git3.1
+- Linux v5.4-rc6-29-g847120f859cc
 
-* Fri Oct 11 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Last iwlwifi fix for the recent firmware issues (rhbz 1733369)
+* Thu Nov 07 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc6.git2.1
+- Linux v5.4-rc6-26-g4dd58158254c
 
-* Tue Oct 08 2019 Laura Abbott <labbott@redhat.com> - 5.3.5-300
-- Linux v5.3.5
+* Tue Nov 05 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc6.git1.1
+- Linux v5.4-rc6-8-g26bc67213424
 
-* Mon Oct  7 2019 Laura Abbott <labbott@redhat.com>
-- selinux fix (rhbz 1758597)
+* Tue Nov 05 2019 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
 
-* Mon Oct  7 2019 Peter Robinson <pbrobinson@fedoraproject.org> 5.3.4-300
-- Linux v5.3.4
+* Mon Nov 04 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc6.git0.1
+- Linux v5.4-rc6
+
+* Mon Nov 04 2019 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
+
+* Fri Nov 01 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-0.rc5.git1.3
+- bump and build again
+
+* Thu Oct 31 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-0.rc5.git1.2
+- bump and build to fix broken weak-updates
+
+* Thu Oct 31 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc5.git1.1
+- Linux v5.4-rc5-49-ge472c64aa4fa
+
+* Thu Oct 31 2019 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
+* Wed Oct 30 2019 Laura Abbott <labbott@redhat.com> - 5.4.0-0.rc5.git0.2
+- bump and build to make sure I haven't broken anything
+
+* Mon Oct 28 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc5.git0.1
+- Linux v5.4-rc5
+
+* Mon Oct 28 2019 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
+
+* Thu Oct 24 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc4.git3.1
+- Linux v5.4-rc4-85-gf116b96685a0
+
+* Wed Oct 23 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc4.git2.1
+- Linux v5.4-rc4-37-g13b86bc4cd64
+
+* Tue Oct 22 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc4.git1.1
+- Linux v5.4-rc4-18-g3b7c59a1950c
+
+* Tue Oct 22 2019 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
+* Mon Oct 21 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc4.git0.1
+- Linux v5.4-rc4
+
+* Mon Oct 21 2019 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
+
+* Fri Oct 18 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc3.git2.1
+- Linux v5.4-rc3-99-g0e2adab6cf28
+
+* Tue Oct 15 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc3.git1.1
+- Linux v5.4-rc3-18-g5bc52f64e884
+
+* Tue Oct 15 2019 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
+* Mon Oct 14 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc3.git0.1
+- Linux v5.4-rc3
+
+* Mon Oct 14 2019 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
+
+* Thu Oct 10 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc2.git2.1
+- Linux v5.4-rc2-96-gfb20da6af705
+
+* Tue Oct 08 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc2.git1.1
+- Linux v5.4-rc2-20-geda57a0e4299
+
+* Tue Oct 08 2019 Jeremy Cline <jcline@redhat.com>
+- Reenable debugging options.
+
+* Mon Oct 07 2019 Laura Abbott <labbott@redhat.com>
+- Enable a few NFT options (rhbz 1651813)
+
+* Mon Oct 07 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc2.git0.1
+- Linux v5.4-rc2
+
+* Mon Oct 07 2019 Jeremy Cline <jcline@redhat.com>
+- Disable debugging options.
 
 * Sun Oct  6 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Fixes for RockPro64
-- Fixes for Jetson-TX series devices
+- Fixes for Jetson TX1/TX2 series of devices
 
-* Thu Oct 03 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Fix CVE-2019-17052 CVE-2019-17053 CVE-2019-17054 CVE-2019-17055 CVE-2019-17056
-  (rhbz 1758239 1758240 1758242 1758243 1758245 1758246 1758248 1758249 1758256 1758257)
+* Fri Oct 04 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc1.git1.1
+- Linux v5.4-rc1-14-gcc3a7bfe62b9
 
-* Tue Oct 01 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.3.2-300
-- Linux v5.3.2
-
-* Mon Sep 30 2019 Laura Abbott <labbott@redhat.com>
-- Fix for tpm crashes (rhbz 1752961)
-
-* Mon Sep 23 2019 Peter Robinson <pbrobinson@fedoraproject.org> 5.3.1-300
-- Upstream patch for iwlwifi 8000 series FW issues (rhbz: 1749949)
-
-* Mon Sep 23 2019 Laura Abbott <labbott@redhat.com> - 5.3.1-100
-- Linux v5.3.1
-
-* Thu Sep 19 2019 Laura Abbott <labbott@redhat.com>
-- Fix for dwc3 (rhbz 1753099)
-
-* Mon Sep 16 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-1
-- Linux v5.3
-
-* Tue Sep 10 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc8.git0.1
-- Linux v5.3-rc8
-
-* Tue Sep 10 2019 Laura Abbott <labbott@redhat.com>
-- Disable debugging options.
-
-* Thu Sep 05 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc7.git1.1
-- Linux v5.3-rc7-2-g3b47fd5ca9ea
-
-* Thu Sep 05 2019 Laura Abbott <labbott@redhat.com>
+* Fri Oct 04 2019 Jeremy Cline <jcline@redhat.com>
 - Reenable debugging options.
 
-* Tue Sep 03 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc7.git0.1
-- Linux v5.3-rc7
+* Wed Oct 02 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc1.git0.1
+- Linux v5.4-rc1
 
-* Tue Sep 03 2019 Laura Abbott <labbott@redhat.com>
+* Wed Oct 02 2019 Jeremy Cline <jcline@redhat.com>
 - Disable debugging options.
 
-* Thu Aug 29 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc6.git2.1
-- Linux v5.3-rc6-119-g9cf6b756cdf2
+* Mon Sep 30 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git9.1
+- Linux v5.3-13236-g97f9a3c4eee5
 
-* Wed Aug 28 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc6.git1.1
-- Linux v5.3-rc6-115-g9e8312f5e160
+* Thu Sep 26 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git8.1
+- Linux v5.3-12397-gf41def397161
 
-* Wed Aug 28 2019 Laura Abbott <labbott@redhat.com>
+* Wed Sep 25 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git7.1
+- Linux v5.3-12289-g351c8a09b00b
+
+* Tue Sep 24 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git6.1
+- Linux v5.3-12025-g4c07e2ddab5b
+
+* Mon Sep 23 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git5.1
+- Linux v5.3-11768-g619e17cf75dd
+
+* Fri Sep 20 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git4.1
+- Linux v5.3-10169-g574cc4539762
+
+* Thu Sep 19 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git3.1
+- Linux v5.3-7639-gb41dae061bbd
+
+* Wed Sep 18 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git2.1
+- Linux v5.3-3839-g35f7a9526615
+
+* Tue Sep 17 2019 Jeremy Cline <jcline@redhat.com> - 5.4.0-0.rc0.git1.1
+- Linux v5.3-2061-gad062195731b
+
+* Tue Sep 17 2019 Jeremy Cline <jcline@redhat.com>
 - Reenable debugging options.
-
-* Mon Aug 26 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc6.git0.1
-- Linux v5.3-rc6
-
-* Mon Aug 26 2019 Laura Abbott <labbott@redhat.com>
-- Disable debugging options.
-
-* Fri Aug 23 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc5.git2.1
-- Linux v5.3-rc5-224-gdd469a456047
-
-* Thu Aug 22 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc5.git1.1
-- Linux v5.3-rc5-149-gbb7ba8069de9
-
-* Thu Aug 22 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Mon Aug 19 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc5.git0.1
-- Linux v5.3-rc5
-
-* Mon Aug 19 2019 Laura Abbott <labbott@redhat.com>
-- Disable debugging options.
-
-* Fri Aug 16 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc4.git3.1
-- Linux v5.3-rc4-71-ga69e90512d9d
-
-* Thu Aug 15 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc4.git2.1
-- Linux v5.3-rc4-53-g41de59634046
-
-* Wed Aug 14 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc4.git1.1
-- Linux v5.3-rc4-4-gee1c7bd33e66
-
-* Wed Aug 14 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Tue Aug 13 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc4.git0.1
-- Linux v5.3-rc4
-
-* Tue Aug 13 2019 Laura Abbott <labbott@redhat.com>
-- Disable debugging options.
-
-* Wed Aug 07 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc3.git1.1
-- Linux v5.3-rc3-282-g33920f1ec5bf
-
-* Wed Aug 07 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Mon Aug 05 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc3.git0.1
-- Linux v5.3-rc3
-
-* Mon Aug 05 2019 Laura Abbott <labbott@redhat.com>
-- Disable debugging options.
-
-* Fri Aug 02 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc2.git4.1
-- Linux v5.3-rc2-70-g1e78030e5e5b
-
-* Thu Aug 01 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc2.git3.1
-- Linux v5.3-rc2-60-g5c6207539aea
-- Enable 8250 serial ports on powerpc
-
-* Wed Jul 31 2019 Peter Robinson <pbrobinson@fedoraproject.org> 5.3.0-0.rc2.git2.2
-- Enable IMA Appraisal
-
-* Wed Jul 31 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc2.git2.1
-- Linux v5.3-rc2-51-g4010b622f1d2
-
-* Tue Jul 30 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc2.git1.1
-- Linux v5.3-rc2-11-g2a11c76e5301
-
-* Tue Jul 30 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Mon Jul 29 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc2.git0.1
-- Linux v5.3-rc2
-
-* Mon Jul 29 2019 Laura Abbott <labbott@redhat.com>
-- Disable debugging options.
-
-* Fri Jul 26 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc1.git4.1
-- Linux v5.3-rc1-96-g6789f873ed37
-- Enable nvram driver (rhbz 1732612)
-
-* Thu Jul 25 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc1.git3.1
-- Linux v5.3-rc1-82-gbed38c3e2dca
-
-* Wed Jul 24 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc1.git2.1
-- Linux v5.3-rc1-59-gad5e427e0f6b
-
-* Tue Jul 23 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc1.git1.1
-- Linux v5.3-rc1-56-g7b5cf701ea9c
-
-* Tue Jul 23 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Sun Jul 21 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc1.git0.1
-- Linux v5.3-rc1
-
-* Sun Jul 21 2019 Laura Abbott <labbott@redhat.com>
-- Disable debugging options.
-
-* Fri Jul 19 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- RHBZ Bug 1576593 - work around while vendor investigates
-
-* Thu Jul 18 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git7.1
-- Linux v5.2-11564-g22051d9c4a57
-
-* Wed Jul 17 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git6.1
-- Linux v5.2-11043-g0a8ad0ffa4d8
-
-* Tue Jul 16 2019 Jeremy Cline <jcline@redhat.com>
-- Fix a firmware crash in Intel 7000 and 8000 devices (rhbz 1716334)
-
-* Tue Jul 16 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git5.1
-- Linux v5.2-10808-g9637d517347e
-
-* Fri Jul 12 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Turn off i686 builds
-
-* Fri Jul 12 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git4.1
-- Linux v5.2-7109-gd7d170a8e357
-
-* Thu Jul 11 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git3.1
-- Linux v5.2-3311-g5450e8a316a6
-
-* Wed Jul 10 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git2.1
-- Linux v5.2-3135-ge9a83bd23220
-
-* Tue Jul 09 2019 Laura Abbott <labbott@redhat.com> - 5.3.0-0.rc0.git1.1
-- Linux v5.2-915-g5ad18b2e60b7
-
-* Tue Jul 09 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Mon Jul 08 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-1
-- Linux v5.2.0
-- Disable debugging options.
-
-* Wed Jul 03 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc7.git1.1
-- Linux v5.2-rc7-8-geca94432934f
-- Reenable debugging options.
-
-* Mon Jul 01 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc7.git0.1
-- Linux v5.2-rc7
-
-* Mon Jul 01 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Fri Jun 28 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc6.git2.1
-- Linux v5.2-rc6-93-g556e2f6020bf
-
-* Tue Jun 25 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc6.git1.1
-- Linux v5.2-rc6-15-g249155c20f9b
-- Reenable debugging options.
-
-* Mon Jun 24 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc6.git0.1
-- Linux v5.2-rc6
-
-* Mon Jun 24 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Sat Jun 22 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- QCom ACPI fixes
-
-* Fri Jun 21 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc5.git4.1
-- Linux v5.2-rc5-290-g4ae004a9bca8
-
-* Thu Jun 20 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc5.git3.1
-- Linux v5.2-rc5-239-g241e39004581
-
-* Wed Jun 19 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc5.git2.1
-- Linux v5.2-rc5-224-gbed3c0d84e7e
-
-* Tue Jun 18 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc5.git1.1
-- Linux v5.2-rc5-177-g29f785ff76b6
-- Reenable debugging options.
-
-* Mon Jun 17 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc5.git0.1
-- Linux v5.2-rc5
-
-* Mon Jun 17 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Fri Jun 14 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc4.git3.1
-- Linux v5.2-rc4-129-g72a20cee5d99
-
-* Fri Jun 14 2019 Jeremy Cline <jcline@redhat.com>
-- Fix the long-standing bluetooth breakage
-
-* Fri Jun 14 2019 Hans de Goede <hdegoede@redhat.com>
-- Fix the LCD panel an Asus EeePC 1025C not lighting up (rhbz#1697069)
-- Add small bugfix for new Logitech wireless keyboard support
-
-* Thu Jun 13 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc4.git2.1
-- Linux v5.2-rc4-45-gc11fb13a117e
-
-* Wed Jun 12 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Raspberry Pi: move to cpufreq driver accepted for upstream \o/
-
-* Wed Jun 12 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc4.git1.1
-- Linux v5.2-rc4-20-gaa7235483a83
-- Reenable debugging options.
-
-* Mon Jun 10 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc4.git0.1
-- Linux v5.2-rc4
-
-* Mon Jun 10 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Fri Jun 07 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc3.git3.1
-- Linux v5.2-rc3-77-g16d72dd4891f
-
-* Thu Jun 06 2019 Jeremy Cline <jcline@redhat.com>
-- Fix incorrect permission denied with lock down off (rhbz 1658675)
-
-* Thu Jun 06 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc3.git2.1
-- Linux v5.2-rc3-37-g156c05917e09
-
-* Tue Jun 04 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc3.git1.1
-- Linux v5.2-rc3-24-g788a024921c4
-- Reenable debugging options.
-
-* Mon Jun 03 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc3.git0.1
-- Linux v5.2-rc3
-
-* Mon Jun 03 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Fri May 31 2019 Peter Robinson <pbrobinson@fedoraproject.org> 5.2.0-0.rc2.git1.2
-- Bump for ARMv7 fix
-
-* Thu May 30 2019 Justin M. Forbes <jforbes@redhat.com> - 5.2.0-0.rc2.git1.1
-- Linux v5.2-rc2-24-gbec7550cca10
-- Reenable debugging options.
-
-* Mon May 27 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc2.git0.1
-- Linux v5.2-rc2
-
-* Mon May 27 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Fri May 24 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc1.git3.1
-- Linux v5.2-rc1-233-g0a72ef899014
-
-* Wed May 22 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc1.git2.1
-- Linux v5.2-rc1-165-g54dee406374c
-
-* Tue May 21 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc1.git1.1
-- Linux v5.2-rc1-129-g9c7db5004280
-
-* Tue May 21 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc1.git0.2
-- Reenable debugging options.
-
-* Mon May 20 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc1.git0.1
-- Disable debugging options.
-- Linux V5.2-rc1
-
-* Sun May 19 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Arm config updates
-
-* Fri May 17 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git9.1
-- Linux v5.1-12505-g0ef0fd351550
-
-* Thu May 16 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git8.1
-- Linux v5.1-12065-g8c05f3b965da
-
-* Wed May 15 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git7.1
-- Linux v5.1-10909-g2bbacd1a9278
-
-* Tue May 14 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git6.1
-- Linux v5.1-10326-g7e9890a3500d
-
-* Mon May 13 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git5.1
-- Linux v5.1-10135-ga13f0655503a
-
-* Fri May 10 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git4.1
-- Linux v5.1-9573-gb970afcfcabd
-
-* Thu May 09 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git3.1
-- Linux v5.1-8122-ga2d635decbfa
-
-* Wed May 08 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git2.1
-- Linux v5.1-5445-g80f232121b69
-
-* Tue May 07 2019 Justin M. Forbes <jforbes@fedoraproject.org> - 5.2.0-0.rc0.git1.1
-- Linux v5.1-1199-g71ae5fc87c34
-- Reenable debugging options.
-
-* Mon May  6 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Enable Arm STM32MP1
-
-* Mon May 06 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-1
-- Linux v5.1
-
-* Fri May 03 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc7.git4.1
-- Linux v5.1-rc7-131-gea9866793d1e
-
-* Thu May 02 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc7.git3.1
-- Linux v5.1-rc7-29-g600d7258316d
-
-* Wed May 01 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc7.git2.1
-- Linux v5.1-rc7-16-gf2bc9c908dfe
-
-* Tue Apr 30 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc7.git1.1
-- Linux v5.1-rc7-5-g83a50840e72a
-
-* Tue Apr 30 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Tue Apr 30 2019 Hans de Goede <hdegoede@redhat.com>
-- Fix wifi on various ideapad models not working (rhbz#1703338)
-
-* Mon Apr 29 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc7.git0.1
-- Linux v5.1-rc7
-
-* Mon Apr 29 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Apr 26 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc6.git4.1
-- Linux v5.1-rc6-72-g8113a85f8720
-
-* Thu Apr 25 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc6.git3.1
-- Linux v5.1-rc6-64-gcd8dead0c394
-
-* Thu Apr 25 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Fix CVE-2019-3900 (rhbz 1698757 1702940)
-
-* Wed Apr 24 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc6.git2.1
-- Linux v5.1-rc6-15-gba25b50d582f
-
-* Tue Apr 23 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc6.git1.1
-- Linux v5.1-rc6-4-g7142eaa58b49
-
-* Tue Apr 23 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Tue Apr 23 2019 Jeremy Cline <jcline@redhat.com>
-- Allow modules signed by keys in the platform keyring (rbhz 1701096)
-
-* Mon Apr 22 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc6.git0.1
-- Linux v5.1-rc6
-
-* Mon Apr 22 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Wed Apr 17 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc5.git2.1
-- Linux v5.1-rc5-36-g444fe9913539
-
-* Tue Apr 16 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc5.git1.1
-- Linux v5.1-rc5-10-g618d919cae2f
-
-* Tue Apr 16 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Apr 15 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc5.git0.1
-- Linux v5.1-rc5
-
-* Mon Apr 15 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Apr 12 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc4.git4.1
-- Linux v5.1-rc4-184-g8ee15f324866
-
-* Thu Apr 11 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc4.git3.1
-- Linux v5.1-rc4-58-g582549e3fbe1
-
-* Wed Apr 10 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc4.git2.1
-- Linux v5.1-rc4-43-g771acc7e4a6e
-
-* Tue Apr 09 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc4.git1.1
-- Linux v5.1-rc4-34-g869e3305f23d
-
-* Tue Apr 09 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Apr 08 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc4.git0.1
-- Linux v5.1-rc4
-
-* Mon Apr 08 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Apr 05 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc3.git3.1
-- Linux v5.1-rc3-206-gea2cec24c8d4
-
-* Wed Apr 03 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc3.git2.1
-- Linux v5.1-rc3-35-g8ed86627f715
-
-* Tue Apr 02 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc3.git1.1
-- Linux v5.1-rc3-14-g5e7a8ca31926
-
-* Tue Apr 02 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Apr 01 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc3.git0.1
-- Linux v5.1-rc3
-
-* Mon Apr 01 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Mar 29 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc2.git4.1
-- Linux v5.1-rc2-247-g9936328b41ce
-- Pick up a mm fix causing hangs (rhbz 1693525)
-
-* Thu Mar 28 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc2.git3.1
-- Linux v5.1-rc2-243-g8c7ae38d1ce1
-
-* Wed Mar 27 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc2.git2.1
-- Linux v5.1-rc2-24-g14c741de9386
-
-* Wed Mar 27 2019 Jeremy Cline <jeremy@jcline.org>
-- Build iptable_filter as module
-
-* Tue Mar 26 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc2.git1.1
-- Linux v5.1-rc2-16-g65ae689329c5
-
-* Tue Mar 26 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Tue Mar 26 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Initial NXP i.MX8 enablement
-
-* Mon Mar 25 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc2.git0.1
-- Linux v5.1-rc2
-
-* Mon Mar 25 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Sat Mar 23 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Fixes for Tegra Jetson TX series
-- Initial support for NVIDIA Jetson Nano
-
-* Fri Mar 22 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc1.git2.1
-- Linux v5.1-rc1-66-gfd1f297b794c
-
-* Wed Mar 20 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc1.git1.1
-- Linux v5.1-rc1-15-gbabf09c3837f
-- Reenable debugging options.
-
-* Wed Mar 20 2019 Hans de Goede <hdegoede@redhat.com>
-- Make the mainline vboxguest drv feature set match VirtualBox 6.0.x (#1689750)
-
-* Mon Mar 18 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc1.git0.1
-- Linux v5.1-rc1
-
-* Mon Mar 18 2019 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Sun Mar 17 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Updates for Arm
-
-* Fri Mar 15 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git9.1
-- Linux v5.0-11520-gf261c4e529da
-
-* Thu Mar 14 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git8.1
-- Linux v5.0-11139-gfa3d493f7a57
-
-* Wed Mar 13 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git7.1
-- Linux v5.0-11053-gebc551f2b8f9
-
-* Tue Mar 12 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git6.1
-- Linux v5.0-10742-gea295481b6e3
-
-* Tue Mar 12 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Arm config updates and fixes
-
-* Mon Mar 11 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git5.1
-- Linux v5.0-10360-g12ad143e1b80
-
-* Fri Mar 08 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git4.1
-- Linux v5.0-7001-g610cd4eadec4
-
-* Thu Mar 07 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git3.1
-- Linux v5.0-6399-gf90d64483ebd
-
-* Wed Mar 06 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git2.1
-- Linux v5.0-3452-g3717f613f48d
-
-* Tue Mar 05 2019 Jeremy Cline <jcline@redhat.com> - 5.1.0-0.rc0.git1.1
-- Linux v5.0-510-gcd2a3bf02625
-
-* Tue Mar 05 2019 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Mon Mar 04 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-1
-- Linux v5.0.0
-
-* Tue Feb 26 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc8.git1.1
-- Linux v5.0-rc8-3-g7d762d69145a
-
-* Tue Feb 26 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Mon Feb 25 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc8.git0.1
-- Linux v5.0-rc8
-- Disable debugging options.
-
-* Fri Feb 22 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc7.git3.1
-- Linux v5.0-rc7-118-g8a61716ff2ab
-
-* Wed Feb 20 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Improvements to 96boards Rock960
-
-* Wed Feb 20 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc7.git2.1
-- Linux v5.0-rc7-85-g2137397c92ae
-
-* Tue Feb 19 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc7.git1.1
-- Linux v5.0-rc7-11-gb5372fe5dc84
-
-* Tue Feb 19 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Mon Feb 18 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc7.git0.1
-- Linux v5.0-rc7
-- Disable debugging options.
-
-* Wed Feb 13 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc6.git1.1
-- Linux v5.0-rc6-42-g1f947a7a011f
-
-* Wed Feb 13 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Wed Feb 13 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Wed Feb 13 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Enable NXP Freescale Layerscape platform
-
-* Mon Feb 11 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc6.git0.1
-- Linux v5.0-rc6
-- Disable debugging options.
-- Tweaks to gcc9 fixes
-
-* Mon Feb 04 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc5.git0.1
-- Linux v5.0-rc5
-- Disable debugging options.
-
-* Fri Feb 01 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc4.git3.1
-- Linux v5.0-rc4-106-g5b4746a03199
-
-* Thu Jan 31 2019 Hans de Goede <hdegoede@redhat.com>
-- Add patches from -next to enable i915.fastboot by default on Skylake+ for
-  https://fedoraproject.org/wiki/Changes/FlickerFreeBoot
-
-* Wed Jan 30 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc4.git2.1
-- Linux v5.0-rc4-59-g62967898789d
-
-* Tue Jan 29 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc4.git1.1
-- Linux v5.0-rc4-1-g4aa9fc2a435a
-
-* Tue Jan 29 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Mon Jan 28 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc4.git0.1
-- Linux v5.0-rc4
-- Disable debugging options.
-
-* Wed Jan 23 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc3.git1.1
-- Linux v5.0-rc3-53-g333478a7eb21
-
-* Wed Jan 23 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Mon Jan 21 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc3.git0.1
-- Linux v5.0-rc3
-- Disable debugging options.
-
-* Fri Jan 18 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc2.git4.1
-- Linux v5.0-rc2-211-gd7393226d15a
-
-* Thu Jan 17 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc2.git3.1
-- Linux v5.0-rc2-145-g7fbfee7c80de
-
-* Wed Jan 16 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc2.git2.1
-- Linux v5.0-rc2-141-g47bfa6d9dc8c
-
-* Tue Jan 15 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc2.git1.1
-- Linux v5.0-rc2-36-gfe76fc6aaf53
-
-* Tue Jan 15 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Mon Jan 14 2019 Laura Abbott <labbott@redhat.com>
-- Enable CONFIG_GPIO_LEDS and CONFIG_GPIO_PCA953X  (rhbz 1601623)
-
-* Mon Jan 14 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc2.git0.1
-- Linux v5.0-rc2
-
-* Mon Jan 14 2019 Laura Abbott <labbott@redhat.com>
-- Disable debugging options.
-
-* Sun Jan 13 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Raspberry Pi updates
-- Update AllWinner A64 timer errata workaround
-
-* Fri Jan 11 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc1.git4.1
-- Linux v5.0-rc1-43-g1bdbe2274920
-
-* Thu Jan 10 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc1.git3.1
-- Linux v5.0-rc1-26-g70c25259537c
-
-* Wed Jan 09 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc1.git2.1
-- Linux v5.0-rc1-24-g4064e47c8281
-
-* Wed Jan 09 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Fix CVE-2019-3701 (rhbz 1663729 1663730)
-
-* Tue Jan 08 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc1.git1.1
-- Linux v5.0-rc1-2-g7b5585136713
-
-* Tue Jan 08 2019 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Mon Jan 07 2019 Justin M. Forbes <jforbes@fedoraproject.org>
-- Updates for secure boot
-
-* Mon Jan 07 2019 Laura Abbott <labbott@redhat.com> - 5.0.0-0.rc1.git0.1
-- Linux v5.0-rc1
-
-* Mon Jan 07 2019 Laura Abbott <labbott@redhat.com>
-- Disable debugging options.
-
-* Fri Jan 04 2019 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git7.1
-- Linux v4.20-10979-g96d4f267e40f
-
-* Fri Jan  4 2019 Peter Robinson <pbrobinson@fedoraproject.org>
-- Updates for Arm plaforms
-- IoT related updates
-
-* Thu Jan 03 2019 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git6.1
-- Linux v4.20-10911-g645ff1e8e704
-
-* Wed Jan 02 2019 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git5.1
-- Linux v4.20-10595-g8e143b90e4d4
-
-* Mon Dec 31 2018 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git4.1
-- Linux v4.20-9221-gf12e840c819b
-
-* Sun Dec 30 2018 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git3.1
-- Linux v4.20-9163-g195303136f19
-
-* Fri Dec 28 2018 Laura Abbott <labbott@redhat.com>
-- Enable CONFIG_BPF_LIRC_MODE2 (rhbz 1628151)
-- Enable CONFIG_NET_SCH_CAKE (rhbz 1655155)
-
-* Fri Dec 28 2018 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git2.1
-- Linux v4.20-6428-g00c569b567c7
-
-* Thu Dec 27 2018 Hans de Goede <hdegoede@redhat.com>
-- Set CONFIG_REALTEK_PHY=y to workaround realtek ethernet issues (rhbz 1650984)
-
-* Wed Dec 26 2018 Laura Abbott <labbott@redhat.com> - 4.21.0-0.rc0.git1.1
-- Linux v4.20-3117-ga5f2bd479f58
-
-* Wed Dec 26 2018 Laura Abbott <labbott@redhat.com>
-- Reenable debugging options.
-
-* Mon Dec 24 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-1
-- Linux v4.20.0
-
-* Mon Dec 24 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Another fix for issue affecting Raspberry Pi 3-series WiFi (rhbz 1652093)
-
-* Fri Dec 21 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc7.git3.1
-- Linux v4.20-rc7-214-g9097a058d49e
-
-* Thu Dec 20 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc7.git2.1
-- Linux v4.20-rc7-202-g1d51b4b1d3f2
-
-* Wed Dec 19 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Initial support for Raspberry Pi model 3A+
-- Stability fixes for Raspberry Pi MMC (sdcard) driver
-
-* Tue Dec 18 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc7.git1.1
-- Linux v4.20-rc7-6-gddfbab46539f
-- Reenable debugging options.
-
-* Mon Dec 17 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc7.git0.1
-- Linux v4.20-rc7
-
-* Mon Dec 17 2018 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Fri Dec 14 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Enhancements for Raspberrp Pi Camera
-
-* Thu Dec 13 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc6.git2.1
-- Linux v4.20-rc6-82-g65e08c5e8631
-
-* Wed Dec 12 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc6.git1.2
-- Reenable debugging options.
-
-* Tue Dec 11 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc6.git1.1
-- Linux v4.20-rc6-25-gf5d582777bcb
-
-* Tue Dec 11 2018 Hans de Goede <hdegoede@redhat.com>
-- Really fix non functional hotkeys on Asus FX503VD (#1645070)
-
-* Mon Dec 10 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc6.git0.1
-- Linux v4.20-rc6
-
-* Mon Dec 10 2018 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Fri Dec 07 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc5.git3.1
-- Linux v4.20-rc5-86-gb72f711a4efa
-
-* Wed Dec 05 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc5.git2.1
-- Linux v4.20-rc5-44-gd08970904582
-
-* Wed Dec 05 2018 Jeremy Cline <jeremy@jcline.org>
-- Fix corruption bug in direct dispatch for blk-mq
-
-* Tue Dec 04 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc5.git1.1
-- Linux v4.20-rc5-21-g0072a0c14d5b
-- Reenable debugging options.
-
-* Mon Dec 03 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc5.git0.1
-- Linux v4.20-rc5
-
-* Mon Dec 03 2018 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Mon Dec  3 2018 Hans de Goede <hdegoede@redhat.com>
-- Fix non functional hotkeys on Asus FX503VD (#1645070)
-
-* Fri Nov 30 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc4.git2.1
-- Linux v4.20-rc4-156-g94f371cb7394
-
-* Wed Nov 28 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc4.git1.1
-- Linux v4.20-rc4-35-g121b018f8c74
-- Reenable debugging options.
-
-* Mon Nov 26 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc4.git0.1
-- Linux v4.20-rc4
-- Disable debugging options.
-
-* Tue Nov 20 2018 Jeremy Cline <jcline@redhat.com> - 4.20.0-0.rc3.git1.1
-- Linux v4.20-rc3-83-g06e68fed3282
-
-* Tue Nov 20 2018 Jeremy Cline <jcline@redhat.com>
-- Reenable debugging options.
-
-* Tue Nov 20 2018 Hans de Goede <hdegoede@redhat.com>
-- Turn on CONFIG_PINCTRL_GEMINILAKE on x86_64 (rhbz#1639155)
-- Add a patch fixing touchscreens on HP AMD based laptops (rhbz#1644013)
-- Add a patch fixing KIOX010A accelerometers (rhbz#1526312)
-
-* Mon Nov 19 2018 Jeremy Cline <jcline@redhat.com> - 4.20.0-0.rc3.git0.1
-- Linux v4.20-rc3
-
-* Mon Nov 19 2018 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Sat Nov 17 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Fix WiFi on Raspberry Pi 3 on aarch64 (rhbz 1649344)
-- Fixes for Raspberry Pi hwmon driver and firmware interface
-
-* Fri Nov 16 2018 Hans de Goede <hdegoede@redhat.com>
-- Enable a few modules needed for accelerometer and other sensor support
-  on some HP X2 2-in-1s
-
-* Thu Nov 15 2018 Justin M. Forbes <jforbes@redhat.com> - 4.20.0-0.rc2.git2.1
-- Linux v4.20-rc2-52-g5929a1f0ff30
-
-* Wed Nov 14 2018 Justin M. Forbes <jforbes@redhat.com> - 4.20.0-0.rc2.git1.1
-- Linux v4.20-rc2-37-g3472f66013d1
-- Reenable debugging options.
-
-* Mon Nov 12 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Further updates for ARM
-- More Qualcomm SD845 enablement
-- FPGA Device Feature List (DFL) support
-- Minor cleanups
-
-* Sun Nov 11 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc2.git0.1
-- Linux v4.20-rc2
-- Disable debugging options.
-
-* Fri Nov 09 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc1.git4.1
-- Linux v4.20-rc1-145-gaa4330e15c26
-
-* Thu Nov  8 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Initial Qualcomm SD845 enablement
-
-* Thu Nov 08 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc1.git3.1
-- Linux v4.20-rc1-98-gb00d209241ff
-
-* Wed Nov 07 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc1.git2.1
-- Linux v4.20-rc1-87-g85758777c2a2
-
-* Wed Nov  7 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Initial Arm config updates for 4.20
-
-* Tue Nov 06 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc1.git1.1
-- Linux v4.20-rc1-62-g8053e5b93eca
-- Reenable debugging options.
-
-* Mon Nov 05 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc1.git0.1
-- Linux v4.20-rc1
-
-* Mon Nov 05 2018 Justin M. Forbes <jforbes@fedoraproject.org>
-- Disable debugging options.
-
-* Fri Nov 02 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git9.1
-- Linux v4.19-12532-g8adcc59974b8
-
-* Thu Nov 01 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git8.1
-- Linux v4.19-12279-g5b7449810ae6
-
-* Wed Oct 31 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git7.1
-- Linux v4.19-11807-g310c7585e830
-
-* Tue Oct 30 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git6.1
-- Linux v4.19-11706-g11743c56785c
-
-* Mon Oct 29 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git5.1
-- Linux v4.19-9448-g673c790e7282
-
-* Fri Oct 26 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git4.1
-- Linux v4.19-6148-ge5f6d9afa341
-
-* Thu Oct 25 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git3.1
-- Linux v4.19-5646-g3acbd2de6bc3
-
-* Wed Oct 24 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git2.1
-- Linux v4.19-4345-g638820d8da8e
-
-* Tue Oct 23 2018 Justin M. Forbes <jforbes@fedoraproject.org> - 4.20.0-0.rc0.git1.1
-- Linux v4.19-1676-g0d1b82cd8ac2
-- Reenable debugging options.
-
-* Mon Oct 22 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-1
-- Linux v4.19
-- Disable debugging options.
-
-* Sat Oct 20 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Fix network on some i.MX6 devices (rhbz 1628209)
-
-* Fri Oct 19 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc8.git4.1
-- Linux v4.19-rc8-95-g91b15613ce7f
-- Enable pinctrl-cannonlake (rhbz 1641057)
-
-* Thu Oct 18 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc8.git3.1
-- Linux v4.19-rc8-27-gfa520c47eaa1
-
-* Wed Oct 17 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc8.git2.1
-- Linux v4.19-rc8-16-gc343db455eb3
-
-* Tue Oct 16 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Fixes to Rock960 series of devices, improves stability considerably
-- Raspberry Pi graphics fix
-
-* Tue Oct 16 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc8.git1.1
-- Linux v4.19-rc8-11-gb955a910d7fd
-- Re-enable debugging options.
-
-* Mon Oct 15 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc8.git0.1
-- Linux v4.19-rc8
-
-* Mon Oct 15 2018 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Oct 12 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Rebase device specific NVRAM files on brcm WiFi devices to latest
-
-* Fri Oct 12 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc7.git4.1
-- Linux v4.19-rc7-139-g6b3944e42e2e
-
-* Thu Oct 11 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc7.git3.1
-- Linux v4.19-rc7-61-g9f203e2f2f06
-
-* Wed Oct 10 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc7.git2.1
-- Linux v4.19-rc7-33-gbb2d8f2f6104
-
-* Tue Oct 09 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc7.git1.1
-- Linux v4.19-rc7-15-g64c5e530ac2c
-- Re-enable debugging options.
-
-* Mon Oct 08 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc7.git0.1
-- Linux v4.19-rc7
-
-* Mon Oct 08 2018 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Oct 05 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc6.git4.1
-- Linux v4.19-rc6-223-gbefad944e231
-
-* Thu Oct 04 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc6.git3.1
-- Linux v4.19-rc6-177-gcec4de302c5f
-
-* Wed Oct 03 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc6.git2.1
-- Linux v4.19-rc6-37-g6bebe37927f3
-
-* Tue Oct 02 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc6.git1.1
-- Linux v4.19-rc6-29-g1d2ba7fee28b
-- Re-enable debugging options.
-
-* Mon Oct 01 2018 Laura Abbott <labbott@redhat.com>
-- Disable CONFIG_CRYPTO_DEV_SP_PSP (rhbz 1608242)
-
-* Mon Oct 01 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc6.git0.1
-- Linux v4.19-rc6
-
-* Mon Oct 01 2018 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Mon Oct  1 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Support loading device specific NVRAM files on brcm WiFi devices
-
-* Fri Sep 28 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc5.git3.1
-- Linux v4.19-rc5-159-gad0371482b1e
-
-* Wed Sep 26 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Add thermal trip to bcm283x (Raspberry Pi) cpufreq
-- Add initial RockPro64 DT support
-
-* Wed Sep 26 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc5.git2.1
-- Linux v4.19-rc5-143-gc307aaf3eb47
-
-* Tue Sep 25 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc5.git1.1
-- Linux v4.19-rc5-99-g8c0f9f5b309d
-- Re-enable debugging options.
-
-* Mon Sep 24 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc5.git0.1
-- Linux v4.19-rc5
-
-* Mon Sep 24 2018 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Sep 21 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc4.git4.1
-- Linux v4.19-rc4-176-g211b100a5ced
-
-* Thu Sep 20 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc4.git3.1
-- Linux v4.19-rc4-137-gae596de1a0c8
-
-* Wed Sep 19 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc4.git2.1
-- Linux v4.19-rc4-86-g4ca719a338d5
-
-* Tue Sep 18 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc4.git1.1
-- Linux v4.19-rc4-78-g5211da9ca526
-- Enable debugging options.
-
-* Mon Sep 17 2018 Jeremy Cline <jeremy@jcline.org> - 4.19.0-0.rc4.git0.1
-- Linux v4.19-rc4
-
-* Mon Sep 17 2018 Jeremy Cline <jcline@redhat.com>
-- Stop including the i686-PAE config in the sources
-- Disable debugging options.
-
-* Fri Sep 14 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc3.git3.1
-- Linux v4.19-rc3-247-gf3c0b8ce4840
-
-* Thu Sep 13 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc3.git2.1
-- Linux v4.19-rc3-130-g54eda9df17f3
-
-* Thu Sep 13 2018 Hans de Goede <hdegoede@redhat.com>
-- Add patch silencing "EFI stub: UEFI Secure Boot is enabled." at boot
-
-* Wed Sep 12 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc3.git1.1
-- Linux v4.19-rc3-21-g5e335542de83
-- Re-enable debugging options.
-
-* Mon Sep 10 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc3.git0.1
-- Linux v4.19-rc3
-
-* Mon Sep 10 2018 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Sep 07 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc2.git3.1
-- Linux v4.19-rc2-205-ga49a9dcce802
-
-* Thu Sep 06 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc2.git2.1
-- Linux v4.19-rc2-163-gb36fdc6853a3
-
-* Wed Sep 05 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc2.git1.1
-- Linux v4.19-rc2-107-g28619527b8a7
-- Re-enable debugging options
-
-* Mon Sep  3 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Enable bcm283x VCHIQ, camera and analog audio drivers
-- ARM config updates for 4.19
-
-* Mon Sep 03 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc2.git0.1
-- Linux v4.19-rc2
-
-* Mon Sep 03 2018 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Fri Aug 31 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc1.git4.1
-- Linux v4.19-rc1-195-g4658aff6eeaa
-
-* Thu Aug 30 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc1.git3.1
-- Linux v4.19-rc1-124-g58c3f14f86c9
-
-* Wed Aug 29 2018 Jeremy Cline <jeremy@jcline.org>
-- Enable the AFS module (rhbz 1616016)
-
-* Wed Aug 29 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc1.git2.1
-- Linux v4.19-rc1-95-g3f16503b7d22
-
-* Tue Aug 28 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc1.git1.1
-- Linux v4.19-rc1-88-g050cdc6c9501
-- Re-enable debugging options
-
-* Mon Aug 27 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc1.git0.1
-- Linux v4.19-rc1
-
-* Mon Aug 27 2018 Jeremy Cline <jcline@redhat.com>
-- Disable debugging options.
-
-* Sat Aug 25 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc0.git12.1
-- Linux v4.18-12872-g051935978432
-
-* Fri Aug 24 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc0.git11.1
-- Linux v4.18-12721-g33e17876ea4e
-
-* Thu Aug 23 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc0.git10.1
-- Linux v4.18-11682-g815f0ddb346c
-
-* Wed Aug 22 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc0.git9.1
-- Linux v4.18-11219-gad1d69735878
-
-* Tue Aug 21 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc0.git8.1
-- Linux v4.18-10986-g778a33959a8a
-
-* Mon Aug 20 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc0.git7.1
-- Linux v4.18-10721-g2ad0d5269970
-
-* Sun Aug 19 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc0.git6.1
-- Linux v4.18-10568-g08b5fa819970
-
-* Sat Aug 18 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc0.git5.1
-- Linux v4.18-8895-g1f7a4c73a739
-
-* Fri Aug 17 2018 Laura Abbott <labbott@redhat.com>
-- Enable CONFIG_AF_KCM (rhbz 1613819)
-
-* Fri Aug 17 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc0.git4.1
-- Linux v4.18-8108-g5c60a7389d79
-- Re-enable AEGIS and MORUS ciphers (rhbz 1610180)
-
-* Thu Aug 16 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc0.git3.1
-- Linux v4.18-7873-gf91e654474d4
-
-* Wed Aug 15 2018 Peter Robinson <pbrobinson@fedoraproject.org>
-- Drop PPC64 (Big Endian) configs
-
-* Wed Aug 15 2018 Laura Abbott <labbott@redhat.com> - 4.19.0-0.rc0.git2.1
-- Linux v4.18-2978-g1eb46908b35d
-
-* Tue Aug 14 2018 Jeremy Cline <jcline@redhat.com> - 4.19.0-0.rc0.git1.1
-- Reenable debugging options.
-- Linux v4.18-1283-g10f3e23f07cb
-
-* Mon Aug 13 2018 Laura Abbott <labbott@redhat.com> - 4.18.0-1
-- Linux v4.18
-- Disable debugging options.
