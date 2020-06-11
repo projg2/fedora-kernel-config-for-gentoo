@@ -800,13 +800,10 @@ Patch12: 0001-kdump-add-support-for-crashkernel-auto.patch
 Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
 Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
 Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
-Patch21: 0001-add-pci_hw_vendor_status.patch
 Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
-Patch25: 0001-IB-rxe-Mark-Soft-RoCE-Transport-driver-as-tech-previ.patch
 Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
 Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
 Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
-Patch30: 0001-Add-support-for-deprecating-processors.patch
 Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
 Patch32: 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 Patch33: 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
