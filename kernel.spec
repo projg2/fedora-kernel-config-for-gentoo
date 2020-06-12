@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20200611gitb29482fde649.1
+%global distro_build 0.rc0.20200612gitb791d1bdf921.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc0.20200611gitb29482fde649.1
+%define pkgrelease 0.rc0.20200612gitb791d1bdf921.1
 
 # This is needed to do merge window version magic
 %define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20200611gitb29482fde649.1%{?buildid}%{?dist}
+%define specrelease 0.rc0.20200612gitb791d1bdf921.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200611gitb29482fde649.tar.xz
+Source0: linux-20200612gitb791d1bdf921.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1280,8 +1280,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200611gitb29482fde649 -c
-mv linux-20200611gitb29482fde649 linux-%{KVERREL}
+%setup -q -n kernel-20200612gitb791d1bdf921 -c
+mv linux-20200612gitb791d1bdf921 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2787,16 +2787,19 @@ fi
 #
 #
 %changelog
-* Thu Jun 11 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.8.0-0.rc0.20200611gitb29482fde649.1]
+* Fri Jun 12 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.8.0-0.rc0.20200612gitb791d1bdf921.1]
 - Fedora config updates ("Justin M. Forbes")
 
-* Thu Jun 11 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc0.20200611gitb29482fde649.1]
-- b29482fde649 rebase
-- Fix PATCHLEVEL for merge window ("Justin M. Forbes")
+* Fri Jun 12 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc0.20200612gitb791d1bdf921.1]
+- b791d1bdf921 rebase
 - PCI: tegra: Revert raw_violation_fixup for tegra124 (Nicolas Chauvet)
+- One more Fedora config update ("Justin M. Forbes")
 - Change ark CONFIG_COMMON_CLK to yes, it is selected already by other options ("Justin M. Forbes")
+- Fix PATCHLEVEL for merge window ("Justin M. Forbes")
 - More module filtering for Fedora ("Justin M. Forbes")
 - Update filters for rnbd in Fedora ("Justin M. Forbes")
+- redhat/Makefile.common: fix RPMKSUBLEVEL condition (Ondrej Mosnacek)
+- redhat/Makefile: silence KABI tar output (Ondrej Mosnacek)
 - Fix up module filtering for 5.8 ("Justin M. Forbes")
 - More Fedora config work ("Justin M. Forbes")
 - RTW88BE and CE have been extracted to their own modules ("Justin M. Forbes")
