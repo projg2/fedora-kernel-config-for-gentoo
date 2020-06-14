@@ -130,7 +130,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  2 files changed, 132 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 8be042df12c3..a723808f4244 100644
+index 043d93cdcaad..178813fea2ec 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1236,6 +1236,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)

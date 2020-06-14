@@ -36,7 +36,7 @@ index cfaaa6a234d4..dab7302a3606 100644
  #define TAINT_RESERVED28		28
  #define TAINT_RESERVED29		29
 diff --git a/kernel/panic.c b/kernel/panic.c
-index d4b2c5b197cb..bc296adbb93f 100644
+index e3bae852d92f..8ab004b0f846 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
 @@ -395,7 +395,7 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {

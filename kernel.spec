@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20200612gitb791d1bdf921.1
+%global distro_build 0.rc1.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc0.20200612gitb791d1bdf921.1
+%define pkgrelease 0.rc1.1
 
 # This is needed to do merge window version magic
 %define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20200612gitb791d1bdf921.1%{?buildid}%{?dist}
+%define specrelease 0.rc1.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.8
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200612gitb791d1bdf921.tar.xz
+Source0: linux-5.8-rc1.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -775,16 +775,15 @@ Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch69: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch71: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
-Patch72: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
-Patch73: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
-Patch74: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
-Patch75: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
-Patch76: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
-Patch77: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
-Patch78: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
-Patch79: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
-Patch80: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
+Patch71: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
+Patch72: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
+Patch73: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
+Patch74: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch75: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch76: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch77: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch78: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch79: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 
 %endif
 
@@ -1280,8 +1279,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200612gitb791d1bdf921 -c
-mv linux-20200612gitb791d1bdf921 linux-%{KVERREL}
+%setup -q -n kernel-5.8-rc1 -c
+mv linux-5.8-rc1 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1357,7 +1356,6 @@ ApplyOptionalPatch 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 ApplyOptionalPatch 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 ApplyOptionalPatch 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 ApplyOptionalPatch 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-ApplyOptionalPatch 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
 ApplyOptionalPatch 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
 ApplyOptionalPatch 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
 ApplyOptionalPatch 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
@@ -2787,8 +2785,16 @@ fi
 #
 #
 %changelog
-* Fri Jun 12 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.8.0-0.rc0.20200612gitb791d1bdf921.1]
-- Fedora config updates ("Justin M. Forbes")
+* Sun Jun 14 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.8.0-0.rc1.1]
+- Fedora config update for rc1 ("Justin M. Forbes")
+
+* Sun Jun 14 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc1.1]
+- v5.8-rc1 rebase
+- Updated changelog for the release based on df2fbf5bfa0e (Fedora Kernel Team)
+
+* Sat Jun 13 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc0.20200613gitdf2fbf5bfa0e.1]
+- df2fbf5bfa0e rebase
+- Updated changelog for the release based on b791d1bdf921 (Fedora Kernel Team)
 
 * Fri Jun 12 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc0.20200612gitb791d1bdf921.1]
 - b791d1bdf921 rebase

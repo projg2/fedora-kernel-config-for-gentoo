@@ -66,7 +66,7 @@ index 28be75396242..0a0081b10edb 100644
  #define TAINT_FLAGS_COUNT		32
  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 9693730833d2..c629d286f540 100644
+index 8da159936bab..8f5546ec2d1f 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
@@ -105,7 +105,7 @@ index 9693730833d2..c629d286f540 100644
  static const struct bpf_map_ops * const bpf_map_types[] = {
  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index 087392cd7dc8..d4b2c5b197cb 100644
+index 534bc76e43da..e3bae852d92f 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
 @@ -399,7 +399,7 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {

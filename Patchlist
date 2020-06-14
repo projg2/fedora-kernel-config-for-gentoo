@@ -67,7 +67,6 @@
 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
