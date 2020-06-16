@@ -860,6 +860,9 @@ Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 Patch106: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
 
+# Thinkpad dual fan control
+Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2956,6 +2959,9 @@ fi
 #
 #
 %changelog
+* Tue Jun 16 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Add thinkpad dual fan control patch from upstream
+
 * Wed Jun 10 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.2-200
 - Linux v5.7.2 rebase
 
