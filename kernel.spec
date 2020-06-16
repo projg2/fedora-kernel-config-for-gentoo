@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.1
+%global distro_build 0.rc1.20200616gita5dc8300df75.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc1.1
+%define pkgrelease 0.rc1.20200616gita5dc8300df75.1
 
 # This is needed to do merge window version magic
 %define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.1%{?buildid}%{?dist}
+%define specrelease 0.rc1.20200616gita5dc8300df75.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.8
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.8-rc1.tar.xz
+Source0: linux-20200616gita5dc8300df75.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1279,8 +1279,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.8-rc1 -c
-mv linux-5.8-rc1 linux-%{KVERREL}
+%setup -q -n kernel-20200616gita5dc8300df75 -c
+mv linux-20200616gita5dc8300df75 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2785,8 +2785,10 @@ fi
 #
 #
 %changelog
-* Sun Jun 14 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.8.0-0.rc1.1]
+* Tue Jun 16 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc1.20200616gita5dc8300df75.1]
+- a5dc8300df75 rebase
 - Fedora config update for rc1 ("Justin M. Forbes")
+- Updated changelog for the release based on v5.8-rc1 (Fedora Kernel Team)
 
 * Sun Jun 14 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc1.1]
 - v5.8-rc1 rebase
