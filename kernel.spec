@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 18
+%define stable_update 19
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -910,9 +910,6 @@ Patch518: vfio-pci-block-user-access-to-disabled-device-MMIO.patch
 
 # rhbz 1789545
 Patch519: vboxguest-fixes.patch
-
-# rhbz 1830150
-Patch520: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
 
 # Thinkpad dual fan control
 Patch521: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
@@ -2947,6 +2944,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.19-200
+- Linux v5.6.19
+
 * Mon Jun 15 2020 Stefan Assmann <sassmann@redhat.com>
 - Add dual fan control for P50, P51, P52, P70, P71, P72, P1 gen1, P2 gen2,
   X1E gen1 and X1E gen2.
