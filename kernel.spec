@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.20200616gita5dc8300df75.1
+%global distro_build 0.rc1.20200617git69119673bd50.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc1.20200616gita5dc8300df75.1
+%define pkgrelease 0.rc1.20200617git69119673bd50.1
 
 # This is needed to do merge window version magic
 %define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20200616gita5dc8300df75.1%{?buildid}%{?dist}
+%define specrelease 0.rc1.20200617git69119673bd50.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200616gita5dc8300df75.tar.xz
+Source0: linux-20200617git69119673bd50.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1279,8 +1279,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200616gita5dc8300df75 -c
-mv linux-20200616gita5dc8300df75 linux-%{KVERREL}
+%setup -q -n kernel-20200617git69119673bd50 -c
+mv linux-20200617git69119673bd50 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2785,6 +2785,10 @@ fi
 #
 #
 %changelog
+* Wed Jun 17 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc1.20200617git69119673bd50.1]
+- 69119673bd50 rebase
+- Updated changelog for the release based on a5dc8300df75 (Fedora Kernel Team)
+
 * Tue Jun 16 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc1.20200616gita5dc8300df75.1]
 - a5dc8300df75 rebase
 - Fedora config update for rc1 ("Justin M. Forbes")
