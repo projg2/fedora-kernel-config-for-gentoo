@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -858,7 +858,6 @@ Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
 Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
 Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
-Patch106: 0001-platform-x86-sony-laptop-SNC-calls-should-handle-BUF.patch
 
 # Thinkpad dual fan control
 Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
@@ -2959,6 +2958,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.3-200
+- Linux v5.7.3
+
 * Tue Jun 16 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Add thinkpad dual fan control patch from upstream
 
