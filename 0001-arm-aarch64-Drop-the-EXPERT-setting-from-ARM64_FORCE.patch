@@ -21,7 +21,7 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 31380da53689..e60f9c74f41d 100644
+index a4a094bedcb2..659090edd357 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -861,7 +861,7 @@ endchoice

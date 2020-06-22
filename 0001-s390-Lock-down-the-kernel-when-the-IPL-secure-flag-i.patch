@@ -28,7 +28,7 @@ index 7d5cfdda5277..be66ee5d0437 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index ccea9a245867..558f9fbfd114 100644
+index 90a2a17239b0..be3b72c53656 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
 @@ -2110,3 +2110,8 @@ int ipl_report_free(struct ipl_report *report)
