@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc2.20200622git625d3449788f.1
+%global distro_build 0.rc2.20200623gitdd0d718152e4.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc2.20200622git625d3449788f.1
+%define pkgrelease 0.rc2.20200623gitdd0d718152e4.1
 
 # This is needed to do merge window version magic
 %define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20200622git625d3449788f.1%{?buildid}%{?dist}
+%define specrelease 0.rc2.20200623gitdd0d718152e4.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200622git625d3449788f.tar.xz
+Source0: linux-20200623gitdd0d718152e4.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1279,8 +1279,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200622git625d3449788f -c
-mv linux-20200622git625d3449788f linux-%{KVERREL}
+%setup -q -n kernel-20200623gitdd0d718152e4 -c
+mv linux-20200623gitdd0d718152e4 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2663,6 +2663,8 @@ fi
 %{_sysconfdir}/bash_completion.d/bpftool
 %{_mandir}/man8/bpftool-cgroup.8.gz
 %{_mandir}/man8/bpftool-gen.8.gz
+%{_mandir}/man8/bpftool-iter.8.gz
+%{_mandir}/man8/bpftool-link.8.gz
 %{_mandir}/man8/bpftool-map.8.gz
 %{_mandir}/man8/bpftool-prog.8.gz
 %{_mandir}/man8/bpftool-perf.8.gz
@@ -2785,6 +2787,12 @@ fi
 #
 #
 %changelog
+* Tue Jun 23 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc2.20200623gitdd0d718152e4.1]
+- dd0d718152e4 rebase
+- Add new bpf man pages ("Justin M. Forbes")
+- Add default option for CONFIG_ARM64_BTI_KERNEL to pending-common so that eln kernels build ("Justin M. Forbes")
+- Updated changelog for the release based on 625d3449788f (Fedora Kernel Team)
+
 * Mon Jun 22 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc2.20200622git625d3449788f.1]
 - 625d3449788f rebase
 - Updated changelog for the release based on 1b5044021070 (Fedora Kernel Team)
