@@ -2779,8 +2779,9 @@ fi
 %endif
 
 %if %{with_tools}
+%ifnarch %{cpupowerarchs}
 %files -n kernel-tools
-%ifarch %{cpupowerarchs}
+%else
 %files -n kernel-tools -f cpupower.lang
 %{_bindir}/cpupower
 %{_datadir}/bash-completion/completions/cpupower
