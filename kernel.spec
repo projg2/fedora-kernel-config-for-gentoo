@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -813,7 +813,6 @@ Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch60: 0001-backlight-lp855x-Ensure-regulators-are-disabled-on-p.patch
 Patch61: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
 Patch63: 0001-Drop-that-for-now.patch
@@ -839,7 +838,6 @@ Patch84: 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
 Patch85: 0001-device-detect-if-changing-endianness-failed.patch
 Patch86: 0001-device-detect-vGPUs.patch
 Patch87: 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
-Patch88: 0001-kms-Fix-regression-by-audio-component-transition.patch
 Patch89: 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
 Patch90: 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
 Patch91: 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
@@ -2958,6 +2956,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 24 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.6-200
+- Linux v5.7.6
+
 * Mon Jun 22 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.5-200
 - Linux v5.7.5
 
