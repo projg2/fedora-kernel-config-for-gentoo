@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc2.20200623gitdd0d718152e4.1
+%global distro_build 0.rc2.20200625git8be3a53e18e0.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc2.20200623gitdd0d718152e4.1
+%define pkgrelease 0.rc2.20200625git8be3a53e18e0.1
 
 # This is needed to do merge window version magic
 %define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20200623gitdd0d718152e4.1%{?buildid}%{?dist}
+%define specrelease 0.rc2.20200625git8be3a53e18e0.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200623gitdd0d718152e4.tar.xz
+Source0: linux-20200625git8be3a53e18e0.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -784,6 +784,7 @@ Patch76: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
 Patch77: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 Patch78: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 Patch79: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
+Patch80: 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
 
 %endif
 
@@ -1279,8 +1280,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200623gitdd0d718152e4 -c
-mv linux-20200623gitdd0d718152e4 linux-%{KVERREL}
+%setup -q -n kernel-20200625git8be3a53e18e0 -c
+mv linux-20200625git8be3a53e18e0 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1365,6 +1366,7 @@ ApplyOptionalPatch 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.pat
 ApplyOptionalPatch 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 ApplyOptionalPatch 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 ApplyOptionalPatch 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
+ApplyOptionalPatch 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
 
 %endif
 
@@ -2787,6 +2789,13 @@ fi
 #
 #
 %changelog
+* Thu Jun 25 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc2.20200625git8be3a53e18e0.1]
+- 8be3a53e18e0 rebase
+- redhat: Replace hardware.redhat.com link in Unsupported message (Prarit Bhargava)
+- redhat/configs: Add .tmp files to .gitignore (Prarit Bhargava)
+- disable uncommon TCP congestion control algorithms (Davide Caratti)
+- Updated changelog for the release based on dd0d718152e4 (Fedora Kernel Team)
+
 * Tue Jun 23 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc2.20200623gitdd0d718152e4.1]
 - dd0d718152e4 rebase
 - Add new bpf man pages ("Justin M. Forbes")
