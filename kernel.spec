@@ -813,7 +813,6 @@ Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch61: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
 Patch63: 0001-Drop-that-for-now.patch
 Patch64: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
@@ -823,10 +822,6 @@ Patch67: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
 Patch68: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
 Patch69: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
 Patch70: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-Patch71: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
-Patch72: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
-Patch73: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-Patch74: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
 Patch79: 0001-disp-gv100-expose-capabilities-class.patch
@@ -858,6 +853,23 @@ Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 
 # Thinkpad dual fan control
 Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
+
+# Latest upstream screen driver - https://patchwork.kernel.org/patch/11627069/
+Patch110: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
+Patch111: 0002-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
+Patch112: 0003-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
+Patch113: 0004-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
+Patch114: 0005-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
+Patch115: 0006-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
+Patch116: 0007-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
+Patch117: 0008-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
+Patch118: 0009-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
+Patch119: 0010-drm-panel-st7703-Enter-sleep-after-display-off.patch
+Patch120: 0011-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
+Patch121: 0012-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
+Patch122: 0013-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
+# Back port from 5.8
+Patch123: 0001-usb-fusb302-Convert-to-use-GPIO-descriptors.patch
 
 # END OF PATCH DEFINITIONS
 
