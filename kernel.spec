@@ -870,7 +870,8 @@ Patch121: 0012-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
 Patch122: 0013-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
 # Back port from 5.8
 Patch123: 0001-usb-fusb302-Convert-to-use-GPIO-descriptors.patch
-
+# Tegra194 ACPI PCI quirk - http://patchwork.ozlabs.org/patch/1221384/
+Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 # END OF PATCH DEFINITIONS
 
 %endif
