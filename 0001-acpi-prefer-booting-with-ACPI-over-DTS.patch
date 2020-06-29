@@ -44,13 +44,13 @@ index a7586a4db142..c2a7e30e2143 100644
 +++ b/arch/arm64/kernel/acpi.c
 @@ -40,7 +40,7 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
  EXPORT_SYMBOL(acpi_pci_disabled);
-
+ 
  static bool param_acpi_off __initdata;
 -static bool param_acpi_on __initdata;
 +static bool param_acpi_on __initdata = true;
  static bool param_acpi_force __initdata;
-
+ 
  static int __init parse_acpi(char *arg)
 -- 
-2.26.2
+2.25.4
 

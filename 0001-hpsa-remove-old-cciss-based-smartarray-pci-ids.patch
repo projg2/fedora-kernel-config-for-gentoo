@@ -34,7 +34,7 @@ index 81d0414e2117..a3c5be79a9cc 100644
 +#ifndef CONFIG_RHEL_DIFFERENCES
  MODULE_ALIAS("cciss");
 +#endif
-
+ 
  static int hpsa_simple_mode;
  module_param(hpsa_simple_mode, int, S_IRUGO|S_IWUSR);
 @@ -144,10 +146,12 @@ static const struct pci_device_id hpsa_pci_device_id[] = {
@@ -49,7 +49,7 @@ index 81d0414e2117..a3c5be79a9cc 100644
 +#endif
  	{0,}
  };
-
+ 
 -- 
-2.26.2
+2.25.4
 

@@ -15,7 +15,7 @@ Signed-off-by: Peter Jones <pjones@redhat.com>
  2 files changed, 96 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 7f1657b6c30d..078df3a48c7b 100644
+index 5114cae4ec97..93dcc37a9820 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -23,13 +23,13 @@ index 7f1657b6c30d..078df3a48c7b 100644
  #include <linux/memblock.h>
  #include <linux/security.h>
 +#include <linux/bsearch.h>
-
+ 
  #include <asm/early_ioremap.h>
-
-@@ -826,40 +827,101 @@ int efi_mem_type(unsigned long phys_addr)
+ 
+@@ -827,40 +828,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
-
+ 
 +struct efi_error_code {
 +	efi_status_t status;
 +	int errno;
@@ -134,7 +134,7 @@ index 7f1657b6c30d..078df3a48c7b 100644
 -	}
 +	struct efi_error_code *found;
 +	size_t num = sizeof(efi_error_codes) / sizeof(struct efi_error_code);
-
+ 
 -	return err;
 +	found = bsearch((void *)(uintptr_t)status, efi_error_codes,
 +			sizeof(struct efi_error_code), num,
@@ -157,29 +157,29 @@ index 7f1657b6c30d..078df3a48c7b 100644
 +		return "Unknown error code";
 +	return found->description;
  }
-
+ 
  static DEFINE_SPINLOCK(efi_mem_reserve_persistent_lock);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 2c6495f72f79..b73b4bcaa32f 100644
+index bb35f3305e55..1d77c218b67e 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
  #define EFI_ABORTED		(21 | (1UL << (BITS_PER_LONG-1)))
  #define EFI_SECURITY_VIOLATION	(26 | (1UL << (BITS_PER_LONG-1)))
-
+ 
 +#define EFI_IS_ERROR(x)		((x) & (1UL << (BITS_PER_LONG-1)))
 +
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -827,6 +829,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -828,6 +830,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
-
+ 
  extern int efi_status_to_err(efi_status_t status);
 +extern const char *efi_status_to_str(efi_status_t status);
-
+ 
  /*
   * Variable Attributes
 -- 
-2.26.2
+2.25.4
 

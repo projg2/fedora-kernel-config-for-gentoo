@@ -54,7 +54,7 @@ index 953a2fae8b15..7ea07f7da582 100644
 @@ -88,6 +88,14 @@ int apei_hest_parse(apei_hest_func_t func, void *data)
  	if (hest_disable || !hest_tab)
  		return -EINVAL;
-
+ 
 +#ifdef CONFIG_ARM64
 +	/* Ignore broken firmware */
 +	if (!strncmp(hest_tab->header.oem_id, "HPE   ", 6) &&
@@ -67,5 +67,5 @@ index 953a2fae8b15..7ea07f7da582 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 -- 
-2.26.2
+2.25.4
 

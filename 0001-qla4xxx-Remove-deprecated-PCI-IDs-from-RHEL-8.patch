@@ -52,5 +52,5 @@ index 5dc697ce8b5d..15f4bedc3a78 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 -- 
-2.26.2
+2.25.4
 

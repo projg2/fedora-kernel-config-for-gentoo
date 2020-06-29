@@ -46,9 +46,9 @@ index 4e18ae5282a6..805341c0aaf3 100755
  ignore="$ignore ( -name *.mod.c ) -prune -o"
 +# RHEL tags and cscope should also ignore redhat/rpm
 +ignore="$ignore ( -path redhat/rpm ) -prune -o"
-
+ 
  # Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
  # to force full paths for a non-O= build
 -- 
-2.26.2
+2.25.4
 

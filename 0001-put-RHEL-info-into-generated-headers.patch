@@ -59,7 +59,7 @@ Acked-by: Prarit Bhargava <prarit@redhat.com>
  1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index ac2c61c37a73..9e33fdf83e11 100644
+index a60c98519c37..a3ec72fe1d8a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1217,7 +1217,13 @@ endef
@@ -75,8 +75,8 @@ index ac2c61c37a73..9e33fdf83e11 100644
 +		$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
 +	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
  endef
-
+ 
  $(version_h): FORCE
 -- 
-2.26.2
+2.25.4
 

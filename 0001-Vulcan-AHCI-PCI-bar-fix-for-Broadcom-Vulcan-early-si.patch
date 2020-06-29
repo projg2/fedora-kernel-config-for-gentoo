@@ -42,7 +42,7 @@ index 812bfc32ecb8..e09fec76c320 100644
 @@ -4183,6 +4183,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
-
+ 
 +/*
 + * PCI BAR 5 is not setup correctly for the on-board AHCI controller
 + * on Broadcom's Vulcan processor. Added a quirk to fix BAR 5 by
@@ -71,5 +71,5 @@ index 812bfc32ecb8..e09fec76c320 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 -- 
-2.26.2
+2.25.4
 

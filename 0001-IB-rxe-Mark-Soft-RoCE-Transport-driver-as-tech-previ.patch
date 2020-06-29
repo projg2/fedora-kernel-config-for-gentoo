@@ -47,12 +47,12 @@ index 5642eefb4ba1..01c8d750b9e0 100644
 @@ -336,6 +336,8 @@ static int __init rxe_module_init(void)
  {
  	int err;
-
+ 
 +	mark_tech_preview("Soft-RoCE Transport Driver", THIS_MODULE);
 +
  	/* initialize slab caches for managed objects */
  	err = rxe_cache_init();
  	if (err) {
 -- 
-2.26.2
+2.25.4
 

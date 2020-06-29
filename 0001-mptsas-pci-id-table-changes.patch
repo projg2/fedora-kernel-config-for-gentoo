@@ -36,7 +36,7 @@ index c17614cd6ed8..ca44a35ec411 100644
 +++ b/drivers/message/fusion/mptsas.c
 @@ -5358,6 +5358,10 @@ static void mptsas_remove(struct pci_dev *pdev)
  }
-
+ 
  static struct pci_device_id mptsas_pci_table[] = {
 +#ifdef CONFIG_RHEL_DIFFERENCES
 +	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_SAS1068,
@@ -54,5 +54,5 @@ index c17614cd6ed8..ca44a35ec411 100644
  };
  MODULE_DEVICE_TABLE(pci, mptsas_pci_table);
 -- 
-2.26.2
+2.25.4
 

@@ -44,7 +44,7 @@ index 8d1641710ed7..4050b6dead75 100644
 +	pr_crit("Warning: %s - this hardware has not undergone testing by Red Hat and might not be certified. Please consult https://catalog.redhat.com for certified hardware.\n", msg);
  }
  EXPORT_SYMBOL(mark_hardware_unsupported);
-
+ 
 -- 
-2.26.2
+2.25.4
 

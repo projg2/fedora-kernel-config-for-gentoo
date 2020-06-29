@@ -130,7 +130,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  2 files changed, 132 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 043d93cdcaad..178813fea2ec 100644
+index 95c090a45b4b..bcc6d2df56c0 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1236,6 +1236,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -140,7 +140,7 @@ index 043d93cdcaad..178813fea2ec 100644
 +		get_model_name(c); /* RHEL: get model name for unsupported check */
  		get_cpu_address_sizes(c);
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
-
+ 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
 index a3767e74c758..a1b8cb9a2579 100644
 --- a/arch/x86/kernel/setup.c
@@ -150,7 +150,7 @@ index a3767e74c758..a1b8cb9a2579 100644
  #include <asm/vsyscall.h>
  #include <linux/vmalloc.h>
 +#include <asm/intel-family.h>
-
+ 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
 @@ -753,7 +754,132 @@ static void __init trim_low_memory_range(void)
@@ -290,14 +290,14 @@ index a3767e74c758..a1b8cb9a2579 100644
 @@ -1250,6 +1376,10 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
-
+ 
 +#ifdef CONFIG_RH_DISABLE_DEPRECATED
 +	rh_check_supported();
 +#endif
 +
  	unwind_init();
  }
-
+ 
 -- 
-2.26.2
+2.25.4
 

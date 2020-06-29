@@ -21,11 +21,11 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index a4a094bedcb2..659090edd357 100644
+index 66dc41fd49f2..2e0700a451e5 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -861,7 +861,7 @@ endchoice
-
+ 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
 -	depends on ARM64_VA_BITS_52 && EXPERT
@@ -34,5 +34,5 @@ index a4a094bedcb2..659090edd357 100644
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
 -- 
-2.26.2
+2.25.4
 

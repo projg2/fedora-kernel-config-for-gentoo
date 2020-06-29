@@ -77,12 +77,12 @@ index cdc636d3013d..4debb7aaad48 100644
  # define __RH_KABI_CHECK_SIZE_ALIGN(_orig, _new)
 +# define __RH_KABI_CHECK_SIZE(_item, _size)
  #endif
-
+ 
  # define _RH_KABI_DEPRECATE(_type, _orig)	_type rh_reserved_##_orig
 @@ -186,6 +203,16 @@
-
+ 
  #define RH_KABI_EXCLUDE(_elem)		_RH_KABI_EXCLUDE(_elem);
-
+ 
 +/*
 + * Extending a struct while reserving extra space.
 + */
@@ -97,5 +97,5 @@ index cdc636d3013d..4debb7aaad48 100644
   * RHEL macros to extend structs.
   *
 -- 
-2.26.2
+2.25.4
 

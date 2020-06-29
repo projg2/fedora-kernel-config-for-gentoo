@@ -23,18 +23,18 @@ index 15b3cb618c6e..4f1addaa3f6f 100644
 --- a/drivers/virt/vboxguest/vboxguest_core.c
 +++ b/drivers/virt/vboxguest/vboxguest_core.c
 @@ -679,7 +679,7 @@ static int vbg_set_host_capabilities(struct vbg_dev *gdev,
-
+ 
  	WARN_ON(!mutex_is_locked(&gdev->session_mutex));
-
+ 
 -	caps = gdev->set_guest_caps_tracker.mask;
 +	caps = gdev->acquired_guest_caps | gdev->set_guest_caps_tracker.mask;
-
+ 
  	if (gdev->guest_caps_host == caps)
  		return 0;
 @@ -703,6 +703,113 @@ static int vbg_set_host_capabilities(struct vbg_dev *gdev,
  	return vbg_status_code_to_errno(rc);
  }
-
+ 
 +/**
 + * Acquire (get exclusive access) guest capabilities for a session.
 + * Takes the session mutex.
@@ -146,9 +146,9 @@ index 15b3cb618c6e..4f1addaa3f6f 100644
   * Sets the guest capabilities for a session. Takes the session spinlock.
   * Return: 0 or negative errno value.
 @@ -725,6 +832,13 @@ static int vbg_set_session_capabilities(struct vbg_dev *gdev,
-
+ 
  	mutex_lock(&gdev->session_mutex);
-
+ 
 +	if (gdev->acquire_mode_guest_caps & or_mask) {
 +		vbg_err("%s error: cannot set caps which are in acquire_mode\n",
 +			__func__);
@@ -162,15 +162,15 @@ index 15b3cb618c6e..4f1addaa3f6f 100644
 @@ -962,6 +1076,7 @@ void vbg_core_close_session(struct vbg_session *session)
  	struct vbg_dev *gdev = session->gdev;
  	int i, rc;
-
+ 
 +	vbg_acquire_session_capabilities(gdev, session, 0, U32_MAX, 0, true);
  	vbg_set_session_capabilities(gdev, session, 0, U32_MAX, true);
  	vbg_set_session_event_filter(gdev, session, 0, U32_MAX, true);
-
+ 
 @@ -1019,6 +1134,25 @@ static int vbg_ioctl_driver_version_info(
  	return 0;
  }
-
+ 
 +/* Must be called with the event_lock held */
 +static u32 vbg_get_allowed_event_mask_for_session(struct vbg_dev *gdev,
 +						  struct vbg_session *session)
@@ -195,16 +195,16 @@ index 15b3cb618c6e..4f1addaa3f6f 100644
  				u32 event_mask)
 @@ -1030,6 +1164,7 @@ static bool vbg_wait_event_cond(struct vbg_dev *gdev,
  	spin_lock_irqsave(&gdev->event_spinlock, flags);
-
+ 
  	events = gdev->pending_events & event_mask;
 +	events &= vbg_get_allowed_event_mask_for_session(gdev, session);
  	wakeup = events || session->cancel_waiters;
-
+ 
  	spin_unlock_irqrestore(&gdev->event_spinlock, flags);
 @@ -1044,6 +1179,7 @@ static u32 vbg_consume_events_locked(struct vbg_dev *gdev,
  {
  	u32 events = gdev->pending_events & event_mask;
-
+ 
 +	events &= vbg_get_allowed_event_mask_for_session(gdev, session);
  	gdev->pending_events &= ~events;
  	return events;
@@ -212,7 +212,7 @@ index 15b3cb618c6e..4f1addaa3f6f 100644
 @@ -1445,6 +1581,29 @@ static int vbg_ioctl_change_filter_mask(struct vbg_dev *gdev,
  					    false);
  }
-
+ 
 +static int vbg_ioctl_acquire_guest_capabilities(struct vbg_dev *gdev,
 +	     struct vbg_session *session,
 +	     struct vbg_ioctl_acquire_guest_caps *caps)
@@ -255,7 +255,7 @@ index dc745a033164..ab4bf64e2cec 100644
 @@ -117,6 +117,15 @@ struct vbg_dev {
  	 */
  	u32 event_filter_host;
-
+ 
 +	/**
 +	 * Guest capabilities which have been switched to acquire_mode.
 +	 */
@@ -286,8 +286,8 @@ index f79d7abe27db..15125f6ec60d 100644
 +++ b/include/uapi/linux/vboxguest.h
 @@ -257,6 +257,30 @@ VMMDEV_ASSERT_SIZE(vbg_ioctl_change_filter, 24 + 8);
  	_IOWR('V', 12, struct vbg_ioctl_change_filter)
-
-
+ 
+ 
 +/** VBG_IOCTL_ACQUIRE_GUEST_CAPABILITIES data structure. */
 +struct vbg_ioctl_acquire_guest_caps {
 +	/** The header. */
@@ -316,5 +316,5 @@ index f79d7abe27db..15125f6ec60d 100644
  struct vbg_ioctl_set_guest_caps {
  	/** The header. */
 -- 
-2.26.2
+2.25.4
 
