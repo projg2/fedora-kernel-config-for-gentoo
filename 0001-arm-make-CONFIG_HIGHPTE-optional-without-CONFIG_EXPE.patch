@@ -16,7 +16,7 @@ index 2ac74904a3ce..f0094424f76a 100644
 +++ b/arch/arm/Kconfig
 @@ -1549,9 +1549,9 @@ config HIGHMEM
  	  If unsure, say n.
- 
+
  config HIGHPTE
 -	bool "Allocate 2nd-level pagetables from highmem" if EXPERT
 +	bool "Allocate 2nd-level pagetables from highmem"
@@ -27,5 +27,5 @@ index 2ac74904a3ce..f0094424f76a 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 -- 
-2.25.4
+2.26.2
 

@@ -29,9 +29,9 @@ index 733a26bd887a..effb81d04bfd 100644
 --- a/Kconfig.redhat
 +++ b/Kconfig.redhat
 @@ -5,7 +5,7 @@
- 
+
  menu "Red Hat options"
- 
+
 -config RH_DISABLE_DEPRECATED
 +config RHEL_DIFFERENCES
  	bool "Remove support for deprecated features"
@@ -44,20 +44,20 @@ index 19d57bfc12f9..e677bb144835 100644
 @@ -1372,7 +1372,7 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
- 
+
 -#ifdef CONFIG_RH_DISABLE_DEPRECATED
 +#ifdef CONFIG_RHEL_DIFFERENCES
  	rh_check_supported();
  #endif
- 
+
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
 index 0a0081b10edb..cfaaa6a234d4 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
 @@ -1058,7 +1058,7 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
- 
+
  struct module;
- 
+
 -#ifdef CONFIG_RH_DISABLE_DEPRECATED
 +#ifdef CONFIG_RHEL_DIFFERENCES
  void mark_hardware_unsupported(const char *msg);
@@ -70,12 +70,12 @@ index c0a4904413b5..1a0c362cddfb 100644
 @@ -12,7 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
  	    notifier.o ksysfs.o cred.o reboot.o \
  	    async.o range.o smpboot.o ucount.o
- 
+
 -obj-$(CONFIG_RH_DISABLE_DEPRECATED) += rh_taint.o
 +obj-$(CONFIG_RHEL_DIFFERENCES) += rh_taint.o
- 
+
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 -- 
-2.25.4
+2.26.2
 

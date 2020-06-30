@@ -23,11 +23,11 @@ index 8fab04e76c14..18ebd7a6af98 100644
 @@ -1444,7 +1444,7 @@ static int vbg_ioctl_change_guest_capabilities(struct vbg_dev *gdev,
  	or_mask = caps->u.in.or_mask;
  	not_mask = caps->u.in.not_mask;
- 
+
 -	if ((or_mask | not_mask) & ~VMMDEV_EVENT_VALID_EVENT_MASK)
 +	if ((or_mask | not_mask) & ~VMMDEV_GUEST_CAPABILITIES_MASK)
  		return -EINVAL;
- 
+
  	ret = vbg_set_session_capabilities(gdev, session, or_mask, not_mask,
 diff --git a/drivers/virt/vboxguest/vmmdev.h b/drivers/virt/vboxguest/vmmdev.h
 index 6337b8d75d96..21f408120e3f 100644
@@ -39,9 +39,9 @@ index 6337b8d75d96..21f408120e3f 100644
  #define VMMDEV_GUEST_SUPPORTS_GRAPHICS                      BIT(2)
 +/* The mask of valid capabilities, for sanity checking. */
 +#define VMMDEV_GUEST_CAPABILITIES_MASK                      0x00000007U
- 
+
  /** struct vmmdev_hypervisorinfo - Hypervisor info structure. */
  struct vmmdev_hypervisorinfo {
 -- 
-2.25.4
+2.26.2
 

@@ -34,7 +34,7 @@ index 8777faced51a..2e60d792005f 100644
 @@ -1572,6 +1572,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
- 
+
 +	/*
 +	 * Firmware on some arm64 X-Gene platforms will make the UART
 +	 * device appear as both a UART and a slave of that UART. Just
@@ -48,5 +48,5 @@ index 8777faced51a..2e60d792005f 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 -- 
-2.25.4
+2.26.2
 

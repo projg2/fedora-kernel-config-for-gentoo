@@ -16,7 +16,7 @@ index 3e4868a6498b..502f9a9a2806 100644
 @@ -15,6 +15,9 @@ NAME = Bobtail Squid
  PHONY := __all
  __all:
- 
+
 +# Set RHEL variables
 +include Makefile.rhelver
 +
@@ -36,8 +36,8 @@ index 3e4868a6498b..502f9a9a2806 100644
 +	$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
 +	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
  endef
- 
+
  $(version_h): FORCE
 -- 
-2.25.4
+2.26.2
 

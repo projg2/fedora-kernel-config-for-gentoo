@@ -75,8 +75,8 @@ index a60c98519c37..a3ec72fe1d8a 100644
 +		$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
 +	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
  endef
- 
+
  $(version_h): FORCE
 -- 
-2.25.4
+2.26.2
 

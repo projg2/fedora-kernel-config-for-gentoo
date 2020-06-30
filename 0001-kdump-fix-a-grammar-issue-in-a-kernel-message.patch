@@ -36,8 +36,8 @@ index c252221b2f4b..df551fc9034c 100644
 -		pr_info("Using crashkernel=auto, the size choosed is a best effort estimation.\n");
 +		pr_info("Using crashkernel=auto, the size chosen is a best effort estimation.\n");
  	}
- 
+
  	/*
 -- 
-2.25.4
+2.26.2
 

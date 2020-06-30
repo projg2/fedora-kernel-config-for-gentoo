@@ -27,12 +27,12 @@ index 28d43754aeb6..19d57bfc12f9 100644
  #include <linux/tboot.h>
 +#include <linux/security.h>
  #include <linux/usb/xhci-dbgp.h>
- 
+
  #include <uapi/linux/mount.h>
 @@ -1105,6 +1106,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
- 
+
 +	efi_set_secure_boot(boot_params.secure_boot);
 +
 +#ifdef CONFIG_LOCK_DOWN_IN_EFI_SECURE_BOOT
@@ -41,7 +41,7 @@ index 28d43754aeb6..19d57bfc12f9 100644
 +#endif
 +
  	dmi_setup();
- 
+
  	/*
 diff --git a/security/lockdown/Kconfig b/security/lockdown/Kconfig
 index e84ddf484010..d0501353a4b9 100644
@@ -50,7 +50,7 @@ index e84ddf484010..d0501353a4b9 100644
 @@ -16,6 +16,19 @@ config SECURITY_LOCKDOWN_LSM_EARLY
  	  subsystem is fully initialised. If enabled, lockdown will
  	  unconditionally be called before any other LSMs.
- 
+
 +config LOCK_DOWN_IN_EFI_SECURE_BOOT
 +	bool "Lock down the kernel in EFI Secure Boot mode"
 +	default n
@@ -68,5 +68,5 @@ index e84ddf484010..d0501353a4b9 100644
  	prompt "Kernel default lockdown mode"
  	default LOCK_DOWN_KERNEL_FORCE_NONE
 -- 
-2.25.4
+2.26.2
 

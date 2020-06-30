@@ -37,7 +37,7 @@ index e209081d644b..7484bcf59a1b 100644
  	struct irq_fwspec *fwspec;
 +	bool skip_producer_check;
  };
- 
+
  /**
 @@ -197,7 +198,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  		return AE_CTRL_TERMINATE;
@@ -55,7 +55,7 @@ index e209081d644b..7484bcf59a1b 100644
  {
 -	struct acpi_irq_parse_one_ctx ctx = { -EINVAL, index, flags, fwspec };
 +	struct acpi_irq_parse_one_ctx ctx = { -EINVAL, index, flags, fwspec, false };
- 
+
 +	/*
 +	 * Firmware on arm64-based HPE m400 platform incorrectly marks
 +	 * its UART interrupt as ACPI_PRODUCER rather than ACPI_CONSUMER.
@@ -71,5 +71,5 @@ index e209081d644b..7484bcf59a1b 100644
  	return ctx.rc;
  }
 -- 
-2.25.4
+2.26.2
 

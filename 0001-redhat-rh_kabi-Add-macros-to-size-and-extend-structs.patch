@@ -128,9 +128,9 @@ index 87f2bd530df7..d551df994583 100644
 --- a/include/linux/rh_kabi.h
 +++ b/include/linux/rh_kabi.h
 @@ -186,4 +186,68 @@
- 
+
  #define RH_KABI_EXCLUDE(_elem)		_RH_KABI_EXCLUDE(_elem);
- 
+
 +/*
 + * RHEL macros to extend structs.
 + *
@@ -197,5 +197,5 @@ index 87f2bd530df7..d551df994583 100644
 +
  #endif /* _LINUX_RH_KABI_H */
 -- 
-2.25.4
+2.26.2
 

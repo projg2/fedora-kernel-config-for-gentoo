@@ -36,7 +36,7 @@ index b90601e8a657..ea9c136bf884 100644
 @@ -163,6 +163,8 @@
  # define __RH_KABI_CHECK_SIZE(_item, _size)
  #endif
- 
+
 +#define RH_KABI_UNIQUE_ID	__PASTE(rh_kabi_hidden_, __LINE__)
 +
  # define _RH_KABI_DEPRECATE(_type, _orig)	_type rh_reserved_##_orig
@@ -59,7 +59,7 @@ index b90601e8a657..ea9c136bf884 100644
 +		unsigned long RH_KABI_UNIQUE_ID[_size];			\
  		__RH_KABI_CHECK_SIZE(_new, 8 * (_size));		\
  	})
- 
+
 -- 
-2.25.4
+2.26.2
 

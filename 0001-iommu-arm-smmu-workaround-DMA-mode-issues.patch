@@ -62,7 +62,7 @@ index d43120eb1dc5..1920be30a378 100644
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
  #define pr_fmt(fmt)    "iommu: " fmt
- 
+
  #include <linux/device.h>
 +#include <linux/dmi.h>
  #include <linux/kernel.h>
@@ -94,5 +94,5 @@ index d43120eb1dc5..1920be30a378 100644
 +arch_initcall(iommu_quirks);
 +#endif
 -- 
-2.25.4
+2.26.2
 

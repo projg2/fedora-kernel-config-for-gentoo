@@ -40,11 +40,11 @@ index da6510af1221..2ec02cbfda72 100644
 +#include <linux/kernel.h>
  #include "pci.h"
  #include "pcie/portdrv.h"
- 
+
 @@ -278,6 +279,34 @@ static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
  	return found_id;
  }
- 
+
 +/**
 + * pci_hw_vendor_status - Tell if a PCI device is supported by the HW vendor
 + * @ids: array of PCI device id structures to search in
@@ -90,7 +90,7 @@ index c79d83304e52..695efeea48f0 100644
 +						struct pci_dev *dev);
  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
  		    int pass);
- 
+
 -- 
-2.25.4
+2.26.2
 

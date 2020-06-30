@@ -18,7 +18,7 @@ index d4a4045092df..ed808148b6a7 100644
 @@ -425,6 +425,11 @@ properties:
            - const: pine64,rockpro64
            - const: rockchip,rk3399
- 
+
 +      - description: Pine64 PinebookPro
 +        items:
 +          - const: pine64,pinebook-pro
@@ -28,5 +28,5 @@ index d4a4045092df..ed808148b6a7 100644
          items:
            - const: radxa,rock
 -- 
-2.25.4
+2.26.2
 

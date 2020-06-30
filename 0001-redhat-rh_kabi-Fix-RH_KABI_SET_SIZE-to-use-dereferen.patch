@@ -40,8 +40,8 @@ index d551df994583..9a4fea93ad99 100644
 -	_name._struct##_size_rh = sizeof(struct _struct##_rh);		\
 +	_name->_struct##_size_rh = sizeof(struct _struct##_rh);		\
  })
- 
+
  /*
 -- 
-2.25.4
+2.26.2
 

@@ -35,7 +35,7 @@ index c028f5944694..1f458e35effb 100644
 +++ b/drivers/message/fusion/mptspi.c
 @@ -1238,12 +1238,17 @@ static struct spi_function_template mptspi_transport_functions = {
   */
- 
+
  static struct pci_device_id mptspi_pci_table[] = {
 +#ifdef CONFIG_RHEL_DIFFERENCES
 +	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_53C1030,
@@ -52,5 +52,5 @@ index c028f5944694..1f458e35effb 100644
  };
  MODULE_DEVICE_TABLE(pci, mptspi_pci_table);
 -- 
-2.25.4
+2.26.2
 

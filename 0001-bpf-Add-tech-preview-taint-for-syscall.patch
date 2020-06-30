@@ -36,10 +36,10 @@ index 8f5546ec2d1f..772054412fab 100644
  	union bpf_attr attr;
 +	static int marked;
  	int err;
- 
+
  	if (sysctl_unprivileged_bpf_disabled && !bpf_capable())
  		return -EPERM;
- 
+
 +	if (!marked) {
 +		mark_tech_preview("eBPF syscall", NULL);
 +		marked = true;
@@ -49,5 +49,5 @@ index 8f5546ec2d1f..772054412fab 100644
  	if (err)
  		return err;
 -- 
-2.25.4
+2.26.2
 

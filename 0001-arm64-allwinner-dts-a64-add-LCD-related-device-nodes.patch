@@ -21,7 +21,7 @@ index cefda145c3c9..96d9150423e0 100644
 @@ -16,6 +16,15 @@ aliases {
  		serial0 = &uart0;
  	};
- 
+
 +	backlight: backlight {
 +		compatible = "pwm-backlight";
 +		pwms = <&r_pwm 0 50000 PWM_POLARITY_INVERTED>;
@@ -37,7 +37,7 @@ index cefda145c3c9..96d9150423e0 100644
 @@ -84,6 +93,30 @@ &dai {
  	status = "okay";
  };
- 
+
 +&de {
 +	status = "okay";
 +};
@@ -68,14 +68,14 @@ index cefda145c3c9..96d9150423e0 100644
 @@ -188,6 +221,10 @@ &r_pio {
  	 */
  };
- 
+
 +&r_pwm {
 +	status = "okay";
 +};
 +
  &r_rsb {
  	status = "okay";
- 
+
 -- 
-2.25.4
+2.26.2
 

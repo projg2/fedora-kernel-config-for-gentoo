@@ -91,20 +91,20 @@ index 2e6670860d27..8c35a5db7d7e 100644
  	const char *srcversion;
 +	const char *rhelversion;
  	struct kobject *holders_dir;
- 
+
  	/* Exported symbols */
 diff --git a/kernel/module.c b/kernel/module.c
 index 0c6573b98c36..4898faa4e8e1 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -802,6 +802,7 @@ static struct module_attribute modinfo_##field = {                    \
- 
+
  MODINFO_ATTR(version);
  MODINFO_ATTR(srcversion);
 +MODINFO_ATTR(rhelversion);
- 
+
  static char last_unloaded_module[MODULE_NAME_LEN+1];
- 
+
 @@ -1266,6 +1267,7 @@ static struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
@@ -122,13 +122,13 @@ index 6aea65c65745..ed3c4d8a1c7f 100644
  #include "modpost.h"
  #include "../../include/linux/license.h"
 +#include "../../include/generated/uapi/linux/version.h"
- 
+
  /* Are we using CONFIG_MODVERSIONS? */
  static int modversions = 0;
 @@ -2384,6 +2385,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
- 
+
 +static void add_rhelversion(struct buffer *b, struct module *mod)
 +{
 +	buf_printf(b, "MODULE_INFO(rhelversion, \"%d.%d\");\n", RHEL_MAJOR,
@@ -143,9 +143,9 @@ index 6aea65c65745..ed3c4d8a1c7f 100644
  		add_moddevtable(&buf, mod);
  		add_srcversion(&buf, mod);
 +		add_rhelversion(&buf, mod);
- 
+
  		sprintf(fname, "%s.mod.c", mod->name);
  		write_if_changed(&buf, fname);
 -- 
-2.25.4
+2.26.2
 

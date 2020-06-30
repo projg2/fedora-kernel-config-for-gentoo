@@ -130,12 +130,12 @@ index f3218bc5ec69..c0a4904413b5 100644
 @@ -12,6 +12,8 @@ obj-y     = fork.o exec_domain.o panic.o \
  	    notifier.o ksysfs.o cred.o reboot.o \
  	    async.o range.o smpboot.o ucount.o
- 
+
 +obj-$(CONFIG_RH_DISABLE_DEPRECATED) += rh_taint.o
 +
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
- 
+
 diff --git a/kernel/rh_taint.c b/kernel/rh_taint.c
 new file mode 100644
 index 000000000000..8d1641710ed7
@@ -236,5 +236,5 @@ index 000000000000..8d1641710ed7
 +}
 +EXPORT_SYMBOL(mark_driver_unsupported);
 -- 
-2.25.4
+2.26.2
 

@@ -31,13 +31,13 @@ index 4cbd49c87568..aa9baa923fd9 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
 @@ -3771,6 +3771,7 @@ static int __init ice_module_init(void)
- 
+
  	pr_info("%s - version %s\n", ice_driver_string, ice_drv_ver);
  	pr_info("%s\n", ice_copyright);
 +	mark_tech_preview(DRV_SUMMARY, THIS_MODULE);
- 
+
  	ice_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, KBUILD_MODNAME);
  	if (!ice_wq) {
 -- 
-2.25.4
+2.26.2
 

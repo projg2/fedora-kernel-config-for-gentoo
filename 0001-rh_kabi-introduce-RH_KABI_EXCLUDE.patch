@@ -80,25 +80,25 @@ index e0d3353802bb..87f2bd530df7 100644
  # define _RH_KABI_REPLACE(_orig, _new)		_orig
  # define _RH_KABI_REPLACE_UNSAFE(_orig, _new)	_orig
 +# define _RH_KABI_EXCLUDE(_elem)
- 
+
  #else
- 
+
 @@ -137,6 +150,8 @@
  	}
  # define _RH_KABI_REPLACE_UNSAFE(_orig, _new)	_new
- 
+
 +# define _RH_KABI_EXCLUDE(_elem)		_elem
 +
  #endif /* __GENKSYMS__ */
- 
+
  /* semicolon added wrappers for the RH_KABI_REPLACE macros */
 @@ -169,4 +184,6 @@
   */
  # define _RH_KABI_RESERVE(n)		unsigned long rh_reserved##n
- 
+
 +#define RH_KABI_EXCLUDE(_elem)		_RH_KABI_EXCLUDE(_elem);
 +
  #endif /* _LINUX_RH_KABI_H */
 -- 
-2.25.4
+2.26.2
 
