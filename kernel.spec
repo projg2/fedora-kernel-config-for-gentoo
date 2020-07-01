@@ -77,19 +77,19 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 100
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 6
+%define base_sublevel 7
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 19
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -786,134 +786,87 @@ Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 
 %if !%{nopatches}
 
-# Git trees.
-
-# Standalone patches
-# 100 - Generic long running patches
-
-# 200 - x86 / secureboot
-
-# bz 1497559 - Make kernel MODSIGN code not error on missing variables
-Patch201: 0002-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
-Patch202: 0003-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
-
-Patch204: efi-secureboot.patch
-
-Patch206: s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
-
-# 300 - ARM patches
-Patch300: arm64-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-
-# RHBZ Bug 1576593 - work around while vendor investigates
-Patch301: arm-make-highpte-not-expert.patch
-
-# https://patchwork.kernel.org/patch/10351797/
-Patch302: ACPI-scan-Fix-regression-related-to-X-Gene-UARTs.patch
-# rhbz 1574718
-Patch303: ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m400.patch
-
-Patch304: ARM-tegra-usb-no-reset.patch
-
-# Raspberry Pi
-# https://patchwork.kernel.org/cover/11353083/
-Patch310: arm64-pinctrl-bcm2835-Add-support-for-all-BCM2711-GPIOs.patch
-# v5 https://patchwork.kernel.org/cover/11429245/
-Patch311: USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-# https://patchwork.kernel.org/patch/11372935/
-Patch312: bcm2835-irqchip-Quiesce-IRQs-left-enabled-by-bootloader.patch
-# https://patchwork.kernel.org/patch/11420129/
-Patch313: ARM-dts-bcm2711-Move-emmc2-into-its-own-bus.patch
-# Upstream commit f87391eec2c5 thread: https://www.spinics.net/lists/linux-mmc/msg58036.html
-Patch314: arm-bcm2711-mmc-sdhci-iproc-Add-custom-set_power-callback.patch
-# Upstream commit 57b76faf1d78
-Patch316: arm-bcm2835-serial-8250_early-support-aux-uart.patch
-
-# Tegra bits
-# https://www.spinics.net/lists/linux-tegra/msg48152.html
-Patch320: ARM64-Tegra-fixes.patch
-# http://patchwork.ozlabs.org/patch/1230891/
-Patch321: arm64-serial-8250_tegra-Create-Tegra-specific-8250-driver.patch
-# http://patchwork.ozlabs.org/patch/1243162/
-Patch324: regulator-pwm-Don-t-warn-on-probe-deferral.patch
-# http://patchwork.ozlabs.org/patch/1243112/
-Patch325: backlight-lp855x-Ensure-regulators-are-disabled-on-probe-failure.patch
-# http://patchwork.ozlabs.org/patch/1221384/
-Patch327: PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
-
-# Coral
-Patch330: arm64-dts-imx8mq-phanbell-Add-support-for-ethernet.patch
-
-# Pine64 bits
-# 340-345 queued for 5.7
-Patch340: arm64-pinebook-fixes.patch
-Patch341: arm64-a64-mbus.patch
-# v4 https://patchwork.kernel.org/cover/11420797/
-Patch342: Add-support-for-the-pine64-Pinebook-Pro.patch
-# https://patchwork.kernel.org/cover/11405517/
-Patch343: Add-LCD-support-for-Pine64-Pinebook-1080p.patch
-# https://lkml.org/lkml/2020/1/15/1320
-Patch344: arm64-pine64-pinetab.patch
-# https://www.spinics.net/lists/arm-kernel/msg789135.html
-Patch345: arm64-pine64-pinephone.patch
-# https://patchwork.kernel.org/cover/11440399/
-Patch346: Add-support-for-PinePhone-LCD-panel.patch
-# https://www.spinics.net/lists/devicetree/msg346446.html
-Patch347: arm64-Fix-some-GPIO-setup-on-Pinebook-Pro.patch
-# https://www.spinics.net/lists/devicetree/msg347052.html
-Patch348: usb-fusb302-Convert-to-use-GPIO-descriptors.patch
-
-# 400 - IBM (ppc/s390x) patches
-
-# 500 - Temp fixes/CVEs etc
-# rhbz 1431375
-Patch501: input-rmi4-remove-the-need-for-artifical-IRQ.patch
-
-# gcc9 fixes
-Patch502: 0001-Drop-that-for-now.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1701096
-# Submitted upstream at https://lkml.org/lkml/2019/4/23/89
-Patch503: KEYS-Make-use-of-platform-keyring-for-module-signature.patch
-
-# Fixes a boot hang on debug kernels
-# https://bugzilla.redhat.com/show_bug.cgi?id=1756655
-Patch504: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-
-# it seems CONFIG_OPTIMIZE_INLINING has been forced now and is causing issues on ARMv7
-# https://lore.kernel.org/patchwork/patch/1132459/
-# https://lkml.org/lkml/2019/8/29/1772
-Patch505: ARM-fix-__get_user_check-in-case-uaccess_-calls-are-not-inlined.patch
-
-# More DP-MST fixes, pending for 5.7
-Patch507: drm-dp-mst-error-handling-improvements.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1811850
-Patch509: drm-i915-backports.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1816621
-# https://patchwork.ozlabs.org/patch/1260523/
-Patch511: e1000e-bump-up-timeout-to-wait-when-ME-un-configure-ULP-mode.patch
-
-Patch512: drm-dp_mst-Fix-drm_dp_send_dpcd_write-return-code.patch
-
-# CVE-2020-12655 rhbz 1832543 1832545
-Patch515: 0001-xfs-add-agf-freeblocks-verify-in-xfs_agf_verify.patch
-
-# rhbz 1828927 No backlight control on CHT devices, patch posted upstream
-Patch516: 0001-pwm-lpss-Fix-get_state-runtime-pm-reference-handling.patch
-
-# kernel.org bz 206217
-Patch517: RFC-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
-
-# CVE-2020-12888 rhbz 1836245 1836244
-Patch518: vfio-pci-block-user-access-to-disabled-device-MMIO.patch
-
-# rhbz 1789545
-Patch519: vboxguest-fixes.patch
+Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
+Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
+Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
+Patch10: 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
+Patch11: 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
+Patch12: 0001-kdump-add-support-for-crashkernel-auto.patch
+Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
+Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
+Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
+Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
+Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
+Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
+Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
+Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
+Patch32: 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
+Patch33: 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
+Patch34: 0001-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
+Patch35: 0001-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
+Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
+Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
+Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
+Patch59: 0001-ARM-tegra-usb-no-reset.patch
+Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
+Patch63: 0001-Drop-that-for-now.patch
+Patch64: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
+Patch65: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+Patch66: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
+Patch67: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
+Patch68: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
+Patch69: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
+Patch70: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
+Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
+Patch79: 0001-disp-gv100-expose-capabilities-class.patch
+Patch80: 0001-core-memory-remove-redundant-assignments-to-variable.patch
+Patch81: 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
+Patch82: 0001-drm-Use-generic-helper-to-check-_PR3-presence.patch
+Patch83: 0001-mmu-Remove-unneeded-semicolon.patch
+Patch84: 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
+Patch85: 0001-device-detect-if-changing-endianness-failed.patch
+Patch86: 0001-device-detect-vGPUs.patch
+Patch87: 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
+Patch89: 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
+Patch90: 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
+Patch91: 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
+Patch92: 0001-disp-hda-gf119-select-HDA-device-entry-based-on-boun.patch
+Patch93: 0001-disp-hda-gv100-NV_PDISP_SF_AUDIO_CNTRL0-register-mov.patch
+Patch94: 0001-kms-nv50-Initialize-core-channel-in-nouveau_display_.patch
+Patch95: 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
+Patch96: 0001-kms-gv100-Add-support-for-interlaced-modes.patch
+Patch97: 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
+Patch98: 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
+Patch99: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
+Patch100: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
+Patch101: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 
 # Thinkpad dual fan control
-Patch521: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
+Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
 
+# Latest upstream screen driver - https://patchwork.kernel.org/patch/11627069/
+Patch110: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
+Patch111: 0002-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
+Patch112: 0003-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
+Patch113: 0004-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
+Patch114: 0005-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
+Patch115: 0006-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
+Patch116: 0007-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
+Patch117: 0008-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
+Patch118: 0009-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
+Patch119: 0010-drm-panel-st7703-Enter-sleep-after-display-off.patch
+Patch120: 0011-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
+Patch121: 0012-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
+Patch122: 0013-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
+# Back port from 5.8
+Patch123: 0001-usb-fusb302-Convert-to-use-GPIO-descriptors.patch
+# Tegra194 ACPI PCI quirk - http://patchwork.ozlabs.org/patch/1221384/
+Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2944,6 +2897,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 01 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.7-100
+- Linux v5.7.7
+
 * Wed Jun 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.19-200
 - Linux v5.6.19
 
