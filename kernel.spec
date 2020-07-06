@@ -789,7 +789,6 @@ Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
 Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
 Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
-Patch10: 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
 Patch11: 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
 Patch12: 0001-kdump-add-support-for-crashkernel-auto.patch
 Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
