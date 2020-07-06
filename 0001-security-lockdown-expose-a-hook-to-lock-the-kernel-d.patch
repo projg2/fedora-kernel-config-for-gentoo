@@ -17,7 +17,7 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  5 files changed, 20 insertions(+)
 
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 6791813cd439..501e14cff79c 100644
+index af998f93d256..3c33f00cd4d6 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -383,6 +383,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -82,10 +82,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 0ce3e73edd42..8fe9a9911261 100644
+index 70a7ad357bc6..23e16e773bc2 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2501,6 +2501,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2516,6 +2516,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
