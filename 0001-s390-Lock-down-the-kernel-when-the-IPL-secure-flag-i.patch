@@ -41,7 +41,7 @@ index 90a2a17239b0..be3b72c53656 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 5853c9872dfe..fab9bc9889da 100644
+index 07aa15ba43b3..307abb2d82d7 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@

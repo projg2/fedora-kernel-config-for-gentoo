@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc4.1
+%global distro_build 0.rc4.20200708gitdcde237b9b0e.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc4.1
+%define pkgrelease 0.rc4.20200708gitdcde237b9b0e.1
 
 # This is needed to do merge window version magic
 %define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.1%{?buildid}%{?dist}
+%define specrelease 0.rc4.20200708gitdcde237b9b0e.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.8
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.8-rc4.tar.xz
+Source0: linux-20200708gitdcde237b9b0e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1280,8 +1280,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.8-rc4 -c
-mv linux-5.8-rc4 linux-%{KVERREL}
+%setup -q -n kernel-20200708gitdcde237b9b0e -c
+mv linux-20200708gitdcde237b9b0e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2792,6 +2792,10 @@ fi
 #
 #
 %changelog
+* Wed Jul 08 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc4.20200708gitdcde237b9b0e.1]
+- dcde237b9b0e rebase
+- Updated changelog for the release based on v5.8-rc4 (Fedora Kernel Team)
+
 * Mon Jul 06 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc4.1]
 - v5.8-rc4 rebase
 - Updated changelog for the release based on cd77006e01b3 (Fedora Kernel Team)
