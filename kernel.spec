@@ -853,6 +853,9 @@ Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 # Thinkpad dual fan control
 Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
 
+# https://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git/commit/?h=next&id=c8e222616c7e98305bdc861db3ccac520bc29921
+Patch108: selinux_allow_reading_labels_before_policy_is_loaded.patch
+
 # Latest upstream screen driver - https://patchwork.kernel.org/patch/11627069/
 Patch110: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
 Patch111: 0002-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
@@ -2967,6 +2970,9 @@ fi
 #
 #
 %changelog
+* Sun Jul 12 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+- selinux: allow reading labels before policy is loaded (rhbz 1845210)
+
 * Thu Jul 09 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.8-200
 - Linux v5.7.8
 - Fixes (rhbz 1852944 1852942 1852963 1852962)
