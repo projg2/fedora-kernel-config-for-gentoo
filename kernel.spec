@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc4.20200710git42f82040ee66.1
+%global distro_build 0.rc5.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc4.20200710git42f82040ee66.1
+%define pkgrelease 0.rc5.1
 
 # This is needed to do merge window version magic
 %define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20200710git42f82040ee66.1%{?buildid}%{?dist}
+%define specrelease 0.rc5.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.8
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200710git42f82040ee66.tar.xz
+Source0: linux-5.8-rc5.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -785,6 +785,25 @@ Patch77: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 Patch78: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 Patch79: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 Patch80: 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
+Patch81: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
+Patch82: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
+Patch83: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
+Patch84: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch85: 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
+Patch86: 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
+Patch87: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
+Patch88: 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
+Patch89: 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
+Patch90: 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
+Patch91: 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
+Patch92: 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
+Patch93: 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
+Patch94: 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
+Patch95: 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
+Patch96: 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
+Patch97: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
+Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
+Patch99: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
 
 %endif
 
@@ -1280,8 +1299,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200710git42f82040ee66 -c
-mv linux-20200710git42f82040ee66 linux-%{KVERREL}
+%setup -q -n kernel-5.8-rc5 -c
+mv linux-5.8-rc5 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1367,6 +1386,25 @@ ApplyOptionalPatch 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.pat
 ApplyOptionalPatch 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 ApplyOptionalPatch 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 ApplyOptionalPatch 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
+ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
+ApplyOptionalPatch 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
+ApplyOptionalPatch 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
+ApplyOptionalPatch 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
+ApplyOptionalPatch 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
+ApplyOptionalPatch 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
+ApplyOptionalPatch 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
+ApplyOptionalPatch 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
+ApplyOptionalPatch 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
+ApplyOptionalPatch 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
+ApplyOptionalPatch 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
+ApplyOptionalPatch 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
+ApplyOptionalPatch 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
+ApplyOptionalPatch 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
+ApplyOptionalPatch 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
+ApplyOptionalPatch 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
+ApplyOptionalPatch 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
+ApplyOptionalPatch 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
+ApplyOptionalPatch 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
 
 %endif
 
@@ -2792,8 +2830,29 @@ fi
 #
 #
 %changelog
-* Fri Jul 10 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc4.20200710git42f82040ee66.1]
-- 42f82040ee66 rebase
+* Mon Jul 13 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc5.1]
+- v5.8-rc5 rebase
+- arm64: dts: sun50i-a64-pinephone: Add touchscreen support (Ondrej Jirman)
+- arm64: dts: sun50i-a64-pinephone: Enable LCD support on PinePhone (Icenowy Zheng)
+- drm/panel: st7703: Assert reset prior to powering down the regulators (Ondrej Jirman)
+- drm/panel: st7703: Enter sleep after display off (Ondrej Jirman)
+- drm/panel: st7703: Add support for Xingbangda XBD599 (Ondrej Jirman)
+- drm/panel: st7703: Move generic part of init sequence to enable callback (Ondrej Jirman)
+- drm/panel: st7703: Move code specific to jh057n closer together (Ondrej Jirman)
+- drm/panel: st7703: Prepare for supporting multiple panels (Ondrej Jirman)
+- drm/panel: st7703: Rename functions from jh057n prefix to st7703 (Ondrej Jirman)
+- drm/panel: rocktech-jh057n00900: Rename the driver to st7703 (Ondrej Jirman)
+- dt-bindings: panel: Add compatible for Xingbangda XBD599 panel (Ondrej Jirman)
+- dt-bindings: panel: Convert rocktech, jh057n00900 to yaml (Ondrej Jirman)
+- dt-bindings: vendor-prefixes: Add Xingbangda (Icenowy Zheng)
+- Revert "arm64: allwinner: dts: a64: add LCD-related device nodes for PinePhone" (Peter Robinson)
+- Revert "drm/sun4i: sun6i_mipi_dsi: fix horizontal timing calculation" (Peter Robinson)
+- Revert "drm: panel: add Xingbangda XBD599 panel" (Peter Robinson)
+- Revert "dt-bindings: panel: add binding for Xingbangda XBD599 panel" (Peter Robinson)
+- selinux: allow reading labels before policy is loaded (Jonathan Lebon)
+- Fixes "acpi: prefer booting with ACPI over DTS" to be RHEL only (Peter Robinson)
+- Update config for renamed panel driver. (Peter Robinson)
+- Enable SERIAL_SC16IS7XX for SPI interfaces (Peter Robinson)
 - Updated changelog for the release based on dcde237b9b0e (Fedora Kernel Team)
 
 * Wed Jul 08 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc4.20200708gitdcde237b9b0e.1]
