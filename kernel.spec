@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc5.1
+%global distro_build 0.rc5.20200714git0dc589da873b.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc5.1
+%define pkgrelease 0.rc5.20200714git0dc589da873b.1
 
 # This is needed to do merge window version magic
 %define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.1%{?buildid}%{?dist}
+%define specrelease 0.rc5.20200714git0dc589da873b.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.8
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.8-rc5.tar.xz
+Source0: linux-20200714git0dc589da873b.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1299,8 +1299,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.8-rc5 -c
-mv linux-5.8-rc5 linux-%{KVERREL}
+%setup -q -n kernel-20200714git0dc589da873b -c
+mv linux-20200714git0dc589da873b linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2830,8 +2830,8 @@ fi
 #
 #
 %changelog
-* Mon Jul 13 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc5.1]
-- v5.8-rc5 rebase
+* Tue Jul 14 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc5.20200714git0dc589da873b.1]
+- 0dc589da873b rebase
 - arm64: dts: sun50i-a64-pinephone: Add touchscreen support (Ondrej Jirman)
 - arm64: dts: sun50i-a64-pinephone: Enable LCD support on PinePhone (Icenowy Zheng)
 - drm/panel: st7703: Assert reset prior to powering down the regulators (Ondrej Jirman)
