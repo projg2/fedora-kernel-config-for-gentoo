@@ -874,6 +874,10 @@ Patch122: 0013-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
 Patch123: 0001-usb-fusb302-Convert-to-use-GPIO-descriptors.patch
 # Tegra194 ACPI PCI quirk - http://patchwork.ozlabs.org/patch/1221384/
 Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+
+# Killer wireless headed to stable
+Patch125: iwlwifi-make-some-killer-wireless-ac-1550-cards-work-again.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2970,6 +2974,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 15 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Make some killer wireless ac 1550 cards work again
+
 * Sun Jul 12 2020 Peter Robinson <pbrobinson@fedoraproject.org>
 - selinux: allow reading labels before policy is loaded (rhbz 1845210)
 
