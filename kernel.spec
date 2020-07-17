@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc5.20200715gite9919e11e219.1
+%global distro_build 0.rc5.20200717git07a56bb875af.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc5.20200715gite9919e11e219.1
+%define pkgrelease 0.rc5.20200717git07a56bb875af.1
 
 # This is needed to do merge window version magic
 %define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20200715gite9919e11e219.1%{?buildid}%{?dist}
+%define specrelease 0.rc5.20200717git07a56bb875af.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200715gite9919e11e219.tar.xz
+Source0: linux-20200717git07a56bb875af.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -591,13 +591,13 @@ Source15: redhatsecureboot301.cer
 Source16: secureboot_s390.cer
 Source17: secureboot_ppc.cer
 
-%define secureboot_ca_0 %{SOURCE12}
-%define secureboot_ca_1 %{SOURCE13}
+%define secureboot_ca_1 %{SOURCE12}
+%define secureboot_ca_0 %{SOURCE13}
 %ifarch x86_64 aarch64
-%define secureboot_key_0 %{SOURCE14}
-%define pesign_name_0 redhatsecureboot501
-%define secureboot_key_1 %{SOURCE15}
-%define pesign_name_1 redhatsecureboot301
+%define secureboot_key_1 %{SOURCE14}
+%define pesign_name_1 redhatsecureboot501
+%define secureboot_key_0 %{SOURCE15}
+%define pesign_name_0 redhatsecureboot301
 %endif
 %ifarch s390x
 %define secureboot_key_0 %{SOURCE16}
@@ -616,12 +616,12 @@ Source13: redhatsecurebootca2.cer
 Source14: redhatsecureboot401.cer
 Source15: redhatsecureboot003.cer
 
-%define secureboot_ca_0 %{SOURCE12}
-%define secureboot_ca_1 %{SOURCE13}
-%define secureboot_key_0 %{SOURCE14}
-%define pesign_name_0 redhatsecureboot401
-%define secureboot_key_1 %{SOURCE15}
-%define pesign_name_1 redhatsecureboot003
+%define secureboot_ca_1 %{SOURCE12}
+%define secureboot_ca_0 %{SOURCE13}
+%define secureboot_key_1 %{SOURCE14}
+%define pesign_name_1 redhatsecureboot401
+%define secureboot_key_0 %{SOURCE15}
+%define pesign_name_0 redhatsecureboot003
 
 # released_kernel
 %endif
@@ -786,34 +786,33 @@ Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch69: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch71: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
-Patch72: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
-Patch73: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
-Patch74: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
-Patch75: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
-Patch76: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
-Patch77: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
-Patch78: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
-Patch79: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
-Patch80: 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
-Patch81: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
-Patch82: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
-Patch83: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
-Patch84: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
-Patch85: 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
-Patch86: 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
-Patch87: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
-Patch88: 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
-Patch89: 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
-Patch90: 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
-Patch91: 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
-Patch92: 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
-Patch93: 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
-Patch94: 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
-Patch95: 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
-Patch96: 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
-Patch97: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
-Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
-Patch99: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
+Patch72: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch73: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch74: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch75: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch76: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch77: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
+Patch78: 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
+Patch79: 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
+Patch80: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
+Patch81: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
+Patch82: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
+Patch83: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch84: 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
+Patch85: 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
+Patch86: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
+Patch87: 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
+Patch88: 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
+Patch89: 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
+Patch90: 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
+Patch91: 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
+Patch92: 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
+Patch93: 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
+Patch94: 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
+Patch95: 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
+Patch96: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
+Patch97: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
+Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
 
 %endif
 
@@ -1309,8 +1308,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200715gite9919e11e219 -c
-mv linux-20200715gite9919e11e219 linux-%{KVERREL}
+%setup -q -n kernel-20200717git07a56bb875af -c
+mv linux-20200717git07a56bb875af linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1387,8 +1386,6 @@ ApplyOptionalPatch 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.pat
 ApplyOptionalPatch 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 ApplyOptionalPatch 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 ApplyOptionalPatch 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
-ApplyOptionalPatch 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
-ApplyOptionalPatch 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
 ApplyOptionalPatch 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
 ApplyOptionalPatch 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
 ApplyOptionalPatch 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
@@ -1396,6 +1393,7 @@ ApplyOptionalPatch 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.pat
 ApplyOptionalPatch 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 ApplyOptionalPatch 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 ApplyOptionalPatch 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
+ApplyOptionalPatch 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
 ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 ApplyOptionalPatch 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
 ApplyOptionalPatch 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
@@ -2848,6 +2846,14 @@ fi
 #
 #
 %changelog
+* Fri Jul 17 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc5.20200717git07a56bb875af.1]
+- 07a56bb875af rebase
+- redhat/configs: Fix common CONFIGs (Prarit Bhargava)
+- redhat/configs: General CONFIG cleanups (Prarit Bhargava)
+- redhat/configs: Update & generalize evaluate_configs (Prarit Bhargava)
+- arch/x86: Remove vendor specific CPU ID checks (Prarit Bhargava)
+- Updated changelog for the release based on e9919e11e219 (Fedora Kernel Team)
+
 * Wed Jul 15 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc5.20200715gite9919e11e219.1]
 - e9919e11e219 rebase
 - arm64: dts: sun50i-a64-pinephone: Add touchscreen support (Ondrej Jirman)
