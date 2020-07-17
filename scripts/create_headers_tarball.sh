@@ -30,17 +30,17 @@ BUILDID=`grep "^%define buildid" kernel.spec| cut -d ' ' -f 3`
 if [ $RELEASED -eq 0 ]; then
 	cd kernel-$MAJORVER.$BASE.fc??
 	NEWBASE=$(($BASE+1))
-	KVER=$MAJORVER.$NEWBASE.0-0.rc$RC.git$GITREV.$BASERELEASE$BUILDID
+	KVER=$MAJORVER.$NEWBASE.0-0.rc$RC.git$GITREV
 	cd linux-$MAJORVER.$NEWBASE.0-0.rc$RC.git$GITREV.$BASERELEASE$BUILDID.fc*/
 else
 	cd kernel-$MAJORVER.$BASE.fc??/linux-$MAJORVER.$BASE.$STABLE-$BASERELEASE$BUILDID.fc*/
-	KVER=$MAJORVER.$BASE.$STABLE-$BASERELEASE
+	KVER=$MAJORVER.$BASE.$STABLE
 fi
 
 # ARCH_LIST below has the default list of supported architectures
 # (the architectures names may be different from rpm, you list here the
 # names of arch/<arch> directories in the kernel sources)
-ARCH_LIST="arm arm64 powerpc s390 x86"
+ARCH_LIST="arm arm64 powerpc riscv s390 x86"
 
 headers_dir=$(mktemp -d)
 trap 'rm -rf "$headers_dir"' SIGHUP SIGINT SIGTERM EXIT
