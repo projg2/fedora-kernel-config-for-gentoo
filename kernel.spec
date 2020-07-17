@@ -644,13 +644,13 @@ Source15: redhatsecureboot301.cer
 Source16: secureboot_s390.cer
 Source17: secureboot_ppc.cer
 
-%define secureboot_ca_0 %{SOURCE12}
-%define secureboot_ca_1 %{SOURCE13}
+%define secureboot_ca_1 %{SOURCE12}
+%define secureboot_ca_0 %{SOURCE13}
 %ifarch x86_64 aarch64
-%define secureboot_key_0 %{SOURCE14}
-%define pesign_name_0 redhatsecureboot501
-%define secureboot_key_1 %{SOURCE15}
-%define pesign_name_1 redhatsecureboot301
+%define secureboot_key_1 %{SOURCE14}
+%define pesign_name_1 redhatsecureboot501
+%define secureboot_key_0 %{SOURCE15}
+%define pesign_name_0 redhatsecureboot301
 %endif
 %ifarch s390x
 %define secureboot_key_0 %{SOURCE16}
@@ -669,12 +669,12 @@ Source13: redhatsecurebootca2.cer
 Source14: redhatsecureboot401.cer
 Source15: redhatsecureboot003.cer
 
-%define secureboot_ca_0 %{SOURCE12}
-%define secureboot_ca_1 %{SOURCE13}
-%define secureboot_key_0 %{SOURCE14}
-%define pesign_name_0 redhatsecureboot401
-%define secureboot_key_1 %{SOURCE15}
-%define pesign_name_1 redhatsecureboot003
+%define secureboot_ca_1 %{SOURCE12}
+%define secureboot_ca_0 %{SOURCE13}
+%define secureboot_key_1 %{SOURCE14}
+%define pesign_name_1 redhatsecureboot401
+%define secureboot_key_0 %{SOURCE15}
+%define pesign_name_0 redhatsecureboot003
 
 # released_kernel
 %endif
