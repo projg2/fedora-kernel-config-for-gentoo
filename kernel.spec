@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc5.20200717git07a56bb875af.1
+%global distro_build 0.rc6.20200720git5714ee50bb43.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc5.20200717git07a56bb875af.1
+%define pkgrelease 0.rc6.20200720git5714ee50bb43.1
 
 # This is needed to do merge window version magic
 %define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20200717git07a56bb875af.1%{?buildid}%{?dist}
+%define specrelease 0.rc6.20200720git5714ee50bb43.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200717git07a56bb875af.tar.xz
+Source0: linux-20200720git5714ee50bb43.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1308,8 +1308,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200717git07a56bb875af -c
-mv linux-20200717git07a56bb875af linux-%{KVERREL}
+%setup -q -n kernel-20200720git5714ee50bb43 -c
+mv linux-20200720git5714ee50bb43 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2846,6 +2846,18 @@ fi
 #
 #
 %changelog
+* Mon Jul 20 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc6.20200720git5714ee50bb43.1]
+- 5714ee50bb43 rebase
+- Updated changelog for the release based on f932d58abc38 (Fedora Kernel Team)
+
+* Sun Jul 19 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc5.20200719gitf932d58abc38.1]
+- f932d58abc38 rebase
+- Updated changelog for the release based on 6a70f89cc58f (Fedora Kernel Team)
+
+* Sat Jul 18 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc5.20200718git6a70f89cc58f.1]
+- 6a70f89cc58f rebase
+- Updated changelog for the release based on 07a56bb875af (Fedora Kernel Team)
+
 * Fri Jul 17 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc5.20200717git07a56bb875af.1]
 - 07a56bb875af rebase
 - redhat/configs: Fix common CONFIGs (Prarit Bhargava)

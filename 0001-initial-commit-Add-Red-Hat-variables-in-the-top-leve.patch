@@ -14,8 +14,8 @@ index 3e4868a6498b..502f9a9a2806 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -15,6 +15,9 @@ NAME = Bobtail Squid
- PHONY := __all
- __all:
+ PHONY := _all
+ _all:
 
 +# Set RHEL variables
 +include Makefile.rhelver
