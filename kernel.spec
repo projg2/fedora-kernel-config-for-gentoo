@@ -888,6 +888,9 @@ Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 # Killer wireless headed to stable
 Patch125: iwlwifi-make-some-killer-wireless-ac-1550-cards-work-again.patch
 
+# rhbz 1858645
+Patch126: copy_xstate_to_kernel-fix-typo-which-caused-gdb-regression.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2992,6 +2995,9 @@ fi
 #
 #
 %changelog
+* Mon Jul 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix GDB regression (rhbz 1858645)
+
 * Fri Jul 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.9-100
 - Linux v5.7.9
 

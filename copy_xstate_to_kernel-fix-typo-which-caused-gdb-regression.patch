@@ -1,0 +1,53 @@
+From MAILER-DAEMON Mon Jul 20 16:03:05 2020
+Date: Sat, 18 Jul 2020 00:20:03 -0700
+From: Kevin Buettner <kevinb@redhat.com>
+To: Al Viro <viro@zeniv.linux.org.uk>, linux-kernel@vger.kernel.org
+Subject: [PATCH] copy_xstate_to_kernel: Fix typo which caused GDB regression
+Message-ID: <20200718002003.6e0a2aef@f32-m1.lan>
+Sender: linux-kernel-owner@vger.kernel.org
+List-ID: <linux-kernel.vger.kernel.org>
+X-Mailing-List: linux-kernel@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+This commit fixes a regression encountered while running the
+gdb.base/corefile.exp test in GDB's test suite.
+
+In my testing, the typo prevented the sw_reserved field of struct
+fxregs_state from being output to the kernel XSAVES area.  Thus the
+correct mask corresponding to XCR0 was not present in the core file
+for GDB to interrogate, resulting in the following behavior:
+
+[kev@f32-1 gdb]$ ./gdb -q testsuite/outputs/gdb.base/corefile/corefile testsuite/outputs/gdb.base/corefile/corefile.core
+Reading symbols from testsuite/outputs/gdb.base/corefile/corefile...
+[New LWP 232880]
+
+warning: Unexpected size of section `.reg-xstate/232880' in core file.
+
+With the typo fixed, the test works again as expected.
+
+Signed-off-by: Kevin Buettner <kevinb@redhat.com>
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+---
+ arch/x86/kernel/fpu/xstate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
+index 6a54e83d5589..9cf40a7ff7ae 100644
+--- a/arch/x86/kernel/fpu/xstate.c
++++ b/arch/x86/kernel/fpu/xstate.c
+@@ -1022,7 +1022,7 @@ int copy_xstate_to_kernel(void *kbuf, struct xregs_state *xsave, unsigned int of
+ 		copy_part(offsetof(struct fxregs_state, st_space), 128,
+ 			  &xsave->i387.st_space, &kbuf, &offset_start, &count);
+ 	if (header.xfeatures & XFEATURE_MASK_SSE)
+-		copy_part(xstate_offsets[XFEATURE_MASK_SSE], 256,
++		copy_part(xstate_offsets[XFEATURE_SSE], 256,
+ 			  &xsave->i387.xmm_space, &kbuf, &offset_start, &count);
+ 	/*
+ 	 * Fill xsave->i387.sw_reserved value for ptrace frame:
+-- 
+2.26.2
+
+
+
