@@ -80,7 +80,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2990,7 +2990,7 @@ fi
 #
 #
 %changelog
-* Wed Jul 22 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.10-200
+* Wed Jul 22 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.10-201
 - Linux v5.7.10
 
 * Mon Jul 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
