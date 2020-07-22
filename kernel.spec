@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -847,8 +847,6 @@ Patch95: 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
 Patch96: 0001-kms-gv100-Add-support-for-interlaced-modes.patch
 Patch97: 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
 Patch98: 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
-Patch99: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
-Patch100: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
 Patch101: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
 Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
 Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
@@ -882,9 +880,6 @@ Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 
 # Killer wireless headed to stable
 Patch125: iwlwifi-make-some-killer-wireless-ac-1550-cards-work-again.patch
-
-# rhbz 1858645
-Patch126: copy_xstate_to_kernel-fix-typo-which-caused-gdb-regression.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2924,6 +2919,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 22 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.10-100
+- Linux v5.7.10
+
 * Mon Jul 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix GDB regression (rhbz 1858645)
 
