@@ -114,7 +114,7 @@ index aa183c9ac0a2..dc323b3f5838 100644
  	&modinfo_coresize,
  	&modinfo_initsize,
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 6aea65c65745..ed3c4d8a1c7f 100644
+index 45f2ab2ec2d4..3bf849a0c6ab 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -21,6 +21,7 @@
@@ -125,7 +125,7 @@ index 6aea65c65745..ed3c4d8a1c7f 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static int modversions = 0;
-@@ -2384,6 +2385,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2392,6 +2393,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -138,7 +138,7 @@ index 6aea65c65745..ed3c4d8a1c7f 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2636,6 +2643,7 @@ int main(int argc, char **argv)
+@@ -2644,6 +2651,7 @@ int main(int argc, char **argv)
  		add_depends(&buf, mod);
  		add_moddevtable(&buf, mod);
  		add_srcversion(&buf, mod);

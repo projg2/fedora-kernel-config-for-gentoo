@@ -107,7 +107,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 1d77c218b67e..f5fe3e01bc0e 100644
+index 2e2f9f608f68..6f5b3b019d3e 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -781,6 +781,14 @@ extern int __init efi_setup_pcdp_console(char *);
@@ -143,7 +143,7 @@ index 1d77c218b67e..f5fe3e01bc0e 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -1089,12 +1101,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1090,12 +1102,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 

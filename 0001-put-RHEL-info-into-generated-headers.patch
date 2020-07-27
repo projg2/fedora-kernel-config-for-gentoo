@@ -59,7 +59,7 @@ Acked-by: Prarit Bhargava <prarit@redhat.com>
  1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 249a51d25c63..542284743304 100644
+index 229e67f2ff75..6bcfd5635a72 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1217,7 +1217,13 @@ endef
