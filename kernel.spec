@@ -1414,6 +1414,7 @@ ApplyOptionalPatch 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
 ApplyOptionalPatch 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
 ApplyOptionalPatch 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
 ApplyOptionalPatch 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
+ApplyOptionalPatch 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
 %endif
 
