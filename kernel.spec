@@ -886,6 +886,9 @@ Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 # rhbz 1857101
 Patch125: 0001-ALSA-hda-Workaround-for-spurious-wakeups-on-some-Int.patch
 
+# Work around a bug in gcc https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
+Patch126: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
