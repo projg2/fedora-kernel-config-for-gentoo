@@ -8,7 +8,7 @@ Subject: [PATCH] Drop that for now
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 6bcfd5635a72..a7b784c0fade 100644
+index 37cfb39d77af..c65a263990ae 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -496,7 +496,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE

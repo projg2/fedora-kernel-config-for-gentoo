@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc7.1
+%global distro_build 1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.8.0
-%define pkgrelease 0.rc7.1
+%define pkgrelease 1
 
 # This is needed to do merge window version magic
 %define patchlevel 8
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.1%{?buildid}%{?dist}
+%define specrelease 1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.8-rc7.tar.xz
+Source0: linux-5.8.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -794,26 +794,27 @@ Patch76: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 Patch77: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 Patch78: 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
 Patch79: 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
-Patch80: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
-Patch81: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
-Patch82: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
-Patch83: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
-Patch84: 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
-Patch85: 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
-Patch86: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
-Patch87: 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
-Patch88: 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
-Patch89: 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
-Patch90: 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
-Patch91: 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
-Patch92: 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
-Patch93: 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
-Patch94: 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
-Patch95: 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
-Patch96: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
-Patch97: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
-Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
-Patch99: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+Patch80: 0001-Revert-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
+Patch81: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
+Patch82: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
+Patch83: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
+Patch84: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch85: 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
+Patch86: 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
+Patch87: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
+Patch88: 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
+Patch89: 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
+Patch90: 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
+Patch91: 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
+Patch92: 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
+Patch93: 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
+Patch94: 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
+Patch95: 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
+Patch96: 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
+Patch97: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
+Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
+Patch99: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
+Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
 %endif
 
@@ -1309,8 +1310,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.8-rc7 -c
-mv linux-5.8-rc7 linux-%{KVERREL}
+%setup -q -n kernel-5.8 -c
+mv linux-5.8 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1395,6 +1396,7 @@ ApplyOptionalPatch 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
 ApplyOptionalPatch 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 ApplyOptionalPatch 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
 ApplyOptionalPatch 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
+ApplyOptionalPatch 0001-Revert-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 ApplyOptionalPatch 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
 ApplyOptionalPatch 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
@@ -2848,6 +2850,34 @@ fi
 #
 #
 %changelog
+* Mon Aug 03 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-1]
+- v5.8 rebase
+- Updated changelog for the release based on ac3a0c847296 (Fedora Kernel Team)
+
+* Sun Aug 02 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc7.20200802gitac3a0c847296.1]
+- ac3a0c847296 rebase
+- Updated changelog for the release based on 7dc6fd0f3b84 (Fedora Kernel Team)
+
+* Sat Aug 01 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc7.20200801git7dc6fd0f3b84.1]
+- 7dc6fd0f3b84 rebase
+- Updated changelog for the release based on 417385c47ef7 (Fedora Kernel Team)
+
+* Fri Jul 31 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc7.20200731git417385c47ef7.1]
+- 417385c47ef7 rebase
+- Add new certs for dual signing with boothole ("Justin M. Forbes")
+- Update secureboot signing for dual keys ("Justin M. Forbes")
+- Updated changelog for the release based on d3590ebf6f91 (Fedora Kernel Team)
+
+* Thu Jul 30 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc7.20200730gitd3590ebf6f91.1]
+- d3590ebf6f91 rebase
+- Updated changelog for the release based on 6ba1b005ffc3 (Fedora Kernel Team)
+
+* Wed Jul 29 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc7.20200729git6ba1b005ffc3.1]
+- 6ba1b005ffc3 rebase
+- Revert "dt-bindings: Add doc for Pine64 Pinebook Pro" (Peter Robinson)
+- fedora: enable LEDS_SGM3140 for arm configs (Peter Robinson)
+- Updated changelog for the release based on v5.8-rc7 (Fedora Kernel Team)
+
 * Mon Jul 27 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-0.rc7.1]
 - v5.8-rc7 rebase
 - Updated changelog for the release based on 04300d66f0a0 (Fedora Kernel Team)

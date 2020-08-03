@@ -76,6 +76,7 @@
 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
+0001-Revert-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
