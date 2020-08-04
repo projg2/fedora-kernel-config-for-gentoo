@@ -86,13 +86,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 7
+%define base_sublevel 8
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -637,41 +637,51 @@ Source10: x509.genkey.rhel
 Source11: x509.genkey.fedora
 %if %{?released_kernel}
 
-Source12: securebootca.cer
-Source13: secureboot.cer
-Source14: secureboot_s390.cer
-Source15: secureboot_ppc.cer
+Source12: redhatsecurebootca5.cer
+Source13: redhatsecurebootca1.cer
+Source14: redhatsecureboot501.cer
+Source15: redhatsecureboot301.cer
+Source16: secureboot_s390.cer
+Source17: secureboot_ppc.cer
 
-%define secureboot_ca %{SOURCE12}
+%define secureboot_ca_1 %{SOURCE12}
+%define secureboot_ca_0 %{SOURCE13}
 %ifarch x86_64 aarch64
-%define secureboot_key %{SOURCE13}
-%define pesign_name redhatsecureboot301
+%define secureboot_key_1 %{SOURCE14}
+%define pesign_name_1 redhatsecureboot501
+%define secureboot_key_0 %{SOURCE15}
+%define pesign_name_0 redhatsecureboot301
 %endif
 %ifarch s390x
-%define secureboot_key %{SOURCE14}
-%define pesign_name redhatsecureboot302
+%define secureboot_key_0 %{SOURCE16}
+%define pesign_name_0 redhatsecureboot302
 %endif
 %ifarch ppc64le
-%define secureboot_key %{SOURCE15}
-%define pesign_name redhatsecureboot303
+%define secureboot_key_0 %{SOURCE17}
+%define pesign_name_0 redhatsecureboot303
 %endif
 
 # released_kernel
 %else
 
-Source12: redhatsecurebootca2.cer
-Source13: redhatsecureboot003.cer
+Source12: redhatsecurebootca4.cer
+Source13: redhatsecurebootca2.cer
+Source14: redhatsecureboot401.cer
+Source15: redhatsecureboot003.cer
 
-%define secureboot_ca %{SOURCE12}
-%define secureboot_key %{SOURCE13}
-%define pesign_name redhatsecureboot003
+%define secureboot_ca_1 %{SOURCE12}
+%define secureboot_ca_0 %{SOURCE13}
+%define secureboot_key_1 %{SOURCE14}
+%define pesign_name_1 redhatsecureboot401
+%define secureboot_key_0 %{SOURCE15}
+%define pesign_name_0 redhatsecureboot003
 
 # released_kernel
 %endif
 
 Source22: mod-extra.list.rhel
-Source16: mod-extra.list.fedora
-Source17: mod-extra.sh
+Source23: mod-extra.list.fedora
+Source24: mod-extra.sh
 Source18: mod-sign.sh
 Source19: mod-extra-blacklist.sh
 Source79: parallel_xz.sh
@@ -794,7 +804,6 @@ Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
 Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
 Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
 Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
-Patch10: 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
 Patch11: 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
 Patch12: 0001-kdump-add-support-for-crashkernel-auto.patch
 Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
@@ -807,71 +816,47 @@ Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
 Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
 Patch32: 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 Patch33: 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
-Patch34: 0001-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
 Patch35: 0001-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
 Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
-Patch63: 0001-Drop-that-for-now.patch
-Patch64: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
-Patch65: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-Patch66: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
-Patch67: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
-Patch68: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
-Patch69: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
-Patch70: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
-Patch79: 0001-disp-gv100-expose-capabilities-class.patch
-Patch80: 0001-core-memory-remove-redundant-assignments-to-variable.patch
-Patch81: 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
-Patch82: 0001-drm-Use-generic-helper-to-check-_PR3-presence.patch
-Patch83: 0001-mmu-Remove-unneeded-semicolon.patch
-Patch84: 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
-Patch85: 0001-device-detect-if-changing-endianness-failed.patch
-Patch86: 0001-device-detect-vGPUs.patch
-Patch87: 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
-Patch89: 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
-Patch90: 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
-Patch91: 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
-Patch92: 0001-disp-hda-gf119-select-HDA-device-entry-based-on-boun.patch
-Patch93: 0001-disp-hda-gv100-NV_PDISP_SF_AUDIO_CNTRL0-register-mov.patch
-Patch94: 0001-kms-nv50-Initialize-core-channel-in-nouveau_display_.patch
-Patch95: 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
-Patch96: 0001-kms-gv100-Add-support-for-interlaced-modes.patch
-Patch97: 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
-Patch98: 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
-Patch99: 0001-virt-vbox-Fix-VBGL_IOCTL_VMMDEV_REQUEST_BIG-and-_LOG.patch
-Patch100: 0001-virt-vbox-Fix-guest-capabilities-mask-check.patch
-Patch101: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
-Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
-Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
-Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
-Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch61: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
+Patch62: 0001-Drop-that-for-now.patch
+Patch63: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
+Patch64: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+Patch65: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
+Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
+Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
+Patch69: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
+Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch72: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch73: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch74: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch75: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch76: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch77: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
+Patch82: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
+Patch83: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
+Patch84: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch85: 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
+Patch86: 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
+Patch87: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
+Patch88: 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
+Patch89: 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
+Patch90: 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
+Patch91: 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
+Patch92: 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
+Patch93: 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
+Patch94: 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
+Patch95: 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
+Patch96: 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
+Patch97: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
+Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
+Patch99: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
+Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
-# Thinkpad dual fan control
-Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
-
-# Latest upstream screen driver - https://patchwork.kernel.org/patch/11627069/
-Patch110: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
-Patch111: 0002-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
-Patch112: 0003-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
-Patch113: 0004-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
-Patch114: 0005-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
-Patch115: 0006-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
-Patch116: 0007-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
-Patch117: 0008-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
-Patch118: 0009-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
-Patch119: 0010-drm-panel-st7703-Enter-sleep-after-display-off.patch
-Patch120: 0011-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
-Patch121: 0012-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
-Patch122: 0013-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
-# Back port from 5.8
-Patch123: 0001-usb-fusb302-Convert-to-use-GPIO-descriptors.patch
-# Tegra194 ACPI PCI quirk - http://patchwork.ozlabs.org/patch/1221384/
-Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -1786,11 +1771,13 @@ BuildKernel() {
     fi
 
     %ifarch x86_64 aarch64
-    %pesign -s -i $SignImage -o vmlinuz.signed -a %{secureboot_ca} -c %{secureboot_key} -n %{pesign_name}
+    %pesign -s -i $SignImage -o vmlinuz.tmp -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
+    %pesign -s -i vmlinuz.tmp -o vmlinuz.signed -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
+    rm vmlinuz.tmp
     %endif
     %ifarch s390x ppc64le
     if [ -x /usr/bin/rpm-sign ]; then
-	rpm-sign --key "%{pesign_name}" --lkmsign $SignImage --output vmlinuz.signed
+	rpm-sign --key "%{pesign_name_0}" --lkmsign $SignImage --output vmlinuz.signed
     elif [ $DoModules -eq 1 ]; then
 	chmod +x scripts/sign-file
 	./scripts/sign-file -p sha256 certs/signing_key.pem certs/signing_key.x509 $SignImage vmlinuz.signed
@@ -1961,7 +1948,6 @@ BuildKernel() {
 %endif
 
     # then drop all but the needed Makefiles/Kconfig files
-    rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Documentation
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
     cp .config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
@@ -2081,11 +2067,11 @@ BuildKernel() {
     popd
 
     # Call the modules-extra script to move things around
-    %{SOURCE17} $RPM_BUILD_ROOT/lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
+    %{SOURCE24} $RPM_BUILD_ROOT/lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
     # Blacklist net autoloadable modules in modules-extra
     %{SOURCE19} $RPM_BUILD_ROOT lib/modules/$KernelVer
     # Call the modules-extra script for internal modules
-    %{SOURCE17} $RPM_BUILD_ROOT/lib/modules/$KernelVer %{SOURCE54} internal
+    %{SOURCE24} $RPM_BUILD_ROOT/lib/modules/$KernelVer %{SOURCE54} internal
 
     #
     # Generate the kernel-core and kernel-modules files lists
@@ -2182,11 +2168,17 @@ BuildKernel() {
 
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
-    install -m 0644 %{secureboot_ca} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
+    %ifarch x86_64 aarch64
+       install -m 0644 %{secureboot_ca_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca-20200609.cer
+       install -m 0644 %{secureboot_ca_1} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca-20140212.cer
+       ln -s kernel-signing-ca-20200609.cer $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
+    %else
+       install -m 0644 %{secureboot_ca_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
+    %endif
     %ifarch s390x ppc64le
     if [ $DoModules -eq 1 ]; then
 	if [ -x /usr/bin/rpm-sign ]; then
-	    install -m 0644 %{secureboot_key} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
+	    install -m 0644 %{secureboot_key_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
 	else
 	    install -m 0644 certs/signing_key.x509.sign${Flav} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
 	    openssl x509 -in certs/signing_key.pem.sign${Flav} -outform der -out $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
@@ -2916,7 +2908,7 @@ fi
 %if 0%{!?fedora:1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
 %endif\
-%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca.cer\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca*.cer\
 %ifarch s390x ppc64le\
 %if 0%{!?4:1}\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/%{signing_key_filename} \
@@ -2969,23 +2961,44 @@ fi
 #
 #
 %changelog
-* Wed Jun 24 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.6-200
-- Linux v5.7.6
+* Sat Aug 01 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.12-200
+- Linux v5.7.12
 
-* Mon Jun 22 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.5-200
-- Linux v5.7.5
+* Wed Jul 29 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.11-200
+- Linux v5.7.11
+- Fix rhbz 1857101
 
-* Thu Jun 18 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.4-200
-- Linux v5.7.4
+* Wed Jul 22 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.10-201
+- Linux v5.7.10
 
-* Wed Jun 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.3-200
-- Linux v5.7.3
+* Mon Jul 20 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix GDB regression (rhbz 1858645)
 
-* Tue Jun 16 2020 Justin M. Forbes <jforbes@fedoraproject.org>
-- Add thinkpad dual fan control patch from upstream
+* Fri Jul 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.9-100
+- Linux v5.7.9
 
-* Wed Jun 10 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.2-200
-- Linux v5.7.2 rebase
+* Wed Jul 15 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Make some killer wireless ac 1550 cards work again
+
+* Sun Jul 12 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+- selinux: allow reading labels before policy is loaded (rhbz 1845210)
+
+* Thu Jul 09 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.8-200
+- Linux v5.7.8
+- Fixes (rhbz 1852944 1852942 1852963 1852962)
+
+* Wed Jul 01 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.7-200
+- Linux v5.7.7
+
+* Mon Jun 29 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.6-200
+- Linux v5.7.6 rebase
+
+* Wed Jun 17 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.19-300
+- Linux v5.6.19
+
+* Mon Jun 15 2020 Stefan Assmann <sassmann@redhat.com>
+- Add dual fan control for P50, P51, P52, P70, P71, P72, P1 gen1, P2 gen2,
+  X1E gen1 and X1E gen2.
 
 * Wed Jun 10 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.6.18-300
 - Linux v5.6.18
