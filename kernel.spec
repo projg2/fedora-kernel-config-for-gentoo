@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -883,11 +883,11 @@ Patch123: 0001-usb-fusb302-Convert-to-use-GPIO-descriptors.patch
 # Tegra194 ACPI PCI quirk - http://patchwork.ozlabs.org/patch/1221384/
 Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 
-# rhbz 1857101
-Patch125: 0001-ALSA-hda-Workaround-for-spurious-wakeups-on-some-Int.patch
-
 # Work around a bug in gcc https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
 Patch126: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+
+# CVE-2020-16166 rhbz 1865751 1865752
+Patch127: random32-update-the-net-random-state-on-interrupt-and-activity.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2993,6 +2993,10 @@ fi
 #
 #
 %changelog
+* Wed Aug 05 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.13-200
+- Linux v5.7.13
+- Fix CVE-2020-16166 (rhbz 1865751 1865752)
+
 * Sat Aug 01 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.12-200
 - Linux v5.7.12
 
