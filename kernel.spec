@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 14
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -885,9 +885,6 @@ Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 
 # Work around a bug in gcc https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
 Patch126: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
-
-# CVE-2020-16166 rhbz 1865751 1865752
-Patch127: random32-update-the-net-random-state-on-interrupt-and-activity.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2993,6 +2990,9 @@ fi
 #
 #
 %changelog
+* Fri Aug 07 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.14-200
+- Linux v5.7.14
+
 * Wed Aug 05 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.13-200
 - Linux v5.7.13
 - Fix CVE-2020-16166 (rhbz 1865751 1865752)
