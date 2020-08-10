@@ -1,7 +1,7 @@
-From a74b75072e094e40a8d1c5fb0370b6c9fc4f7f26 Mon Sep 17 00:00:00 2001
+From 9134295c0515492b1ab7733c0290b2afde336d6b Mon Sep 17 00:00:00 2001
 From: Vidya Sagar <vidyas@nvidia.com>
 Date: Sat, 11 Jan 2020 00:45:00 +0530
-Subject: [PATCH 1/2] PCI: Add MCFG quirks for Tegra194 host controllers
+Subject: [PATCH] PCI: Add MCFG quirks for Tegra194 host controllers
 
 The PCIe controller in Tegra194 SoC is not completely ECAM-compliant.
 With the current hardware design limitations in place, ECAM can be enabled
@@ -15,18 +15,17 @@ to generate respective configuration accesses just like the way it is
 done in DesignWare core sub-system.
 
 Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
-Reported-by: kbuild test robot <lkp@intel.com>
 Acked-by: Thierry Reding <treding@nvidia.com>
 [ Updated by jonathanh@nvidia.com only permit building the Tegra194
   PCIe driver into the kernel and not as a module ]
 Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
 ---
  drivers/acpi/pci_mcfg.c                    |   7 ++
- drivers/pci/controller/dwc/Kconfig         |   9 +-
+ drivers/pci/controller/dwc/Kconfig         |  10 +-
  drivers/pci/controller/dwc/Makefile        |   2 +-
  drivers/pci/controller/dwc/pcie-tegra194.c | 102 +++++++++++++++++++++
  include/linux/pci-ecam.h                   |   1 +
- 5 files changed, 116 insertions(+), 5 deletions(-)
+ 5 files changed, 117 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/acpi/pci_mcfg.c b/drivers/acpi/pci_mcfg.c
 index 54b36b7ad47d9..6573d495d9c1f 100644
@@ -47,10 +46,10 @@ index 54b36b7ad47d9..6573d495d9c1f 100644
  	{"APM   ", "XGENE   ", rev, seg, MCFG_BUS_ANY, \
  		&xgene_v1_pcie_ecam_ops }
 diff --git a/drivers/pci/controller/dwc/Kconfig b/drivers/pci/controller/dwc/Kconfig
-index 044a3761c44f2..7745d26420a72 100644
+index 044a3761c44f2..e4ee4bf9ac64a 100644
 --- a/drivers/pci/controller/dwc/Kconfig
 +++ b/drivers/pci/controller/dwc/Kconfig
-@@ -247,10 +247,10 @@ config PCI_MESON
+@@ -247,25 +247,27 @@ config PCI_MESON
  	  implement the driver.
  
  config PCIE_TEGRA194
@@ -63,7 +62,12 @@ index 044a3761c44f2..7745d26420a72 100644
  	depends on ARCH_TEGRA_194_SOC || COMPILE_TEST
  	depends on PCI_MSI_IRQ_DOMAIN
  	select PCIE_DW_HOST
-@@ -262,10 +262,11 @@ config PCIE_TEGRA194_HOST
+ 	select PHY_TEGRA194_P2U
+ 	select PCIE_TEGRA194
++	default y if ARCH_TEGRA_194_SOC
+ 	help
+ 	  Enables support for the PCIe controller in the NVIDIA Tegra194 SoC to
+ 	  work in host mode. There are two instances of PCIe controllers in
  	  Tegra194. This controller can work either as EP or RC. In order to
  	  enable host-specific features PCIE_TEGRA194_HOST must be selected and
  	  in order to enable device-specific features PCIE_TEGRA194_EP must be
@@ -96,7 +100,7 @@ index a751553fa0dbd..dbb9818765566 100644
 +obj-$(CONFIG_ARM64) += pcie-tegra194.o
  endif
 diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index 92b77f7d83546..cc18814c5bece 100644
+index 92b77f7d83546..7b3d581795197 100644
 --- a/drivers/pci/controller/dwc/pcie-tegra194.c
 +++ b/drivers/pci/controller/dwc/pcie-tegra194.c
 @@ -22,6 +22,8 @@
@@ -196,7 +200,7 @@ index 92b77f7d83546..cc18814c5bece 100644
 +	return (void __iomem *)(pcie->config_base + where);
 +}
 +
-+struct pci_ecam_ops tegra194_pcie_ops = {
++const struct pci_ecam_ops tegra194_pcie_ops = {
 +	.bus_shift	= 20,
 +	.init		= tegra194_acpi_init,
 +	.pci_ops	= {
