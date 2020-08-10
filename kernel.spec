@@ -485,7 +485,7 @@ BuildRequires: python3-devel
 BuildRequires: rsync
 %endif
 %if %{with_doc}
-BuildRequires: xmlto, asciidoc, python3-sphinx
+BuildRequires: xmlto, asciidoc, python3-sphinx, python3-sphinx_rtd_theme
 %endif
 %if %{with_sparse}
 BuildRequires: sparse
