@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -837,7 +837,6 @@ Patch73: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
 Patch74: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
 Patch75: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 Patch76: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
-Patch77: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 Patch82: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
 Patch83: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
 Patch84: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
@@ -2965,6 +2964,9 @@ fi
 #
 #
 %changelog
+* Tue Aug 11 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.1-200
+- Linux v5.8.1
+
 * Sat Aug 01 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.12-200
 - Linux v5.7.12
 
