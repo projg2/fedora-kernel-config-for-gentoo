@@ -455,7 +455,7 @@ Name: kernel%{?variant}
 License: GPLv2 and Redistributable, no modification permitted
 URL: https://www.kernel.org/
 Version: %{rpmversion}
-Release: %{pkg_release}
+Release: %{pkg_release}.1
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
 %if 0%{?fedora}
@@ -2850,6 +2850,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 12 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.0-1.1
+- Linux v5.8.1
+
 * Mon Aug 03 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-1]
 - v5.8 rebase
 - Updated changelog for the release based on ac3a0c847296 (Fedora Kernel Team)
