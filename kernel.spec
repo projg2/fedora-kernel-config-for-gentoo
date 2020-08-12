@@ -1,8 +1,7 @@
 # We have to override the new %%install behavior because, well... the kernel is special.
 %global __spec_install_pre %{___build_pre}
 
-# Short-term fix so the package builds with GCC 10.
-# This should go away soon.
+# this should go away soon
 %define _legacy_common_support 1
 
 # At the time of this writing (2019-03), RHEL8 packages use w2.xzdio
@@ -28,9 +27,7 @@ Summary: The Linux kernel
 # For rawhide and/or a kernel built from an rc or git snapshot,
 # released_kernel should be 0.
 # For a stable, released kernel, released_kernel should be 1.
-%global released_kernel 0
-
-%global distro_build 1
+%global released_kernel 1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -61,23 +58,60 @@ Summary: The Linux kernel
 
 # define buildid .local
 
-
 %if 0%{?fedora}
 %define primary_target fedora
 %else
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.8.0
-%define pkgrelease 1
+# baserelease defines which build revision of this kernel version we're
+# building.  We used to call this fedora_build, but the magical name
+# baserelease is matched by the rpmdev-bumpspec tool, which you should use.
+#
+# We used to have some extra magic weirdness to bump this automatically,
+# but now we don't.  Just use: rpmdev-bumpspec -c 'comment for changelog'
+# When changing base_sublevel below or going from rc to a final kernel,
+# reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
+# scripts/rebase.sh should be made to do that for you, actually.
+#
+# NOTE: baserelease must be > 0 or bad things will happen if you switch
+#       to a released kernel (released version will be < rc version)
+#
+# For non-released -rc kernels, this will be appended after the rcX and
+# gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
+#
+%global baserelease 300
+%global fedora_build %{baserelease}
 
-# This is needed to do merge window version magic
-%define patchlevel 8
+# base_sublevel is the kernel version we're starting with and patching
+# on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
+# which yields a base_sublevel of 0.
+%define base_sublevel 8
 
-# allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 1%{?buildid}%{?dist}
+## If this is a released kernel ##
+%if 0%{?released_kernel}
 
-%define pkg_release %{specrelease}
+# Do we have a -stable update to apply?
+%define stable_update 1
+# Set rpm version accordingly
+%if 0%{?stable_update}
+%define stablerev %{stable_update}
+%define stable_base %{stable_update}
+%endif
+%define rpmversion 5.%{base_sublevel}.%{stable_update}
+
+## The not-released-kernel case ##
+%else
+# The next upstream release sublevel (base_sublevel+1)
+%define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
+# The rc snapshot level
+%global rcrev 0
+# The git snapshot level
+%define gitrev 0
+# Set rpm version accordingly
+%define rpmversion 5.%{upstream_sublevel}.0
+%endif
+# Nb: The above rcrev and gitrev values automagically define Patch00 and Patch01 below.
 
 # What parts do we want to build?  We must build at least one kernel.
 # These are the kernels that are built IF the architecture allows it.
@@ -168,9 +202,6 @@ Summary: The Linux kernel
 # See also 'make debug' and 'make release'.
 %define debugbuildsenabled 1
 
-# The kernel tarball/base version
-%define kversion 5.8
-
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
 %define with_headers 0
@@ -192,6 +223,32 @@ Summary: The Linux kernel
 %else
 %define make_opts -s
 %endif
+
+# pkg_release is what we'll fill in for the rpm Release: field
+%if 0%{?released_kernel}
+
+%define pkg_release %{fedora_build}%{?buildid}%{?dist}
+
+%else
+
+# non-released_kernel
+%if 0%{?rcrev}
+%define rctag .rc%rcrev
+%else
+%define rctag .rc0
+%endif
+%if 0%{?gitrev}
+%define gittag .git%gitrev
+%else
+%define gittag .git0
+%endif
+%define pkg_release 0%{?rctag}%{?gittag}.%{fedora_build}%{?buildid}%{?dist}
+
+%endif
+
+# The kernel tarball/base version
+%define kversion 5.%{base_sublevel}
+
 
 # turn off debug kernel and kabichk for gcov builds
 %if %{with_gcov}
@@ -267,7 +324,10 @@ Summary: The Linux kernel
 
 # if requested, only build debug kernel
 %if %{with_dbgonly}
+%if %{debugbuildsenabled}
 %define with_up 0
+%endif
+%define with_pae 0
 %define with_tools 0
 %define with_perf 0
 %define with_bpftool 0
@@ -406,21 +466,18 @@ Summary: The Linux kernel
 %if 0%{?fedora}
 %define nobuildarches i386
 %else
-%define nobuildarches i386 i686 %{arm}
+%define nobuildarches i386 i686
 %endif
 
 %ifarch %nobuildarches
-# disable BuildKernel commands
 %define with_up 0
 %define with_debug 0
-%define with_pae 0
-%define with_zfcpdump 0
-
 %define with_debuginfo 0
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
 %define with_selftests 0
+%define with_pae 0
 %define _enable_debug_packages 0
 %endif
 
@@ -455,7 +512,7 @@ Name: kernel%{?variant}
 License: GPLv2 and Redistributable, no modification permitted
 URL: https://www.kernel.org/
 Version: %{rpmversion}
-Release: %{pkg_release}.1
+Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
 %if 0%{?fedora}
@@ -480,12 +537,13 @@ BuildRequires: net-tools, hostname, bc, elfutils-devel
 %if 0%{?fedora}
 BuildRequires: dwarves
 %endif
+# Used to mangle unversioned shebangs to be Python 3
 BuildRequires: python3-devel
 %if %{with_headers}
 BuildRequires: rsync
 %endif
 %if %{with_doc}
-BuildRequires: xmlto, asciidoc, python3-sphinx, python3-sphinx_rtd_theme
+BuildRequires: xmlto, asciidoc, python3-sphinx
 %endif
 %if %{with_sparse}
 BuildRequires: sparse
@@ -509,7 +567,11 @@ BuildRequires: python3-docutils
 BuildRequires: zlib-devel binutils-devel
 %endif
 %if %{with_selftests}
+%if 0%{?fedora}
 BuildRequires: clang llvm
+%else
+BuildRequires: llvm-toolset
+%endif
 %ifnarch %{arm}
 BuildRequires: numactl-devel
 %endif
@@ -561,16 +623,7 @@ BuildRequires: xmlto
 BuildRequires: asciidoc
 %endif
 
-# Because this is the kernel, it's hard to get a single upstream URL
-# to represent the base without needing to do a bunch of patching. This
-# tarball is generated from a src-git tree. If you want to see the
-# exact git commit you can run
-#
-# xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.8.tar.xz
-
-Source1: Makefile.rhelver
-
+Source0: https://www.kernel.org/pub/linux/kernel/v5.x/linux-%{kversion}.tar.xz
 
 # Name of the packaged file containing signing key
 %ifarch ppc64le
@@ -627,9 +680,10 @@ Source15: redhatsecureboot003.cer
 %endif
 
 Source22: mod-extra.list.rhel
-Source16: mod-extra.list.fedora
-Source17: mod-blacklist.sh
+Source23: mod-extra.list.fedora
+Source24: mod-extra.sh
 Source18: mod-sign.sh
+Source19: mod-extra-blacklist.sh
 Source79: parallel_xz.sh
 
 Source80: filter-x86_64.sh.fedora
@@ -683,6 +737,7 @@ Source53: generate_bls_conf.sh
 Source56: update_scripts.sh
 
 Source54: mod-internal.list
+Source55: merge.pl
 
 Source200: check-kabi
 
@@ -696,55 +751,68 @@ Source211: Module.kabi_dup_ppc64le
 Source212: Module.kabi_dup_s390x
 Source213: Module.kabi_dup_x86_64
 
-Source300: kernel-abi-whitelists-%{rpmversion}-%{distro_build}.tar.bz2
-Source301: kernel-kabi-dw-%{rpmversion}-%{distro_build}.tar.bz2
+# Source300: kernel-abi-whitelists-%{rpmversion}-%{distro_build}.tar.bz2
+# Source301: kernel-kabi-dw-%{rpmversion}-%{distro_build}.tar.bz2
 
 # Sources for kernel-tools
 Source2000: cpupower.service
 Source2001: cpupower.config
 
-# Some people enjoy building customized kernels from the dist-git in Fedora and
-# use this to override configuration options. One day they may all use the
-# source tree, but in the mean time we carry this to support the legacy workflow
-Source3000: merge.pl
-Source3001: kernel-local
-Source3002: Patchlist
+## Patches needed for building this package
 
-Source4000: README.rst
+# Patch1: patch-%{rpmversion}-redhat.patch
+
+# empty final patch to facilitate testing of kernel patches
+# Patch999999: linux-kernel-test.patch
+
+# This file is intentionally left empty in the stock kernel. Its a nicety
+# added for those wanting to do custom rebuilds with altered config opts.
+Source1000: kernel-local
+
+# Here should be only the patches up to the upstream canonical Linus tree.
+
+# For a stable release kernel
+%if 0%{?stable_update}
+%if 0%{?stable_base}
+%define    stable_patch_00  patch-5.%{base_sublevel}.%{stable_base}.xz
+Source5000: %{stable_patch_00}
+%endif
+
+# non-released_kernel case
+# These are automagically defined by the rcrev and gitrev values set up
+# near the top of this spec file.
+%else
+%if 0%{?rcrev}
+Source5000: patch-5.%{upstream_sublevel}-rc%{rcrev}.xz
+%if 0%{?gitrev}
+Source5001: patch-5.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
+%endif
+%else
+# pre-{base_sublevel+1}-rc1 case
+%if 0%{?gitrev}
+Source5000: patch-5.%{base_sublevel}-git%{gitrev}.xz
+%endif
+%endif
+%endif
 
 ## Patches needed for building this package
 
+## compile fixes
+
 %if !%{nopatches}
 
-Patch2: 0001-initial-commit-Add-Red-Hat-variables-in-the-top-leve.patch
-Patch3: 0001-Pull-the-RHEL-version-defines-out-of-the-Makefile.patch
-Patch4: 0001-Introduce-CONFIG_RH_DISABLE_DEPRECATED.patch
-Patch5: 0001-Add-Red-Hat-tainting.patch
 Patch6: 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
-Patch7: 0001-modules-add-rhelversion-MODULE_INFO-tag.patch
 Patch8: 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
 Patch9: 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
-Patch10: 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
 Patch11: 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
 Patch12: 0001-kdump-add-support-for-crashkernel-auto.patch
-Patch13: 0001-put-RHEL-info-into-generated-headers.patch
-Patch14: 0001-tags.sh-Ignore-redhat-rpm.patch
 Patch15: 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
-Patch16: 0001-add-Red-Hat-specific-taint-flags.patch
-Patch17: 0001-bpf-set-unprivileged_bpf_disabled-to-1-by-default-ad.patch
-Patch18: 0001-bpf-Add-tech-preview-taint-for-syscall.patch
 Patch19: 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
 Patch20: 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
-Patch21: 0001-add-pci_hw_vendor_status.patch
-Patch22: 0001-kABI-Add-generic-kABI-macros-to-use-for-kABI-workaro.patch
-Patch23: 0001-ice-mark-driver-as-tech-preview.patch
 Patch24: 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
-Patch25: 0001-IB-rxe-Mark-Soft-RoCE-Transport-driver-as-tech-previ.patch
 Patch26: 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
-Patch27: 0001-rh_kabi-introduce-RH_KABI_EXCLUDE.patch
 Patch28: 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
 Patch29: 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
-Patch30: 0001-Add-support-for-deprecating-processors.patch
 Patch31: 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
 Patch32: 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
 Patch33: 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
@@ -752,29 +820,8 @@ Patch34: 0001-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
 Patch35: 0001-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
 Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-Patch38: 0001-Rename-RH_DISABLE_DEPRECATED-to-RHEL_DIFFERENCES.patch
-Patch39: 0001-kernel-add-SUPPORT_REMOVED-kernel-taint.patch
-Patch40: 0001-mpt-remove-certain-deprecated-pci-ids.patch
-Patch41: 0001-megaraid_sas-remove-deprecated-pci-ids.patch
-Patch42: 0001-aacraid-Remove-depreciated-device-and-vendor-PCI-id-.patch
-Patch43: 0001-qla4xxx-Remove-deprecated-PCI-IDs-from-RHEL-8.patch
-Patch44: 0001-hpsa-remove-old-cciss-based-smartarray-pci-ids.patch
-Patch45: 0001-mptspi-Taint-kernel-if-mptspi-is-loaded.patch
-Patch46: 0001-be2iscsi-remove-unsupported-device-IDs.patch
-Patch47: 0001-qla2xxx-Remove-PCI-IDs-of-deprecated-adapter.patch
-Patch48: 0001-mptspi-pci-id-table-changes.patch
-Patch49: 0001-mptsas-Taint-kernel-if-mptsas-is-loaded.patch
-Patch50: 0001-mptsas-pci-id-table-changes.patch
-Patch51: 0001-Removing-Obsolete-hba-pci-ids-from-rhel8.patch
-Patch52: 0001-redhat-rh_kabi-Add-macros-to-size-and-extend-structs.patch
-Patch53: 0001-redhat-rh_kabi-Fix-RH_KABI_SET_SIZE-to-use-dereferen.patch
-Patch54: 0001-redhat-rh_kabi-Indirect-EXTEND-macros-so-nesting-of-.patch
-Patch55: 0001-redhat-rh_kabi-introduce-RH_KABI_EXTEND_WITH_SIZE.patch
-Patch56: 0001-redhat-rh_kabi-add-a-comment-with-warning-about-RH_K.patch
-Patch57: 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch60: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 Patch61: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
 Patch62: 0001-Drop-that-for-now.patch
 Patch63: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
@@ -785,17 +832,11 @@ Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch69: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch71: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
 Patch72: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
 Patch73: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
 Patch74: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
 Patch75: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
 Patch76: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
-Patch77: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
-Patch78: 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
-Patch79: 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
-Patch80: 0001-Revert-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
-Patch81: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 Patch82: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
 Patch83: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
 Patch84: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
@@ -816,12 +857,13 @@ Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
 Patch99: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
 Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
+Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+Patch102: 0002-arm64-tegra-Re-order-PCIe-aperture-mappings-to-suppo.patch
+Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
+# END OF PATCH DEFINITIONS
+
 %endif
 
-# empty final patch to facilitate testing of kernel patches
-Patch999999: linux-kernel-test.patch
-
-# END OF PATCH DEFINITIONS
 
 %description
 The kernel meta package
@@ -990,7 +1032,7 @@ This package provides debug information for package kernel-tools.
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
 
 # with_tools
 %endif
@@ -1081,6 +1123,8 @@ AutoReqProv: no\
 This package provides debug information for package %{name}%{?1:-%{1}}.\
 This is required to use SystemTap with %{name}%{?1:-%{1}}-%{KVERREL}.\
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*\/usr\/src\/kernels/.*|XXX' -o ignored-debuginfo.list -p '/.*/%%{KVERREL_RE}%{?1:[+]%{1}}/.*|/.*%%{KVERREL_RE}%{?1:\+%{1}}(\.debug)?' -o debuginfo%{?1}.list}\
+
+
 %{nil}
 
 #
@@ -1169,6 +1213,7 @@ Provides: kernel-modules = %{version}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
 Provides: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
 Requires: kernel-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
+Recommends: alsa-sof-firmware\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules\
@@ -1199,6 +1244,9 @@ The meta-package for the %{1} kernel\
 Summary: %{variant_summary}\
 Provides: kernel-%{?1:%{1}-}core-uname-r = %{KVERREL}%{?variant}%{?1:+%{1}}\
 Provides: installonlypkg(kernel)\
+%ifarch ppc64le\
+Obsoletes: kernel-bootwrapper\
+%endif\
 %{expand:%%kernel_reqprovconf}\
 %if %{?1:1} %{!?1:0} \
 %{expand:%%kernel_meta_package %{?1:%{1}}}\
@@ -1258,10 +1306,15 @@ input and output, etc.
 %prep
 # do a few sanity-checks for --with *only builds
 %if %{with_baseonly}
-%if !%{with_up}
+%if !%{with_up}%{with_pae}
 echo "Cannot build --with baseonly, up build is disabled"
 exit 1
 %endif
+%endif
+
+%if "%{baserelease}" == "0"
+echo "baserelease must be greater than zero"
+exit 1
 %endif
 
 # more sanity checking; do it quietly
@@ -1310,117 +1363,166 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.8 -c
-mv linux-5.8 linux-%{KVERREL}
+# First we unpack the kernel tarball.
+# If this isn't the first make prep, we use links to the existing clean tarball
+# which speeds things up quite a bit.
 
-cd linux-%{KVERREL}
-cp -a %{SOURCE1} .
+# Update to latest upstream.
+%if 0%{?released_kernel}
+%define vanillaversion 5.%{base_sublevel}
+# non-released_kernel case
+%else
+%if 0%{?rcrev}
+%define vanillaversion 5.%{upstream_sublevel}-rc%{rcrev}
+%if 0%{?gitrev}
+%define vanillaversion 5.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}
+%endif
+%else
+# pre-{base_sublevel+1}-rc1 case
+%if 0%{?gitrev}
+%define vanillaversion 5.%{base_sublevel}-git%{gitrev}
+%else
+%define vanillaversion 5.%{base_sublevel}
+%endif
+%endif
+%endif
 
-%if !%{nopatches}
+# %%{vanillaversion} : the full version name, e.g. 2.6.35-rc6-git3
+# %%{kversion}       : the base version, e.g. 2.6.34
 
-ApplyOptionalPatch 0001-initial-commit-Add-Red-Hat-variables-in-the-top-leve.patch
-ApplyOptionalPatch 0001-Pull-the-RHEL-version-defines-out-of-the-Makefile.patch
-ApplyOptionalPatch 0001-Introduce-CONFIG_RH_DISABLE_DEPRECATED.patch
-ApplyOptionalPatch 0001-Add-Red-Hat-tainting.patch
-ApplyOptionalPatch 0001-ACPI-APEI-arm64-Ignore-broken-HPE-moonshot-APEI-supp.patch
-ApplyOptionalPatch 0001-modules-add-rhelversion-MODULE_INFO-tag.patch
-ApplyOptionalPatch 0001-ACPI-irq-Workaround-firmware-issue-on-X-Gene-based-m.patch
-ApplyOptionalPatch 0001-aarch64-acpi-scan-Fix-regression-related-to-X-Gene-U.patch
-ApplyOptionalPatch 0001-acpi-prefer-booting-with-ACPI-over-DTS.patch
-ApplyOptionalPatch 0001-kdump-round-up-the-total-memory-size-to-128M-for-cra.patch
-ApplyOptionalPatch 0001-kdump-add-support-for-crashkernel-auto.patch
-ApplyOptionalPatch 0001-put-RHEL-info-into-generated-headers.patch
-ApplyOptionalPatch 0001-tags.sh-Ignore-redhat-rpm.patch
-ApplyOptionalPatch 0001-kdump-fix-a-grammar-issue-in-a-kernel-message.patch
-ApplyOptionalPatch 0001-add-Red-Hat-specific-taint-flags.patch
-ApplyOptionalPatch 0001-bpf-set-unprivileged_bpf_disabled-to-1-by-default-ad.patch
-ApplyOptionalPatch 0001-bpf-Add-tech-preview-taint-for-syscall.patch
-ApplyOptionalPatch 0001-Vulcan-AHCI-PCI-bar-fix-for-Broadcom-Vulcan-early-si.patch
-ApplyOptionalPatch 0001-ahci-thunderx2-Fix-for-errata-that-affects-stop-engi.patch
-ApplyOptionalPatch 0001-add-pci_hw_vendor_status.patch
-ApplyOptionalPatch 0001-kABI-Add-generic-kABI-macros-to-use-for-kABI-workaro.patch
-ApplyOptionalPatch 0001-ice-mark-driver-as-tech-preview.patch
-ApplyOptionalPatch 0001-scsi-smartpqi-add-inspur-advantech-ids.patch
-ApplyOptionalPatch 0001-IB-rxe-Mark-Soft-RoCE-Transport-driver-as-tech-previ.patch
-ApplyOptionalPatch 0001-ipmi-do-not-configure-ipmi-for-HPE-m400.patch
-ApplyOptionalPatch 0001-rh_kabi-introduce-RH_KABI_EXCLUDE.patch
-ApplyOptionalPatch 0001-iommu-arm-smmu-workaround-DMA-mode-issues.patch
-ApplyOptionalPatch 0001-arm-aarch64-Drop-the-EXPERT-setting-from-ARM64_FORCE.patch
-ApplyOptionalPatch 0001-Add-support-for-deprecating-processors.patch
-ApplyOptionalPatch 0001-Add-efi_status_to_str-and-rework-efi_status_to_err.patch
-ApplyOptionalPatch 0001-Make-get_cert_list-use-efi_status_to_str-to-print-er.patch
-ApplyOptionalPatch 0001-security-lockdown-expose-a-hook-to-lock-the-kernel-d.patch
-ApplyOptionalPatch 0001-efi-Add-an-EFI_SECURE_BOOT-flag-to-indicate-secure-b.patch
-ApplyOptionalPatch 0001-efi-Lock-down-the-kernel-if-booted-in-secure-boot-mo.patch
-ApplyOptionalPatch 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
-ApplyOptionalPatch 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
-ApplyOptionalPatch 0001-Rename-RH_DISABLE_DEPRECATED-to-RHEL_DIFFERENCES.patch
-ApplyOptionalPatch 0001-kernel-add-SUPPORT_REMOVED-kernel-taint.patch
-ApplyOptionalPatch 0001-mpt-remove-certain-deprecated-pci-ids.patch
-ApplyOptionalPatch 0001-megaraid_sas-remove-deprecated-pci-ids.patch
-ApplyOptionalPatch 0001-aacraid-Remove-depreciated-device-and-vendor-PCI-id-.patch
-ApplyOptionalPatch 0001-qla4xxx-Remove-deprecated-PCI-IDs-from-RHEL-8.patch
-ApplyOptionalPatch 0001-hpsa-remove-old-cciss-based-smartarray-pci-ids.patch
-ApplyOptionalPatch 0001-mptspi-Taint-kernel-if-mptspi-is-loaded.patch
-ApplyOptionalPatch 0001-be2iscsi-remove-unsupported-device-IDs.patch
-ApplyOptionalPatch 0001-qla2xxx-Remove-PCI-IDs-of-deprecated-adapter.patch
-ApplyOptionalPatch 0001-mptspi-pci-id-table-changes.patch
-ApplyOptionalPatch 0001-mptsas-Taint-kernel-if-mptsas-is-loaded.patch
-ApplyOptionalPatch 0001-mptsas-pci-id-table-changes.patch
-ApplyOptionalPatch 0001-Removing-Obsolete-hba-pci-ids-from-rhel8.patch
-ApplyOptionalPatch 0001-redhat-rh_kabi-Add-macros-to-size-and-extend-structs.patch
-ApplyOptionalPatch 0001-redhat-rh_kabi-Fix-RH_KABI_SET_SIZE-to-use-dereferen.patch
-ApplyOptionalPatch 0001-redhat-rh_kabi-Indirect-EXTEND-macros-so-nesting-of-.patch
-ApplyOptionalPatch 0001-redhat-rh_kabi-introduce-RH_KABI_EXTEND_WITH_SIZE.patch
-ApplyOptionalPatch 0001-redhat-rh_kabi-add-a-comment-with-warning-about-RH_K.patch
-ApplyOptionalPatch 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
-ApplyOptionalPatch 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
-ApplyOptionalPatch 0001-ARM-tegra-usb-no-reset.patch
-ApplyOptionalPatch 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
-ApplyOptionalPatch 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
-ApplyOptionalPatch 0001-Drop-that-for-now.patch
-ApplyOptionalPatch 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
-ApplyOptionalPatch 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-ApplyOptionalPatch 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
-ApplyOptionalPatch 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
-ApplyOptionalPatch 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
-ApplyOptionalPatch 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-ApplyOptionalPatch 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
-ApplyOptionalPatch 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-ApplyOptionalPatch 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
-ApplyOptionalPatch 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
-ApplyOptionalPatch 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
-ApplyOptionalPatch 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
-ApplyOptionalPatch 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
-ApplyOptionalPatch 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
-ApplyOptionalPatch 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
-ApplyOptionalPatch 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
-ApplyOptionalPatch 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
-ApplyOptionalPatch 0001-Revert-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
-ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
-ApplyOptionalPatch 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
-ApplyOptionalPatch 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
-ApplyOptionalPatch 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
-ApplyOptionalPatch 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
-ApplyOptionalPatch 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
-ApplyOptionalPatch 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
-ApplyOptionalPatch 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
-ApplyOptionalPatch 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
-ApplyOptionalPatch 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
-ApplyOptionalPatch 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
-ApplyOptionalPatch 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
-ApplyOptionalPatch 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+# Use kernel-%%{kversion}%%{?dist} as the top-level directory name
+# so we can prep different trees within a single git directory.
+
+# Build a list of the other top-level kernel tree directories.
+# This will be used to hardlink identical vanilla subdirs.
+sharedirs=$(find "$PWD" -maxdepth 1 -type d -name 'kernel-5.*' \
+            | grep -x -v "$PWD"/kernel-%{kversion}%{?dist}) ||:
+
+# Delete all old stale trees.
+if [ -d kernel-%{kversion}%{?dist} ]; then
+  cd kernel-%{kversion}%{?dist}
+  for i in linux-*
+  do
+     if [ -d $i ]; then
+       # Just in case we ctrl-c'd a prep already
+       rm -rf deleteme.%{_target_cpu}
+       # Move away the stale away, and delete in background.
+       mv $i deleteme-$i
+       rm -rf deleteme* &
+     fi
+  done
+  cd ..
+fi
+
+# Generate new tree
+if [ ! -d kernel-%{kversion}%{?dist}/vanilla-%{vanillaversion} ]; then
+
+  if [ -d kernel-%{kversion}%{?dist}/vanilla-%{kversion} ]; then
+
+    # The base vanilla version already exists.
+    cd kernel-%{kversion}%{?dist}
+
+    # Any vanilla-* directories other than the base one are stale.
+    for dir in vanilla-*; do
+      [ "$dir" = vanilla-%{kversion} ] || rm -rf $dir &
+    done
+
+  else
+
+    rm -f pax_global_header
+    # Look for an identical base vanilla dir that can be hardlinked.
+    for sharedir in $sharedirs ; do
+      if [[ ! -z $sharedir  &&  -d $sharedir/vanilla-%{kversion} ]] ; then
+        break
+      fi
+    done
+    if [[ ! -z $sharedir  &&  -d $sharedir/vanilla-%{kversion} ]] ; then
+%setup -q -n kernel-%{kversion}%{?dist} -c -T
+      cp -al $sharedir/vanilla-%{kversion} .
+    else
+%setup -q -n kernel-%{kversion}%{?dist} -c
+      mv linux-%{kversion} vanilla-%{kversion}
+    fi
+
+  fi
+
+%if "%{kversion}" != "%{vanillaversion}"
+
+  for sharedir in $sharedirs ; do
+    if [[ ! -z $sharedir  &&  -d $sharedir/vanilla-%{vanillaversion} ]] ; then
+      break
+    fi
+  done
+  if [[ ! -z $sharedir  &&  -d $sharedir/vanilla-%{vanillaversion} ]] ; then
+
+    cp -al $sharedir/vanilla-%{vanillaversion} .
+
+  else
+
+    # Need to apply patches to the base vanilla version.
+    cp -al vanilla-%{kversion} vanilla-%{vanillaversion}
+    cd vanilla-%{vanillaversion}
+
+cp %{SOURCE12} .
+
+# Update vanilla to the latest upstream.
+# (non-released_kernel case only)
+%if 0%{?rcrev}
+    xzcat %{SOURCE5000} | patch -p1 -F1 -s
+%if 0%{?gitrev}
+    xzcat %{SOURCE5001} | patch -p1 -F1 -s
+%endif
+%else
+# pre-{base_sublevel+1}-rc1 case
+%if 0%{?gitrev}
+    xzcat %{SOURCE5000} | patch -p1 -F1 -s
+%endif
+%endif
+    git init
+    git config user.email "kernel-team@fedoraproject.org"
+    git config user.name "Fedora Kernel Team"
+    git config gc.auto 0
+    git add .
+    git commit -a -q -m "baseline"
+
+    cd ..
+
+  fi
 
 %endif
 
-ApplyOptionalPatch linux-kernel-test.patch
+else
+
+  # We already have all vanilla dirs, just change to the top-level directory.
+  cd kernel-%{kversion}%{?dist}
+
+fi
+
+# Now build the fedora kernel tree.
+cp -al vanilla-%{vanillaversion} linux-%{KVERREL}
+
+cd linux-%{KVERREL}
+if [ ! -d .git ]; then
+    git init
+    git config user.email "kernel-team@fedoraproject.org"
+    git config user.name "Fedora Kernel Team"
+    git config gc.auto 0
+    git add .
+    git commit -a -q -m "baseline"
+fi
+
+
+# released_kernel with possible stable updates
+%if 0%{?stable_base}
+# This is special because the kernel spec is hell and nothing is consistent
+xzcat %{SOURCE5000} | patch -p1 -F1 -s
+git commit -a -m "Stable update"
+%endif
+
+# Note: Even in the "nopatches" path some patches (build tweaks and compile
+# fixes) will always get applied; see patch defition above for details
+
+git am %{patches}
 
 # END OF PATCH APPLICATIONS
 
@@ -1449,7 +1551,6 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 	tools/perf/tests/attr.py \
 	tools/perf/scripts/python/stat-cpi.py \
 	tools/perf/scripts/python/sched-migration.py \
-	tools/testing/selftests/drivers/net/mlxsw/sharedbuffer_configuration.py \
 	Documentation \
 	scripts/gen_compile_commands.py
 
@@ -1459,26 +1560,30 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 if [ -L configs ]; then
 	rm -f configs
 fi
+# Deal with configs stuff
 mkdir configs
 cd configs
 
 # Drop some necessary files from the source dir into the buildroot
 cp $RPM_SOURCE_DIR/kernel-*.config .
+cp %{SOURCE1000} .
+cp %{SOURCE55} .
 cp %{SOURCE51} .
-# merge.pl
-cp %{SOURCE3000} .
-# kernel-local
-cp %{SOURCE3001} .
 VERSION=%{version} ./generate_all_configs.sh %{primary_target} %{debugbuildsenabled}
+
 
 # Merge in any user-provided local config option changes
 %ifnarch %nobuildarches
 for i in %{all_arch_configs}
 do
   mv $i $i.tmp
-  ./merge.pl %{SOURCE3001} $i.tmp > $i
+  ./merge.pl %{SOURCE1000} $i.tmp > $i
   rm $i.tmp
 done
+%endif
+
+%if !%{debugbuildsenabled}
+rm -f kernel-%{version}-*debug.config
 %endif
 
 # enable GCOV kernel config options if gcov is on
@@ -1527,6 +1632,19 @@ cp_vmlinux()
   eu-strip --remove-comment -o "$2" "$1"
 }
 
+# These are for host programs that get built as part of the kernel and
+# are required to be packaged in kernel-devel for building external modules.
+# Since they are userspace binaries, they are required to pickup the hardening
+# flags defined in the macros. The --build-id=uuid is a trick to get around
+# debuginfo limitations: Typically, find-debuginfo.sh will update the build
+# id of all binaries to allow for parllel debuginfo installs. The kernel
+# can't use this because it breaks debuginfo for the vDSO so we have to
+# use a special mechanism for kernel and modules to be unique. Unfortunately,
+# we still have userspace binaries which need unique debuginfo and because
+# they come from the kernel package, we can't just use find-debuginfo.sh to
+# rewrite only those binaries. The easiest option right now is just to have
+# the build id be a uuid for the host programs.
+#
 # Note we need to disable these flags for cross builds because the flags
 # from redhat-rpm-config assume that host == target so target arch
 # flags cause issues with the host compiler.
@@ -1535,7 +1653,7 @@ cp_vmlinux()
 %define build_hostldflags %{?build_ldflags}
 %endif
 
-%define make %{__make} %{?cross_opts} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
+%define make make %{?cross_opts} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
 
 BuildKernel() {
     MakeTarget=$1
@@ -1565,14 +1683,20 @@ BuildKernel() {
     KernelVer=%{version}-%{release}.%{_target_cpu}${Flav}
     echo BUILDING A KERNEL FOR ${Flavour} %{_target_cpu}...
 
+    %if 0%{?stable_update}
+    # make sure SUBLEVEL is incremented on a stable release.  Sigh 3.x.
+    perl -p -i -e "s/^SUBLEVEL.*/SUBLEVEL = %{?stablerev}/" Makefile
+    %endif
+
     # make sure EXTRAVERSION says what we want it to say
-    # Trim the release if this is a CI build, since KERNELVERSION is limited to 64 characters
-    ShortRel=$(perl -e "print \"%{release}\" =~ s/\.pr\.[0-9A-Fa-f]{32}//r")
-    perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${ShortRel}.%{_target_cpu}${Flav}/" Makefile
+    perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -%{release}.%{_target_cpu}${Flav}/" Makefile
 
     # if pre-rc1 devel kernel, must fix up PATCHLEVEL for our versioning scheme
-    # if we are post rc1 this should match anyway so this won't matter
-    perl -p -i -e 's/^PATCHLEVEL.*/PATCHLEVEL = %{patchlevel}/' Makefile
+    %if !0%{?rcrev}
+    %if 0%{?gitrev}
+    perl -p -i -e 's/^PATCHLEVEL.*/PATCHLEVEL = %{upstream_sublevel}/' Makefile
+    %endif
+    %endif
 
     # and now to start the build process
 
@@ -1726,16 +1850,17 @@ BuildKernel() {
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     (cd $RPM_BUILD_ROOT/lib/modules/$KernelVer ; ln -s build source)
     # dirs for additional modules per module-init-tools, kbuild/modules.txt
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/extra
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/internal
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/updates
+%if 0%{!?fedora:1}
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/weak-updates
+%endif
     # CONFIG_KERNEL_HEADER_TEST generates some extra files in the process of
     # testing so just delete
     find . -name *.h.s -delete
     # first copy everything
     cp --parents `find  -type f -name "Makefile*" -o -name "Kconfig*"` $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    if [ ! -e Module.symvers ]; then
-        touch Module.symvers
-    fi
     cp Module.symvers $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp System.map $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     if [ -s Module.markers ]; then
@@ -1832,15 +1957,6 @@ BuildKernel() {
     cp -a scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/tracing
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/spdxcheck.py
-
-    # Files for 'make scripts' to succeed with kernel-devel.
-    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/security/selinux/include
-    cp -a --parents security/selinux/include/classmap.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents security/selinux/include/initial_sid_to_string.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/include/tools
-    cp -a --parents tools/include/tools/be_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/include/tools/le_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-
     if [ -f tools/objtool/objtool ]; then
       cp -a tools/objtool/objtool $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/objtool/ || :
     fi
@@ -1953,10 +2069,12 @@ BuildKernel() {
         rm -f modules.{alias*,builtin.bin,dep*,*map,symbols*,devname,softdep}
     popd
 
-    # Identify modules in the kernel-modules-extras package
-    %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
-    # Identify modules in the kernel-modules-extras package
-    %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE54} internal
+    # Call the modules-extra script to move things around
+    %{SOURCE24} $RPM_BUILD_ROOT/lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
+    # Blacklist net autoloadable modules in modules-extra
+    %{SOURCE19} $RPM_BUILD_ROOT lib/modules/$KernelVer
+    # Call the modules-extra script for internal modules
+    %{SOURCE24} $RPM_BUILD_ROOT/lib/modules/$KernelVer %{SOURCE54} internal
 
     #
     # Generate the kernel-core and kernel-modules files lists
@@ -1969,10 +2087,8 @@ BuildKernel() {
     mkdir restore
     cp -r lib/modules/$KernelVer/* restore/.
 
-    # don't include anything going into kernel-modules-extra in the file lists
-    xargs rm -rf < mod-extra.list
-    # don't include anything going int kernel-modules-internal in the file lists
-    xargs rm -rf < mod-internal.list
+    # don't include anything going into k-m-e and k-m-i in the file lists
+    rm -rf lib/modules/$KernelVer/{extra,internal}
 
     if [ $DoModules -eq 1 ]; then
 	# Find all the module files and filter them out into the core and
@@ -2023,15 +2139,11 @@ BuildKernel() {
     sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/k-d.list > ../kernel${Flavour:+-${Flavour}}-modules.list
     sed -e 's/^lib*/%dir \/lib/' %{?zipsed} $RPM_BUILD_ROOT/module-dirs.list > ../kernel${Flavour:+-${Flavour}}-core.list
     sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/modules.list >> ../kernel${Flavour:+-${Flavour}}-core.list
-    sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-extra.list >> ../kernel${Flavour:+-${Flavour}}-modules-extra.list
-    sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-internal.list >> ../kernel${Flavour:+-${Flavour}}-modules-internal.list
 
     # Cleanup
     rm -f $RPM_BUILD_ROOT/k-d.list
     rm -f $RPM_BUILD_ROOT/modules.list
     rm -f $RPM_BUILD_ROOT/module-dirs.list
-    rm -f $RPM_BUILD_ROOT/mod-extra.list
-    rm -f $RPM_BUILD_ROOT/mod-internal.list
 
 %if %{signmodules}
     if [ $DoModules -eq 1 ]; then
@@ -2120,7 +2232,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
 %global perf_make \
-  %{__make} -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix} PYTHON=%{__python3}
+  make -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2158,17 +2270,15 @@ pushd tools/thermal/tmon/
 %{tools_make}
 popd
 pushd tools/iio/
-# Needs to be fixed to pick up CFLAGS
-%{__make}
+%{make}
 popd
 pushd tools/gpio/
-# Needs to be fixed to pick up CFLAGS
-%{__make}
+%{make}
 popd
 %endif
 
 %global bpftool_make \
-  %{__make} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_LDFLAGS="%{__global_ldflags}" DESTDIR=$RPM_BUILD_ROOT V=1
+  make EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_LDFLAGS="%{__global_ldflags}" DESTDIR=$RPM_BUILD_ROOT V=1
 %if %{with_bpftool}
 pushd tools/bpf/bpftool
 %{bpftool_make}
@@ -2186,7 +2296,7 @@ popd
 
 %if %{with_doc}
 # Make the HTML pages.
-%{__make} PYTHON=/usr/bin/python3 htmldocs || %{doc_build_fail}
+make PYTHON=/usr/bin/python3 htmldocs || %{doc_build_fail}
 
 # sometimes non-world-readable files sneak into the kernel source tree
 chmod -R a=rX Documentation
@@ -2242,7 +2352,7 @@ find Documentation -type d | xargs chmod u+w
 # We don't want to package debuginfo for self-tests and samples but
 # we have to delete them to avoid an error messages about unpackaged
 # files.
-# Delete the debuginfo for kernel-devel files
+# Delete the debuginfo for for kernel-devel files
 %define __remove_unwanted_dbginfo_install_post \
   if [ "%{with_selftests}" -ne "0" ]; then \
     rm -rf $RPM_BUILD_ROOT/usr/lib/debug/usr/libexec/ksamples; \
@@ -2287,7 +2397,7 @@ tar -h -f - --exclude=man --exclude='.*' -c Documentation | tar xf - -C $docdir
 
 %if %{with_headers}
 # Install kernel headers
-%{__make} ARCH=%{hdrarch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr headers_install
+make ARCH=%{hdrarch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr headers_install
 
 find $RPM_BUILD_ROOT/usr/include \
      \( -name .install -o -name .check -o \
@@ -2305,7 +2415,7 @@ mkdir -p $RPM_BUILD_ROOT/usr/tmp-headers
 
 for arch in $HDR_ARCH_LIST; do
 	mkdir $RPM_BUILD_ROOT/usr/tmp-headers/arch-${arch}
-	%{__make} ARCH=${arch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr/tmp-headers/arch-${arch} headers_install
+	make ARCH=${arch} INSTALL_HDR_PATH=$RPM_BUILD_ROOT/usr/tmp-headers/arch-${arch} headers_install
 done
 
 find $RPM_BUILD_ROOT/usr/tmp-headers \
@@ -2391,14 +2501,14 @@ pushd tools/thermal/tmon
 %{tools_make} INSTALL_ROOT=%{buildroot} install
 popd
 pushd tools/iio
-%{__make} DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install
 popd
 pushd tools/gpio
-%{__make} DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install
 popd
 pushd tools/kvm/kvm_stat
-%{__make} INSTALL_ROOT=%{buildroot} install-tools
-%{__make} INSTALL_ROOT=%{buildroot} install-man
+make INSTALL_ROOT=%{buildroot} install-tools
+make INSTALL_ROOT=%{buildroot} install-man
 popd
 %endif
 
@@ -2549,10 +2659,12 @@ fi\
 #
 %define kernel_variant_posttrans() \
 %{expand:%%posttrans %{?1:%{1}-}core}\
+%if 0%{!?fedora:1}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
     %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
 fi\
+%endif\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
@@ -2582,10 +2694,12 @@ fi}\
 %define kernel_variant_preun() \
 %{expand:%%preun %{?1:%{1}-}core}\
 /bin/kernel-install remove %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
+%if 0%{!?fedora:1}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
     %{_sbindir}/weak-modules --remove-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
 fi\
+%endif\
 %{nil}
 
 %kernel_variant_preun
@@ -2700,7 +2814,6 @@ fi
 %{_bindir}/lsgpio
 %{_bindir}/gpio-hammer
 %{_bindir}/gpio-event-mon
-%{_bindir}/gpio-watch
 %{_mandir}/man1/kvm_stat*
 %{_bindir}/kvm_stat
 
@@ -2726,8 +2839,6 @@ fi
 %{_sysconfdir}/bash_completion.d/bpftool
 %{_mandir}/man8/bpftool-cgroup.8.gz
 %{_mandir}/man8/bpftool-gen.8.gz
-%{_mandir}/man8/bpftool-iter.8.gz
-%{_mandir}/man8/bpftool-link.8.gz
 %{_mandir}/man8/bpftool-map.8.gz
 %{_mandir}/man8/bpftool-prog.8.gz
 %{_mandir}/man8/bpftool-perf.8.gz
@@ -2736,7 +2847,6 @@ fi
 %{_mandir}/man8/bpftool-net.8.gz
 %{_mandir}/man8/bpftool-feature.8.gz
 %{_mandir}/man8/bpftool-btf.8.gz
-%{_mandir}/man8/bpftool-struct_ops.8.gz
 
 %if %{with_debuginfo}
 %files -f bpftool-debuginfo.list -n bpftool-debuginfo
@@ -2798,7 +2908,9 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
+%if 0%{!?fedora:1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
+%endif\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca*.cer\
 %ifarch s390x ppc64le\
 %if 0%{!?4:1}\
@@ -2813,9 +2925,11 @@ fi
 %{expand:%%files %{?3:%{3}-}devel}\
 %defverify(not mtime)\
 /usr/src/kernels/%{KVERREL}%{?3:+%{3}}\
-%{expand:%%files -f kernel-%{?3:%{3}-}modules-extra.list %{?3:%{3}-}modules-extra}\
+%{expand:%%files %{?3:%{3}-}modules-extra}\
 %config(noreplace) /etc/modprobe.d/*-blacklist.conf\
-%{expand:%%files -f kernel-%{?3:%{3}-}modules-internal.list %{?3:%{3}-}modules-internal}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/extra\
+%{expand:%%files %{?3:%{3}-}modules-internal}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/internal\
 %if %{with_debuginfo}\
 %ifnarch noarch\
 %{expand:%%files -f debuginfo%{?3}.list %{?3:%{3}-}debuginfo}\
