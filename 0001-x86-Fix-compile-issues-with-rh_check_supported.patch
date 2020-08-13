@@ -25,10 +25,10 @@ Signed-off-by: Don Zickus <dzickus@redhat.com>
  1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index e677bb144835..6d31895c8e92 100644
+index b57e6dd6d7ef..66441cb9c1af 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -756,6 +756,7 @@ static void __init trim_low_memory_range(void)
+@@ -757,6 +757,7 @@ static void __init trim_low_memory_range(void)
  	memblock_reserve(0, ALIGN(reserve_low, PAGE_SIZE));
  }
 
@@ -36,7 +36,7 @@ index e677bb144835..6d31895c8e92 100644
  static bool valid_amd_processor(__u8 family, const char *model_id)
  {
  	bool valid;
-@@ -880,6 +881,9 @@ static void rh_check_supported(void)
+@@ -881,6 +882,9 @@ static void rh_check_supported(void)
  	if (acpi_disabled && !guest)
  		pr_crit("ACPI has been disabled or is not available on this hardware.  This may result in a single cpu boot, incorrect PCI IRQ routing, or boot failure.\n");
  }
@@ -46,7 +46,7 @@ index e677bb144835..6d31895c8e92 100644
 
  /*
   * Dump out kernel offset information on panic.
-@@ -1372,9 +1376,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1371,9 +1375,7 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 

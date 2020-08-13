@@ -32,10 +32,10 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index 5dc697ce8b5d..15f4bedc3a78 100644
+index bab87e47b238..70545ee26c9c 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
-@@ -9842,6 +9842,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
+@@ -9868,6 +9868,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
  		.subvendor	= PCI_ANY_ID,
  		.subdevice	= PCI_ANY_ID,
  	},
@@ -43,7 +43,7 @@ index 5dc697ce8b5d..15f4bedc3a78 100644
  	{
  		.vendor         = PCI_VENDOR_ID_QLOGIC,
  		.device         = PCI_DEVICE_ID_QLOGIC_ISP8022,
-@@ -9860,6 +9861,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
+@@ -9886,6 +9887,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
  		.subvendor	= PCI_ANY_ID,
  		.subdevice	= PCI_ANY_ID,
  	},

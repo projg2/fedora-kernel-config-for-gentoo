@@ -19,10 +19,10 @@ Cc: David Arcari <darcari@redhat.com>
  1 file changed, 85 deletions(-)
 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 6d31895c8e92..4e43f6957621 100644
+index 66441cb9c1af..6100995124f9 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -757,72 +757,6 @@ static void __init trim_low_memory_range(void)
+@@ -758,72 +758,6 @@ static void __init trim_low_memory_range(void)
  }
 
  #ifdef CONFIG_RHEL_DIFFERENCES
@@ -95,7 +95,7 @@ index 6d31895c8e92..4e43f6957621 100644
 
  static void rh_check_supported(void)
  {
-@@ -843,27 +777,8 @@ static void rh_check_supported(void)
+@@ -844,27 +778,8 @@ static void rh_check_supported(void)
  	 */
  	switch (boot_cpu_data.x86_vendor) {
  	case X86_VENDOR_AMD:

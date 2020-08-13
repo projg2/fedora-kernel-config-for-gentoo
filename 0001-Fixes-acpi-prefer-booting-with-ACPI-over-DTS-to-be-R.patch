@@ -16,7 +16,7 @@ CC: Mark Salter <msalter@redhat.com>
  1 file changed, 4 insertions(+)
 
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-index c2a7e30e2143..169b753903d1 100644
+index 5cb0d548ec25..999f0a232e57 100644
 --- a/arch/arm64/kernel/acpi.c
 +++ b/arch/arm64/kernel/acpi.c
 @@ -40,7 +40,11 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */

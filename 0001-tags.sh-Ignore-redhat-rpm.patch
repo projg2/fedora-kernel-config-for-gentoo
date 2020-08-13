@@ -37,7 +37,7 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index 4e18ae5282a6..805341c0aaf3 100755
+index 32d3f53af10b..52a0138c6920 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi

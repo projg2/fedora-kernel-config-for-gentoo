@@ -23,7 +23,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 00668335c2af..219f95ab56f8 100644
+index 861f7140f52e..8c08ca7954a4 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -133,6 +133,7 @@ static void megasas_get_pd_info(struct megasas_instance *instance,

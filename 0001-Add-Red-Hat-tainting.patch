@@ -94,16 +94,16 @@ Upstream Status: RHEL only
 Signed-off-by: Philipp Rudo <prudo@redhat.com>
 ---
  include/linux/kernel.h | 15 +++++++
- kernel/Makefile        |  2 +
+ kernel/Makefile        |  1 +
  kernel/rh_taint.c      | 93 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 110 insertions(+)
+ 3 files changed, 109 insertions(+)
  create mode 100644 kernel/rh_taint.c
 
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 82d91547d122..b82db0c0caec 100644
+index 500def620d8f..c352ecdfcb43 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -1038,4 +1038,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -1037,4 +1037,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -124,15 +124,14 @@ index 82d91547d122..b82db0c0caec 100644
 +
  #endif
 diff --git a/kernel/Makefile b/kernel/Makefile
-index f3218bc5ec69..c0a4904413b5 100644
+index b3da548691c9..931e726455f4 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
-@@ -12,6 +12,8 @@ obj-y     = fork.o exec_domain.o panic.o \
- 	    notifier.o ksysfs.o cred.o reboot.o \
- 	    async.o range.o smpboot.o ucount.o
+@@ -13,6 +13,7 @@ obj-y     = fork.o exec_domain.o panic.o \
+ 	    async.o range.o smpboot.o ucount.o regset.o
 
+ obj-$(CONFIG_BPFILTER) += usermode_driver.o
 +obj-$(CONFIG_RH_DISABLE_DEPRECATED) += rh_taint.o
-+
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 

@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 1
+%global distro_build 0.rc0.20200813gitdc06fe51d26e.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -68,14 +68,14 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.8.0
-%define pkgrelease 1
+%define rpmversion 5.9.0
+%define pkgrelease 0.rc0.20200813gitdc06fe51d26e.1
 
 # This is needed to do merge window version magic
-%define patchlevel 8
+%define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 1%{?buildid}%{?dist}
+%define specrelease 0.rc0.20200813gitdc06fe51d26e.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,10 +166,10 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
-%define kversion 5.8
+%define kversion 5.9
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -181,11 +181,11 @@ Summary: The Linux kernel
 %define with_ipaclones 0
 # no whitelist
 %define with_kernel_abi_whitelists 0
-%endif
 # Fedora builds these separately
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
+%endif
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -485,7 +485,7 @@ BuildRequires: python3-devel
 BuildRequires: rsync
 %endif
 %if %{with_doc}
-BuildRequires: xmlto, asciidoc, python3-sphinx, python3-sphinx_rtd_theme
+BuildRequires: xmlto, asciidoc, python3-sphinx
 %endif
 %if %{with_sparse}
 BuildRequires: sparse
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.8.tar.xz
+Source0: linux-20200813gitdc06fe51d26e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -774,48 +774,20 @@ Patch56: 0001-redhat-rh_kabi-add-a-comment-with-warning-about-RH_K.patch
 Patch57: 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch60: 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
-Patch61: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
-Patch62: 0001-Drop-that-for-now.patch
-Patch63: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
-Patch64: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-Patch65: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
-Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
-Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
-Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-Patch69: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
-Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch71: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
-Patch72: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
-Patch73: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
-Patch74: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
-Patch75: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
-Patch76: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
-Patch77: 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
-Patch78: 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
-Patch79: 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
-Patch80: 0001-Revert-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
-Patch81: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
-Patch82: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
-Patch83: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
-Patch84: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
-Patch85: 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
-Patch86: 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
-Patch87: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
-Patch88: 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
-Patch89: 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
-Patch90: 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
-Patch91: 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
-Patch92: 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
-Patch93: 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
-Patch94: 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
-Patch95: 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
-Patch96: 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
-Patch97: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
-Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
-Patch99: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
-Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
-Patch101: 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
+Patch60: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
+Patch61: 0001-Drop-that-for-now.patch
+Patch62: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
+Patch63: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+Patch64: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
+Patch65: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
+Patch66: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch67: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
+Patch68: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch69: 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
+Patch70: 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
+Patch71: 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
+Patch72: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
+Patch73: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
 %endif
 
@@ -1311,8 +1283,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.8 -c
-mv linux-5.8 linux-%{KVERREL}
+%setup -q -n kernel-20200813gitdc06fe51d26e -c
+mv linux-20200813gitdc06fe51d26e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1377,7 +1349,6 @@ ApplyOptionalPatch 0001-redhat-rh_kabi-add-a-comment-with-warning-about-RH_K.pat
 ApplyOptionalPatch 0001-redhat-rh_kabi-deduplication-friendly-structs.patch
 ApplyOptionalPatch 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 ApplyOptionalPatch 0001-ARM-tegra-usb-no-reset.patch
-ApplyOptionalPatch 0001-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 ApplyOptionalPatch 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
 ApplyOptionalPatch 0001-Drop-that-for-now.patch
 ApplyOptionalPatch 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
@@ -1386,39 +1357,12 @@ ApplyOptionalPatch 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.pat
 ApplyOptionalPatch 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
 ApplyOptionalPatch 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 ApplyOptionalPatch 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-ApplyOptionalPatch 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
 ApplyOptionalPatch 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 ApplyOptionalPatch 0001-x86-Fix-compile-issues-with-rh_check_supported.patch
-ApplyOptionalPatch 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
-ApplyOptionalPatch 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
-ApplyOptionalPatch 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
-ApplyOptionalPatch 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
-ApplyOptionalPatch 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
-ApplyOptionalPatch 0001-PCI-tegra-Revert-raw_violation_fixup-for-tegra124.patch
 ApplyOptionalPatch 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
 ApplyOptionalPatch 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
-ApplyOptionalPatch 0001-Revert-dt-bindings-Add-doc-for-Pine64-Pinebook-Pro.patch
 ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
-ApplyOptionalPatch 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
-ApplyOptionalPatch 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
-ApplyOptionalPatch 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
-ApplyOptionalPatch 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
-ApplyOptionalPatch 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
-ApplyOptionalPatch 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
-ApplyOptionalPatch 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
-ApplyOptionalPatch 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
-ApplyOptionalPatch 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
-ApplyOptionalPatch 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
-ApplyOptionalPatch 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
-ApplyOptionalPatch 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
 ApplyOptionalPatch 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
-ApplyOptionalPatch 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 
 %endif
 
@@ -2852,6 +2796,25 @@ fi
 #
 #
 %changelog
+* Thu Aug 13 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc0.20200813gitdc06fe51d26e.1]
+- dc06fe51d26e rebase
+- More mismatches ("Justin M. Forbes")
+- Fedora config change due to deps ("Justin M. Forbes")
+- CONFIG_SND_SOC_MAX98390 is now selected by SND_SOC_INTEL_DA7219_MAX98357A_GENERIC ("Justin M. Forbes")
+- Config change required for build part 2 ("Justin M. Forbes")
+- Config change required for build ("Justin M. Forbes")
+- Fedora config update ("Justin M. Forbes")
+- Revert "Merge branch 'make_configs_fix' into 'os-build'" (Justin Forbes)
+- redhat/configs/process_configs.sh: Remove *.config.orig files (Prarit Bhargava)
+- redhat/configs/process_configs.sh: Add process_configs_known_broken flag (Prarit Bhargava)
+- redhat/Makefile: Fix '*-configs' targets (Prarit Bhargava)
+- Updated changelog for the release based on v5.8 (Fedora Kernel Team)
+- Add ability to sync upstream through Makefile (Don Zickus)
+- Add master merge check (Don Zickus)
+- Replace hardcoded values 'os-build' and project id with variables (Don Zickus)
+- gitattributes: Remove unnecesary export restrictions (Prarit Bhargava)
+- redhat/Makefile.common: Fix MARKER (Prarit Bhargava)
+
 * Mon Aug 03 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.8.0-1]
 - v5.8 rebase
 - Updated changelog for the release based on ac3a0c847296 (Fedora Kernel Team)

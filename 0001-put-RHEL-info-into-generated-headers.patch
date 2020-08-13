@@ -59,10 +59,10 @@ Acked-by: Prarit Bhargava <prarit@redhat.com>
  1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/Makefile b/Makefile
-index 24a4c1b97bb0..37cfb39d77af 100644
+index 254e80a96b23..7542f496ff1e 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1217,7 +1217,13 @@ endef
+@@ -1250,7 +1250,13 @@ endef
  define filechk_version.h
  	echo \#define LINUX_VERSION_CODE $(shell                         \
  	expr $(VERSION) \* 65536 + 0$(PATCHLEVEL) \* 256 + 0$(SUBLEVEL)); \

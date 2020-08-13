@@ -27,12 +27,12 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 4cbd49c87568..aa9baa923fd9 100644
+index 4634b48949bb..e93470340eda 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3771,6 +3771,7 @@ static int __init ice_module_init(void)
+@@ -4786,6 +4786,7 @@ static int __init ice_module_init(void)
 
- 	pr_info("%s - version %s\n", ice_driver_string, ice_drv_ver);
+ 	pr_info("%s\n", ice_driver_string);
  	pr_info("%s\n", ice_copyright);
 +	mark_tech_preview(DRV_SUMMARY, THIS_MODULE);
 
