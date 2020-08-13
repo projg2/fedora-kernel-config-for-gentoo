@@ -181,11 +181,11 @@ Summary: The Linux kernel
 %define with_ipaclones 0
 # no whitelist
 %define with_kernel_abi_whitelists 0
+%endif
 # Fedora builds these separately
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
-%endif
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -815,6 +815,7 @@ Patch97: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
 Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
 Patch99: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
 Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+Patch101: 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 
 %endif
 
@@ -1417,6 +1418,7 @@ ApplyOptionalPatch 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.pat
 ApplyOptionalPatch 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
 ApplyOptionalPatch 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
 ApplyOptionalPatch 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+ApplyOptionalPatch 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 
 %endif
 
