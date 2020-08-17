@@ -64,7 +64,7 @@ index c93ba7fc65da..2803ec062a16 100644
  void mark_hardware_deprecated(const char *msg);
  void mark_tech_preview(const char *msg, struct module *mod);
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 931e726455f4..362464775992 100644
+index 4fbfd2a0800c..a591962f7906 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -14,6 +14,7 @@ obj-y     = fork.o exec_domain.o panic.o \

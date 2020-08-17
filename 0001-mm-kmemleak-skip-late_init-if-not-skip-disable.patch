@@ -51,10 +51,10 @@ Signed-off-by: Murphy Zhou <jencce.kernel@gmail.com>
  1 file changed, 5 insertions(+)
 
 diff --git a/mm/kmemleak.c b/mm/kmemleak.c
-index e362dc3d2028..0c3dfb8eef67 100644
+index 5e252d91eb14..c6e1a9443e9e 100644
 --- a/mm/kmemleak.c
 +++ b/mm/kmemleak.c
-@@ -1958,6 +1958,11 @@ void __init kmemleak_init(void)
+@@ -1960,6 +1960,11 @@ void __init kmemleak_init(void)
   */
  static int __init kmemleak_late_init(void)
  {

@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20200813gitdc06fe51d26e.1
+%global distro_build 0.rc1.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc0.20200813gitdc06fe51d26e.1
+%define pkgrelease 0.rc1.1
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20200813gitdc06fe51d26e.1%{?buildid}%{?dist}
+%define specrelease 0.rc1.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.9
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200813gitdc06fe51d26e.tar.xz
+Source0: linux-5.9-rc1.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1283,8 +1283,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200813gitdc06fe51d26e -c
-mv linux-20200813gitdc06fe51d26e linux-%{KVERREL}
+%setup -q -n kernel-5.9-rc1 -c
+mv linux-5.9-rc1 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2796,15 +2796,22 @@ fi
 #
 #
 %changelog
-* Thu Aug 13 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc0.20200813gitdc06fe51d26e.1]
-- dc06fe51d26e rebase
+* Mon Aug 17 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc1.1]
+- v5.9-rc1 rebase
+- Config updates for Fedora ("Justin M. Forbes")
+- fedora: enable enery model (Peter Robinson)
+- iio: enable LTR-559 light and proximity sensor (Peter Robinson)
+- iio: chemical: enable some popular chemical and partical sensors (Peter Robinson)
 - More mismatches ("Justin M. Forbes")
 - Fedora config change due to deps ("Justin M. Forbes")
 - CONFIG_SND_SOC_MAX98390 is now selected by SND_SOC_INTEL_DA7219_MAX98357A_GENERIC ("Justin M. Forbes")
 - Config change required for build part 2 ("Justin M. Forbes")
 - Config change required for build ("Justin M. Forbes")
+- Enable ARM_SMCCC_SOC_ID on all aarch64 kernels (Peter Robinson)
+- Enable ZSTD compression algorithm on all kernels (Peter Robinson)
 - Fedora config update ("Justin M. Forbes")
 - Revert "Merge branch 'make_configs_fix' into 'os-build'" (Justin Forbes)
+- Use the configs/generic config for SND_HDA_INTEL everywhere (Peter Robinson)
 - redhat/configs/process_configs.sh: Remove *.config.orig files (Prarit Bhargava)
 - redhat/configs/process_configs.sh: Add process_configs_known_broken flag (Prarit Bhargava)
 - redhat/Makefile: Fix '*-configs' targets (Prarit Bhargava)

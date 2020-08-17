@@ -34,7 +34,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  4 files changed, 30 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 98ea67f27809..352afb16f424 100644
+index bdc1f33fd3d1..f3ffc38c4aa4 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -5373,6 +5373,14 @@
@@ -66,7 +66,7 @@ index 8d3eaa27b082..c93ba7fc65da 100644
  #define TAINT_FLAGS_COUNT		32
  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 2f343ce15747..f7e570292afe 100644
+index 86299a292214..ae1d88925f73 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@

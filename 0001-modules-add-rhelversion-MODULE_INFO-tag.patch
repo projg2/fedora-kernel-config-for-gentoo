@@ -82,7 +82,7 @@ Acked-by: Prarit Bhargava <prarit@redhat.com>
  3 files changed, 11 insertions(+)
 
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 2e6670860d27..8c35a5db7d7e 100644
+index e30ed5fa33a7..b960ea38d185 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -371,6 +371,7 @@ struct module {
@@ -94,10 +94,10 @@ index 2e6670860d27..8c35a5db7d7e 100644
 
  	/* Exported symbols */
 diff --git a/kernel/module.c b/kernel/module.c
-index 8fa2600bde6a..263e654f6212 100644
+index 1c5cff34d9f2..670ceadd44d2 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -802,6 +802,7 @@ static struct module_attribute modinfo_##field = {                    \
+@@ -805,6 +805,7 @@ static struct module_attribute modinfo_##field = {                    \
 
  MODINFO_ATTR(version);
  MODINFO_ATTR(srcversion);
@@ -105,7 +105,7 @@ index 8fa2600bde6a..263e654f6212 100644
 
  static char last_unloaded_module[MODULE_NAME_LEN+1];
 
-@@ -1266,6 +1267,7 @@ static struct module_attribute *modinfo_attrs[] = {
+@@ -1267,6 +1268,7 @@ static struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
