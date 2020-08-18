@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.1
+%global distro_build 0.rc1.20200818git06a4ec1d9dc6.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc1.1
+%define pkgrelease 0.rc1.20200818git06a4ec1d9dc6.1
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.1%{?buildid}%{?dist}
+%define specrelease 0.rc1.20200818git06a4ec1d9dc6.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.9
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.9-rc1.tar.xz
+Source0: linux-20200818git06a4ec1d9dc6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1283,8 +1283,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.9-rc1 -c
-mv linux-5.9-rc1 linux-%{KVERREL}
+%setup -q -n kernel-20200818git06a4ec1d9dc6 -c
+mv linux-20200818git06a4ec1d9dc6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2796,8 +2796,14 @@ fi
 #
 #
 %changelog
-* Mon Aug 17 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc1.1]
-- v5.9-rc1 rebase
+* Tue Aug 18 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.9.0-0.rc1.20200818git06a4ec1d9dc6.1]
+- New config deps ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+
+* Tue Aug 18 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc1.20200818git06a4ec1d9dc6.1]
+- 06a4ec1d9dc6 rebase
+- First half of config updates for Fedora ("Justin M. Forbes")
+- Add config options that only show up when we prep on arm ("Justin M. Forbes")
 - Config updates for Fedora ("Justin M. Forbes")
 - fedora: enable enery model (Peter Robinson)
 - iio: enable LTR-559 light and proximity sensor (Peter Robinson)
@@ -2807,6 +2813,7 @@ fi
 - CONFIG_SND_SOC_MAX98390 is now selected by SND_SOC_INTEL_DA7219_MAX98357A_GENERIC ("Justin M. Forbes")
 - Config change required for build part 2 ("Justin M. Forbes")
 - Config change required for build ("Justin M. Forbes")
+- Updates for Fedora arm architectures for the 5.9 window (Peter Robinson)
 - Enable ARM_SMCCC_SOC_ID on all aarch64 kernels (Peter Robinson)
 - Enable ZSTD compression algorithm on all kernels (Peter Robinson)
 - Fedora config update ("Justin M. Forbes")
