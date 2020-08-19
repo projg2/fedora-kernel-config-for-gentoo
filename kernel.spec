@@ -56,7 +56,7 @@ Summary: The Linux kernel
 %global zipsed -e 's/\.ko$/\.ko.xz/'
 %endif
 
-# define buildid .local
+%define buildid .rpi1
 
 %if 0%{?fedora}
 %define primary_target fedora
@@ -860,6 +860,9 @@ Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 Patch102: 0002-arm64-tegra-Re-order-PCIe-aperture-mappings-to-suppo.patch
 Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
+
+# https://lkml.org/lkml/2020/8/14/221
+Patch104: dma-pool-fixes.patch
 # END OF PATCH DEFINITIONS
 
 %endif
