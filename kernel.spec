@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.20200818git06a4ec1d9dc6.1
+%global distro_build 0.rc1.20200820git18445bf405cb.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc1.20200818git06a4ec1d9dc6.1
+%define pkgrelease 0.rc1.20200820git18445bf405cb.1
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20200818git06a4ec1d9dc6.1%{?buildid}%{?dist}
+%define specrelease 0.rc1.20200820git18445bf405cb.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -485,7 +485,7 @@ BuildRequires: python3-devel
 BuildRequires: rsync
 %endif
 %if %{with_doc}
-BuildRequires: xmlto, asciidoc, python3-sphinx
+BuildRequires: xmlto, asciidoc, python3-sphinx, python3-sphinx_rtd_theme
 %endif
 %if %{with_sparse}
 BuildRequires: sparse
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200818git06a4ec1d9dc6.tar.xz
+Source0: linux-20200820git18445bf405cb.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1283,8 +1283,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200818git06a4ec1d9dc6 -c
-mv linux-20200818git06a4ec1d9dc6 linux-%{KVERREL}
+%setup -q -n kernel-20200820git18445bf405cb -c
+mv linux-20200820git18445bf405cb linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2745,12 +2745,7 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
-%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca*.cer\
-%ifarch s390x ppc64le\
-%if 0%{!?4:1}\
-%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/%{signing_key_filename} \
-%endif\
-%endif\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
 %endif\
@@ -2796,9 +2791,16 @@ fi
 #
 #
 %changelog
-* Tue Aug 18 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.9.0-0.rc1.20200818git06a4ec1d9dc6.1]
+* Wed Aug 19 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc1.20200819git18445bf405cb.1]
+- 18445bf405cb rebase
+- Add mlx5_vdpa to module filter for Fedora ("Justin M. Forbes")
+- Add python3-sphinx_rtd_theme buildreq for docs ("Justin M. Forbes")
+- kernel.spec: Remove kernel-keys directory on rpm erase (Prarit Bhargava)
+- More Fedora config updates ("Justin M. Forbes")
 - New config deps ("Justin M. Forbes")
-- Fedora config updates ("Justin M. Forbes")
+- Updated changelog for the release based on 06a4ec1d9dc6 (Fedora Kernel Team)
+- redhat: ark: enable CONFIG_NET_SCH_TAPRIO (Davide Caratti)
+- redhat: ark: enable CONFIG_NET_SCH_ETF (Davide Caratti)
 
 * Tue Aug 18 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc1.20200818git06a4ec1d9dc6.1]
 - 06a4ec1d9dc6 rebase
