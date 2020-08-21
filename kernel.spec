@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2967,6 +2967,9 @@ fi
 #
 #
 %changelog
+* Fri Aug 21 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.3-300
+- Linux v5.8.3
+
 * Wed Aug 19 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.2-300.rpi1
 - Linux v5.8.2
 
