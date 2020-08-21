@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.20200820git18445bf405cb.1
+%global distro_build 0.rc1.20200821gitda2968ff879b.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc1.20200820git18445bf405cb.1
+%define pkgrelease 0.rc1.20200821gitda2968ff879b.1
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20200820git18445bf405cb.1%{?buildid}%{?dist}
+%define specrelease 0.rc1.20200821gitda2968ff879b.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200820git18445bf405cb.tar.xz
+Source0: linux-20200821gitda2968ff879b.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -788,6 +788,7 @@ Patch70: 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
 Patch71: 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
 Patch72: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 Patch73: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+Patch74: 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 
 %endif
 
@@ -1283,8 +1284,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200820git18445bf405cb -c
-mv linux-20200820git18445bf405cb linux-%{KVERREL}
+%setup -q -n kernel-20200821gitda2968ff879b -c
+mv linux-20200821gitda2968ff879b linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1363,6 +1364,7 @@ ApplyOptionalPatch 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.pat
 ApplyOptionalPatch 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
 ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 ApplyOptionalPatch 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+ApplyOptionalPatch 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 
 %endif
 
@@ -2791,6 +2793,13 @@ fi
 #
 #
 %changelog
+* Fri Aug 21 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc1.20200821gitda2968ff879b.1]
+- da2968ff879b rebase
+- Temporarily remove cdomain from sphinx documentation ("Justin M. Forbes")
+- Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377 ("Justin M. Forbes")
+- Updated changelog for the release based on 18445bf405cb (Fedora Kernel Team)
+- enable PROTECTED_VIRTUALIZATION_GUEST for all s390x kernels (=?UTF-8?q?Dan=20Hor=C3=A1k?=)
+
 * Wed Aug 19 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc1.20200819git18445bf405cb.1]
 - 18445bf405cb rebase
 - Add mlx5_vdpa to module filter for Fedora ("Justin M. Forbes")

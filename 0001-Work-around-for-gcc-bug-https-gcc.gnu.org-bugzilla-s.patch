@@ -1,4 +1,4 @@
-From 90750a5b1205a7dcc002224738585b861779cdae Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: "Justin M. Forbes" <jforbes@fedoraproject.org>
 Date: Thu, 30 Jul 2020 10:26:11 -0500
 Subject: [PATCH] Work around for gcc bug

@@ -69,3 +69,5 @@
 0001-redhat-Replace-hardware.redhat.com-link-in-Unsupport.patch
 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
+0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
