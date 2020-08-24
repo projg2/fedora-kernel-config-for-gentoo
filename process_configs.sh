@@ -15,6 +15,11 @@ usage()
 	echo "     -t: test run, do not overwrite original config"
 	echo "     -w: error on misconfigured config options"
 	echo "     -z: commit new configs to pending directory"
+	echo ""
+	echo "     A special CONFIG file tag, process_configs_known_broken can be added as a"
+	echo "     comment to any CONFIG file.  This tag indicates that there is no way to "
+	echo "     fix a CONFIG's entry.  This tag should only be used in extreme cases"
+	echo "     and is not to be used as a workaround to solve CONFIG problems."
 	exit 1
 }
 
@@ -67,8 +72,23 @@ checkoptions()
 		}
 	' $1 $2 > .mismatches
 
+	checkoptions_error=false
 	if test -s .mismatches
 	then
+		while read LINE
+		do
+			if find ./ -name $(echo $LINE | awk -F "=" ' { print $1 } ' | awk ' { print $2 }') | xargs grep ^ | grep -q "process_configs_known_broken"; then
+				# This is a known broken config.
+				# See script help warning.
+				checkoptions_error=false
+			else
+				checkoptions_error=true
+				break
+			fi
+		done < .mismatches
+
+		! $checkoptions_error && return
+
 		echo "Error: Mismatches found in configuration files"
 		cat .mismatches
 		RETURNCODE=1
@@ -167,6 +187,7 @@ function commit_new_configs()
 		if [ "$arch" = "EMPTY" ]
 		then
 			# This arch is intentionally left blank
+			rm -f "${cfg}.orig"
 			continue
 		fi
 		echo -n "Checking for new configs in $cfg ... "
@@ -201,6 +222,7 @@ function process_configs()
 		if [ "$arch" = "EMPTY" ]
 		then
 			# This arch is intentionally left blank
+			rm -f "${cfg}.orig"
 			continue
 		fi
 		echo -n "Processing $cfg ... "
@@ -244,7 +266,7 @@ function process_configs()
 		else
 			mv ${cfgtmp} ${cfg}
 		fi
-		rm ${cfgorig}
+		rm -f ${cfgorig}
 		echo "done"
 	done
 	rm "$SCRIPT_DIR"/*.config*.old

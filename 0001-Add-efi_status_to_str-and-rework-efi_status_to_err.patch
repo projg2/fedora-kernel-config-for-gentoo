@@ -15,7 +15,7 @@ Signed-off-by: Peter Jones <pjones@redhat.com>
  2 files changed, 96 insertions(+), 31 deletions(-)
 
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index fdd1db025dbf..8ef7d1df09dd 100644
+index 3aa07c3b5136..833c35abd009 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -26,7 +26,7 @@ index fdd1db025dbf..8ef7d1df09dd 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -831,40 +832,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -833,40 +834,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 

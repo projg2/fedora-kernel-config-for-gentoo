@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.20200821gitda2968ff879b.1
+%global distro_build 0.rc2.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc1.20200821gitda2968ff879b.1
+%define pkgrelease 0.rc2.1
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20200821gitda2968ff879b.1%{?buildid}%{?dist}
+%define specrelease 0.rc2.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.9
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200821gitda2968ff879b.tar.xz
+Source0: linux-5.9-rc2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1284,8 +1284,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200821gitda2968ff879b -c
-mv linux-20200821gitda2968ff879b linux-%{KVERREL}
+%setup -q -n kernel-5.9-rc2 -c
+mv linux-5.9-rc2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2793,6 +2793,18 @@ fi
 #
 #
 %changelog
+* Mon Aug 24 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc2.1]
+- v5.9-rc2 rebase
+- Updated changelog for the release based on c3d8f220d012 (Fedora Kernel Team)
+
+* Sun Aug 23 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc1.20200823gitc3d8f220d012.1]
+- c3d8f220d012 rebase
+- Updated changelog for the release based on f873db9acd3c (Fedora Kernel Team)
+
+* Sat Aug 22 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc1.20200822gitf873db9acd3c.1]
+- f873db9acd3c rebase
+- Updated changelog for the release based on da2968ff879b (Fedora Kernel Team)
+
 * Fri Aug 21 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc1.20200821gitda2968ff879b.1]
 - da2968ff879b rebase
 - Temporarily remove cdomain from sphinx documentation ("Justin M. Forbes")
