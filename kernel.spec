@@ -790,6 +790,9 @@ Patch72: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 Patch73: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 Patch74: 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 
+#Temporary build fix
+Patch75: 0001-ARM64-vdso32-Install-vdso32-from-vdso_install.patch
+
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1365,6 +1368,7 @@ ApplyOptionalPatch 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
 ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 ApplyOptionalPatch 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 ApplyOptionalPatch 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
+ApplyOptionalPatch 0001-ARM64-vdso32-Install-vdso32-from-vdso_install.patch
 
 %endif
 
