@@ -867,6 +867,10 @@ Patch104: dma-pool-fixes.patch
 # Goes away with 5.9
 Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
 
+#Temporary build fix (will figure this out after Plumbers)
+Patch106: 0001-revert-ARM64-vdso32-Install-vdso32-from-vdso_install.patch
+
+
 # END OF PATCH DEFINITIONS
 
 %endif
