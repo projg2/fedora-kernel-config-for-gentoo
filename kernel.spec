@@ -86,13 +86,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 7
+%define base_sublevel 8
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 17
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -822,69 +822,50 @@ Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
-Patch63: 0001-Drop-that-for-now.patch
-Patch64: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
-Patch65: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-Patch66: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
-Patch67: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
-Patch68: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
-Patch69: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
-Patch70: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
-Patch79: 0001-disp-gv100-expose-capabilities-class.patch
-Patch80: 0001-core-memory-remove-redundant-assignments-to-variable.patch
-Patch81: 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
-Patch82: 0001-drm-Use-generic-helper-to-check-_PR3-presence.patch
-Patch83: 0001-mmu-Remove-unneeded-semicolon.patch
-Patch84: 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
-Patch85: 0001-device-detect-if-changing-endianness-failed.patch
-Patch86: 0001-device-detect-vGPUs.patch
-Patch87: 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
-Patch89: 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
-Patch90: 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
-Patch91: 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
-Patch92: 0001-disp-hda-gf119-select-HDA-device-entry-based-on-boun.patch
-Patch93: 0001-disp-hda-gv100-NV_PDISP_SF_AUDIO_CNTRL0-register-mov.patch
-Patch94: 0001-kms-nv50-Initialize-core-channel-in-nouveau_display_.patch
-Patch95: 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
-Patch96: 0001-kms-gv100-Add-support-for-interlaced-modes.patch
-Patch97: 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
-Patch98: 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
-Patch101: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
-Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
-Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
-Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
-Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch61: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
+Patch62: 0001-Drop-that-for-now.patch
+Patch63: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
+Patch64: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+Patch65: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
+Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
+Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
+Patch69: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
+Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch72: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch73: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch74: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch75: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch76: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch82: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
+Patch83: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
+Patch84: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch85: 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
+Patch86: 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
+Patch87: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
+Patch88: 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
+Patch89: 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
+Patch90: 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
+Patch91: 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
+Patch92: 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
+Patch93: 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
+Patch94: 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
+Patch95: 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
+Patch96: 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
+Patch97: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
+Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
+Patch99: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
+Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
-# Thinkpad dual fan control
-Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
+Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+Patch102: 0002-arm64-tegra-Re-order-PCIe-aperture-mappings-to-suppo.patch
+Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
 
-# https://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git/commit/?h=next&id=c8e222616c7e98305bdc861db3ccac520bc29921
-Patch108: selinux_allow_reading_labels_before_policy_is_loaded.patch
+# https://lkml.org/lkml/2020/8/14/221
+Patch104: dma-pool-fixes.patch
 
-# Latest upstream screen driver - https://patchwork.kernel.org/patch/11627069/
-Patch110: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
-Patch111: 0002-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
-Patch112: 0003-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
-Patch113: 0004-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
-Patch114: 0005-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
-Patch115: 0006-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
-Patch116: 0007-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
-Patch117: 0008-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
-Patch118: 0009-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
-Patch119: 0010-drm-panel-st7703-Enter-sleep-after-display-off.patch
-Patch120: 0011-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
-Patch121: 0012-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
-Patch122: 0013-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
-# Back port from 5.8
-Patch123: 0001-usb-fusb302-Convert-to-use-GPIO-descriptors.patch
-# Tegra194 ACPI PCI quirk - http://patchwork.ozlabs.org/patch/1221384/
-Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
-
-# Work around a bug in gcc https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
-Patch126: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
+# Goes away with 5.9
+Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2990,6 +2971,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 26 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.4-200
+- Linux v5.8.4 rebase
+
 * Fri Aug 21 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.17-200
 - Linux v5.7.17
 
