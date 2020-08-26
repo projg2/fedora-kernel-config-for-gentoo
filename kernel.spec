@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -863,6 +863,10 @@ Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
 
 # https://lkml.org/lkml/2020/8/14/221
 Patch104: dma-pool-fixes.patch
+
+# Goes away with 5.9
+Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2967,6 +2971,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 26 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.4-300
+- Linux v5.8.4
+
 * Fri Aug 21 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.3-300
 - Linux v5.8.3
 
