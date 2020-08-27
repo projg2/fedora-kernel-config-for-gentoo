@@ -31,7 +31,7 @@ Signed-off-by: Laura Abbott <labbott@redhat.com>
  1 file changed, 5 insertions(+)
 
 diff --git a/drivers/message/fusion/mptsas.c b/drivers/message/fusion/mptsas.c
-index c17614cd6ed8..ca44a35ec411 100644
+index 38d8b2bb3a37..b71f77a5799f 100644
 --- a/drivers/message/fusion/mptsas.c
 +++ b/drivers/message/fusion/mptsas.c
 @@ -5358,6 +5358,10 @@ static void mptsas_remove(struct pci_dev *pdev)

@@ -32,7 +32,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index bab87e47b238..70545ee26c9c 100644
+index 676778cbc550..e41772d11f26 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
 @@ -9868,6 +9868,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {

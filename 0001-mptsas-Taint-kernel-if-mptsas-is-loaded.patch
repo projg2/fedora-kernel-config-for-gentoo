@@ -31,7 +31,7 @@ Signed-off-by: Laura Abbott <labbott@redhat.com>
  1 file changed, 5 insertions(+)
 
 diff --git a/drivers/message/fusion/mptsas.c b/drivers/message/fusion/mptsas.c
-index 6a79cd0ebe2b..c17614cd6ed8 100644
+index 18b91ea1a353..38d8b2bb3a37 100644
 --- a/drivers/message/fusion/mptsas.c
 +++ b/drivers/message/fusion/mptsas.c
 @@ -5290,6 +5290,11 @@ mptsas_probe(struct pci_dev *pdev, const struct pci_device_id *id)
