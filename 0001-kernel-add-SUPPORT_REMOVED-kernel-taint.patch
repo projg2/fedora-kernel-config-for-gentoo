@@ -23,7 +23,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 2803ec062a16..6753f8e17dfe 100644
+index e355907f5d6c..7a7a47665771 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
 @@ -612,7 +612,7 @@ extern enum system_states {

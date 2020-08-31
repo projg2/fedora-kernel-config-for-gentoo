@@ -51,7 +51,7 @@ index a1a012702915..b57e6dd6d7ef 100644
  #endif
 
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index c93ba7fc65da..2803ec062a16 100644
+index 156d1e44d9f7..e355907f5d6c 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
 @@ -1057,7 +1057,7 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }

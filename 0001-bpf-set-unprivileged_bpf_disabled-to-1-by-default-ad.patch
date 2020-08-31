@@ -53,7 +53,7 @@ index a1068742a6df..aba9439caec9 100644
  			[USB] Default USB device authorization:
  			(default -1 = authorized except for wireless USB,
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 8d3eaa27b082..c93ba7fc65da 100644
+index f14f238dc36a..156d1e44d9f7 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
 @@ -617,7 +617,7 @@ extern enum system_states {

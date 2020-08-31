@@ -100,7 +100,7 @@ Signed-off-by: Philipp Rudo <prudo@redhat.com>
  create mode 100644 kernel/rh_taint.c
 
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 500def620d8f..c352ecdfcb43 100644
+index c25b8e41c0ea..c3dd56bf044f 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
 @@ -1037,4 +1037,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
