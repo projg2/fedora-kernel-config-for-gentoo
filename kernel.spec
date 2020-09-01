@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc3.1
+%global distro_build 0.rc3.20200901gitb51594df17d0.1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc3.1
+%define pkgrelease 0.rc3.20200901gitb51594df17d0.1
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.1%{?buildid}%{?dist}
+%define specrelease 0.rc3.20200901gitb51594df17d0.1%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.9
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.9-rc3.tar.xz
+Source0: linux-20200901gitb51594df17d0.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -789,6 +789,7 @@ Patch71: 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
 Patch72: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 Patch73: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 Patch74: 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
+Patch75: media-ti-vpe-cal-Fix-compilation-on-32-bit-ARM.patch
 
 %endif
 
@@ -1284,8 +1285,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.9-rc3 -c
-mv linux-5.9-rc3 linux-%{KVERREL}
+%setup -q -n kernel-20200901gitb51594df17d0 -c
+mv linux-20200901gitb51594df17d0 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1365,6 +1366,7 @@ ApplyOptionalPatch 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
 ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 ApplyOptionalPatch 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 ApplyOptionalPatch 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
+ApplyOptionalPatch media-ti-vpe-cal-Fix-compilation-on-32-bit-ARM.patch
 
 %endif
 
@@ -2793,6 +2795,12 @@ fi
 #
 #
 %changelog
+* Tue Sep 01 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc3.20200901gitb51594df17d0.1]
+- b51594df17d0 rebase
+- Fedora filter update ("Justin M. Forbes")
+- Config update for Fedora ("Justin M. Forbes")
+- Updated changelog for the release based on v5.9-rc3 (Fedora Kernel Team)
+
 * Mon Aug 31 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc3.1]
 - v5.9-rc3 rebase
 - Updated changelog for the release based on 1127b219ce94 (Fedora Kernel Team)
