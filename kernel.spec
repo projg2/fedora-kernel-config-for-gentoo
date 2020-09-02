@@ -870,6 +870,8 @@ Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
 #Temporary build fix (will figure this out after Plumbers)
 Patch106: 0001-revert-ARM64-vdso32-Install-vdso32-from-vdso_install.patch
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=1874117
+Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
 
 # END OF PATCH DEFINITIONS
 
