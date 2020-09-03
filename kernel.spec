@@ -83,13 +83,13 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 7
+%define base_sublevel 8
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 17
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -185,7 +185,7 @@ Summary: The Linux kernel
 
 #
 # gcov support
-%define with_gcov %{?_with_gcov: 1} %{?!_with_gcov: 0}
+%define with_gcov %{?_with_gcov:1}%{?!_with_gcov:0}
 
 #
 # ipa_clone support
@@ -658,7 +658,8 @@ Source17: secureboot_ppc.cer
 %define pesign_name_0 redhatsecureboot303
 %endif
 
-%else # released_kernel
+# released_kernel
+%else
 
 Source12: redhatsecurebootca4.cer
 Source13: redhatsecurebootca2.cer
@@ -672,7 +673,8 @@ Source15: redhatsecureboot003.cer
 %define secureboot_key_0 %{SOURCE15}
 %define pesign_name_0 redhatsecureboot003
 
-%endif # released_kernel
+# released_kernel
+%endif
 
 Source22: mod-extra.list.rhel
 Source23: mod-extra.list.fedora
@@ -817,66 +819,53 @@ Patch36: 0001-s390-Lock-down-the-kernel-when-the-IPL-secure-flag-i.patch
 Patch37: 0001-Add-option-of-13-for-FORCE_MAX_ZONEORDER.patch
 Patch58: 0001-arm-make-CONFIG_HIGHPTE-optional-without-CONFIG_EXPE.patch
 Patch59: 0001-ARM-tegra-usb-no-reset.patch
-Patch62: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
-Patch63: 0001-Drop-that-for-now.patch
-Patch64: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
-Patch65: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
-Patch66: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
-Patch67: 0001-soc-bcm2835-Sync-xHCI-reset-firmware-property-with-d.patch
-Patch68: 0001-firmware-raspberrypi-Introduce-vl805-init-routine.patch
-Patch69: 0001-PCI-brcmstb-Wait-for-Raspberry-Pi-s-firmware-when-pr.patch
-Patch70: 0001-USB-pci-quirks-Add-Raspberry-Pi-4-quirk.patch
-Patch75: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
-Patch76: 0001-perf-cs-etm-Move-defined-of-traceid_list.patch
-Patch79: 0001-disp-gv100-expose-capabilities-class.patch
-Patch80: 0001-core-memory-remove-redundant-assignments-to-variable.patch
-Patch81: 0001-acr-Use-kmemdup-instead-of-kmalloc-and-memcpy.patch
-Patch82: 0001-drm-Use-generic-helper-to-check-_PR3-presence.patch
-Patch83: 0001-mmu-Remove-unneeded-semicolon.patch
-Patch84: 0001-device-rework-mmio-mapping-code-to-get-rid-of-second.patch
-Patch85: 0001-device-detect-if-changing-endianness-failed.patch
-Patch86: 0001-device-detect-vGPUs.patch
-Patch87: 0001-device-use-regular-PRI-accessors-in-chipset-detectio.patch
-Patch89: 0001-disp-nv50-increase-timeout-on-pio-channel-free-polli.patch
-Patch90: 0001-disp-hda-gt215-pass-head-to-nvkm_ior.hda.eld.patch
-Patch91: 0001-disp-hda-gf119-add-HAL-for-programming-device-entry-.patch
-Patch92: 0001-disp-hda-gf119-select-HDA-device-entry-based-on-boun.patch
-Patch93: 0001-disp-hda-gv100-NV_PDISP_SF_AUDIO_CNTRL0-register-mov.patch
-Patch94: 0001-kms-nv50-Initialize-core-channel-in-nouveau_display_.patch
-Patch95: 0001-kms-nv50-Probe-SOR-and-PIOR-caps-for-DP-interlacing-.patch
-Patch96: 0001-kms-gv100-Add-support-for-interlaced-modes.patch
-Patch97: 0001-kms-nv50-Move-8BPC-limit-for-MST-into-nv50_mstc_get_.patch
-Patch98: 0001-kms-nv50-Share-DP-SST-mode_valid-handling-with-MST.patch
-Patch101: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
-Patch102: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
-Patch103: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
-Patch104: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
-Patch105: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch61: 0001-Input-rmi4-remove-the-need-for-artificial-IRQ-in-cas.patch
+Patch62: 0001-Drop-that-for-now.patch
+Patch63: 0001-KEYS-Make-use-of-platform-keyring-for-module-signatu.patch
+Patch64: 0001-mm-kmemleak-skip-late_init-if-not-skip-disable.patch
+Patch65: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
+Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
+Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
+Patch69: 0001-arm64-allwinner-dts-a64-add-LCD-related-device-nodes.patch
+Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
+Patch72: 0001-virt-vbox-Rename-guest_caps-struct-members-to-set_gu.patch
+Patch73: 0001-virt-vbox-Add-vbg_set_host_capabilities-helper-funct.patch
+Patch74: 0001-virt-vbox-Add-support-for-the-new-VBG_IOCTL_ACQUIRE_.patch
+Patch75: 0001-virt-vbox-Add-a-few-new-vmmdev-request-types-to-the-.patch
+Patch76: 0001-virt-vbox-Log-unknown-ioctl-requests-as-error.patch
+Patch82: 0001-selinux-allow-reading-labels-before-policy-is-loaded.patch
+Patch83: 0001-Revert-dt-bindings-panel-add-binding-for-Xingbangda-.patch
+Patch84: 0001-Revert-drm-panel-add-Xingbangda-XBD599-panel.patch
+Patch85: 0001-Revert-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timin.patch
+Patch86: 0001-Revert-arm64-allwinner-dts-a64-add-LCD-related-devic.patch
+Patch87: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
+Patch88: 0001-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
+Patch89: 0001-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
+Patch90: 0001-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
+Patch91: 0001-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
+Patch92: 0001-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
+Patch93: 0001-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
+Patch94: 0001-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
+Patch95: 0001-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
+Patch96: 0001-drm-panel-st7703-Enter-sleep-after-display-off.patch
+Patch97: 0001-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
+Patch98: 0001-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
+Patch99: 0001-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
+Patch100: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
-# Thinkpad dual fan control
-Patch107: 0001-platform-x86-thinkpad_acpi-Add-support-for-dual-fan-.patch
+Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+Patch102: 0002-arm64-tegra-Re-order-PCIe-aperture-mappings-to-suppo.patch
+Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
 
-# https://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git/commit/?h=next&id=c8e222616c7e98305bdc861db3ccac520bc29921
-Patch108: selinux_allow_reading_labels_before_policy_is_loaded.patch
+# Goes away with 5.9
+Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
 
-# Latest upstream screen driver - https://patchwork.kernel.org/patch/11627069/
-Patch110: 0001-dt-bindings-vendor-prefixes-Add-Xingbangda.patch
-Patch111: 0002-dt-bindings-panel-Convert-rocktech-jh057n00900-to-ya.patch
-Patch112: 0003-dt-bindings-panel-Add-compatible-for-Xingbangda-XBD5.patch
-Patch113: 0004-drm-panel-rocktech-jh057n00900-Rename-the-driver-to-.patch
-Patch114: 0005-drm-panel-st7703-Rename-functions-from-jh057n-prefix.patch
-Patch115: 0006-drm-panel-st7703-Prepare-for-supporting-multiple-pan.patch
-Patch116: 0007-drm-panel-st7703-Move-code-specific-to-jh057n-closer.patch
-Patch117: 0008-drm-panel-st7703-Move-generic-part-of-init-sequence-.patch
-Patch118: 0009-drm-panel-st7703-Add-support-for-Xingbangda-XBD599.patch
-Patch119: 0010-drm-panel-st7703-Enter-sleep-after-display-off.patch
-Patch120: 0011-drm-panel-st7703-Assert-reset-prior-to-powering-down.patch
-Patch121: 0012-arm64-dts-sun50i-a64-pinephone-Enable-LCD-support-on.patch
-Patch122: 0013-arm64-dts-sun50i-a64-pinephone-Add-touchscreen-suppo.patch
-# Back port from 5.8
-Patch123: 0001-usb-fusb302-Convert-to-use-GPIO-descriptors.patch
-# Tegra194 ACPI PCI quirk - http://patchwork.ozlabs.org/patch/1221384/
-Patch124: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1874117
+Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
+
+# CVE-2020-14385 rhbz 1874800 1874811
+Patch108: 0001-xfs-fix-boundary-test-in-xfs_attr_shortform_verify.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -996,8 +985,8 @@ This package provides debug information for the perf python bindings.
 # the python_sitearch macro should already be defined from above
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{python3_sitearch}/perf.*so(\.debug)?|XXX' -o python3-perf-debuginfo.list}
 
-
-%endif # with_perf
+# with_perf
+%endif
 
 %if %{with_tools}
 %package -n kernel-tools
@@ -1052,7 +1041,8 @@ This package provides debug information for package kernel-tools.
 # of matching the pattern against the symlinks file.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
 
-%endif # with_tools
+# with_tools
+%endif
 
 %if %{with_bpftool}
 
@@ -1073,9 +1063,11 @@ This package provides debug information for the bpftool package.
 
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_sbindir}/bpftool(\.debug)?|XXX' -o bpftool-debuginfo.list}
 
-%endif # with_bpftool
+# with_bpftool
+%endif
 
 %if %{with_selftests}
+
 %package selftests-internal
 Summary: Kernel samples and selftests
 License: GPLv2
@@ -1083,12 +1075,14 @@ Requires: binutils, bpftool, iproute-tc, nmap-ncat
 Requires: kernel-modules-internal = %{version}-%{release}
 %description selftests-internal
 Kernel sample programs and selftests.
-%{nil}
+
 # Note that this pattern only works right to match the .build-id
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libexecdir}/(ksamples|kselftests)/.*|XXX' -o selftests-debuginfo.list}
+
+# with_selftests
 %endif
 
 %if %{with_gcov}
@@ -1287,6 +1281,7 @@ Cortex-A15 devices with LPAE and HW virtualisation support
 %description zfcpdump-core
 The kernel package contains the Linux kernel (vmlinuz) for use by the
 zfcpdump infrastructure.
+# with_zfcpdump
 %endif
 
 %define variant_summary The Linux kernel compiled with extra debugging enabled
@@ -1541,8 +1536,7 @@ git am %{patches}
 # Any further pre-build tree manipulations happen here.
 
 chmod +x scripts/checkpatch.pl
-chmod +x tools/objtool/sync-check.sh
-mv COPYING COPYING-%{version}
+mv COPYING COPYING-%{version}-%{release}
 
 # This Prevents scripts/setlocalversion from mucking with our version numbers.
 touch .scmversion
@@ -1810,7 +1804,9 @@ BuildKernel() {
     if [ "$KernelExtension" == "gz" ]; then
         gzip -f9 $SignImage
     fi
+    # signkernel
     %endif
+
     $CopyKernel $KernelImage \
                 $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
     chmod 755 $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
@@ -1825,7 +1821,7 @@ BuildKernel() {
     if [ $DoModules -eq 1 ]; then
 	# Override $(mod-fw) because we don't want it to install any firmware
 	# we'll get it from the linux-firmware package and we don't want conflicts
-	%{make} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT %{?_smp_mflags} modules_install KERNELRELEASE=$KernelVer mod-fw=
+	%{make} %{?_smp_mflags} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT %{?_smp_mflags} modules_install KERNELRELEASE=$KernelVer mod-fw=
     fi
 
 %if %{with_gcov}
@@ -1864,6 +1860,9 @@ BuildKernel() {
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/extra
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/internal
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/updates
+%if 0%{!?fedora:1}
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/weak-updates
+%endif
     # CONFIG_KERNEL_HEADER_TEST generates some extra files in the process of
     # testing so just delete
     find . -name *.h.s -delete
@@ -1884,13 +1883,15 @@ BuildKernel() {
     echo "**** GENERATING kernel ABI metadata ****"
     gzip -c9 < Module.symvers > $RPM_BUILD_ROOT/boot/symvers-$KernelVer.gz
     cp $RPM_BUILD_ROOT/boot/symvers-$KernelVer.gz $RPM_BUILD_ROOT/lib/modules/$KernelVer/symvers.gz
+
 %if %{with_kabichk}
     echo "**** kABI checking is enabled in kernel SPEC file. ****"
     chmod 0755 $RPM_SOURCE_DIR/check-kabi
     if [ -e $RPM_SOURCE_DIR/Module.kabi_%{_target_cpu}$Flavour ]; then
         cp $RPM_SOURCE_DIR/Module.kabi_%{_target_cpu}$Flavour $RPM_BUILD_ROOT/Module.kabi
         $RPM_SOURCE_DIR/check-kabi -k $RPM_BUILD_ROOT/Module.kabi -s Module.symvers || exit 1
-        rm $RPM_BUILD_ROOT/Module.kabi # for now, don't keep it around.
+        # for now, don't keep it around.
+        rm $RPM_BUILD_ROOT/Module.kabi
     else
         echo "**** NOTE: Cannot find reference Module.kabi file. ****"
     fi
@@ -1901,7 +1902,8 @@ BuildKernel() {
     if [ -e $RPM_SOURCE_DIR/Module.kabi_dup_%{_target_cpu}$Flavour ]; then
         cp $RPM_SOURCE_DIR/Module.kabi_dup_%{_target_cpu}$Flavour $RPM_BUILD_ROOT/Module.kabi
         $RPM_SOURCE_DIR/check-kabi -k $RPM_BUILD_ROOT/Module.kabi -s Module.symvers || exit 1
-        rm $RPM_BUILD_ROOT/Module.kabi # for now, don't keep it around.
+        # for now, don't keep it around.
+        rm $RPM_BUILD_ROOT/Module.kabi
     else
         echo "**** NOTE: Cannot find DUP reference Module.kabi file. ****"
     fi
@@ -2092,9 +2094,8 @@ BuildKernel() {
     mkdir restore
     cp -r lib/modules/$KernelVer/* restore/.
 
-    # don't include anything going into k-m-e in the file lists
+    # don't include anything going into k-m-e and k-m-i in the file lists
     rm -rf lib/modules/$KernelVer/{extra,internal}
-
 
     if [ $DoModules -eq 1 ]; then
 	# Find all the module files and filter them out into the core and
@@ -2246,28 +2247,34 @@ chmod +x tools/perf/check-headers.sh
 %{perf_make} DESTDIR=$RPM_BUILD_ROOT all
 %endif
 
+%global tools_make \
+  %{make} CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" V=1
+
 %if %{with_tools}
 %ifarch %{cpupowerarchs}
 # cpupower
 # make sure version-gen.sh is executable.
 chmod +x tools/power/cpupower/utils/version-gen.sh
-%{make} %{?_smp_mflags} -C tools/power/cpupower CPUFREQ_BENCH=false
+%{tools_make} %{?_smp_mflags} -C tools/power/cpupower CPUFREQ_BENCH=false
 %ifarch x86_64
     pushd tools/power/cpupower/debug/x86_64
-    %{make} %{?_smp_mflags} centrino-decode powernow-k8-decode
+    %{tools_make} %{?_smp_mflags} centrino-decode powernow-k8-decode
     popd
 %endif
 %ifarch x86_64
    pushd tools/power/x86/x86_energy_perf_policy/
-   %{make}
+   %{tools_make}
    popd
    pushd tools/power/x86/turbostat
+   %{tools_make}
+   popd
+   pushd tools/power/x86/intel-speed-select
    %{make}
    popd
-%endif #turbostat/x86_energy_perf_policy
+%endif
 %endif
 pushd tools/thermal/tmon/
-%{make}
+%{tools_make}
 popd
 pushd tools/iio/
 %{make}
@@ -2296,7 +2303,7 @@ popd
 
 %if %{with_doc}
 # Make the HTML pages.
-make htmldocs || %{doc_build_fail}
+make PYTHON=/usr/bin/python3 htmldocs || %{doc_build_fail}
 
 # sometimes non-world-readable files sneak into the kernel source tree
 chmod -R a=rX Documentation
@@ -2388,6 +2395,7 @@ docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{rpmversion}
 mkdir -p $docdir
 tar -h -f - --exclude=man --exclude='.*' -c Documentation | tar xf - -C $docdir
 
+# with_doc
 %endif
 
 # We have to do the headers install before the tools install because the
@@ -2405,7 +2413,11 @@ find $RPM_BUILD_ROOT/usr/include \
 %endif
 
 %if %{with_cross_headers}
+%if 0%{?fedora}
 HDR_ARCH_LIST='arm arm64 powerpc s390 x86'
+%else
+HDR_ARCH_LIST='arm64 powerpc s390 x86'
+%endif
 mkdir -p $RPM_BUILD_ROOT/usr/tmp-headers
 
 for arch in $HDR_ARCH_LIST; do
@@ -2430,8 +2442,10 @@ rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
 # kabi directory
 INSTALL_KABI_PATH=$RPM_BUILD_ROOT/lib/modules/
 mkdir -p $INSTALL_KABI_PATH
+
 # install kabi releases directories
 tar xjvf %{SOURCE300} -C $INSTALL_KABI_PATH
+# with_kernel_abi_whitelists
 %endif
 
 %if %{with_perf}
@@ -2481,14 +2495,17 @@ install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
 %ifarch x86_64
    mkdir -p %{buildroot}%{_mandir}/man8
    pushd tools/power/x86/x86_energy_perf_policy
-   make DESTDIR=%{buildroot} install
+   %{tools_make} DESTDIR=%{buildroot} install
    popd
    pushd tools/power/x86/turbostat
-   make DESTDIR=%{buildroot} install
+   %{tools_make} DESTDIR=%{buildroot} install
    popd
-%endif #turbostat/x86_energy_perf_policy
+   pushd tools/power/x86/intel-speed-select
+   %{tools_make} CFLAGS+="-D_GNU_SOURCE -Iinclude" DESTDIR=%{buildroot} install
+   popd
+%endif
 pushd tools/thermal/tmon
-make INSTALL_ROOT=%{buildroot} install
+%{tools_make} INSTALL_ROOT=%{buildroot} install
 popd
 pushd tools/iio
 make DESTDIR=%{buildroot} install
@@ -2552,6 +2569,18 @@ find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/livepatch/{}
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
 popd
+%endif
+
+# We have to do the headers checksum calculation after the tools install because
+# these might end up installing their own set of headers on top of kernel's
+%if %{with_headers}
+# compute a content hash to export as Provides: kernel-headers-checksum
+HEADERS_CHKSUM=$(export LC_ALL=C; find $RPM_BUILD_ROOT/usr/include -type f -name "*.h" \
+			! -path $RPM_BUILD_ROOT/usr/include/linux/version.h | \
+		 sort | xargs cat | sha1sum - | cut -f 1 -d ' ');
+# export the checksum via usr/include/linux/version.h, so the dynamic
+# find-provides can grab the hash to update it accordingly
+echo "#define KERNEL_HEADERS_CHECKSUM \"$HEADERS_CHKSUM\"" >> $RPM_BUILD_ROOT/usr/include/linux/version.h
 %endif
 
 ###
@@ -2637,6 +2666,12 @@ fi\
 #
 %define kernel_variant_posttrans() \
 %{expand:%%posttrans %{?1:%{1}-}core}\
+%if 0%{!?fedora:1}\
+if [ -x %{_sbindir}/weak-modules ]\
+then\
+    %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
+fi\
+%endif\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
@@ -2666,6 +2701,12 @@ fi}\
 %define kernel_variant_preun() \
 %{expand:%%preun %{?1:%{1}-}core}\
 /bin/kernel-install remove %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
+%if 0%{!?fedora:1}\
+if [ -x %{_sbindir}/weak-modules ]\
+then\
+    %{_sbindir}/weak-modules --remove-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
+fi\
+%endif\
 %{nil}
 
 %kernel_variant_preun
@@ -2747,11 +2788,13 @@ fi
 
 %files -f python3-perf-debuginfo.list -n python3-perf-debuginfo
 %endif
-%endif # with_perf
+# with_perf
+%endif
 
 %if %{with_tools}
+%ifnarch %{cpupowerarchs}
 %files -n kernel-tools
-%ifarch %{cpupowerarchs}
+%else
 %files -n kernel-tools -f cpupower.lang
 %{_bindir}/cpupower
 %{_datadir}/bash-completion/completions/cpupower
@@ -2767,8 +2810,10 @@ fi
 %{_mandir}/man8/x86_energy_perf_policy*
 %{_bindir}/turbostat
 %{_mandir}/man8/turbostat*
+%{_bindir}/intel-speed-select
 %endif
-%endif # cpupowerarchs
+# cpupowerarchs
+%endif
 %{_bindir}/tmon
 %{_bindir}/iio_event_monitor
 %{_bindir}/iio_generic_buffer
@@ -2792,13 +2837,15 @@ fi
 %{_libdir}/libcpupower.so
 %{_includedir}/cpufreq.h
 %endif
-%endif # with_tools
+# with_tools
+%endif
 
 %if %{with_bpftool}
 %files -n bpftool
 %{_sbindir}/bpftool
 %{_sysconfdir}/bash_completion.d/bpftool
 %{_mandir}/man8/bpftool-cgroup.8.gz
+%{_mandir}/man8/bpftool-gen.8.gz
 %{_mandir}/man8/bpftool-map.8.gz
 %{_mandir}/man8/bpftool-prog.8.gz
 %{_mandir}/man8/bpftool-perf.8.gz
@@ -2845,7 +2892,7 @@ fi
 %if %{2}\
 %{expand:%%files -f kernel-%{?3:%{3}-}core.list %{?1:-f kernel-%{?3:%{3}-}ldsoconf.list} %{?3:%{3}-}core}\
 %{!?_licensedir:%global license %%doc}\
-%license linux-%{KVERREL}/COPYING-%{version}\
+%license linux-%{KVERREL}/COPYING-%{version}-%{release}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}\
 %ghost /%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/.vmlinuz.hmac \
@@ -2868,7 +2915,15 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
-%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
+%if 0%{!?fedora:1}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
+%endif\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/kernel-signing-ca*.cer\
+%ifarch s390x ppc64le\
+%if 0%{!?4:1}\
+%{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}/%{signing_key_filename} \
+%endif\
+%endif\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
 %endif\
@@ -2916,6 +2971,10 @@ fi
 #
 #
 %changelog
+* Thu Sep 03 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.6-100
+- Linux v5.8.6
+- Fix CVE-2020-14385 (rhbz 1874800 1874811)
+
 * Fri Aug 21 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.7.17-100
 - Linux v5.7.17
 

@@ -1,6 +1,6 @@
-From 92c547f35f4852908f40c2861d9b9d10e0c5099b Mon Sep 17 00:00:00 2001
-From: Peter Robinson <pbrobinson@gmail.com>
-Date: Sun, 28 Jun 2020 16:48:50 +0100
+From 9134295c0515492b1ab7733c0290b2afde336d6b Mon Sep 17 00:00:00 2001
+From: Vidya Sagar <vidyas@nvidia.com>
+Date: Sat, 11 Jan 2020 00:45:00 +0530
 Subject: [PATCH] PCI: Add MCFG quirks for Tegra194 host controllers
 
 The PCIe controller in Tegra194 SoC is not completely ECAM-compliant.
@@ -15,25 +15,20 @@ to generate respective configuration accesses just like the way it is
 done in DesignWare core sub-system.
 
 Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
----
-V3:
-* Removed MCFG address hardcoding in pci_mcfg.c file
-* Started using 'dbi_base' for accessing root port's own config space
-* and using 'config_base' for accessing config space of downstream hierarchy
-
-V2:
-* Fixed build issues reported by kbuild test bot
+Acked-by: Thierry Reding <treding@nvidia.com>
+[ Updated by jonathanh@nvidia.com only permit building the Tegra194
+  PCIe driver into the kernel and not as a module ]
+Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
 ---
  drivers/acpi/pci_mcfg.c                    |   7 ++
+ drivers/pci/controller/dwc/Kconfig         |  10 +-
  drivers/pci/controller/dwc/Makefile        |   2 +-
  drivers/pci/controller/dwc/pcie-tegra194.c | 102 +++++++++++++++++++++
  include/linux/pci-ecam.h                   |   1 +
- 4 files changed, 111 insertions(+), 1 deletion(-)
+ 5 files changed, 117 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/acpi/pci_mcfg.c b/drivers/acpi/pci_mcfg.c
-index 6b347d9920cc2..7071814081736 100644
+index 54b36b7ad47d9..6573d495d9c1f 100644
 --- a/drivers/acpi/pci_mcfg.c
 +++ b/drivers/acpi/pci_mcfg.c
 @@ -116,6 +116,13 @@ static struct mcfg_fixup mcfg_quirks[] = {
@@ -50,8 +45,44 @@ index 6b347d9920cc2..7071814081736 100644
  #define XGENE_V1_ECAM_MCFG(rev, seg) \
  	{"APM   ", "XGENE   ", rev, seg, MCFG_BUS_ANY, \
  		&xgene_v1_pcie_ecam_ops }
+diff --git a/drivers/pci/controller/dwc/Kconfig b/drivers/pci/controller/dwc/Kconfig
+index 044a3761c44f2..e4ee4bf9ac64a 100644
+--- a/drivers/pci/controller/dwc/Kconfig
++++ b/drivers/pci/controller/dwc/Kconfig
+@@ -247,25 +247,27 @@ config PCI_MESON
+ 	  implement the driver.
+ 
+ config PCIE_TEGRA194
+-	tristate
++	bool
+ 
+ config PCIE_TEGRA194_HOST
+-	tristate "NVIDIA Tegra194 (and later) PCIe controller - Host Mode"
++	bool "NVIDIA Tegra194 (and later) PCIe controller - Host Mode"
+ 	depends on ARCH_TEGRA_194_SOC || COMPILE_TEST
+ 	depends on PCI_MSI_IRQ_DOMAIN
+ 	select PCIE_DW_HOST
+ 	select PHY_TEGRA194_P2U
+ 	select PCIE_TEGRA194
++	default y if ARCH_TEGRA_194_SOC
+ 	help
+ 	  Enables support for the PCIe controller in the NVIDIA Tegra194 SoC to
+ 	  work in host mode. There are two instances of PCIe controllers in
+ 	  Tegra194. This controller can work either as EP or RC. In order to
+ 	  enable host-specific features PCIE_TEGRA194_HOST must be selected and
+ 	  in order to enable device-specific features PCIE_TEGRA194_EP must be
+-	  selected. This uses the DesignWare core.
++	  selected. This uses the DesignWare core. ACPI platforms with Tegra194
++	  don't need to enable this.
+ 
+ config PCIE_TEGRA194_EP
+-	tristate "NVIDIA Tegra194 (and later) PCIe controller - Endpoint Mode"
++	bool "NVIDIA Tegra194 (and later) PCIe controller - Endpoint Mode"
+ 	depends on ARCH_TEGRA_194_SOC || COMPILE_TEST
+ 	depends on PCI_ENDPOINT
+ 	select PCIE_DW_EP
 diff --git a/drivers/pci/controller/dwc/Makefile b/drivers/pci/controller/dwc/Makefile
-index 8a637cfcf6e99..76a6c52b8500e 100644
+index a751553fa0dbd..dbb9818765566 100644
 --- a/drivers/pci/controller/dwc/Makefile
 +++ b/drivers/pci/controller/dwc/Makefile
 @@ -17,7 +17,6 @@ obj-$(CONFIG_PCIE_INTEL_GW) += pcie-intel-gw.o
@@ -60,16 +91,16 @@ index 8a637cfcf6e99..76a6c52b8500e 100644
  obj-$(CONFIG_PCI_MESON) += pci-meson.o
 -obj-$(CONFIG_PCIE_TEGRA194) += pcie-tegra194.o
  obj-$(CONFIG_PCIE_UNIPHIER) += pcie-uniphier.o
+ obj-$(CONFIG_PCIE_UNIPHIER_EP) += pcie-uniphier-ep.o
  
- # The following drivers are for devices that use the generic ACPI
-@@ -33,4 +32,5 @@ obj-$(CONFIG_PCIE_UNIPHIER) += pcie-uniphier.o
+@@ -34,4 +33,5 @@ obj-$(CONFIG_PCIE_UNIPHIER_EP) += pcie-uniphier-ep.o
  ifdef CONFIG_PCI
  obj-$(CONFIG_ARM64) += pcie-al.o
  obj-$(CONFIG_ARM64) += pcie-hisi.o
 +obj-$(CONFIG_ARM64) += pcie-tegra194.o
  endif
 diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index ae30a2fd3716a..571b39c5cac63 100644
+index 92b77f7d83546..7b3d581795197 100644
 --- a/drivers/pci/controller/dwc/pcie-tegra194.c
 +++ b/drivers/pci/controller/dwc/pcie-tegra194.c
 @@ -22,6 +22,8 @@
@@ -169,7 +200,7 @@ index ae30a2fd3716a..571b39c5cac63 100644
 +	return (void __iomem *)(pcie->config_base + where);
 +}
 +
-+struct pci_ecam_ops tegra194_pcie_ops = {
++const struct pci_ecam_ops tegra194_pcie_ops = {
 +	.bus_shift	= 20,
 +	.init		= tegra194_acpi_init,
 +	.pci_ops	= {
@@ -185,7 +216,7 @@ index ae30a2fd3716a..571b39c5cac63 100644
  static inline struct tegra_pcie_dw *to_tegra_pcie(struct dw_pcie *pci)
  {
  	return container_of(pci, struct tegra_pcie_dw, pci);
-@@ -2406,3 +2505,6 @@ MODULE_DEVICE_TABLE(of, tegra_pcie_dw_of_match);
+@@ -2405,3 +2504,6 @@ MODULE_DEVICE_TABLE(of, tegra_pcie_dw_of_match);
  MODULE_AUTHOR("Vidya Sagar <vidyas@nvidia.com>");
  MODULE_DESCRIPTION("NVIDIA PCIe host controller driver");
  MODULE_LICENSE("GPL v2");
@@ -193,17 +224,17 @@ index ae30a2fd3716a..571b39c5cac63 100644
 +#endif /* CONFIG_PCIE_TEGRA194 */
 +
 diff --git a/include/linux/pci-ecam.h b/include/linux/pci-ecam.h
-index a73164c85e78b..6156140dcbb65 100644
+index 1af5cb02ef7f9..3fb16ada505a0 100644
 --- a/include/linux/pci-ecam.h
 +++ b/include/linux/pci-ecam.h
-@@ -57,6 +57,7 @@ extern struct pci_ecam_ops pci_thunder_ecam_ops; /* Cavium ThunderX 1.x */
- extern struct pci_ecam_ops xgene_v1_pcie_ecam_ops; /* APM X-Gene PCIe v1 */
- extern struct pci_ecam_ops xgene_v2_pcie_ecam_ops; /* APM X-Gene PCIe v2.x */
- extern struct pci_ecam_ops al_pcie_ops; /* Amazon Annapurna Labs PCIe */
-+extern struct pci_ecam_ops tegra194_pcie_ops; /* Tegra194 PCIe */
+@@ -57,6 +57,7 @@ extern const struct pci_ecam_ops pci_thunder_ecam_ops; /* Cavium ThunderX 1.x */
+ extern const struct pci_ecam_ops xgene_v1_pcie_ecam_ops; /* APM X-Gene PCIe v1 */
+ extern const struct pci_ecam_ops xgene_v2_pcie_ecam_ops; /* APM X-Gene PCIe v2.x */
+ extern const struct pci_ecam_ops al_pcie_ops;	/* Amazon Annapurna Labs PCIe */
++extern const struct pci_ecam_ops tegra194_pcie_ops; /* Tegra194 PCIe */
  #endif
  
- #ifdef CONFIG_PCI_HOST_COMMON
+ #if IS_ENABLED(CONFIG_PCI_HOST_COMMON)
 -- 
 2.26.2
 
