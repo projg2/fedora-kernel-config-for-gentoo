@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2971,7 +2971,7 @@ fi
 #
 #
 %changelog
-* Thu Sep 03 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.6-100
+* Thu Sep 03 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.6-101
 - Linux v5.8.6
 - Fix CVE-2020-14385 (rhbz 1874800 1874811)
 
