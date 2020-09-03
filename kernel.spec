@@ -861,17 +861,14 @@ Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 Patch102: 0002-arm64-tegra-Re-order-PCIe-aperture-mappings-to-suppo.patch
 Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
 
-# https://lkml.org/lkml/2020/8/14/221
-Patch104: dma-pool-fixes.patch
-
 # Goes away with 5.9
 Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
 
-#Temporary build fix (will figure this out after Plumbers)
-Patch106: 0001-revert-ARM64-vdso32-Install-vdso32-from-vdso_install.patch
-
 # https://bugzilla.redhat.com/show_bug.cgi?id=1874117
 Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
+
+# CVE-2020-14385 rhbz 1874800 1874811
+Patch108: 0001-xfs-fix-boundary-test-in-xfs_attr_shortform_verify.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2979,6 +2976,8 @@ fi
 %changelog
 * Thu Aug 27 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.5-300
 - Linux v5.8.5
+- Fix CVE-2020-14385 (rhbz 1874800 1874811)
+- Move CONFIG_USB_XHCI_PCI_RENESAS to inline (rhbz 1874300)
 
 * Wed Aug 26 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.4-300
 - Linux v5.8.4
