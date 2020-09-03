@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2974,10 +2974,13 @@ fi
 #
 #
 %changelog
-* Thu Aug 27 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.5-300
-- Linux v5.8.5
+* Thu Sep 03 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.6-300
+- Linux v5.8.6
 - Fix CVE-2020-14385 (rhbz 1874800 1874811)
 - Move CONFIG_USB_XHCI_PCI_RENESAS to inline (rhbz 1874300)
+
+* Thu Aug 27 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.5-300
+- Linux v5.8.5
 
 * Wed Aug 26 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.4-300
 - Linux v5.8.4
