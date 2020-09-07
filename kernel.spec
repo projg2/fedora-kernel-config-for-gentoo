@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc3.20200902git9c7d619be5a0.1
+%global distro_build 0.rc4.5
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc3.20200902git9c7d619be5a0.1
+%define pkgrelease 0.rc4.5
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20200902git9c7d619be5a0.1%{?buildid}%{?dist}
+%define specrelease 0.rc4.5%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.9
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200902git9c7d619be5a0.tar.xz
+Source0: linux-5.9-rc4.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -789,7 +789,6 @@ Patch71: 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
 Patch72: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 Patch73: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 Patch74: 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
-Patch75: media-ti-vpe-cal-Fix-compilation-on-32-bit-ARM.patch
 
 %endif
 
@@ -1285,8 +1284,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200902git9c7d619be5a0 -c
-mv linux-20200902git9c7d619be5a0 linux-%{KVERREL}
+%setup -q -n kernel-5.9-rc4 -c
+mv linux-5.9-rc4 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1366,7 +1365,6 @@ ApplyOptionalPatch 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
 ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 ApplyOptionalPatch 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 ApplyOptionalPatch 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
-ApplyOptionalPatch media-ti-vpe-cal-Fix-compilation-on-32-bit-ARM.patch
 
 %endif
 
@@ -2795,6 +2793,213 @@ fi
 #
 #
 %changelog
+* Mon Sep 07 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc4.4]
+- Merge ark-patches
+
+* Mon Sep 07 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc4.3.test]
+- v5.9-rc4 rebase
+- Linux 5.9-rc4 (Linus Torvalds)
+- Updated changelog for the release based on dd9fb9bb3340 (Fedora Kernel Team)
+- io_uring: fix linked deferred ->files cancellation (Pavel Begunkov)
+- io_uring: fix cancel of deferred reqs with ->files (Pavel Begunkov)
+- io_uring: fix explicit async read/write mapping for large segments (Jens Axboe)
+- x86/entry: Unbreak 32bit fast syscall (Thomas Gleixner)
+- x86/debug: Allow a single level of #DB recursion (Andy Lutomirski)
+- x86/entry: Fix AC assertion (Peter Zijlstra)
+- tracing/kprobes, x86/ptrace: Fix regs argument order for i386 (Vamshi K Sthambamkadi)
+- iommu/vt-d: Handle 36bit addressing for x86-32 (Chris Wilson)
+- iommu/amd: Do not use IOMMUv2 functionality when SME is active (Joerg Roedel)
+- iommu/amd: Do not force direct mapping when SME is active (Joerg Roedel)
+- iommu/amd: Use cmpxchg_double() when updating 128-bit IRTE (Suravee Suthikulpanit)
+- iommu/amd: Restore IRTE.RemapEn bit after programming IRTE (Suravee Suthikulpanit)
+- iommu/vt-d: Fix NULL pointer dereference in dev_iommu_priv_set() (Lu Baolu)
+- iommu/vt-d: Serialize IOMMU GCMD register modifications (Lu Baolu)
+- MAINTAINERS: Update QUALCOMM IOMMU after Arm SMMU drivers move (Lukas Bulwahn)
+- xen: add helpers to allocate unpopulated memory (Roger Pau Monne)
+- memremap: rename MEMORY_DEVICE_DEVDAX to MEMORY_DEVICE_GENERIC (Roger Pau Monne)
+- xen/balloon: add header guard (Roger Pau Monne)
+- x86, fakenuma: Fix invalid starting node ID (Huang Ying)
+- x86/mm/32: Bring back vmalloc faulting on x86_32 (Joerg Roedel)
+- x86/cmdline: Disable jump tables for cmdline.c (Arvind Sankar)
+
+* Sun Sep 06 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc3.20200906gitdd9fb9bb3340.3]
+- Merge ark-patches
+
+* Sun Sep 06 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc3.20200906gitdd9fb9bb3340.2.test]
+- dd9fb9bb3340 rebase
+- include/linux/log2.h: add missing () around n in roundup_pow_of_two() (Jason Gunthorpe)
+- mm/khugepaged.c: fix khugepaged's request size in collapse_file (David Howells)
+- mm/hugetlb: fix a race between hugetlb sysctl handlers (Muchun Song)
+- mm/hugetlb: try preferred node first when alloc gigantic page from cma (Li Xinhai)
+- mm/migrate: preserve soft dirty in remove_migration_pte() (Ralph Campbell)
+- mm/migrate: remove unnecessary is_zone_device_page() check (Ralph Campbell)
+- mm/rmap: fixup copying of soft dirty and uffd ptes (Alistair Popple)
+- mm/migrate: fixup setting UFFD_WP flag (Alistair Popple)
+- mm: madvise: fix vma user-after-free (Yang Shi)
+- checkpatch: fix the usage of capture group ( ... ) (Mrinal Pandey)
+- fork: adjust sysctl_max_threads definition to match prototype (Tobias Klauser)
+- ipc: adjust proc_ipc_sem_dointvec definition to match prototype (Tobias Klauser)
+- mm: track page table modifications in __apply_to_page_range() (Joerg Roedel)
+- MAINTAINERS: IA64: mark Status as Odd Fixes only (Randy Dunlap)
+- MAINTAINERS: add LLVM maintainers (Nick Desaulniers)
+- MAINTAINERS: update Cavium/Marvell entries (Robert Richter)
+- mm: slub: fix conversion of freelist_corrupted() (Eugeniu Rosca)
+- mm: memcg: fix memcg reclaim soft lockup (Xunlei Pang)
+- memcg: fix use-after-free in uncharge_batch (Michal Hocko)
+- xfs: don't update mtime on COW faults (Mikulas Patocka)
+- ext2: don't update mtime on COW faults (Mikulas Patocka)
+- Updated changelog for the release based on c70672d8d316 (Fedora Kernel Team)
+- xfs: fix xfs_bmap_validate_extent_raw when checking attr fork of rt files ("Darrick J. Wong")
+- ARC: [plat-hsdk]: Switch ethernet phy-mode to rgmii-id (Evgeniy Didin)
+- arc: fix memory initialization for systems with two memory banks (Mike Rapoport)
+- clang-format: Update with the latest for_each macro list (Miguel Ojeda)
+- sparse: use static inline for __chk_{user,io}_ptr() (Luc Van Oostenryck)
+- irqchip/eznps: Fix build error for !ARC700 builds (Vineet Gupta)
+- ARC: show_regs: fix r12 printing and simplify (Vineet Gupta)
+- Compiler Attributes: fix comment concerning GCC 4.6 (Luc Van Oostenryck)
+- Compiler Attributes: remove comment about sparse not supporting __has_attribute (Luc Van Oostenryck)
+- ARC: HSDK: wireup perf irq (Vineet Gupta)
+- ARC: perf: don't bail setup if pct irq missing in device-tree (Vineet Gupta)
+- ARC: pgalloc.h: delete a duplicated word + other fixes (Randy Dunlap)
+- auxdisplay: Replace HTTP links with HTTPS ones ("Alexander A. Klimov")
+
+* Sat Sep 05 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc3.20200905gitc70672d8d316.2]
+- Merge ark-patches
+
+* Sat Sep 05 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc3.20200905gitc70672d8d316.1.test]
+- c70672d8d316 rebase
+- Fedora confi gupdate ("Justin M. Forbes")
+- net/packet: fix overflow in tpacket_rcv (Or Cohen)
+- mm: Add PGREUSE counter (Peter Xu)
+- mm/gup: Remove enfornced COW mechanism (Peter Xu)
+- mm/ksm: Remove reuse_ksm_page() (Peter Xu)
+- mm: do_wp_page() simplification (Linus Torvalds)
+- gcov: Disable gcov build with GCC 10 (Leon Romanovsky)
+- init: fix error check in clean_path() (Barret Rhoden)
+- thermal: core: Fix use-after-free in thermal_zone_device_unregister() (Dmitry Osipenko)
+- thermal: qcom-spmi-temp-alarm: Don't suppress negative temp (Veera Vegivada)
+- thermal: ti-soc-thermal: Fix bogus thermal shutdowns for omap4430 (Tony Lindgren)
+- Updated changelog for the release based on 59126901f200 (Fedora Kernel Team)
+- ALSA: hda/realtek - Improved routing for Thinkpad X1 7th/8th Gen (Takashi Iwai)
+- MIPS: SNI: Fix SCSI interrupt (Thomas Bogendoerfer)
+- MIPS: add missing MSACSR and upper MSA initialization (Huang Pei)
+- dmaengine: ti: k3-udma: Update rchan_oes_offset for am654 SYSFW ABI 3.0 (Peter Ujfalusi)
+- drm/nouveau/kms/nv50-gp1xx: add WAR for EVO push buffer HW bug (Ben Skeggs)
+- drm/nouveau/kms/nv50-gp1xx: disable notifies again after core update (Ben Skeggs)
+- drm/nouveau/kms/nv50-: add some whitespace before debug message (Ben Skeggs)
+- drm/nouveau/kms/gv100-: Include correct push header in crcc37d.c (Lyude Paul)
+- drm/radeon: Prefer lower feedback dividers (Kai-Heng Feng)
+- drm/amdgpu: Fix bug in reporting voltage for CIK (Sandeep Raghuraman)
+- drm/amdgpu: Specify get_argument function for ci_smu_funcs (Sandeep Raghuraman)
+- drm/amd/pm: enable MP0 DPM for sienna_cichlid (Jiansong Chen)
+- drm/amd/pm: avoid false alarm due to confusing softwareshutdowntemp setting (Evan Quan)
+- drm/amd/pm: fix is_dpm_running() run error on 32bit system (Kevin Wang)
+- kconfig: remove redundant assignment prompt = prompt (Denis Efremov)
+- kbuild: Documentation: clean up makefiles.rst (Randy Dunlap)
+- kconfig: streamline_config.pl: check defined(ENV variable) before using it (Randy Dunlap)
+- block: allow for_each_bvec to support zero len bvec (Ming Lei)
+- ALSA: hda: use consistent HDAudio spelling in comments/docs (Pierre-Louis Bossart)
+- libata: implement ATA_HORKAGE_MAX_TRIM_128M and apply to Sandisks (Tejun Heo)
+- ALSA: hda: add dev_dbg log when driver is not selected (Pierre-Louis Bossart)
+- ALSA: hda: fix a runtime pm issue in SOF when integrated GPU is disabled (Rander Wang)
+- ALSA: hda: hdmi - add Rocketlake support (Rander Wang)
+- io_uring: no read/write-retry on -EAGAIN error and O_NONBLOCK marked file (Jens Axboe)
+- io_uring: set table->files[i] to NULL when io_sqe_file_register failed (Jiufei Xue)
+- ALSA: ua101: convert tasklets to use new tasklet_setup() API (Allen Pais)
+- ALSA: usb-audio: convert tasklets to use new tasklet_setup() API (Allen Pais)
+- ASoC: txx9: convert tasklets to use new tasklet_setup() API (Allen Pais)
+- ASoC: siu: convert tasklets to use new tasklet_setup() API (Allen Pais)
+- ASoC: fsl_esai: convert tasklets to use new tasklet_setup() API (Allen Pais)
+- ALSA: hdsp: convert tasklets to use new tasklet_setup() API (Allen Pais)
+- ALSA: riptide: convert tasklets to use new tasklet_setup() API (Allen Pais)
+- ALSA: pci/asihpi: convert tasklets to use new tasklet_setup() API (Allen Pais)
+- ALSA: firewire: convert tasklets to use new tasklet_setup() API (Allen Pais)
+- ALSA: core: convert tasklets to use new tasklet_setup() API (Allen Pais)
+- s390: update defconfigs (Heiko Carstens)
+- s390: fix GENERIC_LOCKBREAK dependency typo in Kconfig (Eric Farman)
+- drm/i915: Clear the repeater bit on HDCP disable (Sean Paul)
+- drm/i915: Fix sha_text population code (Sean Paul)
+- drm/i915/display: Ensure that ret is always initialized in icl_combo_phy_verify_state (Nathan Chancellor)
+- arm64/module: set trampoline section flags regardless of CONFIG_DYNAMIC_FTRACE (Jessica Yu)
+- arm64: Remove exporting cpu_logical_map symbol (Sudeep Holla)
+- blk-stat: make q->stats->lock irqsafe (Tejun Heo)
+- blk-iocost: ioc_pd_free() shouldn't assume irq disabled (Tejun Heo)
+- cpufreq: intel_pstate: Fix intel_pstate_get_hwp_max() for turbo disabled (Francisco Jerez)
+- cpufreq: intel_pstate: Free memory only when turning off ("Rafael J. Wysocki")
+- cpufreq: intel_pstate: Add ->offline and ->online callbacks ("Rafael J. Wysocki")
+- cpufreq: intel_pstate: Tweak the EPP sysfs interface ("Rafael J. Wysocki")
+- cpufreq: intel_pstate: Update cached EPP in the active mode ("Rafael J. Wysocki")
+- cpufreq: intel_pstate: Refuse to turn off with HWP enabled ("Rafael J. Wysocki")
+- block: fix locking in bdev_del_partition (Christoph Hellwig)
+- block: release disk reference in hd_struct_free_work (Ming Lei)
+- io_uring: fix removing the wrong file in __io_sqe_files_update() (Jiufei Xue)
+- block: ensure bdi->io_pages is always initialized (Jens Axboe)
+- ALSA: pcm: oss: Remove superfluous WARN_ON() for mulaw sanity check (Takashi Iwai)
+- MIPS: perf: Fix wrong check condition of Loongson event IDs (Tiezhu Yang)
+- Documentation/llvm: Improve formatting of commands, variables, and arguments (Nathan Chancellor)
+- opp: Don't drop reference for an OPP table that was never parsed (Viresh Kumar)
+- ALSA: hda - Fix silent audio output and corrupted input on MSI X570-A PRO (Dan Crawford)
+- nvme-pci: cancel nvme device request before disabling (Tong Zhang)
+- nvme: only use power of two io boundaries (Keith Busch)
+- nvme: fix controller instance leak (Keith Busch)
+- nvmet-fc: Fix a missed _irqsave version of spin_lock in 'nvmet_fc_fod_op_done()' (Christophe JAILLET)
+- nvme: Fix NULL dereference for pci nvme controllers (Sagi Grimberg)
+- nvme-rdma: fix reset hang if controller died in the middle of a reset (Sagi Grimberg)
+- nvme-rdma: fix timeout handler (Sagi Grimberg)
+- nvme-rdma: serialize controller teardown sequences (Sagi Grimberg)
+- nvme-tcp: fix reset hang if controller died in the middle of a reset (Sagi Grimberg)
+- nvme-tcp: fix timeout handler (Sagi Grimberg)
+- nvme-tcp: serialize controller teardown sequences (Sagi Grimberg)
+- nvme: have nvme_wait_freeze_timeout return if it timed out (Sagi Grimberg)
+- nvme-fabrics: don't check state NVME_CTRL_NEW for request acceptance (Sagi Grimberg)
+- nvmet-tcp: Fix NULL dereference when a connect data comes in h2cdata pdu (Ziye Yang)
+- ALSA: hda/hdmi: always check pin power status in i915 pin fixup (Kai Vehmanen)
+- ALSA: hda/realtek: Add quirk for Samsung Galaxy Book Ion NT950XCJ-X716A (Adrien Crivelli)
+- ALSA: usb-audio: Add basic capture support for Pioneer DJ DJM-250MK2 (=?UTF-8?q?Franti=C5=A1ek=20Ku=C4=8Dera?=)
+- ALSA: usb-audio: Add implicit feedback quirk for UR22C (Joshua Sivec)
+- drivers/dma/dma-jz4780: Fix race condition between probe and irq handler (Madhuparna Bhowmik)
+- dmaengine: dw-edma: Fix scatter-gather address calculation (Gustavo Pimentel)
+- dmaengine: ti: k3-udma: Fix the TR initialization for prep_slave_sg (Peter Ujfalusi)
+- dmaengine: pl330: Fix burst length if burst size is smaller than bus width (Marek Szyprowski)
+- Revert "ALSA: hda: Add support for Loongson 7A1000 controller" (Tiezhu Yang)
+- ALSA: hda/tegra: Program WAKEEN register for Tegra (Mohan Kumar)
+- ALSA: hda: Fix 2 channel swapping for Tegra (Mohan Kumar)
+- ALSA: ca0106: fix error code handling (Tong Zhang)
+- Documentation: sound/cards: fix heading underline lengths for https: changes (Randy Dunlap)
+- ALSA: usb-audio: Disable autosuspend for Lenovo ThinkStation P620 (Kai-Heng Feng)
+- ALSA: firewire-digi00x: exclude Avid Adrenaline from detection (Takashi Sakamoto)
+- ALSA; firewire-tascam: exclude Tascam FE-8 from detection (Takashi Sakamoto)
+- mips/oprofile: Fix fallthrough placement (He Zhe)
+- MIPS: Loongson64: Remove unnecessary inclusion of boot_param.h (WANG Xuerui)
+- MIPS: BMIPS: Also call bmips_cpu_setup() for secondary cores (Florian Fainelli)
+- MIPS: mm: BMIPS5000 has inclusive physical caches (Florian Fainelli)
+- dmaengine: at_hdmac: add missing kfree() call in at_dma_xlate() (Yu Kuai)
+- dmaengine: at_hdmac: add missing put_device() call in at_dma_xlate() (Yu Kuai)
+- dmaengine: at_hdmac: check return value of of_find_device_by_node() in at_dma_xlate() (Yu Kuai)
+- MIPS: Loongson64: Do not override watch and ejtag feature (Jiaxun Yang)
+- dmaengine: of-dma: Fix of_dma_router_xlate's of_dma_xlate handling (Peter Ujfalusi)
+- dmaengine: idxd: reset states after device disable or reset (Dave Jiang)
+- dmaengine: acpi: Put the CSRT table after using it (Hanjun Guo)
+- ata: ahci: use ata_link_info() instead of ata_link_printk() (Xu Wang)
+
+* Fri Sep 04 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc3.20200904git59126901f200.1]
+- Merge ark-patches
+
+* Fri Sep 04 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc3.20200904git59126901f200.0.test]
+- 59126901f200 rebase
+- Updated changelog for the release based on fc3abb53250a (Fedora Kernel Team)
+- Swap how ark-latest is built (Don Zickus)
+- Add extra version bump to os-build branch (Don Zickus)
+- dist-release: Avoid needless version bump. (Don Zickus)
+- Add dist-fedora-release target (Don Zickus)
+- Remove redundant code in dist-release (Don Zickus)
+- Makefile.common rename TAG to _TAG (Don Zickus)
+
+* Thu Sep 03 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc3.20200903gitfc3abb53250a.1]
+- fc3abb53250a rebase
+- Fedora config change ("Justin M. Forbes")
+- Updated changelog for the release based on 9c7d619be5a0 (Fedora Kernel Team)
+
 * Wed Sep 02 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc3.20200902git9c7d619be5a0.1]
 - 9c7d619be5a0 rebase
 - Updated changelog for the release based on b51594df17d0 (Fedora Kernel Team)

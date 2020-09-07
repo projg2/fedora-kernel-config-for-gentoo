@@ -66,7 +66,7 @@ index f14f238dc36a..156d1e44d9f7 100644
  #define TAINT_FLAGS_COUNT		32
  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 1bf960aa615c..df6479d7ff5f 100644
+index b999e7ff2583..5e5ac50d9137 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
