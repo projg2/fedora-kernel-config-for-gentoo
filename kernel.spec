@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -863,12 +863,6 @@ Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1874117
 Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
-
-# CVE-2020-14385 rhbz 1874800 1874811
-Patch108: 0001-xfs-fix-boundary-test-in-xfs_attr_shortform_verify.patch
-
-# CVE-2020-14386 rhbz 1875699 1876349
-Patch109: net-packet-fix-overflow-in-tpacket_rcv.patch
 
 Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 
@@ -2976,6 +2970,9 @@ fi
 #
 #
 %changelog
+* Wed Sep  9 13:40:09 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.8-100
+- Linux v5.8.8
+
 * Mon Sep 07 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.7-100
 - Linux v5.8.7
 - Fix CVE-2020-14386 (rhbz 1875699 1876349)
