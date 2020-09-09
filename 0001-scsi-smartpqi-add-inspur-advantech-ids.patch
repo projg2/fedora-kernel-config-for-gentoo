@@ -66,5 +66,5 @@ index ca1e6cf6a38e..af3ce8608ed3 100644
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_DELL, 0x1fe0)
 -- 
-2.26.2
+2.28.0
 

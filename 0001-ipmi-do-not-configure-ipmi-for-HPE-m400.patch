@@ -119,5 +119,5 @@ index 737c0b6b24ea..7901e780323b 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 -- 
-2.26.2
+2.28.0
 

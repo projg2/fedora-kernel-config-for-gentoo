@@ -43,5 +43,5 @@ index 2b7e7b5f38ed..b3bacfdcb727 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 -- 
-2.26.2
+2.28.0
 

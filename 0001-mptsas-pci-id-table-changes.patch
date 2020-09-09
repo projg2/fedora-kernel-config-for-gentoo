@@ -54,5 +54,5 @@ index 38d8b2bb3a37..b71f77a5799f 100644
  };
  MODULE_DEVICE_TABLE(pci, mptsas_pci_table);
 -- 
-2.26.2
+2.28.0
 

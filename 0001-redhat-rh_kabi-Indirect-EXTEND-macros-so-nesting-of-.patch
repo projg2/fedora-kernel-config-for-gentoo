@@ -46,5 +46,5 @@ index 9a4fea93ad99..cdc636d3013d 100644
  /*
   * RH_KABI_SET_SIZE calculates and sets the size of the extended struct and
 -- 
-2.26.2
+2.28.0
 

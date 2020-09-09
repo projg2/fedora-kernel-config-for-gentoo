@@ -39,5 +39,5 @@ index 4634b48949bb..e93470340eda 100644
  	ice_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, KBUILD_MODNAME);
  	if (!ice_wq) {
 -- 
-2.26.2
+2.28.0
 

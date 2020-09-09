@@ -48,5 +48,5 @@ index 2142f1554761..f5fdf6f3650c 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 -- 
-2.26.2
+2.28.0
 

@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc4.5
+%global distro_build 0.rc4.20200909git34d4ddd359db.6
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc4.5
+%define pkgrelease 0.rc4.20200909git34d4ddd359db.6
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.5%{?buildid}%{?dist}
+%define specrelease 0.rc4.20200909git34d4ddd359db.6%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.9
@@ -567,7 +567,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.9-rc4.tar.xz
+Source0: linux-20200909git34d4ddd359db.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1284,8 +1284,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.9-rc4 -c
-mv linux-5.9-rc4 linux-%{KVERREL}
+%setup -q -n kernel-20200909git34d4ddd359db -c
+mv linux-20200909git34d4ddd359db linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2793,6 +2793,34 @@ fi
 #
 #
 %changelog
+* Wed Sep 09 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc4.20200909git34d4ddd359db.5]
+- Merge ark-patches
+
+* Wed Sep 09 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc4.20200909git34d4ddd359db.4.test]
+- 34d4ddd359db rebase
+- Revert "drm/i915/gem: Delete unused code" (Dave Airlie)
+- Revert "drm/i915/gem: Async GPU relocations only" (Dave Airlie)
+- Revert "drm/i915: Remove i915_gem_object_get_dirty_page()" (Dave Airlie)
+- Updated changelog for the release based on v5.9-rc4 (Fedora Kernel Team)
+- drm/msm: Disable the RPTR shadow (Jordan Crouse)
+- drm/msm: Disable preemption on all 5xx targets (Jordan Crouse)
+- drm/msm: Enable expanded apriv support for a650 (Jordan Crouse)
+- drm/msm: Split the a5xx preemption record (Jordan Crouse)
+- Revert "kbuild: use -flive-patching when CONFIG_LIVEPATCH is enabled" (Josh Poimboeuf)
+- scsi: mpt3sas: Don't call disable_irq from IRQ poll handler (Tomas Henzl)
+- scsi: megaraid_sas: Don't call disable_irq from process IRQ poll (Tomas Henzl)
+- scsi: target: iscsi: Fix hang in iscsit_access_np() when getting tpg->np_login_sem (Hou Pu)
+- scsi: libsas: Set data_dir as DMA_NONE if libata marks qc as NODATA (Luo Jiaxing)
+- scsi: target: iscsi: Fix data digest calculation (Varun Prakash)
+- scsi: lpfc: Update lpfc version to 12.8.0.4 (James Smart)
+- scsi: lpfc: Extend the RDF FPIN Registration descriptor for additional events (James Smart)
+- scsi: lpfc: Fix FLOGI/PLOGI receive race condition in pt2pt discovery (James Smart)
+- scsi: lpfc: Fix setting IRQ affinity with an empty CPU mask (James Smart)
+- scsi: qla2xxx: Fix regression on sparc64 (=?UTF-8?q?Ren=C3=A9=20Rebe?=)
+- scsi: libfc: Fix for double free() (Javed Hasan)
+- scsi: pm8001: Fix memleak in pm8001_exec_internal_task_abort (Dinghao Liu)
+- selftests/timers: Turn off timeout setting (Po-Hsu Lin)
+
 * Mon Sep 07 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc4.4]
 - Merge ark-patches
 
