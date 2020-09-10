@@ -869,6 +869,9 @@ Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
 
 Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 
+# CVE-2020-25211 rhbz 1877571 1877572
+Patch111: netfilter-ctnetlink-add-range-check-for-l3-l4-protonum.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2973,6 +2976,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 10 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix CVE-2020-25211 (rhbz 1877571 1877572)
+
 * Wed Sep  9 13:39:47 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.8-300
 - Linux v5.8.8
 
