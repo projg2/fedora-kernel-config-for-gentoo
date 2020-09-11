@@ -71,3 +71,4 @@
 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
+0001-Filter-out-LTO-build-options-from-the-perl-ccopts.patch

@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc4.20200909git34d4ddd359db.6
+%global distro_build 0.rc4.20200911git581cb3a26baf.8
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc4.20200909git34d4ddd359db.6
+%define pkgrelease 0.rc4.20200911git581cb3a26baf.8
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20200909git34d4ddd359db.6%{?buildid}%{?dist}
+%define specrelease 0.rc4.20200911git581cb3a26baf.8%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -181,11 +181,11 @@ Summary: The Linux kernel
 %define with_ipaclones 0
 # no whitelist
 %define with_kernel_abi_whitelists 0
-%endif
 # Fedora builds these separately
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
+%endif
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -353,7 +353,6 @@ Summary: The Linux kernel
 %define kernel_image vmlinux
 %define kernel_image_elf 1
 %define all_arch_configs kernel-%{version}-ppc64le*.config
-%define kcflags -O3
 %endif
 
 %ifarch s390x
@@ -567,7 +566,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200909git34d4ddd359db.tar.xz
+Source0: linux-20200911git581cb3a26baf.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -789,6 +788,7 @@ Patch71: 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
 Patch72: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 Patch73: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 Patch74: 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
+Patch75: 0001-Filter-out-LTO-build-options-from-the-perl-ccopts.patch
 
 %endif
 
@@ -1284,8 +1284,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200909git34d4ddd359db -c
-mv linux-20200909git34d4ddd359db linux-%{KVERREL}
+%setup -q -n kernel-20200911git581cb3a26baf -c
+mv linux-20200911git581cb3a26baf linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1365,6 +1365,7 @@ ApplyOptionalPatch 0001-arch-x86-Remove-vendor-specific-CPU-ID-checks.patch
 ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 ApplyOptionalPatch 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 ApplyOptionalPatch 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
+ApplyOptionalPatch 0001-Filter-out-LTO-build-options-from-the-perl-ccopts.patch
 
 %endif
 
@@ -2793,8 +2794,23 @@ fi
 #
 #
 %changelog
-* Wed Sep 09 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc4.20200909git34d4ddd359db.5]
+* Fri Sep 11 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc4.20200911git581cb3a26baf.7]
 - Merge ark-patches
+
+* Fri Sep 11 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc4.20200911git581cb3a26baf.6.test]
+- 581cb3a26baf rebase
+- f2fs: Return EOF on unaligned end of file DIO read (Gabriel Krisman Bertazi)
+- f2fs: fix indefinite loop scanning for free nid (Sahitya Tummala)
+- f2fs: Fix type of section block count variables (Shin'ichiro Kawasaki)
+
+* Thu Sep 10 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc4.20200910git7fe10096c150.5.test]
+- 7fe10096c150 rebase
+- kernel.spec: don't override upstream compiler flags for ppc64le (=?UTF-8?q?Dan=20Hor=C3=A1k?=)
+- SUNRPC: stop printk reading past end of string ("J. Bruce Fields")
+- NFS: Zero-stateid SETATTR should first return delegation (Chuck Lever)
+- padata: fix possible padata_works_lock deadlock (Daniel Jordan)
+- NFSv4.1 handle ERR_DELAY error reclaiming locking state on delegation recall (Olga Kornievskaia)
+- xprtrdma: Release in-flight MRs on disconnect (Chuck Lever)
 
 * Wed Sep 09 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc4.20200909git34d4ddd359db.4.test]
 - 34d4ddd359db rebase
