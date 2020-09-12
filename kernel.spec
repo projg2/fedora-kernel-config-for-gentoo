@@ -867,10 +867,18 @@ Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1874117
 Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
 
-Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
+# https://patchwork.kernel.org/patch/11745283/
+Patch108: brcmfmac-BCM4329-Fixes-and-improvement.patch
+
+# https://patchwork.kernel.org/patch/11743769/
+Patch109: mmc-sdhci-iproc-Enable-eMMC-DDR-3.3V-support-for-bcm2711.patch
+# https://www.spinics.net/lists/linux-mmc/msg60653.html
+Patch111: mmc-sdio-Use-mmc_pre_req-mmc_post_req.patch
+
+Patch112: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 
 # CVE-2020-25211 rhbz 1877571 1877572
-Patch111: netfilter-ctnetlink-add-range-check-for-l3-l4-protonum.patch
+Patch113: netfilter-ctnetlink-add-range-check-for-l3-l4-protonum.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2976,6 +2984,11 @@ fi
 #
 #
 %changelog
+* Sat Sep 12 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix for SDIO speed issue
+- Fix for certain mSD cards on Raspberry Pi 4
+- Fix for older brcm sdio WiFi modules
+
 * Thu Sep 10 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2020-25211 (rhbz 1877571 1877572)
 
