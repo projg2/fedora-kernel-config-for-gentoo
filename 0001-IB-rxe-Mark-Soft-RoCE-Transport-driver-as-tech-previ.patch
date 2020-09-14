@@ -41,10 +41,10 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/infiniband/sw/rxe/rxe.c b/drivers/infiniband/sw/rxe/rxe.c
-index 907203afbd99..6fbbe2b109d1 100644
+index 77f2c7cd1216..aea28fb3d6a9 100644
 --- a/drivers/infiniband/sw/rxe/rxe.c
 +++ b/drivers/infiniband/sw/rxe/rxe.c
-@@ -303,6 +303,8 @@ static int __init rxe_module_init(void)
+@@ -305,6 +305,8 @@ static int __init rxe_module_init(void)
  {
  	int err;
 
