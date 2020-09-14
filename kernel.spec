@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2984,6 +2984,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 14 08:51:55 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.9-300
+- Linux v5.8.9
+
 * Sat Sep 12 2020 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fix for SDIO speed issue
 - Fix for certain mSD cards on Raspberry Pi 4
