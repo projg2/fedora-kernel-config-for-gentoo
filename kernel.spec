@@ -872,6 +872,9 @@ Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 # CVE-2020-25211 rhbz 1877571 1877572
 Patch111: netfilter-ctnetlink-add-range-check-for-l3-l4-protonum.patch
 
+# rhbz 1878858
+Patch112: block-restore-a-specific-error-code-in-bdev_del_part.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2978,6 +2981,7 @@ fi
 %changelog
 * Mon Sep 14 08:51:46 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.9-200
 - Linux v5.8.9
+- Fix error code in bdev_del_part (rhbz 1878858)
 
 * Thu Sep 10 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix CVE-2020-25211 (rhbz 1877571 1877572)
