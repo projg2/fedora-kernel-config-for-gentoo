@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -868,6 +868,9 @@ Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 
 # CVE-2020-25211 rhbz 1877571 1877572
 Patch111: netfilter-ctnetlink-add-range-check-for-l3-l4-protonum.patch
+
+# rhbz 1878858
+Patch112: block-restore-a-specific-error-code-in-bdev_del_part.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2973,6 +2976,9 @@ fi
 #
 #
 %changelog
+* Mon Sep 14 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.9-101
+- Fix error code in bdev_del_part (rhbz 1878858)
+
 * Mon Sep 14 08:51:55 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.9-100
 - Linux v5.8.9
 
