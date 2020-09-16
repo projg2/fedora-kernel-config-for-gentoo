@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc5.11
+%global distro_build 0.rc5.20200916gitfc4f28bb3daf.12
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc5.11
+%define pkgrelease 0.rc5.20200916gitfc4f28bb3daf.12
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.11%{?buildid}%{?dist}
+%define specrelease 0.rc5.20200916gitfc4f28bb3daf.12%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.9
@@ -566,7 +566,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.9-rc5.tar.xz
+Source0: linux-20200916gitfc4f28bb3daf.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1284,8 +1284,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.9-rc5 -c
-mv linux-5.9-rc5 linux-%{KVERREL}
+%setup -q -n kernel-20200916gitfc4f28bb3daf -c
+mv linux-20200916gitfc4f28bb3daf linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2799,6 +2799,17 @@ fi
 #
 #
 %changelog
+* Tue Sep 15 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc5.20200915gitfc4f28bb3daf.11]
+- Merge ark-patches
+
+* Tue Sep 15 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc5.20200915gitfc4f28bb3daf.10.test]
+- fc4f28bb3daf rebase
+- vgacon: remove software scrollback support (Linus Torvalds)
+- fbcon: remove now unusued 'softback_lines' cursor() argument (Linus Torvalds)
+- fbcon: remove soft scrollback code (Linus Torvalds)
+- btrfs: fix wrong address when faulting in pages in the search ioctl (Filipe Manana)
+- Updated changelog for the release based on v5.9-rc5 (Fedora Kernel Team)
+
 * Mon Sep 14 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc5.10]
 - Merge ark-patches
 
