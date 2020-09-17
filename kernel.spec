@@ -881,10 +881,10 @@ Patch112: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 Patch113: netfilter-ctnetlink-add-range-check-for-l3-l4-protonum.patch
 
 # rhbz 1873720
-Patch112: v2-nfs-Fix-security-label-length-not-being-reset.patch
+Patch114: v2-nfs-Fix-security-label-length-not-being-reset.patch
 
 # rhbz 1875339 1875828 1876997
-Patch113: pdx86-SW_TABLET_MODE-fixes.patch
+Patch115: pdx86-SW_TABLET_MODE-fixes.patch
 
 # END OF PATCH DEFINITIONS
 
