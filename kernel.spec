@@ -872,8 +872,6 @@ Patch108: brcmfmac-BCM4329-Fixes-and-improvement.patch
 
 # https://patchwork.kernel.org/patch/11743769/
 Patch109: mmc-sdhci-iproc-Enable-eMMC-DDR-3.3V-support-for-bcm2711.patch
-# https://www.spinics.net/lists/linux-mmc/msg60653.html
-Patch111: mmc-sdio-Use-mmc_pre_req-mmc_post_req.patch
 
 Patch112: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 
