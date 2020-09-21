@@ -789,6 +789,7 @@ Patch72: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 Patch73: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 Patch74: 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 Patch75: 0001-Filter-out-LTO-build-options-from-the-perl-ccopts.patch
+Patch76: 0001-dax-Fix-compilation-for-CONFIG_DAX-CONFIG_FS_DAX.patch
 
 %endif
 
@@ -1366,6 +1367,7 @@ ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.pat
 ApplyOptionalPatch 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 ApplyOptionalPatch 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 ApplyOptionalPatch 0001-Filter-out-LTO-build-options-from-the-perl-ccopts.patch
+ApplyOptionalPatch 0001-dax-Fix-compilation-for-CONFIG_DAX-CONFIG_FS_DAX.patch
 
 %endif
 
