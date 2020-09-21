@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc5.20200916gitfc4f28bb3daf.12
+%global distro_build 0.rc6.13
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc5.20200916gitfc4f28bb3daf.12
+%define pkgrelease 0.rc6.13
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20200916gitfc4f28bb3daf.12%{?buildid}%{?dist}
+%define specrelease 0.rc6.13%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.9
@@ -181,11 +181,11 @@ Summary: The Linux kernel
 %define with_ipaclones 0
 # no whitelist
 %define with_kernel_abi_whitelists 0
+%endif
 # Fedora builds these separately
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
-%endif
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -566,7 +566,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200916gitfc4f28bb3daf.tar.xz
+Source0: linux-5.9-rc6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1284,8 +1284,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200916gitfc4f28bb3daf -c
-mv linux-20200916gitfc4f28bb3daf linux-%{KVERREL}
+%setup -q -n kernel-5.9-rc6 -c
+mv linux-5.9-rc6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2071,11 +2071,6 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %global perf_make \
   %{__make} -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
-# The kernel tools build with -ggdb3 which seems to interact badly with LTO
-# causing various errors with references to discarded sections and symbol
-# type errors from the LTO plugin.  Until those issues are addressed
-# disable LTO
-%global _lto_cflags %{nil}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
@@ -2799,6 +2794,175 @@ fi
 #
 #
 %changelog
+* Mon Sep 21 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.12]
+- Merge ark-patches
+
+* Mon Sep 21 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.11.test]
+- v5.9-rc6 rebase
+- Linux 5.9-rc6 (Linus Torvalds)
+- mm: fix wake_page_function() comment typos (Linus Torvalds)
+- dax: Fix stack overflow when mounting fsdax pmem device (Adrian Huang)
+- dm: Call proper helper to determine dax support (Jan Kara)
+- dm/dax: Fix table reference counts (Dan Williams)
+- kconfig: qconf: revive help message in the info view (Masahiro Yamada)
+- kconfig: qconf: fix incomplete type 'struct gstr' warning (Masahiro Yamada)
+- RISC-V: Resurrect the MMIO timer implementation for M-mode systems (Palmer Dabbelt)
+- riscv: Fix Kendryte K210 device tree (Damien Le Moal)
+- riscv: Add sfence.vma after early page table changes (Greentime Hu)
+- kcsan: kconfig: move to menu 'Generic Kernel Debugging Instruments' (Changbin Du)
+- fs/fs-writeback.c: adjust dirtytime_interval_handler definition to match prototype (Tobias Klauser)
+- stackleak: let stack_erasing_sysctl take a kernel pointer buffer (Tobias Klauser)
+- ftrace: let ftrace_enable_sysctl take a kernel pointer buffer (Tobias Klauser)
+- mm/memory_hotplug: drain per-cpu pages again during memory offline (Pavel Tatashin)
+- selftests/vm: fix display of page size in map_hugetlb (Christophe Leroy)
+- mm/thp: fix __split_huge_pmd_locked() for migration PMD (Ralph Campbell)
+- kprobes: fix kill kprobe which has been marked as gone (Muchun Song)
+- tmpfs: restore functionality of nr_inodes=0 (Byron Stanoszek)
+- mlock: fix unevictable_pgs event counts on THP (Hugh Dickins)
+- mm: fix check_move_unevictable_pages() on THP (Hugh Dickins)
+- mm: migration of hugetlbfs page skip memcg (Hugh Dickins)
+- ksm: reinstate memcg charge on copied pages (Hugh Dickins)
+- mailmap: add older email addresses for Kees Cook (Kees Cook)
+- i2c: mxs: use MXS_DMA_CTRL_WAIT4END instead of DMA_CTRL_ACK (Matthias Schiffer)
+- i2c: mediatek: Send i2c master code at more than 1MHz (Qii Wang)
+- i2c: mediatek: Fix generic definitions for bus frequency (Qii Wang)
+- objtool: Fix noreturn detection for ignored functions (Josh Poimboeuf)
+- kconfig: qconf: use delete[] instead of delete to free array (again) (Masahiro Yamada)
+- iommu/amd: Restore IRTE.RemapEn bit for amd_iommu_activate_guest_mode (Suravee Suthikulpanit)
+- iommu/amd: Fix potential @entry null deref (Joao Martins)
+- x86/unwind/fp: Fix FP unwinding in ret_from_fork (Josh Poimboeuf)
+- i2c: core: Call i2c_acpi_install_space_handler() before i2c_acpi_register_devices() (Hans de Goede)
+- percpu: fix first chunk size calculation for populated bitmap (Sunghyun Jin)
+- mm: allow a controlled amount of unfairness in the page lock (Linus Torvalds)
+- arm64: paravirt: Initialize steal time when cpu is online (Andrew Jones)
+- usblp: fix race between disconnect() and read() (Oliver Neukum)
+- arm64: bpf: Fix branch offset in JIT (Ilias Apalodimas)
+- ehci-hcd: Move include to keep CRC stable (Quentin Perret)
+- drm/amd/display: Don't log hdcp module warnings in dmesg (Bhawanpreet Lakha)
+- drm/amdgpu: declare ta firmware for navy_flounder (Jiansong Chen)
+- drm/mediatek: Add missing put_device() call in mtk_hdmi_dt_parse_pdata() (Yu Kuai)
+- drm/mediatek: Add missing put_device() call in mtk_drm_kms_init() (Yu Kuai)
+- drm/mediatek: Add exception handing in mtk_drm_probe() if component init fail (Yu Kuai)
+- drm/mediatek: Add missing put_device() call in mtk_ddp_comp_init() (Yu Kuai)
+- drm/mediatek: Use CPU when fail to get cmdq event (Chun-Kuang Hu)
+- drm/mediatek: Remove duplicated include (Wang Hai)
+- MIPS: SNI: Fix spurious interrupts (Thomas Bogendoerfer)
+- MAINTAINERS: Fix Max's and Shravan's emails (Leon Romanovsky)
+- ACPI: processor: Take over RCU-idle for C3-BM idle (Peter Zijlstra)
+- cpuidle: Allow cpuidle drivers to take over RCU-idle (Peter Zijlstra)
+- ACPI: processor: Use CPUIDLE_FLAG_TLB_FLUSHED (Peter Zijlstra)
+- ACPI: processor: Use CPUIDLE_FLAG_TIMER_STOP (Peter Zijlstra)
+- locking/percpu-rwsem: Use this_cpu_{inc,dec}() for read_count (Hou Tao)
+- perf stat: Fix the ratio comments of miss-events (Qi Liu)
+- fbcon: Fix user font detection test at fbcon_resize(). (Tetsuo Handa)
+- powercap: RAPL: Add support for Lakefield (Ricardo Neri)
+- serial: 8250_pci: Add Realtek 816a and 816b (Tobias Diedrich)
+- serial: core: fix console port-lock regression (Johan Hovold)
+- serial: core: fix port-lock initialisation (Johan Hovold)
+- usb: typec: intel_pmc_mux: Handle SCU IPC error conditions (Madhusudanarao Amara)
+- USB: quirks: Add USB_QUIRK_IGNORE_REMOTE_WAKEUP quirk for BYD zhaoxin notebook (Penghao)
+- USB: UAS: fix disconnect by unplugging a hub (Oliver Neukum)
+- usb: typec: ucsi: Prevent mode overrun (Heikki Krogerus)
+- usb: typec: ucsi: acpi: Increase command completion timeout value (Heikki Krogerus)
+- drm/i915: Filter wake_flags passed to default_wake_function (Chris Wilson)
+- drm/i915: Be wary of data races when reading the active execlists (Chris Wilson)
+- drm/i915/gem: Reduce context termination list iteration guard to RCU (Chris Wilson)
+- drm/i915/gem: Delay tracking the GEM context until it is registered (Chris Wilson)
+- drm/amdgpu/dc: Require primary plane to be enabled whenever the CRTC is (=?UTF-8?q?Michel=20D=C3=A4nzer?=)
+- drm/radeon: revert "Prefer lower feedback dividers" (=?UTF-8?q?Christian=20K=C3=B6nig?=)
+- drm/amdgpu: Include sienna_cichlid in USBC PD FW support. (Andrey Grodzovsky)
+- drm/amd/display: update nv1x stutter latencies (Jun Lei)
+- drm/amd/display: Don't use DRM_ERROR() for DTM add topology (Bhawanpreet Lakha)
+- drm/amd/pm: support runtime pptable update for sienna_cichlid etc. (Jiansong Chen)
+- drm/amdkfd: fix a memory leak issue (Dennis Li)
+- drm/kfd: fix a system crash issue during GPU recovery (Dennis Li)
+- efi: efibc: check for efivars write capability (Ard Biesheuvel)
+- perf test: Free formats for perf pmu parse test (Namhyung Kim)
+- perf metric: Do not free metric when failed to resolve (Namhyung Kim)
+- perf metric: Free metric when it failed to resolve (Namhyung Kim)
+- perf metric: Release expr_parse_ctx after testing (Namhyung Kim)
+- perf test: Fix memory leaks in parse-metric test (Namhyung Kim)
+- perf parse-event: Fix memory leak in evsel->unit (Namhyung Kim)
+- perf evlist: Fix cpu/thread map leak (Namhyung Kim)
+- perf metric: Fix some memory leaks - part 2 (Namhyung Kim)
+- perf metric: Fix some memory leaks (Namhyung Kim)
+- perf test: Free aliases for PMU event map aliases test (Namhyung Kim)
+- perf vendor events amd: Remove trailing commas (Henry Burns)
+- MIPS: SNI: Fix MIPS_L1_CACHE_SHIFT (Thomas Bogendoerfer)
+- EDAC/ghes: Check whether the driver is on the safe list correctly (Borislav Petkov)
+- EDAC/ghes: Clear scanned data on unload (Borislav Petkov)
+- Updated changelog for the release based on fc4f28bb3daf (Fedora Kernel Team)
+- perf test: Leader sampling shouldn't clear sample period (Ian Rogers)
+- perf record: Don't clear event's period if set by a term (Ian Rogers)
+- tools headers UAPI: update linux/in.h copy (Arnaldo Carvalho de Melo)
+- tools headers UAPI: Sync kvm.h headers with the kernel sources (Arnaldo Carvalho de Melo)
+- perf record: Prevent override of attr->sample_period for libpfm4 events (Stephane Eranian)
+- perf record: Set PERF_RECORD_PERIOD if attr->freq is set. (David Sharp)
+- perf bench: Fix 2 memory sanitizer warnings (Ian Rogers)
+- perf test: Fix the "signal" test inline assembly (Jiri Olsa)
+- core/entry: Report syscall correctly for trace and audit (Kees Cook)
+- Input: trackpoint - add new trackpoint variant IDs (Vincent Huang)
+- Revert "mtd: spi-nor: Add capability to disable flash quad mode" (Yicong Yang)
+- Revert "mtd: spi-nor: Disable the flash quad mode in spi_nor_restore()" (Yicong Yang)
+- Drivers: hv: vmbus: Add timeout to vmbus_wait_for_unload (Michael Kelley)
+- x86/boot/compressed: Disable relocation relaxation (Arvind Sankar)
+- s390: add 3f program exception handler (Janosch Frank)
+- lockdep: fix order in trace_hardirqs_off_caller() (Sven Schnelle)
+- s390/pci: fix leak of DMA tables on hard unplug (Niklas Schnelle)
+- s390/init: add missing __init annotations (Ilya Leoshkevich)
+- s390/zcrypt: fix kmalloc 256k failure (Harald Freudenberger)
+- s390/idle: fix suspicious RCU usage (Peter Zijlstra)
+- i2c: i801: Simplify the suspend callback (Jean Delvare)
+- i2c: i801: Fix resume bug (=?UTF-8?q?Volker=20R=C3=BCmelin?=)
+- i2c: aspeed: Mask IRQ status to relevant bits (Eddie James)
+- sh: fix syscall tracing (Rich Felker)
+- sh: remove spurious circular inclusion from asm/smp.h (Rich Felker)
+- arm64: Allow CPUs unffected by ARM erratum 1418040 to come in late (Marc Zyngier)
+- RISC-V: Take text_mutex in ftrace_init_nop() (Palmer Dabbelt)
+- clk: qcom: lpass: Correct goto target in lpass_core_sc7180_probe() (Jing Xiangfeng)
+- clk: versatile: Add of_node_put() before return statement (Sumera Priyadarsini)
+- clk: bcm: dvp: Select the reset framework (Maxime Ripard)
+- scsi: libsas: Fix error path in sas_notify_lldd_dev_found() (Dan Carpenter)
+- Drivers: hv: vmbus: hibernation: do not hang forever in vmbus_bus_resume() (Dexuan Cui)
+- thunderbolt: Retry DROM read once if parsing fails (Mika Westerberg)
+- ALSA: hda/realtek - The Mic on a RedmiBook doesn't work (Hui Wang)
+- x86/defconfigs: Explicitly unset CONFIG_64BIT in i386_defconfig (=?UTF-8?q?Daniel=20D=C3=ADaz?=)
+- powerpc/papr_scm: Limit the readability of 'perf_stats' sysfs attribute (Vaibhav Jain)
+- Input: i8042 - add Entroware Proteus EL07R4 to nomux and reset lists (Hans de Goede)
+- ASoC: tlv320adcx140: Wake up codec before accessing register (Camel Guo)
+- cpuidle: pseries: Fix CEDE latency conversion from tb to us ("Gautham R. Shenoy")
+- powerpc/dma: Fix dma_map_ops::get_required_mask (Alexey Kardashevskiy)
+- ASoC: core: Do not cleanup uninitialized dais on soc_pcm_open failure (Cezary Rojewski)
+- ALSA: hda: fixup headset for ASUS GX502 laptop (Luke D Jones)
+- locking/lockdep: Fix "USED" <- "IN-NMI" inversions ("peterz@infradead.org")
+- Revert "powerpc/build: vdso linker warning for orphan sections" (Michael Ellerman)
+- ASoC: Intel: bytcr_rt5640: Add quirk for MPMAN Converter9 2-in-1 (Hans de Goede)
+- powerpc/mm: Remove DEBUG_VM_PGTABLE support on powerpc ("Aneesh Kumar K.V")
+- ASoC: Intel: haswell: Fix power transition refactor (Cezary Rojewski)
+- ASoC: tlv320adcx140: Fix accessing uninitialized adcx140->dev (Camel Guo)
+- selftests/powerpc: Skip PROT_SAO test in guests/LPARS (Michael Ellerman)
+- ASoC: wm8994: Ensure the device is resumed in wm89xx_mic_detect functions (Sylwester Nawrocki)
+- ASoC: wm8994: Skip setting of the WM8994_MICBIAS register for WM1811 (Sylwester Nawrocki)
+- ASoC: meson: axg-toddr: fix channel order on g12 platforms (Jerome Brunet)
+- ASoC: soc-core: add snd_soc_find_dai_with_mutex() (Kuninori Morimoto)
+- powerpc/book3s64/radix: Fix boot failure with large amount of guest memory ("Aneesh Kumar K.V")
+- drm/mediatek: dsi: Fix scrolling of panel with small hfp or hbp (Jitao Shi)
+- ASoC: qcom: common: Fix refcount imbalance on error (Dinghao Liu)
+- ASoC: rt700: Fix return check for devm_regmap_init_sdw() (Vinod Koul)
+- ASoC: rt715: Fix return check for devm_regmap_init_sdw() (Vinod Koul)
+- ASoC: rt711: Fix return check for devm_regmap_init_sdw() (Vinod Koul)
+- ASoC: rt1308-sdw: Fix return check for devm_regmap_init_sdw() (Vinod Koul)
+- ASoC: max98373: Fix return check for devm_regmap_init_sdw() (Vinod Koul)
+- ASoC: ti: fixup ams_delta_mute() function name (Kuninori Morimoto)
+- ASoC: pcm3168a: ignore 0 Hz settings (Kuninori Morimoto)
+- ASoC: Intel: tgl_max98373: fix a runtime pm issue in multi-thread case (Rander Wang)
+- ASoC: qcom: Set card->owner to avoid warnings (Stephan Gerhold)
+- ASoC: intel: atom: Add period size constraint (Brent Lu)
+- device_cgroup: Fix RCU list debugging warning (Amol Grover)
+- ASoC: Intel: skl_hda_dsp_generic: Fix NULLptr dereference in autosuspend delay (Mateusz Gorski)
+- clk: rockchip: Fix initialization of mux_pll_src_4plls_p (Nathan Chancellor)
+- clk: davinci: Use the correct size when allocating memory (Christophe JAILLET)
+
 * Tue Sep 15 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc5.20200915gitfc4f28bb3daf.11]
 - Merge ark-patches
 
