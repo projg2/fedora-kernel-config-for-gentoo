@@ -89,7 +89,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2988,6 +2988,10 @@ fi
 #
 #
 %changelog
+* Wed Sep 23 06:59:28 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.11-100
+- Linux v5.8.11
+- Fix (rhbz 1821946)
+
 * Thu Sep 17 08:47:44 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.10-100
 - Linux v5.8.10
 - Fix (rhbz 1873720 1876997)
