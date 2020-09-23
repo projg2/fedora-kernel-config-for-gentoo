@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc6.20200922git98477740630f.14
+%global distro_build 0.rc6.20200923git805c6d3c1921.15
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc6.20200922git98477740630f.14
+%define pkgrelease 0.rc6.20200923git805c6d3c1921.15
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20200922git98477740630f.14%{?buildid}%{?dist}
+%define specrelease 0.rc6.20200923git805c6d3c1921.15%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -566,7 +566,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200922git98477740630f.tar.xz
+Source0: linux-20200923git805c6d3c1921.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1284,8 +1284,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200922git98477740630f -c
-mv linux-20200922git98477740630f linux-%{KVERREL}
+%setup -q -n kernel-20200923git805c6d3c1921 -c
+mv linux-20200923git805c6d3c1921 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2795,6 +2795,203 @@ fi
 #
 #
 %changelog
+* Wed Sep 23 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200923git805c6d3c1921.14]
+- Merge ark-patches
+
+* Wed Sep 23 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200923git805c6d3c1921.13.test]
+- 805c6d3c1921 rebase
+- Updated changelog for the release based on 98477740630f (Fedora Kernel Team)
+- net: mscc: ocelot: fix some key offsets for IP4_TCP_UDP VCAP IS2 entries (Vladimir Oltean)
+- net: dsa: seville: fix some key offsets for IP4_TCP_UDP VCAP IS2 entries (Vladimir Oltean)
+- net: dsa: felix: fix some key offsets for IP4_TCP_UDP VCAP IS2 entries (Xiaoliang Yang)
+- inet_diag: validate INET_DIAG_REQ_PROTOCOL attribute (Eric Dumazet)
+- net: bridge: br_vlan_get_pvid_rcu() should dereference the VLAN group under RCU (Vladimir Oltean)
+- net: Update MAINTAINERS for MediaTek switch driver (Sean Wang)
+- net/mlx5e: mlx5e_fec_in_caps() returns a boolean (Saeed Mahameed)
+- net/mlx5e: kTLS, Avoid kzalloc(GFP_KERNEL) under spinlock (Saeed Mahameed)
+- net/mlx5e: kTLS, Fix leak on resync error flow (Saeed Mahameed)
+- net/mlx5e: kTLS, Add missing dma_unmap in RX resync (Saeed Mahameed)
+- net/mlx5e: kTLS, Fix napi sync and possible use-after-free (Tariq Toukan)
+- net/mlx5e: TLS, Do not expose FPGA TLS counter if not supported (Tariq Toukan)
+- net/mlx5e: Fix using wrong stats_grps in mlx5e_update_ndo_stats() (Alaa Hleihel)
+- net/mlx5e: Fix multicast counter not up-to-date in "ip -s" (Ron Diskin)
+- net/mlx5e: Fix endianness when calculating pedit mask first bit (Maor Dickman)
+- net/mlx5e: Enable adding peer miss rules only if merged eswitch is supported (Maor Dickman)
+- net/mlx5e: CT: Fix freeing ct_label mapping (Roi Dayan)
+- net/mlx5e: Fix memory leak of tunnel info when rule under multipath not ready (Jianbo Liu)
+- net/mlx5e: Use synchronize_rcu to sync with NAPI (Maxim Mikityanskiy)
+- net/mlx5e: Use RCU to protect rq->xdp_prog (Maxim Mikityanskiy)
+- net/mlx5: Fix FTE cleanup (Maor Gottlieb)
+- ipv6: route: convert comma to semicolon (Xu Wang)
+- sfc: Fix error code in probe (Dan Carpenter)
+- io_uring: fix openat/openat2 unified prep handling (Jens Axboe)
+- io_uring: mark statx/files_update/epoll_ctl as non-SQPOLL (Jens Axboe)
+- tools/io_uring: fix compile breakage (Douglas Gilbert)
+- io_uring: don't use retry based buffered reads for non-async bdev (Jens Axboe)
+- io_uring: don't re-setup vecs/iter in io_resumit_prep() is already there (Jens Axboe)
+- bnxt_en: Fix wrong flag value passed to HWRM_PORT_QSTATS_EXT fw call. (Michael Chan)
+- bnxt_en: Fix HWRM_FUNC_QSTATS_EXT firmware call. (Michael Chan)
+- bnxt_en: Return -EOPNOTSUPP for ETHTOOL_GREGS on VFs. (Vasundhara Volam)
+- bnxt_en: Protect bnxt_set_eee() and bnxt_set_pauseparam() with mutex. (Michael Chan)
+- bnxt_en: return proper error codes in bnxt_show_temp (Edwin Peer)
+- bnxt_en: Use memcpy to copy VPD field info. (Vasundhara Volam)
+- net: sctp: Fix IPv6 ancestor_size calc in sctp_copy_descendant (Henry Ptasinski)
+- net: mvneta: recycle the page in case of out-of-order (Lorenzo Bianconi)
+- rhashtable: fix indentation of a continue statement (Colin Ian King)
+- bootconfig: init: make xbc_namebuf static (Jason Yan)
+- MAINTAINERS: Update ibmveth maintainer (Cristobal Forno)
+- net: ipv6: fix kconfig dependency warning for IPV6_SEG6_HMAC (Necip Fazil Yildiran)
+- dpaa2-eth: fix a build warning in dpmac.c (Yangbo Lu)
+- hinic: fix sending pkts from core while self testing (Luo bin)
+- net: mscc: ocelot: deinitialize only initialized ports (Vladimir Oltean)
+- net: mscc: ocelot: unregister net devices on unbind (Vladimir Oltean)
+- net: mscc: ocelot: refactor ports parsing code into a dedicated function (Vladimir Oltean)
+- net: mscc: ocelot: error checking when calling ocelot_init() (Vladimir Oltean)
+- net: mscc: ocelot: check for errors on memory allocation of ports (Vladimir Oltean)
+- net: dsa: seville: fix buffer size of the queue system (Vladimir Oltean)
+- net: mscc: ocelot: add locking for the port TX timestamp ID (Vladimir Oltean)
+- net: mscc: ocelot: fix race condition with TX timestamping (Vladimir Oltean)
+- kprobes: tracing/kprobes: Fix to kill kprobes on initmem after boot (Masami Hiramatsu)
+- tracing: fix double free (Tom Rix)
+- ftrace: Let ftrace_enable_sysctl take a kernel pointer buffer (Tobias Klauser)
+- tracing: Make the space reserved for the pid wider (Sebastian Andrzej Siewior)
+- ftrace: Fix missing synchronize_rcu() removing trampoline from kallsyms (Adrian Hunter)
+- ftrace: Free the trampoline when ftrace_startup() fails (Miroslav Benes)
+- kprobes: Fix to check probe enabled before disarm_kprobe_ftrace() (Masami Hiramatsu)
+- mac80211: fix 80 MHz association to 160/80+80 AP on 6 GHz (John Crispin)
+- mac80211: do not allow bigger VHT MPDUs than the hardware supports (Felix Fietkau)
+- cfg80211: fix 6 GHz channel conversion (Johannes Berg)
+- mac80211: do not disable HE if HT is missing on 2.4 GHz (Wen Gong)
+- mac80211: Fix radiotap header channel flag for 6GHz band (Aloka Dixit)
+- lib80211: fix unmet direct dependendices config warning when !CRYPTO (Necip Fazil Yildiran)
+- mac80211: add AQL support for VHT160 tx rates (Felix Fietkau)
+- mac80211: extend AQL aggregation estimation to HE and fix unit mismatch (Felix Fietkau)
+- nfp: use correct define to return NONE fec (Jakub Kicinski)
+- hinic: fix potential resource leak (Wei Li)
+- net: phy: Do not warn in phy_stop() on PHY_DOWN (Florian Fainelli)
+- net: phy: Avoid NPD upon phy_detach() when driver is unbound (Florian Fainelli)
+- ethtool: add and use message type for tunnel info reply (Michal Kubecek)
+- drivers/net/wan/hdlc: Set skb->protocol before transmitting (Xie He)
+- drivers/net/wan/lapbether: Make skb->protocol consistent with the header (Xie He)
+- cxgb4: fix memory leak during module unload (Raju Rangoju)
+- hv_netvsc: Add validation for untrusted Hyper-V values (Andres Beltran)
+- fuse: fix the ->direct_IO() treatment of iov_iter (Al Viro)
+- nvmet: get transport reference for passthru ctrl (Christoph Hellwig)
+- nvme-core: get/put ctrl and transport module in nvme_dev_open/release() (Chaitanya Kulkarni)
+- net: dsa: microchip: ksz8795: really set the correct number of ports (Matthias Schiffer)
+- geneve: add transport ports in route lookup for geneve (Mark Gray)
+- net: hns: kerneldoc fixes (Lu Wei)
+- fs: fix cast in fsparam_u32hex() macro (Alexey Dobriyan)
+- bpf: Fix a rcu warning for bpffs map pretty-print (Yonghong Song)
+- bpf: Bpf_skc_to_* casting helpers require a NULL check on sk (Martin KaFai Lau)
+- ipv4: Update exception handling for multipath routes via same device (David Ahern)
+- net: tipc: kerneldoc fixes (Lu Wei)
+- ibmvnic: update MAINTAINERS (Dany Madden)
+- batman-adv: mcast: fix duplicate mcast packets from BLA backbone to mesh (=?UTF-8?q?Linus=20L=C3=BCssing?=)
+- batman-adv: mcast: fix duplicate mcast packets in BLA backbone from mesh (=?UTF-8?q?Linus=20L=C3=BCssing?=)
+- batman-adv: mcast: fix duplicate mcast packets in BLA backbone from LAN (=?UTF-8?q?Linus=20L=C3=BCssing?=)
+- nvme-tcp: fix kconfig dependency warning when !CRYPTO (Necip Fazil Yildiran)
+- nvme-pci: disable the write zeros command for Intel 600P/P3100 (David Milburn)
+- docs/bpf: Remove source code links (Andrii Nakryiko)
+- s390/dasd: Fix zero write for FBA devices (=?UTF-8?q?Jan=20H=C3=B6ppner?=)
+- xsk: Fix number of pinned pages/umem size discrepancy (=?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?=)
+- net: sched: initialize with 0 before setting erspan md->u (Xin Long)
+- lwtunnel: only keep the available bits when setting vxlan md->gbp (Xin Long)
+- net: sched: only keep the available bits when setting vxlan md->gbp (Xin Long)
+- tipc: use skb_unshare() instead in tipc_buf_append() (Xin Long)
+- tipc: Fix memory leak in tipc_group_create_member() (Peilin Ye)
+- ipv4: Initialize flowi4_multipath_hash in data path (David Ahern)
+- net: lantiq: Disable IRQs only if NAPI gets scheduled (Hauke Mehrtens)
+- net: lantiq: Use napi_complete_done() (Hauke Mehrtens)
+- net: lantiq: use netif_tx_napi_add() for TX NAPI (Hauke Mehrtens)
+- net: lantiq: Wake TX queue again (Hauke Mehrtens)
+- rndis_host: increase sleep time in the query-response loop (Olympia Giannou)
+- batman-adv: Add missing include for in_interrupt() (Sven Eckelmann)
+- io_uring: don't run task work on an exiting task (Jens Axboe)
+- io_uring: drop 'ctx' ref on task work cancelation (Jens Axboe)
+- io_uring: grab any needed state during defer prep (Jens Axboe)
+- net: ethernet: ti: cpsw_new: fix suspend/resume (Grygorii Strashko)
+- net: ipa: fix u32_replace_bits by u32p_xxx version (Vadym Kochan)
+- hinic: fix rewaking txq after netif_tx_disable (Luo bin)
+- taprio: Fix allowing too small intervals (Vinicius Costa Gomes)
+- enetc: Fix mdio bus removal on PF probe bailout (Claudiu Manoil)
+- docs/bpf: Fix ringbuf documentation (Andrii Nakryiko)
+- net: dec: de2104x: Increase receive ring size for Tulip (Lucy Yan)
+- netlink: fix doc about nlmsg_parse/nla_validate (Nicolas Dichtel)
+- net: DCB: Validate DCB_ATTR_DCB_BUFFER argument (Petr Machata)
+- selftests: rtnetlink: Test bridge enslavement with different parent IDs (Ido Schimmel)
+- net: Fix bridge enslavement failure (Ido Schimmel)
+- net: mvneta: fix possible use-after-free in mvneta_xdp_put_buff (Lorenzo Bianconi)
+- s390/qeth: delay draining the TX buffers (Julian Wiedmann)
+- net: Fix broken NETIF_F_CSUM_MASK spell in netdev_features.h (Miaohe Lin)
+- net: Correct the comment of dst_dev_put() (Miaohe Lin)
+- hdlc_ppp: add range checks in ppp_cp_parse_cr() (Dan Carpenter)
+- net: phy: call phy_disable_interrupts() in phy_attach_direct() instead (Yoshihiro Shimoda)
+- hv_netvsc: Cache the current data path to avoid duplicate call and message (Dexuan Cui)
+- hv_netvsc: Switch the data path at the right time during hibernation (Dexuan Cui)
+- net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc (Yunsheng Lin)
+- net: dsa: microchip: look for phy-mode in port nodes (Helmut Grohne)
+- mptcp: fix kmalloc flag in mptcp_pm_nl_get_local_id (Geliang Tang)
+- mptcp: fix subflow's remote_id issues (Geliang Tang)
+- mptcp: fix subflow's local_id issues (Geliang Tang)
+- tipc: fix shutdown() of connection oriented socket (Tetsuo Handa)
+- connector: Move maintainence under networking drivers umbrella. ("David S. Miller")
+- igc: Fix not considering the TX delay for timestamps (Vinicius Costa Gomes)
+- igc: Fix wrong timestamp latency numbers (Vinicius Costa Gomes)
+- i40e: always propagate error value in i40e_set_vsi_promisc() (Stefan Assmann)
+- i40e: fix return of uninitialized aq_ret in i40e_set_vsi_promisc (Stefan Assmann)
+- net: qed: RDMA personality shouldn't fail VF load (Dmitry Bogdanov)
+- net: qede: Disable aRFS for NPAR and 100G (Dmitry Bogdanov)
+- net: qed: Disable aRFS for NPAR and 100G (Dmitry Bogdanov)
+- wireguard: peerlookup: take lock before checking hash in replace operation ("Jason A. Donenfeld")
+- wireguard: noise: take lock when removing handshake entry from table ("Jason A. Donenfeld")
+- hsr: avoid newline at end of message in NL_SET_ERR_MSG_MOD (Ye Bin)
+- net: add __must_check to skb_put_padto() (Eric Dumazet)
+- net: qrtr: check skb_put_padto() return value (Eric Dumazet)
+- ip: fix tos reflection in ack and reset packets (Wei Wang)
+- MAINTAINERS: remove John Allen from ibmvnic (Jakub Kicinski)
+- fib: fix fib_rule_ops indirect call wrappers when CONFIG_IPV6=m (Brian Vazquez)
+- ipv6: avoid lockdep issue in fib6_del() (Eric Dumazet)
+- net: dsa: link interfaces with the DSA master to get rid of lockdep warnings (Vladimir Oltean)
+- tools/libbpf: Avoid counting local symbols in ABI check (Tony Ambardar)
+- bpf: Fix clobbering of r2 in bpf_gen_ld_abs (Daniel Borkmann)
+- mac802154: tx: fix use-after-free (Eric Dumazet)
+- netfilter: nft_meta: use socket user_ns to retrieve skuid and skgid (Pablo Neira Ayuso)
+- netfilter: conntrack: nf_conncount_init is failing with IPv6 disabled (Eelco Chaudron)
+- netfilter: ctnetlink: fix mark based dump filtering regression (Martin Willi)
+- netfilter: nf_tables: coalesce multiple notifications into one skbuff (Pablo Neira Ayuso)
+- netfilter: ctnetlink: add a range check for l3/l4 protonum (Will McVicker)
+- hv_netvsc: Fix hibernation for mlx5 VF driver (Dexuan Cui)
+- Revert "netns: don't disable BHs when locking "nsid_lock"" (Taehee Yoo)
+- ibmvnic: add missing parenthesis in do_reset() (Jakub Kicinski)
+- netdevice.h: fix xdp_state kernel-doc warning (Randy Dunlap)
+- netdevice.h: fix proto_down_reason kernel-doc warning (Randy Dunlap)
+- bnxt_en: Fix NULL ptr dereference crash in bnxt_fw_reset_task() (Vasundhara Volam)
+- bnxt_en: Avoid sending firmware messages when AER error is detected. (Vasundhara Volam)
+- Revert "wlcore: Adding suppoprt for IGTK key in wlcore driver" (Mauro Carvalho Chehab)
+- net: dsa: rtl8366: Properly clear member config (Linus Walleij)
+- net: macb: fix for pause frame receive enable bit (Parshuram Thombare)
+- cxgb4: Fix offset when clearing filter byte counters (Ganji Aravind)
+- hinic: bump up the timeout of UPDATE_FW cmd (Luo bin)
+- hinic: bump up the timeout of SET_FUNC_STATE cmd (Luo bin)
+- batman-adv: mcast/TT: fix wrongly dropped or rerouted packets (=?UTF-8?q?Linus=20L=C3=BCssing?=)
+- act_ife: load meta modules before tcf_idr_check_alloc() (Cong Wang)
+- atm: eni: fix the missed pci_disable_device() for eni_init_one() (Jing Xiangfeng)
+- drivers/net/wan/hdlc_fr: Add needed_headroom for PVC devices (Xie He)
+- selftests/bpf: Add bpf_{update, delete}_map_elem in hashmap iter program (Yonghong Song)
+- bpf: Do not use bucket_lock for hashmap iterator (Yonghong Song)
+- libbpf: Remove arch-specific include path in Makefile ("Naveen N. Rao")
+- tools/bpf: build: Make sure resolve_btfids cleans up after itself (=?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?=)
+- libbpf: Fix build failure from uninitialized variable warning (Tony Ambardar)
+- batman-adv: bla: fix type misuse for backbone_gw hash indexing (=?UTF-8?q?Linus=20L=C3=BCssing?=)
+- mwifiex: Increase AES key storage size to 256 bits (Maximilian Luz)
+- mt76: mt7915: use ieee80211_free_txskb to free tx skbs (Felix Fietkau)
+- mt76: mt7615: use v1 MCU API on MT7615 to fix issues with adding/removing stations (Felix Fietkau)
+- vboxsf: Fix the check for the old binary mount-arguments struct (Hans de Goede)
+- brcmfmac: reserve tx credit only when txctl is ready to send (Wright Feng)
+- ieee802154/adf7242: check status of adf7242_read_reg (Tom Rix)
+- ieee802154: fix one possible memleak in ca8210_dev_com_init (Liu Jian)
+
 * Tue Sep 22 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200922git98477740630f.13]
 - Merge ark-patches
 
