@@ -864,6 +864,9 @@ Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
 # Goes away with 5.9
 Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
 
+# https://patchwork.kernel.org/patch/11796255/
+Patch106: arm64-dts-rockchip-disable-USB-type-c-DisplayPort.patch
+
 # https://bugzilla.redhat.com/show_bug.cgi?id=1874117
 Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
 
