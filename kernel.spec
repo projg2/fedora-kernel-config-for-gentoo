@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc6.20200923git805c6d3c1921.15
+%global distro_build 0.rc6.20200925git171d4ff79f96.17
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc6.20200923git805c6d3c1921.15
+%define pkgrelease 0.rc6.20200925git171d4ff79f96.17
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20200923git805c6d3c1921.15%{?buildid}%{?dist}
+%define specrelease 0.rc6.20200925git171d4ff79f96.17%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -566,7 +566,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200923git805c6d3c1921.tar.xz
+Source0: linux-20200925git171d4ff79f96.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1284,8 +1284,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200923git805c6d3c1921 -c
-mv linux-20200923git805c6d3c1921 linux-%{KVERREL}
+%setup -q -n kernel-20200925git171d4ff79f96 -c
+mv linux-20200925git171d4ff79f96 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2071,7 +2071,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %global perf_make \
   %{__make} -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
-%global _lto_cflags %{nil}
++%global _lto_cflags %{nil}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
@@ -2795,6 +2795,43 @@ fi
 #
 #
 %changelog
+* Fri Sep 25 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200925git171d4ff79f96.16]
+- Merge ark-patches
+
+* Fri Sep 25 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200925git171d4ff79f96.15.test]
+- 171d4ff79f96 rebase
+- mm: fix misplaced unlock_page in do_wp_page() (Linus Torvalds)
+- Updated changelog for the release based on c9c9e6a49f89 (Fedora Kernel Team)
+- Revert "ALSA: usb-audio: Disable Lenovo P620 Rear line-in volume control" (Kai-Heng Feng)
+- media: dt-bindings: media: imx274: Convert to json-schema (Jacopo Mondi)
+- Revert "ALSA: hda - Fix silent audio output and corrupted input on MSI X570-A PRO" (Takashi Iwai)
+- ALSA: usb-audio: Add delay quirk for H570e USB headsets (Joakim Tjernlund)
+- ALSA: hda/realtek: Enable front panel headset LED on Lenovo ThinkStation P520 (Kai-Heng Feng)
+- ALSA: hda/realtek - Couldn't detect Mic if booting with headset plugged (Hui Wang)
+- ALSA: asihpi: fix iounmap in error handler (Tom Rix)
+- media: media/v4l2: remove V4L2_FLAG_MEMORY_NON_CONSISTENT flag (Sergey Senozhatsky)
+- mmc: mmc_spi: Fix mmc_spi_dma_alloc() return type for !HAS_DMA (Geert Uytterhoeven)
+- media: cec-adap.c: don't use flush_scheduled_work() (Hans Verkuil)
+
+* Thu Sep 24 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200924gitc9c9e6a49f89.15]
+- Merge ark-patches
+
+* Thu Sep 24 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200924gitc9c9e6a49f89.14.test]
+- c9c9e6a49f89 rebase
+- mm: move the copy_one_pte() pte_present check into the caller (Linus Torvalds)
+- mm: split out the non-present case from copy_one_pte() (Linus Torvalds)
+- Updated changelog for the release based on 805c6d3c1921 (Fedora Kernel Team)
+- dm crypt: document encrypted keyring key option (Milan Broz)
+- dm crypt: document new no_workqueue flags (Milan Broz)
+- btrfs: fix put of uninitialized kobject after seed device delete (Anand Jain)
+- tools/bootconfig: Add testcase for tailing space (Masami Hiramatsu)
+- tools/bootconfig: Add testcases for repeated key with brace (Masami Hiramatsu)
+- lib/bootconfig: Fix to remove tailing spaces after value (Masami Hiramatsu)
+- lib/bootconfig: Fix a bug of breaking existing tree nodes (Masami Hiramatsu)
+- dm: fix comment in dm_process_bio() (Mike Snitzer)
+- dm: fix bio splitting and its bio completion order for regular IO (Mike Snitzer)
+- btrfs: fix overflow when copying corrupt csums for a message (Johannes Thumshirn)
+
 * Wed Sep 23 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200923git805c6d3c1921.14]
 - Merge ark-patches
 
