@@ -892,6 +892,7 @@ Patch117: arm64-pwm-rockchip-Keep-enabled-PWMs-running-while-probing.patch
 
 # Backport from 5.9
 Patch118: arm64-rockchip-pinebookpro-add-fuel-gauge.patch
+Patch119: arm64-tegra-enable-dfll-on-jetson-nano.patch
 
 # END OF PATCH DEFINITIONS
 
