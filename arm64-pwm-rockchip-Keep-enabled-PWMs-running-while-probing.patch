@@ -1,0 +1,141 @@
+From patchwork Sat Sep 19 19:33:06 2020
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Patchwork-Submitter: Simon South <simon@simonsouth.net>
+X-Patchwork-Id: 11787259
+Return-Path: 
+ <SRS0=uBh2=C4=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
+ [172.30.200.123])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id D0780618
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 19 Sep 2020 19:33:55 +0000 (UTC)
+Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPS id 9DF4C21707
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Sat, 19 Sep 2020 19:33:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=lists.infradead.org
+ header.i=@lists.infradead.org header.b="tXxoe57q"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9DF4C21707
+Authentication-Results: mail.kernel.org;
+ dmarc=none (p=none dis=none) header.from=simonsouth.net
+Authentication-Results: mail.kernel.org;
+ spf=none
+ smtp.mailfrom=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
+	Content-Type:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:MIME-Version:Message-Id:Date:Subject:To:From:
+	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
+	:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=rTFhR4wE/kksRMBhCZanM50Dz/U+ohZU+WFgqGfznMQ=; b=tXxoe57qQlrQ18QBvKs3JZ7wYU
+	mFyPVtA2yDfFfGESvkL1Xa44HehjqPoeSxNBAyejg6YfozEgeDKKVZsBEex5hw6LE56H8Iofj0pZV
+	AFM98+vh4tydKA7vxhGl0cm7jMVq3N68wqcikUkcdCEs3bp+5dHpOowzZaj3sm51gw/g6pD3ut1+V
+	IYlRTF/VuDd3IDW4o27pNrgIqWx9f+/eO1gUdxwCa4i0VNLAHXCt5ysGE+CSwVWMEcp5YN5K1iO8b
+	sFKtjMiOcg9wrJdEoYpiFbcHETgUGNj5wdbwRvJR2qZ36gSImyUqJobYqSUyVHCJI2JRUch3UDFtt
+	yDQgQ99A==;
+Received: from localhost ([::1] helo=merlin.infradead.org)
+	by merlin.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
+	id 1kJic9-0004AL-NX; Sat, 19 Sep 2020 19:33:41 +0000
+Received: from mailout.easymail.ca ([64.68.200.34])
+ by merlin.infradead.org with esmtps (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kJic6-00049d-Ia; Sat, 19 Sep 2020 19:33:39 +0000
+Received: from localhost (localhost [127.0.0.1])
+ by mailout.easymail.ca (Postfix) with ESMTP id C7C54A05B3;
+ Sat, 19 Sep 2020 19:33:37 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at emo05-pco.easydns.vpn
+Received: from mailout.easymail.ca ([127.0.0.1])
+ by localhost (emo05-pco.easydns.vpn [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id G6RbiLyf29ms; Sat, 19 Sep 2020 19:33:37 +0000 (UTC)
+Received: from jupiter.simonsouth.net (unknown [108.162.141.195])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested)
+ by mailout.easymail.ca (Postfix) with ESMTPSA id 77C83A025D;
+ Sat, 19 Sep 2020 19:33:27 +0000 (UTC)
+From: Simon South <simon@simonsouth.net>
+To: thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
+ lee.jones@linaro.org, heiko@sntech.de, linux-pwm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org
+Subject: [PATCH v2] pwm: rockchip: Keep enabled PWMs running while probing
+Date: Sat, 19 Sep 2020 15:33:06 -0400
+Message-Id: <20200919193306.1023-1-simon@simonsouth.net>
+X-Mailer: git-send-email 2.28.0
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20200919_153338_624271_ABEEE8C4 
+X-CRM114-Status: GOOD (  16.76  )
+X-Spam-Score: -2.3 (--)
+X-Spam-Report: SpamAssassin version 3.4.4 on merlin.infradead.org summary:
+ Content analysis details:   (-2.3 points)
+ pts rule name              description
+ ---- ----------------------
+ --------------------------------------------------
+ -2.3 RCVD_IN_DNSWL_MED      RBL: Sender listed at https://www.dnswl.org/,
+ medium trust [64.68.200.34 listed in list.dnswl.org]
+ 0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
+ -0.0 SPF_PASS               SPF: sender matches SPF record
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: Simon South <simon@simonsouth.net>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+
+Following commit cfc4c189bc70 ("pwm: Read initial hardware state at
+request time") the Rockchip PWM driver can no longer assume a device's
+pwm_state structure has been populated after a call to pwmchip_add().
+Consequently, the test in rockchip_pwm_probe() intended to prevent the
+driver from stopping PWM devices already enabled by the bootloader no
+longer functions reliably and this can lead to the kernel hanging
+during startup, particularly on devices like the Pinebook Pro that use
+a PWM-controlled backlight for their display.
+
+Avoid this by querying the device directly at probe time to determine
+whether or not it is enabled.
+
+Fixes: cfc4c189bc70 ("pwm: Read initial hardware state at request time")
+Signed-off-by: Simon South <simon@simonsouth.net>
+Reviewed-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+---
+ drivers/pwm/pwm-rockchip.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pwm/pwm-rockchip.c b/drivers/pwm/pwm-rockchip.c
+index eb8c9cb645a6..098e94335cb5 100644
+--- a/drivers/pwm/pwm-rockchip.c
++++ b/drivers/pwm/pwm-rockchip.c
+@@ -288,6 +288,7 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 	const struct of_device_id *id;
+ 	struct rockchip_pwm_chip *pc;
+ 	struct resource *r;
++	u32 enable_conf, ctrl;
+ 	int ret, count;
+ 
+ 	id = of_match_device(rockchip_pwm_dt_ids, &pdev->dev);
+@@ -362,7 +363,9 @@ static int rockchip_pwm_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	/* Keep the PWM clk enabled if the PWM appears to be up and running. */
+-	if (!pwm_is_enabled(pc->chip.pwms))
++	enable_conf = pc->data->enable_conf;
++	ctrl = readl_relaxed(pc->base + pc->data->regs.ctrl);
++	if ((ctrl & enable_conf) != enable_conf)
+ 		clk_disable(pc->clk);
+ 
+ 	return 0;
