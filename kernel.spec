@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc6.20200925git171d4ff79f96.17
+%global distro_build 0.rc7.20
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc6.20200925git171d4ff79f96.17
+%define pkgrelease 0.rc7.20
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20200925git171d4ff79f96.17%{?buildid}%{?dist}
+%define specrelease 0.rc7.20%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.9
@@ -182,10 +182,10 @@ Summary: The Linux kernel
 # no whitelist
 %define with_kernel_abi_whitelists 0
 # Fedora builds these separately
+%endif
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
-%endif
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -566,7 +566,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200925git171d4ff79f96.tar.xz
+Source0: linux-5.9-rc7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -708,6 +708,7 @@ Source2001: cpupower.config
 Source3000: merge.pl
 Source3001: kernel-local
 Source3002: Patchlist
+Source3003: Patchlist.changelog
 
 Source4000: README.rst
 
@@ -1284,8 +1285,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200925git171d4ff79f96 -c
-mv linux-20200925git171d4ff79f96 linux-%{KVERREL}
+%setup -q -n kernel-5.9-rc7 -c
+mv linux-5.9-rc7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2071,7 +2072,6 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %global perf_make \
   %{__make} -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
-+%global _lto_cflags %{nil}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
@@ -2795,6 +2795,30 @@ fi
 #
 #
 %changelog
+* Mon Sep 28 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc7.19]
+- Merge ark-patches
+
+* Mon Sep 28 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc7.18.test]
+- v5.9-rc7 rebase
+- Updated changelog for the release based on a1bffa48745a (Fedora Kernel Team)
+
+* Sun Sep 27 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200927gita1bffa48745a.18]
+- Merge ark-patches
+
+* Sun Sep 27 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200927gita1bffa48745a.17.test]
+- a1bffa48745a rebase
+- Updated changelog for the release based on 7c7ec3226f5f (Fedora Kernel Team)
+- Create Patchlist.changelog file (Don Zickus)
+
+* Sat Sep 26 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200926git7c7ec3226f5f.17]
+- Merge ark-patches
+
+* Sat Sep 26 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200926git7c7ec3226f5f.16.test]
+- 7c7ec3226f5f rebase
+- Filter out upstream commits from changelog (Don Zickus)
+- Merge Upstream script fixes (Don Zickus)
+- Updated changelog for the release based on 171d4ff79f96 (Fedora Kernel Team)
+
 * Fri Sep 25 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc6.20200925git171d4ff79f96.16]
 - Merge ark-patches
 

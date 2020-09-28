@@ -1,0 +1,78 @@
+d050d59df54ae511abe2749da224fdead503d8eb Filter out LTO build options from the perl ccopts
+ac45397de18ae12a593d9905f45184653778c12c Temporarily remove cdomain from sphinx documentation
+640592428861a423ff76e010ac94c0534604824b Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
+c15af43ddd7d41b4057d0a5b024106ebde0c1638 Fixes "acpi: prefer booting with ACPI over DTS" to be RHEL only
+c189dfd915d3491c25af95f37b9607cb23d8d408 arch/x86: Remove vendor specific CPU ID checks
+5f3e99d5ea1148a4f116ad25c04755a17ed97d8c redhat: Replace hardware.redhat.com link in Unsupported message
+844d4ff20ee79a738e70186daa6d7fa410d3c9fa x86: Fix compile issues with rh_check_supported()
+8065d66d3d7945d3e764187dbea84f02a8ded75a e1000e: bump up timeout to wait when ME un-configure ULP mode
+8714692ff7c4d29ea19559163f35fa8010bc3a6e drm/sun4i: sun6i_mipi_dsi: fix horizontal timing calculation
+19b41705110cac0669c07afe12ad111af9ec8ee3 drm: panel: add Xingbangda XBD599 panel
+c6b2c9e3ce1040cb8118cec45475f172a5500399 dt-bindings: panel: add binding for Xingbangda XBD599 panel
+3b3965f1f690e8b6f822d1595c58b2e642cd75cd ARM: fix __get_user_check() in case uaccess_* calls are not inlined
+fe8f04e184269f114b54019da0219fb700c30180 mm/kmemleak: skip late_init if not skip disable
+b3b4264f1c86243abdf152ac3f9fdf9179334f91 KEYS: Make use of platform keyring for module signature verify
+1786643603f8f2764b284883bafff969a5ccbf47 Drop that for now
+3d21988c3fc938c129d11f27305b9204a960d45f Input: rmi4 - remove the need for artificial IRQ in case of HID
+96d54983c9e35cb1b6db02696c3f93d174521b4e ARM: tegra: usb no reset
+7fed090d9758059dc81133eabaf431be489d7bac arm: make CONFIG_HIGHPTE optional without CONFIG_EXPERT
+70c0c26b9077fbd9fcbe4b7e15b25d8ed2e4a4fc redhat: rh_kabi: deduplication friendly structs
+954c348127aa0a6d9daa8458e06bce6aeab93ac7 redhat: rh_kabi add a comment with warning about RH_KABI_EXCLUDE usage
+8886c73e2b745096d20c3c60dc61da25d3f92238 redhat: rh_kabi: introduce RH_KABI_EXTEND_WITH_SIZE
+16df75e4a82d6a4049a285bd35fc7893334ea728 redhat: rh_kabi: Indirect EXTEND macros so nesting of other macros will resolve.
+07cff8a43d87f3f4fd6c947a8dbb03629dec7f1b redhat: rh_kabi: Fix RH_KABI_SET_SIZE to use dereference operator
+4cd2c3ac05c76f23a81e8321aad4f711da73e3b6 redhat: rh_kabi: Add macros to size and extend structs
+e7ae8fe482c3f6fdb9f4982e60756ebdc4a706cf Removing Obsolete hba pci-ids from rhel8
+12db34ebe175f7eccddfa7ab10def6bee5e604e1 mptsas: pci-id table changes
+3ef11f1dda218250c91ceebea7e11cd406e4e2d9 mptsas: Taint kernel if mptsas is loaded
+1c75f07f03eee584c99fdb6dc795ca88352aae7b mptspi: pci-id table changes
+08004f7e34bb7d82a49ddeac329fa229dccbeef3 qla2xxx: Remove PCI IDs of deprecated adapter
+e0644bfe2c8da1906ff026b4e5a6c9f6b42a413d be2iscsi: remove unsupported device IDs
+35e989810007a0b154373119ac89a1ecfbebeb15 mptspi: Taint kernel if mptspi is loaded
+b06ab2b263e08ee644e9bc655a5e401e175060b7 hpsa: remove old cciss-based smartarray pci ids
+52423cd02aee7419d201c9181be35a35cbdb0940 qla4xxx: Remove deprecated PCI IDs from RHEL 8
+07ee8a0a019860c0f4394d624eb73d92e2c83137 aacraid: Remove depreciated device and vendor PCI id's
+752d49d3cc795cb108d0324277eb601580cc3f80 megaraid_sas: remove deprecated pci-ids
+8fb0c76365e46b6aa085a12bd803b5b80c189206 mpt*: remove certain deprecated pci-ids
+f30105994c63b739c229a0583291b988435add80 kernel: add SUPPORT_REMOVED kernel taint
+fcefa27f17c1dd32f7a470f9ddae5a58578eb3fd Rename RH_DISABLE_DEPRECATED to RHEL_DIFFERENCES
+7995321a6b571e93ed4f6db74ea58503ede740c8 Add option of 13 for FORCE_MAX_ZONEORDER
+64b6406ab965d13d31bdb1dcbb0d6b156bb22432 s390: Lock down the kernel when the IPL secure flag is set
+e2dff8da82a7c54ae73235f12c9fd30815064395 efi: Lock down the kernel if booted in secure boot mode
+51f5608f135bbdfb91820878cf01e81e0973aaec efi: Add an EFI_SECURE_BOOT flag to indicate secure boot mode
+e1fad39b73243babed5a594ee51e466e7dcfc383 security: lockdown: expose a hook to lock the kernel down
+473a2d149faeff9f58445c9f6f6fb7672d511f29 Make get_cert_list() use efi_status_to_str() to print error messages.
+b35fa09721d651880eee5e7a080494d77b6497ee Add efi_status_to_str() and rework efi_status_to_err().
+bab88142be87711ce284954571c43cd82456e6ee Add support for deprecating processors
+65458b4ce50e2fba43ac9265775347a7cee84b92 arm: aarch64: Drop the EXPERT setting from ARM64_FORCE_52BIT
+bc75a2a1f2d729595ce2f0297e6f15f139a80b06 iommu/arm-smmu: workaround DMA mode issues
+a0848af208965c3dfc0088695ffb5ff8bf3b8bcc rh_kabi: introduce RH_KABI_EXCLUDE
+4e1eeb20578912d3e4e22ce09332a7b61537f87f ipmi: do not configure ipmi for HPE m400
+6a0b92eed96ba7eae2552301b65ef69243a2b7b0 IB/rxe: Mark Soft-RoCE Transport driver as tech-preview
+c0708650e75b643818b38693ecd6d5ed0d5bc7c6 scsi: smartpqi: add inspur advantech ids
+8dc0bc473e1012c0e660359c5a4fa277b76c1673 ice: mark driver as tech-preview
+4936bf80b84807b47cda3c77ef0218c99ea937c6 kABI: Add generic kABI macros to use for kABI workarounds
+7086fb873e5507079c92b78c474cdc4ed4e1a56d add pci_hw_vendor_status()
+27f4611163cea50a706e3a151ed002fb87f800a0 ahci: thunderx2: Fix for errata that affects stop engine
+7af030958933c4b107fcffa4e5b9cf87f17c92bd Vulcan: AHCI PCI bar fix for Broadcom Vulcan early silicon
+d5a6b43b0a2c141b05c99e94fbeff95e6ffed98e bpf: Add tech preview taint for syscall
+8c5af605b98ababb4e8498b83666ca4efec49ac7 bpf: set unprivileged_bpf_disabled to 1 by default, add a boot parameter
+bc0745a1bbeb715866b885cb48c807b9184ce651 add Red Hat-specific taint flags
+399fb032c09f96b6b2c183edf7dd9ed883940cbd kdump: fix a grammar issue in a kernel message
+f15181481f999316e5f638f455aa327ad778004f tags.sh: Ignore redhat/rpm
+dffb37699813e29c2e2f4f1f14cf8450f4488f48 put RHEL info into generated headers
+35cc3773d5bf853ebe6fbefaee74bc7f58c5c91f kdump: add support for crashkernel=auto
+5d7a4d4ff5c755cb747f9d3af86ad182ceeea05e kdump: round up the total memory size to 128M for crashkernel reservation
+c750840bb23a14c00fd6e5e9c503c5cbaca2f55a acpi: prefer booting with ACPI over DTS
+1eb76f4018166a2d2d4f8b643936154c1408af4a aarch64: acpi scan: Fix regression related to X-Gene UARTs
+1fdff94dd0be0fdee5b57830ca2e8225ad46507b ACPI / irq: Workaround firmware issue on X-Gene based m400
+2bb817df21bfb67a0f586a9d848b41655d6624e3 modules: add rhelversion MODULE_INFO tag
+e4d3e12560c5747bdce3d8a350f5f04da38425fc ACPI: APEI: arm64: Ignore broken HPE moonshot APEI support
+76c6bf67413f363c6941327a9b4bf2bdacd07868 Add Red Hat tainting
+379f6759a865681f716334965b7605feea26e738 Introduce CONFIG_RH_DISABLE_DEPRECATED
+43557447afe99a0181e0f80e682a7cbdc03b4e7a gitattributes: Remove unnecesary export restrictions
+f003c79ead7f293e9315954c2c0fe39dda34459d Add RHMAINTAINERS file and supporting conf
+825b7aa1169c8a40f81b3b3a886a866ae80c3dc2 gitlab: Add CI job for packaging scripts
+a99885a5e77af594dfdce586cc83e5911d8401ce Pull the RHEL version defines out of the Makefile
+cd3a5d30570279538623ea8a1255db0ee4b728f7 [initial commit] Add Red Hat variables in the top level makefile
+9646ba0fd73d6c948df5532d22b6d1e452930cc2 [initial commit] Red Hat gitignore and attributes
