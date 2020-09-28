@@ -894,6 +894,9 @@ Patch117: arm64-pwm-rockchip-Keep-enabled-PWMs-running-while-probing.patch
 Patch118: arm64-rockchip-pinebookpro-add-fuel-gauge.patch
 Patch119: arm64-tegra-enable-dfll-on-jetson-nano.patch
 
+# https://www.spinics.net/lists/linux-tegra/msg53605.html
+Patch120: iommu-tegra-smmu-Fix-TLB-line-for-Tegra210.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
