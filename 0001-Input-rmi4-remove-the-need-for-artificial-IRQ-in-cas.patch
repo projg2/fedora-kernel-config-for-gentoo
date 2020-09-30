@@ -22,7 +22,7 @@ Signed-off-by: Lyude <lyude@redhat.com>
  3 files changed, 75 insertions(+), 114 deletions(-)
 
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index 7f41213d5ae3..86a23ede344c 100644
+index 8cffa84c9650..6c4e3675601a 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
 @@ -322,19 +322,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
@@ -45,7 +45,7 @@ index 7f41213d5ae3..86a23ede344c 100644
  	return 1;
  }
 
-@@ -591,56 +584,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
+@@ -592,56 +585,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
  	.reset		= rmi_hid_reset,
  };
 
@@ -102,7 +102,7 @@ index 7f41213d5ae3..86a23ede344c 100644
  static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
  {
  	struct rmi_data *data = NULL;
-@@ -713,18 +656,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
+@@ -714,18 +657,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
 
  	mutex_init(&data->page_mutex);
 

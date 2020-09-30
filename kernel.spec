@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc7.20
+%global distro_build 0.rc7.20200930gitfb0155a09b02.22
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc7.20
+%define pkgrelease 0.rc7.20200930gitfb0155a09b02.22
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20%{?buildid}%{?dist}
+%define specrelease 0.rc7.20200930gitfb0155a09b02.22%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.9
@@ -182,10 +182,10 @@ Summary: The Linux kernel
 # no whitelist
 %define with_kernel_abi_whitelists 0
 # Fedora builds these separately
-%endif
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
+%endif
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -566,7 +566,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.9-rc7.tar.xz
+Source0: linux-20200930gitfb0155a09b02.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -790,6 +790,7 @@ Patch72: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 Patch73: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 Patch74: 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 Patch75: 0001-Filter-out-LTO-build-options-from-the-perl-ccopts.patch
+Patch76: 0001-tools-libbpf-Avoid-counting-local-symbols-in-ABI-che.patch
 
 %endif
 
@@ -1285,8 +1286,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.9-rc7 -c
-mv linux-5.9-rc7 linux-%{KVERREL}
+%setup -q -n kernel-20200930gitfb0155a09b02 -c
+mv linux-20200930gitfb0155a09b02 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1367,6 +1368,7 @@ ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.pat
 ApplyOptionalPatch 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 ApplyOptionalPatch 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 ApplyOptionalPatch 0001-Filter-out-LTO-build-options-from-the-perl-ccopts.patch
+ApplyOptionalPatch 0001-tools-libbpf-Avoid-counting-local-symbols-in-ABI-che.patch
 
 %endif
 
@@ -2072,6 +2074,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %global perf_make \
   %{__make} -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
+%global _lto_cflags %{nil}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
@@ -2795,6 +2798,20 @@ fi
 #
 #
 %changelog
+* Wed Sep 30 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc7.20200930gitfb0155a09b02.21]
+- Merge ark-patches
+
+* Wed Sep 30 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc7.20200930gitfb0155a09b02.20.test]
+- fb0155a09b02 rebase
+
+* Tue Sep 29 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc7.20]
+- Merge ark-patches
+
+* Tue Sep 29 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc7.19.test]
+- Separate merge-upstream and release stages (Don Zickus)
+- Re-enable CONFIG_IR_SERIAL on Fedora (Prarit Bhargava)
+- Updated changelog for the release based on v5.9-rc7 (Fedora Kernel Team)
+
 * Mon Sep 28 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc7.19]
 - Merge ark-patches
 

@@ -16,7 +16,7 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 60a89b5e57b3..165d602481fe 100644
+index 74c5325108c0..5aa22996be8c 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1133,6 +1133,7 @@ config XEN

@@ -35,7 +35,7 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  1 file changed, 4 insertions(+)
 
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index 2e2756d8a49b..a67a47d3fce1 100644
+index 08fc4b381056..1305a2b72536 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 @@ -11033,6 +11033,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)

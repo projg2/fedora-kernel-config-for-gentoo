@@ -49,7 +49,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/scsi/be2iscsi/be_main.c b/drivers/scsi/be2iscsi/be_main.c
-index 5c3513a4b450..0d59aca2cf58 100644
+index 8dc2e0824ad7..dfb9d0ae3247 100644
 --- a/drivers/scsi/be2iscsi/be_main.c
 +++ b/drivers/scsi/be2iscsi/be_main.c
 @@ -370,11 +370,13 @@ static int beiscsi_eh_device_reset(struct scsi_cmnd *sc)

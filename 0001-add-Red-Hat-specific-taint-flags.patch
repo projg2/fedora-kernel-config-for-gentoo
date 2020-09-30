@@ -24,10 +24,10 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  2 files changed, 32 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index c3dd56bf044f..f14f238dc36a 100644
+index 19291af895eb..ae2859863d59 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -602,7 +602,24 @@ extern enum system_states {
+@@ -604,7 +604,24 @@ extern enum system_states {
  #define TAINT_LIVEPATCH			15
  #define TAINT_AUX			16
  #define TAINT_RANDSTRUCT		17
@@ -54,7 +54,7 @@ index c3dd56bf044f..f14f238dc36a 100644
 
  struct taint_flag {
 diff --git a/kernel/panic.c b/kernel/panic.c
-index aef8872ba843..fe1d3decf61c 100644
+index e2157ca387c8..534bc76e43da 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
 @@ -386,6 +386,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {

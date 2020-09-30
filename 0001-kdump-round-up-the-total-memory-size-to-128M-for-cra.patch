@@ -45,7 +45,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-index 106e4500fd53..0b3f738178b8 100644
+index 18175687133a..e4dfe2a05a31 100644
 --- a/kernel/crash_core.c
 +++ b/kernel/crash_core.c
 @@ -7,6 +7,7 @@
@@ -56,7 +56,7 @@ index 106e4500fd53..0b3f738178b8 100644
 
  #include <asm/page.h>
  #include <asm/sections.h>
-@@ -41,6 +42,15 @@ static int __init parse_crashkernel_mem(char *cmdline,
+@@ -39,6 +40,15 @@ static int __init parse_crashkernel_mem(char *cmdline,
  					unsigned long long *crash_base)
  {
  	char *cur = cmdline, *tmp;
@@ -72,7 +72,7 @@ index 106e4500fd53..0b3f738178b8 100644
 
  	/* for each entry of the comma-separated list */
  	do {
-@@ -85,13 +95,13 @@ static int __init parse_crashkernel_mem(char *cmdline,
+@@ -83,13 +93,13 @@ static int __init parse_crashkernel_mem(char *cmdline,
  			return -EINVAL;
  		}
  		cur = tmp;

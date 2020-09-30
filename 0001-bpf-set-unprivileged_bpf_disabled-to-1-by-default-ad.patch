@@ -34,10 +34,10 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  4 files changed, 30 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index a1068742a6df..aba9439caec9 100644
+index 98ea67f27809..352afb16f424 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5370,6 +5370,14 @@
+@@ -5373,6 +5373,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -53,10 +53,10 @@ index a1068742a6df..aba9439caec9 100644
  			[USB] Default USB device authorization:
  			(default -1 = authorized except for wireless USB,
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index f14f238dc36a..156d1e44d9f7 100644
+index ae2859863d59..f24819663517 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -617,7 +617,7 @@ extern enum system_states {
+@@ -619,7 +619,7 @@ extern enum system_states {
  #define TAINT_RESERVED28		28
  #define TAINT_RESERVED29		29
  #define TAINT_RESERVED30		30
@@ -66,7 +66,7 @@ index f14f238dc36a..156d1e44d9f7 100644
  #define TAINT_FLAGS_COUNT		32
  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index b999e7ff2583..5e5ac50d9137 100644
+index 2f343ce15747..f7e570292afe 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
@@ -105,7 +105,7 @@ index b999e7ff2583..5e5ac50d9137 100644
  static const struct bpf_map_ops * const bpf_map_types[] = {
  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index fe1d3decf61c..2c483bec82d6 100644
+index 534bc76e43da..e3bae852d92f 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
 @@ -399,7 +399,7 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {

@@ -51,7 +51,7 @@ Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
  1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/arch/arm/include/asm/uaccess.h b/arch/arm/include/asm/uaccess.h
-index a13d90206472..6a6aae01755b 100644
+index b5fdd30252f8..d43ceaa78269 100644
 --- a/arch/arm/include/asm/uaccess.h
 +++ b/arch/arm/include/asm/uaccess.h
 @@ -195,11 +195,12 @@ extern int __get_user_64t_4(void *);

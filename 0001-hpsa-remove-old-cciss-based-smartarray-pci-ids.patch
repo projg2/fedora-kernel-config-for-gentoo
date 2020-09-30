@@ -24,7 +24,7 @@ Upstream Status: RHEL only
  1 file changed, 4 insertions(+)
 
 diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index 48d5da59262b..84d90eedb067 100644
+index 91794a50b31f..0c3dd00e8664 100644
 --- a/drivers/scsi/hpsa.c
 +++ b/drivers/scsi/hpsa.c
 @@ -82,7 +82,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
