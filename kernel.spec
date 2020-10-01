@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -874,9 +874,6 @@ Patch108: brcmfmac-BCM4329-Fixes-and-improvement.patch
 Patch109: mmc-sdhci-iproc-Enable-eMMC-DDR-3.3V-support-for-bcm2711.patch
 
 Patch112: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
-
-# CVE-2020-25211 rhbz 1877571 1877572
-Patch113: netfilter-ctnetlink-add-range-check-for-l3-l4-protonum.patch
 
 # rhbz 1873720
 Patch114: v2-nfs-Fix-security-label-length-not-being-reset.patch
@@ -3010,6 +3007,9 @@ fi
 #
 #
 %changelog
+* Thu Oct  1 12:09:16 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.13-300
+- Linux v5.8.13
+
 * Mon Sep 28 06:48:48 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.12-300
 - Linux v5.8.12
 
