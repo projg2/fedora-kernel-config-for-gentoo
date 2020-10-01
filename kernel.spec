@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -868,9 +868,6 @@ Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
 Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
 
 Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
-
-# CVE-2020-25211 rhbz 1877571 1877572
-Patch111: netfilter-ctnetlink-add-range-check-for-l3-l4-protonum.patch
 
 # rhbz 1873720
 Patch112: v2-nfs-Fix-security-label-length-not-being-reset.patch
@@ -3000,6 +2997,9 @@ fi
 #
 #
 %changelog
+* Thu Oct  1 12:09:13 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.13-200
+- Linux v5.8.13
+
 * Mon Sep 28 06:48:18 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.12-200
 - Linux v5.8.12
 
