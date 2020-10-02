@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc7.20200930gitfb0155a09b02.22
+%global distro_build 0.rc7.20201002git60e720931556.24
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.9.0
-%define pkgrelease 0.rc7.20200930gitfb0155a09b02.22
+%define pkgrelease 0.rc7.20201002git60e720931556.24
 
 # This is needed to do merge window version magic
 %define patchlevel 9
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20200930gitfb0155a09b02.22%{?buildid}%{?dist}
+%define specrelease 0.rc7.20201002git60e720931556.24%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -566,7 +566,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20200930gitfb0155a09b02.tar.xz
+Source0: linux-20201002git60e720931556.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -790,7 +790,6 @@ Patch72: 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.patch
 Patch73: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 Patch74: 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 Patch75: 0001-Filter-out-LTO-build-options-from-the-perl-ccopts.patch
-Patch76: 0001-tools-libbpf-Avoid-counting-local-symbols-in-ABI-che.patch
 
 %endif
 
@@ -1286,8 +1285,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20200930gitfb0155a09b02 -c
-mv linux-20200930gitfb0155a09b02 linux-%{KVERREL}
+%setup -q -n kernel-20201002git60e720931556 -c
+mv linux-20201002git60e720931556 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1368,7 +1367,6 @@ ApplyOptionalPatch 0001-Fixes-acpi-prefer-booting-with-ACPI-over-DTS-to-be-R.pat
 ApplyOptionalPatch 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 ApplyOptionalPatch 0001-Temporarily-remove-cdomain-from-sphinx-documentation.patch
 ApplyOptionalPatch 0001-Filter-out-LTO-build-options-from-the-perl-ccopts.patch
-ApplyOptionalPatch 0001-tools-libbpf-Avoid-counting-local-symbols-in-ABI-che.patch
 
 %endif
 
@@ -2798,6 +2796,23 @@ fi
 #
 #
 %changelog
+* Fri Oct 02 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc7.20201002git60e720931556.23]
+- Merge ark-patches
+
+* Fri Oct 02 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc7.20201002git60e720931556.22.test]
+- 60e720931556 rebase
+- New configs in drivers/pinctrl (Fedora Kernel Team)
+- Updated changelog for the release based on 02de58b24d2e (Fedora Kernel Team)
+- Update CONFIG_THERMAL_NETLINK (Justin Forbes)
+- configs: Enable CONFIG_ENERGY_MODEL (Phil Auld)
+
+* Thu Oct 01 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc7.20201001git02de58b24d2e.22]
+- Merge ark-patches
+
+* Thu Oct 01 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc7.20201001git02de58b24d2e.21.test]
+- 02de58b24d2e rebase
+- Updated changelog for the release based on fb0155a09b02 (Fedora Kernel Team)
+
 * Wed Sep 30 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-0.rc7.20200930gitfb0155a09b02.21]
 - Merge ark-patches
 
