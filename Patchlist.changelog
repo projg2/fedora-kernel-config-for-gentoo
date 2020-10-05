@@ -1,6 +1,6 @@
-e932c7b57534b257f9c3556f4d4c29d3d4bedb9c Filter out LTO build options from the perl ccopts
-c70919ea8453d6b761ed2452fab72c18188fa818 Temporarily remove cdomain from sphinx documentation
-362f059ba88a0f0c64d012ef052664a9b6782c81 Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
+a71a336858692932d6c97e3c4d611ab4a2b8f80d Filter out LTO build options from the perl ccopts
+a531ea58bbad61c0c1bd7f749b383bd14360cc56 Temporarily remove cdomain from sphinx documentation
+3efb2dd58766839acf864fd8a6a2f9180e006c02 Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
 17b0f7f1d49df30661b517d668715ff5ee1bab09 Fixes "acpi: prefer booting with ACPI over DTS" to be RHEL only
 e7c009cd91ababdbb5f726ef592c7800f0682d3a arch/x86: Remove vendor specific CPU ID checks
 7120b2a26fc4c7954fd0395973dc6739c110e091 redhat: Replace hardware.redhat.com link in Unsupported message
