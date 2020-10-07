@@ -1,0 +1,149 @@
+From patchwork Tue Oct  6 16:33:26 2020
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Jeremy Linton <jeremy.linton@arm.com>
+X-Patchwork-Id: 11818995
+Return-Path: 
+ <SRS0=j42+=DN=lists.infradead.org=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@kernel.org>
+Received: from mail.kernel.org (pdx-korg-mail-1.web.codeaurora.org
+ [172.30.200.123])
+	by pdx-korg-patchwork-2.web.codeaurora.org (Postfix) with ESMTP id 90CE859D
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Tue,  6 Oct 2020 16:35:07 +0000 (UTC)
+Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPS id 5D82E206D4
+	for <patchwork-linux-arm@patchwork.kernel.org>;
+ Tue,  6 Oct 2020 16:35:07 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=lists.infradead.org
+ header.i=@lists.infradead.org header.b="f/oUq3JQ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D82E206D4
+Authentication-Results: mail.kernel.org;
+ dmarc=fail (p=none dis=none) header.from=arm.com
+Authentication-Results: mail.kernel.org;
+ spf=none
+ smtp.mailfrom=linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=lists.infradead.org; s=merlin.20170209; h=Sender:Content-Transfer-Encoding:
+	Content-Type:Cc:List-Subscribe:List-Help:List-Post:List-Archive:
+	List-Unsubscribe:List-Id:MIME-Version:Message-Id:Date:Subject:To:From:
+	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
+	:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Owner;
+	bh=zNs0I+g5JjqBvhvT5+mF98XNJ/hK7N5NCEi/ndGYagE=; b=f/oUq3JQxCkOkX7IQrzLh7mHuM
+	vBXmyTI3BhMnGo6oaWvcF/dYeUpO4wAmEHlqyFf6zHzUv8Gwtm5IDH4l0csTqkTEYUdkwD6A9MGX2
+	RHpylWVrErZCvcV4kRqENP+0w7j8Ry+ZE4+NZZFcUB/ecGYhJxD3/4Gc5ycmENUkRIAsJrQOPWW+b
+	SIKpmegcjtJ1AIv7+Y+7II37IhmF579qQoghCSgFaGp6WAEIv80wcrswEnEDc9nsbBMIC1XjlN6g3
+	8PclJ+oXlsNPMLkhu1gJclvRBWzN3OjXVvwAvQuLBW2CqpdTxvYIE6g26kpEbUdGOVaGlieYcN0pd
+	RrspfWkQ==;
+Received: from localhost ([::1] helo=merlin.infradead.org)
+	by merlin.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
+	id 1kPpu9-0007rB-Rx; Tue, 06 Oct 2020 16:33:33 +0000
+Received: from foss.arm.com ([217.140.110.172])
+ by merlin.infradead.org with esmtp (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1kPpu6-0007qe-MX
+ for linux-arm-kernel@lists.infradead.org; Tue, 06 Oct 2020 16:33:31 +0000
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 69DBBD6E;
+ Tue,  6 Oct 2020 09:33:27 -0700 (PDT)
+Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com
+ [10.118.28.62])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 608393F66B;
+ Tue,  6 Oct 2020 09:33:27 -0700 (PDT)
+From: Jeremy Linton <jeremy.linton@arm.com>
+To: linux-arm-kernel@lists.infradead.org
+Subject: [BUG][PATCH v3] crypto: arm64: Use x16 with indirect branch to bti_c
+Date: Tue,  6 Oct 2020 11:33:26 -0500
+Message-Id: <20201006163326.2780619-1-jeremy.linton@arm.com>
+X-Mailer: git-send-email 2.25.4
+MIME-Version: 1.0
+X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-646709E3 
+X-CRM114-CacheID: sfid-20201006_123330_788327_AA367CD9 
+X-CRM114-Status: GOOD (  11.54  )
+X-Spam-Score: -2.3 (--)
+X-Spam-Report: SpamAssassin version 3.4.4 on merlin.infradead.org summary:
+ Content analysis details:   (-2.3 points)
+ pts rule name              description
+ ---- ----------------------
+ --------------------------------------------------
+ -2.3 RCVD_IN_DNSWL_MED      RBL: Sender listed at https://www.dnswl.org/,
+ medium trust [217.140.110.172 listed in list.dnswl.org]
+ -0.0 SPF_PASS               SPF: sender matches SPF record
+ 0.0 SPF_HELO_NONE          SPF: HELO does not publish an SPF Record
+X-BeenThere: linux-arm-kernel@lists.infradead.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: <linux-arm-kernel.lists.infradead.org>
+List-Unsubscribe: 
+ <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: 
+ <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Cc: herbert@gondor.apana.org.au, catalin.marinas@arm.com,
+ linux-kernel@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>,
+ ardb@kernel.org, broonie@kernel.org, linux-crypto@vger.kernel.org,
+ will@kernel.org, davem@davemloft.net, dave.martin@arm.com
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: 
+ linux-arm-kernel-bounces+patchwork-linux-arm=patchwork.kernel.org@lists.infradead.org
+
+The AES code uses a 'br x7' as part of a function called by
+a macro. That branch needs a bti_j as a target. This results
+in a panic as seen below. Using x16 (or x17) with an indirect
+branch keeps the target bti_c.
+
+  Bad mode in Synchronous Abort handler detected on CPU1, code 0x34000003 -- BTI
+  CPU: 1 PID: 265 Comm: cryptomgr_test Not tainted 5.8.11-300.fc33.aarch64 #1
+  pstate: 20400c05 (nzCv daif +PAN -UAO BTYPE=j-)
+  pc : aesbs_encrypt8+0x0/0x5f0 [aes_neon_bs]
+  lr : aesbs_xts_encrypt+0x48/0xe0 [aes_neon_bs]
+  sp : ffff80001052b730
+
+  aesbs_encrypt8+0x0/0x5f0 [aes_neon_bs]
+   __xts_crypt+0xb0/0x2dc [aes_neon_bs]
+   xts_encrypt+0x28/0x3c [aes_neon_bs]
+  crypto_skcipher_encrypt+0x50/0x84
+  simd_skcipher_encrypt+0xc8/0xe0
+  crypto_skcipher_encrypt+0x50/0x84
+  test_skcipher_vec_cfg+0x224/0x5f0
+  test_skcipher+0xbc/0x120
+  alg_test_skcipher+0xa0/0x1b0
+  alg_test+0x3dc/0x47c
+  cryptomgr_test+0x38/0x60
+
+Fixes: 0e89640b640d ("crypto: arm64 - Use modern annotations for assembly functions")
+Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Reviewed-by: Mark Brown <broonie@kernel.org>
+---
+ arch/arm64/crypto/aes-neonbs-core.S | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/crypto/aes-neonbs-core.S b/arch/arm64/crypto/aes-neonbs-core.S
+index b357164379f6..63a52ad9a75c 100644
+--- a/arch/arm64/crypto/aes-neonbs-core.S
++++ b/arch/arm64/crypto/aes-neonbs-core.S
+@@ -788,7 +788,7 @@ SYM_FUNC_START_LOCAL(__xts_crypt8)
+ 
+ 0:	mov		bskey, x21
+ 	mov		rounds, x22
+-	br		x7
++	br		x16
+ SYM_FUNC_END(__xts_crypt8)
+ 
+ 	.macro		__xts_crypt, do8, o0, o1, o2, o3, o4, o5, o6, o7
+@@ -806,7 +806,7 @@ SYM_FUNC_END(__xts_crypt8)
+ 	uzp1		v30.4s, v30.4s, v25.4s
+ 	ld1		{v25.16b}, [x24]
+ 
+-99:	adr		x7, \do8
++99:	adr		x16, \do8
+ 	bl		__xts_crypt8
+ 
+ 	ldp		q16, q17, [sp, #.Lframe_local_offset]

@@ -894,6 +894,8 @@ Patch119: arm64-tegra-enable-dfll-on-jetson-nano.patch
 # https://www.spinics.net/lists/linux-tegra/msg53605.html
 Patch120: iommu-tegra-smmu-Fix-TLB-line-for-Tegra210.patch
 
+# https://patchwork.kernel.org/patch/11818995
+Patch121: arm64-BUG-crypto-arm64-Use-x16-with-indirect-branch-to-bti_c.patch
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -3007,6 +3009,9 @@ fi
 #
 #
 %changelog
+* Wed Oct  7 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix aarch64 boot crash on BTI capable systems
+
 * Thu Oct  1 12:09:16 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.13-300
 - Linux v5.8.13
 
