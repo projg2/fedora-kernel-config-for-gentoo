@@ -1,6 +1,6 @@
-a71a336858692932d6c97e3c4d611ab4a2b8f80d Filter out LTO build options from the perl ccopts
-a531ea58bbad61c0c1bd7f749b383bd14360cc56 Temporarily remove cdomain from sphinx documentation
-3efb2dd58766839acf864fd8a6a2f9180e006c02 Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
+4832d86eca09ae8e25fe4f3d3461febae3954fc9 Filter out LTO build options from the perl ccopts
+d5be61198fd5662ccd774234bc09ae26c8d45943 Temporarily remove cdomain from sphinx documentation
+94eca877fc9b9f2b9b4e6b0555b60625bf85c2e2 Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
 17b0f7f1d49df30661b517d668715ff5ee1bab09 Fixes "acpi: prefer booting with ACPI over DTS" to be RHEL only
 e7c009cd91ababdbb5f726ef592c7800f0682d3a arch/x86: Remove vendor specific CPU ID checks
 7120b2a26fc4c7954fd0395973dc6739c110e091 redhat: Replace hardware.redhat.com link in Unsupported message
@@ -70,9 +70,5 @@ de13e14cc2388478d9a2c68c5d90affd92098f11 ACPI / irq: Workaround firmware issue o
 3247f9c838f4aa91aa5d08c152b385d61554d4b5 ACPI: APEI: arm64: Ignore broken HPE moonshot APEI support
 e80982feaa68226ff60d2f83dace2016c35270d3 Add Red Hat tainting
 2987f9a606df106f5bdfa4113eb55356a21085a6 Introduce CONFIG_RH_DISABLE_DEPRECATED
-43557447afe99a0181e0f80e682a7cbdc03b4e7a gitattributes: Remove unnecesary export restrictions
-f003c79ead7f293e9315954c2c0fe39dda34459d Add RHMAINTAINERS file and supporting conf
-825b7aa1169c8a40f81b3b3a886a866ae80c3dc2 gitlab: Add CI job for packaging scripts
 a99885a5e77af594dfdce586cc83e5911d8401ce Pull the RHEL version defines out of the Makefile
 cd3a5d30570279538623ea8a1255db0ee4b728f7 [initial commit] Add Red Hat variables in the top level makefile
-9646ba0fd73d6c948df5532d22b6d1e452930cc2 [initial commit] Red Hat gitignore and attributes
