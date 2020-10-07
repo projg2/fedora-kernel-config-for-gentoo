@@ -3001,6 +3001,7 @@ fi
 %changelog
 * Wed Oct  7 2020 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fix aarch64 boot crash on BTI capable systems
+- Fix boot crash on aarch64 Ampere eMAG systems (rhbz #1874117)
 
 * Thu Oct  1 12:09:13 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.13-200
 - Linux v5.8.13
