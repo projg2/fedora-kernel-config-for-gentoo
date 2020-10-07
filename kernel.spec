@@ -884,6 +884,8 @@ Patch117: arm64-pwm-rockchip-Keep-enabled-PWMs-running-while-probing.patch
 # Backport from 5.9
 Patch118: arm64-rockchip-pinebookpro-add-fuel-gauge.patch
 
+# https://patchwork.kernel.org/patch/11818995
+Patch121: arm64-BUG-crypto-arm64-Use-x16-with-indirect-branch-to-bti_c.patch
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2997,6 +2999,9 @@ fi
 #
 #
 %changelog
+* Wed Oct  7 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fix aarch64 boot crash on BTI capable systems
+
 * Thu Oct  1 12:09:13 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.13-200
 - Linux v5.8.13
 
