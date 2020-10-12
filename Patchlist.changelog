@@ -1,11 +1,11 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/d004487d01c8ddb49d87c553729e6043d245adb6
- d004487d01c8ddb49d87c553729e6043d245adb6 Filter out LTO build options from the perl ccopts
+https://gitlab.com/cki-project/kernel-ark/-/commit/0e4d28c89a6003100560bd30995f88e11a78dde9
+ 0e4d28c89a6003100560bd30995f88e11a78dde9 Filter out LTO build options from the perl ccopts
 
-https://gitlab.com/cki-project/kernel-ark/-/commit/d80b8dc4c0083e20f3c0caebfbd2bf1ab7ccf7c4
- d80b8dc4c0083e20f3c0caebfbd2bf1ab7ccf7c4 Temporarily remove cdomain from sphinx documentation
+https://gitlab.com/cki-project/kernel-ark/-/commit/f648e05a607bdceac423c8f6d14736c99543cd83
+ f648e05a607bdceac423c8f6d14736c99543cd83 Temporarily remove cdomain from sphinx documentation
 
-https://gitlab.com/cki-project/kernel-ark/-/commit/d6d706eab459fa9906ded320563c154dbf082a50
- d6d706eab459fa9906ded320563c154dbf082a50 Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
+https://gitlab.com/cki-project/kernel-ark/-/commit/187c2541d22a64db262d5415441fb8e4a6014282
+ 187c2541d22a64db262d5415441fb8e4a6014282 Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/17b0f7f1d49df30661b517d668715ff5ee1bab09
  17b0f7f1d49df30661b517d668715ff5ee1bab09 Fixes "acpi: prefer booting with ACPI over DTS" to be RHEL only
