@@ -1,6 +1,5 @@
  Documentation/admin-guide/kdump/kdump.rst          |  11 +
  Documentation/admin-guide/kernel-parameters.txt    |   8 +
- Documentation/conf.py                              |   2 +-
  .../bindings/display/panel/xingbangda,xbd599.yaml  |  50 +++
  Kconfig                                            |   2 +
  Kconfig.redhat                                     |  17 +
@@ -72,10 +71,10 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/perf/Makefile.config                         |   1 +
- 74 files changed, 1586 insertions(+), 193 deletions(-)
+ 73 files changed, 1585 insertions(+), 192 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
-index 2da65fef2a1c..d53a524f80f0 100644
+index 75a9dd98e76e..3ff3291551f9 100644
 --- a/Documentation/admin-guide/kdump/kdump.rst
 +++ b/Documentation/admin-guide/kdump/kdump.rst
 @@ -285,6 +285,17 @@ This would mean:
@@ -97,10 +96,10 @@ index 2da65fef2a1c..d53a524f80f0 100644
 
  Boot into System Kernel
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index a1068742a6df..aba9439caec9 100644
+index 0fa47ddf4c46..f24d4c43dc19 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5370,6 +5370,14 @@
+@@ -5378,6 +5378,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -115,19 +114,6 @@ index a1068742a6df..aba9439caec9 100644
  	usbcore.authorized_default=
  			[USB] Default USB device authorization:
  			(default -1 = authorized except for wireless USB,
-diff --git a/Documentation/conf.py b/Documentation/conf.py
-index c503188880d9..b5b2be8eec22 100644
---- a/Documentation/conf.py
-+++ b/Documentation/conf.py
-@@ -36,7 +36,7 @@ needs_sphinx = '1.3'
- # Add any Sphinx extension module names here, as strings. They can be
- # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
- # ones.
--extensions = ['kerneldoc', 'rstFlatTable', 'kernel_include', 'cdomain',
-+extensions = ['kerneldoc', 'rstFlatTable', 'kernel_include',
-               'kfigure', 'sphinx.ext.ifconfig', 'automarkup',
-               'maintainers_include', 'sphinx.ext.autosectionlabel' ]
-
 diff --git a/Documentation/devicetree/bindings/display/panel/xingbangda,xbd599.yaml b/Documentation/devicetree/bindings/display/panel/xingbangda,xbd599.yaml
 new file mode 100644
 index 000000000000..b27bcf11198f
@@ -257,10 +243,10 @@ index 51540b291738..cb84fca3accc 100644
 
  $(version_h): FORCE
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index e00d94b16658..4db48405b23a 100644
+index e67ef15c800f..a8cd3715ca43 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1514,9 +1514,9 @@ config HIGHMEM
+@@ -1515,9 +1515,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -304,10 +290,10 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 6d232837cbee..165d602481fe 100644
+index 4b136e923ccb..9179f909ed02 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -861,7 +861,7 @@ endchoice
+@@ -869,7 +869,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -316,7 +302,7 @@ index 6d232837cbee..165d602481fe 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1133,6 +1133,7 @@ config XEN
+@@ -1141,6 +1141,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if (ARM64_64K_PAGES && TRANSPARENT_HUGEPAGE)
@@ -388,19 +374,19 @@ index c2c1b4e723ea..1247f80a3bf0 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index c5d6f17d9b9d..9bf902c26a6e 100644
+index 7824fc62c7cd..6f38a3f502ca 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1253,6 +1253,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1307,6 +1307,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
 +		get_model_name(c); /* RHEL: get model name for unsupported check */
  		get_cpu_address_sizes(c);
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
-
+ 		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 3511736fbc74..6100995124f9 100644
+index fa16b906ea3f..76c93ac0f037 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -18,6 +18,7 @@
@@ -409,9 +395,9 @@ index 3511736fbc74..6100995124f9 100644
  #include <linux/tboot.h>
 +#include <linux/security.h>
  #include <linux/usb/xhci-dbgp.h>
+ #include <linux/static_call.h>
 
- #include <uapi/linux/mount.h>
-@@ -45,6 +46,7 @@
+@@ -46,6 +47,7 @@
  #include <asm/unwind.h>
  #include <asm/vsyscall.h>
  #include <linux/vmalloc.h>
@@ -419,7 +405,7 @@ index 3511736fbc74..6100995124f9 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -754,7 +756,51 @@ static void __init trim_low_memory_range(void)
+@@ -755,7 +757,51 @@ static void __init trim_low_memory_range(void)
  {
  	memblock_reserve(0, ALIGN(reserve_low, PAGE_SIZE));
  }
@@ -472,7 +458,7 @@ index 3511736fbc74..6100995124f9 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -978,6 +1024,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -980,6 +1026,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -486,7 +472,7 @@ index 3511736fbc74..6100995124f9 100644
  	dmi_setup();
 
  	/*
-@@ -1129,19 +1182,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1132,19 +1185,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -507,7 +493,7 @@ index 3511736fbc74..6100995124f9 100644
 
  	reserve_initrd();
 
-@@ -1249,6 +1290,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1252,6 +1293,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -704,7 +690,7 @@ index 737c0b6b24ea..7901e780323b 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
-index 7a216984552b..f0ef02d733af 100644
+index e8da782280b6..95e357f42761 100644
 --- a/drivers/firmware/efi/Makefile
 +++ b/drivers/firmware/efi/Makefile
 @@ -25,6 +25,7 @@ obj-$(CONFIG_EFI_FAKE_MEMMAP)		+= fake_map.o
@@ -716,7 +702,7 @@ index 7a216984552b..f0ef02d733af 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 3aa07c3b5136..833c35abd009 100644
+index 5e5480a0a32d..bb5d61fc82bb 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -727,7 +713,7 @@ index 3aa07c3b5136..833c35abd009 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -833,40 +834,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -840,40 +841,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -1654,7 +1640,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 609bd25bf154..c701912b13ab 100644
+index 0e4fbdc0f5e5..4f07b4ebc936 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1665,7 +1651,7 @@ index 609bd25bf154..c701912b13ab 100644
  #include <linux/kernel.h>
  #include <linux/bug.h>
  #include <linux/types.h>
-@@ -2849,3 +2850,24 @@ int iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -2849,3 +2850,24 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  	return ops->sva_get_pasid(handle);
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
@@ -2171,7 +2157,7 @@ index 5b768b80d1ee..6929b6b5186b 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 73db1ae04cef..1cdc5d8b6ac3 100644
+index d7c0e73af2b9..c2af576741d5 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -2183,7 +2169,7 @@ index 73db1ae04cef..1cdc5d8b6ac3 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -783,6 +785,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -786,6 +788,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -2198,7 +2184,7 @@ index 73db1ae04cef..1cdc5d8b6ac3 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -794,6 +804,8 @@ static inline bool efi_enabled(int feature)
+@@ -797,6 +807,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -2207,7 +2193,7 @@ index 73db1ae04cef..1cdc5d8b6ac3 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -820,6 +832,8 @@ efi_capsule_pending(int *reset_type)
+@@ -823,6 +835,8 @@ efi_capsule_pending(int *reset_type)
  	return false;
  }
 
@@ -2216,7 +2202,7 @@ index 73db1ae04cef..1cdc5d8b6ac3 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -832,6 +846,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -835,6 +849,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -2224,7 +2210,7 @@ index 73db1ae04cef..1cdc5d8b6ac3 100644
 
  /*
   * Variable Attributes
-@@ -1091,12 +1106,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1083,12 +1098,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -2318,10 +2304,10 @@ index 9e2e3e63719d..317660f68b4f 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/module.h b/include/linux/module.h
-index e30ed5fa33a7..b960ea38d185 100644
+index a29187f7c360..9a9b05e946d7 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
-@@ -371,6 +371,7 @@ struct module {
+@@ -372,6 +372,7 @@ struct module {
  	struct module_attribute *modinfo_attrs;
  	const char *version;
  	const char *srcversion;
@@ -2683,7 +2669,7 @@ index 0a0a03b36a3b..26869f44416b 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 9a20016d4900..a591962f7906 100644
+index b74820d8b264..f334ed22187b 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -13,6 +13,8 @@ obj-y     = fork.o exec_domain.o panic.o \
@@ -2818,7 +2804,7 @@ index 106e4500fd53..09a4870fe1fb 100644
  	 * if the commandline contains a ':', then that's the extended
  	 * syntax -- if not, it must be the classic syntax
 diff --git a/kernel/module.c b/kernel/module.c
-index 1c5cff34d9f2..670ceadd44d2 100644
+index c075a18103fb..502171299962 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -805,6 +805,7 @@ static struct module_attribute modinfo_##field = {                    \
@@ -3032,7 +3018,7 @@ index 69341b36f271..dbc63328187c 100644
  		sprintf(fname, "%s.mod.c", mod->name);
  		write_if_changed(&buf, fname);
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index 850f4ccb6afc..64154c5fc10c 100755
+index fd96734deff1..5b540f3dcff1 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
@@ -3045,7 +3031,7 @@ index 850f4ccb6afc..64154c5fc10c 100755
  # Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
  # to force full paths for a non-O= build
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-index 253fb9a7fc98..8c95b68d86d4 100644
+index ee4b4c666854..eff9ff593405 100644
 --- a/security/integrity/platform_certs/load_uefi.c
 +++ b/security/integrity/platform_certs/load_uefi.c
 @@ -46,7 +46,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,

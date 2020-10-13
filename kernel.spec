@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 37
+%global distro_build 0.rc0.20201013gitc4439713e82a.40
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -68,14 +68,14 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.9.0
-%define pkgrelease 36
+%define rpmversion 5.10.0
+%define pkgrelease 0.rc0.20201013gitc4439713e82a.40
 
 # This is needed to do merge window version magic
-%define patchlevel 9
+%define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 36%{?buildid}%{?dist}
+%define specrelease 0.rc0.20201013gitc4439713e82a.40%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,10 +166,10 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
-%define kversion 5.9
+%define kversion 5.10
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -566,7 +566,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.9.tar.xz
+Source0: linux-20201013gitc4439713e82a.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1210,8 +1210,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.9 -c
-mv linux-5.9 linux-%{KVERREL}
+%setup -q -n kernel-20201013gitc4439713e82a -c
+mv linux-20201013gitc4439713e82a linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2647,10 +2647,19 @@ fi
 #
 #
 %changelog
-* Mon Oct 12 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-35]
+* Tue Oct 13 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201013gitc4439713e82a.39]
 - Filter out LTO build options from the perl ccopts ("Justin M. Forbes")
-- Temporarily remove cdomain from sphinx documentation ("Justin M. Forbes")
 - Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377 ("Justin M. Forbes")
+
+* Tue Oct 13 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201013gitc4439713e82a.38.test]
+- c4439713e82a rebase
+
+* Tue Oct 13 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201013git865c50e1d279.37.test]
+- 865c50e1d279 rebase
+
+* Tue Oct 13 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-35.test]
+- Disable Speakup synth DECEXT ("Justin M. Forbes")
+- Enable Speakup for Fedora since it is out of staging ("Justin M. Forbes")
 
 * Mon Oct 12 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.9.0-34.test]
 - v5.9 rebase
