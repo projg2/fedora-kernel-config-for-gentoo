@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -875,9 +875,6 @@ Patch109: mmc-sdhci-iproc-Enable-eMMC-DDR-3.3V-support-for-bcm2711.patch
 
 Patch112: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 
-# rhbz 1875339 1875828 1876997
-Patch115: pdx86-SW_TABLET_MODE-fixes.patch
-
 # https://patchwork.kernel.org/patch/11796255/
 Patch116: arm64-dts-rockchip-disable-USB-type-c-DisplayPort.patch
 
@@ -891,8 +888,9 @@ Patch119: arm64-tegra-enable-dfll-on-jetson-nano.patch
 # https://www.spinics.net/lists/linux-tegra/msg53605.html
 Patch120: iommu-tegra-smmu-Fix-TLB-line-for-Tegra210.patch
 
-# https://patchwork.kernel.org/patch/11818995
-Patch121: arm64-BUG-crypto-arm64-Use-x16-with-indirect-branch-to-bti_c.patch
+# CVE-2020-16119 rhbz 1886374 1888083
+Patch121: CVE-2020-16119-DCCP-CCID-structure-use-after-free.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -3006,6 +3004,10 @@ fi
 #
 #
 %changelog
+* Wed Oct 14 11:29:34 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.15-300
+- Linux v5.8.15
+- Fix CVE-2020-16119 (rhbz 1886374 1888083)
+
 * Wed Oct  7 07:21:34 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.14-300
 - Linux v5.8.14
 
