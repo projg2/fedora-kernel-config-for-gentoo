@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 14
+%define stable_update 15
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -869,9 +869,6 @@ Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
 
 Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 
-# rhbz 1875339 1875828 1876997
-Patch113: pdx86-SW_TABLET_MODE-fixes.patch
-
 # https://patchwork.kernel.org/patch/11796255/
 Patch116: arm64-dts-rockchip-disable-USB-type-c-DisplayPort.patch
 
@@ -881,8 +878,9 @@ Patch117: arm64-pwm-rockchip-Keep-enabled-PWMs-running-while-probing.patch
 # Backport from 5.9
 Patch118: arm64-rockchip-pinebookpro-add-fuel-gauge.patch
 
-# https://patchwork.kernel.org/patch/11818995
-Patch121: arm64-BUG-crypto-arm64-Use-x16-with-indirect-branch-to-bti_c.patch
+# CVE-2020-16119 rhbz 1886374 1888083
+Patch119: CVE-2020-16119-DCCP-CCID-structure-use-after-free.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2996,6 +2994,10 @@ fi
 #
 #
 %changelog
+* Wed Oct 14 11:29:47 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.15-200
+- Linux v5.8.15
+- Fix CVE-2020-16119 (rhbz 1886374 1888083)
+
 * Wed Oct  7 07:21:23 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.14-200
 - Linux v5.8.14
 
