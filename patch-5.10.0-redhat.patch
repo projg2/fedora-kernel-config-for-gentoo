@@ -243,10 +243,10 @@ index 51540b291738..cb84fca3accc 100644
 
  $(version_h): FORCE
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index e67ef15c800f..a8cd3715ca43 100644
+index 82d0b00bc7a5..c8acc3eaebf4 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1515,9 +1515,9 @@ config HIGHMEM
+@@ -1516,9 +1516,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -290,7 +290,7 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 4b136e923ccb..9179f909ed02 100644
+index 9cd317f00034..584d7353b48d 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -869,7 +869,7 @@ endchoice
@@ -302,7 +302,7 @@ index 4b136e923ccb..9179f909ed02 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1141,6 +1141,7 @@ config XEN
+@@ -1128,6 +1128,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if (ARM64_64K_PAGES && TRANSPARENT_HUGEPAGE)
@@ -374,7 +374,7 @@ index c2c1b4e723ea..1247f80a3bf0 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 7824fc62c7cd..6f38a3f502ca 100644
+index c51158914ea2..38d0794b7675 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1307,6 +1307,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -2002,10 +2002,10 @@ index d48414e295a0..ba0e384412c9 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 2b7e7b5f38ed..b3bacfdcb727 100644
+index 020270ce790b..de841140216b 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
-@@ -133,6 +133,7 @@ static void megasas_get_pd_info(struct megasas_instance *instance,
+@@ -138,6 +138,7 @@ static void megasas_get_pd_info(struct megasas_instance *instance,
   */
  static struct pci_device_id megasas_pci_table[] = {
 
@@ -2013,7 +2013,7 @@ index 2b7e7b5f38ed..b3bacfdcb727 100644
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1064R)},
  	/* xscale IOP */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1078R)},
-@@ -151,6 +152,7 @@ static struct pci_device_id megasas_pci_table[] = {
+@@ -156,6 +157,7 @@ static struct pci_device_id megasas_pci_table[] = {
  	/* xscale IOP, vega */
  	{PCI_DEVICE(PCI_VENDOR_ID_DELL, PCI_DEVICE_ID_DELL_PERC5)},
  	/* xscale IOP */
@@ -2224,10 +2224,10 @@ index d7c0e73af2b9..c2af576741d5 100644
 
  #ifdef CONFIG_RESET_ATTACK_MITIGATION
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index c25b8e41c0ea..7a7a47665771 100644
+index e4aa29b1ad62..958f058db539 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -602,7 +602,24 @@ extern enum system_states {
+@@ -601,7 +601,24 @@ extern enum system_states {
  #define TAINT_LIVEPATCH			15
  #define TAINT_AUX			16
  #define TAINT_RANDSTRUCT		17
@@ -2253,7 +2253,7 @@ index c25b8e41c0ea..7a7a47665771 100644
  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
 
  struct taint_flag {
-@@ -1037,4 +1054,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -1036,4 +1053,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))

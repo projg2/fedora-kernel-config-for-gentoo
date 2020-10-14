@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20201013gitc4439713e82a.40
+%global distro_build 0.rc0.20201014gitb5fc7a89e58b.41
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc0.20201013gitc4439713e82a.40
+%define pkgrelease 0.rc0.20201014gitb5fc7a89e58b.41
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20201013gitc4439713e82a.40%{?buildid}%{?dist}
+%define specrelease 0.rc0.20201014gitb5fc7a89e58b.41%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -566,7 +566,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201013gitc4439713e82a.tar.xz
+Source0: linux-20201014gitb5fc7a89e58b.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1210,8 +1210,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201013gitc4439713e82a -c
-mv linux-20201013gitc4439713e82a linux-%{KVERREL}
+%setup -q -n kernel-20201014gitb5fc7a89e58b -c
+mv linux-20201014gitb5fc7a89e58b linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2647,9 +2647,12 @@ fi
 #
 #
 %changelog
-* Tue Oct 13 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201013gitc4439713e82a.39]
+* Wed Oct 14 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201014gitb5fc7a89e58b.40]
 - Filter out LTO build options from the perl ccopts ("Justin M. Forbes")
 - Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377 ("Justin M. Forbes")
+
+* Wed Oct 14 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201014gitb5fc7a89e58b.39.test]
+- b5fc7a89e58b rebase
 
 * Tue Oct 13 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201013gitc4439713e82a.38.test]
 - c4439713e82a rebase

@@ -1,8 +1,8 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/c61af5f7ab21fdc698bd9f0414e7f7a0774e841c
- c61af5f7ab21fdc698bd9f0414e7f7a0774e841c Filter out LTO build options from the perl ccopts
+https://gitlab.com/cki-project/kernel-ark/-/commit/514c3a2c3adc4a97d99c39c8e91327740a54807c
+ 514c3a2c3adc4a97d99c39c8e91327740a54807c Filter out LTO build options from the perl ccopts
 
-https://gitlab.com/cki-project/kernel-ark/-/commit/1d3841035d16e2ce7796d38b1721e4665a2ed160
- 1d3841035d16e2ce7796d38b1721e4665a2ed160 Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
+https://gitlab.com/cki-project/kernel-ark/-/commit/7638e86597c1d8e311a2934d4fc8d1baf86cc248
+ 7638e86597c1d8e311a2934d4fc8d1baf86cc248 Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/17b0f7f1d49df30661b517d668715ff5ee1bab09
  17b0f7f1d49df30661b517d668715ff5ee1bab09 Fixes "acpi: prefer booting with ACPI over DTS" to be RHEL only
