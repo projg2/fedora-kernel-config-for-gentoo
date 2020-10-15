@@ -77,7 +77,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 100
+%global baserelease 101
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -868,6 +868,9 @@ Patch110: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 
 # CVE-2020-16119 rhbz 1886374 1888083
 Patch119: CVE-2020-16119-DCCP-CCID-structure-use-after-free.patch
+
+# CVE-2020-12351 CVE-2020-12352 rhbz 1886521 1888439 1886529 1888440
+Patch122: bluetooth_cves.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2982,6 +2985,9 @@ fi
 #
 #
 %changelog
+* Thu Oct 15 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.15-101
+- Fix BleedingTooth CVE-2020-12351 CVE-2020-12352 (rhbz 1886521 1888439 1886529 1888440)
+
 * Wed Oct 14 11:29:48 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.15-100
 - Linux v5.8.15
 - Fix CVE-2020-16119 (rhbz 1886374 1888083)
