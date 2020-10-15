@@ -80,7 +80,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -880,6 +880,9 @@ Patch118: arm64-rockchip-pinebookpro-add-fuel-gauge.patch
 
 # CVE-2020-16119 rhbz 1886374 1888083
 Patch119: CVE-2020-16119-DCCP-CCID-structure-use-after-free.patch
+
+# CVE-2020-12351 CVE-2020-12352 rhbz 1886521 1888439 1886529 1888440
+Patch122: bluetooth_cves.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2994,6 +2997,9 @@ fi
 #
 #
 %changelog
+* Thu Oct 15 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.15-201
+- Fix BleedingTooth CVE-2020-12351 CVE-2020-12352 (rhbz 1886521 1888439 1886529 1888440)
+
 * Wed Oct 14 11:29:47 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.15-200
 - Linux v5.8.15
 - Fix CVE-2020-16119 (rhbz 1886374 1888083)
