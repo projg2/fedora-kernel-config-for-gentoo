@@ -884,6 +884,12 @@ Patch119: CVE-2020-16119-DCCP-CCID-structure-use-after-free.patch
 # CVE-2020-12351 CVE-2020-12352 rhbz 1886521 1888439 1886529 1888440
 Patch122: bluetooth_cves.patch
 
+# Surface Go series not booting regression fix (rhbz 1886249)
+# Also fixes some touchscreen regressions:
+# https://bugzilla.kernel.org/show_bug.cgi?id=209627
+# Pending for inclusion into stable series
+Patch123: 0001-i2c-core-Restore-acpi_walk_dep_device_list-getting-c.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2997,6 +3003,9 @@ fi
 #
 #
 %changelog
+* Fri Oct 16 2020 Hans de Goede <hdegoede@redhat.com>
+- Fix Micrsoft Surface Go series boot regression (rhbz 1886249)
+
 * Thu Oct 15 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.15-201
 - Fix BleedingTooth CVE-2020-12351 CVE-2020-12352 (rhbz 1886521 1888439 1886529 1888440)
 
