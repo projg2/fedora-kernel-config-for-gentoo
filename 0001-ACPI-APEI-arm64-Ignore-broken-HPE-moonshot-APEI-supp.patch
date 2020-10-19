@@ -48,7 +48,7 @@ Signed-off-by: Herton R. Krzesinski <herton@redhat.com>
  1 file changed, 8 insertions(+)
 
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
-index 953a2fae8b15..7ea07f7da582 100644
+index 6e980fe16772..37bc003e7a83 100644
 --- a/drivers/acpi/apei/hest.c
 +++ b/drivers/acpi/apei/hest.c
 @@ -88,6 +88,14 @@ int apei_hest_parse(apei_hest_func_t func, void *data)
@@ -67,5 +67,5 @@ index 953a2fae8b15..7ea07f7da582 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 -- 
-2.26.2
+2.28.0
 

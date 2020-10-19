@@ -314,7 +314,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
-index 7b22366d0065..307a651b2755 100644
+index 8ed37f93f3c8..d7ad35a15acb 100644
 --- a/include/linux/rmi.h
 +++ b/include/linux/rmi.h
 @@ -363,6 +363,7 @@ struct rmi_driver_data {
@@ -326,5 +326,5 @@ index 7b22366d0065..307a651b2755 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 -- 
-2.26.2
+2.28.0
 

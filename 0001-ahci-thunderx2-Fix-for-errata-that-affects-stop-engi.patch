@@ -85,5 +85,5 @@ index ea5bf5f4cbed..71c55cae27ac 100644
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
 -- 
-2.26.2
+2.28.0
 
