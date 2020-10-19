@@ -96,10 +96,10 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 0fa47ddf4c46..f24d4c43dc19 100644
+index d246ad46d845..d80156fef33f 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5378,6 +5378,14 @@
+@@ -5395,6 +5395,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -204,7 +204,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 51540b291738..cb84fca3accc 100644
+index ebbd34801476..0457c8b5e816 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -227,7 +227,7 @@ index 51540b291738..cb84fca3accc 100644
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
  KBUILD_AFLAGS_KERNEL :=
-@@ -1245,7 +1249,13 @@ endef
+@@ -1238,7 +1242,13 @@ endef
  define filechk_version.h
  	echo \#define LINUX_VERSION_CODE $(shell                         \
  	expr $(VERSION) \* 65536 + 0$(PATCHLEVEL) \* 256 + 0$(SUBLEVEL)); \
@@ -243,7 +243,7 @@ index 51540b291738..cb84fca3accc 100644
 
  $(version_h): FORCE
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 82d0b00bc7a5..c8acc3eaebf4 100644
+index 3996b6572c3a..fe506995497c 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -1516,9 +1516,9 @@ config HIGHMEM
@@ -290,7 +290,7 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 9cd317f00034..584d7353b48d 100644
+index 893130ce1626..d8dd5bde0bc5 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -869,7 +869,7 @@ endchoice
@@ -327,10 +327,10 @@ index cada0b816c8a..77b30bf451aa 100644
 
  static int __init parse_acpi(char *arg)
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
-index 7d5cfdda5277..be66ee5d0437 100644
+index a9e2c7295b35..6ff11f3a2d47 100644
 --- a/arch/s390/include/asm/ipl.h
 +++ b/arch/s390/include/asm/ipl.h
-@@ -120,6 +120,7 @@ int ipl_report_add_component(struct ipl_report *report, struct kexec_buf *kbuf,
+@@ -127,6 +127,7 @@ int ipl_report_add_component(struct ipl_report *report, struct kexec_buf *kbuf,
  			     unsigned char flags, unsigned short cert);
  int ipl_report_add_certificate(struct ipl_report *report, void *key,
  			       unsigned long addr, unsigned long len);
@@ -339,10 +339,10 @@ index 7d5cfdda5277..be66ee5d0437 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 90a2a17239b0..be3b72c53656 100644
+index 98b3aca1de8e..1cace7c90d41 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2110,3 +2110,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2215,3 +2215,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -352,7 +352,7 @@ index 90a2a17239b0..be3b72c53656 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index c2c1b4e723ea..1247f80a3bf0 100644
+index 4d843e64496f..4fc65aaef059 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -363,7 +363,7 @@ index c2c1b4e723ea..1247f80a3bf0 100644
 
  #include <asm/boot_data.h>
  #include <asm/ipl.h>
-@@ -1085,6 +1086,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -1101,6 +1102,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -374,7 +374,7 @@ index c2c1b4e723ea..1247f80a3bf0 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index c51158914ea2..38d0794b7675 100644
+index 35ad8480c464..fade48ea4c2d 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1307,6 +1307,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -386,18 +386,18 @@ index c51158914ea2..38d0794b7675 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index fa16b906ea3f..76c93ac0f037 100644
+index 84f581c91db4..1d510bd7c969 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -18,6 +18,7 @@
+@@ -19,6 +19,7 @@
  #include <linux/sfi.h>
  #include <linux/hugetlb.h>
  #include <linux/tboot.h>
 +#include <linux/security.h>
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
-
-@@ -46,6 +47,7 @@
+ #include <linux/swiotlb.h>
+@@ -48,6 +49,7 @@
  #include <asm/unwind.h>
  #include <asm/vsyscall.h>
  #include <linux/vmalloc.h>
@@ -405,7 +405,7 @@ index fa16b906ea3f..76c93ac0f037 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -755,7 +757,51 @@ static void __init trim_low_memory_range(void)
+@@ -735,7 +737,51 @@ static void __init trim_low_memory_range(void)
  {
  	memblock_reserve(0, ALIGN(reserve_low, PAGE_SIZE));
  }
@@ -458,7 +458,7 @@ index fa16b906ea3f..76c93ac0f037 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -980,6 +1026,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -960,6 +1006,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -472,7 +472,7 @@ index fa16b906ea3f..76c93ac0f037 100644
  	dmi_setup();
 
  	/*
-@@ -1132,19 +1185,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1112,19 +1165,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -493,7 +493,7 @@ index fa16b906ea3f..76c93ac0f037 100644
 
  	reserve_initrd();
 
-@@ -1252,6 +1293,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1233,6 +1274,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -580,10 +580,10 @@ index e209081d644b..7484bcf59a1b 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 2142f1554761..f5fdf6f3650c 100644
+index a896e5e87c93..f5b2986c9415 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1574,6 +1574,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1573,6 +1573,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
 
@@ -655,7 +655,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index 737c0b6b24ea..7901e780323b 100644
+index 8774a3b8ff95..8c3d67367b9c 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -34,6 +34,7 @@
@@ -663,10 +663,10 @@ index 737c0b6b24ea..7901e780323b 100644
  #include <linux/nospec.h>
  #include <linux/vmalloc.h>
 +#include <linux/dmi.h>
+ #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-
-@@ -5153,8 +5154,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5173,8 +5174,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -891,10 +891,10 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index de2f2a452be5..3ce658de416b 100644
+index b9dbedf8f15e..a8801d0d69b9 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -462,6 +462,15 @@ config DRM_PANEL_VISIONOX_RM69299
+@@ -490,6 +490,15 @@ config DRM_PANEL_VISIONOX_RM69299
  	  Say Y here if you want to enable support for Visionox
  	  RM69299  DSI Video Mode panel.
 
@@ -911,10 +911,10 @@ index de2f2a452be5..3ce658de416b 100644
  	tristate "Xinpeng XPP055C272 panel driver"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index e45ceac6286f..bd10617430ec 100644
+index 2ba560bca61d..5e109b9ccd64 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -49,4 +49,5 @@ obj-$(CONFIG_DRM_PANEL_TPO_TD043MTEA1) += panel-tpo-td043mtea1.o
+@@ -52,4 +52,5 @@ obj-$(CONFIG_DRM_PANEL_TPO_TD043MTEA1) += panel-tpo-td043mtea1.o
  obj-$(CONFIG_DRM_PANEL_TPO_TPG110) += panel-tpo-tpg110.o
  obj-$(CONFIG_DRM_PANEL_TRULY_NT35597_WQXGA) += panel-truly-nt35597.o
  obj-$(CONFIG_DRM_PANEL_VISIONOX_RM69299) += panel-visionox-rm69299.o
@@ -1293,7 +1293,7 @@ index 000000000000..b483f96ee1db
 +MODULE_DESCRIPTION("DRM driver for Xingbangda XBD599 MIPI DSI panel");
 +MODULE_LICENSE("GPL v2");
 diff --git a/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c b/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
-index de8a11abd66a..7e8c1a3c9b8f 100644
+index 4f5efcace68e..5af808078efd 100644
 --- a/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
 +++ b/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c
 @@ -556,7 +556,7 @@ static void sun6i_dsi_setup_timings(struct sun6i_dsi *dsi,
@@ -1640,7 +1640,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 0e4fbdc0f5e5..4f07b4ebc936 100644
+index 8c470f451a32..e065b5b6c0ac 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1651,7 +1651,7 @@ index 0e4fbdc0f5e5..4f07b4ebc936 100644
  #include <linux/kernel.h>
  #include <linux/bug.h>
  #include <linux/types.h>
-@@ -2849,3 +2850,24 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3029,3 +3030,24 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  	return ops->sva_get_pasid(handle);
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
@@ -1747,10 +1747,10 @@ index eabc4de5816c..1f458e35effb 100644
 
  out_mptspi_probe:
 diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index b2f2fcfdf732..a9e4c059d402 100644
+index 9aa6fad8ed47..11a9cea929a3 100644
 --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
 +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -1245,9 +1245,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
+@@ -1248,9 +1248,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
  			ew32(H2ME, mac_reg);
  		}
 
@@ -1763,10 +1763,10 @@ index b2f2fcfdf732..a9e4c059d402 100644
  				goto out;
  			}
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 54a7f55eb8c1..4b409e3c9b7c 100644
+index 2dea4d0e9415..ea87438a4f7b 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4780,6 +4780,7 @@ static int __init ice_module_init(void)
+@@ -4813,6 +4813,7 @@ static int __init ice_module_init(void)
 
  	pr_info("%s\n", ice_driver_string);
  	pr_info("%s\n", ice_copyright);
@@ -1775,7 +1775,7 @@ index 54a7f55eb8c1..4b409e3c9b7c 100644
  	ice_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, KBUILD_MODNAME);
  	if (!ice_wq) {
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 449466f71040..f5678ed743bf 100644
+index d1b7169c0684..0354e84ce1ac 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -1783,10 +1783,10 @@ index 449466f71040..f5678ed743bf 100644
  #include <linux/of_device.h>
  #include <linux/acpi.h>
 +#include <linux/kernel.h>
+ #include <linux/dma-map-ops.h>
  #include "pci.h"
  #include "pcie/portdrv.h"
-
-@@ -279,6 +280,34 @@ static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
+@@ -280,6 +281,34 @@ static const struct pci_device_id *pci_match_device(struct pci_driver *drv,
  	return found_id;
  }
 
@@ -1822,10 +1822,10 @@ index 449466f71040..f5678ed743bf 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 2a589b6d6ed8..a2b2333e6ab1 100644
+index 01f23e30bd8f..bf5ae01ae3c6 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4196,6 +4196,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4139,6 +4139,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1857,7 +1857,7 @@ index 2a589b6d6ed8..a2b2333e6ab1 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/scsi/aacraid/linit.c b/drivers/scsi/aacraid/linit.c
-index a3aee146537b..cf50fa206890 100644
+index 8f3772480582..b2ced7ed9d8e 100644
 --- a/drivers/scsi/aacraid/linit.c
 +++ b/drivers/scsi/aacraid/linit.c
 @@ -78,6 +78,7 @@ char aac_driver_version[] = AAC_DRIVER_FULL_VERSION;
@@ -1877,7 +1877,7 @@ index a3aee146537b..cf50fa206890 100644
  	{ 0x9005, 0x028c, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 63 }, /* Adaptec PMC Series 7 (Denali) */
  	{ 0x9005, 0x028d, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 64 }, /* Adaptec PMC Series 8 */
 diff --git a/drivers/scsi/be2iscsi/be_main.c b/drivers/scsi/be2iscsi/be_main.c
-index 5c3513a4b450..0d59aca2cf58 100644
+index 202ba925c494..094a9b551247 100644
 --- a/drivers/scsi/be2iscsi/be_main.c
 +++ b/drivers/scsi/be2iscsi/be_main.c
 @@ -370,11 +370,13 @@ static int beiscsi_eh_device_reset(struct scsi_cmnd *sc)
@@ -1895,10 +1895,10 @@ index 5c3513a4b450..0d59aca2cf58 100644
  	{ 0 }
  };
 diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index 48d5da59262b..84d90eedb067 100644
+index 83ce4f11a589..f3dfb047f49b 100644
 --- a/drivers/scsi/hpsa.c
 +++ b/drivers/scsi/hpsa.c
-@@ -82,7 +82,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
+@@ -83,7 +83,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
  MODULE_SUPPORTED_DEVICE("HP Smart Array Controllers");
  MODULE_VERSION(HPSA_DRIVER_VERSION);
  MODULE_LICENSE("GPL");
@@ -1908,7 +1908,7 @@ index 48d5da59262b..84d90eedb067 100644
 
  static int hpsa_simple_mode;
  module_param(hpsa_simple_mode, int, S_IRUGO|S_IWUSR);
-@@ -144,10 +146,12 @@ static const struct pci_device_id hpsa_pci_device_id[] = {
+@@ -145,10 +147,12 @@ static const struct pci_device_id hpsa_pci_device_id[] = {
  	{PCI_VENDOR_ID_HP_3PAR, 0x0075, 0x1590, 0x007D},
  	{PCI_VENDOR_ID_HP_3PAR, 0x0075, 0x1590, 0x0088},
  	{PCI_VENDOR_ID_HP, 0x333f, 0x103c, 0x333f},
@@ -2002,7 +2002,7 @@ index d48414e295a0..ba0e384412c9 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 020270ce790b..de841140216b 100644
+index 41cd66fc7d81..2bc149710f3d 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -138,6 +138,7 @@ static void megasas_get_pd_info(struct megasas_instance *instance,
@@ -2022,10 +2022,10 @@ index 020270ce790b..de841140216b 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index 2e2756d8a49b..a67a47d3fce1 100644
+index 5f845d7094fc..28d623e6c159 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -11033,6 +11033,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
+@@ -11309,6 +11309,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
   * The pci device ids are defined in mpi/mpi2_cnfg.h.
   */
  static const struct pci_device_id mpt3sas_pci_table[] = {
@@ -2033,7 +2033,7 @@ index 2e2756d8a49b..a67a47d3fce1 100644
  	/* Spitfire ~ 2004 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2004,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -11051,6 +11052,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -11327,6 +11328,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2116_2,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -2041,7 +2041,7 @@ index 2e2756d8a49b..a67a47d3fce1 100644
  	/* Thunderbolt ~ 2208 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2208_1,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -11075,9 +11077,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -11351,9 +11353,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SWITCH_MPI_EP_1,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -2054,10 +2054,10 @@ index 2e2756d8a49b..a67a47d3fce1 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 8da00ba54aec..cf5ccbdd7fbc 100644
+index f9c8ae9d669e..b5935dce1a9d 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -7796,6 +7796,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -7703,6 +7703,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -2065,7 +2065,7 @@ index 8da00ba54aec..cf5ccbdd7fbc 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -7808,13 +7809,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -7715,13 +7716,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -2085,10 +2085,10 @@ index 8da00ba54aec..cf5ccbdd7fbc 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index 676778cbc550..e41772d11f26 100644
+index 2c23b692e318..684df7268ab3 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
-@@ -9868,6 +9868,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
+@@ -9867,6 +9867,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
  		.subvendor	= PCI_ANY_ID,
  		.subdevice	= PCI_ANY_ID,
  	},
@@ -2096,7 +2096,7 @@ index 676778cbc550..e41772d11f26 100644
  	{
  		.vendor         = PCI_VENDOR_ID_QLOGIC,
  		.device         = PCI_DEVICE_ID_QLOGIC_ISP8022,
-@@ -9886,6 +9887,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
+@@ -9885,6 +9886,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
  		.subvendor	= PCI_ANY_ID,
  		.subdevice	= PCI_ANY_ID,
  	},
@@ -2105,10 +2105,10 @@ index 676778cbc550..e41772d11f26 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
-index ca1e6cf6a38e..af3ce8608ed3 100644
+index 9d0229656681..28da005c3cc2 100644
 --- a/drivers/scsi/smartpqi/smartpqi_init.c
 +++ b/drivers/scsi/smartpqi/smartpqi_init.c
-@@ -8250,6 +8250,18 @@ static const struct pci_device_id pqi_pci_id_table[] = {
+@@ -8317,6 +8317,18 @@ static const struct pci_device_id pqi_pci_id_table[] = {
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       0x19e5, 0xd22c)
  	},
@@ -2127,7 +2127,7 @@ index ca1e6cf6a38e..af3ce8608ed3 100644
  	{
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_ADAPTEC2, 0x0110)
-@@ -8386,6 +8398,10 @@ static const struct pci_device_id pqi_pci_id_table[] = {
+@@ -8457,6 +8469,10 @@ static const struct pci_device_id pqi_pci_id_table[] = {
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_ADVANTECH, 0x8312)
  	},
@@ -2139,10 +2139,10 @@ index ca1e6cf6a38e..af3ce8608ed3 100644
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_DELL, 0x1fe0)
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 5b768b80d1ee..6929b6b5186b 100644
+index 17202b2ee063..033990e935dd 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5517,6 +5517,13 @@ static void hub_event(struct work_struct *work)
+@@ -5531,6 +5531,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
@@ -2224,10 +2224,10 @@ index d7c0e73af2b9..c2af576741d5 100644
 
  #ifdef CONFIG_RESET_ATTACK_MITIGATION
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index e4aa29b1ad62..958f058db539 100644
+index c629215fdad9..85e6408ecf49 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -601,7 +601,24 @@ extern enum system_states {
+@@ -602,7 +602,24 @@ extern enum system_states {
  #define TAINT_LIVEPATCH			15
  #define TAINT_AUX			16
  #define TAINT_RANDSTRUCT		17
@@ -2253,7 +2253,7 @@ index e4aa29b1ad62..958f058db539 100644
  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
 
  struct taint_flag {
-@@ -1036,4 +1053,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -888,4 +905,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -2274,10 +2274,10 @@ index e4aa29b1ad62..958f058db539 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 2a8c74d99015..0d3129588b78 100644
+index 32a940117e7a..edb5ae9c9e09 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -383,6 +383,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -385,6 +385,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -2287,10 +2287,10 @@ index 2a8c74d99015..0d3129588b78 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 9e2e3e63719d..317660f68b4f 100644
+index 8814e3d5952d..4864890abdba 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1507,6 +1507,12 @@
+@@ -1520,6 +1520,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -2646,10 +2646,10 @@ index 8ed37f93f3c8..d7ad35a15acb 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 0a0a03b36a3b..26869f44416b 100644
+index bc2725491560..079bea163ba1 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -451,6 +451,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -456,6 +456,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2657,7 +2657,7 @@ index 0a0a03b36a3b..26869f44416b 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1291,6 +1292,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1304,6 +1305,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2669,23 +2669,23 @@ index 0a0a03b36a3b..26869f44416b 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/kernel/Makefile b/kernel/Makefile
-index b74820d8b264..f334ed22187b 100644
+index e5bc66a94b70..3f6c2d0afd18 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
-@@ -13,6 +13,8 @@ obj-y     = fork.o exec_domain.o panic.o \
+@@ -12,6 +12,8 @@ obj-y     = fork.o exec_domain.o panic.o \
+ 	    notifier.o ksysfs.o cred.o reboot.o \
  	    async.o range.o smpboot.o ucount.o regset.o
 
- obj-$(CONFIG_BPFILTER) += usermode_driver.o
 +obj-$(CONFIG_RH_DISABLE_DEPRECATED) += rh_taint.o
 +obj-$(CONFIG_RHEL_DIFFERENCES) += rh_taint.o
+ obj-$(CONFIG_USERMODE_DRIVER) += usermode_driver.o
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
-
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index b999e7ff2583..ce77b8dfe47a 100644
+index 1110ecd7d1f3..c813349a8715 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
-@@ -24,6 +24,7 @@
+@@ -25,6 +25,7 @@
  #include <linux/ctype.h>
  #include <linux/nospec.h>
  #include <linux/audit.h>
@@ -2693,7 +2693,7 @@ index b999e7ff2583..ce77b8dfe47a 100644
  #include <uapi/linux/btf.h>
  #include <linux/pgtable.h>
  #include <linux/bpf_lsm.h>
-@@ -48,7 +49,25 @@ static DEFINE_SPINLOCK(map_idr_lock);
+@@ -50,7 +51,25 @@ static DEFINE_SPINLOCK(map_idr_lock);
  static DEFINE_IDR(link_idr);
  static DEFINE_SPINLOCK(link_idr_lock);
 
@@ -2720,7 +2720,7 @@ index b999e7ff2583..ce77b8dfe47a 100644
 
  static const struct bpf_map_ops * const bpf_map_types[] = {
  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
-@@ -4136,11 +4155,17 @@ static int bpf_iter_create(union bpf_attr *attr)
+@@ -4358,11 +4377,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
  SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
  {
  	union bpf_attr attr;
@@ -2804,10 +2804,10 @@ index 106e4500fd53..09a4870fe1fb 100644
  	 * if the commandline contains a ':', then that's the extended
  	 * syntax -- if not, it must be the classic syntax
 diff --git a/kernel/module.c b/kernel/module.c
-index c075a18103fb..502171299962 100644
+index 9d9f2400d94e..6ca7ef939305 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -805,6 +805,7 @@ static struct module_attribute modinfo_##field = {                    \
+@@ -806,6 +806,7 @@ static struct module_attribute modinfo_##field = {                    \
 
  MODINFO_ATTR(version);
  MODINFO_ATTR(srcversion);
@@ -2815,7 +2815,7 @@ index c075a18103fb..502171299962 100644
 
  static char last_unloaded_module[MODULE_NAME_LEN+1];
 
-@@ -1267,6 +1268,7 @@ static struct module_attribute *modinfo_attrs[] = {
+@@ -1268,6 +1269,7 @@ static struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
@@ -2845,7 +2845,7 @@ index 9d9fc678c91d..84ad75a53c83 100644
 +	return ret;
  }
 diff --git a/kernel/panic.c b/kernel/panic.c
-index aef8872ba843..e1f2bf843901 100644
+index 396142ee43fd..f3a4d1735339 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
 @@ -386,6 +386,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
@@ -2969,7 +2969,7 @@ index 000000000000..4050b6dead75
 +}
 +EXPORT_SYMBOL(mark_driver_unsupported);
 diff --git a/mm/kmemleak.c b/mm/kmemleak.c
-index 5e252d91eb14..c6e1a9443e9e 100644
+index c0014d3b91c1..c00e9820412a 100644
 --- a/mm/kmemleak.c
 +++ b/mm/kmemleak.c
 @@ -1960,6 +1960,11 @@ void __init kmemleak_init(void)
@@ -3091,10 +3091,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 70a7ad357bc6..23e16e773bc2 100644
+index a28045dc9e7f..36b8b9fcad48 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2516,6 +2516,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2532,6 +2532,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
@@ -3108,10 +3108,10 @@ index 70a7ad357bc6..23e16e773bc2 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-index 190be4fa5c21..28beab03575a 100644
+index d1b5fb89992f..214a4d4e2d18 100644
 --- a/tools/perf/Makefile.config
 +++ b/tools/perf/Makefile.config
-@@ -748,6 +748,7 @@ else
+@@ -744,6 +744,7 @@ else
    PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
    PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
    PERL_EMBED_CCOPTS := $(filter-out -specs=%,$(PERL_EMBED_CCOPTS))
