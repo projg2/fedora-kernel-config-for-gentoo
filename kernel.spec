@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20201021git071a0578b0ce.49
+%global distro_build 0.rc0.20201022git96485e446260.51
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc0.20201021git071a0578b0ce.49
+%define pkgrelease 0.rc0.20201022git96485e446260.51
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20201021git071a0578b0ce.49%{?buildid}%{?dist}
+%define specrelease 0.rc0.20201022git96485e446260.51%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -566,7 +566,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201021git071a0578b0ce.tar.xz
+Source0: linux-20201022git96485e446260.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1210,8 +1210,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201021git071a0578b0ce -c
-mv linux-20201021git071a0578b0ce linux-%{KVERREL}
+%setup -q -n kernel-20201022git96485e446260 -c
+mv linux-20201022git96485e446260 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2647,9 +2647,17 @@ fi
 #
 #
 %changelog
-* Tue Oct 20 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201020git071a0578b0ce.48]
+* Thu Oct 22 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201022git96485e446260.50]
 - Filter out LTO build options from the perl ccopts ("Justin M. Forbes")
 - Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377 ("Justin M. Forbes")
+
+* Thu Oct 22 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201022git96485e446260.49.test]
+- 96485e446260 rebase
+
+* Thu Oct 22 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201022gitf804b3159482.48.test]
+- f804b3159482 rebase
+- New configs in kernel/trace (Fedora Kernel Team)
+- configs/iommu: Add config comment to empty CONFIG_SUN50I_IOMMU file (Jerry Snitselaar)
 
 * Tue Oct 20 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201020git071a0578b0ce.47.test]
 - Fix Fedora config locations ("Justin M. Forbes")

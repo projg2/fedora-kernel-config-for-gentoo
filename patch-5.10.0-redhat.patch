@@ -28,7 +28,7 @@
  drivers/gpu/drm/panel/panel-xingbangda-xbd599.c    | 366 +++++++++++++++++++++
  drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c             |  10 +-
  drivers/hid/hid-rmi.c                              |  64 ----
- drivers/infiniband/sw/rxe/rxe.c                    |   2 +
+ drivers/infiniband/sw/rxe/rxe.c                    |   9 +
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++---
  drivers/iommu/iommu.c                              |  22 ++
  drivers/message/fusion/mptsas.c                    |  10 +
@@ -71,7 +71,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/perf/Makefile.config                         |   1 +
- 73 files changed, 1585 insertions(+), 192 deletions(-)
+ 73 files changed, 1592 insertions(+), 192 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -96,10 +96,10 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index d246ad46d845..d80156fef33f 100644
+index 02d4adbf98d2..60b193a77c9d 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5395,6 +5395,14 @@
+@@ -5512,6 +5512,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -243,10 +243,10 @@ index ebbd34801476..0457c8b5e816 100644
 
  $(version_h): FORCE
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 3996b6572c3a..fe506995497c 100644
+index c18fa9d382b7..8dc868660a02 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1516,9 +1516,9 @@ config HIGHMEM
+@@ -1517,9 +1517,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -290,10 +290,10 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 893130ce1626..d8dd5bde0bc5 100644
+index 08fa3a1c50f0..85a8eb59957f 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -869,7 +869,7 @@ endchoice
+@@ -870,7 +870,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -302,7 +302,7 @@ index 893130ce1626..d8dd5bde0bc5 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1128,6 +1128,7 @@ config XEN
+@@ -1129,6 +1129,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if (ARM64_64K_PAGES && TRANSPARENT_HUGEPAGE)
@@ -690,7 +690,7 @@ index 8774a3b8ff95..8c3d67367b9c 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
-index e8da782280b6..95e357f42761 100644
+index d6ca2da19339..7c30a62c5e5d 100644
 --- a/drivers/firmware/efi/Makefile
 +++ b/drivers/firmware/efi/Makefile
 @@ -25,6 +25,7 @@ obj-$(CONFIG_EFI_FAKE_MEMMAP)		+= fake_map.o
@@ -1435,18 +1435,25 @@ index 7f41213d5ae3..86a23ede344c 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/infiniband/sw/rxe/rxe.c b/drivers/infiniband/sw/rxe/rxe.c
-index 77f2c7cd1216..aea28fb3d6a9 100644
+index 95f0de0c8b49..61725443c33b 100644
 --- a/drivers/infiniband/sw/rxe/rxe.c
 +++ b/drivers/infiniband/sw/rxe/rxe.c
-@@ -305,6 +305,8 @@ static int __init rxe_module_init(void)
+@@ -284,6 +284,15 @@ static int __init rxe_module_init(void)
  {
  	int err;
 
 +	mark_tech_preview("Soft-RoCE Transport Driver", THIS_MODULE);
 +
- 	/* initialize slab caches for managed objects */
- 	err = rxe_cache_init();
- 	if (err) {
++	/* initialize slab caches for managed objects */
++	err = rxe_cache_init();
++	if (err) {
++		pr_err("unable to init object pools\n");
++		return err;
++	}
++
+ 	err = rxe_net_init();
+ 	if (err)
+ 		return err;
 diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
 index 258d5fe3d395..f7298e3dc8f3 100644
 --- a/drivers/input/rmi4/rmi_driver.c
@@ -2669,7 +2676,7 @@ index bc2725491560..079bea163ba1 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/kernel/Makefile b/kernel/Makefile
-index e5bc66a94b70..3f6c2d0afd18 100644
+index 2044ef02763b..a8a5ddc59912 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,8 @@ obj-y     = fork.o exec_domain.o panic.o \
@@ -3108,10 +3115,10 @@ index a28045dc9e7f..36b8b9fcad48 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-index d1b5fb89992f..214a4d4e2d18 100644
+index 6890fc4b063a..ce8516e4de34 100644
 --- a/tools/perf/Makefile.config
 +++ b/tools/perf/Makefile.config
-@@ -744,6 +744,7 @@ else
+@@ -749,6 +749,7 @@ else
    PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
    PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
    PERL_EMBED_CCOPTS := $(filter-out -specs=%,$(PERL_EMBED_CCOPTS))
