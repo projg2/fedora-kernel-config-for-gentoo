@@ -717,6 +717,7 @@ Source4000: README.rst
 
 Patch1: patch-%{rpmversion}-redhat.patch
 Patch2: 0001-Fix-up-a-merge-issue-with-rxe.c.patch
+Patch3: s390_build_fix.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1221,6 +1222,7 @@ cp -a %{SOURCE1} .
 
 ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
 ApplyOptionalPatch 0001-Fix-up-a-merge-issue-with-rxe.c.patch
+ApplyOptionalPatch s390_build_fix.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
