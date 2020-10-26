@@ -1,0 +1,31 @@
+From 364788093bdf437c33753d327136c363be8f756c Mon Sep 17 00:00:00 2001
+From: "Justin M. Forbes" <jforbes@fedoraproject.org>
+Date: Mon, 26 Oct 2020 10:18:33 -0500
+Subject: [PATCH] Fix up a merge issue with rxe.c
+
+Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
+---
+ drivers/infiniband/sw/rxe/rxe.c | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/drivers/infiniband/sw/rxe/rxe.c b/drivers/infiniband/sw/rxe/rxe.c
+index 61725443c33b..faa8a6cadef1 100644
+--- a/drivers/infiniband/sw/rxe/rxe.c
++++ b/drivers/infiniband/sw/rxe/rxe.c
+@@ -286,13 +286,6 @@ static int __init rxe_module_init(void)
+
+ 	mark_tech_preview("Soft-RoCE Transport Driver", THIS_MODULE);
+
+-	/* initialize slab caches for managed objects */
+-	err = rxe_cache_init();
+-	if (err) {
+-		pr_err("unable to init object pools\n");
+-		return err;
+-	}
+-
+ 	err = rxe_net_init();
+ 	if (err)
+ 		return err;
+-- 
+2.28.0
+

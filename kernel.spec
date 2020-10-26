@@ -716,6 +716,7 @@ Source4000: README.rst
 %if !%{nopatches}
 
 Patch1: patch-%{rpmversion}-redhat.patch
+Patch2: 0001-Fix-up-a-merge-issue-with-rxe.c.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1219,6 +1220,7 @@ cp -a %{SOURCE1} .
 %if !%{nopatches}
 
 ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
+ApplyOptionalPatch 0001-Fix-up-a-merge-issue-with-rxe.c.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
