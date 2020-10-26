@@ -30,7 +30,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20201022git96485e446260.51
+%global distro_build 0.rc1.56
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +69,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc0.20201022git96485e446260.51
+%define pkgrelease 0.rc1.56
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20201022git96485e446260.51%{?buildid}%{?dist}
+%define specrelease 0.rc1.56%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.10
@@ -182,10 +182,10 @@ Summary: The Linux kernel
 # no whitelist
 %define with_kernel_abi_whitelists 0
 # Fedora builds these separately
+%endif
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
-%endif
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -566,7 +566,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201022git96485e446260.tar.xz
+Source0: linux-5.10-rc1.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1210,8 +1210,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201022git96485e446260 -c
-mv linux-20201022git96485e446260 linux-%{KVERREL}
+%setup -q -n kernel-5.10-rc1 -c
+mv linux-5.10-rc1 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1923,7 +1923,6 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %global perf_make \
   %{__make} -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
-%global _lto_cflags %{nil}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
@@ -2647,9 +2646,15 @@ fi
 #
 #
 %changelog
-* Thu Oct 22 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201022git96485e446260.50]
+* Mon Oct 26 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.55]
 - Filter out LTO build options from the perl ccopts ("Justin M. Forbes")
 - Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377 ("Justin M. Forbes")
+
+* Mon Oct 26 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.54.test]
+- v5.10-rc1 rebase
+
+* Sat Oct 24 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201024git96485e446260.51.test]
+- [Automatic] Handle config dependency changes (Don Zickus)
 
 * Thu Oct 22 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc0.20201022git96485e446260.49.test]
 - 96485e446260 rebase

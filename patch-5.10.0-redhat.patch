@@ -3,7 +3,7 @@
  .../bindings/display/panel/xingbangda,xbd599.yaml  |  50 +++
  Kconfig                                            |   2 +
  Kconfig.redhat                                     |  17 +
- Makefile                                           |  14 +-
+ Makefile                                           |  13 +-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm/include/asm/uaccess.h                     |   8 +-
  arch/arm64/Kconfig                                 |   3 +-
@@ -71,7 +71,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/perf/Makefile.config                         |   1 +
- 73 files changed, 1592 insertions(+), 192 deletions(-)
+ 73 files changed, 1592 insertions(+), 191 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -96,7 +96,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 02d4adbf98d2..60b193a77c9d 100644
+index 526d65d8573a..0e78308a5dce 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -5512,6 +5512,14 @@
@@ -204,7 +204,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index ebbd34801476..0457c8b5e816 100644
+index ee2284a5cad2..2c08fcabe616 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -218,16 +218,15 @@ index ebbd34801476..0457c8b5e816 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -497,7 +501,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+@@ -497,6 +501,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
  		   -Werror=implicit-function-declaration -Werror=implicit-int \
--		   -Wno-format-security \
-+		   -Wno-format-security -Wno-address-of-packed-member \
++		   -Wno-address-of-packed-member \
+ 		   -Werror=return-type -Wno-format-security \
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
- KBUILD_AFLAGS_KERNEL :=
-@@ -1238,7 +1242,13 @@ endef
+@@ -1247,7 +1252,13 @@ endef
  define filechk_version.h
  	echo \#define LINUX_VERSION_CODE $(shell                         \
  	expr $(VERSION) \* 65536 + 0$(PATCHLEVEL) \* 256 + 0$(SUBLEVEL)); \
@@ -243,10 +242,10 @@ index ebbd34801476..0457c8b5e816 100644
 
  $(version_h): FORCE
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index c18fa9d382b7..8dc868660a02 100644
+index fe2f17eb2b50..5bbcac6318a9 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1517,9 +1517,9 @@ config HIGHMEM
+@@ -1513,9 +1513,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -290,10 +289,10 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 08fa3a1c50f0..85a8eb59957f 100644
+index f858c352f72a..35579b9dd9a5 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -870,7 +870,7 @@ endchoice
+@@ -871,7 +871,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -302,7 +301,7 @@ index 08fa3a1c50f0..85a8eb59957f 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1129,6 +1129,7 @@ config XEN
+@@ -1130,6 +1130,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if (ARM64_64K_PAGES && TRANSPARENT_HUGEPAGE)
@@ -1335,7 +1334,7 @@ index 4f5efcace68e..5af808078efd 100644
  		/*
  		 * And I'm not entirely sure what vblk is about. The driver in
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index 7f41213d5ae3..86a23ede344c 100644
+index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
 @@ -322,19 +322,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
@@ -1426,7 +1425,7 @@ index 7f41213d5ae3..86a23ede344c 100644
 -	}
 -
  	if (data->device_flags & RMI_DEVICE_HAS_PHYS_BUTTONS)
- 		rmi_hid_pdata.f30_data.disable = true;
+ 		rmi_hid_pdata.gpio_data.disable = true;
 
  	data->xport.dev = hdev->dev.parent;
  	data->xport.pdata = rmi_hid_pdata;
@@ -1782,7 +1781,7 @@ index 2dea4d0e9415..ea87438a4f7b 100644
  	ice_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, KBUILD_MODNAME);
  	if (!ice_wq) {
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index d1b7169c0684..0354e84ce1ac 100644
+index 8b587fc97f7b..afd364210381 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -1829,7 +1828,7 @@ index d1b7169c0684..0354e84ce1ac 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 01f23e30bd8f..bf5ae01ae3c6 100644
+index f70692ac79c5..2381cb1d2333 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4139,6 +4139,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -2231,7 +2230,7 @@ index d7c0e73af2b9..c2af576741d5 100644
 
  #ifdef CONFIG_RESET_ATTACK_MITIGATION
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index c629215fdad9..85e6408ecf49 100644
+index 2f05e9128201..fc3d6161a3b7 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
 @@ -602,7 +602,24 @@ extern enum system_states {
@@ -2294,7 +2293,7 @@ index 32a940117e7a..edb5ae9c9e09 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 8814e3d5952d..4864890abdba 100644
+index c503f7ab8afb..909e4fb32458 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
 @@ -1520,6 +1520,12 @@
@@ -2311,7 +2310,7 @@ index 8814e3d5952d..4864890abdba 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/module.h b/include/linux/module.h
-index a29187f7c360..9a9b05e946d7 100644
+index 7ccdf87f376f..bff07f39198d 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -372,6 +372,7 @@ struct module {
@@ -2323,10 +2322,10 @@ index a29187f7c360..9a9b05e946d7 100644
 
  	/* Exported symbols */
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 835530605c0d..1a5afb3b706f 100644
+index 22207a79762c..e2f9a745fbc1 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1406,6 +1406,10 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1409,6 +1409,10 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2641,10 +2640,10 @@ index 000000000000..ea9c136bf884
 +
 +#endif /* _LINUX_RH_KABI_H */
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
-index 8ed37f93f3c8..d7ad35a15acb 100644
+index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h
 +++ b/include/linux/rmi.h
-@@ -363,6 +363,7 @@ struct rmi_driver_data {
+@@ -364,6 +364,7 @@ struct rmi_driver_data {
 
  	struct rmi4_attn_data attn_data;
  	DECLARE_KFIFO(attn_fifo, struct rmi4_attn_data, 16);
@@ -2676,7 +2675,7 @@ index bc2725491560..079bea163ba1 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 2044ef02763b..a8a5ddc59912 100644
+index af601b9bda0e..eb29602a431b 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,8 @@ obj-y     = fork.o exec_domain.o panic.o \
@@ -2689,7 +2688,7 @@ index 2044ef02763b..a8a5ddc59912 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 1110ecd7d1f3..c813349a8715 100644
+index 8f50c9c19f1b..0a98ae3d38a0 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -25,6 +25,7 @@
@@ -2727,7 +2726,7 @@ index 1110ecd7d1f3..c813349a8715 100644
 
  static const struct bpf_map_ops * const bpf_map_types[] = {
  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
-@@ -4358,11 +4377,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
+@@ -4357,11 +4376,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
  SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
  {
  	union bpf_attr attr;
@@ -2811,10 +2810,10 @@ index 106e4500fd53..09a4870fe1fb 100644
  	 * if the commandline contains a ':', then that's the extended
  	 * syntax -- if not, it must be the classic syntax
 diff --git a/kernel/module.c b/kernel/module.c
-index 9d9f2400d94e..6ca7ef939305 100644
+index a4fa44a652a7..2cb5d45c7d1b 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -806,6 +806,7 @@ static struct module_attribute modinfo_##field = {                    \
+@@ -807,6 +807,7 @@ static struct module_attribute modinfo_##field = {                    \
 
  MODINFO_ATTR(version);
  MODINFO_ATTR(srcversion);
@@ -2822,7 +2821,7 @@ index 9d9f2400d94e..6ca7ef939305 100644
 
  static char last_unloaded_module[MODULE_NAME_LEN+1];
 
-@@ -1268,6 +1269,7 @@ static struct module_attribute *modinfo_attrs[] = {
+@@ -1269,6 +1270,7 @@ static struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
@@ -2992,7 +2991,7 @@ index c0014d3b91c1..c00e9820412a 100644
 
  	debugfs_create_file("kmemleak", 0644, NULL, NULL, &kmemleak_fops);
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 69341b36f271..dbc63328187c 100644
+index f882ce0d9327..fafe657d640d 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -21,6 +21,7 @@
