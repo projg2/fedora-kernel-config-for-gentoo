@@ -880,6 +880,16 @@ Patch124: 0001-update-phy-on-pine64-a64-devices.patch
 Patch125: arm-sun8i-realtek-phy-fixes.patch
 # https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201025140144.28693-1-ats@offog.org/
 Patch126: ARM-dts-sun7i-pcduino3-nano-enable-RGMII-RX-TX-delay-on-PHY.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201025081949.783443-1-jernej.skrabec@siol.net/
+Patch127: ARM-dts-sun8i-r40-bananapi-m2-ultra-Fix-ethernet-node.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201022185839.2779245-1-jernej.skrabec@siol.net/
+Patch128: arm64-dts-allwinner-a64-OrangePi-Win-Fix-ethernet-node.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201028115817.68113-1-nperic@gmail.com/
+Patch129: arm64-dts-allwinner-h5-OrangePi-Prime-Fix-ethernet-node.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023184858.3272918-1-jernej.skrabec@siol.net/
+Patch130: arm64-dts-allwinner-h5-OrangePi-PC2-Fix-ethernet-node.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023194902.368239-1-jernej.skrabec@siol.net/
+Patch131: arm64-dts-allwinner-h6-Pine-H64-Fix-ethernet-node.patch
 
 # END OF PATCH DEFINITIONS
 
