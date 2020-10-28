@@ -874,6 +874,12 @@ Patch119: CVE-2020-16119-DCCP-CCID-structure-use-after-free.patch
 # https://bugzilla.kernel.org/show_bug.cgi?id=209627
 # Pending for inclusion into stable series
 Patch123: 0001-i2c-core-Restore-acpi_walk_dep_device_list-getting-c.patch
+# A patch to fix some undocumented things broke a bunch of Allwinner networks due to wrong assumptions
+Patch124: 0001-update-phy-on-pine64-a64-devices.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201024162515.30032-2-wens@kernel.org/
+Patch125: arm-sun8i-realtek-phy-fixes.patch
+# https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201025140144.28693-1-ats@offog.org/
+Patch126: ARM-dts-sun7i-pcduino3-nano-enable-RGMII-RX-TX-delay-on-PHY.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2988,6 +2994,9 @@ fi
 #
 #
 %changelog
+* Wed Oct 28 2020 Peter Robinson <pbrobinson@fedoraproject.org>
+- Fixes for AllWinner wired network issues due to Realtek PHY driver change (rhbz 1889090)
+
 * Mon Oct 19 07:15:08 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.16-100
 - Linux v5.8.16
 
