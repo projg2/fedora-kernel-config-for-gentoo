@@ -28,7 +28,7 @@
  drivers/gpu/drm/panel/panel-xingbangda-xbd599.c    | 366 +++++++++++++++++++++
  drivers/gpu/drm/sun4i/sun6i_mipi_dsi.c             |  10 +-
  drivers/hid/hid-rmi.c                              |  64 ----
- drivers/infiniband/sw/rxe/rxe.c                    |   9 +
+ drivers/infiniband/sw/rxe/rxe.c                    |   2 +
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++---
  drivers/iommu/iommu.c                              |  22 ++
  drivers/message/fusion/mptsas.c                    |  10 +
@@ -71,7 +71,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/perf/Makefile.config                         |   1 +
- 73 files changed, 1592 insertions(+), 191 deletions(-)
+ 73 files changed, 1585 insertions(+), 191 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -1434,21 +1434,14 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/infiniband/sw/rxe/rxe.c b/drivers/infiniband/sw/rxe/rxe.c
-index 95f0de0c8b49..61725443c33b 100644
+index 95f0de0c8b49..faa8a6cadef1 100644
 --- a/drivers/infiniband/sw/rxe/rxe.c
 +++ b/drivers/infiniband/sw/rxe/rxe.c
-@@ -284,6 +284,15 @@ static int __init rxe_module_init(void)
+@@ -284,6 +284,8 @@ static int __init rxe_module_init(void)
  {
  	int err;
 
 +	mark_tech_preview("Soft-RoCE Transport Driver", THIS_MODULE);
-+
-+	/* initialize slab caches for managed objects */
-+	err = rxe_cache_init();
-+	if (err) {
-+		pr_err("unable to init object pools\n");
-+		return err;
-+	}
 +
  	err = rxe_net_init();
  	if (err)

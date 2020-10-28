@@ -1,8 +1,11 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/67aa1b57cf2c9b9c6fdfb51896995dac508906d3
- 67aa1b57cf2c9b9c6fdfb51896995dac508906d3 Filter out LTO build options from the perl ccopts
+https://gitlab.com/cki-project/kernel-ark/-/commit/9aa1ec5b52ec51e001bf9cc8bcb03a3b11169a05
+ 9aa1ec5b52ec51e001bf9cc8bcb03a3b11169a05 Filter out LTO build options from the perl ccopts
 
-https://gitlab.com/cki-project/kernel-ark/-/commit/30e946a449e41c42d277880d2a1b217fa67c929b
- 30e946a449e41c42d277880d2a1b217fa67c929b Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
+https://gitlab.com/cki-project/kernel-ark/-/commit/c2dfd820ea052ab38b8b58a0f4a2ea72b6b6e763
+ c2dfd820ea052ab38b8b58a0f4a2ea72b6b6e763 Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/364788093bdf437c33753d327136c363be8f756c
+ 364788093bdf437c33753d327136c363be8f756c Fix up a merge issue with rxe.c
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/17b0f7f1d49df30661b517d668715ff5ee1bab09
  17b0f7f1d49df30661b517d668715ff5ee1bab09 Fixes "acpi: prefer booting with ACPI over DTS" to be RHEL only

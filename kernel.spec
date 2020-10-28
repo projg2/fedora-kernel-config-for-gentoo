@@ -1,3 +1,5 @@
+%global _lto_cflags %{nil}
+
 # We have to override the new %%install behavior because, well... the kernel is special.
 %global __spec_install_pre %{___build_pre}
 
@@ -30,7 +32,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.56
+%global distro_build 0.rc1.20201028gited8780e3f2ec.57
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -69,13 +71,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc1.56
+%define pkgrelease 0.rc1.20201028gited8780e3f2ec.57
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.56%{?buildid}%{?dist}
+%define specrelease 0.rc1.20201028gited8780e3f2ec.57%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -166,7 +168,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.10
@@ -182,10 +184,10 @@ Summary: The Linux kernel
 # no whitelist
 %define with_kernel_abi_whitelists 0
 # Fedora builds these separately
-%endif
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
+%endif
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -508,7 +510,7 @@ BuildRequires: python3-docutils
 BuildRequires: zlib-devel binutils-devel
 %endif
 %if %{with_selftests}
-BuildRequires: clang llvm
+BuildRequires: llvm
 %ifnarch %{arm}
 BuildRequires: numactl-devel
 %endif
@@ -566,7 +568,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.10-rc1.tar.xz
+Source0: linux-20201028gited8780e3f2ec.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -716,8 +718,6 @@ Source4000: README.rst
 %if !%{nopatches}
 
 Patch1: patch-%{rpmversion}-redhat.patch
-Patch2: 0001-Fix-up-a-merge-issue-with-rxe.c.patch
-Patch3: s390_build_fix.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1212,8 +1212,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.10-rc1 -c
-mv linux-5.10-rc1 linux-%{KVERREL}
+%setup -q -n kernel-20201028gited8780e3f2ec -c
+mv linux-20201028gited8780e3f2ec linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1221,8 +1221,6 @@ cp -a %{SOURCE1} .
 %if !%{nopatches}
 
 ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
-ApplyOptionalPatch 0001-Fix-up-a-merge-issue-with-rxe.c.patch
-ApplyOptionalPatch s390_build_fix.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
@@ -2650,9 +2648,16 @@ fi
 #
 #
 %changelog
-* Mon Oct 26 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.55]
+* Wed Oct 28 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.20201028gited8780e3f2ec.56]
+- Fix LTO issues with kernel-tools (Don Zickus)
+- Point pathfix to the new location for gen_compile_commands.py ("Justin M. Forbes")
 - Filter out LTO build options from the perl ccopts ("Justin M. Forbes")
 - Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377 ("Justin M. Forbes")
+
+* Wed Oct 28 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.20201028gited8780e3f2ec.55.test]
+- ed8780e3f2ec rebase
+- Fix up a merge issue with rxe.c ("Justin M. Forbes")
+- configs: Disable CONFIG_SECURITY_SELINUX_DISABLE (Ondrej Mosnacek)
 
 * Mon Oct 26 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.54.test]
 - v5.10-rc1 rebase
