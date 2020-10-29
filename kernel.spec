@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 17
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -864,9 +864,6 @@ Patch103: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
 # Goes away with 5.9
 Patch105: 0001-platform-x86-thinkpad_acpi-lap-or-desk-mode-interfac.patch
 
-# https://bugzilla.redhat.com/show_bug.cgi?id=1874117
-Patch107: 0001-drivers-perf-xgene_pmu-Fix-uninitialized-resource-st.patch
-
 # https://patchwork.kernel.org/patch/11745283/
 Patch108: brcmfmac-BCM4329-Fixes-and-improvement.patch
 
@@ -878,9 +875,6 @@ Patch112: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 # https://patchwork.kernel.org/patch/11796255/
 Patch116: arm64-dts-rockchip-disable-USB-type-c-DisplayPort.patch
 
-# https://patchwork.kernel.org/patch/11787259/
-Patch117: arm64-pwm-rockchip-Keep-enabled-PWMs-running-while-probing.patch
-
 # Backport from 5.9
 Patch118: arm64-rockchip-pinebookpro-add-fuel-gauge.patch
 Patch119: arm64-tegra-enable-dfll-on-jetson-nano.patch
@@ -890,12 +884,6 @@ Patch120: iommu-tegra-smmu-Fix-TLB-line-for-Tegra210.patch
 
 # CVE-2020-16119 rhbz 1886374 1888083
 Patch121: CVE-2020-16119-DCCP-CCID-structure-use-after-free.patch
-
-# Surface Go series not booting regression fix (rhbz 1886249)
-# Also fixes some touchscreen regressions:
-# https://bugzilla.kernel.org/show_bug.cgi?id=209627
-# Pending for inclusion into stable series
-Patch123: 0001-i2c-core-Restore-acpi_walk_dep_device_list-getting-c.patch
 
 # A patch to fix some undocumented things broke a bunch of Allwinner networks due to wrong assumptions
 Patch124: 0001-update-phy-on-pine64-a64-devices.patch
@@ -3027,6 +3015,9 @@ fi
 #
 #
 %changelog
+* Thu Oct 29 07:55:15 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.17-300
+- Linux v5.8.17
+
 * Wed Oct 28 2020 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fixes for AllWinner wired network issues due to Realtek PHY driver change (rhbz 1889090)
 
