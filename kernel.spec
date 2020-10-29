@@ -902,6 +902,9 @@ Patch130: arm64-dts-allwinner-h5-OrangePi-PC2-Fix-ethernet-node.patch
 # https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023194902.368239-1-jernej.skrabec@siol.net/
 Patch131: arm64-dts-allwinner-h6-Pine-H64-Fix-ethernet-node.patch
 
+# CVE-2020-27675 rhbz 1891114 1891115
+Patch132: 0001-xen-events-avoid-removing-an-event-channel-while-han.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -3017,6 +3020,7 @@ fi
 %changelog
 * Thu Oct 29 07:55:15 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.8.17-300
 - Linux v5.8.17
+- Fix CVE-2020-27675 (rhbz 1891114 1891115)
 
 * Wed Oct 28 2020 Peter Robinson <pbrobinson@fedoraproject.org>
 - Fixes for AllWinner wired network issues due to Realtek PHY driver change (rhbz 1889090)
