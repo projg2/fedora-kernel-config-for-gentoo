@@ -850,6 +850,9 @@ Patch130: arm64-dts-allwinner-h5-OrangePi-PC2-Fix-ethernet-node.patch
 # https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023194902.368239-1-jernej.skrabec@siol.net/
 Patch131: arm64-dts-allwinner-h6-Pine-H64-Fix-ethernet-node.patch
 
+# CVE-2020-27675 rhbz 1891114 1891115
+Patch132: 0001-xen-events-avoid-removing-an-event-channel-while-han.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2965,6 +2968,7 @@ fi
 %changelog
 * Thu Oct 29 07:38:36 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.9.2-300
 - Linux v5.9.2
+- Fix CVE-2020-27675 (rhbz 1891114 1891115)
 
 * Mon Oct 19 11:38:57 CDT 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.9.1-300
 - Linux v5.9.1 rebase
