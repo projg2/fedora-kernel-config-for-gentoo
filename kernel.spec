@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.20201030git07e088730245.60
+%global distro_build 0.rc2.62
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -95,20 +95,19 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc1.20201030git07e088730245.60
+%define pkgrelease 0.rc2.62
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20201030git07e088730245.60%{?buildid}%{?dist}
+%define specrelease 0.rc2.62%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
-# What parts do we want to build?  We must build at least one kernel.
-# These are the kernels that are built IF the architecture allows it.
-# All should default to 1 (enabled) and be flipped to 0 (disabled)
-# by later arch-specific checks.
+# What parts do we want to build? These are the kernels that are built IF the
+# architecture allows it. All should default to 1 (enabled) and be flipped to
+# 0 (disabled) by later arch-specific checks.
 
 # The following build options are enabled by default.
 # Use either --without <opt> in your rpmbuild command or force values
@@ -192,7 +191,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.10
@@ -525,6 +524,7 @@ BuildRequires: numactl-devel
 %endif
 %if %{with_tools}
 BuildRequires: gettext ncurses-devel
+BuildRequires: libcap-devel libcap-ng-devel
 %ifnarch s390x
 BuildRequires: pciutils-devel
 %endif
@@ -592,7 +592,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201030git07e088730245.tar.xz
+Source0: linux-5.10-rc2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1236,8 +1236,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201030git07e088730245 -c
-mv linux-20201030git07e088730245 linux-%{KVERREL}
+%setup -q -n kernel-5.10-rc2 -c
+mv linux-5.10-rc2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1364,33 +1364,18 @@ cp_vmlinux()
 
 %define make %{__make} %{?cross_opts} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
 
-BuildKernel() {
-    MakeTarget=$1
-    KernelImage=$2
-    Flavour=$4
-    DoVDSO=$3
+InitBuildVars() {
+    # Initialize the kernel .config file and create some variables that are
+    # needed for the actual build process.
+
+    Flavour=$1
     Flav=${Flavour:++${Flavour}}
-    InstallName=${5:-vmlinuz}
 
-    DoModules=1
-    if [ "$Flavour" = "zfcpdump" ]; then
-	    DoModules=0
-    fi
-
-    # Pick the right config file for the kernel we're building
+    # Pick the right kernel config file
     Config=kernel-%{version}-%{_target_cpu}${Flavour:+-${Flavour}}.config
     DevelDir=/usr/src/kernels/%{KVERREL}${Flav}
 
-    # When the bootable image is just the ELF kernel, strip it.
-    # We already copy the unstripped file into the debuginfo package.
-    if [ "$KernelImage" = vmlinux ]; then
-      CopyKernel=cp_vmlinux
-    else
-      CopyKernel=cp
-    fi
-
     KernelVer=%{version}-%{release}.%{_target_cpu}${Flav}
-    echo BUILDING A KERNEL FOR ${Flavour} %{_target_cpu}...
 
     # make sure EXTRAVERSION says what we want it to say
     # Trim the release if this is a CI build, since KERNELVERSION is limited to 64 characters
@@ -1400,8 +1385,6 @@ BuildKernel() {
     # if pre-rc1 devel kernel, must fix up PATCHLEVEL for our versioning scheme
     # if we are post rc1 this should match anyway so this won't matter
     perl -p -i -e 's/^PATCHLEVEL.*/PATCHLEVEL = %{patchlevel}/' Makefile
-
-    # and now to start the build process
 
     %{make} %{?_smp_mflags} mrproper
     cp configs/$Config .config
@@ -1419,6 +1402,32 @@ BuildKernel() {
     if [ "$Flavour" == "" ]; then
         KCFLAGS="$KCFLAGS %{?kpatch_kcflags}"
     fi
+}
+
+BuildKernel() {
+    MakeTarget=$1
+    KernelImage=$2
+    Flavour=$4
+    DoVDSO=$3
+    Flav=${Flavour:++${Flavour}}
+    InstallName=${5:-vmlinuz}
+
+    DoModules=1
+    if [ "$Flavour" = "zfcpdump" ]; then
+	    DoModules=0
+    fi
+
+    # When the bootable image is just the ELF kernel, strip it.
+    # We already copy the unstripped file into the debuginfo package.
+    if [ "$KernelImage" = vmlinux ]; then
+      CopyKernel=cp_vmlinux
+    else
+      CopyKernel=cp
+    fi
+
+    InitBuildVars $Flavour
+
+    echo BUILDING A KERNEL FOR ${Flavour} %{_target_cpu}...
 
     %{make} ARCH=$Arch olddefconfig >/dev/null
 
@@ -1944,6 +1953,14 @@ BuildKernel %make_target %kernel_image %{use_vdso} lpae
 
 %if %{with_up}
 BuildKernel %make_target %kernel_image %{_use_vdso}
+%endif
+
+%ifnarch noarch i686
+%if !%{with_debug} && !%{with_zfcpdump} && !%{with_up}
+# If only building the user space tools, then initialize the build environment
+# and some variables so that the various userspace tools can be built.
+InitBuildVars
+%endif
 %endif
 
 %global perf_make \
@@ -2672,6 +2689,17 @@ fi
 #
 #
 %changelog
+* Mon Nov 02 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc2.61.test]
+- v5.10-rc2 rebase
+
+* Sun Nov 01 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.20201101gitc2dc4c073fb7.60.test]
+- c2dc4c073fb7 rebase
+
+* Sat Oct 31 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.20201031git5fc6b075e165.59.test]
+- 5fc6b075e165 rebase
+- Allow building of kernel-tools standalone (Don Zickus)
+- Allow kernel-tools to build without selftests (Don Zickus)
+
 * Fri Oct 30 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.20201030git07e088730245.58.test]
 - 07e088730245 rebase
 - Fix LTO issues with kernel-tools (Don Zickus)
