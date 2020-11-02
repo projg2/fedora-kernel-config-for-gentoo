@@ -1,6 +1,30 @@
+# All Global changes to build and install go here.
+# Per the below section about __spec_install_pre, any rpm
+# environment changes that affect %%install need to go
+# here before the %%install macro is pre-built.
+
+# Disable LTO in userspace packages.
 %global _lto_cflags %{nil}
 
-# We have to override the new %%install behavior because, well... the kernel is special.
+
+
+# The kernel's %%install section is special
+# Normally the %%install section starts by cleaning up the BUILD_ROOT
+# like so:
+#
+# %%__spec_install_pre %%{___build_pre}\
+#     [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf "${RPM_BUILD_ROOT}"\
+#     mkdir -p `dirname "$RPM_BUILD_ROOT"`\
+#     mkdir "$RPM_BUILD_ROOT"\
+# %%{nil}
+#
+# But because of kernel variants, the %%build section, specifically
+# BuildKernel(), moves each variant to its final destination as the
+# variant is built.  This violates the expectation of the %%install
+# section.  As a result we snapshot the current env variables and
+# purposely leave out the removal section.  All global wide changes
+# should be added above this line otherwise the %%install section
+# will not see them.
 %global __spec_install_pre %{___build_pre}
 
 # Short-term fix so the package builds with GCC 10.
@@ -32,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.20201028gited8780e3f2ec.57
+%global distro_build 0.rc1.20201030git07e088730245.60
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -71,13 +95,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc1.20201028gited8780e3f2ec.57
+%define pkgrelease 0.rc1.20201030git07e088730245.60
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20201028gited8780e3f2ec.57%{?buildid}%{?dist}
+%define specrelease 0.rc1.20201030git07e088730245.60%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -510,7 +534,7 @@ BuildRequires: python3-docutils
 BuildRequires: zlib-devel binutils-devel
 %endif
 %if %{with_selftests}
-BuildRequires: llvm
+BuildRequires: clang llvm
 %ifnarch %{arm}
 BuildRequires: numactl-devel
 %endif
@@ -568,7 +592,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201028gited8780e3f2ec.tar.xz
+Source0: linux-20201030git07e088730245.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1212,8 +1236,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201028gited8780e3f2ec -c
-mv linux-20201028gited8780e3f2ec linux-%{KVERREL}
+%setup -q -n kernel-20201030git07e088730245 -c
+mv linux-20201030git07e088730245 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2648,11 +2672,42 @@ fi
 #
 #
 %changelog
-* Wed Oct 28 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.20201028gited8780e3f2ec.56]
+* Fri Oct 30 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.20201030git07e088730245.58.test]
+- 07e088730245 rebase
 - Fix LTO issues with kernel-tools (Don Zickus)
+- New configs in drivers/mfd (Fedora Kernel Team)
+- arm64/defconfig: Enable CONFIG_KEXEC_FILE (Bhupesh Sharma) [https://bugzilla.redhat.com/show_bug.cgi?id=1821565]
+- redhat/configs: Cleanup CONFIG_CRYPTO_SHA512 (Prarit Bhargava)
+- redhat: ark: disable CONFIG_NET_ACT_CTINFO (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_TEQL (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_SFB (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_QFQ (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_PLUG (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_PIE (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_MULTIQ (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_HHF (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_DSMARK (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_DRR (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_CODEL (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_CHOKE (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_CBQ (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_ATM (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_EMATCH and sub-targets (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_CLS_TCINDEX (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_CLS_RSVP6 (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_CLS_RSVP (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_CLS_ROUTE4 (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_CLS_BASIC (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_ACT_SKBMOD (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_ACT_SIMP (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_ACT_NAT (Davide Caratti)
+
+* Thu Oct 29 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.20201029git23859ae44402.57.test]
+- 23859ae44402 rebase
+
+* Thu Oct 29 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.20201029gited8780e3f2ec.56.test]
 - Point pathfix to the new location for gen_compile_commands.py ("Justin M. Forbes")
 - Filter out LTO build options from the perl ccopts ("Justin M. Forbes")
-- Work around for gcc bug https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96377 ("Justin M. Forbes")
 
 * Wed Oct 28 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc1.20201028gited8780e3f2ec.55.test]
 - ed8780e3f2ec rebase

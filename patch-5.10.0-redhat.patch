@@ -13,7 +13,6 @@
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/cpu/common.c                       |   1 +
  arch/x86/kernel/setup.c                            |  71 +++-
- crypto/aegis128-neon-inner.c                       |   4 +-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
  drivers/acpi/scan.c                                |   9 +
@@ -71,7 +70,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/perf/Makefile.config                         |   1 +
- 73 files changed, 1585 insertions(+), 191 deletions(-)
+ 72 files changed, 1583 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -500,21 +499,6 @@ index 84f581c91db4..1d510bd7c969 100644
 +
  	unwind_init();
  }
-
-diff --git a/crypto/aegis128-neon-inner.c b/crypto/aegis128-neon-inner.c
-index 2a660ac1bc3a..fa87ff6a2a71 100644
---- a/crypto/aegis128-neon-inner.c
-+++ b/crypto/aegis128-neon-inner.c
-@@ -148,8 +148,8 @@ void crypto_aegis128_init_neon(void *state, const void *key, const void *iv)
- 		kiv,
- 		vld1q_u8(const1),
- 		vld1q_u8(const0),
--		k ^ vld1q_u8(const0),
--		k ^ vld1q_u8(const1),
-+		(uint8x16_t) (k ^ vld1q_u8(const0)),
-+		(uint8x16_t) (k ^ vld1q_u8(const1)),
- 	}};
- 	int i;
 
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
 index 6e980fe16772..37bc003e7a83 100644
