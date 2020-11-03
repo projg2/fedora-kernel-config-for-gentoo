@@ -1,0 +1,48 @@
+From a267434b15bc06c72708327fb1110bf565577a15 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Tue, 3 Nov 2020 16:53:02 +0000
+Subject: [PATCH] arm64: tegra: Use valid PWM period for VDD_GPU on Tegra210
+
+From: Thierry Reding <treding@nvidia.com>
+
+The PWM on Tegra210 can run at a maximum frequency of 48 MHz and cannot
+reach the minimum period is 5334 ns. The currently configured period of
+4880 ns is not within the valid range, so set it to 8000 ns. This value
+was taken from the downstream DTS files and seems to work fine.
+
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+---
+ arch/arm64/boot/dts/nvidia/tegra210-p2180.dtsi     | 2 +-
+ arch/arm64/boot/dts/nvidia/tegra210-p3450-0000.dts | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/nvidia/tegra210-p2180.dtsi b/arch/arm64/boot/dts/nvidia/tegra210-p2180.dtsi
+index 6a4b50aaa25d..85ee7e6b71ac 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra210-p2180.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra210-p2180.dtsi
+@@ -337,7 +337,7 @@ psci {
+ 
+ 	vdd_gpu: regulator@100 {
+ 		compatible = "pwm-regulator";
+-		pwms = <&pwm 1 4880>;
++		pwms = <&pwm 1 8000>;
+ 		regulator-name = "VDD_GPU";
+ 		regulator-min-microvolt = <710000>;
+ 		regulator-max-microvolt = <1320000>;
+diff --git a/arch/arm64/boot/dts/nvidia/tegra210-p3450-0000.dts b/arch/arm64/boot/dts/nvidia/tegra210-p3450-0000.dts
+index 2282ea1c6279..195a43e2356b 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra210-p3450-0000.dts
++++ b/arch/arm64/boot/dts/nvidia/tegra210-p3450-0000.dts
+@@ -818,7 +818,7 @@ vdd_cpu: regulator@5 {
+ 
+ 	vdd_gpu: regulator@6 {
+ 		compatible = "pwm-regulator";
+-		pwms = <&pwm 1 4880>;
++		pwms = <&pwm 1 8000>;
+ 
+ 		regulator-name = "VDD_GPU";
+ 		regulator-min-microvolt = <710000>;
+-- 
+2.28.0
+

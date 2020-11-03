@@ -833,6 +833,22 @@ Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
 Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch72: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
+# https://patchwork.kernel.org/patch/11743769/
+Patch100: mmc-sdhci-iproc-Enable-eMMC-DDR-3.3V-support-for-bcm2711.patch
+
+# https://patchwork.kernel.org/patch/11745283/
+Patch101: brcmfmac-BCM4329-Fixes-and-improvement.patch
+
+# https://patchwork.kernel.org/patch/11796255/
+Patch102: arm64-dts-rockchip-disable-USB-type-c-DisplayPort.patch
+
+# Tegra fixes
+Patch105: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+Patch106: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
+Patch107: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
+# https://www.spinics.net/lists/linux-tegra/msg53605.html
+Patch108: iommu-tegra-smmu-Fix-TLB-line-for-Tegra210.patch
+
 # A patch to fix some undocumented things broke a bunch of Allwinner networks due to wrong assumptions
 Patch124: 0001-update-phy-on-pine64-a64-devices.patch
 # https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201024162515.30032-2-wens@kernel.org/
