@@ -534,7 +534,7 @@ BuildRequires: python3-docutils
 BuildRequires: zlib-devel binutils-devel
 %endif
 %if %{with_selftests}
-BuildRequires: clang llvm
+BuildRequires: llvm
 %ifnarch %{arm}
 BuildRequires: numactl-devel
 %endif
