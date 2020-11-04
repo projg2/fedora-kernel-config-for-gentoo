@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2982,6 +2982,11 @@ fi
 #
 #
 %changelog
+* Wed Nov  4 17:08:50 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.9.4-300
+- Linux v5.9.4
+- Fixes CVE-2020-25668 (rhbz 1893287 1893288)
+- Fixes CVE-2020-27673 (rhbz 1891110 1891112)
+
 * Mon Nov  2 12:03:06 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.9.3-300
 - Linux v5.9.3
 
