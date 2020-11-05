@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -845,7 +845,6 @@ Patch102: arm64-dts-rockchip-disable-USB-type-c-DisplayPort.patch
 # Tegra fixes
 Patch105: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 Patch106: arm64-tegra-Use-valid-PWM-period-for-VDD_GPU-on-Tegra210.patch
-Patch107: memory-tegra-Remove-GPU-from-DRM-IOMMU-group.patch
 # https://www.spinics.net/lists/linux-tegra/msg53605.html
 Patch108: iommu-tegra-smmu-Fix-TLB-line-for-Tegra210.patch
 
@@ -865,9 +864,6 @@ Patch129: arm64-dts-allwinner-h5-OrangePi-Prime-Fix-ethernet-node.patch
 Patch130: arm64-dts-allwinner-h5-OrangePi-PC2-Fix-ethernet-node.patch
 # https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023194902.368239-1-jernej.skrabec@siol.net/
 Patch131: arm64-dts-allwinner-h6-Pine-H64-Fix-ethernet-node.patch
-
-# CVE-2020-27675 rhbz 1891114 1891115
-Patch132: 0001-xen-events-avoid-removing-an-event-channel-while-han.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2982,6 +2978,9 @@ fi
 #
 #
 %changelog
+* Thu Nov  5 09:08:36 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.9.5-300
+- Linux v5.9.5
+
 * Wed Nov  4 17:08:50 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.9.4-300
 - Linux v5.9.4
 - Fixes CVE-2020-25668 (rhbz 1893287 1893288)
