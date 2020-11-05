@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc2.62
+%global distro_build 0.rc2.20201105git4ef8451b3326.64
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -95,13 +95,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc2.62
+%define pkgrelease 0.rc2.20201105git4ef8451b3326.64
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.62%{?buildid}%{?dist}
+%define specrelease 0.rc2.20201105git4ef8451b3326.64%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -191,7 +191,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.10
@@ -534,7 +534,7 @@ BuildRequires: python3-docutils
 BuildRequires: zlib-devel binutils-devel
 %endif
 %if %{with_selftests}
-BuildRequires: llvm
+BuildRequires: clang llvm
 %ifnarch %{arm}
 BuildRequires: numactl-devel
 %endif
@@ -592,7 +592,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.10-rc2.tar.xz
+Source0: linux-20201105git4ef8451b3326.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1236,8 +1236,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.10-rc2 -c
-mv linux-5.10-rc2 linux-%{KVERREL}
+%setup -q -n kernel-20201105git4ef8451b3326 -c
+mv linux-20201105git4ef8451b3326 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2689,6 +2689,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 04 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc2.20201104git4ef8451b3326.62.test]
+- 4ef8451b3326 rebase
+
 * Mon Nov 02 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc2.61.test]
 - v5.10-rc2 rebase
 

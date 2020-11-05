@@ -69,8 +69,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- tools/perf/Makefile.config                         |   1 +
- 72 files changed, 1583 insertions(+), 189 deletions(-)
+ 71 files changed, 1582 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -3090,15 +3089,3 @@ index a28045dc9e7f..36b8b9fcad48 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-index 6890fc4b063a..ce8516e4de34 100644
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -749,6 +749,7 @@ else
-   PERL_EMBED_LIBADD = $(call grep-libs,$(PERL_EMBED_LDOPTS))
-   PERL_EMBED_CCOPTS = $(shell perl -MExtUtils::Embed -e ccopts 2>/dev/null)
-   PERL_EMBED_CCOPTS := $(filter-out -specs=%,$(PERL_EMBED_CCOPTS))
-+  PERL_EMBED_CCOPTS := $(filter-out -flto=auto -ffat-lto-objects, $(PERL_EMBED_CCOPTS))
-   PERL_EMBED_LDOPTS := $(filter-out -specs=%,$(PERL_EMBED_LDOPTS))
-   FLAGS_PERL_EMBED=$(PERL_EMBED_CCOPTS) $(PERL_EMBED_LDOPTS)
-
