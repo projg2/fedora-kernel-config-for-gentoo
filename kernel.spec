@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc2.20201105git4ef8451b3326.64
+%global distro_build 0.rc3.68
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -95,13 +95,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc2.20201105git4ef8451b3326.64
+%define pkgrelease 0.rc3.68
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20201105git4ef8451b3326.64%{?buildid}%{?dist}
+%define specrelease 0.rc3.68%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -191,7 +191,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.10
@@ -534,7 +534,7 @@ BuildRequires: python3-docutils
 BuildRequires: zlib-devel binutils-devel
 %endif
 %if %{with_selftests}
-BuildRequires: clang llvm
+BuildRequires: llvm
 %ifnarch %{arm}
 BuildRequires: numactl-devel
 %endif
@@ -592,7 +592,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201105git4ef8451b3326.tar.xz
+Source0: linux-5.10-rc3.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1236,8 +1236,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201105git4ef8451b3326 -c
-mv linux-20201105git4ef8451b3326 linux-%{KVERREL}
+%setup -q -n kernel-5.10-rc3 -c
+mv linux-5.10-rc3 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2689,6 +2689,22 @@ fi
 #
 #
 %changelog
+* Mon Nov 09 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.10.0-0.rc3.68]
+- Fedora 5.10 config updates ("Justin M. Forbes")
+
+* Mon Nov 09 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc3.66.test]
+- v5.10-rc3 rebase
+
+* Sun Nov 08 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc2.20201108git4429f14aeea9.65.test]
+- 4429f14aeea9 rebase
+
+* Sat Nov 07 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc2.20201107git659caaf65dc9.64.test]
+- 659caaf65dc9 rebase
+
+* Fri Nov 06 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc2.20201106git521b619acdc8.63.test]
+- 521b619acdc8 rebase
+- Fedora 5.10 configs round 1 ("Justin M. Forbes")
+
 * Wed Nov 04 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc2.20201104git4ef8451b3326.62.test]
 - 4ef8451b3326 rebase
 

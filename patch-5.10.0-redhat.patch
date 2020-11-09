@@ -202,7 +202,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 9e7fd6a065a7..cc3f21bf5d51 100644
+index 008aba5f1a20..5f0bdba21c4a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -287,7 +287,7 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 1d466addb078..516a53104f3e 100644
+index 1515f6f153a0..b79d18fcd698 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -891,7 +891,7 @@ endchoice
@@ -1622,7 +1622,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8c470f451a32..e065b5b6c0ac 100644
+index b53446bb8c6b..b17b2a76a547 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1877,7 +1877,7 @@ index 202ba925c494..094a9b551247 100644
  	{ 0 }
  };
 diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index 83ce4f11a589..f3dfb047f49b 100644
+index 8df70c92911d..754a912d30a6 100644
 --- a/drivers/scsi/hpsa.c
 +++ b/drivers/scsi/hpsa.c
 @@ -83,7 +83,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
