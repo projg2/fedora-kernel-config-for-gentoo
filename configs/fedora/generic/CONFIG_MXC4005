@@ -1,1 +1,1 @@
-# CONFIG_MXC4005 is not set
+CONFIG_MXC4005=m
