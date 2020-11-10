@@ -18,7 +18,7 @@ index b26181cf9095..01728a4c5309 100644
  	pinctrl-names = "default";
  	pinctrl-0 = <&rgmii_pins>;
 -	phy-mode = "rgmii";
-+	phy-mode = "rgmii-txid";
++	phy-mode = "rgmii-id";
  	phy-handle = <&ext_rgmii_phy>;
  	status = "okay";
  };
@@ -31,7 +31,7 @@ index 2165f238af13..9741fb5caa6f 100644
  	pinctrl-names = "default";
  	pinctrl-0 = <&rmii_pins>;
 -	phy-mode = "rmii";
-+	phy-mode = "rmii-id";
++	phy-mode = "rmii-txid";
  	phy-handle = <&ext_rmii_phy1>;
  	phy-supply = <&reg_dc1sw>;
  	status = "okay";

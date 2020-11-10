@@ -1,6 +1,6 @@
-From 9134295c0515492b1ab7733c0290b2afde336d6b Mon Sep 17 00:00:00 2001
-From: Vidya Sagar <vidyas@nvidia.com>
-Date: Sat, 11 Jan 2020 00:45:00 +0530
+From dc7294c776b82b0f0feec1536b2f4676806b4b8a Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Tue, 3 Nov 2020 14:04:29 +0000
 Subject: [PATCH] PCI: Add MCFG quirks for Tegra194 host controllers
 
 The PCIe controller in Tegra194 SoC is not completely ECAM-compliant.
@@ -19,6 +19,7 @@ Acked-by: Thierry Reding <treding@nvidia.com>
 [ Updated by jonathanh@nvidia.com only permit building the Tegra194
   PCIe driver into the kernel and not as a module ]
 Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
 ---
  drivers/acpi/pci_mcfg.c                    |   7 ++
  drivers/pci/controller/dwc/Kconfig         |  10 +-
@@ -28,7 +29,7 @@ Signed-off-by: Jon Hunter <jonathanh@nvidia.com>
  5 files changed, 117 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/acpi/pci_mcfg.c b/drivers/acpi/pci_mcfg.c
-index 54b36b7ad47d9..6573d495d9c1f 100644
+index 54b36b7ad47d..6573d495d9c1 100644
 --- a/drivers/acpi/pci_mcfg.c
 +++ b/drivers/acpi/pci_mcfg.c
 @@ -116,6 +116,13 @@ static struct mcfg_fixup mcfg_quirks[] = {
@@ -46,7 +47,7 @@ index 54b36b7ad47d9..6573d495d9c1f 100644
  	{"APM   ", "XGENE   ", rev, seg, MCFG_BUS_ANY, \
  		&xgene_v1_pcie_ecam_ops }
 diff --git a/drivers/pci/controller/dwc/Kconfig b/drivers/pci/controller/dwc/Kconfig
-index 044a3761c44f2..e4ee4bf9ac64a 100644
+index 044a3761c44f..e4ee4bf9ac64 100644
 --- a/drivers/pci/controller/dwc/Kconfig
 +++ b/drivers/pci/controller/dwc/Kconfig
 @@ -247,25 +247,27 @@ config PCI_MESON
@@ -82,7 +83,7 @@ index 044a3761c44f2..e4ee4bf9ac64a 100644
  	depends on PCI_ENDPOINT
  	select PCIE_DW_EP
 diff --git a/drivers/pci/controller/dwc/Makefile b/drivers/pci/controller/dwc/Makefile
-index a751553fa0dbd..dbb9818765566 100644
+index a751553fa0db..dbb981876556 100644
 --- a/drivers/pci/controller/dwc/Makefile
 +++ b/drivers/pci/controller/dwc/Makefile
 @@ -17,7 +17,6 @@ obj-$(CONFIG_PCIE_INTEL_GW) += pcie-intel-gw.o
@@ -100,7 +101,7 @@ index a751553fa0dbd..dbb9818765566 100644
 +obj-$(CONFIG_ARM64) += pcie-tegra194.o
  endif
 diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index 92b77f7d83546..7b3d581795197 100644
+index 70498689d0c0..3db514e1ea7e 100644
 --- a/drivers/pci/controller/dwc/pcie-tegra194.c
 +++ b/drivers/pci/controller/dwc/pcie-tegra194.c
 @@ -22,6 +22,8 @@
@@ -216,7 +217,7 @@ index 92b77f7d83546..7b3d581795197 100644
  static inline struct tegra_pcie_dw *to_tegra_pcie(struct dw_pcie *pci)
  {
  	return container_of(pci, struct tegra_pcie_dw, pci);
-@@ -2405,3 +2504,6 @@ MODULE_DEVICE_TABLE(of, tegra_pcie_dw_of_match);
+@@ -2403,3 +2502,6 @@ MODULE_DEVICE_TABLE(of, tegra_pcie_dw_of_match);
  MODULE_AUTHOR("Vidya Sagar <vidyas@nvidia.com>");
  MODULE_DESCRIPTION("NVIDIA PCIe host controller driver");
  MODULE_LICENSE("GPL v2");
@@ -224,7 +225,7 @@ index 92b77f7d83546..7b3d581795197 100644
 +#endif /* CONFIG_PCIE_TEGRA194 */
 +
 diff --git a/include/linux/pci-ecam.h b/include/linux/pci-ecam.h
-index 1af5cb02ef7f9..3fb16ada505a0 100644
+index 1af5cb02ef7f..3fb16ada505a 100644
 --- a/include/linux/pci-ecam.h
 +++ b/include/linux/pci-ecam.h
 @@ -57,6 +57,7 @@ extern const struct pci_ecam_ops pci_thunder_ecam_ops; /* Cavium ThunderX 1.x */
@@ -236,5 +237,5 @@ index 1af5cb02ef7f9..3fb16ada505a0 100644
  
  #if IS_ENABLED(CONFIG_PCI_HOST_COMMON)
 -- 
-2.26.2
+2.28.0
 

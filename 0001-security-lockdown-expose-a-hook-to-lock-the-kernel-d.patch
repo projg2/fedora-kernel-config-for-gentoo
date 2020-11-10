@@ -17,7 +17,7 @@ Signed-off-by: Jeremy Cline <jcline@redhat.com>
  5 files changed, 20 insertions(+)
 
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index af998f93d256..3c33f00cd4d6 100644
+index 2a8c74d99015..0d3129588b78 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -383,6 +383,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -30,7 +30,7 @@ index af998f93d256..3c33f00cd4d6 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 95b7c1d32062..dbacbb1fc129 100644
+index 9e2e3e63719d..317660f68b4f 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
 @@ -1507,6 +1507,12 @@
@@ -99,5 +99,5 @@ index 70a7ad357bc6..23e16e773bc2 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 -- 
-2.26.2
+2.28.0
 

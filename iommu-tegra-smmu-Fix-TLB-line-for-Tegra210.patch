@@ -1,0 +1,48 @@
+From c461469e12073007ac4bbddd3a4830632c065738 Mon Sep 17 00:00:00 2001
+From: Peter Robinson <pbrobinson@gmail.com>
+Date: Mon, 28 Sep 2020 11:34:09 +0100
+Subject: [PATCH] These two patches fix ACTIVE_TLB_LINES field setting in
+ tegra-smmu driver for Tegra210 platforms.
+
+This resend in series groups two previous seperate changes that're
+corelated, being pointed out by Thierry. Also adding his Acked-by.
+
+Nicolin Chen (2):
+  iommu/tegra-smmu: Fix tlb_mask
+  memory: tegra: Correct num_tlb_lines for tegra210
+
+Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
+---
+ drivers/iommu/tegra-smmu.c      | 2 +-
+ drivers/memory/tegra/tegra210.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 7426b7666e2b..d5f1384ef6a1 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -1022,7 +1022,7 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+ 	smmu->pfn_mask = BIT_MASK(mc->soc->num_address_bits - PAGE_SHIFT) - 1;
+ 	dev_dbg(dev, "address bits: %u, PFN mask: %#lx\n",
+ 		mc->soc->num_address_bits, smmu->pfn_mask);
+-	smmu->tlb_mask = (smmu->soc->num_tlb_lines << 1) - 1;
++	smmu->tlb_mask = (1 << fls(smmu->soc->num_tlb_lines)) - 1;
+ 	dev_dbg(dev, "TLB lines: %u, mask: %#lx\n", smmu->soc->num_tlb_lines,
+ 		smmu->tlb_mask);
+ 
+diff --git a/drivers/memory/tegra/tegra210.c b/drivers/memory/tegra/tegra210.c
+index cc0482434c75..7212d1d7b348 100644
+--- a/drivers/memory/tegra/tegra210.c
++++ b/drivers/memory/tegra/tegra210.c
+@@ -1073,7 +1073,7 @@ static const struct tegra_smmu_soc tegra210_smmu_soc = {
+ 	.num_groups = ARRAY_SIZE(tegra210_groups),
+ 	.supports_round_robin_arbitration = true,
+ 	.supports_request_limit = true,
+-	.num_tlb_lines = 32,
++	.num_tlb_lines = 48,
+ 	.num_asids = 128,
+ };
+ 
+-- 
+2.26.2
+
