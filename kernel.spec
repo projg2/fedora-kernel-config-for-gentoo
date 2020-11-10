@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2978,6 +2978,9 @@ fi
 #
 #
 %changelog
+* Tue Nov 10 15:34:25 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.9.8-200
+- Linux v5.9.8
+
 * Tue Nov 10 2020 <jforbes@fedoraproject.org> - 5.9.7-200
 - Linux v5.9.7 rebase
 - Fixes CVE-2020-25668 (rhbz 1893287 1893288)
