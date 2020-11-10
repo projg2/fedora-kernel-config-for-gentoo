@@ -2980,6 +2980,7 @@ fi
 %changelog
 * Tue Nov 10 15:34:25 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.9.8-200
 - Linux v5.9.8
+- Fixes CVE-2020-8694 (rhbz 1828580 1896525)
 
 * Tue Nov 10 2020 <jforbes@fedoraproject.org> - 5.9.7-200
 - Linux v5.9.7 rebase
