@@ -865,6 +865,9 @@ Patch130: arm64-dts-allwinner-h5-OrangePi-PC2-Fix-ethernet-node.patch
 # https://patchwork.kernel.org/project/linux-arm-kernel/patch/20201023194902.368239-1-jernej.skrabec@siol.net/
 Patch131: arm64-dts-allwinner-h6-Pine-H64-Fix-ethernet-node.patch
 
+# rhbz 1897038
+Patch132: bluetooth-fix-LL-privacy-BLE-device-fails-to-connect.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2978,6 +2981,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 12 2020 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix bluetooth device disconnect issues. (rhbz 1897038)
+
 * Tue Nov 10 15:34:25 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.9.8-200
 - Linux v5.9.8
 - Fixes CVE-2020-8694 (rhbz 1828580 1896525)
