@@ -16,6 +16,11 @@ while test "$#" != 0; do
 	shift
 done
 
+#This seems to cause problems with large numbers
+if (( $procgroup > 12 )); then
+	procgroup=12
+fi
+
 # If told to use only one cpu:
 test "$procgroup" || exec xargs -r xz
 test "$procgroup" = 1 && exec xargs -r xz

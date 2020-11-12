@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc3.68
+%global distro_build 0.rc3.20201112git3d5e28bff7ad.73
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -95,13 +95,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc3.68
+%define pkgrelease 0.rc3.20201112git3d5e28bff7ad.73
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.68%{?buildid}%{?dist}
+%define specrelease 0.rc3.20201112git3d5e28bff7ad.73%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -191,7 +191,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.10
@@ -592,7 +592,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.10-rc3.tar.xz
+Source0: linux-20201112git3d5e28bff7ad.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1236,8 +1236,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.10-rc3 -c
-mv linux-5.10-rc3 linux-%{KVERREL}
+%setup -q -n kernel-20201112git3d5e28bff7ad -c
+mv linux-20201112git3d5e28bff7ad linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2689,7 +2689,15 @@ fi
 #
 #
 %changelog
-* Mon Nov 09 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.10.0-0.rc3.68]
+* Thu Nov 12 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc3.20201112git3d5e28bff7ad.71.test]
+- 3d5e28bff7ad rebase
+
+* Wed Nov 11 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc3.20201111giteccc87672492.68.test]
+- eccc87672492 rebase
+- redhat: enable CONFIG_INTEL_IOMMU_SVM (Jerry Snitselaar)
+
+* Tue Nov 10 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc3.67.test]
+- More Fedora config fixes ("Justin M. Forbes")
 - Fedora 5.10 config updates ("Justin M. Forbes")
 
 * Mon Nov 09 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc3.66.test]
