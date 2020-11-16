@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc3.20201112git3d5e28bff7ad.73
+%global distro_build 0.rc4.78
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -95,13 +95,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc3.20201112git3d5e28bff7ad.73
+%define pkgrelease 0.rc4.78
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20201112git3d5e28bff7ad.73%{?buildid}%{?dist}
+%define specrelease 0.rc4.78%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -191,7 +191,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.10
@@ -592,7 +592,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201112git3d5e28bff7ad.tar.xz
+Source0: linux-5.10-rc4.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1236,8 +1236,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201112git3d5e28bff7ad -c
-mv linux-20201112git3d5e28bff7ad linux-%{KVERREL}
+%setup -q -n kernel-5.10-rc4 -c
+mv linux-5.10-rc4 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2689,6 +2689,24 @@ fi
 #
 #
 %changelog
+* Mon Nov 16 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc4.77]
+- No need to review, Temporary workarounds due to DEBUG_INFO_BTF not working ("Justin M. Forbes")
+
+* Mon Nov 16 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc4.76.test]
+- v5.10-rc4 rebase
+- Ath11k related config updates ("Justin M. Forbes")
+- Fedora config updates for ath11k ("Justin M. Forbes")
+
+* Sun Nov 15 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc3.20201115gite28c0d7c92c8.74.test]
+- e28c0d7c92c8 rebase
+
+* Sat Nov 14 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc3.20201114gitf01c30de86f1.73.test]
+- f01c30de86f1 rebase
+- Turn on ATH11K for Fedora ("Justin M. Forbes")
+
+* Fri Nov 13 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc3.20201113git585e5b17b92d.72.test]
+- 585e5b17b92d rebase
+
 * Thu Nov 12 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc3.20201112git3d5e28bff7ad.71.test]
 - 3d5e28bff7ad rebase
 

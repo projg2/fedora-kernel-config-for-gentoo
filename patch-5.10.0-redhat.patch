@@ -202,7 +202,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 008aba5f1a20..5f0bdba21c4a 100644
+index e2c3f65c4721..36e66831ae23 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -562,7 +562,7 @@ index e209081d644b..7484bcf59a1b 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index a896e5e87c93..f5b2986c9415 100644
+index bc6a79e33220..384d347275a0 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1573,6 +1573,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -2827,7 +2827,7 @@ index 9d9fc678c91d..84ad75a53c83 100644
 +	return ret;
  }
 diff --git a/kernel/panic.c b/kernel/panic.c
-index 396142ee43fd..f3a4d1735339 100644
+index 332736a72a58..1c81aa14f488 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
 @@ -386,6 +386,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
