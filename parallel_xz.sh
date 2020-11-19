@@ -17,8 +17,8 @@ while test "$#" != 0; do
 done
 
 #This seems to cause problems with large numbers
-if (( $procgroup > 8 )); then
-	procgroup=8
+if (( $procgroup > 4 )); then
+	procgroup=4
 fi
 
 # If told to use only one cpu:

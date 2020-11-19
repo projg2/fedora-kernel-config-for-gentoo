@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc4.20201117git9c87c9f41245.79
+%global distro_build 0.rc4.20201119gitc2e7554e1b85.81
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -95,13 +95,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc4.20201117git9c87c9f41245.79
+%define pkgrelease 0.rc4.20201119gitc2e7554e1b85.81
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20201117git9c87c9f41245.79%{?buildid}%{?dist}
+%define specrelease 0.rc4.20201119gitc2e7554e1b85.81%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -592,7 +592,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201117git9c87c9f41245.tar.xz
+Source0: linux-20201119gitc2e7554e1b85.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1236,8 +1236,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201117git9c87c9f41245 -c
-mv linux-20201117git9c87c9f41245 linux-%{KVERREL}
+%setup -q -n kernel-20201119gitc2e7554e1b85 -c
+mv linux-20201119gitc2e7554e1b85 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2689,8 +2689,16 @@ fi
 #
 #
 %changelog
-* Tue Nov 17 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc4.20201117git9c87c9f41245.78]
+* Thu Nov 19 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc4.20201119gitc2e7554e1b85.80]
 - No need to review, Temporary workarounds due to DEBUG_INFO_BTF not working ("Justin M. Forbes")
+
+* Thu Nov 19 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc4.20201119gitc2e7554e1b85.79.test]
+- c2e7554e1b85 rebase
+- Enable NANDSIM for Fedora ("Justin M. Forbes")
+- Re-enable CONFIG_ACPI_TABLE_UPGRADE for Fedora since upstream disables this if secureboot is active ("Justin M. Forbes")
+
+* Wed Nov 18 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc4.20201118git0fa8ee0d9ab9.78.test]
+- 0fa8ee0d9ab9 rebase
 
 * Tue Nov 17 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc4.20201117git9c87c9f41245.77.test]
 - 9c87c9f41245 rebase
