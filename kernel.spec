@@ -92,7 +92,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2981,6 +2981,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 19 07:12:19 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.9.9-100
+- Linux v5.9.9
+
 * Thu Nov 12 2020 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix bluetooth device disconnect issues. (rhbz 1897038)
 
