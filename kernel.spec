@@ -55,7 +55,7 @@ Summary: The Linux kernel
 %if %{zipmodules}
 %global zipsed -e 's/\.ko$/\.ko.xz/'
 # for parallel xz processes, replace with 1 to go back to single process
-+%global zcpu `nproc --all`
+%global zcpu `nproc --all`
 %endif
 
 # define buildid .local
