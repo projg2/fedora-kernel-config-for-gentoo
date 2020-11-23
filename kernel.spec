@@ -54,6 +54,8 @@ Summary: The Linux kernel
 
 %if %{zipmodules}
 %global zipsed -e 's/\.ko$/\.ko.xz/'
+# for parallel xz processes, replace with 1 to go back to single process
++%global zcpu `nproc --all`
 %endif
 
 # define buildid .local
@@ -92,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -867,6 +869,9 @@ Patch131: arm64-dts-allwinner-h6-Pine-H64-Fix-ethernet-node.patch
 
 # rhbz 1897038
 Patch132: bluetooth-fix-LL-privacy-BLE-device-fails-to-connect.patch
+
+# CVE-2020-28941 rhbz 1899985 1899986
+Patch133: speakup-do-not-let-the-line-discipline-be-used-several-times.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2346,7 +2351,7 @@ find Documentation -type d | xargs chmod u+w
     fi \
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
-    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | %{SOURCE79} %{?_smp_mflags}; \
+    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -P%{zcpu} xz; \
   fi \
 %{nil}
 
@@ -2981,6 +2986,11 @@ fi
 #
 #
 %changelog
+* Mon Nov 23 09:58:15 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.9.10-200
+- Linux v5.9.10
+- Fix CVE-2020-28941 (rhbz 1899985 1899986)
+- Fix CVE-2020-4788 (rhbz 1888433 1900437)
+
 * Thu Nov 19 07:09:26 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.9.9-200
 - Linux v5.9.9
 - Enable NANDSIM (rhbz 1898638)
