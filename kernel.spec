@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc5.82
+%global distro_build 0.rc5.20201124gitd5beb3140f91.84
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -83,6 +83,8 @@ Summary: The Linux kernel
 
 %if %{zipmodules}
 %global zipsed -e 's/\.ko$/\.ko.xz/'
+# for parallel xz processes, replace with 1 to go back to single process
+%global zcpu `nproc --all`
 %endif
 
 # define buildid .local
@@ -95,13 +97,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc5.82
+%define pkgrelease 0.rc5.20201124gitd5beb3140f91.84
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.82%{?buildid}%{?dist}
+%define specrelease 0.rc5.20201124gitd5beb3140f91.84%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -191,7 +193,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.10
@@ -592,7 +594,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.10-rc5.tar.xz
+Source0: linux-20201124gitd5beb3140f91.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1236,8 +1238,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.10-rc5 -c
-mv linux-5.10-rc5 linux-%{KVERREL}
+%setup -q -n kernel-20201124gitd5beb3140f91 -c
+mv linux-20201124gitd5beb3140f91 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2063,7 +2065,7 @@ find Documentation -type d | xargs chmod u+w
     fi \
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
-    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | %{SOURCE79} %{?_smp_mflags}; \
+    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -P%{zcpu} xz; \
   fi \
 %{nil}
 
@@ -2689,6 +2691,9 @@ fi
 #
 #
 %changelog
+* Tue Nov 24 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc5.20201124gitd5beb3140f91.84]
+- Temporarily backout parallel xz script ("Justin M. Forbes")
+
 * Fri Nov 20 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc4.20201120git4d02da974ea8.81]
 - Fedora config update ("Justin M. Forbes")
 - redhat: generic  enable CONFIG_INET_MPTCP_DIAG (Davide Caratti)
