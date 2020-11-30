@@ -202,7 +202,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index ed081e3eb800..549e1381c227 100644
+index 43ecedeb3f02..d35dda518ef1 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -216,7 +216,7 @@ index ed081e3eb800..549e1381c227 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -497,6 +501,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+@@ -495,6 +499,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
  		   -Werror=implicit-function-declaration -Werror=implicit-int \
@@ -224,7 +224,7 @@ index ed081e3eb800..549e1381c227 100644
  		   -Werror=return-type -Wno-format-security \
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
-@@ -1247,7 +1252,13 @@ endef
+@@ -1245,7 +1250,13 @@ endef
  define filechk_version.h
  	echo \#define LINUX_VERSION_CODE $(shell                         \
  	expr $(VERSION) \* 65536 + 0$(PATCHLEVEL) \* 256 + 0$(SUBLEVEL)); \
@@ -684,7 +684,7 @@ index d6ca2da19339..7c30a62c5e5d 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 5e5480a0a32d..bb5d61fc82bb 100644
+index 6c6eec044a97..406aff8327b6 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -1622,7 +1622,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b53446bb8c6b..b17b2a76a547 100644
+index 0f4dc25d46c9..bd962ee8bc4b 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1633,7 +1633,7 @@ index b53446bb8c6b..b17b2a76a547 100644
  #include <linux/kernel.h>
  #include <linux/bug.h>
  #include <linux/types.h>
-@@ -3029,3 +3030,24 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3031,3 +3032,24 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  	return ops->sva_get_pasid(handle);
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);

@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc5.20201125git127c501a03d5.85
+%global distro_build 0.rc6.90
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -97,13 +97,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc5.20201125git127c501a03d5.85
+%define pkgrelease 0.rc6.90
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20201125git127c501a03d5.85%{?buildid}%{?dist}
+%define specrelease 0.rc6.90%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -193,7 +193,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.10
@@ -503,7 +503,9 @@ BuildRequires: kmod, patch, bash, tar, git-core
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
 BuildRequires: net-tools, hostname, bc, elfutils-devel
+%if 0%{?fedora}
 BuildRequires: dwarves
+%endif
 BuildRequires: python3-devel
 %if %{with_headers}
 BuildRequires: rsync
@@ -592,7 +594,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201125git127c501a03d5.tar.xz
+Source0: linux-5.10-rc6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1236,8 +1238,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201125git127c501a03d5 -c
-mv linux-20201125git127c501a03d5 linux-%{KVERREL}
+%setup -q -n kernel-5.10-rc6 -c
+mv linux-5.10-rc6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2689,8 +2691,32 @@ fi
 #
 #
 %changelog
-* Wed Nov 25 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc5.20201125git127c501a03d5.85]
+* Mon Nov 30 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc6.90]
 - Temporarily backout parallel xz script ("Justin M. Forbes")
+- build_configs.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- genspec.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- ark-rebase-patches.sh: Fix for shellcheck (Ben Crocker)
+- ark-create-release.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- merge-subtrees.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- rh-dist-git.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- update_scripts.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- x86_rngd.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- parallel_xz.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- expand_srpm.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- create-tarball.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- generate_bls_conf.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- clone_tree.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- new_release.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- download_cross.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- create_distgit_changelog.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- generate_cross_report.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- run_kabi-dw.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- mod-blacklist.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- scripts/configdiff.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- self-test/0001-shellcheck.bats: check for shellcheck (Ben Crocker)
+- self-test/1001-rpmlint.bats, 1003-rpminspect.bats (Ben Crocker)
+- Makefile, Makefile.common, egit.sh, 1005-dist-dump-variables.bats (Ben Crocker)
+- Add GIT macro to Makefile and Makefile.common: (Ben Crocker)
 
 * Fri Nov 20 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc4.20201120git4d02da974ea8.81]
 - Fedora config update ("Justin M. Forbes")
