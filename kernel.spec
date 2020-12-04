@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc6.20201202git509a15421674.91
+%global distro_build 0.rc6.20201204git34816d20f173.92
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -97,13 +97,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc6.20201202git509a15421674.91
+%define pkgrelease 0.rc6.20201204git34816d20f173.92
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20201202git509a15421674.91%{?buildid}%{?dist}
+%define specrelease 0.rc6.20201204git34816d20f173.92%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -503,9 +503,7 @@ BuildRequires: kmod, patch, bash, tar, git-core
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
 BuildRequires: net-tools, hostname, bc, elfutils-devel
-%if 0%{?fedora}
 BuildRequires: dwarves
-%endif
 BuildRequires: python3-devel
 %if %{with_headers}
 BuildRequires: rsync
@@ -546,9 +544,7 @@ BuildConflicts: rhbuildsys(DiskFree) < 500Mb
 %if %{with_debuginfo}
 BuildRequires: rpm-build, elfutils
 BuildConflicts: rpm < 4.13.0.1-19
-%if 0%{?fedora}
 BuildConflicts: dwarves < 1.13
-%endif
 # Most of these should be enabled after more investigation
 %undefine _include_minidebuginfo
 %undefine _find_debuginfo_dwz_opts
@@ -594,7 +590,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201202git509a15421674.tar.xz
+Source0: linux-20201204git34816d20f173.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1238,8 +1234,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201202git509a15421674 -c
-mv linux-20201202git509a15421674 linux-%{KVERREL}
+%setup -q -n kernel-20201204git34816d20f173 -c
+mv linux-20201204git34816d20f173 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2727,7 +2723,8 @@ fi
 #
 #
 %changelog
-* Wed Dec 02 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc6.20201202git509a15421674.91]
+* Fri Dec 04 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc6.20201204git34816d20f173.92]
+- configs: Enable CONFIG_DEBUG_INFO_BTF (Don Zickus)
 - Temporarily backout parallel xz script ("Justin M. Forbes")
 - Remove cp instruction already handled in instruction below. ("Paulo E. Castro")
 - Add all the dependencies gleaned from running `make prepare` on a bloated devel kernel. ("Paulo E. Castro")
@@ -2758,6 +2755,10 @@ fi
 - self-test/1001-rpmlint.bats, 1003-rpminspect.bats (Ben Crocker)
 - Makefile, Makefile.common, egit.sh, 1005-dist-dump-variables.bats (Ben Crocker)
 - Add GIT macro to Makefile and Makefile.common: (Ben Crocker)
+
+* Thu Dec 03 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc6.20201203git34816d20f173.91]
+- fedora: some minor arm audio config tweaks (Peter Robinson)
+- Ship xpad with default modules on Fedora and RHEL (Bastien Nocera)
 
 * Wed Dec 02 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc6.20201202git509a15421674.90]
 - Fedora config update ("Justin M. Forbes")
