@@ -740,6 +740,7 @@ Source4000: README.rst
 %if !%{nopatches}
 
 Patch1: patch-%{rpmversion}-redhat.patch
+Patch2: revert-mm-filemap-add-static-for-function-__add_to_page_cache_locked.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1243,6 +1244,7 @@ cp -a %{SOURCE1} .
 %if !%{nopatches}
 
 ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
+ApplyOptionalPatch revert-mm-filemap-add-static-for-function-__add_to_page_cache_locked.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch

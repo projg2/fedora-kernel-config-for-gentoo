@@ -1,0 +1,90 @@
+From: akpm@linux-foundation.org
+To: mm-commits@vger.kernel.org, mkubecek@suse.cz, jrdr.linux@gmail.com,
+ josef@toxicpanda.com, jmforbes@linuxtx.org, daniel@iogearbox.net,
+ ast@kernel.org, alex.shi@linux.alibaba.com, akpm@linux-foundation.org
+Subject:  +
+ revert-mm-filemap-add-static-for-function-__add_to_page_cache_locked.patch
+ added to -mm tree
+Message-ID: <20201208034157.9KFja%akpm@linux-foundation.org>
+User-Agent: s-nail v14.9.10
+
+
+The patch titled
+     Subject: revert "mm/filemap: add static for function __add_to_page_cache_locked"
+has been added to the -mm tree.  Its filename is
+     revert-mm-filemap-add-static-for-function-__add_to_page_cache_locked.patch
+
+This patch should soon appear at
+    https://ozlabs.org/~akpm/mmots/broken-out/revert-mm-filemap-add-static-for-function-__add_to_page_cache_locked.patch
+and later at
+    https://ozlabs.org/~akpm/mmotm/broken-out/revert-mm-filemap-add-static-for-function-__add_to_page_cache_locked.patch
+
+Before you just go and hit "reply", please:
+   a) Consider who else should be cc'ed
+   b) Prefer to cc a suitable mailing list as well
+   c) Ideally: find the original patch on the mailing list and do a
+      reply-to-all to that, adding suitable additional cc's
+
+*** Remember to use Documentation/process/submit-checklist.rst when testing your code ***
+
+The -mm tree is included into linux-next and is updated
+there every 3-4 working days
+
+------------------------------------------------------
+From: Andrew Morton <akpm@linux-foundation.org>
+Subject: revert "mm/filemap: add static for function __add_to_page_cache_locked"
+
+Revert 3351b16af494 ("mm/filemap: add static for function
+__add_to_page_cache_locked") due to build issues with
+CONFIG_DEBUG_INFO_BTF=y.
+
+Link: https://lkml.kernel.org/r/CAADnVQJ6tmzBXvtroBuEH6QA0H+q7yaSKxrVvVxhqr3KBZdEXg@mail.gmail.com
+Cc: Michal Kubecek <mkubecek@suse.cz>
+Cc: Justin Forbes <jmforbes@linuxtx.org>
+Cc: Alex Shi <alex.shi@linux.alibaba.com>
+Cc: Souptick Joarder <jrdr.linux@gmail.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+---
+
+ mm/filemap.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/mm/filemap.c~revert-mm-filemap-add-static-for-function-__add_to_page_cache_locked
++++ a/mm/filemap.c
+@@ -827,7 +827,7 @@ int replace_page_cache_page(struct page
+ }
+ EXPORT_SYMBOL_GPL(replace_page_cache_page);
+ 
+-static noinline int __add_to_page_cache_locked(struct page *page,
++noinline int __add_to_page_cache_locked(struct page *page,
+ 					struct address_space *mapping,
+ 					pgoff_t offset, gfp_t gfp,
+ 					void **shadowp)
+_
+
+Patches currently in -mm which might be from akpm@linux-foundation.org are
+
+revert-mm-filemap-add-static-for-function-__add_to_page_cache_locked.patch
+kthread_worker-document-cpu-hotplug-handling-fix.patch
+mm.patch
+mm-remove-the-unuseful-else-after-a-return-checkpatch-fixes.patch
+mm-prevent-gup_fast-from-racing-with-cow-during-fork-checkpatch-fixes.patch
+mm-swap_state-skip-meaningless-swap-cache-readahead-when-ra_infowin-==-0-fix.patch
+mm-vmallocc-__vmalloc_area_node-avoid-32-bit-overflow.patch
+mm-cma-improve-pr_debug-log-in-cma_release-fix.patch
+mm-vmstat-fix-proc-sys-vm-stat_refresh-generating-false-warnings-fix-2.patch
+lib-cmdline_kunit-add-a-new-test-suite-for-cmdline-api-fix.patch
+ilog2-improve-ilog2-for-constant-arguments-checkpatch-fixes.patch
+lib-test_bitmapc-add-for_each_set_clump-test-cases-checkpatch-fixes.patch
+checkpatch-fix-typo_spelling-check-for-words-with-apostrophe-fix.patch
+resource-fix-kernel-doc-markups-checkpatch-fixes.patch
+linux-next-rejects.patch
+kmap-stupid-hacks-to-make-it-compile.patch
+init-kconfig-dont-assume-scripts-lld-versionsh-is-executable.patch
+set_memory-allow-set_direct_map__noflush-for-multiple-pages-fix.patch
+arch-mm-wire-up-memfd_secret-system-call-were-relevant-fix.patch
+kernel-forkc-export-kernel_thread-to-modules.patch
+
