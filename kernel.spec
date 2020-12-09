@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc7.93
+%global distro_build 0.rc7.20201209gita68a0262abda.95
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -97,13 +97,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc7.93
+%define pkgrelease 0.rc7.20201209gita68a0262abda.95
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.93%{?buildid}%{?dist}
+%define specrelease 0.rc7.20201209gita68a0262abda.95%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -193,7 +193,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.10
@@ -590,7 +590,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.10-rc7.tar.xz
+Source0: linux-20201209gita68a0262abda.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1235,8 +1235,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.10-rc7 -c
-mv linux-5.10-rc7 linux-%{KVERREL}
+%setup -q -n kernel-20201209gita68a0262abda -c
+mv linux-20201209gita68a0262abda linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2725,7 +2725,7 @@ fi
 #
 #
 %changelog
-* Mon Dec 07 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.93]
+* Wed Dec 09 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.20201209gita68a0262abda.95]
 - Temporarily backout parallel xz script ("Justin M. Forbes")
 - Remove cp instruction already handled in instruction below. ("Paulo E. Castro")
 - Add all the dependencies gleaned from running `make prepare` on a bloated devel kernel. ("Paulo E. Castro")
@@ -2756,6 +2756,13 @@ fi
 - self-test/1001-rpmlint.bats, 1003-rpminspect.bats (Ben Crocker)
 - Makefile, Makefile.common, egit.sh, 1005-dist-dump-variables.bats (Ben Crocker)
 - Add GIT macro to Makefile and Makefile.common: (Ben Crocker)
+
+* Wed Dec 09 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.20201209gita68a0262abda.94]
+- Update CONFIG_INET6_ESPINTCP (Justin Forbes)
+- New configs in net/ipv6 ("Justin M. Forbes")
+
+* Tue Dec 08 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.93]
+- fedora: move CONFIG_RTC_NVMEM options from ark to common (Peter Robinson)
 
 * Mon Dec 07 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.92]
 - configs: Enable CONFIG_DEBUG_INFO_BTF (Don Zickus)

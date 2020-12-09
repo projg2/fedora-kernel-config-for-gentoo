@@ -1984,10 +1984,10 @@ index d48414e295a0..ba0e384412c9 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 41cd66fc7d81..2bc149710f3d 100644
+index e158d3d62056..f63c55b6408c 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
-@@ -138,6 +138,7 @@ static void megasas_get_pd_info(struct megasas_instance *instance,
+@@ -133,6 +133,7 @@ static void megasas_get_pd_info(struct megasas_instance *instance,
   */
  static struct pci_device_id megasas_pci_table[] = {
 
@@ -1995,7 +1995,7 @@ index 41cd66fc7d81..2bc149710f3d 100644
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1064R)},
  	/* xscale IOP */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1078R)},
-@@ -156,6 +157,7 @@ static struct pci_device_id megasas_pci_table[] = {
+@@ -151,6 +152,7 @@ static struct pci_device_id megasas_pci_table[] = {
  	/* xscale IOP, vega */
  	{PCI_DEVICE(PCI_VENDOR_ID_DELL, PCI_DEVICE_ID_DELL_PERC5)},
  	/* xscale IOP */
