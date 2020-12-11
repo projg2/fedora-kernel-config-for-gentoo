@@ -2628,7 +2628,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index bc2725491560..079bea163ba1 100644
+index 39642626a707..17d55164b892 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -456,6 +456,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);

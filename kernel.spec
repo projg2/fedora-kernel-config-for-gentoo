@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc7.20201209gita68a0262abda.95
+%global distro_build 0.rc7.20201211git33dc9614dc20.97
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -97,13 +97,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc7.20201209gita68a0262abda.95
+%define pkgrelease 0.rc7.20201211git33dc9614dc20.97
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20201209gita68a0262abda.95%{?buildid}%{?dist}
+%define specrelease 0.rc7.20201211git33dc9614dc20.97%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -590,7 +590,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201209gita68a0262abda.tar.xz
+Source0: linux-20201211git33dc9614dc20.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1235,8 +1235,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201209gita68a0262abda -c
-mv linux-20201209gita68a0262abda linux-%{KVERREL}
+%setup -q -n kernel-20201211git33dc9614dc20 -c
+mv linux-20201211git33dc9614dc20 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2725,8 +2725,7 @@ fi
 #
 #
 %changelog
-* Wed Dec 09 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.20201209gita68a0262abda.95]
-- Temporarily backout parallel xz script ("Justin M. Forbes")
+* Fri Dec 11 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.20201211git33dc9614dc20.97]
 - Remove cp instruction already handled in instruction below. ("Paulo E. Castro")
 - Add all the dependencies gleaned from running `make prepare` on a bloated devel kernel. ("Paulo E. Castro")
 - Add tools to path mangling script. ("Paulo E. Castro")
@@ -2752,10 +2751,32 @@ fi
 - run_kabi-dw.sh: Fix syntax flagged by shellcheck (Ben Crocker)
 - mod-blacklist.sh: Fix syntax flagged by shellcheck (Ben Crocker)
 - scripts/configdiff.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- self-test/0001-shellcheck.bats: check for shellcheck (Ben Crocker)
-- self-test/1001-rpmlint.bats, 1003-rpminspect.bats (Ben Crocker)
-- Makefile, Makefile.common, egit.sh, 1005-dist-dump-variables.bats (Ben Crocker)
-- Add GIT macro to Makefile and Makefile.common: (Ben Crocker)
+
+* Fri Dec 11 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.20201211git33dc9614dc20.96]
+- redhat: explicitly disable CONFIG_IMA_APPRAISE_SIGNED_INIT (Bruno Meneguele)
+- redhat: enable CONFIG_EVM_LOAD_X509 on ARK (Bruno Meneguele)
+- redhat: enable CONFIG_EVM_ATTR_FSUUID on ARK (Bruno Meneguele)
+- redhat: enable CONFIG_EVM in all arches and flavors (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_LOAD_X509 on ARK (Bruno Meneguele)
+- redhat: set CONFIG_IMA_DEFAULT_HASH to SHA256 (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_READ_POLICY on ARK (Bruno Meneguele)
+- redhat: set default IMA template for all ARK arches (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_DEFAULT_HASH_SHA256 for all flavors (Bruno Meneguele)
+- redhat: disable CONFIG_IMA_DEFAULT_HASH_SHA1 (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_ARCH_POLICY for ppc and x86 (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_APPRAISE_MODSIG (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_APPRAISE_BOOTPARAM (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_APPRAISE (Bruno Meneguele)
+- redhat: enable CONFIG_INTEGRITY for aarch64 (Bruno Meneguele)
+- Temporarily backout parallel xz script ("Justin M. Forbes")
+- New configs in drivers/mfd (Fedora Kernel Team)
+- New configs in drivers/mfd ("CKI@GitLab")
+- New configs in drivers/firmware (Fedora Kernel Team)
+
+* Thu Dec 10 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.20201210gita2f5ea9e314b.95]
+- kernel: Update some missing KASAN/KCSAN options (Jeremy Linton)
+- kernel: Enable coresight on aarch64 (Jeremy Linton)
 
 * Wed Dec 09 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.20201209gita68a0262abda.94]
 - Update CONFIG_INET6_ESPINTCP (Justin Forbes)
