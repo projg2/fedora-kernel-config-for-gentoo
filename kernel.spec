@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc7.20201211git33dc9614dc20.97
+%global distro_build 98
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -97,13 +97,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.10.0
-%define pkgrelease 0.rc7.20201211git33dc9614dc20.97
+%define pkgrelease 98
 
 # This is needed to do merge window version magic
 %define patchlevel 10
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20201211git33dc9614dc20.97%{?buildid}%{?dist}
+%define specrelease 98%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -193,7 +193,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.10
@@ -590,7 +590,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201211git33dc9614dc20.tar.xz
+Source0: linux-5.10.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -740,7 +740,6 @@ Source4000: README.rst
 %if !%{nopatches}
 
 Patch1: patch-%{rpmversion}-redhat.patch
-Patch2: revert-mm-filemap-add-static-for-function-__add_to_page_cache_locked.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1235,8 +1234,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201211git33dc9614dc20 -c
-mv linux-20201211git33dc9614dc20 linux-%{KVERREL}
+%setup -q -n kernel-5.10 -c
+mv linux-5.10 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1244,7 +1243,6 @@ cp -a %{SOURCE1} .
 %if !%{nopatches}
 
 ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
-ApplyOptionalPatch revert-mm-filemap-add-static-for-function-__add_to_page_cache_locked.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
@@ -1273,7 +1271,10 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 	scripts/diffconfig \
 	scripts/bloat-o-meter \
 	scripts/jobserver-exec \
-	tools \
+	tools/perf/tests/attr.py \
+	tools/perf/scripts/python/stat-cpi.py \
+	tools/perf/scripts/python/sched-migration.py \
+	tools/testing/selftests/drivers/net/mlxsw/sharedbuffer_configuration.py \
 	Documentation \
 	scripts/clang-tools
 
@@ -1674,37 +1675,8 @@ BuildKernel() {
     cp -a --parents tools/include/tools/be_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp -a --parents tools/include/tools/le_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
-    # Files for 'make prepare' to succeed with kernel-devel.
-    cp -a --parents tools/include/linux/compiler* $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/include/linux/types.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/build/Build.include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp --parents tools/build/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp --parents tools/build/fixdep.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp --parents tools/objtool/sync-check.sh $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/bpf/resolve_btfids $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-
-    cp --parents security/selinux/include/policycap_names.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp --parents security/selinux/include/policycap.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-
-    cp -a --parents tools/include/asm-generic $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/include/linux $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/include/uapi/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/include/uapi/asm-generic $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/include/uapi/linux $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/include/vdso $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp --parents tools/scripts/utilities.mak $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/lib/subcmd $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp --parents tools/lib/*.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp --parents tools/objtool/*.[ch] $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp --parents tools/objtool/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/lib/bpf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp --parents tools/lib/bpf/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-
     if [ -f tools/objtool/objtool ]; then
       cp -a tools/objtool/objtool $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/objtool/ || :
-    fi
-    if [ -f tools/objtool/fixdep ]; then
-      cp -a tools/objtool/fixdep $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/objtool/ || :
     fi
     if [ -d arch/$Arch/scripts ]; then
       cp -a arch/$Arch/scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/arch/%{_arch} || :
@@ -1751,6 +1723,7 @@ BuildKernel() {
     cp -a --parents arch/x86/tools/relocs.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/tools/relocs_common.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/tools/relocs.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+    cp -a --parents tools/include/tools/le_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/purgatory.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/stack.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/setup-x86_64.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
@@ -1758,18 +1731,7 @@ BuildKernel() {
     cp -a --parents arch/x86/boot/string.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/string.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/ctype.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-
-    cp -a --parents tools/arch/x86/include/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/arch/x86/include/uapi/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/objtool/arch/x86/lib $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/arch/x86/lib/ $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/arch/x86/tools/gen-insn-attr-x86.awk $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/objtool/arch/x86/ $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-
 %endif
-    # Clean up intermediate tools files
-    find $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools \( -iname "*.o" -o -iname "*.cmd" \) -exec rm -f {} +
-
     # Make sure the Makefile and version.h have a matching timestamp so that
     # external modules can be built
     touch -r $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Makefile $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/generated/uapi/linux/version.h
@@ -2725,32 +2687,12 @@ fi
 #
 #
 %changelog
-* Fri Dec 11 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.20201211git33dc9614dc20.97]
-- Remove cp instruction already handled in instruction below. ("Paulo E. Castro")
-- Add all the dependencies gleaned from running `make prepare` on a bloated devel kernel. ("Paulo E. Castro")
-- Add tools to path mangling script. ("Paulo E. Castro")
-- Remove duplicate cp statement which is also not specific to x86. ("Paulo E. Castro")
-- Correct orc_types failure whilst running `make prepare` https://bugzilla.redhat.com/show_bug.cgi?id=1882854 ("Paulo E. Castro")
-- build_configs.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- genspec.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- ark-rebase-patches.sh: Fix for shellcheck (Ben Crocker)
-- ark-create-release.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- merge-subtrees.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- rh-dist-git.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- update_scripts.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- x86_rngd.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- parallel_xz.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- expand_srpm.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- create-tarball.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- generate_bls_conf.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- clone_tree.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- new_release.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- download_cross.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- create_distgit_changelog.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- generate_cross_report.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- run_kabi-dw.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- mod-blacklist.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- scripts/configdiff.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+* Mon Dec 14 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.10.0-98]
+- Add missing '$' sign to (GIT) in redhat/Makefile (Augusto Caringi)
+
+* Sat Dec 12 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.20201212git7f376f1917d7.97]
+- Remove filterdiff and use native git instead (Don Zickus)
+- New configs in net/sched ("Justin M. Forbes")
 
 * Fri Dec 11 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.20201211git33dc9614dc20.96]
 - redhat: explicitly disable CONFIG_IMA_APPRAISE_SIGNED_INIT (Bruno Meneguele)

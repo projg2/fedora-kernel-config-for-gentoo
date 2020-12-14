@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-# shellcheck disable=SC1091
 . /etc/os-release
 
 kernelver=$1 && shift
@@ -19,10 +18,7 @@ else
     debugid=""
 fi
 
-# shellcheck will complain about bootprefix being referenced but not assigned,
-# but that is perfectly OK here.
-# shellcheck disable=SC2154
-cat > "$output" <<EOF
+cat >${output} <<EOF
 title ${NAME} (${kernelver}) ${VERSION}${debugname}
 version ${kernelver}${debugid}
 linux ${bootprefix}/vmlinuz-${kernelver}
