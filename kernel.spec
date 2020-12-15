@@ -740,6 +740,7 @@ Source4000: README.rst
 %if !%{nopatches}
 
 Patch1: patch-%{rpmversion}-redhat.patch
+Patch2: 5.10.1-reverts.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1243,6 +1244,7 @@ cp -a %{SOURCE1} .
 %if !%{nopatches}
 
 ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
+ApplyOptionalPatch 5.10.1-reverts.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
