@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 98
+%global distro_build 0.rc0.20201217gite994cc240a3b.102
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -96,14 +96,14 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.10.0
-%define pkgrelease 98
+%define rpmversion 5.11.0
+%define pkgrelease 0.rc0.20201217gite994cc240a3b.102
 
 # This is needed to do merge window version magic
-%define patchlevel 10
+%define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 98%{?buildid}%{?dist}
+%define specrelease 0.rc0.20201217gite994cc240a3b.102%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -193,10 +193,10 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
-%define kversion 5.10
+%define kversion 5.11
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -590,7 +590,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.10.tar.xz
+Source0: linux-20201217gite994cc240a3b.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -740,7 +740,6 @@ Source4000: README.rst
 %if !%{nopatches}
 
 Patch1: patch-%{rpmversion}-redhat.patch
-Patch2: 5.10.1-reverts.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1235,8 +1234,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.10 -c
-mv linux-5.10 linux-%{KVERREL}
+%setup -q -n kernel-20201217gite994cc240a3b -c
+mv linux-20201217gite994cc240a3b linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1244,7 +1243,6 @@ cp -a %{SOURCE1} .
 %if !%{nopatches}
 
 ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
-ApplyOptionalPatch 5.10.1-reverts.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
@@ -1273,10 +1271,7 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 	scripts/diffconfig \
 	scripts/bloat-o-meter \
 	scripts/jobserver-exec \
-	tools/perf/tests/attr.py \
-	tools/perf/scripts/python/stat-cpi.py \
-	tools/perf/scripts/python/sched-migration.py \
-	tools/testing/selftests/drivers/net/mlxsw/sharedbuffer_configuration.py \
+	tools \
 	Documentation \
 	scripts/clang-tools
 
@@ -1677,8 +1672,37 @@ BuildKernel() {
     cp -a --parents tools/include/tools/be_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp -a --parents tools/include/tools/le_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
+    # Files for 'make prepare' to succeed with kernel-devel.
+    cp -a --parents tools/include/linux/compiler* $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/linux/types.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/build/Build.include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/build/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/build/fixdep.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/objtool/sync-check.sh $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/bpf/resolve_btfids $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+
+    cp --parents security/selinux/include/policycap_names.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents security/selinux/include/policycap.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+
+    cp -a --parents tools/include/asm-generic $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/linux $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/uapi/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/uapi/asm-generic $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/uapi/linux $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/include/vdso $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/scripts/utilities.mak $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/lib/subcmd $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/lib/*.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/objtool/*.[ch] $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/objtool/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/lib/bpf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/lib/bpf/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+
     if [ -f tools/objtool/objtool ]; then
       cp -a tools/objtool/objtool $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/objtool/ || :
+    fi
+    if [ -f tools/objtool/fixdep ]; then
+      cp -a tools/objtool/fixdep $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/objtool/ || :
     fi
     if [ -d arch/$Arch/scripts ]; then
       cp -a arch/$Arch/scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/arch/%{_arch} || :
@@ -1725,7 +1749,6 @@ BuildKernel() {
     cp -a --parents arch/x86/tools/relocs.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/tools/relocs_common.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/tools/relocs.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents tools/include/tools/le_byteshift.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/purgatory.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/stack.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/purgatory/setup-x86_64.S $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
@@ -1733,7 +1756,18 @@ BuildKernel() {
     cp -a --parents arch/x86/boot/string.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/string.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/ctype.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+
+    cp -a --parents tools/arch/x86/include/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/arch/x86/include/uapi/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/objtool/arch/x86/lib $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/arch/x86/lib/ $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/arch/x86/tools/gen-insn-attr-x86.awk $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/objtool/arch/x86/ $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+
 %endif
+    # Clean up intermediate tools files
+    find $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools \( -iname "*.o" -o -iname "*.cmd" \) -exec rm -f {} +
+
     # Make sure the Makefile and version.h have a matching timestamp so that
     # external modules can be built
     touch -r $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Makefile $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/generated/uapi/linux/version.h
@@ -2689,8 +2723,654 @@ fi
 #
 #
 %changelog
-* Mon Dec 14 2020 Justin M. Forbes <jforbes@fedoraproject.org> [5.10.0-98]
+* Thu Dec 17 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc0.20201217gite994cc240a3b.102]
+- build_configs.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- genspec.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- ark-rebase-patches.sh: Fix for shellcheck (Ben Crocker)
+- ark-create-release.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- merge-subtrees.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- rh-dist-git.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- update_scripts.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- x86_rngd.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- parallel_xz.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- expand_srpm.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- create-tarball.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- generate_bls_conf.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- clone_tree.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- new_release.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- download_cross.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- create_distgit_changelog.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- generate_cross_report.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- run_kabi-dw.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- mod-blacklist.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- scripts/configdiff.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+
+* Wed Dec 16 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc0.20201216gite994cc240a3b.101]
+- drop unused BACKLIGHT_GENERIC (Peter Robinson)
+
+* Tue Dec 15 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc0.20201215git148842c98a24.100]
 - Add missing '$' sign to (GIT) in redhat/Makefile (Augusto Caringi)
+- Remove filterdiff and use native git instead (Don Zickus)
+- kernel: Update some missing KASAN/KCSAN options (Jeremy Linton)
+- kernel: Enable coresight on aarch64 (Jeremy Linton)
+- redhat: ark: enable CONFIG_IKHEADERS (Jiri Olsa)
+- fedora: some minor arm audio config tweaks (Peter Robinson)
+- fedora: move CONFIG_RTC_NVMEM options from ark to common (Peter Robinson)
+- redhat: explicitly disable CONFIG_IMA_APPRAISE_SIGNED_INIT (Bruno Meneguele)
+- redhat: enable CONFIG_EVM_LOAD_X509 on ARK (Bruno Meneguele)
+- redhat: enable CONFIG_EVM_ATTR_FSUUID on ARK (Bruno Meneguele)
+- redhat: enable CONFIG_EVM in all arches and flavors (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_LOAD_X509 on ARK (Bruno Meneguele)
+- redhat: set CONFIG_IMA_DEFAULT_HASH to SHA256 (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_READ_POLICY on ARK (Bruno Meneguele)
+- redhat: set default IMA template for all ARK arches (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_DEFAULT_HASH_SHA256 for all flavors (Bruno Meneguele)
+- redhat: disable CONFIG_IMA_DEFAULT_HASH_SHA1 (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_ARCH_POLICY for ppc and x86 (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_APPRAISE_MODSIG (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_APPRAISE_BOOTPARAM (Bruno Meneguele)
+- redhat: enable CONFIG_IMA_APPRAISE (Bruno Meneguele)
+- redhat: enable CONFIG_INTEGRITY for aarch64 (Bruno Meneguele)
+- Ship xpad with default modules on Fedora and RHEL (Bastien Nocera)
+- configs: Enable CONFIG_DEBUG_INFO_BTF (Don Zickus)
+- Remove cp instruction already handled in instruction below. ("Paulo E. Castro")
+- Add all the dependencies gleaned from running `make prepare` on a bloated devel kernel. ("Paulo E. Castro")
+- Add tools to path mangling script. ("Paulo E. Castro")
+- Remove duplicate cp statement which is also not specific to x86. ("Paulo E. Castro")
+- Correct orc_types failure whilst running `make prepare` https://bugzilla.redhat.com/show_bug.cgi?id=1882854 ("Paulo E. Castro")
+- Fedora config update ("Justin M. Forbes")
+- Fedora config change because CONFIG_FSL_DPAA2_ETH now selects CONFIG_FSL_XGMAC_MDIO ("Justin M. Forbes")
+- Fedora: Only enable legacy serial/game port joysticks on x86 (Peter Robinson)
+- Fedora: Enable the options required for the Librem 5 Phone (Peter Robinson)
+- Temporarily backout parallel xz script ("Justin M. Forbes")
+- Fedora config update ("Justin M. Forbes")
+- Enable NANDSIM for Fedora ("Justin M. Forbes")
+- Re-enable CONFIG_ACPI_TABLE_UPGRADE for Fedora since upstream disables this if secureboot is active ("Justin M. Forbes")
+- Ath11k related config updates ("Justin M. Forbes")
+- Fedora config updates for ath11k ("Justin M. Forbes")
+- Turn on ATH11K for Fedora ("Justin M. Forbes")
+- redhat: generic  enable CONFIG_INET_MPTCP_DIAG (Davide Caratti)
+- More Fedora config fixes ("Justin M. Forbes")
+- Fedora 5.10 config updates ("Justin M. Forbes")
+- Fedora 5.10 configs round 1 ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- redhat: enable CONFIG_INTEL_IOMMU_SVM (Jerry Snitselaar)
+- Update CONFIG_INET6_ESPINTCP (Justin Forbes)
+- Fix LTO issues with kernel-tools (Don Zickus)
+- Allow building of kernel-tools standalone (Don Zickus)
+- Allow kernel-tools to build without selftests (Don Zickus)
+- Fix up a merge issue with rxe.c ("Justin M. Forbes")
+- Point pathfix to the new location for gen_compile_commands.py ("Justin M. Forbes")
+- [Automatic] Handle config dependency changes (Don Zickus)
+- New configs in drivers/mfd (Fedora Kernel Team)
+- New configs in drivers/mfd ("CKI@GitLab")
+- New configs in drivers/mfd (Fedora Kernel Team)
+- New configs in drivers/firmware (Fedora Kernel Team)
+- arm64/defconfig: Enable CONFIG_KEXEC_FILE (Bhupesh Sharma) [https://bugzilla.redhat.com/show_bug.cgi?id=1821565]
+- Fix Fedora config locations ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- Partial revert: Add master merge check (Don Zickus)
+- Add CONFIG_ARM64_MTE which is not picked up by the config scripts for some reason ("Justin M. Forbes")
+- configs: enable CONFIG_CRYPTO_CTS=y so cts(cbc(aes)) is available in FIPS mode (Vladis Dronov)
+- Disable Speakup synth DECEXT ("Justin M. Forbes")
+- Enable Speakup for Fedora since it is out of staging ("Justin M. Forbes")
+- WIP: redhat/docs: Update documentation for single branch workflow (Prarit Bhargava)
+- Update Maintainers doc to reflect workflow changes (Don Zickus)
+- Updated changelog for the release based on 7575fdda569b (Fedora Kernel Team)
+- Modify patchlist changelog output (Don Zickus)
+- configs: Disable CONFIG_SECURITY_SELINUX_DISABLE (Ondrej Mosnacek)
+- Updated changelog for the release based on 7575fdda569b (Fedora Kernel Team)
+- Fix path location for ark-update-configs.sh (Don Zickus)
+- Updated changelog for the release based on 7575fdda569b (Fedora Kernel Team)
+- Updated changelog for the release based on v5.9-rc8 (Fedora Kernel Team)
+- Stop merging ark-patches for release (Don Zickus)
+- Combine Red Hat patches into single patch (Don Zickus)
+- Updated changelog for the release based on v5.9-rc8 (Fedora Kernel Team)
+- Updated changelog for the release based on 22fbc037cd32 (Fedora Kernel Team)
+- Updated changelog for the release based on d3d45f8220d6 (Fedora Kernel Team)
+- Updated changelog for the release based on 472e5b056f00 (Fedora Kernel Team)
+- Set SquashFS decompression options for all flavors to match RHEL (Bohdan Khomutskyi)
+- Updated changelog for the release based on 60e720931556 (Fedora Kernel Team)
+- New configs in drivers/pinctrl (Fedora Kernel Team)
+- Updated changelog for the release based on 02de58b24d2e (Fedora Kernel Team)
+- New configs in drivers/misc (Jeremy Cline)
+- New configs in net/sched ("Justin M. Forbes")
+- New configs in net/ipv6 ("Justin M. Forbes")
+- New configs in drivers/net/wireless ("Justin M. Forbes")
+- Update CONFIG_THERMAL_NETLINK (Justin Forbes)
+- New configs in kernel/trace (Fedora Kernel Team)
+- configs/iommu: Add config comment to empty CONFIG_SUN50I_IOMMU file (Jerry Snitselaar)
+- New configs in drivers/phy (Fedora Kernel Team)
+- New configs in drivers/tty (Fedora Kernel Team)
+- Updated changelog for the release based on fb0155a09b02 (Fedora Kernel Team)
+- redhat/self-test: Initial commit (Ben Crocker)
+- Updated changelog for the release based on v5.9-rc7 (Fedora Kernel Team)
+- Separate merge-upstream and release stages (Don Zickus)
+- redhat/configs: Cleanup CONFIG_CRYPTO_SHA512 (Prarit Bhargava)
+- Re-enable CONFIG_IR_SERIAL on Fedora (Prarit Bhargava)
+- Updated changelog for the release based on v5.9-rc7 (Fedora Kernel Team)
+- Updated changelog for the release based on a1bffa48745a (Fedora Kernel Team)
+- Updated changelog for the release based on 7c7ec3226f5f (Fedora Kernel Team)
+- Create Patchlist.changelog file (Don Zickus)
+- Filter out upstream commits from changelog (Don Zickus)
+- Merge Upstream script fixes (Don Zickus)
+- Updated changelog for the release based on 171d4ff79f96 (Fedora Kernel Team)
+- generate_all_configs.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- process_configs.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- Updated changelog for the release based on c9c9e6a49f89 (Fedora Kernel Team)
+- Updated changelog for the release based on 805c6d3c1921 (Fedora Kernel Team)
+- Updated changelog for the release based on 98477740630f (Fedora Kernel Team)
+- Updated changelog for the release based on v5.9-rc6 (Fedora Kernel Team)
+- Updated changelog for the release based on fc4f28bb3daf (Fedora Kernel Team)
+- Updated changelog for the release based on v5.9-rc5 (Fedora Kernel Team)
+- Updated changelog for the release based on ef2e9a563b0c (Fedora Kernel Team)
+- Updated changelog for the release based on 729e3d091984 (Fedora Kernel Team)
+- dist-merge-upstream: Checkout known branch for ci scripts (Don Zickus)
+- Updated changelog for the release based on 581cb3a26baf (Fedora Kernel Team)
+- Filter out LTO build options from the perl ccopts ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- kernel.spec: don't override upstream compiler flags for ppc64le (=?UTF-8?q?Dan=20Hor=C3=A1k?=)
+- Updated changelog for the release based on v5.9-rc4 (Fedora Kernel Team)
+- Updated changelog for the release based on dd9fb9bb3340 (Fedora Kernel Team)
+- Updated changelog for the release based on c70672d8d316 (Fedora Kernel Team)
+- Fedora confi gupdate ("Justin M. Forbes")
+- Updated changelog for the release based on 59126901f200 (Fedora Kernel Team)
+- Updated changelog for the release based on fc3abb53250a (Fedora Kernel Team)
+- Fedora config change ("Justin M. Forbes")
+- Updated changelog for the release based on 9c7d619be5a0 (Fedora Kernel Team)
+- Updated changelog for the release based on b51594df17d0 (Fedora Kernel Team)
+- Fedora filter update ("Justin M. Forbes")
+- Config update for Fedora ("Justin M. Forbes")
+- Updated changelog for the release based on v5.9-rc3 (Fedora Kernel Team)
+- Updated changelog for the release based on 1127b219ce94 (Fedora Kernel Team)
+- Updated changelog for the release based on 4d41ead6ead9 (Fedora Kernel Team)
+- mod-sign.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- Updated changelog for the release based on 15bc20c6af4c (Fedora Kernel Team)
+- Updated changelog for the release based on 2ac69819ba9e (Fedora Kernel Team)
+- Updated changelog for the release based on 6a9dc5fd6170 (Fedora Kernel Team)
+- Updated changelog for the release based on v5.9-rc2 (Fedora Kernel Team)
+- Updated changelog for the release based on c3d8f220d012 (Fedora Kernel Team)
+- Updated changelog for the release based on f873db9acd3c (Fedora Kernel Team)
+- Swap how ark-latest is built (Don Zickus)
+- Add extra version bump to os-build branch (Don Zickus)
+- dist-release: Avoid needless version bump. (Don Zickus)
+- Add dist-fedora-release target (Don Zickus)
+- Remove redundant code in dist-release (Don Zickus)
+- Makefile.common rename TAG to _TAG (Don Zickus)
+- redhat/configs/process_configs.sh: Remove *.config.orig files (Prarit Bhargava)
+- redhat/configs/process_configs.sh: Add process_configs_known_broken flag (Prarit Bhargava)
+- redhat/Makefile: Fix '*-configs' targets (Prarit Bhargava)
+- Updated changelog for the release based on da2968ff879b (Fedora Kernel Team)
+- Updated changelog for the release based on 18445bf405cb (Fedora Kernel Team)
+- Add mlx5_vdpa to module filter for Fedora ("Justin M. Forbes")
+- Add python3-sphinx_rtd_theme buildreq for docs ("Justin M. Forbes")
+- More Fedora config updates ("Justin M. Forbes")
+- New config deps ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- Updated changelog for the release based on 06a4ec1d9dc6 (Fedora Kernel Team)
+- First half of config updates for Fedora ("Justin M. Forbes")
+- Add config options that only show up when we prep on arm ("Justin M. Forbes")
+- Config updates for Fedora ("Justin M. Forbes")
+- fedora: enable enery model (Peter Robinson)
+- iio: enable LTR-559 light and proximity sensor (Peter Robinson)
+- iio: chemical: enable some popular chemical and partical sensors (Peter Robinson)
+- More mismatches ("Justin M. Forbes")
+- Fedora config change due to deps ("Justin M. Forbes")
+- CONFIG_SND_SOC_MAX98390 is now selected by SND_SOC_INTEL_DA7219_MAX98357A_GENERIC ("Justin M. Forbes")
+- Config change required for build part 2 ("Justin M. Forbes")
+- Config change required for build ("Justin M. Forbes")
+- Fixes "acpi: prefer booting with ACPI over DTS" to be RHEL only (Peter Robinson)
+- arch/x86: Remove vendor specific CPU ID checks (Prarit Bhargava)
+- redhat: Replace hardware.redhat.com link in Unsupported message (Prarit Bhargava)
+- x86: Fix compile issues with rh_check_supported() (Don Zickus)
+- e1000e: bump up timeout to wait when ME un-configure ULP mode (Aaron Ma)
+- drm/sun4i: sun6i_mipi_dsi: fix horizontal timing calculation (Icenowy Zheng)
+- drm: panel: add Xingbangda XBD599 panel (Icenowy Zheng)
+- dt-bindings: panel: add binding for Xingbangda XBD599 panel (Icenowy Zheng)
+- ARM: fix __get_user_check() in case uaccess_* calls are not inlined (Masahiro Yamada)
+- mm/kmemleak: skip late_init if not skip disable (Murphy Zhou)
+- KEYS: Make use of platform keyring for module signature verify (Robert Holmes)
+- Drop that for now (Laura Abbott)
+- Input: rmi4 - remove the need for artificial IRQ in case of HID (Benjamin Tissoires)
+- ARM: tegra: usb no reset (Peter Robinson)
+- arm: make CONFIG_HIGHPTE optional without CONFIG_EXPERT (Jon Masters)
+- redhat: rh_kabi: deduplication friendly structs (Jiri Benc)
+- redhat: rh_kabi add a comment with warning about RH_KABI_EXCLUDE usage (Jiri Benc)
+- redhat: rh_kabi: introduce RH_KABI_EXTEND_WITH_SIZE (Jiri Benc)
+- redhat: rh_kabi: Indirect EXTEND macros so nesting of other macros will resolve. (Don Dutile)
+- redhat: rh_kabi: Fix RH_KABI_SET_SIZE to use dereference operator (Tony Camuso)
+- redhat: rh_kabi: Add macros to size and extend structs (Prarit Bhargava)
+- Removing Obsolete hba pci-ids from rhel8 (Dick Kennedy) [1572321]
+- mptsas: pci-id table changes (Laura Abbott)
+- mptsas: Taint kernel if mptsas is loaded (Laura Abbott)
+- mptspi: pci-id table changes (Laura Abbott)
+- qla2xxx: Remove PCI IDs of deprecated adapter (Jeremy Cline)
+- be2iscsi: remove unsupported device IDs (Chris Leech) [1574502]
+- mptspi: Taint kernel if mptspi is loaded (Laura Abbott)
+- hpsa: remove old cciss-based smartarray pci ids (Joseph Szczypek) [1471185]
+- qla4xxx: Remove deprecated PCI IDs from RHEL 8 (Chad Dupuis) [1518874]
+- aacraid: Remove depreciated device and vendor PCI id's (Raghava Aditya Renukunta) [1495307]
+- megaraid_sas: remove deprecated pci-ids (Tomas Henzl) [1509329]
+- mpt*: remove certain deprecated pci-ids (Jeremy Cline)
+- kernel: add SUPPORT_REMOVED kernel taint (Tomas Henzl) [1602033]
+- Rename RH_DISABLE_DEPRECATED to RHEL_DIFFERENCES (Don Zickus)
+- Add option of 13 for FORCE_MAX_ZONEORDER (Peter Robinson)
+- s390: Lock down the kernel when the IPL secure flag is set (Jeremy Cline)
+- efi: Lock down the kernel if booted in secure boot mode (David Howells)
+- efi: Add an EFI_SECURE_BOOT flag to indicate secure boot mode (David Howells)
+- security: lockdown: expose a hook to lock the kernel down (Jeremy Cline)
+- Make get_cert_list() use efi_status_to_str() to print error messages. (Peter Jones)
+- Add efi_status_to_str() and rework efi_status_to_err(). (Peter Jones)
+- Add support for deprecating processors (Laura Abbott)
+- arm: aarch64: Drop the EXPERT setting from ARM64_FORCE_52BIT (Jeremy Cline)
+- iommu/arm-smmu: workaround DMA mode issues (Laura Abbott)
+- rh_kabi: introduce RH_KABI_EXCLUDE (Jakub Racek) [1652256]
+- ipmi: do not configure ipmi for HPE m400 (Laura Abbott) [https://bugzilla.redhat.com/show_bug.cgi?id=1670017]
+- IB/rxe: Mark Soft-RoCE Transport driver as tech-preview (Don Dutile) [1605216]
+- scsi: smartpqi: add inspur advantech ids (Don Brace) [1503736]
+- ice: mark driver as tech-preview (Jonathan Toppins) [1495347]
+- kABI: Add generic kABI macros to use for kABI workarounds (Myron Stowe) [1546831]
+- add pci_hw_vendor_status() (Maurizio Lombardi) [1590829]
+- ahci: thunderx2: Fix for errata that affects stop engine (Robert Richter) [1563590]
+- Vulcan: AHCI PCI bar fix for Broadcom Vulcan early silicon (Robert Richter) [1563590]
+- bpf: Add tech preview taint for syscall (Eugene Syromiatnikov) [1559877]
+- bpf: set unprivileged_bpf_disabled to 1 by default, add a boot parameter (Eugene Syromiatnikov) [1561171]
+- add Red Hat-specific taint flags (Eugene Syromiatnikov) [1559877]
+- kdump: fix a grammar issue in a kernel message (Dave Young) [1507353]
+- tags.sh: Ignore redhat/rpm (Jeremy Cline)
+- put RHEL info into generated headers (Laura Abbott) [https://bugzilla.redhat.com/show_bug.cgi?id=1663728]
+- kdump: add support for crashkernel=auto (Jeremy Cline)
+- kdump: round up the total memory size to 128M for crashkernel reservation (Dave Young) [1507353]
+- acpi: prefer booting with ACPI over DTS (Mark Salter) [1576869]
+- aarch64: acpi scan: Fix regression related to X-Gene UARTs (Mark Salter) [1519554]
+- ACPI / irq: Workaround firmware issue on X-Gene based m400 (Mark Salter) [1519554]
+- modules: add rhelversion MODULE_INFO tag (Laura Abbott)
+- ACPI: APEI: arm64: Ignore broken HPE moonshot APEI support (Al Stone) [1518076]
+- Add Red Hat tainting (Laura Abbott)
+- Introduce CONFIG_RH_DISABLE_DEPRECATED (Laura Abbott)
+- Updates for Fedora arm architectures for the 5.9 window (Peter Robinson)
+- Enable ARM_SMCCC_SOC_ID on all aarch64 kernels (Peter Robinson)
+- Enable ZSTD compression algorithm on all kernels (Peter Robinson)
+- Fedora config update ("Justin M. Forbes")
+- Revert "Merge branch 'make_configs_fix' into 'os-build'" (Justin Forbes)
+- Use the configs/generic config for SND_HDA_INTEL everywhere (Peter Robinson)
+- enable PROTECTED_VIRTUALIZATION_GUEST for all s390x kernels (=?UTF-8?q?Dan=20Hor=C3=A1k?=)
+- kernel.spec: Remove kernel-keys directory on rpm erase (Prarit Bhargava)
+- redhat/configs/process_configs.sh: Remove *.config.orig files (Prarit Bhargava)
+- redhat/configs/process_configs.sh: Add process_configs_known_broken flag (Prarit Bhargava)
+- redhat/Makefile: Fix '*-configs' targets (Prarit Bhargava)
+- Updated changelog for the release based on v5.8 (Fedora Kernel Team)
+- Updated changelog for the release based on ac3a0c847296 (Fedora Kernel Team)
+- Updated changelog for the release based on 7dc6fd0f3b84 (Fedora Kernel Team)
+- redhat: ark: enable CONFIG_NET_SCH_TAPRIO (Davide Caratti)
+- redhat: ark: enable CONFIG_NET_SCH_ETF (Davide Caratti)
+- Add ability to sync upstream through Makefile (Don Zickus)
+- Add master merge check (Don Zickus)
+- Replace hardcoded values 'os-build' and project id with variables (Don Zickus)
+- Updated changelog for the release based on 417385c47ef7 (Fedora Kernel Team)
+- gitattributes: Remove unnecesary export restrictions (Prarit Bhargava)
+- redhat/Makefile.common: Fix MARKER (Prarit Bhargava)
+- Add new certs for dual signing with boothole ("Justin M. Forbes")
+- Update secureboot signing for dual keys ("Justin M. Forbes")
+- Updated changelog for the release based on d3590ebf6f91 (Fedora Kernel Team)
+- Updated changelog for the release based on 6ba1b005ffc3 (Fedora Kernel Team)
+- redhat: ark: disable CONFIG_NET_ACT_CTINFO (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_TEQL (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_SFB (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_QFQ (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_PLUG (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_PIE (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_MULTIQ (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_HHF (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_DSMARK (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_DRR (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_CODEL (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_CHOKE (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_CBQ (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_SCH_ATM (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_EMATCH and sub-targets (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_CLS_TCINDEX (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_CLS_RSVP6 (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_CLS_RSVP (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_CLS_ROUTE4 (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_CLS_BASIC (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_ACT_SKBMOD (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_ACT_SIMP (Davide Caratti)
+- redhat: ark: disable CONFIG_NET_ACT_NAT (Davide Caratti)
+- fedora: enable LEDS_SGM3140 for arm configs (Peter Robinson)
+- Updated changelog for the release based on v5.8-rc7 (Fedora Kernel Team)
+- Updated changelog for the release based on 04300d66f0a0 (Fedora Kernel Team)
+- Updated changelog for the release based on 23ee3e4e5bd2 (Fedora Kernel Team)
+- configs: Enable CONFIG_ENERGY_MODEL (Phil Auld)
+- Enable CONFIG_DM_VERITY_VERIFY_ROOTHASH_SIG ("Justin M. Forbes")
+- Updated changelog for the release based on f37e99aca03f (Fedora Kernel Team)
+- Updated changelog for the release based on d15be546031c (Fedora Kernel Team)
+- fedora: arm: Update some meson config options (Peter Robinson)
+- redhat/configs: Fix common CONFIGs (Prarit Bhargava)
+- redhat/configs: General CONFIG cleanups (Prarit Bhargava)
+- redhat/configs: Update & generalize evaluate_configs (Prarit Bhargava)
+- Updated changelog for the release based on 4fa640dc5230 (Fedora Kernel Team)
+- Updated changelog for the release based on 5714ee50bb43 (Fedora Kernel Team)
+- Updated changelog for the release based on f932d58abc38 (Fedora Kernel Team)
+- Updated changelog for the release based on 6a70f89cc58f (Fedora Kernel Team)
+- Updated changelog for the release based on 07a56bb875af (Fedora Kernel Team)
+- redhat/docs: Add Fedora RPM tagging date (Prarit Bhargava)
+- Updated changelog for the release based on e9919e11e219 (Fedora Kernel Team)
+- Update config for renamed panel driver. (Peter Robinson)
+- Enable SERIAL_SC16IS7XX for SPI interfaces (Peter Robinson)
+- Updated changelog for the release based on dcde237b9b0e (Fedora Kernel Team)
+- Updated changelog for the release based on v5.8-rc4 (Fedora Kernel Team)
+- Updated changelog for the release based on cd77006e01b3 (Fedora Kernel Team)
+- Fedora config updates ("Justin M. Forbes")
+- Updated changelog for the release based on v5.8-rc3 (Fedora Kernel Team)
+- s390x-zfcpdump: Handle missing Module.symvers file (Don Zickus)
+- Updated changelog for the release based on 8be3a53e18e0 (Fedora Kernel Team)
+- redhat/configs: Add .tmp files to .gitignore (Prarit Bhargava)
+- disable uncommon TCP congestion control algorithms (Davide Caratti)
+- Updated changelog for the release based on dd0d718152e4 (Fedora Kernel Team)
+- Add new bpf man pages ("Justin M. Forbes")
+- Add default option for CONFIG_ARM64_BTI_KERNEL to pending-common so that eln kernels build ("Justin M. Forbes")
+- Updated changelog for the release based on 625d3449788f (Fedora Kernel Team)
+- Updated changelog for the release based on 1b5044021070 (Fedora Kernel Team)
+- redhat/Makefile: Add fedora-configs and rh-configs make targets (Prarit Bhargava)
+- Updated changelog for the release based on 69119673bd50 (Fedora Kernel Team)
+- redhat/configs: Use SHA512 for module signing (Prarit Bhargava)
+- Updated changelog for the release based on a5dc8300df75 (Fedora Kernel Team)
+- genspec.sh: 'touch' empty Patchlist file for single tarball (Don Zickus)
+- Fedora config update for rc1 ("Justin M. Forbes")
+- Updated changelog for the release based on v5.8-rc1 (Fedora Kernel Team)
+- Fedora config updates ("Justin M. Forbes")
+- Updated changelog for the release based on df2fbf5bfa0e (Fedora Kernel Team)
+- Fedora config updates ("Justin M. Forbes")
+- Updated changelog for the release based on b791d1bdf921 (Fedora Kernel Team)
+- One more Fedora config update ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- Change ark CONFIG_COMMON_CLK to yes, it is selected already by other options ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- Fix PATCHLEVEL for merge window ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- More module filtering for Fedora ("Justin M. Forbes")
+- Update filters for rnbd in Fedora ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- redhat/Makefile.common: fix RPMKSUBLEVEL condition (Ondrej Mosnacek)
+- redhat/Makefile: silence KABI tar output (Ondrej Mosnacek)
+- Fix up module filtering for 5.8 ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- More Fedora config work ("Justin M. Forbes")
+- RTW88BE and CE have been extracted to their own modules ("Justin M. Forbes")
+- Set CONFIG_BLK_INLINE_ENCRYPTION_FALLBACK for Fedora ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- Arm64 Use Branch Target Identification for kernel ("Justin M. Forbes")
+- Fedora config updates ("Justin M. Forbes")
+- Change value of CONFIG_SECURITY_SELINUX_CHECKREQPROT_VALUE ("Justin M. Forbes")
+- Fix configs for Fedora ("Justin M. Forbes")
+- Fix update_scripts.sh unselective pattern sub (David Howells)
+- Updated changelog for the release based on b0c3ba31be3e ("CKI@GitLab")
+- Updated changelog for the release based on 444fc5cde643 ("CKI@GitLab")
+- Remove typoed config file aarch64CONFIG_SM_GCC_8150 ("Justin M. Forbes")
+- Updated changelog for the release based on v5.7-rc7 ("CKI@GitLab")
+- Updated changelog for the release based on caffb99b6929 ("CKI@GitLab")
+- Updated changelog for the release based on 444565650a5f ("CKI@GitLab")
+- redhat/Makefile: Fix RHEL8 python warning (Prarit Bhargava)
+- redhat: Add dummy-module kernel module (Prarit Bhargava)
+- kernel.spec: fix 'make scripts' for kernel-devel package (Brian Masney)
+- Makefile: correct help text for dist-cross-<arch>-rpms (Brian Masney)
+- Add Documentation back to kernel-devel as it has Kconfig now ("Justin M. Forbes")
+- Updated changelog for the release based on 642b151f45dd ("CKI@GitLab")
+- Drop the static path configuration for the Sphinx docs (Jeremy Cline)
+- Updated changelog for the release based on v5.7-rc6 ("CKI@GitLab")
+- Updated changelog for the release based on 3d1c1e5931ce ("CKI@GitLab")
+- Updated changelog for the release based on 12bf0b632ed0 ("CKI@GitLab")
+- Updated changelog for the release based on 1ae7efb38854 ("CKI@GitLab")
+- redhat: Change Makefile target names to dist- (Prarit Bhargava)
+- configs: Disable Serial IR driver (Prarit Bhargava)
+- Updated changelog for the release based on 24085f70a6e1 ("CKI@GitLab")
+- Updated changelog for the release based on 152036d1379f ("CKI@GitLab")
+- Updated changelog for the release based on v5.7-rc5 ("CKI@GitLab")
+- Updated changelog for the release based on e99332e7b4cd ("CKI@GitLab")
+- Fix "multiple files for package kernel-tools" (Pablo Greco)
+- Updated changelog for the release based on d5eeab8d7e26 ("CKI@GitLab")
+- Add zero-commit to format-patch options ("Justin M. Forbes")
+- Updated changelog for the release based on 79dede78c057 ("CKI@GitLab")
+- Introduce a Sphinx documentation project (Jeremy Cline)
+- Updated changelog for the release based on a811c1fa0a02 ("CKI@GitLab")
+- Sign off generated configuration patches (Jeremy Cline)
+- Updated changelog for the release based on dc56c5acd850 ("CKI@GitLab")
+- Use __make macro instead of make (Tom Stellard)
+- Build ARK against ELN (Don Zickus)
+- Updated changelog for the release based on 47cf1b422e60 ("CKI@GitLab")
+- Updated changelog for the release based on v5.7-rc4 ("CKI@GitLab")
+- Updated changelog for the release based on f66ed1ebbfde ("CKI@GitLab")
+- Updated changelog for the release based on 690e2aba7beb ("CKI@GitLab")
+- redhat/configs: Enable CONFIG_SMC91X and disable CONFIG_SMC911X (Prarit Bhargava) [http://bugzilla.redhat.com/1722136]
+- Updated changelog for the release based on c45e8bccecaf ("CKI@GitLab")
+- Drop the requirement to have a remote called linus (Jeremy Cline)
+- Rename 'internal' branch to 'os-build' (Don Zickus)
+- Updated changelog for the release based on 1d2cc5ac6f66 ("CKI@GitLab")
+- Only include open merge requests with "Include in Releases" label (Jeremy Cline)
+- Copy Makefile.rhelver as a source file rather than a patch (Jeremy Cline)
+- Exit non-zero if the tag already exists for a release (Jeremy Cline)
+- Move the sed to clear the patch templating outside of conditionals ("Justin M. Forbes")
+- Add cec to the filter overrides ("Justin M. Forbes")
+- Add overrides to filter-modules.sh ("Justin M. Forbes")
+- Adjust the changelog update script to not push anything (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- Updated changelog ("CKI@GitLab")
+- Match template format in kernel.spec.template ("Justin M. Forbes")
+- Break out the Patches into individual files for dist-git ("Justin M. Forbes")
+- Break the Red Hat patch into individual commits (Jeremy Cline)
+- Add a script to generate release tags and branches (Jeremy Cline)
+- Set CONFIG_VDPA for fedora ("Justin M. Forbes")
+- Drop --target noarch from the rh-rpms make target (Jeremy Cline)
+- Provide defaults in ark-rebase-patches.sh (Jeremy Cline)
+- Default ark-rebase-patches.sh to not report issues (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- Package gpio-watch in kernel-tools (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- Add a README to the dist-git repository (Jeremy Cline)
+- Drop DIST from release commits and tags (Jeremy Cline)
+- Copy distro files rather than moving them (Jeremy Cline)
+- Place the buildid before the dist in the release (Jeremy Cline)
+- Sync up with Fedora arm configuration prior to merging (Jeremy Cline)
+- Disable CONFIG_PROTECTED_VIRTUALIZATION_GUEST for zfcpdump (Jeremy Cline)
+- Include bpftool-struct_ops man page in the bpftool package (Jeremy Cline)
+- Add sharedbuffer_configuration.py to the pathfix.py script (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- Drop RH_FEDORA in favor of the now-merged RHEL_DIFFERENCES (Jeremy Cline)
+- Sync up Fedora configs from the first week of the merge window (Jeremy Cline)
+- Add a script to test if all commits are signed off (Jeremy Cline)
+- Fix a painfully obvious YAML syntax error in .gitlab-ci.yml (Jeremy Cline)
+- Migrate blacklisting floppy.ko to mod-blacklist.sh (Don Zickus)
+- kernel packaging: Combine mod-blacklist.sh and mod-extra-blacklist.sh (Don Zickus)
+- kernel packaging: Fix extra namespace collision (Don Zickus)
+- mod-extra.sh: Rename to mod-blacklist.sh (Don Zickus)
+- mod-extra.sh: Make file generic (Don Zickus)
+- Fix make rh-configs-arch (Don Zickus)
+- Add in armv7hl kernel header support (Don Zickus)
+- Disable all BuildKernel commands when only building headers (Don Zickus)
+- Updated changelog ("CKI@GitLab")
+- Add RHMAINTAINERS file and supporting conf (Don Zickus)
+- Drop any gitlab-ci patches from ark-patches (Jeremy Cline)
+- Build the srpm for internal branch CI using the vanilla tree (Jeremy Cline)
+- Pull in the latest ARM configurations for Fedora (Jeremy Cline)
+- Fix xz memory usage issue (Neil Horman)
+- Use ark-latest instead of master for update script (Jeremy Cline)
+- Move the CI jobs back into the ARK repository (Jeremy Cline)
+- Revert "[redhat] Apply a second patch set in Fedora build roots" (Jeremy Cline)
+- Sync up ARK's Fedora config with the dist-git repository (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- Pull in the latest configuration changes from Fedora (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- configs: enable CONFIG_NET_SCH_CBS (Marcelo Ricardo Leitner)
+- Drop configuration options in fedora/ that no longer exist (Jeremy Cline)
+- Set RH_FEDORA for ARK and Fedora (Jeremy Cline)
+- redhat: enable CONFIG_LWTUNNEL_BPF (Jiri Benc)
+- redhat/kernel.spec: Include the release in the kernel COPYING file (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- redhat/kernel.spec: add scripts/jobserver-exec to py3_shbang_opts list (Jeremy Cline)
+- redhat/kernel.spec: package bpftool-gen man page (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- distgit-changelog: handle multiple y-stream BZ numbers (Bruno Meneguele)
+- redhat/kernel.spec: remove all inline comments (Bruno Meneguele)
+- redhat/genspec: awk unknown whitespace regex pattern (Bruno Meneguele)
+- Improve the readability of gen_config_patches.sh (Jeremy Cline)
+- Fix some awkward edge cases in gen_config_patches.sh (Jeremy Cline)
+- Updated changelog (Jeremy Cline)
+- Update the CI environment to use Fedora 31 (Jeremy Cline)
+- Revert "Turn off CONFIG_AX25" (Laura Abbott)
+- Updated changelog ("CKI@GitLab")
+- Updated changelog ("CKI@GitLab")
+- configs: Enable CONFIG_KEY_DH_OPERATIONS on ARK (Ondrej Mosnacek)
+- redhat: drop whitespace from with_gcov macro (Jan Stancek) [INTERNAL]
+- Updated changelog ("CKI@GitLab")
+- Updated changelog ("CKI@GitLab")
+- Updated changelog ("CKI@GitLab")
+- Updated changelog ("CKI@GitLab")
+- Turn on BLAKE2B for Fedora (Jeremy Cline)
+- kernel.spec.template: Clean up stray *.h.s files (Laura Abbott)
+- configs: Adjust CONFIG_MPLS_ROUTING and CONFIG_MPLS_IPTUNNEL (Laura Abbott)
+- New configs in lib/crypto (Jeremy Cline)
+- Build the SRPM in the CI job (Jeremy Cline)
+- Fix up released_kernel case (Laura Abbott)
+- New configs in drivers/char (Jeremy Cline)
+- Add label so the Gitlab to email bridge ignores the changelog (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- Temporarily switch TUNE_DEFAULT to y (Jeremy Cline)
+- Run config test for merge requests and internal (Jeremy Cline)
+- Turn off CONFIG_AX25 (Laura Abbott)
+- Add missing licensedir line (Laura Abbott)
+- New configs in net/tls (Jeremy Cline)
+- New configs in net/tipc (Jeremy Cline)
+- New configs in lib/kunit (Jeremy Cline)
+- New configs in lib/Kconfig.debug (Jeremy Cline)
+- New configs in drivers/ptp (Jeremy Cline)
+- New configs in drivers/nvme (Jeremy Cline)
+- New configs in drivers/net/phy (Jeremy Cline)
+- New configs in drivers/crypto (Jeremy Cline)
+- New configs in crypto/Kconfig (Jeremy Cline)
+- New configs in arch/arm64 (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- redhat/scripts: Remove redhat/scripts/rh_get_maintainer.pl (Prarit Bhargava)
+- configs: Take CONFIG_DEFAULT_MMAP_MIN_ADDR from Fedra (Laura Abbott)
+- configs: Turn off ISDN (Laura Abbott)
+- kernel-packaging: Remove kernel files from kernel-modules-extra package (Prarit Bhargava)
+- Add a script to generate configuration patches (Laura Abbott)
+- Introduce rh-configs-commit (Laura Abbott)
+- Updated changelog ("CKI@GitLab")
+- configs: Enable CONFIG_DEBUG_WX (Laura Abbott)
+- configs: Disable wireless USB (Laura Abbott)
+- Clean up some temporary config files (Laura Abbott)
+- configs: New config in drivers/gpu for v5.4-rc1 (Jeremy Cline)
+- configs: New config in arch/powerpc for v5.4-rc1 (Jeremy Cline)
+- configs: New config in crypto for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/usb for v5.4-rc1 (Jeremy Cline)
+- AUTOMATIC: New configs (Jeremy Cline)
+- Skip ksamples for bpf, they are broken (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- configs: New config in fs/erofs for v5.4-rc1 (Jeremy Cline)
+- configs: New config in mm for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/md for v5.4-rc1 (Jeremy Cline)
+- configs: New config in init for v5.4-rc1 (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- configs: New config in fs/fuse for v5.4-rc1 (Jeremy Cline)
+- merge.pl: Avoid comments but do not skip them (Don Zickus)
+- configs: New config in drivers/net/ethernet/pensando for v5.4-rc1 (Jeremy Cline)
+- Update a comment about what released kernel means (Laura Abbott)
+- Provide both Fedora and RHEL files in the SRPM (Laura Abbott)
+- kernel.spec.template: Trim EXTRAVERSION in the Makefile (Laura Abbott)
+- kernel.spec.template: Add macros for building with nopatches (Laura Abbott)
+- kernel.spec.template: Add some macros for Fedora differences (Laura Abbott)
+- kernel.spec.template: Consolodate the options (Laura Abbott)
+- configs: Add pending direcory to Fedora (Laura Abbott)
+- kernel.spec.template: Don't run hardlink if rpm-ostree is in use (Laura Abbott)
+- configs: New config in net/can for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/net/phy for v5.4-rc1 (Jeremy Cline)
+- Updated changelog ("CKI@GitLab")
+- configs: turn on ARM64_FORCE_52BIT for debug builds (Jeremy Cline)
+- kernel.spec.template: Tweak the python3 mangling (Laura Abbott)
+- kernel.spec.template: Add --with verbose option (Laura Abbott)
+- kernel.spec.template: Switch to using install instead of __install (Laura Abbott)
+- kernel.spec.template: Make the kernel.org URL https (Laura Abbott)
+- kernel.spec.template: Update message about secure boot signing (Laura Abbott)
+- kernel.spec.template: Move some with flags definitions up (Laura Abbott)
+- kernel.spec.template: Update some BuildRequires (Laura Abbott)
+- kernel.spec.template: Get rid of clean (Laura Abbott)
+- configs: New config in drivers/char for v5.4-rc1 (Jeremy Cline)
+- configs: New config in net/sched for v5.4-rc1 (Jeremy Cline)
+- configs: New config in lib for v5.4-rc1 (Jeremy Cline)
+- configs: New config in fs/verity for v5.4-rc1 (Jeremy Cline)
+- configs: New config in arch/aarch64 for v5.4-rc4 (Jeremy Cline)
+- configs: New config in arch/arm64 for v5.4-rc1 (Jeremy Cline)
+- Flip off CONFIG_ARM64_VA_BITS_52 so the bundle that turns it on applies (Jeremy Cline)
+- configs: Increase x86_64 NR_UARTS to 64 (Prarit Bhargava) [http://bugzilla.redhat.com/1730649]
+- Update changelog (Laura Abbott)
+- New configuration options for v5.4-rc4 (Jeremy Cline)
+- Correctly name tarball for single tarball builds (Laura Abbott)
+- configs: New config in drivers/pci for v5.4-rc1 (Jeremy Cline)
+- Allow overriding the dist tag on the command line (Laura Abbott)
+- Allow scratch branch target to be overridden (Laura Abbott)
+- Remove long dead BUILD_DEFAULT_TARGET (Laura Abbott)
+- Amend the changelog when rebasing (Laura Abbott)
+- configs: New config in drivers/platform for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/pinctrl for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/net/wireless for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/net/ethernet/mellanox for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/net/can for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/hid for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/dma-buf for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/crypto for v5.4-rc1 (Jeremy Cline)
+- configs: New config in arch/s390 for v5.4-rc1 (Jeremy Cline)
+- configs: New config in block for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/cpuidle for v5.4-rc1 (Jeremy Cline)
+- redhat: configs: Split CONFIG_CRYPTO_SHA512 (Laura Abbott)
+- redhat: Set Fedora options (Laura Abbott)
+- gitlab: Add CI job for packaging scripts (Major Hayden)
+- Set CRYPTO_SHA3_*_S390 to builtin on zfcpdump (Jeremy Cline)
+- configs: New config in drivers/edac for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/firmware for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/hwmon for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/iio for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/mmc for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/tty for v5.4-rc1 (Jeremy Cline)
+- configs: New config in arch/s390 for v5.4-rc1 (Jeremy Cline)
+- configs: New config in drivers/bus for v5.4-rc1 (Jeremy Cline)
+- Add option to allow mismatched configs on the command line (Laura Abbott)
+- configs: New config in drivers/crypto for v5.4-rc1 (Jeremy Cline)
+- configs: New config in sound/pci for v5.4-rc1 (Jeremy Cline)
+- configs: New config in sound/soc for v5.4-rc1 (Jeremy Cline)
+- Speed up CI with CKI image (Major Hayden)
+- configs: Fix the pending default for CONFIG_ARM64_VA_BITS_52 (Jeremy Cline)
+- configs: Turn on OPTIMIZE_INLINING for everything (Jeremy Cline)
+- configs: Set valid pending defaults for CRYPTO_ESSIV (Jeremy Cline)
+- Add an initial CI configuration for the internal branch (Jeremy Cline)
+- New drop of configuration options for v5.4-rc1 (Jeremy Cline)
+- Disable e1000 driver in ARK (Neil Horman)
+- New drop of configuration options for v5.4-rc1 (Jeremy Cline)
+- configs: Adjust CONFIG_FORCE_MAX_ZONEORDER for Fedora (Laura Abbott)
+- configs: Add README for some other arches (Laura Abbott)
+- configs: Sync up Fedora configs (Laura Abbott)
+- Pull the RHEL version defines out of the Makefile (Jeremy Cline)
+- Sync up the ARK build scripts (Jeremy Cline)
+- Sync up the Fedora Rawhide configs (Jeremy Cline)
+- Sync up the ARK config files (Jeremy Cline)
+- [initial commit] Add structure for building with git (Laura Abbott)
+- [initial commit] Add Red Hat variables in the top level makefile (Laura Abbott)
+- [initial commit] Red Hat gitignore and attributes (Laura Abbott)
+- [initial commit] Add changelog (Laura Abbott)
+- [initial commit] Add makefile (Laura Abbott)
+- [initial commit] Add files for generating the kernel.spec (Laura Abbott)
+- [initial commit] Add rpm directory (Laura Abbott)
+- [initial commit] Add files for packaging (Laura Abbott)
+- [initial commit] Add kabi files (Laura Abbott)
+- [initial commit] Add scripts (Laura Abbott)
+- [initial commit] Add configs (Laura Abbott)
+- [initial commit] Add Makefiles (Laura Abbott)
+
+* Tue Dec 15 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-99]
+- Add missing '$' sign to (GIT) in redhat/Makefile (Augusto Caringi)
+- redhat: ark: enable CONFIG_IKHEADERS (Jiri Olsa)
 
 * Sat Dec 12 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.10.0-0.rc7.20201212git7f376f1917d7.97]
 - Remove filterdiff and use native git instead (Don Zickus)
