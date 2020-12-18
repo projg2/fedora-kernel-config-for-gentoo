@@ -4,24 +4,10 @@ Date: Mon, 26 Oct 2020 17:01:57 +0000
 Subject: [PATCH 1/2] update phy on pine64 a64 devices
 
 ---
- arch/arm64/boot/dts/allwinner/sun50i-a64-pine64-plus.dts      | 2 +-
  arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts           | 2 +-
  arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64-plus.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64-plus.dts
-index b26181cf9095..01728a4c5309 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64-plus.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64-plus.dts
-@@ -13,7 +13,7 @@ / {
- &emac {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&rgmii_pins>;
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-id";
- 	phy-handle = <&ext_rgmii_phy>;
- 	status = "okay";
- };
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
 index 2165f238af13..9741fb5caa6f 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pine64.dts
@@ -33,19 +19,6 @@ index 2165f238af13..9741fb5caa6f 100644
 -	phy-mode = "rmii";
 +	phy-mode = "rmii-txid";
  	phy-handle = <&ext_rmii_phy1>;
- 	phy-supply = <&reg_dc1sw>;
- 	status = "okay";
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts
-index 2f6ea9f3f6a2..079b10641ccd 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-sopine-baseboard.dts
-@@ -79,7 +79,7 @@ &ehci1 {
- &emac {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&rgmii_pins>;
--	phy-mode = "rgmii";
-+	phy-mode = "rgmii-id";
- 	phy-handle = <&ext_rgmii_phy>;
  	phy-supply = <&reg_dc1sw>;
  	status = "okay";
 -- 

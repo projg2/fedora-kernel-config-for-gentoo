@@ -27,8 +27,8 @@ index c9de4b36ca51..a1a012702915 100644
  #include <linux/tboot.h>
 +#include <linux/security.h>
  #include <linux/usb/xhci-dbgp.h>
-
- #include <uapi/linux/mount.h>
+ #include <linux/static_call.h>
+ #include <linux/swiotlb.h>
 @@ -1104,6 +1105,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
