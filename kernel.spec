@@ -836,16 +836,16 @@ Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch72: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
 # https://patchwork.kernel.org/patch/11796255/
-Patch102: arm64-dts-rockchip-disable-USB-type-c-DisplayPort.patch
+Patch100: arm64-dts-rockchip-disable-USB-type-c-DisplayPort.patch
 
 # Tegra fixes
-Patch105: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
+Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 
 # A patch to fix some undocumented things broke a bunch of Allwinner networks due to wrong assumptions
-Patch124: 0001-update-phy-on-pine64-a64-devices.patch
+Patch102: 0001-update-phy-on-pine64-a64-devices.patch
 
 # rhbz 1897038
-Patch132: bluetooth-fix-LL-privacy-BLE-device-fails-to-connect.patch
+Patch103: bluetooth-fix-LL-privacy-BLE-device-fails-to-connect.patch
 
 # END OF PATCH DEFINITIONS
 
