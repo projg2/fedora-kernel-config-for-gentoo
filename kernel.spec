@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20201217gite994cc240a3b.102
+%global distro_build 0.rc0.20201221gite37b12e4bb21.106
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -97,13 +97,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc0.20201217gite994cc240a3b.102
+%define pkgrelease 0.rc0.20201221gite37b12e4bb21.106
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20201217gite994cc240a3b.102%{?buildid}%{?dist}
+%define specrelease 0.rc0.20201221gite37b12e4bb21.106%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -590,7 +590,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201217gite994cc240a3b.tar.xz
+Source0: linux-20201221gite37b12e4bb21.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1234,8 +1234,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201217gite994cc240a3b -c
-mv linux-20201217gite994cc240a3b linux-%{KVERREL}
+%setup -q -n kernel-20201221gite37b12e4bb21 -c
+mv linux-20201221gite37b12e4bb21 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2723,7 +2723,7 @@ fi
 #
 #
 %changelog
-* Thu Dec 17 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc0.20201217gite994cc240a3b.102]
+* Mon Dec 21 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc0.20201221gite37b12e4bb21.106]
 - build_configs.sh: Fix syntax flagged by shellcheck (Ben Crocker)
 - genspec.sh: Fix syntax flagged by shellcheck (Ben Crocker)
 - ark-rebase-patches.sh: Fix for shellcheck (Ben Crocker)
@@ -2744,6 +2744,9 @@ fi
 - run_kabi-dw.sh: Fix syntax flagged by shellcheck (Ben Crocker)
 - mod-blacklist.sh: Fix syntax flagged by shellcheck (Ben Crocker)
 - scripts/configdiff.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+
+* Fri Dec 18 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc0.20201218gita409ed156a90.102]
+- This is selected by PCIE_QCOM so must match ("Justin M. Forbes")
 
 * Wed Dec 16 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc0.20201216gite994cc240a3b.101]
 - drop unused BACKLIGHT_GENERIC (Peter Robinson)
