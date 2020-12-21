@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2960,6 +2960,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 21 07:49:50 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.2-200
+- Linux v5.10.2
+
 * Tue Dec 15 09:57:30 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.1-200
 - Linux v5.10.1
 
