@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20201221gite37b12e4bb21.106
+%global distro_build 0.rc0.20201223git614cb5894306.107
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -97,13 +97,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc0.20201221gite37b12e4bb21.106
+%define pkgrelease 0.rc0.20201223git614cb5894306.107
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20201221gite37b12e4bb21.106%{?buildid}%{?dist}
+%define specrelease 0.rc0.20201223git614cb5894306.107%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -505,6 +505,7 @@ BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
 BuildRequires: python3-devel
+BuildRequires: gcc-plugin-devel
 %if %{with_headers}
 BuildRequires: rsync
 %endif
@@ -590,7 +591,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201221gite37b12e4bb21.tar.xz
+Source0: linux-20201223git614cb5894306.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1234,8 +1235,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201221gite37b12e4bb21 -c
-mv linux-20201221gite37b12e4bb21 linux-%{KVERREL}
+%setup -q -n kernel-20201223git614cb5894306 -c
+mv linux-20201223git614cb5894306 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2723,27 +2724,23 @@ fi
 #
 #
 %changelog
-* Mon Dec 21 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc0.20201221gite37b12e4bb21.106]
+* Wed Dec 23 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc0.20201223git614cb5894306.107]
+- New configs in drivers/rtc (Fedora Kernel Team)
+- redhat/configs: Enable CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL (Josh Poimboeuf)
+- redhat/configs: Enable CONFIG_GCC_PLUGIN_STRUCTLEAK (Josh Poimboeuf)
+- redhat/configs: Enable CONFIG_GCC_PLUGINS on ARK (Josh Poimboeuf)
+- redhat/configs: Enable CONFIG_KASAN on Fedora (Josh Poimboeuf)
 - build_configs.sh: Fix syntax flagged by shellcheck (Ben Crocker)
 - genspec.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- ark-rebase-patches.sh: Fix for shellcheck (Ben Crocker)
-- ark-create-release.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- merge-subtrees.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- rh-dist-git.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- update_scripts.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- x86_rngd.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- parallel_xz.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- expand_srpm.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- create-tarball.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- generate_bls_conf.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- clone_tree.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- new_release.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- download_cross.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- create_distgit_changelog.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- generate_cross_report.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- run_kabi-dw.sh: Fix syntax flagged by shellcheck (Ben Crocker)
 - mod-blacklist.sh: Fix syntax flagged by shellcheck (Ben Crocker)
-- scripts/configdiff.sh: Fix syntax flagged by shellcheck (Ben Crocker)
+- Enable Speakup accessibility driver ("Justin M. Forbes")
+- New configs in init/Kconfig (Fedora Kernel Team)
+- New configs in init/Kconfig (Fedora Kernel Team)
+
+* Mon Dec 21 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc0.20201221git8653b778e454.106]
+- Fix fedora config mismatch due to dep changes ("Justin M. Forbes")
+- Remove duplicate ENERGY_MODEL configs (Peter Robinson)
+- New configs in drivers/crypto (Jeremy Cline)
 
 * Fri Dec 18 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc0.20201218gita409ed156a90.102]
 - This is selected by PCIE_QCOM so must match ("Justin M. Forbes")

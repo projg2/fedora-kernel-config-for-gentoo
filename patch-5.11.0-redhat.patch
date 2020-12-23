@@ -202,7 +202,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index e30cf02da8b8..91c8dfc1f8a7 100644
+index 29c3eecd7b30..00378d0ef971 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -240,10 +240,10 @@ index e30cf02da8b8..91c8dfc1f8a7 100644
 
  $(version_h): FORCE
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index b8ade91281bc..07efd0cb7715 100644
+index 138248999df7..b962482a442e 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1482,9 +1482,9 @@ config HIGHMEM
+@@ -1492,9 +1492,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -287,10 +287,10 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 81463eb537bb..5bd644114103 100644
+index d0d94f77d000..8fc8abed4ebd 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -895,7 +895,7 @@ endchoice
+@@ -896,7 +896,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -299,7 +299,7 @@ index 81463eb537bb..5bd644114103 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1148,6 +1148,7 @@ config XEN
+@@ -1149,6 +1149,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if (ARM64_64K_PAGES && TRANSPARENT_HUGEPAGE)
@@ -562,10 +562,10 @@ index e209081d644b..7484bcf59a1b 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index a1b226eb2ce2..a6289f5a9fd4 100644
+index 80b668c80073..fa30cf6100dd 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1604,6 +1604,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1605,6 +1605,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
 
@@ -2970,7 +2970,7 @@ index c0014d3b91c1..c00e9820412a 100644
 
  	debugfs_create_file("kmemleak", 0644, NULL, NULL, &kmemleak_fops);
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index f882ce0d9327..fafe657d640d 100644
+index d6c81657d695..c70e5904b7bc 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -21,6 +21,7 @@
@@ -2981,7 +2981,7 @@ index f882ce0d9327..fafe657d640d 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static int modversions = 0;
-@@ -2393,6 +2394,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2381,6 +2382,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -2994,7 +2994,7 @@ index f882ce0d9327..fafe657d640d 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2645,6 +2652,7 @@ int main(int argc, char **argv)
+@@ -2630,6 +2637,7 @@ int main(int argc, char **argv)
  		add_depends(&buf, mod);
  		add_moddevtable(&buf, mod);
  		add_srcversion(&buf, mod);
