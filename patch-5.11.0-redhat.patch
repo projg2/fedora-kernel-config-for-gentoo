@@ -46,7 +46,7 @@
  drivers/scsi/qla4xxx/ql4_os.c                      |   2 +
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
- include/linux/efi.h                                |  21 +-
+ include/linux/efi.h                                |  15 +
  include/linux/kernel.h                             |  34 +-
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -69,7 +69,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 71 files changed, 1582 insertions(+), 189 deletions(-)
+ 71 files changed, 1582 insertions(+), 183 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -202,7 +202,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 29c3eecd7b30..00378d0ef971 100644
+index 3d328b7ab200..934b3f566c86 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -287,7 +287,7 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index d0d94f77d000..8fc8abed4ebd 100644
+index 05e17351e4f3..306ae6ff5346 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -896,7 +896,7 @@ endchoice
@@ -672,10 +672,10 @@ index c44ad18464f1..3ec1db4cbbc3 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
-index d6ca2da19339..7c30a62c5e5d 100644
+index 467e94259679..9b6f5b8e5397 100644
 --- a/drivers/firmware/efi/Makefile
 +++ b/drivers/firmware/efi/Makefile
-@@ -25,6 +25,7 @@ obj-$(CONFIG_EFI_FAKE_MEMMAP)		+= fake_map.o
+@@ -28,6 +28,7 @@ obj-$(CONFIG_EFI_FAKE_MEMMAP)		+= fake_map.o
  obj-$(CONFIG_EFI_BOOTLOADER_CONTROL)	+= efibc.o
  obj-$(CONFIG_EFI_TEST)			+= test/
  obj-$(CONFIG_EFI_DEV_PATH_PARSER)	+= dev-path-parser.o
@@ -2142,7 +2142,7 @@ index 7f71218cc1e5..283fc0f41cd2 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index d7c0e73af2b9..c2af576741d5 100644
+index 763b816ba19c..03cb4259200d 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -2178,16 +2178,16 @@ index d7c0e73af2b9..c2af576741d5 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -823,6 +835,8 @@ efi_capsule_pending(int *reset_type)
- 	return false;
- }
+@@ -817,6 +829,8 @@ static inline bool efi_enabled(int feature)
+ static inline void
+ efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
 +static inline void efi_set_secure_boot(enum efi_secureboot_mode mode) {}
 +
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -835,6 +849,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -829,6 +843,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -2195,19 +2195,6 @@ index d7c0e73af2b9..c2af576741d5 100644
 
  /*
   * Variable Attributes
-@@ -1083,12 +1098,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
- extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
- extern unsigned long efi_call_virt_save_flags(void);
-
--enum efi_secureboot_mode {
--	efi_secureboot_mode_unset,
--	efi_secureboot_mode_unknown,
--	efi_secureboot_mode_disabled,
--	efi_secureboot_mode_enabled,
--};
- enum efi_secureboot_mode efi_get_secureboot(void);
-
- #ifdef CONFIG_RESET_ATTACK_MITIGATION
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
 index f7902d8c1048..8d612af767c4 100644
 --- a/include/linux/kernel.h
