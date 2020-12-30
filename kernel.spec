@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -843,9 +843,6 @@ Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 
 # A patch to fix some undocumented things broke a bunch of Allwinner networks due to wrong assumptions
 Patch102: 0001-update-phy-on-pine64-a64-devices.patch
-
-# rhbz 1897038
-Patch103: bluetooth-fix-LL-privacy-BLE-device-fails-to-connect.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2960,6 +2957,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 30 11:51:28 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.4-200
+- Linux v5.10.4
+
 * Mon Dec 28 08:51:38 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.3-200
 - Linux v5.10.3
 
