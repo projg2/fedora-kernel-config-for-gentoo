@@ -844,6 +844,9 @@ Patch101: 0001-PCI-Add-MCFG-quirks-for-Tegra194-host-controllers.patch
 # A patch to fix some undocumented things broke a bunch of Allwinner networks due to wrong assumptions
 Patch102: 0001-update-phy-on-pine64-a64-devices.patch
 
+# OMAP Pandaboard fix
+Patch103: arm-pandaboard-fix-add-bluetooth.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif

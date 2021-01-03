@@ -1,0 +1,64 @@
+From b86516452cfd94321900abe7c8ac843c146a8c53 Mon Sep 17 00:00:00 2001
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+Date: Sat, 3 Oct 2020 16:10:01 +0200
+Subject: ARM: dts: pandaboard es: add bluetooth uart for HCI
+
+The wl271 bluetooth uart is connected to uart2.
+Setup a serdev uart child and separate bluetooth and uart2 pinmux
+from wl12xx pinmux to better group the pins and muxes.
+
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+---
+ arch/arm/boot/dts/omap4-panda-es.dts | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+diff --git a/arch/arm/boot/dts/omap4-panda-es.dts b/arch/arm/boot/dts/omap4-panda-es.dts
+index 6afa8fd7c412d..7c6886cd738f0 100644
+--- a/arch/arm/boot/dts/omap4-panda-es.dts
++++ b/arch/arm/boot/dts/omap4-panda-es.dts
+@@ -49,6 +49,22 @@
+ 			OMAP4_IOPAD(0x0fc, PIN_INPUT_PULLUP | MUX_MODE3) /* gpio_113 */
+ 		>;
+ 	};
++
++	bt_pins: pinmux_bt_pins {
++		pinctrl-single,pins = <
++			OMAP4_IOPAD(0x06c, PIN_OUTPUT | MUX_MODE3)		/* gpmc_a22.gpio_46 - BTEN */
++			OMAP4_IOPAD(0x072, PIN_OUTPUT_PULLUP | MUX_MODE3)	/* gpmc_a25.gpio_49 - BTWAKEUP */
++		>;
++	};
++
++	uart2_pins: pinmux_uart2_pins {
++		pinctrl-single,pins = <
++			OMAP4_IOPAD(0x118, PIN_INPUT_PULLUP | MUX_MODE0)	/* uart2_cts.uart2_cts - HCI */
++			OMAP4_IOPAD(0x11a, PIN_OUTPUT | MUX_MODE0)		/* uart2_rts.uart2_rts */
++			OMAP4_IOPAD(0x11c, PIN_INPUT_PULLUP | MUX_MODE0)	/* uart2_rx.uart2_rx */
++			OMAP4_IOPAD(0x11e, PIN_OUTPUT | MUX_MODE0)		/* uart2_tx.uart2_tx */
++		>;
++	};
+ };
+ 
+ &led_wkgpio_pins {
+@@ -80,3 +96,19 @@
+ &gpio1_target {
+ 	 ti,no-reset-on-init;
+ };
++
++&wl12xx_gpio {
++	pinctrl-single,pins = <
++		OMAP4_IOPAD(0x066, PIN_OUTPUT | MUX_MODE3)		/* gpmc_a19.gpio_43 */
++		OMAP4_IOPAD(0x070, PIN_OUTPUT_PULLUP | MUX_MODE3)	/* gpmc_a24.gpio_48 */
++	>;
++};
++
++&uart2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart2_pins &bt_pins>;
++	bluetooth: tiwi {
++		compatible = "ti,wl1271-st";
++		enable-gpios = <&gpio2 14 GPIO_ACTIVE_HIGH>;	/* GPIO_46 */
++	};
++};
+-- 
+cgit 1.2.3-1.el7
