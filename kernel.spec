@@ -505,7 +505,7 @@ BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
 BuildRequires: python3-devel
-BuildRequires: gcc-plugin-devel
+BuildRequires: gcc-plugin-devel, gcc-c++
 %if %{with_headers}
 BuildRequires: rsync
 %endif
