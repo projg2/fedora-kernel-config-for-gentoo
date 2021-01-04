@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.20201229gitdea8dcf2a9fa.109
+%global distro_build 0.rc2.114
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -97,13 +97,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc1.20201229gitdea8dcf2a9fa.109
+%define pkgrelease 0.rc2.114
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20201229gitdea8dcf2a9fa.109%{?buildid}%{?dist}
+%define specrelease 0.rc2.114%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -193,7 +193,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.11
@@ -591,7 +591,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20201229gitdea8dcf2a9fa.tar.xz
+Source0: linux-5.11-rc2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1235,8 +1235,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20201229gitdea8dcf2a9fa -c
-mv linux-20201229gitdea8dcf2a9fa linux-%{KVERREL}
+%setup -q -n kernel-5.11-rc2 -c
+mv linux-5.11-rc2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2724,6 +2724,9 @@ fi
 #
 #
 %changelog
+* Sun Jan 03 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc1.20210103giteda809aef534.113]
+- Fedora: cleanup PCMCIA configs, move to x86 (Peter Robinson)
+
 * Wed Dec 23 2020 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc0.20201223git614cb5894306.107]
 - New configs in drivers/rtc (Fedora Kernel Team)
 - redhat/configs: Enable CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL (Josh Poimboeuf)
