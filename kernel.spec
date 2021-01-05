@@ -379,6 +379,7 @@ Summary: The Linux kernel
 %define make_target vmlinux
 %define kernel_image vmlinux
 %define kernel_image_elf 1
+%define use_vdso 0
 %define all_arch_configs kernel-%{version}-ppc64le*.config
 %endif
 
@@ -742,6 +743,7 @@ Source4000: README.rst
 
 Patch1: patch-%{rpmversion}-redhat.patch
 Patch2: secureboot_merge_fix.patch
+Patch3: gcc11-plugins-fix.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1246,6 +1248,7 @@ cp -a %{SOURCE1} .
 
 ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
 ApplyOptionalPatch secureboot_merge_fix.patch
+ApplyOptionalPatch gcc11-plugins-fix.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
