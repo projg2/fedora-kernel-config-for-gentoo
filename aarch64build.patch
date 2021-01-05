@@ -1,0 +1,17 @@
+---
+ kernel/irq/manage.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index ab8567f32501..dec3f73e8db9 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -2859,3 +2859,4 @@ bool irq_check_status_bit(unsigned int irq, unsigned int bitmask)
+ 	rcu_read_unlock();
+ 	return res;
+ }
++EXPORT_SYMBOL_GPL(irq_check_status_bit);
+-- 
+2.27.0
+
+  
