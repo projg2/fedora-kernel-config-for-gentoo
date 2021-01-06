@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -846,6 +846,11 @@ Patch102: 0001-update-phy-on-pine64-a64-devices.patch
 
 # OMAP Pandaboard fix
 Patch103: arm-pandaboard-fix-add-bluetooth.patch
+
+# Fix CVE-2020-36158 rhbz 1913348 1913349
+Patch104: 0001-mwifiex-Fix-possible-buffer-overflows-in-mwifiex_cmd.patch
+
+Patch105: 0001-ALSA-hda-via-Fix-runtime-PM-for-Clevo-W35xSS.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -2960,6 +2965,10 @@ fi
 #
 #
 %changelog
+* Wed Jan  6 12:53:15 CST 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.5-200
+- Linux v5.10.5
+- Fix CVE-2020-36158 (rhbz 1913348 1913349)
+
 * Wed Dec 30 11:51:28 CST 2020 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.4-200
 - Linux v5.10.4
 
