@@ -1,3 +1,12 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/e6e7a09f8c9ba404abfcdb41f1fca0bd6c1b56b0
+ e6e7a09f8c9ba404abfcdb41f1fca0bd6c1b56b0 irq: export irq_check_status_bit
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/e187313e5f0086538fefe0925ef84480f99616d8
+ e187313e5f0086538fefe0925ef84480f99616d8 gcc-plugins: fix gcc 11 indigestion with plugins...
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/0c84b348e33ab9d7df5c3c5acc7fbc07fd96fafc
+ 0c84b348e33ab9d7df5c3c5acc7fbc07fd96fafc Fix up bad merge with efi: generalize efi_get_secureboot
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/364788093bdf437c33753d327136c363be8f756c
  364788093bdf437c33753d327136c363be8f756c Fix up a merge issue with rxe.c
 
