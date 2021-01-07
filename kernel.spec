@@ -855,6 +855,9 @@ Patch105: 0001-ALSA-hda-via-Fix-runtime-PM-for-Clevo-W35xSS.patch
 # rhbz 1898495
 Patch106: Bluetooth-hci_core-Fix-attempting-to-set-RPA-timeout-when-unsupported.patch
 
+# Nouveau mDP detection fix
+Patch107: 0001-drm-nouveau-kms-handle-mDP-connectors.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
