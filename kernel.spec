@@ -852,6 +852,9 @@ Patch104: 0001-mwifiex-Fix-possible-buffer-overflows-in-mwifiex_cmd.patch
 
 Patch105: 0001-ALSA-hda-via-Fix-runtime-PM-for-Clevo-W35xSS.patch
 
+# rhbz 1898495
+Patch106: Bluetooth-hci_core-Fix-attempting-to-set-RPA-timeout-when-unsupported.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2965,6 +2968,9 @@ fi
 #
 #
 %changelog
+* Thu Jan  7 2021 Justin M. Forbes <jforbes@fedoraproject.org>
+- Fix bluetooth controller initialization (rhbz 1898495)
+
 * Wed Jan  6 12:53:15 CST 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.5-200
 - Linux v5.10.5
 - Fix CVE-2020-36158 (rhbz 1913348 1913349)
