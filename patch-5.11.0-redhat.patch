@@ -32,7 +32,6 @@
  drivers/iommu/iommu.c                              |  22 ++
  drivers/message/fusion/mptsas.c                    |  10 +
  drivers/message/fusion/mptspi.c                    |  11 +
- drivers/net/ethernet/intel/e1000e/ich8lan.c        |   4 +-
  drivers/net/ethernet/intel/ice/ice_main.c          |   1 +
  drivers/pci/pci-driver.c                           |  29 ++
  drivers/pci/quirks.c                               |  24 ++
@@ -71,7 +70,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 73 files changed, 1585 insertions(+), 192 deletions(-)
+ 72 files changed, 1583 insertions(+), 190 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -1733,22 +1732,6 @@ index af0ce5611e4a..1c226920c12d 100644
  	return 0;
 
  out_mptspi_probe:
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index 9aa6fad8ed47..11a9cea929a3 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -1248,9 +1248,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct e1000_hw *hw, bool force)
- 			ew32(H2ME, mac_reg);
- 		}
-
--		/* Poll up to 300msec for ME to clear ULP_CFG_DONE. */
-+		/* Poll up to 2.5sec for ME to clear ULP_CFG_DONE. */
- 		while (er32(FWSM) & E1000_FWSM_ULP_CFG_DONE) {
--			if (i++ == 30) {
-+			if (i++ == 250) {
- 				ret_val = -E1000_ERR_PHY;
- 				goto out;
- 			}
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
 index c52b9bb0e3ab..3e463dccac33 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
@@ -2670,10 +2653,10 @@ index aa7368c7eabf..59724bef4bf2 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 4caf06fe4152..32eeb063f270 100644
+index c3bb03c8371f..28614a0c7de7 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
-@@ -25,6 +25,7 @@
+@@ -24,6 +24,7 @@
  #include <linux/ctype.h>
  #include <linux/nospec.h>
  #include <linux/audit.h>
@@ -2681,7 +2664,7 @@ index 4caf06fe4152..32eeb063f270 100644
  #include <uapi/linux/btf.h>
  #include <linux/pgtable.h>
  #include <linux/bpf_lsm.h>
-@@ -51,7 +52,25 @@ static DEFINE_SPINLOCK(map_idr_lock);
+@@ -50,7 +51,25 @@ static DEFINE_SPINLOCK(map_idr_lock);
  static DEFINE_IDR(link_idr);
  static DEFINE_SPINLOCK(link_idr_lock);
 
@@ -2708,7 +2691,7 @@ index 4caf06fe4152..32eeb063f270 100644
 
  static const struct bpf_map_ops * const bpf_map_types[] = {
  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
-@@ -4339,11 +4358,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
+@@ -4338,11 +4357,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
  SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
  {
  	union bpf_attr attr;
