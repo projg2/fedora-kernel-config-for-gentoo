@@ -63,14 +63,13 @@
  kernel/panic.c                                     |  14 +
  kernel/rh_taint.c                                  |  93 ++++++
  mm/kmemleak.c                                      |   5 +
- scripts/gcc-plugins/Makefile                       |   4 +-
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 72 files changed, 1583 insertions(+), 190 deletions(-)
+ 71 files changed, 1581 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -95,7 +94,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index c722ec19cd00..3b490fce3392 100644
+index 9e3cdb271d06..e98bca34b9d5 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -5526,6 +5526,14 @@
@@ -203,7 +202,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 8b2c3f88ee5e..2cb8050ffd0d 100644
+index 9e73f82e0d86..3b03f12f6f3e 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1972,10 +1971,10 @@ index d48414e295a0..ba0e384412c9 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 6e4bf05c6d77..0921b0aa9670 100644
+index af192096a82b..0e076a26a924 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
-@@ -133,6 +133,7 @@ static void megasas_get_pd_info(struct megasas_instance *instance,
+@@ -138,6 +138,7 @@ static void megasas_get_pd_info(struct megasas_instance *instance,
   */
  static struct pci_device_id megasas_pci_table[] = {
 
@@ -1983,7 +1982,7 @@ index 6e4bf05c6d77..0921b0aa9670 100644
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1064R)},
  	/* xscale IOP */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1078R)},
-@@ -151,6 +152,7 @@ static struct pci_device_id megasas_pci_table[] = {
+@@ -156,6 +157,7 @@ static struct pci_device_id megasas_pci_table[] = {
  	/* xscale IOP, vega */
  	{PCI_DEVICE(PCI_VENDOR_ID_DELL, PCI_DEVICE_ID_DELL_PERC5)},
  	/* xscale IOP */
@@ -2964,22 +2963,6 @@ index c0014d3b91c1..c00e9820412a 100644
  	kmemleak_initialized = 1;
 
  	debugfs_create_file("kmemleak", 0644, NULL, NULL, &kmemleak_fops);
-diff --git a/scripts/gcc-plugins/Makefile b/scripts/gcc-plugins/Makefile
-index d66949bfeba4..b5487cce69e8 100644
---- a/scripts/gcc-plugins/Makefile
-+++ b/scripts/gcc-plugins/Makefile
-@@ -22,9 +22,9 @@ always-y += $(GCC_PLUGIN)
- GCC_PLUGINS_DIR = $(shell $(CC) -print-file-name=plugin)
-
- plugin_cxxflags	= -Wp,-MMD,$(depfile) $(KBUILD_HOSTCXXFLAGS) -fPIC \
--		   -I $(GCC_PLUGINS_DIR)/include -I $(obj) -std=gnu++98 \
-+		   -I $(GCC_PLUGINS_DIR)/include -I $(obj) -std=gnu++11 \
- 		   -fno-rtti -fno-exceptions -fasynchronous-unwind-tables \
--		   -ggdb -Wno-narrowing -Wno-unused-variable -Wno-c++11-compat \
-+		   -ggdb -Wno-narrowing -Wno-unused-variable \
- 		   -Wno-format-diag
-
- plugin_ldflags	= -shared
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
 index d6c81657d695..c70e5904b7bc 100644
 --- a/scripts/mod/modpost.c

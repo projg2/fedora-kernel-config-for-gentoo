@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc2.20210108gitf5e6c330254a.119
+%global distro_build 0.rc3.122
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -97,13 +97,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc2.20210108gitf5e6c330254a.119
+%define pkgrelease 0.rc3.122
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20210108gitf5e6c330254a.119%{?buildid}%{?dist}
+%define specrelease 0.rc3.122%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -193,7 +193,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.11
@@ -506,6 +506,7 @@ BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
 BuildRequires: python3-devel
+BuildRequires: gcc-plugin-devel
 %if %{with_headers}
 BuildRequires: rsync
 %endif
@@ -591,7 +592,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210108gitf5e6c330254a.tar.xz
+Source0: linux-5.11-rc3.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1235,8 +1236,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210108gitf5e6c330254a -c
-mv linux-20210108gitf5e6c330254a linux-%{KVERREL}
+%setup -q -n kernel-5.11-rc3 -c
+mv linux-5.11-rc3 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2724,9 +2725,12 @@ fi
 #
 #
 %changelog
-* Fri Jan 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc2.20210108gitf5e6c330254a.119]
+* Mon Jan 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc3.122]
 - irq: export irq_check_status_bit (Levi Yun)
 - Turn off vdso_install for ppc ("Justin M. Forbes")
+
+* Sat Jan 09 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc2.20210109git996e435fd401.119]
+- Revert "Merge branch 'revert-29a48502' into 'os-build'" (Justin Forbes)
 
 * Fri Jan 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc2.20210108gitf5e6c330254a.118]
 - Fedora: arm updates for 5.11 and general cross Fedora cleanups (Peter Robinson)
