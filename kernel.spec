@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -847,13 +847,7 @@ Patch102: 0001-update-phy-on-pine64-a64-devices.patch
 # OMAP Pandaboard fix
 Patch103: arm-pandaboard-fix-add-bluetooth.patch
 
-# Fix CVE-2020-36158 rhbz 1913348 1913349
-Patch104: 0001-mwifiex-Fix-possible-buffer-overflows-in-mwifiex_cmd.patch
-
 Patch105: 0001-ALSA-hda-via-Fix-runtime-PM-for-Clevo-W35xSS.patch
-
-# rhbz 1898495
-Patch106: Bluetooth-hci_core-Fix-attempting-to-set-RPA-timeout-when-unsupported.patch
 
 # Nouveau mDP detection fix
 Patch107: 0001-drm-nouveau-kms-handle-mDP-connectors.patch
@@ -2971,6 +2965,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 11 06:51:13 CST 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.6-200
+- Linux v5.10.6
+
 * Thu Jan  7 2021 Justin M. Forbes <jforbes@fedoraproject.org>
 - Fix bluetooth controller initialization (rhbz 1898495)
 
