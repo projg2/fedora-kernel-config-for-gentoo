@@ -88,9 +88,9 @@ index 737c0b6b24ea..7901e780323b 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -34,6 +34,7 @@
- #include <linux/uuid.h>
  #include <linux/nospec.h>
  #include <linux/vmalloc.h>
+ #include <linux/delay.h>
 +#include <linux/dmi.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
