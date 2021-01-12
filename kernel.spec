@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -832,7 +832,6 @@ Patch65: 0001-ARM-fix-__get_user_check-in-case-uaccess_-calls-are-.patch
 Patch66: 0001-dt-bindings-panel-add-binding-for-Xingbangda-XBD599-.patch
 Patch67: 0001-drm-panel-add-Xingbangda-XBD599-panel.patch
 Patch68: 0001-drm-sun4i-sun6i_mipi_dsi-fix-horizontal-timing-calcu.patch
-Patch70: 0001-e1000e-bump-up-timeout-to-wait-when-ME-un-configure-.patch
 Patch72: 0001-Work-around-for-gcc-bug-https-gcc.gnu.org-bugzilla-s.patch
 
 # https://patchwork.kernel.org/patch/11796255/
@@ -846,8 +845,6 @@ Patch102: 0001-update-phy-on-pine64-a64-devices.patch
 
 # OMAP Pandaboard fix
 Patch103: arm-pandaboard-fix-add-bluetooth.patch
-
-Patch105: 0001-ALSA-hda-via-Fix-runtime-PM-for-Clevo-W35xSS.patch
 
 # Nouveau mDP detection fix
 Patch107: 0001-drm-nouveau-kms-handle-mDP-connectors.patch
@@ -2965,6 +2962,9 @@ fi
 #
 #
 %changelog
+* Tue Jan 12 13:41:35 CST 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.7-200
+- Linux v5.10.7
+
 * Mon Jan 11 06:51:13 CST 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.6-200
 - Linux v5.10.6 rebase
 - Fix bluetooth controller initialization (rhbz 1898495)
