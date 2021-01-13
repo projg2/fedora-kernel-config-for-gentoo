@@ -1,11 +1,89 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/8773e8c6039ff74d1426cc80de30de759cd0c2a2
- 8773e8c6039ff74d1426cc80de30de759cd0c2a2 irq: export irq_check_status_bit
+https://gitlab.com/cki-project/kernel-ark/-/commit/bf07a85cd0f7fd4acb55ee99fde07ddfa4a81848
+ bf07a85cd0f7fd4acb55ee99fde07ddfa4a81848 irq: export irq_check_status_bit
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/2896c93811e39d63a4d9b63ccf12a8fbc226e5e4
+ 2896c93811e39d63a4d9b63ccf12a8fbc226e5e4 scsi: target: Fix XCOPY NAA identifier lookup
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/7bb83f6fc4ee84e95d0ac0d14452c2619fb3fe70
+ 7bb83f6fc4ee84e95d0ac0d14452c2619fb3fe70 tracing/kprobes: Do the notrace functions check without kprobes on ftrace
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/896567ee7f17a8a736cda8a28cc987228410a2ac
+ 896567ee7f17a8a736cda8a28cc987228410a2ac NFS: nfs_igrab_and_active must first reference the superblock
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/113aac6d567bda783af36d08f73bfda47d8e9a40
+ 113aac6d567bda783af36d08f73bfda47d8e9a40 NFS: nfs_delegation_find_inode_server must first reference the superblock
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/cb2856c5971723910a86b7d1d0cf623d6919cbc4
+ cb2856c5971723910a86b7d1d0cf623d6919cbc4 NFS/pNFS: Fix a leak of the layout 'plh_outstanding' counter
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/46c9ea1d4fee4cf1f8cc6001b9c14aae61b3d502
+ 46c9ea1d4fee4cf1f8cc6001b9c14aae61b3d502 NFS/pNFS: Don't leak DS commits in pnfs_generic_retry_commit()
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/1757655d780d9d29bc4b60e708342e94924f7ef3
+ 1757655d780d9d29bc4b60e708342e94924f7ef3 NFS/pNFS: Don't call pnfs_free_bucket_lseg() before removing the request
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/2c8d5fc37fe2384a9bdb6965443ab9224d46f704
+ 2c8d5fc37fe2384a9bdb6965443ab9224d46f704 pNFS: Stricter ordering of layoutget and layoutreturn
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/c18d1e17ba2f6a1c9257b0b5d2882a6e3f772673
+ c18d1e17ba2f6a1c9257b0b5d2882a6e3f772673 pNFS: Clean up pnfs_layoutreturn_free_lsegs()
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/078000d02d57f02dde61de4901f289672e98c8bc
+ 078000d02d57f02dde61de4901f289672e98c8bc pNFS: We want return-on-close to complete when evicting the inode
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/67bbceedc9bb8ad48993a8bd6486054756d711f4
+ 67bbceedc9bb8ad48993a8bd6486054756d711f4 pNFS: Mark layout for return if return-on-close was not sent
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/86b53fbf08f48d353a86a06aef537e78e82ba721
+ 86b53fbf08f48d353a86a06aef537e78e82ba721 net: sunrpc: interpret the return value of kstrtou32 correctly
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/c98e9daa59a611ff4e163689815f40380c912415
+ c98e9daa59a611ff4e163689815f40380c912415 NFS: Adjust fs_context error logging
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/e076ab2a2ca70a0270232067cd49f76cd92efe64
+ e076ab2a2ca70a0270232067cd49f76cd92efe64 btrfs: shrink delalloc pages instead of full inodes
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/50e31ef486afe60f128d42fb9620e2a63172c15c
+ 50e31ef486afe60f128d42fb9620e2a63172c15c btrfs: reloc: fix wrong file extent type check to avoid false ENOENT
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/347fb0cfc9bab5195c6701e62eda488310d7938f
+ 347fb0cfc9bab5195c6701e62eda488310d7938f btrfs: tree-checker: check if chunk item end overflows
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/29b665cc51e8b602bf2a275734349494776e3dbc
+ 29b665cc51e8b602bf2a275734349494776e3dbc btrfs: prevent NULL pointer dereference in extent_io_tree_panic
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/71008734d27f2276fcef23a5e546d358430f2d52
+ 71008734d27f2276fcef23a5e546d358430f2d52 btrfs: print the actual offset in btrfs_root_name
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/3d1a90ab0ed93362ec8ac85cf291243c87260c21
+ 3d1a90ab0ed93362ec8ac85cf291243c87260c21 NFS4: Fix use-after-free in trace_event_raw_event_nfs4_set_lock
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/ad0a6bad44758afa3b440c254a24999a0c7e35d5
+ ad0a6bad44758afa3b440c254a24999a0c7e35d5 x86/hyperv: check cpu mask after interrupt has been disabled
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/e187313e5f0086538fefe0925ef84480f99616d8
  e187313e5f0086538fefe0925ef84480f99616d8 gcc-plugins: fix gcc 11 indigestion with plugins...
 
+https://gitlab.com/cki-project/kernel-ark/-/commit/dfe94d4086e40e92b1926bddcefa629b791e9b28
+ dfe94d4086e40e92b1926bddcefa629b791e9b28 x86/hyperv: Fix kexec panic/hang issues
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/0c84b348e33ab9d7df5c3c5acc7fbc07fd96fafc
  0c84b348e33ab9d7df5c3c5acc7fbc07fd96fafc Fix up bad merge with efi: generalize efi_get_secureboot
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/7b723008f9c95624c848fad661c01b06e47b20da
+ 7b723008f9c95624c848fad661c01b06e47b20da NFSD: Restore NFSv4 decoding's SAVEMEM functionality
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/4a85a6a3320b4a622315d2e0ea91a1d2b013bce4
+ 4a85a6a3320b4a622315d2e0ea91a1d2b013bce4 SUNRPC: Handle TCP socket sends with kernel_sendpage() again
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/d6c9e4368cc6a61bf25c9c72437ced509c854563
+ d6c9e4368cc6a61bf25c9c72437ced509c854563 NFSD: Fix sparse warning in nfssvc.c
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/b68f0cbd3f95f2df81e525c310a41fc73c2ed0d3
+ b68f0cbd3f95f2df81e525c310a41fc73c2ed0d3 nfsd: Don't set eof on a truncated READ_PLUS
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/72d78717c6d06adf65d2e3dccc96d9e9dc978593
+ 72d78717c6d06adf65d2e3dccc96d9e9dc978593 nfsd: Fixes for nfsd4_encode_read_plus_data()
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/364788093bdf437c33753d327136c363be8f756c
  364788093bdf437c33753d327136c363be8f756c Fix up a merge issue with rxe.c

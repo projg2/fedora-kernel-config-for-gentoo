@@ -56,7 +56,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc3.122
+%global distro_build 0.rc3.124
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -97,13 +97,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc3.122
+%define pkgrelease 0.rc3.124
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.122%{?buildid}%{?dist}
+%define specrelease 0.rc3.124%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -2725,9 +2725,31 @@ fi
 #
 #
 %changelog
-* Mon Jan 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc3.122]
+* Wed Jan 13 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.0-0.rc3.124]
+- v5.11-rc3 rebase
+
+* Wed Jan 13 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc3.20210113gite609571b5ffa.124]
 - irq: export irq_check_status_bit (Levi Yun)
 - Turn off vdso_install for ppc ("Justin M. Forbes")
+
+* Wed Jan 13 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc3.20210113gite609571b5ffa.123]
+- fedora: only enable ACPI_CONFIGFS, ACPI_CUSTOM_METHOD in debug kernels (Peter Robinson)
+- fedora: User the same EFI_CUSTOM_SSDT_OVERLAYS as ARK (Peter Robinson)
+- all: all arches/kernels enable the same DMI options (Peter Robinson)
+- all: move SENSORS_ACPI_POWER to common/generic (Peter Robinson)
+- fedora: PCIE_HISI_ERR is already in common (Peter Robinson)
+- all: all ACPI platforms enable ATA_ACPI so move it to common (Peter Robinson)
+- all: x86: move shared x86 acpi config options to generic (Peter Robinson)
+- All: x86: Move ACPI_VIDEO to common/x86 (Peter Robinson)
+- All: x86: Enable ACPI_DPTF (Intel DPTF) (Peter Robinson)
+- All: enable ACPI_BGRT for all ACPI platforms. (Peter Robinson)
+- All: Only build ACPI_EC_DEBUGFS for debug kernels (Peter Robinson)
+- All: Disable Intel Classmate PC ACPI_CMPC option (Peter Robinson)
+- cleanup: ACPI_PROCFS_POWER was removed upstream (Peter Robinson)
+- All: ACPI: De-dupe the ACPI options that are the same across ark/fedora on x86/arm (Peter Robinson)
+
+* Tue Jan 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc3.20210112gita0d54b4f5b21.122]
+- Enable the vkms module in Fedora (Jeremy Cline)
 
 * Sat Jan 09 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc2.20210109git996e435fd401.119]
 - Revert "Merge branch 'revert-29a48502' into 'os-build'" (Justin Forbes)
