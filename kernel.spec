@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc3.20210114git65f0d2414b70.125
+%global distro_build 0.rc4.129
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc3.20210114git65f0d2414b70.125
+%define pkgrelease 0.rc4.129
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20210114git65f0d2414b70.125%{?buildid}%{?dist}
+%define specrelease 0.rc4.129%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -201,7 +201,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.11
@@ -601,7 +601,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210114git65f0d2414b70.tar.xz
+Source0: linux-5.11-rc4.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -614,47 +614,48 @@ Source1: Makefile.rhelver
 %define signing_key_filename kernel-signing-s390.cer
 %endif
 
-Source10: x509.genkey.rhel
-Source11: x509.genkey.fedora
+Source8: x509.genkey.rhel
+Source9: x509.genkey.fedora
+
 %if %{?released_kernel}
 
-Source12: redhatsecurebootca5.cer
-Source13: redhatsecurebootca1.cer
-Source14: redhatsecureboot501.cer
-Source15: redhatsecureboot301.cer
-Source16: secureboot_s390.cer
-Source17: secureboot_ppc.cer
+Source10: redhatsecurebootca5.cer
+Source11: redhatsecurebootca1.cer
+Source12: redhatsecureboot501.cer
+Source13: redhatsecureboot301.cer
+Source14: secureboot_s390.cer
+Source15: secureboot_ppc.cer
 
-%define secureboot_ca_1 %{SOURCE12}
-%define secureboot_ca_0 %{SOURCE13}
+%define secureboot_ca_1 %{SOURCE10}
+%define secureboot_ca_0 %{SOURCE11}
 %ifarch x86_64 aarch64
-%define secureboot_key_1 %{SOURCE14}
+%define secureboot_key_1 %{SOURCE12}
 %define pesign_name_1 redhatsecureboot501
-%define secureboot_key_0 %{SOURCE15}
+%define secureboot_key_0 %{SOURCE13}
 %define pesign_name_0 redhatsecureboot301
 %endif
 %ifarch s390x
-%define secureboot_key_0 %{SOURCE16}
+%define secureboot_key_0 %{SOURCE14}
 %define pesign_name_0 redhatsecureboot302
 %endif
 %ifarch ppc64le
-%define secureboot_key_0 %{SOURCE17}
+%define secureboot_key_0 %{SOURCE15}
 %define pesign_name_0 redhatsecureboot303
 %endif
 
 # released_kernel
 %else
 
-Source12: redhatsecurebootca4.cer
-Source13: redhatsecurebootca2.cer
-Source14: redhatsecureboot401.cer
-Source15: redhatsecureboot003.cer
+Source10: redhatsecurebootca4.cer
+Source11: redhatsecurebootca2.cer
+Source12: redhatsecureboot401.cer
+Source13: redhatsecureboot003.cer
 
-%define secureboot_ca_1 %{SOURCE12}
-%define secureboot_ca_0 %{SOURCE13}
-%define secureboot_key_1 %{SOURCE14}
+%define secureboot_ca_1 %{SOURCE10}
+%define secureboot_ca_0 %{SOURCE11}
+%define secureboot_key_1 %{SOURCE12}
 %define pesign_name_1 redhatsecureboot401
-%define secureboot_key_0 %{SOURCE15}
+%define secureboot_key_0 %{SOURCE13}
 %define pesign_name_0 redhatsecureboot003
 
 # released_kernel
@@ -1245,8 +1246,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210114git65f0d2414b70 -c
-mv linux-20210114git65f0d2414b70 linux-%{KVERREL}
+%setup -q -n kernel-5.11-rc4 -c
+mv linux-5.11-rc4 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2065,11 +2066,11 @@ popd
 %endif
 
 %if %{with_selftests}
-%{make} -s ARCH=$Arch V=1 samples/bpf/
+%{make} -s %{?_smp_mflags} ARCH=$Arch V=1 samples/bpf/
 pushd tools/testing/selftests
 # We need to install here because we need to call make with ARCH set which
 # doesn't seem possible to do in the install section.
-%{make} -s ARCH=$Arch V=1 TARGETS="bpf livepatch net" INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests install
+%{make} -s %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf livepatch net" INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests install
 popd
 %endif
 
@@ -2734,9 +2735,19 @@ fi
 #
 #
 %changelog
-* Thu Jan 14 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc3.20210114git65f0d2414b70.125]
+* Mon Jan 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc4.129]
 - irq: export irq_check_status_bit (Levi Yun)
 - Turn off vdso_install for ppc ("Justin M. Forbes")
+
+* Sat Jan 16 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc3.20210116git1d94330a437a.126]
+- Fedora 5.11 configs pt 1 ("Justin M. Forbes")
+
+* Fri Jan 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc3.20210115git5ee88057889b.125]
+- redhat: avoid conflict with mod-blacklist.sh and released_kernel defined ("Herton R. Krzesinski")
+- redhat: handle certificate files conditionally as done for src.rpm ("Herton R. Krzesinski")
+- Run MR testing in CKI pipeline (Veronika Kabatova)
+- specfile: add {?_smp_mflags} to "make headers_install" in tools/testing/selftests (Denys Vlasenko)
+- specfile: add {?_smp_mflags} to "make samples/bpf/" (Denys Vlasenko)
 
 * Thu Jan 14 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc3.20210114git65f0d2414b70.124]
 - Reword comment (Nicolas Chauvet)
