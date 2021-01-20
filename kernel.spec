@@ -2965,6 +2965,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 20 2021 Peter Robinson <pbrobinson@fedoraproject.org
+- Fix for ARMv7 builder pause issue
+
 * Tue Jan 19 15:00:34 CST 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.9-100
 - Linux v5.10.9
 
