@@ -82,7 +82,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 200
+%global baserelease 201
 %global fedora_build %{baserelease}
 
 # base_sublevel is the kernel version we're starting with and patching
@@ -2965,6 +2965,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 20 2021 Peter Robinson <pbrobinson@fedoraproject.org> - 5.10.9-201
+- Fix for ARMv7 builder pause issue
+
 * Tue Jan 19 15:00:17 CST 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.9-200
 - Linux v5.10.9
 
