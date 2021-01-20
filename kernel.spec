@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc4.129
+%global distro_build 0.rc4.20210120git45dfb8a5659a.131
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc4.129
+%define pkgrelease 0.rc4.20210120git45dfb8a5659a.131
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.129%{?buildid}%{?dist}
+%define specrelease 0.rc4.20210120git45dfb8a5659a.131%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -201,7 +201,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.11
@@ -601,7 +601,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.11-rc4.tar.xz
+Source0: linux-20210120git45dfb8a5659a.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1246,8 +1246,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.11-rc4 -c
-mv linux-5.11-rc4 linux-%{KVERREL}
+%setup -q -n kernel-20210120git45dfb8a5659a -c
+mv linux-20210120git45dfb8a5659a linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2735,9 +2735,14 @@ fi
 #
 #
 %changelog
-* Mon Jan 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc4.129]
+* Wed Jan 20 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc4.20210120git45dfb8a5659a.131]
+- redhat: replace inline awk script with genlog.py call (Herton R. Krzesinski)
+- redhat: add genlog.py script (Herton R. Krzesinski)
 - irq: export irq_check_status_bit (Levi Yun)
-- Turn off vdso_install for ppc ("Justin M. Forbes")
+- Turn off vdso_install for ppc (Justin M. Forbes)
+
+* Tue Jan 19 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc4.20210119git1e2a199f6ccd.129]
+- all: s390x: Increase CONFIG_PCI_NR_FUNCTIONS to 512 (#1888735) (=?UTF-8?q?Dan=20Hor=C3=A1k?=)
 
 * Sat Jan 16 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc3.20210116git1d94330a437a.126]
 - Fedora 5.11 configs pt 1 ("Justin M. Forbes")
