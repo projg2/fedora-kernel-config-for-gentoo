@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2965,6 +2965,10 @@ fi
 #
 #
 %changelog
+* Sun Jan 24 11:29:01 CST 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.10-100
+- Linux v5.10.10
+- Fixes CVE-2021-3178 (rhbz 1918179 1918181)
+
 * Wed Jan 20 2021 Peter Robinson <pbrobinson@fedoraproject.org
 - Fix for ARMv7 builder pause issue
 
