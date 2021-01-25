@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc4.20210120git45dfb8a5659a.131
+%global distro_build 0.rc5.134
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc4.20210120git45dfb8a5659a.131
+%define pkgrelease 0.rc5.134
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20210120git45dfb8a5659a.131%{?buildid}%{?dist}
+%define specrelease 0.rc5.134%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -201,7 +201,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.11
@@ -601,7 +601,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210120git45dfb8a5659a.tar.xz
+Source0: linux-5.11-rc5.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1246,8 +1246,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210120git45dfb8a5659a -c
-mv linux-20210120git45dfb8a5659a linux-%{KVERREL}
+%setup -q -n kernel-5.11-rc5 -c
+mv linux-5.11-rc5 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2735,11 +2735,20 @@ fi
 #
 #
 %changelog
-* Wed Jan 20 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc4.20210120git45dfb8a5659a.131]
+* Mon Jan 25 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.134]
 - redhat: replace inline awk script with genlog.py call (Herton R. Krzesinski)
 - redhat: add genlog.py script (Herton R. Krzesinski)
-- irq: export irq_check_status_bit (Levi Yun)
 - Turn off vdso_install for ppc (Justin M. Forbes)
+
+* Mon Jan 25 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.133]
+- Fedora 5.11 config updates part 4 ("Justin M. Forbes")
+- Fedora 5.11 config updates part 3 ("Justin M. Forbes")
+- Fedora 5.11 config updates part 2 ("Justin M. Forbes")
+- Update internal (test) module list from RHEL-8 (Joe Lawrence) [https://bugzilla.redhat.com/show_bug.cgi?id=1915073]
+
+* Thu Jan 21 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc4.20210121git9791581c049c.131]
+- Fix USB_XHCI_PCI regression ("Justin M. Forbes")
+- fedora: fixes for ARMv7 build issue by disabling HIGHPTE (Peter Robinson)
 
 * Tue Jan 19 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc4.20210119git1e2a199f6ccd.129]
 - all: s390x: Increase CONFIG_PCI_NR_FUNCTIONS to 512 (#1888735) (=?UTF-8?q?Dan=20Hor=C3=A1k?=)

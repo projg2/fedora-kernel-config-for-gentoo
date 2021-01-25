@@ -1,6 +1,3 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/6041aa1ca31a9c8b878b142602e2a2bbcdedb902
- 6041aa1ca31a9c8b878b142602e2a2bbcdedb902 irq: export irq_check_status_bit
-
 https://gitlab.com/cki-project/kernel-ark/-/commit/e187313e5f0086538fefe0925ef84480f99616d8
  e187313e5f0086538fefe0925ef84480f99616d8 gcc-plugins: fix gcc 11 indigestion with plugins...
 

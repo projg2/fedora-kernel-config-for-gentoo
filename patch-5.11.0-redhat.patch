@@ -57,7 +57,6 @@
  kernel/Makefile                                    |   2 +
  kernel/bpf/syscall.c                               |  27 +-
  kernel/crash_core.c                                |  28 +-
- kernel/irq/manage.c                                |   1 +
  kernel/module.c                                    |   2 +
  kernel/module_signing.c                            |   9 +-
  kernel/panic.c                                     |  14 +
@@ -69,7 +68,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 71 files changed, 1581 insertions(+), 188 deletions(-)
+ 70 files changed, 1580 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -202,7 +201,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index b0e4767735dc..be03cc790748 100644
+index e0af7a4a5598..ef96c9dae155 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -383,7 +382,7 @@ index 35ad8480c464..fade48ea4c2d 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 740f3bdb3f61..26c35aa38ea7 100644
+index 3412c4595efd..637343dc5ade 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -19,6 +19,7 @@
@@ -402,8 +401,8 @@ index 740f3bdb3f61..26c35aa38ea7 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -730,7 +732,51 @@ static void __init trim_low_memory_range(void)
- {
+@@ -728,7 +730,51 @@ static void __init trim_low_memory_range(void)
+ 	 */
  	memblock_reserve(0, ALIGN(reserve_low, PAGE_SIZE));
  }
 -	
@@ -455,7 +454,7 @@ index 740f3bdb3f61..26c35aa38ea7 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -955,6 +1001,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -953,6 +999,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -469,7 +468,7 @@ index 740f3bdb3f61..26c35aa38ea7 100644
  	dmi_setup();
 
  	/*
-@@ -1113,19 +1166,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1111,19 +1164,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -490,7 +489,7 @@ index 740f3bdb3f61..26c35aa38ea7 100644
 
  	reserve_initrd();
 
-@@ -1234,6 +1275,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1232,6 +1273,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -562,10 +561,10 @@ index e209081d644b..7484bcf59a1b 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 58ff36340cd7..3e2854a6d953 100644
+index 1db063b02f63..f0a5fb19524f 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1618,6 +1618,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1620,6 +1620,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
 
@@ -1971,7 +1970,7 @@ index d48414e295a0..ba0e384412c9 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index af192096a82b..0e076a26a924 100644
+index 63a4f48bdc75..786af4c41caf 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -138,6 +138,7 @@ static void megasas_get_pd_info(struct megasas_instance *instance,
@@ -2652,7 +2651,7 @@ index aa7368c7eabf..59724bef4bf2 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index c3bb03c8371f..28614a0c7de7 100644
+index e5999d86c76e..746b35c7e69a 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
@@ -2690,7 +2689,7 @@ index c3bb03c8371f..28614a0c7de7 100644
 
  static const struct bpf_map_ops * const bpf_map_types[] = {
  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
-@@ -4338,11 +4357,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
+@@ -4340,11 +4359,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
  SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
  {
  	union bpf_attr attr;
@@ -2773,15 +2772,6 @@ index 825284baaf46..0b2b3f510b16 100644
  	/*
  	 * if the commandline contains a ':', then that's the extended
  	 * syntax -- if not, it must be the classic syntax
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index ab8567f32501..dec3f73e8db9 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -2859,3 +2859,4 @@ bool irq_check_status_bit(unsigned int irq, unsigned int bitmask)
- 	rcu_read_unlock();
- 	return res;
- }
-+EXPORT_SYMBOL_GPL(irq_check_status_bit);
 diff --git a/kernel/module.c b/kernel/module.c
 index 4bf30e4b3eaa..b6b813ef93db 100644
 --- a/kernel/module.c
