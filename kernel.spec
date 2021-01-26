@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc5.134
+%global distro_build 0.rc5.20210126git13391c60da33.135
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc5.134
+%define pkgrelease 0.rc5.20210126git13391c60da33.135
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.134%{?buildid}%{?dist}
+%define specrelease 0.rc5.20210126git13391c60da33.135%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -201,7 +201,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.11
@@ -601,7 +601,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.11-rc5.tar.xz
+Source0: linux-20210126git13391c60da33.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1246,8 +1246,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.11-rc5 -c
-mv linux-5.11-rc5 linux-%{KVERREL}
+%setup -q -n kernel-20210126git13391c60da33 -c
+mv linux-20210126git13391c60da33 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2735,7 +2735,7 @@ fi
 #
 #
 %changelog
-* Mon Jan 25 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.134]
+* Tue Jan 26 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210126git13391c60da33.135]
 - redhat: replace inline awk script with genlog.py call (Herton R. Krzesinski)
 - redhat: add genlog.py script (Herton R. Krzesinski)
 - Turn off vdso_install for ppc (Justin M. Forbes)
