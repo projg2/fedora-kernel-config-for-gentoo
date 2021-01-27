@@ -852,6 +852,9 @@ Patch104: 0001-brcm-rpi4-fix-usb-numeration.patch
 # Nouveau mDP detection fix
 Patch107: 0001-drm-nouveau-kms-handle-mDP-connectors.patch
 
+# rhbz 1918778
+Patch108: media-pwc-fix-the-urb-buffer-allocation.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2967,6 +2970,7 @@ fi
 %changelog
 * Wed Jan 27 08:07:52 CST 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.11-100
 - Linux v5.10.11
+- Fix URB buffer allocation of pwc driver (rhbz 1918778)
 
 * Sun Jan 24 11:29:01 CST 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.10-100
 - Linux v5.10.10
