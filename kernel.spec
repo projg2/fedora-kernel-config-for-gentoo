@@ -94,7 +94,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -2965,6 +2965,9 @@ fi
 #
 #
 %changelog
+* Wed Jan 27 08:07:48 CST 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.11-200
+- Linux v5.10.11
+
 * Sun Jan 24 11:28:41 CST 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.10-200
 - Linux v5.10.10
 - Fixes CVE-2021-3178 (rhbz 1918179 1918181)
