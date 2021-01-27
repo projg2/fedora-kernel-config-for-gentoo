@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc5.20210126git13391c60da33.135
+%global distro_build 0.rc5.20210127git2ab38c17aac1.136
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc5.20210126git13391c60da33.135
+%define pkgrelease 0.rc5.20210127git2ab38c17aac1.136
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20210126git13391c60da33.135%{?buildid}%{?dist}
+%define specrelease 0.rc5.20210127git2ab38c17aac1.136%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -601,7 +601,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210126git13391c60da33.tar.xz
+Source0: linux-20210127git2ab38c17aac1.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1246,8 +1246,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210126git13391c60da33 -c
-mv linux-20210126git13391c60da33 linux-%{KVERREL}
+%setup -q -n kernel-20210127git2ab38c17aac1 -c
+mv linux-20210127git2ab38c17aac1 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2735,10 +2735,13 @@ fi
 #
 #
 %changelog
-* Tue Jan 26 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210126git13391c60da33.135]
+* Wed Jan 27 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210127git2ab38c17aac1.136]
 - redhat: replace inline awk script with genlog.py call (Herton R. Krzesinski)
 - redhat: add genlog.py script (Herton R. Krzesinski)
 - Turn off vdso_install for ppc (Justin M. Forbes)
+
+* Wed Jan 27 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210127git2ab38c17aac1.135]
+- New configs in lib/Kconfig.debug (Jeremy Cline)
 
 * Mon Jan 25 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.133]
 - Fedora 5.11 config updates part 4 ("Justin M. Forbes")
