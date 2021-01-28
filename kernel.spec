@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc5.20210127git2ab38c17aac1.136
+%global distro_build 0.rc5.20210128git76c057c84d28.137
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc5.20210127git2ab38c17aac1.136
+%define pkgrelease 0.rc5.20210128git76c057c84d28.137
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20210127git2ab38c17aac1.136%{?buildid}%{?dist}
+%define specrelease 0.rc5.20210128git76c057c84d28.137%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -601,7 +601,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210127git2ab38c17aac1.tar.xz
+Source0: linux-20210128git76c057c84d28.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1246,8 +1246,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210127git2ab38c17aac1 -c
-mv linux-20210127git2ab38c17aac1 linux-%{KVERREL}
+%setup -q -n kernel-20210128git76c057c84d28 -c
+mv linux-20210128git76c057c84d28 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2735,10 +2735,15 @@ fi
 #
 #
 %changelog
-* Wed Jan 27 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210127git2ab38c17aac1.136]
+* Thu Jan 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210128git76c057c84d28.137]
+- Turn off CONFIG_VIRTIO_CONSOLE for s390x zfcpdump (Justin M. Forbes)
 - redhat: replace inline awk script with genlog.py call (Herton R. Krzesinski)
 - redhat: add genlog.py script (Herton R. Krzesinski)
 - Turn off vdso_install for ppc (Justin M. Forbes)
+
+* Thu Jan 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210128git76c057c84d28.136]
+- Keep VIRTIO_CONSOLE on s390x available. (=?UTF-8?q?Jakub=20=C4=8Cajka?=)
+- New configs in drivers/clk ("Justin M. Forbes")
 
 * Wed Jan 27 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210127git2ab38c17aac1.135]
 - New configs in lib/Kconfig.debug (Jeremy Cline)
