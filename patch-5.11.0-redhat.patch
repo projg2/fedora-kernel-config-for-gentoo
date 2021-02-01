@@ -201,7 +201,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index e0af7a4a5598..ef96c9dae155 100644
+index f5842126e89d..5d5845be64e8 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1731,10 +1731,10 @@ index af0ce5611e4a..1c226920c12d 100644
 
  out_mptspi_probe:
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index c52b9bb0e3ab..3e463dccac33 100644
+index e10ca8929f85..17f256875fa7 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4810,6 +4810,7 @@ static int __init ice_module_init(void)
+@@ -4806,6 +4806,7 @@ static int __init ice_module_init(void)
 
  	pr_info("%s\n", ice_driver_string);
  	pr_info("%s\n", ice_copyright);
@@ -2022,7 +2022,7 @@ index c8b09a81834d..24c8d6ea8838 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index f80abe28f35a..02d8de118b5f 100644
+index 0e0fe5b09496..5a85e3edf898 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
 @@ -7698,6 +7698,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {

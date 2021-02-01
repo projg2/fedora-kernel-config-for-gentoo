@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc5.20210128git76c057c84d28.137
+%global distro_build 0.rc6.141
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc5.20210128git76c057c84d28.137
+%define pkgrelease 0.rc6.141
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20210128git76c057c84d28.137%{?buildid}%{?dist}
+%define specrelease 0.rc6.141%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -201,7 +201,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.11
@@ -601,7 +601,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210128git76c057c84d28.tar.xz
+Source0: linux-5.11-rc6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1246,8 +1246,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210128git76c057c84d28 -c
-mv linux-20210128git76c057c84d28 linux-%{KVERREL}
+%setup -q -n kernel-5.11-rc6 -c
+mv linux-5.11-rc6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2296,6 +2296,8 @@ popd
 pushd tools/bpf/bpftool
 %{bpftool_make} prefix=%{_prefix} bash_compdir=%{_sysconfdir}/bash_completion.d/ mandir=%{_mandir} install doc-install
 popd
+# man-pages packages this (rhbz #1686954, #1918707)
+rm %{buildroot}%{_mandir}/man7/bpf-helpers.7
 %endif
 
 %if %{with_selftests}
@@ -2622,7 +2624,6 @@ fi
 %{_mandir}/man8/bpftool-prog.8.gz
 %{_mandir}/man8/bpftool-perf.8.gz
 %{_mandir}/man8/bpftool.8.gz
-%{_mandir}/man7/bpf-helpers.7.gz
 %{_mandir}/man8/bpftool-net.8.gz
 %{_mandir}/man8/bpftool-feature.8.gz
 %{_mandir}/man8/bpftool-btf.8.gz
@@ -2735,11 +2736,19 @@ fi
 #
 #
 %changelog
-* Thu Jan 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210128git76c057c84d28.137]
-- Turn off CONFIG_VIRTIO_CONSOLE for s390x zfcpdump (Justin M. Forbes)
+* Mon Feb 01 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc6.141]
 - redhat: replace inline awk script with genlog.py call (Herton R. Krzesinski)
 - redhat: add genlog.py script (Herton R. Krzesinski)
 - Turn off vdso_install for ppc (Justin M. Forbes)
+
+* Sun Jan 31 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210131git0e9bcda5d286.139]
+- Remove bpf-helpers.7 from bpftool package (Jiri Olsa)
+
+* Sat Jan 30 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210130git0e9bcda5d286.138]
+- New configs in lib/Kconfig.debug (Fedora Kernel Team)
+
+* Fri Jan 29 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210129gitbec4c2968fce.137]
+- Turn off CONFIG_VIRTIO_CONSOLE for s390x zfcpdump ("Justin M. Forbes")
 
 * Thu Jan 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc5.20210128git76c057c84d28.136]
 - Keep VIRTIO_CONSOLE on s390x available. (=?UTF-8?q?Jakub=20=C4=8Cajka?=)
