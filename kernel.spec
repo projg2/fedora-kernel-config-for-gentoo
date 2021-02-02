@@ -849,6 +849,9 @@ Patch103: arm-pandaboard-fix-add-bluetooth.patch
 # Fix for USB on some newer RPi4 / firmware combinations
 Patch104: 0001-brcm-rpi4-fix-usb-numeration.patch
 
+# RPi-4 and wifi issues
+Patch105: arm-dts-rpi-4-disable-wifi-frequencies.patch
+
 # Nouveau mDP detection fix
 Patch107: 0001-drm-nouveau-kms-handle-mDP-connectors.patch
 
