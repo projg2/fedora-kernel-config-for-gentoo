@@ -54,7 +54,7 @@
  include/linux/rh_kabi.h                            | 297 +++++++++++++++++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
- kernel/Makefile                                    |   2 +
+ kernel/Makefile                                    |   1 +
  kernel/bpf/syscall.c                               |  27 +-
  kernel/crash_core.c                                |  28 +-
  kernel/module.c                                    |   2 +
@@ -62,13 +62,14 @@
  kernel/panic.c                                     |  14 +
  kernel/rh_taint.c                                  |  93 ++++++
  mm/kmemleak.c                                      |   5 +
+ net/bluetooth/l2cap_core.c                         |   1 +
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 70 files changed, 1580 insertions(+), 188 deletions(-)
+ 71 files changed, 1580 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -2638,14 +2639,13 @@ index c35ea0ffccd9..342d4579bf5c 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/kernel/Makefile b/kernel/Makefile
-index aa7368c7eabf..59724bef4bf2 100644
+index aa7368c7eabf..2700b4c4ca0a 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
-@@ -12,6 +12,8 @@ obj-y     = fork.o exec_domain.o panic.o \
+@@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
  	    notifier.o ksysfs.o cred.o reboot.o \
  	    async.o range.o smpboot.o ucount.o regset.o
 
-+obj-$(CONFIG_RH_DISABLE_DEPRECATED) += rh_taint.o
 +obj-$(CONFIG_RHEL_DIFFERENCES) += rh_taint.o
  obj-$(CONFIG_USERMODE_DRIVER) += usermode_driver.o
  obj-$(CONFIG_MODULES) += kmod.o
@@ -2953,6 +2953,18 @@ index c0014d3b91c1..c00e9820412a 100644
  	kmemleak_initialized = 1;
 
  	debugfs_create_file("kmemleak", 0644, NULL, NULL, &kmemleak_fops);
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 17b87b57a175..ad1524a3b49c 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -4519,6 +4519,7 @@ static inline int l2cap_config_rsp(struct l2cap_conn *conn,
+ 		}
+ 		goto done;
+
++	case L2CAP_CONF_UNKNOWN:
+ 	case L2CAP_CONF_UNACCEPT:
+ 		if (chan->num_conf_rsp <= L2CAP_CONF_MAX_CONF_RSP) {
+ 			char req[64];
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
 index d6c81657d695..c70e5904b7bc 100644
 --- a/scripts/mod/modpost.c
