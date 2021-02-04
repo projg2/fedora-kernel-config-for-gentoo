@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc6.20210203git3aaf0a27ffc2.143
+%global distro_build 0.rc6.20210204git61556703b610.144
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc6.20210203git3aaf0a27ffc2.143
+%define pkgrelease 0.rc6.20210204git61556703b610.144
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20210203git3aaf0a27ffc2.143%{?buildid}%{?dist}
+%define specrelease 0.rc6.20210204git61556703b610.144%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -601,7 +601,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210203git3aaf0a27ffc2.tar.xz
+Source0: linux-20210204git61556703b610.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1246,8 +1246,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210203git3aaf0a27ffc2 -c
-mv linux-20210203git3aaf0a27ffc2 linux-%{KVERREL}
+%setup -q -n kernel-20210204git61556703b610 -c
+mv linux-20210204git61556703b610 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2736,8 +2736,15 @@ fi
 #
 #
 %changelog
-* Wed Feb 03 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc6.20210203git3aaf0a27ffc2.143]
+* Thu Feb 04 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc6.20210204git61556703b610.144]
+- Rename the master branch to rawhide for Fedora (Justin M. Forbes)
 - Bluetooth: L2CAP: Try harder to accept device not knowing options (Bastien Nocera)
+
+* Thu Feb 04 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc6.20210204git61556703b610.143]
+- Makefile targets for packit integration (Ben Crocker)
+- Turn off KASAN for rawhide debug builds (Justin M. Forbes)
+- New configs in arch/arm64 (Justin Forbes)
+- Remove deprecated Intel MIC config options (Peter Robinson)
 
 * Wed Feb 03 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc6.20210203git3aaf0a27ffc2.142]
 - redhat: replace inline awk script with genlog.py call (Herton R. Krzesinski)
