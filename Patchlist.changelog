@@ -1,5 +1,5 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/2eeb557d7ea6e3a1802dca85e12e6a2ad83fdce0
- 2eeb557d7ea6e3a1802dca85e12e6a2ad83fdce0 Bluetooth: L2CAP: Try harder to accept device not knowing options
+https://gitlab.com/cki-project/kernel-ark/-/commit/67dabe40324eee91aa9f135391ca7b0eb9a7e069
+ 67dabe40324eee91aa9f135391ca7b0eb9a7e069 Bluetooth: L2CAP: Try harder to accept device not knowing options
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/035ea4b6c436e53b4c9e388bc65c965f310e216c
  035ea4b6c436e53b4c9e388bc65c965f310e216c redhat: remove remaining references of CONFIG_RH_DISABLE_DEPRECATED

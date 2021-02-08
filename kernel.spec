@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc6.20210204git61556703b610.144
+%global distro_build 0.rc7.149
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc6.20210204git61556703b610.144
+%define pkgrelease 0.rc7.149
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20210204git61556703b610.144%{?buildid}%{?dist}
+%define specrelease 0.rc7.149%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -201,7 +201,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.11
@@ -601,7 +601,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210204git61556703b610.tar.xz
+Source0: linux-5.11-rc7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -718,6 +718,9 @@ Source53: generate_bls_conf.sh
 Source56: update_scripts.sh
 
 Source54: mod-internal.list
+
+Source100: rheldup3.x509
+Source101: rhelkpatch1.x509
 
 Source200: check-kabi
 
@@ -1246,8 +1249,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210204git61556703b610 -c
-mv linux-20210204git61556703b610 linux-%{KVERREL}
+%setup -q -n kernel-5.11-rc7 -c
+mv linux-5.11-rc7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1321,6 +1324,18 @@ for i in *.config
 do
   sed -i 's/# CONFIG_GCOV_KERNEL is not set/CONFIG_GCOV_KERNEL=y\nCONFIG_GCOV_PROFILE_ALL=y\n/' $i
 done
+%endif
+
+# Add DUP and kpatch certificates to system trusted keys for RHEL
+%if 0%{?rhel}
+%if %{signkernel}%{signmodules}
+openssl x509 -inform der -in %{SOURCE100} -out rheldup3.pem
+openssl x509 -inform der -in %{SOURCE101} -out rhelkpatch1.pem
+cat rheldup3.pem rhelkpatch1.pem > ../certs/rhel.pem
+for i in *.config; do
+  sed -i 's@CONFIG_SYSTEM_TRUSTED_KEYS=""@CONFIG_SYSTEM_TRUSTED_KEYS="certs/rhel.pem"@' $i
+done
+%endif
 %endif
 
 cp %{SOURCE52} .
@@ -2736,9 +2751,21 @@ fi
 #
 #
 %changelog
-* Thu Feb 04 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc6.20210204git61556703b610.144]
-- Rename the master branch to rawhide for Fedora (Justin M. Forbes)
+* Mon Feb 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.149]
 - Bluetooth: L2CAP: Try harder to accept device not knowing options (Bastien Nocera)
+
+* Mon Feb 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.148]
+- redhat: add DUP and kpatch certificates to system trusted keys for RHEL build (Herton R. Krzesinski)
+
+* Mon Feb 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc6.20210208git825b5991a46e.147]
+- The comments in CONFIG_USB_RTL8153_ECM actually turn off CONFIG_USB_RTL8152 (Justin M. Forbes)
+
+* Sat Feb 06 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc6.20210206git17fbcdf9f163.145]
+- Update CKI pipeline project (Veronika Kabatova)
+
+* Fri Feb 05 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc6.20210205gitdd86e7fa07a3.144]
+- Turn off additional KASAN options for Fedora (Justin M. Forbes)
+- Rename the master branch to rawhide for Fedora (Justin M. Forbes)
 
 * Thu Feb 04 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc6.20210204git61556703b610.143]
 - Makefile targets for packit integration (Ben Crocker)

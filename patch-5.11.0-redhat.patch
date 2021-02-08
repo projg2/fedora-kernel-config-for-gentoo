@@ -202,7 +202,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index f5842126e89d..5d5845be64e8 100644
+index ade44ac4cc2f..0c4b4407dd7f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -216,7 +216,7 @@ index f5842126e89d..5d5845be64e8 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -495,6 +499,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+@@ -494,6 +498,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
  		   -Werror=implicit-function-declaration -Werror=implicit-int \
@@ -224,7 +224,7 @@ index f5842126e89d..5d5845be64e8 100644
  		   -Werror=return-type -Wno-format-security \
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
-@@ -1253,7 +1258,13 @@ endef
+@@ -1248,7 +1253,13 @@ endef
  define filechk_version.h
  	echo \#define LINUX_VERSION_CODE $(shell                         \
  	expr $(VERSION) \* 65536 + 0$(PATCHLEVEL) \* 256 + 0$(SUBLEVEL)); \
@@ -383,7 +383,7 @@ index 35ad8480c464..fade48ea4c2d 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 3412c4595efd..637343dc5ade 100644
+index 740f3bdb3f61..26c35aa38ea7 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -19,6 +19,7 @@
@@ -402,8 +402,8 @@ index 3412c4595efd..637343dc5ade 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -728,7 +730,51 @@ static void __init trim_low_memory_range(void)
- 	 */
+@@ -730,7 +732,51 @@ static void __init trim_low_memory_range(void)
+ {
  	memblock_reserve(0, ALIGN(reserve_low, PAGE_SIZE));
  }
 -	
@@ -455,7 +455,7 @@ index 3412c4595efd..637343dc5ade 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -953,6 +999,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -955,6 +1001,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -469,7 +469,7 @@ index 3412c4595efd..637343dc5ade 100644
  	dmi_setup();
 
  	/*
-@@ -1111,19 +1164,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1113,19 +1166,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -490,7 +490,7 @@ index 3412c4595efd..637343dc5ade 100644
 
  	reserve_initrd();
 
-@@ -1232,6 +1273,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1234,6 +1275,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -562,7 +562,7 @@ index e209081d644b..7484bcf59a1b 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 1db063b02f63..f0a5fb19524f 100644
+index 22566b4b3150..4c2294593928 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1620,6 +1620,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
