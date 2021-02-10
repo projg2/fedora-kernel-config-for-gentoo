@@ -2975,6 +2975,8 @@ fi
 %changelog
 * Wed Feb 10 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.15-200
 - Linux v5.10.15
+- Fixes CVE-2021-20194 (rhbz 1912683 1926781)
+- Fixes rhbz 1916674
 
 * Sun Feb 07 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.14-200
 - Linux v5.10.14
