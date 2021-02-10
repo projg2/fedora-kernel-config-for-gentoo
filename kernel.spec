@@ -858,6 +858,8 @@ Patch107: 0001-drm-nouveau-kms-handle-mDP-connectors.patch
 # rhbz 1918778
 Patch108: media-pwc-fix-the-urb-buffer-allocation.patch
 
+Patch109: 0001-Revert-drm-amd-display-Update-NV1x-SR-latency-values.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
