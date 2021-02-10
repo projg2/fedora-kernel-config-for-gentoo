@@ -69,7 +69,9 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 71 files changed, 1580 insertions(+), 188 deletions(-)
+ sound/hda/Kconfig                                  |  14 +
+ sound/hda/intel-dsp-config.c                       |  29 +-
+ 73 files changed, 1606 insertions(+), 205 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -3088,3 +3090,77 @@ index 7b09cfbae94f..e1c7bda4de13 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+diff --git a/sound/hda/Kconfig b/sound/hda/Kconfig
+index 3bc9224d5e4f..9ed5cfa3c18c 100644
+--- a/sound/hda/Kconfig
++++ b/sound/hda/Kconfig
+@@ -46,3 +46,17 @@ config SND_INTEL_DSP_CONFIG
+ 	select SND_INTEL_NHLT if ACPI
+ 	# this config should be selected only for Intel DSP platforms.
+ 	# A fallback is provided so that the code compiles in all cases.
++
++config SND_INTEL_BYT_PREFER_SOF
++	bool "Prefer SOF driver over SST on BY/CHT platforms"
++	depends on SND_SST_ATOM_HIFI2_PLATFORM_ACPI && SND_SOC_SOF_BAYTRAIL
++	default n
++	help
++	  The kernel has 2 drivers for the Low Power Engine audio-block on
++	  Bay- and Cherry-Trail SoCs. The old SST driver and the new SOF
++	  driver. If both drivers are enabled then the kernel will default
++	  to using the old SST driver, unless told otherwise through the
++	  snd_intel_dspcfg.dsp_driver module-parameter.
++
++	  Set this option to Y to make the kernel default to the new SOF
++	  driver instead.
+diff --git a/sound/hda/intel-dsp-config.c b/sound/hda/intel-dsp-config.c
+index c45686172517..68bb977c6a37 100644
+--- a/sound/hda/intel-dsp-config.c
++++ b/sound/hda/intel-dsp-config.c
+@@ -452,35 +452,30 @@ int snd_intel_dsp_driver_probe(struct pci_dev *pci)
+ }
+ EXPORT_SYMBOL_GPL(snd_intel_dsp_driver_probe);
+
++/* Should we default to SOF or SST for BYT/CHT ? */
++#if IS_ENABLED(CONFIG_SND_INTEL_BYT_PREFER_SOF) || \
++    !IS_ENABLED(CONFIG_SND_SST_ATOM_HIFI2_PLATFORM_ACPI)
++#define FLAG_SST_OR_SOF_BYT	FLAG_SOF
++#else
++#define FLAG_SST_OR_SOF_BYT	FLAG_SST
++#endif
++
+ /*
+  * configuration table
+  * - the order of similar ACPI ID entries is important!
+  * - the first successful match will win
+  */
+ static const struct config_entry acpi_config_table[] = {
++#if IS_ENABLED(CONFIG_SND_SST_ATOM_HIFI2_PLATFORM_ACPI) || \
++    IS_ENABLED(CONFIG_SND_SOC_SOF_BAYTRAIL)
+ /* BayTrail */
+-#if IS_ENABLED(CONFIG_SND_SST_ATOM_HIFI2_PLATFORM_ACPI)
+-	{
+-		.flags = FLAG_SST,
+-		.acpi_hid = "80860F28",
+-	},
+-#endif
+-#if IS_ENABLED(CONFIG_SND_SOC_SOF_BAYTRAIL)
+ 	{
+-		.flags = FLAG_SOF,
++		.flags = FLAG_SST_OR_SOF_BYT,
+ 		.acpi_hid = "80860F28",
+ 	},
+-#endif
+ /* CherryTrail */
+-#if IS_ENABLED(CONFIG_SND_SST_ATOM_HIFI2_PLATFORM_ACPI)
+-	{
+-		.flags = FLAG_SST,
+-		.acpi_hid = "808622A8",
+-	},
+-#endif
+-#if IS_ENABLED(CONFIG_SND_SOC_SOF_BAYTRAIL)
+ 	{
+-		.flags = FLAG_SOF,
++		.flags = FLAG_SST_OR_SOF_BYT,
+ 		.acpi_hid = "808622A8",
+ 	},
+ #endif

@@ -1,5 +1,8 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/67dabe40324eee91aa9f135391ca7b0eb9a7e069
- 67dabe40324eee91aa9f135391ca7b0eb9a7e069 Bluetooth: L2CAP: Try harder to accept device not knowing options
+https://gitlab.com/cki-project/kernel-ark/-/commit/5bd5db57713dba41e3a6df6538c4c3063aa53fb7
+ 5bd5db57713dba41e3a6df6538c4c3063aa53fb7 Bluetooth: L2CAP: Try harder to accept device not knowing options
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/06219afd635737bfee1a7c676258e66448f133e2
+ 06219afd635737bfee1a7c676258e66448f133e2 ALSA: hda: intel-dsp-config: Add SND_INTEL_BYT_PREFER_SOF Kconfig option
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/035ea4b6c436e53b4c9e388bc65c965f310e216c
  035ea4b6c436e53b4c9e388bc65c965f310e216c redhat: remove remaining references of CONFIG_RH_DISABLE_DEPRECATED

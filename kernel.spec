@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc7.149
+%global distro_build 0.rc7.20210210gite0756cfc7d7c.150
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc7.149
+%define pkgrelease 0.rc7.20210210gite0756cfc7d7c.150
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.149%{?buildid}%{?dist}
+%define specrelease 0.rc7.20210210gite0756cfc7d7c.150%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -201,7 +201,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.11
@@ -396,6 +396,7 @@ Summary: The Linux kernel
 %define hdrarch s390
 %define all_arch_configs kernel-%{version}-s390x.config
 %define kernel_image arch/s390/boot/bzImage
+%define vmlinux_decompressor arch/s390/boot/compressed/vmlinux
 %endif
 
 %ifarch %{arm}
@@ -601,7 +602,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.11-rc7.tar.xz
+Source0: linux-20210210gite0756cfc7d7c.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1249,8 +1250,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.11-rc7 -c
-mv linux-5.11-rc7 linux-%{KVERREL}
+%setup -q -n kernel-20210210gite0756cfc7d7c -c
+mv linux-20210210gite0756cfc7d7c linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1811,6 +1812,16 @@ BuildKernel() {
     #
     mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
     cp vmlinux $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
+    if [ -n "%{vmlinux_decompressor}" ]; then
+	    eu-readelf -n  %{vmlinux_decompressor} | grep "Build ID" | awk '{print $NF}' > vmlinux.decompressor.id
+	    # Without build-id the build will fail. But for s390 the build-id
+	    # wasn't added before 5.11. In case it is missing prefer not
+	    # packaging the debuginfo over a build failure.
+	    if [ -s vmlinux.decompressor.id ]; then
+		    cp vmlinux.decompressor.id $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/vmlinux.decompressor.id
+		    cp %{vmlinux_decompressor} $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer/vmlinux.decompressor
+	    fi
+    fi
 %endif
 
     find $RPM_BUILD_ROOT/lib/modules/$KernelVer -name "*.ko" -type f >modnames
@@ -2751,8 +2762,15 @@ fi
 #
 #
 %changelog
-* Mon Feb 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.149]
+* Wed Feb 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.20210210gite0756cfc7d7c.150]
 - Bluetooth: L2CAP: Try harder to accept device not knowing options (Bastien Nocera)
+
+* Wed Feb 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.20210210gite0756cfc7d7c.149]
+- Fix trailing white space in redhat/configs/fedora/generic/CONFIG_SND_INTEL_BYT_PREFER_SOF (Justin M. Forbes)
+- Add a redhat/rebase-notes.txt file (Hans de Goede)
+- Turn on SND_INTEL_BYT_PREFER_SOF for Fedora (Hans de Goede)
+- ALSA: hda: intel-dsp-config: Add SND_INTEL_BYT_PREFER_SOF Kconfig option (Hans de Goede) [1924101]
+- CI: Drop MR ID from the name variable (Veronika Kabatova)
 
 * Mon Feb 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.148]
 - redhat: add DUP and kpatch certificates to system trusted keys for RHEL build (Herton R. Krzesinski)
