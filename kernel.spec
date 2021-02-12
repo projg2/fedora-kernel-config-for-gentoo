@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc7.20210210gite0756cfc7d7c.150
+%global distro_build 0.rc7.20210212git291009f656e8.151
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc7.20210210gite0756cfc7d7c.150
+%define pkgrelease 0.rc7.20210212git291009f656e8.151
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20210210gite0756cfc7d7c.150%{?buildid}%{?dist}
+%define specrelease 0.rc7.20210212git291009f656e8.151%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -602,7 +602,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210210gite0756cfc7d7c.tar.xz
+Source0: linux-20210212git291009f656e8.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1250,8 +1250,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210210gite0756cfc7d7c -c
-mv linux-20210210gite0756cfc7d7c linux-%{KVERREL}
+%setup -q -n kernel-20210212git291009f656e8 -c
+mv linux-20210212git291009f656e8 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2762,8 +2762,11 @@ fi
 #
 #
 %changelog
-* Wed Feb 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.20210210gite0756cfc7d7c.150]
+* Fri Feb 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.20210212git291009f656e8.151]
 - Bluetooth: L2CAP: Try harder to accept device not knowing options (Bastien Nocera)
+
+* Fri Feb 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.20210212git291009f656e8.150]
+- fedora: minor arm sound config updates (Peter Robinson)
 
 * Wed Feb 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.20210210gite0756cfc7d7c.149]
 - Fix trailing white space in redhat/configs/fedora/generic/CONFIG_SND_INTEL_BYT_PREFER_SOF (Justin M. Forbes)
