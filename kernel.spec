@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc7.20210212git291009f656e8.151
+%global distro_build 155
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.0
-%define pkgrelease 0.rc7.20210212git291009f656e8.151
+%define pkgrelease 155
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20210212git291009f656e8.151%{?buildid}%{?dist}
+%define specrelease 155%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -201,7 +201,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.11
@@ -602,7 +602,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210212git291009f656e8.tar.xz
+Source0: linux-5.11.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1250,8 +1250,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210212git291009f656e8 -c
-mv linux-20210212git291009f656e8 linux-%{KVERREL}
+%setup -q -n kernel-5.11 -c
+mv linux-5.11 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2762,8 +2762,14 @@ fi
 #
 #
 %changelog
-* Fri Feb 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.20210212git291009f656e8.151]
+* Mon Feb 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-155]
 - Bluetooth: L2CAP: Try harder to accept device not knowing options (Bastien Nocera)
+
+* Mon Feb 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-154]
+- process_configs.sh: fix find/xargs data flow (Ondrej Mosnacek)
+
+* Sat Feb 13 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.20210213gitdcc0b49040c7.151]
+- Fedora config update (Justin M. Forbes)
 
 * Fri Feb 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-0.rc7.20210212git291009f656e8.150]
 - fedora: minor arm sound config updates (Peter Robinson)
