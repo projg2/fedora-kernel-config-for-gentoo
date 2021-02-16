@@ -111,7 +111,7 @@ Summary: The Linux kernel
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 155%{?buildid}%{?dist}
+%define specrelease 156%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -2762,6 +2762,9 @@ fi
 #
 #
 %changelog
+* Tue Feb 16 2021 Peter Robinson <pbrobinson@fedoraproject.org> - 5.11.0-156
+- Early boot fix for UEFI on ARMv7 (rhbz 1929353)
+
 * Mon Feb 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.11.0-155]
 - Bluetooth: L2CAP: Try harder to accept device not knowing options (Bastien Nocera)
 
