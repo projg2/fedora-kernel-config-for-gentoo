@@ -860,6 +860,9 @@ Patch108: media-pwc-fix-the-urb-buffer-allocation.patch
 
 Patch109: 0001-Revert-drm-amd-display-Update-NV1x-SR-latency-values.patch
 
+# rhbz 1916104 (patch from bluetooth-next)
+Patch110: bluetooth-btusb-qca-fix.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2973,6 +2976,9 @@ fi
 #
 #
 %changelog
+* Thu Feb 18 2021 Hans de Goede <hdegoede@redhat.com>
+- Fix various QCA bluetooth devices no longer working (rhbz#1916104)
+
 * Wed Feb 17 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.17-200
 - Linux v5.10.17
 
