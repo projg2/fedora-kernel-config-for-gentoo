@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20210222git31caf8b2a847.158
+%global distro_build 0.rc0.20210224gitc03c21ba6f4e.160
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.12.0
-%define pkgrelease 0.rc0.20210222git31caf8b2a847.158
+%define pkgrelease 0.rc0.20210224gitc03c21ba6f4e.160
 
 # This is needed to do merge window version magic
 %define patchlevel 12
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210222git31caf8b2a847.158%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210224gitc03c21ba6f4e.160%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -602,7 +602,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210222git31caf8b2a847.tar.xz
+Source0: linux-20210224gitc03c21ba6f4e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -930,7 +930,7 @@ This package provides debug information for package kernel-tools.
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
 
 # with_tools
 %endif
@@ -1250,8 +1250,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210222git31caf8b2a847 -c
-mv linux-20210222git31caf8b2a847 linux-%{KVERREL}
+%setup -q -n kernel-20210224gitc03c21ba6f4e -c
+mv linux-20210224gitc03c21ba6f4e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2762,6 +2762,10 @@ fi
 #
 #
 %changelog
+* Tue Feb 23 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc0.20210223git3b9cdafb5358.159]
+- Update pending-common configs to address new upstream config deps (Justin M. Forbes)
+- rpmspec: ship gpio-watch.debug in the proper debuginfo package (Herton R. Krzesinski)
+
 * Mon Feb 22 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc0.20210222git31caf8b2a847.158]
 - Removed description text as a comment confuses the config generation (Justin M. Forbes)
 - New configs in drivers/dma-buf (Jeremy Cline)

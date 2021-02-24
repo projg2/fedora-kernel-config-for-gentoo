@@ -93,10 +93,10 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 4fc20f9af2fb..da1488b1ae1a 100644
+index 0ac883777318..7021fac9b8c9 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5553,6 +5553,14 @@
+@@ -5579,6 +5579,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -201,7 +201,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 95caa81be8fb..afcd7d9332a2 100644
+index b18dbc634690..71afbb866b76 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -223,7 +223,7 @@ index 95caa81be8fb..afcd7d9332a2 100644
  		   -Werror=return-type -Wno-format-security \
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
-@@ -1260,7 +1265,13 @@ endef
+@@ -1282,7 +1287,13 @@ endef
  define filechk_version.h
  	echo \#define LINUX_VERSION_CODE $(shell                         \
  	expr $(VERSION) \* 65536 + 0$(PATCHLEVEL) \* 256 + 0$(SUBLEVEL)); \
@@ -239,10 +239,10 @@ index 95caa81be8fb..afcd7d9332a2 100644
 
  $(version_h): FORCE
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 6d0ed2888935..89c8ffeb242c 100644
+index 853aab5ab327..99cd243aed4e 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1473,9 +1473,9 @@ config HIGHMEM
+@@ -1474,9 +1474,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -286,10 +286,10 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 1b8cecdc028e..64db280f60a4 100644
+index fd8abf9cb312..d3b7904df471 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -894,7 +894,7 @@ endchoice
+@@ -898,7 +898,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -298,7 +298,7 @@ index 1b8cecdc028e..64db280f60a4 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1152,6 +1152,7 @@ config XEN
+@@ -1156,6 +1156,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if (ARM64_64K_PAGES && TRANSPARENT_HUGEPAGE)
@@ -1621,7 +1621,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ffeebda8d6de..2314da0ce11c 100644
+index d0b0a15dba84..005984e8ef5e 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1632,7 +1632,7 @@ index ffeebda8d6de..2314da0ce11c 100644
  #include <linux/kernel.h>
  #include <linux/bug.h>
  #include <linux/types.h>
-@@ -3047,6 +3048,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3049,6 +3050,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1863,7 +1863,7 @@ index 90fcddb76f46..f22d7b2608ce 100644
  	{ 0 }
  };
 diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index f4d3747cfa0b..b41594b315fe 100644
+index 337d3aa91945..08a18c376361 100644
 --- a/drivers/scsi/hpsa.c
 +++ b/drivers/scsi/hpsa.c
 @@ -83,7 +83,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
@@ -2022,10 +2022,10 @@ index c8b09a81834d..24c8d6ea8838 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 0e0fe5b09496..5a85e3edf898 100644
+index 074392560f3d..261facf2638a 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -7698,6 +7698,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -7723,6 +7723,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -2033,7 +2033,7 @@ index 0e0fe5b09496..5a85e3edf898 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -7710,13 +7711,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -7735,13 +7736,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -2243,10 +2243,10 @@ index 5b7ed6dc99ac..17703b5a7091 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index dfd261dcbcb0..1c3dc985accc 100644
+index 477a597db013..1719a0020891 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -387,6 +387,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -390,6 +390,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -2256,10 +2256,10 @@ index dfd261dcbcb0..1c3dc985accc 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index bdfc8a76a4f7..2f8537023038 100644
+index fb7f3193753d..0f91ae3361e6 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1529,6 +1529,12 @@
+@@ -1530,6 +1530,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -2273,7 +2273,7 @@ index bdfc8a76a4f7..2f8537023038 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 7a0bcb5b1ffc..3088a812acc5 100644
+index 59f094fa6f74..28468e91a6a6 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -372,6 +372,7 @@ struct module {
@@ -2285,7 +2285,7 @@ index 7a0bcb5b1ffc..3088a812acc5 100644
 
  	/* Exported symbols */
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 53f4904ee83d..e886fb76261a 100644
+index 86c799c97b77..20b508e0baae 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1423,6 +1423,10 @@ int pci_add_dynid(struct pci_driver *drv,
@@ -2615,10 +2615,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index b0d14f04b16d..312b1628a20f 100644
+index 8aeebd6646dc..7737a5d71168 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -460,6 +460,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -468,6 +468,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2626,7 +2626,7 @@ index b0d14f04b16d..312b1628a20f 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1315,6 +1316,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1329,6 +1330,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2638,7 +2638,7 @@ index b0d14f04b16d..312b1628a20f 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/kernel/Makefile b/kernel/Makefile
-index aa7368c7eabf..2700b4c4ca0a 100644
+index 320f1f3941b7..e3632573c1ed 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
@@ -2772,10 +2772,10 @@ index 825284baaf46..0b2b3f510b16 100644
  	 * if the commandline contains a ':', then that's the extended
  	 * syntax -- if not, it must be the classic syntax
 diff --git a/kernel/module.c b/kernel/module.c
-index 4bf30e4b3eaa..b6b813ef93db 100644
+index 30479355ab85..84ffc4db2815 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -837,6 +837,7 @@ static struct module_attribute modinfo_##field = {                    \
+@@ -738,6 +738,7 @@ static struct module_attribute modinfo_##field = {                    \
 
  MODINFO_ATTR(version);
  MODINFO_ATTR(srcversion);
@@ -2783,7 +2783,7 @@ index 4bf30e4b3eaa..b6b813ef93db 100644
 
  static char last_unloaded_module[MODULE_NAME_LEN+1];
 
-@@ -1298,6 +1299,7 @@ static struct module_attribute *modinfo_attrs[] = {
+@@ -1202,6 +1203,7 @@ static struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
@@ -2792,7 +2792,7 @@ index 4bf30e4b3eaa..b6b813ef93db 100644
  	&modinfo_coresize,
  	&modinfo_initsize,
 diff --git a/kernel/module_signing.c b/kernel/module_signing.c
-index 9d9fc678c91d..84ad75a53c83 100644
+index 8723ae70ea1f..fb2d773498c2 100644
 --- a/kernel/module_signing.c
 +++ b/kernel/module_signing.c
 @@ -38,8 +38,15 @@ int mod_verify_sig(const void *mod, struct load_info *info)
@@ -2953,10 +2953,10 @@ index c0014d3b91c1..c00e9820412a 100644
 
  	debugfs_create_file("kmemleak", 0644, NULL, NULL, &kmemleak_fops);
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index d6c81657d695..c70e5904b7bc 100644
+index 24725e50c7b4..cdefcf29dbfc 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -21,6 +21,7 @@
+@@ -20,6 +20,7 @@
  #include <errno.h>
  #include "modpost.h"
  #include "../../include/linux/license.h"
@@ -2964,7 +2964,7 @@ index d6c81657d695..c70e5904b7bc 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static int modversions = 0;
-@@ -2381,6 +2382,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2335,6 +2336,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -2977,7 +2977,7 @@ index d6c81657d695..c70e5904b7bc 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2630,6 +2637,7 @@ int main(int argc, char **argv)
+@@ -2584,6 +2591,7 @@ int main(int argc, char **argv)
  		add_depends(&buf, mod);
  		add_moddevtable(&buf, mod);
  		add_srcversion(&buf, mod);
@@ -3059,10 +3059,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 401663b5b70e..2572d59648d8 100644
+index 5ac96b16f8fa..fc47d6de57ee 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2542,6 +2542,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2547,6 +2547,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
