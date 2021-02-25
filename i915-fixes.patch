@@ -1,0 +1,134 @@
+From 660fd7a8af42f8715dc6784a2d1d2fe42dc5a72f Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Tue, 19 Jan 2021 11:07:57 +0000
+Subject: [PATCH 1/3] drm/i915/gt: One more flush for Baytrail clear residuals
+
+CI reports that Baytail requires one more invalidate after CACHE_MODE
+for it to be happy.
+
+Fixes: ace44e13e577 ("drm/i915/gt: Clear CACHE_MODE prior to clearing residuals")
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Mika Kuoppala <mika.kuoppala@linux.intel.com>
+Cc: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
+Reviewed-by: Mika Kuoppala <mika.kuoppala@linux.intel.com>
+Reviewed-by: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210119110802.22228-1-chris@chris-wilson.co.uk
+---
+ drivers/gpu/drm/i915/gt/gen7_renderclear.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/gt/gen7_renderclear.c b/drivers/gpu/drm/i915/gt/gen7_renderclear.c
+index e961ad6a3129..c50b18dd67be 100644
+--- a/drivers/gpu/drm/i915/gt/gen7_renderclear.c
++++ b/drivers/gpu/drm/i915/gt/gen7_renderclear.c
+@@ -353,19 +353,21 @@ static void gen7_emit_pipeline_flush(struct batch_chunk *batch)
+ 
+ static void gen7_emit_pipeline_invalidate(struct batch_chunk *batch)
+ {
+-	u32 *cs = batch_alloc_items(batch, 0, 8);
++	u32 *cs = batch_alloc_items(batch, 0, 10);
+ 
+ 	/* ivb: Stall before STATE_CACHE_INVALIDATE */
+-	*cs++ = GFX_OP_PIPE_CONTROL(4);
++	*cs++ = GFX_OP_PIPE_CONTROL(5);
+ 	*cs++ = PIPE_CONTROL_STALL_AT_SCOREBOARD |
+ 		PIPE_CONTROL_CS_STALL;
+ 	*cs++ = 0;
+ 	*cs++ = 0;
++	*cs++ = 0;
+ 
+-	*cs++ = GFX_OP_PIPE_CONTROL(4);
++	*cs++ = GFX_OP_PIPE_CONTROL(5);
+ 	*cs++ = PIPE_CONTROL_STATE_CACHE_INVALIDATE;
+ 	*cs++ = 0;
+ 	*cs++ = 0;
++	*cs++ = 0;
+ 
+ 	batch_advance(batch, cs);
+ }
+@@ -397,6 +399,7 @@ static void emit_batch(struct i915_vma * const vma,
+ 	batch_add(&cmds, 0xffff0000);
+ 	batch_add(&cmds, i915_mmio_reg_offset(CACHE_MODE_1));
+ 	batch_add(&cmds, 0xffff0000 | PIXEL_SUBSPAN_COLLECT_OPT_DISABLE);
++	gen7_emit_pipeline_invalidate(&cmds);
+ 	gen7_emit_pipeline_flush(&cmds);
+ 
+ 	/* Switch to the media pipeline and our base address */
+-- 
+2.30.1
+
+From b3d131f8d2b9055052b6e072b57fa390b7275443 Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Mon, 25 Jan 2021 22:02:47 +0000
+Subject: [PATCH 2/3] drm/i915/gt: Flush before changing register state
+
+Flush; invalidate; change registers; invalidate; flush.
+
+Will this finally work on every device? Or will Baytrail complain again?
+
+On the positive side, we immediately see the benefit of having hsw-gt1 in
+CI.
+
+Fixes: ace44e13e577 ("drm/i915/gt: Clear CACHE_MODE prior to clearing residuals")
+Testcase: igt/gem_render_tiled_blits # hsw-gt1
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Mika Kuoppala <mika.kuoppala@linux.intel.com>
+Cc: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
+Acked-by: Mika Kuoppala <mika.kuoppala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210125220247.31701-1-chris@chris-wilson.co.uk
+---
+ drivers/gpu/drm/i915/gt/gen7_renderclear.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/i915/gt/gen7_renderclear.c b/drivers/gpu/drm/i915/gt/gen7_renderclear.c
+index c50b18dd67be..e53b409012c0 100644
+--- a/drivers/gpu/drm/i915/gt/gen7_renderclear.c
++++ b/drivers/gpu/drm/i915/gt/gen7_renderclear.c
+@@ -393,6 +393,7 @@ static void emit_batch(struct i915_vma * const vma,
+ 						     desc_count);
+ 
+ 	/* Reset inherited context registers */
++	gen7_emit_pipeline_flush(&cmds);
+ 	gen7_emit_pipeline_invalidate(&cmds);
+ 	batch_add(&cmds, MI_LOAD_REGISTER_IMM(2));
+ 	batch_add(&cmds, i915_mmio_reg_offset(CACHE_MODE_0_GEN7));
+-- 
+2.30.1
+
+From 28f4f465f21f9dc267ce08833b8e79356cbc05f3 Mon Sep 17 00:00:00 2001
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Date: Wed, 10 Feb 2021 12:27:28 +0000
+Subject: [PATCH 3/3] drm/i915/gt: Correct surface base address for renderclear
+
+The surface_state_base is an offset into the batch, so we need to pass
+the correct batch address for STATE_BASE_ADDRESS.
+
+Fixes: 47f8253d2b89 ("drm/i915/gen7: Clear all EU/L3 residual contexts")
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Mika Kuoppala <mika.kuoppala@linux.intel.com>
+Cc: Prathap Kumar Valsan <prathap.kumar.valsan@intel.com>
+Cc: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
+Cc: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Mika Kuoppala <mika.kuoppala@linux.intel.com>
+Cc: <stable@vger.kernel.org> # v5.7+
+Link: https://patchwork.freedesktop.org/patch/msgid/20210210122728.20097-1-chris@chris-wilson.co.uk
+---
+ drivers/gpu/drm/i915/gt/gen7_renderclear.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/i915/gt/gen7_renderclear.c b/drivers/gpu/drm/i915/gt/gen7_renderclear.c
+index e53b409012c0..4adbc2bba97f 100644
+--- a/drivers/gpu/drm/i915/gt/gen7_renderclear.c
++++ b/drivers/gpu/drm/i915/gt/gen7_renderclear.c
+@@ -240,7 +240,7 @@ gen7_emit_state_base_address(struct batch_chunk *batch,
+ 	/* general */
+ 	*cs++ = batch_addr(batch) | BASE_ADDRESS_MODIFY;
+ 	/* surface */
+-	*cs++ = batch_addr(batch) | surface_state_base | BASE_ADDRESS_MODIFY;
++	*cs++ = (batch_addr(batch) + surface_state_base) | BASE_ADDRESS_MODIFY;
+ 	/* dynamic */
+ 	*cs++ = batch_addr(batch) | BASE_ADDRESS_MODIFY;
+ 	/* indirect */
+-- 
+2.30.1
+
