@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20210224gitc03c21ba6f4e.160
+%global distro_build 0.rc0.20210225gitc03c21ba6f4e.160
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.12.0
-%define pkgrelease 0.rc0.20210224gitc03c21ba6f4e.160
+%define pkgrelease 0.rc0.20210225gitc03c21ba6f4e.160
 
 # This is needed to do merge window version magic
 %define patchlevel 12
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210224gitc03c21ba6f4e.160%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210225gitc03c21ba6f4e.160%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -602,7 +602,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210224gitc03c21ba6f4e.tar.xz
+Source0: linux-20210225gitc03c21ba6f4e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1250,8 +1250,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210224gitc03c21ba6f4e -c
-mv linux-20210224gitc03c21ba6f4e linux-%{KVERREL}
+%setup -q -n kernel-20210225gitc03c21ba6f4e -c
+mv linux-20210225gitc03c21ba6f4e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
