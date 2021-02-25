@@ -860,6 +860,9 @@ Patch109: 0001-Revert-drm-amd-display-Update-NV1x-SR-latency-values.patch
 # rhbz 1916104 (patch from bluetooth-next)
 Patch110: bluetooth-btusb-qca-fix.patch
 
+# rhbz 1925346
+Patch111: i915-fixes.patch
+
 # END OF PATCH DEFINITIONS
 
 %endif
@@ -2973,6 +2976,9 @@ fi
 #
 #
 %changelog
+* Thu Feb 25 2021 Justin M. Forbes <jforbes@fedoraproject.org>
+- Some i915 fixes for 5.10 (rhbz 1925346)
+
 * Tue Feb 23 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.18-200
 - Linux v5.10.18
 
