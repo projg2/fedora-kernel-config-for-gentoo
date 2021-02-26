@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 300
+%global distro_build 301
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.1
-%define pkgrelease 300
+%define pkgrelease 301
 
 # This is needed to do merge window version magic
 %define patchlevel 11
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 300%{?buildid}%{?dist}
+%define specrelease 301%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -2762,7 +2762,8 @@ fi
 #
 #
 %changelog
-* Tue Feb 23 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.1-300]
+* Fri Feb 26 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.1-2]
+- MARKER needs SUBLEVEL for stable, I need to think of a better longterm solution (Justin M. Forbes)
 - Config updates for 5.11.1 (Justin M. Forbes)
 - Set CONFIG_DEBUG_HIGHMEM as off for non debug kernels (Justin M. Forbes)
 - CONFIG_DEBUG_HIGHMEM should be debug only (Justin M. Forbes)
