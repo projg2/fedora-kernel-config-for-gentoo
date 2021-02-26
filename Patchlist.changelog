@@ -1,3 +1,12 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/371887659b615d8d586eec7f3abe5ac02cb7b9e8
+ 371887659b615d8d586eec7f3abe5ac02cb7b9e8 drm/i915/gt: Correct surface base address for renderclear
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/904e376792c00bfd12e5843e1f7bc3f181561dd9
+ 904e376792c00bfd12e5843e1f7bc3f181561dd9 drm/i915/gt: Flush before changing register state
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/40f01725589329b66717e54b052f3460050c76dd
+ 40f01725589329b66717e54b052f3460050c76dd drm/i915/gt: One more flush for Baytrail clear residuals
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/4c24519305eb3cb3eb471582e5c89fa40edf3ea0
  4c24519305eb3cb3eb471582e5c89fa40edf3ea0 Bluetooth: btusb: Some Qualcomm Bluetooth adapters stop working
 
