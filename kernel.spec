@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20210225gitc03c21ba6f4e.160
+%global distro_build 0.rc1.162
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.12.0
-%define pkgrelease 0.rc0.20210225gitc03c21ba6f4e.160
+%define pkgrelease 0.rc1.162
 
 # This is needed to do merge window version magic
 %define patchlevel 12
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210225gitc03c21ba6f4e.160%{?buildid}%{?dist}
+%define specrelease 0.rc1.162%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -201,7 +201,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.12
@@ -602,7 +602,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210225gitc03c21ba6f4e.tar.xz
+Source0: linux-5.12-rc1.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1250,8 +1250,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210225gitc03c21ba6f4e -c
-mv linux-20210225gitc03c21ba6f4e linux-%{KVERREL}
+%setup -q -n kernel-5.12-rc1 -c
+mv linux-5.12-rc1 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2762,6 +2762,10 @@ fi
 #
 #
 %changelog
+* Sat Feb 27 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc0.20210227gitc03c21ba6f4e.161]
+- Change the pending config for CONFIG_PPC_QUEUED_SPINLOCKS as it is now default upstream for 64-bit server CPUs (Justin M. Forbes)
+- Turn on CONFIG_PPC_QUEUED_SPINLOCKS as it is default upstream now (Justin M. Forbes)
+
 * Tue Feb 23 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc0.20210223git3b9cdafb5358.159]
 - Update pending-common configs to address new upstream config deps (Justin M. Forbes)
 - rpmspec: ship gpio-watch.debug in the proper debuginfo package (Herton R. Krzesinski)

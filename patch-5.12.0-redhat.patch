@@ -93,10 +93,10 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 0ac883777318..7021fac9b8c9 100644
+index 04545725f187..42ca35b0ee40 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5579,6 +5579,14 @@
+@@ -5582,6 +5582,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -201,7 +201,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index b18dbc634690..71afbb866b76 100644
+index f9b54da2fca0..77582ee9b1a3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -215,7 +215,7 @@ index b18dbc634690..71afbb866b76 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -494,6 +498,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+@@ -493,6 +497,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
  		   -Werror=implicit-function-declaration -Werror=implicit-int \
@@ -223,12 +223,12 @@ index b18dbc634690..71afbb866b76 100644
  		   -Werror=return-type -Wno-format-security \
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
-@@ -1282,7 +1287,13 @@ endef
- define filechk_version.h
- 	echo \#define LINUX_VERSION_CODE $(shell                         \
- 	expr $(VERSION) \* 65536 + 0$(PATCHLEVEL) \* 256 + 0$(SUBLEVEL)); \
--	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))'
-+	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))'; \
+@@ -1293,7 +1298,13 @@ define filechk_version.h
+ 	((c) > 255 ? 255 : (c)))';                                       \
+ 	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
+ 	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
+-	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
++	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)                 \
 +	echo '#define RHEL_MAJOR $(RHEL_MAJOR)'; \
 +	echo '#define RHEL_MINOR $(RHEL_MINOR)'; \
 +	echo '#define RHEL_RELEASE_VERSION(a,b) (((a) << 8) + (b))'; \
@@ -237,7 +237,7 @@ index b18dbc634690..71afbb866b76 100644
 +	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
  endef
 
- $(version_h): FORCE
+ $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
 index 853aab5ab327..99cd243aed4e 100644
 --- a/arch/arm/Kconfig
@@ -286,10 +286,10 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index fd8abf9cb312..d3b7904df471 100644
+index 1f212b47a48a..7aa12d0eadec 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -898,7 +898,7 @@ endchoice
+@@ -899,7 +899,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -298,7 +298,7 @@ index fd8abf9cb312..d3b7904df471 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1156,6 +1156,7 @@ config XEN
+@@ -1158,6 +1158,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if (ARM64_64K_PAGES && TRANSPARENT_HUGEPAGE)
@@ -370,7 +370,7 @@ index 60da976eee6f..732c3c1ba320 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 9215b91bc044..5f0844207c36 100644
+index ab640abe26b6..dad705387133 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1310,6 +1310,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -382,18 +382,18 @@ index 9215b91bc044..5f0844207c36 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 740f3bdb3f61..26c35aa38ea7 100644
+index d883176ef2ce..5abf76890d93 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -19,6 +19,7 @@
- #include <linux/sfi.h>
+@@ -18,6 +18,7 @@
+ #include <linux/root_dev.h>
  #include <linux/hugetlb.h>
  #include <linux/tboot.h>
 +#include <linux/security.h>
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -48,6 +49,7 @@
+@@ -47,6 +48,7 @@
  #include <asm/unwind.h>
  #include <asm/vsyscall.h>
  #include <linux/vmalloc.h>
@@ -401,7 +401,7 @@ index 740f3bdb3f61..26c35aa38ea7 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -730,7 +732,51 @@ static void __init trim_low_memory_range(void)
+@@ -729,7 +731,51 @@ static void __init trim_low_memory_range(void)
  {
  	memblock_reserve(0, ALIGN(reserve_low, PAGE_SIZE));
  }
@@ -454,7 +454,7 @@ index 740f3bdb3f61..26c35aa38ea7 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -955,6 +1001,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -954,6 +1000,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -468,7 +468,7 @@ index 740f3bdb3f61..26c35aa38ea7 100644
  	dmi_setup();
 
  	/*
-@@ -1113,19 +1166,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1112,19 +1165,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -489,7 +489,7 @@ index 740f3bdb3f61..26c35aa38ea7 100644
 
  	reserve_initrd();
 
-@@ -1234,6 +1275,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1232,6 +1273,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -1863,7 +1863,7 @@ index 90fcddb76f46..f22d7b2608ce 100644
  	{ 0 }
  };
 diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index 337d3aa91945..08a18c376361 100644
+index 38369766511c..ceaa197c7547 100644
 --- a/drivers/scsi/hpsa.c
 +++ b/drivers/scsi/hpsa.c
 @@ -83,7 +83,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
@@ -1990,10 +1990,10 @@ index 63a4f48bdc75..786af4c41caf 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index c8b09a81834d..24c8d6ea8838 100644
+index ffca03064797..f6ef73bf2161 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -12267,6 +12267,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
+@@ -12309,6 +12309,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
   * The pci device ids are defined in mpi/mpi2_cnfg.h.
   */
  static const struct pci_device_id mpt3sas_pci_table[] = {
@@ -2001,7 +2001,7 @@ index c8b09a81834d..24c8d6ea8838 100644
  	/* Spitfire ~ 2004 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2004,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12285,6 +12286,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12327,6 +12328,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2116_2,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -2009,7 +2009,7 @@ index c8b09a81834d..24c8d6ea8838 100644
  	/* Thunderbolt ~ 2208 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2208_1,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12309,9 +12311,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12351,9 +12353,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SWITCH_MPI_EP_1,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -2053,7 +2053,7 @@ index 074392560f3d..261facf2638a 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index a4b014e1cd8c..4b2b4a88e931 100644
+index 7bd9a4a04ad5..124a65ba4c40 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
 @@ -9864,6 +9864,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
