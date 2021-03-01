@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/a512e1bf45d5712e94fb3aa47e20b7578dad0373
+ a512e1bf45d5712e94fb3aa47e20b7578dad0373 Fix merge issue
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/06219afd635737bfee1a7c676258e66448f133e2
  06219afd635737bfee1a7c676258e66448f133e2 ALSA: hda: intel-dsp-config: Add SND_INTEL_BYT_PREFER_SOF Kconfig option
 

@@ -2762,6 +2762,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 01 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.0-0.rc1.162]
+- Fix merge issue (Justin M. Forbes)
+
 * Sat Feb 27 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc0.20210227gitc03c21ba6f4e.161]
 - Change the pending config for CONFIG_PPC_QUEUED_SPINLOCKS as it is now default upstream for 64-bit server CPUs (Justin M. Forbes)
 - Turn on CONFIG_PPC_QUEUED_SPINLOCKS as it is default upstream now (Justin M. Forbes)
