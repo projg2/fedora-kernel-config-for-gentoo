@@ -4,12 +4,14 @@
  arch/arm/Kconfig                                   |   4 +-
  arch/arm/include/asm/uaccess.h                     |   8 +-
  arch/arm64/Kconfig                                 |   3 +-
+ .../boot/dts/rockchip/rk3399-pinebook-pro.dts      |   2 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/setup.c                            |  22 +-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
+ drivers/acpi/pci_mcfg.c                            |   7 +
  drivers/acpi/scan.c                                |   9 +
  drivers/ata/libahci.c                              |  18 +
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +
@@ -17,7 +19,6 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++--
  drivers/firmware/efi/secureboot.c                  |  38 +++
- drivers/gpu/drm/i915/gt/gen7_renderclear.c         |  12 +-
  drivers/gpu/drm/panel/Kconfig                      |   9 +
  drivers/gpu/drm/panel/Makefile                     |   1 +
  drivers/gpu/drm/panel/panel-xingbangda-xbd599.c    | 366 +++++++++++++++++++++
@@ -25,12 +26,17 @@
  drivers/hid/hid-rmi.c                              |  64 ----
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++---
  drivers/iommu/iommu.c                              |  22 ++
+ drivers/pci/controller/dwc/Kconfig                 |  10 +-
+ drivers/pci/controller/dwc/Makefile                |   2 +-
+ drivers/pci/controller/dwc/pcie-tegra194.c         | 102 ++++++
+ drivers/pci/controller/pcie-brcmstb.c              |   1 +
  drivers/pci/quirks.c                               |  24 ++
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
  include/linux/efi.h                                |  22 +-
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
+ include/linux/pci-ecam.h                           |   1 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  kernel/crash_core.c                                |  28 +-
@@ -42,7 +48,7 @@
  security/security.c                                |   6 +
  sound/hda/Kconfig                                  |  14 +
  sound/hda/intel-dsp-config.c                       |  29 +-
- 44 files changed, 952 insertions(+), 205 deletions(-)
+ 50 files changed, 1063 insertions(+), 207 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -123,7 +129,7 @@ index 000000000000..b27bcf11198f
 +
 +...
 diff --git a/Makefile b/Makefile
-index 617be9fd59ce..e7b46edea555 100644
+index a8c1162de3a0..e38dd6eddec8 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -494,6 +494,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -182,7 +188,7 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index f39568b28ec1..794d5413765b 100644
+index 3dfb25afa616..3fc8431c31c3 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -894,7 +894,7 @@ endchoice
@@ -202,6 +208,19 @@ index f39568b28ec1..794d5413765b 100644
  	default "12" if (ARM64_16K_PAGES && TRANSPARENT_HUGEPAGE)
  	default "11"
  	help
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
+index 219b7507a10f..45769764425d 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
+@@ -380,7 +380,7 @@ mains_charger: dc-charger {
+ };
+
+ &cdn_dp {
+-	status = "okay";
++	status = "disabled";
+ };
+
+ &cpu_b0 {
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index a9e2c7295b35..6ff11f3a2d47 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -358,6 +377,24 @@ index e209081d644b..7484bcf59a1b 100644
  	acpi_walk_resources(handle, METHOD_NAME__CRS, acpi_irq_parse_one_cb, &ctx);
  	return ctx.rc;
  }
+diff --git a/drivers/acpi/pci_mcfg.c b/drivers/acpi/pci_mcfg.c
+index 95f23acd5b80..53cab975f612 100644
+--- a/drivers/acpi/pci_mcfg.c
++++ b/drivers/acpi/pci_mcfg.c
+@@ -116,6 +116,13 @@ static struct mcfg_fixup mcfg_quirks[] = {
+ 	THUNDER_ECAM_QUIRK(2, 12),
+ 	THUNDER_ECAM_QUIRK(2, 13),
+
++	{ "NVIDIA", "TEGRA194", 1, 0, MCFG_BUS_ANY, &tegra194_pcie_ops},
++	{ "NVIDIA", "TEGRA194", 1, 1, MCFG_BUS_ANY, &tegra194_pcie_ops},
++	{ "NVIDIA", "TEGRA194", 1, 2, MCFG_BUS_ANY, &tegra194_pcie_ops},
++	{ "NVIDIA", "TEGRA194", 1, 3, MCFG_BUS_ANY, &tegra194_pcie_ops},
++	{ "NVIDIA", "TEGRA194", 1, 4, MCFG_BUS_ANY, &tegra194_pcie_ops},
++	{ "NVIDIA", "TEGRA194", 1, 5, MCFG_BUS_ANY, &tegra194_pcie_ops},
++
+ #define XGENE_V1_ECAM_MCFG(rev, seg) \
+ 	{"APM   ", "XGENE   ", rev, seg, MCFG_BUS_ANY, \
+ 		&xgene_v1_pcie_ecam_ops }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
 index 22566b4b3150..4c2294593928 100644
 --- a/drivers/acpi/scan.c
@@ -669,59 +706,6 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
-diff --git a/drivers/gpu/drm/i915/gt/gen7_renderclear.c b/drivers/gpu/drm/i915/gt/gen7_renderclear.c
-index e961ad6a3129..4adbc2bba97f 100644
---- a/drivers/gpu/drm/i915/gt/gen7_renderclear.c
-+++ b/drivers/gpu/drm/i915/gt/gen7_renderclear.c
-@@ -240,7 +240,7 @@ gen7_emit_state_base_address(struct batch_chunk *batch,
- 	/* general */
- 	*cs++ = batch_addr(batch) | BASE_ADDRESS_MODIFY;
- 	/* surface */
--	*cs++ = batch_addr(batch) | surface_state_base | BASE_ADDRESS_MODIFY;
-+	*cs++ = (batch_addr(batch) + surface_state_base) | BASE_ADDRESS_MODIFY;
- 	/* dynamic */
- 	*cs++ = batch_addr(batch) | BASE_ADDRESS_MODIFY;
- 	/* indirect */
-@@ -353,19 +353,21 @@ static void gen7_emit_pipeline_flush(struct batch_chunk *batch)
-
- static void gen7_emit_pipeline_invalidate(struct batch_chunk *batch)
- {
--	u32 *cs = batch_alloc_items(batch, 0, 8);
-+	u32 *cs = batch_alloc_items(batch, 0, 10);
-
- 	/* ivb: Stall before STATE_CACHE_INVALIDATE */
--	*cs++ = GFX_OP_PIPE_CONTROL(4);
-+	*cs++ = GFX_OP_PIPE_CONTROL(5);
- 	*cs++ = PIPE_CONTROL_STALL_AT_SCOREBOARD |
- 		PIPE_CONTROL_CS_STALL;
- 	*cs++ = 0;
- 	*cs++ = 0;
-+	*cs++ = 0;
-
--	*cs++ = GFX_OP_PIPE_CONTROL(4);
-+	*cs++ = GFX_OP_PIPE_CONTROL(5);
- 	*cs++ = PIPE_CONTROL_STATE_CACHE_INVALIDATE;
- 	*cs++ = 0;
- 	*cs++ = 0;
-+	*cs++ = 0;
-
- 	batch_advance(batch, cs);
- }
-@@ -391,12 +393,14 @@ static void emit_batch(struct i915_vma * const vma,
- 						     desc_count);
-
- 	/* Reset inherited context registers */
-+	gen7_emit_pipeline_flush(&cmds);
- 	gen7_emit_pipeline_invalidate(&cmds);
- 	batch_add(&cmds, MI_LOAD_REGISTER_IMM(2));
- 	batch_add(&cmds, i915_mmio_reg_offset(CACHE_MODE_0_GEN7));
- 	batch_add(&cmds, 0xffff0000);
- 	batch_add(&cmds, i915_mmio_reg_offset(CACHE_MODE_1));
- 	batch_add(&cmds, 0xffff0000 | PIXEL_SUBSPAN_COLLECT_OPT_DISABLE);
-+	gen7_emit_pipeline_invalidate(&cmds);
- 	gen7_emit_pipeline_flush(&cmds);
-
- 	/* Switch to the media pipeline and our base address */
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
 index b4e021ea30f9..5687b745ebe2 100644
 --- a/drivers/gpu/drm/panel/Kconfig
@@ -1459,7 +1443,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index ffeebda8d6de..2314da0ce11c 100644
+index fd5f59373fc6..8a11aa9e0318 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1470,7 +1454,7 @@ index ffeebda8d6de..2314da0ce11c 100644
  #include <linux/kernel.h>
  #include <linux/bug.h>
  #include <linux/types.h>
-@@ -3047,6 +3048,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3060,6 +3061,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1498,6 +1482,196 @@ index ffeebda8d6de..2314da0ce11c 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
+diff --git a/drivers/pci/controller/dwc/Kconfig b/drivers/pci/controller/dwc/Kconfig
+index 22c5529e9a65..259ff5ff3f24 100644
+--- a/drivers/pci/controller/dwc/Kconfig
++++ b/drivers/pci/controller/dwc/Kconfig
+@@ -254,25 +254,27 @@ config PCI_MESON
+ 	  implement the driver.
+
+ config PCIE_TEGRA194
+-	tristate
++	bool
+
+ config PCIE_TEGRA194_HOST
+-	tristate "NVIDIA Tegra194 (and later) PCIe controller - Host Mode"
++	bool "NVIDIA Tegra194 (and later) PCIe controller - Host Mode"
+ 	depends on ARCH_TEGRA_194_SOC || COMPILE_TEST
+ 	depends on PCI_MSI_IRQ_DOMAIN
+ 	select PCIE_DW_HOST
+ 	select PHY_TEGRA194_P2U
+ 	select PCIE_TEGRA194
++	default y if ARCH_TEGRA_194_SOC
+ 	help
+ 	  Enables support for the PCIe controller in the NVIDIA Tegra194 SoC to
+ 	  work in host mode. There are two instances of PCIe controllers in
+ 	  Tegra194. This controller can work either as EP or RC. In order to
+ 	  enable host-specific features PCIE_TEGRA194_HOST must be selected and
+ 	  in order to enable device-specific features PCIE_TEGRA194_EP must be
+-	  selected. This uses the DesignWare core.
++	  selected. This uses the DesignWare core. ACPI platforms with Tegra194
++	  don't need to enable this.
+
+ config PCIE_TEGRA194_EP
+-	tristate "NVIDIA Tegra194 (and later) PCIe controller - Endpoint Mode"
++	bool "NVIDIA Tegra194 (and later) PCIe controller - Endpoint Mode"
+ 	depends on ARCH_TEGRA_194_SOC || COMPILE_TEST
+ 	depends on PCI_ENDPOINT
+ 	select PCIE_DW_EP
+diff --git a/drivers/pci/controller/dwc/Makefile b/drivers/pci/controller/dwc/Makefile
+index a751553fa0db..dbb981876556 100644
+--- a/drivers/pci/controller/dwc/Makefile
++++ b/drivers/pci/controller/dwc/Makefile
+@@ -17,7 +17,6 @@ obj-$(CONFIG_PCIE_INTEL_GW) += pcie-intel-gw.o
+ obj-$(CONFIG_PCIE_KIRIN) += pcie-kirin.o
+ obj-$(CONFIG_PCIE_HISI_STB) += pcie-histb.o
+ obj-$(CONFIG_PCI_MESON) += pci-meson.o
+-obj-$(CONFIG_PCIE_TEGRA194) += pcie-tegra194.o
+ obj-$(CONFIG_PCIE_UNIPHIER) += pcie-uniphier.o
+ obj-$(CONFIG_PCIE_UNIPHIER_EP) += pcie-uniphier-ep.o
+
+@@ -34,4 +33,5 @@ obj-$(CONFIG_PCIE_UNIPHIER_EP) += pcie-uniphier-ep.o
+ ifdef CONFIG_PCI
+ obj-$(CONFIG_ARM64) += pcie-al.o
+ obj-$(CONFIG_ARM64) += pcie-hisi.o
++obj-$(CONFIG_ARM64) += pcie-tegra194.o
+ endif
+diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
+index 6fa216e52d14..0a851de769e8 100644
+--- a/drivers/pci/controller/dwc/pcie-tegra194.c
++++ b/drivers/pci/controller/dwc/pcie-tegra194.c
+@@ -22,6 +22,8 @@
+ #include <linux/of_irq.h>
+ #include <linux/of_pci.h>
+ #include <linux/pci.h>
++#include <linux/pci-acpi.h>
++#include <linux/pci-ecam.h>
+ #include <linux/phy/phy.h>
+ #include <linux/pinctrl/consumer.h>
+ #include <linux/platform_device.h>
+@@ -311,6 +313,103 @@ struct tegra_pcie_dw_of_data {
+ 	enum dw_pcie_device_mode mode;
+ };
+
++#if defined(CONFIG_ACPI) && defined(CONFIG_PCI_QUIRKS)
++struct tegra194_pcie_acpi  {
++	void __iomem *config_base;
++	void __iomem *iatu_base;
++	void __iomem *dbi_base;
++};
++
++static int tegra194_acpi_init(struct pci_config_window *cfg)
++{
++	struct device *dev = cfg->parent;
++	struct tegra194_pcie_acpi *pcie;
++
++	pcie = devm_kzalloc(dev, sizeof(*pcie), GFP_KERNEL);
++	if (!pcie)
++		return -ENOMEM;
++
++	pcie->config_base = cfg->win;
++	pcie->iatu_base = cfg->win + SZ_256K;
++	pcie->dbi_base = cfg->win + SZ_512K;
++	cfg->priv = pcie;
++
++	return 0;
++}
++
++static inline void atu_reg_write(struct tegra194_pcie_acpi *pcie, int index,
++				 u32 val, u32 reg)
++{
++	u32 offset = PCIE_GET_ATU_OUTB_UNR_REG_OFFSET(index);
++
++	writel(val, pcie->iatu_base + offset + reg);
++}
++
++static void program_outbound_atu(struct tegra194_pcie_acpi *pcie, int index,
++				 int type, u64 cpu_addr, u64 pci_addr, u64 size)
++{
++	atu_reg_write(pcie, index, lower_32_bits(cpu_addr),
++		      PCIE_ATU_LOWER_BASE);
++	atu_reg_write(pcie, index, upper_32_bits(cpu_addr),
++		      PCIE_ATU_UPPER_BASE);
++	atu_reg_write(pcie, index, lower_32_bits(pci_addr),
++		      PCIE_ATU_LOWER_TARGET);
++	atu_reg_write(pcie, index, lower_32_bits(cpu_addr + size - 1),
++		      PCIE_ATU_LIMIT);
++	atu_reg_write(pcie, index, upper_32_bits(pci_addr),
++		      PCIE_ATU_UPPER_TARGET);
++	atu_reg_write(pcie, index, type, PCIE_ATU_CR1);
++	atu_reg_write(pcie, index, PCIE_ATU_ENABLE, PCIE_ATU_CR2);
++}
++
++static void __iomem *tegra194_map_bus(struct pci_bus *bus,
++				      unsigned int devfn, int where)
++{
++	struct pci_config_window *cfg = bus->sysdata;
++	struct tegra194_pcie_acpi *pcie = cfg->priv;
++	u32 busdev;
++	int type;
++
++	if (bus->number < cfg->busr.start || bus->number > cfg->busr.end)
++		return NULL;
++
++	if (bus->number == cfg->busr.start) {
++		if (PCI_SLOT(devfn) == 0)
++			return pcie->dbi_base + where;
++		else
++			return NULL;
++	}
++
++	busdev = PCIE_ATU_BUS(bus->number) | PCIE_ATU_DEV(PCI_SLOT(devfn)) |
++		 PCIE_ATU_FUNC(PCI_FUNC(devfn));
++
++	if (bus->parent->number == cfg->busr.start) {
++		if (PCI_SLOT(devfn) == 0)
++			type = PCIE_ATU_TYPE_CFG0;
++		else
++			return NULL;
++	} else {
++		type = PCIE_ATU_TYPE_CFG1;
++	}
++
++	program_outbound_atu(pcie, PCIE_ATU_REGION_INDEX0, type,
++			     cfg->res.start, busdev, SZ_256K);
++	return (void __iomem *)(pcie->config_base + where);
++}
++
++const struct pci_ecam_ops tegra194_pcie_ops = {
++	.bus_shift	= 20,
++	.init		= tegra194_acpi_init,
++	.pci_ops	= {
++		.map_bus	= tegra194_map_bus,
++		.read		= pci_generic_config_read,
++		.write		= pci_generic_config_write,
++	}
++};
++#endif /* defined(CONFIG_ACPI) && defined(CONFIG_PCI_QUIRKS) */
++
++#ifdef CONFIG_PCIE_TEGRA194
++
+ static inline struct tegra_pcie_dw *to_tegra_pcie(struct dw_pcie *pci)
+ {
+ 	return container_of(pci, struct tegra_pcie_dw, pci);
+@@ -2311,3 +2410,6 @@ MODULE_DEVICE_TABLE(of, tegra_pcie_dw_of_match);
+ MODULE_AUTHOR("Vidya Sagar <vidyas@nvidia.com>");
+ MODULE_DESCRIPTION("NVIDIA PCIe host controller driver");
+ MODULE_LICENSE("GPL v2");
++
++#endif /* CONFIG_PCIE_TEGRA194 */
++
+diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
+index d41257f43a8f..e3456b058106 100644
+--- a/drivers/pci/controller/pcie-brcmstb.c
++++ b/drivers/pci/controller/pcie-brcmstb.c
+@@ -857,6 +857,7 @@ static int brcm_pcie_setup(struct brcm_pcie *pcie)
+
+ 	/* Reset the bridge */
+ 	pcie->bridge_sw_init_set(pcie, 1);
++	pcie->perst_set(pcie, 1);
+ 	usleep_range(100, 200);
+
+ 	/* Take the bridge out of reset */
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index 653660e3ba9e..98851d00dc4d 100644
 --- a/drivers/pci/quirks.c
@@ -1683,6 +1857,18 @@ index a19adef1f088..57cce0d5c347 100644
   * Security hooks for perf events
   *
   * @perf_event_open:
+diff --git a/include/linux/pci-ecam.h b/include/linux/pci-ecam.h
+index 65d3d83015c3..fbdadd4d8377 100644
+--- a/include/linux/pci-ecam.h
++++ b/include/linux/pci-ecam.h
+@@ -85,6 +85,7 @@ extern const struct pci_ecam_ops pci_thunder_ecam_ops; /* Cavium ThunderX 1.x */
+ extern const struct pci_ecam_ops xgene_v1_pcie_ecam_ops; /* APM X-Gene PCIe v1 */
+ extern const struct pci_ecam_ops xgene_v2_pcie_ecam_ops; /* APM X-Gene PCIe v2.x */
+ extern const struct pci_ecam_ops al_pcie_ops;	/* Amazon Annapurna Labs PCIe */
++extern const struct pci_ecam_ops tegra194_pcie_ops; /* Tegra194 PCIe */
+ #endif
+
+ #if IS_ENABLED(CONFIG_PCI_HOST_COMMON)
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
 index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h
@@ -1784,7 +1970,7 @@ index 825284baaf46..0b2b3f510b16 100644
  	 * if the commandline contains a ':', then that's the extended
  	 * syntax -- if not, it must be the classic syntax
 diff --git a/kernel/module_signing.c b/kernel/module_signing.c
-index 9d9fc678c91d..84ad75a53c83 100644
+index 8723ae70ea1f..fb2d773498c2 100644
 --- a/kernel/module_signing.c
 +++ b/kernel/module_signing.c
 @@ -38,8 +38,15 @@ int mod_verify_sig(const void *mod, struct load_info *info)

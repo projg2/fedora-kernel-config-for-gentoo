@@ -1,3 +1,12 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/6f4d37a3597e3ab80a62a6ab62883151d256de40
+ 6f4d37a3597e3ab80a62a6ab62883151d256de40 arm64: dts: rockchip: disable USB type-c DisplayPort
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/2e70d4b9f02113eaa2d4435f6532922e6484762f
+ 2e70d4b9f02113eaa2d4435f6532922e6484762f PCI: Add MCFG quirks for Tegra194 host controllers
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/70615d7e6a262babe4367446e8e2ac398924b014
+ 70615d7e6a262babe4367446e8e2ac398924b014 brcm: rpi4: fix usb numeration
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/371887659b615d8d586eec7f3abe5ac02cb7b9e8
  371887659b615d8d586eec7f3abe5ac02cb7b9e8 drm/i915/gt: Correct surface base address for renderclear
 
