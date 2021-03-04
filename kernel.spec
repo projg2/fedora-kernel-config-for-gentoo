@@ -2965,6 +2965,9 @@ fi
 #
 #
 %changelog
+* Thu Mar 04 2021 Hans de Goede <hdegoede@redhat.com>
+- Fix broadwell-rt286 sound (rhbz#1933229)
+
 * Thu Mar 04 2021 Justin M. Forbes <jforbes@fedoraproject.org> - 5.10.20-200
 - Linux v5.10.20
 
