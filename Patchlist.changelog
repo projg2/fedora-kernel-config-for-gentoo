@@ -1,5 +1,14 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/a512e1bf45d5712e94fb3aa47e20b7578dad0373
- a512e1bf45d5712e94fb3aa47e20b7578dad0373 Fix merge issue
+https://gitlab.com/cki-project/kernel-ark/-/commit/d908e89415db0ecd166e7aca182e74cdc9b7e0fb
+ d908e89415db0ecd166e7aca182e74cdc9b7e0fb Fix merge issue
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/70568d15e877d67aed877cdb0457c405b50b644c
+ 70568d15e877d67aed877cdb0457c405b50b644c Revert "dt-bindings: panel: add binding for Xingbangda XBD599 panel"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/9e6d2508ac2c3a368ad15384b12e4344fa2992ba
+ 9e6d2508ac2c3a368ad15384b12e4344fa2992ba Revert "drm: panel: add Xingbangda XBD599 panel"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/0aa7626f8b8269c396dadf2c47cba94039546b21
+ 0aa7626f8b8269c396dadf2c47cba94039546b21 Revert "drm/sun4i: sun6i_mipi_dsi: fix horizontal timing calculation"
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/06219afd635737bfee1a7c676258e66448f133e2
  06219afd635737bfee1a7c676258e66448f133e2 ALSA: hda: intel-dsp-config: Add SND_INTEL_BYT_PREFER_SOF Kconfig option
