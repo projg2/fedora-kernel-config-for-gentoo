@@ -1,3 +1,9 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/8c183d2a65857c77f4cf84cc9821b9b8cc45cfd7
+ 8c183d2a65857c77f4cf84cc9821b9b8cc45cfd7 PCI: Add MCFG quirks for Tegra194 host controllers
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/89525aa6ba3154ad25b133ed683c7701d915a464
+ 89525aa6ba3154ad25b133ed683c7701d915a464 Revert "PCI: Add MCFG quirks for Tegra194 host controllers"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/6f4d37a3597e3ab80a62a6ab62883151d256de40
  6f4d37a3597e3ab80a62a6ab62883151d256de40 arm64: dts: rockchip: disable USB type-c DisplayPort
 

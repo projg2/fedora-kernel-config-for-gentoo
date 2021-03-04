@@ -105,6 +105,7 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.11.3
+%define stableversion 5.11
 %define pkgrelease 300
 
 # This is needed to do merge window version magic
@@ -755,7 +756,7 @@ Source4000: README.rst
 
 %if !%{nopatches}
 
-Patch1: patch-%{rpmversion}-redhat.patch
+Patch1: patch-%{stableversion}-redhat.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1258,7 +1259,7 @@ cp -a %{SOURCE1} .
 
 %if !%{nopatches}
 
-ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
+ApplyOptionalPatch patch-%{stableversion}-redhat.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
@@ -2762,6 +2763,12 @@ fi
 #
 #
 %changelog
+* Thu Mar 04 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.3-300]
+- PCI: Add MCFG quirks for Tegra194 host controllers (Vidya Sagar)
+- Revert "PCI: Add MCFG quirks for Tegra194 host controllers" (Peter Robinson)
+- forgot to push this one earlier (Justin M. Forbes)
+- Reference the patch as version.patchlevel to more easily see diffs between stable releases (Justin M. Forbes)
+
 * Thu Mar 04 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.3-5]
 - arm64: dts: rockchip: disable USB type-c DisplayPort (Jian-Hong Pan)
 - Build PHY_TEGRA194_P2U and PCIE_TEGRA194_HOST in, not as modules (Peter Robinson)

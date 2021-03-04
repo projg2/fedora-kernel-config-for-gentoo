@@ -1537,7 +1537,7 @@ index a751553fa0db..dbb981876556 100644
 +obj-$(CONFIG_ARM64) += pcie-tegra194.o
  endif
 diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index 6fa216e52d14..0a851de769e8 100644
+index 6fa216e52d14..1090a9cfe4f0 100644
 --- a/drivers/pci/controller/dwc/pcie-tegra194.c
 +++ b/drivers/pci/controller/dwc/pcie-tegra194.c
 @@ -22,6 +22,8 @@
@@ -1632,8 +1632,8 @@ index 6fa216e52d14..0a851de769e8 100644
 +		type = PCIE_ATU_TYPE_CFG1;
 +	}
 +
-+	program_outbound_atu(pcie, PCIE_ATU_REGION_INDEX0, type,
-+			     cfg->res.start, busdev, SZ_256K);
++	program_outbound_atu(pcie, 0, type, cfg->res.start, busdev, SZ_256K);
++
 +	return (void __iomem *)(pcie->config_base + where);
 +}
 +
