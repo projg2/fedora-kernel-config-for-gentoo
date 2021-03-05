@@ -4,7 +4,6 @@
  Kconfig.redhat                                  |  17 ++
  Makefile                                        |  13 +-
  arch/arm/Kconfig                                |   4 +-
- arch/arm/include/asm/uaccess.h                  |   8 +-
  arch/arm64/Kconfig                              |   3 +-
  arch/arm64/kernel/acpi.c                        |   4 +
  arch/s390/include/asm/ipl.h                     |   1 +
@@ -63,7 +62,7 @@
  security/lockdown/Kconfig                       |  13 ++
  security/lockdown/lockdown.c                    |   1 +
  security/security.c                             |   6 +
- 65 files changed, 1148 insertions(+), 183 deletions(-)
+ 64 files changed, 1143 insertions(+), 180 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -193,37 +192,6 @@ index 853aab5ab327..99cd243aed4e 100644
  	help
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
-diff --git a/arch/arm/include/asm/uaccess.h b/arch/arm/include/asm/uaccess.h
-index a13d90206472..6a6aae01755b 100644
---- a/arch/arm/include/asm/uaccess.h
-+++ b/arch/arm/include/asm/uaccess.h
-@@ -195,11 +195,12 @@ extern int __get_user_64t_4(void *);
- #define __get_user_check(x, p)						\
- 	({								\
- 		unsigned long __limit = current_thread_info()->addr_limit - 1; \
-+		unsigned int __ua_flags = uaccess_save_and_enable();	\
- 		register typeof(*(p)) __user *__p asm("r0") = (p);	\
- 		register __inttype(x) __r2 asm("r2");			\
- 		register unsigned long __l asm("r1") = __limit;		\
- 		register int __e asm("r0");				\
--		unsigned int __ua_flags = uaccess_save_and_enable();	\
-+		unsigned int __err;					\
- 		switch (sizeof(*(__p))) {				\
- 		case 1:							\
- 			if (sizeof((x)) >= 8)				\
-@@ -227,9 +228,10 @@ extern int __get_user_64t_4(void *);
- 			break;						\
- 		default: __e = __get_user_bad(); break;			\
- 		}							\
--		uaccess_restore(__ua_flags);				\
-+		__err = __e;						\
- 		x = (typeof(*(p))) __r2;				\
--		__e;							\
-+		uaccess_restore(__ua_flags);				\
-+		__err;							\
- 	})
-
- #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
 index 1f212b47a48a..7aa12d0eadec 100644
 --- a/arch/arm64/Kconfig
