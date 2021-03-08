@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.11.3
+%define rpmversion 5.11.4
 %define stableversion 5.11
 %define pkgrelease 300
 
@@ -603,7 +603,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.11.3.tar.xz
+Source0: linux-5.11.4.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1251,8 +1251,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.11.3 -c
-mv linux-5.11.3 linux-%{KVERREL}
+%setup -q -n kernel-5.11.4 -c
+mv linux-5.11.4 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2763,7 +2763,7 @@ fi
 #
 #
 %changelog
-* Thu Mar 04 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.3-300]
+* Sun Mar 07 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.4-6]
 - PCI: Add MCFG quirks for Tegra194 host controllers (Vidya Sagar)
 - Revert "PCI: Add MCFG quirks for Tegra194 host controllers" (Peter Robinson)
 - forgot to push this one earlier (Justin M. Forbes)
