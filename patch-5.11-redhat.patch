@@ -129,7 +129,7 @@ index 000000000000..b27bcf11198f
 +
 +...
 diff --git a/Makefile b/Makefile
-index cb9a8e823951..2b1b03c782b7 100644
+index 1673c12fb4b3..2dc0fb2e035b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -494,6 +494,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
