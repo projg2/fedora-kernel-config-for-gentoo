@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/da4e612568dc657270f6f40d79c948c764d8b689
+ da4e612568dc657270f6f40d79c948c764d8b689 Revert "mm/kmemleak: skip late_init if not skip disable"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/234ab09d2042209b04bc13f9ebde41323bea1150
  234ab09d2042209b04bc13f9ebde41323bea1150 Revert "ARM: fix __get_user_check() in case uaccess_* calls are not inlined"
 
