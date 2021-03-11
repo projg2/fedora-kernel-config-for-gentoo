@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.11.5
+%define rpmversion 5.11.6
 %define stableversion 5.11
 %define pkgrelease 300
 
@@ -603,7 +603,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.11.5.tar.xz
+Source0: linux-5.11.6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1251,8 +1251,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.11.5 -c
-mv linux-5.11.5 linux-%{KVERREL}
+%setup -q -n kernel-5.11.6 -c
+mv linux-5.11.6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2763,6 +2763,25 @@ fi
 #
 #
 %changelog
+* Thu Mar 11 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.6-8]
+- Forgot to turn this back on when disabling gcc plugins (Justin M. Forbes)
+- Fedora: Turn on SND_SOC_INTEL_SKYLAKE_HDAUDIO_CODEC option (Hans de Goede)
+- common: enable RTC_SYSTOHC to supplement update_persistent_clock64 (Peter Robinson)
+- Disable structleak gcc-plugins until a solution is upstream (Justin M. Forbes)
+- mmc: sdhci-iproc: Add ACPI bindings for the rpi (Jeremy Linton)
+- ACPI: platform: Hide ACPI_PLATFORM_PROFILE option (Maximilian Luz)
+- platform/x86: ideapad-laptop: DYTC Platform profile support (Jiaxun Yang)
+- platform/x86: thinkpad_acpi: Replace ifdef CONFIG_ACPI_PLATFORM_PROFILE with depends on (Hans de Goede)
+- platform/x86: thinkpad_acpi: Add platform profile support (Mark Pearson)
+- platform/x86: thinkpad_acpi: fixed warning and incorporated review comments (Nitin Joshi)
+- platform/x86: thinkpad_acpi: Don't register keyboard_lang unnecessarily (Hans de Goede)
+- platform/x86: thinkpad_acpi: set keyboard language (Nitin Joshi)
+- ACPI: platform-profile: Fix possible deadlock in platform_profile_remove() (Hans de Goede)
+- ACPI: platform-profile: Introduce object pointers to callbacks (Jiaxun Yang)
+- ACPI: platform-profile: Drop const qualifier for cur_profile (Jiaxun Yang)
+- ACPI: platform: Add platform profile support (Mark Pearson)
+- Documentation: Add documentation for new platform_profile sysfs attribute (Mark Pearson)
+
 * Tue Mar 09 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.5-7]
 - Turn on SND_SOC_INTEL_SOUNDWIRE_SOF_MACH for Fedora again (Justin M. Forbes)
 
