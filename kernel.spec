@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc2.20210310git05a59d79793d.168
+%global distro_build 0.rc3.170
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.12.0
-%define pkgrelease 0.rc2.20210310git05a59d79793d.168
+%define pkgrelease 0.rc3.170
 
 # This is needed to do merge window version magic
 %define patchlevel 12
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20210310git05a59d79793d.168%{?buildid}%{?dist}
+%define specrelease 0.rc3.170%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -201,7 +201,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.12
@@ -602,7 +602,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210310git05a59d79793d.tar.xz
+Source0: linux-5.12-rc3.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1250,8 +1250,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210310git05a59d79793d -c
-mv linux-20210310git05a59d79793d linux-%{KVERREL}
+%setup -q -n kernel-5.12-rc3 -c
+mv linux-5.12-rc3 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2762,8 +2762,20 @@ fi
 #
 #
 %changelog
-* Wed Mar 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc2.20210310git05a59d79793d.168]
-- Set CONFIG_MOUSE_SERIAL=n by default (Patrick Talbert)
+* Mon Mar 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc3.170]
+- Fedora: filters: update to move dfl-emif to modules (Peter Robinson)
+- drop duplicate DEVFREQ_GOV_SIMPLE_ONDEMAND config (Peter Robinson)
+- efi: The EFI_VARS is legacy and now x86 only (Peter Robinson)
+- common: enable RTC_SYSTOHC to supplement update_persistent_clock64 (Peter Robinson)
+- generic: arm: enable SCMI for all options (Peter Robinson)
+- fedora: the PCH_CAN driver is x86-32 only (Peter Robinson)
+- common: disable legacy CAN device support (Peter Robinson)
+- common: Enable Microchip MCP251x/MCP251xFD CAN controllers (Peter Robinson)
+- common: Bosch MCAN support for Intel Elkhart Lake (Peter Robinson)
+- common: enable CAN_PEAK_PCIEFD PCI-E driver (Peter Robinson)
+- common: disable CAN_PEAK_PCIEC PCAN-ExpressCard (Peter Robinson)
+- common: enable common CAN layer 2 protocols (Peter Robinson)
+- ark: disable CAN_LEDS option (Peter Robinson)
 
 * Wed Mar 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc2.20210310git05a59d79793d.167]
 - Fedora: Turn on SND_SOC_INTEL_SKYLAKE_HDAUDIO_CODEC option (Hans de Goede)
