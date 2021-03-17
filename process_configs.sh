@@ -3,6 +3,8 @@
 # This script takes the merged config files and processes them through oldconfig
 # and listnewconfig
 #
+# Globally disable suggestion of appending '|| exit' or '|| return' to cd/pushd/popd commands
+# shellcheck disable=SC2164
 
 usage()
 {
@@ -15,6 +17,11 @@ usage()
 	echo "     -t: test run, do not overwrite original config"
 	echo "     -w: error on misconfigured config options"
 	echo "     -z: commit new configs to pending directory"
+	echo ""
+	echo "     A special CONFIG file tag, process_configs_known_broken can be added as a"
+	echo "     comment to any CONFIG file.  This tag indicates that there is no way to "
+	echo "     fix a CONFIG's entry.  This tag should only be used in extreme cases"
+	echo "     and is not to be used as a workaround to solve CONFIG problems."
 	exit 1
 }
 
@@ -30,11 +37,11 @@ switch_to_toplevel()
 	path="$(pwd)"
 	while test -n "$path"
 	do
-		test -e $path/MAINTAINERS && \
-			test -d $path/drivers && \
+		test -e "$path"/MAINTAINERS && \
+			test -d "$path"/drivers && \
 			break
 
-		path="$(dirname $path)"
+		path=$(dirname "$path")
 	done
 
 	test -n "$path"  || die "Can't find toplevel"
@@ -65,10 +72,25 @@ checkoptions()
 					 print "Found "a[1]"="a[2]" after generation, had " a[1]"="configs[a[1]]" in Source tree";
 			}
 		}
-	' $1 $2 > .mismatches
+	' "$1" "$2" > .mismatches
 
+	checkoptions_error=false
 	if test -s .mismatches
 	then
+		while read -r LINE
+		do
+			if find ./ -name "$(echo "$LINE" | awk -F "=" ' { print $1 } ' | awk ' { print $2 }')" -print0 | xargs -0 grep ^ | grep -q "process_configs_known_broken"; then
+				# This is a known broken config.
+				# See script help warning.
+				checkoptions_error=false
+			else
+				checkoptions_error=true
+				break
+			fi
+		done < .mismatches
+
+		! $checkoptions_error && return
+
 		echo "Error: Mismatches found in configuration files"
 		cat .mismatches
 		RETURNCODE=1
@@ -84,7 +106,7 @@ parsenewconfigs()
 	# and puts it into CONFIG_FOO files. Using the output of
 	# listnewconfig is much easier to ensure we get the default
 	# output.
-        /usr/bin/awk -v BASE=$tmpdir '
+        /usr/bin/awk -v BASE="$tmpdir" '
                 /is not set/ {
                         split ($0, a, "#");
                         split(a[2], b);
@@ -109,7 +131,7 @@ parsenewconfigs()
 	# each CONFIG_FOO file. Because of how awk works
 	# there's a lot of moving files around and catting to
 	# get what we need.
-        /usr/bin/awk -v BASE=$tmpdir '
+        /usr/bin/awk -v BASE="$tmpdir" '
                 BEGIN { inpatch=0;
 			outfile="none";
                         symbol="none"; }
@@ -141,28 +163,28 @@ parsenewconfigs()
 
         ' .helpnewconfig
 
-	pushd $tmpdir &> /dev/null
+	pushd "$tmpdir" &> /dev/null
 	rm fake_*
 	popd &> /dev/null
-	for f in `ls $tmpdir`; do
-		[[ -e "$tmpdir/$f" ]] || break
-		cp $tmpdir/$f $SCRIPT_DIR/pending"$FLAVOR"/generic/
+	for f in "$tmpdir"/*; do
+		[[ -e "$f" ]] || break
+		cp "$f" "$SCRIPT_DIR/pending$FLAVOR/generic/"
 	done
 
-	rm -rf $tmpdir
+	rm -rf "$tmpdir"
 }
 
 function commit_new_configs()
 {
 	# assume we are in $source_tree/configs, need to get to top level
-	pushd $(switch_to_toplevel) &>/dev/null
+	pushd "$(switch_to_toplevel)" &>/dev/null
 
-	for cfg in $SCRIPT_DIR/${PACKAGE_NAME}${KVERREL}${SUBARCH}*.config
+	for cfg in "$SCRIPT_DIR/${PACKAGE_NAME}${KVERREL}${SUBARCH}"*.config
 	do
-		arch=$(head -1 $cfg | cut -b 3-)
+		arch=$(head -1 "$cfg" | cut -b 3-)
 		cfgtmp="${cfg}.tmp"
 		cfgorig="${cfg}.orig"
-		cat $cfg > $cfgorig
+		cat "$cfg" > "$cfgorig"
 
 		if [ "$arch" = "EMPTY" ]
 		then
@@ -171,32 +193,32 @@ function commit_new_configs()
 		fi
 		echo -n "Checking for new configs in $cfg ... "
 
-		make ARCH=$arch KCONFIG_CONFIG=$cfgorig listnewconfig >& .listnewconfig
+		make ARCH="$arch" KCONFIG_CONFIG="$cfgorig" listnewconfig >& .listnewconfig
 		grep -E 'CONFIG_' .listnewconfig > .newoptions
 		if test -s .newoptions
 		then
-			make ARCH=$arch KCONFIG_CONFIG=$cfgorig helpnewconfig >& .helpnewconfig
+			make ARCH="$arch" KCONFIG_CONFIG="$cfgorig" helpnewconfig >& .helpnewconfig
 			parsenewconfigs
 		fi
 		rm .newoptions
 		echo "done"
 	done
 
-	git add $SCRIPT_DIR/pending"$FLAVOR"
+	git add "$SCRIPT_DIR/pending$FLAVOR"
 	git commit -m "[redhat] AUTOMATIC: New configs"
 }
 
 function process_configs()
 {
 	# assume we are in $source_tree/configs, need to get to top level
-	pushd $(switch_to_toplevel) &>/dev/null
+	pushd "$(switch_to_toplevel)" &>/dev/null
 
-	for cfg in $SCRIPT_DIR/${PACKAGE_NAME}${KVERREL}${SUBARCH}*.config
+	for cfg in "$SCRIPT_DIR/${PACKAGE_NAME}${KVERREL}${SUBARCH}"*.config
 	do
-		arch=$(head -1 $cfg | cut -b 3-)
+		arch=$(head -1 "$cfg" | cut -b 3-)
 		cfgtmp="${cfg}.tmp"
 		cfgorig="${cfg}.orig"
-		cat $cfg > $cfgorig
+		cat "$cfg" > "$cfgorig"
 
 		if [ "$arch" = "EMPTY" ]
 		then
@@ -205,7 +227,7 @@ function process_configs()
 		fi
 		echo -n "Processing $cfg ... "
 
-		make ARCH=$arch KCONFIG_CONFIG=$cfgorig listnewconfig >& .listnewconfig
+		make ARCH="$arch" KCONFIG_CONFIG="$cfgorig" listnewconfig >& .listnewconfig
 		grep -E 'CONFIG_' .listnewconfig > .newoptions
 		if test -n "$NEWOPTIONS" && test -s .newoptions
 		then
@@ -230,21 +252,21 @@ function process_configs()
 
 		rm .listnewconfig
 
-		make ARCH=$arch KCONFIG_CONFIG=$cfgorig olddefconfig > /dev/null || exit 1
-		echo "# $arch" > ${cfgtmp}
-		cat "${cfgorig}" >> ${cfgtmp}
+		make ARCH="$arch" KCONFIG_CONFIG="$cfgorig" olddefconfig > /dev/null || exit 1
+		echo "# $arch" > "$cfgtmp"
+		cat "$cfgorig" >> "$cfgtmp"
 		if test -n "$CHECKOPTIONS"
 		then
-			checkoptions $cfg $cfgtmp
+			checkoptions "$cfg" "$cfgtmp"
 		fi
 		# if test run, don't overwrite original
 		if test -n "$TESTRUN"
 		then
-			rm ${cfgtmp}
+			rm -f "$cfgtmp"
 		else
-			mv ${cfgtmp} ${cfg}
+			mv "$cfgtmp" "$cfg"
 		fi
-		rm ${cfgorig}
+		rm -f "$cfgorig"
 		echo "done"
 	done
 	rm "$SCRIPT_DIR"/*.config*.old
@@ -302,9 +324,8 @@ PACKAGE_NAME="${1:-kernel}" # defines the package name used
 KVERREL="$(test -n "$2" && echo "-$2" || echo "")"
 SUBARCH="$(test -n "$3" && echo "-$3" || echo "")"
 FLAVOR="$(test -n "$4" && echo "-$4" || echo "-common")"
-SCRIPT="$(readlink -f $0)"
-OUTPUT_DIR="$PWD"
-SCRIPT_DIR="$(dirname $SCRIPT)"
+SCRIPT=$(readlink -f "$0")
+SCRIPT_DIR=$(dirname "$SCRIPT")
 
 # Most RHEL options are options we want in Fedora so RHEL pending settings head
 # to common/
@@ -314,7 +335,7 @@ then
 fi
 
 # to handle this script being a symlink
-cd $SCRIPT_DIR
+cd "$SCRIPT_DIR"
 
 if test -n "$COMMITNEWCONFIGS"; then
 	commit_new_configs

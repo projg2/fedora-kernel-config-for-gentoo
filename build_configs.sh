@@ -1,1 +1,0 @@
-configs/build_configs.sh
