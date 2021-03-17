@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.11.6
+%define rpmversion 5.11.7
 %define stableversion 5.11
 %define pkgrelease 300
 
@@ -603,7 +603,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.11.6.tar.xz
+Source0: linux-5.11.7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1251,8 +1251,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.11.6 -c
-mv linux-5.11.6 linux-%{KVERREL}
+%setup -q -n kernel-5.11.7 -c
+mv linux-5.11.7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2468,10 +2468,12 @@ fi\
 #
 %define kernel_variant_posttrans() \
 %{expand:%%posttrans %{?1:%{1}-}core}\
+%if 0%{!?fedora:1}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
     %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
 fi\
+%endif\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
@@ -2763,6 +2765,18 @@ fi
 #
 #
 %changelog
+* Wed Mar 17 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.7-9]
+- Disable weak-modules again rhbz 1828455 (Justin M. Forbes)
+- More config updates for gcc-plugin turn off (Justin M. Forbes)
+- fedora: the PCH_CAN driver is x86-32 only (Peter Robinson)
+- common: disable legacy CAN device support (Peter Robinson)
+- common: Enable Microchip MCP251x/MCP251xFD CAN controllers (Peter Robinson)
+- common: Bosch MCAN support for Intel Elkhart Lake (Peter Robinson)
+- common: enable CAN_PEAK_PCIEFD PCI-E driver (Peter Robinson)
+- common: disable CAN_PEAK_PCIEC PCAN-ExpressCard (Peter Robinson)
+- common: enable common CAN layer 2 protocols (Peter Robinson)
+- ark: disable CAN_LEDS option (Peter Robinson)
+
 * Thu Mar 11 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.6-8]
 - Forgot to turn this back on when disabling gcc plugins (Justin M. Forbes)
 - Fedora: Turn on SND_SOC_INTEL_SKYLAKE_HDAUDIO_CODEC option (Hans de Goede)
