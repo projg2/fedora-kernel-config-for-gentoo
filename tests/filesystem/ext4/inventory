@@ -1,3 +1,0 @@
-#!/bin/bash
-export TEST_DOCKER_EXTRA_ARGS="--privileged -v /dev:/dev"
-exec merge-standard-inventory "$@"
