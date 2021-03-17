@@ -2765,6 +2765,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 17 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.7-100]
+- This is a released kernel branch (Justin M. Forbes)
+
 * Wed Mar 17 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.7-9]
 - Disable weak-modules again rhbz 1828455 (Justin M. Forbes)
 - More config updates for gcc-plugin turn off (Justin M. Forbes)
