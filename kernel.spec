@@ -64,7 +64,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc3.170
+%global distro_build 0.rc3.20210318git6417f03132a6.171
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +105,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.12.0
-%define pkgrelease 0.rc3.170
+%define pkgrelease 0.rc3.20210318git6417f03132a6.171
 
 # This is needed to do merge window version magic
 %define patchlevel 12
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.170%{?buildid}%{?dist}
+%define specrelease 0.rc3.20210318git6417f03132a6.171%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -201,7 +201,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.12
@@ -602,7 +602,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12-rc3.tar.xz
+Source0: linux-20210318git6417f03132a6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1250,8 +1250,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12-rc3 -c
-mv linux-5.12-rc3 linux-%{KVERREL}
+%setup -q -n kernel-20210318git6417f03132a6 -c
+mv linux-20210318git6417f03132a6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2467,10 +2467,12 @@ fi\
 #
 %define kernel_variant_posttrans() \
 %{expand:%%posttrans %{?1:%{1}-}core}\
+%if 0%{!?fedora:1}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
     %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
 fi\
+%endif\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
@@ -2762,6 +2764,10 @@ fi
 #
 #
 %changelog
+* Thu Mar 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc3.20210318git6417f03132a6.171]
+- Turn off weak-modules for Fedora (Justin M. Forbes)
+- redhat: enable CONFIG_FW_LOADER_COMPRESS for ARK (Herton R. Krzesinski) [1939095]
+
 * Mon Mar 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc3.170]
 - Fedora: filters: update to move dfl-emif to modules (Peter Robinson)
 - drop duplicate DEVFREQ_GOV_SIMPLE_ONDEMAND config (Peter Robinson)
