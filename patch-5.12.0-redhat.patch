@@ -138,7 +138,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index a28bb374663d..02c6a9b5180f 100644
+index d4784d181123..ba1efc2609e3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -589,7 +589,7 @@ index 467e94259679..9b6f5b8e5397 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index df3f9bcab581..8d5b6eb36467 100644
+index 4b7ee3fa9224..64b31d852d20 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -1452,7 +1452,7 @@ index 63a4f48bdc75..786af4c41caf 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index ffca03064797..f6ef73bf2161 100644
+index 6aa6de729187..10d2ea521280 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 @@ -12309,6 +12309,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
@@ -1587,7 +1587,7 @@ index 7f71218cc1e5..283fc0f41cd2 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 8710f5710c1d..2203dfb1fb1f 100644
+index 6b5d36babfcc..fd4a5d66a9d0 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1599,7 +1599,7 @@ index 8710f5710c1d..2203dfb1fb1f 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -780,6 +782,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -782,6 +784,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1614,7 +1614,7 @@ index 8710f5710c1d..2203dfb1fb1f 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -791,6 +801,8 @@ static inline bool efi_enabled(int feature)
+@@ -793,6 +803,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1623,7 +1623,7 @@ index 8710f5710c1d..2203dfb1fb1f 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -811,6 +823,8 @@ static inline bool efi_enabled(int feature)
+@@ -813,6 +825,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1632,7 +1632,7 @@ index 8710f5710c1d..2203dfb1fb1f 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -823,6 +837,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -825,6 +839,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1640,7 +1640,7 @@ index 8710f5710c1d..2203dfb1fb1f 100644
 
  /*
   * Variable Attributes
-@@ -1075,13 +1090,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1077,13 +1092,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
