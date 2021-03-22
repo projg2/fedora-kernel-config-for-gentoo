@@ -273,7 +273,7 @@ index 000000000000..c33a71263d9e
 + 2. Add the new profile name, along with a clear description of the
 +    expected behaviour, to the sysfs-platform_profile ABI documentation.
 diff --git a/Makefile b/Makefile
-index 6ba32b82c480..20d2cb6a8bad 100644
+index d8a39ece170d..1b98067c8aa8 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -494,6 +494,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
