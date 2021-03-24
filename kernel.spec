@@ -6,6 +6,12 @@
 # Disable LTO in userspace packages.
 %global _lto_cflags %{nil}
 
+# Option to enable compiling with clang instead of gcc.
+%bcond_with toolchain_clang
+
+%if %{with toolchain_clang}
+%global toolchain clang
+%endif
 
 # Cross compile on copr for arm
 # See https://bugzilla.redhat.com/1879599
@@ -64,7 +70,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc4.175
+%global distro_build 0.rc4.20210324git7acac4b3196c.176
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -105,13 +111,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.12.0
-%define pkgrelease 0.rc4.175
+%define pkgrelease 0.rc4.20210324git7acac4b3196c.176
 
 # This is needed to do merge window version magic
 %define patchlevel 12
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.175%{?buildid}%{?dist}
+%define specrelease 0.rc4.20210324git7acac4b3196c.176%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -201,7 +207,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.12
@@ -226,6 +232,10 @@ Summary: The Linux kernel
 %define make_opts V=1
 %else
 %define make_opts -s
+%endif
+
+%if %{with toolchain_clang}
+%global make_opts %{make_opts} HOSTCC=clang CC=clang
 %endif
 
 # turn off debug kernel and kabichk for gcov builds
@@ -432,6 +442,14 @@ Summary: The Linux kernel
 %define with_configchecks 0
 %endif
 
+# Setting the compiler to clang enables some different config options
+# than what is expected, so disable this check for now.
+# TODO: What's the best way to fix this?  Do wee need a different set of
+# configs for clang?
+%if %{with toolchain_clang}
+%define with_configchecks 0
+%endif
+
 # To temporarily exclude an architecture from being built, add it to
 # %%nobuildarches. Do _NOT_ use the ExclusiveArch: line, because if we
 # don't build kernel-headers then the new build system will no longer let
@@ -596,13 +614,17 @@ BuildRequires: xmlto
 BuildRequires: asciidoc
 %endif
 
+%if %{with toolchain_clang}
+BuildRequires: clang
+%endif
+
 # Because this is the kernel, it's hard to get a single upstream URL
 # to represent the base without needing to do a bunch of patching. This
 # tarball is generated from a src-git tree. If you want to see the
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12-rc4.tar.xz
+Source0: linux-20210324git7acac4b3196c.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1038,6 +1060,12 @@ AutoReqProv: no\
 Requires(pre): findutils\
 Requires: findutils\
 Requires: perl-interpreter\
+Requires: openssl-devel\
+Requires: elfutils-libelf-devel\
+Requires: bison\
+Requires: flex\
+Requires: make\
+Requires: gcc\
 %description %{?1:%{1}-}devel\
 This package provides kernel headers and makefiles sufficient to build modules\
 against the %{?2:%{2} }kernel package.\
@@ -1250,8 +1278,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12-rc4 -c
-mv linux-5.12-rc4 linux-%{KVERREL}
+%setup -q -n kernel-20210324git7acac4b3196c -c
+mv linux-20210324git7acac4b3196c linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1723,6 +1751,7 @@ BuildKernel() {
     cp --parents tools/lib/*.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp --parents tools/objtool/*.[ch] $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp --parents tools/objtool/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp --parents tools/objtool/include/objtool/*.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp -a --parents tools/lib/bpf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp --parents tools/lib/bpf/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
@@ -2764,6 +2793,28 @@ fi
 #
 #
 %changelog
+* Wed Mar 24 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc4.20210324git7acac4b3196c.176]
+- New configs in drivers/platform (CKI@GitLab)
+- New configs in drivers/firmware (CKI@GitLab)
+- New configs in drivers/mailbox (Fedora Kernel Team)
+- New configs in drivers/net/phy (Justin M. Forbes)
+- Update CONFIG_DM_MULTIPATH_IOA (Augusto Caringi)
+- New configs in mm/Kconfig (CKI@GitLab)
+- New configs in arch/powerpc (Jeremy Cline)
+- New configs in arch/powerpc (Jeremy Cline)
+- New configs in drivers/input (Fedora Kernel Team)
+- New configs in net/bluetooth (Justin M. Forbes)
+- New configs in drivers/clk (Fedora Kernel Team)
+- New configs in init/Kconfig (Jeremy Cline)
+- redhat: allow running fedora-configs and rh-configs targets outside of redhat/ (Herton R. Krzesinski)
+- all: unify the disable of goldfish (android emulation platform) (Peter Robinson)
+- common: minor cleanup/de-dupe of dma/dmabuf debug configs (Peter Robinson)
+- common/ark: these drivers/arches were removed in 5.12 (Peter Robinson)
+- common: unset serial mouse for general config (Peter Robinson)
+- Correct kernel-devel make prepare build for 5.12. (Paulo E. Castro)
+- redhat: add initial support for centos stream dist-git sync on Makefiles (Herton R. Krzesinski)
+- redhat/configs: Enable CONFIG_SCHED_STACK_END_CHECK for Fedora and ARK (Josh Poimboeuf) [1856174]
+
 * Sat Mar 20 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc3.20210320git1c273e10bc0c.173]
 - CONFIG_VFIO now selects IOMMU_API instead of depending on it, causing several config mismatches for the zfcpdump kernel (Justin M. Forbes)
 
