@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.11.8
+%define rpmversion 5.11.9
 %define stableversion 5.11
 %define pkgrelease 200
 
@@ -603,7 +603,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.11.8.tar.xz
+Source0: linux-5.11.9.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1251,8 +1251,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.11.8 -c
-mv linux-5.11.8 linux-%{KVERREL}
+%setup -q -n kernel-5.11.9 -c
+mv linux-5.11.9 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2765,6 +2765,22 @@ fi
 #
 #
 %changelog
+* Wed Mar 24 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.9-11]
+- KVM: PPC: Book3S HV: Save and restore FSCR in the P9 path (Fabiano Rosas)
+- drm/nouveau/kms/nve4-nv108: Don't advertise 256x256 cursor support yet (Lyude Paul)
+- platform/x86: intel-vbtn: Stop reporting SW_DOCK events (Hans de Goede)
+- platform/x86: dell-wmi-sysman: Cleanup create_attributes_level_sysfs_files() (Hans de Goede)
+- platform/x86: dell-wmi-sysman: Make sysman_init() return -ENODEV of the interfaces are not found (Hans de Goede)
+- platform/x86: dell-wmi-sysman: Cleanup sysman_init() error-exit handling (Hans de Goede)
+- platform/x86: dell-wmi-sysman: Fix release_attributes_data() getting called twice on init_bios_attributes() failure (Hans de Goede)
+- platform/x86: dell-wmi-sysman: Make it safe to call exit_foo_attributes() multiple times (Hans de Goede)
+- platform/x86: dell-wmi-sysman: Fix possible NULL pointer deref on exit (Hans de Goede)
+- platform/x86: dell-wmi-sysman: Fix crash caused by calling kset_unregister twice (Hans de Goede)
+- platform/x86: thinkpad_acpi: Disable DYTC CQL mode around switching to balanced mode (Hans de Goede)
+- platform/x86: thinkpad_acpi: Allow the FnLock LED to change state (Esteve Varela Colominas)
+- platform/x86: thinkpad_acpi: check dytc version for lapmode sysfs (Mark Pearson)
+- platform/x86: intel-hid: Support Lenovo ThinkPad X1 Tablet Gen 2 (Alban Bedel)
+
 * Sun Mar 21 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.8-10]
 - This is a released kernel branch (Justin M. Forbes)
 
