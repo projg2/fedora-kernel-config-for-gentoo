@@ -2112,7 +2112,7 @@ index 320f1f3941b7..e3632573c1ed 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index c859bc46d06c..1c6e78fa2b6d 100644
+index 250503482cda..dde01992df7e 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
@@ -2150,7 +2150,7 @@ index c859bc46d06c..1c6e78fa2b6d 100644
 
  static const struct bpf_map_ops * const bpf_map_types[] = {
  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
-@@ -4346,11 +4365,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
+@@ -4351,11 +4370,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
  SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
  {
  	union bpf_attr attr;

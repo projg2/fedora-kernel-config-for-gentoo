@@ -70,7 +70,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc4.20210324git7acac4b3196c.176
+%global distro_build 0.rc4.20210325gite138138003eb.177
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -111,13 +111,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.12.0
-%define pkgrelease 0.rc4.20210324git7acac4b3196c.176
+%define pkgrelease 0.rc4.20210325gite138138003eb.177
 
 # This is needed to do merge window version magic
 %define patchlevel 12
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20210324git7acac4b3196c.176%{?buildid}%{?dist}
+%define specrelease 0.rc4.20210325gite138138003eb.177%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -624,7 +624,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210324git7acac4b3196c.tar.xz
+Source0: linux-20210325gite138138003eb.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1278,8 +1278,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210324git7acac4b3196c -c
-mv linux-20210324git7acac4b3196c linux-%{KVERREL}
+%setup -q -n kernel-20210325gite138138003eb -c
+mv linux-20210325gite138138003eb linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2793,6 +2793,11 @@ fi
 #
 #
 %changelog
+* Thu Mar 25 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc4.20210325gite138138003eb.177]
+- New configs in arch/powerpc (Fedora Kernel Team)
+- configs: enable BPF LSM on Fedora and ARK (Ondrej Mosnacek)
+- configs: clean up LSM configs (Ondrej Mosnacek)
+
 * Wed Mar 24 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc4.20210324git7acac4b3196c.176]
 - New configs in drivers/platform (CKI@GitLab)
 - New configs in drivers/firmware (CKI@GitLab)
