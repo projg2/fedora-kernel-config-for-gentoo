@@ -27,6 +27,7 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
+ drivers/gpu/drm/i915/display/intel_psr.c           |   9 +-
  drivers/gpu/drm/nouveau/dispnv50/disp.c            |  12 +-
  drivers/gpu/drm/panel/Kconfig                      |   9 +
  drivers/gpu/drm/panel/Makefile                     |   1 +
@@ -68,7 +69,8 @@
  security/security.c                                |   6 +
  sound/hda/Kconfig                                  |  14 +
  sound/hda/intel-dsp-config.c                       |  29 +-
- 70 files changed, 2254 insertions(+), 270 deletions(-)
+ sound/soc/intel/atom/sst-mfld-platform-pcm.c       |   6 +-
+ 72 files changed, 2264 insertions(+), 275 deletions(-)
 
 diff --git a/Documentation/ABI/testing/sysfs-platform_profile b/Documentation/ABI/testing/sysfs-platform_profile
 new file mode 100644
@@ -282,7 +284,7 @@ index 000000000000..c33a71263d9e
 + 2. Add the new profile name, along with a clear description of the
 +    expected behaviour, to the sysfs-platform_profile ABI documentation.
 diff --git a/Makefile b/Makefile
-index 23403c8e0838..f066d200185e 100644
+index 824d15c14be0..60669eb8738b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -494,6 +494,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -1090,6 +1092,27 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
+index b3631b722de3..0b8866900dfb 100644
+--- a/drivers/gpu/drm/i915/display/intel_psr.c
++++ b/drivers/gpu/drm/i915/display/intel_psr.c
+@@ -1708,9 +1708,14 @@ void intel_psr_init(struct drm_i915_private *dev_priv)
+ 		 */
+ 		dev_priv->hsw_psr_mmio_adjust = _SRD_CTL_EDP - _HSW_EDP_PSR_BASE;
+
+-	if (dev_priv->params.enable_psr == -1)
+-		if (INTEL_GEN(dev_priv) < 9 || !dev_priv->vbt.psr.enable)
++	if (dev_priv->params.enable_psr == -1) {
++		if (INTEL_GEN(dev_priv) < 9 || !dev_priv->vbt.psr.enable) {
+ 			dev_priv->params.enable_psr = 0;
++		} else if (INTEL_GEN(dev_priv) == 12) {
++			/* See https://gitlab.freedesktop.org/drm/intel/-/issues/3134 */
++			dev_priv->params.enable_psr = 0;
++		}
++	}
+
+ 	/* Set link_standby x link_off defaults */
+ 	if (IS_HASWELL(dev_priv) || IS_BROADWELL(dev_priv))
 diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.c b/drivers/gpu/drm/nouveau/dispnv50/disp.c
 index 5f4f09a601d4..857b76605a9e 100644
 --- a/drivers/gpu/drm/nouveau/dispnv50/disp.c
@@ -3860,3 +3883,33 @@ index c45686172517..68bb977c6a37 100644
  		.acpi_hid = "808622A8",
  	},
  #endif
+diff --git a/sound/soc/intel/atom/sst-mfld-platform-pcm.c b/sound/soc/intel/atom/sst-mfld-platform-pcm.c
+index 9e9b05883557..aa5dd590ddd5 100644
+--- a/sound/soc/intel/atom/sst-mfld-platform-pcm.c
++++ b/sound/soc/intel/atom/sst-mfld-platform-pcm.c
+@@ -488,14 +488,14 @@ static struct snd_soc_dai_driver sst_platform_dai[] = {
+ 		.channels_min = SST_STEREO,
+ 		.channels_max = SST_STEREO,
+ 		.rates = SNDRV_PCM_RATE_44100|SNDRV_PCM_RATE_48000,
+-		.formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE,
++		.formats = SNDRV_PCM_FMTBIT_S16_LE,
+ 	},
+ 	.capture = {
+ 		.stream_name = "Headset Capture",
+ 		.channels_min = 1,
+ 		.channels_max = 2,
+ 		.rates = SNDRV_PCM_RATE_44100|SNDRV_PCM_RATE_48000,
+-		.formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE,
++		.formats = SNDRV_PCM_FMTBIT_S16_LE,
+ 	},
+ },
+ {
+@@ -506,7 +506,7 @@ static struct snd_soc_dai_driver sst_platform_dai[] = {
+ 		.channels_min = SST_STEREO,
+ 		.channels_max = SST_STEREO,
+ 		.rates = SNDRV_PCM_RATE_44100|SNDRV_PCM_RATE_48000,
+-		.formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE,
++		.formats = SNDRV_PCM_FMTBIT_S16_LE,
+ 	},
+ },
+ {
