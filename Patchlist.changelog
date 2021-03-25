@@ -1,3 +1,9 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/f93a5201c2ef7e9f70aa68621100f868764c2b15
+ f93a5201c2ef7e9f70aa68621100f868764c2b15 drm/i915/tgl/psr: Disable PSR on Tigerlake for now
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/63787bf2ade1acf5b4ae353d5f92dffa40519afb
+ 63787bf2ade1acf5b4ae353d5f92dffa40519afb ASoC: intel: atom: Stop advertising non working S24LE support
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/d6e1043c3ee761b14ddae1707e78f10b26868c19
  d6e1043c3ee761b14ddae1707e78f10b26868c19 KVM: PPC: Book3S HV: Save and restore FSCR in the P9 path
 
