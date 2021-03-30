@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.11.10
+%define rpmversion 5.11.11
 %define stableversion 5.11
 %define pkgrelease 300
 
@@ -603,7 +603,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.11.10.tar.xz
+Source0: linux-5.11.11.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1251,8 +1251,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.11.10 -c
-mv linux-5.11.10 linux-%{KVERREL}
+%setup -q -n kernel-5.11.11 -c
+mv linux-5.11.11 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2765,6 +2765,15 @@ fi
 #
 #
 %changelog
+* Tue Mar 30 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.11-300]
+- Set CONFIG_XEN_MEMORY_HOTPLUG_LIMIT as required by 5.11.11 (Justin M. Forbes)
+
+* Tue Mar 30 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.11-13]
+- drm/i915: Disable LTTPR support when the DPCD rev < 1.4 (Imre Deak)
+- drm/i915/dp: Prevent setting the LTTPR LT mode if no LTTPRs are detected (Imre Deak)
+- drm/i915/ilk-glk: Fix link training on links with LTTPRs (Imre Deak)
+- redhat/mod-blacklist.sh: Fix floppy blacklisting (Hans de Goede)
+
 * Thu Mar 25 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.10-12]
 - drm/i915/tgl/psr: Disable PSR on Tigerlake for now (Lyude Paul)
 - Fedora: Turn off the SND_INTEL_BYT_PREFER_SOF option (Hans de Goede)
