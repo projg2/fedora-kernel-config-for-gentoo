@@ -27,8 +27,10 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
+ drivers/gpu/drm/i915/display/intel_dp.c            |  11 +-
+ .../gpu/drm/i915/display/intel_dp_link_training.c  |  91 ++--
+ .../gpu/drm/i915/display/intel_dp_link_training.h  |   2 +-
  drivers/gpu/drm/i915/display/intel_psr.c           |   9 +-
- drivers/gpu/drm/nouveau/dispnv50/disp.c            |  12 +-
  drivers/gpu/drm/panel/Kconfig                      |   9 +
  drivers/gpu/drm/panel/Makefile                     |   1 +
  drivers/gpu/drm/panel/panel-xingbangda-xbd599.c    | 366 +++++++++++++++
@@ -42,14 +44,8 @@
  drivers/pci/controller/pcie-brcmstb.c              |   1 +
  drivers/pci/quirks.c                               |  24 +
  drivers/platform/x86/Kconfig                       |   2 +
- .../platform/x86/dell-wmi-sysman/enum-attributes.c |   3 +
- .../platform/x86/dell-wmi-sysman/int-attributes.c  |   3 +
- .../x86/dell-wmi-sysman/passobj-attributes.c       |   3 +
- .../x86/dell-wmi-sysman/string-attributes.c        |   3 +
- drivers/platform/x86/dell-wmi-sysman/sysman.c      |  84 ++--
  drivers/platform/x86/ideapad-laptop.c              | 289 ++++++++++++
  drivers/platform/x86/intel-hid.c                   |   7 +
- drivers/platform/x86/intel-vbtn.c                  |  12 +-
  drivers/platform/x86/thinkpad_acpi.c               | 518 ++++++++++++++++++++-
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
@@ -70,7 +66,7 @@
  sound/hda/Kconfig                                  |  14 +
  sound/hda/intel-dsp-config.c                       |  29 +-
  sound/soc/intel/atom/sst-mfld-platform-pcm.c       |   6 +-
- 72 files changed, 2264 insertions(+), 275 deletions(-)
+ 68 files changed, 2268 insertions(+), 255 deletions(-)
 
 diff --git a/Documentation/ABI/testing/sysfs-platform_profile b/Documentation/ABI/testing/sysfs-platform_profile
 new file mode 100644
@@ -284,10 +280,10 @@ index 000000000000..c33a71263d9e
 + 2. Add the new profile name, along with a clear description of the
 +    expected behaviour, to the sysfs-platform_profile ABI documentation.
 diff --git a/Makefile b/Makefile
-index 824d15c14be0..60669eb8738b 100644
+index 7578e0d9622f..74679ade5579 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -494,6 +494,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+@@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
  		   -Werror=implicit-function-declaration -Werror=implicit-int \
@@ -782,10 +778,10 @@ index 000000000000..4a59c5993bde
 +MODULE_AUTHOR("Mark Pearson <markpearson@lenovo.com>");
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 22566b4b3150..4c2294593928 100644
+index a4fdf61b0644..9aa6d898fadd 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1620,6 +1620,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1638,6 +1638,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
 
@@ -1092,6 +1088,224 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
+index 8a26307c4896..bc2aae63fe40 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp.c
++++ b/drivers/gpu/drm/i915/display/intel_dp.c
+@@ -1400,6 +1400,7 @@ static u32 g4x_get_aux_send_ctl(struct intel_dp *intel_dp,
+ 	else
+ 		precharge = 5;
+
++	/* Max timeout value on G4x-BDW: 1.6ms */
+ 	if (IS_BROADWELL(dev_priv))
+ 		timeout = DP_AUX_CH_CTL_TIME_OUT_600us;
+ 	else
+@@ -1426,6 +1427,12 @@ static u32 skl_get_aux_send_ctl(struct intel_dp *intel_dp,
+ 	enum phy phy = intel_port_to_phy(i915, dig_port->base.port);
+ 	u32 ret;
+
++	/*
++	 * Max timeout values:
++	 * SKL-GLK: 1.6ms
++	 * CNL: 3.2ms
++	 * ICL+: 4ms
++	 */
+ 	ret = DP_AUX_CH_CTL_SEND_BUSY |
+ 	      DP_AUX_CH_CTL_DONE |
+ 	      DP_AUX_CH_CTL_INTERRUPT |
+@@ -4871,9 +4878,7 @@ intel_dp_get_dpcd(struct intel_dp *intel_dp)
+ {
+ 	int ret;
+
+-	intel_dp_lttpr_init(intel_dp);
+-
+-	if (drm_dp_read_dpcd_caps(&intel_dp->aux, intel_dp->dpcd))
++	if (intel_dp_init_lttpr_and_dprx_caps(intel_dp) < 0)
+ 		return false;
+
+ 	/*
+diff --git a/drivers/gpu/drm/i915/display/intel_dp_link_training.c b/drivers/gpu/drm/i915/display/intel_dp_link_training.c
+index d8c6d7054d11..e6532ea5757b 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp_link_training.c
++++ b/drivers/gpu/drm/i915/display/intel_dp_link_training.c
+@@ -34,16 +34,9 @@ intel_dp_dump_link_status(const u8 link_status[DP_LINK_STATUS_SIZE])
+ 		      link_status[3], link_status[4], link_status[5]);
+ }
+
+-static int intel_dp_lttpr_count(struct intel_dp *intel_dp)
++static void intel_dp_reset_lttpr_common_caps(struct intel_dp *intel_dp)
+ {
+-	int count = drm_dp_lttpr_count(intel_dp->lttpr_common_caps);
+-
+-	/*
+-	 * Pretend no LTTPRs in case of LTTPR detection error, or
+-	 * if too many (>8) LTTPRs are detected. This translates to link
+-	 * training in transparent mode.
+-	 */
+-	return count <= 0 ? 0 : count;
++	memset(&intel_dp->lttpr_common_caps, 0, sizeof(intel_dp->lttpr_common_caps));
+ }
+
+ static void intel_dp_reset_lttpr_count(struct intel_dp *intel_dp)
+@@ -93,10 +86,21 @@ static void intel_dp_read_lttpr_phy_caps(struct intel_dp *intel_dp,
+
+ static bool intel_dp_read_lttpr_common_caps(struct intel_dp *intel_dp)
+ {
++	struct drm_i915_private *i915 = dp_to_i915(intel_dp);
++
++	if (intel_dp_is_edp(intel_dp))
++		return false;
++
++	/*
++	 * Detecting LTTPRs must be avoided on platforms with an AUX timeout
++	 * period < 3.2ms. (see DP Standard v2.0, 2.11.2, 3.6.6.1).
++	 */
++	if (INTEL_GEN(i915) < 10)
++		return false;
++
+ 	if (drm_dp_read_lttpr_common_caps(&intel_dp->aux,
+ 					  intel_dp->lttpr_common_caps) < 0) {
+-		memset(intel_dp->lttpr_common_caps, 0,
+-		       sizeof(intel_dp->lttpr_common_caps));
++		intel_dp_reset_lttpr_common_caps(intel_dp);
+ 		return false;
+ 	}
+
+@@ -118,30 +122,57 @@ intel_dp_set_lttpr_transparent_mode(struct intel_dp *intel_dp, bool enable)
+ }
+
+ /**
+- * intel_dp_lttpr_init - detect LTTPRs and init the LTTPR link training mode
++ * intel_dp_init_lttpr_and_dprx_caps - detect LTTPR and DPRX caps, init the LTTPR link training mode
+  * @intel_dp: Intel DP struct
+  *
+- * Read the LTTPR common capabilities, switch to non-transparent link training
+- * mode if any is detected and read the PHY capabilities for all detected
+- * LTTPRs. In case of an LTTPR detection error or if the number of
++ * Read the LTTPR common and DPRX capabilities and switch to non-transparent
++ * link training mode if any is detected and read the PHY capabilities for all
++ * detected LTTPRs. In case of an LTTPR detection error or if the number of
+  * LTTPRs is more than is supported (8), fall back to the no-LTTPR,
+  * transparent mode link training mode.
+  *
+  * Returns:
+- *   >0  if LTTPRs were detected and the non-transparent LT mode was set
++ *   >0  if LTTPRs were detected and the non-transparent LT mode was set. The
++ *       DPRX capabilities are read out.
+  *    0  if no LTTPRs or more than 8 LTTPRs were detected or in case of a
+- *       detection failure and the transparent LT mode was set
++ *       detection failure and the transparent LT mode was set. The DPRX
++ *       capabilities are read out.
++ *   <0  Reading out the DPRX capabilities failed.
+  */
+-int intel_dp_lttpr_init(struct intel_dp *intel_dp)
++int intel_dp_init_lttpr_and_dprx_caps(struct intel_dp *intel_dp)
+ {
+ 	int lttpr_count;
+ 	bool ret;
+ 	int i;
+
+-	if (intel_dp_is_edp(intel_dp))
++	ret = intel_dp_read_lttpr_common_caps(intel_dp);
++
++	/* The DPTX shall read the DPRX caps after LTTPR detection. */
++	if (drm_dp_read_dpcd_caps(&intel_dp->aux, intel_dp->dpcd)) {
++		intel_dp_reset_lttpr_common_caps(intel_dp);
++		return -EIO;
++	}
++
++	if (!ret)
+ 		return 0;
+
+-	ret = intel_dp_read_lttpr_common_caps(intel_dp);
++	/*
++	 * The 0xF0000-0xF02FF range is only valid if the DPCD revision is
++	 * at least 1.4.
++	 */
++	if (intel_dp->dpcd[DP_DPCD_REV] < 0x14) {
++		intel_dp_reset_lttpr_common_caps(intel_dp);
++		return 0;
++	}
++
++	lttpr_count = drm_dp_lttpr_count(intel_dp->lttpr_common_caps);
++	/*
++	 * Prevent setting LTTPR transparent mode explicitly if no LTTPRs are
++	 * detected as this breaks link training at least on the Dell WD19TB
++	 * dock.
++	 */
++	if (lttpr_count == 0)
++		return 0;
+
+ 	/*
+ 	 * See DP Standard v2.0 3.6.6.1. about the explicit disabling of
+@@ -150,17 +181,12 @@ int intel_dp_lttpr_init(struct intel_dp *intel_dp)
+ 	 */
+ 	intel_dp_set_lttpr_transparent_mode(intel_dp, true);
+
+-	if (!ret)
+-		return 0;
+-
+-	lttpr_count = intel_dp_lttpr_count(intel_dp);
+-
+ 	/*
+ 	 * In case of unsupported number of LTTPRs or failing to switch to
+ 	 * non-transparent mode fall-back to transparent link training mode,
+ 	 * still taking into account any LTTPR common lane- rate/count limits.
+ 	 */
+-	if (lttpr_count == 0)
++	if (lttpr_count < 0)
+ 		return 0;
+
+ 	if (!intel_dp_set_lttpr_transparent_mode(intel_dp, false)) {
+@@ -178,7 +204,7 @@ int intel_dp_lttpr_init(struct intel_dp *intel_dp)
+
+ 	return lttpr_count;
+ }
+-EXPORT_SYMBOL(intel_dp_lttpr_init);
++EXPORT_SYMBOL(intel_dp_init_lttpr_and_dprx_caps);
+
+ static u8 dp_voltage_max(u8 preemph)
+ {
+@@ -222,11 +248,11 @@ intel_dp_phy_is_downstream_of_source(struct intel_dp *intel_dp,
+ 				     enum drm_dp_phy dp_phy)
+ {
+ 	struct drm_i915_private *i915 = dp_to_i915(intel_dp);
+-	int lttpr_count = intel_dp_lttpr_count(intel_dp);
++	int lttpr_count = drm_dp_lttpr_count(intel_dp->lttpr_common_caps);
+
+-	drm_WARN_ON_ONCE(&i915->drm, lttpr_count == 0 && dp_phy != DP_PHY_DPRX);
++	drm_WARN_ON_ONCE(&i915->drm, lttpr_count <= 0 && dp_phy != DP_PHY_DPRX);
+
+-	return lttpr_count == 0 || dp_phy == DP_PHY_LTTPR(lttpr_count - 1);
++	return lttpr_count <= 0 || dp_phy == DP_PHY_LTTPR(lttpr_count - 1);
+ }
+
+ static u8 intel_dp_phy_voltage_max(struct intel_dp *intel_dp,
+@@ -814,7 +840,10 @@ void intel_dp_start_link_train(struct intel_dp *intel_dp,
+ 	 * TODO: Reiniting LTTPRs here won't be needed once proper connector
+ 	 * HW state readout is added.
+ 	 */
+-	int lttpr_count = intel_dp_lttpr_init(intel_dp);
++	int lttpr_count = intel_dp_init_lttpr_and_dprx_caps(intel_dp);
++
++	if (lttpr_count < 0)
++		return;
+
+ 	if (!intel_dp_link_train_all_phys(intel_dp, crtc_state, lttpr_count))
+ 		intel_dp_schedule_fallback_link_training(intel_dp, crtc_state);
+diff --git a/drivers/gpu/drm/i915/display/intel_dp_link_training.h b/drivers/gpu/drm/i915/display/intel_dp_link_training.h
+index 6a1f76bd8c75..9cb7c28027f0 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp_link_training.h
++++ b/drivers/gpu/drm/i915/display/intel_dp_link_training.h
+@@ -11,7 +11,7 @@
+ struct intel_crtc_state;
+ struct intel_dp;
+
+-int intel_dp_lttpr_init(struct intel_dp *intel_dp);
++int intel_dp_init_lttpr_and_dprx_caps(struct intel_dp *intel_dp);
+
+ void intel_dp_get_adjust_train(struct intel_dp *intel_dp,
+ 			       const struct intel_crtc_state *crtc_state,
 diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
 index b3631b722de3..0b8866900dfb 100644
 --- a/drivers/gpu/drm/i915/display/intel_psr.c
@@ -1113,31 +1327,6 @@ index b3631b722de3..0b8866900dfb 100644
 
  	/* Set link_standby x link_off defaults */
  	if (IS_HASWELL(dev_priv) || IS_BROADWELL(dev_priv))
-diff --git a/drivers/gpu/drm/nouveau/dispnv50/disp.c b/drivers/gpu/drm/nouveau/dispnv50/disp.c
-index 5f4f09a601d4..857b76605a9e 100644
---- a/drivers/gpu/drm/nouveau/dispnv50/disp.c
-+++ b/drivers/gpu/drm/nouveau/dispnv50/disp.c
-@@ -2663,9 +2663,19 @@ nv50_display_create(struct drm_device *dev)
- 	else
- 		nouveau_display(dev)->format_modifiers = disp50xx_modifiers;
-
--	if (disp->disp->object.oclass >= GK104_DISP) {
-+	/* FIXME: 256x256 cursors are supported on Kepler, however unlike Maxwell and later
-+	 * generations Kepler requires that we specify the page type, small (4K) or large (128K),
-+	 * correctly for the ctxdma being used on curs/ovly. We currently share a ctxdma across all
-+	 * display planes (except ovly) that defaults to small pages, which results in artifacting
-+	 * on 256x256 cursors. Until we teach nouveau to create an appropriate ctxdma for the cursor
-+	 * fb in use, simply avoid advertising support for 256x256 cursors.
-+	 */
-+	if (disp->disp->object.oclass >= GM107_DISP) {
- 		dev->mode_config.cursor_width = 256;
- 		dev->mode_config.cursor_height = 256;
-+	} else if (disp->disp->object.oclass >= GK104_DISP) {
-+		dev->mode_config.cursor_width = 128;
-+		dev->mode_config.cursor_height = 128;
- 	} else {
- 		dev->mode_config.cursor_width = 64;
- 		dev->mode_config.cursor_height = 64;
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
 index b4e021ea30f9..5687b745ebe2 100644
 --- a/drivers/gpu/drm/panel/Kconfig
@@ -2159,252 +2348,6 @@ index ac4125ec0660..3a8ade8bb073 100644
  	select HWMON
  	select NVRAM
  	select NEW_LEDS
-diff --git a/drivers/platform/x86/dell-wmi-sysman/enum-attributes.c b/drivers/platform/x86/dell-wmi-sysman/enum-attributes.c
-index 80f4b7785c6c..091e48c217ed 100644
---- a/drivers/platform/x86/dell-wmi-sysman/enum-attributes.c
-+++ b/drivers/platform/x86/dell-wmi-sysman/enum-attributes.c
-@@ -185,5 +185,8 @@ void exit_enum_attributes(void)
- 			sysfs_remove_group(wmi_priv.enumeration_data[instance_id].attr_name_kobj,
- 								&enumeration_attr_group);
- 	}
-+	wmi_priv.enumeration_instances_count = 0;
-+
- 	kfree(wmi_priv.enumeration_data);
-+	wmi_priv.enumeration_data = NULL;
- }
-diff --git a/drivers/platform/x86/dell-wmi-sysman/int-attributes.c b/drivers/platform/x86/dell-wmi-sysman/int-attributes.c
-index 75aedbb733be..8a49ba6e44f9 100644
---- a/drivers/platform/x86/dell-wmi-sysman/int-attributes.c
-+++ b/drivers/platform/x86/dell-wmi-sysman/int-attributes.c
-@@ -175,5 +175,8 @@ void exit_int_attributes(void)
- 			sysfs_remove_group(wmi_priv.integer_data[instance_id].attr_name_kobj,
- 								&integer_attr_group);
- 	}
-+	wmi_priv.integer_instances_count = 0;
-+
- 	kfree(wmi_priv.integer_data);
-+	wmi_priv.integer_data = NULL;
- }
-diff --git a/drivers/platform/x86/dell-wmi-sysman/passobj-attributes.c b/drivers/platform/x86/dell-wmi-sysman/passobj-attributes.c
-index 3abcd95477c0..834b3e82ad9f 100644
---- a/drivers/platform/x86/dell-wmi-sysman/passobj-attributes.c
-+++ b/drivers/platform/x86/dell-wmi-sysman/passobj-attributes.c
-@@ -183,5 +183,8 @@ void exit_po_attributes(void)
- 			sysfs_remove_group(wmi_priv.po_data[instance_id].attr_name_kobj,
- 								&po_attr_group);
- 	}
-+	wmi_priv.po_instances_count = 0;
-+
- 	kfree(wmi_priv.po_data);
-+	wmi_priv.po_data = NULL;
- }
-diff --git a/drivers/platform/x86/dell-wmi-sysman/string-attributes.c b/drivers/platform/x86/dell-wmi-sysman/string-attributes.c
-index ac75dce88a4c..552537852459 100644
---- a/drivers/platform/x86/dell-wmi-sysman/string-attributes.c
-+++ b/drivers/platform/x86/dell-wmi-sysman/string-attributes.c
-@@ -155,5 +155,8 @@ void exit_str_attributes(void)
- 			sysfs_remove_group(wmi_priv.str_data[instance_id].attr_name_kobj,
- 								&str_attr_group);
- 	}
-+	wmi_priv.str_instances_count = 0;
-+
- 	kfree(wmi_priv.str_data);
-+	wmi_priv.str_data = NULL;
- }
-diff --git a/drivers/platform/x86/dell-wmi-sysman/sysman.c b/drivers/platform/x86/dell-wmi-sysman/sysman.c
-index cb81010ba1a2..7410ccae650c 100644
---- a/drivers/platform/x86/dell-wmi-sysman/sysman.c
-+++ b/drivers/platform/x86/dell-wmi-sysman/sysman.c
-@@ -210,25 +210,17 @@ static struct kobj_attribute pending_reboot = __ATTR_RO(pending_reboot);
-  */
- static int create_attributes_level_sysfs_files(void)
- {
--	int ret = sysfs_create_file(&wmi_priv.main_dir_kset->kobj, &reset_bios.attr);
-+	int ret;
-
--	if (ret) {
--		pr_debug("could not create reset_bios file\n");
-+	ret = sysfs_create_file(&wmi_priv.main_dir_kset->kobj, &reset_bios.attr);
-+	if (ret)
- 		return ret;
--	}
-
- 	ret = sysfs_create_file(&wmi_priv.main_dir_kset->kobj, &pending_reboot.attr);
--	if (ret) {
--		pr_debug("could not create changing_pending_reboot file\n");
--		sysfs_remove_file(&wmi_priv.main_dir_kset->kobj, &reset_bios.attr);
--	}
--	return ret;
--}
-+	if (ret)
-+		return ret;
-
--static void release_reset_bios_data(void)
--{
--	sysfs_remove_file(&wmi_priv.main_dir_kset->kobj, &reset_bios.attr);
--	sysfs_remove_file(&wmi_priv.main_dir_kset->kobj, &pending_reboot.attr);
-+	return 0;
- }
-
- static ssize_t wmi_sysman_attr_show(struct kobject *kobj, struct attribute *attr,
-@@ -373,8 +365,6 @@ static void destroy_attribute_objs(struct kset *kset)
-  */
- static void release_attributes_data(void)
- {
--	release_reset_bios_data();
--
- 	mutex_lock(&wmi_priv.mutex);
- 	exit_enum_attributes();
- 	exit_int_attributes();
-@@ -386,11 +376,13 @@ static void release_attributes_data(void)
- 		wmi_priv.authentication_dir_kset = NULL;
- 	}
- 	if (wmi_priv.main_dir_kset) {
-+		sysfs_remove_file(&wmi_priv.main_dir_kset->kobj, &reset_bios.attr);
-+		sysfs_remove_file(&wmi_priv.main_dir_kset->kobj, &pending_reboot.attr);
- 		destroy_attribute_objs(wmi_priv.main_dir_kset);
- 		kset_unregister(wmi_priv.main_dir_kset);
-+		wmi_priv.main_dir_kset = NULL;
- 	}
- 	mutex_unlock(&wmi_priv.mutex);
--
- }
-
- /**
-@@ -497,7 +489,6 @@ static int init_bios_attributes(int attr_type, const char *guid)
-
- err_attr_init:
- 	mutex_unlock(&wmi_priv.mutex);
--	release_attributes_data();
- 	kfree(obj);
- 	return retval;
- }
-@@ -513,102 +504,91 @@ static int __init sysman_init(void)
- 	}
-
- 	ret = init_bios_attr_set_interface();
--	if (ret || !wmi_priv.bios_attr_wdev) {
--		pr_debug("failed to initialize set interface\n");
--		goto fail_set_interface;
--	}
-+	if (ret)
-+		return ret;
-
- 	ret = init_bios_attr_pass_interface();
--	if (ret || !wmi_priv.password_attr_wdev) {
--		pr_debug("failed to initialize pass interface\n");
--		goto fail_pass_interface;
-+	if (ret)
-+		goto err_exit_bios_attr_set_interface;
-+
-+	if (!wmi_priv.bios_attr_wdev || !wmi_priv.password_attr_wdev) {
-+		pr_debug("failed to find set or pass interface\n");
-+		ret = -ENODEV;
-+		goto err_exit_bios_attr_pass_interface;
- 	}
-
- 	ret = class_register(&firmware_attributes_class);
- 	if (ret)
--		goto fail_class;
-+		goto err_exit_bios_attr_pass_interface;
-
- 	wmi_priv.class_dev = device_create(&firmware_attributes_class, NULL, MKDEV(0, 0),
- 				  NULL, "%s", DRIVER_NAME);
- 	if (IS_ERR(wmi_priv.class_dev)) {
- 		ret = PTR_ERR(wmi_priv.class_dev);
--		goto fail_classdev;
-+		goto err_unregister_class;
- 	}
-
- 	wmi_priv.main_dir_kset = kset_create_and_add("attributes", NULL,
- 						     &wmi_priv.class_dev->kobj);
- 	if (!wmi_priv.main_dir_kset) {
- 		ret = -ENOMEM;
--		goto fail_main_kset;
-+		goto err_destroy_classdev;
- 	}
-
- 	wmi_priv.authentication_dir_kset = kset_create_and_add("authentication", NULL,
- 								&wmi_priv.class_dev->kobj);
- 	if (!wmi_priv.authentication_dir_kset) {
- 		ret = -ENOMEM;
--		goto fail_authentication_kset;
-+		goto err_release_attributes_data;
- 	}
-
- 	ret = create_attributes_level_sysfs_files();
- 	if (ret) {
- 		pr_debug("could not create reset BIOS attribute\n");
--		goto fail_reset_bios;
-+		goto err_release_attributes_data;
- 	}
-
- 	ret = init_bios_attributes(ENUM, DELL_WMI_BIOS_ENUMERATION_ATTRIBUTE_GUID);
- 	if (ret) {
- 		pr_debug("failed to populate enumeration type attributes\n");
--		goto fail_create_group;
-+		goto err_release_attributes_data;
- 	}
-
- 	ret = init_bios_attributes(INT, DELL_WMI_BIOS_INTEGER_ATTRIBUTE_GUID);
- 	if (ret) {
- 		pr_debug("failed to populate integer type attributes\n");
--		goto fail_create_group;
-+		goto err_release_attributes_data;
- 	}
-
- 	ret = init_bios_attributes(STR, DELL_WMI_BIOS_STRING_ATTRIBUTE_GUID);
- 	if (ret) {
- 		pr_debug("failed to populate string type attributes\n");
--		goto fail_create_group;
-+		goto err_release_attributes_data;
- 	}
-
- 	ret = init_bios_attributes(PO, DELL_WMI_BIOS_PASSOBJ_ATTRIBUTE_GUID);
- 	if (ret) {
- 		pr_debug("failed to populate pass object type attributes\n");
--		goto fail_create_group;
-+		goto err_release_attributes_data;
- 	}
-
- 	return 0;
-
--fail_create_group:
-+err_release_attributes_data:
- 	release_attributes_data();
-
--fail_reset_bios:
--	if (wmi_priv.authentication_dir_kset) {
--		kset_unregister(wmi_priv.authentication_dir_kset);
--		wmi_priv.authentication_dir_kset = NULL;
--	}
--
--fail_authentication_kset:
--	if (wmi_priv.main_dir_kset) {
--		kset_unregister(wmi_priv.main_dir_kset);
--		wmi_priv.main_dir_kset = NULL;
--	}
--
--fail_main_kset:
-+err_destroy_classdev:
- 	device_destroy(&firmware_attributes_class, MKDEV(0, 0));
-
--fail_classdev:
-+err_unregister_class:
- 	class_unregister(&firmware_attributes_class);
-
--fail_class:
-+err_exit_bios_attr_pass_interface:
- 	exit_bios_attr_pass_interface();
-
--fail_pass_interface:
-+err_exit_bios_attr_set_interface:
- 	exit_bios_attr_set_interface();
-
--fail_set_interface:
- 	return ret;
- }
-
 diff --git a/drivers/platform/x86/ideapad-laptop.c b/drivers/platform/x86/ideapad-laptop.c
 index 5b81bafa5c16..cc42af2a0a98 100644
 --- a/drivers/platform/x86/ideapad-laptop.c
@@ -2772,29 +2715,6 @@ index 2f5b8d09143e..57cc92891a57 100644
  	{ }
  };
 
-diff --git a/drivers/platform/x86/intel-vbtn.c b/drivers/platform/x86/intel-vbtn.c
-index 30a9062d2b4b..a90c32d072da 100644
---- a/drivers/platform/x86/intel-vbtn.c
-+++ b/drivers/platform/x86/intel-vbtn.c
-@@ -47,8 +47,16 @@ static const struct key_entry intel_vbtn_keymap[] = {
- };
-
- static const struct key_entry intel_vbtn_switchmap[] = {
--	{ KE_SW,     0xCA, { .sw = { SW_DOCK, 1 } } },		/* Docked */
--	{ KE_SW,     0xCB, { .sw = { SW_DOCK, 0 } } },		/* Undocked */
-+	/*
-+	 * SW_DOCK should only be reported for docking stations, but DSDTs using the
-+	 * intel-vbtn code, always seem to use this for 2-in-1s / convertibles and set
-+	 * SW_DOCK=1 when in laptop-mode (in tandem with setting SW_TABLET_MODE=0).
-+	 * This causes userspace to think the laptop is docked to a port-replicator
-+	 * and to disable suspend-on-lid-close, which is undesirable.
-+	 * Map the dock events to KEY_IGNORE to avoid this broken SW_DOCK reporting.
-+	 */
-+	{ KE_IGNORE, 0xCA, { .sw = { SW_DOCK, 1 } } },		/* Docked */
-+	{ KE_IGNORE, 0xCB, { .sw = { SW_DOCK, 0 } } },		/* Undocked */
- 	{ KE_SW,     0xCC, { .sw = { SW_TABLET_MODE, 1 } } },	/* Tablet */
- 	{ KE_SW,     0xCD, { .sw = { SW_TABLET_MODE, 0 } } },	/* Laptop */
- };
 diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
 index f3e8eca8d86d..9ecf7829b3d8 100644
 --- a/drivers/platform/x86/thinkpad_acpi.c
