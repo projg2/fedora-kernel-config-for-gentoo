@@ -1,3 +1,12 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/593117da3c5aaaa2f9af01513a9aa7a275e67701
+ 593117da3c5aaaa2f9af01513a9aa7a275e67701 drm/i915: Disable LTTPR support when the DPCD rev < 1.4
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/4cf60312635599acf0e70c29d7de0355426d9165
+ 4cf60312635599acf0e70c29d7de0355426d9165 drm/i915/dp: Prevent setting the LTTPR LT mode if no LTTPRs are detected
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/044d6c51c6cd6c419c17766f1fe0e03161afee6d
+ 044d6c51c6cd6c419c17766f1fe0e03161afee6d drm/i915/ilk-glk: Fix link training on links with LTTPRs
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/f93a5201c2ef7e9f70aa68621100f868764c2b15
  f93a5201c2ef7e9f70aa68621100f868764c2b15 drm/i915/tgl/psr: Disable PSR on Tigerlake for now
 
