@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/867c17b1e141b774eb34d56a6ebc9c6c5f259b4b
+ 867c17b1e141b774eb34d56a6ebc9c6c5f259b4b REDHAT: coresight: etm4x: Disable coresight on HPE Apollo 70
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/da4e612568dc657270f6f40d79c948c764d8b689
  da4e612568dc657270f6f40d79c948c764d8b689 Revert "mm/kmemleak: skip late_init if not skip disable"
 

@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc6.184
+%global distro_build 0.rc6.20210407git2d743660786e.185
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.12.0
-%define pkgrelease 0.rc6.184
+%define pkgrelease 0.rc6.20210407git2d743660786e.185
 
 # This is needed to do merge window version magic
 %define patchlevel 12
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.184%{?buildid}%{?dist}
+%define specrelease 0.rc6.20210407git2d743660786e.185%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -203,7 +203,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.12
@@ -620,7 +620,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12-rc6.tar.xz
+Source0: linux-20210407git2d743660786e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1274,8 +1274,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12-rc6 -c
-mv linux-5.12-rc6 linux-%{KVERREL}
+%setup -q -n kernel-20210407git2d743660786e -c
+mv linux-20210407git2d743660786e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2789,6 +2789,11 @@ fi
 #
 #
 %changelog
+* Wed Apr 07 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc6.20210407git2d743660786e.185]
+- common/ark: cleanup and unify the parport configs (Peter Robinson)
+- iommu/vt-d: enable INTEL_IDXD_SVM for both fedora and rhel (Jerry Snitselaar)
+- REDHAT: coresight: etm4x: Disable coresight on HPE Apollo 70 (Jeremy Linton)
+
 * Wed Mar 31 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc5.20210331git2bb25b3a748a.181]
 - configs/common/generic: disable CONFIG_SLAB_MERGE_DEFAULT (Rafael Aquini)
 - Remove _legacy_common_support (Justin M. Forbes)

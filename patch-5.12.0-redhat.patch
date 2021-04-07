@@ -1,67 +1,68 @@
- Documentation/admin-guide/kdump/kdump.rst       |  11 +
- Documentation/admin-guide/kernel-parameters.txt |   8 +
- Kconfig                                         |   2 +
- Kconfig.redhat                                  |  17 ++
- Makefile                                        |  13 +-
- arch/arm/Kconfig                                |   4 +-
- arch/arm64/Kconfig                              |   3 +-
- arch/arm64/kernel/acpi.c                        |   4 +
- arch/s390/include/asm/ipl.h                     |   1 +
- arch/s390/kernel/ipl.c                          |   5 +
- arch/s390/kernel/setup.c                        |   4 +
- arch/x86/kernel/cpu/common.c                    |   1 +
- arch/x86/kernel/setup.c                         |  71 ++++--
- drivers/acpi/apei/hest.c                        |   8 +
- drivers/acpi/irq.c                              |  17 +-
- drivers/acpi/scan.c                             |   9 +
- drivers/ata/libahci.c                           |  18 ++
- drivers/char/ipmi/ipmi_dmi.c                    |  15 ++
- drivers/char/ipmi/ipmi_msghandler.c             |  16 +-
- drivers/firmware/efi/Makefile                   |   1 +
- drivers/firmware/efi/efi.c                      | 124 +++++++---
- drivers/firmware/efi/secureboot.c               |  38 +++
- drivers/hid/hid-rmi.c                           |  64 -----
- drivers/infiniband/sw/rxe/rxe.c                 |   2 +
- drivers/input/rmi4/rmi_driver.c                 | 124 ++++++----
- drivers/iommu/iommu.c                           |  22 ++
- drivers/message/fusion/mptsas.c                 |  10 +
- drivers/message/fusion/mptspi.c                 |  11 +
- drivers/net/ethernet/intel/ice/ice_main.c       |   1 +
- drivers/pci/pci-driver.c                        |  29 +++
- drivers/pci/quirks.c                            |  24 ++
- drivers/scsi/aacraid/linit.c                    |   2 +
- drivers/scsi/be2iscsi/be_main.c                 |   2 +
- drivers/scsi/hpsa.c                             |   4 +
- drivers/scsi/lpfc/lpfc_ids.h                    |  14 ++
- drivers/scsi/megaraid/megaraid_sas_base.c       |   2 +
- drivers/scsi/mpt3sas/mpt3sas_scsih.c            |   4 +
- drivers/scsi/qla2xxx/qla_os.c                   |   6 +
- drivers/scsi/qla4xxx/ql4_os.c                   |   2 +
- drivers/scsi/smartpqi/smartpqi_init.c           |  16 ++
- drivers/usb/core/hub.c                          |   7 +
- include/linux/efi.h                             |  22 +-
- include/linux/kernel.h                          |  34 ++-
- include/linux/lsm_hook_defs.h                   |   2 +
- include/linux/lsm_hooks.h                       |   6 +
- include/linux/module.h                          |   1 +
- include/linux/pci.h                             |   4 +
- include/linux/rh_kabi.h                         | 297 ++++++++++++++++++++++++
- include/linux/rmi.h                             |   1 +
- include/linux/security.h                        |   5 +
- kernel/Makefile                                 |   1 +
- kernel/bpf/syscall.c                            |  27 ++-
- kernel/crash_core.c                             |  28 ++-
- kernel/module.c                                 |   2 +
- kernel/module_signing.c                         |   9 +-
- kernel/panic.c                                  |  14 ++
- kernel/rh_taint.c                               |  93 ++++++++
- scripts/mod/modpost.c                           |   8 +
- scripts/tags.sh                                 |   2 +
- security/integrity/platform_certs/load_uefi.c   |   6 +-
- security/lockdown/Kconfig                       |  13 ++
- security/lockdown/lockdown.c                    |   1 +
- security/security.c                             |   6 +
- 63 files changed, 1138 insertions(+), 180 deletions(-)
+ Documentation/admin-guide/kdump/kdump.rst          |  11 +
+ Documentation/admin-guide/kernel-parameters.txt    |   8 +
+ Kconfig                                            |   2 +
+ Kconfig.redhat                                     |  17 ++
+ Makefile                                           |  13 +-
+ arch/arm/Kconfig                                   |   4 +-
+ arch/arm64/Kconfig                                 |   3 +-
+ arch/arm64/kernel/acpi.c                           |   4 +
+ arch/s390/include/asm/ipl.h                        |   1 +
+ arch/s390/kernel/ipl.c                             |   5 +
+ arch/s390/kernel/setup.c                           |   4 +
+ arch/x86/kernel/cpu/common.c                       |   1 +
+ arch/x86/kernel/setup.c                            |  71 ++++-
+ drivers/acpi/apei/hest.c                           |   8 +
+ drivers/acpi/irq.c                                 |  17 +-
+ drivers/acpi/scan.c                                |   9 +
+ drivers/ata/libahci.c                              |  18 ++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 ++
+ drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
+ drivers/firmware/efi/Makefile                      |   1 +
+ drivers/firmware/efi/efi.c                         | 124 ++++++---
+ drivers/firmware/efi/secureboot.c                  |  38 +++
+ drivers/hid/hid-rmi.c                              |  64 -----
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++
+ drivers/infiniband/sw/rxe/rxe.c                    |   2 +
+ drivers/input/rmi4/rmi_driver.c                    | 124 +++++----
+ drivers/iommu/iommu.c                              |  22 ++
+ drivers/message/fusion/mptsas.c                    |  10 +
+ drivers/message/fusion/mptspi.c                    |  11 +
+ drivers/net/ethernet/intel/ice/ice_main.c          |   1 +
+ drivers/pci/pci-driver.c                           |  29 ++
+ drivers/pci/quirks.c                               |  24 ++
+ drivers/scsi/aacraid/linit.c                       |   2 +
+ drivers/scsi/be2iscsi/be_main.c                    |   2 +
+ drivers/scsi/hpsa.c                                |   4 +
+ drivers/scsi/lpfc/lpfc_ids.h                       |  14 +
+ drivers/scsi/megaraid/megaraid_sas_base.c          |   2 +
+ drivers/scsi/mpt3sas/mpt3sas_scsih.c               |   4 +
+ drivers/scsi/qla2xxx/qla_os.c                      |   6 +
+ drivers/scsi/qla4xxx/ql4_os.c                      |   2 +
+ drivers/scsi/smartpqi/smartpqi_init.c              |  16 ++
+ drivers/usb/core/hub.c                             |   7 +
+ include/linux/efi.h                                |  22 +-
+ include/linux/kernel.h                             |  34 ++-
+ include/linux/lsm_hook_defs.h                      |   2 +
+ include/linux/lsm_hooks.h                          |   6 +
+ include/linux/module.h                             |   1 +
+ include/linux/pci.h                                |   4 +
+ include/linux/rh_kabi.h                            | 297 +++++++++++++++++++++
+ include/linux/rmi.h                                |   1 +
+ include/linux/security.h                           |   5 +
+ kernel/Makefile                                    |   1 +
+ kernel/bpf/syscall.c                               |  27 +-
+ kernel/crash_core.c                                |  28 +-
+ kernel/module.c                                    |   2 +
+ kernel/module_signing.c                            |   9 +-
+ kernel/panic.c                                     |  14 +
+ kernel/rh_taint.c                                  |  93 +++++++
+ scripts/mod/modpost.c                              |   8 +
+ scripts/tags.sh                                    |   2 +
+ security/integrity/platform_certs/load_uefi.c      |   6 +-
+ security/lockdown/Kconfig                          |  13 +
+ security/lockdown/lockdown.c                       |   1 +
+ security/security.c                                |   6 +
+ 64 files changed, 1157 insertions(+), 180 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -877,6 +878,57 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.proto_name = "hid";
  	data->xport.ops = &hid_rmi_ops;
 
+diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+index 15016f757828..59326b940b3a 100644
+--- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
++++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+@@ -9,6 +9,7 @@
+ #include <linux/init.h>
+ #include <linux/types.h>
+ #include <linux/device.h>
++#include <linux/dmi.h>
+ #include <linux/io.h>
+ #include <linux/err.h>
+ #include <linux/fs.h>
+@@ -1963,6 +1964,16 @@ static const struct amba_id etm4_ids[] = {
+ 	{},
+ };
+
++static const struct dmi_system_id broken_coresight[] = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "HPE"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Apollo 70"),
++		},
++	},
++	{ }	/* terminating entry */
++};
++
+ MODULE_DEVICE_TABLE(amba, etm4_ids);
+
+ static struct amba_driver etm4x_amba_driver = {
+@@ -1995,6 +2006,11 @@ static int __init etm4x_init(void)
+ {
+ 	int ret;
+
++	if (dmi_check_system(broken_coresight)) {
++		pr_info("ETM4 disabled due to firmware bug\n");
++		return 0;
++	}
++
+ 	ret = etm4_pm_setup();
+
+ 	/* etm4_pm_setup() does its own cleanup - exit on error */
+@@ -2021,6 +2037,9 @@ static int __init etm4x_init(void)
+
+ static void __exit etm4x_exit(void)
+ {
++	if (dmi_check_system(broken_coresight))
++		return;
++
+ 	amba_driver_unregister(&etm4x_amba_driver);
+ 	platform_driver_unregister(&etm4_platform_driver);
+ 	etm4_pm_clear();
 diff --git a/drivers/infiniband/sw/rxe/rxe.c b/drivers/infiniband/sw/rxe/rxe.c
 index 95f0de0c8b49..faa8a6cadef1 100644
 --- a/drivers/infiniband/sw/rxe/rxe.c
