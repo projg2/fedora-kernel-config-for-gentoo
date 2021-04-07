@@ -1,3 +1,15 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/10b9b8dbb3f5967b6f276f28182466fe45b3b0bc
+ 10b9b8dbb3f5967b6f276f28182466fe45b3b0bc Backport of SOF audio hang fix for X1 Carbon 9
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/01612cca904ceb26196b1382117e58109b99a38f
+ 01612cca904ceb26196b1382117e58109b99a38f drm/amdgpu: check alignment on CPU page for bo map
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/060b78036fafaaf280c24cc9b684c8398e0add8d
+ 060b78036fafaaf280c24cc9b684c8398e0add8d drm/amdgpu: Set a suitable dev_info.gart_page_size
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/a13ce1820c09914aab4c46fd600d2e6c44ddfa65
+ a13ce1820c09914aab4c46fd600d2e6c44ddfa65 drm/amdgpu: fix offset calculation in amdgpu_vm_bo_clear_mappings()
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/593117da3c5aaaa2f9af01513a9aa7a275e67701
  593117da3c5aaaa2f9af01513a9aa7a275e67701 drm/i915: Disable LTTPR support when the DPCD rev < 1.4
 
