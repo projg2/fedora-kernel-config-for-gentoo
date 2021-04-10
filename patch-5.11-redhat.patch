@@ -14,6 +14,7 @@
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/setup.c                            |  22 +-
+ arch/x86/kvm/hyperv.c                              |   2 +-
  drivers/acpi/Kconfig                               |   3 +
  drivers/acpi/Makefile                              |   1 +
  drivers/acpi/apei/hest.c                           |   8 +
@@ -30,7 +31,7 @@
  drivers/gpu/drm/i915/display/intel_dp.c            |  11 +-
  .../gpu/drm/i915/display/intel_dp_link_training.c  |  91 ++--
  .../gpu/drm/i915/display/intel_dp_link_training.h  |   2 +-
- drivers/gpu/drm/i915/display/intel_psr.c           |   9 +-
+ drivers/gpu/drm/i915/display/intel_psr.c           |  14 +
  drivers/gpu/drm/panel/Kconfig                      |   9 +
  drivers/gpu/drm/panel/Makefile                     |   1 +
  drivers/gpu/drm/panel/panel-xingbangda-xbd599.c    | 366 +++++++++++++++
@@ -40,13 +41,12 @@
  drivers/iommu/iommu.c                              |  22 +
  drivers/pci/controller/dwc/Kconfig                 |  10 +-
  drivers/pci/controller/dwc/Makefile                |   2 +-
- drivers/pci/controller/dwc/pcie-tegra194.c         | 102 ++++
+ drivers/pci/controller/dwc/pcie-tegra194.c         | 102 +++++
  drivers/pci/controller/pcie-brcmstb.c              |   1 +
  drivers/pci/quirks.c                               |  24 +
  drivers/platform/x86/Kconfig                       |   2 +
  drivers/platform/x86/ideapad-laptop.c              | 289 ++++++++++++
- drivers/platform/x86/intel-hid.c                   |   7 +
- drivers/platform/x86/thinkpad_acpi.c               | 518 ++++++++++++++++++++-
+ drivers/platform/x86/thinkpad_acpi.c               | 510 ++++++++++++++++++++-
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
  include/linux/efi.h                                |  22 +-
@@ -75,7 +75,7 @@
  sound/soc/sof/ops.h                                |   8 +
  sound/soc/sof/sof-pci-dev.c                        |   2 +-
  sound/soc/sof/sof-priv.h                           |   4 +-
- 77 files changed, 2294 insertions(+), 260 deletions(-)
+ 77 files changed, 2288 insertions(+), 258 deletions(-)
 
 diff --git a/Documentation/ABI/testing/sysfs-platform_profile b/Documentation/ABI/testing/sysfs-platform_profile
 new file mode 100644
@@ -289,7 +289,7 @@ index 000000000000..c33a71263d9e
 + 2. Add the new profile name, along with a clear description of the
 +    expected behaviour, to the sysfs-platform_profile ABI documentation.
 diff --git a/Makefile b/Makefile
-index 1e31504aab61..59a5c8126afe 100644
+index 1be83283e032..ca17261905ec 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -348,10 +348,10 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index e42da99db91f..383d80dd03c7 100644
+index 2517dd8c5a4d..c8dcf2660b24 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -894,7 +894,7 @@ endchoice
+@@ -904,7 +904,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -360,7 +360,7 @@ index e42da99db91f..383d80dd03c7 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1148,6 +1148,7 @@ config XEN
+@@ -1158,6 +1158,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if (ARM64_64K_PAGES && TRANSPARENT_HUGEPAGE)
@@ -497,6 +497,19 @@ index df964571a6b4..200db376f728 100644
 
  	reserve_initrd();
 
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index 922c69dcca4d..cee2cb0f6e5f 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -155,7 +155,7 @@ static struct kvm_vcpu_hv_synic *synic_get(struct kvm *kvm, u32 vpidx)
+ 	struct kvm_vcpu_hv_synic *synic;
+
+ 	vcpu = get_vcpu_by_vpidx(kvm, vpidx);
+-	if (!vcpu)
++	if (!vcpu || !vcpu_to_hv_vcpu(vcpu))
+ 		return NULL;
+ 	synic = vcpu_to_synic(vcpu);
+ 	return (synic->active) ? synic : NULL;
 diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
 index ebcf534514be..7265173689ce 100644
 --- a/drivers/acpi/Kconfig
@@ -1316,26 +1329,30 @@ index 6a1f76bd8c75..9cb7c28027f0 100644
  void intel_dp_get_adjust_train(struct intel_dp *intel_dp,
  			       const struct intel_crtc_state *crtc_state,
 diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
-index b3631b722de3..0b8866900dfb 100644
+index b3631b722de3..5089dbd240f4 100644
 --- a/drivers/gpu/drm/i915/display/intel_psr.c
 +++ b/drivers/gpu/drm/i915/display/intel_psr.c
-@@ -1708,9 +1708,14 @@ void intel_psr_init(struct drm_i915_private *dev_priv)
- 		 */
- 		dev_priv->hsw_psr_mmio_adjust = _SRD_CTL_EDP - _HSW_EDP_PSR_BASE;
+@@ -653,6 +653,20 @@ tgl_dc3co_exitline_compute_config(struct intel_dp *intel_dp,
+ 	struct drm_i915_private *dev_priv = dp_to_i915(intel_dp);
+ 	u32 exit_scanlines;
 
--	if (dev_priv->params.enable_psr == -1)
--		if (INTEL_GEN(dev_priv) < 9 || !dev_priv->vbt.psr.enable)
-+	if (dev_priv->params.enable_psr == -1) {
-+		if (INTEL_GEN(dev_priv) < 9 || !dev_priv->vbt.psr.enable) {
- 			dev_priv->params.enable_psr = 0;
-+		} else if (INTEL_GEN(dev_priv) == 12) {
-+			/* See https://gitlab.freedesktop.org/drm/intel/-/issues/3134 */
-+			dev_priv->params.enable_psr = 0;
-+		}
-+	}
++	/*
++	 * FIXME: Due to the changed sequence of activating/deactivating DC3CO,
++	 * disable DC3CO until the changed dc3co activating/deactivating sequence
++	 * is applied. B.Specs:49196
++	 */
++	return;
++
++	/*
++	 * DMC's DC3CO exit mechanism has an issue with Selective Fecth
++	 * TODO: when the issue is addressed, this restriction should be removed.
++	 */
++	if (crtc_state->enable_psr2_sel_fetch)
++		return;
++
+ 	if (!(dev_priv->csr.allowed_dc_mask & DC_STATE_EN_DC3CO))
+ 		return;
 
- 	/* Set link_standby x link_off defaults */
- 	if (IS_HASWELL(dev_priv) || IS_BROADWELL(dev_priv))
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
 index b4e021ea30f9..5687b745ebe2 100644
 --- a/drivers/gpu/drm/panel/Kconfig
@@ -2706,26 +2723,8 @@ index 5b81bafa5c16..cc42af2a0a98 100644
  	return 0;
  }
  #endif
-diff --git a/drivers/platform/x86/intel-hid.c b/drivers/platform/x86/intel-hid.c
-index 2f5b8d09143e..57cc92891a57 100644
---- a/drivers/platform/x86/intel-hid.c
-+++ b/drivers/platform/x86/intel-hid.c
-@@ -90,6 +90,13 @@ static const struct dmi_system_id button_array_table[] = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "HP Spectre x2 Detachable"),
- 		},
- 	},
-+	{
-+		.ident = "Lenovo ThinkPad X1 Tablet Gen 2",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_FAMILY, "ThinkPad X1 Tablet Gen 2"),
-+		},
-+	},
- 	{ }
- };
-
 diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index f3e8eca8d86d..9ecf7829b3d8 100644
+index 9f8da7155a89..9ecf7829b3d8 100644
 --- a/drivers/platform/x86/thinkpad_acpi.c
 +++ b/drivers/platform/x86/thinkpad_acpi.c
 @@ -66,6 +66,7 @@
@@ -2736,28 +2735,7 @@ index f3e8eca8d86d..9ecf7829b3d8 100644
  #include <sound/core.h>
  #include <sound/control.h>
  #include <sound/initval.h>
-@@ -4080,13 +4081,19 @@ static bool hotkey_notify_6xxx(const u32 hkey,
-
- 	case TP_HKEY_EV_KEY_NUMLOCK:
- 	case TP_HKEY_EV_KEY_FN:
--	case TP_HKEY_EV_KEY_FN_ESC:
- 		/* key press events, we just ignore them as long as the EC
- 		 * is still reporting them in the normal keyboard stream */
- 		*send_acpi_ev = false;
- 		*ignore_acpi_ev = true;
- 		return true;
-
-+	case TP_HKEY_EV_KEY_FN_ESC:
-+		/* Get the media key status to foce the status LED to update */
-+		acpi_evalf(hkey_handle, NULL, "GMKS", "v");
-+		*send_acpi_ev = false;
-+		*ignore_acpi_ev = true;
-+		return true;
-+
- 	case TP_HKEY_EV_TABLET_CHANGED:
- 		tpacpi_input_send_tabletsw();
- 		hotkey_tablet_mode_notify_change();
-@@ -9844,6 +9851,11 @@ static struct ibm_struct lcdshadow_driver_data = {
+@@ -9850,6 +9851,11 @@ static struct ibm_struct lcdshadow_driver_data = {
   * Thinkpad sensor interfaces
   */
 
@@ -2769,7 +2747,7 @@ index f3e8eca8d86d..9ecf7829b3d8 100644
  #define DYTC_CMD_GET          2 /* To get current IC function and mode */
  #define DYTC_GET_LAPMODE_BIT 17 /* Set when in lapmode */
 
-@@ -9854,17 +9866,56 @@ static bool has_palmsensor;
+@@ -9860,17 +9866,56 @@ static bool has_palmsensor;
  static bool has_lapsensor;
  static bool palm_state;
  static bool lap_state;
@@ -2831,7 +2809,7 @@ index f3e8eca8d86d..9ecf7829b3d8 100644
 
  	*present = true; /*If we get his far, we have lapmode support*/
  	*state = output & BIT(DYTC_GET_LAPMODE_BIT) ? true : false;
-@@ -9962,7 +10013,18 @@ static int tpacpi_proxsensor_init(struct ibm_init_struct *iibm)
+@@ -9968,7 +10013,18 @@ static int tpacpi_proxsensor_init(struct ibm_init_struct *iibm)
  		if (err)
  			return err;
  	}
@@ -2851,7 +2829,7 @@ index f3e8eca8d86d..9ecf7829b3d8 100644
  		err = sysfs_create_file(&tpacpi_pdev->dev.kobj, &dev_attr_dytc_lapmode.attr);
  		if (err)
  			return err;
-@@ -9983,6 +10045,434 @@ static struct ibm_struct proxsensor_driver_data = {
+@@ -9989,6 +10045,434 @@ static struct ibm_struct proxsensor_driver_data = {
  	.exit = proxsensor_exit,
  };
 
@@ -3286,7 +3264,7 @@ index f3e8eca8d86d..9ecf7829b3d8 100644
  /****************************************************************************
   ****************************************************************************
   *
-@@ -10031,8 +10521,12 @@ static void tpacpi_driver_event(const unsigned int hkey_event)
+@@ -10037,8 +10521,12 @@ static void tpacpi_driver_event(const unsigned int hkey_event)
  		mutex_unlock(&kbdlight_mutex);
  	}
 
@@ -3300,7 +3278,7 @@ index f3e8eca8d86d..9ecf7829b3d8 100644
  }
 
  static void hotkey_driver_event(const unsigned int scancode)
-@@ -10475,6 +10969,14 @@ static struct ibm_init_struct ibms_init[] __initdata = {
+@@ -10481,6 +10969,14 @@ static struct ibm_init_struct ibms_init[] __initdata = {
  		.init = tpacpi_proxsensor_init,
  		.data = &proxsensor_driver_data,
  	},
