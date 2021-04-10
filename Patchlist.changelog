@@ -1,3 +1,12 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/2632d432606c16de479f4fd0140a6ddb56ebd2dd
+ 2632d432606c16de479f4fd0140a6ddb56ebd2dd Re-enable PSR2 on Tigerlake with new workarounds from Intel
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/6f135ea15bdf3954be0b135f4d3ca830c6582ee7
+ 6f135ea15bdf3954be0b135f4d3ca830c6582ee7 Fix build with patch for CVE-2021-30178
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/b8493c09d2961b8e49a9ab355f08992406addefa
+ b8493c09d2961b8e49a9ab355f08992406addefa KVM: x86: hyper-v: Fix Hyper-V context null-ptr-deref
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/10b9b8dbb3f5967b6f276f28182466fe45b3b0bc
  10b9b8dbb3f5967b6f276f28182466fe45b3b0bc Backport of SOF audio hang fix for X1 Carbon 9
 
