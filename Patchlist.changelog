@@ -1,6 +1,9 @@
 https://gitlab.com/cki-project/kernel-ark/-/commit/2632d432606c16de479f4fd0140a6ddb56ebd2dd
  2632d432606c16de479f4fd0140a6ddb56ebd2dd Re-enable PSR2 on Tigerlake with new workarounds from Intel
 
+https://gitlab.com/cki-project/kernel-ark/-/commit/06607487ea87ac1e9447fdea23a8bc9ab7c2ba49
+ 06607487ea87ac1e9447fdea23a8bc9ab7c2ba49 drm/i915/gen11+: Only load DRAM information from pcode
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/6f135ea15bdf3954be0b135f4d3ca830c6582ee7
  6f135ea15bdf3954be0b135f4d3ca830c6582ee7 Fix build with patch for CVE-2021-30178
 

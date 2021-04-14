@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.11.13
+%define rpmversion 5.11.14
 %define stableversion 5.11
 %define pkgrelease 200
 
@@ -603,7 +603,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.11.13.tar.xz
+Source0: linux-5.11.14.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1251,8 +1251,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.11.13 -c
-mv linux-5.11.13 linux-%{KVERREL}
+%setup -q -n kernel-5.11.14 -c
+mv linux-5.11.14 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2765,7 +2765,10 @@ fi
 #
 #
 %changelog
-* Sat Apr 10 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.13-200]
+* Wed Apr 14 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.14-0]
+- Quick hack to reset release to 0 (Justin M. Forbes)
+- Add clarity to rebase notes since that change was backed out (Justin M. Forbes)
+- drm/i915/gen11+: Only load DRAM information from pcode (José Roberto de Souza)
 - Add CONFIG_NVIDIA_CARMEL_CNP_ERRATUM to RHEL configs too (Justin M. Forbes)
 - Add config for CONFIG_NVIDIA_CARMEL_CNP_ERRATUM (Justin M. Forbes)
 
