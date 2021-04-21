@@ -292,7 +292,7 @@ index 000000000000..c33a71263d9e
 + 2. Add the new profile name, along with a clear description of the
 +    expected behaviour, to the sysfs-platform_profile ABI documentation.
 diff --git a/Makefile b/Makefile
-index bcd8764fead9..f58195f60045 100644
+index 124d8e200776..17d54943a569 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -304,10 +304,10 @@ index bcd8764fead9..f58195f60045 100644
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 138248999df7..b962482a442e 100644
+index 3d2c684eab77..7a26e2e735d1 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1492,9 +1492,9 @@ config HIGHMEM
+@@ -1498,9 +1498,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -351,7 +351,7 @@ index a13d90206472..6a6aae01755b 100644
 
  #define get_user(x, p)							\
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 2517dd8c5a4d..c8dcf2660b24 100644
+index cd7f725b80d4..63ff09fffd7d 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -904,7 +904,7 @@ endchoice
@@ -454,7 +454,7 @@ index 1fbed91c73bc..73f5724342b1 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index df964571a6b4..200db376f728 100644
+index 54a3048ebc5b..45dabcea1f22 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -19,6 +19,7 @@
@@ -479,7 +479,7 @@ index df964571a6b4..200db376f728 100644
  	dmi_setup();
 
  	/*
-@@ -1116,19 +1124,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1113,19 +1121,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 

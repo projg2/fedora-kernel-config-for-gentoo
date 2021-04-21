@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.11.15
+%define rpmversion 5.11.16
 %define stableversion 5.11
 %define pkgrelease 100
 
@@ -603,7 +603,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.11.15.tar.xz
+Source0: linux-5.11.16.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1251,8 +1251,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.11.15 -c
-mv linux-5.11.15 linux-%{KVERREL}
+%setup -q -n kernel-5.11.16 -c
+mv linux-5.11.16 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2765,6 +2765,9 @@ fi
 #
 #
 %changelog
+* Wed Apr 21 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.16-0]
+- Turn off ADI_AXI_ADC and AD9467 which now require CONFIG_OF (Justin M. Forbes)
+
 * Fri Apr 16 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.15-0]
 - Turn on CONFIG_VDPA_SIM_NET (rhbz 1942343) (Justin M. Forbes)
 
