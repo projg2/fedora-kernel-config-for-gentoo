@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc8.191
+%global distro_build 0.rc8.20210423git7af08140979a.193
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.12.0
-%define pkgrelease 0.rc8.191
+%define pkgrelease 0.rc8.20210423git7af08140979a.193
 
 # This is needed to do merge window version magic
 %define patchlevel 12
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.191%{?buildid}%{?dist}
+%define specrelease 0.rc8.20210423git7af08140979a.193%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -203,7 +203,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.12
@@ -622,7 +622,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12-rc8.tar.xz
+Source0: linux-20210423git7af08140979a.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1276,8 +1276,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12-rc8 -c
-mv linux-5.12-rc8 linux-%{KVERREL}
+%setup -q -n kernel-20210423git7af08140979a -c
+mv linux-20210423git7af08140979a linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2791,6 +2791,16 @@ fi
 #
 #
 %changelog
+* Wed Apr 21 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc8.20210421git7af08140979a.193]
+- Replace /usr/libexec/platform-python with /usr/bin/python3 (David Ward)
+
+* Tue Apr 20 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc8.20210420git7af08140979a.192]
+- Turn off ADI_AXI_ADC and AD9467 which now require CONFIG_OF (Justin M. Forbes)
+- Export ark infrastructure files (Don Zickus)
+- docs: Update docs to reflect newer workflow. (Don Zickus)
+- Use upstream/master for merge-base with fallback to master (Don Zickus)
+- Fedora: Turn off the SND_INTEL_BYT_PREFER_SOF option (Hans de Goede)
+
 * Mon Apr 19 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc8.191]
 - filter-modules.sh.fedora: clean up "netprots" (Paul Bolle)
 - filter-modules.sh.fedora: clean up "scsidrvs" (Paul Bolle)
