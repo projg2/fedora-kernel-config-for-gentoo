@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc8.20210423git7af08140979a.193
+%global distro_build 198
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.12.0
-%define pkgrelease 0.rc8.20210423git7af08140979a.193
+%define pkgrelease 198
 
 # This is needed to do merge window version magic
 %define patchlevel 12
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.20210423git7af08140979a.193%{?buildid}%{?dist}
+%define specrelease 198%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -203,7 +203,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.12
@@ -622,7 +622,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210423git7af08140979a.tar.xz
+Source0: linux-5.12.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1276,8 +1276,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210423git7af08140979a -c
-mv linux-20210423git7af08140979a linux-%{KVERREL}
+%setup -q -n kernel-5.12 -c
+mv linux-5.12 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2791,6 +2791,12 @@ fi
 #
 #
 %changelog
+* Mon Apr 26 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-198]
+- mod-extra.list.fedora: remove 72 unused modules (Paul Bolle)
+
+* Mon Apr 26 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-197]
+- Create ark-latest branch last for CI scripts (Don Zickus)
+
 * Wed Apr 21 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.12.0-0.rc8.20210421git7af08140979a.193]
 - Replace /usr/libexec/platform-python with /usr/bin/python3 (David Ward)
 
