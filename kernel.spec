@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20210428gitacd3d2859453.2
+%global distro_build 0.rc0.20210430git8ca5297e7e38.3
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc0.20210428gitacd3d2859453.2
+%define pkgrelease 0.rc0.20210430git8ca5297e7e38.3
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210428gitacd3d2859453.2%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210430git8ca5297e7e38.3%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -622,7 +622,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-20210428gitacd3d2859453.tar.xz
+Source0: linux-5.12-11146-g8ca5297e7e38.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1276,8 +1276,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-20210428gitacd3d2859453 -c
-mv linux-20210428gitacd3d2859453 linux-%{KVERREL}
+%setup -q -n kernel-5.12-11146-g8ca5297e7e38 -c
+mv linux-5.12-11146-g8ca5297e7e38 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2440,7 +2440,7 @@ if [ -f /etc/sysconfig/kernel ]\
 then\
     . /etc/sysconfig/kernel || exit $?\
 fi\
-if [ "$HARDLINK" != "no" -a -x /usr/sbin/hardlink -a ! -e /run/ostree-booted ] \
+if [ "$HARDLINK" != "no" -a -x /usr/bin/hardlink -a ! -e /run/ostree-booted ] \
 then\
     (cd /usr/src/kernels/%{KVERREL}%{?1:+%{1}} &&\
      /usr/bin/find . -type f | while read f; do\
@@ -2791,6 +2791,18 @@ fi
 #
 #
 %changelog
+* Fri Apr 30 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc0.20210430git8ca5297e7e38.3]
+- hardlink is in /usr/bin/ now (Justin M. Forbes)
+- Ensure CONFIG_KVM_BOOK3S_64_PR stays on in Fedora, even if it is turned off in RHEL (Justin M. Forbes)
+- Set date in package release from repository commit, not system clock (David Ward)
+- Use a better upstream tarball filename for snapshots (David Ward)
+- Don't create empty pending-common files on pending-fedora commits (Don Zickus)
+- nvme: multipath: Change default of kernel NVMe multipath to be disabled (Mike Snitzer)
+- nvme: decouple basic ANA log page re-read support from native multipathing (Mike Snitzer)
+- nvme: allow local retry and proper failover for REQ_FAILFAST_TRANSPORT (Mike Snitzer)
+- nvme: Return BLK_STS_TARGET if the DNR bit is set (Mike Snitzer)
+- Add redhat/configs/pending-common/generic/s390x/zfcpdump/CONFIG_NETFS_SUPPORT (Justin M. Forbes)
+
 * Wed Apr 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc0.20210428gitacd3d2859453.2]
 - Reset the counter as we start the 5.13 merge window (Justin M. Forbes)
 - Create ark-latest branch last for CI scripts (Don Zickus)

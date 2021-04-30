@@ -1,3 +1,15 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/81cf9b7d49bb0a3786746e73d3090d97cefe301e
+ 81cf9b7d49bb0a3786746e73d3090d97cefe301e nvme: multipath: Change default of kernel NVMe multipath to be disabled
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/fb1e1b5878182056becb07f4970e037619a1a0de
+ fb1e1b5878182056becb07f4970e037619a1a0de nvme: decouple basic ANA log page re-read support from native multipathing
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/bbea40fc46cf77b2a44adc23311e11dd3eb32a43
+ bbea40fc46cf77b2a44adc23311e11dd3eb32a43 nvme: allow local retry and proper failover for REQ_FAILFAST_TRANSPORT
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/fdcb96689d55e37b76a424887ef1619550192c69
+ fdcb96689d55e37b76a424887ef1619550192c69 nvme: Return BLK_STS_TARGET if the DNR bit is set
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/b410e179ae9057e517589bb4f5825e758e2c52c1
  b410e179ae9057e517589bb4f5825e758e2c52c1 wireguard: mark as Tech Preview
 
