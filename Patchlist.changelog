@@ -1,3 +1,15 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/3f376f878f898469dfbbc1b244b20ffb69f00076
+ 3f376f878f898469dfbbc1b244b20ffb69f00076 nitro_enclaves: Fix stale file descriptors on failed usercopy
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/8aa4dd3792cb3abf1ddfe8849373c929f766f349
+ 8aa4dd3792cb3abf1ddfe8849373c929f766f349 sfc: ef10: fix TX queue lookup in TX event handling
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/529556bc1873b233571c0b6ef943ab9c95ceb63c
+ 529556bc1873b233571c0b6ef943ab9c95ceb63c sfc: farch: fix TX queue lookup in TX event handling
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/7a830bef2ea006ce525cc542e4b1fb8698c96e70
+ 7a830bef2ea006ce525cc542e4b1fb8698c96e70 sfc: farch: fix TX queue lookup in TX flush done handling
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/2632d432606c16de479f4fd0140a6ddb56ebd2dd
  2632d432606c16de479f4fd0140a6ddb56ebd2dd Re-enable PSR2 on Tigerlake with new workarounds from Intel
 
