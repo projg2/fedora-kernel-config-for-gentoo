@@ -43,6 +43,8 @@
  drivers/hid/hid-rmi.c                              |  64 ---
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
  drivers/iommu/iommu.c                              |  22 +
+ drivers/net/ethernet/sfc/ef10.c                    |   3 +-
+ drivers/net/ethernet/sfc/farch.c                   |  16 +-
  drivers/pci/controller/dwc/Kconfig                 |  10 +-
  drivers/pci/controller/dwc/Makefile                |   2 +-
  drivers/pci/controller/dwc/pcie-tegra194.c         | 102 +++++
@@ -53,6 +55,7 @@
  drivers/platform/x86/thinkpad_acpi.c               | 510 ++++++++++++++++++++-
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
+ drivers/virt/nitro_enclaves/ne_misc_dev.c          |  43 +-
  include/linux/efi.h                                |  22 +-
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -78,7 +81,7 @@
  sound/soc/sof/ops.h                                |   8 +
  sound/soc/sof/sof-pci-dev.c                        |   2 +-
  sound/soc/sof/sof-priv.h                           |   4 +-
- 80 files changed, 2378 insertions(+), 330 deletions(-)
+ 83 files changed, 2404 insertions(+), 366 deletions(-)
 
 diff --git a/Documentation/ABI/testing/sysfs-platform_profile b/Documentation/ABI/testing/sysfs-platform_profile
 new file mode 100644
@@ -292,7 +295,7 @@ index 000000000000..c33a71263d9e
 + 2. Add the new profile name, along with a clear description of the
 +    expected behaviour, to the sysfs-platform_profile ABI documentation.
 diff --git a/Makefile b/Makefile
-index d8367e193232..d0621367191f 100644
+index 6cf79e492f72..9d762784ce21 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -2390,6 +2393,64 @@ index fd5f59373fc6..8a11aa9e0318 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
+diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+index da6886dcac37..4fa72b573c17 100644
+--- a/drivers/net/ethernet/sfc/ef10.c
++++ b/drivers/net/ethernet/sfc/ef10.c
+@@ -2928,8 +2928,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
+
+ 	/* Get the transmit queue */
+ 	tx_ev_q_label = EFX_QWORD_FIELD(*event, ESF_DZ_TX_QLABEL);
+-	tx_queue = efx_channel_get_tx_queue(channel,
+-					    tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
++	tx_queue = channel->tx_queue + (tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
+
+ 	if (!tx_queue->timestamping) {
+ 		/* Transmit completion */
+diff --git a/drivers/net/ethernet/sfc/farch.c b/drivers/net/ethernet/sfc/farch.c
+index d75cf5ff5686..49df02ecee91 100644
+--- a/drivers/net/ethernet/sfc/farch.c
++++ b/drivers/net/ethernet/sfc/farch.c
+@@ -835,14 +835,14 @@ efx_farch_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
+ 		/* Transmit completion */
+ 		tx_ev_desc_ptr = EFX_QWORD_FIELD(*event, FSF_AZ_TX_EV_DESC_PTR);
+ 		tx_ev_q_label = EFX_QWORD_FIELD(*event, FSF_AZ_TX_EV_Q_LABEL);
+-		tx_queue = efx_channel_get_tx_queue(
+-			channel, tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
++		tx_queue = channel->tx_queue +
++				(tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
+ 		efx_xmit_done(tx_queue, tx_ev_desc_ptr);
+ 	} else if (EFX_QWORD_FIELD(*event, FSF_AZ_TX_EV_WQ_FF_FULL)) {
+ 		/* Rewrite the FIFO write pointer */
+ 		tx_ev_q_label = EFX_QWORD_FIELD(*event, FSF_AZ_TX_EV_Q_LABEL);
+-		tx_queue = efx_channel_get_tx_queue(
+-			channel, tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
++		tx_queue = channel->tx_queue +
++				(tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
+
+ 		netif_tx_lock(efx->net_dev);
+ 		efx_farch_notify_tx_desc(tx_queue);
+@@ -1081,16 +1081,16 @@ static void
+ efx_farch_handle_tx_flush_done(struct efx_nic *efx, efx_qword_t *event)
+ {
+ 	struct efx_tx_queue *tx_queue;
++	struct efx_channel *channel;
+ 	int qid;
+
+ 	qid = EFX_QWORD_FIELD(*event, FSF_AZ_DRIVER_EV_SUBDATA);
+ 	if (qid < EFX_MAX_TXQ_PER_CHANNEL * (efx->n_tx_channels + efx->n_extra_tx_channels)) {
+-		tx_queue = efx_get_tx_queue(efx, qid / EFX_MAX_TXQ_PER_CHANNEL,
+-					    qid % EFX_MAX_TXQ_PER_CHANNEL);
+-		if (atomic_cmpxchg(&tx_queue->flush_outstanding, 1, 0)) {
++		channel = efx_get_tx_channel(efx, qid / EFX_MAX_TXQ_PER_CHANNEL);
++		tx_queue = channel->tx_queue + (qid % EFX_MAX_TXQ_PER_CHANNEL);
++		if (atomic_cmpxchg(&tx_queue->flush_outstanding, 1, 0))
+ 			efx_farch_magic_event(tx_queue->channel,
+ 					      EFX_CHANNEL_MAGIC_TX_DRAIN(tx_queue));
+-		}
+ 	}
+ }
+
 diff --git a/drivers/pci/controller/dwc/Kconfig b/drivers/pci/controller/dwc/Kconfig
 index 22c5529e9a65..259ff5ff3f24 100644
 --- a/drivers/pci/controller/dwc/Kconfig
@@ -3606,6 +3667,86 @@ index 7f71218cc1e5..283fc0f41cd2 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/drivers/virt/nitro_enclaves/ne_misc_dev.c b/drivers/virt/nitro_enclaves/ne_misc_dev.c
+index f1964ea4b826..e21e1e86ad15 100644
+--- a/drivers/virt/nitro_enclaves/ne_misc_dev.c
++++ b/drivers/virt/nitro_enclaves/ne_misc_dev.c
+@@ -1524,7 +1524,8 @@ static const struct file_operations ne_enclave_fops = {
+  *			  enclave file descriptor to be further used for enclave
+  *			  resources handling e.g. memory regions and CPUs.
+  * @ne_pci_dev :	Private data associated with the PCI device.
+- * @slot_uid:		Generated unique slot id associated with an enclave.
++ * @slot_uid:		User pointer to store the generated unique slot id
++ *			associated with an enclave to.
+  *
+  * Context: Process context. This function is called with the ne_pci_dev enclave
+  *	    mutex held.
+@@ -1532,7 +1533,7 @@ static const struct file_operations ne_enclave_fops = {
+  * * Enclave fd on success.
+  * * Negative return value on failure.
+  */
+-static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 *slot_uid)
++static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 __user *slot_uid)
+ {
+ 	struct ne_pci_dev_cmd_reply cmd_reply = {};
+ 	int enclave_fd = -1;
+@@ -1634,7 +1635,18 @@ static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 *slot_uid)
+
+ 	list_add(&ne_enclave->enclave_list_entry, &ne_pci_dev->enclaves_list);
+
+-	*slot_uid = ne_enclave->slot_uid;
++	if (copy_to_user(slot_uid, &ne_enclave->slot_uid, sizeof(ne_enclave->slot_uid))) {
++		/*
++		 * As we're holding the only reference to 'enclave_file', fput()
++		 * will call ne_enclave_release() which will do a proper cleanup
++		 * of all so far allocated resources, leaving only the unused fd
++		 * for us to free.
++		 */
++		fput(enclave_file);
++		put_unused_fd(enclave_fd);
++
++		return -EFAULT;
++	}
+
+ 	fd_install(enclave_fd, enclave_file);
+
+@@ -1671,34 +1683,13 @@ static long ne_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 	switch (cmd) {
+ 	case NE_CREATE_VM: {
+ 		int enclave_fd = -1;
+-		struct file *enclave_file = NULL;
+ 		struct ne_pci_dev *ne_pci_dev = ne_devs.ne_pci_dev;
+-		int rc = -EINVAL;
+-		u64 slot_uid = 0;
++		u64 __user *slot_uid = (void __user *)arg;
+
+ 		mutex_lock(&ne_pci_dev->enclaves_list_mutex);
+-
+-		enclave_fd = ne_create_vm_ioctl(ne_pci_dev, &slot_uid);
+-		if (enclave_fd < 0) {
+-			rc = enclave_fd;
+-
+-			mutex_unlock(&ne_pci_dev->enclaves_list_mutex);
+-
+-			return rc;
+-		}
+-
++		enclave_fd = ne_create_vm_ioctl(ne_pci_dev, slot_uid);
+ 		mutex_unlock(&ne_pci_dev->enclaves_list_mutex);
+
+-		if (copy_to_user((void __user *)arg, &slot_uid, sizeof(slot_uid))) {
+-			enclave_file = fget(enclave_fd);
+-			/* Decrement file refs to have release() called. */
+-			fput(enclave_file);
+-			fput(enclave_file);
+-			put_unused_fd(enclave_fd);
+-
+-			return -EFAULT;
+-		}
+-
+ 		return enclave_fd;
+ 	}
+
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 119262585e9b..7d67f0187c34 100644
 --- a/include/linux/efi.h
