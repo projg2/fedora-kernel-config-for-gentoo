@@ -28,7 +28,7 @@
  drivers/message/fusion/mptsas.c                    |  10 +
  drivers/message/fusion/mptspi.c                    |  11 +
  drivers/net/ethernet/intel/ice/ice_main.c          |   1 +
- drivers/net/wireguard/main.c                       |   1 +
+ drivers/net/wireguard/main.c                       |   7 +
  drivers/nvme/host/core.c                           |  22 +-
  drivers/nvme/host/multipath.c                      |  18 +-
  drivers/nvme/host/nvme.h                           |   4 +
@@ -66,7 +66,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 68 files changed, 1194 insertions(+), 186 deletions(-)
+ 68 files changed, 1200 insertions(+), 186 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -91,10 +91,10 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 5c949c12ed07..1f9cfc4c530a 100644
+index 02470ba1fe6a..6946753cc08c 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5723,6 +5723,14 @@
+@@ -5731,6 +5731,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -143,7 +143,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 6eafedd7efc6..4019e3339d11 100644
+index 72af8e423f11..5295f99d5c92 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -181,10 +181,10 @@ index 6eafedd7efc6..4019e3339d11 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index e6e08d8a45fc..93e524d41fdb 100644
+index 085c830d344b..ea1306234cbc 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1481,9 +1481,9 @@ config HIGHMEM
+@@ -1482,9 +1482,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -197,10 +197,10 @@ index e6e08d8a45fc..93e524d41fdb 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 570fa52eb6f0..68294084bb1b 100644
+index 7f2a80091337..3ee3a087b985 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -916,7 +916,7 @@ endchoice
+@@ -917,7 +917,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -209,7 +209,7 @@ index 570fa52eb6f0..68294084bb1b 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1177,6 +1177,7 @@ config XEN
+@@ -1178,6 +1178,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -881,7 +881,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index a5b13a7779c3..4abd356f6435 100644
+index db881993c211..92a1ebb9cea3 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -892,7 +892,7 @@ index a5b13a7779c3..4abd356f6435 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -1964,6 +1965,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2076,6 +2077,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -909,7 +909,7 @@ index a5b13a7779c3..4abd356f6435 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -1996,6 +2007,11 @@ static int __init etm4x_init(void)
+@@ -2109,6 +2120,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -921,7 +921,7 @@ index a5b13a7779c3..4abd356f6435 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2022,6 +2038,9 @@ static int __init etm4x_init(void)
+@@ -2135,6 +2151,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -1137,7 +1137,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d0b0a15dba84..005984e8ef5e 100644
+index 808ab70d5df5..2a92c1c26326 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1148,7 +1148,7 @@ index d0b0a15dba84..005984e8ef5e 100644
  #include <linux/kernel.h>
  #include <linux/bug.h>
  #include <linux/types.h>
-@@ -3049,6 +3050,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3036,6 +3037,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1259,10 +1259,30 @@ index 4ee85a217c6f..494f392a8d56 100644
  	ice_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, KBUILD_MODNAME);
  	if (!ice_wq) {
 diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
-index 7a7d5f1a80fc..7df985e31113 100644
+index 7a7d5f1a80fc..de28e2633761 100644
 --- a/drivers/net/wireguard/main.c
 +++ b/drivers/net/wireguard/main.c
-@@ -39,6 +39,7 @@ static int __init mod_init(void)
+@@ -12,6 +12,7 @@
+
+ #include <uapi/linux/wireguard.h>
+
++#include <linux/fips.h>
+ #include <linux/init.h>
+ #include <linux/module.h>
+ #include <linux/genetlink.h>
+@@ -21,6 +22,11 @@ static int __init mod_init(void)
+ {
+ 	int ret;
+
++#ifdef CONFIG_RHEL_DIFFERENCES
++	if (fips_enabled)
++		return -EOPNOTSUPP;
++#endif
++
+ #ifdef DEBUG
+ 	if (!wg_allowedips_selftest() || !wg_packet_counter_selftest() ||
+ 	    !wg_ratelimiter_selftest())
+@@ -39,6 +45,7 @@ static int __init mod_init(void)
  	pr_info("WireGuard " WIREGUARD_VERSION " loaded. See www.wireguard.com for information.\n");
  	pr_info("Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.\n");
 
@@ -1907,10 +1927,10 @@ index 5b7ed6dc99ac..17703b5a7091 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 61f04f7dc1a4..8d8d2c112784 100644
+index 04c01794de83..26f8df026fa9 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -394,6 +394,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -395,6 +395,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -1920,10 +1940,10 @@ index 61f04f7dc1a4..8d8d2c112784 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index ba2ccd950833..f3a024f3cf5d 100644
+index 5c4c5c0602cb..753b53038690 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1542,6 +1542,12 @@
+@@ -1545,6 +1545,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -2279,10 +2299,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 9aeda3f9e838..de544db8b73b 100644
+index 06f7c50ce77f..09ed686ac5e6 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -470,6 +470,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -471,6 +471,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2290,7 +2310,7 @@ index 9aeda3f9e838..de544db8b73b 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1343,6 +1344,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1347,6 +1348,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2436,7 +2456,7 @@ index 825284baaf46..0b2b3f510b16 100644
  	 * if the commandline contains a ':', then that's the extended
  	 * syntax -- if not, it must be the classic syntax
 diff --git a/kernel/module.c b/kernel/module.c
-index 20fb004e7d8d..d5397912b174 100644
+index b5dd92e35b02..d49412abb842 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -738,6 +738,7 @@ static struct module_attribute modinfo_##field = {                    \
@@ -2707,10 +2727,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 94383f83ba42..7adc15e72694 100644
+index b38155b2de83..b0a6711b4825 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2561,6 +2561,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2598,6 +2598,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 

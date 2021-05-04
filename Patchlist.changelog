@@ -7,6 +7,9 @@ https://gitlab.com/cki-project/kernel-ark/-/commit/fb1e1b5878182056becb07f4970e0
 https://gitlab.com/cki-project/kernel-ark/-/commit/bbea40fc46cf77b2a44adc23311e11dd3eb32a43
  bbea40fc46cf77b2a44adc23311e11dd3eb32a43 nvme: allow local retry and proper failover for REQ_FAILFAST_TRANSPORT
 
+https://gitlab.com/cki-project/kernel-ark/-/commit/3a09b8f23044400af91ac282646645719a6d5dd2
+ 3a09b8f23044400af91ac282646645719a6d5dd2 wireguard: disable in FIPS mode
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/fdcb96689d55e37b76a424887ef1619550192c69
  fdcb96689d55e37b76a424887ef1619550192c69 nvme: Return BLK_STS_TARGET if the DNR bit is set
 
