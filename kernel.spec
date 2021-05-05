@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20210504git5e321ded302d.7
+%global distro_build 0.rc0.20210505gitd665ea6ea86c.8
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc0.20210504git5e321ded302d.7
+%define pkgrelease 0.rc0.20210505gitd665ea6ea86c.8
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210504git5e321ded302d.7%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210505gitd665ea6ea86c.8%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -618,7 +618,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12-13670-g5e321ded302d.tar.xz
+Source0: linux-5.12-13882-gd665ea6ea86c.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1268,8 +1268,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12-13670-g5e321ded302d -c
-mv linux-5.12-13670-g5e321ded302d linux-%{KVERREL}
+%setup -q -n kernel-5.12-13882-gd665ea6ea86c -c
+mv linux-5.12-13882-gd665ea6ea86c linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2779,6 +2779,16 @@ fi
 #
 #
 %changelog
+* Wed May 05 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc0.20210505gitd665ea6ea86c.8]
+- Flip CONFIG_USB_ROLE_SWITCH from m to y (Justin M. Forbes)
+- Set valid options for CONFIG_FW_LOADER_USER_HELPER (Justin M. Forbes)
+- Clean up CONFIG_FB_MODE_HELPERS (Justin M. Forbes)
+- Turn off CONFIG_VFIO for the s390x zfcpdump kernel (Justin M. Forbes)
+- Delete unused CONFIG_SND_SOC_MAX98390 pending-common (Justin M. Forbes)
+- Update pending-common configs, preparing to set correctly (Justin M. Forbes)
+- Update fedora filters for surface (Justin M. Forbes)
+- Build CONFIG_CRYPTO_ECDSA inline for s390x zfcpdump (Justin M. Forbes)
+
 * Tue May 04 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc0.20210504git5e321ded302d.7]
 - Fix branch creation for releases based on tags (Jeremy Cline)
 - Replace "flavour" where "variant" is meant instead (David Ward)

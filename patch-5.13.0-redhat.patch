@@ -1969,10 +1969,10 @@ index 8100bb477d86..f758f2869c02 100644
 
  	/* Exported symbols */
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 0fa104ee13d9..09701ace3928 100644
+index 413ece666bf9..b53f1f41e42c 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1431,6 +1431,10 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1432,6 +1432,10 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
