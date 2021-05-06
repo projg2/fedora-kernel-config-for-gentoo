@@ -91,10 +91,10 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 02470ba1fe6a..6946753cc08c 100644
+index a1266f33d6e6..8796144af189 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5731,6 +5731,14 @@
+@@ -5750,6 +5750,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -181,10 +181,10 @@ index 72af8e423f11..5295f99d5c92 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 085c830d344b..ea1306234cbc 100644
+index 24804f11302d..fd5ff3fa0d5b 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1482,9 +1482,9 @@ config HIGHMEM
+@@ -1484,9 +1484,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -197,10 +197,10 @@ index 085c830d344b..ea1306234cbc 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 7f2a80091337..3ee3a087b985 100644
+index f0b17d758912..c913235275a1 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -917,7 +917,7 @@ endchoice
+@@ -922,7 +922,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -209,7 +209,7 @@ index 7f2a80091337..3ee3a087b985 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1178,6 +1178,7 @@ config XEN
+@@ -1174,6 +1174,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -1474,10 +1474,10 @@ index ec44a79e951a..5025827ef396 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 653660e3ba9e..98851d00dc4d 100644
+index dcb229de1acb..eb2f6394b286 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4143,6 +4143,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4132,6 +4132,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1969,10 +1969,10 @@ index 8100bb477d86..f758f2869c02 100644
 
  	/* Exported symbols */
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 413ece666bf9..b53f1f41e42c 100644
+index c20211e59a57..ba81f1b4bd9b 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1432,6 +1432,10 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1430,6 +1430,10 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
