@@ -91,10 +91,10 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index a1266f33d6e6..8796144af189 100644
+index a816935d23d4..3037285ebb3b 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5750,6 +5750,14 @@
+@@ -5762,6 +5762,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -259,7 +259,7 @@ index dba04fbc37a2..f809ab6441fd 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 72134f9f6ff5..95970f299ef5 100644
+index 5aab59ad5688..c53572b81c37 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -470,7 +470,7 @@ index e209081d644b..7484bcf59a1b 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index bc973fbd70b2..15b3b8a03785 100644
+index a22778e880c2..ecdf66fb96b5 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1640,6 +1640,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -1877,10 +1877,10 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 5b7ed6dc99ac..17703b5a7091 100644
+index 09035ac67d4b..acc5fd8ba845 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -458,7 +458,24 @@ extern enum system_states {
+@@ -451,7 +451,24 @@ extern enum system_states {
  #define TAINT_LIVEPATCH			15
  #define TAINT_AUX			16
  #define TAINT_RANDSTRUCT		17
@@ -1906,7 +1906,7 @@ index 5b7ed6dc99ac..17703b5a7091 100644
  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
 
  struct taint_flag {
-@@ -744,4 +761,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -737,4 +754,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))

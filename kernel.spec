@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20210506git8404c9fbc84b.9
+%global distro_build 0.rc0.20210507gita48b0872e694.10
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc0.20210506git8404c9fbc84b.9
+%define pkgrelease 0.rc0.20210507gita48b0872e694.10
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210506git8404c9fbc84b.9%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210507gita48b0872e694.10%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -618,7 +618,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12-14380-g8404c9fbc84b.tar.xz
+Source0: linux-5.12-14712-ga48b0872e694.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1269,8 +1269,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12-14380-g8404c9fbc84b -c
-mv linux-5.12-14380-g8404c9fbc84b linux-%{KVERREL}
+%setup -q -n kernel-5.12-14712-ga48b0872e694 -c
+mv linux-5.12-14712-ga48b0872e694 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1759,8 +1759,7 @@ BuildKernel() {
     if [ -f arch/%{asmarch}/kernel/module.lds ]; then
       cp -a --parents arch/%{asmarch}/kernel/module.lds $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     fi
-    rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/*.o
-    rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/*/*.o
+    find $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts \( -iname "*.o" -o -iname "*.cmd" \) -exec rm -f {} +
 %ifarch ppc64le
     cp -a --parents arch/powerpc/lib/crtsavres.[So] $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
 %endif
@@ -2780,6 +2779,11 @@ fi
 #
 #
 %changelog
+* Fri May 07 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc0.20210507gita48b0872e694.10]
+- Keep sctp and l2tp modules in modules-extra (Don Zickus)
+- Fix ppc64le cross build packaging (Don Zickus)
+- Fedora: Make amd_pinctrl module builtin (Hans de Goede)
+
 * Thu May 06 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc0.20210506git8404c9fbc84b.9]
 - Keep CONFIG_KASAN_HW_TAGS off for aarch64 debug configs (Justin M. Forbes)
 - New configs in drivers/bus (Fedora Kernel Team)
