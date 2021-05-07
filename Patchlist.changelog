@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/398fc8a1fce86d37d63fefc15daca4da0f6189dd
+ 398fc8a1fce86d37d63fefc15daca4da0f6189dd ALSA: hda/realtek: Fix silent headphone output on ASUS UX430UA
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/3f376f878f898469dfbbc1b244b20ffb69f00076
  3f376f878f898469dfbbc1b244b20ffb69f00076 nitro_enclaves: Fix stale file descriptors on failed usercopy
 
