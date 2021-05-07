@@ -1,3 +1,12 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/2dc491eb51b8100aaa21c294580960342595b3f0
+ 2dc491eb51b8100aaa21c294580960342595b3f0 ALSA: hda/realtek: Fix silent headphone output on ASUS UX430UA
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/a819e506dfa5de71c8484fb4cea7b6c84cea4d3a
+ a819e506dfa5de71c8484fb4cea7b6c84cea4d3a PCI: Add MCFG quirks for Tegra194 host controllers
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/c7c67cb075451b4bb46483bb26a06555c448c4cf
+ c7c67cb075451b4bb46483bb26a06555c448c4cf Revert "PCI: Add MCFG quirks for Tegra194 host controllers"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/f8cacb0facdfb7915011064320f470b71e674ea0
  f8cacb0facdfb7915011064320f470b71e674ea0 nitro_enclaves: Fix stale file descriptors on failed usercopy
 

@@ -23,9 +23,8 @@
  drivers/iommu/iommu.c                              |  22 ++++
  drivers/net/ethernet/sfc/ef10.c                    |   3 +-
  drivers/net/ethernet/sfc/farch.c                   |  16 +--
- drivers/pci/controller/dwc/Kconfig                 |  10 +-
  drivers/pci/controller/dwc/Makefile                |   2 +-
- drivers/pci/controller/dwc/pcie-tegra194.c         | 102 +++++++++++++++++
+ drivers/pci/controller/dwc/pcie-tegra194.c         | 103 +++++++++++++++++
  drivers/pci/quirks.c                               |  24 ++++
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +++
  drivers/usb/core/hub.c                             |   7 ++
@@ -42,7 +41,8 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 44 files changed, 639 insertions(+), 217 deletions(-)
+ sound/pci/hda/patch_realtek.c                      |  18 +++
+ 44 files changed, 652 insertions(+), 213 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -67,7 +67,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index 78b0941f0de4..5a32ebba5b1a 100644
+index 5077411a1874..482c880bebb1 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -1045,42 +1045,6 @@ index d75cf5ff5686..49df02ecee91 100644
  	}
  }
 
-diff --git a/drivers/pci/controller/dwc/Kconfig b/drivers/pci/controller/dwc/Kconfig
-index 22c5529e9a65..259ff5ff3f24 100644
---- a/drivers/pci/controller/dwc/Kconfig
-+++ b/drivers/pci/controller/dwc/Kconfig
-@@ -254,25 +254,27 @@ config PCI_MESON
- 	  implement the driver.
-
- config PCIE_TEGRA194
--	tristate
-+	bool
-
- config PCIE_TEGRA194_HOST
--	tristate "NVIDIA Tegra194 (and later) PCIe controller - Host Mode"
-+	bool "NVIDIA Tegra194 (and later) PCIe controller - Host Mode"
- 	depends on ARCH_TEGRA_194_SOC || COMPILE_TEST
- 	depends on PCI_MSI_IRQ_DOMAIN
- 	select PCIE_DW_HOST
- 	select PHY_TEGRA194_P2U
- 	select PCIE_TEGRA194
-+	default y if ARCH_TEGRA_194_SOC
- 	help
- 	  Enables support for the PCIe controller in the NVIDIA Tegra194 SoC to
- 	  work in host mode. There are two instances of PCIe controllers in
- 	  Tegra194. This controller can work either as EP or RC. In order to
- 	  enable host-specific features PCIE_TEGRA194_HOST must be selected and
- 	  in order to enable device-specific features PCIE_TEGRA194_EP must be
--	  selected. This uses the DesignWare core.
-+	  selected. This uses the DesignWare core. ACPI platforms with Tegra194
-+	  don't need to enable this.
-
- config PCIE_TEGRA194_EP
--	tristate "NVIDIA Tegra194 (and later) PCIe controller - Endpoint Mode"
-+	bool "NVIDIA Tegra194 (and later) PCIe controller - Endpoint Mode"
- 	depends on ARCH_TEGRA_194_SOC || COMPILE_TEST
- 	depends on PCI_ENDPOINT
- 	select PCIE_DW_EP
 diff --git a/drivers/pci/controller/dwc/Makefile b/drivers/pci/controller/dwc/Makefile
 index a751553fa0db..dbb981876556 100644
 --- a/drivers/pci/controller/dwc/Makefile
@@ -1100,7 +1064,7 @@ index a751553fa0db..dbb981876556 100644
 +obj-$(CONFIG_ARM64) += pcie-tegra194.o
  endif
 diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index 6fa216e52d14..0a851de769e8 100644
+index 6fa216e52d14..cb38e94a3033 100644
 --- a/drivers/pci/controller/dwc/pcie-tegra194.c
 +++ b/drivers/pci/controller/dwc/pcie-tegra194.c
 @@ -22,6 +22,8 @@
@@ -1112,12 +1076,12 @@ index 6fa216e52d14..0a851de769e8 100644
  #include <linux/phy/phy.h>
  #include <linux/pinctrl/consumer.h>
  #include <linux/platform_device.h>
-@@ -311,6 +313,103 @@ struct tegra_pcie_dw_of_data {
+@@ -311,6 +313,104 @@ struct tegra_pcie_dw_of_data {
  	enum dw_pcie_device_mode mode;
  };
 
 +#if defined(CONFIG_ACPI) && defined(CONFIG_PCI_QUIRKS)
-+struct tegra194_pcie_acpi  {
++struct tegra194_pcie_ecam  {
 +	void __iomem *config_base;
 +	void __iomem *iatu_base;
 +	void __iomem *dbi_base;
@@ -1126,50 +1090,51 @@ index 6fa216e52d14..0a851de769e8 100644
 +static int tegra194_acpi_init(struct pci_config_window *cfg)
 +{
 +	struct device *dev = cfg->parent;
-+	struct tegra194_pcie_acpi *pcie;
++	struct tegra194_pcie_ecam *pcie_ecam;
 +
-+	pcie = devm_kzalloc(dev, sizeof(*pcie), GFP_KERNEL);
-+	if (!pcie)
++	pcie_ecam = devm_kzalloc(dev, sizeof(*pcie_ecam), GFP_KERNEL);
++	if (!pcie_ecam)
 +		return -ENOMEM;
 +
-+	pcie->config_base = cfg->win;
-+	pcie->iatu_base = cfg->win + SZ_256K;
-+	pcie->dbi_base = cfg->win + SZ_512K;
-+	cfg->priv = pcie;
++	pcie_ecam->config_base = cfg->win;
++	pcie_ecam->iatu_base = cfg->win + SZ_256K;
++	pcie_ecam->dbi_base = cfg->win + SZ_512K;
++	cfg->priv = pcie_ecam;
 +
 +	return 0;
 +}
 +
-+static inline void atu_reg_write(struct tegra194_pcie_acpi *pcie, int index,
-+				 u32 val, u32 reg)
++static void atu_reg_write(struct tegra194_pcie_ecam *pcie_ecam, int index,
++			  u32 val, u32 reg)
 +{
 +	u32 offset = PCIE_GET_ATU_OUTB_UNR_REG_OFFSET(index);
 +
-+	writel(val, pcie->iatu_base + offset + reg);
++	writel(val, pcie_ecam->iatu_base + offset + reg);
 +}
 +
-+static void program_outbound_atu(struct tegra194_pcie_acpi *pcie, int index,
-+				 int type, u64 cpu_addr, u64 pci_addr, u64 size)
++static void program_outbound_atu(struct tegra194_pcie_ecam *pcie_ecam,
++				 int index, int type, u64 cpu_addr,
++				 u64 pci_addr, u64 size)
 +{
-+	atu_reg_write(pcie, index, lower_32_bits(cpu_addr),
++	atu_reg_write(pcie_ecam, index, lower_32_bits(cpu_addr),
 +		      PCIE_ATU_LOWER_BASE);
-+	atu_reg_write(pcie, index, upper_32_bits(cpu_addr),
++	atu_reg_write(pcie_ecam, index, upper_32_bits(cpu_addr),
 +		      PCIE_ATU_UPPER_BASE);
-+	atu_reg_write(pcie, index, lower_32_bits(pci_addr),
++	atu_reg_write(pcie_ecam, index, lower_32_bits(pci_addr),
 +		      PCIE_ATU_LOWER_TARGET);
-+	atu_reg_write(pcie, index, lower_32_bits(cpu_addr + size - 1),
++	atu_reg_write(pcie_ecam, index, lower_32_bits(cpu_addr + size - 1),
 +		      PCIE_ATU_LIMIT);
-+	atu_reg_write(pcie, index, upper_32_bits(pci_addr),
++	atu_reg_write(pcie_ecam, index, upper_32_bits(pci_addr),
 +		      PCIE_ATU_UPPER_TARGET);
-+	atu_reg_write(pcie, index, type, PCIE_ATU_CR1);
-+	atu_reg_write(pcie, index, PCIE_ATU_ENABLE, PCIE_ATU_CR2);
++	atu_reg_write(pcie_ecam, index, type, PCIE_ATU_CR1);
++	atu_reg_write(pcie_ecam, index, PCIE_ATU_ENABLE, PCIE_ATU_CR2);
 +}
 +
 +static void __iomem *tegra194_map_bus(struct pci_bus *bus,
 +				      unsigned int devfn, int where)
 +{
 +	struct pci_config_window *cfg = bus->sysdata;
-+	struct tegra194_pcie_acpi *pcie = cfg->priv;
++	struct tegra194_pcie_ecam *pcie_ecam = cfg->priv;
 +	u32 busdev;
 +	int type;
 +
@@ -1178,7 +1143,7 @@ index 6fa216e52d14..0a851de769e8 100644
 +
 +	if (bus->number == cfg->busr.start) {
 +		if (PCI_SLOT(devfn) == 0)
-+			return pcie->dbi_base + where;
++			return pcie_ecam->dbi_base + where;
 +		else
 +			return NULL;
 +	}
@@ -1195,13 +1160,13 @@ index 6fa216e52d14..0a851de769e8 100644
 +		type = PCIE_ATU_TYPE_CFG1;
 +	}
 +
-+	program_outbound_atu(pcie, PCIE_ATU_REGION_INDEX0, type,
-+			     cfg->res.start, busdev, SZ_256K);
-+	return (void __iomem *)(pcie->config_base + where);
++	program_outbound_atu(pcie_ecam, 0, type, cfg->res.start, busdev,
++			     SZ_256K);
++
++	return pcie_ecam->config_base + where;
 +}
 +
 +const struct pci_ecam_ops tegra194_pcie_ops = {
-+	.bus_shift	= 20,
 +	.init		= tegra194_acpi_init,
 +	.pci_ops	= {
 +		.map_bus	= tegra194_map_bus,
@@ -1216,7 +1181,7 @@ index 6fa216e52d14..0a851de769e8 100644
  static inline struct tegra_pcie_dw *to_tegra_pcie(struct dw_pcie *pci)
  {
  	return container_of(pci, struct tegra_pcie_dw, pci);
-@@ -2311,3 +2410,6 @@ MODULE_DEVICE_TABLE(of, tegra_pcie_dw_of_match);
+@@ -2311,3 +2411,6 @@ MODULE_DEVICE_TABLE(of, tegra_pcie_dw_of_match);
  MODULE_AUTHOR("Vidya Sagar <vidyas@nvidia.com>");
  MODULE_DESCRIPTION("NVIDIA PCIe host controller driver");
  MODULE_LICENSE("GPL v2");
@@ -1698,3 +1663,53 @@ index 5ac96b16f8fa..fc47d6de57ee 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index a7544b77d3f7..7569fd8c9cff 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -5667,6 +5667,18 @@ static void alc_fixup_tpt470_dacs(struct hda_codec *codec,
+ 		spec->gen.preferred_dacs = preferred_pairs;
+ }
+
++static void alc295_fixup_asus_dacs(struct hda_codec *codec,
++				   const struct hda_fixup *fix, int action)
++{
++	static const hda_nid_t preferred_pairs[] = {
++		0x17, 0x02, 0x21, 0x03, 0
++	};
++	struct alc_spec *spec = codec->spec;
++
++	if (action == HDA_FIXUP_ACT_PRE_PROBE)
++		spec->gen.preferred_dacs = preferred_pairs;
++}
++
+ static void alc_shutup_dell_xps13(struct hda_codec *codec)
+ {
+ 	struct alc_spec *spec = codec->spec;
+@@ -6427,6 +6439,7 @@ enum {
+ 	ALC282_FIXUP_ACER_DISABLE_LINEOUT,
+ 	ALC255_FIXUP_ACER_LIMIT_INT_MIC_BOOST,
+ 	ALC256_FIXUP_ACER_HEADSET_MIC,
++	ALC295_FIXUP_ASUS_DACS,
+ };
+
+ static const struct hda_fixup alc269_fixups[] = {
+@@ -7901,6 +7914,10 @@ static const struct hda_fixup alc269_fixups[] = {
+ 		.chained = true,
+ 		.chain_id = ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC
+ 	},
++	[ALC295_FIXUP_ASUS_DACS] = {
++		.type = HDA_FIXUP_FUNC,
++		.v.func = alc295_fixup_asus_dacs,
++	},
+ };
+
+ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+@@ -8096,6 +8113,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
+ 	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
+ 	SND_PCI_QUIRK(0x1043, 0x16e3, "ASUS UX50", ALC269_FIXUP_STEREO_DMIC),
++	SND_PCI_QUIRK(0x1043, 0x1740, "ASUS UX430UA", ALC295_FIXUP_ASUS_DACS),
+ 	SND_PCI_QUIRK(0x1043, 0x17d1, "ASUS UX431FL", ALC294_FIXUP_ASUS_DUAL_SPK),
+ 	SND_PCI_QUIRK(0x1043, 0x18b1, "Asus MJ401TA", ALC256_FIXUP_ASUS_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x18f1, "Asus FX505DT", ALC256_FIXUP_ASUS_HEADSET_MIC),

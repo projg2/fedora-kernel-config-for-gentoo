@@ -106,7 +106,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.12.1
+%define rpmversion 5.12.2
 %define stableversion 5.12
 %define pkgrelease 300
 
@@ -623,7 +623,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12.1.tar.xz
+Source0: linux-5.12.2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1277,8 +1277,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12.1 -c
-mv linux-5.12.1 linux-%{KVERREL}
+%setup -q -n kernel-5.12.2 -c
+mv linux-5.12.2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2792,7 +2792,12 @@ fi
 #
 #
 %changelog
-* Mon May 03 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.1-300]
+* Fri May 07 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.2-0]
+- Fedora-5.12: Make amd_pinctrl module builtin (Hans de Goede)
+- ALSA: hda/realtek: Fix silent headphone output on ASUS UX430UA (Takashi Iwai)
+- Fedora 32 will EOL on 5.11 (Justin M. Forbes)
+- PCI: Add MCFG quirks for Tegra194 host controllers (Vidya Sagar)
+- Revert "PCI: Add MCFG quirks for Tegra194 host controllers" (Peter Robinson)
 - nitro_enclaves: Fix stale file descriptors on failed usercopy (Mathias Krause)
 - Revert "add pci_hw_vendor_status()" (Justin M. Forbes)
 - fedora: arm: build in Tegra194 PCIe/PHY drivers (Peter Robinson)
