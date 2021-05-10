@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc0.20210507gita48b0872e694.10
+%global distro_build 0.rc1.13
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc0.20210507gita48b0872e694.10
+%define pkgrelease 0.rc1.13
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210507gita48b0872e694.10%{?buildid}%{?dist}
+%define specrelease 0.rc1.13%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -203,7 +203,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.13
@@ -618,7 +618,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12-14712-ga48b0872e694.tar.xz
+Source0: linux-5.13-rc1.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -731,7 +731,6 @@ Source50: kernel-x86_64-debug-fedora.config
 Source51: generate_all_configs.sh
 
 Source52: process_configs.sh
-Source53: generate_bls_conf.sh
 Source56: update_scripts.sh
 
 Source54: mod-internal.list
@@ -766,6 +765,7 @@ Source3001: kernel-local
 Source3003: Patchlist.changelog
 
 Source4000: README.rst
+Source4001: rpminspect.yaml
 
 ## Patches needed for building this package
 
@@ -1269,8 +1269,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12-14712-ga48b0872e694 -c
-mv linux-5.12-14712-ga48b0872e694 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc1 -c
+mv linux-5.13-rc1 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1978,9 +1978,6 @@ BuildKernel() {
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
-
-    # build a BLS config for this kernel
-    %{SOURCE53} "$KernelVer" "$RPM_BUILD_ROOT" "%{?variant}"
 
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
@@ -2731,7 +2728,6 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/build\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/bls.conf\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
 %if %{1}\
@@ -2779,6 +2775,20 @@ fi
 #
 #
 %changelog
+* Mon May 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.13]
+- Remove unused boot loader specification files (David Ward)
+
+* Mon May 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.12]
+- Revert "Merge branch 'fix-tag-check' into 'os-build'" (Justin Forbes)
+- Enable CONFIG_DRM_AMDGPU_USERPTR for everyone (Justin M. Forbes)
+- redhat: add initial rpminspect configuration (Herton R. Krzesinski)
+
+* Sat May 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc0.20210507gita48b0872e694.11]
+- fedora: arm updates for 5.13 (Peter Robinson)
+- fedora: Enable WWAN and associated MHI bits (Peter Robinson)
+- Update CONFIG_MODPROBE_PATH to /usr/sbin (Justin Forbes)
+- Fedora set modprobe path (Justin M. Forbes)
+
 * Fri May 07 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc0.20210507gita48b0872e694.10]
 - Keep sctp and l2tp modules in modules-extra (Don Zickus)
 - Fix ppc64le cross build packaging (Don Zickus)

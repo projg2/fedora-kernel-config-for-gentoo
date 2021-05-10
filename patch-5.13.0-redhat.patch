@@ -30,7 +30,7 @@
  drivers/net/ethernet/intel/ice/ice_main.c          |   1 +
  drivers/net/wireguard/main.c                       |   7 +
  drivers/nvme/host/core.c                           |  22 +-
- drivers/nvme/host/multipath.c                      |  18 +-
+ drivers/nvme/host/multipath.c                      |  20 +-
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/pci-driver.c                           |  29 ++
  drivers/pci/quirks.c                               |  24 ++
@@ -66,7 +66,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 68 files changed, 1200 insertions(+), 186 deletions(-)
+ 68 files changed, 1201 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -91,10 +91,10 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index a816935d23d4..3037285ebb3b 100644
+index cb89dbdedc46..3d033c0b69f9 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5762,6 +5762,14 @@
+@@ -5764,6 +5764,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -143,7 +143,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 72af8e423f11..5295f99d5c92 100644
+index 53d09c414635..583c3a3510b9 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -157,7 +157,7 @@ index 72af8e423f11..5295f99d5c92 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -508,6 +512,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+@@ -503,6 +507,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
  		   -Werror=implicit-function-declaration -Werror=implicit-int \
@@ -165,7 +165,7 @@ index 72af8e423f11..5295f99d5c92 100644
  		   -Werror=return-type -Wno-format-security \
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
-@@ -1292,7 +1297,13 @@ define filechk_version.h
+@@ -1291,7 +1296,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -197,10 +197,10 @@ index 24804f11302d..fd5ff3fa0d5b 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index f0b17d758912..c913235275a1 100644
+index 9f1d8566bbf9..ebb24a713210 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -922,7 +922,7 @@ endchoice
+@@ -921,7 +921,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -209,7 +209,7 @@ index f0b17d758912..c913235275a1 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1174,6 +1174,7 @@ config XEN
+@@ -1165,6 +1165,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -281,7 +281,7 @@ index 5aab59ad5688..c53572b81c37 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 6bdb69a9a7dc..1001dd85a984 100644
+index a1b756c49a93..e8992590d603 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1308,6 +1308,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -427,10 +427,10 @@ index 277f00b288d1..adbce15c273d 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index e209081d644b..7484bcf59a1b 100644
+index c68e694fca26..146cba5ae5bc 100644
 --- a/drivers/acpi/irq.c
 +++ b/drivers/acpi/irq.c
-@@ -126,6 +126,7 @@ struct acpi_irq_parse_one_ctx {
+@@ -130,6 +130,7 @@ struct acpi_irq_parse_one_ctx {
  	unsigned int index;
  	unsigned long *res_flags;
  	struct irq_fwspec *fwspec;
@@ -438,7 +438,7 @@ index e209081d644b..7484bcf59a1b 100644
  };
 
  /**
-@@ -197,7 +198,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -201,7 +202,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  		return AE_CTRL_TERMINATE;
  	case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
  		eirq = &ares->data.extended_irq;
@@ -448,7 +448,7 @@ index e209081d644b..7484bcf59a1b 100644
  			return AE_OK;
  		if (ctx->index >= eirq->interrupt_count) {
  			ctx->index -= eirq->interrupt_count;
-@@ -232,8 +234,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -236,8 +238,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  static int acpi_irq_parse_one(acpi_handle handle, unsigned int index,
  			      struct irq_fwspec *fwspec, unsigned long *flags)
  {
@@ -1291,7 +1291,7 @@ index 7a7d5f1a80fc..de28e2633761 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index b6f7815fa239..c2f177efe312 100644
+index 522c9b229f80..3161fec27575 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -241,6 +241,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1358,7 +1358,7 @@ index b6f7815fa239..c2f177efe312 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 0d0de3433f37..44b745bed521 100644
+index 0551796517e6..e64ab1be5765 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -8,7 +8,11 @@
@@ -1373,7 +1373,7 @@ index 0d0de3433f37..44b745bed521 100644
  module_param(multipath, bool, 0444);
  MODULE_PARM_DESC(multipath,
  	"turn on native support for multiple controllers per subsystem");
-@@ -65,13 +69,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
+@@ -65,14 +69,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
  	return true;
  }
 
@@ -1383,12 +1383,13 @@ index 0d0de3433f37..44b745bed521 100644
  	struct nvme_ns *ns = req->q->queuedata;
  	u16 status = nvme_req(req)->status & 0x7ff;
 -	unsigned long flags;
+-	struct bio *bio;
 -
 -	nvme_mpath_clear_current_path(ns);
 
  	/*
  	 * If we got back an ANA error, we know the controller is alive but not
-@@ -82,6 +83,15 @@ void nvme_failover_req(struct request *req)
+@@ -83,6 +83,16 @@ void nvme_failover_req(struct request *req)
  		set_bit(NVME_NS_ANA_PENDING, &ns->flags);
  		queue_work(nvme_wq, &ns->ctrl->ana_work);
  	}
@@ -1398,17 +1399,18 @@ index 0d0de3433f37..44b745bed521 100644
 +{
 +	struct nvme_ns *ns = req->q->queuedata;
 +	unsigned long flags;
++	struct bio *bio;
 +
 +	nvme_mpath_clear_current_path(ns);
 +	nvme_update_ana(req);
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
- 	blk_steal_bios(&ns->head->requeue_list, req);
+ 	for (bio = req->bio; bio; bio = bio->bi_next)
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 773dde5b231d..31bba9c1ce70 100644
+index 05f31a2c64bb..401a93cfffde 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -694,6 +694,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -708,6 +708,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags);
  void nvme_failover_req(struct request *req);
@@ -1416,7 +1418,7 @@ index 773dde5b231d..31bba9c1ce70 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -738,6 +739,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
+@@ -752,6 +753,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1706,10 +1708,10 @@ index d00aca3c77ce..ecc3aee57c3d 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index d74c32f84ef5..b7c38e7a5bfc 100644
+index 4eab564ea6a0..f2d360667273 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -7742,6 +7742,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -7743,6 +7743,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -1717,7 +1719,7 @@ index d74c32f84ef5..b7c38e7a5bfc 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -7754,13 +7755,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -7755,13 +7756,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -1877,10 +1879,10 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 09035ac67d4b..acc5fd8ba845 100644
+index 15d8bad3d2f2..5cc175748767 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -451,7 +451,24 @@ extern enum system_states {
+@@ -453,7 +453,24 @@ extern enum system_states {
  #define TAINT_LIVEPATCH			15
  #define TAINT_AUX			16
  #define TAINT_RANDSTRUCT		17
@@ -1906,7 +1908,7 @@ index 09035ac67d4b..acc5fd8ba845 100644
  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
 
  struct taint_flag {
-@@ -737,4 +754,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -739,4 +756,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -2322,7 +2324,7 @@ index 06f7c50ce77f..09ed686ac5e6 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/kernel/Makefile b/kernel/Makefile
-index e8a6715f38dc..f92f94ce57aa 100644
+index 4df609be42d0..4ef0c0f6a8f4 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
@@ -2654,7 +2656,7 @@ index 3e623ccc020b..3047abc9a507 100644
  		sprintf(fname, "%s.mod.c", mod->name);
  		write_if_changed(&buf, fname);
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index fd96734deff1..5b540f3dcff1 100755
+index db8ba411860a..2294fb0f17a9 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
