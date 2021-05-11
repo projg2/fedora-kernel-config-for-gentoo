@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.13
+%global distro_build 0.rc1.20210511git1140ab592e2e.14
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc1.13
+%define pkgrelease 0.rc1.20210511git1140ab592e2e.14
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.13%{?buildid}%{?dist}
+%define specrelease 0.rc1.20210511git1140ab592e2e.14%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -203,7 +203,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.13
@@ -541,6 +541,7 @@ BuildRequires: sparse
 BuildRequires: zlib-devel binutils-devel newt-devel perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel
 BuildRequires: java-devel
+BuildRequires: libbpf-devel
 %ifnarch %{arm} s390x
 BuildRequires: numactl-devel
 %endif
@@ -618,7 +619,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc1.tar.xz
+Source0: linux-5.13-rc1-74-g1140ab592e2e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1269,8 +1270,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc1 -c
-mv linux-5.13-rc1 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc1-74-g1140ab592e2e -c
+mv linux-5.13-rc1-74-g1140ab592e2e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2050,7 +2051,7 @@ InitBuildVars
 %endif
 
 %global perf_make \
-  %{__make} -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2775,8 +2776,16 @@ fi
 #
 #
 %changelog
-* Mon May 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.13]
+* Tue May 11 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.0-0.rc1.20210511git1140ab592e2e.14]
+- Force DWARF4 because crash does not support DWARF5 yet (Justin M. Forbes)
+
+* Tue May 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.20210511git1140ab592e2e.14]
 - Remove unused boot loader specification files (David Ward)
+
+* Tue May 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.20210511git1140ab592e2e.13]
+- common: disable Apple Silicon generally (Peter Robinson)
+- cleanup Intel's FPGA configs (Peter Robinson)
+- common: move PTP KVM support from ark to common (Peter Robinson)
 
 * Mon May 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.12]
 - Revert "Merge branch 'fix-tag-check' into 'os-build'" (Justin Forbes)
