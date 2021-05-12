@@ -1,3 +1,18 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/30238ba3648a11cea389e4727ed44d2ea586ca74
+ 30238ba3648a11cea389e4727ed44d2ea586ca74 io_uring: truncate lengths larger than MAX_RW_COUNT on provide buffers
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/83fa05252400d9d4eb082a60dd20c7aa02e581a0
+ 83fa05252400d9d4eb082a60dd20c7aa02e581a0 bpf: Prevent writable memory-mapping of read-only ringbuf pages
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/ac6ff1a3a73dd80199ea5f4bfa42b5ef259a86c9
+ ac6ff1a3a73dd80199ea5f4bfa42b5ef259a86c9 bpf, ringbuf: Deny reserve of buffers larger than ringbuf
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/a248d25a33289e149fb07454f310668ff2e809ba
+ a248d25a33289e149fb07454f310668ff2e809ba bpf: Fix alu32 const subreg bound tracking on bitwise operations
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/f7a8b12d2afd1c5573cea621f7b45a74f538f079
+ f7a8b12d2afd1c5573cea621f7b45a74f538f079 net/nfc: fix use-after-free llcp_sock_bind/connect
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/398fc8a1fce86d37d63fefc15daca4da0f6189dd
  398fc8a1fce86d37d63fefc15daca4da0f6189dd ALSA: hda/realtek: Fix silent headphone output on ASUS UX430UA
 
