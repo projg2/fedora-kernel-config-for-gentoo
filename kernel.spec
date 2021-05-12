@@ -106,7 +106,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.12.2
+%define rpmversion 5.12.3
 %define stableversion 5.12
 %define pkgrelease 300
 
@@ -623,7 +623,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12.2.tar.xz
+Source0: linux-5.12.3.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1277,8 +1277,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12.2 -c
-mv linux-5.12.2 linux-%{KVERREL}
+%setup -q -n kernel-5.12.3 -c
+mv linux-5.12.3 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2792,6 +2792,14 @@ fi
 #
 #
 %changelog
+* Wed May 12 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.3-0]
+- io_uring: truncate lengths larger than MAX_RW_COUNT on provide buffers (Thadeu Lima de Souza Cascardo)
+- bpf: Prevent writable memory-mapping of read-only ringbuf pages (Andrii Nakryiko)
+- bpf, ringbuf: Deny reserve of buffers larger than ringbuf (Thadeu Lima de Souza Cascardo)
+- bpf: Fix alu32 const subreg bound tracking on bitwise operations (Daniel Borkmann)
+- net/nfc: fix use-after-free llcp_sock_bind/connect (Or Cohen)
+- Force DWARF4 because crash does not support DWARF5 yet (Justin M. Forbes)
+
 * Fri May 07 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.2-0]
 - Fedora-5.12: Make amd_pinctrl module builtin (Hans de Goede)
 - ALSA: hda/realtek: Fix silent headphone output on ASUS UX430UA (Takashi Iwai)
