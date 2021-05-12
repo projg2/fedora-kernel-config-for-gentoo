@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.20210511git1140ab592e2e.14
+%global distro_build 0.rc1.20210512git88b06399c9c7.15
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc1.20210511git1140ab592e2e.14
+%define pkgrelease 0.rc1.20210512git88b06399c9c7.15
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20210511git1140ab592e2e.14%{?buildid}%{?dist}
+%define specrelease 0.rc1.20210512git88b06399c9c7.15%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -619,7 +619,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc1-74-g1140ab592e2e.tar.xz
+Source0: linux-5.13-rc1-76-g88b06399c9c7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1270,8 +1270,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc1-74-g1140ab592e2e -c
-mv linux-5.13-rc1-74-g1140ab592e2e linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc1-76-g88b06399c9c7 -c
+mv linux-5.13-rc1-76-g88b06399c9c7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2776,11 +2776,12 @@ fi
 #
 #
 %changelog
-* Tue May 11 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.0-0.rc1.20210511git1140ab592e2e.14]
-- Force DWARF4 because crash does not support DWARF5 yet (Justin M. Forbes)
-
-* Tue May 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.20210511git1140ab592e2e.14]
+* Wed May 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.20210512git88b06399c9c7.15]
 - Remove unused boot loader specification files (David Ward)
+
+* Wed May 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.20210512git88b06399c9c7.14]
+- redhat/configs: Enable mlx5 IPsec and TLS offloads (Alaa Hleihel) [1869674 1957636]
+- Force DWARF4 because crash does not support DWARF5 yet (Justin M. Forbes)
 
 * Tue May 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.20210511git1140ab592e2e.13]
 - common: disable Apple Silicon generally (Peter Robinson)
