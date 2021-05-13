@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.20210512git88b06399c9c7.15
+%global distro_build 0.rc1.20210513gitc06a2ba62fc4.15
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc1.20210512git88b06399c9c7.15
+%define pkgrelease 0.rc1.20210513gitc06a2ba62fc4.15
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20210512git88b06399c9c7.15%{?buildid}%{?dist}
+%define specrelease 0.rc1.20210513gitc06a2ba62fc4.15%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -619,7 +619,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc1-76-g88b06399c9c7.tar.xz
+Source0: linux-5.13-rc1-92-gc06a2ba62fc4.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1270,8 +1270,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc1-76-g88b06399c9c7 -c
-mv linux-5.13-rc1-76-g88b06399c9c7 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc1-92-gc06a2ba62fc4 -c
+mv linux-5.13-rc1-92-gc06a2ba62fc4 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2776,8 +2776,9 @@ fi
 #
 #
 %changelog
-* Wed May 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.20210512git88b06399c9c7.15]
+* Thu May 13 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.20210513gitc06a2ba62fc4.15]
 - Remove unused boot loader specification files (David Ward)
+- Revert "nvme: multipath: Change default of kernel NVMe multipath to be disabled" (Mike Snitzer)
 
 * Wed May 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.20210512git88b06399c9c7.14]
 - redhat/configs: Enable mlx5 IPsec and TLS offloads (Alaa Hleihel) [1869674 1957636]

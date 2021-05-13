@@ -30,7 +30,7 @@
  drivers/net/ethernet/intel/ice/ice_main.c          |   1 +
  drivers/net/wireguard/main.c                       |   7 +
  drivers/nvme/host/core.c                           |  22 +-
- drivers/nvme/host/multipath.c                      |  20 +-
+ drivers/nvme/host/multipath.c                      |  16 +-
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/pci-driver.c                           |  29 ++
  drivers/pci/quirks.c                               |  24 ++
@@ -66,7 +66,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 68 files changed, 1201 insertions(+), 187 deletions(-)
+ 68 files changed, 1197 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -1358,22 +1358,10 @@ index 522c9b229f80..3161fec27575 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 0551796517e6..e64ab1be5765 100644
+index 0551796517e6..79bd58079267 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
-@@ -8,7 +8,11 @@
- #include <trace/events/block.h>
- #include "nvme.h"
-
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+static bool multipath = false;
-+#else
- static bool multipath = true;
-+#endif
- module_param(multipath, bool, 0444);
- MODULE_PARM_DESC(multipath,
- 	"turn on native support for multiple controllers per subsystem");
-@@ -65,14 +69,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
+@@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
  	return true;
  }
 
@@ -1389,7 +1377,7 @@ index 0551796517e6..e64ab1be5765 100644
 
  	/*
  	 * If we got back an ANA error, we know the controller is alive but not
-@@ -83,6 +83,16 @@ void nvme_failover_req(struct request *req)
+@@ -83,6 +79,16 @@ void nvme_failover_req(struct request *req)
  		set_bit(NVME_NS_ANA_PENDING, &ns->flags);
  		queue_work(nvme_wq, &ns->ctrl->ana_work);
  	}
