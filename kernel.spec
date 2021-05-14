@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.11.20
+%define rpmversion 5.11.21
 %define stableversion 5.11
 %define pkgrelease 100
 
@@ -603,7 +603,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.11.20.tar.xz
+Source0: linux-5.11.21.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1251,8 +1251,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.11.20 -c
-mv linux-5.11.20 linux-%{KVERREL}
+%setup -q -n kernel-5.11.21 -c
+mv linux-5.11.21 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2765,6 +2765,9 @@ fi
 #
 #
 %changelog
+* Fri May 14 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.21-0]
+- can: isotp: prevent race between isotp_bind() and isotp_setsockopt() (Norbert Slusarek)
+
 * Wed May 12 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.20-0]
 - io_uring: truncate lengths larger than MAX_RW_COUNT on provide buffers (Thadeu Lima de Souza Cascardo)
 - bpf: Prevent writable memory-mapping of read-only ringbuf pages (Andrii Nakryiko)
