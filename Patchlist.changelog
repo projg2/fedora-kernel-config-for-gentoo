@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/888eb8b57a1716a604aa9b415c132788527e5a8e
+ 888eb8b57a1716a604aa9b415c132788527e5a8e can: isotp: prevent race between isotp_bind() and isotp_setsockopt()
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/30238ba3648a11cea389e4727ed44d2ea586ca74
  30238ba3648a11cea389e4727ed44d2ea586ca74 io_uring: truncate lengths larger than MAX_RW_COUNT on provide buffers
 

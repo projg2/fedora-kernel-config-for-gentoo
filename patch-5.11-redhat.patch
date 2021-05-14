@@ -43,7 +43,6 @@
  drivers/hid/hid-rmi.c                              |  64 ---
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
  drivers/iommu/iommu.c                              |  22 +
- drivers/net/ethernet/sfc/ef10.c                    |   3 +-
  drivers/pci/controller/dwc/Kconfig                 |  10 +-
  drivers/pci/controller/dwc/Makefile                |   2 +-
  drivers/pci/controller/dwc/pcie-tegra194.c         | 102 +++++
@@ -54,7 +53,6 @@
  drivers/platform/x86/thinkpad_acpi.c               | 510 ++++++++++++++++++++-
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
- fs/io_uring.c                                      |   4 +-
  include/linux/efi.h                                |  22 +-
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -62,12 +60,10 @@
  include/linux/platform_profile.h                   |  41 ++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
- kernel/bpf/ringbuf.c                               |  24 +-
- kernel/bpf/verifier.c                              |  22 +-
  kernel/crash_core.c                                |  28 +-
  kernel/module_signing.c                            |   9 +-
  mm/kmemleak.c                                      |   5 +
- net/nfc/llcp_sock.c                                |   4 +
+ net/can/isotp.c                                    |  49 +-
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
@@ -84,7 +80,7 @@
  sound/soc/sof/ops.h                                |   8 +
  sound/soc/sof/sof-pci-dev.c                        |   2 +-
  sound/soc/sof/sof-priv.h                           |   4 +-
- 86 files changed, 2423 insertions(+), 360 deletions(-)
+ 82 files changed, 2429 insertions(+), 346 deletions(-)
 
 diff --git a/Documentation/ABI/testing/sysfs-platform_profile b/Documentation/ABI/testing/sysfs-platform_profile
 new file mode 100644
@@ -298,7 +294,7 @@ index 000000000000..c33a71263d9e
 + 2. Add the new profile name, along with a clear description of the
 +    expected behaviour, to the sysfs-platform_profile ABI documentation.
 diff --git a/Makefile b/Makefile
-index 87597736db03..57e472835133 100644
+index 11ca74eabf47..cc33fcabfd5a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -391,7 +387,7 @@ index 219b7507a10f..45769764425d 100644
 
  &cpu_b0 {
 diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index 6f612d240392..f2ddf7139a2a 100644
+index 138556cb559d..eaaf27624898 100644
 --- a/arch/powerpc/kvm/book3s_hv.c
 +++ b/arch/powerpc/kvm/book3s_hv.c
 @@ -3595,6 +3595,7 @@ static int kvmhv_p9_guest_entry(struct kvm_vcpu *vcpu, u64 time_limit,
@@ -402,7 +398,7 @@ index 6f612d240392..f2ddf7139a2a 100644
  	s64 dec;
  	u64 tb;
  	int trap, save_pmu;
-@@ -3735,6 +3736,9 @@ static int kvmhv_p9_guest_entry(struct kvm_vcpu *vcpu, u64 time_limit,
+@@ -3738,6 +3739,9 @@ static int kvmhv_p9_guest_entry(struct kvm_vcpu *vcpu, u64 time_limit,
  	if (host_amr != vcpu->arch.amr)
  		mtspr(SPRN_AMR, host_amr);
 
@@ -438,7 +434,7 @@ index 7a21eca498aa..565f143c9858 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 1fbed91c73bc..73f5724342b1 100644
+index 69e96501e0e8..66758c16d665 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -2357,7 +2353,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index fd5f59373fc6..8a11aa9e0318 100644
+index 0e0140454de8..7a83d1d65eee 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -2368,7 +2364,7 @@ index fd5f59373fc6..8a11aa9e0318 100644
  #include <linux/kernel.h>
  #include <linux/bug.h>
  #include <linux/types.h>
-@@ -3060,6 +3061,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3066,6 +3067,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -2396,20 +2392,6 @@ index fd5f59373fc6..8a11aa9e0318 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index da6886dcac37..4fa72b573c17 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -2928,8 +2928,7 @@ efx_ef10_handle_tx_event(struct efx_channel *channel, efx_qword_t *event)
-
- 	/* Get the transmit queue */
- 	tx_ev_q_label = EFX_QWORD_FIELD(*event, ESF_DZ_TX_QLABEL);
--	tx_queue = efx_channel_get_tx_queue(channel,
--					    tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
-+	tx_queue = channel->tx_queue + (tx_ev_q_label % EFX_MAX_TXQ_PER_CHANNEL);
-
- 	if (!tx_queue->timestamping) {
- 		/* Transmit completion */
 diff --git a/drivers/pci/controller/dwc/Kconfig b/drivers/pci/controller/dwc/Kconfig
 index 22c5529e9a65..259ff5ff3f24 100644
 --- a/drivers/pci/controller/dwc/Kconfig
@@ -3626,28 +3608,6 @@ index 404507d1b76f..51ee8f28a60b 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 95b4a89dad4e..157ceda04650 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -222,7 +222,7 @@ struct fixed_file_data {
- struct io_buffer {
- 	struct list_head list;
- 	__u64 addr;
--	__s32 len;
-+	__u32 len;
- 	__u16 bid;
- };
-
-@@ -4252,7 +4252,7 @@ static int io_add_buffers(struct io_provide_buf *pbuf, struct io_buffer **head)
- 			break;
-
- 		buf->addr = addr;
--		buf->len = pbuf->len;
-+		buf->len = min_t(__u32, pbuf->len, MAX_RW_COUNT);
- 		buf->bid = bid;
- 		addr += pbuf->len;
- 		bid++;
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 119262585e9b..7d67f0187c34 100644
 --- a/include/linux/efi.h
@@ -3840,111 +3800,6 @@ index c35ea0ffccd9..342d4579bf5c 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
-diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
-index f25b719ac786..84b3b35fc0d0 100644
---- a/kernel/bpf/ringbuf.c
-+++ b/kernel/bpf/ringbuf.c
-@@ -221,25 +221,20 @@ static int ringbuf_map_get_next_key(struct bpf_map *map, void *key,
- 	return -ENOTSUPP;
- }
-
--static size_t bpf_ringbuf_mmap_page_cnt(const struct bpf_ringbuf *rb)
--{
--	size_t data_pages = (rb->mask + 1) >> PAGE_SHIFT;
--
--	/* consumer page + producer page + 2 x data pages */
--	return RINGBUF_POS_PAGES + 2 * data_pages;
--}
--
- static int ringbuf_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
- {
- 	struct bpf_ringbuf_map *rb_map;
--	size_t mmap_sz;
-
- 	rb_map = container_of(map, struct bpf_ringbuf_map, map);
--	mmap_sz = bpf_ringbuf_mmap_page_cnt(rb_map->rb) << PAGE_SHIFT;
--
--	if (vma->vm_pgoff * PAGE_SIZE + (vma->vm_end - vma->vm_start) > mmap_sz)
--		return -EINVAL;
-
-+	if (vma->vm_flags & VM_WRITE) {
-+		/* allow writable mapping for the consumer_pos only */
-+		if (vma->vm_pgoff != 0 || vma->vm_end - vma->vm_start != PAGE_SIZE)
-+			return -EPERM;
-+	} else {
-+		vma->vm_flags &= ~VM_MAYWRITE;
-+	}
-+	/* remap_vmalloc_range() checks size and offset constraints */
- 	return remap_vmalloc_range(vma, rb_map->rb,
- 				   vma->vm_pgoff + RINGBUF_PGOFF);
- }
-@@ -315,6 +310,9 @@ static void *__bpf_ringbuf_reserve(struct bpf_ringbuf *rb, u64 size)
- 		return NULL;
-
- 	len = round_up(size + BPF_RINGBUF_HDR_SZ, 8);
-+	if (len > rb->mask + 1)
-+		return NULL;
-+
- 	cons_pos = smp_load_acquire(&rb->consumer_pos);
-
- 	if (in_nmi()) {
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 4e4a844a68c3..4d6bde433a0f 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -6398,11 +6398,10 @@ static void scalar32_min_max_and(struct bpf_reg_state *dst_reg,
- 	s32 smin_val = src_reg->s32_min_value;
- 	u32 umax_val = src_reg->u32_max_value;
-
--	/* Assuming scalar64_min_max_and will be called so its safe
--	 * to skip updating register for known 32-bit case.
--	 */
--	if (src_known && dst_known)
-+	if (src_known && dst_known) {
-+		__mark_reg32_known(dst_reg, var32_off.value);
- 		return;
-+	}
-
- 	/* We get our minimum from the var_off, since that's inherently
- 	 * bitwise.  Our maximum is the minimum of the operands' maxima.
-@@ -6422,7 +6421,6 @@ static void scalar32_min_max_and(struct bpf_reg_state *dst_reg,
- 		dst_reg->s32_min_value = dst_reg->u32_min_value;
- 		dst_reg->s32_max_value = dst_reg->u32_max_value;
- 	}
--
- }
-
- static void scalar_min_max_and(struct bpf_reg_state *dst_reg,
-@@ -6469,11 +6467,10 @@ static void scalar32_min_max_or(struct bpf_reg_state *dst_reg,
- 	s32 smin_val = src_reg->s32_min_value;
- 	u32 umin_val = src_reg->u32_min_value;
-
--	/* Assuming scalar64_min_max_or will be called so it is safe
--	 * to skip updating register for known case.
--	 */
--	if (src_known && dst_known)
-+	if (src_known && dst_known) {
-+		__mark_reg32_known(dst_reg, var32_off.value);
- 		return;
-+	}
-
- 	/* We get our maximum from the var_off, and our minimum is the
- 	 * maximum of the operands' minima
-@@ -6538,11 +6535,10 @@ static void scalar32_min_max_xor(struct bpf_reg_state *dst_reg,
- 	struct tnum var32_off = tnum_subreg(dst_reg->var_off);
- 	s32 smin_val = src_reg->s32_min_value;
-
--	/* Assuming scalar64_min_max_xor will be called so it is safe
--	 * to skip updating register for known case.
--	 */
--	if (src_known && dst_known)
-+	if (src_known && dst_known) {
-+		__mark_reg32_known(dst_reg, var32_off.value);
- 		return;
-+	}
-
- 	/* We get both minimum and maximum from the var32_off. */
- 	dst_reg->u32_min_value = var32_off.value;
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
 index 825284baaf46..0b2b3f510b16 100644
 --- a/kernel/crash_core.c
@@ -4047,41 +3902,95 @@ index c0014d3b91c1..c00e9820412a 100644
  	kmemleak_initialized = 1;
 
  	debugfs_create_file("kmemleak", 0644, NULL, NULL, &kmemleak_fops);
-diff --git a/net/nfc/llcp_sock.c b/net/nfc/llcp_sock.c
-index a3b46f888803..53dbe733f998 100644
---- a/net/nfc/llcp_sock.c
-+++ b/net/nfc/llcp_sock.c
-@@ -109,12 +109,14 @@ static int llcp_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
- 					  GFP_KERNEL);
- 	if (!llcp_sock->service_name) {
- 		nfc_llcp_local_put(llcp_sock->local);
-+		llcp_sock->local = NULL;
- 		ret = -ENOMEM;
- 		goto put_dev;
- 	}
- 	llcp_sock->ssap = nfc_llcp_get_sdp_ssap(local, llcp_sock);
- 	if (llcp_sock->ssap == LLCP_SAP_MAX) {
- 		nfc_llcp_local_put(llcp_sock->local);
-+		llcp_sock->local = NULL;
- 		kfree(llcp_sock->service_name);
- 		llcp_sock->service_name = NULL;
- 		ret = -EADDRINUSE;
-@@ -709,6 +711,7 @@ static int llcp_sock_connect(struct socket *sock, struct sockaddr *_addr,
- 	llcp_sock->ssap = nfc_llcp_get_local_ssap(local);
- 	if (llcp_sock->ssap == LLCP_SAP_MAX) {
- 		nfc_llcp_local_put(llcp_sock->local);
-+		llcp_sock->local = NULL;
- 		ret = -ENOMEM;
- 		goto put_dev;
- 	}
-@@ -756,6 +759,7 @@ static int llcp_sock_connect(struct socket *sock, struct sockaddr *_addr,
- sock_llcp_release:
- 	nfc_llcp_put_ssap(local, llcp_sock->ssap);
- 	nfc_llcp_local_put(llcp_sock->local);
-+	llcp_sock->local = NULL;
+diff --git a/net/can/isotp.c b/net/can/isotp.c
+index 9f94ad3caee9..253b24417c8e 100644
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -1062,27 +1062,31 @@ static int isotp_bind(struct socket *sock, struct sockaddr *uaddr, int len)
+ 	if (len < ISOTP_MIN_NAMELEN)
+ 		return -EINVAL;
 
- put_dev:
- 	nfc_put_device(dev);
++	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
++		return -EADDRNOTAVAIL;
++
++	if (!addr->can_ifindex)
++		return -ENODEV;
++
++	lock_sock(sk);
++
+ 	/* do not register frame reception for functional addressing */
+ 	if (so->opt.flags & CAN_ISOTP_SF_BROADCAST)
+ 		do_rx_reg = 0;
+
+ 	/* do not validate rx address for functional addressing */
+ 	if (do_rx_reg) {
+-		if (addr->can_addr.tp.rx_id == addr->can_addr.tp.tx_id)
+-			return -EADDRNOTAVAIL;
++		if (addr->can_addr.tp.rx_id == addr->can_addr.tp.tx_id) {
++			err = -EADDRNOTAVAIL;
++			goto out;
++		}
+
+-		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
+-			return -EADDRNOTAVAIL;
++		if (addr->can_addr.tp.rx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG)) {
++			err = -EADDRNOTAVAIL;
++			goto out;
++		}
+ 	}
+
+-	if (addr->can_addr.tp.tx_id & (CAN_ERR_FLAG | CAN_RTR_FLAG))
+-		return -EADDRNOTAVAIL;
+-
+-	if (!addr->can_ifindex)
+-		return -ENODEV;
+-
+-	lock_sock(sk);
+-
+ 	if (so->bound && addr->can_ifindex == so->ifindex &&
+ 	    addr->can_addr.tp.rx_id == so->rxid &&
+ 	    addr->can_addr.tp.tx_id == so->txid)
+@@ -1164,16 +1168,13 @@ static int isotp_getname(struct socket *sock, struct sockaddr *uaddr, int peer)
+ 	return ISOTP_MIN_NAMELEN;
+ }
+
+-static int isotp_setsockopt(struct socket *sock, int level, int optname,
++static int isotp_setsockopt_locked(struct socket *sock, int level, int optname,
+ 			    sockptr_t optval, unsigned int optlen)
+ {
+ 	struct sock *sk = sock->sk;
+ 	struct isotp_sock *so = isotp_sk(sk);
+ 	int ret = 0;
+
+-	if (level != SOL_CAN_ISOTP)
+-		return -EINVAL;
+-
+ 	if (so->bound)
+ 		return -EISCONN;
+
+@@ -1248,6 +1249,22 @@ static int isotp_setsockopt(struct socket *sock, int level, int optname,
+ 	return ret;
+ }
+
++static int isotp_setsockopt(struct socket *sock, int level, int optname,
++			    sockptr_t optval, unsigned int optlen)
++
++{
++	struct sock *sk = sock->sk;
++	int ret;
++
++	if (level != SOL_CAN_ISOTP)
++		return -EINVAL;
++
++	lock_sock(sk);
++	ret = isotp_setsockopt_locked(sock, level, optname, optval, optlen);
++	release_sock(sk);
++	return ret;
++}
++
+ static int isotp_getsockopt(struct socket *sock, int level, int optname,
+ 			    char __user *optval, int __user *optlen)
+ {
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
 index ee4b4c666854..eff9ff593405 100644
 --- a/security/integrity/platform_certs/load_uefi.c
@@ -4234,10 +4143,10 @@ index c45686172517..68bb977c6a37 100644
  	},
  #endif
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index d05d16ddbdf2..3dd6362000a1 100644
+index 8ec57bd351df..213a3311baff 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -5688,6 +5688,18 @@ static void alc_fixup_tpt470_dacs(struct hda_codec *codec,
+@@ -5717,6 +5717,18 @@ static void alc_fixup_tpt470_dacs(struct hda_codec *codec,
  		spec->gen.preferred_dacs = preferred_pairs;
  }
 
@@ -4256,7 +4165,7 @@ index d05d16ddbdf2..3dd6362000a1 100644
  static void alc_shutup_dell_xps13(struct hda_codec *codec)
  {
  	struct alc_spec *spec = codec->spec;
-@@ -6451,6 +6463,7 @@ enum {
+@@ -6481,6 +6493,7 @@ enum {
  	ALC282_FIXUP_ACER_DISABLE_LINEOUT,
  	ALC255_FIXUP_ACER_LIMIT_INT_MIC_BOOST,
  	ALC256_FIXUP_ACER_HEADSET_MIC,
@@ -4264,7 +4173,7 @@ index d05d16ddbdf2..3dd6362000a1 100644
  };
 
  static const struct hda_fixup alc269_fixups[] = {
-@@ -7939,6 +7952,10 @@ static const struct hda_fixup alc269_fixups[] = {
+@@ -7973,6 +7986,10 @@ static const struct hda_fixup alc269_fixups[] = {
  		.chained = true,
  		.chain_id = ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC
  	},
@@ -4275,14 +4184,14 @@ index d05d16ddbdf2..3dd6362000a1 100644
  };
 
  static const struct snd_pci_quirk alc269_fixup_tbl[] = {
-@@ -8137,6 +8154,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+@@ -8171,6 +8188,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
  	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
  	SND_PCI_QUIRK(0x1043, 0x16e3, "ASUS UX50", ALC269_FIXUP_STEREO_DMIC),
 +	SND_PCI_QUIRK(0x1043, 0x1740, "ASUS UX430UA", ALC295_FIXUP_ASUS_DACS),
  	SND_PCI_QUIRK(0x1043, 0x17d1, "ASUS UX431FL", ALC294_FIXUP_ASUS_DUAL_SPK),
+ 	SND_PCI_QUIRK(0x1043, 0x1881, "ASUS Zephyrus S/M", ALC294_FIXUP_ASUS_GX502_PINS),
  	SND_PCI_QUIRK(0x1043, 0x18b1, "Asus MJ401TA", ALC256_FIXUP_ASUS_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x18f1, "Asus FX505DT", ALC256_FIXUP_ASUS_HEADSET_MIC),
 diff --git a/sound/soc/sof/intel/apl.c b/sound/soc/sof/intel/apl.c
 index fc29b91b8932..c7ed2b3d6abc 100644
 --- a/sound/soc/sof/intel/apl.c
