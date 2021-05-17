@@ -143,7 +143,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 53d09c414635..583c3a3510b9 100644
+index 0ed7e061c8e9..9319af840cbd 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -470,10 +470,10 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index a22778e880c2..ecdf66fb96b5 100644
+index 453eff8ec8c3..7a60a5d6f9ab 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1640,6 +1640,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1641,6 +1641,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
 
@@ -1291,7 +1291,7 @@ index 7a7d5f1a80fc..de28e2633761 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 522c9b229f80..3161fec27575 100644
+index 762125f2905f..02aaa0a23e4b 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -241,6 +241,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1358,7 +1358,7 @@ index 522c9b229f80..3161fec27575 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 0551796517e6..79bd58079267 100644
+index f81871c7128a..6c4cc5e9be60 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
@@ -1395,7 +1395,7 @@ index 0551796517e6..79bd58079267 100644
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next)
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 05f31a2c64bb..401a93cfffde 100644
+index 0015860ec12b..25acc9943007 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
 @@ -708,6 +708,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
@@ -1406,7 +1406,7 @@ index 05f31a2c64bb..401a93cfffde 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -752,6 +753,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
+@@ -753,6 +754,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1781,7 +1781,7 @@ index 5db16509b6e1..5b8b5e3edd39 100644
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_DELL, 0x1fe0)
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index b2bc4b7c4289..0da634c8abcd 100644
+index fc7d6cdacf16..33fea509ff86 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
 @@ -5585,6 +5585,13 @@ static void hub_event(struct work_struct *work)

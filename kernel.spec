@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc1.20210513gitc06a2ba62fc4.15
+%global distro_build 0.rc2.19
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc1.20210513gitc06a2ba62fc4.15
+%define pkgrelease 0.rc2.19
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20210513gitc06a2ba62fc4.15%{?buildid}%{?dist}
+%define specrelease 0.rc2.19%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -203,7 +203,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 # The kernel tarball/base version
 %define kversion 5.13
@@ -619,7 +619,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc1-92-gc06a2ba62fc4.tar.xz
+Source0: linux-5.13-rc2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1270,8 +1270,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc1-92-gc06a2ba62fc4 -c
-mv linux-5.13-rc1-92-gc06a2ba62fc4 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc2 -c
+mv linux-5.13-rc2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2043,7 +2043,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
 %ifnarch noarch i686
-%if !%{with_debug} && !%{with_zfcpdump} && !%{with_up}
+%if !%{with_debug} && !%{with_zfcpdump} && !%{with_pae} && !%{with_up}
 # If only building the user space tools, then initialize the build environment
 # and some variables so that the various userspace tools can be built.
 InitBuildVars
@@ -2051,7 +2051,7 @@ InitBuildVars
 %endif
 
 %global perf_make \
-  %{__make} -s EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2060,7 +2060,7 @@ chmod +x tools/perf/check-headers.sh
 %endif
 
 %global tools_make \
-  %{make} CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" V=1
+  %{make} CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?make_opts}
 
 %if %{with_tools}
 %ifarch %{cpupowerarchs}
@@ -2099,7 +2099,7 @@ popd
 %endif
 
 %global bpftool_make \
-  %{__make} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_LDFLAGS="%{__global_ldflags}" DESTDIR=$RPM_BUILD_ROOT V=1
+  %{__make} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_LDFLAGS="%{__global_ldflags}" DESTDIR=$RPM_BUILD_ROOT %{?make_opts}
 %if %{with_bpftool}
 pushd tools/bpf/bpftool
 %{bpftool_make}
@@ -2383,18 +2383,6 @@ find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/livepatch/{}
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
 popd
-%endif
-
-# We have to do the headers checksum calculation after the tools install because
-# these might end up installing their own set of headers on top of kernel's
-%if %{with_headers}
-# compute a content hash to export as Provides: kernel-headers-checksum
-HEADERS_CHKSUM=$(export LC_ALL=C; find $RPM_BUILD_ROOT/usr/include -type f -name "*.h" \
-			! -path $RPM_BUILD_ROOT/usr/include/linux/version.h | \
-		 sort | xargs cat | sha1sum - | cut -f 1 -d ' ');
-# export the checksum via usr/include/linux/version.h, so the dynamic
-# find-provides can grab the hash to update it accordingly
-echo "#define KERNEL_HEADERS_CHECKSUM \"$HEADERS_CHKSUM\"" >> $RPM_BUILD_ROOT/usr/include/linux/version.h
 %endif
 
 ###
@@ -2776,6 +2764,19 @@ fi
 #
 #
 %changelog
+* Mon May 17 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc2.19]
+- rpmspec: revert/drop content hash for kernel-headers (Herton R. Krzesinski)
+- rpmspec: fix check that calls InitBuildVars (Herton R. Krzesinski)
+
+* Sat May 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.20210515git25a1298726e9.17]
+- fedora: enable zonefs (Damien Le Moal)
+
+* Fri May 14 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.20210514git315d99318179.16]
+- redhat: load specific ARCH keys to INTEGRITY_PLATFORM_KEYRING (Bruno Meneguele)
+- redhat: enable INTEGRITY_TRUSTED_KEYRING across all variants (Bruno Meneguele)
+- redhat: enable SYSTEM_BLACKLIST_KEYRING across all variants (Bruno Meneguele)
+- redhat: enable INTEGRITY_ASYMMETRIC_KEYS across all variants (Bruno Meneguele)
+
 * Thu May 13 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc1.20210513gitc06a2ba62fc4.15]
 - Remove unused boot loader specification files (David Ward)
 - Revert "nvme: multipath: Change default of kernel NVMe multipath to be disabled" (Mike Snitzer)
