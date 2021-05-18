@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc2.19
+%global distro_build 0.rc2.20210518git8ac91e6c6033.21
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc2.19
+%define pkgrelease 0.rc2.20210518git8ac91e6c6033.21
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.19%{?buildid}%{?dist}
+%define specrelease 0.rc2.20210518git8ac91e6c6033.21%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -203,7 +203,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 1 for production (build separate debug kernels)
 #  and 0 for rawhide (all kernels are debug kernels).
 # See also 'make debug' and 'make release'.
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 # The kernel tarball/base version
 %define kversion 5.13
@@ -542,6 +542,7 @@ BuildRequires: zlib-devel binutils-devel newt-devel perl(ExtUtils::Embed) bison 
 BuildRequires: audit-libs-devel
 BuildRequires: java-devel
 BuildRequires: libbpf-devel
+BuildRequires: libbabeltrace-devel
 %ifnarch %{arm} s390x
 BuildRequires: numactl-devel
 %endif
@@ -619,7 +620,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc2.tar.xz
+Source0: linux-5.13-rc2-5-g8ac91e6c6033.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1039,9 +1040,9 @@ This is required to use SystemTap with %{name}%{?1:-%{1}}-%{KVERREL}.\
 
 #
 # This macro creates a kernel-<subpackage>-devel package.
-#	%%kernel_devel_package <subpackage> <pretty-name>
+#	%%kernel_devel_package [-m] <subpackage> <pretty-name>
 #
-%define kernel_devel_package() \
+%define kernel_devel_package(m) \
 %package %{?1:%{1}-}devel\
 Summary: Development package for building kernel modules to match the %{?2:%{2} }kernel\
 Provides: kernel%{?1:-%{1}}-devel-%{_target_cpu} = %{version}-%{release}\
@@ -1058,6 +1059,9 @@ Requires: bison\
 Requires: flex\
 Requires: make\
 Requires: gcc\
+%if %{-m:1}%{!-m:0}\
+Requires: kernel-devel-uname-r = %{KVERREL}\
+%endif\
 %description %{?1:%{1}-}devel\
 This package provides kernel headers and makefiles sufficient to build modules\
 against the %{?2:%{2} }kernel package.\
@@ -1098,9 +1102,9 @@ This package provides kernel modules for the %{?2:%{2} }kernel package for Red H
 
 #
 # This macro creates a kernel-<subpackage>-modules-extra package.
-#	%%kernel_modules_extra_package <subpackage> <pretty-name>
+#	%%kernel_modules_extra_package [-m] <subpackage> <pretty-name>
 #
-%define kernel_modules_extra_package() \
+%define kernel_modules_extra_package(m) \
 %package %{?1:%{1}-}modules-extra\
 Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
 Provides: kernel%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{version}-%{release}\
@@ -1110,6 +1114,9 @@ Provides: installonlypkg(kernel-module)\
 Provides: kernel%{?1:-%{1}}-modules-extra-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
+%if %{-m:1}%{!-m:0}\
+Requires: kernel-modules-extra-uname-r = %{KVERREL}\
+%endif\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules-extra\
@@ -1118,9 +1125,9 @@ This package provides less commonly used kernel modules for the %{?2:%{2} }kerne
 
 #
 # This macro creates a kernel-<subpackage>-modules package.
-#	%%kernel_modules_package <subpackage> <pretty-name>
+#	%%kernel_modules_package [-m] <subpackage> <pretty-name>
 #
-%define kernel_modules_package() \
+%define kernel_modules_package(m) \
 %package %{?1:%{1}-}modules\
 Summary: kernel modules to match the %{?2:%{2}-}core kernel\
 Provides: kernel%{?1:-%{1}}-modules-%{_target_cpu} = %{version}-%{release}\
@@ -1129,6 +1136,9 @@ Provides: kernel-modules = %{version}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
 Provides: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
+%if %{-m:1}%{!-m:0}\
+Requires: kernel-modules-uname-r = %{KVERREL}\
+%endif\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules\
@@ -1152,22 +1162,27 @@ The meta-package for the %{1} kernel\
 #
 # This macro creates a kernel-<subpackage> and its -devel and -debuginfo too.
 #	%%define variant_summary The Linux kernel compiled for <configuration>
-#	%%kernel_variant_package [-n <pretty-name>] <subpackage>
+#	%%kernel_variant_package [-n <pretty-name>] [-m] <subpackage>
 #
-%define kernel_variant_package(n:) \
+%define kernel_variant_package(n:m) \
 %package %{?1:%{1}-}core\
 Summary: %{variant_summary}\
 Provides: kernel-%{?1:%{1}-}core-uname-r = %{KVERREL}%{?1:+%{1}}\
 Provides: installonlypkg(kernel)\
+%if %{-m:1}%{!-m:0}\
+Requires: kernel-core-uname-r = %{KVERREL}\
+%endif\
 %{expand:%%kernel_reqprovconf}\
 %if %{?1:1} %{!?1:0} \
 %{expand:%%kernel_meta_package %{?1:%{1}}}\
 %endif\
-%{expand:%%kernel_devel_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
-%{expand:%%kernel_modules_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
-%{expand:%%kernel_modules_extra_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
+%{expand:%%kernel_devel_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
+%{expand:%%kernel_modules_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
+%{expand:%%kernel_modules_extra_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
+%if %{-m:0}%{!-m:1}\
 %{expand:%%kernel_modules_internal_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
 %{expand:%%kernel_debuginfo_package %{?1:%{1}}}\
+%endif\
 %{nil}
 
 # Now, each variant package.
@@ -1190,7 +1205,11 @@ zfcpdump infrastructure.
 %endif
 
 %define variant_summary The Linux kernel compiled with extra debugging enabled
+%if !%{debugbuildsenabled}
+%kernel_variant_package -m debug
+%else
 %kernel_variant_package debug
+%endif
 %description debug-core
 The kernel package contains the Linux kernel (vmlinuz), the core of any
 Linux operating system.  The kernel handles the basic functions
@@ -1270,8 +1289,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc2 -c
-mv linux-5.13-rc2 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc2-5-g8ac91e6c6033 -c
+mv linux-5.13-rc2-5-g8ac91e6c6033 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2517,8 +2536,10 @@ fi\
 %kernel_variant_post -v lpae -r (kernel|kernel-smp)
 %endif
 
+%if %{with_debug}
 %kernel_variant_preun debug
 %kernel_variant_post -v debug
+%endif
 
 %if %{with_zfcpdump}
 %kernel_variant_preun zfcpdump
@@ -2743,6 +2764,13 @@ fi
 
 %kernel_variant_files %{_use_vdso} %{with_up}
 %kernel_variant_files %{_use_vdso} %{with_debug} debug
+%if !%{debugbuildsenabled}
+%files debug
+%files debug-core
+%files debug-devel
+%files debug-modules
+%files debug-modules-extra
+%endif
 %kernel_variant_files %{use_vdso} %{with_pae} lpae
 %kernel_variant_files %{_use_vdso} %{with_zfcpdump} zfcpdump
 
@@ -2764,6 +2792,13 @@ fi
 #
 #
 %changelog
+* Tue May 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc2.20210518git8ac91e6c6033.21]
+- rpmspec: build debug-* meta-packages if debug builds are disabled (Herton R. Krzesinski)
+
+* Tue May 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc2.20210518git8ac91e6c6033.20]
+- UIO: disable unused config options (Aristeu Rozanski) [1957819]
+- ARK-config: Make amd_pinctrl module builtin (Hans de Goede)
+
 * Mon May 17 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc2.19]
 - rpmspec: revert/drop content hash for kernel-headers (Herton R. Krzesinski)
 - rpmspec: fix check that calls InitBuildVars (Herton R. Krzesinski)
