@@ -294,7 +294,7 @@ index 000000000000..c33a71263d9e
 + 2. Add the new profile name, along with a clear description of the
 +    expected behaviour, to the sysfs-platform_profile ABI documentation.
 diff --git a/Makefile b/Makefile
-index 11ca74eabf47..cc33fcabfd5a 100644
+index ff363cc6b11f..efa514a45640 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -805,10 +805,10 @@ index 000000000000..4a59c5993bde
 +MODULE_AUTHOR("Mark Pearson <markpearson@lenovo.com>");
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 239eeeafc62f..bb8c046fc4cb 100644
+index 32a9bd878852..fd2a5b90d7ca 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1638,6 +1638,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1639,6 +1639,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
 
@@ -2571,7 +2571,7 @@ index 6fa216e52d14..1090a9cfe4f0 100644
 +#endif /* CONFIG_PCIE_TEGRA194 */
 +
 diff --git a/drivers/pci/controller/pcie-brcmstb.c b/drivers/pci/controller/pcie-brcmstb.c
-index d41257f43a8f..e3456b058106 100644
+index 7cbd56d8a5ff..cb252bc09d2a 100644
 --- a/drivers/pci/controller/pcie-brcmstb.c
 +++ b/drivers/pci/controller/pcie-brcmstb.c
 @@ -857,6 +857,7 @@ static int brcm_pcie_setup(struct brcm_pcie *pcie)
@@ -3591,7 +3591,7 @@ index 5ff14b409c23..ec42020dcd58 100644
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_DELL, 0x1fe0)
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 404507d1b76f..51ee8f28a60b 100644
+index 13fe37fbbd2c..77c57e075b0e 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
 @@ -5532,6 +5532,13 @@ static void hub_event(struct work_struct *work)
@@ -4143,7 +4143,7 @@ index c45686172517..68bb977c6a37 100644
  	},
  #endif
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 8ec57bd351df..213a3311baff 100644
+index 1fe70f2fe4fe..af80edb21bbb 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
 @@ -5717,6 +5717,18 @@ static void alc_fixup_tpt470_dacs(struct hda_codec *codec,
@@ -4165,15 +4165,15 @@ index 8ec57bd351df..213a3311baff 100644
  static void alc_shutup_dell_xps13(struct hda_codec *codec)
  {
  	struct alc_spec *spec = codec->spec;
-@@ -6481,6 +6493,7 @@ enum {
+@@ -6484,6 +6496,7 @@ enum {
  	ALC282_FIXUP_ACER_DISABLE_LINEOUT,
  	ALC255_FIXUP_ACER_LIMIT_INT_MIC_BOOST,
  	ALC256_FIXUP_ACER_HEADSET_MIC,
 +	ALC295_FIXUP_ASUS_DACS,
+ 	ALC285_FIXUP_IDEAPAD_S740_COEF,
  };
 
- static const struct hda_fixup alc269_fixups[] = {
-@@ -7973,6 +7986,10 @@ static const struct hda_fixup alc269_fixups[] = {
+@@ -7977,6 +7990,10 @@ static const struct hda_fixup alc269_fixups[] = {
  		.chained = true,
  		.chain_id = ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC
  	},
@@ -4181,10 +4181,10 @@ index 8ec57bd351df..213a3311baff 100644
 +		.type = HDA_FIXUP_FUNC,
 +		.v.func = alc295_fixup_asus_dacs,
 +	},
- };
-
- static const struct snd_pci_quirk alc269_fixup_tbl[] = {
-@@ -8171,6 +8188,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	[ALC285_FIXUP_IDEAPAD_S740_COEF] = {
+ 		.type = HDA_FIXUP_FUNC,
+ 		.v.func = alc285_fixup_ideapad_s740_coef,
+@@ -8181,6 +8198,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
  	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
  	SND_PCI_QUIRK(0x1043, 0x16e3, "ASUS UX50", ALC269_FIXUP_STEREO_DMIC),

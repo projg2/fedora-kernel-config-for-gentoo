@@ -104,7 +104,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.11.21
+%define rpmversion 5.11.22
 %define stableversion 5.11
 %define pkgrelease 100
 
@@ -603,7 +603,7 @@ BuildRequires: asciidoc
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.11.21.tar.xz
+Source0: linux-5.11.22.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1251,8 +1251,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.11.21 -c
-mv linux-5.11.21 linux-%{KVERREL}
+%setup -q -n kernel-5.11.22 -c
+mv linux-5.11.22 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2765,6 +2765,9 @@ fi
 #
 #
 %changelog
+* Wed May 19 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.22-0]
+- Fedora 33 and 34 are being rebased to 5.12 (Justin M. Forbes)
+
 * Fri May 14 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.11.21-0]
 - can: isotp: prevent race between isotp_bind() and isotp_setsockopt() (Norbert Slusarek)
 
