@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 0
 
-%global distro_build 0.rc2.20210518git8ac91e6c6033.21
+%global distro_build 0.rc2.20210520gitc3d0e3fd41b7.21
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -107,13 +107,13 @@ Summary: The Linux kernel
 %endif
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc2.20210518git8ac91e6c6033.21
+%define pkgrelease 0.rc2.20210520gitc3d0e3fd41b7.21
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20210518git8ac91e6c6033.21%{?buildid}%{?dist}
+%define specrelease 0.rc2.20210520gitc3d0e3fd41b7.21%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -620,7 +620,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc2-5-g8ac91e6c6033.tar.xz
+Source0: linux-5.13-rc2-8-gc3d0e3fd41b7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1289,8 +1289,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc2-5-g8ac91e6c6033 -c
-mv linux-5.13-rc2-5-g8ac91e6c6033 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc2-8-gc3d0e3fd41b7 -c
+mv linux-5.13-rc2-8-gc3d0e3fd41b7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2792,7 +2792,7 @@ fi
 #
 #
 %changelog
-* Tue May 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc2.20210518git8ac91e6c6033.21]
+* Thu May 20 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc2.20210520gitc3d0e3fd41b7.21]
 - rpmspec: build debug-* meta-packages if debug builds are disabled (Herton R. Krzesinski)
 
 * Tue May 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc2.20210518git8ac91e6c6033.20]
