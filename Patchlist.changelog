@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/3b0b403f2c1261ea8e4ab576e5a44664a7abd12c
+ 3b0b403f2c1261ea8e4ab576e5a44664a7abd12c mm/cma: mark CMA on x86_64 tech preview and print RHEL-specific infos
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/42fcca9ea8f8acd6f561e9589f92462246e572ff
  42fcca9ea8f8acd6f561e9589f92462246e572ff Revert "nvme: multipath: Change default of kernel NVMe multipath to be disabled"
 

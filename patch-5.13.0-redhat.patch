@@ -60,13 +60,14 @@
  kernel/module_signing.c                            |   9 +-
  kernel/panic.c                                     |  14 +
  kernel/rh_taint.c                                  |  93 +++++++
+ mm/cma.c                                           |  10 +
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 68 files changed, 1197 insertions(+), 187 deletions(-)
+ 69 files changed, 1207 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -2610,6 +2611,34 @@ index 000000000000..4050b6dead75
 +	        name ? name : "kernel");
 +}
 +EXPORT_SYMBOL(mark_driver_unsupported);
+diff --git a/mm/cma.c b/mm/cma.c
+index 995e15480937..588f7e7885cf 100644
+--- a/mm/cma.c
++++ b/mm/cma.c
+@@ -125,6 +125,12 @@ static void __init cma_activate_area(struct cma *cma)
+ 	spin_lock_init(&cma->mem_head_lock);
+ #endif
+
++#ifdef CONFIG_RHEL_DIFFERENCES
++	/* s390x and ppc64 has been using CMA already in RHEL 8 as default. */
++	if (!IS_ENABLED(CONFIG_S390) && !IS_ENABLED(CONFIG_PPC64))
++		mark_tech_preview("CMA", NULL);
++#endif /* CONFIG_RHEL_DIFFERENCES */
++
+ 	return;
+
+ not_in_zone:
+@@ -437,6 +443,10 @@ struct page *cma_alloc(struct cma *cma, unsigned long count,
+ 	if (!cma || !cma->count || !cma->bitmap)
+ 		goto out;
+
++#ifdef CONFIG_RHEL_DIFFERENCES
++	pr_info_once("Initial CMA usage detected\n");
++#endif /* CONFIG_RHEL_DIFFERENCES */
++
+ 	pr_debug("%s(cma %p, count %lu, align %d)\n", __func__, (void *)cma,
+ 		 count, align);
+
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
 index 3e623ccc020b..3047abc9a507 100644
 --- a/scripts/mod/modpost.c
