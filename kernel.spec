@@ -106,7 +106,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.12.5
+%define rpmversion 5.12.6
 %define stableversion 5.12
 %define pkgrelease 200
 
@@ -623,7 +623,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12.5.tar.xz
+Source0: linux-5.12.6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1277,8 +1277,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12.5 -c
-mv linux-5.12.5 linux-%{KVERREL}
+%setup -q -n kernel-5.12.6 -c
+mv linux-5.12.6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2792,6 +2792,9 @@ fi
 #
 #
 %changelog
+* Sat May 22 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.6-0]
+- bus: mhi: core: Download AMSS image from appropriate function (Bhaumik Bhatt)
+
 * Wed May 19 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.5-0]
 - drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
 - fedora: enable zonefs (Damien Le Moal)
