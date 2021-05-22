@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/00f96bf907caf6f5bd6ff876958aa9a1bb45f969
+ 00f96bf907caf6f5bd6ff876958aa9a1bb45f969 bus: mhi: core: Download AMSS image from appropriate function
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/8ce924d893c80e34cbe65310fe1389e7ab4d808c
  8ce924d893c80e34cbe65310fe1389e7ab4d808c drm/rockchip: remove existing generic drivers to take over the device
 

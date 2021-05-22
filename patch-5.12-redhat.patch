@@ -66,7 +66,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index f60212a0412c..7424a878605f 100644
+index dd021135838b..834afa29b14c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -1027,7 +1027,7 @@ index a751553fa0db..dbb981876556 100644
 +obj-$(CONFIG_ARM64) += pcie-tegra194.o
  endif
 diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index 6fa216e52d14..cb38e94a3033 100644
+index 0e94190ca4e8..dfc5d6772e64 100644
 --- a/drivers/pci/controller/dwc/pcie-tegra194.c
 +++ b/drivers/pci/controller/dwc/pcie-tegra194.c
 @@ -22,6 +22,8 @@
