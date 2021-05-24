@@ -144,7 +144,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 0ed7e061c8e9..9319af840cbd 100644
+index e4468353425a..95ea0abae436 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -2447,7 +2447,7 @@ index 825284baaf46..0b2b3f510b16 100644
  	 * if the commandline contains a ':', then that's the extended
  	 * syntax -- if not, it must be the classic syntax
 diff --git a/kernel/module.c b/kernel/module.c
-index b5dd92e35b02..d49412abb842 100644
+index 7e78dfabca97..5095efe4d1e1 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -738,6 +738,7 @@ static struct module_attribute modinfo_##field = {                    \

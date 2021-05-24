@@ -59,14 +59,21 @@
 
 Summary: The Linux kernel
 
-# For a kernel released for public testing, released_kernel should be 1.
-# For internal testing builds during development, it should be 0.
-# For rawhide and/or a kernel built from an rc or git snapshot,
-# released_kernel should be 0.
-# For a stable, released kernel, released_kernel should be 1.
+# Set released_kernel to 1 when the upstream source tarball contains a
+#  kernel release. (This includes prepatch or "rc" releases.)
+# Set released_kernel to 0 when the upstream source tarball contains an
+#  unreleased kernel development snapshot.
 %global released_kernel 0
 
-%global distro_build 0.rc2.20210521git79a106fc6585.22
+# Set debugbuildsenabled to 1 to build separate base and debug kernels
+#  (on supported architectures). The kernel-debug-* subpackages will
+#  contain the debug kernel.
+# Set debugbuildsenabled to 0 to not build a separate debug kernel, but
+#  to build the base kernel using the debug configuration. (Specifying
+#  the --with-release option overrides this setting.)
+%define debugbuildsenabled 1
+
+%global distro_build 0.rc3.25
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -106,24 +113,23 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
+# The kernel tarball/base version
+%define kversion 5.13
+
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc2.20210521git79a106fc6585.22
+%define pkgrelease 0.rc3.25
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20210521git79a106fc6585.22%{?buildid}%{?dist}
+%define specrelease 0.rc3.25%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
-# What parts do we want to build? These are the kernels that are built IF the
-# architecture allows it. All should default to 1 (enabled) and be flipped to
-# 0 (disabled) by later arch-specific checks.
-
-# The following build options are enabled by default.
-# Use either --without <opt> in your rpmbuild command or force values
-# to 0 in here to disable them.
+# The following build options are enabled by default, but may become disabled
+# by later architecture-specific checks. These can also be disabled by using
+# --without <opt> in the rpmbuild command, or by forcing these values to 0.
 #
 # standard kernel
 %define with_up        %{?_without_up:        0} %{?!_without_up:        1}
@@ -131,6 +137,8 @@ Summary: The Linux kernel
 %define with_pae       %{?_without_pae:       0} %{?!_without_pae:       1}
 # kernel-debug
 %define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
+# kernel-zfcpdump (s390 specific kernel for zfcpdump)
+%define with_zfcpdump  %{?_without_zfcpdump:  0} %{?!_without_zfcpdump:  1}
 # kernel-doc
 %define with_doc       %{?_without_doc:       0} %{?!_without_doc:       1}
 # kernel-headers
@@ -144,10 +152,6 @@ Summary: The Linux kernel
 %define with_bpftool   %{?_without_bpftool:   0} %{?!_without_bpftool:   1}
 # kernel-debuginfo
 %define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
-# Control whether to install the vdso directories.
-%define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 1}
-# kernel-zfcpdump (s390 specific kernel for zfcpdump)
-%define with_zfcpdump  %{?_without_zfcpdump:  0} %{?!_without_zfcpdump:  1}
 # kernel-abi-whitelists
 %define with_kernel_abi_whitelists %{?_without_kernel_abi_whitelists: 0} %{?!_without_kernel_abi_whitelists: 1}
 # internal samples and selftests
@@ -172,6 +176,9 @@ Summary: The Linux kernel
 # Note that this option needs to have baseline setup in SOURCE300.
 %define with_kabidwchk %{?_without_kabidwchk: 0} %{?!_without_kabidwchk: 1}
 %define with_kabidw_base %{?_with_kabidw_base: 1} %{?!_with_kabidw_base: 0}
+#
+# Control whether to install the vdso directories.
+%define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 1}
 #
 # should we do C=1 builds with sparse
 %define with_sparse    %{?_with_sparse:       1} %{?!_with_sparse:       0}
@@ -199,14 +206,6 @@ Summary: The Linux kernel
 
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
-
-# Set debugbuildsenabled to 1 for production (build separate debug kernels)
-#  and 0 for rawhide (all kernels are debug kernels).
-# See also 'make debug' and 'make release'.
-%define debugbuildsenabled 0
-
-# The kernel tarball/base version
-%define kversion 5.13
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -273,6 +272,10 @@ Summary: The Linux kernel
 
 %if %{with_vanilla}
 %define nopatches 1
+%endif
+
+%if %{with_release}
+%define debugbuildsenabled 1
 %endif
 
 %if !%{debugbuildsenabled}
@@ -620,7 +623,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc2-191-g79a106fc6585.tar.xz
+Source0: linux-5.13-rc3.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1289,8 +1292,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc2-191-g79a106fc6585 -c
-mv linux-5.13-rc2-191-g79a106fc6585 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc3 -c
+mv linux-5.13-rc3 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2792,6 +2795,10 @@ fi
 #
 #
 %changelog
+* Mon May 24 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc3.25]
+- Override %%{debugbuildsenabled} if the --with-release option is used (David Ward)
+- Improve comments in SPEC file, and move some option tests and macros (David Ward)
+
 * Fri May 21 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc2.20210521git79a106fc6585.22]
 - configs: enable CONFIG_EXFAT_FS (Pavel Reichl) [1943423]
 - Revert s390x/zfcpdump part of a9d179c40281 and ecbfddd98621 (Vladis Dronov)
