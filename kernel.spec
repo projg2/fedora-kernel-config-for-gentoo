@@ -71,9 +71,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc3.25
+%global distro_build 0.rc3.20210525gita050a6d2b7e8.26
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.13
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc3.25
+%define pkgrelease 0.rc3.20210525gita050a6d2b7e8.26
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.25%{?buildid}%{?dist}
+%define specrelease 0.rc3.20210525gita050a6d2b7e8.26%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -623,7 +623,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc3.tar.xz
+Source0: linux-5.13-rc3-39-ga050a6d2b7e8.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1292,8 +1292,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc3 -c
-mv linux-5.13-rc3 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc3-39-ga050a6d2b7e8 -c
+mv linux-5.13-rc3-39-ga050a6d2b7e8 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2795,6 +2795,10 @@ fi
 #
 #
 %changelog
+* Tue May 25 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc3.20210525gita050a6d2b7e8.26]
+- Make CRYPTO_EC also builtin (Simo Sorce) [1947240]
+- Do not hard-code a default value for DIST (David Ward)
+
 * Mon May 24 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc3.25]
 - Override %%{debugbuildsenabled} if the --with-release option is used (David Ward)
 - Improve comments in SPEC file, and move some option tests and macros (David Ward)
