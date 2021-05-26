@@ -28,6 +28,7 @@
  drivers/message/fusion/mptsas.c                    |  10 +
  drivers/message/fusion/mptspi.c                    |  11 +
  drivers/net/ethernet/intel/ice/ice_main.c          |   1 +
+ drivers/net/team/team.c                            |   2 +
  drivers/net/wireguard/main.c                       |   7 +
  drivers/nvme/host/core.c                           |  22 +-
  drivers/nvme/host/multipath.c                      |  16 +-
@@ -67,7 +68,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 69 files changed, 1207 insertions(+), 187 deletions(-)
+ 70 files changed, 1209 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -1259,6 +1260,19 @@ index 4ee85a217c6f..494f392a8d56 100644
 
  	ice_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, KBUILD_MODNAME);
  	if (!ice_wq) {
+diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
+index dd7917cab2b1..f6b43adb2ced 100644
+--- a/drivers/net/team/team.c
++++ b/drivers/net/team/team.c
+@@ -3045,6 +3045,8 @@ static int __init team_module_init(void)
+ 	if (err)
+ 		goto err_nl_init;
+
++	mark_hardware_deprecated(DRV_NAME);
++
+ 	return 0;
+
+ err_nl_init:
 diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
 index 7a7d5f1a80fc..de28e2633761 100644
 --- a/drivers/net/wireguard/main.c
