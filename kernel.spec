@@ -106,7 +106,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.12.7
+%define rpmversion 5.12.8
 %define stableversion 5.12
 %define pkgrelease 300
 
@@ -623,7 +623,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12.7.tar.xz
+Source0: linux-5.12.8.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1277,8 +1277,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12.7 -c
-mv linux-5.12.7 linux-%{KVERREL}
+%setup -q -n kernel-5.12.8 -c
+mv linux-5.12.8 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
