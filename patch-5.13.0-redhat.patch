@@ -31,7 +31,7 @@
  drivers/net/team/team.c                            |   2 +
  drivers/net/wireguard/main.c                       |   7 +
  drivers/nvme/host/core.c                           |  22 +-
- drivers/nvme/host/multipath.c                      |  16 +-
+ drivers/nvme/host/multipath.c                      |  19 +-
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/pci-driver.c                           |  29 ++
  drivers/pci/quirks.c                               |  24 ++
@@ -55,7 +55,7 @@
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  kernel/Makefile                                    |   1 +
- kernel/bpf/syscall.c                               |  27 +-
+ kernel/bpf/syscall.c                               |  27 ++
  kernel/crash_core.c                                |  28 +-
  kernel/module.c                                    |   2 +
  kernel/module_signing.c                            |   9 +-
@@ -68,7 +68,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 70 files changed, 1209 insertions(+), 187 deletions(-)
+ 70 files changed, 1211 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -145,7 +145,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index e4468353425a..95ea0abae436 100644
+index b79e0e8acbe3..4968f750ae2e 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -167,7 +167,7 @@ index e4468353425a..95ea0abae436 100644
  		   -Werror=return-type -Wno-format-security \
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
-@@ -1291,7 +1296,13 @@ define filechk_version.h
+@@ -1296,7 +1301,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -472,7 +472,7 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 453eff8ec8c3..7a60a5d6f9ab 100644
+index e10d38ac7cf2..684b241e89e9 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1641,6 +1641,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -1306,7 +1306,7 @@ index 7a7d5f1a80fc..de28e2633761 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 762125f2905f..02aaa0a23e4b 100644
+index 66973bb56305..fcfc2aa3124c 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -241,6 +241,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1373,7 +1373,7 @@ index 762125f2905f..02aaa0a23e4b 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index f81871c7128a..6c4cc5e9be60 100644
+index f81871c7128a..763ed40d50fe 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
@@ -1409,6 +1409,16 @@ index f81871c7128a..6c4cc5e9be60 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next)
+@@ -795,8 +801,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+ 	int error = 0;
+
+ 	/* check if multipath is enabled and we have the capability */
+-	if (!multipath || !ctrl->subsys ||
+-	    !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
++	if (!ctrl->subsys || !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
+ 		return 0;
+
+ 	ctrl->anacap = id->anacap;
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
 index 0015860ec12b..25acc9943007 100644
 --- a/drivers/nvme/host/nvme.h
@@ -2339,7 +2349,7 @@ index 4df609be42d0..4ef0c0f6a8f4 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 941ca06d9dfa..8231bd05d0ea 100644
+index ea04b0deb5ce..88925c1887b7 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
@@ -2350,11 +2360,10 @@ index 941ca06d9dfa..8231bd05d0ea 100644
  #include <uapi/linux/btf.h>
  #include <linux/pgtable.h>
  #include <linux/bpf_lsm.h>
-@@ -50,7 +51,25 @@ static DEFINE_SPINLOCK(map_idr_lock);
+@@ -50,6 +51,26 @@ static DEFINE_SPINLOCK(map_idr_lock);
  static DEFINE_IDR(link_idr);
  static DEFINE_SPINLOCK(link_idr_lock);
 
--int sysctl_unprivileged_bpf_disabled __read_mostly;
 +/* RHEL-only: default to 1 */
 +int sysctl_unprivileged_bpf_disabled __read_mostly = 1;
 +
@@ -2374,10 +2383,11 @@ index 941ca06d9dfa..8231bd05d0ea 100644
 +	return 1;
 +}
 +__setup("unprivileged_bpf_disabled=", unprivileged_bpf_setup);
++
+ int sysctl_unprivileged_bpf_disabled __read_mostly =
+ 	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
- static const struct bpf_map_ops * const bpf_map_types[] = {
- #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
-@@ -4368,11 +4387,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
+@@ -4369,11 +4390,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
  SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
  {
  	union bpf_attr attr;
