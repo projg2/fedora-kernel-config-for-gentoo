@@ -2786,3 +2786,84 @@ index b38155b2de83..b0a6711b4825 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+From d9b1c2752249db9fabd95de4b3656d66f348b671 Mon Sep 17 00:00:00 2001
+From: Jiri Olsa <jolsa@kernel.org>
+Date: Tue, 1 Jun 2021 14:15:11 +0200
+Subject: [PATCH] bpf: Fix unprivileged_bpf_disabled setup
+
+There's recent change [1] that adds new config option and sets
+unprivileged_bpf_disabled to 2 if the option is enabled
+(CONFIG_BPF_UNPRIV_DEFAULT_OFF).
+
+The current RHEL specific behaviour is to set unprivileged_bpf_disabled
+to 1 by default and add boot command line argument to enable
+unpriv bpf.
+
+The config option is enabled in previous patch, adding the taint
+for proc/sysctl unprivileged_bpf_disabled setup.
+
+[1] 08389d888287 ("bpf: Add kconfig knob for disabling unpriv bpf by default")
+[2] 607f0e89af7e ("bpf: set unprivileged_bpf_disabled to 1 by default, add a boot parameter")
+
+Fixes: 607f0e89af7e ("bpf: set unprivileged_bpf_disabled to 1 by default, add a boot parameter")
+Signed-off-by: Jiri Olsa <jolsa@redhat.com>
+---
+ Documentation/admin-guide/kernel-parameters.txt | 7 ++++---
+ kernel/bpf/syscall.c                            | 3 ---
+ kernel/sysctl.c                                 | 5 +++++
+ 3 files changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 3d033c0b69f9..e4c7b7002d58 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -5765,12 +5765,13 @@
+ 			[X86] Cause panic on unknown NMI.
+ 
+ 	unprivileged_bpf_disabled=
+-			Format: { "0" | "1" }
++			Format: { "0" | "1" | "2" }
+ 			Sets the initial value of
+ 			kernel.unprivileged_bpf_disabled sysctl knob.
+ 			0 - unprivileged bpf() syscall access is enabled.
+-			1 - unprivileged bpf() syscall access is disabled.
+-			Default value is 1.
++			1 - unprivileged bpf() syscall access is disabled permanently.
++			2 - unprivileged bpf() syscall access is disabled.
++			Default value is 2.
+ 
+ 	usbcore.authorized_default=
+ 			[USB] Default USB device authorization:
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 88925c1887b7..cb37c3f119cf 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -51,9 +51,6 @@ static DEFINE_SPINLOCK(map_idr_lock);
+ static DEFINE_IDR(link_idr);
+ static DEFINE_SPINLOCK(link_idr_lock);
+ 
+-/* RHEL-only: default to 1 */
+-int sysctl_unprivileged_bpf_disabled __read_mostly = 1;
+-
+ static int __init unprivileged_bpf_setup(char *str)
+ {
+ 	unsigned long disabled;
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index d4a78e08f6d8..cfb0ff48394d 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -241,6 +241,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+ 	if (write && !ret) {
+ 		if (locked_state && unpriv_enable != 1)
+ 			return -EPERM;
++		if (!unpriv_enable) {
++			pr_warn("Unprivileged BPF has been enabled, "
++				"tainting the kernel");
++			add_taint(TAINT_UNPRIVILEGED_BPF, LOCKDEP_STILL_OK);
++		}
+ 		*(int *)table->data = unpriv_enable;
+ 	}
+ 	return ret;
+-- 
+GitLab
+
