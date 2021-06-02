@@ -71,9 +71,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc4.32
+%global distro_build 0.rc4.20210602git231bc5390667.34
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.13
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc4.32
+%define pkgrelease 0.rc4.20210602git231bc5390667.34
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.32%{?buildid}%{?dist}
+%define specrelease 0.rc4.20210602git231bc5390667.34%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -647,7 +647,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc4.tar.xz
+Source0: linux-5.13-rc4-48-g231bc5390667.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1316,8 +1316,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc4 -c
-mv linux-5.13-rc4 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc4-48-g231bc5390667 -c
+mv linux-5.13-rc4-48-g231bc5390667 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2871,7 +2871,9 @@ fi
 #
 #
 %changelog
-* Mon May 31 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc4.32]
+* Wed Jun 02 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc4.20210602git231bc5390667.34]
+- bpf: Fix unprivileged_bpf_disabled setup (Jiri Olsa)
+- Enable CONFIG_BPF_UNPRIV_DEFAULT_OFF (Jiri Olsa)
 - spec: Enable sefltests rpm build (Jiri Olsa)
 - spec: Allow bpf selftest/samples to fail (Jiri Olsa)
 - kvm: Add kvm_stat.service file and kvm_stat logrotate config to the tools (Jiri Benc)
@@ -2902,6 +2904,9 @@ fi
 - kernel.spec: selftests should not depend on modules-internal (Jiri Benc)
 - kernel.spec: build samples (Jiri Benc)
 - kernel.spec: tools: sync missing options with RHEL 8 (Jiri Benc)
+
+* Tue Jun 01 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc4.20210601gitc2131f7e73c9.32]
+- configs/common/s390: disable CONFIG_QETH_{OSN,OSX} (Philipp Rudo) [1903201]
 
 * Fri May 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc3.20210528git97e5bf604b7a.28]
 - nvme: nvme_mpath_init remove multipath check (Mike Snitzer)
