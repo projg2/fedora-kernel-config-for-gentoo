@@ -1,5 +1,5 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/b392c7f3dbb0b2be61e3c6b29d915aad923dff90
- b392c7f3dbb0b2be61e3c6b29d915aad923dff90 bpf: Fix unprivileged_bpf_disabled setup
+https://gitlab.com/cki-project/kernel-ark/-/commit/9ecb01bae94e7379d2da1b5e375241ea3b40ff3b
+ 9ecb01bae94e7379d2da1b5e375241ea3b40ff3b bpf: Fix unprivileged_bpf_disabled setup
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/217f590d1ac59c7253497adb15c8a81d59b8be95
  217f590d1ac59c7253497adb15c8a81d59b8be95 nvme: nvme_mpath_init remove multipath check
