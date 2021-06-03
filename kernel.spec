@@ -106,7 +106,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.12.8
+%define rpmversion 5.12.9
 %define stableversion 5.12
 %define pkgrelease 200
 
@@ -623,7 +623,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12.8.tar.xz
+Source0: linux-5.12.9.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1277,8 +1277,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12.8 -c
-mv linux-5.12.8 linux-%{KVERREL}
+%setup -q -n kernel-5.12.9 -c
+mv linux-5.12.9 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2792,6 +2792,9 @@ fi
 #
 #
 %changelog
+* Thu Jun 03 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.9-0]
+- selinux: Allow context mounts for unpriviliged overlayfs (Vivek Goyal)
+
 * Wed May 26 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.7-0]
 - Fix up merge issue resulting in dual entries for ALC295_FIXUP_ASUS_DACS (Justin M. Forbes)
 - powerpc/64s/syscall: Fix ptrace syscall info with scv syscalls (Nicholas Piggin)
