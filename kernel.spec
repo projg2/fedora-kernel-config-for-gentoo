@@ -71,9 +71,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc4.20210603git324c92e5e0ee.35
+%global distro_build 0.rc5.38
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.13
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc4.20210603git324c92e5e0ee.35
+%define pkgrelease 0.rc5.38
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20210603git324c92e5e0ee.35%{?buildid}%{?dist}
+%define specrelease 0.rc5.38%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -647,7 +647,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc4-61-g324c92e5e0ee.tar.xz
+Source0: linux-5.13-rc5.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1316,8 +1316,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc4-61-g324c92e5e0ee -c
-mv linux-5.13-rc4-61-g324c92e5e0ee linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc5 -c
+mv linux-5.13-rc5 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2871,7 +2871,7 @@ fi
 #
 #
 %changelog
-* Thu Jun 03 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc4.20210603git324c92e5e0ee.35]
+* Mon Jun 07 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc5.38]
 - spec: Enable sefltests rpm build (Jiri Olsa)
 - spec: Allow bpf selftest/samples to fail (Jiri Olsa)
 - kvm: Add kvm_stat.service file and kvm_stat logrotate config to the tools (Jiri Benc)
@@ -2902,6 +2902,9 @@ fi
 - kernel.spec: selftests should not depend on modules-internal (Jiri Benc)
 - kernel.spec: build samples (Jiri Benc)
 - kernel.spec: tools: sync missing options with RHEL 8 (Jiri Benc)
+
+* Sat Jun 05 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc4.20210604gitf88cd3fb9df2.36]
+- RHEL: disable io_uring support (Jeff Moyer)
 
 * Thu Jun 03 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc4.20210603git324c92e5e0ee.34]
 - all: Changing CONFIG_UV_SYSFS to build uv_sysfs.ko as a loadable module. (Frank Ramsay)

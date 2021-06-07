@@ -54,6 +54,7 @@
  include/linux/rh_kabi.h                            | 297 +++++++++++++++++++++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
+ init/Kconfig                                       |   2 +-
  kernel/Makefile                                    |   1 +
  kernel/bpf/syscall.c                               |  24 ++
  kernel/crash_core.c                                |  28 +-
@@ -69,7 +70,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 71 files changed, 1214 insertions(+), 188 deletions(-)
+ 72 files changed, 1215 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -147,7 +148,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index b79e0e8acbe3..4968f750ae2e 100644
+index 144d4f8b7eb3..c57946dbc433 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -297,7 +298,7 @@ index a1b756c49a93..e8992590d603 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 72920af0b3c0..d1f74c05cf24 100644
+index 1e720626069a..78644c6dc4a8 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -18,6 +18,7 @@
@@ -308,7 +309,7 @@ index 72920af0b3c0..d1f74c05cf24 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -47,6 +48,7 @@
+@@ -48,6 +49,7 @@
  #include <asm/unwind.h>
  #include <asm/vsyscall.h>
  #include <linux/vmalloc.h>
@@ -316,8 +317,8 @@ index 72920af0b3c0..d1f74c05cf24 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -753,6 +755,50 @@ static void __init early_reserve_memory(void)
- 	reserve_bios_regions();
+@@ -755,6 +757,50 @@ static void __init early_reserve_memory(void)
+ 	trim_snb_memory();
  }
 
 +#ifdef CONFIG_RHEL_DIFFERENCES
@@ -367,7 +368,7 @@ index 72920af0b3c0..d1f74c05cf24 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -960,6 +1006,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -962,6 +1008,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -381,7 +382,7 @@ index 72920af0b3c0..d1f74c05cf24 100644
  	dmi_setup();
 
  	/*
-@@ -1118,19 +1171,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1126,19 +1179,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -402,7 +403,7 @@ index 72920af0b3c0..d1f74c05cf24 100644
 
  	reserve_initrd();
 
-@@ -1235,6 +1276,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1251,6 +1292,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -1276,7 +1277,7 @@ index dd7917cab2b1..f6b43adb2ced 100644
 
  err_nl_init:
 diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
-index 7a7d5f1a80fc..de28e2633761 100644
+index 75dbe77b0b4b..029ff8576f8e 100644
 --- a/drivers/net/wireguard/main.c
 +++ b/drivers/net/wireguard/main.c
 @@ -12,6 +12,7 @@
@@ -1296,10 +1297,10 @@ index 7a7d5f1a80fc..de28e2633761 100644
 +		return -EOPNOTSUPP;
 +#endif
 +
- #ifdef DEBUG
- 	if (!wg_allowedips_selftest() || !wg_packet_counter_selftest() ||
- 	    !wg_ratelimiter_selftest())
-@@ -39,6 +45,7 @@ static int __init mod_init(void)
+ 	ret = wg_allowedips_slab_init();
+ 	if (ret < 0)
+ 		goto err_allowedips;
+@@ -48,6 +54,7 @@ static int __init mod_init(void)
  	pr_info("WireGuard " WIREGUARD_VERSION " loaded. See www.wireguard.com for information.\n");
  	pr_info("Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.\n");
 
@@ -1986,7 +1987,7 @@ index 8100bb477d86..f758f2869c02 100644
 
  	/* Exported symbols */
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index c20211e59a57..ba81f1b4bd9b 100644
+index 24306504226a..ea30eee40dfb 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1430,6 +1430,10 @@ int pci_add_dynid(struct pci_driver *drv,
@@ -2338,6 +2339,19 @@ index 06f7c50ce77f..09ed686ac5e6 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
+diff --git a/init/Kconfig b/init/Kconfig
+index a61c92066c2e..94107b1d0e3e 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1622,7 +1622,7 @@ config AIO
+ 	  this option saves about 7k.
+
+ config IO_URING
+-	bool "Enable IO uring support" if EXPERT
++	bool "Enable IO uring support"
+ 	select IO_WQ
+ 	default y
+ 	help
 diff --git a/kernel/Makefile b/kernel/Makefile
 index 4df609be42d0..4ef0c0f6a8f4 100644
 --- a/kernel/Makefile
