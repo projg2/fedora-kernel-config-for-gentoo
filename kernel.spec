@@ -73,7 +73,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc5.20210608git368094df48e6.39
+%global distro_build 0.rc5.20210610gitcd1245d75ce9.40
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.13
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc5.20210608git368094df48e6.39
+%define pkgrelease 0.rc5.20210610gitcd1245d75ce9.40
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20210608git368094df48e6.39%{?buildid}%{?dist}
+%define specrelease 0.rc5.20210610gitcd1245d75ce9.40%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -573,6 +573,9 @@ BuildRequires: libtraceevent-devel
 %ifnarch %{arm} s390x
 BuildRequires: numactl-devel
 %endif
+%ifarch aarch64
+BuildRequires: opencsd-devel >= 1.0.0-2
+%endif
 %endif
 %if %{with_tools}
 BuildRequires: gettext ncurses-devel
@@ -647,7 +650,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc5-36-g368094df48e6.tar.xz
+Source0: linux-5.13-rc5-63-gcd1245d75ce9.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1316,8 +1319,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc5-36-g368094df48e6 -c
-mv linux-5.13-rc5-36-g368094df48e6 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc5-63-gcd1245d75ce9 -c
+mv linux-5.13-rc5-63-gcd1245d75ce9 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2096,8 +2099,11 @@ InitBuildVars
 %endif
 %endif
 
+%ifarch aarch64
+%global perf_build_extra_opts CORESIGHT=1
+%endif
 %global perf_make \
-  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2871,7 +2877,7 @@ fi
 #
 #
 %changelog
-* Tue Jun 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc5.20210608git368094df48e6.39]
+* Thu Jun 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc5.20210610gitcd1245d75ce9.40]
 - spec: Enable sefltests rpm build (Jiri Olsa)
 - spec: Allow bpf selftest/samples to fail (Jiri Olsa)
 - kvm: Add kvm_stat.service file and kvm_stat logrotate config to the tools (Jiri Benc)
