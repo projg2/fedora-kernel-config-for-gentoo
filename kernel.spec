@@ -106,7 +106,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.12.9
+%define rpmversion 5.12.10
 %define stableversion 5.12
 %define pkgrelease 200
 
@@ -623,7 +623,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12.9.tar.xz
+Source0: linux-5.12.10.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1277,8 +1277,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12.9 -c
-mv linux-5.12.9 linux-%{KVERREL}
+%setup -q -n kernel-5.12.10 -c
+mv linux-5.12.10 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2792,6 +2792,10 @@ fi
 #
 #
 %changelog
+* Thu Jun 10 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.10-0]
+- Bluetooth: use correct lock to prevent UAF of hdev object (Lin Ma)
+- nfc: fix NULL ptr dereference in llcp_sock_getname() after failed connect (Krzysztof Kozlowski)
+
 * Thu Jun 03 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.9-0]
 - selinux: Allow context mounts for unpriviliged overlayfs (Vivek Goyal)
 
