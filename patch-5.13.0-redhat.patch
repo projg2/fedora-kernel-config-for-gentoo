@@ -6,6 +6,9 @@
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
  arch/arm64/kernel/acpi.c                           |   4 +
+ arch/powerpc/Kconfig                               |   1 -
+ arch/powerpc/include/asm/jump_label.h              |  21 +-
+ arch/powerpc/kernel/jump_label.c                   |   4 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
@@ -70,7 +73,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 72 files changed, 1215 insertions(+), 189 deletions(-)
+ 75 files changed, 1232 insertions(+), 198 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -238,6 +241,85 @@ index cada0b816c8a..77b30bf451aa 100644
  static bool param_acpi_force __initdata;
 
  static int __init parse_acpi(char *arg)
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 088dd2afcfe4..59e0d55ee01d 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -189,7 +189,6 @@ config PPC
+ 	select HAVE_ARCH_HUGE_VMALLOC		if HAVE_ARCH_HUGE_VMAP
+ 	select HAVE_ARCH_HUGE_VMAP		if PPC_BOOK3S_64 && PPC_RADIX_MMU
+ 	select HAVE_ARCH_JUMP_LABEL
+-	select HAVE_ARCH_JUMP_LABEL_RELATIVE
+ 	select HAVE_ARCH_KASAN			if PPC32 && PPC_PAGE_SHIFT <= 14
+ 	select HAVE_ARCH_KASAN_VMALLOC		if PPC32 && PPC_PAGE_SHIFT <= 14
+ 	select HAVE_ARCH_KFENCE			if PPC32
+diff --git a/arch/powerpc/include/asm/jump_label.h b/arch/powerpc/include/asm/jump_label.h
+index 2d5c6bec2b4f..09297ec9fa52 100644
+--- a/arch/powerpc/include/asm/jump_label.h
++++ b/arch/powerpc/include/asm/jump_label.h
+@@ -20,8 +20,7 @@ static __always_inline bool arch_static_branch(struct static_key *key, bool bran
+ 	asm_volatile_goto("1:\n\t"
+ 		 "nop # arch_static_branch\n\t"
+ 		 ".pushsection __jump_table,  \"aw\"\n\t"
+-		 ".long 1b - ., %l[l_yes] - .\n\t"
+-		 JUMP_ENTRY_TYPE "%c0 - .\n\t"
++		 JUMP_ENTRY_TYPE "1b, %l[l_yes], %c0\n\t"
+ 		 ".popsection \n\t"
+ 		 : :  "i" (&((char *)key)[branch]) : : l_yes);
+
+@@ -35,8 +34,7 @@ static __always_inline bool arch_static_branch_jump(struct static_key *key, bool
+ 	asm_volatile_goto("1:\n\t"
+ 		 "b %l[l_yes] # arch_static_branch_jump\n\t"
+ 		 ".pushsection __jump_table,  \"aw\"\n\t"
+-		 ".long 1b - ., %l[l_yes] - .\n\t"
+-		 JUMP_ENTRY_TYPE "%c0 - .\n\t"
++		 JUMP_ENTRY_TYPE "1b, %l[l_yes], %c0\n\t"
+ 		 ".popsection \n\t"
+ 		 : :  "i" (&((char *)key)[branch]) : : l_yes);
+
+@@ -45,12 +43,23 @@ static __always_inline bool arch_static_branch_jump(struct static_key *key, bool
+ 	return true;
+ }
+
++#ifdef CONFIG_PPC64
++typedef u64 jump_label_t;
++#else
++typedef u32 jump_label_t;
++#endif
++
++struct jump_entry {
++	jump_label_t code;
++	jump_label_t target;
++	jump_label_t key;
++};
++
+ #else
+ #define ARCH_STATIC_BRANCH(LABEL, KEY)		\
+ 1098:	nop;					\
+ 	.pushsection __jump_table, "aw";	\
+-	.long 1098b - ., LABEL - .;		\
+-	FTR_ENTRY_LONG KEY;			\
++	FTR_ENTRY_LONG 1098b, LABEL, KEY;	\
+ 	.popsection
+ #endif
+
+diff --git a/arch/powerpc/kernel/jump_label.c b/arch/powerpc/kernel/jump_label.c
+index ce87dc5ea23c..144858027fa3 100644
+--- a/arch/powerpc/kernel/jump_label.c
++++ b/arch/powerpc/kernel/jump_label.c
+@@ -11,10 +11,10 @@
+ void arch_jump_label_transform(struct jump_entry *entry,
+ 			       enum jump_label_type type)
+ {
+-	struct ppc_inst *addr = (struct ppc_inst *)jump_entry_code(entry);
++	struct ppc_inst *addr = (struct ppc_inst *)(unsigned long)entry->code;
+
+ 	if (type == JUMP_LABEL_JMP)
+-		patch_branch(addr, jump_entry_target(entry), 0);
++		patch_branch(addr, entry->target, 0);
+ 	else
+ 		patch_instruction(addr, ppc_inst(PPC_INST_NOP));
+ }
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index a9e2c7295b35..6ff11f3a2d47 100644
 --- a/arch/s390/include/asm/ipl.h

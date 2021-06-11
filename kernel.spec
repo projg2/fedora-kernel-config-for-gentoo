@@ -73,7 +73,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc5.20210610gitcd1245d75ce9.40
+%global distro_build 0.rc5.20210611git929d931f2b40.42
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.13
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc5.20210610gitcd1245d75ce9.40
+%define pkgrelease 0.rc5.20210611git929d931f2b40.42
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20210610gitcd1245d75ce9.40%{?buildid}%{?dist}
+%define specrelease 0.rc5.20210611git929d931f2b40.42%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -650,7 +650,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc5-63-gcd1245d75ce9.tar.xz
+Source0: linux-5.13-rc5-110-g929d931f2b40.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1319,8 +1319,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc5-63-gcd1245d75ce9 -c
-mv linux-5.13-rc5-63-gcd1245d75ce9 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc5-110-g929d931f2b40 -c
+mv linux-5.13-rc5-110-g929d931f2b40 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2877,7 +2877,8 @@ fi
 #
 #
 %changelog
-* Thu Jun 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc5.20210610gitcd1245d75ce9.40]
+* Fri Jun 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc5.20210611git929d931f2b40.42]
+- Revert "powerpc: Switch to relative jump labels" (Don Zickus)
 - spec: Enable sefltests rpm build (Jiri Olsa)
 - spec: Allow bpf selftest/samples to fail (Jiri Olsa)
 - kvm: Add kvm_stat.service file and kvm_stat logrotate config to the tools (Jiri Benc)
@@ -2913,6 +2914,13 @@ fi
 - configs/process_configs.sh: make use of dummy-tools (Philipp Rudo)
 - configs/common: disable CONFIG_INIT_STACK_ALL_{PATTERN,ZERO} (Philipp Rudo)
 - configs/common/aarch64: disable CONFIG_RELR (Philipp Rudo)
+
+* Fri Jun 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc5.20210611git929d931f2b40.41]
+- redhat/configs: enable IMA_KEXEC for supported arches (Bruno Meneguele)
+- redhat/configs: enable INTEGRITY_SIGNATURE to all arches (Bruno Meneguele)
+
+* Fri Jun 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc5.20210611git06af8679449d.40]
+- configs: enable CONFIG_LEDS_BRIGHTNESS_HW_CHANGED (Benjamin Tissoires)
 
 * Sat Jun 05 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc4.20210604gitf88cd3fb9df2.36]
 - RHEL: disable io_uring support (Jeff Moyer)
