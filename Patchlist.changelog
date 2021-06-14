@@ -1,5 +1,5 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/75a7840b5a3793c11a241e00f7b01c088d25017b
- 75a7840b5a3793c11a241e00f7b01c088d25017b Revert "powerpc: Switch to relative jump labels"
+https://gitlab.com/cki-project/kernel-ark/-/commit/fdb0a1456873aca1fa0f14c0461f81c82eea872b
+ fdb0a1456873aca1fa0f14c0461f81c82eea872b Revert "powerpc: Switch to relative jump labels"
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/9ecb01bae94e7379d2da1b5e375241ea3b40ff3b
  9ecb01bae94e7379d2da1b5e375241ea3b40ff3b bpf: Fix unprivileged_bpf_disabled setup

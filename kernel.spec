@@ -71,9 +71,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc5.20210611git929d931f2b40.42
+%global distro_build 0.rc6.45
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.13
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc5.20210611git929d931f2b40.42
+%define pkgrelease 0.rc6.45
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20210611git929d931f2b40.42%{?buildid}%{?dist}
+%define specrelease 0.rc6.45%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -650,7 +650,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc5-110-g929d931f2b40.tar.xz
+Source0: linux-5.13-rc6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1319,8 +1319,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc5-110-g929d931f2b40 -c
-mv linux-5.13-rc5-110-g929d931f2b40 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc6 -c
+mv linux-5.13-rc6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2877,7 +2877,7 @@ fi
 #
 #
 %changelog
-* Fri Jun 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc5.20210611git929d931f2b40.42]
+* Mon Jun 14 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc6.45]
 - Revert "powerpc: Switch to relative jump labels" (Don Zickus)
 - spec: Enable sefltests rpm build (Jiri Olsa)
 - spec: Allow bpf selftest/samples to fail (Jiri Olsa)
