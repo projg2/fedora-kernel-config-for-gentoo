@@ -1,5 +1,23 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/fdb0a1456873aca1fa0f14c0461f81c82eea872b
- fdb0a1456873aca1fa0f14c0461f81c82eea872b Revert "powerpc: Switch to relative jump labels"
+https://gitlab.com/cki-project/kernel-ark/-/commit/9f4b3d98a427d0062998c330d1e1ac52bebedcf6
+ 9f4b3d98a427d0062998c330d1e1ac52bebedcf6 Revert "powerpc: Switch to relative jump labels"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/b8e1cc9b59a5b9aae3c76c4cb45b8193e1440e9e
+ b8e1cc9b59a5b9aae3c76c4cb45b8193e1440e9e bpf, selftests: Disable tests that need clang13
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/f8f4e3ac32315185f07d22251a6ba9d82e4b8e84
+ f8f4e3ac32315185f07d22251a6ba9d82e4b8e84 PCI: rockchip: Register IRQs just before pci_host_probe()
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/1cadd9dc5a163eb58fc1c7a801a6bfaeb89f197c
+ 1cadd9dc5a163eb58fc1c7a801a6bfaeb89f197c arm64: dts: rockchip: Update PCI host bridge window to 32-bit address memory
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/7526d4b295786a611864afff7913a79a49a2cb71
+ 7526d4b295786a611864afff7913a79a49a2cb71 PCI: of: Refactor the check for non-prefetchable 32-bit window
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/70bc1635669324f4e61cf13d597977832d6895c6
+ 70bc1635669324f4e61cf13d597977832d6895c6 PCI: of: Relax the condition for warning about non-prefetchable memory aperture size
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/9c7a186ec0defb0bf55187f21de45ace5252ba59
+ 9c7a186ec0defb0bf55187f21de45ace5252ba59 PCI: of: Clear 64-bit flag for non-prefetchable memory below 4GB
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/9ecb01bae94e7379d2da1b5e375241ea3b40ff3b
  9ecb01bae94e7379d2da1b5e375241ea3b40ff3b bpf: Fix unprivileged_bpf_disabled setup

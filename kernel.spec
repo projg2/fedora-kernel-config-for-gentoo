@@ -71,9 +71,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc6.45
+%global distro_build 0.rc6.20210617git70585216fe77.48
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.13
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc6.45
+%define pkgrelease 0.rc6.20210617git70585216fe77.48
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.45%{?buildid}%{?dist}
+%define specrelease 0.rc6.20210617git70585216fe77.48%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -574,7 +574,7 @@ BuildRequires: libtraceevent-devel
 BuildRequires: numactl-devel
 %endif
 %ifarch aarch64
-BuildRequires: opencsd-devel
+BuildRequires: opencsd-devel >= 1.0.0
 %endif
 %endif
 %if %{with_tools}
@@ -650,7 +650,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc6.tar.xz
+Source0: linux-5.13-rc6-44-g70585216fe77.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1319,8 +1319,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc6 -c
-mv linux-5.13-rc6 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc6-44-g70585216fe77 -c
+mv linux-5.13-rc6-44-g70585216fe77 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2877,10 +2877,11 @@ fi
 #
 #
 %changelog
-* Mon Jun 14 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc6.45]
+* Thu Jun 17 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc6.20210617git70585216fe77.48]
 - Revert "powerpc: Switch to relative jump labels" (Don Zickus)
 - spec: Enable sefltests rpm build (Jiri Olsa)
 - spec: Allow bpf selftest/samples to fail (Jiri Olsa)
+- bpf, selftests: Disable tests that need clang13 (Toke Høiland-Jørgensen)
 - kvm: Add kvm_stat.service file and kvm_stat logrotate config to the tools (Jiri Benc)
 - kernel.spec: Add missing source files to kernel-selftests-internal (Jiri Benc)
 - kernel.spec: selftests: add net/forwarding to TARGETS list (Jiri Benc)
@@ -2909,11 +2910,28 @@ fi
 - kernel.spec: selftests should not depend on modules-internal (Jiri Benc)
 - kernel.spec: build samples (Jiri Benc)
 - kernel.spec: tools: sync missing options with RHEL 8 (Jiri Benc)
+
+* Thu Jun 17 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc6.20210617git70585216fe77.47]
+- Move CONFIG_ARCH_INTEL_SOCFPGA up a level for Fedora (Justin M. Forbes)
+
+* Thu Jun 17 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc6.20210617git94f0b2d4a1d0.46]
+- fedora: enable the Rockchip rk3399 pcie drivers (Peter Robinson)
+- PCI: rockchip: Register IRQs just before pci_host_probe() (Javier Martinez Canillas)
+- arm64: dts: rockchip: Update PCI host bridge window to 32-bit address memory (Punit Agrawal)
+- PCI: of: Refactor the check for non-prefetchable 32-bit window (Punit Agrawal)
+- PCI: of: Relax the condition for warning about non-prefetchable memory aperture size (Punit Agrawal)
+- PCI: of: Clear 64-bit flag for non-prefetchable memory below 4GB (Punit Agrawal)
+- Fedora 5.13 config updates pt 1 (Justin M. Forbes)
+- Fix version requirement from opencsd-devel buildreq (Justin M. Forbes)
+
+* Wed Jun 16 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc6.20210616git94f0b2d4a1d0.45]
 - configs/ark/s390: set CONFIG_MARCH_Z14 and CONFIG_TUNE_Z15 (Philipp Rudo) [1876435]
 - configs/common/s390: Clean up CONFIG_{MARCH,TUNE}_Z* (Philipp Rudo)
 - configs/process_configs.sh: make use of dummy-tools (Philipp Rudo)
 - configs/common: disable CONFIG_INIT_STACK_ALL_{PATTERN,ZERO} (Philipp Rudo)
 - configs/common/aarch64: disable CONFIG_RELR (Philipp Rudo)
+- redhat/config: enable STMICRO nic for RHEL (Mark Salter)
+- redhat/configs: Enable ARCH_TEGRA on RHEL (Mark Salter)
 
 * Fri Jun 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc5.20210611git929d931f2b40.41]
 - redhat/configs: enable IMA_KEXEC for supported arches (Bruno Meneguele)
