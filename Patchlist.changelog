@@ -1,8 +1,5 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/9f4b3d98a427d0062998c330d1e1ac52bebedcf6
- 9f4b3d98a427d0062998c330d1e1ac52bebedcf6 Revert "powerpc: Switch to relative jump labels"
-
-https://gitlab.com/cki-project/kernel-ark/-/commit/b8e1cc9b59a5b9aae3c76c4cb45b8193e1440e9e
- b8e1cc9b59a5b9aae3c76c4cb45b8193e1440e9e bpf, selftests: Disable tests that need clang13
+https://gitlab.com/cki-project/kernel-ark/-/commit/4c05f35129d76245d35c07d65c95571b8c30c02e
+ 4c05f35129d76245d35c07d65c95571b8c30c02e bpf, selftests: Disable tests that need clang13
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/f8f4e3ac32315185f07d22251a6ba9d82e4b8e84
  f8f4e3ac32315185f07d22251a6ba9d82e4b8e84 PCI: rockchip: Register IRQs just before pci_host_probe()

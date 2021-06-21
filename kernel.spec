@@ -71,9 +71,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc6.20210617git70585216fe77.48
+%global distro_build 0.rc7.51
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.13
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc6.20210617git70585216fe77.48
+%define pkgrelease 0.rc7.51
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20210617git70585216fe77.48%{?buildid}%{?dist}
+%define specrelease 0.rc7.51%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -650,7 +650,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc6-44-g70585216fe77.tar.xz
+Source0: linux-5.13-rc7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1319,8 +1319,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc6-44-g70585216fe77 -c
-mv linux-5.13-rc6-44-g70585216fe77 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc7 -c
+mv linux-5.13-rc7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2877,8 +2877,15 @@ fi
 #
 #
 %changelog
-* Thu Jun 17 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc6.20210617git70585216fe77.48]
-- Revert "powerpc: Switch to relative jump labels" (Don Zickus)
+* Mon Jun 21 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc7.51]
+- Turn off DRM_XEN_FRONTEND for Fedora as we had DRM_XEN off already (Justin M. Forbes)
+
+* Sat Jun 19 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc6.20210619gitfd0aa1a4567d.49]
+- Fedora 5.13 config updates pt 3 (Justin M. Forbes)
+
+* Fri Jun 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc6.20210618gitfd0aa1a4567d.48]
+- all: enable ath11k wireless modules (Peter Robinson)
+- all: Enable WWAN and associated MHI bus pieces (Peter Robinson)
 - spec: Enable sefltests rpm build (Jiri Olsa)
 - spec: Allow bpf selftest/samples to fail (Jiri Olsa)
 - bpf, selftests: Disable tests that need clang13 (Toke Høiland-Jørgensen)
@@ -2910,6 +2917,9 @@ fi
 - kernel.spec: selftests should not depend on modules-internal (Jiri Benc)
 - kernel.spec: build samples (Jiri Benc)
 - kernel.spec: tools: sync missing options with RHEL 8 (Jiri Benc)
+- redhat/configs: nftables: Enable extra flowtable symbols (Phil Sutter)
+- redhat/configs: Sync netfilter options with RHEL8 (Phil Sutter)
+- Fedora 5.13 config updates pt 2 (Justin M. Forbes)
 
 * Thu Jun 17 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc6.20210617git70585216fe77.47]
 - Move CONFIG_ARCH_INTEL_SOCFPGA up a level for Fedora (Justin M. Forbes)
