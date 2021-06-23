@@ -71,9 +71,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc7.51
+%global distro_build 0.rc7.20210623git0c18f29aae7c.53
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.13
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc7.51
+%define pkgrelease 0.rc7.20210623git0c18f29aae7c.53
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.51%{?buildid}%{?dist}
+%define specrelease 0.rc7.20210623git0c18f29aae7c.53%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -222,7 +222,6 @@ Summary: The Linux kernel
 # Fedora builds these separately
 %define with_perf 0
 %define with_tools 0
-%define with_bpftool 0
 %endif
 
 %if %{with_verbose}
@@ -462,14 +461,6 @@ Summary: The Linux kernel
 %define with_configchecks 0
 %endif
 
-# Setting the compiler to clang enables some different config options
-# than what is expected, so disable this check for now.
-# TODO: What's the best way to fix this?  Do wee need a different set of
-# configs for clang?
-%if %{with toolchain_clang}
-%define with_configchecks 0
-%endif
-
 # To temporarily exclude an architecture from being built, add it to
 # %%nobuildarches. Do _NOT_ use the ExclusiveArch: line, because if we
 # don't build kernel-headers then the new build system will no longer let
@@ -554,6 +545,7 @@ BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
 BuildRequires: python3-devel
 BuildRequires: gcc-plugin-devel
+BuildRequires: bpftool
 %if %{with_headers}
 BuildRequires: rsync
 %endif
@@ -650,7 +642,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc7.tar.xz
+Source0: linux-5.13-rc7-3-g0c18f29aae7c.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1319,8 +1311,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc7 -c
-mv linux-5.13-rc7 linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc7-3-g0c18f29aae7c -c
+mv linux-5.13-rc7-3-g0c18f29aae7c linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2026,6 +2018,11 @@ BuildKernel() {
     # the F17 UsrMove feature.
     ln -sf $DevelDir $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
+%ifnarch armv7hl
+    # Generate vmlinux.h and put it to kernel-devel path
+    bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+%endif
+
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
 
@@ -2154,8 +2151,12 @@ pushd tools/vm/
 popd
 %endif
 
+if [ -f $DevelDir/vmlinux.h ]; then
+  RPM_VMLINUX_H=$DevelDir/vmlinux.h
+fi
+
 %global bpftool_make \
-  %{__make} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_LDFLAGS="%{__global_ldflags}" DESTDIR=$RPM_BUILD_ROOT %{?make_opts}
+  %{__make} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_LDFLAGS="%{__global_ldflags}" DESTDIR=$RPM_BUILD_ROOT %{?make_opts} VMLINUX_H="${RPM_VMLINUX_H}" V=1
 %if %{with_bpftool}
 pushd tools/bpf/bpftool
 %{bpftool_make}
@@ -2175,7 +2176,7 @@ export BPFTOOL=$(pwd)/tools/bpf/bpftool/bpftool
 pushd tools/testing/selftests
 # We need to install here because we need to call make with ARCH set which
 # doesn't seem possible to do in the install section.
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf livepatch net net/forwarding net/mptcp netfilter tc-testing" SKIP_TARGETS="" INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests install
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf livepatch net net/forwarding net/mptcp netfilter tc-testing" SKIP_TARGETS="" INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
@@ -2414,6 +2415,10 @@ install -m755 slabinfo %{buildroot}%{_bindir}/slabinfo
 install -m755 page_owner_sort %{buildroot}%{_bindir}/page_owner_sort
 popd
 %endif
+
+if [ -f $DevelDir/vmlinux.h ]; then
+  RPM_VMLINUX_H=$DevelDir/vmlinux.h
+fi
 
 %if %{with_bpftool}
 pushd tools/bpf/bpftool
@@ -2877,6 +2882,14 @@ fi
 #
 #
 %changelog
+* Wed Jun 23 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc7.20210623git0c18f29aae7c.53]
+- redhat/configs: enable CONFIG_NET_ACT_MPLS (Marcelo Ricardo Leitner)
+
+* Tue Jun 22 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc7.20210622gita96bfed64c89.52]
+- configs: Enable CONFIG_DEBUG_KERNEL for zfcpdump (Jiri Olsa)
+- kernel.spec: Add support to use vmlinux.h (Don Zickus)
+- spec: Add vmlinux.h to kernel-devel package (Jiri Olsa)
+
 * Mon Jun 21 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc7.51]
 - Turn off DRM_XEN_FRONTEND for Fedora as we had DRM_XEN off already (Justin M. Forbes)
 

@@ -2573,10 +2573,10 @@ index 684a6061a13a..220579c0e963 100644
  	 * if the commandline contains a ':', then that's the extended
  	 * syntax -- if not, it must be the classic syntax
 diff --git a/kernel/module.c b/kernel/module.c
-index 7e78dfabca97..5095efe4d1e1 100644
+index 927d46cb8eb9..387e08c31633 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -738,6 +738,7 @@ static struct module_attribute modinfo_##field = {                    \
+@@ -742,6 +742,7 @@ static struct module_attribute modinfo_##field = {                    \
 
  MODINFO_ATTR(version);
  MODINFO_ATTR(srcversion);
@@ -2584,7 +2584,7 @@ index 7e78dfabca97..5095efe4d1e1 100644
 
  static char last_unloaded_module[MODULE_NAME_LEN+1];
 
-@@ -1202,6 +1203,7 @@ static struct module_attribute *modinfo_attrs[] = {
+@@ -1206,6 +1207,7 @@ static struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
