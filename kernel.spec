@@ -73,7 +73,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc7.20210624git7426cedc7dad.54
+%global distro_build 0.rc7.20210625git44db63d1ad8d.55
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.13
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc7.20210624git7426cedc7dad.54
+%define pkgrelease 0.rc7.20210625git44db63d1ad8d.55
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20210624git7426cedc7dad.54%{?buildid}%{?dist}
+%define specrelease 0.rc7.20210625git44db63d1ad8d.55%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -642,7 +642,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc7-10-g7426cedc7dad.tar.xz
+Source0: linux-5.13-rc7-43-g44db63d1ad8d.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -704,7 +704,7 @@ Source13: redhatsecureboot003.cer
 
 Source22: mod-extra.list.rhel
 Source16: mod-extra.list.fedora
-Source17: mod-blacklist.sh
+Source17: mod-denylist.sh
 Source18: mod-sign.sh
 Source79: parallel_xz.sh
 
@@ -1311,8 +1311,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc7-10-g7426cedc7dad -c
-mv linux-5.13-rc7-10-g7426cedc7dad linux-%{KVERREL}
+%setup -q -n kernel-5.13-rc7-43-g44db63d1ad8d -c
+mv linux-5.13-rc7-43-g44db63d1ad8d linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2882,6 +2882,10 @@ fi
 #
 #
 %changelog
+* Fri Jun 25 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc7.20210625git44db63d1ad8d.55]
+- redhat/configs: Enable needed drivers for BlueField SoC on aarch64 (Alaa Hleihel) [1858592 1858594 1858596]
+- redhat: Rename mod-blacklist.sh to mod-denylist.sh (Prarit Bhargava)
+
 * Wed Jun 23 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc7.20210623git0c18f29aae7c.53]
 - redhat/configs: enable CONFIG_NET_ACT_MPLS (Marcelo Ricardo Leitner)
 
