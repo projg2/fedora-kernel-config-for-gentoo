@@ -1,3 +1,9 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/1d17f94715a5d837dcaa4608ce485997932aa60b
+ 1d17f94715a5d837dcaa4608ce485997932aa60b Revert "PCI: of: Relax the condition for warning about non-prefetchable memory aperture size"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/1fc5cea5c27bd65c5a068d13de7f2f2ac08de9d7
+ 1fc5cea5c27bd65c5a068d13de7f2f2ac08de9d7 Revert "PCI: of: Refactor the check for non-prefetchable 32-bit window"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/4c05f35129d76245d35c07d65c95571b8c30c02e
  4c05f35129d76245d35c07d65c95571b8c30c02e bpf, selftests: Disable tests that need clang13
 

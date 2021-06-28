@@ -71,9 +71,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc7.20210625git44db63d1ad8d.55
+%global distro_build 58
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.13
 
 %define rpmversion 5.13.0
-%define pkgrelease 0.rc7.20210625git44db63d1ad8d.55
+%define pkgrelease 58
 
 # This is needed to do merge window version magic
 %define patchlevel 13
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20210625git44db63d1ad8d.55%{?buildid}%{?dist}
+%define specrelease 58%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -642,7 +642,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-rc7-43-g44db63d1ad8d.tar.xz
+Source0: linux-5.13.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1311,8 +1311,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-rc7-43-g44db63d1ad8d -c
-mv linux-5.13-rc7-43-g44db63d1ad8d linux-%{KVERREL}
+%setup -q -n kernel-5.13 -c
+mv linux-5.13 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2882,6 +2882,14 @@ fi
 #
 #
 %changelog
+* Mon Jun 28 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.0-58]
+- Revert "PCI: of: Relax the condition for warning about non-prefetchable memory aperture size" (Herton R. Krzesinski)
+- Revert "PCI: of: Refactor the check for non-prefetchable 32-bit window" (Herton R. Krzesinski)
+- Fedora 5.13 config updates (Justin M. Forbes)
+
+* Mon Jun 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-58]
+- More Fedora config updates for 5.13 (Justin M. Forbes)
+
 * Fri Jun 25 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.13.0-0.rc7.20210625git44db63d1ad8d.55]
 - redhat/configs: Enable needed drivers for BlueField SoC on aarch64 (Alaa Hleihel) [1858592 1858594 1858596]
 - redhat: Rename mod-blacklist.sh to mod-denylist.sh (Prarit Bhargava)
