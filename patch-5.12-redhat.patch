@@ -36,12 +36,13 @@
  include/linux/security.h                           |   5 +
  kernel/crash_core.c                                |  28 ++++-
  kernel/module_signing.c                            |   9 +-
+ net/can/bcm.c                                      |   6 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  security/selinux/hooks.c                           |   3 +-
- 43 files changed, 641 insertions(+), 185 deletions(-)
+ 44 files changed, 647 insertions(+), 185 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -66,7 +67,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index d2fe36db78ae..0fb6443bd3a7 100644
+index 433f164f9ee0..56a62bea0db1 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -1537,8 +1538,32 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
+diff --git a/net/can/bcm.c b/net/can/bcm.c
+index f3e4d9528fa3..c67916020e63 100644
+--- a/net/can/bcm.c
++++ b/net/can/bcm.c
+@@ -785,6 +785,7 @@ static int bcm_delete_rx_op(struct list_head *ops, struct bcm_msg_head *mh,
+ 						  bcm_rx_handler, op);
+
+ 			list_del(&op->list);
++			synchronize_rcu();
+ 			bcm_remove_op(op);
+ 			return 1; /* done */
+ 		}
+@@ -1533,6 +1534,11 @@ static int bcm_release(struct socket *sock)
+ 					  REGMASK(op->can_id),
+ 					  bcm_rx_handler, op);
+
++	}
++
++	synchronize_rcu();
++
++	list_for_each_entry_safe(op, next, &bo->rx_ops, list) {
+ 		bcm_remove_op(op);
+ 	}
+
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-index ee4b4c666854..eff9ff593405 100644
+index f290f78c3f30..d3e7ae04f5be 100644
 --- a/security/integrity/platform_certs/load_uefi.c
 +++ b/security/integrity/platform_certs/load_uefi.c
 @@ -46,7 +46,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
