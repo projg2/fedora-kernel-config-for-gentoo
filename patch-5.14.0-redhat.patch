@@ -118,10 +118,10 @@ index cb30ca3df27c..951ad3ad6aee 100644
 
     If memory above 4G is preferred, crashkernel=size,high can be used to
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 26453f250683..61609c281f94 100644
+index 2991f6e692bd..211c9424fb5a 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5770,6 +5770,15 @@
+@@ -5798,6 +5798,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -225,7 +225,7 @@ index 24804f11302d..fd5ff3fa0d5b 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index dabe9b81012f..72d5bf02a57c 100644
+index a6a09cb95cc7..29972c6b0009 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -921,7 +921,7 @@ endchoice
@@ -511,10 +511,10 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index e10d38ac7cf2..684b241e89e9 100644
+index 0641bc20b097..7b8e42d05bb3 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1641,6 +1641,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1647,6 +1647,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
 
@@ -1968,10 +1968,10 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 15d8bad3d2f2..5cc175748767 100644
+index bf950621febf..d72c2c25cda9 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -453,7 +453,24 @@ extern enum system_states {
+@@ -455,7 +455,24 @@ extern enum system_states {
  #define TAINT_LIVEPATCH			15
  #define TAINT_AUX			16
  #define TAINT_RANDSTRUCT		17
@@ -1997,7 +1997,7 @@ index 15d8bad3d2f2..5cc175748767 100644
  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
 
  struct taint_flag {
-@@ -739,4 +756,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -741,4 +758,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -2492,7 +2492,7 @@ index ea04b0deb5ce..cb37c3f119cf 100644
  	if (err)
  		return err;
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-index 684a6061a13a..220579c0e963 100644
+index da449c1cdca7..fbf5e6ef1bab 100644
 --- a/kernel/crash_core.c
 +++ b/kernel/crash_core.c
 @@ -7,6 +7,7 @@
@@ -2722,7 +2722,7 @@ index 000000000000..4050b6dead75
 +}
 +EXPORT_SYMBOL(mark_driver_unsupported);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 8c8c220637ce..e49748b8fa2a 100644
+index bade84290e24..dbd3eb80f575 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
 @@ -242,6 +242,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,

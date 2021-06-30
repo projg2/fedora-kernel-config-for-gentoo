@@ -73,7 +73,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20210629gitc54b245d0118.3
+%global distro_build 0.rc0.20210630git007b350a5875.3
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc0.20210629gitc54b245d0118.3
+%define pkgrelease 0.rc0.20210630git007b350a5875.3
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210629gitc54b245d0118.3%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210630git007b350a5875.3%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -279,10 +279,6 @@ Summary: The Linux kernel
 
 %if %{with_release}
 %define debugbuildsenabled 1
-%endif
-
-%if !%{debugbuildsenabled}
-%define with_debug 0
 %endif
 
 %if !%{with_debuginfo}
@@ -508,6 +504,18 @@ Summary: The Linux kernel
 %define _use_vdso 0
 %endif
 
+# If build of debug packages is disabled, we need to know if we want to create
+# meta debug packages or not, after we define with_debug for all specific cases
+# above. So this must be at the end here, after all cases of with_debug or not.
+%define with_debug_meta 0
+%if !%{debugbuildsenabled}
+%if %{with_debug}
+%define with_debug_meta 1
+%endif
+%define with_debug 0
+%endif
+
+
 #
 # Packages that need to be installed before the kernel is, because the %%post
 # scripts use them.
@@ -644,7 +652,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-1956-gc54b245d0118.tar.xz
+Source0: linux-5.13-2525-g007b350a5875.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1313,8 +1321,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-1956-gc54b245d0118 -c
-mv linux-5.13-1956-gc54b245d0118 linux-%{KVERREL}
+%setup -q -n kernel-5.13-2525-g007b350a5875 -c
+mv linux-5.13-2525-g007b350a5875 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2856,7 +2864,7 @@ fi
 
 %kernel_variant_files %{_use_vdso} %{with_up}
 %kernel_variant_files %{_use_vdso} %{with_debug} debug
-%if !%{debugbuildsenabled}
+%if %{with_debug_meta}
 %files debug
 %files debug-core
 %files debug-devel
@@ -2884,11 +2892,12 @@ fi
 #
 #
 %changelog
-* Tue Jun 29 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.0-0.rc0.20210629gitc54b245d0118.3]
-- Revert "kernel.spec: Add kernel-debug-matched meta package" (Justin M. Forbes)
+* Wed Jun 30 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.0-0.rc0.20210630git007b350a5875.3]
+- Filter update for Fedora aarch64 (Justin M. Forbes)
 
-* Tue Jun 29 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210629gitc54b245d0118.3]
-- kernel.spec: Add kernel-debug-matched meta package (Timothée Ravier)
+* Wed Jun 30 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210630git007b350a5875.3]
+- rpmspec: only build debug meta packages where we build debug ones (Herton R. Krzesinski)
+- rpmspec: do not BuildRequires bpftool on nobuildarches (Herton R. Krzesinski)
 
 * Tue Jun 29 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210629gitc54b245d0118.2]
 - redhat/configs: Consolidate CONFIG_HMC_DRV in the common s390x folder (Thomas Huth) [1976270]
