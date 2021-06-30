@@ -106,7 +106,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.12.13
+%define rpmversion 5.12.14
 %define stableversion 5.12
 %define pkgrelease 200
 
@@ -623,7 +623,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12.13.tar.xz
+Source0: linux-5.12.14.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1277,8 +1277,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12.13 -c
-mv linux-5.12.13 linux-%{KVERREL}
+%setup -q -n kernel-5.12.14 -c
+mv linux-5.12.14 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2792,6 +2792,10 @@ fi
 #
 #
 %changelog
+* Wed Jun 30 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.14-0]
+- Add CONFIG_SYSTEM_REVOCATION_LIST backported config option for 5.12.14 (Justin M. Forbes)
+- can: bcm: delay release of struct bcm_op after synchronize_rcu (Thadeu Lima de Souza Cascardo)
+
 * Wed Jun 16 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.11-0]
 - Bluetooth: btqca: Don't modify firmware contents in-place (Connor Abbott)
 
