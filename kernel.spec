@@ -73,7 +73,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20210630git007b350a5875.3
+%global distro_build 0.rc0.20210701gitdbe69e433722.6
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc0.20210630git007b350a5875.3
+%define pkgrelease 0.rc0.20210701gitdbe69e433722.6
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210630git007b350a5875.3%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210701gitdbe69e433722.6%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -222,6 +222,8 @@ Summary: The Linux kernel
 # Fedora builds these separately
 %define with_perf 0
 %define with_tools 0
+%define with_selftests 0
+%define with_bpftool 0
 %endif
 
 %if %{with_verbose}
@@ -652,7 +654,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-2525-g007b350a5875.tar.xz
+Source0: linux-5.13-5357-gdbe69e433722.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1321,8 +1323,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-2525-g007b350a5875 -c
-mv linux-5.13-2525-g007b350a5875 linux-%{KVERREL}
+%setup -q -n kernel-5.13-5357-gdbe69e433722 -c
+mv linux-5.13-5357-gdbe69e433722 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2893,7 +2895,12 @@ fi
 #
 #
 %changelog
-* Wed Jun 30 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.0-0.rc0.20210630git007b350a5875.3]
+* Thu Jul 01 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210701gitdbe69e433722.6]
+- Fix location of syscall scripts for kernel-devel (Justin M. Forbes)
+
+* Thu Jul 01 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210630git007b350a5875.4]
+- fedora: arm: Enable some i.MX8 options (Peter Robinson)
+- Enable Landlock for Fedora (Justin M. Forbes)
 - Filter update for Fedora aarch64 (Justin M. Forbes)
 
 * Wed Jun 30 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210630git007b350a5875.3]

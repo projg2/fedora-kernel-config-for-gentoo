@@ -73,26 +73,19 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/bpf/Makefile               |   1 -
- tools/testing/selftests/bpf/prog_tests/atomics.c   | 246 ----------
- .../testing/selftests/bpf/prog_tests/bpf_tcp_ca.c  | 280 -----------
- .../testing/selftests/bpf/prog_tests/kfunc_call.c  |  59 ---
  .../selftests/bpf/prog_tests/linked_funcs.c        |  42 --
  .../testing/selftests/bpf/prog_tests/linked_maps.c |  30 --
  .../testing/selftests/bpf/prog_tests/linked_vars.c |  43 --
- .../selftests/bpf/prog_tests/static_linked.c       |  40 --
  tools/testing/selftests/bpf/progs/bpf_cubic.c      | 545 ---------------------
  tools/testing/selftests/bpf/progs/bpf_dctcp.c      | 224 ---------
  .../testing/selftests/bpf/progs/kfunc_call_test.c  |  47 --
  .../selftests/bpf/progs/kfunc_call_test_subprog.c  |  42 --
  tools/testing/selftests/bpf/progs/linked_funcs1.c  |  73 ---
  tools/testing/selftests/bpf/progs/linked_funcs2.c  |  73 ---
- tools/testing/selftests/bpf/progs/linked_maps1.c   |  82 ----
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- .../selftests/bpf/progs/test_static_linked1.c      |  30 --
- .../selftests/bpf/progs/test_static_linked2.c      |  31 --
- 94 files changed, 1223 insertions(+), 2269 deletions(-)
+ 87 files changed, 1223 insertions(+), 1501 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index cb30ca3df27c..951ad3ad6aee 100644
@@ -225,10 +218,10 @@ index 24804f11302d..fd5ff3fa0d5b 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index a6a09cb95cc7..29972c6b0009 100644
+index be9083882f97..e86312d3c98e 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -921,7 +921,7 @@ endchoice
+@@ -922,7 +922,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -237,7 +230,7 @@ index a6a09cb95cc7..29972c6b0009 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1165,6 +1165,7 @@ config XEN
+@@ -1166,6 +1166,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -1288,10 +1281,10 @@ index af0ce5611e4a..1c226920c12d 100644
 
  out_mptspi_probe:
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 0eb2307325d3..568b04a7cea8 100644
+index ef8d1815af56..702abf98c068 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4852,6 +4852,7 @@ static int __init ice_module_init(void)
+@@ -5063,6 +5063,7 @@ static int __init ice_module_init(void)
 
  	pr_info("%s\n", ice_driver_string);
  	pr_info("%s\n", ice_copyright);
@@ -1345,10 +1338,10 @@ index 75dbe77b0b4b..029ff8576f8e 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 66973bb56305..fcfc2aa3124c 100644
+index 80c656dcbbac..a6bf1b947d49 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
-@@ -241,6 +241,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
+@@ -261,6 +261,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
 
  static blk_status_t nvme_error_status(u16 status)
  {
@@ -1358,7 +1351,7 @@ index 66973bb56305..fcfc2aa3124c 100644
  	switch (status & 0x7ff) {
  	case NVME_SC_SUCCESS:
  		return BLK_STS_OK;
-@@ -300,6 +303,7 @@ enum nvme_disposition {
+@@ -320,6 +323,7 @@ enum nvme_disposition {
  	COMPLETE,
  	RETRY,
  	FAILOVER,
@@ -1366,7 +1359,7 @@ index 66973bb56305..fcfc2aa3124c 100644
  };
 
  static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
-@@ -307,15 +311,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
+@@ -327,15 +331,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
  	if (likely(nvme_req(req)->status == 0))
  		return COMPLETE;
 
@@ -1386,7 +1379,7 @@ index 66973bb56305..fcfc2aa3124c 100644
  	} else {
  		if (blk_queue_dying(req->q))
  			return COMPLETE;
-@@ -337,6 +342,14 @@ static inline void nvme_end_req(struct request *req)
+@@ -357,6 +362,14 @@ static inline void nvme_end_req(struct request *req)
  	blk_mq_end_request(req, status);
  }
 
@@ -1401,7 +1394,7 @@ index 66973bb56305..fcfc2aa3124c 100644
  void nvme_complete_rq(struct request *req)
  {
  	trace_nvme_complete_rq(req);
-@@ -355,6 +368,9 @@ void nvme_complete_rq(struct request *req)
+@@ -375,6 +388,9 @@ void nvme_complete_rq(struct request *req)
  	case FAILOVER:
  		nvme_failover_req(req);
  		return;
@@ -1412,7 +1405,7 @@ index 66973bb56305..fcfc2aa3124c 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index f81871c7128a..763ed40d50fe 100644
+index 0ea5298469c3..94538b576977 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
@@ -1448,7 +1441,7 @@ index f81871c7128a..763ed40d50fe 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next)
-@@ -795,8 +801,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -789,8 +795,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1457,12 +1450,12 @@ index f81871c7128a..763ed40d50fe 100644
 +	if (!ctrl->subsys || !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
  		return 0;
 
- 	ctrl->anacap = id->anacap;
+ 	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 0015860ec12b..25acc9943007 100644
+index 75420ceacc10..617e130e9377 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -708,6 +708,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -706,6 +706,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags);
  void nvme_failover_req(struct request *req);
@@ -1470,7 +1463,7 @@ index 0015860ec12b..25acc9943007 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -753,6 +754,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
+@@ -750,6 +751,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1968,10 +1961,10 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index bf950621febf..d72c2c25cda9 100644
+index f2ad8a53f71f..718de4b22938 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -455,7 +455,24 @@ extern enum system_states {
+@@ -467,7 +467,24 @@ extern enum system_states {
  #define TAINT_LIVEPATCH			15
  #define TAINT_AUX			16
  #define TAINT_RANDSTRUCT		17
@@ -1997,7 +1990,7 @@ index bf950621febf..d72c2c25cda9 100644
  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
 
  struct taint_flag {
-@@ -741,4 +758,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -753,4 +770,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -2018,10 +2011,10 @@ index bf950621febf..d72c2c25cda9 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 04c01794de83..26f8df026fa9 100644
+index 2adeea44c0d5..517013ece679 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -395,6 +395,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -394,6 +394,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -2390,7 +2383,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 06f7c50ce77f..09ed686ac5e6 100644
+index 24eda04221e9..128837ea1fb2 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -471,6 +471,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
@@ -2413,10 +2406,10 @@ index 06f7c50ce77f..09ed686ac5e6 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index a61c92066c2e..94107b1d0e3e 100644
+index 55f9f7738ebb..564553afb251 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1622,7 +1622,7 @@ config AIO
+@@ -1625,7 +1625,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -2438,7 +2431,7 @@ index 4df609be42d0..4ef0c0f6a8f4 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index ea04b0deb5ce..cb37c3f119cf 100644
+index e343f158e556..840c5ecd4fc6 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
@@ -2473,8 +2466,8 @@ index ea04b0deb5ce..cb37c3f119cf 100644
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
-@@ -4369,11 +4387,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
- SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
+@@ -4427,11 +4445,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
+ static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
  {
  	union bpf_attr attr;
 +	static int marked;
@@ -2722,7 +2715,7 @@ index 000000000000..4050b6dead75
 +}
 +EXPORT_SYMBOL(mark_driver_unsupported);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index bade84290e24..dbd3eb80f575 100644
+index e1aa24e1545c..aba4074131ca 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
 @@ -242,6 +242,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
@@ -2872,7 +2865,7 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index e9f8010a2341..e8a42ea43a67 100644
+index 09533cbb7221..d36675494753 100644
 --- a/security/security.c
 +++ b/security/security.c
 @@ -2598,6 +2598,12 @@ int security_locked_down(enum lockdown_reason what)
@@ -2889,620 +2882,17 @@ index e9f8010a2341..e8a42ea43a67 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 511259c2c6c5..bd2ca0032883 100644
+index f405b20c1e6c..a8e298a22709 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -409,7 +409,6 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
- 		      $(TRUNNER_EXTRA_HDRS)				\
+@@ -424,7 +424,6 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
  		      $(TRUNNER_BPF_OBJS)				\
  		      $(TRUNNER_BPF_SKELS)				\
+ 		      $(TRUNNER_BPF_LSKELS)				\
 -		      $(TRUNNER_BPF_SKELS_LINKED)			\
  		      $$(BPFOBJ) | $(TRUNNER_OUTPUT)
  	$$(call msg,TEST-OBJ,$(TRUNNER_BINARY),$$@)
  	$(Q)cd $$(@D) && $$(CC) -I. $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
-diff --git a/tools/testing/selftests/bpf/prog_tests/atomics.c b/tools/testing/selftests/bpf/prog_tests/atomics.c
-deleted file mode 100644
-index 21efe7bbf10d..000000000000
---- a/tools/testing/selftests/bpf/prog_tests/atomics.c
-+++ /dev/null
-@@ -1,246 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--
--#include <test_progs.h>
--
--#include "atomics.skel.h"
--
--static void test_add(struct atomics *skel)
--{
--	int err, prog_fd;
--	__u32 duration = 0, retval;
--	struct bpf_link *link;
--
--	link = bpf_program__attach(skel->progs.add);
--	if (CHECK(IS_ERR(link), "attach(add)", "err: %ld\n", PTR_ERR(link)))
--		return;
--
--	prog_fd = bpf_program__fd(skel->progs.add);
--	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
--				NULL, NULL, &retval, &duration);
--	if (CHECK(err || retval, "test_run add",
--		  "err %d errno %d retval %d duration %d\n", err, errno, retval, duration))
--		goto cleanup;
--
--	ASSERT_EQ(skel->data->add64_value, 3, "add64_value");
--	ASSERT_EQ(skel->bss->add64_result, 1, "add64_result");
--
--	ASSERT_EQ(skel->data->add32_value, 3, "add32_value");
--	ASSERT_EQ(skel->bss->add32_result, 1, "add32_result");
--
--	ASSERT_EQ(skel->bss->add_stack_value_copy, 3, "add_stack_value");
--	ASSERT_EQ(skel->bss->add_stack_result, 1, "add_stack_result");
--
--	ASSERT_EQ(skel->data->add_noreturn_value, 3, "add_noreturn_value");
--
--cleanup:
--	bpf_link__destroy(link);
--}
--
--static void test_sub(struct atomics *skel)
--{
--	int err, prog_fd;
--	__u32 duration = 0, retval;
--	struct bpf_link *link;
--
--	link = bpf_program__attach(skel->progs.sub);
--	if (CHECK(IS_ERR(link), "attach(sub)", "err: %ld\n", PTR_ERR(link)))
--		return;
--
--	prog_fd = bpf_program__fd(skel->progs.sub);
--	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
--				NULL, NULL, &retval, &duration);
--	if (CHECK(err || retval, "test_run sub",
--		  "err %d errno %d retval %d duration %d\n",
--		  err, errno, retval, duration))
--		goto cleanup;
--
--	ASSERT_EQ(skel->data->sub64_value, -1, "sub64_value");
--	ASSERT_EQ(skel->bss->sub64_result, 1, "sub64_result");
--
--	ASSERT_EQ(skel->data->sub32_value, -1, "sub32_value");
--	ASSERT_EQ(skel->bss->sub32_result, 1, "sub32_result");
--
--	ASSERT_EQ(skel->bss->sub_stack_value_copy, -1, "sub_stack_value");
--	ASSERT_EQ(skel->bss->sub_stack_result, 1, "sub_stack_result");
--
--	ASSERT_EQ(skel->data->sub_noreturn_value, -1, "sub_noreturn_value");
--
--cleanup:
--	bpf_link__destroy(link);
--}
--
--static void test_and(struct atomics *skel)
--{
--	int err, prog_fd;
--	__u32 duration = 0, retval;
--	struct bpf_link *link;
--
--	link = bpf_program__attach(skel->progs.and);
--	if (CHECK(IS_ERR(link), "attach(and)", "err: %ld\n", PTR_ERR(link)))
--		return;
--
--	prog_fd = bpf_program__fd(skel->progs.and);
--	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
--				NULL, NULL, &retval, &duration);
--	if (CHECK(err || retval, "test_run and",
--		  "err %d errno %d retval %d duration %d\n", err, errno, retval, duration))
--		goto cleanup;
--
--	ASSERT_EQ(skel->data->and64_value, 0x010ull << 32, "and64_value");
--	ASSERT_EQ(skel->bss->and64_result, 0x110ull << 32, "and64_result");
--
--	ASSERT_EQ(skel->data->and32_value, 0x010, "and32_value");
--	ASSERT_EQ(skel->bss->and32_result, 0x110, "and32_result");
--
--	ASSERT_EQ(skel->data->and_noreturn_value, 0x010ull << 32, "and_noreturn_value");
--cleanup:
--	bpf_link__destroy(link);
--}
--
--static void test_or(struct atomics *skel)
--{
--	int err, prog_fd;
--	__u32 duration = 0, retval;
--	struct bpf_link *link;
--
--	link = bpf_program__attach(skel->progs.or);
--	if (CHECK(IS_ERR(link), "attach(or)", "err: %ld\n", PTR_ERR(link)))
--		return;
--
--	prog_fd = bpf_program__fd(skel->progs.or);
--	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
--				NULL, NULL, &retval, &duration);
--	if (CHECK(err || retval, "test_run or",
--		  "err %d errno %d retval %d duration %d\n",
--		  err, errno, retval, duration))
--		goto cleanup;
--
--	ASSERT_EQ(skel->data->or64_value, 0x111ull << 32, "or64_value");
--	ASSERT_EQ(skel->bss->or64_result, 0x110ull << 32, "or64_result");
--
--	ASSERT_EQ(skel->data->or32_value, 0x111, "or32_value");
--	ASSERT_EQ(skel->bss->or32_result, 0x110, "or32_result");
--
--	ASSERT_EQ(skel->data->or_noreturn_value, 0x111ull << 32, "or_noreturn_value");
--cleanup:
--	bpf_link__destroy(link);
--}
--
--static void test_xor(struct atomics *skel)
--{
--	int err, prog_fd;
--	__u32 duration = 0, retval;
--	struct bpf_link *link;
--
--	link = bpf_program__attach(skel->progs.xor);
--	if (CHECK(IS_ERR(link), "attach(xor)", "err: %ld\n", PTR_ERR(link)))
--		return;
--
--	prog_fd = bpf_program__fd(skel->progs.xor);
--	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
--				NULL, NULL, &retval, &duration);
--	if (CHECK(err || retval, "test_run xor",
--		  "err %d errno %d retval %d duration %d\n", err, errno, retval, duration))
--		goto cleanup;
--
--	ASSERT_EQ(skel->data->xor64_value, 0x101ull << 32, "xor64_value");
--	ASSERT_EQ(skel->bss->xor64_result, 0x110ull << 32, "xor64_result");
--
--	ASSERT_EQ(skel->data->xor32_value, 0x101, "xor32_value");
--	ASSERT_EQ(skel->bss->xor32_result, 0x110, "xor32_result");
--
--	ASSERT_EQ(skel->data->xor_noreturn_value, 0x101ull << 32, "xor_nxoreturn_value");
--cleanup:
--	bpf_link__destroy(link);
--}
--
--static void test_cmpxchg(struct atomics *skel)
--{
--	int err, prog_fd;
--	__u32 duration = 0, retval;
--	struct bpf_link *link;
--
--	link = bpf_program__attach(skel->progs.cmpxchg);
--	if (CHECK(IS_ERR(link), "attach(cmpxchg)", "err: %ld\n", PTR_ERR(link)))
--		return;
--
--	prog_fd = bpf_program__fd(skel->progs.cmpxchg);
--	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
--				NULL, NULL, &retval, &duration);
--	if (CHECK(err || retval, "test_run add",
--		  "err %d errno %d retval %d duration %d\n", err, errno, retval, duration))
--		goto cleanup;
--
--	ASSERT_EQ(skel->data->cmpxchg64_value, 2, "cmpxchg64_value");
--	ASSERT_EQ(skel->bss->cmpxchg64_result_fail, 1, "cmpxchg_result_fail");
--	ASSERT_EQ(skel->bss->cmpxchg64_result_succeed, 1, "cmpxchg_result_succeed");
--
--	ASSERT_EQ(skel->data->cmpxchg32_value, 2, "lcmpxchg32_value");
--	ASSERT_EQ(skel->bss->cmpxchg32_result_fail, 1, "cmpxchg_result_fail");
--	ASSERT_EQ(skel->bss->cmpxchg32_result_succeed, 1, "cmpxchg_result_succeed");
--
--cleanup:
--	bpf_link__destroy(link);
--}
--
--static void test_xchg(struct atomics *skel)
--{
--	int err, prog_fd;
--	__u32 duration = 0, retval;
--	struct bpf_link *link;
--
--	link = bpf_program__attach(skel->progs.xchg);
--	if (CHECK(IS_ERR(link), "attach(xchg)", "err: %ld\n", PTR_ERR(link)))
--		return;
--
--	prog_fd = bpf_program__fd(skel->progs.xchg);
--	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
--				NULL, NULL, &retval, &duration);
--	if (CHECK(err || retval, "test_run add",
--		  "err %d errno %d retval %d duration %d\n", err, errno, retval, duration))
--		goto cleanup;
--
--	ASSERT_EQ(skel->data->xchg64_value, 2, "xchg64_value");
--	ASSERT_EQ(skel->bss->xchg64_result, 1, "xchg64_result");
--
--	ASSERT_EQ(skel->data->xchg32_value, 2, "xchg32_value");
--	ASSERT_EQ(skel->bss->xchg32_result, 1, "xchg32_result");
--
--cleanup:
--	bpf_link__destroy(link);
--}
--
--void test_atomics(void)
--{
--	struct atomics *skel;
--	__u32 duration = 0;
--
--	skel = atomics__open_and_load();
--	if (CHECK(!skel, "skel_load", "atomics skeleton failed\n"))
--		return;
--
--	if (skel->data->skip_tests) {
--		printf("%s:SKIP:no ENABLE_ATOMICS_TESTS (missing Clang BPF atomics support)",
--		       __func__);
--		test__skip();
--		goto cleanup;
--	}
--
--	if (test__start_subtest("add"))
--		test_add(skel);
--	if (test__start_subtest("sub"))
--		test_sub(skel);
--	if (test__start_subtest("and"))
--		test_and(skel);
--	if (test__start_subtest("or"))
--		test_or(skel);
--	if (test__start_subtest("xor"))
--		test_xor(skel);
--	if (test__start_subtest("cmpxchg"))
--		test_cmpxchg(skel);
--	if (test__start_subtest("xchg"))
--		test_xchg(skel);
--
--cleanup:
--	atomics__destroy(skel);
--}
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-deleted file mode 100644
-index e25917f04602..000000000000
---- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-+++ /dev/null
-@@ -1,280 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/* Copyright (c) 2019 Facebook */
--
--#include <linux/err.h>
--#include <netinet/tcp.h>
--#include <test_progs.h>
--#include "bpf_dctcp.skel.h"
--#include "bpf_cubic.skel.h"
--#include "bpf_tcp_nogpl.skel.h"
--
--#define min(a, b) ((a) < (b) ? (a) : (b))
--
--static const unsigned int total_bytes = 10 * 1024 * 1024;
--static const struct timeval timeo_sec = { .tv_sec = 10 };
--static const size_t timeo_optlen = sizeof(timeo_sec);
--static int expected_stg = 0xeB9F;
--static int stop, duration;
--
--static int settimeo(int fd)
--{
--	int err;
--
--	err = setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeo_sec,
--			 timeo_optlen);
--	if (CHECK(err == -1, "setsockopt(fd, SO_RCVTIMEO)", "errno:%d\n",
--		  errno))
--		return -1;
--
--	err = setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeo_sec,
--			 timeo_optlen);
--	if (CHECK(err == -1, "setsockopt(fd, SO_SNDTIMEO)", "errno:%d\n",
--		  errno))
--		return -1;
--
--	return 0;
--}
--
--static int settcpca(int fd, const char *tcp_ca)
--{
--	int err;
--
--	err = setsockopt(fd, IPPROTO_TCP, TCP_CONGESTION, tcp_ca, strlen(tcp_ca));
--	if (CHECK(err == -1, "setsockopt(fd, TCP_CONGESTION)", "errno:%d\n",
--		  errno))
--		return -1;
--
--	return 0;
--}
--
--static void *server(void *arg)
--{
--	int lfd = (int)(long)arg, err = 0, fd;
--	ssize_t nr_sent = 0, bytes = 0;
--	char batch[1500];
--
--	fd = accept(lfd, NULL, NULL);
--	while (fd == -1) {
--		if (errno == EINTR)
--			continue;
--		err = -errno;
--		goto done;
--	}
--
--	if (settimeo(fd)) {
--		err = -errno;
--		goto done;
--	}
--
--	while (bytes < total_bytes && !READ_ONCE(stop)) {
--		nr_sent = send(fd, &batch,
--			       min(total_bytes - bytes, sizeof(batch)), 0);
--		if (nr_sent == -1 && errno == EINTR)
--			continue;
--		if (nr_sent == -1) {
--			err = -errno;
--			break;
--		}
--		bytes += nr_sent;
--	}
--
--	CHECK(bytes != total_bytes, "send", "%zd != %u nr_sent:%zd errno:%d\n",
--	      bytes, total_bytes, nr_sent, errno);
--
--done:
--	if (fd != -1)
--		close(fd);
--	if (err) {
--		WRITE_ONCE(stop, 1);
--		return ERR_PTR(err);
--	}
--	return NULL;
--}
--
--static void do_test(const char *tcp_ca, const struct bpf_map *sk_stg_map)
--{
--	struct sockaddr_in6 sa6 = {};
--	ssize_t nr_recv = 0, bytes = 0;
--	int lfd = -1, fd = -1;
--	pthread_t srv_thread;
--	socklen_t addrlen = sizeof(sa6);
--	void *thread_ret;
--	char batch[1500];
--	int err;
--
--	WRITE_ONCE(stop, 0);
--
--	lfd = socket(AF_INET6, SOCK_STREAM, 0);
--	if (CHECK(lfd == -1, "socket", "errno:%d\n", errno))
--		return;
--	fd = socket(AF_INET6, SOCK_STREAM, 0);
--	if (CHECK(fd == -1, "socket", "errno:%d\n", errno)) {
--		close(lfd);
--		return;
--	}
--
--	if (settcpca(lfd, tcp_ca) || settcpca(fd, tcp_ca) ||
--	    settimeo(lfd) || settimeo(fd))
--		goto done;
--
--	/* bind, listen and start server thread to accept */
--	sa6.sin6_family = AF_INET6;
--	sa6.sin6_addr = in6addr_loopback;
--	err = bind(lfd, (struct sockaddr *)&sa6, addrlen);
--	if (CHECK(err == -1, "bind", "errno:%d\n", errno))
--		goto done;
--	err = getsockname(lfd, (struct sockaddr *)&sa6, &addrlen);
--	if (CHECK(err == -1, "getsockname", "errno:%d\n", errno))
--		goto done;
--	err = listen(lfd, 1);
--	if (CHECK(err == -1, "listen", "errno:%d\n", errno))
--		goto done;
--
--	if (sk_stg_map) {
--		err = bpf_map_update_elem(bpf_map__fd(sk_stg_map), &fd,
--					  &expected_stg, BPF_NOEXIST);
--		if (CHECK(err, "bpf_map_update_elem(sk_stg_map)",
--			  "err:%d errno:%d\n", err, errno))
--			goto done;
--	}
--
--	/* connect to server */
--	err = connect(fd, (struct sockaddr *)&sa6, addrlen);
--	if (CHECK(err == -1, "connect", "errno:%d\n", errno))
--		goto done;
--
--	if (sk_stg_map) {
--		int tmp_stg;
--
--		err = bpf_map_lookup_elem(bpf_map__fd(sk_stg_map), &fd,
--					  &tmp_stg);
--		if (CHECK(!err || errno != ENOENT,
--			  "bpf_map_lookup_elem(sk_stg_map)",
--			  "err:%d errno:%d\n", err, errno))
--			goto done;
--	}
--
--	err = pthread_create(&srv_thread, NULL, server, (void *)(long)lfd);
--	if (CHECK(err != 0, "pthread_create", "err:%d errno:%d\n", err, errno))
--		goto done;
--
--	/* recv total_bytes */
--	while (bytes < total_bytes && !READ_ONCE(stop)) {
--		nr_recv = recv(fd, &batch,
--			       min(total_bytes - bytes, sizeof(batch)), 0);
--		if (nr_recv == -1 && errno == EINTR)
--			continue;
--		if (nr_recv == -1)
--			break;
--		bytes += nr_recv;
--	}
--
--	CHECK(bytes != total_bytes, "recv", "%zd != %u nr_recv:%zd errno:%d\n",
--	      bytes, total_bytes, nr_recv, errno);
--
--	WRITE_ONCE(stop, 1);
--	pthread_join(srv_thread, &thread_ret);
--	CHECK(IS_ERR(thread_ret), "pthread_join", "thread_ret:%ld",
--	      PTR_ERR(thread_ret));
--done:
--	close(lfd);
--	close(fd);
--}
--
--static void test_cubic(void)
--{
--	struct bpf_cubic *cubic_skel;
--	struct bpf_link *link;
--
--	cubic_skel = bpf_cubic__open_and_load();
--	if (CHECK(!cubic_skel, "bpf_cubic__open_and_load", "failed\n"))
--		return;
--
--	link = bpf_map__attach_struct_ops(cubic_skel->maps.cubic);
--	if (CHECK(IS_ERR(link), "bpf_map__attach_struct_ops", "err:%ld\n",
--		  PTR_ERR(link))) {
--		bpf_cubic__destroy(cubic_skel);
--		return;
--	}
--
--	do_test("bpf_cubic", NULL);
--
--	bpf_link__destroy(link);
--	bpf_cubic__destroy(cubic_skel);
--}
--
--static void test_dctcp(void)
--{
--	struct bpf_dctcp *dctcp_skel;
--	struct bpf_link *link;
--
--	dctcp_skel = bpf_dctcp__open_and_load();
--	if (CHECK(!dctcp_skel, "bpf_dctcp__open_and_load", "failed\n"))
--		return;
--
--	link = bpf_map__attach_struct_ops(dctcp_skel->maps.dctcp);
--	if (CHECK(IS_ERR(link), "bpf_map__attach_struct_ops", "err:%ld\n",
--		  PTR_ERR(link))) {
--		bpf_dctcp__destroy(dctcp_skel);
--		return;
--	}
--
--	do_test("bpf_dctcp", dctcp_skel->maps.sk_stg_map);
--	CHECK(dctcp_skel->bss->stg_result != expected_stg,
--	      "Unexpected stg_result", "stg_result (%x) != expected_stg (%x)\n",
--	      dctcp_skel->bss->stg_result, expected_stg);
--
--	bpf_link__destroy(link);
--	bpf_dctcp__destroy(dctcp_skel);
--}
--
--static char *err_str;
--static bool found;
--
--static int libbpf_debug_print(enum libbpf_print_level level,
--			      const char *format, va_list args)
--{
--	char *log_buf;
--
--	if (level != LIBBPF_WARN ||
--	    strcmp(format, "libbpf: \n%s\n")) {
--		vprintf(format, args);
--		return 0;
--	}
--
--	log_buf = va_arg(args, char *);
--	if (!log_buf)
--		goto out;
--	if (err_str && strstr(log_buf, err_str) != NULL)
--		found = true;
--out:
--	printf(format, log_buf);
--	return 0;
--}
--
--static void test_invalid_license(void)
--{
--	libbpf_print_fn_t old_print_fn;
--	struct bpf_tcp_nogpl *skel;
--
--	err_str = "struct ops programs must have a GPL compatible license";
--	found = false;
--	old_print_fn = libbpf_set_print(libbpf_debug_print);
--
--	skel = bpf_tcp_nogpl__open_and_load();
--	ASSERT_NULL(skel, "bpf_tcp_nogpl");
--	ASSERT_EQ(found, true, "expected_err_msg");
--
--	bpf_tcp_nogpl__destroy(skel);
--	libbpf_set_print(old_print_fn);
--}
--
--void test_bpf_tcp_ca(void)
--{
--	if (test__start_subtest("dctcp"))
--		test_dctcp();
--	if (test__start_subtest("cubic"))
--		test_cubic();
--	if (test__start_subtest("invalid_license"))
--		test_invalid_license();
--}
-diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-deleted file mode 100644
-index 7fc0951ee75f..000000000000
---- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-+++ /dev/null
-@@ -1,59 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/* Copyright (c) 2021 Facebook */
--#include <test_progs.h>
--#include <network_helpers.h>
--#include "kfunc_call_test.skel.h"
--#include "kfunc_call_test_subprog.skel.h"
--
--static void test_main(void)
--{
--	struct kfunc_call_test *skel;
--	int prog_fd, retval, err;
--
--	skel = kfunc_call_test__open_and_load();
--	if (!ASSERT_OK_PTR(skel, "skel"))
--		return;
--
--	prog_fd = bpf_program__fd(skel->progs.kfunc_call_test1);
--	err = bpf_prog_test_run(prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
--				NULL, NULL, (__u32 *)&retval, NULL);
--	ASSERT_OK(err, "bpf_prog_test_run(test1)");
--	ASSERT_EQ(retval, 12, "test1-retval");
--
--	prog_fd = bpf_program__fd(skel->progs.kfunc_call_test2);
--	err = bpf_prog_test_run(prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
--				NULL, NULL, (__u32 *)&retval, NULL);
--	ASSERT_OK(err, "bpf_prog_test_run(test2)");
--	ASSERT_EQ(retval, 3, "test2-retval");
--
--	kfunc_call_test__destroy(skel);
--}
--
--static void test_subprog(void)
--{
--	struct kfunc_call_test_subprog *skel;
--	int prog_fd, retval, err;
--
--	skel = kfunc_call_test_subprog__open_and_load();
--	if (!ASSERT_OK_PTR(skel, "skel"))
--		return;
--
--	prog_fd = bpf_program__fd(skel->progs.kfunc_call_test1);
--	err = bpf_prog_test_run(prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
--				NULL, NULL, (__u32 *)&retval, NULL);
--	ASSERT_OK(err, "bpf_prog_test_run(test1)");
--	ASSERT_EQ(retval, 10, "test1-retval");
--	ASSERT_NEQ(skel->data->active_res, -1, "active_res");
--	ASSERT_EQ(skel->data->sk_state, BPF_TCP_CLOSE, "sk_state");
--
--	kfunc_call_test_subprog__destroy(skel);
--}
--
--void test_kfunc_call(void)
--{
--	if (test__start_subtest("main"))
--		test_main();
--
--	if (test__start_subtest("subprog"))
--		test_subprog();
--}
 diff --git a/tools/testing/selftests/bpf/prog_tests/linked_funcs.c b/tools/testing/selftests/bpf/prog_tests/linked_funcs.c
 deleted file mode 100644
 index e9916f2817ec..000000000000
@@ -3635,52 +3025,6 @@ index 267166abe4c1..000000000000
 -
 -cleanup:
 -	linked_vars__destroy(skel);
--}
-diff --git a/tools/testing/selftests/bpf/prog_tests/static_linked.c b/tools/testing/selftests/bpf/prog_tests/static_linked.c
-deleted file mode 100644
-index 46556976dccc..000000000000
---- a/tools/testing/selftests/bpf/prog_tests/static_linked.c
-+++ /dev/null
-@@ -1,40 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/* Copyright (c) 2019 Facebook */
--
--#include <test_progs.h>
--#include "test_static_linked.skel.h"
--
--void test_static_linked(void)
--{
--	int err;
--	struct test_static_linked* skel;
--
--	skel = test_static_linked__open();
--	if (!ASSERT_OK_PTR(skel, "skel_open"))
--		return;
--
--	skel->rodata->rovar1 = 1;
--	skel->bss->static_var1 = 2;
--	skel->bss->static_var11 = 3;
--
--	skel->rodata->rovar2 = 4;
--	skel->bss->static_var2 = 5;
--	skel->bss->static_var22 = 6;
--
--	err = test_static_linked__load(skel);
--	if (!ASSERT_OK(err, "skel_load"))
--		goto cleanup;
--
--	err = test_static_linked__attach(skel);
--	if (!ASSERT_OK(err, "skel_attach"))
--		goto cleanup;
--
--	/* trigger */
--	usleep(1);
--
--	ASSERT_EQ(skel->bss->var1, 1 * 2 + 2 + 3, "var1");
--	ASSERT_EQ(skel->bss->var2, 4 * 3 + 5 + 6, "var2");
--
--cleanup:
--	test_static_linked__destroy(skel);
 -}
 diff --git a/tools/testing/selftests/bpf/progs/bpf_cubic.c b/tools/testing/selftests/bpf/progs/bpf_cubic.c
 deleted file mode 100644
@@ -4722,94 +4066,6 @@ index 575e958e60b7..000000000000
 -}
 -
 -char LICENSE[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/linked_maps1.c b/tools/testing/selftests/bpf/progs/linked_maps1.c
-deleted file mode 100644
-index 52291515cc72..000000000000
---- a/tools/testing/selftests/bpf/progs/linked_maps1.c
-+++ /dev/null
-@@ -1,82 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/* Copyright (c) 2021 Facebook */
--
--#include "vmlinux.h"
--#include <bpf/bpf_helpers.h>
--#include <bpf/bpf_tracing.h>
--
--struct my_key { long x; };
--struct my_value { long x; };
--
--struct {
--	__uint(type, BPF_MAP_TYPE_HASH);
--	__type(key, struct my_key);
--	__type(value, struct my_value);
--	__uint(max_entries, 16);
--} map1 SEC(".maps");
--
-- /* Matches map2 definition in linked_maps2.c. Order of the attributes doesn't
--  * matter.
--  */
--typedef struct {
--	__uint(max_entries, 8);
--	__type(key, int);
--	__type(value, int);
--	__uint(type, BPF_MAP_TYPE_ARRAY);
--} map2_t;
--
--extern map2_t map2 SEC(".maps");
--
--/* This should be the winning map definition, but we have no way of verifying,
-- * so we just make sure that it links and works without errors
-- */
--struct {
--	__uint(type, BPF_MAP_TYPE_ARRAY);
--	__type(key, int);
--	__type(value, int);
--	__uint(max_entries, 16);
--} map_weak __weak SEC(".maps");
--
--int output_first1;
--int output_second1;
--int output_weak1;
--
--SEC("raw_tp/sys_enter")
--int BPF_PROG(handler_enter1)
--{
--	/* update values with key = 1 */
--	int key = 1, val = 1;
--	struct my_key key_struct = { .x = 1 };
--	struct my_value val_struct = { .x = 1000 };
--
--	bpf_map_update_elem(&map1, &key_struct, &val_struct, 0);
--	bpf_map_update_elem(&map2, &key, &val, 0);
--	bpf_map_update_elem(&map_weak, &key, &val, 0);
--
--	return 0;
--}
--
--SEC("raw_tp/sys_exit")
--int BPF_PROG(handler_exit1)
--{
--	/* lookup values with key = 2, set in another file */
--	int key = 2, *val;
--	struct my_key key_struct = { .x = 2 };
--	struct my_value *value_struct;
--
--	value_struct = bpf_map_lookup_elem(&map1, &key_struct);
--	if (value_struct)
--		output_first1 = value_struct->x;
--
--	val = bpf_map_lookup_elem(&map2, &key);
--	if (val)
--		output_second1 = *val;
--
--	val = bpf_map_lookup_elem(&map_weak, &key);
--	if (val)
--		output_weak1 = *val;
--	
--	return 0;
--}
--
--char LICENSE[] SEC("license") = "GPL";
 diff --git a/tools/testing/selftests/bpf/progs/linked_maps2.c b/tools/testing/selftests/bpf/progs/linked_maps2.c
 deleted file mode 100644
 index 0693687474ed..000000000000
@@ -5013,76 +4269,3 @@ index e4f5bd388a3c..000000000000
 -}
 -
 -char LICENSE[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_static_linked1.c b/tools/testing/selftests/bpf/progs/test_static_linked1.c
-deleted file mode 100644
-index ea1a6c4c7172..000000000000
---- a/tools/testing/selftests/bpf/progs/test_static_linked1.c
-+++ /dev/null
-@@ -1,30 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/* Copyright (c) 2021 Facebook */
--
--#include <linux/bpf.h>
--#include <bpf/bpf_helpers.h>
--
--/* 8-byte aligned .bss */
--static volatile long static_var1;
--static volatile int static_var11;
--int var1 = 0;
--/* 4-byte aligned .rodata */
--const volatile int rovar1;
--
--/* same "subprog" name in both files */
--static __noinline int subprog(int x)
--{
--	/* but different formula */
--	return x * 2;
--}
--
--SEC("raw_tp/sys_enter")
--int handler1(const void *ctx)
--{
--	var1 = subprog(rovar1) + static_var1 + static_var11;
--
--	return 0;
--}
--
--char LICENSE[] SEC("license") = "GPL";
--int VERSION SEC("version") = 1;
-diff --git a/tools/testing/selftests/bpf/progs/test_static_linked2.c b/tools/testing/selftests/bpf/progs/test_static_linked2.c
-deleted file mode 100644
-index 54d8d1ab577c..000000000000
---- a/tools/testing/selftests/bpf/progs/test_static_linked2.c
-+++ /dev/null
-@@ -1,31 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/* Copyright (c) 2021 Facebook */
--
--#include <linux/bpf.h>
--#include <bpf/bpf_helpers.h>
--
--/* 4-byte aligned .bss */
--static volatile int static_var2;
--static volatile int static_var22;
--int var2 = 0;
--/* 8-byte aligned .rodata */
--const volatile long rovar2;
--
--/* same "subprog" name in both files */
--static __noinline int subprog(int x)
--{
--	/* but different formula */
--	return x * 3;
--}
--
--SEC("raw_tp/sys_enter")
--int handler2(const void *ctx)
--{
--	var2 = subprog(rovar2) + static_var2 + static_var22;
--
--	return 0;
--}
--
--/* different name and/or type of the variable doesn't matter */
--char _license[] SEC("license") = "GPL";
--int _version SEC("version") = 1;
