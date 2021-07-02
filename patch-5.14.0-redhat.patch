@@ -111,10 +111,10 @@ index cb30ca3df27c..951ad3ad6aee 100644
 
     If memory above 4G is preferred, crashkernel=size,high can be used to
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 2991f6e692bd..211c9424fb5a 100644
+index 0315407f5f57..4844e7547a99 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5798,6 +5798,15 @@
+@@ -5803,6 +5803,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -202,10 +202,10 @@ index 88888fff4c62..acbf3a56af4e 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 24804f11302d..fd5ff3fa0d5b 100644
+index 809317b5a6c6..3c047e8c03f1 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1484,9 +1484,9 @@ config HIGHMEM
+@@ -1482,9 +1482,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -966,10 +966,10 @@ index db881993c211..92a1ebb9cea3 100644
  	platform_driver_unregister(&etm4_platform_driver);
  	etm4_pm_clear();
 diff --git a/drivers/infiniband/sw/rxe/rxe.c b/drivers/infiniband/sw/rxe/rxe.c
-index 95f0de0c8b49..faa8a6cadef1 100644
+index 8e0f9c489cab..e8c5ad07be7a 100644
 --- a/drivers/infiniband/sw/rxe/rxe.c
 +++ b/drivers/infiniband/sw/rxe/rxe.c
-@@ -284,6 +284,8 @@ static int __init rxe_module_init(void)
+@@ -285,6 +285,8 @@ static int __init rxe_module_init(void)
  {
  	int err;
 
@@ -1511,7 +1511,7 @@ index f1d08a1b1591..78d04ac29cd5 100644
  	if (err < 0)
  		goto err_remove_irq_domain;
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index ec44a79e951a..5025827ef396 100644
+index 3a72352aa5cf..47b11f3c7fce 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -2053,10 +2053,10 @@ index 8100bb477d86..f758f2869c02 100644
 
  	/* Exported symbols */
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 24306504226a..ea30eee40dfb 100644
+index d1f0916c6a37..542d149b9162 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1430,6 +1430,10 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1433,6 +1433,10 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);

@@ -73,7 +73,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20210701gitdbe69e433722.6
+%global distro_build 0.rc0.20210702git3dbdb38e2869.6
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc0.20210701gitdbe69e433722.6
+%define pkgrelease 0.rc0.20210702git3dbdb38e2869.6
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210701gitdbe69e433722.6%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210702git3dbdb38e2869.6%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -222,8 +222,9 @@ Summary: The Linux kernel
 # Fedora builds these separately
 %define with_perf 0
 %define with_tools 0
-%define with_selftests 0
 %define with_bpftool 0
+# selftests turns on bpftool
+%define with_selftests 0
 %endif
 
 %if %{with_verbose}
@@ -654,7 +655,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-5357-gdbe69e433722.tar.xz
+Source0: linux-5.13-7637-g3dbdb38e2869.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1323,8 +1324,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-5357-gdbe69e433722 -c
-mv linux-5.13-5357-gdbe69e433722 linux-%{KVERREL}
+%setup -q -n kernel-5.13-7637-g3dbdb38e2869 -c
+mv linux-5.13-7637-g3dbdb38e2869 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2895,7 +2896,9 @@ fi
 #
 #
 %changelog
-* Thu Jul 01 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210701gitdbe69e433722.6]
+* Fri Jul 02 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210702git3dbdb38e2869.6]
+- Turn off with_selftests for Fedora (Justin M. Forbes)
+- Don't build bpftool on Fedora (Justin M. Forbes)
 - Fix location of syscall scripts for kernel-devel (Justin M. Forbes)
 
 * Thu Jul 01 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210630git007b350a5875.4]
