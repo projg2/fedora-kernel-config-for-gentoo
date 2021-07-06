@@ -73,7 +73,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20210702git3dbdb38e2869.6
+%global distro_build 0.rc0.20210706git79160a603bdb.11
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc0.20210702git3dbdb38e2869.6
+%define pkgrelease 0.rc0.20210706git79160a603bdb.11
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210702git3dbdb38e2869.6%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210706git79160a603bdb.11%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -655,7 +655,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-7637-g3dbdb38e2869.tar.xz
+Source0: linux-5.13-11788-g79160a603bdb.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1103,6 +1103,20 @@ against the %{?2:%{2} }kernel package.\
 %{nil}
 
 #
+# This macro creates an empty kernel-<subpackage>-devel-matched package that
+# requires both the core and devel packages locked on the same version.
+#	%%kernel_devel_matched_package [-m] <subpackage> <pretty-name>
+#
+%define kernel_devel_matched_package(m) \
+%package %{?1:%{1}-}devel-matched\
+Summary: Meta package to install matching core and devel packages for a given %{?2:%{2} }kernel\
+Requires: kernel%{?1:-%{1}}-devel = %{version}-%{release}\
+Requires: kernel%{?1:-%{1}}-core = %{version}-%{release}\
+%description %{?1:%{1}-}devel-matched\
+This meta package is used to install matching core and devel packages for a given %{?2:%{2} }kernel.\
+%{nil}
+
+#
 # kernel-<variant>-ipaclones-internal package
 #
 %define kernel_ipaclones_package() \
@@ -1212,6 +1226,7 @@ Requires: kernel-core-uname-r = %{KVERREL}\
 %{expand:%%kernel_meta_package %{?1:%{1}}}\
 %endif\
 %{expand:%%kernel_devel_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
+%{expand:%%kernel_devel_matched_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
 %{expand:%%kernel_modules_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
 %{expand:%%kernel_modules_extra_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
 %if %{-m:0}%{!-m:1}\
@@ -1324,8 +1339,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-7637-g3dbdb38e2869 -c
-mv linux-5.13-7637-g3dbdb38e2869 linux-%{KVERREL}
+%setup -q -n kernel-5.13-11788-g79160a603bdb -c
+mv linux-5.13-11788-g79160a603bdb linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2852,6 +2867,7 @@ fi
 %{expand:%%files %{?3:%{3}-}devel}\
 %defverify(not mtime)\
 /usr/src/kernels/%{KVERREL}%{?3:+%{3}}\
+%{expand:%%files %{?3:%{3}-}devel-matched}\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-extra.list %{?3:%{3}-}modules-extra}\
 %config(noreplace) /etc/modprobe.d/*-blacklist.conf\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-internal.list %{?3:%{3}-}modules-internal}\
@@ -2872,6 +2888,7 @@ fi
 %files debug
 %files debug-core
 %files debug-devel
+%files debug-devel-matched
 %files debug-modules
 %files debug-modules-extra
 %endif
@@ -2896,6 +2913,17 @@ fi
 #
 #
 %changelog
+* Tue Jul 06 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.0-0.rc0.20210706git79160a603bdb.11]
+- common: enable STRICT_MODULE_RWX everywhere (Peter Robinson)
+
+* Tue Jul 06 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210706git79160a603bdb.11]
+- drm/amdgpu/dc: Really fix DCN3.1 Makefile for PPC64 (Michal Suchanek)
+
+* Sat Jul 03 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210702git3dbdb38e2869.7]
+- COMMON_CLK_STM32MP157_SCMI is bool and selects COMMON_CLK_SCMI (Justin M. Forbes)
+- kernel.spec: Add kernel{,-debug}-devel-matched meta packages (Timothée Ravier)
+- mod-denylist.sh: Change to denylist (Prarit Bhargava)
+
 * Fri Jul 02 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210702git3dbdb38e2869.6]
 - Turn off with_selftests for Fedora (Justin M. Forbes)
 - Don't build bpftool on Fedora (Justin M. Forbes)
