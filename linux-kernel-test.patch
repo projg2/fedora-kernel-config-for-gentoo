@@ -1,0 +1,33 @@
+From 5cfc0690eefcc30f880f0c02863a35d63b6c733c Mon Sep 17 00:00:00 2001
+From: "Justin M. Forbes" <jforbes@fedoraproject.org>
+Date: Tue, 6 Jul 2021 13:50:10 -0500
+Subject: [PATCH] Fix the perf trace link location
+
+The install perf_dlfilter.h patch included what seems to be
+a typo in the Makefile.perf, which changed the location of the trace
+link from '$(DESTDIR_SQ)$(bindir_SQ)/trace' to
+'$(DESTDIR_SQ)$(dir_SQ)/trace' This reverts it back to the correct
+location.
+
+Fixes: 0beb218315e06 ("perf build: Install perf_dlfilter.h")
+Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
+---
+ tools/perf/Makefile.perf | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/perf/Makefile.perf b/tools/perf/Makefile.perf
+index c9e0de5b00c1..a1b9be78a1e0 100644
+--- a/tools/perf/Makefile.perf
++++ b/tools/perf/Makefile.perf
+@@ -923,7 +923,7 @@ install-tools: all install-gtk
+ 	$(call QUIET_INSTALL, binaries) \
+ 		$(INSTALL) -d -m 755 '$(DESTDIR_SQ)$(bindir_SQ)'; \
+ 		$(INSTALL) $(OUTPUT)perf '$(DESTDIR_SQ)$(bindir_SQ)'; \
+-		$(LN) '$(DESTDIR_SQ)$(bindir_SQ)/perf' '$(DESTDIR_SQ)$(dir_SQ)/trace'; \
++		$(LN) '$(DESTDIR_SQ)$(bindir_SQ)/perf' '$(DESTDIR_SQ)$(bindir_SQ)/trace'; \
+ 		$(INSTALL) -d -m 755 '$(DESTDIR_SQ)$(includedir_SQ)/perf'; \
+ 		$(INSTALL) util/perf_dlfilter.h -t '$(DESTDIR_SQ)$(includedir_SQ)/perf'
+ ifndef NO_PERF_READ_VDSO32
+-- 
+2.31.1
+
