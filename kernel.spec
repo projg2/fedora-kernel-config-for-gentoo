@@ -2024,7 +2024,7 @@ BuildKernel() {
 
 %ifnarch armv7hl
     # Generate vmlinux.h and put it to kernel-devel path
-    bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+    # bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
 %endif
 
     # prune junk from kernel-devel
