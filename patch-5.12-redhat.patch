@@ -67,7 +67,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index 433f164f9ee0..56a62bea0db1 100644
+index 09e1a0967bab..63c53593ee89 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
