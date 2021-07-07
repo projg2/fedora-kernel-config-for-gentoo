@@ -1,5 +1,17 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/b3f99a2ab9f429d8131824c67441aea5daf5a35e
- b3f99a2ab9f429d8131824c67441aea5daf5a35e drm/amdgpu/dc: Really fix DCN3.1 Makefile for PPC64
+https://gitlab.com/cki-project/kernel-ark/-/commit/07dabbf6bfada8b964005e573d2a48323e4e0c9c
+ 07dabbf6bfada8b964005e573d2a48323e4e0c9c Fix the perf trace link location
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/b677d674288dc553c5832cb1c898d00617846ecc
+ b677d674288dc553c5832cb1c898d00617846ecc drm/amdgpu/dc: Really fix DCN3.1 Makefile for PPC64
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/c86a777b719e3777a9663a13a739840fb48a20ef
+ c86a777b719e3777a9663a13a739840fb48a20ef Revert "kdump: add support for crashkernel=auto"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/0b109d48baa09325c8ccee1557c2dc8cffac781c
+ 0b109d48baa09325c8ccee1557c2dc8cffac781c Revert "kdump: round up the total memory size to 128M for crashkernel reservation"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/b09992bdcf141528a8904e3f81b0d915f483248d
+ b09992bdcf141528a8904e3f81b0d915f483248d Revert "kdump: fix a grammar issue in a kernel message"
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/97a1cde284225696c445ecd5f844bca58e4321db
  97a1cde284225696c445ecd5f844bca58e4321db bpf, selftests: Disable tests that need clang13

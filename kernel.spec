@@ -73,7 +73,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20210706git79160a603bdb.11
+%global distro_build 0.rc0.20210707git77d34a4683b0.12
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc0.20210706git79160a603bdb.11
+%define pkgrelease 0.rc0.20210707git77d34a4683b0.12
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210706git79160a603bdb.11%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210707git77d34a4683b0.12%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -655,7 +655,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-11788-g79160a603bdb.tar.xz
+Source0: linux-5.13-11855-g77d34a4683b0.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -769,6 +769,7 @@ Source51: generate_all_configs.sh
 
 Source52: process_configs.sh
 Source56: update_scripts.sh
+Source57: generate_crashkernel_default.sh
 
 Source54: mod-internal.list
 
@@ -1339,8 +1340,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-11788-g79160a603bdb -c
-mv linux-5.13-11788-g79160a603bdb linux-%{KVERREL}
+%setup -q -n kernel-5.13-11855-g77d34a4683b0 -c
+mv linux-5.13-11855-g77d34a4683b0 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1422,6 +1423,10 @@ done
 openssl x509 -inform der -in %{SOURCE100} -out rheldup3.pem
 openssl x509 -inform der -in %{SOURCE101} -out rhelkpatch1.pem
 cat rheldup3.pem rhelkpatch1.pem > ../certs/rhel.pem
+%ifarch s390x ppc64le
+openssl x509 -inform der -in %{secureboot_ca_0} -out secureboot.pem
+cat secureboot.pem >> ../certs/rhel.pem
+%endif
 for i in *.config; do
   sed -i 's@CONFIG_SYSTEM_TRUSTED_KEYS=""@CONFIG_SYSTEM_TRUSTED_KEYS="certs/rhel.pem"@' $i
 done
@@ -2054,6 +2059,9 @@ BuildKernel() {
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
+
+    # Generate crashkernel default config
+    %{SOURCE57} "$KernelVer" "$Arch" "$RPM_BUILD_ROOT"
 
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
@@ -2858,6 +2866,7 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/crashkernel.default\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
@@ -2913,11 +2922,19 @@ fi
 #
 #
 %changelog
-* Tue Jul 06 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.0-0.rc0.20210706git79160a603bdb.11]
-- common: enable STRICT_MODULE_RWX everywhere (Peter Robinson)
-
-* Tue Jul 06 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210706git79160a603bdb.11]
+* Wed Jul 07 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210707git77d34a4683b0.12]
+- Fix the perf trace link location (Justin M. Forbes)
 - drm/amdgpu/dc: Really fix DCN3.1 Makefile for PPC64 (Michal Suchanek)
+
+* Wed Jul 07 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210707git77d34a4683b0.11]
+- redhat: add secureboot CA certificate to trusted kernel keyring (Bruno Meneguele)
+- redhat/configs: enable IMA_ARCH_POLICY for aarch64 and s390x (Bruno Meneguele)
+- redhat/configs: Enable CONFIG_MLXBF_GIGE on aarch64 (Alaa Hleihel) [1858599]
+- Revert "kdump: add support for crashkernel=auto" (Kairui Song)
+- Revert "kdump: round up the total memory size to 128M for crashkernel reservation" (Kairui Song)
+- Revert "kdump: fix a grammar issue in a kernel message" (Kairui Song)
+- Revert "Merge branch 'rename_mod_blacklist_sh_part_2' into 'os-build'" (Justin M. Forbes)
+- common: enable STRICT_MODULE_RWX everywhere (Peter Robinson)
 
 * Sat Jul 03 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210702git3dbdb38e2869.7]
 - COMMON_CLK_STM32MP157_SCMI is bool and selects COMMON_CLK_SCMI (Justin M. Forbes)
