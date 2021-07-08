@@ -73,7 +73,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20210707git77d34a4683b0.12
+%global distro_build 0.rc0.20210708gite9f1cbc0c411.13
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc0.20210707git77d34a4683b0.12
+%define pkgrelease 0.rc0.20210708gite9f1cbc0c411.13
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210707git77d34a4683b0.12%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210708gite9f1cbc0c411.13%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -156,8 +156,8 @@ Summary: The Linux kernel
 %define with_bpftool   %{?_without_bpftool:   0} %{?!_without_bpftool:   1}
 # kernel-debuginfo
 %define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
-# kernel-abi-whitelists
-%define with_kernel_abi_whitelists %{?_without_kernel_abi_whitelists: 0} %{?!_without_kernel_abi_whitelists: 1}
+# kernel-abi-stablelists
+%define with_kernel_abi_stablelists %{?_without_kernel_abi_stablelists: 0} %{?!_without_kernel_abi_stablelists: 1}
 # internal samples and selftests
 %define with_selftests %{?_without_selftests: 0} %{?!_without_selftests: 1}
 #
@@ -217,8 +217,8 @@ Summary: The Linux kernel
 %define with_cross_headers 0
 # no ipa_clone for now
 %define with_ipaclones 0
-# no whitelist
-%define with_kernel_abi_whitelists 0
+# no stablelist
+%define with_kernel_abi_stablelists 0
 # Fedora builds these separately
 %define with_perf 0
 %define with_tools 0
@@ -246,7 +246,7 @@ Summary: The Linux kernel
 %define with_kabidupchk 0
 %define with_kabidwchk 0
 %define with_kabidw_base 0
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 %endif
 
 # turn off kABI DWARF-based check if we're generating the base dataset
@@ -305,7 +305,7 @@ Summary: The Linux kernel
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 %define with_selftests 0
 %define with_cross 0
 %define with_cross_headers 0
@@ -325,7 +325,7 @@ Summary: The Linux kernel
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 %define with_selftests 0
 %define with_cross 0
 %define with_cross_headers 0
@@ -348,7 +348,7 @@ Summary: The Linux kernel
 %endif
 
 %ifnarch noarch
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 %endif
 
 # Overrides for generic default options
@@ -556,7 +556,7 @@ BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
 BuildRequires: python3-devel
 BuildRequires: gcc-plugin-devel
-%ifnarch %{nobuildarches}
+%ifnarch %{nobuildarches} noarch
 BuildRequires: bpftool
 %endif
 %if %{with_headers}
@@ -655,7 +655,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-11855-g77d34a4683b0.tar.xz
+Source0: linux-5.13-12185-ge9f1cbc0c411.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -788,7 +788,7 @@ Source211: Module.kabi_dup_ppc64le
 Source212: Module.kabi_dup_s390x
 Source213: Module.kabi_dup_x86_64
 
-Source300: kernel-abi-whitelists-%{rpmversion}-%{distro_build}.tar.bz2
+Source300: kernel-abi-stablelists-%{rpmversion}-%{distro_build}.tar.bz2
 Source301: kernel-kabi-dw-%{rpmversion}-%{distro_build}.tar.bz2
 
 # Sources for kernel-tools
@@ -1034,10 +1034,10 @@ Summary: gcov graph and source files for coverage data collection.
 kernel-gcov includes the gcov graph and source files for gcov coverage collection.
 %endif
 
-%package -n kernel-abi-whitelists
-Summary: The Red Hat Enterprise Linux kernel ABI symbol whitelists
+%package -n kernel-abi-stablelists
+Summary: The Red Hat Enterprise Linux kernel ABI symbol stablelists
 AutoReqProv: no
-%description -n kernel-abi-whitelists
+%description -n kernel-abi-stablelists
 The kABI package contains information pertaining to the Red Hat Enterprise
 Linux kernel ABI, including lists of kernel symbols that are needed by
 external Linux kernel modules, and a yum plugin to aid enforcement.
@@ -1340,8 +1340,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-11855-g77d34a4683b0 -c
-mv linux-5.13-11855-g77d34a4683b0 linux-%{KVERREL}
+%setup -q -n kernel-5.13-12185-ge9f1cbc0c411 -c
+mv linux-5.13-12185-ge9f1cbc0c411 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1734,13 +1734,13 @@ BuildKernel() {
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf
         tar xjvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
 
-        mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/whitelists
-        tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/whitelists
+        mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/stablelists
+        tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
 
         echo "**** GENERATING DWARF-based kABI baseline dataset ****"
         chmod 0755 $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh
         $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh generate \
-            "$RPM_BUILD_ROOT/kabi-dwarf/whitelists/kabi-current/kabi_whitelist_%{_target_cpu}" \
+            "$RPM_BUILD_ROOT/kabi-dwarf/stablelists/kabi-current/kabi_stablelist_%{_target_cpu}" \
             "$(pwd)" \
             "$RPM_BUILD_ROOT/kabidw-base/%{_target_cpu}${Variant:+.${Variant}}" || :
 
@@ -1753,13 +1753,13 @@ BuildKernel() {
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf
         tar xjvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
         if [ -d "$RPM_BUILD_ROOT/kabi-dwarf/base/%{_target_cpu}${Variant:+.${Variant}}" ]; then
-            mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/whitelists
-            tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/whitelists
+            mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/stablelists
+            tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
 
             echo "**** GENERATING DWARF-based kABI dataset ****"
             chmod 0755 $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh
             $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh generate \
-                "$RPM_BUILD_ROOT/kabi-dwarf/whitelists/kabi-current/kabi_whitelist_%{_target_cpu}" \
+                "$RPM_BUILD_ROOT/kabi-dwarf/stablelists/kabi-current/kabi_stablelist_%{_target_cpu}" \
                 "$(pwd)" \
                 "$RPM_BUILD_ROOT/kabi-dwarf/base/%{_target_cpu}${Variant:+.${Variant}}.tmp" || :
 
@@ -2370,14 +2370,14 @@ done
 rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
 %endif
 
-%if %{with_kernel_abi_whitelists}
+%if %{with_kernel_abi_stablelists}
 # kabi directory
 INSTALL_KABI_PATH=$RPM_BUILD_ROOT/lib/modules/
 mkdir -p $INSTALL_KABI_PATH
 
 # install kabi releases directories
 tar xjvf %{SOURCE300} -C $INSTALL_KABI_PATH
-# with_kernel_abi_whitelists
+# with_kernel_abi_stablelists
 %endif
 
 %if %{with_perf}
@@ -2689,8 +2689,8 @@ fi
 /usr/*-linux-gnu/include/*
 %endif
 
-%if %{with_kernel_abi_whitelists}
-%files -n kernel-abi-whitelists
+%if %{with_kernel_abi_stablelists}
+%files -n kernel-abi-stablelists
 /lib/modules/kabi-*
 %endif
 
@@ -2922,9 +2922,13 @@ fi
 #
 #
 %changelog
-* Wed Jul 07 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210707git77d34a4683b0.12]
+* Thu Jul 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210708gite9f1cbc0c411.13]
 - Fix the perf trace link location (Justin M. Forbes)
 - drm/amdgpu/dc: Really fix DCN3.1 Makefile for PPC64 (Michal Suchanek)
+
+* Thu Jul 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210708gite9f1cbc0c411.12]
+- rpmspec: do not BuildRequires bpftool on noarch (Herton R. Krzesinski)
+- redhat/configs: disable {IMA,EVM}_LOAD_X509 (Bruno Meneguele) [1977529]
 
 * Wed Jul 07 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210707git77d34a4683b0.11]
 - redhat: add secureboot CA certificate to trusted kernel keyring (Bruno Meneguele)

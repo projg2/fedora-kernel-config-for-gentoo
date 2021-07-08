@@ -293,10 +293,10 @@ index b58ee83f30e3..66e08b5d86d3 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index a99d00393206..2ca44d88e832 100644
+index 64b805bd6a54..e6702f1e1beb 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1308,6 +1308,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1304,6 +1304,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
@@ -2487,7 +2487,7 @@ index e343f158e556..840c5ecd4fc6 100644
  	if (err)
  		return err;
 diff --git a/kernel/module.c b/kernel/module.c
-index 927d46cb8eb9..387e08c31633 100644
+index 64bd61b2d3ad..c1a2a8a29248 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -742,6 +742,7 @@ static struct module_attribute modinfo_##field = {                    \
@@ -2498,7 +2498,7 @@ index 927d46cb8eb9..387e08c31633 100644
 
  static char last_unloaded_module[MODULE_NAME_LEN+1];
 
-@@ -1206,6 +1207,7 @@ static struct module_attribute *modinfo_attrs[] = {
+@@ -1205,6 +1206,7 @@ static struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,

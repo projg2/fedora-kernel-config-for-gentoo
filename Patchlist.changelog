@@ -1,8 +1,8 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/07dabbf6bfada8b964005e573d2a48323e4e0c9c
- 07dabbf6bfada8b964005e573d2a48323e4e0c9c Fix the perf trace link location
+https://gitlab.com/cki-project/kernel-ark/-/commit/eeeb30f378c606dff8ef7823e6ab0af0f041657f
+ eeeb30f378c606dff8ef7823e6ab0af0f041657f Fix the perf trace link location
 
-https://gitlab.com/cki-project/kernel-ark/-/commit/b677d674288dc553c5832cb1c898d00617846ecc
- b677d674288dc553c5832cb1c898d00617846ecc drm/amdgpu/dc: Really fix DCN3.1 Makefile for PPC64
+https://gitlab.com/cki-project/kernel-ark/-/commit/3cecd9812d297c5653678c5e84e2a9ab9daf4819
+ 3cecd9812d297c5653678c5e84e2a9ab9daf4819 drm/amdgpu/dc: Really fix DCN3.1 Makefile for PPC64
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/c86a777b719e3777a9663a13a739840fb48a20ef
  c86a777b719e3777a9663a13a739840fb48a20ef Revert "kdump: add support for crashkernel=auto"
