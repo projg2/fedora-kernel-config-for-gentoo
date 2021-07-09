@@ -73,7 +73,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20210708gite9f1cbc0c411.13
+%global distro_build 0.rc0.20210709gitf55966571d5e.14
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc0.20210708gite9f1cbc0c411.13
+%define pkgrelease 0.rc0.20210709gitf55966571d5e.14
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210708gite9f1cbc0c411.13%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210709gitf55966571d5e.14%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -655,7 +655,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-12185-ge9f1cbc0c411.tar.xz
+Source0: linux-5.13-12377-gf55966571d5e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1340,8 +1340,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-12185-ge9f1cbc0c411 -c
-mv linux-5.13-12185-ge9f1cbc0c411 linux-%{KVERREL}
+%setup -q -n kernel-5.13-12377-gf55966571d5e -c
+mv linux-5.13-12377-gf55966571d5e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2922,9 +2922,11 @@ fi
 #
 #
 %changelog
-* Thu Jul 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210708gite9f1cbc0c411.13]
+* Fri Jul 09 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210709gitf55966571d5e.14]
 - Fix the perf trace link location (Justin M. Forbes)
-- drm/amdgpu/dc: Really fix DCN3.1 Makefile for PPC64 (Michal Suchanek)
+
+* Fri Jul 09 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210709gitf55966571d5e.13]
+- redhat/configs: enable KEXEC_SIG which is already enabled in RHEL8 for s390x and x86_64 (Coiby Xu) [1976835]
 
 * Thu Jul 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210708gite9f1cbc0c411.12]
 - rpmspec: do not BuildRequires bpftool on noarch (Herton R. Krzesinski)

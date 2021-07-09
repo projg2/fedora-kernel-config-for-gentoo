@@ -20,7 +20,6 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
- drivers/gpu/drm/amd/display/dc/dcn31/Makefile      |   2 +
  drivers/hid/hid-rmi.c                              |  64 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/infiniband/sw/rxe/rxe.c                    |   2 +
@@ -34,7 +33,6 @@
  drivers/nvme/host/core.c                           |  22 +-
  drivers/nvme/host/multipath.c                      |  19 +-
  drivers/nvme/host/nvme.h                           |   4 +
- drivers/pci/controller/pcie-rockchip-host.c        |  12 +-
  drivers/pci/pci-driver.c                           |  29 ++
  drivers/pci/quirks.c                               |  24 +
  drivers/scsi/aacraid/linit.c                       |   2 +
@@ -86,7 +84,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 88 files changed, 1188 insertions(+), 1500 deletions(-)
+ 86 files changed, 1180 insertions(+), 1494 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index bdb22006f713..61a3a4a4730b 100644
@@ -792,26 +790,6 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
-index 5dcdc5a858fe..4bab97acb155 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
-@@ -28,6 +28,7 @@ endif
- CFLAGS_$(AMDDALPATH)/dc/dcn31/dcn31_resource.o += -mhard-float
- endif
-
-+ifdef CONFIG_X86
- ifdef IS_OLD_GCC
- # Stack alignment mismatch, proceed with caution.
- # GCC < 7.1 cannot compile code using `double` and -mpreferred-stack-boundary=3
-@@ -36,6 +37,7 @@ CFLAGS_$(AMDDALPATH)/dc/dcn31/dcn31_resource.o += -mpreferred-stack-boundary=4
- else
- CFLAGS_$(AMDDALPATH)/dc/dcn31/dcn31_resource.o += -msse2
- endif
-+endif
-
- AMD_DAL_DCN31 = $(addprefix $(AMDDALPATH)/dc/dcn31/,$(DCN31))
-
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1471,43 +1449,6 @@ index 75420ceacc10..617e130e9377 100644
  static inline void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl)
  {
  }
-diff --git a/drivers/pci/controller/pcie-rockchip-host.c b/drivers/pci/controller/pcie-rockchip-host.c
-index f1d08a1b1591..78d04ac29cd5 100644
---- a/drivers/pci/controller/pcie-rockchip-host.c
-+++ b/drivers/pci/controller/pcie-rockchip-host.c
-@@ -592,10 +592,6 @@ static int rockchip_pcie_parse_host_dt(struct rockchip_pcie *rockchip)
- 	if (err)
- 		return err;
-
--	err = rockchip_pcie_setup_irq(rockchip);
--	if (err)
--		return err;
--
- 	rockchip->vpcie12v = devm_regulator_get_optional(dev, "vpcie12v");
- 	if (IS_ERR(rockchip->vpcie12v)) {
- 		if (PTR_ERR(rockchip->vpcie12v) != -ENODEV)
-@@ -973,8 +969,6 @@ static int rockchip_pcie_probe(struct platform_device *pdev)
- 	if (err)
- 		goto err_vpcie;
-
--	rockchip_pcie_enable_interrupts(rockchip);
--
- 	err = rockchip_pcie_init_irq_domain(rockchip);
- 	if (err < 0)
- 		goto err_deinit_port;
-@@ -992,6 +986,12 @@ static int rockchip_pcie_probe(struct platform_device *pdev)
- 	bridge->sysdata = rockchip;
- 	bridge->ops = &rockchip_pcie_ops;
-
-+	err = rockchip_pcie_setup_irq(rockchip);
-+	if (err)
-+		goto err_remove_irq_domain;
-+
-+	rockchip_pcie_enable_interrupts(rockchip);
-+
- 	err = pci_host_probe(bridge);
- 	if (err < 0)
- 		goto err_remove_irq_domain;
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
 index 3a72352aa5cf..47b11f3c7fce 100644
 --- a/drivers/pci/pci-driver.c
@@ -1556,10 +1497,10 @@ index 3a72352aa5cf..47b11f3c7fce 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 22b2bb1109c9..2131ee5ab7fd 100644
+index 6d74386eadc2..2333c1e4ae05 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4219,6 +4219,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4230,6 +4230,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -2055,7 +1996,7 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index eb45078abc3a..5f88ca707c7e 100644
+index 540b377ca8f6..eb21f6dfb846 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1433,6 +1433,10 @@ int pci_add_dynid(struct pci_driver *drv,
