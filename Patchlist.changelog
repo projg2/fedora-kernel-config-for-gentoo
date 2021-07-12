@@ -1,6 +1,3 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/6f5d7fac6e5ad971605ac27a4fb92940d95406b4
- 6f5d7fac6e5ad971605ac27a4fb92940d95406b4 Fix the perf trace link location
-
 https://gitlab.com/cki-project/kernel-ark/-/commit/c86a777b719e3777a9663a13a739840fb48a20ef
  c86a777b719e3777a9663a13a739840fb48a20ef Revert "kdump: add support for crashkernel=auto"
 

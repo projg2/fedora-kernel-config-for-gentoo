@@ -4,7 +4,6 @@
  Makefile                                           |  13 +-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
- arch/arm64/boot/dts/rockchip/rk3399.dtsi           |   2 +-
  arch/arm64/kernel/acpi.c                           |   4 +
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
@@ -70,7 +69,6 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- tools/perf/Makefile.perf                           |   2 +-
  tools/testing/selftests/bpf/Makefile               |   1 -
  .../selftests/bpf/prog_tests/linked_funcs.c        |  42 --
  .../testing/selftests/bpf/prog_tests/linked_maps.c |  30 --
@@ -84,7 +82,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 86 files changed, 1180 insertions(+), 1494 deletions(-)
+ 84 files changed, 1178 insertions(+), 1492 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index bdb22006f713..61a3a4a4730b 100644
@@ -140,7 +138,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 88888fff4c62..acbf3a56af4e 100644
+index c3f9bd191b89..e3c43232203c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -154,7 +152,7 @@ index 88888fff4c62..acbf3a56af4e 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -503,6 +507,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+@@ -508,6 +512,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
  		   -Werror=implicit-function-declaration -Werror=implicit-int \
@@ -162,7 +160,7 @@ index 88888fff4c62..acbf3a56af4e 100644
  		   -Werror=return-type -Wno-format-security \
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
-@@ -1299,7 +1304,13 @@ define filechk_version.h
+@@ -1256,7 +1261,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -178,10 +176,10 @@ index 88888fff4c62..acbf3a56af4e 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 06b6187b67af..ba742b2f40b1 100644
+index 3ea1c417339f..a52069686c33 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1479,9 +1479,9 @@ config HIGHMEM
+@@ -1480,9 +1480,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -214,19 +212,6 @@ index e07e7de9ac49..65aa88fad60d 100644
  	default "12" if ARM64_16K_PAGES
  	default "11"
  	help
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399.dtsi b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-index 634a91af8e83..4b854eb21f72 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399.dtsi
-@@ -227,7 +227,7 @@ pcie0: pcie@f8000000 {
- 		       <&pcie_phy 2>, <&pcie_phy 3>;
- 		phy-names = "pcie-phy-0", "pcie-phy-1",
- 			    "pcie-phy-2", "pcie-phy-3";
--		ranges = <0x83000000 0x0 0xfa000000 0x0 0xfa000000 0x0 0x1e00000>,
-+		ranges = <0x82000000 0x0 0xfa000000 0x0 0xfa000000 0x0 0x1e00000>,
- 			 <0x81000000 0x0 0xfbe00000 0x0 0xfbe00000 0x0 0x100000>;
- 		resets = <&cru SRST_PCIE_CORE>, <&cru SRST_PCIE_MGMT>,
- 			 <&cru SRST_PCIE_MGMT_STICKY>, <&cru SRST_PCIE_PIPE>,
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
 index f3851724fe35..ef69eeab6f2a 100644
 --- a/arch/arm64/kernel/acpi.c
@@ -269,7 +254,7 @@ index 50e2c21e0ec9..5da0c683df8d 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index b58ee83f30e3..66e08b5d86d3 100644
+index ff0f9e838916..557318323664 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -280,7 +265,7 @@ index b58ee83f30e3..66e08b5d86d3 100644
  #include <linux/hugetlb.h>
 
  #include <asm/boot_data.h>
-@@ -1022,6 +1023,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -1023,6 +1024,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -303,7 +288,7 @@ index 64b805bd6a54..e6702f1e1beb 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 9f1d9215a9fb..af9eea013e0f 100644
+index bff3a784aec5..1a9c345f914d 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -19,6 +19,7 @@
@@ -373,7 +358,7 @@ index 9f1d9215a9fb..af9eea013e0f 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -939,6 +985,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -936,6 +982,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -387,7 +372,7 @@ index 9f1d9215a9fb..af9eea013e0f 100644
  	dmi_setup();
 
  	/*
-@@ -1104,19 +1157,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1101,19 +1154,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -408,7 +393,7 @@ index 9f1d9215a9fb..af9eea013e0f 100644
 
  	reserve_initrd();
 
-@@ -1229,6 +1270,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1226,6 +1267,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -1314,7 +1299,7 @@ index 75dbe77b0b4b..029ff8576f8e 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 80c656dcbbac..a6bf1b947d49 100644
+index 11779be42186..3aeb87c94cfb 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -261,6 +261,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1428,7 +1413,7 @@ index 0ea5298469c3..94538b576977 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 75420ceacc10..617e130e9377 100644
+index 18ef8dd03a90..5cc86f4ca4be 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
 @@ -706,6 +706,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
@@ -1552,10 +1537,10 @@ index 3168915adaa7..71b48e29b708 100644
  	{ 0x9005, 0x028c, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 63 }, /* Adaptec PMC Series 7 (Denali) */
  	{ 0x9005, 0x028d, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 64 }, /* Adaptec PMC Series 8 */
 diff --git a/drivers/scsi/be2iscsi/be_main.c b/drivers/scsi/be2iscsi/be_main.c
-index 310b801c6c87..6fe4affc034f 100644
+index e70f69f791db..dc54f0321fab 100644
 --- a/drivers/scsi/be2iscsi/be_main.c
 +++ b/drivers/scsi/be2iscsi/be_main.c
-@@ -370,11 +370,13 @@ static int beiscsi_eh_device_reset(struct scsi_cmnd *sc)
+@@ -369,11 +369,13 @@ static int beiscsi_eh_device_reset(struct scsi_cmnd *sc)
 
  /*------------------- PCI Driver operations and data ----------------- */
  static const struct pci_device_id beiscsi_pci_id_table[] = {
@@ -1729,10 +1714,10 @@ index 866d118f7931..d7499e1afaae 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 4eab564ea6a0..f2d360667273 100644
+index cedd558f65eb..d2534cd5559f 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -7743,6 +7743,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -7811,6 +7811,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -1740,7 +1725,7 @@ index 4eab564ea6a0..f2d360667273 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -7755,13 +7756,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -7823,13 +7824,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -1954,10 +1939,10 @@ index 5c4c5c0602cb..753b53038690 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 8100bb477d86..f758f2869c02 100644
+index 8a298d820dbc..b71215412e59 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
-@@ -374,6 +374,7 @@ struct module {
+@@ -380,6 +380,7 @@ struct module {
  	struct module_attribute *modinfo_attrs;
  	const char *version;
  	const char *srcversion;
@@ -2349,7 +2334,7 @@ index 24eda04221e9..128837ea1fb2 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 55f9f7738ebb..564553afb251 100644
+index bb0d6e6262b1..90ec1ffc75b1 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1625,7 +1625,7 @@ config AIO
@@ -2428,10 +2413,10 @@ index e343f158e556..840c5ecd4fc6 100644
  	if (err)
  		return err;
 diff --git a/kernel/module.c b/kernel/module.c
-index 64bd61b2d3ad..c1a2a8a29248 100644
+index ed13917ea5f3..88643913f3e4 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -742,6 +742,7 @@ static struct module_attribute modinfo_##field = {                    \
+@@ -743,6 +743,7 @@ static struct module_attribute modinfo_##field = {                    \
 
  MODINFO_ATTR(version);
  MODINFO_ATTR(srcversion);
@@ -2439,7 +2424,7 @@ index 64bd61b2d3ad..c1a2a8a29248 100644
 
  static char last_unloaded_module[MODULE_NAME_LEN+1];
 
-@@ -1205,6 +1206,7 @@ static struct module_attribute *modinfo_attrs[] = {
+@@ -1206,6 +1207,7 @@ static struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
@@ -2637,7 +2622,7 @@ index 995e15480937..588f7e7885cf 100644
  		 count, align);
 
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 3e623ccc020b..3047abc9a507 100644
+index 270a7df898e2..ac41f848b8a2 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -20,6 +20,7 @@
@@ -2648,7 +2633,7 @@ index 3e623ccc020b..3047abc9a507 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static int modversions = 0;
-@@ -2339,6 +2340,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2342,6 +2343,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -2661,7 +2646,7 @@ index 3e623ccc020b..3047abc9a507 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2568,6 +2575,7 @@ int main(int argc, char **argv)
+@@ -2571,6 +2578,7 @@ int main(int argc, char **argv)
  		add_depends(&buf, mod);
  		add_moddevtable(&buf, mod);
  		add_srcversion(&buf, mod);
@@ -2759,19 +2744,6 @@ index 09533cbb7221..d36675494753 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-diff --git a/tools/perf/Makefile.perf b/tools/perf/Makefile.perf
-index c9e0de5b00c1..a1b9be78a1e0 100644
---- a/tools/perf/Makefile.perf
-+++ b/tools/perf/Makefile.perf
-@@ -923,7 +923,7 @@ install-tools: all install-gtk
- 	$(call QUIET_INSTALL, binaries) \
- 		$(INSTALL) -d -m 755 '$(DESTDIR_SQ)$(bindir_SQ)'; \
- 		$(INSTALL) $(OUTPUT)perf '$(DESTDIR_SQ)$(bindir_SQ)'; \
--		$(LN) '$(DESTDIR_SQ)$(bindir_SQ)/perf' '$(DESTDIR_SQ)$(dir_SQ)/trace'; \
-+		$(LN) '$(DESTDIR_SQ)$(bindir_SQ)/perf' '$(DESTDIR_SQ)$(bindir_SQ)/trace'; \
- 		$(INSTALL) -d -m 755 '$(DESTDIR_SQ)$(includedir_SQ)/perf'; \
- 		$(INSTALL) util/perf_dlfilter.h -t '$(DESTDIR_SQ)$(includedir_SQ)/perf'
- ifndef NO_PERF_READ_VDSO32
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
 index f405b20c1e6c..a8e298a22709 100644
 --- a/tools/testing/selftests/bpf/Makefile

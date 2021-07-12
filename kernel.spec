@@ -71,9 +71,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc0.20210709gitf55966571d5e.14
+%global distro_build 0.rc1.16
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc0.20210709gitf55966571d5e.14
+%define pkgrelease 0.rc1.16
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210709gitf55966571d5e.14%{?buildid}%{?dist}
+%define specrelease 0.rc1.16%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -655,7 +655,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13-12377-gf55966571d5e.tar.xz
+Source0: linux-5.14-rc1.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1340,8 +1340,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13-12377-gf55966571d5e -c
-mv linux-5.13-12377-gf55966571d5e linux-%{KVERREL}
+%setup -q -n kernel-5.14-rc1 -c
+mv linux-5.14-rc1 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2922,9 +2922,6 @@ fi
 #
 #
 %changelog
-* Fri Jul 09 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210709gitf55966571d5e.14]
-- Fix the perf trace link location (Justin M. Forbes)
-
 * Fri Jul 09 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc0.20210709gitf55966571d5e.13]
 - redhat/configs: enable KEXEC_SIG which is already enabled in RHEL8 for s390x and x86_64 (Coiby Xu) [1976835]
 
