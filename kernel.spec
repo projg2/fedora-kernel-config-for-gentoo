@@ -116,7 +116,7 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.13
 
-%define rpmversion 5.13.1
+%define rpmversion 5.13.2
 %define stableversion 5.13
 %define pkgrelease 300
 
@@ -646,7 +646,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13.1.tar.xz
+Source0: linux-5.13.2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1315,8 +1315,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13.1 -c
-mv linux-5.13.1 linux-%{KVERREL}
+%setup -q -n kernel-5.13.2 -c
+mv linux-5.13.2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2886,6 +2886,32 @@ fi
 #
 #
 %changelog
+* Wed Jul 14 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.2-0]
+- platform/x86: amd-pmc: Use return code on suspend (Mario Limonciello)
+- ACPI: PM: Only mark EC GPE for wakeup on Intel systems (Mario Limonciello)
+- platform/x86: amd-pmc: Add new acpi id for future PMC controllers (Shyam Sundar S K)
+- platform/x86: amd-pmc: Add support for ACPI ID AMDI0006 (Shyam Sundar S K)
+- amd-pmc: Add support for logging s0ix counters (Shyam Sundar S K)
+- platform/x86: amd-pmc: Add support for logging SMU metrics (Shyam Sundar S K)
+- platform/x86: amd-pmc: call dump registers only once (Shyam Sundar S K)
+- platform/x86: amd-pmc: Fix SMU firmware reporting mechanism (Shyam Sundar S K)
+- platform/x86: amd-pmc: Fix command completion code (Shyam Sundar S K)
+- ACPI: PM: Adjust behavior for field problems on AMD systems (Mario Limonciello)
+- ACPI: PM: s2idle: Add support for new Microsoft UUID (Pratik Vishwakarma)
+- ACPI: PM: s2idle: Add support for multiple func mask (Pratik Vishwakarma)
+- ACPI: PM: s2idle: Refactor common code (Pratik Vishwakarma)
+- ACPI: PM: s2idle: Use correct revision id (Pratik Vishwakarma)
+- ACPI: PM: s2idle: Add missing LPS0 functions for AMD (Alex Deucher)
+- ACPI: Add quirks for AMD Renoir/Lucienne CPUs to force the D3 hint (Mario Limonciello)
+- ACPI: Check StorageD3Enable _DSD property in ACPI code (Mario Limonciello)
+- nvme-pci: look for StorageD3Enable on companion ACPI device instead (Mario Limonciello)
+- ACPI: processor idle: Fix up C-state latency if not ordered (Mario Limonciello)
+- Revert "drm/rockchip: remove existing generic drivers to take over the device" (Justin M. Forbes)
+- all: unify and cleanup i2c TPM2 modules (Peter Robinson)
+- tpm_tis_spi: add missing SPI device ID entries (Javier Martinez Canillas)
+- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
+- arm64: dts: rockchip: disable USB type-c DisplayPort (Jian-Hong Pan)
+
 * Wed Jul 07 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.1-0]
 - Don't build bpftool as part of kernel (Justin M. Forbes)
 - fedora: arm: Enable some i.MX8 options (Peter Robinson)

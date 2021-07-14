@@ -1,3 +1,72 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/21449ddd0db578d5dbf6eebe54e61e8f34254852
+ 21449ddd0db578d5dbf6eebe54e61e8f34254852 platform/x86: amd-pmc: Use return code on suspend
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/4619b73bd9e896fd14ffff3ff6752691ca49178f
+ 4619b73bd9e896fd14ffff3ff6752691ca49178f ACPI: PM: Only mark EC GPE for wakeup on Intel systems
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/f5c0a0b90aa95f4bcd4fabfef12c858ce6cd2838
+ f5c0a0b90aa95f4bcd4fabfef12c858ce6cd2838 platform/x86: amd-pmc: Add new acpi id for future PMC controllers
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/e3161dd5dc44260f7b92bb9ad86feaef5b4bced3
+ e3161dd5dc44260f7b92bb9ad86feaef5b4bced3 platform/x86: amd-pmc: Add support for ACPI ID AMDI0006
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/916af868cb51f5b4beb69bc89e1c7ae5fedcd2c8
+ 916af868cb51f5b4beb69bc89e1c7ae5fedcd2c8 amd-pmc: Add support for logging s0ix counters
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/69469b9d5e3946ebc32641d839a259adfb102bd5
+ 69469b9d5e3946ebc32641d839a259adfb102bd5 platform/x86: amd-pmc: Add support for logging SMU metrics
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/f247ee06dca20a0077f9ba40e45de203244076d1
+ f247ee06dca20a0077f9ba40e45de203244076d1 platform/x86: amd-pmc: call dump registers only once
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/4461aa443d6fdb8fe144e1c833f1f8041b04b4b0
+ 4461aa443d6fdb8fe144e1c833f1f8041b04b4b0 platform/x86: amd-pmc: Fix SMU firmware reporting mechanism
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/ef4982bb5ef41c72037729525325eb7afaaf5a59
+ ef4982bb5ef41c72037729525325eb7afaaf5a59 platform/x86: amd-pmc: Fix command completion code
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/3764cadafee393f09d9c10d5201de82de183183e
+ 3764cadafee393f09d9c10d5201de82de183183e ACPI: PM: Adjust behavior for field problems on AMD systems
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/7ea3b2567dae3b32f62308051094e9cf54bdb8fa
+ 7ea3b2567dae3b32f62308051094e9cf54bdb8fa ACPI: PM: s2idle: Add support for new Microsoft UUID
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/89872477be26440180dd7cc30c7c7cbdfda175db
+ 89872477be26440180dd7cc30c7c7cbdfda175db ACPI: PM: s2idle: Add support for multiple func mask
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/f231bad21add99d33483a17e28fde17b6b66f116
+ f231bad21add99d33483a17e28fde17b6b66f116 ACPI: PM: s2idle: Refactor common code
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/9c6dce4a57b9f141c3b3c0f2a16db0ffc08b0f76
+ 9c6dce4a57b9f141c3b3c0f2a16db0ffc08b0f76 ACPI: PM: s2idle: Use correct revision id
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/639c93bf40a55f2b2a2fd330854db91c00a68215
+ 639c93bf40a55f2b2a2fd330854db91c00a68215 ACPI: PM: s2idle: Add missing LPS0 functions for AMD
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/ce265e8b0015f8283d5a80d5238e83daded344a6
+ ce265e8b0015f8283d5a80d5238e83daded344a6 ACPI: Add quirks for AMD Renoir/Lucienne CPUs to force the D3 hint
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/87350d62d6fd0ec4c73a864f6528cbba973d7bc8
+ 87350d62d6fd0ec4c73a864f6528cbba973d7bc8 ACPI: Check StorageD3Enable _DSD property in ACPI code
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/78f3f35f89ac19ff2f336a0ece7ef3d3ff71ac22
+ 78f3f35f89ac19ff2f336a0ece7ef3d3ff71ac22 nvme-pci: look for StorageD3Enable on companion ACPI device instead
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/0a243d877fd0326498ac0030543d64b390986eb2
+ 0a243d877fd0326498ac0030543d64b390986eb2 ACPI: processor idle: Fix up C-state latency if not ordered
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/e5bd8b07661bdad460ab096bb87095d9318ea119
+ e5bd8b07661bdad460ab096bb87095d9318ea119 Revert "drm/rockchip: remove existing generic drivers to take over the device"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/51ceb5f3efa65385feb712687c5749f9ce8b283c
+ 51ceb5f3efa65385feb712687c5749f9ce8b283c tpm_tis_spi: add missing SPI device ID entries
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/d1b159f0d298977cb2feac785c4274022f5ce960
+ d1b159f0d298977cb2feac785c4274022f5ce960 drm/rockchip: remove existing generic drivers to take over the device
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/4db44a6a812dcde9dc3fe981402019aa4785b5b7
+ 4db44a6a812dcde9dc3fe981402019aa4785b5b7 arm64: dts: rockchip: disable USB type-c DisplayPort
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/9e2ed248fc44ab379a97547ae9dfa1592add81f2
  9e2ed248fc44ab379a97547ae9dfa1592add81f2 can: bcm: delay release of struct bcm_op after synchronize_rcu
 
