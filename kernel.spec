@@ -71,9 +71,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc1.20210714git40226a3d96ef.18
+%global distro_build 0.rc2.23
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +117,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc1.20210714git40226a3d96ef.18
+%define pkgrelease 0.rc2.23
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20210714git40226a3d96ef.18%{?buildid}%{?dist}
+%define specrelease 0.rc2.23%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -655,7 +655,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-rc1-16-g40226a3d96ef.tar.xz
+Source0: linux-5.14-rc2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1340,8 +1340,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-rc1-16-g40226a3d96ef -c
-mv linux-5.14-rc1-16-g40226a3d96ef linux-%{KVERREL}
+%setup -q -n kernel-5.14-rc2 -c
+mv linux-5.14-rc2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2922,6 +2922,16 @@ fi
 #
 #
 %changelog
+* Mon Jul 19 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc1.20210719git1d67c8d993ba.22]
+- Revert "scsi: smartpqi: add inspur advantech ids" (Herton R. Krzesinski)
+- redhat/configs: Enable stmmac NIC for x86_64 (Mark Salter)
+
+* Thu Jul 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc1.20210715git40226a3d96ef.19]
+- all: hyperv: use the DRM driver rather than FB (Peter Robinson)
+- all: hyperv: unify the Microsoft HyperV configs (Peter Robinson)
+- all: VMWare: clean up VMWare configs (Peter Robinson)
+- Update CONFIG_ARM_FFA_TRANSPORT (Patrick Talbert)
+
 * Wed Jul 14 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc1.20210714git40226a3d96ef.18]
 - CI: Handle all mirrors (Veronika Kabatova)
 - Turn on CONFIG_STACKTRACE for s390x zfpcdump kernels (Justin M. Forbes)

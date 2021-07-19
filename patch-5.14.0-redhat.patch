@@ -42,7 +42,6 @@
  drivers/scsi/mpt3sas/mpt3sas_scsih.c               |   4 +
  drivers/scsi/qla2xxx/qla_os.c                      |   6 +
  drivers/scsi/qla4xxx/ql4_os.c                      |   2 +
- drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
  include/linux/efi.h                                |  22 +-
  include/linux/kernel.h                             |  15 +
@@ -82,7 +81,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 84 files changed, 1178 insertions(+), 1492 deletions(-)
+ 83 files changed, 1162 insertions(+), 1492 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index bdb22006f713..61a3a4a4730b 100644
@@ -138,7 +137,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index c3f9bd191b89..e3c43232203c 100644
+index e4f5895badb5..90e631652aaf 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -160,7 +159,7 @@ index c3f9bd191b89..e3c43232203c 100644
  		   -Werror=return-type -Wno-format-security \
  		   -std=gnu89
  KBUILD_CPPFLAGS := -D__KERNEL__
-@@ -1256,7 +1261,13 @@ define filechk_version.h
+@@ -1257,7 +1262,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -176,7 +175,7 @@ index c3f9bd191b89..e3c43232203c 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 3ea1c417339f..a52069686c33 100644
+index 82f908fa5676..6ffefb694a23 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -1480,9 +1480,9 @@ config HIGHMEM
@@ -192,7 +191,7 @@ index 3ea1c417339f..a52069686c33 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index e07e7de9ac49..65aa88fad60d 100644
+index b5b13a932561..37af638217aa 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -914,7 +914,7 @@ endchoice
@@ -1764,40 +1763,6 @@ index 6ee7ea4c27e0..31814931620a 100644
  	{0, 0},
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
-diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
-index dcc0b9618a64..6d1c08b435dc 100644
---- a/drivers/scsi/smartpqi/smartpqi_init.c
-+++ b/drivers/scsi/smartpqi/smartpqi_init.c
-@@ -8807,6 +8807,18 @@ static const struct pci_device_id pqi_pci_id_table[] = {
- 		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
- 			       0x19e5, 0xd22c)
- 	},
-+	{
-+		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
-+			       0x1bd4, 0x004a)
-+	},
-+	{
-+		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
-+			       0x1bd4, 0x004b)
-+	},
-+	{
-+		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
-+			       0x1bd4, 0x004c)
-+	},
- 	{
- 		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
- 			       PCI_VENDOR_ID_ADAPTEC2, 0x0110)
-@@ -9063,6 +9075,10 @@ static const struct pci_device_id pqi_pci_id_table[] = {
- 		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
- 			       PCI_VENDOR_ID_ADVANTECH, 0x8312)
- 	},
-+	{
-+		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
-+			       PCI_VENDOR_ID_ADVANTECH, 0x8312)
-+	},
- 	{
- 		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
- 			       PCI_VENDOR_ID_DELL, 0x1fe0)
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index d1efc7141333..2e2877e0cea4 100644
 --- a/drivers/usb/core/hub.c
@@ -2334,7 +2299,7 @@ index 24eda04221e9..128837ea1fb2 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index bb0d6e6262b1..90ec1ffc75b1 100644
+index 55f9f7738ebb..564553afb251 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1625,7 +1625,7 @@ config AIO

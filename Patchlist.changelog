@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/807dd7c3997fc8ed8936a3d1b2da1d158cd9500b
+ 807dd7c3997fc8ed8936a3d1b2da1d158cd9500b Revert "scsi: smartpqi: add inspur advantech ids"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/c86a777b719e3777a9663a13a739840fb48a20ef
  c86a777b719e3777a9663a13a739840fb48a20ef Revert "kdump: add support for crashkernel=auto"
 
