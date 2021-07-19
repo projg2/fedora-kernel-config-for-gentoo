@@ -65,7 +65,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index f1d0775925cc..f9229000f2df 100644
+index b708d7c665e1..a5597ee8bdac 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -1026,7 +1026,7 @@ index a751553fa0db..dbb981876556 100644
 +obj-$(CONFIG_ARM64) += pcie-tegra194.o
  endif
 diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index 0e94190ca4e8..dfc5d6772e64 100644
+index 8dee6d3f33a7..d1b3dcea4340 100644
 --- a/drivers/pci/controller/dwc/pcie-tegra194.c
 +++ b/drivers/pci/controller/dwc/pcie-tegra194.c
 @@ -22,6 +22,8 @@
@@ -1143,7 +1143,7 @@ index 0e94190ca4e8..dfc5d6772e64 100644
  static inline struct tegra_pcie_dw *to_tegra_pcie(struct dw_pcie *pci)
  {
  	return container_of(pci, struct tegra_pcie_dw, pci);
-@@ -2311,3 +2411,6 @@ MODULE_DEVICE_TABLE(of, tegra_pcie_dw_of_match);
+@@ -2313,3 +2413,6 @@ MODULE_DEVICE_TABLE(of, tegra_pcie_dw_of_match);
  MODULE_AUTHOR("Vidya Sagar <vidyas@nvidia.com>");
  MODULE_DESCRIPTION("NVIDIA PCIe host controller driver");
  MODULE_LICENSE("GPL v2");
@@ -1151,10 +1151,10 @@ index 0e94190ca4e8..dfc5d6772e64 100644
 +#endif /* CONFIG_PCIE_TEGRA194 */
 +
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 7bf76bca888d..804c0bc8bb4d 100644
+index 909343ee7e0a..ffda4be3bd39 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4230,6 +4230,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4241,6 +4241,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
