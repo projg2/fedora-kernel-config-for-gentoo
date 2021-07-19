@@ -106,7 +106,7 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
-%define rpmversion 5.12.17
+%define rpmversion 5.12.18
 %define stableversion 5.12
 %define pkgrelease 300
 
@@ -623,7 +623,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.12.17.tar.xz
+Source0: linux-5.12.18.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1277,8 +1277,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.12.17 -c
-mv linux-5.12.17 linux-%{KVERREL}
+%setup -q -n kernel-5.12.18 -c
+mv linux-5.12.18 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2792,6 +2792,13 @@ fi
 #
 #
 %changelog
+* Mon Jul 19 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.18-300]
+- kernel-5.12.18-0 (Justin M. Forbes)
+- Don't tag a release as [redhat] (Justin M. Forbes)
+
+* Mon Jul 19 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.18-0]
+- Don't tag a release as [redhat] (Justin M. Forbes)
+
 * Wed Jun 30 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.14-0]
 - Add CONFIG_SYSTEM_REVOCATION_LIST backported config option for 5.12.14 (Justin M. Forbes)
 - can: bcm: delay release of struct bcm_op after synchronize_rcu (Thadeu Lima de Souza Cascardo)
