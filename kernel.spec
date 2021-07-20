@@ -116,7 +116,7 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.13
 
-%define rpmversion 5.13.3
+%define rpmversion 5.13.4
 %define stableversion 5.13
 %define pkgrelease 200
 
@@ -646,7 +646,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13.3.tar.xz
+Source0: linux-5.13.4.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1316,8 +1316,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13.3 -c
-mv linux-5.13.3 linux-%{KVERREL}
+%setup -q -n kernel-5.13.4 -c
+mv linux-5.13.4 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2888,7 +2888,16 @@ fi
 #
 #
 %changelog
-* Mon Jul 19 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.3-200]
+* Tue Jul 20 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.4-200]
+- RHEL configs need this too (Justin M. Forbes)
+- kernel-5.13.4-0 (Justin M. Forbes)
+- Config update for 5.13.4 (Justin M. Forbes)
+- kernel-5.13.3-0 (Justin M. Forbes)
+- Don't tag a release as [redhat] (Justin M. Forbes)
+- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
+
+* Tue Jul 20 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.4-0]
+- Config update for 5.13.4 (Justin M. Forbes)
 - kernel-5.13.3-0 (Justin M. Forbes)
 - Don't tag a release as [redhat] (Justin M. Forbes)
 - platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
