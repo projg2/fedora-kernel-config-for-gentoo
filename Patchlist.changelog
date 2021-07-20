@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/ac7528c112c7612679d66ac0e887fdcce8eec7c0
+ ac7528c112c7612679d66ac0e887fdcce8eec7c0 Revert "usb: renesas-xhci: Fix handling of unknown ROM state"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/59fec098b4b0eb9bc766f12c40b85f8fc42cbb1d
  59fec098b4b0eb9bc766f12c40b85f8fc42cbb1d can: bcm: delay release of struct bcm_op after synchronize_rcu
 

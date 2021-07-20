@@ -27,6 +27,7 @@
  drivers/pci/quirks.c                               |  24 ++++
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +++
  drivers/usb/core/hub.c                             |   7 ++
+ drivers/usb/host/xhci-pci-renesas.c                |  16 +--
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -40,7 +41,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  security/selinux/hooks.c                           |   3 +-
- 42 files changed, 621 insertions(+), 178 deletions(-)
+ 43 files changed, 629 insertions(+), 186 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -65,7 +66,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index b708d7c665e1..a5597ee8bdac 100644
+index 9658bc0ba389..1575934b8b04 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -495,6 +495,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -143,7 +144,7 @@ index 7a21eca498aa..565f143c9858 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 382d73da134c..f5b2b127e24d 100644
+index 93538e63fa03..60e4b4275dc4 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -1026,7 +1027,7 @@ index a751553fa0db..dbb981876556 100644
 +obj-$(CONFIG_ARM64) += pcie-tegra194.o
  endif
 diff --git a/drivers/pci/controller/dwc/pcie-tegra194.c b/drivers/pci/controller/dwc/pcie-tegra194.c
-index 8dee6d3f33a7..d1b3dcea4340 100644
+index fb1df066a236..10807662d980 100644
 --- a/drivers/pci/controller/dwc/pcie-tegra194.c
 +++ b/drivers/pci/controller/dwc/pcie-tegra194.c
 @@ -22,6 +22,8 @@
@@ -1237,6 +1238,40 @@ index 6ebb8bd92e9d..bf06d4a8b2ec 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/drivers/usb/host/xhci-pci-renesas.c b/drivers/usb/host/xhci-pci-renesas.c
+index 431213cdf9e0..f97ac9f52bf4 100644
+--- a/drivers/usb/host/xhci-pci-renesas.c
++++ b/drivers/usb/host/xhci-pci-renesas.c
+@@ -207,8 +207,7 @@ static int renesas_check_rom_state(struct pci_dev *pdev)
+ 			return 0;
+
+ 		case RENESAS_ROM_STATUS_NO_RESULT: /* No result yet */
+-			dev_dbg(&pdev->dev, "Unknown ROM status ...\n");
+-			break;
++			return 0;
+
+ 		case RENESAS_ROM_STATUS_ERROR: /* Error State */
+ 		default: /* All other states are marked as "Reserved states" */
+@@ -225,12 +224,13 @@ static int renesas_fw_check_running(struct pci_dev *pdev)
+ 	u8 fw_state;
+ 	int err;
+
+-	/*
+-	 * Only if device has ROM and loaded FW we can skip loading and
+-	 * return success. Otherwise (even unknown state), attempt to load FW.
+-	 */
+-	if (renesas_check_rom(pdev) && !renesas_check_rom_state(pdev))
+-		return 0;
++	/* Check if device has ROM and loaded, if so skip everything */
++	err = renesas_check_rom(pdev);
++	if (err) { /* we have rom */
++		err = renesas_check_rom_state(pdev);
++		if (!err)
++			return err;
++	}
+
+ 	/*
+ 	 * Test if the device is actually needing the firmware. As most
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 6b5d36babfcc..fd4a5d66a9d0 100644
 --- a/include/linux/efi.h
@@ -1336,10 +1371,10 @@ index fb7f3193753d..0f91ae3361e6 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/pci-ecam.h b/include/linux/pci-ecam.h
-index 65d3d83015c3..fbdadd4d8377 100644
+index 944da75ff25c..adea5a4771cf 100644
 --- a/include/linux/pci-ecam.h
 +++ b/include/linux/pci-ecam.h
-@@ -85,6 +85,7 @@ extern const struct pci_ecam_ops pci_thunder_ecam_ops; /* Cavium ThunderX 1.x */
+@@ -86,6 +86,7 @@ extern const struct pci_ecam_ops pci_thunder_ecam_ops; /* Cavium ThunderX 1.x */
  extern const struct pci_ecam_ops xgene_v1_pcie_ecam_ops; /* APM X-Gene PCIe v1 */
  extern const struct pci_ecam_ops xgene_v2_pcie_ecam_ops; /* APM X-Gene PCIe v2.x */
  extern const struct pci_ecam_ops al_pcie_ops;	/* Amazon Annapurna Labs PCIe */
