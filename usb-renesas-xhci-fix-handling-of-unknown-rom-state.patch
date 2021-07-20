@@ -1,0 +1,64 @@
+commit 926bb4ece936dcb83421e55f08eb3055628bca2f
+Author: Moritz Fischer <mdf@kernel.org>
+Date:   Sat Jul 17 15:33:32 2021 -0700
+
+    usb: renesas-xhci: Fix handling of unknown ROM state
+    
+    Justin,
+    
+    On Sat, Jul 17, 2021 at 08:39:19AM -0500, Justin Forbes wrote:
+    > On Mon, Jul 12, 2021 at 2:31 AM Greg Kroah-Hartman
+    > <gregkh@linuxfoundation.org> wrote:
+    > >
+    > > From: Moritz Fischer <mdf@kernel.org>
+    > >
+    > > commit d143825baf15f204dac60acdf95e428182aa3374 upstream.
+    > >
+    > > The ROM load sometimes seems to return an unknown status
+    > > (RENESAS_ROM_STATUS_NO_RESULT) instead of success / fail.
+    > >
+    > > If the ROM load indeed failed this leads to failures when trying to
+    > > communicate with the controller later on.
+    > >
+    > > Attempt to load firmware using RAM load in those cases.
+    > >
+    > > Fixes: 2478be82de44 ("usb: renesas-xhci: Add ROM loader for uPD720201")
+    > > Cc: stable@vger.kernel.org
+    > > Cc: Mathias Nyman <mathias.nyman@intel.com>
+    > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    > > Cc: Vinod Koul <vkoul@kernel.org>
+    > > Tested-by: Vinod Koul <vkoul@kernel.org>
+    > > Reviewed-by: Vinod Koul <vkoul@kernel.org>
+    > > Signed-off-by: Moritz Fischer <mdf@kernel.org>
+    > > Link: https://lore.kernel.org/r/20210615153758.253572-1-mdf@kernel.org
+    > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    > >
+    >
+    > After sending out 5.12.17 for testing, we had a user complain that all
+    > of their USB devices disappeared with the error:
+    >
+    > Jul 15 23:18:53 kernel: xhci_hcd 0000:04:00.0: Direct firmware load
+    > for renesas_usb_fw.mem failed with error -2
+    > Jul 15 23:18:53 kernel: xhci_hcd 0000:04:00.0: request_firmware failed: -2
+    > Jul 15 23:18:53 kernel: xhci_hcd: probe of 0000:04:00.0 failed with error -2
+    
+    This looks like it fails finding the actual firmware file (ENOENT). Any
+    chance you could give this a whirl on top of the original patch?
+
+diff --git a/drivers/usb/host/xhci-pci.c b/drivers/usb/host/xhci-pci.c
+index 18c2bbddf080..cde8f6f1ec5d 100644
+--- a/drivers/usb/host/xhci-pci.c
++++ b/drivers/usb/host/xhci-pci.c
+@@ -379,7 +379,11 @@ static int xhci_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
+ 	driver_data = (struct xhci_driver_data *)id->driver_data;
+ 	if (driver_data && driver_data->quirks & XHCI_RENESAS_FW_QUIRK) {
+ 		retval = renesas_xhci_check_request_fw(dev, id);
+-		if (retval)
++		/*
++		 * If firmware wasn't found there's still a chance this might work without
++		 * loading firmware on some systems, so let's try at least.
++		 */
++		if (retval && retval != -ENOENT)
+ 			return retval;
+ 	}
+
