@@ -13,6 +13,13 @@
 %global toolchain clang
 %endif
 
+# Compile the kernel with LTO (only supported when building with clang).
+%bcond_with clang_lto
+
+%if %{with clang_lto} && %{without toolchain_clang}
+{error:clang_lto requires --with toolchain_clang}
+%endif
+
 # Cross compile on copr for arm
 # See https://bugzilla.redhat.com/1879599
 %if 0%{?_with_cross_arm:1}
@@ -71,9 +78,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc2.23
+%global distro_build 0.rc2.20210721git8cae8cd89f05.24
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -117,13 +124,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc2.23
+%define pkgrelease 0.rc2.20210721git8cae8cd89f05.24
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.23%{?buildid}%{?dist}
+%define specrelease 0.rc2.20210721git8cae8cd89f05.24%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -234,7 +241,11 @@ Summary: The Linux kernel
 %endif
 
 %if %{with toolchain_clang}
-%global make_opts %{make_opts} HOSTCC=clang CC=clang
+%global clang_make_opts HOSTCC=clang CC=clang
+%if %{with clang_lto}
+%global clang_make_opts %{clang_make_opts} LD=ld.lld HOSTLD=ld.lld AR=llvm-ar NM=llvm-nm HOSTAR=llvm-ar HOSTNM=llvm-nm LLVM_IAS=1
+%endif
+%global make_opts %{make_opts} %{clang_make_opts}
 # clang does not support the -fdump-ipa-clones option
 %global with_ipaclones 0
 %endif
@@ -649,13 +660,18 @@ BuildRequires: asciidoc
 BuildRequires: clang
 %endif
 
+%if %{with clang_lto}
+BuildRequires: llvm
+BuildRequires: lld
+%endif
+
 # Because this is the kernel, it's hard to get a single upstream URL
 # to represent the base without needing to do a bunch of patching. This
 # tarball is generated from a src-git tree. If you want to see the
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-rc2.tar.xz
+Source0: linux-5.14-rc2-1-g8cae8cd89f05.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1340,8 +1356,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-rc2 -c
-mv linux-5.14-rc2 linux-%{KVERREL}
+%setup -q -n kernel-5.14-rc2-1-g8cae8cd89f05 -c
+mv linux-5.14-rc2-1-g8cae8cd89f05 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1417,6 +1433,13 @@ do
 done
 %endif
 
+%if %{with clang_lto}
+for i in *aarch64*.config *x86_64*.config; do
+  sed -i 's/# CONFIG_LTO_CLANG_THIN is not set/CONFIG_LTO_CLANG_THIN=y/' $i
+  sed -i 's/CONFIG_LTO_NONE=y/# CONFIG_LTO_NONE is not set/' $i
+done
+%endif
+
 # Add DUP and kpatch certificates to system trusted keys for RHEL
 %if 0%{?rhel}
 %if %{signkernel}%{signmodules}
@@ -1437,6 +1460,11 @@ cp %{SOURCE52} .
 OPTS=""
 %if %{with_configchecks}
 	OPTS="$OPTS -w -n -c"
+%endif
+%if %{with clang_lto}
+for opt in %{clang_make_opts}; do
+  OPTS="$OPTS -m $opt"
+done
 %endif
 ./process_configs.sh $OPTS kernel %{rpmversion}
 
@@ -2922,6 +2950,16 @@ fi
 #
 #
 %changelog
+* Wed Jul 21 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc2.20210721git8cae8cd89f05.24]
+- redhat/configs: Add CONFIG_INTEL_PMT_CRASHLOG (Michael Petlan) [1880486]
+- redhat/configs: Add CONFIG_INTEL_PMT_TELEMETRY (Michael Petlan) [1880486]
+- redhat/configs: Add CONFIG_MFD_INTEL_PMT (Michael Petlan) [1880486]
+- redhat/configs: enable CONFIG_BLK_DEV_ZONED (Ming Lei) [1638087]
+- Add --with clang_lto option to build the kernel with Link Time Optimizations (Tom Stellard)
+- common: disable DVB_AV7110 and associated pieces (Peter Robinson)
+- Fix fedora-only config updates (Don Zickus)
+- Fedor config update for new option (Justin M. Forbes)
+
 * Mon Jul 19 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc1.20210719git1d67c8d993ba.22]
 - Revert "scsi: smartpqi: add inspur advantech ids" (Herton R. Krzesinski)
 - redhat/configs: Enable stmmac NIC for x86_64 (Mark Salter)
