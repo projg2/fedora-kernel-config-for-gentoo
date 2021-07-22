@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc2.20210721git8cae8cd89f05.24
+%global distro_build 0.rc2.20210722git3d5895cd3517.25
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -124,13 +124,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc2.20210721git8cae8cd89f05.24
+%define pkgrelease 0.rc2.20210722git3d5895cd3517.25
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20210721git8cae8cd89f05.24%{?buildid}%{?dist}
+%define specrelease 0.rc2.20210722git3d5895cd3517.25%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -671,7 +671,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-rc2-1-g8cae8cd89f05.tar.xz
+Source0: linux-5.14-rc2-34-g3d5895cd3517.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1356,8 +1356,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-rc2-1-g8cae8cd89f05 -c
-mv linux-5.14-rc2-1-g8cae8cd89f05 linux-%{KVERREL}
+%setup -q -n kernel-5.14-rc2-34-g3d5895cd3517 -c
+mv linux-5.14-rc2-34-g3d5895cd3517 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
