@@ -116,7 +116,7 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.13
 
-%define rpmversion 5.13.4
+%define rpmversion 5.13.5
 %define stableversion 5.13
 %define pkgrelease 200
 
@@ -646,7 +646,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13.4.tar.xz
+Source0: linux-5.13.5.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -801,7 +801,6 @@ Source4001: rpminspect.yaml
 %if !%{nopatches}
 
 Patch1: patch-%{stableversion}-redhat.patch
-Patch2: usb-renesas-xhci-fix-handling-of-unknown-rom-state.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1316,8 +1315,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13.4 -c
-mv linux-5.13.4 linux-%{KVERREL}
+%setup -q -n kernel-5.13.5 -c
+mv linux-5.13.5 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1325,7 +1324,6 @@ cp -a %{SOURCE1} .
 %if !%{nopatches}
 
 ApplyOptionalPatch patch-%{stableversion}-redhat.patch
-ApplyOptionalPatch usb-renesas-xhci-fix-handling-of-unknown-rom-state.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
@@ -2888,7 +2886,20 @@ fi
 #
 #
 %changelog
-* Tue Jul 20 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.4-200]
+* Sun Jul 25 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.5-200]
+- kernel-5.13.5-0 (Justin M. Forbes)
+- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
+- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
+- RHEL configs need this too (Justin M. Forbes)
+- kernel-5.13.4-0 (Justin M. Forbes)
+- Config update for 5.13.4 (Justin M. Forbes)
+- kernel-5.13.3-0 (Justin M. Forbes)
+- Don't tag a release as [redhat] (Justin M. Forbes)
+- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
+
+* Sun Jul 25 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.5-0]
+- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
+- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
 - RHEL configs need this too (Justin M. Forbes)
 - kernel-5.13.4-0 (Justin M. Forbes)
 - Config update for 5.13.4 (Justin M. Forbes)
