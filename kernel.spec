@@ -78,9 +78,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc2.20210723git8baef6386baa.26
+%global distro_build 0.rc3.29
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -124,13 +124,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc2.20210723git8baef6386baa.26
+%define pkgrelease 0.rc3.29
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20210723git8baef6386baa.26%{?buildid}%{?dist}
+%define specrelease 0.rc3.29%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -671,7 +671,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-rc2-169-g8baef6386baa.tar.xz
+Source0: linux-5.14-rc3.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1356,8 +1356,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-rc2-169-g8baef6386baa -c
-mv linux-5.14-rc2-169-g8baef6386baa linux-%{KVERREL}
+%setup -q -n kernel-5.14-rc3 -c
+mv linux-5.14-rc3 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2953,6 +2953,10 @@ fi
 #
 #
 %changelog
+* Sat Jul 24 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc2.20210723git8baef6386baa.27]
+- Build Fedora x86s kernels with bytcr-wm5102 (Marius Hoch)
+- Deleted redhat/configs/fedora/generic/x86/CONFIG_FB_HYPERV (Patrick Lang)
+
 * Fri Jul 23 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc2.20210723git8baef6386baa.26]
 - rpmspec: correct the ghost initramfs attributes (Herton R. Krzesinski) [1977056]
 - rpmspec: amend removal of depmod created files to include modules.builtin.alias.bin (Herton R. Krzesinski) [1977056]

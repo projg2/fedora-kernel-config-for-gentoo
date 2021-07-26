@@ -137,7 +137,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index e4f5895badb5..90e631652aaf 100644
+index 6b555f64df06..b77b78602f8f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -586,7 +586,7 @@ index 467e94259679..9b6f5b8e5397 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 4b7ee3fa9224..64b31d852d20 100644
+index 847f33ffc4ae..363037f8eaf8 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -1298,7 +1298,7 @@ index 75dbe77b0b4b..029ff8576f8e 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 11779be42186..3aeb87c94cfb 100644
+index dfd9dec0c1f6..de735680d279 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -261,6 +261,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1365,7 +1365,7 @@ index 11779be42186..3aeb87c94cfb 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 0ea5298469c3..94538b576977 100644
+index 3f32c5e86bfc..3f95b8d5881f 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
@@ -1401,7 +1401,7 @@ index 0ea5298469c3..94538b576977 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next)
-@@ -789,8 +795,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -796,8 +802,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1412,7 +1412,7 @@ index 0ea5298469c3..94538b576977 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 18ef8dd03a90..5cc86f4ca4be 100644
+index 5cd1fa3b8464..2667c617ae92 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
 @@ -706,6 +706,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
@@ -1423,7 +1423,7 @@ index 18ef8dd03a90..5cc86f4ca4be 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -750,6 +751,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
+@@ -743,6 +744,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1681,10 +1681,10 @@ index ec10b2497310..ab5f0c9f3c68 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index 866d118f7931..d7499e1afaae 100644
+index 8e64a6f14542..f8a28b42e547 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -12475,6 +12475,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
+@@ -12480,6 +12480,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
   * The pci device ids are defined in mpi/mpi2_cnfg.h.
   */
  static const struct pci_device_id mpt3sas_pci_table[] = {
@@ -1692,7 +1692,7 @@ index 866d118f7931..d7499e1afaae 100644
  	/* Spitfire ~ 2004 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2004,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12493,6 +12494,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12498,6 +12499,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2116_2,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -1700,7 +1700,7 @@ index 866d118f7931..d7499e1afaae 100644
  	/* Thunderbolt ~ 2208 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2208_1,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12517,9 +12519,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12522,9 +12524,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SWITCH_MPI_EP_1,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -1764,10 +1764,10 @@ index 6ee7ea4c27e0..31814931620a 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index d1efc7141333..2e2877e0cea4 100644
+index 86658a81d284..5647f4756e97 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5609,6 +5609,13 @@ static void hub_event(struct work_struct *work)
+@@ -5657,6 +5657,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
