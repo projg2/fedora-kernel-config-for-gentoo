@@ -1,7 +1,7 @@
  Documentation/admin-guide/kernel-parameters.txt    |   9 +
  Kconfig                                            |   2 +
  Kconfig.redhat                                     |  17 +
- Makefile                                           |  13 +-
+ Makefile                                           |  12 +-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
  arch/arm64/kernel/acpi.c                           |   4 +
@@ -81,7 +81,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 83 files changed, 1162 insertions(+), 1492 deletions(-)
+ 83 files changed, 1161 insertions(+), 1492 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index bdb22006f713..61a3a4a4730b 100644
@@ -137,7 +137,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 6b555f64df06..b77b78602f8f 100644
+index 6b555f64df06..0a73a38e82b0 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -151,15 +151,7 @@ index 6b555f64df06..b77b78602f8f 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -508,6 +512,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
- KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
- 		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
- 		   -Werror=implicit-function-declaration -Werror=implicit-int \
-+		   -Wno-address-of-packed-member \
- 		   -Werror=return-type -Wno-format-security \
- 		   -std=gnu89
- KBUILD_CPPFLAGS := -D__KERNEL__
-@@ -1257,7 +1262,13 @@ define filechk_version.h
+@@ -1257,7 +1261,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \

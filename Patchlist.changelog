@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/42130f93b60c5e750ed179c98da57046ea298c54
+ 42130f93b60c5e750ed179c98da57046ea298c54 Revert "Drop that for now"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/807dd7c3997fc8ed8936a3d1b2da1d158cd9500b
  807dd7c3997fc8ed8936a3d1b2da1d158cd9500b Revert "scsi: smartpqi: add inspur advantech ids"
 
