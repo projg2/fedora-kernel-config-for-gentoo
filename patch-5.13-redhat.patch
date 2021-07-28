@@ -32,7 +32,6 @@
  drivers/platform/x86/amd-pmc.c                     | 248 +++++++++-
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
- drivers/usb/host/xhci-pci-renesas.c                |  16 +-
  include/linux/acpi.h                               |   5 +
  include/linux/efi.h                                |  22 +-
  include/linux/lsm_hook_defs.h                      |   2 +
@@ -66,7 +65,7 @@
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
  .../selftests/bpf/progs/test_static_linked1.c      |  30 --
  .../selftests/bpf/progs/test_static_linked2.c      |  31 --
- 68 files changed, 917 insertions(+), 2361 deletions(-)
+ 67 files changed, 909 insertions(+), 2353 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -91,7 +90,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index 41be12f806e0..f89aa29cd5c2 100644
+index 96967f895193..dccbf438edf2 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -508,6 +508,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -797,7 +796,7 @@ index 467e94259679..9b6f5b8e5397 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 4b7ee3fa9224..64b31d852d20 100644
+index 847f33ffc4ae..363037f8eaf8 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -1405,10 +1404,10 @@ index d94bd8d732e9..7775395bef6f 100644
  	IWL_DEV_INFO(0x02F0, 0x0074, iwl_ax201_cfg_quz_hr, NULL),
  	IWL_DEV_INFO(0x02F0, 0x6074, iwl_ax201_cfg_quz_hr, NULL),
 diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index 42ad75ff1348..5a72bdf5ad03 100644
+index fb1c5ae0da39..b7cf30213ac2 100644
 --- a/drivers/nvme/host/pci.c
 +++ b/drivers/nvme/host/pci.c
-@@ -2828,32 +2828,6 @@ static unsigned long check_vendor_combination_bug(struct pci_dev *pdev)
+@@ -2830,32 +2830,6 @@ static unsigned long check_vendor_combination_bug(struct pci_dev *pdev)
  	return 0;
  }
 
@@ -1441,7 +1440,7 @@ index 42ad75ff1348..5a72bdf5ad03 100644
  static void nvme_async_probe(void *data, async_cookie_t cookie)
  {
  	struct nvme_dev *dev = data;
-@@ -2903,7 +2877,7 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+@@ -2905,7 +2879,7 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
  	quirks |= check_vendor_combination_bug(pdev);
 
@@ -1917,10 +1916,10 @@ index 5db16509b6e1..5b8b5e3edd39 100644
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_DELL, 0x1fe0)
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index df8e69e60aaf..fb851c5130e1 100644
+index 4e123336e410..22d98f536d90 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5587,6 +5587,13 @@ static void hub_event(struct work_struct *work)
+@@ -5635,6 +5635,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
@@ -1934,40 +1933,6 @@ index df8e69e60aaf..fb851c5130e1 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/drivers/usb/host/xhci-pci-renesas.c b/drivers/usb/host/xhci-pci-renesas.c
-index 431213cdf9e0..f97ac9f52bf4 100644
---- a/drivers/usb/host/xhci-pci-renesas.c
-+++ b/drivers/usb/host/xhci-pci-renesas.c
-@@ -207,8 +207,7 @@ static int renesas_check_rom_state(struct pci_dev *pdev)
- 			return 0;
-
- 		case RENESAS_ROM_STATUS_NO_RESULT: /* No result yet */
--			dev_dbg(&pdev->dev, "Unknown ROM status ...\n");
--			break;
-+			return 0;
-
- 		case RENESAS_ROM_STATUS_ERROR: /* Error State */
- 		default: /* All other states are marked as "Reserved states" */
-@@ -225,12 +224,13 @@ static int renesas_fw_check_running(struct pci_dev *pdev)
- 	u8 fw_state;
- 	int err;
-
--	/*
--	 * Only if device has ROM and loaded FW we can skip loading and
--	 * return success. Otherwise (even unknown state), attempt to load FW.
--	 */
--	if (renesas_check_rom(pdev) && !renesas_check_rom_state(pdev))
--		return 0;
-+	/* Check if device has ROM and loaded, if so skip everything */
-+	err = renesas_check_rom(pdev);
-+	if (err) { /* we have rom */
-+		err = renesas_check_rom_state(pdev);
-+		if (!err)
-+			return err;
-+	}
-
- 	/*
- 	 * Test if the device is actually needing the firmware. As most
 diff --git a/include/linux/acpi.h b/include/linux/acpi.h
 index c60745f657e9..dd0dafd21e33 100644
 --- a/include/linux/acpi.h
