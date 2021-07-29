@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc3.20210728git7d549995d4e0.31
+%global distro_build 0.rc3.20210728git4010a528219e.32
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -124,13 +124,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc3.20210728git7d549995d4e0.31
+%define pkgrelease 0.rc3.20210728git4010a528219e.32
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20210728git7d549995d4e0.31%{?buildid}%{?dist}
+%define specrelease 0.rc3.20210728git4010a528219e.32%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -671,7 +671,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-rc3-14-g7d549995d4e0.tar.xz
+Source0: linux-5.14-rc3-38-g4010a528219e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1356,8 +1356,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-rc3-14-g7d549995d4e0 -c
-mv linux-5.14-rc3-14-g7d549995d4e0 linux-%{KVERREL}
+%setup -q -n kernel-5.14-rc3-38-g4010a528219e -c
+mv linux-5.14-rc3-38-g4010a528219e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2951,8 +2951,9 @@ fi
 #
 #
 %changelog
-* Wed Jul 28 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.0-0.rc3.20210728git7d549995d4e0.31]
-- kernel-5.14.0-0.rc3.20210728git7d549995d4e0.31 (Fedora Kernel Team)
+* Thu Jul 29 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.0-0.rc3.20210728git4010a528219e.32]
+- kernel-5.14.0-0.rc3.20210728git4010a528219e.32 (Fedora Kernel Team)
+- kernel-5.14.0-0.rc3.20210728git4010a528219e.31 (Fedora Kernel Team)
 - kernel-5.14.0-0.rc3.20210728git7d549995d4e0.30 (Fedora Kernel Team)
 - Don't tag a release as [redhat] (Justin M. Forbes)
 - Revert "Drop that for now" (Herton R. Krzesinski)
@@ -2970,7 +2971,26 @@ fi
 - redhat/configs: Double MAX_LOCKDEP_ENTRIES (Waiman Long) [1940075]
 - rpmspec: fix verbose output on kernel-devel installation (Herton R. Krzesinski) [1981406]
 
-* Wed Jul 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc3.20210728git7d549995d4e0.31]
+* Wed Jul 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc3.20210728git4010a528219e.32]
+- kernel-5.14.0-0.rc3.20210728git4010a528219e.31 (Fedora Kernel Team)
+- kernel-5.14.0-0.rc3.20210728git7d549995d4e0.30 (Fedora Kernel Team)
+- Don't tag a release as [redhat] (Justin M. Forbes)
+- Revert "Drop that for now" (Herton R. Krzesinski)
+- rpmspec: switch iio and gpio tools to use tools_make (Herton R. Krzesinski) [1956988]
+- configs/process_configs.sh: Handle config items with no help text (Patrick Talbert)
+- fedora: sound config updates for 5.14 (Peter Robinson)
+- fedora: Only enable FSI drivers on POWER platform (Peter Robinson)
+- The CONFIG_RAW_DRIVER has been removed from upstream (Peter Robinson)
+- fedora: updates for 5.14 with a few disables for common from pending (Peter Robinson)
+- fedora: migrate from MFD_TPS68470 -> INTEL_SKL_INT3472 (Peter Robinson)
+- fedora: Remove STAGING_GASKET_FRAMEWORK (Peter Robinson)
+- Fedora: move DRM_VMWGFX configs from ark -> common (Peter Robinson)
+- fedora: arm: disabled unused FB drivers (Peter Robinson)
+- fedora: don't enable FB_VIRTUAL (Peter Robinson)
+- redhat/configs: Double MAX_LOCKDEP_ENTRIES (Waiman Long) [1940075]
+- rpmspec: fix verbose output on kernel-devel installation (Herton R. Krzesinski) [1981406]
+
+* Wed Jul 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc3.20210728git4010a528219e.31]
 - kernel-5.14.0-0.rc3.20210728git7d549995d4e0.30 (Fedora Kernel Team)
 - Don't tag a release as [redhat] (Justin M. Forbes)
 - Revert "Drop that for now" (Herton R. Krzesinski)
