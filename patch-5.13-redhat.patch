@@ -90,7 +90,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index 96967f895193..dccbf438edf2 100644
+index 614327400aea..15c6acda836e 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -508,6 +508,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -1404,10 +1404,10 @@ index d94bd8d732e9..7775395bef6f 100644
  	IWL_DEV_INFO(0x02F0, 0x0074, iwl_ax201_cfg_quz_hr, NULL),
  	IWL_DEV_INFO(0x02F0, 0x6074, iwl_ax201_cfg_quz_hr, NULL),
 diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index fb1c5ae0da39..b7cf30213ac2 100644
+index d963f25fc7ae..66455e2261d0 100644
 --- a/drivers/nvme/host/pci.c
 +++ b/drivers/nvme/host/pci.c
-@@ -2830,32 +2830,6 @@ static unsigned long check_vendor_combination_bug(struct pci_dev *pdev)
+@@ -2880,32 +2880,6 @@ static unsigned long check_vendor_combination_bug(struct pci_dev *pdev)
  	return 0;
  }
 
@@ -1440,7 +1440,7 @@ index fb1c5ae0da39..b7cf30213ac2 100644
  static void nvme_async_probe(void *data, async_cookie_t cookie)
  {
  	struct nvme_dev *dev = data;
-@@ -2905,7 +2879,7 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+@@ -2955,7 +2929,7 @@ static int nvme_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
  	quirks |= check_vendor_combination_bug(pdev);
 
