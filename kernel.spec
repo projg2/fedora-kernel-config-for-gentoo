@@ -116,7 +116,7 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.13
 
-%define rpmversion 5.13.6
+%define rpmversion 5.13.7
 %define stableversion 5.13
 %define pkgrelease 100
 
@@ -646,7 +646,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13.6.tar.xz
+Source0: linux-5.13.7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1315,8 +1315,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13.6 -c
-mv linux-5.13.6 linux-%{KVERREL}
+%setup -q -n kernel-5.13.7 -c
+mv linux-5.13.7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2886,7 +2886,20 @@ fi
 #
 #
 %changelog
-* Wed Jul 28 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.6-100]
+* Sat Jul 31 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.7-100]
+- kernel-5.13.7-0 (Justin M. Forbes)
+- kernel-5.13.6-0 (Justin M. Forbes)
+- kernel-5.13.5-0 (Justin M. Forbes)
+- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
+- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
+- RHEL configs need this too (Justin M. Forbes)
+- kernel-5.13.4-0 (Justin M. Forbes)
+- Config update for 5.13.4 (Justin M. Forbes)
+- kernel-5.13.3-0 (Justin M. Forbes)
+- Don't tag a release as [redhat] (Justin M. Forbes)
+- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
+
+* Sat Jul 31 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.7-0]
 - kernel-5.13.6-0 (Justin M. Forbes)
 - kernel-5.13.5-0 (Justin M. Forbes)
 - iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
