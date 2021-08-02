@@ -55,7 +55,7 @@
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
  kernel/Makefile                                    |   1 +
- kernel/bpf/syscall.c                               |  24 +
+ kernel/bpf/syscall.c                               |  18 +
  kernel/module.c                                    |   2 +
  kernel/module_signing.c                            |   9 +-
  kernel/panic.c                                     |  14 +
@@ -81,7 +81,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 83 files changed, 1161 insertions(+), 1492 deletions(-)
+ 83 files changed, 1155 insertions(+), 1492 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index bdb22006f713..61a3a4a4730b 100644
@@ -137,7 +137,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 6b555f64df06..0a73a38e82b0 100644
+index 27a072cffcb9..1aee287a8f9c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -167,10 +167,10 @@ index 6b555f64df06..0a73a38e82b0 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 82f908fa5676..6ffefb694a23 100644
+index 2fb7012c3246..47718b4f2f75 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1480,9 +1480,9 @@ config HIGHMEM
+@@ -1474,9 +1474,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -2316,7 +2316,7 @@ index 4df609be42d0..4ef0c0f6a8f4 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index e343f158e556..840c5ecd4fc6 100644
+index e343f158e556..b2c979f9b80e 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
@@ -2351,24 +2351,6 @@ index e343f158e556..840c5ecd4fc6 100644
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
-@@ -4427,11 +4445,17 @@ static int bpf_prog_bind_map(union bpf_attr *attr)
- static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
- {
- 	union bpf_attr attr;
-+	static int marked;
- 	int err;
-
- 	if (sysctl_unprivileged_bpf_disabled && !bpf_capable())
- 		return -EPERM;
-
-+	if (!marked) {
-+		mark_tech_preview("eBPF syscall", NULL);
-+		marked = true;
-+	}
-+
- 	err = bpf_check_uarg_tail_zero(uattr, sizeof(attr), size);
- 	if (err)
- 		return err;
 diff --git a/kernel/module.c b/kernel/module.c
 index ed13917ea5f3..88643913f3e4 100644
 --- a/kernel/module.c
