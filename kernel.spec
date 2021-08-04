@@ -78,9 +78,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc4.36
+%global distro_build 0.rc4.20210804gitd5ad8ec3cfb5.36
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -124,13 +124,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc4.36
+%define pkgrelease 0.rc4.20210804gitd5ad8ec3cfb5.36
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.36%{?buildid}%{?dist}
+%define specrelease 0.rc4.20210804gitd5ad8ec3cfb5.36%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -671,7 +671,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-rc4.tar.xz
+Source0: linux-5.14-rc4-11-gd5ad8ec3cfb5.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -821,6 +821,7 @@ Source3003: Patchlist.changelog
 
 Source4000: README.rst
 Source4001: rpminspect.yaml
+Source4002: gating.yaml
 
 ## Patches needed for building this package
 
@@ -1356,8 +1357,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-rc4 -c
-mv linux-5.14-rc4 linux-%{KVERREL}
+%setup -q -n kernel-5.14-rc4-11-gd5ad8ec3cfb5 -c
+mv linux-5.14-rc4-11-gd5ad8ec3cfb5 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2951,36 +2952,10 @@ fi
 #
 #
 %changelog
-* Mon Aug 02 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.0-0.rc4.36]
-- kernel-5.14.0-0.rc4.36 (Fedora Kernel Team)
-- kernel-5.14.0-0.rc4.35 (Fedora Kernel Team)
-- kernel-5.14.0-0.rc3.20210801gitf3438b4c4e69.34 (Fedora Kernel Team)
-- kernel-5.14.0-0.rc3.20210731gitc7d102232649.33 (Fedora Kernel Team)
-- x86: configs: Enable CONFIG_TEST_FPU for debug kernels (Vitaly Kuznetsov) [1988384]
-- kernel-5.14.0-0.rc3.20210730git764a5bc89b12.32 (Fedora Kernel Team)
-- redhat/configs: Move CHACHA and POLY1305 to core kernel to allow BIG_KEYS=y (root) [1983298]
-- Revert "bpf: Add tech preview taint for syscall" (Jiri Olsa) [1978833]
-- kernel.spec: fix build of samples/bpf (Jiri Benc)
-- Enable OSNOISE_TRACER and TIMERLAT_TRACER (Jerome Marchand) [1979379]
-- kernel-5.14.0-0.rc3.20210728git4010a528219e.31 (Fedora Kernel Team)
-- kernel-5.14.0-0.rc3.20210728git7d549995d4e0.30 (Fedora Kernel Team)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- Revert "Drop that for now" (Herton R. Krzesinski)
-- rpmspec: switch iio and gpio tools to use tools_make (Herton R. Krzesinski) [1956988]
-- configs/process_configs.sh: Handle config items with no help text (Patrick Talbert)
-- fedora: sound config updates for 5.14 (Peter Robinson)
-- fedora: Only enable FSI drivers on POWER platform (Peter Robinson)
-- The CONFIG_RAW_DRIVER has been removed from upstream (Peter Robinson)
-- fedora: updates for 5.14 with a few disables for common from pending (Peter Robinson)
-- fedora: migrate from MFD_TPS68470 -> INTEL_SKL_INT3472 (Peter Robinson)
-- fedora: Remove STAGING_GASKET_FRAMEWORK (Peter Robinson)
-- Fedora: move DRM_VMWGFX configs from ark -> common (Peter Robinson)
-- fedora: arm: disabled unused FB drivers (Peter Robinson)
-- fedora: don't enable FB_VIRTUAL (Peter Robinson)
-- redhat/configs: Double MAX_LOCKDEP_ENTRIES (Waiman Long) [1940075]
-- rpmspec: fix verbose output on kernel-devel installation (Herton R. Krzesinski) [1981406]
-
-* Mon Aug 02 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc4.36]
+* Wed Aug 04 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc4.20210804gitd5ad8ec3cfb5.36]
+- Revert "Merge branch 'releasefix' into 'os-build'" (Justin M. Forbes)
+- Fedora 5.14 configs round 1 (Justin M. Forbes)
+- redhat: add gating configuration for centos stream/rhel9 (Herton R. Krzesinski)
 - kernel-5.14.0-0.rc4.35 (Fedora Kernel Team)
 - kernel-5.14.0-0.rc3.20210801gitf3438b4c4e69.34 (Fedora Kernel Team)
 - kernel-5.14.0-0.rc3.20210731gitc7d102232649.33 (Fedora Kernel Team)
