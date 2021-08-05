@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc4.20210804gitd5ad8ec3cfb5.36
+%global distro_build 0.rc4.20210805git251a1524293d.37
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -124,13 +124,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc4.20210804gitd5ad8ec3cfb5.36
+%define pkgrelease 0.rc4.20210805git251a1524293d.37
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20210804gitd5ad8ec3cfb5.36%{?buildid}%{?dist}
+%define specrelease 0.rc4.20210805git251a1524293d.37%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -671,7 +671,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-rc4-11-gd5ad8ec3cfb5.tar.xz
+Source0: linux-5.14-rc4-22-g251a1524293d.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1357,8 +1357,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-rc4-11-gd5ad8ec3cfb5 -c
-mv linux-5.14-rc4-11-gd5ad8ec3cfb5 linux-%{KVERREL}
+%setup -q -n kernel-5.14-rc4-22-g251a1524293d -c
+mv linux-5.14-rc4-22-g251a1524293d linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2952,6 +2952,12 @@ fi
 #
 #
 %changelog
+* Thu Aug 05 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc4.20210805git251a1524293d.37]
+- common: Update for CXL (Compute Express Link) configs (Peter Robinson)
+- redhat: configs: disable CRYPTO_SM modules (Herton R. Krzesinski) [1990040]
+- Remove fedora version of the LOCKDEP_BITS, we should use common (Justin M. Forbes)
+- Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
+
 * Wed Aug 04 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc4.20210804gitd5ad8ec3cfb5.36]
 - Revert "Merge branch 'releasefix' into 'os-build'" (Justin M. Forbes)
 - Fedora 5.14 configs round 1 (Justin M. Forbes)
