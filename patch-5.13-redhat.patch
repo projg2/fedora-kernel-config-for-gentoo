@@ -21,6 +21,7 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
+ drivers/gpu/drm/i915/display/intel_dp.c            |  12 +-
  drivers/gpu/drm/rockchip/rockchip_drm_drv.c        |  11 +
  drivers/hid/hid-rmi.c                              |  64 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
@@ -30,6 +31,7 @@
  drivers/net/wireless/intel/iwlwifi/pcie/drv.c      |   1 +
  drivers/nvme/host/pci.c                            |  28 +-
  drivers/pci/quirks.c                               |  24 +
+ drivers/pinctrl/intel/pinctrl-tigerlake.c          |  26 +-
  drivers/platform/x86/amd-pmc.c                     | 204 +++++++-
  drivers/scsi/smartpqi/smartpqi_init.c              |  16 +
  drivers/usb/core/hub.c                             |   7 +
@@ -66,7 +68,7 @@
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
  .../selftests/bpf/progs/test_static_linked1.c      |  30 --
  .../selftests/bpf/progs/test_static_linked2.c      |  31 --
- 68 files changed, 887 insertions(+), 2342 deletions(-)
+ 70 files changed, 907 insertions(+), 2360 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -91,7 +93,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index fdb4e2fd9d8f..d8efc35bad77 100644
+index 9d810e13a83f..bbf84537d849 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -508,6 +508,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -985,6 +987,32 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
+index 005510f309cf..bf00ad214b49 100644
+--- a/drivers/gpu/drm/i915/display/intel_dp.c
++++ b/drivers/gpu/drm/i915/display/intel_dp.c
+@@ -1318,14 +1318,16 @@ intel_dp_compute_link_config(struct intel_encoder *encoder,
+ 	limits.min_bpp = intel_dp_min_bpp(pipe_config->output_format);
+ 	limits.max_bpp = intel_dp_max_bpp(intel_dp, pipe_config);
+
+-	if (intel_dp->use_max_params) {
++	if (intel_dp->use_max_params ||
++	    intel_dp->dpcd[DP_DPCD_REV] <= DP_DPCD_REV_11) {
+ 		/*
+ 		 * Use the maximum clock and number of lanes the eDP panel
+ 		 * advertizes being capable of in case the initial fast
+-		 * optimal params failed us. The panels are generally
+-		 * designed to support only a single clock and lane
+-		 * configuration, and typically on older panels these
+-		 * values correspond to the native resolution of the panel.
++		 * optimal params failed us or the panel is DP 1.1 or earlier.
++		 * The panels are generally designed to support only a single
++		 * clock and lane configuration, and typically on older panels
++		 * these values correspond to the native resolution of the
++		 * panel.
+ 		 */
+ 		limits.min_lane_count = limits.max_lane_count;
+ 		limits.min_clock = limits.max_clock;
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
 index 212bd87c0c4a..b8b066938e48 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
@@ -1507,6 +1535,56 @@ index 6d74386eadc2..2333c1e4ae05 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/pinctrl/intel/pinctrl-tigerlake.c b/drivers/pinctrl/intel/pinctrl-tigerlake.c
+index 75b6d66955bf..3ddaeffc0415 100644
+--- a/drivers/pinctrl/intel/pinctrl-tigerlake.c
++++ b/drivers/pinctrl/intel/pinctrl-tigerlake.c
+@@ -701,32 +701,32 @@ static const struct pinctrl_pin_desc tglh_pins[] = {
+
+ static const struct intel_padgroup tglh_community0_gpps[] = {
+ 	TGL_GPP(0, 0, 24, 0),				/* GPP_A */
+-	TGL_GPP(1, 25, 44, 128),			/* GPP_R */
+-	TGL_GPP(2, 45, 70, 32),				/* GPP_B */
+-	TGL_GPP(3, 71, 78, INTEL_GPIO_BASE_NOMAP),	/* vGPIO_0 */
++	TGL_GPP(1, 25, 44, 32),				/* GPP_R */
++	TGL_GPP(2, 45, 70, 64),				/* GPP_B */
++	TGL_GPP(3, 71, 78, 96),				/* vGPIO_0 */
+ };
+
+ static const struct intel_padgroup tglh_community1_gpps[] = {
+-	TGL_GPP(0, 79, 104, 96),			/* GPP_D */
+-	TGL_GPP(1, 105, 128, 64),			/* GPP_C */
+-	TGL_GPP(2, 129, 136, 160),			/* GPP_S */
+-	TGL_GPP(3, 137, 153, 192),			/* GPP_G */
+-	TGL_GPP(4, 154, 180, 224),			/* vGPIO */
++	TGL_GPP(0, 79, 104, 128),			/* GPP_D */
++	TGL_GPP(1, 105, 128, 160),			/* GPP_C */
++	TGL_GPP(2, 129, 136, 192),			/* GPP_S */
++	TGL_GPP(3, 137, 153, 224),			/* GPP_G */
++	TGL_GPP(4, 154, 180, 256),			/* vGPIO */
+ };
+
+ static const struct intel_padgroup tglh_community3_gpps[] = {
+-	TGL_GPP(0, 181, 193, 256),			/* GPP_E */
+-	TGL_GPP(1, 194, 217, 288),			/* GPP_F */
++	TGL_GPP(0, 181, 193, 288),			/* GPP_E */
++	TGL_GPP(1, 194, 217, 320),			/* GPP_F */
+ };
+
+ static const struct intel_padgroup tglh_community4_gpps[] = {
+-	TGL_GPP(0, 218, 241, 320),			/* GPP_H */
++	TGL_GPP(0, 218, 241, 352),			/* GPP_H */
+ 	TGL_GPP(1, 242, 251, 384),			/* GPP_J */
+-	TGL_GPP(2, 252, 266, 352),			/* GPP_K */
++	TGL_GPP(2, 252, 266, 416),			/* GPP_K */
+ };
+
+ static const struct intel_padgroup tglh_community5_gpps[] = {
+-	TGL_GPP(0, 267, 281, 416),			/* GPP_I */
++	TGL_GPP(0, 267, 281, 448),			/* GPP_I */
+ 	TGL_GPP(1, 282, 290, INTEL_GPIO_BASE_NOMAP),	/* JTAG */
+ };
+
 diff --git a/drivers/platform/x86/amd-pmc.c b/drivers/platform/x86/amd-pmc.c
 index ca95c2a52e26..e38e8288468f 100644
 --- a/drivers/platform/x86/amd-pmc.c
