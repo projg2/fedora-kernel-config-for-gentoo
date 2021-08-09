@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/c9d32e7b2e03eacf36f7a05ad68ca92dada6fd1f
+ c9d32e7b2e03eacf36f7a05ad68ca92dada6fd1f pinctrl: tigerlake: Fix GPIO mapping for newer version of software
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/42130f93b60c5e750ed179c98da57046ea298c54
  42130f93b60c5e750ed179c98da57046ea298c54 Revert "Drop that for now"
 
