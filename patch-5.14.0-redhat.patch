@@ -26,7 +26,6 @@
  drivers/iommu/iommu.c                              |  22 +
  drivers/message/fusion/mptsas.c                    |  10 +
  drivers/message/fusion/mptspi.c                    |  11 +
- drivers/net/ethernet/intel/ice/ice_main.c          |   1 +
  drivers/net/team/team.c                            |   2 +
  drivers/net/wireguard/main.c                       |   7 +
  drivers/nvme/host/core.c                           |  22 +-
@@ -82,7 +81,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 84 files changed, 1168 insertions(+), 1505 deletions(-)
+ 83 files changed, 1167 insertions(+), 1505 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index bdb22006f713..61a3a4a4730b 100644
@@ -1233,18 +1232,6 @@ index af0ce5611e4a..1c226920c12d 100644
  	return 0;
 
  out_mptspi_probe:
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index ef8d1815af56..702abf98c068 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5063,6 +5063,7 @@ static int __init ice_module_init(void)
-
- 	pr_info("%s\n", ice_driver_string);
- 	pr_info("%s\n", ice_copyright);
-+	mark_tech_preview(DRV_SUMMARY, THIS_MODULE);
-
- 	ice_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, KBUILD_MODNAME);
- 	if (!ice_wq) {
 diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
 index dd7917cab2b1..f6b43adb2ced 100644
 --- a/drivers/net/team/team.c
