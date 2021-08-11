@@ -1,5 +1,5 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/98b8c823dd9a61ee01ddba1669a2809cd6725935
- 98b8c823dd9a61ee01ddba1669a2809cd6725935 pinctrl: tigerlake: Fix GPIO mapping for newer version of software
+https://gitlab.com/cki-project/kernel-ark/-/commit/989076bf390c0354bc3334037539bc0ae3c5133d
+ 989076bf390c0354bc3334037539bc0ae3c5133d pinctrl: tigerlake: Fix GPIO mapping for newer version of software
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/a34f0f1fdb553a2d11a5220c9e417e3d9d96ee43
  a34f0f1fdb553a2d11a5220c9e417e3d9d96ee43 Revert "ice: mark driver as tech-preview"
