@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/478ca6c098cab88b5eaef871822b6a8ab7414235
+ 478ca6c098cab88b5eaef871822b6a8ab7414235 bpf: Fix integer overflow involving bucket_size
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/53c4c6b56f335cb97de78ede2e2f65c5ff90df2c
  53c4c6b56f335cb97de78ede2e2f65c5ff90df2c Fix up backport of Dell XPS 9710 quirk
 
