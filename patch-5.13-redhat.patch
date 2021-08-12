@@ -42,6 +42,7 @@
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
+ kernel/bpf/hashtab.c                               |   4 +-
  kernel/crash_core.c                                |  28 +-
  kernel/module_signing.c                            |   9 +-
  security/integrity/platform_certs/load_uefi.c      |   6 +-
@@ -73,7 +74,7 @@
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
  .../selftests/bpf/progs/test_static_linked1.c      |  30 --
  .../selftests/bpf/progs/test_static_linked2.c      |  31 --
- 75 files changed, 955 insertions(+), 2364 deletions(-)
+ 76 files changed, 957 insertions(+), 2366 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -2160,6 +2161,21 @@ index a61c92066c2e..94107b1d0e3e 100644
  	select IO_WQ
  	default y
  	help
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index d7ebb12ffffc..49857e8cd6ce 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -1464,8 +1464,8 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *map,
+ 	/* We cannot do copy_from_user or copy_to_user inside
+ 	 * the rcu_read_lock. Allocate enough space here.
+ 	 */
+-	keys = kvmalloc(key_size * bucket_size, GFP_USER | __GFP_NOWARN);
+-	values = kvmalloc(value_size * bucket_size, GFP_USER | __GFP_NOWARN);
++	keys = kvmalloc_array(key_size, bucket_size, GFP_USER | __GFP_NOWARN);
++	values = kvmalloc_array(value_size, bucket_size, GFP_USER | __GFP_NOWARN);
+ 	if (!keys || !values) {
+ 		ret = -ENOMEM;
+ 		goto after_loop;
 diff --git a/kernel/crash_core.c b/kernel/crash_core.c
 index 684a6061a13a..220579c0e963 100644
 --- a/kernel/crash_core.c

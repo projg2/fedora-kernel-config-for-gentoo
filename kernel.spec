@@ -2887,6 +2887,7 @@ fi
 #
 %changelog
 * Thu Aug 12 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.10-100]
+- bpf: Fix integer overflow involving bucket_size (Tatsuhiko Yasumatsu)
 - kernel-5.13.10-0 (Justin M. Forbes)
 - Fix up backport of Dell XPS 9710 quirk (Justin M. Forbes)
 - ASoC: Intel: sof_sdw_max98373: remove useless inits (Pierre-Louis Bossart)
