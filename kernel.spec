@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc5.20210811git761c6d7ec820.44
+%global distro_build 0.rc5.20210813gitf8e6dfc64f61.46
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -124,13 +124,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc5.20210811git761c6d7ec820.44
+%define pkgrelease 0.rc5.20210813gitf8e6dfc64f61.46
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20210811git761c6d7ec820.44%{?buildid}%{?dist}
+%define specrelease 0.rc5.20210813gitf8e6dfc64f61.46%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -671,7 +671,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-rc5-17-g761c6d7ec820.tar.xz
+Source0: linux-5.14-rc5-184-gf8e6dfc64f61.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1357,8 +1357,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-rc5-17-g761c6d7ec820 -c
-mv linux-5.14-rc5-17-g761c6d7ec820 linux-%{KVERREL}
+%setup -q -n kernel-5.14-rc5-184-gf8e6dfc64f61 -c
+mv linux-5.14-rc5-184-gf8e6dfc64f61 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2647,7 +2647,7 @@ then\
     %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
 fi\
 %endif\
-/bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
+/bin/kernel-install add -v %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
 #
@@ -2952,11 +2952,11 @@ fi
 #
 #
 %changelog
-* Wed Aug 11 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.0-0.rc5.20210811git761c6d7ec820.44]
-- update filters for Fedora (Justin M. Forbes)
-
-* Wed Aug 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc5.20210811git761c6d7ec820.44]
+* Fri Aug 13 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc5.20210813gitf8e6dfc64f61.46]
 - pinctrl: tigerlake: Fix GPIO mapping for newer version of software (Andy Shevchenko)
+
+* Fri Aug 13 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc5.20210813gitf8e6dfc64f61.45]
+- update filters for Fedora (Justin M. Forbes)
 
 * Tue Aug 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc5.20210810git9a73fa375d58.42]
 - redhat/configs/evaluate_configs: Update help output (Prarit Bhargava)
