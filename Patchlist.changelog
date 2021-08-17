@@ -1,3 +1,9 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/8313ae8cdf9823adfd53b643de2385fad6deccc5
+ 8313ae8cdf9823adfd53b643de2385fad6deccc5 crypto: rng - Override drivers/char/random in FIPS mode
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/77f4d04971afd67990d04174c971a74bd2bd1fc9
+ 77f4d04971afd67990d04174c971a74bd2bd1fc9 random: Add hook to override device reads and getrandom(2)
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/a34f0f1fdb553a2d11a5220c9e417e3d9d96ee43
  a34f0f1fdb553a2d11a5220c9e417e3d9d96ee43 Revert "ice: mark driver as tech-preview"
 
