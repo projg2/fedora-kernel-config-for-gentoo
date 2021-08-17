@@ -99,7 +99,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index 4e9f877f513f..6123e12d63e2 100644
+index eaf1df54ad12..96c289777a99 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -508,6 +508,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -2126,10 +2126,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 06f7c50ce77f..09ed686ac5e6 100644
+index 0acd1b68bf30..a02717d46d6d 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -471,6 +471,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -472,6 +472,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2137,7 +2137,7 @@ index 06f7c50ce77f..09ed686ac5e6 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1347,6 +1348,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1348,6 +1349,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2323,10 +2323,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index b38155b2de83..b0a6711b4825 100644
+index 0d626c0dafcc..61696b1f5d3f 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2598,6 +2598,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2599,6 +2599,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
