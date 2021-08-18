@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc6.20210817git794c7931a242.47
+%global distro_build 0.rc6.20210818git614cb2751d31.48
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -124,13 +124,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc6.20210817git794c7931a242.47
+%define pkgrelease 0.rc6.20210818git614cb2751d31.48
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20210817git794c7931a242.47%{?buildid}%{?dist}
+%define specrelease 0.rc6.20210818git614cb2751d31.48%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -671,7 +671,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-rc6-41-g794c7931a242.tar.xz
+Source0: linux-5.14-rc6-43-g614cb2751d31.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1357,8 +1357,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-rc6-41-g794c7931a242 -c
-mv linux-5.14-rc6-41-g794c7931a242 linux-%{KVERREL}
+%setup -q -n kernel-5.14-rc6-43-g614cb2751d31 -c
+mv linux-5.14-rc6-43-g614cb2751d31 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2952,6 +2952,10 @@ fi
 #
 #
 %changelog
+* Wed Aug 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc6.20210818git614cb2751d31.48]
+- Filter updates for aarch64 (Justin M. Forbes)
+- increase CONFIG_NODES_SHIFT for aarch64 (Chris von Recklinghausen) [1890304]
+
 * Tue Aug 17 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc6.20210817git794c7931a242.47]
 - Revert "redhat: ark: disable CONFIG_NET_SCH_MULTIQ" (Marcelo Ricardo Leitner)
 - redhat: configs: Enable CONFIG_WIRELESS_HOTKEY (Hans de Goede)
