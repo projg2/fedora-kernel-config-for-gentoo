@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc6.20210818git614cb2751d31.48
+%global distro_build 0.rc6.20210820gitd992fe5318d8.50
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -124,13 +124,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc6.20210818git614cb2751d31.48
+%define pkgrelease 0.rc6.20210820gitd992fe5318d8.50
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20210818git614cb2751d31.48%{?buildid}%{?dist}
+%define specrelease 0.rc6.20210820gitd992fe5318d8.50%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -671,7 +671,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-rc6-43-g614cb2751d31.tar.xz
+Source0: linux-5.14-rc6-125-gd992fe5318d8.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1357,8 +1357,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-rc6-43-g614cb2751d31 -c
-mv linux-5.14-rc6-43-g614cb2751d31 linux-%{KVERREL}
+%setup -q -n kernel-5.14-rc6-125-gd992fe5318d8 -c
+mv linux-5.14-rc6-125-gd992fe5318d8 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2952,6 +2952,15 @@ fi
 #
 #
 %changelog
+* Fri Aug 20 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc6.20210820gitd992fe5318d8.50]
+- Fedora config updates for 5.14 (Justin M. Forbes)
+
+* Thu Aug 19 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc6.20210819gitd6d09a694205.49]
+- CI: Rename ARK CI pipeline type (Veronika Kabatova)
+- CI: Finish up c9s config (Veronika Kabatova)
+- CI: Update ppc64le config (Veronika Kabatova)
+- CI: use more templates (Veronika Kabatova)
+
 * Wed Aug 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc6.20210818git614cb2751d31.48]
 - Filter updates for aarch64 (Justin M. Forbes)
 - increase CONFIG_NODES_SHIFT for aarch64 (Chris von Recklinghausen) [1890304]
