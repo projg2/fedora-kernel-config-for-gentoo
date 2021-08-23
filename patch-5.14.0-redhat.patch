@@ -139,7 +139,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index c19d1638da25..5392d14f9646 100644
+index 80aa85170d6b..3b0fcfb382a3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1405,7 +1405,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 5419c4b9f27a..3bce0190f0cd 100644
+index 63f0af10c403..195be16dbd39 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1416,7 +1416,7 @@ index 5419c4b9f27a..3bce0190f0cd 100644
  #include <linux/kernel.h>
  #include <linux/bug.h>
  #include <linux/types.h>
-@@ -3036,6 +3037,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3039,6 +3040,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1743,10 +1743,10 @@ index 3a72352aa5cf..47b11f3c7fce 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 6d74386eadc2..2333c1e4ae05 100644
+index ab3de1551b50..7bc8ebb58d35 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4230,6 +4230,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4231,6 +4231,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
