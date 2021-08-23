@@ -4366,3 +4366,69 @@ index e4f5bd388a3c..000000000000
 -}
 -
 -char LICENSE[] SEC("license") = "GPL";
+From b894705796f2b6106035e0619bfba627f2cfca18 Mon Sep 17 00:00:00 2001
+From: Matthias Brugger <mbrugger@suse.com>
+Date: Thu, 15 Jul 2021 18:41:01 +0200
+Subject: [PATCH] arm64: dts: rockchip: Disable CDN DP on Pinebook Pro
+
+The CDN DP needs a PHY and a extcon to work correctly. But no extcon is
+provided by the device-tree, which leads to an error:
+cdn-dp fec00000.dp: [drm:cdn_dp_probe [rockchipdrm]] *ERROR* missing extcon or phy
+cdn-dp: probe of fec00000.dp failed with error -22
+
+Disable the CDN DP to make graphic work on the Pinebook Pro.
+
+Reported-by: Guillaume Gardet <guillaume.gardet@arm.com>
+Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
+index 2115e03a59d7..dae8c252bc2b 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
+@@ -385,10 +385,6 @@ mains_charger: dc-charger {
+ 	};
+ };
+ 
+-&cdn_dp {
+-	status = "okay";
+-};
+-
+ &cpu_b0 {
+ 	cpu-supply = <&vdd_cpu_b>;
+ };
+-- 
+GitLab
+
+From b735f326216640ea0610f20245db2f4505619177 Mon Sep 17 00:00:00 2001
+From: Dan Johansen <strit@manjaro.org>
+Date: Fri, 6 Aug 2021 00:04:27 +0200
+Subject: [PATCH] arm64: dts: rockchip: Setup USB typec port as datarole on
+
+Some chargers try to put the charged device into device data
+role. Before this commit this condition caused the tcpm state machine to
+issue a hard reset due to a capability missmatch.
+
+Signed-off-by: Dan Johansen <strit@manjaro.org>
+---
+ arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
+index 2b5f001ff4a6..2115e03a59d7 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
+@@ -711,7 +711,7 @@ fusb0: fusb30x@22 {
+ 
+ 		connector {
+ 			compatible = "usb-c-connector";
+-			data-role = "host";
++			data-role = "dual";
+ 			label = "USB-C";
+ 			op-sink-microwatt = <1000000>;
+ 			power-role = "dual";
+-- 
+GitLab
+
