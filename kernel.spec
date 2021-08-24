@@ -124,13 +124,13 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc7.54
+%define pkgrelease 0.rc7.55
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.54%{?buildid}%{?dist}
+%define specrelease 0.rc7.55%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
