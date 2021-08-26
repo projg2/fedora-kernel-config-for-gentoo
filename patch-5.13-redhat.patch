@@ -97,7 +97,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index 2458a4abcbcc..93ddceb5d254 100644
+index ed4031db3894..feffc231bdd3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -508,6 +508,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -1383,7 +1383,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 808ab70d5df5..2a92c1c26326 100644
+index db966a7841fe..8ae7a008b06f 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1394,7 +1394,7 @@ index 808ab70d5df5..2a92c1c26326 100644
  #include <linux/kernel.h>
  #include <linux/bug.h>
  #include <linux/types.h>
-@@ -3036,6 +3037,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3039,6 +3040,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1505,10 +1505,10 @@ index d963f25fc7ae..66455e2261d0 100644
  		 * Some systems use a bios work around to ask for D3 on
  		 * platforms that support kernel managed suspend.
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 6d74386eadc2..2333c1e4ae05 100644
+index ab3de1551b50..7bc8ebb58d35 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4230,6 +4230,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4231,6 +4231,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
