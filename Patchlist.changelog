@@ -1,3 +1,21 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/4cee6f338b9edaeab1c45c6b2a8ecf80c8711186
+ 4cee6f338b9edaeab1c45c6b2a8ecf80c8711186 Revert "IB/rxe: Mark Soft-RoCE Transport driver as tech-preview"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/b894705796f2b6106035e0619bfba627f2cfca18
+ b894705796f2b6106035e0619bfba627f2cfca18 arm64: dts: rockchip: Disable CDN DP on Pinebook Pro
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/b735f326216640ea0610f20245db2f4505619177
+ b735f326216640ea0610f20245db2f4505619177 arm64: dts: rockchip: Setup USB typec port as datarole on
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/3156004a8cc7237e5d8bbc933ca7d98cda0de811
+ 3156004a8cc7237e5d8bbc933ca7d98cda0de811 [fs] dax: mark tech preview
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/d92489c57587f99695a76b1c9abadf50676cdab3
+ d92489c57587f99695a76b1c9abadf50676cdab3 xfs: drop experimental warnings for bigtime and inobtcount
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/659c5777b5fd4b759b73495bdc072ea8ac80e1d8
+ 659c5777b5fd4b759b73495bdc072ea8ac80e1d8 [scsi] megaraid_sas: re-add certain pci-ids
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/8313ae8cdf9823adfd53b643de2385fad6deccc5
  8313ae8cdf9823adfd53b643de2385fad6deccc5 crypto: rng - Override drivers/char/random in FIPS mode
 

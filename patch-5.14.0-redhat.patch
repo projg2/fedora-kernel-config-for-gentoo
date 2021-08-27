@@ -4,6 +4,7 @@
  Makefile                                           |  12 +-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
+ .../boot/dts/rockchip/rk3399-pinebook-pro.dts      |   6 +-
  arch/arm64/kernel/acpi.c                           |   4 +
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
@@ -23,7 +24,6 @@
  drivers/firmware/efi/secureboot.c                  |  38 ++
  drivers/hid/hid-rmi.c                              |  64 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
- drivers/infiniband/sw/rxe/rxe.c                    |   2 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
  drivers/iommu/iommu.c                              |  22 +
  drivers/message/fusion/mptsas.c                    |  10 +
@@ -39,11 +39,13 @@
  drivers/scsi/be2iscsi/be_main.c                    |   2 +
  drivers/scsi/hpsa.c                                |   4 +
  drivers/scsi/lpfc/lpfc_ids.h                       |  14 +
- drivers/scsi/megaraid/megaraid_sas_base.c          |   2 +
+ drivers/scsi/megaraid/megaraid_sas_base.c          |   4 +
  drivers/scsi/mpt3sas/mpt3sas_scsih.c               |   4 +
  drivers/scsi/qla2xxx/qla_os.c                      |   6 +
  drivers/scsi/qla4xxx/ql4_os.c                      |   2 +
  drivers/usb/core/hub.c                             |   7 +
+ fs/ext4/super.c                                    |   5 +
+ fs/xfs/xfs_super.c                                 |  13 +-
  include/linux/efi.h                                |  22 +-
  include/linux/kernel.h                             |  15 +
  include/linux/lsm_hook_defs.h                      |   2 +
@@ -83,7 +85,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 85 files changed, 1348 insertions(+), 1493 deletions(-)
+ 87 files changed, 1359 insertions(+), 1506 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index bdb22006f713..61a3a4a4730b 100644
@@ -185,10 +187,10 @@ index 2fb7012c3246..47718b4f2f75 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index fdcd54d39c1e..365b74034428 100644
+index 62c3c1d2190f..121b5eb1e329 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -914,7 +914,7 @@ endchoice
+@@ -915,7 +915,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -197,7 +199,7 @@ index fdcd54d39c1e..365b74034428 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1155,6 +1155,7 @@ config XEN
+@@ -1156,6 +1156,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -205,6 +207,30 @@ index fdcd54d39c1e..365b74034428 100644
  	default "12" if ARM64_16K_PAGES
  	default "11"
  	help
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
+index 2b5f001ff4a6..dae8c252bc2b 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
+@@ -385,10 +385,6 @@ mains_charger: dc-charger {
+ 	};
+ };
+
+-&cdn_dp {
+-	status = "okay";
+-};
+-
+ &cpu_b0 {
+ 	cpu-supply = <&vdd_cpu_b>;
+ };
+@@ -711,7 +707,7 @@ fusb0: fusb30x@22 {
+
+ 		connector {
+ 			compatible = "usb-c-connector";
+-			data-role = "host";
++			data-role = "dual";
+ 			label = "USB-C";
+ 			op-sink-microwatt = <1000000>;
+ 			power-role = "dual";
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
 index f3851724fe35..ef69eeab6f2a 100644
 --- a/arch/arm64/kernel/acpi.c
@@ -1199,19 +1225,6 @@ index da27cd4a3c38..5404b4c407c5 100644
  	amba_driver_unregister(&etm4x_amba_driver);
  	platform_driver_unregister(&etm4_platform_driver);
  	etm4_pm_clear();
-diff --git a/drivers/infiniband/sw/rxe/rxe.c b/drivers/infiniband/sw/rxe/rxe.c
-index 8e0f9c489cab..e8c5ad07be7a 100644
---- a/drivers/infiniband/sw/rxe/rxe.c
-+++ b/drivers/infiniband/sw/rxe/rxe.c
-@@ -285,6 +285,8 @@ static int __init rxe_module_init(void)
- {
- 	int err;
-
-+	mark_tech_preview("Soft-RoCE Transport Driver", THIS_MODULE);
-+
- 	err = rxe_net_init();
- 	if (err)
- 		return err;
 diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
 index 258d5fe3d395..f7298e3dc8f3 100644
 --- a/drivers/input/rmi4/rmi_driver.c
@@ -1923,7 +1936,7 @@ index d48414e295a0..ba0e384412c9 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index ec10b2497310..ab5f0c9f3c68 100644
+index ec10b2497310..5066d52a1fdb 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
@@ -1934,7 +1947,19 @@ index ec10b2497310..ab5f0c9f3c68 100644
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1064R)},
  	/* xscale IOP */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1078R)},
-@@ -167,6 +168,7 @@ static struct pci_device_id megasas_pci_table[] = {
+@@ -157,16 +158,19 @@ static struct pci_device_id megasas_pci_table[] = {
+ 	/* ppc IOP */
+ 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1078GEN2)},
+ 	/* gen2*/
++#endif
+ 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS0079GEN2)},
+ 	/* gen2*/
+ 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS0073SKINNY)},
+ 	/* skinny*/
+ 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS0071SKINNY)},
+ 	/* skinny*/
++#ifndef CONFIG_RHEL_DIFFERENCES
+ 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_VERDE_ZCR)},
  	/* xscale IOP, vega */
  	{PCI_DEVICE(PCI_VENDOR_ID_DELL, PCI_DEVICE_ID_DELL_PERC5)},
  	/* xscale IOP */
@@ -2043,6 +2068,69 @@ index 86658a81d284..5647f4756e97 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index dfa09a277b56..2bde0a2d1683 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -4439,6 +4439,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+ 		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
+
+ 	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
++		static bool printed = false;
+ 		if (ext4_has_feature_inline_data(sb)) {
+ 			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
+ 					" that may contain inline data");
+@@ -4449,6 +4450,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+ 				"DAX unsupported by block device.");
+ 			goto failed_mount;
+ 		}
++		if (!printed) {
++			mark_tech_preview("ext4 direct access (dax)", NULL);
++			printed = true;
++		}
+ 	}
+
+ 	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
+diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
+index 2c9e26a44546..9820fa8c7c30 100644
+--- a/fs/xfs/xfs_super.c
++++ b/fs/xfs/xfs_super.c
+@@ -1539,12 +1539,9 @@ xfs_fs_fill_super(
+ 	if (XFS_SB_VERSION_NUM(&mp->m_sb) == XFS_SB_VERSION_5)
+ 		sb->s_flags |= SB_I_VERSION;
+
+-	if (xfs_sb_version_hasbigtime(&mp->m_sb))
+-		xfs_warn(mp,
+- "EXPERIMENTAL big timestamp feature in use. Use at your own risk!");
+-
+ 	if (mp->m_flags & XFS_MOUNT_DAX_ALWAYS) {
+ 		bool rtdev_is_dax = false, datadev_is_dax;
++		static bool printed = false;
+
+ 		xfs_warn(mp,
+ 		"DAX enabled. Warning: EXPERIMENTAL, use at your own risk");
+@@ -1565,6 +1562,10 @@ xfs_fs_fill_super(
+ 			error = -EINVAL;
+ 			goto out_filestream_unmount;
+ 		}
++		if (!printed) {
++			mark_tech_preview("xfs direct access (dax)", NULL);
++			printed = true;
++		}
+ 	}
+
+ 	if (mp->m_flags & XFS_MOUNT_DISCARD) {
+@@ -1598,10 +1599,6 @@ xfs_fs_fill_super(
+ 		goto out_filestream_unmount;
+ 	}
+
+-	if (xfs_sb_version_hasinobtcounts(&mp->m_sb))
+-		xfs_warn(mp,
+- "EXPERIMENTAL inode btree counters feature in use. Use at your own risk!");
+-
+ 	error = xfs_mountfs(mp);
+ 	if (error)
+ 		goto out_filestream_unmount;
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 6b5d36babfcc..fd4a5d66a9d0 100644
 --- a/include/linux/efi.h
