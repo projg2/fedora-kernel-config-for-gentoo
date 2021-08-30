@@ -78,9 +78,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc7.20210827git77dd11439b86.57
+%global distro_build 60
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -124,13 +124,14 @@ Summary: The Linux kernel
 %define kversion 5.14
 
 %define rpmversion 5.14.0
-%define pkgrelease 0.rc7.20210827git77dd11439b86.57
+%define patchversion 5.14
+%define pkgrelease 60
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20210827git77dd11439b86.57%{?buildid}%{?dist}
+%define specrelease 60%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -671,7 +672,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-rc7-89-g77dd11439b86.tar.xz
+Source0: linux-5.14.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -827,7 +828,7 @@ Source4002: gating.yaml
 
 %if !%{nopatches}
 
-Patch1: patch-%{rpmversion}-redhat.patch
+Patch1: patch-%{patchversion}-redhat.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1357,15 +1358,15 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-rc7-89-g77dd11439b86 -c
-mv linux-5.14-rc7-89-g77dd11439b86 linux-%{KVERREL}
+%setup -q -n kernel-5.14 -c
+mv linux-5.14 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
 
 %if !%{nopatches}
 
-ApplyOptionalPatch patch-%{rpmversion}-redhat.patch
+ApplyOptionalPatch patch-%{patchversion}-redhat.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
@@ -2957,6 +2958,12 @@ fi
 #
 #
 %changelog
+* Mon Aug 30 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14-60]
+- arm64: use common CONFIG_MAX_ZONEORDER for arm kernel (Mark Salter)
+
+* Sat Aug 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14-0.rc7.20210828git64b4fc45bea6.58]
+- Create Makefile.variables for a single point of configuration change (Justin M. Forbes)
+
 * Fri Aug 27 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.14.0-0.rc7.20210827git77dd11439b86.57]
 - rpmspec: drop traceevent files instead of just excluding them from files list (Herton R. Krzesinski) [1967640]
 - Revert "redhat/configs: Enable genet and brcmfmac wlan" (Íñigo Huguet)

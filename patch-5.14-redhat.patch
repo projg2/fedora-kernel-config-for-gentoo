@@ -141,7 +141,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 80aa85170d6b..3b0fcfb382a3 100644
+index 61741e9d9c6e..093ecf99677f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -187,7 +187,7 @@ index 2fb7012c3246..47718b4f2f75 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 62c3c1d2190f..121b5eb1e329 100644
+index 62c3c1d2190f..9ef6bb1d5b0c 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -915,7 +915,7 @@ endchoice
@@ -203,7 +203,7 @@ index 62c3c1d2190f..121b5eb1e329 100644
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
-+	default "13" if (ARCH_THUNDER && !ARM64_64K_PAGES && !RHEL_DIFFERENCES)
++	default "13" if (ARCH_THUNDER && !ARM64_64K_PAGES)
  	default "12" if ARM64_16K_PAGES
  	default "11"
  	help

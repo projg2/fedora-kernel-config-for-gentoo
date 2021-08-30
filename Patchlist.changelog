@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/12be5095f2feb2c686f6c9fb31de5513355fe31a
+ 12be5095f2feb2c686f6c9fb31de5513355fe31a arm64: use common CONFIG_MAX_ZONEORDER for arm kernel
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/4cee6f338b9edaeab1c45c6b2a8ecf80c8711186
  4cee6f338b9edaeab1c45c6b2a8ecf80c8711186 Revert "IB/rxe: Mark Soft-RoCE Transport driver as tech-preview"
 
