@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 
-%global distro_build 60
+%global distro_build 61
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -125,13 +125,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.14.0
 %define patchversion 5.14
-%define pkgrelease 60
+%define pkgrelease 61
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 60%{?buildid}%{?dist}
+%define specrelease 61%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -853,6 +853,7 @@ Provides: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
 Requires(pre): linux-firmware >= 20150904-56.git6ebf5d57\
+Requires(pre): strace\
 Requires(preun): systemd >= 200\
 Conflicts: xfsprogs < 4.3.0-1\
 Conflicts: xorg-x11-drv-vmmouse < 13.0.99\
@@ -2654,7 +2655,7 @@ then\
     %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
 fi\
 %endif\
-/bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
+/usr/bin/strace -f -s 8192 /bin/kernel-install -v add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
 #
