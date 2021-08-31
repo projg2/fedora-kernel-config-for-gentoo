@@ -88,10 +88,10 @@
  87 files changed, 1359 insertions(+), 1506 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index bdb22006f713..61a3a4a4730b 100644
+index 56bd70ee82fa..46ade8b9da8c 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5854,6 +5854,15 @@
+@@ -5871,6 +5871,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -248,10 +248,10 @@ index f3851724fe35..ef69eeab6f2a 100644
 
  static int __init parse_acpi(char *arg)
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
-index a9e2c7295b35..6ff11f3a2d47 100644
+index 3f8ee257f9aa..3ab92feb6241 100644
 --- a/arch/s390/include/asm/ipl.h
 +++ b/arch/s390/include/asm/ipl.h
-@@ -127,6 +127,7 @@ int ipl_report_add_component(struct ipl_report *report, struct kexec_buf *kbuf,
+@@ -128,6 +128,7 @@ int ipl_report_add_component(struct ipl_report *report, struct kexec_buf *kbuf,
  			     unsigned char flags, unsigned short cert);
  int ipl_report_add_certificate(struct ipl_report *report, void *key,
  			       unsigned long addr, unsigned long len);
@@ -260,10 +260,10 @@ index a9e2c7295b35..6ff11f3a2d47 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 50e2c21e0ec9..5da0c683df8d 100644
+index e2cc35775b99..96fc8134f056 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2218,3 +2218,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2215,3 +2215,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -273,7 +273,7 @@ index 50e2c21e0ec9..5da0c683df8d 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index ff0f9e838916..557318323664 100644
+index fe14beb338e5..62abbfd5c2d9 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -284,7 +284,7 @@ index ff0f9e838916..557318323664 100644
  #include <linux/hugetlb.h>
 
  #include <asm/boot_data.h>
-@@ -1023,6 +1024,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -974,6 +975,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -295,10 +295,10 @@ index ff0f9e838916..557318323664 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 64b805bd6a54..e6702f1e1beb 100644
+index 0f8885949e8c..a79e57a77076 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1304,6 +1304,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1310,6 +1310,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
@@ -601,10 +601,10 @@ index b24513ec3fae..8308569f66e0 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index fec2e9754aed..bea4e2973259 100644
+index 5b3fa2cbe722..ad46d87e17e2 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
-@@ -671,6 +671,24 @@ int ahci_stop_engine(struct ata_port *ap)
+@@ -672,6 +672,24 @@ int ahci_stop_engine(struct ata_port *ap)
  	tmp &= ~PORT_CMD_START;
  	writel(tmp, port_mmio + PORT_CMD);
 
@@ -1573,7 +1573,7 @@ index 75dbe77b0b4b..029ff8576f8e 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index dfd9dec0c1f6..de735680d279 100644
+index 8679a108f571..0875e3578088 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -261,6 +261,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1640,7 +1640,7 @@ index dfd9dec0c1f6..de735680d279 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 3f32c5e86bfc..3f95b8d5881f 100644
+index 37ce3e8b1db2..00a3e40026cf 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
@@ -1687,10 +1687,10 @@ index 3f32c5e86bfc..3f95b8d5881f 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 5cd1fa3b8464..2667c617ae92 100644
+index a2e1f298b217..87fb7efca59b 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -706,6 +706,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -739,6 +739,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags);
  void nvme_failover_req(struct request *req);
@@ -1698,7 +1698,7 @@ index 5cd1fa3b8464..2667c617ae92 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -743,6 +744,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
+@@ -776,6 +777,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -2069,10 +2069,10 @@ index 86658a81d284..5647f4756e97 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index dfa09a277b56..2bde0a2d1683 100644
+index d6df62fc810c..5c7b1ac47ff4 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4439,6 +4439,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4436,6 +4436,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
 
  	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
@@ -2080,7 +2080,7 @@ index dfa09a277b56..2bde0a2d1683 100644
  		if (ext4_has_feature_inline_data(sb)) {
  			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
  					" that may contain inline data");
-@@ -4449,6 +4450,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4446,6 +4447,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  				"DAX unsupported by block device.");
  			goto failed_mount;
  		}
@@ -2092,10 +2092,10 @@ index dfa09a277b56..2bde0a2d1683 100644
 
  	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
 diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index 2c9e26a44546..9820fa8c7c30 100644
+index 102cbd606633..c5bdd4fae954 100644
 --- a/fs/xfs/xfs_super.c
 +++ b/fs/xfs/xfs_super.c
-@@ -1539,12 +1539,9 @@ xfs_fs_fill_super(
+@@ -1537,12 +1537,9 @@ xfs_fs_fill_super(
  	if (XFS_SB_VERSION_NUM(&mp->m_sb) == XFS_SB_VERSION_5)
  		sb->s_flags |= SB_I_VERSION;
 
@@ -2109,7 +2109,7 @@ index 2c9e26a44546..9820fa8c7c30 100644
 
  		xfs_warn(mp,
  		"DAX enabled. Warning: EXPERIMENTAL, use at your own risk");
-@@ -1565,6 +1562,10 @@ xfs_fs_fill_super(
+@@ -1563,6 +1560,10 @@ xfs_fs_fill_super(
  			error = -EINVAL;
  			goto out_filestream_unmount;
  		}
@@ -2120,7 +2120,7 @@ index 2c9e26a44546..9820fa8c7c30 100644
  	}
 
  	if (mp->m_flags & XFS_MOUNT_DISCARD) {
-@@ -1598,10 +1599,6 @@ xfs_fs_fill_super(
+@@ -1596,10 +1597,6 @@ xfs_fs_fill_super(
  		goto out_filestream_unmount;
  	}
 
