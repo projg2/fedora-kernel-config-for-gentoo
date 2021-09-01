@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20210831gitb91db6a0b52e.1
+%global distro_build 0.rc0.20210901git9e9fb7655ed5.2
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -125,13 +125,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc0.20210831gitb91db6a0b52e.1
+%define pkgrelease 0.rc0.20210901git9e9fb7655ed5.2
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210831gitb91db6a0b52e.1%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210901git9e9fb7655ed5.2%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -672,7 +672,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-1100-gb91db6a0b52e.tar.xz
+Source0: linux-5.14-3754-g9e9fb7655ed5.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1358,8 +1358,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-1100-gb91db6a0b52e -c
-mv linux-5.14-1100-gb91db6a0b52e linux-%{KVERREL}
+%setup -q -n kernel-5.14-3754-g9e9fb7655ed5 -c
+mv linux-5.14-3754-g9e9fb7655ed5 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2654,7 +2654,7 @@ then\
     %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
 fi\
 %endif\
-sh -x /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
+/bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
 #

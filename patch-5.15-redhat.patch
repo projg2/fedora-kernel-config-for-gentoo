@@ -77,7 +77,7 @@
  .../testing/selftests/bpf/prog_tests/linked_maps.c |  30 --
  .../testing/selftests/bpf/prog_tests/linked_vars.c |  43 --
  tools/testing/selftests/bpf/progs/bpf_cubic.c      | 545 ---------------------
- tools/testing/selftests/bpf/progs/bpf_dctcp.c      | 224 ---------
+ tools/testing/selftests/bpf/progs/bpf_dctcp.c      | 249 ----------
  .../testing/selftests/bpf/progs/kfunc_call_test.c  |  47 --
  .../selftests/bpf/progs/kfunc_call_test_subprog.c  |  42 --
  tools/testing/selftests/bpf/progs/linked_funcs1.c  |  73 ---
@@ -85,13 +85,13 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 87 files changed, 1359 insertions(+), 1506 deletions(-)
+ 87 files changed, 1359 insertions(+), 1531 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 56bd70ee82fa..46ade8b9da8c 100644
+index 2102467faad6..9b8468f8021a 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5871,6 +5871,15 @@
+@@ -5869,6 +5869,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -232,7 +232,7 @@ index 2b5f001ff4a6..dae8c252bc2b 100644
  			op-sink-microwatt = <1000000>;
  			power-role = "dual";
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-index f3851724fe35..ef69eeab6f2a 100644
+index 1c9c2f7a1c04..64a01859d685 100644
 --- a/arch/arm64/kernel/acpi.c
 +++ b/arch/arm64/kernel/acpi.c
 @@ -40,7 +40,11 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
@@ -307,7 +307,7 @@ index 0f8885949e8c..a79e57a77076 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index bff3a784aec5..1a9c345f914d 100644
+index 63b20536c8d2..9fef580d9f23 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -19,6 +19,7 @@
@@ -326,7 +326,7 @@ index bff3a784aec5..1a9c345f914d 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -732,6 +734,50 @@ static void __init early_reserve_memory(void)
+@@ -722,6 +724,50 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -377,7 +377,7 @@ index bff3a784aec5..1a9c345f914d 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -936,6 +982,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -926,6 +972,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -391,7 +391,7 @@ index bff3a784aec5..1a9c345f914d 100644
  	dmi_setup();
 
  	/*
-@@ -1101,19 +1154,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1091,19 +1144,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -412,7 +412,7 @@ index bff3a784aec5..1a9c345f914d 100644
 
  	reserve_initrd();
 
-@@ -1226,6 +1267,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1216,6 +1257,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -2296,7 +2296,7 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 540b377ca8f6..eb21f6dfb846 100644
+index 947430637cac..d7a4bd8762d1 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1433,6 +1433,10 @@ int pci_add_dynid(struct pci_driver *drv,
@@ -2699,7 +2699,7 @@ index 4df609be42d0..4ef0c0f6a8f4 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index e343f158e556..b2c979f9b80e 100644
+index 4e50c0bfdb7d..f4e32c61ec18 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
@@ -2900,7 +2900,7 @@ index 000000000000..4050b6dead75
 +}
 +EXPORT_SYMBOL(mark_driver_unsupported);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 272f4a272f8c..3a5a6455b363 100644
+index 25e49b4d8049..2fa39d772a28 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
 @@ -243,6 +243,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
@@ -3067,10 +3067,10 @@ index 9ffa9e9c5c55..36484cc9842d 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index f405b20c1e6c..a8e298a22709 100644
+index 866531c08e4f..40dadc919226 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -424,7 +424,6 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
+@@ -425,7 +425,6 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
  		      $(TRUNNER_BPF_OBJS)				\
  		      $(TRUNNER_BPF_SKELS)				\
  		      $(TRUNNER_BPF_LSKELS)				\
@@ -3764,10 +3764,10 @@ index f62df4d023f9..000000000000
 -};
 diff --git a/tools/testing/selftests/bpf/progs/bpf_dctcp.c b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
 deleted file mode 100644
-index fd42247da8b4..000000000000
+index 9573be6122be..000000000000
 --- a/tools/testing/selftests/bpf/progs/bpf_dctcp.c
 +++ /dev/null
-@@ -1,224 +0,0 @@
+@@ -1,249 +0,0 @@
 -// SPDX-License-Identifier: GPL-2.0
 -/* Copyright (c) 2019 Facebook */
 -
@@ -3787,6 +3787,11 @@ index fd42247da8b4..000000000000
 -
 -char _license[] SEC("license") = "GPL";
 -
+-volatile const char fallback[TCP_CA_NAME_MAX];
+-const char bpf_dctcp[] = "bpf_dctcp";
+-const char tcp_cdg[] = "cdg";
+-char cc_res[TCP_CA_NAME_MAX];
+-int tcp_cdg_res = 0;
 -int stg_result = 0;
 -
 -struct {
@@ -3826,6 +3831,26 @@ index fd42247da8b4..000000000000
 -	const struct tcp_sock *tp = tcp_sk(sk);
 -	struct dctcp *ca = inet_csk_ca(sk);
 -	int *stg;
+-
+-	if (!(tp->ecn_flags & TCP_ECN_OK) && fallback[0]) {
+-		/* Switch to fallback */
+-		bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
+-			       (void *)fallback, sizeof(fallback));
+-		/* Switch back to myself which the bpf trampoline
+-		 * stopped calling dctcp_init recursively.
+-		 */
+-		bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
+-			       (void *)bpf_dctcp, sizeof(bpf_dctcp));
+-		/* Switch back to fallback */
+-		bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
+-			       (void *)fallback, sizeof(fallback));
+-		/* Expecting -ENOTSUPP for tcp_cdg_res */
+-		tcp_cdg_res = bpf_setsockopt(sk, SOL_TCP, TCP_CONGESTION,
+-					     (void *)tcp_cdg, sizeof(tcp_cdg));
+-		bpf_getsockopt(sk, SOL_TCP, TCP_CONGESTION,
+-			       (void *)cc_res, sizeof(cc_res));
+-		return;
+-	}
 -
 -	ca->prior_rcv_nxt = tp->rcv_nxt;
 -	ca->dctcp_alpha = min(dctcp_alpha_on_init, DCTCP_MAX_ALPHA);
@@ -4047,7 +4072,7 @@ index 470f8723e463..000000000000
 -char _license[] SEC("license") = "GPL";
 diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test_subprog.c b/tools/testing/selftests/bpf/progs/kfunc_call_test_subprog.c
 deleted file mode 100644
-index b2dcb7d9cb03..000000000000
+index 5fbd9e232d44..000000000000
 --- a/tools/testing/selftests/bpf/progs/kfunc_call_test_subprog.c
 +++ /dev/null
 @@ -1,42 +0,0 @@
@@ -4062,7 +4087,7 @@ index b2dcb7d9cb03..000000000000
 -				  __u32 c, __u64 d) __ksym;
 -extern struct sock *bpf_kfunc_call_test3(struct sock *sk) __ksym;
 -int active_res = -1;
--int sk_state = -1;
+-int sk_state_res = -1;
 -
 -int __noinline f1(struct __sk_buff *skb)
 -{
@@ -4081,7 +4106,7 @@ index b2dcb7d9cb03..000000000000
 -	if (active)
 -		active_res = *active;
 -
--	sk_state = bpf_kfunc_call_test3((struct sock *)sk)->__sk_common.skc_state;
+-	sk_state_res = bpf_kfunc_call_test3((struct sock *)sk)->sk_state;
 -
 -	return (__u32)bpf_kfunc_call_test1((struct sock *)sk, 1, 2, 3, 4);
 -}
