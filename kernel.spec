@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20210901git9e9fb7655ed5.2
+%global distro_build 0.rc0.20210902git4ac6d90867a4.4
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -125,13 +125,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc0.20210901git9e9fb7655ed5.2
+%define pkgrelease 0.rc0.20210902git4ac6d90867a4.4
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210901git9e9fb7655ed5.2%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210902git4ac6d90867a4.4%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -672,7 +672,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-3754-g9e9fb7655ed5.tar.xz
+Source0: linux-5.14-7693-g4ac6d90867a4.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1358,8 +1358,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-3754-g9e9fb7655ed5 -c
-mv linux-5.14-3754-g9e9fb7655ed5 linux-%{KVERREL}
+%setup -q -n kernel-5.14-7693-g4ac6d90867a4 -c
+mv linux-5.14-7693-g4ac6d90867a4 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2170,7 +2170,7 @@ InitBuildVars
 %global perf_build_extra_opts CORESIGHT=1
 %endif
 %global perf_make \
-  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2958,6 +2958,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 02 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210902git4ac6d90867a4.4]
+- Temporarily stop building perf with LIBBPF_DYNAMIC=1 (Justin M. Forbes)
+
 * Tue Aug 31 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210831gitb91db6a0b52e.1]
 - arm64: use common CONFIG_MAX_ZONEORDER for arm kernel (Mark Salter)
 - Create Makefile.variables for a single point of configuration change (Justin M. Forbes)

@@ -88,10 +88,10 @@
  87 files changed, 1359 insertions(+), 1531 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 2102467faad6..9b8468f8021a 100644
+index 84dc5790741b..32326e8e181f 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5869,6 +5869,15 @@
+@@ -5892,6 +5892,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -171,10 +171,10 @@ index 61741e9d9c6e..093ecf99677f 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 2fb7012c3246..47718b4f2f75 100644
+index 1a48c17a5909..78320ace7ebe 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1474,9 +1474,9 @@ config HIGHMEM
+@@ -1472,9 +1472,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -187,10 +187,10 @@ index 2fb7012c3246..47718b4f2f75 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 62c3c1d2190f..9ef6bb1d5b0c 100644
+index 9dc1720a909f..f4616e6ffad6 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -915,7 +915,7 @@ endchoice
+@@ -913,7 +913,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -199,7 +199,7 @@ index 62c3c1d2190f..9ef6bb1d5b0c 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1156,6 +1156,7 @@ config XEN
+@@ -1154,6 +1154,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -307,10 +307,10 @@ index 0f8885949e8c..a79e57a77076 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 63b20536c8d2..9fef580d9f23 100644
+index 79f164141116..3309c4c30e7b 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -19,6 +19,7 @@
+@@ -20,6 +20,7 @@
  #include <linux/root_dev.h>
  #include <linux/hugetlb.h>
  #include <linux/tboot.h>
@@ -318,7 +318,7 @@ index 63b20536c8d2..9fef580d9f23 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -49,6 +50,7 @@
+@@ -50,6 +51,7 @@
  #include <asm/unwind.h>
  #include <asm/vsyscall.h>
  #include <linux/vmalloc.h>
@@ -326,7 +326,7 @@ index 63b20536c8d2..9fef580d9f23 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -722,6 +724,50 @@ static void __init early_reserve_memory(void)
+@@ -723,6 +725,50 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -377,7 +377,7 @@ index 63b20536c8d2..9fef580d9f23 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -926,6 +972,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -927,6 +973,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -391,7 +391,7 @@ index 63b20536c8d2..9fef580d9f23 100644
  	dmi_setup();
 
  	/*
-@@ -1091,19 +1144,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1092,19 +1145,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -412,7 +412,7 @@ index 63b20536c8d2..9fef580d9f23 100644
 
  	reserve_initrd();
 
-@@ -1216,6 +1257,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1217,6 +1258,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -874,7 +874,7 @@ index 605969ed0f96..4d51f1c67675 100644
 +}
 +EXPORT_SYMBOL_GPL(random_unregister_extrng);
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
-index 467e94259679..9b6f5b8e5397 100644
+index c02ff25dd477..d860f8eb9a81 100644
 --- a/drivers/firmware/efi/Makefile
 +++ b/drivers/firmware/efi/Makefile
 @@ -28,6 +28,7 @@ obj-$(CONFIG_EFI_FAKE_MEMMAP)		+= fake_map.o
@@ -1175,7 +1175,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index da27cd4a3c38..5404b4c407c5 100644
+index e24252eaf8e4..368d64adeee8 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -1186,7 +1186,7 @@ index da27cd4a3c38..5404b4c407c5 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2071,6 +2072,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2105,6 +2106,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -1203,7 +1203,7 @@ index da27cd4a3c38..5404b4c407c5 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2104,6 +2115,11 @@ static int __init etm4x_init(void)
+@@ -2138,6 +2149,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -1215,7 +1215,7 @@ index da27cd4a3c38..5404b4c407c5 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2130,6 +2146,9 @@ static int __init etm4x_init(void)
+@@ -2164,6 +2180,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -1709,7 +1709,7 @@ index a2e1f298b217..87fb7efca59b 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 3a72352aa5cf..47b11f3c7fce 100644
+index a0615395500a..d4914e1753d1 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -2254,7 +2254,7 @@ index 5c4c5c0602cb..753b53038690 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 8a298d820dbc..b71215412e59 100644
+index c9f1200b2312..8ebb51f34be4 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -380,6 +380,7 @@ struct module {
@@ -2674,10 +2674,10 @@ index 5b7288521300..f966f591c91e 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 55f9f7738ebb..564553afb251 100644
+index e708180e9a59..44c1a872a86b 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1625,7 +1625,7 @@ config AIO
+@@ -1634,7 +1634,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -2735,7 +2735,7 @@ index 4e50c0bfdb7d..f4e32c61ec18 100644
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
 diff --git a/kernel/module.c b/kernel/module.c
-index ed13917ea5f3..88643913f3e4 100644
+index 40ec9a030eec..2d50fb4c9862 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -743,6 +743,7 @@ static struct module_attribute modinfo_##field = {                    \
@@ -2776,10 +2776,10 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	return ret;
  }
 diff --git a/kernel/panic.c b/kernel/panic.c
-index edad89660a2b..71a5a1cf6235 100644
+index cefd7d82366f..ad43433c7013 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -387,6 +387,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -384,6 +384,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
