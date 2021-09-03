@@ -3072,3 +3072,24 @@ index e4f5bd388a3c..000000000000
 -}
 -
 -char LICENSE[] SEC("license") = "GPL";
+commit e11905f1a6ea9f03a9f1a3b061a1a581536a2850
+Author: Justin M. Forbes <jforbes@fedoraproject.org>
+Date:   Fri Sep 3 10:54:07 2021 -0500
+
+    Revert "team: mark team driver as deprecated"
+    
+    This is a RHEL only patch and should not be in the Fedora kernel.
+
+diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
+index f6b43adb2ced..dd7917cab2b1 100644
+--- a/drivers/net/team/team.c
++++ b/drivers/net/team/team.c
+@@ -3045,8 +3045,6 @@ static int __init team_module_init(void)
+ 	if (err)
+ 		goto err_nl_init;
+
+-	mark_hardware_deprecated(DRV_NAME);
+-
+ 	return 0;
+
+ err_nl_init:
