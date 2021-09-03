@@ -97,7 +97,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index ed4031db3894..feffc231bdd3 100644
+index de1f9c79e27a..3e7f047f3340 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -508,6 +508,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -992,7 +992,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
-index 005510f309cf..bf00ad214b49 100644
+index ddee6d4f07cf..282a1c0f654a 100644
 --- a/drivers/gpu/drm/i915/display/intel_dp.c
 +++ b/drivers/gpu/drm/i915/display/intel_dp.c
 @@ -1318,14 +1318,16 @@ intel_dp_compute_link_config(struct intel_encoder *encoder,
@@ -1447,7 +1447,7 @@ index 75dbe77b0b4b..4bd6dd722f44 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-index d94bd8d732e9..7775395bef6f 100644
+index 9f11a1d5d034..81e881da7f15 100644
 --- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
 +++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
 @@ -556,6 +556,7 @@ static const struct iwl_dev_info iwl_dev_info_table[] = {
