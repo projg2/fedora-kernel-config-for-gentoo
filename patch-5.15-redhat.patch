@@ -45,7 +45,7 @@
  drivers/scsi/qla4xxx/ql4_os.c                      |   2 +
  drivers/usb/core/hub.c                             |   7 +
  fs/ext4/super.c                                    |   5 +
- fs/xfs/xfs_super.c                                 |  13 +-
+ fs/xfs/xfs_super.c                                 |   5 +
  include/linux/efi.h                                |  22 +-
  include/linux/kernel.h                             |  15 +
  include/linux/lsm_hook_defs.h                      |   2 +
@@ -85,13 +85,13 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 87 files changed, 1359 insertions(+), 1531 deletions(-)
+ 87 files changed, 1359 insertions(+), 1523 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 84dc5790741b..32326e8e181f 100644
+index 828d11441ebf..208262916a11 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5892,6 +5892,15 @@
+@@ -5887,6 +5887,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -141,7 +141,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 61741e9d9c6e..093ecf99677f 100644
+index d45fc2edf186..7b74139b9fa8 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -155,7 +155,7 @@ index 61741e9d9c6e..093ecf99677f 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1256,7 +1260,13 @@ define filechk_version.h
+@@ -1267,7 +1271,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -171,10 +171,10 @@ index 61741e9d9c6e..093ecf99677f 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 1a48c17a5909..78320ace7ebe 100644
+index 99863022436d..fb0fe0b06efe 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1472,9 +1472,9 @@ config HIGHMEM
+@@ -1470,9 +1470,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -187,10 +187,10 @@ index 1a48c17a5909..78320ace7ebe 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 9dc1720a909f..f4616e6ffad6 100644
+index 077f2ec4eeb2..d33c848032c3 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -913,7 +913,7 @@ endchoice
+@@ -911,7 +911,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -199,7 +199,7 @@ index 9dc1720a909f..f4616e6ffad6 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1154,6 +1154,7 @@ config XEN
+@@ -1152,6 +1152,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -273,7 +273,7 @@ index e2cc35775b99..96fc8134f056 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index fe14beb338e5..62abbfd5c2d9 100644
+index 5a01872f5984..dde96de11a17 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -284,7 +284,7 @@ index fe14beb338e5..62abbfd5c2d9 100644
  #include <linux/hugetlb.h>
 
  #include <asm/boot_data.h>
-@@ -974,6 +975,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -977,6 +978,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -1418,7 +1418,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 63f0af10c403..195be16dbd39 100644
+index 3303d707bab4..372edaaafaa1 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1426,10 +1426,10 @@ index 63f0af10c403..195be16dbd39 100644
 
  #include <linux/device.h>
 +#include <linux/dmi.h>
+ #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
- #include <linux/bug.h>
- #include <linux/types.h>
-@@ -3039,6 +3040,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+ #include <linux/bits.h>
+@@ -3118,6 +3119,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1709,7 +1709,7 @@ index a2e1f298b217..87fb7efca59b 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index a0615395500a..d4914e1753d1 100644
+index 2761ab86490d..aa71a0c904f3 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -1720,7 +1720,7 @@ index a0615395500a..d4914e1753d1 100644
  #include <linux/dma-map-ops.h>
  #include "pci.h"
  #include "pcie/portdrv.h"
-@@ -281,6 +282,34 @@ static struct attribute *pci_drv_attrs[] = {
+@@ -295,6 +296,34 @@ static struct attribute *pci_drv_attrs[] = {
  };
  ATTRIBUTE_GROUPS(pci_drv);
 
@@ -1829,7 +1829,7 @@ index e70f69f791db..dc54f0321fab 100644
  	{ 0 }
  };
 diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index f135a10f582b..99b17b05cab1 100644
+index 3faa87fa296a..15a9a0c59c41 100644
 --- a/drivers/scsi/hpsa.c
 +++ b/drivers/scsi/hpsa.c
 @@ -82,7 +82,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
@@ -1856,7 +1856,7 @@ index f135a10f582b..99b17b05cab1 100644
  };
 
 diff --git a/drivers/scsi/lpfc/lpfc_ids.h b/drivers/scsi/lpfc/lpfc_ids.h
-index d48414e295a0..ba0e384412c9 100644
+index 6a90e6e53d09..7e48c3bf701d 100644
 --- a/drivers/scsi/lpfc/lpfc_ids.h
 +++ b/drivers/scsi/lpfc/lpfc_ids.h
 @@ -24,6 +24,7 @@
@@ -1936,7 +1936,7 @@ index d48414e295a0..ba0e384412c9 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index ec10b2497310..5066d52a1fdb 100644
+index e4298bf4a482..c889e7bedbcb 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
@@ -1968,10 +1968,10 @@ index ec10b2497310..5066d52a1fdb 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index 8e64a6f14542..f8a28b42e547 100644
+index 2f82b1e629af..e3d5c18788d6 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -12480,6 +12480,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
+@@ -12548,6 +12548,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
   * The pci device ids are defined in mpi/mpi2_cnfg.h.
   */
  static const struct pci_device_id mpt3sas_pci_table[] = {
@@ -1979,7 +1979,7 @@ index 8e64a6f14542..f8a28b42e547 100644
  	/* Spitfire ~ 2004 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2004,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12498,6 +12499,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12566,6 +12567,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2116_2,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -1987,7 +1987,7 @@ index 8e64a6f14542..f8a28b42e547 100644
  	/* Thunderbolt ~ 2208 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2208_1,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12522,9 +12524,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12590,9 +12592,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SWITCH_MPI_EP_1,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -2000,10 +2000,10 @@ index 8e64a6f14542..f8a28b42e547 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index cedd558f65eb..d2534cd5559f 100644
+index d2e40aaba734..de0d41fec938 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -7811,6 +7811,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -7960,6 +7960,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -2011,7 +2011,7 @@ index cedd558f65eb..d2534cd5559f 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -7823,13 +7824,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -7972,13 +7973,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -2031,7 +2031,7 @@ index cedd558f65eb..d2534cd5559f 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index 6ee7ea4c27e0..31814931620a 100644
+index f1ea65c6e5f5..6a8cd12b633c 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
 @@ -9855,6 +9855,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
@@ -2069,10 +2069,10 @@ index 86658a81d284..5647f4756e97 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index d6df62fc810c..5c7b1ac47ff4 100644
+index 136940af00b8..c3a0bbebcba7 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4436,6 +4436,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4291,6 +4291,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
 
  	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
@@ -2080,7 +2080,7 @@ index d6df62fc810c..5c7b1ac47ff4 100644
  		if (ext4_has_feature_inline_data(sb)) {
  			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
  					" that may contain inline data");
-@@ -4446,6 +4447,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4301,6 +4302,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  				"DAX unsupported by block device.");
  			goto failed_mount;
  		}
@@ -2092,24 +2092,18 @@ index d6df62fc810c..5c7b1ac47ff4 100644
 
  	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
 diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index 102cbd606633..c5bdd4fae954 100644
+index 9a86d3ec2cb6..f3828cb07b9e 100644
 --- a/fs/xfs/xfs_super.c
 +++ b/fs/xfs/xfs_super.c
-@@ -1537,12 +1537,9 @@ xfs_fs_fill_super(
- 	if (XFS_SB_VERSION_NUM(&mp->m_sb) == XFS_SB_VERSION_5)
- 		sb->s_flags |= SB_I_VERSION;
+@@ -1584,6 +1584,7 @@ xfs_fs_fill_super(
 
--	if (xfs_sb_version_hasbigtime(&mp->m_sb))
--		xfs_warn(mp,
-- "EXPERIMENTAL big timestamp feature in use. Use at your own risk!");
--
- 	if (mp->m_flags & XFS_MOUNT_DAX_ALWAYS) {
+ 	if (xfs_has_dax_always(mp)) {
  		bool rtdev_is_dax = false, datadev_is_dax;
 +		static bool printed = false;
 
  		xfs_warn(mp,
  		"DAX enabled. Warning: EXPERIMENTAL, use at your own risk");
-@@ -1563,6 +1560,10 @@ xfs_fs_fill_super(
+@@ -1604,6 +1605,10 @@ xfs_fs_fill_super(
  			error = -EINVAL;
  			goto out_filestream_unmount;
  		}
@@ -2119,18 +2113,7 @@ index 102cbd606633..c5bdd4fae954 100644
 +		}
  	}
 
- 	if (mp->m_flags & XFS_MOUNT_DISCARD) {
-@@ -1596,10 +1597,6 @@ xfs_fs_fill_super(
- 		goto out_filestream_unmount;
- 	}
-
--	if (xfs_sb_version_hasinobtcounts(&mp->m_sb))
--		xfs_warn(mp,
-- "EXPERIMENTAL inode btree counters feature in use. Use at your own risk!");
--
- 	error = xfs_mountfs(mp);
- 	if (error)
- 		goto out_filestream_unmount;
+ 	if (xfs_has_discard(mp)) {
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 6b5d36babfcc..fd4a5d66a9d0 100644
 --- a/include/linux/efi.h
@@ -2200,7 +2183,7 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 1b2f0a7e00d6..bfbf97662e1e 100644
+index 2776423a587e..b2ad8b56dc3c 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
 @@ -530,4 +530,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
@@ -2296,10 +2279,10 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 947430637cac..d7a4bd8762d1 100644
+index 34d7d94ddf6d..f7cac6f6a505 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1433,6 +1433,10 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1462,6 +1462,10 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2674,10 +2657,10 @@ index 5b7288521300..f966f591c91e 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index e708180e9a59..44c1a872a86b 100644
+index 8cb97f141b70..a89f032fea7e 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1634,7 +1634,7 @@ config AIO
+@@ -1648,7 +1648,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -2900,7 +2883,7 @@ index 000000000000..4050b6dead75
 +}
 +EXPORT_SYMBOL(mark_driver_unsupported);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 25e49b4d8049..2fa39d772a28 100644
+index 083be6af29d7..4f271712be5e 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
 @@ -243,6 +243,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
@@ -2944,10 +2927,10 @@ index 995e15480937..588f7e7885cf 100644
  		 count, align);
 
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 270a7df898e2..ac41f848b8a2 100644
+index cb8ab7d91d30..5f13183ccc23 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -20,6 +20,7 @@
+@@ -21,6 +21,7 @@
  #include <errno.h>
  #include "modpost.h"
  #include "../../include/linux/license.h"
@@ -2955,7 +2938,7 @@ index 270a7df898e2..ac41f848b8a2 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static int modversions = 0;
-@@ -2342,6 +2343,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2351,6 +2352,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -2968,7 +2951,7 @@ index 270a7df898e2..ac41f848b8a2 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2571,6 +2578,7 @@ int main(int argc, char **argv)
+@@ -2580,6 +2587,7 @@ int main(int argc, char **argv)
  		add_depends(&buf, mod);
  		add_moddevtable(&buf, mod);
  		add_srcversion(&buf, mod);

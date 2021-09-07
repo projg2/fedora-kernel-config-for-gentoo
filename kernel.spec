@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20210902git4ac6d90867a4.4
+%global distro_build 0.rc0.20210907git4b93c544e90e.6
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -125,13 +125,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc0.20210902git4ac6d90867a4.4
+%define pkgrelease 0.rc0.20210907git4b93c544e90e.6
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210902git4ac6d90867a4.4%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210907git4b93c544e90e.6%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -672,7 +672,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-7693-g4ac6d90867a4.tar.xz
+Source0: linux-5.14-9718-g4b93c544e90e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1358,8 +1358,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-7693-g4ac6d90867a4 -c
-mv linux-5.14-7693-g4ac6d90867a4 linux-%{KVERREL}
+%setup -q -n kernel-5.14-9718-g4b93c544e90e -c
+mv linux-5.14-9718-g4b93c544e90e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2958,7 +2958,7 @@ fi
 #
 #
 %changelog
-* Thu Sep 02 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210902git4ac6d90867a4.4]
+* Tue Sep 07 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210907git4b93c544e90e.6]
 - Temporarily stop building perf with LIBBPF_DYNAMIC=1 (Justin M. Forbes)
 
 * Tue Aug 31 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210831gitb91db6a0b52e.1]
