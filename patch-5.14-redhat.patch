@@ -21,7 +21,6 @@
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
  drivers/iommu/iommu.c                              |  22 +
- drivers/net/team/team.c                            |   2 +
  drivers/net/wireguard/main.c                       |   6 +
  drivers/net/wireless/intel/iwlwifi/pcie/drv.c      |   1 +
  drivers/pci/quirks.c                               |  24 +
@@ -53,7 +52,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 55 files changed, 658 insertions(+), 1495 deletions(-)
+ 54 files changed, 656 insertions(+), 1495 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
 index 2fb7012c3246..47718b4f2f75 100644
@@ -1259,19 +1258,6 @@ index 63f0af10c403..195be16dbd39 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index dd7917cab2b1..f6b43adb2ced 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -3045,6 +3045,8 @@ static int __init team_module_init(void)
- 	if (err)
- 		goto err_nl_init;
-
-+	mark_hardware_deprecated(DRV_NAME);
-+
- 	return 0;
-
- err_nl_init:
 diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
 index 75dbe77b0b4b..4bd6dd722f44 100644
 --- a/drivers/net/wireguard/main.c
@@ -3072,24 +3058,3 @@ index e4f5bd388a3c..000000000000
 -}
 -
 -char LICENSE[] SEC("license") = "GPL";
-commit e11905f1a6ea9f03a9f1a3b061a1a581536a2850
-Author: Justin M. Forbes <jforbes@fedoraproject.org>
-Date:   Fri Sep 3 10:54:07 2021 -0500
-
-    Revert "team: mark team driver as deprecated"
-    
-    This is a RHEL only patch and should not be in the Fedora kernel.
-
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index f6b43adb2ced..dd7917cab2b1 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -3045,8 +3045,6 @@ static int __init team_module_init(void)
- 	if (err)
- 		goto err_nl_init;
-
--	mark_hardware_deprecated(DRV_NAME);
--
- 	return 0;
-
- err_nl_init:
