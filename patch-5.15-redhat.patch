@@ -141,7 +141,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index d45fc2edf186..7b74139b9fa8 100644
+index 2d1e491f7737..b056845109e5 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -155,7 +155,7 @@ index d45fc2edf186..7b74139b9fa8 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1267,7 +1271,13 @@ define filechk_version.h
+@@ -1269,7 +1273,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -1756,10 +1756,10 @@ index 2761ab86490d..aa71a0c904f3 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index ab3de1551b50..7bc8ebb58d35 100644
+index e5089af8ad90..01dd08860d4e 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4231,6 +4231,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4268,6 +4268,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -2279,10 +2279,10 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 34d7d94ddf6d..f7cac6f6a505 100644
+index cd8aa6fce204..35df61824d02 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1462,6 +1462,10 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1470,6 +1470,10 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2657,7 +2657,7 @@ index 5b7288521300..f966f591c91e 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 8cb97f141b70..a89f032fea7e 100644
+index 11f8a845f259..9b94cc1b5546 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1648,7 +1648,7 @@ config AIO

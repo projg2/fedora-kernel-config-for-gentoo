@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20210907git4b93c544e90e.6
+%global distro_build 0.rc0.20210909gita3fa7a101dcf.8
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -125,13 +125,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc0.20210907git4b93c544e90e.6
+%define pkgrelease 0.rc0.20210909gita3fa7a101dcf.8
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210907git4b93c544e90e.6%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210909gita3fa7a101dcf.8%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -672,7 +672,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-9718-g4b93c544e90e.tar.xz
+Source0: linux-5.14-10557-ga3fa7a101dcf.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1358,8 +1358,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-9718-g4b93c544e90e -c
-mv linux-5.14-9718-g4b93c544e90e linux-%{KVERREL}
+%setup -q -n kernel-5.14-10557-ga3fa7a101dcf -c
+mv linux-5.14-10557-ga3fa7a101dcf linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2958,8 +2958,14 @@ fi
 #
 #
 %changelog
-* Tue Sep 07 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210907git4b93c544e90e.6]
+* Thu Sep 09 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-0.rc0.20210909gita3fa7a101dcf.8]
+- Fixup IOMMU configs in pending so that configs are sane again (Justin M. Forbes)
+
+* Thu Sep 09 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210909gita3fa7a101dcf.8]
 - Temporarily stop building perf with LIBBPF_DYNAMIC=1 (Justin M. Forbes)
+
+* Wed Sep 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210908gitac08b1c68d1b.6]
+- Some initial Fedora config items for 5.15 (Justin M. Forbes)
 
 * Tue Aug 31 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210831gitb91db6a0b52e.1]
 - arm64: use common CONFIG_MAX_ZONEORDER for arm kernel (Mark Salter)
