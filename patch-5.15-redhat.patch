@@ -88,10 +88,10 @@
  87 files changed, 1359 insertions(+), 1523 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 828d11441ebf..208262916a11 100644
+index 91ba391f9b32..88296cfdc5e5 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5887,6 +5887,15 @@
+@@ -5892,6 +5892,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -171,10 +171,10 @@ index 2d1e491f7737..b056845109e5 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 99863022436d..fb0fe0b06efe 100644
+index fc196421b2ce..0a6b267128ae 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1470,9 +1470,9 @@ config HIGHMEM
+@@ -1469,9 +1469,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -273,7 +273,7 @@ index e2cc35775b99..96fc8134f056 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 5a01872f5984..dde96de11a17 100644
+index 67e5fff96ee0..0d58c1f07176 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -282,9 +282,9 @@ index 5a01872f5984..dde96de11a17 100644
  #include <linux/start_kernel.h>
 +#include <linux/security.h>
  #include <linux/hugetlb.h>
+ #include <linux/kmemleak.h>
 
- #include <asm/boot_data.h>
-@@ -977,6 +978,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -981,6 +982,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -2069,10 +2069,10 @@ index 86658a81d284..5647f4756e97 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 136940af00b8..c3a0bbebcba7 100644
+index 0775950ee84e..1a3e0b7dd7dc 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4291,6 +4291,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4292,6 +4292,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
 
  	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
@@ -2080,7 +2080,7 @@ index 136940af00b8..c3a0bbebcba7 100644
  		if (ext4_has_feature_inline_data(sb)) {
  			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
  					" that may contain inline data");
-@@ -4301,6 +4302,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4302,6 +4303,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  				"DAX unsupported by block device.");
  			goto failed_mount;
  		}
@@ -2092,10 +2092,10 @@ index 136940af00b8..c3a0bbebcba7 100644
 
  	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
 diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index 9a86d3ec2cb6..f3828cb07b9e 100644
+index c4e0cd1c1c8c..f80fa9b6d53e 100644
 --- a/fs/xfs/xfs_super.c
 +++ b/fs/xfs/xfs_super.c
-@@ -1584,6 +1584,7 @@ xfs_fs_fill_super(
+@@ -1593,6 +1593,7 @@ xfs_fs_fill_super(
 
  	if (xfs_has_dax_always(mp)) {
  		bool rtdev_is_dax = false, datadev_is_dax;
@@ -2103,7 +2103,7 @@ index 9a86d3ec2cb6..f3828cb07b9e 100644
 
  		xfs_warn(mp,
  		"DAX enabled. Warning: EXPERIMENTAL, use at your own risk");
-@@ -1604,6 +1605,10 @@ xfs_fs_fill_super(
+@@ -1612,6 +1613,10 @@ xfs_fs_fill_super(
  			error = -EINVAL;
  			goto out_filestream_unmount;
  		}

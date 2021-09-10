@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20210909gita3fa7a101dcf.8
+%global distro_build 0.rc0.20210910gitbf9f243f23e6.9
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -125,13 +125,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc0.20210909gita3fa7a101dcf.8
+%define pkgrelease 0.rc0.20210910gitbf9f243f23e6.9
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20210909gita3fa7a101dcf.8%{?buildid}%{?dist}
+%define specrelease 0.rc0.20210910gitbf9f243f23e6.9%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -672,7 +672,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14-10557-ga3fa7a101dcf.tar.xz
+Source0: linux-5.14-10807-gbf9f243f23e6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1358,8 +1358,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14-10557-ga3fa7a101dcf -c
-mv linux-5.14-10557-ga3fa7a101dcf linux-%{KVERREL}
+%setup -q -n kernel-5.14-10807-gbf9f243f23e6 -c
+mv linux-5.14-10807-gbf9f243f23e6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2958,11 +2958,12 @@ fi
 #
 #
 %changelog
-* Thu Sep 09 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-0.rc0.20210909gita3fa7a101dcf.8]
-- Fixup IOMMU configs in pending so that configs are sane again (Justin M. Forbes)
-
-* Thu Sep 09 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210909gita3fa7a101dcf.8]
+* Fri Sep 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210910gitbf9f243f23e6.9]
 - Temporarily stop building perf with LIBBPF_DYNAMIC=1 (Justin M. Forbes)
+
+* Fri Sep 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210910gitbf9f243f23e6.8]
+- Update CONFIG_WERROR to disabled as it can cause issue with out of tree modules. (Justin M. Forbes)
+- Fixup IOMMU configs in pending so that configs are sane again (Justin M. Forbes)
 
 * Wed Sep 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210908gitac08b1c68d1b.6]
 - Some initial Fedora config items for 5.15 (Justin M. Forbes)
