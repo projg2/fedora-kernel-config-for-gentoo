@@ -97,7 +97,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index d0ea05957da6..44022e6db235 100644
+index cbb2f35baedb..d3dc4ecbc462 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -508,6 +508,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -1505,7 +1505,7 @@ index d963f25fc7ae..66455e2261d0 100644
  		 * Some systems use a bios work around to ask for D3 on
  		 * platforms that support kernel managed suspend.
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index ab3de1551b50..7bc8ebb58d35 100644
+index 7b1c81b899cd..5904ece27f64 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4231,6 +4231,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
