@@ -1295,7 +1295,7 @@ index 0b8a0cd3b652..6f49950a5f6d 100644
  	IWL_DEV_INFO(0x02F0, 0x0074, iwl_ax201_cfg_quz_hr, NULL),
  	IWL_DEV_INFO(0x02F0, 0x6074, iwl_ax201_cfg_quz_hr, NULL),
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index ab3de1551b50..7bc8ebb58d35 100644
+index 7b1c81b899cd..5904ece27f64 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4231,6 +4231,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
