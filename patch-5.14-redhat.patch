@@ -22,7 +22,6 @@
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
  drivers/iommu/iommu.c                              |  22 +
  drivers/net/wireguard/main.c                       |   6 +
- drivers/net/wireless/intel/iwlwifi/pcie/drv.c      |   1 +
  drivers/pci/quirks.c                               |  24 +
  drivers/usb/core/hub.c                             |   7 +
  fs/xfs/xfs_super.c                                 |   8 -
@@ -52,7 +51,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 54 files changed, 656 insertions(+), 1495 deletions(-)
+ 53 files changed, 655 insertions(+), 1495 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
 index 2fb7012c3246..47718b4f2f75 100644
@@ -141,10 +140,10 @@ index a9e2c7295b35..6ff11f3a2d47 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 50e2c21e0ec9..5da0c683df8d 100644
+index 911cd3912351..caae31c04561 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2218,3 +2218,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2215,3 +2215,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -154,7 +153,7 @@ index 50e2c21e0ec9..5da0c683df8d 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index ff0f9e838916..557318323664 100644
+index ee23908f1b96..0273125cdfba 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -165,7 +164,7 @@ index ff0f9e838916..557318323664 100644
  #include <linux/hugetlb.h>
 
  #include <asm/boot_data.h>
-@@ -1023,6 +1024,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -1030,6 +1031,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -1282,18 +1281,6 @@ index 75dbe77b0b4b..4bd6dd722f44 100644
  	ret = wg_allowedips_slab_init();
  	if (ret < 0)
  		goto err_allowedips;
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-index 0b8a0cd3b652..6f49950a5f6d 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-@@ -558,6 +558,7 @@ static const struct iwl_dev_info iwl_dev_info_table[] = {
- 	IWL_DEV_INFO(0xA0F0, 0x1652, killer1650i_2ax_cfg_qu_b0_hr_b0, NULL),
- 	IWL_DEV_INFO(0xA0F0, 0x2074, iwl_ax201_cfg_qu_hr, NULL),
- 	IWL_DEV_INFO(0xA0F0, 0x4070, iwl_ax201_cfg_qu_hr, NULL),
-+	IWL_DEV_INFO(0xA0F0, 0x6074, iwl_ax201_cfg_qu_hr, NULL),
- 	IWL_DEV_INFO(0x02F0, 0x0070, iwl_ax201_cfg_quz_hr, NULL),
- 	IWL_DEV_INFO(0x02F0, 0x0074, iwl_ax201_cfg_quz_hr, NULL),
- 	IWL_DEV_INFO(0x02F0, 0x6074, iwl_ax201_cfg_quz_hr, NULL),
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index 7b1c81b899cd..5904ece27f64 100644
 --- a/drivers/pci/quirks.c
