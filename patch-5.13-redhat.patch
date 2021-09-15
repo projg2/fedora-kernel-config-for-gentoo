@@ -28,7 +28,6 @@
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
  drivers/iommu/iommu.c                              |  22 +
  drivers/net/wireguard/main.c                       |   6 +
- drivers/net/wireless/intel/iwlwifi/pcie/drv.c      |   1 +
  drivers/nvme/host/pci.c                            |  28 +-
  drivers/pci/quirks.c                               |  24 +
  drivers/platform/x86/amd-pmc.c                     | 204 +++++++-
@@ -72,7 +71,7 @@
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
  .../selftests/bpf/progs/test_static_linked1.c      |  30 --
  .../selftests/bpf/progs/test_static_linked2.c      |  31 --
- 74 files changed, 942 insertions(+), 2351 deletions(-)
+ 73 files changed, 941 insertions(+), 2351 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -97,7 +96,7 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index cbb2f35baedb..d3dc4ecbc462 100644
+index c79a2c70a22b..5e3e32edbd4b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -508,6 +508,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
@@ -1446,18 +1445,6 @@ index 75dbe77b0b4b..4bd6dd722f44 100644
  	ret = wg_allowedips_slab_init();
  	if (ret < 0)
  		goto err_allowedips;
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-index 9f11a1d5d034..81e881da7f15 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-@@ -556,6 +556,7 @@ static const struct iwl_dev_info iwl_dev_info_table[] = {
- 	IWL_DEV_INFO(0xA0F0, 0x1652, killer1650i_2ax_cfg_qu_b0_hr_b0, NULL),
- 	IWL_DEV_INFO(0xA0F0, 0x2074, iwl_ax201_cfg_qu_hr, NULL),
- 	IWL_DEV_INFO(0xA0F0, 0x4070, iwl_ax201_cfg_qu_hr, NULL),
-+	IWL_DEV_INFO(0xA0F0, 0x6074, iwl_ax201_cfg_qu_hr, NULL),
- 	IWL_DEV_INFO(0x02F0, 0x0070, iwl_ax201_cfg_quz_hr, NULL),
- 	IWL_DEV_INFO(0x02F0, 0x0074, iwl_ax201_cfg_quz_hr, NULL),
- 	IWL_DEV_INFO(0x02F0, 0x6074, iwl_ax201_cfg_quz_hr, NULL),
 diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
 index d963f25fc7ae..66455e2261d0 100644
 --- a/drivers/nvme/host/pci.c
