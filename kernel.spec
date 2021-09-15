@@ -78,9 +78,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc1.12
+%global distro_build 0.rc1.20210915git3ca706c189db.13
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -125,13 +125,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc1.12
+%define pkgrelease 0.rc1.20210915git3ca706c189db.13
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.12%{?buildid}%{?dist}
+%define specrelease 0.rc1.20210915git3ca706c189db.13%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -547,7 +547,7 @@ Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
 %if 0%{?fedora}
-ExclusiveArch: x86_64 s390x %{arm} aarch64 ppc64le
+ExclusiveArch: noarch x86_64 s390x %{arm} aarch64 ppc64le
 %else
 ExclusiveArch: noarch i386 i686 x86_64 s390x %{arm} aarch64 ppc64le
 %endif
@@ -672,7 +672,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc1.tar.xz
+Source0: linux-5.15-rc1-19-g3ca706c189db.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1358,8 +1358,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc1 -c
-mv linux-5.15-rc1 linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc1-19-g3ca706c189db -c
+mv linux-5.15-rc1-19-g3ca706c189db linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2170,7 +2170,7 @@ InitBuildVars
 %global perf_build_extra_opts CORESIGHT=1
 %endif
 %global perf_make \
-  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2958,8 +2958,11 @@ fi
 #
 #
 %changelog
-* Mon Sep 13 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc1.12]
-- Temporarily stop building perf with LIBBPF_DYNAMIC=1 (Justin M. Forbes)
+* Wed Sep 15 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-0.rc1.20210915git3ca706c189db.13]
+- Build kernel-doc for Fedora (Justin M. Forbes)
+
+* Wed Sep 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc1.20210915git3ca706c189db.13]
+- x86_64: Enable Elkhart Lake Quadrature Encoder Peripheral support (Prarit Bhargava)
 
 * Fri Sep 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc0.20210910gitbf9f243f23e6.8]
 - Update CONFIG_WERROR to disabled as it can cause issue with out of tree modules. (Justin M. Forbes)
