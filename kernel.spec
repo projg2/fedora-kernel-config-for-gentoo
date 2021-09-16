@@ -116,7 +116,7 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.13
 
-%define rpmversion 5.13.17
+%define rpmversion 5.13.18
 %define stableversion 5.13
 %define pkgrelease 100
 
@@ -646,7 +646,7 @@ BuildRequires: clang
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13.17.tar.xz
+Source0: linux-5.13.18.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1315,8 +1315,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13.17 -c
-mv linux-5.13.17 linux-%{KVERREL}
+%setup -q -n kernel-5.13.18 -c
+mv linux-5.13.18 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2886,8 +2886,42 @@ fi
 #
 #
 %changelog
-* Wed Sep 15 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.17-100]
-- kernel-5.13.17-0 (Justin M. Forbes)
+* Thu Sep 16 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.18-100]
+- kernel-5.13.18-0 (Justin M. Forbes)
+
+* Wed Sep 15 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.17-0]
+- kernel-5.13.16-0 (Justin M. Forbes)
+- kernel-5.13.15-0 (Justin M. Forbes)
+- kernel-5.13.14-0 (Justin M. Forbes)
+- kernel-5.13.13-0 (Justin M. Forbes)
+- kernel-5.13.12-0 (Justin M. Forbes)
+- kernel-5.13.11-0 (Justin M. Forbes)
+- bpf: Fix integer overflow involving bucket_size (Tatsuhiko Yasumatsu)
+- kernel-5.13.10-0 (Justin M. Forbes)
+- Fix up backport of Dell XPS 9710 quirk (Justin M. Forbes)
+- ASoC: Intel: sof_sdw_max98373: remove useless inits (Pierre-Louis Bossart)
+- ASoC: Intel: update sof_pcm512x quirks (Pierre-Louis Bossart)
+- ASoC: SOF: Intel: Use DMI string to search for adl_mx98373_rt5682 variant (jairaj arava)
+- ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710 (Pierre-Louis Bossart)
+- kernel-5.13.9-0 (Justin M. Forbes)
+- drm/i915/dp: Use max params for older panels (Kai-Heng Feng)
+- pinctrl: tigerlake: Fix GPIO mapping for newer version of software (Andy Shevchenko)
+- kernel-5.13.8-0 (Justin M. Forbes)
+- Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
+- Revert CRYPTO_ECDH and CRYPTO_ECDA from builtin to module to fix fips (Justin M. Forbes)
+- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
+- powerpc/pseries: Fix regression while building external modules (Srikar Dronamraju)
+- kernel-5.13.7-0 (Justin M. Forbes)
+- kernel-5.13.6-0 (Justin M. Forbes)
+- kernel-5.13.5-0 (Justin M. Forbes)
+- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
+- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
+- RHEL configs need this too (Justin M. Forbes)
+- kernel-5.13.4-0 (Justin M. Forbes)
+- Config update for 5.13.4 (Justin M. Forbes)
+- kernel-5.13.3-0 (Justin M. Forbes)
+- Don't tag a release as [redhat] (Justin M. Forbes)
+- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
 
 * Mon Sep 13 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.16-0]
 - kernel-5.13.15-0 (Justin M. Forbes)
