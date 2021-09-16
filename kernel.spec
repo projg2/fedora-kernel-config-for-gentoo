@@ -123,7 +123,7 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.14
 
-%define rpmversion 5.14.4
+%define rpmversion 5.14.5
 %define patchversion 5.14
 %define pkgrelease 300
 
@@ -672,7 +672,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.14.4.tar.xz
+Source0: linux-5.14.5.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1358,8 +1358,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.14.4 -c
-mv linux-5.14.4 linux-%{KVERREL}
+%setup -q -n kernel-5.14.5 -c
+mv linux-5.14.5 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2958,16 +2958,18 @@ fi
 #
 #
 %changelog
-* Wed Sep 15 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.4-300]
+* Thu Sep 16 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.5-0]
+
+* Wed Sep 15 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.4-0]
 - Build kernel-doc for Fedora (Justin M. Forbes)
 
-* Wed Sep 08 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.3-300]
+* Wed Sep 08 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.3-0]
 - Revert "team: mark team driver as deprecated" (Justin M. Forbes)
 
-* Fri Sep 03 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.2-300]
+* Fri Sep 03 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.2-0]
 - Setup for building fedora-5.14 branch (Justin M. Forbes)
 
-* Mon Aug 30 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.1-300]
+* Mon Aug 30 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.1-0]
 - iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
 - arm64: use common CONFIG_MAX_ZONEORDER for arm kernel (Mark Salter)
 - Create Makefile.variables for a single point of configuration change (Justin M. Forbes)
