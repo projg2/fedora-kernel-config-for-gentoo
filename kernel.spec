@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc1.20210916gitff1ffd71d5f0.14
+%global distro_build 0.rc1.20210917gitbdb575f87217.15
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -125,13 +125,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc1.20210916gitff1ffd71d5f0.14
+%define pkgrelease 0.rc1.20210917gitbdb575f87217.15
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20210916gitff1ffd71d5f0.14%{?buildid}%{?dist}
+%define specrelease 0.rc1.20210917gitbdb575f87217.15%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -672,7 +672,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc1-33-gff1ffd71d5f0.tar.xz
+Source0: linux-5.15-rc1-164-gbdb575f87217.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1358,8 +1358,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc1-33-gff1ffd71d5f0 -c
-mv linux-5.15-rc1-33-gff1ffd71d5f0 linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc1-164-gbdb575f87217 -c
+mv linux-5.15-rc1-164-gbdb575f87217 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2958,6 +2958,9 @@ fi
 #
 #
 %changelog
+* Fri Sep 17 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc1.20210917gitbdb575f87217.15]
+- redhat/configs: enable SYSTEM_BLACKLIST_KEYRING which is already enabled in rhel8 and Fedora 34 (Coiby Xu)
+
 * Thu Sep 16 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc1.20210916gitff1ffd71d5f0.14]
 - Build kernel-doc for Fedora (Justin M. Forbes)
 
