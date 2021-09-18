@@ -1,11 +1,5 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/d92805b6228532148fe7e597b615fdae199e9de7
- d92805b6228532148fe7e597b615fdae199e9de7 Linux 5.14.5
-
-https://gitlab.com/cki-project/kernel-ark/-/commit/4ff654aba77c54100726bd67112cb7f0d09a2f1b
- 4ff654aba77c54100726bd67112cb7f0d09a2f1b Revert "time: Handle negative seconds correctly in timespec64_to_ns()"
-
-https://gitlab.com/cki-project/kernel-ark/-/commit/6bac75c9019bef9b259f184e59726ad825fd9a3c
- 6bac75c9019bef9b259f184e59726ad825fd9a3c Revert "posix-cpu-timers: Force next expiration recalc after itimer reset"
+https://gitlab.com/cki-project/kernel-ark/-/commit/f0c98d3a1045b6149d85b93b350a738d2a495d16
+ f0c98d3a1045b6149d85b93b350a738d2a495d16 ACPI: PM: s2idle: Run both AMD and Microsoft methods if both are supported
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/e11905f1a6ea9f03a9f1a3b061a1a581536a2850
  e11905f1a6ea9f03a9f1a3b061a1a581536a2850 Revert "team: mark team driver as deprecated"
