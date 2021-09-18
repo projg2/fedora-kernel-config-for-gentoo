@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/b2b95f30b12c6b2931fbee60977ebae8dc0fe5a8
+ b2b95f30b12c6b2931fbee60977ebae8dc0fe5a8 drm/i915/display/psr: Disable DC3CO when the PSR2 is used
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/478ca6c098cab88b5eaef871822b6a8ab7414235
  478ca6c098cab88b5eaef871822b6a8ab7414235 bpf: Fix integer overflow involving bucket_size
 

@@ -22,6 +22,7 @@
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
  drivers/gpu/drm/i915/display/intel_dp.c            |  12 +-
+ drivers/gpu/drm/i915/display/intel_psr.c           |   7 +
  drivers/gpu/drm/rockchip/rockchip_drm_drv.c        |  11 +
  drivers/hid/hid-rmi.c                              |  64 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
@@ -46,7 +47,6 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- sound/soc/intel/boards/sof_pcm512x.c               |  13 +-
  sound/soc/intel/boards/sof_rt5682.c                |  14 +
  sound/soc/intel/boards/sof_sdw.c                   |  12 +
  sound/soc/intel/boards/sof_sdw_max98373.c          |   4 +-
@@ -71,7 +71,7 @@
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
  .../selftests/bpf/progs/test_static_linked1.c      |  30 --
  .../selftests/bpf/progs/test_static_linked2.c      |  31 --
- 73 files changed, 941 insertions(+), 2351 deletions(-)
+ 73 files changed, 937 insertions(+), 2349 deletions(-)
 
 diff --git a/Documentation/admin-guide/kdump/kdump.rst b/Documentation/admin-guide/kdump/kdump.rst
 index 75a9dd98e76e..3ff3291551f9 100644
@@ -96,10 +96,10 @@ index 75a9dd98e76e..3ff3291551f9 100644
 
  Boot into System Kernel
 diff --git a/Makefile b/Makefile
-index ddbd64b92a72..6e74913db692 100644
+index 528a5c37bc8d..137829fa1f2f 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -508,6 +508,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
+@@ -513,6 +513,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
  		   -Werror=implicit-function-declaration -Werror=implicit-int \
@@ -1016,6 +1016,24 @@ index ddee6d4f07cf..282a1c0f654a 100644
  		 */
  		limits.min_lane_count = limits.max_lane_count;
  		limits.min_clock = limits.max_clock;
+diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
+index 8ada4f829cab..4cec6b4d7fb9 100644
+--- a/drivers/gpu/drm/i915/display/intel_psr.c
++++ b/drivers/gpu/drm/i915/display/intel_psr.c
+@@ -654,6 +654,13 @@ tgl_dc3co_exitline_compute_config(struct intel_dp *intel_dp,
+ 	struct drm_i915_private *dev_priv = dp_to_i915(intel_dp);
+ 	u32 exit_scanlines;
+
++	/*
++	 * FIXME: Due to the changed sequence of activating/deactivating DC3CO,
++	 * disable DC3CO until the changed dc3co activating/deactivating sequence
++	 * is applied. B.Specs:49196
++	 */
++	return;
++
+ 	/*
+ 	 * DMC's DC3CO exit mechanism has an issue with Selective Fecth
+ 	 * TODO: when the issue is addressed, this restriction should be removed.
 diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
 index 212bd87c0c4a..b8b066938e48 100644
 --- a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
@@ -1446,7 +1464,7 @@ index 75dbe77b0b4b..4bd6dd722f44 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index d963f25fc7ae..66455e2261d0 100644
+index 01feb1c2278d..ae4591aae2d7 100644
 --- a/drivers/nvme/host/pci.c
 +++ b/drivers/nvme/host/pci.c
 @@ -2880,32 +2880,6 @@ static unsigned long check_vendor_combination_bug(struct pci_dev *pdev)
@@ -1492,10 +1510,10 @@ index d963f25fc7ae..66455e2261d0 100644
  		 * Some systems use a bios work around to ask for D3 on
  		 * platforms that support kernel managed suspend.
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 7b1c81b899cd..5904ece27f64 100644
+index 1905ee0297a4..58fded74fb31 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4231,6 +4231,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4232,6 +4232,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1876,10 +1894,10 @@ index ca95c2a52e26..e38e8288468f 100644
  	{ }
  };
 diff --git a/drivers/scsi/smartpqi/smartpqi_init.c b/drivers/scsi/smartpqi/smartpqi_init.c
-index 5db16509b6e1..5b8b5e3edd39 100644
+index f573517e8f6e..88c5ae02bade 100644
 --- a/drivers/scsi/smartpqi/smartpqi_init.c
 +++ b/drivers/scsi/smartpqi/smartpqi_init.c
-@@ -8808,6 +8808,18 @@ static const struct pci_device_id pqi_pci_id_table[] = {
+@@ -8809,6 +8809,18 @@ static const struct pci_device_id pqi_pci_id_table[] = {
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       0x19e5, 0xd22c)
  	},
@@ -1898,7 +1916,7 @@ index 5db16509b6e1..5b8b5e3edd39 100644
  	{
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_ADAPTEC2, 0x0110)
-@@ -9064,6 +9076,10 @@ static const struct pci_device_id pqi_pci_id_table[] = {
+@@ -9065,6 +9077,10 @@ static const struct pci_device_id pqi_pci_id_table[] = {
  		PCI_DEVICE_SUB(PCI_VENDOR_ID_ADAPTEC2, 0x028f,
  			       PCI_VENDOR_ID_ADVANTECH, 0x8312)
  	},
@@ -2259,49 +2277,6 @@ index 0d626c0dafcc..61696b1f5d3f 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-diff --git a/sound/soc/intel/boards/sof_pcm512x.c b/sound/soc/intel/boards/sof_pcm512x.c
-index 8620d4f38493..335c212c1961 100644
---- a/sound/soc/intel/boards/sof_pcm512x.c
-+++ b/sound/soc/intel/boards/sof_pcm512x.c
-@@ -26,11 +26,16 @@
-
- #define SOF_PCM512X_SSP_CODEC(quirk)		((quirk) & GENMASK(3, 0))
- #define SOF_PCM512X_SSP_CODEC_MASK			(GENMASK(3, 0))
-+#define SOF_PCM512X_ENABLE_SSP_CAPTURE		BIT(4)
-+#define SOF_PCM512X_ENABLE_DMIC			BIT(5)
-
- #define IDISP_CODEC_MASK	0x4
-
- /* Default: SSP5 */
--static unsigned long sof_pcm512x_quirk = SOF_PCM512X_SSP_CODEC(5);
-+static unsigned long sof_pcm512x_quirk =
-+	SOF_PCM512X_SSP_CODEC(5) |
-+	SOF_PCM512X_ENABLE_SSP_CAPTURE |
-+	SOF_PCM512X_ENABLE_DMIC;
-
- static bool is_legacy_cpu;
-
-@@ -245,8 +250,9 @@ static struct snd_soc_dai_link *sof_card_dai_links_create(struct device *dev,
- 	links[id].dpcm_playback = 1;
- 	/*
- 	 * capture only supported with specific versions of the Hifiberry DAC+
--	 * links[id].dpcm_capture = 1;
- 	 */
-+	if (sof_pcm512x_quirk & SOF_PCM512X_ENABLE_SSP_CAPTURE)
-+		links[id].dpcm_capture = 1;
- 	links[id].no_pcm = 1;
- 	links[id].cpus = &cpus[id];
- 	links[id].num_cpus = 1;
-@@ -381,6 +387,9 @@ static int sof_audio_probe(struct platform_device *pdev)
-
- 	ssp_codec = sof_pcm512x_quirk & SOF_PCM512X_SSP_CODEC_MASK;
-
-+	if (!(sof_pcm512x_quirk & SOF_PCM512X_ENABLE_DMIC))
-+		dmic_be_num = 0;
-+
- 	/* compute number of dai links */
- 	sof_audio_card_pcm512x.num_links = 1 + dmic_be_num + hdmi_num;
-
 diff --git a/sound/soc/intel/boards/sof_rt5682.c b/sound/soc/intel/boards/sof_rt5682.c
 index 78262c659983..f4b25ae7fd5a 100644
 --- a/sound/soc/intel/boards/sof_rt5682.c
@@ -4590,44 +4565,3 @@ index 54d8d1ab577c..000000000000
 -/* different name and/or type of the variable doesn't matter */
 -char _license[] SEC("license") = "GPL";
 -int _version SEC("version") = 1;
-From 04fe164eacef2d9e6faac240e1c5537db88299ed Mon Sep 17 00:00:00 2001
-From: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-Date: Thu, 1 Apr 2021 20:02:37 +0300
-Subject: [PATCH] drm/i915/display/psr: Disable DC3CO when the PSR2 is used
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-Due to the changed sequence of activating/deactivating DC3CO, disable
-DC3CO until the changed dc3co activating/deactivating sequence is applied.
-
-References: https://gitlab.freedesktop.org/drm/intel/-/issues/3134
-Signed-off-by: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
-Reviewed-by: José Roberto de Souza <jose.souza@intel.com>
-Signed-off-by: José Roberto de Souza <jose.souza@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210401170237.40472-1-gwan-gyeong.mun@intel.com
----
- drivers/gpu/drm/i915/display/intel_psr.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
-index 8ada4f829cab..4cec6b4d7fb9 100644
---- a/drivers/gpu/drm/i915/display/intel_psr.c
-+++ b/drivers/gpu/drm/i915/display/intel_psr.c
-@@ -654,6 +654,13 @@ tgl_dc3co_exitline_compute_config(struct intel_dp *intel_dp,
- 	struct drm_i915_private *dev_priv = dp_to_i915(intel_dp);
- 	u32 exit_scanlines;
- 
-+	/*
-+	 * FIXME: Due to the changed sequence of activating/deactivating DC3CO,
-+	 * disable DC3CO until the changed dc3co activating/deactivating sequence
-+	 * is applied. B.Specs:49196
-+	 */
-+	return;
-+
- 	/*
- 	 * DMC's DC3CO exit mechanism has an issue with Selective Fecth
- 	 * TODO: when the issue is addressed, this restriction should be removed.
--- 
-GitLab
-
