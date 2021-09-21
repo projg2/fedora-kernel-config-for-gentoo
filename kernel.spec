@@ -394,6 +394,8 @@ Summary: The Linux kernel
 # sparse blows up on ppc
 %ifnarch ppc64le
 %define with_sparse 0
+# Temporarily turn off selftests as they are failing to build on ppc
+%define with_selftests 0
 %endif
 
 # zfcpdump mechanism is s390 only
