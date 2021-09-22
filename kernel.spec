@@ -13,6 +13,13 @@
 %global toolchain clang
 %endif
 
+# Compile the kernel with LTO (only supported when building with clang).
+%bcond_with clang_lto
+
+%if %{with clang_lto} && %{without toolchain_clang}
+{error:clang_lto requires --with toolchain_clang}
+%endif
+
 # Cross compile on copr for arm
 # See https://bugzilla.redhat.com/1879599
 %if 0%{?_with_cross_arm:1}
@@ -114,14 +121,14 @@ Summary: The Linux kernel
 %endif
 
 # The kernel tarball/base version
-%define kversion 5.13
+%define kversion 5.14
 
-%define rpmversion 5.13.19
-%define stableversion 5.13
+%define rpmversion 5.14.7
+%define patchversion 5.14
 %define pkgrelease 100
 
 # This is needed to do merge window version magic
-%define patchlevel 13
+%define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
 %define specrelease 100%{?buildid}%{?dist}
@@ -157,8 +164,8 @@ Summary: The Linux kernel
 %define with_bpftool   %{?_without_bpftool:   0} %{?!_without_bpftool:   1}
 # kernel-debuginfo
 %define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
-# kernel-abi-whitelists
-%define with_kernel_abi_whitelists %{?_without_kernel_abi_whitelists: 0} %{?!_without_kernel_abi_whitelists: 1}
+# kernel-abi-stablelists
+%define with_kernel_abi_stablelists %{?_without_kernel_abi_stablelists: 0} %{?!_without_kernel_abi_stablelists: 1}
 # internal samples and selftests
 %define with_selftests %{?_without_selftests: 0} %{?!_without_selftests: 1}
 #
@@ -218,8 +225,8 @@ Summary: The Linux kernel
 %define with_cross_headers 0
 # no ipa_clone for now
 %define with_ipaclones 0
-# no whitelist
-%define with_kernel_abi_whitelists 0
+# no stablelist
+%define with_kernel_abi_stablelists 0
 # Fedora builds these separately
 %define with_perf 0
 %define with_tools 0
@@ -235,7 +242,11 @@ Summary: The Linux kernel
 %endif
 
 %if %{with toolchain_clang}
-%global make_opts %{make_opts} HOSTCC=clang CC=clang
+%global clang_make_opts HOSTCC=clang CC=clang
+%if %{with clang_lto}
+%global clang_make_opts %{clang_make_opts} LD=ld.lld HOSTLD=ld.lld AR=llvm-ar NM=llvm-nm HOSTAR=llvm-ar HOSTNM=llvm-nm LLVM_IAS=1
+%endif
+%global make_opts %{make_opts} %{clang_make_opts}
 # clang does not support the -fdump-ipa-clones option
 %global with_ipaclones 0
 %endif
@@ -247,7 +258,7 @@ Summary: The Linux kernel
 %define with_kabidupchk 0
 %define with_kabidwchk 0
 %define with_kabidw_base 0
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 %endif
 
 # turn off kABI DWARF-based check if we're generating the base dataset
@@ -285,10 +296,6 @@ Summary: The Linux kernel
 %define debugbuildsenabled 1
 %endif
 
-%if !%{debugbuildsenabled}
-%define with_debug 0
-%endif
-
 %if !%{with_debuginfo}
 %define _enable_debug_packages 0
 %endif
@@ -310,7 +317,7 @@ Summary: The Linux kernel
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 %define with_selftests 0
 %define with_cross 0
 %define with_cross_headers 0
@@ -330,7 +337,7 @@ Summary: The Linux kernel
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 %define with_selftests 0
 %define with_cross 0
 %define with_cross_headers 0
@@ -353,7 +360,7 @@ Summary: The Linux kernel
 %endif
 
 %ifnarch noarch
-%define with_kernel_abi_whitelists 0
+%define with_kernel_abi_stablelists 0
 %endif
 
 # Overrides for generic default options
@@ -512,6 +519,18 @@ Summary: The Linux kernel
 %define _use_vdso 0
 %endif
 
+# If build of debug packages is disabled, we need to know if we want to create
+# meta debug packages or not, after we define with_debug for all specific cases
+# above. So this must be at the end here, after all cases of with_debug or not.
+%define with_debug_meta 0
+%if !%{debugbuildsenabled}
+%if %{with_debug}
+%define with_debug_meta 1
+%endif
+%define with_debug 0
+%endif
+
+
 #
 # Packages that need to be installed before the kernel is, because the %%post
 # scripts use them.
@@ -528,7 +547,7 @@ Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
 %if 0%{?fedora}
-ExclusiveArch: x86_64 s390x %{arm} aarch64 ppc64le
+ExclusiveArch: noarch x86_64 s390x %{arm} aarch64 ppc64le
 %else
 ExclusiveArch: noarch i386 i686 x86_64 s390x %{arm} aarch64 ppc64le
 %endif
@@ -549,7 +568,9 @@ BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
 BuildRequires: python3-devel
 BuildRequires: gcc-plugin-devel
+%ifnarch %{nobuildarches} noarch
 BuildRequires: bpftool
+%endif
 %if %{with_headers}
 BuildRequires: rsync
 %endif
@@ -640,13 +661,18 @@ BuildRequires: asciidoc
 BuildRequires: clang
 %endif
 
+%if %{with clang_lto}
+BuildRequires: llvm
+BuildRequires: lld
+%endif
+
 # Because this is the kernel, it's hard to get a single upstream URL
 # to represent the base without needing to do a bunch of patching. This
 # tarball is generated from a src-git tree. If you want to see the
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.13.19.tar.xz
+Source0: linux-5.14.7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -760,6 +786,7 @@ Source51: generate_all_configs.sh
 
 Source52: process_configs.sh
 Source56: update_scripts.sh
+Source57: generate_crashkernel_default.sh
 
 Source54: mod-internal.list
 
@@ -778,7 +805,7 @@ Source211: Module.kabi_dup_ppc64le
 Source212: Module.kabi_dup_s390x
 Source213: Module.kabi_dup_x86_64
 
-Source300: kernel-abi-whitelists-%{rpmversion}-%{distro_build}.tar.bz2
+Source300: kernel-abi-stablelists-%{rpmversion}-%{distro_build}.tar.bz2
 Source301: kernel-kabi-dw-%{rpmversion}-%{distro_build}.tar.bz2
 
 # Sources for kernel-tools
@@ -795,12 +822,13 @@ Source3003: Patchlist.changelog
 
 Source4000: README.rst
 Source4001: rpminspect.yaml
+Source4002: gating.yaml
 
 ## Patches needed for building this package
 
 %if !%{nopatches}
 
-Patch1: patch-%{stableversion}-redhat.patch
+Patch1: patch-%{patchversion}-redhat.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -1024,10 +1052,10 @@ Summary: gcov graph and source files for coverage data collection.
 kernel-gcov includes the gcov graph and source files for gcov coverage collection.
 %endif
 
-%package -n kernel-abi-whitelists
-Summary: The Red Hat Enterprise Linux kernel ABI symbol whitelists
+%package -n kernel-abi-stablelists
+Summary: The Red Hat Enterprise Linux kernel ABI symbol stablelists
 AutoReqProv: no
-%description -n kernel-abi-whitelists
+%description -n kernel-abi-stablelists
 The kABI package contains information pertaining to the Red Hat Enterprise
 Linux kernel ABI, including lists of kernel symbols that are needed by
 external Linux kernel modules, and a yum plugin to aid enforcement.
@@ -1091,6 +1119,20 @@ Requires: kernel-devel-uname-r = %{KVERREL}\
 %description %{?1:%{1}-}devel\
 This package provides kernel headers and makefiles sufficient to build modules\
 against the %{?2:%{2} }kernel package.\
+%{nil}
+
+#
+# This macro creates an empty kernel-<subpackage>-devel-matched package that
+# requires both the core and devel packages locked on the same version.
+#	%%kernel_devel_matched_package [-m] <subpackage> <pretty-name>
+#
+%define kernel_devel_matched_package(m) \
+%package %{?1:%{1}-}devel-matched\
+Summary: Meta package to install matching core and devel packages for a given %{?2:%{2} }kernel\
+Requires: kernel%{?1:-%{1}}-devel = %{version}-%{release}\
+Requires: kernel%{?1:-%{1}}-core = %{version}-%{release}\
+%description %{?1:%{1}-}devel-matched\
+This meta package is used to install matching core and devel packages for a given %{?2:%{2} }kernel.\
 %{nil}
 
 #
@@ -1203,6 +1245,7 @@ Requires: kernel-core-uname-r = %{KVERREL}\
 %{expand:%%kernel_meta_package %{?1:%{1}}}\
 %endif\
 %{expand:%%kernel_devel_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
+%{expand:%%kernel_devel_matched_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
 %{expand:%%kernel_modules_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
 %{expand:%%kernel_modules_extra_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
 %if %{-m:0}%{!-m:1}\
@@ -1315,15 +1358,15 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.13.19 -c
-mv linux-5.13.19 linux-%{KVERREL}
+%setup -q -n kernel-5.14.7 -c
+mv linux-5.14.7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
 
 %if !%{nopatches}
 
-ApplyOptionalPatch patch-%{stableversion}-redhat.patch
+ApplyOptionalPatch patch-%{patchversion}-redhat.patch
 %endif
 
 ApplyOptionalPatch linux-kernel-test.patch
@@ -1392,12 +1435,23 @@ do
 done
 %endif
 
+%if %{with clang_lto}
+for i in *aarch64*.config *x86_64*.config; do
+  sed -i 's/# CONFIG_LTO_CLANG_THIN is not set/CONFIG_LTO_CLANG_THIN=y/' $i
+  sed -i 's/CONFIG_LTO_NONE=y/# CONFIG_LTO_NONE is not set/' $i
+done
+%endif
+
 # Add DUP and kpatch certificates to system trusted keys for RHEL
 %if 0%{?rhel}
 %if %{signkernel}%{signmodules}
 openssl x509 -inform der -in %{SOURCE100} -out rheldup3.pem
 openssl x509 -inform der -in %{SOURCE101} -out rhelkpatch1.pem
 cat rheldup3.pem rhelkpatch1.pem > ../certs/rhel.pem
+%ifarch s390x ppc64le
+openssl x509 -inform der -in %{secureboot_ca_0} -out secureboot.pem
+cat secureboot.pem >> ../certs/rhel.pem
+%endif
 for i in *.config; do
   sed -i 's@CONFIG_SYSTEM_TRUSTED_KEYS=""@CONFIG_SYSTEM_TRUSTED_KEYS="certs/rhel.pem"@' $i
 done
@@ -1408,6 +1462,11 @@ cp %{SOURCE52} .
 OPTS=""
 %if %{with_configchecks}
 	OPTS="$OPTS -w -n -c"
+%endif
+%if %{with clang_lto}
+for opt in %{clang_make_opts}; do
+  OPTS="$OPTS -m $opt"
+done
 %endif
 ./process_configs.sh $OPTS kernel %{rpmversion}
 
@@ -1705,13 +1764,13 @@ BuildKernel() {
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf
         tar xjvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
 
-        mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/whitelists
-        tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/whitelists
+        mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/stablelists
+        tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
 
         echo "**** GENERATING DWARF-based kABI baseline dataset ****"
         chmod 0755 $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh
         $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh generate \
-            "$RPM_BUILD_ROOT/kabi-dwarf/whitelists/kabi-current/kabi_whitelist_%{_target_cpu}" \
+            "$RPM_BUILD_ROOT/kabi-dwarf/stablelists/kabi-current/kabi_stablelist_%{_target_cpu}" \
             "$(pwd)" \
             "$RPM_BUILD_ROOT/kabidw-base/%{_target_cpu}${Variant:+.${Variant}}" || :
 
@@ -1724,13 +1783,13 @@ BuildKernel() {
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf
         tar xjvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
         if [ -d "$RPM_BUILD_ROOT/kabi-dwarf/base/%{_target_cpu}${Variant:+.${Variant}}" ]; then
-            mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/whitelists
-            tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/whitelists
+            mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/stablelists
+            tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
 
             echo "**** GENERATING DWARF-based kABI dataset ****"
             chmod 0755 $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh
             $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh generate \
-                "$RPM_BUILD_ROOT/kabi-dwarf/whitelists/kabi-current/kabi_whitelist_%{_target_cpu}" \
+                "$RPM_BUILD_ROOT/kabi-dwarf/stablelists/kabi-current/kabi_stablelist_%{_target_cpu}" \
                 "$(pwd)" \
                 "$RPM_BUILD_ROOT/kabi-dwarf/base/%{_target_cpu}${Variant:+.${Variant}}.tmp" || :
 
@@ -1832,8 +1891,6 @@ BuildKernel() {
 %ifarch i686 x86_64
     # files for 'make prepare' to succeed with kernel-devel
     cp -a --parents arch/x86/entry/syscalls/syscall_32.tbl $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents arch/x86/entry/syscalls/syscalltbl.sh $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents arch/x86/entry/syscalls/syscallhdr.sh $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/entry/syscalls/syscall_64.tbl $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/tools/relocs_32.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/tools/relocs_64.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
@@ -1847,6 +1904,9 @@ BuildKernel() {
     cp -a --parents arch/x86/boot/string.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/string.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
     cp -a --parents arch/x86/boot/ctype.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+
+    cp -a --parents scripts/syscalltbl.sh $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
+    cp -a --parents scripts/syscallhdr.sh $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
 
     cp -a --parents tools/arch/x86/include/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp -a --parents tools/arch/x86/include/uapi/asm $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
@@ -1919,10 +1979,16 @@ BuildKernel() {
     ( find $RPM_BUILD_ROOT/lib/modules/$KernelVer -name '*.ko' | xargs /sbin/modinfo -l | \
         grep -E -v 'GPL( v2)?$|Dual BSD/GPL$|Dual MPL/GPL$|GPL and additional rights$' ) && exit 1
 
-    # remove files that will be auto generated by depmod at rpm -i time
-    pushd $RPM_BUILD_ROOT/lib/modules/$KernelVer/
-        rm -f modules.{alias*,builtin.bin,dep*,*map,symbols*,devname,softdep}
-    popd
+    remove_depmod_files()
+    {
+        # remove files that will be auto generated by depmod at rpm -i time
+        pushd $RPM_BUILD_ROOT/lib/modules/$KernelVer/
+            rm -f modules.{alias,alias.bin,builtin.alias.bin,builtin.bin} \
+                  modules.{dep,dep.bin,devname,softdep,symbols,symbols.bin}
+        popd
+    }
+
+    remove_depmod_files
 
     # Identify modules in the kernel-modules-extras package
     %{SOURCE17} $RPM_BUILD_ROOT lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
@@ -1974,10 +2040,7 @@ BuildKernel() {
 	touch lib/modules/$KernelVer/modules.builtin
     fi
 
-    # remove files that will be auto generated by depmod at rpm -i time
-    pushd $RPM_BUILD_ROOT/lib/modules/$KernelVer/
-        rm -f modules.{alias*,builtin.bin,dep*,*map,symbols*,devname,softdep}
-    popd
+    remove_depmod_files
 
     # Go back and find all of the various directories in the tree.  We use this
     # for the dir lists in kernel-core
@@ -2029,6 +2092,9 @@ BuildKernel() {
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
+
+    # Generate crashkernel default config
+    %{SOURCE57} "$KernelVer" "$Arch" "$RPM_BUILD_ROOT"
 
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
@@ -2142,12 +2208,10 @@ pushd tools/thermal/tmon/
 %{tools_make}
 popd
 pushd tools/iio/
-# Needs to be fixed to pick up CFLAGS
-%{__make}
+%{tools_make}
 popd
 pushd tools/gpio/
-# Needs to be fixed to pick up CFLAGS
-%{__make}
+%{tools_make}
 popd
 # build VM tools
 pushd tools/vm/
@@ -2172,7 +2236,7 @@ popd
 # in the source tree. We installed them previously to $RPM_BUILD_ROOT/usr
 # but there's no way to tell the Makefile to take them from there.
 %{make} %{?_smp_mflags} headers_install
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 samples/bpf/
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/
 
 # Prevent bpf selftests to build bpftool repeatedly:
 export BPFTOOL=$(pwd)/tools/bpf/bpftool/bpftool
@@ -2288,7 +2352,7 @@ find Documentation -type d | xargs chmod u+w
 cd linux-%{KVERREL}
 
 %if %{with_doc}
-docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{rpmversion}
+docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{rpmversion}-%{pkgrelease}
 
 # copy the source over
 mkdir -p $docdir
@@ -2337,14 +2401,14 @@ done
 rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
 %endif
 
-%if %{with_kernel_abi_whitelists}
+%if %{with_kernel_abi_stablelists}
 # kabi directory
 INSTALL_KABI_PATH=$RPM_BUILD_ROOT/lib/modules/
 mkdir -p $INSTALL_KABI_PATH
 
 # install kabi releases directories
 tar xjvf %{SOURCE300} -C $INSTALL_KABI_PATH
-# with_kernel_abi_whitelists
+# with_kernel_abi_stablelists
 %endif
 
 %if %{with_perf}
@@ -2367,6 +2431,12 @@ rm -rf %{buildroot}/usr/lib/perf/include
 # perf man pages (note: implicit rpm magic compresses them later)
 mkdir -p %{buildroot}/%{_mandir}/man1
 %{perf_make} DESTDIR=$RPM_BUILD_ROOT install-man
+
+# remove any tracevent files, eg. its plugins still gets built and installed,
+# even if we build against system's libtracevent during perf build (by setting
+# LIBTRACEEVENT_DYNAMIC=1 above in perf_make macro). Those files should already
+# ship with libtraceevent package.
+rm -rf %{buildroot}%{_libdir}/traceevent
 %endif
 
 %if %{with_tools}
@@ -2402,10 +2472,10 @@ pushd tools/thermal/tmon
 %{tools_make} INSTALL_ROOT=%{buildroot} install
 popd
 pushd tools/iio
-%{__make} DESTDIR=%{buildroot} install
+%{tools_make} DESTDIR=%{buildroot} install
 popd
 pushd tools/gpio
-%{__make} DESTDIR=%{buildroot} install
+%{tools_make} DESTDIR=%{buildroot} install
 popd
 install -m644 -D %{SOURCE2002} %{buildroot}%{_sysconfdir}/logrotate.d/kvm_stat
 pushd tools/kvm/kvm_stat
@@ -2528,7 +2598,7 @@ if [ "$HARDLINK" != "no" -a -x /usr/bin/hardlink -a ! -e /run/ostree-booted ] \
 then\
     (cd /usr/src/kernels/%{KVERREL}%{?1:+%{1}} &&\
      /usr/bin/find . -type f | while read f; do\
-       hardlink -c /usr/src/kernels/*%{?dist}.*/$f $f\
+       hardlink -c /usr/src/kernels/*%{?dist}.*/$f $f > /dev/null\
      done)\
 fi\
 %{nil}
@@ -2656,8 +2726,8 @@ fi
 /usr/*-linux-gnu/include/*
 %endif
 
-%if %{with_kernel_abi_whitelists}
-%files -n kernel-abi-whitelists
+%if %{with_kernel_abi_stablelists}
+%files -n kernel-abi-stablelists
 /lib/modules/kabi-*
 %endif
 
@@ -2673,16 +2743,15 @@ fi
 %if %{with_doc}
 %files doc
 %defattr(-,root,root)
-%{_datadir}/doc/kernel-doc-%{rpmversion}/Documentation/*
-%dir %{_datadir}/doc/kernel-doc-%{rpmversion}/Documentation
-%dir %{_datadir}/doc/kernel-doc-%{rpmversion}
+%{_datadir}/doc/kernel-doc-%{rpmversion}-%{pkgrelease}/Documentation/*
+%dir %{_datadir}/doc/kernel-doc-%{rpmversion}-%{pkgrelease}/Documentation
+%dir %{_datadir}/doc/kernel-doc-%{rpmversion}-%{pkgrelease}
 %endif
 
 %if %{with_perf}
 %files -n perf
 %{_bindir}/perf
 %{_libdir}/libperf-jvmti.so
-%exclude %{_libdir}/traceevent
 %dir %{_libexecdir}/perf-core
 %{_libexecdir}/perf-core/*
 %{_datadir}/perf-core/*
@@ -2819,13 +2888,13 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/dtb \
 %ghost /%{image_install_path}/dtb-%{KVERREL}%{?3:+%{3}} \
 %endif\
-%attr(600,root,root) /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
-%ghost /boot/System.map-%{KVERREL}%{?3:+%{3}}\
+%attr(0600, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
+%ghost %attr(0600, root, root) /boot/System.map-%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.gz\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/config\
-%ghost /boot/symvers-%{KVERREL}%{?3:+%{3}}.gz\
-%ghost /boot/config-%{KVERREL}%{?3:+%{3}}\
-%ghost /boot/initramfs-%{KVERREL}%{?3:+%{3}}.img\
+%ghost %attr(0600, root, root) /boot/symvers-%{KVERREL}%{?3:+%{3}}.gz\
+%ghost %attr(0600, root, root) /boot/initramfs-%{KVERREL}%{?3:+%{3}}.img\
+%ghost %attr(0644, root, root) /boot/config-%{KVERREL}%{?3:+%{3}}\
 %dir /lib/modules\
 %dir /lib/modules/%{KVERREL}%{?3:+%{3}}\
 %dir /lib/modules/%{KVERREL}%{?3:+%{3}}/kernel\
@@ -2833,6 +2902,7 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/crashkernel.default\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
@@ -2842,6 +2912,7 @@ fi
 %{expand:%%files %{?3:%{3}-}devel}\
 %defverify(not mtime)\
 /usr/src/kernels/%{KVERREL}%{?3:+%{3}}\
+%{expand:%%files %{?3:%{3}-}devel-matched}\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-extra.list %{?3:%{3}-}modules-extra}\
 %config(noreplace) /etc/modprobe.d/*-blacklist.conf\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-internal.list %{?3:%{3}-}modules-internal}\
@@ -2858,10 +2929,11 @@ fi
 
 %kernel_variant_files %{_use_vdso} %{with_up}
 %kernel_variant_files %{_use_vdso} %{with_debug} debug
-%if !%{debugbuildsenabled}
+%if %{with_debug_meta}
 %files debug
 %files debug-core
 %files debug-devel
+%files debug-devel-matched
 %files debug-modules
 %files debug-modules-extra
 %endif
@@ -2886,403 +2958,160 @@ fi
 #
 #
 %changelog
-* Sat Sep 18 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.19-100]
-- kernel-5.13.19-0 (Justin M. Forbes)
-- drm/i915/display/psr: Disable DC3CO when the PSR2 is used (Gwan-gyeong Mun)
+* Wed Sep 22 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.7-0]
+- Add Fedora 34 and 33 to release_targets (Justin M. Forbes)
+- Strip [redhat] entries from changelog (Justin M. Forbes)
 
-* Thu Sep 16 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.18-0]
-- kernel-5.13.17-0 (Justin M. Forbes)
-- kernel-5.13.16-0 (Justin M. Forbes)
-- kernel-5.13.15-0 (Justin M. Forbes)
-- kernel-5.13.14-0 (Justin M. Forbes)
-- kernel-5.13.13-0 (Justin M. Forbes)
-- kernel-5.13.12-0 (Justin M. Forbes)
-- kernel-5.13.11-0 (Justin M. Forbes)
-- bpf: Fix integer overflow involving bucket_size (Tatsuhiko Yasumatsu)
-- kernel-5.13.10-0 (Justin M. Forbes)
-- Fix up backport of Dell XPS 9710 quirk (Justin M. Forbes)
-- ASoC: Intel: sof_sdw_max98373: remove useless inits (Pierre-Louis Bossart)
-- ASoC: Intel: update sof_pcm512x quirks (Pierre-Louis Bossart)
-- ASoC: SOF: Intel: Use DMI string to search for adl_mx98373_rt5682 variant (jairaj arava)
-- ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710 (Pierre-Louis Bossart)
-- kernel-5.13.9-0 (Justin M. Forbes)
-- drm/i915/dp: Use max params for older panels (Kai-Heng Feng)
-- pinctrl: tigerlake: Fix GPIO mapping for newer version of software (Andy Shevchenko)
-- kernel-5.13.8-0 (Justin M. Forbes)
+* Sat Sep 18 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.6-0]
+- Fix changelog generation (Justin M. Forbes)
+- Clean up changelog (Justin M. Forbes)
+- ACPI: PM: s2idle: Run both AMD and Microsoft methods if both are supported (Mario Limonciello)
+- Don't tag a release as [redhat] (Justin M. Forbes)
+- Fixes for changelog that I think will help with the next stable bump (Justin M. Forbes)
+
+* Thu Sep 16 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.5-0]
+- kernel-5.14.5-0 (Justin M. Forbes)
+
+* Wed Sep 15 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.4-0]
+- kernel-5.14.4-0 (Justin M. Forbes)
+- Build kernel-doc for Fedora (Justin M. Forbes)
+
+* Wed Sep 08 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.3-0]
+- kernel-5.14.3-0 (Justin M. Forbes)
+- Revert "team: mark team driver as deprecated" (Justin M. Forbes)
+
+* Fri Sep 03 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.2-0]
+- kernel-5.14.2-0 (Justin M. Forbes)
+- Setup for building fedora-5.14 branch (Justin M. Forbes)
+
+* Mon Aug 30 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.1-0]
+- kernel-5.14.1-0 (Justin M. Forbes)
+- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
+- arm64: use common CONFIG_MAX_ZONEORDER for arm kernel (Mark Salter)
+- Create Makefile.variables for a single point of configuration change (Justin M. Forbes)
+- Clean up changelog (Justin M. Forbes)
+- ACPI: PM: s2idle: Run both AMD and Microsoft methods if both are supported (Mario Limonciello)
+- Don't tag a release as [redhat] (Justin M. Forbes)
+- Fixes for changelog that I think will help with the next stable bump (Justin M. Forbes)
+- Build kernel-doc for Fedora (Justin M. Forbes)
+- Revert "team: mark team driver as deprecated" (Justin M. Forbes)
+- Setup for building fedora-5.14 branch (Justin M. Forbes)
+- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
+- arm64: use common CONFIG_MAX_ZONEORDER for arm kernel (Mark Salter)
+- Create Makefile.variables for a single point of configuration change (Justin M. Forbes)
+- rpmspec: drop traceevent files instead of just excluding them from files list (Herton R. Krzesinski) [1967640]
+- redhat/config: Enablement of CONFIG_PAPR_SCM for PowerPC (Gustavo Walbon) [1962936]
+- Attempt to fix Intel PMT code (David Arcari)
+- CI: Enable realtime branch testing (Veronika Kabatova)
+- CI: Enable realtime checks for c9s and RHEL9 (Veronika Kabatova)
+- ark: wireless: enable all rtw88 pcie wirless variants (Peter Robinson)
+- wireless: rtw88: move debug options to common/debug (Peter Robinson)
+- fedora: minor PTP clock driver cleanups (Peter Robinson)
+- common: x86: enable VMware PTP support on ark (Peter Robinson)
+- arm64: dts: rockchip: Disable CDN DP on Pinebook Pro (Matthias Brugger)
+- arm64: dts: rockchip: Setup USB typec port as datarole on (Dan Johansen)
+- xfs: drop experimental warnings for bigtime and inobtcount (Bill O'Donnell) [1995321]
+- Disable liquidio driver on ark/rhel (Herton R. Krzesinski) [1993393]
+- More Fedora config updates (Justin M. Forbes)
+- Fedora config updates for 5.14 (Justin M. Forbes)
+- CI: Rename ARK CI pipeline type (Veronika Kabatova)
+- CI: Finish up c9s config (Veronika Kabatova)
+- CI: Update ppc64le config (Veronika Kabatova)
+- CI: use more templates (Veronika Kabatova)
+- Filter updates for aarch64 (Justin M. Forbes)
+- increase CONFIG_NODES_SHIFT for aarch64 (Chris von Recklinghausen) [1890304]
+- redhat: configs: Enable CONFIG_WIRELESS_HOTKEY (Hans de Goede)
+- redhat/configs: Update CONFIG_NVRAM (Desnes A. Nunes do Rosario) [1988254]
+- common: serial: build in SERIAL_8250_LPSS for x86 (Peter Robinson)
+- powerpc: enable CONFIG_FUNCTION_PROFILER (Diego Domingos) [1831065]
+- crypto: rng - Override drivers/char/random in FIPS mode (Herbert Xu)
+- random: Add hook to override device reads and getrandom(2) (Herbert Xu)
+- redhat/configs: Disable Soft-RoCE driver (Kamal Heib)
+- redhat/configs/evaluate_configs: Update help output (Prarit Bhargava)
+- redhat/configs: Double MAX_LOCKDEP_CHAINS (Justin M. Forbes)
+- fedora: configs: Fix WM5102 Kconfig (Hans de Goede)
+- powerpc: enable CONFIG_POWER9_CPU (Diego Domingos) [1876436]
+- redhat/configs: Fix CONFIG_VIRTIO_IOMMU to 'y' on aarch64 (Eric Auger) [1972795]
+- filter-modules.sh: add more sound modules to filter (Jaroslav Kysela)
+- redhat/configs: sound configuration cleanups and updates (Jaroslav Kysela)
+- common: Update for CXL (Compute Express Link) configs (Peter Robinson)
+- redhat: configs: disable CRYPTO_SM modules (Herton R. Krzesinski) [1990040]
+- Remove fedora version of the LOCKDEP_BITS, we should use common (Justin M. Forbes)
 - Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
-- Revert CRYPTO_ECDH and CRYPTO_ECDA from builtin to module to fix fips (Justin M. Forbes)
-- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
-- powerpc/pseries: Fix regression while building external modules (Srikar Dronamraju)
-- kernel-5.13.7-0 (Justin M. Forbes)
-- kernel-5.13.6-0 (Justin M. Forbes)
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Wed Sep 15 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.17-0]
-- kernel-5.13.16-0 (Justin M. Forbes)
-- kernel-5.13.15-0 (Justin M. Forbes)
-- kernel-5.13.14-0 (Justin M. Forbes)
-- kernel-5.13.13-0 (Justin M. Forbes)
-- kernel-5.13.12-0 (Justin M. Forbes)
-- kernel-5.13.11-0 (Justin M. Forbes)
-- bpf: Fix integer overflow involving bucket_size (Tatsuhiko Yasumatsu)
-- kernel-5.13.10-0 (Justin M. Forbes)
-- Fix up backport of Dell XPS 9710 quirk (Justin M. Forbes)
-- ASoC: Intel: sof_sdw_max98373: remove useless inits (Pierre-Louis Bossart)
-- ASoC: Intel: update sof_pcm512x quirks (Pierre-Louis Bossart)
-- ASoC: SOF: Intel: Use DMI string to search for adl_mx98373_rt5682 variant (jairaj arava)
-- ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710 (Pierre-Louis Bossart)
-- kernel-5.13.9-0 (Justin M. Forbes)
-- drm/i915/dp: Use max params for older panels (Kai-Heng Feng)
-- pinctrl: tigerlake: Fix GPIO mapping for newer version of software (Andy Shevchenko)
-- kernel-5.13.8-0 (Justin M. Forbes)
-- Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
-- Revert CRYPTO_ECDH and CRYPTO_ECDA from builtin to module to fix fips (Justin M. Forbes)
-- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
-- powerpc/pseries: Fix regression while building external modules (Srikar Dronamraju)
-- kernel-5.13.7-0 (Justin M. Forbes)
-- kernel-5.13.6-0 (Justin M. Forbes)
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Mon Sep 13 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.16-0]
-- kernel-5.13.15-0 (Justin M. Forbes)
-- kernel-5.13.14-0 (Justin M. Forbes)
-- kernel-5.13.13-0 (Justin M. Forbes)
-- kernel-5.13.12-0 (Justin M. Forbes)
-- kernel-5.13.11-0 (Justin M. Forbes)
-- bpf: Fix integer overflow involving bucket_size (Tatsuhiko Yasumatsu)
-- kernel-5.13.10-0 (Justin M. Forbes)
-- Fix up backport of Dell XPS 9710 quirk (Justin M. Forbes)
-- ASoC: Intel: sof_sdw_max98373: remove useless inits (Pierre-Louis Bossart)
-- ASoC: Intel: update sof_pcm512x quirks (Pierre-Louis Bossart)
-- ASoC: SOF: Intel: Use DMI string to search for adl_mx98373_rt5682 variant (jairaj arava)
-- ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710 (Pierre-Louis Bossart)
-- kernel-5.13.9-0 (Justin M. Forbes)
-- drm/i915/dp: Use max params for older panels (Kai-Heng Feng)
-- pinctrl: tigerlake: Fix GPIO mapping for newer version of software (Andy Shevchenko)
-- kernel-5.13.8-0 (Justin M. Forbes)
-- Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
-- Revert CRYPTO_ECDH and CRYPTO_ECDA from builtin to module to fix fips (Justin M. Forbes)
-- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
-- powerpc/pseries: Fix regression while building external modules (Srikar Dronamraju)
-- kernel-5.13.7-0 (Justin M. Forbes)
-- kernel-5.13.6-0 (Justin M. Forbes)
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Wed Sep 08 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.15-0]
-- kernel-5.13.14-0 (Justin M. Forbes)
-- kernel-5.13.13-0 (Justin M. Forbes)
-- kernel-5.13.12-0 (Justin M. Forbes)
-- kernel-5.13.11-0 (Justin M. Forbes)
-- bpf: Fix integer overflow involving bucket_size (Tatsuhiko Yasumatsu)
-- kernel-5.13.10-0 (Justin M. Forbes)
-- Fix up backport of Dell XPS 9710 quirk (Justin M. Forbes)
-- ASoC: Intel: sof_sdw_max98373: remove useless inits (Pierre-Louis Bossart)
-- ASoC: Intel: update sof_pcm512x quirks (Pierre-Louis Bossart)
-- ASoC: SOF: Intel: Use DMI string to search for adl_mx98373_rt5682 variant (jairaj arava)
-- ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710 (Pierre-Louis Bossart)
-- kernel-5.13.9-0 (Justin M. Forbes)
-- drm/i915/dp: Use max params for older panels (Kai-Heng Feng)
-- pinctrl: tigerlake: Fix GPIO mapping for newer version of software (Andy Shevchenko)
-- kernel-5.13.8-0 (Justin M. Forbes)
-- Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
-- Revert CRYPTO_ECDH and CRYPTO_ECDA from builtin to module to fix fips (Justin M. Forbes)
-- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
-- powerpc/pseries: Fix regression while building external modules (Srikar Dronamraju)
-- kernel-5.13.7-0 (Justin M. Forbes)
-- kernel-5.13.6-0 (Justin M. Forbes)
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Fri Sep 03 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.14-0]
-- kernel-5.13.13-0 (Justin M. Forbes)
-- kernel-5.13.12-0 (Justin M. Forbes)
-- kernel-5.13.11-0 (Justin M. Forbes)
-- bpf: Fix integer overflow involving bucket_size (Tatsuhiko Yasumatsu)
-- kernel-5.13.10-0 (Justin M. Forbes)
-- Fix up backport of Dell XPS 9710 quirk (Justin M. Forbes)
-- ASoC: Intel: sof_sdw_max98373: remove useless inits (Pierre-Louis Bossart)
-- ASoC: Intel: update sof_pcm512x quirks (Pierre-Louis Bossart)
-- ASoC: SOF: Intel: Use DMI string to search for adl_mx98373_rt5682 variant (jairaj arava)
-- ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710 (Pierre-Louis Bossart)
-- kernel-5.13.9-0 (Justin M. Forbes)
-- drm/i915/dp: Use max params for older panels (Kai-Heng Feng)
-- pinctrl: tigerlake: Fix GPIO mapping for newer version of software (Andy Shevchenko)
-- kernel-5.13.8-0 (Justin M. Forbes)
-- Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
-- Revert CRYPTO_ECDH and CRYPTO_ECDA from builtin to module to fix fips (Justin M. Forbes)
-- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
-- powerpc/pseries: Fix regression while building external modules (Srikar Dronamraju)
-- kernel-5.13.7-0 (Justin M. Forbes)
-- kernel-5.13.6-0 (Justin M. Forbes)
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Thu Aug 26 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.13-0]
-- kernel-5.13.12-0 (Justin M. Forbes)
-- kernel-5.13.11-0 (Justin M. Forbes)
-- bpf: Fix integer overflow involving bucket_size (Tatsuhiko Yasumatsu)
-- kernel-5.13.10-0 (Justin M. Forbes)
-- Fix up backport of Dell XPS 9710 quirk (Justin M. Forbes)
-- ASoC: Intel: sof_sdw_max98373: remove useless inits (Pierre-Louis Bossart)
-- ASoC: Intel: update sof_pcm512x quirks (Pierre-Louis Bossart)
-- ASoC: SOF: Intel: Use DMI string to search for adl_mx98373_rt5682 variant (jairaj arava)
-- ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710 (Pierre-Louis Bossart)
-- kernel-5.13.9-0 (Justin M. Forbes)
-- drm/i915/dp: Use max params for older panels (Kai-Heng Feng)
-- pinctrl: tigerlake: Fix GPIO mapping for newer version of software (Andy Shevchenko)
-- kernel-5.13.8-0 (Justin M. Forbes)
-- Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
-- Revert CRYPTO_ECDH and CRYPTO_ECDA from builtin to module to fix fips (Justin M. Forbes)
-- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
-- powerpc/pseries: Fix regression while building external modules (Srikar Dronamraju)
-- kernel-5.13.7-0 (Justin M. Forbes)
-- kernel-5.13.6-0 (Justin M. Forbes)
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Wed Aug 18 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.12-0]
-- kernel-5.13.11-0 (Justin M. Forbes)
-- bpf: Fix integer overflow involving bucket_size (Tatsuhiko Yasumatsu)
-- kernel-5.13.10-0 (Justin M. Forbes)
-- Fix up backport of Dell XPS 9710 quirk (Justin M. Forbes)
-- ASoC: Intel: sof_sdw_max98373: remove useless inits (Pierre-Louis Bossart)
-- ASoC: Intel: update sof_pcm512x quirks (Pierre-Louis Bossart)
-- ASoC: SOF: Intel: Use DMI string to search for adl_mx98373_rt5682 variant (jairaj arava)
-- ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710 (Pierre-Louis Bossart)
-- kernel-5.13.9-0 (Justin M. Forbes)
-- drm/i915/dp: Use max params for older panels (Kai-Heng Feng)
-- pinctrl: tigerlake: Fix GPIO mapping for newer version of software (Andy Shevchenko)
-- kernel-5.13.8-0 (Justin M. Forbes)
-- Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
-- Revert CRYPTO_ECDH and CRYPTO_ECDA from builtin to module to fix fips (Justin M. Forbes)
-- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
-- powerpc/pseries: Fix regression while building external modules (Srikar Dronamraju)
-- kernel-5.13.7-0 (Justin M. Forbes)
-- kernel-5.13.6-0 (Justin M. Forbes)
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Tue Aug 17 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.11-0]
-- bpf: Fix integer overflow involving bucket_size (Tatsuhiko Yasumatsu)
-- kernel-5.13.10-0 (Justin M. Forbes)
-- Fix up backport of Dell XPS 9710 quirk (Justin M. Forbes)
-- ASoC: Intel: sof_sdw_max98373: remove useless inits (Pierre-Louis Bossart)
-- ASoC: Intel: update sof_pcm512x quirks (Pierre-Louis Bossart)
-- ASoC: SOF: Intel: Use DMI string to search for adl_mx98373_rt5682 variant (jairaj arava)
-- ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710 (Pierre-Louis Bossart)
-- kernel-5.13.9-0 (Justin M. Forbes)
-- drm/i915/dp: Use max params for older panels (Kai-Heng Feng)
-- pinctrl: tigerlake: Fix GPIO mapping for newer version of software (Andy Shevchenko)
-- kernel-5.13.8-0 (Justin M. Forbes)
-- Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
-- Revert CRYPTO_ECDH and CRYPTO_ECDA from builtin to module to fix fips (Justin M. Forbes)
-- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
-- powerpc/pseries: Fix regression while building external modules (Srikar Dronamraju)
-- kernel-5.13.7-0 (Justin M. Forbes)
-- kernel-5.13.6-0 (Justin M. Forbes)
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Thu Aug 12 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.10-0]
-- Fix up backport of Dell XPS 9710 quirk (Justin M. Forbes)
-- ASoC: Intel: sof_sdw_max98373: remove useless inits (Pierre-Louis Bossart)
-- ASoC: Intel: update sof_pcm512x quirks (Pierre-Louis Bossart)
-- ASoC: SOF: Intel: Use DMI string to search for adl_mx98373_rt5682 variant (jairaj arava)
-- ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710 (Pierre-Louis Bossart)
-- kernel-5.13.9-0 (Justin M. Forbes)
-- drm/i915/dp: Use max params for older panels (Kai-Heng Feng)
-- pinctrl: tigerlake: Fix GPIO mapping for newer version of software (Andy Shevchenko)
-- kernel-5.13.8-0 (Justin M. Forbes)
-- Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
-- Revert CRYPTO_ECDH and CRYPTO_ECDA from builtin to module to fix fips (Justin M. Forbes)
-- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
-- powerpc/pseries: Fix regression while building external modules (Srikar Dronamraju)
-- kernel-5.13.7-0 (Justin M. Forbes)
-- kernel-5.13.6-0 (Justin M. Forbes)
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Sun Aug 08 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.9-0]
-- drm/i915/dp: Use max params for older panels (Kai-Heng Feng)
-- pinctrl: tigerlake: Fix GPIO mapping for newer version of software (Andy Shevchenko)
-- kernel-5.13.8-0 (Justin M. Forbes)
-- Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
-- Revert CRYPTO_ECDH and CRYPTO_ECDA from builtin to module to fix fips (Justin M. Forbes)
-- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
-- powerpc/pseries: Fix regression while building external modules (Srikar Dronamraju)
-- kernel-5.13.7-0 (Justin M. Forbes)
-- kernel-5.13.6-0 (Justin M. Forbes)
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Wed Aug 04 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.8-0]
-- Re-enable sermouse for x86 (rhbz 1974002) (Justin M. Forbes)
-- Revert CRYPTO_ECDH and CRYPTO_ECDA from builtin to module to fix fips (Justin M. Forbes)
-- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
-- powerpc/pseries: Fix regression while building external modules (Srikar Dronamraju)
-- kernel-5.13.7-0 (Justin M. Forbes)
-- kernel-5.13.6-0 (Justin M. Forbes)
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Sat Jul 31 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.7-0]
-- kernel-5.13.6-0 (Justin M. Forbes)
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Wed Jul 28 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.6-0]
-- kernel-5.13.5-0 (Justin M. Forbes)
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Sun Jul 25 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.5-0]
-- iwlwifi Add support for ax201 in Samsung Galaxy Book Flex2 Alpha (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- RHEL configs need this too (Justin M. Forbes)
-- kernel-5.13.4-0 (Justin M. Forbes)
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Tue Jul 20 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.4-0]
-- Config update for 5.13.4 (Justin M. Forbes)
-- kernel-5.13.3-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Mon Jul 19 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.3-0]
-- Don't tag a release as [redhat] (Justin M. Forbes)
-- platform/x86: amd-pmc: Fix missing unlock on error in amd_pmc_send_cmd() (Yang Yingliang)
-
-* Wed Jul 14 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.2-0]
-- platform/x86: amd-pmc: Use return code on suspend (Mario Limonciello)
-- ACPI: PM: Only mark EC GPE for wakeup on Intel systems (Mario Limonciello)
-- platform/x86: amd-pmc: Add new acpi id for future PMC controllers (Shyam Sundar S K)
-- platform/x86: amd-pmc: Add support for ACPI ID AMDI0006 (Shyam Sundar S K)
-- amd-pmc: Add support for logging s0ix counters (Shyam Sundar S K)
-- platform/x86: amd-pmc: Add support for logging SMU metrics (Shyam Sundar S K)
-- platform/x86: amd-pmc: call dump registers only once (Shyam Sundar S K)
-- platform/x86: amd-pmc: Fix SMU firmware reporting mechanism (Shyam Sundar S K)
-- platform/x86: amd-pmc: Fix command completion code (Shyam Sundar S K)
-- ACPI: PM: Adjust behavior for field problems on AMD systems (Mario Limonciello)
-- ACPI: PM: s2idle: Add support for new Microsoft UUID (Pratik Vishwakarma)
-- ACPI: PM: s2idle: Add support for multiple func mask (Pratik Vishwakarma)
-- ACPI: PM: s2idle: Refactor common code (Pratik Vishwakarma)
-- ACPI: PM: s2idle: Use correct revision id (Pratik Vishwakarma)
-- ACPI: PM: s2idle: Add missing LPS0 functions for AMD (Alex Deucher)
-- ACPI: Add quirks for AMD Renoir/Lucienne CPUs to force the D3 hint (Mario Limonciello)
-- ACPI: Check StorageD3Enable _DSD property in ACPI code (Mario Limonciello)
-- nvme-pci: look for StorageD3Enable on companion ACPI device instead (Mario Limonciello)
-- ACPI: processor idle: Fix up C-state latency if not ordered (Mario Limonciello)
-- Revert "drm/rockchip: remove existing generic drivers to take over the device" (Justin M. Forbes)
+- Fedora 5.14 configs round 1 (Justin M. Forbes)
+- redhat: add gating configuration for centos stream/rhel9 (Herton R. Krzesinski)
+- x86: configs: Enable CONFIG_TEST_FPU for debug kernels (Vitaly Kuznetsov) [1988384]
+- redhat/configs: Move CHACHA and POLY1305 to core kernel to allow BIG_KEYS=y (root) [1983298]
+- kernel.spec: fix build of samples/bpf (Jiri Benc)
+- Enable OSNOISE_TRACER and TIMERLAT_TRACER (Jerome Marchand) [1979379]
+- rpmspec: switch iio and gpio tools to use tools_make (Herton R. Krzesinski) [1956988]
+- configs/process_configs.sh: Handle config items with no help text (Patrick Talbert)
+- fedora: sound config updates for 5.14 (Peter Robinson)
+- fedora: Only enable FSI drivers on POWER platform (Peter Robinson)
+- The CONFIG_RAW_DRIVER has been removed from upstream (Peter Robinson)
+- fedora: updates for 5.14 with a few disables for common from pending (Peter Robinson)
+- fedora: migrate from MFD_TPS68470 -> INTEL_SKL_INT3472 (Peter Robinson)
+- fedora: Remove STAGING_GASKET_FRAMEWORK (Peter Robinson)
+- Fedora: move DRM_VMWGFX configs from ark -> common (Peter Robinson)
+- fedora: arm: disabled unused FB drivers (Peter Robinson)
+- fedora: don't enable FB_VIRTUAL (Peter Robinson)
+- redhat/configs: Double MAX_LOCKDEP_ENTRIES (Waiman Long) [1940075]
+- rpmspec: fix verbose output on kernel-devel installation (Herton R. Krzesinski) [1981406]
+- Build Fedora x86s kernels with bytcr-wm5102 (Marius Hoch)
+- Deleted redhat/configs/fedora/generic/x86/CONFIG_FB_HYPERV (Patrick Lang)
+- rpmspec: correct the ghost initramfs attributes (Herton R. Krzesinski) [1977056]
+- rpmspec: amend removal of depmod created files to include modules.builtin.alias.bin (Herton R. Krzesinski) [1977056]
+- configs: remove duplicate CONFIG_DRM_HYPERV file (Patrick Talbert)
+- CI: use common code for merge and release (Don Zickus)
+- rpmspec: add release string to kernel doc directory name (Jan Stancek)
+- redhat/configs: Add CONFIG_INTEL_PMT_CRASHLOG (Michael Petlan) [1880486]
+- redhat/configs: Add CONFIG_INTEL_PMT_TELEMETRY (Michael Petlan) [1880486]
+- redhat/configs: Add CONFIG_MFD_INTEL_PMT (Michael Petlan) [1880486]
+- redhat/configs: enable CONFIG_BLK_DEV_ZONED (Ming Lei) [1638087]
+- Add --with clang_lto option to build the kernel with Link Time Optimizations (Tom Stellard)
+- common: disable DVB_AV7110 and associated pieces (Peter Robinson)
+- Fix fedora-only config updates (Don Zickus)
+- Fedor config update for new option (Justin M. Forbes)
+- redhat/configs: Enable stmmac NIC for x86_64 (Mark Salter)
+- all: hyperv: use the DRM driver rather than FB (Peter Robinson)
+- all: hyperv: unify the Microsoft HyperV configs (Peter Robinson)
+- all: VMWare: clean up VMWare configs (Peter Robinson)
+- Update CONFIG_ARM_FFA_TRANSPORT (Patrick Talbert)
+- CI: Handle all mirrors (Veronika Kabatova)
+- Turn on CONFIG_STACKTRACE for s390x zfpcdump kernels (Justin M. Forbes)
+- arm64: switch ark kernel to 4K pagesize (Mark Salter)
+- Disable AMIGA_PARTITION and KARMA_PARTITION (Prarit Bhargava) [1802694]
 - all: unify and cleanup i2c TPM2 modules (Peter Robinson)
-- tpm_tis_spi: add missing SPI device ID entries (Javier Martinez Canillas)
-- drm/rockchip: remove existing generic drivers to take over the device (Javier Martinez Canillas)
-- arm64: dts: rockchip: disable USB type-c DisplayPort (Jian-Hong Pan)
-
-* Wed Jul 07 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.13.1-0]
-- Don't build bpftool as part of kernel (Justin M. Forbes)
+- redhat/configs: Set CONFIG_VIRTIO_IOMMU on aarch64 (Eric Auger) [1972795]
+- redhat/configs: Disable CONFIG_RT_GROUP_SCHED in rhel config (Phil Auld)
+- redhat/configs: enable KEXEC_SIG which is already enabled in RHEL8 for s390x and x86_64 (Coiby Xu) [1976835]
+- rpmspec: do not BuildRequires bpftool on noarch (Herton R. Krzesinski)
+- redhat/configs: disable {IMA,EVM}_LOAD_X509 (Bruno Meneguele) [1977529]
+- redhat: add secureboot CA certificate to trusted kernel keyring (Bruno Meneguele)
+- redhat/configs: enable IMA_ARCH_POLICY for aarch64 and s390x (Bruno Meneguele)
+- redhat/configs: Enable CONFIG_MLXBF_GIGE on aarch64 (Alaa Hleihel) [1858599]
+- common: enable STRICT_MODULE_RWX everywhere (Peter Robinson)
+- COMMON_CLK_STM32MP157_SCMI is bool and selects COMMON_CLK_SCMI (Justin M. Forbes)
+- kernel.spec: Add kernel{,-debug}-devel-matched meta packages (Timothée Ravier)
+- Turn off with_selftests for Fedora (Justin M. Forbes)
+- Don't build bpftool on Fedora (Justin M. Forbes)
+- Fix location of syscall scripts for kernel-devel (Justin M. Forbes)
 - fedora: arm: Enable some i.MX8 options (Peter Robinson)
 - Enable Landlock for Fedora (Justin M. Forbes)
-- can: bcm: delay release of struct bcm_op after synchronize_rcu (Thadeu Lima de Souza Cascardo)
+- Filter update for Fedora aarch64 (Justin M. Forbes)
+- rpmspec: only build debug meta packages where we build debug ones (Herton R. Krzesinski)
+- rpmspec: do not BuildRequires bpftool on nobuildarches (Herton R. Krzesinski)
+- redhat/configs: Consolidate CONFIG_HMC_DRV in the common s390x folder (Thomas Huth) [1976270]
+- redhat/configs: Consolidate CONFIG_EXPOLINE_OFF in the common folder (Thomas Huth) [1976270]
+- redhat/configs: Move CONFIG_HW_RANDOM_S390 into the s390x/ subfolder (Thomas Huth) [1976270]
+- redhat/configs: Disable CONFIG_HOTPLUG_PCI_SHPC in the Fedora settings (Thomas Huth) [1976270]
+- redhat/configs: Remove the non-existent CONFIG_NO_BOOTMEM switch (Thomas Huth) [1976270]
+- redhat/configs: Compile the virtio-console as a module on s390x (Thomas Huth) [1976270]
+- redhat/configs: Enable CONFIG_S390_CCW_IOMMU and CONFIG_VFIO_CCW for ARK, too (Thomas Huth) [1976270]
+- Revert "Merge branch 'ec_fips' into 'os-build'" (Vladis Dronov) [1947240]
 - Fix typos in fedora filters (Justin M. Forbes)
 - More filtering for Fedora (Justin M. Forbes)
 - Fix Fedora module filtering for spi-altera-dfl (Justin M. Forbes)
-- Changes for building stable Fedora (Justin M. Forbes)
 - Fedora 5.13 config updates (Justin M. Forbes)
 - fedora: cleanup TCG_TIS_I2C_CR50 (Peter Robinson)
 - fedora: drop duplicate configs (Peter Robinson)
@@ -3333,8 +3162,6 @@ fi
 - Fedora 5.13 config updates pt 2 (Justin M. Forbes)
 - Move CONFIG_ARCH_INTEL_SOCFPGA up a level for Fedora (Justin M. Forbes)
 - fedora: enable the Rockchip rk3399 pcie drivers (Peter Robinson)
-- PCI: rockchip: Register IRQs just before pci_host_probe() (Javier Martinez Canillas)
-- arm64: dts: rockchip: Update PCI host bridge window to 32-bit address memory (Punit Agrawal)
 - Fedora 5.13 config updates pt 1 (Justin M. Forbes)
 - Fix version requirement from opencsd-devel buildreq (Justin M. Forbes)
 - configs/ark/s390: set CONFIG_MARCH_Z14 and CONFIG_TUNE_Z15 (Philipp Rudo) [1876435]
@@ -3354,6 +3181,7 @@ fi
 - redhat/configs: Set PVPANIC_MMIO for x86 and PVPANIC_PCI for aarch64 (Eric Auger) [1961178]
 - Enable CONFIG_BPF_UNPRIV_DEFAULT_OFF (Jiri Olsa)
 - configs/common/s390: disable CONFIG_QETH_{OSN,OSX} (Philipp Rudo) [1903201]
+- team: mark team driver as deprecated (Hangbin Liu) [1945477]
 - Make CRYPTO_EC also builtin (Simo Sorce) [1947240]
 - Do not hard-code a default value for DIST (David Ward)
 - Override %%{debugbuildsenabled} if the --with-release option is used (David Ward)
@@ -3362,6 +3190,7 @@ fi
 - Revert s390x/zfcpdump part of a9d179c40281 and ecbfddd98621 (Vladis Dronov)
 - Embed crypto algos, modes and templates needed in the FIPS mode (Vladis Dronov) [1947240]
 - configs: Add and enable CONFIG_HYPERV_TESTING for debug kernels (Mohammed Gamal)
+- mm/cma: mark CMA on x86_64 tech preview and print RHEL-specific infos (David Hildenbrand) [1945002]
 - configs: enable CONFIG_CMA on x86_64 in ARK (David Hildenbrand) [1945002]
 - rpmspec: build debug-* meta-packages if debug builds are disabled (Herton R. Krzesinski)
 - UIO: disable unused config options (Aristeu Rozanski) [1957819]
@@ -3672,7 +3501,6 @@ fi
 - redhat: ark: disable CONFIG_NET_SCH_QFQ (Davide Caratti)
 - redhat: ark: disable CONFIG_NET_SCH_PLUG (Davide Caratti)
 - redhat: ark: disable CONFIG_NET_SCH_PIE (Davide Caratti)
-- redhat: ark: disable CONFIG_NET_SCH_MULTIQ (Davide Caratti)
 - redhat: ark: disable CONFIG_NET_SCH_HHF (Davide Caratti)
 - redhat: ark: disable CONFIG_NET_SCH_DSMARK (Davide Caratti)
 - redhat: ark: disable CONFIG_NET_SCH_DRR (Davide Caratti)
@@ -3712,7 +3540,6 @@ fi
 - generate_all_configs.sh: Fix syntax flagged by shellcheck (Ben Crocker)
 - redhat/self-test: Initial commit (Ben Crocker)
 - KEYS: Make use of platform keyring for module signature verify (Robert Holmes)
-- Drop that for now (Laura Abbott)
 - Input: rmi4 - remove the need for artificial IRQ in case of HID (Benjamin Tissoires)
 - ARM: tegra: usb no reset (Peter Robinson)
 - arm: make CONFIG_HIGHPTE optional without CONFIG_EXPERT (Jon Masters)
@@ -3726,12 +3553,8 @@ fi
 - arm: aarch64: Drop the EXPERT setting from ARM64_FORCE_52BIT (Jeremy Cline)
 - iommu/arm-smmu: workaround DMA mode issues (Laura Abbott)
 - ipmi: do not configure ipmi for HPE m400 (Laura Abbott) [1670017]
-- scsi: smartpqi: add inspur advantech ids (Don Brace)
 - ahci: thunderx2: Fix for errata that affects stop engine (Robert Richter)
 - Vulcan: AHCI PCI bar fix for Broadcom Vulcan early silicon (Robert Richter)
-- kdump: fix a grammar issue in a kernel message (Dave Young) [1507353]
-- kdump: add support for crashkernel=auto (Jeremy Cline)
-- kdump: round up the total memory size to 128M for crashkernel reservation (Dave Young) [1507353]
 - acpi: prefer booting with ACPI over DTS (Mark Salter) [1576869]
 - aarch64: acpi scan: Fix regression related to X-Gene UARTs (Mark Salter) [1519554]
 - ACPI / irq: Workaround firmware issue on X-Gene based m400 (Mark Salter) [1519554]
@@ -4042,97 +3865,6 @@ fi
 - configs: Add README for some other arches (Laura Abbott)
 - configs: Sync up Fedora configs (Laura Abbott)
 - [initial commit] Add structure for building with git (Laura Abbott)
-- [initial commit] Red Hat gitignore and attributes (Laura Abbott)
-- [initial commit] Add changelog (Laura Abbott)
-- [initial commit] Add makefile (Laura Abbott)
-- [initial commit] Add files for generating the kernel.spec (Laura Abbott)
-- [initial commit] Add rpm directory (Laura Abbott)
-- [initial commit] Add files for packaging (Laura Abbott)
-- [initial commit] Add kabi files (Laura Abbott)
-- [initial commit] Add scripts (Laura Abbott)
-- [initial commit] Add configs (Laura Abbott)
-- [initial commit] Add Makefiles (Laura Abbott)
-
-* Wed Oct 09 2019 Jeremy Cline <jcline@redhat.com> [5.4.0-0.rc2.1.elrdy]
-- Skip ksamples for bpf, they are broken (Jeremy Cline)
-- Add a SysRq option to lift kernel lockdown (Kyle McMartin)
-- efi: Lock down the kernel if booted in secure boot mode (David Howells)
-- efi: Add an EFI_SECURE_BOOT flag to indicate secure boot mode (David Howells)
-- security: lockdown: expose a hook to lock the kernel down (Jeremy Cline)
-- Make get_cert_list() use efi_status_to_str() to print error messages. (Peter Jones)
-- Add efi_status_to_str() and rework efi_status_to_err(). (Peter Jones)
-- Make get_cert_list() not complain about cert lists that aren't present. (Peter Jones)
-- [iommu] iommu/arm-smmu: workaround DMA mode issues (Laura Abbott)
-- [kernel] rh_taint: correct loaddable module support dependencies (Philipp Rudo) [1652266]
-- [kernel] rh_kabi: introduce RH_KABI_EXCLUDE (Jakub Racek) [1652256]
-- [x86] mark intel knights landing and knights mill unsupported (David Arcari) [1610493]
-- [x86] mark whiskey-lake processor supported (David Arcari) [1609604]
-- [char] ipmi: do not configure ipmi for HPE m400 (Laura Abbott) [https://bugzilla.redhat.com/show_bug.cgi?id=1670017]
-- [infiniband] IB/rxe: Mark Soft-RoCE Transport driver as tech-preview (Don Dutile) [1605216]
-- [scsi] scsi: smartpqi: add inspur advantech ids (Don Brace) [1503736]
-- [netdrv] ice: mark driver as tech-preview (Jonathan Toppins) [1495347]
-- [scsi] be2iscsi: remove BE3 family support (Maurizio Lombardi) [1598366]
-- [x86] update rh_check_supported processor list (David Arcari) [1595918]
-- [kernel] kABI: Add generic kABI macros to use for kABI workarounds (Myron Stowe) [1546831]
-- [pci] add pci_hw_vendor_status() (Maurizio Lombardi) [1590829]
-- [ata] ahci: thunderx2: Fix for errata that affects stop engine (Robert Richter) [1563590]
-- [pci] Vulcan: AHCI PCI bar fix for Broadcom Vulcan early silicon (Robert Richter) [1563590]
-- [kernel] bpf: Add tech preview taint for syscall (Eugene Syromiatnikov) [1559877]
-- [kernel] bpf: set unprivileged_bpf_disabled to 1 by default, add a boot parameter (Eugene Syromiatnikov) [1561171]
-- [kernel] add Red Hat-specific taint flags (Eugene Syromiatnikov) [1559877]
-- [kernel] kdump: fix a grammar issue in a kernel message (Dave Young) [1507353]
-- [scripts] tags.sh: Ignore redhat/rpm (Jeremy Cline)
-- [kernel] put RHEL info into generated headers (Laura Abbott) [https://bugzilla.redhat.com/show_bug.cgi?id=1663728]
-- [kernel] kdump: add support for crashkernel=auto (Jeremy Cline)
-- [kernel] kdump: round up the total memory size to 128M for crashkernel reservation (Dave Young) [1507353]
-- [arm64] acpi: prefer booting with ACPI over DTS (Mark Salter) [1576869]
-- [acpi] aarch64: acpi scan: Fix regression related to X-Gene UARTs (Mark Salter) [1519554]
-- [acpi] ACPI / irq: Workaround firmware issue on X-Gene based m400 (Mark Salter) [1519554]
-- [x86] add rh_check_supported (David Arcari) [1565717]
-- [scsi] qla2xxx: Remove PCI IDs of deprecated adapter (Jeremy Cline)
-- [scsi] be2iscsi: remove unsupported device IDs (Chris Leech) [1574502]
-- [scsi] Removing Obsolete hba pci-ids from rhel8 (Dick Kennedy) [1572321]
-- [scsi] hpsa: modify hpsa driver version (Jeremy Cline)
-- [scsi] hpsa: remove old cciss-based smartarray pci ids (Joseph Szczypek) [1471185]
-- [kernel] rh_taint: add support for marking driver as unsupported (Jonathan Toppins) [1565704]
-- [kernel] rh_taint: add support (David Arcari) [1565704]
-- [scsi] qla4xxx: Remove deprecated PCI IDs from RHEL 8 (Chad Dupuis) [1518874]
-- [scsi] aacraid: Remove depreciated device and vendor PCI id's (Raghava Aditya Renukunta) [1495307]
-- [scsi] megaraid_sas: remove deprecated pci-ids (Tomas Henzl) [1509329]
-- [scsi] mpt*: remove certain deprecated pci-ids (Jeremy Cline)
-- [kernel] modules: add rhelversion MODULE_INFO tag (Laura Abbott)
-- [acpi] ACPI: APEI: arm64: Ignore broken HPE moonshot APEI support (Al Stone) [1518076]
-- gitlab: Add CI job for packaging scripts (Major Hayden)
-- Set CRYPTO_SHA3_*_S390 to builtin on zfcpdump (Jeremy Cline)
-- configs: New config in drivers/edac for v5.4-rc1 (Jeremy Cline)
-- configs: New config in drivers/firmware for v5.4-rc1 (Jeremy Cline)
-- configs: New config in drivers/hwmon for v5.4-rc1 (Jeremy Cline)
-- configs: New config in drivers/iio for v5.4-rc1 (Jeremy Cline)
-- configs: New config in drivers/mmc for v5.4-rc1 (Jeremy Cline)
-- configs: New config in drivers/tty for v5.4-rc1 (Jeremy Cline)
-- configs: New config in arch/s390 for v5.4-rc1 (Jeremy Cline)
-- configs: New config in drivers/bus for v5.4-rc1 (Jeremy Cline)
-- Add option to allow mismatched configs on the command line (Laura Abbott)
-- configs: New config in drivers/crypto for v5.4-rc1 (Jeremy Cline)
-- configs: New config in sound/pci for v5.4-rc1 (Jeremy Cline)
-- configs: New config in sound/soc for v5.4-rc1 (Jeremy Cline)
-- Speed up CI with CKI image (Major Hayden)
-- configs: Fix the pending default for CONFIG_ARM64_VA_BITS_52 (Jeremy Cline)
-- configs: Turn on OPTIMIZE_INLINING for everything (Jeremy Cline)
-- configs: Set valid pending defaults for CRYPTO_ESSIV (Jeremy Cline)
-- Add an initial CI configuration for the internal branch (Jeremy Cline)
-- New drop of configuration options for v5.4-rc1 (Jeremy Cline)
-- Disable e1000 driver in ARK (Neil Horman)
-- New drop of configuration options for v5.4-rc1 (Jeremy Cline)
-- configs: Adjust CONFIG_FORCE_MAX_ZONEORDER for Fedora (Laura Abbott)
-- configs: Add README for some other arches (Laura Abbott)
-- configs: Sync up Fedora configs (Laura Abbott)
-- Pull the RHEL version defines out of the Makefile (Jeremy Cline)
-- Sync up the ARK build scripts (Jeremy Cline)
-- Sync up the Fedora Rawhide configs (Jeremy Cline)
-- Sync up the ARK config files (Jeremy Cline)
-- [initial commit] Add structure for building with git (Laura Abbott)
-- [initial commit] Add Red Hat variables in the top level makefile (Laura Abbott)
 - [initial commit] Red Hat gitignore and attributes (Laura Abbott)
 - [initial commit] Add changelog (Laura Abbott)
 - [initial commit] Add makefile (Laura Abbott)
