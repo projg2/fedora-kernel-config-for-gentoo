@@ -78,9 +78,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc2.18
+%global distro_build 0.rc2.20210922git92477dd1faa6.20
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -125,13 +125,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc2.18
+%define pkgrelease 0.rc2.20210922git92477dd1faa6.20
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.18%{?buildid}%{?dist}
+%define specrelease 0.rc2.20210922git92477dd1faa6.20%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -394,8 +394,6 @@ Summary: The Linux kernel
 # sparse blows up on ppc
 %ifnarch ppc64le
 %define with_sparse 0
-# Temporarily turn off selftests as they are failing to build on ppc
-%define with_selftests 0
 %endif
 
 # zfcpdump mechanism is s390 only
@@ -674,7 +672,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc2.tar.xz
+Source0: linux-5.15-rc2-32-g92477dd1faa6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1360,8 +1358,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc2 -c
-mv linux-5.15-rc2 linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc2-32-g92477dd1faa6 -c
+mv linux-5.15-rc2-32-g92477dd1faa6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
