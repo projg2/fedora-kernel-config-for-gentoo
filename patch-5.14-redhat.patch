@@ -1377,7 +1377,7 @@ index 75dbe77b0b4b..4bd6dd722f44 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 1905ee0297a4..58fded74fb31 100644
+index 8c3c1ef92171..18431236ab9f 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4232,6 +4232,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
