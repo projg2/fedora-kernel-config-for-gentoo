@@ -78,9 +78,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc3.25
+%global distro_build 0.rc3.20210929gita4e6f95a891a.27
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -125,13 +125,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc3.25
+%define pkgrelease 0.rc3.20210929gita4e6f95a891a.27
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.25%{?buildid}%{?dist}
+%define specrelease 0.rc3.20210929gita4e6f95a891a.27%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -428,7 +428,6 @@ Summary: The Linux kernel
 %define kernel_image vmlinux
 %define kernel_image_elf 1
 %define use_vdso 0
-%define with_selftests 0
 %define all_arch_configs kernel-%{version}-ppc64le*.config
 %endif
 
@@ -673,7 +672,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc3.tar.xz
+Source0: linux-5.15-rc3-104-ga4e6f95a891a.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1359,8 +1358,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc3 -c
-mv linux-5.15-rc3 linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc3-104-ga4e6f95a891a -c
+mv linux-5.15-rc3-104-ga4e6f95a891a linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2959,6 +2958,16 @@ fi
 #
 #
 %changelog
+* Wed Sep 29 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc3.20210929gita4e6f95a891a.27]
+- cleanup CONFIG_X86_PLATFORM_DRIVERS_INTEL (David Arcari)
+- redhat: rename usage of .rhel8git.mk to .rhpkg.mk (Herton R. Krzesinski)
+
+* Tue Sep 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc3.20210928git0513e464f900.26]
+- Manually add pending items that need to be set due to mismatch (Justin M. Forbes)
+- Clean up pending common (Justin M. Forbes)
+- redhat/configs: Enable CONFIG_BLK_CGROUP_IOLATENCY & CONFIG_BLK_CGROUP_FC_APPID (Waiman Long) [2006813]
+- redhat: remove kernel.changelog-8.99 file (Herton R. Krzesinski)
+
 * Thu Sep 23 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc2.20210923git58e2cf5d7946.21]
 - redhat/configs: enable CONFIG_SQUASHFS_ZSTD which is already enabled in Fedora 34 (Tao Liu) [1998953]
 
