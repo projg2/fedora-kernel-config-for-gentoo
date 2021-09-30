@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc3.20210929gita4e6f95a891a.27
+%global distro_build 0.rc3.20210930git02d5e016800d.28
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -125,13 +125,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc3.20210929gita4e6f95a891a.27
+%define pkgrelease 0.rc3.20210930git02d5e016800d.28
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20210929gita4e6f95a891a.27%{?buildid}%{?dist}
+%define specrelease 0.rc3.20210930git02d5e016800d.28%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -672,7 +672,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc3-104-ga4e6f95a891a.tar.xz
+Source0: linux-5.15-rc3-135-g02d5e016800d.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1358,8 +1358,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc3-104-ga4e6f95a891a -c
-mv linux-5.15-rc3-104-ga4e6f95a891a linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc3-135-g02d5e016800d -c
+mv linux-5.15-rc3-135-g02d5e016800d linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2958,6 +2958,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 30 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc3.20210930git02d5e016800d.28]
+- redhat/configs: Remove CONFIG_INFINIBAND_I40IW (Kamal Heib)
+
 * Wed Sep 29 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc3.20210929gita4e6f95a891a.27]
 - cleanup CONFIG_X86_PLATFORM_DRIVERS_INTEL (David Arcari)
 - redhat: rename usage of .rhel8git.mk to .rhpkg.mk (Herton R. Krzesinski)
