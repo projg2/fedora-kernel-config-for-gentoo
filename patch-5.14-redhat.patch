@@ -6,6 +6,7 @@
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/setup.c                            |  22 +-
+ block/bfq-iosched.c                                |  16 +-
  crypto/rng.c                                       |  73 ++-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
@@ -23,7 +24,6 @@
  drivers/iommu/iommu.c                              |  22 +
  drivers/net/wireguard/main.c                       |   6 +
  drivers/pci/quirks.c                               |  24 +
- .../int340x_thermal/processor_thermal_device.c     |   5 +-
  drivers/usb/core/hub.c                             |   7 +
  fs/xfs/xfs_super.c                                 |   8 -
  include/linux/efi.h                                |  22 +-
@@ -52,7 +52,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 54 files changed, 658 insertions(+), 1497 deletions(-)
+ 54 files changed, 658 insertions(+), 1508 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
 index 2fb7012c3246..47718b4f2f75 100644
@@ -176,7 +176,7 @@ index 6f0d2d4dea74..2f4d60b24155 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index bff3a784aec5..4e13c3ee5723 100644
+index d103e8489ec1..16ef6bcceed2 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -19,6 +19,7 @@
@@ -187,7 +187,7 @@ index bff3a784aec5..4e13c3ee5723 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -936,6 +937,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -938,6 +939,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -201,7 +201,7 @@ index bff3a784aec5..4e13c3ee5723 100644
  	dmi_setup();
 
  	/*
-@@ -1101,19 +1109,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1103,19 +1111,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -221,6 +221,47 @@ index bff3a784aec5..4e13c3ee5723 100644
 +	efi_set_secure_boot(boot_params.secure_boot);
 
  	reserve_initrd();
+
+diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+index 3a1038b6eeb3..9360c65169ff 100644
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -2662,15 +2662,6 @@ bfq_setup_merge(struct bfq_queue *bfqq, struct bfq_queue *new_bfqq)
+ 	 * are likely to increase the throughput.
+ 	 */
+ 	bfqq->new_bfqq = new_bfqq;
+-	/*
+-	 * The above assignment schedules the following redirections:
+-	 * each time some I/O for bfqq arrives, the process that
+-	 * generated that I/O is disassociated from bfqq and
+-	 * associated with new_bfqq. Here we increases new_bfqq->ref
+-	 * in advance, adding the number of processes that are
+-	 * expected to be associated with new_bfqq as they happen to
+-	 * issue I/O.
+-	 */
+ 	new_bfqq->ref += process_refs;
+ 	return new_bfqq;
+ }
+@@ -2733,10 +2724,6 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ {
+ 	struct bfq_queue *in_service_bfqq, *new_bfqq;
+
+-	/* if a merge has already been setup, then proceed with that first */
+-	if (bfqq->new_bfqq)
+-		return bfqq->new_bfqq;
+-
+ 	/*
+ 	 * Check delayed stable merge for rotational or non-queueing
+ 	 * devs. For this branch to be executed, bfqq must not be
+@@ -2838,6 +2825,9 @@ bfq_setup_cooperator(struct bfq_data *bfqd, struct bfq_queue *bfqq,
+ 	if (bfq_too_late_for_merging(bfqq))
+ 		return NULL;
+
++	if (bfqq->new_bfqq)
++		return bfqq->new_bfqq;
++
+ 	if (!io_struct || unlikely(bfqq == &bfqd->oom_bfqq))
+ 		return NULL;
 
 diff --git a/crypto/rng.c b/crypto/rng.c
 index fea082b25fe4..50a9d040bed1 100644
@@ -1317,29 +1358,6 @@ index 8c3c1ef92171..18431236ab9f 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
-diff --git a/drivers/thermal/intel/int340x_thermal/processor_thermal_device.c b/drivers/thermal/intel/int340x_thermal/processor_thermal_device.c
-index 0f0038af2ad4..fb64acfd5e07 100644
---- a/drivers/thermal/intel/int340x_thermal/processor_thermal_device.c
-+++ b/drivers/thermal/intel/int340x_thermal/processor_thermal_device.c
-@@ -107,7 +107,7 @@ static int tcc_offset_update(unsigned int tcc)
- 	return 0;
- }
-
--static unsigned int tcc_offset_save;
-+static int tcc_offset_save = -1;
-
- static ssize_t tcc_offset_degree_celsius_store(struct device *dev,
- 				struct device_attribute *attr, const char *buf,
-@@ -352,7 +352,8 @@ int proc_thermal_resume(struct device *dev)
- 	proc_dev = dev_get_drvdata(dev);
- 	proc_thermal_read_ppcc(proc_dev);
-
--	tcc_offset_update(tcc_offset_save);
-+	if (tcc_offset_save >= 0)
-+		tcc_offset_update(tcc_offset_save);
-
- 	return 0;
- }
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index 86658a81d284..5647f4756e97 100644
 --- a/drivers/usb/core/hub.c

@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/be4d6e21716592aa0230e5ae6ecaedce6f36d9a5
+ be4d6e21716592aa0230e5ae6ecaedce6f36d9a5 Revert "block, bfq: honor already-setup queue merges"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/b404ad1e47af572e35ac407260103356c961c627
  b404ad1e47af572e35ac407260103356c961c627 thermal/drivers/int340x: Do not set a wrong tcc offset on resume
 
