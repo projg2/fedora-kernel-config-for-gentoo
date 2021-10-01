@@ -3050,10 +3050,10 @@ index 9ffa9e9c5c55..36484cc9842d 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 866531c08e4f..40dadc919226 100644
+index 799b88152e9e..73c687d900c3 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -425,7 +425,6 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
+@@ -426,7 +426,6 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
  		      $(TRUNNER_BPF_OBJS)				\
  		      $(TRUNNER_BPF_SKELS)				\
  		      $(TRUNNER_BPF_LSKELS)				\
