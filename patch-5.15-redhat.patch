@@ -47,7 +47,7 @@
  fs/ext4/super.c                                    |   5 +
  fs/xfs/xfs_super.c                                 |   5 +
  include/linux/efi.h                                |  22 +-
- include/linux/kernel.h                             |  15 +
+ include/linux/kernel.h                             |  17 +
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
  include/linux/module.h                             |   1 +
@@ -63,7 +63,7 @@
  kernel/module.c                                    |   2 +
  kernel/module_signing.c                            |   9 +-
  kernel/panic.c                                     |  14 +
- kernel/rh_taint.c                                  |  93 ++++
+ kernel/rh_taint.c                                  | 109 +++++
  kernel/sysctl.c                                    |   5 +
  mm/cma.c                                           |  10 +
  scripts/mod/modpost.c                              |   8 +
@@ -85,7 +85,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 87 files changed, 1359 insertions(+), 1523 deletions(-)
+ 87 files changed, 1377 insertions(+), 1523 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 91ba391f9b32..88296cfdc5e5 100644
@@ -141,7 +141,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 437ccc66a1c2..22750d1ec561 100644
+index 7b74223d1309..ef9d05c382c3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1573,7 +1573,7 @@ index 75dbe77b0b4b..029ff8576f8e 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index e486845d2c7e..c012fc0027f1 100644
+index 7712a8f78337..471f4ff4272a 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -262,6 +262,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1687,10 +1687,10 @@ index e8ccdd398f78..b77de74d3660 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 9871c0c9374c..08afeca5ffda 100644
+index ed79a6c7e804..961dc67d7261 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -740,6 +740,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -746,6 +746,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags);
  void nvme_failover_req(struct request *req);
@@ -1698,7 +1698,7 @@ index 9871c0c9374c..08afeca5ffda 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -778,6 +779,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
+@@ -784,6 +785,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -2069,10 +2069,10 @@ index 86658a81d284..5647f4756e97 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 0775950ee84e..1a3e0b7dd7dc 100644
+index 88d5d274a868..6693ff552b24 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4292,6 +4292,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4298,6 +4298,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
 
  	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
@@ -2080,7 +2080,7 @@ index 0775950ee84e..1a3e0b7dd7dc 100644
  		if (ext4_has_feature_inline_data(sb)) {
  			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
  					" that may contain inline data");
-@@ -4302,6 +4303,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4308,6 +4309,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  				"DAX unsupported by block device.");
  			goto failed_mount;
  		}
@@ -2183,10 +2183,10 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 2776423a587e..b2ad8b56dc3c 100644
+index 2776423a587e..07b4d301690d 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -530,4 +530,19 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -530,4 +530,21 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -2198,11 +2198,13 @@ index 2776423a587e..b2ad8b56dc3c 100644
 +void mark_hardware_deprecated(const char *msg);
 +void mark_tech_preview(const char *msg, struct module *mod);
 +void mark_driver_unsupported(const char *name);
++void mark_driver_deprecated(const char *name);
 +#else
 +static inline void mark_hardware_unsupported(const char *msg) { }
 +static inline void mark_hardware_deprecated(const char *msg) { }
 +static inline void mark_tech_preview(const char *msg, struct module *mod) { }
 +static inline void mark_driver_unsupported(const char *name) { }
++static inline void mark_driver_deprecated(const char *name) { }
 +#endif
 +
  #endif
@@ -2785,10 +2787,10 @@ index cefd7d82366f..ad43433c7013 100644
  /**
 diff --git a/kernel/rh_taint.c b/kernel/rh_taint.c
 new file mode 100644
-index 000000000000..4050b6dead75
+index 000000000000..95196f56ab1e
 --- /dev/null
 +++ b/kernel/rh_taint.c
-@@ -0,0 +1,93 @@
+@@ -0,0 +1,109 @@
 +#include <linux/kernel.h>
 +#include <linux/module.h>
 +
@@ -2882,6 +2884,22 @@ index 000000000000..4050b6dead75
 +	        name ? name : "kernel");
 +}
 +EXPORT_SYMBOL(mark_driver_unsupported);
++
++/**
++ * mark_driver_deprecated() - Mark drivers as deprecated.
++ * @name: the name of the driver
++ *
++ * Called to minimize the support status of a previously supported driver in
++ * a minor release. This does not TAINT the kernel. Future
++ * RHEL major releases may not include this driver. Driver updates and fixes
++ * will be limited to critical issues in future minor releases.
++ */
++void mark_driver_deprecated(const char *name)
++{
++	pr_crit("Warning: %s - this driver is not recommended for new deployments. It continues to be supported in this RHEL release, but it is likely to be removed in the next major release. Driver updates and fixes will be limited to critical issues. Please contact Red Hat Support for additional information.\n",
++	        name ? name : "kernel");
++}
++EXPORT_SYMBOL(mark_driver_deprecated);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
 index 083be6af29d7..4f271712be5e 100644
 --- a/kernel/sysctl.c

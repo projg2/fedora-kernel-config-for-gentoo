@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/1739846090d60287d56220b3a984603158668acb
+ 1739846090d60287d56220b3a984603158668acb redhat: Add mark_driver_deprecated()
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/db5256d639278a4a5980c15cffcb538b057e6849
  db5256d639278a4a5980c15cffcb538b057e6849 arm64: use common CONFIG_MAX_ZONEORDER for arm kernel
 

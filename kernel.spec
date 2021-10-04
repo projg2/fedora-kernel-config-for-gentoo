@@ -83,9 +83,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc3.20211001git4de593fb965f.30
+%global distro_build 0.rc4.33
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc3.20211001git4de593fb965f.30
+%define pkgrelease 0.rc4.33
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20211001git4de593fb965f.30%{?buildid}%{?dist}
+%define specrelease 0.rc4.33%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -677,7 +677,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc3-240-g4de593fb965f.tar.xz
+Source0: linux-5.15-rc4.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1368,8 +1368,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc3-240-g4de593fb965f -c
-mv linux-5.15-rc3-240-g4de593fb965f linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc4 -c
+mv linux-5.15-rc4 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2968,8 +2968,17 @@ fi
 #
 #
 %changelog
-* Fri Oct 01 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc3.20211001git4de593fb965f.30]
+* Mon Oct 04 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc4.33]
+- Fix ordering in genspec args (Justin M. Forbes)
+
+* Sat Oct 02 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc3.20211002git53d5fc89d66a.30]
+- redhat/configs: Enable Hyper-V guests on ARM64 (Vitaly Kuznetsov) [2007430]
+- redhat: configs: Enable CONFIG_THINKPAD_LMI (Hans de Goede)
+- redhat/docs: update Koji link to avoid redirect (Joel Savitz)
+- redhat: add support for different profiles with dist*-brew (Herton R. Krzesinski)
 - Fix BPF selftests build on ppc64 (Justin M. Forbes)
+- redhat: configs: Disable xtables and ipset (Phil Sutter) [1945179]
+- redhat: Add mark_driver_deprecated() (Phil Sutter) [1945179]
 
 * Fri Oct 01 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc3.20211001git4de593fb965f.29]
 - Change s390x CONFIG_NODES_SHIFT from 4 to 1 (Justin M. Forbes)
