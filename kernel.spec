@@ -433,6 +433,7 @@ Summary: The Linux kernel
 %define kernel_image vmlinux
 %define kernel_image_elf 1
 %define use_vdso 0
+%define with_selftests 0
 %define all_arch_configs kernel-%{version}-ppc64le*.config
 %endif
 
