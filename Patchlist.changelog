@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/d54c534eb54e581cb7327e36ca1a43f1ec5c94e5
+ d54c534eb54e581cb7327e36ca1a43f1ec5c94e5 Testing upstream bpf selftests
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/1739846090d60287d56220b3a984603158668acb
  1739846090d60287d56220b3a984603158668acb redhat: Add mark_driver_deprecated()
 

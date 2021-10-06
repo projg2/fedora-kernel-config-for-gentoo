@@ -83,9 +83,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc4.33
+%global distro_build 0.rc4.20211006git60a9483534ed.34
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc4.33
+%define pkgrelease 0.rc4.20211006git60a9483534ed.34
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.33%{?buildid}%{?dist}
+%define specrelease 0.rc4.20211006git60a9483534ed.34%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -433,7 +433,6 @@ Summary: The Linux kernel
 %define kernel_image vmlinux
 %define kernel_image_elf 1
 %define use_vdso 0
-%define with_selftests 0
 %define all_arch_configs kernel-%{version}-ppc64le*.config
 %endif
 
@@ -678,7 +677,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc4.tar.xz
+Source0: linux-5.15-rc4-15-g60a9483534ed.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1369,8 +1368,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc4 -c
-mv linux-5.15-rc4 linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc4-15-g60a9483534ed -c
+mv linux-5.15-rc4-15-g60a9483534ed linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2969,7 +2968,13 @@ fi
 #
 #
 %changelog
-* Mon Oct 04 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc4.33]
+* Wed Oct 06 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-0.rc4.20211006git60a9483534ed.34]
+- Testing upstream bpf selftests (Justin M. Forbes)
+
+* Wed Oct 06 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc4.20211006git60a9483534ed.34]
+- Revert "Merge branch 'ppcbpfselftest' into 'os-build'" (Justin M. Forbes)
+
+* Tue Oct 05 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc4.20211005gitf6274b06e326.33]
 - Fix ordering in genspec args (Justin M. Forbes)
 
 * Sat Oct 02 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc3.20211002git53d5fc89d66a.30]
