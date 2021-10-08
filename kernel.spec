@@ -85,7 +85,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc4.20211006git60a9483534ed.34
+%global distro_build 0.rc4.20211008git1da38549dd64.36
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc4.20211006git60a9483534ed.34
+%define pkgrelease 0.rc4.20211008git1da38549dd64.36
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20211006git60a9483534ed.34%{?buildid}%{?dist}
+%define specrelease 0.rc4.20211008git1da38549dd64.36%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -677,7 +677,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc4-15-g60a9483534ed.tar.xz
+Source0: linux-5.15-rc4-193-g1da38549dd64.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1368,8 +1368,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc4-15-g60a9483534ed -c
-mv linux-5.15-rc4-15-g60a9483534ed linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc4-193-g1da38549dd64 -c
+mv linux-5.15-rc4-193-g1da38549dd64 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2968,8 +2968,9 @@ fi
 #
 #
 %changelog
-* Wed Oct 06 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-0.rc4.20211006git60a9483534ed.34]
-- Testing upstream bpf selftests (Justin M. Forbes)
+* Thu Oct 07 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc4.20211007git5af4055fa813.35]
+- Fedora NTFS config updates (Justin M. Forbes)
+- Fedora 5.15 configs part 1 (Justin M. Forbes)
 
 * Wed Oct 06 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc4.20211006git60a9483534ed.34]
 - Revert "Merge branch 'ppcbpfselftest' into 'os-build'" (Justin M. Forbes)
