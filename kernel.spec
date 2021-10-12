@@ -83,9 +83,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc5.39
+%global distro_build 0.rc5.20211012gitfa5878760579.41
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc5.39
+%define pkgrelease 0.rc5.20211012gitfa5878760579.41
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.39%{?buildid}%{?dist}
+%define specrelease 0.rc5.20211012gitfa5878760579.41%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -432,8 +432,9 @@ Summary: The Linux kernel
 %define make_target vmlinux
 %define kernel_image vmlinux
 %define kernel_image_elf 1
-%define with_selftests 0
 %define use_vdso 0
+# Currently very broken for ppc
+%define with_selftests 0
 %define all_arch_configs kernel-%{version}-ppc64le*.config
 %endif
 
@@ -678,7 +679,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc5.tar.xz
+Source0: linux-5.15-rc5-25-gfa5878760579.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1369,8 +1370,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc5 -c
-mv linux-5.15-rc5 linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc5-25-gfa5878760579 -c
+mv linux-5.15-rc5-25-gfa5878760579 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2969,6 +2970,14 @@ fi
 #
 #
 %changelog
+* Tue Oct 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc5.20211012gitfa5878760579.41]
+- Temporarily turn off selftests for bpf on ppc (Justin M. Forbes)
+
+* Tue Oct 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc5.20211012gitfa5878760579.40]
+- Enable KUNIT tests for redhat kernel-modules-internal (Nico Pache)
+- redhat: add *-matched meta packages to rpminspect emptyrpm config (Herton R. Krzesinski)
+- Use common config for NODES_SHIFT (Mark Salter)
+
 * Sat Oct 09 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc4.20211009git5d6ab0bb408f.37]
 - redhat: fix typo and make the output more silent for dist-git sync (Herton R. Krzesinski)
 
