@@ -2720,7 +2720,7 @@ index 4e50c0bfdb7d..f4e32c61ec18 100644
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
 diff --git a/kernel/module.c b/kernel/module.c
-index 40ec9a030eec..2d50fb4c9862 100644
+index 5c26a76e800b..25c4108ac627 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -743,6 +743,7 @@ static struct module_attribute modinfo_##field = {                    \

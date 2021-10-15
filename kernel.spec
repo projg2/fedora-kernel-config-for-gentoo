@@ -85,7 +85,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc5.20211013gitf4d0cc426f77.42
+%global distro_build 0.rc5.20211015gitec681c53f8d2.44
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc5.20211013gitf4d0cc426f77.42
+%define pkgrelease 0.rc5.20211015gitec681c53f8d2.44
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20211013gitf4d0cc426f77.42%{?buildid}%{?dist}
+%define specrelease 0.rc5.20211015gitec681c53f8d2.44%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -679,7 +679,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc5-39-gf4d0cc426f77.tar.xz
+Source0: linux-5.15-rc5-126-gec681c53f8d2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1370,8 +1370,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc5-39-gf4d0cc426f77 -c
-mv linux-5.15-rc5-39-gf4d0cc426f77 linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc5-126-gec681c53f8d2 -c
+mv linux-5.15-rc5-126-gec681c53f8d2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2970,9 +2970,13 @@ fi
 #
 #
 %changelog
-* Wed Oct 13 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc5.20211013gitf4d0cc426f77.42]
-- Add kfence_test to mod-internal.list (Justin M. Forbes)
+* Fri Oct 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc5.20211015gitec681c53f8d2.44]
 - Temporarily turn off selftests for bpf on ppc (Justin M. Forbes)
+
+* Fri Oct 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc5.20211015gitec681c53f8d2.43]
+- Fix dist-srpm-gcov (Don Zickus)
+- redhat: configs: add CONFIG_NTB and related items (John W. Linville)
+- Add kfence_test to mod-internal.list (Justin M. Forbes)
 
 * Tue Oct 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc5.20211012gitfa5878760579.40]
 - Enable KUNIT tests for redhat kernel-modules-internal (Nico Pache)
