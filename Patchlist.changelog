@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/7669a9b770057fa6a97e4fc23225e72ddba8719d
+ 7669a9b770057fa6a97e4fc23225e72ddba8719d ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/32568097ff5803d25ac5e233583903c1c4666711
  32568097ff5803d25ac5e233583903c1c4666711 e100e: Fix packet loss issues seen on Intel network controller
 
