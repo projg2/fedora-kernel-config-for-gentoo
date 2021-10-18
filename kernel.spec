@@ -83,9 +83,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc5.20211015gitec681c53f8d2.44
+%global distro_build 0.rc6.47
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc5.20211015gitec681c53f8d2.44
+%define pkgrelease 0.rc6.47
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20211015gitec681c53f8d2.44%{?buildid}%{?dist}
+%define specrelease 0.rc6.47%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -679,7 +679,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc5-126-gec681c53f8d2.tar.xz
+Source0: linux-5.15-rc6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1370,8 +1370,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc5-126-gec681c53f8d2 -c
-mv linux-5.15-rc5-126-gec681c53f8d2 linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc6 -c
+mv linux-5.15-rc6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2970,7 +2970,7 @@ fi
 #
 #
 %changelog
-* Fri Oct 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc5.20211015gitec681c53f8d2.44]
+* Mon Oct 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc6.47]
 - Temporarily turn off selftests for bpf on ppc (Justin M. Forbes)
 
 * Fri Oct 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc5.20211015gitec681c53f8d2.43]
