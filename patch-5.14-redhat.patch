@@ -3222,3 +3222,29 @@ index e4f5bd388a3c..000000000000
 -}
 -
 -char LICENSE[] SEC("license") = "GPL";
+From 53c4c6b56f335cb97de78ede2e2f65c5ff90df2c Mon Sep 17 00:00:00 2001
+From: "Justin M. Forbes" <jforbes@fedoraproject.org>
+Date: Tue, 10 Aug 2021 13:34:24 -0500
+Subject: [PATCH] Fix up backport of Dell XPS 9710 quirk
+
+Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
+---
+ sound/soc/intel/boards/sof_sdw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/soc/intel/boards/sof_sdw.c b/sound/soc/intel/boards/sof_sdw.c
+index c78a98be343d..3635d8002ecf 100644
+--- a/sound/soc/intel/boards/sof_sdw.c
++++ b/sound/soc/intel/boards/sof_sdw.c
+@@ -136,7 +136,7 @@ static const struct dmi_system_id sof_sdw_quirk_table[] = {
+ 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "0A5D")
+ 		},
+ 		.driver_data = (void *)(SOF_SDW_TGL_HDMI |
+-					RT711_JD2 |
++					SOF_RT711_JD_SRC_JD2 |
+ 					SOF_RT715_DAI_ID_FIX |
+ 					SOF_SDW_FOUR_SPK),
+ 	},
+-- 
+2.31.1
+
