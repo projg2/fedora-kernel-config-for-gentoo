@@ -1,3 +1,12 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/c72074b04c2b97c40f0fecb2754cd58f83c21642
+ c72074b04c2b97c40f0fecb2754cd58f83c21642 autofs: fix wait name hash calculation in autofs_wait()
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/cf1b4a61d08376edbf118eaadd3917b1feb96dac
+ cf1b4a61d08376edbf118eaadd3917b1feb96dac Fix up quirk to match upstream
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/959b672c6338f5fa203aadc5cd121c724ea2a002
+ 959b672c6338f5fa203aadc5cd121c724ea2a002 Fix up backport of Dell XPS 9710 quirk
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/7669a9b770057fa6a97e4fc23225e72ddba8719d
  7669a9b770057fa6a97e4fc23225e72ddba8719d ASoC: Intel: sof_sdw: add quirk for Dell XPS 9710
 
