@@ -28,6 +28,7 @@
  drivers/net/wireguard/main.c                       |   6 +
  drivers/pci/quirks.c                               |  24 +
  drivers/usb/core/hub.c                             |   7 +
+ fs/autofs/waitq.c                                  |   2 +-
  fs/xfs/xfs_super.c                                 |   8 -
  include/linux/efi.h                                |  22 +-
  include/linux/lsm_hook_defs.h                      |   2 +
@@ -42,7 +43,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- sound/soc/intel/boards/sof_sdw.c                   |  12 +
+ sound/soc/intel/boards/sof_sdw.c                   |  13 +
  tools/testing/selftests/bpf/Makefile               |   1 -
  .../selftests/bpf/prog_tests/linked_funcs.c        |  42 --
  .../testing/selftests/bpf/prog_tests/linked_maps.c |  30 --
@@ -56,7 +57,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 58 files changed, 721 insertions(+), 1510 deletions(-)
+ 59 files changed, 723 insertions(+), 1511 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
 index 2fb7012c3246..47718b4f2f75 100644
@@ -1488,6 +1489,19 @@ index 86658a81d284..5647f4756e97 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/autofs/waitq.c b/fs/autofs/waitq.c
+index 16b5fca0626e..54c1f8b8b075 100644
+--- a/fs/autofs/waitq.c
++++ b/fs/autofs/waitq.c
+@@ -358,7 +358,7 @@ int autofs_wait(struct autofs_sb_info *sbi,
+ 		qstr.len = strlen(p);
+ 		offset = p - name;
+ 	}
+-	qstr.hash = full_name_hash(dentry, name, qstr.len);
++	qstr.hash = full_name_hash(dentry, qstr.name, qstr.len);
+
+ 	if (mutex_lock_interruptible(&sbi->wq_mutex)) {
+ 		kfree(name);
 diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
 index 2c9e26a44546..f96324912d6a 100644
 --- a/fs/xfs/xfs_super.c
@@ -1812,10 +1826,18 @@ index 9ffa9e9c5c55..36484cc9842d 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/sound/soc/intel/boards/sof_sdw.c b/sound/soc/intel/boards/sof_sdw.c
-index cb3afc4519cf..6a12f9817e0b 100644
+index cb3afc4519cf..a8a0156045ba 100644
 --- a/sound/soc/intel/boards/sof_sdw.c
 +++ b/sound/soc/intel/boards/sof_sdw.c
-@@ -128,6 +128,18 @@ static const struct dmi_system_id sof_sdw_quirk_table[] = {
+@@ -13,6 +13,7 @@
+ #include <sound/soc.h>
+ #include <sound/soc-acpi.h>
+ #include "sof_sdw_common.h"
++#include "../../codecs/rt711.h"
+
+ unsigned long sof_sdw_quirk = SOF_RT711_JD_SRC_JD1;
+ static int quirk_override = -1;
+@@ -128,6 +129,18 @@ static const struct dmi_system_id sof_sdw_quirk_table[] = {
  					SOF_RT711_JD_SRC_JD2 |
  					SOF_RT715_DAI_ID_FIX),
  	},
@@ -3222,29 +3244,3 @@ index e4f5bd388a3c..000000000000
 -}
 -
 -char LICENSE[] SEC("license") = "GPL";
-From 53c4c6b56f335cb97de78ede2e2f65c5ff90df2c Mon Sep 17 00:00:00 2001
-From: "Justin M. Forbes" <jforbes@fedoraproject.org>
-Date: Tue, 10 Aug 2021 13:34:24 -0500
-Subject: [PATCH] Fix up backport of Dell XPS 9710 quirk
-
-Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
----
- sound/soc/intel/boards/sof_sdw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/sound/soc/intel/boards/sof_sdw.c b/sound/soc/intel/boards/sof_sdw.c
-index c78a98be343d..3635d8002ecf 100644
---- a/sound/soc/intel/boards/sof_sdw.c
-+++ b/sound/soc/intel/boards/sof_sdw.c
-@@ -136,7 +136,7 @@ static const struct dmi_system_id sof_sdw_quirk_table[] = {
- 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "0A5D")
- 		},
- 		.driver_data = (void *)(SOF_SDW_TGL_HDMI |
--					RT711_JD2 |
-+					SOF_RT711_JD_SRC_JD2 |
- 					SOF_RT715_DAI_ID_FIX |
- 					SOF_SDW_FOUR_SPK),
- 	},
--- 
-2.31.1
-
