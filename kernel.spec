@@ -83,9 +83,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc6.47
+%global distro_build 0.rc6.20211021git2f111a6fd5b5.49
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc6.47
+%define pkgrelease 0.rc6.20211021git2f111a6fd5b5.49
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.47%{?buildid}%{?dist}
+%define specrelease 0.rc6.20211021git2f111a6fd5b5.49%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -247,9 +247,14 @@ Summary: The Linux kernel
 %endif
 
 %if %{with toolchain_clang}
-%global clang_make_opts HOSTCC=clang CC=clang
+%ifarch s390x ppc64le
+%global llvm_ias 0
+%else
+%global llvm_ias 1
+%endif
+%global clang_make_opts HOSTCC=clang CC=clang LLVM_IAS=%{llvm_ias}
 %if %{with clang_lto}
-%global clang_make_opts %{clang_make_opts} LD=ld.lld HOSTLD=ld.lld AR=llvm-ar NM=llvm-nm HOSTAR=llvm-ar HOSTNM=llvm-nm LLVM_IAS=1
+%global clang_make_opts %{clang_make_opts} LD=ld.lld HOSTLD=ld.lld AR=llvm-ar NM=llvm-nm HOSTAR=llvm-ar HOSTNM=llvm-nm
 %endif
 %global make_opts %{make_opts} %{clang_make_opts}
 # clang does not support the -fdump-ipa-clones option
@@ -433,8 +438,6 @@ Summary: The Linux kernel
 %define kernel_image vmlinux
 %define kernel_image_elf 1
 %define use_vdso 0
-# Currently very broken for ppc
-%define with_selftests 0
 %define all_arch_configs kernel-%{version}-ppc64le*.config
 %endif
 
@@ -679,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc6.tar.xz
+Source0: linux-5.15-rc6-70-g2f111a6fd5b5.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1370,8 +1373,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc6 -c
-mv linux-5.15-rc6 linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc6-70-g2f111a6fd5b5 -c
+mv linux-5.15-rc6-70-g2f111a6fd5b5 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2248,7 +2251,7 @@ popd
 # in the source tree. We installed them previously to $RPM_BUILD_ROOT/usr
 # but there's no way to tell the Makefile to take them from there.
 %{make} %{?_smp_mflags} headers_install
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/ || true
 
 # Prevent bpf selftests to build bpftool repeatedly:
 export BPFTOOL=$(pwd)/tools/bpf/bpftool/bpftool
@@ -2970,8 +2973,14 @@ fi
 #
 #
 %changelog
-* Mon Oct 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc6.47]
-- Temporarily turn off selftests for bpf on ppc (Justin M. Forbes)
+* Thu Oct 21 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc6.20211021git2f111a6fd5b5.49]
+- Revert "bpf, selftests: Disable tests that need clang13" (Jiri Olsa)
+- spec: Don't fail spec build if ksamples fails (Jiri Olsa)
+- Enable CONFIG_QCOM_SCM for arm (Justin M. Forbes)
+
+* Tue Oct 19 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc6.47]
+- redhat: Disable clang's integrated assembler on ppc64le and s390x (Tom Stellard)
+- redhat/configs: enable CONFIG_IMA_WRITE_POLICY (Bruno Meneguele)
 
 * Fri Oct 15 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc5.20211015gitec681c53f8d2.43]
 - Fix dist-srpm-gcov (Don Zickus)

@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/5ad158bfea74aec50281bacc90a21315bd55d447
+ 5ad158bfea74aec50281bacc90a21315bd55d447 Revert "bpf, selftests: Disable tests that need clang13"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/1739846090d60287d56220b3a984603158668acb
  1739846090d60287d56220b3a984603158668acb redhat: Add mark_driver_deprecated()
 
