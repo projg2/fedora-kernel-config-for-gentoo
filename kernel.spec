@@ -83,9 +83,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc6.20211021git2f111a6fd5b5.49
+%global distro_build 0.rc7.53
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc6.20211021git2f111a6fd5b5.49
+%define pkgrelease 0.rc7.53
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20211021git2f111a6fd5b5.49%{?buildid}%{?dist}
+%define specrelease 0.rc7.53%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc6-70-g2f111a6fd5b5.tar.xz
+Source0: linux-5.15-rc7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1373,8 +1373,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc6-70-g2f111a6fd5b5 -c
-mv linux-5.15-rc6-70-g2f111a6fd5b5 linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc7 -c
+mv linux-5.15-rc7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2973,6 +2973,10 @@ fi
 #
 #
 %changelog
+* Tue Oct 26 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc7.53]
+- Enable CONFIG_FAIL_SUNRPC for debug builds (Justin M. Forbes)
+- fedora: Disable fbdev drivers and use simpledrm instead (Javier Martinez Canillas)
+
 * Thu Oct 21 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc6.20211021git2f111a6fd5b5.49]
 - Revert "bpf, selftests: Disable tests that need clang13" (Jiri Olsa)
 - spec: Don't fail spec build if ksamples fails (Jiri Olsa)
