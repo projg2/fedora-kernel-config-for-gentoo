@@ -83,9 +83,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc7.53
+%global distro_build 0.rc7.20211027gitd25f27432f80.55
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc7.53
+%define pkgrelease 0.rc7.20211027gitd25f27432f80.55
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.53%{?buildid}%{?dist}
+%define specrelease 0.rc7.20211027gitd25f27432f80.55%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc7.tar.xz
+Source0: linux-5.15-rc7-18-gd25f27432f80.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -797,6 +797,7 @@ Source72: filter-s390x.sh.fedora
 Source73: filter-modules.sh.fedora
 %endif
 
+Source75: partial-kgcov-snip.config
 Source80: generate_all_configs.sh
 Source81: process_configs.sh
 
@@ -1373,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc7 -c
-mv linux-5.15-rc7 linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc7-18-gd25f27432f80 -c
+mv linux-5.15-rc7-18-gd25f27432f80 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1438,15 +1439,13 @@ for i in %{all_arch_configs}
 do
   mv $i $i.tmp
   ./merge.pl %{SOURCE3001} $i.tmp > $i
-  rm $i.tmp
-done
-%endif
-
-# enable GCOV kernel config options if gcov is on
 %if %{with_gcov}
-for i in *.config
-do
-  sed -i 's/# CONFIG_GCOV_KERNEL is not set/CONFIG_GCOV_KERNEL=y\nCONFIG_GCOV_PROFILE_ALL=y\n/' $i
+  echo "Merging with gcov options"
+  cat %{SOURCE75}
+  mv $i $i.tmp
+  ./merge.pl %{SOURCE75} $i.tmp > $i
+%endif
+  rm $i.tmp
 done
 %endif
 
@@ -2875,7 +2874,7 @@ fi
 %endif
 
 %if %{with_gcov}
-%ifarch x86_64 s390x ppc64le aarch64
+%ifnarch %nobuildarches noarch
 %files gcov
 %{_builddir}
 %endif
@@ -2973,6 +2972,13 @@ fi
 #
 #
 %changelog
+* Wed Oct 27 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc7.20211027gitd25f27432f80.55]
+- redhat/kernel.spec.template: don't hardcode gcov arches (Jan Stancek)
+- redhat/configs: create a separate config for gcov options (Jan Stancek)
+
+* Wed Oct 27 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc7.20211027gitd25f27432f80.54]
+- Fedora config updates (Justin M. Forbes)
+
 * Tue Oct 26 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc7.53]
 - Enable CONFIG_FAIL_SUNRPC for debug builds (Justin M. Forbes)
 - fedora: Disable fbdev drivers and use simpledrm instead (Javier Martinez Canillas)
