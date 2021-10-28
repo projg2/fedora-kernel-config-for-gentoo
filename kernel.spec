@@ -85,7 +85,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc7.20211027gitd25f27432f80.55
+%global distro_build 0.rc7.20211028git1fc596a56b33.56
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc7.20211027gitd25f27432f80.55
+%define pkgrelease 0.rc7.20211028git1fc596a56b33.56
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20211027gitd25f27432f80.55%{?buildid}%{?dist}
+%define specrelease 0.rc7.20211028git1fc596a56b33.56%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc7-18-gd25f27432f80.tar.xz
+Source0: linux-5.15-rc7-33-g1fc596a56b33.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1374,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc7-18-gd25f27432f80 -c
-mv linux-5.15-rc7-18-gd25f27432f80 linux-%{KVERREL}
+%setup -q -n kernel-5.15-rc7-33-g1fc596a56b33 -c
+mv linux-5.15-rc7-33-g1fc596a56b33 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2972,9 +2972,13 @@ fi
 #
 #
 %changelog
-* Wed Oct 27 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc7.20211027gitd25f27432f80.55]
+* Thu Oct 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc7.20211028git1fc596a56b33.56]
 - redhat/kernel.spec.template: don't hardcode gcov arches (Jan Stancek)
 - redhat/configs: create a separate config for gcov options (Jan Stancek)
+
+* Thu Oct 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc7.20211028git1fc596a56b33.55]
+- Build CONFIG_SPI_PXA2XX as a module on x86 (Justin M. Forbes)
+- redhat/configs: enable CONFIG_BCMGENET as module (Joel Savitz)
 
 * Wed Oct 27 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc7.20211027gitd25f27432f80.54]
 - Fedora config updates (Justin M. Forbes)
