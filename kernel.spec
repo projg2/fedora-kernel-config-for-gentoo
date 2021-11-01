@@ -83,9 +83,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc7.20211028git1fc596a56b33.56
+%global distro_build 60
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.0
 %define patchversion 5.15
-%define pkgrelease 0.rc7.20211028git1fc596a56b33.56
+%define pkgrelease 60
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20211028git1fc596a56b33.56%{?buildid}%{?dist}
+%define specrelease 60%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-rc7-33-g1fc596a56b33.tar.xz
+Source0: linux-5.15.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1374,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-rc7-33-g1fc596a56b33 -c
-mv linux-5.15-rc7-33-g1fc596a56b33 linux-%{KVERREL}
+%setup -q -n kernel-5.15 -c
+mv linux-5.15 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2972,9 +2972,17 @@ fi
 #
 #
 %changelog
-* Thu Oct 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc7.20211028git1fc596a56b33.56]
+* Mon Nov 01 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-60]
+- Fedora configs for 5.15 (Justin M. Forbes)
+
+* Mon Nov 01 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-60]
 - redhat/kernel.spec.template: don't hardcode gcov arches (Jan Stancek)
 - redhat/configs: create a separate config for gcov options (Jan Stancek)
+
+* Fri Oct 29 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc7.20211029gitf25a5481af12.56]
+- redhat/configs/evaluate_configs: walk cfgvariants line by line (Jan Stancek)
+- redhat/configs/evaluate_configs: insert EMPTY tags at correct place (Jan Stancek)
+- redhat: make dist-srpm-gcov add to BUILDOPTS (Jan Stancek)
 
 * Thu Oct 28 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.15-0.rc7.20211028git1fc596a56b33.55]
 - Build CONFIG_SPI_PXA2XX as a module on x86 (Justin M. Forbes)
