@@ -75,10 +75,10 @@
  74 files changed, 1377 insertions(+), 193 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 43dc35fe5bc0..ada907ac43ff 100644
+index fb76a64a2168..6f99137fada2 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5892,6 +5892,15 @@
+@@ -5900,6 +5900,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -128,7 +128,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index ed6e7ec60eff..c43109d6d310 100644
+index d6520b797768..4ccb157fc2b4 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -142,7 +142,7 @@ index ed6e7ec60eff..c43109d6d310 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1263,7 +1267,13 @@ define filechk_version.h
+@@ -1264,7 +1268,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -158,7 +158,7 @@ index ed6e7ec60eff..c43109d6d310 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index dcf2df6da98f..b03b682850ab 100644
+index 5d3b030e78e3..92096c89288f 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -1470,9 +1470,9 @@ config HIGHMEM
@@ -174,10 +174,10 @@ index dcf2df6da98f..b03b682850ab 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index fee914c716aa..99bb34aac703 100644
+index 3a00dfb0711e..668a1b1fbd72 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -911,7 +911,7 @@ endchoice
+@@ -1026,7 +1026,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -186,7 +186,7 @@ index fee914c716aa..99bb34aac703 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1152,6 +1152,7 @@ config XEN
+@@ -1276,6 +1276,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -282,10 +282,10 @@ index 67e5fff96ee0..0d58c1f07176 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index b3410f1ac217..c0645c5b4860 100644
+index 0083464de5e3..2de5f417f3f2 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1311,6 +1311,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1316,6 +1316,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
@@ -568,10 +568,10 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 5b54c80b9d32..86c314f8d8a0 100644
+index f456ba7c1060..29cb41d4d9c2 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1720,6 +1720,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1721,6 +1721,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
 
@@ -643,7 +643,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index e96cb5c4f97a..d645460fe8a9 100644
+index deed355422f4..5199fb71a7e7 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -654,7 +654,7 @@ index e96cb5c4f97a..d645460fe8a9 100644
  #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5160,8 +5161,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5394,8 +5395,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -873,7 +873,7 @@ index c02ff25dd477..d860f8eb9a81 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 847f33ffc4ae..363037f8eaf8 100644
+index ae79c3300129..e9205ea7aeb3 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -884,7 +884,7 @@ index 847f33ffc4ae..363037f8eaf8 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -841,40 +842,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -844,40 +845,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -1405,7 +1405,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3303d707bab4..372edaaafaa1 100644
+index e80261d17a49..3354b89ec1fe 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1416,7 +1416,7 @@ index 3303d707bab4..372edaaafaa1 100644
  #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -3118,6 +3119,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3119,6 +3120,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1560,10 +1560,10 @@ index 75dbe77b0b4b..029ff8576f8e 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index f8dd664b2eda..0ff9ea8340e4 100644
+index 838b5e2058be..2598901296f2 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
-@@ -262,6 +262,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
+@@ -244,6 +244,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
 
  static blk_status_t nvme_error_status(u16 status)
  {
@@ -1573,7 +1573,7 @@ index f8dd664b2eda..0ff9ea8340e4 100644
  	switch (status & 0x7ff) {
  	case NVME_SC_SUCCESS:
  		return BLK_STS_OK;
-@@ -321,6 +324,7 @@ enum nvme_disposition {
+@@ -303,6 +306,7 @@ enum nvme_disposition {
  	COMPLETE,
  	RETRY,
  	FAILOVER,
@@ -1581,7 +1581,7 @@ index f8dd664b2eda..0ff9ea8340e4 100644
  };
 
  static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
-@@ -328,15 +332,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
+@@ -310,15 +314,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
  	if (likely(nvme_req(req)->status == 0))
  		return COMPLETE;
 
@@ -1601,7 +1601,7 @@ index f8dd664b2eda..0ff9ea8340e4 100644
  	} else {
  		if (blk_queue_dying(req->q))
  			return COMPLETE;
-@@ -358,6 +363,14 @@ static inline void nvme_end_req(struct request *req)
+@@ -344,6 +349,14 @@ static inline void nvme_end_req(struct request *req)
  	blk_mq_end_request(req, status);
  }
 
@@ -1616,7 +1616,7 @@ index f8dd664b2eda..0ff9ea8340e4 100644
  void nvme_complete_rq(struct request *req)
  {
  	trace_nvme_complete_rq(req);
-@@ -376,6 +389,9 @@ void nvme_complete_rq(struct request *req)
+@@ -362,6 +375,9 @@ void nvme_complete_rq(struct request *req)
  	case FAILOVER:
  		nvme_failover_req(req);
  		return;
@@ -1627,7 +1627,7 @@ index f8dd664b2eda..0ff9ea8340e4 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index fba06618c6c2..a4d81de29e13 100644
+index 7f2071f2460c..2e9f83901c77 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
@@ -1662,8 +1662,8 @@ index fba06618c6c2..a4d81de29e13 100644
 +	nvme_update_ana(req);
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
- 	for (bio = req->bio; bio; bio = bio->bi_next)
-@@ -814,8 +820,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+ 	for (bio = req->bio; bio; bio = bio->bi_next) {
+@@ -838,8 +844,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1674,10 +1674,10 @@ index fba06618c6c2..a4d81de29e13 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index ed79a6c7e804..961dc67d7261 100644
+index b334af8aa264..b2a0e2fc6d47 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -746,6 +746,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -765,6 +765,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags);
  void nvme_failover_req(struct request *req);
@@ -1685,7 +1685,7 @@ index ed79a6c7e804..961dc67d7261 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -784,6 +785,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
+@@ -803,6 +804,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -2056,10 +2056,10 @@ index 86658a81d284..5647f4756e97 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 88d5d274a868..6693ff552b24 100644
+index 79b6a0c47f6f..de9bb1405099 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4298,6 +4298,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4297,6 +4297,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
 
  	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
@@ -2067,7 +2067,7 @@ index 88d5d274a868..6693ff552b24 100644
  		if (ext4_has_feature_inline_data(sb)) {
  			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
  					" that may contain inline data");
-@@ -4308,6 +4309,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4307,6 +4308,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  				"DAX unsupported by block device.");
  			goto failed_mount;
  		}
@@ -2170,10 +2170,10 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 2776423a587e..07b4d301690d 100644
+index e8696e4a45aa..4009e24f4dff 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -530,4 +530,21 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -529,4 +529,21 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -2196,10 +2196,10 @@ index 2776423a587e..07b4d301690d 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 2adeea44c0d5..517013ece679 100644
+index a9ac70ae01ab..9bbf62267622 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -394,6 +394,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -395,6 +395,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -2209,10 +2209,10 @@ index 2adeea44c0d5..517013ece679 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 5c4c5c0602cb..753b53038690 100644
+index 0bada4df23fc..3bee971d0b1e 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1545,6 +1545,12 @@
+@@ -1548,6 +1548,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -2623,10 +2623,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 5b7288521300..f966f591c91e 100644
+index 7e0ba63b5dde..5ab6ceaa2589 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -472,6 +472,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -473,6 +473,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2634,7 +2634,7 @@ index 5b7288521300..f966f591c91e 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1348,6 +1349,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1355,6 +1356,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2659,7 +2659,7 @@ index 11f8a845f259..9b94cc1b5546 100644
  	default y
  	help
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 4df609be42d0..4ef0c0f6a8f4 100644
+index 186c49582f45..7bbf1c3801f9 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
@@ -3038,10 +3038,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 9ffa9e9c5c55..36484cc9842d 100644
+index 95e30fadba78..ee2beb206700 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2599,6 +2599,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2600,6 +2600,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
