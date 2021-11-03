@@ -80,7 +80,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 
-%global distro_build 300
+%global distro_build 301
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -125,13 +125,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.14.16
 %define patchversion 5.14
-%define pkgrelease 300
+%define pkgrelease 301
 
 # This is needed to do merge window version magic
 %define patchlevel 14
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 300%{?buildid}%{?dist}
+%define specrelease 301%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -2958,6 +2958,11 @@ fi
 #
 #
 %changelog
+* Wed Nov 03 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.16-1]
+- Update release for usb fix rebuild (Justin M. Forbes)
+- Revert "xhci: Set HCD flag to defer primary roothub registration" (Justin M. Forbes)
+- Revert "usb: core: hcd: Add support for deferring roothub registration" (Justin M. Forbes)
+
 * Tue Nov 02 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.14.16-0]
 - Changelog entry for 5.14.15 (Justin M. Forbes)
 

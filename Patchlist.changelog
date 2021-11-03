@@ -1,3 +1,9 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/4ea42fc748bc3ba5da69dd285681603f8474732e
+ 4ea42fc748bc3ba5da69dd285681603f8474732e Revert "xhci: Set HCD flag to defer primary roothub registration"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/492e6a0e07e3e62e977f7b705eab528495923772
+ 492e6a0e07e3e62e977f7b705eab528495923772 Revert "usb: core: hcd: Add support for deferring roothub registration"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/c72074b04c2b97c40f0fecb2754cd58f83c21642
  c72074b04c2b97c40f0fecb2754cd58f83c21642 autofs: fix wait name hash calculation in autofs_wait()
 
