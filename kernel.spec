@@ -85,7 +85,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20211102gitbfc484fe6abb.1
+%global distro_build 0.rc0.20211103gitdcd68326d29b.2
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc0.20211102gitbfc484fe6abb.1
+%define pkgrelease 0.rc0.20211103gitdcd68326d29b.2
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20211102gitbfc484fe6abb.1%{?buildid}%{?dist}
+%define specrelease 0.rc0.20211103gitdcd68326d29b.2%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-2229-gbfc484fe6abb.tar.xz
+Source0: linux-5.15-6700-gdcd68326d29b.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1374,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-2229-gbfc484fe6abb -c
-mv linux-5.15-2229-gbfc484fe6abb linux-%{KVERREL}
+%setup -q -n kernel-5.15-6700-gdcd68326d29b -c
+mv linux-5.15-6700-gdcd68326d29b linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2972,6 +2972,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 03 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211103gitdcd68326d29b.2]
+- Fix up fedora and pending configs for PREEMPT to end mismatch (Justin M. Forbes)
+
 * Tue Nov 02 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211102gitbfc484fe6abb.1]
 - Enable binder for fedora (Justin M. Forbes)
 - Reset RHEL_RELEASE for 5.16 (Justin M. Forbes)

@@ -75,10 +75,10 @@
  74 files changed, 1377 insertions(+), 193 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index fb76a64a2168..6f99137fada2 100644
+index 6aea495b0970..a40b6107b4ca 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5900,6 +5900,15 @@
+@@ -5911,6 +5911,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -128,7 +128,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index d6520b797768..4ccb157fc2b4 100644
+index 6f2e233c7bc0..375d9b1611eb 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -142,7 +142,7 @@ index d6520b797768..4ccb157fc2b4 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1264,7 +1268,13 @@ define filechk_version.h
+@@ -1267,7 +1271,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -158,10 +158,10 @@ index d6520b797768..4ccb157fc2b4 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 5d3b030e78e3..92096c89288f 100644
+index d96209b20736..739147ec53a9 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1470,9 +1470,9 @@ config HIGHMEM
+@@ -1479,9 +1479,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -174,10 +174,10 @@ index 5d3b030e78e3..92096c89288f 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 3a00dfb0711e..668a1b1fbd72 100644
+index de65d2fa0657..6675a5a6aea9 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1026,7 +1026,7 @@ endchoice
+@@ -1027,7 +1027,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -186,7 +186,7 @@ index 3a00dfb0711e..668a1b1fbd72 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1276,6 +1276,7 @@ config XEN
+@@ -1277,6 +1277,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -506,10 +506,10 @@ index fea082b25fe4..50a9d040bed1 100644
  MODULE_LICENSE("GPL");
  MODULE_DESCRIPTION("Random Number Generator");
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
-index 277f00b288d1..adbce15c273d 100644
+index 0edc1ed47673..782e2f399af2 100644
 --- a/drivers/acpi/apei/hest.c
 +++ b/drivers/acpi/apei/hest.c
-@@ -94,6 +94,14 @@ int apei_hest_parse(apei_hest_func_t func, void *data)
+@@ -96,6 +96,14 @@ static int apei_hest_parse(apei_hest_func_t func, void *data)
  	if (hest_disable || !hest_tab)
  		return -EINVAL;
 
@@ -568,7 +568,7 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index f456ba7c1060..29cb41d4d9c2 100644
+index dce2c291b982..e047edc644e8 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1721,6 +1721,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -1515,7 +1515,7 @@ index af0ce5611e4a..1c226920c12d 100644
 
  out_mptspi_probe:
 diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index dd7917cab2b1..f6b43adb2ced 100644
+index 8b2adc56b92a..f0ad908048c6 100644
 --- a/drivers/net/team/team.c
 +++ b/drivers/net/team/team.c
 @@ -3045,6 +3045,8 @@ static int __init team_module_init(void)
@@ -2079,10 +2079,10 @@ index 79b6a0c47f6f..de9bb1405099 100644
 
  	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
 diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index c4e0cd1c1c8c..f80fa9b6d53e 100644
+index e21459f9923a..c37903d09a45 100644
 --- a/fs/xfs/xfs_super.c
 +++ b/fs/xfs/xfs_super.c
-@@ -1593,6 +1593,7 @@ xfs_fs_fill_super(
+@@ -1594,6 +1594,7 @@ xfs_fs_fill_super(
 
  	if (xfs_has_dax_always(mp)) {
  		bool rtdev_is_dax = false, datadev_is_dax;
@@ -2090,7 +2090,7 @@ index c4e0cd1c1c8c..f80fa9b6d53e 100644
 
  		xfs_warn(mp,
  		"DAX enabled. Warning: EXPERIMENTAL, use at your own risk");
-@@ -1612,6 +1613,10 @@ xfs_fs_fill_super(
+@@ -1613,6 +1614,10 @@ xfs_fs_fill_super(
  			error = -EINVAL;
  			goto out_filestream_unmount;
  		}
@@ -2671,7 +2671,7 @@ index 186c49582f45..7bbf1c3801f9 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 1cad6979a0d0..ac2c5f0085cc 100644
+index 50f96ea4452a..4f2f992de1aa 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
