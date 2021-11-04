@@ -4,7 +4,6 @@
  Makefile                                           |  12 +-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
- .../boot/dts/rockchip/rk3399-pinebook-pro.dts      |   6 +-
  arch/arm64/kernel/acpi.c                           |   4 +
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
@@ -72,7 +71,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 74 files changed, 1377 insertions(+), 193 deletions(-)
+ 73 files changed, 1376 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 6aea495b0970..a40b6107b4ca 100644
@@ -158,10 +157,10 @@ index 6f2e233c7bc0..375d9b1611eb 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index d96209b20736..739147ec53a9 100644
+index f0f9e8bec83a..041a3934cf4f 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1479,9 +1479,9 @@ config HIGHMEM
+@@ -1478,9 +1478,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -194,30 +193,6 @@ index de65d2fa0657..6675a5a6aea9 100644
  	default "12" if ARM64_16K_PAGES
  	default "11"
  	help
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
-index 2b5f001ff4a6..dae8c252bc2b 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
-@@ -385,10 +385,6 @@ mains_charger: dc-charger {
- 	};
- };
-
--&cdn_dp {
--	status = "okay";
--};
--
- &cpu_b0 {
- 	cpu-supply = <&vdd_cpu_b>;
- };
-@@ -711,7 +707,7 @@ fusb0: fusb30x@22 {
-
- 		connector {
- 			compatible = "usb-c-connector";
--			data-role = "host";
-+			data-role = "dual";
- 			label = "USB-C";
- 			op-sink-microwatt = <1000000>;
- 			power-role = "dual";
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
 index f3851724fe35..ef69eeab6f2a 100644
 --- a/arch/arm64/kernel/acpi.c

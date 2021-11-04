@@ -85,7 +85,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20211103gitdcd68326d29b.2
+%global distro_build 0.rc0.20211104git7ddb58cb0eca.3
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc0.20211103gitdcd68326d29b.2
+%define pkgrelease 0.rc0.20211104git7ddb58cb0eca.3
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20211103gitdcd68326d29b.2%{?buildid}%{?dist}
+%define specrelease 0.rc0.20211104git7ddb58cb0eca.3%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-6700-gdcd68326d29b.tar.xz
+Source0: linux-5.15-8713-g7ddb58cb0eca.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1374,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-6700-gdcd68326d29b -c
-mv linux-5.15-6700-gdcd68326d29b linux-%{KVERREL}
+%setup -q -n kernel-5.15-8713-g7ddb58cb0eca -c
+mv linux-5.15-8713-g7ddb58cb0eca linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2972,6 +2972,17 @@ fi
 #
 #
 %changelog
+* Thu Nov 04 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211104git7ddb58cb0eca.3]
+- Add nct6775 to filter-modules.sh.rhel (Justin M. Forbes)
+- Enable PREEMPT_DYNAMIC for all but s390x (Justin M. Forbes)
+- Add memcpy_kunit to mod-internal.list (Justin M. Forbes)
+- New configs in fs/ksmbd (Fedora Kernel Team)
+- Add nct6775 to Fedora filter-modules.sh (Justin M. Forbes)
+- New configs in fs/ntfs3 (Fedora Kernel Team)
+- Make CONFIG_IOMMU_DEFAULT_DMA_STRICT default for all but x86 (Justin M. Forbes)
+- redhat/configs: enable  KEXEC_IMAGE_VERIFY_SIG for RHEL (Coiby Xu)
+- redhat/configs: enable KEXEC_SIG for aarch64 RHEL (Coiby Xu) [1994858]
+
 * Wed Nov 03 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211103gitdcd68326d29b.2]
 - Fix up fedora and pending configs for PREEMPT to end mismatch (Justin M. Forbes)
 
