@@ -74,10 +74,10 @@
  73 files changed, 1376 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 6aea495b0970..a40b6107b4ca 100644
+index 756bfb7d5235..43a74e0d46b2 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5911,6 +5911,15 @@
+@@ -5906,6 +5906,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -173,10 +173,10 @@ index f0f9e8bec83a..041a3934cf4f 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index de65d2fa0657..6675a5a6aea9 100644
+index 176d6fddc4f2..04a2aaf843c6 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1027,7 +1027,7 @@ endchoice
+@@ -1023,7 +1023,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -185,7 +185,7 @@ index de65d2fa0657..6675a5a6aea9 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1277,6 +1277,7 @@ config XEN
+@@ -1273,6 +1273,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -1137,7 +1137,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index e24252eaf8e4..368d64adeee8 100644
+index 86a313857b58..dcfc95d0e328 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -1148,7 +1148,7 @@ index e24252eaf8e4..368d64adeee8 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2105,6 +2106,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2156,6 +2157,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -1165,7 +1165,7 @@ index e24252eaf8e4..368d64adeee8 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2138,6 +2149,11 @@ static int __init etm4x_init(void)
+@@ -2189,6 +2200,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -1177,7 +1177,7 @@ index e24252eaf8e4..368d64adeee8 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2164,6 +2180,9 @@ static int __init etm4x_init(void)
+@@ -2215,6 +2231,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -1380,7 +1380,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e80261d17a49..3354b89ec1fe 100644
+index dd7863e453a5..6759ef17a2c3 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1391,7 +1391,7 @@ index e80261d17a49..3354b89ec1fe 100644
  #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -3119,6 +3120,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3118,6 +3119,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -2940,7 +2940,7 @@ index cb8ab7d91d30..5f13183ccc23 100644
  		sprintf(fname, "%s.mod.c", mod->name);
  		write_if_changed(&buf, fname);
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index db8ba411860a..2294fb0f17a9 100755
+index b24bfaec6290..0418ba1d33f3 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
