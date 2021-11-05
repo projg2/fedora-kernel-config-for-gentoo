@@ -66,7 +66,7 @@ Summary: The Linux kernel
 # For a stable, released kernel, released_kernel should be 1.
 %global released_kernel 1
 
-%global distro_build 300
+%global distro_build 302
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -108,13 +108,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.12.19
 %define stableversion 5.12
-%define pkgrelease 300
+%define pkgrelease 302
 
 # This is needed to do merge window version magic
 %define patchlevel 12
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 300%{?buildid}%{?dist}
+%define specrelease 302%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -2792,12 +2792,9 @@ fi
 #
 #
 %changelog
-* Tue Jul 20 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.19-300]
-- Config update for backported driver (Justin M. Forbes)
-- kernel-5.12.19-0 (Justin M. Forbes)
-- Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
-- kernel-5.12.18-0 (Justin M. Forbes)
-- Don't tag a release as [redhat] (Justin M. Forbes)
+* Fri Nov 05 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.19-302]
+- Bump release for build (Justin M. Forbes)
+- tipc: fix size validations for the MSG_CRYPTO type (Max VA)
 
 * Tue Jul 20 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.12.19-0]
 - Revert "usb: renesas-xhci: Fix handling of unknown ROM state" (Justin M. Forbes)
