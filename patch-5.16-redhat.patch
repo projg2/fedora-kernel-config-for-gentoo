@@ -27,6 +27,7 @@
  drivers/iommu/iommu.c                              |  22 ++
  drivers/message/fusion/mptsas.c                    |  10 +
  drivers/message/fusion/mptspi.c                    |  11 +
+ drivers/net/ethernet/intel/e1000/e1000_main.c      |   5 +
  drivers/net/team/team.c                            |   2 +
  drivers/net/wireguard/main.c                       |   7 +
  drivers/nvme/host/core.c                           |  22 +-
@@ -71,13 +72,13 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 73 files changed, 1376 insertions(+), 188 deletions(-)
+ 74 files changed, 1381 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 756bfb7d5235..43a74e0d46b2 100644
+index 0905d2cdb2d5..a433eaa1ab66 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5906,6 +5906,15 @@
+@@ -5922,6 +5922,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -127,7 +128,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 6f2e233c7bc0..375d9b1611eb 100644
+index ccae14852814..2b45a326661c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -141,7 +142,7 @@ index 6f2e233c7bc0..375d9b1611eb 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1267,7 +1271,13 @@ define filechk_version.h
+@@ -1282,7 +1286,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -173,7 +174,7 @@ index f0f9e8bec83a..041a3934cf4f 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 176d6fddc4f2..04a2aaf843c6 100644
+index c4207cf9bb17..9e440657f15e 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1023,7 +1023,7 @@ endchoice
@@ -185,7 +186,7 @@ index 176d6fddc4f2..04a2aaf843c6 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1273,6 +1273,7 @@ config XEN
+@@ -1277,6 +1277,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -235,7 +236,7 @@ index e2cc35775b99..96fc8134f056 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 67e5fff96ee0..0d58c1f07176 100644
+index 40405f2304f1..a6f5f1cae2fe 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -246,7 +247,7 @@ index 67e5fff96ee0..0d58c1f07176 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -981,6 +982,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -975,6 +976,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -269,7 +270,7 @@ index 0083464de5e3..2de5f417f3f2 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 40ed44ead063..544a885fa9a9 100644
+index 49b596db5631..69468eebf8a0 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -563,10 +564,10 @@ index dce2c291b982..e047edc644e8 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 5b3fa2cbe722..ad46d87e17e2 100644
+index 28430c093a7f..929be1c2800e 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
-@@ -672,6 +672,24 @@ int ahci_stop_engine(struct ata_port *ap)
+@@ -690,6 +690,24 @@ int ahci_stop_engine(struct ata_port *ap)
  	tmp &= ~PORT_CMD_START;
  	writel(tmp, port_mmio + PORT_CMD);
 
@@ -1420,7 +1421,7 @@ index dd7863e453a5..6759ef17a2c3 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/message/fusion/mptsas.c b/drivers/message/fusion/mptsas.c
-index 85285ba8e817..b8109517c4ef 100644
+index 091b45024d34..4457c5c7e173 100644
 --- a/drivers/message/fusion/mptsas.c
 +++ b/drivers/message/fusion/mptsas.c
 @@ -5318,6 +5318,11 @@ mptsas_probe(struct pci_dev *pdev, const struct pci_device_id *id)
@@ -1455,7 +1456,7 @@ index 85285ba8e817..b8109517c4ef 100644
  };
  MODULE_DEVICE_TABLE(pci, mptsas_pci_table);
 diff --git a/drivers/message/fusion/mptspi.c b/drivers/message/fusion/mptspi.c
-index af0ce5611e4a..1c226920c12d 100644
+index acd4805dcf83..5f814d447ab3 100644
 --- a/drivers/message/fusion/mptspi.c
 +++ b/drivers/message/fusion/mptspi.c
 @@ -1238,12 +1238,17 @@ static struct spi_function_template mptspi_transport_functions = {
@@ -1489,6 +1490,22 @@ index af0ce5611e4a..1c226920c12d 100644
  	return 0;
 
  out_mptspi_probe:
+diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
+index 669060a2e6aa..49b17169987d 100644
+--- a/drivers/net/ethernet/intel/e1000/e1000_main.c
++++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
+@@ -224,6 +224,11 @@ static int __init e1000_init_module(void)
+
+ 	pr_info("%s\n", e1000_copyright);
+
++#ifdef CONFIG_RHEL_DIFFERENCES
++	add_taint(TAINT_SUPPORT_REMOVED, LOCKDEP_STILL_OK);
++	mark_driver_unsupported(e1000_driver_name);
++#endif
++
+ 	ret = pci_register_driver(&e1000_driver);
+ 	if (copybreak != COPYBREAK_DEFAULT) {
+ 		if (copybreak == 0)
 diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
 index 8b2adc56b92a..f0ad908048c6 100644
 --- a/drivers/net/team/team.c
@@ -1671,7 +1688,7 @@ index b334af8aa264..b2a0e2fc6d47 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 2761ab86490d..aa71a0c904f3 100644
+index 1d98c974381c..b442f6927ec0 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -1718,10 +1735,10 @@ index 2761ab86490d..aa71a0c904f3 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 4537d1ea14fd..af30ab6c81e2 100644
+index aedb78c86ddc..1f936704cfe2 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4268,6 +4268,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4269,6 +4269,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1753,7 +1770,7 @@ index 4537d1ea14fd..af30ab6c81e2 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/scsi/aacraid/linit.c b/drivers/scsi/aacraid/linit.c
-index 3168915adaa7..71b48e29b708 100644
+index a911252075a6..9bc69f6880f3 100644
 --- a/drivers/scsi/aacraid/linit.c
 +++ b/drivers/scsi/aacraid/linit.c
 @@ -78,6 +78,7 @@ char aac_driver_version[] = AAC_DRIVER_FULL_VERSION;
@@ -1773,10 +1790,10 @@ index 3168915adaa7..71b48e29b708 100644
  	{ 0x9005, 0x028c, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 63 }, /* Adaptec PMC Series 7 (Denali) */
  	{ 0x9005, 0x028d, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 64 }, /* Adaptec PMC Series 8 */
 diff --git a/drivers/scsi/be2iscsi/be_main.c b/drivers/scsi/be2iscsi/be_main.c
-index e70f69f791db..dc54f0321fab 100644
+index ab55681145f8..1f8b0f73597b 100644
 --- a/drivers/scsi/be2iscsi/be_main.c
 +++ b/drivers/scsi/be2iscsi/be_main.c
-@@ -369,11 +369,13 @@ static int beiscsi_eh_device_reset(struct scsi_cmnd *sc)
+@@ -372,11 +372,13 @@ static int beiscsi_eh_device_reset(struct scsi_cmnd *sc)
 
  /*------------------- PCI Driver operations and data ----------------- */
  static const struct pci_device_id beiscsi_pci_id_table[] = {
@@ -1791,7 +1808,7 @@ index e70f69f791db..dc54f0321fab 100644
  	{ 0 }
  };
 diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index 3faa87fa296a..15a9a0c59c41 100644
+index cdf3328cc065..6754c7ee79d7 100644
 --- a/drivers/scsi/hpsa.c
 +++ b/drivers/scsi/hpsa.c
 @@ -82,7 +82,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
@@ -1898,7 +1915,7 @@ index 6a90e6e53d09..7e48c3bf701d 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 39d8754e63ac..011561b023a7 100644
+index aeb95f409826..68a999b02009 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
@@ -1930,7 +1947,7 @@ index 39d8754e63ac..011561b023a7 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index ad1b6c2b37a7..d246f48109f1 100644
+index cee7170beae8..3f9d70325677 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 @@ -12550,6 +12550,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
@@ -1962,7 +1979,7 @@ index ad1b6c2b37a7..d246f48109f1 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 836fedcea241..5f5e2ca8af53 100644
+index c3ff50ffe205..621a3acb7443 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
 @@ -7960,6 +7960,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
@@ -1993,7 +2010,7 @@ index 836fedcea241..5f5e2ca8af53 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index f1ea65c6e5f5..6a8cd12b633c 100644
+index 8987acc24dac..5013d52a7211 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
 @@ -9855,6 +9855,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
@@ -2031,10 +2048,10 @@ index 86658a81d284..5647f4756e97 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 79b6a0c47f6f..de9bb1405099 100644
+index a320c54202d9..bd1e167436f4 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4297,6 +4297,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4305,6 +4305,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
 
  	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
@@ -2042,7 +2059,7 @@ index 79b6a0c47f6f..de9bb1405099 100644
  		if (ext4_has_feature_inline_data(sb)) {
  			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
  					" that may contain inline data");
-@@ -4307,6 +4308,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4315,6 +4316,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  				"DAX unsupported by block device.");
  			goto failed_mount;
  		}
@@ -2145,10 +2162,10 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index e8696e4a45aa..4009e24f4dff 100644
+index e5359b09de1d..60b097643f45 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -529,4 +529,21 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -530,4 +530,21 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -2243,10 +2260,10 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index cd8aa6fce204..35df61824d02 100644
+index b4dbcc86b3f1..5950ed6035fc 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1470,6 +1470,10 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1474,6 +1474,10 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2621,7 +2638,7 @@ index 7e0ba63b5dde..5ab6ceaa2589 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 11f8a845f259..9b94cc1b5546 100644
+index 21b1f4870c80..5e82f7f77abd 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1648,7 +1648,7 @@ config AIO
@@ -2879,7 +2896,7 @@ index 083be6af29d7..4f271712be5e 100644
  	}
  	return ret;
 diff --git a/mm/cma.c b/mm/cma.c
-index 995e15480937..588f7e7885cf 100644
+index bc9ca8f3c487..9fa9a485eb3a 100644
 --- a/mm/cma.c
 +++ b/mm/cma.c
 @@ -125,6 +125,12 @@ static void __init cma_activate_area(struct cma *cma)

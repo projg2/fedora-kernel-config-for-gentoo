@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/07b3d9b051aa347237b4c637a1984c1915c750b2
+ 07b3d9b051aa347237b4c637a1984c1915c750b2 Enable e1000 in rhel9 as unsupported
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/b30b6a3942d682121a73d63cb7a3fc98cc3d69f7
  b30b6a3942d682121a73d63cb7a3fc98cc3d69f7 redhat: Add mark_driver_deprecated()
 

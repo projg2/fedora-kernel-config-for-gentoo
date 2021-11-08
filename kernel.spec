@@ -85,7 +85,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20211105gitd4439a1189f9.4
+%global distro_build 0.rc0.20211108git6b75d88fa81b.7
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc0.20211105gitd4439a1189f9.4
+%define pkgrelease 0.rc0.20211108git6b75d88fa81b.7
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20211105gitd4439a1189f9.4%{?buildid}%{?dist}
+%define specrelease 0.rc0.20211108git6b75d88fa81b.7%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-10158-gd4439a1189f9.tar.xz
+Source0: linux-5.15-11222-g6b75d88fa81b.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1374,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-10158-gd4439a1189f9 -c
-mv linux-5.15-10158-gd4439a1189f9 linux-%{KVERREL}
+%setup -q -n kernel-5.15-11222-g6b75d88fa81b -c
+mv linux-5.15-11222-g6b75d88fa81b linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2972,6 +2972,10 @@ fi
 #
 #
 %changelog
+* Sat Nov 06 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211106gitfe91c4725aee.5]
+- Enable e1000 in rhel9 as unsupported (Ken Cox) [2002344]
+- Turn on COMMON_CLK_AXG_AUDIO for Fedora rhbz 2020481 (Justin M. Forbes)
+
 * Fri Nov 05 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211105gitd4439a1189f9.4]
 - Fix up fedora config options from mismatch (Justin M. Forbes)
 
