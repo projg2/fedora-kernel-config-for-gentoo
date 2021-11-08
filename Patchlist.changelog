@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/135e0ca7843b0c75078420af44f09c03adf031e4
+ 135e0ca7843b0c75078420af44f09c03adf031e4 btrfs: fix memory ordering between normal and ordered work functions
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/4ea42fc748bc3ba5da69dd285681603f8474732e
  4ea42fc748bc3ba5da69dd285681603f8474732e Revert "xhci: Set HCD flag to defer primary roothub registration"
 
