@@ -23,12 +23,10 @@
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/input/serio/i8042-x86ia64io.h              |  14 +++
  drivers/iommu/iommu.c                              |  22 ++++
- drivers/net/wireguard/main.c                       |   6 +
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
- drivers/scsi/megaraid/megaraid_sas_base.c          |   2 +
  drivers/usb/core/hub.c                             |   7 ++
  fs/btrfs/async-thread.c                            |  14 +++
  include/linux/efi.h                                |  22 ++--
@@ -44,7 +42,7 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 46 files changed, 716 insertions(+), 192 deletions(-)
+ 44 files changed, 708 insertions(+), 192 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index ffcc7eadc44b..7c94a55d6770 100644
@@ -1297,30 +1295,6 @@ index 3303d707bab4..372edaaafaa1 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
-diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
-index 75dbe77b0b4b..4bd6dd722f44 100644
---- a/drivers/net/wireguard/main.c
-+++ b/drivers/net/wireguard/main.c
-@@ -12,6 +12,7 @@
-
- #include <uapi/linux/wireguard.h>
-
-+#include <linux/fips.h>
- #include <linux/init.h>
- #include <linux/module.h>
- #include <linux/genetlink.h>
-@@ -21,6 +22,11 @@ static int __init mod_init(void)
- {
- 	int ret;
-
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+	if (fips_enabled)
-+		return -EOPNOTSUPP;
-+#endif
-+
- 	ret = wg_allowedips_slab_init();
- 	if (ret < 0)
- 		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
 index f8dd664b2eda..0ff9ea8340e4 100644
 --- a/drivers/nvme/host/core.c
@@ -1492,25 +1466,6 @@ index 4537d1ea14fd..af30ab6c81e2 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
-diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 39d8754e63ac..044e54b7aeda 100644
---- a/drivers/scsi/megaraid/megaraid_sas_base.c
-+++ b/drivers/scsi/megaraid/megaraid_sas_base.c
-@@ -157,12 +157,14 @@ static struct pci_device_id megasas_pci_table[] = {
- 	/* ppc IOP */
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS1078GEN2)},
- 	/* gen2*/
-+#endif
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS0079GEN2)},
- 	/* gen2*/
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS0073SKINNY)},
- 	/* skinny*/
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_SAS0071SKINNY)},
- 	/* skinny*/
-+#ifndef CONFIG_RHEL_DIFFERENCES
- 	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_VERDE_ZCR)},
- 	/* xscale IOP, vega */
- 	{PCI_DEVICE(PCI_VENDOR_ID_DELL, PCI_DEVICE_ID_DELL_PERC5)},
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index 86658a81d284..5647f4756e97 100644
 --- a/drivers/usb/core/hub.c

@@ -2973,6 +2973,8 @@ fi
 #
 %changelog
 * Tue Nov 09 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-200]
+- Revert "[scsi] megaraid_sas: re-add certain pci-ids" (Justin M. Forbes)
+- Revert "wireguard: disable in FIPS mode" (Justin M. Forbes)
 - Revert "[fs] dax: mark tech preview" (Justin M. Forbes)
 - Revert "wireguard: mark as Tech Preview" (Justin M. Forbes)
 - Revert "add pci_hw_vendor_status()" (Justin M. Forbes)
