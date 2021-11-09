@@ -1,3 +1,9 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/83006c3429d58b6247863c348495417636186107
+ 83006c3429d58b6247863c348495417636186107 Revert "[fs] dax: mark tech preview"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/58b66eecb6ef60c71c5017aa0220b6e3e2a5e38f
+ 58b66eecb6ef60c71c5017aa0220b6e3e2a5e38f Revert "wireguard: mark as Tech Preview"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/e7dd4e098056b44495d41d06418a11c4442447e0
  e7dd4e098056b44495d41d06418a11c4442447e0 Revert "add pci_hw_vendor_status()"
 

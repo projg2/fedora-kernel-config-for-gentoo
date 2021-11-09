@@ -23,7 +23,7 @@
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/input/serio/i8042-x86ia64io.h              |  14 +++
  drivers/iommu/iommu.c                              |  22 ++++
- drivers/net/wireguard/main.c                       |   7 ++
+ drivers/net/wireguard/main.c                       |   6 +
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
@@ -31,8 +31,6 @@
  drivers/scsi/megaraid/megaraid_sas_base.c          |   2 +
  drivers/usb/core/hub.c                             |   7 ++
  fs/btrfs/async-thread.c                            |  14 +++
- fs/ext4/super.c                                    |   5 +
- fs/xfs/xfs_super.c                                 |   5 +
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -46,7 +44,7 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 48 files changed, 727 insertions(+), 192 deletions(-)
+ 46 files changed, 716 insertions(+), 192 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index ffcc7eadc44b..7c94a55d6770 100644
@@ -1300,7 +1298,7 @@ index 3303d707bab4..372edaaafaa1 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
-index 75dbe77b0b4b..029ff8576f8e 100644
+index 75dbe77b0b4b..4bd6dd722f44 100644
 --- a/drivers/net/wireguard/main.c
 +++ b/drivers/net/wireguard/main.c
 @@ -12,6 +12,7 @@
@@ -1323,14 +1321,6 @@ index 75dbe77b0b4b..029ff8576f8e 100644
  	ret = wg_allowedips_slab_init();
  	if (ret < 0)
  		goto err_allowedips;
-@@ -48,6 +54,7 @@ static int __init mod_init(void)
- 	pr_info("WireGuard " WIREGUARD_VERSION " loaded. See www.wireguard.com for information.\n");
- 	pr_info("Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.\n");
-
-+	mark_tech_preview("WireGuard", THIS_MODULE);
- 	return 0;
-
- err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
 index f8dd664b2eda..0ff9ea8340e4 100644
 --- a/drivers/nvme/host/core.c
@@ -1571,52 +1561,6 @@ index 309516e6a968..d39af03b456c 100644
  		set_bit(WORK_DONE_BIT, &work->flags);
  		run_ordered_work(wq, work);
  	} else {
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 88d5d274a868..6693ff552b24 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -4298,6 +4298,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
- 		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
-
- 	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
-+		static bool printed = false;
- 		if (ext4_has_feature_inline_data(sb)) {
- 			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
- 					" that may contain inline data");
-@@ -4308,6 +4309,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
- 				"DAX unsupported by block device.");
- 			goto failed_mount;
- 		}
-+		if (!printed) {
-+			mark_tech_preview("ext4 direct access (dax)", NULL);
-+			printed = true;
-+		}
- 	}
-
- 	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
-diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index c4e0cd1c1c8c..f80fa9b6d53e 100644
---- a/fs/xfs/xfs_super.c
-+++ b/fs/xfs/xfs_super.c
-@@ -1593,6 +1593,7 @@ xfs_fs_fill_super(
-
- 	if (xfs_has_dax_always(mp)) {
- 		bool rtdev_is_dax = false, datadev_is_dax;
-+		static bool printed = false;
-
- 		xfs_warn(mp,
- 		"DAX enabled. Warning: EXPERIMENTAL, use at your own risk");
-@@ -1612,6 +1613,10 @@ xfs_fs_fill_super(
- 			error = -EINVAL;
- 			goto out_filestream_unmount;
- 		}
-+		if (!printed) {
-+			mark_tech_preview("xfs direct access (dax)", NULL);
-+			printed = true;
-+		}
- 	}
-
- 	if (xfs_has_discard(mp)) {
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 6b5d36babfcc..fd4a5d66a9d0 100644
 --- a/include/linux/efi.h
