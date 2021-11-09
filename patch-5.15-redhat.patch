@@ -27,7 +27,6 @@
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
- drivers/pci/pci-driver.c                           |  29 +++++
  drivers/pci/quirks.c                               |  24 ++++
  drivers/scsi/megaraid/megaraid_sas_base.c          |   2 +
  drivers/usb/core/hub.c                             |   7 ++
@@ -37,7 +36,6 @@
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
- include/linux/pci.h                                |   4 +
  include/linux/random.h                             |   7 ++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
@@ -48,7 +46,7 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 50 files changed, 760 insertions(+), 192 deletions(-)
+ 48 files changed, 727 insertions(+), 192 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index ffcc7eadc44b..7c94a55d6770 100644
@@ -1469,53 +1467,6 @@ index ed79a6c7e804..961dc67d7261 100644
  static inline void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl)
  {
  }
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 2761ab86490d..aa71a0c904f3 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -19,6 +19,7 @@
- #include <linux/kexec.h>
- #include <linux/of_device.h>
- #include <linux/acpi.h>
-+#include <linux/kernel.h>
- #include <linux/dma-map-ops.h>
- #include "pci.h"
- #include "pcie/portdrv.h"
-@@ -295,6 +296,34 @@ static struct attribute *pci_drv_attrs[] = {
- };
- ATTRIBUTE_GROUPS(pci_drv);
-
-+/**
-+ * pci_hw_vendor_status - Tell if a PCI device is supported by the HW vendor
-+ * @ids: array of PCI device id structures to search in
-+ * @dev: the PCI device structure to match against
-+ *
-+ * Used by a driver to check whether this device is in its list of unsupported
-+ * devices.  Returns the matching pci_device_id structure or %NULL if there is
-+ * no match.
-+ *
-+ * Reserved for Internal Red Hat use only.
-+ */
-+const struct pci_device_id *pci_hw_vendor_status(
-+						const struct pci_device_id *ids,
-+						struct pci_dev *dev)
-+{
-+	char devinfo[64];
-+	const struct pci_device_id *ret = pci_match_id(ids, dev);
-+
-+	if (ret) {
-+		snprintf(devinfo, sizeof(devinfo), "%s %s",
-+			 dev_driver_string(&dev->dev), dev_name(&dev->dev));
-+		mark_hardware_deprecated(devinfo);
-+	}
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(pci_hw_vendor_status);
-+
- struct drv_dev_and_id {
- 	struct pci_driver *drv;
- 	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index 4537d1ea14fd..af30ab6c81e2 100644
 --- a/drivers/pci/quirks.c
@@ -1764,21 +1715,6 @@ index 5c4c5c0602cb..753b53038690 100644
   * Security hooks for perf events
   *
   * @perf_event_open:
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index cd8aa6fce204..35df61824d02 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1470,6 +1470,10 @@ int pci_add_dynid(struct pci_driver *drv,
- 		  unsigned long driver_data);
- const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
- 					 struct pci_dev *dev);
-+/* Reserved for Internal Red Hat use only */
-+const struct pci_device_id *pci_hw_vendor_status(
-+						const struct pci_device_id *ids,
-+						struct pci_dev *dev);
- int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
- 		    int pass);
-
 diff --git a/include/linux/random.h b/include/linux/random.h
 index f45b8be3e3c4..7ccdec68b789 100644
 --- a/include/linux/random.h

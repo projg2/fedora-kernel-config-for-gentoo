@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/e7dd4e098056b44495d41d06418a11c4442447e0
+ e7dd4e098056b44495d41d06418a11c4442447e0 Revert "add pci_hw_vendor_status()"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/69487df85dc22a202aa7276e2c47ea11ec52eb19
  69487df85dc22a202aa7276e2c47ea11ec52eb19 Input: i8042 - Add quirk for Fujitsu Lifebook T725
 

@@ -2973,6 +2973,7 @@ fi
 #
 %changelog
 * Tue Nov 09 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-200]
+- Revert "add pci_hw_vendor_status()" (Justin M. Forbes)
 - Input: i8042 - Add quirk for Fujitsu Lifebook T725 (Takashi Iwai)
 
 * Mon Nov 08 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-0]
