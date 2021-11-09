@@ -5,6 +5,7 @@
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
  arch/arm64/kernel/acpi.c                           |   4 +
+ arch/arm64/kernel/cpufeature.c                     |   1 +
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
@@ -21,6 +22,7 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 ++++++---
  drivers/firmware/efi/secureboot.c                  |  38 +++
+ drivers/gpu/drm/virtio/virtgpu_drv.c               |   3 +-
  drivers/hid/hid-rmi.c                              |  64 -----
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++
  drivers/input/rmi4/rmi_driver.c                    | 124 +++++----
@@ -72,7 +74,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 74 files changed, 1381 insertions(+), 188 deletions(-)
+ 76 files changed, 1384 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 0905d2cdb2d5..a433eaa1ab66 100644
@@ -128,7 +130,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index ccae14852814..2b45a326661c 100644
+index d83d72c26aaa..b4009aa40067 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -142,7 +144,7 @@ index ccae14852814..2b45a326661c 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1282,7 +1286,13 @@ define filechk_version.h
+@@ -1245,7 +1249,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -210,6 +212,18 @@ index f3851724fe35..ef69eeab6f2a 100644
  static bool param_acpi_force __initdata;
 
  static int __init parse_acpi(char *arg)
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index ecbdff795f5e..646662407a07 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -2864,6 +2864,7 @@ bool this_cpu_has_cap(unsigned int n)
+
+ 	return false;
+ }
++EXPORT_SYMBOL_GPL(this_cpu_has_cap);
+
+ /*
+  * This helper function is used in a narrow window when,
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index 3f8ee257f9aa..3ab92feb6241 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -1037,6 +1051,23 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/virtio/virtgpu_drv.c b/drivers/gpu/drm/virtio/virtgpu_drv.c
+index 749db18dcfa2..d86e1ad4a972 100644
+--- a/drivers/gpu/drm/virtio/virtgpu_drv.c
++++ b/drivers/gpu/drm/virtio/virtgpu_drv.c
+@@ -163,10 +163,11 @@ static __poll_t virtio_gpu_poll(struct file *filp,
+ 	struct drm_file *drm_file = filp->private_data;
+ 	struct virtio_gpu_fpriv *vfpriv = drm_file->driver_priv;
+ 	struct drm_device *dev = drm_file->minor->dev;
++	struct virtio_gpu_device *vgdev = dev->dev_private;
+ 	struct drm_pending_event *e = NULL;
+ 	__poll_t mask = 0;
+
+-	if (!vfpriv->ring_idx_mask)
++	if (!vgdev->has_virgl_3d || !vfpriv || !vfpriv->ring_idx_mask)
+ 		return drm_poll(filp, wait);
+
+ 	poll_wait(filp, &drm_file->event_wait, wait);
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -2260,10 +2291,10 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index b4dbcc86b3f1..5950ed6035fc 100644
+index c8afbee5da4b..122c0b5473fe 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1474,6 +1474,10 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1475,6 +1475,10 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2699,7 +2730,7 @@ index 50f96ea4452a..4f2f992de1aa 100644
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
 diff --git a/kernel/module.c b/kernel/module.c
-index 5c26a76e800b..25c4108ac627 100644
+index 84a9141a5e15..d5aabc30ba8d 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -743,6 +743,7 @@ static struct module_attribute modinfo_##field = {                    \
