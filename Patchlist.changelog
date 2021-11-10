@@ -1,8 +1,8 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/ca3bff2fbfde026a32a900a47e61443e79f64464
- ca3bff2fbfde026a32a900a47e61443e79f64464 arm64: cpufeature: Export this_cpu_has_cap helper
+https://gitlab.com/cki-project/kernel-ark/-/commit/22d78162a1ebd87197d6395e7b702033e6cd2905
+ 22d78162a1ebd87197d6395e7b702033e6cd2905 arm64: cpufeature: Export this_cpu_has_cap helper
 
-https://gitlab.com/cki-project/kernel-ark/-/commit/b7fc3a511b8d75b54b1bc4bd5f6a2d571bd00b5e
- b7fc3a511b8d75b54b1bc4bd5f6a2d571bd00b5e drm/virtio: Fix NULL dereference error in virtio_gpu_poll
+https://gitlab.com/cki-project/kernel-ark/-/commit/b3f61c9e2180aebee495c2f5e1389a8a1493bb0b
+ b3f61c9e2180aebee495c2f5e1389a8a1493bb0b drm/virtio: Fix NULL dereference error in virtio_gpu_poll
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/07b3d9b051aa347237b4c637a1984c1915c750b2
  07b3d9b051aa347237b4c637a1984c1915c750b2 Enable e1000 in rhel9 as unsupported
