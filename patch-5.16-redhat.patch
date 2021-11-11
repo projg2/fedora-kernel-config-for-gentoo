@@ -77,10 +77,10 @@
  76 files changed, 1384 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 0905d2cdb2d5..a433eaa1ab66 100644
+index 9725c546a0d4..4d440bdcf5b9 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5922,6 +5922,15 @@
+@@ -5936,6 +5936,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -213,10 +213,10 @@ index f3851724fe35..ef69eeab6f2a 100644
 
  static int __init parse_acpi(char *arg)
 diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-index ecbdff795f5e..646662407a07 100644
+index 7de96196ae14..6f3e677d88f1 100644
 --- a/arch/arm64/kernel/cpufeature.c
 +++ b/arch/arm64/kernel/cpufeature.c
-@@ -2864,6 +2864,7 @@ bool this_cpu_has_cap(unsigned int n)
+@@ -2868,6 +2868,7 @@ bool this_cpu_has_cap(unsigned int n)
 
  	return false;
  }
@@ -558,10 +558,10 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index dce2c291b982..e047edc644e8 100644
+index a50f1967c73d..faeecb8bc471 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1721,6 +1721,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1725,6 +1725,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
  		return false;
 
@@ -2079,10 +2079,10 @@ index 86658a81d284..5647f4756e97 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index a320c54202d9..bd1e167436f4 100644
+index 4e33b5eca694..b480ca4934de 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4305,6 +4305,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4304,6 +4304,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
 
  	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
@@ -2090,7 +2090,7 @@ index a320c54202d9..bd1e167436f4 100644
  		if (ext4_has_feature_inline_data(sb)) {
  			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
  					" that may contain inline data");
-@@ -4315,6 +4316,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4314,6 +4315,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
  				"DAX unsupported by block device.");
  			goto failed_mount;
  		}

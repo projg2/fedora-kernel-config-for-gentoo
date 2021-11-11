@@ -85,7 +85,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20211110gitcb690f5238d7.10
+%global distro_build 0.rc0.20211111gitdebe436e77c7.11
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc0.20211110gitcb690f5238d7.10
+%define pkgrelease 0.rc0.20211111gitdebe436e77c7.11
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20211110gitcb690f5238d7.10%{?buildid}%{?dist}
+%define specrelease 0.rc0.20211111gitdebe436e77c7.11%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-11863-gcb690f5238d7.tar.xz
+Source0: linux-5.15-12267-gdebe436e77c7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1374,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-11863-gcb690f5238d7 -c
-mv linux-5.15-11863-gcb690f5238d7 linux-%{KVERREL}
+%setup -q -n kernel-5.15-12267-gdebe436e77c7 -c
+mv linux-5.15-12267-gdebe436e77c7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2184,7 +2184,7 @@ InitBuildVars
 %global perf_build_extra_opts CORESIGHT=1
 %endif
 %global perf_make \
-  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2972,9 +2972,12 @@ fi
 #
 #
 %changelog
-* Wed Nov 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211110gitcb690f5238d7.10]
+* Thu Nov 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211111gitdebe436e77c7.11]
 - arm64: cpufeature: Export this_cpu_has_cap helper (Arnd Bergmann)
 - drm/virtio: Fix NULL dereference error in virtio_gpu_poll (Vivek Kasireddy)
+
+* Thu Nov 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211111gitdebe436e77c7.10]
+- Add rebase notes to check for PCI patches (Justin M. Forbes)
 
 * Wed Nov 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211110gitcb690f5238d7.9]
 - redhat: configs: move CONFIG_ACCESSIBILITY from fedora to common (John W. Linville)
