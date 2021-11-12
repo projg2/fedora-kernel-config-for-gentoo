@@ -1,3 +1,12 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/052a70eae8d9fabd82bcb701931302704dccc472
+ 052a70eae8d9fabd82bcb701931302704dccc472 usb: xhci: tegra: Check padctrl interrupt presence in device tree
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/078b72468a1734ef5f055c6c8c0bbd1882babdef
+ 078b72468a1734ef5f055c6c8c0bbd1882babdef x86/PCI/ACPI: Replace printk calls with pr_info/pr_warn calls
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/dde0ccc0f204067a7f353a6eddd74a2d2345a03f
+ dde0ccc0f204067a7f353a6eddd74a2d2345a03f x86/PCI: Ignore E820 reservations for bridge windows on newer systems
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/dbfaeb8e3c1a949e75c8e7aecee8c57ed54c9d02
  dbfaeb8e3c1a949e75c8e7aecee8c57ed54c9d02 Revert "[scsi] megaraid_sas: re-add certain pci-ids"
 
