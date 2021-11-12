@@ -5,7 +5,6 @@
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
  arch/arm64/kernel/acpi.c                           |   4 +
- arch/arm64/kernel/cpufeature.c                     |   1 +
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
@@ -74,7 +73,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 76 files changed, 1384 insertions(+), 189 deletions(-)
+ 75 files changed, 1383 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 9725c546a0d4..4d440bdcf5b9 100644
@@ -212,18 +211,6 @@ index f3851724fe35..ef69eeab6f2a 100644
  static bool param_acpi_force __initdata;
 
  static int __init parse_acpi(char *arg)
-diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-index 7de96196ae14..6f3e677d88f1 100644
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -2868,6 +2868,7 @@ bool this_cpu_has_cap(unsigned int n)
-
- 	return false;
- }
-+EXPORT_SYMBOL_GPL(this_cpu_has_cap);
-
- /*
-  * This helper function is used in a narrow window when,
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index 3f8ee257f9aa..3ab92feb6241 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -1719,7 +1706,7 @@ index b334af8aa264..b2a0e2fc6d47 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 1d98c974381c..b442f6927ec0 100644
+index 588588cfda48..1b90c69b7718 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -2219,10 +2206,10 @@ index 968b4c4fe65b..4c34135b7fee 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index a9ac70ae01ab..9bbf62267622 100644
+index 442a611fa0fb..45b98d102e61 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -395,6 +395,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -397,6 +397,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -2232,10 +2219,10 @@ index a9ac70ae01ab..9bbf62267622 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 0bada4df23fc..3bee971d0b1e 100644
+index d6823214d5c1..c927853f0732 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1548,6 +1548,12 @@
+@@ -1553,6 +1553,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -2291,10 +2278,10 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index c8afbee5da4b..122c0b5473fe 100644
+index 138d764c1c35..ab6ba4f105f6 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1475,6 +1475,10 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1476,6 +1476,10 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2646,7 +2633,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 7e0ba63b5dde..5ab6ceaa2589 100644
+index 06eac4e61a13..afbb845f8203 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -473,6 +473,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
@@ -2669,7 +2656,7 @@ index 7e0ba63b5dde..5ab6ceaa2589 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 21b1f4870c80..5e82f7f77abd 100644
+index 45bcaa8e7481..e0c1399a1a2c 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1648,7 +1648,7 @@ config AIO
@@ -3061,10 +3048,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 95e30fadba78..ee2beb206700 100644
+index 779a9edea0a0..08fd8f49ad3a 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2600,6 +2600,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2607,6 +2607,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 

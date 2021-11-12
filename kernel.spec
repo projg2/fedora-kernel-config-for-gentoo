@@ -85,7 +85,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20211111gitdebe436e77c7.11
+%global distro_build 0.rc0.20211112git5833291ab6de.12
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc0.20211111gitdebe436e77c7.11
+%define pkgrelease 0.rc0.20211112git5833291ab6de.12
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20211111gitdebe436e77c7.11%{?buildid}%{?dist}
+%define specrelease 0.rc0.20211112git5833291ab6de.12%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15-12267-gdebe436e77c7.tar.xz
+Source0: linux-5.15-12452-g5833291ab6de.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1374,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15-12267-gdebe436e77c7 -c
-mv linux-5.15-12267-gdebe436e77c7 linux-%{KVERREL}
+%setup -q -n kernel-5.15-12452-g5833291ab6de -c
+mv linux-5.15-12452-g5833291ab6de linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2972,8 +2972,7 @@ fi
 #
 #
 %changelog
-* Thu Nov 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211111gitdebe436e77c7.11]
-- arm64: cpufeature: Export this_cpu_has_cap helper (Arnd Bergmann)
+* Fri Nov 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211112git5833291ab6de.12]
 - drm/virtio: Fix NULL dereference error in virtio_gpu_poll (Vivek Kasireddy)
 
 * Thu Nov 11 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211111gitdebe436e77c7.10]
