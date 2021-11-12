@@ -19,11 +19,13 @@
  drivers/hid/hid-rmi.c                              |  64 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
+ drivers/input/serio/i8042-x86ia64io.h              |  14 +
  drivers/iommu/iommu.c                              |  22 +
  drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c     |   4 +
  drivers/net/wireguard/main.c                       |   6 +
  drivers/pci/quirks.c                               |  24 +
  drivers/usb/core/hub.c                             |   7 +
+ drivers/usb/host/xhci-tegra.c                      |  41 +-
  fs/btrfs/async-thread.c                            |  14 +
  fs/xfs/xfs_super.c                                 |   8 -
  include/linux/efi.h                                |  22 +-
@@ -53,7 +55,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 55 files changed, 685 insertions(+), 1494 deletions(-)
+ 57 files changed, 728 insertions(+), 1506 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
 index 110b305af27f..488feec76f0a 100644
@@ -1206,6 +1208,38 @@ index 258d5fe3d395..f7298e3dc8f3 100644
 
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
+diff --git a/drivers/input/serio/i8042-x86ia64io.h b/drivers/input/serio/i8042-x86ia64io.h
+index a5a003553646..aedd05541044 100644
+--- a/drivers/input/serio/i8042-x86ia64io.h
++++ b/drivers/input/serio/i8042-x86ia64io.h
+@@ -272,6 +272,13 @@ static const struct dmi_system_id __initconst i8042_dmi_nomux_table[] = {
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "LifeBook S6230"),
+ 		},
+ 	},
++	{
++		/* Fujitsu Lifebook T725 laptop */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK T725"),
++		},
++	},
+ 	{
+ 		/* Fujitsu Lifebook U745 */
+ 		.matches = {
+@@ -840,6 +847,13 @@ static const struct dmi_system_id __initconst i8042_dmi_notimeout_table[] = {
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK AH544"),
+ 		},
+ 	},
++	{
++		/* Fujitsu Lifebook T725 laptop */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK T725"),
++		},
++	},
+ 	{
+ 		/* Fujitsu U574 laptop */
+ 		/* https://bugzilla.kernel.org/show_bug.cgi?id=69731 */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
 index 63f0af10c403..195be16dbd39 100644
 --- a/drivers/iommu/iommu.c
@@ -1349,6 +1383,91 @@ index 86658a81d284..5647f4756e97 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/drivers/usb/host/xhci-tegra.c b/drivers/usb/host/xhci-tegra.c
+index 575fa89a783f..b88dac844c5d 100644
+--- a/drivers/usb/host/xhci-tegra.c
++++ b/drivers/usb/host/xhci-tegra.c
+@@ -1400,6 +1400,7 @@ static void tegra_xusb_deinit_usb_phy(struct tegra_xusb *tegra)
+
+ static int tegra_xusb_probe(struct platform_device *pdev)
+ {
++	struct of_phandle_args args;
+ 	struct tegra_xusb *tegra;
+ 	struct device_node *np;
+ 	struct resource *regs;
+@@ -1454,10 +1455,17 @@ static int tegra_xusb_probe(struct platform_device *pdev)
+ 		goto put_padctl;
+ 	}
+
+-	tegra->padctl_irq = of_irq_get(np, 0);
+-	if (tegra->padctl_irq <= 0) {
+-		err = (tegra->padctl_irq == 0) ? -ENODEV : tegra->padctl_irq;
+-		goto put_padctl;
++	/* Older device-trees don't have padctrl interrupt */
++	err = of_irq_parse_one(np, 0, &args);
++	if (!err) {
++		tegra->padctl_irq = of_irq_get(np, 0);
++		if (tegra->padctl_irq <= 0) {
++			err = (tegra->padctl_irq == 0) ? -ENODEV : tegra->padctl_irq;
++			goto put_padctl;
++		}
++	} else {
++		dev_dbg(&pdev->dev,
++			"%pOF is missing an interrupt, disabling PM support\n", np);
+ 	}
+
+ 	tegra->host_clk = devm_clk_get(&pdev->dev, "xusb_host");
+@@ -1696,11 +1704,15 @@ static int tegra_xusb_probe(struct platform_device *pdev)
+ 		goto remove_usb3;
+ 	}
+
+-	err = devm_request_threaded_irq(&pdev->dev, tegra->padctl_irq, NULL, tegra_xusb_padctl_irq,
+-					IRQF_ONESHOT, dev_name(&pdev->dev), tegra);
+-	if (err < 0) {
+-		dev_err(&pdev->dev, "failed to request padctl IRQ: %d\n", err);
+-		goto remove_usb3;
++	if (tegra->padctl_irq) {
++		err = devm_request_threaded_irq(&pdev->dev, tegra->padctl_irq,
++						NULL, tegra_xusb_padctl_irq,
++						IRQF_ONESHOT, dev_name(&pdev->dev),
++						tegra);
++		if (err < 0) {
++			dev_err(&pdev->dev, "failed to request padctl IRQ: %d\n", err);
++			goto remove_usb3;
++		}
+ 	}
+
+ 	err = tegra_xusb_enable_firmware_messages(tegra);
+@@ -1718,13 +1730,16 @@ static int tegra_xusb_probe(struct platform_device *pdev)
+ 	/* Enable wake for both USB 2.0 and USB 3.0 roothubs */
+ 	device_init_wakeup(&tegra->hcd->self.root_hub->dev, true);
+ 	device_init_wakeup(&xhci->shared_hcd->self.root_hub->dev, true);
+-	device_init_wakeup(tegra->dev, true);
+
+ 	pm_runtime_use_autosuspend(tegra->dev);
+ 	pm_runtime_set_autosuspend_delay(tegra->dev, 2000);
+ 	pm_runtime_mark_last_busy(tegra->dev);
+ 	pm_runtime_set_active(tegra->dev);
+-	pm_runtime_enable(tegra->dev);
++
++	if (tegra->padctl_irq) {
++		device_init_wakeup(tegra->dev, true);
++		pm_runtime_enable(tegra->dev);
++	}
+
+ 	return 0;
+
+@@ -1772,7 +1787,9 @@ static int tegra_xusb_remove(struct platform_device *pdev)
+ 	dma_free_coherent(&pdev->dev, tegra->fw.size, tegra->fw.virt,
+ 			  tegra->fw.phys);
+
+-	pm_runtime_disable(&pdev->dev);
++	if (tegra->padctl_irq)
++		pm_runtime_disable(&pdev->dev);
++
+ 	pm_runtime_put(&pdev->dev);
+
+ 	tegra_xusb_powergate_partitions(tegra);
 diff --git a/fs/btrfs/async-thread.c b/fs/btrfs/async-thread.c
 index 309516e6a968..d39af03b456c 100644
 --- a/fs/btrfs/async-thread.c
@@ -1476,7 +1595,7 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 2adeea44c0d5..517013ece679 100644
+index 61590c1f2d33..4c10750865c2 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -394,6 +394,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -1489,7 +1608,7 @@ index 2adeea44c0d5..517013ece679 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 5c4c5c0602cb..753b53038690 100644
+index 59024618554e..ab9ca4d393da 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
 @@ -1545,6 +1545,12 @@
@@ -1543,7 +1662,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 5b7288521300..f966f591c91e 100644
+index 46a02ce34d00..37e991a10d70 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -472,6 +472,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
@@ -1554,7 +1673,7 @@ index 5b7288521300..f966f591c91e 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1348,6 +1349,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1353,6 +1354,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -1688,7 +1807,7 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 9ffa9e9c5c55..36484cc9842d 100644
+index 67264cb08fb3..85a0227bfac1 100644
 --- a/security/security.c
 +++ b/security/security.c
 @@ -2599,6 +2599,12 @@ int security_locked_down(enum lockdown_reason what)

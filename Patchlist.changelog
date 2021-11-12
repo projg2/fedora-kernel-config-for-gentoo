@@ -1,3 +1,9 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/3715b05fa9dc06b00536752b10ddd70252ed8b35
+ 3715b05fa9dc06b00536752b10ddd70252ed8b35 usb: xhci: tegra: Check padctrl interrupt presence in device tree
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/b9f75c7f59600e9aa65cd915248c9a94fa98c56d
+ b9f75c7f59600e9aa65cd915248c9a94fa98c56d Input: i8042 - Add quirk for Fujitsu Lifebook T725
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/135e0ca7843b0c75078420af44f09c03adf031e4
  135e0ca7843b0c75078420af44f09c03adf031e4 btrfs: fix memory ordering between normal and ordered work functions
 
