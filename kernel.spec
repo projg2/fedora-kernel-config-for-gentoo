@@ -469,6 +469,7 @@ Summary: The Linux kernel
 %endif
 
 %ifarch aarch64
+%define with_selftests 0
 %define all_arch_configs kernel-%{version}-aarch64*.config
 %define asmarch arm64
 %define hdrarch arm64
