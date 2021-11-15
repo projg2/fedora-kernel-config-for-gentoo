@@ -21,7 +21,6 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 ++++++---
  drivers/firmware/efi/secureboot.c                  |  38 +++
- drivers/gpu/drm/virtio/virtgpu_drv.c               |   3 +-
  drivers/hid/hid-rmi.c                              |  64 -----
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++
  drivers/input/rmi4/rmi_driver.c                    | 124 +++++----
@@ -73,7 +72,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 75 files changed, 1383 insertions(+), 189 deletions(-)
+ 74 files changed, 1381 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 9725c546a0d4..4d440bdcf5b9 100644
@@ -129,7 +128,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index d83d72c26aaa..b4009aa40067 100644
+index 9e12c14ea0fb..c0a784684f99 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -143,7 +142,7 @@ index d83d72c26aaa..b4009aa40067 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1245,7 +1249,13 @@ define filechk_version.h
+@@ -1241,7 +1245,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -565,7 +564,7 @@ index a50f1967c73d..faeecb8bc471 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 28430c093a7f..929be1c2800e 100644
+index 8a6835bfd18a..e7fc078e8621 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -690,6 +690,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -1038,23 +1037,6 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
-diff --git a/drivers/gpu/drm/virtio/virtgpu_drv.c b/drivers/gpu/drm/virtio/virtgpu_drv.c
-index 749db18dcfa2..d86e1ad4a972 100644
---- a/drivers/gpu/drm/virtio/virtgpu_drv.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_drv.c
-@@ -163,10 +163,11 @@ static __poll_t virtio_gpu_poll(struct file *filp,
- 	struct drm_file *drm_file = filp->private_data;
- 	struct virtio_gpu_fpriv *vfpriv = drm_file->driver_priv;
- 	struct drm_device *dev = drm_file->minor->dev;
-+	struct virtio_gpu_device *vgdev = dev->dev_private;
- 	struct drm_pending_event *e = NULL;
- 	__poll_t mask = 0;
-
--	if (!vfpriv->ring_idx_mask)
-+	if (!vgdev->has_virgl_3d || !vfpriv || !vfpriv->ring_idx_mask)
- 		return drm_poll(filp, wait);
-
- 	poll_wait(filp, &drm_file->event_wait, wait);
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1753,7 +1735,7 @@ index 588588cfda48..1b90c69b7718 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index aedb78c86ddc..1f936704cfe2 100644
+index 003950c738d2..ef27596d04d8 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4269,6 +4269,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1997,10 +1979,10 @@ index cee7170beae8..3f9d70325677 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index c3ff50ffe205..621a3acb7443 100644
+index abcd30917263..3f0b22e61350 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -7960,6 +7960,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -7937,6 +7937,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -2008,7 +1990,7 @@ index c3ff50ffe205..621a3acb7443 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -7972,13 +7973,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -7949,13 +7950,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -2112,7 +2094,7 @@ index e21459f9923a..c37903d09a45 100644
 
  	if (xfs_has_discard(mp)) {
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 6b5d36babfcc..fd4a5d66a9d0 100644
+index dbd39b20e034..8127dcbe5a6e 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -2124,7 +2106,7 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -782,6 +784,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -783,6 +785,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -2139,7 +2121,7 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -793,6 +803,8 @@ static inline bool efi_enabled(int feature)
+@@ -794,6 +804,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -2148,7 +2130,7 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -813,6 +825,8 @@ static inline bool efi_enabled(int feature)
+@@ -814,6 +826,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -2157,7 +2139,7 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -825,6 +839,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -826,6 +840,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -2165,7 +2147,7 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
 
  /*
   * Variable Attributes
-@@ -1077,13 +1092,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1078,13 +1093,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -2180,7 +2162,7 @@ index 6b5d36babfcc..fd4a5d66a9d0 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 968b4c4fe65b..4c34135b7fee 100644
+index 77755ac3e189..6234dde914b6 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
 @@ -495,4 +495,21 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
@@ -2206,10 +2188,10 @@ index 968b4c4fe65b..4c34135b7fee 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 442a611fa0fb..45b98d102e61 100644
+index df8de62f4710..f4bbbeb1623a 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -397,6 +397,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -395,6 +395,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -2219,10 +2201,10 @@ index 442a611fa0fb..45b98d102e61 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index d6823214d5c1..c927853f0732 100644
+index d45b6f6e27fd..70622b506461 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1553,6 +1553,12 @@
+@@ -1548,6 +1548,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -2278,10 +2260,10 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 138d764c1c35..ab6ba4f105f6 100644
+index 18a75c8e615c..2c34abce98bf 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1476,6 +1476,10 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1478,6 +1478,10 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2633,7 +2615,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 06eac4e61a13..afbb845f8203 100644
+index bbf44a466832..026a06b98a96 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -473,6 +473,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
@@ -2656,10 +2638,10 @@ index 06eac4e61a13..afbb845f8203 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 45bcaa8e7481..e0c1399a1a2c 100644
+index 4b7bac10c72d..6c356cf804b4 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1648,7 +1648,7 @@ config AIO
+@@ -1653,7 +1653,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -3048,10 +3030,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 779a9edea0a0..08fd8f49ad3a 100644
+index c88167a414b4..e65a178ff9f4 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2607,6 +2607,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2600,6 +2600,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
