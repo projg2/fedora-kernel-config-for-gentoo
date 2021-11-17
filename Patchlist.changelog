@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/6fce0dd43763fcc2beb0034d7dc358a4c4644108
+ 6fce0dd43763fcc2beb0034d7dc358a4c4644108 platform/x86: thinkpad_acpi: Add support for dual fan control
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/3715b05fa9dc06b00536752b10ddd70252ed8b35
  3715b05fa9dc06b00536752b10ddd70252ed8b35 usb: xhci: tegra: Check padctrl interrupt presence in device tree
 

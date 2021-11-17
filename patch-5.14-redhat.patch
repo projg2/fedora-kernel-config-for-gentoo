@@ -19,11 +19,11 @@
  drivers/hid/hid-rmi.c                              |  64 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
- drivers/input/serio/i8042-x86ia64io.h              |  14 +
  drivers/iommu/iommu.c                              |  22 +
  drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c     |   4 +
  drivers/net/wireguard/main.c                       |   6 +
  drivers/pci/quirks.c                               |  24 +
+ drivers/platform/x86/thinkpad_acpi.c               |   1 +
  drivers/usb/core/hub.c                             |   7 +
  drivers/usb/host/xhci-tegra.c                      |  41 +-
  fs/btrfs/async-thread.c                            |  14 +
@@ -55,7 +55,7 @@
  tools/testing/selftests/bpf/progs/linked_maps2.c   |  76 ---
  tools/testing/selftests/bpf/progs/linked_vars1.c   |  54 --
  tools/testing/selftests/bpf/progs/linked_vars2.c   |  55 ---
- 57 files changed, 728 insertions(+), 1506 deletions(-)
+ 57 files changed, 715 insertions(+), 1506 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
 index 110b305af27f..488feec76f0a 100644
@@ -372,7 +372,7 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index b24513ec3fae..8308569f66e0 100644
+index ae9464091f1b..90cb50ab3073 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1721,6 +1721,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -447,7 +447,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index e96cb5c4f97a..d645460fe8a9 100644
+index a08f53f208bf..49942737cae0 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -458,7 +458,7 @@ index e96cb5c4f97a..d645460fe8a9 100644
  #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5160,8 +5161,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5164,8 +5165,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -1208,38 +1208,6 @@ index 258d5fe3d395..f7298e3dc8f3 100644
 
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
-diff --git a/drivers/input/serio/i8042-x86ia64io.h b/drivers/input/serio/i8042-x86ia64io.h
-index a5a003553646..aedd05541044 100644
---- a/drivers/input/serio/i8042-x86ia64io.h
-+++ b/drivers/input/serio/i8042-x86ia64io.h
-@@ -272,6 +272,13 @@ static const struct dmi_system_id __initconst i8042_dmi_nomux_table[] = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "LifeBook S6230"),
- 		},
- 	},
-+	{
-+		/* Fujitsu Lifebook T725 laptop */
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK T725"),
-+		},
-+	},
- 	{
- 		/* Fujitsu Lifebook U745 */
- 		.matches = {
-@@ -840,6 +847,13 @@ static const struct dmi_system_id __initconst i8042_dmi_notimeout_table[] = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK AH544"),
- 		},
- 	},
-+	{
-+		/* Fujitsu Lifebook T725 laptop */
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK T725"),
-+		},
-+	},
- 	{
- 		/* Fujitsu U574 laptop */
- 		/* https://bugzilla.kernel.org/show_bug.cgi?id=69731 */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
 index 63f0af10c403..195be16dbd39 100644
 --- a/drivers/iommu/iommu.c
@@ -1331,10 +1299,10 @@ index 75dbe77b0b4b..4bd6dd722f44 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 8c3c1ef92171..18431236ab9f 100644
+index cef69b71a6f1..18e176d8596e 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4232,6 +4232,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4233,6 +4233,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1365,6 +1333,18 @@ index 8c3c1ef92171..18431236ab9f 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
+index 27595aba214d..6aa31816159c 100644
+--- a/drivers/platform/x86/thinkpad_acpi.c
++++ b/drivers/platform/x86/thinkpad_acpi.c
+@@ -8853,6 +8853,7 @@ static const struct tpacpi_quirk fan_quirk_table[] __initconst = {
+ 	TPACPI_Q_LNV3('N', '2', 'E', TPACPI_FAN_2CTL),	/* P1 / X1 Extreme (1st gen) */
+ 	TPACPI_Q_LNV3('N', '2', 'O', TPACPI_FAN_2CTL),	/* P1 / X1 Extreme (2nd gen) */
+ 	TPACPI_Q_LNV3('N', '2', 'V', TPACPI_FAN_2CTL),	/* P1 / X1 Extreme (3nd gen) */
++	TPACPI_Q_LNV3('N', '4', '0', TPACPI_FAN_2CTL),	/* P1 / X1 Extreme (4nd gen) */
+ 	TPACPI_Q_LNV3('N', '3', '0', TPACPI_FAN_2CTL),	/* P15 (1st gen) / P15v (1st gen) */
+ 	TPACPI_Q_LNV3('N', '3', '2', TPACPI_FAN_2CTL),	/* X1 Carbon (9th gen) */
+ };
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index 86658a81d284..5647f4756e97 100644
 --- a/drivers/usb/core/hub.c
