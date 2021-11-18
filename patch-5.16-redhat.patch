@@ -65,6 +65,7 @@
  kernel/panic.c                                     |  14 +
  kernel/rh_taint.c                                  | 109 ++++++++
  kernel/sysctl.c                                    |   5 +
+ lib/test_kasan.c                                   |   2 +
  mm/cma.c                                           |  10 +
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
@@ -72,7 +73,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 74 files changed, 1381 insertions(+), 188 deletions(-)
+ 75 files changed, 1383 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 9725c546a0d4..4d440bdcf5b9 100644
@@ -2895,6 +2896,26 @@ index 083be6af29d7..4f271712be5e 100644
  		*(int *)table->data = unpriv_enable;
  	}
  	return ret;
+diff --git a/lib/test_kasan.c b/lib/test_kasan.c
+index 67ed689a0b1b..0643573f8686 100644
+--- a/lib/test_kasan.c
++++ b/lib/test_kasan.c
+@@ -869,6 +869,7 @@ static void kasan_memchr(struct kunit *test)
+ 	ptr = kmalloc(size, GFP_KERNEL | __GFP_ZERO);
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+
++	OPTIMIZER_HIDE_VAR(size);
+ 	KUNIT_EXPECT_KASAN_FAIL(test,
+ 		kasan_ptr_result = memchr(ptr, '1', size + 1));
+
+@@ -894,6 +895,7 @@ static void kasan_memcmp(struct kunit *test)
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
+ 	memset(arr, 0, sizeof(arr));
+
++	OPTIMIZER_HIDE_VAR(size);
+ 	KUNIT_EXPECT_KASAN_FAIL(test,
+ 		kasan_int_result = memcmp(ptr, arr, size+1));
+ 	kfree(ptr);
 diff --git a/mm/cma.c b/mm/cma.c
 index bc9ca8f3c487..9fa9a485eb3a 100644
 --- a/mm/cma.c
@@ -3046,72 +3067,3 @@ index c88167a414b4..e65a178ff9f4 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-From 308661b9e60dedfff8ee23bec8127680c4d7b670 Mon Sep 17 00:00:00 2001
-From: Kees Cook <keescook@chromium.org>
-Date: Mon, 15 Nov 2021 16:41:11 -0800
-Subject: [PATCH] kasan: test: Silence intentional read overflow warnings
-
-As done in commit d73dad4eb5ad ("kasan: test: bypass __alloc_size checks")
-for __write_overflow warnings, also silence some more cases that trip
-the __read_overflow warnings seen in 5.16-rc1[1]:
-
-In file included from /kisskb/src/include/linux/string.h:253,
-                 from /kisskb/src/include/linux/bitmap.h:10,
-                 from /kisskb/src/include/linux/cpumask.h:12,
-                 from /kisskb/src/include/linux/mm_types_task.h:14,
-                 from /kisskb/src/include/linux/mm_types.h:5,
-                 from /kisskb/src/include/linux/page-flags.h:13,
-                 from /kisskb/src/arch/arm64/include/asm/mte.h:14,
-                 from /kisskb/src/arch/arm64/include/asm/pgtable.h:12,
-                 from /kisskb/src/include/linux/pgtable.h:6,
-                 from /kisskb/src/include/linux/kasan.h:29,
-                 from /kisskb/src/lib/test_kasan.c:10:
-In function 'memcmp',
-    inlined from 'kasan_memcmp' at /kisskb/src/lib/test_kasan.c:897:2:
-/kisskb/src/include/linux/fortify-string.h:263:25: error: call to '__read_overflow' declared with attribute error: detected read beyond size of object (1st parameter)
-  263 |                         __read_overflow();
-      |                         ^~~~~~~~~~~~~~~~~
-In function 'memchr',
-    inlined from 'kasan_memchr' at /kisskb/src/lib/test_kasan.c:872:2:
-/kisskb/src/include/linux/fortify-string.h:277:17: error: call to '__read_overflow' declared with attribute error: detected read beyond size of object (1st parameter)
-  277 |                 __read_overflow();
-      |                 ^~~~~~~~~~~~~~~~~
-
-[1] http://kisskb.ellerman.id.au/kisskb/buildresult/14660585/log/
-
-Cc: Marco Elver <elver@google.com>
-Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Andrey Konovalov <andreyknvl@gmail.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: kasan-dev@googlegroups.com
-Fixes: d73dad4eb5ad ("kasan: test: bypass __alloc_size checks")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
----
- lib/test_kasan.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/lib/test_kasan.c b/lib/test_kasan.c
-index 67ed689a0b1b..0643573f8686 100644
---- a/lib/test_kasan.c
-+++ b/lib/test_kasan.c
-@@ -869,6 +869,7 @@ static void kasan_memchr(struct kunit *test)
- 	ptr = kmalloc(size, GFP_KERNEL | __GFP_ZERO);
- 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
-
-+	OPTIMIZER_HIDE_VAR(size);
- 	KUNIT_EXPECT_KASAN_FAIL(test,
- 		kasan_ptr_result = memchr(ptr, '1', size + 1));
-
-@@ -894,6 +895,7 @@ static void kasan_memcmp(struct kunit *test)
- 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
- 	memset(arr, 0, sizeof(arr));
-
-+	OPTIMIZER_HIDE_VAR(size);
- 	KUNIT_EXPECT_KASAN_FAIL(test,
- 		kasan_int_result = memcmp(ptr, arr, size+1));
- 	kfree(ptr);
--- 
-2.33.1
-

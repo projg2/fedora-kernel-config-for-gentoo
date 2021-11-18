@@ -83,9 +83,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc1.20211115git8ab774587903.14
+%global distro_build 0.rc1.20211118git42eb8fdac2fc.16
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc1.20211115git8ab774587903.14
+%define pkgrelease 0.rc1.20211118git42eb8fdac2fc.16
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20211115git8ab774587903.14%{?buildid}%{?dist}
+%define specrelease 0.rc1.20211118git42eb8fdac2fc.16%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -469,7 +469,6 @@ Summary: The Linux kernel
 %endif
 
 %ifarch aarch64
-%define with_selftests 0
 %define all_arch_configs kernel-%{version}-aarch64*.config
 %define asmarch arm64
 %define hdrarch arm64
@@ -683,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-rc1-3-g8ab774587903.tar.xz
+Source0: linux-5.16-rc1-21-g42eb8fdac2fc.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1375,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-rc1-3-g8ab774587903 -c
-mv linux-5.16-rc1-3-g8ab774587903 linux-%{KVERREL}
+%setup -q -n kernel-5.16-rc1-21-g42eb8fdac2fc -c
+mv linux-5.16-rc1-21-g42eb8fdac2fc linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2185,7 +2184,7 @@ InitBuildVars
 %global perf_build_extra_opts CORESIGHT=1
 %endif
 %global perf_make \
-  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2973,6 +2972,15 @@ fi
 #
 #
 %changelog
+* Thu Nov 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc1.20211118git42eb8fdac2fc.16]
+- kasan: test: Silence intentional read overflow warnings (Kees Cook)
+
+* Thu Nov 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc1.20211118git42eb8fdac2fc.15]
+- New configs in drivers/net/wwan (Fedora Kernel Team)
+- New configs in drivers/i2c (Fedora Kernel Team)
+- redhat/docs/index.rst: Add local build information. (Prarit Bhargava)
+- Fix up preempt configs (Justin M. Forbes)
+
 * Sat Nov 13 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc0.20211113git66f4beaa6c1d.12]
 - Turn on CONFIG_HID_NINTENDO for controller support (Dave Olsthoorn)
 - Fedora: Enable MediaTek bluetooth pieces (Peter Robinson)
