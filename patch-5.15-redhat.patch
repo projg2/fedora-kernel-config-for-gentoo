@@ -26,7 +26,6 @@
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
- drivers/input/serio/i8042-x86ia64io.h              |  14 +++
  drivers/iommu/iommu.c                              |  22 ++++
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
@@ -48,10 +47,10 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 50 files changed, 805 insertions(+), 214 deletions(-)
+ 49 files changed, 791 insertions(+), 214 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 43dc35fe5bc0..07f1615206d4 100644
+index 1396fd2d9031..4bc97128cee8 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -3949,6 +3949,15 @@
@@ -71,7 +70,7 @@ index 43dc35fe5bc0..07f1615206d4 100644
  				This is normally done in pci_enable_device(),
  				so this option is a temporary workaround
 diff --git a/Makefile b/Makefile
-index 14480187ac75..b3146bb9a64f 100644
+index 79eeb13c0973..084fdfae9d16 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -584,7 +583,7 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 5b54c80b9d32..86c314f8d8a0 100644
+index 770b82483d74..1b922c6b79d6 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1720,6 +1720,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -659,7 +658,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index e96cb5c4f97a..d645460fe8a9 100644
+index a08f53f208bf..49942737cae0 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -670,7 +669,7 @@ index e96cb5c4f97a..d645460fe8a9 100644
  #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5160,8 +5161,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5164,8 +5165,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -1420,38 +1419,6 @@ index 258d5fe3d395..f7298e3dc8f3 100644
 
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
-diff --git a/drivers/input/serio/i8042-x86ia64io.h b/drivers/input/serio/i8042-x86ia64io.h
-index a5a003553646..aedd05541044 100644
---- a/drivers/input/serio/i8042-x86ia64io.h
-+++ b/drivers/input/serio/i8042-x86ia64io.h
-@@ -272,6 +272,13 @@ static const struct dmi_system_id __initconst i8042_dmi_nomux_table[] = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "LifeBook S6230"),
- 		},
- 	},
-+	{
-+		/* Fujitsu Lifebook T725 laptop */
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK T725"),
-+		},
-+	},
- 	{
- 		/* Fujitsu Lifebook U745 */
- 		.matches = {
-@@ -840,6 +847,13 @@ static const struct dmi_system_id __initconst i8042_dmi_notimeout_table[] = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK AH544"),
- 		},
- 	},
-+	{
-+		/* Fujitsu Lifebook T725 laptop */
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK T725"),
-+		},
-+	},
- 	{
- 		/* Fujitsu U574 laptop */
- 		/* https://bugzilla.kernel.org/show_bug.cgi?id=69731 */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
 index 3303d707bab4..372edaaafaa1 100644
 --- a/drivers/iommu/iommu.c
@@ -1560,7 +1527,7 @@ index f8dd664b2eda..0ff9ea8340e4 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index fba06618c6c2..a4d81de29e13 100644
+index 2f76969408b2..021a4176b321 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
@@ -1596,7 +1563,7 @@ index fba06618c6c2..a4d81de29e13 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next)
-@@ -814,8 +820,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -813,8 +819,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1629,10 +1596,10 @@ index ed79a6c7e804..961dc67d7261 100644
  {
  }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 4537d1ea14fd..af30ab6c81e2 100644
+index 6c957124f84d..28e3040eae66 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4268,6 +4268,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4269,6 +4269,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 

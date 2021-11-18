@@ -128,7 +128,7 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.15
 
-%define rpmversion 5.15.2
+%define rpmversion 5.15.3
 %define patchversion 5.15
 %define pkgrelease 200
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15.2.tar.xz
+Source0: linux-5.15.3.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1374,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15.2 -c
-mv linux-5.15.2 linux-%{KVERREL}
+%setup -q -n kernel-5.15.3 -c
+mv linux-5.15.3 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2972,6 +2972,10 @@ fi
 #
 #
 %changelog
+* Thu Nov 18 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-0]
+- Enable CIFS_SMB_DIRECT for Fedora (Justin M. Forbes)
+- Fedora: rockchip: move the GPIO module back to builtin (Peter Robinson)
+
 * Fri Nov 12 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-0]
 - usb: xhci: tegra: Check padctrl interrupt presence in device tree (Dmitry Osipenko)
 - Fedora: Enable MediaTek bluetooth pieces (Peter Robinson)
