@@ -545,7 +545,7 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index a50f1967c73d..faeecb8bc471 100644
+index 2c80765670bc..5245fad951d8 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1725,6 +1725,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -2664,7 +2664,7 @@ index 186c49582f45..7bbf1c3801f9 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 50f96ea4452a..4f2f992de1aa 100644
+index 1033ee8c0caf..f2e6d22a5645 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -24,6 +24,7 @@
