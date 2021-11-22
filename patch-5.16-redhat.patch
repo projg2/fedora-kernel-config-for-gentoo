@@ -65,7 +65,6 @@
  kernel/panic.c                                     |  14 +
  kernel/rh_taint.c                                  | 109 ++++++++
  kernel/sysctl.c                                    |   5 +
- lib/test_kasan.c                                   |   2 +
  mm/cma.c                                           |  10 +
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
@@ -73,7 +72,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 75 files changed, 1383 insertions(+), 188 deletions(-)
+ 74 files changed, 1381 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 9725c546a0d4..4d440bdcf5b9 100644
@@ -129,7 +128,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 9e12c14ea0fb..c0a784684f99 100644
+index daf95a574b08..17a521cc03d7 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -159,10 +158,10 @@ index 9e12c14ea0fb..c0a784684f99 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index f0f9e8bec83a..041a3934cf4f 100644
+index c2724d986fa0..8063dcef65f7 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1478,9 +1478,9 @@ config HIGHMEM
+@@ -1479,9 +1479,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -224,10 +223,10 @@ index 3f8ee257f9aa..3ab92feb6241 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index e2cc35775b99..96fc8134f056 100644
+index 5ad1dde23dc5..b6192d58eed3 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2215,3 +2215,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2216,3 +2216,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -237,7 +236,7 @@ index e2cc35775b99..96fc8134f056 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 40405f2304f1..a6f5f1cae2fe 100644
+index 225ab2d0a4c6..6a06cde25ca2 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -248,7 +247,7 @@ index 40405f2304f1..a6f5f1cae2fe 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -975,6 +976,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -963,6 +964,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -271,7 +270,7 @@ index 0083464de5e3..2de5f417f3f2 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 49b596db5631..69468eebf8a0 100644
+index c410be738ae7..dcbff059b842 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -341,7 +340,7 @@ index 49b596db5631..69468eebf8a0 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -929,6 +975,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -941,6 +987,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -355,7 +354,7 @@ index 49b596db5631..69468eebf8a0 100644
  	dmi_setup();
 
  	/*
-@@ -1094,19 +1147,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1106,19 +1159,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -376,7 +375,7 @@ index 49b596db5631..69468eebf8a0 100644
 
  	reserve_initrd();
 
-@@ -1219,6 +1260,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1231,6 +1272,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -565,7 +564,7 @@ index 2c80765670bc..5245fad951d8 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 8a6835bfd18a..e7fc078e8621 100644
+index f76b8418e6fb..350e52fccc30 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -690,6 +690,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -2896,26 +2895,6 @@ index 083be6af29d7..4f271712be5e 100644
  		*(int *)table->data = unpriv_enable;
  	}
  	return ret;
-diff --git a/lib/test_kasan.c b/lib/test_kasan.c
-index 67ed689a0b1b..0643573f8686 100644
---- a/lib/test_kasan.c
-+++ b/lib/test_kasan.c
-@@ -869,6 +869,7 @@ static void kasan_memchr(struct kunit *test)
- 	ptr = kmalloc(size, GFP_KERNEL | __GFP_ZERO);
- 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
-
-+	OPTIMIZER_HIDE_VAR(size);
- 	KUNIT_EXPECT_KASAN_FAIL(test,
- 		kasan_ptr_result = memchr(ptr, '1', size + 1));
-
-@@ -894,6 +895,7 @@ static void kasan_memcmp(struct kunit *test)
- 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr);
- 	memset(arr, 0, sizeof(arr));
-
-+	OPTIMIZER_HIDE_VAR(size);
- 	KUNIT_EXPECT_KASAN_FAIL(test,
- 		kasan_int_result = memcmp(ptr, arr, size+1));
- 	kfree(ptr);
 diff --git a/mm/cma.c b/mm/cma.c
 index bc9ca8f3c487..9fa9a485eb3a 100644
 --- a/mm/cma.c

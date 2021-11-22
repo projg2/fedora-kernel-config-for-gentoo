@@ -83,9 +83,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc1.20211119git4c388a8e740d.17
+%global distro_build 0.rc2.18
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc1.20211119git4c388a8e740d.17
+%define pkgrelease 0.rc2.18
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20211119git4c388a8e740d.17%{?buildid}%{?dist}
+%define specrelease 0.rc2.18%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-rc1-236-g4c388a8e740d.tar.xz
+Source0: linux-5.16-rc2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1374,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-rc1-236-g4c388a8e740d -c
-mv linux-5.16-rc1-236-g4c388a8e740d linux-%{KVERREL}
+%setup -q -n kernel-5.16-rc2 -c
+mv linux-5.16-rc2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2270,7 +2270,7 @@ for dir in bpf bpf/no_alu32 bpf/progs; do
 	test -d $dir || continue
 	mkdir -p %{buildroot}%{_libexecdir}/kselftests/$dir
 	find $dir -maxdepth 1 -type f \( -executable -o -name '*.py' -o -name settings -o \
-		-name 'btf_dump_test_case_*.c' -o \
+		-name 'btf_dump_test_case_*.c' -o -name '*.ko' -o \
 		-name '*.o' -exec sh -c 'readelf -h "{}" | grep -q "^  Machine:.*BPF"' \; \) -print0 | \
 	xargs -0 cp -t %{buildroot}%{_libexecdir}/kselftests/$dir || true
 done
@@ -2972,8 +2972,8 @@ fi
 #
 #
 %changelog
-* Fri Nov 19 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc1.20211119git4c388a8e740d.17]
-- kasan: test: Silence intentional read overflow warnings (Kees Cook)
+* Sat Nov 20 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc1.20211120gita90af8f15bdc.17]
+- spec: add bpf_testmod.ko to kselftests/bpf (Viktor Malik)
 
 * Thu Nov 18 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc1.20211118git42eb8fdac2fc.15]
 - New configs in drivers/net/wwan (Fedora Kernel Team)
