@@ -36,6 +36,7 @@
  drivers/usb/core/hub.c                             |   7 ++
  drivers/usb/host/xhci-tegra.c                      |  41 +++++--
  fs/btrfs/async-thread.c                            |  14 +++
+ fs/fuse/dev.c                                      |  14 +--
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -49,7 +50,7 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 51 files changed, 803 insertions(+), 215 deletions(-)
+ 52 files changed, 805 insertions(+), 227 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 1396fd2d9031..4bc97128cee8 100644
@@ -1809,6 +1810,38 @@ index 309516e6a968..d39af03b456c 100644
  		set_bit(WORK_DONE_BIT, &work->flags);
  		run_ordered_work(wq, work);
  	} else {
+diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+index 5a1f142bdb48..dde341a6388a 100644
+--- a/fs/fuse/dev.c
++++ b/fs/fuse/dev.c
+@@ -847,12 +847,6 @@ static int fuse_try_move_page(struct fuse_copy_state *cs, struct page **pagep)
+
+ 	replace_page_cache_page(oldpage, newpage);
+
+-	/*
+-	 * Release while we have extra ref on stolen page.  Otherwise
+-	 * anon_pipe_buf_release() might think the page can be reused.
+-	 */
+-	pipe_buf_release(cs->pipe, buf);
+-
+ 	get_page(newpage);
+
+ 	if (!(buf->flags & PIPE_BUF_FLAG_LRU))
+@@ -2037,12 +2031,8 @@ static ssize_t fuse_dev_splice_write(struct pipe_inode_info *pipe,
+
+ 	pipe_lock(pipe);
+ out_free:
+-	for (idx = 0; idx < nbuf; idx++) {
+-		struct pipe_buffer *buf = &bufs[idx];
+-
+-		if (buf->ops)
+-			pipe_buf_release(pipe, buf);
+-	}
++	for (idx = 0; idx < nbuf; idx++)
++		pipe_buf_release(pipe, &bufs[idx]);
+ 	pipe_unlock(pipe);
+
+ 	kvfree(bufs);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 6b5d36babfcc..fd4a5d66a9d0 100644
 --- a/include/linux/efi.h

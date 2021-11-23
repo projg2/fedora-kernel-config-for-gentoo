@@ -85,7 +85,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 
-%global distro_build 100
+%global distro_build 101
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.15.4
 %define patchversion 5.15
-%define pkgrelease 100
+%define pkgrelease 101
 
 # This is needed to do merge window version magic
 %define patchlevel 15
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 100%{?buildid}%{?dist}
+%define specrelease 101%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -2972,6 +2972,9 @@ fi
 #
 #
 %changelog
+* Tue Nov 23 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-101]
+- Revert "fuse: fix page stealing" (Justin M. Forbes)
+
 * Mon Nov 22 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.15-0]
 - mwifiex_usb: Fix skb_over_panic in mwifiex_usb_recv (Zekun Shen)
 - atlantic: Fix OOB read and write in hw_atl_utils_fw_rpc_wait (Zekun Shen)
