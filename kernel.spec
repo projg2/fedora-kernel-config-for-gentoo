@@ -83,9 +83,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc2.18
+%global distro_build 0.rc2.20211124git5d9f4cf36721.19
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc2.18
+%define pkgrelease 0.rc2.20211124git5d9f4cf36721.19
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.18%{?buildid}%{?dist}
+%define specrelease 0.rc2.20211124git5d9f4cf36721.19%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-rc2.tar.xz
+Source0: linux-5.16-rc2-54-g5d9f4cf36721.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1374,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-rc2 -c
-mv linux-5.16-rc2 linux-%{KVERREL}
+%setup -q -n kernel-5.16-rc2-54-g5d9f4cf36721 -c
+mv linux-5.16-rc2-54-g5d9f4cf36721 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2184,7 +2184,7 @@ InitBuildVars
 %global perf_build_extra_opts CORESIGHT=1
 %endif
 %global perf_make \
-  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2972,6 +2972,11 @@ fi
 #
 #
 %changelog
+* Wed Nov 24 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc2.20211124git5d9f4cf36721.19]
+- Fix up PREEMPT configs (Justin M. Forbes)
+- New configs in drivers/media (Fedora Kernel Team)
+- New configs in drivers/net/ethernet/litex (Fedora Kernel Team)
+
 * Sat Nov 20 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc1.20211120gita90af8f15bdc.17]
 - spec: add bpf_testmod.ko to kselftests/bpf (Viktor Malik)
 
