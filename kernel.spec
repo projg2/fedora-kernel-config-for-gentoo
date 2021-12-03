@@ -85,7 +85,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc3.20211201git58e1100fdc59.25
+%global distro_build 0.rc3.20211203git5f58da2befa5.26
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +130,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc3.20211201git58e1100fdc59.25
+%define pkgrelease 0.rc3.20211203git5f58da2befa5.26
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20211201git58e1100fdc59.25%{?buildid}%{?dist}
+%define specrelease 0.rc3.20211203git5f58da2befa5.26%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -687,7 +687,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-rc3-51-g58e1100fdc59.tar.xz
+Source0: linux-5.16-rc3-227-g5f58da2befa5.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1379,8 +1379,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-rc3-51-g58e1100fdc59 -c
-mv linux-5.16-rc3-51-g58e1100fdc59 linux-%{KVERREL}
+%setup -q -n kernel-5.16-rc3-227-g5f58da2befa5 -c
+mv linux-5.16-rc3-227-g5f58da2befa5 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2189,7 +2189,7 @@ InitBuildVars
 %global perf_build_extra_opts CORESIGHT=1
 %endif
 %global perf_make \
-  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2977,6 +2977,18 @@ fi
 #
 #
 %changelog
+* Fri Dec 03 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc3.20211203git5f58da2befa5.26]
+- redhat/configs: Add two new CONFIGs (Prarit Bhargava)
+- redhat/configs: Remove dead CONFIG files (Prarit Bhargava)
+- redhat/configs/evaluate_configs: Add find dead configs option (Prarit Bhargava)
+- Add more rebase notes for Fedora 5.16 (Justin M. Forbes)
+- Fedora: Feature: Retire wireless Extensions (Peter Robinson)
+- fedora: arm: some SoC enablement pieces (Peter Robinson)
+- fedora: arm: enable PCIE_ROCKCHIP_DW for rk35xx series (Peter Robinson)
+- fedora: enable RTW89 802.11 WiFi driver (Peter Robinson)
+- fedora: arm: Enable DRM_PANEL_EDP (Peter Robinson)
+- fedora: sound: enable new sound drivers (Peter Robinson)
+
 * Wed Dec 01 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc3.20211201git58e1100fdc59.25]
 - redhat/configs: unset KEXEC_SIG for s390x zfcpdump (Coiby Xu)
 - spec: Keep .BTF section in modules (Jiri Olsa)
