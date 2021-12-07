@@ -7,6 +7,8 @@
 %global include_fedora 1
 # Include RHEL files
 %global include_rhel 1
+# Provide Patchlist.changelog file
+%global patchlist_changelog 1
 
 # Disable LTO in userspace packages.
 %global _lto_cflags %{nil}
@@ -83,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc4.29
+%global distro_build 0.rc4.20211207gitcd8c917a56f2.30
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc4.29
+%define pkgrelease 0.rc4.20211207gitcd8c917a56f2.30
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.29%{?buildid}%{?dist}
+%define specrelease 0.rc4.20211207gitcd8c917a56f2.30%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -687,7 +689,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-rc4.tar.xz
+Source0: linux-5.16-rc4-12-gcd8c917a56f2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -839,7 +841,9 @@ Source2002: kvm_stat.logrotate
 # source tree, but in the mean time we carry this to support the legacy workflow
 Source3000: merge.pl
 Source3001: kernel-local
-Source3003: Patchlist.changelog
+%if %{patchlist_changelog}
+Source3002: Patchlist.changelog
+%endif
 
 Source4000: README.rst
 Source4001: rpminspect.yaml
@@ -1379,8 +1383,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-rc4 -c
-mv linux-5.16-rc4 linux-%{KVERREL}
+%setup -q -n kernel-5.16-rc4-12-gcd8c917a56f2 -c
+mv linux-5.16-rc4-12-gcd8c917a56f2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2977,6 +2981,13 @@ fi
 #
 #
 %changelog
+* Tue Dec 07 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc4.20211207gitcd8c917a56f2.30]
+- redhat/configs: enable CONFIG_AMD_PTDMA for ark (John W. Linville)
+- redhat/configs: enable CONFIG_RD_ZSTD for rhel (Tao Liu) [2020132]
+- fedora: build TEE as a module for all arches (Peter Robinson)
+- common: build TRUSTED_KEYS in everywhere (Peter Robinson)
+- redhat: make Patchlist.changelog generation conditional (Herton R. Krzesinski)
+
 * Fri Dec 03 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc3.20211203git5f58da2befa5.26]
 - redhat/configs: Add two new CONFIGs (Prarit Bhargava)
 - redhat/configs: Remove dead CONFIG files (Prarit Bhargava)
