@@ -128,7 +128,7 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.15
 
-%define rpmversion 5.15.6
+%define rpmversion 5.15.7
 %define patchversion 5.15
 %define pkgrelease 200
 
@@ -682,7 +682,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.15.6.tar.xz
+Source0: linux-5.15.7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1374,8 +1374,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.15.6 -c
-mv linux-5.15.6 linux-%{KVERREL}
+%setup -q -n kernel-5.15.7 -c
+mv linux-5.15.7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .

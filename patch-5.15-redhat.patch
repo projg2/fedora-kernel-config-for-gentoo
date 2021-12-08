@@ -23,12 +23,10 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
- drivers/gpu/drm/i915/gt/intel_workarounds.c        |   7 --
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
- .../aquantia/atlantic/hw_atl/hw_atl_utils.c        |  10 ++
  drivers/net/wireless/marvell/mwifiex/usb.c         |   3 +-
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
@@ -48,7 +46,7 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 50 files changed, 760 insertions(+), 206 deletions(-)
+ 48 files changed, 750 insertions(+), 199 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 1396fd2d9031..4bc97128cee8 100644
@@ -71,7 +69,7 @@ index 1396fd2d9031..4bc97128cee8 100644
  				This is normally done in pci_enable_device(),
  				so this option is a temporary workaround
 diff --git a/Makefile b/Makefile
-index 0faa64733281..5da4d20e69ec 100644
+index 2d85216b1493..6c9277288453 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -174,7 +172,7 @@ index 5ad1dde23dc5..b6192d58eed3 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index d77269f16894..445c3c8c2dba 100644
+index ee67215a678a..931955a9ceca 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -185,7 +183,7 @@ index d77269f16894..445c3c8c2dba 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -973,6 +974,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -970,6 +971,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -593,7 +591,7 @@ index 5b54c80b9d32..86c314f8d8a0 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 5b3fa2cbe722..ad46d87e17e2 100644
+index 395772fa3943..35aa1b420262 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -672,6 +672,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -648,7 +646,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index a08f53f208bf..49942737cae0 100644
+index b404cc46cbda..c74d611bcb79 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -659,7 +657,7 @@ index a08f53f208bf..49942737cae0 100644
  #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5164,8 +5165,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5173,8 +5174,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -1066,24 +1064,6 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
-diff --git a/drivers/gpu/drm/i915/gt/intel_workarounds.c b/drivers/gpu/drm/i915/gt/intel_workarounds.c
-index aae609d7d85d..6b5ab19a2ada 100644
---- a/drivers/gpu/drm/i915/gt/intel_workarounds.c
-+++ b/drivers/gpu/drm/i915/gt/intel_workarounds.c
-@@ -621,13 +621,6 @@ static void gen12_ctx_workarounds_init(struct intel_engine_cs *engine,
- 	       FF_MODE2_GS_TIMER_MASK,
- 	       FF_MODE2_GS_TIMER_224,
- 	       0, false);
--
--	/*
--	 * Wa_14012131227:dg1
--	 * Wa_1508744258:tgl,rkl,dg1,adl-s,adl-p
--	 */
--	wa_masked_en(wal, GEN7_COMMON_SLICE_CHICKEN1,
--		     GEN9_RHWO_OPTIMIZATION_DISABLE);
- }
-
- static void dg1_ctx_workarounds_init(struct intel_engine_cs *engine,
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1467,34 +1447,6 @@ index 3303d707bab4..372edaaafaa1 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-index 404cbf60d3f2..da1d185f6d22 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-@@ -559,6 +559,11 @@ int hw_atl_utils_fw_rpc_wait(struct aq_hw_s *self,
- 			goto err_exit;
-
- 		if (fw.len == 0xFFFFU) {
-+			if (sw.len > sizeof(self->rpc)) {
-+				printk(KERN_INFO "Invalid sw len: %x\n", sw.len);
-+				err = -EINVAL;
-+				goto err_exit;
-+			}
- 			err = hw_atl_utils_fw_rpc_call(self, sw.len);
- 			if (err < 0)
- 				goto err_exit;
-@@ -567,6 +572,11 @@ int hw_atl_utils_fw_rpc_wait(struct aq_hw_s *self,
-
- 	if (rpc) {
- 		if (fw.len) {
-+			if (fw.len > sizeof(self->rpc)) {
-+				printk(KERN_INFO "Invalid fw len: %x\n", fw.len);
-+				err = -EINVAL;
-+				goto err_exit;
-+			}
- 			err =
- 			hw_atl_utils_fw_downld_dwords(self,
- 						      self->rpc_addr,
 diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
 index 9736aa0ab7fd..8f01fcbe9396 100644
 --- a/drivers/net/wireless/marvell/mwifiex/usb.c
