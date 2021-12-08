@@ -9,7 +9,7 @@
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/cpu/common.c                       |   1 +
- arch/x86/kernel/setup.c                            |  69 ++++-
+ arch/x86/kernel/setup.c                            |  70 ++++-
  crypto/rng.c                                       |  73 ++++-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
@@ -27,13 +27,13 @@
  drivers/iommu/iommu.c                              |  22 ++
  drivers/message/fusion/mptsas.c                    |  10 +
  drivers/message/fusion/mptspi.c                    |  11 +
- drivers/net/ethernet/intel/e1000/e1000_main.c      |   5 +
+ drivers/net/ethernet/intel/e1000/e1000_main.c      |   2 +
  drivers/net/team/team.c                            |   2 +
  drivers/net/wireguard/main.c                       |   7 +
  drivers/nvme/host/core.c                           |  22 +-
  drivers/nvme/host/multipath.c                      |  19 +-
  drivers/nvme/host/nvme.h                           |   4 +
- drivers/pci/pci-driver.c                           |  29 ++
+ drivers/pci/pci-driver.c                           |  79 ++++++
  drivers/pci/quirks.c                               |  24 ++
  drivers/scsi/aacraid/linit.c                       |   2 +
  drivers/scsi/be2iscsi/be_main.c                    |   2 +
@@ -47,12 +47,12 @@
  fs/ext4/super.c                                    |   5 +
  fs/xfs/xfs_super.c                                 |   5 +
  include/linux/efi.h                                |  22 +-
- include/linux/kernel.h                             |  17 ++
+ include/linux/kernel.h                             |  19 ++
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
  include/linux/module.h                             |   1 +
  include/linux/panic.h                              |  19 +-
- include/linux/pci.h                                |   4 +
+ include/linux/pci.h                                |  16 ++
  include/linux/random.h                             |   7 +
  include/linux/rh_kabi.h                            | 297 +++++++++++++++++++++
  include/linux/rmi.h                                |   1 +
@@ -63,7 +63,7 @@
  kernel/module.c                                    |   2 +
  kernel/module_signing.c                            |   9 +-
  kernel/panic.c                                     |  14 +
- kernel/rh_taint.c                                  | 109 ++++++++
+ kernel/rh_messages.c                               | 179 +++++++++++++
  kernel/sysctl.c                                    |   5 +
  mm/cma.c                                           |  10 +
  scripts/mod/modpost.c                              |   8 +
@@ -72,7 +72,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 74 files changed, 1381 insertions(+), 188 deletions(-)
+ 74 files changed, 1513 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 9725c546a0d4..4d440bdcf5b9 100644
@@ -270,7 +270,7 @@ index 0083464de5e3..2de5f417f3f2 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 6a190c7f4d71..3fbfbf6ed21c 100644
+index 6a190c7f4d71..f1e635696e01 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -289,7 +289,7 @@ index 6a190c7f4d71..3fbfbf6ed21c 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -723,6 +725,50 @@ static void __init early_reserve_memory(void)
+@@ -723,6 +725,51 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -320,7 +320,8 @@ index 6a190c7f4d71..3fbfbf6ed21c 100644
 +		pr_crit("Detected processor %s %s\n",
 +			boot_cpu_data.x86_vendor_id,
 +			boot_cpu_data.x86_model_id);
-+		mark_hardware_unsupported("Processor");
++		mark_hardware_unmaintained("x86 processor", "%s %s", boot_cpu_data.x86_vendor_id,
++					  boot_cpu_data.x86_model_id);
 +		break;
 +	}
 +
@@ -340,7 +341,7 @@ index 6a190c7f4d71..3fbfbf6ed21c 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -941,6 +987,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -941,6 +988,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -354,7 +355,7 @@ index 6a190c7f4d71..3fbfbf6ed21c 100644
  	dmi_setup();
 
  	/*
-@@ -1106,19 +1159,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1106,19 +1160,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -375,7 +376,7 @@ index 6a190c7f4d71..3fbfbf6ed21c 100644
 
  	reserve_initrd();
 
-@@ -1231,6 +1272,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1231,6 +1273,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -1491,30 +1492,27 @@ index acd4805dcf83..5f814d447ab3 100644
 
  out_mptspi_probe:
 diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
-index 669060a2e6aa..49b17169987d 100644
+index 669060a2e6aa..befd1f254436 100644
 --- a/drivers/net/ethernet/intel/e1000/e1000_main.c
 +++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-@@ -224,6 +224,11 @@ static int __init e1000_init_module(void)
+@@ -933,6 +933,8 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	int bars, need_ioport;
+ 	bool disable_dev = false;
 
- 	pr_info("%s\n", e1000_copyright);
-
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+	add_taint(TAINT_SUPPORT_REMOVED, LOCKDEP_STILL_OK);
-+	mark_driver_unsupported(e1000_driver_name);
-+#endif
++	pci_hw_unmaintained(e1000_pci_tbl, pdev);
 +
- 	ret = pci_register_driver(&e1000_driver);
- 	if (copybreak != COPYBREAK_DEFAULT) {
- 		if (copybreak == 0)
+ 	/* do not allocate ioport bars when not needed */
+ 	need_ioport = e1000_is_need_ioport(pdev);
+ 	if (need_ioport) {
 diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index 8b2adc56b92a..f0ad908048c6 100644
+index 8b2adc56b92a..3263b33c9b69 100644
 --- a/drivers/net/team/team.c
 +++ b/drivers/net/team/team.c
 @@ -3045,6 +3045,8 @@ static int __init team_module_init(void)
  	if (err)
  		goto err_nl_init;
 
-+	mark_hardware_deprecated(DRV_NAME);
++	mark_driver_deprecated(DRV_NAME);
 +
  	return 0;
 
@@ -1688,7 +1686,7 @@ index b334af8aa264..b2a0e2fc6d47 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 588588cfda48..1b90c69b7718 100644
+index 588588cfda48..5218a8c10a93 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -1699,37 +1697,87 @@ index 588588cfda48..1b90c69b7718 100644
  #include <linux/dma-map-ops.h>
  #include "pci.h"
  #include "pcie/portdrv.h"
-@@ -295,6 +296,34 @@ static struct attribute *pci_drv_attrs[] = {
+@@ -295,6 +296,84 @@ static struct attribute *pci_drv_attrs[] = {
  };
  ATTRIBUTE_GROUPS(pci_drv);
 
++#if CONFIG_RHEL_DIFFERENCES
 +/**
-+ * pci_hw_vendor_status - Tell if a PCI device is supported by the HW vendor
++ * pci_hw_deprecated - Tell if a PCI device is deprecated
 + * @ids: array of PCI device id structures to search in
 + * @dev: the PCI device structure to match against
 + *
-+ * Used by a driver to check whether this device is in its list of unsupported
++ * Used by a driver to check whether this device is in its list of deprecated
 + * devices.  Returns the matching pci_device_id structure or %NULL if there is
 + * no match.
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+const struct pci_device_id *pci_hw_vendor_status(
-+						const struct pci_device_id *ids,
-+						struct pci_dev *dev)
++const struct pci_device_id *pci_hw_deprecated(const struct pci_device_id *ids,
++					      struct pci_dev *dev)
 +{
-+	char devinfo[64];
 +	const struct pci_device_id *ret = pci_match_id(ids, dev);
 +
-+	if (ret) {
-+		snprintf(devinfo, sizeof(devinfo), "%s %s",
-+			 dev_driver_string(&dev->dev), dev_name(&dev->dev));
-+		mark_hardware_deprecated(devinfo);
-+	}
++	if (!ret)
++		return NULL;
 +
++	mark_hardware_deprecated(dev_driver_string(&dev->dev), "%04X:%04X @ %s",
++				 dev->device, dev->vendor, pci_name(dev));
 +	return ret;
 +}
-+EXPORT_SYMBOL(pci_hw_vendor_status);
++EXPORT_SYMBOL(pci_hw_deprecated);
++
++/**
++ * pci_hw_unmaintained - Tell if a PCI device is unmaintained
++ * @ids: array of PCI device id structures to search in
++ * @dev: the PCI device structure to match against
++ *
++ * Used by a driver to check whether this device is in its list of unmaintained
++ * devices.  Returns the matching pci_device_id structure or %NULL if there is
++ * no match.
++ *
++ * Reserved for Internal Red Hat use only.
++ */
++const struct pci_device_id *pci_hw_unmaintained(const struct pci_device_id *ids,
++						struct pci_dev *dev)
++{
++	const struct pci_device_id *ret = pci_match_id(ids, dev);
++
++	if (!ret)
++		return NULL;
++
++	mark_hardware_unmaintained(dev_driver_string(&dev->dev), "%04X:%04X @ %s",
++				   dev->device, dev->vendor, pci_name(dev));
++	return ret;
++}
++EXPORT_SYMBOL(pci_hw_unmaintained);
++
++/**
++ * pci_hw_disabled - Tell if a PCI device is disabled
++ * @ids: array of PCI device id structures to search in
++ * @dev: the PCI device structure to match against
++ *
++ * Used by a driver to check whether this device is in its list of disabled
++ * devices.  Returns the matching pci_device_id structure or %NULL if there is
++ * no match.
++ *
++ * Reserved for Internal Red Hat use only.
++ */
++const struct pci_device_id *pci_hw_disabled(const struct pci_device_id *ids,
++					    struct pci_dev *dev)
++{
++	const struct pci_device_id *ret = pci_match_id(ids, dev);
++
++	if (!ret)
++		return NULL;
++
++	mark_hardware_disabled(dev_driver_string(&dev->dev), "%04X:%04X @ %s",
++				   dev->device, dev->vendor, pci_name(dev));
++	return ret;
++}
++EXPORT_SYMBOL(pci_hw_disabled);
++
++#endif
 +
  struct drv_dev_and_id {
  	struct pci_driver *drv;
@@ -2162,10 +2210,10 @@ index dbd39b20e034..8127dcbe5a6e 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 77755ac3e189..6234dde914b6 100644
+index 77755ac3e189..e236de3f9073 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -495,4 +495,21 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -495,4 +495,23 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -2173,17 +2221,19 @@ index 77755ac3e189..6234dde914b6 100644
 +struct module;
 +
 +#ifdef CONFIG_RHEL_DIFFERENCES
-+void mark_hardware_unsupported(const char *msg);
-+void mark_hardware_deprecated(const char *msg);
++void mark_hardware_unmaintained(const char *driver_name, char *fmt, ...);
++void mark_driver_unmaintained(const char *driver_name);
++void mark_hardware_deprecated(const char *driver_name, char *fmt, ...);
++void mark_driver_deprecated(const char *driver_name);
++void mark_hardware_disabled(const char *driver_name, char *fmt, ...);
 +void mark_tech_preview(const char *msg, struct module *mod);
-+void mark_driver_unsupported(const char *name);
-+void mark_driver_deprecated(const char *name);
 +#else
-+static inline void mark_hardware_unsupported(const char *msg) { }
-+static inline void mark_hardware_deprecated(const char *msg) { }
++static inline void mark_hardware_unsupported(const char *driver_name, char *fmt, ...) { }
++static inline void mark_driver_unmaintained(const char *driver_name) { }
++static inline void mark_hardware_deprecated(const char *driver_name, char *fmt, ...) { }
++static inline void mark_driver_deprecated(const char *driver_name) { }
++static inline void mark_hardware_disabled(const char *driver_name, char *fmt, ...) { }
 +static inline void mark_tech_preview(const char *msg, struct module *mod) { }
-+static inline void mark_driver_unsupported(const char *name) { }
-+static inline void mark_driver_deprecated(const char *name) { }
 +#endif
 +
  #endif
@@ -2260,17 +2310,29 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 18a75c8e615c..2c34abce98bf 100644
+index 18a75c8e615c..fb9af56f5fec 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1478,6 +1478,10 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1478,6 +1478,22 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
-+/* Reserved for Internal Red Hat use only */
-+const struct pci_device_id *pci_hw_vendor_status(
-+						const struct pci_device_id *ids,
++
++#ifdef CONFIG_RHEL_DIFFERENCES
++const struct pci_device_id *pci_hw_deprecated(const struct pci_device_id *ids,
++					      struct pci_dev *dev);
++const struct pci_device_id *pci_hw_unmaintained(const struct pci_device_id *ids,
 +						struct pci_dev *dev);
++const struct pci_device_id *pci_hw_disabled(const struct pci_device_id *ids,
++					    struct pci_dev *dev);
++#else
++static inline const struct pci_device_id *pci_hw_deprecated(const struct pci_device_id *ids,
++							    struct pci_dev *dev) { return NULL; }
++static inline const struct pci_device_id *pci_hw_unmaintained(const struct pci_device_id *ids,
++							      struct pci_dev *dev) { return NULL; }
++const struct pci_device_id *pci_hw_disabled(const struct pci_device_id *ids,
++					    struct pci_dev *dev) {return NULL; }
++#endif
  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
  		    int pass);
 
@@ -2651,14 +2713,14 @@ index 4b7bac10c72d..6c356cf804b4 100644
  	default y
  	help
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 186c49582f45..7bbf1c3801f9 100644
+index 186c49582f45..aa60b06d3cf7 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
  	    notifier.o ksysfs.o cred.o reboot.o \
  	    async.o range.o smpboot.o ucount.o regset.o
 
-+obj-$(CONFIG_RHEL_DIFFERENCES) += rh_taint.o
++obj-$(CONFIG_RHEL_DIFFERENCES) += rh_messages.o
  obj-$(CONFIG_USERMODE_DRIVER) += usermode_driver.o
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
@@ -2764,15 +2826,16 @@ index cefd7d82366f..ad43433c7013 100644
  };
 
  /**
-diff --git a/kernel/rh_taint.c b/kernel/rh_taint.c
+diff --git a/kernel/rh_messages.c b/kernel/rh_messages.c
 new file mode 100644
-index 000000000000..95196f56ab1e
+index 000000000000..345a979cd0e4
 --- /dev/null
-+++ b/kernel/rh_taint.c
-@@ -0,0 +1,109 @@
++++ b/kernel/rh_messages.c
+@@ -0,0 +1,179 @@
 +#include <linux/kernel.h>
 +#include <linux/module.h>
 +
++#define DEV_DESC_LEN 256
 +/*
 + * The following functions are used by Red Hat to indicate to users that
 + * hardware and drivers are unsupported, or have limited support in RHEL major
@@ -2781,40 +2844,140 @@ index 000000000000..95196f56ab1e
 + *
 + * Any use of these functions _MUST_ be documented in the RHEL Release Notes,
 + * and have approval of management.
++ *
++ * Generally, the process of disabling a driver or device in RHEL requires the
++ * driver or device to be marked as 'deprecated' in all existing releases, and
++ * then either 'unmaintained' or 'disabled' in a future release.
++ *
++ * In general, deprecated and unmaintained drivers continue to receive security
++ * related fixes until they are disabled.
 + */
 +
 +/**
-+ * mark_hardware_unsupported() - Mark hardware, class, or type as unsupported.
-+ * @msg: Hardware name, class, or type
++ * mark_hardware_unmaintained() - Mark hardware as unmaintained.
++ * @driver_name: driver name
++ * @fmt: format for device description
++ * @...: args for device description
 + *
-+ * Called to mark a device, class of devices, or types of devices as not having
-+ * support in any RHEL minor release.  This does not TAINT the kernel.  Red Hat
-+ * will not fix bugs against this hardware in this minor release.  Red Hat may
-+ * declare support in a future major or minor update release.  This cannot be
-+ * used to mark drivers unsupported.
++ * Called to notify users that the device will no longer be tested on a routine
++ * basis and driver code associated with this device is no longer being updated.
++ * Red Hat may fix security-related and critical issues.  Support for this device
++ * will be disabled in a future major release and users deploying this device
++ * should plan to replace the device in production systems.
++ *
++ * This function should be used when the driver's usage can be tied to a
++ * specific hardware device.  For example, a network device driver loading on a
++ * specific device that is no longer maintained by the manufacturer.
 + */
-+void mark_hardware_unsupported(const char *msg)
++void mark_hardware_unmaintained(const char *driver_name, char *fmt, ...)
 +{
-+	/* Print one single message */
-+	pr_crit("Warning: %s - this hardware has not undergone testing by Red Hat and might not be certified. Please consult https://catalog.redhat.com for certified hardware.\n", msg);
++	char device_description[DEV_DESC_LEN];
++	va_list args;
++
++	va_start(args, fmt);
++	vsnprintf(device_description, DEV_DESC_LEN, fmt, args);
++	pr_crit("Warning: Unmaintained hardware is detected:  %s:%s\n", driver_name,
++		device_description);
++	va_end(args);
 +}
-+EXPORT_SYMBOL(mark_hardware_unsupported);
++EXPORT_SYMBOL(mark_hardware_unmaintained);
 +
 +/**
-+ * mark_hardware_deprecated() - Mark hardware, class, or type as deprecated.
-+ * @msg: Hardware name, class, or type
++ * mark_driver_unmaintained() - Mark a driver as unmaintained.
++ * @driver_name: driver name
 + *
-+ * Called to minimize the support status of a previously supported device in
-+ * a minor release.  This does not TAINT the kernel.  Marking hardware
-+ * deprecated is usually done in conjunction with the hardware vendor.  Future
-+ * RHEL major releases may not include this driver.  Driver updates and fixes
-+ * for this device will be limited to critical issues in future minor releases.
++ * Called to notify users that a driver will no longer be tested on a routine
++ * basis and the driver code is no longer being updated.  Red Hat may fix
++ * security-related and critical issues.  Support for this driver will be
++ * disabled in a future major release, and users should replace any affected
++ * devices in production systems.
++ *
++ * This function should be used when a driver's usage cannot be tied to a
++ * specific hardware device.  For example, a network bonding driver or a higher
++ * level storage layer driver that is no longer maintained upstream.
 + */
-+void mark_hardware_deprecated(const char *msg)
++void mark_driver_unmaintained(const char *driver_name)
 +{
-+	pr_crit("Warning: %s - this hardware is not recommended for new deployments. It continues to be supported in this RHEL release, but it is likely to be removed in the next major release. Driver updates and fixes for this device will be limited to critical issues. Please contact Red Hat Support or your device's hardware vendor for additional information.\n", msg);
++	pr_crit("Warning: Unmaintained driver is detected:  %s\n", driver_name);
++}
++EXPORT_SYMBOL(mark_driver_unmaintained);
++
++/**
++ * mark_hardware_deprecated() - Mark hardware as deprecated.
++ * @driver_name: driver name
++ * @fmt: format for device description
++ * @...: args for device description
++ *
++ * Called to notify users that support for the device is planned to be
++ * unmaintained in a future major release, and will eventually be disabled in a
++ * future major release.  This device should not be used in new production
++ * environments and users should replace the device in production systems.
++ *
++ * This function should be used when the driver's usage can be tied to a
++ * specific hardware device.  For example, a network device driver loading on a
++ * specific device that is no longer maintained by the manufacturer.
++ */
++void mark_hardware_deprecated(const char *driver_name, char *fmt, ...)
++{
++	char device_description[DEV_DESC_LEN];
++	va_list args;
++
++	va_start(args, fmt);
++	vsnprintf(device_description, DEV_DESC_LEN, fmt, args);
++	pr_crit("Warning: Deprecated Hardware is detected: %s:%s will not be maintained in a future major release and may be disabled\n",
++		driver_name, device_description);
++	va_end(args);
 +}
 +EXPORT_SYMBOL(mark_hardware_deprecated);
++
++/**
++ * mark_driver_deprecated() - Mark a driver as deprecated.
++ * @driver_name: driver name
++ *
++ * Called to notify users that support for this driver is planned to be
++ * unmaintained in a future major release, and will eventually be disabled in a
++ * future major release.  This driver should not be used in new production
++ * environments and users should replace any affected devices in production
++ * systems.
++ *
++ * This function should be used when a driver's usage cannot be tied to a
++ * specific hardware device.  For example, a network bonding driver or a higher
++ * level storage layer driver that is no longer maintained upstream.
++ */
++void mark_driver_deprecated(const char *driver_name)
++{
++	pr_crit("Warning: Deprecated Driver is detected: %s will not be maintained in a future major release and may be disabled\n",
++		driver_name);
++}
++EXPORT_SYMBOL(mark_driver_deprecated);
++
++/**
++ * mark_hardware_disabled() - Mark a driver as removed.
++ * @driver_name: driver name
++ * @fmt: format for device description
++ * @...: args for device description
++ *
++ * Called to notify users that a device's support has been completely disabled
++ * and no future support updates will occur.  This device cannot be used in new
++ * production environments, and users must replace the device in production
++ * systems.
++ *
++ * This function should be used when the driver's usage can be tied to a
++ * specific hardware device.  For example, a network device driver loading on a
++ * specific device that is no longer maintained by the manufacturer.
++ */
++void mark_hardware_disabled(const char *driver_name, char *fmt, ...)
++{
++	char device_description[DEV_DESC_LEN];
++	va_list args;
++
++	va_start(args, fmt);
++	vsnprintf(device_description, DEV_DESC_LEN, fmt, args);
++	pr_crit("Warning: Disabled Hardware is detected: %s:%s is no longer enabled in this release.\n",
++		driver_name, device_description);
++	va_end(args);
++}
++EXPORT_SYMBOL(mark_hardware_disabled);
 +
 +/**
 + * mark_tech_preview() - Mark driver or kernel subsystem as 'Tech Preview'
@@ -2848,37 +3011,6 @@ index 000000000000..95196f56ab1e
 +#endif
 +}
 +EXPORT_SYMBOL(mark_tech_preview);
-+
-+/**
-+ * mark_driver_unsupported - drivers that we know we don't want to support
-+ * @name: the name of the driver
-+ *
-+ * In some cases Red Hat has chosen to build a driver for internal QE
-+ * use. Use this function to mark those drivers as unsupported for
-+ * customers.
-+ */
-+void mark_driver_unsupported(const char *name)
-+{
-+	pr_crit("Warning: %s - This driver has not undergone sufficient testing by Red Hat for this release and therefore cannot be used in production systems.\n",
-+	        name ? name : "kernel");
-+}
-+EXPORT_SYMBOL(mark_driver_unsupported);
-+
-+/**
-+ * mark_driver_deprecated() - Mark drivers as deprecated.
-+ * @name: the name of the driver
-+ *
-+ * Called to minimize the support status of a previously supported driver in
-+ * a minor release. This does not TAINT the kernel. Future
-+ * RHEL major releases may not include this driver. Driver updates and fixes
-+ * will be limited to critical issues in future minor releases.
-+ */
-+void mark_driver_deprecated(const char *name)
-+{
-+	pr_crit("Warning: %s - this driver is not recommended for new deployments. It continues to be supported in this RHEL release, but it is likely to be removed in the next major release. Driver updates and fixes will be limited to critical issues. Please contact Red Hat Support for additional information.\n",
-+	        name ? name : "kernel");
-+}
-+EXPORT_SYMBOL(mark_driver_deprecated);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
 index 083be6af29d7..4f271712be5e 100644
 --- a/kernel/sysctl.c
