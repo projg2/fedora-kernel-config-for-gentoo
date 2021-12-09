@@ -3178,3 +3178,36 @@ index c88167a414b4..e65a178ff9f4 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+From f56e8c23f21528d48b494c2762b7d7674468273d Mon Sep 17 00:00:00 2001
+From: Prarit Bhargava <prarit@redhat.com>
+Date: Wed, 8 Dec 2021 15:44:29 -0500
+Subject: [PATCH] drivers/pci/pci-driver.c: Fix if/ifdef typo
+
+This needs to be an ifdef, not an if.
+
+Fixes compile error:
+
+drivers/pci/pci-driver.c:299:5: warning: "CONFIG_RHEL_DIFFERENCES" is not defined, evaluates to 0 [-Wundef]
+  299 | #if CONFIG_RHEL_DIFFERENCES
+
+Signed-off-by: Prarit Bhargava <prarit@redhat.com>
+---
+ drivers/pci/pci-driver.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 5218a8c10a93..f0b7f4661f3a 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -296,7 +296,7 @@ static struct attribute *pci_drv_attrs[] = {
+ };
+ ATTRIBUTE_GROUPS(pci_drv);
+
+-#if CONFIG_RHEL_DIFFERENCES
++#ifdef CONFIG_RHEL_DIFFERENCES
+ /**
+  * pci_hw_deprecated - Tell if a PCI device is deprecated
+  * @ids: array of PCI device id structures to search in
+-- 
+2.33.1
+
