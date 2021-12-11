@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/f56e8c23f21528d48b494c2762b7d7674468273d
+ f56e8c23f21528d48b494c2762b7d7674468273d drivers/pci/pci-driver.c: Fix if/ifdef typo
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/32e41db9e05fedb40cae321e08e02668f030fd61
  32e41db9e05fedb40cae321e08e02668f030fd61 kernel/rh_taint.c: Update to new messaging
 

@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc4.20211208git2a987e65025e.31
+%global distro_build 0.rc4.20211210gitc741e49150db.32
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc4.20211208git2a987e65025e.31
+%define pkgrelease 0.rc4.20211210gitc741e49150db.32
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20211208git2a987e65025e.31%{?buildid}%{?dist}
+%define specrelease 0.rc4.20211210gitc741e49150db.32%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -689,7 +689,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-rc4-31-g2a987e65025e.tar.xz
+Source0: linux-5.16-rc4-163-gc741e49150db.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1383,8 +1383,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-rc4-31-g2a987e65025e -c
-mv linux-5.16-rc4-31-g2a987e65025e linux-%{KVERREL}
+%setup -q -n kernel-5.16-rc4-163-gc741e49150db -c
+mv linux-5.16-rc4-163-gc741e49150db linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2981,6 +2981,10 @@ fi
 #
 #
 %changelog
+* Fri Dec 10 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc4.20211210gitc741e49150db.32]
+- redhat/configs: enable CONFIG_NTB_NETDEV for ark (John W. Linville)
+- drivers/pci/pci-driver.c: Fix if/ifdef typo (Prarit Bhargava)
+
 * Wed Dec 08 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc4.20211208git2a987e65025e.31]
 - common: arm64: ensure all the required arm64 errata are enabled (Peter Robinson)
 - kernel/rh_taint.c: Update to new messaging (Prarit Bhargava) [2019377]
