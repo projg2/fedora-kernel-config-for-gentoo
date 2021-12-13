@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/e92cffb3ade9c9013c04bf608ba1019b393c23ea
+ e92cffb3ade9c9013c04bf608ba1019b393c23ea pci.h: Fix static include
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/f56e8c23f21528d48b494c2762b7d7674468273d
  f56e8c23f21528d48b494c2762b7d7674468273d drivers/pci/pci-driver.c: Fix if/ifdef typo
 

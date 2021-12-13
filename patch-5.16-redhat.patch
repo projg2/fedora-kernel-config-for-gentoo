@@ -33,7 +33,7 @@
  drivers/nvme/host/core.c                           |  22 +-
  drivers/nvme/host/multipath.c                      |  19 +-
  drivers/nvme/host/nvme.h                           |   4 +
- drivers/pci/pci-driver.c                           |  79 ++++++
+ drivers/pci/pci-driver.c                           |  78 ++++++
  drivers/pci/quirks.c                               |  24 ++
  drivers/scsi/aacraid/linit.c                       |   2 +
  drivers/scsi/be2iscsi/be_main.c                    |   2 +
@@ -72,7 +72,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 74 files changed, 1513 insertions(+), 188 deletions(-)
+ 74 files changed, 1512 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 9725c546a0d4..4d440bdcf5b9 100644
@@ -128,7 +128,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index ef967a26bcd3..ebaf1fbd54b4 100644
+index 765115c99655..a57d974abf71 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1550,7 +1550,7 @@ index ee4da9ab8013..0f217997a764 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 4c63564adeaa..3541ddd16644 100644
+index 1af8a4513708..5a23e077ab86 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -244,6 +244,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1617,7 +1617,7 @@ index 4c63564adeaa..3541ddd16644 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 7f2071f2460c..2e9f83901c77 100644
+index 13e5d503ed07..daaeb316f624 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
@@ -1664,7 +1664,7 @@ index 7f2071f2460c..2e9f83901c77 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index b334af8aa264..b2a0e2fc6d47 100644
+index 9b095ee01364..bf25ef206cd2 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
 @@ -765,6 +765,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
@@ -1686,7 +1686,7 @@ index b334af8aa264..b2a0e2fc6d47 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 588588cfda48..f0b7f4661f3a 100644
+index 588588cfda48..adb3a91b0ba3 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -1697,7 +1697,7 @@ index 588588cfda48..f0b7f4661f3a 100644
  #include <linux/dma-map-ops.h>
  #include "pci.h"
  #include "pcie/portdrv.h"
-@@ -295,6 +296,84 @@ static struct attribute *pci_drv_attrs[] = {
+@@ -295,6 +296,83 @@ static struct attribute *pci_drv_attrs[] = {
  };
  ATTRIBUTE_GROUPS(pci_drv);
 
@@ -1776,7 +1776,6 @@ index 588588cfda48..f0b7f4661f3a 100644
 +	return ret;
 +}
 +EXPORT_SYMBOL(pci_hw_disabled);
-+
 +#endif
 +
  struct drv_dev_and_id {
@@ -2119,7 +2118,7 @@ index 4e33b5eca694..b480ca4934de 100644
 
  	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
 diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index e21459f9923a..c37903d09a45 100644
+index 778b57b1f020..2a152330076d 100644
 --- a/fs/xfs/xfs_super.c
 +++ b/fs/xfs/xfs_super.c
 @@ -1594,6 +1594,7 @@ xfs_fs_fill_super(
@@ -2310,7 +2309,7 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 18a75c8e615c..fb9af56f5fec 100644
+index 18a75c8e615c..8cc24460267e 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1478,6 +1478,22 @@ int pci_add_dynid(struct pci_driver *drv,
@@ -2330,8 +2329,8 @@ index 18a75c8e615c..fb9af56f5fec 100644
 +							    struct pci_dev *dev) { return NULL; }
 +static inline const struct pci_device_id *pci_hw_unmaintained(const struct pci_device_id *ids,
 +							      struct pci_dev *dev) { return NULL; }
-+const struct pci_device_id *pci_hw_disabled(const struct pci_device_id *ids,
-+					    struct pci_dev *dev) {return NULL; }
++static inline const struct pci_device_id *pci_hw_disabled(const struct pci_device_id *ids,
++							  struct pci_dev *dev) {return NULL; }
 +#endif
  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
  		    int pass);
