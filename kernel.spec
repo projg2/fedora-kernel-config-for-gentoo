@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc5.35
+%global distro_build 0.rc5.20211214git5472f14a3742.36
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc5.35
+%define pkgrelease 0.rc5.20211214git5472f14a3742.36
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.35%{?buildid}%{?dist}
+%define specrelease 0.rc5.20211214git5472f14a3742.36%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -689,7 +689,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-rc5.tar.xz
+Source0: linux-5.16-rc5-10-g5472f14a3742.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1383,8 +1383,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-rc5 -c
-mv linux-5.16-rc5 linux-%{KVERREL}
+%setup -q -n kernel-5.16-rc5-10-g5472f14a3742 -c
+mv linux-5.16-rc5-10-g5472f14a3742 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2193,7 +2193,7 @@ InitBuildVars
 %global perf_build_extra_opts CORESIGHT=1
 %endif
 %global perf_make \
-  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2981,7 +2981,11 @@ fi
 #
 #
 %changelog
-* Mon Dec 13 2021 Justin M. Forbes <jforbes@fedoraproject.org> [5.16-0.rc5.35]
+* Tue Dec 14 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc5.20211214git5472f14a3742.36]
+- Enable CONFIG_CIFS_SMB_DIRECT for ARK (Ronnie Sahlberg)
+- mt76: enable new device MT7921E in CentOs/RHEL (Íñigo Huguet) [2004821]
+- Disable CONFIG_DEBUG_PREEMPT on normal builds (Phil Auld)
+- redhat/configs: Enable CONFIG_PCI_P2PDMA for ark (Myron Stowe)
 - pci.h: Fix static include (Prarit Bhargava)
 
 * Sun Dec 12 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc4.20211212gita763d5a5abd6.34]
