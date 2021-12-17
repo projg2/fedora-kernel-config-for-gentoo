@@ -32,6 +32,7 @@
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
+ drivers/platform/x86/thinkpad_acpi.c               |   4 +-
  drivers/usb/core/hub.c                             |   7 ++
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
@@ -46,7 +47,7 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 48 files changed, 750 insertions(+), 199 deletions(-)
+ 49 files changed, 752 insertions(+), 201 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 1396fd2d9031..4bc97128cee8 100644
@@ -69,7 +70,7 @@ index 1396fd2d9031..4bc97128cee8 100644
  				This is normally done in pci_enable_device(),
  				so this option is a temporary workaround
 diff --git a/Makefile b/Makefile
-index 72344b214bba..efa8577eb3fa 100644
+index d5e266291e5d..081570eb866b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1632,6 +1633,24 @@ index 208fa03acdda..88cfaa8ac3b3 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
+index 3dc055ce6e61..bb56640eb31f 100644
+--- a/drivers/platform/x86/thinkpad_acpi.c
++++ b/drivers/platform/x86/thinkpad_acpi.c
+@@ -5813,11 +5813,11 @@ static const char * const tpacpi_led_names[TPACPI_LED_NUMLEDS] = {
+ 	"tpacpi::standby",
+ 	"tpacpi::dock_status1",
+ 	"tpacpi::dock_status2",
+-	"tpacpi::unknown_led2",
++	"tpacpi::lid_logo_dot",
+ 	"tpacpi::unknown_led3",
+ 	"tpacpi::thinkvantage",
+ };
+-#define TPACPI_SAFE_LEDS	0x1081U
++#define TPACPI_SAFE_LEDS	0x1481U
+
+ static inline bool tpacpi_is_led_restricted(const unsigned int led)
+ {
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index 00070a8a6507..e9e0ffa990cd 100644
 --- a/drivers/usb/core/hub.c
