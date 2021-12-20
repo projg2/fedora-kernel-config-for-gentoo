@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc5.20211217git6441998e2e37.38
+%global distro_build 0.rc6.41
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc5.20211217git6441998e2e37.38
+%define pkgrelease 0.rc6.41
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20211217git6441998e2e37.38%{?buildid}%{?dist}
+%define specrelease 0.rc6.41%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -689,7 +689,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-rc5-171-g6441998e2e37.tar.xz
+Source0: linux-5.16-rc6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1383,8 +1383,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-rc5-171-g6441998e2e37 -c
-mv linux-5.16-rc5-171-g6441998e2e37 linux-%{KVERREL}
+%setup -q -n kernel-5.16-rc6 -c
+mv linux-5.16-rc6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2981,6 +2981,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 20 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc6.41]
+- redhat/configs: Enable CONFIG_CRYPTO_BLAKE2B (Neal Gompa) [2031547]
+
 * Thu Dec 16 2021 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc5.20211216git2b14864acbaa.37]
 - Enable CONFIG_BPF_SYSCALL for zfcpdump (Jiri Olsa)
 
