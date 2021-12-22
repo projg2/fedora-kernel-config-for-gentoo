@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc6.20211221git59b3f9448833.42
+%global distro_build 0.rc6.20211222git2f47a9a4dfa3.43
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc6.20211221git59b3f9448833.42
+%define pkgrelease 0.rc6.20211222git2f47a9a4dfa3.43
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20211221git59b3f9448833.42%{?buildid}%{?dist}
+%define specrelease 0.rc6.20211222git2f47a9a4dfa3.43%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -689,7 +689,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-rc6-6-g59b3f9448833.tar.xz
+Source0: linux-5.16-rc6-31-g2f47a9a4dfa3.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1383,8 +1383,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-rc6-6-g59b3f9448833 -c
-mv linux-5.16-rc6-6-g59b3f9448833 linux-%{KVERREL}
+%setup -q -n kernel-5.16-rc6-31-g2f47a9a4dfa3 -c
+mv linux-5.16-rc6-31-g2f47a9a4dfa3 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
