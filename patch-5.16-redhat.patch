@@ -75,10 +75,10 @@
  74 files changed, 1512 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index fc34332c8d9a..85f96e7a5005 100644
+index 2fba82431efb..3166f991adfa 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5940,6 +5940,15 @@
+@@ -5942,6 +5942,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -128,7 +128,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index d85f1ff79f5c..3eca2a2b70de 100644
+index 17b4319ad2ff..f6c96ef725a2 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -270,7 +270,7 @@ index 0083464de5e3..2de5f417f3f2 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 6a190c7f4d71..f1e635696e01 100644
+index e04f5e6eb33f..0beeb4ebee6e 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -289,7 +289,7 @@ index 6a190c7f4d71..f1e635696e01 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -723,6 +725,51 @@ static void __init early_reserve_memory(void)
+@@ -720,6 +722,51 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -341,7 +341,7 @@ index 6a190c7f4d71..f1e635696e01 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -941,6 +988,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -929,6 +976,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -355,7 +355,7 @@ index 6a190c7f4d71..f1e635696e01 100644
  	dmi_setup();
 
  	/*
-@@ -1106,19 +1160,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1094,19 +1148,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -376,7 +376,7 @@ index 6a190c7f4d71..f1e635696e01 100644
 
  	reserve_initrd();
 
-@@ -1231,6 +1273,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1219,6 +1261,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
