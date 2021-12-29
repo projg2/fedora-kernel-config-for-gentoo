@@ -2141,7 +2141,7 @@ index 778b57b1f020..2a152330076d 100644
 
  	if (xfs_has_discard(mp)) {
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index dbd39b20e034..8127dcbe5a6e 100644
+index ef8dbc0a1522..836a5dfc6156 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
