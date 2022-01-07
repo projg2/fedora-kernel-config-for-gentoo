@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc8.20220106git75acfdb6fd92.56
+%global distro_build 0.rc8.20220107gitddec8ed2d490.57
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc8.20220106git75acfdb6fd92.56
+%define pkgrelease 0.rc8.20220107gitddec8ed2d490.57
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.20220106git75acfdb6fd92.56%{?buildid}%{?dist}
+%define specrelease 0.rc8.20220107gitddec8ed2d490.57%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -689,7 +689,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-rc8-48-g75acfdb6fd92.tar.xz
+Source0: linux-5.16-rc8-57-gddec8ed2d490.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1383,8 +1383,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-rc8-48-g75acfdb6fd92 -c
-mv linux-5.16-rc8-48-g75acfdb6fd92 linux-%{KVERREL}
+%setup -q -n kernel-5.16-rc8-57-gddec8ed2d490 -c
+mv linux-5.16-rc8-57-gddec8ed2d490 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2981,6 +2981,9 @@ fi
 #
 #
 %changelog
+* Fri Jan 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc8.20220107gitddec8ed2d490.57]
+- Clean up excess text in Fedora config files (Justin M. Forbes)
+
 * Thu Jan 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc8.20220106git75acfdb6fd92.56]
 - Fedora config updates for 5.16 (Justin M. Forbes)
 
