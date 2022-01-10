@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc8.20220107gitddec8ed2d490.57
+%global distro_build 60
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.16.0
 %define patchversion 5.16
-%define pkgrelease 0.rc8.20220107gitddec8ed2d490.57
+%define pkgrelease 60
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.20220107gitddec8ed2d490.57%{?buildid}%{?dist}
+%define specrelease 60%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -689,7 +689,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-rc8-57-gddec8ed2d490.tar.xz
+Source0: linux-5.16.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1383,8 +1383,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-rc8-57-gddec8ed2d490 -c
-mv linux-5.16-rc8-57-gddec8ed2d490 linux-%{KVERREL}
+%setup -q -n kernel-5.16 -c
+mv linux-5.16 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2981,6 +2981,11 @@ fi
 #
 #
 %changelog
+* Sun Jan 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc8.20220109git4634129ad9fd.59]
+- redhat/configs: Migrate ZRAM_DEF_* configs to common/ (Neal Gompa)
+- redhat/configs: Enable CONFIG_CRYPTO_ZSTD (Neal Gompa) [2032758]
+- Turn CONFIG_DEVMEM back off for aarch64 (Justin M. Forbes)
+
 * Fri Jan 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.16-0.rc8.20220107gitddec8ed2d490.57]
 - Clean up excess text in Fedora config files (Justin M. Forbes)
 
