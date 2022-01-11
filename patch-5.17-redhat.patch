@@ -65,6 +65,7 @@
  kernel/panic.c                                     |  14 +
  kernel/rh_messages.c                               | 179 +++++++++++++
  kernel/sysctl.c                                    |   5 +
+ lib/crypto/Kconfig                                 |   8 +-
  mm/cma.c                                           |  10 +
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
@@ -72,13 +73,13 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 74 files changed, 1512 insertions(+), 188 deletions(-)
+ 75 files changed, 1516 insertions(+), 192 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 2fba82431efb..3166f991adfa 100644
+index 49f495c9a7f8..aa7c84429250 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5942,6 +5942,15 @@
+@@ -5958,6 +5958,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -158,10 +159,10 @@ index 08510230b42f..6b4160ecf0bd 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index c2724d986fa0..8063dcef65f7 100644
+index 796fc8017f5d..427312380687 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1479,9 +1479,9 @@ config HIGHMEM
+@@ -1478,9 +1478,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -174,10 +175,10 @@ index c2724d986fa0..8063dcef65f7 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index c4207cf9bb17..9e440657f15e 100644
+index ef3b5cb40d16..c3f0f2fbb9f9 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1023,7 +1023,7 @@ endchoice
+@@ -1025,7 +1025,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -186,7 +187,7 @@ index c4207cf9bb17..9e440657f15e 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1277,6 +1277,7 @@ config XEN
+@@ -1279,6 +1279,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -195,10 +196,10 @@ index c4207cf9bb17..9e440657f15e 100644
  	default "11"
  	help
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-index f3851724fe35..ef69eeab6f2a 100644
+index e4dea8db6924..3f17c7b5bd78 100644
 --- a/arch/arm64/kernel/acpi.c
 +++ b/arch/arm64/kernel/acpi.c
-@@ -40,7 +40,11 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
+@@ -41,7 +41,11 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
  EXPORT_SYMBOL(acpi_pci_disabled);
 
  static bool param_acpi_off __initdata;
@@ -236,7 +237,7 @@ index 5ad1dde23dc5..b6192d58eed3 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 225ab2d0a4c6..6a06cde25ca2 100644
+index f2c25d113e7b..059fe82e020a 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -258,7 +259,7 @@ index 225ab2d0a4c6..6a06cde25ca2 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 0083464de5e3..2de5f417f3f2 100644
+index 7b8382c11788..4aa07bcf45cf 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1316,6 +1316,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -270,7 +271,7 @@ index 0083464de5e3..2de5f417f3f2 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index e04f5e6eb33f..0beeb4ebee6e 100644
+index f7a132eb794d..2305f8353e49 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -281,7 +282,7 @@ index e04f5e6eb33f..0beeb4ebee6e 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -50,6 +51,7 @@
+@@ -51,6 +52,7 @@
  #include <asm/unwind.h>
  #include <asm/vsyscall.h>
  #include <linux/vmalloc.h>
@@ -289,7 +290,7 @@ index e04f5e6eb33f..0beeb4ebee6e 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -720,6 +722,51 @@ static void __init early_reserve_memory(void)
+@@ -721,6 +723,51 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -341,7 +342,7 @@ index e04f5e6eb33f..0beeb4ebee6e 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -929,6 +976,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -930,6 +977,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -355,7 +356,7 @@ index e04f5e6eb33f..0beeb4ebee6e 100644
  	dmi_setup();
 
  	/*
-@@ -1094,19 +1148,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1099,19 +1153,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -376,7 +377,7 @@ index e04f5e6eb33f..0beeb4ebee6e 100644
 
  	reserve_initrd();
 
-@@ -1219,6 +1261,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1224,6 +1266,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -545,11 +546,11 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 2c80765670bc..5245fad951d8 100644
+index 1185ecea59d1..f913b21a0be5 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1725,6 +1725,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
- 	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
+@@ -1753,6 +1753,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
 +	/*
@@ -655,18 +656,18 @@ index c59265146e9c..caa8458edde2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 605969ed0f96..4d51f1c67675 100644
+index 227fb7802738..2836c089d2f3 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -335,6 +335,7 @@
+@@ -345,6 +345,7 @@
  #include <linux/syscalls.h>
  #include <linux/completion.h>
  #include <linux/uuid.h>
 +#include <linux/rcupdate.h>
  #include <crypto/chacha.h>
- #include <crypto/sha1.h>
+ #include <crypto/blake2s.h>
 
-@@ -349,6 +350,11 @@
+@@ -359,6 +360,11 @@
 
  /* #define ADD_INTERRUPT_BENCH */
 
@@ -678,7 +679,7 @@ index 605969ed0f96..4d51f1c67675 100644
  /*
   * Configuration information
   */
-@@ -481,6 +487,9 @@ static int ratelimit_disable __read_mostly;
+@@ -493,6 +499,9 @@ static int ratelimit_disable __read_mostly;
  module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
  MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
 
@@ -688,7 +689,7 @@ index 605969ed0f96..4d51f1c67675 100644
  /**********************************************************************
   *
   * OS independent entropy store.   Here are the functions which handle
-@@ -1858,6 +1867,13 @@ random_poll(struct file *file, poll_table * wait)
+@@ -1869,6 +1878,13 @@ random_poll(struct file *file, poll_table * wait)
  	return mask;
  }
 
@@ -702,7 +703,7 @@ index 605969ed0f96..4d51f1c67675 100644
  static int
  write_pool(struct entropy_store *r, const char __user *buffer, size_t count)
  {
-@@ -1961,7 +1977,58 @@ static int random_fasync(int fd, struct file *filp, int on)
+@@ -1972,7 +1988,58 @@ static int random_fasync(int fd, struct file *filp, int on)
  	return fasync_helper(fd, filp, on, &fasync);
  }
 
@@ -761,7 +762,7 @@ index 605969ed0f96..4d51f1c67675 100644
  	.read  = random_read,
  	.write = random_write,
  	.poll  = random_poll,
-@@ -1972,6 +2039,7 @@ const struct file_operations random_fops = {
+@@ -1983,6 +2050,7 @@ const struct file_operations random_fops = {
  };
 
  const struct file_operations urandom_fops = {
@@ -769,7 +770,7 @@ index 605969ed0f96..4d51f1c67675 100644
  	.read  = urandom_read,
  	.write = random_write,
  	.unlocked_ioctl = random_ioctl,
-@@ -1980,9 +2048,31 @@ const struct file_operations urandom_fops = {
+@@ -1991,9 +2059,31 @@ const struct file_operations urandom_fops = {
  	.llseek = noop_llseek,
  };
 
@@ -801,7 +802,7 @@ index 605969ed0f96..4d51f1c67675 100644
  	int ret;
 
  	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM|GRND_INSECURE))
-@@ -1998,6 +2088,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
+@@ -2009,6 +2099,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
  	if (count > INT_MAX)
  		count = INT_MAX;
 
@@ -820,7 +821,7 @@ index 605969ed0f96..4d51f1c67675 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		if (flags & GRND_NONBLOCK)
  			return -EAGAIN;
-@@ -2303,3 +2405,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
+@@ -2319,3 +2421,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
  		add_device_randomness(buf, size);
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
@@ -1492,7 +1493,7 @@ index acd4805dcf83..5f814d447ab3 100644
 
  out_mptspi_probe:
 diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
-index 669060a2e6aa..befd1f254436 100644
+index 3f5feb55cfba..9d8cb34845b3 100644
 --- a/drivers/net/ethernet/intel/e1000/e1000_main.c
 +++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
 @@ -933,6 +933,8 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
@@ -1782,7 +1783,7 @@ index 588588cfda48..adb3a91b0ba3 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 003950c738d2..ef27596d04d8 100644
+index b4cb658cce2b..287443efe522 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4269,6 +4269,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -2336,7 +2337,7 @@ index 18a75c8e615c..8cc24460267e 100644
  		    int pass);
 
 diff --git a/include/linux/random.h b/include/linux/random.h
-index f45b8be3e3c4..7ccdec68b789 100644
+index c45b2693e51f..4edfdb3e44a9 100644
 --- a/include/linux/random.h
 +++ b/include/linux/random.h
 @@ -14,6 +14,11 @@
@@ -2699,7 +2700,7 @@ index bbf44a466832..026a06b98a96 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 4b7bac10c72d..6c356cf804b4 100644
+index ec589e5c1b8c..e39293dd68fb 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1653,7 +1653,7 @@ config AIO
@@ -2724,10 +2725,10 @@ index 186c49582f45..aa60b06d3cf7 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 1033ee8c0caf..f2e6d22a5645 100644
+index fa4505f9b611..1955a6f41b7b 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
-@@ -24,6 +24,7 @@
+@@ -25,6 +25,7 @@
  #include <linux/ctype.h>
  #include <linux/nospec.h>
  #include <linux/audit.h>
@@ -2735,7 +2736,7 @@ index 1033ee8c0caf..f2e6d22a5645 100644
  #include <uapi/linux/btf.h>
  #include <linux/pgtable.h>
  #include <linux/bpf_lsm.h>
-@@ -50,6 +51,23 @@ static DEFINE_SPINLOCK(map_idr_lock);
+@@ -51,6 +52,23 @@ static DEFINE_SPINLOCK(map_idr_lock);
  static DEFINE_IDR(link_idr);
  static DEFINE_SPINLOCK(link_idr_lock);
 
@@ -3011,10 +3012,10 @@ index 000000000000..345a979cd0e4
 +}
 +EXPORT_SYMBOL(mark_tech_preview);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 083be6af29d7..4f271712be5e 100644
+index d7ed1dffa426..19a40d791c99 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -243,6 +243,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -244,6 +244,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;
@@ -3026,6 +3027,46 @@ index 083be6af29d7..4f271712be5e 100644
  		*(int *)table->data = unpriv_enable;
  	}
  	return ret;
+diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
+index 8620f38e117c..a3e41b7a8054 100644
+--- a/lib/crypto/Kconfig
++++ b/lib/crypto/Kconfig
+@@ -40,7 +40,7 @@ config CRYPTO_LIB_CHACHA_GENERIC
+ 	  of CRYPTO_LIB_CHACHA.
+
+ config CRYPTO_LIB_CHACHA
+-	tristate
++	tristate "ChaCha library interface"
+ 	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
+ 	select CRYPTO_LIB_CHACHA_GENERIC if CRYPTO_ARCH_HAVE_LIB_CHACHA=n
+ 	help
+@@ -65,7 +65,7 @@ config CRYPTO_LIB_CURVE25519_GENERIC
+ 	  of CRYPTO_LIB_CURVE25519.
+
+ config CRYPTO_LIB_CURVE25519
+-	tristate
++	tristate "Curve25519 scalar multiplication library"
+ 	depends on CRYPTO_ARCH_HAVE_LIB_CURVE25519 || !CRYPTO_ARCH_HAVE_LIB_CURVE25519
+ 	select CRYPTO_LIB_CURVE25519_GENERIC if CRYPTO_ARCH_HAVE_LIB_CURVE25519=n
+ 	help
+@@ -100,7 +100,7 @@ config CRYPTO_LIB_POLY1305_GENERIC
+ 	  of CRYPTO_LIB_POLY1305.
+
+ config CRYPTO_LIB_POLY1305
+-	tristate
++	tristate "Poly1305 library interface"
+ 	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
+ 	select CRYPTO_LIB_POLY1305_GENERIC if CRYPTO_ARCH_HAVE_LIB_POLY1305=n
+ 	help
+@@ -109,7 +109,7 @@ config CRYPTO_LIB_POLY1305
+ 	  is available and enabled.
+
+ config CRYPTO_LIB_CHACHA20POLY1305
+-	tristate
++	tristate "ChaCha20-Poly1305 AEAD support (8-byte nonce library version)"
+ 	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
+ 	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
+ 	select CRYPTO_LIB_CHACHA
 diff --git a/mm/cma.c b/mm/cma.c
 index bc9ca8f3c487..9fa9a485eb3a 100644
 --- a/mm/cma.c
