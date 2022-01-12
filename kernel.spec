@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20220111gitfe8152b38d3a.61
+%global distro_build 0.rc0.20220112gitdaadb3bd0e8d.63
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc0.20220111gitfe8152b38d3a.61
+%define pkgrelease 0.rc0.20220112gitdaadb3bd0e8d.63
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220111gitfe8152b38d3a.61%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220112gitdaadb3bd0e8d.63%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-5221-gfe8152b38d3a.tar.xz
+Source0: linux-5.16-6518-gdaadb3bd0e8d.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1386,8 +1386,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-5221-gfe8152b38d3a -c
-mv linux-5.16-5221-gfe8152b38d3a linux-%{KVERREL}
+%setup -q -n kernel-5.16-6518-gdaadb3bd0e8d -c
+mv linux-5.16-6518-gdaadb3bd0e8d linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2984,8 +2984,12 @@ fi
 #
 #
 %changelog
-* Tue Jan 11 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.17-0.rc0.20220111gitfe8152b38d3a.61]
+* Wed Jan 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc0.20220112gitdaadb3bd0e8d.63]
 - lib/crypto: add prompts back to crypto libraries (Justin M. Forbes)
+
+* Wed Jan 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc0.20220112gitdaadb3bd0e8d.62]
+- redhat: ignore ksamples and kselftests on the badfuncs rpminspect test (Herton R. Krzesinski)
+- redhat: disable upstream check for rpminspect (Herton R. Krzesinski)
 
 * Tue Jan 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc0.20220111gitfe8152b38d3a.61]
 - redhat: switch the vsyscall config to CONFIG_LEGACY_VSYSCALL_XONLY=y (Herton R. Krzesinski) [1876977]

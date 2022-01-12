@@ -76,10 +76,10 @@
  75 files changed, 1516 insertions(+), 192 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 49f495c9a7f8..aa7c84429250 100644
+index 685645e75706..62672720fd12 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5958,6 +5958,15 @@
+@@ -5992,6 +5992,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -129,7 +129,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 08510230b42f..6b4160ecf0bd 100644
+index 45278d508d81..9407d40e121b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -143,7 +143,7 @@ index 08510230b42f..6b4160ecf0bd 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1241,7 +1245,13 @@ define filechk_version.h
+@@ -1246,7 +1250,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -159,7 +159,7 @@ index 08510230b42f..6b4160ecf0bd 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 796fc8017f5d..427312380687 100644
+index fabe39169b12..bfd2929ab514 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -1478,9 +1478,9 @@ config HIGHMEM
@@ -175,10 +175,10 @@ index 796fc8017f5d..427312380687 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index ef3b5cb40d16..c3f0f2fbb9f9 100644
+index f6e333b59314..32d8dcfa1e1d 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1025,7 +1025,7 @@ endchoice
+@@ -1024,7 +1024,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -187,7 +187,7 @@ index ef3b5cb40d16..c3f0f2fbb9f9 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1279,6 +1279,7 @@ config XEN
+@@ -1278,6 +1278,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -2096,10 +2096,10 @@ index 00070a8a6507..e9e0ffa990cd 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 4e33b5eca694..b480ca4934de 100644
+index 9a936ecbaa3b..cd6f029892d0 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4304,6 +4304,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4761,6 +4761,7 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
  		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
 
  	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
@@ -2107,7 +2107,7 @@ index 4e33b5eca694..b480ca4934de 100644
  		if (ext4_has_feature_inline_data(sb)) {
  			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
  					" that may contain inline data");
-@@ -4314,6 +4315,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+@@ -4771,6 +4772,10 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
  				"DAX unsupported by block device.");
  			goto failed_mount;
  		}
@@ -2119,7 +2119,7 @@ index 4e33b5eca694..b480ca4934de 100644
 
  	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
 diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index 778b57b1f020..2a152330076d 100644
+index c7ac486ca5d3..67431fe73dc2 100644
 --- a/fs/xfs/xfs_super.c
 +++ b/fs/xfs/xfs_super.c
 @@ -1594,6 +1594,7 @@ xfs_fs_fill_super(
@@ -2142,7 +2142,7 @@ index 778b57b1f020..2a152330076d 100644
 
  	if (xfs_has_discard(mp)) {
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index ef8dbc0a1522..836a5dfc6156 100644
+index 0de9fb1fdc5a..623207a0e74e 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -2238,10 +2238,10 @@ index 77755ac3e189..e236de3f9073 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index df8de62f4710..f4bbbeb1623a 100644
+index a5a724c308d8..7d560b86c195 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -395,6 +395,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -392,6 +392,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -2251,10 +2251,10 @@ index df8de62f4710..f4bbbeb1623a 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index d45b6f6e27fd..70622b506461 100644
+index 3bf5c658bc44..4701bc5ce2f5 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1548,6 +1548,12 @@
+@@ -1544,6 +1544,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -2677,10 +2677,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index bbf44a466832..026a06b98a96 100644
+index 6d72772182c8..fe3b072665fb 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -473,6 +473,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -471,6 +471,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2688,7 +2688,7 @@ index bbf44a466832..026a06b98a96 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1355,6 +1356,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1347,6 +1348,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2700,10 +2700,10 @@ index bbf44a466832..026a06b98a96 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index ec589e5c1b8c..e39293dd68fb 100644
+index f2ae41e6717f..53634e0b1595 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1653,7 +1653,7 @@ config AIO
+@@ -1646,7 +1646,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -3142,10 +3142,10 @@ index b24bfaec6290..0418ba1d33f3 100755
  # Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
  # to force full paths for a non-O= build
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-index f290f78c3f30..d3e7ae04f5be 100644
+index 08b6d12f99b4..61b596236d53 100644
 --- a/security/integrity/platform_certs/load_uefi.c
 +++ b/security/integrity/platform_certs/load_uefi.c
-@@ -46,7 +46,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
+@@ -47,7 +47,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
  		return NULL;
 
  	if (*status != EFI_BUFFER_TOO_SMALL) {
@@ -3155,7 +3155,7 @@ index f290f78c3f30..d3e7ae04f5be 100644
  		return NULL;
  	}
 
-@@ -57,7 +58,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
+@@ -58,7 +59,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
  	*status = efi.get_variable(name, guid, NULL, &lsize, db);
  	if (*status != EFI_SUCCESS) {
  		kfree(db);
@@ -3202,10 +3202,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index c88167a414b4..e65a178ff9f4 100644
+index 3d4eb474f35b..c02f1aa3ff64 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2600,6 +2600,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2592,6 +2592,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
