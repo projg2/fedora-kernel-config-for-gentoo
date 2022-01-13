@@ -1,5 +1,5 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/1b7a8385006c33eb4beeb16b5f56ac4d79382dcd
- 1b7a8385006c33eb4beeb16b5f56ac4d79382dcd lib/crypto: add prompts back to crypto libraries
+https://gitlab.com/cki-project/kernel-ark/-/commit/a5366668e0493110e1cd0b4a615c0f9dc8b47256
+ a5366668e0493110e1cd0b4a615c0f9dc8b47256 lib/crypto: add prompts back to crypto libraries
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/aa7ea266d2b6a3d865060945da1f8c674640e989
  aa7ea266d2b6a3d865060945da1f8c674640e989 pci.h: Fix static include

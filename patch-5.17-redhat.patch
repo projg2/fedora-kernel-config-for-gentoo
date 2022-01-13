@@ -129,7 +129,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 45278d508d81..9407d40e121b 100644
+index 0fc511aac61c..bc784b38679d 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -143,7 +143,7 @@ index 45278d508d81..9407d40e121b 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1246,7 +1250,13 @@ define filechk_version.h
+@@ -1235,7 +1239,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -546,10 +546,10 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 1185ecea59d1..f913b21a0be5 100644
+index c215bc8723d0..f77dfdd124f1 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1753,6 +1753,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1769,6 +1769,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -1383,7 +1383,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index dd7863e453a5..6759ef17a2c3 100644
+index 8b86406b7162..2dffe129b902 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1394,7 +1394,7 @@ index dd7863e453a5..6759ef17a2c3 100644
  #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -3118,6 +3119,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3119,6 +3120,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1551,7 +1551,7 @@ index ee4da9ab8013..0f217997a764 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 1af8a4513708..5a23e077ab86 100644
+index 5e0bfda04bd7..a03469d46842 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -244,6 +244,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1618,10 +1618,10 @@ index 1af8a4513708..5a23e077ab86 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 13e5d503ed07..daaeb316f624 100644
+index f8bf6606eb2f..88383f443a58 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
-@@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
+@@ -101,14 +101,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
  	return true;
  }
 
@@ -1637,7 +1637,7 @@ index 13e5d503ed07..daaeb316f624 100644
 
  	/*
  	 * If we got back an ANA error, we know the controller is alive but not
-@@ -83,6 +79,16 @@ void nvme_failover_req(struct request *req)
+@@ -119,6 +115,16 @@ void nvme_failover_req(struct request *req)
  		set_bit(NVME_NS_ANA_PENDING, &ns->flags);
  		queue_work(nvme_wq, &ns->ctrl->ana_work);
  	}
@@ -1654,7 +1654,7 @@ index 13e5d503ed07..daaeb316f624 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -838,8 +844,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -869,8 +875,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1665,18 +1665,18 @@ index 13e5d503ed07..daaeb316f624 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 9b095ee01364..bf25ef206cd2 100644
+index a162f6c6da6e..0606205d5dcc 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -765,6 +765,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
- void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
+@@ -770,6 +770,7 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
+ void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags);
  void nvme_failover_req(struct request *req);
 +void nvme_update_ana(struct request *req);
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -803,6 +804,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
+@@ -808,6 +809,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -2078,10 +2078,10 @@ index 8987acc24dac..5013d52a7211 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 00070a8a6507..e9e0ffa990cd 100644
+index 47a1c8bddf86..e309d992e2ad 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5666,6 +5666,13 @@ static void hub_event(struct work_struct *work)
+@@ -5683,6 +5683,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
@@ -2096,18 +2096,18 @@ index 00070a8a6507..e9e0ffa990cd 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 9a936ecbaa3b..cd6f029892d0 100644
+index 0343f682504d..c93cc4be14ba 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4761,6 +4761,7 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
- 		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
+@@ -4764,6 +4764,7 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
+ 	}
 
  	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
 +		static bool printed = false;
  		if (ext4_has_feature_inline_data(sb)) {
  			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
  					" that may contain inline data");
-@@ -4771,6 +4772,10 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
+@@ -4774,6 +4775,10 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
  				"DAX unsupported by block device.");
  			goto failed_mount;
  		}
@@ -2119,21 +2119,17 @@ index 9a936ecbaa3b..cd6f029892d0 100644
 
  	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
 diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index c7ac486ca5d3..67431fe73dc2 100644
+index e8f37bdc8354..f57bbc8feeee 100644
 --- a/fs/xfs/xfs_super.c
 +++ b/fs/xfs/xfs_super.c
-@@ -1594,6 +1594,7 @@ xfs_fs_fill_super(
+@@ -1598,9 +1598,14 @@ xfs_fs_fill_super(
+ 		sb->s_flags |= SB_I_VERSION;
 
  	if (xfs_has_dax_always(mp)) {
- 		bool rtdev_is_dax = false, datadev_is_dax;
 +		static bool printed = false;
-
- 		xfs_warn(mp,
- 		"DAX enabled. Warning: EXPERIMENTAL, use at your own risk");
-@@ -1613,6 +1614,10 @@ xfs_fs_fill_super(
- 			error = -EINVAL;
+ 		error = xfs_setup_dax_always(mp);
+ 		if (error)
  			goto out_filestream_unmount;
- 		}
 +		if (!printed) {
 +			mark_tech_preview("xfs direct access (dax)", NULL);
 +			printed = true;
@@ -2700,7 +2696,7 @@ index 6d72772182c8..fe3b072665fb 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index f2ae41e6717f..53634e0b1595 100644
+index c5a8f80f0a1b..26ae03c3afd6 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1646,7 +1646,7 @@ config AIO
