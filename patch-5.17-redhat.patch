@@ -76,7 +76,7 @@
  75 files changed, 1516 insertions(+), 192 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 685645e75706..62672720fd12 100644
+index 4955d2faf4cc..d67538c87631 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -5992,6 +5992,15 @@
@@ -1963,7 +1963,7 @@ index 6a90e6e53d09..7e48c3bf701d 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index aeb95f409826..68a999b02009 100644
+index 82e1e24257bc..d256b02a5d2f 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
@@ -2306,10 +2306,10 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 18a75c8e615c..8cc24460267e 100644
+index 0a7b6b2f163b..5ba560df0537 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1478,6 +1478,22 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1480,6 +1480,22 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
