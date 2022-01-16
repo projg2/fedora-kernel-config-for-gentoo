@@ -1,3 +1,9 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/d334145759adb9d064c94828fe534b78d6d8ca3a
+ d334145759adb9d064c94828fe534b78d6d8ca3a netfilter: nat: force port remap to prevent shadowing well-known ports
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/ff45edcc5c5fd94937474616c9a1c6ed8331e6ce
+ ff45edcc5c5fd94937474616c9a1c6ed8331e6ce netfilter: conntrack: tag conntracks picked up in local out hook
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/f1cc8d1b733c14b152da07eeab09ae0ffb541ef1
  f1cc8d1b733c14b152da07eeab09ae0ffb541ef1 iwlwifi: mvm: Increase the scan timeout guard to 30 seconds
 

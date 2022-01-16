@@ -41,14 +41,18 @@
  include/linux/random.h                             |   7 ++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
+ include/net/netfilter/nf_conntrack.h               |   1 +
  init/Kconfig                                       |   2 +-
  kernel/module_signing.c                            |   9 +-
+ net/netfilter/nf_conntrack_core.c                  |   3 +
+ net/netfilter/nf_nat_core.c                        |  43 ++++++-
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 50 files changed, 753 insertions(+), 202 deletions(-)
+ tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
+ 54 files changed, 800 insertions(+), 207 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 8ff6dafafdf8..e3f786336cf9 100644
@@ -71,7 +75,7 @@ index 8ff6dafafdf8..e3f786336cf9 100644
  				This is normally done in pci_enable_device(),
  				so this option is a temporary workaround
 diff --git a/Makefile b/Makefile
-index a469670e7675..cf656b40117c 100644
+index aed26e228dde..543979497d37 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -683,7 +687,7 @@ index fe91090e04a4..f00bc6886913 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 605969ed0f96..4d51f1c67675 100644
+index 7470ee24db2f..a3ac18f64ba7 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -335,6 +335,7 @@
@@ -706,7 +710,7 @@ index 605969ed0f96..4d51f1c67675 100644
  /*
   * Configuration information
   */
-@@ -481,6 +487,9 @@ static int ratelimit_disable __read_mostly;
+@@ -482,6 +488,9 @@ static int ratelimit_disable __read_mostly;
  module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
  MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
 
@@ -716,7 +720,7 @@ index 605969ed0f96..4d51f1c67675 100644
  /**********************************************************************
   *
   * OS independent entropy store.   Here are the functions which handle
-@@ -1858,6 +1867,13 @@ random_poll(struct file *file, poll_table * wait)
+@@ -1878,6 +1887,13 @@ random_poll(struct file *file, poll_table * wait)
  	return mask;
  }
 
@@ -730,7 +734,7 @@ index 605969ed0f96..4d51f1c67675 100644
  static int
  write_pool(struct entropy_store *r, const char __user *buffer, size_t count)
  {
-@@ -1961,7 +1977,58 @@ static int random_fasync(int fd, struct file *filp, int on)
+@@ -1981,7 +1997,58 @@ static int random_fasync(int fd, struct file *filp, int on)
  	return fasync_helper(fd, filp, on, &fasync);
  }
 
@@ -789,7 +793,7 @@ index 605969ed0f96..4d51f1c67675 100644
  	.read  = random_read,
  	.write = random_write,
  	.poll  = random_poll,
-@@ -1972,6 +2039,7 @@ const struct file_operations random_fops = {
+@@ -1992,6 +2059,7 @@ const struct file_operations random_fops = {
  };
 
  const struct file_operations urandom_fops = {
@@ -797,7 +801,7 @@ index 605969ed0f96..4d51f1c67675 100644
  	.read  = urandom_read,
  	.write = random_write,
  	.unlocked_ioctl = random_ioctl,
-@@ -1980,9 +2048,31 @@ const struct file_operations urandom_fops = {
+@@ -2000,9 +2068,31 @@ const struct file_operations urandom_fops = {
  	.llseek = noop_llseek,
  };
 
@@ -829,7 +833,7 @@ index 605969ed0f96..4d51f1c67675 100644
  	int ret;
 
  	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM|GRND_INSECURE))
-@@ -1998,6 +2088,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
+@@ -2018,6 +2108,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
  	if (count > INT_MAX)
  		count = INT_MAX;
 
@@ -848,7 +852,7 @@ index 605969ed0f96..4d51f1c67675 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		if (flags & GRND_NONBLOCK)
  			return -EAGAIN;
-@@ -2303,3 +2405,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
+@@ -2324,3 +2426,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
  		add_device_randomness(buf, size);
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
@@ -1666,7 +1670,7 @@ index 3dc055ce6e61..bb56640eb31f 100644
  static inline bool tpacpi_is_led_restricted(const unsigned int led)
  {
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 00070a8a6507..e9e0ffa990cd 100644
+index 3bc4a86c3d0a..e346da4f58f2 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
 @@ -5666,6 +5666,13 @@ static void hub_event(struct work_struct *work)
@@ -1841,6 +1845,18 @@ index 46a02ce34d00..37e991a10d70 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
+diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
+index d24b0a34c8f0..871489df63c6 100644
+--- a/include/net/netfilter/nf_conntrack.h
++++ b/include/net/netfilter/nf_conntrack.h
+@@ -95,6 +95,7 @@ struct nf_conn {
+ 	unsigned long status;
+
+ 	u16		cpu;
++	u16		local_origin:1;
+ 	possible_net_t ct_net;
+
+ #if IS_ENABLED(CONFIG_NF_NAT)
 diff --git a/init/Kconfig b/init/Kconfig
 index 11f8a845f259..9b94cc1b5546 100644
 --- a/init/Kconfig
@@ -1875,6 +1891,100 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 4712a90a1820..208abc729302 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -1749,6 +1749,9 @@ resolve_normal_ct(struct nf_conn *tmpl,
+ 			return 0;
+ 		if (IS_ERR(h))
+ 			return PTR_ERR(h);
++
++		ct = nf_ct_tuplehash_to_ctrack(h);
++		ct->local_origin = state->hook == NF_INET_LOCAL_OUT;
+ 	}
+ 	ct = nf_ct_tuplehash_to_ctrack(h);
+
+diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
+index 273117683922..21ec0c3d1d47 100644
+--- a/net/netfilter/nf_nat_core.c
++++ b/net/netfilter/nf_nat_core.c
+@@ -494,6 +494,38 @@ static void nf_nat_l4proto_unique_tuple(struct nf_conntrack_tuple *tuple,
+ 	goto another_round;
+ }
+
++static bool tuple_force_port_remap(const struct nf_conntrack_tuple *tuple)
++{
++	u16 sp, dp;
++
++	switch (tuple->dst.protonum) {
++	case IPPROTO_TCP:
++		sp = ntohs(tuple->src.u.tcp.port);
++		dp = ntohs(tuple->dst.u.tcp.port);
++		break;
++	case IPPROTO_UDP:
++	case IPPROTO_UDPLITE:
++		sp = ntohs(tuple->src.u.udp.port);
++		dp = ntohs(tuple->dst.u.udp.port);
++		break;
++	default:
++		return false;
++	}
++
++	/* IANA: System port range: 1-1023,
++	 *         user port range: 1024-49151,
++	 *      private port range: 49152-65535.
++	 *
++	 * Linux default ephemeral port range is 32768-60999.
++	 *
++	 * Enforce port remapping if sport is significantly lower
++	 * than dport to prevent NAT port shadowing, i.e.
++	 * accidental match of 'new' inbound connection vs.
++	 * existing outbound one.
++	 */
++	return sp < 16384 && dp >= 32768;
++}
++
+ /* Manipulate the tuple into the range given. For NF_INET_POST_ROUTING,
+  * we change the source to map into the range. For NF_INET_PRE_ROUTING
+  * and NF_INET_LOCAL_OUT, we change the destination to map into the
+@@ -507,11 +539,17 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
+ 		 struct nf_conn *ct,
+ 		 enum nf_nat_manip_type maniptype)
+ {
++	bool random_port = range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL;
+ 	const struct nf_conntrack_zone *zone;
+ 	struct net *net = nf_ct_net(ct);
+
+ 	zone = nf_ct_zone(ct);
+
++	if (maniptype == NF_NAT_MANIP_SRC &&
++	    !random_port &&
++	    !ct->local_origin)
++		random_port = tuple_force_port_remap(orig_tuple);
++
+ 	/* 1) If this srcip/proto/src-proto-part is currently mapped,
+ 	 * and that same mapping gives a unique tuple within the given
+ 	 * range, use that.
+@@ -520,8 +558,7 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
+ 	 * So far, we don't do local source mappings, so multiple
+ 	 * manips not an issue.
+ 	 */
+-	if (maniptype == NF_NAT_MANIP_SRC &&
+-	    !(range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL)) {
++	if (maniptype == NF_NAT_MANIP_SRC && !random_port) {
+ 		/* try the original tuple first */
+ 		if (in_range(orig_tuple, range)) {
+ 			if (!nf_nat_used_tuple(orig_tuple, ct)) {
+@@ -545,7 +582,7 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
+ 	 */
+
+ 	/* Only bother mapping if it's not already in range and unique */
+-	if (!(range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL)) {
++	if (!random_port) {
+ 		if (range->flags & NF_NAT_RANGE_PROTO_SPECIFIED) {
+ 			if (!(range->flags & NF_NAT_RANGE_PROTO_OFFSET) &&
+ 			    l4proto_in_range(tuple, maniptype,
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index db8ba411860a..2294fb0f17a9 100755
 --- a/scripts/tags.sh
@@ -1965,3 +2075,19 @@ index 67264cb08fb3..85a0227bfac1 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+diff --git a/tools/testing/selftests/netfilter/nft_nat.sh b/tools/testing/selftests/netfilter/nft_nat.sh
+index da1c1e4b6c86..6a08644d501e 100755
+--- a/tools/testing/selftests/netfilter/nft_nat.sh
++++ b/tools/testing/selftests/netfilter/nft_nat.sh
+@@ -867,8 +867,9 @@ EOF
+ 		return $ksft_skip
+ 	fi
+
+-	# test default behaviour. Packet from ns1 to ns0 is redirected to ns2.
+-	test_port_shadow "default" "CLIENT"
++	# test default behaviour. Packet from ns1 to ns0 is not redirected
++	# due to automatic port translation.
++	test_port_shadow "default" "ROUTER"
+
+ 	# test packet filter based mitigation: prevent forwarding of
+ 	# packets claiming to come from the service port.
