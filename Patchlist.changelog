@@ -1,3 +1,15 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/79cb6c7a857b0fbe827e089f447310d025398bf8
+ 79cb6c7a857b0fbe827e089f447310d025398bf8 Revert "mm/cma: mark CMA on x86_64 tech preview and print RHEL-specific infos"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/69f8ef6282e92fe7b9d73bea4b633624f0c81130
+ 69f8ef6282e92fe7b9d73bea4b633624f0c81130 Revert "[fs] dax: mark tech preview"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/38628fda65d468915582dfaad81a859727d128e2
+ 38628fda65d468915582dfaad81a859727d128e2 Revert "wireguard: mark as Tech Preview"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/79b09200275b1ff9e25f1a18c0362fc62a71d318
+ 79b09200275b1ff9e25f1a18c0362fc62a71d318 drm/amdgpu: don't do resets on APUs which don't support it
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/f344d2d608cb557f983dd45563e1a6dcc05792de
  f344d2d608cb557f983dd45563e1a6dcc05792de netfilter: nat: force port remap to prevent shadowing well-known ports
 

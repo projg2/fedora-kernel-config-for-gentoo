@@ -17,19 +17,19 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/gpu/drm/amd/amdgpu/cik.c                   |   4 +
+ drivers/gpu/drm/amd/amdgpu/vi.c                    |   4 +
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
- drivers/net/wireguard/main.c                       |   7 ++
+ drivers/net/wireguard/main.c                       |   6 +
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/scsi/megaraid/megaraid_sas_base.c          |   2 +
  drivers/usb/core/hub.c                             |   7 ++
- fs/ext4/super.c                                    |   5 +
- fs/xfs/xfs_super.c                                 |   5 +
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -38,7 +38,6 @@
  include/linux/security.h                           |   5 +
  include/net/netfilter/nf_conntrack.h               |   1 +
  kernel/module_signing.c                            |   9 +-
- mm/cma.c                                           |  10 ++
  net/netfilter/nf_conntrack_core.c                  |   3 +
  net/netfilter/nf_nat_core.c                        |  43 ++++++-
  scripts/tags.sh                                    |   2 +
@@ -47,7 +46,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
- 49 files changed, 775 insertions(+), 191 deletions(-)
+ 48 files changed, 762 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index fdbd06daf2af..0234d5708219 100644
@@ -891,6 +890,36 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/amd/amdgpu/cik.c b/drivers/gpu/drm/amd/amdgpu/cik.c
+index 54f28c075f21..f10ce740a29c 100644
+--- a/drivers/gpu/drm/amd/amdgpu/cik.c
++++ b/drivers/gpu/drm/amd/amdgpu/cik.c
+@@ -1428,6 +1428,10 @@ static int cik_asic_reset(struct amdgpu_device *adev)
+ {
+ 	int r;
+
++	/* APUs don't have full asic reset */
++	if (adev->flags & AMD_IS_APU)
++		return 0;
++
+ 	if (cik_asic_reset_method(adev) == AMD_RESET_METHOD_BACO) {
+ 		dev_info(adev->dev, "BACO reset\n");
+ 		r = amdgpu_dpm_baco_reset(adev);
+diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c b/drivers/gpu/drm/amd/amdgpu/vi.c
+index fe9a7cc8d9eb..6645ebbd2696 100644
+--- a/drivers/gpu/drm/amd/amdgpu/vi.c
++++ b/drivers/gpu/drm/amd/amdgpu/vi.c
+@@ -956,6 +956,10 @@ static int vi_asic_reset(struct amdgpu_device *adev)
+ {
+ 	int r;
+
++	/* APUs don't have full asic reset */
++	if (adev->flags & AMD_IS_APU)
++		return 0;
++
+ 	if (vi_asic_reset_method(adev) == AMD_RESET_METHOD_BACO) {
+ 		dev_info(adev->dev, "BACO reset\n");
+ 		r = amdgpu_dpm_baco_reset(adev);
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1275,7 +1304,7 @@ index dd7863e453a5..6759ef17a2c3 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
-index ee4da9ab8013..0f217997a764 100644
+index ee4da9ab8013..d395d11eadc4 100644
 --- a/drivers/net/wireguard/main.c
 +++ b/drivers/net/wireguard/main.c
 @@ -12,6 +12,7 @@
@@ -1298,14 +1327,6 @@ index ee4da9ab8013..0f217997a764 100644
  	ret = wg_allowedips_slab_init();
  	if (ret < 0)
  		goto err_allowedips;
-@@ -48,6 +54,7 @@ static int __init wg_mod_init(void)
- 	pr_info("WireGuard " WIREGUARD_VERSION " loaded. See www.wireguard.com for information.\n");
- 	pr_info("Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.\n");
-
-+	mark_tech_preview("WireGuard", THIS_MODULE);
- 	return 0;
-
- err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
 index 1af8a4513708..5a23e077ab86 100644
 --- a/drivers/nvme/host/core.c
@@ -1514,52 +1535,6 @@ index 3bc4a86c3d0a..e346da4f58f2 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 4e33b5eca694..b480ca4934de 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -4304,6 +4304,7 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
- 		set_bit(EXT4_FLAGS_BDEV_IS_DAX, &sbi->s_ext4_flags);
-
- 	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
-+		static bool printed = false;
- 		if (ext4_has_feature_inline_data(sb)) {
- 			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
- 					" that may contain inline data");
-@@ -4314,6 +4315,10 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
- 				"DAX unsupported by block device.");
- 			goto failed_mount;
- 		}
-+		if (!printed) {
-+			mark_tech_preview("ext4 direct access (dax)", NULL);
-+			printed = true;
-+		}
- 	}
-
- 	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
-diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index 778b57b1f020..2a152330076d 100644
---- a/fs/xfs/xfs_super.c
-+++ b/fs/xfs/xfs_super.c
-@@ -1594,6 +1594,7 @@ xfs_fs_fill_super(
-
- 	if (xfs_has_dax_always(mp)) {
- 		bool rtdev_is_dax = false, datadev_is_dax;
-+		static bool printed = false;
-
- 		xfs_warn(mp,
- 		"DAX enabled. Warning: EXPERIMENTAL, use at your own risk");
-@@ -1613,6 +1614,10 @@ xfs_fs_fill_super(
- 			error = -EINVAL;
- 			goto out_filestream_unmount;
- 		}
-+		if (!printed) {
-+			mark_tech_preview("xfs direct access (dax)", NULL);
-+			printed = true;
-+		}
- 	}
-
- 	if (xfs_has_discard(mp)) {
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index ef8dbc0a1522..836a5dfc6156 100644
 --- a/include/linux/efi.h
@@ -1751,34 +1726,6 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
-diff --git a/mm/cma.c b/mm/cma.c
-index bc9ca8f3c487..9fa9a485eb3a 100644
---- a/mm/cma.c
-+++ b/mm/cma.c
-@@ -125,6 +125,12 @@ static void __init cma_activate_area(struct cma *cma)
- 	spin_lock_init(&cma->mem_head_lock);
- #endif
-
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+	/* s390x and ppc64 has been using CMA already in RHEL 8 as default. */
-+	if (!IS_ENABLED(CONFIG_S390) && !IS_ENABLED(CONFIG_PPC64))
-+		mark_tech_preview("CMA", NULL);
-+#endif /* CONFIG_RHEL_DIFFERENCES */
-+
- 	return;
-
- not_in_zone:
-@@ -437,6 +443,10 @@ struct page *cma_alloc(struct cma *cma, unsigned long count,
- 	if (!cma || !cma->count || !cma->bitmap)
- 		goto out;
-
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+	pr_info_once("Initial CMA usage detected\n");
-+#endif /* CONFIG_RHEL_DIFFERENCES */
-+
- 	pr_debug("%s(cma %p, count %lu, align %d)\n", __func__, (void *)cma,
- 		 count, align);
-
 diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
 index 4712a90a1820..208abc729302 100644
 --- a/net/netfilter/nf_conntrack_core.c
