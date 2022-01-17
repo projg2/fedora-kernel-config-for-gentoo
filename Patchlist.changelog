@@ -1,3 +1,9 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/933f8e20d77088ff01589f9a625a1f8e69681c1b
+ 933f8e20d77088ff01589f9a625a1f8e69681c1b Revert "[scsi] megaraid_sas: re-add certain pci-ids"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/75d150b4f21dc262f30e552afd5264cd632ea738
+ 75d150b4f21dc262f30e552afd5264cd632ea738 Revert "wireguard: disable in FIPS mode"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/79cb6c7a857b0fbe827e089f447310d025398bf8
  79cb6c7a857b0fbe827e089f447310d025398bf8 Revert "mm/cma: mark CMA on x86_64 tech preview and print RHEL-specific infos"
 
