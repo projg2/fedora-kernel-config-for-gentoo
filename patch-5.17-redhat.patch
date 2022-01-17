@@ -76,10 +76,10 @@
  75 files changed, 1516 insertions(+), 192 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 4955d2faf4cc..d67538c87631 100644
+index f5a27f067db9..f4dc42f2f82a 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5992,6 +5992,15 @@
+@@ -6000,6 +6000,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -1140,7 +1140,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 86a313857b58..dcfc95d0e328 100644
+index bf18128cf5de..e973c7816de8 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -1151,7 +1151,7 @@ index 86a313857b58..dcfc95d0e328 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2156,6 +2157,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2165,6 +2166,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -1168,7 +1168,7 @@ index 86a313857b58..dcfc95d0e328 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2189,6 +2200,11 @@ static int __init etm4x_init(void)
+@@ -2198,6 +2209,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -1180,7 +1180,7 @@ index 86a313857b58..dcfc95d0e328 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2215,6 +2231,9 @@ static int __init etm4x_init(void)
+@@ -2224,6 +2240,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -1783,10 +1783,10 @@ index 588588cfda48..adb3a91b0ba3 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index b4cb658cce2b..287443efe522 100644
+index d2dd6a6cda60..3339eccbac79 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4269,6 +4269,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4272,6 +4272,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1856,7 +1856,7 @@ index ab55681145f8..1f8b0f73597b 100644
  	{ 0 }
  };
 diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index cdf3328cc065..6754c7ee79d7 100644
+index a47bcce3c9c7..094944a52866 100644
 --- a/drivers/scsi/hpsa.c
 +++ b/drivers/scsi/hpsa.c
 @@ -82,7 +82,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
@@ -2058,7 +2058,7 @@ index abcd30917263..3f0b22e61350 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index 8987acc24dac..5013d52a7211 100644
+index 0ae936d839f1..c7b3fe22e3e4 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
 @@ -9855,6 +9855,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
@@ -2096,10 +2096,10 @@ index 47a1c8bddf86..e309d992e2ad 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 0343f682504d..c93cc4be14ba 100644
+index db9fe4843529..2473d2520bcd 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4764,6 +4764,7 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
+@@ -4763,6 +4763,7 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
  	}
 
  	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
@@ -2107,7 +2107,7 @@ index 0343f682504d..c93cc4be14ba 100644
  		if (ext4_has_feature_inline_data(sb)) {
  			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
  					" that may contain inline data");
-@@ -4774,6 +4775,10 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
+@@ -4773,6 +4774,10 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
  				"DAX unsupported by block device.");
  			goto failed_mount;
  		}
@@ -2206,10 +2206,10 @@ index 0de9fb1fdc5a..623207a0e74e 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 77755ac3e189..e236de3f9073 100644
+index 055eb203c00e..023966c67190 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -495,4 +495,23 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -494,4 +494,23 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -2264,10 +2264,10 @@ index 3bf5c658bc44..4701bc5ce2f5 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/module.h b/include/linux/module.h
-index c9f1200b2312..8ebb51f34be4 100644
+index 1e135fd5c076..6ec4d001c1e2 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
-@@ -380,6 +380,7 @@ struct module {
+@@ -381,6 +381,7 @@ struct module {
  	struct module_attribute *modinfo_attrs;
  	const char *version;
  	const char *srcversion;
@@ -2306,10 +2306,10 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 0a7b6b2f163b..5ba560df0537 100644
+index 8253a5413d7c..8dcbd8f1700f 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1480,6 +1480,22 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1490,6 +1490,22 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2696,7 +2696,7 @@ index 6d72772182c8..fe3b072665fb 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index c5a8f80f0a1b..26ae03c3afd6 100644
+index fc61bfa5ebb2..c742632d7b5a 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1646,7 +1646,7 @@ config AIO
@@ -2709,7 +2709,7 @@ index c5a8f80f0a1b..26ae03c3afd6 100644
  	default y
  	help
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 186c49582f45..aa60b06d3cf7 100644
+index 56f4ee97f328..2dfcaac71418 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
@@ -2757,7 +2757,7 @@ index fa4505f9b611..1955a6f41b7b 100644
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
 diff --git a/kernel/module.c b/kernel/module.c
-index 84a9141a5e15..d5aabc30ba8d 100644
+index 24dab046e16c..0501ad302769 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -743,6 +743,7 @@ static struct module_attribute modinfo_##field = {                    \
@@ -2768,7 +2768,7 @@ index 84a9141a5e15..d5aabc30ba8d 100644
 
  static char last_unloaded_module[MODULE_NAME_LEN+1];
 
-@@ -1206,6 +1207,7 @@ static struct module_attribute *modinfo_attrs[] = {
+@@ -1205,6 +1206,7 @@ static struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
@@ -3008,10 +3008,10 @@ index 000000000000..345a979cd0e4
 +}
 +EXPORT_SYMBOL(mark_tech_preview);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index d7ed1dffa426..19a40d791c99 100644
+index ef77be575d87..977930662f33 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -244,6 +244,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -245,6 +245,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;
@@ -3125,7 +3125,7 @@ index cb8ab7d91d30..5f13183ccc23 100644
  		sprintf(fname, "%s.mod.c", mod->name);
  		write_if_changed(&buf, fname);
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index b24bfaec6290..0418ba1d33f3 100755
+index 16d475b3e203..4e333f14b84e 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
