@@ -10,6 +10,7 @@
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/cpu/common.c                       |   1 +
  arch/x86/kernel/setup.c                            |  70 ++++-
+ crypto/Kconfig                                     |   2 -
  crypto/rng.c                                       |  73 ++++-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
@@ -65,7 +66,8 @@
  kernel/panic.c                                     |  14 +
  kernel/rh_messages.c                               | 179 +++++++++++++
  kernel/sysctl.c                                    |   5 +
- lib/crypto/Kconfig                                 |   8 +-
+ lib/Kconfig                                        |   2 +
+ lib/crypto/Kconfig                                 |  17 +-
  mm/cma.c                                           |  10 +
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
@@ -73,7 +75,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 75 files changed, 1516 insertions(+), 192 deletions(-)
+ 77 files changed, 1526 insertions(+), 195 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index f5a27f067db9..f4dc42f2f82a 100644
@@ -386,6 +388,16 @@ index f7a132eb794d..2305f8353e49 100644
  	unwind_init();
  }
 
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index 94bfa32cc6a1..442765219c37 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -1928,5 +1928,3 @@ source "crypto/asymmetric_keys/Kconfig"
+ source "certs/Kconfig"
+
+ endif	# if CRYPTO
+-
+-source "lib/crypto/Kconfig"
 diff --git a/crypto/rng.c b/crypto/rng.c
 index fea082b25fe4..50a9d040bed1 100644
 --- a/crypto/rng.c
@@ -546,7 +558,7 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index c215bc8723d0..f77dfdd124f1 100644
+index 1331756d4cfc..4b5257f5e2c4 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1769,6 +1769,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -566,7 +578,7 @@ index c215bc8723d0..f77dfdd124f1 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index f76b8418e6fb..350e52fccc30 100644
+index 0ed484e04fd6..a2e486bd14ef 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -690,6 +690,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -2138,7 +2150,7 @@ index e8f37bdc8354..f57bbc8feeee 100644
 
  	if (xfs_has_discard(mp)) {
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 0de9fb1fdc5a..623207a0e74e 100644
+index ccd4d3f91c98..e64643e3e364 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -2150,7 +2162,7 @@ index 0de9fb1fdc5a..623207a0e74e 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -783,6 +785,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -829,6 +831,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -2165,7 +2177,7 @@ index 0de9fb1fdc5a..623207a0e74e 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -794,6 +804,8 @@ static inline bool efi_enabled(int feature)
+@@ -840,6 +850,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -2174,7 +2186,7 @@ index 0de9fb1fdc5a..623207a0e74e 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -814,6 +826,8 @@ static inline bool efi_enabled(int feature)
+@@ -860,6 +872,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -2183,7 +2195,7 @@ index 0de9fb1fdc5a..623207a0e74e 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -826,6 +840,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -872,6 +886,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -2191,7 +2203,7 @@ index 0de9fb1fdc5a..623207a0e74e 100644
 
  /*
   * Variable Attributes
-@@ -1078,13 +1093,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1124,13 +1139,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -3023,20 +3035,51 @@ index ef77be575d87..977930662f33 100644
  		*(int *)table->data = unpriv_enable;
  	}
  	return ret;
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 655b0e43f260..c20b68ad2bc3 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -122,6 +122,8 @@ config INDIRECT_IOMEM_FALLBACK
+ 	  mmio accesses when the IO memory address is not a registered
+ 	  emulated region.
+
++source "lib/crypto/Kconfig"
++
+ config CRC_CCITT
+ 	tristate "CRC-CCITT functions"
+ 	help
 diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
-index 8620f38e117c..a3e41b7a8054 100644
+index 8620f38e117c..e8e525650cf2 100644
 --- a/lib/crypto/Kconfig
 +++ b/lib/crypto/Kconfig
-@@ -40,7 +40,7 @@ config CRYPTO_LIB_CHACHA_GENERIC
+@@ -1,5 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+
++menu "Crypto library routines"
++
+ config CRYPTO_LIB_AES
+ 	tristate
+
+@@ -31,7 +33,7 @@ config CRYPTO_ARCH_HAVE_LIB_CHACHA
+
+ config CRYPTO_LIB_CHACHA_GENERIC
+ 	tristate
+-	select CRYPTO_ALGAPI
++	select XOR_BLOCKS
+ 	help
+ 	  This symbol can be depended upon by arch implementations of the
+ 	  ChaCha library interface that require the generic code as a
+@@ -40,7 +42,8 @@ config CRYPTO_LIB_CHACHA_GENERIC
  	  of CRYPTO_LIB_CHACHA.
 
  config CRYPTO_LIB_CHACHA
 -	tristate
 +	tristate "ChaCha library interface"
++	depends on CRYPTO
  	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
  	select CRYPTO_LIB_CHACHA_GENERIC if CRYPTO_ARCH_HAVE_LIB_CHACHA=n
  	help
-@@ -65,7 +65,7 @@ config CRYPTO_LIB_CURVE25519_GENERIC
+@@ -65,7 +68,7 @@ config CRYPTO_LIB_CURVE25519_GENERIC
  	  of CRYPTO_LIB_CURVE25519.
 
  config CRYPTO_LIB_CURVE25519
@@ -3045,7 +3088,7 @@ index 8620f38e117c..a3e41b7a8054 100644
  	depends on CRYPTO_ARCH_HAVE_LIB_CURVE25519 || !CRYPTO_ARCH_HAVE_LIB_CURVE25519
  	select CRYPTO_LIB_CURVE25519_GENERIC if CRYPTO_ARCH_HAVE_LIB_CURVE25519=n
  	help
-@@ -100,7 +100,7 @@ config CRYPTO_LIB_POLY1305_GENERIC
+@@ -100,7 +103,7 @@ config CRYPTO_LIB_POLY1305_GENERIC
  	  of CRYPTO_LIB_POLY1305.
 
  config CRYPTO_LIB_POLY1305
@@ -3054,7 +3097,7 @@ index 8620f38e117c..a3e41b7a8054 100644
  	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
  	select CRYPTO_LIB_POLY1305_GENERIC if CRYPTO_ARCH_HAVE_LIB_POLY1305=n
  	help
-@@ -109,7 +109,7 @@ config CRYPTO_LIB_POLY1305
+@@ -109,14 +112,18 @@ config CRYPTO_LIB_POLY1305
  	  is available and enabled.
 
  config CRYPTO_LIB_CHACHA20POLY1305
@@ -3062,7 +3105,18 @@ index 8620f38e117c..a3e41b7a8054 100644
 +	tristate "ChaCha20-Poly1305 AEAD support (8-byte nonce library version)"
  	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
  	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
++	depends on CRYPTO
  	select CRYPTO_LIB_CHACHA
+ 	select CRYPTO_LIB_POLY1305
++	select CRYPTO_ALGAPI
+
+ config CRYPTO_LIB_SHA256
+ 	tristate
+
+ config CRYPTO_LIB_SM4
+ 	tristate
++
++endmenu
 diff --git a/mm/cma.c b/mm/cma.c
 index bc9ca8f3c487..9fa9a485eb3a 100644
 --- a/mm/cma.c
