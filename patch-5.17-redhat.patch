@@ -10,7 +10,6 @@
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/cpu/common.c                       |   1 +
  arch/x86/kernel/setup.c                            |  70 ++++-
- crypto/Kconfig                                     |   2 -
  crypto/rng.c                                       |  73 ++++-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
@@ -18,7 +17,7 @@
  drivers/ata/libahci.c                              |  18 ++
  drivers/char/ipmi/ipmi_dmi.c                       |  15 ++
  drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
- drivers/char/random.c                              | 115 ++++++++
+ drivers/char/random.c                              | 134 ++++++++++
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 ++++++---
  drivers/firmware/efi/secureboot.c                  |  38 +++
@@ -66,8 +65,6 @@
  kernel/panic.c                                     |  14 +
  kernel/rh_messages.c                               | 179 +++++++++++++
  kernel/sysctl.c                                    |   5 +
- lib/Kconfig                                        |   2 +
- lib/crypto/Kconfig                                 |  17 +-
  mm/cma.c                                           |  10 +
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
@@ -75,7 +72,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 77 files changed, 1526 insertions(+), 195 deletions(-)
+ 74 files changed, 1531 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index f5a27f067db9..f4dc42f2f82a 100644
@@ -131,7 +128,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 0fc511aac61c..bc784b38679d 100644
+index 3f07f0f04475..b96b47caa489 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -388,16 +385,6 @@ index f7a132eb794d..2305f8353e49 100644
  	unwind_init();
  }
 
-diff --git a/crypto/Kconfig b/crypto/Kconfig
-index 94bfa32cc6a1..442765219c37 100644
---- a/crypto/Kconfig
-+++ b/crypto/Kconfig
-@@ -1928,5 +1928,3 @@ source "crypto/asymmetric_keys/Kconfig"
- source "certs/Kconfig"
-
- endif	# if CRYPTO
--
--source "lib/crypto/Kconfig"
 diff --git a/crypto/rng.c b/crypto/rng.c
 index fea082b25fe4..50a9d040bed1 100644
 --- a/crypto/rng.c
@@ -668,10 +655,10 @@ index c59265146e9c..caa8458edde2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 227fb7802738..2836c089d2f3 100644
+index b411182df6f6..ec4b9e43cc65 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -345,6 +345,7 @@
+@@ -344,6 +344,7 @@
  #include <linux/syscalls.h>
  #include <linux/completion.h>
  #include <linux/uuid.h>
@@ -679,7 +666,7 @@ index 227fb7802738..2836c089d2f3 100644
  #include <crypto/chacha.h>
  #include <crypto/blake2s.h>
 
-@@ -359,6 +360,11 @@
+@@ -358,6 +359,30 @@
 
  /* #define ADD_INTERRUPT_BENCH */
 
@@ -688,10 +675,29 @@ index 227fb7802738..2836c089d2f3 100644
 + */
 +static const struct random_extrng __rcu *extrng;
 +
++/*
++ * Configuration information
++ */
++#define INPUT_POOL_SHIFT	12
++#define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
++#define OUTPUT_POOL_SHIFT	10
++#define OUTPUT_POOL_WORDS	(1 << (OUTPUT_POOL_SHIFT-5))
++#define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
++
++/*
++ * To allow fractional bits to be tracked, the entropy_count field is
++ * denominated in units of 1/8th bits.
++ *
++ * 2*(ENTROPY_SHIFT + poolbitshift) must <= 31, or the multiply in
++ * credit_entropy_bits() needs to be 64 bits wide.
++ */
++#define ENTROPY_SHIFT 3
++#define ENTROPY_BITS(r) ((r)->entropy_count >> ENTROPY_SHIFT)
++
  /*
-  * Configuration information
-  */
-@@ -493,6 +499,9 @@ static int ratelimit_disable __read_mostly;
+  * If the entropy count falls under this number of bits, then we
+  * should wake up processes which are selecting or polling on write
+@@ -486,6 +511,9 @@ static int ratelimit_disable __read_mostly;
  module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
  MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
 
@@ -701,7 +707,7 @@ index 227fb7802738..2836c089d2f3 100644
  /**********************************************************************
   *
   * OS independent entropy store.   Here are the functions which handle
-@@ -1869,6 +1878,13 @@ random_poll(struct file *file, poll_table * wait)
+@@ -1775,6 +1803,13 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
  	return mask;
  }
 
@@ -712,10 +718,10 @@ index 227fb7802738..2836c089d2f3 100644
 +	return EPOLLIN | EPOLLRDNORM;
 +}
 +
- static int
- write_pool(struct entropy_store *r, const char __user *buffer, size_t count)
+ static int write_pool(const char __user *buffer, size_t count)
  {
-@@ -1972,7 +1988,58 @@ static int random_fasync(int fd, struct file *filp, int on)
+ 	size_t bytes;
+@@ -1876,7 +1911,58 @@ static int random_fasync(int fd, struct file *filp, int on)
  	return fasync_helper(fd, filp, on, &fasync);
  }
 
@@ -771,18 +777,18 @@ index 227fb7802738..2836c089d2f3 100644
 +
  const struct file_operations random_fops = {
 +	.open  = random_open,
- 	.read  = random_read,
+ 	.read = random_read,
  	.write = random_write,
- 	.poll  = random_poll,
-@@ -1983,6 +2050,7 @@ const struct file_operations random_fops = {
+ 	.poll = random_poll,
+@@ -1887,6 +1973,7 @@ const struct file_operations random_fops = {
  };
 
  const struct file_operations urandom_fops = {
 +	.open  = urandom_open,
- 	.read  = urandom_read,
+ 	.read = urandom_read,
  	.write = random_write,
  	.unlocked_ioctl = random_ioctl,
-@@ -1991,9 +2059,31 @@ const struct file_operations urandom_fops = {
+@@ -1895,9 +1982,31 @@ const struct file_operations urandom_fops = {
  	.llseek = noop_llseek,
  };
 
@@ -807,14 +813,14 @@ index 227fb7802738..2836c089d2f3 100644
 +	.release = extrng_release,
 +};
 +
- SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
- 		unsigned int, flags)
+ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+ 		flags)
  {
 +	const struct random_extrng *rng;
  	int ret;
 
- 	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM|GRND_INSECURE))
-@@ -2009,6 +2099,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
+ 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
+@@ -1913,6 +2022,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
  	if (count > INT_MAX)
  		count = INT_MAX;
 
@@ -833,7 +839,7 @@ index 227fb7802738..2836c089d2f3 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		if (flags & GRND_NONBLOCK)
  			return -EAGAIN;
-@@ -2319,3 +2421,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
+@@ -2220,3 +2341,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
  		add_device_randomness(buf, size);
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
@@ -2708,10 +2714,10 @@ index 6d72772182c8..fe3b072665fb 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index fc61bfa5ebb2..c742632d7b5a 100644
+index e9119bf54b1f..e3b57b4898fe 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1646,7 +1646,7 @@ config AIO
+@@ -1645,7 +1645,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -3035,88 +3041,6 @@ index ef77be575d87..977930662f33 100644
  		*(int *)table->data = unpriv_enable;
  	}
  	return ret;
-diff --git a/lib/Kconfig b/lib/Kconfig
-index 655b0e43f260..c20b68ad2bc3 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -122,6 +122,8 @@ config INDIRECT_IOMEM_FALLBACK
- 	  mmio accesses when the IO memory address is not a registered
- 	  emulated region.
-
-+source "lib/crypto/Kconfig"
-+
- config CRC_CCITT
- 	tristate "CRC-CCITT functions"
- 	help
-diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
-index 8620f38e117c..e8e525650cf2 100644
---- a/lib/crypto/Kconfig
-+++ b/lib/crypto/Kconfig
-@@ -1,5 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
-
-+menu "Crypto library routines"
-+
- config CRYPTO_LIB_AES
- 	tristate
-
-@@ -31,7 +33,7 @@ config CRYPTO_ARCH_HAVE_LIB_CHACHA
-
- config CRYPTO_LIB_CHACHA_GENERIC
- 	tristate
--	select CRYPTO_ALGAPI
-+	select XOR_BLOCKS
- 	help
- 	  This symbol can be depended upon by arch implementations of the
- 	  ChaCha library interface that require the generic code as a
-@@ -40,7 +42,8 @@ config CRYPTO_LIB_CHACHA_GENERIC
- 	  of CRYPTO_LIB_CHACHA.
-
- config CRYPTO_LIB_CHACHA
--	tristate
-+	tristate "ChaCha library interface"
-+	depends on CRYPTO
- 	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
- 	select CRYPTO_LIB_CHACHA_GENERIC if CRYPTO_ARCH_HAVE_LIB_CHACHA=n
- 	help
-@@ -65,7 +68,7 @@ config CRYPTO_LIB_CURVE25519_GENERIC
- 	  of CRYPTO_LIB_CURVE25519.
-
- config CRYPTO_LIB_CURVE25519
--	tristate
-+	tristate "Curve25519 scalar multiplication library"
- 	depends on CRYPTO_ARCH_HAVE_LIB_CURVE25519 || !CRYPTO_ARCH_HAVE_LIB_CURVE25519
- 	select CRYPTO_LIB_CURVE25519_GENERIC if CRYPTO_ARCH_HAVE_LIB_CURVE25519=n
- 	help
-@@ -100,7 +103,7 @@ config CRYPTO_LIB_POLY1305_GENERIC
- 	  of CRYPTO_LIB_POLY1305.
-
- config CRYPTO_LIB_POLY1305
--	tristate
-+	tristate "Poly1305 library interface"
- 	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
- 	select CRYPTO_LIB_POLY1305_GENERIC if CRYPTO_ARCH_HAVE_LIB_POLY1305=n
- 	help
-@@ -109,14 +112,18 @@ config CRYPTO_LIB_POLY1305
- 	  is available and enabled.
-
- config CRYPTO_LIB_CHACHA20POLY1305
--	tristate
-+	tristate "ChaCha20-Poly1305 AEAD support (8-byte nonce library version)"
- 	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
- 	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
-+	depends on CRYPTO
- 	select CRYPTO_LIB_CHACHA
- 	select CRYPTO_LIB_POLY1305
-+	select CRYPTO_ALGAPI
-
- config CRYPTO_LIB_SHA256
- 	tristate
-
- config CRYPTO_LIB_SM4
- 	tristate
-+
-+endmenu
 diff --git a/mm/cma.c b/mm/cma.c
 index bc9ca8f3c487..9fa9a485eb3a 100644
 --- a/mm/cma.c
@@ -3146,7 +3070,7 @@ index bc9ca8f3c487..9fa9a485eb3a 100644
  		 count, align);
 
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index cb8ab7d91d30..5f13183ccc23 100644
+index 6bfa33217914..92d936f34b27 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -21,6 +21,7 @@
@@ -3157,7 +3081,7 @@ index cb8ab7d91d30..5f13183ccc23 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static int modversions = 0;
-@@ -2351,6 +2352,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2366,6 +2367,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -3170,7 +3094,7 @@ index cb8ab7d91d30..5f13183ccc23 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2580,6 +2587,7 @@ int main(int argc, char **argv)
+@@ -2595,6 +2602,7 @@ int main(int argc, char **argv)
  		add_depends(&buf, mod);
  		add_moddevtable(&buf, mod);
  		add_srcversion(&buf, mod);

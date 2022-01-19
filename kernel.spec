@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20220118gitfe81ba137ebc.69
+%global distro_build 0.rc0.20220119git1d1df41c5a33.70
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc0.20220118gitfe81ba137ebc.69
+%define pkgrelease 0.rc0.20220119git1d1df41c5a33.70
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220118gitfe81ba137ebc.69%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220119git1d1df41c5a33.70%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-10996-gfe81ba137ebc.tar.xz
+Source0: linux-5.16-11200-g1d1df41c5a33.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1386,8 +1386,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-10996-gfe81ba137ebc -c
-mv linux-5.16-10996-gfe81ba137ebc linux-%{KVERREL}
+%setup -q -n kernel-5.16-11200-g1d1df41c5a33 -c
+mv linux-5.16-11200-g1d1df41c5a33 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1611,6 +1611,7 @@ BuildKernel() {
 
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/systemtap
 %if %{with_debuginfo}
     mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/%{image_install_path}
 %endif
@@ -2929,6 +2930,7 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/crashkernel.default\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/systemtap\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
@@ -2984,9 +2986,10 @@ fi
 #
 #
 %changelog
-* Tue Jan 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc0.20220118gitfe81ba137ebc.69]
-- filter-modules.sh.rhel: Add ntc_thermistor to singlemods (Prarit Bhargava)
+* Wed Jan 19 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc0.20220118gitfe81ba137ebc.69]
 - lib/crypto: add prompts back to crypto libraries (Justin M. Forbes)
+- Add packaged but empty /lib/modules/<kver>/systemtap/ (Justin M. Forbes)
+- filter-modules.sh.rhel: Add ntc_thermistor to singlemods (Prarit Bhargava)
 
 * Tue Jan 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc0.20220118gitfe81ba137ebc.68]
 - Move CONFIG_SND_SOC_TLV320AIC31XX as it is now selected by CONFIG_SND_SOC_FSL_ASOC_CARD (Justin M. Forbes)
