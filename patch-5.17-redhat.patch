@@ -17,7 +17,7 @@
  drivers/ata/libahci.c                              |  18 ++
  drivers/char/ipmi/ipmi_dmi.c                       |  15 ++
  drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
- drivers/char/random.c                              | 134 ++++++++++
+ drivers/char/random.c                              | 115 ++++++++
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 ++++++---
  drivers/firmware/efi/secureboot.c                  |  38 +++
@@ -72,7 +72,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 74 files changed, 1531 insertions(+), 188 deletions(-)
+ 74 files changed, 1512 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index f5a27f067db9..f4dc42f2f82a 100644
@@ -174,7 +174,7 @@ index fabe39169b12..bfd2929ab514 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index f6e333b59314..32d8dcfa1e1d 100644
+index dc10d26cb432..b30c5a7659f5 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1024,7 +1024,7 @@ endchoice
@@ -186,7 +186,7 @@ index f6e333b59314..32d8dcfa1e1d 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1278,6 +1278,7 @@ config XEN
+@@ -1266,6 +1266,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -655,7 +655,7 @@ index c59265146e9c..caa8458edde2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index b411182df6f6..ec4b9e43cc65 100644
+index b411182df6f6..a113450d0521 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -344,6 +344,7 @@
@@ -666,7 +666,7 @@ index b411182df6f6..ec4b9e43cc65 100644
  #include <crypto/chacha.h>
  #include <crypto/blake2s.h>
 
-@@ -358,6 +359,30 @@
+@@ -358,6 +359,11 @@
 
  /* #define ADD_INTERRUPT_BENCH */
 
@@ -675,29 +675,10 @@ index b411182df6f6..ec4b9e43cc65 100644
 + */
 +static const struct random_extrng __rcu *extrng;
 +
-+/*
-+ * Configuration information
-+ */
-+#define INPUT_POOL_SHIFT	12
-+#define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
-+#define OUTPUT_POOL_SHIFT	10
-+#define OUTPUT_POOL_WORDS	(1 << (OUTPUT_POOL_SHIFT-5))
-+#define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
-+
-+/*
-+ * To allow fractional bits to be tracked, the entropy_count field is
-+ * denominated in units of 1/8th bits.
-+ *
-+ * 2*(ENTROPY_SHIFT + poolbitshift) must <= 31, or the multiply in
-+ * credit_entropy_bits() needs to be 64 bits wide.
-+ */
-+#define ENTROPY_SHIFT 3
-+#define ENTROPY_BITS(r) ((r)->entropy_count >> ENTROPY_SHIFT)
-+
  /*
   * If the entropy count falls under this number of bits, then we
   * should wake up processes which are selecting or polling on write
-@@ -486,6 +511,9 @@ static int ratelimit_disable __read_mostly;
+@@ -486,6 +492,9 @@ static int ratelimit_disable __read_mostly;
  module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
  MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
 
@@ -707,7 +688,7 @@ index b411182df6f6..ec4b9e43cc65 100644
  /**********************************************************************
   *
   * OS independent entropy store.   Here are the functions which handle
-@@ -1775,6 +1803,13 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
+@@ -1775,6 +1784,13 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
  	return mask;
  }
 
@@ -721,7 +702,7 @@ index b411182df6f6..ec4b9e43cc65 100644
  static int write_pool(const char __user *buffer, size_t count)
  {
  	size_t bytes;
-@@ -1876,7 +1911,58 @@ static int random_fasync(int fd, struct file *filp, int on)
+@@ -1876,7 +1892,58 @@ static int random_fasync(int fd, struct file *filp, int on)
  	return fasync_helper(fd, filp, on, &fasync);
  }
 
@@ -780,7 +761,7 @@ index b411182df6f6..ec4b9e43cc65 100644
  	.read = random_read,
  	.write = random_write,
  	.poll = random_poll,
-@@ -1887,6 +1973,7 @@ const struct file_operations random_fops = {
+@@ -1887,6 +1954,7 @@ const struct file_operations random_fops = {
  };
 
  const struct file_operations urandom_fops = {
@@ -788,7 +769,7 @@ index b411182df6f6..ec4b9e43cc65 100644
  	.read = urandom_read,
  	.write = random_write,
  	.unlocked_ioctl = random_ioctl,
-@@ -1895,9 +1982,31 @@ const struct file_operations urandom_fops = {
+@@ -1895,9 +1963,31 @@ const struct file_operations urandom_fops = {
  	.llseek = noop_llseek,
  };
 
@@ -820,7 +801,7 @@ index b411182df6f6..ec4b9e43cc65 100644
  	int ret;
 
  	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
-@@ -1913,6 +2022,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+@@ -1913,6 +2003,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
  	if (count > INT_MAX)
  		count = INT_MAX;
 
@@ -839,7 +820,7 @@ index b411182df6f6..ec4b9e43cc65 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		if (flags & GRND_NONBLOCK)
  			return -EAGAIN;
-@@ -2220,3 +2341,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
+@@ -2220,3 +2322,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
  		add_device_randomness(buf, size);
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
@@ -2224,10 +2205,10 @@ index ccd4d3f91c98..e64643e3e364 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 055eb203c00e..023966c67190 100644
+index 33f47a996513..7a716c0b05bc 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -494,4 +494,23 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -503,4 +503,23 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -2816,10 +2797,10 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	return ret;
  }
 diff --git a/kernel/panic.c b/kernel/panic.c
-index cefd7d82366f..ad43433c7013 100644
+index 55b50e052ec3..8b7955251793 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -384,6 +384,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -385,6 +385,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
