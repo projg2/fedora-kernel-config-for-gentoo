@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/d585d2f953aa602153c0912e68c27015c4c77320
+ d585d2f953aa602153c0912e68c27015c4c77320 drm/amdgpu: don't do resets on APUs which don't support it
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/d334145759adb9d064c94828fe534b78d6d8ca3a
  d334145759adb9d064c94828fe534b78d6d8ca3a netfilter: nat: force port remap to prevent shadowing well-known ports
 
