@@ -2986,8 +2986,7 @@ fi
 #
 #
 %changelog
-* Thu Jan 20 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.16.2-200]
-- v5.16.2 rebase
+* Thu Jan 20 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.16.2-0]
 - Add packaged but empty /lib/modules/<kver>/systemtap/ (Justin M. Forbes)
 - Revert "[scsi] megaraid_sas: re-add certain pci-ids" (Justin M. Forbes)
 - Revert "wireguard: disable in FIPS mode" (Justin M. Forbes)
