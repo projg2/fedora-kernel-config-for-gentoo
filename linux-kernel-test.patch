@@ -1,0 +1,51 @@
+From nobody Wed Jan 19 11:56:00 2022
+From: Sergei Trofimovich <slyich@gmail.com>
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: linux-kernel@vger.kernel.org, Sergei Trofimovich <slyich@gmail.com>, Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: [PATCH] objtool: check: give big enough buffer for pv_ops
+Date: Fri, 14 Jan 2022 07:57:56 +0000
+Message-Id: <20220114075756.838243-1-slyich@gmail.com>
+List-ID: <linux-kernel.vger.kernel.org>
+X-Mailing-List: linux-kernel@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+On gcc-12 build fails flagging possible buffer overflow:
+
+    check.c: In function 'validate_call':
+    check.c:2865:58: error: '%d' directive output may be truncated writing between 1 and 10 bytes into a region of size 9 [-Werror=format-truncation=]
+     2865 |                 snprintf(pvname, sizeof(pvname), "pv_ops[%d]", idx);
+          |                                                          ^~
+
+I think it's a valid warning:
+
+    static char pvname[16];
+    int idx;
+    ...
+    idx = (rel->addend / sizeof(void *));
+    snprintf(pvname, sizeof(pvname), "pv_ops[%d]", idx);
+
+we have only 7 chars for %d while it could take up to 9.
+
+CC: Josh Poimboeuf <jpoimboe@redhat.com>
+CC: Peter Zijlstra <peterz@infradead.org>
+---
+ tools/objtool/check.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index 8c1931eab5f1..0fae132ea59f 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -2852,7 +2852,7 @@ static inline bool func_uaccess_safe(struct symbol *func)
+ 
+ static inline const char *call_dest_name(struct instruction *insn)
+ {
+-	static char pvname[16];
++	static char pvname[32];
+ 	struct reloc *rel;
+ 	int idx;
+ 
+-- 
+2.34.1
