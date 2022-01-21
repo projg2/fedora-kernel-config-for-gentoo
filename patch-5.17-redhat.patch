@@ -72,7 +72,8 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 74 files changed, 1512 insertions(+), 188 deletions(-)
+ tools/objtool/check.c                              |   2 +-
+ 75 files changed, 1513 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index f5a27f067db9..f4dc42f2f82a 100644
@@ -3173,3 +3174,16 @@ index 3d4eb474f35b..c02f1aa3ff64 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index c2d2ab9a2861..f5bed94e4558 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -2854,7 +2854,7 @@ static inline bool func_uaccess_safe(struct symbol *func)
+
+ static inline const char *call_dest_name(struct instruction *insn)
+ {
+-	static char pvname[16];
++	static char pvname[32];
+ 	struct reloc *rel;
+ 	int idx;
+

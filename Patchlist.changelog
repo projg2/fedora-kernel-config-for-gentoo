@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/8783212c76137450007cd397847b20f9ae2634c4
+ 8783212c76137450007cd397847b20f9ae2634c4 objtool: check: give big enough buffer for pv_ops
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/c1ee15318f4a2688057fd1aeee6272603d0871f0
  c1ee15318f4a2688057fd1aeee6272603d0871f0 Fixup merge in random.c
 
