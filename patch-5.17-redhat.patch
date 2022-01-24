@@ -129,7 +129,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 3f07f0f04475..b96b47caa489 100644
+index 0fb4f94a6885..f19ab6b40583 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -175,10 +175,10 @@ index fabe39169b12..bfd2929ab514 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index dc10d26cb432..b30c5a7659f5 100644
+index 6978140edfa4..a9c3542c2577 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1024,7 +1024,7 @@ endchoice
+@@ -1023,7 +1023,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -187,7 +187,7 @@ index dc10d26cb432..b30c5a7659f5 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1266,6 +1266,7 @@ config XEN
+@@ -1265,6 +1265,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -656,7 +656,7 @@ index c59265146e9c..caa8458edde2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index b411182df6f6..a113450d0521 100644
+index 68613f0b6887..8198a831e626 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -344,6 +344,7 @@
@@ -821,7 +821,7 @@ index b411182df6f6..a113450d0521 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		if (flags & GRND_NONBLOCK)
  			return -EAGAIN;
-@@ -2220,3 +2322,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
+@@ -2230,3 +2332,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
  		add_device_randomness(buf, size);
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
@@ -1423,10 +1423,10 @@ index 8b86406b7162..2dffe129b902 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/message/fusion/mptsas.c b/drivers/message/fusion/mptsas.c
-index 091b45024d34..4457c5c7e173 100644
+index 4acd8f9a48e1..57b430c4d814 100644
 --- a/drivers/message/fusion/mptsas.c
 +++ b/drivers/message/fusion/mptsas.c
-@@ -5318,6 +5318,11 @@ mptsas_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+@@ -5320,6 +5320,11 @@ mptsas_probe(struct pci_dev *pdev, const struct pci_device_id *id)
  		    ioc, MPI_SAS_OP_CLEAR_ALL_PERSISTENT);
  	}
 
@@ -1438,7 +1438,7 @@ index 091b45024d34..4457c5c7e173 100644
  	error = scsi_add_host(sh, &ioc->pcidev->dev);
  	if (error) {
  		dprintk(ioc, printk(MYIOC_s_ERR_FMT
-@@ -5381,6 +5386,10 @@ static void mptsas_remove(struct pci_dev *pdev)
+@@ -5383,6 +5388,10 @@ static void mptsas_remove(struct pci_dev *pdev)
  }
 
  static struct pci_device_id mptsas_pci_table[] = {
@@ -1449,7 +1449,7 @@ index 091b45024d34..4457c5c7e173 100644
  	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_SAS1064,
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_SAS1068,
-@@ -5393,6 +5402,7 @@ static struct pci_device_id mptsas_pci_table[] = {
+@@ -5395,6 +5404,7 @@ static struct pci_device_id mptsas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ PCI_VENDOR_ID_LSI_LOGIC, MPI_MANUFACTPAGE_DEVID_SAS1068_820XELP,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -2096,10 +2096,10 @@ index 47a1c8bddf86..e309d992e2ad 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index db9fe4843529..2473d2520bcd 100644
+index eee0d9ebfa6c..787d364f3b4a 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4763,6 +4763,7 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
+@@ -4760,6 +4760,7 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
  	}
 
  	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
@@ -2107,7 +2107,7 @@ index db9fe4843529..2473d2520bcd 100644
  		if (ext4_has_feature_inline_data(sb)) {
  			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
  					" that may contain inline data");
-@@ -4773,6 +4774,10 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
+@@ -4770,6 +4771,10 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
  				"DAX unsupported by block device.");
  			goto failed_mount;
  		}
@@ -3008,10 +3008,10 @@ index 000000000000..345a979cd0e4
 +}
 +EXPORT_SYMBOL(mark_tech_preview);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index ef77be575d87..977930662f33 100644
+index 5ae443b2882e..4b929f4cb77a 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -245,6 +245,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -195,6 +195,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;

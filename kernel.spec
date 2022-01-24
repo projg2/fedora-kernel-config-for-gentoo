@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20220121gitc2c94b3b187d.73
+%global distro_build 0.rc1.20220124gitdd81e1c7d5fb.76
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc0.20220121gitc2c94b3b187d.73
+%define pkgrelease 0.rc1.20220124gitdd81e1c7d5fb.76
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220121gitc2c94b3b187d.73%{?buildid}%{?dist}
+%define specrelease 0.rc1.20220124gitdd81e1c7d5fb.76%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16-11444-gc2c94b3b187d.tar.xz
+Source0: linux-5.17-rc1-32-gdd81e1c7d5fb.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -812,7 +812,6 @@ Source80: generate_all_configs.sh
 Source81: process_configs.sh
 
 Source82: update_scripts.sh
-Source83: generate_crashkernel_default.sh
 
 Source84: mod-internal.list
 
@@ -880,7 +879,8 @@ Provides: kernel-drm-nouveau = 16\
 Provides: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
-Requires(pre): linux-firmware >= 20150904-56.git6ebf5d57\
+Requires(pre): ((linux-firmware >= 20150904-56.git6ebf5d57) if linux-firmware)\
+Recommends: linux-firmware\
 Requires(preun): systemd >= 200\
 Conflicts: xfsprogs < 4.3.0-1\
 Conflicts: xorg-x11-drv-vmmouse < 13.0.99\
@@ -1386,8 +1386,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16-11444-gc2c94b3b187d -c
-mv linux-5.16-11444-gc2c94b3b187d linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc1-32-gdd81e1c7d5fb -c
+mv linux-5.17-rc1-32-gdd81e1c7d5fb linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2119,9 +2119,6 @@ BuildKernel() {
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
-
-    # Generate crashkernel default config
-    %{SOURCE83} "$KernelVer" "$Arch" "$RPM_BUILD_ROOT"
 
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
@@ -2929,7 +2926,6 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/crashkernel.default\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/systemtap\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
 %if %{1}\
@@ -2986,8 +2982,14 @@ fi
 #
 #
 %changelog
-* Fri Jan 21 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc0.20220121gitc2c94b3b187d.73]
+* Mon Jan 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc1.20220124gitdd81e1c7d5fb.76]
 - objtool: check: give big enough buffer for pv_ops (Sergei Trofimovich)
+
+* Sat Jan 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc0.20220122git1c52283265a4.73]
+- Revert "[redhat] Generate a crashkernel.default for each kernel build" (Coiby Xu)
+- spec: make linux-firmware weak(er) dependency (Jan Stancek)
+- rtw89: enable new driver rtw89 and device RTK8852AE (Íñigo Huguet)
+- Config consolidation into common (Justin M. Forbes)
 
 * Thu Jan 20 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc0.20220120gitfa2e1ba3e9e3.71]
 - Fixup merge in random.c (Justin M. Forbes)
