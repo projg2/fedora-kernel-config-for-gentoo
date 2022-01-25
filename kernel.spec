@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc1.20220124gitdd81e1c7d5fb.76
+%global distro_build 0.rc1.20220125gita08b41ab9e2e.76
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc1.20220124gitdd81e1c7d5fb.76
+%define pkgrelease 0.rc1.20220125gita08b41ab9e2e.76
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20220124gitdd81e1c7d5fb.76%{?buildid}%{?dist}
+%define specrelease 0.rc1.20220125gita08b41ab9e2e.76%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc1-32-gdd81e1c7d5fb.tar.xz
+Source0: linux-5.17-rc1-36-ga08b41ab9e2e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1386,8 +1386,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc1-32-gdd81e1c7d5fb -c
-mv linux-5.17-rc1-32-gdd81e1c7d5fb linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc1-36-ga08b41ab9e2e -c
+mv linux-5.17-rc1-36-ga08b41ab9e2e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2982,7 +2982,7 @@ fi
 #
 #
 %changelog
-* Mon Jan 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc1.20220124gitdd81e1c7d5fb.76]
+* Tue Jan 25 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc1.20220125gita08b41ab9e2e.76]
 - objtool: check: give big enough buffer for pv_ops (Sergei Trofimovich)
 
 * Sat Jan 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc0.20220122git1c52283265a4.73]
