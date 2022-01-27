@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/63aede4769015c5f4cccb3f297229905f547dab5
+ 63aede4769015c5f4cccb3f297229905f547dab5 Revert "PCI/MSI: Mask MSI-X vectors only on success"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/d585d2f953aa602153c0912e68c27015c4c77320
  d585d2f953aa602153c0912e68c27015c4c77320 drm/amdgpu: don't do resets on APUs which don't support it
 
