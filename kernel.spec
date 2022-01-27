@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc1.20220126git0280e3c58f92.77
+%global distro_build 0.rc1.20220127git626b2dda7651.78
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc1.20220126git0280e3c58f92.77
+%define pkgrelease 0.rc1.20220127git626b2dda7651.78
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20220126git0280e3c58f92.77%{?buildid}%{?dist}
+%define specrelease 0.rc1.20220127git626b2dda7651.78%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc1-81-g0280e3c58f92.tar.xz
+Source0: linux-5.17-rc1-86-g626b2dda7651.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -777,6 +777,8 @@ Source37: filter-aarch64.sh.rhel
 Source38: filter-ppc64le.sh.rhel
 Source39: filter-s390x.sh.rhel
 Source40: filter-modules.sh.rhel
+
+Source41: x509.genkey.centos
 %endif
 
 %if 0%{?include_fedora}
@@ -1386,8 +1388,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc1-81-g0280e3c58f92 -c
-mv linux-5.17-rc1-81-g0280e3c58f92 linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc1-86-g626b2dda7651 -c
+mv linux-5.17-rc1-86-g626b2dda7651 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1498,6 +1500,18 @@ done
 
 cp %{SOURCE82} .
 RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
+
+# We may want to override files from the primary target in case of building
+# against a flavour of it (eg. centos not rhel), thus override it here if
+# necessary
+if [ "%{primary_target}" == "rhel" ]; then
+%if 0%{?centos}
+  echo "Updating scripts/sources to centos version"
+  RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh centos
+%else
+  echo "Not updating scripts/sources to centos version"
+%endif
+fi
 
 # end of kernel config
 %endif
@@ -2075,7 +2089,14 @@ BuildKernel() {
 
     # Cleanup
     rm System.map
-    cp -r restore/* lib/modules/$KernelVer/.
+    # Just "cp -r" can be very slow: here, it rewrites _existing files_
+    # with open(O_TRUNC). Many filesystems synchronously wait for metadata
+    # update for such file rewrites (seen in strace as final close syscall
+    # taking a long time). On a rotational disk, cp was observed to take
+    # more than 5 minutes on ext4 and more than 15 minutes (!) on xfs.
+    # With --remove-destination, we avoid this, and copying
+    # (with enough RAM to cache it) takes 5 seconds:
+    cp -r --remove-destination restore/* lib/modules/$KernelVer/.
     rm -rf restore
     popd
 
@@ -2982,6 +3003,10 @@ fi
 #
 #
 %changelog
+* Thu Jan 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc1.20220127git626b2dda7651.78]
+- spec: speed up "cp -r" when it overwrites existing files. (Denys Vlasenko)
+- redhat: use centos x509.genkey file if building under centos (Herton R. Krzesinski)
+
 * Tue Jan 25 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc1.20220125gita08b41ab9e2e.76]
 - objtool: check: give big enough buffer for pv_ops (Sergei Trofimovich)
 
