@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/c759148911ab75991555a2dde4682d9a0badba29
+ c759148911ab75991555a2dde4682d9a0badba29 Revert "drm/i915: Flush TLBs before releasing backing store"
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/caf0c7ca6fe0e84e0ca85aa89a5c881ba46b5fb2
  caf0c7ca6fe0e84e0ca85aa89a5c881ba46b5fb2 drm/i915: Flush TLBs before releasing backing store
 
