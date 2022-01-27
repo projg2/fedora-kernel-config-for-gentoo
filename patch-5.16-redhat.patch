@@ -17,8 +17,15 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
- drivers/gpu/drm/amd/amdgpu/cik.c                   |   4 +
- drivers/gpu/drm/amd/amdgpu/vi.c                    |   4 +
+ drivers/gpu/drm/i915/gem/i915_gem_object_types.h   |   1 +
+ drivers/gpu/drm/i915/gem/i915_gem_pages.c          |  10 ++
+ drivers/gpu/drm/i915/gt/intel_gt.c                 | 108 ++++++++++++++++++
+ drivers/gpu/drm/i915/gt/intel_gt.h                 |   2 +
+ drivers/gpu/drm/i915/gt/intel_gt_types.h           |   2 +
+ drivers/gpu/drm/i915/i915_reg.h                    |  11 ++
+ drivers/gpu/drm/i915/i915_vma.c                    |   3 +
+ drivers/gpu/drm/i915/intel_uncore.c                |  26 ++++-
+ drivers/gpu/drm/i915/intel_uncore.h                |   2 +
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -44,10 +51,10 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
- 46 files changed, 754 insertions(+), 191 deletions(-)
+ 53 files changed, 907 insertions(+), 195 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index dd98debc2604..1d65238a5bcf 100644
+index acb8ffee65dc..d41b475c83d3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -395,11 +402,11 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 2c80765670bc..5245fad951d8 100644
+index 25d9f04f1995..c2fa1e98fb28 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1725,6 +1725,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
- 	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
+@@ -1732,6 +1732,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
 +	/*
@@ -505,7 +512,7 @@ index c59265146e9c..caa8458edde2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 7470ee24db2f..a3ac18f64ba7 100644
+index a27ae3999ff3..dc4e136adb08 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -335,6 +335,7 @@
@@ -538,7 +545,7 @@ index 7470ee24db2f..a3ac18f64ba7 100644
  /**********************************************************************
   *
   * OS independent entropy store.   Here are the functions which handle
-@@ -1878,6 +1887,13 @@ random_poll(struct file *file, poll_table * wait)
+@@ -1880,6 +1889,13 @@ random_poll(struct file *file, poll_table * wait)
  	return mask;
  }
 
@@ -552,7 +559,7 @@ index 7470ee24db2f..a3ac18f64ba7 100644
  static int
  write_pool(struct entropy_store *r, const char __user *buffer, size_t count)
  {
-@@ -1981,7 +1997,58 @@ static int random_fasync(int fd, struct file *filp, int on)
+@@ -1983,7 +1999,58 @@ static int random_fasync(int fd, struct file *filp, int on)
  	return fasync_helper(fd, filp, on, &fasync);
  }
 
@@ -611,7 +618,7 @@ index 7470ee24db2f..a3ac18f64ba7 100644
  	.read  = random_read,
  	.write = random_write,
  	.poll  = random_poll,
-@@ -1992,6 +2059,7 @@ const struct file_operations random_fops = {
+@@ -1994,6 +2061,7 @@ const struct file_operations random_fops = {
  };
 
  const struct file_operations urandom_fops = {
@@ -619,7 +626,7 @@ index 7470ee24db2f..a3ac18f64ba7 100644
  	.read  = urandom_read,
  	.write = random_write,
  	.unlocked_ioctl = random_ioctl,
-@@ -2000,9 +2068,31 @@ const struct file_operations urandom_fops = {
+@@ -2002,9 +2070,31 @@ const struct file_operations urandom_fops = {
  	.llseek = noop_llseek,
  };
 
@@ -651,7 +658,7 @@ index 7470ee24db2f..a3ac18f64ba7 100644
  	int ret;
 
  	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM|GRND_INSECURE))
-@@ -2018,6 +2108,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
+@@ -2020,6 +2110,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
  	if (count > INT_MAX)
  		count = INT_MAX;
 
@@ -670,7 +677,7 @@ index 7470ee24db2f..a3ac18f64ba7 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		if (flags & GRND_NONBLOCK)
  			return -EAGAIN;
-@@ -2324,3 +2426,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
+@@ -2329,3 +2431,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
  		add_device_randomness(buf, size);
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
@@ -888,36 +895,307 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
-diff --git a/drivers/gpu/drm/amd/amdgpu/cik.c b/drivers/gpu/drm/amd/amdgpu/cik.c
-index 54f28c075f21..f10ce740a29c 100644
---- a/drivers/gpu/drm/amd/amdgpu/cik.c
-+++ b/drivers/gpu/drm/amd/amdgpu/cik.c
-@@ -1428,6 +1428,10 @@ static int cik_asic_reset(struct amdgpu_device *adev)
- {
- 	int r;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
+index da85169006d4..a0aa6dbe120e 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
+@@ -305,6 +305,7 @@ struct drm_i915_gem_object {
+ #define I915_BO_READONLY          BIT(6)
+ #define I915_TILING_QUIRK_BIT     7 /* unknown swizzling; do not release! */
+ #define I915_BO_PROTECTED         BIT(8)
++#define I915_BO_WAS_BOUND_BIT     9
+ 	/**
+ 	 * @mem_flags - Mutable placement-related flags
+ 	 *
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_pages.c b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
+index 1d3f40abd025..0c85aa244f93 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_pages.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_pages.c
+@@ -10,6 +10,8 @@
+ #include "i915_gem_lmem.h"
+ #include "i915_gem_mman.h"
 
-+	/* APUs don't have full asic reset */
-+	if (adev->flags & AMD_IS_APU)
-+		return 0;
++#include "gt/intel_gt.h"
 +
- 	if (cik_asic_reset_method(adev) == AMD_RESET_METHOD_BACO) {
- 		dev_info(adev->dev, "BACO reset\n");
- 		r = amdgpu_dpm_baco_reset(adev);
-diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c b/drivers/gpu/drm/amd/amdgpu/vi.c
-index fe9a7cc8d9eb..6645ebbd2696 100644
---- a/drivers/gpu/drm/amd/amdgpu/vi.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vi.c
-@@ -956,6 +956,10 @@ static int vi_asic_reset(struct amdgpu_device *adev)
- {
- 	int r;
+ void __i915_gem_object_set_pages(struct drm_i915_gem_object *obj,
+ 				 struct sg_table *pages,
+ 				 unsigned int sg_page_sizes)
+@@ -217,6 +219,14 @@ __i915_gem_object_unset_pages(struct drm_i915_gem_object *obj)
+ 	__i915_gem_object_reset_page_iter(obj);
+ 	obj->mm.page_sizes.phys = obj->mm.page_sizes.sg = 0;
 
-+	/* APUs don't have full asic reset */
-+	if (adev->flags & AMD_IS_APU)
-+		return 0;
++	if (test_and_clear_bit(I915_BO_WAS_BOUND_BIT, &obj->flags)) {
++		struct drm_i915_private *i915 = to_i915(obj->base.dev);
++		intel_wakeref_t wakeref;
 +
- 	if (vi_asic_reset_method(adev) == AMD_RESET_METHOD_BACO) {
- 		dev_info(adev->dev, "BACO reset\n");
- 		r = amdgpu_dpm_baco_reset(adev);
++		with_intel_runtime_pm_if_active(&i915->runtime_pm, wakeref)
++			intel_gt_invalidate_tlbs(to_gt(i915));
++	}
++
+ 	return pages;
+ }
+
+diff --git a/drivers/gpu/drm/i915/gt/intel_gt.c b/drivers/gpu/drm/i915/gt/intel_gt.c
+index 1cb1948ac959..d5c2a6c07b2f 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gt.c
++++ b/drivers/gpu/drm/i915/gt/intel_gt.c
+@@ -30,6 +30,8 @@ void intel_gt_init_early(struct intel_gt *gt, struct drm_i915_private *i915)
+
+ 	spin_lock_init(&gt->irq_lock);
+
++	mutex_init(&gt->tlb_invalidate_lock);
++
+ 	INIT_LIST_HEAD(&gt->closed_vma);
+ 	spin_lock_init(&gt->closed_lock);
+
+@@ -907,3 +909,109 @@ void intel_gt_info_print(const struct intel_gt_info *info,
+
+ 	intel_sseu_dump(&info->sseu, p);
+ }
++
++struct reg_and_bit {
++	i915_reg_t reg;
++	u32 bit;
++};
++
++static struct reg_and_bit
++get_reg_and_bit(const struct intel_engine_cs *engine, const bool gen8,
++		const i915_reg_t *regs, const unsigned int num)
++{
++	const unsigned int class = engine->class;
++	struct reg_and_bit rb = { };
++
++	if (drm_WARN_ON_ONCE(&engine->i915->drm,
++			     class >= num || !regs[class].reg))
++		return rb;
++
++	rb.reg = regs[class];
++	if (gen8 && class == VIDEO_DECODE_CLASS)
++		rb.reg.reg += 4 * engine->instance; /* GEN8_M2TCR */
++	else
++		rb.bit = engine->instance;
++
++	rb.bit = BIT(rb.bit);
++
++	return rb;
++}
++
++void intel_gt_invalidate_tlbs(struct intel_gt *gt)
++{
++	static const i915_reg_t gen8_regs[] = {
++		[RENDER_CLASS]			= GEN8_RTCR,
++		[VIDEO_DECODE_CLASS]		= GEN8_M1TCR, /* , GEN8_M2TCR */
++		[VIDEO_ENHANCEMENT_CLASS]	= GEN8_VTCR,
++		[COPY_ENGINE_CLASS]		= GEN8_BTCR,
++	};
++	static const i915_reg_t gen12_regs[] = {
++		[RENDER_CLASS]			= GEN12_GFX_TLB_INV_CR,
++		[VIDEO_DECODE_CLASS]		= GEN12_VD_TLB_INV_CR,
++		[VIDEO_ENHANCEMENT_CLASS]	= GEN12_VE_TLB_INV_CR,
++		[COPY_ENGINE_CLASS]		= GEN12_BLT_TLB_INV_CR,
++	};
++	struct drm_i915_private *i915 = gt->i915;
++	struct intel_uncore *uncore = gt->uncore;
++	struct intel_engine_cs *engine;
++	enum intel_engine_id id;
++	const i915_reg_t *regs;
++	unsigned int num = 0;
++
++	if (I915_SELFTEST_ONLY(gt->awake == -ENODEV))
++		return;
++
++	if (GRAPHICS_VER(i915) == 12) {
++		regs = gen12_regs;
++		num = ARRAY_SIZE(gen12_regs);
++	} else if (GRAPHICS_VER(i915) >= 8 && GRAPHICS_VER(i915) <= 11) {
++		regs = gen8_regs;
++		num = ARRAY_SIZE(gen8_regs);
++	} else if (GRAPHICS_VER(i915) < 8) {
++		return;
++	}
++
++	if (drm_WARN_ONCE(&i915->drm, !num,
++			  "Platform does not implement TLB invalidation!"))
++		return;
++
++	GEM_TRACE("\n");
++
++	assert_rpm_wakelock_held(&i915->runtime_pm);
++
++	mutex_lock(&gt->tlb_invalidate_lock);
++	intel_uncore_forcewake_get(uncore, FORCEWAKE_ALL);
++
++	for_each_engine(engine, gt, id) {
++		/*
++		 * HW architecture suggest typical invalidation time at 40us,
++		 * with pessimistic cases up to 100us and a recommendation to
++		 * cap at 1ms. We go a bit higher just in case.
++		 */
++		const unsigned int timeout_us = 100;
++		const unsigned int timeout_ms = 4;
++		struct reg_and_bit rb;
++
++		rb = get_reg_and_bit(engine, regs == gen8_regs, regs, num);
++		if (!i915_mmio_reg_offset(rb.reg))
++			continue;
++
++		intel_uncore_write_fw(uncore, rb.reg, rb.bit);
++		if (__intel_wait_for_register_fw(uncore,
++						 rb.reg, rb.bit, 0,
++						 timeout_us, timeout_ms,
++						 NULL))
++			drm_err_ratelimited(&gt->i915->drm,
++					    "%s TLB invalidation did not complete in %ums!\n",
++					    engine->name, timeout_ms);
++	}
++
++	/*
++	 * Use delayed put since a) we mostly expect a flurry of TLB
++	 * invalidations so it is good to avoid paying the forcewake cost and
++	 * b) it works around a bug in Icelake which cannot cope with too rapid
++	 * transitions.
++	 */
++	intel_uncore_forcewake_put_delayed(uncore, FORCEWAKE_ALL);
++	mutex_unlock(&gt->tlb_invalidate_lock);
++}
+diff --git a/drivers/gpu/drm/i915/gt/intel_gt.h b/drivers/gpu/drm/i915/gt/intel_gt.h
+index 74e771871a9b..c0169d6017c2 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gt.h
++++ b/drivers/gpu/drm/i915/gt/intel_gt.h
+@@ -90,4 +90,6 @@ void intel_gt_info_print(const struct intel_gt_info *info,
+
+ void intel_gt_watchdog_work(struct work_struct *work);
+
++void intel_gt_invalidate_tlbs(struct intel_gt *gt);
++
+ #endif /* __INTEL_GT_H__ */
+diff --git a/drivers/gpu/drm/i915/gt/intel_gt_types.h b/drivers/gpu/drm/i915/gt/intel_gt_types.h
+index 14216cc471b1..f20687796490 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gt_types.h
++++ b/drivers/gpu/drm/i915/gt/intel_gt_types.h
+@@ -73,6 +73,8 @@ struct intel_gt {
+
+ 	struct intel_uc uc;
+
++	struct mutex tlb_invalidate_lock;
++
+ 	struct i915_wa_list wa_list;
+
+ 	struct intel_gt_timelines {
+diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
+index bcee121bec5a..14ce8809efdd 100644
+--- a/drivers/gpu/drm/i915/i915_reg.h
++++ b/drivers/gpu/drm/i915/i915_reg.h
+@@ -2697,6 +2697,12 @@ static inline bool i915_mmio_reg_valid(i915_reg_t reg)
+ #define   GAMT_CHKN_DISABLE_DYNAMIC_CREDIT_SHARING	(1 << 28)
+ #define   GAMT_CHKN_DISABLE_I2M_CYCLE_ON_WR_PORT	(1 << 24)
+
++#define GEN8_RTCR	_MMIO(0x4260)
++#define GEN8_M1TCR	_MMIO(0x4264)
++#define GEN8_M2TCR	_MMIO(0x4268)
++#define GEN8_BTCR	_MMIO(0x426c)
++#define GEN8_VTCR	_MMIO(0x4270)
++
+ #if 0
+ #define PRB0_TAIL	_MMIO(0x2030)
+ #define PRB0_HEAD	_MMIO(0x2034)
+@@ -2792,6 +2798,11 @@ static inline bool i915_mmio_reg_valid(i915_reg_t reg)
+ #define   FAULT_VA_HIGH_BITS		(0xf << 0)
+ #define   FAULT_GTT_SEL			(1 << 4)
+
++#define GEN12_GFX_TLB_INV_CR	_MMIO(0xced8)
++#define GEN12_VD_TLB_INV_CR	_MMIO(0xcedc)
++#define GEN12_VE_TLB_INV_CR	_MMIO(0xcee0)
++#define GEN12_BLT_TLB_INV_CR	_MMIO(0xcee4)
++
+ #define GEN12_AUX_ERR_DBG		_MMIO(0x43f4)
+
+ #define FPGA_DBG		_MMIO(0x42300)
+diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
+index bef795e265a6..cb288e6bdc02 100644
+--- a/drivers/gpu/drm/i915/i915_vma.c
++++ b/drivers/gpu/drm/i915/i915_vma.c
+@@ -431,6 +431,9 @@ int i915_vma_bind(struct i915_vma *vma,
+ 		vma->ops->bind_vma(vma->vm, NULL, vma, cache_level, bind_flags);
+ 	}
+
++	if (vma->obj)
++		set_bit(I915_BO_WAS_BOUND_BIT, &vma->obj->flags);
++
+ 	atomic_or(bind_flags, &vma->flags);
+ 	return 0;
+ }
+diff --git a/drivers/gpu/drm/i915/intel_uncore.c b/drivers/gpu/drm/i915/intel_uncore.c
+index e072054adac5..e21c779cb487 100644
+--- a/drivers/gpu/drm/i915/intel_uncore.c
++++ b/drivers/gpu/drm/i915/intel_uncore.c
+@@ -724,7 +724,8 @@ void intel_uncore_forcewake_get__locked(struct intel_uncore *uncore,
+ }
+
+ static void __intel_uncore_forcewake_put(struct intel_uncore *uncore,
+-					 enum forcewake_domains fw_domains)
++					 enum forcewake_domains fw_domains,
++					 bool delayed)
+ {
+ 	struct intel_uncore_forcewake_domain *domain;
+ 	unsigned int tmp;
+@@ -739,7 +740,11 @@ static void __intel_uncore_forcewake_put(struct intel_uncore *uncore,
+ 			continue;
+ 		}
+
+-		fw_domains_put(uncore, domain->mask);
++		if (delayed &&
++		    !(domain->uncore->fw_domains_timer & domain->mask))
++			fw_domain_arm_timer(domain);
++		else
++			fw_domains_put(uncore, domain->mask);
+ 	}
+ }
+
+@@ -760,7 +765,20 @@ void intel_uncore_forcewake_put(struct intel_uncore *uncore,
+ 		return;
+
+ 	spin_lock_irqsave(&uncore->lock, irqflags);
+-	__intel_uncore_forcewake_put(uncore, fw_domains);
++	__intel_uncore_forcewake_put(uncore, fw_domains, false);
++	spin_unlock_irqrestore(&uncore->lock, irqflags);
++}
++
++void intel_uncore_forcewake_put_delayed(struct intel_uncore *uncore,
++					enum forcewake_domains fw_domains)
++{
++	unsigned long irqflags;
++
++	if (!uncore->fw_get_funcs)
++		return;
++
++	spin_lock_irqsave(&uncore->lock, irqflags);
++	__intel_uncore_forcewake_put(uncore, fw_domains, true);
+ 	spin_unlock_irqrestore(&uncore->lock, irqflags);
+ }
+
+@@ -802,7 +820,7 @@ void intel_uncore_forcewake_put__locked(struct intel_uncore *uncore,
+ 	if (!uncore->fw_get_funcs)
+ 		return;
+
+-	__intel_uncore_forcewake_put(uncore, fw_domains);
++	__intel_uncore_forcewake_put(uncore, fw_domains, false);
+ }
+
+ void assert_forcewakes_inactive(struct intel_uncore *uncore)
+diff --git a/drivers/gpu/drm/i915/intel_uncore.h b/drivers/gpu/drm/i915/intel_uncore.h
+index 3248e4e2c540..d08088fa4c7e 100644
+--- a/drivers/gpu/drm/i915/intel_uncore.h
++++ b/drivers/gpu/drm/i915/intel_uncore.h
+@@ -243,6 +243,8 @@ void intel_uncore_forcewake_get(struct intel_uncore *uncore,
+ 				enum forcewake_domains domains);
+ void intel_uncore_forcewake_put(struct intel_uncore *uncore,
+ 				enum forcewake_domains domains);
++void intel_uncore_forcewake_put_delayed(struct intel_uncore *uncore,
++					enum forcewake_domains domains);
+ void intel_uncore_forcewake_flush(struct intel_uncore *uncore,
+ 				  enum forcewake_domains fw_domains);
+
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1262,7 +1540,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index dd7863e453a5..6759ef17a2c3 100644
+index 8b86406b7162..2dffe129b902 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1273,7 +1551,7 @@ index dd7863e453a5..6759ef17a2c3 100644
  #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -3118,6 +3119,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3119,6 +3120,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1438,10 +1716,10 @@ index 9b095ee01364..bf25ef206cd2 100644
  {
  }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 003950c738d2..ef27596d04d8 100644
+index 20a932690738..494cee3aec7b 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4269,6 +4269,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4272,6 +4272,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1473,10 +1751,10 @@ index 003950c738d2..ef27596d04d8 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 3bc4a86c3d0a..e346da4f58f2 100644
+index ac6c5ccfe1cb..ec784479eece 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5666,6 +5666,13 @@ static void hub_event(struct work_struct *work)
+@@ -5669,6 +5669,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
