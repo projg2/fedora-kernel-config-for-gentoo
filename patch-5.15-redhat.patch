@@ -74,7 +74,7 @@ index 8ff6dafafdf8..e3f786336cf9 100644
  				This is normally done in pci_enable_device(),
  				so this option is a temporary workaround
 diff --git a/Makefile b/Makefile
-index 088197ed3f66..18279618693d 100644
+index 385286f987d8..7d1852b1edc6 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
