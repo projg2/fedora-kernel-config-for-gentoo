@@ -72,8 +72,9 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
+ tools/lib/subcmd/subcmd-util.h                     |   9 +-
  tools/objtool/check.c                              |   2 +-
- 75 files changed, 1513 insertions(+), 189 deletions(-)
+ 76 files changed, 1517 insertions(+), 194 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index f5a27f067db9..f4dc42f2f82a 100644
@@ -129,7 +130,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 0fb4f94a6885..f19ab6b40583 100644
+index 1fc3491096cb..cabf37d9d6ec 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -159,10 +160,10 @@ index 0fb4f94a6885..f19ab6b40583 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index fabe39169b12..bfd2929ab514 100644
+index 4c97cb40eebb..caf06cef3d2e 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1478,9 +1478,9 @@ config HIGHMEM
+@@ -1479,9 +1479,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -175,10 +176,10 @@ index fabe39169b12..bfd2929ab514 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 6978140edfa4..a9c3542c2577 100644
+index f2b5a4abef21..ccff5b146754 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1023,7 +1023,7 @@ endchoice
+@@ -1092,7 +1092,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -187,7 +188,7 @@ index 6978140edfa4..a9c3542c2577 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1265,6 +1265,7 @@ config XEN
+@@ -1334,6 +1334,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -851,7 +852,7 @@ index c02ff25dd477..d860f8eb9a81 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index ae79c3300129..e9205ea7aeb3 100644
+index 7de3f5b6e8d0..95b1c35b347c 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -862,7 +863,7 @@ index ae79c3300129..e9205ea7aeb3 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -844,40 +845,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -851,40 +852,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -2234,7 +2235,7 @@ index 33f47a996513..7a716c0b05bc 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index a5a724c308d8..7d560b86c195 100644
+index 819ec92dc2a8..b49986bfbeca 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -392,6 +392,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -3158,10 +3159,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 3d4eb474f35b..c02f1aa3ff64 100644
+index 22261d79f333..20336365f864 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2592,6 +2592,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2603,6 +2603,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
@@ -3174,29 +3175,6 @@ index 3d4eb474f35b..c02f1aa3ff64 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index c2d2ab9a2861..f5bed94e4558 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -2854,7 +2854,7 @@ static inline bool func_uaccess_safe(struct symbol *func)
-
- static inline const char *call_dest_name(struct instruction *insn)
- {
--	static char pvname[16];
-+	static char pvname[32];
- 	struct reloc *rel;
- 	int idx;
-
-From b3d2907a37c53f7379be8742bfbfe47aa2877bfc Mon Sep 17 00:00:00 2001
-From: "Justin M. Forbes" <jforbes@fedoraproject.org>
-Date: Thu, 27 Jan 2022 15:33:37 -0600
-Subject: [PATCH] Fix subcmd-util for gcc 12
-
-Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
----
- tools/lib/subcmd/subcmd-util.h | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
-
 diff --git a/tools/lib/subcmd/subcmd-util.h b/tools/lib/subcmd/subcmd-util.h
 index 794a375dad36..7009fc176636 100644
 --- a/tools/lib/subcmd/subcmd-util.h
@@ -3219,6 +3197,16 @@ index 794a375dad36..7009fc176636 100644
  		if (!ret)
  			die("Out of memory, realloc failed");
  	}
--- 
-2.34.1
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index c2d2ab9a2861..f5bed94e4558 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -2854,7 +2854,7 @@ static inline bool func_uaccess_safe(struct symbol *func)
+
+ static inline const char *call_dest_name(struct instruction *insn)
+ {
+-	static char pvname[16];
++	static char pvname[32];
+ 	struct reloc *rel;
+ 	int idx;
 

@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc1.20220128git145d9b498fc8.79
+%global distro_build 0.rc2.83
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc1.20220128git145d9b498fc8.79
+%define pkgrelease 0.rc2.83
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20220128git145d9b498fc8.79%{?buildid}%{?dist}
+%define specrelease 0.rc2.83%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc1-230-g145d9b498fc8.tar.xz
+Source0: linux-5.17-rc2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1388,8 +1388,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc1-230-g145d9b498fc8 -c
-mv linux-5.17-rc1-230-g145d9b498fc8 linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc2 -c
+mv linux-5.17-rc2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3003,6 +3003,12 @@ fi
 #
 #
 %changelog
+* Sun Jan 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc2.83]
+- Workaround for gcc12 compile issues in ubcmd-util.h (Justin M. Forbes)
+
+* Sat Jan 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc1.20220129git169387e2aa29.80]
+- New configs in drivers/crypto (Fedora Kernel Team)
+
 * Fri Jan 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc1.20220128git145d9b498fc8.79]
 - Add test_hash to the mod-internal.list (Justin M. Forbes)
 - configs: disable CONFIG_CRAMFS (Abhi Das) [2041184]

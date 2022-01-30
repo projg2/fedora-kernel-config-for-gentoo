@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/93296c8913585b0fef445615f3a13d8f42a85898
+ 93296c8913585b0fef445615f3a13d8f42a85898 Workaround for gcc12 compile issues in ubcmd-util.h
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/4f79b3c547b8e3dbc014058a8adffe0fe8cd5e4b
  4f79b3c547b8e3dbc014058a8adffe0fe8cd5e4b objtool: check: give big enough buffer for pv_ops
 
