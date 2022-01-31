@@ -3210,3 +3210,34 @@ index c2d2ab9a2861..f5bed94e4558 100644
  	struct reloc *rel;
  	int idx;
 
+From 102756c4df1ea2f55dd6a9de3f22f9304194d0e6 Mon Sep 17 00:00:00 2001
+From: "Justin M. Forbes" <jforbes@fedoraproject.org>
+Date: Mon, 31 Jan 2022 12:55:43 -0600
+Subject: [PATCH] Fix gcc 12 warning address of 'mem_section' will never be
+ NULL
+
+Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
+---
+ include/linux/mmzone.h | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index aed44e9b5d89..9eeaa7e10771 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -1390,11 +1390,9 @@ static inline unsigned long *section_to_usemap(struct mem_section *ms)
+ static inline struct mem_section *__nr_to_section(unsigned long nr)
+ {
+ #ifdef CONFIG_SPARSEMEM_EXTREME
+-	if (!mem_section)
++	if (!mem_section || !mem_section[SECTION_NR_TO_ROOT(nr)])
+ 		return NULL;
+ #endif
+-	if (!mem_section[SECTION_NR_TO_ROOT(nr)])
+-		return NULL;
+ 	return &mem_section[SECTION_NR_TO_ROOT(nr)][nr & SECTION_ROOT_MASK];
+ }
+ extern size_t mem_section_usage_size(void);
+-- 
+2.34.1
+
