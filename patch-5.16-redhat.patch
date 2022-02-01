@@ -1977,3 +1977,23 @@ index d88867d2fed7..349a319a9e51 100755
 
  	# test packet filter based mitigation: prevent forwarding of
  	# packets claiming to come from the service port.
+commit b3d4e07f484c7c87ff802893d8ab90227cba3469
+Author: Justin M. Forbes <jforbes@fedoraproject.org>
+Date:   Tue Feb 1 12:45:35 2022 -0600
+
+    Fixup ath11k: add support for WCN6855 hw2.1 backport
+    
+    Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
+
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 246147e03c09..8133326b1629 100644
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -337,7 +337,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+ 		.supports_suspend = true,
+ 		.hal_desc_sz = sizeof(struct hal_rx_desc_wcn6855),
+ 		.fix_l1ss = false,
+-		.credit_flow = true,
+ 		.max_tx_ring = DP_TCL_NUM_RING_MAX_QCA6390,
+ 		.hal_params = &ath11k_hw_hal_params_qca6390,
+ 		.supports_dynamic_smps_6ghz = false,
