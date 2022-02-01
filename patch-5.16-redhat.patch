@@ -1,17 +1,11 @@
- Documentation/admin-guide/kernel-parameters.txt    |   9 ++
  Makefile                                           |   4 +
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
- .../boot/dts/rockchip/rk3399-pinebook-pro.dts      |   2 +-
- arch/arm64/kernel/acpi.c                           |   2 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/include/asm/pci_x86.h                     |  10 ++
- arch/x86/kernel/resource.c                         |   4 +
+ arch/x86/kernel/resource.c                         |  23 +++-
  arch/x86/kernel/setup.c                            |  22 ++--
- arch/x86/pci/acpi.c                                |  49 ++++++--
- arch/x86/pci/common.c                              |   6 +
  crypto/rng.c                                       |  73 +++++++++++-
  drivers/acpi/apei/hest.c                           |   8 ++
  drivers/acpi/irq.c                                 |  17 ++-
@@ -27,12 +21,14 @@
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
+ drivers/net/wireless/ath/ath11k/core.c             |  53 +++++++++
+ drivers/net/wireless/ath/ath11k/core.h             |   1 +
+ drivers/net/wireless/ath/ath11k/mhi.c              |   1 +
+ drivers/net/wireless/ath/ath11k/pci.c              |  16 ++-
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
- drivers/pci/msi.c                                  |  13 +--
  drivers/pci/quirks.c                               |  24 ++++
- drivers/platform/x86/thinkpad_acpi.c               |   4 +-
  drivers/usb/core/hub.c                             |   7 ++
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
@@ -41,7 +37,6 @@
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  include/net/netfilter/nf_conntrack.h               |   1 +
- init/Kconfig                                       |   2 +-
  kernel/module_signing.c                            |   9 +-
  net/netfilter/nf_conntrack_core.c                  |   3 +
  net/netfilter/nf_nat_core.c                        |  43 ++++++-
@@ -51,30 +46,10 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
- 53 files changed, 800 insertions(+), 215 deletions(-)
+ 48 files changed, 815 insertions(+), 193 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 8ff6dafafdf8..e3f786336cf9 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3955,6 +3955,15 @@
- 				please report a bug.
- 		nocrs		[X86] Ignore PCI host bridge windows from ACPI.
- 				If you need to use this, please report a bug.
-+		use_e820	[X86] Use E820 reservations to exclude parts of
-+				PCI host bridge windows. This is a workaround
-+				for BIOS defects in host bridge _CRS methods.
-+				If you need to use this, please report a bug to
-+				<linux-pci@vger.kernel.org>.
-+		no_e820		[X86] Ignore E820 reservations for PCI host
-+				bridge windows. This is the default on modern
-+				hardware. If you need to use this, please report
-+				a bug to <linux-pci@vger.kernel.org>.
- 		routeirq	Do IRQ routing for all PCI devices.
- 				This is normally done in pci_enable_device(),
- 				so this option is a temporary workaround
 diff --git a/Makefile b/Makefile
-index 385286f987d8..7d1852b1edc6 100644
+index 2f0e5c3d9e2a..d71b7646e438 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -89,10 +64,10 @@ index 385286f987d8..7d1852b1edc6 100644
  # to get the ordering right.
  #
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 4ebd512043be..6743668b7b33 100644
+index c2724d986fa0..8063dcef65f7 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1471,9 +1471,9 @@ config HIGHMEM
+@@ -1479,9 +1479,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -105,10 +80,10 @@ index 4ebd512043be..6743668b7b33 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 0758ea0717f9..fb57b7a992d4 100644
+index c4207cf9bb17..9e440657f15e 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -911,7 +911,7 @@ endchoice
+@@ -1023,7 +1023,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -117,7 +92,7 @@ index 0758ea0717f9..fb57b7a992d4 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1152,6 +1152,7 @@ config XEN
+@@ -1277,6 +1277,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -125,32 +100,6 @@ index 0758ea0717f9..fb57b7a992d4 100644
  	default "12" if ARM64_16K_PAGES
  	default "11"
  	help
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
-index 9e5d07f5712e..dae8c252bc2b 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-pinebook-pro.dts
-@@ -707,7 +707,7 @@ fusb0: fusb30x@22 {
-
- 		connector {
- 			compatible = "usb-c-connector";
--			data-role = "host";
-+			data-role = "dual";
- 			label = "USB-C";
- 			op-sink-microwatt = <1000000>;
- 			power-role = "dual";
-diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-index f3851724fe35..cac21da49455 100644
---- a/arch/arm64/kernel/acpi.c
-+++ b/arch/arm64/kernel/acpi.c
-@@ -40,7 +40,7 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
- EXPORT_SYMBOL(acpi_pci_disabled);
-
- static bool param_acpi_off __initdata;
--static bool param_acpi_on __initdata;
-+static bool param_acpi_on __initdata = true;
- static bool param_acpi_force __initdata;
-
- static int __init parse_acpi(char *arg)
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index 3f8ee257f9aa..3ab92feb6241 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -177,7 +126,7 @@ index 5ad1dde23dc5..b6192d58eed3 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index ee67215a678a..931955a9ceca 100644
+index 225ab2d0a4c6..6a06cde25ca2 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -188,7 +137,7 @@ index ee67215a678a..931955a9ceca 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -970,6 +971,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -963,6 +964,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -198,62 +147,51 @@ index ee67215a678a..931955a9ceca 100644
  	/* Have one command line that is parsed and saved in /proc/cmdline */
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
-diff --git a/arch/x86/include/asm/pci_x86.h b/arch/x86/include/asm/pci_x86.h
-index 490411dba438..0bb4e7dd0ffc 100644
---- a/arch/x86/include/asm/pci_x86.h
-+++ b/arch/x86/include/asm/pci_x86.h
-@@ -39,6 +39,8 @@ do {						\
- #define PCI_ROOT_NO_CRS		0x100000
- #define PCI_NOASSIGN_BARS	0x200000
- #define PCI_BIG_ROOT_WINDOW	0x400000
-+#define PCI_USE_E820		0x800000
-+#define PCI_NO_E820		0x1000000
-
- extern unsigned int pci_probe;
- extern unsigned long pirq_table_addr;
-@@ -64,6 +66,8 @@ void pcibios_scan_specific_bus(int busn);
-
- /* pci-irq.c */
-
-+struct pci_dev;
-+
- struct irq_info {
- 	u8 bus, devfn;			/* Bus, device and function */
- 	struct {
-@@ -232,3 +236,9 @@ static inline void mmio_config_writel(void __iomem *pos, u32 val)
- # define x86_default_pci_init_irq	NULL
- # define x86_default_pci_fixup_irqs	NULL
- #endif
-+
-+#if defined(CONFIG_PCI) && defined(CONFIG_ACPI)
-+extern bool pci_use_e820;
-+#else
-+#define pci_use_e820 false
-+#endif
 diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
-index 9b9fb7882c20..e8dc9bc327bd 100644
+index 9b9fb7882c20..9ae64f9af956 100644
 --- a/arch/x86/kernel/resource.c
 +++ b/arch/x86/kernel/resource.c
-@@ -1,6 +1,7 @@
+@@ -1,4 +1,5 @@
  // SPDX-License-Identifier: GPL-2.0
++#include <linux/dmi.h>
  #include <linux/ioport.h>
  #include <asm/e820/api.h>
-+#include <asm/pci_x86.h>
 
- static void resource_clip(struct resource *res, resource_size_t start,
- 			  resource_size_t end)
-@@ -28,6 +29,9 @@ static void remove_e820_regions(struct resource *avail)
- 	int i;
+@@ -23,11 +24,31 @@ static void resource_clip(struct resource *res, resource_size_t start,
+ 		res->start = end + 1;
+ }
+
++/*
++ * Some BIOS-es contain a bug where they add addresses which map to
++ * system RAM in the PCI host bridge window returned by the ACPI _CRS
++ * method, see commit 4dc2287c1805 ("x86: avoid E820 regions when
++ * allocating address space"). To avoid this Linux by default excludes
++ * E820 reservations when allocating addresses since 2010.
++ * In 2019 some systems have shown-up with E820 reservations which cover
++ * the entire _CRS returned PCI host bridge window, causing all attempts
++ * to assign memory to PCI BARs to fail if Linux uses E820 reservations.
++ *
++ * Ideally Linux would fully stop using E820 reservations, but then
++ * the old systems this was added for will regress.
++ * Instead keep the old behavior for old systems, while ignoring the
++ * E820 reservations for any systems from now on.
++ */
+ static void remove_e820_regions(struct resource *avail)
+ {
+-	int i;
++	int i, year = dmi_get_bios_year();
  	struct e820_entry *entry;
 
-+	if (!pci_use_e820)
++	if (year >= 2018)
 +		return;
++
++	pr_info_once("PCI: Removing E820 reservations from host bridge windows\n");
 +
  	for (i = 0; i < e820_table->nr_entries; i++) {
  		entry = &e820_table->entries[i];
 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 48596f9fddf4..b31d4f581b66 100644
+index e04f5e6eb33f..8015e3d2dc9a 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -299,123 +237,6 @@ index 48596f9fddf4..b31d4f581b66 100644
 
  	reserve_initrd();
 
-diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
-index 948656069cdd..f357dac92610 100644
---- a/arch/x86/pci/acpi.c
-+++ b/arch/x86/pci/acpi.c
-@@ -1,4 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
-+
-+#define pr_fmt(fmt) "PCI: " fmt
-+
- #include <linux/pci.h>
- #include <linux/acpi.h>
- #include <linux/init.h>
-@@ -21,6 +24,8 @@ struct pci_root_info {
-
- static bool pci_use_crs = true;
- static bool pci_ignore_seg = false;
-+/* Consumed in arch/x86/kernel/resource.c */
-+bool pci_use_e820 = false;
-
- static int __init set_use_crs(const struct dmi_system_id *id)
- {
-@@ -36,7 +41,7 @@ static int __init set_nouse_crs(const struct dmi_system_id *id)
-
- static int __init set_ignore_seg(const struct dmi_system_id *id)
- {
--	printk(KERN_INFO "PCI: %s detected: ignoring ACPI _SEG\n", id->ident);
-+	pr_info("%s detected: ignoring ACPI _SEG\n", id->ident);
- 	pci_ignore_seg = true;
- 	return 0;
- }
-@@ -156,10 +161,35 @@ void __init pci_acpi_crs_quirks(void)
- 	else if (pci_probe & PCI_USE__CRS)
- 		pci_use_crs = true;
-
--	printk(KERN_INFO "PCI: %s host bridge windows from ACPI; "
--	       "if necessary, use \"pci=%s\" and report a bug\n",
--	       pci_use_crs ? "Using" : "Ignoring",
--	       pci_use_crs ? "nocrs" : "use_crs");
-+	pr_info("%s host bridge windows from ACPI; if necessary, use \"pci=%s\" and report a bug\n",
-+		pci_use_crs ? "Using" : "Ignoring",
-+		pci_use_crs ? "nocrs" : "use_crs");
-+
-+	/*
-+	 * Some BIOS-es contain a bug where they add addresses which map to
-+	 * system RAM in the PCI host bridge window returned by the ACPI _CRS
-+	 * method, see commit 4dc2287c1805 ("x86: avoid E820 regions when
-+	 * allocating address space"). To avoid this Linux by default excludes
-+	 * E820 reservations when allocating addresses since 2010.
-+	 * In 2020 some systems have shown-up with E820 reservations which cover
-+	 * the entire _CRS returned PCI host bridge window, causing all attempts
-+	 * to assign memory to PCI BARs to fail if Linux uses E820 reservations.
-+	 *
-+	 * Ideally Linux would fully stop using E820 reservations, but then
-+	 * the old systems this was added for will regress.
-+	 * Instead keep the old behavior for old systems, while ignoring the
-+	 * E820 reservations for any systems from now on.
-+	 */
-+	if (year >= 0 && year < 2018)
-+		pci_use_e820 = true;
-+
-+	if (pci_probe & PCI_NO_E820)
-+		pci_use_e820 = false;
-+	else if (pci_probe & PCI_USE_E820)
-+		pci_use_e820 = true;
-+
-+	pr_info("%s E820 reservations for host bridge windows\n",
-+		pci_use_e820 ? "Using" : "Ignoring");
- }
-
- #ifdef	CONFIG_PCI_MMCONFIG
-@@ -334,9 +364,8 @@ struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root)
- 		root->segment = domain = 0;
-
- 	if (domain && !pci_domains_supported) {
--		printk(KERN_WARNING "pci_bus %04x:%02x: "
--		       "ignored (multiple domains not supported)\n",
--		       domain, busnum);
-+		pr_warn("pci_bus %04x:%02x: ignored (multiple domains not supported)\n",
-+			domain, busnum);
- 		return NULL;
- 	}
-
-@@ -404,7 +433,7 @@ int __init pci_acpi_init(void)
- 	if (acpi_noirq)
- 		return -ENODEV;
-
--	printk(KERN_INFO "PCI: Using ACPI for IRQ routing\n");
-+	pr_info("Using ACPI for IRQ routing\n");
- 	acpi_irq_penalty_init();
- 	pcibios_enable_irq = acpi_pci_irq_enable;
- 	pcibios_disable_irq = acpi_pci_irq_disable;
-@@ -416,7 +445,7 @@ int __init pci_acpi_init(void)
- 		 * also do it here in case there are still broken drivers that
- 		 * don't use pci_enable_device().
- 		 */
--		printk(KERN_INFO "PCI: Routing PCI interrupts for all devices because \"pci=routeirq\" specified\n");
-+		pr_info("Routing PCI interrupts for all devices because \"pci=routeirq\" specified\n");
- 		for_each_pci_dev(dev)
- 			acpi_pci_irq_enable(dev);
- 	}
-diff --git a/arch/x86/pci/common.c b/arch/x86/pci/common.c
-index 3507f456fcd0..091ec7e94fcb 100644
---- a/arch/x86/pci/common.c
-+++ b/arch/x86/pci/common.c
-@@ -595,6 +595,12 @@ char *__init pcibios_setup(char *str)
- 	} else if (!strcmp(str, "nocrs")) {
- 		pci_probe |= PCI_ROOT_NO_CRS;
- 		return NULL;
-+	} else if (!strcmp(str, "use_e820")) {
-+		pci_probe |= PCI_USE_E820;
-+		return NULL;
-+	} else if (!strcmp(str, "no_e820")) {
-+		pci_probe |= PCI_NO_E820;
-+		return NULL;
- #ifdef CONFIG_PHYS_ADDR_T_64BIT
- 	} else if (!strcmp(str, "big_root_window")) {
- 		pci_probe |= PCI_BIG_ROOT_WINDOW;
 diff --git a/crypto/rng.c b/crypto/rng.c
 index fea082b25fe4..50a9d040bed1 100644
 --- a/crypto/rng.c
@@ -514,10 +335,10 @@ index fea082b25fe4..50a9d040bed1 100644
  MODULE_LICENSE("GPL");
  MODULE_DESCRIPTION("Random Number Generator");
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
-index 277f00b288d1..adbce15c273d 100644
+index 0edc1ed47673..782e2f399af2 100644
 --- a/drivers/acpi/apei/hest.c
 +++ b/drivers/acpi/apei/hest.c
-@@ -94,6 +94,14 @@ int apei_hest_parse(apei_hest_func_t func, void *data)
+@@ -96,6 +96,14 @@ static int apei_hest_parse(apei_hest_func_t func, void *data)
  	if (hest_disable || !hest_tab)
  		return -EINVAL;
 
@@ -576,10 +397,10 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 6e9cd41c5f9b..07db2f6afa17 100644
+index 25d9f04f1995..c2fa1e98fb28 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1727,6 +1727,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1732,6 +1732,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -596,10 +417,10 @@ index 6e9cd41c5f9b..07db2f6afa17 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 395772fa3943..35aa1b420262 100644
+index f76b8418e6fb..350e52fccc30 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
-@@ -672,6 +672,24 @@ int ahci_stop_engine(struct ata_port *ap)
+@@ -690,6 +690,24 @@ int ahci_stop_engine(struct ata_port *ap)
  	tmp &= ~PORT_CMD_START;
  	writel(tmp, port_mmio + PORT_CMD);
 
@@ -651,7 +472,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index fe91090e04a4..f00bc6886913 100644
+index c59265146e9c..caa8458edde2 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -662,7 +483,7 @@ index fe91090e04a4..f00bc6886913 100644
  #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5178,8 +5179,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5422,8 +5423,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -881,7 +702,7 @@ index c02ff25dd477..d860f8eb9a81 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 847f33ffc4ae..363037f8eaf8 100644
+index 7de3f5b6e8d0..95b1c35b347c 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -892,7 +713,7 @@ index 847f33ffc4ae..363037f8eaf8 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -841,40 +842,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -851,40 +852,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -1170,7 +991,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index e24252eaf8e4..368d64adeee8 100644
+index 86a313857b58..dcfc95d0e328 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -1181,7 +1002,7 @@ index e24252eaf8e4..368d64adeee8 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2105,6 +2106,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2156,6 +2157,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -1198,7 +1019,7 @@ index e24252eaf8e4..368d64adeee8 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2138,6 +2149,11 @@ static int __init etm4x_init(void)
+@@ -2189,6 +2200,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -1210,7 +1031,7 @@ index e24252eaf8e4..368d64adeee8 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2164,6 +2180,9 @@ static int __init etm4x_init(void)
+@@ -2215,6 +2231,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -1413,7 +1234,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f62fb6a58f10..26ade573cec9 100644
+index 8b86406b7162..2dffe129b902 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1452,11 +1273,135 @@ index f62fb6a58f10..26ade573cec9 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index cb8cacbbd5b4..246147e03c09 100644
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -291,6 +291,59 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+ 		.alloc_cacheable_memory = false,
+ 		.wakeup_mhi = true,
+ 	},
++	{
++		.name = "wcn6855 hw2.1",
++		.hw_rev = ATH11K_HW_WCN6855_HW21,
++		.fw = {
++			.dir = "WCN6855/hw2.1",
++			.board_size = 256 * 1024,
++			.cal_offset = 128 * 1024,
++		},
++		.max_radios = 3,
++		.bdf_addr = 0x4B0C0000,
++		.hw_ops = &wcn6855_ops,
++		.ring_mask = &ath11k_hw_ring_mask_qca6390,
++		.internal_sleep_clock = true,
++		.regs = &wcn6855_regs,
++		.qmi_service_ins_id = ATH11K_QMI_WLFW_SERVICE_INS_ID_V01_QCA6390,
++		.host_ce_config = ath11k_host_ce_config_qca6390,
++		.ce_count = 9,
++		.target_ce_config = ath11k_target_ce_config_wlan_qca6390,
++		.target_ce_count = 9,
++		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
++		.svc_to_ce_map_len = 14,
++		.single_pdev_only = true,
++		.rxdma1_enable = false,
++		.num_rxmda_per_pdev = 2,
++		.rx_mac_buf_ring = true,
++		.vdev_start_delay = true,
++		.htt_peer_map_v2 = false,
++
++		.spectral = {
++			.fft_sz = 0,
++			.fft_pad_sz = 0,
++			.summary_pad_sz = 0,
++			.fft_hdr_len = 0,
++			.max_fft_bins = 0,
++		},
++
++		.interface_modes = BIT(NL80211_IFTYPE_STATION) |
++					BIT(NL80211_IFTYPE_AP),
++		.supports_monitor = false,
++		.supports_shadow_regs = true,
++		.idle_ps = true,
++		.supports_sta_ps = true,
++		.cold_boot_calib = false,
++		.supports_suspend = true,
++		.hal_desc_sz = sizeof(struct hal_rx_desc_wcn6855),
++		.fix_l1ss = false,
++		.credit_flow = true,
++		.max_tx_ring = DP_TCL_NUM_RING_MAX_QCA6390,
++		.hal_params = &ath11k_hw_hal_params_qca6390,
++		.supports_dynamic_smps_6ghz = false,
++		.alloc_cacheable_memory = false,
++		.wakeup_mhi = true,
++	},
+ };
+
+ int ath11k_core_suspend(struct ath11k_base *ab)
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 011373b91ae0..3d6519612422 100644
+--- a/drivers/net/wireless/ath/ath11k/core.h
++++ b/drivers/net/wireless/ath/ath11k/core.h
+@@ -117,6 +117,7 @@ enum ath11k_hw_rev {
+ 	ATH11K_HW_IPQ6018_HW10,
+ 	ATH11K_HW_QCN9074_HW10,
+ 	ATH11K_HW_WCN6855_HW20,
++	ATH11K_HW_WCN6855_HW21,
+ };
+
+ enum ath11k_firmware_mode {
+diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+index 49c0b1ad40a0..95f5a1960676 100644
+--- a/drivers/net/wireless/ath/ath11k/mhi.c
++++ b/drivers/net/wireless/ath/ath11k/mhi.c
+@@ -356,6 +356,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
+ 		break;
+ 	case ATH11K_HW_QCA6390_HW20:
+ 	case ATH11K_HW_WCN6855_HW20:
++	case ATH11K_HW_WCN6855_HW21:
+ 		ath11k_mhi_config = &ath11k_mhi_config_qca6390;
+ 		break;
+ 	default:
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index 4c348bacf2cb..9fe496d35b38 100644
+--- a/drivers/net/wireless/ath/ath11k/pci.c
++++ b/drivers/net/wireless/ath/ath11k/pci.c
+@@ -25,7 +25,7 @@
+ #define WINDOW_RANGE_MASK		GENMASK(18, 0)
+
+ #define TCSR_SOC_HW_VERSION		0x0224
+-#define TCSR_SOC_HW_VERSION_MAJOR_MASK	GENMASK(16, 8)
++#define TCSR_SOC_HW_VERSION_MAJOR_MASK	GENMASK(11, 8)
+ #define TCSR_SOC_HW_VERSION_MINOR_MASK	GENMASK(7, 0)
+
+ /* BAR0 + 4k is always accessible, and no
+@@ -1297,9 +1297,21 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
+ 					   &soc_hw_version_minor);
+ 		switch (soc_hw_version_major) {
+ 		case 2:
+-			ab->hw_rev = ATH11K_HW_WCN6855_HW20;
++			switch (soc_hw_version_minor) {
++			case 0x00:
++			case 0x01:
++				ab->hw_rev = ATH11K_HW_WCN6855_HW20;
++				break;
++			case 0x10:
++			case 0x11:
++				ab->hw_rev = ATH11K_HW_WCN6855_HW21;
++				break;
++			default:
++				goto unsupported_wcn6855_soc;
++			}
+ 			break;
+ 		default:
++unsupported_wcn6855_soc:
+ 			dev_err(&pdev->dev, "Unsupported WCN6855 SOC hardware version: %d %d\n",
+ 				soc_hw_version_major, soc_hw_version_minor);
+ 			ret = -EOPNOTSUPP;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index f8dd664b2eda..0ff9ea8340e4 100644
+index 1af8a4513708..5a23e077ab86 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
-@@ -262,6 +262,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
+@@ -244,6 +244,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
 
  static blk_status_t nvme_error_status(u16 status)
  {
@@ -1466,7 +1411,7 @@ index f8dd664b2eda..0ff9ea8340e4 100644
  	switch (status & 0x7ff) {
  	case NVME_SC_SUCCESS:
  		return BLK_STS_OK;
-@@ -321,6 +324,7 @@ enum nvme_disposition {
+@@ -303,6 +306,7 @@ enum nvme_disposition {
  	COMPLETE,
  	RETRY,
  	FAILOVER,
@@ -1474,7 +1419,7 @@ index f8dd664b2eda..0ff9ea8340e4 100644
  };
 
  static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
-@@ -328,15 +332,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
+@@ -310,15 +314,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
  	if (likely(nvme_req(req)->status == 0))
  		return COMPLETE;
 
@@ -1494,7 +1439,7 @@ index f8dd664b2eda..0ff9ea8340e4 100644
  	} else {
  		if (blk_queue_dying(req->q))
  			return COMPLETE;
-@@ -358,6 +363,14 @@ static inline void nvme_end_req(struct request *req)
+@@ -344,6 +349,14 @@ static inline void nvme_end_req(struct request *req)
  	blk_mq_end_request(req, status);
  }
 
@@ -1509,7 +1454,7 @@ index f8dd664b2eda..0ff9ea8340e4 100644
  void nvme_complete_rq(struct request *req)
  {
  	trace_nvme_complete_rq(req);
-@@ -376,6 +389,9 @@ void nvme_complete_rq(struct request *req)
+@@ -362,6 +375,9 @@ void nvme_complete_rq(struct request *req)
  	case FAILOVER:
  		nvme_failover_req(req);
  		return;
@@ -1520,7 +1465,7 @@ index f8dd664b2eda..0ff9ea8340e4 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 2f76969408b2..021a4176b321 100644
+index 13e5d503ed07..daaeb316f624 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
@@ -1555,8 +1500,8 @@ index 2f76969408b2..021a4176b321 100644
 +	nvme_update_ana(req);
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
- 	for (bio = req->bio; bio; bio = bio->bi_next)
-@@ -813,8 +819,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+ 	for (bio = req->bio; bio; bio = bio->bi_next) {
+@@ -838,8 +844,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1567,10 +1512,10 @@ index 2f76969408b2..021a4176b321 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index ed79a6c7e804..961dc67d7261 100644
+index 9b095ee01364..bf25ef206cd2 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -746,6 +746,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -765,6 +765,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags);
  void nvme_failover_req(struct request *req);
@@ -1578,7 +1523,7 @@ index ed79a6c7e804..961dc67d7261 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -784,6 +785,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
+@@ -803,6 +804,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1588,39 +1533,8 @@ index ed79a6c7e804..961dc67d7261 100644
  static inline void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl)
  {
  }
-diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-index cc4c2b8a5efd..96132d68be1e 100644
---- a/drivers/pci/msi.c
-+++ b/drivers/pci/msi.c
-@@ -721,6 +721,9 @@ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
- 		goto out_disable;
- 	}
-
-+	/* Ensure that all table entries are masked. */
-+	msix_mask_all(base, tsize);
-+
- 	ret = msix_setup_entries(dev, base, entries, nvec, affd);
- 	if (ret)
- 		goto out_disable;
-@@ -747,16 +750,6 @@ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
- 	/* Set MSI-X enabled bits and unmask the function */
- 	pci_intx_for_msi(dev, 0);
- 	dev->msix_enabled = 1;
--
--	/*
--	 * Ensure that all table entries are masked to prevent
--	 * stale entries from firing in a crash kernel.
--	 *
--	 * Done late to deal with a broken Marvell NVME device
--	 * which takes the MSI-X mask bits into account even
--	 * when MSI-X is disabled, which prevents MSI delivery.
--	 */
--	msix_mask_all(base, tsize);
- 	pci_msix_clear_and_set_ctrl(dev, PCI_MSIX_FLAGS_MASKALL, 0);
-
- 	pcibios_free_irq(dev);
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 0663762ea69d..3f1215e8c5b2 100644
+index 20a932690738..494cee3aec7b 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4272,6 +4272,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1654,24 +1568,6 @@ index 0663762ea69d..3f1215e8c5b2 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
-diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index 3dc055ce6e61..bb56640eb31f 100644
---- a/drivers/platform/x86/thinkpad_acpi.c
-+++ b/drivers/platform/x86/thinkpad_acpi.c
-@@ -5813,11 +5813,11 @@ static const char * const tpacpi_led_names[TPACPI_LED_NUMLEDS] = {
- 	"tpacpi::standby",
- 	"tpacpi::dock_status1",
- 	"tpacpi::dock_status2",
--	"tpacpi::unknown_led2",
-+	"tpacpi::lid_logo_dot",
- 	"tpacpi::unknown_led3",
- 	"tpacpi::thinkvantage",
- };
--#define TPACPI_SAFE_LEDS	0x1081U
-+#define TPACPI_SAFE_LEDS	0x1481U
-
- static inline bool tpacpi_is_led_restricted(const unsigned int led)
- {
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index ac6c5ccfe1cb..ec784479eece 100644
 --- a/drivers/usb/core/hub.c
@@ -1691,7 +1587,7 @@ index ac6c5ccfe1cb..ec784479eece 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 3d8ddc5eca8c..779f41901f35 100644
+index ef8dbc0a1522..836a5dfc6156 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1703,7 +1599,7 @@ index 3d8ddc5eca8c..779f41901f35 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -782,6 +784,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -783,6 +785,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1718,7 +1614,7 @@ index 3d8ddc5eca8c..779f41901f35 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -793,6 +803,8 @@ static inline bool efi_enabled(int feature)
+@@ -794,6 +804,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1727,7 +1623,7 @@ index 3d8ddc5eca8c..779f41901f35 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -813,6 +825,8 @@ static inline bool efi_enabled(int feature)
+@@ -814,6 +826,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1736,7 +1632,7 @@ index 3d8ddc5eca8c..779f41901f35 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -825,6 +839,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -826,6 +840,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1744,7 +1640,7 @@ index 3d8ddc5eca8c..779f41901f35 100644
 
  /*
   * Variable Attributes
-@@ -1077,13 +1092,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1078,13 +1093,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -1759,10 +1655,10 @@ index 3d8ddc5eca8c..779f41901f35 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 61590c1f2d33..4c10750865c2 100644
+index f0c7b352340a..bea09711d8d7 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -394,6 +394,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -395,6 +395,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -1772,10 +1668,10 @@ index 61590c1f2d33..4c10750865c2 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 59024618554e..ab9ca4d393da 100644
+index d45b6f6e27fd..70622b506461 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1545,6 +1545,12 @@
+@@ -1548,6 +1548,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -1826,10 +1722,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 46a02ce34d00..37e991a10d70 100644
+index bbf44a466832..026a06b98a96 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -472,6 +472,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -473,6 +473,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -1837,7 +1733,7 @@ index 46a02ce34d00..37e991a10d70 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1353,6 +1354,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1355,6 +1356,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -1860,19 +1756,6 @@ index d24b0a34c8f0..871489df63c6 100644
  	possible_net_t ct_net;
 
  #if IS_ENABLED(CONFIG_NF_NAT)
-diff --git a/init/Kconfig b/init/Kconfig
-index 11f8a845f259..9b94cc1b5546 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1648,7 +1648,7 @@ config AIO
- 	  this option saves about 7k.
-
- config IO_URING
--	bool "Enable IO uring support" if EXPERT
-+	bool "Enable IO uring support"
- 	select IO_WQ
- 	default y
- 	help
 diff --git a/kernel/module_signing.c b/kernel/module_signing.c
 index 8723ae70ea1f..fb2d773498c2 100644
 --- a/kernel/module_signing.c
@@ -1895,7 +1778,7 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	return ret;
  }
 diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 4712a90a1820..208abc729302 100644
+index 7f7997460764..c42478d48f7d 100644
 --- a/net/netfilter/nf_conntrack_core.c
 +++ b/net/netfilter/nf_conntrack_core.c
 @@ -1749,6 +1749,9 @@ resolve_normal_ct(struct nf_conn *tmpl,
@@ -1909,7 +1792,7 @@ index 4712a90a1820..208abc729302 100644
  	ct = nf_ct_tuplehash_to_ctrack(h);
 
 diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
-index 273117683922..21ec0c3d1d47 100644
+index 4d50d51db796..29d26bc977dc 100644
 --- a/net/netfilter/nf_nat_core.c
 +++ b/net/netfilter/nf_nat_core.c
 @@ -494,6 +494,38 @@ static void nf_nat_l4proto_unique_tuple(struct nf_conntrack_tuple *tuple,
@@ -1989,7 +1872,7 @@ index 273117683922..21ec0c3d1d47 100644
  			if (!(range->flags & NF_NAT_RANGE_PROTO_OFFSET) &&
  			    l4proto_in_range(tuple, maniptype,
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index db8ba411860a..2294fb0f17a9 100755
+index b24bfaec6290..0418ba1d33f3 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
@@ -2062,10 +1945,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 67264cb08fb3..85a0227bfac1 100644
+index 64abdfb20bc2..ed920477e11d 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2599,6 +2599,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2611,6 +2611,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
@@ -2079,10 +1962,10 @@ index 67264cb08fb3..85a0227bfac1 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/tools/testing/selftests/netfilter/nft_nat.sh b/tools/testing/selftests/netfilter/nft_nat.sh
-index da1c1e4b6c86..6a08644d501e 100755
+index d88867d2fed7..349a319a9e51 100755
 --- a/tools/testing/selftests/netfilter/nft_nat.sh
 +++ b/tools/testing/selftests/netfilter/nft_nat.sh
-@@ -867,8 +867,9 @@ EOF
+@@ -880,8 +880,9 @@ EOF
  		return $ksft_skip
  	fi
 
