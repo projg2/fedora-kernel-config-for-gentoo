@@ -21,10 +21,6 @@
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
- drivers/net/wireless/ath/ath11k/core.c             |  53 +++++++++
- drivers/net/wireless/ath/ath11k/core.h             |   1 +
- drivers/net/wireless/ath/ath11k/mhi.c              |   1 +
- drivers/net/wireless/ath/ath11k/pci.c              |  16 ++-
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
@@ -46,7 +42,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
- 48 files changed, 815 insertions(+), 193 deletions(-)
+ 44 files changed, 746 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index 2f0e5c3d9e2a..d71b7646e438 100644
@@ -1273,130 +1269,6 @@ index 8b86406b7162..2dffe129b902 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index cb8cacbbd5b4..246147e03c09 100644
---- a/drivers/net/wireless/ath/ath11k/core.c
-+++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -291,6 +291,59 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.alloc_cacheable_memory = false,
- 		.wakeup_mhi = true,
- 	},
-+	{
-+		.name = "wcn6855 hw2.1",
-+		.hw_rev = ATH11K_HW_WCN6855_HW21,
-+		.fw = {
-+			.dir = "WCN6855/hw2.1",
-+			.board_size = 256 * 1024,
-+			.cal_offset = 128 * 1024,
-+		},
-+		.max_radios = 3,
-+		.bdf_addr = 0x4B0C0000,
-+		.hw_ops = &wcn6855_ops,
-+		.ring_mask = &ath11k_hw_ring_mask_qca6390,
-+		.internal_sleep_clock = true,
-+		.regs = &wcn6855_regs,
-+		.qmi_service_ins_id = ATH11K_QMI_WLFW_SERVICE_INS_ID_V01_QCA6390,
-+		.host_ce_config = ath11k_host_ce_config_qca6390,
-+		.ce_count = 9,
-+		.target_ce_config = ath11k_target_ce_config_wlan_qca6390,
-+		.target_ce_count = 9,
-+		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
-+		.svc_to_ce_map_len = 14,
-+		.single_pdev_only = true,
-+		.rxdma1_enable = false,
-+		.num_rxmda_per_pdev = 2,
-+		.rx_mac_buf_ring = true,
-+		.vdev_start_delay = true,
-+		.htt_peer_map_v2 = false,
-+
-+		.spectral = {
-+			.fft_sz = 0,
-+			.fft_pad_sz = 0,
-+			.summary_pad_sz = 0,
-+			.fft_hdr_len = 0,
-+			.max_fft_bins = 0,
-+		},
-+
-+		.interface_modes = BIT(NL80211_IFTYPE_STATION) |
-+					BIT(NL80211_IFTYPE_AP),
-+		.supports_monitor = false,
-+		.supports_shadow_regs = true,
-+		.idle_ps = true,
-+		.supports_sta_ps = true,
-+		.cold_boot_calib = false,
-+		.supports_suspend = true,
-+		.hal_desc_sz = sizeof(struct hal_rx_desc_wcn6855),
-+		.fix_l1ss = false,
-+		.credit_flow = true,
-+		.max_tx_ring = DP_TCL_NUM_RING_MAX_QCA6390,
-+		.hal_params = &ath11k_hw_hal_params_qca6390,
-+		.supports_dynamic_smps_6ghz = false,
-+		.alloc_cacheable_memory = false,
-+		.wakeup_mhi = true,
-+	},
- };
-
- int ath11k_core_suspend(struct ath11k_base *ab)
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index 011373b91ae0..3d6519612422 100644
---- a/drivers/net/wireless/ath/ath11k/core.h
-+++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -117,6 +117,7 @@ enum ath11k_hw_rev {
- 	ATH11K_HW_IPQ6018_HW10,
- 	ATH11K_HW_QCN9074_HW10,
- 	ATH11K_HW_WCN6855_HW20,
-+	ATH11K_HW_WCN6855_HW21,
- };
-
- enum ath11k_firmware_mode {
-diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
-index 49c0b1ad40a0..95f5a1960676 100644
---- a/drivers/net/wireless/ath/ath11k/mhi.c
-+++ b/drivers/net/wireless/ath/ath11k/mhi.c
-@@ -356,6 +356,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
- 		break;
- 	case ATH11K_HW_QCA6390_HW20:
- 	case ATH11K_HW_WCN6855_HW20:
-+	case ATH11K_HW_WCN6855_HW21:
- 		ath11k_mhi_config = &ath11k_mhi_config_qca6390;
- 		break;
- 	default:
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index 4c348bacf2cb..9fe496d35b38 100644
---- a/drivers/net/wireless/ath/ath11k/pci.c
-+++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -25,7 +25,7 @@
- #define WINDOW_RANGE_MASK		GENMASK(18, 0)
-
- #define TCSR_SOC_HW_VERSION		0x0224
--#define TCSR_SOC_HW_VERSION_MAJOR_MASK	GENMASK(16, 8)
-+#define TCSR_SOC_HW_VERSION_MAJOR_MASK	GENMASK(11, 8)
- #define TCSR_SOC_HW_VERSION_MINOR_MASK	GENMASK(7, 0)
-
- /* BAR0 + 4k is always accessible, and no
-@@ -1297,9 +1297,21 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
- 					   &soc_hw_version_minor);
- 		switch (soc_hw_version_major) {
- 		case 2:
--			ab->hw_rev = ATH11K_HW_WCN6855_HW20;
-+			switch (soc_hw_version_minor) {
-+			case 0x00:
-+			case 0x01:
-+				ab->hw_rev = ATH11K_HW_WCN6855_HW20;
-+				break;
-+			case 0x10:
-+			case 0x11:
-+				ab->hw_rev = ATH11K_HW_WCN6855_HW21;
-+				break;
-+			default:
-+				goto unsupported_wcn6855_soc;
-+			}
- 			break;
- 		default:
-+unsupported_wcn6855_soc:
- 			dev_err(&pdev->dev, "Unsupported WCN6855 SOC hardware version: %d %d\n",
- 				soc_hw_version_major, soc_hw_version_minor);
- 			ret = -EOPNOTSUPP;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
 index 1af8a4513708..5a23e077ab86 100644
 --- a/drivers/nvme/host/core.c
@@ -1977,23 +1849,3 @@ index d88867d2fed7..349a319a9e51 100755
 
  	# test packet filter based mitigation: prevent forwarding of
  	# packets claiming to come from the service port.
-commit b3d4e07f484c7c87ff802893d8ab90227cba3469
-Author: Justin M. Forbes <jforbes@fedoraproject.org>
-Date:   Tue Feb 1 12:45:35 2022 -0600
-
-    Fixup ath11k: add support for WCN6855 hw2.1 backport
-    
-    Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
-
-diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
-index 246147e03c09..8133326b1629 100644
---- a/drivers/net/wireless/ath/ath11k/core.c
-+++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -337,7 +337,6 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
- 		.supports_suspend = true,
- 		.hal_desc_sz = sizeof(struct hal_rx_desc_wcn6855),
- 		.fix_l1ss = false,
--		.credit_flow = true,
- 		.max_tx_ring = DP_TCL_NUM_RING_MAX_QCA6390,
- 		.hal_params = &ath11k_hw_hal_params_qca6390,
- 		.supports_dynamic_smps_6ghz = false,
