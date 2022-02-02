@@ -1,5 +1,8 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/93296c8913585b0fef445615f3a13d8f42a85898
- 93296c8913585b0fef445615f3a13d8f42a85898 Workaround for gcc12 compile issues in ubcmd-util.h
+https://gitlab.com/cki-project/kernel-ark/-/commit/302bf21126cacae897f8a8fd5257cfdb2e8668a9
+ 302bf21126cacae897f8a8fd5257cfdb2e8668a9 mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/0a0a8b3fbe3d159111ab0117f62ad4d29ab194c6
+ 0a0a8b3fbe3d159111ab0117f62ad4d29ab194c6 Workaround for gcc12 compile issues in ubcmd-util.h
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/4f79b3c547b8e3dbc014058a8adffe0fe8cd5e4b
  4f79b3c547b8e3dbc014058a8adffe0fe8cd5e4b objtool: check: give big enough buffer for pv_ops

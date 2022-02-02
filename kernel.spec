@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc2.83
+%global distro_build 0.rc2.20220202git9f7fb8de5d9b.84
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc2.83
+%define pkgrelease 0.rc2.20220202git9f7fb8de5d9b.84
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.83%{?buildid}%{?dist}
+%define specrelease 0.rc2.20220202git9f7fb8de5d9b.84%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc2.tar.xz
+Source0: linux-5.17-rc2-39-g9f7fb8de5d9b.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1388,8 +1388,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc2 -c
-mv linux-5.17-rc2 linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc2-39-g9f7fb8de5d9b -c
+mv linux-5.17-rc2-39-g9f7fb8de5d9b linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1960,12 +1960,11 @@ BuildKernel() {
     # Clean up intermediate tools files
     find $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools \( -iname "*.o" -o -iname "*.cmd" \) -exec rm -f {} +
 
-    # Make sure the Makefile and version.h have a matching timestamp so that
-    # external modules can be built
-    touch -r $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Makefile $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/generated/uapi/linux/version.h
-
-    # Copy .config to include/config/auto.conf so "make prepare" is unnecessary.
-    cp $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/.config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/config/auto.conf
+    # Make sure the Makefile, version.h, and auto.conf have a matching
+    # timestamp so that external modules can be built
+    touch -r $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Makefile \
+        $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/generated/uapi/linux/version.h \
+        $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include/config/auto.conf
 
 %if %{with_debuginfo}
     eu-readelf -n vmlinux | grep "Build ID" | awk '{print $NF}' > vmlinux.id
@@ -3003,8 +3002,12 @@ fi
 #
 #
 %changelog
-* Sun Jan 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc2.83]
+* Wed Feb 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc2.20220202git9f7fb8de5d9b.84]
+- mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
 - Workaround for gcc12 compile issues in ubcmd-util.h (Justin M. Forbes)
+
+* Wed Feb 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc2.20220202git9f7fb8de5d9b.83]
+- spec: don't overwrite auto.conf with .config (Ondrej Mosnacek)
 
 * Sat Jan 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc1.20220129git169387e2aa29.80]
 - New configs in drivers/crypto (Fedora Kernel Team)

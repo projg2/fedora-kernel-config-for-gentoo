@@ -50,6 +50,7 @@
  include/linux/kernel.h                             |  19 ++
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
+ include/linux/mmzone.h                             |   4 +-
  include/linux/module.h                             |   1 +
  include/linux/panic.h                              |  19 +-
  include/linux/pci.h                                |  16 ++
@@ -74,7 +75,7 @@
  security/security.c                                |   6 +
  tools/lib/subcmd/subcmd-util.h                     |   9 +-
  tools/objtool/check.c                              |   2 +-
- 76 files changed, 1517 insertions(+), 194 deletions(-)
+ 77 files changed, 1518 insertions(+), 197 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index f5a27f067db9..f4dc42f2f82a 100644
@@ -2097,7 +2098,7 @@ index 47a1c8bddf86..e309d992e2ad 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index eee0d9ebfa6c..787d364f3b4a 100644
+index ce60b5026bde..95211f35dae8 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
 @@ -4760,6 +4760,7 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
@@ -2264,6 +2265,23 @@ index 3bf5c658bc44..4701bc5ce2f5 100644
   * Security hooks for perf events
   *
   * @perf_event_open:
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index aed44e9b5d89..08517376c765 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -1390,11 +1390,9 @@ static inline unsigned long *section_to_usemap(struct mem_section *ms)
+ static inline struct mem_section *__nr_to_section(unsigned long nr)
+ {
+ #ifdef CONFIG_SPARSEMEM_EXTREME
+-	if (!mem_section)
++	if (!*mem_section || !mem_section[SECTION_NR_TO_ROOT(nr)])
+ 		return NULL;
+ #endif
+-	if (!mem_section[SECTION_NR_TO_ROOT(nr)])
+-		return NULL;
+ 	return &mem_section[SECTION_NR_TO_ROOT(nr)][nr & SECTION_ROOT_MASK];
+ }
+ extern size_t mem_section_usage_size(void);
 diff --git a/include/linux/module.h b/include/linux/module.h
 index 1e135fd5c076..6ec4d001c1e2 100644
 --- a/include/linux/module.h
@@ -3209,35 +3227,4 @@ index c2d2ab9a2861..f5bed94e4558 100644
 +	static char pvname[32];
  	struct reloc *rel;
  	int idx;
-
-From 102756c4df1ea2f55dd6a9de3f22f9304194d0e6 Mon Sep 17 00:00:00 2001
-From: "Justin M. Forbes" <jforbes@fedoraproject.org>
-Date: Mon, 31 Jan 2022 12:55:43 -0600
-Subject: [PATCH] Fix gcc 12 warning address of 'mem_section' will never be
- NULL
-
-Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
----
- include/linux/mmzone.h | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index aed44e9b5d89..9eeaa7e10771 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -1390,11 +1390,9 @@ static inline unsigned long *section_to_usemap(struct mem_section *ms)
- static inline struct mem_section *__nr_to_section(unsigned long nr)
- {
- #ifdef CONFIG_SPARSEMEM_EXTREME
--	if (!mem_section)
-+	if (!mem_section || !mem_section[SECTION_NR_TO_ROOT(nr)])
- 		return NULL;
- #endif
--	if (!mem_section[SECTION_NR_TO_ROOT(nr)])
--		return NULL;
- 	return &mem_section[SECTION_NR_TO_ROOT(nr)][nr & SECTION_ROOT_MASK];
- }
- extern size_t mem_section_usage_size(void);
--- 
-2.34.1
 
