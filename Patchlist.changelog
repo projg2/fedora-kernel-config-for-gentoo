@@ -1,8 +1,8 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/302bf21126cacae897f8a8fd5257cfdb2e8668a9
- 302bf21126cacae897f8a8fd5257cfdb2e8668a9 mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
+https://gitlab.com/cki-project/kernel-ark/-/commit/ced9da90d623af4a0d37b62e8399d3221ae06b3f
+ ced9da90d623af4a0d37b62e8399d3221ae06b3f mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
 
-https://gitlab.com/cki-project/kernel-ark/-/commit/0a0a8b3fbe3d159111ab0117f62ad4d29ab194c6
- 0a0a8b3fbe3d159111ab0117f62ad4d29ab194c6 Workaround for gcc12 compile issues in ubcmd-util.h
+https://gitlab.com/cki-project/kernel-ark/-/commit/19d88acbb9804237648cc946164aba3d93e2f3de
+ 19d88acbb9804237648cc946164aba3d93e2f3de Workaround for gcc12 compile issues in ubcmd-util.h
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/4f79b3c547b8e3dbc014058a8adffe0fe8cd5e4b
  4f79b3c547b8e3dbc014058a8adffe0fe8cd5e4b objtool: check: give big enough buffer for pv_ops
@@ -10,8 +10,65 @@ https://gitlab.com/cki-project/kernel-ark/-/commit/4f79b3c547b8e3dbc014058a8adff
 https://gitlab.com/cki-project/kernel-ark/-/commit/c1ee15318f4a2688057fd1aeee6272603d0871f0
  c1ee15318f4a2688057fd1aeee6272603d0871f0 Fixup merge in random.c
 
+https://gitlab.com/cki-project/kernel-ark/-/commit/8de7ca8b26e143a48e66dd1d6309a5e4115ffcb6
+ 8de7ca8b26e143a48e66dd1d6309a5e4115ffcb6 kabi: Add kABI macros for enum type
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/3f4e8e79d3aaba0e7c9eecc47d2bb3fee741cb6a
+ 3f4e8e79d3aaba0e7c9eecc47d2bb3fee741cb6a kabi: expand and clarify documentation of aux structs
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/86b381142c544134ddef62469e8dd8a0eb64cdf4
+ 86b381142c544134ddef62469e8dd8a0eb64cdf4 kabi: introduce RH_KABI_USE_AUX_PTR
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/8fcb03036ae488acf9257f0babe477b4474b546c
+ 8fcb03036ae488acf9257f0babe477b4474b546c kabi: rename RH_KABI_SIZE_AND_EXTEND to AUX
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/07bd34c562953c1be1a12c3fcbd0ef15a87cfd4b
+ 07bd34c562953c1be1a12c3fcbd0ef15a87cfd4b kabi: more consistent _RH_KABI_SIZE_AND_EXTEND
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/e87ffabceba1712c7cf6f3a9b42d2242c3e9a220
+ e87ffabceba1712c7cf6f3a9b42d2242c3e9a220 kabi: use fixed field name for extended part
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/da92a8cda48e7f1475e21b07282190ccbef93d0f
+ da92a8cda48e7f1475e21b07282190ccbef93d0f kabi: fix dereference in RH_KABI_CHECK_EXT
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/f10725d312d109970c154eb160a52c16432724bf
+ f10725d312d109970c154eb160a52c16432724bf kabi: fix RH_KABI_SET_SIZE macro
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/b5e2e9b785ae15c4513da11aac44e8b86af3ab94
+ b5e2e9b785ae15c4513da11aac44e8b86af3ab94 kabi: expand and clarify documentation
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/c0af090ecabac4d176ea3501b68f576f517b4a09
+ c0af090ecabac4d176ea3501b68f576f517b4a09 kabi: make RH_KABI_USE replace any number of reserved fields
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/79bee808c6a10aa8e722cc6e5e7d59dfd00b5ab7
+ 79bee808c6a10aa8e722cc6e5e7d59dfd00b5ab7 kabi: rename RH_KABI_USE2 to RH_KABI_USE_SPLIT
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/cc866b14f70b7b69cd1760c6778d020dd3b11dac
+ cc866b14f70b7b69cd1760c6778d020dd3b11dac kabi: change RH_KABI_REPLACE2 to RH_KABI_REPLACE_SPLIT
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/681595d3ab5b38ead06cdccf6753ef8f6584e920
+ 681595d3ab5b38ead06cdccf6753ef8f6584e920 kabi: change RH_KABI_REPLACE_UNSAFE to RH_KABI_BROKEN_REPLACE
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/6b0b54eb111834c460fab7a1f9709e03ccd92287
+ 6b0b54eb111834c460fab7a1f9709e03ccd92287 kabi: introduce RH_KABI_ADD_MODIFIER
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/34fea3d44eb92556ec0b9b576c652cd21acec7e8
+ 34fea3d44eb92556ec0b9b576c652cd21acec7e8 kabi: Include kconfig.h
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/8638f77f36a8d0f5965583f4ede2a319aec0b0bb
+ 8638f77f36a8d0f5965583f4ede2a319aec0b0bb kabi: macros for intentional kABI breakage
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/31ed0967ebcc6f5b7d72717fc5d5c5417a6fa558
+ 31ed0967ebcc6f5b7d72717fc5d5c5417a6fa558 kabi: fix the note about terminating semicolon
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/f2a759d299ddcbb63cd3edc14e3f29f44f61278b
+ f2a759d299ddcbb63cd3edc14e3f29f44f61278b kabi: introduce RH_KABI_HIDE_INCLUDE and RH_KABI_FAKE_INCLUDE
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/309ccf0b279d3f3e7a88fb8889defc10c5ffa818
  309ccf0b279d3f3e7a88fb8889defc10c5ffa818 lib/crypto: add prompts back to crypto libraries
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/e582ea6a9572e95b13cc26aefe65cacb892a55c7
+ e582ea6a9572e95b13cc26aefe65cacb892a55c7 [redhat] virtio: enable virtio-mem on x86-64 as tech-preview
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/aa7ea266d2b6a3d865060945da1f8c674640e989
  aa7ea266d2b6a3d865060945da1f8c674640e989 pci.h: Fix static include
