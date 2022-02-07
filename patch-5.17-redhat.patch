@@ -75,8 +75,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/lib/subcmd/subcmd-util.h                     |   9 +-
- tools/objtool/check.c                              |   2 +-
- 78 files changed, 1749 insertions(+), 197 deletions(-)
+ 77 files changed, 1748 insertions(+), 196 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index f5a27f067db9..f4dc42f2f82a 100644
@@ -132,7 +131,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 1fc3491096cb..cabf37d9d6ec 100644
+index ceb987e5c87b..b4e3cf779718 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -178,10 +177,10 @@ index 4c97cb40eebb..caf06cef3d2e 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index f2b5a4abef21..ccff5b146754 100644
+index cbcd42decb2a..a2920cce2695 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1092,7 +1092,7 @@ endchoice
+@@ -1108,7 +1108,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -190,7 +189,7 @@ index f2b5a4abef21..ccff5b146754 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1334,6 +1334,7 @@ config XEN
+@@ -1350,6 +1350,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -659,7 +658,7 @@ index c59265146e9c..caa8458edde2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 68613f0b6887..8198a831e626 100644
+index 3404a91edf29..184dbb94710c 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -344,6 +344,7 @@
@@ -706,7 +705,7 @@ index 68613f0b6887..8198a831e626 100644
  static int write_pool(const char __user *buffer, size_t count)
  {
  	size_t bytes;
-@@ -1876,7 +1892,58 @@ static int random_fasync(int fd, struct file *filp, int on)
+@@ -1879,7 +1895,58 @@ static int random_fasync(int fd, struct file *filp, int on)
  	return fasync_helper(fd, filp, on, &fasync);
  }
 
@@ -765,7 +764,7 @@ index 68613f0b6887..8198a831e626 100644
  	.read = random_read,
  	.write = random_write,
  	.poll = random_poll,
-@@ -1887,6 +1954,7 @@ const struct file_operations random_fops = {
+@@ -1890,6 +1957,7 @@ const struct file_operations random_fops = {
  };
 
  const struct file_operations urandom_fops = {
@@ -773,7 +772,7 @@ index 68613f0b6887..8198a831e626 100644
  	.read = urandom_read,
  	.write = random_write,
  	.unlocked_ioctl = random_ioctl,
-@@ -1895,9 +1963,31 @@ const struct file_operations urandom_fops = {
+@@ -1898,9 +1966,31 @@ const struct file_operations urandom_fops = {
  	.llseek = noop_llseek,
  };
 
@@ -805,7 +804,7 @@ index 68613f0b6887..8198a831e626 100644
  	int ret;
 
  	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
-@@ -1913,6 +2003,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+@@ -1916,6 +2006,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
  	if (count > INT_MAX)
  		count = INT_MAX;
 
@@ -824,7 +823,7 @@ index 68613f0b6887..8198a831e626 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		if (flags & GRND_NONBLOCK)
  			return -EAGAIN;
-@@ -2230,3 +2332,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
+@@ -2235,3 +2337,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
  		add_device_randomness(buf, size);
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
@@ -1386,7 +1385,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8b86406b7162..2dffe129b902 100644
+index 107dcf5938d6..225a9797e39d 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1397,7 +1396,7 @@ index 8b86406b7162..2dffe129b902 100644
  #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -3119,6 +3120,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3124,6 +3125,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1554,7 +1553,7 @@ index ee4da9ab8013..0f217997a764 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 5e0bfda04bd7..a03469d46842 100644
+index 961a5f8a44d2..3b125b6a5eeb 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -244,6 +244,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -2123,7 +2122,7 @@ index 38becd8d578c..f4ec685879cf 100644
  		queue_work(system_freezable_wq, &vm->wq);
  	}
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index ce60b5026bde..95211f35dae8 100644
+index c5021ca0a28a..b64257a6eebc 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
 @@ -4760,6 +4760,7 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
@@ -2146,10 +2145,10 @@ index ce60b5026bde..95211f35dae8 100644
 
  	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
 diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index e8f37bdc8354..f57bbc8feeee 100644
+index 4c0dee78b2f8..6cf5ed2d039a 100644
 --- a/fs/xfs/xfs_super.c
 +++ b/fs/xfs/xfs_super.c
-@@ -1598,9 +1598,14 @@ xfs_fs_fill_super(
+@@ -1602,9 +1602,14 @@ xfs_fs_fill_super(
  		sb->s_flags |= SB_I_VERSION;
 
  	if (xfs_has_dax_always(mp)) {
@@ -3458,16 +3457,3 @@ index 794a375dad36..7009fc176636 100644
  		if (!ret)
  			die("Out of memory, realloc failed");
  	}
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index c2d2ab9a2861..f5bed94e4558 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -2854,7 +2854,7 @@ static inline bool func_uaccess_safe(struct symbol *func)
-
- static inline const char *call_dest_name(struct instruction *insn)
- {
--	static char pvname[16];
-+	static char pvname[32];
- 	struct reloc *rel;
- 	int idx;
-

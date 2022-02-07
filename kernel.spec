@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc2.20220204gitdcb85f85fa6f.86
+%global distro_build 0.rc3.89
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc2.20220204gitdcb85f85fa6f.86
+%define pkgrelease 0.rc3.89
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20220204gitdcb85f85fa6f.86%{?buildid}%{?dist}
+%define specrelease 0.rc3.89%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc2-167-gdcb85f85fa6f.tar.xz
+Source0: linux-5.17-rc3.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1388,8 +1388,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc2-167-gdcb85f85fa6f -c
-mv linux-5.17-rc2-167-gdcb85f85fa6f linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc3 -c
+mv linux-5.17-rc3 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3002,9 +3002,12 @@ fi
 #
 #
 %changelog
-* Fri Feb 04 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc2.20220204gitdcb85f85fa6f.86]
+* Mon Feb 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc3.89]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
 - Workaround for gcc12 compile issues in ubcmd-util.h (Justin M. Forbes)
+
+* Sat Feb 05 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc2.20220205git0457e5153e0e.86]
+- Enable iSER on s390x (Stefan Schulze Frielinghaus)
 
 * Thu Feb 03 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc2.20220203git88808fbbead4.84]
 - redhat/configs: Enable CONFIG_ACER_WIRELESS (Peter Georg) [2025985]
