@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc3.20220209gite6251ab4551f.91
+%global distro_build 0.rc3.20220210gitf4bc5bbb5fef.92
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc3.20220209gite6251ab4551f.91
+%define pkgrelease 0.rc3.20220210gitf4bc5bbb5fef.92
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20220209gite6251ab4551f.91%{?buildid}%{?dist}
+%define specrelease 0.rc3.20220210gitf4bc5bbb5fef.92%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc3-29-ge6251ab4551f.tar.xz
+Source0: linux-5.17-rc3-43-gf4bc5bbb5fef.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1391,8 +1391,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc3-29-ge6251ab4551f -c
-mv linux-5.17-rc3-29-ge6251ab4551f linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc3-43-gf4bc5bbb5fef -c
+mv linux-5.17-rc3-43-gf4bc5bbb5fef linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3005,9 +3005,12 @@ fi
 #
 #
 %changelog
-* Wed Feb 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc3.e6251ab4551f.91]
+* Thu Feb 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc3.f4bc5bbb5fef.92]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
 - Workaround for gcc12 compile issues in ubcmd-util.h (Justin M. Forbes)
+
+* Thu Feb 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc3.f4bc5bbb5fef.91]
+- redhat: move CONFIG_ARM64_MTE to aarch64 config directory (Herton R. Krzesinski)
 
 * Wed Feb 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc3.e6251ab4551f.90]
 - Change CONFIG_TEST_BPF to a module (Justin M. Forbes)
