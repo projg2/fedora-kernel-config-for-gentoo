@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc4.96
+%global distro_build 0.rc4.20220215gitd567f5db412e.97
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc4.96
+%define pkgrelease 0.rc4.20220215gitd567f5db412e.97
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.96%{?buildid}%{?dist}
+%define specrelease 0.rc4.20220215gitd567f5db412e.97%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc4.tar.xz
+Source0: linux-5.17-rc4-2-gd567f5db412e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1391,8 +1391,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc4 -c
-mv linux-5.17-rc4 linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc4-2-gd567f5db412e -c
+mv linux-5.17-rc4-2-gd567f5db412e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3005,9 +3005,9 @@ fi
 #
 #
 %changelog
-* Mon Feb 14 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc4.96]
+* Tue Feb 15 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc4.d567f5db412e.97]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
-- Workaround for gcc12 compile issues in ubcmd-util.h (Justin M. Forbes)
+- tools: Fix use-after-free for realloc(..., 0) (Kees Cook)
 
 * Sun Feb 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc3.b81b1829e7e3.94]
 - redhat: fix make {distg-brew,distg-koji} (Andrea Claudi)

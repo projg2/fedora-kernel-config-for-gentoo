@@ -74,8 +74,8 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- tools/lib/subcmd/subcmd-util.h                     |   9 +-
- 77 files changed, 1748 insertions(+), 196 deletions(-)
+ tools/lib/subcmd/subcmd-util.h                     |  11 +-
+ 77 files changed, 1746 insertions(+), 200 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index f5a27f067db9..f4dc42f2f82a 100644
@@ -3436,24 +3436,24 @@ index 22261d79f333..20336365f864 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/tools/lib/subcmd/subcmd-util.h b/tools/lib/subcmd/subcmd-util.h
-index 794a375dad36..7009fc176636 100644
+index 794a375dad36..b2aec04fce8f 100644
 --- a/tools/lib/subcmd/subcmd-util.h
 +++ b/tools/lib/subcmd/subcmd-util.h
-@@ -49,13 +49,12 @@ static NORETURN inline void die(const char *err, ...)
-
+@@ -50,15 +50,8 @@ static NORETURN inline void die(const char *err, ...)
  static inline void *xrealloc(void *ptr, size_t size)
  {
--	void *ret = realloc(ptr, size);
+ 	void *ret = realloc(ptr, size);
 -	if (!ret && !size)
 -		ret = realloc(ptr, 1);
-+	void *ret;
-+	if (!size)
-+		size = 1;
-+	ret = realloc(ptr, size);
- 	if (!ret) {
- 		ret = realloc(ptr, size);
+-	if (!ret) {
+-		ret = realloc(ptr, size);
 -		if (!ret && !size)
 -			ret = realloc(ptr, 1);
- 		if (!ret)
- 			die("Out of memory, realloc failed");
- 	}
+-		if (!ret)
+-			die("Out of memory, realloc failed");
+-	}
++	if (!ret)
++		die("Out of memory, realloc failed");
+ 	return ret;
+ }
+
