@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc4.20220215gitd567f5db412e.97
+%global distro_build 0.rc4.20220216gitc5d9ae265b10.98
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc4.20220215gitd567f5db412e.97
+%define pkgrelease 0.rc4.20220216gitc5d9ae265b10.98
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20220215gitd567f5db412e.97%{?buildid}%{?dist}
+%define specrelease 0.rc4.20220216gitc5d9ae265b10.98%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc4-2-gd567f5db412e.tar.xz
+Source0: linux-5.17-rc4-51-gc5d9ae265b10.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1391,8 +1391,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc4-2-gd567f5db412e -c
-mv linux-5.17-rc4-2-gd567f5db412e linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc4-51-gc5d9ae265b10 -c
+mv linux-5.17-rc4-51-gc5d9ae265b10 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3005,7 +3005,7 @@ fi
 #
 #
 %changelog
-* Tue Feb 15 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc4.d567f5db412e.97]
+* Wed Feb 16 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc4.c5d9ae265b10.98]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
 - tools: Fix use-after-free for realloc(..., 0) (Kees Cook)
 

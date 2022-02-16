@@ -1,8 +1,8 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/9bd25eb01729860701ec902abfcc4730f3752e3b
- 9bd25eb01729860701ec902abfcc4730f3752e3b mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
+https://gitlab.com/cki-project/kernel-ark/-/commit/f6776474a40faf40eb2b52e581f930ce3951fcd3
+ f6776474a40faf40eb2b52e581f930ce3951fcd3 mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
 
-https://gitlab.com/cki-project/kernel-ark/-/commit/49cb0e447d9dce2bed07776a2d0259a9ea5a609b
- 49cb0e447d9dce2bed07776a2d0259a9ea5a609b tools: Fix use-after-free for realloc(..., 0)
+https://gitlab.com/cki-project/kernel-ark/-/commit/665124f5033c156eaf44a552df7fd6f60c89bd3e
+ 665124f5033c156eaf44a552df7fd6f60c89bd3e tools: Fix use-after-free for realloc(..., 0)
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/4f79b3c547b8e3dbc014058a8adffe0fe8cd5e4b
  4f79b3c547b8e3dbc014058a8adffe0fe8cd5e4b objtool: check: give big enough buffer for pv_ops
