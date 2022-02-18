@@ -74,8 +74,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- tools/lib/subcmd/subcmd-util.h                     |  11 +-
- 77 files changed, 1746 insertions(+), 200 deletions(-)
+ 76 files changed, 1744 insertions(+), 191 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index f5a27f067db9..f4dc42f2f82a 100644
@@ -3435,25 +3434,3 @@ index 22261d79f333..20336365f864 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-diff --git a/tools/lib/subcmd/subcmd-util.h b/tools/lib/subcmd/subcmd-util.h
-index 794a375dad36..b2aec04fce8f 100644
---- a/tools/lib/subcmd/subcmd-util.h
-+++ b/tools/lib/subcmd/subcmd-util.h
-@@ -50,15 +50,8 @@ static NORETURN inline void die(const char *err, ...)
- static inline void *xrealloc(void *ptr, size_t size)
- {
- 	void *ret = realloc(ptr, size);
--	if (!ret && !size)
--		ret = realloc(ptr, 1);
--	if (!ret) {
--		ret = realloc(ptr, size);
--		if (!ret && !size)
--			ret = realloc(ptr, 1);
--		if (!ret)
--			die("Out of memory, realloc failed");
--	}
-+	if (!ret)
-+		die("Out of memory, realloc failed");
- 	return ret;
- }
-
