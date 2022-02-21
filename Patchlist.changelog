@@ -1,5 +1,5 @@
-https://gitlab.com/cki-project/kernel-ark/-/commit/2a5b4cb01ce15645555568d370741862f00eb28e
- 2a5b4cb01ce15645555568d370741862f00eb28e mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
+https://gitlab.com/cki-project/kernel-ark/-/commit/a225ad3aaaf8a13ed474930bc3b204b396d978d2
+ a225ad3aaaf8a13ed474930bc3b204b396d978d2 mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
 
 https://gitlab.com/cki-project/kernel-ark/-/commit/4f79b3c547b8e3dbc014058a8adffe0fe8cd5e4b
  4f79b3c547b8e3dbc014058a8adffe0fe8cd5e4b objtool: check: give big enough buffer for pv_ops
