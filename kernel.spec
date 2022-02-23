@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc5.20220222git038101e6b2cd.103
+%global distro_build 0.rc5.20220223git5c1ee569660d.104
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc5.20220222git038101e6b2cd.103
+%define pkgrelease 0.rc5.20220223git5c1ee569660d.104
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20220222git038101e6b2cd.103%{?buildid}%{?dist}
+%define specrelease 0.rc5.20220223git5c1ee569660d.104%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc5-4-g038101e6b2cd.tar.xz
+Source0: linux-5.17-rc5-11-g5c1ee569660d.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1391,8 +1391,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc5-4-g038101e6b2cd -c
-mv linux-5.17-rc5-4-g038101e6b2cd linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc5-11-g5c1ee569660d -c
+mv linux-5.17-rc5-11-g5c1ee569660d linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3005,8 +3005,12 @@ fi
 #
 #
 %changelog
-* Tue Feb 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc5.038101e6b2cd.103]
+* Wed Feb 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc5.5c1ee569660d.104]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Wed Feb 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc5.5c1ee569660d.103]
+- redhat: configs: Disable CONFIG_MPLS for s390x/zfcpdump (Guillaume Nault)
+- Fedora 5.17 configs round 1 (Justin M. Forbes)
 
 * Tue Feb 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc5.038101e6b2cd.102]
 - redhat: configs: disable the surface platform (David Arcari)
