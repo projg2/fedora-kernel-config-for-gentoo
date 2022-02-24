@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc5.20220223git5c1ee569660d.104
+%global distro_build 0.rc5.20220224git23d04328444a.105
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc5.20220223git5c1ee569660d.104
+%define pkgrelease 0.rc5.20220224git23d04328444a.105
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20220223git5c1ee569660d.104%{?buildid}%{?dist}
+%define specrelease 0.rc5.20220224git23d04328444a.105%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc5-11-g5c1ee569660d.tar.xz
+Source0: linux-5.17-rc5-21-g23d04328444a.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1391,8 +1391,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc5-11-g5c1ee569660d -c
-mv linux-5.17-rc5-11-g5c1ee569660d linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc5-21-g23d04328444a -c
+mv linux-5.17-rc5-21-g23d04328444a linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3005,8 +3005,11 @@ fi
 #
 #
 %changelog
-* Wed Feb 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc5.5c1ee569660d.104]
+* Thu Feb 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc5.23d04328444a.105]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Thu Feb 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc5.23d04328444a.104]
+- configs/process_configs.sh: Remove orig files (Prarit Bhargava)
 
 * Wed Feb 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc5.5c1ee569660d.103]
 - redhat: configs: Disable CONFIG_MPLS for s390x/zfcpdump (Guillaume Nault)
