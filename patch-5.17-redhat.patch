@@ -1552,7 +1552,7 @@ index ee4da9ab8013..0f217997a764 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 469f23186159..9056b9b3016e 100644
+index fd4720d37cc0..c31bc05ec139 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -244,6 +244,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1784,7 +1784,7 @@ index 588588cfda48..adb3a91b0ba3 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index d2dd6a6cda60..3339eccbac79 100644
+index 65f7f6b0576c..27398de38c0c 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4272,6 +4272,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -2981,7 +2981,7 @@ index 56f4ee97f328..2dfcaac71418 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index fa4505f9b611..1955a6f41b7b 100644
+index ca70fe6fba38..b723094f3284 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -25,6 +25,7 @@
