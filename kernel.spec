@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc5.20220225git53ab78cd6d5a.106
+%global distro_build 0.rc6.109
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc5.20220225git53ab78cd6d5a.106
+%define pkgrelease 0.rc6.109
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20220225git53ab78cd6d5a.106%{?buildid}%{?dist}
+%define specrelease 0.rc6.109%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc5-189-g53ab78cd6d5a.tar.xz
+Source0: linux-5.17-rc6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1391,8 +1391,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc5-189-g53ab78cd6d5a -c
-mv linux-5.17-rc5-189-g53ab78cd6d5a linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc6 -c
+mv linux-5.17-rc6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3005,8 +3005,18 @@ fi
 #
 #
 %changelog
-* Fri Feb 25 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc5.53ab78cd6d5a.106]
+* Mon Feb 28 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.17-0.rc6.109]
+- Build CROS_EC Modules (Jason Montleon)
+
+* Mon Feb 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc6.109]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Mon Feb 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc6.108]
+- redhat: configs: change aarch64 default dma domain to lazy (Jerry Snitselaar)
+- redhat: configs: disable ATM protocols (Davide Caratti)
+
+* Sat Feb 26 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc5.9137eda53752.106]
+- configs/fedora: Enable the interconnect SC7180 driver built-in (Enric Balletbo i Serra)
 
 * Fri Feb 25 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc5.53ab78cd6d5a.105]
 - configs: clean up CONFIG_PAGE_TABLE_ISOLATION files (Ondrej Mosnacek)
