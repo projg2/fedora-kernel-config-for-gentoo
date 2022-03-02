@@ -17,6 +17,7 @@
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
  drivers/gpu/drm/i915/display/intel_psr.c           |  10 +-
+ drivers/gpu/drm/nouveau/nouveau_backlight.c        |   3 +-
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -47,10 +48,10 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
- 49 files changed, 805 insertions(+), 198 deletions(-)
+ 50 files changed, 807 insertions(+), 199 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 00ba75768af7..f95367fb3134 100644
+index 09a9bb824afa..02a849fa625b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -870,6 +871,20 @@ index 7a205fd5023b..42d57ebd9061 100644
  		return false;
  	}
 
+diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+index 1cbd71abc80a..9d2513de959b 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
++++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+@@ -294,7 +294,8 @@ nv50_backlight_init(struct nouveau_backlight *bl,
+ 	struct nouveau_drm *drm = nouveau_drm(nv_encoder->base.base.dev);
+ 	struct nvif_object *device = &drm->client.device.object;
+
+-	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)))
++	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)) ||
++	    nv_conn->base.status != connector_status_connected)
+ 		return -ENODEV;
+
+ 	if (nv_conn->type == DCB_CONNECTOR_eDP) {
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1376,7 +1391,7 @@ index 4c348bacf2cb..9fe496d35b38 100644
  				soc_hw_version_major, soc_hw_version_minor);
  			ret = -EOPNOTSUPP;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 352766aa3122..16a2c9417536 100644
+index 5785f6abf194..7fc5f15a4b78 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -244,6 +244,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
