@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc6.20220302gitfb184c4af9b9.111
+%global distro_build 0.rc6.20220303git5859a2b19911.112
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc6.20220302gitfb184c4af9b9.111
+%define pkgrelease 0.rc6.20220303git5859a2b19911.112
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20220302gitfb184c4af9b9.111%{?buildid}%{?dist}
+%define specrelease 0.rc6.20220303git5859a2b19911.112%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc6-54-gfb184c4af9b9.tar.xz
+Source0: linux-5.17-rc6-66-g5859a2b19911.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1391,8 +1391,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc6-54-gfb184c4af9b9 -c
-mv linux-5.17-rc6-54-gfb184c4af9b9 linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc6-66-g5859a2b19911 -c
+mv linux-5.17-rc6-66-g5859a2b19911 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3005,8 +3005,11 @@ fi
 #
 #
 %changelog
-* Wed Mar 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc6.fb184c4af9b9.111]
+* Thu Mar 03 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc6.5859a2b19911.112]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Thu Mar 03 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc6.5859a2b19911.111]
+- redhat/configs: Disable CONFIG_MACINTOSH_DRIVERS in RHEL. (Prarit Bhargava)
 
 * Wed Mar 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc6.fb184c4af9b9.110]
 - redhat: Fix "make dist-release-finish" to use the correct NVR variables (Neal Gompa) [2053836]
