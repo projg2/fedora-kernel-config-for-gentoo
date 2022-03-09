@@ -77,10 +77,10 @@
  76 files changed, 1744 insertions(+), 191 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index f5a27f067db9..f4dc42f2f82a 100644
+index 7123524a86b8..9440625f58d5 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6000,6 +6000,15 @@
+@@ -6004,6 +6004,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -176,7 +176,7 @@ index 4c97cb40eebb..caf06cef3d2e 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 09b885cc4db5..73fd512bd66f 100644
+index f979ec410d6e..7c865dfbe522 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1109,7 +1109,7 @@ endchoice
@@ -3268,10 +3268,10 @@ index 000000000000..345a979cd0e4
 +}
 +EXPORT_SYMBOL(mark_tech_preview);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 5ae443b2882e..4b929f4cb77a 100644
+index 730ab56d9e92..df217c4ed071 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -195,6 +195,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -199,6 +199,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;
@@ -3282,7 +3282,7 @@ index 5ae443b2882e..4b929f4cb77a 100644
 +		}
  		*(int *)table->data = unpriv_enable;
  	}
- 	return ret;
+
 diff --git a/mm/cma.c b/mm/cma.c
 index bc9ca8f3c487..9fa9a485eb3a 100644
 --- a/mm/cma.c
