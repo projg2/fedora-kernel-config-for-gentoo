@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc7.20220309git330f4c53d3c2.118
+%global distro_build 0.rc7.20220310git3bf7edc84a9e.119
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc7.20220309git330f4c53d3c2.118
+%define pkgrelease 0.rc7.20220310git3bf7edc84a9e.119
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20220309git330f4c53d3c2.118%{?buildid}%{?dist}
+%define specrelease 0.rc7.20220310git3bf7edc84a9e.119%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc7-64-g330f4c53d3c2.tar.xz
+Source0: linux-5.17-rc7-78-g3bf7edc84a9e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1391,8 +1391,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc7-64-g330f4c53d3c2 -c
-mv linux-5.17-rc7-64-g330f4c53d3c2 linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc7-78-g3bf7edc84a9e -c
+mv linux-5.17-rc7-78-g3bf7edc84a9e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3005,7 +3005,10 @@ fi
 #
 #
 %changelog
-* Wed Mar 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc7.330f4c53d3c2.118]
+* Thu Mar 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc7.3bf7edc84a9e.119]
+- mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Thu Mar 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc7.3bf7edc84a9e.118]
 - redhat/configs/process_configs.sh: Fix issue with old error files (Prarit Bhargava)
 - redhat/configs/build_configs.sh: Parallelize execution (Prarit Bhargava)
 - redhat/configs/build_configs.sh: Provide better messages (Prarit Bhargava)
@@ -3015,7 +3018,6 @@ fi
 - redhat/configs/process_configs.sh: Provide better messages (Prarit Bhargava)
 - redhat/configs/process_configs.sh: Create unique output files (Prarit Bhargava)
 - redhat/configs/process_configs.sh: Add processing config function (Prarit Bhargava)
-- mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
 
 * Tue Mar 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc7.ea4424be1688.116]
 - redhat: Unify genspec.sh and kernel.spec variable names (Prarit Bhargava)
