@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc7.20220310git3bf7edc84a9e.119
+%global distro_build 0.rc7.20220311git79b00034e9dc.120
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc7.20220310git3bf7edc84a9e.119
+%define pkgrelease 0.rc7.20220311git79b00034e9dc.120
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20220310git3bf7edc84a9e.119%{?buildid}%{?dist}
+%define specrelease 0.rc7.20220311git79b00034e9dc.120%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc7-78-g3bf7edc84a9e.tar.xz
+Source0: linux-5.17-rc7-205-g79b00034e9dc.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1391,8 +1391,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc7-78-g3bf7edc84a9e -c
-mv linux-5.17-rc7-78-g3bf7edc84a9e linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc7-205-g79b00034e9dc -c
+mv linux-5.17-rc7-205-g79b00034e9dc linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3005,8 +3005,13 @@ fi
 #
 #
 %changelog
-* Thu Mar 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc7.3bf7edc84a9e.119]
+* Fri Mar 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc7.79b00034e9dc.120]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Fri Mar 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc7.79b00034e9dc.119]
+- Setting CONFIG_I2C_SMBUS to "m" for ark (Gopal Tiwari)
+- Print arch with process_configs errors (Justin M. Forbes)
+- Pass RHJOBS to process_configs for dist-configs-check as well (Justin M. Forbes)
 
 * Thu Mar 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc7.3bf7edc84a9e.118]
 - redhat/configs/process_configs.sh: Fix issue with old error files (Prarit Bhargava)
