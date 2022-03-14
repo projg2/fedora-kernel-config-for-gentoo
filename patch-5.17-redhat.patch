@@ -130,7 +130,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 87f672473523..5ad226acc6b6 100644
+index 55a30ca69350..099a81cc56fd 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -272,7 +272,7 @@ index 7b8382c11788..4aa07bcf45cf 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index f7a132eb794d..2305f8353e49 100644
+index 90d7e1788c91..9b2f902114b8 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -291,7 +291,7 @@ index f7a132eb794d..2305f8353e49 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -721,6 +723,51 @@ static void __init early_reserve_memory(void)
+@@ -741,6 +743,51 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -343,7 +343,7 @@ index f7a132eb794d..2305f8353e49 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -930,6 +977,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -950,6 +997,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -357,7 +357,7 @@ index f7a132eb794d..2305f8353e49 100644
  	dmi_setup();
 
  	/*
-@@ -1099,19 +1153,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1119,19 +1173,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -378,7 +378,7 @@ index f7a132eb794d..2305f8353e49 100644
 
  	reserve_initrd();
 
-@@ -1224,6 +1266,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1244,6 +1286,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 

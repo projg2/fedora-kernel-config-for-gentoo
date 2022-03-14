@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc7.20220311git79b00034e9dc.120
+%global distro_build 0.rc8.123
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc7.20220311git79b00034e9dc.120
+%define pkgrelease 0.rc8.123
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20220311git79b00034e9dc.120%{?buildid}%{?dist}
+%define specrelease 0.rc8.123%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc7-205-g79b00034e9dc.tar.xz
+Source0: linux-5.17-rc8.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1391,8 +1391,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc7-205-g79b00034e9dc -c
-mv linux-5.17-rc7-205-g79b00034e9dc linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc8 -c
+mv linux-5.17-rc8 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3005,8 +3005,13 @@ fi
 #
 #
 %changelog
-* Fri Mar 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc7.79b00034e9dc.120]
+* Mon Mar 14 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc8.123]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Sat Mar 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc7.68453767131a.120]
+- Last of the Fedora 5.17 configs initial pass (Justin M. Forbes)
+- redhat/Makefile: Silence dist-clean-configs output (Prarit Bhargava)
+- Fedora 5.17 config updates (Justin M. Forbes)
 
 * Fri Mar 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc7.79b00034e9dc.119]
 - Setting CONFIG_I2C_SMBUS to "m" for ark (Gopal Tiwari)
