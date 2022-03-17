@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/dd24222299c0cc5a6a118f2265fcf3f769a7cfb4
+ dd24222299c0cc5a6a118f2265fcf3f769a7cfb4 Back out the nfs workaround and just revert the query for fs_location
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/c6295fc9bb25d3684c10aaa89e00f5e12ccd4dd2
  c6295fc9bb25d3684c10aaa89e00f5e12ccd4dd2 nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
 
