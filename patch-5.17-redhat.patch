@@ -547,7 +547,7 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 1331756d4cfc..4b5257f5e2c4 100644
+index 8b2e5ef15559..ac0291ef0838 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1769,6 +1769,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -852,7 +852,7 @@ index c02ff25dd477..d860f8eb9a81 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 7de3f5b6e8d0..95b1c35b347c 100644
+index 5502e176d51b..93b61ca552d6 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@

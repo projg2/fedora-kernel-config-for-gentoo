@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc8.20220316git56e337f2cf13.124
+%global distro_build 0.rc8.20220318git551acdc3c3d2.125
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.0
 %define patchversion 5.17
-%define pkgrelease 0.rc8.20220316git56e337f2cf13.124
+%define pkgrelease 0.rc8.20220318git551acdc3c3d2.125
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.20220316git56e337f2cf13.124%{?buildid}%{?dist}
+%define specrelease 0.rc8.20220318git551acdc3c3d2.125%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-rc8-3-g56e337f2cf13.tar.xz
+Source0: linux-5.17-rc8-45-g551acdc3c3d2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1391,8 +1391,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-rc8-3-g56e337f2cf13 -c
-mv linux-5.17-rc8-3-g56e337f2cf13 linux-%{KVERREL}
+%setup -q -n kernel-5.17-rc8-45-g551acdc3c3d2 -c
+mv linux-5.17-rc8-45-g551acdc3c3d2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3019,7 +3019,7 @@ fi
 #
 #
 %changelog
-* Wed Mar 16 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc8.56e337f2cf13.123]
+* Fri Mar 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc8.551acdc3c3d2.124]
 - redhat/Makefile: Reorganize variables (Prarit Bhargava)
 - redhat/Makefile: Add some descriptions (Prarit Bhargava)
 - redhat/Makefile: Move SNAPSHOT check (Prarit Bhargava)
@@ -3045,6 +3045,9 @@ fi
 - redhat: Combine Makefile and Makefile.common (Prarit Bhargava)
 - redhat/koji/Makefile: Decouple koji Makefile from Makefile.common (Prarit Bhargava)
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Fri Mar 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc8.551acdc3c3d2.124]
+- Set CONFIG_SND_SOC_SOF_MT8195 for Fedora and turn on VDPA_SIM_BLOCK (Justin M. Forbes)
 
 * Wed Mar 16 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.17-0.rc8.56e337f2cf13.123]
 - Add asus_wmi_sensors modules to filters for Fedora (Justin M. Forbes)
