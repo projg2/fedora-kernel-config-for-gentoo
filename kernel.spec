@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 
-%global distro_build 101
+%global distro_build 100
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -130,15 +130,15 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.16
 
-%define rpmversion 5.16.15
+%define rpmversion 5.16.16
 %define patchversion 5.16
-%define pkgrelease 101
+%define pkgrelease 100
 
 # This is needed to do merge window version magic
 %define patchlevel 16
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 101%{?buildid}%{?dist}
+%define specrelease 100%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.16.15.tar.xz
+Source0: linux-5.16.16.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1386,8 +1386,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.16.15 -c
-mv linux-5.16.15 linux-%{KVERREL}
+%setup -q -n kernel-5.16.16 -c
+mv linux-5.16.16 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2985,6 +2985,9 @@ fi
 #
 #
 %changelog
+* Sat Mar 19 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.16.16-0]
+- drm/mgag200: Fix PLL setup for g200wb and g200ew (Jocelyn Falempe)
+
 * Thu Mar 17 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.16.15-1]
 - Back out the nfs workaround and just revert the query for fs_location (Justin M. Forbes)
 
