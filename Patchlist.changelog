@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/dfe21b33039e0c863a4e41a8e8508fa6af46bad8
+ dfe21b33039e0c863a4e41a8e8508fa6af46bad8 drm/mgag200: Fix PLL setup for g200wb and g200ew
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/dd24222299c0cc5a6a118f2265fcf3f769a7cfb4
  dd24222299c0cc5a6a118f2265fcf3f769a7cfb4 Back out the nfs workaround and just revert the query for fs_location
 
