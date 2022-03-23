@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9db0837f0d0b5ddd9b81e1feb1bcbff21ae93106
+ 9db0837f0d0b5ddd9b81e1feb1bcbff21ae93106 mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/f2725627148ae8c46e9d740f8b93aa2fcd1739ec
  f2725627148ae8c46e9d740f8b93aa2fcd1739ec Revert "PCI/MSI: Mask MSI-X vectors only on success"
 

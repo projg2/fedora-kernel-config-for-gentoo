@@ -3019,7 +3019,9 @@ fi
 #
 #
 %changelog
-* Tue Mar 22 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.17-300]
+* Wed Mar 23 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.17-300]
+- mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+- Turn on RANDOM_TRUST_BOOTLOADER (Justin M. Forbes)
 - Revert "PCI/MSI: Mask MSI-X vectors only on success" (Justin M. Forbes)
 - Define SNAPSHOT correctly for VERSION_ON_UPSTREAM=0 (Justin M. Forbes)
 - Config fixups after some RHEL specific patches were reverted (Justin M. Forbes)

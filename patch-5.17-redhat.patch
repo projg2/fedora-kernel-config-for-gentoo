@@ -31,6 +31,7 @@
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
+ include/linux/mmzone.h                             |   4 +-
  include/linux/module.h                             |   1 +
  include/linux/random.h                             |   7 ++
  include/linux/rmi.h                                |   1 +
@@ -44,7 +45,7 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 46 files changed, 718 insertions(+), 196 deletions(-)
+ 47 files changed, 719 insertions(+), 199 deletions(-)
 
 diff --git a/Kconfig b/Kconfig
 index 745bc773f567..f57ff40109d7 100644
@@ -1593,6 +1594,23 @@ index 3bf5c658bc44..4701bc5ce2f5 100644
   * Security hooks for perf events
   *
   * @perf_event_open:
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index aed44e9b5d89..08517376c765 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -1390,11 +1390,9 @@ static inline unsigned long *section_to_usemap(struct mem_section *ms)
+ static inline struct mem_section *__nr_to_section(unsigned long nr)
+ {
+ #ifdef CONFIG_SPARSEMEM_EXTREME
+-	if (!mem_section)
++	if (!*mem_section || !mem_section[SECTION_NR_TO_ROOT(nr)])
+ 		return NULL;
+ #endif
+-	if (!mem_section[SECTION_NR_TO_ROOT(nr)])
+-		return NULL;
+ 	return &mem_section[SECTION_NR_TO_ROOT(nr)][nr & SECTION_ROOT_MASK];
+ }
+ extern size_t mem_section_usage_size(void);
 diff --git a/include/linux/module.h b/include/linux/module.h
 index 1e135fd5c076..6ec4d001c1e2 100644
 --- a/include/linux/module.h
