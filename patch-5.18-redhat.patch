@@ -77,10 +77,10 @@
  76 files changed, 1729 insertions(+), 191 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 09cdee9e3bad..ec544efa934e 100644
+index c658e5d2d52c..cff79133a982 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6037,6 +6037,15 @@
+@@ -6050,6 +6050,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -160,10 +160,10 @@ index 7214f075e1f0..6ecb3acb605c 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 49652ef9eff4..afe95364a8cf 100644
+index c1251856ef77..fefe78477b23 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1481,9 +1481,9 @@ config HIGHMEM
+@@ -1486,9 +1486,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -547,10 +547,10 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 5ffd87ac42b3..fcf798569592 100644
+index c116e3a65ab4..3a3837cebc3a 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1770,6 +1770,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1774,6 +1774,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -567,7 +567,7 @@ index 5ffd87ac42b3..fcf798569592 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 0ed484e04fd6..a2e486bd14ef 100644
+index cf8c7fd59ada..28a8189be64f 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -690,6 +690,24 @@ int ahci_stop_engine(struct ata_port *ap)

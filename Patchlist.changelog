@@ -1,8 +1,8 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/29b8543681d4225dcd5e2c458139c808a553ce33
- 29b8543681d4225dcd5e2c458139c808a553ce33 Fix up rng merge
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b5022dc75dcec1bd4ff4ad859903963468d1e453
+ b5022dc75dcec1bd4ff4ad859903963468d1e453 mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
 
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/5185e46eea00ba1aa467afb39f51e495c37a2e28
- 5185e46eea00ba1aa467afb39f51e495c37a2e28 mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/8e648aae90c1d739b5ead43fb84c2cae550a8344
+ 8e648aae90c1d739b5ead43fb84c2cae550a8344 Fix up rng merge
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/867208fb125b1948587e9f9f08c53d3a07e1db56
  867208fb125b1948587e9f9f08c53d3a07e1db56 [redhat] virtio: enable virtio-mem on x86-64 as tech-preview
