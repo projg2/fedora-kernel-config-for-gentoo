@@ -77,10 +77,10 @@
  76 files changed, 1729 insertions(+), 191 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index c658e5d2d52c..cff79133a982 100644
+index b7ccaa2ea867..bc58b9348bb8 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6050,6 +6050,15 @@
+@@ -6077,6 +6077,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -176,10 +176,10 @@ index c1251856ef77..fefe78477b23 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 13aa8d955c46..db67db56060c 100644
+index f8680892401b..5f7087d2d907 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1116,7 +1116,7 @@ endchoice
+@@ -1117,7 +1117,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -188,7 +188,7 @@ index 13aa8d955c46..db67db56060c 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1355,6 +1355,7 @@ config XEN
+@@ -1356,6 +1356,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -272,7 +272,7 @@ index 64deb7727d00..1aacdc64cd63 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 90d7e1788c91..9b2f902114b8 100644
+index c95b9ac5a457..560db0f01260 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -291,7 +291,7 @@ index 90d7e1788c91..9b2f902114b8 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -741,6 +743,51 @@ static void __init early_reserve_memory(void)
+@@ -737,6 +739,51 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -343,7 +343,7 @@ index 90d7e1788c91..9b2f902114b8 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -950,6 +997,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -946,6 +993,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -357,7 +357,7 @@ index 90d7e1788c91..9b2f902114b8 100644
  	dmi_setup();
 
  	/*
-@@ -1119,19 +1173,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1115,19 +1169,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -378,7 +378,7 @@ index 90d7e1788c91..9b2f902114b8 100644
 
  	reserve_initrd();
 
-@@ -1244,6 +1286,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1240,6 +1282,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -1356,7 +1356,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 107dcf5938d6..225a9797e39d 100644
+index f2c45b85b9fc..cfeb6b3cd758 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1367,7 +1367,7 @@ index 107dcf5938d6..225a9797e39d 100644
  #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -3124,6 +3125,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -2863,6 +2864,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1396,7 +1396,7 @@ index 107dcf5938d6..225a9797e39d 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/message/fusion/mptsas.c b/drivers/message/fusion/mptsas.c
-index 4acd8f9a48e1..57b430c4d814 100644
+index 34901bcd1ce8..24194dbc2784 100644
 --- a/drivers/message/fusion/mptsas.c
 +++ b/drivers/message/fusion/mptsas.c
 @@ -5320,6 +5320,11 @@ mptsas_probe(struct pci_dev *pdev, const struct pci_device_id *id)
@@ -1431,7 +1431,7 @@ index 4acd8f9a48e1..57b430c4d814 100644
  };
  MODULE_DEVICE_TABLE(pci, mptsas_pci_table);
 diff --git a/drivers/message/fusion/mptspi.c b/drivers/message/fusion/mptspi.c
-index acd4805dcf83..5f814d447ab3 100644
+index 388675cc1765..8c7d0740efb6 100644
 --- a/drivers/message/fusion/mptspi.c
 +++ b/drivers/message/fusion/mptspi.c
 @@ -1238,12 +1238,17 @@ static struct spi_function_template mptspi_transport_functions = {
@@ -1479,10 +1479,10 @@ index 3f5feb55cfba..9d8cb34845b3 100644
  	need_ioport = e1000_is_need_ioport(pdev);
  	if (need_ioport) {
 diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index 8b2adc56b92a..3263b33c9b69 100644
+index b07dde6f0abf..abcb1cb9a11f 100644
 --- a/drivers/net/team/team.c
 +++ b/drivers/net/team/team.c
-@@ -3045,6 +3045,8 @@ static int __init team_module_init(void)
+@@ -3050,6 +3050,8 @@ static int __init team_module_init(void)
  	if (err)
  		goto err_nl_init;
 
@@ -1791,7 +1791,7 @@ index 65f7f6b0576c..27398de38c0c 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/scsi/aacraid/linit.c b/drivers/scsi/aacraid/linit.c
-index a911252075a6..9bc69f6880f3 100644
+index 9c27bc37e5de..8179eac8a7c3 100644
 --- a/drivers/scsi/aacraid/linit.c
 +++ b/drivers/scsi/aacraid/linit.c
 @@ -78,6 +78,7 @@ char aac_driver_version[] = AAC_DRIVER_FULL_VERSION;
@@ -1811,7 +1811,7 @@ index a911252075a6..9bc69f6880f3 100644
  	{ 0x9005, 0x028c, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 63 }, /* Adaptec PMC Series 7 (Denali) */
  	{ 0x9005, 0x028d, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 64 }, /* Adaptec PMC Series 8 */
 diff --git a/drivers/scsi/be2iscsi/be_main.c b/drivers/scsi/be2iscsi/be_main.c
-index ab55681145f8..1f8b0f73597b 100644
+index 3bb0adefbe06..b5408ba70ecb 100644
 --- a/drivers/scsi/be2iscsi/be_main.c
 +++ b/drivers/scsi/be2iscsi/be_main.c
 @@ -372,11 +372,13 @@ static int beiscsi_eh_device_reset(struct scsi_cmnd *sc)
@@ -1936,7 +1936,7 @@ index 6a90e6e53d09..7e48c3bf701d 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 82e1e24257bc..d256b02a5d2f 100644
+index 8bf72dbc33b7..d76794bfa0e0 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
@@ -2000,10 +2000,10 @@ index 00792767c620..2ee890521ed7 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index abcd30917263..3f0b22e61350 100644
+index 762229d495a8..1567434af08b 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -7937,6 +7937,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -7974,6 +7974,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -2011,7 +2011,7 @@ index abcd30917263..3f0b22e61350 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -7949,13 +7950,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -7986,13 +7987,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -2031,7 +2031,7 @@ index abcd30917263..3f0b22e61350 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index 0ae936d839f1..c7b3fe22e3e4 100644
+index 3f6cb2a5c2c2..68768100a1ac 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
 @@ -9855,6 +9855,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
@@ -2320,7 +2320,7 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 8253a5413d7c..8dcbd8f1700f 100644
+index 60d423d8f0c4..a3a717230745 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1490,6 +1490,22 @@ int pci_add_dynid(struct pci_driver *drv,
@@ -2933,10 +2933,10 @@ index 25b3ef71f495..d37a6c88c69f 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index beb5b866c318..eced2818910b 100644
+index 97463a33baa7..9275dae4d368 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1645,7 +1645,7 @@ config AIO
+@@ -1649,7 +1649,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -2958,7 +2958,7 @@ index 56f4ee97f328..2dfcaac71418 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index ca70fe6fba38..b723094f3284 100644
+index cdaa1152436a..3aff64e17359 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -25,6 +25,7 @@
@@ -2969,7 +2969,7 @@ index ca70fe6fba38..b723094f3284 100644
  #include <uapi/linux/btf.h>
  #include <linux/pgtable.h>
  #include <linux/bpf_lsm.h>
-@@ -51,6 +52,23 @@ static DEFINE_SPINLOCK(map_idr_lock);
+@@ -52,6 +53,23 @@ static DEFINE_SPINLOCK(map_idr_lock);
  static DEFINE_IDR(link_idr);
  static DEFINE_SPINLOCK(link_idr_lock);
 
@@ -3035,10 +3035,10 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	return ret;
  }
 diff --git a/kernel/panic.c b/kernel/panic.c
-index 55b50e052ec3..8b7955251793 100644
+index eb4dfb932c85..c884a0b18445 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -385,6 +385,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -404,6 +404,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },

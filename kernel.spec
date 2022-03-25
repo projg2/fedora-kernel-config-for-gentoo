@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20220324gited4643521e6a.6
+%global distro_build 0.rc0.20220325git34af78c4e616.7
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc0.20220324gited4643521e6a.6
+%define pkgrelease 0.rc0.20220325git34af78c4e616.7
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220324gited4643521e6a.6%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220325git34af78c4e616.7%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -620,6 +620,9 @@ BuildRequires: libcap-devel libcap-ng-devel
 %ifnarch s390x
 BuildRequires: pciutils-devel
 %endif
+%ifarch i686 x86_64
+BuildRequires: libnl3-devel
+%endif
 %endif
 %if %{with_tools} || %{signmodules} || %{signkernel}
 BuildRequires: openssl-devel
@@ -695,7 +698,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-4443-ged4643521e6a.tar.xz
+Source0: linux-5.17-9727-g34af78c4e616.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1391,8 +1394,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-4443-ged4643521e6a -c
-mv linux-5.17-4443-ged4643521e6a linux-%{KVERREL}
+%setup -q -n kernel-5.17-9727-g34af78c4e616 -c
+mv linux-5.17-9727-g34af78c4e616 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3019,15 +3022,22 @@ fi
 #
 #
 %changelog
-* Thu Mar 24 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18-0.rc0.20220324gited4643521e6a.6]
-- Fix up CONFIG_SND_AMD_ACP_CONFIG files (Patrick Talbert)
-- Remove CONFIG_SND_SOC_SOF_DEBUG_PROBES files (Patrick Talbert)
-
-* Thu Mar 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18-0.rc0.ed4643521e6a.5]
-- Add new kunit tests for 5.18 to mod-internal.list (Justin M. Forbes)
-- redhat/configs/process_configs.sh: Fix race with tools generation (Prarit Bhargava)
+* Fri Mar 25 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18-0.rc0.34af78c4e616.6]
 - Avoid creating files in $RPM_SOURCE_DIR (Nicolas Chauvet)
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Fri Mar 25 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18-0.rc0.34af78c4e616.5]
+- redhat/configs: Disable watchdog components (Prarit Bhargava)
+- redhat/README.Makefile: Add a Makefile README file (Prarit Bhargava)
+- redhat/Makefile: Remove duplicated code (Prarit Bhargava)
+- Add BuildRequires libnl3-devel for intel-speed-select (Justin M. Forbes)
+- Add new kunit tests for 5.18 to mod-internal.list (Justin M. Forbes)
+- Fix RHDISTGIT for Fedora (Justin M. Forbes)
+- redhat/configs/process_configs.sh: Fix race with tools generation (Prarit Bhargava)
+- New configs in drivers/dax (Fedora Kernel Team)
+- Fix up CONFIG_SND_AMD_ACP_CONFIG files (Patrick Talbert)
+- Remove CONFIG_SND_SOC_SOF_DEBUG_PROBES files (Patrick Talbert)
+- SATA_MOBILE_LPM_POLICY is now SATA_LPM_POLICY (Justin M. Forbes)
 
 * Thu Mar 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18-0.rc0.ed4643521e6a.4]
 - Fix up rng merge (Justin M. Forbes)
