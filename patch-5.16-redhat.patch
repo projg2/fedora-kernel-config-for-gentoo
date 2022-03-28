@@ -1,3 +1,4 @@
+ Documentation/core-api/dma-attributes.rst          |   8 ++
  Makefile                                           |   4 +
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
@@ -25,7 +26,6 @@
  drivers/net/wireless/ath/ath11k/core.h             |   1 +
  drivers/net/wireless/ath/ath11k/mhi.c              |   1 +
  drivers/net/wireless/ath/ath11k/pci.c              |  16 ++-
- drivers/nfc/st21nfca/se.c                          |  10 ++
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
@@ -36,6 +36,7 @@
  fs/nfs/nfs4_fs.h                                   |   9 +-
  fs/nfs/nfs4proc.c                                  |  76 ++-----------
  fs/nfs/nfs4state.c                                 |   3 +-
+ include/linux/dma-mapping.h                        |   8 ++
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -44,6 +45,7 @@
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  include/net/netfilter/nf_conntrack.h               |   1 +
+ kernel/dma/swiotlb.c                               |  23 ++--
  kernel/module_signing.c                            |   9 +-
  net/netfilter/nf_conntrack_core.c                  |   3 +
  net/netfilter/nf_nat_core.c                        |  43 ++++++-
@@ -53,10 +55,26 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
- 55 files changed, 821 insertions(+), 284 deletions(-)
+ 57 files changed, 835 insertions(+), 299 deletions(-)
 
+diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
+index 1887d92e8e92..17706dc91ec9 100644
+--- a/Documentation/core-api/dma-attributes.rst
++++ b/Documentation/core-api/dma-attributes.rst
+@@ -130,3 +130,11 @@ accesses to DMA buffers in both privileged "supervisor" and unprivileged
+ subsystem that the buffer is fully accessible at the elevated privilege
+ level (and ideally inaccessible or at least read-only at the
+ lesser-privileged levels).
++
++DMA_ATTR_OVERWRITE
++------------------
++
++This is a hint to the DMA-mapping subsystem that the device is expected to
++overwrite the entire mapped size, thus the caller does not require any of the
++previous buffer contents to be preserved. This allows bounce-buffering
++implementations to optimise DMA_FROM_DEVICE transfers.
 diff --git a/Makefile b/Makefile
-index 0ca39c16b3bf..5e51ad0402d1 100644
+index f47cecba0618..cbac049b97a3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1373,34 +1391,6 @@ index 4c348bacf2cb..9fe496d35b38 100644
  			dev_err(&pdev->dev, "Unsupported WCN6855 SOC hardware version: %d %d\n",
  				soc_hw_version_major, soc_hw_version_minor);
  			ret = -EOPNOTSUPP;
-diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
-index a43fc4117fa5..c922f10d0d7b 100644
---- a/drivers/nfc/st21nfca/se.c
-+++ b/drivers/nfc/st21nfca/se.c
-@@ -316,6 +316,11 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
- 			return -ENOMEM;
-
- 		transaction->aid_len = skb->data[1];
-+
-+		/* Checking if the length of the AID is valid */
-+		if (transaction->aid_len > sizeof(transaction->aid))
-+			return -EINVAL;
-+
- 		memcpy(transaction->aid, &skb->data[2],
- 		       transaction->aid_len);
-
-@@ -325,6 +330,11 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
- 			return -EPROTO;
-
- 		transaction->params_len = skb->data[transaction->aid_len + 3];
-+
-+		/* Total size is allocated (skb->len - 2) minus fixed array members */
-+		if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
-+			return -EINVAL;
-+
- 		memcpy(transaction->params, skb->data +
- 		       transaction->aid_len + 4, transaction->params_len);
-
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
 index 5785f6abf194..7fc5f15a4b78 100644
 --- a/drivers/nvme/host/core.c
@@ -1824,6 +1814,25 @@ index 499bef9fe118..f3265575c28d 100644
  	if (result) {
  		dprintk("<-- %s: failed to retrieve fs_locations: %d\n",
  			__func__, result);
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index dca2b1355bb1..6150d11a607e 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -61,6 +61,14 @@
+  */
+ #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+
++/*
++ * This is a hint to the DMA-mapping subsystem that the device is expected
++ * to overwrite the entire mapped size, thus the caller does not require any
++ * of the previous buffer contents to be preserved. This allows
++ * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
++ */
++#define DMA_ATTR_OVERWRITE		(1UL << 10)
++
+ /*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
+  * be given to a device to use as a DMA source or target.  It is specific to a
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index ef8dbc0a1522..836a5dfc6156 100644
 --- a/include/linux/efi.h
@@ -2006,6 +2015,47 @@ index d24b0a34c8f0..871489df63c6 100644
  	possible_net_t ct_net;
 
  #if IS_ENABLED(CONFIG_NF_NAT)
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index e7f138c7636c..d958b1201092 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -581,14 +581,10 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 	for (i = 0; i < nr_slots(alloc_size + offset); i++)
+ 		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
+ 	tlb_addr = slot_addr(mem->start, index) + offset;
+-	/*
+-	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
+-	 * to the tlb buffer, if we knew for sure the device will
+-	 * overwirte the entire current content. But we don't. Thus
+-	 * unconditional bounce may prevent leaking swiotlb content (i.e.
+-	 * kernel memory) to user-space.
+-	 */
+-	swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
++	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
++	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
++	    dir == DMA_BIDIRECTIONAL))
++		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
+ 	return tlb_addr;
+ }
+
+@@ -655,13 +651,10 @@ void swiotlb_tbl_unmap_single(struct device *dev, phys_addr_t tlb_addr,
+ void swiotlb_sync_single_for_device(struct device *dev, phys_addr_t tlb_addr,
+ 		size_t size, enum dma_data_direction dir)
+ {
+-	/*
+-	 * Unconditional bounce is necessary to avoid corruption on
+-	 * sync_*_for_cpu or dma_ummap_* when the device didn't overwrite
+-	 * the whole lengt of the bounce buffer.
+-	 */
+-	swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
+-	BUG_ON(!valid_dma_direction(dir));
++	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)
++		swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
++	else
++		BUG_ON(dir != DMA_FROM_DEVICE);
+ }
+
+ void swiotlb_sync_single_for_cpu(struct device *dev, phys_addr_t tlb_addr,
 diff --git a/kernel/module_signing.c b/kernel/module_signing.c
 index 8723ae70ea1f..fb2d773498c2 100644
 --- a/kernel/module_signing.c

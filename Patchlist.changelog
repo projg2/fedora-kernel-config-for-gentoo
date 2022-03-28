@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/dfd1a798f126547c4a9f0b4aab00046b88358f0d
+ dfd1a798f126547c4a9f0b4aab00046b88358f0d Revert "swiotlb: rework "fix info leak with DMA_FROM_DEVICE""
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/dfe21b33039e0c863a4e41a8e8508fa6af46bad8
  dfe21b33039e0c863a4e41a8e8508fa6af46bad8 drm/mgag200: Fix PLL setup for g200wb and g200ew
 
