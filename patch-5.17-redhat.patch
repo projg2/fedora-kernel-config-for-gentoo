@@ -1,3 +1,4 @@
+ Documentation/core-api/dma-attributes.rst          |   8 ++
  Kconfig                                            |   2 +
  Kconfig.redhat                                     |  17 +++
  Makefile                                           |  12 +-
@@ -18,6 +19,7 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/gpu/drm/i915/display/intel_psr.c           |   9 ++
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -28,6 +30,7 @@
  drivers/pci/msi/msi.c                              |  12 +-
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
+ include/linux/dma-mapping.h                        |   8 ++
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -37,6 +40,7 @@
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
+ kernel/dma/swiotlb.c                               |  23 ++--
  kernel/module.c                                    |   2 +
  kernel/module_signing.c                            |   9 +-
  scripts/mod/modpost.c                              |   8 ++
@@ -45,8 +49,24 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 47 files changed, 719 insertions(+), 199 deletions(-)
+ 51 files changed, 752 insertions(+), 214 deletions(-)
 
+diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
+index 1887d92e8e92..17706dc91ec9 100644
+--- a/Documentation/core-api/dma-attributes.rst
++++ b/Documentation/core-api/dma-attributes.rst
+@@ -130,3 +130,11 @@ accesses to DMA buffers in both privileged "supervisor" and unprivileged
+ subsystem that the buffer is fully accessible at the elevated privilege
+ level (and ideally inaccessible or at least read-only at the
+ lesser-privileged levels).
++
++DMA_ATTR_OVERWRITE
++------------------
++
++This is a hint to the DMA-mapping subsystem that the device is expected to
++overwrite the entire mapped size, thus the caller does not require any of the
++previous buffer contents to be preserved. This allows bounce-buffering
++implementations to optimise DMA_FROM_DEVICE transfers.
 diff --git a/Kconfig b/Kconfig
 index 745bc773f567..f57ff40109d7 100644
 --- a/Kconfig
@@ -81,7 +101,7 @@ index 000000000000..733a26bd887a
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 7214f075e1f0..6ecb3acb605c 100644
+index 34f9f5a9457a..799d71b74ea9 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -894,6 +914,26 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
+index 00279e8c2775..545424e4a066 100644
+--- a/drivers/gpu/drm/i915/display/intel_psr.c
++++ b/drivers/gpu/drm/i915/display/intel_psr.c
+@@ -744,6 +744,15 @@ static bool intel_psr2_sel_fetch_config_valid(struct intel_dp *intel_dp,
+ 		return false;
+ 	}
+
++	/* Temporary workaround for Lenovo's issues with the X1 Carbon 10th Gen
++	 * See: https://bugzilla.redhat.com/show_bug.cgi?id=2065794
++	 */
++	if (IS_ALDERLAKE_P(dev_priv)) {
++		drm_dbg_kms(&dev_priv->drm,
++			    "PSR2 sel fetch disabled on ADL-P, see rhbz2065794\n");
++		return false;
++	}
++
+ 	return crtc_state->enable_psr2_sel_fetch = true;
+ }
+
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1496,6 +1536,25 @@ index 47a1c8bddf86..e309d992e2ad 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index dca2b1355bb1..6150d11a607e 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -61,6 +61,14 @@
+  */
+ #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+
++/*
++ * This is a hint to the DMA-mapping subsystem that the device is expected
++ * to overwrite the entire mapped size, thus the caller does not require any
++ * of the previous buffer contents to be preserved. This allows
++ * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
++ */
++#define DMA_ATTR_OVERWRITE		(1UL << 10)
++
+ /*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
+  * be given to a device to use as a DMA source or target.  It is specific to a
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index ccd4d3f91c98..e64643e3e364 100644
 --- a/include/linux/efi.h
@@ -1696,6 +1755,47 @@ index e9119bf54b1f..e3b57b4898fe 100644
  	select IO_WQ
  	default y
  	help
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 6db1c475ec82..bfc56cb21705 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -627,14 +627,10 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 	for (i = 0; i < nr_slots(alloc_size + offset); i++)
+ 		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
+ 	tlb_addr = slot_addr(mem->start, index) + offset;
+-	/*
+-	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
+-	 * to the tlb buffer, if we knew for sure the device will
+-	 * overwirte the entire current content. But we don't. Thus
+-	 * unconditional bounce may prevent leaking swiotlb content (i.e.
+-	 * kernel memory) to user-space.
+-	 */
+-	swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
++	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
++	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
++	    dir == DMA_BIDIRECTIONAL))
++		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
+ 	return tlb_addr;
+ }
+
+@@ -701,13 +697,10 @@ void swiotlb_tbl_unmap_single(struct device *dev, phys_addr_t tlb_addr,
+ void swiotlb_sync_single_for_device(struct device *dev, phys_addr_t tlb_addr,
+ 		size_t size, enum dma_data_direction dir)
+ {
+-	/*
+-	 * Unconditional bounce is necessary to avoid corruption on
+-	 * sync_*_for_cpu or dma_ummap_* when the device didn't overwrite
+-	 * the whole lengt of the bounce buffer.
+-	 */
+-	swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
+-	BUG_ON(!valid_dma_direction(dir));
++	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)
++		swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
++	else
++		BUG_ON(dir != DMA_FROM_DEVICE);
+ }
+
+ void swiotlb_sync_single_for_cpu(struct device *dev, phys_addr_t tlb_addr,
 diff --git a/kernel/module.c b/kernel/module.c
 index 46a5c2ed1928..92c2306651ce 100644
 --- a/kernel/module.c

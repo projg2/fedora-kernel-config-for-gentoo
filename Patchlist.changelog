@@ -1,3 +1,9 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/442a5cb0498230a157a4f482de2d53796a400435
+ 442a5cb0498230a157a4f482de2d53796a400435 Revert "swiotlb: rework "fix info leak with DMA_FROM_DEVICE""
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/2151233ebcc5c33b39ed3ba2b5a848f7205d5159
+ 2151233ebcc5c33b39ed3ba2b5a848f7205d5159 drm/i915: Temporarily disable selective fetch for PSR2 on ADL-P
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/9db0837f0d0b5ddd9b81e1feb1bcbff21ae93106
  9db0837f0d0b5ddd9b81e1feb1bcbff21ae93106 mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
 
