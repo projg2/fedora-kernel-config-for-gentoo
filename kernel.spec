@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20220325git34af78c4e616.7
+%global distro_build 0.rc0.20220328gitae085d7f9365.10
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc0.20220325git34af78c4e616.7
+%define pkgrelease 0.rc0.20220328gitae085d7f9365.10
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220325git34af78c4e616.7%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220328gitae085d7f9365.10%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -698,7 +698,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-9727-g34af78c4e616.tar.xz
+Source0: linux-5.17-11407-gae085d7f9365.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1394,8 +1394,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-9727-g34af78c4e616 -c
-mv linux-5.17-9727-g34af78c4e616 linux-%{KVERREL}
+%setup -q -n kernel-5.17-11407-gae085d7f9365 -c
+mv linux-5.17-11407-gae085d7f9365 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3022,9 +3022,17 @@ fi
 #
 #
 %changelog
-* Fri Mar 25 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18-0.rc0.34af78c4e616.6]
+* Mon Mar 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.ae085d7f9365.9]
 - Avoid creating files in $RPM_SOURCE_DIR (Nicolas Chauvet)
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Sat Mar 26 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.52d543b5497c.6]
+- Fedora config updates to fix process_configs (Justin M. Forbes)
+- redhat: Fix release tagging (Prarit Bhargava)
+- redhat/self-test: Fix version tag test (Prarit Bhargava)
+- redhat/self-test: Fix BUILD verification test (Prarit Bhargava)
+- redhat/self-test: Cleanup SRPM related self-tests (Prarit Bhargava)
+- redhat/self-test: Fix shellcheck test (Prarit Bhargava)
 
 * Fri Mar 25 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18-0.rc0.34af78c4e616.5]
 - redhat/configs: Disable watchdog components (Prarit Bhargava)
