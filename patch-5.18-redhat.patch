@@ -176,7 +176,7 @@ index c1251856ef77..fefe78477b23 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 23048be0333b..13dbf88d88e3 100644
+index 57c4c995965f..a3c61780e99c 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1117,7 +1117,7 @@ endchoice
@@ -1113,7 +1113,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index bf18128cf5de..e973c7816de8 100644
+index 7f416a12000e..68be4afaa58a 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -1124,7 +1124,7 @@ index bf18128cf5de..e973c7816de8 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2165,6 +2166,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2171,6 +2172,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -1141,7 +1141,7 @@ index bf18128cf5de..e973c7816de8 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2198,6 +2209,11 @@ static int __init etm4x_init(void)
+@@ -2204,6 +2215,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -1153,7 +1153,7 @@ index bf18128cf5de..e973c7816de8 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2224,6 +2240,9 @@ static int __init etm4x_init(void)
+@@ -2230,6 +2246,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {

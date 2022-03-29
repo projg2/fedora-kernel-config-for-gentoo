@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20220328gitae085d7f9365.10
+%global distro_build 0.rc0.20220329git1930a6e739c4.11
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc0.20220328gitae085d7f9365.10
+%define pkgrelease 0.rc0.20220329git1930a6e739c4.11
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220328gitae085d7f9365.10%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220329git1930a6e739c4.11%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -698,7 +698,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-11407-gae085d7f9365.tar.xz
+Source0: linux-5.17-12882-g1930a6e739c4.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -778,7 +778,6 @@ Source33: kernel-x86_64-debug-rhel.config
 
 Source34: filter-x86_64.sh.rhel
 Source35: filter-armv7hl.sh.rhel
-Source36: filter-i686.sh.rhel
 Source37: filter-aarch64.sh.rhel
 Source38: filter-ppc64le.sh.rhel
 Source39: filter-s390x.sh.rhel
@@ -797,8 +796,6 @@ Source54: kernel-armv7hl-fedora.config
 Source55: kernel-armv7hl-debug-fedora.config
 Source56: kernel-armv7hl-lpae-fedora.config
 Source57: kernel-armv7hl-lpae-debug-fedora.config
-Source58: kernel-i686-fedora.config
-Source59: kernel-i686-debug-fedora.config
 Source60: kernel-ppc64le-fedora.config
 Source61: kernel-ppc64le-debug-fedora.config
 Source62: kernel-s390x-fedora.config
@@ -808,7 +805,6 @@ Source65: kernel-x86_64-debug-fedora.config
 
 Source67: filter-x86_64.sh.fedora
 Source68: filter-armv7hl.sh.fedora
-Source69: filter-i686.sh.fedora
 Source70: filter-aarch64.sh.fedora
 Source71: filter-ppc64le.sh.fedora
 Source72: filter-s390x.sh.fedora
@@ -1394,8 +1390,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-11407-gae085d7f9365 -c
-mv linux-5.17-11407-gae085d7f9365 linux-%{KVERREL}
+%setup -q -n kernel-5.17-12882-g1930a6e739c4 -c
+mv linux-5.17-12882-g1930a6e739c4 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3022,9 +3018,18 @@ fi
 #
 #
 %changelog
-* Mon Mar 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.ae085d7f9365.9]
+* Tue Mar 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.1930a6e739c4.10]
 - Avoid creating files in $RPM_SOURCE_DIR (Nicolas Chauvet)
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Tue Mar 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.1930a6e739c4.9]
+- redhat/configs: remove unnecessary GPIO options for aarch64 (Brian Masney)
+- redhat/configs: remove viperboard related Kconfig options (Brian Masney)
+- redhat/configs/process_configs.sh: Avoid race with find (Prarit Bhargava)
+- redhat/configs/process_configs.sh: Remove CONTINUEONERROR (Prarit Bhargava)
+- Remove i686 configs and filters (Justin M. Forbes)
+- redhat/configs: Set CONFIG_X86_AMD_PSTATE built-in on Fedora (Prarit Bhargava)
+- Fix up mismatch with CRC64 (Justin M. Forbes)
 
 * Sat Mar 26 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.52d543b5497c.6]
 - Fedora config updates to fix process_configs (Justin M. Forbes)
