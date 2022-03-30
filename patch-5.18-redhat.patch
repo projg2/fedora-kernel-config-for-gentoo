@@ -160,7 +160,7 @@ index c28c5d91e5c8..509e4e0c7780 100644
 
  $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index c1251856ef77..fefe78477b23 100644
+index 2e8091e2d8a8..32e0403314b1 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -1486,9 +1486,9 @@ config HIGHMEM

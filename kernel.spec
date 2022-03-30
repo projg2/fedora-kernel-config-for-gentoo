@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20220329git1930a6e739c4.11
+%global distro_build 0.rc0.20220330gitd888c83fcec7.12
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc0.20220329git1930a6e739c4.11
+%define pkgrelease 0.rc0.20220330gitd888c83fcec7.12
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220329git1930a6e739c4.11%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220330gitd888c83fcec7.12%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -698,7 +698,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-12882-g1930a6e739c4.tar.xz
+Source0: linux-5.17-13034-gd888c83fcec7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1390,8 +1390,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-12882-g1930a6e739c4 -c
-mv linux-5.17-12882-g1930a6e739c4 linux-%{KVERREL}
+%setup -q -n kernel-5.17-13034-gd888c83fcec7 -c
+mv linux-5.17-13034-gd888c83fcec7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2246,7 +2246,7 @@ chmod +x tools/power/cpupower/utils/version-gen.sh
    %{tools_make}
    popd
    pushd tools/power/x86/intel-speed-select
-   %{make}
+   %{make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3" LDFLAGS+="-lnl-genl-3 -lnl-3"
    popd
 %endif
 %endif
@@ -2511,7 +2511,7 @@ install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
    %{tools_make} DESTDIR=%{buildroot} install
    popd
    pushd tools/power/x86/intel-speed-select
-   %{tools_make} CFLAGS+="-D_GNU_SOURCE -Iinclude" DESTDIR=%{buildroot} install
+   %{make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3" LDFLAGS+="-lnl-genl-3 -lnl-3" DESTDIR=%{buildroot} install
    popd
 %endif
 pushd tools/thermal/tmon
@@ -3018,9 +3018,16 @@ fi
 #
 #
 %changelog
-* Tue Mar 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.1930a6e739c4.10]
-- Avoid creating files in $RPM_SOURCE_DIR (Nicolas Chauvet)
+* Wed Mar 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.d888c83fcec7.11]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Wed Mar 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.d888c83fcec7.10]
+- redhat/config: Remove obsolete CONFIG_MFD_INTEL_PMT (David Arcari)
+- redhat/configs: enable CONFIG_INTEL_ISHTP_ECLITE (David Arcari)
+- Avoid creating files in $RPM_SOURCE_DIR (Nicolas Chauvet)
+- Flip CRC64 from off to y (Justin M. Forbes)
+- New configs in lib/Kconfig (Fedora Kernel Team)
+- disable redundant assignment of CONFIG_BQL on ARK (Davide Caratti)
 
 * Tue Mar 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.1930a6e739c4.9]
 - redhat/configs: remove unnecessary GPIO options for aarch64 (Brian Masney)
