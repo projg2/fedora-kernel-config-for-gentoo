@@ -52,3 +52,4 @@ test_bpf
 stackinit_kunit
 overflow_kunit
 clk-gate_test
+clk_test
