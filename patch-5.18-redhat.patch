@@ -130,7 +130,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index c28c5d91e5c8..509e4e0c7780 100644
+index 18ecb49f1af6..8e964bc4843e 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -144,7 +144,7 @@ index c28c5d91e5c8..509e4e0c7780 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1234,7 +1238,13 @@ define filechk_version.h
+@@ -1242,7 +1246,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -158,7 +158,7 @@ index c28c5d91e5c8..509e4e0c7780 100644
 +	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
  endef
 
- $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
+ $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
 index 2e8091e2d8a8..32e0403314b1 100644
 --- a/arch/arm/Kconfig
@@ -2933,7 +2933,7 @@ index 25b3ef71f495..d37a6c88c69f 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 97463a33baa7..9275dae4d368 100644
+index ddcbefe535e9..5061ef5ba38b 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1649,7 +1649,7 @@ config AIO
@@ -2946,7 +2946,7 @@ index 97463a33baa7..9275dae4d368 100644
  	default y
  	help
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 56f4ee97f328..2dfcaac71418 100644
+index 471d71935e90..bb93ae663f1e 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
