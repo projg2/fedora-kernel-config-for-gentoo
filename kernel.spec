@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20220330gitd888c83fcec7.12
+%global distro_build 0.rc0.20220331git787af64d05cd.13
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc0.20220330gitd888c83fcec7.12
+%define pkgrelease 0.rc0.20220331git787af64d05cd.13
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220330gitd888c83fcec7.12%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220331git787af64d05cd.13%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -698,7 +698,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-13034-gd888c83fcec7.tar.xz
+Source0: linux-5.17-13430-g787af64d05cd.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1390,8 +1390,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-13034-gd888c83fcec7 -c
-mv linux-5.17-13034-gd888c83fcec7 linux-%{KVERREL}
+%setup -q -n kernel-5.17-13430-g787af64d05cd -c
+mv linux-5.17-13430-g787af64d05cd linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2246,7 +2246,7 @@ chmod +x tools/power/cpupower/utils/version-gen.sh
    %{tools_make}
    popd
    pushd tools/power/x86/intel-speed-select
-   %{make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3" LDFLAGS+="-lnl-genl-3 -lnl-3"
+   %{make} CFLAGS="${RPM_OPT_FLAGS} -D_GNU_SOURCE -Iinclude -I/usr/include/libnl3" LDFLAGS="%{__global_ldflags} -lnl-genl-3 -lnl-3"
    popd
 %endif
 %endif
@@ -2511,7 +2511,7 @@ install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
    %{tools_make} DESTDIR=%{buildroot} install
    popd
    pushd tools/power/x86/intel-speed-select
-   %{make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3" LDFLAGS+="-lnl-genl-3 -lnl-3" DESTDIR=%{buildroot} install
+   %{make} CFLAGS="${RPM_OPT_FLAGS} -D_GNU_SOURCE -Iinclude -I/usr/include/libnl3" LDFLAGS="%{__global_ldflags} -lnl-genl-3 -lnl-3" DESTDIR=%{buildroot} install
    popd
 %endif
 pushd tools/thermal/tmon
@@ -3018,7 +3018,8 @@ fi
 #
 #
 %changelog
-* Wed Mar 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.d888c83fcec7.11]
+* Thu Mar 31 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.787af64d05cd.12]
+- redhat/kernel.spec.template: Fix intel-speed-select compile (Prarit Bhargava)
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
 
 * Wed Mar 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.d888c83fcec7.10]

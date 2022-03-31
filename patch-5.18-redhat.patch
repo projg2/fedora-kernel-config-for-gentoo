@@ -2261,7 +2261,7 @@ index 419b5febc3ca..491323dfe4e0 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index 962b14d403e8..95ecd06fd858 100644
+index 962b14d403e8..8a89efe47571 100644
 --- a/include/linux/mmzone.h
 +++ b/include/linux/mmzone.h
 @@ -1398,11 +1398,9 @@ static inline unsigned long *section_to_usemap(struct mem_section *ms)
@@ -2269,7 +2269,7 @@ index 962b14d403e8..95ecd06fd858 100644
  {
  #ifdef CONFIG_SPARSEMEM_EXTREME
 -	if (!mem_section)
-+	if (!*mem_section || !mem_section[SECTION_NR_TO_ROOT(nr)])
++	if (!mem_section || !mem_section[SECTION_NR_TO_ROOT(nr)])
  		return NULL;
  #endif
 -	if (!mem_section[SECTION_NR_TO_ROOT(nr)])

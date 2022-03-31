@@ -1,5 +1,5 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/9b7bccf83a9f4bcfec141e14bc64737463ad4456
- 9b7bccf83a9f4bcfec141e14bc64737463ad4456 mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/aa4ced52321898b847145fe2a34214b4398ad377
+ aa4ced52321898b847145fe2a34214b4398ad377 mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/8e648aae90c1d739b5ead43fb84c2cae550a8344
  8e648aae90c1d739b5ead43fb84c2cae550a8344 Fix up rng merge
