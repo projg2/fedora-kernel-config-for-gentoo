@@ -242,6 +242,8 @@ Summary: The Linux kernel
 %define with_selftests 0
 %endif
 
+%define with_tools 0
+
 %if %{with_verbose}
 %define make_opts V=1
 %else
