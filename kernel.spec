@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc0.20220331gitb4a5ea09b293.14
+%global distro_build 0.rc0.20220401gite8b767f5e04097a.15
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc0.20220331gitb4a5ea09b293.14
+%define pkgrelease 0.rc0.20220401gite8b767f5e04097a.15
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220331gitb4a5ea09b293.14%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220401gite8b767f5e04097a.15%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -698,7 +698,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-13532-gb4a5ea09b293.tar.xz
+Source0: linux-5.17-13673-ge8b767f5e04097a.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1390,8 +1390,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-13532-gb4a5ea09b293 -c
-mv linux-5.17-13532-gb4a5ea09b293 linux-%{KVERREL}
+%setup -q -n kernel-5.17-13673-ge8b767f5e04097a -c
+mv linux-5.17-13673-ge8b767f5e04097a linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3018,10 +3018,20 @@ fi
 #
 #
 %changelog
-* Thu Mar 31 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.b4a5ea09b293.13]
-- Add clk_test and clk-gate_test to mod-internal.list (Justin M. Forbes)
+* Fri Apr 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.e8b767f5e04097a.14]
 - redhat/kernel.spec.template: Fix intel-speed-select compile (Prarit Bhargava)
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+
+* Fri Apr 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.e8b767f5e04097a.13]
+- Add clk_test and clk-gate_test to mod-internal.list (Justin M. Forbes)
+- redhat/self-tests: Ignore UPSTREAM (Prarit Bhargava)
+- redhat/self-tests: Ignore RHGITURL (Prarit Bhargava)
+- redhat/Makefile.variables: Extend git hash length to 15 (Prarit Bhargava)
+- redhat/self-test: Remove changelog from spec files (Prarit Bhargava)
+- redhat/genspec.sh: Rearrange genspec.sh (Prarit Bhargava)
+- redhat/self-test: Add spec file data (Prarit Bhargava)
+- redhat/self-test: Add better dist-dump-variables test (Prarit Bhargava)
+- redhat/self-test: Add variable test data (Prarit Bhargava)
 
 * Wed Mar 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.d888c83fcec7.10]
 - redhat/config: Remove obsolete CONFIG_MFD_INTEL_PMT (David Arcari)
