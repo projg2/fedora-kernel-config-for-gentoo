@@ -1,10 +1,13 @@
- Makefile                                           |   4 +
+ 0001-Revert-SimpleDRM-changes.patch                | 108 ++++++++++++++++++
+ Documentation/core-api/dma-attributes.rst          |   8 ++
+ Kconfig                                            |   2 +
+ Kconfig.redhat                                     |  17 +++
+ Makefile                                           |  12 +-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/resource.c                         |  23 +++-
  arch/x86/kernel/setup.c                            |  22 ++--
  crypto/rng.c                                       |  73 +++++++++++-
  drivers/acpi/apei/hest.c                           |   8 ++
@@ -17,35 +20,209 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/gpu/drm/i915/display/intel_psr.c           |   9 ++
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c     |   4 +-
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
+ drivers/pci/msi/msi.c                              |  12 +-
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
+ fs/nfs/client.c                                    |   3 +-
+ fs/nfs/fs_context.c                                |   8 ++
+ include/linux/dma-mapping.h                        |   8 ++
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
+ include/linux/mmzone.h                             |  11 +-
+ include/linux/module.h                             |   1 +
+ include/linux/nfs_fs_sb.h                          |   1 +
  include/linux/random.h                             |   7 ++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
- include/net/netfilter/nf_conntrack.h               |   1 +
+ init/Kconfig                                       |   2 +-
+ kernel/dma/swiotlb.c                               |  23 ++--
+ kernel/module.c                                    |   2 +
  kernel/module_signing.c                            |   9 +-
- net/netfilter/nf_conntrack_core.c                  |   3 +
- net/netfilter/nf_nat_core.c                        |  43 ++++++-
+ net/bluetooth/hci_core.c                           |   4 +-
+ net/bluetooth/hci_event.c                          |   7 +-
+ scripts/mod/modpost.c                              |   8 ++
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
- 44 files changed, 746 insertions(+), 191 deletions(-)
+ 58 files changed, 885 insertions(+), 223 deletions(-)
 
+diff --git a/0001-Revert-SimpleDRM-changes.patch b/0001-Revert-SimpleDRM-changes.patch
+new file mode 100644
+index 000000000000..5b63b49da946
+--- /dev/null
++++ b/0001-Revert-SimpleDRM-changes.patch
+@@ -0,0 +1,108 @@
++From 71e9b84904d2dffca453acc8e44029197bd7057d Mon Sep 17 00:00:00 2001
++From: "Justin M. Forbes" <jforbes@fedoraproject.org>
++Date: Thu, 31 Mar 2022 13:42:18 -0500
++Subject: [PATCH] Revert SimpleDRM changes
++
++The Simple DRM feature for F36 requires some configration changes that
++do not work for everyone on F35 and below. This revert will be saved in
++the tree so that it can be applied before building configs for F34/F35
++
++Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
++---
++ redhat/configs/fedora/generic/CONFIG_DRM            | 1 -
++ redhat/configs/fedora/generic/CONFIG_DRM_DEBUG_MM   | 1 -
++ redhat/configs/fedora/generic/CONFIG_DRM_SIMPLEDRM  | 2 +-
++ redhat/configs/fedora/generic/CONFIG_FB_EFI         | 1 -
++ redhat/configs/fedora/generic/CONFIG_FB_SSD1307     | 2 +-
++ redhat/configs/fedora/generic/CONFIG_I2C_ALGOBIT    | 1 -
++ redhat/configs/fedora/generic/CONFIG_SYSFB_SIMPLEFB | 2 +-
++ redhat/configs/fedora/generic/arm/CONFIG_FB_SIMPLE  | 2 +-
++ redhat/configs/fedora/generic/arm/CONFIG_FB_SSD1307 | 2 +-
++ redhat/configs/fedora/generic/x86/CONFIG_FB_I810    | 2 +-
++ redhat/configs/fedora/generic/x86/CONFIG_FB_VGA16   | 2 +-
++ 11 files changed, 7 insertions(+), 11 deletions(-)
++ delete mode 100644 redhat/configs/fedora/generic/CONFIG_DRM
++ delete mode 100644 redhat/configs/fedora/generic/CONFIG_DRM_DEBUG_MM
++ delete mode 100644 redhat/configs/fedora/generic/CONFIG_FB_EFI
++ delete mode 100644 redhat/configs/fedora/generic/CONFIG_I2C_ALGOBIT
++
++diff --git a/redhat/configs/fedora/generic/CONFIG_DRM b/redhat/configs/fedora/generic/CONFIG_DRM
++deleted file mode 100644
++index 517f31840d34..000000000000
++--- a/redhat/configs/fedora/generic/CONFIG_DRM
+++++ /dev/null
++@@ -1 +0,0 @@
++-CONFIG_DRM=y
++diff --git a/redhat/configs/fedora/generic/CONFIG_DRM_DEBUG_MM b/redhat/configs/fedora/generic/CONFIG_DRM_DEBUG_MM
++deleted file mode 100644
++index 117f02c9e72a..000000000000
++--- a/redhat/configs/fedora/generic/CONFIG_DRM_DEBUG_MM
+++++ /dev/null
++@@ -1 +0,0 @@
++-# CONFIG_DRM_DEBUG_MM is not set
++diff --git a/redhat/configs/fedora/generic/CONFIG_DRM_SIMPLEDRM b/redhat/configs/fedora/generic/CONFIG_DRM_SIMPLEDRM
++index b81ed1176cd9..2bd12280c074 100644
++--- a/redhat/configs/fedora/generic/CONFIG_DRM_SIMPLEDRM
+++++ b/redhat/configs/fedora/generic/CONFIG_DRM_SIMPLEDRM
++@@ -1 +1 @@
++-CONFIG_DRM_SIMPLEDRM=y
+++# CONFIG_DRM_SIMPLEDRM is not set
++diff --git a/redhat/configs/fedora/generic/CONFIG_FB_EFI b/redhat/configs/fedora/generic/CONFIG_FB_EFI
++deleted file mode 100644
++index 93d6a277972b..000000000000
++--- a/redhat/configs/fedora/generic/CONFIG_FB_EFI
+++++ /dev/null
++@@ -1 +0,0 @@
++-# CONFIG_FB_EFI is not set
++diff --git a/redhat/configs/fedora/generic/CONFIG_FB_SSD1307 b/redhat/configs/fedora/generic/CONFIG_FB_SSD1307
++index cddd16bb7398..efd995bdfe8a 100644
++--- a/redhat/configs/fedora/generic/CONFIG_FB_SSD1307
+++++ b/redhat/configs/fedora/generic/CONFIG_FB_SSD1307
++@@ -1 +1 @@
++-# CONFIG_FB_SSD1307 is not set
+++CONFIG_FB_SSD1307=m
++diff --git a/redhat/configs/fedora/generic/CONFIG_I2C_ALGOBIT b/redhat/configs/fedora/generic/CONFIG_I2C_ALGOBIT
++deleted file mode 100644
++index b89d18d43501..000000000000
++--- a/redhat/configs/fedora/generic/CONFIG_I2C_ALGOBIT
+++++ /dev/null
++@@ -1 +0,0 @@
++-CONFIG_I2C_ALGOBIT=y
++diff --git a/redhat/configs/fedora/generic/CONFIG_SYSFB_SIMPLEFB b/redhat/configs/fedora/generic/CONFIG_SYSFB_SIMPLEFB
++index d542137dbb6a..6ae3e10a489e 100644
++--- a/redhat/configs/fedora/generic/CONFIG_SYSFB_SIMPLEFB
+++++ b/redhat/configs/fedora/generic/CONFIG_SYSFB_SIMPLEFB
++@@ -1 +1 @@
++-CONFIG_SYSFB_SIMPLEFB=y
+++# CONFIG_SYSFB_SIMPLEFB is not set
++diff --git a/redhat/configs/fedora/generic/arm/CONFIG_FB_SIMPLE b/redhat/configs/fedora/generic/arm/CONFIG_FB_SIMPLE
++index 3ae9be22cdf9..0eb3d04225f1 100644
++--- a/redhat/configs/fedora/generic/arm/CONFIG_FB_SIMPLE
+++++ b/redhat/configs/fedora/generic/arm/CONFIG_FB_SIMPLE
++@@ -1 +1 @@
++-# CONFIG_FB_SIMPLE is not set
+++CONFIG_FB_SIMPLE=y
++diff --git a/redhat/configs/fedora/generic/arm/CONFIG_FB_SSD1307 b/redhat/configs/fedora/generic/arm/CONFIG_FB_SSD1307
++index cddd16bb7398..efd995bdfe8a 100644
++--- a/redhat/configs/fedora/generic/arm/CONFIG_FB_SSD1307
+++++ b/redhat/configs/fedora/generic/arm/CONFIG_FB_SSD1307
++@@ -1 +1 @@
++-# CONFIG_FB_SSD1307 is not set
+++CONFIG_FB_SSD1307=m
++diff --git a/redhat/configs/fedora/generic/x86/CONFIG_FB_I810 b/redhat/configs/fedora/generic/x86/CONFIG_FB_I810
++index 3a3f4d26de7b..9ef6eca18a0a 100644
++--- a/redhat/configs/fedora/generic/x86/CONFIG_FB_I810
+++++ b/redhat/configs/fedora/generic/x86/CONFIG_FB_I810
++@@ -1 +1 @@
++-# CONFIG_FB_I810 is not set
+++CONFIG_FB_I810=m
++diff --git a/redhat/configs/fedora/generic/x86/CONFIG_FB_VGA16 b/redhat/configs/fedora/generic/x86/CONFIG_FB_VGA16
++index d933f13d7a84..4fa33dfdc6be 100644
++--- a/redhat/configs/fedora/generic/x86/CONFIG_FB_VGA16
+++++ b/redhat/configs/fedora/generic/x86/CONFIG_FB_VGA16
++@@ -1 +1 @@
++-# CONFIG_FB_VGA16 is not set
+++CONFIG_FB_VGA16=m
++-- 
++2.35.1
++
+diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
+index 1887d92e8e92..17706dc91ec9 100644
+--- a/Documentation/core-api/dma-attributes.rst
++++ b/Documentation/core-api/dma-attributes.rst
+@@ -130,3 +130,11 @@ accesses to DMA buffers in both privileged "supervisor" and unprivileged
+ subsystem that the buffer is fully accessible at the elevated privilege
+ level (and ideally inaccessible or at least read-only at the
+ lesser-privileged levels).
++
++DMA_ATTR_OVERWRITE
++------------------
++
++This is a hint to the DMA-mapping subsystem that the device is expected to
++overwrite the entire mapped size, thus the caller does not require any of the
++previous buffer contents to be preserved. This allows bounce-buffering
++implementations to optimise DMA_FROM_DEVICE transfers.
+diff --git a/Kconfig b/Kconfig
+index 745bc773f567..f57ff40109d7 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -30,3 +30,5 @@ source "lib/Kconfig"
+ source "lib/Kconfig.debug"
+
+ source "Documentation/Kconfig"
++
++source "Kconfig.redhat"
+diff --git a/Kconfig.redhat b/Kconfig.redhat
+new file mode 100644
+index 000000000000..733a26bd887a
+--- /dev/null
++++ b/Kconfig.redhat
+@@ -0,0 +1,17 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Red Hat specific options
++#
++
++menu "Red Hat options"
++
++config RH_DISABLE_DEPRECATED
++	bool "Remove support for deprecated features"
++	help
++	  Red Hat may choose to deprecate certain features in its kernels.
++	  Enable this option to remove support for hardware that is no
++	  longer supported.
++
++	  Unless you want a restricted kernel, say N here.
++
++endmenu
 diff --git a/Makefile b/Makefile
-index 36ff4ed4763b..1779878aa037 100644
+index 34f9f5a9457a..799d71b74ea9 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -59,8 +236,23 @@ index 36ff4ed4763b..1779878aa037 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
+@@ -1235,7 +1239,13 @@ define filechk_version.h
+ 	((c) > 255 ? 255 : (c)))';                                       \
+ 	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
+ 	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
+-	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
++	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);                \
++	echo '#define RHEL_MAJOR $(RHEL_MAJOR)'; \
++	echo '#define RHEL_MINOR $(RHEL_MINOR)'; \
++	echo '#define RHEL_RELEASE_VERSION(a,b) (((a) << 8) + (b))'; \
++	echo '#define RHEL_RELEASE_CODE \
++		$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
++	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
+ endef
+
+ $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index c2724d986fa0..8063dcef65f7 100644
+index 4c97cb40eebb..caf06cef3d2e 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -1479,9 +1479,9 @@ config HIGHMEM
@@ -76,10 +268,10 @@ index c2724d986fa0..8063dcef65f7 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index c4207cf9bb17..9e440657f15e 100644
+index c842878f8133..72949bfbe1af 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1023,7 +1023,7 @@ endchoice
+@@ -1109,7 +1109,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -88,7 +280,7 @@ index c4207cf9bb17..9e440657f15e 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1277,6 +1277,7 @@ config XEN
+@@ -1348,6 +1348,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -122,7 +314,7 @@ index 5ad1dde23dc5..b6192d58eed3 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 225ab2d0a4c6..6a06cde25ca2 100644
+index 05327be3a982..c473e5ca67f1 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -133,7 +325,7 @@ index 225ab2d0a4c6..6a06cde25ca2 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -963,6 +964,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -965,6 +966,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -143,51 +335,8 @@ index 225ab2d0a4c6..6a06cde25ca2 100644
  	/* Have one command line that is parsed and saved in /proc/cmdline */
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
-diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
-index 9b9fb7882c20..9ae64f9af956 100644
---- a/arch/x86/kernel/resource.c
-+++ b/arch/x86/kernel/resource.c
-@@ -1,4 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
-+#include <linux/dmi.h>
- #include <linux/ioport.h>
- #include <asm/e820/api.h>
-
-@@ -23,11 +24,31 @@ static void resource_clip(struct resource *res, resource_size_t start,
- 		res->start = end + 1;
- }
-
-+/*
-+ * Some BIOS-es contain a bug where they add addresses which map to
-+ * system RAM in the PCI host bridge window returned by the ACPI _CRS
-+ * method, see commit 4dc2287c1805 ("x86: avoid E820 regions when
-+ * allocating address space"). To avoid this Linux by default excludes
-+ * E820 reservations when allocating addresses since 2010.
-+ * In 2019 some systems have shown-up with E820 reservations which cover
-+ * the entire _CRS returned PCI host bridge window, causing all attempts
-+ * to assign memory to PCI BARs to fail if Linux uses E820 reservations.
-+ *
-+ * Ideally Linux would fully stop using E820 reservations, but then
-+ * the old systems this was added for will regress.
-+ * Instead keep the old behavior for old systems, while ignoring the
-+ * E820 reservations for any systems from now on.
-+ */
- static void remove_e820_regions(struct resource *avail)
- {
--	int i;
-+	int i, year = dmi_get_bios_year();
- 	struct e820_entry *entry;
-
-+	if (year >= 2018)
-+		return;
-+
-+	pr_info_once("PCI: Removing E820 reservations from host bridge windows\n");
-+
- 	for (i = 0; i < e820_table->nr_entries; i++) {
- 		entry = &e820_table->entries[i];
-
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index e04f5e6eb33f..8015e3d2dc9a 100644
+index 90d7e1788c91..262198c48162 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -198,7 +347,7 @@ index e04f5e6eb33f..8015e3d2dc9a 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -929,6 +930,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -950,6 +951,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -212,7 +361,7 @@ index e04f5e6eb33f..8015e3d2dc9a 100644
  	dmi_setup();
 
  	/*
-@@ -1094,19 +1102,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1119,19 +1127,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -393,10 +542,10 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 25d9f04f1995..c2fa1e98fb28 100644
+index 8b2e5ef15559..ac0291ef0838 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1732,6 +1732,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1769,6 +1769,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -413,7 +562,7 @@ index 25d9f04f1995..c2fa1e98fb28 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index f76b8418e6fb..350e52fccc30 100644
+index 0ed484e04fd6..a2e486bd14ef 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -690,6 +690,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -503,18 +652,18 @@ index c59265146e9c..caa8458edde2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index a27ae3999ff3..dc4e136adb08 100644
+index 3404a91edf29..184dbb94710c 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
-@@ -335,6 +335,7 @@
+@@ -344,6 +344,7 @@
  #include <linux/syscalls.h>
  #include <linux/completion.h>
  #include <linux/uuid.h>
 +#include <linux/rcupdate.h>
  #include <crypto/chacha.h>
- #include <crypto/sha1.h>
+ #include <crypto/blake2s.h>
 
-@@ -349,6 +350,11 @@
+@@ -358,6 +359,11 @@
 
  /* #define ADD_INTERRUPT_BENCH */
 
@@ -524,9 +673,9 @@ index a27ae3999ff3..dc4e136adb08 100644
 +static const struct random_extrng __rcu *extrng;
 +
  /*
-  * Configuration information
-  */
-@@ -482,6 +488,9 @@ static int ratelimit_disable __read_mostly;
+  * If the entropy count falls under this number of bits, then we
+  * should wake up processes which are selecting or polling on write
+@@ -486,6 +492,9 @@ static int ratelimit_disable __read_mostly;
  module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
  MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
 
@@ -536,7 +685,7 @@ index a27ae3999ff3..dc4e136adb08 100644
  /**********************************************************************
   *
   * OS independent entropy store.   Here are the functions which handle
-@@ -1880,6 +1889,13 @@ random_poll(struct file *file, poll_table * wait)
+@@ -1775,6 +1784,13 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
  	return mask;
  }
 
@@ -547,10 +696,10 @@ index a27ae3999ff3..dc4e136adb08 100644
 +	return EPOLLIN | EPOLLRDNORM;
 +}
 +
- static int
- write_pool(struct entropy_store *r, const char __user *buffer, size_t count)
+ static int write_pool(const char __user *buffer, size_t count)
  {
-@@ -1983,7 +1999,58 @@ static int random_fasync(int fd, struct file *filp, int on)
+ 	size_t bytes;
+@@ -1879,7 +1895,58 @@ static int random_fasync(int fd, struct file *filp, int on)
  	return fasync_helper(fd, filp, on, &fasync);
  }
 
@@ -606,18 +755,18 @@ index a27ae3999ff3..dc4e136adb08 100644
 +
  const struct file_operations random_fops = {
 +	.open  = random_open,
- 	.read  = random_read,
+ 	.read = random_read,
  	.write = random_write,
- 	.poll  = random_poll,
-@@ -1994,6 +2061,7 @@ const struct file_operations random_fops = {
+ 	.poll = random_poll,
+@@ -1890,6 +1957,7 @@ const struct file_operations random_fops = {
  };
 
  const struct file_operations urandom_fops = {
 +	.open  = urandom_open,
- 	.read  = urandom_read,
+ 	.read = urandom_read,
  	.write = random_write,
  	.unlocked_ioctl = random_ioctl,
-@@ -2002,9 +2070,31 @@ const struct file_operations urandom_fops = {
+@@ -1898,9 +1966,31 @@ const struct file_operations urandom_fops = {
  	.llseek = noop_llseek,
  };
 
@@ -642,14 +791,14 @@ index a27ae3999ff3..dc4e136adb08 100644
 +	.release = extrng_release,
 +};
 +
- SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
- 		unsigned int, flags)
+ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+ 		flags)
  {
 +	const struct random_extrng *rng;
  	int ret;
 
- 	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM|GRND_INSECURE))
-@@ -2020,6 +2110,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
+ 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
+@@ -1916,6 +2006,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
  	if (count > INT_MAX)
  		count = INT_MAX;
 
@@ -668,7 +817,7 @@ index a27ae3999ff3..dc4e136adb08 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		if (flags & GRND_NONBLOCK)
  			return -EAGAIN;
-@@ -2329,3 +2431,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
+@@ -2235,3 +2337,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
  		add_device_randomness(buf, size);
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
@@ -698,7 +847,7 @@ index c02ff25dd477..d860f8eb9a81 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index ae79c3300129..e9205ea7aeb3 100644
+index 5502e176d51b..93b61ca552d6 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -709,7 +858,7 @@ index ae79c3300129..e9205ea7aeb3 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -844,40 +845,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -851,40 +852,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -886,6 +1035,26 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
+index 00279e8c2775..545424e4a066 100644
+--- a/drivers/gpu/drm/i915/display/intel_psr.c
++++ b/drivers/gpu/drm/i915/display/intel_psr.c
+@@ -744,6 +744,15 @@ static bool intel_psr2_sel_fetch_config_valid(struct intel_dp *intel_dp,
+ 		return false;
+ 	}
+
++	/* Temporary workaround for Lenovo's issues with the X1 Carbon 10th Gen
++	 * See: https://bugzilla.redhat.com/show_bug.cgi?id=2065794
++	 */
++	if (IS_ALDERLAKE_P(dev_priv)) {
++		drm_dbg_kms(&dev_priv->drm,
++			    "PSR2 sel fetch disabled on ADL-P, see rhbz2065794\n");
++		return false;
++	}
++
+ 	return crtc_state->enable_psr2_sel_fetch = true;
+ }
+
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -987,7 +1156,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 86a313857b58..dcfc95d0e328 100644
+index bf18128cf5de..e973c7816de8 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -998,7 +1167,7 @@ index 86a313857b58..dcfc95d0e328 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2156,6 +2157,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2165,6 +2166,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -1015,7 +1184,7 @@ index 86a313857b58..dcfc95d0e328 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2189,6 +2200,11 @@ static int __init etm4x_init(void)
+@@ -2198,6 +2209,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -1027,7 +1196,7 @@ index 86a313857b58..dcfc95d0e328 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2215,6 +2231,9 @@ static int __init etm4x_init(void)
+@@ -2224,6 +2240,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -1230,7 +1399,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8b86406b7162..2dffe129b902 100644
+index 107dcf5938d6..225a9797e39d 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1241,7 +1410,7 @@ index 8b86406b7162..2dffe129b902 100644
  #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -3119,6 +3120,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3124,6 +3125,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1269,8 +1438,30 @@ index 8b86406b7162..2dffe129b902 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index 2da804f84b48..bd5998012a87 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		__raw_writel(value, offset);
+ 	else
+-		writel_relaxed(value, offset);
++		writel(value, offset);
+ }
+
+ static inline u32 bcmgenet_readl(void __iomem *offset)
+@@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		return __raw_readl(offset);
+ 	else
+-		return readl_relaxed(offset);
++		return readl(offset);
+ }
+
+ static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 1af8a4513708..5a23e077ab86 100644
+index fd4720d37cc0..c31bc05ec139 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -244,6 +244,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1337,10 +1528,10 @@ index 1af8a4513708..5a23e077ab86 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 13e5d503ed07..daaeb316f624 100644
+index ff775235534c..94de4ecefe56 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
-@@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
+@@ -101,14 +101,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
  	return true;
  }
 
@@ -1356,7 +1547,7 @@ index 13e5d503ed07..daaeb316f624 100644
 
  	/*
  	 * If we got back an ANA error, we know the controller is alive but not
-@@ -83,6 +79,16 @@ void nvme_failover_req(struct request *req)
+@@ -119,6 +115,16 @@ void nvme_failover_req(struct request *req)
  		set_bit(NVME_NS_ANA_PENDING, &ns->flags);
  		queue_work(nvme_wq, &ns->ctrl->ana_work);
  	}
@@ -1373,7 +1564,7 @@ index 13e5d503ed07..daaeb316f624 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -838,8 +844,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -869,8 +875,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1384,18 +1575,18 @@ index 13e5d503ed07..daaeb316f624 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 9b095ee01364..bf25ef206cd2 100644
+index a162f6c6da6e..0606205d5dcc 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -765,6 +765,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
- void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
+@@ -770,6 +770,7 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
+ void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags);
  void nvme_failover_req(struct request *req);
 +void nvme_update_ana(struct request *req);
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -803,6 +804,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
+@@ -808,6 +809,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1405,8 +1596,38 @@ index 9b095ee01364..bf25ef206cd2 100644
  static inline void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl)
  {
  }
+diff --git a/drivers/pci/msi/msi.c b/drivers/pci/msi/msi.c
+index 9037a7827eca..e5900638483b 100644
+--- a/drivers/pci/msi/msi.c
++++ b/drivers/pci/msi/msi.c
+@@ -635,6 +635,9 @@ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
+ 		goto out_disable;
+ 	}
+
++	/* Ensure that all table entries are masked. */
++	msix_mask_all(base, tsize);
++
+ 	dev->msix_base = base;
+
+ 	ret = msix_setup_interrupts(dev, base, entries, nvec, affd);
+@@ -644,15 +647,6 @@ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
+ 	/* Disable INTX */
+ 	pci_intx_for_msi(dev, 0);
+
+-	/*
+-	 * Ensure that all table entries are masked to prevent
+-	 * stale entries from firing in a crash kernel.
+-	 *
+-	 * Done late to deal with a broken Marvell NVME device
+-	 * which takes the MSI-X mask bits into account even
+-	 * when MSI-X is disabled, which prevents MSI delivery.
+-	 */
+-	msix_mask_all(base, tsize);
+ 	pci_msix_clear_and_set_ctrl(dev, PCI_MSIX_FLAGS_MASKALL, 0);
+
+ 	pcibios_free_irq(dev);
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 20a932690738..494cee3aec7b 100644
+index 65f7f6b0576c..27398de38c0c 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4272,6 +4272,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1441,10 +1662,10 @@ index 20a932690738..494cee3aec7b 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index ac6c5ccfe1cb..ec784479eece 100644
+index 47a1c8bddf86..e309d992e2ad 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5669,6 +5669,13 @@ static void hub_event(struct work_struct *work)
+@@ -5683,6 +5683,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
@@ -1458,8 +1679,74 @@ index ac6c5ccfe1cb..ec784479eece 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/nfs/client.c b/fs/nfs/client.c
+index d1f34229e11a..e828504cc396 100644
+--- a/fs/nfs/client.c
++++ b/fs/nfs/client.c
+@@ -857,7 +857,8 @@ static int nfs_probe_fsinfo(struct nfs_server *server, struct nfs_fh *mntfh, str
+ 	}
+
+ 	if (clp->rpc_ops->discover_trunking != NULL &&
+-			(server->caps & NFS_CAP_FS_LOCATIONS)) {
++			(server->caps & NFS_CAP_FS_LOCATIONS &&
++			 (server->flags & NFS_MOUNT_TRUNK_DISCOVERY))) {
+ 		error = clp->rpc_ops->discover_trunking(server, mntfh);
+ 		if (error < 0)
+ 			return error;
+diff --git a/fs/nfs/fs_context.c b/fs/nfs/fs_context.c
+index ea17fa1f31ec..e2d59bb5e6bb 100644
+--- a/fs/nfs/fs_context.c
++++ b/fs/nfs/fs_context.c
+@@ -80,6 +80,7 @@ enum nfs_param {
+ 	Opt_source,
+ 	Opt_tcp,
+ 	Opt_timeo,
++	Opt_trunkdiscovery,
+ 	Opt_udp,
+ 	Opt_v,
+ 	Opt_vers,
+@@ -180,6 +181,7 @@ static const struct fs_parameter_spec nfs_fs_parameters[] = {
+ 	fsparam_string("source",	Opt_source),
+ 	fsparam_flag  ("tcp",		Opt_tcp),
+ 	fsparam_u32   ("timeo",		Opt_timeo),
++	fsparam_flag_no("trunkdiscovery", Opt_trunkdiscovery),
+ 	fsparam_flag  ("udp",		Opt_udp),
+ 	fsparam_flag  ("v2",		Opt_v),
+ 	fsparam_flag  ("v3",		Opt_v),
+@@ -529,6 +531,12 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
+ 		else
+ 			ctx->flags &= ~NFS_MOUNT_NOCTO;
+ 		break;
++	case Opt_trunkdiscovery:
++		if (result.negated)
++			ctx->flags &= ~NFS_MOUNT_TRUNK_DISCOVERY;
++		else
++			ctx->flags |= NFS_MOUNT_TRUNK_DISCOVERY;
++		break;
+ 	case Opt_ac:
+ 		if (result.negated)
+ 			ctx->flags |= NFS_MOUNT_NOAC;
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index dca2b1355bb1..6150d11a607e 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -61,6 +61,14 @@
+  */
+ #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+
++/*
++ * This is a hint to the DMA-mapping subsystem that the device is expected
++ * to overwrite the entire mapped size, thus the caller does not require any
++ * of the previous buffer contents to be preserved. This allows
++ * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
++ */
++#define DMA_ATTR_OVERWRITE		(1UL << 10)
++
+ /*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
+  * be given to a device to use as a DMA source or target.  It is specific to a
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index ef8dbc0a1522..836a5dfc6156 100644
+index ccd4d3f91c98..e64643e3e364 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1471,7 +1758,7 @@ index ef8dbc0a1522..836a5dfc6156 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -783,6 +785,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -829,6 +831,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1486,7 +1773,7 @@ index ef8dbc0a1522..836a5dfc6156 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -794,6 +804,8 @@ static inline bool efi_enabled(int feature)
+@@ -840,6 +850,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1495,7 +1782,7 @@ index ef8dbc0a1522..836a5dfc6156 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -814,6 +826,8 @@ static inline bool efi_enabled(int feature)
+@@ -860,6 +872,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1504,7 +1791,7 @@ index ef8dbc0a1522..836a5dfc6156 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -826,6 +840,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -872,6 +886,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1512,7 +1799,7 @@ index ef8dbc0a1522..836a5dfc6156 100644
 
  /*
   * Variable Attributes
-@@ -1078,13 +1093,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1124,13 +1139,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -1527,10 +1814,10 @@ index ef8dbc0a1522..836a5dfc6156 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index df8de62f4710..f4bbbeb1623a 100644
+index 819ec92dc2a8..b49986bfbeca 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -395,6 +395,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -392,6 +392,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -1540,10 +1827,10 @@ index df8de62f4710..f4bbbeb1623a 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index d45b6f6e27fd..70622b506461 100644
+index 3bf5c658bc44..4701bc5ce2f5 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1548,6 +1548,12 @@
+@@ -1544,6 +1544,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -1556,8 +1843,57 @@ index d45b6f6e27fd..70622b506461 100644
   * Security hooks for perf events
   *
   * @perf_event_open:
+diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+index aed44e9b5d89..c7a0d500b396 100644
+--- a/include/linux/mmzone.h
++++ b/include/linux/mmzone.h
+@@ -1389,13 +1389,16 @@ static inline unsigned long *section_to_usemap(struct mem_section *ms)
+
+ static inline struct mem_section *__nr_to_section(unsigned long nr)
+ {
++	unsigned long root = SECTION_NR_TO_ROOT(nr);
++
++	if (unlikely(root >= NR_SECTION_ROOTS))
++		return NULL;
++
+ #ifdef CONFIG_SPARSEMEM_EXTREME
+-	if (!mem_section)
++	if (!mem_section || !mem_section[root])
+ 		return NULL;
+ #endif
+-	if (!mem_section[SECTION_NR_TO_ROOT(nr)])
+-		return NULL;
+-	return &mem_section[SECTION_NR_TO_ROOT(nr)][nr & SECTION_ROOT_MASK];
++	return &mem_section[root][nr & SECTION_ROOT_MASK];
+ }
+ extern size_t mem_section_usage_size(void);
+
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 1e135fd5c076..6ec4d001c1e2 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -381,6 +381,7 @@ struct module {
+ 	struct module_attribute *modinfo_attrs;
+ 	const char *version;
+ 	const char *srcversion;
++	const char *rhelversion;
+ 	struct kobject *holders_dir;
+
+ 	/* Exported symbols */
+diff --git a/include/linux/nfs_fs_sb.h b/include/linux/nfs_fs_sb.h
+index ca0959e51e81..b0e3fd550122 100644
+--- a/include/linux/nfs_fs_sb.h
++++ b/include/linux/nfs_fs_sb.h
+@@ -151,6 +151,7 @@ struct nfs_server {
+ #define NFS_MOUNT_SOFTREVAL		0x800000
+ #define NFS_MOUNT_WRITE_EAGER		0x01000000
+ #define NFS_MOUNT_WRITE_WAIT		0x02000000
++#define NFS_MOUNT_TRUNK_DISCOVERY	0x04000000
+
+ 	unsigned int		fattr_valid;	/* Valid attributes */
+ 	unsigned int		caps;		/* server capabilities */
 diff --git a/include/linux/random.h b/include/linux/random.h
-index f45b8be3e3c4..7ccdec68b789 100644
+index c45b2693e51f..4edfdb3e44a9 100644
 --- a/include/linux/random.h
 +++ b/include/linux/random.h
 @@ -14,6 +14,11 @@
@@ -1594,10 +1930,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index bbf44a466832..026a06b98a96 100644
+index 6d72772182c8..fe3b072665fb 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -473,6 +473,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -471,6 +471,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -1605,7 +1941,7 @@ index bbf44a466832..026a06b98a96 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1355,6 +1356,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1347,6 +1348,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -1616,18 +1952,80 @@ index bbf44a466832..026a06b98a96 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
-diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
-index d24b0a34c8f0..871489df63c6 100644
---- a/include/net/netfilter/nf_conntrack.h
-+++ b/include/net/netfilter/nf_conntrack.h
-@@ -95,6 +95,7 @@ struct nf_conn {
- 	unsigned long status;
+diff --git a/init/Kconfig b/init/Kconfig
+index e9119bf54b1f..e3b57b4898fe 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1645,7 +1645,7 @@ config AIO
+ 	  this option saves about 7k.
 
- 	u16		cpu;
-+	u16		local_origin:1;
- 	possible_net_t ct_net;
+ config IO_URING
+-	bool "Enable IO uring support" if EXPERT
++	bool "Enable IO uring support"
+ 	select IO_WQ
+ 	default y
+ 	help
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 6db1c475ec82..bfc56cb21705 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -627,14 +627,10 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 	for (i = 0; i < nr_slots(alloc_size + offset); i++)
+ 		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
+ 	tlb_addr = slot_addr(mem->start, index) + offset;
+-	/*
+-	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
+-	 * to the tlb buffer, if we knew for sure the device will
+-	 * overwirte the entire current content. But we don't. Thus
+-	 * unconditional bounce may prevent leaking swiotlb content (i.e.
+-	 * kernel memory) to user-space.
+-	 */
+-	swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
++	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
++	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
++	    dir == DMA_BIDIRECTIONAL))
++		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
+ 	return tlb_addr;
+ }
 
- #if IS_ENABLED(CONFIG_NF_NAT)
+@@ -701,13 +697,10 @@ void swiotlb_tbl_unmap_single(struct device *dev, phys_addr_t tlb_addr,
+ void swiotlb_sync_single_for_device(struct device *dev, phys_addr_t tlb_addr,
+ 		size_t size, enum dma_data_direction dir)
+ {
+-	/*
+-	 * Unconditional bounce is necessary to avoid corruption on
+-	 * sync_*_for_cpu or dma_ummap_* when the device didn't overwrite
+-	 * the whole lengt of the bounce buffer.
+-	 */
+-	swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
+-	BUG_ON(!valid_dma_direction(dir));
++	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)
++		swiotlb_bounce(dev, tlb_addr, size, DMA_TO_DEVICE);
++	else
++		BUG_ON(dir != DMA_FROM_DEVICE);
+ }
+
+ void swiotlb_sync_single_for_cpu(struct device *dev, phys_addr_t tlb_addr,
+diff --git a/kernel/module.c b/kernel/module.c
+index 46a5c2ed1928..92c2306651ce 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -743,6 +743,7 @@ static struct module_attribute modinfo_##field = {                    \
+
+ MODINFO_ATTR(version);
+ MODINFO_ATTR(srcversion);
++MODINFO_ATTR(rhelversion);
+
+ static char last_unloaded_module[MODULE_NAME_LEN+1];
+
+@@ -1205,6 +1206,7 @@ static struct module_attribute *modinfo_attrs[] = {
+ 	&module_uevent,
+ 	&modinfo_version,
+ 	&modinfo_srcversion,
++	&modinfo_rhelversion,
+ 	&modinfo_initstate,
+ 	&modinfo_coresize,
+ 	&modinfo_initsize,
 diff --git a/kernel/module_signing.c b/kernel/module_signing.c
 index 8723ae70ea1f..fb2d773498c2 100644
 --- a/kernel/module_signing.c
@@ -1649,102 +2047,81 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 4712a90a1820..208abc729302 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -1749,6 +1749,9 @@ resolve_normal_ct(struct nf_conn *tmpl,
- 			return 0;
- 		if (IS_ERR(h))
- 			return PTR_ERR(h);
-+
-+		ct = nf_ct_tuplehash_to_ctrack(h);
-+		ct->local_origin = state->hook == NF_INET_LOCAL_OUT;
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 2882bc7d79d7..bc3a11ec0c27 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3667,8 +3667,8 @@ static void hci_scodata_packet(struct hci_dev *hdev, struct sk_buff *skb)
+ 		sco_recv_scodata(conn, skb);
+ 		return;
+ 	} else {
+-		bt_dev_err(hdev, "SCO packet for unknown connection handle %d",
+-			   handle);
++		bt_dev_err_ratelimited(hdev, "SCO packet for unknown connection handle %d",
++				       handle);
  	}
- 	ct = nf_ct_tuplehash_to_ctrack(h);
 
-diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
-index 4d50d51db796..29d26bc977dc 100644
---- a/net/netfilter/nf_nat_core.c
-+++ b/net/netfilter/nf_nat_core.c
-@@ -494,6 +494,38 @@ static void nf_nat_l4proto_unique_tuple(struct nf_conntrack_tuple *tuple,
- 	goto another_round;
+ 	kfree_skb(skb);
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index fc30f4c03d29..2bca8cb1c68f 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -6798,7 +6798,7 @@ static const struct hci_ev {
+ 	HCI_EV(HCI_EV_NUM_COMP_BLOCKS, hci_num_comp_blocks_evt,
+ 	       sizeof(struct hci_ev_num_comp_blocks)),
+ 	/* [0xff = HCI_EV_VENDOR] */
+-	HCI_EV(HCI_EV_VENDOR, msft_vendor_evt, 0),
++	HCI_EV_VL(HCI_EV_VENDOR, msft_vendor_evt, 0, HCI_MAX_EVENT_SIZE),
+ };
+
+ static void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
+@@ -6823,8 +6823,9 @@ static void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
+ 	 * decide if that is acceptable.
+ 	 */
+ 	if (skb->len > ev->max_len)
+-		bt_dev_warn(hdev, "unexpected event 0x%2.2x length: %u > %u",
+-			    event, skb->len, ev->max_len);
++		bt_dev_warn_ratelimited(hdev,
++					"unexpected event 0x%2.2x length: %u > %u",
++					event, skb->len, ev->max_len);
+
+ 	data = hci_ev_skb_pull(hdev, skb, event, ev->min_len);
+ 	if (!data)
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index 6bfa33217914..92d936f34b27 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -21,6 +21,7 @@
+ #include <errno.h>
+ #include "modpost.h"
+ #include "../../include/linux/license.h"
++#include "../../include/generated/uapi/linux/version.h"
+
+ /* Are we using CONFIG_MODVERSIONS? */
+ static int modversions = 0;
+@@ -2366,6 +2367,12 @@ static void write_buf(struct buffer *b, const char *fname)
+ 	}
  }
 
-+static bool tuple_force_port_remap(const struct nf_conntrack_tuple *tuple)
++static void add_rhelversion(struct buffer *b, struct module *mod)
 +{
-+	u16 sp, dp;
-+
-+	switch (tuple->dst.protonum) {
-+	case IPPROTO_TCP:
-+		sp = ntohs(tuple->src.u.tcp.port);
-+		dp = ntohs(tuple->dst.u.tcp.port);
-+		break;
-+	case IPPROTO_UDP:
-+	case IPPROTO_UDPLITE:
-+		sp = ntohs(tuple->src.u.udp.port);
-+		dp = ntohs(tuple->dst.u.udp.port);
-+		break;
-+	default:
-+		return false;
-+	}
-+
-+	/* IANA: System port range: 1-1023,
-+	 *         user port range: 1024-49151,
-+	 *      private port range: 49152-65535.
-+	 *
-+	 * Linux default ephemeral port range is 32768-60999.
-+	 *
-+	 * Enforce port remapping if sport is significantly lower
-+	 * than dport to prevent NAT port shadowing, i.e.
-+	 * accidental match of 'new' inbound connection vs.
-+	 * existing outbound one.
-+	 */
-+	return sp < 16384 && dp >= 32768;
++	buf_printf(b, "MODULE_INFO(rhelversion, \"%d.%d\");\n", RHEL_MAJOR,
++		   RHEL_MINOR);
 +}
 +
- /* Manipulate the tuple into the range given. For NF_INET_POST_ROUTING,
-  * we change the source to map into the range. For NF_INET_PRE_ROUTING
-  * and NF_INET_LOCAL_OUT, we change the destination to map into the
-@@ -507,11 +539,17 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
- 		 struct nf_conn *ct,
- 		 enum nf_nat_manip_type maniptype)
+ static void write_if_changed(struct buffer *b, const char *fname)
  {
-+	bool random_port = range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL;
- 	const struct nf_conntrack_zone *zone;
- 	struct net *net = nf_ct_net(ct);
+ 	char *tmp;
+@@ -2595,6 +2602,7 @@ int main(int argc, char **argv)
+ 		add_depends(&buf, mod);
+ 		add_moddevtable(&buf, mod);
+ 		add_srcversion(&buf, mod);
++		add_rhelversion(&buf, mod);
 
- 	zone = nf_ct_zone(ct);
-
-+	if (maniptype == NF_NAT_MANIP_SRC &&
-+	    !random_port &&
-+	    !ct->local_origin)
-+		random_port = tuple_force_port_remap(orig_tuple);
-+
- 	/* 1) If this srcip/proto/src-proto-part is currently mapped,
- 	 * and that same mapping gives a unique tuple within the given
- 	 * range, use that.
-@@ -520,8 +558,7 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
- 	 * So far, we don't do local source mappings, so multiple
- 	 * manips not an issue.
- 	 */
--	if (maniptype == NF_NAT_MANIP_SRC &&
--	    !(range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL)) {
-+	if (maniptype == NF_NAT_MANIP_SRC && !random_port) {
- 		/* try the original tuple first */
- 		if (in_range(orig_tuple, range)) {
- 			if (!nf_nat_used_tuple(orig_tuple, ct)) {
-@@ -545,7 +582,7 @@ get_unique_tuple(struct nf_conntrack_tuple *tuple,
- 	 */
-
- 	/* Only bother mapping if it's not already in range and unique */
--	if (!(range->flags & NF_NAT_RANGE_PROTO_RANDOM_ALL)) {
-+	if (!random_port) {
- 		if (range->flags & NF_NAT_RANGE_PROTO_SPECIFIED) {
- 			if (!(range->flags & NF_NAT_RANGE_PROTO_OFFSET) &&
- 			    l4proto_in_range(tuple, maniptype,
+ 		sprintf(fname, "%s.mod.c", mod->name);
+ 		write_if_changed(&buf, fname);
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index b24bfaec6290..0418ba1d33f3 100755
+index 16d475b3e203..4e333f14b84e 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
@@ -1757,10 +2134,10 @@ index b24bfaec6290..0418ba1d33f3 100755
  # Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
  # to force full paths for a non-O= build
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-index f290f78c3f30..d3e7ae04f5be 100644
+index 08b6d12f99b4..61b596236d53 100644
 --- a/security/integrity/platform_certs/load_uefi.c
 +++ b/security/integrity/platform_certs/load_uefi.c
-@@ -46,7 +46,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
+@@ -47,7 +47,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
  		return NULL;
 
  	if (*status != EFI_BUFFER_TOO_SMALL) {
@@ -1770,7 +2147,7 @@ index f290f78c3f30..d3e7ae04f5be 100644
  		return NULL;
  	}
 
-@@ -57,7 +58,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
+@@ -58,7 +59,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
  	*status = efi.get_variable(name, guid, NULL, &lsize, db);
  	if (*status != EFI_SUCCESS) {
  		kfree(db);
@@ -1817,10 +2194,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index c88167a414b4..e65a178ff9f4 100644
+index 22261d79f333..20336365f864 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2600,6 +2600,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2603,6 +2603,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
@@ -1833,19 +2210,3 @@ index c88167a414b4..e65a178ff9f4 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-diff --git a/tools/testing/selftests/netfilter/nft_nat.sh b/tools/testing/selftests/netfilter/nft_nat.sh
-index d88867d2fed7..349a319a9e51 100755
---- a/tools/testing/selftests/netfilter/nft_nat.sh
-+++ b/tools/testing/selftests/netfilter/nft_nat.sh
-@@ -880,8 +880,9 @@ EOF
- 		return $ksft_skip
- 	fi
-
--	# test default behaviour. Packet from ns1 to ns0 is redirected to ns2.
--	test_port_shadow "default" "CLIENT"
-+	# test default behaviour. Packet from ns1 to ns0 is not redirected
-+	# due to automatic port translation.
-+	test_port_shadow "default" "ROUTER"
-
- 	# test packet filter based mitigation: prevent forwarding of
- 	# packets claiming to come from the service port.
