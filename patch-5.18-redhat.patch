@@ -3419,3 +3419,32 @@ index b7cf5cbfdc67..3cde9062fcf6 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+From 5834cadfb4eb3051a4fddae48579706f3e050c16 Mon Sep 17 00:00:00 2001
+From: "Justin M. Forbes" <jforbes@fedoraproject.org>
+Date: Fri, 1 Apr 2022 17:14:48 -0500
+Subject: [PATCH] Fix build flag passing for intel-speed-select
+
+Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
+---
+ tools/power/x86/intel-speed-select/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/power/x86/intel-speed-select/Makefile b/tools/power/x86/intel-speed-select/Makefile
+index 846f785e278d..b1ae862cec9d 100644
+--- a/tools/power/x86/intel-speed-select/Makefile
++++ b/tools/power/x86/intel-speed-select/Makefile
+@@ -40,9 +40,9 @@ prepare: $(OUTPUT)include/linux/isst_if.h $(OUTPUT)include/linux/thermal.h
+ ISST_IN := $(OUTPUT)intel-speed-select-in.o
+
+ $(ISST_IN): prepare FORCE
+-	$(Q)$(MAKE) $(build)=intel-speed-select
++	$(Q)$(MAKE) CFLAGS="$(CFLAGS)" $(build)=intel-speed-select
+ $(OUTPUT)intel-speed-select: $(ISST_IN)
+-	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@
++	$(QUIET_LINK)$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
+
+ clean:
+ 	rm -f $(ALL_PROGRAMS)
+-- 
+2.35.1
+
