@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc0.20220401gite8b767f5e04097a.15
+%global distro_build 0.rc1.18
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc0.20220401gite8b767f5e04097a.15
+%define pkgrelease 0.rc1.18
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220401gite8b767f5e04097a.15%{?buildid}%{?dist}
+%define specrelease 0.rc1.18%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -698,7 +698,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17-13673-ge8b767f5e04097a.tar.xz
+Source0: linux-5.18-rc1.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1390,8 +1390,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17-13673-ge8b767f5e04097a -c
-mv linux-5.17-13673-ge8b767f5e04097a linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc1 -c
+mv linux-5.18-rc1 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3018,9 +3018,12 @@ fi
 #
 #
 %changelog
-* Fri Apr 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.e8b767f5e04097a.14]
+* Mon Apr 04 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.17]
 - redhat/kernel.spec.template: Fix intel-speed-select compile (Prarit Bhargava)
+
+* Mon Apr 04 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.16]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)
+- redhat/configs: Enable CONFIG_RCU_SCALE_TEST & CONFIG_RCU_REF_SCALE_TEST (Waiman Long)
 
 * Fri Apr 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc0.e8b767f5e04097a.13]
 - Add clk_test and clk-gate_test to mod-internal.list (Justin M. Forbes)

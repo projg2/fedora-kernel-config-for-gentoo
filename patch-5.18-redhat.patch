@@ -130,7 +130,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 18ecb49f1af6..8e964bc4843e 100644
+index 8c7de9a72ea2..60632151a917 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -144,7 +144,7 @@ index 18ecb49f1af6..8e964bc4843e 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1242,7 +1246,13 @@ define filechk_version.h
+@@ -1238,7 +1242,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -225,7 +225,7 @@ index 3f8ee257f9aa..3ab92feb6241 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 28ae7df26c4a..8f5ea21872ff 100644
+index 1cc85b8ff42e..b7ee128c67ce 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
 @@ -2216,3 +2216,8 @@ int ipl_report_free(struct ipl_report *report)
@@ -238,7 +238,7 @@ index 28ae7df26c4a..8f5ea21872ff 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 84e23fcc1106..a6ec5247aa18 100644
+index d860ac300919..6e63924932e6 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -249,7 +249,7 @@ index 84e23fcc1106..a6ec5247aa18 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -964,6 +965,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -965,6 +966,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -1524,7 +1524,7 @@ index ee4da9ab8013..0f217997a764 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 677fa4bf76d3..71d5d773d3d8 100644
+index efb85c6d8e2d..e30c7cc199db 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -240,6 +240,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1591,7 +1591,7 @@ index 677fa4bf76d3..71d5d773d3d8 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 1b31f19e1053..4ffdabb4f223 100644
+index d464fdf978fb..acdaab3d7697 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
@@ -1627,7 +1627,7 @@ index 1b31f19e1053..4ffdabb4f223 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -847,8 +853,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -869,8 +875,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1638,10 +1638,10 @@ index 1b31f19e1053..4ffdabb4f223 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index f4b674a8ce20..181cbac05cef 100644
+index 1393bbf82d71..493a30d3493a 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -776,6 +776,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -795,6 +795,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1649,7 +1649,7 @@ index f4b674a8ce20..181cbac05cef 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -811,6 +812,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -831,6 +832,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -2116,10 +2116,10 @@ index 81749eaddf4c..f5de0c0c14cd 100644
 
  	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
 diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index d84714e4e46a..689297b7b003 100644
+index 54be9d64093e..20fe244067ec 100644
 --- a/fs/xfs/xfs_super.c
 +++ b/fs/xfs/xfs_super.c
-@@ -1602,9 +1602,14 @@ xfs_fs_fill_super(
+@@ -1603,9 +1603,14 @@ xfs_fs_fill_super(
  		sb->s_flags |= SB_I_VERSION;
 
  	if (xfs_has_dax_always(mp)) {
@@ -2328,7 +2328,7 @@ index f5844908a089..901d51012738 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index b957eeb89c7a..16c883f374aa 100644
+index 60adf42460ab..a3f0f828a346 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1491,6 +1491,22 @@ int pci_add_dynid(struct pci_driver *drv,
@@ -3297,7 +3297,7 @@ index eaa4b5c920a2..27563a5fedcd 100644
  		 count, align);
 
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index d10f93aac1c8..253455a77e19 100644
+index ed9d056d2108..8388e2a804d3 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -21,6 +21,7 @@
