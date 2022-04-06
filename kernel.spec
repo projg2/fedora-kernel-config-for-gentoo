@@ -2246,7 +2246,7 @@ chmod +x tools/power/cpupower/utils/version-gen.sh
    %{tools_make}
    popd
    pushd tools/power/x86/intel-speed-select
-   %{make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3
+   %{make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3"
    popd
 %endif
 %endif
