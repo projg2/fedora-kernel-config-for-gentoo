@@ -1,5 +1,14 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9e0d609a1538c26606fe04613e8ce3a4244ff3c2
+ 9e0d609a1538c26606fe04613e8ce3a4244ff3c2 tools/power/x86/intel-speed-select: fix build failure when using -Wl,--as-needed
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/9a4f5172b1f7ca55a805fca7cd025b9a1f8c1eae
  9a4f5172b1f7ca55a805fca7cd025b9a1f8c1eae mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/4254c840c8f3f59b221709274c049e34587de909
+ 4254c840c8f3f59b221709274c049e34587de909 Add Partner Supported taint flag to kAFS
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0308c0e25aac4bd0fafa852d8b5625be8885e419
+ 0308c0e25aac4bd0fafa852d8b5625be8885e419 Add Partner Supported taint flag
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/8e648aae90c1d739b5ead43fb84c2cae550a8344
  8e648aae90c1d739b5ead43fb84c2cae550a8344 Fix up rng merge

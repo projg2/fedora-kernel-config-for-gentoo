@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc1.18
+%global distro_build 0.rc1.20220406git3e732ebf7316ac8.19
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc1.18
+%define pkgrelease 0.rc1.20220406git3e732ebf7316ac8.19
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.18%{?buildid}%{?dist}
+%define specrelease 0.rc1.20220406git3e732ebf7316ac8.19%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -698,7 +698,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc1.tar.xz
+Source0: linux-5.18-rc1-16-g3e732ebf7316ac8.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1390,8 +1390,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc1 -c
-mv linux-5.18-rc1 linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc1-16-g3e732ebf7316ac8 -c
+mv linux-5.18-rc1-16-g3e732ebf7316ac8 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2246,7 +2246,7 @@ chmod +x tools/power/cpupower/utils/version-gen.sh
    %{tools_make}
    popd
    pushd tools/power/x86/intel-speed-select
-   %{make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3" LDFLAGS+="-lnl-genl-3 -lnl-3"
+   %{make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3
    popd
 %endif
 %endif
@@ -2511,7 +2511,7 @@ install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
    %{tools_make} DESTDIR=%{buildroot} install
    popd
    pushd tools/power/x86/intel-speed-select
-   %{make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3" LDFLAGS+="-lnl-genl-3 -lnl-3" DESTDIR=%{buildroot} install
+   %{tools_make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl" DESTDIR=%{buildroot} install
    popd
 %endif
 pushd tools/thermal/tmon
@@ -3018,8 +3018,13 @@ fi
 #
 #
 %changelog
-* Mon Apr 04 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.17]
-- redhat/kernel.spec.template: Fix intel-speed-select compile (Prarit Bhargava)
+* Wed Apr 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.3e732ebf7316ac8.18]
+- tools/power/x86/intel-speed-select: fix build failure when using -Wl,--as-needed (Herton R. Krzesinski)
+
+* Wed Apr 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.3e732ebf7316ac8.17]
+- Add Partner Supported taint flag to kAFS (Alice Mitchell) [2038999]
+- Add Partner Supported taint flag (Alice Mitchell) [2038999]
+- Enabled INTEGRITY_MACHINE_KEYRING for all configs. (Peter Robinson)
 
 * Mon Apr 04 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.16]
 - mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning (Waiman Long)

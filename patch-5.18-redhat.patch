@@ -45,10 +45,11 @@
  drivers/scsi/qla4xxx/ql4_os.c                      |   2 +
  drivers/usb/core/hub.c                             |   7 +
  drivers/virtio/virtio_mem.c                        |  13 +
+ fs/afs/main.c                                      |   3 +
  fs/ext4/super.c                                    |   5 +
  fs/xfs/xfs_super.c                                 |   5 +
  include/linux/efi.h                                |  22 +-
- include/linux/kernel.h                             |  19 +
+ include/linux/kernel.h                             |  21 +
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
  include/linux/mmzone.h                             |  11 +-
@@ -65,7 +66,7 @@
  kernel/module.c                                    |   2 +
  kernel/module_signing.c                            |   9 +-
  kernel/panic.c                                     |  14 +
- kernel/rh_messages.c                               | 179 +++++++
+ kernel/rh_messages.c                               | 209 +++++++++
  kernel/sysctl.c                                    |   5 +
  mm/cma.c                                           |  10 +
  scripts/mod/modpost.c                              |   8 +
@@ -74,7 +75,8 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 76 files changed, 1735 insertions(+), 192 deletions(-)
+ tools/power/x86/intel-speed-select/Makefile        |   2 +-
+ 78 files changed, 1771 insertions(+), 193 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 3f1cc5e317ed..fbc0870dd787 100644
@@ -2092,6 +2094,20 @@ index e7d6b679596d..e604370ed3c1 100644
  		atomic_set(&vm->config_changed, 1);
  		queue_work(system_freezable_wq, &vm->wq);
  	}
+diff --git a/fs/afs/main.c b/fs/afs/main.c
+index eae288c8d40a..8b8bf447cedc 100644
+--- a/fs/afs/main.c
++++ b/fs/afs/main.c
+@@ -201,6 +201,9 @@ static int __init afs_init(void)
+ 		goto error_proc;
+ 	}
+
++#ifdef CONFIG_RHEL_DIFFERENCES
++	mark_partner_supported(KBUILD_MODNAME, THIS_MODULE);
++#endif
+ 	return ret;
+
+ error_proc:
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
 index 81749eaddf4c..f5de0c0c14cd 100644
 --- a/fs/ext4/super.c
@@ -2203,10 +2219,10 @@ index ccd4d3f91c98..e64643e3e364 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 08ba5995aa8b..5745b60e3b78 100644
+index 08ba5995aa8b..1aa251e902cd 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -517,4 +517,23 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -517,4 +517,25 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -2220,6 +2236,7 @@ index 08ba5995aa8b..5745b60e3b78 100644
 +void mark_driver_deprecated(const char *driver_name);
 +void mark_hardware_disabled(const char *driver_name, char *fmt, ...);
 +void mark_tech_preview(const char *msg, struct module *mod);
++void mark_partner_supported(const char *msg, struct module *mod);
 +#else
 +static inline void mark_hardware_unsupported(const char *driver_name, char *fmt, ...) { }
 +static inline void mark_driver_unmaintained(const char *driver_name) { }
@@ -2227,6 +2244,7 @@ index 08ba5995aa8b..5745b60e3b78 100644
 +static inline void mark_driver_deprecated(const char *driver_name) { }
 +static inline void mark_hardware_disabled(const char *driver_name, char *fmt, ...) { }
 +static inline void mark_tech_preview(const char *msg, struct module *mod) { }
++static inline void mark_partner_supported(const char *msg, struct module *mod) { }
 +#endif
 +
  #endif
@@ -2298,7 +2316,7 @@ index 1e135fd5c076..6ec4d001c1e2 100644
 
  	/* Exported symbols */
 diff --git a/include/linux/panic.h b/include/linux/panic.h
-index f5844908a089..901d51012738 100644
+index f5844908a089..0382f4a116e9 100644
 --- a/include/linux/panic.h
 +++ b/include/linux/panic.h
 @@ -74,7 +74,24 @@ static inline void set_arch_panic_timeout(int timeout, int arch_default_timeout)
@@ -2315,7 +2333,7 @@ index f5844908a089..901d51012738 100644
 +#define TAINT_23			23
 +#define TAINT_24			24
 +#define TAINT_25			25
-+#define TAINT_26			26
++#define TAINT_PARTNER_SUPPORTED 	26
 +#define TAINT_SUPPORT_REMOVED		27
 +/* Bits 28 - 31 are reserved for Red Hat use only */
 +#define TAINT_RESERVED28		28
@@ -3043,7 +3061,7 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	return ret;
  }
 diff --git a/kernel/panic.c b/kernel/panic.c
-index eb4dfb932c85..c884a0b18445 100644
+index eb4dfb932c85..310c8958e081 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
 @@ -404,6 +404,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
@@ -3058,7 +3076,7 @@ index eb4dfb932c85..c884a0b18445 100644
 +	[ TAINT_23 ]			= { '?', '-', false },
 +	[ TAINT_24 ]			= { '?', '-', false },
 +	[ TAINT_25 ]			= { '?', '-', false },
-+	[ TAINT_26 ]			= { '?', '-', false },
++	[ TAINT_PARTNER_SUPPORTED ]	= { 'p', ' ', true },
 +	[ TAINT_SUPPORT_REMOVED ]	= { 'h', ' ', false },
 +	[ TAINT_RESERVED28 ]		= { '?', '-', false },
 +	[ TAINT_RESERVED29 ]		= { '?', '-', false },
@@ -3069,10 +3087,10 @@ index eb4dfb932c85..c884a0b18445 100644
  /**
 diff --git a/kernel/rh_messages.c b/kernel/rh_messages.c
 new file mode 100644
-index 000000000000..345a979cd0e4
+index 000000000000..586c3319f530
 --- /dev/null
 +++ b/kernel/rh_messages.c
-@@ -0,0 +1,179 @@
+@@ -0,0 +1,209 @@
 +#include <linux/kernel.h>
 +#include <linux/module.h>
 +
@@ -3252,6 +3270,36 @@ index 000000000000..345a979cd0e4
 +#endif
 +}
 +EXPORT_SYMBOL(mark_tech_preview);
++
++/**
++ * mark_partner_supported() - Mark driver or kernel subsystem as 'Partner Supported'
++ * @msg: Driver or kernel subsystem name
++ *
++ * Called to clarify the support status of a driver.  This does TAINT the
++ * kernel.  Calling this function indicates that the driver or subsystem is
++ * supported by one of our partners and not by Red Hat directly.
++ */
++void mark_partner_supported(const char *msg, struct module *mod)
++{
++	const char *str = NULL;
++
++	if (msg)
++		str = msg;
++#ifdef CONFIG_MODULES
++	else if (mod && mod->name)
++		str = mod->name;
++#endif
++
++	pr_warn("Notice: %s is a Partner Supported GPL module and not supported directly by Red Hat.\n"
++		"Please contact your provider for support.\n",
++		(str ? str : "kernel"));
++	add_taint(TAINT_PARTNER_SUPPORTED, LOCKDEP_STILL_OK);
++#ifdef CONFIG_MODULES
++	if (mod)
++		mod->taints |= (1U << TAINT_PARTNER_SUPPORTED);
++#endif
++}
++EXPORT_SYMBOL(mark_partner_supported);
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
 index 830aaf8ca08e..080bafbeabef 100644
 --- a/kernel/sysctl.c
@@ -3419,32 +3467,16 @@ index b7cf5cbfdc67..3cde9062fcf6 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-From 5834cadfb4eb3051a4fddae48579706f3e050c16 Mon Sep 17 00:00:00 2001
-From: "Justin M. Forbes" <jforbes@fedoraproject.org>
-Date: Fri, 1 Apr 2022 17:14:48 -0500
-Subject: [PATCH] Fix build flag passing for intel-speed-select
-
-Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
----
- tools/power/x86/intel-speed-select/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
 diff --git a/tools/power/x86/intel-speed-select/Makefile b/tools/power/x86/intel-speed-select/Makefile
-index 846f785e278d..b1ae862cec9d 100644
+index 846f785e278d..7221f2f55e8b 100644
 --- a/tools/power/x86/intel-speed-select/Makefile
 +++ b/tools/power/x86/intel-speed-select/Makefile
-@@ -40,9 +40,9 @@ prepare: $(OUTPUT)include/linux/isst_if.h $(OUTPUT)include/linux/thermal.h
- ISST_IN := $(OUTPUT)intel-speed-select-in.o
-
+@@ -42,7 +42,7 @@ ISST_IN := $(OUTPUT)intel-speed-select-in.o
  $(ISST_IN): prepare FORCE
--	$(Q)$(MAKE) $(build)=intel-speed-select
-+	$(Q)$(MAKE) CFLAGS="$(CFLAGS)" $(build)=intel-speed-select
+ 	$(Q)$(MAKE) $(build)=intel-speed-select
  $(OUTPUT)intel-speed-select: $(ISST_IN)
 -	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@
-+	$(QUIET_LINK)$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
++	$(QUIET_LINK)$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
  clean:
  	rm -f $(ALL_PROGRAMS)
--- 
-2.35.1
-
