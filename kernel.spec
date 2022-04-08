@@ -130,7 +130,7 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.17
 
-%define rpmversion 5.17.1
+%define rpmversion 5.17.2
 %define patchversion 5.17
 %define pkgrelease 200
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17.1.tar.xz
+Source0: linux-5.17.2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1387,8 +1387,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17.1 -c
-mv linux-5.17.1 linux-%{KVERREL}
+%setup -q -n kernel-5.17.2 -c
+mv linux-5.17.2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3015,7 +3015,12 @@ fi
 #
 #
 %changelog
-* Fri Apr 01 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.17.1-200]
+* Fri Apr 08 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.17.2-0]
+- Move the patch to the redhat directory so it doesn't end up as an applied patch (Justin M. Forbes)
+- Config updates for 5.17.2 (Justin M. Forbes)
+- Fedora: arm: Updates for QCom devices (Peter Robinson)
+- Fedora arm and generic updates for 5.17 (Peter Robinson)
+- enable COMMON_CLK_SI5341 for Xilinx ZYNQ-MP (Peter Robinson)
 - Update Fix 'mem_section' will never be NULL gcc 12 warning to V4 (Justin M. Forbes)
 - NFSv4.1 provide mount option to toggle trunking discovery (Olga Kornievskaia)
 - Add the Revert patch so that it can be applied when building dist-git for F34 and F35 (Justin M. Forbes)
