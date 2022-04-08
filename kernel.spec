@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc1.20220406git3e732ebf7316ac8.19
+%global distro_build 0.rc1.20220408git1831fed559732b1.20
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc1.20220406git3e732ebf7316ac8.19
+%define pkgrelease 0.rc1.20220408git1831fed559732b1.20
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20220406git3e732ebf7316ac8.19%{?buildid}%{?dist}
+%define specrelease 0.rc1.20220408git1831fed559732b1.20%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -698,7 +698,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc1-16-g3e732ebf7316ac8.tar.xz
+Source0: linux-5.18-rc1-184-g1831fed559732b1.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1032,7 +1032,7 @@ This package provides debug information for package kernel-tools.
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|.*%%{_sbindir}/intel_sdsi(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
 
 # with_tools
 %endif
@@ -1390,8 +1390,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc1-16-g3e732ebf7316ac8 -c
-mv linux-5.18-rc1-16-g3e732ebf7316ac8 linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc1-184-g1831fed559732b1 -c
+mv linux-5.18-rc1-184-g1831fed559732b1 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1708,7 +1708,7 @@ BuildKernel() {
     # hmac sign the kernel for FIPS
     echo "Creating hmac file: $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac"
     ls -l $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
-    sha512hmac $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer | sed -e "s,$RPM_BUILD_ROOT,," > $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac;
+    (cd $RPM_BUILD_ROOT/%{image_install_path} && sha512hmac $InstallName-$KernelVer) > $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac;
     cp $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac $RPM_BUILD_ROOT/lib/modules/$KernelVer/.vmlinuz.hmac
 
     if [ $DoModules -eq 1 ]; then
@@ -2248,6 +2248,9 @@ chmod +x tools/power/cpupower/utils/version-gen.sh
    pushd tools/power/x86/intel-speed-select
    %{make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3"
    popd
+   pushd tools/arch/x86/intel_sdsi
+   %{make}
+   popd
 %endif
 %endif
 pushd tools/thermal/tmon/
@@ -2512,6 +2515,9 @@ install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
    popd
    pushd tools/power/x86/intel-speed-select
    %{tools_make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3" DESTDIR=%{buildroot} install
+   popd
+   pushd tools/arch/x86/intel_sdsi
+   %{tools_make} DESTDIR=%{buildroot} install
    popd
 %endif
 pushd tools/thermal/tmon
@@ -2851,6 +2857,7 @@ fi
 %{_bindir}/turbostat
 %{_mandir}/man8/turbostat*
 %{_bindir}/intel-speed-select
+%{_sbindir}/intel_sdsi
 %endif
 # cpupowerarchs
 %endif
@@ -3018,8 +3025,14 @@ fi
 #
 #
 %changelog
-* Wed Apr 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.3e732ebf7316ac8.18]
+* Fri Apr 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.1831fed559732b1.19]
 - tools/power/x86/intel-speed-select: fix build failure when using -Wl,--as-needed (Herton R. Krzesinski)
+
+* Fri Apr 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.1831fed559732b1.18]
+- redhat/configs: Enable cr50 I2C TPM interface (Akihiko Odaki)
+- spec: make HMAC file encode relative path (Jonathan Lebon)
+- redhat/kernel.spec.template: Add intel_sdsi utility (Prarit Bhargava)
+- Spec fixes for intel-speed-select (Justin M. Forbes)
 
 * Wed Apr 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.3e732ebf7316ac8.17]
 - Add Partner Supported taint flag to kAFS (Alice Mitchell) [2038999]

@@ -659,7 +659,7 @@ index c59265146e9c..caa8458edde2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 1d8242969751..ce626cbe3390 100644
+index e15063d61460..5a488694308a 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -52,6 +52,7 @@
@@ -756,7 +756,7 @@ index 1d8242969751..ce626cbe3390 100644
  /*
   * Batched entropy returns random integers. The quality of the random
   * number is good as /dev/urandom. In order to ensure that the randomness
-@@ -1179,6 +1245,19 @@ void add_bootloader_randomness(const void *buf, size_t size)
+@@ -1176,6 +1242,19 @@ void add_bootloader_randomness(const void *buf, size_t size)
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
 
@@ -776,7 +776,7 @@ index 1d8242969751..ce626cbe3390 100644
  #if IS_ENABLED(CONFIG_VMGENID)
  static BLOCKING_NOTIFIER_HEAD(vmfork_chain);
 
-@@ -1466,6 +1545,9 @@ static void try_to_generate_entropy(void)
+@@ -1463,6 +1542,9 @@ static void try_to_generate_entropy(void)
  SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
  		flags)
  {
@@ -786,7 +786,7 @@ index 1d8242969751..ce626cbe3390 100644
  	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
  		return -EINVAL;
 
-@@ -1479,6 +1561,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+@@ -1476,6 +1558,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
  	if (count > INT_MAX)
  		count = INT_MAX;
 
@@ -805,7 +805,7 @@ index 1d8242969751..ce626cbe3390 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		int ret;
 
-@@ -1632,6 +1726,7 @@ static int random_fasync(int fd, struct file *filp, int on)
+@@ -1636,6 +1730,7 @@ static int random_fasync(int fd, struct file *filp, int on)
  }
 
  const struct file_operations random_fops = {
