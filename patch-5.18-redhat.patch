@@ -52,7 +52,6 @@
  include/linux/kernel.h                             |  21 +
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
- include/linux/mmzone.h                             |  11 +-
  include/linux/module.h                             |   1 +
  include/linux/panic.h                              |  19 +-
  include/linux/pci.h                                |  16 +
@@ -76,7 +75,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/power/x86/intel-speed-select/Makefile        |   2 +-
- 78 files changed, 1771 insertions(+), 193 deletions(-)
+ 77 files changed, 1764 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 3f1cc5e317ed..fbc0870dd787 100644
@@ -132,7 +131,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 8c7de9a72ea2..60632151a917 100644
+index 29e273d3f8cc..f9fafd14f5de 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -549,10 +548,10 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 9efbfe087de7..90f4595c8b3a 100644
+index 762b61f67e6c..3581d4898dc4 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1779,6 +1779,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1766,6 +1766,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -1938,7 +1937,7 @@ index 6a90e6e53d09..7e48c3bf701d 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 8bf72dbc33b7..d76794bfa0e0 100644
+index db6793608447..24c16a1245a1 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
@@ -1970,10 +1969,10 @@ index 8bf72dbc33b7..d76794bfa0e0 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index 00792767c620..2ee890521ed7 100644
+index 7e476f50935b..c44e9bad52a1 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -12605,6 +12605,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
+@@ -12608,6 +12608,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
   * The pci device ids are defined in mpi/mpi2_cnfg.h.
   */
  static const struct pci_device_id mpt3sas_pci_table[] = {
@@ -1981,7 +1980,7 @@ index 00792767c620..2ee890521ed7 100644
  	/* Spitfire ~ 2004 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2004,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12623,6 +12624,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12626,6 +12627,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2116_2,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -1989,7 +1988,7 @@ index 00792767c620..2ee890521ed7 100644
  	/* Thunderbolt ~ 2208 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2208_1,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12647,9 +12649,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12650,9 +12652,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SWITCH_MPI_EP_1,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -2278,31 +2277,6 @@ index 419b5febc3ca..491323dfe4e0 100644
   * Security hooks for perf events
   *
   * @perf_event_open:
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index 962b14d403e8..46ffab808f03 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -1397,13 +1397,16 @@ static inline unsigned long *section_to_usemap(struct mem_section *ms)
-
- static inline struct mem_section *__nr_to_section(unsigned long nr)
- {
-+	unsigned long root = SECTION_NR_TO_ROOT(nr);
-+
-+	if (unlikely(root >= NR_SECTION_ROOTS))
-+		return NULL;
-+
- #ifdef CONFIG_SPARSEMEM_EXTREME
--	if (!mem_section)
-+	if (!mem_section || !mem_section[root])
- 		return NULL;
- #endif
--	if (!mem_section[SECTION_NR_TO_ROOT(nr)])
--		return NULL;
--	return &mem_section[SECTION_NR_TO_ROOT(nr)][nr & SECTION_ROOT_MASK];
-+	return &mem_section[root][nr & SECTION_ROOT_MASK];
- }
- extern size_t mem_section_usage_size(void);
-
 diff --git a/include/linux/module.h b/include/linux/module.h
 index 1e135fd5c076..6ec4d001c1e2 100644
 --- a/include/linux/module.h
@@ -2972,7 +2946,7 @@ index ddcbefe535e9..5061ef5ba38b 100644
  	default y
  	help
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 471d71935e90..bb93ae663f1e 100644
+index 847a82bfe0e3..81f875f5370e 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \

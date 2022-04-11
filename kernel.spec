@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc1.20220408git1831fed559732b1.20
+%global distro_build 0.rc2.23
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc1.20220408git1831fed559732b1.20
+%define pkgrelease 0.rc2.23
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20220408git1831fed559732b1.20%{?buildid}%{?dist}
+%define specrelease 0.rc2.23%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -698,7 +698,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc1-184-g1831fed559732b1.tar.xz
+Source0: linux-5.18-rc2.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1390,8 +1390,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc1-184-g1831fed559732b1 -c
-mv linux-5.18-rc1-184-g1831fed559732b1 linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc2 -c
+mv linux-5.18-rc2 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3025,8 +3025,15 @@ fi
 #
 #
 %changelog
-* Fri Apr 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.1831fed559732b1.19]
+* Mon Apr 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc2.22]
 - tools/power/x86/intel-speed-select: fix build failure when using -Wl,--as-needed (Herton R. Krzesinski)
+
+* Mon Apr 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc2.21]
+- redhat/configs: enable CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT (Joel Savitz) [2026319]
+
+* Sat Apr 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.f1b45d8ccb9839b.19]
+- configs: enable CONFIG_RMI4_F3A (Benjamin Tissoires)
+- redhat: configs: Disable TPM 1.2 specific drivers (Jerry Snitselaar)
 
 * Fri Apr 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc1.1831fed559732b1.18]
 - redhat/configs: Enable cr50 I2C TPM interface (Akihiko Odaki)
