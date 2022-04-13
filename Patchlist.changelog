@@ -1,5 +1,5 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/6888ca0f9edde34646db3796af8c43aa0ecee9ab
- 6888ca0f9edde34646db3796af8c43aa0ecee9ab tools/power/x86/intel-speed-select: fix build failure when using -Wl,--as-needed
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/a0c122c4fb17f350396cb664d2fc184df9872279
+ a0c122c4fb17f350396cb664d2fc184df9872279 tools/power/x86/intel-speed-select: fix build failure when using -Wl,--as-needed
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/9a4f5172b1f7ca55a805fca7cd025b9a1f8c1eae
  9a4f5172b1f7ca55a805fca7cd025b9a1f8c1eae mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
