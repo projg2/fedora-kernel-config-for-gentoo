@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 
-%global distro_build 300
+%global distro_build 301
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.17.3
 %define patchversion 5.17
-%define pkgrelease 300
+%define pkgrelease 301
 
 # This is needed to do merge window version magic
 %define patchlevel 17
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 300%{?buildid}%{?dist}
+%define specrelease 301%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
