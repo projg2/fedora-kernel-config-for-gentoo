@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/ea0c997fe80f42ae5f3028581d1bad74c4a55dc3
+ ea0c997fe80f42ae5f3028581d1bad74c4a55dc3 Revert "net: bcmgenet: Use stronger register read/writes to assure ordering"
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/10744450395503f1c584313b322f52e8f8542ef0
  10744450395503f1c584313b322f52e8f8542ef0 ALSA: memalloc: Add fallback SG-buffer allocations for x86
 

@@ -26,6 +26,7 @@
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c     |   4 +-
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
@@ -56,7 +57,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  sound/core/memalloc.c                              | 111 +++++++++++++++++-
- 58 files changed, 884 insertions(+), 208 deletions(-)
+ 59 files changed, 886 insertions(+), 210 deletions(-)
 
 diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
 index 1887d92e8e92..17706dc91ec9 100644
@@ -1355,6 +1356,28 @@ index 107dcf5938d6..225a9797e39d 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index bd5998012a87..2da804f84b48 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -76,7 +76,7 @@ static inline void bcmgenet_writel(u32 value, void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		__raw_writel(value, offset);
+ 	else
+-		writel(value, offset);
++		writel_relaxed(value, offset);
+ }
+
+ static inline u32 bcmgenet_readl(void __iomem *offset)
+@@ -84,7 +84,7 @@ static inline u32 bcmgenet_readl(void __iomem *offset)
+ 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+ 		return __raw_readl(offset);
+ 	else
+-		return readl(offset);
++		return readl_relaxed(offset);
+ }
+
+ static inline void dmadesc_set_length_status(struct bcmgenet_priv *priv,
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
 index 6215d50ed3e7..10f1629e0940 100644
 --- a/drivers/nvme/host/core.c
