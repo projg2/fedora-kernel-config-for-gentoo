@@ -131,7 +131,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 29e273d3f8cc..f9fafd14f5de 100644
+index fa5112a0ec1b..706caf45c828 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -261,7 +261,7 @@ index d860ac300919..6e63924932e6 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index ed4417500700..50045296524c 100644
+index e342ae4db3c4..42e1b922fbfd 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1447,6 +1447,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -658,7 +658,7 @@ index c59265146e9c..caa8458edde2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index e15063d61460..5a488694308a 100644
+index 3a293f919af9..b3d1b1ad8e97 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -52,6 +52,7 @@
@@ -691,8 +691,8 @@ index e15063d61460..5a488694308a 100644
  /*
   * Returns whether or not the input pool has been seeded and thus guaranteed
   * to supply cryptographically secure random numbers. This applies to: the
-@@ -576,6 +585,63 @@ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
- 	return ret;
+@@ -578,6 +587,63 @@ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ 	return ret ? ret : -EFAULT;
  }
 
 +static __poll_t
@@ -755,7 +755,7 @@ index e15063d61460..5a488694308a 100644
  /*
   * Batched entropy returns random integers. The quality of the random
   * number is good as /dev/urandom. In order to ensure that the randomness
-@@ -1176,6 +1242,19 @@ void add_bootloader_randomness(const void *buf, size_t size)
+@@ -1177,6 +1243,19 @@ void add_bootloader_randomness(const void *buf, size_t size)
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
 
@@ -775,7 +775,7 @@ index e15063d61460..5a488694308a 100644
  #if IS_ENABLED(CONFIG_VMGENID)
  static BLOCKING_NOTIFIER_HEAD(vmfork_chain);
 
-@@ -1463,6 +1542,9 @@ static void try_to_generate_entropy(void)
+@@ -1459,6 +1538,9 @@ static void try_to_generate_entropy(void)
  SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
  		flags)
  {
@@ -785,7 +785,7 @@ index e15063d61460..5a488694308a 100644
  	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
  		return -EINVAL;
 
-@@ -1476,6 +1558,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+@@ -1472,6 +1554,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
  	if (count > INT_MAX)
  		count = INT_MAX;
 
@@ -804,7 +804,7 @@ index e15063d61460..5a488694308a 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		int ret;
 
-@@ -1636,6 +1730,7 @@ static int random_fasync(int fd, struct file *filp, int on)
+@@ -1632,6 +1726,7 @@ static int random_fasync(int fd, struct file *filp, int on)
  }
 
  const struct file_operations random_fops = {
@@ -1525,7 +1525,7 @@ index ee4da9ab8013..0f217997a764 100644
 
  err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index efb85c6d8e2d..e30c7cc199db 100644
+index e1846d04817f..9725d5f03eee 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -240,6 +240,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1639,10 +1639,10 @@ index d464fdf978fb..acdaab3d7697 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 1393bbf82d71..493a30d3493a 100644
+index a2b53ca63335..021e51c64cde 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -795,6 +795,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -800,6 +800,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1650,7 +1650,7 @@ index 1393bbf82d71..493a30d3493a 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -831,6 +832,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -836,6 +837,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -2218,10 +2218,10 @@ index ccd4d3f91c98..e64643e3e364 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 08ba5995aa8b..1aa251e902cd 100644
+index a890428bcc1a..e9c48d147a23 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -517,4 +517,25 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -508,4 +508,25 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))

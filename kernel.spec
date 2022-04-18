@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc2.20220413gita19944809fe9942.23
+%global distro_build 0.rc3.27
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -132,13 +132,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc2.20220413gita19944809fe9942.23
+%define pkgrelease 0.rc3.27
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20220413gita19944809fe9942.23%{?buildid}%{?dist}
+%define specrelease 0.rc3.27%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -698,7 +698,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc2-50-ga19944809fe9942.tar.xz
+Source0: linux-5.18-rc3.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1390,8 +1390,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc2-50-ga19944809fe9942 -c
-mv linux-5.18-rc2-50-ga19944809fe9942 linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc3 -c
+mv linux-5.18-rc3 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3025,6 +3025,12 @@ fi
 #
 #
 %changelog
+* Fri Apr 15 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc2.028192fea1de083.23]
+- redhat: Enable KASAN on all ELN debug kernels (Nico Pache)
+- redhat: configs: Enable INTEL_IOMMU_DEBUGFS for debug builds (Jerry Snitselaar)
+- generic: can: disable CAN_SOFTING everywhere (Peter Robinson)
+- redhat/configs: Enable CONFIG_DM_ERA=m for all (Yanko Kaneti)
+
 * Wed Apr 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc2.a19944809fe9942.22]
 - redhat/configs: enable CONFIG_SAMPLE_VFIO_MDEV_MTTY (Patrick Talbert)
 - Build intel_sdsi with %%{tools_make} (Justin M. Forbes)
