@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
-%global distro_build 0.rc3.27
+%global distro_build 0.rc3.20220420git559089e0a93d442.29
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -115,7 +115,6 @@ Summary: The Linux kernel
 %if %{zipmodules}
 %global zipsed -e 's/\.ko$/\.ko.xz/'
 # for parallel xz processes, replace with 1 to go back to single process
-%global zcpu `nproc --all`
 %endif
 
 # define buildid .local
@@ -132,13 +131,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc3.27
+%define pkgrelease 0.rc3.20220420git559089e0a93d442.29
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.27%{?buildid}%{?dist}
+%define specrelease 0.rc3.20220420git559089e0a93d442.29%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -411,11 +410,6 @@ Summary: The Linux kernel
 # zfcpdump mechanism is s390 only
 %ifnarch s390x
 %define with_zfcpdump 0
-%endif
-
-# skip BTF in kernel modules for s390x
-%ifnarch s390x
-%define with_kmod_btf --keep-section '.BTF'
 %endif
 
 %if 0%{?fedora}
@@ -698,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc3.tar.xz
+Source0: linux-5.18-rc3-7-g559089e0a93d442.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1121,7 +1115,7 @@ AutoReqProv: no\
 %description %{?1:%{1}-}debuginfo\
 This package provides debug information for package %{name}%{?1:-%{1}}.\
 This is required to use SystemTap with %{name}%{?1:-%{1}}-%{KVERREL}.\
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} %{?with_kmod_btf} -p '.*\/usr\/src\/kernels/.*|XXX' -o ignored-debuginfo.list -p '/.*/%%{KVERREL_RE}%{?1:[+]%{1}}/.*|/.*%%{KVERREL_RE}%{?1:\+%{1}}(\.debug)?' -o debuginfo%{?1}.list}\
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} --keep-section '.BTF' -p '.*\/usr\/src\/kernels/.*|XXX' -o ignored-debuginfo.list -p '/.*/%%{KVERREL_RE}%{?1:[+]%{1}}/.*|/.*%%{KVERREL_RE}%{?1:\+%{1}}(\.debug)?' -o debuginfo%{?1}.list}\
 %{nil}
 
 #
@@ -1390,8 +1384,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc3 -c
-mv linux-5.18-rc3 linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc3-7-g559089e0a93d442 -c
+mv linux-5.18-rc3-7-g559089e0a93d442 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1447,7 +1441,7 @@ cp %{SOURCE80} .
 cp %{SOURCE3000} .
 # kernel-local
 cp %{SOURCE3001} .
-VERSION=%{version} ./generate_all_configs.sh %{primary_target} %{debugbuildsenabled}
+FLAVOR=%{primary_target} KVERSION=%{version} ./generate_all_configs.sh %{debugbuildsenabled}
 
 # Merge in any user-provided local config option changes
 %ifnarch %nobuildarches
@@ -1498,7 +1492,7 @@ for opt in %{clang_make_opts}; do
   OPTS="$OPTS -m $opt"
 done
 %endif
-./process_configs.sh $OPTS kernel %{rpmversion}
+RHJOBS=$RPM_BUILD_NCPUS PACKAGE_NAME=kernel ./process_configs.sh $OPTS ${rpmversion}
 
 cp %{SOURCE82} .
 RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
@@ -1856,6 +1850,14 @@ BuildKernel() {
     cp -a scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/tracing
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/spdxcheck.py
+
+%ifarch s390x
+    # CONFIG_EXPOLINE_EXTERN=y produces arch/s390/lib/expoline.o
+    # which is needed during external module build.
+    if [ -f arch/s390/lib/expoline.o ]; then
+      cp -a --parents arch/s390/lib/expoline.o $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    fi
+%endif
 
     # Files for 'make scripts' to succeed with kernel-devel.
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/security/selinux/include
@@ -2348,7 +2350,7 @@ find Documentation -type d | xargs chmod u+w
     fi \
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
-    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -P%{zcpu} xz; \
+    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -P${RPM_BUILD_NCPUS} xz; \
   fi \
 %{nil}
 
@@ -3025,6 +3027,27 @@ fi
 #
 #
 %changelog
+* Wed Apr 20 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc3.559089e0a93d442.28]
+- redhat/Makefile: Deprecate SINGLE_TARBALL (Prarit Bhargava)
+- redhat/Makefile.rhpkg: Remove quotes for RHDISTGIT (Prarit Bhargava)
+- redhat/self-test: Clean up data set (Prarit Bhargava)
+- redhat/scripts/create-tarball.sh: Use Makefile variables (Prarit Bhargava)
+- redhat/Makefile: Cleanup TARBALL target (Prarit Bhargava)
+- redhat/Makefile: Use RPMVERSION (Prarit Bhargava)
+- redhat/scripts/rh-dist-git.sh: Use Makefile variables (Prarit Bhargava)
+- redhat/configs/build_configs.sh: Use Makefile variables (Prarit Bhargava)
+- redhat/configs/process_configs.sh: Use Makefile variables (Prarit Bhargava)
+- redhat/kernel.spec.template: Use RPM_BUILD_NCPUS (Prarit Bhargava)
+- redhat/configs/generate_all_configs.sh: Use Makefile variables (Prarit Bhargava)
+
+* Wed Apr 20 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc3.559089e0a93d442.27]
+- spec: keep .BTF section in modules for s390 (Yauheni Kaliuta) [2071969]
+- kernel.spec.template: Ship arch/s390/lib/expoline.o in kernel-devel (Ondrej Mosnacek)
+- redhat: disable tv/radio media device infrastructure (Jarod Wilson)
+- redhat/configs: clean up INTEL_LPSS configuration (David Arcari)
+- Have to rename the actual contents too (Justin M. Forbes)
+- The CONFIG_SATA_MOBILE_LPM_POLICY rebane was reverted (Justin M. Forbes)
+
 * Fri Apr 15 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc2.028192fea1de083.23]
 - redhat: Enable KASAN on all ELN debug kernels (Nico Pache)
 - redhat: configs: Enable INTEL_IOMMU_DEBUGFS for debug builds (Jerry Snitselaar)
