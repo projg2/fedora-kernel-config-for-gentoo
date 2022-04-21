@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc3.20220420git559089e0a93d442.29
+%global distro_build 0.rc3.20220421gitb253435746d9a4a.30
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -131,13 +131,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc3.20220420git559089e0a93d442.29
+%define pkgrelease 0.rc3.20220421gitb253435746d9a4a.30
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20220420git559089e0a93d442.29%{?buildid}%{?dist}
+%define specrelease 0.rc3.20220421gitb253435746d9a4a.30%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc3-7-g559089e0a93d442.tar.xz
+Source0: linux-5.18-rc3-16-gb253435746d9a4a.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1384,8 +1384,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc3-7-g559089e0a93d442 -c
-mv linux-5.18-rc3-7-g559089e0a93d442 linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc3-16-gb253435746d9a4a -c
+mv linux-5.18-rc3-16-gb253435746d9a4a linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3027,18 +3027,21 @@ fi
 #
 #
 %changelog
-* Wed Apr 20 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc3.559089e0a93d442.28]
-- redhat/Makefile: Deprecate SINGLE_TARBALL (Prarit Bhargava)
-- redhat/Makefile.rhpkg: Remove quotes for RHDISTGIT (Prarit Bhargava)
+* Thu Apr 21 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc3.b253435746d9a4a.29]
 - redhat/self-test: Clean up data set (Prarit Bhargava)
+- redhat/Makefile.rhpkg: Remove quotes for RHDISTGIT (Prarit Bhargava)
 - redhat/scripts/create-tarball.sh: Use Makefile variables (Prarit Bhargava)
-- redhat/Makefile: Cleanup TARBALL target (Prarit Bhargava)
+- redhat/Makefile: Deprecate SINGLE_TARBALL (Prarit Bhargava)
+- redhat/Makefile: Move SINGLE_TARBALL to Makefile.variables (Prarit Bhargava)
 - redhat/Makefile: Use RPMVERSION (Prarit Bhargava)
 - redhat/scripts/rh-dist-git.sh: Use Makefile variables (Prarit Bhargava)
 - redhat/configs/build_configs.sh: Use Makefile variables (Prarit Bhargava)
 - redhat/configs/process_configs.sh: Use Makefile variables (Prarit Bhargava)
 - redhat/kernel.spec.template: Use RPM_BUILD_NCPUS (Prarit Bhargava)
 - redhat/configs/generate_all_configs.sh: Use Makefile variables (Prarit Bhargava)
+
+* Thu Apr 21 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc3.b253435746d9a4a.28]
+- kernel-ark: arch_hw Update CONFIG_MOUSE_VSXXXAA=m (Tony Camuso) [2062909]
 
 * Wed Apr 20 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc3.559089e0a93d442.27]
 - spec: keep .BTF section in modules for s390 (Yauheni Kaliuta) [2071969]
