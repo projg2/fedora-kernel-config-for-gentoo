@@ -131,7 +131,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index fa5112a0ec1b..706caf45c828 100644
+index c3ec1ea42379..2262b65c424b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -177,10 +177,10 @@ index 2e8091e2d8a8..32e0403314b1 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 57c4c995965f..a3c61780e99c 100644
+index 20ea89d9ac2f..774c1a05152d 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1117,7 +1117,7 @@ endchoice
+@@ -1126,7 +1126,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -189,7 +189,7 @@ index 57c4c995965f..a3c61780e99c 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1356,6 +1356,7 @@ config XEN
+@@ -1365,6 +1365,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -2108,10 +2108,10 @@ index eae288c8d40a..8b8bf447cedc 100644
 
  error_proc:
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 81749eaddf4c..f5de0c0c14cd 100644
+index 1466fbdbc8e3..4b3569868a77 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -4793,6 +4793,7 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
+@@ -4800,6 +4800,7 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
  	}
 
  	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
@@ -2119,7 +2119,7 @@ index 81749eaddf4c..f5de0c0c14cd 100644
  		if (ext4_has_feature_inline_data(sb)) {
  			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
  					" that may contain inline data");
-@@ -4803,6 +4804,10 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
+@@ -4810,6 +4811,10 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
  				"DAX unsupported by block device.");
  			goto failed_mount;
  		}

@@ -85,9 +85,9 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
-%global distro_build 0.rc3.20220422gitd569e86915b7f2f.31
+%global distro_build 0.rc4.33
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -131,13 +131,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc3.20220422gitd569e86915b7f2f.31
+%define pkgrelease 0.rc4.33
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20220422gitd569e86915b7f2f.31%{?buildid}%{?dist}
+%define specrelease 0.rc4.33%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc3-80-gd569e86915b7f2f.tar.xz
+Source0: linux-5.18-rc4.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1384,8 +1384,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc3-80-gd569e86915b7f2f -c
-mv linux-5.18-rc3-80-gd569e86915b7f2f linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc4 -c
+mv linux-5.18-rc4 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3027,7 +3027,7 @@ fi
 #
 #
 %changelog
-* Fri Apr 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc3.d569e86915b7f2f.30]
+* Sat Apr 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc3.c00c5e1d157bec0.30]
 - redhat/self-test: Clean up data set (Prarit Bhargava)
 - redhat/Makefile.rhpkg: Remove quotes for RHDISTGIT (Prarit Bhargava)
 - redhat/scripts/create-tarball.sh: Use Makefile variables (Prarit Bhargava)
@@ -3039,6 +3039,7 @@ fi
 - redhat/configs/process_configs.sh: Use Makefile variables (Prarit Bhargava)
 - redhat/kernel.spec.template: Use RPM_BUILD_NCPUS (Prarit Bhargava)
 - redhat/configs/generate_all_configs.sh: Use Makefile variables (Prarit Bhargava)
+- redhat/configs: enable nf_tables SYNPROXY extension on ark (Davide Caratti)
 
 * Fri Apr 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc3.d569e86915b7f2f.29]
 - fedora: Disable fbdev drivers missed before (Javier Martinez Canillas)
