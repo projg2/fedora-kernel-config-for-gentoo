@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc4.20220426gitd615b5416f8a1af.34
+%global distro_build 0.rc4.20220427git46cf2c613f4b10e.35
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -131,13 +131,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc4.20220426gitd615b5416f8a1af.34
+%define pkgrelease 0.rc4.20220427git46cf2c613f4b10e.35
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20220426gitd615b5416f8a1af.34%{?buildid}%{?dist}
+%define specrelease 0.rc4.20220427git46cf2c613f4b10e.35%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc4-6-gd615b5416f8a1af.tar.xz
+Source0: linux-5.18-rc4-50-g46cf2c613f4b10e.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1384,8 +1384,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc4-6-gd615b5416f8a1af -c
-mv linux-5.18-rc4-6-gd615b5416f8a1af linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc4-50-g46cf2c613f4b10e -c
+mv linux-5.18-rc4-50-g46cf2c613f4b10e linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3027,6 +3027,12 @@ fi
 #
 #
 %changelog
+* Wed Apr 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc4.46cf2c613f4b10e.34]
+- ARK: Remove code marking drivers as tech preview (Peter Georg)
+- ARK: Remove code marking devices deprecated (Peter Georg)
+- ARK: Remove code marking devices unmaintained (Peter Georg)
+- rh_message: Fix function name (Peter Georg) [2019377]
+
 * Tue Apr 26 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc4.d615b5416f8a1af.33]
 - Turn on CONFIG_RANDOM_TRUST_BOOTLOADER (Justin M. Forbes)
 - redhat/configs: aarch64: enable CPU_FREQ_GOV_SCHEDUTIL (Mark Salter)

@@ -9,7 +9,7 @@
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/cpu/common.c                       |   1 +
- arch/x86/kernel/setup.c                            |  70 ++-
+ arch/x86/kernel/setup.c                            |  68 ++-
  crypto/rng.c                                       |  73 ++-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
@@ -27,9 +27,7 @@
  drivers/iommu/iommu.c                              |  22 +
  drivers/message/fusion/mptsas.c                    |  10 +
  drivers/message/fusion/mptspi.c                    |  11 +
- drivers/net/ethernet/intel/e1000/e1000_main.c      |   2 +
- drivers/net/team/team.c                            |   2 +
- drivers/net/wireguard/main.c                       |   7 +
+ drivers/net/wireguard/main.c                       |   6 +
  drivers/nvme/host/core.c                           |  22 +-
  drivers/nvme/host/multipath.c                      |  19 +-
  drivers/nvme/host/nvme.h                           |   4 +
@@ -44,10 +42,7 @@
  drivers/scsi/qla2xxx/qla_os.c                      |   6 +
  drivers/scsi/qla4xxx/ql4_os.c                      |   2 +
  drivers/usb/core/hub.c                             |   7 +
- drivers/virtio/virtio_mem.c                        |  13 +
  fs/afs/main.c                                      |   3 +
- fs/ext4/super.c                                    |   5 +
- fs/xfs/xfs_super.c                                 |   5 +
  include/linux/efi.h                                |  22 +-
  include/linux/kernel.h                             |  21 +
  include/linux/lsm_hook_defs.h                      |   2 +
@@ -67,7 +62,6 @@
  kernel/panic.c                                     |  14 +
  kernel/rh_messages.c                               | 209 +++++++++
  kernel/sysctl.c                                    |   5 +
- mm/cma.c                                           |  10 +
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
@@ -75,7 +69,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/power/x86/intel-speed-select/Makefile        |   2 +-
- 77 files changed, 1764 insertions(+), 189 deletions(-)
+ 71 files changed, 1724 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 3f1cc5e317ed..fbc0870dd787 100644
@@ -273,7 +267,7 @@ index e342ae4db3c4..42e1b922fbfd 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index c95b9ac5a457..560db0f01260 100644
+index c95b9ac5a457..749d5305be79 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -292,7 +286,7 @@ index c95b9ac5a457..560db0f01260 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -737,6 +739,51 @@ static void __init early_reserve_memory(void)
+@@ -737,6 +739,49 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -323,8 +317,6 @@ index c95b9ac5a457..560db0f01260 100644
 +		pr_crit("Detected processor %s %s\n",
 +			boot_cpu_data.x86_vendor_id,
 +			boot_cpu_data.x86_model_id);
-+		mark_hardware_unmaintained("x86 processor", "%s %s", boot_cpu_data.x86_vendor_id,
-+					  boot_cpu_data.x86_model_id);
 +		break;
 +	}
 +
@@ -344,7 +336,7 @@ index c95b9ac5a457..560db0f01260 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -946,6 +993,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -946,6 +991,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -358,7 +350,7 @@ index c95b9ac5a457..560db0f01260 100644
  	dmi_setup();
 
  	/*
-@@ -1115,19 +1169,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1115,19 +1167,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -379,7 +371,7 @@ index c95b9ac5a457..560db0f01260 100644
 
  	reserve_initrd();
 
-@@ -1240,6 +1282,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1240,6 +1280,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -1466,34 +1458,8 @@ index 388675cc1765..8c7d0740efb6 100644
  	return 0;
 
  out_mptspi_probe:
-diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
-index 3f5feb55cfba..9d8cb34845b3 100644
---- a/drivers/net/ethernet/intel/e1000/e1000_main.c
-+++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-@@ -933,6 +933,8 @@ static int e1000_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	int bars, need_ioport;
- 	bool disable_dev = false;
-
-+	pci_hw_unmaintained(e1000_pci_tbl, pdev);
-+
- 	/* do not allocate ioport bars when not needed */
- 	need_ioport = e1000_is_need_ioport(pdev);
- 	if (need_ioport) {
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index b07dde6f0abf..abcb1cb9a11f 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -3050,6 +3050,8 @@ static int __init team_module_init(void)
- 	if (err)
- 		goto err_nl_init;
-
-+	mark_driver_deprecated(DRV_NAME);
-+
- 	return 0;
-
- err_nl_init:
 diff --git a/drivers/net/wireguard/main.c b/drivers/net/wireguard/main.c
-index ee4da9ab8013..0f217997a764 100644
+index ee4da9ab8013..d395d11eadc4 100644
 --- a/drivers/net/wireguard/main.c
 +++ b/drivers/net/wireguard/main.c
 @@ -12,6 +12,7 @@
@@ -1516,14 +1482,6 @@ index ee4da9ab8013..0f217997a764 100644
  	ret = wg_allowedips_slab_init();
  	if (ret < 0)
  		goto err_allowedips;
-@@ -48,6 +54,7 @@ static int __init wg_mod_init(void)
- 	pr_info("WireGuard " WIREGUARD_VERSION " loaded. See www.wireguard.com for information.\n");
- 	pr_info("Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.\n");
-
-+	mark_tech_preview("WireGuard", THIS_MODULE);
- 	return 0;
-
- err_netlink:
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
 index e1846d04817f..9725d5f03eee 100644
 --- a/drivers/nvme/host/core.c
@@ -2069,30 +2027,6 @@ index 1460857026e0..7e1964891089 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
-index e7d6b679596d..e604370ed3c1 100644
---- a/drivers/virtio/virtio_mem.c
-+++ b/drivers/virtio/virtio_mem.c
-@@ -2789,6 +2789,19 @@ static int virtio_mem_probe(struct virtio_device *vdev)
-
- 	/* trigger a config update to start processing the requested_size */
- 	if (!vm->in_kdump) {
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+		static bool printed;
-+
-+		/*
-+		 * virtio-mem, and especially its memory hot(un)plug
-+		 * functionality, is tech-preview.
-+		 */
-+		if (!printed) {
-+			printed = true;
-+			mark_tech_preview("virtio_mem", THIS_MODULE);
-+		}
-+#endif /* CONFIG_RHEL_DIFFERENCES */
-+
- 		atomic_set(&vm->config_changed, 1);
- 		queue_work(system_freezable_wq, &vm->wq);
- 	}
 diff --git a/fs/afs/main.c b/fs/afs/main.c
 index eae288c8d40a..8b8bf447cedc 100644
 --- a/fs/afs/main.c
@@ -2107,48 +2041,6 @@ index eae288c8d40a..8b8bf447cedc 100644
  	return ret;
 
  error_proc:
-diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 1466fbdbc8e3..4b3569868a77 100644
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -4800,6 +4800,7 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
- 	}
-
- 	if (sbi->s_mount_opt & EXT4_MOUNT_DAX_ALWAYS) {
-+		static bool printed = false;
- 		if (ext4_has_feature_inline_data(sb)) {
- 			ext4_msg(sb, KERN_ERR, "Cannot use DAX on a filesystem"
- 					" that may contain inline data");
-@@ -4810,6 +4811,10 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
- 				"DAX unsupported by block device.");
- 			goto failed_mount;
- 		}
-+		if (!printed) {
-+			mark_tech_preview("ext4 direct access (dax)", NULL);
-+			printed = true;
-+		}
- 	}
-
- 	if (ext4_has_feature_encrypt(sb) && es->s_encryption_level) {
-diff --git a/fs/xfs/xfs_super.c b/fs/xfs/xfs_super.c
-index 54be9d64093e..20fe244067ec 100644
---- a/fs/xfs/xfs_super.c
-+++ b/fs/xfs/xfs_super.c
-@@ -1603,9 +1603,14 @@ xfs_fs_fill_super(
- 		sb->s_flags |= SB_I_VERSION;
-
- 	if (xfs_has_dax_always(mp)) {
-+		static bool printed = false;
- 		error = xfs_setup_dax_always(mp);
- 		if (error)
- 			goto out_filestream_unmount;
-+		if (!printed) {
-+			mark_tech_preview("xfs direct access (dax)", NULL);
-+			printed = true;
-+		}
- 	}
-
- 	if (xfs_has_discard(mp)) {
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index ccd4d3f91c98..e64643e3e364 100644
 --- a/include/linux/efi.h
@@ -2218,7 +2110,7 @@ index ccd4d3f91c98..e64643e3e364 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index a890428bcc1a..e9c48d147a23 100644
+index a890428bcc1a..e71813290f0b 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
 @@ -508,4 +508,25 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
@@ -2237,7 +2129,7 @@ index a890428bcc1a..e9c48d147a23 100644
 +void mark_tech_preview(const char *msg, struct module *mod);
 +void mark_partner_supported(const char *msg, struct module *mod);
 +#else
-+static inline void mark_hardware_unsupported(const char *driver_name, char *fmt, ...) { }
++static inline void mark_hardware_unmaintained(const char *driver_name, char *fmt, ...) { }
 +static inline void mark_driver_unmaintained(const char *driver_name) { }
 +static inline void mark_hardware_deprecated(const char *driver_name, char *fmt, ...) { }
 +static inline void mark_driver_deprecated(const char *driver_name) { }
@@ -3289,34 +3181,6 @@ index 830aaf8ca08e..080bafbeabef 100644
 +		}
  		*(int *)table->data = unpriv_enable;
  	}
-
-diff --git a/mm/cma.c b/mm/cma.c
-index eaa4b5c920a2..27563a5fedcd 100644
---- a/mm/cma.c
-+++ b/mm/cma.c
-@@ -125,6 +125,12 @@ static void __init cma_activate_area(struct cma *cma)
- 	spin_lock_init(&cma->mem_head_lock);
- #endif
-
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+	/* s390x and ppc64 has been using CMA already in RHEL 8 as default. */
-+	if (!IS_ENABLED(CONFIG_S390) && !IS_ENABLED(CONFIG_PPC64))
-+		mark_tech_preview("CMA", NULL);
-+#endif /* CONFIG_RHEL_DIFFERENCES */
-+
- 	return;
-
- not_in_zone:
-@@ -434,6 +440,10 @@ struct page *cma_alloc(struct cma *cma, unsigned long count,
- 	if (!cma || !cma->count || !cma->bitmap)
- 		goto out;
-
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+	pr_info_once("Initial CMA usage detected\n");
-+#endif /* CONFIG_RHEL_DIFFERENCES */
-+
- 	pr_debug("%s(cma %p, count %lu, align %d)\n", __func__, (void *)cma,
- 		 count, align);
 
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
 index ed9d056d2108..8388e2a804d3 100644
