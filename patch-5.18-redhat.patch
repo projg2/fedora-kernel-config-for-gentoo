@@ -2110,7 +2110,7 @@ index ccd4d3f91c98..e64643e3e364 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index a890428bcc1a..e71813290f0b 100644
+index fe6efb24d151..85b185391da7 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
 @@ -508,4 +508,25 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
