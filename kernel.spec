@@ -87,7 +87,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 
-%global distro_build 0.rc4.20220428git8f4dd16603ce834.36
+%global distro_build 0.rc4.20220429git38d741cb70b3074.37
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -131,13 +131,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc4.20220428git8f4dd16603ce834.36
+%define pkgrelease 0.rc4.20220429git38d741cb70b3074.37
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20220428git8f4dd16603ce834.36%{?buildid}%{?dist}
+%define specrelease 0.rc4.20220429git38d741cb70b3074.37%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +692,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc4-64-g8f4dd16603ce834.tar.xz
+Source0: linux-5.18-rc4-192-g38d741cb70b3074.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1384,8 +1384,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc4-64-g8f4dd16603ce834 -c
-mv linux-5.18-rc4-64-g8f4dd16603ce834 linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc4-192-g38d741cb70b3074 -c
+mv linux-5.18-rc4-192-g38d741cb70b3074 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .

@@ -68,8 +68,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- tools/power/x86/intel-speed-select/Makefile        |   2 +-
- 71 files changed, 1724 insertions(+), 189 deletions(-)
+ 70 files changed, 1723 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 3f1cc5e317ed..fbc0870dd787 100644
@@ -3305,16 +3304,3 @@ index b7cf5cbfdc67..3cde9062fcf6 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-diff --git a/tools/power/x86/intel-speed-select/Makefile b/tools/power/x86/intel-speed-select/Makefile
-index 846f785e278d..7221f2f55e8b 100644
---- a/tools/power/x86/intel-speed-select/Makefile
-+++ b/tools/power/x86/intel-speed-select/Makefile
-@@ -42,7 +42,7 @@ ISST_IN := $(OUTPUT)intel-speed-select-in.o
- $(ISST_IN): prepare FORCE
- 	$(Q)$(MAKE) $(build)=intel-speed-select
- $(OUTPUT)intel-speed-select: $(ISST_IN)
--	$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@
-+	$(QUIET_LINK)$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
-
- clean:
- 	rm -f $(ALL_PROGRAMS)
