@@ -124,7 +124,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index c3ec1ea42379..2262b65c424b 100644
+index 9a820c525b86..fbcfb1dc4578 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -649,7 +649,7 @@ index c59265146e9c..caa8458edde2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 3a293f919af9..b3d1b1ad8e97 100644
+index 4c9adb4f3d5d..4f660c064c70 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -52,6 +52,7 @@
@@ -682,7 +682,7 @@ index 3a293f919af9..b3d1b1ad8e97 100644
  /*
   * Returns whether or not the input pool has been seeded and thus guaranteed
   * to supply cryptographically secure random numbers. This applies to: the
-@@ -578,6 +587,63 @@ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+@@ -585,6 +594,63 @@ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
  	return ret ? ret : -EFAULT;
  }
 
@@ -746,7 +746,7 @@ index 3a293f919af9..b3d1b1ad8e97 100644
  /*
   * Batched entropy returns random integers. The quality of the random
   * number is good as /dev/urandom. In order to ensure that the randomness
-@@ -1177,6 +1243,19 @@ void add_bootloader_randomness(const void *buf, size_t size)
+@@ -1184,6 +1250,19 @@ void add_bootloader_randomness(const void *buf, size_t size)
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
 
@@ -766,7 +766,7 @@ index 3a293f919af9..b3d1b1ad8e97 100644
  #if IS_ENABLED(CONFIG_VMGENID)
  static BLOCKING_NOTIFIER_HEAD(vmfork_chain);
 
-@@ -1459,6 +1538,9 @@ static void try_to_generate_entropy(void)
+@@ -1466,6 +1545,9 @@ static void try_to_generate_entropy(void)
  SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
  		flags)
  {
@@ -776,7 +776,7 @@ index 3a293f919af9..b3d1b1ad8e97 100644
  	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
  		return -EINVAL;
 
-@@ -1472,6 +1554,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+@@ -1479,6 +1561,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
  	if (count > INT_MAX)
  		count = INT_MAX;
 
@@ -795,7 +795,7 @@ index 3a293f919af9..b3d1b1ad8e97 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		int ret;
 
-@@ -1632,6 +1726,7 @@ static int random_fasync(int fd, struct file *filp, int on)
+@@ -1639,6 +1733,7 @@ static int random_fasync(int fd, struct file *filp, int on)
  }
 
  const struct file_operations random_fops = {

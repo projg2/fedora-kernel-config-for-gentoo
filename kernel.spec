@@ -85,9 +85,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
-
-%global distro_build 0.rc4.20220429git38d741cb70b3074.37
+%define debugbuildsenabled 1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -131,13 +129,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc4.20220429git38d741cb70b3074.37
+%define pkgrelease 0.rc5.40
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20220429git38d741cb70b3074.37%{?buildid}%{?dist}
+%define specrelease 0.rc5.40%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -692,7 +690,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc4-192-g38d741cb70b3074.tar.xz
+Source0: linux-5.18-rc5.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -828,8 +826,8 @@ Source211: Module.kabi_dup_ppc64le
 Source212: Module.kabi_dup_s390x
 Source213: Module.kabi_dup_x86_64
 
-Source300: kernel-abi-stablelists-%{rpmversion}-%{distro_build}.tar.bz2
-Source301: kernel-kabi-dw-%{rpmversion}-%{distro_build}.tar.bz2
+Source300: kernel-abi-stablelists-%{rpmversion}-%{pkgrelease}.tar.bz2
+Source301: kernel-kabi-dw-%{rpmversion}-%{pkgrelease}.tar.bz2
 
 # Sources for kernel-tools
 Source2000: cpupower.service
@@ -1384,8 +1382,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc4-192-g38d741cb70b3074 -c
-mv linux-5.18-rc4-192-g38d741cb70b3074 linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc5 -c
+mv linux-5.18-rc5 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3027,6 +3025,17 @@ fi
 #
 #
 %changelog
+* Mon May 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc5.39]
+- redhat/configs: Set GUP_TEST in debug kernel (Joel Savitz)
+
+* Sat Apr 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc4.8013d1d3d2e3323.37]
+- enable DAMON configs (Chris von Recklinghausen) [2004233]
+- redhat: add zstream switch for zstream release numbering (Herton R. Krzesinski)
+- redhat: change kabi tarballs to use the package release (Herton R. Krzesinski)
+- redhat: generate distgit changelog in genspec.sh as well (Herton R. Krzesinski)
+- redhat: make genspec prefer metadata from git notes (Herton R. Krzesinski)
+- redhat: use tags from git notes for zstream to generate changelog (Herton R. Krzesinski)
+
 * Wed Apr 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc4.46cf2c613f4b10e.34]
 - ARK: Remove code marking drivers as tech preview (Peter Georg)
 - ARK: Remove code marking devices deprecated (Peter Georg)
