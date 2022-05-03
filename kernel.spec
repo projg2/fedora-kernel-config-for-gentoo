@@ -85,7 +85,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -129,13 +129,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc5.40
+%define pkgrelease 0.rc5.20220503git9050ba3a61a4b5b.41
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.40%{?buildid}%{?dist}
+%define specrelease 0.rc5.20220503git9050ba3a61a4b5b.41%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -690,7 +690,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc5.tar.xz
+Source0: linux-5.18-rc5-6-g9050ba3a61a4b5b.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1382,8 +1382,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc5 -c
-mv linux-5.18-rc5 linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc5-6-g9050ba3a61a4b5b -c
+mv linux-5.18-rc5-6-g9050ba3a61a4b5b linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
