@@ -129,13 +129,13 @@ Summary: The Linux kernel
 
 %define rpmversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc5.20220504git107c948d1d3e61d.42
+%define pkgrelease 0.rc5.20220505gita7391ad3572431a.43
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20220504git107c948d1d3e61d.42%{?buildid}%{?dist}
+%define specrelease 0.rc5.20220505gita7391ad3572431a.43%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -690,7 +690,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc5-16-g107c948d1d3e61d.tar.xz
+Source0: linux-5.18-rc5-28-ga7391ad3572431a.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1382,8 +1382,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc5-16-g107c948d1d3e61d -c
-mv linux-5.18-rc5-16-g107c948d1d3e61d linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc5-28-ga7391ad3572431a -c
+mv linux-5.18-rc5-28-ga7391ad3572431a linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .

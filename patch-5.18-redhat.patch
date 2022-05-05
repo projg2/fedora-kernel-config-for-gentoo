@@ -614,7 +614,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index c59265146e9c..caa8458edde2 100644
+index f1827257ef0e..5a45c2cd3dc2 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -625,7 +625,7 @@ index c59265146e9c..caa8458edde2 100644
  #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5422,8 +5423,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5427,8 +5428,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -1348,7 +1348,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f2c45b85b9fc..cfeb6b3cd758 100644
+index 857d4c2fd1a2..9353941f3a97 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1359,7 +1359,7 @@ index f2c45b85b9fc..cfeb6b3cd758 100644
  #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -2863,6 +2864,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -2870,6 +2871,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
