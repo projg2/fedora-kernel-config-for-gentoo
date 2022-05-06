@@ -127,15 +127,15 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.18
 
-%define rpmversion 5.18.0
+%define specversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc5.20220505gita7391ad3572431a.43
+%define pkgrelease 0.rc5.20220506gitfe27d189e3f42e3.44
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20220505gita7391ad3572431a.43%{?buildid}%{?dist}
+%define specrelease 0.rc5.20220506gitfe27d189e3f42e3.44%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -551,7 +551,7 @@ Summary: The Linux kernel
 Name: kernel
 License: GPLv2 and Redistributable, no modification permitted
 URL: https://www.kernel.org/
-Version: %{rpmversion}
+Version: %{specversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
@@ -690,7 +690,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc5-28-ga7391ad3572431a.tar.xz
+Source0: linux-5.18-rc5-115-gfe27d189e3f42e3.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -826,8 +826,8 @@ Source211: Module.kabi_dup_ppc64le
 Source212: Module.kabi_dup_s390x
 Source213: Module.kabi_dup_x86_64
 
-Source300: kernel-abi-stablelists-%{rpmversion}-%{pkgrelease}.tar.bz2
-Source301: kernel-kabi-dw-%{rpmversion}-%{pkgrelease}.tar.bz2
+Source300: kernel-abi-stablelists-%{specversion}-%{pkgrelease}.tar.bz2
+Source301: kernel-kabi-dw-%{specversion}-%{pkgrelease}.tar.bz2
 
 # Sources for kernel-tools
 Source2000: cpupower.service
@@ -869,8 +869,8 @@ The kernel meta package
 # macros defined above.
 #
 %define kernel_reqprovconf \
-Provides: kernel = %{rpmversion}-%{pkg_release}\
-Provides: kernel-%{_target_cpu} = %{rpmversion}-%{pkg_release}%{?1:+%{1}}\
+Provides: kernel = %{specversion}-%{pkg_release}\
+Provides: kernel-%{_target_cpu} = %{specversion}-%{pkg_release}%{?1:+%{1}}\
 Provides: kernel-drm-nouveau = 16\
 Provides: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires(pre): %{kernel_prereq}\
@@ -1382,8 +1382,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc5-28-ga7391ad3572431a -c
-mv linux-5.18-rc5-28-ga7391ad3572431a linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc5-115-gfe27d189e3f42e3 -c
+mv linux-5.18-rc5-115-gfe27d189e3f42e3 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -1439,7 +1439,7 @@ cp %{SOURCE80} .
 cp %{SOURCE3000} .
 # kernel-local
 cp %{SOURCE3001} .
-FLAVOR=%{primary_target} KVERSION=%{version} ./generate_all_configs.sh %{debugbuildsenabled}
+FLAVOR=%{primary_target} SPECVERSION=%{version} ./generate_all_configs.sh %{debugbuildsenabled}
 
 # Merge in any user-provided local config option changes
 %ifnarch %nobuildarches
@@ -1490,7 +1490,7 @@ for opt in %{clang_make_opts}; do
   OPTS="$OPTS -m $opt"
 done
 %endif
-RHJOBS=$RPM_BUILD_NCPUS PACKAGE_NAME=kernel ./process_configs.sh $OPTS ${rpmversion}
+RHJOBS=$RPM_BUILD_NCPUS PACKAGE_NAME=kernel ./process_configs.sh $OPTS ${specversion}
 
 cp %{SOURCE82} .
 RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
@@ -2401,7 +2401,7 @@ find Documentation -type d | xargs chmod u+w
 cd linux-%{KVERREL}
 
 %if %{with_doc}
-docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{rpmversion}-%{pkgrelease}
+docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}
 
 # copy the source over
 mkdir -p $docdir
@@ -2809,9 +2809,9 @@ fi
 %if %{with_doc}
 %files doc
 %defattr(-,root,root)
-%{_datadir}/doc/kernel-doc-%{rpmversion}-%{pkgrelease}/Documentation/*
-%dir %{_datadir}/doc/kernel-doc-%{rpmversion}-%{pkgrelease}/Documentation
-%dir %{_datadir}/doc/kernel-doc-%{rpmversion}-%{pkgrelease}
+%{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}/Documentation/*
+%dir %{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}/Documentation
+%dir %{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}
 %endif
 
 %if %{with_perf}
@@ -3025,6 +3025,25 @@ fi
 #
 #
 %changelog
+* Fri May 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc5.fe27d189e3f42e3.43]
+- redhat: shellcheck cleanup (Prarit Bhargava)
+- redhat/self-test/data: Cleanup data (Prarit Bhargava)
+- redhat/self-test: Add test to verify SPEC variables (Prarit Bhargava)
+- redhat/Makefile: Add 'duplicate' SPEC entries for user set variables (Prarit Bhargava)
+- redhat/Makefile: Rename TARFILE_RELEASE to SPECTARFILE_RELEASE (Prarit Bhargava)
+- redhat/genspec: Rename PATCHLIST_CHANGELOG to SPECPATCHLIST_CHANGELOG (Prarit Bhargava)
+- redhat/genspec: Rename DEBUG_BUILDS_ENABLED to SPECDEBUG_BUILDS_ENABLED (Prarit Bhargava)
+- redhat/Makefile: Rename PKGRELEASE to SPECBUILD (Prarit Bhargava)
+- redhat/genspec: Rename BUILDID_DEFINE to SPECBUILDID (Prarit Bhargava)
+- redhat/Makefile: Rename CHANGELOG to SPECCHANGELOG (Prarit Bhargava)
+- redhat/Makefile: Rename RPMKEXTRAVERSION to SPECKEXTRAVERSION (Prarit Bhargava)
+- redhat/Makefile: Rename RPMKSUBLEVEL to SPECKSUBLEVEL (Prarit Bhargava)
+- redhat/Makefile: Rename RPMKPATCHLEVEL to SPECKPATCHLEVEL (Prarit Bhargava)
+- redhat/Makefile: Rename RPMKVERSION to SPECKVERSION (Prarit Bhargava)
+- redhat/Makefile: Rename KVERSION to SPECVERSION (Prarit Bhargava)
+- redhat/Makefile: Deprecate some simple targets (Prarit Bhargava)
+- redhat/Makefile: Use KVERSION (Prarit Bhargava)
+
 * Mon May 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc5.39]
 - redhat/configs: Set GUP_TEST in debug kernel (Joel Savitz)
 
