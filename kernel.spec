@@ -130,7 +130,7 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.17
 
-%define rpmversion 5.17.5
+%define rpmversion 5.17.6
 %define patchversion 5.17
 %define pkgrelease 300
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17.5.tar.xz
+Source0: linux-5.17.6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1387,8 +1387,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17.5 -c
-mv linux-5.17.5 linux-%{KVERREL}
+%setup -q -n kernel-5.17.6 -c
+mv linux-5.17.6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3015,7 +3015,10 @@ fi
 #
 #
 %changelog
-* Thu Apr 28 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.17.5-300]
+* Mon May 09 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.17.6-0]
+- fedora: arm: Enable new Rockchip 356x series drivers (Peter Robinson)
+- fedora: arm: enable DRM_I2C_NXP_TDA998X on aarch64 (Peter Robinson)
+- Add config entry for CONFIG_BLK_DEV_FD_RAWCMD (Justin M. Forbes)
 - Update changelog (Justin M. Forbes)
 
 * Thu Apr 28 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.17.5-0]
