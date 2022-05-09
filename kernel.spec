@@ -85,7 +85,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -129,13 +129,13 @@ Summary: The Linux kernel
 
 %define specversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc5.20220506gitfe27d189e3f42e3.44
+%define pkgrelease 0.rc6.47
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20220506gitfe27d189e3f42e3.44%{?buildid}%{?dist}
+%define specrelease 0.rc6.47%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -690,7 +690,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc5-115-gfe27d189e3f42e3.tar.xz
+Source0: linux-5.18-rc6.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1382,8 +1382,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc5-115-gfe27d189e3f42e3 -c
-mv linux-5.18-rc5-115-gfe27d189e3f42e3 linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc6 -c
+mv linux-5.18-rc6 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3025,6 +3025,10 @@ fi
 #
 #
 %changelog
+* Mon May 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc6.46]
+- redhat/self-test: Add test to verify Makefile declarations. (Prarit Bhargava)
+- redhat/Makefile: Add RHTEST (Prarit Bhargava)
+
 * Fri May 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc5.fe27d189e3f42e3.43]
 - redhat: shellcheck cleanup (Prarit Bhargava)
 - redhat/self-test/data: Cleanup data (Prarit Bhargava)
