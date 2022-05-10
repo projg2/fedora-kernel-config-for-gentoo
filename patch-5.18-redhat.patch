@@ -8,6 +8,8 @@
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
+ arch/x86/boot/header.S                             |   4 +
+ arch/x86/include/asm/efi.h                         |   5 +
  arch/x86/kernel/cpu/common.c                       |   1 +
  arch/x86/kernel/setup.c                            |  68 ++-
  crypto/rng.c                                       |  73 ++-
@@ -18,8 +20,11 @@
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +
  drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
  drivers/char/random.c                              |  95 ++++
+ drivers/firmware/efi/Kconfig                       |  12 +
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
+ drivers/firmware/efi/libstub/efistub.h             |  74 +++
+ drivers/firmware/efi/libstub/x86-stub.c            | 119 ++++-
  drivers/firmware/efi/secureboot.c                  |  38 ++
  drivers/hid/hid-rmi.c                              |  64 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
@@ -43,7 +48,7 @@
  drivers/scsi/qla4xxx/ql4_os.c                      |   2 +
  drivers/usb/core/hub.c                             |   7 +
  fs/afs/main.c                                      |   3 +
- include/linux/efi.h                                |  22 +-
+ include/linux/efi.h                                |  24 +-
  include/linux/kernel.h                             |  21 +
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -68,7 +73,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 70 files changed, 1723 insertions(+), 188 deletions(-)
+ 75 files changed, 1934 insertions(+), 193 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 3f1cc5e317ed..fbc0870dd787 100644
@@ -253,6 +258,38 @@ index d860ac300919..6e63924932e6 100644
  	/* Have one command line that is parsed and saved in /proc/cmdline */
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
+diff --git a/arch/x86/boot/header.S b/arch/x86/boot/header.S
+index 6dbd7e9f74c9..0352e4589efa 100644
+--- a/arch/x86/boot/header.S
++++ b/arch/x86/boot/header.S
+@@ -163,7 +163,11 @@ extra_header_fields:
+ 	.long	0x200				# SizeOfHeaders
+ 	.long	0				# CheckSum
+ 	.word	IMAGE_SUBSYSTEM_EFI_APPLICATION	# Subsystem (EFI application)
++#ifdef CONFIG_DXE_MEM_ATTRIBUTES
++	.word	IMAGE_DLL_CHARACTERISTICS_NX_COMPAT	# DllCharacteristics
++#else
+ 	.word	0				# DllCharacteristics
++#endif
+ #ifdef CONFIG_X86_32
+ 	.long	0				# SizeOfStackReserve
+ 	.long	0				# SizeOfStackCommit
+diff --git a/arch/x86/include/asm/efi.h b/arch/x86/include/asm/efi.h
+index 98938a68251c..bed74a0f2932 100644
+--- a/arch/x86/include/asm/efi.h
++++ b/arch/x86/include/asm/efi.h
+@@ -357,6 +357,11 @@ static inline u32 efi64_convert_status(efi_status_t status)
+ 						   runtime),		\
+ 				    func, __VA_ARGS__))
+
++#define efi_dxe_call(func, ...)						\
++	(efi_is_native()						\
++		? efi_dxe_table->func(__VA_ARGS__)			\
++		: __efi64_thunk_map(efi_dxe_table, func, __VA_ARGS__))
++
+ #else /* CONFIG_EFI_MIXED */
+
+ static inline bool efi_is_64bit(void)
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
 index e342ae4db3c4..42e1b922fbfd 100644
 --- a/arch/x86/kernel/cpu/common.c
@@ -803,6 +840,29 @@ index 4c9adb4f3d5d..4f660c064c70 100644
  	.read = random_read,
  	.write = random_write,
  	.poll = random_poll,
+diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
+index 2c3dac5ecb36..f44f8b746e42 100644
+--- a/drivers/firmware/efi/Kconfig
++++ b/drivers/firmware/efi/Kconfig
+@@ -91,6 +91,18 @@ config EFI_SOFT_RESERVE
+
+ 	  If unsure, say Y.
+
++config EFI_DXE_MEM_ATTRIBUTES
++	bool "Adjust memory attributes in EFISTUB"
++	depends on EFI && EFI_STUB && X86
++	default y
++	help
++	  UEFI specification does not guarantee all memory to be
++	  accessible for both write and execute as the kernel expects
++	  it to be.
++	  Use DXE services to check and alter memory protection
++	  attributes during boot via EFISTUB to ensure that memory
++	  ranges used by the kernel are writable and executable.
++
+ config EFI_PARAMS_FROM_FDT
+ 	bool
+ 	help
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
 index c02ff25dd477..d860f8eb9a81 100644
 --- a/drivers/firmware/efi/Makefile
@@ -960,6 +1020,276 @@ index 5502e176d51b..93b61ca552d6 100644
  }
 
  static DEFINE_SPINLOCK(efi_mem_reserve_persistent_lock);
+diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
+index edb77b0621ea..2dc24776899a 100644
+--- a/drivers/firmware/efi/libstub/efistub.h
++++ b/drivers/firmware/efi/libstub/efistub.h
+@@ -36,6 +36,9 @@ extern bool efi_novamap;
+
+ extern const efi_system_table_t *efi_system_table;
+
++typedef union efi_dxe_services_table efi_dxe_services_table_t;
++extern const efi_dxe_services_table_t *efi_dxe_table;
++
+ efi_status_t __efiapi efi_pe_entry(efi_handle_t handle,
+ 				   efi_system_table_t *sys_table_arg);
+
+@@ -44,6 +47,7 @@ efi_status_t __efiapi efi_pe_entry(efi_handle_t handle,
+ #define efi_is_native()		(true)
+ #define efi_bs_call(func, ...)	efi_system_table->boottime->func(__VA_ARGS__)
+ #define efi_rt_call(func, ...)	efi_system_table->runtime->func(__VA_ARGS__)
++#define efi_dxe_call(func, ...)	efi_dxe_table->func(__VA_ARGS__)
+ #define efi_table_attr(inst, attr)	(inst->attr)
+ #define efi_call_proto(inst, func, ...) inst->func(inst, ##__VA_ARGS__)
+
+@@ -329,6 +333,76 @@ union efi_boot_services {
+ 	} mixed_mode;
+ };
+
++typedef enum {
++	EfiGcdMemoryTypeNonExistent,
++	EfiGcdMemoryTypeReserved,
++	EfiGcdMemoryTypeSystemMemory,
++	EfiGcdMemoryTypeMemoryMappedIo,
++	EfiGcdMemoryTypePersistent,
++	EfiGcdMemoryTypeMoreReliable,
++	EfiGcdMemoryTypeMaximum
++} efi_gcd_memory_type_t;
++
++typedef struct {
++	efi_physical_addr_t base_address;
++	u64 length;
++	u64 capabilities;
++	u64 attributes;
++	efi_gcd_memory_type_t gcd_memory_type;
++	void *image_handle;
++	void *device_handle;
++} efi_gcd_memory_space_desc_t;
++
++/*
++ * EFI DXE Services table
++ */
++union efi_dxe_services_table {
++	struct {
++		efi_table_hdr_t hdr;
++		void *add_memory_space;
++		void *allocate_memory_space;
++		void *free_memory_space;
++		void *remove_memory_space;
++		efi_status_t (__efiapi *get_memory_space_descriptor)(efi_physical_addr_t,
++								     efi_gcd_memory_space_desc_t *);
++		efi_status_t (__efiapi *set_memory_space_attributes)(efi_physical_addr_t,
++								     u64, u64);
++		void *get_memory_space_map;
++		void *add_io_space;
++		void *allocate_io_space;
++		void *free_io_space;
++		void *remove_io_space;
++		void *get_io_space_descriptor;
++		void *get_io_space_map;
++		void *dispatch;
++		void *schedule;
++		void *trust;
++		void *process_firmware_volume;
++		void *set_memory_space_capabilities;
++	};
++	struct {
++		efi_table_hdr_t hdr;
++		u32 add_memory_space;
++		u32 allocate_memory_space;
++		u32 free_memory_space;
++		u32 remove_memory_space;
++		u32 get_memory_space_descriptor;
++		u32 set_memory_space_attributes;
++		u32 get_memory_space_map;
++		u32 add_io_space;
++		u32 allocate_io_space;
++		u32 free_io_space;
++		u32 remove_io_space;
++		u32 get_io_space_descriptor;
++		u32 get_io_space_map;
++		u32 dispatch;
++		u32 schedule;
++		u32 trust;
++		u32 process_firmware_volume;
++		u32 set_memory_space_capabilities;
++	} mixed_mode;
++};
++
+ typedef union efi_uga_draw_protocol efi_uga_draw_protocol_t;
+
+ union efi_uga_draw_protocol {
+diff --git a/drivers/firmware/efi/libstub/x86-stub.c b/drivers/firmware/efi/libstub/x86-stub.c
+index 01ddd4502e28..b14e88ccefca 100644
+--- a/drivers/firmware/efi/libstub/x86-stub.c
++++ b/drivers/firmware/efi/libstub/x86-stub.c
+@@ -22,6 +22,7 @@
+ #define MAXMEM_X86_64_4LEVEL (1ull << 46)
+
+ const efi_system_table_t *efi_system_table;
++const efi_dxe_services_table_t *efi_dxe_table;
+ extern u32 image_offset;
+ static efi_loaded_image_t *image = NULL;
+
+@@ -211,9 +212,110 @@ static void retrieve_apple_device_properties(struct boot_params *boot_params)
+ 	}
+ }
+
++static void
++adjust_memory_range_protection(unsigned long start, unsigned long size)
++{
++	efi_status_t status;
++	efi_gcd_memory_space_desc_t desc;
++	unsigned long end, next;
++	unsigned long rounded_start, rounded_end;
++	unsigned long unprotect_start, unprotect_size;
++	int has_system_memory = 0;
++
++	if (efi_dxe_table == NULL)
++		return;
++
++	rounded_start = rounddown(start, EFI_PAGE_SIZE);
++	rounded_end = roundup(start + size, EFI_PAGE_SIZE);
++
++	/*
++	 * Don't modify memory region attributes, they are
++	 * already suitable, to lower the possibility to
++	 * encounter firmware bugs.
++	 */
++
++	for (end = start + size; start < end; start = next) {
++
++		status = efi_dxe_call(get_memory_space_descriptor, start, &desc);
++
++		if (status != EFI_SUCCESS)
++			return;
++
++		next = desc.base_address + desc.length;
++
++		/*
++		 * Only system memory is suitable for trampoline/kernel image placement,
++		 * so only this type of memory needs its attributes to be modified.
++		 */
++
++		if (desc.gcd_memory_type != EfiGcdMemoryTypeSystemMemory ||
++		    (desc.attributes & (EFI_MEMORY_RO | EFI_MEMORY_XP)) == 0)
++			continue;
++
++		unprotect_start = max(rounded_start, (unsigned long)desc.base_address);
++		unprotect_size = min(rounded_end, next) - unprotect_start;
++
++		status = efi_dxe_call(set_memory_space_attributes,
++				      unprotect_start, unprotect_size,
++				      EFI_MEMORY_WB);
++
++		if (status != EFI_SUCCESS) {
++			efi_warn("Unable to unprotect memory range [%08lx,%08lx]: %d\n",
++				 unprotect_start,
++				 unprotect_start + unprotect_size,
++				 (int)status);
++		}
++	}
++}
++
++/*
++ * Trampoline takes 2 pages and can be loaded in first megabyte of memory
++ * with its end placed between 128k and 640k where BIOS might start.
++ * (see arch/x86/boot/compressed/pgtable_64.c)
++ *
++ * We cannot find exact trampoline placement since memory map
++ * can be modified by UEFI, and it can alter the computed address.
++ */
++
++#define TRAMPOLINE_PLACEMENT_BASE ((128 - 8)*1024)
++#define TRAMPOLINE_PLACEMENT_SIZE (640*1024 - (128 - 8)*1024)
++
++void startup_32(struct boot_params *boot_params);
++
++static void
++setup_memory_protection(unsigned long image_base, unsigned long image_size)
++{
++	/*
++	 * Allow execution of possible trampoline used
++	 * for switching between 4- and 5-level page tables
++	 * and relocated kernel image.
++	 */
++
++	adjust_memory_range_protection(TRAMPOLINE_PLACEMENT_BASE,
++				       TRAMPOLINE_PLACEMENT_SIZE);
++
++#ifdef CONFIG_64BIT
++	if (image_base != (unsigned long)startup_32)
++		adjust_memory_range_protection(image_base, image_size);
++#else
++	/*
++	 * Clear protection flags on a whole range of possible
++	 * addresses used for KASLR. We don't need to do that
++	 * on x86_64, since KASLR/extraction is performed after
++	 * dedicated identity page tables are built and we only
++	 * need to remove possible protection on relocated image
++	 * itself disregarding further relocations.
++	 */
++	adjust_memory_range_protection(LOAD_PHYSICAL_ADDR,
++				       KERNEL_IMAGE_SIZE - LOAD_PHYSICAL_ADDR);
++#endif
++}
++
+ static const efi_char16_t apple[] = L"Apple";
+
+-static void setup_quirks(struct boot_params *boot_params)
++static void setup_quirks(struct boot_params *boot_params,
++			 unsigned long image_base,
++			 unsigned long image_size)
+ {
+ 	efi_char16_t *fw_vendor = (efi_char16_t *)(unsigned long)
+ 		efi_table_attr(efi_system_table, fw_vendor);
+@@ -222,6 +324,9 @@ static void setup_quirks(struct boot_params *boot_params)
+ 		if (IS_ENABLED(CONFIG_APPLE_PROPERTIES))
+ 			retrieve_apple_device_properties(boot_params);
+ 	}
++
++	if (IS_ENABLED(CONFIG_EFI_DXE_MEM_ATTRIBUTES))
++		setup_memory_protection(image_base, image_size);
+ }
+
+ /*
+@@ -341,8 +446,6 @@ static void __noreturn efi_exit(efi_handle_t handle, efi_status_t status)
+ 		asm("hlt");
+ }
+
+-void startup_32(struct boot_params *boot_params);
+-
+ void __noreturn efi_stub_entry(efi_handle_t handle,
+ 			       efi_system_table_t *sys_table_arg,
+ 			       struct boot_params *boot_params);
+@@ -677,11 +780,17 @@ unsigned long efi_main(efi_handle_t handle,
+ 	efi_status_t status;
+
+ 	efi_system_table = sys_table_arg;
+-
+ 	/* Check if we were booted by the EFI firmware */
+ 	if (efi_system_table->hdr.signature != EFI_SYSTEM_TABLE_SIGNATURE)
+ 		efi_exit(handle, EFI_INVALID_PARAMETER);
+
++	efi_dxe_table = get_efi_config_table(EFI_DXE_SERVICES_TABLE_GUID);
++	if (efi_dxe_table &&
++	    efi_dxe_table->hdr.signature != EFI_DXE_SERVICES_TABLE_SIGNATURE) {
++		efi_warn("Ignoring DXE services table: invalid signature\n");
++		efi_dxe_table = NULL;
++	}
++
+ 	/*
+ 	 * If the kernel isn't already loaded at a suitable address,
+ 	 * relocate it.
+@@ -791,7 +900,7 @@ unsigned long efi_main(efi_handle_t handle,
+
+ 	setup_efi_pci(boot_params);
+
+-	setup_quirks(boot_params);
++	setup_quirks(boot_params, bzimage_addr, buffer_end - buffer_start);
+
+ 	status = exit_boot(boot_params, handle);
+ 	if (status != EFI_SUCCESS) {
 diff --git a/drivers/firmware/efi/secureboot.c b/drivers/firmware/efi/secureboot.c
 new file mode 100644
 index 000000000000..de0a3714a5d4
@@ -2041,7 +2371,7 @@ index eae288c8d40a..8b8bf447cedc 100644
 
  error_proc:
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index ccd4d3f91c98..e64643e3e364 100644
+index ccd4d3f91c98..2241dfa131e7 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -2053,7 +2383,23 @@ index ccd4d3f91c98..e64643e3e364 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -829,6 +831,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -383,6 +385,7 @@ void efi_native_runtime_setup(void);
+ #define EFI_LOAD_FILE_PROTOCOL_GUID		EFI_GUID(0x56ec3091, 0x954c, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
+ #define EFI_LOAD_FILE2_PROTOCOL_GUID		EFI_GUID(0x4006c0c1, 0xfcb3, 0x403e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
+ #define EFI_RT_PROPERTIES_TABLE_GUID		EFI_GUID(0xeb66918a, 0x7eef, 0x402a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
++#define EFI_DXE_SERVICES_TABLE_GUID		EFI_GUID(0x05ad34ba, 0x6f02, 0x4214,  0x95, 0x2e, 0x4d, 0xa0, 0x39, 0x8e, 0x2b, 0xb9)
+
+ #define EFI_IMAGE_SECURITY_DATABASE_GUID	EFI_GUID(0xd719b2cb, 0x3d3a, 0x4596,  0xa3, 0xbc, 0xda, 0xd0, 0x0e, 0x67, 0x65, 0x6f)
+ #define EFI_SHIM_LOCK_GUID			EFI_GUID(0x605dab50, 0xe046, 0x4300,  0xab, 0xb6, 0x3d, 0xd8, 0x10, 0xdd, 0x8b, 0x23)
+@@ -435,6 +438,7 @@ typedef struct {
+ } efi_config_table_type_t;
+
+ #define EFI_SYSTEM_TABLE_SIGNATURE ((u64)0x5453595320494249ULL)
++#define EFI_DXE_SERVICES_TABLE_SIGNATURE ((u64)0x565245535f455844ULL)
+
+ #define EFI_2_30_SYSTEM_TABLE_REVISION  ((2 << 16) | (30))
+ #define EFI_2_20_SYSTEM_TABLE_REVISION  ((2 << 16) | (20))
+@@ -829,6 +833,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -2068,7 +2414,7 @@ index ccd4d3f91c98..e64643e3e364 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -840,6 +850,8 @@ static inline bool efi_enabled(int feature)
+@@ -840,6 +852,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -2077,7 +2423,7 @@ index ccd4d3f91c98..e64643e3e364 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -860,6 +872,8 @@ static inline bool efi_enabled(int feature)
+@@ -860,6 +874,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -2086,7 +2432,7 @@ index ccd4d3f91c98..e64643e3e364 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -872,6 +886,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -872,6 +888,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -2094,7 +2440,7 @@ index ccd4d3f91c98..e64643e3e364 100644
 
  /*
   * Variable Attributes
-@@ -1124,13 +1139,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1124,13 +1141,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 

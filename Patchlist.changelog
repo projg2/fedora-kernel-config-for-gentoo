@@ -1,3 +1,12 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/908522441a1426c117a6fc4090465908a0196b72
+ 908522441a1426c117a6fc4090465908a0196b72 efi: x86: Set the NX-compatibility flag in the PE header
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/a5d9cbafb8fa7a1875e4c0c23758083bf929b5b2
+ a5d9cbafb8fa7a1875e4c0c23758083bf929b5b2 efi: libstub: ensure allocated memory to be executable
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3568b364f961f86962db6bbc90bbb94bbd869fc3
+ 3568b364f961f86962db6bbc90bbb94bbd869fc3 efi: libstub: declare DXE services table
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/a0c122c4fb17f350396cb664d2fc184df9872279
  a0c122c4fb17f350396cb664d2fc184df9872279 tools/power/x86/intel-speed-select: fix build failure when using -Wl,--as-needed
 
