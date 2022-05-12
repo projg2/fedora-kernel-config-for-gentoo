@@ -1,3 +1,12 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/8a35d9b408eeb4798a147fb76eb3f10368133de8
+ 8a35d9b408eeb4798a147fb76eb3f10368133de8 efi: x86: Set the NX-compatibility flag in the PE header
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/e42a2e6c9c035388d705b3cec7bf130346b632cc
+ e42a2e6c9c035388d705b3cec7bf130346b632cc efi: libstub: ensure allocated memory to be executable
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/811844b59e9b0e4e91cfa65daaab429e0664edd7
+ 811844b59e9b0e4e91cfa65daaab429e0664edd7 efi: libstub: declare DXE services table
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/ea0c997fe80f42ae5f3028581d1bad74c4a55dc3
  ea0c997fe80f42ae5f3028581d1bad74c4a55dc3 Revert "net: bcmgenet: Use stronger register read/writes to assure ordering"
 
