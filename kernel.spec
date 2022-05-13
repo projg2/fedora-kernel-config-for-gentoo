@@ -129,13 +129,13 @@ Summary: The Linux kernel
 
 %define specversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc6.20220511gitfeb9c5e19e913b5.50
+%define pkgrelease 0.rc6.20220513gitf3f19f939c11925.51
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20220511gitfeb9c5e19e913b5.50%{?buildid}%{?dist}
+%define specrelease 0.rc6.20220513gitf3f19f939c11925.51%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -654,6 +654,10 @@ BuildRequires: kabi-dw
 %if %{signkernel}%{signmodules}
 BuildRequires: openssl
 %if %{signkernel}
+# ELN uses Fedora signing process, so exclude
+%if 0%{?rhel}%{?centos} && !0%{?eln}
+BuildRequires: system-sb-certs
+%endif
 %ifarch x86_64 aarch64
 BuildRequires: nss-tools
 BuildRequires: pesign >= 0.10-4
@@ -690,7 +694,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc6-9-gfeb9c5e19e913b5.tar.xz
+Source0: linux-5.18-rc6-85-gf3f19f939c11925.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1382,8 +1386,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc6-9-gfeb9c5e19e913b5 -c
-mv linux-5.18-rc6-9-gfeb9c5e19e913b5 linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc6-85-gf3f19f939c11925 -c
+mv linux-5.18-rc6-85-gf3f19f939c11925 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -2348,7 +2352,7 @@ find Documentation -type d | xargs chmod u+w
     fi \
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
-    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -P${RPM_BUILD_NCPUS} xz; \
+    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -P${RPM_BUILD_NCPUS} -r xz; \
   fi \
 %{nil}
 
@@ -3025,11 +3029,20 @@ fi
 #
 #
 %changelog
-* Wed May 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc6.feb9c5e19e913b5.49]
+* Fri May 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc6.f3f19f939c11925.50]
 - Add CONFIG_EFI_DXE_MEM_ATTRIBUTES (Justin M. Forbes)
 - efi: x86: Set the NX-compatibility flag in the PE header (Peter Jones)
 - efi: libstub: ensure allocated memory to be executable (Baskov Evgeniy)
 - efi: libstub: declare DXE services table (Baskov Evgeniy)
+
+* Fri May 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc6.f3f19f939c11925.49]
+- redhat/configs: Fix rm warning on error (Prarit Bhargava)
+- Fix nightly merge CI (Don Zickus)
+- redhat/kernel.spec.template: fix standalone tools build (Jan Stancek)
+- Add system-sb-certs for RHEL-9 (Don Zickus)
+- Fix dist-buildcheck-reqs (Don Zickus)
+- move DAMON configs to correct directory (Chris von Recklinghausen)
+- redhat: indicate HEAD state in tarball/rpm name (Jarod Wilson)
 
 * Wed May 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc6.feb9c5e19e913b5.48]
 - Fedora 5.18 config set part 1 (Justin M. Forbes)
