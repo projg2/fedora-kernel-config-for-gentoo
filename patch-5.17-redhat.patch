@@ -111,7 +111,7 @@ index 000000000000..733a26bd887a
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index ce65b393a2b4..c7526eac960f 100644
+index 3cf179812f0f..ca873b29f0b2 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -2244,7 +2244,7 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	return ret;
  }
 diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 2882bc7d79d7..bc3a11ec0c27 100644
+index 9e9713f7ddb8..57646a96cb2d 100644
 --- a/net/bluetooth/hci_core.c
 +++ b/net/bluetooth/hci_core.c
 @@ -3667,8 +3667,8 @@ static void hci_scodata_packet(struct hci_dev *hdev, struct sk_buff *skb)
