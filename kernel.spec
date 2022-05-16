@@ -85,7 +85,7 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 
 %if 0%{?fedora}
 %define secure_boot_arch x86_64
@@ -129,13 +129,13 @@ Summary: The Linux kernel
 
 %define specversion 5.18.0
 %define patchversion 5.18
-%define pkgrelease 0.rc6.20220513gitf3f19f939c11925.51
+%define pkgrelease 0.rc7.54
 
 # This is needed to do merge window version magic
 %define patchlevel 18
 
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20220513gitf3f19f939c11925.51%{?buildid}%{?dist}
+%define specrelease 0.rc7.54%{?buildid}%{?dist}
 
 %define pkg_release %{specrelease}
 
@@ -694,7 +694,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.18-rc6-85-gf3f19f939c11925.tar.xz
+Source0: linux-5.18-rc7.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1386,8 +1386,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.18-rc6-85-gf3f19f939c11925 -c
-mv linux-5.18-rc6-85-gf3f19f939c11925 linux-%{KVERREL}
+%setup -q -n kernel-5.18-rc7 -c
+mv linux-5.18-rc7 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3029,11 +3029,14 @@ fi
 #
 #
 %changelog
-* Fri May 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc6.f3f19f939c11925.50]
+* Mon May 16 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc7.53]
 - Add CONFIG_EFI_DXE_MEM_ATTRIBUTES (Justin M. Forbes)
 - efi: x86: Set the NX-compatibility flag in the PE header (Peter Jones)
 - efi: libstub: ensure allocated memory to be executable (Baskov Evgeniy)
 - efi: libstub: declare DXE services table (Baskov Evgeniy)
+
+* Mon May 16 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc7.52]
+- redhat/configs: fix CONFIG_INTEL_ISHTP_ECLITE (David Arcari)
 
 * Fri May 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc6.f3f19f939c11925.49]
 - redhat/configs: Fix rm warning on error (Prarit Bhargava)
