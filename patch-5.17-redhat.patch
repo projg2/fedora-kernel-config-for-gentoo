@@ -111,7 +111,7 @@ index 000000000000..733a26bd887a
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 3cf179812f0f..ca873b29f0b2 100644
+index aba139bbd1c7..01a8c0b291ac 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1917,7 +1917,7 @@ index d1f34229e11a..e828504cc396 100644
  		if (error < 0)
  			return error;
 diff --git a/fs/nfs/fs_context.c b/fs/nfs/fs_context.c
-index ea17fa1f31ec..e2d59bb5e6bb 100644
+index d20891162145..9a16897e8dc6 100644
 --- a/fs/nfs/fs_context.c
 +++ b/fs/nfs/fs_context.c
 @@ -80,6 +80,7 @@ enum nfs_param {
