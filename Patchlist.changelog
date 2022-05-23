@@ -1,11 +1,11 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/e59f4660c88480efbc29445375df8570cfe51041
- e59f4660c88480efbc29445375df8570cfe51041 efi: x86: Set the NX-compatibility flag in the PE header
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d063a739789283176b7259bf6b9bb6879cc6cad0
+ d063a739789283176b7259bf6b9bb6879cc6cad0 efi: x86: Set the NX-compatibility flag in the PE header
 
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/de5e9728071d6ba35820beea7349cc0c8a36d53f
- de5e9728071d6ba35820beea7349cc0c8a36d53f efi: libstub: ensure allocated memory to be executable
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/5d5a2883376311c013668817b94bd977acc521dc
+ 5d5a2883376311c013668817b94bd977acc521dc efi: libstub: ensure allocated memory to be executable
 
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/427186f0cc428d89f9bd89e73231c3764de8f30b
- 427186f0cc428d89f9bd89e73231c3764de8f30b efi: libstub: declare DXE services table
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/19f61377090f35ef3e7a2d20450dc8d021fdeb45
+ 19f61377090f35ef3e7a2d20450dc8d021fdeb45 efi: libstub: declare DXE services table
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/a0c122c4fb17f350396cb664d2fc184df9872279
  a0c122c4fb17f350396cb664d2fc184df9872279 tools/power/x86/intel-speed-select: fix build failure when using -Wl,--as-needed
