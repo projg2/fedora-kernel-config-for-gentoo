@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
-%define specversion 5.18.0
-%define patchversion 5.18
-%define pkgrelease 60
+%define specversion 5.19.0
+%define patchversion 5.19
+%define pkgrelease 0.rc0.20220524git143a6252e1b8.60
 %define kversion 5
-%define tarfile_release 5.18
+%define tarfile_release 5.18-1157-g143a6252e1b8
 # This is needed to do merge window version magic
-%define patchlevel 18
+%define patchlevel 19
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 60%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220524git143a6252e1b8.60%{?buildid}%{?dist}
 
 #
 # End of genspec.sh variables
@@ -3034,14 +3034,10 @@ fi
 #
 #
 %changelog
-* Mon May 23 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.0-60]
-- Changelog fix (Justin M. Forbes)
-- Revert variable switch for lasttag (Justin M. Forbes)
-- Fedora: arm: Updates for QCom devices (Peter Robinson)
-- Fedora arm and generic updates for 5.17 (Peter Robinson)
-- enable COMMON_CLK_SI5341 for Xilinx ZYNQ-MP (Peter Robinson)
+* Tue May 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc0.143a6252e1b8.59]
+- redhat/Makefile: Drop quotation marks around string definitions (Prarit Bhargava)
 
-* Mon May 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-59]
+* Mon May 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-58]
 - redhat: Add self-tests to .gitlab-ci.yml (Prarit Bhargava)
 - redhat/self-test: Update data (Prarit Bhargava)
 - redhat/self-test: Unset Makefile variables (Prarit Bhargava)
@@ -3056,6 +3052,28 @@ fi
 * Fri May 20 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc7.3d7285a335ed.55]
 - Update filter-modules for mlx5-vfio-pci (Justin M. Forbes)
 - Fedora configs for 5.18 (Justin M. Forbes)
+
+* Thu May 19 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc7.f993aed406ea.54]
+- self-test/data/create-data.sh: Avoid SINGLE_TARBALL warning (Prarit Bhargava)
+- redhat/Makefile: Rename PREBUILD to UPSTREAMBUILD (Prarit Bhargava)
+- redhat/Makefile: Rename BUILDID to LOCALVERSION (Prarit Bhargava)
+- redhat/Makefile: Fix dist-brew & distg-brew targets (Prarit Bhargava)
+- redhat/Makefile: Reorganize MARKER code (Prarit Bhargava)
+- redhat/scripts/new_release.sh: Use Makefile variables (Prarit Bhargava)
+- redhat/Makefile: Rename __YSTREAM and __ZSTREAM (Prarit Bhargava)
+- redhat/genspec.sh: Add comment about SPECBUILDID variable (Prarit Bhargava)
+- redhat/kernel.spec.template: Move genspec variables into one section (Prarit Bhargava)
+- redhat/kernel.spec.template: Remove kversion (Prarit Bhargava)
+- redhat/Makefile: Add SPECTARFILE_RELEASE comment (Prarit Bhargava)
+- redhat/Makefile: Rename RPMVERSION to BASEVERSION (Prarit Bhargava)
+- redhat/Makefile: Target whitespace cleanup (Prarit Bhargava)
+- redhat/Makefile: Move SPECRELEASE to genspec.sh (Prarit Bhargava)
+- redhat/Makefile: Add kernel-NVR comment (Prarit Bhargava)
+- redhat/Makefile: Use SPECFILE variable (Prarit Bhargava)
+- redhat/Makefile: Remove KEXTRAVERSION (Prarit Bhargava)
+- redhat: Enable VM kselftests (Nico Pache) [1978539]
+- redhat: enable CONFIG_TEST_VMALLOC for vm selftests (Nico Pache)
+- redhat: Enable HMM test to be used by the kselftest test suite (Nico Pache)
 
 * Wed May 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.18.0-0.rc7.210e04ff7681.53]
 - redhat/Makefile.variables: Change git hash length to default (Prarit Bhargava)
