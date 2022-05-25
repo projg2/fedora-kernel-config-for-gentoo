@@ -3570,3 +3570,114 @@ index c36b7c412de2..fae0c84027fd 100644
 -- 
 2.36.1
 
+From 297bcb88233101e8d5062729ff3a5f989bad1c3b Mon Sep 17 00:00:00 2001
+From: "Justin M. Forbes" <jforbes@fedoraproject.org>
+Date: Wed, 25 May 2022 16:24:02 -0500
+Subject: [PATCH] Revert "crypto: rng - Override drivers/char/random in FIPS
+ mode"
+
+This reverts commit 427c8a54adcb92826faca4c40ef4591fe87e2fdf.
+---
+ crypto/rng.c | 73 +---------------------------------------------------
+ 1 file changed, 1 insertion(+), 72 deletions(-)
+
+diff --git a/crypto/rng.c b/crypto/rng.c
+index 50a9d040bed1..fea082b25fe4 100644
+--- a/crypto/rng.c
++++ b/crypto/rng.c
+@@ -11,17 +11,14 @@
+ #include <linux/atomic.h>
+ #include <crypto/internal/rng.h>
+ #include <linux/err.h>
+-#include <linux/fips.h>
+-#include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/random.h>
+ #include <linux/seq_file.h>
+-#include <linux/sched.h>
+-#include <linux/sched/signal.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
+ #include <linux/cryptouser.h>
++#include <linux/compiler.h>
+ #include <net/netlink.h>
+
+ #include "internal.h"
+@@ -227,73 +224,5 @@ void crypto_unregister_rngs(struct rng_alg *algs, int count)
+ }
+ EXPORT_SYMBOL_GPL(crypto_unregister_rngs);
+
+-static ssize_t crypto_devrandom_read(void __user *buf, size_t buflen)
+-{
+-	u8 tmp[256];
+-	ssize_t ret;
+-
+-	if (!buflen)
+-		return 0;
+-
+-	ret = crypto_get_default_rng();
+-	if (ret)
+-		return ret;
+-
+-	for (;;) {
+-		int err;
+-		int i;
+-
+-		i = min_t(int, buflen, sizeof(tmp));
+-		err = crypto_rng_get_bytes(crypto_default_rng, tmp, i);
+-		if (err) {
+-			ret = err;
+-			break;
+-		}
+-
+-		if (copy_to_user(buf, tmp, i)) {
+-			ret = -EFAULT;
+-			break;
+-		}
+-
+-		buflen -= i;
+-		buf += i;
+-		ret += i;
+-
+-		if (!buflen)
+-			break;
+-
+-		if (need_resched()) {
+-			if (signal_pending(current))
+-				break;
+-			schedule();
+-		}
+-	}
+-
+-	crypto_put_default_rng();
+-	memzero_explicit(tmp, sizeof(tmp));
+-
+-	return ret;
+-}
+-
+-static const struct random_extrng crypto_devrandom_rng = {
+-	.extrng_read = crypto_devrandom_read,
+-	.owner = THIS_MODULE,
+-};
+-
+-static int __init crypto_rng_init(void)
+-{
+-	if (fips_enabled)
+-		random_register_extrng(&crypto_devrandom_rng);
+-	return 0;
+-}
+-
+-static void __exit crypto_rng_exit(void)
+-{
+-	random_unregister_extrng();
+-}
+-
+-late_initcall(crypto_rng_init);
+-module_exit(crypto_rng_exit);
+-
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Random Number Generator");
+-- 
+2.36.1
+
