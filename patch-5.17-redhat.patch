@@ -24,6 +24,7 @@
  drivers/firmware/efi/libstub/efistub.h             |  74 ++++++++++++
  drivers/firmware/efi/libstub/x86-stub.c            | 119 +++++++++++++++++++-
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/firmware/sysfb.c                           |  18 ++-
  drivers/gpu/drm/i915/display/intel_bios.c          |   6 +
  drivers/gpu/drm/i915/display/intel_psr.c           |   9 ++
  drivers/gpu/drm/i915/display/intel_vbt_defs.h      |   3 +
@@ -59,7 +60,7 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 61 files changed, 980 insertions(+), 212 deletions(-)
+ 62 files changed, 997 insertions(+), 213 deletions(-)
 
 diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
 index 1887d92e8e92..17706dc91ec9 100644
@@ -111,7 +112,7 @@ index 000000000000..733a26bd887a
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index aba139bbd1c7..01a8c0b291ac 100644
+index 318597a4147e..739e5da2072e 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1249,6 +1250,42 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
+index 2bfbb05f7d89..a504f7234f35 100644
+--- a/drivers/firmware/sysfb.c
++++ b/drivers/firmware/sysfb.c
+@@ -34,6 +34,22 @@
+ #include <linux/screen_info.h>
+ #include <linux/sysfb.h>
+
++static int skip_simpledrm;
++
++static int __init simpledrm_disable(char *opt)
++{
++	if (!opt)
++                return -EINVAL;
++
++	get_option(&opt, &skip_simpledrm);
++
++	if (skip_simpledrm)
++		pr_info("The simpledrm driver will not be probed\n");
++
++	return 0;
++}
++early_param("nvidia-drm.modeset", simpledrm_disable);
++
+ static __init int sysfb_init(void)
+ {
+ 	struct screen_info *si = &screen_info;
+@@ -45,7 +61,7 @@ static __init int sysfb_init(void)
+
+ 	/* try to create a simple-framebuffer device */
+ 	compatible = sysfb_parse_mode(si, &mode);
+-	if (compatible) {
++	if (compatible && !skip_simpledrm) {
+ 		ret = sysfb_create_simplefb(si, &mode);
+ 		if (!ret)
+ 			return 0;
 diff --git a/drivers/gpu/drm/i915/display/intel_bios.c b/drivers/gpu/drm/i915/display/intel_bios.c
 index 9d989c9f5da4..5d97a251d3dc 100644
 --- a/drivers/gpu/drm/i915/display/intel_bios.c
@@ -1684,7 +1721,7 @@ index 107dcf5938d6..225a9797e39d 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 10f7c79caac2..8ac0161d2aef 100644
+index 0abd772c57f0..3c9889ce56ac 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -244,6 +244,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1751,7 +1788,7 @@ index 10f7c79caac2..8ac0161d2aef 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index a703f1f5fb64..d77c24333cb4 100644
+index 189175fff7e4..c0627a9d1274 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -101,14 +101,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
@@ -1787,7 +1824,7 @@ index a703f1f5fb64..d77c24333cb4 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -870,8 +876,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -891,8 +897,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1798,7 +1835,7 @@ index a703f1f5fb64..d77c24333cb4 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 68c42e831117..6a7091335257 100644
+index 85f3f55c71c5..aad43c21c0a4 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
 @@ -794,6 +794,7 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
@@ -1809,7 +1846,7 @@ index 68c42e831117..6a7091335257 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -832,6 +833,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
+@@ -833,6 +834,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -2144,10 +2181,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 25b3ef71f495..d37a6c88c69f 100644
+index 7fc4e9f49f54..6f0b0b2dc73d 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -471,6 +471,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -473,6 +473,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2155,7 +2192,7 @@ index 25b3ef71f495..d37a6c88c69f 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1347,6 +1348,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1349,6 +1350,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2365,10 +2402,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index b7cf5cbfdc67..3cde9062fcf6 100644
+index aaf6566deb9f..86926966c15d 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2623,6 +2623,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2625,6 +2625,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 

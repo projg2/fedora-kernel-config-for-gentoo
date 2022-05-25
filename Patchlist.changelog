@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/205bec68a0ea67b6bff6fea9603b7b8aeacc9d46
+ 205bec68a0ea67b6bff6fea9603b7b8aeacc9d46 drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/8a35d9b408eeb4798a147fb76eb3f10368133de8
  8a35d9b408eeb4798a147fb76eb3f10368133de8 efi: x86: Set the NX-compatibility flag in the PE header
 
