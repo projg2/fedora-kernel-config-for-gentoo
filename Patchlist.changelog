@@ -1,3 +1,9 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/2059671da90bd277ba89fa594572fe5576111487
+ 2059671da90bd277ba89fa594572fe5576111487 Revert "crypto: rng - Override drivers/char/random in FIPS mode"
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/f4e15161df97e86a988d422f4565947025c77f77
+ f4e15161df97e86a988d422f4565947025c77f77 Revert random: Add hook to override device reads and getrandom(2)
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/1dd6350807cc188cedd18a957bda06a52811fee8
  1dd6350807cc188cedd18a957bda06a52811fee8 efi: x86: Set the NX-compatibility flag in the PE header
 

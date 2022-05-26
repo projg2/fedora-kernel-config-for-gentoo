@@ -10,14 +10,12 @@
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/cpu/common.c                       |   1 +
  arch/x86/kernel/setup.c                            |  68 ++-
- crypto/rng.c                                       |  73 ++-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
  drivers/acpi/scan.c                                |   9 +
  drivers/ata/libahci.c                              |  18 +
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +
  drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
- drivers/char/random.c                              | 113 +++++
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
@@ -50,31 +48,29 @@
  include/linux/module.h                             |   1 +
  include/linux/panic.h                              |  19 +-
  include/linux/pci.h                                |  16 +
- include/linux/random.h                             |   8 +
  include/linux/rh_kabi.h                            | 515 +++++++++++++++++++++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
  kernel/Makefile                                    |   1 +
- kernel/bpf/syscall.c                               |  18 +
+ kernel/bpf/syscall.c                               |  23 +
  kernel/module.c                                    |   2 +
  kernel/module_signing.c                            |   9 +-
  kernel/panic.c                                     |  14 +
  kernel/rh_messages.c                               | 209 +++++++++
- kernel/sysctl.c                                    |   5 +
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 70 files changed, 1737 insertions(+), 188 deletions(-)
+ 66 files changed, 1544 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 2d67cdfbf9c9..58db5556bebf 100644
+index a9066cfb85a0..6617293edf31 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6218,6 +6218,15 @@
+@@ -6223,6 +6223,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -379,103 +375,6 @@ index 249981bf3d8a..c238b6994574 100644
  	unwind_init();
  }
 
-diff --git a/crypto/rng.c b/crypto/rng.c
-index fea082b25fe4..50a9d040bed1 100644
---- a/crypto/rng.c
-+++ b/crypto/rng.c
-@@ -11,14 +11,17 @@
- #include <linux/atomic.h>
- #include <crypto/internal/rng.h>
- #include <linux/err.h>
-+#include <linux/fips.h>
-+#include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/random.h>
- #include <linux/seq_file.h>
-+#include <linux/sched.h>
-+#include <linux/sched/signal.h>
- #include <linux/slab.h>
- #include <linux/string.h>
- #include <linux/cryptouser.h>
--#include <linux/compiler.h>
- #include <net/netlink.h>
-
- #include "internal.h"
-@@ -224,5 +227,73 @@ void crypto_unregister_rngs(struct rng_alg *algs, int count)
- }
- EXPORT_SYMBOL_GPL(crypto_unregister_rngs);
-
-+static ssize_t crypto_devrandom_read(void __user *buf, size_t buflen)
-+{
-+	u8 tmp[256];
-+	ssize_t ret;
-+
-+	if (!buflen)
-+		return 0;
-+
-+	ret = crypto_get_default_rng();
-+	if (ret)
-+		return ret;
-+
-+	for (;;) {
-+		int err;
-+		int i;
-+
-+		i = min_t(int, buflen, sizeof(tmp));
-+		err = crypto_rng_get_bytes(crypto_default_rng, tmp, i);
-+		if (err) {
-+			ret = err;
-+			break;
-+		}
-+
-+		if (copy_to_user(buf, tmp, i)) {
-+			ret = -EFAULT;
-+			break;
-+		}
-+
-+		buflen -= i;
-+		buf += i;
-+		ret += i;
-+
-+		if (!buflen)
-+			break;
-+
-+		if (need_resched()) {
-+			if (signal_pending(current))
-+				break;
-+			schedule();
-+		}
-+	}
-+
-+	crypto_put_default_rng();
-+	memzero_explicit(tmp, sizeof(tmp));
-+
-+	return ret;
-+}
-+
-+static const struct random_extrng crypto_devrandom_rng = {
-+	.extrng_read = crypto_devrandom_read,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int __init crypto_rng_init(void)
-+{
-+	if (fips_enabled)
-+		random_register_extrng(&crypto_devrandom_rng);
-+	return 0;
-+}
-+
-+static void __exit crypto_rng_exit(void)
-+{
-+	random_unregister_extrng();
-+}
-+
-+late_initcall(crypto_rng_init);
-+module_exit(crypto_rng_exit);
-+
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Random Number Generator");
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
 index 6aef1ee5e1bd..8f146b1b4972 100644
 --- a/drivers/acpi/apei/hest.c
@@ -648,194 +547,6 @@ index 703433493c85..6b1b102b9b7d 100644
  	mutex_lock(&ipmi_interfaces_mutex);
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index b691b9d59503..5d7a1fdf1edd 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -53,6 +53,7 @@
- #include <linux/uaccess.h>
- #include <linux/suspend.h>
- #include <linux/siphash.h>
-+#include <linux/rcupdate.h>
- #include <crypto/chacha.h>
- #include <crypto/blake2s.h>
- #include <asm/processor.h>
-@@ -281,6 +282,11 @@ static bool crng_has_old_seed(void)
- 	return time_is_before_jiffies(READ_ONCE(base_crng.birth) + interval);
- }
-
-+/*
-+ * Hook for external RNG.
-+ */
-+static const struct random_extrng __rcu *extrng;
-+
- /*
-  * This function returns a ChaCha state that you may use for generating
-  * random data. It also returns up to 32 bytes on its own of random data
-@@ -669,6 +675,9 @@ static void __cold _credit_init_bits(size_t bits)
- }
-
-
-+static const struct file_operations extrng_random_fops;
-+static const struct file_operations extrng_urandom_fops;
-+
- /**********************************************************************
-  *
-  * Entropy collection routines.
-@@ -873,6 +882,19 @@ void __cold add_bootloader_randomness(const void *buf, size_t len)
- }
- EXPORT_SYMBOL_GPL(add_bootloader_randomness);
-
-+void random_register_extrng(const struct random_extrng *rng)
-+{
-+	rcu_assign_pointer(extrng, rng);
-+}
-+EXPORT_SYMBOL_GPL(random_register_extrng);
-+
-+void random_unregister_extrng(void)
-+{
-+	RCU_INIT_POINTER(extrng, NULL);
-+	synchronize_rcu();
-+}
-+EXPORT_SYMBOL_GPL(random_unregister_extrng);
-+
- #if IS_ENABLED(CONFIG_VMGENID)
- static BLOCKING_NOTIFIER_HEAD(vmfork_chain);
-
-@@ -1243,6 +1265,7 @@ SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags
- 	struct iov_iter iter;
- 	struct iovec iov;
- 	int ret;
-+	const struct random_extrng *rng;
-
- 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
- 		return -EINVAL;
-@@ -1254,6 +1277,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags
- 	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
- 		return -EINVAL;
-
-+	rcu_read_lock();
-+	rng = rcu_dereference(extrng);
-+	if (rng && !try_module_get(rng->owner))
-+		rng = NULL;
-+	rcu_read_unlock();
-+
-+	if (rng) {
-+		ret = rng->extrng_read(buf, count);
-+		module_put(rng->owner);
-+		return ret;
-+	}
-+
- 	if (!crng_ready() && !(flags & GRND_INSECURE)) {
- 		if (flags & GRND_NONBLOCK)
- 			return -EAGAIN;
-@@ -1274,6 +1309,12 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
- 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
- }
-
-+static __poll_t extrng_poll(struct file *file, poll_table * wait)
-+{
-+	/* extrng pool is always full, always read, no writes */
-+	return EPOLLIN | EPOLLRDNORM;
-+}
-+
- static ssize_t write_pool_user(struct iov_iter *iter)
- {
- 	u8 block[BLAKE2S_BLOCK_SIZE];
-@@ -1410,7 +1451,58 @@ static int random_fasync(int fd, struct file *filp, int on)
- 	return fasync_helper(fd, filp, on, &fasync);
- }
-
-+static int random_open(struct inode *inode, struct file *filp)
-+{
-+	const struct random_extrng *rng;
-+
-+	rcu_read_lock();
-+	rng = rcu_dereference(extrng);
-+	if (rng && !try_module_get(rng->owner))
-+		rng = NULL;
-+	rcu_read_unlock();
-+
-+	if (!rng)
-+		return 0;
-+
-+	filp->f_op = &extrng_random_fops;
-+	filp->private_data = rng->owner;
-+
-+	return 0;
-+}
-+
-+static int urandom_open(struct inode *inode, struct file *filp)
-+{
-+	const struct random_extrng *rng;
-+
-+	rcu_read_lock();
-+	rng = rcu_dereference(extrng);
-+	if (rng && !try_module_get(rng->owner))
-+		rng = NULL;
-+	rcu_read_unlock();
-+
-+	if (!rng)
-+		return 0;
-+
-+	filp->f_op = &extrng_urandom_fops;
-+	filp->private_data = rng->owner;
-+
-+	return 0;
-+}
-+
-+static int extrng_release(struct inode *inode, struct file *filp)
-+{
-+	module_put(filp->private_data);
-+	return 0;
-+}
-+
-+static ssize_t
-+extrng_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
-+{
-+	return rcu_dereference_raw(extrng)->extrng_read(buf, nbytes);
-+}
-+
- const struct file_operations random_fops = {
-+	.open  = random_open,
- 	.read_iter = random_read_iter,
- 	.write_iter = random_write_iter,
- 	.poll = random_poll,
-@@ -1423,6 +1515,7 @@ const struct file_operations random_fops = {
- };
-
- const struct file_operations urandom_fops = {
-+	.open  = urandom_open,
- 	.read_iter = urandom_read_iter,
- 	.write_iter = random_write_iter,
- 	.unlocked_ioctl = random_ioctl,
-@@ -1433,6 +1526,26 @@ const struct file_operations urandom_fops = {
- 	.splice_write = iter_file_splice_write,
- };
-
-+static const struct file_operations extrng_random_fops = {
-+	.open  = random_open,
-+	.read  = extrng_read,
-+	.write = random_write,
-+	.poll  = extrng_poll,
-+	.unlocked_ioctl = random_ioctl,
-+	.fasync = random_fasync,
-+	.llseek = noop_llseek,
-+	.release = extrng_release,
-+};
-+
-+static const struct file_operations extrng_urandom_fops = {
-+	.open  = urandom_open,
-+	.read  = extrng_read,
-+	.write = random_write,
-+	.unlocked_ioctl = random_ioctl,
-+	.fasync = random_fasync,
-+	.llseek = noop_llseek,
-+	.release = extrng_release,
-+};
-
- /********************************************************************
-  *
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
 index c02ff25dd477..d860f8eb9a81 100644
 --- a/drivers/firmware/efi/Makefile
@@ -1927,7 +1638,7 @@ index 6a90e6e53d09..7e48c3bf701d 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index db6793608447..24c16a1245a1 100644
+index c95360a3c186..b7d7b4639a9e 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
@@ -1959,10 +1670,10 @@ index db6793608447..24c16a1245a1 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index 7e476f50935b..c44e9bad52a1 100644
+index b519f4b59d30..3e51c2e8cb69 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -12608,6 +12608,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
+@@ -12606,6 +12606,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
   * The pci device ids are defined in mpi/mpi2_cnfg.h.
   */
  static const struct pci_device_id mpt3sas_pci_table[] = {
@@ -1970,7 +1681,7 @@ index 7e476f50935b..c44e9bad52a1 100644
  	/* Spitfire ~ 2004 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2004,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12626,6 +12627,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12624,6 +12625,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2116_2,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -1978,7 +1689,7 @@ index 7e476f50935b..c44e9bad52a1 100644
  	/* Thunderbolt ~ 2208 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2208_1,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12650,9 +12652,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12648,9 +12650,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SWITCH_MPI_EP_1,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -1991,10 +1702,10 @@ index 7e476f50935b..c44e9bad52a1 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 762229d495a8..1567434af08b 100644
+index 73073fb08369..3e4612bcf8fc 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -7974,6 +7974,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -7973,6 +7973,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -2002,7 +1713,7 @@ index 762229d495a8..1567434af08b 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -7986,13 +7987,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -7985,13 +7986,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -2022,10 +1733,10 @@ index 762229d495a8..1567434af08b 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index 3f6cb2a5c2c2..68768100a1ac 100644
+index 9e849f6b0d0f..00f9a1303b93 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
-@@ -9855,6 +9855,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
+@@ -9854,6 +9854,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
  		.subvendor	= PCI_ANY_ID,
  		.subdevice	= PCI_ANY_ID,
  	},
@@ -2033,7 +1744,7 @@ index 3f6cb2a5c2c2..68768100a1ac 100644
  	{
  		.vendor         = PCI_VENDOR_ID_QLOGIC,
  		.device         = PCI_DEVICE_ID_QLOGIC_ISP8022,
-@@ -9873,6 +9874,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
+@@ -9872,6 +9873,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
  		.subvendor	= PCI_ANY_ID,
  		.subdevice	= PCI_ANY_ID,
  	},
@@ -2074,7 +1785,7 @@ index eae288c8d40a..8b8bf447cedc 100644
 
  error_proc:
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index db424f3dc3f2..f2de8b540a50 100644
+index 7d9b0bb47eb3..221776a5377a 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -2270,32 +1981,6 @@ index 60adf42460ab..a3f0f828a346 100644
  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
  		    int pass);
 
-diff --git a/include/linux/random.h b/include/linux/random.h
-index fae0c84027fd..c36b7c412de2 100644
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -10,6 +10,11 @@
-
- #include <uapi/linux/random.h>
-
-+struct random_extrng {
-+	ssize_t (*extrng_read)(void __user *buf, size_t buflen);
-+	struct module *owner;
-+};
-+
- struct notifier_block;
-
- void add_device_randomness(const void *buf, size_t len);
-@@ -141,6 +146,9 @@ int random_prepare_cpu(unsigned int cpu);
- int random_online_cpu(unsigned int cpu);
- #endif
-
-+void random_register_extrng(const struct random_extrng *rng);
-+void random_unregister_extrng(void);
-+
- #ifndef MODULE
- extern const struct file_operations random_fops, urandom_fops;
- #endif
 diff --git a/include/linux/rh_kabi.h b/include/linux/rh_kabi.h
 new file mode 100644
 index 000000000000..c7b42c1f1681
@@ -2853,7 +2538,7 @@ index 7fc4e9f49f54..6f0b0b2dc73d 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index ddcbefe535e9..5061ef5ba38b 100644
+index adc57f989d87..2d3f26d072c4 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1649,7 +1649,7 @@ config AIO
@@ -2878,10 +2563,10 @@ index 847a82bfe0e3..81f875f5370e 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index cdaa1152436a..3aff64e17359 100644
+index 2b69306d3c6e..8f60e3254ce1 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
-@@ -25,6 +25,7 @@
+@@ -26,6 +26,7 @@
  #include <linux/ctype.h>
  #include <linux/nospec.h>
  #include <linux/audit.h>
@@ -2889,7 +2574,7 @@ index cdaa1152436a..3aff64e17359 100644
  #include <uapi/linux/btf.h>
  #include <linux/pgtable.h>
  #include <linux/bpf_lsm.h>
-@@ -52,6 +53,23 @@ static DEFINE_SPINLOCK(map_idr_lock);
+@@ -54,6 +55,23 @@ static DEFINE_SPINLOCK(map_idr_lock);
  static DEFINE_IDR(link_idr);
  static DEFINE_SPINLOCK(link_idr_lock);
 
@@ -2912,6 +2597,18 @@ index cdaa1152436a..3aff64e17359 100644
 +
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
+
+@@ -5217,6 +5235,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+ 	if (write && !ret) {
+ 		if (locked_state && unpriv_enable != 1)
+ 			return -EPERM;
++		if (!unpriv_enable) {
++			pr_warn("Unprivileged BPF has been enabled, "
++				"tainting the kernel");
++			add_taint(TAINT_UNPRIVILEGED_BPF, LOCKDEP_STILL_OK);
++		}
+ 		*(int *)table->data = unpriv_enable;
+ 	}
 
 diff --git a/kernel/module.c b/kernel/module.c
 index 6cea788fd965..237887c5d9e0 100644
@@ -2955,7 +2652,7 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	return ret;
  }
 diff --git a/kernel/panic.c b/kernel/panic.c
-index 8355b19676f8..b38cf9d013c8 100644
+index 6737b2332275..67b8c5fd2a66 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
 @@ -404,6 +404,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
@@ -3194,22 +2891,6 @@ index 000000000000..586c3319f530
 +#endif
 +}
 +EXPORT_SYMBOL(mark_partner_supported);
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 5b7b1a82ae6a..ca19de7bcfbb 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -199,6 +199,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
- 	if (write && !ret) {
- 		if (locked_state && unpriv_enable != 1)
- 			return -EPERM;
-+		if (!unpriv_enable) {
-+			pr_warn("Unprivileged BPF has been enabled, "
-+				"tainting the kernel");
-+			add_taint(TAINT_UNPRIVILEGED_BPF, LOCKDEP_STILL_OK);
-+		}
- 		*(int *)table->data = unpriv_enable;
- 	}
-
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
 index ed9d056d2108..8388e2a804d3 100644
 --- a/scripts/mod/modpost.c
@@ -3333,351 +3014,3 @@ index 188b8f782220..dab400de2335 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-From 900f11e054896bae7b0146055698656e3d1e20a6 Mon Sep 17 00:00:00 2001
-From: "Justin M. Forbes" <jforbes@fedoraproject.org>
-Date: Wed, 25 May 2022 15:55:40 -0500
-Subject: [PATCH] Revert random: Add hook to override device reads and
- getrandom(2)
-
-The random system upstream is in a period of major rewrite.  In the 5.18
-merge window, it took a considerable amount of time to message this into
-the random.c rewrites. In the 5.19 merge window, rng->extrng_read(buf,
-count); does not even compile, with buf and count undefined.   As I do
-not see the subsequent patch that allows the override with a FIPS rng, I
-am just reverting the whole thing, and it can be added back when Herbert
-has time or motivation to do so.
-
-Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
----
- drivers/char/random.c  | 113 -----------------------------------------
- include/linux/random.h |   8 ---
- 2 files changed, 121 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 5d7a1fdf1edd..b691b9d59503 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -53,7 +53,6 @@
- #include <linux/uaccess.h>
- #include <linux/suspend.h>
- #include <linux/siphash.h>
--#include <linux/rcupdate.h>
- #include <crypto/chacha.h>
- #include <crypto/blake2s.h>
- #include <asm/processor.h>
-@@ -282,11 +281,6 @@ static bool crng_has_old_seed(void)
- 	return time_is_before_jiffies(READ_ONCE(base_crng.birth) + interval);
- }
-
--/*
-- * Hook for external RNG.
-- */
--static const struct random_extrng __rcu *extrng;
--
- /*
-  * This function returns a ChaCha state that you may use for generating
-  * random data. It also returns up to 32 bytes on its own of random data
-@@ -675,9 +669,6 @@ static void __cold _credit_init_bits(size_t bits)
- }
-
-
--static const struct file_operations extrng_random_fops;
--static const struct file_operations extrng_urandom_fops;
--
- /**********************************************************************
-  *
-  * Entropy collection routines.
-@@ -882,19 +873,6 @@ void __cold add_bootloader_randomness(const void *buf, size_t len)
- }
- EXPORT_SYMBOL_GPL(add_bootloader_randomness);
-
--void random_register_extrng(const struct random_extrng *rng)
--{
--	rcu_assign_pointer(extrng, rng);
--}
--EXPORT_SYMBOL_GPL(random_register_extrng);
--
--void random_unregister_extrng(void)
--{
--	RCU_INIT_POINTER(extrng, NULL);
--	synchronize_rcu();
--}
--EXPORT_SYMBOL_GPL(random_unregister_extrng);
--
- #if IS_ENABLED(CONFIG_VMGENID)
- static BLOCKING_NOTIFIER_HEAD(vmfork_chain);
-
-@@ -1265,7 +1243,6 @@ SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags
- 	struct iov_iter iter;
- 	struct iovec iov;
- 	int ret;
--	const struct random_extrng *rng;
-
- 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
- 		return -EINVAL;
-@@ -1277,18 +1254,6 @@ SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags
- 	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
- 		return -EINVAL;
-
--	rcu_read_lock();
--	rng = rcu_dereference(extrng);
--	if (rng && !try_module_get(rng->owner))
--		rng = NULL;
--	rcu_read_unlock();
--
--	if (rng) {
--		ret = rng->extrng_read(buf, count);
--		module_put(rng->owner);
--		return ret;
--	}
--
- 	if (!crng_ready() && !(flags & GRND_INSECURE)) {
- 		if (flags & GRND_NONBLOCK)
- 			return -EAGAIN;
-@@ -1309,12 +1274,6 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
- 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
- }
-
--static __poll_t extrng_poll(struct file *file, poll_table * wait)
--{
--	/* extrng pool is always full, always read, no writes */
--	return EPOLLIN | EPOLLRDNORM;
--}
--
- static ssize_t write_pool_user(struct iov_iter *iter)
- {
- 	u8 block[BLAKE2S_BLOCK_SIZE];
-@@ -1451,58 +1410,7 @@ static int random_fasync(int fd, struct file *filp, int on)
- 	return fasync_helper(fd, filp, on, &fasync);
- }
-
--static int random_open(struct inode *inode, struct file *filp)
--{
--	const struct random_extrng *rng;
--
--	rcu_read_lock();
--	rng = rcu_dereference(extrng);
--	if (rng && !try_module_get(rng->owner))
--		rng = NULL;
--	rcu_read_unlock();
--
--	if (!rng)
--		return 0;
--
--	filp->f_op = &extrng_random_fops;
--	filp->private_data = rng->owner;
--
--	return 0;
--}
--
--static int urandom_open(struct inode *inode, struct file *filp)
--{
--	const struct random_extrng *rng;
--
--	rcu_read_lock();
--	rng = rcu_dereference(extrng);
--	if (rng && !try_module_get(rng->owner))
--		rng = NULL;
--	rcu_read_unlock();
--
--	if (!rng)
--		return 0;
--
--	filp->f_op = &extrng_urandom_fops;
--	filp->private_data = rng->owner;
--
--	return 0;
--}
--
--static int extrng_release(struct inode *inode, struct file *filp)
--{
--	module_put(filp->private_data);
--	return 0;
--}
--
--static ssize_t
--extrng_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
--{
--	return rcu_dereference_raw(extrng)->extrng_read(buf, nbytes);
--}
--
- const struct file_operations random_fops = {
--	.open  = random_open,
- 	.read_iter = random_read_iter,
- 	.write_iter = random_write_iter,
- 	.poll = random_poll,
-@@ -1515,7 +1423,6 @@ const struct file_operations random_fops = {
- };
-
- const struct file_operations urandom_fops = {
--	.open  = urandom_open,
- 	.read_iter = urandom_read_iter,
- 	.write_iter = random_write_iter,
- 	.unlocked_ioctl = random_ioctl,
-@@ -1526,26 +1433,6 @@ const struct file_operations urandom_fops = {
- 	.splice_write = iter_file_splice_write,
- };
-
--static const struct file_operations extrng_random_fops = {
--	.open  = random_open,
--	.read  = extrng_read,
--	.write = random_write,
--	.poll  = extrng_poll,
--	.unlocked_ioctl = random_ioctl,
--	.fasync = random_fasync,
--	.llseek = noop_llseek,
--	.release = extrng_release,
--};
--
--static const struct file_operations extrng_urandom_fops = {
--	.open  = urandom_open,
--	.read  = extrng_read,
--	.write = random_write,
--	.unlocked_ioctl = random_ioctl,
--	.fasync = random_fasync,
--	.llseek = noop_llseek,
--	.release = extrng_release,
--};
-
- /********************************************************************
-  *
-diff --git a/include/linux/random.h b/include/linux/random.h
-index c36b7c412de2..fae0c84027fd 100644
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -10,11 +10,6 @@
-
- #include <uapi/linux/random.h>
-
--struct random_extrng {
--	ssize_t (*extrng_read)(void __user *buf, size_t buflen);
--	struct module *owner;
--};
--
- struct notifier_block;
-
- void add_device_randomness(const void *buf, size_t len);
-@@ -146,9 +141,6 @@ int random_prepare_cpu(unsigned int cpu);
- int random_online_cpu(unsigned int cpu);
- #endif
-
--void random_register_extrng(const struct random_extrng *rng);
--void random_unregister_extrng(void);
--
- #ifndef MODULE
- extern const struct file_operations random_fops, urandom_fops;
- #endif
--- 
-2.36.1
-
-From 297bcb88233101e8d5062729ff3a5f989bad1c3b Mon Sep 17 00:00:00 2001
-From: "Justin M. Forbes" <jforbes@fedoraproject.org>
-Date: Wed, 25 May 2022 16:24:02 -0500
-Subject: [PATCH] Revert "crypto: rng - Override drivers/char/random in FIPS
- mode"
-
-This reverts commit 427c8a54adcb92826faca4c40ef4591fe87e2fdf.
----
- crypto/rng.c | 73 +---------------------------------------------------
- 1 file changed, 1 insertion(+), 72 deletions(-)
-
-diff --git a/crypto/rng.c b/crypto/rng.c
-index 50a9d040bed1..fea082b25fe4 100644
---- a/crypto/rng.c
-+++ b/crypto/rng.c
-@@ -11,17 +11,14 @@
- #include <linux/atomic.h>
- #include <crypto/internal/rng.h>
- #include <linux/err.h>
--#include <linux/fips.h>
--#include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/random.h>
- #include <linux/seq_file.h>
--#include <linux/sched.h>
--#include <linux/sched/signal.h>
- #include <linux/slab.h>
- #include <linux/string.h>
- #include <linux/cryptouser.h>
-+#include <linux/compiler.h>
- #include <net/netlink.h>
-
- #include "internal.h"
-@@ -227,73 +224,5 @@ void crypto_unregister_rngs(struct rng_alg *algs, int count)
- }
- EXPORT_SYMBOL_GPL(crypto_unregister_rngs);
-
--static ssize_t crypto_devrandom_read(void __user *buf, size_t buflen)
--{
--	u8 tmp[256];
--	ssize_t ret;
--
--	if (!buflen)
--		return 0;
--
--	ret = crypto_get_default_rng();
--	if (ret)
--		return ret;
--
--	for (;;) {
--		int err;
--		int i;
--
--		i = min_t(int, buflen, sizeof(tmp));
--		err = crypto_rng_get_bytes(crypto_default_rng, tmp, i);
--		if (err) {
--			ret = err;
--			break;
--		}
--
--		if (copy_to_user(buf, tmp, i)) {
--			ret = -EFAULT;
--			break;
--		}
--
--		buflen -= i;
--		buf += i;
--		ret += i;
--
--		if (!buflen)
--			break;
--
--		if (need_resched()) {
--			if (signal_pending(current))
--				break;
--			schedule();
--		}
--	}
--
--	crypto_put_default_rng();
--	memzero_explicit(tmp, sizeof(tmp));
--
--	return ret;
--}
--
--static const struct random_extrng crypto_devrandom_rng = {
--	.extrng_read = crypto_devrandom_read,
--	.owner = THIS_MODULE,
--};
--
--static int __init crypto_rng_init(void)
--{
--	if (fips_enabled)
--		random_register_extrng(&crypto_devrandom_rng);
--	return 0;
--}
--
--static void __exit crypto_rng_exit(void)
--{
--	random_unregister_extrng();
--}
--
--late_initcall(crypto_rng_init);
--module_exit(crypto_rng_exit);
--
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Random Number Generator");
--- 
-2.36.1
-
