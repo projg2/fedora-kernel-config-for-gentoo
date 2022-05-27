@@ -54,8 +54,8 @@
  init/Kconfig                                       |   2 +-
  kernel/Makefile                                    |   1 +
  kernel/bpf/syscall.c                               |  23 +
- kernel/module.c                                    |   2 +
- kernel/module_signing.c                            |   9 +-
+ kernel/module/main.c                               |   2 +
+ kernel/module/signing.c                            |   9 +-
  kernel/panic.c                                     |  14 +
  kernel/rh_messages.c                               | 209 +++++++++
  scripts/mod/modpost.c                              |   8 +
@@ -67,7 +67,7 @@
  66 files changed, 1544 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index a9066cfb85a0..6617293edf31 100644
+index 32073f873662..779ba9a73c9d 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -6223,6 +6223,15 @@
@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index bbcd3abf2f4d..a81e9800d70d 100644
+index edc3f44cd96c..9ec991e258d0 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -134,7 +134,7 @@ index bbcd3abf2f4d..a81e9800d70d 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1239,7 +1243,13 @@ define filechk_version.h
+@@ -1240,7 +1244,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -150,10 +150,10 @@ index bbcd3abf2f4d..a81e9800d70d 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 0dcf88e7f9cf..b2bfb5a139e1 100644
+index 903165a400a7..578894315318 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1497,9 +1497,9 @@ config HIGHMEM
+@@ -1416,9 +1416,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -166,10 +166,10 @@ index 0dcf88e7f9cf..b2bfb5a139e1 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index d550f5acfaf3..6c6b0408e83c 100644
+index a4968845e67f..9f2f98c2ce25 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1125,7 +1125,7 @@ endchoice
+@@ -1128,7 +1128,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -178,7 +178,7 @@ index d550f5acfaf3..6c6b0408e83c 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1364,6 +1364,7 @@ config XEN
+@@ -1367,6 +1367,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -1913,10 +1913,10 @@ index 91c8146649f5..42a73934404e 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 1e135fd5c076..6ec4d001c1e2 100644
+index abd9fa916b7d..f32ae6380ffd 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
-@@ -381,6 +381,7 @@ struct module {
+@@ -380,6 +380,7 @@ struct module {
  	struct module_attribute *modinfo_attrs;
  	const char *version;
  	const char *srcversion;
@@ -1925,10 +1925,10 @@ index 1e135fd5c076..6ec4d001c1e2 100644
 
  	/* Exported symbols */
 diff --git a/include/linux/panic.h b/include/linux/panic.h
-index f5844908a089..0382f4a116e9 100644
+index e71161da69c4..25d187e0a84c 100644
 --- a/include/linux/panic.h
 +++ b/include/linux/panic.h
-@@ -74,7 +74,24 @@ static inline void set_arch_panic_timeout(int timeout, int arch_default_timeout)
+@@ -68,7 +68,24 @@ static inline void set_arch_panic_timeout(int timeout, int arch_default_timeout)
  #define TAINT_LIVEPATCH			15
  #define TAINT_AUX			16
  #define TAINT_RANDSTRUCT		17
@@ -2538,10 +2538,10 @@ index 7fc4e9f49f54..6f0b0b2dc73d 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index adc57f989d87..2d3f26d072c4 100644
+index 8aed339b8e06..b8b786d6f57c 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1649,7 +1649,7 @@ config AIO
+@@ -1636,7 +1636,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -2551,7 +2551,7 @@ index adc57f989d87..2d3f26d072c4 100644
  	default y
  	help
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 847a82bfe0e3..81f875f5370e 100644
+index 318789c728d3..148911cf65da 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
@@ -2610,11 +2610,11 @@ index 2b69306d3c6e..8f60e3254ce1 100644
  		*(int *)table->data = unpriv_enable;
  	}
 
-diff --git a/kernel/module.c b/kernel/module.c
-index 6cea788fd965..237887c5d9e0 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -743,6 +743,7 @@ static struct module_attribute modinfo_##field = {                    \
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index fed58d30725d..96e9ad060bfe 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -523,6 +523,7 @@ static struct module_attribute modinfo_##field = {                    \
 
  MODINFO_ATTR(version);
  MODINFO_ATTR(srcversion);
@@ -2622,19 +2622,19 @@ index 6cea788fd965..237887c5d9e0 100644
 
  static char last_unloaded_module[MODULE_NAME_LEN+1];
 
-@@ -1205,6 +1206,7 @@ static struct module_attribute *modinfo_attrs[] = {
+@@ -965,6 +966,7 @@ struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
 +	&modinfo_rhelversion,
  	&modinfo_initstate,
  	&modinfo_coresize,
- 	&modinfo_initsize,
-diff --git a/kernel/module_signing.c b/kernel/module_signing.c
-index 8723ae70ea1f..fb2d773498c2 100644
---- a/kernel/module_signing.c
-+++ b/kernel/module_signing.c
-@@ -38,8 +38,15 @@ int mod_verify_sig(const void *mod, struct load_info *info)
+ #ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
+diff --git a/kernel/module/signing.c b/kernel/module/signing.c
+index 85c8999dfecf..a537d01bdfa0 100644
+--- a/kernel/module/signing.c
++++ b/kernel/module/signing.c
+@@ -58,10 +58,17 @@ int mod_verify_sig(const void *mod, struct load_info *info)
  	modlen -= sig_len + sizeof(ms);
  	info->len = modlen;
 
@@ -2651,11 +2651,13 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
+
+ int module_sig_check(struct load_info *info, int flags)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index 6737b2332275..67b8c5fd2a66 100644
+index a3c758dba15a..1f6df57c76cb 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -404,6 +404,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -428,6 +428,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
@@ -2892,7 +2894,7 @@ index 000000000000..586c3319f530
 +}
 +EXPORT_SYMBOL(mark_partner_supported);
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index ed9d056d2108..8388e2a804d3 100644
+index 42e949cbc255..d2944ae3d49f 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -21,6 +21,7 @@
@@ -2902,8 +2904,8 @@ index ed9d056d2108..8388e2a804d3 100644
 +#include "../../include/generated/uapi/linux/version.h"
 
  /* Are we using CONFIG_MODVERSIONS? */
- static int modversions = 0;
-@@ -2373,6 +2374,12 @@ static void write_buf(struct buffer *b, const char *fname)
+ static bool modversions;
+@@ -2390,6 +2391,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -2916,14 +2918,14 @@ index ed9d056d2108..8388e2a804d3 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2602,6 +2609,7 @@ int main(int argc, char **argv)
- 		add_depends(&buf, mod);
- 		add_moddevtable(&buf, mod);
- 		add_srcversion(&buf, mod);
-+		add_rhelversion(&buf, mod);
+@@ -2453,6 +2460,7 @@ static void write_mod_c_file(struct module *mod)
+ 	add_depends(&buf, mod);
+ 	add_moddevtable(&buf, mod);
+ 	add_srcversion(&buf, mod);
++	add_rhelversion(&buf, mod);
 
- 		sprintf(fname, "%s.mod.c", mod->name);
- 		write_if_changed(&buf, fname);
+ 	ret = snprintf(fname, sizeof(fname), "%s.mod.c", mod->name);
+ 	if (ret >= sizeof(fname)) {
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index 16d475b3e203..4e333f14b84e 100755
 --- a/scripts/tags.sh

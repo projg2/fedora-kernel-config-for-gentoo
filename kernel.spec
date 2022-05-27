@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc0.20220526gitbabf0bb978e3.4
+%define pkgrelease 0.rc0.20220527git7e284070abe5.4
 %define kversion 5
-%define tarfile_release 5.18-7857-gbabf0bb978e3
+%define tarfile_release 5.18-10037-g7e284070abe5
 # This is needed to do merge window version magic
 %define patchlevel 19
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220526gitbabf0bb978e3.4%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220527git7e284070abe5.4%{?buildid}%{?dist}
 
 #
 # End of genspec.sh variables
@@ -3034,7 +3034,13 @@ fi
 #
 #
 %changelog
-* Thu May 26 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc0.babf0bb978e3.3]
+* Fri May 27 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.0-0.rc0.20220527git7e284070abe5.4]
+- Fix up config mismatches (Justin M. Forbes)
+
+* Fri May 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc0.7e284070abe5.3]
+- generic/fedora: cleanup and disable Lightning Moutain SoC (Peter Robinson)
+- redhat: Set SND_SOC_SOF_HDA_PROBES to =m (Patrick Talbert)
+- Fix versioning on stable Fedora (Justin M. Forbes)
 - Revert "crypto: rng - Override drivers/char/random in FIPS mode" (Justin M. Forbes)
 - Revert random: Add hook to override device reads and getrandom(2) (Justin M. Forbes)
 
