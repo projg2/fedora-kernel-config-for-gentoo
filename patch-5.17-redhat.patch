@@ -10,14 +10,12 @@
  arch/x86/boot/header.S                             |   4 +
  arch/x86/include/asm/efi.h                         |   5 +
  arch/x86/kernel/setup.c                            |  22 ++--
- crypto/rng.c                                       |  73 +++++++++++-
  drivers/acpi/apei/hest.c                           |   8 ++
  drivers/acpi/irq.c                                 |  17 ++-
  drivers/acpi/scan.c                                |   9 ++
  drivers/ata/libahci.c                              |  18 +++
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
  drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
- drivers/char/random.c                              | 115 +++++++++++++++++++
  drivers/firmware/efi/Kconfig                       |  12 ++
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
@@ -46,7 +44,6 @@
  include/linux/lsm_hooks.h                          |   6 +
  include/linux/module.h                             |   1 +
  include/linux/nfs_fs_sb.h                          |   1 +
- include/linux/random.h                             |   7 ++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
@@ -60,7 +57,7 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 62 files changed, 997 insertions(+), 213 deletions(-)
+ 59 files changed, 803 insertions(+), 212 deletions(-)
 
 diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
 index 1887d92e8e92..17706dc91ec9 100644
@@ -112,7 +109,7 @@ index 000000000000..733a26bd887a
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index b821f270a4ca..72a7c6958ea5 100644
+index 25c44dda0ef3..5af0d61c0782 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -304,103 +301,6 @@ index 90d7e1788c91..262198c48162 100644
 
  	reserve_initrd();
 
-diff --git a/crypto/rng.c b/crypto/rng.c
-index fea082b25fe4..50a9d040bed1 100644
---- a/crypto/rng.c
-+++ b/crypto/rng.c
-@@ -11,14 +11,17 @@
- #include <linux/atomic.h>
- #include <crypto/internal/rng.h>
- #include <linux/err.h>
-+#include <linux/fips.h>
-+#include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/random.h>
- #include <linux/seq_file.h>
-+#include <linux/sched.h>
-+#include <linux/sched/signal.h>
- #include <linux/slab.h>
- #include <linux/string.h>
- #include <linux/cryptouser.h>
--#include <linux/compiler.h>
- #include <net/netlink.h>
-
- #include "internal.h"
-@@ -224,5 +227,73 @@ void crypto_unregister_rngs(struct rng_alg *algs, int count)
- }
- EXPORT_SYMBOL_GPL(crypto_unregister_rngs);
-
-+static ssize_t crypto_devrandom_read(void __user *buf, size_t buflen)
-+{
-+	u8 tmp[256];
-+	ssize_t ret;
-+
-+	if (!buflen)
-+		return 0;
-+
-+	ret = crypto_get_default_rng();
-+	if (ret)
-+		return ret;
-+
-+	for (;;) {
-+		int err;
-+		int i;
-+
-+		i = min_t(int, buflen, sizeof(tmp));
-+		err = crypto_rng_get_bytes(crypto_default_rng, tmp, i);
-+		if (err) {
-+			ret = err;
-+			break;
-+		}
-+
-+		if (copy_to_user(buf, tmp, i)) {
-+			ret = -EFAULT;
-+			break;
-+		}
-+
-+		buflen -= i;
-+		buf += i;
-+		ret += i;
-+
-+		if (!buflen)
-+			break;
-+
-+		if (need_resched()) {
-+			if (signal_pending(current))
-+				break;
-+			schedule();
-+		}
-+	}
-+
-+	crypto_put_default_rng();
-+	memzero_explicit(tmp, sizeof(tmp));
-+
-+	return ret;
-+}
-+
-+static const struct random_extrng crypto_devrandom_rng = {
-+	.extrng_read = crypto_devrandom_read,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int __init crypto_rng_init(void)
-+{
-+	if (fips_enabled)
-+		random_register_extrng(&crypto_devrandom_rng);
-+	return 0;
-+}
-+
-+static void __exit crypto_rng_exit(void)
-+{
-+	random_unregister_extrng();
-+}
-+
-+late_initcall(crypto_rng_init);
-+module_exit(crypto_rng_exit);
-+
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Random Number Generator");
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
 index 6aef1ee5e1bd..8f146b1b4972 100644
 --- a/drivers/acpi/apei/hest.c
@@ -573,189 +473,6 @@ index f1827257ef0e..5a45c2cd3dc2 100644
  	mutex_lock(&ipmi_interfaces_mutex);
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 3404a91edf29..184dbb94710c 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -344,6 +344,7 @@
- #include <linux/syscalls.h>
- #include <linux/completion.h>
- #include <linux/uuid.h>
-+#include <linux/rcupdate.h>
- #include <crypto/chacha.h>
- #include <crypto/blake2s.h>
-
-@@ -358,6 +359,11 @@
-
- /* #define ADD_INTERRUPT_BENCH */
-
-+/*
-+ * Hook for external RNG.
-+ */
-+static const struct random_extrng __rcu *extrng;
-+
- /*
-  * If the entropy count falls under this number of bits, then we
-  * should wake up processes which are selecting or polling on write
-@@ -486,6 +492,9 @@ static int ratelimit_disable __read_mostly;
- module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
- MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
-
-+static const struct file_operations extrng_random_fops;
-+static const struct file_operations extrng_urandom_fops;
-+
- /**********************************************************************
-  *
-  * OS independent entropy store.   Here are the functions which handle
-@@ -1775,6 +1784,13 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
- 	return mask;
- }
-
-+static __poll_t
-+extrng_poll(struct file *file, poll_table * wait)
-+{
-+	/* extrng pool is always full, always read, no writes */
-+	return EPOLLIN | EPOLLRDNORM;
-+}
-+
- static int write_pool(const char __user *buffer, size_t count)
- {
- 	size_t bytes;
-@@ -1879,7 +1895,58 @@ static int random_fasync(int fd, struct file *filp, int on)
- 	return fasync_helper(fd, filp, on, &fasync);
- }
-
-+static int random_open(struct inode *inode, struct file *filp)
-+{
-+	const struct random_extrng *rng;
-+
-+	rcu_read_lock();
-+	rng = rcu_dereference(extrng);
-+	if (rng && !try_module_get(rng->owner))
-+		rng = NULL;
-+	rcu_read_unlock();
-+
-+	if (!rng)
-+		return 0;
-+
-+	filp->f_op = &extrng_random_fops;
-+	filp->private_data = rng->owner;
-+
-+	return 0;
-+}
-+
-+static int urandom_open(struct inode *inode, struct file *filp)
-+{
-+	const struct random_extrng *rng;
-+
-+	rcu_read_lock();
-+	rng = rcu_dereference(extrng);
-+	if (rng && !try_module_get(rng->owner))
-+		rng = NULL;
-+	rcu_read_unlock();
-+
-+	if (!rng)
-+		return 0;
-+
-+	filp->f_op = &extrng_urandom_fops;
-+	filp->private_data = rng->owner;
-+
-+	return 0;
-+}
-+
-+static int extrng_release(struct inode *inode, struct file *filp)
-+{
-+	module_put(filp->private_data);
-+	return 0;
-+}
-+
-+static ssize_t
-+extrng_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
-+{
-+	return rcu_dereference_raw(extrng)->extrng_read(buf, nbytes);
-+}
-+
- const struct file_operations random_fops = {
-+	.open  = random_open,
- 	.read = random_read,
- 	.write = random_write,
- 	.poll = random_poll,
-@@ -1890,6 +1957,7 @@ const struct file_operations random_fops = {
- };
-
- const struct file_operations urandom_fops = {
-+	.open  = urandom_open,
- 	.read = urandom_read,
- 	.write = random_write,
- 	.unlocked_ioctl = random_ioctl,
-@@ -1898,9 +1966,31 @@ const struct file_operations urandom_fops = {
- 	.llseek = noop_llseek,
- };
-
-+static const struct file_operations extrng_random_fops = {
-+	.open  = random_open,
-+	.read  = extrng_read,
-+	.write = random_write,
-+	.poll  = extrng_poll,
-+	.unlocked_ioctl = random_ioctl,
-+	.fasync = random_fasync,
-+	.llseek = noop_llseek,
-+	.release = extrng_release,
-+};
-+
-+static const struct file_operations extrng_urandom_fops = {
-+	.open  = urandom_open,
-+	.read  = extrng_read,
-+	.write = random_write,
-+	.unlocked_ioctl = random_ioctl,
-+	.fasync = random_fasync,
-+	.llseek = noop_llseek,
-+	.release = extrng_release,
-+};
-+
- SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
- 		flags)
- {
-+	const struct random_extrng *rng;
- 	int ret;
-
- 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
-@@ -1916,6 +2006,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
- 	if (count > INT_MAX)
- 		count = INT_MAX;
-
-+	rcu_read_lock();
-+	rng = rcu_dereference(extrng);
-+	if (rng && !try_module_get(rng->owner))
-+		rng = NULL;
-+	rcu_read_unlock();
-+
-+	if (rng) {
-+		ret = rng->extrng_read(buf, count);
-+		module_put(rng->owner);
-+		return ret;
-+	}
-+
- 	if (!(flags & GRND_INSECURE) && !crng_ready()) {
- 		if (flags & GRND_NONBLOCK)
- 			return -EAGAIN;
-@@ -2235,3 +2337,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
- 		add_device_randomness(buf, size);
- }
- EXPORT_SYMBOL_GPL(add_bootloader_randomness);
-+
-+void random_register_extrng(const struct random_extrng *rng)
-+{
-+	rcu_assign_pointer(extrng, rng);
-+}
-+EXPORT_SYMBOL_GPL(random_register_extrng);
-+
-+void random_unregister_extrng(void)
-+{
-+	RCU_INIT_POINTER(extrng, NULL);
-+	synchronize_rcu();
-+}
-+EXPORT_SYMBOL_GPL(random_unregister_extrng);
 diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
 index 2c3dac5ecb36..f44f8b746e42 100644
 --- a/drivers/firmware/efi/Kconfig
@@ -2143,31 +1860,6 @@ index ca0959e51e81..b0e3fd550122 100644
 
  	unsigned int		fattr_valid;	/* Valid attributes */
  	unsigned int		caps;		/* server capabilities */
-diff --git a/include/linux/random.h b/include/linux/random.h
-index c45b2693e51f..4edfdb3e44a9 100644
---- a/include/linux/random.h
-+++ b/include/linux/random.h
-@@ -14,6 +14,11 @@
-
- #include <uapi/linux/random.h>
-
-+struct random_extrng {
-+	ssize_t (*extrng_read)(void __user *buf, size_t buflen);
-+	struct module *owner;
-+};
-+
- struct random_ready_callback {
- 	struct list_head list;
- 	void (*func)(struct random_ready_callback *rdy);
-@@ -44,6 +49,8 @@ extern bool rng_is_initialized(void);
- extern int add_random_ready_callback(struct random_ready_callback *rdy);
- extern void del_random_ready_callback(struct random_ready_callback *rdy);
- extern int __must_check get_random_bytes_arch(void *buf, int nbytes);
-+void random_register_extrng(const struct random_extrng *rng);
-+void random_unregister_extrng(void);
-
- #ifndef MODULE
- extern const struct file_operations random_fops, urandom_fops;
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
 index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h

@@ -1,3 +1,9 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/77da23276919a734b100b4856457d1b4c856e758
+ 77da23276919a734b100b4856457d1b4c856e758 Revert "crypto: rng - Override drivers/char/random in FIPS mode"
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/41f81f1faeab51ba2fe611184467ca22379d50e5
+ 41f81f1faeab51ba2fe611184467ca22379d50e5 Revert "random: Add hook to override device reads and getrandom(2)"
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/205bec68a0ea67b6bff6fea9603b7b8aeacc9d46
  205bec68a0ea67b6bff6fea9603b7b8aeacc9d46 drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
 
