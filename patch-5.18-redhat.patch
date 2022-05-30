@@ -44,7 +44,7 @@
  43 files changed, 712 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 7d5b0bfe7960..52df3d8781ee 100644
+index 2bb168acb8f4..d4a8ca96e4a2 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1622,10 +1622,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 25b3ef71f495..d37a6c88c69f 100644
+index 7fc4e9f49f54..6f0b0b2dc73d 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -471,6 +471,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -473,6 +473,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -1633,7 +1633,7 @@ index 25b3ef71f495..d37a6c88c69f 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1347,6 +1348,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1349,6 +1350,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -1752,10 +1752,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index b7cf5cbfdc67..3cde9062fcf6 100644
+index aaf6566deb9f..86926966c15d 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2623,6 +2623,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2625,6 +2625,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
