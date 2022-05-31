@@ -67,10 +67,10 @@
  66 files changed, 1544 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 32073f873662..779ba9a73c9d 100644
+index 710b52d87bdd..5997c3c6e42f 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6223,6 +6223,15 @@
+@@ -6232,6 +6232,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -1362,7 +1362,7 @@ index 9b72b6ecf33c..d2717a44074e 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 4ceeb75fc899..be23656279ff 100644
+index 2f3b69adfc9e..3fb99a86882f 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -1458,10 +1458,10 @@ index 4ceeb75fc899..be23656279ff 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index da829274fc66..bb6e79ec3d00 100644
+index 41aeaa235132..e8137d31cc93 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4284,6 +4284,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4285,6 +4285,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1955,10 +1955,10 @@ index e71161da69c4..25d187e0a84c 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 60adf42460ab..a3f0f828a346 100644
+index 3266ac08f8ec..675ee177e936 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1491,6 +1491,22 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1487,6 +1487,22 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2538,10 +2538,10 @@ index 7fc4e9f49f54..6f0b0b2dc73d 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 8aed339b8e06..b8b786d6f57c 100644
+index 251aac1c0ccd..6cd2533ee581 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1636,7 +1636,7 @@ config AIO
+@@ -1665,7 +1665,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING

@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc0.20220527git7e284070abe5.4
+%define pkgrelease 0.rc0.20220531git8ab2afa23bd1.8
 %define kversion 5
-%define tarfile_release 5.18-10037-g7e284070abe5
+%define tarfile_release 5.18-11439-g8ab2afa23bd1
 # This is needed to do merge window version magic
 %define patchlevel 19
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220527git7e284070abe5.4%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220531git8ab2afa23bd1.8%{?buildid}%{?dist}
 
 #
 # End of genspec.sh variables
@@ -2649,6 +2649,10 @@ popd
 # a far more sophisticated hardlink implementation.
 # https://github.com/projectatomic/rpm-ostree/commit/58a79056a889be8814aa51f507b2c7a4dccee526
 #
+# The deletion of *.hardlink-temporary files is a temporary workaround
+# for this bug in the hardlink binary (fixed in util-linux 2.38):
+# https://github.com/util-linux/util-linux/issues/1602
+#
 %define kernel_devel_post() \
 %{expand:%%post %{?1:%{1}-}devel}\
 if [ -f /etc/sysconfig/kernel ]\
@@ -2660,7 +2664,9 @@ then\
     (cd /usr/src/kernels/%{KVERREL}%{?1:+%{1}} &&\
      /usr/bin/find . -type f | while read f; do\
        hardlink -c /usr/src/kernels/*%{?dist}.*/$f $f > /dev/null\
-     done)\
+     done;\
+     /usr/bin/find /usr/src/kernels -type f -name '*.hardlink-temporary' -delete\
+    )\
 fi\
 %{nil}
 
@@ -3034,7 +3040,19 @@ fi
 #
 #
 %changelog
-* Fri May 27 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.0-0.rc0.20220527git7e284070abe5.4]
+* Tue May 31 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc0.8ab2afa23bd1.7]
+- redhat/kernel.spec.template: update selftest data via "make dist-self-test-data" (Denys Vlasenko)
+- redhat/kernel.spec.template: remove stray *.hardlink-temporary files, if any (Denys Vlasenko)
+
+* Mon May 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc0.b00ed48bb0a7.6]
+- Fix up ZSMALLOC config for s390 (Justin M. Forbes)
+- Turn on KASAN_OUTLINE for ppc debug (Justin M. Forbes)
+- Turn on KASAN_OUTLINE for PPC debug to avoid mismatch (Justin M. Forbes)
+
+* Sun May 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc0.664a393a2663.5]
+- Fix up crypto config mistmatches (Justin M. Forbes)
+
+* Sat May 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc0.9d004b2f4fea.4]
 - Fix up config mismatches (Justin M. Forbes)
 
 * Fri May 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc0.7e284070abe5.3]
