@@ -166,7 +166,7 @@ index 903165a400a7..578894315318 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index a4968845e67f..9f2f98c2ce25 100644
+index 1652a9800ebe..834d178f6c70 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1128,7 +1128,7 @@ endchoice
@@ -1092,7 +1092,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 857d4c2fd1a2..9353941f3a97 100644
+index 847ad47a2dfd..e5e545c80de7 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1103,7 +1103,7 @@ index 857d4c2fd1a2..9353941f3a97 100644
  #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -2870,6 +2871,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -2856,6 +2857,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1362,7 +1362,7 @@ index 9b72b6ecf33c..d2717a44074e 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 2f3b69adfc9e..3fb99a86882f 100644
+index 49238ddd39ee..7c32d338542f 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -1371,9 +1371,9 @@ index 2f3b69adfc9e..3fb99a86882f 100644
  #include <linux/acpi.h>
 +#include <linux/kernel.h>
  #include <linux/dma-map-ops.h>
+ #include <linux/iommu.h>
  #include "pci.h"
- #include "pcie/portdrv.h"
-@@ -295,6 +296,83 @@ static struct attribute *pci_drv_attrs[] = {
+@@ -296,6 +297,83 @@ static struct attribute *pci_drv_attrs[] = {
  };
  ATTRIBUTE_GROUPS(pci_drv);
 
@@ -1955,10 +1955,10 @@ index e71161da69c4..25d187e0a84c 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 3266ac08f8ec..675ee177e936 100644
+index 993674b32717..667a9aa908e6 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1487,6 +1487,22 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1495,6 +1495,22 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2538,10 +2538,10 @@ index 7fc4e9f49f54..6f0b0b2dc73d 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 251aac1c0ccd..6cd2533ee581 100644
+index c984afc489de..7f2dd88b6090 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1665,7 +1665,7 @@ config AIO
+@@ -1669,7 +1669,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING

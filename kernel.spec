@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc0.20220531git8ab2afa23bd1.8
+%define pkgrelease 0.rc0.20220601git700170bf6b4d.9
 %define kversion 5
-%define tarfile_release 5.18-11439-g8ab2afa23bd1
+%define tarfile_release 5.18-11712-g700170bf6b4d
 # This is needed to do merge window version magic
 %define patchlevel 19
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220531git8ab2afa23bd1.8%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220601git700170bf6b4d.9%{?buildid}%{?dist}
 
 #
 # End of genspec.sh variables
@@ -3040,6 +3040,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc0.700170bf6b4d.8]
+- Turn off KASAN_INLINE for RHEL ppc in pending (Justin M. Forbes)
+
 * Tue May 31 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc0.8ab2afa23bd1.7]
 - redhat/kernel.spec.template: update selftest data via "make dist-self-test-data" (Denys Vlasenko)
 - redhat/kernel.spec.template: remove stray *.hardlink-temporary files, if any (Denys Vlasenko)
