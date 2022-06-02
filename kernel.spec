@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc0.20220601git700170bf6b4d.9
+%define pkgrelease 0.rc0.20220602gitd1dc87763f40.10
 %define kversion 5
-%define tarfile_release 5.18-11712-g700170bf6b4d
+%define tarfile_release 5.18-11972-gd1dc87763f40
 # This is needed to do merge window version magic
 %define patchlevel 19
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220601git700170bf6b4d.9%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220602gitd1dc87763f40.10%{?buildid}%{?dist}
 
 #
 # End of genspec.sh variables
@@ -3040,6 +3040,10 @@ fi
 #
 #
 %changelog
+* Thu Jun 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc0.d1dc87763f40.9]
+- redhat/configs: enable CONFIG_SP5100_TCO (David Arcari)
+- redhat/configs: Set CONFIG_VIRTIO_IOMMU on x86_64 (Eric Auger) [2089765]
+
 * Wed Jun 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc0.700170bf6b4d.8]
 - Turn off KASAN_INLINE for RHEL ppc in pending (Justin M. Forbes)
 
