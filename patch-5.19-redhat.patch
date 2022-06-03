@@ -150,10 +150,10 @@ index edc3f44cd96c..9ec991e258d0 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 903165a400a7..578894315318 100644
+index f182f32145a8..38d16f029968 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1416,9 +1416,9 @@ config HIGHMEM
+@@ -1395,9 +1395,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -2631,10 +2631,10 @@ index fed58d30725d..96e9ad060bfe 100644
  	&modinfo_coresize,
  #ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
 diff --git a/kernel/module/signing.c b/kernel/module/signing.c
-index 85c8999dfecf..a537d01bdfa0 100644
+index a2ff4242e623..f0d2be1ee4f1 100644
 --- a/kernel/module/signing.c
 +++ b/kernel/module/signing.c
-@@ -58,10 +58,17 @@ int mod_verify_sig(const void *mod, struct load_info *info)
+@@ -61,10 +61,17 @@ int mod_verify_sig(const void *mod, struct load_info *info)
  	modlen -= sig_len + sizeof(ms);
  	info->len = modlen;
 

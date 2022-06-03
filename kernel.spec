@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc0.20220602gitd1dc87763f40.10
+%define pkgrelease 0.rc0.20220603git50fd82b3a9a9.11
 %define kversion 5
-%define tarfile_release 5.18-11972-gd1dc87763f40
+%define tarfile_release 5.18-12234-g50fd82b3a9a9
 # This is needed to do merge window version magic
 %define patchlevel 19
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220602gitd1dc87763f40.10%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220603git50fd82b3a9a9.11%{?buildid}%{?dist}
 
 #
 # End of genspec.sh variables
