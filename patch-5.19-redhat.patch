@@ -67,10 +67,10 @@
  66 files changed, 1544 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 710b52d87bdd..5997c3c6e42f 100644
+index 8090130b544b..2a0dc78f340f 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6232,6 +6232,15 @@
+@@ -6237,6 +6237,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index edc3f44cd96c..9ec991e258d0 100644
+index c43d825a3c4c..3a870536497b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -150,10 +150,10 @@ index edc3f44cd96c..9ec991e258d0 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index f182f32145a8..38d16f029968 100644
+index 7630ba9cb6cc..c2e2991edd11 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1395,9 +1395,9 @@ config HIGHMEM
+@@ -1382,9 +1382,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -250,7 +250,7 @@ index 8d91eccc0963..d5a41405b466 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 2e9142797c99..062a33911ae6 100644
+index c296cb1c0113..beae6350a8ab 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1461,6 +1461,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -262,7 +262,7 @@ index 2e9142797c99..062a33911ae6 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 249981bf3d8a..c238b6994574 100644
+index 3ebb85327edb..a415b10f55c5 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -849,7 +849,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 7f416a12000e..68be4afaa58a 100644
+index 87299e99dabb..d37b689ad1bf 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -860,7 +860,7 @@ index 7f416a12000e..68be4afaa58a 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2171,6 +2172,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2123,6 +2124,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -877,7 +877,7 @@ index 7f416a12000e..68be4afaa58a 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2204,6 +2215,11 @@ static int __init etm4x_init(void)
+@@ -2156,6 +2167,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -889,7 +889,7 @@ index 7f416a12000e..68be4afaa58a 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2230,6 +2246,9 @@ static int __init etm4x_init(void)
+@@ -2182,6 +2198,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -1226,7 +1226,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 72f7c955c707..a6636245a86b 100644
+index 24165daee3c8..9443dc463c44 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -240,6 +240,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1558,7 +1558,7 @@ index a47bcce3c9c7..094944a52866 100644
  };
 
 diff --git a/drivers/scsi/lpfc/lpfc_ids.h b/drivers/scsi/lpfc/lpfc_ids.h
-index 6a90e6e53d09..7e48c3bf701d 100644
+index a1b9be245560..aa8c493241c6 100644
 --- a/drivers/scsi/lpfc/lpfc_ids.h
 +++ b/drivers/scsi/lpfc/lpfc_ids.h
 @@ -24,6 +24,7 @@
@@ -1753,10 +1753,10 @@ index 9e849f6b0d0f..00f9a1303b93 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 1460857026e0..7e1964891089 100644
+index 68e9121c1878..ccd7566adb4b 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5688,6 +5688,13 @@ static void hub_event(struct work_struct *work)
+@@ -5686,6 +5686,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
@@ -1955,10 +1955,10 @@ index e71161da69c4..25d187e0a84c 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 993674b32717..667a9aa908e6 100644
+index 81a57b498f22..220e81965971 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1495,6 +1495,22 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1499,6 +1499,22 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2894,10 +2894,10 @@ index 000000000000..586c3319f530
 +}
 +EXPORT_SYMBOL(mark_partner_supported);
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 42e949cbc255..d2944ae3d49f 100644
+index 29d5a841e215..4d2b96e07e9a 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -21,6 +21,7 @@
+@@ -22,6 +22,7 @@
  #include <errno.h>
  #include "modpost.h"
  #include "../../include/linux/license.h"
@@ -2905,7 +2905,7 @@ index 42e949cbc255..d2944ae3d49f 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static bool modversions;
-@@ -2390,6 +2391,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2314,6 +2315,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -2918,7 +2918,7 @@ index 42e949cbc255..d2944ae3d49f 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2453,6 +2460,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2377,6 +2384,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
@@ -2927,7 +2927,7 @@ index 42e949cbc255..d2944ae3d49f 100644
  	ret = snprintf(fname, sizeof(fname), "%s.mod.c", mod->name);
  	if (ret >= sizeof(fname)) {
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index 16d475b3e203..4e333f14b84e 100755
+index 01fab3d4f90b..2ae5dfc904f9 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
