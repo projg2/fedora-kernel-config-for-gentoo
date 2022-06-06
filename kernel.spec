@@ -122,11 +122,11 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 0
 # define buildid .local
-%define specversion 5.18.1
+%define specversion 5.18.2
 %define patchversion 5.18
 %define pkgrelease 200
 %define kversion 5
-%define tarfile_release 5.18.1
+%define tarfile_release 5.18.2
 # This is needed to do merge window version magic
 %define patchlevel 18
 # allow pkg_release to have configurable %%{?dist} tag
@@ -3034,6 +3034,10 @@ fi
 #
 #
 %changelog
+* Mon Jun 06 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.2-0]
+- Add the fedora-stable-release.sh script to generate stable dist-git (Justin M. Forbes)
+- Add the simpleDRM revert patch so that F35 can be maintained without it (Justin M. Forbes)
+
 * Thu May 26 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.0-0]
 - Fix versioning for Stable Fedora (Justin M. Forbes)
 - Reset release to 0 for stable (Justin M. Forbes)
