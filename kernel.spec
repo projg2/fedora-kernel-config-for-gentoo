@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc1.14
+%define pkgrelease 0.rc1.20220607gite71e60cd74df.15
 %define kversion 5
-%define tarfile_release 5.19-rc1
+%define tarfile_release 5.19-rc1-3-ge71e60cd74df
 # This is needed to do merge window version magic
 %define patchlevel 19
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.14%{?buildid}%{?dist}
+%define specrelease 0.rc1.20220607gite71e60cd74df.15%{?buildid}%{?dist}
 
 #
 # End of genspec.sh variables
@@ -3040,6 +3040,9 @@ fi
 #
 #
 %changelog
+* Tue Jun 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc1.e71e60cd74df.14]
+- redhat/configs/README: Update the README (Prarit Bhargava)
+
 * Mon Jun 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc1.13]
 - redhat/docs: fix hyperlink typo (Patrick Talbert)
 - all: net: remove old NIC/ATM drivers that use virt_to_bus() (Peter Robinson)
