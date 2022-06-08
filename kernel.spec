@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc1.20220607gite71e60cd74df.15
+%define pkgrelease 0.rc1.20220608git9886142c7a22.16
 %define kversion 5
-%define tarfile_release 5.19-rc1-3-ge71e60cd74df
+%define tarfile_release 5.19-rc1-11-g9886142c7a22
 # This is needed to do merge window version magic
 %define patchlevel 19
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20220607gite71e60cd74df.15%{?buildid}%{?dist}
+%define specrelease 0.rc1.20220608git9886142c7a22.16%{?buildid}%{?dist}
 
 #
 # End of genspec.sh variables
@@ -3040,6 +3040,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 08 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.0-0.rc1.20220608git9886142c7a22.16]
+- Drop RCU_EXP_CPU_STALL_TIMEOUT to 0, we are not really android (Justin M. Forbes)
+
 * Tue Jun 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc1.e71e60cd74df.14]
 - redhat/configs/README: Update the README (Prarit Bhargava)
 
