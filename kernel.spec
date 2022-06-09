@@ -122,15 +122,15 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 5.18.2
+%define specversion 5.18.3
 %define patchversion 5.18
-%define pkgrelease 201
+%define pkgrelease 200
 %define kversion 5
-%define tarfile_release 5.18.2
+%define tarfile_release 5.18.3
 # This is needed to do merge window version magic
 %define patchlevel 18
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 201%{?buildid}%{?dist}
+%define specrelease 200%{?buildid}%{?dist}
 
 #
 # End of genspec.sh variables
@@ -3034,7 +3034,8 @@ fi
 #
 #
 %changelog
-* Tue Jun 07 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.2-201]
+* Thu Jun 09 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.3-0]
+- Config updates for stable backports (Justin M. Forbes)
 - Fix typo in Makefile for stable Fedora (Justin M. Forbes)
 
 * Mon Jun 06 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.2-0]
