@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc1.20220609git6bfb56e93bce.17
+%define pkgrelease 0.rc1.20220610git874c8ca1e60b.18
 %define kversion 5
-%define tarfile_release 5.19-rc1-24-g6bfb56e93bce
+%define tarfile_release 5.19-rc1-95-g874c8ca1e60b
 # This is needed to do merge window version magic
 %define patchlevel 19
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20220609git6bfb56e93bce.17%{?buildid}%{?dist}
+%define specrelease 0.rc1.20220610git874c8ca1e60b.18%{?buildid}%{?dist}
 
 #
 # End of genspec.sh variables
@@ -2228,7 +2228,7 @@ chmod +x tools/perf/check-headers.sh
 %endif
 
 %global tools_make \
-  %{make} CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?make_opts}
+  CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{make} %{?make_opts}
 
 %if %{with_tools}
 %ifarch %{cpupowerarchs}
@@ -2249,10 +2249,10 @@ chmod +x tools/power/cpupower/utils/version-gen.sh
    %{tools_make}
    popd
    pushd tools/power/x86/intel-speed-select
-   %{make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3"
+   %{tools_make}
    popd
    pushd tools/arch/x86/intel_sdsi
-   %{tools_make}
+   %{tools_make} CFLAGS="${RPM_OPT_FLAGS}"
    popd
 %endif
 %endif
@@ -2517,10 +2517,10 @@ install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
    %{tools_make} DESTDIR=%{buildroot} install
    popd
    pushd tools/power/x86/intel-speed-select
-   %{tools_make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3" DESTDIR=%{buildroot} install
+   %{tools_make} DESTDIR=%{buildroot} install
    popd
    pushd tools/arch/x86/intel_sdsi
-   %{tools_make} DESTDIR=%{buildroot} install
+   %{tools_make} CFLAGS="${RPM_OPT_FLAGS}" DESTDIR=%{buildroot} install
    popd
 %endif
 pushd tools/thermal/tmon
@@ -3040,6 +3040,16 @@ fi
 #
 #
 %changelog
+* Fri Jun 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc1.874c8ca1e60b.17]
+- Common: minor cleanups (Peter Robinson)
+- fedora: some minor Fedora cleanups (Peter Robinson)
+- fedora: drop X86_PLATFORM_DRIVERS_DELL dupe (Peter Robinson)
+- redhat: change tools_make macro to avoid full override of variables in Makefile (Herton R. Krzesinski)
+- Fix typo in Makefile for Fedora Stable Versioning (Justin M. Forbes)
+- Remove duplicates from ark/generic/s390x/zfcpdump/ (Vladis Dronov)
+- Move common/debug/s390x/zfcpdump/ configs to ark/debug/s390x/zfcpdump/ (Vladis Dronov)
+- Move common/generic/s390x/zfcpdump/ configs to ark/generic/s390x/zfcpdump/ (Vladis Dronov)
+
 * Thu Jun 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc1.6bfb56e93bce.16]
 - Drop RCU_EXP_CPU_STALL_TIMEOUT to 0, we are not really android (Justin M. Forbes)
 
