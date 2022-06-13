@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc1.20220610git874c8ca1e60b.18
+%define pkgrelease 0.rc2.21
 %define kversion 5
-%define tarfile_release 5.19-rc1-95-g874c8ca1e60b
+%define tarfile_release 5.19-rc2
 # This is needed to do merge window version magic
 %define patchlevel 19
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20220610git874c8ca1e60b.18%{?buildid}%{?dist}
+%define specrelease 0.rc2.21%{?buildid}%{?dist}
 
 #
 # End of genspec.sh variables
@@ -3040,6 +3040,11 @@ fi
 #
 #
 %changelog
+* Sun Jun 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc1.7a68065eb9cd.19]
+- redhat/configs/fedora: Enable a set of modules used on some x86 tablets (Hans de Goede)
+- redhat/configs: Make INTEL_SOC_PMIC_CHTDC_TI builtin (Hans de Goede)
+- redhat/configs/fedora: enable missing modules modules for Intel IPU3 camera support (Hans de Goede)
+
 * Fri Jun 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc1.874c8ca1e60b.17]
 - Common: minor cleanups (Peter Robinson)
 - fedora: some minor Fedora cleanups (Peter Robinson)
