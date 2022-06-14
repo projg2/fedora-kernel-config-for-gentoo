@@ -130,7 +130,7 @@ Summary: The Linux kernel
 # The kernel tarball/base version
 %define kversion 5.17
 
-%define rpmversion 5.17.14
+%define rpmversion 5.17.15
 %define patchversion 5.17
 %define pkgrelease 300
 
@@ -695,7 +695,7 @@ BuildRequires: lld
 # exact git commit you can run
 #
 # xzcat -qq ${TARBALL} | git get-tar-commit-id
-Source0: linux-5.17.14.tar.xz
+Source0: linux-5.17.15.tar.xz
 
 Source1: Makefile.rhelver
 
@@ -1387,8 +1387,8 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-5.17.14 -c
-mv linux-5.17.14 linux-%{KVERREL}
+%setup -q -n kernel-5.17.15 -c
+mv linux-5.17.15 linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
@@ -3015,6 +3015,9 @@ fi
 #
 #
 %changelog
+* Tue Jun 14 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.17.15-300]
+- v5.17.15 rebase
+
 * Thu Jun 09 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.17.14-0]
 - Config updates for stable backports (Justin M. Forbes)
 
