@@ -1,7 +1,4 @@
- Documentation/core-api/dma-attributes.rst          |   8 ++
- Kconfig                                            |   2 +
- Kconfig.redhat                                     |  17 +++
- Makefile                                           |  12 +-
+ Makefile                                           |   4 +
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
  arch/s390/include/asm/ipl.h                        |   1 +
@@ -23,9 +20,7 @@
  drivers/firmware/efi/libstub/x86-stub.c            | 119 +++++++++++++++++++-
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
  drivers/firmware/sysfb.c                           |  18 ++-
- drivers/gpu/drm/i915/display/intel_bios.c          |   6 +
- drivers/gpu/drm/i915/display/intel_psr.c           |   9 ++
- drivers/gpu/drm/i915/display/intel_vbt_defs.h      |   3 +
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c  |   8 +-
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -33,83 +28,24 @@
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
- drivers/pci/msi/msi.c                              |  12 +-
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
- fs/nfs/client.c                                    |   3 +-
- fs/nfs/fs_context.c                                |   8 ++
- include/linux/dma-mapping.h                        |   8 ++
  include/linux/efi.h                                |  24 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
- include/linux/module.h                             |   1 +
- include/linux/nfs_fs_sb.h                          |   1 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
- kernel/dma/swiotlb.c                               |  12 +-
- kernel/module.c                                    |   2 +
  kernel/module_signing.c                            |   9 +-
- net/bluetooth/hci_core.c                           |   4 +-
- scripts/mod/modpost.c                              |   8 ++
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 59 files changed, 803 insertions(+), 212 deletions(-)
+ 44 files changed, 716 insertions(+), 195 deletions(-)
 
-diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
-index 1887d92e8e92..17706dc91ec9 100644
---- a/Documentation/core-api/dma-attributes.rst
-+++ b/Documentation/core-api/dma-attributes.rst
-@@ -130,3 +130,11 @@ accesses to DMA buffers in both privileged "supervisor" and unprivileged
- subsystem that the buffer is fully accessible at the elevated privilege
- level (and ideally inaccessible or at least read-only at the
- lesser-privileged levels).
-+
-+DMA_ATTR_OVERWRITE
-+------------------
-+
-+This is a hint to the DMA-mapping subsystem that the device is expected to
-+overwrite the entire mapped size, thus the caller does not require any of the
-+previous buffer contents to be preserved. This allows bounce-buffering
-+implementations to optimise DMA_FROM_DEVICE transfers.
-diff --git a/Kconfig b/Kconfig
-index 745bc773f567..f57ff40109d7 100644
---- a/Kconfig
-+++ b/Kconfig
-@@ -30,3 +30,5 @@ source "lib/Kconfig"
- source "lib/Kconfig.debug"
-
- source "Documentation/Kconfig"
-+
-+source "Kconfig.redhat"
-diff --git a/Kconfig.redhat b/Kconfig.redhat
-new file mode 100644
-index 000000000000..733a26bd887a
---- /dev/null
-+++ b/Kconfig.redhat
-@@ -0,0 +1,17 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Red Hat specific options
-+#
-+
-+menu "Red Hat options"
-+
-+config RH_DISABLE_DEPRECATED
-+	bool "Remove support for deprecated features"
-+	help
-+	  Red Hat may choose to deprecate certain features in its kernels.
-+	  Enable this option to remove support for hardware that is no
-+	  longer supported.
-+
-+	  Unless you want a restricted kernel, say N here.
-+
-+endmenu
 diff --git a/Makefile b/Makefile
-index c3676b04ca38..0d3b2030e876 100644
+index 6cbf7bb15edd..fcb7fc7a5e81 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -123,26 +59,11 @@ index c3676b04ca38..0d3b2030e876 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1235,7 +1239,13 @@ define filechk_version.h
- 	((c) > 255 ? 255 : (c)))';                                       \
- 	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
- 	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
--	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
-+	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);                \
-+	echo '#define RHEL_MAJOR $(RHEL_MAJOR)'; \
-+	echo '#define RHEL_MINOR $(RHEL_MINOR)'; \
-+	echo '#define RHEL_RELEASE_VERSION(a,b) (((a) << 8) + (b))'; \
-+	echo '#define RHEL_RELEASE_CODE \
-+		$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
-+	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
- endef
-
- $(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 4c97cb40eebb..caf06cef3d2e 100644
+index 2e8091e2d8a8..32e0403314b1 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1479,9 +1479,9 @@ config HIGHMEM
+@@ -1486,9 +1486,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -155,10 +76,10 @@ index 4c97cb40eebb..caf06cef3d2e 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index baa0e9bbe754..7adce1807baf 100644
+index 20ea89d9ac2f..774c1a05152d 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1110,7 +1110,7 @@ endchoice
+@@ -1126,7 +1126,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -167,7 +88,7 @@ index baa0e9bbe754..7adce1807baf 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1349,6 +1349,7 @@ config XEN
+@@ -1365,6 +1365,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -188,7 +109,7 @@ index 3f8ee257f9aa..3ab92feb6241 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 5ad1dde23dc5..b6192d58eed3 100644
+index 1cc85b8ff42e..b7ee128c67ce 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
 @@ -2216,3 +2216,8 @@ int ipl_report_free(struct ipl_report *report)
@@ -201,7 +122,7 @@ index 5ad1dde23dc5..b6192d58eed3 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 05327be3a982..c473e5ca67f1 100644
+index d860ac300919..6e63924932e6 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -239,10 +160,10 @@ index 6dbd7e9f74c9..0352e4589efa 100644
  	.long	0				# SizeOfStackReserve
  	.long	0				# SizeOfStackCommit
 diff --git a/arch/x86/include/asm/efi.h b/arch/x86/include/asm/efi.h
-index 03cb12775043..4614d54383ac 100644
+index 98938a68251c..bed74a0f2932 100644
 --- a/arch/x86/include/asm/efi.h
 +++ b/arch/x86/include/asm/efi.h
-@@ -352,6 +352,11 @@ static inline u32 efi64_convert_status(efi_status_t status)
+@@ -357,6 +357,11 @@ static inline u32 efi64_convert_status(efi_status_t status)
  						   runtime),		\
  				    func, __VA_ARGS__))
 
@@ -255,7 +176,7 @@ index 03cb12775043..4614d54383ac 100644
 
  static inline bool efi_is_64bit(void)
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 90d7e1788c91..262198c48162 100644
+index c95b9ac5a457..6640be279dae 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -266,7 +187,7 @@ index 90d7e1788c91..262198c48162 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -950,6 +951,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -946,6 +947,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -280,7 +201,7 @@ index 90d7e1788c91..262198c48162 100644
  	dmi_setup();
 
  	/*
-@@ -1119,19 +1127,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1115,19 +1123,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -364,10 +285,10 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 8b2e5ef15559..ac0291ef0838 100644
+index 762b61f67e6c..3581d4898dc4 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1769,6 +1769,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1766,6 +1766,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -384,7 +305,7 @@ index 8b2e5ef15559..ac0291ef0838 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 0ed484e04fd6..a2e486bd14ef 100644
+index cf8c7fd59ada..28a8189be64f 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -690,6 +690,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -1003,57 +924,39 @@ index 2bfbb05f7d89..a504f7234f35 100644
  		ret = sysfb_create_simplefb(si, &mode);
  		if (!ret)
  			return 0;
-diff --git a/drivers/gpu/drm/i915/display/intel_bios.c b/drivers/gpu/drm/i915/display/intel_bios.c
-index 9d989c9f5da4..5d97a251d3dc 100644
---- a/drivers/gpu/drm/i915/display/intel_bios.c
-+++ b/drivers/gpu/drm/i915/display/intel_bios.c
-@@ -1968,6 +1968,12 @@ static int _intel_bios_max_tmds_clock(const struct intel_bios_encoder_data *devd
- 		fallthrough;
- 	case HDMI_MAX_DATA_RATE_PLATFORM:
- 		return 0;
-+	case HDMI_MAX_DATA_RATE_594:
-+		return 594000;
-+	case HDMI_MAX_DATA_RATE_340:
-+		return 340000;
-+	case HDMI_MAX_DATA_RATE_300:
-+		return 300000;
- 	case HDMI_MAX_DATA_RATE_297:
- 		return 297000;
- 	case HDMI_MAX_DATA_RATE_165:
-diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
-index cd32e1470b3c..0f6da3a0ed2a 100644
---- a/drivers/gpu/drm/i915/display/intel_psr.c
-+++ b/drivers/gpu/drm/i915/display/intel_psr.c
-@@ -744,6 +744,15 @@ static bool intel_psr2_sel_fetch_config_valid(struct intel_dp *intel_dp,
- 		return false;
- 	}
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 8dd03de7c277..78a38c3b7d66 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -2835,7 +2835,7 @@ static struct drm_mode_config_helper_funcs amdgpu_dm_mode_config_helperfuncs = {
 
-+	/* Temporary workaround for Lenovo's issues with the X1 Carbon 10th Gen
-+	 * See: https://bugzilla.redhat.com/show_bug.cgi?id=2065794
-+	 */
-+	if (IS_ALDERLAKE_P(dev_priv)) {
-+		drm_dbg_kms(&dev_priv->drm,
-+			    "PSR2 sel fetch disabled on ADL-P, see rhbz2065794\n");
-+		return false;
-+	}
-+
- 	return crtc_state->enable_psr2_sel_fetch = true;
- }
+ static void update_connector_ext_caps(struct amdgpu_dm_connector *aconnector)
+ {
+-	u32 max_cll, min_cll, max, min, q, r;
++	u32 max_avg, min_cll, max, min, q, r;
+ 	struct amdgpu_dm_backlight_caps *caps;
+ 	struct amdgpu_display_manager *dm;
+ 	struct drm_connector *conn_base;
+@@ -2865,7 +2865,7 @@ static void update_connector_ext_caps(struct amdgpu_dm_connector *aconnector)
+ 	caps = &dm->backlight_caps[i];
+ 	caps->ext_caps = &aconnector->dc_link->dpcd_sink_ext_caps;
+ 	caps->aux_support = false;
+-	max_cll = conn_base->hdr_sink_metadata.hdmi_type1.max_cll;
++	max_avg = conn_base->hdr_sink_metadata.hdmi_type1.max_fall;
+ 	min_cll = conn_base->hdr_sink_metadata.hdmi_type1.min_cll;
 
-diff --git a/drivers/gpu/drm/i915/display/intel_vbt_defs.h b/drivers/gpu/drm/i915/display/intel_vbt_defs.h
-index f043d85ba64d..e8f99ba4e772 100644
---- a/drivers/gpu/drm/i915/display/intel_vbt_defs.h
-+++ b/drivers/gpu/drm/i915/display/intel_vbt_defs.h
-@@ -307,6 +307,9 @@ struct bdb_general_features {
- #define HDMI_MAX_DATA_RATE_PLATFORM	0			/* 204 */
- #define HDMI_MAX_DATA_RATE_297		1			/* 204 */
- #define HDMI_MAX_DATA_RATE_165		2			/* 204 */
-+#define HDMI_MAX_DATA_RATE_594		3			/* 249 */
-+#define HDMI_MAX_DATA_RATE_340		4			/* 249 */
-+#define HDMI_MAX_DATA_RATE_300		5			/* 249 */
+ 	if (caps->ext_caps->bits.oled == 1 /*||
+@@ -2893,8 +2893,8 @@ static void update_connector_ext_caps(struct amdgpu_dm_connector *aconnector)
+ 	 * The results of the above expressions can be verified at
+ 	 * pre_computed_values.
+ 	 */
+-	q = max_cll >> 5;
+-	r = max_cll % 32;
++	q = max_avg >> 5;
++	r = max_avg % 32;
+ 	max = (1 << q) * pre_computed_values[r];
 
- #define LEGACY_CHILD_DEVICE_CONFIG_SIZE		33
-
+ 	// min luminance: maxLum * (CV/255)^2 / 100
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1155,7 +1058,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index bf18128cf5de..e973c7816de8 100644
+index 7f416a12000e..68be4afaa58a 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -1166,7 +1069,7 @@ index bf18128cf5de..e973c7816de8 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2165,6 +2166,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2171,6 +2172,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -1183,7 +1086,7 @@ index bf18128cf5de..e973c7816de8 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2198,6 +2209,11 @@ static int __init etm4x_init(void)
+@@ -2204,6 +2215,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -1195,7 +1098,7 @@ index bf18128cf5de..e973c7816de8 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2224,6 +2240,9 @@ static int __init etm4x_init(void)
+@@ -2230,6 +2246,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -1398,7 +1301,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 107dcf5938d6..225a9797e39d 100644
+index 857d4c2fd1a2..9353941f3a97 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1409,7 +1312,7 @@ index 107dcf5938d6..225a9797e39d 100644
  #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -3124,6 +3125,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -2870,6 +2871,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1438,10 +1341,10 @@ index 107dcf5938d6..225a9797e39d 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index e086440a2042..44977ed5d13d 100644
+index 2d6a01853109..f22cd4b9c118 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
-@@ -244,6 +244,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
+@@ -240,6 +240,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
 
  static blk_status_t nvme_error_status(u16 status)
  {
@@ -1451,7 +1354,7 @@ index e086440a2042..44977ed5d13d 100644
  	switch (status & 0x7ff) {
  	case NVME_SC_SUCCESS:
  		return BLK_STS_OK;
-@@ -303,6 +306,7 @@ enum nvme_disposition {
+@@ -330,6 +333,7 @@ enum nvme_disposition {
  	COMPLETE,
  	RETRY,
  	FAILOVER,
@@ -1459,7 +1362,7 @@ index e086440a2042..44977ed5d13d 100644
  };
 
  static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
-@@ -310,15 +314,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
+@@ -337,15 +341,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
  	if (likely(nvme_req(req)->status == 0))
  		return COMPLETE;
 
@@ -1479,7 +1382,7 @@ index e086440a2042..44977ed5d13d 100644
  	} else {
  		if (blk_queue_dying(req->q))
  			return COMPLETE;
-@@ -344,6 +349,14 @@ static inline void nvme_end_req(struct request *req)
+@@ -373,6 +378,14 @@ static inline void nvme_end_req(struct request *req)
  	blk_mq_end_request(req, status);
  }
 
@@ -1494,7 +1397,7 @@ index e086440a2042..44977ed5d13d 100644
  void nvme_complete_rq(struct request *req)
  {
  	trace_nvme_complete_rq(req);
-@@ -362,6 +375,9 @@ void nvme_complete_rq(struct request *req)
+@@ -391,6 +404,9 @@ void nvme_complete_rq(struct request *req)
  	case FAILOVER:
  		nvme_failover_req(req);
  		return;
@@ -1505,11 +1408,11 @@ index e086440a2042..44977ed5d13d 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 189175fff7e4..c0627a9d1274 100644
+index d464fdf978fb..acdaab3d7697 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
-@@ -101,14 +101,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)
- 	return true;
+@@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
+ 			blk_freeze_queue_start(h->disk->queue);
  }
 
 -void nvme_failover_req(struct request *req)
@@ -1524,7 +1427,7 @@ index 189175fff7e4..c0627a9d1274 100644
 
  	/*
  	 * If we got back an ANA error, we know the controller is alive but not
-@@ -119,6 +115,16 @@ void nvme_failover_req(struct request *req)
+@@ -98,6 +94,16 @@ void nvme_failover_req(struct request *req)
  		set_bit(NVME_NS_ANA_PENDING, &ns->flags);
  		queue_work(nvme_wq, &ns->ctrl->ana_work);
  	}
@@ -1541,7 +1444,7 @@ index 189175fff7e4..c0627a9d1274 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -891,8 +897,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -869,8 +875,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1552,18 +1455,18 @@ index 189175fff7e4..c0627a9d1274 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 85f3f55c71c5..aad43c21c0a4 100644
+index a2b53ca63335..021e51c64cde 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -794,6 +794,7 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
+@@ -800,6 +800,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
- bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags);
  void nvme_failover_req(struct request *req);
 +void nvme_update_ana(struct request *req);
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -833,6 +834,9 @@ static inline bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name,
+@@ -836,6 +837,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1573,36 +1476,6 @@ index 85f3f55c71c5..aad43c21c0a4 100644
  static inline void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl)
  {
  }
-diff --git a/drivers/pci/msi/msi.c b/drivers/pci/msi/msi.c
-index 9037a7827eca..e5900638483b 100644
---- a/drivers/pci/msi/msi.c
-+++ b/drivers/pci/msi/msi.c
-@@ -635,6 +635,9 @@ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
- 		goto out_disable;
- 	}
-
-+	/* Ensure that all table entries are masked. */
-+	msix_mask_all(base, tsize);
-+
- 	dev->msix_base = base;
-
- 	ret = msix_setup_interrupts(dev, base, entries, nvec, affd);
-@@ -644,15 +647,6 @@ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
- 	/* Disable INTX */
- 	pci_intx_for_msi(dev, 0);
-
--	/*
--	 * Ensure that all table entries are masked to prevent
--	 * stale entries from firing in a crash kernel.
--	 *
--	 * Done late to deal with a broken Marvell NVME device
--	 * which takes the MSI-X mask bits into account even
--	 * when MSI-X is disabled, which prevents MSI delivery.
--	 */
--	msix_mask_all(base, tsize);
- 	pci_msix_clear_and_set_ctrl(dev, PCI_MSIX_FLAGS_MASKALL, 0);
-
- 	pcibios_free_irq(dev);
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index 41aeaa235132..e8137d31cc93 100644
 --- a/drivers/pci/quirks.c
@@ -1639,10 +1512,10 @@ index 41aeaa235132..e8137d31cc93 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 47a1c8bddf86..e309d992e2ad 100644
+index 1460857026e0..7e1964891089 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5683,6 +5683,13 @@ static void hub_event(struct work_struct *work)
+@@ -5688,6 +5688,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
@@ -1656,72 +1529,6 @@ index 47a1c8bddf86..e309d992e2ad 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/fs/nfs/client.c b/fs/nfs/client.c
-index d1f34229e11a..e828504cc396 100644
---- a/fs/nfs/client.c
-+++ b/fs/nfs/client.c
-@@ -857,7 +857,8 @@ static int nfs_probe_fsinfo(struct nfs_server *server, struct nfs_fh *mntfh, str
- 	}
-
- 	if (clp->rpc_ops->discover_trunking != NULL &&
--			(server->caps & NFS_CAP_FS_LOCATIONS)) {
-+			(server->caps & NFS_CAP_FS_LOCATIONS &&
-+			 (server->flags & NFS_MOUNT_TRUNK_DISCOVERY))) {
- 		error = clp->rpc_ops->discover_trunking(server, mntfh);
- 		if (error < 0)
- 			return error;
-diff --git a/fs/nfs/fs_context.c b/fs/nfs/fs_context.c
-index d20891162145..9a16897e8dc6 100644
---- a/fs/nfs/fs_context.c
-+++ b/fs/nfs/fs_context.c
-@@ -80,6 +80,7 @@ enum nfs_param {
- 	Opt_source,
- 	Opt_tcp,
- 	Opt_timeo,
-+	Opt_trunkdiscovery,
- 	Opt_udp,
- 	Opt_v,
- 	Opt_vers,
-@@ -180,6 +181,7 @@ static const struct fs_parameter_spec nfs_fs_parameters[] = {
- 	fsparam_string("source",	Opt_source),
- 	fsparam_flag  ("tcp",		Opt_tcp),
- 	fsparam_u32   ("timeo",		Opt_timeo),
-+	fsparam_flag_no("trunkdiscovery", Opt_trunkdiscovery),
- 	fsparam_flag  ("udp",		Opt_udp),
- 	fsparam_flag  ("v2",		Opt_v),
- 	fsparam_flag  ("v3",		Opt_v),
-@@ -529,6 +531,12 @@ static int nfs_fs_context_parse_param(struct fs_context *fc,
- 		else
- 			ctx->flags &= ~NFS_MOUNT_NOCTO;
- 		break;
-+	case Opt_trunkdiscovery:
-+		if (result.negated)
-+			ctx->flags &= ~NFS_MOUNT_TRUNK_DISCOVERY;
-+		else
-+			ctx->flags |= NFS_MOUNT_TRUNK_DISCOVERY;
-+		break;
- 	case Opt_ac:
- 		if (result.negated)
- 			ctx->flags |= NFS_MOUNT_NOAC;
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index dca2b1355bb1..6150d11a607e 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -61,6 +61,14 @@
-  */
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
-
-+/*
-+ * This is a hint to the DMA-mapping subsystem that the device is expected
-+ * to overwrite the entire mapped size, thus the caller does not require any
-+ * of the previous buffer contents to be preserved. This allows
-+ * bounce-buffering implementations to optimise DMA_FROM_DEVICE transfers.
-+ */
-+#define DMA_ATTR_OVERWRITE		(1UL << 10)
-+
- /*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-  * be given to a device to use as a DMA source or target.  It is specific to a
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index cc6d2be2ffd5..418d814d2eb7 100644
 --- a/include/linux/efi.h
@@ -1836,30 +1643,6 @@ index 419b5febc3ca..491323dfe4e0 100644
   * Security hooks for perf events
   *
   * @perf_event_open:
-diff --git a/include/linux/module.h b/include/linux/module.h
-index d5e9066990ca..23ffbf466a48 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -380,6 +380,7 @@ struct module {
- 	struct module_attribute *modinfo_attrs;
- 	const char *version;
- 	const char *srcversion;
-+	const char *rhelversion;
- 	struct kobject *holders_dir;
-
- 	/* Exported symbols */
-diff --git a/include/linux/nfs_fs_sb.h b/include/linux/nfs_fs_sb.h
-index 1fdf560dddd8..bac7a34324c5 100644
---- a/include/linux/nfs_fs_sb.h
-+++ b/include/linux/nfs_fs_sb.h
-@@ -151,6 +151,7 @@ struct nfs_server {
- #define NFS_MOUNT_SOFTREVAL		0x800000
- #define NFS_MOUNT_WRITE_EAGER		0x01000000
- #define NFS_MOUNT_WRITE_WAIT		0x02000000
-+#define NFS_MOUNT_TRUNK_DISCOVERY	0x04000000
-
- 	unsigned int		fattr_valid;	/* Valid attributes */
- 	unsigned int		caps;		/* server capabilities */
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
 index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h
@@ -1896,10 +1679,10 @@ index 7fc4e9f49f54..6f0b0b2dc73d 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 4a7a569706c5..bc8f25fcfe0d 100644
+index b19e2eeaae80..7d12d49b9024 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1650,7 +1650,7 @@ config AIO
+@@ -1654,7 +1654,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -1908,49 +1691,6 @@ index 4a7a569706c5..bc8f25fcfe0d 100644
  	select IO_WQ
  	default y
  	help
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 6c350555e5a1..bfc56cb21705 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -627,14 +627,10 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	for (i = 0; i < nr_slots(alloc_size + offset); i++)
- 		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
- 	tlb_addr = slot_addr(mem->start, index) + offset;
--	/*
--	 * When dir == DMA_FROM_DEVICE we could omit the copy from the orig
--	 * to the tlb buffer, if we knew for sure the device will
--	 * overwirte the entire current content. But we don't. Thus
--	 * unconditional bounce may prevent leaking swiotlb content (i.e.
--	 * kernel memory) to user-space.
--	 */
--	swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
-+	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
-+	    (!(attrs & DMA_ATTR_OVERWRITE) || dir == DMA_TO_DEVICE ||
-+	    dir == DMA_BIDIRECTIONAL))
-+		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_TO_DEVICE);
- 	return tlb_addr;
- }
-
-diff --git a/kernel/module.c b/kernel/module.c
-index 740323cff545..7828a8946781 100644
---- a/kernel/module.c
-+++ b/kernel/module.c
-@@ -743,6 +743,7 @@ static struct module_attribute modinfo_##field = {                    \
-
- MODINFO_ATTR(version);
- MODINFO_ATTR(srcversion);
-+MODINFO_ATTR(rhelversion);
-
- static char last_unloaded_module[MODULE_NAME_LEN+1];
-
-@@ -1205,6 +1206,7 @@ static struct module_attribute *modinfo_attrs[] = {
- 	&module_uevent,
- 	&modinfo_version,
- 	&modinfo_srcversion,
-+	&modinfo_rhelversion,
- 	&modinfo_initstate,
- 	&modinfo_coresize,
- 	&modinfo_initsize,
 diff --git a/kernel/module_signing.c b/kernel/module_signing.c
 index 8723ae70ea1f..fb2d773498c2 100644
 --- a/kernel/module_signing.c
@@ -1972,54 +1712,6 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index f1feb9204063..d6374d1c7e2f 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3667,8 +3667,8 @@ static void hci_scodata_packet(struct hci_dev *hdev, struct sk_buff *skb)
- 		sco_recv_scodata(conn, skb);
- 		return;
- 	} else {
--		bt_dev_err(hdev, "SCO packet for unknown connection handle %d",
--			   handle);
-+		bt_dev_err_ratelimited(hdev, "SCO packet for unknown connection handle %d",
-+				       handle);
- 	}
-
- 	kfree_skb(skb);
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index eae6ae9d3c3b..2b5775411bef 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -21,6 +21,7 @@
- #include <errno.h>
- #include "modpost.h"
- #include "../../include/linux/license.h"
-+#include "../../include/generated/uapi/linux/version.h"
-
- /* Are we using CONFIG_MODVERSIONS? */
- static int modversions = 0;
-@@ -2367,6 +2368,12 @@ static void write_buf(struct buffer *b, const char *fname)
- 	}
- }
-
-+static void add_rhelversion(struct buffer *b, struct module *mod)
-+{
-+	buf_printf(b, "MODULE_INFO(rhelversion, \"%d.%d\");\n", RHEL_MAJOR,
-+		   RHEL_MINOR);
-+}
-+
- static void write_if_changed(struct buffer *b, const char *fname)
- {
- 	char *tmp;
-@@ -2596,6 +2603,7 @@ int main(int argc, char **argv)
- 		add_depends(&buf, mod);
- 		add_moddevtable(&buf, mod);
- 		add_srcversion(&buf, mod);
-+		add_rhelversion(&buf, mod);
-
- 		sprintf(fname, "%s.mod.c", mod->name);
- 		write_if_changed(&buf, fname);
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index 16d475b3e203..4e333f14b84e 100755
 --- a/scripts/tags.sh
@@ -2034,7 +1726,7 @@ index 16d475b3e203..4e333f14b84e 100755
  # Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
  # to force full paths for a non-O= build
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-index a031522351c9..7c2ae3104441 100644
+index 093894a640dc..1c43a9462b4b 100644
 --- a/security/integrity/platform_certs/load_uefi.c
 +++ b/security/integrity/platform_certs/load_uefi.c
 @@ -73,7 +73,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
