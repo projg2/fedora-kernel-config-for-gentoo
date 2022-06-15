@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.18.4
 %define patchversion 5.18
-%define pkgrelease 200
+%define pkgrelease 201
 %define kversion 5
 %define tarfile_release 5.18.4
 # This is needed to do merge window version magic
 %define patchlevel 18
 # allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 200%{?buildid}%{?dist}
+%define specrelease 201%{?buildid}%{?dist}
 
 #
 # End of genspec.sh variables
@@ -3034,7 +3034,8 @@ fi
 #
 #
 %changelog
-* Tue Jun 14 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.4-200]
+* Wed Jun 15 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.4-201]
+- Turn E1000 back on (Justin M. Forbes)
 - Changelog update for rebase (Justin M. Forbes)
 
 * Tue Jun 14 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.4-0]
