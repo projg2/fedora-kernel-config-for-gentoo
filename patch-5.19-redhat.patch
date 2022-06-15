@@ -67,10 +67,10 @@
  66 files changed, 1544 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 8090130b544b..2a0dc78f340f 100644
+index 2522b11e593f..852307b46301 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6237,6 +6237,15 @@
+@@ -6272,6 +6272,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -250,10 +250,10 @@ index 8d91eccc0963..d5a41405b466 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index c296cb1c0113..beae6350a8ab 100644
+index 4730b0a58f24..ee654b3d6d6e 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1461,6 +1461,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1507,6 +1507,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
