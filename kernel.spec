@@ -124,13 +124,15 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc2.20220616git30306f6194ca.23
+%define pkgrelease 0.rc2.20220617git47700948a4ab.24
 %define kversion 5
-%define tarfile_release 5.19-rc2-60-g30306f6194ca
+%define tarfile_release 5.19-rc2-117-g47700948a4ab
 # This is needed to do merge window version magic
 %define patchlevel 19
-# allow pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20220616git30306f6194ca.23%{?buildid}%{?dist}
+# This allows pkg_release to have configurable %%{?dist} tag
+%define specrelease 0.rc2.20220617git47700948a4ab.24%{?buildid}%{?dist}
+# This defines the kabi tarball version
+%define kabiversion 5.19.0
 
 #
 # End of genspec.sh variables
@@ -829,8 +831,8 @@ Source211: Module.kabi_dup_ppc64le
 Source212: Module.kabi_dup_s390x
 Source213: Module.kabi_dup_x86_64
 
-Source300: kernel-abi-stablelists-%{specversion}-%{pkgrelease}.tar.bz2
-Source301: kernel-kabi-dw-%{specversion}-%{pkgrelease}.tar.bz2
+Source300: kernel-abi-stablelists-%{kabiversion}.tar.bz2
+Source301: kernel-kabi-dw-%{kabiversion}.tar.bz2
 
 # Sources for kernel-tools
 Source2000: cpupower.service
@@ -3040,6 +3042,15 @@ fi
 #
 #
 %changelog
+* Fri Jun 17 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc2.47700948a4ab.23]
+- redhat/Makefile: Add SPECKABIVERSION variable (Prarit Bhargava)
+- redhat/self-test: Provide better failure output (Prarit Bhargava)
+- redhat/self-test: Reformat tests to kernel standard (Prarit Bhargava)
+- redhat/self-test: Add purpose and header to each test (Prarit Bhargava)
+- Drop outdated CRYPTO_ECDH configs (Vladis Dronov)
+- Brush up crypto SHA512 and USER configs (Vladis Dronov)
+- Brush up crypto ECDH and ECDSA configs (Vladis Dronov)
+
 * Wed Jun 15 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc2.018ab4fabddd.21]
 - redhat/self-test: Update data set (Prarit Bhargava)
 - create-data.sh: Reduce specfile data output (Prarit Bhargava)
