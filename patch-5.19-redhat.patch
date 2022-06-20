@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 1a6678d817bd..26554fa9689d 100644
+index 513c1fbf7888..5e1c1cf59665 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -262,7 +262,7 @@ index 4730b0a58f24..ee654b3d6d6e 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 3ebb85327edb..a415b10f55c5 100644
+index bd6c6fd373ae..51a23f4931d8 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -281,7 +281,7 @@ index 3ebb85327edb..a415b10f55c5 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -737,6 +739,49 @@ static void __init early_reserve_memory(void)
+@@ -732,6 +734,49 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -331,7 +331,7 @@ index 3ebb85327edb..a415b10f55c5 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -968,6 +1013,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -963,6 +1008,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -345,7 +345,7 @@ index 3ebb85327edb..a415b10f55c5 100644
  	dmi_setup();
 
  	/*
-@@ -1137,19 +1189,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1132,19 +1184,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -366,7 +366,7 @@ index 3ebb85327edb..a415b10f55c5 100644
 
  	reserve_initrd();
 
-@@ -1262,6 +1302,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1257,6 +1297,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -1226,7 +1226,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 24165daee3c8..9443dc463c44 100644
+index 3ab2cfd254a4..a595b2843bed 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -240,6 +240,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1340,10 +1340,10 @@ index d3e2440d8abb..da01ce9c9542 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 9b72b6ecf33c..d2717a44074e 100644
+index 0da94b233fed..f3616ab87759 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -806,6 +806,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -834,6 +834,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1351,7 +1351,7 @@ index 9b72b6ecf33c..d2717a44074e 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -842,6 +843,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -870,6 +871,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -2654,10 +2654,10 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index a3c758dba15a..1f6df57c76cb 100644
+index 4cf13c37bd08..7a6c3e7f9f4d 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -428,6 +428,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -430,6 +430,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
