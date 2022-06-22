@@ -20,7 +20,7 @@
  drivers/firmware/efi/libstub/x86-stub.c            | 119 +++++++++++++++++++-
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
  drivers/firmware/sysfb.c                           |  18 ++-
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c  |   8 +-
+ drivers/gpu/drm/i915/display/intel_psr.c           |   9 ++
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -42,10 +42,10 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 44 files changed, 716 insertions(+), 195 deletions(-)
+ 44 files changed, 721 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 34bfb76d6333..14b77f963807 100644
+index 27850d452d65..c6cd7b49725d 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -924,39 +924,26 @@ index 2bfbb05f7d89..a504f7234f35 100644
  		ret = sysfb_create_simplefb(si, &mode);
  		if (!ret)
  			return 0;
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 8dd03de7c277..78a38c3b7d66 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -2835,7 +2835,7 @@ static struct drm_mode_config_helper_funcs amdgpu_dm_mode_config_helperfuncs = {
+diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
+index 6c9e6e7f0afd..f0ff2f1f5fcb 100644
+--- a/drivers/gpu/drm/i915/display/intel_psr.c
++++ b/drivers/gpu/drm/i915/display/intel_psr.c
+@@ -744,6 +744,15 @@ static bool intel_psr2_sel_fetch_config_valid(struct intel_dp *intel_dp,
+ 		return false;
+ 	}
 
- static void update_connector_ext_caps(struct amdgpu_dm_connector *aconnector)
- {
--	u32 max_cll, min_cll, max, min, q, r;
-+	u32 max_avg, min_cll, max, min, q, r;
- 	struct amdgpu_dm_backlight_caps *caps;
- 	struct amdgpu_display_manager *dm;
- 	struct drm_connector *conn_base;
-@@ -2865,7 +2865,7 @@ static void update_connector_ext_caps(struct amdgpu_dm_connector *aconnector)
- 	caps = &dm->backlight_caps[i];
- 	caps->ext_caps = &aconnector->dc_link->dpcd_sink_ext_caps;
- 	caps->aux_support = false;
--	max_cll = conn_base->hdr_sink_metadata.hdmi_type1.max_cll;
-+	max_avg = conn_base->hdr_sink_metadata.hdmi_type1.max_fall;
- 	min_cll = conn_base->hdr_sink_metadata.hdmi_type1.min_cll;
++	/* Temporary workaround for Lenovo's issues with the X1 Carbon 10th Gen
++	 * See: https://bugzilla.redhat.com/show_bug.cgi?id=2065794
++	 */
++	if (IS_ALDERLAKE_P(dev_priv)) {
++		drm_dbg_kms(&dev_priv->drm,
++			    "PSR2 sel fetch disabled on ADL-P, see rhbz2065794\n");
++		return false;
++	}
++
+ 	return crtc_state->enable_psr2_sel_fetch = true;
+ }
 
- 	if (caps->ext_caps->bits.oled == 1 /*||
-@@ -2893,8 +2893,8 @@ static void update_connector_ext_caps(struct amdgpu_dm_connector *aconnector)
- 	 * The results of the above expressions can be verified at
- 	 * pre_computed_values.
- 	 */
--	q = max_cll >> 5;
--	r = max_cll % 32;
-+	q = max_avg >> 5;
-+	r = max_avg % 32;
- 	max = (1 << q) * pre_computed_values[r];
-
- 	// min luminance: maxLum * (CV/255)^2 / 100
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1341,7 +1328,7 @@ index 857d4c2fd1a2..9353941f3a97 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 2d6a01853109..f22cd4b9c118 100644
+index 1ea85c88d795..d30563dabd95 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -240,6 +240,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1679,10 +1666,10 @@ index 7fc4e9f49f54..6f0b0b2dc73d 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index b19e2eeaae80..7d12d49b9024 100644
+index fa63cc019ebf..8643b5cef9f1 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1654,7 +1654,7 @@ config AIO
+@@ -1663,7 +1663,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
