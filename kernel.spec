@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc3.20220621git78ca55889a54.28
+%define pkgrelease 0.rc3.20220623gitde5c208d533a.29
 %define kversion 5
-%define tarfile_release 5.19-rc3-27-g78ca55889a54
+%define tarfile_release 5.19-rc3-48-gde5c208d533a
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20220621git78ca55889a54.28%{?buildid}%{?dist}
+%define specrelease 0.rc3.20220623gitde5c208d533a.29%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
@@ -3042,6 +3042,9 @@ fi
 #
 #
 %changelog
+* Thu Jun 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc3.de5c208d533a.28]
+- configs/fedora: Enable the pinctrl SC7180 driver built-in (Enric Balletbo i Serra)
+
 * Sat Jun 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc2.4b35035bcf80.24]
 - redhat/configs: enable CONFIG_DEBUG_NET for debug kernel (Hangbin Liu)
 
