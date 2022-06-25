@@ -122,11 +122,11 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 5.18.6
+%define specversion 5.18.7
 %define patchversion 5.18
 %define pkgrelease 200
 %define kversion 5
-%define tarfile_release 5.18.6
+%define tarfile_release 5.18.7
 # This is needed to do merge window version magic
 %define patchlevel 18
 # allow pkg_release to have configurable %%{?dist} tag
@@ -3034,6 +3034,9 @@ fi
 #
 #
 %changelog
+
+* Sat Jun 25 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.7-200]
+- v5.18.7 rebase
 * Wed Jun 22 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.6-0]
 - drm/i915: Temporarily disable selective fetch for PSR2 on ADL-P (Mark Pearson) [2065794]
 - Turn E1000 back on correctly (Justin M. Forbes)
