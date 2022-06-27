@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc3.20220624git92f20ff72066.30
+%define pkgrelease 0.rc4.33
 %define kversion 5
-%define tarfile_release 5.19-rc3-146-g92f20ff72066
+%define tarfile_release 5.19-rc4
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20220624git92f20ff72066.30%{?buildid}%{?dist}
+%define specrelease 0.rc4.33%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
@@ -3042,6 +3042,10 @@ fi
 #
 #
 %changelog
+* Mon Jun 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc4.32]
+- fedora: wireless: disable SiLabs and PureLiFi (Peter Robinson)
+- fedora: updates for 5.19 (Peter Robinson)
+
 * Fri Jun 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc3.92f20ff72066.29]
 - fedora: minor updates for Fedora configs (Peter Robinson)
 

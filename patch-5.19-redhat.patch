@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 513c1fbf7888..5e1c1cf59665 100644
+index 8973b285ce6c..ba893f692d55 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1226,7 +1226,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 3ab2cfd254a4..a595b2843bed 100644
+index b3d9c29aba1e..e295e4c27a5a 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -240,6 +240,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -2654,10 +2654,10 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index 4cf13c37bd08..7a6c3e7f9f4d 100644
+index a3308af28a21..1ca93bae00de 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -430,6 +430,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -428,6 +428,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
@@ -2894,7 +2894,7 @@ index 000000000000..586c3319f530
 +}
 +EXPORT_SYMBOL(mark_partner_supported);
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 29d5a841e215..4d2b96e07e9a 100644
+index 620dc8c4c814..09f57724f9a4 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
