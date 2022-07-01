@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc4.20220630gitd9b2ba67917c.35
+%define pkgrelease 0.rc4.20220701gita175eca0f3d7.36
 %define kversion 5
-%define tarfile_release 5.19-rc4-36-gd9b2ba67917c
+%define tarfile_release 5.19-rc4-125-ga175eca0f3d7
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20220630gitd9b2ba67917c.35%{?buildid}%{?dist}
+%define specrelease 0.rc4.20220701gita175eca0f3d7.36%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
