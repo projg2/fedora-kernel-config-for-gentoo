@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc4.20220701gita175eca0f3d7.36
+%define pkgrelease 0.rc5.39
 %define kversion 5
-%define tarfile_release 5.19-rc4-125-ga175eca0f3d7
+%define tarfile_release 5.19-rc5
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20220701gita175eca0f3d7.36%{?buildid}%{?dist}
+%define specrelease 0.rc5.39%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
@@ -3100,6 +3100,9 @@ fi
 #
 #
 %changelog
+* Sat Jul 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc4.089866061428.36]
+- fedora: arm: enable a couple of QCom drivers (Peter Robinson)
+
 * Thu Jun 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc4.d9b2ba67917c.34]
 - redhat/Makefile: Deprecate BUILD_SCRATCH_TARGET (Prarit Bhargava)
 - redhat: enable CONFIG_DEVTMPFS_SAFE (Mark Langsdorf)

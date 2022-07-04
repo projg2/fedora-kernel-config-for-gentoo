@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 8973b285ce6c..ba893f692d55 100644
+index 990d2ee79186..77bce7a7dc7c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -228,7 +228,7 @@ index 1cc85b8ff42e..b7ee128c67ce 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 8d91eccc0963..d5a41405b466 100644
+index 0a37f5de2863..e2644fc7a172 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -239,7 +239,7 @@ index 8d91eccc0963..d5a41405b466 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -965,6 +966,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -970,6 +971,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -1226,7 +1226,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index b3d9c29aba1e..e295e4c27a5a 100644
+index ec6ac298d8de..ddce2807c680 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -240,6 +240,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1340,10 +1340,10 @@ index d3e2440d8abb..da01ce9c9542 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 0da94b233fed..f3616ab87759 100644
+index 5558f8812157..dc8fd8da85da 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -834,6 +834,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -835,6 +835,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1351,7 +1351,7 @@ index 0da94b233fed..f3616ab87759 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, struct nvme_id_ns *id);
-@@ -870,6 +871,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -871,6 +872,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
