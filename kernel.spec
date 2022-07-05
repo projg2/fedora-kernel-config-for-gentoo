@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc5.39
+%define pkgrelease 0.rc5.20220705gitc1084b6c5620.40
 %define kversion 5
-%define tarfile_release 5.19-rc5
+%define tarfile_release 5.19-rc5-49-gc1084b6c5620
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.39%{?buildid}%{?dist}
+%define specrelease 0.rc5.20220705gitc1084b6c5620.40%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
