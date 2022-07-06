@@ -19,6 +19,7 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
+ drivers/gpu/drm/drm_aperture.c                     |  26 +-
  drivers/hid/hid-rmi.c                              |  64 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
@@ -64,7 +65,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 66 files changed, 1544 insertions(+), 187 deletions(-)
+ 67 files changed, 1559 insertions(+), 198 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 2522b11e593f..852307b46301 100644
@@ -748,6 +749,49 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/drm_aperture.c b/drivers/gpu/drm/drm_aperture.c
+index 74bd4a76b253..059fd71424f6 100644
+--- a/drivers/gpu/drm/drm_aperture.c
++++ b/drivers/gpu/drm/drm_aperture.c
+@@ -329,7 +329,20 @@ int drm_aperture_remove_conflicting_pci_framebuffers(struct pci_dev *pdev,
+ 						     const struct drm_driver *req_driver)
+ {
+ 	resource_size_t base, size;
+-	int bar, ret = 0;
++	int bar, ret;
++
++	/*
++	 * WARNING: Apparently we must kick fbdev drivers before vgacon,
++	 * otherwise the vga fbdev driver falls over.
++	 */
++#if IS_REACHABLE(CONFIG_FB)
++	ret = remove_conflicting_pci_framebuffers(pdev, req_driver->name);
++	if (ret)
++		return ret;
++#endif
++	ret = vga_remove_vgacon(pdev);
++	if (ret)
++		return ret;
+
+ 	for (bar = 0; bar < PCI_STD_NUM_BARS; ++bar) {
+ 		if (!(pci_resource_flags(pdev, bar) & IORESOURCE_MEM))
+@@ -339,15 +352,6 @@ int drm_aperture_remove_conflicting_pci_framebuffers(struct pci_dev *pdev,
+ 		drm_aperture_detach_drivers(base, size);
+ 	}
+
+-	/*
+-	 * WARNING: Apparently we must kick fbdev drivers before vgacon,
+-	 * otherwise the vga fbdev driver falls over.
+-	 */
+-#if IS_REACHABLE(CONFIG_FB)
+-	ret = remove_conflicting_pci_framebuffers(pdev, req_driver->name);
+-#endif
+-	if (ret == 0)
+-		ret = vga_remove_vgacon(pdev);
+-	return ret;
++	return 0;
+ }
+ EXPORT_SYMBOL(drm_aperture_remove_conflicting_pci_framebuffers);
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c

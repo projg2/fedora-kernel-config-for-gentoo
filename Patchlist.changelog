@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/8de3bef2cbd61732031e9e0c270566b103306114
+ 8de3bef2cbd61732031e9e0c270566b103306114 drm/aperture: Run fbdev removal before internal helpers
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/297bcb88233101e8d5062729ff3a5f989bad1c3b
  297bcb88233101e8d5062729ff3a5f989bad1c3b Revert "crypto: rng - Override drivers/char/random in FIPS mode"
 
