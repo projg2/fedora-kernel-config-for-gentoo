@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc5.20220706gite35e5b6f695d.42
+%define pkgrelease 0.rc5.20220707git9f09069cde34.43
 %define kversion 5
-%define tarfile_release 5.19-rc5-56-ge35e5b6f695d
+%define tarfile_release 5.19-rc5-105-g9f09069cde34
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20220706gite35e5b6f695d.42%{?buildid}%{?dist}
+%define specrelease 0.rc5.20220707git9f09069cde34.43%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
@@ -610,6 +610,7 @@ BuildRequires: opencsd-devel >= 1.0.0
 %if %{with_tools}
 BuildRequires: gettext ncurses-devel
 BuildRequires: libcap-devel libcap-ng-devel
+BuildRequires: libtracefs-devel
 %ifnarch s390x
 BuildRequires: pciutils-devel
 %endif
@@ -1031,6 +1032,15 @@ This package provides debug information for package kernel-tools.
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|.*%%{_sbindir}/intel_sdsi(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
+
+%package -n rtla
+Summary: RTLA: Real-Time Linux Analysis tools 
+%description -n rtla
+The rtla tool is a meta-tool that includes a set of commands that
+aims to analyze the real-time properties of Linux. But, instead of
+testing Linux as a black box, rtla leverages kernel tracing
+capabilities to provide precise information about the properties
+and root causes of unexpected results.
 
 # with_tools
 %endif
@@ -2310,6 +2320,9 @@ popd
 pushd tools/vm/
 %{tools_make} slabinfo page_owner_sort
 popd
+pushd tools/tracing/rtla
+%{tools_make}
+popd
 %endif
 
 if [ -f $DevelDir/vmlinux.h ]; then
@@ -2584,6 +2597,16 @@ pushd tools/vm/
 install -m755 slabinfo %{buildroot}%{_bindir}/slabinfo
 install -m755 page_owner_sort %{buildroot}%{_bindir}/page_owner_sort
 popd
+pushd tools/tracing/rtla/
+%{tools_make} DESTDIR=%{buildroot} install
+rm -f %{buildroot}%{_bindir}/osnoise
+rm -f %{buildroot}%{_bindir}/timerlat
+(cd %{buildroot}
+
+        ln -sf rtla ./%{_bindir}/osnoise
+        ln -sf rtla ./%{_bindir}/timerlat
+)
+popd
 %endif
 
 if [ -f $DevelDir/vmlinux.h ]; then
@@ -2857,6 +2880,7 @@ fi
 %if %{with_headers}
 %files headers
 /usr/include/*
+%exclude %{_includedir}/cpufreq.h
 %endif
 
 %if %{with_cross_headers}
@@ -2961,6 +2985,19 @@ fi
 %{_libdir}/libcpupower.so
 %{_includedir}/cpufreq.h
 %endif
+
+%files -n rtla
+%{_bindir}/rtla
+%{_bindir}/osnoise
+%{_bindir}/timerlat
+%{_mandir}/man1/rtla-osnoise-hist.1.gz
+%{_mandir}/man1/rtla-osnoise-top.1.gz
+%{_mandir}/man1/rtla-osnoise.1.gz
+%{_mandir}/man1/rtla-timerlat-hist.1.gz
+%{_mandir}/man1/rtla-timerlat-top.1.gz
+%{_mandir}/man1/rtla-timerlat.1.gz
+%{_mandir}/man1/rtla.1.gz
+
 # with_tools
 %endif
 
@@ -3100,8 +3137,13 @@ fi
 #
 #
 %changelog
-* Wed Jul 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc5.e35e5b6f695d.41]
+* Thu Jul 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc5.9f09069cde34.42]
 - drm/aperture: Run fbdev removal before internal helpers (Thomas Zimmermann)
+
+* Thu Jul 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc5.9f09069cde34.41]
+- Fedora 5.19 configs pt 1 (Justin M. Forbes)
+- redhat: Exclude cpufreq.h from kernel-headers (Patrick Talbert)
+- Add rtla subpackage for kernel-tools (Justin M. Forbes)
 
 * Sat Jul 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc4.089866061428.36]
 - fedora: arm: enable a couple of QCom drivers (Peter Robinson)
