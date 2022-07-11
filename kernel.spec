@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc5.20220708gite8a4e1c1bb69.44
+%define pkgrelease 0.rc6.46
 %define kversion 5
-%define tarfile_release 5.19-rc5-187-ge8a4e1c1bb69
+%define tarfile_release 5.19-rc6
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20220708gite8a4e1c1bb69.44%{?buildid}%{?dist}
+%define specrelease 0.rc6.46%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
@@ -3137,9 +3137,6 @@ fi
 #
 #
 %changelog
-* Fri Jul 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc5.e8a4e1c1bb69.43]
-- drm/aperture: Run fbdev removal before internal helpers (Thomas Zimmermann)
-
 * Thu Jul 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc5.9f09069cde34.41]
 - Fedora 5.19 configs pt 1 (Justin M. Forbes)
 - redhat: Exclude cpufreq.h from kernel-headers (Patrick Talbert)
