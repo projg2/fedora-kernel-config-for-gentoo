@@ -122,11 +122,11 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 5.18.10
+%define specversion 5.18.11
 %define patchversion 5.18
 %define pkgrelease 200
 %define kversion 5
-%define tarfile_release 5.18.10
+%define tarfile_release 5.18.11
 # This is needed to do merge window version magic
 %define patchlevel 18
 # allow pkg_release to have configurable %%{?dist} tag
@@ -3034,6 +3034,72 @@ fi
 #
 #
 %changelog
+* Tue Jul 12 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.11-200]
+- Turn on configs for retbleed (Justin M. Forbes)
+
+* Tue Jul 12 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.11-0]
+- x86/static_call: Serialize __static_call_fixup() properly (Thomas Gleixner)
+- x86/speculation: Disable RRSBA behavior (Pawan Gupta)
+- x86/kexec: Disable RET on kexec (Konrad Rzeszutek Wilk)
+- x86/bugs: Do not enable IBPB-on-entry when IBPB is not supported (Thadeu Lima de Souza Cascardo)
+- x86/entry: Move PUSH_AND_CLEAR_REGS() back into error_entry (Peter Zijlstra)
+- x86/bugs: Add Cannon lake to RETBleed affected CPU list (Pawan Gupta)
+- x86/retbleed: Add fine grained Kconfig knobs (Peter Zijlstra)
+- x86/cpu/amd: Enumerate BTC_NO (Andrew Cooper)
+- x86/common: Stamp out the stepping madness (Peter Zijlstra)
+- KVM: VMX: Prevent RSB underflow before vmenter (Josh Poimboeuf)
+- x86/speculation: Fill RSB on vmexit for IBRS (Josh Poimboeuf)
+- KVM: VMX: Fix IBRS handling after vmexit (Josh Poimboeuf)
+- KVM: VMX: Prevent guest RSB poisoning attacks with eIBRS (Josh Poimboeuf)
+- KVM: VMX: Convert launched argument to flags (Josh Poimboeuf)
+- KVM: VMX: Flatten __vmx_vcpu_run() (Josh Poimboeuf)
+- objtool: Re-add UNWIND_HINT_{SAVE_RESTORE} (Josh Poimboeuf)
+- x86/speculation: Remove x86_spec_ctrl_mask (Josh Poimboeuf)
+- x86/speculation: Use cached host SPEC_CTRL value for guest entry/exit (Josh Poimboeuf)
+- x86/speculation: Fix SPEC_CTRL write on SMT state change (Josh Poimboeuf)
+- x86/speculation: Fix firmware entry SPEC_CTRL handling (Josh Poimboeuf)
+- x86/speculation: Fix RSB filling with CONFIG_RETPOLINE=n (Josh Poimboeuf)
+- x86/cpu/amd: Add Spectral Chicken (Peter Zijlstra)
+- objtool: Add entry UNRET validation (Thadeu Lima de Souza Cascardo)
+- x86/bugs: Do IBPB fallback check only once (Josh Poimboeuf)
+- x86/bugs: Add retbleed=ibpb (Peter Zijlstra)
+- x86/xen: Add UNTRAIN_RET (Peter Zijlstra)
+- x86/xen: Rename SYS* entry points (Peter Zijlstra)
+- objtool: Update Retpoline validation (Peter Zijlstra)
+- intel_idle: Disable IBRS during long idle (Peter Zijlstra)
+- x86/bugs: Report Intel retbleed vulnerability (Peter Zijlstra)
+- x86/bugs: Split spectre_v2_select_mitigation() and spectre_v2_user_select_mitigation() (Peter Zijlstra)
+- x86/speculation: Add spectre_v2=ibrs option to support Kernel IBRS (Pawan Gupta)
+- x86/bugs: Optimize SPEC_CTRL MSR writes (Peter Zijlstra)
+- x86/entry: Add kernel IBRS implementation (Thadeu Lima de Souza Cascardo)
+- x86/bugs: Keep a per-CPU IA32_SPEC_CTRL value (Peter Zijlstra)
+- x86/bugs: Enable STIBP for JMP2RET (Kim Phillips)
+- x86/bugs: Add AMD retbleed= boot parameter (Alexandre Chartre)
+- x86/bugs: Report AMD retbleed vulnerability (Alexandre Chartre)
+- x86: Add magic AMD return-thunk (Thadeu Lima de Souza Cascardo)
+- objtool: Treat .text.__x86.* as noinstr (Peter Zijlstra)
+- x86/entry: Avoid very early RET (Peter Zijlstra)
+- x86: Use return-thunk in asm code (Peter Zijlstra)
+- x86/sev: Avoid using __x86_return_thunk (Kim Phillips)
+- x86/vsyscall_emu/64: Don't use RET in vsyscall emulation (Peter Zijlstra)
+- x86/kvm: Fix SETcc emulation for return thunks (Peter Zijlstra)
+- x86/bpf: Use alternative RET encoding (Peter Zijlstra)
+- x86/ftrace: Use alternative RET encoding (Peter Zijlstra)
+- x86,static_call: Use alternative RET encoding (Peter Zijlstra)
+- objtool: skip non-text sections when adding return-thunk sites (Thadeu Lima de Souza Cascardo)
+- x86,objtool: Create .return_sites (Peter Zijlstra)
+- x86: Undo return-thunk damage (Peter Zijlstra)
+- x86/retpoline: Use -mfunction-return (Peter Zijlstra)
+- x86/retpoline: Swizzle retpoline thunk (Peter Zijlstra)
+- x86/retpoline: Cleanup some #ifdefery (Peter Zijlstra)
+- x86/cpufeatures: Move RETPOLINE flags to word 11 (Peter Zijlstra)
+- x86/kvm/vmx: Make noinstr clean (Peter Zijlstra)
+- x86/entry: Remove skip_r11rcx (Peter Zijlstra)
+- x86/entry: Don't call error_entry() for XENPV (Lai Jiangshan)
+- x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry() (Lai Jiangshan)
+- x86/entry: Switch the stack after error_entry() returns (Lai Jiangshan)
+- x86/traps: Use pt_regs directly in fixup_bad_iret() (Lai Jiangshan)
+
 * Thu Jul 07 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.10-0]
 - netfilter: nf_tables: stricter validation of element data (Pablo Neira Ayuso)
 - Revert "Revert "smb3: use netname when available on secondary channels"" (Justin M. Forbes)
