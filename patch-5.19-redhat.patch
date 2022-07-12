@@ -2611,7 +2611,7 @@ index 2b69306d3c6e..8f60e3254ce1 100644
  	}
 
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index fed58d30725d..96e9ad060bfe 100644
+index 0548151dd933..e5b6b3e616d3 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
 @@ -523,6 +523,7 @@ static struct module_attribute modinfo_##field = {                    \
