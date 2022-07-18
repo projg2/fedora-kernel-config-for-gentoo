@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc6.20220714git4a57a8400075.49
+%define pkgrelease 0.rc7.53
 %define kversion 5
-%define tarfile_release 5.19-rc6-115-g4a57a8400075
+%define tarfile_release 5.19-rc7
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20220714git4a57a8400075.49%{?buildid}%{?dist}
+%define specrelease 0.rc7.53%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
@@ -871,12 +871,14 @@ The kernel meta package
 
 #
 # This macro does requires, provides, conflicts, obsoletes for a kernel package.
-#	%%kernel_reqprovconf <subpackage>
+#	%%kernel_reqprovconf [-o] <subpackage>
 # It uses any kernel_<subpackage>_conflicts and kernel_<subpackage>_obsoletes
 # macros defined above.
 #
-%define kernel_reqprovconf \
+%define kernel_reqprovconf(o) \
+%if %{-o:0}%{!-o:1}\
 Provides: kernel = %{specversion}-%{pkg_release}\
+%endif\
 Provides: kernel-%{_target_cpu} = %{specversion}-%{pkg_release}%{?1:+%{1}}\
 Provides: kernel-drm-nouveau = 16\
 Provides: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
@@ -1270,9 +1272,9 @@ The meta-package for the %{1} kernel\
 #
 # This macro creates a kernel-<subpackage> and its -devel and -debuginfo too.
 #	%%define variant_summary The Linux kernel compiled for <configuration>
-#	%%kernel_variant_package [-n <pretty-name>] [-m] <subpackage>
+#	%%kernel_variant_package [-n <pretty-name>] [-m] [-o] <subpackage>
 #
-%define kernel_variant_package(n:m) \
+%define kernel_variant_package(n:mo) \
 %package %{?1:%{1}-}core\
 Summary: %{variant_summary}\
 Provides: kernel-%{?1:%{1}-}core-uname-r = %{KVERREL}%{?1:+%{1}}\
@@ -1280,7 +1282,7 @@ Provides: installonlypkg(kernel)\
 %if %{-m:1}%{!-m:0}\
 Requires: kernel-core-uname-r = %{KVERREL}\
 %endif\
-%{expand:%%kernel_reqprovconf}\
+%{expand:%%kernel_reqprovconf %{?1:%{1}} %{-o:%{-o}}}\
 %if %{?1:1} %{!?1:0} \
 %{expand:%%kernel_meta_package %{?1:%{1}}}\
 %endif\
@@ -1330,7 +1332,7 @@ Cortex-A15 devices with LPAE and HW virtualisation support
 
 %if %{with_zfcpdump}
 %define variant_summary The Linux kernel compiled for zfcpdump usage
-%kernel_variant_package zfcpdump
+%kernel_variant_package -o zfcpdump
 %description zfcpdump-core
 The kernel package contains the Linux kernel (vmlinuz) for use by the
 zfcpdump infrastructure.
@@ -3137,6 +3139,9 @@ fi
 #
 #
 %changelog
+* Mon Jul 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc7.52]
+- redhat: make kernel-zfcpdump-core to not provide kernel-core/kernel (Herton R. Krzesinski)
+
 * Tue Jul 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc6.5a29232d870d.46]
 - redhat/configs: Enable QAT devices for arches other than x86 (Vladis Dronov)
 
