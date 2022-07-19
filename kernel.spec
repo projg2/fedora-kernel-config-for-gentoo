@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc7.53
+%define pkgrelease 0.rc7.20220719gitca85855bdcae.54
 %define kversion 5
-%define tarfile_release 5.19-rc7
+%define tarfile_release 5.19-rc7-5-gca85855bdcae
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.53%{?buildid}%{?dist}
+%define specrelease 0.rc7.20220719gitca85855bdcae.54%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
@@ -3139,6 +3139,35 @@ fi
 #
 #
 %changelog
+* Tue Jul 19 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc7.ca85855bdcae.53]
+- arm64: config: Enable DRM_V3D (Nicolas Saenz Julienne)
+- ARM: configs: Enable DRM_V3D (Peter Robinson)
+- ARM: dts: bcm2711: Enable V3D (Peter Robinson)
+- drm/v3d: Add support for bcm2711 (Peter Robinson)
+- drm/v3d: Get rid of pm code (Peter Robinson)
+- dt-bindings: gpu: v3d: Add BCM2711's compatible (Peter Robinson)
+- soc: bcm: bcm2835-power: Bypass power_on/off() calls (Nicolas Saenz Julienne)
+- soc: bcm: bcm2835-power: Add support for BCM2711's RPiVid ASB (Stefan Wahren)
+- soc: bcm: bcm2835-power: Resolve ASB register macros (Stefan Wahren)
+- soc: bcm: bcm2835-power: Refactor ASB control (Stefan Wahren)
+- mfd: bcm2835-pm: Add support for BCM2711 (Stefan Wahren)
+- mfd: bcm2835-pm: Use 'reg-names' to get resources (Nicolas Saenz Julienne)
+- ARM: dts: bcm2711: Use proper compatible in PM/Watchdog node (Nicolas Saenz Julienne)
+- ARM: dts: bcm2835/bcm2711: Introduce reg-names in watchdog node (Nicolas Saenz Julienne)
+- dt-bindings: soc: bcm: bcm2835-pm: Add support for bcm2711 (Stefan Wahren)
+- dt-bindings: soc: bcm: bcm2835-pm: Introduce reg-names (Nicolas Saenz Julienne)
+- dt-bindings: soc: bcm: bcm2835-pm: Convert bindings to DT schema (Nicolas Saenz Julienne)
+- drm: Prevent drm_copy_field() to attempt copying a NULL pointer (Javier Martinez Canillas)
+- drm: Use size_t type for len variable in drm_copy_field() (Javier Martinez Canillas)
+- fedora: enable BCM_NET_PHYPTP (Peter Robinson)
+- net: phy: Add support for 1PPS out and external timestamps (Jonathan Lemon)
+- net: phy: broadcom: Add PTP support for some Broadcom PHYs. (Jonathan Lemon)
+- net: phy: broadcom: Add Broadcom PTP hooks to bcm-phy-lib (Jonathan Lemon)
+- Fedora 5.19 configs update part 2 (Justin M. Forbes)
+- redhat/Makefile: Change fedora BUILD_TARGET (Prarit Bhargava)
+- New configs in security/keys (Fedora Kernel Team)
+- Fedora: arm: enable a pair of drivers (Peter Robinson)
+
 * Mon Jul 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc7.52]
 - redhat: make kernel-zfcpdump-core to not provide kernel-core/kernel (Herton R. Krzesinski)
 

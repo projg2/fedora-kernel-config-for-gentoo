@@ -1,3 +1,69 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3e6c59f7d9411700000a39a6b1f311cf14ae04bf
+ 3e6c59f7d9411700000a39a6b1f311cf14ae04bf arm64: config: Enable DRM_V3D
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/93e17fe07050f95258db7c2f39931d55a1adbf4b
+ 93e17fe07050f95258db7c2f39931d55a1adbf4b ARM: configs: Enable DRM_V3D
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/e8fb9825476734a15705f739c6eed3af4bd098c5
+ e8fb9825476734a15705f739c6eed3af4bd098c5 ARM: dts: bcm2711: Enable V3D
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7b65af00a0e7fda6215c0623f664e22ae22be21c
+ 7b65af00a0e7fda6215c0623f664e22ae22be21c drm/v3d: Add support for bcm2711
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/c5b6180d2d190dbdb8b6d052c9accceda1d3a1a3
+ c5b6180d2d190dbdb8b6d052c9accceda1d3a1a3 drm/v3d: Get rid of pm code
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/c3d4c51216d6d9b2417982a8f43ca55a43ff9ba2
+ c3d4c51216d6d9b2417982a8f43ca55a43ff9ba2 dt-bindings: gpu: v3d: Add BCM2711's compatible
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/8fa0fdac99f4a6c1827532fad9b5599287d885fa
+ 8fa0fdac99f4a6c1827532fad9b5599287d885fa soc: bcm: bcm2835-power: Bypass power_on/off() calls
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b50a2975996190d0ad2723384a5dfb88748f1589
+ b50a2975996190d0ad2723384a5dfb88748f1589 soc: bcm: bcm2835-power: Add support for BCM2711's RPiVid ASB
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/96636502e3bef2595960815009a8cdf7568229d9
+ 96636502e3bef2595960815009a8cdf7568229d9 soc: bcm: bcm2835-power: Resolve ASB register macros
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/11edf851683453246117d1f1f6fb31230c499984
+ 11edf851683453246117d1f1f6fb31230c499984 soc: bcm: bcm2835-power: Refactor ASB control
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/a8fbc6cac714a0317be56669e040e82a899280ab
+ a8fbc6cac714a0317be56669e040e82a899280ab mfd: bcm2835-pm: Add support for BCM2711
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d99e924104bc6261496cb953b99b3e06ac52a066
+ d99e924104bc6261496cb953b99b3e06ac52a066 mfd: bcm2835-pm: Use 'reg-names' to get resources
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/88edafa693c70d9f9204b162728903a45d423673
+ 88edafa693c70d9f9204b162728903a45d423673 ARM: dts: bcm2711: Use proper compatible in PM/Watchdog node
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d28b28c7f46f7d807064035ff76e16eae69b6c3d
+ d28b28c7f46f7d807064035ff76e16eae69b6c3d ARM: dts: bcm2835/bcm2711: Introduce reg-names in watchdog node
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/c5312b3c454d18ea785808e674ce7270f28c2750
+ c5312b3c454d18ea785808e674ce7270f28c2750 dt-bindings: soc: bcm: bcm2835-pm: Add support for bcm2711
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0ee92ce60b956a95ab7aede64885bd0a1c87b721
+ 0ee92ce60b956a95ab7aede64885bd0a1c87b721 dt-bindings: soc: bcm: bcm2835-pm: Introduce reg-names
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d954bc5e74c968bf777b55cf0c00815aeb565654
+ d954bc5e74c968bf777b55cf0c00815aeb565654 dt-bindings: soc: bcm: bcm2835-pm: Convert bindings to DT schema
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/361febf10d1873927d099d5e5248a3789aa730eb
+ 361febf10d1873927d099d5e5248a3789aa730eb drm: Prevent drm_copy_field() to attempt copying a NULL pointer
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/f49d3c9bf89d838d27dc6e392f02c1d2caa41729
+ f49d3c9bf89d838d27dc6e392f02c1d2caa41729 drm: Use size_t type for len variable in drm_copy_field()
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/bb1b8f3e8564633453ce3c081364acd9c798fc48
+ bb1b8f3e8564633453ce3c081364acd9c798fc48 net: phy: Add support for 1PPS out and external timestamps
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/cfa3c1f3176c53c99a8a7933a5d981c333b9e4a9
+ cfa3c1f3176c53c99a8a7933a5d981c333b9e4a9 net: phy: broadcom: Add PTP support for some Broadcom PHYs.
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/834e2da38cfd87ff8c7e25b540d3dc87cb49e36a
+ 834e2da38cfd87ff8c7e25b540d3dc87cb49e36a net: phy: broadcom: Add Broadcom PTP hooks to bcm-phy-lib
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/297bcb88233101e8d5062729ff3a5f989bad1c3b
  297bcb88233101e8d5062729ff3a5f989bad1c3b Revert "crypto: rng - Override drivers/char/random in FIPS mode"
 
