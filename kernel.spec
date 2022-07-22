@@ -122,11 +122,11 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 5.18.11
+%define specversion 5.18.13
 %define patchversion 5.18
 %define pkgrelease 200
 %define kversion 5
-%define tarfile_release 5.18.11
+%define tarfile_release 5.18.13
 # This is needed to do merge window version magic
 %define patchlevel 18
 # allow pkg_release to have configurable %%{?dist} tag
@@ -3034,7 +3034,17 @@ fi
 #
 #
 %changelog
-* Tue Jul 12 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.11-200]
+* Fri Jul 22 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.13-0]
+- um: Add missing apply_returns() (Peter Zijlstra)
+- x86/bugs: Remove apostrophe typo (Kim Phillips)
+- tools headers cpufeatures: Sync with the kernel sources (Arnaldo Carvalho de Melo)
+- tools arch x86: Sync the msr-index.h copy with the kernel sources (Arnaldo Carvalho de Melo)
+- KVM: emulate: do not adjust size of fastop and setcc subroutines (Paolo Bonzini)
+- x86/kvm: fix FASTOP_SIZE when return thunks are enabled (Thadeu Lima de Souza Cascardo)
+- efi/x86: use naked RET on mixed mode call wrapper (Thadeu Lima de Souza Cascardo)
+- x86/speculation: Use DECLARE_PER_CPU for x86_spec_ctrl_current (Nathan Chancellor)
+- x86/asm/32: Fix ANNOTATE_UNRET_SAFE use on 32-bit (Jiri Slaby)
+- fedora: Also enable efifb on aarch64 for Nvidia (Javier Martinez Canillas)
 - Turn on configs for retbleed (Justin M. Forbes)
 
 * Tue Jul 12 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.18.11-0]
