@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc7.20220721git353f7988dd84.55
+%define pkgrelease 0.rc7.20220722git68e77ffbfd06.56
 %define kversion 5
-%define tarfile_release 5.19-rc7-7-g353f7988dd84
+%define tarfile_release 5.19-rc7-135-g68e77ffbfd06
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20220721git353f7988dd84.55%{?buildid}%{?dist}
+%define specrelease 0.rc7.20220722git68e77ffbfd06.56%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
@@ -1892,10 +1892,10 @@ BuildKernel() {
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/spdxcheck.py
 
 %ifarch s390x
-    # CONFIG_EXPOLINE_EXTERN=y produces arch/s390/lib/expoline.o
+    # CONFIG_EXPOLINE_EXTERN=y produces arch/s390/lib/expoline/expoline.o
     # which is needed during external module build.
-    if [ -f arch/s390/lib/expoline.o ]; then
-      cp -a --parents arch/s390/lib/expoline.o $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    if [ -f arch/s390/lib/expoline/expoline.o ]; then
+      cp -a --parents arch/s390/lib/expoline/expoline.o $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     fi
 %endif
 
@@ -3139,6 +3139,18 @@ fi
 #
 #
 %changelog
+* Fri Jul 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc7.68e77ffbfd06.55]
+- create-data: Parallelize spec file data (Prarit Bhargava)
+- create-data.sh: Store SOURCES Makefile variable (Prarit Bhargava)
+- redhat/Makefile: Split up setup-source target (Prarit Bhargava)
+- create-data.sh: Redefine varfilename (Prarit Bhargava)
+- create-data.sh: Parallelize variable file creation (Prarit Bhargava)
+- redhat/configs: Enable CONFIG_LZ4_COMPRESS (Prarit Bhargava)
+- redhat/docs: Update brew information (Prarit Bhargava)
+- redhat/Makefile: Fix eln BUILD_TARGET (Prarit Bhargava)
+- redhat/Makefile: Set BUILD_TARGET for dist-brew (Prarit Bhargava)
+- kernel.spec.template: update (s390x) expoline.o path (Joe Lawrence)
+
 * Tue Jul 19 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc7.ca85855bdcae.53]
 - arm64: config: Enable DRM_V3D (Nicolas Saenz Julienne)
 - ARM: configs: Enable DRM_V3D (Peter Robinson)
