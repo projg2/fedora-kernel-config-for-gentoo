@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc7.20220722git68e77ffbfd06.56
+%define pkgrelease 0.rc8.59
 %define kversion 5
-%define tarfile_release 5.19-rc7-135-g68e77ffbfd06
+%define tarfile_release 5.19-rc8
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20220722git68e77ffbfd06.56%{?buildid}%{?dist}
+%define specrelease 0.rc8.59%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
@@ -3139,6 +3139,16 @@ fi
 #
 #
 %changelog
+* Mon Jul 25 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc8.58]
+- fedora: armv7: enable MMC_STM32_SDMMC (Peter Robinson)
+
+* Sat Jul 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc7.70664fc10c0d.56]
+- .gitlab-ci.yaml: Add test for dist-get-buildreqs target (Prarit Bhargava)
+- redhat/docs: Add information on build dependencies (Prarit Bhargava)
+- redhat/Makefile: Add better pass message for dist-get-buildreqs (Prarit Bhargava)
+- redhat/Makefile: Provide a better message for system-sb-certs (Prarit Bhargava)
+- redhat/Makefile: Change dist-buildreq-check to a non-blocking target (Prarit Bhargava)
+
 * Fri Jul 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc7.68e77ffbfd06.55]
 - create-data: Parallelize spec file data (Prarit Bhargava)
 - create-data.sh: Store SOURCES Makefile variable (Prarit Bhargava)
