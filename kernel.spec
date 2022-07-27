@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc8.59
+%define pkgrelease 0.rc8.20220727git39c3c396f813.60
 %define kversion 5
-%define tarfile_release 5.19-rc8
+%define tarfile_release 5.19-rc8-17-g39c3c396f813
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.59%{?buildid}%{?dist}
+%define specrelease 0.rc8.20220727git39c3c396f813.60%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
@@ -3139,6 +3139,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc8.39c3c396f813.59]
+- redhat: Enable CONFIG_LZ4_COMPRESS on Fedora (Prarit Bhargava)
+
 * Mon Jul 25 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc8.58]
 - fedora: armv7: enable MMC_STM32_SDMMC (Peter Robinson)
 
