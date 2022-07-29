@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.0
 %define patchversion 5.19
-%define pkgrelease 0.rc8.20220727git39c3c396f813.60
+%define pkgrelease 0.rc8.20220729git6e2c0490769e.62
 %define kversion 5
-%define tarfile_release 5.19-rc8-17-g39c3c396f813
+%define tarfile_release 5.19-rc8-105-g6e2c0490769e
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.20220727git39c3c396f813.60%{?buildid}%{?dist}
+%define specrelease 0.rc8.20220729git6e2c0490769e.62%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.0
 
@@ -880,7 +880,6 @@ The kernel meta package
 Provides: kernel = %{specversion}-%{pkg_release}\
 %endif\
 Provides: kernel-%{_target_cpu} = %{specversion}-%{pkg_release}%{?1:+%{1}}\
-Provides: kernel-drm-nouveau = 16\
 Provides: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
@@ -3139,6 +3138,10 @@ fi
 #
 #
 %changelog
+* Fri Jul 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc8.6e2c0490769e.61]
+- omit unused Provides (Dan Horák)
+- self-test: Add test for DIST=".eln" (Prarit Bhargava)
+
 * Wed Jul 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-0.rc8.39c3c396f813.59]
 - redhat: Enable CONFIG_LZ4_COMPRESS on Fedora (Prarit Bhargava)
 
