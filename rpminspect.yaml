@@ -23,4 +23,4 @@ emptyrpm:
 patches:
     ignore_list:
         - linux-kernel-test.patch
-        - patch-5.19-redhat.patch
+        - patch-5.20-redhat.patch
