@@ -67,7 +67,7 @@
  kernel/bpf/syscall.c                               |  23 +
  kernel/module/main.c                               |   2 +
  kernel/module/signing.c                            |   9 +-
- kernel/panic.c                                     |  14 +
+ kernel/panic.c                                     |  13 +
  kernel/rh_messages.c                               | 209 +++++
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
@@ -75,7 +75,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 77 files changed, 2555 insertions(+), 233 deletions(-)
+ 77 files changed, 2554 insertions(+), 233 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 0e990f7c2aa3..9d28feed61de 100644
@@ -3968,14 +3968,13 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index c6eb8f8db0c0..eef592767c11 100644
+index c6eb8f8db0c0..da82fb0fbb1b 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -429,6 +429,20 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -429,6 +429,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
  	[ TAINT_TEST ]			= { 'N', ' ', true },
-+	[ TAINT_18 ]			= { '?', '-', false },
 +	[ TAINT_19 ]			= { '?', '-', false },
 +	[ TAINT_20 ]			= { '?', '-', false },
 +	[ TAINT_21 ]			= { '?', '-', false },

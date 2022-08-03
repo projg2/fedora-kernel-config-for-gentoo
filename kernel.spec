@@ -3138,6 +3138,11 @@ fi
 #
 #
 %changelog
+* Wed Aug 03 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.20.0-0.rc0.20220803gite2b542100719.2]
+- Fix up merge thinko (Justin M. Forbes)
+- Fix BLAKE2S_ARM and BLAKE2S_X86 configs in pending (Justin M. Forbes)
+- Fix pending for ACPI_VIDEO (Justin M. Forbes)
+
 * Wed Aug 03 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.20.0-0.rc0.e2b542100719.1]
 - Reset release (Justin M. Forbes)
 - redhat/configs: Fix rm warning on config warnings (Eric Chanudet)
