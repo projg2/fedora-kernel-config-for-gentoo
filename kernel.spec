@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.20.0
 %define patchversion 5.20
-%define pkgrelease 0.rc0.20220803gite2b542100719.2
+%define pkgrelease 0.rc0.20220808git1ab9250751ee.8
 %define kversion 5
-%define tarfile_release 5.19-2858-ge2b542100719
+%define tarfile_release 5.19-12716-g1ab9250751ee
 # This is needed to do merge window version magic
 %define patchlevel 20
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220803gite2b542100719.2%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220808git1ab9250751ee.8%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.20.0
 
@@ -3138,7 +3138,17 @@ fi
 #
 #
 %changelog
-* Wed Aug 03 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.20.0-0.rc0.20220803gite2b542100719.2]
+* Mon Aug 08 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.20.0-0.rc0.20220808git1ab9250751ee.8]
+- Clean up a mismatch in Fedora configs (Justin M. Forbes)
+
+* Sat Aug 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.20.0-0.rc0.6614a3c3164a.5]
+- redhat/configs: Sync up Retbleed configs with centos-stream (Waiman Long)
+
+* Fri Aug 05 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.20.0-0.rc0.b44f2fd87919.3]
+- Change CRYPTO_BLAKE2S_X86 from m to y (Justin M. Forbes)
+- Leave CONFIG_ACPI_VIDEO on for x86 only (Justin M. Forbes)
+
+* Thu Aug 04 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.20.0-0.rc0.b44f2fd87919.2]
 - Fix up merge thinko (Justin M. Forbes)
 - Fix BLAKE2S_ARM and BLAKE2S_X86 configs in pending (Justin M. Forbes)
 - Fix pending for ACPI_VIDEO (Justin M. Forbes)
