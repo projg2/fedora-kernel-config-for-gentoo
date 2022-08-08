@@ -57,3 +57,4 @@ clk_test
 mtty
 test_hmm
 test_vmalloc
+test_cpumask
