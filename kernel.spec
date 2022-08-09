@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.20.0
 %define patchversion 5.20
-%define pkgrelease 0.rc0.20220808git1ab9250751ee.8
+%define pkgrelease 0.rc0.20220809git1ab9250751ee.8
 %define kversion 5
 %define tarfile_release 5.19-12716-g1ab9250751ee
 # This is needed to do merge window version magic
 %define patchlevel 20
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220808git1ab9250751ee.8%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220809git1ab9250751ee.8%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.20.0
 
@@ -3138,7 +3138,8 @@ fi
 #
 #
 %changelog
-* Mon Aug 08 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.20.0-0.rc0.20220808git1ab9250751ee.8]
+* Tue Aug 09 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.20.0-0.rc0.20220809git1ab9250751ee.8]
+- Build fixes (Justin M. Forbes)
 - Clean up a mismatch in Fedora configs (Justin M. Forbes)
 
 * Sat Aug 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.20.0-0.rc0.6614a3c3164a.5]
