@@ -3138,8 +3138,8 @@ fi
 #
 #
 %changelog
-* Tue Aug 09 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.20.0-0.rc0.20220809git1ab9250751ee.8]
-- Build fixes (Justin M. Forbes)
+* Wed Aug 10 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.20.0-0.rc0.20220809git1ab9250751ee.8]
+- Turn off some Kunit tests in pending (Justin M. Forbes)
 - Clean up a mismatch in Fedora configs (Justin M. Forbes)
 
 * Sat Aug 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.20.0-0.rc0.6614a3c3164a.5]
