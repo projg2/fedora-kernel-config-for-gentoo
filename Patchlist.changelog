@@ -1,3 +1,18 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9602f79ee66be0de1e67917bfc95252c6e596a9c
+ 9602f79ee66be0de1e67917bfc95252c6e596a9c netfilter: nf_tables: do not allow RULE_ID to refer to another chain
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/659e3d168cadf504f65adc830287592f0397f8d4
+ 659e3d168cadf504f65adc830287592f0397f8d4 netfilter: nf_tables: do not allow CHAIN_ID to refer to another table
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/29e6901364bcdd9d664b3a5bb142063710f66745
+ 29e6901364bcdd9d664b3a5bb142063710f66745 netfilter: nf_tables: do not allow SET_ID to refer to another table
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/2aff526ed9ac346017df36be2ee8cf3cb08a85f0
+ 2aff526ed9ac346017df36be2ee8cf3cb08a85f0 net_sched: cls_route: remove from list when handle is 0
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/5bd3fa9e52be0ddcacde0c305a19e500f9572606
+ 5bd3fa9e52be0ddcacde0c305a19e500f9572606 posix-cpu-timers: Cleanup CPU timers before freeing them during exec
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/f014b0b869404c24a955539ae044dae72f639cce
  f014b0b869404c24a955539ae044dae72f639cce um: Add missing apply_returns()
 

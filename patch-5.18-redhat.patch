@@ -30,6 +30,7 @@
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
+ fs/exec.c                                          |   3 +
  include/linux/efi.h                                |  24 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -37,15 +38,17 @@
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
  kernel/module_signing.c                            |   9 +-
+ net/netfilter/nf_tables_api.c                      |  17 ++-
+ net/sched/cls_route.c                              |   2 +-
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 44 files changed, 721 insertions(+), 191 deletions(-)
+ 47 files changed, 737 insertions(+), 197 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 18bcbcd037f0..0d3bf7d650c0 100644
+index ef8c18e5c161..81900a28f77b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1516,6 +1519,20 @@ index 1460857026e0..7e1964891089 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/exec.c b/fs/exec.c
+index 5a75e92b1a0a..a9f5acf8f0ec 100644
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -1297,6 +1297,9 @@ int begin_new_exec(struct linux_binprm * bprm)
+ 	bprm->mm = NULL;
+
+ #ifdef CONFIG_POSIX_TIMERS
++	spin_lock_irq(&me->sighand->siglock);
++	posix_cpu_timers_exit(me);
++	spin_unlock_irq(&me->sighand->siglock);
+ 	exit_itimers(me);
+ 	flush_itimer_signals();
+ #endif
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index cc6d2be2ffd5..418d814d2eb7 100644
 --- a/include/linux/efi.h
@@ -1699,6 +1716,124 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index de3dc35ce609..30dd77d58f20 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2472,6 +2472,7 @@ static int nf_tables_updchain(struct nft_ctx *ctx, u8 genmask, u8 policy,
+ }
+
+ static struct nft_chain *nft_chain_lookup_byid(const struct net *net,
++					       const struct nft_table *table,
+ 					       const struct nlattr *nla)
+ {
+ 	struct nftables_pernet *nft_net = nft_pernet(net);
+@@ -2482,6 +2483,7 @@ static struct nft_chain *nft_chain_lookup_byid(const struct net *net,
+ 		struct nft_chain *chain = trans->ctx.chain;
+
+ 		if (trans->msg_type == NFT_MSG_NEWCHAIN &&
++		    chain->table == table &&
+ 		    id == nft_trans_chain_id(trans))
+ 			return chain;
+ 	}
+@@ -3369,6 +3371,7 @@ static int nft_table_validate(struct net *net, const struct nft_table *table)
+ }
+
+ static struct nft_rule *nft_rule_lookup_byid(const struct net *net,
++					     const struct nft_chain *chain,
+ 					     const struct nlattr *nla);
+
+ #define NFT_RULE_MAXEXPRS	128
+@@ -3415,7 +3418,7 @@ static int nf_tables_newrule(struct sk_buff *skb, const struct nfnl_info *info,
+ 			return -EOPNOTSUPP;
+
+ 	} else if (nla[NFTA_RULE_CHAIN_ID]) {
+-		chain = nft_chain_lookup_byid(net, nla[NFTA_RULE_CHAIN_ID]);
++		chain = nft_chain_lookup_byid(net, table, nla[NFTA_RULE_CHAIN_ID]);
+ 		if (IS_ERR(chain)) {
+ 			NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_CHAIN_ID]);
+ 			return PTR_ERR(chain);
+@@ -3457,7 +3460,7 @@ static int nf_tables_newrule(struct sk_buff *skb, const struct nfnl_info *info,
+ 				return PTR_ERR(old_rule);
+ 			}
+ 		} else if (nla[NFTA_RULE_POSITION_ID]) {
+-			old_rule = nft_rule_lookup_byid(net, nla[NFTA_RULE_POSITION_ID]);
++			old_rule = nft_rule_lookup_byid(net, chain, nla[NFTA_RULE_POSITION_ID]);
+ 			if (IS_ERR(old_rule)) {
+ 				NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_POSITION_ID]);
+ 				return PTR_ERR(old_rule);
+@@ -3602,6 +3605,7 @@ static int nf_tables_newrule(struct sk_buff *skb, const struct nfnl_info *info,
+ }
+
+ static struct nft_rule *nft_rule_lookup_byid(const struct net *net,
++					     const struct nft_chain *chain,
+ 					     const struct nlattr *nla)
+ {
+ 	struct nftables_pernet *nft_net = nft_pernet(net);
+@@ -3612,6 +3616,7 @@ static struct nft_rule *nft_rule_lookup_byid(const struct net *net,
+ 		struct nft_rule *rule = nft_trans_rule(trans);
+
+ 		if (trans->msg_type == NFT_MSG_NEWRULE &&
++		    trans->ctx.chain == chain &&
+ 		    id == nft_trans_rule_id(trans))
+ 			return rule;
+ 	}
+@@ -3661,7 +3666,7 @@ static int nf_tables_delrule(struct sk_buff *skb, const struct nfnl_info *info,
+
+ 			err = nft_delrule(&ctx, rule);
+ 		} else if (nla[NFTA_RULE_ID]) {
+-			rule = nft_rule_lookup_byid(net, nla[NFTA_RULE_ID]);
++			rule = nft_rule_lookup_byid(net, chain, nla[NFTA_RULE_ID]);
+ 			if (IS_ERR(rule)) {
+ 				NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_ID]);
+ 				return PTR_ERR(rule);
+@@ -3840,6 +3845,7 @@ static struct nft_set *nft_set_lookup_byhandle(const struct nft_table *table,
+ }
+
+ static struct nft_set *nft_set_lookup_byid(const struct net *net,
++					   const struct nft_table *table,
+ 					   const struct nlattr *nla, u8 genmask)
+ {
+ 	struct nftables_pernet *nft_net = nft_pernet(net);
+@@ -3851,6 +3857,7 @@ static struct nft_set *nft_set_lookup_byid(const struct net *net,
+ 			struct nft_set *set = nft_trans_set(trans);
+
+ 			if (id == nft_trans_set_id(trans) &&
++			    set->table == table &&
+ 			    nft_active_genmask(set, genmask))
+ 				return set;
+ 		}
+@@ -3871,7 +3878,7 @@ struct nft_set *nft_set_lookup_global(const struct net *net,
+ 		if (!nla_set_id)
+ 			return set;
+
+-		set = nft_set_lookup_byid(net, nla_set_id, genmask);
++		set = nft_set_lookup_byid(net, table, nla_set_id, genmask);
+ 	}
+ 	return set;
+ }
+@@ -9595,7 +9602,7 @@ static int nft_verdict_init(const struct nft_ctx *ctx, struct nft_data *data,
+ 						 tb[NFTA_VERDICT_CHAIN],
+ 						 genmask);
+ 		} else if (tb[NFTA_VERDICT_CHAIN_ID]) {
+-			chain = nft_chain_lookup_byid(ctx->net,
++			chain = nft_chain_lookup_byid(ctx->net, ctx->table,
+ 						      tb[NFTA_VERDICT_CHAIN_ID]);
+ 			if (IS_ERR(chain))
+ 				return PTR_ERR(chain);
+diff --git a/net/sched/cls_route.c b/net/sched/cls_route.c
+index a35ab8c27866..3f935cbbaff6 100644
+--- a/net/sched/cls_route.c
++++ b/net/sched/cls_route.c
+@@ -526,7 +526,7 @@ static int route4_change(struct net *net, struct sk_buff *in_skb,
+ 	rcu_assign_pointer(f->next, f1);
+ 	rcu_assign_pointer(*fp, f);
+
+-	if (fold && fold->handle && f->handle != fold->handle) {
++	if (fold) {
+ 		th = to_hash(fold->handle);
+ 		h = from_hash(fold->handle >> 16);
+ 		b = rtnl_dereference(head->table[th]);
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index 16d475b3e203..4e333f14b84e 100755
 --- a/scripts/tags.sh
