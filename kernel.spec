@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 5.19.0
+%define specversion 5.19.1
 %define patchversion 5.19
 %define pkgrelease 300
 %define kversion 5
-%define tarfile_release 5.19
+%define tarfile_release 5.19.1
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 5.19.0
+%define kabiversion 5.19.1
 
 #
 # End of genspec.sh variables
@@ -3138,10 +3138,11 @@ fi
 #
 #
 %changelog
-* Tue Aug 09 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.0-300]
-- Set up for stable Fedora (Justin M. Forbes)
-- Turn E1000 back on after rebase/strip of RHELism (Justin M. Forbes)
-- Reset release (Justin M. Forbes)
+* Thu Aug 11 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.1-300]
+- v5.19.1 rebase
+
+* Thu Aug 11 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.1-0]
+- v5.19.1 rebase
 
 * Tue Aug 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.19.0-65]
 - redhat/configs: Fix rm warning on config warnings (Eric Chanudet)
