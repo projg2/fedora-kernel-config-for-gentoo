@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.20.0
 %define patchversion 5.20
-%define pkgrelease 0.rc0.20220809git1ab9250751ee.8
+%define pkgrelease 0.rc0.20220812git7ebfc85e2cd7.10
 %define kversion 5
-%define tarfile_release 5.19-12716-g1ab9250751ee
+%define tarfile_release 5.19-13930-g7ebfc85e2cd7
 # This is needed to do merge window version magic
 %define patchlevel 20
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20220809git1ab9250751ee.8%{?buildid}%{?dist}
+%define specrelease 0.rc0.20220812git7ebfc85e2cd7.10%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.20.0
 
@@ -3138,7 +3138,10 @@ fi
 #
 #
 %changelog
-* Wed Aug 10 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.20.0-0.rc0.20220809git1ab9250751ee.8]
+* Fri Aug 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [5.20.0-0.rc0.3bc1bc0b59d0.8]
+- Add python3-setuptools buildreq for perf (Justin M. Forbes)
+- Add cros_kunit to mod-internal.list (Justin M. Forbes)
+- Add new tests to mod-internal.list (Justin M. Forbes)
 - Turn off some Kunit tests in pending (Justin M. Forbes)
 - Clean up a mismatch in Fedora configs (Justin M. Forbes)
 

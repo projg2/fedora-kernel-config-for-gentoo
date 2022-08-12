@@ -68,10 +68,10 @@
  67 files changed, 1547 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index bab2b0bf5988..5b8e4ea0d0af 100644
+index db5de5f0b9d3..b7db309ab887 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6377,6 +6377,15 @@
+@@ -6391,6 +6391,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -121,7 +121,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index dc6295f91263..c2c9bac44473 100644
+index 5f5c43a52455..353133d8245e 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -135,7 +135,7 @@ index dc6295f91263..c2c9bac44473 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1245,7 +1249,13 @@ define filechk_version.h
+@@ -1251,7 +1255,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -251,10 +251,10 @@ index ed4fbbbdd1b0..fbc9fcf681c2 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 736262a76a12..4c410c845a8f 100644
+index 64a73f415f03..2955e1c6f757 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1524,6 +1524,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1532,6 +1532,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
@@ -2551,10 +2551,10 @@ index 1bc362cb413f..961600d0572d 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 8c9ad53b45dc..64f0c68e1cfb 100644
+index 80fe60fa77fb..ab664cf7ed79 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1689,7 +1689,7 @@ config AIO
+@@ -1682,7 +1682,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -2576,7 +2576,7 @@ index 318789c728d3..148911cf65da 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 83c7136c5788..dfb60d30d794 100644
+index a4d40d98428a..2cb611a26fdc 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@
@@ -2611,7 +2611,7 @@ index 83c7136c5788..dfb60d30d794 100644
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
-@@ -5254,6 +5272,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -5269,6 +5287,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;
@@ -2624,7 +2624,7 @@ index 83c7136c5788..dfb60d30d794 100644
  	}
 
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 57fc2821be63..d7cdcfa19546 100644
+index 6a477c622544..f4dbf3591f20 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
 @@ -523,6 +523,7 @@ static struct module_attribute modinfo_##field = {                    \
@@ -2633,9 +2633,9 @@ index 57fc2821be63..d7cdcfa19546 100644
  MODINFO_ATTR(srcversion);
 +MODINFO_ATTR(rhelversion);
 
- static char last_unloaded_module[MODULE_NAME_LEN+1];
-
-@@ -965,6 +966,7 @@ struct module_attribute *modinfo_attrs[] = {
+ static struct {
+ 	char name[MODULE_NAME_LEN + 1];
+@@ -970,6 +971,7 @@ struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
@@ -2906,7 +2906,7 @@ index 000000000000..586c3319f530
 +}
 +EXPORT_SYMBOL(mark_partner_supported);
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 29474cee10b1..8ecabc1b1686 100644
+index 55e32af2e53f..eda59a076309 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
@@ -2917,7 +2917,7 @@ index 29474cee10b1..8ecabc1b1686 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static bool modversions;
-@@ -2317,6 +2318,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2132,6 +2133,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -2930,7 +2930,7 @@ index 29474cee10b1..8ecabc1b1686 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2380,6 +2387,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2195,6 +2202,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
