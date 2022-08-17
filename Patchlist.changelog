@@ -1,3 +1,9 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3b823933997c2c3eb7970ec0ec30da4be1940df7
+ 3b823933997c2c3eb7970ec0ec30da4be1940df7 Bluetooth: hci_event: Fix vendor (unknown) opcode status handling
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3acea40142fded80fd2282e48520b4ba0d7ba03a
+ 3acea40142fded80fd2282e48520b4ba0d7ba03a Bluetooth: hci_sync: Fix resuming scan after suspend resume
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/9602f79ee66be0de1e67917bfc95252c6e596a9c
  9602f79ee66be0de1e67917bfc95252c6e596a9c netfilter: nf_tables: do not allow RULE_ID to refer to another chain
 

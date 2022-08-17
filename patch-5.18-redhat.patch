@@ -30,7 +30,6 @@
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
- fs/exec.c                                          |   3 +
  include/linux/efi.h                                |  24 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -38,17 +37,16 @@
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
  kernel/module_signing.c                            |   9 +-
- net/netfilter/nf_tables_api.c                      |  17 ++-
- net/sched/cls_route.c                              |   2 +-
+ net/bluetooth/hci_event.c                          |  20 ++++
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 47 files changed, 737 insertions(+), 197 deletions(-)
+ 45 files changed, 741 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index ef8c18e5c161..81900a28f77b 100644
+index 23162e2bdf14..c1b398c5bc54 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -79,10 +77,10 @@ index 2e8091e2d8a8..32e0403314b1 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 20ea89d9ac2f..774c1a05152d 100644
+index 54cf6faf339c..c513485d3351 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1126,7 +1126,7 @@ endchoice
+@@ -1143,7 +1143,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -91,7 +89,7 @@ index 20ea89d9ac2f..774c1a05152d 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1365,6 +1365,7 @@ config XEN
+@@ -1382,6 +1382,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -1331,7 +1329,7 @@ index 857d4c2fd1a2..9353941f3a97 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index c9831daafbc6..5c4bb1e9ba0a 100644
+index a58a69999dbc..bf2a917f12b4 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -240,6 +240,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1398,7 +1396,7 @@ index c9831daafbc6..5c4bb1e9ba0a 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index d464fdf978fb..acdaab3d7697 100644
+index b0fe23439c4a..65aa285034f7 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
@@ -1434,7 +1432,7 @@ index d464fdf978fb..acdaab3d7697 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -869,8 +875,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -870,8 +876,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1519,20 +1517,6 @@ index 1460857026e0..7e1964891089 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/fs/exec.c b/fs/exec.c
-index 5a75e92b1a0a..a9f5acf8f0ec 100644
---- a/fs/exec.c
-+++ b/fs/exec.c
-@@ -1297,6 +1297,9 @@ int begin_new_exec(struct linux_binprm * bprm)
- 	bprm->mm = NULL;
-
- #ifdef CONFIG_POSIX_TIMERS
-+	spin_lock_irq(&me->sighand->siglock);
-+	posix_cpu_timers_exit(me);
-+	spin_unlock_irq(&me->sighand->siglock);
- 	exit_itimers(me);
- 	flush_itimer_signals();
- #endif
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index cc6d2be2ffd5..418d814d2eb7 100644
 --- a/include/linux/efi.h
@@ -1716,124 +1700,37 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index de3dc35ce609..30dd77d58f20 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -2472,6 +2472,7 @@ static int nf_tables_updchain(struct nft_ctx *ctx, u8 genmask, u8 policy,
- }
-
- static struct nft_chain *nft_chain_lookup_byid(const struct net *net,
-+					       const struct nft_table *table,
- 					       const struct nlattr *nla)
- {
- 	struct nftables_pernet *nft_net = nft_pernet(net);
-@@ -2482,6 +2483,7 @@ static struct nft_chain *nft_chain_lookup_byid(const struct net *net,
- 		struct nft_chain *chain = trans->ctx.chain;
-
- 		if (trans->msg_type == NFT_MSG_NEWCHAIN &&
-+		    chain->table == table &&
- 		    id == nft_trans_chain_id(trans))
- 			return chain;
- 	}
-@@ -3369,6 +3371,7 @@ static int nft_table_validate(struct net *net, const struct nft_table *table)
- }
-
- static struct nft_rule *nft_rule_lookup_byid(const struct net *net,
-+					     const struct nft_chain *chain,
- 					     const struct nlattr *nla);
-
- #define NFT_RULE_MAXEXPRS	128
-@@ -3415,7 +3418,7 @@ static int nf_tables_newrule(struct sk_buff *skb, const struct nfnl_info *info,
- 			return -EOPNOTSUPP;
-
- 	} else if (nla[NFTA_RULE_CHAIN_ID]) {
--		chain = nft_chain_lookup_byid(net, nla[NFTA_RULE_CHAIN_ID]);
-+		chain = nft_chain_lookup_byid(net, table, nla[NFTA_RULE_CHAIN_ID]);
- 		if (IS_ERR(chain)) {
- 			NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_CHAIN_ID]);
- 			return PTR_ERR(chain);
-@@ -3457,7 +3460,7 @@ static int nf_tables_newrule(struct sk_buff *skb, const struct nfnl_info *info,
- 				return PTR_ERR(old_rule);
- 			}
- 		} else if (nla[NFTA_RULE_POSITION_ID]) {
--			old_rule = nft_rule_lookup_byid(net, nla[NFTA_RULE_POSITION_ID]);
-+			old_rule = nft_rule_lookup_byid(net, chain, nla[NFTA_RULE_POSITION_ID]);
- 			if (IS_ERR(old_rule)) {
- 				NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_POSITION_ID]);
- 				return PTR_ERR(old_rule);
-@@ -3602,6 +3605,7 @@ static int nf_tables_newrule(struct sk_buff *skb, const struct nfnl_info *info,
- }
-
- static struct nft_rule *nft_rule_lookup_byid(const struct net *net,
-+					     const struct nft_chain *chain,
- 					     const struct nlattr *nla)
- {
- 	struct nftables_pernet *nft_net = nft_pernet(net);
-@@ -3612,6 +3616,7 @@ static struct nft_rule *nft_rule_lookup_byid(const struct net *net,
- 		struct nft_rule *rule = nft_trans_rule(trans);
-
- 		if (trans->msg_type == NFT_MSG_NEWRULE &&
-+		    trans->ctx.chain == chain &&
- 		    id == nft_trans_rule_id(trans))
- 			return rule;
- 	}
-@@ -3661,7 +3666,7 @@ static int nf_tables_delrule(struct sk_buff *skb, const struct nfnl_info *info,
-
- 			err = nft_delrule(&ctx, rule);
- 		} else if (nla[NFTA_RULE_ID]) {
--			rule = nft_rule_lookup_byid(net, nla[NFTA_RULE_ID]);
-+			rule = nft_rule_lookup_byid(net, chain, nla[NFTA_RULE_ID]);
- 			if (IS_ERR(rule)) {
- 				NL_SET_BAD_ATTR(extack, nla[NFTA_RULE_ID]);
- 				return PTR_ERR(rule);
-@@ -3840,6 +3845,7 @@ static struct nft_set *nft_set_lookup_byhandle(const struct nft_table *table,
- }
-
- static struct nft_set *nft_set_lookup_byid(const struct net *net,
-+					   const struct nft_table *table,
- 					   const struct nlattr *nla, u8 genmask)
- {
- 	struct nftables_pernet *nft_net = nft_pernet(net);
-@@ -3851,6 +3857,7 @@ static struct nft_set *nft_set_lookup_byid(const struct net *net,
- 			struct nft_set *set = nft_trans_set(trans);
-
- 			if (id == nft_trans_set_id(trans) &&
-+			    set->table == table &&
- 			    nft_active_genmask(set, genmask))
- 				return set;
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 7cb956d3abb2..12df96177187 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -3997,6 +3997,26 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, void *data,
+ 			break;
  		}
-@@ -3871,7 +3878,7 @@ struct nft_set *nft_set_lookup_global(const struct net *net,
- 		if (!nla_set_id)
- 			return set;
-
--		set = nft_set_lookup_byid(net, nla_set_id, genmask);
-+		set = nft_set_lookup_byid(net, table, nla_set_id, genmask);
  	}
- 	return set;
- }
-@@ -9595,7 +9602,7 @@ static int nft_verdict_init(const struct nft_ctx *ctx, struct nft_data *data,
- 						 tb[NFTA_VERDICT_CHAIN],
- 						 genmask);
- 		} else if (tb[NFTA_VERDICT_CHAIN_ID]) {
--			chain = nft_chain_lookup_byid(ctx->net,
-+			chain = nft_chain_lookup_byid(ctx->net, ctx->table,
- 						      tb[NFTA_VERDICT_CHAIN_ID]);
- 			if (IS_ERR(chain))
- 				return PTR_ERR(chain);
-diff --git a/net/sched/cls_route.c b/net/sched/cls_route.c
-index a35ab8c27866..3f935cbbaff6 100644
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -526,7 +526,7 @@ static int route4_change(struct net *net, struct sk_buff *in_skb,
- 	rcu_assign_pointer(f->next, f1);
- 	rcu_assign_pointer(*fp, f);
++	if (i == ARRAY_SIZE(hci_cc_table)) {
++		/* Unknown opcode, assume byte 0 contains the status, so
++		 * that e.g. __hci_cmd_sync() properly returns errors
++		 * for vendor specific commands send by HCI drivers.
++		 *
++		 * Note that the specification does not specify that
++		 * byte 0 is the status:
++		 *
++		 * BLUETOOTH CORE SPECIFICATION Version 5.3 | Vol 4, Part E
++		 * page 2189:
++		 *
++		 * Return_Parameters:
++		 * Size: Depends on command
++		 *
++		 * For now using byte 0 seems to work fine, but in the future
++		 * this may need to be updated so that drivers using vendor
++		 * commands can specify their own completion handler.
++		 */
++		*status = skb->data[0];
++	}
 
--	if (fold && fold->handle && f->handle != fold->handle) {
-+	if (fold) {
- 		th = to_hash(fold->handle);
- 		h = from_hash(fold->handle >> 16);
- 		b = rtnl_dereference(head->table[th]);
+ 	handle_cmd_cnt_and_timer(hdev, ev->ncmd);
+
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index 16d475b3e203..4e333f14b84e 100755
 --- a/scripts/tags.sh
