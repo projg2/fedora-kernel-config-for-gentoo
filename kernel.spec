@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc1.13
+%define pkgrelease 0.rc1.20220817git3cc40a443a04.14
 %define kversion 6
-%define tarfile_release 6.0-rc1
+%define tarfile_release 6.0-rc1-17-g3cc40a443a04
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.13%{?buildid}%{?dist}
+%define specrelease 0.rc1.20220817git3cc40a443a04.14%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -571,7 +571,7 @@ Requires: kernel-modules-uname-r = %{KVERREL}
 #
 # List the packages used during the kernel build
 #
-BuildRequires: kmod, patch, bash, coreutils, tar, git-core, which
+BuildRequires: kmod, bash, coreutils, tar, git-core, which
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
 BuildRequires: net-tools, hostname, bc, elfutils-devel
@@ -1387,7 +1387,7 @@ if [ "%{patches}" != "%%{patches}" ] ; then
   done
 fi 2>/dev/null
 
-patch_command='patch -p1 -F1 -s'
+patch_command='git apply'
 ApplyPatch()
 {
   local patch=$1
@@ -2700,6 +2700,15 @@ popd
 ###
 
 %if %{with_tools}
+%post -n kernel-tools
+%systemd_post cpupower.service
+
+%preun -n kernel-tools
+%systemd_preun cpupower.service
+
+%postun -n kernel-tools
+%systemd_postun cpupower.service
+
 %post -n kernel-tools-libs
 /sbin/ldconfig
 
@@ -3138,6 +3147,12 @@ fi
 #
 #
 %changelog
+* Wed Aug 17 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc1.3cc40a443a04.13]
+- redhat/Makefile: Clean linux tarballs (Prarit Bhargava)
+- redhat/configs: Cleanup CONFIG_ACPI_AGDI (Prarit Bhargava)
+- spec: add cpupower daemon reload on install/upgrade (Jarod Wilson)
+- redhat: properly handle binary files in patches (Ondrej Mosnacek)
+
 * Mon Aug 15 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc1.12]
 - Add python3-setuptools buildreq for perf (Justin M. Forbes)
 - Add cros_kunit to mod-internal.list (Justin M. Forbes)
