@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc1.20220817git3cc40a443a04.14
+%define pkgrelease 0.rc1.20220818git3b06a2755758.15
 %define kversion 6
-%define tarfile_release 6.0-rc1-17-g3cc40a443a04
+%define tarfile_release 6.0-rc1-66-g3b06a2755758
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20220817git3cc40a443a04.14%{?buildid}%{?dist}
+%define specrelease 0.rc1.20220818git3b06a2755758.15%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3147,6 +3147,9 @@ fi
 #
 #
 %changelog
+* Thu Aug 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc1.3b06a2755758.14]
+- redhat: configs: Disable FIE on arm (Jeremy Linton) [2012226]
+
 * Wed Aug 17 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc1.3cc40a443a04.13]
 - redhat/Makefile: Clean linux tarballs (Prarit Bhargava)
 - redhat/configs: Cleanup CONFIG_ACPI_AGDI (Prarit Bhargava)
