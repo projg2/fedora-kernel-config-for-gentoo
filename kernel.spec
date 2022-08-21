@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 5.19.2
+%define specversion 5.19.3
 %define patchversion 5.19
 %define pkgrelease 300
 %define kversion 5
-%define tarfile_release 5.19.2
+%define tarfile_release 5.19.3
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 5.19.2
+%define kabiversion 5.19.3
 
 #
 # End of genspec.sh variables
@@ -3138,8 +3138,11 @@ fi
 #
 #
 %changelog
-* Wed Aug 17 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.2-300]
-- v5.19.2 rebase
+* Sun Aug 21 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.3-300]
+- v5.19.3 rebase
+
+* Sun Aug 21 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.3-0]
+- v5.19.3 rebase
 
 * Wed Aug 17 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.2-0]
 - v5.19.2 rebase
