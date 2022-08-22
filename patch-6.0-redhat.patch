@@ -121,7 +121,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index f09673b6c11d..7b0556fac07d 100644
+index c7705f749601..605a6bbe1714 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -135,7 +135,7 @@ index f09673b6c11d..7b0556fac07d 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1251,7 +1255,13 @@ define filechk_version.h
+@@ -1249,7 +1253,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -2551,10 +2551,10 @@ index 1bc362cb413f..961600d0572d 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 80fe60fa77fb..ab664cf7ed79 100644
+index 532362fcfe31..30d547537ea0 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1682,7 +1682,7 @@ config AIO
+@@ -1678,7 +1678,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -2906,7 +2906,7 @@ index 000000000000..586c3319f530
 +}
 +EXPORT_SYMBOL(mark_partner_supported);
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 55e32af2e53f..eda59a076309 100644
+index 2c80da0220c3..18097b6e2fe7 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
@@ -2917,7 +2917,7 @@ index 55e32af2e53f..eda59a076309 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static bool modversions;
-@@ -2132,6 +2133,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2130,6 +2131,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -2930,7 +2930,7 @@ index 55e32af2e53f..eda59a076309 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2195,6 +2202,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2193,6 +2200,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);

@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc1.20220819git4c2d0b039c5c.16
+%define pkgrelease 0.rc2.19
 %define kversion 6
-%define tarfile_release 6.0-rc1-160-g4c2d0b039c5c
+%define tarfile_release 6.0-rc2
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20220819git4c2d0b039c5c.16%{?buildid}%{?dist}
+%define specrelease 0.rc2.19%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3147,6 +3147,25 @@ fi
 #
 #
 %changelog
+* Mon Aug 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc2.19]
+- Linux v6.0.0-0.rc2
+
+* Sun Aug 21 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc1.15b3f48a4339.18]
+- Linux v6.0.0-0.rc1.15b3f48a4339
+
+* Sat Aug 20 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc1.50cd95ac4654.17]
+- redhat/docs: Add dist-brew BUILD_FLAGS information (Prarit Bhargava)
+- redhat: change the changelog item for upstream merges (Herton R. Krzesinski)
+- redhat: fix dist-release build number test (Herton R. Krzesinski)
+- redhat: fix release number bump when dist-release-changed runs (Herton R. Krzesinski)
+- redhat: use new genlog.sh script to detect changes for dist-release (Herton R. Krzesinski)
+- redhat: move changelog addition to the spec file back into genspec.sh (Herton R. Krzesinski)
+- redhat: always add a rebase entry when ark merges from upstream (Herton R. Krzesinski)
+- redhat: drop merge ark patches hack (Herton R. Krzesinski)
+- redhat: don't hardcode temporary changelog file (Herton R. Krzesinski)
+- redhat: split changelog generation from genspec.sh (Herton R. Krzesinski)
+- Linux v6.0.0-0.rc1.50cd95ac4654
+
 * Thu Aug 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc1.3b06a2755758.14]
 - redhat: configs: Disable FIE on arm (Jeremy Linton) [2012226]
 
