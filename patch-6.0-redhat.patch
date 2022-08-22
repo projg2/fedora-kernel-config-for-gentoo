@@ -3028,3 +3028,65 @@ index 14d30fec8a00..df70ea0b84a1 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+From nobody Mon Aug 22 09:25:09 2022
+From: Yang Jihong <yangjihong1@huawei.com>
+To: <bp@suse.de>, <ndesaulniers@google.com>, <nathan@kernel.org>, <alexandre.belloni@bootlin.com>, <mingo@kernel.org>, <acme@kernel.org>, <namhyung@kernel.org>, <jolsa@kernel.org>, <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] perf tools: Fix compile error for x86
+Date: Mon, 22 Aug 2022 17:25:57 +0800
+Message-ID: <20220822092557.210209-1-yangjihong1@huawei.com>
+List-ID: <linux-kernel.vger.kernel.org>
+X-Mailing-List: linux-kernel@vger.kernel.org
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+
+Commit a0a12c3ed057 ("asm goto: eradicate CC_HAS_ASM_GOTO") eradicates
+CC_HAS_ASM_GOTO, perf on x86 call asm_volatile_goto when compiling __GEN_RMWcc.
+However, asm_volatile_goto is not declared, which causes compilation error:
+
+In file included from /home/linux/tools/include/asm/../../arch/x86/include/asm/atomic.h:7,
+                 from /home/linux/tools/include/asm/atomic.h:6,
+                 from /home/linux/tools/include/linux/atomic.h:5,
+                 from /home/linux/tools/include/linux/refcount.h:41,
+                 from /home/linux/tools/lib/perf/include/internal/cpumap.h:5,
+                 from /home/linux/tools/perf/util/cpumap.h:7,
+                 from /home/linux/tools/perf/util/env.h:7,
+                 from /home/linux/tools/perf/util/header.h:12,
+                 from pmu-events/pmu-events.c:9:
+/home/linux/tools/include/asm/../../arch/x86/include/asm/atomic.h: In function ‘atomic_dec_and_test’:
+/home/linux/tools/include/asm/../../arch/x86/include/asm/rmwcc.h:7:2: error: implicit declaration of function ‘asm_volatile_goto’ [-Werror=implicit-function-declaration]
+  asm_volatile_goto (fullop "; j" cc " %l[cc_label]"  \
+  ^~~~~~~~~~~~~~~~~
+
+Solution:
+Define asm_volatile_goto in compiler_types.h if not declared.
+
+Currently, only x86 architecture uses asm_volatile_goto.
+Theoretically, this patch affects only the x86 architecture.
+
+
+
+Fixes: a0a12c3ed057 ("asm goto: eradicate CC_HAS_ASM_GOTO")
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+Tested-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Tested-by: Ingo Molnar <mingo@kernel.org>
+---
+ tools/include/linux/compiler_types.h | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/tools/include/linux/compiler_types.h b/tools/include/linux/compiler_types.h
+index 24ae3054f304..1bdd834bdd57 100644
+--- a/tools/include/linux/compiler_types.h
++++ b/tools/include/linux/compiler_types.h
+@@ -36,4 +36,8 @@
+ #include <linux/compiler-gcc.h>
+ #endif
+ 
++#ifndef asm_volatile_goto
++#define asm_volatile_goto(x...) asm goto(x)
++#endif
++
+ #endif /* __LINUX_COMPILER_TYPES_H */
+-- 
+2.30.GIT
+
