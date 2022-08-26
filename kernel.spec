@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc2.20220824gitc40e8341e3b3.23
+%define pkgrelease 0.rc2.20220826git4c612826bec1.22
 %define kversion 6
-%define tarfile_release 6.0-rc2-54-gc40e8341e3b3
+%define tarfile_release 6.0-rc2-159-g4c612826bec1
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20220824gitc40e8341e3b3.23%{?buildid}%{?dist}
+%define specrelease 0.rc2.20220826git4c612826bec1.22%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -571,7 +571,7 @@ Requires: kernel-modules-uname-r = %{KVERREL}
 #
 # List the packages used during the kernel build
 #
-BuildRequires: kmod, bash, coreutils, tar, git-core, which, acl
+BuildRequires: kmod, bash, coreutils, tar, git-core, which
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
 BuildRequires: net-tools, hostname, bc, elfutils-devel
@@ -3147,11 +3147,8 @@ fi
 #
 #
 %changelog
-* Wed Aug 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc2.c40e8341e3b3.23]
-- bump for build again
-
-* Wed Aug 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc2.c40e8341e3b3.22]
-- bump for build
+* Fri Aug 26 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc2.4c612826bec1.22]
+- Linux v6.0.0-0.rc2.4c612826bec1
 
 * Wed Aug 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc2.c40e8341e3b3.21]
 - Linux v6.0.0-0.rc2.c40e8341e3b3
