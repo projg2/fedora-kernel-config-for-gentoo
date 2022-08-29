@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc2.20220826git4c612826bec1.22
+%define pkgrelease 0.rc3.25
 %define kversion 6
-%define tarfile_release 6.0-rc2-159-g4c612826bec1
+%define tarfile_release 6.0-rc3
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20220826git4c612826bec1.22%{?buildid}%{?dist}
+%define specrelease 0.rc3.25%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3147,6 +3147,17 @@ fi
 #
 #
 %changelog
+* Mon Aug 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc3.25]
+- Linux v6.0.0-0.rc3
+
+* Sun Aug 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc2.10d4879f9ef0.24]
+- Linux v6.0.0-0.rc2.10d4879f9ef0
+
+* Sat Aug 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc2.e022620b5d05.23]
+- Fedora: arm changes for 6.0, part 1, with some ACPI (Peter Robinson)
+- redhat/self-test: Fix shellcheck errors (Prarit Bhargava)
+- Linux v6.0.0-0.rc2.e022620b5d05
+
 * Fri Aug 26 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc2.4c612826bec1.22]
 - Linux v6.0.0-0.rc2.4c612826bec1
 
