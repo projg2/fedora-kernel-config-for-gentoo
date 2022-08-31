@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 5.19.4
+%define specversion 5.19.6
 %define patchversion 5.19
 %define pkgrelease 300
 %define kversion 5
-%define tarfile_release 5.19.4
+%define tarfile_release 5.19.6
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 5.19.4
+%define kabiversion 5.19.6
 
 #
 # End of genspec.sh variables
@@ -3138,6 +3138,12 @@ fi
 #
 #
 %changelog
+* Wed Aug 31 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.6-0]
+- Revert "block: freeze the queue earlier in del_gendisk" (Justin M. Forbes)
+- redhat/configs: aarch64: Turn on Apple Silicon configs for Fedora (Eric Curtin)
+- redhat/Makefile: Always set UPSTREAM (Prarit Bhargava)
+- Linux v5.19.6
+
 * Thu Aug 25 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.4-0]
 - Linux v5.19.4
 
