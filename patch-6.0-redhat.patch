@@ -1897,7 +1897,7 @@ index fe6efb24d151..85b185391da7 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 806448173033..353b165e6db7 100644
+index 60fff133c0b1..fa0aa514c70f 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -395,6 +395,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -1910,7 +1910,7 @@ index 806448173033..353b165e6db7 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 84a0d7e02176..0270b68a9dd6 100644
+index 3aa6030302f5..23b63de268a3 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
 @@ -1557,6 +1557,12 @@
@@ -2528,7 +2528,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 1bc362cb413f..961600d0572d 100644
+index 7bd0c490703d..7779eaf1ffa1 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -475,6 +475,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
@@ -3012,7 +3012,7 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 14d30fec8a00..df70ea0b84a1 100644
+index 4b95de24bc8d..10047790e96e 100644
 --- a/security/security.c
 +++ b/security/security.c
 @@ -2623,6 +2623,12 @@ int security_locked_down(enum lockdown_reason what)

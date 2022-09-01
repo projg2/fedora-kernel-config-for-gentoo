@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc3.20220830gitdcf8e5633e2e.26
+%define pkgrelease 0.rc3.20220901gitc5e4d5e99162.27
 %define kversion 6
-%define tarfile_release 6.0-rc3-7-gdcf8e5633e2e
+%define tarfile_release 6.0-rc3-31-gc5e4d5e99162
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20220830gitdcf8e5633e2e.26%{?buildid}%{?dist}
+%define specrelease 0.rc3.20220901gitc5e4d5e99162.27%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3147,6 +3147,11 @@ fi
 #
 #
 %changelog
+* Thu Sep 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc3.c5e4d5e99162.27]
+- redhat/Makefile: Always set UPSTREAM (Prarit Bhargava)
+- redhat/configs: aarch64: Turn on Apple Silicon configs for Fedora (Eric Curtin)
+- Linux v6.0.0-0.rc3.c5e4d5e99162
+
 * Tue Aug 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc3.dcf8e5633e2e.26]
 - Add cpumask_kunit to mod-internal.list (Justin M. Forbes)
 - config - consolidate disabled MARCH options on s390x (Dan Horák)
