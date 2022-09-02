@@ -2576,7 +2576,7 @@ index 318789c728d3..148911cf65da 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index a4d40d98428a..2cb611a26fdc 100644
+index 27760627370d..5cbbbd0cf581 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@

@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc3.20220901gitc5e4d5e99162.27
+%define pkgrelease 0.rc3.20220902git42e66b1cc3a0.28
 %define kversion 6
-%define tarfile_release 6.0-rc3-31-gc5e4d5e99162
+%define tarfile_release 6.0-rc3-107-g42e66b1cc3a0
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20220901gitc5e4d5e99162.27%{?buildid}%{?dist}
+%define specrelease 0.rc3.20220902git42e66b1cc3a0.28%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3147,6 +3147,10 @@ fi
 #
 #
 %changelog
+* Fri Sep 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc3.42e66b1cc3a0.28]
+- Fedora 6.0 configs part 1 (Justin M. Forbes)
+- Linux v6.0.0-0.rc3.42e66b1cc3a0
+
 * Thu Sep 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc3.c5e4d5e99162.27]
 - redhat/Makefile: Always set UPSTREAM (Prarit Bhargava)
 - redhat/configs: aarch64: Turn on Apple Silicon configs for Fedora (Eric Curtin)
