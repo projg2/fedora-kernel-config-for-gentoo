@@ -121,7 +121,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 952d354069a4..91c24008b37f 100644
+index a4f71076cacb..a6f13827b133 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1767,7 +1767,7 @@ index 9e849f6b0d0f..00f9a1303b93 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 2633acde7ac1..665b8a441b0a 100644
+index d4b1e70d1498..bb2cc1dfb22e 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
 @@ -5676,6 +5676,13 @@ static void hub_event(struct work_struct *work)
