@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc4.20220909git506357871c18.34
+%define pkgrelease 0.rc5.37
 %define kversion 6
-%define tarfile_release 6.0-rc4-137-g506357871c18
+%define tarfile_release 6.0-rc5
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20220909git506357871c18.34%{?buildid}%{?dist}
+%define specrelease 0.rc5.37%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3147,6 +3147,18 @@ fi
 #
 #
 %changelog
+* Mon Sep 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc5.37]
+- configs/fedora: Make Fedora work with HNS3 network adapter (Zamir SUN)
+- redhat/configs/fedora/generic: Enable CONFIG_BLK_DEV_UBLK on Fedora (Richard W.M. Jones) [2122595]
+- fedora: disable IWLMEI (Peter Robinson)
+- Linux v6.0.0-0.rc5
+
+* Sun Sep 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc4.b96fbd602d35.36]
+- Linux v6.0.0-0.rc4.b96fbd602d35
+
+* Sat Sep 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc4.ce888220d5c7.35]
+- Linux v6.0.0-0.rc4.ce888220d5c7
+
 * Fri Sep 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc4.506357871c18.34]
 - Linux v6.0.0-0.rc4.506357871c18
 

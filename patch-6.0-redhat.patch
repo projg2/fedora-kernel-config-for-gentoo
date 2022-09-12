@@ -121,7 +121,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index a4f71076cacb..a6f13827b133 100644
+index a5e9d9388649..ca96ff659d46 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -167,7 +167,7 @@ index 87badeae3181..2ec7919034d8 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 9fb9fff08c94..6f6392f33711 100644
+index 1ce7685ad5de..101f1d767658 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1182,7 +1182,7 @@ endchoice
@@ -229,7 +229,7 @@ index 1cc85b8ff42e..b7ee128c67ce 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index ed4fbbbdd1b0..fbc9fcf681c2 100644
+index bbd4bde4f65d..dd60114ae9c1 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -240,7 +240,7 @@ index ed4fbbbdd1b0..fbc9fcf681c2 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -967,6 +968,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -968,6 +969,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -1112,7 +1112,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 780fb7071577..b5eb4f837b44 100644
+index 3a808146b50f..c1a3f3057921 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1246,7 +1246,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index af367b22871b..3c5b7917b7b2 100644
+index 66446f1e06cf..29fccce7ba4e 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1684,7 +1684,7 @@ index f6c37a97544e..a1488544300e 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index def37a7e5980..5d8de7690b82 100644
+index bd6a5f1bd532..3d460a12baa3 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 @@ -12606,6 +12606,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
