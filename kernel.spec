@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc5.37
+%define pkgrelease 0.rc5.20220913gite839a756012b.38
 %define kversion 6
-%define tarfile_release 6.0-rc5
+%define tarfile_release 6.0-rc5-15-ge839a756012b
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.37%{?buildid}%{?dist}
+%define specrelease 0.rc5.20220913gite839a756012b.38%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -2821,6 +2821,10 @@ fi\
 %endif\
 rm -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{1}}\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
+if [[ ! -e "/boot/symvers-%{KVERREL}%{?1:+%{1}}.gz" ]]; then\
+    ln -s "/lib/modules/%{KVERREL}%{?1:+%{1}}/symvers.gz" "/boot/symvers-%{KVERREL}%{?1:+%{1}}.gz"\
+    command -v restorecon &>/dev/null && restorecon "/boot/symvers-%{KVERREL}%{?1:+%{1}}.gz" \
+fi\
 %{nil}
 
 #
@@ -3147,6 +3151,12 @@ fi
 #
 #
 %changelog
+* Tue Sep 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc5.e839a756012b.38]
+- redhat: create /boot symvers link if it doesn't exist (Jan Stancek)
+- redhat: set LC_ALL=C before sorting config content (Frantisek Hrbata)
+- redhat: remove duplicate kunit tests in mod-internal.list (Nico Pache)
+- Linux v6.0.0-0.rc5.e839a756012b
+
 * Mon Sep 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc5.37]
 - configs/fedora: Make Fedora work with HNS3 network adapter (Zamir SUN)
 - redhat/configs/fedora/generic: Enable CONFIG_BLK_DEV_UBLK on Fedora (Richard W.M. Jones) [2122595]
