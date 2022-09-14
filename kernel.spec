@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc5.20220913gite839a756012b.38
+%define pkgrelease 0.rc5.20220914git3245cb65fd91.39
 %define kversion 6
-%define tarfile_release 6.0-rc5-15-ge839a756012b
+%define tarfile_release 6.0-rc5-25-g3245cb65fd91
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20220913gite839a756012b.38%{?buildid}%{?dist}
+%define specrelease 0.rc5.20220914git3245cb65fd91.39%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3151,6 +3151,11 @@ fi
 #
 #
 %changelog
+* Wed Sep 14 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc5.3245cb65fd91.39]
+- Fix up SND_CTL debug options (Justin M. Forbes)
+- Revert "Merge branch 'sort_configs' into 'os-build'" (Justin M. Forbes)
+- Linux v6.0.0-0.rc5.3245cb65fd91
+
 * Tue Sep 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc5.e839a756012b.38]
 - redhat: create /boot symvers link if it doesn't exist (Jan Stancek)
 - redhat: set LC_ALL=C before sorting config content (Frantisek Hrbata)
