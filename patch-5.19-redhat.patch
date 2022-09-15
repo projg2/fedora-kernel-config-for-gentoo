@@ -29,6 +29,7 @@
  drivers/firmware/sysfb.c                           |  18 +-
  drivers/gpu/drm/drm_ioctl.c                        |   8 +-
  drivers/gpu/drm/i915/display/intel_bios.c          |  46 +-
+ drivers/gpu/drm/i915/display/intel_psr.c           |  37 +-
  drivers/gpu/drm/v3d/Kconfig                        |   5 +-
  drivers/gpu/drm/v3d/v3d_debugfs.c                  |  18 +-
  drivers/gpu/drm/v3d/v3d_drv.c                      |  12 +-
@@ -60,7 +61,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 62 files changed, 1747 insertions(+), 342 deletions(-)
+ 63 files changed, 1777 insertions(+), 349 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml b/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml
 index e6485f7b046f..217c42874f41 100644
@@ -252,7 +253,7 @@ index 000000000000..733a26bd887a
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index e361c6230e9e..2c6324eff16a 100644
+index 1f27c4bd09e6..ec5fbc9dc8ae 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -371,10 +372,10 @@ index ce9826bce29b..948d18e59cf5 100644
  CONFIG_DRM_ETNAVIV=m
  CONFIG_DRM_MXSFB=m
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 001eaba5a6b4..cc20aaacd741 100644
+index cc1e7bb49d38..8bb79230ac24 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1162,7 +1162,7 @@ endchoice
+@@ -1179,7 +1179,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -383,7 +384,7 @@ index 001eaba5a6b4..cc20aaacd741 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1401,6 +1401,7 @@ config XEN
+@@ -1418,6 +1418,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -429,7 +430,7 @@ index 1cc85b8ff42e..b7ee128c67ce 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 0a37f5de2863..e2644fc7a172 100644
+index 3e0361db963e..9b59492fc2f4 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -440,7 +441,7 @@ index 0a37f5de2863..e2644fc7a172 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -970,6 +971,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -971,6 +972,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -947,7 +948,7 @@ index 51fcf1298023..7f1097947731 100644
  	/* don't overflow userbuf */
  	len = strlen(value);
 diff --git a/drivers/gpu/drm/i915/display/intel_bios.c b/drivers/gpu/drm/i915/display/intel_bios.c
-index 0c5638f5b72b..a532958ad85f 100644
+index 91caf4523b34..84c086610235 100644
 --- a/drivers/gpu/drm/i915/display/intel_bios.c
 +++ b/drivers/gpu/drm/i915/display/intel_bios.c
 @@ -332,18 +332,6 @@ static bool fixup_lfp_data_ptrs(const void *bdb, void *ptrs_block)
@@ -1040,6 +1041,101 @@ index 0c5638f5b72b..a532958ad85f 100644
  	table_size = sizeof(struct lvds_lfp_panel_name);
 
  	if (16 * (size + table_size) <= block_size) {
+diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
+index 06db407e2749..36356893c7ca 100644
+--- a/drivers/gpu/drm/i915/display/intel_psr.c
++++ b/drivers/gpu/drm/i915/display/intel_psr.c
+@@ -1618,8 +1618,12 @@ static void psr2_man_trk_ctl_calc(struct intel_crtc_state *crtc_state,
+ }
+
+ static void clip_area_update(struct drm_rect *overlap_damage_area,
+-			     struct drm_rect *damage_area)
++			     struct drm_rect *damage_area,
++			     struct drm_rect *pipe_src)
+ {
++	if (!drm_rect_intersect(damage_area, pipe_src))
++		return;
++
+ 	if (overlap_damage_area->y1 == -1) {
+ 		overlap_damage_area->y1 = damage_area->y1;
+ 		overlap_damage_area->y2 = damage_area->y2;
+@@ -1685,6 +1689,7 @@ static bool psr2_sel_fetch_pipe_state_supported(const struct intel_crtc_state *c
+ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+ 				struct intel_crtc *crtc)
+ {
++	struct drm_i915_private *dev_priv = to_i915(state->base.dev);
+ 	struct intel_crtc_state *crtc_state = intel_atomic_get_new_crtc_state(state, crtc);
+ 	struct drm_rect pipe_clip = { .x1 = 0, .y1 = -1, .x2 = INT_MAX, .y2 = -1 };
+ 	struct intel_plane_state *new_plane_state, *old_plane_state;
+@@ -1708,7 +1713,8 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+ 	 */
+ 	for_each_oldnew_intel_plane_in_state(state, plane, old_plane_state,
+ 					     new_plane_state, i) {
+-		struct drm_rect src, damaged_area = { .y1 = -1 };
++		struct drm_rect src, damaged_area = { .x1 = 0, .y1 = -1,
++						      .x2 = INT_MAX };
+ 		struct drm_atomic_helper_damage_iter iter;
+ 		struct drm_rect clip;
+
+@@ -1735,20 +1741,23 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+ 			if (old_plane_state->uapi.visible) {
+ 				damaged_area.y1 = old_plane_state->uapi.dst.y1;
+ 				damaged_area.y2 = old_plane_state->uapi.dst.y2;
+-				clip_area_update(&pipe_clip, &damaged_area);
++				clip_area_update(&pipe_clip, &damaged_area,
++						 &crtc_state->pipe_src);
+ 			}
+
+ 			if (new_plane_state->uapi.visible) {
+ 				damaged_area.y1 = new_plane_state->uapi.dst.y1;
+ 				damaged_area.y2 = new_plane_state->uapi.dst.y2;
+-				clip_area_update(&pipe_clip, &damaged_area);
++				clip_area_update(&pipe_clip, &damaged_area,
++						 &crtc_state->pipe_src);
+ 			}
+ 			continue;
+ 		} else if (new_plane_state->uapi.alpha != old_plane_state->uapi.alpha) {
+ 			/* If alpha changed mark the whole plane area as damaged */
+ 			damaged_area.y1 = new_plane_state->uapi.dst.y1;
+ 			damaged_area.y2 = new_plane_state->uapi.dst.y2;
+-			clip_area_update(&pipe_clip, &damaged_area);
++			clip_area_update(&pipe_clip, &damaged_area,
++					 &crtc_state->pipe_src);
+ 			continue;
+ 		}
+
+@@ -1759,7 +1768,8 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+ 						   &new_plane_state->uapi);
+ 		drm_atomic_for_each_plane_damage(&iter, &clip) {
+ 			if (drm_rect_intersect(&clip, &src))
+-				clip_area_update(&damaged_area, &clip);
++				clip_area_update(&damaged_area, &clip,
++						 &crtc_state->pipe_src);
+ 		}
+
+ 		if (damaged_area.y1 == -1)
+@@ -1767,7 +1777,20 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+
+ 		damaged_area.y1 += new_plane_state->uapi.dst.y1 - src.y1;
+ 		damaged_area.y2 += new_plane_state->uapi.dst.y1 - src.y1;
+-		clip_area_update(&pipe_clip, &damaged_area);
++		clip_area_update(&pipe_clip, &damaged_area, &crtc_state->pipe_src);
++	}
++
++	/*
++	 * TODO: For now we are just using full update in case
++	 * selective fetch area calculation fails. To optimize this we
++	 * should identify cases where this happens and fix the area
++	 * calculation for those.
++	 */
++	if (pipe_clip.y1 == -1) {
++		drm_info_once(&dev_priv->drm,
++			      "Selective fetch area calculation failed in pipe %c\n",
++			      pipe_name(crtc->pipe));
++		full_update = true;
+ 	}
+
+ 	if (full_update)
 diff --git a/drivers/gpu/drm/v3d/Kconfig b/drivers/gpu/drm/v3d/Kconfig
 index e973ec487484..ce62c5908e1d 100644
 --- a/drivers/gpu/drm/v3d/Kconfig
@@ -1565,7 +1661,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 847ad47a2dfd..e5e545c80de7 100644
+index f113833c3075..09b90271036f 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -3066,7 +3162,7 @@ index 7d9b0bb47eb3..221776a5377a 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index eafa1d2489fd..8a7165ea78d5 100644
+index 4e94755098f1..f97d4de2996f 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -394,6 +394,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -3079,7 +3175,7 @@ index eafa1d2489fd..8a7165ea78d5 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 91c8146649f5..42a73934404e 100644
+index b681cfce6190..9cf4ac43050c 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
 @@ -1550,6 +1550,12 @@
@@ -3120,7 +3216,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 7fc4e9f49f54..6f0b0b2dc73d 100644
+index 3cc127bb5bfd..2fecdfb03eb5 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -473,6 +473,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
@@ -3283,7 +3379,7 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 188b8f782220..dab400de2335 100644
+index 8b62654ff3f9..1c03d1cff35c 100644
 --- a/security/security.c
 +++ b/security/security.c
 @@ -2617,6 +2617,12 @@ int security_locked_down(enum lockdown_reason what)
