@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc5.20220914git3245cb65fd91.39
+%define pkgrelease 0.rc6.41
 %define kversion 6
-%define tarfile_release 6.0-rc5-25-g3245cb65fd91
+%define tarfile_release 6.0-rc6
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20220914git3245cb65fd91.39%{?buildid}%{?dist}
+%define specrelease 0.rc6.41%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3151,6 +3151,12 @@ fi
 #
 #
 %changelog
+* Mon Sep 19 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc6.41]
+- Linux v6.0.0-0.rc6
+
+* Sat Sep 17 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc5.a335366bad13.40]
+- Linux v6.0.0-0.rc5.a335366bad13
+
 * Wed Sep 14 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc5.3245cb65fd91.39]
 - Fix up SND_CTL debug options (Justin M. Forbes)
 - Revert "Merge branch 'sort_configs' into 'os-build'" (Justin M. Forbes)
