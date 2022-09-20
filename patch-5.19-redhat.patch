@@ -56,12 +56,13 @@
  init/Kconfig                                       |   2 +-
  kernel/module/signing.c                            |   9 +-
  net/bluetooth/hci_event.c                          |  20 +
+ scripts/pahole-flags.sh                            |   4 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 63 files changed, 1777 insertions(+), 349 deletions(-)
+ 64 files changed, 1781 insertions(+), 349 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml b/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml
 index e6485f7b046f..217c42874f41 100644
@@ -253,7 +254,7 @@ index 000000000000..733a26bd887a
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 1f27c4bd09e6..ec5fbc9dc8ae 100644
+index 33a9b6b547c4..f16045bf3888 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -3305,6 +3306,19 @@ index 2c320a8fe70d..e097bf4ce549 100644
 
  	if (i == ARRAY_SIZE(hci_cc_table)) {
  		/* Unknown opcode, assume byte 0 contains the status, so
+diff --git a/scripts/pahole-flags.sh b/scripts/pahole-flags.sh
+index 0d99ef17e4a5..d4f3d63cb434 100755
+--- a/scripts/pahole-flags.sh
++++ b/scripts/pahole-flags.sh
+@@ -20,4 +20,8 @@ if [ "${pahole_ver}" -ge "122" ]; then
+ 	extra_paholeopt="${extra_paholeopt} -j"
+ fi
+
++if [ "${pahole_ver}" -ge "124" ]; then
++	extra_paholeopt="${extra_paholeopt} --skip_encoding_btf_enum64"
++fi
++
+ echo ${extra_paholeopt}
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index 01fab3d4f90b..2ae5dfc904f9 100755
 --- a/scripts/tags.sh
@@ -3395,48 +3409,3 @@ index 8b62654ff3f9..1c03d1cff35c 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-From 9d5fb7eaaa7db6a9952531d029dc9c3fb16a8eee Mon Sep 17 00:00:00 2001
-From: Martin Rodriguez Reboredo <yakoyoku@gmail.com>
-Date: Tue, 6 Sep 2022 15:31:23 +0200
-Subject: [PATCH] kbuild: Add skip_encoding_btf_enum64 option to pahole
-
-New pahole (version 1.24) generates by default new BTF_KIND_ENUM64 BTF tag,
-which is not supported by stable kernel.
-
-As a result the kernel with CONFIG_DEBUG_INFO_BTF option will fail to
-compile with following error:
-
-  BTFIDS  vmlinux
-FAILED: load BTF from vmlinux: Invalid argument
-
-New pahole provides --skip_encoding_btf_enum64 option to skip BTF_KIND_ENUM64
-generation and produce BTF supported by stable kernel.
-
-Adding this option to scripts/pahole-flags.sh.
-
-This change does not have equivalent commit in linus tree, because linus tree
-has support for BTF_KIND_ENUM64 tag, so it does not need to be disabled.
-
-Signed-off-by: Martin Rodriguez Reboredo <yakoyoku@gmail.com>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- scripts/pahole-flags.sh | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/scripts/pahole-flags.sh b/scripts/pahole-flags.sh
-index 0d99ef17e4a5..d4f3d63cb434 100755
---- a/scripts/pahole-flags.sh
-+++ b/scripts/pahole-flags.sh
-@@ -20,4 +20,8 @@ if [ "${pahole_ver}" -ge "122" ]; then
- 	extra_paholeopt="${extra_paholeopt} -j"
- fi
-
-+if [ "${pahole_ver}" -ge "124" ]; then
-+	extra_paholeopt="${extra_paholeopt} --skip_encoding_btf_enum64"
-+fi
-+
- echo ${extra_paholeopt}
--- 
-2.37.3
-

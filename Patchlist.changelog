@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9d5fb7eaaa7db6a9952531d029dc9c3fb16a8eee
+ 9d5fb7eaaa7db6a9952531d029dc9c3fb16a8eee kbuild: Add skip_encoding_btf_enum64 option to pahole
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/81d89458f7f2d872c7de7181acb857fe041ee953
  81d89458f7f2d872c7de7181acb857fe041ee953 [PATCH] drm/i915: Ensure damage clip area is within pipe area
 
