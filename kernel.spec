@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc6.20220921git60891ec99e14.42
+%define pkgrelease 0.rc6.20220922gitdc164f4fb00a.43
 %define kversion 6
-%define tarfile_release 6.0-rc6-9-g60891ec99e14
+%define tarfile_release 6.0-rc6-45-gdc164f4fb00a
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20220921git60891ec99e14.42%{?buildid}%{?dist}
+%define specrelease 0.rc6.20220922gitdc164f4fb00a.43%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3151,6 +3151,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc6.dc164f4fb00a.43]
+- Linux v6.0.0-0.rc6.dc164f4fb00a
+
 * Wed Sep 21 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc6.60891ec99e14.42]
 - redhat/self-test: Ignore .rhpkg.mk files (Prarit Bhargava)
 - redhat/configs: Enable CONFIG_PRINTK_INDEX on Fedora (Prarit Bhargava)
