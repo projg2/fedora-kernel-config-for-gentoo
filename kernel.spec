@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc6.20220922gitdc164f4fb00a.43
+%define pkgrelease 0.rc7.47
 %define kversion 6
-%define tarfile_release 6.0-rc6-45-gdc164f4fb00a
+%define tarfile_release 6.0-rc7
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20220922gitdc164f4fb00a.43%{?buildid}%{?dist}
+%define specrelease 0.rc7.47%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3151,6 +3151,23 @@ fi
 #
 #
 %changelog
+* Mon Sep 26 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.47]
+- all: cleanup dell config options (Peter Robinson)
+- redhat: Include more kunit tests (Nico Pache)
+- common: some minor cleanups/de-dupe (Peter Robinson)
+- common: enable INTEGRITY_MACHINE_KEYRING on all configuraitons (Peter Robinson)
+- Linux v6.0.0-0.rc7
+
+* Sun Sep 25 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc6.105a36f3694e.46]
+- Linux v6.0.0-0.rc6.105a36f3694e
+
+* Sat Sep 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc6.a63f2e7cb110.45]
+- Fedora 6.0 configs update (Justin M. Forbes)
+- Linux v6.0.0-0.rc6.a63f2e7cb110
+
+* Fri Sep 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc6.bf682942cd26.44]
+- Linux v6.0.0-0.rc6.bf682942cd26
+
 * Thu Sep 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc6.dc164f4fb00a.43]
 - Linux v6.0.0-0.rc6.dc164f4fb00a
 
