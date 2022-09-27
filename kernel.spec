@@ -120,19 +120,23 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc7.47
+%define pkgrelease 0.rc7.20220927gita1375562c0a8.48
 %define kversion 6
-%define tarfile_release 6.0-rc7
+%define tarfile_release 6.0-rc7-34-ga1375562c0a8
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.47%{?buildid}%{?dist}
+%define specrelease 0.rc7.20220927gita1375562c0a8.48%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
+
+# If this variable is set to 1, a bpf selftests build failure will cause a
+# fatal kernel package build error
+%define selftests_must_build 0
 
 #
 # End of genspec.sh variables
@@ -578,6 +582,7 @@ BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
 BuildRequires: python3-devel
 BuildRequires: gcc-plugin-devel
+BuildRequires: kernel-rpm-macros
 # glibc-static is required for a consistent build environment (specifically
 # CONFIG_CC_CAN_LINK_STATIC=y).
 BuildRequires: glibc-static
@@ -597,7 +602,7 @@ BuildRequires: sparse
 BuildRequires: zlib-devel binutils-devel newt-devel perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel python3-setuptools
 BuildRequires: java-devel
-BuildRequires: libbpf-devel
+BuildRequires: libbpf-devel >= 0.6.0-1
 BuildRequires: libbabeltrace-devel
 BuildRequires: libtraceevent-devel
 %ifnarch %{arm} s390x
@@ -626,7 +631,7 @@ BuildRequires: python3-docutils
 BuildRequires: zlib-devel binutils-devel
 %endif
 %if %{with_selftests}
-BuildRequires: clang llvm
+BuildRequires: clang llvm fuse-devel
 %ifnarch %{arm}
 BuildRequires: numactl-devel
 %endif
@@ -1073,7 +1078,7 @@ This package provides debug information for the bpftool package.
 %package selftests-internal
 Summary: Kernel samples and selftests
 License: GPLv2
-Requires: binutils, bpftool, iproute-tc, nmap-ncat, python3
+Requires: binutils, bpftool, iproute-tc, nmap-ncat, python3, fuse-libs
 %description selftests-internal
 Kernel sample programs and selftests.
 
@@ -2191,7 +2196,10 @@ BuildKernel() {
 
 %ifnarch armv7hl
     # Generate vmlinux.h and put it to kernel-devel path
-    bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+    # zfcpdump build does not have btf anymore
+    if [ "$Variant" != "zfcpdump" ]; then
+        bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+    fi
 %endif
 
     # prune junk from kernel-devel
@@ -2271,7 +2279,7 @@ InitBuildVars
 %global perf_build_extra_opts CORESIGHT=1
 %endif
 %global perf_make \
-  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags} -Wl,-E" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -2343,7 +2351,15 @@ popd
 # in the source tree. We installed them previously to $RPM_BUILD_ROOT/usr
 # but there's no way to tell the Makefile to take them from there.
 %{make} %{?_smp_mflags} headers_install
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/ || true
+
+# If we re building only tools without kernel, we need to generate config
+# headers and prepare tree for modules building. The modules_prepare target
+# will cover both.
+if [ ! -f include/generated/autoconf.h ]; then
+   %{make} %{?_smp_mflags} modules_prepare
+fi
+
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/ VMLINUX_H="${RPM_VMLINUX_H}" || true
 
 # Prevent bpf selftests to build bpftool repeatedly:
 export BPFTOOL=$(pwd)/tools/bpf/bpftool/bpftool
@@ -2351,7 +2367,8 @@ export BPFTOOL=$(pwd)/tools/bpf/bpftool/bpftool
 pushd tools/testing/selftests
 # We need to install here because we need to call make with ARCH set which
 # doesn't seem possible to do in the install section.
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf vm livepatch net net/forwarding net/mptcp netfilter tc-testing" SKIP_TARGETS="" INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf vm livepatch net net/forwarding net/mptcp netfilter tc-testing memfd" SKIP_TARGETS="" FORCE_TARGETS=%{selftests_must_build} INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
@@ -2688,6 +2705,13 @@ pushd tools/testing/selftests/netfilter
 find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/netfilter/{} \;
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/netfilter/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/netfilter/{} \;
+popd
+
+# install memfd selftests
+pushd tools/testing/selftests/memfd
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/memfd/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/memfd/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/memfd/{} \;
 popd
 %endif
 
@@ -3151,6 +3175,31 @@ fi
 #
 #
 %changelog
+* Tue Sep 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.a1375562c0a8.48]
+- redhat: Set CONFIG_MAXLINEAR_GPHY to =m (Petr Oros)
+- redhat/configs enable CONFIG_INTEL_IFS (David Arcari)
+- redhat: Remove filter-i686.sh.rhel (Prarit Bhargava)
+- redhat/Makefile: Set PATCHLIST_URL to none for RHEL/cs9 (Prarit Bhargava)
+- redhat: remove GL_DISTGIT_USER, RHDISTGIT and unify dist-git cloning (Prarit Bhargava)
+- redhat/Makefile.variables: Add ADD_COMMITID_TO_VERSION (Prarit Bhargava)
+- kernel.spec: disable vmlinux.h generation for s390 zfcpdump config (Prarit Bhargava)
+- perf: Require libbpf 0.6.0 or newer (Prarit Bhargava)
+- kabi: add stablelist helpers (Prarit Bhargava)
+- Makefile: add kabi targets (Prarit Bhargava)
+- kabi: add support for symbol namespaces into check-kabi (Prarit Bhargava)
+- kabi: ignore new stablelist metadata in show-kabi (Prarit Bhargava)
+- redhat/Makefile: add dist-assert-tree-clean target (Prarit Bhargava)
+- redhat/kernel.spec.template: Specify vmlinux.h path when building samples/bpf (Prarit Bhargava) [2041365]
+- spec: Fix separate tools build (Prarit Bhargava) [2054579]
+- redhat/scripts: Update merge-subtrees.sh with new subtree location (Prarit Bhargava)
+- redhat/kernel.spec.template: enable dependencies generation (Prarit Bhargava)
+- redhat: build and include memfd to kernel-selftests-internal (Prarit Bhargava) [2027506]
+- redhat/kernel.spec.template: Link perf with --export-dynamic (Prarit Bhargava)
+- redhat: kernel.spec: selftests: abort on build failure (Prarit Bhargava)
+- redhat: configs: move CONFIG_SERIAL_MULTI_INSTANTIATE=m settings to common/x86 (Jaroslav Kysela)
+- configs: enable CONFIG_HP_ILO for aarch64 (Mark Salter)
+- Linux v6.0.0-0.rc7.a1375562c0a8
+
 * Mon Sep 26 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.47]
 - all: cleanup dell config options (Peter Robinson)
 - redhat: Include more kunit tests (Nico Pache)
