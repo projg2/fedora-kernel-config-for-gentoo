@@ -16,7 +16,6 @@
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/setup.c                            |  22 +-
- block/genhd.c                                      |   3 +-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
  drivers/acpi/scan.c                                |   9 +
@@ -62,7 +61,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 64 files changed, 1781 insertions(+), 349 deletions(-)
+ 63 files changed, 1779 insertions(+), 348 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml b/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml
 index e6485f7b046f..217c42874f41 100644
@@ -254,7 +253,7 @@ index 000000000000..733a26bd887a
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 01463a22926d..2cb088d25213 100644
+index 7df4c195c8ab..6adcbebd18ae 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -499,27 +498,6 @@ index bd6c6fd373ae..3333b08a778d 100644
 
  	reserve_initrd();
 
-diff --git a/block/genhd.c b/block/genhd.c
-index 278227ba1d53..e0675772178b 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -623,7 +623,6 @@ void del_gendisk(struct gendisk *disk)
- 	 * Prevent new I/O from crossing bio_queue_enter().
- 	 */
- 	blk_queue_start_drain(q);
--	blk_mq_freeze_queue_wait(q);
-
- 	if (!(disk->flags & GENHD_FL_HIDDEN)) {
- 		sysfs_remove_link(&disk_to_dev(disk)->kobj, "bdi");
-@@ -647,6 +646,8 @@ void del_gendisk(struct gendisk *disk)
- 	pm_runtime_set_memalloc_noio(disk_to_dev(disk), false);
- 	device_del(disk_to_dev(disk));
-
-+	blk_mq_freeze_queue_wait(q);
-+
- 	blk_throtl_cancel_bios(disk->queue);
-
- 	blk_sync_queue(q);
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
 index 6aef1ee5e1bd..8f146b1b4972 100644
 --- a/drivers/acpi/apei/hest.c
@@ -949,7 +927,7 @@ index 51fcf1298023..7f1097947731 100644
  	/* don't overflow userbuf */
  	len = strlen(value);
 diff --git a/drivers/gpu/drm/i915/display/intel_bios.c b/drivers/gpu/drm/i915/display/intel_bios.c
-index 91caf4523b34..84c086610235 100644
+index b5de61fe9cc6..40ef64a867e4 100644
 --- a/drivers/gpu/drm/i915/display/intel_bios.c
 +++ b/drivers/gpu/drm/i915/display/intel_bios.c
 @@ -332,18 +332,6 @@ static bool fixup_lfp_data_ptrs(const void *bdb, void *ptrs_block)
@@ -1043,10 +1021,10 @@ index 91caf4523b34..84c086610235 100644
 
  	if (16 * (size + table_size) <= block_size) {
 diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
-index 06db407e2749..36356893c7ca 100644
+index 8f09203e0cf0..7d61c55184e5 100644
 --- a/drivers/gpu/drm/i915/display/intel_psr.c
 +++ b/drivers/gpu/drm/i915/display/intel_psr.c
-@@ -1618,8 +1618,12 @@ static void psr2_man_trk_ctl_calc(struct intel_crtc_state *crtc_state,
+@@ -1624,8 +1624,12 @@ static void psr2_man_trk_ctl_calc(struct intel_crtc_state *crtc_state,
  }
 
  static void clip_area_update(struct drm_rect *overlap_damage_area,
@@ -1060,7 +1038,7 @@ index 06db407e2749..36356893c7ca 100644
  	if (overlap_damage_area->y1 == -1) {
  		overlap_damage_area->y1 = damage_area->y1;
  		overlap_damage_area->y2 = damage_area->y2;
-@@ -1685,6 +1689,7 @@ static bool psr2_sel_fetch_pipe_state_supported(const struct intel_crtc_state *c
+@@ -1691,6 +1695,7 @@ static bool psr2_sel_fetch_pipe_state_supported(const struct intel_crtc_state *c
  int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
  				struct intel_crtc *crtc)
  {
@@ -1068,7 +1046,7 @@ index 06db407e2749..36356893c7ca 100644
  	struct intel_crtc_state *crtc_state = intel_atomic_get_new_crtc_state(state, crtc);
  	struct drm_rect pipe_clip = { .x1 = 0, .y1 = -1, .x2 = INT_MAX, .y2 = -1 };
  	struct intel_plane_state *new_plane_state, *old_plane_state;
-@@ -1708,7 +1713,8 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+@@ -1714,7 +1719,8 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
  	 */
  	for_each_oldnew_intel_plane_in_state(state, plane, old_plane_state,
  					     new_plane_state, i) {
@@ -1078,7 +1056,7 @@ index 06db407e2749..36356893c7ca 100644
  		struct drm_atomic_helper_damage_iter iter;
  		struct drm_rect clip;
 
-@@ -1735,20 +1741,23 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+@@ -1741,20 +1747,23 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
  			if (old_plane_state->uapi.visible) {
  				damaged_area.y1 = old_plane_state->uapi.dst.y1;
  				damaged_area.y2 = old_plane_state->uapi.dst.y2;
@@ -1105,7 +1083,7 @@ index 06db407e2749..36356893c7ca 100644
  			continue;
  		}
 
-@@ -1759,7 +1768,8 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+@@ -1765,7 +1774,8 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
  						   &new_plane_state->uapi);
  		drm_atomic_for_each_plane_damage(&iter, &clip) {
  			if (drm_rect_intersect(&clip, &src))
@@ -1115,7 +1093,7 @@ index 06db407e2749..36356893c7ca 100644
  		}
 
  		if (damaged_area.y1 == -1)
-@@ -1767,7 +1777,20 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+@@ -1773,7 +1783,20 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
 
  		damaged_area.y1 += new_plane_state->uapi.dst.y1 - src.y1;
  		damaged_area.y2 += new_plane_state->uapi.dst.y1 - src.y1;
@@ -3077,7 +3055,7 @@ index 1e0041ec8132..5bcd047768b6 100644
  					       ARRAY_SIZE(power_domain_names),
  					       sizeof(*power->pd_xlate.domains),
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index dfef85a18eb5..d733da254911 100644
+index 80b29f937c60..8eaebd6a15b8 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
 @@ -5686,6 +5686,13 @@ static void hub_event(struct work_struct *work)
