@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc7.20220927gita1375562c0a8.48
+%define pkgrelease 0.rc7.20220928git49c13ed0316d.50
 %define kversion 6
-%define tarfile_release 6.0-rc7-34-ga1375562c0a8
+%define tarfile_release 6.0-rc7-68-g49c13ed0316d
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20220927gita1375562c0a8.48%{?buildid}%{?dist}
+%define specrelease 0.rc7.20220928git49c13ed0316d.50%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -2367,8 +2367,13 @@ export BPFTOOL=$(pwd)/tools/bpf/bpftool/bpftool
 pushd tools/testing/selftests
 # We need to install here because we need to call make with ARCH set which
 # doesn't seem possible to do in the install section.
+%if %{selftests_must_build}
+  force_targets="FORCE_TARGETS=1"
+%else
+  force_targets=""
+%endif
 
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf vm livepatch net net/forwarding net/mptcp netfilter tc-testing memfd" SKIP_TARGETS="" FORCE_TARGETS=%{selftests_must_build} INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf vm livepatch net net/forwarding net/mptcp netfilter tc-testing memfd" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
@@ -3175,6 +3180,22 @@ fi
 #
 #
 %changelog
+* Wed Sep 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.49c13ed0316d.50]
+- Allow selftests to fail without killing the build (Justin M. Forbes)
+
+* Wed Sep 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.49c13ed0316d.49]
+- redhat/configs: Remove x86_64 from priority files (Prarit Bhargava)
+- redhat/configs/pending-ark: Remove x86_64 directory (Prarit Bhargava)
+- redhat/configs/pending-fedora: Remove x86_64 directory (Prarit Bhargava)
+- redhat/configs/fedora: Remove x86_64 directory (Prarit Bhargava)
+- redhat/configs/common: Remove x86_64 directory (Prarit Bhargava)
+- redhat/configs/ark: Remove x86_64 directory (Prarit Bhargava)
+- redhat/configs/custom-overrides: Remove x86_64 directory (Prarit Bhargava)
+- configs: use common CONFIG_ARM64_SME for ark and fedora (Mark Salter)
+- redhat/configs: Add a warning message to priority.common (Prarit Bhargava)
+- redhat/configs: Enable INIT_STACK_ALL_ZERO for Fedora (Miko Larsson)
+- Linux v6.0.0-0.rc7.49c13ed0316d
+
 * Tue Sep 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.a1375562c0a8.48]
 - redhat: Set CONFIG_MAXLINEAR_GPHY to =m (Petr Oros)
 - redhat/configs enable CONFIG_INTEL_IFS (David Arcari)
