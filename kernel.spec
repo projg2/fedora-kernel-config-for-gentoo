@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc7.20220928git49c13ed0316d.50
+%define pkgrelease 0.rc7.20220929gitc3e0e1e23c70.50
 %define kversion 6
-%define tarfile_release 6.0-rc7-68-g49c13ed0316d
+%define tarfile_release 6.0-rc7-81-gc3e0e1e23c70
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20220928git49c13ed0316d.50%{?buildid}%{?dist}
+%define specrelease 0.rc7.20220929gitc3e0e1e23c70.50%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3180,8 +3180,14 @@ fi
 #
 #
 %changelog
-* Wed Sep 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.49c13ed0316d.50]
+* Thu Sep 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.c3e0e1e23c70.50]
 - Allow selftests to fail without killing the build (Justin M. Forbes)
+- redhat: Remove redhat/Makefile.rhpkg (Prarit Bhargava)
+- redhat/Makefile: Move RHDISTGIT_CACHE and RHDISTGIT_TMP (Prarit Bhargava)
+- redhat/Makefile.rhpkg: Remove RHDISTGIT_USER (Prarit Bhargava)
+- redhat/Makefile: Move RHPKG_BIN to redhat/Makefile (Prarit Bhargava)
+- common: clean up Android option with removal of CONFIG_ANDROID (Peter Robinson)
+- Linux v6.0.0-0.rc7.c3e0e1e23c70
 
 * Wed Sep 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.49c13ed0316d.49]
 - redhat/configs: Remove x86_64 from priority files (Prarit Bhargava)
