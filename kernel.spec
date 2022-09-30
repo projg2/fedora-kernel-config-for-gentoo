@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc7.20220929gitc3e0e1e23c70.50
+%define pkgrelease 0.rc7.20220930git987a926c1d8a.51
 %define kversion 6
-%define tarfile_release 6.0-rc7-81-gc3e0e1e23c70
+%define tarfile_release 6.0-rc7-132-g987a926c1d8a
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20220929gitc3e0e1e23c70.50%{?buildid}%{?dist}
+%define specrelease 0.rc7.20220930git987a926c1d8a.51%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3180,6 +3180,10 @@ fi
 #
 #
 %changelog
+* Fri Sep 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.987a926c1d8a.51]
+- Common config cleanup for 6.0 (Justin M. Forbes)
+- Linux v6.0.0-0.rc7.987a926c1d8a
+
 * Thu Sep 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.c3e0e1e23c70.50]
 - Allow selftests to fail without killing the build (Justin M. Forbes)
 - redhat: Remove redhat/Makefile.rhpkg (Prarit Bhargava)
