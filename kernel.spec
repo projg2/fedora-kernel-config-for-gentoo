@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.0.0
 %define patchversion 6.0
-%define pkgrelease 0.rc7.20220930git987a926c1d8a.51
+%define pkgrelease 54
 %define kversion 6
-%define tarfile_release 6.0-rc7-132-g987a926c1d8a
+%define tarfile_release 6.0
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20220930git987a926c1d8a.51%{?buildid}%{?dist}
+%define specrelease 54%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.0
 
@@ -3180,6 +3180,16 @@ fi
 #
 #
 %changelog
+* Mon Oct 03 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-54]
+- redhat/configs: Move CONFIG_ARM_SMMU_QCOM_DEBUG to common (Jerry Snitselaar)
+- Linux v6.0.0
+
+* Sun Oct 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.b357fd1c2afc.53]
+- Linux v6.0.0-0.rc7.b357fd1c2afc
+
+* Sat Oct 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.ffb4d94b4314.52]
+- Linux v6.0.0-0.rc7.ffb4d94b4314
+
 * Fri Sep 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.0.0-0.rc7.987a926c1d8a.51]
 - Common config cleanup for 6.0 (Justin M. Forbes)
 - Linux v6.0.0-0.rc7.987a926c1d8a
