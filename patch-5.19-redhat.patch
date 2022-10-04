@@ -253,7 +253,7 @@ index 000000000000..733a26bd887a
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 7df4c195c8ab..6adcbebd18ae 100644
+index 2ecedf786e27..351174264fec 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -927,7 +927,7 @@ index 51fcf1298023..7f1097947731 100644
  	/* don't overflow userbuf */
  	len = strlen(value);
 diff --git a/drivers/gpu/drm/i915/display/intel_bios.c b/drivers/gpu/drm/i915/display/intel_bios.c
-index b5de61fe9cc6..40ef64a867e4 100644
+index 91caf4523b34..84c086610235 100644
 --- a/drivers/gpu/drm/i915/display/intel_bios.c
 +++ b/drivers/gpu/drm/i915/display/intel_bios.c
 @@ -332,18 +332,6 @@ static bool fixup_lfp_data_ptrs(const void *bdb, void *ptrs_block)
@@ -1021,10 +1021,10 @@ index b5de61fe9cc6..40ef64a867e4 100644
 
  	if (16 * (size + table_size) <= block_size) {
 diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
-index 8f09203e0cf0..7d61c55184e5 100644
+index 06db407e2749..36356893c7ca 100644
 --- a/drivers/gpu/drm/i915/display/intel_psr.c
 +++ b/drivers/gpu/drm/i915/display/intel_psr.c
-@@ -1624,8 +1624,12 @@ static void psr2_man_trk_ctl_calc(struct intel_crtc_state *crtc_state,
+@@ -1618,8 +1618,12 @@ static void psr2_man_trk_ctl_calc(struct intel_crtc_state *crtc_state,
  }
 
  static void clip_area_update(struct drm_rect *overlap_damage_area,
@@ -1038,7 +1038,7 @@ index 8f09203e0cf0..7d61c55184e5 100644
  	if (overlap_damage_area->y1 == -1) {
  		overlap_damage_area->y1 = damage_area->y1;
  		overlap_damage_area->y2 = damage_area->y2;
-@@ -1691,6 +1695,7 @@ static bool psr2_sel_fetch_pipe_state_supported(const struct intel_crtc_state *c
+@@ -1685,6 +1689,7 @@ static bool psr2_sel_fetch_pipe_state_supported(const struct intel_crtc_state *c
  int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
  				struct intel_crtc *crtc)
  {
@@ -1046,7 +1046,7 @@ index 8f09203e0cf0..7d61c55184e5 100644
  	struct intel_crtc_state *crtc_state = intel_atomic_get_new_crtc_state(state, crtc);
  	struct drm_rect pipe_clip = { .x1 = 0, .y1 = -1, .x2 = INT_MAX, .y2 = -1 };
  	struct intel_plane_state *new_plane_state, *old_plane_state;
-@@ -1714,7 +1719,8 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+@@ -1708,7 +1713,8 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
  	 */
  	for_each_oldnew_intel_plane_in_state(state, plane, old_plane_state,
  					     new_plane_state, i) {
@@ -1056,7 +1056,7 @@ index 8f09203e0cf0..7d61c55184e5 100644
  		struct drm_atomic_helper_damage_iter iter;
  		struct drm_rect clip;
 
-@@ -1741,20 +1747,23 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+@@ -1735,20 +1741,23 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
  			if (old_plane_state->uapi.visible) {
  				damaged_area.y1 = old_plane_state->uapi.dst.y1;
  				damaged_area.y2 = old_plane_state->uapi.dst.y2;
@@ -1083,7 +1083,7 @@ index 8f09203e0cf0..7d61c55184e5 100644
  			continue;
  		}
 
-@@ -1765,7 +1774,8 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+@@ -1759,7 +1768,8 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
  						   &new_plane_state->uapi);
  		drm_atomic_for_each_plane_damage(&iter, &clip) {
  			if (drm_rect_intersect(&clip, &src))
@@ -1093,7 +1093,7 @@ index 8f09203e0cf0..7d61c55184e5 100644
  		}
 
  		if (damaged_area.y1 == -1)
-@@ -1773,7 +1783,20 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
+@@ -1767,7 +1777,20 @@ int intel_psr2_sel_fetch_update(struct intel_atomic_state *state,
 
  		damaged_area.y1 += new_plane_state->uapi.dst.y1 - src.y1;
  		damaged_area.y2 += new_plane_state->uapi.dst.y1 - src.y1;
