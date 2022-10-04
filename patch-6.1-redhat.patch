@@ -121,7 +121,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 8478e13e9424..037381430a72 100644
+index f659d3085121..d9d258c43993 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -135,7 +135,7 @@ index 8478e13e9424..037381430a72 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1249,7 +1253,13 @@ define filechk_version.h
+@@ -1324,7 +1328,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -396,7 +396,7 @@ index 6aef1ee5e1bd..8f146b1b4972 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index dabe45eba055..82cf1ddf25d6 100644
+index 4db5bb587599..de258f416e80 100644
 --- a/drivers/acpi/irq.c
 +++ b/drivers/acpi/irq.c
 @@ -137,6 +137,7 @@ struct acpi_irq_parse_one_ctx {
@@ -439,10 +439,10 @@ index dabe45eba055..82cf1ddf25d6 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 42cec8120f18..c6dc77dba6b6 100644
+index 558664d169fc..8510440fa17e 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1752,6 +1752,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1741,6 +1741,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -1897,10 +1897,10 @@ index fe6efb24d151..85b185391da7 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 60fff133c0b1..fa0aa514c70f 100644
+index f8715ddbfcf4..2ee04e17a896 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -395,6 +395,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -396,6 +396,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -1910,10 +1910,10 @@ index 60fff133c0b1..fa0aa514c70f 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 3aa6030302f5..23b63de268a3 100644
+index 4ec80b96c22e..93495ac301f2 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1557,6 +1557,12 @@
+@@ -1561,6 +1561,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -1927,10 +1927,10 @@ index 3aa6030302f5..23b63de268a3 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 518296ea7f73..78f8fdc3901d 100644
+index ec61fb53979a..821e7dc558e5 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
-@@ -380,6 +380,7 @@ struct module {
+@@ -379,6 +379,7 @@ struct module {
  	struct module_attribute *modinfo_attrs;
  	const char *version;
  	const char *srcversion;
@@ -1968,7 +1968,7 @@ index c7759b3f2045..f6a368b1b04c 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 060af91bafcd..107f2290058a 100644
+index 5da0846aa3c1..03ba17b03dea 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1499,6 +1499,22 @@ int pci_add_dynid(struct pci_driver *drv,
@@ -2528,10 +2528,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 7bd0c490703d..7779eaf1ffa1 100644
+index 3480f61e1b2d..49574fa65eda 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -475,6 +475,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -476,6 +476,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2539,7 +2539,7 @@ index 7bd0c490703d..7779eaf1ffa1 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1358,6 +1359,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1364,6 +1365,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2551,10 +2551,10 @@ index 7bd0c490703d..7779eaf1ffa1 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 532362fcfe31..30d547537ea0 100644
+index a078cb026523..d469f8570952 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1678,7 +1678,7 @@ config AIO
+@@ -1690,7 +1690,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -2624,10 +2624,10 @@ index 27760627370d..5cbbbd0cf581 100644
  	}
 
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index a4e4d84b6f4e..d78e1bc1e3f7 100644
+index 70c0b2c6fef8..ef89a3b08c2f 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -523,6 +523,7 @@ static struct module_attribute modinfo_##field = {                    \
+@@ -524,6 +524,7 @@ static struct module_attribute modinfo_##field = {                    \
 
  MODINFO_ATTR(version);
  MODINFO_ATTR(srcversion);
@@ -2635,7 +2635,7 @@ index a4e4d84b6f4e..d78e1bc1e3f7 100644
 
  static struct {
  	char name[MODULE_NAME_LEN + 1];
-@@ -970,6 +971,7 @@ struct module_attribute *modinfo_attrs[] = {
+@@ -971,6 +972,7 @@ struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
@@ -2952,7 +2952,7 @@ index e137cf15aae9..2ed2341f7967 100755
  # Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
  # to force full paths for a non-O= build
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-index 093894a640dc..1c43a9462b4b 100644
+index b78753d27d8e..f0b37800431a 100644
 --- a/security/integrity/platform_certs/load_uefi.c
 +++ b/security/integrity/platform_certs/load_uefi.c
 @@ -73,7 +73,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
@@ -3000,7 +3000,7 @@ index e84ddf484010..d0501353a4b9 100644
  	prompt "Kernel default lockdown mode"
  	default LOCK_DOWN_KERNEL_FORCE_NONE
 diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-index 87cbdc64d272..18555cf18da7 100644
+index a79b985e917e..772a69bf43ec 100644
 --- a/security/lockdown/lockdown.c
 +++ b/security/lockdown/lockdown.c
 @@ -73,6 +73,7 @@ static int lockdown_is_locked_down(enum lockdown_reason what)
@@ -3012,10 +3012,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 4b95de24bc8d..10047790e96e 100644
+index 9696dd64095e..f146b22edafb 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2623,6 +2623,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2628,6 +2628,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
