@@ -68,7 +68,7 @@
  67 files changed, 1547 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 426fa892d311..11b6f16bc969 100644
+index e92d63d3e878..28c0ab72ce28 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -6406,6 +6406,15 @@
@@ -2576,7 +2576,7 @@ index 318789c728d3..148911cf65da 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 27760627370d..5cbbbd0cf581 100644
+index 7b373a5e861f..6b880dcbdeda 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@
@@ -2611,7 +2611,7 @@ index 27760627370d..5cbbbd0cf581 100644
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
-@@ -5269,6 +5287,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -5283,6 +5301,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;
