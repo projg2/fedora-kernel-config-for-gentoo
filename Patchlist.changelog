@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/5e2ef040546aa76886d9dc491ff6e8496430440a
+ 5e2ef040546aa76886d9dc491ff6e8496430440a Change acpi_bus_get_acpi_device to acpi_get_acpi_dev
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/99d7ef3159706a0c7d0dfa0335b13d7f39bae9c4
  99d7ef3159706a0c7d0dfa0335b13d7f39bae9c4 drm: Prevent drm_copy_field() to attempt copying a NULL pointer
 

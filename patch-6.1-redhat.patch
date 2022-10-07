@@ -67,10 +67,10 @@
  66 files changed, 1540 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index e92d63d3e878..28c0ab72ce28 100644
+index 02ee2e2405e7..eda361d0db56 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6406,6 +6406,15 @@
+@@ -6417,6 +6417,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -150,10 +150,10 @@ index f659d3085121..d9d258c43993 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 87badeae3181..2ec7919034d8 100644
+index 22dc1d6936bc..7fc3e9c5bc4c 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1387,9 +1387,9 @@ config HIGHMEM
+@@ -1315,9 +1315,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -166,10 +166,10 @@ index 87badeae3181..2ec7919034d8 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 1ce7685ad5de..101f1d767658 100644
+index 0e48d1e4c578..92a60d317e99 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1182,7 +1182,7 @@ endchoice
+@@ -1197,7 +1197,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -178,7 +178,7 @@ index 1ce7685ad5de..101f1d767658 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1421,6 +1421,7 @@ config XEN
+@@ -1436,6 +1436,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -395,7 +395,7 @@ index 6aef1ee5e1bd..8f146b1b4972 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index 4db5bb587599..de258f416e80 100644
+index 4db5bb587599..f8c62b72a93c 100644
 --- a/drivers/acpi/irq.c
 +++ b/drivers/acpi/irq.c
 @@ -137,6 +137,7 @@ struct acpi_irq_parse_one_ctx {
@@ -849,7 +849,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index d39660a3e50c..8e5ffb4325a3 100644
+index 80fefaba58ee..be8f345bb379 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -1877,7 +1877,7 @@ index fe6efb24d151..85b185391da7 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index f8715ddbfcf4..2ee04e17a896 100644
+index ec119da1d89b..3c27eb4fd460 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -396,6 +396,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -2508,7 +2508,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 3480f61e1b2d..49574fa65eda 100644
+index 87fac3af6dad..804c897f07a8 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -476,6 +476,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
@@ -2992,7 +2992,7 @@ index a79b985e917e..772a69bf43ec 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 9696dd64095e..f146b22edafb 100644
+index 8312b3bf1169..219ea9552aa6 100644
 --- a/security/security.c
 +++ b/security/security.c
 @@ -2628,6 +2628,12 @@ int security_locked_down(enum lockdown_reason what)
