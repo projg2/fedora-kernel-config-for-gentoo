@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc0.20221007git4c86114194e6.5
+%define pkgrelease 0.rc0.20221009gita6afa4199d3d.7
 %define kversion 6
-%define tarfile_release 6.0-6475-g4c86114194e6
+%define tarfile_release 6.0-9039-ga6afa4199d3d
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20221007git4c86114194e6.5%{?buildid}%{?dist}
+%define specrelease 0.rc0.20221009gita6afa4199d3d.7%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3180,10 +3180,16 @@ fi
 #
 #
 %changelog
-* Fri Oct 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.4c86114194e6.5]
+* Sun Oct 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.a6afa4199d3d.7]
 - Add acpi video to the filter_modules.sh for rhel (Justin M. Forbes)
 - Change acpi_bus_get_acpi_device to acpi_get_acpi_dev (Justin M. Forbes)
 - Add new drm kunit tests to mod-internal.list (Justin M. Forbes)
+
+* Sun Oct 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.a6afa4199d3d.6]
+- Linux v6.1.0-0.rc0.a6afa4199d3d
+
+* Sat Oct 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.e8bc52cb8df8.5]
+- Linux v6.1.0-0.rc0.e8bc52cb8df8
 
 * Fri Oct 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.4c86114194e6.4]
 - Add fortify_kunit to mod-internal.list (Justin M. Forbes)
