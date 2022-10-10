@@ -67,7 +67,7 @@
  66 files changed, 1540 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 02ee2e2405e7..eda361d0db56 100644
+index b2413342b309..6d72eef46282 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -6417,6 +6417,15 @@
@@ -215,10 +215,10 @@ index a405b6bb89fb..50827b341fd7 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 1cc85b8ff42e..b7ee128c67ce 100644
+index 325cbf69ebbd..1801af7a6ec4 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2216,3 +2216,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2221,3 +2221,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -228,7 +228,7 @@ index 1cc85b8ff42e..b7ee128c67ce 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index bbd4bde4f65d..dd60114ae9c1 100644
+index ab19ddb09d65..d463ec57b218 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -239,7 +239,7 @@ index bbd4bde4f65d..dd60114ae9c1 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -968,6 +969,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -978,6 +979,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -560,10 +560,10 @@ index 8d151e332584..bd29fe4ddbf3 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index e4080ad96089..e050d2f8dbe5 100644
+index 11857af72859..67ce560e80ff 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
-@@ -31,6 +31,7 @@
+@@ -32,6 +32,7 @@
  #include <linux/ucs2_string.h>
  #include <linux/memblock.h>
  #include <linux/security.h>
@@ -571,7 +571,7 @@ index e4080ad96089..e050d2f8dbe5 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -864,40 +865,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -879,40 +880,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -1779,7 +1779,7 @@ index eae288c8d40a..8b8bf447cedc 100644
 
  error_proc:
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index d2b84c2fec39..3498d72b62ec 100644
+index da3974bf05d3..cd7fad7eef44 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1791,7 +1791,7 @@ index d2b84c2fec39..3498d72b62ec 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -849,6 +851,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -863,6 +865,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1806,7 +1806,7 @@ index d2b84c2fec39..3498d72b62ec 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -860,6 +870,8 @@ static inline bool efi_enabled(int feature)
+@@ -874,6 +884,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1815,7 +1815,7 @@ index d2b84c2fec39..3498d72b62ec 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -881,6 +893,8 @@ static inline bool efi_enabled(int feature)
+@@ -895,6 +907,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1824,7 +1824,7 @@ index d2b84c2fec39..3498d72b62ec 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -895,6 +909,7 @@ static inline void efi_find_mirror(void) {}
+@@ -909,6 +923,7 @@ static inline void efi_find_mirror(void) {}
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1832,7 +1832,7 @@ index d2b84c2fec39..3498d72b62ec 100644
 
  /*
   * Variable Attributes
-@@ -1107,13 +1122,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1137,13 +1152,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -2508,10 +2508,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 87fac3af6dad..804c897f07a8 100644
+index ca1b7109c0db..b947cfbf04c2 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -476,6 +476,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -478,6 +478,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2519,7 +2519,7 @@ index 87fac3af6dad..804c897f07a8 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1364,6 +1365,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1366,6 +1367,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2531,10 +2531,10 @@ index 87fac3af6dad..804c897f07a8 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index a078cb026523..d469f8570952 100644
+index 751ca3dd1d22..9df6045bdd65 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1690,7 +1690,7 @@ config AIO
+@@ -1689,7 +1689,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -2992,10 +2992,10 @@ index a79b985e917e..772a69bf43ec 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 8312b3bf1169..219ea9552aa6 100644
+index 79d82cb6e469..843b0dd8f0dd 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2628,6 +2628,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2630,6 +2630,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 

@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc0.20221009gita6afa4199d3d.7
+%define pkgrelease 0.rc0.20221010git493ffd6605b2.7
 %define kversion 6
-%define tarfile_release 6.0-9039-ga6afa4199d3d
+%define tarfile_release 6.0-9423-g493ffd6605b2
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20221009gita6afa4199d3d.7%{?buildid}%{?dist}
+%define specrelease 0.rc0.20221010git493ffd6605b2.7%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -1677,6 +1677,9 @@ BuildKernel() {
     find arch/$Arch/boot/dts -name '*.dtb' -type f -delete
 %endif
 
+    # Remove large intermediate files we no longer need to save space
+    rm vmlinux.o .tmp_vmlinux.btf
+
     # Start installing the results
     install -m 644 .config $RPM_BUILD_ROOT/boot/config-$KernelVer
     install -m 644 .config $RPM_BUILD_ROOT/lib/modules/$KernelVer/config
@@ -2020,9 +2023,11 @@ BuildKernel() {
 
     #
     # save the vmlinux file for kernel debugging into the kernel-debuginfo rpm
+    # (use mv + symlink instead of cp to reduce disk space requirements)
     #
     mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
-    cp vmlinux $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
+    mv vmlinux $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
+    ln -s $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer/vmlinux vmlinux
     if [ -n "%{vmlinux_decompressor}" ]; then
 	    eu-readelf -n  %{vmlinux_decompressor} | grep "Build ID" | awk '{print $NF}' > vmlinux.decompressor.id
 	    # Without build-id the build will fail. But for s390 the build-id
@@ -2327,7 +2332,7 @@ pushd tools/gpio/
 popd
 # build VM tools
 pushd tools/vm/
-%{tools_make} slabinfo page_owner_sort
+%{tools_make} CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" slabinfo page_owner_sort
 popd
 pushd tools/tracing/rtla
 %{tools_make}
@@ -3180,10 +3185,16 @@ fi
 #
 #
 %changelog
-* Sun Oct 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.a6afa4199d3d.7]
+* Mon Oct 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.493ffd6605b2.7]
 - Add acpi video to the filter_modules.sh for rhel (Justin M. Forbes)
 - Change acpi_bus_get_acpi_device to acpi_get_acpi_dev (Justin M. Forbes)
+- Turn on ACPI_VIDEO for arm (Justin M. Forbes)
+- Turn on CONFIG_PRIME_NUMBERS as a module (Justin M. Forbes)
 - Add new drm kunit tests to mod-internal.list (Justin M. Forbes)
+- redhat: fix elf got hardening for vm tools (Frantisek Hrbata)
+- kernel.spec.template: remove some temporary files early (Ondrej Mosnacek)
+- kernel.spec.template: avoid keeping two copies of vmlinux (Ondrej Mosnacek)
+- Linux v6.1.0-0.rc0.493ffd6605b2
 
 * Sun Oct 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.a6afa4199d3d.6]
 - Linux v6.1.0-0.rc0.a6afa4199d3d
