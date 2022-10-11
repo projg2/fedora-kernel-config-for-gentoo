@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc0.20221010git493ffd6605b2.7
+%define pkgrelease 0.rc0.20221011git60bb8154d1d7.8
 %define kversion 6
-%define tarfile_release 6.0-9423-g493ffd6605b2
+%define tarfile_release 6.0-10822-g60bb8154d1d7
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20221010git493ffd6605b2.7%{?buildid}%{?dist}
+%define specrelease 0.rc0.20221011git60bb8154d1d7.8%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3185,6 +3185,9 @@ fi
 #
 #
 %changelog
+* Tue Oct 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.60bb8154d1d7.8]
+- Linux v6.1.0-0.rc0.60bb8154d1d7
+
 * Mon Oct 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.493ffd6605b2.7]
 - Add acpi video to the filter_modules.sh for rhel (Justin M. Forbes)
 - Change acpi_bus_get_acpi_device to acpi_get_acpi_dev (Justin M. Forbes)
