@@ -21,6 +21,7 @@ fat_test
 fortify_kunit
 iio-test-format
 iio-test-rescale
+kasan_test
 kfence_test
 kunit
 kunit-test
