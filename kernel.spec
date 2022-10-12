@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.0.0
+%define specversion 6.0.1
 %define patchversion 6.0
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.0
+%define tarfile_release 6.0.1
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.0.0
+%define kabiversion 6.0.1
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3180,8 +3180,11 @@ fi
 #
 #
 %changelog
-* Wed Oct 05 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.0-300]
+* Wed Oct 12 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.1-0]
+- scsi: stex: Properly zero out the passthrough command structure (Linus Torvalds)
+- ipv4: Handle attempt to delete multipath route when fib_info contains an nh reference (David Ahern)
 - Turn E1000 back on (Justin M. Forbes)
+- Linux v6.0.1
 
 * Wed Oct 05 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.0-0]
 - enable efifb for Nvidia (Justin M. Forbes)

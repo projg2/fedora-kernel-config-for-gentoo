@@ -24,23 +24,27 @@
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
+ drivers/scsi/stex.c                                |  17 +--
  drivers/usb/core/hub.c                             |   7 ++
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
+ include/scsi/scsi_cmnd.h                           |   2 +-
  init/Kconfig                                       |   2 +-
  kernel/module/signing.c                            |   9 +-
+ net/ipv4/fib_semantics.c                           |   8 +-
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 39 files changed, 508 insertions(+), 187 deletions(-)
+ tools/testing/selftests/net/fib_nexthops.sh        |   5 +
+ 43 files changed, 527 insertions(+), 200 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 8478e13e9424..9179a4f53267 100644
+index 3193969f1eb3..f6857e4cdb25 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1167,6 +1171,36 @@ index 4944798e75b5..079a29ef1bf2 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/scsi/stex.c b/drivers/scsi/stex.c
+index e6420f2127ce..8def242675ef 100644
+--- a/drivers/scsi/stex.c
++++ b/drivers/scsi/stex.c
+@@ -665,16 +665,17 @@ static int stex_queuecommand_lck(struct scsi_cmnd *cmd)
+ 		return 0;
+ 	case PASSTHRU_CMD:
+ 		if (cmd->cmnd[1] == PASSTHRU_GET_DRVVER) {
+-			struct st_drvver ver;
++			const struct st_drvver ver = {
++				.major = ST_VER_MAJOR,
++				.minor = ST_VER_MINOR,
++				.oem = ST_OEM,
++				.build = ST_BUILD_VER,
++				.signature[0] = PASSTHRU_SIGNATURE,
++				.console_id = host->max_id - 1,
++				.host_no = hba->host->host_no,
++			};
+ 			size_t cp_len = sizeof(ver);
+
+-			ver.major = ST_VER_MAJOR;
+-			ver.minor = ST_VER_MINOR;
+-			ver.oem = ST_OEM;
+-			ver.build = ST_BUILD_VER;
+-			ver.signature[0] = PASSTHRU_SIGNATURE;
+-			ver.console_id = host->max_id - 1;
+-			ver.host_no = hba->host->host_no;
+ 			cp_len = scsi_sg_copy_from_buffer(cmd, &ver, cp_len);
+ 			if (sizeof(ver) == cp_len)
+ 				cmd->result = DID_OK << 16;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index bbab424b0d55..ed86042fb57b 100644
 --- a/drivers/usb/core/hub.c
@@ -1318,6 +1352,19 @@ index 7bd0c490703d..7779eaf1ffa1 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
+diff --git a/include/scsi/scsi_cmnd.h b/include/scsi/scsi_cmnd.h
+index bac55decf900..7d3622db38ed 100644
+--- a/include/scsi/scsi_cmnd.h
++++ b/include/scsi/scsi_cmnd.h
+@@ -201,7 +201,7 @@ static inline unsigned int scsi_get_resid(struct scsi_cmnd *cmd)
+ 	for_each_sg(scsi_sglist(cmd), sg, nseg, __i)
+
+ static inline int scsi_sg_copy_from_buffer(struct scsi_cmnd *cmd,
+-					   void *buf, int buflen)
++					   const void *buf, int buflen)
+ {
+ 	return sg_copy_from_buffer(scsi_sglist(cmd), scsi_sg_count(cmd),
+ 				   buf, buflen);
 diff --git a/init/Kconfig b/init/Kconfig
 index 532362fcfe31..30d547537ea0 100644
 --- a/init/Kconfig
@@ -1354,6 +1401,28 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
 
  int module_sig_check(struct load_info *info, int flags)
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index 2dc97583d279..e9a7f70a54df 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -888,13 +888,13 @@ int fib_nh_match(struct net *net, struct fib_config *cfg, struct fib_info *fi,
+ 		return 1;
+ 	}
+
++	/* cannot match on nexthop object attributes */
++	if (fi->nh)
++		return 1;
++
+ 	if (cfg->fc_oif || cfg->fc_gw_family) {
+ 		struct fib_nh *nh;
+
+-		/* cannot match on nexthop object attributes */
+-		if (fi->nh)
+-			return 1;
+-
+ 		nh = fib_info_nh(fi, 0);
+ 		if (cfg->fc_encap) {
+ 			if (fib_encap_match(net, cfg->fc_encap_type,
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index e137cf15aae9..2ed2341f7967 100755
 --- a/scripts/tags.sh
@@ -1444,3 +1513,19 @@ index 4b95de24bc8d..10047790e96e 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
+index d5a0dd548989..ee5e98204d3d 100755
+--- a/tools/testing/selftests/net/fib_nexthops.sh
++++ b/tools/testing/selftests/net/fib_nexthops.sh
+@@ -1223,6 +1223,11 @@ ipv4_fcnal()
+ 	log_test $rc 0 "Delete nexthop route warning"
+ 	run_cmd "$IP route delete 172.16.101.1/32 nhid 12"
+ 	run_cmd "$IP nexthop del id 12"
++
++	run_cmd "$IP nexthop add id 21 via 172.16.1.6 dev veth1"
++	run_cmd "$IP ro add 172.16.101.0/24 nhid 21"
++	run_cmd "$IP ro del 172.16.101.0/24 nexthop via 172.16.1.7 dev veth1 nexthop via 172.16.1.8 dev veth1"
++	log_test $? 2 "Delete multipath route with only nh id based entry"
+ }
+
+ ipv4_grp_fcnal()
