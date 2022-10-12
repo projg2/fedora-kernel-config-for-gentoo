@@ -1,3 +1,9 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3401107a6fbe13ef6eb6a9a8b6d6dbec04fbf234
+ 3401107a6fbe13ef6eb6a9a8b6d6dbec04fbf234 scsi: stex: Properly zero out the passthrough command structure
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d88ada87e783422a5e31b8e4c6dd376f58553cb1
+ d88ada87e783422a5e31b8e4c6dd376f58553cb1 ipv4: Handle attempt to delete multipath route when fib_info contains an nh reference
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/9d5fb7eaaa7db6a9952531d029dc9c3fb16a8eee
  9d5fb7eaaa7db6a9952531d029dc9c3fb16a8eee kbuild: Add skip_encoding_btf_enum64 option to pahole
 

@@ -44,6 +44,7 @@
  drivers/net/phy/bcm-phy-ptp.c                      | 944 +++++++++++++++++++++
  drivers/net/phy/broadcom.c                         |  33 +-
  drivers/pci/quirks.c                               |  24 +
+ drivers/scsi/stex.c                                |  17 +-
  drivers/soc/bcm/bcm2835-power.c                    |  72 +-
  drivers/usb/core/hub.c                             |   7 +
  include/linux/efi.h                                |  22 +-
@@ -52,16 +53,19 @@
  include/linux/mfd/bcm2835-pm.h                     |   1 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
+ include/scsi/scsi_cmnd.h                           |   2 +-
  init/Kconfig                                       |   2 +-
  kernel/module/signing.c                            |   9 +-
  net/bluetooth/hci_event.c                          |  20 +
+ net/ipv4/fib_semantics.c                           |   8 +-
  scripts/pahole-flags.sh                            |   4 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 63 files changed, 1779 insertions(+), 348 deletions(-)
+ tools/testing/selftests/net/fib_nexthops.sh        |   5 +
+ 67 files changed, 1798 insertions(+), 361 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml b/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml
 index e6485f7b046f..217c42874f41 100644
@@ -253,7 +257,7 @@ index 000000000000..733a26bd887a
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index ff4a15867145..975c3f82db13 100644
+index af05237987ef..ec594b2177f0 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -2916,6 +2920,36 @@ index 2e68f50bc7ae..00e1d5bc83a5 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/scsi/stex.c b/drivers/scsi/stex.c
+index e6420f2127ce..8def242675ef 100644
+--- a/drivers/scsi/stex.c
++++ b/drivers/scsi/stex.c
+@@ -665,16 +665,17 @@ static int stex_queuecommand_lck(struct scsi_cmnd *cmd)
+ 		return 0;
+ 	case PASSTHRU_CMD:
+ 		if (cmd->cmnd[1] == PASSTHRU_GET_DRVVER) {
+-			struct st_drvver ver;
++			const struct st_drvver ver = {
++				.major = ST_VER_MAJOR,
++				.minor = ST_VER_MINOR,
++				.oem = ST_OEM,
++				.build = ST_BUILD_VER,
++				.signature[0] = PASSTHRU_SIGNATURE,
++				.console_id = host->max_id - 1,
++				.host_no = hba->host->host_no,
++			};
+ 			size_t cp_len = sizeof(ver);
+
+-			ver.major = ST_VER_MAJOR;
+-			ver.minor = ST_VER_MINOR;
+-			ver.oem = ST_OEM;
+-			ver.build = ST_BUILD_VER;
+-			ver.signature[0] = PASSTHRU_SIGNATURE;
+-			ver.console_id = host->max_id - 1;
+-			ver.host_no = hba->host->host_no;
+ 			cp_len = scsi_sg_copy_from_buffer(cmd, &ver, cp_len);
+ 			if (sizeof(ver) == cp_len)
+ 				cmd->result = DID_OK << 16;
 diff --git a/drivers/soc/bcm/bcm2835-power.c b/drivers/soc/bcm/bcm2835-power.c
 index 1e0041ec8132..5bcd047768b6 100644
 --- a/drivers/soc/bcm/bcm2835-power.c
@@ -3217,6 +3251,19 @@ index 3cc127bb5bfd..2fecdfb03eb5 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
+diff --git a/include/scsi/scsi_cmnd.h b/include/scsi/scsi_cmnd.h
+index 1e80e70dfa92..5ce1aac64edd 100644
+--- a/include/scsi/scsi_cmnd.h
++++ b/include/scsi/scsi_cmnd.h
+@@ -201,7 +201,7 @@ static inline unsigned int scsi_get_resid(struct scsi_cmnd *cmd)
+ 	for_each_sg(scsi_sglist(cmd), sg, nseg, __i)
+
+ static inline int scsi_sg_copy_from_buffer(struct scsi_cmnd *cmd,
+-					   void *buf, int buflen)
++					   const void *buf, int buflen)
+ {
+ 	return sg_copy_from_buffer(scsi_sglist(cmd), scsi_sg_count(cmd),
+ 				   buf, buflen);
 diff --git a/init/Kconfig b/init/Kconfig
 index c7900e8975f1..ea721c12c251 100644
 --- a/init/Kconfig
@@ -3254,10 +3301,10 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 2c320a8fe70d..e097bf4ce549 100644
+index 81e5bcdbbe94..ff74e2a55e8f 100644
 --- a/net/bluetooth/hci_event.c
 +++ b/net/bluetooth/hci_event.c
-@@ -3997,6 +3997,26 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, void *data,
+@@ -3999,6 +3999,26 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, void *data,
  			break;
  		}
  	}
@@ -3284,6 +3331,28 @@ index 2c320a8fe70d..e097bf4ce549 100644
 
  	if (i == ARRAY_SIZE(hci_cc_table)) {
  		/* Unknown opcode, assume byte 0 contains the status, so
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index db7b2503f068..36653cd5964a 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -888,13 +888,13 @@ int fib_nh_match(struct net *net, struct fib_config *cfg, struct fib_info *fi,
+ 		return 1;
+ 	}
+
++	/* cannot match on nexthop object attributes */
++	if (fi->nh)
++		return 1;
++
+ 	if (cfg->fc_oif || cfg->fc_gw_family) {
+ 		struct fib_nh *nh;
+
+-		/* cannot match on nexthop object attributes */
+-		if (fi->nh)
+-			return 1;
+-
+ 		nh = fib_info_nh(fi, 0);
+ 		if (cfg->fc_encap) {
+ 			if (fib_encap_match(net, cfg->fc_encap_type,
 diff --git a/scripts/pahole-flags.sh b/scripts/pahole-flags.sh
 index 0d99ef17e4a5..d4f3d63cb434 100755
 --- a/scripts/pahole-flags.sh
@@ -3387,3 +3456,19 @@ index 8b62654ff3f9..1c03d1cff35c 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
+index d5a0dd548989..ee5e98204d3d 100755
+--- a/tools/testing/selftests/net/fib_nexthops.sh
++++ b/tools/testing/selftests/net/fib_nexthops.sh
+@@ -1223,6 +1223,11 @@ ipv4_fcnal()
+ 	log_test $rc 0 "Delete nexthop route warning"
+ 	run_cmd "$IP route delete 172.16.101.1/32 nhid 12"
+ 	run_cmd "$IP nexthop del id 12"
++
++	run_cmd "$IP nexthop add id 21 via 172.16.1.6 dev veth1"
++	run_cmd "$IP ro add 172.16.101.0/24 nhid 21"
++	run_cmd "$IP ro del 172.16.101.0/24 nexthop via 172.16.1.7 dev veth1 nexthop via 172.16.1.8 dev veth1"
++	log_test $? 2 "Delete multipath route with only nh id based entry"
+ }
+
+ ipv4_grp_fcnal()

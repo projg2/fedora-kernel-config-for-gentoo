@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 5.19.14
+%define specversion 5.19.15
 %define patchversion 5.19
 %define pkgrelease 300
 %define kversion 5
-%define tarfile_release 5.19.14
+%define tarfile_release 5.19.15
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 5.19.14
+%define kabiversion 5.19.15
 
 #
 # End of genspec.sh variables
@@ -3138,6 +3138,11 @@ fi
 #
 #
 %changelog
+* Wed Oct 12 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.15-0]
+- scsi: stex: Properly zero out the passthrough command structure (Linus Torvalds)
+- ipv4: Handle attempt to delete multipath route when fib_info contains an nh reference (David Ahern)
+- Linux v5.19.15
+
 * Wed Oct 05 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.14-0]
 - Linux v5.19.14
 
