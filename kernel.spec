@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc0.20221011git60bb8154d1d7.8
+%define pkgrelease 0.rc0.20221012git49da07006239.10
 %define kversion 6
-%define tarfile_release 6.0-10822-g60bb8154d1d7
+%define tarfile_release 6.0-11414-g49da07006239
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20221011git60bb8154d1d7.8%{?buildid}%{?dist}
+%define specrelease 0.rc0.20221012git49da07006239.10%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3185,6 +3185,13 @@ fi
 #
 #
 %changelog
+* Wed Oct 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.49da07006239.10]
+- Add kasan_test to mod-internal.list (Justin M. Forbes)
+
+* Wed Oct 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.49da07006239.9]
+- Rename rename FORCE_MAX_ZONEORDER to ARCH_FORCE_MAX_ORDER in pending (Justin M. Forbes)
+- Linux v6.1.0-0.rc0.49da07006239
+
 * Tue Oct 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.60bb8154d1d7.8]
 - Linux v6.1.0-0.rc0.60bb8154d1d7
 

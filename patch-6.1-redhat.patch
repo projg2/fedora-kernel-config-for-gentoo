@@ -513,7 +513,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index 703433493c85..6b1b102b9b7d 100644
+index 49a1707693c9..8296a943611e 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -524,7 +524,7 @@ index 703433493c85..6b1b102b9b7d 100644
  #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5516,8 +5517,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5510,8 +5511,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -1362,7 +1362,7 @@ index a29877217ee6..ec2e6c7692af 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 49238ddd39ee..7c32d338542f 100644
+index 107d77f3c846..1274904f7011 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -1458,7 +1458,7 @@ index 49238ddd39ee..7c32d338542f 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 4944798e75b5..079a29ef1bf2 100644
+index 285acc4aaccc..a7056957e7dd 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4296,6 +4296,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1948,10 +1948,10 @@ index c7759b3f2045..f6a368b1b04c 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 5da0846aa3c1..03ba17b03dea 100644
+index 2bda4a4e47e8..4cbfee14dfe5 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1499,6 +1499,22 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1500,6 +1500,22 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
