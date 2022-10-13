@@ -1,3 +1,42 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b7ac3893a05dddcf85e47e0f9fc3868bb80cba8e
+ b7ac3893a05dddcf85e47e0f9fc3868bb80cba8e mctp: prevent double key removal and unref
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/f41667878d605b0df50332ec1bb91b3c58b0a2b6
+ f41667878d605b0df50332ec1bb91b3c58b0a2b6 wifi: cfg80211: update hidden BSSes to avoid WARN_ON
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/2c047ea0b747055e5afc74d6ee24d0e1a6fd045b
+ 2c047ea0b747055e5afc74d6ee24d0e1a6fd045b wifi: mac80211: fix crash in beacon protection for P2P-device
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0ceb5de271ef569e73ff55fc45e4c858c4e90a8f
+ 0ceb5de271ef569e73ff55fc45e4c858c4e90a8f wifi: mac80211_hwsim: avoid mac80211 warning on bad rate
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/99b388fa0f89350475a015ced6ea091137708a85
+ 99b388fa0f89350475a015ced6ea091137708a85 wifi: cfg80211: avoid nontransmitted BSS list corruption
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d9250a0c289718402eae31b58425c280e6fb42d9
+ d9250a0c289718402eae31b58425c280e6fb42d9 wifi: cfg80211: fix BSS refcounting bugs
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/15d4d3f11fc53ff4789c9c2a5f0a874d64671146
+ 15d4d3f11fc53ff4789c9c2a5f0a874d64671146 wifi: cfg80211: ensure length byte is present before access
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/1c57f15727fb63f7f0bfdcc9f032501804c93de4
+ 1c57f15727fb63f7f0bfdcc9f032501804c93de4 wifi: mac80211: fix MBSSID parsing use-after-free
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/1a9ee89eb2c3d3a4e1a5786650a83419acdc1de2
+ 1a9ee89eb2c3d3a4e1a5786650a83419acdc1de2 wifi: cfg80211/mac80211: reject bad MBSSID elements
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/828022c8d93a3c2a1d98a134910682ed0f961d0c
+ 828022c8d93a3c2a1d98a134910682ed0f961d0c wifi: cfg80211: fix u8 overflow in cfg80211_update_notlisted_nontrans()
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/01e0ad5ed5f0788f9688daacd4695df17e1174e9
+ 01e0ad5ed5f0788f9688daacd4695df17e1174e9 drm/vc4: hdmi: Check the HSM rate at runtime_resume
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0d9cf6806f3be0d0a2adad69ddc50192ca38285b
+ 0d9cf6806f3be0d0a2adad69ddc50192ca38285b drm/vc4: hdmi: Enforce the minimum rate at runtime_resume
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/482f7491ba5a1106e8b7d5ca0accc353f2c0d55a
+ 482f7491ba5a1106e8b7d5ca0accc353f2c0d55a phy: rockchip-inno-usb2: Return zero after otg sync
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/3401107a6fbe13ef6eb6a9a8b6d6dbec04fbf234
  3401107a6fbe13ef6eb6a9a8b6d6dbec04fbf234 scsi: stex: Properly zero out the passthrough command structure
 

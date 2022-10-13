@@ -33,6 +33,7 @@
  drivers/gpu/drm/v3d/v3d_debugfs.c                  |  18 +-
  drivers/gpu/drm/v3d/v3d_drv.c                      |  12 +-
  drivers/gpu/drm/v3d/v3d_gem.c                      |  12 +-
+ drivers/gpu/drm/vc4/vc4_hdmi.c                     |  29 +
  drivers/hid/hid-rmi.c                              |  64 --
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +--
@@ -43,7 +44,9 @@
  drivers/net/phy/bcm-phy-lib.h                      |  19 +
  drivers/net/phy/bcm-phy-ptp.c                      | 944 +++++++++++++++++++++
  drivers/net/phy/broadcom.c                         |  33 +-
+ drivers/net/wireless/mac80211_hwsim.c              |   2 +
  drivers/pci/quirks.c                               |  24 +
+ drivers/phy/rockchip/phy-rockchip-inno-usb2.c      |  10 +-
  drivers/scsi/stex.c                                |  17 +-
  drivers/soc/bcm/bcm2835-power.c                    |  72 +-
  drivers/usb/core/hub.c                             |   7 +
@@ -58,6 +61,12 @@
  kernel/module/signing.c                            |   9 +-
  net/bluetooth/hci_event.c                          |  20 +
  net/ipv4/fib_semantics.c                           |   8 +-
+ net/mac80211/ieee80211_i.h                         |   8 +
+ net/mac80211/rx.c                                  |  12 +-
+ net/mac80211/util.c                                |  34 +-
+ net/mctp/af_mctp.c                                 |  23 +-
+ net/mctp/route.c                                   |  10 +-
+ net/wireless/scan.c                                |  77 +-
  scripts/pahole-flags.sh                            |   4 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
@@ -65,7 +74,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/net/fib_nexthops.sh        |   5 +
- 67 files changed, 1798 insertions(+), 361 deletions(-)
+ 76 files changed, 1939 insertions(+), 425 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml b/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml
 index e6485f7b046f..217c42874f41 100644
@@ -1300,6 +1309,59 @@ index 2352e9640922..725a252e837b 100644
  fail:
  	kfree(*container);
  	*container = NULL;
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 199bc398817f..eb3aaaca2b80 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -2889,12 +2889,37 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
+ 	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
+ 	unsigned long __maybe_unused flags;
+ 	u32 __maybe_unused value;
++	unsigned long rate;
+ 	int ret;
+
++	/*
++	 * The HSM clock is in the HDMI power domain, so we need to set
++	 * its frequency while the power domain is active so that it
++	 * keeps its rate.
++	 */
++	ret = clk_set_min_rate(vc4_hdmi->hsm_clock, HSM_MIN_CLOCK_FREQ);
++	if (ret)
++		return ret;
++
+ 	ret = clk_prepare_enable(vc4_hdmi->hsm_clock);
+ 	if (ret)
+ 		return ret;
+
++	/*
++	 * Whenever the RaspberryPi boots without an HDMI monitor
++	 * plugged in, the firmware won't have initialized the HSM clock
++	 * rate and it will be reported as 0.
++	 *
++	 * If we try to access a register of the controller in such a
++	 * case, it will lead to a silent CPU stall. Let's make sure we
++	 * prevent such a case.
++	 */
++	rate = clk_get_rate(vc4_hdmi->hsm_clock);
++	if (!rate) {
++		ret = -EINVAL;
++		goto err_disable_clk;
++	}
++
+ 	if (vc4_hdmi->variant->reset)
+ 		vc4_hdmi->variant->reset(vc4_hdmi);
+
+@@ -2916,6 +2941,10 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
+ #endif
+
+ 	return 0;
++
++err_disable_clk:
++	clk_disable_unprepare(vc4_hdmi->hsm_clock);
++	return ret;
+ }
+
+ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -2885,6 +2947,19 @@ index e36809aa6d30..876bc45ede60 100644
  	return 0;
  }
 
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index b511e705a46e..6c81422fd226 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -4251,6 +4251,8 @@ static int hwsim_cloned_frame_received_nl(struct sk_buff *skb_2,
+
+ 	rx_status.band = channel->band;
+ 	rx_status.rate_idx = nla_get_u32(info->attrs[HWSIM_ATTR_RX_RATE]);
++	if (rx_status.rate_idx >= data2->hw->wiphy->bands[rx_status.band]->n_bitrates)
++		goto out;
+ 	rx_status.signal = nla_get_u32(info->attrs[HWSIM_ATTR_SIGNAL]);
+
+ 	hdr = (void *)skb->data;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index 2e68f50bc7ae..00e1d5bc83a5 100644
 --- a/drivers/pci/quirks.c
@@ -2920,6 +2995,38 @@ index 2e68f50bc7ae..00e1d5bc83a5 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+index 5223d4c9afdf..39f14a5b78cd 100644
+--- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
++++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+@@ -1124,7 +1124,7 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
+ 					  struct rockchip_usb2phy_port *rport,
+ 					  struct device_node *child_np)
+ {
+-	int ret;
++	int ret, id;
+
+ 	rport->port_id = USB2PHY_PORT_OTG;
+ 	rport->port_cfg = &rphy->phy_cfg->port_cfgs[USB2PHY_PORT_OTG];
+@@ -1162,13 +1162,15 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
+
+ 		ret = devm_extcon_register_notifier(rphy->dev, rphy->edev,
+ 					EXTCON_USB_HOST, &rport->event_nb);
+-		if (ret)
++		if (ret) {
+ 			dev_err(rphy->dev, "register USB HOST notifier failed\n");
++			goto out;
++		}
+
+ 		if (!of_property_read_bool(rphy->dev->of_node, "extcon")) {
+ 			/* do initial sync of usb state */
+-			ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
+-			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
++			id = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
++			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !id);
+ 		}
+ 	}
+
 diff --git a/drivers/scsi/stex.c b/drivers/scsi/stex.c
 index e6420f2127ce..8def242675ef 100644
 --- a/drivers/scsi/stex.c
@@ -3353,6 +3460,351 @@ index db7b2503f068..36653cd5964a 100644
  		nh = fib_info_nh(fi, 0);
  		if (cfg->fc_encap) {
  			if (fib_encap_match(net, cfg->fc_encap_type,
+diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
+index 48fbccbf2a54..44c8701af95c 100644
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -1640,6 +1640,14 @@ struct ieee802_11_elems {
+
+ 	/* whether a parse error occurred while retrieving these elements */
+ 	bool parse_error;
++
++	/*
++	 * scratch buffer that can be used for various element parsing related
++	 * tasks, e.g., element de-fragmentation etc.
++	 */
++	size_t scratch_len;
++	u8 *scratch_pos;
++	u8 scratch[];
+ };
+
+ static inline struct ieee80211_local *hw_to_local(
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index b938806a5184..2d584a86dbf3 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -1988,10 +1988,11 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
+
+ 		if (mmie_keyidx < NUM_DEFAULT_KEYS + NUM_DEFAULT_MGMT_KEYS ||
+ 		    mmie_keyidx >= NUM_DEFAULT_KEYS + NUM_DEFAULT_MGMT_KEYS +
+-		    NUM_DEFAULT_BEACON_KEYS) {
+-			cfg80211_rx_unprot_mlme_mgmt(rx->sdata->dev,
+-						     skb->data,
+-						     skb->len);
++				   NUM_DEFAULT_BEACON_KEYS) {
++			if (rx->sdata->dev)
++				cfg80211_rx_unprot_mlme_mgmt(rx->sdata->dev,
++							     skb->data,
++							     skb->len);
+ 			return RX_DROP_MONITOR; /* unexpected BIP keyidx */
+ 		}
+
+@@ -2139,7 +2140,8 @@ ieee80211_rx_h_decrypt(struct ieee80211_rx_data *rx)
+ 	/* either the frame has been decrypted or will be dropped */
+ 	status->flag |= RX_FLAG_DECRYPTED;
+
+-	if (unlikely(ieee80211_is_beacon(fc) && result == RX_DROP_UNUSABLE))
++	if (unlikely(ieee80211_is_beacon(fc) && result == RX_DROP_UNUSABLE &&
++		     rx->sdata->dev))
+ 		cfg80211_rx_unprot_mlme_mgmt(rx->sdata->dev,
+ 					     skb->data, skb->len);
+
+diff --git a/net/mac80211/util.c b/net/mac80211/util.c
+index 3f698e508dd7..8f36ab8fcfb2 100644
+--- a/net/mac80211/util.c
++++ b/net/mac80211/util.c
+@@ -1439,6 +1439,8 @@ static size_t ieee802_11_find_bssid_profile(const u8 *start, size_t len,
+ 	for_each_element_id(elem, WLAN_EID_MULTIPLE_BSSID, start, len) {
+ 		if (elem->datalen < 2)
+ 			continue;
++		if (elem->data[0] < 1 || elem->data[0] > 8)
++			continue;
+
+ 		for_each_element(sub, elem->data + 1, elem->datalen - 1) {
+ 			u8 new_bssid[ETH_ALEN];
+@@ -1501,25 +1503,27 @@ struct ieee802_11_elems *ieee802_11_parse_elems_crc(const u8 *start, size_t len,
+ 	const struct element *non_inherit = NULL;
+ 	u8 *nontransmitted_profile;
+ 	int nontransmitted_profile_len = 0;
++	size_t scratch_len = len;
+
+-	elems = kzalloc(sizeof(*elems), GFP_ATOMIC);
++	elems = kzalloc(sizeof(*elems) + scratch_len, GFP_ATOMIC);
+ 	if (!elems)
+ 		return NULL;
+ 	elems->ie_start = start;
+ 	elems->total_len = len;
+-
+-	nontransmitted_profile = kmalloc(len, GFP_ATOMIC);
+-	if (nontransmitted_profile) {
+-		nontransmitted_profile_len =
+-			ieee802_11_find_bssid_profile(start, len, elems,
+-						      transmitter_bssid,
+-						      bss_bssid,
+-						      nontransmitted_profile);
+-		non_inherit =
+-			cfg80211_find_ext_elem(WLAN_EID_EXT_NON_INHERITANCE,
+-					       nontransmitted_profile,
+-					       nontransmitted_profile_len);
+-	}
++	elems->scratch_len = scratch_len;
++	elems->scratch_pos = elems->scratch;
++
++	nontransmitted_profile = elems->scratch_pos;
++	nontransmitted_profile_len =
++		ieee802_11_find_bssid_profile(start, len, elems,
++					      transmitter_bssid,
++					      bss_bssid,
++					      nontransmitted_profile);
++	elems->scratch_pos += nontransmitted_profile_len;
++	elems->scratch_len -= nontransmitted_profile_len;
++	non_inherit = cfg80211_find_ext_elem(WLAN_EID_EXT_NON_INHERITANCE,
++					     nontransmitted_profile,
++					     nontransmitted_profile_len);
+
+ 	crc = _ieee802_11_parse_elems_crc(start, len, action, elems, filter,
+ 					  crc, non_inherit);
+@@ -1548,8 +1552,6 @@ struct ieee802_11_elems *ieee802_11_parse_elems_crc(const u8 *start, size_t len,
+ 	    offsetofend(struct ieee80211_bssid_index, dtim_count))
+ 		elems->dtim_count = elems->bssid_index->dtim_count;
+
+-	kfree(nontransmitted_profile);
+-
+ 	elems->crc = crc;
+
+ 	return elems;
+diff --git a/net/mctp/af_mctp.c b/net/mctp/af_mctp.c
+index c2fc2a7b2528..b6b5e496fa40 100644
+--- a/net/mctp/af_mctp.c
++++ b/net/mctp/af_mctp.c
+@@ -295,11 +295,12 @@ __must_hold(&net->mctp.keys_lock)
+ 	mctp_dev_release_key(key->dev, key);
+ 	spin_unlock_irqrestore(&key->lock, flags);
+
+-	hlist_del(&key->hlist);
+-	hlist_del(&key->sklist);
+-
+-	/* unref for the lists */
+-	mctp_key_unref(key);
++	if (!hlist_unhashed(&key->hlist)) {
++		hlist_del_init(&key->hlist);
++		hlist_del_init(&key->sklist);
++		/* unref for the lists */
++		mctp_key_unref(key);
++	}
+
+ 	kfree_skb(skb);
+ }
+@@ -373,9 +374,17 @@ static int mctp_ioctl_alloctag(struct mctp_sock *msk, unsigned long arg)
+
+ 	ctl.tag = tag | MCTP_TAG_OWNER | MCTP_TAG_PREALLOC;
+ 	if (copy_to_user((void __user *)arg, &ctl, sizeof(ctl))) {
+-		spin_lock_irqsave(&key->lock, flags);
+-		__mctp_key_remove(key, net, flags, MCTP_TRACE_KEY_DROPPED);
++		unsigned long fl2;
++		/* Unwind our key allocation: the keys list lock needs to be
++		 * taken before the individual key locks, and we need a valid
++		 * flags value (fl2) to pass to __mctp_key_remove, hence the
++		 * second spin_lock_irqsave() rather than a plain spin_lock().
++		 */
++		spin_lock_irqsave(&net->mctp.keys_lock, flags);
++		spin_lock_irqsave(&key->lock, fl2);
++		__mctp_key_remove(key, net, fl2, MCTP_TRACE_KEY_DROPPED);
+ 		mctp_key_unref(key);
++		spin_unlock_irqrestore(&net->mctp.keys_lock, flags);
+ 		return -EFAULT;
+ 	}
+
+diff --git a/net/mctp/route.c b/net/mctp/route.c
+index 3b24b8d18b5b..2155f15a074c 100644
+--- a/net/mctp/route.c
++++ b/net/mctp/route.c
+@@ -228,12 +228,12 @@ __releases(&key->lock)
+
+ 	if (!key->manual_alloc) {
+ 		spin_lock_irqsave(&net->mctp.keys_lock, flags);
+-		hlist_del(&key->hlist);
+-		hlist_del(&key->sklist);
++		if (!hlist_unhashed(&key->hlist)) {
++			hlist_del_init(&key->hlist);
++			hlist_del_init(&key->sklist);
++			mctp_key_unref(key);
++		}
+ 		spin_unlock_irqrestore(&net->mctp.keys_lock, flags);
+-
+-		/* unref for the lists */
+-		mctp_key_unref(key);
+ 	}
+
+ 	/* and one for the local reference */
+diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+index 0134e5d5c81a..39fb9cc25cdc 100644
+--- a/net/wireless/scan.c
++++ b/net/wireless/scan.c
+@@ -143,18 +143,12 @@ static inline void bss_ref_get(struct cfg80211_registered_device *rdev,
+ 	lockdep_assert_held(&rdev->bss_lock);
+
+ 	bss->refcount++;
+-	if (bss->pub.hidden_beacon_bss) {
+-		bss = container_of(bss->pub.hidden_beacon_bss,
+-				   struct cfg80211_internal_bss,
+-				   pub);
+-		bss->refcount++;
+-	}
+-	if (bss->pub.transmitted_bss) {
+-		bss = container_of(bss->pub.transmitted_bss,
+-				   struct cfg80211_internal_bss,
+-				   pub);
+-		bss->refcount++;
+-	}
++
++	if (bss->pub.hidden_beacon_bss)
++		bss_from_pub(bss->pub.hidden_beacon_bss)->refcount++;
++
++	if (bss->pub.transmitted_bss)
++		bss_from_pub(bss->pub.transmitted_bss)->refcount++;
+ }
+
+ static inline void bss_ref_put(struct cfg80211_registered_device *rdev,
+@@ -304,7 +298,8 @@ static size_t cfg80211_gen_new_ie(const u8 *ie, size_t ielen,
+ 	tmp_old = cfg80211_find_ie(WLAN_EID_SSID, ie, ielen);
+ 	tmp_old = (tmp_old) ? tmp_old + tmp_old[1] + 2 : ie;
+
+-	while (tmp_old + tmp_old[1] + 2 - ie <= ielen) {
++	while (tmp_old + 2 - ie <= ielen &&
++	       tmp_old + tmp_old[1] + 2 - ie <= ielen) {
+ 		if (tmp_old[0] == 0) {
+ 			tmp_old++;
+ 			continue;
+@@ -364,7 +359,8 @@ static size_t cfg80211_gen_new_ie(const u8 *ie, size_t ielen,
+ 	 * copied to new ie, skip ssid, capability, bssid-index ie
+ 	 */
+ 	tmp_new = sub_copy;
+-	while (tmp_new + tmp_new[1] + 2 - sub_copy <= subie_len) {
++	while (tmp_new + 2 - sub_copy <= subie_len &&
++	       tmp_new + tmp_new[1] + 2 - sub_copy <= subie_len) {
+ 		if (!(tmp_new[0] == WLAN_EID_NON_TX_BSSID_CAP ||
+ 		      tmp_new[0] == WLAN_EID_SSID)) {
+ 			memcpy(pos, tmp_new, tmp_new[1] + 2);
+@@ -427,6 +423,15 @@ cfg80211_add_nontrans_list(struct cfg80211_bss *trans_bss,
+
+ 	rcu_read_unlock();
+
++	/*
++	 * This is a bit weird - it's not on the list, but already on another
++	 * one! The only way that could happen is if there's some BSSID/SSID
++	 * shared by multiple APs in their multi-BSSID profiles, potentially
++	 * with hidden SSID mixed in ... ignore it.
++	 */
++	if (!list_empty(&nontrans_bss->nontrans_list))
++		return -EINVAL;
++
+ 	/* add to the list */
+ 	list_add_tail(&nontrans_bss->nontrans_list, &trans_bss->nontrans_list);
+ 	return 0;
+@@ -1602,6 +1607,23 @@ struct cfg80211_non_tx_bss {
+ 	u8 bssid_index;
+ };
+
++static void cfg80211_update_hidden_bsses(struct cfg80211_internal_bss *known,
++					 const struct cfg80211_bss_ies *new_ies,
++					 const struct cfg80211_bss_ies *old_ies)
++{
++	struct cfg80211_internal_bss *bss;
++
++	/* Assign beacon IEs to all sub entries */
++	list_for_each_entry(bss, &known->hidden_list, hidden_list) {
++		const struct cfg80211_bss_ies *ies;
++
++		ies = rcu_access_pointer(bss->pub.beacon_ies);
++		WARN_ON(ies != old_ies);
++
++		rcu_assign_pointer(bss->pub.beacon_ies, new_ies);
++	}
++}
++
+ static bool
+ cfg80211_update_known_bss(struct cfg80211_registered_device *rdev,
+ 			  struct cfg80211_internal_bss *known,
+@@ -1625,7 +1647,6 @@ cfg80211_update_known_bss(struct cfg80211_registered_device *rdev,
+ 			kfree_rcu((struct cfg80211_bss_ies *)old, rcu_head);
+ 	} else if (rcu_access_pointer(new->pub.beacon_ies)) {
+ 		const struct cfg80211_bss_ies *old;
+-		struct cfg80211_internal_bss *bss;
+
+ 		if (known->pub.hidden_beacon_bss &&
+ 		    !list_empty(&known->hidden_list)) {
+@@ -1653,16 +1674,7 @@ cfg80211_update_known_bss(struct cfg80211_registered_device *rdev,
+ 		if (old == rcu_access_pointer(known->pub.ies))
+ 			rcu_assign_pointer(known->pub.ies, new->pub.beacon_ies);
+
+-		/* Assign beacon IEs to all sub entries */
+-		list_for_each_entry(bss, &known->hidden_list, hidden_list) {
+-			const struct cfg80211_bss_ies *ies;
+-
+-			ies = rcu_access_pointer(bss->pub.beacon_ies);
+-			WARN_ON(ies != old);
+-
+-			rcu_assign_pointer(bss->pub.beacon_ies,
+-					   new->pub.beacon_ies);
+-		}
++		cfg80211_update_hidden_bsses(known, new->pub.beacon_ies, old);
+
+ 		if (old)
+ 			kfree_rcu((struct cfg80211_bss_ies *)old, rcu_head);
+@@ -1739,6 +1751,8 @@ cfg80211_bss_update(struct cfg80211_registered_device *rdev,
+ 		new->refcount = 1;
+ 		INIT_LIST_HEAD(&new->hidden_list);
+ 		INIT_LIST_HEAD(&new->pub.nontrans_list);
++		/* we'll set this later if it was non-NULL */
++		new->pub.transmitted_bss = NULL;
+
+ 		if (rcu_access_pointer(tmp->pub.proberesp_ies)) {
+ 			hidden = rb_find_bss(rdev, tmp, BSS_CMP_HIDE_ZLEN);
+@@ -2021,10 +2035,15 @@ cfg80211_inform_single_bss_data(struct wiphy *wiphy,
+ 		spin_lock_bh(&rdev->bss_lock);
+ 		if (cfg80211_add_nontrans_list(non_tx_data->tx_bss,
+ 					       &res->pub)) {
+-			if (__cfg80211_unlink_bss(rdev, res))
++			if (__cfg80211_unlink_bss(rdev, res)) {
+ 				rdev->bss_generation++;
++				res = NULL;
++			}
+ 		}
+ 		spin_unlock_bh(&rdev->bss_lock);
++
++		if (!res)
++			return NULL;
+ 	}
+
+ 	trace_cfg80211_return_bss(&res->pub);
+@@ -2143,6 +2162,8 @@ static void cfg80211_parse_mbssid_data(struct wiphy *wiphy,
+ 	for_each_element_id(elem, WLAN_EID_MULTIPLE_BSSID, ie, ielen) {
+ 		if (elem->datalen < 4)
+ 			continue;
++		if (elem->data[0] < 1 || (int)elem->data[0] > 8)
++			continue;
+ 		for_each_element(sub, elem->data + 1, elem->datalen - 1) {
+ 			u8 profile_len;
+
+@@ -2279,7 +2300,7 @@ cfg80211_update_notlisted_nontrans(struct wiphy *wiphy,
+ 	size_t new_ie_len;
+ 	struct cfg80211_bss_ies *new_ies;
+ 	const struct cfg80211_bss_ies *old;
+-	u8 cpy_len;
++	size_t cpy_len;
+
+ 	lockdep_assert_held(&wiphy_to_rdev(wiphy)->bss_lock);
+
+@@ -2346,6 +2367,8 @@ cfg80211_update_notlisted_nontrans(struct wiphy *wiphy,
+ 	} else {
+ 		old = rcu_access_pointer(nontrans_bss->beacon_ies);
+ 		rcu_assign_pointer(nontrans_bss->beacon_ies, new_ies);
++		cfg80211_update_hidden_bsses(bss_from_pub(nontrans_bss),
++					     new_ies, old);
+ 		rcu_assign_pointer(nontrans_bss->ies, new_ies);
+ 		if (old)
+ 			kfree_rcu((struct cfg80211_bss_ies *)old, rcu_head);
 diff --git a/scripts/pahole-flags.sh b/scripts/pahole-flags.sh
 index 0d99ef17e4a5..d4f3d63cb434 100755
 --- a/scripts/pahole-flags.sh

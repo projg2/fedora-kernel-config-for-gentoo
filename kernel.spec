@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.15
 %define patchversion 5.19
-%define pkgrelease 300
+%define pkgrelease 301
 %define kversion 5
 %define tarfile_release 5.19.15
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 300%{?buildid}%{?dist}
+%define specrelease 301%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.15
 
@@ -3138,6 +3138,22 @@ fi
 #
 #
 %changelog
+* Thu Oct 13 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.15-1]
+- Bump for build (Justin M. Forbes)
+- mctp: prevent double key removal and unref (Jeremy Kerr)
+- wifi: cfg80211: update hidden BSSes to avoid WARN_ON (Johannes Berg)
+- wifi: mac80211: fix crash in beacon protection for P2P-device (Johannes Berg)
+- wifi: mac80211_hwsim: avoid mac80211 warning on bad rate (Johannes Berg)
+- wifi: cfg80211: avoid nontransmitted BSS list corruption (Johannes Berg)
+- wifi: cfg80211: fix BSS refcounting bugs (Johannes Berg)
+- wifi: cfg80211: ensure length byte is present before access (Johannes Berg)
+- wifi: mac80211: fix MBSSID parsing use-after-free (Johannes Berg)
+- wifi: cfg80211/mac80211: reject bad MBSSID elements (Johannes Berg)
+- wifi: cfg80211: fix u8 overflow in cfg80211_update_notlisted_nontrans() (Johannes Berg)
+- drm/vc4: hdmi: Check the HSM rate at runtime_resume (Maxime Ripard)
+- drm/vc4: hdmi: Enforce the minimum rate at runtime_resume (Maxime Ripard)
+- phy: rockchip-inno-usb2: Return zero after otg sync (Peter Geis)
+
 * Wed Oct 12 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.15-0]
 - scsi: stex: Properly zero out the passthrough command structure (Linus Torvalds)
 - ipv4: Handle attempt to delete multipath route when fib_info contains an nh reference (David Ahern)
