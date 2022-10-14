@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc0.20221013gita185a0995518.11
+%define pkgrelease 0.rc0.20221014git9c9155a3509a.11
 %define kversion 6
-%define tarfile_release 6.0-11658-ga185a0995518
+%define tarfile_release 6.0-11990-g9c9155a3509a
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20221013gita185a0995518.11%{?buildid}%{?dist}
+%define specrelease 0.rc0.20221014git9c9155a3509a.11%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -2882,7 +2882,7 @@ if [ `uname -i` == "x86_64" -o `uname -i` == "i386" ] &&\
   /bin/sed -r -i -e 's/^DEFAULTKERNEL=%{-r*}$/DEFAULTKERNEL=kernel%{?-v:-%{-v*}}/' /etc/sysconfig/kernel || exit $?\
 fi}\
 mkdir -p %{_localstatedir}/lib/rpm-state/%{name}\
-touch %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{1}}\
+touch %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?-v:+%{-v*}}\
 %{nil}
 
 #
@@ -3185,8 +3185,14 @@ fi
 #
 #
 %changelog
-* Thu Oct 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.a185a0995518.11]
+* Fri Oct 14 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.9c9155a3509a.11]
 - Add kasan_test to mod-internal.list (Justin M. Forbes)
+- redhat/Makefile.variables: Fix typo with RHDISTGIT_TMP (Prarit Bhargava)
+- spec: fix path to `installing_core` stamp file for subpackages (Jonathan Lebon)
+- Remove unused ci scripts (Don Zickus)
+- Rename rename FORCE_MAX_ZONEORDER to ARCH_FORCE_MAX_ORDER in configs (Justin M. Forbes)
+- redhat: Add new fortify_kunit & is_signed_type_kunit to mod-internal.list (Patrick Talbert)
+- Linux v6.1.0-0.rc0.9c9155a3509a
 
 * Thu Oct 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.a185a0995518.10]
 - Linux v6.1.0-0.rc0.a185a0995518
