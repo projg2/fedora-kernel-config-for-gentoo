@@ -17,6 +17,7 @@
  drivers/firmware/sysfb.c                           |  18 ++-
  drivers/gpu/drm/drm_ioctl.c                        |   8 +-
  drivers/gpu/drm/i915/display/intel_bios.c          |  46 +++-----
+ drivers/gpu/drm/vc4/vc4_hdmi.c                     |  29 +++++
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -25,14 +26,13 @@
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
- drivers/scsi/stex.c                                |  17 +--
+ drivers/phy/rockchip/phy-rockchip-inno-usb2.c      |  10 +-
  drivers/usb/core/hub.c                             |   7 ++
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
- include/scsi/scsi_cmnd.h                           |   2 +-
  init/Kconfig                                       |   2 +-
  kernel/module/signing.c                            |   9 +-
  net/ipv4/fib_semantics.c                           |   8 +-
@@ -42,10 +42,10 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/net/fib_nexthops.sh        |   5 +
- 44 files changed, 545 insertions(+), 228 deletions(-)
+ 44 files changed, 570 insertions(+), 223 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 3193969f1eb3..f6857e4cdb25 100644
+index aa449693ad09..9cf6cf0e5402 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -712,6 +712,59 @@ index 7d6eb9ad7a02..f801d923fdec 100644
  	table_size = sizeof(struct lvds_lfp_panel_name);
 
  	if (16 * (size + table_size) <= block_size) {
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 1e5f68704d7d..874c6bd787c5 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -2869,12 +2869,37 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
+ 	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
+ 	unsigned long __maybe_unused flags;
+ 	u32 __maybe_unused value;
++	unsigned long rate;
+ 	int ret;
+
++	/*
++	 * The HSM clock is in the HDMI power domain, so we need to set
++	 * its frequency while the power domain is active so that it
++	 * keeps its rate.
++	 */
++	ret = clk_set_min_rate(vc4_hdmi->hsm_clock, HSM_MIN_CLOCK_FREQ);
++	if (ret)
++		return ret;
++
+ 	ret = clk_prepare_enable(vc4_hdmi->hsm_clock);
+ 	if (ret)
+ 		return ret;
+
++	/*
++	 * Whenever the RaspberryPi boots without an HDMI monitor
++	 * plugged in, the firmware won't have initialized the HSM clock
++	 * rate and it will be reported as 0.
++	 *
++	 * If we try to access a register of the controller in such a
++	 * case, it will lead to a silent CPU stall. Let's make sure we
++	 * prevent such a case.
++	 */
++	rate = clk_get_rate(vc4_hdmi->hsm_clock);
++	if (!rate) {
++		ret = -EINVAL;
++		goto err_disable_clk;
++	}
++
+ 	if (vc4_hdmi->variant->reset)
+ 		vc4_hdmi->variant->reset(vc4_hdmi);
+
+@@ -2896,6 +2921,10 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
+ #endif
+
+ 	return 0;
++
++err_disable_clk:
++	clk_disable_unprepare(vc4_hdmi->hsm_clock);
++	return ret;
+ }
+
+ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1266,36 +1319,38 @@ index 4944798e75b5..079a29ef1bf2 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
-diff --git a/drivers/scsi/stex.c b/drivers/scsi/stex.c
-index e6420f2127ce..8def242675ef 100644
---- a/drivers/scsi/stex.c
-+++ b/drivers/scsi/stex.c
-@@ -665,16 +665,17 @@ static int stex_queuecommand_lck(struct scsi_cmnd *cmd)
- 		return 0;
- 	case PASSTHRU_CMD:
- 		if (cmd->cmnd[1] == PASSTHRU_GET_DRVVER) {
--			struct st_drvver ver;
-+			const struct st_drvver ver = {
-+				.major = ST_VER_MAJOR,
-+				.minor = ST_VER_MINOR,
-+				.oem = ST_OEM,
-+				.build = ST_BUILD_VER,
-+				.signature[0] = PASSTHRU_SIGNATURE,
-+				.console_id = host->max_id - 1,
-+				.host_no = hba->host->host_no,
-+			};
- 			size_t cp_len = sizeof(ver);
+diff --git a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+index 0b1e9337ee8e..e6ededc51523 100644
+--- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
++++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+@@ -1124,7 +1124,7 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
+ 					  struct rockchip_usb2phy_port *rport,
+ 					  struct device_node *child_np)
+ {
+-	int ret;
++	int ret, id;
 
--			ver.major = ST_VER_MAJOR;
--			ver.minor = ST_VER_MINOR;
--			ver.oem = ST_OEM;
--			ver.build = ST_BUILD_VER;
--			ver.signature[0] = PASSTHRU_SIGNATURE;
--			ver.console_id = host->max_id - 1;
--			ver.host_no = hba->host->host_no;
- 			cp_len = scsi_sg_copy_from_buffer(cmd, &ver, cp_len);
- 			if (sizeof(ver) == cp_len)
- 				cmd->result = DID_OK << 16;
+ 	rport->port_id = USB2PHY_PORT_OTG;
+ 	rport->port_cfg = &rphy->phy_cfg->port_cfgs[USB2PHY_PORT_OTG];
+@@ -1162,13 +1162,15 @@ static int rockchip_usb2phy_otg_port_init(struct rockchip_usb2phy *rphy,
+
+ 		ret = devm_extcon_register_notifier(rphy->dev, rphy->edev,
+ 					EXTCON_USB_HOST, &rport->event_nb);
+-		if (ret)
++		if (ret) {
+ 			dev_err(rphy->dev, "register USB HOST notifier failed\n");
++			goto out;
++		}
+
+ 		if (!of_property_read_bool(rphy->dev->of_node, "extcon")) {
+ 			/* do initial sync of usb state */
+-			ret = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
+-			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !ret);
++			id = property_enabled(rphy->grf, &rport->port_cfg->utmi_id);
++			extcon_set_state_sync(rphy->edev, EXTCON_USB_HOST, !id);
+ 		}
+ 	}
+
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index bbab424b0d55..ed86042fb57b 100644
 --- a/drivers/usb/core/hub.c
@@ -1447,19 +1502,6 @@ index 7bd0c490703d..7779eaf1ffa1 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
-diff --git a/include/scsi/scsi_cmnd.h b/include/scsi/scsi_cmnd.h
-index bac55decf900..7d3622db38ed 100644
---- a/include/scsi/scsi_cmnd.h
-+++ b/include/scsi/scsi_cmnd.h
-@@ -201,7 +201,7 @@ static inline unsigned int scsi_get_resid(struct scsi_cmnd *cmd)
- 	for_each_sg(scsi_sglist(cmd), sg, nseg, __i)
-
- static inline int scsi_sg_copy_from_buffer(struct scsi_cmnd *cmd,
--					   void *buf, int buflen)
-+					   const void *buf, int buflen)
- {
- 	return sg_copy_from_buffer(scsi_sglist(cmd), scsi_sg_count(cmd),
- 				   buf, buflen);
 diff --git a/init/Kconfig b/init/Kconfig
 index 532362fcfe31..30d547537ea0 100644
 --- a/init/Kconfig
@@ -1532,7 +1574,7 @@ index e137cf15aae9..2ed2341f7967 100755
  # Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
  # to force full paths for a non-O= build
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-index 093894a640dc..1c43a9462b4b 100644
+index b78753d27d8e..f0b37800431a 100644
 --- a/security/integrity/platform_certs/load_uefi.c
 +++ b/security/integrity/platform_certs/load_uefi.c
 @@ -73,7 +73,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,

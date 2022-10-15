@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.0.1
+%define specversion 6.0.2
 %define patchversion 6.0
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.0.1
+%define tarfile_release 6.0.2
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.0.1
+%define kabiversion 6.0.2
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3180,9 +3180,13 @@ fi
 #
 #
 %changelog
-* Wed Oct 12 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.1-300]
+* Sat Oct 15 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.2-0]
+- phy: rockchip-inno-usb2: Return zero after otg sync (Peter Geis)
+- drm/vc4: hdmi: Check the HSM rate at runtime_resume (Maxime Ripard)
+- drm/vc4: hdmi: Enforce the minimum rate at runtime_resume (Maxime Ripard)
 - drm/i915/bios: Use hardcoded fp_timing size for generating LFP data pointers (Mark Pearson)
 - Trim changelog before 6.0 reset (Justin M. Forbes)
+- Linux v6.0.2
 
 * Wed Oct 12 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.1-0]
 - scsi: stex: Properly zero out the passthrough command structure (Linus Torvalds)
