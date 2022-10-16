@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.0.2
 %define patchversion 6.0
-%define pkgrelease 300
+%define pkgrelease 301
 %define kversion 6
 %define tarfile_release 6.0.2
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 300%{?buildid}%{?dist}
+%define specrelease 301%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.0.2
 
@@ -575,7 +575,7 @@ Requires: kernel-modules-uname-r = %{KVERREL}
 #
 # List the packages used during the kernel build
 #
-BuildRequires: kmod, bash, coreutils, tar, git-core, which
+BuildRequires: kmod, patch, bash, coreutils, tar, git-core, which
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
 BuildRequires: net-tools, hostname, bc, elfutils-devel
@@ -1392,7 +1392,7 @@ if [ "%{patches}" != "%%{patches}" ] ; then
   done
 fi 2>/dev/null
 
-patch_command='git apply'
+patch_command='patch -p1 -F1 -s'
 ApplyPatch()
 {
   local patch=$1
@@ -2194,13 +2194,13 @@ BuildKernel() {
     # the F17 UsrMove feature.
     ln -sf $DevelDir $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
-# %ifnarch armv7hl
+%ifnarch armv7hl
     # Generate vmlinux.h and put it to kernel-devel path
     # zfcpdump build does not have btf anymore
-#     if [ "$Variant" != "zfcpdump" ]; then
-#         bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
-#     fi
-# %endif
+    if [ "$Variant" != "zfcpdump" ]; then
+        bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+    fi
+%endif
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
@@ -3180,6 +3180,9 @@ fi
 #
 #
 %changelog
+* Sun Oct 16 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.2-301]
+- Revert "redhat: properly handle binary files in patches" (Justin M. Forbes)
+
 * Sat Oct 15 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.2-0]
 - phy: rockchip-inno-usb2: Return zero after otg sync (Peter Geis)
 - drm/vc4: hdmi: Check the HSM rate at runtime_resume (Maxime Ripard)
