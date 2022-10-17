@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index cfbe6a7de640..80a3a35a9c36 100644
+index f41ec8c8426b..4781baaf709c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -166,10 +166,10 @@ index a08c9d092a33..1d82f6e9ecbd 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index f6737d2f37b2..831201c75275 100644
+index 505c8a1ccbe0..575f77325e60 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1195,7 +1195,7 @@ endchoice
+@@ -1212,7 +1212,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -178,7 +178,7 @@ index f6737d2f37b2..831201c75275 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1434,6 +1434,7 @@ config XEN
+@@ -1451,6 +1451,7 @@ config XEN
  config ARCH_FORCE_MAX_ORDER
  	int
  	default "14" if ARM64_64K_PAGES

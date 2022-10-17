@@ -120,17 +120,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc0.20221014git9c9155a3509a.11
+%define pkgrelease 0.rc1.15
 %define kversion 6
-%define tarfile_release 6.0-11990-g9c9155a3509a
+%define tarfile_release 6.1-rc1
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20221014git9c9155a3509a.11%{?buildid}%{?dist}
+%define specrelease 0.rc1.15%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -575,7 +575,7 @@ Requires: kernel-modules-uname-r = %{KVERREL}
 #
 # List the packages used during the kernel build
 #
-BuildRequires: kmod, bash, coreutils, tar, git-core, which
+BuildRequires: kmod, patch, bash, coreutils, tar, git-core, which
 BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
 BuildRequires: net-tools, hostname, bc, elfutils-devel
@@ -1392,7 +1392,7 @@ if [ "%{patches}" != "%%{patches}" ] ; then
   done
 fi 2>/dev/null
 
-patch_command='git apply'
+patch_command='patch -p1 -F1 -s'
 ApplyPatch()
 {
   local patch=$1
@@ -3185,6 +3185,19 @@ fi
 #
 #
 %changelog
+* Mon Oct 17 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.15]
+- Revert "redhat: properly handle binary files in patches" (Akihiko Odaki)
+
+* Mon Oct 17 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.14]
+- Linux v6.1.0-0.rc1
+
+* Sun Oct 16 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.1501278bb7ba.13]
+- Linux v6.1.0-0.rc0.1501278bb7ba
+
+* Sat Oct 15 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.19d17ab7c68b.12]
+- Turn on Multi-Gen LRU for Fedora (Justin M. Forbes)
+- Linux v6.1.0-0.rc0.19d17ab7c68b
+
 * Fri Oct 14 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.9c9155a3509a.11]
 - Add kasan_test to mod-internal.list (Justin M. Forbes)
 - redhat/Makefile.variables: Fix typo with RHDISTGIT_TMP (Prarit Bhargava)
