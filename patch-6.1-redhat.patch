@@ -64,7 +64,9 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 66 files changed, 1540 insertions(+), 187 deletions(-)
+ tools/perf/Documentation/arm-coresight.txt         |   5 +
+ tools/perf/Documentation/perf-arm-coresight.txt    |   5 -
+ 68 files changed, 1545 insertions(+), 192 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index a465d5242774..191876dd4731 100644
@@ -3008,35 +3010,6 @@ index 79d82cb6e469..843b0dd8f0dd 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-From 9c9d8f1b7327830376445c4dd05b121e1525c93f Mon Sep 17 00:00:00 2001
-From: Adrian Hunter <adrian.hunter@intel.com>
-Date: Mon, 17 Oct 2022 12:35:49 +0300
-Subject: [PATCH] perf tools: Fix man page build wrt perf-arm-coresight.txt
-
-perf build assumes documentation files starting with "perf-" are man
-pages but perf-arm-coresight.txt is not a man page:
-
-asciidoc: ERROR: perf-arm-coresight.txt: line 2: malformed manpage title
-asciidoc: ERROR: perf-arm-coresight.txt: line 3: name section expected
-asciidoc: FAILED: perf-arm-coresight.txt: line 3: section title expected
-make[3]: *** [Makefile:266: perf-arm-coresight.xml] Error 1
-make[3]: *** Waiting for unfinished jobs....
-make[2]: *** [Makefile.perf:895: man] Error 2
-
-Fix by renaming it.
-
-Reported-by: Sven Schnelle <svens@linux.ibm.com>
-Reported-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Fixes: dc2e0fb00bb2 ("perf test coresight: Add relevant documentation about ARM64 CoreSight testing")
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
-Reviewed-by: Leo Yan <leo.yan@linaro.org>
----
- tools/perf/Documentation/arm-coresight.txt      | 5 +++++
- tools/perf/Documentation/perf-arm-coresight.txt | 5 -----
- 2 files changed, 5 insertions(+), 5 deletions(-)
- create mode 100644 tools/perf/Documentation/arm-coresight.txt
- delete mode 100644 tools/perf/Documentation/perf-arm-coresight.txt
-
 diff --git a/tools/perf/Documentation/arm-coresight.txt b/tools/perf/Documentation/arm-coresight.txt
 new file mode 100644
 index 000000000000..c117fc50a2a9
@@ -3059,6 +3032,3 @@ index c117fc50a2a9..000000000000
 -
 -For full documentation, see Documentation/trace/coresight/coresight-perf.rst
 -in the kernel tree.
--- 
-2.37.3
-
