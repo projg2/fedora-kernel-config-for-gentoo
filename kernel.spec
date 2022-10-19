@@ -90,7 +90,6 @@ Summary: The Linux kernel
 
 %if %{zipmodules}
 %global zipsed -e 's/\.ko$/\.ko.xz/'
-# for parallel xz processes, replace with 1 to go back to single process
 %endif
 
 %if 0%{?fedora}
@@ -124,13 +123,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc1.20221018gitbb1a1146467a.16
+%define pkgrelease 0.rc1.20221019gitaae703b02f92.17
 %define kversion 6
-%define tarfile_release 6.1-rc1-10-gbb1a1146467a
+%define tarfile_release 6.1-rc1-25-gaae703b02f92
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20221018gitbb1a1146467a.16%{?buildid}%{?dist}
+%define specrelease 0.rc1.20221019gitaae703b02f92.17%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -760,7 +759,6 @@ Source13: redhatsecureboot003.cer
 
 Source20: mod-denylist.sh
 Source21: mod-sign.sh
-Source22: parallel_xz.sh
 
 %define modsign_cmd %{SOURCE21}
 
@@ -1524,6 +1522,13 @@ for i in *.config; do
   sed -i 's@CONFIG_SYSTEM_TRUSTED_KEYS=""@CONFIG_SYSTEM_TRUSTED_KEYS="certs/rhel.pem"@' $i
 done
 %endif
+%endif
+
+# Adjust FIPS module name for RHEL
+%if 0%{?rhel}
+for i in *.config; do
+  sed -i 's/CONFIG_CRYPTO_FIPS_NAME=.*/CONFIG_CRYPTO_FIPS_NAME="Red Hat Enterprise Linux %{rhel} - Kernel Cryptographic API"/' $i
+done
 %endif
 
 cp %{SOURCE81} .
@@ -3185,9 +3190,14 @@ fi
 #
 #
 %changelog
-* Tue Oct 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.bb1a1146467a.16]
+* Wed Oct 19 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.aae703b02f92.17]
 - perf tools: Fix man page build wrt perf-arm-coresight.txt (Adrian Hunter)
+
+* Wed Oct 19 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.aae703b02f92.16]
+- Adjust FIPS module name in RHEL (Vladis Dronov)
 - spec: prevent git apply from searching for the .git directory (Ondrej Mosnacek)
+- redhat: Remove parallel_xz.sh (Prarit Bhargava)
+- Linux v6.1.0-0.rc1.aae703b02f92
 
 * Tue Oct 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.bb1a1146467a.15]
 - Linux v6.1.0-0.rc1.bb1a1146467a
