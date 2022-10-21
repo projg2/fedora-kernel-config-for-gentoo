@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/382edc42e3e53cfc18b9a47f4d2f8ed8355804a3
+ 382edc42e3e53cfc18b9a47f4d2f8ed8355804a3 drm/vc4: hdmi: Fix HSM clock too low on Pi4
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/b7ac3893a05dddcf85e47e0f9fc3868bb80cba8e
  b7ac3893a05dddcf85e47e0f9fc3868bb80cba8e mctp: prevent double key removal and unref
 

@@ -33,7 +33,8 @@
  drivers/gpu/drm/v3d/v3d_debugfs.c                  |  18 +-
  drivers/gpu/drm/v3d/v3d_drv.c                      |  12 +-
  drivers/gpu/drm/v3d/v3d_gem.c                      |  12 +-
- drivers/gpu/drm/vc4/vc4_hdmi.c                     |  29 +
+ drivers/gpu/drm/vc4/vc4_hdmi.c                     |  46 +-
+ drivers/gpu/drm/vc4/vc4_hdmi.h                     |   1 +
  drivers/hid/hid-rmi.c                              |  64 --
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +--
@@ -65,7 +66,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/net/fib_nexthops.sh        |   5 +
- 67 files changed, 1823 insertions(+), 356 deletions(-)
+ 68 files changed, 1839 insertions(+), 358 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml b/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml
 index e6485f7b046f..217c42874f41 100644
@@ -1301,29 +1302,69 @@ index 2352e9640922..725a252e837b 100644
  	kfree(*container);
  	*container = NULL;
 diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 199bc398817f..eb3aaaca2b80 100644
+index 199bc398817f..3519b0c23d3b 100644
 --- a/drivers/gpu/drm/vc4/vc4_hdmi.c
 +++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -2889,12 +2889,37 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
+@@ -2732,9 +2732,16 @@ static int vc4_hdmi_init_resources(struct vc4_hdmi *vc4_hdmi)
+ 		DRM_ERROR("Failed to get HDMI state machine clock\n");
+ 		return PTR_ERR(vc4_hdmi->hsm_clock);
+ 	}
++
+ 	vc4_hdmi->audio_clock = vc4_hdmi->hsm_clock;
+ 	vc4_hdmi->cec_clock = vc4_hdmi->hsm_clock;
+
++	vc4_hdmi->hsm_rpm_clock = devm_clk_get(dev, "hdmi");
++	if (IS_ERR(vc4_hdmi->hsm_rpm_clock)) {
++		DRM_ERROR("Failed to get HDMI state machine clock\n");
++		return PTR_ERR(vc4_hdmi->hsm_rpm_clock);
++	}
++
+ 	return 0;
+ }
+
+@@ -2816,6 +2823,12 @@ static int vc5_hdmi_init_resources(struct vc4_hdmi *vc4_hdmi)
+ 		return PTR_ERR(vc4_hdmi->hsm_clock);
+ 	}
+
++	vc4_hdmi->hsm_rpm_clock = devm_clk_get(dev, "hdmi");
++	if (IS_ERR(vc4_hdmi->hsm_rpm_clock)) {
++		DRM_ERROR("Failed to get HDMI state machine clock\n");
++		return PTR_ERR(vc4_hdmi->hsm_rpm_clock);
++	}
++
+ 	vc4_hdmi->pixel_bvb_clock = devm_clk_get(dev, "bvb");
+ 	if (IS_ERR(vc4_hdmi->pixel_bvb_clock)) {
+ 		DRM_ERROR("Failed to get pixel bvb clock\n");
+@@ -2879,7 +2892,7 @@ static int vc4_hdmi_runtime_suspend(struct device *dev)
+ {
+ 	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
+
+-	clk_disable_unprepare(vc4_hdmi->hsm_clock);
++	clk_disable_unprepare(vc4_hdmi->hsm_rpm_clock);
+
+ 	return 0;
+ }
+@@ -2889,12 +2902,37 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
  	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
  	unsigned long __maybe_unused flags;
  	u32 __maybe_unused value;
 +	unsigned long rate;
  	int ret;
 
+-	ret = clk_prepare_enable(vc4_hdmi->hsm_clock);
 +	/*
 +	 * The HSM clock is in the HDMI power domain, so we need to set
 +	 * its frequency while the power domain is active so that it
 +	 * keeps its rate.
 +	 */
-+	ret = clk_set_min_rate(vc4_hdmi->hsm_clock, HSM_MIN_CLOCK_FREQ);
-+	if (ret)
-+		return ret;
-+
- 	ret = clk_prepare_enable(vc4_hdmi->hsm_clock);
++	ret = clk_set_min_rate(vc4_hdmi->hsm_rpm_clock, HSM_MIN_CLOCK_FREQ);
  	if (ret)
  		return ret;
 
++	ret = clk_prepare_enable(vc4_hdmi->hsm_rpm_clock);
++	if (ret)
++		return ret;
++
 +	/*
 +	 * Whenever the RaspberryPi boots without an HDMI monitor
 +	 * plugged in, the firmware won't have initialized the HSM clock
@@ -1333,7 +1374,7 @@ index 199bc398817f..eb3aaaca2b80 100644
 +	 * case, it will lead to a silent CPU stall. Let's make sure we
 +	 * prevent such a case.
 +	 */
-+	rate = clk_get_rate(vc4_hdmi->hsm_clock);
++	rate = clk_get_rate(vc4_hdmi->hsm_rpm_clock);
 +	if (!rate) {
 +		ret = -EINVAL;
 +		goto err_disable_clk;
@@ -1342,7 +1383,7 @@ index 199bc398817f..eb3aaaca2b80 100644
  	if (vc4_hdmi->variant->reset)
  		vc4_hdmi->variant->reset(vc4_hdmi);
 
-@@ -2916,6 +2941,10 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
+@@ -2916,6 +2954,10 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
  #endif
 
  	return 0;
@@ -1353,6 +1394,18 @@ index 199bc398817f..eb3aaaca2b80 100644
  }
 
  static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.h b/drivers/gpu/drm/vc4/vc4_hdmi.h
+index 1520387b317f..fbc0a55f18e1 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.h
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.h
+@@ -171,6 +171,7 @@ struct vc4_hdmi {
+ 	struct clk *cec_clock;
+ 	struct clk *pixel_clock;
+ 	struct clk *hsm_clock;
++	struct clk *hsm_rpm_clock;
+ 	struct clk *audio_clock;
+ 	struct clk *pixel_bvb_clock;
+
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c

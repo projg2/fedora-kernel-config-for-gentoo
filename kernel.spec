@@ -124,13 +124,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 5.19.16
 %define patchversion 5.19
-%define pkgrelease 300
+%define pkgrelease 301
 %define kversion 5
 %define tarfile_release 5.19.16
 # This is needed to do merge window version magic
 %define patchlevel 19
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 300%{?buildid}%{?dist}
+%define specrelease 301%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 5.19.16
 
@@ -3138,6 +3138,10 @@ fi
 #
 #
 %changelog
+* Fri Oct 21 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.16-1]
+- Bump for build (Justin M. Forbes)
+- drm/vc4: hdmi: Fix HSM clock too low on Pi4 (maxime@cerno.tech)
+
 * Sat Oct 15 2022 Justin M. Forbes <jforbes@fedoraproject.org> [5.19.16-0]
 - Reset build for version bump (Justin M. Forbes)
 - Linux v5.19.16
