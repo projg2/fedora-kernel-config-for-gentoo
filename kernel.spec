@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.0.2
+%define specversion 6.0.3
 %define patchversion 6.0
-%define pkgrelease 301
+%define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.0.2
+%define tarfile_release 6.0.3
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 301%{?buildid}%{?dist}
+%define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.0.2
+%define kabiversion 6.0.3
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -2194,13 +2194,13 @@ BuildKernel() {
     # the F17 UsrMove feature.
     ln -sf $DevelDir $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
-# %ifnarch armv7hl
+%ifnarch armv7hl
     # Generate vmlinux.h and put it to kernel-devel path
     # zfcpdump build does not have btf anymore
-#     if [ "$Variant" != "zfcpdump" ]; then
-#         bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
-#     fi
-# %endif
+    if [ "$Variant" != "zfcpdump" ]; then
+        bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+    fi
+%endif
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
@@ -3180,8 +3180,11 @@ fi
 #
 #
 %changelog
-* Sun Oct 16 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.2-301]
+* Fri Oct 21 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.3-0]
+- drm/vc4: hdmi: Fix HSM clock too low on Pi4 (maxime@cerno.tech)
+- Config updates for new options in 6.0.3 (Justin M. Forbes)
 - Revert "redhat: properly handle binary files in patches" (Justin M. Forbes)
+- Linux v6.0.3
 
 * Sat Oct 15 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.2-0]
 - phy: rockchip-inno-usb2: Return zero after otg sync (Peter Geis)

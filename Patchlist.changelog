@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3f98e8c4ff4856388d73a2dd727241fc05dc717f
+ 3f98e8c4ff4856388d73a2dd727241fc05dc717f drm/vc4: hdmi: Fix HSM clock too low on Pi4
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/1dc36385281ea0ffa70f6fd94f21a85e69b89062
  1dc36385281ea0ffa70f6fd94f21a85e69b89062 phy: rockchip-inno-usb2: Return zero after otg sync
 
