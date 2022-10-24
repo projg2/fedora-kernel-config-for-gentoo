@@ -119,17 +119,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc1.20221019gitaae703b02f92.17
+%define pkgrelease 0.rc2.21
 %define kversion 6
-%define tarfile_release 6.1-rc1-25-gaae703b02f92
+%define tarfile_release 6.1-rc2
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20221019gitaae703b02f92.17%{?buildid}%{?dist}
+%define specrelease 0.rc2.21%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3190,8 +3190,20 @@ fi
 #
 #
 %changelog
-* Wed Oct 19 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.aae703b02f92.17]
+* Mon Oct 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.21]
 - perf tools: Fix man page build wrt perf-arm-coresight.txt (Adrian Hunter)
+
+* Mon Oct 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.20]
+- Linux v6.1.0-0.rc2
+
+* Sun Oct 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.d47136c28015.19]
+- Linux v6.1.0-0.rc1.d47136c28015
+
+* Sat Oct 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.4da34b7d175d.18]
+- Linux v6.1.0-0.rc1.4da34b7d175d
+
+* Fri Oct 21 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.e35184f32151.17]
+- Linux v6.1.0-0.rc1.e35184f32151
 
 * Wed Oct 19 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.aae703b02f92.16]
 - Adjust FIPS module name in RHEL (Vladis Dronov)

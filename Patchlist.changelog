@@ -1,5 +1,5 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/8b1b0f775cff7f5dc36cc1edf61e3e3971a25059
- 8b1b0f775cff7f5dc36cc1edf61e3e3971a25059 perf tools: Fix man page build wrt perf-arm-coresight.txt
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/cd37e50d142e792867e204b7dca20a64334739cd
+ cd37e50d142e792867e204b7dca20a64334739cd perf tools: Fix man page build wrt perf-arm-coresight.txt
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/a5465769aab281eaccf26b6b2c1659e26de74074
  a5465769aab281eaccf26b6b2c1659e26de74074 Change acpi_bus_get_acpi_device to acpi_get_acpi_dev
