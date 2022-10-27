@@ -123,13 +123,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc2.20221026git4dc12f37a8e9.23
+%define pkgrelease 0.rc2.20221027gitb229b6ca5abb.23
 %define kversion 6
-%define tarfile_release 6.1-rc2-70-g4dc12f37a8e9
+%define tarfile_release 6.1-rc2-105-gb229b6ca5abb
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20221026git4dc12f37a8e9.23%{?buildid}%{?dist}
+%define specrelease 0.rc2.20221027gitb229b6ca5abb.23%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3190,8 +3190,9 @@ fi
 #
 #
 %changelog
-* Wed Oct 26 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.4dc12f37a8e9.23]
-- perf tools: Fix man page build wrt perf-arm-coresight.txt (Adrian Hunter)
+* Thu Oct 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.b229b6ca5abb.23]
+- redhat/docs: Update with DISTLOCALVERSION (Prarit Bhargava)
+- Linux v6.1.0-0.rc2.b229b6ca5abb
 
 * Wed Oct 26 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.4dc12f37a8e9.22]
 - redhat/Makefile: Rename LOCALVERSION to DISTLOCALVERSION (Akihiko Odaki)
