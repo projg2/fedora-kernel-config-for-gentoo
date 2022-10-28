@@ -123,13 +123,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc2.20221027gitb229b6ca5abb.23
+%define pkgrelease 0.rc2.20221028git23758867219c.24
 %define kversion 6
-%define tarfile_release 6.1-rc2-105-gb229b6ca5abb
+%define tarfile_release 6.1-rc2-189-g23758867219c
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20221027gitb229b6ca5abb.23%{?buildid}%{?dist}
+%define specrelease 0.rc2.20221028git23758867219c.24%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3190,6 +3190,14 @@ fi
 #
 #
 %changelog
+* Fri Oct 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.23758867219c.24]
+- redhat: method.py: change the output loop to use 'values' method (Patrick Talbert)
+- redhat: use 'update' method in merge.py (Patrick Talbert)
+- redhat: Use a context manager in merge.py for opening the config file for reading (Patrick Talbert)
+- redhat: automatically strip newlines in merge.py (Clark Williams)
+- redhat: python replacement for merge.pl (Clark Williams)
+- Linux v6.1.0-0.rc2.23758867219c
+
 * Thu Oct 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.b229b6ca5abb.23]
 - redhat/docs: Update with DISTLOCALVERSION (Prarit Bhargava)
 - Linux v6.1.0-0.rc2.b229b6ca5abb
