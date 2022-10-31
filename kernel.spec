@@ -119,17 +119,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc2.20221028git23758867219c.24
+%define pkgrelease 0.rc3.27
 %define kversion 6
-%define tarfile_release 6.1-rc2-189-g23758867219c
+%define tarfile_release 6.1-rc3
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20221028git23758867219c.24%{?buildid}%{?dist}
+%define specrelease 0.rc3.27%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3190,6 +3190,17 @@ fi
 #
 #
 %changelog
+* Mon Oct 31 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.27]
+- Linux v6.1.0-0.rc3
+
+* Sun Oct 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.882ad2a2a8ff.26]
+- Linux v6.1.0-0.rc2.882ad2a2a8ff
+
+* Sat Oct 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.576e61cea1e4.25]
+- configs: move CONFIG_INTEL_TDX_GUEST to common directory (Wander Lairson Costa)
+- redhat/Makefile: Use new BUILD_TARGET for RHEL dist[g]-brew target (Prarit Bhargava)
+- Linux v6.1.0-0.rc2.576e61cea1e4
+
 * Fri Oct 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.23758867219c.24]
 - redhat: method.py: change the output loop to use 'values' method (Patrick Talbert)
 - redhat: use 'update' method in merge.py (Patrick Talbert)
