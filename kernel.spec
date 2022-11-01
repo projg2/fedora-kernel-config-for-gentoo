@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.0.5
+%define specversion 6.0.6
 %define patchversion 6.0
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.0.5
+%define tarfile_release 6.0.6
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.0.5
+%define kabiversion 6.0.6
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -2194,13 +2194,13 @@ BuildKernel() {
     # the F17 UsrMove feature.
     ln -sf $DevelDir $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
-# %ifnarch armv7hl
+%ifnarch armv7hl
     # Generate vmlinux.h and put it to kernel-devel path
     # zfcpdump build does not have btf anymore
-#     if [ "$Variant" != "zfcpdump" ]; then
-#         bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
-#     fi
-# %endif
+    if [ "$Variant" != "zfcpdump" ]; then
+        bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+    fi
+%endif
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
@@ -3180,7 +3180,13 @@ fi
 #
 #
 %changelog
-* Wed Oct 26 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.5-300]
+* Tue Nov 01 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.6-0]
+- drm/simpledrm: Only advertise formats that are supported (Justin M. Forbes)
+- disable enum64 BTF in fedora rawhide (Jiri Olsa)
+- Update patch for 6.0 (Justin M. Forbes)
+- Linux v6.0.6
+
+* Wed Oct 26 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.5-0]
 - Add release targets for stable rebase (Justin M. Forbes)
 - Linux v6.0.5
 
