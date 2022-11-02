@@ -123,13 +123,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc3.20221101git5aaef24b5c6d.28
+%define pkgrelease 0.rc3.20221102git8f71a2b3f435.29
 %define kversion 6
-%define tarfile_release 6.1-rc3-11-g5aaef24b5c6d
+%define tarfile_release 6.1-rc3-45-g8f71a2b3f435
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20221101git5aaef24b5c6d.28%{?buildid}%{?dist}
+%define specrelease 0.rc3.20221102git8f71a2b3f435.29%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3190,6 +3190,13 @@ fi
 #
 #
 %changelog
+* Wed Nov 02 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.1.0-0.rc3.20221102git8f71a2b3f435.29]
+- configs/fedora: Enable a few more drivers needed by the HP X2 Chromebook (Javier Martinez Canillas)
+
+* Wed Nov 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.8f71a2b3f435.29]
+- redhat/Makefile: Remove BUILD_SCRATCH_TARGET (Prarit Bhargava)
+- Linux v6.1.0-0.rc3.8f71a2b3f435
+
 * Tue Nov 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.5aaef24b5c6d.28]
 - Linux v6.1.0-0.rc3.5aaef24b5c6d
 
