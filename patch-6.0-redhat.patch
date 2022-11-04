@@ -42,7 +42,7 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/net/fib_nexthops.sh        |   5 +
- 44 files changed, 609 insertions(+), 199 deletions(-)
+ 44 files changed, 607 insertions(+), 201 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index c2144a4bb2ef..4e8ae58e2ec1 100644
@@ -702,7 +702,7 @@ index 5422363690e7..a5b500811892 100644
  	}
 
 diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 780a19a75c3f..281f01e8cbca 100644
+index 780a19a75c3f..4e5bba0822a5 100644
 --- a/drivers/gpu/drm/vc4/vc4_hdmi.c
 +++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
 @@ -2712,9 +2712,16 @@ static int vc4_hdmi_init_resources(struct vc4_hdmi *vc4_hdmi)
@@ -752,14 +752,20 @@ index 780a19a75c3f..281f01e8cbca 100644
  	int ret;
 
  	/*
-@@ -2884,6 +2898,25 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
+@@ -2876,14 +2890,29 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
+ 	 * its frequency while the power domain is active so that it
+ 	 * keeps its rate.
+ 	 */
+-	ret = clk_set_min_rate(vc4_hdmi->hsm_clock, HSM_MIN_CLOCK_FREQ);
++	ret = clk_set_min_rate(vc4_hdmi->hsm_rpm_clock, HSM_MIN_CLOCK_FREQ);
  	if (ret)
  		return ret;
 
+-	ret = clk_prepare_enable(vc4_hdmi->hsm_clock);
 +	ret = clk_prepare_enable(vc4_hdmi->hsm_rpm_clock);
-+	if (ret)
-+		return ret;
-+
+ 	if (ret)
+ 		return ret;
+
 +	/*
 +	 * Whenever the RaspberryPi boots without an HDMI monitor
 +	 * plugged in, the firmware won't have initialized the HSM clock
@@ -778,7 +784,7 @@ index 780a19a75c3f..281f01e8cbca 100644
  	if (vc4_hdmi->variant->reset)
  		vc4_hdmi->variant->reset(vc4_hdmi);
 
-@@ -2905,6 +2938,10 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
+@@ -2905,6 +2934,10 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
  #endif
 
  	return 0;

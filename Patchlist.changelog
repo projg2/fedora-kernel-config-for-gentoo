@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/03928964c7af719ea1e4ee7bd5681800543c6ed6
+ 03928964c7af719ea1e4ee7bd5681800543c6ed6 Fix up vc4 merge for Pi4
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/bf2bceedcc5d66c041165b4db6aea032fd7f4b5c
  bf2bceedcc5d66c041165b4db6aea032fd7f4b5c drm/simpledrm: Only advertise formats that are supported
 
