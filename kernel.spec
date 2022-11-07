@@ -119,17 +119,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc3.20221102git8f71a2b3f435.29
+%define pkgrelease 0.rc4.34
 %define kversion 6
-%define tarfile_release 6.1-rc3-45-g8f71a2b3f435
+%define tarfile_release 6.1-rc4
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20221102git8f71a2b3f435.29%{?buildid}%{?dist}
+%define specrelease 0.rc4.34%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3190,8 +3190,24 @@ fi
 #
 #
 %changelog
-* Wed Nov 02 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.1.0-0.rc3.20221102git8f71a2b3f435.29]
+* Mon Nov 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.34]
+- redhat/configs: move CONFIG_ACPI_VIDEO to common/generic (Mark Langsdorf)
+- enable imx8xm I2C configs properly (Al Stone)
+- Linux v6.1.0-0.rc4
+
+* Sun Nov 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.2f5065a0bc9d.33]
+- Linux v6.1.0-0.rc3.2f5065a0bc9d
+
+* Sat Nov 05 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.b208b9fbbcba.32]
+- Linux v6.1.0-0.rc3.b208b9fbbcba
+
+* Fri Nov 04 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.ee6050c8af96.31]
+- Linux v6.1.0-0.rc3.ee6050c8af96
+
+* Thu Nov 03 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.8e5423e991e8.30]
 - configs/fedora: Enable a few more drivers needed by the HP X2 Chromebook (Javier Martinez Canillas)
+- enable the rtc-rv8803 driver on RHEL and Fedora (David Arcari)
+- Linux v6.1.0-0.rc3.8e5423e991e8
 
 * Wed Nov 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.8f71a2b3f435.29]
 - redhat/Makefile: Remove BUILD_SCRATCH_TARGET (Prarit Bhargava)
