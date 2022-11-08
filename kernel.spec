@@ -119,17 +119,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc4.34
+%define pkgrelease 0.rc4.20221108git59f2f4b8a757.36
 %define kversion 6
-%define tarfile_release 6.1-rc4
+%define tarfile_release 6.1-rc4-11-g59f2f4b8a757
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.34%{?buildid}%{?dist}
+%define specrelease 0.rc4.20221108git59f2f4b8a757.36%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3190,6 +3190,17 @@ fi
 #
 #
 %changelog
+* Tue Nov 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.59f2f4b8a757.36]
+- fs: fix leaked psi pressure state (Johannes Weiner)
+
+* Tue Nov 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.59f2f4b8a757.35]
+- Enable configs for imx8m PHYs (Al Stone)
+- configs/fedora: Build some SC7180 clock controllers as modules (Javier Martinez Canillas)
+- redhat/configs: Disable fbdev drivers and use simpledrm everywhere (Javier Martinez Canillas) [1986223]
+- redhat: fix the branch we pull from the documentation tree (Herton R. Krzesinski)
+- redhat/configs: change so watchdog is module versus builtin (Steve Best)
+- Linux v6.1.0-0.rc4.59f2f4b8a757
+
 * Mon Nov 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.34]
 - redhat/configs: move CONFIG_ACPI_VIDEO to common/generic (Mark Langsdorf)
 - enable imx8xm I2C configs properly (Al Stone)

@@ -41,6 +41,8 @@
  drivers/scsi/qla4xxx/ql4_os.c                      |   2 +
  drivers/usb/core/hub.c                             |   7 +
  fs/afs/main.c                                      |   3 +
+ fs/btrfs/compression.c                             |  14 +-
+ fs/erofs/zdata.c                                   |  18 +-
  include/linux/efi.h                                |  22 +-
  include/linux/kernel.h                             |  21 +
  include/linux/lsm_hook_defs.h                      |   2 +
@@ -64,7 +66,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 66 files changed, 1540 insertions(+), 187 deletions(-)
+ 68 files changed, 1559 insertions(+), 200 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index a465d5242774..191876dd4731 100644
@@ -1778,6 +1780,109 @@ index eae288c8d40a..8b8bf447cedc 100644
  	return ret;
 
  error_proc:
+diff --git a/fs/btrfs/compression.c b/fs/btrfs/compression.c
+index f1f051ad3147..e6635fe70067 100644
+--- a/fs/btrfs/compression.c
++++ b/fs/btrfs/compression.c
+@@ -512,7 +512,7 @@ static u64 bio_end_offset(struct bio *bio)
+ static noinline int add_ra_bio_pages(struct inode *inode,
+ 				     u64 compressed_end,
+ 				     struct compressed_bio *cb,
+-				     unsigned long *pflags)
++				     int *memstall, unsigned long *pflags)
+ {
+ 	struct btrfs_fs_info *fs_info = btrfs_sb(inode->i_sb);
+ 	unsigned long end_index;
+@@ -581,8 +581,10 @@ static noinline int add_ra_bio_pages(struct inode *inode,
+ 			continue;
+ 		}
+
+-		if (PageWorkingset(page))
++		if (!*memstall && PageWorkingset(page)) {
+ 			psi_memstall_enter(pflags);
++			*memstall = 1;
++		}
+
+ 		ret = set_page_extent_mapped(page);
+ 		if (ret < 0) {
+@@ -670,8 +672,8 @@ void btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
+ 	u64 em_len;
+ 	u64 em_start;
+ 	struct extent_map *em;
+-	/* Initialize to 1 to make skip psi_memstall_leave unless needed */
+-	unsigned long pflags = 1;
++	unsigned long pflags;
++	int memstall = 0;
+ 	blk_status_t ret;
+ 	int ret2;
+ 	int i;
+@@ -727,7 +729,7 @@ void btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
+ 		goto fail;
+ 	}
+
+-	add_ra_bio_pages(inode, em_start + em_len, cb, &pflags);
++	add_ra_bio_pages(inode, em_start + em_len, cb, &memstall, &pflags);
+
+ 	/* include any pages we added in add_ra-bio_pages */
+ 	cb->len = bio->bi_iter.bi_size;
+@@ -807,7 +809,7 @@ void btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
+ 		}
+ 	}
+
+-	if (!pflags)
++	if (memstall)
+ 		psi_memstall_leave(&pflags);
+
+ 	if (refcount_dec_and_test(&cb->pending_ios))
+diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
+index c7f24fc7efd5..064a166324a7 100644
+--- a/fs/erofs/zdata.c
++++ b/fs/erofs/zdata.c
+@@ -1412,8 +1412,8 @@ static void z_erofs_submit_queue(struct z_erofs_decompress_frontend *f,
+ 	struct block_device *last_bdev;
+ 	unsigned int nr_bios = 0;
+ 	struct bio *bio = NULL;
+-	/* initialize to 1 to make skip psi_memstall_leave unless needed */
+-	unsigned long pflags = 1;
++	unsigned long pflags;
++	int memstall = 0;
+
+ 	bi_private = jobqueueset_init(sb, q, fgq, force_fg);
+ 	qtail[JQ_BYPASS] = &q[JQ_BYPASS]->head;
+@@ -1463,14 +1463,18 @@ static void z_erofs_submit_queue(struct z_erofs_decompress_frontend *f,
+ 			if (bio && (cur != last_index + 1 ||
+ 				    last_bdev != mdev.m_bdev)) {
+ submit_bio_retry:
+-				if (!pflags)
+-					psi_memstall_leave(&pflags);
+ 				submit_bio(bio);
++				if (memstall) {
++					psi_memstall_leave(&pflags);
++					memstall = 0;
++				}
+ 				bio = NULL;
+ 			}
+
+-			if (unlikely(PageWorkingset(page)))
++			if (unlikely(PageWorkingset(page)) && !memstall) {
+ 				psi_memstall_enter(&pflags);
++				memstall = 1;
++			}
+
+ 			if (!bio) {
+ 				bio = bio_alloc(mdev.m_bdev, BIO_MAX_VECS,
+@@ -1500,9 +1504,9 @@ static void z_erofs_submit_queue(struct z_erofs_decompress_frontend *f,
+ 	} while (owned_head != Z_EROFS_PCLUSTER_TAIL);
+
+ 	if (bio) {
+-		if (!pflags)
+-			psi_memstall_leave(&pflags);
+ 		submit_bio(bio);
++		if (memstall)
++			psi_memstall_leave(&pflags);
+ 	}
+
+ 	/*
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 929d559ad41d..3fa273ff1c22 100644
 --- a/include/linux/efi.h
