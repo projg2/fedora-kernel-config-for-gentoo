@@ -123,13 +123,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc4.20221109gitf141df371335.37
+%define pkgrelease 0.rc4.20221110gitf67dd6ce0723.38
 %define kversion 6
-%define tarfile_release 6.1-rc4-15-gf141df371335
+%define tarfile_release 6.1-rc4-20-gf67dd6ce0723
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20221109gitf141df371335.37%{?buildid}%{?dist}
+%define specrelease 0.rc4.20221110gitf67dd6ce0723.38%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3190,8 +3190,12 @@ fi
 #
 #
 %changelog
-* Wed Nov 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.f141df371335.37]
+* Thu Nov 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.f67dd6ce0723.38]
 - fs: fix leaked psi pressure state (Johannes Weiner)
+
+* Thu Nov 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.f67dd6ce0723.37]
+- redhat: fix selftest git command so it picks the right commit (Patrick Talbert)
+- Linux v6.1.0-0.rc4.f67dd6ce0723
 
 * Wed Nov 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.f141df371335.36]
 - redhat/configs: enable HP_WATCHDOG for aarch64 (Mark Salter)
