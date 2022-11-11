@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.0.7
+%define specversion 6.0.8
 %define patchversion 6.0
-%define pkgrelease 301
+%define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.0.7
+%define tarfile_release 6.0.8
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 301%{?buildid}%{?dist}
+%define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.0.7
+%define kabiversion 6.0.8
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3180,8 +3180,19 @@ fi
 #
 #
 %changelog
-* Fri Nov 04 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.7-301]
+* Fri Nov 11 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.8-0]
+- PCI/PM: Always disable PTM for all devices during suspend (Mark Pearson)
+- PCI/PTM: Consolidate PTM interface declarations (Mark Pearson)
+- PCI/PTM: Reorder functions in logical order (Mark Pearson)
+- PCI/PTM: Preserve RsvdP bits in PTM Control register (Mark Pearson)
+- PCI/PTM: Move pci_ptm_info() body into its only caller (Mark Pearson)
+- PCI/PTM: Add pci_suspend_ptm() and pci_resume_ptm() (Mark Pearson)
+- PCI/PTM: Separate configuration and enable (Mark Pearson)
+- PCI/PTM: Add pci_upstream_ptm() helper (Mark Pearson)
+- PCI/PTM: Cache PTM Capability offset (Mark Pearson)
+- Turn on dln2 support (RHBZ 2110372) (Justin M. Forbes)
 - Fix up vc4 merge for Pi4 (Justin M. Forbes)
+- Linux v6.0.8
 
 * Thu Nov 03 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.7-0]
 - Add revert patch for BTF workaround (Justin M. Forbes)
