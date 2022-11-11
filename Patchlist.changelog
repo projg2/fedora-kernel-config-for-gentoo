@@ -1,5 +1,5 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/47765387464ca90b4e9b181904e74c2ed2305554
- 47765387464ca90b4e9b181904e74c2ed2305554 fs: fix leaked psi pressure state
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/44cbcd6764df14eef098f094c1477d340e3a060b
+ 44cbcd6764df14eef098f094c1477d340e3a060b fs: fix leaked psi pressure state
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/a5465769aab281eaccf26b6b2c1659e26de74074
  a5465769aab281eaccf26b6b2c1659e26de74074 Change acpi_bus_get_acpi_device to acpi_get_acpi_dev
