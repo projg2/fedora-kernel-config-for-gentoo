@@ -41,8 +41,6 @@
  drivers/scsi/qla4xxx/ql4_os.c                      |   2 +
  drivers/usb/core/hub.c                             |   7 +
  fs/afs/main.c                                      |   3 +
- fs/btrfs/compression.c                             |  14 +-
- fs/erofs/zdata.c                                   |  18 +-
  include/linux/efi.h                                |  22 +-
  include/linux/kernel.h                             |  21 +
  include/linux/lsm_hook_defs.h                      |   2 +
@@ -66,7 +64,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 68 files changed, 1559 insertions(+), 200 deletions(-)
+ 66 files changed, 1540 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index a465d5242774..191876dd4731 100644
@@ -122,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index ac2ec990422d..6f23c2014800 100644
+index 58cd4f5e1c3a..c1eddea3caed 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1228,7 +1226,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index dc4220600585..758d2239af64 100644
+index da55ce45ac70..e697c37a111e 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1780,111 +1778,8 @@ index eae288c8d40a..8b8bf447cedc 100644
  	return ret;
 
  error_proc:
-diff --git a/fs/btrfs/compression.c b/fs/btrfs/compression.c
-index f1f051ad3147..e6635fe70067 100644
---- a/fs/btrfs/compression.c
-+++ b/fs/btrfs/compression.c
-@@ -512,7 +512,7 @@ static u64 bio_end_offset(struct bio *bio)
- static noinline int add_ra_bio_pages(struct inode *inode,
- 				     u64 compressed_end,
- 				     struct compressed_bio *cb,
--				     unsigned long *pflags)
-+				     int *memstall, unsigned long *pflags)
- {
- 	struct btrfs_fs_info *fs_info = btrfs_sb(inode->i_sb);
- 	unsigned long end_index;
-@@ -581,8 +581,10 @@ static noinline int add_ra_bio_pages(struct inode *inode,
- 			continue;
- 		}
-
--		if (PageWorkingset(page))
-+		if (!*memstall && PageWorkingset(page)) {
- 			psi_memstall_enter(pflags);
-+			*memstall = 1;
-+		}
-
- 		ret = set_page_extent_mapped(page);
- 		if (ret < 0) {
-@@ -670,8 +672,8 @@ void btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 	u64 em_len;
- 	u64 em_start;
- 	struct extent_map *em;
--	/* Initialize to 1 to make skip psi_memstall_leave unless needed */
--	unsigned long pflags = 1;
-+	unsigned long pflags;
-+	int memstall = 0;
- 	blk_status_t ret;
- 	int ret2;
- 	int i;
-@@ -727,7 +729,7 @@ void btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 		goto fail;
- 	}
-
--	add_ra_bio_pages(inode, em_start + em_len, cb, &pflags);
-+	add_ra_bio_pages(inode, em_start + em_len, cb, &memstall, &pflags);
-
- 	/* include any pages we added in add_ra-bio_pages */
- 	cb->len = bio->bi_iter.bi_size;
-@@ -807,7 +809,7 @@ void btrfs_submit_compressed_read(struct inode *inode, struct bio *bio,
- 		}
- 	}
-
--	if (!pflags)
-+	if (memstall)
- 		psi_memstall_leave(&pflags);
-
- 	if (refcount_dec_and_test(&cb->pending_ios))
-diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
-index c7f24fc7efd5..064a166324a7 100644
---- a/fs/erofs/zdata.c
-+++ b/fs/erofs/zdata.c
-@@ -1412,8 +1412,8 @@ static void z_erofs_submit_queue(struct z_erofs_decompress_frontend *f,
- 	struct block_device *last_bdev;
- 	unsigned int nr_bios = 0;
- 	struct bio *bio = NULL;
--	/* initialize to 1 to make skip psi_memstall_leave unless needed */
--	unsigned long pflags = 1;
-+	unsigned long pflags;
-+	int memstall = 0;
-
- 	bi_private = jobqueueset_init(sb, q, fgq, force_fg);
- 	qtail[JQ_BYPASS] = &q[JQ_BYPASS]->head;
-@@ -1463,14 +1463,18 @@ static void z_erofs_submit_queue(struct z_erofs_decompress_frontend *f,
- 			if (bio && (cur != last_index + 1 ||
- 				    last_bdev != mdev.m_bdev)) {
- submit_bio_retry:
--				if (!pflags)
--					psi_memstall_leave(&pflags);
- 				submit_bio(bio);
-+				if (memstall) {
-+					psi_memstall_leave(&pflags);
-+					memstall = 0;
-+				}
- 				bio = NULL;
- 			}
-
--			if (unlikely(PageWorkingset(page)))
-+			if (unlikely(PageWorkingset(page)) && !memstall) {
- 				psi_memstall_enter(&pflags);
-+				memstall = 1;
-+			}
-
- 			if (!bio) {
- 				bio = bio_alloc(mdev.m_bdev, BIO_MAX_VECS,
-@@ -1500,9 +1504,9 @@ static void z_erofs_submit_queue(struct z_erofs_decompress_frontend *f,
- 	} while (owned_head != Z_EROFS_PCLUSTER_TAIL);
-
- 	if (bio) {
--		if (!pflags)
--			psi_memstall_leave(&pflags);
- 		submit_bio(bio);
-+		if (memstall)
-+			psi_memstall_leave(&pflags);
- 	}
-
- 	/*
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 929d559ad41d..3fa273ff1c22 100644
+index 7603fc58c47c..1099e99286c6 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1896,7 +1791,7 @@ index 929d559ad41d..3fa273ff1c22 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -863,6 +865,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -864,6 +866,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1911,7 +1806,7 @@ index 929d559ad41d..3fa273ff1c22 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -874,6 +884,8 @@ static inline bool efi_enabled(int feature)
+@@ -875,6 +885,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1920,7 +1815,7 @@ index 929d559ad41d..3fa273ff1c22 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -895,6 +907,8 @@ static inline bool efi_enabled(int feature)
+@@ -896,6 +908,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1929,7 +1824,7 @@ index 929d559ad41d..3fa273ff1c22 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -909,6 +923,7 @@ static inline void efi_find_mirror(void) {}
+@@ -910,6 +924,7 @@ static inline void efi_find_mirror(void) {}
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1937,7 +1832,7 @@ index 929d559ad41d..3fa273ff1c22 100644
 
  /*
   * Variable Attributes
-@@ -1134,13 +1149,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1135,13 +1150,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
