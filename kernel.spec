@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.0.8
+%define specversion 6.0.9
 %define patchversion 6.0
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.0.8
+%define tarfile_release 6.0.9
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.0.8
+%define kabiversion 6.0.9
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3180,6 +3180,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 16 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.9-0]
+- Linux v6.0.9
+
 * Fri Nov 11 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.8-0]
 - PCI/PM: Always disable PTM for all devices during suspend (Mark Pearson)
 - PCI/PTM: Consolidate PTM interface declarations (Mark Pearson)
