@@ -123,13 +123,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc5.20221116git59d0d52c30d4.41
+%define pkgrelease 0.rc5.20221117gitcc675d22e422.42
 %define kversion 6
-%define tarfile_release 6.1-rc5-18-g59d0d52c30d4
+%define tarfile_release 6.1-rc5-44-gcc675d22e422
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20221116git59d0d52c30d4.41%{?buildid}%{?dist}
+%define specrelease 0.rc5.20221117gitcc675d22e422.42%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -1683,7 +1683,8 @@ BuildKernel() {
 %endif
 
     # Remove large intermediate files we no longer need to save space
-    rm vmlinux.o .tmp_vmlinux.btf
+    # (-f required for zfcpdump builds that do not enable BTF)
+    rm -f vmlinux.o .tmp_vmlinux.btf
 
     # Start installing the results
     install -m 644 .config $RPM_BUILD_ROOT/boot/config-$KernelVer
@@ -3190,6 +3191,13 @@ fi
 #
 #
 %changelog
+* Thu Nov 17 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.cc675d22e422.42]
+- redhat: Force remove tmp file (Prarit Bhargava)
+- redhat/configs: ALSA - cleanups for the CentOS 9.2 update (Jaroslav Kysela)
+- CI: Use CKI container images from quay.io (Veronika Kabatova)
+- redhat: clean up the partial-kgcov-snip.config file (Patrick Talbert)
+- Linux v6.1.0-0.rc5.cc675d22e422
+
 * Wed Nov 16 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.59d0d52c30d4.41]
 - Linux v6.1.0-0.rc5.59d0d52c30d4
 
