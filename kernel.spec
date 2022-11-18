@@ -123,13 +123,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc5.20221117gitcc675d22e422.42
+%define pkgrelease 0.rc5.20221118git84368d882b96.43
 %define kversion 6
-%define tarfile_release 6.1-rc5-44-gcc675d22e422
+%define tarfile_release 6.1-rc5-144-g84368d882b96
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20221117gitcc675d22e422.42%{?buildid}%{?dist}
+%define specrelease 0.rc5.20221118git84368d882b96.43%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3191,6 +3191,10 @@ fi
 #
 #
 %changelog
+* Fri Nov 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.84368d882b96.43]
+- redhat/Makefile: Fix RHJOBS grep warning (Prarit Bhargava)
+- Linux v6.1.0-0.rc5.84368d882b96
+
 * Thu Nov 17 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.cc675d22e422.42]
 - redhat: Force remove tmp file (Prarit Bhargava)
 - redhat/configs: ALSA - cleanups for the CentOS 9.2 update (Jaroslav Kysela)
