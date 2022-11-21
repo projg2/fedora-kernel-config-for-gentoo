@@ -119,17 +119,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc5.20221118git84368d882b96.43
+%define pkgrelease 0.rc6.46
 %define kversion 6
-%define tarfile_release 6.1-rc5-144-g84368d882b96
+%define tarfile_release 6.1-rc6
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20221118git84368d882b96.43%{?buildid}%{?dist}
+%define specrelease 0.rc6.46%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3191,6 +3191,15 @@ fi
 #
 #
 %changelog
+* Mon Nov 21 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc6.46]
+- Linux v6.1.0-0.rc6
+
+* Sun Nov 20 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.77c51ba552a1.45]
+- Linux v6.1.0-0.rc5.77c51ba552a1
+
+* Sat Nov 19 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.fe24a97cf254.44]
+- Linux v6.1.0-0.rc5.fe24a97cf254
+
 * Fri Nov 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.84368d882b96.43]
 - redhat/Makefile: Fix RHJOBS grep warning (Prarit Bhargava)
 - Linux v6.1.0-0.rc5.84368d882b96
