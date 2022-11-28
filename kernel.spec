@@ -123,13 +123,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc6.46
+%define pkgrelease 0.rc7.51
 %define kversion 6
-%define tarfile_release 6.1-rc6
+%define tarfile_release 6.1-rc7
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.46%{?buildid}%{?dist}
+%define specrelease 0.rc7.51%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
