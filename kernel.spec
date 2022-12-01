@@ -123,13 +123,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc7.20221130git01f856ae6d0c.53
+%define pkgrelease 0.rc7.20221201gitef4d3ea40565.54
 %define kversion 6
-%define tarfile_release 6.1-rc7-101-g01f856ae6d0c
+%define tarfile_release 6.1-rc7-103-gef4d3ea40565
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20221130git01f856ae6d0c.53%{?buildid}%{?dist}
+%define specrelease 0.rc7.20221201gitef4d3ea40565.54%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3191,6 +3191,12 @@ fi
 #
 #
 %changelog
+* Thu Dec 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc7.ef4d3ea40565.54]
+- Adjust path to compressed vmlinux kernel image for s390x (Justin M. Forbes) [2149273]
+- Fedora config updates for 6.1 (Justin M. Forbes)
+- redhat: genlog.sh should expect genlog.py in the current directory (Patrick Talbert)
+- Linux v6.1.0-0.rc7.ef4d3ea40565
+
 * Mon Nov 21 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc6.46]
 - Linux v6.1.0-0.rc6
 
