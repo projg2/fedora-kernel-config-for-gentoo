@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.0.10
+%define specversion 6.0.11
 %define patchversion 6.0
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.0.10
+%define tarfile_release 6.0.11
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.0.10
+%define kabiversion 6.0.11
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -450,7 +450,7 @@ Summary: The Linux kernel
 %define hdrarch s390
 %define all_arch_configs kernel-%{version}-s390x.config
 %define kernel_image arch/s390/boot/bzImage
-%define vmlinux_decompressor arch/s390/boot/compressed/vmlinux
+%define vmlinux_decompressor arch/s390/boot/vmlinux
 %endif
 
 %ifarch %{arm}
@@ -3180,6 +3180,12 @@ fi
 #
 #
 %changelog
+* Fri Dec 02 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.11-0]
+- drm/i915: fix TLB invalidation for Gen12 video and compute engines (Andrzej Hajda)
+- l2tp: Serialize access to sk_user_data with sk_callback_lock (Jakub Sitnicki)
+- Adjust path to compressed vmlinux kernel image for s390x (Justin M. Forbes) [2149273]
+- Linux v6.0.11
+
 * Sat Nov 26 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.10-0]
 - net: neigh: decrement the family specific qlen (Thomas Zeitlhofer)
 - Linux v6.0.10
