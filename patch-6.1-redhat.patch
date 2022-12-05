@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 78525ebea876..767d35dc1f5d 100644
+index 0992f827888d..a9212c718add 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1226,7 +1226,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index da55ce45ac70..e697c37a111e 100644
+index 69e333922bea..58376434c9d1 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1293,7 +1293,7 @@ index da55ce45ac70..e697c37a111e 100644
  #ifdef CONFIG_NVME_AUTH
  		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 93e2138a8b42..e5025519475f 100644
+index 7e025b8948cb..08001fe25095 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
@@ -1329,7 +1329,7 @@ index 93e2138a8b42..e5025519475f 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -874,8 +880,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -877,8 +883,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */

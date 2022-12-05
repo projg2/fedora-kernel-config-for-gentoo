@@ -119,17 +119,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc7.20221202gita4412fdd49dc.55
+%define pkgrelease 0.rc8.58
 %define kversion 6
-%define tarfile_release 6.1-rc7-123-ga4412fdd49dc
+%define tarfile_release 6.1-rc8
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20221202gita4412fdd49dc.55%{?buildid}%{?dist}
+%define specrelease 0.rc8.58%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3191,6 +3191,18 @@ fi
 #
 #
 %changelog
+* Mon Dec 05 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.58]
+- Linux v6.1.0-0.rc8
+
+* Sun Dec 04 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc7.c2bf05db6c78.57]
+- Linux v6.1.0-0.rc7.c2bf05db6c78
+
+* Sat Dec 03 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc7.97ee9d1c1696.56]
+- Turn off NVMEM_U_BOOT_ENV for fedora (Justin M. Forbes)
+- Consolidate matching fedora and ark entries to common (Justin M. Forbes)
+- Empty out redhat/configs/common (Justin M. Forbes)
+- Linux v6.1.0-0.rc7.97ee9d1c1696
+
 * Fri Dec 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc7.a4412fdd49dc.55]
 - Linux v6.1.0-0.rc7.a4412fdd49dc
 
