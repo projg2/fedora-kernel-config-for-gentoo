@@ -119,17 +119,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc8.58
+%define pkgrelease 0.rc8.20221206gitbce9332220bd.59
 %define kversion 6
-%define tarfile_release 6.1-rc8
+%define tarfile_release 6.1-rc8-3-gbce9332220bd
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.58%{?buildid}%{?dist}
+%define specrelease 0.rc8.20221206gitbce9332220bd.59%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -3191,6 +3191,14 @@ fi
 #
 #
 %changelog
+* Tue Dec 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.bce9332220bd.59]
+- redhat/configs: move CONFIG_TEGRA186_GPC_DMA config (Mark Salter)
+- Check for kernel config git-push failures (Don Zickus)
+- redhat: genlog.sh failures should interrupt the recipe (Patrick Talbert)
+- Turn CONFIG_GNSS back on for Fedora (Justin M. Forbes)
+- redhat/configs: enable CONFIG_GNSS for RHEL (Michal Schmidt)
+- Linux v6.1.0-0.rc8.bce9332220bd
+
 * Mon Dec 05 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.58]
 - Linux v6.1.0-0.rc8
 
