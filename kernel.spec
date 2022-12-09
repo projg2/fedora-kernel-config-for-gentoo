@@ -123,13 +123,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc8.20221206gitbce9332220bd.59
+%define pkgrelease 0.rc8.20221209git0d1409e4ff08.62
 %define kversion 6
-%define tarfile_release 6.1-rc8-3-gbce9332220bd
+%define tarfile_release 6.1-rc8-148-g0d1409e4ff08
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.20221206gitbce9332220bd.59%{?buildid}%{?dist}
+%define specrelease 0.rc8.20221209git0d1409e4ff08.62%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -840,8 +840,6 @@ Source300: kernel-abi-stablelists-%{kabiversion}.tar.bz2
 Source301: kernel-kabi-dw-%{kabiversion}.tar.bz2
 
 # Sources for kernel-tools
-Source2000: cpupower.service
-Source2001: cpupower.config
 Source2002: kvm_stat.logrotate
 
 # Some people enjoy building customized kernels from the dist-git in Fedora and
@@ -2592,9 +2590,6 @@ mv cpupower.lang ../
     popd
 %endif
 chmod 0755 %{buildroot}%{_libdir}/libcpupower.so*
-mkdir -p %{buildroot}%{_unitdir} %{buildroot}%{_sysconfdir}/sysconfig
-install -m644 %{SOURCE2000} %{buildroot}%{_unitdir}/cpupower.service
-install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
 %endif
 %ifarch x86_64
    mkdir -p %{buildroot}%{_mandir}/man8
@@ -2740,15 +2735,6 @@ popd
 ###
 
 %if %{with_tools}
-%post -n kernel-tools
-%systemd_post cpupower.service
-
-%preun -n kernel-tools
-%systemd_preun cpupower.service
-
-%postun -n kernel-tools
-%systemd_postun cpupower.service
-
 %post -n kernel-tools-libs
 /sbin/ldconfig
 
@@ -3191,6 +3177,21 @@ fi
 #
 #
 %changelog
+* Fri Dec 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.0d1409e4ff08.62]
+- Turn off CONFIG_CRYPTO_ARIA_AESNI_AVX_X86_64 (Justin M. Forbes)
+- Turn off CONFIG_EFI_ZBOOT as it makes CKI choke (Justin M. Forbes)
+- Linux v6.1.0-0.rc8.0d1409e4ff08
+
+* Thu Dec 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.479174d402bc.61]
+- Fedora config updates for 6.1 (Justin M. Forbes)
+- redhat: Remove cpupower files (Prarit Bhargava)
+- Linux v6.1.0-0.rc8.479174d402bc
+
+* Wed Dec 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.8ed710da2873.60]
+- redhat/configs: update CXL-related options to match what RHEL will use (John W. Linville)
+- Clean up the config for the Tegra186 timer (Al Stone)
+- Linux v6.1.0-0.rc8.8ed710da2873
+
 * Tue Dec 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.bce9332220bd.59]
 - redhat/configs: move CONFIG_TEGRA186_GPC_DMA config (Mark Salter)
 - Check for kernel config git-push failures (Don Zickus)

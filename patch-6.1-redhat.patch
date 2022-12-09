@@ -1226,7 +1226,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 69e333922bea..58376434c9d1 100644
+index 7e3893d06bab..1ffa2a223a39 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
