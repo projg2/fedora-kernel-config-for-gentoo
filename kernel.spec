@@ -119,17 +119,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.1.0
 %define patchversion 6.1
-%define pkgrelease 0.rc8.20221209git0d1409e4ff08.62
+%define pkgrelease 65
 %define kversion 6
-%define tarfile_release 6.1-rc8-148-g0d1409e4ff08
+%define tarfile_release 6.1
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.20221209git0d1409e4ff08.62%{?buildid}%{?dist}
+%define specrelease 65%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.1.0
 
@@ -2984,9 +2984,7 @@ fi
 %{_bindir}/centrino-decode
 %{_bindir}/powernow-k8-decode
 %endif
-%{_unitdir}/cpupower.service
 %{_mandir}/man[1-8]/cpupower*
-%config(noreplace) %{_sysconfdir}/sysconfig/cpupower
 %ifarch x86_64
 %{_bindir}/x86_energy_perf_policy
 %{_mandir}/man8/x86_energy_perf_policy*
@@ -3177,6 +3175,20 @@ fi
 #
 #
 %changelog
+* Mon Dec 12 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.1.0-65]
+- redhat/kernel.spec.template: Fix cpupower file error (Prarit Bhargava)
+- More Fedora configs for 6.1 as deps were switched on (Justin M. Forbes)
+
+* Mon Dec 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-65]
+- Linux v6.1.0
+
+* Sun Dec 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.4cee37b3a4e6.64]
+- Linux v6.1.0-0.rc8.4cee37b3a4e6
+
+* Sat Dec 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.3ecc37918c80.63]
+- Handle automated case when config generation works correctly (Don Zickus)
+- Linux v6.1.0-0.rc8.3ecc37918c80
+
 * Fri Dec 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.0d1409e4ff08.62]
 - Turn off CONFIG_CRYPTO_ARIA_AESNI_AVX_X86_64 (Justin M. Forbes)
 - Turn off CONFIG_EFI_ZBOOT as it makes CKI choke (Justin M. Forbes)
