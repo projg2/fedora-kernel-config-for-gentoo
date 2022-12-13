@@ -27,6 +27,9 @@
 %global _arch arm
 %global _build_arch arm
 %global _with_cross    1
+# Enforces buildroot if cross_arm
+# See https://bugzilla.redhat.com/2149446
+%global buildroot %{_buildrootdir}/%{NAME}-%{VERSION}-%{RELEASE}.%{_build_cpu}
 %endif
 
 # The kernel's %%install section is special
@@ -119,19 +122,19 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
-%define specversion 6.1.0
-%define patchversion 6.1
-%define pkgrelease 65
+%define specversion 6.2.0
+%define patchversion 6.2
+%define pkgrelease 0.rc0.20221213git764822972d64.1
 %define kversion 6
-%define tarfile_release 6.1
+%define tarfile_release 6.1-3225-g764822972d64
 # This is needed to do merge window version magic
-%define patchlevel 1
+%define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 65%{?buildid}%{?dist}
+%define specrelease 0.rc0.20221213git764822972d64.1%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.1.0
+%define kabiversion 6.2.0
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3175,229 +3178,90 @@ fi
 #
 #
 %changelog
-* Mon Dec 12 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.1.0-65]
+* Tue Dec 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.764822972d64.1]
+- Reset RHEL_RELEASE for the 6.2 window. (Justin M. Forbes)
 - redhat/kernel.spec.template: Fix cpupower file error (Prarit Bhargava)
+- redhat/configs: aarhc64: clean up some erratum configs (Mark Salter)
 - More Fedora configs for 6.1 as deps were switched on (Justin M. Forbes)
-
-* Mon Dec 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-65]
-- Linux v6.1.0
-
-* Sun Dec 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.4cee37b3a4e6.64]
-- Linux v6.1.0-0.rc8.4cee37b3a4e6
-
-* Sat Dec 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.3ecc37918c80.63]
+- redhat/configs: make SOC_TEGRA_CBB a module (Mark Salter)
+- redhat/configs: aarch64: reorganize tegra configs to common dir (Mark Salter)
+- Enforces buildroot if cross_arm (Nicolas Chauvet)
 - Handle automated case when config generation works correctly (Don Zickus)
-- Linux v6.1.0-0.rc8.3ecc37918c80
-
-* Fri Dec 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.0d1409e4ff08.62]
 - Turn off CONFIG_CRYPTO_ARIA_AESNI_AVX_X86_64 (Justin M. Forbes)
 - Turn off CONFIG_EFI_ZBOOT as it makes CKI choke (Justin M. Forbes)
-- Linux v6.1.0-0.rc8.0d1409e4ff08
-
-* Thu Dec 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.479174d402bc.61]
 - Fedora config updates for 6.1 (Justin M. Forbes)
 - redhat: Remove cpupower files (Prarit Bhargava)
-- Linux v6.1.0-0.rc8.479174d402bc
-
-* Wed Dec 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.8ed710da2873.60]
 - redhat/configs: update CXL-related options to match what RHEL will use (John W. Linville)
 - Clean up the config for the Tegra186 timer (Al Stone)
-- Linux v6.1.0-0.rc8.8ed710da2873
-
-* Tue Dec 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.bce9332220bd.59]
 - redhat/configs: move CONFIG_TEGRA186_GPC_DMA config (Mark Salter)
 - Check for kernel config git-push failures (Don Zickus)
 - redhat: genlog.sh failures should interrupt the recipe (Patrick Talbert)
 - Turn CONFIG_GNSS back on for Fedora (Justin M. Forbes)
 - redhat/configs: enable CONFIG_GNSS for RHEL (Michal Schmidt)
-- Linux v6.1.0-0.rc8.bce9332220bd
-
-* Mon Dec 05 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc8.58]
-- Linux v6.1.0-0.rc8
-
-* Sun Dec 04 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc7.c2bf05db6c78.57]
-- Linux v6.1.0-0.rc7.c2bf05db6c78
-
-* Sat Dec 03 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc7.97ee9d1c1696.56]
 - Turn off NVMEM_U_BOOT_ENV for fedora (Justin M. Forbes)
 - Consolidate matching fedora and ark entries to common (Justin M. Forbes)
 - Empty out redhat/configs/common (Justin M. Forbes)
-- Linux v6.1.0-0.rc7.97ee9d1c1696
-
-* Fri Dec 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc7.a4412fdd49dc.55]
-- Linux v6.1.0-0.rc7.a4412fdd49dc
-
-* Thu Dec 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc7.ef4d3ea40565.54]
 - Adjust path to compressed vmlinux kernel image for s390x (Justin M. Forbes) [2149273]
 - Fedora config updates for 6.1 (Justin M. Forbes)
 - redhat: genlog.sh should expect genlog.py in the current directory (Patrick Talbert)
-- Linux v6.1.0-0.rc7.ef4d3ea40565
-
-* Mon Nov 21 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc6.46]
-- Linux v6.1.0-0.rc6
-
-* Sun Nov 20 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.77c51ba552a1.45]
-- Linux v6.1.0-0.rc5.77c51ba552a1
-
-* Sat Nov 19 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.fe24a97cf254.44]
-- Linux v6.1.0-0.rc5.fe24a97cf254
-
-* Fri Nov 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.84368d882b96.43]
+- redhat/configs: consolidate CONFIG_TEST_LIVEPATCH=m (Joe Lawrence)
+- redhat/configs: enable CONFIG_TEST_LIVEPATCH=m for s390x (Julia Denham)
+- Revert "Merge branch 'ark-make-help' into 'os-build'" (Scott Weaver)
+- Remove recommendation to use 'common' for config changes. (Don Zickus)
+- Update config to add i3c support for AArch64 (Mark Charlebois)
+- redhat: Move cross-compile scripts into their own directory (Prarit Bhargava)
+- redhat: Move yaml files into their own directory (Prarit Bhargava)
+- redhat: Move update_scripts.sh into redhat/scripts (Prarit Bhargava)
+- redhat: Move kernel-tools scripts into their own directory (Prarit Bhargava)
+- redhat: Move gen-* scripts into their own directory (Prarit Bhargava)
+- redhat: Move mod-* scripts into their own directory (Prarit Bhargava)
 - redhat/Makefile: Fix RHJOBS grep warning (Prarit Bhargava)
-- Linux v6.1.0-0.rc5.84368d882b96
-
-* Thu Nov 17 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.cc675d22e422.42]
 - redhat: Force remove tmp file (Prarit Bhargava)
 - redhat/configs: ALSA - cleanups for the CentOS 9.2 update (Jaroslav Kysela)
 - CI: Use CKI container images from quay.io (Veronika Kabatova)
 - redhat: clean up the partial-kgcov-snip.config file (Patrick Talbert)
-- Linux v6.1.0-0.rc5.cc675d22e422
-
-* Wed Nov 16 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.59d0d52c30d4.41]
-- Linux v6.1.0-0.rc5.59d0d52c30d4
-
-* Tue Nov 15 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.e01d50cbd6ee.40]
 - redhat: avoid picking up stray editor backups when processing configs (Clark Williams)
 - CI: Remove old configs (Veronika Kabatova)
 - redhat: override `make help` to include dist-help (Jonathan Toppins)
 - redhat: make RHTEST stricter (Jonathan Toppins)
 - redhat: Enable support for SN2201 system (Ivan Vecera)
 - redhat/docs/index.rst: Add FLAVOR information to generate configs for local builds (Enric Balletbo i Serra)
-- Linux v6.1.0-0.rc5.e01d50cbd6ee
-
-* Mon Nov 14 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc5.39]
-- Linux v6.1.0-0.rc5
-
-* Fri Nov 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.4bbf3422df78.38]
-- Linux v6.1.0-0.rc4.4bbf3422df78
-
-* Thu Nov 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.f67dd6ce0723.37]
 - redhat: fix selftest git command so it picks the right commit (Patrick Talbert)
-- Linux v6.1.0-0.rc4.f67dd6ce0723
-
-* Wed Nov 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.f141df371335.36]
 - redhat/configs: enable HP_WATCHDOG for aarch64 (Mark Salter)
 - redhat: disable Kfence Kunit Test (Nico Pache)
 - configs: enable CONFIG_LRU_GEN_ENABLED everywhere (Patrick Talbert)
 - redhat: Enable WWAN feature and support for Intel, Qualcomm and Mediatek devices (Jose Ignacio Tornos Martinez)
 - Turn on dln2 support (RHBZ 2110372) (Justin M. Forbes)
-- Linux v6.1.0-0.rc4.f141df371335
-
-* Tue Nov 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.59f2f4b8a757.35]
 - Enable configs for imx8m PHYs (Al Stone)
 - configs/fedora: Build some SC7180 clock controllers as modules (Javier Martinez Canillas)
 - redhat/configs: Disable fbdev drivers and use simpledrm everywhere (Javier Martinez Canillas) [1986223]
 - redhat: fix the branch we pull from the documentation tree (Herton R. Krzesinski)
 - redhat/configs: change so watchdog is module versus builtin (Steve Best)
-- Linux v6.1.0-0.rc4.59f2f4b8a757
-
-* Mon Nov 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc4.34]
 - redhat/configs: move CONFIG_ACPI_VIDEO to common/generic (Mark Langsdorf)
 - enable imx8xm I2C configs properly (Al Stone)
-- Linux v6.1.0-0.rc4
-
-* Sun Nov 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.2f5065a0bc9d.33]
-- Linux v6.1.0-0.rc3.2f5065a0bc9d
-
-* Sat Nov 05 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.b208b9fbbcba.32]
-- Linux v6.1.0-0.rc3.b208b9fbbcba
-
-* Fri Nov 04 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.ee6050c8af96.31]
-- Linux v6.1.0-0.rc3.ee6050c8af96
-
-* Thu Nov 03 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.8e5423e991e8.30]
 - configs/fedora: Enable a few more drivers needed by the HP X2 Chromebook (Javier Martinez Canillas)
 - enable the rtc-rv8803 driver on RHEL and Fedora (David Arcari)
-- Linux v6.1.0-0.rc3.8e5423e991e8
-
-* Wed Nov 02 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.8f71a2b3f435.29]
 - redhat/Makefile: Remove BUILD_SCRATCH_TARGET (Prarit Bhargava)
-- Linux v6.1.0-0.rc3.8f71a2b3f435
-
-* Tue Nov 01 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.5aaef24b5c6d.28]
-- Linux v6.1.0-0.rc3.5aaef24b5c6d
-
-* Mon Oct 31 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc3.27]
-- Linux v6.1.0-0.rc3
-
-* Sun Oct 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.882ad2a2a8ff.26]
-- Linux v6.1.0-0.rc2.882ad2a2a8ff
-
-* Sat Oct 29 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.576e61cea1e4.25]
 - configs: move CONFIG_INTEL_TDX_GUEST to common directory (Wander Lairson Costa)
 - redhat/Makefile: Use new BUILD_TARGET for RHEL dist[g]-brew target (Prarit Bhargava)
-- Linux v6.1.0-0.rc2.576e61cea1e4
-
-* Fri Oct 28 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.23758867219c.24]
 - redhat: method.py: change the output loop to use 'values' method (Patrick Talbert)
 - redhat: use 'update' method in merge.py (Patrick Talbert)
 - redhat: Use a context manager in merge.py for opening the config file for reading (Patrick Talbert)
 - redhat: automatically strip newlines in merge.py (Clark Williams)
 - redhat: python replacement for merge.pl (Clark Williams)
-- Linux v6.1.0-0.rc2.23758867219c
-
-* Thu Oct 27 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.b229b6ca5abb.23]
 - redhat/docs: Update with DISTLOCALVERSION (Prarit Bhargava)
-- Linux v6.1.0-0.rc2.b229b6ca5abb
-
-* Wed Oct 26 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.4dc12f37a8e9.22]
 - redhat/Makefile: Rename LOCALVERSION to DISTLOCALVERSION (Akihiko Odaki)
-- Linux v6.1.0-0.rc2.4dc12f37a8e9
-
-* Tue Oct 25 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.1a2dcbdde82e.21]
-- Linux v6.1.0-0.rc2.1a2dcbdde82e
-
-* Mon Oct 24 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc2.20]
-- Linux v6.1.0-0.rc2
-
-* Sun Oct 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.d47136c28015.19]
-- Linux v6.1.0-0.rc1.d47136c28015
-
-* Sat Oct 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.4da34b7d175d.18]
-- Linux v6.1.0-0.rc1.4da34b7d175d
-
-* Fri Oct 21 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.e35184f32151.17]
-- Linux v6.1.0-0.rc1.e35184f32151
-
-* Wed Oct 19 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.aae703b02f92.16]
 - Adjust FIPS module name in RHEL (Vladis Dronov)
 - spec: prevent git apply from searching for the .git directory (Ondrej Mosnacek)
 - redhat: Remove parallel_xz.sh (Prarit Bhargava)
-- Linux v6.1.0-0.rc1.aae703b02f92
-
-* Tue Oct 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.bb1a1146467a.15]
-- Linux v6.1.0-0.rc1.bb1a1146467a
-
-* Mon Oct 17 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc1.14]
-- Linux v6.1.0-0.rc1
-
-* Sun Oct 16 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.1501278bb7ba.13]
-- Linux v6.1.0-0.rc0.1501278bb7ba
-
-* Sat Oct 15 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.19d17ab7c68b.12]
 - Turn on Multi-Gen LRU for Fedora (Justin M. Forbes)
-- Linux v6.1.0-0.rc0.19d17ab7c68b
-
-* Fri Oct 14 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.9c9155a3509a.11]
 - Add kasan_test to mod-internal.list (Justin M. Forbes)
 - redhat/Makefile.variables: Fix typo with RHDISTGIT_TMP (Prarit Bhargava)
 - spec: fix path to `installing_core` stamp file for subpackages (Jonathan Lebon)
 - Remove unused ci scripts (Don Zickus)
 - Rename rename FORCE_MAX_ZONEORDER to ARCH_FORCE_MAX_ORDER in configs (Justin M. Forbes)
 - redhat: Add new fortify_kunit & is_signed_type_kunit to mod-internal.list (Patrick Talbert)
-- Linux v6.1.0-0.rc0.9c9155a3509a
-
-* Thu Oct 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.a185a0995518.10]
-- Linux v6.1.0-0.rc0.a185a0995518
-
-* Wed Oct 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.49da07006239.9]
 - Rename rename FORCE_MAX_ZONEORDER to ARCH_FORCE_MAX_ORDER in pending (Justin M. Forbes)
-- Linux v6.1.0-0.rc0.49da07006239
-
-* Tue Oct 11 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.60bb8154d1d7.8]
-- Linux v6.1.0-0.rc0.60bb8154d1d7
-
-* Mon Oct 10 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.493ffd6605b2.7]
 - Add acpi video to the filter_modules.sh for rhel (Justin M. Forbes)
 - Change acpi_bus_get_acpi_device to acpi_get_acpi_dev (Justin M. Forbes)
 - Turn on ACPI_VIDEO for arm (Justin M. Forbes)
@@ -3406,29 +3270,11 @@ fi
 - redhat: fix elf got hardening for vm tools (Frantisek Hrbata)
 - kernel.spec.template: remove some temporary files early (Ondrej Mosnacek)
 - kernel.spec.template: avoid keeping two copies of vmlinux (Ondrej Mosnacek)
-- Linux v6.1.0-0.rc0.493ffd6605b2
-
-* Sun Oct 09 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.a6afa4199d3d.6]
-- Linux v6.1.0-0.rc0.a6afa4199d3d
-
-* Sat Oct 08 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.e8bc52cb8df8.5]
-- Linux v6.1.0-0.rc0.e8bc52cb8df8
-
-* Fri Oct 07 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.4c86114194e6.4]
 - Add fortify_kunit to mod-internal.list (Justin M. Forbes)
 - Add module filters for Fedora as acpi video has new deps (Justin M. Forbes)
 - One more mismatch (Justin M. Forbes)
 - Fix up pending for mismatches (Justin M. Forbes)
-- Linux v6.1.0-0.rc0.4c86114194e6
-
-* Thu Oct 06 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.833477fce7a1.3]
-- Linux v6.1.0-0.rc0.833477fce7a1
-
-* Wed Oct 05 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.2bca25eaeba6.2]
 - Trim changelog with the reset (Justin M. Forbes)
-- Linux v6.1.0-0.rc0.2bca25eaeba6
-
-* Tue Oct 04 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-0.rc0.725737e7c21d.1]
 - Reset the RHEL_RELEASE in Makefile.rhelver (Justin M. Forbes)
 - Forgot too remove this from pending, it is set properly in ark (Justin M. Forbes)
 - redhat/Makefile: Add DIST to git tags for RHEL (Prarit Bhargava)
@@ -3550,8 +3396,6 @@ fi
 - redhat/Makefile: Fix eln BUILD_TARGET (Prarit Bhargava)
 - redhat/Makefile: Set BUILD_TARGET for dist-brew (Prarit Bhargava)
 - kernel.spec.template: update (s390x) expoline.o path (Joe Lawrence)
-- drm: Prevent drm_copy_field() to attempt copying a NULL pointer (Javier Martinez Canillas)
-- drm: Use size_t type for len variable in drm_copy_field() (Javier Martinez Canillas)
 - fedora: enable BCM_NET_PHYPTP (Peter Robinson)
 - Fedora 5.19 configs update part 2 (Justin M. Forbes)
 - redhat/Makefile: Change fedora BUILD_TARGET (Prarit Bhargava)
@@ -4961,11 +4805,7 @@ fi
 - [initial commit] Add scripts (Laura Abbott)
 - [initial commit] Add configs (Laura Abbott)
 - [initial commit] Add Makefiles (Laura Abbott)
-- Linux v6.1.0-0.rc0.725737e7c21d
+- Linux v6.2.0-0.rc0.764822972d64
 
-###
-# The following Emacs magic makes C-c C-e use UTC dates.
-# Local Variables:
-# rpm-change-log-uses-utc: t
-# End:
-###
+* Mon Dec 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-65]
+- Linux v6.1.0

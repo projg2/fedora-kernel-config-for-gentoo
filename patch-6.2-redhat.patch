@@ -67,10 +67,10 @@
  66 files changed, 1540 insertions(+), 187 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 42af9ca0127e..f477c32fc478 100644
+index b36c0e0fbc83..547c7473abed 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6421,6 +6421,15 @@
+@@ -6427,6 +6427,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 997b67722292..014ee2e09da0 100644
+index bb60045526c4..690b90449c61 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -134,7 +134,7 @@ index 997b67722292..014ee2e09da0 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1318,7 +1322,13 @@ define filechk_version.h
+@@ -1320,7 +1324,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -166,10 +166,10 @@ index a08c9d092a33..1d82f6e9ecbd 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 505c8a1ccbe0..575f77325e60 100644
+index 7fc3457a8891..800d628726f9 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1212,7 +1212,7 @@ endchoice
+@@ -1236,7 +1236,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -178,7 +178,7 @@ index 505c8a1ccbe0..575f77325e60 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1451,6 +1451,7 @@ config XEN
+@@ -1475,6 +1475,7 @@ config XEN
  config ARCH_FORCE_MAX_ORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -187,10 +187,10 @@ index 505c8a1ccbe0..575f77325e60 100644
  	default "11"
  	help
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-index a5a256e3f9fe..0b40091e03c5 100644
+index 378453faa87e..3eddf2d9ded9 100644
 --- a/arch/arm64/kernel/acpi.c
 +++ b/arch/arm64/kernel/acpi.c
-@@ -41,7 +41,11 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
+@@ -42,7 +42,11 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
  EXPORT_SYMBOL(acpi_pci_disabled);
 
  static bool param_acpi_off __initdata;
@@ -203,10 +203,10 @@ index a5a256e3f9fe..0b40091e03c5 100644
 
  static int __init parse_acpi(char *arg)
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
-index a405b6bb89fb..50827b341fd7 100644
+index b0d00032479d..afb9544fb007 100644
 --- a/arch/s390/include/asm/ipl.h
 +++ b/arch/s390/include/asm/ipl.h
-@@ -128,6 +128,7 @@ int ipl_report_add_component(struct ipl_report *report, struct kexec_buf *kbuf,
+@@ -139,6 +139,7 @@ int ipl_report_add_component(struct ipl_report *report, struct kexec_buf *kbuf,
  			     unsigned char flags, unsigned short cert);
  int ipl_report_add_certificate(struct ipl_report *report, void *key,
  			       unsigned long addr, unsigned long len);
@@ -215,10 +215,10 @@ index a405b6bb89fb..50827b341fd7 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 325cbf69ebbd..1801af7a6ec4 100644
+index fbd646dbf440..23ca9cdb2438 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2221,3 +2221,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2568,3 +2568,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -228,7 +228,7 @@ index 325cbf69ebbd..1801af7a6ec4 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index ab19ddb09d65..d463ec57b218 100644
+index 2094f575c532..b74be981b1dc 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -239,7 +239,7 @@ index ab19ddb09d65..d463ec57b218 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -978,6 +979,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -979,6 +980,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -250,7 +250,7 @@ index ab19ddb09d65..d463ec57b218 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 3e508f239098..65bcc1c96362 100644
+index 3f66dd03c091..460a915f41df 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1544,6 +1544,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -395,10 +395,10 @@ index 6aef1ee5e1bd..8f146b1b4972 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index 1cc4647f78b8..016d488cabc3 100644
+index c2c786eb95ab..4e3aa80cd5cf 100644
 --- a/drivers/acpi/irq.c
 +++ b/drivers/acpi/irq.c
-@@ -137,6 +137,7 @@ struct acpi_irq_parse_one_ctx {
+@@ -138,6 +138,7 @@ struct acpi_irq_parse_one_ctx {
  	unsigned int index;
  	unsigned long *res_flags;
  	struct irq_fwspec *fwspec;
@@ -406,7 +406,7 @@ index 1cc4647f78b8..016d488cabc3 100644
  };
 
  /**
-@@ -210,7 +211,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -211,7 +212,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  		return AE_CTRL_TERMINATE;
  	case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
  		eirq = &ares->data.extended_irq;
@@ -416,7 +416,7 @@ index 1cc4647f78b8..016d488cabc3 100644
  			return AE_OK;
  		if (ctx->index >= eirq->interrupt_count) {
  			ctx->index -= eirq->interrupt_count;
-@@ -246,8 +248,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -247,8 +249,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  static int acpi_irq_parse_one(acpi_handle handle, unsigned int index,
  			      struct irq_fwspec *fwspec, unsigned long *flags)
  {
@@ -438,7 +438,7 @@ index 1cc4647f78b8..016d488cabc3 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index b47e93a24a9a..9d172e177a75 100644
+index 274344434282..71671f258345 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1743,6 +1743,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -560,7 +560,7 @@ index 8d151e332584..bd29fe4ddbf3 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index a46df5d1d094..b35a70c70757 100644
+index 16dae588f0e3..c51ae0e02cdf 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -571,7 +571,7 @@ index a46df5d1d094..b35a70c70757 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -881,40 +882,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -900,40 +901,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -1877,10 +1877,10 @@ index fe6efb24d151..85b185391da7 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index ec119da1d89b..3c27eb4fd460 100644
+index 7f4aaddce298..23210d5b9a7f 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -396,6 +396,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -402,6 +402,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -1890,10 +1890,10 @@ index ec119da1d89b..3c27eb4fd460 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 4ec80b96c22e..93495ac301f2 100644
+index 1d02d1170e21..23ee1e086aa5 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1561,6 +1561,12 @@
+@@ -1573,6 +1573,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -1948,10 +1948,10 @@ index c7759b3f2045..f6a368b1b04c 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 2bda4a4e47e8..4cbfee14dfe5 100644
+index c0d939f3169c..0912aeeb12ed 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1500,6 +1500,22 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1520,6 +1520,22 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2508,10 +2508,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index ca1b7109c0db..b947cfbf04c2 100644
+index 2bfc2e1ce51f..63e025011973 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -478,6 +478,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -485,6 +485,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2519,7 +2519,7 @@ index ca1b7109c0db..b947cfbf04c2 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1366,6 +1367,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1395,6 +1396,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2647,10 +2647,10 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index da323209f583..fefa065d5e37 100644
+index 75fe389e8814..4a9e6ca7f2f3 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -426,6 +426,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -427,6 +427,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
  	[ TAINT_TEST ]			= { 'N', ' ', true },
@@ -2992,10 +2992,10 @@ index a79b985e917e..772a69bf43ec 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 79d82cb6e469..843b0dd8f0dd 100644
+index bdc295ad5fba..2d1a94693c9e 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2630,6 +2630,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2672,6 +2672,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 

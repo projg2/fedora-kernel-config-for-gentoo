@@ -23,4 +23,4 @@ emptyrpm:
 patches:
     ignore_list:
         - linux-kernel-test.patch
-        - patch-6.1-redhat.patch
+        - patch-6.2-redhat.patch
