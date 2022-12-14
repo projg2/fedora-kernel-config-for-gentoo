@@ -19,7 +19,7 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
- drivers/hid/hid-rmi.c                              |  64 ---
+ drivers/hid/hid-rmi.c                              |  66 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
  drivers/iommu/iommu.c                              |  22 +
@@ -64,13 +64,13 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 66 files changed, 1540 insertions(+), 187 deletions(-)
+ 66 files changed, 1540 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index b36c0e0fbc83..547c7473abed 100644
+index fb388c6c8c60..e5e93a9a3b0e 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6427,6 +6427,15 @@
+@@ -6430,6 +6430,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -150,10 +150,10 @@ index bb60045526c4..690b90449c61 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index a08c9d092a33..1d82f6e9ecbd 100644
+index 65d0daf63262..44b7790febc5 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1315,9 +1315,9 @@ config HIGHMEM
+@@ -1318,9 +1318,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -250,10 +250,10 @@ index 2094f575c532..b74be981b1dc 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 3f66dd03c091..460a915f41df 100644
+index 62b83bc5b4b9..ad259d93f46a 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1544,6 +1544,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1545,6 +1545,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
@@ -262,7 +262,7 @@ index 3f66dd03c091..460a915f41df 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 216fee7144ee..1173b45cfe04 100644
+index 88188549647c..db4ec95571bb 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -273,7 +273,7 @@ index 216fee7144ee..1173b45cfe04 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -53,6 +54,7 @@
+@@ -55,6 +56,7 @@
  #include <asm/unwind.h>
  #include <asm/vsyscall.h>
  #include <linux/vmalloc.h>
@@ -281,7 +281,7 @@ index 216fee7144ee..1173b45cfe04 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -805,6 +807,49 @@ static void __init early_reserve_memory(void)
+@@ -807,6 +809,49 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -331,7 +331,7 @@ index 216fee7144ee..1173b45cfe04 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -1036,6 +1081,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -1038,6 +1083,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -345,7 +345,7 @@ index 216fee7144ee..1173b45cfe04 100644
  	dmi_setup();
 
  	/*
-@@ -1205,19 +1257,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1196,19 +1248,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -366,7 +366,7 @@ index 216fee7144ee..1173b45cfe04 100644
 
  	reserve_initrd();
 
-@@ -1330,6 +1370,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1321,6 +1361,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -458,7 +458,7 @@ index 274344434282..71671f258345 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 954386a2b500..8f49d54e838e 100644
+index 29acc35bf4a6..c0eaa763cdad 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -727,6 +727,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -513,7 +513,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index 49a1707693c9..8296a943611e 100644
+index 186f1fee7534..93e3a76596ff 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -524,7 +524,7 @@ index 49a1707693c9..8296a943611e 100644
  #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5510,8 +5511,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5516,8 +5517,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -548,10 +548,10 @@ index 49a1707693c9..8296a943611e 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
-index 8d151e332584..bd29fe4ddbf3 100644
+index b51f2a4c821e..be31d32aba53 100644
 --- a/drivers/firmware/efi/Makefile
 +++ b/drivers/firmware/efi/Makefile
-@@ -27,6 +27,7 @@ obj-$(CONFIG_EFI_FAKE_MEMMAP)		+= fake_map.o
+@@ -25,6 +25,7 @@ subdir-$(CONFIG_EFI_STUB)		+= libstub
  obj-$(CONFIG_EFI_BOOTLOADER_CONTROL)	+= efibc.o
  obj-$(CONFIG_EFI_TEST)			+= test/
  obj-$(CONFIG_EFI_DEV_PATH_PARSER)	+= dev-path-parser.o
@@ -560,7 +560,7 @@ index 8d151e332584..bd29fe4ddbf3 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 16dae588f0e3..c51ae0e02cdf 100644
+index 31a4090c66b3..92cc28552227 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -571,7 +571,7 @@ index 16dae588f0e3..c51ae0e02cdf 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -900,40 +901,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -902,40 +903,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -749,10 +749,10 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index bb1f423f4ace..efc96776f761 100644
+index 84e7ba5314d3..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
-@@ -321,19 +321,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
+@@ -321,21 +321,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
  {
  	struct rmi_data *hdata = hid_get_drvdata(hdev);
  	struct rmi_device *rmi_dev = hdata->xport.rmi_dev;
@@ -761,6 +761,8 @@ index bb1f423f4ace..efc96776f761 100644
  	if (!(test_bit(RMI_STARTED, &hdata->flags)))
  		return 0;
 
+-	pm_wakeup_event(hdev->dev.parent, 0);
+-
 -	local_irq_save(flags);
 -
  	rmi_set_attn_data(rmi_dev, data[1], &data[2], size - 2);
@@ -772,7 +774,7 @@ index bb1f423f4ace..efc96776f761 100644
  	return 1;
  }
 
-@@ -589,56 +582,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
+@@ -591,56 +582,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
  	.reset		= rmi_hid_reset,
  };
 
@@ -829,7 +831,7 @@ index bb1f423f4ace..efc96776f761 100644
  static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
  {
  	struct rmi_data *data = NULL;
-@@ -711,18 +654,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
+@@ -713,18 +654,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
 
  	mutex_init(&data->page_mutex);
 
@@ -1226,7 +1228,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 7e3893d06bab..1ffa2a223a39 100644
+index e26b085a007a..9bd9f08eddeb 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1267,7 +1269,7 @@ index 7e3893d06bab..1ffa2a223a39 100644
  	} else {
  		if (blk_queue_dying(req->q))
  			return COMPLETE;
-@@ -387,6 +392,14 @@ static inline void nvme_end_req(struct request *req)
+@@ -389,6 +394,14 @@ static inline void nvme_end_req(struct request *req)
  	blk_mq_end_request(req, status);
  }
 
@@ -1282,7 +1284,7 @@ index 7e3893d06bab..1ffa2a223a39 100644
  void nvme_complete_rq(struct request *req)
  {
  	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
-@@ -407,6 +420,9 @@ void nvme_complete_rq(struct request *req)
+@@ -409,6 +422,9 @@ void nvme_complete_rq(struct request *req)
  	case FAILOVER:
  		nvme_failover_req(req);
  		return;
@@ -1293,7 +1295,7 @@ index 7e3893d06bab..1ffa2a223a39 100644
  #ifdef CONFIG_NVME_AUTH
  		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 7e025b8948cb..08001fe25095 100644
+index c03093b6813c..46a71df1fbd1 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
@@ -1329,7 +1331,7 @@ index 7e025b8948cb..08001fe25095 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -877,8 +883,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -903,8 +909,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1340,10 +1342,10 @@ index 7e025b8948cb..08001fe25095 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index a29877217ee6..ec2e6c7692af 100644
+index 6bbb73ef8b25..1c99a8a525c9 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -870,6 +870,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -873,6 +873,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1351,7 +1353,7 @@ index a29877217ee6..ec2e6c7692af 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -906,6 +907,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -911,6 +912,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1779,7 +1781,7 @@ index eae288c8d40a..8b8bf447cedc 100644
 
  error_proc:
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 7603fc58c47c..1099e99286c6 100644
+index 4b27519143f5..44e604ab1f7d 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1791,7 +1793,7 @@ index 7603fc58c47c..1099e99286c6 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -864,6 +866,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -850,6 +852,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1806,7 +1808,7 @@ index 7603fc58c47c..1099e99286c6 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -875,6 +885,8 @@ static inline bool efi_enabled(int feature)
+@@ -861,6 +871,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1815,7 +1817,7 @@ index 7603fc58c47c..1099e99286c6 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -896,6 +908,8 @@ static inline bool efi_enabled(int feature)
+@@ -882,6 +894,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1824,7 +1826,7 @@ index 7603fc58c47c..1099e99286c6 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -910,6 +924,7 @@ static inline void efi_find_mirror(void) {}
+@@ -896,6 +910,7 @@ static inline void efi_find_mirror(void) {}
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1832,7 +1834,7 @@ index 7603fc58c47c..1099e99286c6 100644
 
  /*
   * Variable Attributes
-@@ -1135,13 +1150,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1098,13 +1113,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -1877,10 +1879,10 @@ index fe6efb24d151..85b185391da7 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 7f4aaddce298..23210d5b9a7f 100644
+index ed6cb2ac55fa..72fb26d13f28 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -402,6 +402,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -403,6 +403,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -1890,12 +1892,12 @@ index 7f4aaddce298..23210d5b9a7f 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 1d02d1170e21..23ee1e086aa5 100644
+index 0a5ba81f7367..39826de8d680 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1573,6 +1573,12 @@
-  *
-  *     @what: kernel feature being accessed
+@@ -1618,6 +1618,12 @@
+  *	@what: kernel feature being accessed.
+  *	Return 0 if permission is granted.
   *
 + * @lock_kernel_down
 + * 	Put the kernel into lock-down mode.
@@ -1907,7 +1909,7 @@ index 1d02d1170e21..23ee1e086aa5 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/module.h b/include/linux/module.h
-index ec61fb53979a..821e7dc558e5 100644
+index 8c5909c0076c..bab37e9055b1 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -379,6 +379,7 @@ struct module {
@@ -2508,10 +2510,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 2bfc2e1ce51f..63e025011973 100644
+index 5b67f208f7de..060133d19a4b 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -485,6 +485,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -487,6 +487,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2519,7 +2521,7 @@ index 2bfc2e1ce51f..63e025011973 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1395,6 +1396,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1402,6 +1403,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2531,7 +2533,7 @@ index 2bfc2e1ce51f..63e025011973 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 94125d3b6893..7a6bf4659565 100644
+index e1938e3a753e..d2370092f6c1 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1685,7 +1685,7 @@ config AIO
@@ -2544,7 +2546,7 @@ index 94125d3b6893..7a6bf4659565 100644
  	default y
  	help
 diff --git a/kernel/Makefile b/kernel/Makefile
-index d754e0be1176..a9d29c4c6c4e 100644
+index e7fc37a68069..b91424eebd96 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
@@ -2556,7 +2558,7 @@ index d754e0be1176..a9d29c4c6c4e 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 7b373a5e861f..6b880dcbdeda 100644
+index 35972afb6850..c884c1a42723 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@
@@ -2591,7 +2593,7 @@ index 7b373a5e861f..6b880dcbdeda 100644
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
-@@ -5283,6 +5301,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -5298,6 +5316,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;
@@ -2604,10 +2606,10 @@ index 7b373a5e861f..6b880dcbdeda 100644
  	}
 
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index d02d39c7174e..1436f083cfb6 100644
+index ff2dfd1f548d..260b26c9d1c2 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -524,6 +524,7 @@ static struct module_attribute modinfo_##field = {                    \
+@@ -521,6 +521,7 @@ static struct module_attribute modinfo_##field = {                    \
 
  MODINFO_ATTR(version);
  MODINFO_ATTR(srcversion);
@@ -2615,7 +2617,7 @@ index d02d39c7174e..1436f083cfb6 100644
 
  static struct {
  	char name[MODULE_NAME_LEN + 1];
-@@ -971,6 +972,7 @@ struct module_attribute *modinfo_attrs[] = {
+@@ -968,6 +969,7 @@ struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
@@ -2932,10 +2934,10 @@ index e137cf15aae9..2ed2341f7967 100755
  # Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
  # to force full paths for a non-O= build
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-index b78753d27d8e..f0b37800431a 100644
+index d1fdd113450a..182e8090cfe8 100644
 --- a/security/integrity/platform_certs/load_uefi.c
 +++ b/security/integrity/platform_certs/load_uefi.c
-@@ -73,7 +73,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
+@@ -74,7 +74,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
  		return NULL;
 
  	if (*status != EFI_BUFFER_TOO_SMALL) {
@@ -2945,7 +2947,7 @@ index b78753d27d8e..f0b37800431a 100644
  		return NULL;
  	}
 
-@@ -84,7 +85,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
+@@ -85,7 +86,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
  	*status = efi.get_variable(name, guid, NULL, &lsize, db);
  	if (*status != EFI_SUCCESS) {
  		kfree(db);
@@ -2992,10 +2994,10 @@ index a79b985e917e..772a69bf43ec 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index bdc295ad5fba..2d1a94693c9e 100644
+index d1571900a8c7..9e6be637ab68 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2672,6 +2672,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2705,6 +2705,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 

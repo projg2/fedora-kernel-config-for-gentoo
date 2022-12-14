@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc0.20221213git764822972d64.1
+%define pkgrelease 0.rc0.20221214gite2ca6ba6ba01.3
 %define kversion 6
-%define tarfile_release 6.1-3225-g764822972d64
+%define tarfile_release 6.1-9941-ge2ca6ba6ba01
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20221213git764822972d64.1%{?buildid}%{?dist}
+%define specrelease 0.rc0.20221214gite2ca6ba6ba01.3%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3178,6 +3178,14 @@ fi
 #
 #
 %changelog
+* Wed Dec 14 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.e2ca6ba6ba01.3]
+- Fix up configs for Fedora so we don't have a mismatch (Justin M. Forbes)
+- Linux v6.2.0-0.rc0.e2ca6ba6ba01
+
+* Wed Dec 14 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.764822972d64.2]
+- Turn on CONFIG_SQUASHFS_DECOMP_SINGLE in pending (Justin M. Forbes)
+- Trim changelog for 6.2 cycle (Justin M. Forbes)
+
 * Tue Dec 13 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.764822972d64.1]
 - Reset RHEL_RELEASE for the 6.2 window. (Justin M. Forbes)
 - redhat/kernel.spec.template: Fix cpupower file error (Prarit Bhargava)
@@ -4809,3 +4817,10 @@ fi
 
 * Mon Dec 12 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.1.0-65]
 - Linux v6.1.0
+
+###
+# The following Emacs magic makes C-c C-e use UTC dates.
+# Local Variables:
+# rpm-change-log-uses-utc: t
+# End:
+###
