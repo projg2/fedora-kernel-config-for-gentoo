@@ -48,7 +48,7 @@
  47 files changed, 767 insertions(+), 365 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 46c6eb57b354..ad3a206451ea 100644
+index bf00f3240b3a..f6fb779815ef 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1088,7 +1088,7 @@ index 3a808146b50f..c1a3f3057921 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index f612a0ba64d0..5c4a1ca36aec 100644
+index aca50bb93750..2f54b3560433 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)

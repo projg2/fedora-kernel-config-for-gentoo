@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.0.12
+%define specversion 6.0.13
 %define patchversion 6.0
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.0.12
+%define tarfile_release 6.0.13
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.0.12
+%define kabiversion 6.0.13
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3180,6 +3180,12 @@ fi
 #
 #
 %changelog
+* Wed Dec 14 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.13-300]
+- Remove F35 from release_targets due to EOL (Justin M. Forbes)
+
+* Wed Dec 14 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.13-0]
+- Linux v6.0.13
+
 * Thu Dec 08 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.12-0]
 - Add new config option for 6.0.12 backport (Justin M. Forbes)
 - Linux v6.0.12
