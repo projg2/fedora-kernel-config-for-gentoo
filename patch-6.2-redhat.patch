@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index bb60045526c4..690b90449c61 100644
+index 6aa709df6bde..5765fbcce655 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -250,10 +250,10 @@ index 2094f575c532..b74be981b1dc 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 62b83bc5b4b9..ad259d93f46a 100644
+index 9cfca3d7d0e2..3372f258374e 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1545,6 +1545,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1565,6 +1565,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
@@ -1094,7 +1094,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 65a3b3d886dc..911b64ce9889 100644
+index d69ebba81beb..6b270832ea5d 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1105,9 +1105,9 @@ index 65a3b3d886dc..911b64ce9889 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2818,6 +2819,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -2777,6 +2778,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
- EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
+ EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
 
 +#ifdef CONFIG_ARM64
 +static int __init iommu_quirks(void)
@@ -1134,7 +1134,7 @@ index 65a3b3d886dc..911b64ce9889 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/message/fusion/mptsas.c b/drivers/message/fusion/mptsas.c
-index 34901bcd1ce8..24194dbc2784 100644
+index 88fe4a860ae5..f4b67fe3f000 100644
 --- a/drivers/message/fusion/mptsas.c
 +++ b/drivers/message/fusion/mptsas.c
 @@ -5320,6 +5320,11 @@ mptsas_probe(struct pci_dev *pdev, const struct pci_device_id *id)
@@ -1364,7 +1364,7 @@ index 6bbb73ef8b25..1c99a8a525c9 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 107d77f3c846..1274904f7011 100644
+index a2ceeacc33eb..be6e0feabf99 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -1533,7 +1533,7 @@ index 50a577ac3bb4..6f862b855ccf 100644
  	{ 0 }
  };
 diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index f8e832b1bc46..307d4e697830 100644
+index 4dbf51e2623a..015e55d07a4f 100644
 --- a/drivers/scsi/hpsa.c
 +++ b/drivers/scsi/hpsa.c
 @@ -82,7 +82,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
@@ -1634,7 +1634,7 @@ index 0b1616e93cf4..85fc52038a82 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index d265a2d9d082..75b50de1cce7 100644
+index 3ceece988338..9ac2cfc37f71 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
@@ -1698,10 +1698,10 @@ index 8e24ebcebfe5..25aa49292397 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 2c85f3cce726..633147b8ed14 100644
+index 7fb28c207ee5..54f5e412e732 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -8068,6 +8068,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -8065,6 +8065,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -1709,7 +1709,7 @@ index 2c85f3cce726..633147b8ed14 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -8080,13 +8081,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -8077,13 +8078,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -1729,7 +1729,7 @@ index 2c85f3cce726..633147b8ed14 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index 9e849f6b0d0f..00f9a1303b93 100644
+index 005502125b27..cd577c40dcca 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
 @@ -9854,6 +9854,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
@@ -1921,10 +1921,10 @@ index 8c5909c0076c..bab37e9055b1 100644
 
  	/* Exported symbols */
 diff --git a/include/linux/panic.h b/include/linux/panic.h
-index c7759b3f2045..f6a368b1b04c 100644
+index 979b776e3bcb..4eabcc0d8a91 100644
 --- a/include/linux/panic.h
 +++ b/include/linux/panic.h
-@@ -69,7 +69,23 @@ static inline void set_arch_panic_timeout(int timeout, int arch_default_timeout)
+@@ -70,7 +70,23 @@ static inline void set_arch_panic_timeout(int timeout, int arch_default_timeout)
  #define TAINT_AUX			16
  #define TAINT_RANDSTRUCT		17
  #define TAINT_TEST			18
@@ -1950,7 +1950,7 @@ index c7759b3f2045..f6a368b1b04c 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index c0d939f3169c..0912aeeb12ed 100644
+index adffd65e84b4..71bf861dc270 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1520,6 +1520,22 @@ int pci_add_dynid(struct pci_driver *drv,
@@ -2533,10 +2533,10 @@ index 5b67f208f7de..060133d19a4b 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index e1938e3a753e..d2370092f6c1 100644
+index 7e5c3ddc341d..850393c608ef 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1685,7 +1685,7 @@ config AIO
+@@ -1694,7 +1694,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -2649,10 +2649,10 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index 75fe389e8814..4a9e6ca7f2f3 100644
+index 326d91505f04..44b01e472228 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -427,6 +427,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -467,6 +467,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
  	[ TAINT_TEST ]			= { 'N', ' ', true },
