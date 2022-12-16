@@ -67,10 +67,10 @@
  66 files changed, 1540 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index fb388c6c8c60..e5e93a9a3b0e 100644
+index 5a0eff3231c6..6cf13b84385a 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6430,6 +6430,15 @@
+@@ -6449,6 +6449,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -150,10 +150,10 @@ index 6aa709df6bde..5765fbcce655 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 65d0daf63262..44b7790febc5 100644
+index a0da424fc93a..d19e0931a5d7 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1318,9 +1318,9 @@ config HIGHMEM
+@@ -1297,9 +1297,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -166,7 +166,7 @@ index 65d0daf63262..44b7790febc5 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 7fc3457a8891..800d628726f9 100644
+index cf6d1cd8b6dc..332da008faa6 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1236,7 +1236,7 @@ endchoice

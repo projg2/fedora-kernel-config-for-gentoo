@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc0.20221215git041fae9c105a.5
+%define pkgrelease 0.rc0.20221216git84e57d292203.5
 %define kversion 6
-%define tarfile_release 6.1-10971-g041fae9c105a
+%define tarfile_release 6.1-11674-g84e57d292203
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20221215git041fae9c105a.5%{?buildid}%{?dist}
+%define specrelease 0.rc0.20221216git84e57d292203.5%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3178,8 +3178,10 @@ fi
 #
 #
 %changelog
-* Thu Dec 15 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.041fae9c105a.5]
+* Fri Dec 16 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.84e57d292203.5]
+- Add siphash_kunit and strscpy_kunit to mod-internal.list (Justin M. Forbes)
 - Add drm_kunit_helpers to mod-internal.list (Justin M. Forbes)
+- Linux v6.2.0-0.rc0.84e57d292203
 
 * Thu Dec 15 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.041fae9c105a.4]
 - Linux v6.2.0-0.rc0.041fae9c105a
