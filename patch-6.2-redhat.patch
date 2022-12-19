@@ -58,13 +58,14 @@
  kernel/module/signing.c                            |   9 +-
  kernel/panic.c                                     |  13 +
  kernel/rh_messages.c                               | 209 +++++++++
+ scripts/head-object-list.txt                       |   1 +
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 66 files changed, 1540 insertions(+), 189 deletions(-)
+ 67 files changed, 1541 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 5a0eff3231c6..6cf13b84385a 100644
@@ -166,10 +167,10 @@ index a0da424fc93a..d19e0931a5d7 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index cf6d1cd8b6dc..332da008faa6 100644
+index 03934808b2ed..2511d5330ece 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1236,7 +1236,7 @@ endchoice
+@@ -1220,7 +1220,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -178,7 +179,7 @@ index cf6d1cd8b6dc..332da008faa6 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1475,6 +1475,7 @@ config XEN
+@@ -1459,6 +1459,7 @@ config XEN
  config ARCH_FORCE_MAX_ORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -851,7 +852,7 @@ index 84e7ba5314d3..efc96776f761 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 80fefaba58ee..be8f345bb379 100644
+index 1cc052979e01..c817bc0a90c5 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -862,7 +863,7 @@ index 80fefaba58ee..be8f345bb379 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2137,6 +2138,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2210,6 +2211,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -879,7 +880,7 @@ index 80fefaba58ee..be8f345bb379 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2170,6 +2181,11 @@ static int __init etm4x_init(void)
+@@ -2243,6 +2254,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -891,7 +892,7 @@ index 80fefaba58ee..be8f345bb379 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2196,6 +2212,9 @@ static int __init etm4x_init(void)
+@@ -2269,6 +2285,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -1228,7 +1229,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index e26b085a007a..9bd9f08eddeb 100644
+index f72fc3bd07c3..d14838f24adb 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1749,10 +1750,10 @@ index 005502125b27..cd577c40dcca 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index bbab424b0d55..ed86042fb57b 100644
+index 77e73fc8d673..fd667f825d88 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5676,6 +5676,13 @@ static void hub_event(struct work_struct *work)
+@@ -5732,6 +5732,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
@@ -2887,6 +2888,18 @@ index 000000000000..586c3319f530
 +#endif
 +}
 +EXPORT_SYMBOL(mark_partner_supported);
+diff --git a/scripts/head-object-list.txt b/scripts/head-object-list.txt
+index b074134cfac2..105ea7ac4751 100644
+--- a/scripts/head-object-list.txt
++++ b/scripts/head-object-list.txt
+@@ -15,6 +15,7 @@ arch/alpha/kernel/head.o
+ arch/arc/kernel/head.o
+ arch/arm/kernel/head-nommu.o
+ arch/arm/kernel/head.o
++arch/arm64/kernel/head.o
+ arch/csky/kernel/head.o
+ arch/hexagon/kernel/head.o
+ arch/ia64/kernel/head.o
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
 index 2c80da0220c3..18097b6e2fe7 100644
 --- a/scripts/mod/modpost.c

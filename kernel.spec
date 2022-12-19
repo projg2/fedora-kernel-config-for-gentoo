@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc0.20221216git84e57d292203.5
+%define pkgrelease 0.rc0.20221219gitf9ff5644bcc0.7
 %define kversion 6
-%define tarfile_release 6.1-11674-g84e57d292203
+%define tarfile_release 6.1-13139-gf9ff5644bcc0
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20221216git84e57d292203.5%{?buildid}%{?dist}
+%define specrelease 0.rc0.20221219gitf9ff5644bcc0.7%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3178,6 +3178,16 @@ fi
 #
 #
 %changelog
+* Mon Dec 19 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.0-0.rc0.20221219gitf9ff5644bcc0.7]
+- Revert "arm64: remove special treatment for the link order of head.o" (Justin M. Forbes)
+
+* Sun Dec 18 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.f9ff5644bcc0.7]
+- Linux v6.2.0-0.rc0.f9ff5644bcc0
+
+* Sat Dec 17 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.77856d911a8c.6]
+- config: enable RCU_TRACE for debug kernels (Wander Lairson Costa)
+- Linux v6.2.0-0.rc0.77856d911a8c
+
 * Fri Dec 16 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.84e57d292203.5]
 - Add siphash_kunit and strscpy_kunit to mod-internal.list (Justin M. Forbes)
 - Add drm_kunit_helpers to mod-internal.list (Justin M. Forbes)
