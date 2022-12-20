@@ -68,10 +68,10 @@
  67 files changed, 1541 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 5a0eff3231c6..6cf13b84385a 100644
+index 6cfa6e3996cf..62b314faa050 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6449,6 +6449,15 @@
+@@ -6471,6 +6471,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -121,10 +121,10 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 6aa709df6bde..5765fbcce655 100644
+index 25247f931872..f72f0ed52e78 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
+@@ -22,6 +22,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
  PHONY := __all
  __all:
 
@@ -135,7 +135,7 @@ index 6aa709df6bde..5765fbcce655 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1320,7 +1324,13 @@ define filechk_version.h
+@@ -1334,7 +1338,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -1095,7 +1095,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d69ebba81beb..6b270832ea5d 100644
+index de91dd88705b..9fef6c8e3341 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1106,7 +1106,7 @@ index d69ebba81beb..6b270832ea5d 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2777,6 +2778,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -2793,6 +2794,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
 
@@ -2607,7 +2607,7 @@ index 35972afb6850..c884c1a42723 100644
  	}
 
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index ff2dfd1f548d..260b26c9d1c2 100644
+index 48568a0f5651..e0dbce757beb 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
 @@ -521,6 +521,7 @@ static struct module_attribute modinfo_##field = {                    \
@@ -2901,7 +2901,7 @@ index b074134cfac2..105ea7ac4751 100644
  arch/hexagon/kernel/head.o
  arch/ia64/kernel/head.o
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 2c80da0220c3..18097b6e2fe7 100644
+index efff8078e395..1b4f8306cea6 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
@@ -2912,7 +2912,7 @@ index 2c80da0220c3..18097b6e2fe7 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static bool modversions;
-@@ -2130,6 +2131,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2138,6 +2139,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -2925,7 +2925,7 @@ index 2c80da0220c3..18097b6e2fe7 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2193,6 +2200,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2201,6 +2208,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
