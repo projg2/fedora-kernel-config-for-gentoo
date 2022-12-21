@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc0.20221220git6feb57c2fd7c.9
+%define pkgrelease 0.rc0.20221221gitb6bb9676f216.10
 %define kversion 6
-%define tarfile_release 6.1-13822-g6feb57c2fd7c
+%define tarfile_release 6.1-13872-gb6bb9676f216
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20221220git6feb57c2fd7c.9%{?buildid}%{?dist}
+%define specrelease 0.rc0.20221221gitb6bb9676f216.10%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3178,8 +3178,11 @@ fi
 #
 #
 %changelog
-* Tue Dec 20 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.6feb57c2fd7c.9]
+* Wed Dec 21 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.b6bb9676f216.10]
 - Revert "arm64: remove special treatment for the link order of head.o" (Justin M. Forbes)
+
+* Wed Dec 21 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.b6bb9676f216.9]
+- Linux v6.2.0-0.rc0.b6bb9676f216
 
 * Tue Dec 20 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.6feb57c2fd7c.8]
 - Linux v6.2.0-0.rc0.6feb57c2fd7c
