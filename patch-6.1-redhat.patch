@@ -14,19 +14,13 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
- drivers/firmware/sysfb.c                           |  18 ++-
- drivers/gpu/drm/i915/display/intel_bios.c          |  46 +++-----
- drivers/gpu/drm/vc4/vc4_hdmi.c                     |  46 +++++++-
- drivers/gpu/drm/vc4/vc4_hdmi.h                     |   1 +
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
- drivers/nvme/host/core.c                           |  22 +++-
- drivers/nvme/host/multipath.c                      |  19 ++--
- drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
+ fs/overlayfs/file.c                                |   1 +
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -34,17 +28,15 @@
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
  kernel/module/signing.c                            |   9 +-
- net/ipv4/fib_semantics.c                           |   8 +-
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- tools/testing/selftests/net/fib_nexthops.sh        |   5 +
- 43 files changed, 573 insertions(+), 220 deletions(-)
+ 35 files changed, 450 insertions(+), 175 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index d4297b3d0735..e7373ece0e0b 100644
+index 7307ae6c2ef7..36f8cf8b5097 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -59,10 +51,10 @@ index d4297b3d0735..e7373ece0e0b 100644
  # to get the ordering right.
  #
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 11ecf09aadc8..5d91c8c3cd49 100644
+index a08c9d092a33..1d82f6e9ecbd 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1387,9 +1387,9 @@ config HIGHMEM
+@@ -1315,9 +1315,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -75,10 +67,10 @@ index 11ecf09aadc8..5d91c8c3cd49 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 3795eb5ba1cd..55d299a03150 100644
+index 505c8a1ccbe0..575f77325e60 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1199,7 +1199,7 @@ endchoice
+@@ -1212,7 +1212,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -87,8 +79,8 @@ index 3795eb5ba1cd..55d299a03150 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1438,6 +1438,7 @@ config XEN
- config FORCE_MAX_ZONEORDER
+@@ -1451,6 +1451,7 @@ config XEN
+ config ARCH_FORCE_MAX_ORDER
  	int
  	default "14" if ARM64_64K_PAGES
 +	default "13" if (ARCH_THUNDER && !ARM64_64K_PAGES)
@@ -108,10 +100,10 @@ index a405b6bb89fb..50827b341fd7 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 1cc85b8ff42e..b7ee128c67ce 100644
+index 325cbf69ebbd..1801af7a6ec4 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2216,3 +2216,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2221,3 +2221,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -121,7 +113,7 @@ index 1cc85b8ff42e..b7ee128c67ce 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index bbd4bde4f65d..dd60114ae9c1 100644
+index ab19ddb09d65..d463ec57b218 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -132,7 +124,7 @@ index bbd4bde4f65d..dd60114ae9c1 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -968,6 +969,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -978,6 +979,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -209,7 +201,7 @@ index 6aef1ee5e1bd..8f146b1b4972 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index dabe45eba055..82cf1ddf25d6 100644
+index 1cc4647f78b8..016d488cabc3 100644
 --- a/drivers/acpi/irq.c
 +++ b/drivers/acpi/irq.c
 @@ -137,6 +137,7 @@ struct acpi_irq_parse_one_ctx {
@@ -220,7 +212,7 @@ index dabe45eba055..82cf1ddf25d6 100644
  };
 
  /**
-@@ -208,7 +209,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -210,7 +211,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  		return AE_CTRL_TERMINATE;
  	case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
  		eirq = &ares->data.extended_irq;
@@ -230,7 +222,7 @@ index dabe45eba055..82cf1ddf25d6 100644
  			return AE_OK;
  		if (ctx->index >= eirq->interrupt_count) {
  			ctx->index -= eirq->interrupt_count;
-@@ -244,8 +246,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -246,8 +248,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  static int acpi_irq_parse_one(acpi_handle handle, unsigned int index,
  			      struct irq_fwspec *fwspec, unsigned long *flags)
  {
@@ -243,7 +235,7 @@ index dabe45eba055..82cf1ddf25d6 100644
 +	 * Don't do the producer/consumer check for that device.
 +	 */
 +	if (IS_ENABLED(CONFIG_ARM64)) {
-+		struct acpi_device *adev = acpi_bus_get_acpi_device(handle);
++		struct acpi_device *adev = acpi_get_acpi_dev(handle);
 +
 +		if (adev && !strcmp(acpi_device_hid(adev), "APMC0D08"))
 +			ctx.skip_producer_check = true;
@@ -252,10 +244,10 @@ index dabe45eba055..82cf1ddf25d6 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 42cec8120f18..c6dc77dba6b6 100644
+index b47e93a24a9a..9d172e177a75 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1752,6 +1752,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1743,6 +1743,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -272,10 +264,10 @@ index 42cec8120f18..c6dc77dba6b6 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index cf8c7fd59ada..28a8189be64f 100644
+index 954386a2b500..8f49d54e838e 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
-@@ -690,6 +690,24 @@ int ahci_stop_engine(struct ata_port *ap)
+@@ -727,6 +727,24 @@ int ahci_stop_engine(struct ata_port *ap)
  	tmp &= ~PORT_CMD_START;
  	writel(tmp, port_mmio + PORT_CMD);
 
@@ -327,7 +319,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index 703433493c85..6b1b102b9b7d 100644
+index 49a1707693c9..8296a943611e 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -338,7 +330,7 @@ index 703433493c85..6b1b102b9b7d 100644
  #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5516,8 +5517,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5510,8 +5511,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -374,10 +366,10 @@ index 8d151e332584..bd29fe4ddbf3 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index e4080ad96089..e050d2f8dbe5 100644
+index a46df5d1d094..b35a70c70757 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
-@@ -31,6 +31,7 @@
+@@ -32,6 +32,7 @@
  #include <linux/ucs2_string.h>
  #include <linux/memblock.h>
  #include <linux/security.h>
@@ -385,7 +377,7 @@ index e4080ad96089..e050d2f8dbe5 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -864,40 +865,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -881,40 +882,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -562,246 +554,11 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
-diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
-index 1f276f108cc9..7039ad9bdf7f 100644
---- a/drivers/firmware/sysfb.c
-+++ b/drivers/firmware/sysfb.c
-@@ -34,6 +34,22 @@
- #include <linux/screen_info.h>
- #include <linux/sysfb.h>
-
-+static int skip_simpledrm;
-+
-+static int __init simpledrm_disable(char *opt)
-+{
-+	if (!opt)
-+                return -EINVAL;
-+
-+	get_option(&opt, &skip_simpledrm);
-+
-+	if (skip_simpledrm)
-+		pr_info("The simpledrm driver will not be probed\n");
-+
-+	return 0;
-+}
-+early_param("nvidia-drm.modeset", simpledrm_disable);
-+
- static struct platform_device *pd;
- static DEFINE_MUTEX(disable_lock);
- static bool disabled;
-@@ -83,7 +99,7 @@ static __init int sysfb_init(void)
-
- 	/* try to create a simple-framebuffer device */
- 	compatible = sysfb_parse_mode(si, &mode);
--	if (compatible) {
-+	if (compatible && !skip_simpledrm) {
- 		pd = sysfb_create_simplefb(si, &mode);
- 		if (!IS_ERR(pd))
- 			goto unlock_mutex;
-diff --git a/drivers/gpu/drm/i915/display/intel_bios.c b/drivers/gpu/drm/i915/display/intel_bios.c
-index 7d6eb9ad7a02..f801d923fdec 100644
---- a/drivers/gpu/drm/i915/display/intel_bios.c
-+++ b/drivers/gpu/drm/i915/display/intel_bios.c
-@@ -333,18 +333,6 @@ static bool fixup_lfp_data_ptrs(const void *bdb, void *ptrs_block)
- 	return validate_lfp_data_ptrs(bdb, ptrs);
- }
-
--static const void *find_fp_timing_terminator(const u8 *data, int size)
--{
--	int i;
--
--	for (i = 0; i < size - 1; i++) {
--		if (data[i] == 0xff && data[i+1] == 0xff)
--			return &data[i];
--	}
--
--	return NULL;
--}
--
- static int make_lfp_data_ptr(struct lvds_lfp_data_ptr_table *table,
- 			     int table_size, int total_size)
- {
-@@ -368,11 +356,22 @@ static void next_lfp_data_ptr(struct lvds_lfp_data_ptr_table *next,
- static void *generate_lfp_data_ptrs(struct drm_i915_private *i915,
- 				    const void *bdb)
- {
--	int i, size, table_size, block_size, offset;
--	const void *t0, *t1, *block;
-+	int i, size, table_size, block_size, offset, fp_timing_size;
- 	struct bdb_lvds_lfp_data_ptrs *ptrs;
-+	const void *block;
- 	void *ptrs_block;
-
-+	/*
-+	 * The hardcoded fp_timing_size is only valid for
-+	 * modernish VBTs. All older VBTs definitely should
-+	 * include block 41 and thus we don't need to
-+	 * generate one.
-+	 */
-+	if (i915->vbt.version < 155)
-+		return NULL;
-+
-+	fp_timing_size = 38;
-+
- 	block = find_raw_section(bdb, BDB_LVDS_LFP_DATA);
- 	if (!block)
- 		return NULL;
-@@ -381,17 +380,8 @@ static void *generate_lfp_data_ptrs(struct drm_i915_private *i915,
-
- 	block_size = get_blocksize(block);
-
--	size = block_size;
--	t0 = find_fp_timing_terminator(block, size);
--	if (!t0)
--		return NULL;
--
--	size -= t0 - block - 2;
--	t1 = find_fp_timing_terminator(t0 + 2, size);
--	if (!t1)
--		return NULL;
--
--	size = t1 - t0;
-+	size = fp_timing_size + sizeof(struct lvds_dvo_timing) +
-+		sizeof(struct lvds_pnp_id);
- 	if (size * 16 > block_size)
- 		return NULL;
-
-@@ -409,7 +399,7 @@ static void *generate_lfp_data_ptrs(struct drm_i915_private *i915,
- 	table_size = sizeof(struct lvds_dvo_timing);
- 	size = make_lfp_data_ptr(&ptrs->ptr[0].dvo_timing, table_size, size);
-
--	table_size = t0 - block + 2;
-+	table_size = fp_timing_size;
- 	size = make_lfp_data_ptr(&ptrs->ptr[0].fp_timing, table_size, size);
-
- 	if (ptrs->ptr[0].fp_timing.table_size)
-@@ -424,14 +414,14 @@ static void *generate_lfp_data_ptrs(struct drm_i915_private *i915,
- 		return NULL;
- 	}
-
--	size = t1 - t0;
-+	size = fp_timing_size + sizeof(struct lvds_dvo_timing) +
-+		sizeof(struct lvds_pnp_id);
- 	for (i = 1; i < 16; i++) {
- 		next_lfp_data_ptr(&ptrs->ptr[i].fp_timing, &ptrs->ptr[i-1].fp_timing, size);
- 		next_lfp_data_ptr(&ptrs->ptr[i].dvo_timing, &ptrs->ptr[i-1].dvo_timing, size);
- 		next_lfp_data_ptr(&ptrs->ptr[i].panel_pnp_id, &ptrs->ptr[i-1].panel_pnp_id, size);
- 	}
-
--	size = t1 - t0;
- 	table_size = sizeof(struct lvds_lfp_panel_name);
-
- 	if (16 * (size + table_size) <= block_size) {
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 1e5f68704d7d..4e5bba0822a5 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -2712,9 +2712,16 @@ static int vc4_hdmi_init_resources(struct vc4_hdmi *vc4_hdmi)
- 		DRM_ERROR("Failed to get HDMI state machine clock\n");
- 		return PTR_ERR(vc4_hdmi->hsm_clock);
- 	}
-+
- 	vc4_hdmi->audio_clock = vc4_hdmi->hsm_clock;
- 	vc4_hdmi->cec_clock = vc4_hdmi->hsm_clock;
-
-+	vc4_hdmi->hsm_rpm_clock = devm_clk_get(dev, "hdmi");
-+	if (IS_ERR(vc4_hdmi->hsm_rpm_clock)) {
-+		DRM_ERROR("Failed to get HDMI state machine clock\n");
-+		return PTR_ERR(vc4_hdmi->hsm_rpm_clock);
-+	}
-+
- 	return 0;
- }
-
-@@ -2796,6 +2803,12 @@ static int vc5_hdmi_init_resources(struct vc4_hdmi *vc4_hdmi)
- 		return PTR_ERR(vc4_hdmi->hsm_clock);
- 	}
-
-+	vc4_hdmi->hsm_rpm_clock = devm_clk_get(dev, "hdmi");
-+	if (IS_ERR(vc4_hdmi->hsm_rpm_clock)) {
-+		DRM_ERROR("Failed to get HDMI state machine clock\n");
-+		return PTR_ERR(vc4_hdmi->hsm_rpm_clock);
-+	}
-+
- 	vc4_hdmi->pixel_bvb_clock = devm_clk_get(dev, "bvb");
- 	if (IS_ERR(vc4_hdmi->pixel_bvb_clock)) {
- 		DRM_ERROR("Failed to get pixel bvb clock\n");
-@@ -2859,7 +2872,7 @@ static int vc4_hdmi_runtime_suspend(struct device *dev)
- {
- 	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
-
--	clk_disable_unprepare(vc4_hdmi->hsm_clock);
-+	clk_disable_unprepare(vc4_hdmi->hsm_rpm_clock);
-
- 	return 0;
- }
-@@ -2869,12 +2882,37 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
- 	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
- 	unsigned long __maybe_unused flags;
- 	u32 __maybe_unused value;
-+	unsigned long rate;
- 	int ret;
-
--	ret = clk_prepare_enable(vc4_hdmi->hsm_clock);
-+	/*
-+	 * The HSM clock is in the HDMI power domain, so we need to set
-+	 * its frequency while the power domain is active so that it
-+	 * keeps its rate.
-+	 */
-+	ret = clk_set_min_rate(vc4_hdmi->hsm_rpm_clock, HSM_MIN_CLOCK_FREQ);
- 	if (ret)
- 		return ret;
-
-+	ret = clk_prepare_enable(vc4_hdmi->hsm_rpm_clock);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Whenever the RaspberryPi boots without an HDMI monitor
-+	 * plugged in, the firmware won't have initialized the HSM clock
-+	 * rate and it will be reported as 0.
-+	 *
-+	 * If we try to access a register of the controller in such a
-+	 * case, it will lead to a silent CPU stall. Let's make sure we
-+	 * prevent such a case.
-+	 */
-+	rate = clk_get_rate(vc4_hdmi->hsm_rpm_clock);
-+	if (!rate) {
-+		ret = -EINVAL;
-+		goto err_disable_clk;
-+	}
-+
- 	if (vc4_hdmi->variant->reset)
- 		vc4_hdmi->variant->reset(vc4_hdmi);
-
-@@ -2896,6 +2934,10 @@ static int vc4_hdmi_runtime_resume(struct device *dev)
- #endif
-
- 	return 0;
-+
-+err_disable_clk:
-+	clk_disable_unprepare(vc4_hdmi->hsm_clock);
-+	return ret;
- }
-
- static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.h b/drivers/gpu/drm/vc4/vc4_hdmi.h
-index c3ed2b07df23..47f141ec8c40 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.h
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.h
-@@ -171,6 +171,7 @@ struct vc4_hdmi {
- 	struct clk *cec_clock;
- 	struct clk *pixel_clock;
- 	struct clk *hsm_clock;
-+	struct clk *hsm_rpm_clock;
- 	struct clk *audio_clock;
- 	struct clk *pixel_bvb_clock;
-
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index 311eee599ce9..2460c6bd46f8 100644
+index bb1f423f4ace..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
-@@ -322,19 +322,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
+@@ -321,19 +321,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
  {
  	struct rmi_data *hdata = hid_get_drvdata(hdev);
  	struct rmi_device *rmi_dev = hdata->xport.rmi_dev;
@@ -821,7 +578,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	return 1;
  }
 
-@@ -591,56 +584,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
+@@ -589,56 +582,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
  	.reset		= rmi_hid_reset,
  };
 
@@ -878,7 +635,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
  {
  	struct rmi_data *data = NULL;
-@@ -713,18 +656,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
+@@ -711,18 +654,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
 
  	mutex_init(&data->page_mutex);
 
@@ -898,7 +655,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index d39660a3e50c..8e5ffb4325a3 100644
+index 80fefaba58ee..be8f345bb379 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -1141,18 +898,18 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3a808146b50f..c1a3f3057921 100644
+index 65a3b3d886dc..911b64ce9889 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -7,6 +7,7 @@
- #define pr_fmt(fmt)    "iommu: " fmt
+@@ -8,6 +8,7 @@
 
+ #include <linux/amba/bus.h>
  #include <linux/device.h>
 +#include <linux/dmi.h>
- #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -2843,6 +2844,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+ #include <linux/bug.h>
+@@ -2818,6 +2819,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1180,144 +937,8 @@ index 3a808146b50f..c1a3f3057921 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 59e4b188fc71..9c6bfc02e6a1 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
-
- static blk_status_t nvme_error_status(u16 status)
- {
-+	if (unlikely(status & NVME_SC_DNR))
-+		return BLK_STS_TARGET;
-+
- 	switch (status & 0x7ff) {
- 	case NVME_SC_SUCCESS:
- 		return BLK_STS_OK;
-@@ -340,6 +343,7 @@ enum nvme_disposition {
- 	COMPLETE,
- 	RETRY,
- 	FAILOVER,
-+	FAILUP,
- 	AUTHENTICATE,
- };
-
-@@ -351,15 +355,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
- 	if ((nvme_req(req)->status & 0x7ff) == NVME_SC_AUTH_REQUIRED)
- 		return AUTHENTICATE;
-
--	if (blk_noretry_request(req) ||
-+	if ((req->cmd_flags & (REQ_FAILFAST_DEV | REQ_FAILFAST_DRIVER)) ||
- 	    (nvme_req(req)->status & NVME_SC_DNR) ||
- 	    nvme_req(req)->retries >= nvme_max_retries)
- 		return COMPLETE;
-
--	if (req->cmd_flags & REQ_NVME_MPATH) {
-+	if (req->cmd_flags & (REQ_NVME_MPATH | REQ_FAILFAST_TRANSPORT)) {
- 		if (nvme_is_path_error(nvme_req(req)->status) ||
- 		    blk_queue_dying(req->q))
--			return FAILOVER;
-+			return (req->cmd_flags & REQ_NVME_MPATH) ?
-+				FAILOVER : FAILUP;
- 	} else {
- 		if (blk_queue_dying(req->q))
- 			return COMPLETE;
-@@ -387,6 +392,14 @@ static inline void nvme_end_req(struct request *req)
- 	blk_mq_end_request(req, status);
- }
-
-+static inline void nvme_failup_req(struct request *req)
-+{
-+	nvme_update_ana(req);
-+
-+	nvme_req(req)->status = NVME_SC_HOST_PATH_ERROR;
-+	nvme_end_req(req);
-+}
-+
- void nvme_complete_rq(struct request *req)
- {
- 	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
-@@ -407,6 +420,9 @@ void nvme_complete_rq(struct request *req)
- 	case FAILOVER:
- 		nvme_failover_req(req);
- 		return;
-+	case FAILUP:
-+		nvme_failup_req(req);
-+		return;
- 	case AUTHENTICATE:
- #ifdef CONFIG_NVME_AUTH
- 		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
-diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index b9cf17cbbbd5..9aa33fc59f67 100644
---- a/drivers/nvme/host/multipath.c
-+++ b/drivers/nvme/host/multipath.c
-@@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
- 			blk_freeze_queue_start(h->disk->queue);
- }
-
--void nvme_failover_req(struct request *req)
-+void nvme_update_ana(struct request *req)
- {
- 	struct nvme_ns *ns = req->q->queuedata;
- 	u16 status = nvme_req(req)->status & 0x7ff;
--	unsigned long flags;
--	struct bio *bio;
--
--	nvme_mpath_clear_current_path(ns);
-
- 	/*
- 	 * If we got back an ANA error, we know the controller is alive but not
-@@ -98,6 +94,16 @@ void nvme_failover_req(struct request *req)
- 		set_bit(NVME_NS_ANA_PENDING, &ns->flags);
- 		queue_work(nvme_wq, &ns->ctrl->ana_work);
- 	}
-+}
-+
-+void nvme_failover_req(struct request *req)
-+{
-+	struct nvme_ns *ns = req->q->queuedata;
-+	unsigned long flags;
-+	struct bio *bio;
-+
-+	nvme_mpath_clear_current_path(ns);
-+	nvme_update_ana(req);
-
- 	spin_lock_irqsave(&ns->head->requeue_lock, flags);
- 	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -872,8 +878,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
- 	int error = 0;
-
- 	/* check if multipath is enabled and we have the capability */
--	if (!multipath || !ctrl->subsys ||
--	    !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
-+	if (!ctrl->subsys || !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
- 		return 0;
-
- 	if (!ctrl->max_namespaces ||
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index a0bf9560cf67..2a226be9b32a 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -844,6 +844,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
- void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
- void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
- void nvme_failover_req(struct request *req);
-+void nvme_update_ana(struct request *req);
- void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
- int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
- void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -880,6 +881,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
- static inline void nvme_failover_req(struct request *req)
- {
- }
-+static inline void nvme_update_ana(struct request *req)
-+{
-+}
- static inline void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl)
- {
- }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 4944798e75b5..079a29ef1bf2 100644
+index 285acc4aaccc..a7056957e7dd 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4296,6 +4296,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1369,8 +990,20 @@ index bbab424b0d55..ed86042fb57b 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/overlayfs/file.c b/fs/overlayfs/file.c
+index a1a22f58ba18..dd688a842b0b 100644
+--- a/fs/overlayfs/file.c
++++ b/fs/overlayfs/file.c
+@@ -96,6 +96,7 @@ static int ovl_change_flags(struct file *file, unsigned int flags)
+
+ 	spin_lock(&file->f_lock);
+ 	file->f_flags = (file->f_flags & ~OVL_SETFL_MASK) | flags;
++	file->f_iocb_flags = iocb_flags(file);
+ 	spin_unlock(&file->f_lock);
+
+ 	return 0;
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index d2b84c2fec39..3498d72b62ec 100644
+index 7603fc58c47c..1099e99286c6 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1382,7 +1015,7 @@ index d2b84c2fec39..3498d72b62ec 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -849,6 +851,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -864,6 +866,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1397,7 +1030,7 @@ index d2b84c2fec39..3498d72b62ec 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -860,6 +870,8 @@ static inline bool efi_enabled(int feature)
+@@ -875,6 +885,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1406,7 +1039,7 @@ index d2b84c2fec39..3498d72b62ec 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -881,6 +893,8 @@ static inline bool efi_enabled(int feature)
+@@ -896,6 +908,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1415,7 +1048,7 @@ index d2b84c2fec39..3498d72b62ec 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -895,6 +909,7 @@ static inline void efi_find_mirror(void) {}
+@@ -910,6 +924,7 @@ static inline void efi_find_mirror(void) {}
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1423,7 +1056,7 @@ index d2b84c2fec39..3498d72b62ec 100644
 
  /*
   * Variable Attributes
-@@ -1107,13 +1122,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1135,13 +1150,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -1438,10 +1071,10 @@ index d2b84c2fec39..3498d72b62ec 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 60fff133c0b1..fa0aa514c70f 100644
+index ec119da1d89b..3c27eb4fd460 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -395,6 +395,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -396,6 +396,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -1451,10 +1084,10 @@ index 60fff133c0b1..fa0aa514c70f 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 3aa6030302f5..23b63de268a3 100644
+index 4ec80b96c22e..93495ac301f2 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1557,6 +1557,12 @@
+@@ -1561,6 +1561,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -1480,10 +1113,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 7bd0c490703d..7779eaf1ffa1 100644
+index ca1b7109c0db..b947cfbf04c2 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -475,6 +475,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -478,6 +478,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -1491,7 +1124,7 @@ index 7bd0c490703d..7779eaf1ffa1 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1358,6 +1359,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1366,6 +1367,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -1503,10 +1136,10 @@ index 7bd0c490703d..7779eaf1ffa1 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 532362fcfe31..30d547537ea0 100644
+index 94125d3b6893..7a6bf4659565 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1678,7 +1678,7 @@ config AIO
+@@ -1685,7 +1685,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -1538,28 +1171,6 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
 
  int module_sig_check(struct load_info *info, int flags)
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index 2dc97583d279..e9a7f70a54df 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -888,13 +888,13 @@ int fib_nh_match(struct net *net, struct fib_config *cfg, struct fib_info *fi,
- 		return 1;
- 	}
-
-+	/* cannot match on nexthop object attributes */
-+	if (fi->nh)
-+		return 1;
-+
- 	if (cfg->fc_oif || cfg->fc_gw_family) {
- 		struct fib_nh *nh;
-
--		/* cannot match on nexthop object attributes */
--		if (fi->nh)
--			return 1;
--
- 		nh = fib_info_nh(fi, 0);
- 		if (cfg->fc_encap) {
- 			if (fib_encap_match(net, cfg->fc_encap_type,
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index e137cf15aae9..2ed2341f7967 100755
 --- a/scripts/tags.sh
@@ -1622,7 +1233,7 @@ index e84ddf484010..d0501353a4b9 100644
  	prompt "Kernel default lockdown mode"
  	default LOCK_DOWN_KERNEL_FORCE_NONE
 diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-index 87cbdc64d272..18555cf18da7 100644
+index a79b985e917e..772a69bf43ec 100644
 --- a/security/lockdown/lockdown.c
 +++ b/security/lockdown/lockdown.c
 @@ -73,6 +73,7 @@ static int lockdown_is_locked_down(enum lockdown_reason what)
@@ -1634,10 +1245,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 4b95de24bc8d..10047790e96e 100644
+index 79d82cb6e469..843b0dd8f0dd 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2623,6 +2623,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2630,6 +2630,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
@@ -1650,19 +1261,3 @@ index 4b95de24bc8d..10047790e96e 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index d5a0dd548989..ee5e98204d3d 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -1223,6 +1223,11 @@ ipv4_fcnal()
- 	log_test $rc 0 "Delete nexthop route warning"
- 	run_cmd "$IP route delete 172.16.101.1/32 nhid 12"
- 	run_cmd "$IP nexthop del id 12"
-+
-+	run_cmd "$IP nexthop add id 21 via 172.16.1.6 dev veth1"
-+	run_cmd "$IP ro add 172.16.101.0/24 nhid 21"
-+	run_cmd "$IP ro del 172.16.101.0/24 nexthop via 172.16.1.7 dev veth1 nexthop via 172.16.1.8 dev veth1"
-+	log_test $? 2 "Delete multipath route with only nh id based entry"
- }
-
- ipv4_grp_fcnal()
