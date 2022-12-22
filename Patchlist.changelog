@@ -1,5 +1,5 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/bd7cb112bc916fbaa71c838de09ef8894a9f99e3
- bd7cb112bc916fbaa71c838de09ef8894a9f99e3 Revert "arm64: remove special treatment for the link order of head.o"
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/cf11ba28840339cd1d829360ea13accb0ee6a0c0
+ cf11ba28840339cd1d829360ea13accb0ee6a0c0 Revert "arm64: remove special treatment for the link order of head.o"
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/77542637f2e84a847a7886979e0613332695c181
  77542637f2e84a847a7886979e0613332695c181 Change acpi_bus_get_acpi_device to acpi_get_acpi_dev

@@ -229,7 +229,7 @@ index fbd646dbf440..23ca9cdb2438 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 2094f575c532..b74be981b1dc 100644
+index 2b6091349daa..b9eafa68df6e 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -240,7 +240,7 @@ index 2094f575c532..b74be981b1dc 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -979,6 +980,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -980,6 +981,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -561,7 +561,7 @@ index b51f2a4c821e..be31d32aba53 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 31a4090c66b3..92cc28552227 100644
+index 09716eebe8ac..dcc10a1cdf96 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -572,7 +572,7 @@ index 31a4090c66b3..92cc28552227 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -902,40 +903,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -904,40 +905,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -2559,7 +2559,7 @@ index e7fc37a68069..b91424eebd96 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 35972afb6850..c884c1a42723 100644
+index 64131f88c553..14752f864aa0 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@
