@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc0.20221222git9d2f6060fe4c.11
+%define pkgrelease 0.rc0.20221223git8395ae05cb5a.12
 %define kversion 6
-%define tarfile_release 6.1-14364-g9d2f6060fe4c
+%define tarfile_release 6.1-14446-g8395ae05cb5a
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20221222git9d2f6060fe4c.11%{?buildid}%{?dist}
+%define specrelease 0.rc0.20221223git8395ae05cb5a.12%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3179,8 +3179,12 @@ fi
 #
 #
 %changelog
-* Thu Dec 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.9d2f6060fe4c.11]
+* Fri Dec 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.8395ae05cb5a.12]
+- Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
 - Revert "arm64: remove special treatment for the link order of head.o" (Justin M. Forbes)
+
+* Fri Dec 23 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.8395ae05cb5a.11]
+- Linux v6.2.0-0.rc0.8395ae05cb5a
 
 * Thu Dec 22 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc0.9d2f6060fe4c.10]
 - spec: add missing BuildRequires: python3-docutils for tools (Ondrej Mosnacek)
