@@ -121,7 +121,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 25247f931872..f72f0ed52e78 100644
+index d4b6af8c09e9..8223bfdea30b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -2547,7 +2547,7 @@ index 7e5c3ddc341d..850393c608ef 100644
  	default y
  	help
 diff --git a/kernel/Makefile b/kernel/Makefile
-index e7fc37a68069..b91424eebd96 100644
+index 10ef068f598d..d7953f0ee28a 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
@@ -2650,10 +2650,10 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index 326d91505f04..44b01e472228 100644
+index 463c9295bc28..9f4d0cefeceb 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -467,6 +467,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -470,6 +470,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
  	[ TAINT_TEST ]			= { 'N', ' ', true },
