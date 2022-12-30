@@ -1229,7 +1229,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 95c488ea91c3..fad3f16d463f 100644
+index 7be562a4e1aa..0169d9f5df9b 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1343,7 +1343,7 @@ index c03093b6813c..46a71df1fbd1 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 6bbb73ef8b25..1c99a8a525c9 100644
+index 424c8a467a0c..3230b91d3476 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
 @@ -873,6 +873,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
