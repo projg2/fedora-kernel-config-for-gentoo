@@ -16,7 +16,7 @@
  drivers/firmware/efi/secureboot.c                  |  38 +++
  drivers/firmware/sysfb.c                           |  18 +-
  drivers/gpu/drm/tiny/simpledrm.c                   |  65 ++++-
- drivers/hid/hid-rmi.c                              |  64 -----
+ drivers/hid/hid-rmi.c                              |  66 -----
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++
  drivers/input/rmi4/rmi_driver.c                    | 124 +++++----
  drivers/iommu/iommu.c                              |  22 ++
@@ -46,10 +46,10 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 48 files changed, 768 insertions(+), 365 deletions(-)
+ 48 files changed, 768 insertions(+), 367 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 0c7ae314ad3d..70073286d29f 100644
+index ff8d88b11391..ff74e2bc5668 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -148,7 +148,7 @@ index bbd4bde4f65d..dd60114ae9c1 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 216fee7144ee..55e817aa000d 100644
+index 892609cde4a2..ad9aa11ba3a0 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -214,10 +214,10 @@ index 6aef1ee5e1bd..8f146b1b4972 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index dabe45eba055..82cf1ddf25d6 100644
+index 0d9a17fdd83e..95133e7fe1ab 100644
 --- a/drivers/acpi/irq.c
 +++ b/drivers/acpi/irq.c
-@@ -137,6 +137,7 @@ struct acpi_irq_parse_one_ctx {
+@@ -138,6 +138,7 @@ struct acpi_irq_parse_one_ctx {
  	unsigned int index;
  	unsigned long *res_flags;
  	struct irq_fwspec *fwspec;
@@ -225,7 +225,7 @@ index dabe45eba055..82cf1ddf25d6 100644
  };
 
  /**
-@@ -208,7 +209,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -209,7 +210,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  		return AE_CTRL_TERMINATE;
  	case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
  		eirq = &ares->data.extended_irq;
@@ -235,7 +235,7 @@ index dabe45eba055..82cf1ddf25d6 100644
  			return AE_OK;
  		if (ctx->index >= eirq->interrupt_count) {
  			ctx->index -= eirq->interrupt_count;
-@@ -244,8 +246,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -245,8 +247,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  static int acpi_irq_parse_one(acpi_handle handle, unsigned int index,
  			      struct irq_fwspec *fwspec, unsigned long *flags)
  {
@@ -332,7 +332,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index 703433493c85..6b1b102b9b7d 100644
+index c9e32d100b7e..bfe9bd1fde24 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -343,7 +343,7 @@ index 703433493c85..6b1b102b9b7d 100644
  #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5516,8 +5517,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5520,8 +5521,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -706,10 +706,10 @@ index 5422363690e7..a5b500811892 100644
  	}
 
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index 311eee599ce9..2460c6bd46f8 100644
+index b2bf588d18c3..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
-@@ -322,19 +322,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
+@@ -322,21 +322,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
  {
  	struct rmi_data *hdata = hid_get_drvdata(hdev);
  	struct rmi_device *rmi_dev = hdata->xport.rmi_dev;
@@ -718,6 +718,8 @@ index 311eee599ce9..2460c6bd46f8 100644
  	if (!(test_bit(RMI_STARTED, &hdata->flags)))
  		return 0;
 
+-	pm_wakeup_event(hdev->dev.parent, 0);
+-
 -	local_irq_save(flags);
 -
  	rmi_set_attn_data(rmi_dev, data[1], &data[2], size - 2);
@@ -729,7 +731,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  	return 1;
  }
 
-@@ -591,56 +584,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
+@@ -593,56 +584,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
  	.reset		= rmi_hid_reset,
  };
 
@@ -786,7 +788,7 @@ index 311eee599ce9..2460c6bd46f8 100644
  static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
  {
  	struct rmi_data *data = NULL;
-@@ -713,18 +656,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
+@@ -715,18 +656,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
 
  	mutex_init(&data->page_mutex);
 
@@ -1089,7 +1091,7 @@ index 3a808146b50f..c1a3f3057921 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index aca50bb93750..2f54b3560433 100644
+index 3582a28a1dce..2b8eaa22070c 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1788,7 +1790,7 @@ index bbab424b0d55..ed86042fb57b 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/overlayfs/file.c b/fs/overlayfs/file.c
-index daff601b5c41..6268eccfa69d 100644
+index a34f8042724c..172cde9d2e56 100644
 --- a/fs/overlayfs/file.c
 +++ b/fs/overlayfs/file.c
 @@ -96,6 +96,7 @@ static int ovl_change_flags(struct file *file, unsigned int flags)

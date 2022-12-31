@@ -122,17 +122,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.0.15
+%define specversion 6.0.16
 %define patchversion 6.0
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.0.15
+%define tarfile_release 6.0.16
 # This is needed to do merge window version magic
 %define patchlevel 0
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.0.15
+%define kabiversion 6.0.16
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3180,6 +3180,9 @@ fi
 #
 #
 %changelog
+* Sat Dec 31 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.16-0]
+- Linux v6.0.16
+
 * Wed Dec 21 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.0.15-0]
 - ovl: update ->f_iocb_flags when ovl_change_flags() modifies ->f_flags (Al Viro)
 - Linux v6.0.15
