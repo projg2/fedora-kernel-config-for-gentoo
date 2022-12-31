@@ -124,17 +124,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.1.1
+%define specversion 6.1.2
 %define patchversion 6.1
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.1.1
+%define tarfile_release 6.1.2
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.1.1
+%define kabiversion 6.1.2
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3178,6 +3178,12 @@ fi
 #
 #
 %changelog
+* Sat Dec 31 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.1.2-0]
+- Configs fix up for 6.1.2 (Justin M. Forbes)
+- disable enum64 BTF in fedora rawhide (Jiri Olsa)
+- Turn on CONFIG_SC_GPUCC_8280XP (Justin M. Forbes)
+- Linux v6.1.2
+
 * Wed Dec 21 2022 Justin M. Forbes <jforbes@fedoraproject.org> [6.1.1-0]
 - ovl: update ->f_iocb_flags when ovl_change_flags() modifies ->f_flags (Al Viro)
 - Updates for building stable Fedora (Justin M. Forbes)
