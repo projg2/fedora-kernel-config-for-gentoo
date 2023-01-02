@@ -122,17 +122,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc1.20221230gitbff687b3dad6.15
+%define pkgrelease 0.rc2.18
 %define kversion 6
-%define tarfile_release 6.2-rc1-68-gbff687b3dad6
+%define tarfile_release 6.2-rc2
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20221230gitbff687b3dad6.15%{?buildid}%{?dist}
+%define specrelease 0.rc2.18%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3179,9 +3179,18 @@ fi
 #
 #
 %changelog
-* Fri Dec 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc1.bff687b3dad6.15]
+* Mon Jan 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc2.18]
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
 - Revert "arm64: remove special treatment for the link order of head.o" (Justin M. Forbes)
+
+* Mon Jan 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc2.17]
+- Linux v6.2.0-0.rc2
+
+* Sun Jan 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc1.e4cf7c25bae5.16]
+- Linux v6.2.0-0.rc1.e4cf7c25bae5
+
+* Sat Dec 31 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc1.c8451c141e07.15]
+- Linux v6.2.0-0.rc1.c8451c141e07
 
 * Fri Dec 30 2022 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc1.bff687b3dad6.14]
 - Linux v6.2.0-0.rc1.bff687b3dad6
