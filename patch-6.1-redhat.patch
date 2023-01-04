@@ -20,7 +20,6 @@
  drivers/iommu/iommu.c                              |  22 ++++
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
- fs/overlayfs/file.c                                |   1 +
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -34,10 +33,10 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 36 files changed, 453 insertions(+), 177 deletions(-)
+ 35 files changed, 452 insertions(+), 177 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 2ecc568c779f..85b3b34336dd 100644
+index a69d14983a48..ddaa7fccb596 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -993,18 +992,6 @@ index bbab424b0d55..ed86042fb57b 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/fs/overlayfs/file.c b/fs/overlayfs/file.c
-index d066be3b9226..6011f955436b 100644
---- a/fs/overlayfs/file.c
-+++ b/fs/overlayfs/file.c
-@@ -96,6 +96,7 @@ static int ovl_change_flags(struct file *file, unsigned int flags)
-
- 	spin_lock(&file->f_lock);
- 	file->f_flags = (file->f_flags & ~OVL_SETFL_MASK) | flags;
-+	file->f_iocb_flags = iocb_flags(file);
- 	spin_unlock(&file->f_lock);
-
- 	return 0;
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 7603fc58c47c..1099e99286c6 100644
 --- a/include/linux/efi.h
