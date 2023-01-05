@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc2.20230103git69b41ac87e4a.19
+%define pkgrelease 0.rc2.20230105git41c03ba9beea.20
 %define kversion 6
-%define tarfile_release 6.2-rc2-10-g69b41ac87e4a
+%define tarfile_release 6.2-rc2-57-g41c03ba9beea
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20230103git69b41ac87e4a.19%{?buildid}%{?dist}
+%define specrelease 0.rc2.20230105git41c03ba9beea.20%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3179,9 +3179,12 @@ fi
 #
 #
 %changelog
-* Tue Jan 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc2.69b41ac87e4a.19]
+* Thu Jan 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc2.41c03ba9beea.20]
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
 - Revert "arm64: remove special treatment for the link order of head.o" (Justin M. Forbes)
+
+* Thu Jan 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc2.41c03ba9beea.19]
+- Linux v6.2.0-0.rc2.41c03ba9beea
 
 * Tue Jan 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc2.69b41ac87e4a.18]
 - redhat/docs: Add FAQ entry for booting between Fedora & ELN/RHEL kernels (Prarit Bhargava)
