@@ -124,17 +124,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.1.3
+%define specversion 6.1.4
 %define patchversion 6.1
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.1.3
+%define tarfile_release 6.1.4
 # This is needed to do merge window version magic
 %define patchlevel 1
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.1.3
+%define kabiversion 6.1.4
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3178,6 +3178,11 @@ fi
 #
 #
 %changelog
+* Sat Jan 07 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.1.4-0]
+- brcmfmac: Prefer DT board type over DMI board type (Ivan T. Ivanov)
+- Remove the revert patch from F36, as a new pahole is being pushed to stable making it unnecessary (Justin M. Forbes)
+- Linux v6.1.4
+
 * Wed Jan 04 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.1.3-0]
 - Linux v6.1.3
 

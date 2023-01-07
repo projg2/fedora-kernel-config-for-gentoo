@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d4af335232ef0ad6d4036fa33a823cc1683d635c
+ d4af335232ef0ad6d4036fa33a823cc1683d635c brcmfmac: Prefer DT board type over DMI board type
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/c1862b27b603f8acf8ef8b64ae2f8650fd2ad267
  c1862b27b603f8acf8ef8b64ae2f8650fd2ad267 disable enum64 BTF in fedora rawhide
 
