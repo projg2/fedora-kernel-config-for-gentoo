@@ -122,17 +122,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc2.20230105git41c03ba9beea.20
+%define pkgrelease 0.rc3.20230109git1fe4fd6f5cad.24
 %define kversion 6
-%define tarfile_release 6.2-rc2-57-g41c03ba9beea
+%define tarfile_release 6.2-rc3-8-g1fe4fd6f5cad
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20230105git41c03ba9beea.20%{?buildid}%{?dist}
+%define specrelease 0.rc3.20230109git1fe4fd6f5cad.24%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3179,9 +3179,23 @@ fi
 #
 #
 %changelog
-* Thu Jan 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc2.41c03ba9beea.20]
+* Mon Jan 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.1fe4fd6f5cad.24]
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
 - Revert "arm64: remove special treatment for the link order of head.o" (Justin M. Forbes)
+
+* Mon Jan 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.1fe4fd6f5cad.23]
+- Linux v6.2.0-0.rc3.1fe4fd6f5cad
+
+* Sun Jan 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc2.9b43a525db12.22]
+- Linux v6.2.0-0.rc2.9b43a525db12
+
+* Sat Jan 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc2.0a71553536d2.21]
+- Linux v6.2.0-0.rc2.0a71553536d2
+
+* Fri Jan 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc2.1f5abbd77e2c.20]
+- general: arm: cleanup ASPEED options (Peter Robinson)
+- redhat/configs: ALSA - cleanups for the AMD Pink Sardine DMIC driver (Jaroslav Kysela)
+- Linux v6.2.0-0.rc2.1f5abbd77e2c
 
 * Thu Jan 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc2.41c03ba9beea.19]
 - Linux v6.2.0-0.rc2.41c03ba9beea
