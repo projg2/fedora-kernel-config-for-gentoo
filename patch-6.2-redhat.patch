@@ -2534,10 +2534,10 @@ index 5b67f208f7de..060133d19a4b 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 7e5c3ddc341d..850393c608ef 100644
+index 0958846b005e..a9f8a5e4f3d8 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1694,7 +1694,7 @@ config AIO
+@@ -1698,7 +1698,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING

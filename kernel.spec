@@ -122,17 +122,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc3.20230109git1fe4fd6f5cad.24
+%define pkgrelease 0.rc3.20230110git5a41237ad1d4.25
 %define kversion 6
-%define tarfile_release 6.2-rc3-8-g1fe4fd6f5cad
+%define tarfile_release 6.2-rc3-9-g5a41237ad1d4
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20230109git1fe4fd6f5cad.24%{?buildid}%{?dist}
+%define specrelease 0.rc3.20230110git5a41237ad1d4.25%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3179,9 +3179,13 @@ fi
 #
 #
 %changelog
-* Mon Jan 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.1fe4fd6f5cad.24]
+* Tue Jan 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.5a41237ad1d4.25]
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
 - Revert "arm64: remove special treatment for the link order of head.o" (Justin M. Forbes)
+
+* Tue Jan 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.5a41237ad1d4.24]
+- redhat/configs: Enable CRYPTO_CURVE25519 in ark (Prarit Bhargava)
+- Linux v6.2.0-0.rc3.5a41237ad1d4
 
 * Mon Jan 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.1fe4fd6f5cad.23]
 - Linux v6.2.0-0.rc3.1fe4fd6f5cad
