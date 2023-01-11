@@ -58,14 +58,13 @@
  kernel/module/signing.c                            |   9 +-
  kernel/panic.c                                     |  13 +
  kernel/rh_messages.c                               | 209 +++++++++
- scripts/head-object-list.txt                       |   1 +
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 67 files changed, 1541 insertions(+), 189 deletions(-)
+ 66 files changed, 1540 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 6cfa6e3996cf..62b314faa050 100644
@@ -2888,18 +2887,6 @@ index 000000000000..586c3319f530
 +#endif
 +}
 +EXPORT_SYMBOL(mark_partner_supported);
-diff --git a/scripts/head-object-list.txt b/scripts/head-object-list.txt
-index b074134cfac2..105ea7ac4751 100644
---- a/scripts/head-object-list.txt
-+++ b/scripts/head-object-list.txt
-@@ -15,6 +15,7 @@ arch/alpha/kernel/head.o
- arch/arc/kernel/head.o
- arch/arm/kernel/head-nommu.o
- arch/arm/kernel/head.o
-+arch/arm64/kernel/head.o
- arch/csky/kernel/head.o
- arch/hexagon/kernel/head.o
- arch/ia64/kernel/head.o
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
 index efff8078e395..1b4f8306cea6 100644
 --- a/scripts/mod/modpost.c
