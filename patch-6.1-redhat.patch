@@ -4,51 +4,43 @@
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/setup.c                            |  22 +-
- drivers/acpi/apei/hest.c                           |   8 +
- drivers/acpi/irq.c                                 |  17 +-
- drivers/acpi/scan.c                                |   9 +
- drivers/ata/libahci.c                              |  18 ++
- drivers/char/ipmi/ipmi_dmi.c                       |  15 ++
- drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
+ arch/x86/kernel/setup.c                            |  22 ++--
+ arch/x86/kvm/vmx/nested.c                          |  11 ++
+ arch/x86/kvm/vmx/vmx.c                             |   6 +-
+ drivers/acpi/apei/hest.c                           |   8 ++
+ drivers/acpi/irq.c                                 |  17 ++-
+ drivers/acpi/scan.c                                |   9 ++
+ drivers/ata/libahci.c                              |  18 +++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
+ drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 ++++++---
- drivers/firmware/efi/secureboot.c                  |  38 +++
- drivers/firmware/sysfb.c                           |  18 +-
- drivers/gpu/drm/tiny/simpledrm.c                   |  65 ++++-
- drivers/hid/hid-rmi.c                              |  66 -----
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++
- drivers/input/rmi4/rmi_driver.c                    | 124 +++++----
- drivers/iommu/iommu.c                              |  22 ++
- drivers/nvme/host/core.c                           |  22 +-
- drivers/nvme/host/multipath.c                      |  19 +-
- drivers/nvme/host/nvme.h                           |   4 +
- drivers/pci/pci-driver.c                           |  11 +
- drivers/pci/pci.c                                  |  28 +-
- drivers/pci/pci.h                                  |  14 +-
- drivers/pci/pcie/ptm.c                             | 300 ++++++++++++---------
- drivers/pci/quirks.c                               |  24 ++
- drivers/usb/core/hub.c                             |   7 +
- include/linux/efi.h                                |  22 +-
+ drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
+ drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/firmware/sysfb.c                           |  18 ++-
+ drivers/hid/hid-rmi.c                              |  66 -----------
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
+ drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
+ drivers/iommu/iommu.c                              |  22 ++++
+ .../net/wireless/broadcom/brcm80211/brcmfmac/of.c  |   5 +-
+ drivers/pci/quirks.c                               |  24 ++++
+ drivers/usb/core/hub.c                             |   7 ++
+ include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
- include/linux/pci.h                                |   3 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
- include/net/sock.h                                 |   2 +-
  init/Kconfig                                       |   2 +-
  kernel/module/signing.c                            |   9 +-
- net/l2tp/l2tp_core.c                               |  19 +-
  scripts/pahole-flags.sh                            |   3 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
- security/lockdown/Kconfig                          |  13 +
+ security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 47 files changed, 767 insertions(+), 367 deletions(-)
+ 39 files changed, 487 insertions(+), 182 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 0104f69d30bb..20a377175eed 100644
+index ddbd2fc917c5..db90bfc4f3ef 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -63,10 +55,10 @@ index 0104f69d30bb..20a377175eed 100644
  # to get the ordering right.
  #
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 11ecf09aadc8..5d91c8c3cd49 100644
+index a08c9d092a33..1d82f6e9ecbd 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1387,9 +1387,9 @@ config HIGHMEM
+@@ -1315,9 +1315,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -79,10 +71,10 @@ index 11ecf09aadc8..5d91c8c3cd49 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 3795eb5ba1cd..55d299a03150 100644
+index 505c8a1ccbe0..575f77325e60 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1199,7 +1199,7 @@ endchoice
+@@ -1212,7 +1212,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -91,8 +83,8 @@ index 3795eb5ba1cd..55d299a03150 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1438,6 +1438,7 @@ config XEN
- config FORCE_MAX_ZONEORDER
+@@ -1451,6 +1451,7 @@ config XEN
+ config ARCH_FORCE_MAX_ORDER
  	int
  	default "14" if ARM64_64K_PAGES
 +	default "13" if (ARCH_THUNDER && !ARM64_64K_PAGES)
@@ -112,10 +104,10 @@ index a405b6bb89fb..50827b341fd7 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 1cc85b8ff42e..b7ee128c67ce 100644
+index 325cbf69ebbd..1801af7a6ec4 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2216,3 +2216,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2221,3 +2221,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -125,7 +117,7 @@ index 1cc85b8ff42e..b7ee128c67ce 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index bbd4bde4f65d..dd60114ae9c1 100644
+index ab19ddb09d65..d463ec57b218 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -136,7 +128,7 @@ index bbd4bde4f65d..dd60114ae9c1 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -968,6 +969,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -978,6 +979,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -193,6 +185,45 @@ index 892609cde4a2..ad9aa11ba3a0 100644
 
  	reserve_initrd();
 
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index 10c63b1bf92f..df8995977ec2 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -4767,6 +4767,17 @@ void nested_vmx_vmexit(struct kvm_vcpu *vcpu, u32 vm_exit_reason,
+
+ 	vmx_switch_vmcs(vcpu, &vmx->vmcs01);
+
++	/*
++	 * If IBRS is advertised to the vCPU, KVM must flush the indirect
++	 * branch predictors when transitioning from L2 to L1, as L1 expects
++	 * hardware (KVM in this case) to provide separate predictor modes.
++	 * Bare metal isolates VMX root (host) from VMX non-root (guest), but
++	 * doesn't isolate different VMCSs, i.e. in this case, doesn't provide
++	 * separate modes for L2 vs L1.
++	 */
++	if (guest_cpuid_has(vcpu, X86_FEATURE_SPEC_CTRL))
++		indirect_branch_prediction_barrier();
++
+ 	/* Update any VMCS fields that might have changed while L2 ran */
+ 	vmcs_write32(VM_EXIT_MSR_LOAD_COUNT, vmx->msr_autoload.host.nr);
+ 	vmcs_write32(VM_ENTRY_MSR_LOAD_COUNT, vmx->msr_autoload.guest.nr);
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 63247c57c72c..179dfe9dc1a5 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -1348,8 +1348,10 @@ void vmx_vcpu_load_vmcs(struct kvm_vcpu *vcpu, int cpu,
+
+ 		/*
+ 		 * No indirect branch prediction barrier needed when switching
+-		 * the active VMCS within a guest, e.g. on nested VM-Enter.
+-		 * The L1 VMM can protect itself with retpolines, IBPB or IBRS.
++		 * the active VMCS within a vCPU, unless IBRS is advertised to
++		 * the vCPU.  To minimize the number of IBPBs executed, KVM
++		 * performs IBPB on nested VM-Exit (a single nested transition
++		 * may switch the active VMCS multiple times).
+ 		 */
+ 		if (!buddy || WARN_ON_ONCE(buddy->vmcs != prev))
+ 			indirect_branch_prediction_barrier();
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
 index 6aef1ee5e1bd..8f146b1b4972 100644
 --- a/drivers/acpi/apei/hest.c
@@ -213,7 +244,7 @@ index 6aef1ee5e1bd..8f146b1b4972 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index 0d9a17fdd83e..95133e7fe1ab 100644
+index c2c786eb95ab..4e3aa80cd5cf 100644
 --- a/drivers/acpi/irq.c
 +++ b/drivers/acpi/irq.c
 @@ -138,6 +138,7 @@ struct acpi_irq_parse_one_ctx {
@@ -224,7 +255,7 @@ index 0d9a17fdd83e..95133e7fe1ab 100644
  };
 
  /**
-@@ -209,7 +210,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -211,7 +212,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  		return AE_CTRL_TERMINATE;
  	case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
  		eirq = &ares->data.extended_irq;
@@ -234,7 +265,7 @@ index 0d9a17fdd83e..95133e7fe1ab 100644
  			return AE_OK;
  		if (ctx->index >= eirq->interrupt_count) {
  			ctx->index -= eirq->interrupt_count;
-@@ -245,8 +247,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -247,8 +249,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  static int acpi_irq_parse_one(acpi_handle handle, unsigned int index,
  			      struct irq_fwspec *fwspec, unsigned long *flags)
  {
@@ -247,7 +278,7 @@ index 0d9a17fdd83e..95133e7fe1ab 100644
 +	 * Don't do the producer/consumer check for that device.
 +	 */
 +	if (IS_ENABLED(CONFIG_ARM64)) {
-+		struct acpi_device *adev = acpi_bus_get_acpi_device(handle);
++		struct acpi_device *adev = acpi_get_acpi_dev(handle);
 +
 +		if (adev && !strcmp(acpi_device_hid(adev), "APMC0D08"))
 +			ctx.skip_producer_check = true;
@@ -256,10 +287,10 @@ index 0d9a17fdd83e..95133e7fe1ab 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index adfeb5770efd..9ed777d8512f 100644
+index b47e93a24a9a..9d172e177a75 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1753,6 +1753,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1743,6 +1743,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -276,10 +307,10 @@ index adfeb5770efd..9ed777d8512f 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index cf8c7fd59ada..28a8189be64f 100644
+index 954386a2b500..8f49d54e838e 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
-@@ -690,6 +690,24 @@ int ahci_stop_engine(struct ata_port *ap)
+@@ -727,6 +727,24 @@ int ahci_stop_engine(struct ata_port *ap)
  	tmp &= ~PORT_CMD_START;
  	writel(tmp, port_mmio + PORT_CMD);
 
@@ -331,7 +362,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index b151cbfc3d9b..8ec5772f8bb0 100644
+index 5d403fb5bd92..385747b5361f 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -342,7 +373,7 @@ index b151cbfc3d9b..8ec5772f8bb0 100644
  #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5522,8 +5523,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5516,8 +5517,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -378,10 +409,10 @@ index 8d151e332584..bd29fe4ddbf3 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index a06decee51e0..039897a56c5c 100644
+index f12cc29bd4b8..ec530425a457 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
-@@ -31,6 +31,7 @@
+@@ -32,6 +32,7 @@
  #include <linux/ucs2_string.h>
  #include <linux/memblock.h>
  #include <linux/security.h>
@@ -389,7 +420,7 @@ index a06decee51e0..039897a56c5c 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -866,40 +867,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -881,40 +882,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -567,7 +598,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
-index 1f276f108cc9..7039ad9bdf7f 100644
+index 3fd3563d962b..75d67e6dde2a 100644
 --- a/drivers/firmware/sysfb.c
 +++ b/drivers/firmware/sysfb.c
 @@ -34,6 +34,22 @@
@@ -602,113 +633,11 @@ index 1f276f108cc9..7039ad9bdf7f 100644
  		pd = sysfb_create_simplefb(si, &mode);
  		if (!IS_ERR(pd))
  			goto unlock_mutex;
-diff --git a/drivers/gpu/drm/tiny/simpledrm.c b/drivers/gpu/drm/tiny/simpledrm.c
-index 5422363690e7..a5b500811892 100644
---- a/drivers/gpu/drm/tiny/simpledrm.c
-+++ b/drivers/gpu/drm/tiny/simpledrm.c
-@@ -569,20 +569,44 @@ static int simpledrm_device_init_mm(struct simpledrm_device *sdev)
-  */
-
- /*
-- * Support all formats of simplefb and maybe more; in order
-- * of preference. The display's update function will do any
-+ * Support the subset of formats that we have conversion helpers for,
-+ * in order of preference. The display's update function will do any
-  * conversion necessary.
-  *
-  * TODO: Add blit helpers for remaining formats and uncomment
-  *       constants.
-  */
--static const uint32_t simpledrm_default_formats[] = {
-+
-+/*
-+ * Supported conversions to RGB565 and RGB888:
-+ *   from [AX]RGB8888
-+ */
-+static const uint32_t simpledrm_primary_plane_formats_base[] = {
-+	DRM_FORMAT_XRGB8888,
-+	DRM_FORMAT_ARGB8888,
-+};
-+
-+/*
-+ * Supported conversions to [AX]RGB8888:
-+ *   A/X variants (no-op)
-+ *   from RGB565
-+ *   from RGB888
-+ */
-+static const uint32_t simpledrm_primary_plane_formats_xrgb8888[] = {
- 	DRM_FORMAT_XRGB8888,
- 	DRM_FORMAT_ARGB8888,
-+	DRM_FORMAT_RGB888,
- 	DRM_FORMAT_RGB565,
- 	//DRM_FORMAT_XRGB1555,
- 	//DRM_FORMAT_ARGB1555,
--	DRM_FORMAT_RGB888,
-+};
-+
-+/*
-+ * Supported conversions to [AX]RGB2101010:
-+ *   A/X variants (no-op)
-+ *   from [AX]RGB8888
-+ */
-+static const uint32_t simpledrm_primary_plane_formats_xrgb2101010[] = {
- 	DRM_FORMAT_XRGB2101010,
- 	DRM_FORMAT_ARGB2101010,
- };
-@@ -744,7 +768,8 @@ static const uint32_t *simpledrm_device_formats(struct simpledrm_device *sdev,
- 						size_t *nformats_out)
- {
- 	struct drm_device *dev = &sdev->dev;
--	size_t i;
-+	const uint32_t *conv_formats;
-+	size_t i, conv_nformats;
-
- 	if (sdev->nformats)
- 		goto out; /* don't rebuild list on recurring calls */
-@@ -753,11 +778,35 @@ static const uint32_t *simpledrm_device_formats(struct simpledrm_device *sdev,
- 	sdev->formats[0] = sdev->format->format;
- 	sdev->nformats = 1;
-
-+	switch (sdev->format->format) {
-+	case DRM_FORMAT_RGB565:
-+	case DRM_FORMAT_RGB888:
-+		conv_formats = simpledrm_primary_plane_formats_base;
-+		conv_nformats = ARRAY_SIZE(simpledrm_primary_plane_formats_base);
-+		break;
-+	case DRM_FORMAT_XRGB8888:
-+	case DRM_FORMAT_ARGB8888:
-+		conv_formats = simpledrm_primary_plane_formats_xrgb8888;
-+		conv_nformats = ARRAY_SIZE(simpledrm_primary_plane_formats_xrgb8888);
-+		break;
-+	case DRM_FORMAT_XRGB2101010:
-+	case DRM_FORMAT_ARGB2101010:
-+		conv_formats = simpledrm_primary_plane_formats_xrgb2101010;
-+		conv_nformats = ARRAY_SIZE(simpledrm_primary_plane_formats_xrgb2101010);
-+		break;
-+	default:
-+		conv_formats = NULL;
-+		conv_nformats = 0;
-+		drm_warn(dev, "Format conversion helpers required to add extra formats.\n");
-+		break;
-+	}
-+
-+
- 	/* default formats go second */
--	for (i = 0; i < ARRAY_SIZE(simpledrm_default_formats); ++i) {
--		if (simpledrm_default_formats[i] == sdev->format->format)
-+	for (i = 0; i < conv_nformats; ++i) {
-+		if (conv_formats[i] == sdev->format->format)
- 			continue; /* native format already went first */
--		sdev->formats[sdev->nformats] = simpledrm_default_formats[i];
-+		sdev->formats[sdev->nformats] = conv_formats[i];
- 		sdev->nformats++;
- 	}
-
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index b2bf588d18c3..2460c6bd46f8 100644
+index 84e7ba5314d3..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
-@@ -322,21 +322,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
+@@ -321,21 +321,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
  {
  	struct rmi_data *hdata = hid_get_drvdata(hdev);
  	struct rmi_device *rmi_dev = hdata->xport.rmi_dev;
@@ -730,7 +659,7 @@ index b2bf588d18c3..2460c6bd46f8 100644
  	return 1;
  }
 
-@@ -593,56 +584,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
+@@ -591,56 +582,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
  	.reset		= rmi_hid_reset,
  };
 
@@ -787,7 +716,7 @@ index b2bf588d18c3..2460c6bd46f8 100644
  static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
  {
  	struct rmi_data *data = NULL;
-@@ -715,18 +656,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
+@@ -713,18 +654,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
 
  	mutex_init(&data->page_mutex);
 
@@ -807,7 +736,7 @@ index b2bf588d18c3..2460c6bd46f8 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index d39660a3e50c..8e5ffb4325a3 100644
+index 80fefaba58ee..be8f345bb379 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -1050,18 +979,18 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3a808146b50f..c1a3f3057921 100644
+index 959d895fc1df..ced88384a6ee 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -7,6 +7,7 @@
- #define pr_fmt(fmt)    "iommu: " fmt
+@@ -8,6 +8,7 @@
 
+ #include <linux/amba/bus.h>
  #include <linux/device.h>
 +#include <linux/dmi.h>
- #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -2843,6 +2844,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+ #include <linux/bug.h>
+@@ -2834,6 +2835,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1089,654 +1018,31 @@ index 3a808146b50f..c1a3f3057921 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 3582a28a1dce..2b8eaa22070c 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
-
- static blk_status_t nvme_error_status(u16 status)
- {
-+	if (unlikely(status & NVME_SC_DNR))
-+		return BLK_STS_TARGET;
-+
- 	switch (status & 0x7ff) {
- 	case NVME_SC_SUCCESS:
- 		return BLK_STS_OK;
-@@ -340,6 +343,7 @@ enum nvme_disposition {
- 	COMPLETE,
- 	RETRY,
- 	FAILOVER,
-+	FAILUP,
- 	AUTHENTICATE,
- };
-
-@@ -351,15 +355,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
- 	if ((nvme_req(req)->status & 0x7ff) == NVME_SC_AUTH_REQUIRED)
- 		return AUTHENTICATE;
-
--	if (blk_noretry_request(req) ||
-+	if ((req->cmd_flags & (REQ_FAILFAST_DEV | REQ_FAILFAST_DRIVER)) ||
- 	    (nvme_req(req)->status & NVME_SC_DNR) ||
- 	    nvme_req(req)->retries >= nvme_max_retries)
- 		return COMPLETE;
-
--	if (req->cmd_flags & REQ_NVME_MPATH) {
-+	if (req->cmd_flags & (REQ_NVME_MPATH | REQ_FAILFAST_TRANSPORT)) {
- 		if (nvme_is_path_error(nvme_req(req)->status) ||
- 		    blk_queue_dying(req->q))
--			return FAILOVER;
-+			return (req->cmd_flags & REQ_NVME_MPATH) ?
-+				FAILOVER : FAILUP;
- 	} else {
- 		if (blk_queue_dying(req->q))
- 			return COMPLETE;
-@@ -387,6 +392,14 @@ static inline void nvme_end_req(struct request *req)
- 	blk_mq_end_request(req, status);
- }
-
-+static inline void nvme_failup_req(struct request *req)
-+{
-+	nvme_update_ana(req);
-+
-+	nvme_req(req)->status = NVME_SC_HOST_PATH_ERROR;
-+	nvme_end_req(req);
-+}
-+
- void nvme_complete_rq(struct request *req)
- {
- 	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
-@@ -407,6 +420,9 @@ void nvme_complete_rq(struct request *req)
- 	case FAILOVER:
- 		nvme_failover_req(req);
- 		return;
-+	case FAILUP:
-+		nvme_failup_req(req);
-+		return;
- 	case AUTHENTICATE:
- #ifdef CONFIG_NVME_AUTH
- 		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
-diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 114e2b9359f8..30049e986fba 100644
---- a/drivers/nvme/host/multipath.c
-+++ b/drivers/nvme/host/multipath.c
-@@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
- 			blk_freeze_queue_start(h->disk->queue);
- }
-
--void nvme_failover_req(struct request *req)
-+void nvme_update_ana(struct request *req)
- {
- 	struct nvme_ns *ns = req->q->queuedata;
- 	u16 status = nvme_req(req)->status & 0x7ff;
--	unsigned long flags;
--	struct bio *bio;
--
--	nvme_mpath_clear_current_path(ns);
-
- 	/*
- 	 * If we got back an ANA error, we know the controller is alive but not
-@@ -98,6 +94,16 @@ void nvme_failover_req(struct request *req)
- 		set_bit(NVME_NS_ANA_PENDING, &ns->flags);
- 		queue_work(nvme_wq, &ns->ctrl->ana_work);
- 	}
-+}
-+
-+void nvme_failover_req(struct request *req)
-+{
-+	struct nvme_ns *ns = req->q->queuedata;
-+	unsigned long flags;
-+	struct bio *bio;
-+
-+	nvme_mpath_clear_current_path(ns);
-+	nvme_update_ana(req);
-
- 	spin_lock_irqsave(&ns->head->requeue_lock, flags);
- 	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -875,8 +881,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
- 	int error = 0;
-
- 	/* check if multipath is enabled and we have the capability */
--	if (!multipath || !ctrl->subsys ||
--	    !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
-+	if (!ctrl->subsys || !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
- 		return 0;
-
- 	if (!ctrl->max_namespaces ||
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 70555022cb44..66c4f089d175 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -854,6 +854,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
- void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
- void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
- void nvme_failover_req(struct request *req);
-+void nvme_update_ana(struct request *req);
- void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
- int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
- void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -890,6 +891,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
- static inline void nvme_failover_req(struct request *req)
- {
- }
-+static inline void nvme_update_ana(struct request *req)
-+{
-+}
- static inline void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl)
- {
- }
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 49238ddd39ee..5d8c37c3e15a 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -774,6 +774,12 @@ static int pci_pm_suspend(struct device *dev)
-
- 	pci_dev->skip_bus_pm = false;
-
-+	/*
-+	 * Disabling PTM allows some systems, e.g., Intel mobile chips
-+	 * since Coffee Lake, to enter a lower-power PM state.
-+	 */
-+	pci_suspend_ptm(pci_dev);
-+
- 	if (pci_has_legacy_pm_support(pci_dev))
- 		return pci_legacy_suspend(dev, PMSG_SUSPEND);
-
-@@ -987,6 +993,8 @@ static int pci_pm_resume(struct device *dev)
- 	if (pci_dev->state_saved)
- 		pci_restore_standard_config(pci_dev);
-
-+	pci_resume_ptm(pci_dev);
-+
- 	if (pci_has_legacy_pm_support(pci_dev))
- 		return pci_legacy_resume(dev);
-
-@@ -1274,6 +1282,8 @@ static int pci_pm_runtime_suspend(struct device *dev)
- 	pci_power_t prev = pci_dev->current_state;
- 	int error;
-
-+	pci_suspend_ptm(pci_dev);
-+
- 	/*
- 	 * If pci_dev->driver is not set (unbound), we leave the device in D0,
- 	 * but it may go to D3cold when the bridge above it runtime suspends.
-@@ -1335,6 +1345,7 @@ static int pci_pm_runtime_resume(struct device *dev)
- 	 * D3cold when the bridge above it runtime suspended.
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+index a83699de01ec..fdd0c9abc1a1 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+@@ -79,7 +79,8 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+ 	/* Apple ARM64 platforms have their own idea of board type, passed in
+ 	 * via the device tree. They also have an antenna SKU parameter
  	 */
- 	pci_pm_default_resume_early(pci_dev);
-+	pci_resume_ptm(pci_dev);
+-	if (!of_property_read_string(np, "brcm,board-type", &prop))
++	err = of_property_read_string(np, "brcm,board-type", &prop);
++	if (!err)
+ 		settings->board_type = prop;
 
- 	if (!pci_dev->driver)
- 		return 0;
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index a484da1a9c66..29dc20615d36 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -2706,24 +2706,12 @@ int pci_prepare_to_sleep(struct pci_dev *dev)
- 	if (target_state == PCI_POWER_ERROR)
- 		return -EIO;
+ 	if (!of_property_read_string(np, "apple,antenna-sku", &prop))
+@@ -87,7 +88,7 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
 
--	/*
--	 * There are systems (for example, Intel mobile chips since Coffee
--	 * Lake) where the power drawn while suspended can be significantly
--	 * reduced by disabling PTM on PCIe root ports as this allows the
--	 * port to enter a lower-power PM state and the SoC to reach a
--	 * lower-power idle state as a whole.
--	 */
--	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
--		pci_disable_ptm(dev);
--
- 	pci_enable_wake(dev, target_state, wakeup);
+ 	/* Set board-type to the first string of the machine compatible prop */
+ 	root = of_find_node_by_path("/");
+-	if (root && !settings->board_type) {
++	if (root && err) {
+ 		char *board_type;
+ 		const char *tmp;
 
- 	error = pci_set_power_state(dev, target_state);
-
--	if (error) {
-+	if (error)
- 		pci_enable_wake(dev, target_state, false);
--		pci_restore_ptm_state(dev);
--	}
-
- 	return error;
- }
-@@ -2764,24 +2752,12 @@ int pci_finish_runtime_suspend(struct pci_dev *dev)
- 	if (target_state == PCI_POWER_ERROR)
- 		return -EIO;
-
--	/*
--	 * There are systems (for example, Intel mobile chips since Coffee
--	 * Lake) where the power drawn while suspended can be significantly
--	 * reduced by disabling PTM on PCIe root ports as this allows the
--	 * port to enter a lower-power PM state and the SoC to reach a
--	 * lower-power idle state as a whole.
--	 */
--	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT)
--		pci_disable_ptm(dev);
--
- 	__pci_enable_wake(dev, target_state, pci_dev_run_wake(dev));
-
- 	error = pci_set_power_state(dev, target_state);
-
--	if (error) {
-+	if (error)
- 		pci_enable_wake(dev, target_state, false);
--		pci_restore_ptm_state(dev);
--	}
-
- 	return error;
- }
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index 785f31086313..5cca2e58cce8 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -505,13 +505,17 @@ static inline int pci_iov_bus_range(struct pci_bus *bus)
- #endif /* CONFIG_PCI_IOV */
-
- #ifdef CONFIG_PCIE_PTM
-+void pci_ptm_init(struct pci_dev *dev);
- void pci_save_ptm_state(struct pci_dev *dev);
- void pci_restore_ptm_state(struct pci_dev *dev);
--void pci_disable_ptm(struct pci_dev *dev);
-+void pci_suspend_ptm(struct pci_dev *dev);
-+void pci_resume_ptm(struct pci_dev *dev);
- #else
-+static inline void pci_ptm_init(struct pci_dev *dev) { }
- static inline void pci_save_ptm_state(struct pci_dev *dev) { }
- static inline void pci_restore_ptm_state(struct pci_dev *dev) { }
--static inline void pci_disable_ptm(struct pci_dev *dev) { }
-+static inline void pci_suspend_ptm(struct pci_dev *dev) { }
-+static inline void pci_resume_ptm(struct pci_dev *dev) { }
- #endif
-
- unsigned long pci_cardbus_resource_alignment(struct resource *);
-@@ -575,12 +579,6 @@ static inline void pcie_set_ecrc_checking(struct pci_dev *dev) { }
- static inline void pcie_ecrc_get_policy(char *str) { }
- #endif
-
--#ifdef CONFIG_PCIE_PTM
--void pci_ptm_init(struct pci_dev *dev);
--#else
--static inline void pci_ptm_init(struct pci_dev *dev) { }
--#endif
--
- struct pci_dev_reset_methods {
- 	u16 vendor;
- 	u16 device;
-diff --git a/drivers/pci/pcie/ptm.c b/drivers/pci/pcie/ptm.c
-index 368a254e3124..b4e5f553467c 100644
---- a/drivers/pci/pcie/ptm.c
-+++ b/drivers/pci/pcie/ptm.c
-@@ -9,30 +9,38 @@
- #include <linux/pci.h>
- #include "../pci.h"
-
--static void pci_ptm_info(struct pci_dev *dev)
-+/*
-+ * If the next upstream device supports PTM, return it; otherwise return
-+ * NULL.  PTM Messages are local, so both link partners must support it.
-+ */
-+static struct pci_dev *pci_upstream_ptm(struct pci_dev *dev)
- {
--	char clock_desc[8];
-+	struct pci_dev *ups = pci_upstream_bridge(dev);
-
--	switch (dev->ptm_granularity) {
--	case 0:
--		snprintf(clock_desc, sizeof(clock_desc), "unknown");
--		break;
--	case 255:
--		snprintf(clock_desc, sizeof(clock_desc), ">254ns");
--		break;
--	default:
--		snprintf(clock_desc, sizeof(clock_desc), "%uns",
--			 dev->ptm_granularity);
--		break;
--	}
--	pci_info(dev, "PTM enabled%s, %s granularity\n",
--		 dev->ptm_root ? " (root)" : "", clock_desc);
-+	/*
-+	 * Switch Downstream Ports are not permitted to have a PTM
-+	 * capability; their PTM behavior is controlled by the Upstream
-+	 * Port (PCIe r5.0, sec 7.9.16), so if the upstream bridge is a
-+	 * Switch Downstream Port, look up one more level.
-+	 */
-+	if (ups && pci_pcie_type(ups) == PCI_EXP_TYPE_DOWNSTREAM)
-+		ups = pci_upstream_bridge(ups);
-+
-+	if (ups && ups->ptm_cap)
-+		return ups;
-+
-+	return NULL;
- }
-
--void pci_disable_ptm(struct pci_dev *dev)
-+/*
-+ * Find the PTM Capability (if present) and extract the information we need
-+ * to use it.
-+ */
-+void pci_ptm_init(struct pci_dev *dev)
- {
--	int ptm;
--	u16 ctrl;
-+	u16 ptm;
-+	u32 cap;
-+	struct pci_dev *ups;
-
- 	if (!pci_is_pcie(dev))
- 		return;
-@@ -41,21 +49,47 @@ void pci_disable_ptm(struct pci_dev *dev)
- 	if (!ptm)
- 		return;
-
--	pci_read_config_word(dev, ptm + PCI_PTM_CTRL, &ctrl);
--	ctrl &= ~(PCI_PTM_CTRL_ENABLE | PCI_PTM_CTRL_ROOT);
--	pci_write_config_word(dev, ptm + PCI_PTM_CTRL, ctrl);
-+	dev->ptm_cap = ptm;
-+	pci_add_ext_cap_save_buffer(dev, PCI_EXT_CAP_ID_PTM, sizeof(u32));
-+
-+	pci_read_config_dword(dev, ptm + PCI_PTM_CAP, &cap);
-+	dev->ptm_granularity = (cap & PCI_PTM_GRANULARITY_MASK) >> 8;
-+
-+	/*
-+	 * Per the spec recommendation (PCIe r6.0, sec 7.9.15.3), select the
-+	 * furthest upstream Time Source as the PTM Root.  For Endpoints,
-+	 * "the Effective Granularity is the maximum Local Clock Granularity
-+	 * reported by the PTM Root and all intervening PTM Time Sources."
-+	 */
-+	ups = pci_upstream_ptm(dev);
-+	if (ups) {
-+		if (ups->ptm_granularity == 0)
-+			dev->ptm_granularity = 0;
-+		else if (ups->ptm_granularity > dev->ptm_granularity)
-+			dev->ptm_granularity = ups->ptm_granularity;
-+	} else if (cap & PCI_PTM_CAP_ROOT) {
-+		dev->ptm_root = 1;
-+	} else if (pci_pcie_type(dev) == PCI_EXP_TYPE_RC_END) {
-+
-+		/*
-+		 * Per sec 7.9.15.3, this should be the Local Clock
-+		 * Granularity of the associated Time Source.  But it
-+		 * doesn't say how to find that Time Source.
-+		 */
-+		dev->ptm_granularity = 0;
-+	}
-+
-+	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ROOT_PORT ||
-+	    pci_pcie_type(dev) == PCI_EXP_TYPE_UPSTREAM)
-+		pci_enable_ptm(dev, NULL);
- }
-
- void pci_save_ptm_state(struct pci_dev *dev)
- {
--	int ptm;
-+	u16 ptm = dev->ptm_cap;
- 	struct pci_cap_saved_state *save_state;
--	u16 *cap;
-+	u32 *cap;
-
--	if (!pci_is_pcie(dev))
--		return;
--
--	ptm = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_PTM);
- 	if (!ptm)
- 		return;
-
-@@ -63,146 +97,152 @@ void pci_save_ptm_state(struct pci_dev *dev)
- 	if (!save_state)
- 		return;
-
--	cap = (u16 *)&save_state->cap.data[0];
--	pci_read_config_word(dev, ptm + PCI_PTM_CTRL, cap);
-+	cap = (u32 *)&save_state->cap.data[0];
-+	pci_read_config_dword(dev, ptm + PCI_PTM_CTRL, cap);
- }
-
- void pci_restore_ptm_state(struct pci_dev *dev)
- {
-+	u16 ptm = dev->ptm_cap;
- 	struct pci_cap_saved_state *save_state;
--	int ptm;
--	u16 *cap;
-+	u32 *cap;
-
--	if (!pci_is_pcie(dev))
-+	if (!ptm)
- 		return;
-
- 	save_state = pci_find_saved_ext_cap(dev, PCI_EXT_CAP_ID_PTM);
--	ptm = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_PTM);
--	if (!save_state || !ptm)
-+	if (!save_state)
- 		return;
-
--	cap = (u16 *)&save_state->cap.data[0];
--	pci_write_config_word(dev, ptm + PCI_PTM_CTRL, *cap);
-+	cap = (u32 *)&save_state->cap.data[0];
-+	pci_write_config_dword(dev, ptm + PCI_PTM_CTRL, *cap);
- }
-
--void pci_ptm_init(struct pci_dev *dev)
-+/* Enable PTM in the Control register if possible */
-+static int __pci_enable_ptm(struct pci_dev *dev)
- {
--	int pos;
--	u32 cap, ctrl;
--	u8 local_clock;
-+	u16 ptm = dev->ptm_cap;
- 	struct pci_dev *ups;
-+	u32 ctrl;
-
--	if (!pci_is_pcie(dev))
--		return;
--
--	/*
--	 * Enable PTM only on interior devices (root ports, switch ports,
--	 * etc.) on the assumption that it causes no link traffic until an
--	 * endpoint enables it.
--	 */
--	if ((pci_pcie_type(dev) == PCI_EXP_TYPE_ENDPOINT ||
--	     pci_pcie_type(dev) == PCI_EXP_TYPE_RC_END))
--		return;
-+	if (!ptm)
-+		return -EINVAL;
-
- 	/*
--	 * Switch Downstream Ports are not permitted to have a PTM
--	 * capability; their PTM behavior is controlled by the Upstream
--	 * Port (PCIe r5.0, sec 7.9.16).
-+	 * A device uses local PTM Messages to request time information
-+	 * from a PTM Root that's farther upstream.  Every device along the
-+	 * path must support PTM and have it enabled so it can handle the
-+	 * messages.  Therefore, if this device is not a PTM Root, the
-+	 * upstream link partner must have PTM enabled before we can enable
-+	 * PTM.
- 	 */
--	ups = pci_upstream_bridge(dev);
--	if (pci_pcie_type(dev) == PCI_EXP_TYPE_DOWNSTREAM &&
--	    ups && ups->ptm_enabled) {
--		dev->ptm_granularity = ups->ptm_granularity;
--		dev->ptm_enabled = 1;
--		return;
-+	if (!dev->ptm_root) {
-+		ups = pci_upstream_ptm(dev);
-+		if (!ups || !ups->ptm_enabled)
-+			return -EINVAL;
- 	}
-
--	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_PTM);
--	if (!pos)
--		return;
--
--	pci_add_ext_cap_save_buffer(dev, PCI_EXT_CAP_ID_PTM, sizeof(u16));
--
--	pci_read_config_dword(dev, pos + PCI_PTM_CAP, &cap);
--	local_clock = (cap & PCI_PTM_GRANULARITY_MASK) >> 8;
--
--	/*
--	 * There's no point in enabling PTM unless it's enabled in the
--	 * upstream device or this device can be a PTM Root itself.  Per
--	 * the spec recommendation (PCIe r3.1, sec 7.32.3), select the
--	 * furthest upstream Time Source as the PTM Root.
--	 */
--	if (ups && ups->ptm_enabled) {
--		ctrl = PCI_PTM_CTRL_ENABLE;
--		if (ups->ptm_granularity == 0)
--			dev->ptm_granularity = 0;
--		else if (ups->ptm_granularity > local_clock)
--			dev->ptm_granularity = ups->ptm_granularity;
--	} else {
--		if (cap & PCI_PTM_CAP_ROOT) {
--			ctrl = PCI_PTM_CTRL_ENABLE | PCI_PTM_CTRL_ROOT;
--			dev->ptm_root = 1;
--			dev->ptm_granularity = local_clock;
--		} else
--			return;
--	}
-+	pci_read_config_dword(dev, ptm + PCI_PTM_CTRL, &ctrl);
-
-+	ctrl |= PCI_PTM_CTRL_ENABLE;
-+	ctrl &= ~PCI_PTM_GRANULARITY_MASK;
- 	ctrl |= dev->ptm_granularity << 8;
--	pci_write_config_dword(dev, pos + PCI_PTM_CTRL, ctrl);
--	dev->ptm_enabled = 1;
-+	if (dev->ptm_root)
-+		ctrl |= PCI_PTM_CTRL_ROOT;
-
--	pci_ptm_info(dev);
-+	pci_write_config_dword(dev, ptm + PCI_PTM_CTRL, ctrl);
-+	return 0;
- }
-
-+/**
-+ * pci_enable_ptm() - Enable Precision Time Measurement
-+ * @dev: PCI device
-+ * @granularity: pointer to return granularity
-+ *
-+ * Enable Precision Time Measurement for @dev.  If successful and
-+ * @granularity is non-NULL, return the Effective Granularity.
-+ *
-+ * Return: zero if successful, or -EINVAL if @dev lacks a PTM Capability or
-+ * is not a PTM Root and lacks an upstream path of PTM-enabled devices.
-+ */
- int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
- {
--	int pos;
--	u32 cap, ctrl;
--	struct pci_dev *ups;
--
--	if (!pci_is_pcie(dev))
--		return -EINVAL;
--
--	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_PTM);
--	if (!pos)
--		return -EINVAL;
--
--	pci_read_config_dword(dev, pos + PCI_PTM_CAP, &cap);
--	if (!(cap & PCI_PTM_CAP_REQ))
--		return -EINVAL;
--
--	/*
--	 * For a PCIe Endpoint, PTM is only useful if the endpoint can
--	 * issue PTM requests to upstream devices that have PTM enabled.
--	 *
--	 * For Root Complex Integrated Endpoints, there is no upstream
--	 * device, so there must be some implementation-specific way to
--	 * associate the endpoint with a time source.
--	 */
--	if (pci_pcie_type(dev) == PCI_EXP_TYPE_ENDPOINT) {
--		ups = pci_upstream_bridge(dev);
--		if (!ups || !ups->ptm_enabled)
--			return -EINVAL;
-+	int rc;
-+	char clock_desc[8];
-
--		dev->ptm_granularity = ups->ptm_granularity;
--	} else if (pci_pcie_type(dev) == PCI_EXP_TYPE_RC_END) {
--		dev->ptm_granularity = 0;
--	} else
--		return -EINVAL;
-+	rc = __pci_enable_ptm(dev);
-+	if (rc)
-+		return rc;
-
--	ctrl = PCI_PTM_CTRL_ENABLE;
--	ctrl |= dev->ptm_granularity << 8;
--	pci_write_config_dword(dev, pos + PCI_PTM_CTRL, ctrl);
- 	dev->ptm_enabled = 1;
-
--	pci_ptm_info(dev);
--
- 	if (granularity)
- 		*granularity = dev->ptm_granularity;
-+
-+	switch (dev->ptm_granularity) {
-+	case 0:
-+		snprintf(clock_desc, sizeof(clock_desc), "unknown");
-+		break;
-+	case 255:
-+		snprintf(clock_desc, sizeof(clock_desc), ">254ns");
-+		break;
-+	default:
-+		snprintf(clock_desc, sizeof(clock_desc), "%uns",
-+			 dev->ptm_granularity);
-+		break;
-+	}
-+	pci_info(dev, "PTM enabled%s, %s granularity\n",
-+		 dev->ptm_root ? " (root)" : "", clock_desc);
-+
- 	return 0;
- }
- EXPORT_SYMBOL(pci_enable_ptm);
-
-+static void __pci_disable_ptm(struct pci_dev *dev)
-+{
-+	u16 ptm = dev->ptm_cap;
-+	u32 ctrl;
-+
-+	if (!ptm)
-+		return;
-+
-+	pci_read_config_dword(dev, ptm + PCI_PTM_CTRL, &ctrl);
-+	ctrl &= ~(PCI_PTM_CTRL_ENABLE | PCI_PTM_CTRL_ROOT);
-+	pci_write_config_dword(dev, ptm + PCI_PTM_CTRL, ctrl);
-+}
-+
-+/**
-+ * pci_disable_ptm() - Disable Precision Time Measurement
-+ * @dev: PCI device
-+ *
-+ * Disable Precision Time Measurement for @dev.
-+ */
-+void pci_disable_ptm(struct pci_dev *dev)
-+{
-+	if (dev->ptm_enabled) {
-+		__pci_disable_ptm(dev);
-+		dev->ptm_enabled = 0;
-+	}
-+}
-+EXPORT_SYMBOL(pci_disable_ptm);
-+
-+/*
-+ * Disable PTM, but preserve dev->ptm_enabled so we silently re-enable it on
-+ * resume if necessary.
-+ */
-+void pci_suspend_ptm(struct pci_dev *dev)
-+{
-+	if (dev->ptm_enabled)
-+		__pci_disable_ptm(dev);
-+}
-+
-+/* If PTM was enabled before suspend, re-enable it when resuming */
-+void pci_resume_ptm(struct pci_dev *dev)
-+{
-+	if (dev->ptm_enabled)
-+		__pci_enable_ptm(dev);
-+}
-+
- bool pcie_ptm_enabled(struct pci_dev *dev)
- {
- 	if (!dev)
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 4944798e75b5..079a29ef1bf2 100644
+index 285acc4aaccc..a7056957e7dd 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4296,6 +4296,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1789,7 +1095,7 @@ index bbab424b0d55..ed86042fb57b 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index f87b2f5db9f8..0b156c2a4ab3 100644
+index 4aa1dbc7b064..acf09c081658 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1801,7 +1107,7 @@ index f87b2f5db9f8..0b156c2a4ab3 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -849,6 +851,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -864,6 +866,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1816,7 +1122,7 @@ index f87b2f5db9f8..0b156c2a4ab3 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -860,6 +870,8 @@ static inline bool efi_enabled(int feature)
+@@ -875,6 +885,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1825,7 +1131,7 @@ index f87b2f5db9f8..0b156c2a4ab3 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -881,6 +893,8 @@ static inline bool efi_enabled(int feature)
+@@ -896,6 +908,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1834,7 +1140,7 @@ index f87b2f5db9f8..0b156c2a4ab3 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -895,6 +909,7 @@ static inline void efi_find_mirror(void) {}
+@@ -910,6 +924,7 @@ static inline void efi_find_mirror(void) {}
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1842,7 +1148,7 @@ index f87b2f5db9f8..0b156c2a4ab3 100644
 
  /*
   * Variable Attributes
-@@ -1104,13 +1119,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1135,13 +1150,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -1857,10 +1163,10 @@ index f87b2f5db9f8..0b156c2a4ab3 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 60fff133c0b1..fa0aa514c70f 100644
+index ec119da1d89b..3c27eb4fd460 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -395,6 +395,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -396,6 +396,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -1870,10 +1176,10 @@ index 60fff133c0b1..fa0aa514c70f 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 3aa6030302f5..23b63de268a3 100644
+index 4ec80b96c22e..93495ac301f2 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
-@@ -1557,6 +1557,12 @@
+@@ -1561,6 +1561,12 @@
   *
   *     @what: kernel feature being accessed
   *
@@ -1886,31 +1192,6 @@ index 3aa6030302f5..23b63de268a3 100644
   * Security hooks for perf events
   *
   * @perf_event_open:
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 060af91bafcd..cb5f796e3319 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -475,6 +475,7 @@ struct pci_dev {
- 	unsigned int	broken_cmd_compl:1;	/* No compl for some cmds */
- #endif
- #ifdef CONFIG_PCIE_PTM
-+	u16		ptm_cap;		/* PTM Capability */
- 	unsigned int	ptm_root:1;
- 	unsigned int	ptm_enabled:1;
- 	u8		ptm_granularity;
-@@ -1677,10 +1678,12 @@ bool pci_ats_disabled(void);
-
- #ifdef CONFIG_PCIE_PTM
- int pci_enable_ptm(struct pci_dev *dev, u8 *granularity);
-+void pci_disable_ptm(struct pci_dev *dev);
- bool pcie_ptm_enabled(struct pci_dev *dev);
- #else
- static inline int pci_enable_ptm(struct pci_dev *dev, u8 *granularity)
- { return -EINVAL; }
-+static inline void pci_disable_ptm(struct pci_dev *dev) { }
- static inline bool pcie_ptm_enabled(struct pci_dev *dev)
- { return false; }
- #endif
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
 index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h
@@ -1924,10 +1205,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 7bd0c490703d..7779eaf1ffa1 100644
+index ca1b7109c0db..b947cfbf04c2 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -475,6 +475,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -478,6 +478,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -1935,7 +1216,7 @@ index 7bd0c490703d..7779eaf1ffa1 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1358,6 +1359,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1366,6 +1367,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -1946,24 +1227,11 @@ index 7bd0c490703d..7779eaf1ffa1 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
-diff --git a/include/net/sock.h b/include/net/sock.h
-index f6e6838c82df..03a4ebe3ccc8 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -323,7 +323,7 @@ struct sk_filter;
-   *	@sk_tskey: counter to disambiguate concurrent tstamp requests
-   *	@sk_zckey: counter to order MSG_ZEROCOPY notifications
-   *	@sk_socket: Identd and reporting IO signals
--  *	@sk_user_data: RPC layer private data
-+  *	@sk_user_data: RPC layer private data. Write-protected by @sk_callback_lock.
-   *	@sk_frag: cached page frag
-   *	@sk_peek_off: current peek_offset value
-   *	@sk_send_head: front of stuff to transmit
 diff --git a/init/Kconfig b/init/Kconfig
-index d1d779d6ba43..b3d83b0eb539 100644
+index 94125d3b6893..7a6bf4659565 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1678,7 +1678,7 @@ config AIO
+@@ -1685,7 +1685,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -1995,71 +1263,6 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
 
  int module_sig_check(struct load_info *info, int flags)
-diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index 7499c51b1850..754fdda8a5f5 100644
---- a/net/l2tp/l2tp_core.c
-+++ b/net/l2tp/l2tp_core.c
-@@ -1150,8 +1150,10 @@ static void l2tp_tunnel_destruct(struct sock *sk)
- 	}
-
- 	/* Remove hooks into tunnel socket */
-+	write_lock_bh(&sk->sk_callback_lock);
- 	sk->sk_destruct = tunnel->old_sk_destruct;
- 	sk->sk_user_data = NULL;
-+	write_unlock_bh(&sk->sk_callback_lock);
-
- 	/* Call the original destructor */
- 	if (sk->sk_destruct)
-@@ -1469,16 +1471,18 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
- 		sock = sockfd_lookup(tunnel->fd, &ret);
- 		if (!sock)
- 			goto err;
--
--		ret = l2tp_validate_socket(sock->sk, net, tunnel->encap);
--		if (ret < 0)
--			goto err_sock;
- 	}
-
-+	sk = sock->sk;
-+	write_lock(&sk->sk_callback_lock);
-+
-+	ret = l2tp_validate_socket(sk, net, tunnel->encap);
-+	if (ret < 0)
-+		goto err_sock;
-+
- 	tunnel->l2tp_net = net;
- 	pn = l2tp_pernet(net);
-
--	sk = sock->sk;
- 	sock_hold(sk);
- 	tunnel->sock = sk;
-
-@@ -1504,7 +1508,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
-
- 		setup_udp_tunnel_sock(net, sock, &udp_cfg);
- 	} else {
--		sk->sk_user_data = tunnel;
-+		rcu_assign_sk_user_data(sk, tunnel);
- 	}
-
- 	tunnel->old_sk_destruct = sk->sk_destruct;
-@@ -1518,6 +1522,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
- 	if (tunnel->fd >= 0)
- 		sockfd_put(sock);
-
-+	write_unlock(&sk->sk_callback_lock);
- 	return 0;
-
- err_sock:
-@@ -1525,6 +1530,8 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
- 		sock_release(sock);
- 	else
- 		sockfd_put(sock);
-+
-+	write_unlock(&sk->sk_callback_lock);
- err:
- 	return ret;
- }
 diff --git a/scripts/pahole-flags.sh b/scripts/pahole-flags.sh
 index 0d99ef17e4a5..81c8e082ec57 100755
 --- a/scripts/pahole-flags.sh
@@ -2134,7 +1337,7 @@ index e84ddf484010..d0501353a4b9 100644
  	prompt "Kernel default lockdown mode"
  	default LOCK_DOWN_KERNEL_FORCE_NONE
 diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-index 87cbdc64d272..18555cf18da7 100644
+index a79b985e917e..772a69bf43ec 100644
 --- a/security/lockdown/lockdown.c
 +++ b/security/lockdown/lockdown.c
 @@ -73,6 +73,7 @@ static int lockdown_is_locked_down(enum lockdown_reason what)
@@ -2146,10 +1349,10 @@ index 87cbdc64d272..18555cf18da7 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 4b95de24bc8d..10047790e96e 100644
+index 79d82cb6e469..843b0dd8f0dd 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2623,6 +2623,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2630,6 +2630,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
