@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc3.20230112gite8f60cd7db24.27
+%define pkgrelease 0.rc3.20230113gitd9fc1511728c.28
 %define kversion 6
-%define tarfile_release 6.2-rc3-30-ge8f60cd7db24
+%define tarfile_release 6.2-rc3-165-gd9fc1511728c
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20230112gite8f60cd7db24.27%{?buildid}%{?dist}
+%define specrelease 0.rc3.20230113gitd9fc1511728c.28%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3179,8 +3179,12 @@ fi
 #
 #
 %changelog
-* Thu Jan 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.e8f60cd7db24.27]
+* Fri Jan 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.d9fc1511728c.28]
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
+
+* Fri Jan 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.d9fc1511728c.27]
+- kernel/rh_messages.c: gcc12 warning on redundant NULL test (Eric Chanudet) [2142658]
+- Linux v6.2.0-0.rc3.d9fc1511728c
 
 * Thu Jan 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.e8f60cd7db24.26]
 - Linux v6.2.0-0.rc3.e8f60cd7db24

@@ -2674,7 +2674,7 @@ index 463c9295bc28..9f4d0cefeceb 100644
  /**
 diff --git a/kernel/rh_messages.c b/kernel/rh_messages.c
 new file mode 100644
-index 000000000000..586c3319f530
+index 000000000000..c55fb108c6bb
 --- /dev/null
 +++ b/kernel/rh_messages.c
 @@ -0,0 +1,209 @@
@@ -2843,7 +2843,7 @@ index 000000000000..586c3319f530
 +	if (msg)
 +		str = msg;
 +#ifdef CONFIG_MODULES
-+	else if (mod && mod->name)
++	else if (mod)
 +		str = mod->name;
 +#endif
 +
