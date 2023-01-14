@@ -40,7 +40,7 @@
  39 files changed, 487 insertions(+), 182 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index ddbd2fc917c5..db90bfc4f3ef 100644
+index 19e8c6dec6e5..37b6bc722a3e 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1228,10 +1228,10 @@ index ca1b7109c0db..b947cfbf04c2 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 94125d3b6893..7a6bf4659565 100644
+index 0c214af99085..060e927bddeb 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1685,7 +1685,7 @@ config AIO
+@@ -1689,7 +1689,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
