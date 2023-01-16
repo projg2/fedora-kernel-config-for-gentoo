@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 460716314fb3..7b76828602d2 100644
+index e09fe100efb2..6479d94cdbcc 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -166,10 +166,10 @@ index 43c7773b89ae..2c1db1cb5528 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 03934808b2ed..2511d5330ece 100644
+index c5ccca26a408..4cacdb4ab764 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1220,7 +1220,7 @@ endchoice
+@@ -1234,7 +1234,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -178,7 +178,7 @@ index 03934808b2ed..2511d5330ece 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1459,6 +1459,7 @@ config XEN
+@@ -1473,6 +1473,7 @@ config XEN
  config ARCH_FORCE_MAX_ORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -438,10 +438,10 @@ index c2c786eb95ab..4e3aa80cd5cf 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 274344434282..71671f258345 100644
+index 0c6f06abe3f4..f66b85b2c108 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1743,6 +1743,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1746,6 +1746,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -560,7 +560,7 @@ index b51f2a4c821e..be31d32aba53 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 09716eebe8ac..dcc10a1cdf96 100644
+index a2b0cbc8741c..8bc96fa10b8f 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -571,7 +571,7 @@ index 09716eebe8ac..dcc10a1cdf96 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -904,40 +905,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -907,40 +908,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -1094,7 +1094,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index de91dd88705b..9fef6c8e3341 100644
+index 5f6a85aea501..3b1e9faa9c2d 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@

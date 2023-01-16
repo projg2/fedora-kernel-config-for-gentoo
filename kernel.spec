@@ -122,17 +122,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 0
+%define debugbuildsenabled 1
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc3.20230113gitd9fc1511728c.28
+%define pkgrelease 0.rc4.31
 %define kversion 6
-%define tarfile_release 6.2-rc3-165-gd9fc1511728c
+%define tarfile_release 6.2-rc4
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20230113gitd9fc1511728c.28%{?buildid}%{?dist}
+%define specrelease 0.rc4.31%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3179,8 +3179,17 @@ fi
 #
 #
 %changelog
-* Fri Jan 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.d9fc1511728c.28]
+* Mon Jan 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc4.31]
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
+
+* Mon Jan 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc4.30]
+- Linux v6.2.0-0.rc4
+
+* Sun Jan 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.7c6984405241.29]
+- Linux v6.2.0-0.rc3.7c6984405241
+
+* Sat Jan 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.97ec4d559d93.28]
+- Linux v6.2.0-0.rc3.97ec4d559d93
 
 * Fri Jan 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc3.d9fc1511728c.27]
 - kernel/rh_messages.c: gcc12 warning on redundant NULL test (Eric Chanudet) [2142658]
