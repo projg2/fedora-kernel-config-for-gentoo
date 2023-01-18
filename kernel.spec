@@ -122,17 +122,17 @@ Summary: The Linux kernel
 # Set debugbuildsenabled to 0 to not build a separate debug kernel, but
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
-%define debugbuildsenabled 1
+%define debugbuildsenabled 0
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc4.31
+%define pkgrelease 0.rc4.20230118gitc1649ec55708.33
 %define kversion 6
-%define tarfile_release 6.2-rc4
+%define tarfile_release 6.2-rc4-41-gc1649ec55708
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.31%{?buildid}%{?dist}
+%define specrelease 0.rc4.20230118gitc1649ec55708.33%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3179,8 +3179,18 @@ fi
 #
 #
 %changelog
-* Mon Jan 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc4.31]
+* Wed Jan 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc4.c1649ec55708.33]
+- Turn off CONFIG_MTK_T7XX for S390x (Justin M. Forbes)
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
+
+* Wed Jan 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc4.c1649ec55708.32]
+- Fix up configs with SND_SOC_NAU8315 mismatch (Justin M. Forbes)
+- Linux v6.2.0-0.rc4.c1649ec55708
+
+* Tue Jan 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc4.6e50979a9c87.31]
+- CI: Do a full build for non-bot runs (Veronika Kabatova)
+- Fix up configs with SND_SOC_NAU8315 mismatch (Justin M. Forbes)
+- Linux v6.2.0-0.rc4.6e50979a9c87
 
 * Mon Jan 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc4.30]
 - Linux v6.2.0-0.rc4
