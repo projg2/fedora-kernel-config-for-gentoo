@@ -21,7 +21,6 @@
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
- .../net/wireless/broadcom/brcm80211/brcmfmac/of.c  |   5 +-
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
  include/linux/efi.h                                |  22 ++--
@@ -37,10 +36,10 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 39 files changed, 487 insertions(+), 182 deletions(-)
+ 38 files changed, 484 insertions(+), 180 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 19e8c6dec6e5..37b6bc722a3e 100644
+index 7eb6793ecfbf..c7e8be8b3a5f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -287,10 +286,10 @@ index c2c786eb95ab..4e3aa80cd5cf 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index b47e93a24a9a..9d172e177a75 100644
+index dbfa58e799e2..69654a728e07 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1743,6 +1743,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1746,6 +1746,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -409,7 +408,7 @@ index 8d151e332584..bd29fe4ddbf3 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index f12cc29bd4b8..ec530425a457 100644
+index 033aac6be7da..28f9bf73368b 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -420,7 +419,7 @@ index f12cc29bd4b8..ec530425a457 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -881,40 +882,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -884,40 +885,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -1018,29 +1017,6 @@ index 959d895fc1df..ced88384a6ee 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-index a83699de01ec..fdd0c9abc1a1 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-@@ -79,7 +79,8 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
- 	/* Apple ARM64 platforms have their own idea of board type, passed in
- 	 * via the device tree. They also have an antenna SKU parameter
- 	 */
--	if (!of_property_read_string(np, "brcm,board-type", &prop))
-+	err = of_property_read_string(np, "brcm,board-type", &prop);
-+	if (!err)
- 		settings->board_type = prop;
-
- 	if (!of_property_read_string(np, "apple,antenna-sku", &prop))
-@@ -87,7 +88,7 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
-
- 	/* Set board-type to the first string of the machine compatible prop */
- 	root = of_find_node_by_path("/");
--	if (root && !settings->board_type) {
-+	if (root && err) {
- 		char *board_type;
- 		const char *tmp;
-
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index 285acc4aaccc..a7056957e7dd 100644
 --- a/drivers/pci/quirks.c
