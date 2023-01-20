@@ -228,7 +228,7 @@ index fbd646dbf440..23ca9cdb2438 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 2b6091349daa..b9eafa68df6e 100644
+index 696c9e007a36..80a56c8eaaae 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -239,7 +239,7 @@ index 2b6091349daa..b9eafa68df6e 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -980,6 +981,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -981,6 +982,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
