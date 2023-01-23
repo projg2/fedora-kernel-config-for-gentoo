@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc4.20230120gitd368967cb103.35
+%define pkgrelease 0.rc5.20230123git2475bf0250de.38
 %define kversion 6
-%define tarfile_release 6.2-rc4-77-gd368967cb103
+%define tarfile_release 6.2-rc5-13-g2475bf0250de
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20230120gitd368967cb103.35%{?buildid}%{?dist}
+%define specrelease 0.rc5.20230123git2475bf0250de.38%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3226,8 +3226,20 @@ fi
 #
 #
 %changelog
-* Fri Jan 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc4.d368967cb103.35]
+* Mon Jan 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.2475bf0250de.38]
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
+
+* Mon Jan 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.2475bf0250de.37]
+- Linux v6.2.0-0.rc5.2475bf0250de
+
+* Sun Jan 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.36]
+- Update module filters for nvmem_u-boot-env (Justin M. Forbes)
+- Linux v6.2.0-0.rc5
+
+* Sat Jan 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc4.f883675bf652.35]
+- fedora: Updates for 6.2 merge (Peter Robinson)
+- fedora: Updates for 6.1 merge (Peter Robinson)
+- Linux v6.2.0-0.rc4.f883675bf652
 
 * Fri Jan 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc4.d368967cb103.34]
 - Linux v6.2.0-0.rc4.d368967cb103

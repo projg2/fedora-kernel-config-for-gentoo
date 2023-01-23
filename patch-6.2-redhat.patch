@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index e09fe100efb2..6479d94cdbcc 100644
+index c1ead4cd2342..eecdc6ae5d6e 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -134,7 +134,7 @@ index e09fe100efb2..6479d94cdbcc 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1334,7 +1338,13 @@ define filechk_version.h
+@@ -1346,7 +1350,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -1749,10 +1749,10 @@ index 005502125b27..cd577c40dcca 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 77e73fc8d673..fd667f825d88 100644
+index 9eca403af2a8..ebe803d4ad4d 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5732,6 +5732,13 @@ static void hub_event(struct work_struct *work)
+@@ -5735,6 +5735,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
@@ -2533,7 +2533,7 @@ index 5b67f208f7de..060133d19a4b 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 7ceabd320425..a31242963c10 100644
+index 44e90b28a30f..2d854d4f390a 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1698,7 +1698,7 @@ config AIO
@@ -2558,7 +2558,7 @@ index 10ef068f598d..d7953f0ee28a 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 64131f88c553..14752f864aa0 100644
+index ecca9366c7a6..be37bb092f7a 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@
@@ -2593,7 +2593,7 @@ index 64131f88c553..14752f864aa0 100644
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
-@@ -5298,6 +5316,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -5288,6 +5306,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;
