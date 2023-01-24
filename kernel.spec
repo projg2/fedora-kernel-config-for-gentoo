@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc5.20230123git2475bf0250de.38
+%define pkgrelease 0.rc5.20230124git7bf70dbb1882.39
 %define kversion 6
-%define tarfile_release 6.2-rc5-13-g2475bf0250de
+%define tarfile_release 6.2-rc5-20-g7bf70dbb1882
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20230123git2475bf0250de.38%{?buildid}%{?dist}
+%define specrelease 0.rc5.20230124git7bf70dbb1882.39%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -1490,6 +1490,7 @@ touch .scmversion
 # This fixes errors such as
 # *** ERROR: ambiguous python shebang in /usr/bin/kvm_stat: #!/usr/bin/python. Change it to python3 (or python2) explicitly.
 # We patch all sources below for which we got a report/error.
+echo "Fixing Python shebangs..."
 pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 	tools/kvm/kvm_stat/kvm_stat \
 	scripts/show_delta \
@@ -1498,7 +1499,7 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 	scripts/jobserver-exec \
 	tools \
 	Documentation \
-	scripts/clang-tools
+	scripts/clang-tools 2> /dev/null
 
 # only deal with configs if we are going to build for the arch
 %ifnarch %nobuildarches
@@ -2067,7 +2068,7 @@ BuildKernel() {
     mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
     mv vmlinux $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
     ln -s $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer/vmlinux vmlinux
-    if [ -n "%{vmlinux_decompressor}" ]; then
+    if [ -n "%{?vmlinux_decompressor}" ]; then
 	    eu-readelf -n  %{vmlinux_decompressor} | grep "Build ID" | awk '{print $NF}' > vmlinux.decompressor.id
 	    # Without build-id the build will fail. But for s390 the build-id
 	    # wasn't added before 5.11. In case it is missing prefer not
@@ -2205,10 +2206,6 @@ BuildKernel() {
     sed -e 's/^lib*/%dir \/lib/' %{?zipsed} $RPM_BUILD_ROOT/module-dirs.list > ../kernel${Variant:+-${Variant}}-modules-core.list
     sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/modules.list >> ../kernel${Variant:+-${Variant}}-modules-core.list
     sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-extra.list >> ../kernel${Variant:+-${Variant}}-modules-extra.list
-    sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-internal.list >> ../kernel${Variant:+-${Variant}}-modules-internal.list
-%if 0%{!?fedora:1}
-    sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-partner.list >> ../kernel${Variant:+-${Variant}}-modules-partner.list
-%endif
 
     # Cleanup
     rm -f $RPM_BUILD_ROOT/k-d.list
@@ -2446,16 +2443,10 @@ chmod -R a=rX Documentation
 find Documentation -type d | xargs chmod u+w
 %endif
 
-# In the modsign case, we do 3 things.  1) We check the "variant" and hard
-# code the value in the following invocations.  This is somewhat sub-optimal
-# but we're doing this inside of an RPM macro and it isn't as easy as it
-# could be because of that.  2) We restore the .tmp_versions/ directory from
-# the one we saved off in BuildKernel above.  This is to make sure we're
-# signing the modules we actually built/installed in that variant.  3) We
-# grab the arch and invoke mod-sign.sh command to actually sign the modules.
+# Module signing (modsign)
 #
-# We have to do all of those things _after_ find-debuginfo runs, otherwise
-# that will strip the signature off of the modules.
+# This must be run _after_ find-debuginfo.sh runs, otherwise that will strip
+# the signature off of the modules.
 #
 # Don't sign modules for the zfcpdump variant as it is monolithic.
 
@@ -2472,7 +2463,8 @@ find Documentation -type d | xargs chmod u+w
     fi \
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
-    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -P${RPM_BUILD_NCPUS} -r xz; \
+    echo "Compressing kernel modules ..." \
+    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -n 16 -P${RPM_BUILD_NCPUS} -r xz; \
   fi \
 %{nil}
 
@@ -3179,9 +3171,11 @@ fi
 %{expand:%%files %{?3:%{3}-}devel-matched}\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-extra.list %{?3:%{3}-}modules-extra}\
 %config(noreplace) /etc/modprobe.d/*-blacklist.conf\
-%{expand:%%files -f kernel-%{?3:%{3}-}modules-internal.list %{?3:%{3}-}modules-internal}\
+%{expand:%%files %{?3:%{3}-}modules-internal}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/internal\
 %if 0%{!?fedora:1}\
-%{expand:%%files -f kernel-%{?3:%{3}-}modules-partner.list %{?3:%{3}-}modules-partner}\
+%{expand:%%files %{?3:%{3}-}modules-partner}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/partner\
 %endif\
 %if %{with_debuginfo}\
 %ifnarch noarch\
@@ -3226,8 +3220,20 @@ fi
 #
 #
 %changelog
-* Mon Jan 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.2475bf0250de.38]
+* Tue Jan 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.7bf70dbb1882.39]
+- Turn off forced debug builds (Justin M. Forbes)
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
+
+* Tue Jan 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.7bf70dbb1882.38]
+- redhat/kernel.spec.template: Fix internal "File listed twice" errors (Prarit Bhargava)
+- redhat: Remove stale .tmp_versions code and comments (Prarit Bhargava)
+- redhat/kernel.spec.template: Fix vmlinux_decompressor on !s390x (Prarit Bhargava)
+- redhat/kernel.spec.template: Remove unnecessary output from pathfix.py (Prarit Bhargava)
+- Modularize CONFIG_ARM_CORESIGHT_PMU_ARCH_SYSTEM_PMU (Mark Salter)
+- redhat/kernel.spec.template: Parallelize compression (Prarit Bhargava)
+- config: Enable Security Path (Ricardo Robaina)
+- redhat/self-test/data: Regenerate self-test data for make change (Prarit Bhargava)
+- Linux v6.2.0-0.rc5.7bf70dbb1882
 
 * Mon Jan 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.2475bf0250de.37]
 - Linux v6.2.0-0.rc5.2475bf0250de
