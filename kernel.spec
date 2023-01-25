@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc5.20230124git7bf70dbb1882.39
+%define pkgrelease 0.rc5.20230125git948ef7bb70c4.40
 %define kversion 6
-%define tarfile_release 6.2-rc5-20-g7bf70dbb1882
+%define tarfile_release 6.2-rc5-45-g948ef7bb70c4
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20230124git7bf70dbb1882.39%{?buildid}%{?dist}
+%define specrelease 0.rc5.20230125git948ef7bb70c4.40%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -388,8 +388,8 @@ Summary: The Linux kernel
 %endif
 
 %if 0%{?fedora}
-# don't do debug builds on anything but i686 and x86_64
-%ifnarch i686 x86_64
+# don't do debug builds on anything but aarch64 and x86_64
+%ifnarch aarch64 x86_64
 %define with_debug 0
 %endif
 %endif
@@ -3220,9 +3220,14 @@ fi
 #
 #
 %changelog
-* Tue Jan 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.7bf70dbb1882.39]
+* Wed Jan 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.948ef7bb70c4.40]
+- Turn on debug builds for aarch64 Fedora (Justin M. Forbes)
 - Turn off forced debug builds (Justin M. Forbes)
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
+
+* Wed Jan 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.948ef7bb70c4.39]
+- gitlab-ci: use CI templates from production branch (Michael Hofmann)
+- Linux v6.2.0-0.rc5.948ef7bb70c4
 
 * Tue Jan 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.7bf70dbb1882.38]
 - redhat/kernel.spec.template: Fix internal "File listed twice" errors (Prarit Bhargava)

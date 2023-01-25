@@ -1533,7 +1533,7 @@ index 50a577ac3bb4..6f862b855ccf 100644
  	{ 0 }
  };
 diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index 4dbf51e2623a..015e55d07a4f 100644
+index f6da34850af9..f994f3ce8851 100644
 --- a/drivers/scsi/hpsa.c
 +++ b/drivers/scsi/hpsa.c
 @@ -82,7 +82,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
@@ -2606,7 +2606,7 @@ index ecca9366c7a6..be37bb092f7a 100644
  	}
 
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 48568a0f5651..e0dbce757beb 100644
+index 4ac3fe43e6c8..5b2604d7e2a7 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
 @@ -521,6 +521,7 @@ static struct module_attribute modinfo_##field = {                    \
