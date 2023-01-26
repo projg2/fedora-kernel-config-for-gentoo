@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc5.20230125git948ef7bb70c4.40
+%define pkgrelease 0.rc5.20230126git7c46948a6e9c.41
 %define kversion 6
-%define tarfile_release 6.2-rc5-45-g948ef7bb70c4
+%define tarfile_release 6.2-rc5-47-g7c46948a6e9c
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20230125git948ef7bb70c4.40%{?buildid}%{?dist}
+%define specrelease 0.rc5.20230126git7c46948a6e9c.41%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3220,10 +3220,18 @@ fi
 #
 #
 %changelog
-* Wed Jan 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.948ef7bb70c4.40]
+* Thu Jan 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.7c46948a6e9c.41]
 - Turn on debug builds for aarch64 Fedora (Justin M. Forbes)
 - Turn off forced debug builds (Justin M. Forbes)
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
+
+* Thu Jan 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.7c46948a6e9c.40]
+- redhat/self-test: Update data with ENABLE_WERROR (Prarit Bhargava)
+- redhat/Makefile.variables: Add ENABLE_WERROR (Prarit Bhargava)
+- makefile: Add -Werror support for RHEL (Prarit Bhargava)
+- redhat/Makefile.variables: Remove mention of Makefile.rhpkg (Prarit Bhargava)
+- redhat/Makefile.variables: Alphabetize variables (Prarit Bhargava)
+- Linux v6.2.0-0.rc5.7c46948a6e9c
 
 * Wed Jan 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.948ef7bb70c4.39]
 - gitlab-ci: use CI templates from production branch (Michael Hofmann)
