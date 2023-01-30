@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc5.20230126git7c46948a6e9c.41
+%define pkgrelease 0.rc6.44
 %define kversion 6
-%define tarfile_release 6.2-rc5-47-g7c46948a6e9c
+%define tarfile_release 6.2-rc6
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20230126git7c46948a6e9c.41%{?buildid}%{?dist}
+%define specrelease 0.rc6.44%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3220,10 +3220,28 @@ fi
 #
 #
 %changelog
-* Thu Jan 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.7c46948a6e9c.41]
-- Turn on debug builds for aarch64 Fedora (Justin M. Forbes)
+* Mon Jan 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.44]
+- Update self-test data to not expect debugbuildsenabled 0 (Justin M. Forbes)
 - Turn off forced debug builds (Justin M. Forbes)
+- Turn on debug builds for aarch64 Fedora (Justin M. Forbes)
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
+
+* Mon Jan 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.43]
+- Linux v6.2.0-0.rc6
+
+* Sun Jan 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.c96618275234.42]
+- Linux v6.2.0-0.rc5.c96618275234
+
+* Sat Jan 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.5af6ce704936.41]
+- redhat/configs: Turn on CONFIG_SPI_TEGRA210_QUAD for RHEL (Mark Salter)
+- ark: aarch64: drop CONFIG_SMC911X (Peter Robinson)
+- all: cleanup and de-dupe CDROM_PKTCDVD options. (Peter Robinson)
+- all: remove CRYPTO_GF128MUL (Peter Robinson)
+- all: cleanup UEFI options (Peter Robinson)
+- common: arm64: Enable Ampere Altra SMpro Hardware Monitoring (Peter Robinson)
+- fedora: enable STACKPROTECTOR_STRONG (Peter Robinson)
+- fedora: enable STACKPROTECTOR on arm platforms (Peter Robinson)
+- Linux v6.2.0-0.rc5.5af6ce704936
 
 * Thu Jan 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc5.7c46948a6e9c.40]
 - redhat/self-test: Update data with ENABLE_WERROR (Prarit Bhargava)
