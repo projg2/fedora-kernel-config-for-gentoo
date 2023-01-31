@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc6.44
+%define pkgrelease 0.rc6.20230131git22b8077d0fce.45
 %define kversion 6
-%define tarfile_release 6.2-rc6
+%define tarfile_release 6.2-rc6-3-g22b8077d0fce
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.44%{?buildid}%{?dist}
+%define specrelease 0.rc6.20230131git22b8077d0fce.45%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3220,11 +3220,14 @@ fi
 #
 #
 %changelog
-* Mon Jan 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.44]
+* Tue Jan 31 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.22b8077d0fce.45]
 - Update self-test data to not expect debugbuildsenabled 0 (Justin M. Forbes)
 - Turn off forced debug builds (Justin M. Forbes)
 - Turn on debug builds for aarch64 Fedora (Justin M. Forbes)
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
+
+* Tue Jan 31 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.22b8077d0fce.44]
+- Linux v6.2.0-0.rc6.22b8077d0fce
 
 * Mon Jan 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.43]
 - Linux v6.2.0-0.rc6
