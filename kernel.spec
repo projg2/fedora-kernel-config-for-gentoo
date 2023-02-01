@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc6.20230131git22b8077d0fce.45
+%define pkgrelease 0.rc6.20230201gitc0b67534c95c.46
 %define kversion 6
-%define tarfile_release 6.2-rc6-3-g22b8077d0fce
+%define tarfile_release 6.2-rc6-11-gc0b67534c95c
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20230131git22b8077d0fce.45%{?buildid}%{?dist}
+%define specrelease 0.rc6.20230201gitc0b67534c95c.46%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3220,11 +3220,16 @@ fi
 #
 #
 %changelog
-* Tue Jan 31 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.22b8077d0fce.45]
+* Wed Feb 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.c0b67534c95c.46]
 - Update self-test data to not expect debugbuildsenabled 0 (Justin M. Forbes)
 - Turn off forced debug builds (Justin M. Forbes)
 - Turn on debug builds for aarch64 Fedora (Justin M. Forbes)
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
+
+* Wed Feb 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.c0b67534c95c.45]
+- Update rebase notes for Fedora (Justin M. Forbes)
+- Update CONFIG_LOCKDEP_CHAINS_BITS to 19 (cmurf)
+- Linux v6.2.0-0.rc6.c0b67534c95c
 
 * Tue Jan 31 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.22b8077d0fce.44]
 - Linux v6.2.0-0.rc6.22b8077d0fce
