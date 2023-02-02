@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc6.20230201gitc0b67534c95c.47
+%define pkgrelease 0.rc6.20230202git9f266ccaa2f5.46
 %define kversion 6
-%define tarfile_release 6.2-rc6-11-gc0b67534c95c
+%define tarfile_release 6.2-rc6-50-g9f266ccaa2f5
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20230201gitc0b67534c95c.47%{?buildid}%{?dist}
+%define specrelease 0.rc6.20230202git9f266ccaa2f5.46%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -635,7 +635,7 @@ BuildRequires: python3-docutils
 BuildRequires: zlib-devel binutils-devel
 %endif
 %if %{with_selftests}
-BuildRequires: clang llvm fuse-devel
+BuildRequires: clang llvm-devel fuse-devel
 %ifnarch %{arm}
 BuildRequires: numactl-devel
 %endif
@@ -850,7 +850,7 @@ Source2002: kvm_stat.logrotate
 # Some people enjoy building customized kernels from the dist-git in Fedora and
 # use this to override configuration options. One day they may all use the
 # source tree, but in the mean time we carry this to support the legacy workflow
-Source3000: merge.pl
+Source3000: merge.py
 Source3001: kernel-local
 %if %{patchlist_changelog}
 Source3002: Patchlist.changelog
@@ -1042,7 +1042,7 @@ This package provides debug information for package kernel-tools.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|.*%%{_sbindir}/intel_sdsi(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
 
 %package -n rtla
-Summary: RTLA: Real-Time Linux Analysis tools 
+Summary: RTLA: Real-Time Linux Analysis tools
 %description -n rtla
 The rtla tool is a meta-tool that includes a set of commands that
 aims to analyze the real-time properties of Linux. But, instead of
@@ -1513,7 +1513,7 @@ cd configs
 # Drop some necessary files from the source dir into the buildroot
 cp $RPM_SOURCE_DIR/kernel-*.config .
 cp %{SOURCE80} .
-# merge.pl
+# merge.py
 cp %{SOURCE3000} .
 # kernel-local
 cp %{SOURCE3001} .
@@ -1524,12 +1524,12 @@ FLAVOR=%{primary_target} SPECVERSION=%{version} ./generate_all_configs.sh %{debu
 for i in %{all_arch_configs}
 do
   mv $i $i.tmp
-  ./merge.pl %{SOURCE3001} $i.tmp > $i
+  ./merge.py %{SOURCE3001} $i.tmp > $i
 %if %{with_gcov}
   echo "Merging with gcov options"
   cat %{SOURCE75}
   mv $i $i.tmp
-  ./merge.pl %{SOURCE75} $i.tmp > $i
+  ./merge.py %{SOURCE75} $i.tmp > $i
 %endif
   rm $i.tmp
 done
@@ -3220,11 +3220,21 @@ fi
 #
 #
 %changelog
-* Wed Feb 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.c0b67534c95c.46]
+* Thu Feb 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.9f266ccaa2f5.46]
+- redhat/configs: Enable CONFIG_SENSORS_LM90 for RHEL (Mark Salter)
+- Fix up SQUASHFS decompression configs (Justin M. Forbes)
+- redhat/configs: enable CONFIG_OCTEON_EP as a module in ARK (Michal Schmidt) [2041990]
+- redhat: ignore rpminspect runpath report on urandom_read selftest binaries (Herton R. Krzesinski)
+- kernel.spec: add llvm-devel build requirement (Scott Weaver)
 - Update self-test data to not expect debugbuildsenabled 0 (Justin M. Forbes)
 - Turn off forced debug builds (Justin M. Forbes)
 - Turn on debug builds for aarch64 Fedora (Justin M. Forbes)
+- redhat/configs:  modify merge.py to match old overrides input (Clark Williams)
+- redhat:  fixup pylint complaints (Clark Williams)
+- redhat: remove merge.pl and references to it (Clark Williams)
+- redhat: update merge.py to handle merge.pl corner cases (Clark Williams)
 - Revert "redhat: fix elf got hardening for vm tools" (Don Zickus)
+- Linux v6.2.0-0.rc6.9f266ccaa2f5
 
 * Wed Feb 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.c0b67534c95c.45]
 - Update rebase notes for Fedora (Justin M. Forbes)

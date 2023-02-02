@@ -24,3 +24,8 @@ patches:
     ignore_list:
         - linux-kernel-test.patch
         - patch-6.2-redhat.patch
+
+runpath:
+    ignore:
+        - /usr/libexec/kselftests/bpf/urandom_read
+        - /usr/libexec/kselftests/bpf/no_alu32/urandom_read
