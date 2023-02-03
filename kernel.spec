@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc6.20230202git9f266ccaa2f5.46
+%define pkgrelease 0.rc6.20230203git66a87fff1a87.47
 %define kversion 6
-%define tarfile_release 6.2-rc6-50-g9f266ccaa2f5
+%define tarfile_release 6.2-rc6-163-g66a87fff1a87
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20230202git9f266ccaa2f5.46%{?buildid}%{?dist}
+%define specrelease 0.rc6.20230203git66a87fff1a87.47%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3220,6 +3220,9 @@ fi
 #
 #
 %changelog
+* Fri Feb 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.66a87fff1a87.47]
+- Linux v6.2.0-0.rc6.66a87fff1a87
+
 * Thu Feb 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.9f266ccaa2f5.46]
 - redhat/configs: Enable CONFIG_SENSORS_LM90 for RHEL (Mark Salter)
 - Fix up SQUASHFS decompression configs (Justin M. Forbes)
