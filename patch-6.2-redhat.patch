@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 749bb455546e..d460f5a0eb93 100644
+index 80afd9fb9f75..a218b3d6cba1 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -560,7 +560,7 @@ index b51f2a4c821e..be31d32aba53 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index a2b0cbc8741c..8bc96fa10b8f 100644
+index 1e0b016fdc2b..7417f131db15 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -1228,7 +1228,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 505e16f20e57..f59344f98b1e 100644
+index 8b6421141162..c21b55a5d337 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1781,7 +1781,7 @@ index eae288c8d40a..8b8bf447cedc 100644
 
  error_proc:
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 4b27519143f5..44e604ab1f7d 100644
+index 98598bd1d2fa..34a6233fabaf 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1793,7 +1793,7 @@ index 4b27519143f5..44e604ab1f7d 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -850,6 +852,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -851,6 +853,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1808,7 +1808,7 @@ index 4b27519143f5..44e604ab1f7d 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -861,6 +871,8 @@ static inline bool efi_enabled(int feature)
+@@ -862,6 +872,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1817,7 +1817,7 @@ index 4b27519143f5..44e604ab1f7d 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -882,6 +894,8 @@ static inline bool efi_enabled(int feature)
+@@ -883,6 +895,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1826,7 +1826,7 @@ index 4b27519143f5..44e604ab1f7d 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -896,6 +910,7 @@ static inline void efi_find_mirror(void) {}
+@@ -897,6 +911,7 @@ static inline void efi_find_mirror(void) {}
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1834,7 +1834,7 @@ index 4b27519143f5..44e604ab1f7d 100644
 
  /*
   * Variable Attributes
-@@ -1098,13 +1113,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1099,13 +1114,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 

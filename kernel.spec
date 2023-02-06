@@ -126,13 +126,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc6.20230203git66a87fff1a87.47
+%define pkgrelease 0.rc7.20230206gitd2d11f342b17.50
 %define kversion 6
-%define tarfile_release 6.2-rc6-163-g66a87fff1a87
+%define tarfile_release 6.2-rc7-2-gd2d11f342b17
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20230203git66a87fff1a87.47%{?buildid}%{?dist}
+%define specrelease 0.rc7.20230206gitd2d11f342b17.50%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3220,6 +3220,17 @@ fi
 #
 #
 %changelog
+* Mon Feb 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc7.d2d11f342b17.50]
+- redhat/Makefile: Remove GIT deprecated message (Prarit Bhargava)
+- Revert "redhat: configs: Disable xtables and ipset" (Phil Sutter)
+- Linux v6.2.0-0.rc7.d2d11f342b17
+
+* Sun Feb 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.837c07cf68fe.49]
+- Linux v6.2.0-0.rc6.837c07cf68fe
+
+* Sat Feb 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.0136d86b7852.48]
+- Linux v6.2.0-0.rc6.0136d86b7852
+
 * Fri Feb 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc6.66a87fff1a87.47]
 - Linux v6.2.0-0.rc6.66a87fff1a87
 
