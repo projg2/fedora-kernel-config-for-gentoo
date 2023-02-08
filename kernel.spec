@@ -132,13 +132,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc7.20230207git05ecb680708a.51
+%define pkgrelease 0.rc7.20230208git0983f6bf2bfc.52
 %define kversion 6
-%define tarfile_release 6.2-rc7-11-g05ecb680708a
+%define tarfile_release 6.2-rc7-18-g0983f6bf2bfc
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20230207git05ecb680708a.51%{?buildid}%{?dist}
+%define specrelease 0.rc7.20230208git0983f6bf2bfc.52%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3325,6 +3325,11 @@ fi
 #
 #
 %changelog
+* Wed Feb 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc7.0983f6bf2bfc.52]
+- redhat/configs: enable CONFIG_INET_DIAG_DESTROY (Andrea Claudi)
+- Enable TDX Guest driver (Vitaly Kuznetsov)
+- Linux v6.2.0-0.rc7.0983f6bf2bfc
+
 * Tue Feb 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc7.05ecb680708a.51]
 - redhat/configs: Enable CONFIG_PCIE_PTM generically (Corinna Vinschen)
 - redhat: Add sub-RPM with a EFI unified kernel image for virtual machines (Vitaly Kuznetsov)
