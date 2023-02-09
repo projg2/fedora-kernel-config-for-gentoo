@@ -132,13 +132,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc7.20230208git0983f6bf2bfc.52
+%define pkgrelease 0.rc7.20230209git0983f6bf2bfc.52
 %define kversion 6
 %define tarfile_release 6.2-rc7-18-g0983f6bf2bfc
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20230208git0983f6bf2bfc.52%{?buildid}%{?dist}
+%define specrelease 0.rc7.20230209git0983f6bf2bfc.52%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -711,9 +711,7 @@ BuildRequires: dracut
 BuildRequires: binutils
 # For the initrd
 BuildRequires: lvm2
-%if 0%{?fedora} > 37
 BuildRequires: systemd-boot-unsigned
-%endif
 # For systemd-stub and systemd-pcrphase
 BuildRequires: systemd-udev >= 252-1
 # For TPM operations in UKI initramfs
@@ -3325,6 +3323,10 @@ fi
 #
 #
 %changelog
+* Thu Feb 09 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.0-0.rc7.20230209git0983f6bf2bfc.52]
+- redhat: Repair ELN build broken by the recent UKI changes (Vitaly Kuznetsov)
+- Fedora configs for 6.2 (Justin M. Forbes)
+
 * Wed Feb 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc7.0983f6bf2bfc.52]
 - redhat/configs: enable CONFIG_INET_DIAG_DESTROY (Andrea Claudi)
 - Enable TDX Guest driver (Vitaly Kuznetsov)
