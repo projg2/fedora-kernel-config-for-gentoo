@@ -3326,6 +3326,9 @@ fi
 #
 #
 %changelog
+* Fri Feb 10 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.0-0.rc7.20230210git38c1e0c65865.54]
+- Fedora configs for 6.2 (Justin M. Forbes)
+
 * Fri Feb 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc7.38c1e0c65865.54]
 - Disable frame pointers (Justin M. Forbes)
 
