@@ -3,6 +3,9 @@
 # environment changes that affect %%install need to go
 # here before the %%install macro is pre-built.
 
+# Disable frame pointers
+%undefine _include_frame_pointers
+
 # Disable LTO in userspace packages.
 %global _lto_cflags %{nil}
 
@@ -132,13 +135,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc7.20230209git0983f6bf2bfc.52
+%define pkgrelease 0.rc7.20230210git38c1e0c65865.54
 %define kversion 6
-%define tarfile_release 6.2-rc7-18-g0983f6bf2bfc
+%define tarfile_release 6.2-rc7-135-g38c1e0c65865
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20230209git0983f6bf2bfc.52%{?buildid}%{?dist}
+%define specrelease 0.rc7.20230210git38c1e0c65865.54%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3323,9 +3326,12 @@ fi
 #
 #
 %changelog
-* Thu Feb 09 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.0-0.rc7.20230209git0983f6bf2bfc.52]
+* Fri Feb 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc7.38c1e0c65865.54]
+- Disable frame pointers (Justin M. Forbes)
+
+* Fri Feb 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc7.38c1e0c65865.53]
 - redhat: Repair ELN build broken by the recent UKI changes (Vitaly Kuznetsov)
-- Fedora configs for 6.2 (Justin M. Forbes)
+- Linux v6.2.0-0.rc7.38c1e0c65865
 
 * Wed Feb 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc7.0983f6bf2bfc.52]
 - redhat/configs: enable CONFIG_INET_DIAG_DESTROY (Andrea Claudi)
