@@ -135,13 +135,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc7.20230210git38c1e0c65865.54
+%define pkgrelease 0.rc8.57
 %define kversion 6
-%define tarfile_release 6.2-rc7-135-g38c1e0c65865
+%define tarfile_release 6.2-rc8
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20230210git38c1e0c65865.54%{?buildid}%{?dist}
+%define specrelease 0.rc8.57%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3326,11 +3326,18 @@ fi
 #
 #
 %changelog
-* Fri Feb 10 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.0-0.rc7.20230210git38c1e0c65865.54]
-- Fedora configs for 6.2 (Justin M. Forbes)
-
-* Fri Feb 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc7.38c1e0c65865.54]
+* Mon Feb 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc8.57]
 - Disable frame pointers (Justin M. Forbes)
+
+* Mon Feb 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc8.56]
+- Linux v6.2.0-0.rc8
+
+* Sun Feb 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc7.f339c2597ebb.55]
+- Linux v6.2.0-0.rc7.f339c2597ebb
+
+* Sat Feb 11 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc7.420b2d431d18.54]
+- Fedora configs for 6.2 (Justin M. Forbes)
+- Linux v6.2.0-0.rc7.420b2d431d18
 
 * Fri Feb 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc7.38c1e0c65865.53]
 - redhat: Repair ELN build broken by the recent UKI changes (Vitaly Kuznetsov)
