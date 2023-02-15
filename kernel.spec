@@ -147,13 +147,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc8.20230214gitf6feea56f66d.58
+%define pkgrelease 0.rc8.20230215gite1c04510f521.58
 %define kversion 6
-%define tarfile_release 6.2-rc8-15-gf6feea56f66d
+%define tarfile_release 6.2-rc8-21-ge1c04510f521
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.20230214gitf6feea56f66d.58%{?buildid}%{?dist}
+%define specrelease 0.rc8.20230215gite1c04510f521.58%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -499,8 +499,8 @@ Summary: The Linux kernel
 %define all_arch_configs kernel-%{version}-aarch64*.config
 %define asmarch arm64
 %define hdrarch arm64
-%define make_target Image.gz
-%define kernel_image arch/arm64/boot/Image.gz
+%define make_target vmlinuz.efi
+%define kernel_image arch/arm64/boot/vmlinuz.efi
 %endif
 
 # Should make listnewconfig fail if there's config options
@@ -3343,8 +3343,12 @@ fi
 #
 #
 %changelog
-* Tue Feb 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc8.f6feea56f66d.58]
+* Wed Feb 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc8.e1c04510f521.58]
+- Consolidate common configs for 6.2 (Justin M. Forbes)
+- aarch64: enable zboot (Gerd Hoffmann)
+- redhat: remove duplicate pending-rhel config items (Patrick Talbert)
 - Disable frame pointers (Justin M. Forbes)
+- Linux v6.2.0-0.rc8.e1c04510f521
 
 * Tue Feb 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc8.f6feea56f66d.57]
 - redhat/configs: update scripts and docs for ark -> rhel rename (Clark Williams)

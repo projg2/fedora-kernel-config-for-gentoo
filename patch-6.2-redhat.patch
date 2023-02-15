@@ -250,10 +250,10 @@ index 696c9e007a36..80a56c8eaaae 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 9cfca3d7d0e2..3372f258374e 100644
+index f3cc7699e1e1..78d9e00d3327 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1565,6 +1565,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1570,6 +1570,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
