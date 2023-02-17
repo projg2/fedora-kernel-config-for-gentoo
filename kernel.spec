@@ -147,13 +147,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.0
 %define patchversion 6.2
-%define pkgrelease 0.rc8.20230215gite1c04510f521.58
+%define pkgrelease 0.rc8.20230217gitec35307e18ba.60
 %define kversion 6
-%define tarfile_release 6.2-rc8-21-ge1c04510f521
+%define tarfile_release 6.2-rc8-98-gec35307e18ba
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.20230215gite1c04510f521.58%{?buildid}%{?dist}
+%define specrelease 0.rc8.20230217gitec35307e18ba.60%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.0
 
@@ -3343,6 +3343,14 @@ fi
 #
 #
 %changelog
+* Fri Feb 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc8.ec35307e18ba.60]
+- Linux v6.2.0-0.rc8.ec35307e18ba
+
+* Thu Feb 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc8.033c40a89f55.59]
+- Fix underline mark-up after text change (Justin M. Forbes)
+- Turn on CONFIG_XFS_RT for Fedora (Justin M. Forbes)
+- Linux v6.2.0-0.rc8.033c40a89f55
+
 * Wed Feb 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-0.rc8.e1c04510f521.58]
 - Consolidate common configs for 6.2 (Justin M. Forbes)
 - aarch64: enable zboot (Gerd Hoffmann)
