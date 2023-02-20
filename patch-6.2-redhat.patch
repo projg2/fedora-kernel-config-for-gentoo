@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 716a975730a6..80ffb773f08e 100644
+index 3f6628780eb2..0aca431f9bae 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1950,7 +1950,7 @@ index 979b776e3bcb..4eabcc0d8a91 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index adffd65e84b4..71bf861dc270 100644
+index 254c8a4126a8..c0f718911aa9 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1520,6 +1520,22 @@ int pci_add_dynid(struct pci_driver *drv,
