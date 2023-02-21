@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 3f6628780eb2..0aca431f9bae 100644
+index 8e5621ddadb2..10c64cc021a3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -150,10 +150,10 @@ index 3f6628780eb2..0aca431f9bae 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 43c7773b89ae..2c1db1cb5528 100644
+index 9f85cc34be7d..43d495c1ba96 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1299,9 +1299,9 @@ config HIGHMEM
+@@ -1288,9 +1288,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -1228,7 +1228,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 8b6421141162..c21b55a5d337 100644
+index 8698410aeb84..0f994d356f54 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1342,7 +1342,7 @@ index fc39d01e7b63..a3d68d41be11 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 424c8a467a0c..3230b91d3476 100644
+index bf46f122e9e1..06dd6bc08962 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
 @@ -873,6 +873,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
@@ -1879,7 +1879,7 @@ index fe6efb24d151..85b185391da7 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index ed6cb2ac55fa..72fb26d13f28 100644
+index 094b76dc7164..ea6c9eaeed9a 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -403,6 +403,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -1892,7 +1892,7 @@ index ed6cb2ac55fa..72fb26d13f28 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 0a5ba81f7367..39826de8d680 100644
+index 6e156d2acffc..cf65032538ea 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
 @@ -1618,6 +1618,12 @@
@@ -2510,10 +2510,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 5b67f208f7de..060133d19a4b 100644
+index 5984d0d550b4..e01d28e48d9c 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -487,6 +487,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -485,6 +485,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2521,7 +2521,7 @@ index 5b67f208f7de..060133d19a4b 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1402,6 +1403,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1400,6 +1401,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2533,10 +2533,10 @@ index 5b67f208f7de..060133d19a4b 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index 44e90b28a30f..2d854d4f390a 100644
+index e76dc579cfa2..3c1447ab5e5e 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1698,7 +1698,7 @@ config AIO
+@@ -1702,7 +1702,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -2649,10 +2649,10 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index 463c9295bc28..9f4d0cefeceb 100644
+index 487f5b03bf83..97adb693f86c 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -470,6 +470,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -471,6 +471,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
  	[ TAINT_TEST ]			= { 'N', ' ', true },
@@ -2994,7 +2994,7 @@ index a79b985e917e..772a69bf43ec 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index d1571900a8c7..9e6be637ab68 100644
+index 4e1150c44ab7..83030cbc27d4 100644
 --- a/security/security.c
 +++ b/security/security.c
 @@ -2705,6 +2705,12 @@ int security_locked_down(enum lockdown_reason what)
