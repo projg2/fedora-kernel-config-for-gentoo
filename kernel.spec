@@ -147,13 +147,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc0.20230221git89f5349e0673.1
+%define pkgrelease 0.rc0.20230222git5b7c4cabbb65.3
 %define kversion 6
-%define tarfile_release 6.2-2019-g89f5349e0673
+%define tarfile_release 6.2-5251-g5b7c4cabbb65
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230221git89f5349e0673.1%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230222git5b7c4cabbb65.3%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3343,6 +3343,12 @@ fi
 #
 #
 %changelog
+* Wed Feb 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.5b7c4cabbb65.3]
+- Linux v6.3.0-0.rc0.5b7c4cabbb65
+
+* Wed Feb 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.89f5349e0673.2]
+- Trim Changelog for 6.3 series (Justin M. Forbes)
+
 * Tue Feb 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.89f5349e0673.1]
 - Reset RHEL_RELEASE to 0 for the 6.3 cycle (Justin M. Forbes)
 - redhat/configs: Enable CONFIG_V4L_TEST_DRIVERS related drivers (Enric Balletbo i Serra)
@@ -5053,3 +5059,10 @@ fi
 - [initial commit] Add configs (Laura Abbott)
 - [initial commit] Add Makefiles (Laura Abbott)
 - Linux v6.3.0-0.rc0.89f5349e0673
+
+###
+# The following Emacs magic makes C-c C-e use UTC dates.
+# Local Variables:
+# rpm-change-log-uses-utc: t
+# End:
+###

@@ -67,10 +67,10 @@
  66 files changed, 1540 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 6cfa6e3996cf..62b314faa050 100644
+index 5e4ee29cf393..67e2d54de930 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6471,6 +6471,15 @@
+@@ -6493,6 +6493,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -150,10 +150,10 @@ index 8e5621ddadb2..10c64cc021a3 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 9f85cc34be7d..43d495c1ba96 100644
+index e24a9820e12f..c39629f18c95 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1288,9 +1288,9 @@ config HIGHMEM
+@@ -1306,9 +1306,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -166,10 +166,10 @@ index 9f85cc34be7d..43d495c1ba96 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index c5ccca26a408..4cacdb4ab764 100644
+index 27b2592698b0..5875d952ed53 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1234,7 +1234,7 @@ endchoice
+@@ -1238,7 +1238,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -178,14 +178,14 @@ index c5ccca26a408..4cacdb4ab764 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1473,6 +1473,7 @@ config XEN
+@@ -1488,6 +1488,7 @@ config XEN
  config ARCH_FORCE_MAX_ORDER
- 	int
+ 	int "Maximum zone order" if ARM64_4K_PAGES || ARM64_16K_PAGES
  	default "14" if ARM64_64K_PAGES
 +	default "13" if (ARCH_THUNDER && !ARM64_64K_PAGES)
+ 	range 12 14 if ARM64_16K_PAGES
  	default "12" if ARM64_16K_PAGES
- 	default "11"
- 	help
+ 	range 11 16 if ARM64_4K_PAGES
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
 index 378453faa87e..3eddf2d9ded9 100644
 --- a/arch/arm64/kernel/acpi.c
@@ -215,10 +215,10 @@ index b0d00032479d..afb9544fb007 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index fbd646dbf440..23ca9cdb2438 100644
+index 5f0f5c86963a..f02ea90d1d4b 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2568,3 +2568,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2519,3 +2519,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -228,7 +228,7 @@ index fbd646dbf440..23ca9cdb2438 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 696c9e007a36..80a56c8eaaae 100644
+index 8ec5cdf9dadc..e2b89563075b 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -239,7 +239,7 @@ index 696c9e007a36..80a56c8eaaae 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -981,6 +982,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -969,6 +970,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -250,10 +250,10 @@ index 696c9e007a36..80a56c8eaaae 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index f3cc7699e1e1..78d9e00d3327 100644
+index a394bbba7a4b..48ddbcababb7 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1570,6 +1570,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1576,6 +1576,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
@@ -262,7 +262,7 @@ index f3cc7699e1e1..78d9e00d3327 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 88188549647c..db4ec95571bb 100644
+index 16babff771bd..93e0fda57656 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -281,7 +281,7 @@ index 88188549647c..db4ec95571bb 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -807,6 +809,49 @@ static void __init early_reserve_memory(void)
+@@ -801,6 +803,49 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -331,7 +331,7 @@ index 88188549647c..db4ec95571bb 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -1038,6 +1083,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -1032,6 +1077,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -345,7 +345,7 @@ index 88188549647c..db4ec95571bb 100644
  	dmi_setup();
 
  	/*
-@@ -1196,19 +1248,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1190,19 +1242,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -366,7 +366,7 @@ index 88188549647c..db4ec95571bb 100644
 
  	reserve_initrd();
 
-@@ -1321,6 +1361,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1315,6 +1355,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -1909,7 +1909,7 @@ index 6e156d2acffc..cf65032538ea 100644
   *
   * @perf_event_open:
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 8c5909c0076c..bab37e9055b1 100644
+index 514bc81568c5..13ab1e2efec6 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -379,6 +379,7 @@ struct module {
@@ -2533,7 +2533,7 @@ index 5984d0d550b4..e01d28e48d9c 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index e76dc579cfa2..3c1447ab5e5e 100644
+index 77a4318a6043..3ea2fae046d2 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1702,7 +1702,7 @@ config AIO
@@ -2558,7 +2558,7 @@ index 10ef068f598d..d7953f0ee28a 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index ecca9366c7a6..be37bb092f7a 100644
+index e3fcdc9836a6..8fe91708d600 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@
@@ -2593,7 +2593,7 @@ index ecca9366c7a6..be37bb092f7a 100644
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
-@@ -5288,6 +5306,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -5311,6 +5329,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;
