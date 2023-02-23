@@ -147,13 +147,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc0.20230222git5b7c4cabbb65.3
+%define pkgrelease 0.rc0.20230223gita5c95ca18a98.4
 %define kversion 6
-%define tarfile_release 6.2-5251-g5b7c4cabbb65
+%define tarfile_release 6.2-8237-ga5c95ca18a98
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230222git5b7c4cabbb65.3%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230223gita5c95ca18a98.4%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3265,6 +3265,7 @@ fi
 %ghost %attr(0600, root, root) /boot/System.map-%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.gz\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/config\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.builtin*\
 %ghost %attr(0600, root, root) /boot/symvers-%{KVERREL}%{?3:+%{3}}.gz\
 %ghost %attr(0600, root, root) /boot/initramfs-%{KVERREL}%{?3:+%{3}}.img\
 %ghost %attr(0644, root, root) /boot/config-%{KVERREL}%{?3:+%{3}}\
@@ -3281,7 +3282,11 @@ fi
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
 %endif\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.*\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.block\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.drm\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.modesetting\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.networking\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.order\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules.list %{?3:%{3}-}modules}\
 %{expand:%%files %{?3:%{3}-}devel}\
 %defverify(not mtime)\
@@ -3343,6 +3348,12 @@ fi
 #
 #
 %changelog
+* Thu Feb 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.a5c95ca18a98.4]
+- kernel.spec: move modules.builtin to kernel-core (Jan Stancek)
+- Turn on IDLE_INJECT for x86 (Justin M. Forbes)
+- Flip CONFIG_IDLE_INJECT in pending (Justin M. Forbes)
+- Linux v6.3.0-0.rc0.a5c95ca18a98
+
 * Wed Feb 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.5b7c4cabbb65.3]
 - Linux v6.3.0-0.rc0.5b7c4cabbb65
 

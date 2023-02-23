@@ -67,10 +67,10 @@
  66 files changed, 1540 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 5e4ee29cf393..67e2d54de930 100644
+index 21b7f87b00fe..ba987a83e847 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6493,6 +6493,15 @@
+@@ -6492,6 +6492,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -458,10 +458,10 @@ index 0c6f06abe3f4..f66b85b2c108 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 29acc35bf4a6..c0eaa763cdad 100644
+index 8f216de76648..51337c993a16 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
-@@ -727,6 +727,24 @@ int ahci_stop_engine(struct ata_port *ap)
+@@ -729,6 +729,24 @@ int ahci_stop_engine(struct ata_port *ap)
  	tmp &= ~PORT_CMD_START;
  	writel(tmp, port_mmio + PORT_CMD);
 
@@ -1698,10 +1698,10 @@ index 8e24ebcebfe5..25aa49292397 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 7fb28c207ee5..54f5e412e732 100644
+index 545167627e48..fae959498d61 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -8065,6 +8065,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -8074,6 +8074,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -1709,7 +1709,7 @@ index 7fb28c207ee5..54f5e412e732 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -8077,13 +8078,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -8086,13 +8087,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -2994,10 +2994,10 @@ index a79b985e917e..772a69bf43ec 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 4e1150c44ab7..83030cbc27d4 100644
+index cf6cc576736f..3653a4f35265 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2705,6 +2705,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2706,6 +2706,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
