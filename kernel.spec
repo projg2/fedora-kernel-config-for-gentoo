@@ -136,7 +136,7 @@ Summary: The Linux kernel
 #  kernel release. (This includes prepatch or "rc" releases.)
 # Set released_kernel to 0 when the upstream source tarball contains an
 #  unreleased kernel development snapshot.
-%global released_kernel 0
+%global released_kernel 1
 # Set debugbuildsenabled to 1 to build separate base and debug kernels
 #  (on supported architectures). The kernel-debug-* subpackages will
 #  contain the debug kernel.
@@ -145,17 +145,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.2.0
+%define specversion 6.2.1
 %define patchversion 6.2
-%define pkgrelease 63
+%define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.2
+%define tarfile_release 6.2.1
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 63%{?buildid}%{?dist}
+%define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.2.0
+%define kabiversion 6.2.1
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3343,6 +3343,18 @@ fi
 #
 #
 %changelog
+* Sat Feb 25 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.1-0]
+- Add UKI revert patch to allow builds on F36 and F37 (Justin M. Forbes)
+- Turn E1000 back on (Justin M. Forbes)
+- More files for stable Fedora (Justin M. Forbes)
+- Update Makefile.variables for stable releases (Justin M. Forbes)
+- drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set (Javier Martinez Canillas)
+- enable efifb for Nvidia (Justin M. Forbes)
+- Fix up configs for dropped patches (Justin M. Forbes)
+- Reset RHEL_RELEASE to 0 for the 6.3 cycle (Justin M. Forbes)
+- redhat/configs: Enable CONFIG_V4L_TEST_DRIVERS related drivers (Enric Balletbo i Serra)
+- Linux v6.2.1
+
 * Mon Feb 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.2.0-63]
 - Linux v6.2.0
 
