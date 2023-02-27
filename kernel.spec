@@ -147,13 +147,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc0.20230223gita5c95ca18a98.4
+%define pkgrelease 0.rc0.20230227gitf3a2439f20d9.9
 %define kversion 6
-%define tarfile_release 6.2-8237-ga5c95ca18a98
+%define tarfile_release 6.2-12485-gf3a2439f20d9
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230223gita5c95ca18a98.4%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230227gitf3a2439f20d9.9%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3348,6 +3348,21 @@ fi
 #
 #
 %changelog
+* Mon Feb 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.f3a2439f20d9.9]
+- Add more kunit tests to mod-internal.list for 6.3 (Justin M. Forbes)
+
+* Mon Feb 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.f3a2439f20d9.8]
+- Linux v6.3.0-0.rc0.f3a2439f20d9
+
+* Sun Feb 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.2fcd07b7ccd5.7]
+- Linux v6.3.0-0.rc0.2fcd07b7ccd5
+
+* Sat Feb 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.489fa31ea873.6]
+- Linux v6.3.0-0.rc0.489fa31ea873
+
+* Fri Feb 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.a5c95ca18a98.5]
+- Flip I2C_ALGOBIT to m to avoid mismatch (Justin M. Forbes)
+
 * Thu Feb 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.a5c95ca18a98.4]
 - kernel.spec: move modules.builtin to kernel-core (Jan Stancek)
 - Turn on IDLE_INJECT for x86 (Justin M. Forbes)
