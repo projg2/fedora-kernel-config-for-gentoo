@@ -106,12 +106,6 @@ Summary: The Linux kernel
 %global zipmodules 1
 %endif
 
-%ifarch x86_64
-%global efiuki 1
-%else
-%global efiuki 0
-%endif
-
 %if %{zipmodules}
 %global zipsed -e 's/\.ko$/\.ko.xz/'
 %endif
@@ -147,13 +141,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc0.20230228gitae3419fbac84.9
+%define pkgrelease 0.rc0.20230301gitc0927a7a5391.11
 %define kversion 6
-%define tarfile_release 6.2-12913-gae3419fbac84
+%define tarfile_release 6.2-12998-gc0927a7a5391
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230228gitae3419fbac84.9%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230301gitc0927a7a5391.11%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -250,6 +244,12 @@ Summary: The Linux kernel
 
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
+
+%ifarch x86_64
+%define with_efiuki %{?_without_efiuki: 0} %{?!_without_efiuki: 1}
+%else
+%define with_efiuki 0
+%endif
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -720,7 +720,7 @@ BuildRequires: llvm
 BuildRequires: lld
 %endif
 
-%if %{efiuki}
+%if %{with_efiuki}
 BuildRequires: dracut
 # For dracut UEFI uki binaries
 BuildRequires: binutils
@@ -1367,7 +1367,7 @@ Requires: kernel-%{?1:%{1}-}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 %endif\
 %{expand:%%kernel_debuginfo_package %{?1:%{1}}}\
 %endif\
-%if %{efiuki}\
+%if %{with_efiuki}\
 %package %{?1:%{1}-}uki-virt\
 Summary: %{variant_summary} unified kernel image for virtual machines\
 Provides: installonlypkg(kernel)\
@@ -1443,7 +1443,7 @@ Linux operating system.  The kernel handles the basic functions
 of the operating system: memory allocation, process allocation, device
 input and output, etc.
 
-%if %{efiuki}
+%if %{with_efiuki}
 %description debug-uki-virt
 Prebuilt debug unified kernel image for virtual machines.
 
@@ -2235,7 +2235,7 @@ BuildKernel() {
 	touch lib/modules/$KernelVer/modules.builtin
     fi
 
-%if %{efiuki}
+%if %{with_efiuki}
     popd
 
     KernelUnifiedImageDir="$RPM_BUILD_ROOT/lib/modules/$KernelVer"
@@ -2271,7 +2271,7 @@ BuildKernel() {
 
     pushd $RPM_BUILD_ROOT
 
-# efiuki
+# with_efiuki
 %endif
 
     remove_depmod_files
@@ -3044,7 +3044,7 @@ then\
 fi\
 %{nil}
 
-%if %{efiuki}
+%if %{with_efiuki}
 %kernel_uki_virt_scripts
 %endif
 
@@ -3057,7 +3057,7 @@ fi\
 %endif
 
 %if %{with_debug}
-%if %{efiuki}
+%if %{with_efiuki}
 %kernel_uki_virt_scripts debug
 %endif
 %kernel_variant_preun debug
@@ -3309,7 +3309,7 @@ fi
 %{expand:%%files -f debuginfo%{?3}.list %{?3:%{3}-}debuginfo}\
 %endif\
 %endif\
-%if %{efiuki}\
+%if %{with_efiuki}\
 %{expand:%%files %{?3:%{3}-}uki-virt}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi\
 %ghost /%{image_install_path}/efi/EFI/Linux/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}-virt.efi\
@@ -3352,6 +3352,18 @@ fi
 #
 #
 %changelog
+* Wed Mar 01 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.3.0-0.rc0.20230301gitc0927a7a5391.11]
+- Add rtla-hwnoise files (Justin M. Forbes)
+- Revert "redhat/kernel.spec.template: Fix RHEL systemd-boot-unsigned dependency" (Justin M. Forbes)
+
+* Wed Mar 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.c0927a7a5391.11]
+- fix tools build after vm to mm rename (Justin M. Forbes)
+
+* Wed Mar 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.c0927a7a5391.10]
+- redhat:  modify efiuki specfile changes to use variants convention (Clark Williams)
+- Turn off DEBUG_INFO_COMPRESSED_ZLIB for Fedora (Justin M. Forbes)
+- Linux v6.3.0-0.rc0.c0927a7a5391
+
 * Tue Feb 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.ae3419fbac84.9]
 - redhat/kernel.spec.template: Fix RHEL systemd-boot-unsigned dependency (Prarit Bhargava)
 - Add hashtable_test to mod-internal.list (Justin M. Forbes)
