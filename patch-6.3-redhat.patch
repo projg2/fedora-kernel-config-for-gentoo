@@ -1,7 +1,7 @@
  Documentation/admin-guide/kernel-parameters.txt    |   9 +
  Kconfig                                            |   2 +
  Kconfig.redhat                                     |  17 +
- Makefile                                           |  12 +-
+ Makefile                                           |  11 +-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
  arch/arm64/kernel/acpi.c                           |   4 +
@@ -64,7 +64,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 66 files changed, 1540 insertions(+), 189 deletions(-)
+ 66 files changed, 1539 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 6221a1d057dd..90c169923eda 100644
@@ -120,21 +120,20 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index aa26f34a9b52..f8ca2e66f4ef 100644
+index aa26f34a9b52..25ad60532278 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -22,6 +22,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
- PHONY := __all
- __all:
+@@ -199,6 +199,9 @@ endif
+ this-makefile := $(lastword $(MAKEFILE_LIST))
+ abs_srctree := $(realpath $(dir $(this-makefile)))
 
 +# Set RHEL variables
-+# Use this spot to avoid future merge conflicts
-+include Makefile.rhelver
++include $(abs_srctree)/Makefile.rhelver
 +
- # We are using a recursive build, so we need to do a little thinking
- # to get the ordering right.
- #
-@@ -1335,7 +1339,13 @@ define filechk_version.h
+ ifneq ($(words $(subst :, ,$(abs_srctree))), 1)
+ $(error source directory cannot contain spaces or colons)
+ endif
+@@ -1335,7 +1338,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \

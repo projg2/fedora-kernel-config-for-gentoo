@@ -141,13 +141,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc0.20230301gitc0927a7a5391.11
+%define pkgrelease 0.rc0.20230302gitee3f96b16468.12
 %define kversion 6
-%define tarfile_release 6.2-12998-gc0927a7a5391
+%define tarfile_release 6.2-13115-gee3f96b16468
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230301gitc0927a7a5391.11%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230302gitee3f96b16468.12%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3352,12 +3352,13 @@ fi
 #
 #
 %changelog
-* Wed Mar 01 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.3.0-0.rc0.20230301gitc0927a7a5391.11]
+* Thu Mar 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.ee3f96b16468.12]
 - Add rtla-hwnoise files (Justin M. Forbes)
-- Revert "redhat/kernel.spec.template: Fix RHEL systemd-boot-unsigned dependency" (Justin M. Forbes)
-
-* Wed Mar 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.c0927a7a5391.11]
 - fix tools build after vm to mm rename (Justin M. Forbes)
+
+* Thu Mar 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.ee3f96b16468.11]
+- redhat:  adapt to upstream Makefile change (Clark Williams)
+- Linux v6.3.0-0.rc0.ee3f96b16468
 
 * Wed Mar 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.c0927a7a5391.10]
 - redhat:  modify efiuki specfile changes to use variants convention (Clark Williams)
