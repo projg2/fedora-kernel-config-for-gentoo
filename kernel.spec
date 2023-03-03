@@ -145,17 +145,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.2.1
+%define specversion 6.2.2
 %define patchversion 6.2
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.2.1
+%define tarfile_release 6.2.2
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.2.1
+%define kabiversion 6.2.2
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -726,7 +726,11 @@ BuildRequires: dracut
 BuildRequires: binutils
 # For the initrd
 BuildRequires: lvm2
+%if 0%{?fedora} > 37
+# The UKI code was introduced in Fedora 38 and is not needed by
+# earlier versions.  This wrapper can be removed in Fedora 41.
 BuildRequires: systemd-boot-unsigned
+%endif
 # For systemd-stub and systemd-pcrphase
 BuildRequires: systemd-udev >= 252-1
 # For TPM operations in UKI initramfs
@@ -3343,6 +3347,13 @@ fi
 #
 #
 %changelog
+* Fri Mar 03 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.2-300]
+- redhat/kernel.spec.template: Fix RHEL systemd-boot-unsigned dependency (Prarit Bhargava)
+
+* Fri Mar 03 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.2-0]
+- Turn off DEBUG_INFO_COMPRESSED_ZLIB for Fedora (Justin M. Forbes)
+- Linux v6.2.2
+
 * Sat Feb 25 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.1-0]
 - Add UKI revert patch to allow builds on F36 and F37 (Justin M. Forbes)
 - Turn E1000 back on (Justin M. Forbes)
