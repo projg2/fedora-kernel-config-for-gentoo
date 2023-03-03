@@ -165,7 +165,7 @@ index e24a9820e12f..c39629f18c95 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 27b2592698b0..5875d952ed53 100644
+index 1023e896d46b..55822162d9ee 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1238,7 +1238,7 @@ endchoice
@@ -186,7 +186,7 @@ index 27b2592698b0..5875d952ed53 100644
  	default "12" if ARM64_16K_PAGES
  	range 11 16 if ARM64_4K_PAGES
 diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-index 378453faa87e..3eddf2d9ded9 100644
+index dba8fcec7f33..e4e33ecfefa9 100644
 --- a/arch/arm64/kernel/acpi.c
 +++ b/arch/arm64/kernel/acpi.c
 @@ -42,7 +42,11 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */

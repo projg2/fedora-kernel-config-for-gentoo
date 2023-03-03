@@ -141,13 +141,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc0.20230302gitee3f96b16468.12
+%define pkgrelease 0.rc0.20230303git2eb29d59ddf0.13
 %define kversion 6
-%define tarfile_release 6.2-13115-gee3f96b16468
+%define tarfile_release 6.2-13277-g2eb29d59ddf0
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230302gitee3f96b16468.12%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230303git2eb29d59ddf0.13%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -726,7 +726,11 @@ BuildRequires: dracut
 BuildRequires: binutils
 # For the initrd
 BuildRequires: lvm2
+%if 0%{?fedora} > 37 || 0%{?rhel} > 9
+# The UKI code was introduced in Fedora 38 and is not needed by earlier
+# versions.  This wrapper can be removed for fedora in Fedora 41.
 BuildRequires: systemd-boot-unsigned
+%endif
 # For systemd-stub and systemd-pcrphase
 BuildRequires: systemd-udev >= 252-1
 # For TPM operations in UKI initramfs
@@ -3352,9 +3356,13 @@ fi
 #
 #
 %changelog
-* Thu Mar 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.ee3f96b16468.12]
+* Fri Mar 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.2eb29d59ddf0.13]
 - Add rtla-hwnoise files (Justin M. Forbes)
+- redhat/kernel.spec.template: Fix RHEL systemd-boot-unsigned dependency for RHEL (Prarit Bhargava)
 - fix tools build after vm to mm rename (Justin M. Forbes)
+
+* Fri Mar 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.2eb29d59ddf0.12]
+- Linux v6.3.0-0.rc0.2eb29d59ddf0
 
 * Thu Mar 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.ee3f96b16468.11]
 - redhat:  adapt to upstream Makefile change (Clark Williams)
