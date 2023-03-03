@@ -732,7 +732,7 @@ BuildRequires: lvm2
 BuildRequires: systemd-boot-unsigned
 %endif
 # For systemd-stub and systemd-pcrphase
-BuildRequires: systemd-udev >= 252-1
+BuildRequires: systemd-udev
 # For TPM operations in UKI initramfs
 BuildRequires: tpm2-tools
 %endif
