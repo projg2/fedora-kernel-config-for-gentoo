@@ -141,13 +141,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc0.20230303git2eb29d59ddf0.13
+%define pkgrelease 0.rc1.16
 %define kversion 6
-%define tarfile_release 6.2-13277-g2eb29d59ddf0
+%define tarfile_release 6.3-rc1
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230303git2eb29d59ddf0.13%{?buildid}%{?dist}
+%define specrelease 0.rc1.16%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -1095,22 +1095,30 @@ and root causes of unexpected results.
 
 %if %{with_bpftool}
 
+%define bpftoolversion 7.2.0
+
 %package -n bpftool
 Summary: Inspection and simple manipulation of eBPF programs and maps
 License: GPLv2
+Version: %{bpftoolversion}
 %description -n bpftool
 This package contains the bpftool, which allows inspection and simple
 manipulation of eBPF programs and maps.
 
 %package -n bpftool-debuginfo
 Summary: Debug information for package bpftool
+Version: %{bpftoolversion}
 Group: Development/Debug
-Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{specversion}-%{release}
 AutoReqProv: no
 %description -n bpftool-debuginfo
 This package provides debug information for the bpftool package.
 
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_sbindir}/bpftool(\.debug)?|XXX' -o bpftool-debuginfo.list}
+
+# Setting "Version:" above overrides the internal {version} macro,
+# need to restore it here
+%define version %{specversion}
 
 # with_bpftool
 %endif
@@ -2511,7 +2519,7 @@ pushd tools/testing/selftests
   force_targets=""
 %endif
 
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf vm livepatch net net/forwarding net/mptcp netfilter tc-testing memfd" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf mm livepatch net net/forwarding net/mptcp netfilter tc-testing memfd" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
@@ -2797,11 +2805,11 @@ find . -type f -executable -exec install -m755 {} %{buildroot}%{_libexecdir}/ksa
 find . -type f ! -executable -exec install -m644 {} %{buildroot}%{_libexecdir}/ksamples/pktgen/{} \;
 popd
 popd
-# install vm selftests
-pushd tools/testing/selftests/vm
-find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/vm/{} \;
-find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/vm/{} \;
-find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/vm/{} \;
+# install mm selftests
+pushd tools/testing/selftests/mm
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/mm/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/mm/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/mm/{} \;
 popd
 # install drivers/net/mlxsw selftests
 pushd tools/testing/selftests/drivers/net/mlxsw
@@ -3356,10 +3364,23 @@ fi
 #
 #
 %changelog
-* Fri Mar 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.2eb29d59ddf0.13]
+* Mon Mar 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.16]
 - Add rtla-hwnoise files (Justin M. Forbes)
 - redhat/kernel.spec.template: Fix RHEL systemd-boot-unsigned dependency for RHEL (Prarit Bhargava)
+
+* Mon Mar 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.15]
+- redhat/configs: CONFIG_HP_ILO location fix (Vladis Dronov)
+- Linux v6.3.0-0.rc1
+
+* Sun Mar 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.b01fe98d34f3.14]
+- Linux v6.3.0-0.rc0.b01fe98d34f3
+
+* Sat Mar 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.0988a0ea7919.13]
+- redhat: Fix build for kselftests mm (Nico Pache)
 - fix tools build after vm to mm rename (Justin M. Forbes)
+- redhat/spec: Update bpftool versioning scheme (Viktor Malik)
+- redhat/configs: CONFIG_CRYPTO_SM4_AESNI_AVX*_X86_64 is x86 only (Prarit Bhargava)
+- Linux v6.3.0-0.rc0.0988a0ea7919
 
 * Fri Mar 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.2eb29d59ddf0.12]
 - Linux v6.3.0-0.rc0.2eb29d59ddf0

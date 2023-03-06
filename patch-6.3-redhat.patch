@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index aa26f34a9b52..25ad60532278 100644
+index d7bd0eb9b346..43b6f18d37d0 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -199,6 +199,9 @@ endif
@@ -1227,10 +1227,10 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 8698410aeb84..0f994d356f54 100644
+index c2730b116dc6..6e35eeb6ed9f 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
-@@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
+@@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
 
  static blk_status_t nvme_error_status(u16 status)
  {
@@ -1240,7 +1240,7 @@ index 8698410aeb84..0f994d356f54 100644
  	switch (status & 0x7ff) {
  	case NVME_SC_SUCCESS:
  		return BLK_STS_OK;
-@@ -340,6 +343,7 @@ enum nvme_disposition {
+@@ -341,6 +344,7 @@ enum nvme_disposition {
  	COMPLETE,
  	RETRY,
  	FAILOVER,
@@ -1248,7 +1248,7 @@ index 8698410aeb84..0f994d356f54 100644
  	AUTHENTICATE,
  };
 
-@@ -351,15 +355,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
+@@ -352,15 +356,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
  	if ((nvme_req(req)->status & 0x7ff) == NVME_SC_AUTH_REQUIRED)
  		return AUTHENTICATE;
 
@@ -1268,7 +1268,7 @@ index 8698410aeb84..0f994d356f54 100644
  	} else {
  		if (blk_queue_dying(req->q))
  			return COMPLETE;
-@@ -389,6 +394,14 @@ static inline void nvme_end_req(struct request *req)
+@@ -390,6 +395,14 @@ static inline void nvme_end_req(struct request *req)
  	blk_mq_end_request(req, status);
  }
 
@@ -1283,7 +1283,7 @@ index 8698410aeb84..0f994d356f54 100644
  void nvme_complete_rq(struct request *req)
  {
  	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
-@@ -409,6 +422,9 @@ void nvme_complete_rq(struct request *req)
+@@ -410,6 +423,9 @@ void nvme_complete_rq(struct request *req)
  	case FAILOVER:
  		nvme_failover_req(req);
  		return;
@@ -2648,10 +2648,10 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index 487f5b03bf83..97adb693f86c 100644
+index 5cfea8302d23..538a628be49d 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -471,6 +471,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -479,6 +479,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
  	[ TAINT_TEST ]			= { 'N', ' ', true },
