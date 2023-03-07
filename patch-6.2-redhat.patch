@@ -18,7 +18,8 @@
  drivers/hid/hid-rmi.c                              |  66 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
- drivers/iommu/iommu.c                              |  22 +
+ drivers/iommu/amd/iommu.c                          |  41 +-
+ drivers/iommu/iommu.c                              |  38 +-
  drivers/pci/quirks.c                               |  24 +
  drivers/usb/core/hub.c                             |   7 +
  include/linux/efi.h                                |  22 +-
@@ -33,7 +34,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 35 files changed, 980 insertions(+), 177 deletions(-)
+ 36 files changed, 1027 insertions(+), 187 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index 1836ddaf2c94..eb1d58681256 100644
@@ -935,8 +936,99 @@ index 258d5fe3d395..f7298e3dc8f3 100644
 
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index cbeaab55c0db..ff4f3d4da340 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -558,6 +558,15 @@ static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
+ 		 * prevent logging it.
+ 		 */
+ 		if (IS_IOMMU_MEM_TRANSACTION(flags)) {
++			/* Device not attached to domain properly */
++			if (dev_data->domain == NULL) {
++				pr_err_ratelimited("Event logged [Device not attached to domain properly]\n");
++				pr_err_ratelimited("  device=%04x:%02x:%02x.%x domain=0x%04x\n",
++						   iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid),
++						   PCI_FUNC(devid), domain_id);
++				goto out;
++			}
++
+ 			if (!report_iommu_fault(&dev_data->domain->domain,
+ 						&pdev->dev, address,
+ 						IS_WRITE_REQUEST(flags) ?
+@@ -1702,27 +1711,29 @@ static int pdev_pri_ats_enable(struct pci_dev *pdev)
+ 	/* Only allow access to user-accessible pages */
+ 	ret = pci_enable_pasid(pdev, 0);
+ 	if (ret)
+-		goto out_err;
++		return ret;
+
+ 	/* First reset the PRI state of the device */
+ 	ret = pci_reset_pri(pdev);
+ 	if (ret)
+-		goto out_err;
++		goto out_err_pasid;
+
+ 	/* Enable PRI */
+ 	/* FIXME: Hardcode number of outstanding requests for now */
+ 	ret = pci_enable_pri(pdev, 32);
+ 	if (ret)
+-		goto out_err;
++		goto out_err_pasid;
+
+ 	ret = pci_enable_ats(pdev, PAGE_SHIFT);
+ 	if (ret)
+-		goto out_err;
++		goto out_err_pri;
+
+ 	return 0;
+
+-out_err:
++out_err_pri:
+ 	pci_disable_pri(pdev);
++
++out_err_pasid:
+ 	pci_disable_pasid(pdev);
+
+ 	return ret;
+@@ -2159,6 +2170,13 @@ static int amd_iommu_attach_device(struct iommu_domain *dom,
+ 	struct amd_iommu *iommu = rlookup_amd_iommu(dev);
+ 	int ret;
+
++	/*
++	 * Skip attach device to domain if new domain is same as
++	 * devices current domain
++	 */
++	if (dev_data->domain == domain)
++		return 0;
++
+ 	dev_data->defer_attach = false;
+
+ 	if (dev_data->domain)
+@@ -2387,12 +2405,17 @@ static int amd_iommu_def_domain_type(struct device *dev)
+ 		return 0;
+
+ 	/*
+-	 * Do not identity map IOMMUv2 capable devices when memory encryption is
+-	 * active, because some of those devices (AMD GPUs) don't have the
+-	 * encryption bit in their DMA-mask and require remapping.
++	 * Do not identity map IOMMUv2 capable devices when:
++	 *  - memory encryption is active, because some of those devices
++	 *    (AMD GPUs) don't have the encryption bit in their DMA-mask
++	 *    and require remapping.
++	 *  - SNP is enabled, because it prohibits DTE[Mode]=0.
+ 	 */
+-	if (!cc_platform_has(CC_ATTR_MEM_ENCRYPT) && dev_data->iommu_v2)
++	if (dev_data->iommu_v2 &&
++	    !cc_platform_has(CC_ATTR_MEM_ENCRYPT) &&
++	    !amd_iommu_snp_en) {
+ 		return IOMMU_DOMAIN_IDENTITY;
++	}
+
+ 	return 0;
+ }
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 5f6a85aea501..3b1e9faa9c2d 100644
+index 5f6a85aea501..026487698b25 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -947,7 +1039,31 @@ index 5f6a85aea501..3b1e9faa9c2d 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2793,6 +2794,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -2124,8 +2125,22 @@ static int __iommu_attach_group(struct iommu_domain *domain,
+
+ 	ret = __iommu_group_for_each_dev(group, domain,
+ 					 iommu_group_do_attach_device);
+-	if (ret == 0)
++	if (ret == 0) {
+ 		group->domain = domain;
++	} else {
++		/*
++		 * To recover from the case when certain device within the
++		 * group fails to attach to the new domain, we need force
++		 * attaching all devices back to the old domain. The old
++		 * domain is compatible for all devices in the group,
++		 * hence the iommu driver should always return success.
++		 */
++		struct iommu_domain *old_domain = group->domain;
++
++		group->domain = NULL;
++		WARN(__iommu_group_set_domain(group, old_domain),
++		     "iommu driver failed to attach a compatible domain");
++	}
+
+ 	return ret;
+ }
+@@ -2793,6 +2808,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
 

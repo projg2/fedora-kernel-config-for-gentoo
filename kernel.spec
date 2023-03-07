@@ -147,13 +147,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.2.2
 %define patchversion 6.2
-%define pkgrelease 300
+%define pkgrelease 301
 %define kversion 6
 %define tarfile_release 6.2.2
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 300%{?buildid}%{?dist}
+%define specrelease 301%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.2.2
 
@@ -732,7 +732,7 @@ BuildRequires: lvm2
 BuildRequires: systemd-boot-unsigned
 %endif
 # For systemd-stub and systemd-pcrphase
-BuildRequires: systemd-udev
+BuildRequires: systemd-udev >= 252-1
 # For TPM operations in UKI initramfs
 BuildRequires: tpm2-tools
 %endif
@@ -3347,7 +3347,13 @@ fi
 #
 #
 %changelog
-* Fri Mar 03 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.2-300]
+* Tue Mar 07 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.2-1]
+- Bump for rebuild (Justin M. Forbes)
+- iommu/amd: Do not identity map v2 capable device when snp is enabled (Vasant Hegde)
+- iommu: Attach device group to old domain in error path (Vasant Hegde)
+- iommu/amd: Improve page fault error reporting (Vasant Hegde)
+- iommu/amd: Skip attach device domain is same as new domain (Vasant Hegde)
+- iommu/amd: Fix error handling for pdev_pri_ats_enable() (Vasant Hegde)
 - redhat/kernel.spec.template: Fix RHEL systemd-boot-unsigned dependency (Prarit Bhargava)
 
 * Fri Mar 03 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.2-0]
