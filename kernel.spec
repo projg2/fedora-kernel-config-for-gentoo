@@ -141,13 +141,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc1.16
+%define pkgrelease 0.rc1.20230307git8ca09d5fa354.17
 %define kversion 6
-%define tarfile_release 6.3-rc1
+%define tarfile_release 6.3-rc1-2-g8ca09d5fa354
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.16%{?buildid}%{?dist}
+%define specrelease 0.rc1.20230307git8ca09d5fa354.17%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3364,9 +3364,16 @@ fi
 #
 #
 %changelog
-* Mon Mar 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.16]
-- Add rtla-hwnoise files (Justin M. Forbes)
+* Tue Mar 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.8ca09d5fa354.17]
 - redhat/kernel.spec.template: Fix RHEL systemd-boot-unsigned dependency for RHEL (Prarit Bhargava)
+
+* Tue Mar 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.8ca09d5fa354.16]
+- redhat/Makefile: fix default values for dist-brew's DISTRO and DIST (Íñigo Huguet)
+- Remove cc lines from automatic configs (Don Zickus)
+- Add rtla-hwnoise files (Justin M. Forbes)
+- redhat/kernel.spec.template: Mark it as a non-executable file (Neal Gompa)
+- fedora: arm: Enable DRM_PANEL_HIMAX_HX8394 (Javier Martinez Canillas)
+- Linux v6.3.0-0.rc1.8ca09d5fa354
 
 * Mon Mar 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.15]
 - redhat/configs: CONFIG_HP_ILO location fix (Vladis Dronov)
