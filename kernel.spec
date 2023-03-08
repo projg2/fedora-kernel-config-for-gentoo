@@ -141,13 +141,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc1.20230307git8ca09d5fa354.17
+%define pkgrelease 0.rc1.20230308git63355b9884b3.17
 %define kversion 6
-%define tarfile_release 6.3-rc1-2-g8ca09d5fa354
+%define tarfile_release 6.3-rc1-3-g63355b9884b3
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20230307git8ca09d5fa354.17%{?buildid}%{?dist}
+%define specrelease 0.rc1.20230308git63355b9884b3.17%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -726,11 +726,7 @@ BuildRequires: dracut
 BuildRequires: binutils
 # For the initrd
 BuildRequires: lvm2
-%if 0%{?fedora} > 37 || 0%{?rhel} > 9
-# The UKI code was introduced in Fedora 38 and is not needed by earlier
-# versions.  This wrapper can be removed for fedora in Fedora 41.
 BuildRequires: systemd-boot-unsigned
-%endif
 # For systemd-stub and systemd-pcrphase
 BuildRequires: systemd-udev >= 252-1
 # For TPM operations in UKI initramfs
@@ -3364,8 +3360,9 @@ fi
 #
 #
 %changelog
-* Tue Mar 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.8ca09d5fa354.17]
-- redhat/kernel.spec.template: Fix RHEL systemd-boot-unsigned dependency for RHEL (Prarit Bhargava)
+* Wed Mar 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.63355b9884b3.17]
+- Revert "Merge branch 'systemd-boot-unsigned' into 'os-build'" (Patrick Talbert)
+- Linux v6.3.0-0.rc1.63355b9884b3
 
 * Tue Mar 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.8ca09d5fa354.16]
 - redhat/Makefile: fix default values for dist-brew's DISTRO and DIST (Íñigo Huguet)
