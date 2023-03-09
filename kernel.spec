@@ -120,6 +120,8 @@ Summary: The Linux kernel
 # genspec.sh variables
 #
 
+# kernel package name
+%global package_name kernel
 # Include Fedora files
 %global include_fedora 1
 # Include RHEL files
@@ -141,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc1.20230308git63355b9884b3.17
+%define pkgrelease 0.rc1.20230309git6a98c9cae232.18
 %define kversion 6
-%define tarfile_release 6.3-rc1-3-g63355b9884b3
+%define tarfile_release 6.3-rc1-19-g6a98c9cae232
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20230308git63355b9884b3.17%{?buildid}%{?dist}
+%define specrelease 0.rc1.20230309git6a98c9cae232.18%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -425,7 +427,7 @@ Summary: The Linux kernel
 %define with_bpftool 0
 %define with_selftests 0
 %define with_debug 0
-%define all_arch_configs kernel-%{version}-*.config
+%define all_arch_configs %{name}-%{version}-*.config
 %endif
 
 # sparse blows up on ppc
@@ -448,13 +450,13 @@ Summary: The Linux kernel
 %ifarch i686
 %define asmarch x86
 %define hdrarch i386
-%define all_arch_configs kernel-%{version}-i?86*.config
+%define all_arch_configs %{name}-%{version}-i?86*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
 %ifarch x86_64
 %define asmarch x86
-%define all_arch_configs kernel-%{version}-x86_64*.config
+%define all_arch_configs %{name}-%{version}-x86_64*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
@@ -465,19 +467,19 @@ Summary: The Linux kernel
 %define kernel_image vmlinux
 %define kernel_image_elf 1
 %define use_vdso 0
-%define all_arch_configs kernel-%{version}-ppc64le*.config
+%define all_arch_configs %{name}-%{version}-ppc64le*.config
 %endif
 
 %ifarch s390x
 %define asmarch s390
 %define hdrarch s390
-%define all_arch_configs kernel-%{version}-s390x.config
+%define all_arch_configs %{name}-%{version}-s390x.config
 %define kernel_image arch/s390/boot/bzImage
 %define vmlinux_decompressor arch/s390/boot/vmlinux
 %endif
 
 %ifarch %{arm}
-%define all_arch_configs kernel-%{version}-arm*.config
+%define all_arch_configs %{name}-%{version}-arm*.config
 %define skip_nonpae_vdso 1
 %define asmarch arm
 %define hdrarch arm
@@ -496,7 +498,7 @@ Summary: The Linux kernel
 %endif
 
 %ifarch aarch64
-%define all_arch_configs kernel-%{version}-aarch64*.config
+%define all_arch_configs %{name}-%{version}-aarch64*.config
 %define asmarch arm64
 %define hdrarch arm64
 %define make_target vmlinuz.efi
@@ -576,7 +578,7 @@ Summary: The Linux kernel
 %define initrd_prereq  dracut >= 027
 
 
-Name: kernel
+Name: %{package_name}
 License: GPLv2 and Redistributable, no modification permitted
 URL: https://www.kernel.org/
 Version: %{specversion}
@@ -804,17 +806,17 @@ Source21: mod-sign.sh
 %if 0%{?include_rhel}
 Source23: x509.genkey.rhel
 
-Source24: kernel-aarch64-rhel.config
-Source25: kernel-aarch64-debug-rhel.config
+Source24: %{name}-aarch64-rhel.config
+Source25: %{name}-aarch64-debug-rhel.config
 Source26: mod-extra.list.rhel
 
-Source27: kernel-ppc64le-rhel.config
-Source28: kernel-ppc64le-debug-rhel.config
-Source29: kernel-s390x-rhel.config
-Source30: kernel-s390x-debug-rhel.config
-Source31: kernel-s390x-zfcpdump-rhel.config
-Source32: kernel-x86_64-rhel.config
-Source33: kernel-x86_64-debug-rhel.config
+Source27: %{name}-ppc64le-rhel.config
+Source28: %{name}-ppc64le-debug-rhel.config
+Source29: %{name}-s390x-rhel.config
+Source30: %{name}-s390x-debug-rhel.config
+Source31: %{name}-s390x-zfcpdump-rhel.config
+Source32: %{name}-x86_64-rhel.config
+Source33: %{name}-x86_64-debug-rhel.config
 
 Source34: filter-x86_64.sh.rhel
 Source35: filter-armv7hl.sh.rhel
@@ -830,18 +832,18 @@ Source41: x509.genkey.centos
 Source50: x509.genkey.fedora
 Source51: mod-extra.list.fedora
 
-Source52: kernel-aarch64-fedora.config
-Source53: kernel-aarch64-debug-fedora.config
-Source54: kernel-armv7hl-fedora.config
-Source55: kernel-armv7hl-debug-fedora.config
-Source56: kernel-armv7hl-lpae-fedora.config
-Source57: kernel-armv7hl-lpae-debug-fedora.config
-Source60: kernel-ppc64le-fedora.config
-Source61: kernel-ppc64le-debug-fedora.config
-Source62: kernel-s390x-fedora.config
-Source63: kernel-s390x-debug-fedora.config
-Source64: kernel-x86_64-fedora.config
-Source65: kernel-x86_64-debug-fedora.config
+Source52: %{name}-aarch64-fedora.config
+Source53: %{name}-aarch64-debug-fedora.config
+Source54: %{name}-armv7hl-fedora.config
+Source55: %{name}-armv7hl-debug-fedora.config
+Source56: %{name}-armv7hl-lpae-fedora.config
+Source57: %{name}-armv7hl-lpae-debug-fedora.config
+Source60: %{name}-ppc64le-fedora.config
+Source61: %{name}-ppc64le-debug-fedora.config
+Source62: %{name}-s390x-fedora.config
+Source63: %{name}-s390x-debug-fedora.config
+Source64: %{name}-x86_64-fedora.config
+Source65: %{name}-x86_64-debug-fedora.config
 
 Source67: filter-x86_64.sh.fedora
 Source68: filter-armv7hl.sh.fedora
@@ -1570,13 +1572,13 @@ mkdir configs
 cd configs
 
 # Drop some necessary files from the source dir into the buildroot
-cp $RPM_SOURCE_DIR/kernel-*.config .
+cp $RPM_SOURCE_DIR/%{name}-*.config .
 cp %{SOURCE80} .
 # merge.py
 cp %{SOURCE3000} .
 # kernel-local
 cp %{SOURCE3001} .
-FLAVOR=%{primary_target} SPECVERSION=%{version} ./generate_all_configs.sh %{debugbuildsenabled}
+FLAVOR=%{primary_target} SPECPACKAGE_NAME=%{name} SPECVERSION=%{version} ./generate_all_configs.sh %{debugbuildsenabled}
 
 # Merge in any user-provided local config option changes
 %ifnarch %nobuildarches
@@ -1634,7 +1636,7 @@ for opt in %{clang_make_opts}; do
   OPTS="$OPTS -m $opt"
 done
 %endif
-RHJOBS=$RPM_BUILD_NCPUS PACKAGE_NAME=kernel ./process_configs.sh $OPTS ${specversion}
+RHJOBS=$RPM_BUILD_NCPUS SPECPACKAGE_NAME=%{name} ./process_configs.sh $OPTS ${specversion}
 
 cp %{SOURCE82} .
 RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
@@ -1699,7 +1701,7 @@ InitBuildVars() {
     Variant=$1
 
     # Pick the right kernel config file
-    Config=kernel-%{version}-%{_target_cpu}${Variant:+-${Variant}}.config
+    Config=%{name}-%{version}-%{_target_cpu}${Variant:+-${Variant}}.config
     DevelDir=/usr/src/kernels/%{KVERREL}${Variant:++${Variant}}
 
     KernelVer=%{version}-%{release}.%{_target_cpu}${Variant:++${Variant}}
@@ -3360,6 +3362,17 @@ fi
 #
 #
 %changelog
+* Thu Mar 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.6a98c9cae232.18]
+- redhat/self-test: Update self-test data (Prarit Bhargava)
+- redhat/kernel.spec.template: Fix hardcoded "kernel" (Prarit Bhargava)
+- redhat/configs/generate_all_configs.sh: Fix config naming (Prarit Bhargava)
+- redhat/kernel.spec.template: Pass SPECPACKAGE_NAME to generate_all_configs.sh (Prarit Bhargava)
+- kernel.spec.template: Use SPECPACKAGE_NAME (Prarit Bhargava)
+- redhat/Makefile: Copy spec file (Prarit Bhargava)
+- redhat: Change PACKAGE_NAME to SPECPACKAGE_NAME (Prarit Bhargava)
+- redhat/configs: Support the virtio_mmio.device parameter in Fedora (David Michael)
+- Linux v6.3.0-0.rc1.6a98c9cae232
+
 * Wed Mar 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.63355b9884b3.17]
 - Revert "Merge branch 'systemd-boot-unsigned' into 'os-build'" (Patrick Talbert)
 - Linux v6.3.0-0.rc1.63355b9884b3
