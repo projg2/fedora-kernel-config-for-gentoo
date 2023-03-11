@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d2fdc4eb94179d410f628f7f56a6740d6d7f6540
+ d2fdc4eb94179d410f628f7f56a6740d6d7f6540 Revert "wifi: cfg80211: Fix use after free for wext"
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/a95fa0b4dd6a8a8aa27d72c95cd8fc522f420996
  a95fa0b4dd6a8a8aa27d72c95cd8fc522f420996 iommu/amd: Do not identity map v2 capable device when snp is enabled
 

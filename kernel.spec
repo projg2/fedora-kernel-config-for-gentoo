@@ -147,17 +147,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.2.3
+%define specversion 6.2.5
 %define patchversion 6.2
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.2.3
+%define tarfile_release 6.2.5
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.2.3
+%define kabiversion 6.2.5
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3345,6 +3345,14 @@ fi
 #
 #
 %changelog
+* Sat Mar 11 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.5-300]
+- Drop the applypatches for f37 (Justin M. Forbes)
+
+* Sat Mar 11 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.5-0]
+- Revert "wifi: cfg80211: Fix use after free for wext" (Justin M. Forbes)
+- Fix up buildReqs for UKI (Justin M. Forbes)
+- Linux v6.2.5
+
 * Fri Mar 10 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.3-0]
 - Add new config option for 6.2.3 (Justin M. Forbes)
 - Only build the efiuki for F37 and newer (Justin M. Forbes)
