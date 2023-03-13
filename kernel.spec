@@ -147,17 +147,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.2.5
+%define specversion 6.2.6
 %define patchversion 6.2
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.2.5
+%define tarfile_release 6.2.6
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.2.5
+%define kabiversion 6.2.6
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3345,8 +3345,11 @@ fi
 #
 #
 %changelog
-* Sat Mar 11 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.5-300]
+* Mon Mar 13 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.6-0]
+- Add Fedora 37 and 36 to release targets (Justin M. Forbes)
+- wifi: cfg80211: Fix use after free for wext (Alexander Wetzel)
 - Drop the applypatches for f37 (Justin M. Forbes)
+- Linux v6.2.6
 
 * Sat Mar 11 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.5-0]
 - Revert "wifi: cfg80211: Fix use after free for wext" (Justin M. Forbes)
