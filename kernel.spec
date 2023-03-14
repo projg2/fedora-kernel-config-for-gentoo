@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc2.23
+%define pkgrelease 0.rc2.20230314gitfc89d7fb499b.24
 %define kversion 6
-%define tarfile_release 6.3-rc2
+%define tarfile_release 6.3-rc2-6-gfc89d7fb499b
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.23%{?buildid}%{?dist}
+%define specrelease 0.rc2.20230314gitfc89d7fb499b.24%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -1636,7 +1636,7 @@ for opt in %{clang_make_opts}; do
   OPTS="$OPTS -m $opt"
 done
 %endif
-RHJOBS=$RPM_BUILD_NCPUS SPECPACKAGE_NAME=%{name} ./process_configs.sh $OPTS ${specversion}
+RHJOBS=$RPM_BUILD_NCPUS SPECPACKAGE_NAME=%{name} ./process_configs.sh $OPTS %{specversion}
 
 cp %{SOURCE82} .
 RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
@@ -3362,8 +3362,16 @@ fi
 #
 #
 %changelog
-* Mon Mar 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.23]
+* Tue Mar 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.fc89d7fb499b.24]
+- kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes (Marco Elver)
 - redhat: version two of Makefile.rhelver tweaks (Clark Williams)
+
+* Tue Mar 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.fc89d7fb499b.23]
+- redhat/kernel.spec.template: Fix typo for process_configs.sh call (Neal Gompa)
+- redhat/configs: CONFIG_CRYPTO_SM3_AVX_X86_64 is x86 only (Vladis Dronov)
+- redhat/configs: Enable CONFIG_PINCTRL_METEORLAKE in RHEL (Prarit Bhargava)
+- fedora: enable new image sensors (Peter Robinson)
+- Linux v6.3.0-0.rc2.fc89d7fb499b
 
 * Mon Mar 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.22]
 - Linux v6.3.0-0.rc2
