@@ -1,7 +1,7 @@
  Documentation/admin-guide/kernel-parameters.txt    |   9 +
  Kconfig                                            |   2 +
  Kconfig.redhat                                     |  17 +
- Makefile                                           |  16 +-
+ Makefile                                           |  20 +-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
  arch/arm64/kernel/acpi.c                           |   4 +
@@ -67,7 +67,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 69 files changed, 1563 insertions(+), 196 deletions(-)
+ 69 files changed, 1567 insertions(+), 196 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 6221a1d057dd..90c169923eda 100644
@@ -123,13 +123,17 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index c933ceb4f21d..6f9a92dee6fe 100644
+index c933ceb4f21d..76949a7c7475 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -22,6 +22,14 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
+@@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
  PHONY := __all
  __all:
 
++# Set RHEL variables
++# Note that this ifdef'ery is required to handle when building with
++# the O= mechanism (relocate the object file results) due to upstream
++# commit 67d7c302 which broke our RHEL include file
 +ifneq ($(realpath source),)
 +include $(realpath source)/Makefile.rhelver
 +else
@@ -141,7 +145,7 @@ index c933ceb4f21d..6f9a92dee6fe 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1335,7 +1343,13 @@ define filechk_version.h
+@@ -1335,7 +1347,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \

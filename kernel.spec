@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc2.20230314gitfc89d7fb499b.24
+%define pkgrelease 0.rc2.20230315git6015b1aca1a2.25
 %define kversion 6
-%define tarfile_release 6.3-rc2-6-gfc89d7fb499b
+%define tarfile_release 6.3-rc2-47-g6015b1aca1a2
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20230314gitfc89d7fb499b.24%{?buildid}%{?dist}
+%define specrelease 0.rc2.20230315git6015b1aca1a2.25%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3362,9 +3362,13 @@ fi
 #
 #
 %changelog
-* Tue Mar 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.fc89d7fb499b.24]
+* Wed Mar 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.6015b1aca1a2.25]
 - kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes (Marco Elver)
 - redhat: version two of Makefile.rhelver tweaks (Clark Williams)
+
+* Wed Mar 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.6015b1aca1a2.24]
+- redhat/configs: Disable CONFIG_GCC_PLUGINS (Prarit Bhargava)
+- Linux v6.3.0-0.rc2.6015b1aca1a2
 
 * Tue Mar 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.fc89d7fb499b.23]
 - redhat/kernel.spec.template: Fix typo for process_configs.sh call (Neal Gompa)
