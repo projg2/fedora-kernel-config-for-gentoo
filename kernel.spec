@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc2.20230315git6015b1aca1a2.25
+%define pkgrelease 0.rc2.20230317git38e04b3e4240.27
 %define kversion 6
-%define tarfile_release 6.3-rc2-47-g6015b1aca1a2
+%define tarfile_release 6.3-rc2-77-g38e04b3e4240
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20230315git6015b1aca1a2.25%{?buildid}%{?dist}
+%define specrelease 0.rc2.20230317git38e04b3e4240.27%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -595,6 +595,7 @@ ExclusiveOS: Linux
 Requires: kernel-core-uname-r = %{KVERREL}
 Requires: kernel-modules-uname-r = %{KVERREL}
 Requires: kernel-modules-core-uname-r = %{KVERREL}
+Provides: installonlypkg(kernel)
 %endif
 
 
@@ -3362,9 +3363,18 @@ fi
 #
 #
 %changelog
-* Wed Mar 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.6015b1aca1a2.25]
+* Fri Mar 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.38e04b3e4240.27]
 - kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes (Marco Elver)
+
+* Fri Mar 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.38e04b3e4240.26]
+- Make Fedora debug configs more useful for debug (Justin M. Forbes)
+- redhat/configs: enable Octeon TX2 network drivers for RHEL (Michal Schmidt) [2040643]
+- redhat/kernel.spec.template: fix installonlypkg for meta package (Jan Stancek)
+- Linux v6.3.0-0.rc2.38e04b3e4240
+
+* Thu Mar 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.9c1bec9c0b08.25]
 - redhat: version two of Makefile.rhelver tweaks (Clark Williams)
+- Linux v6.3.0-0.rc2.9c1bec9c0b08
 
 * Wed Mar 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.6015b1aca1a2.24]
 - redhat/configs: Disable CONFIG_GCC_PLUGINS (Prarit Bhargava)
