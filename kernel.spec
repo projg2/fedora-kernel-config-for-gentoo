@@ -107,10 +107,11 @@ Summary: The Linux kernel
 %endif
 
 %ifarch x86_64
-%if 0%{?fedora} > 36
 %global efiuki 1
-%endif
 %else
+%global efiuki 0
+%endif
+%if 0%{?fedora} < 37
 %global efiuki 0
 %endif
 
@@ -147,17 +148,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.2.6
+%define specversion 6.2.7
 %define patchversion 6.2
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.2.6
+%define tarfile_release 6.2.7
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.2.6
+%define kabiversion 6.2.7
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3345,6 +3346,17 @@ fi
 #
 #
 %changelog
+* Fri Mar 17 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.7-0]
+- NFS: Correct timing for assigning access cache timestamp (Chengen Du)
+- usb: ucsi: Fix ucsi->connector race (Hans de Goede)
+- usb: ucsi_acpi: Increase the command completion timeout (Hans de Goede)
+- usb: ucsi: Fix NULL pointer deref in ucsi_connector_change() (Hans de Goede)
+- Enable CONFIG_NET_SCH_FQ_PIE for Fedora (Justin M. Forbes)
+- Fix build issue with efiuki conditional (Justin M. Forbes)
+- Move endif to correct location for efiuki conditional (Justin M. Forbes)
+- EFI UKI revert now conditionalized in spec. Drop revert (Justin M. Forbes)
+- Linux v6.2.7
+
 * Mon Mar 13 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.6-0]
 - Add Fedora 37 and 36 to release targets (Justin M. Forbes)
 - wifi: cfg80211: Fix use after free for wext (Alexander Wetzel)
