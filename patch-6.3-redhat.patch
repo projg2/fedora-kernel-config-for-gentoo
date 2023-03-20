@@ -123,7 +123,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index c933ceb4f21d..76949a7c7475 100644
+index a2c310df2145..5b7c0413e3cd 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -145,7 +145,7 @@ index c933ceb4f21d..76949a7c7475 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1335,7 +1347,13 @@ define filechk_version.h
+@@ -1334,7 +1346,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -1308,7 +1308,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index c2730b116dc6..6e35eeb6ed9f 100644
+index d4be525f8100..3ee03d5dff9d 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1375,7 +1375,7 @@ index c2730b116dc6..6e35eeb6ed9f 100644
  #ifdef CONFIG_NVME_AUTH
  		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index fc39d01e7b63..a3d68d41be11 100644
+index 9171452e2f6d..289bbb3523ce 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
@@ -2030,10 +2030,10 @@ index 979b776e3bcb..4eabcc0d8a91 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index fafd8020c6d7..913ac81ccf34 100644
+index b50e5c79f7e3..14c622041b43 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1522,6 +1522,22 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1523,6 +1523,22 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);

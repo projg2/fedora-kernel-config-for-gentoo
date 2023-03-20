@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc2.20230317git38e04b3e4240.27
+%define pkgrelease 0.rc3.30
 %define kversion 6
-%define tarfile_release 6.3-rc2-77-g38e04b3e4240
+%define tarfile_release 6.3-rc3
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20230317git38e04b3e4240.27%{?buildid}%{?dist}
+%define specrelease 0.rc3.30%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3363,8 +3363,19 @@ fi
 #
 #
 %changelog
-* Fri Mar 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.38e04b3e4240.27]
+* Mon Mar 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.30]
 - kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes (Marco Elver)
+
+* Mon Mar 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.29]
+- Linux v6.3.0-0.rc3
+
+* Sun Mar 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.a3671bd86a97.28]
+- Linux v6.3.0-0.rc2.a3671bd86a97
+
+* Sat Mar 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.478a351ce0d6.27]
+- Use RHJOBS for create-tarball (Don Zickus)
+- Enable CONFIG_NET_SCH_FQ_PIE for Fedora (Justin M. Forbes)
+- Linux v6.3.0-0.rc2.478a351ce0d6
 
 * Fri Mar 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.38e04b3e4240.26]
 - Make Fedora debug configs more useful for debug (Justin M. Forbes)
