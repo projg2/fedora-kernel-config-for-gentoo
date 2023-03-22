@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc3.30
+%define pkgrelease 0.rc3.20230322gita1effab7a3a3.31
 %define kversion 6
-%define tarfile_release 6.3-rc3
+%define tarfile_release 6.3-rc3-21-ga1effab7a3a3
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.30%{?buildid}%{?dist}
+%define specrelease 0.rc3.20230322gita1effab7a3a3.31%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -1540,9 +1540,6 @@ ApplyOptionalPatch linux-kernel-test.patch
 
 chmod +x scripts/checkpatch.pl
 mv COPYING COPYING-%{version}-%{release}
-
-# This Prevents scripts/setlocalversion from mucking with our version numbers.
-touch .scmversion
 
 # Mangle /usr/bin/python shebangs to /usr/bin/python3
 # Mangle all Python shebangs to be Python 3 explicitly
@@ -3363,8 +3360,16 @@ fi
 #
 #
 %changelog
-* Mon Mar 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.30]
+* Wed Mar 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.a1effab7a3a3.31]
 - kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes (Marco Elver)
+
+* Wed Mar 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.a1effab7a3a3.30]
+- arm64/configs: Put some arm64 configs in the right place (Mark Salter)
+- cleanup removed R8188EU config (Peter Robinson)
+- Make RHJOBS container friendly (Don Zickus)
+- Remove scmversion from kernel.spec.template (Don Zickus)
+- redhat/configs: Enable CONFIG_SND_SOC_CS42L83 (Neal Gompa)
+- Linux v6.3.0-0.rc3.a1effab7a3a3
 
 * Mon Mar 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.29]
 - Linux v6.3.0-0.rc3
