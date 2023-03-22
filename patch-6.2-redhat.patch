@@ -21,6 +21,7 @@
  drivers/iommu/iommu.c                              |  22 +
  drivers/pci/quirks.c                               |  24 +
  drivers/usb/core/hub.c                             |   7 +
+ drivers/usb/host/xhci-pci.c                        |   7 +-
  drivers/usb/typec/ucsi/ucsi.c                      |  33 +-
  drivers/usb/typec/ucsi/ucsi_acpi.c                 |   2 +-
  fs/nfs/dir.c                                       |   2 +-
@@ -36,10 +37,10 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 38 files changed, 997 insertions(+), 197 deletions(-)
+ 39 files changed, 1000 insertions(+), 201 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 43cf2c785cb1..f3441e6f1ed6 100644
+index 2c90d9b067f4..93b82f038789 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1031,6 +1032,26 @@ index 97a0f8faea6e..d837548d2024 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/drivers/usb/host/xhci-pci.c b/drivers/usb/host/xhci-pci.c
+index fb988e4ea924..6db07ca419c3 100644
+--- a/drivers/usb/host/xhci-pci.c
++++ b/drivers/usb/host/xhci-pci.c
+@@ -771,12 +771,11 @@ static struct pci_driver xhci_pci_driver = {
+ 	/* suspend and resume implemented later */
+
+ 	.shutdown = 	usb_hcd_pci_shutdown,
+-	.driver = {
+ #ifdef CONFIG_PM
+-		.pm = &usb_hcd_pci_pm_ops,
+-#endif
+-		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
++	.driver = {
++		.pm = &usb_hcd_pci_pm_ops
+ 	},
++#endif
+ };
+
+ static int __init xhci_pci_init(void)
 diff --git a/drivers/usb/typec/ucsi/ucsi.c b/drivers/usb/typec/ucsi/ucsi.c
 index 1cf8947c6d66..086b50968983 100644
 --- a/drivers/usb/typec/ucsi/ucsi.c

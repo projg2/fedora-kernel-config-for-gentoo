@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d72fed198ee1835d3950d0cb4787b7f3a082ff40
+ d72fed198ee1835d3950d0cb4787b7f3a082ff40 Revert "usb: xhci-pci: Set PROBE_PREFER_ASYNCHRONOUS"
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/14005bf69741499a3df8cb2e74c0dc99c37e9438
  14005bf69741499a3df8cb2e74c0dc99c37e9438 NFS: Correct timing for assigning access cache timestamp
 
