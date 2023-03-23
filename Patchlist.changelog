@@ -1,5 +1,5 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/e90e7b1c992140f8d072f1f7e7ef88648f6e416b
- e90e7b1c992140f8d072f1f7e7ef88648f6e416b kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/2c46dae9e6e8ea71ad9711878729e3e85dd89b7d
+ 2c46dae9e6e8ea71ad9711878729e3e85dd89b7d kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/8d2cc85c7080506ecb798e46a48a3cdb89bbb175
  8d2cc85c7080506ecb798e46a48a3cdb89bbb175 redhat: version two of Makefile.rhelver tweaks

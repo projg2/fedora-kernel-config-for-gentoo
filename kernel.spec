@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc3.20230322gita1effab7a3a3.31
+%define pkgrelease 0.rc3.20230323gitfff5a5e7f528.32
 %define kversion 6
-%define tarfile_release 6.3-rc3-21-ga1effab7a3a3
+%define tarfile_release 6.3-rc3-26-gfff5a5e7f528
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20230322gita1effab7a3a3.31%{?buildid}%{?dist}
+%define specrelease 0.rc3.20230323gitfff5a5e7f528.32%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3360,8 +3360,11 @@ fi
 #
 #
 %changelog
-* Wed Mar 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.a1effab7a3a3.31]
+* Thu Mar 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.fff5a5e7f528.32]
 - kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes (Marco Elver)
+
+* Thu Mar 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.fff5a5e7f528.31]
+- Linux v6.3.0-0.rc3.fff5a5e7f528
 
 * Wed Mar 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.a1effab7a3a3.30]
 - arm64/configs: Put some arm64 configs in the right place (Mark Salter)
