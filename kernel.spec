@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc3.20230323gitfff5a5e7f528.32
+%define pkgrelease 0.rc3.20230324git1e760fa3596e.33
 %define kversion 6
-%define tarfile_release 6.3-rc3-26-gfff5a5e7f528
+%define tarfile_release 6.3-rc3-31-g1e760fa3596e
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20230323gitfff5a5e7f528.32%{?buildid}%{?dist}
+%define specrelease 0.rc3.20230324git1e760fa3596e.33%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3360,8 +3360,14 @@ fi
 #
 #
 %changelog
-* Thu Mar 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.fff5a5e7f528.32]
+* Fri Mar 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.1e760fa3596e.33]
 - kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes (Marco Elver)
+
+* Fri Mar 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.1e760fa3596e.32]
+- Revert "acpi: prefer booting with ACPI over DTS" (Mark Salter)
+- Revert "Fixes "acpi: prefer booting with ACPI over DTS" to be RHEL only" (Mark Salter)
+- configs: arm: bring some configs in line with rhel configs in c9s (Mark Salter)
+- Linux v6.3.0-0.rc3.1e760fa3596e
 
 * Thu Mar 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.fff5a5e7f528.31]
 - Linux v6.3.0-0.rc3.fff5a5e7f528

@@ -1,5 +1,11 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/2c46dae9e6e8ea71ad9711878729e3e85dd89b7d
- 2c46dae9e6e8ea71ad9711878729e3e85dd89b7d kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/303ea0d45db99c3ef3837b706717920086b580e5
+ 303ea0d45db99c3ef3837b706717920086b580e5 kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/22dd8ddfd304a1eb6fe11f5aad6a6e8523575414
+ 22dd8ddfd304a1eb6fe11f5aad6a6e8523575414 Revert "acpi: prefer booting with ACPI over DTS"
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d2355b8da25ba141f5bfa8c1c1c1ad4c4ca2564f
+ d2355b8da25ba141f5bfa8c1c1c1ad4c4ca2564f Revert "Fixes "acpi: prefer booting with ACPI over DTS" to be RHEL only"
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/8d2cc85c7080506ecb798e46a48a3cdb89bbb175
  8d2cc85c7080506ecb798e46a48a3cdb89bbb175 redhat: version two of Makefile.rhelver tweaks

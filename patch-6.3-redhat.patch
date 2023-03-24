@@ -4,7 +4,6 @@
  Makefile                                           |  20 +-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   3 +-
- arch/arm64/kernel/acpi.c                           |   4 +
  arch/powerpc/include/asm/kasan.h                   |   2 +-
  arch/powerpc/include/asm/string.h                  |  15 +-
  arch/powerpc/kernel/prom_init_check.sh             |   9 +-
@@ -67,7 +66,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 69 files changed, 1567 insertions(+), 196 deletions(-)
+ 68 files changed, 1563 insertions(+), 196 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 6221a1d057dd..90c169923eda 100644
@@ -197,22 +196,6 @@ index 1023e896d46b..55822162d9ee 100644
  	range 12 14 if ARM64_16K_PAGES
  	default "12" if ARM64_16K_PAGES
  	range 11 16 if ARM64_4K_PAGES
-diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
-index dba8fcec7f33..e4e33ecfefa9 100644
---- a/arch/arm64/kernel/acpi.c
-+++ b/arch/arm64/kernel/acpi.c
-@@ -42,7 +42,11 @@ int acpi_pci_disabled = 1;	/* skip ACPI PCI scan and IRQ initialization */
- EXPORT_SYMBOL(acpi_pci_disabled);
-
- static bool param_acpi_off __initdata;
-+#ifdef CONFIG_RHEL_DIFFERENCES
-+static bool param_acpi_on __initdata = true;
-+#else
- static bool param_acpi_on __initdata;
-+#endif
- static bool param_acpi_force __initdata;
-
- static int __init parse_acpi(char *arg)
 diff --git a/arch/powerpc/include/asm/kasan.h b/arch/powerpc/include/asm/kasan.h
 index 92a968202ba7..365d2720097c 100644
 --- a/arch/powerpc/include/asm/kasan.h
