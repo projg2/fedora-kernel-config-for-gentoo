@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc3.20230324git1e760fa3596e.33
+%define pkgrelease 0.rc4.35
 %define kversion 6
-%define tarfile_release 6.3-rc3-31-g1e760fa3596e
+%define tarfile_release 6.3-rc4
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20230324git1e760fa3596e.33%{?buildid}%{?dist}
+%define specrelease 0.rc4.35%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3360,8 +3360,16 @@ fi
 #
 #
 %changelog
-* Fri Mar 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.1e760fa3596e.33]
-- kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes (Marco Elver)
+* Mon Mar 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.35]
+- generic: common: Parport and paride/ata cleanups (Peter Robinson)
+- Linux v6.3.0-0.rc4
+
+* Sun Mar 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.da8e7da11e4b.34]
+- Linux v6.3.0-0.rc3.da8e7da11e4b
+
+* Sat Mar 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.65aca32efdcb.33]
+- CONFIG_SND_SOC_CS42L83 is no longer common (Justin M. Forbes)
+- Linux v6.3.0-0.rc3.65aca32efdcb
 
 * Fri Mar 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.1e760fa3596e.32]
 - Revert "acpi: prefer booting with ACPI over DTS" (Mark Salter)

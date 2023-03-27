@@ -1,6 +1,3 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/303ea0d45db99c3ef3837b706717920086b580e5
- 303ea0d45db99c3ef3837b706717920086b580e5 kasan, powerpc: Don't rename memintrinsics if compiler adds prefixes
-
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/22dd8ddfd304a1eb6fe11f5aad6a6e8523575414
  22dd8ddfd304a1eb6fe11f5aad6a6e8523575414 Revert "acpi: prefer booting with ACPI over DTS"
 
