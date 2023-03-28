@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc4.35
+%define pkgrelease 0.rc4.20230328git3a93e40326c8.36
 %define kversion 6
-%define tarfile_release 6.3-rc4
+%define tarfile_release 6.3-rc4-25-g3a93e40326c8
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.35%{?buildid}%{?dist}
+%define specrelease 0.rc4.20230328git3a93e40326c8.36%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3360,6 +3360,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.3a93e40326c8.36]
+- Linux v6.3.0-0.rc4.3a93e40326c8
+
 * Mon Mar 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.35]
 - generic: common: Parport and paride/ata cleanups (Peter Robinson)
 - Linux v6.3.0-0.rc4
