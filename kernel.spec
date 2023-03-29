@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc4.20230328git3a93e40326c8.36
+%define pkgrelease 0.rc4.20230329gitfcd476ea6a88.37
 %define kversion 6
-%define tarfile_release 6.3-rc4-25-g3a93e40326c8
+%define tarfile_release 6.3-rc4-34-gfcd476ea6a88
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20230328git3a93e40326c8.36%{?buildid}%{?dist}
+%define specrelease 0.rc4.20230329gitfcd476ea6a88.37%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -1028,7 +1028,7 @@ This package provides debug information for the perf python bindings.
 %endif
 
 %if %{with_tools}
-%package -n kernel-tools
+%package -n %{package_name}-tools
 Summary: Assortment of tools for the Linux kernel
 License: GPLv2
 %ifarch %{cpupowerarchs}
@@ -1039,46 +1039,46 @@ Provides:  cpufrequtils = 1:009-0.6.p1
 Obsoletes: cpufreq-utils < 1:009-0.6.p1
 Obsoletes: cpufrequtils < 1:009-0.6.p1
 Obsoletes: cpuspeed < 1:1.5-16
-Requires: kernel-tools-libs = %{version}-%{release}
+Requires: %{package_name}-tools-libs = %{version}-%{release}
 %endif
 %define __requires_exclude ^%{_bindir}/python
-%description -n kernel-tools
+%description -n %{package_name}-tools
 This package contains the tools/ directory from the kernel source
 and the supporting documentation.
 
-%package -n kernel-tools-libs
+%package -n %{package_name}-tools-libs
 Summary: Libraries for the kernels-tools
 License: GPLv2
-%description -n kernel-tools-libs
+%description -n %{package_name}-tools-libs
 This package contains the libraries built from the tools/ directory
 from the kernel source.
 
-%package -n kernel-tools-libs-devel
+%package -n %{package_name}-tools-libs-devel
 Summary: Assortment of tools for the Linux kernel
 License: GPLv2
-Requires: kernel-tools = %{version}-%{release}
+Requires: %{package_name}-tools = %{version}-%{release}
 %ifarch %{cpupowerarchs}
 Provides:  cpupowerutils-devel = 1:009-0.6.p1
 Obsoletes: cpupowerutils-devel < 1:009-0.6.p1
 %endif
-Requires: kernel-tools-libs = %{version}-%{release}
-Provides: kernel-tools-devel
-%description -n kernel-tools-libs-devel
+Requires: %{package_name}-libs = %{version}-%{release}
+Provides: %{package_name}-tools-devel
+%description -n %{package_name}-tools-libs-devel
 This package contains the development files for the tools/ directory from
 the kernel source.
 
-%package -n kernel-tools-debuginfo
-Summary: Debug information for package kernel-tools
+%package -n %{package_name}-tools-debuginfo
+Summary: Debug information for package %{package_name}-tools
 Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
 AutoReqProv: no
-%description -n kernel-tools-debuginfo
-This package provides debug information for package kernel-tools.
+%description -n %{package_name}-tools-debuginfo
+This package provides debug information for package %{package_name}-tools.
 
 # Note that this pattern only works right to match the .build-id
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|.*%%{_sbindir}/intel_sdsi(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|.*%%{_sbindir}/intel_sdsi(\.debug)?|XXX' -o %{package_name}-tools-debuginfo.list}
 
 %package -n rtla
 Summary: RTLA: Real-Time Linux Analysis tools
@@ -1147,10 +1147,10 @@ Summary: gcov graph and source files for coverage data collection.
 kernel-gcov includes the gcov graph and source files for gcov coverage collection.
 %endif
 
-%package -n kernel-abi-stablelists
+%package -n %{package_name}-abi-stablelists
 Summary: The Red Hat Enterprise Linux kernel ABI symbol stablelists
 AutoReqProv: no
-%description -n kernel-abi-stablelists
+%description -n %{package_name}-abi-stablelists
 The kABI package contains information pertaining to the Red Hat Enterprise
 Linux kernel ABI, including lists of kernel symbols that are needed by
 external Linux kernel modules, and a yum plugin to aid enforcement.
@@ -1224,8 +1224,8 @@ against the %{?2:%{2} }kernel package.\
 %define kernel_devel_matched_package(m) \
 %package %{?1:%{1}-}devel-matched\
 Summary: Meta package to install matching core and devel packages for a given %{?2:%{2} }kernel\
-Requires: kernel%{?1:-%{1}}-devel = %{version}-%{release}\
-Requires: kernel%{?1:-%{1}}-core = %{version}-%{release}\
+Requires: %{package_name}%{?1:-%{1}}-devel = %{version}-%{release}\
+Requires: %{package_name}%{?1:-%{1}}-core = %{version}-%{release}\
 %description %{?1:%{1}-}devel-matched\
 This meta package is used to install matching core and devel packages for a given %{?2:%{2} }kernel.\
 %{nil}
@@ -2867,10 +2867,10 @@ popd
 ###
 
 %if %{with_tools}
-%post -n kernel-tools-libs
+%post -n %{package_name}-tools-libs
 /sbin/ldconfig
 
-%postun -n kernel-tools-libs
+%postun -n %{package_name}-tools-libs
 /sbin/ldconfig
 %endif
 
@@ -3098,7 +3098,7 @@ fi
 %endif
 
 %if %{with_kernel_abi_stablelists}
-%files -n kernel-abi-stablelists
+%files -n %{package_name}-abi-stablelists
 /lib/modules/kabi-*
 %endif
 
@@ -3144,9 +3144,9 @@ fi
 
 %if %{with_tools}
 %ifnarch %{cpupowerarchs}
-%files -n kernel-tools
+%files -n %{package_name}-tools
 %else
-%files -n kernel-tools -f cpupower.lang
+%files -n %{package_name}-tools -f cpupower.lang
 %{_bindir}/cpupower
 %{_datadir}/bash-completion/completions/cpupower
 %ifarch x86_64
@@ -3180,15 +3180,15 @@ fi
 %{_bindir}/slabinfo
 
 %if %{with_debuginfo}
-%files -f kernel-tools-debuginfo.list -n kernel-tools-debuginfo
+%files -f %{package_name}-tools-debuginfo.list -n %{package_name}-tools-debuginfo
 %endif
 
 %ifarch %{cpupowerarchs}
-%files -n kernel-tools-libs
+%files -n %{package_name}-tools-libs
 %{_libdir}/libcpupower.so.0
 %{_libdir}/libcpupower.so.0.0.1
 
-%files -n kernel-tools-libs-devel
+%files -n %{package_name}-tools-libs-devel
 %{_libdir}/libcpupower.so
 %{_includedir}/cpufreq.h
 %endif
@@ -3360,6 +3360,13 @@ fi
 #
 #
 %changelog
+* Wed Mar 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.fcd476ea6a88.37]
+- redhat: kunit: cleanup NITRO config and enable rescale test (Nico Pache)
+- kernel.spec: use %%{package_name} to fix kernel-devel-matched Requires (Jan Stancek)
+- kernel.spec: use %%{package_name} also for abi-stablelist subpackages (Jan Stancek)
+- kernel.spec: use %%{package_name} also for tools subpackages (Jan Stancek)
+- Linux v6.3.0-0.rc4.fcd476ea6a88
+
 * Tue Mar 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.3a93e40326c8.36]
 - Linux v6.3.0-0.rc4.3a93e40326c8
 
