@@ -148,17 +148,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.2.8
+%define specversion 6.2.9
 %define patchversion 6.2
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.2.8
+%define tarfile_release 6.2.9
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.2.8
+%define kabiversion 6.2.9
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3346,6 +3346,18 @@ fi
 #
 #
 %changelog
+* Thu Mar 30 2023 Augusto Caringi <acaringi@redhat.com> [6.2.9-0]
+- Add bug numbers from recent MRs (Justin M. Forbes)
+- net: wwan: iosm: fixes 7560 modem crash (M Chetan Kumar)
+- Input: alps - fix compatibility with -funsigned-char (msizanoen)
+- Input: focaltech - use explicitly signed char type (Jason A. Donenfeld)
+- drm/nouveau/kms: Fix backlight registration (Hans de Goede)
+- Add bugs addressed so far for the 6.2.9 build (Justin M. Forbes)
+- btrfs: fix race between quota disable and quota assign ioctls (Filipe Manana)
+- redhat/configs: Enable CONFIG_SND_SOC_CS42L83 (Neal Gompa)
+- Add patch to turn off EFI_ZBOOT for Fedora 36 (Justin M. Forbes)
+- Linux v6.2.9
+
 * Wed Mar 22 2023 Augusto Caringi <acaringi@redhat.com> [6.2.8-0]
 - Add new config option for 6.2.8 (Augusto Caringi)
 - Revert "usb: xhci-pci: Set PROBE_PREFER_ASYNCHRONOUS" (Kate Hsuan)

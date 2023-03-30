@@ -1,3 +1,18 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b07be483040ffde4aea1f4979bf5aba52898e736
+ b07be483040ffde4aea1f4979bf5aba52898e736 net: wwan: iosm: fixes 7560 modem crash
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/84ec9dc84621513d0d1696c0535ea1e305181c2a
+ 84ec9dc84621513d0d1696c0535ea1e305181c2a Input: alps - fix compatibility with -funsigned-char
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/e4823b9e65e36058a10a875e053ee550861c860a
+ e4823b9e65e36058a10a875e053ee550861c860a Input: focaltech - use explicitly signed char type
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/97e494ffa8f7e65e75c0631f1a5bf3ac70a96e99
+ 97e494ffa8f7e65e75c0631f1a5bf3ac70a96e99 drm/nouveau/kms: Fix backlight registration
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/78eac5b28b5a43c7a99b65798af08c0fba4a62aa
+ 78eac5b28b5a43c7a99b65798af08c0fba4a62aa btrfs: fix race between quota disable and quota assign ioctls
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/d72fed198ee1835d3950d0cb4787b7f3a082ff40
  d72fed198ee1835d3950d0cb4787b7f3a082ff40 Revert "usb: xhci-pci: Set PROBE_PREFER_ASYNCHRONOUS"
 

@@ -15,16 +15,20 @@
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
  drivers/firmware/sysfb.c                           |  18 +-
+ drivers/gpu/drm/nouveau/nouveau_backlight.c        |   7 +-
  drivers/hid/hid-rmi.c                              |  66 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
+ drivers/input/mouse/alps.c                         |  16 +-
+ drivers/input/mouse/focaltech.c                    |   8 +-
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
  drivers/iommu/iommu.c                              |  22 +
+ drivers/net/wwan/iosm/iosm_ipc_imem.c              |   7 +
  drivers/pci/quirks.c                               |  24 +
  drivers/usb/core/hub.c                             |   7 +
  drivers/usb/host/xhci-pci.c                        |   7 +-
- drivers/usb/typec/ucsi/ucsi.c                      |  33 +-
- drivers/usb/typec/ucsi/ucsi_acpi.c                 |   2 +-
- fs/nfs/dir.c                                       |   2 +-
+ drivers/usb/typec/ucsi/ucsi.c                      |  22 +-
+ fs/btrfs/ioctl.c                                   |   2 +
+ fs/btrfs/qgroup.c                                  |  11 +-
  include/linux/efi.h                                |  22 +-
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -37,10 +41,10 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 39 files changed, 1000 insertions(+), 201 deletions(-)
+ 43 files changed, 1029 insertions(+), 208 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 2c90d9b067f4..93b82f038789 100644
+index 8732f7208d59..2ef18d9eed77 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -559,7 +563,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
-index 3fd3563d962b..75d67e6dde2a 100644
+index 3c197db42c9d..16e4a2e90fae 100644
 --- a/drivers/firmware/sysfb.c
 +++ b/drivers/firmware/sysfb.c
 @@ -34,6 +34,22 @@
@@ -585,7 +589,7 @@ index 3fd3563d962b..75d67e6dde2a 100644
  static struct platform_device *pd;
  static DEFINE_MUTEX(disable_lock);
  static bool disabled;
-@@ -83,7 +99,7 @@ static __init int sysfb_init(void)
+@@ -85,7 +101,7 @@ static __init int sysfb_init(void)
 
  	/* try to create a simple-framebuffer device */
  	compatible = sysfb_parse_mode(si, &mode);
@@ -594,6 +598,32 @@ index 3fd3563d962b..75d67e6dde2a 100644
  		pd = sysfb_create_simplefb(si, &mode);
  		if (!IS_ERR(pd))
  			goto unlock_mutex;
+diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+index 40409a29f5b6..91b5ecc57538 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
++++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+@@ -33,6 +33,7 @@
+ #include <linux/apple-gmux.h>
+ #include <linux/backlight.h>
+ #include <linux/idr.h>
++#include <drm/drm_probe_helper.h>
+
+ #include "nouveau_drv.h"
+ #include "nouveau_reg.h"
+@@ -299,8 +300,12 @@ nv50_backlight_init(struct nouveau_backlight *bl,
+ 	struct nouveau_drm *drm = nouveau_drm(nv_encoder->base.base.dev);
+ 	struct nvif_object *device = &drm->client.device.object;
+
++	/*
++	 * Note when this runs the connectors have not been probed yet,
++	 * so nv_conn->base.status is not set yet.
++	 */
+ 	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)) ||
+-	    nv_conn->base.status != connector_status_connected)
++	    drm_helper_probe_detect(&nv_conn->base, NULL, false) != connector_status_connected)
+ 		return -ENODEV;
+
+ 	if (nv_conn->type == DCB_CONNECTOR_eDP) {
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 84e7ba5314d3..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
@@ -747,6 +777,83 @@ index 77bca6932f01..27f5455aef6c 100644
  	amba_driver_unregister(&etm4x_amba_driver);
  	platform_driver_unregister(&etm4_platform_driver);
  	etm4_pm_clear();
+diff --git a/drivers/input/mouse/alps.c b/drivers/input/mouse/alps.c
+index 989228b5a0a4..e2c11d9f3868 100644
+--- a/drivers/input/mouse/alps.c
++++ b/drivers/input/mouse/alps.c
+@@ -852,8 +852,8 @@ static void alps_process_packet_v6(struct psmouse *psmouse)
+ 			x = y = z = 0;
+
+ 		/* Divide 4 since trackpoint's speed is too fast */
+-		input_report_rel(dev2, REL_X, (char)x / 4);
+-		input_report_rel(dev2, REL_Y, -((char)y / 4));
++		input_report_rel(dev2, REL_X, (s8)x / 4);
++		input_report_rel(dev2, REL_Y, -((s8)y / 4));
+
+ 		psmouse_report_standard_buttons(dev2, packet[3]);
+
+@@ -1104,8 +1104,8 @@ static void alps_process_trackstick_packet_v7(struct psmouse *psmouse)
+ 	    ((packet[3] & 0x20) << 1);
+ 	z = (packet[5] & 0x3f) | ((packet[3] & 0x80) >> 1);
+
+-	input_report_rel(dev2, REL_X, (char)x);
+-	input_report_rel(dev2, REL_Y, -((char)y));
++	input_report_rel(dev2, REL_X, (s8)x);
++	input_report_rel(dev2, REL_Y, -((s8)y));
+ 	input_report_abs(dev2, ABS_PRESSURE, z);
+
+ 	psmouse_report_standard_buttons(dev2, packet[1]);
+@@ -2294,20 +2294,20 @@ static int alps_get_v3_v7_resolution(struct psmouse *psmouse, int reg_pitch)
+ 	if (reg < 0)
+ 		return reg;
+
+-	x_pitch = (char)(reg << 4) >> 4; /* sign extend lower 4 bits */
++	x_pitch = (s8)(reg << 4) >> 4; /* sign extend lower 4 bits */
+ 	x_pitch = 50 + 2 * x_pitch; /* In 0.1 mm units */
+
+-	y_pitch = (char)reg >> 4; /* sign extend upper 4 bits */
++	y_pitch = (s8)reg >> 4; /* sign extend upper 4 bits */
+ 	y_pitch = 36 + 2 * y_pitch; /* In 0.1 mm units */
+
+ 	reg = alps_command_mode_read_reg(psmouse, reg_pitch + 1);
+ 	if (reg < 0)
+ 		return reg;
+
+-	x_electrode = (char)(reg << 4) >> 4; /* sign extend lower 4 bits */
++	x_electrode = (s8)(reg << 4) >> 4; /* sign extend lower 4 bits */
+ 	x_electrode = 17 + x_electrode;
+
+-	y_electrode = (char)reg >> 4; /* sign extend upper 4 bits */
++	y_electrode = (s8)reg >> 4; /* sign extend upper 4 bits */
+ 	y_electrode = 13 + y_electrode;
+
+ 	x_phys = x_pitch * (x_electrode - 1); /* In 0.1 mm units */
+diff --git a/drivers/input/mouse/focaltech.c b/drivers/input/mouse/focaltech.c
+index 6fd5fff0cbff..c74b99077d16 100644
+--- a/drivers/input/mouse/focaltech.c
++++ b/drivers/input/mouse/focaltech.c
+@@ -202,8 +202,8 @@ static void focaltech_process_rel_packet(struct psmouse *psmouse,
+ 	state->pressed = packet[0] >> 7;
+ 	finger1 = ((packet[0] >> 4) & 0x7) - 1;
+ 	if (finger1 < FOC_MAX_FINGERS) {
+-		state->fingers[finger1].x += (char)packet[1];
+-		state->fingers[finger1].y += (char)packet[2];
++		state->fingers[finger1].x += (s8)packet[1];
++		state->fingers[finger1].y += (s8)packet[2];
+ 	} else {
+ 		psmouse_err(psmouse, "First finger in rel packet invalid: %d\n",
+ 			    finger1);
+@@ -218,8 +218,8 @@ static void focaltech_process_rel_packet(struct psmouse *psmouse,
+ 	 */
+ 	finger2 = ((packet[3] >> 4) & 0x7) - 1;
+ 	if (finger2 < FOC_MAX_FINGERS) {
+-		state->fingers[finger2].x += (char)packet[4];
+-		state->fingers[finger2].y += (char)packet[5];
++		state->fingers[finger2].x += (s8)packet[4];
++		state->fingers[finger2].y += (s8)packet[5];
+ 	}
+ }
+
 diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
 index 258d5fe3d395..f7298e3dc8f3 100644
 --- a/drivers/input/rmi4/rmi_driver.c
@@ -979,6 +1086,24 @@ index f8100067502f..e0823c45e2fa 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_imem.c b/drivers/net/wwan/iosm/iosm_ipc_imem.c
+index 1e6a47976642..c066b0040a3f 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_imem.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_imem.c
+@@ -587,6 +587,13 @@ static void ipc_imem_run_state_worker(struct work_struct *instance)
+ 	while (ctrl_chl_idx < IPC_MEM_MAX_CHANNELS) {
+ 		if (!ipc_chnl_cfg_get(&chnl_cfg_port, ctrl_chl_idx)) {
+ 			ipc_imem->ipc_port[ctrl_chl_idx] = NULL;
++
++			if (ipc_imem->pcie->pci->device == INTEL_CP_DEVICE_7560_ID &&
++			    chnl_cfg_port.wwan_port_type == WWAN_PORT_XMMRPC) {
++				ctrl_chl_idx++;
++				continue;
++			}
++
+ 			if (ipc_imem->pcie->pci->device == INTEL_CP_DEVICE_7360_ID &&
+ 			    chnl_cfg_port.wwan_port_type == WWAN_PORT_MBIM) {
+ 				ctrl_chl_idx++;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index 494fa46f5767..27bc8dd45ad8 100644
 --- a/drivers/pci/quirks.c
@@ -1053,7 +1178,7 @@ index fb988e4ea924..6db07ca419c3 100644
 
  static int __init xhci_pci_init(void)
 diff --git a/drivers/usb/typec/ucsi/ucsi.c b/drivers/usb/typec/ucsi/ucsi.c
-index 1cf8947c6d66..086b50968983 100644
+index 8cbbb002fefe..086b50968983 100644
 --- a/drivers/usb/typec/ucsi/ucsi.c
 +++ b/drivers/usb/typec/ucsi/ucsi.c
 @@ -1039,9 +1039,8 @@ static struct fwnode_handle *ucsi_find_fwnode(struct ucsi_connector *con)
@@ -1075,29 +1200,16 @@ index 1cf8947c6d66..086b50968983 100644
  	con->ucsi = ucsi;
 
  	cap->fwnode = ucsi_find_fwnode(con);
-@@ -1204,8 +1202,8 @@ static int ucsi_register_port(struct ucsi *ucsi, int index)
+@@ -1204,7 +1202,7 @@ static int ucsi_register_port(struct ucsi *ucsi, int index)
   */
  static int ucsi_init(struct ucsi *ucsi)
  {
 -	struct ucsi_connector *con;
--	u64 command;
 +	struct ucsi_connector *con, *connector;
-+	u64 command, ntfy;
+ 	u64 command, ntfy;
  	int ret;
  	int i;
-
-@@ -1217,8 +1215,8 @@ static int ucsi_init(struct ucsi *ucsi)
- 	}
-
- 	/* Enable basic notifications */
--	ucsi->ntfy = UCSI_ENABLE_NTFY_CMD_COMPLETE | UCSI_ENABLE_NTFY_ERROR;
--	command = UCSI_SET_NOTIFICATION_ENABLE | ucsi->ntfy;
-+	ntfy = UCSI_ENABLE_NTFY_CMD_COMPLETE | UCSI_ENABLE_NTFY_ERROR;
-+	command = UCSI_SET_NOTIFICATION_ENABLE | ntfy;
- 	ret = ucsi_send_command(ucsi, command, NULL, 0);
- 	if (ret < 0)
- 		goto err_reset;
-@@ -1235,31 +1233,33 @@ static int ucsi_init(struct ucsi *ucsi)
+@@ -1235,16 +1233,16 @@ static int ucsi_init(struct ucsi *ucsi)
  	}
 
  	/* Allocate the connectors. Released in ucsi_unregister() */
@@ -1118,18 +1230,12 @@ index 1cf8947c6d66..086b50968983 100644
  		if (ret)
  			goto err_unregister;
  	}
-
- 	/* Enable all notifications */
--	ucsi->ntfy = UCSI_ENABLE_NTFY_ALL;
--	command = UCSI_SET_NOTIFICATION_ENABLE | ucsi->ntfy;
-+	ntfy = UCSI_ENABLE_NTFY_ALL;
-+	command = UCSI_SET_NOTIFICATION_ENABLE | ntfy;
- 	ret = ucsi_send_command(ucsi, command, NULL, 0);
+@@ -1256,11 +1254,12 @@ static int ucsi_init(struct ucsi *ucsi)
  	if (ret < 0)
  		goto err_unregister;
 
 +	ucsi->connector = connector;
-+	ucsi->ntfy = ntfy;
+ 	ucsi->ntfy = ntfy;
  	return 0;
 
  err_unregister:
@@ -1138,7 +1244,7 @@ index 1cf8947c6d66..086b50968983 100644
  		ucsi_unregister_partner(con);
  		ucsi_unregister_altmodes(con, UCSI_RECIPIENT_CON);
  		ucsi_unregister_port_psy(con);
-@@ -1268,10 +1268,7 @@ static int ucsi_init(struct ucsi *ucsi)
+@@ -1269,10 +1268,7 @@ static int ucsi_init(struct ucsi *ucsi)
  		typec_unregister_port(con->port);
  		con->port = NULL;
  	}
@@ -1150,41 +1256,50 @@ index 1cf8947c6d66..086b50968983 100644
  err_reset:
  	memset(&ucsi->cap, 0, sizeof(ucsi->cap));
  	ucsi_reset_ppm(ucsi);
-diff --git a/drivers/usb/typec/ucsi/ucsi_acpi.c b/drivers/usb/typec/ucsi/ucsi_acpi.c
-index ce0c8ef80c04..62206a6b8ea7 100644
---- a/drivers/usb/typec/ucsi/ucsi_acpi.c
-+++ b/drivers/usb/typec/ucsi/ucsi_acpi.c
-@@ -78,7 +78,7 @@ static int ucsi_acpi_sync_write(struct ucsi *ucsi, unsigned int offset,
- 	if (ret)
- 		goto out_clear_bit;
-
--	if (!wait_for_completion_timeout(&ua->complete, HZ))
-+	if (!wait_for_completion_timeout(&ua->complete, 5 * HZ))
- 		ret = -ETIMEDOUT;
-
- out_clear_bit:
-diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
-index f7e4a88d5d92..e28dd6475e39 100644
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -3089,7 +3089,6 @@ static void nfs_access_add_rbtree(struct inode *inode,
- 		else
- 			goto found;
+diff --git a/fs/btrfs/ioctl.c b/fs/btrfs/ioctl.c
+index 7e348bd2ccde..c232636ecdfe 100644
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -3731,7 +3731,9 @@ static long btrfs_ioctl_qgroup_assign(struct file *file, void __user *arg)
  	}
--	set->timestamp = ktime_get_ns();
- 	rb_link_node(&set->rb_node, parent, p);
- 	rb_insert_color(&set->rb_node, root_node);
- 	list_add_tail(&set->lru, &nfsi->access_cache_entry_lru);
-@@ -3114,6 +3113,7 @@ void nfs_access_add_cache(struct inode *inode, struct nfs_access_entry *set,
- 	cache->fsgid = cred->fsgid;
- 	cache->group_info = get_group_info(cred->group_info);
- 	cache->mask = set->mask;
-+	cache->timestamp = ktime_get_ns();
 
- 	/* The above field assignments must be visible
- 	 * before this item appears on the lru.  We cannot easily
+ 	/* update qgroup status and info */
++	mutex_lock(&fs_info->qgroup_ioctl_lock);
+ 	err = btrfs_run_qgroups(trans);
++	mutex_unlock(&fs_info->qgroup_ioctl_lock);
+ 	if (err < 0)
+ 		btrfs_handle_fs_error(fs_info, err,
+ 				      "failed to update qgroup status and info");
+diff --git a/fs/btrfs/qgroup.c b/fs/btrfs/qgroup.c
+index af97413abcf4..abf2b7f14307 100644
+--- a/fs/btrfs/qgroup.c
++++ b/fs/btrfs/qgroup.c
+@@ -2828,13 +2828,22 @@ int btrfs_qgroup_account_extents(struct btrfs_trans_handle *trans)
+ }
+
+ /*
+- * called from commit_transaction. Writes all changed qgroups to disk.
++ * Writes all changed qgroups to disk.
++ * Called by the transaction commit path and the qgroup assign ioctl.
+  */
+ int btrfs_run_qgroups(struct btrfs_trans_handle *trans)
+ {
+ 	struct btrfs_fs_info *fs_info = trans->fs_info;
+ 	int ret = 0;
+
++	/*
++	 * In case we are called from the qgroup assign ioctl, assert that we
++	 * are holding the qgroup_ioctl_lock, otherwise we can race with a quota
++	 * disable operation (ioctl) and access a freed quota root.
++	 */
++	if (trans->transaction->state != TRANS_STATE_COMMIT_DOING)
++		lockdep_assert_held(&fs_info->qgroup_ioctl_lock);
++
+ 	if (!fs_info->quota_root)
+ 		return ret;
+
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 98598bd1d2fa..34a6233fabaf 100644
+index ac22f7ca195a..e680835ad387 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1196,7 +1311,7 @@ index 98598bd1d2fa..34a6233fabaf 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -851,6 +853,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -852,6 +854,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1211,7 +1326,7 @@ index 98598bd1d2fa..34a6233fabaf 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -862,6 +872,8 @@ static inline bool efi_enabled(int feature)
+@@ -863,6 +873,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1220,7 +1335,7 @@ index 98598bd1d2fa..34a6233fabaf 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -883,6 +895,8 @@ static inline bool efi_enabled(int feature)
+@@ -884,6 +896,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1229,7 +1344,7 @@ index 98598bd1d2fa..34a6233fabaf 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -897,6 +911,7 @@ static inline void efi_find_mirror(void) {}
+@@ -898,6 +912,7 @@ static inline void efi_find_mirror(void) {}
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1237,7 +1352,7 @@ index 98598bd1d2fa..34a6233fabaf 100644
 
  /*
   * Variable Attributes
-@@ -1099,13 +1114,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1100,13 +1115,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
