@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc4.20230331git62bad54b26db.39
+%define pkgrelease 0.rc5.42
 %define kversion 6
-%define tarfile_release 6.3-rc4-161-g62bad54b26db
+%define tarfile_release 6.3-rc5
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20230331git62bad54b26db.39%{?buildid}%{?dist}
+%define specrelease 0.rc5.42%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3360,6 +3360,16 @@ fi
 #
 #
 %changelog
+* Mon Apr 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc5.42]
+- Linux v6.3.0-0.rc5
+
+* Sun Apr 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.00c7b5f4ddc5.41]
+- Linux v6.3.0-0.rc4.00c7b5f4ddc5
+
+* Sat Apr 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.7b50567bdcad.40]
+- redhat/configs: enable CONFIG_INTEL_TCC_COOLING for RHEL (David Arcari)
+- Linux v6.3.0-0.rc4.7b50567bdcad
+
 * Fri Mar 31 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.62bad54b26db.39]
 - Update Fedora ppc filters after config updates (Justin M. Forbes)
 - Update Fedora aarch64 filters after config updates (Justin M. Forbes)

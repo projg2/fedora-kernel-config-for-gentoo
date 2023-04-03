@@ -119,7 +119,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index da2586d4c728..7efbc45514bd 100644
+index ef4e96b9cd5b..44e93d66bab4 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -2879,7 +2879,7 @@ index 000000000000..c55fb108c6bb
 +}
 +EXPORT_SYMBOL(mark_partner_supported);
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index efff8078e395..1b4f8306cea6 100644
+index 9466b6a2abae..83ba3c9b4406 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
