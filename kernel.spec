@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc5.42
+%define pkgrelease 0.rc5.20230404git148341f0a2f5.43
 %define kversion 6
-%define tarfile_release 6.3-rc5
+%define tarfile_release 6.3-rc5-5-g148341f0a2f5
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.42%{?buildid}%{?dist}
+%define specrelease 0.rc5.20230404git148341f0a2f5.43%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -1061,7 +1061,7 @@ Requires: %{package_name}-tools = %{version}-%{release}
 Provides:  cpupowerutils-devel = 1:009-0.6.p1
 Obsoletes: cpupowerutils-devel < 1:009-0.6.p1
 %endif
-Requires: %{package_name}-libs = %{version}-%{release}
+Requires: %{package_name}-tools-libs = %{version}-%{release}
 Provides: %{package_name}-tools-devel
 %description -n %{package_name}-tools-libs-devel
 This package contains the development files for the tools/ directory from
@@ -3360,6 +3360,14 @@ fi
 #
 #
 %changelog
+* Tue Apr 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc5.148341f0a2f5.43]
+- Update Fedora arm filters after config updates (Nicolas Chauvet)
+- redhat/kernel.spec.template: Fix kernel-tools-libs-devel dependency (Prarit Bhargava)
+- redhat: fix the check for the n option (Patrick Talbert)
+- common: de-dupe some options that are the same (Peter Robinson)
+- generic: remove deleted options (Peter Robinson)
+- Linux v6.3.0-0.rc5.148341f0a2f5
+
 * Mon Apr 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc5.42]
 - Linux v6.3.0-0.rc5
 
