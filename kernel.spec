@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc5.20230405git76f598ba7d8e.44
+%define pkgrelease 0.rc5.20230406git99ddf2254feb.45
 %define kversion 6
-%define tarfile_release 6.3-rc5-22-g76f598ba7d8e
+%define tarfile_release 6.3-rc5-32-g99ddf2254feb
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20230405git76f598ba7d8e.44%{?buildid}%{?dist}
+%define specrelease 0.rc5.20230406git99ddf2254feb.45%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3360,6 +3360,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc5.99ddf2254feb.45]
+- Linux v6.3.0-0.rc5.99ddf2254feb
+
 * Wed Apr 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc5.76f598ba7d8e.44]
 - redhat: configs: Enable CONFIG_MEMTEST to enable memory test (Kate Hsuan)
 - Linux v6.3.0-0.rc5.76f598ba7d8e
