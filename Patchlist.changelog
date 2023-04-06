@@ -1,3 +1,15 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/efa74f28ec858cb955be08faf1086f05c3f7510a
+ efa74f28ec858cb955be08faf1086f05c3f7510a arm64: dts: rk3399-pinephone-pro: Add touchscreen support
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/a9e7700a801771e102607a569ff6864e22fd057d
+ a9e7700a801771e102607a569ff6864e22fd057d arm64: dts: rk3399-pinephone-pro: Add internal display support
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/bcbae486933e1967e9cc24d510cda81f064993cc
+ bcbae486933e1967e9cc24d510cda81f064993cc drm: panel: Add Himax HX8394 panel controller driver
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9d6a7048fd29c3ac5ae50b83620dcc5959490118
+ 9d6a7048fd29c3ac5ae50b83620dcc5959490118 dt-bindings: display: Add Himax HX8394 panel controller
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/b07be483040ffde4aea1f4979bf5aba52898e736
  b07be483040ffde4aea1f4979bf5aba52898e736 net: wwan: iosm: fixes 7560 modem crash
 
