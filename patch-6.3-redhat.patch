@@ -119,7 +119,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index ef4e96b9cd5b..44e93d66bab4 100644
+index 5aeea3d98fc0..ed4cb6f19654 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -842,7 +842,7 @@ index 84e7ba5314d3..efc96776f761 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 1ea8f173cca0..a9e3fb46c62c 100644
+index 4c15fae534f3..b3a9015d90b7 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -853,7 +853,7 @@ index 1ea8f173cca0..a9e3fb46c62c 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2267,6 +2268,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2263,6 +2264,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -870,7 +870,7 @@ index 1ea8f173cca0..a9e3fb46c62c 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2300,6 +2311,11 @@ static int __init etm4x_init(void)
+@@ -2296,6 +2307,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -882,7 +882,7 @@ index 1ea8f173cca0..a9e3fb46c62c 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2326,6 +2342,9 @@ static int __init etm4x_init(void)
+@@ -2322,6 +2338,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -1219,7 +1219,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 53ef028596c6..6014cd758c77 100644
+index d6a9bac91a4c..a1b60b4beb8e 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1689,10 +1689,10 @@ index 8e24ebcebfe5..25aa49292397 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index bee1b8a82020..cf02b902109d 100644
+index d0cdbfe771a9..ae8e0a19ee4b 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -8093,6 +8093,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -8094,6 +8094,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -1700,7 +1700,7 @@ index bee1b8a82020..cf02b902109d 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -8105,13 +8106,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -8106,13 +8107,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
