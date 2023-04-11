@@ -143,13 +143,13 @@ Summary: The Linux kernel
 # define buildid .local
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc6.49
+%define pkgrelease 0.rc6.20230411git0d3eb744aed4.50
 %define kversion 6
-%define tarfile_release 6.3-rc6
+%define tarfile_release 6.3-rc6-16-g0d3eb744aed4
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.49%{?buildid}%{?dist}
+%define specrelease 0.rc6.20230411git0d3eb744aed4.50%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3360,6 +3360,11 @@ fi
 #
 #
 %changelog
+* Tue Apr 11 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.0d3eb744aed4.50]
+- ipmi: ssif_bmc: Add SSIF BMC driver (Tony Camuso)
+- common: minor de-dupe of parallel port configs (Peter Robinson)
+- Linux v6.3.0-0.rc6.0d3eb744aed4
+
 * Mon Apr 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.49]
 - Linux v6.3.0-0.rc6
 
