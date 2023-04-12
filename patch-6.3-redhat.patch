@@ -1941,7 +1941,7 @@ index 979b776e3bcb..4eabcc0d8a91 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index b50e5c79f7e3..14c622041b43 100644
+index a5dda515fcd1..03a823c03579 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1523,6 +1523,22 @@ int pci_add_dynid(struct pci_driver *drv,

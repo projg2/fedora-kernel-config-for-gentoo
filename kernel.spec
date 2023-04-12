@@ -122,6 +122,7 @@ Summary: The Linux kernel
 
 # kernel package name
 %global package_name kernel
+%global gemini 0
 # Include Fedora files
 %global include_fedora 1
 # Include RHEL files
@@ -141,15 +142,16 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
+%define specrpmversion 6.3.0
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc6.20230411git0d3eb744aed4.50
+%define pkgrelease 0.rc6.20230412gite62252bc55b6.51
 %define kversion 6
-%define tarfile_release 6.3-rc6-16-g0d3eb744aed4
+%define tarfile_release 6.3-rc6-34-ge62252bc55b6
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20230411git0d3eb744aed4.50%{?buildid}%{?dist}
+%define specrelease 0.rc6.20230412gite62252bc55b6.51%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -318,7 +320,7 @@ Summary: The Linux kernel
 %define make_target bzImage
 %define image_install_path boot
 
-%define KVERREL %{version}-%{release}.%{_target_cpu}
+%define KVERREL %{specversion}-%{release}.%{_target_cpu}
 %define KVERREL_RE %(echo %KVERREL | sed 's/+/[+]/g')
 %define hdrarch %_target_cpu
 %define asmarch %_target_cpu
@@ -427,7 +429,7 @@ Summary: The Linux kernel
 %define with_bpftool 0
 %define with_selftests 0
 %define with_debug 0
-%define all_arch_configs %{name}-%{version}-*.config
+%define all_arch_configs %{name}-%{specrpmversion}-*.config
 %endif
 
 # sparse blows up on ppc
@@ -450,13 +452,13 @@ Summary: The Linux kernel
 %ifarch i686
 %define asmarch x86
 %define hdrarch i386
-%define all_arch_configs %{name}-%{version}-i?86*.config
+%define all_arch_configs %{name}-%{specrpmversion}-i?86*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
 %ifarch x86_64
 %define asmarch x86
-%define all_arch_configs %{name}-%{version}-x86_64*.config
+%define all_arch_configs %{name}-%{specrpmversion}-x86_64*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
@@ -467,19 +469,19 @@ Summary: The Linux kernel
 %define kernel_image vmlinux
 %define kernel_image_elf 1
 %define use_vdso 0
-%define all_arch_configs %{name}-%{version}-ppc64le*.config
+%define all_arch_configs %{name}-%{specrpmversion}-ppc64le*.config
 %endif
 
 %ifarch s390x
 %define asmarch s390
 %define hdrarch s390
-%define all_arch_configs %{name}-%{version}-s390x.config
+%define all_arch_configs %{name}-%{specrpmversion}-s390x.config
 %define kernel_image arch/s390/boot/bzImage
 %define vmlinux_decompressor arch/s390/boot/vmlinux
 %endif
 
 %ifarch %{arm}
-%define all_arch_configs %{name}-%{version}-arm*.config
+%define all_arch_configs %{name}-%{specrpmversion}-arm*.config
 %define skip_nonpae_vdso 1
 %define asmarch arm
 %define hdrarch arm
@@ -498,7 +500,7 @@ Summary: The Linux kernel
 %endif
 
 %ifarch aarch64
-%define all_arch_configs %{name}-%{version}-aarch64*.config
+%define all_arch_configs %{name}-%{specrpmversion}-aarch64*.config
 %define asmarch arm64
 %define hdrarch arm64
 %define make_target vmlinuz.efi
@@ -581,7 +583,7 @@ Summary: The Linux kernel
 Name: %{package_name}
 License: GPLv2 and Redistributable, no modification permitted
 URL: https://www.kernel.org/
-Version: %{specversion}
+Version: %{specrpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
@@ -924,7 +926,7 @@ The kernel meta package
 %if %{-o:0}%{!-o:1}\
 Provides: kernel = %{specversion}-%{pkg_release}\
 %endif\
-Provides: kernel-%{_target_cpu} = %{specversion}-%{pkg_release}%{?1:+%{1}}\
+Provides: kernel-%{_target_cpu} = %{specrpmversion}-%{pkg_release}%{?1:+%{1}}\
 Provides: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires(pre): %{kernel_prereq}\
@@ -961,6 +963,10 @@ options that can be passed to Linux kernel modules at load time.
 Summary: Header files for the Linux kernel for use by glibc
 Obsoletes: glibc-kernheaders < 3.0-46
 Provides: glibc-kernheaders = 3.0-46
+%if 0%{?gemini}
+Provides: kernel-headers = %{specversion}-%{release}
+Obsoletes: kernel-headers < %{specversion}
+%endif
 %description headers
 Kernel-headers includes the C header files that specify the interface
 between the Linux kernel and userspace libraries and programs.  The
@@ -970,13 +976,16 @@ glibc package.
 
 %package cross-headers
 Summary: Header files for the Linux kernel for use by cross-glibc
+%if 0%{?gemini}
+Provides: kernel-cross-headers = %{specversion}-%{release}
+Obsoletes: kernel-cross-headers < %{specversion}
+%endif
 %description cross-headers
 Kernel-cross-headers includes the C header files that specify the interface
 between the Linux kernel and userspace libraries and programs.  The
 header files define structures and constants that are needed for
 building most standard programs and are also needed for rebuilding the
 cross-glibc package.
-
 
 %package debuginfo-common-%{_target_cpu}
 Summary: Kernel source files used by %{name}-debuginfo packages
@@ -987,6 +996,9 @@ It provides the kernel source files common to all builds.
 
 %if %{with_perf}
 %package -n perf
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
 Summary: Performance monitoring for the Linux kernel
 Requires: bzip2
 License: GPLv2
@@ -995,8 +1007,11 @@ This package contains the perf tool, which enables performance monitoring
 of the Linux kernel.
 
 %package -n perf-debuginfo
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
 Summary: Debug information for package perf
-Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{specrpmversion}-%{release}
 AutoReqProv: no
 %description -n perf-debuginfo
 This package provides debug information for the perf package.
@@ -1008,6 +1023,9 @@ This package provides debug information for the perf package.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/perf(\.debug)?|.*%%{_libexecdir}/perf-core/.*|.*%%{_libdir}/libperf-jvmti.so(\.debug)?|XXX' -o perf-debuginfo.list}
 
 %package -n python3-perf
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
 Summary: Python bindings for apps which will manipulate perf events
 %description -n python3-perf
 The python3-perf package contains a module that permits applications
@@ -1015,8 +1033,11 @@ written in the Python programming language to use the interface
 to manipulate perf events.
 
 %package -n python3-perf-debuginfo
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
 Summary: Debug information for package perf python bindings
-Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{specrpmversion}-%{release}
 AutoReqProv: no
 %description -n python3-perf-debuginfo
 This package provides debug information for the perf python bindings.
@@ -1039,7 +1060,7 @@ Provides:  cpufrequtils = 1:009-0.6.p1
 Obsoletes: cpufreq-utils < 1:009-0.6.p1
 Obsoletes: cpufrequtils < 1:009-0.6.p1
 Obsoletes: cpuspeed < 1:1.5-16
-Requires: %{package_name}-tools-libs = %{version}-%{release}
+Requires: %{package_name}-tools-libs = %{specrpmversion}-%{release}
 %endif
 %define __requires_exclude ^%{_bindir}/python
 %description -n %{package_name}-tools
@@ -1081,6 +1102,9 @@ This package provides debug information for package %{package_name}-tools.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|.*%%{_sbindir}/intel_sdsi(\.debug)?|XXX' -o %{package_name}-tools-debuginfo.list}
 
 %package -n rtla
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
 Summary: RTLA: Real-Time Linux Analysis tools
 %description -n rtla
 The rtla tool is a meta-tool that includes a set of commands that
@@ -1108,7 +1132,7 @@ manipulation of eBPF programs and maps.
 Summary: Debug information for package bpftool
 Version: %{bpftoolversion}
 Group: Development/Debug
-Requires: %{name}-debuginfo-common-%{_target_cpu} = %{specversion}-%{release}
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{specrpmversion}-%{release}
 AutoReqProv: no
 %description -n bpftool-debuginfo
 This package provides debug information for the bpftool package.
@@ -1117,7 +1141,7 @@ This package provides debug information for the bpftool package.
 
 # Setting "Version:" above overrides the internal {version} macro,
 # need to restore it here
-%define version %{specversion}
+%define version %{specrpmversion}
 
 # with_bpftool
 %endif
@@ -1177,8 +1201,8 @@ Linux kernel, suitable for the kabi-dw tool.
 %define kernel_debuginfo_package() \
 %package %{?1:%{1}-}debuginfo\
 Summary: Debug information for package %{name}%{?1:-%{1}}\
-Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}\
-Provides: %{name}%{?1:-%{1}}-debuginfo-%{_target_cpu} = %{version}-%{release}\
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: %{name}%{?1:-%{1}}-debuginfo-%{_target_cpu} = %{specrpmversion}-%{release}\
 Provides: installonlypkg(kernel)\
 AutoReqProv: no\
 %description %{?1:%{1}-}debuginfo\
@@ -1194,8 +1218,8 @@ This is required to use SystemTap with %{name}%{?1:-%{1}}-%{KVERREL}.\
 %define kernel_devel_package(m) \
 %package %{?1:%{1}-}devel\
 Summary: Development package for building kernel modules to match the %{?2:%{2} }kernel\
-Provides: kernel%{?1:-%{1}}-devel-%{_target_cpu} = %{version}-%{release}\
-Provides: kernel-devel-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
+Provides: kernel%{?1:-%{1}}-devel-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: kernel-devel-%{_target_cpu} = %{specrpmversion}-%{release}%{?1:+%{1}}\
 Provides: kernel-devel-uname-r = %{KVERREL}%{?1:+%{1}}\
 Provides: installonlypkg(kernel)\
 AutoReqProv: no\
@@ -1224,8 +1248,8 @@ against the %{?2:%{2} }kernel package.\
 %define kernel_devel_matched_package(m) \
 %package %{?1:%{1}-}devel-matched\
 Summary: Meta package to install matching core and devel packages for a given %{?2:%{2} }kernel\
-Requires: %{package_name}%{?1:-%{1}}-devel = %{version}-%{release}\
-Requires: %{package_name}%{?1:-%{1}}-core = %{version}-%{release}\
+Requires: %{package_name}%{?1:-%{1}}-devel = %{specrpmversion}-%{release}\
+Requires: %{package_name}%{?1:-%{1}}-core = %{specrpmversion}-%{release}\
 %description %{?1:%{1}-}devel-matched\
 This meta package is used to install matching core and devel packages for a given %{?2:%{2} }kernel.\
 %{nil}
@@ -1250,9 +1274,9 @@ This package provides *.ipa-clones files.\
 %package %{?1:%{1}-}modules-internal\
 Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
 Group: System Environment/Kernel\
-Provides: kernel%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{version}-%{release}\
-Provides: kernel%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel%{?1:-%{1}}-modules-internal = %{version}-%{release}%{?1:+%{1}}\
+Provides: kernel%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: kernel%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{specrpmversion}-%{release}%{?1:+%{1}}\
+Provides: kernel%{?1:-%{1}}-modules-internal = %{specrpmversion}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
 Provides: kernel%{?1:-%{1}}-modules-internal-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
@@ -1271,9 +1295,9 @@ This package provides kernel modules for the %{?2:%{2} }kernel package for Red H
 %define kernel_modules_extra_package(m) \
 %package %{?1:%{1}-}modules-extra\
 Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
-Provides: kernel%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{version}-%{release}\
-Provides: kernel%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel%{?1:-%{1}}-modules-extra = %{version}-%{release}%{?1:+%{1}}\
+Provides: kernel%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: kernel%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{specrpmversion}-%{release}%{?1:+%{1}}\
+Provides: kernel%{?1:-%{1}}-modules-extra = %{specrpmversion}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
 Provides: kernel%{?1:-%{1}}-modules-extra-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
@@ -1295,9 +1319,9 @@ This package provides less commonly used kernel modules for the %{?2:%{2} }kerne
 %define kernel_modules_package(m) \
 %package %{?1:%{1}-}modules\
 Summary: kernel modules to match the %{?2:%{2}-}core kernel\
-Provides: kernel%{?1:-%{1}}-modules-%{_target_cpu} = %{version}-%{release}\
-Provides: kernel-modules-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel-modules = %{version}-%{release}%{?1:+%{1}}\
+Provides: kernel%{?1:-%{1}}-modules-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: kernel-modules-%{_target_cpu} = %{specrpmversion}-%{release}%{?1:+%{1}}\
+Provides: kernel-modules = %{specrpmversion}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
 Provides: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
@@ -1318,9 +1342,9 @@ This package provides commonly used kernel modules for the %{?2:%{2}-}core kerne
 %define kernel_modules_core_package(m) \
 %package %{?1:%{1}-}modules-core\
 Summary: Core kernel modules to match the %{?2:%{2}-}core kernel\
-Provides: kernel%{?1:-%{1}}-modules-core-%{_target_cpu} = %{version}-%{release}\
-Provides: kernel-modules-core-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel-modules-core = %{version}-%{release}%{?1:+%{1}}\
+Provides: kernel%{?1:-%{1}}-modules-core-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: kernel-modules-core-%{_target_cpu} = %{specrpmversion}-%{release}%{?1:+%{1}}\
+Provides: kernel-modules-core = %{specrpmversion}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
 Provides: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
@@ -1395,9 +1419,9 @@ Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 %package %{?1:%{1}-}modules-partner\
 Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
 Group: System Environment/Kernel\
-Provides: kernel%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{version}-%{release}\
-Provides: kernel%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel%{?1:-%{1}}-modules-partner = %{version}-%{release}%{?1:+%{1}}\
+Provides: kernel%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: kernel%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{specrpmversion}-%{release}%{?1:+%{1}}\
+Provides: kernel%{?1:-%{1}}-modules-partner = %{specrpmversion}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
 Provides: kernel%{?1:-%{1}}-modules-partner-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
@@ -1539,7 +1563,7 @@ ApplyOptionalPatch linux-kernel-test.patch
 # Any further pre-build tree manipulations happen here.
 
 chmod +x scripts/checkpatch.pl
-mv COPYING COPYING-%{version}-%{release}
+mv COPYING COPYING-%{specrpmversion}-%{release}
 
 # Mangle /usr/bin/python shebangs to /usr/bin/python3
 # Mangle all Python shebangs to be Python 3 explicitly
@@ -1576,7 +1600,7 @@ cp %{SOURCE80} .
 cp %{SOURCE3000} .
 # kernel-local
 cp %{SOURCE3001} .
-FLAVOR=%{primary_target} SPECPACKAGE_NAME=%{name} SPECVERSION=%{version} ./generate_all_configs.sh %{debugbuildsenabled}
+FLAVOR=%{primary_target} SPECPACKAGE_NAME=%{name} SPECVERSION=%{specversion} SPECRPMVERSION=%{specrpmversion} ./generate_all_configs.sh %{debugbuildsenabled}
 
 # Merge in any user-provided local config option changes
 %ifnarch %nobuildarches
@@ -1634,7 +1658,7 @@ for opt in %{clang_make_opts}; do
   OPTS="$OPTS -m $opt"
 done
 %endif
-RHJOBS=$RPM_BUILD_NCPUS SPECPACKAGE_NAME=%{name} ./process_configs.sh $OPTS %{specversion}
+RHJOBS=$RPM_BUILD_NCPUS SPECPACKAGE_NAME=%{name} ./process_configs.sh $OPTS %{specrpmversion}
 
 cp %{SOURCE82} .
 RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
@@ -1699,10 +1723,10 @@ InitBuildVars() {
     Variant=$1
 
     # Pick the right kernel config file
-    Config=%{name}-%{version}-%{_target_cpu}${Variant:+-${Variant}}.config
+    Config=%{name}-%{specrpmversion}-%{_target_cpu}${Variant:+-${Variant}}.config
     DevelDir=/usr/src/kernels/%{KVERREL}${Variant:++${Variant}}
 
-    KernelVer=%{version}-%{release}.%{_target_cpu}${Variant:++${Variant}}
+    KernelVer=%{specversion}-%{release}.%{_target_cpu}${Variant:++${Variant}}
 
     # make sure EXTRAVERSION says what we want it to say
     # Trim the release if this is a CI build, since KERNELVERSION is limited to 64 characters
@@ -3360,6 +3384,14 @@ fi
 #
 #
 %changelog
+* Wed Apr 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.e62252bc55b6.51]
+- kernel.spec: Gemini: add Epoch to perf and rtla subpackages (Jan Stancek)
+- kernel.spec: Gemini: fix header provides for upgrade path (Jan Stancek)
+- redhat: introduce Gemini versioning (Jan Stancek)
+- redhat: separate RPM version from uname version (Jan Stancek)
+- redhat: introduce GEMINI and RHEL_REBASE_NUM variable (Jan Stancek)
+- Linux v6.3.0-0.rc6.e62252bc55b6
+
 * Tue Apr 11 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.0d3eb744aed4.50]
 - ipmi: ssif_bmc: Add SSIF BMC driver (Tony Camuso)
 - common: minor de-dupe of parallel port configs (Peter Robinson)
