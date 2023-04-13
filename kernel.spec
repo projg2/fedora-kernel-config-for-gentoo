@@ -145,13 +145,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.3.0
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc6.20230412gite62252bc55b6.51
+%define pkgrelease 0.rc6.20230413gitde4664485abb.52
 %define kversion 6
-%define tarfile_release 6.3-rc6-34-ge62252bc55b6
+%define tarfile_release 6.3-rc6-46-gde4664485abb
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20230412gite62252bc55b6.51%{?buildid}%{?dist}
+%define specrelease 0.rc6.20230413gitde4664485abb.52%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3384,6 +3384,9 @@ fi
 #
 #
 %changelog
+* Thu Apr 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.de4664485abb.52]
+- Linux v6.3.0-0.rc6.de4664485abb
+
 * Wed Apr 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.e62252bc55b6.51]
 - kernel.spec: Gemini: add Epoch to perf and rtla subpackages (Jan Stancek)
 - kernel.spec: Gemini: fix header provides for upgrade path (Jan Stancek)
