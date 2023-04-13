@@ -26,7 +26,6 @@
  drivers/iommu/iommu.c                              |  22 +
  drivers/pci/quirks.c                               |  24 +
  drivers/usb/core/hub.c                             |   7 +
- drivers/usb/host/xhci-pci.c                        |   7 +-
  include/linux/efi.h                                |  22 +-
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -39,7 +38,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 41 files changed, 1637 insertions(+), 181 deletions(-)
+ 40 files changed, 1634 insertions(+), 177 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/display/panel/himax,hx8394.yaml b/Documentation/devicetree/bindings/display/panel/himax,hx8394.yaml
 new file mode 100644
@@ -124,7 +123,7 @@ index 000000000000..1b2a1baa26f9
 +
 +...
 diff --git a/Makefile b/Makefile
-index 6ec0ec452e46..40a89b4c3682 100644
+index 416490daa76a..f65904d89130 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1437,7 +1436,7 @@ index 84e7ba5314d3..efc96776f761 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 77bca6932f01..27f5455aef6c 100644
+index a65b41017cec..f0ebfbba1f2f 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -1448,7 +1447,7 @@ index 77bca6932f01..27f5455aef6c 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2216,6 +2217,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2212,6 +2213,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -1465,7 +1464,7 @@ index 77bca6932f01..27f5455aef6c 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2249,6 +2260,11 @@ static int __init etm4x_init(void)
+@@ -2245,6 +2256,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -1477,7 +1476,7 @@ index 77bca6932f01..27f5455aef6c 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2275,6 +2291,9 @@ static int __init etm4x_init(void)
+@@ -2271,6 +2287,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -1772,26 +1771,6 @@ index 97a0f8faea6e..d837548d2024 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/drivers/usb/host/xhci-pci.c b/drivers/usb/host/xhci-pci.c
-index fb988e4ea924..6db07ca419c3 100644
---- a/drivers/usb/host/xhci-pci.c
-+++ b/drivers/usb/host/xhci-pci.c
-@@ -771,12 +771,11 @@ static struct pci_driver xhci_pci_driver = {
- 	/* suspend and resume implemented later */
-
- 	.shutdown = 	usb_hcd_pci_shutdown,
--	.driver = {
- #ifdef CONFIG_PM
--		.pm = &usb_hcd_pci_pm_ops,
--#endif
--		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
-+	.driver = {
-+		.pm = &usb_hcd_pci_pm_ops
- 	},
-+#endif
- };
-
- static int __init xhci_pci_init(void)
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index ac22f7ca195a..e680835ad387 100644
 --- a/include/linux/efi.h
