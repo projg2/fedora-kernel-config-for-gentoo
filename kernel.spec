@@ -145,13 +145,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.3.0
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc7.56
+%define pkgrelease 0.rc7.20230420gitcb0856346a60.59
 %define kversion 6
-%define tarfile_release 6.3-rc7
+%define tarfile_release 6.3-rc7-89-gcb0856346a60
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.56%{?buildid}%{?dist}
+%define specrelease 0.rc7.20230420gitcb0856346a60.59%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -680,7 +680,12 @@ BuildConflicts: dwarves < 1.13
 %undefine _unique_debug_srcs
 %undefine _debugsource_packages
 %undefine _debuginfo_subpackages
+
+%if 0%{?fedora}
+%global _find_debuginfo_opts -r -q
+%else
 %global _find_debuginfo_opts -r
+%endif
 %global _missing_build_ids_terminate_build 1
 %global _no_recompute_build_ids 1
 %endif
@@ -1567,6 +1572,9 @@ ApplyOptionalPatch linux-kernel-test.patch
 
 chmod +x scripts/checkpatch.pl
 mv COPYING COPYING-%{specrpmversion}-%{release}
+
+# on linux-next prevent scripts/setlocalversion from mucking with our version numbers
+rm -f localversion-next
 
 # Mangle /usr/bin/python shebangs to /usr/bin/python3
 # Mangle all Python shebangs to be Python 3 explicitly
@@ -3074,10 +3082,12 @@ touch %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?-v:+%
 %define kernel_uki_virt_scripts() \
 %{expand:%%posttrans %{?1:%{1}-}uki-virt}\
 mkdir -p /boot/efi/EFI/Linux\
-cp /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz-virt.efi /boot/efi/EFI/Linux/vmlinuz-%{KVERREL}%{?1:+%{1}}-virt.efi\
+entry_token=$(kernel-install inspect | grep KERNEL_INSTALL_ENTRY_TOKEN: | cut -d ' ' -f2)\
+cp /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz-virt.efi /boot/efi/EFI/Linux/${entry_token}-%{KVERREL}%{?1:+%{1}}.efi\
 %{nil}\
 %{expand:%%postun %{?1:%{1}-}uki-virt}\
-rm -f /boot/efi/EFI/Linux/vmlinuz-%{KVERREL}%{?1:+%{1}}-virt.efi\
+entry_token=$(kernel-install inspect | grep KERNEL_INSTALL_ENTRY_TOKEN: | cut -d ' ' -f2)\
+rm -f /boot/efi/EFI/Linux/${entry_token}-%{KVERREL}%{?1:+%{1}}.efi\
 %{nil}
 
 #
@@ -3354,7 +3364,7 @@ fi
 %if %{with_efiuki}\
 %{expand:%%files %{?3:%{3}-}uki-virt}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi\
-%ghost /%{image_install_path}/efi/EFI/Linux/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}-virt.efi\
+%ghost /%{image_install_path}/efi/EFI/Linux/%{?-k:%{-k*}}%{!?-k:*}-%{KVERREL}%{?3:+%{3}}.efi\
 %endif\
 %if %{?3:1} %{!?3:0}\
 %{expand:%%files %{3}}\
@@ -3399,6 +3409,19 @@ fi
 #
 #
 %changelog
+* Thu Apr 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.cb0856346a60.59]
+- redhat/Makefile: Support building linux-next (Thorsten Leemhuis)
+- redhat/Makefile: support building stable-rc versions (Thorsten Leemhuis)
+- redhat/Makefile: Add target to print DISTRELEASETAG (Thorsten Leemhuis)
+
+* Thu Apr 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.cb0856346a60.58]
+- Linux v6.3.0-0.rc7.cb0856346a60
+
+* Wed Apr 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.af67688dca57.57]
+- kernel.spec: Fix UKI naming to comply with BLS (Philipp Rudo)
+- redhat/kernel.spec.template: Suppress 'extracting debug info' noise in build log (Prarit Bhargava)
+- Linux v6.3.0-0.rc7.af67688dca57
+
 * Mon Apr 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.56]
 - Linux v6.3.0-0.rc7
 

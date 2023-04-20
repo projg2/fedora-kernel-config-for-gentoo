@@ -66,7 +66,7 @@
  65 files changed, 1544 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 6221a1d057dd..90c169923eda 100644
+index 7016cb12dc4e..64bbc2312980 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -6530,6 +6530,15 @@
