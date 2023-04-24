@@ -145,13 +145,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.3.0
 %define specversion 6.3.0
 %define patchversion 6.3
-%define pkgrelease 0.rc7.20230420gitcb0856346a60.59
+%define pkgrelease 63
 %define kversion 6
-%define tarfile_release 6.3-rc7-89-gcb0856346a60
+%define tarfile_release 6.3
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20230420gitcb0856346a60.59%{?buildid}%{?dist}
+%define specrelease 63%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.0
 
@@ -3409,10 +3409,22 @@ fi
 #
 #
 %changelog
-* Thu Apr 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.cb0856346a60.59]
+* Mon Apr 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-63]
 - redhat/Makefile: Support building linux-next (Thorsten Leemhuis)
 - redhat/Makefile: support building stable-rc versions (Thorsten Leemhuis)
 - redhat/Makefile: Add target to print DISTRELEASETAG (Thorsten Leemhuis)
+
+* Mon Apr 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-62]
+- Linux v6.3.0
+
+* Sun Apr 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.622322f53c6d.61]
+- Linux v6.3.0-0.rc7.622322f53c6d
+
+* Sat Apr 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.8e41e0a57566.60]
+- Linux v6.3.0-0.rc7.8e41e0a57566
+
+* Fri Apr 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.2af3e53a4dc0.59]
+- Linux v6.3.0-0.rc7.2af3e53a4dc0
 
 * Thu Apr 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.cb0856346a60.58]
 - Linux v6.3.0-0.rc7.cb0856346a60
