@@ -3,7 +3,7 @@
  Kconfig.redhat                                     |  17 +
  Makefile                                           |  20 +-
  arch/arm/Kconfig                                   |   4 +-
- arch/arm64/Kconfig                                 |   3 +-
+ arch/arm64/Kconfig                                 |   2 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
@@ -43,7 +43,6 @@
  include/linux/efi.h                                |  22 +-
  include/linux/kernel.h                             |  21 +
  include/linux/lsm_hook_defs.h                      |   2 +
- include/linux/lsm_hooks.h                          |   6 +
  include/linux/module.h                             |   1 +
  include/linux/panic.h                              |  18 +-
  include/linux/pci.h                                |  16 +
@@ -62,14 +61,14 @@
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
- security/security.c                                |   6 +
- 65 files changed, 1544 insertions(+), 189 deletions(-)
+ security/security.c                                |  12 +
+ 64 files changed, 1543 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 7016cb12dc4e..64bbc2312980 100644
+index 10e2e5c3ff0b..47abad173cdd 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6530,6 +6530,15 @@
+@@ -6527,6 +6527,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -157,7 +156,7 @@ index f5543eef4f82..44f8a5e7b84b 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index e24a9820e12f..c39629f18c95 100644
+index d64ad0fe6c0c..ac3c18ec1f0e 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -1306,9 +1306,9 @@ config HIGHMEM
@@ -173,7 +172,7 @@ index e24a9820e12f..c39629f18c95 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 1023e896d46b..55822162d9ee 100644
+index 1023e896d46b..a5bb8dc90d68 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1238,7 +1238,7 @@ endchoice
@@ -185,14 +184,6 @@ index 1023e896d46b..55822162d9ee 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1488,6 +1488,7 @@ config XEN
- config ARCH_FORCE_MAX_ORDER
- 	int "Maximum zone order" if ARM64_4K_PAGES || ARM64_16K_PAGES
- 	default "14" if ARM64_64K_PAGES
-+	default "13" if (ARCH_THUNDER && !ARM64_64K_PAGES)
- 	range 12 14 if ARM64_16K_PAGES
- 	default "12" if ARM64_16K_PAGES
- 	range 11 16 if ARM64_4K_PAGES
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index b0d00032479d..afb9544fb007 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -1870,7 +1861,7 @@ index 40bce7495af8..fe339ce1a212 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 094b76dc7164..ea6c9eaeed9a 100644
+index 6bb55e61e8e8..3bf124aca5ff 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -403,6 +403,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -1882,23 +1873,6 @@ index 094b76dc7164..ea6c9eaeed9a 100644
 
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
-diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 6e156d2acffc..cf65032538ea 100644
---- a/include/linux/lsm_hooks.h
-+++ b/include/linux/lsm_hooks.h
-@@ -1618,6 +1618,12 @@
-  *	@what: kernel feature being accessed.
-  *	Return 0 if permission is granted.
-  *
-+ * @lock_kernel_down
-+ * 	Put the kernel into lock-down mode.
-+ *
-+ * 	@where: Where the lock-down is originating from (e.g. command line option)
-+ * 	@level: The lock-down level (can only increase)
-+ *
-  * Security hooks for perf events
-  *
-  * @perf_event_open:
 diff --git a/include/linux/module.h b/include/linux/module.h
 index 4435ad9439ab..b4ff17720fb9 100644
 --- a/include/linux/module.h
@@ -2501,10 +2475,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 5984d0d550b4..e01d28e48d9c 100644
+index e2734e9e44d5..52344c344e7a 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -485,6 +485,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -482,6 +482,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2512,7 +2486,7 @@ index 5984d0d550b4..e01d28e48d9c 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1400,6 +1401,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1388,6 +1389,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -2537,7 +2511,7 @@ index c88bb30a8b0b..8bdbf31c5570 100644
  	default y
  	help
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 10ef068f598d..d7953f0ee28a 100644
+index 6fc72b3afbde..525c7119c8e3 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
@@ -2973,25 +2947,31 @@ index e84ddf484010..d0501353a4b9 100644
  	prompt "Kernel default lockdown mode"
  	default LOCK_DOWN_KERNEL_FORCE_NONE
 diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-index a79b985e917e..772a69bf43ec 100644
+index 68d19632aeb7..ef348935b6ff 100644
 --- a/security/lockdown/lockdown.c
 +++ b/security/lockdown/lockdown.c
 @@ -73,6 +73,7 @@ static int lockdown_is_locked_down(enum lockdown_reason what)
 
- static struct security_hook_list lockdown_hooks[] __lsm_ro_after_init = {
+ static struct security_hook_list lockdown_hooks[] __ro_after_init = {
  	LSM_HOOK_INIT(locked_down, lockdown_is_locked_down),
 +	LSM_HOOK_INIT(lock_kernel_down, lock_kernel_down),
  };
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index cf6cc576736f..3653a4f35265 100644
+index d5ff7ff45b77..ac7d177a5fea 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2706,6 +2706,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5167,6 +5167,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
++/**
++ * security_lock_kernel_down() - Put the kernel into lock-down mode.
++ *
++ * @where: Where the lock-down is originating from (e.g. command line option)
++ * @level: The lock-down level (can only increase)
++ */
 +int security_lock_kernel_down(const char *where, enum lockdown_reason level)
 +{
 +	return call_int_hook(lock_kernel_down, 0, where, level);
@@ -2999,5 +2979,5 @@ index cf6cc576736f..3653a4f35265 100644
 +EXPORT_SYMBOL(security_lock_kernel_down);
 +
  #ifdef CONFIG_PERF_EVENTS
- int security_perf_event_open(struct perf_event_attr *attr, int type)
- {
+ /**
+  * security_perf_event_open() - Check if a perf event open is allowed

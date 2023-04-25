@@ -142,18 +142,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.3.0
-%define specversion 6.3.0
-%define patchversion 6.3
-%define pkgrelease 63
+%define specrpmversion 6.4.0
+%define specversion 6.4.0
+%define patchversion 6.4
+%define pkgrelease 0.rc0.20230425git173ea743bf7a.3
 %define kversion 6
-%define tarfile_release 6.3
+%define tarfile_release 6.3-436-g173ea743bf7a
 # This is needed to do merge window version magic
-%define patchlevel 3
+%define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 63%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230425git173ea743bf7a.3%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.3.0
+%define kabiversion 6.4.0
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3409,192 +3409,66 @@ fi
 #
 #
 %changelog
-* Mon Apr 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-63]
+* Tue Apr 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.173ea743bf7a.3]
 - redhat/Makefile: Support building linux-next (Thorsten Leemhuis)
 - redhat/Makefile: support building stable-rc versions (Thorsten Leemhuis)
 - redhat/Makefile: Add target to print DISTRELEASETAG (Thorsten Leemhuis)
 
-* Mon Apr 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-62]
-- Linux v6.3.0
-
-* Sun Apr 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.622322f53c6d.61]
-- Linux v6.3.0-0.rc7.622322f53c6d
-
-* Sat Apr 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.8e41e0a57566.60]
-- Linux v6.3.0-0.rc7.8e41e0a57566
-
-* Fri Apr 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.2af3e53a4dc0.59]
-- Linux v6.3.0-0.rc7.2af3e53a4dc0
-
-* Thu Apr 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.cb0856346a60.58]
-- Linux v6.3.0-0.rc7.cb0856346a60
-
-* Wed Apr 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.af67688dca57.57]
+* Tue Apr 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.173ea743bf7a.2]
+- Reset RHEL_RELEASE for the 6.4 cycle (Justin M. Forbes)
+- Fix up the RHEL configs for xtables and ipset (Justin M. Forbes)
+- ark: enable wifi on aarch64 (Íñigo Huguet)
+- fedora: wifi: hermes: disable 802.11b driver (Peter Robinson)
+- fedora: wifi: libertas: use the LIBERTAS_THINFIRM driver (Peter Robinson)
+- fedora: wifi: disable Zydas vendor (Peter Robinson)
+- redhat: fix python ValueError in error path of merge.py (Clark Williams)
+- fedora: arm: minor updates (Peter Robinson)
 - kernel.spec: Fix UKI naming to comply with BLS (Philipp Rudo)
 - redhat/kernel.spec.template: Suppress 'extracting debug info' noise in build log (Prarit Bhargava)
-- Linux v6.3.0-0.rc7.af67688dca57
-
-* Mon Apr 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc7.56]
-- Linux v6.3.0-0.rc7
-
-* Sun Apr 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.3e7bb4f24617.55]
-- Linux v6.3.0-0.rc6.3e7bb4f24617
-
-* Sat Apr 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.7a934f4bd7d6.54]
 - Fedora 6.3 configs part 2 (Justin M. Forbes)
-- Linux v6.3.0-0.rc6.7a934f4bd7d6
-
-* Fri Apr 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.44149752e998.53]
 - redhat/configs: Enable CONFIG_X86_KERNEL_IBT for Fedora and ARK (Josh Poimboeuf)
 - kernel.spec: gcov: make gcov subpackages per variant (Jan Stancek)
-- Linux v6.3.0-0.rc6.44149752e998
-
-* Thu Apr 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.de4664485abb.52]
-- Linux v6.3.0-0.rc6.de4664485abb
-
-* Wed Apr 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.e62252bc55b6.51]
 - kernel.spec: Gemini: add Epoch to perf and rtla subpackages (Jan Stancek)
 - kernel.spec: Gemini: fix header provides for upgrade path (Jan Stancek)
 - redhat: introduce Gemini versioning (Jan Stancek)
 - redhat: separate RPM version from uname version (Jan Stancek)
 - redhat: introduce GEMINI and RHEL_REBASE_NUM variable (Jan Stancek)
-- Linux v6.3.0-0.rc6.e62252bc55b6
-
-* Tue Apr 11 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.0d3eb744aed4.50]
 - ipmi: ssif_bmc: Add SSIF BMC driver (Tony Camuso)
 - common: minor de-dupe of parallel port configs (Peter Robinson)
-- Linux v6.3.0-0.rc6.0d3eb744aed4
-
-* Mon Apr 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc6.49]
-- Linux v6.3.0-0.rc6
-
-* Sun Apr 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc5.cdc9718d5e59.48]
-- Linux v6.3.0-0.rc5.cdc9718d5e59
-
-* Sat Apr 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc5.aa318c48808c.47]
 - Fedora 6.3 configs part 1 (Justin M. Forbes)
-- Linux v6.3.0-0.rc5.aa318c48808c
-
-* Fri Apr 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc5.f2afccfefe7b.46]
-- Linux v6.3.0-0.rc5.f2afccfefe7b
-
-* Thu Apr 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc5.99ddf2254feb.45]
-- Linux v6.3.0-0.rc5.99ddf2254feb
-
-* Wed Apr 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc5.76f598ba7d8e.44]
 - redhat: configs: Enable CONFIG_MEMTEST to enable memory test (Kate Hsuan)
-- Linux v6.3.0-0.rc5.76f598ba7d8e
-
-* Tue Apr 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc5.148341f0a2f5.43]
 - Update Fedora arm filters after config updates (Nicolas Chauvet)
 - redhat/kernel.spec.template: Fix kernel-tools-libs-devel dependency (Prarit Bhargava)
 - redhat: fix the check for the n option (Patrick Talbert)
 - common: de-dupe some options that are the same (Peter Robinson)
 - generic: remove deleted options (Peter Robinson)
-- Linux v6.3.0-0.rc5.148341f0a2f5
-
-* Mon Apr 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc5.42]
-- Linux v6.3.0-0.rc5
-
-* Sun Apr 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.00c7b5f4ddc5.41]
-- Linux v6.3.0-0.rc4.00c7b5f4ddc5
-
-* Sat Apr 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.7b50567bdcad.40]
 - redhat/configs: enable CONFIG_INTEL_TCC_COOLING for RHEL (David Arcari)
-- Linux v6.3.0-0.rc4.7b50567bdcad
-
-* Fri Mar 31 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.62bad54b26db.39]
 - Update Fedora ppc filters after config updates (Justin M. Forbes)
 - Update Fedora aarch64 filters after config updates (Justin M. Forbes)
-- Linux v6.3.0-0.rc4.62bad54b26db
-
-* Thu Mar 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.ffe78bbd5121.38]
 - fedora: arm: Updates for 6.3 (Peter Robinson)
-- Linux v6.3.0-0.rc4.ffe78bbd5121
-
-* Wed Mar 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.fcd476ea6a88.37]
 - redhat: kunit: cleanup NITRO config and enable rescale test (Nico Pache)
 - kernel.spec: use %%{package_name} to fix kernel-devel-matched Requires (Jan Stancek)
 - kernel.spec: use %%{package_name} also for abi-stablelist subpackages (Jan Stancek)
 - kernel.spec: use %%{package_name} also for tools subpackages (Jan Stancek)
-- Linux v6.3.0-0.rc4.fcd476ea6a88
-
-* Tue Mar 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.3a93e40326c8.36]
-- Linux v6.3.0-0.rc4.3a93e40326c8
-
-* Mon Mar 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc4.35]
 - generic: common: Parport and paride/ata cleanups (Peter Robinson)
-- Linux v6.3.0-0.rc4
-
-* Sun Mar 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.da8e7da11e4b.34]
-- Linux v6.3.0-0.rc3.da8e7da11e4b
-
-* Sat Mar 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.65aca32efdcb.33]
 - CONFIG_SND_SOC_CS42L83 is no longer common (Justin M. Forbes)
-- Linux v6.3.0-0.rc3.65aca32efdcb
-
-* Fri Mar 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.1e760fa3596e.32]
-- Revert "acpi: prefer booting with ACPI over DTS" (Mark Salter)
-- Revert "Fixes "acpi: prefer booting with ACPI over DTS" to be RHEL only" (Mark Salter)
 - configs: arm: bring some configs in line with rhel configs in c9s (Mark Salter)
-- Linux v6.3.0-0.rc3.1e760fa3596e
-
-* Thu Mar 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.fff5a5e7f528.31]
-- Linux v6.3.0-0.rc3.fff5a5e7f528
-
-* Wed Mar 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.a1effab7a3a3.30]
 - arm64/configs: Put some arm64 configs in the right place (Mark Salter)
 - cleanup removed R8188EU config (Peter Robinson)
 - Make RHJOBS container friendly (Don Zickus)
 - Remove scmversion from kernel.spec.template (Don Zickus)
 - redhat/configs: Enable CONFIG_SND_SOC_CS42L83 (Neal Gompa)
-- Linux v6.3.0-0.rc3.a1effab7a3a3
-
-* Mon Mar 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc3.29]
-- Linux v6.3.0-0.rc3
-
-* Sun Mar 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.a3671bd86a97.28]
-- Linux v6.3.0-0.rc2.a3671bd86a97
-
-* Sat Mar 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.478a351ce0d6.27]
 - Use RHJOBS for create-tarball (Don Zickus)
 - Enable CONFIG_NET_SCH_FQ_PIE for Fedora (Justin M. Forbes)
-- Linux v6.3.0-0.rc2.478a351ce0d6
-
-* Fri Mar 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.38e04b3e4240.26]
 - Make Fedora debug configs more useful for debug (Justin M. Forbes)
 - redhat/configs: enable Octeon TX2 network drivers for RHEL (Michal Schmidt) [2040643]
 - redhat/kernel.spec.template: fix installonlypkg for meta package (Jan Stancek)
-- Linux v6.3.0-0.rc2.38e04b3e4240
-
-* Thu Mar 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.9c1bec9c0b08.25]
 - redhat: version two of Makefile.rhelver tweaks (Clark Williams)
-- Linux v6.3.0-0.rc2.9c1bec9c0b08
-
-* Wed Mar 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.6015b1aca1a2.24]
 - redhat/configs: Disable CONFIG_GCC_PLUGINS (Prarit Bhargava)
-- Linux v6.3.0-0.rc2.6015b1aca1a2
-
-* Tue Mar 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.fc89d7fb499b.23]
 - redhat/kernel.spec.template: Fix typo for process_configs.sh call (Neal Gompa)
 - redhat/configs: CONFIG_CRYPTO_SM3_AVX_X86_64 is x86 only (Vladis Dronov)
 - redhat/configs: Enable CONFIG_PINCTRL_METEORLAKE in RHEL (Prarit Bhargava)
 - fedora: enable new image sensors (Peter Robinson)
-- Linux v6.3.0-0.rc2.fc89d7fb499b
-
-* Mon Mar 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc2.22]
-- Linux v6.3.0-0.rc2
-
-* Sun Mar 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.81ff855485a3.21]
-- Linux v6.3.0-0.rc1.81ff855485a3
-
-* Sat Mar 11 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.ef5f68cc1f82.20]
-- Linux v6.3.0-0.rc1.ef5f68cc1f82
-
-* Fri Mar 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.44889ba56cbb.19]
-- Linux v6.3.0-0.rc1.44889ba56cbb
-
-* Thu Mar 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.6a98c9cae232.18]
 - redhat/self-test: Update self-test data (Prarit Bhargava)
 - redhat/kernel.spec.template: Fix hardcoded "kernel" (Prarit Bhargava)
 - redhat/configs/generate_all_configs.sh: Fix config naming (Prarit Bhargava)
@@ -3603,78 +3477,29 @@ fi
 - redhat/Makefile: Copy spec file (Prarit Bhargava)
 - redhat: Change PACKAGE_NAME to SPECPACKAGE_NAME (Prarit Bhargava)
 - redhat/configs: Support the virtio_mmio.device parameter in Fedora (David Michael)
-- Linux v6.3.0-0.rc1.6a98c9cae232
-
-* Wed Mar 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.63355b9884b3.17]
 - Revert "Merge branch 'systemd-boot-unsigned' into 'os-build'" (Patrick Talbert)
-- Linux v6.3.0-0.rc1.63355b9884b3
-
-* Tue Mar 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.8ca09d5fa354.16]
 - redhat/Makefile: fix default values for dist-brew's DISTRO and DIST (Íñigo Huguet)
 - Remove cc lines from automatic configs (Don Zickus)
 - Add rtla-hwnoise files (Justin M. Forbes)
 - redhat/kernel.spec.template: Mark it as a non-executable file (Neal Gompa)
 - fedora: arm: Enable DRM_PANEL_HIMAX_HX8394 (Javier Martinez Canillas)
-- Linux v6.3.0-0.rc1.8ca09d5fa354
-
-* Mon Mar 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc1.15]
 - redhat/configs: CONFIG_HP_ILO location fix (Vladis Dronov)
-- Linux v6.3.0-0.rc1
-
-* Sun Mar 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.b01fe98d34f3.14]
-- Linux v6.3.0-0.rc0.b01fe98d34f3
-
-* Sat Mar 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.0988a0ea7919.13]
 - redhat: Fix build for kselftests mm (Nico Pache)
 - fix tools build after vm to mm rename (Justin M. Forbes)
 - redhat/spec: Update bpftool versioning scheme (Viktor Malik)
 - redhat/configs: CONFIG_CRYPTO_SM4_AESNI_AVX*_X86_64 is x86 only (Prarit Bhargava)
-- Linux v6.3.0-0.rc0.0988a0ea7919
-
-* Fri Mar 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.2eb29d59ddf0.12]
-- Linux v6.3.0-0.rc0.2eb29d59ddf0
-
-* Thu Mar 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.ee3f96b16468.11]
 - redhat:  adapt to upstream Makefile change (Clark Williams)
-- Linux v6.3.0-0.rc0.ee3f96b16468
-
-* Wed Mar 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.c0927a7a5391.10]
 - redhat:  modify efiuki specfile changes to use variants convention (Clark Williams)
 - Turn off DEBUG_INFO_COMPRESSED_ZLIB for Fedora (Justin M. Forbes)
-- Linux v6.3.0-0.rc0.c0927a7a5391
-
-* Tue Feb 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.ae3419fbac84.9]
 - redhat/kernel.spec.template: Fix RHEL systemd-boot-unsigned dependency (Prarit Bhargava)
 - Add hashtable_test to mod-internal.list (Justin M. Forbes)
 - Add more kunit tests to mod-internal.list for 6.3 (Justin M. Forbes)
 - Flip CONFIG_I2C_ALGOBIT to m (Justin M. Forbes)
-- Linux v6.3.0-0.rc0.ae3419fbac84
-
-* Mon Feb 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.f3a2439f20d9.8]
-- Linux v6.3.0-0.rc0.f3a2439f20d9
-
-* Sun Feb 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.2fcd07b7ccd5.7]
-- Linux v6.3.0-0.rc0.2fcd07b7ccd5
-
-* Sat Feb 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.489fa31ea873.6]
-- Linux v6.3.0-0.rc0.489fa31ea873
-
-* Fri Feb 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.a5c95ca18a98.5]
 - Flip I2C_ALGOBIT to m to avoid mismatch (Justin M. Forbes)
-
-* Thu Feb 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.a5c95ca18a98.4]
 - kernel.spec: move modules.builtin to kernel-core (Jan Stancek)
 - Turn on IDLE_INJECT for x86 (Justin M. Forbes)
 - Flip CONFIG_IDLE_INJECT in pending (Justin M. Forbes)
-- Linux v6.3.0-0.rc0.a5c95ca18a98
-
-* Wed Feb 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.5b7c4cabbb65.3]
-- Linux v6.3.0-0.rc0.5b7c4cabbb65
-
-* Wed Feb 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.89f5349e0673.2]
 - Trim Changelog for 6.3 series (Justin M. Forbes)
-
-* Tue Feb 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.3.0-0.rc0.89f5349e0673.1]
 - Reset RHEL_RELEASE to 0 for the 6.3 cycle (Justin M. Forbes)
 - redhat/configs: Enable CONFIG_V4L_TEST_DRIVERS related drivers (Enric Balletbo i Serra)
 - redhat/configs: Enable UCSI_CCG support (David Marlin)
@@ -5009,7 +4834,6 @@ fi
 - process_configs.sh: Fix syntax flagged by shellcheck (Ben Crocker)
 - generate_all_configs.sh: Fix syntax flagged by shellcheck (Ben Crocker)
 - redhat/self-test: Initial commit (Ben Crocker)
-- Fixes "acpi: prefer booting with ACPI over DTS" to be RHEL only (Peter Robinson)
 - arch/x86: Remove vendor specific CPU ID checks (Prarit Bhargava)
 - redhat: Replace hardware.redhat.com link in Unsupported message (Prarit Bhargava) [1810301]
 - x86: Fix compile issues with rh_check_supported() (Don Zickus)
@@ -5037,7 +4861,6 @@ fi
 - mpt*: remove certain deprecated pci-ids (Jeremy Cline)
 - kernel: add SUPPORT_REMOVED kernel taint (Tomas Henzl) [1602033]
 - Rename RH_DISABLE_DEPRECATED to RHEL_DIFFERENCES (Don Zickus)
-- Add option of 13 for FORCE_MAX_ZONEORDER (Peter Robinson)
 - s390: Lock down the kernel when the IPL secure flag is set (Jeremy Cline)
 - efi: Lock down the kernel if booted in secure boot mode (David Howells)
 - efi: Add an EFI_SECURE_BOOT flag to indicate secure boot mode (David Howells)
@@ -5057,7 +4880,6 @@ fi
 - add Red Hat-specific taint flags (Eugene Syromiatnikov) [1559877]
 - tags.sh: Ignore redhat/rpm (Jeremy Cline)
 - put RHEL info into generated headers (Laura Abbott) [1663728]
-- acpi: prefer booting with ACPI over DTS (Mark Salter) [1576869]
 - aarch64: acpi scan: Fix regression related to X-Gene UARTs (Mark Salter) [1519554]
 - ACPI / irq: Workaround firmware issue on X-Gene based m400 (Mark Salter) [1519554]
 - modules: add rhelversion MODULE_INFO tag (Laura Abbott)
@@ -5383,7 +5205,7 @@ fi
 - [initial commit] Add scripts (Laura Abbott)
 - [initial commit] Add configs (Laura Abbott)
 - [initial commit] Add Makefiles (Laura Abbott)
-- Linux v6.3.0-0.rc0.89f5349e0673
+- Linux v6.4.0-0.rc0.173ea743bf7a
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.
