@@ -145,13 +145,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc0.20230425git173ea743bf7a.3
+%define pkgrelease 0.rc0.20230426git0cfd8703e7da.4
 %define kversion 6
-%define tarfile_release 6.3-436-g173ea743bf7a
+%define tarfile_release 6.3-4626-g0cfd8703e7da
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230425git173ea743bf7a.3%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230426git0cfd8703e7da.4%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3409,10 +3409,18 @@ fi
 #
 #
 %changelog
-* Tue Apr 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.173ea743bf7a.3]
+* Wed Apr 26 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.0-0.rc0.20230426git0cfd8703e7da.4]
+- Add regmap-kunit to mod-internal.list (Justin M. Forbes)
+- Fix up some config mismatches in new Fedora config items (Justin M. Forbes)
+
+* Wed Apr 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.0cfd8703e7da.4]
 - redhat/Makefile: Support building linux-next (Thorsten Leemhuis)
 - redhat/Makefile: support building stable-rc versions (Thorsten Leemhuis)
 - redhat/Makefile: Add target to print DISTRELEASETAG (Thorsten Leemhuis)
+
+* Wed Apr 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.0cfd8703e7da.3]
+- Reset changelog for 6.4 series (Justin M. Forbes)
+- Linux v6.4.0-0.rc0.0cfd8703e7da
 
 * Tue Apr 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.173ea743bf7a.2]
 - Reset RHEL_RELEASE for the 6.4 cycle (Justin M. Forbes)
