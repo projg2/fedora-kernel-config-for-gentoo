@@ -145,13 +145,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc0.20230426git0cfd8703e7da.4
+%define pkgrelease 0.rc0.20230427git6e98b09da931.5
 %define kversion 6
-%define tarfile_release 6.3-4626-g0cfd8703e7da
+%define tarfile_release 6.3-7919-g6e98b09da931
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230426git0cfd8703e7da.4%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230427git6e98b09da931.5%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3409,14 +3409,22 @@ fi
 #
 #
 %changelog
-* Wed Apr 26 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.0-0.rc0.20230426git0cfd8703e7da.4]
-- Add regmap-kunit to mod-internal.list (Justin M. Forbes)
-- Fix up some config mismatches in new Fedora config items (Justin M. Forbes)
+* Thu Apr 27 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.0-0.rc0.20230427git6e98b09da931.5]
+- configs: set CONFIG_PAGE_POOL_STATS (Patrick Talbert)
 
-* Wed Apr 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.0cfd8703e7da.4]
+* Thu Apr 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.6e98b09da931.5]
+- Revert "drm/ttm: Reduce the number of used allocation orders for TTM pages" (Justin M. Forbes)
+- Add regmap-kunit to mod-internal.list (Justin M. Forbes)
+- Add apple_bl to filter-modules (Justin M. Forbes)
 - redhat/Makefile: Support building linux-next (Thorsten Leemhuis)
 - redhat/Makefile: support building stable-rc versions (Thorsten Leemhuis)
 - redhat/Makefile: Add target to print DISTRELEASETAG (Thorsten Leemhuis)
+
+* Thu Apr 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.6e98b09da931.4]
+- Add apple_bl to fedora module_filter (Justin M. Forbes)
+- Fix up some config mismatches in new Fedora config items (Justin M. Forbes)
+- redhat/configs: disable CONFIG_USB_NET_SR9700 for aarch64 (Jose Ignacio Tornos Martinez)
+- Linux v6.4.0-0.rc0.6e98b09da931
 
 * Wed Apr 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.0cfd8703e7da.3]
 - Reset changelog for 6.4 series (Justin M. Forbes)

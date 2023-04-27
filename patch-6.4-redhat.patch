@@ -18,6 +18,7 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
+ drivers/gpu/drm/ttm/ttm_pool.c                     |  30 +-
  drivers/hid/hid-rmi.c                              |  66 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
@@ -62,7 +63,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 +
- 64 files changed, 1543 insertions(+), 189 deletions(-)
+ 65 files changed, 1554 insertions(+), 208 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index bbecbd5797a3..7ffe48a9f489 100644
@@ -440,7 +441,7 @@ index 0c6f06abe3f4..f66b85b2c108 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 8f216de76648..51337c993a16 100644
+index 9c2cb6cbea76..a9ecf278aa79 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -729,6 +729,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -730,6 +731,110 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/ttm/ttm_pool.c b/drivers/gpu/drm/ttm/ttm_pool.c
+index 18c342a919a2..dfce896c4bae 100644
+--- a/drivers/gpu/drm/ttm/ttm_pool.c
++++ b/drivers/gpu/drm/ttm/ttm_pool.c
+@@ -47,11 +47,6 @@
+
+ #include "ttm_module.h"
+
+-#define TTM_MAX_ORDER (PMD_SHIFT - PAGE_SHIFT)
+-#define __TTM_DIM_ORDER (TTM_MAX_ORDER + 1)
+-/* Some architectures have a weird PMD_SHIFT */
+-#define TTM_DIM_ORDER (__TTM_DIM_ORDER <= MAX_ORDER ? __TTM_DIM_ORDER : MAX_ORDER)
+-
+ /**
+  * struct ttm_pool_dma - Helper object for coherent DMA mappings
+  *
+@@ -70,11 +65,11 @@ module_param(page_pool_size, ulong, 0644);
+
+ static atomic_long_t allocated_pages;
+
+-static struct ttm_pool_type global_write_combined[TTM_DIM_ORDER];
+-static struct ttm_pool_type global_uncached[TTM_DIM_ORDER];
++static struct ttm_pool_type global_write_combined[MAX_ORDER];
++static struct ttm_pool_type global_uncached[MAX_ORDER];
+
+-static struct ttm_pool_type global_dma32_write_combined[TTM_DIM_ORDER];
+-static struct ttm_pool_type global_dma32_uncached[TTM_DIM_ORDER];
++static struct ttm_pool_type global_dma32_write_combined[MAX_ORDER];
++static struct ttm_pool_type global_dma32_uncached[MAX_ORDER];
+
+ static spinlock_t shrinker_lock;
+ static struct list_head shrinker_list;
+@@ -449,7 +444,7 @@ int ttm_pool_alloc(struct ttm_pool *pool, struct ttm_tt *tt,
+ 	else
+ 		gfp_flags |= GFP_HIGHUSER;
+
+-	for (order = min_t(unsigned int, TTM_MAX_ORDER, __fls(num_pages));
++	for (order = min_t(unsigned int, MAX_ORDER - 1, __fls(num_pages));
+ 	     num_pages;
+ 	     order = min_t(unsigned int, order, __fls(num_pages))) {
+ 		struct ttm_pool_type *pt;
+@@ -568,7 +563,7 @@ void ttm_pool_init(struct ttm_pool *pool, struct device *dev,
+
+ 	if (use_dma_alloc) {
+ 		for (i = 0; i < TTM_NUM_CACHING_TYPES; ++i)
+-			for (j = 0; j < TTM_DIM_ORDER; ++j)
++			for (j = 0; j < MAX_ORDER; ++j)
+ 				ttm_pool_type_init(&pool->caching[i].orders[j],
+ 						   pool, i, j);
+ 	}
+@@ -588,7 +583,7 @@ void ttm_pool_fini(struct ttm_pool *pool)
+
+ 	if (pool->use_dma_alloc) {
+ 		for (i = 0; i < TTM_NUM_CACHING_TYPES; ++i)
+-			for (j = 0; j < TTM_DIM_ORDER; ++j)
++			for (j = 0; j < MAX_ORDER; ++j)
+ 				ttm_pool_type_fini(&pool->caching[i].orders[j]);
+ 	}
+
+@@ -642,7 +637,7 @@ static void ttm_pool_debugfs_header(struct seq_file *m)
+ 	unsigned int i;
+
+ 	seq_puts(m, "\t ");
+-	for (i = 0; i < TTM_DIM_ORDER; ++i)
++	for (i = 0; i < MAX_ORDER; ++i)
+ 		seq_printf(m, " ---%2u---", i);
+ 	seq_puts(m, "\n");
+ }
+@@ -653,7 +648,7 @@ static void ttm_pool_debugfs_orders(struct ttm_pool_type *pt,
+ {
+ 	unsigned int i;
+
+-	for (i = 0; i < TTM_DIM_ORDER; ++i)
++	for (i = 0; i < MAX_ORDER; ++i)
+ 		seq_printf(m, " %8u", ttm_pool_type_count(&pt[i]));
+ 	seq_puts(m, "\n");
+ }
+@@ -756,16 +751,13 @@ int ttm_pool_mgr_init(unsigned long num_pages)
+ {
+ 	unsigned int i;
+
+-	BUILD_BUG_ON(TTM_DIM_ORDER > MAX_ORDER);
+-	BUILD_BUG_ON(TTM_DIM_ORDER < 1);
+-
+ 	if (!page_pool_size)
+ 		page_pool_size = num_pages;
+
+ 	spin_lock_init(&shrinker_lock);
+ 	INIT_LIST_HEAD(&shrinker_list);
+
+-	for (i = 0; i < TTM_DIM_ORDER; ++i) {
++	for (i = 0; i < MAX_ORDER; ++i) {
+ 		ttm_pool_type_init(&global_write_combined[i], NULL,
+ 				   ttm_write_combined, i);
+ 		ttm_pool_type_init(&global_uncached[i], NULL, ttm_uncached, i);
+@@ -798,7 +790,7 @@ void ttm_pool_mgr_fini(void)
+ {
+ 	unsigned int i;
+
+-	for (i = 0; i < TTM_DIM_ORDER; ++i) {
++	for (i = 0; i < MAX_ORDER; ++i) {
+ 		ttm_pool_type_fini(&global_write_combined[i]);
+ 		ttm_pool_type_fini(&global_uncached[i]);
+
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 84e7ba5314d3..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1116,7 +1221,7 @@ index 10db680acaed..5c6cfbdbb361 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/message/fusion/mptsas.c b/drivers/message/fusion/mptsas.c
-index 88fe4a860ae5..f4b67fe3f000 100644
+index 86f16f3ea478..0ad9759ab0c1 100644
 --- a/drivers/message/fusion/mptsas.c
 +++ b/drivers/message/fusion/mptsas.c
 @@ -5320,6 +5320,11 @@ mptsas_probe(struct pci_dev *pdev, const struct pci_device_id *id)
@@ -1151,7 +1256,7 @@ index 88fe4a860ae5..f4b67fe3f000 100644
  };
  MODULE_DEVICE_TABLE(pci, mptsas_pci_table);
 diff --git a/drivers/message/fusion/mptspi.c b/drivers/message/fusion/mptspi.c
-index 62089a8caa2f..2606c7cafcf7 100644
+index 6c5920db1e9d..c20e21e3d70a 100644
 --- a/drivers/message/fusion/mptspi.c
 +++ b/drivers/message/fusion/mptspi.c
 @@ -1238,12 +1238,17 @@ static struct spi_function_template mptspi_transport_functions = {
@@ -1210,7 +1315,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index d6a9bac91a4c..a1b60b4beb8e 100644
+index 1bfd52eae2ee..d5860f5688d6 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1477,10 +1582,10 @@ index 44cab813bf95..4e8bd92f9cc4 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/scsi/aacraid/linit.c b/drivers/scsi/aacraid/linit.c
-index 5ba5c18b77b4..87f58b189772 100644
+index 68f4dbcfff49..90a6070a1332 100644
 --- a/drivers/scsi/aacraid/linit.c
 +++ b/drivers/scsi/aacraid/linit.c
-@@ -78,6 +78,7 @@ char aac_driver_version[] = AAC_DRIVER_FULL_VERSION;
+@@ -77,6 +77,7 @@ char aac_driver_version[] = AAC_DRIVER_FULL_VERSION;
   * Note: The last field is used to index into aac_drivers below.
   */
  static const struct pci_device_id aac_pci_tbl[] = {
@@ -1488,7 +1593,7 @@ index 5ba5c18b77b4..87f58b189772 100644
  	{ 0x1028, 0x0001, 0x1028, 0x0001, 0, 0, 0 }, /* PERC 2/Si (Iguana/PERC2Si) */
  	{ 0x1028, 0x0002, 0x1028, 0x0002, 0, 0, 1 }, /* PERC 3/Di (Opal/PERC3Di) */
  	{ 0x1028, 0x0003, 0x1028, 0x0003, 0, 0, 2 }, /* PERC 3/Si (SlimFast/PERC3Si */
-@@ -145,6 +146,7 @@ static const struct pci_device_id aac_pci_tbl[] = {
+@@ -144,6 +145,7 @@ static const struct pci_device_id aac_pci_tbl[] = {
  	{ 0x9005, 0x0285, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 59 }, /* Adaptec Catch All */
  	{ 0x9005, 0x0286, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 60 }, /* Adaptec Rocket Catch All */
  	{ 0x9005, 0x0288, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 61 }, /* Adaptec NEMER/ARK Catch All */
@@ -1497,7 +1602,7 @@ index 5ba5c18b77b4..87f58b189772 100644
  	{ 0x9005, 0x028c, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 63 }, /* Adaptec PMC Series 7 (Denali) */
  	{ 0x9005, 0x028d, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 64 }, /* Adaptec PMC Series 8 */
 diff --git a/drivers/scsi/be2iscsi/be_main.c b/drivers/scsi/be2iscsi/be_main.c
-index 50a577ac3bb4..6f862b855ccf 100644
+index e48f14ad6dfd..bd4de6bbf639 100644
 --- a/drivers/scsi/be2iscsi/be_main.c
 +++ b/drivers/scsi/be2iscsi/be_main.c
 @@ -387,11 +387,13 @@ static int beiscsi_eh_device_reset(struct scsi_cmnd *sc)
@@ -1515,7 +1620,7 @@ index 50a577ac3bb4..6f862b855ccf 100644
  	{ 0 }
  };
 diff --git a/drivers/scsi/hpsa.c b/drivers/scsi/hpsa.c
-index f6da34850af9..f994f3ce8851 100644
+index af18d20f3079..0cebae77fd00 100644
 --- a/drivers/scsi/hpsa.c
 +++ b/drivers/scsi/hpsa.c
 @@ -82,7 +82,9 @@ MODULE_DESCRIPTION("Driver for HP Smart Array Controller version " \
@@ -1616,7 +1721,7 @@ index 0b1616e93cf4..85fc52038a82 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index c895189375e2..8b409048658b 100644
+index 317c944c68e3..03206dd949c0 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
@@ -1648,10 +1753,10 @@ index c895189375e2..8b409048658b 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index 8e24ebcebfe5..25aa49292397 100644
+index c3c1f466fe01..370efec15191 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -12618,6 +12618,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
+@@ -12617,6 +12617,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
   * The pci device ids are defined in mpi/mpi2_cnfg.h.
   */
  static const struct pci_device_id mpt3sas_pci_table[] = {
@@ -1659,7 +1764,7 @@ index 8e24ebcebfe5..25aa49292397 100644
  	/* Spitfire ~ 2004 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2004,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12636,6 +12637,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12635,6 +12636,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2116_2,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -1667,7 +1772,7 @@ index 8e24ebcebfe5..25aa49292397 100644
  	/* Thunderbolt ~ 2208 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2208_1,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12660,9 +12662,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12659,9 +12661,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SWITCH_MPI_EP_1,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -1680,10 +1785,10 @@ index 8e24ebcebfe5..25aa49292397 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index d0cdbfe771a9..ae8e0a19ee4b 100644
+index 2fa695bf38b7..187f8fbea40c 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -8094,6 +8094,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -8088,6 +8088,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -1691,7 +1796,7 @@ index d0cdbfe771a9..ae8e0a19ee4b 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -8106,13 +8107,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -8100,13 +8101,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -1711,10 +1816,10 @@ index d0cdbfe771a9..ae8e0a19ee4b 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index 005502125b27..cd577c40dcca 100644
+index ee6d784c095c..7001d50a674c 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
-@@ -9854,6 +9854,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
+@@ -9850,6 +9850,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
  		.subvendor	= PCI_ANY_ID,
  		.subdevice	= PCI_ANY_ID,
  	},
@@ -1722,7 +1827,7 @@ index 005502125b27..cd577c40dcca 100644
  	{
  		.vendor         = PCI_VENDOR_ID_QLOGIC,
  		.device         = PCI_DEVICE_ID_QLOGIC_ISP8022,
-@@ -9872,6 +9873,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
+@@ -9868,6 +9869,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
  		.subvendor	= PCI_ANY_ID,
  		.subdevice	= PCI_ANY_ID,
  	},
@@ -1874,7 +1979,7 @@ index 6bb55e61e8e8..3bf124aca5ff 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/module.h b/include/linux/module.h
-index e65a71b04490..bf0d39579ce8 100644
+index 3730ed99e5f7..51b68b2a7af2 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -387,6 +387,7 @@ struct module {
@@ -2523,7 +2628,7 @@ index 6fc72b3afbde..525c7119c8e3 100644
  obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index adc83cb82f37..945c0704dd27 100644
+index 14f39c1e573e..d221300ae815 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@
@@ -2534,7 +2639,7 @@ index adc83cb82f37..945c0704dd27 100644
  #include <uapi/linux/btf.h>
  #include <linux/pgtable.h>
  #include <linux/bpf_lsm.h>
-@@ -54,6 +55,23 @@ static DEFINE_SPINLOCK(map_idr_lock);
+@@ -55,6 +56,23 @@ static DEFINE_SPINLOCK(map_idr_lock);
  static DEFINE_IDR(link_idr);
  static DEFINE_SPINLOCK(link_idr_lock);
 
@@ -2558,7 +2663,7 @@ index adc83cb82f37..945c0704dd27 100644
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
-@@ -5311,6 +5329,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -5377,6 +5395,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;
