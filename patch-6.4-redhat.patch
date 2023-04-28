@@ -3,7 +3,7 @@
  Kconfig.redhat                                     |  17 +
  Makefile                                           |  20 +-
  arch/arm/Kconfig                                   |   4 +-
- arch/arm64/Kconfig                                 |   2 +-
+ arch/arm64/Kconfig                                 |   4 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
@@ -18,7 +18,6 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++--
  drivers/firmware/efi/secureboot.c                  |  38 ++
- drivers/gpu/drm/ttm/ttm_pool.c                     |  30 +-
  drivers/hid/hid-rmi.c                              |  66 ---
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
@@ -63,13 +62,13 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 +
- 65 files changed, 1554 insertions(+), 208 deletions(-)
+ 64 files changed, 1544 insertions(+), 190 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index bbecbd5797a3..7ffe48a9f489 100644
+index a38d55b6482c..528a0fbda416 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6550,6 +6550,15 @@
+@@ -6561,6 +6561,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -157,7 +156,7 @@ index f5543eef4f82..44f8a5e7b84b 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index a8b82c2f333b..545796dfdecb 100644
+index 0fb4b218f665..402f3309a90c 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -1304,9 +1304,9 @@ config HIGHMEM
@@ -173,10 +172,10 @@ index a8b82c2f333b..545796dfdecb 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 3f5bf55050e8..cd62ae46f55d 100644
+index b1201d25a8a4..b48b81c2eb0d 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1267,7 +1267,7 @@ endchoice
+@@ -1268,7 +1268,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -185,6 +184,15 @@ index 3f5bf55050e8..cd62ae46f55d 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
+@@ -1516,7 +1516,7 @@ config XEN
+ # 16K |       27          |      14      |       13        |         11         |
+ # 64K |       29          |      16      |       13        |         13         |
+ config ARCH_FORCE_MAX_ORDER
+-	int "Order of maximal physically contiguous allocations" if EXPERT && (ARM64_4K_PAGES || ARM64_16K_PAGES)
++	int "Order of maximal physically contiguous allocations"
+ 	default "13" if ARM64_64K_PAGES
+ 	default "11" if ARM64_16K_PAGES
+ 	default "10"
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index b0d00032479d..afb9544fb007 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -731,110 +739,6 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
-diff --git a/drivers/gpu/drm/ttm/ttm_pool.c b/drivers/gpu/drm/ttm/ttm_pool.c
-index 18c342a919a2..dfce896c4bae 100644
---- a/drivers/gpu/drm/ttm/ttm_pool.c
-+++ b/drivers/gpu/drm/ttm/ttm_pool.c
-@@ -47,11 +47,6 @@
-
- #include "ttm_module.h"
-
--#define TTM_MAX_ORDER (PMD_SHIFT - PAGE_SHIFT)
--#define __TTM_DIM_ORDER (TTM_MAX_ORDER + 1)
--/* Some architectures have a weird PMD_SHIFT */
--#define TTM_DIM_ORDER (__TTM_DIM_ORDER <= MAX_ORDER ? __TTM_DIM_ORDER : MAX_ORDER)
--
- /**
-  * struct ttm_pool_dma - Helper object for coherent DMA mappings
-  *
-@@ -70,11 +65,11 @@ module_param(page_pool_size, ulong, 0644);
-
- static atomic_long_t allocated_pages;
-
--static struct ttm_pool_type global_write_combined[TTM_DIM_ORDER];
--static struct ttm_pool_type global_uncached[TTM_DIM_ORDER];
-+static struct ttm_pool_type global_write_combined[MAX_ORDER];
-+static struct ttm_pool_type global_uncached[MAX_ORDER];
-
--static struct ttm_pool_type global_dma32_write_combined[TTM_DIM_ORDER];
--static struct ttm_pool_type global_dma32_uncached[TTM_DIM_ORDER];
-+static struct ttm_pool_type global_dma32_write_combined[MAX_ORDER];
-+static struct ttm_pool_type global_dma32_uncached[MAX_ORDER];
-
- static spinlock_t shrinker_lock;
- static struct list_head shrinker_list;
-@@ -449,7 +444,7 @@ int ttm_pool_alloc(struct ttm_pool *pool, struct ttm_tt *tt,
- 	else
- 		gfp_flags |= GFP_HIGHUSER;
-
--	for (order = min_t(unsigned int, TTM_MAX_ORDER, __fls(num_pages));
-+	for (order = min_t(unsigned int, MAX_ORDER - 1, __fls(num_pages));
- 	     num_pages;
- 	     order = min_t(unsigned int, order, __fls(num_pages))) {
- 		struct ttm_pool_type *pt;
-@@ -568,7 +563,7 @@ void ttm_pool_init(struct ttm_pool *pool, struct device *dev,
-
- 	if (use_dma_alloc) {
- 		for (i = 0; i < TTM_NUM_CACHING_TYPES; ++i)
--			for (j = 0; j < TTM_DIM_ORDER; ++j)
-+			for (j = 0; j < MAX_ORDER; ++j)
- 				ttm_pool_type_init(&pool->caching[i].orders[j],
- 						   pool, i, j);
- 	}
-@@ -588,7 +583,7 @@ void ttm_pool_fini(struct ttm_pool *pool)
-
- 	if (pool->use_dma_alloc) {
- 		for (i = 0; i < TTM_NUM_CACHING_TYPES; ++i)
--			for (j = 0; j < TTM_DIM_ORDER; ++j)
-+			for (j = 0; j < MAX_ORDER; ++j)
- 				ttm_pool_type_fini(&pool->caching[i].orders[j]);
- 	}
-
-@@ -642,7 +637,7 @@ static void ttm_pool_debugfs_header(struct seq_file *m)
- 	unsigned int i;
-
- 	seq_puts(m, "\t ");
--	for (i = 0; i < TTM_DIM_ORDER; ++i)
-+	for (i = 0; i < MAX_ORDER; ++i)
- 		seq_printf(m, " ---%2u---", i);
- 	seq_puts(m, "\n");
- }
-@@ -653,7 +648,7 @@ static void ttm_pool_debugfs_orders(struct ttm_pool_type *pt,
- {
- 	unsigned int i;
-
--	for (i = 0; i < TTM_DIM_ORDER; ++i)
-+	for (i = 0; i < MAX_ORDER; ++i)
- 		seq_printf(m, " %8u", ttm_pool_type_count(&pt[i]));
- 	seq_puts(m, "\n");
- }
-@@ -756,16 +751,13 @@ int ttm_pool_mgr_init(unsigned long num_pages)
- {
- 	unsigned int i;
-
--	BUILD_BUG_ON(TTM_DIM_ORDER > MAX_ORDER);
--	BUILD_BUG_ON(TTM_DIM_ORDER < 1);
--
- 	if (!page_pool_size)
- 		page_pool_size = num_pages;
-
- 	spin_lock_init(&shrinker_lock);
- 	INIT_LIST_HEAD(&shrinker_list);
-
--	for (i = 0; i < TTM_DIM_ORDER; ++i) {
-+	for (i = 0; i < MAX_ORDER; ++i) {
- 		ttm_pool_type_init(&global_write_combined[i], NULL,
- 				   ttm_write_combined, i);
- 		ttm_pool_type_init(&global_uncached[i], NULL, ttm_uncached, i);
-@@ -798,7 +790,7 @@ void ttm_pool_mgr_fini(void)
- {
- 	unsigned int i;
-
--	for (i = 0; i < TTM_DIM_ORDER; ++i) {
-+	for (i = 0; i < MAX_ORDER; ++i) {
- 		ttm_pool_type_fini(&global_write_combined[i]);
- 		ttm_pool_type_fini(&global_uncached[i]);
-
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 84e7ba5314d3..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1181,7 +1085,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 10db680acaed..5c6cfbdbb361 100644
+index 807c98de40d4..a3a07bde75cd 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1192,7 +1096,7 @@ index 10db680acaed..5c6cfbdbb361 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2816,6 +2817,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -2820,6 +2821,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
 
@@ -1315,7 +1219,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 1bfd52eae2ee..d5860f5688d6 100644
+index ccb6eb1282f8..6b96e7224bd3 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1451,7 +1355,7 @@ index bf46f122e9e1..06dd6bc08962 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 57ddcc59af30..d26173fd62e3 100644
+index ae9baf801681..4e01e6192f16 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -1547,10 +1451,10 @@ index 57ddcc59af30..d26173fd62e3 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 44cab813bf95..4e8bd92f9cc4 100644
+index f4e2a88729fd..d3ba2beeb4d6 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4296,6 +4296,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4309,6 +4309,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1936,10 +1840,10 @@ index 7aa62c92185f..2da17f5aeef9 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 40bce7495af8..fe339ce1a212 100644
+index 0d91e0af0125..d83e42ef8dd5 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -508,4 +508,25 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -481,4 +481,25 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -1979,10 +1883,10 @@ index 6bb55e61e8e8..3bf124aca5ff 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 3730ed99e5f7..51b68b2a7af2 100644
+index 9e56763dff81..71da868d8895 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
-@@ -387,6 +387,7 @@ struct module {
+@@ -418,6 +418,7 @@ struct module {
  	struct module_attribute *modinfo_attrs;
  	const char *version;
  	const char *srcversion;
@@ -2020,10 +1924,10 @@ index 979b776e3bcb..4eabcc0d8a91 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index a5dda515fcd1..03a823c03579 100644
+index 0b57e37d8e77..3d5f8638303a 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1523,6 +1523,22 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1557,6 +1557,22 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2603,10 +2507,10 @@ index e2734e9e44d5..52344c344e7a 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index c9ec6e8e4d5d..87b890623581 100644
+index 32c24950c4ce..bdcb8d104374 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1683,7 +1683,7 @@ config AIO
+@@ -1645,7 +1645,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -2616,7 +2520,7 @@ index c9ec6e8e4d5d..87b890623581 100644
  	default y
  	help
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 6fc72b3afbde..525c7119c8e3 100644
+index b69c95315480..6296043efe36 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
@@ -2625,8 +2529,8 @@ index 6fc72b3afbde..525c7119c8e3 100644
 
 +obj-$(CONFIG_RHEL_DIFFERENCES) += rh_messages.o
  obj-$(CONFIG_USERMODE_DRIVER) += usermode_driver.o
- obj-$(CONFIG_MODULES) += kmod.o
  obj-$(CONFIG_MULTIUSER) += groups.o
+ obj-$(CONFIG_VHOST_TASK) += vhost_task.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
 index 14f39c1e573e..d221300ae815 100644
 --- a/kernel/bpf/syscall.c
@@ -2676,10 +2580,10 @@ index 14f39c1e573e..d221300ae815 100644
  	}
 
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index d3be89de706d..edcbe5ccf502 100644
+index 044aa2c9e3cb..2d646a3396ac 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
-@@ -522,6 +522,7 @@ static struct module_attribute modinfo_##field = {                    \
+@@ -528,6 +528,7 @@ static struct module_attribute modinfo_##field = {                    \
 
  MODINFO_ATTR(version);
  MODINFO_ATTR(srcversion);
@@ -2687,7 +2591,7 @@ index d3be89de706d..edcbe5ccf502 100644
 
  static struct {
  	char name[MODULE_NAME_LEN + 1];
-@@ -969,6 +970,7 @@ struct module_attribute *modinfo_attrs[] = {
+@@ -987,6 +988,7 @@ struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
@@ -2958,18 +2862,18 @@ index 000000000000..c55fb108c6bb
 +}
 +EXPORT_SYMBOL(mark_partner_supported);
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 9466b6a2abae..83ba3c9b4406 100644
+index d4531d09984d..071964717c3b 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -22,6 +22,7 @@
- #include <errno.h>
+@@ -23,6 +23,7 @@
  #include "modpost.h"
  #include "../../include/linux/license.h"
+ #include "../../include/linux/module_symbol.h"
 +#include "../../include/generated/uapi/linux/version.h"
 
  /* Are we using CONFIG_MODVERSIONS? */
  static bool modversions;
-@@ -2138,6 +2139,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2132,6 +2133,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -2982,7 +2886,7 @@ index 9466b6a2abae..83ba3c9b4406 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2201,6 +2208,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2195,6 +2202,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);

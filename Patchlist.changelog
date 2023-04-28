@@ -1,5 +1,5 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/6cd3397cb5e1168abf4879029741fbb1a780d8a2
- 6cd3397cb5e1168abf4879029741fbb1a780d8a2 Revert "drm/ttm: Reduce the number of used allocation orders for TTM pages"
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/ea5d87bc661fe388e78a16538c74449767acc1b1
+ ea5d87bc661fe388e78a16538c74449767acc1b1 Temporary workaround for aarc64 FORCE_MAX_ORDER
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/89cb9c58c541e6e6a7c388fd2122339d40c9c606
  89cb9c58c541e6e6a7c388fd2122339d40c9c606 redhat: version two of Makefile.rhelver tweaks

@@ -145,13 +145,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc0.20230427git6e98b09da931.5
+%define pkgrelease 0.rc0.20230428git33afd4b76393.7
 %define kversion 6
-%define tarfile_release 6.3-7919-g6e98b09da931
+%define tarfile_release 6.3-10620-g33afd4b76393
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230427git6e98b09da931.5%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230428git33afd4b76393.7%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -2233,7 +2233,7 @@ BuildKernel() {
 
     # Identify modules in the kernel-modules-extras package
     %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer $(realpath configs/mod-extra.list)
-    # Identify modules in the kernel-modules-extras package
+    # Identify modules in the kernel-modules-internal package
     %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE84} internal
 %if 0%{!?fedora:1}
     # Identify modules in the kernel-modules-partner package
@@ -2254,10 +2254,10 @@ BuildKernel() {
 
     # don't include anything going into kernel-modules-extra in the file lists
     xargs rm -rf < mod-extra.list
-    # don't include anything going int kernel-modules-internal in the file lists
+    # don't include anything going into kernel-modules-internal in the file lists
     xargs rm -rf < mod-internal.list
 %if 0%{!?fedora:1}
-    # don't include anything going int kernel-modules-partner in the file lists
+    # don't include anything going into kernel-modules-partner in the file lists
     xargs rm -rf < mod-partner.list
 %endif
 
@@ -3409,16 +3409,22 @@ fi
 #
 #
 %changelog
-* Thu Apr 27 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.0-0.rc0.20230427git6e98b09da931.5]
-- configs: set CONFIG_PAGE_POOL_STATS (Patrick Talbert)
+* Fri Apr 28 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.0-0.rc0.20230428git33afd4b76393.7]
+- Temporary workaround for aarc64 FORCE_MAX_ORDER (Justin M. Forbes)
 
-* Thu Apr 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.6e98b09da931.5]
-- Revert "drm/ttm: Reduce the number of used allocation orders for TTM pages" (Justin M. Forbes)
-- Add regmap-kunit to mod-internal.list (Justin M. Forbes)
-- Add apple_bl to filter-modules (Justin M. Forbes)
+* Fri Apr 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.33afd4b76393.7]
 - redhat/Makefile: Support building linux-next (Thorsten Leemhuis)
 - redhat/Makefile: support building stable-rc versions (Thorsten Leemhuis)
 - redhat/Makefile: Add target to print DISTRELEASETAG (Thorsten Leemhuis)
+
+* Fri Apr 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.33afd4b76393.6]
+- Linux v6.4.0-0.rc0.33afd4b76393
+
+* Fri Apr 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.6e98b09da931.5]
+- Add apple_bl to filter-modules (Justin M. Forbes)
+- Add handshake-test to mod-intenal.list (Justin M. Forbes)
+- Add regmap-kunit to mod-internal.list (Justin M. Forbes)
+- configs: set CONFIG_PAGE_POOL_STATS (Patrick Talbert)
 
 * Thu Apr 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.6e98b09da931.4]
 - Add apple_bl to fedora module_filter (Justin M. Forbes)
