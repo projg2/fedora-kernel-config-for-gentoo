@@ -106,8 +106,11 @@ Summary: The Linux kernel
 %global zipmodules 1
 %endif
 
+# Default compression algorithm
+%global compression xz
+%global compext xz
 %if %{zipmodules}
-%global zipsed -e 's/\.ko$/\.ko.xz/'
+%global zipsed -e 's/\.ko$/\.ko.%compext/'
 %endif
 
 %if 0%{?fedora}
@@ -145,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc0.20230428git33afd4b76393.7
+%define pkgrelease 0.rc0.20230501git58390c8ce1bd.10
 %define kversion 6
-%define tarfile_release 6.3-10620-g33afd4b76393
+%define tarfile_release 6.3-12049-g58390c8ce1bd
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230428git33afd4b76393.7%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230501git58390c8ce1bd.10%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -605,7 +608,7 @@ Provides: installonlypkg(kernel)
 # List the packages used during the kernel build
 #
 BuildRequires: kmod, bash, coreutils, tar, git-core, which
-BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
+BuildRequires: bzip2, xz, findutils, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
@@ -1853,14 +1856,7 @@ BuildKernel() {
         CopyKernel=cp
     fi
 
-    # Sign the image if we're using EFI
-    # aarch64 kernels are gziped EFI images
-    KernelExtension=${KernelImage##*.}
-    if [ "$KernelExtension" == "gz" ]; then
-        SignImage=${KernelImage%.*}
-    else
-        SignImage=$KernelImage
-    fi
+    SignImage=$KernelImage
 
     %ifarch x86_64 aarch64
     %pesign -s -i $SignImage -o vmlinuz.tmp -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
@@ -1883,9 +1879,6 @@ BuildKernel() {
         exit 1
     fi
     mv vmlinuz.signed $SignImage
-    if [ "$KernelExtension" == "gz" ]; then
-        gzip -f9 $SignImage
-    fi
     # signkernel
     %endif
 
@@ -1962,8 +1955,8 @@ BuildKernel() {
     # NOTENOTE: checksums to the rpm metadata provides list.
     # NOTENOTE: if you change the symvers name, update the backend too
     echo "**** GENERATING kernel ABI metadata ****"
-    gzip -c9 < Module.symvers > $RPM_BUILD_ROOT/boot/symvers-$KernelVer.gz
-    cp $RPM_BUILD_ROOT/boot/symvers-$KernelVer.gz $RPM_BUILD_ROOT/lib/modules/$KernelVer/symvers.gz
+    %compression -c9 < Module.symvers > $RPM_BUILD_ROOT/boot/symvers-$KernelVer.%compext
+    cp $RPM_BUILD_ROOT/boot/symvers-$KernelVer.%compext $RPM_BUILD_ROOT/lib/modules/$KernelVer/symvers.%compext
 
 %if %{with_kabichk}
     echo "**** kABI checking is enabled in kernel SPEC file. ****"
@@ -2615,7 +2608,7 @@ find Documentation -type d | xargs chmod u+w
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
     echo "Compressing kernel modules ..." \
-    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -n 16 -P${RPM_BUILD_NCPUS} -r xz; \
+    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -n 16 -P${RPM_BUILD_NCPUS} -r %compression; \
   fi \
 %{nil}
 
@@ -3043,9 +3036,9 @@ fi\
 %endif\
 rm -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{1}}\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
-if [[ ! -e "/boot/symvers-%{KVERREL}%{?1:+%{1}}.gz" ]]; then\
-    ln -s "/lib/modules/%{KVERREL}%{?1:+%{1}}/symvers.gz" "/boot/symvers-%{KVERREL}%{?1:+%{1}}.gz"\
-    command -v restorecon &>/dev/null && restorecon "/boot/symvers-%{KVERREL}%{?1:+%{1}}.gz" \
+if [[ ! -e "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext" ]]; then\
+    ln -s "/lib/modules/%{KVERREL}%{?1:+%{1}}/symvers.%compext" "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext"\
+    command -v restorecon &>/dev/null && restorecon "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext" \
 fi\
 %{nil}
 
@@ -3319,10 +3312,10 @@ fi
 %endif\
 %attr(0600, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
 %ghost %attr(0600, root, root) /boot/System.map-%{KVERREL}%{?3:+%{3}}\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.gz\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.%compext\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/config\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.builtin*\
-%ghost %attr(0600, root, root) /boot/symvers-%{KVERREL}%{?3:+%{3}}.gz\
+%ghost %attr(0600, root, root) /boot/symvers-%{KVERREL}%{?3:+%{3}}.%compext\
 %ghost %attr(0600, root, root) /boot/initramfs-%{KVERREL}%{?3:+%{3}}.img\
 %ghost %attr(0644, root, root) /boot/config-%{KVERREL}%{?3:+%{3}}\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-core.list %{?3:%{3}-}modules-core}\
@@ -3409,13 +3402,24 @@ fi
 #
 #
 %changelog
-* Fri Apr 28 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.0-0.rc0.20230428git33afd4b76393.7]
-- Temporary workaround for aarc64 FORCE_MAX_ORDER (Justin M. Forbes)
-
-* Fri Apr 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.33afd4b76393.7]
+* Mon May 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.58390c8ce1bd.10]
+- Remove EXPERT from ARCH_FORCE_MAX_ORDER for aarch64 (Justin M. Forbes)
 - redhat/Makefile: Support building linux-next (Thorsten Leemhuis)
 - redhat/Makefile: support building stable-rc versions (Thorsten Leemhuis)
 - redhat/Makefile: Add target to print DISTRELEASETAG (Thorsten Leemhuis)
+
+* Mon May 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.58390c8ce1bd.9]
+- Change FORCE_MAX_ORDER for ppc64 to be 8 (Justin M. Forbes)
+- kernel.spec.template: Add global compression variables (Prarit Bhargava)
+- kernel.spec.template: Use xz for KABI (Prarit Bhargava)
+- kernel.spec.template: Remove gzip related aarch64 code (Prarit Bhargava)
+- Linux v6.4.0-0.rc0.58390c8ce1bd
+
+* Sun Apr 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.825a0714d2b3.8]
+- Linux v6.4.0-0.rc0.825a0714d2b3
+
+* Sat Apr 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.89d77f71f493.7]
+- Linux v6.4.0-0.rc0.89d77f71f493
 
 * Fri Apr 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.33afd4b76393.6]
 - Linux v6.4.0-0.rc0.33afd4b76393
