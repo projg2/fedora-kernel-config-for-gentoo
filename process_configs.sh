@@ -193,7 +193,7 @@ function commit_new_configs()
 	# assume we are in $source_tree/configs, need to get to top level
 	pushd "$(switch_to_toplevel)" &>/dev/null
 
-	for cfg in "$SCRIPT_DIR/${PACKAGE_NAME}${KVERREL}"*.config
+	for cfg in "$SCRIPT_DIR/${SPECPACKAGE_NAME}${KVERREL}"*.config
 	do
 		arch=$(head -1 "$cfg" | cut -b 3-)
 		cfgtmp="${cfg}.tmp"
@@ -304,7 +304,7 @@ function process_configs()
 	[ -f .mismatches ] && rm -f .mismatches
 
 	count=0
-	for cfg in "$SCRIPT_DIR/${PACKAGE_NAME}${KVERREL}"*.config
+	for cfg in "$SCRIPT_DIR/${SPECPACKAGE_NAME}${KVERREL}"*.config
 	do
 		if [ "$count" -eq 0 ]; then
 			# do the first one by itself so that tools are built
@@ -387,15 +387,15 @@ do
 done
 
 KVERREL="$(test -n "$1" && echo "-$1" || echo "")"
-FLAVOR="$(test -n "$2" && echo "-$2" || echo "-ark")"
+FLAVOR="$(test -n "$2" && echo "-$2" || echo "-rhel")"
 # shellcheck disable=SC2015
 SCRIPT=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT")
 
-# Config options for RHEL should target the pending-ark directory, not pending-common.
+# Config options for RHEL should target the pending-rhel directory, not pending-common.
 if [ "$FLAVOR" = "-rhel" ]
 then
-	FLAVOR="-ark"
+	FLAVOR="-rhel"
 fi
 
 # to handle this script being a symlink
