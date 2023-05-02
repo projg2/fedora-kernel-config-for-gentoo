@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc0.20230501git58390c8ce1bd.10
+%define pkgrelease 0.rc0.20230502git865fdb08197e.11
 %define kversion 6
-%define tarfile_release 6.3-12049-g58390c8ce1bd
+%define tarfile_release 6.3-12423-g865fdb08197e
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230501git58390c8ce1bd.10%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230502git865fdb08197e.11%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -2557,7 +2557,7 @@ pushd tools/testing/selftests
   force_targets=""
 %endif
 
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf mm livepatch net net/forwarding net/mptcp netfilter tc-testing memfd" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf mm livepatch net net/forwarding net/mptcp netfilter tc-testing memfd drivers/net/bonding" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
@@ -2573,7 +2573,9 @@ for dir in bpf bpf/no_alu32 bpf/progs; do
 		-name '*.o' -exec sh -c 'readelf -h "{}" | grep -q "^  Machine:.*BPF"' \; \) -print0 | \
 	xargs -0 cp -t %{buildroot}%{_libexecdir}/kselftests/$dir || true
 done
+ln -sr  %{buildroot}%{_libexecdir}/kselftests/bpf/bpftool %{buildroot}%{_libexecdir}/kselftests/bpf/no_alu32/bpftool
 %buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs"
+%buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs-no_alu32"
 popd
 export -n BPFTOOL
 %endif
@@ -2860,6 +2862,12 @@ pushd tools/testing/selftests/drivers/net/netdevsim
 find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/drivers/net/netdevsim/{} \;
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/netdevsim/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/netdevsim/{} \;
+popd
+# install drivers/net/bonding selftests
+pushd tools/testing/selftests/drivers/net/bonding
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/drivers/net/bonding/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/bonding/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/bonding/{} \;
 popd
 # install net/forwarding selftests
 pushd tools/testing/selftests/net/forwarding
@@ -3402,11 +3410,17 @@ fi
 #
 #
 %changelog
-* Mon May 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.58390c8ce1bd.10]
+* Tue May 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.865fdb08197e.11]
 - Remove EXPERT from ARCH_FORCE_MAX_ORDER for aarch64 (Justin M. Forbes)
 - redhat/Makefile: Support building linux-next (Thorsten Leemhuis)
 - redhat/Makefile: support building stable-rc versions (Thorsten Leemhuis)
 - redhat/Makefile: Add target to print DISTRELEASETAG (Thorsten Leemhuis)
+
+* Tue May 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.865fdb08197e.10]
+- kernel.spec: package unstripped test_progs-no_alu32 (Felix Maurer)
+- bpf/selftests: fix bpf selftests install (Jerome Marchand)
+- kernel.spec: add bonding selftest (Hangbin Liu)
+- Linux v6.4.0-0.rc0.865fdb08197e
 
 * Mon May 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.58390c8ce1bd.9]
 - Change FORCE_MAX_ORDER for ppc64 to be 8 (Justin M. Forbes)
