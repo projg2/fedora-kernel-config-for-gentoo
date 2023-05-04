@@ -1,5 +1,5 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/59fe4cb198950c23260934f63a4599ce8dc93a12
- 59fe4cb198950c23260934f63a4599ce8dc93a12 Remove EXPERT from ARCH_FORCE_MAX_ORDER for aarch64
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7db3eaa8ca8fae9bf5d21bee023f01714307e231
+ 7db3eaa8ca8fae9bf5d21bee023f01714307e231 Remove EXPERT from ARCH_FORCE_MAX_ORDER for aarch64
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/89cb9c58c541e6e6a7c388fd2122339d40c9c606
  89cb9c58c541e6e6a7c388fd2122339d40c9c606 redhat: version two of Makefile.rhelver tweaks
