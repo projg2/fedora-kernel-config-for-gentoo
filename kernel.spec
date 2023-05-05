@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc0.20230504git1a5304fecee5.13
+%define pkgrelease 0.rc0.20230505git78b421b6a7c6.14
 %define kversion 6
-%define tarfile_release 6.3-13027-g1a5304fecee5
+%define tarfile_release 6.3-13164-g78b421b6a7c6
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230504git1a5304fecee5.13%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230505git78b421b6a7c6.14%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3408,11 +3408,16 @@ fi
 #
 #
 %changelog
-* Thu May 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.1a5304fecee5.13]
-- Remove EXPERT from ARCH_FORCE_MAX_ORDER for aarch64 (Justin M. Forbes)
+* Fri May 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.78b421b6a7c6.14]
 - redhat/Makefile: Support building linux-next (Thorsten Leemhuis)
 - redhat/Makefile: support building stable-rc versions (Thorsten Leemhuis)
 - redhat/Makefile: Add target to print DISTRELEASETAG (Thorsten Leemhuis)
+
+* Fri May 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.78b421b6a7c6.13]
+- Remove EXPERT from ARCH_FORCE_MAX_ORDER for aarch64 (Justin M. Forbes)
+- Revert "Merge branch 'unstripped-no_alu32' into 'os-build'" (Patrick Talbert)
+- configs: Enable CONFIG_PAGE_POOL_STATS for common/generic (Patrick Talbert)
+- Linux v6.4.0-0.rc0.78b421b6a7c6
 
 * Thu May 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.1a5304fecee5.12]
 - redhat/configs: enable CONFIG_DELL_WMI_PRIVACY for both RHEL and Fedora (David Arcari)
