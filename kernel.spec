@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc0.20230505git78b421b6a7c6.14
+%define pkgrelease 0.rc1.16
 %define kversion 6
-%define tarfile_release 6.3-13164-g78b421b6a7c6
+%define tarfile_release 6.4-rc1
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230505git78b421b6a7c6.14%{?buildid}%{?dist}
+%define specrelease 0.rc1.16%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3290,8 +3290,10 @@ fi
 %endif
 
 # empty meta-package
+%if %{with_up}
 %ifnarch %nobuildarches noarch
 %files
+%endif
 %endif
 
 # This is %%{image_install_path} on an arch where that includes ELF files,
@@ -3408,10 +3410,23 @@ fi
 #
 #
 %changelog
-* Fri May 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.78b421b6a7c6.14]
+* Mon May 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc1.16]
+- Linux v6.4.0-0.rc1
+
+* Sun May 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.fc4354c6e5c2.15]
+- Linux v6.4.0-0.rc0.fc4354c6e5c2
+
+* Sat May 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.2e1e1337881b.14]
+- redhat: Remove editconfig (Prarit Bhargava)
+- redhat: configs: fix CONFIG_WERROR replace in build_configs (Jan Stancek)
+- redhat/configs: enable Maxim MAX77620 PMIC for RHEL (Mark Salter)
+- kernel.spec: skip kernel meta package when building without up (Jan Stancek)
+- redhat/configs: enable RDMA_RXE for RHEL (Kamal Heib) [2022578]
+- redhat/configs: update RPCSEC_GSS_KRB5 configs (Scott Mayhew)
 - redhat/Makefile: Support building linux-next (Thorsten Leemhuis)
 - redhat/Makefile: support building stable-rc versions (Thorsten Leemhuis)
 - redhat/Makefile: Add target to print DISTRELEASETAG (Thorsten Leemhuis)
+- Linux v6.4.0-0.rc0.2e1e1337881b
 
 * Fri May 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc0.78b421b6a7c6.13]
 - Remove EXPERT from ARCH_FORCE_MAX_ORDER for aarch64 (Justin M. Forbes)
