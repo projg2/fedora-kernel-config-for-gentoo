@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc1.16
+%define pkgrelease 0.rc1.20230509gitba0ad6ed89fd.17
 %define kversion 6
-%define tarfile_release 6.4-rc1
+%define tarfile_release 6.4-rc1-1-gba0ad6ed89fd
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.16%{?buildid}%{?dist}
+%define specrelease 0.rc1.20230509gitba0ad6ed89fd.17%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3410,6 +3410,10 @@ fi
 #
 #
 %changelog
+* Tue May 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc1.ba0ad6ed89fd.17]
+- Turn on IO_URING for RHEL in pending (Justin M. Forbes)
+- Linux v6.4.0-0.rc1.ba0ad6ed89fd
+
 * Mon May 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc1.16]
 - Linux v6.4.0-0.rc1
 
