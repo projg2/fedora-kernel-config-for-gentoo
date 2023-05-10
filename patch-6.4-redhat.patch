@@ -49,7 +49,6 @@
  include/linux/rh_kabi.h                            | 515 +++++++++++++++++++++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
- init/Kconfig                                       |   2 +-
  kernel/Makefile                                    |   1 +
  kernel/bpf/syscall.c                               |  23 +
  kernel/module/main.c                               |   2 +
@@ -62,7 +61,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 +
- 64 files changed, 1544 insertions(+), 190 deletions(-)
+ 63 files changed, 1543 insertions(+), 189 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 9e5bab29685f..223901a42a15 100644
@@ -2506,19 +2505,6 @@ index e2734e9e44d5..52344c344e7a 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
-diff --git a/init/Kconfig b/init/Kconfig
-index 32c24950c4ce..bdcb8d104374 100644
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1645,7 +1645,7 @@ config AIO
- 	  this option saves about 7k.
-
- config IO_URING
--	bool "Enable IO uring support" if EXPERT
-+	bool "Enable IO uring support"
- 	select IO_WQ
- 	default y
- 	help
 diff --git a/kernel/Makefile b/kernel/Makefile
 index b69c95315480..6296043efe36 100644
 --- a/kernel/Makefile

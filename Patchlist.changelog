@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/a880b0fb1a4b0e1526d80c3dc4555eb09d688d46
+ a880b0fb1a4b0e1526d80c3dc4555eb09d688d46 Enable IO_URING for RHEL
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/b619e4a64dcb734ca5839a50ae20d48a1fb2e2e9
  b619e4a64dcb734ca5839a50ae20d48a1fb2e2e9 Remove EXPERT from ARCH_FORCE_MAX_ORDER for aarch64
 
