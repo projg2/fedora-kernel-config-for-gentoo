@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/031984ff6b9b3a71724ccaf58e6bd26cd1997a5f
+ 031984ff6b9b3a71724ccaf58e6bd26cd1997a5f xfs: verify buffer contents when we skip log replay
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/efa74f28ec858cb955be08faf1086f05c3f7510a
  efa74f28ec858cb955be08faf1086f05c3f7510a arm64: dts: rk3399-pinephone-pro: Add touchscreen support
 

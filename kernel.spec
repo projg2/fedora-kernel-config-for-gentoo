@@ -148,17 +148,17 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specversion 6.2.14
+%define specversion 6.2.15
 %define patchversion 6.2
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.2.14
+%define tarfile_release 6.2.15
 # This is needed to do merge window version magic
 %define patchlevel 2
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.2.14
+%define kabiversion 6.2.15
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3346,6 +3346,12 @@ fi
 #
 #
 %changelog
+* Thu May 11 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.15-0]
+- redhat: configs: generic: x86: Disable CONFIG_VIDEO_OV2740 for x86 platform (Kate Hsuan)
+- Add Bugs to be fixed in 6.2.15 (Justin M. Forbes)
+- xfs: verify buffer contents when we skip log replay (Darrick J. Wong)
+- Linux v6.2.15
+
 * Sun Apr 30 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.2.14-0]
 - Linux v6.2.14
 
