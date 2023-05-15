@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc1.20230511git80e62bc8487b.19
+%define pkgrelease 0.rc2.23
 %define kversion 6
-%define tarfile_release 6.4-rc1-26-g80e62bc8487b
+%define tarfile_release 6.4-rc2
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20230511git80e62bc8487b.19%{?buildid}%{?dist}
+%define specrelease 0.rc2.23%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3410,6 +3410,20 @@ fi
 #
 #
 %changelog
+* Mon May 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc2.23]
+- redhat/configs: Fix incorrect configs location and content (Vladis Dronov)
+- redhat/configs: turn on CONFIG_MARVELL_CN10K_DDR_PMU (Michal Schmidt) [2042241]
+- Linux v6.4.0-0.rc2
+
+* Sun May 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc1.bb7c241fae62.22]
+- Linux v6.4.0-0.rc1.bb7c241fae62
+
+* Sat May 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc1.9a48d6046722.21]
+- Linux v6.4.0-0.rc1.9a48d6046722
+
+* Fri May 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc1.cc3c44c9fda2.20]
+- Linux v6.4.0-0.rc1.cc3c44c9fda2
+
 * Thu May 11 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc1.80e62bc8487b.19]
 - redhat: configs: generic: x86: Disable CONFIG_VIDEO_OV2740 for x86 platform (Kate Hsuan)
 - Linux v6.4.0-0.rc1.80e62bc8487b
