@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc2.23
+%define pkgrelease 0.rc2.20230518git4d6d4c7f541d.24
 %define kversion 6
-%define tarfile_release 6.4-rc2
+%define tarfile_release 6.4-rc2-18-g4d6d4c7f541d
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.23%{?buildid}%{?dist}
+%define specrelease 0.rc2.20230518git4d6d4c7f541d.24%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -2574,6 +2574,7 @@ for dir in bpf bpf/no_alu32 bpf/progs; do
 	xargs -0 cp -t %{buildroot}%{_libexecdir}/kselftests/$dir || true
 done
 %buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs"
+%buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs-no_alu32"
 popd
 export -n BPFTOOL
 %endif
@@ -3364,6 +3365,10 @@ fi
 %endif\
 %if %{with_efiuki}\
 %{expand:%%files %{?3:%{3}-}uki-virt}\
+%attr(0600, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.gz\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/config\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.builtin*\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi\
 %ghost /%{image_install_path}/efi/EFI/Linux/%{?-k:%{-k*}}%{!?-k:*}-%{KVERREL}%{?3:+%{3}}.efi\
 %endif\
@@ -3410,6 +3415,12 @@ fi
 #
 #
 %changelog
+* Thu May 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc2.4d6d4c7f541d.24]
+- kernel.spec: package unstripped test_progs-no_alu32 (Felix Maurer)
+- Turn on NFT_CONNLIMIT for Fedora (Justin M. Forbes)
+- Include the information about builtin symbols into kernel-uki-virt package too (Vitaly Kuznetsov)
+- Linux v6.4.0-0.rc2.4d6d4c7f541d
+
 * Mon May 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc2.23]
 - redhat/configs: Fix incorrect configs location and content (Vladis Dronov)
 - redhat/configs: turn on CONFIG_MARVELL_CN10K_DDR_PMU (Michal Schmidt) [2042241]
