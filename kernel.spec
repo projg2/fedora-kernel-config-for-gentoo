@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc2.20230518git4d6d4c7f541d.24
+%define pkgrelease 0.rc2.20230519git2d1bcbc6cd70.25
 %define kversion 6
-%define tarfile_release 6.4-rc2-18-g4d6d4c7f541d
+%define tarfile_release 6.4-rc2-163-g2d1bcbc6cd70
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20230518git4d6d4c7f541d.24%{?buildid}%{?dist}
+%define specrelease 0.rc2.20230519git2d1bcbc6cd70.25%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3415,6 +3415,14 @@ fi
 #
 #
 %changelog
+* Fri May 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc2.2d1bcbc6cd70.25]
+- redhat/configs: turn on CONFIG_MARVELL_CN10K_TAD_PMU (Michal Schmidt) [2042240]
+- redhat/configs: Fix enabling MANA Infiniband (Kamal Heib)
+- Fix file listing for symvers in uki (Justin M. Forbes)
+- Fix up some Fedora config items (Justin M. Forbes)
+- enable efifb for Nvidia (Justin M. Forbes)
+- Linux v6.4.0-0.rc2.2d1bcbc6cd70
+
 * Thu May 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc2.4d6d4c7f541d.24]
 - kernel.spec: package unstripped test_progs-no_alu32 (Felix Maurer)
 - Turn on NFT_CONNLIMIT for Fedora (Justin M. Forbes)
