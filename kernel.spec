@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc2.20230519git2d1bcbc6cd70.25
+%define pkgrelease 0.rc3.28
 %define kversion 6
-%define tarfile_release 6.4-rc2-163-g2d1bcbc6cd70
+%define tarfile_release 6.4-rc3
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20230519git2d1bcbc6cd70.25%{?buildid}%{?dist}
+%define specrelease 0.rc3.28%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3415,6 +3415,16 @@ fi
 #
 #
 %changelog
+* Mon May 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc3.28]
+- Enable CONFIG_BT on aarch64 (Charles Mirabile)
+- Linux v6.4.0-0.rc3
+
+* Sun May 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc2.0dd2a6fb1e34.27]
+- Linux v6.4.0-0.rc2.0dd2a6fb1e34
+
+* Sat May 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc2.d3f704310cc7.26]
+- Linux v6.4.0-0.rc2.d3f704310cc7
+
 * Fri May 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc2.2d1bcbc6cd70.25]
 - redhat/configs: turn on CONFIG_MARVELL_CN10K_TAD_PMU (Michal Schmidt) [2042240]
 - redhat/configs: Fix enabling MANA Infiniband (Kamal Heib)
