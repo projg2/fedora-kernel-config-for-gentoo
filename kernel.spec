@@ -145,13 +145,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.3.4
 %define specversion 6.3.4
 %define patchversion 6.3
-%define pkgrelease 200
+%define pkgrelease 201
 %define kversion 6
 %define tarfile_release 6.3.4
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 200%{?buildid}%{?dist}
+%define specrelease 201%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.3.4
 
@@ -3406,6 +3406,11 @@ fi
 #
 #
 %changelog
+* Sat May 27 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.3.4-1]
+- Bump rhelver for build with xfs fix (Justin M. Forbes)
+- xfs: fix livelock in delayed allocation at ENOSPC (Dave Chinner)
+- Turn off some debug options found to impact performance (Justin M. Forbes)
+
 * Thu May 25 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.3.4-0]
 - Revert "Turn off DEBUG_VM for non debug Fedora kernels" (Justin M. Forbes)
 - Turn off DEBUG_VM for non debug Fedora kernels (Justin M. Forbes)
