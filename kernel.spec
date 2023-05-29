@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc3.20230526git0d85b27b0cc6.32
+%define pkgrelease 0.rc4.20230529gite338142b39cf.35
 %define kversion 6
-%define tarfile_release 6.4-rc3-190-g0d85b27b0cc6
+%define tarfile_release 6.4-rc4-13-ge338142b39cf
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20230526git0d85b27b0cc6.32%{?buildid}%{?dist}
+%define specrelease 0.rc4.20230529gite338142b39cf.35%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3415,6 +3415,20 @@ fi
 #
 #
 %changelog
+* Mon May 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc4.e338142b39cf.35]
+- Linux v6.4.0-0.rc4.e338142b39cf
+
+* Sun May 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc3.416839029e38.34]
+- Linux v6.4.0-0.rc3.416839029e38
+
+* Sat May 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc3.49572d536129.33]
+- Turn off some debug options found to impact performance (Justin M. Forbes)
+- wifi: rtw89: enable RTL8852BE card in RHEL (Íñigo Huguet)
+- redhat/configs: enable TEGRA186_GPC_DMA for RHEL (Mark Salter)
+- Move imx8m configs from fedora to common (Mark Salter)
+- redhat/configs: turn on lpuart serial port support Driver (Steve Best) [2208834]
+- Linux v6.4.0-0.rc3.49572d536129
+
 * Fri May 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc3.0d85b27b0cc6.32]
 - Linux v6.4.0-0.rc3.0d85b27b0cc6
 
