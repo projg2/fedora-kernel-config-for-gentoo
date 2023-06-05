@@ -117,7 +117,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 836643eaefee..91f34cafca40 100644
+index 09866a85bc2a..f2a166968dbe 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1218,7 +1218,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 1f0cbb77b249..0a80d662466c 100644
+index 3ec38e2b9173..58c733c6dc6a 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1274,7 +1274,7 @@ index 1f0cbb77b249..0a80d662466c 100644
  void nvme_complete_rq(struct request *req)
  {
  	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
-@@ -410,6 +423,9 @@ void nvme_complete_rq(struct request *req)
+@@ -419,6 +432,9 @@ void nvme_complete_rq(struct request *req)
  	case FAILOVER:
  		nvme_failover_req(req);
  		return;
@@ -1332,10 +1332,10 @@ index 2bc159a318ff..d5562a97f232 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index a2d4f59e0535..1c5092b995e9 100644
+index 8657811f8b88..feee7e1e6c8d 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -878,6 +878,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -879,6 +879,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1343,7 +1343,7 @@ index a2d4f59e0535..1c5092b995e9 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -916,6 +917,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -917,6 +918,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1771,7 +1771,7 @@ index eae288c8d40a..8b8bf447cedc 100644
 
  error_proc:
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 7aa62c92185f..2da17f5aeef9 100644
+index 571d1a6e1b74..8f786e38de3f 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
