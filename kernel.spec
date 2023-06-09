@@ -142,18 +142,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.3.6
-%define specversion 6.3.6
+%define specrpmversion 6.3.7
+%define specversion 6.3.7
 %define patchversion 6.3
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.3.6
+%define tarfile_release 6.3.7
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.3.6
+%define kabiversion 6.3.7
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3406,6 +3406,14 @@ fi
 #
 #
 %changelog
+* Fri Jun 09 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.3.7-200]
+- Add a CVE to BugsFixed (Justin M. Forbes)
+
+* Fri Jun 09 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.3.7-0]
+- redhat/configs: Enable CONFIG_SC_GPUCC_8280XP for fedora (Andrew Halaney)
+- redhat/configs: Enable CONFIG_QCOM_IPCC for fedora (Andrew Halaney)
+- Linux v6.3.7
+
 * Mon Jun 05 2023 Augusto Caringi <acaringi@redhat.com> [6.3.6-0]
 - Add the nvidia bug to BugsFixed (Justin M. Forbes)
 - drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set (Javier Martinez Canillas)
