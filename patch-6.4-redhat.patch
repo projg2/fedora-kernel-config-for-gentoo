@@ -3,7 +3,7 @@
  Kconfig.redhat                                     |  17 +
  Makefile                                           |  20 +-
  arch/arm/Kconfig                                   |   4 +-
- arch/arm64/Kconfig                                 |   4 +-
+ arch/arm64/Kconfig                                 |   2 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
@@ -61,7 +61,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 +
- 63 files changed, 1543 insertions(+), 189 deletions(-)
+ 63 files changed, 1542 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 9e5bab29685f..223901a42a15 100644
@@ -171,7 +171,7 @@ index 0fb4b218f665..402f3309a90c 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index b1201d25a8a4..7de342835693 100644
+index 343e1e1cae10..163545217df2 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1268,7 +1268,7 @@ endchoice
@@ -183,15 +183,6 @@ index b1201d25a8a4..7de342835693 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1516,7 +1516,7 @@ config XEN
- # 16K |       27          |      14      |       13        |         11         |
- # 64K |       29          |      16      |       13        |         13         |
- config ARCH_FORCE_MAX_ORDER
--	int "Order of maximal physically contiguous allocations" if EXPERT && (ARM64_4K_PAGES || ARM64_16K_PAGES)
-+	int "Order of maximal physically contiguous allocations" if ARM64_4K_PAGES || ARM64_16K_PAGES
- 	default "13" if ARM64_64K_PAGES
- 	default "11" if ARM64_16K_PAGES
- 	default "10"
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index b0d00032479d..afb9544fb007 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -2518,7 +2509,7 @@ index b69c95315480..6296043efe36 100644
  obj-$(CONFIG_MULTIUSER) += groups.o
  obj-$(CONFIG_VHOST_TASK) += vhost_task.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 14f39c1e573e..d221300ae815 100644
+index 0c21d0d8efe4..9a7ea786dfe2 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@
@@ -2553,7 +2544,7 @@ index 14f39c1e573e..d221300ae815 100644
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
-@@ -5377,6 +5395,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -5386,6 +5404,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;

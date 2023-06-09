@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc5.20230606gitf8dba31b0a82.42
+%define pkgrelease 0.rc5.20230609git8d15d5e1851b.45
 %define kversion 6
-%define tarfile_release 6.4-rc5-2-gf8dba31b0a82
+%define tarfile_release 6.4-rc5-136-g8d15d5e1851b
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20230606gitf8dba31b0a82.42%{?buildid}%{?dist}
+%define specrelease 0.rc5.20230609git8d15d5e1851b.45%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -2830,10 +2830,6 @@ rm -f %{buildroot}%{_bindir}/timerlat
 popd
 %endif
 
-if [ -f $DevelDir/vmlinux.h ]; then
-  RPM_VMLINUX_H=$DevelDir/vmlinux.h
-fi
-
 %if %{with_bpftool}
 pushd tools/bpf/bpftool
 %{bpftool_make} prefix=%{_prefix} bash_compdir=%{_sysconfdir}/bash_completion.d/ mandir=%{_mandir} install doc-install
@@ -3440,6 +3436,23 @@ fi
 #
 #
 %changelog
+* Fri Jun 09 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.0-0.rc5.20230609git8d15d5e1851b.45]
+- Fedora configs for 6.4 (Justin M. Forbes)
+
+* Fri Jun 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc5.8d15d5e1851b.45]
+- Change aarch64 CONFIG_ARCH_FORCE_MAX_ORDER to 10 for 4K pages (Justin M. Forbes)
+- Linux v6.4.0-0.rc5.8d15d5e1851b
+
+* Fri Jun 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc5.a4d7d7011219.44]
+- kernel.spec: remove "RPM_VMLINUX_H=$DevelDir/vmlinux.h" code chunk in %%install (Denys Vlasenko)
+
+* Thu Jun 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc5.a4d7d7011219.43]
+- redhat/configs: aarch64: Turn on Display for OnePlus 6 (Eric Curtin)
+- redhat/configs: NXP i.MX93 pinctrl, clk, analog to digital converters (Steve Best)
+- redhat/configs: Enable CONFIG_SC_GPUCC_8280XP for fedora (Andrew Halaney)
+- redhat/configs: Enable CONFIG_QCOM_IPCC for fedora (Andrew Halaney)
+- Linux v6.4.0-0.rc5.a4d7d7011219
+
 * Tue Jun 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc5.f8dba31b0a82.42]
 - Linux v6.4.0-0.rc5.f8dba31b0a82
 
