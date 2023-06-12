@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc5.20230609git8d15d5e1851b.45
+%define pkgrelease 0.rc5.20230612git022ce8862dff.47
 %define kversion 6
-%define tarfile_release 6.4-rc5-136-g8d15d5e1851b
+%define tarfile_release 6.4-rc5-305-g022ce8862dff
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20230609git8d15d5e1851b.45%{?buildid}%{?dist}
+%define specrelease 0.rc5.20230612git022ce8862dff.47%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3436,8 +3436,15 @@ fi
 #
 #
 %changelog
-* Fri Jun 09 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.0-0.rc5.20230609git8d15d5e1851b.45]
+* Mon Jun 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc5.022ce8862dff.47]
+- redhat/configs: IMX8ULP pinctrl driver (Steve Best)
+- redhat/configs: increase CONFIG_FRAME_WARN for Fedora on aarch64 (Brian Masney)
+- redhat/configs: add two missing Kconfig options for the Thinkpad x13s (Brian Masney)
+- Linux v6.4.0-0.rc5.022ce8862dff
+
+* Sat Jun 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc5.64569520920a.46]
 - Fedora configs for 6.4 (Justin M. Forbes)
+- Linux v6.4.0-0.rc5.64569520920a
 
 * Fri Jun 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc5.8d15d5e1851b.45]
 - Change aarch64 CONFIG_ARCH_FORCE_MAX_ORDER to 10 for 4K pages (Justin M. Forbes)
