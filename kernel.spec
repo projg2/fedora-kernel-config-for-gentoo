@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc5.20230612git022ce8862dff.47
+%define pkgrelease 0.rc6.48
 %define kversion 6
-%define tarfile_release 6.4-rc5-305-g022ce8862dff
+%define tarfile_release 6.4-rc6
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20230612git022ce8862dff.47%{?buildid}%{?dist}
+%define specrelease 0.rc6.48%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3436,6 +3436,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc6.48]
+- Linux v6.4.0-0.rc6
+
 * Mon Jun 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc5.022ce8862dff.47]
 - redhat/configs: IMX8ULP pinctrl driver (Steve Best)
 - redhat/configs: increase CONFIG_FRAME_WARN for Fedora on aarch64 (Brian Masney)

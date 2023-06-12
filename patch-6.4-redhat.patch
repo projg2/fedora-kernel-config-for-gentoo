@@ -117,7 +117,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 09866a85bc2a..f2a166968dbe 100644
+index 0d3a9d3e73c1..7a5e4c1cbe0f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
