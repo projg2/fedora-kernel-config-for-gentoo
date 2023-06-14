@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc6.48
+%define pkgrelease 0.rc6.20230614gitb6dad5178cea.49
 %define kversion 6
-%define tarfile_release 6.4-rc6
+%define tarfile_release 6.4-rc6-37-gb6dad5178cea
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.48%{?buildid}%{?dist}
+%define specrelease 0.rc6.20230614gitb6dad5178cea.49%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3436,6 +3436,11 @@ fi
 #
 #
 %changelog
+* Wed Jun 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc6.b6dad5178cea.49]
+- Remove CONFIG_ARCH_FORCE_MAX_ORDER for aarch64 (Justin M. Forbes)
+- Fix up config and filter for PTP_DFL_TOD (Justin M. Forbes)
+- Linux v6.4.0-0.rc6.b6dad5178cea
+
 * Mon Jun 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc6.48]
 - Linux v6.4.0-0.rc6
 
