@@ -142,18 +142,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.3.7
-%define specversion 6.3.7
+%define specrpmversion 6.3.8
+%define specversion 6.3.8
 %define patchversion 6.3
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.3.7
+%define tarfile_release 6.3.8
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.3.7
+%define kabiversion 6.3.8
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3406,8 +3406,10 @@ fi
 #
 #
 %changelog
-* Fri Jun 09 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.3.7-200]
+* Wed Jun 14 2023 Augusto Caringi <acaringi@redhat.com> [6.3.8-0]
+- usb: typec: ucsi: Fix command cancellation (Heikki Krogerus)
 - Add a CVE to BugsFixed (Justin M. Forbes)
+- Linux v6.3.8
 
 * Fri Jun 09 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.3.7-0]
 - redhat/configs: Enable CONFIG_SC_GPUCC_8280XP for fedora (Andrew Halaney)

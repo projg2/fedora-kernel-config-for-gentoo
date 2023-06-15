@@ -24,6 +24,7 @@
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
+ drivers/usb/typec/ucsi/ucsi.c                      |  11 +-
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -36,10 +37,10 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  sound/pci/hda/patch_realtek.c                      |   2 +
- 38 files changed, 509 insertions(+), 187 deletions(-)
+ 39 files changed, 516 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 71c958fd5285..b4dd1352e20d 100644
+index b4267d7a57b3..94fab2bcc83d 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1167,6 +1168,35 @@ index 97a0f8faea6e..d837548d2024 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/drivers/usb/typec/ucsi/ucsi.c b/drivers/usb/typec/ucsi/ucsi.c
+index 8d1baf28df55..8ada8e969f79 100644
+--- a/drivers/usb/typec/ucsi/ucsi.c
++++ b/drivers/usb/typec/ucsi/ucsi.c
+@@ -132,10 +132,8 @@ static int ucsi_exec_command(struct ucsi *ucsi, u64 cmd)
+ 	if (ret)
+ 		return ret;
+
+-	if (cci & UCSI_CCI_BUSY) {
+-		ucsi->ops->async_write(ucsi, UCSI_CANCEL, NULL, 0);
+-		return -EBUSY;
+-	}
++	if (cmd != UCSI_CANCEL && cci & UCSI_CCI_BUSY)
++		return ucsi_exec_command(ucsi, UCSI_CANCEL);
+
+ 	if (!(cci & UCSI_CCI_COMMAND_COMPLETE))
+ 		return -EIO;
+@@ -149,6 +147,11 @@ static int ucsi_exec_command(struct ucsi *ucsi, u64 cmd)
+ 		return ucsi_read_error(ucsi);
+ 	}
+
++	if (cmd == UCSI_CANCEL && cci & UCSI_CCI_CANCEL_COMPLETE) {
++		ret = ucsi_acknowledge_command(ucsi);
++		return ret ? ret : -EBUSY;
++	}
++
+ 	return UCSI_CCI_LENGTH(cci);
+ }
+
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 7aa62c92185f..2da17f5aeef9 100644
 --- a/include/linux/efi.h
@@ -1414,10 +1444,10 @@ index cf6cc576736f..3653a4f35265 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 7b5f194513c7..9adf2930ff39 100644
+index 48a0e87136f1..973fe458d1be 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -9726,6 +9726,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+@@ -9733,6 +9733,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x17aa, 0x2318, "Thinkpad Z13 Gen2", ALC287_FIXUP_CS35L41_I2C_2),
  	SND_PCI_QUIRK(0x17aa, 0x2319, "Thinkpad Z16 Gen2", ALC287_FIXUP_CS35L41_I2C_2),
  	SND_PCI_QUIRK(0x17aa, 0x231a, "Thinkpad Z16 Gen2", ALC287_FIXUP_CS35L41_I2C_2),

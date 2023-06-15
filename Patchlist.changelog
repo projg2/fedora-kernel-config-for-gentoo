@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/c707ce93be6a6f4524cf88e3f18e0437d7bd2b14
+ c707ce93be6a6f4524cf88e3f18e0437d7bd2b14 usb: typec: ucsi: Fix command cancellation
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/ac99dd89b9e59639ebec28116dd57302b0148c16
  ac99dd89b9e59639ebec28116dd57302b0148c16 drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
 
