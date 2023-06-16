@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc6.20230614gitb6dad5178cea.49
+%define pkgrelease 0.rc6.20230616git40f71e7cd3c6.50
 %define kversion 6
-%define tarfile_release 6.4-rc6-37-gb6dad5178cea
+%define tarfile_release 6.4-rc6-195-g40f71e7cd3c6
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20230614gitb6dad5178cea.49%{?buildid}%{?dist}
+%define specrelease 0.rc6.20230616git40f71e7cd3c6.50%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -2073,7 +2073,8 @@ BuildKernel() {
     cp --parents tools/build/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp --parents tools/build/fixdep.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp --parents tools/objtool/sync-check.sh $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
-    cp -a --parents tools/bpf/resolve_btfids $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/bpf/resolve_btfids/main.c $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    cp -a --parents tools/bpf/resolve_btfids/Build $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
     cp --parents security/selinux/include/policycap_names.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     cp --parents security/selinux/include/policycap.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
@@ -3436,6 +3437,13 @@ fi
 #
 #
 %changelog
+* Fri Jun 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc6.40f71e7cd3c6.50]
+- spec: remove resolve_btfids from kernel-devel (Viktor Malik)
+- tools/resolve_btfids: Fix setting HOSTCFLAGS (Viktor Malik)
+- Fix typo in filter-modules (Justin M. Forbes)
+- redhat/configs: Enable CONFIG_INIT_STACK_ALL_ZERO for RHEL (Josh Poimboeuf)
+- Linux v6.4.0-0.rc6.40f71e7cd3c6
+
 * Wed Jun 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc6.b6dad5178cea.49]
 - Remove CONFIG_ARCH_FORCE_MAX_ORDER for aarch64 (Justin M. Forbes)
 - Fix up config and filter for PTP_DFL_TOD (Justin M. Forbes)
