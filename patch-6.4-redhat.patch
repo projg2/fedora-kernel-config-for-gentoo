@@ -118,7 +118,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 0d3a9d3e73c1..7a5e4c1cbe0f 100644
+index b68b43c19072..78e7e19c0d66 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1477,10 +1477,10 @@ index c525867760bf..549083cdf0ec 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/scsi/aacraid/linit.c b/drivers/scsi/aacraid/linit.c
-index 68f4dbcfff49..90a6070a1332 100644
+index c4a36c0be527..6ca4061cd164 100644
 --- a/drivers/scsi/aacraid/linit.c
 +++ b/drivers/scsi/aacraid/linit.c
-@@ -77,6 +77,7 @@ char aac_driver_version[] = AAC_DRIVER_FULL_VERSION;
+@@ -78,6 +78,7 @@ char aac_driver_version[] = AAC_DRIVER_FULL_VERSION;
   * Note: The last field is used to index into aac_drivers below.
   */
  static const struct pci_device_id aac_pci_tbl[] = {
@@ -1488,7 +1488,7 @@ index 68f4dbcfff49..90a6070a1332 100644
  	{ 0x1028, 0x0001, 0x1028, 0x0001, 0, 0, 0 }, /* PERC 2/Si (Iguana/PERC2Si) */
  	{ 0x1028, 0x0002, 0x1028, 0x0002, 0, 0, 1 }, /* PERC 3/Di (Opal/PERC3Di) */
  	{ 0x1028, 0x0003, 0x1028, 0x0003, 0, 0, 2 }, /* PERC 3/Si (SlimFast/PERC3Si */
-@@ -144,6 +145,7 @@ static const struct pci_device_id aac_pci_tbl[] = {
+@@ -145,6 +146,7 @@ static const struct pci_device_id aac_pci_tbl[] = {
  	{ 0x9005, 0x0285, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 59 }, /* Adaptec Catch All */
  	{ 0x9005, 0x0286, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 60 }, /* Adaptec Rocket Catch All */
  	{ 0x9005, 0x0288, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 61 }, /* Adaptec NEMER/ARK Catch All */

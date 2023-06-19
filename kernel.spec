@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc6.20230616git40f71e7cd3c6.50
+%define pkgrelease 0.rc7.53
 %define kversion 6
-%define tarfile_release 6.4-rc6-195-g40f71e7cd3c6
+%define tarfile_release 6.4-rc7
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20230616git40f71e7cd3c6.50%{?buildid}%{?dist}
+%define specrelease 0.rc7.53%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -2397,6 +2397,8 @@ BuildKernel() {
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
+    # prune junk from kernel-debuginfo
+    find $RPM_BUILD_ROOT/usr/src/kernels -name "*.mod.c" -delete
 
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
@@ -3437,6 +3439,23 @@ fi
 #
 #
 %changelog
+* Mon Jun 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc7.53]
+- common: remove deleted USB PCCARD drivers (Peter Robinson)
+- fedora: further cleanup of pccard/cardbus subsystem (Peter Robinson)
+- common: properly disable PCCARD subsystem (Peter Robinson)
+- Linux v6.4.0-0.rc7
+
+* Sun Jun 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc6.1b29d271614a.52]
+- Linux v6.4.0-0.rc6.1b29d271614a
+
+* Sat Jun 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc6.1639fae5132b.51]
+- redhat/configs: arm: enable SERIAL_TEGRA UART for RHEL (Mark Salter)
+- redhat/configs: enable CONFIG_X86_AMD_PSTATE_UT (David Arcari)
+- redhat/configs: Enable CONFIG_TCG_VTPM_PROXY for RHEL (Štěpán Horáček)
+- redhat: do not package *.mod.c generated files (Denys Vlasenko)
+- ALSA configuration changes for ARK/RHEL 9.3 (Jaroslav Kysela)
+- Linux v6.4.0-0.rc6.1639fae5132b
+
 * Fri Jun 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc6.40f71e7cd3c6.50]
 - spec: remove resolve_btfids from kernel-devel (Viktor Malik)
 - tools/resolve_btfids: Fix setting HOSTCFLAGS (Viktor Malik)
