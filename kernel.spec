@@ -148,13 +148,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc7.53
+%define pkgrelease 0.rc7.20230620git692b7dc87ca6.54
 %define kversion 6
-%define tarfile_release 6.4-rc7
+%define tarfile_release 6.4-rc7-14-g692b7dc87ca6
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.53%{?buildid}%{?dist}
+%define specrelease 0.rc7.20230620git692b7dc87ca6.54%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3439,6 +3439,9 @@ fi
 #
 #
 %changelog
+* Tue Jun 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc7.692b7dc87ca6.54]
+- Linux v6.4.0-0.rc7.692b7dc87ca6
+
 * Mon Jun 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc7.53]
 - common: remove deleted USB PCCARD drivers (Peter Robinson)
 - fedora: further cleanup of pccard/cardbus subsystem (Peter Robinson)
