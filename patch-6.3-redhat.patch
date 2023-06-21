@@ -9,6 +9,7 @@
  drivers/acpi/irq.c                                 |  17 ++-
  drivers/acpi/scan.c                                |   9 ++
  drivers/ata/libahci.c                              |  18 +++
+ drivers/bluetooth/btusb.c                          |   3 +
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
  drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
  drivers/firmware/efi/Makefile                      |   1 +
@@ -24,7 +25,6 @@
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
- drivers/usb/typec/ucsi/ucsi.c                      |  11 +-
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -37,10 +37,10 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  sound/pci/hda/patch_realtek.c                      |   2 +
- 39 files changed, 516 insertions(+), 191 deletions(-)
+ 39 files changed, 512 insertions(+), 187 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index b4267d7a57b3..94fab2bcc83d 100644
+index f8ee72375885..8f848f64ad80 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -296,6 +296,20 @@ index 8f216de76648..51337c993a16 100644
  	/* wait for engine to stop. This could be as long as 500 msec */
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 0923582299f3..e88dd1a937a3 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -615,6 +615,9 @@ static const struct usb_device_id blacklist_table[] = {
+ 	{ USB_DEVICE(0x0489, 0xe0e2), .driver_info = BTUSB_MEDIATEK |
+ 						     BTUSB_WIDEBAND_SPEECH |
+ 						     BTUSB_VALID_LE_STATES },
++	{ USB_DEVICE(0x0489, 0xe0e4), .driver_info = BTUSB_MEDIATEK |
++						     BTUSB_WIDEBAND_SPEECH |
++						     BTUSB_VALID_LE_STATES },
+ 	{ USB_DEVICE(0x0489, 0xe0f2), .driver_info = BTUSB_MEDIATEK |
+ 						     BTUSB_WIDEBAND_SPEECH |
+ 						     BTUSB_VALID_LE_STATES },
 diff --git a/drivers/char/ipmi/ipmi_dmi.c b/drivers/char/ipmi/ipmi_dmi.c
 index bbf7029e224b..cf7faa970dd6 100644
 --- a/drivers/char/ipmi/ipmi_dmi.c
@@ -1116,7 +1130,7 @@ index a2d4f59e0535..1c5092b995e9 100644
  {
  }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index f4e2a88729fd..d3ba2beeb4d6 100644
+index c525867760bf..549083cdf0ec 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4309,6 +4309,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1168,35 +1182,6 @@ index 97a0f8faea6e..d837548d2024 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/drivers/usb/typec/ucsi/ucsi.c b/drivers/usb/typec/ucsi/ucsi.c
-index 8d1baf28df55..8ada8e969f79 100644
---- a/drivers/usb/typec/ucsi/ucsi.c
-+++ b/drivers/usb/typec/ucsi/ucsi.c
-@@ -132,10 +132,8 @@ static int ucsi_exec_command(struct ucsi *ucsi, u64 cmd)
- 	if (ret)
- 		return ret;
-
--	if (cci & UCSI_CCI_BUSY) {
--		ucsi->ops->async_write(ucsi, UCSI_CANCEL, NULL, 0);
--		return -EBUSY;
--	}
-+	if (cmd != UCSI_CANCEL && cci & UCSI_CCI_BUSY)
-+		return ucsi_exec_command(ucsi, UCSI_CANCEL);
-
- 	if (!(cci & UCSI_CCI_COMMAND_COMPLETE))
- 		return -EIO;
-@@ -149,6 +147,11 @@ static int ucsi_exec_command(struct ucsi *ucsi, u64 cmd)
- 		return ucsi_read_error(ucsi);
- 	}
-
-+	if (cmd == UCSI_CANCEL && cci & UCSI_CCI_CANCEL_COMPLETE) {
-+		ret = ucsi_acknowledge_command(ucsi);
-+		return ret ? ret : -EBUSY;
-+	}
-+
- 	return UCSI_CCI_LENGTH(cci);
- }
-
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 7aa62c92185f..2da17f5aeef9 100644
 --- a/include/linux/efi.h
@@ -1444,7 +1429,7 @@ index cf6cc576736f..3653a4f35265 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 48a0e87136f1..973fe458d1be 100644
+index 920e44ba998a..921398590e3f 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
 @@ -9733,6 +9733,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {

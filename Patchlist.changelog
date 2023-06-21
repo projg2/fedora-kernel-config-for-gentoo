@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7fbd55f9899d0e8ec17ee56f7835885278bd2005
+ 7fbd55f9899d0e8ec17ee56f7835885278bd2005 Bluetooth: Add VID/PID 0489/e0e4 for MediaTek MT7922
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/c707ce93be6a6f4524cf88e3f18e0437d7bd2b14
  c707ce93be6a6f4524cf88e3f18e0437d7bd2b14 usb: typec: ucsi: Fix command cancellation
 

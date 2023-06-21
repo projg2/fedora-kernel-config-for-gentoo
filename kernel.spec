@@ -142,18 +142,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.3.8
-%define specversion 6.3.8
+%define specrpmversion 6.3.9
+%define specversion 6.3.9
 %define patchversion 6.3
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.3.8
+%define tarfile_release 6.3.9
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.3.8
+%define kabiversion 6.3.9
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3406,6 +3406,13 @@ fi
 #
 #
 %changelog
+* Wed Jun 21 2023 Augusto Caringi <acaringi@redhat.com> [6.3.9-0]
+- Turn on CONFIG_RMNET for Fedora (Justin M. Forbes)
+- redhat/config: common: Enable CONFIG_GPIO_SIM for software development (Kate Hsuan)
+- Add the MT7922 Bluetooth bug to BugsFixed (Augusto Caringi)
+- Bluetooth: Add VID/PID 0489/e0e4 for MediaTek MT7922 (Meng Tang)
+- Linux v6.3.9
+
 * Wed Jun 14 2023 Augusto Caringi <acaringi@redhat.com> [6.3.8-0]
 - usb: typec: ucsi: Fix command cancellation (Heikki Krogerus)
 - Add a CVE to BugsFixed (Justin M. Forbes)
