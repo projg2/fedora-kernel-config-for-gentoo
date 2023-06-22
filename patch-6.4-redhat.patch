@@ -542,7 +542,7 @@ index b51f2a4c821e..be31d32aba53 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index abeff7dc0b58..6384796e76dd 100644
+index 34b9e7876538..97bc2138bf74 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -553,7 +553,7 @@ index abeff7dc0b58..6384796e76dd 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -947,40 +948,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -926,40 +927,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
