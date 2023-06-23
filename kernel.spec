@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc7.20230622gitdad9774deaf1.56
+%define pkgrelease 0.rc7.20230623git8a28a0b6f1a1.57
 %define kversion 6
-%define tarfile_release 6.4-rc7-72-gdad9774deaf1
+%define tarfile_release 6.4-rc7-194-g8a28a0b6f1a1
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20230622gitdad9774deaf1.56%{?buildid}%{?dist}
+%define specrelease 0.rc7.20230623git8a28a0b6f1a1.57%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -3700,6 +3700,10 @@ fi\
 #
 #
 %changelog
+* Fri Jun 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc7.8a28a0b6f1a1.57]
+- redhat/configs: Disable qcom armv7 drippings in the aarch64 tree (Jeremy Linton)
+- Linux v6.4.0-0.rc7.8a28a0b6f1a1
+
 * Thu Jun 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc7.dad9774deaf1.56]
 - kernel.spec: drop obsolete ldconfig (Jan Stancek)
 - Consolidate config items to common for 6.4 cycle (Justin M. Forbes)
