@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.0
 %define specversion 6.4.0
 %define patchversion 6.4
-%define pkgrelease 0.rc7.20230623git8a28a0b6f1a1.57
+%define pkgrelease 59
 %define kversion 6
-%define tarfile_release 6.4-rc7-194-g8a28a0b6f1a1
+%define tarfile_release 6.4
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20230623git8a28a0b6f1a1.57%{?buildid}%{?dist}
+%define specrelease 59%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.0
 
@@ -206,14 +206,23 @@ Summary: The Linux kernel
 %define with_up        %{?_without_up:        0} %{?!_without_up:        1}
 # kernel PAE (only valid for ARM (lpae))
 %define with_pae       %{?_without_pae:       0} %{?!_without_pae:       1}
-# kernel-debug
+# build also debug variants
 %define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
 # kernel-zfcpdump (s390 specific kernel for zfcpdump)
 %define with_zfcpdump  %{?_without_zfcpdump:  0} %{?!_without_zfcpdump:  1}
 # kernel-64k (aarch64 kernel with 64K page_size)
 %define with_arm64_64k %{?_without_arm64_64k: 0} %{?!_without_arm64_64k: 1}
 # kernel-rt (x86_64 and aarch64 only PREEMPT_RT enabled kernel)
-%define with_realtime  %{?_without_realtime:  1} %{?!_without_realtime:  0}
+%define with_realtime  %{?_with_realtime:     1} %{?!_with_realtime:     0}
+
+# Supported variants
+#            (base)    with_debug    with_gcov
+# up         X         X             X
+# pae        X                       X
+# zfcpdump   X                       X
+# arm64_64k  X         X             X
+# realtime   X         X             X
+
 # kernel-doc
 %define with_doc       %{?_without_doc:       0} %{?!_without_doc:       1}
 # kernel-headers
@@ -238,7 +247,7 @@ Summary: The Linux kernel
 %define with_baseonly  %{?_with_baseonly:     1} %{?!_with_baseonly:     0}
 # Only build the pae kernel (--with paeonly):
 %define with_paeonly   %{?_with_paeonly:      1} %{?!_with_paeonly:      0}
-# Only build the debug kernel (--with dbgonly):
+# Only build the debug variants (--with dbgonly):
 %define with_dbgonly   %{?_with_dbgonly:      1} %{?!_with_dbgonly:      0}
 # Only build the realtime kernel (--with rtonly):
 %define with_rtonly    %{?_with_rtonly:       1} %{?!_with_rtonly:       0}
@@ -413,8 +422,6 @@ Summary: The Linux kernel
 
 # if requested, only build debug kernel
 %if %{with_dbgonly}
-%define with_up 0
-%define with_realtime 0
 %define with_vdso_install 0
 %define with_perf 0
 %define with_tools 0
@@ -647,6 +654,22 @@ Summary: The Linux kernel
 %define with_debug 0
 %endif
 
+# short-hand for "are we building base/non-debug variants of ...?"
+%if %{with_up} && !%{with_dbgonly}
+%define with_up_base 1
+%else
+%define with_up_base 0
+%endif
+%if %{with_realtime} && !%{with_dbgonly}
+%define with_realtime_base 1
+%else
+%define with_realtime_base 0
+%endif
+%if %{with_arm64_64k} && !%{with_dbgonly}
+%define with_arm64_64k_base 1
+%else
+%define with_arm64_64k_base 0
+%endif
 
 #
 # Packages that need to be installed before the kernel is, because the %%post
@@ -757,11 +780,9 @@ BuildConflicts: dwarves < 1.13
 %undefine _debugsource_packages
 %undefine _debuginfo_subpackages
 
-%if 0%{?fedora}
+# Remove -q option below to provide 'extracting debug info' messages
 %global _find_debuginfo_opts -r -q
-%else
-%global _find_debuginfo_opts -r
-%endif
+
 %global _missing_build_ids_terminate_build 1
 %global _no_recompute_build_ids 1
 %endif
@@ -1589,7 +1610,7 @@ zfcpdump infrastructure.
 # with_zfcpdump
 %endif
 
-%if %{with_arm64_64k}
+%if %{with_arm64_64k_base}
 %define variant_summary The Linux kernel compiled for 64k pagesize usage
 %kernel_variant_package 64k
 %description 64k-core
@@ -1626,7 +1647,7 @@ It should only be installed when trying to gather additional information
 on kernel bugs, as some of these options impact performance noticably.
 %endif
 
-%if %{with_realtime}
+%if %{with_realtime_base}
 %define variant_summary The Linux kernel compiled with PREEMPT_RT enabled
 %kernel_variant_package rt
 %description rt-core
@@ -1634,6 +1655,7 @@ This package includes a version of the Linux kernel compiled with the
 PREEMPT_RT real-time preemption support
 %endif
 
+%if %{with_up} && %{with_debug}
 %if !%{debugbuildsenabled}
 %kernel_variant_package -m debug
 %else
@@ -1648,8 +1670,9 @@ input and output, etc.
 This variant of the kernel has numerous debugging options enabled.
 It should only be installed when trying to gather additional information
 on kernel bugs, as some of these options impact performance noticably.
+%endif
 
-%if %{with_up}
+%if %{with_up_base}
 # And finally the main -core package
 
 %define variant_summary The Linux kernel
@@ -1661,10 +1684,12 @@ of the operating system: memory allocation, process allocation, device
 input and output, etc.
 %endif
 
-%if %{with_efiuki}
+%if %{with_up} && %{with_debug} && %{with_efiuki}
 %description debug-uki-virt
 Prebuilt debug unified kernel image for virtual machines.
+%endif
 
+%if %{with_up_base} && %{with_efiuki}
 %description uki-virt
 Prebuilt default unified kernel image for virtual machines.
 %endif
@@ -2630,7 +2655,7 @@ cd linux-%{KVERREL}
 
 
 %if %{with_debug}
-%if %{with_realtime} && !%{with_dbgonly}
+%if %{with_realtime}
 echo "building rt-debug"
 BuildKernel %make_target %kernel_image %{_use_vdso} rt-debug
 %endif
@@ -2649,7 +2674,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso} debug
 BuildKernel %make_target %kernel_image %{_use_vdso} zfcpdump
 %endif
 
-%if %{with_arm64_64k}
+%if %{with_arm64_64k_base}
 BuildKernel %make_target %kernel_image %{_use_vdso} 64k
 %endif
 
@@ -2657,11 +2682,11 @@ BuildKernel %make_target %kernel_image %{_use_vdso} 64k
 BuildKernel %make_target %kernel_image %{use_vdso} lpae
 %endif
 
-%if %{with_realtime}
+%if %{with_realtime_base}
 BuildKernel %make_target %kernel_image %{_use_vdso} rt
 %endif
 
-%if %{with_up}
+%if %{with_up_base}
 BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
@@ -2812,24 +2837,29 @@ find Documentation -type d | xargs chmod u+w
 #
 # Don't sign modules for the zfcpdump variant as it is monolithic.
 
+# TODO - this needs to be fixed in same way as we have it in c9s
 %define __modsign_install_post \
   if [ "%{signmodules}" -eq "1" ]; then \
     if [ "%{with_pae}" -ne "0" ]; then \
        %{modsign_cmd} certs/signing_key.pem.sign+lpae certs/signing_key.x509.sign+lpae $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+lpae/ \
     fi \
-    if [ "%{with_debug}" -ne "0" ]; then \
-      if [ "%{with_realtime}" -ne "0" ]; then \
-        %{modsign_cmd} certs/signing_key.pem.sign+rt-debug certs/signing_key.x509.sign+rt-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+rt-debug/ \
-      fi \
-      if [ "%{with_up}" -ne "0" ]; then \
-        %{modsign_cmd} certs/signing_key.pem.sign+debug certs/signing_key.x509.sign+debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+debug/ \
-      fi \
-      if [ "%{with_arm64_64k}" -ne "0" ]; then \
-        %{modsign_cmd} certs/signing_key.pem.sign+64k-debug certs/signing_key.x509.sign+64k-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+64k-debug/ \
-      fi \
-    fi \
-    if [ "%{with_up}" -ne "0" ]; then \
+    if [ "%{with_up_base}" -ne "0" ]; then \
       %{modsign_cmd} certs/signing_key.pem.sign certs/signing_key.x509.sign $RPM_BUILD_ROOT/lib/modules/%{KVERREL}/ \
+    fi \
+    if [ "%{with_up}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
+         %{modsign_cmd} certs/signing_key.pem.sign+debug certs/signing_key.x509.sign+debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+debug/ \
+    fi \
+    if [ "%{with_realtime_base}" -ne "0" ]; then \
+       %{modsign_cmd} certs/signing_key.pem.sign+rt certs/signing_key.x509.sign+rt $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+rt/ \
+    fi \
+    if [ "%{with_realtime}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
+         %{modsign_cmd} certs/signing_key.pem.sign+rt-debug certs/signing_key.x509.sign+rt-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+rt-debug/ \
+    fi \
+    if [ "%{with_arm64_64k_base}" -ne "0" ]; then \
+       %{modsign_cmd} certs/signing_key.pem.sign+64k certs/signing_key.x509.sign+64k $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+64k/ \
+    fi \
+    if [ "%{with_arm64_64k}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
+         %{modsign_cmd} certs/signing_key.pem.sign+64k-debug certs/signing_key.x509.sign+64k-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+64k-debug/ \
     fi \
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
@@ -3342,11 +3372,11 @@ then\
 fi\
 %{nil}
 
-%if %{with_efiuki}
+%if %{with_up_base} && %{with_efiuki}
 %kernel_uki_virt_scripts
 %endif
 
-%if %{with_up}
+%if %{with_up_base}
 %kernel_variant_preun
 %kernel_variant_post -r kernel-smp
 %endif
@@ -3361,15 +3391,16 @@ fi\
 %kernel_variant_post -v zfcpdump
 %endif
 
-%if %{with_debug}
-%if %{with_efiuki}
+%if %{with_up} && %{with_debug} && %{with_efiuki}
 %kernel_uki_virt_scripts debug
 %endif
+
+%if %{with_up} && %{with_debug}
 %kernel_variant_preun debug
 %kernel_variant_post -v debug
 %endif
 
-%if %{with_arm64_64k}
+%if %{with_arm64_64k_base}
 %kernel_variant_preun 64k
 %kernel_variant_post -v 64k
 %endif
@@ -3379,15 +3410,16 @@ fi\
 %kernel_variant_post -v 64k-debug
 %endif
 
-%if %{with_realtime}
+%if %{with_realtime_base}
 %kernel_variant_preun rt
 %kernel_variant_post -v rt -r (kernel|kernel-smp)
 %kernel_kvm_post rt
-%if %{with_debug}
+%endif
+
+%if %{with_realtime} && %{with_debug}
 %kernel_variant_preun rt-debug
 %kernel_variant_post -v rt-debug
 %kernel_kvm_post rt-debug
-%endif
 %endif
 
 ###
@@ -3556,7 +3588,7 @@ fi\
 %endif
 
 # empty meta-package
-%if %{with_up}
+%if %{with_up_base}
 %ifnarch %nobuildarches noarch
 %files
 %endif
@@ -3653,12 +3685,14 @@ fi\
 %endif\
 %{nil}
 
-%kernel_variant_files %{_use_vdso} %{with_up}
+%kernel_variant_files %{_use_vdso} %{with_up_base}
+%if %{with_up}
 %kernel_variant_files %{_use_vdso} %{with_debug} debug
+%endif
 %if %{with_arm64_64k}
 %kernel_variant_files %{_use_vdso} %{with_debug} 64k-debug
 %endif
-%kernel_variant_files %{_use_vdso} %{with_realtime} rt
+%kernel_variant_files %{_use_vdso} %{with_realtime_base} rt
 %if %{with_realtime}
 %kernel_variant_files %{_use_vdso} %{with_debug} rt-debug
 %endif
@@ -3680,7 +3714,7 @@ fi\
 %endif
 %endif
 %kernel_variant_files %{_use_vdso} %{with_zfcpdump} zfcpdump
-%kernel_variant_files %{_use_vdso} %{with_arm64_64k} 64k
+%kernel_variant_files %{_use_vdso} %{with_arm64_64k_base} 64k
 
 %define kernel_variant_ipaclones(k:) \
 %if %{1}\
@@ -3693,13 +3727,24 @@ fi\
 %endif\
 %{nil}
 
-%kernel_variant_ipaclones %{with_up}
+%kernel_variant_ipaclones %{with_up_base}
 
 # plz don't put in a version string unless you're going to tag
 # and build.
 #
 #
 %changelog
+* Mon Jun 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-59]
+- redhat/kernel.spec.template: Disable 'extracting debug info' messages (Prarit Bhargava)
+- kernel/rh_messages.c: Another gcc12 warning on redundant NULL test (Florian Weimer) [2216678]
+- redhat: fix signing for realtime and arm64_64k non-debug variants (Jan Stancek)
+- redhat: treat with_up consistently (Jan Stancek)
+- redhat: make with_realtime opt-in (Jan Stancek)
+- Linux v6.4.0
+
+* Sat Jun 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc7.a92b7d26c743.58]
+- Linux v6.4.0-0.rc7.a92b7d26c743
+
 * Fri Jun 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.4.0-0.rc7.8a28a0b6f1a1.57]
 - redhat/configs: Disable qcom armv7 drippings in the aarch64 tree (Jeremy Linton)
 - Linux v6.4.0-0.rc7.8a28a0b6f1a1

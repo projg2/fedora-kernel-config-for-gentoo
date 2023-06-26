@@ -118,7 +118,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index b68b43c19072..78e7e19c0d66 100644
+index e51e4d9174ab..e58f04ca4249 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -2626,7 +2626,7 @@ index 886d2ebd0a0d..d3d1fbbfaa93 100644
  /**
 diff --git a/kernel/rh_messages.c b/kernel/rh_messages.c
 new file mode 100644
-index 000000000000..c55fb108c6bb
+index 000000000000..018800f35ff2
 --- /dev/null
 +++ b/kernel/rh_messages.c
 @@ -0,0 +1,209 @@
@@ -2825,7 +2825,7 @@ index 000000000000..c55fb108c6bb
 +	if (msg)
 +		str = msg;
 +#ifdef CONFIG_MODULES
-+	else if (mod && mod->name)
++	else if (mod)
 +		str = mod->name;
 +#endif
 +
@@ -2840,7 +2840,7 @@ index 000000000000..c55fb108c6bb
 +}
 +EXPORT_SYMBOL(mark_partner_supported);
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index d4531d09984d..071964717c3b 100644
+index c12150f96b88..3f28b300ae22 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -23,6 +23,7 @@
@@ -2851,7 +2851,7 @@ index d4531d09984d..071964717c3b 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static bool modversions;
-@@ -2132,6 +2133,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2137,6 +2138,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -2864,7 +2864,7 @@ index d4531d09984d..071964717c3b 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2195,6 +2202,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2200,6 +2207,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
