@@ -65,7 +65,7 @@
  64 files changed, 1544 insertions(+), 190 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 9e5bab29685f..223901a42a15 100644
+index c5e7bb4babf0..8ff0f3ee64cf 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -6563,6 +6563,15 @@
@@ -156,10 +156,10 @@ index e51e4d9174ab..e58f04ca4249 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 0fb4b218f665..402f3309a90c 100644
+index 1b158bbab29a..6fe26996302d 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1304,9 +1304,9 @@ config HIGHMEM
+@@ -1306,9 +1306,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -172,10 +172,10 @@ index 0fb4b218f665..402f3309a90c 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 343e1e1cae10..163545217df2 100644
+index d260ca10e8c1..030bbc572e2d 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1268,7 +1268,7 @@ endchoice
+@@ -1269,7 +1269,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -232,10 +232,10 @@ index fe10da1a271e..e2c6068201c0 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 80710a68ef7d..972d1ffc1de8 100644
+index 52683fddafaf..d0f15368dcce 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1578,6 +1578,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1561,6 +1561,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
@@ -420,7 +420,7 @@ index c2c786eb95ab..4e3aa80cd5cf 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 0c6f06abe3f4..f66b85b2c108 100644
+index 1c3e1e2bb0b5..163d43c671a8 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1746,6 +1746,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -530,7 +530,7 @@ index 186f1fee7534..93e3a76596ff 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
-index b51f2a4c821e..be31d32aba53 100644
+index e489fefd23da..f2dfae764fb5 100644
 --- a/drivers/firmware/efi/Makefile
 +++ b/drivers/firmware/efi/Makefile
 @@ -25,6 +25,7 @@ subdir-$(CONFIG_EFI_STUB)		+= libstub
@@ -542,7 +542,7 @@ index b51f2a4c821e..be31d32aba53 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 34b9e7876538..97bc2138bf74 100644
+index 3a6ee7bb06f1..2e3779d34979 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -553,7 +553,7 @@ index 34b9e7876538..97bc2138bf74 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -926,40 +927,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -952,40 +953,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -1210,10 +1210,10 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 3ec38e2b9173..58c733c6dc6a 100644
+index fdfcf2781c85..885fd64e5aa8 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
-@@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
+@@ -251,6 +251,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
 
  static blk_status_t nvme_error_status(u16 status)
  {
@@ -1277,7 +1277,7 @@ index 3ec38e2b9173..58c733c6dc6a 100644
  #ifdef CONFIG_NVME_AUTH
  		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 2bc159a318ff..d5562a97f232 100644
+index 98001eebd275..5468bba57045 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
@@ -1324,10 +1324,10 @@ index 2bc159a318ff..d5562a97f232 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 8657811f8b88..feee7e1e6c8d 100644
+index 9a98c14c552a..312223e76557 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -879,6 +879,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -884,6 +884,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1335,7 +1335,7 @@ index 8657811f8b88..feee7e1e6c8d 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -917,6 +918,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -922,6 +923,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1763,7 +1763,7 @@ index eae288c8d40a..8b8bf447cedc 100644
 
  error_proc:
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 571d1a6e1b74..8f786e38de3f 100644
+index 18d83a613635..88e0e3d20bb3 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1775,7 +1775,7 @@ index 571d1a6e1b74..8f786e38de3f 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -857,6 +859,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -871,6 +873,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1790,7 +1790,7 @@ index 571d1a6e1b74..8f786e38de3f 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -868,6 +878,8 @@ static inline bool efi_enabled(int feature)
+@@ -882,6 +892,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1799,7 +1799,7 @@ index 571d1a6e1b74..8f786e38de3f 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -889,6 +901,8 @@ static inline bool efi_enabled(int feature)
+@@ -903,6 +915,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1808,7 +1808,7 @@ index 571d1a6e1b74..8f786e38de3f 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -903,6 +917,7 @@ static inline void efi_find_mirror(void) {}
+@@ -917,6 +931,7 @@ static inline void efi_find_mirror(void) {}
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1816,7 +1816,7 @@ index 571d1a6e1b74..8f786e38de3f 100644
 
  /*
   * Variable Attributes
-@@ -1108,13 +1123,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1122,13 +1137,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
