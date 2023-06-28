@@ -1,5 +1,5 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/d35c21ab6572781a1707f611ea56f7ba340b0586
- d35c21ab6572781a1707f611ea56f7ba340b0586 Revert "Remove EXPERT from ARCH_FORCE_MAX_ORDER for aarch64"
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/4b35b89927d7bc634917f603ffc1bcccbdca2f15
+ 4b35b89927d7bc634917f603ffc1bcccbdca2f15 Revert "Remove EXPERT from ARCH_FORCE_MAX_ORDER for aarch64"
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/8407896256bc918ea5b5939c17ea6811cfeb5167
  8407896256bc918ea5b5939c17ea6811cfeb5167 kernel/rh_messages.c: Another gcc12 warning on redundant NULL test

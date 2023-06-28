@@ -65,10 +65,10 @@
  64 files changed, 1544 insertions(+), 190 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index c5e7bb4babf0..8ff0f3ee64cf 100644
+index d172651ed914..d2fd93370884 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6563,6 +6563,15 @@
+@@ -6598,6 +6598,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -81,9 +81,9 @@ index c5e7bb4babf0..8ff0f3ee64cf 100644
 +			2 - unprivileged bpf() syscall access is disabled.
 +			Default value is 2.
 +
- 	usbcore.authorized_default=
- 			[USB] Default USB device authorization:
- 			(default -1 = authorized except for wireless USB,
+ 	unwind_debug	[X86-64]
+ 			Enable unwinder debug output.  This can be
+ 			useful for debugging certain unwinder error
 diff --git a/Kconfig b/Kconfig
 index 745bc773f567..f57ff40109d7 100644
 --- a/Kconfig
@@ -118,7 +118,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index e51e4d9174ab..e58f04ca4249 100644
+index 48a044bfe062..d70bfc4985e5 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -140,7 +140,7 @@ index e51e4d9174ab..e58f04ca4249 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1335,7 +1347,13 @@ define filechk_version.h
+@@ -1341,7 +1353,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -156,7 +156,7 @@ index e51e4d9174ab..e58f04ca4249 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 1b158bbab29a..6fe26996302d 100644
+index cef741bb03b3..d496c1c72018 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -1306,9 +1306,9 @@ config HIGHMEM
@@ -172,7 +172,7 @@ index 1b158bbab29a..6fe26996302d 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index d260ca10e8c1..030bbc572e2d 100644
+index a05652ac66ce..458b5ec5b4e5 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1269,7 +1269,7 @@ endchoice
@@ -197,10 +197,10 @@ index b0d00032479d..afb9544fb007 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index f44f70de9661..829255d50d01 100644
+index 85a00d97a314..bbb1c69afb62 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2517,3 +2517,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2533,3 +2533,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -244,7 +244,7 @@ index 52683fddafaf..d0f15368dcce 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 16babff771bd..93e0fda57656 100644
+index fd975a4a5200..d171d94853de 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -263,7 +263,7 @@ index 16babff771bd..93e0fda57656 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -801,6 +803,49 @@ static void __init early_reserve_memory(void)
+@@ -800,6 +802,49 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -313,7 +313,7 @@ index 16babff771bd..93e0fda57656 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -1032,6 +1077,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -1031,6 +1076,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -324,10 +324,10 @@ index 16babff771bd..93e0fda57656 100644
 +		security_lock_kernel_down("EFI Secure Boot mode", LOCKDOWN_INTEGRITY_MAX);
 +#endif
 +
+ 	reserve_ibft_region();
  	dmi_setup();
 
- 	/*
-@@ -1190,19 +1242,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1192,19 +1244,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -348,7 +348,7 @@ index 16babff771bd..93e0fda57656 100644
 
  	reserve_initrd();
 
-@@ -1315,6 +1355,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1317,6 +1357,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -1616,7 +1616,7 @@ index 0b1616e93cf4..85fc52038a82 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 317c944c68e3..03206dd949c0 100644
+index 050eed8e2684..6842a7be3789 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
@@ -1861,10 +1861,10 @@ index 0d91e0af0125..d83e42ef8dd5 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 6bb55e61e8e8..3bf124aca5ff 100644
+index 7308a1a7599b..a3aa26339b43 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -403,6 +403,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -404,6 +404,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
 
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -2475,7 +2475,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index e2734e9e44d5..52344c344e7a 100644
+index 32828502f09e..b5c27505fa16 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -482,6 +482,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
@@ -2946,10 +2946,10 @@ index 68d19632aeb7..ef348935b6ff 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index d5ff7ff45b77..ac7d177a5fea 100644
+index b720424ca37d..bf65c13de58f 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -5167,6 +5167,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5184,6 +5184,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 

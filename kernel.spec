@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc0.20230627git1ef6663a587b.60
+%define pkgrelease 0.rc0.20230628git6aeadf7896bf.2
 %define kversion 6
-%define tarfile_release 6.4-1224-g1ef6663a587b
+%define tarfile_release 6.4-1761-g6aeadf7896bf
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230627git1ef6663a587b.60%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230628git6aeadf7896bf.2%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3734,9 +3734,18 @@ fi\
 #
 #
 %changelog
-* Tue Jun 27 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc0.20230627git1ef6663a587b.60]
-- Fix up rebase issue with CONFIG_ARCH_FORCE_MAX_ORDER (Justin M. Forbes)
+* Wed Jun 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.6aeadf7896bf.2]
+- Add intel-m10-bmc-hwmon to singlemods (Thorsten Leemhuis)
+- Add hid-uclogic-test to mod-internal.list (Thorsten Leemhuis)
+- Add checksum_kunit.ko to mod-internal.list (Thorsten Leemhuis)
+- Add strcat_kunit to mod-internal.list (Thorsten Leemhuis)
+- Add input_test to mod-intenal.list (Thorsten Leemhuis)
+- Linux v6.5.0-0.rc0.6aeadf7896bf
+
+* Wed Jun 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.1ef6663a587b.1]
 - Revert "Remove EXPERT from ARCH_FORCE_MAX_ORDER for aarch64" (Justin M. Forbes)
+- Reset the release number and dedup the changelog after rebase (Justin M. Forbes)
+- Fix up rebase issue with CONFIG_ARCH_FORCE_MAX_ORDER (Justin M. Forbes)
 
 * Tue Jun 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.1ef6663a587b.60]
 - redhat/kernel.spec.template: Disable 'extracting debug info' messages (Prarit Bhargava)
@@ -5632,3 +5641,10 @@ fi\
 - [initial commit] Add Makefiles (Laura Abbott)
 - Linux v6.5.0-0.rc0.1ef6663a587b
 
+
+###
+# The following Emacs magic makes C-c C-e use UTC dates.
+# Local Variables:
+# rpm-change-log-uses-utc: t
+# End:
+###
