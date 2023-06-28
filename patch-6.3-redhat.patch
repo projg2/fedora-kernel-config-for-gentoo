@@ -40,7 +40,7 @@
  39 files changed, 512 insertions(+), 187 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index f8ee72375885..8f848f64ad80 100644
+index 47253ac6c85c..15a31ab19ace 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -384,7 +384,7 @@ index b51f2a4c821e..be31d32aba53 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index abeff7dc0b58..6384796e76dd 100644
+index 34b9e7876538..97bc2138bf74 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -395,7 +395,7 @@ index abeff7dc0b58..6384796e76dd 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -947,40 +948,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -926,40 +927,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -994,7 +994,7 @@ index 256a38371120..a77075a6abb5 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index c015393beeee..d97dac7ae5a7 100644
+index 8a632bf7f5a8..4c346f979f1e 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1050,7 +1050,7 @@ index c015393beeee..d97dac7ae5a7 100644
  void nvme_complete_rq(struct request *req)
  {
  	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
-@@ -410,6 +423,9 @@ void nvme_complete_rq(struct request *req)
+@@ -419,6 +432,9 @@ void nvme_complete_rq(struct request *req)
  	case FAILOVER:
  		nvme_failover_req(req);
  		return;
@@ -1108,10 +1108,10 @@ index 2bc159a318ff..d5562a97f232 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index a2d4f59e0535..1c5092b995e9 100644
+index 8657811f8b88..feee7e1e6c8d 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -878,6 +878,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -879,6 +879,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1119,7 +1119,7 @@ index a2d4f59e0535..1c5092b995e9 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -916,6 +917,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -917,6 +918,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1429,10 +1429,10 @@ index cf6cc576736f..3653a4f35265 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 920e44ba998a..921398590e3f 100644
+index eb049014f87a..3fc66c4f9540 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -9733,6 +9733,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+@@ -9734,6 +9734,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x17aa, 0x2318, "Thinkpad Z13 Gen2", ALC287_FIXUP_CS35L41_I2C_2),
  	SND_PCI_QUIRK(0x17aa, 0x2319, "Thinkpad Z16 Gen2", ALC287_FIXUP_CS35L41_I2C_2),
  	SND_PCI_QUIRK(0x17aa, 0x231a, "Thinkpad Z16 Gen2", ALC287_FIXUP_CS35L41_I2C_2),

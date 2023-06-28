@@ -142,18 +142,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.3.9
-%define specversion 6.3.9
+%define specrpmversion 6.3.10
+%define specversion 6.3.10
 %define patchversion 6.3
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.3.9
+%define tarfile_release 6.3.10
 # This is needed to do merge window version magic
 %define patchlevel 3
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.3.9
+%define kabiversion 6.3.10
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3406,6 +3406,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 28 2023 Augusto Caringi <acaringi@redhat.com> [6.3.10-0]
+- Linux v6.3.10
+
 * Wed Jun 21 2023 Augusto Caringi <acaringi@redhat.com> [6.3.9-0]
 - Turn on CONFIG_RMNET for Fedora (Justin M. Forbes)
 - redhat/config: common: Enable CONFIG_GPIO_SIM for software development (Kate Hsuan)
