@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc0.20230628git6aeadf7896bf.2
+%define pkgrelease 0.rc0.20230629git3a8a670eeeaa.3
 %define kversion 6
-%define tarfile_release 6.4-1761-g6aeadf7896bf
+%define tarfile_release 6.4-4247-g3a8a670eeeaa
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230628git6aeadf7896bf.2%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230629git3a8a670eeeaa.3%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -1248,7 +1248,7 @@ analysing the logical and timing behavior of Linux.
 
 %if %{with_bpftool}
 
-%define bpftoolversion 7.2.0
+%define bpftoolversion 7.3.0
 
 %package -n bpftool
 Summary: Inspection and simple manipulation of eBPF programs and maps
@@ -1494,9 +1494,9 @@ This package provides essential kernel modules for the %{?2:%{2}-}core kernel pa
 %define kernel_meta_package() \
 %package %{1}\
 summary: kernel meta-package for the %{1} kernel\
-Requires: kernel-%{1}-core-uname-r = %{KVERREL}+%{uname_suffix %{1}}\
-Requires: kernel-%{1}-modules-uname-r = %{KVERREL}+%{uname_suffix %{1}}\
-Requires: kernel-%{1}-modules-core-uname-r = %{KVERREL}+%{uname_suffix %{1}}\
+Requires: kernel-%{1}-core-uname-r = %{KVERREL}%{uname_suffix %{1}}\
+Requires: kernel-%{1}-modules-uname-r = %{KVERREL}%{uname_suffix %{1}}\
+Requires: kernel-%{1}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{1}}\
 %if "%{1}" == "rt" || "%{1}" == "rt-debug"\
 Requires: realtime-setup\
 %endif\
@@ -3734,6 +3734,16 @@ fi\
 #
 #
 %changelog
+* Thu Jun 29 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc0.20230629git3a8a670eeeaa.3]
+- fedora/rhel: Move I2C_DESIGNWARE_PLATFORM, I2C_SLAVE, & GPIOLIB from pending (Patrick Talbert)
+- fedora: Enable CONFIG_SPI_SLAVE (Patrick Talbert)
+- fedora/rhel: enable I2C_DESIGNWARE_PLATFORM, I2C_SLAVE, and GPIOLIB (Patrick Talbert)
+- fedora: Enable CONFIG_SPI_SLAVE in fedora-pending (Patrick Talbert)
+
+* Thu Jun 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.3a8a670eeeaa.3]
+- redhat: remove extra + (plus) from meta package Requires definitions (Patrick Talbert)
+- Linux v6.5.0-0.rc0.3a8a670eeeaa
+
 * Wed Jun 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.6aeadf7896bf.2]
 - Add intel-m10-bmc-hwmon to singlemods (Thorsten Leemhuis)
 - Add hid-uclogic-test to mod-internal.list (Thorsten Leemhuis)

@@ -61,8 +61,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 +
- tools/bpf/resolve_btfids/Makefile                  |   4 +-
- 64 files changed, 1544 insertions(+), 190 deletions(-)
+ 63 files changed, 1542 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index d172651ed914..d2fd93370884 100644
@@ -172,10 +171,10 @@ index cef741bb03b3..d496c1c72018 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index a05652ac66ce..458b5ec5b4e5 100644
+index 3ae5c03ded0e..6676dd66c0ba 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1269,7 +1269,7 @@ endchoice
+@@ -1273,7 +1273,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -1076,7 +1075,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f1dcfa3f1a1b..62fa35de72ac 100644
+index eb620552967b..f906bff9d35f 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1874,7 +1873,7 @@ index 7308a1a7599b..a3aa26339b43 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 9e56763dff81..71da868d8895 100644
+index a98e188cf37b..2eef4246c2c9 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -418,6 +418,7 @@ struct module {
@@ -1886,10 +1885,10 @@ index 9e56763dff81..71da868d8895 100644
 
  	/* Exported symbols */
 diff --git a/include/linux/panic.h b/include/linux/panic.h
-index 979b776e3bcb..4eabcc0d8a91 100644
+index 6717b15e798c..8e1d3eae1686 100644
 --- a/include/linux/panic.h
 +++ b/include/linux/panic.h
-@@ -70,7 +70,23 @@ static inline void set_arch_panic_timeout(int timeout, int arch_default_timeout)
+@@ -73,7 +73,23 @@ static inline void set_arch_panic_timeout(int timeout, int arch_default_timeout)
  #define TAINT_AUX			16
  #define TAINT_RANDSTRUCT		17
  #define TAINT_TEST			18
@@ -2498,19 +2497,19 @@ index 32828502f09e..b5c27505fa16 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/kernel/Makefile b/kernel/Makefile
-index b69c95315480..6296043efe36 100644
+index 3947122d618b..5b9462a450a1 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
  	    notifier.o ksysfs.o cred.o reboot.o \
- 	    async.o range.o smpboot.o ucount.o regset.o
+ 	    async.o range.o smpboot.o ucount.o regset.o ksyms_common.o
 
 +obj-$(CONFIG_RHEL_DIFFERENCES) += rh_messages.o
  obj-$(CONFIG_USERMODE_DRIVER) += usermode_driver.o
  obj-$(CONFIG_MULTIUSER) += groups.o
  obj-$(CONFIG_VHOST_TASK) += vhost_task.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index f1c8733f76b8..e8260e8c8aa1 100644
+index a2aef900519c..b872a64be8fd 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@
@@ -2545,7 +2544,7 @@ index f1c8733f76b8..e8260e8c8aa1 100644
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
-@@ -5391,6 +5409,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -5456,6 +5474,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;
@@ -2558,7 +2557,7 @@ index f1c8733f76b8..e8260e8c8aa1 100644
  	}
 
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 4e2cf784cf8c..66782bc8bc65 100644
+index 834de86ebe35..20b8d46d5fbf 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
 @@ -528,6 +528,7 @@ static struct module_attribute modinfo_##field = {                    \
@@ -2569,7 +2568,7 @@ index 4e2cf784cf8c..66782bc8bc65 100644
 
  static struct {
  	char name[MODULE_NAME_LEN + 1];
-@@ -987,6 +988,7 @@ struct module_attribute *modinfo_attrs[] = {
+@@ -980,6 +981,7 @@ struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
  	&modinfo_srcversion,
@@ -2601,7 +2600,7 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index 886d2ebd0a0d..d3d1fbbfaa93 100644
+index 10effe40a3fa..f49ce6660929 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
 @@ -479,6 +479,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
@@ -2968,25 +2967,3 @@ index b720424ca37d..bf65c13de58f 100644
  #ifdef CONFIG_PERF_EVENTS
  /**
   * security_perf_event_open() - Check if a perf event open is allowed
-diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
-index ac548a7baa73..4b8079f294f6 100644
---- a/tools/bpf/resolve_btfids/Makefile
-+++ b/tools/bpf/resolve_btfids/Makefile
-@@ -67,7 +67,7 @@ $(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OU
- LIBELF_FLAGS := $(shell $(HOSTPKG_CONFIG) libelf --cflags 2>/dev/null)
- LIBELF_LIBS  := $(shell $(HOSTPKG_CONFIG) libelf --libs 2>/dev/null || echo -lelf)
-
--HOSTCFLAGS += -g \
-+HOSTCFLAGS_resolve_btfids += -g \
-           -I$(srctree)/tools/include \
-           -I$(srctree)/tools/include/uapi \
-           -I$(LIBBPF_INCLUDE) \
-@@ -76,7 +76,7 @@ HOSTCFLAGS += -g \
-
- LIBS = $(LIBELF_LIBS) -lz
-
--export srctree OUTPUT HOSTCFLAGS Q HOSTCC HOSTLD HOSTAR
-+export srctree OUTPUT HOSTCFLAGS_resolve_btfids Q HOSTCC HOSTLD HOSTAR
- include $(srctree)/tools/build/Makefile.include
-
- $(BINARY_IN): fixdep FORCE prepare | $(OUTPUT)
