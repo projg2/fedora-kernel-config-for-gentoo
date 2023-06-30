@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc0.20230629git3a8a670eeeaa.3
+%define pkgrelease 0.rc0.20230630gite55e5df193d2.5
 %define kversion 6
-%define tarfile_release 6.4-4247-g3a8a670eeeaa
+%define tarfile_release 6.4-8686-ge55e5df193d2
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230629git3a8a670eeeaa.3%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230630gite55e5df193d2.5%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3734,8 +3734,18 @@ fi\
 #
 #
 %changelog
-* Thu Jun 29 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc0.20230629git3a8a670eeeaa.3]
+* Fri Jun 30 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc0.20230630gite55e5df193d2.5]
+- Fix up armv7 configs for Fedora (Justin M. Forbes)
+- redhat: Set pending-rhel x86 values for various SND configs (Patrick Talbert)
+
+* Fri Jun 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.e55e5df193d2.5]
+- Linux v6.5.0-0.rc0.e55e5df193d2
+
+* Fri Jun 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.3a8a670eeeaa.4]
+- redhat: update self-test data (Patrick Talbert)
+- redhat: ignore SPECBPFTOOLVERSION/bpftoolversion in self-test create-data.sh (Patrick Talbert)
 - fedora/rhel: Move I2C_DESIGNWARE_PLATFORM, I2C_SLAVE, & GPIOLIB from pending (Patrick Talbert)
+- redhat/filter-modules.sh.rhel: add needed deps for intel_rapl_tpmi (Jan Stancek)
 - fedora: Enable CONFIG_SPI_SLAVE (Patrick Talbert)
 - fedora/rhel: enable I2C_DESIGNWARE_PLATFORM, I2C_SLAVE, and GPIOLIB (Patrick Talbert)
 - fedora: Enable CONFIG_SPI_SLAVE in fedora-pending (Patrick Talbert)

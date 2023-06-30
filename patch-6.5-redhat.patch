@@ -64,10 +64,10 @@
  63 files changed, 1542 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index d172651ed914..d2fd93370884 100644
+index 44bcaf791ce6..4116742c3e3d 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6598,6 +6598,15 @@
+@@ -6599,6 +6599,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -155,10 +155,10 @@ index 48a044bfe062..d70bfc4985e5 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index cef741bb03b3..d496c1c72018 100644
+index 7a27550ff3c1..cf402933dd3c 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1306,9 +1306,9 @@ config HIGHMEM
+@@ -1307,9 +1307,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -171,10 +171,10 @@ index cef741bb03b3..d496c1c72018 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 3ae5c03ded0e..6676dd66c0ba 100644
+index 595028bd9160..03ead64170b4 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1273,7 +1273,7 @@ endchoice
+@@ -1274,7 +1274,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -1075,7 +1075,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index eb620552967b..f906bff9d35f 100644
+index da340f11c5f5..4734307d5eb3 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1086,7 +1086,7 @@ index eb620552967b..f906bff9d35f 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2846,6 +2847,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -2819,6 +2820,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
 
@@ -1111,9 +1111,9 @@ index eb620552967b..f906bff9d35f 100644
 +arch_initcall(iommu_quirks);
 +#endif
 +
- /*
-  * Changes the default domain of an iommu group
-  *
+ /**
+  * iommu_setup_default_domain - Set the default_domain for the group
+  * @group: Group to change
 diff --git a/drivers/message/fusion/mptsas.c b/drivers/message/fusion/mptsas.c
 index 86f16f3ea478..0ad9759ab0c1 100644
 --- a/drivers/message/fusion/mptsas.c
