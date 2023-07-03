@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc0.20230630gite55e5df193d2.5
+%define pkgrelease 0.rc0.20230703gita901a3568fd2.8
 %define kversion 6
-%define tarfile_release 6.4-8686-ge55e5df193d2
+%define tarfile_release 6.4-10173-ga901a3568fd2
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230630gite55e5df193d2.5%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230703gita901a3568fd2.8%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -428,8 +428,6 @@ Summary: The Linux kernel
 %define with_bpftool 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
-%define with_cross 0
-%define with_cross_headers 0
 %define with_ipaclones 0
 %endif
 
@@ -3734,9 +3732,25 @@ fi\
 #
 #
 %changelog
-* Fri Jun 30 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc0.20230630gite55e5df193d2.5]
+* Mon Jul 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.a901a3568fd2.8]
+- Allow ELN pipelines failures (Michael Hofmann)
+- Enable cs-like CI (Michael Hofmann)
+- Allow to auto-cancel redundant pipelines (Michael Hofmann)
+- Remove obsolete unused trigger variable (Michael Hofmann)
+- Fix linter warnings in .gitlab-ci.yml (Michael Hofmann)
+- config: wifi: debug options for ath11k, brcm80211 and iwlwifi (Íñigo Huguet)
+- redhat: allow dbgonly cross builds (Jan Stancek)
+- redhat/configs: Clean up x86-64 call depth tracking configs (Waiman Long)
+- redhat: move SND configs from pending-rhel to rhel (Patrick Talbert)
+- Linux v6.5.0-0.rc0.a901a3568fd2
+
+* Sun Jul 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.995b406c7e97.7]
+- Linux v6.5.0-0.rc0.995b406c7e97
+
+* Sat Jul 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.a507db1d8fdc.6]
 - Fix up armv7 configs for Fedora (Justin M. Forbes)
 - redhat: Set pending-rhel x86 values for various SND configs (Patrick Talbert)
+- Linux v6.5.0-0.rc0.a507db1d8fdc
 
 * Fri Jun 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.e55e5df193d2.5]
 - Linux v6.5.0-0.rc0.e55e5df193d2

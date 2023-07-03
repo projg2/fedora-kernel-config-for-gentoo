@@ -64,7 +64,7 @@
  63 files changed, 1542 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 44bcaf791ce6..4116742c3e3d 100644
+index 85fb0fa5d091..d2ca6b3b4d94 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -6599,6 +6599,15 @@
@@ -117,7 +117,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 48a044bfe062..d70bfc4985e5 100644
+index 7a5a175f708f..a7ca673ed840 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -139,7 +139,7 @@ index 48a044bfe062..d70bfc4985e5 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1341,7 +1353,13 @@ define filechk_version.h
+@@ -1327,7 +1339,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -171,10 +171,10 @@ index 7a27550ff3c1..cf402933dd3c 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 595028bd9160..03ead64170b4 100644
+index 891ab530a665..8657aa6bb5c7 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1274,7 +1274,7 @@ endchoice
+@@ -1275,7 +1275,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -439,7 +439,7 @@ index 1c3e1e2bb0b5..163d43c671a8 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 9c2cb6cbea76..a9ecf278aa79 100644
+index 06aec35f88f2..50428bd0fa12 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -729,6 +729,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -541,7 +541,7 @@ index e489fefd23da..f2dfae764fb5 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 3a6ee7bb06f1..2e3779d34979 100644
+index 1599f1176842..a1fc17f1e0cc 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -552,7 +552,7 @@ index 3a6ee7bb06f1..2e3779d34979 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -952,40 +953,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -953,40 +954,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -1209,7 +1209,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index fdfcf2781c85..885fd64e5aa8 100644
+index 98bfb3d9c22a..8cd4ed11b8f0 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1323,10 +1323,10 @@ index 98001eebd275..5468bba57045 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 9a98c14c552a..312223e76557 100644
+index a69e1efb3299..b7478e528f7e 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -884,6 +884,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -886,6 +886,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1334,7 +1334,7 @@ index 9a98c14c552a..312223e76557 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -922,6 +923,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -924,6 +925,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1441,10 +1441,10 @@ index ae9baf801681..4e01e6192f16 100644
  	struct pci_driver *drv;
  	struct pci_dev *dev;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index c525867760bf..549083cdf0ec 100644
+index 321156ca273d..fc399e56ec8f 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4309,6 +4309,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4406,6 +4406,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1679,10 +1679,10 @@ index c3c1f466fe01..370efec15191 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 2fa695bf38b7..187f8fbea40c 100644
+index 877e4f446709..7afe5faf7066 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -8088,6 +8088,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -8087,6 +8087,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -1690,7 +1690,7 @@ index 2fa695bf38b7..187f8fbea40c 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -8100,13 +8101,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -8099,13 +8100,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -1710,7 +1710,7 @@ index 2fa695bf38b7..187f8fbea40c 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index ee6d784c095c..7001d50a674c 100644
+index b2a3988e1e15..cc22e1ac8fb9 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
 @@ -9850,6 +9850,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
@@ -1762,7 +1762,7 @@ index eae288c8d40a..8b8bf447cedc 100644
 
  error_proc:
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 18d83a613635..88e0e3d20bb3 100644
+index ab088c662e88..f974f9d9a7c5 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1815,7 +1815,7 @@ index 18d83a613635..88e0e3d20bb3 100644
 
  /*
   * Variable Attributes
-@@ -1122,13 +1137,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1133,13 +1148,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -1914,7 +1914,7 @@ index 6717b15e798c..8e1d3eae1686 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 60b8772b5bd4..9ef4e4a5df7e 100644
+index c69a2cc1f412..27da72fdff38 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1560,6 +1560,22 @@ int pci_add_dynid(struct pci_driver *drv,
@@ -2839,7 +2839,7 @@ index 000000000000..018800f35ff2
 +}
 +EXPORT_SYMBOL(mark_partner_supported);
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index c12150f96b88..3f28b300ae22 100644
+index b29b29707f10..e176487ebf1f 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -23,6 +23,7 @@
@@ -2850,7 +2850,7 @@ index c12150f96b88..3f28b300ae22 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static bool modversions;
-@@ -2137,6 +2138,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2076,6 +2077,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -2863,7 +2863,7 @@ index c12150f96b88..3f28b300ae22 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2200,6 +2207,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2136,6 +2143,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
@@ -2872,7 +2872,7 @@ index c12150f96b88..3f28b300ae22 100644
  	ret = snprintf(fname, sizeof(fname), "%s.mod.c", mod->name);
  	if (ret >= sizeof(fname)) {
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index ea31640b2671..2a08b8f8a380 100755
+index f6b3c7cd39c7..35044647ed1a 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
