@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc0.20230703gita901a3568fd2.8
+%define pkgrelease 0.rc0.20230705gitd528014517f2.10
 %define kversion 6
-%define tarfile_release 6.4-10173-ga901a3568fd2
+%define tarfile_release 6.4-11478-gd528014517f2
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230703gita901a3568fd2.8%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230705gitd528014517f2.10%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3732,6 +3732,18 @@ fi\
 #
 #
 %changelog
+* Wed Jul 05 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc0.20230705gitd528014517f2.10]
+- fedira: enable pending-fedora CONFIG_CPUFREQ_DT_PLATDEV as a module (Patrick Talbert)
+
+* Wed Jul 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.d528014517f2.10]
+- redhat: fix the 'eln BUILD_TARGET' self-test (Patrick Talbert)
+- redhat: update the self-test-data (Patrick Talbert)
+- redhat: remove trailing space in dist-dump-variables output (Patrick Talbert)
+- Linux v6.5.0-0.rc0.d528014517f2
+
+* Tue Jul 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.24be4d0b46bb.9]
+- Linux v6.5.0-0.rc0.24be4d0b46bb
+
 * Mon Jul 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.a901a3568fd2.8]
 - Allow ELN pipelines failures (Michael Hofmann)
 - Enable cs-like CI (Michael Hofmann)
