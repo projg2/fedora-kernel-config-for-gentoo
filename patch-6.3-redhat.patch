@@ -40,7 +40,7 @@
  39 files changed, 512 insertions(+), 187 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 34349623a76a..6c842f7ce710 100644
+index 7b6c66b7b004..ccb75089fc4f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1339,7 +1339,7 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index ea31640b2671..2a08b8f8a380 100755
+index f6b3c7cd39c7..35044647ed1a 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
