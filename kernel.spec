@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc0.20230705gitd528014517f2.10
+%define pkgrelease 0.rc0.20230706gitc17414a273b8.12
 %define kversion 6
-%define tarfile_release 6.4-11478-gd528014517f2
+%define tarfile_release 6.4-12069-gc17414a273b8
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230705gitd528014517f2.10%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230706gitc17414a273b8.12%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3732,8 +3732,15 @@ fi\
 #
 #
 %changelog
-* Wed Jul 05 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc0.20230705gitd528014517f2.10]
+* Thu Jul 06 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc0.20230706gitc17414a273b8.12]
+- redhat: add intel-m10-bmc-hwmon to filter-modules singlemods list (Patrick Talbert)
+
+* Thu Jul 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.c17414a273b8.12]
+- Change pathfix.py to %%py3_shebang_fix (Justin M. Forbes)
+
+* Thu Jul 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.c17414a273b8.11]
 - fedira: enable pending-fedora CONFIG_CPUFREQ_DT_PLATDEV as a module (Patrick Talbert)
+- Linux v6.5.0-0.rc0.c17414a273b8
 
 * Wed Jul 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.d528014517f2.10]
 - redhat: fix the 'eln BUILD_TARGET' self-test (Patrick Talbert)
