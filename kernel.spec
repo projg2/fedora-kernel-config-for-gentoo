@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.4.2
 %define specversion 6.4.2
 %define patchversion 6.4
-%define pkgrelease 200
+%define pkgrelease 201
 %define kversion 6
 %define tarfile_release 6.4.2
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 200%{?buildid}%{?dist}
+%define specrelease 201%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.4.2
 
@@ -3734,7 +3734,10 @@ fi\
 #
 #
 %changelog
-* Wed Jul 05 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.2-200]
+* Fri Jul 07 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.2-201]
+- mm: disable CONFIG_PER_VMA_LOCK until its fixed (Suren Baghdasaryan)
+- fork: lock VMAs of the parent process when forking (Suren Baghdasaryan)
+- Turn on NET_VENDOR_QUALCOMM so that rmnet builds (Justin M. Forbes)
 - Fix missing rhel config (Justin M. Forbes)
 
 * Wed Jul 05 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.2-0]
