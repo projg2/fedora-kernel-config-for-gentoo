@@ -64,7 +64,7 @@
  63 files changed, 1542 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 85fb0fa5d091..d2ca6b3b4d94 100644
+index a1457995fd41..33e37745deff 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -6599,6 +6599,15 @@
@@ -117,7 +117,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 12579666581f..f2273a60d6e3 100644
+index 47690c28456a..f68f41eef27a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -209,7 +209,7 @@ index 85a00d97a314..bbb1c69afb62 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index fe10da1a271e..e2c6068201c0 100644
+index 00d76448319d..e679d13303e3 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -419,10 +419,10 @@ index c2c786eb95ab..4e3aa80cd5cf 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 1c3e1e2bb0b5..163d43c671a8 100644
+index 5b145f1aaa1b..59cb691d7f07 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1746,6 +1746,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1748,6 +1748,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
