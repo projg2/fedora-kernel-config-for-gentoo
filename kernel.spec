@@ -171,18 +171,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.2
-%define specversion 6.4.2
+%define specrpmversion 6.4.3
+%define specversion 6.4.3
 %define patchversion 6.4
-%define pkgrelease 201
+%define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.4.2
+%define tarfile_release 6.4.3
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 201%{?buildid}%{?dist}
+%define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.4.2
+%define kabiversion 6.4.3
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -835,7 +835,7 @@ BuildRequires: binutils
 BuildRequires: lvm2
 BuildRequires: systemd-boot-unsigned
 # For systemd-stub and systemd-pcrphase
-BuildRequires: systemd-udev >= 252-1
+BuildRequires: systemd-udev
 # For TPM operations in UKI initramfs
 BuildRequires: tpm2-tools
 %endif
@@ -3734,11 +3734,34 @@ fi\
 #
 #
 %changelog
-* Fri Jul 07 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.2-201]
+* Tue Jul 11 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.3-200]
+- Fix up some config mismatches (Justin M. Forbes)
+
+* Tue Jul 11 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.3-0]
+- drm/amd: Don't try to enable secure display TA multiple times (Mario Limonciello)
+- drm/amdgpu: fix number of fence calculations (Christian König)
+- drm/amdgpu: check RAS irq existence for VCN/JPEG (Tao Zhou)
+- drm/amd/pm: add abnormal fan detection for smu 13.0.0 (Kenneth Feng)
+- drm/amdgpu/sdma4: set align mask to 255 (Alex Deucher)
+- drm/amd/pm: revise the ASPM settings for thunderbolt attached scenario (Evan Quan)
+- drm/amdgpu: Skip mark offset for high priority rings (Jiadong Zhu)
+- drm/amdgpu: make sure that BOs have a backing store (Christian König)
+- drm/amdgpu: make sure BOs are locked in amdgpu_vm_get_memory (Christian König)
+- Linux 6.4.3 (Greg Kroah-Hartman)
+- fork: lock VMAs of the parent process when forking (Suren Baghdasaryan)
+- bootmem: remove the vmemmap pages from kmemleak in free_bootmem_page (Liu Shixin)
+- mm: call arch_swap_restore() from do_swap_page() (Peter Collingbourne)
+- mm: lock newly mapped VMA with corrected ordering (Hugh Dickins)
+- mm: lock newly mapped VMA which can be modified after it becomes visible (Suren Baghdasaryan)
+- mm: lock a vma before stack expansion (Suren Baghdasaryan)
+- fedora: arm: some minor updates (Peter Robinson)
+- fedora: bluetooth: enable AOSP extensions (Peter Robinson)
+- Fix up buildReqs for UKI (Justin M. Forbes)
 - mm: disable CONFIG_PER_VMA_LOCK until its fixed (Suren Baghdasaryan)
 - fork: lock VMAs of the parent process when forking (Suren Baghdasaryan)
 - Turn on NET_VENDOR_QUALCOMM so that rmnet builds (Justin M. Forbes)
 - Fix missing rhel config (Justin M. Forbes)
+- Linux v6.4.3
 
 * Wed Jul 05 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.2-0]
 - Linux v6.4.2
