@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc1.11
+%define pkgrelease 0.rc1.20230711git3f01e9fed845.12
 %define kversion 6
-%define tarfile_release 6.5-rc1
+%define tarfile_release 6.5-rc1-6-g3f01e9fed845
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.11%{?buildid}%{?dist}
+%define specrelease 0.rc1.20230711git3f01e9fed845.12%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3732,7 +3732,8 @@ fi\
 #
 #
 %changelog
-* Mon Jul 10 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc1.11]
+* Tue Jul 11 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc1.3f01e9fed845.12.el127]
+- redhat: use the eln builder for daily jobs (Patrick Talbert)
 - redhat: set CONFIG_XILINX_WINDOW_WATCHDOG as disabled in pending (Patrick Talbert)
 - Add baseline ARK/ELN pipelines (Michael Hofmann)
 - Simplify job rules (Michael Hofmann)
@@ -3748,7 +3749,7 @@ fi\
 - Change pathfix.py to %%py3_shebang_fix (Justin M. Forbes)
 - Turn on NET_VENDOR_QUALCOMM for Fedora to enable rmnet (Justin M. Forbes)
 - redhat: add intel-m10-bmc-hwmon to filter-modules singlemods list (Patrick Talbert)
-- Linux v6.5.0-0.rc1
+- Linux v6.5.0-0.rc1.3f01e9fed845
 
 * Thu Jul 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc0.c17414a273b8.11]
 - fedira: enable pending-fedora CONFIG_CPUFREQ_DT_PLATDEV as a module (Patrick Talbert)
