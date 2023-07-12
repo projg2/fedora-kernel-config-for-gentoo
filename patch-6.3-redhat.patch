@@ -40,7 +40,7 @@
  39 files changed, 512 insertions(+), 187 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 7b6c66b7b004..ccb75089fc4f 100644
+index df591a8efd8a..924a4f55e1c0 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -139,7 +139,7 @@ index 8ec5cdf9dadc..e2b89563075b 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 16babff771bd..a1e48e27cf7a 100644
+index 0cccfeb67c3a..a7dccf67c4a1 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -164,7 +164,7 @@ index 16babff771bd..a1e48e27cf7a 100644
  	dmi_setup();
 
  	/*
-@@ -1190,19 +1198,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1192,19 +1200,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -994,7 +994,7 @@ index 256a38371120..a77075a6abb5 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 8a632bf7f5a8..4c346f979f1e 100644
+index 8d8403b65e1b..188818d8f110 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
