@@ -38,6 +38,7 @@
  drivers/scsi/mpt3sas/mpt3sas_scsih.c               |   4 +
  drivers/scsi/qla2xxx/qla_os.c                      |   6 +
  drivers/scsi/qla4xxx/ql4_os.c                      |   2 +
+ drivers/scsi/sd.c                                  |  10 +
  drivers/usb/core/hub.c                             |   7 +
  fs/afs/main.c                                      |   3 +
  include/linux/efi.h                                |  22 +-
@@ -61,7 +62,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 +
- 63 files changed, 1542 insertions(+), 188 deletions(-)
+ 64 files changed, 1552 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index a1457995fd41..33e37745deff 100644
@@ -117,7 +118,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 47690c28456a..f68f41eef27a 100644
+index 658ec2b8aa74..787bdb95aca2 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -171,10 +172,10 @@ index 7a27550ff3c1..cf402933dd3c 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 7856c3a3e35a..8840db28e911 100644
+index a2511b30d0f6..a41975a8f04f 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1294,7 +1294,7 @@ endchoice
+@@ -1296,7 +1296,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -1075,7 +1076,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index da340f11c5f5..4734307d5eb3 100644
+index caaf563d38ae..d9c4d039c4e7 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1209,7 +1210,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 47d7ba2827ff..e7c333af4afe 100644
+index 37b6fa746662..62a97e568b7f 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1729,6 +1730,34 @@ index b2a3988e1e15..cc22e1ac8fb9 100644
  	{0, 0},
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
+diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+index 68b12afa0721..1f321832f69c 100644
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -130,6 +130,14 @@ static const char *sd_cache_types[] = {
+ 	"write back, no read (daft)"
+ };
+
++static const char *sd_probe_types[] = { "async", "sync" };
++
++static char sd_probe_type[6] = "async";
++module_param_string(probe, sd_probe_type, sizeof(sd_probe_type),
++		    S_IRUGO|S_IWUSR);
++MODULE_PARM_DESC(probe, "async or sync. Setting to 'sync' disables asynchronous "
++		 "device number assignments (sda, sdb, ...).");
++
+ static void sd_set_flush_flag(struct scsi_disk *sdkp)
+ {
+ 	bool wc = false, fua = false;
+@@ -3958,6 +3966,8 @@ static int __init init_sd(void)
+ 		goto err_out_class;
+ 	}
+
++	if (!strcmp(sd_probe_type, "sync"))
++		sd_template.gendrv.probe_type = PROBE_FORCE_SYNCHRONOUS;
+ 	err = scsi_register_driver(&sd_template.gendrv);
+ 	if (err)
+ 		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index a739403a9e45..191513936ce8 100644
 --- a/drivers/usb/core/hub.c

@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc1.20230711git3f01e9fed845.12
+%define pkgrelease 0.rc2.17
 %define kversion 6
-%define tarfile_release 6.5-rc1-6-g3f01e9fed845
+%define tarfile_release 6.5-rc2
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20230711git3f01e9fed845.12%{?buildid}%{?dist}
+%define specrelease 0.rc2.17%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3732,6 +3732,29 @@ fi\
 #
 #
 %changelog
+* Mon Jul 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc2.17.el127]
+- Linux v6.5.0-0.rc2
+
+* Sun Jul 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc1.831fe284d827.16.el127]
+- fedora: wifi: tweak ZYDAS WiFI config options (Peter Robinson)
+- Linux v6.5.0-0.rc1.831fe284d827
+
+* Sat Jul 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc1.b6e6cc1f78c7.15.el127]
+- scsi: sd: Add "probe_type" module parameter to allow synchronous probing (Ewan D. Milne) [2140017]
+- redhat/configs: allow IMA to use MOK keys (Coiby Xu)
+- Linux v6.5.0-0.rc1.b6e6cc1f78c7
+
+* Fri Jul 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc1.4b810bf037e5.14.el127]
+- Linux v6.5.0-0.rc1.4b810bf037e5
+
+* Thu Jul 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc1.eb26cbb1a754.13.el127]
+- Simplify documentation jobs (Michael Hofmann)
+- Auto-cancel pipelines only on MRs (Michael Hofmann)
+- CI: Call script directly (Don Zickus)
+- CI: Remove stale TAG and Makefile cruft (Don Zickus)
+- CI: Move os-build tracking to common area (Don Zickus)
+- Linux v6.5.0-0.rc1.eb26cbb1a754
+
 * Tue Jul 11 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc1.3f01e9fed845.12.el127]
 - redhat: use the eln builder for daily jobs (Patrick Talbert)
 - redhat: set CONFIG_XILINX_WINDOW_WATCHDOG as disabled in pending (Patrick Talbert)

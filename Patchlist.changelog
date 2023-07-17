@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7ba2fc7e001181fe630e92a4633e76a6c71689e1
+ 7ba2fc7e001181fe630e92a4633e76a6c71689e1 scsi: sd: Add "probe_type" module parameter to allow synchronous probing
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/4b35b89927d7bc634917f603ffc1bcccbdca2f15
  4b35b89927d7bc634917f603ffc1bcccbdca2f15 Revert "Remove EXPERT from ARCH_FORCE_MAX_ORDER for aarch64"
 
