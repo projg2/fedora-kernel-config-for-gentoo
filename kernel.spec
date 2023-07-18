@@ -3732,6 +3732,10 @@ fi\
 #
 #
 %changelog
+* Tue Jul 18 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc2.17]
+- Fedora 6.5 configs part 1 (Justin M. Forbes)
+- fedora: enable CONFIG_ZYNQMP_IPI_MBOX as a builtin in pending-fedora (Patrick Talbert)
+
 * Mon Jul 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc2.17.el127]
 - Linux v6.5.0-0.rc2
 
