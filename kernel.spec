@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc2.17
+%define pkgrelease 0.rc2.20230719gitccff6d117d8d.18
 %define kversion 6
-%define tarfile_release 6.5-rc2
+%define tarfile_release 6.5-rc2-46-gccff6d117d8d
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.17%{?buildid}%{?dist}
+%define specrelease 0.rc2.20230719gitccff6d117d8d.18%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3732,9 +3732,12 @@ fi\
 #
 #
 %changelog
-* Tue Jul 18 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc2.17]
+* Wed Jul 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc2.ccff6d117d8d.18.el127]
 - Fedora 6.5 configs part 1 (Justin M. Forbes)
 - fedora: enable CONFIG_ZYNQMP_IPI_MBOX as a builtin in pending-fedora (Patrick Talbert)
+- fedora: arm: some minor updates (Peter Robinson)
+- fedora: bluetooth: enable AOSP extensions (Peter Robinson)
+- Linux v6.5.0-0.rc2.ccff6d117d8d
 
 * Mon Jul 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc2.17.el127]
 - Linux v6.5.0-0.rc2
