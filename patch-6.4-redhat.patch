@@ -1,4 +1,4 @@
- Makefile                                           |  12 ++
+ Makefile                                           |  20 +++-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   2 +-
  arch/s390/include/asm/ipl.h                        |   1 +
@@ -9,7 +9,6 @@
  drivers/acpi/irq.c                                 |  17 ++-
  drivers/acpi/scan.c                                |   9 ++
  drivers/ata/libahci.c                              |  18 +++
- drivers/bluetooth/btusb.c                          |   3 +
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
  drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
  drivers/firmware/efi/Makefile                      |   1 +
@@ -20,27 +19,27 @@
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
- drivers/nvme/host/core.c                           |  22 +++-
- drivers/nvme/host/multipath.c                      |  19 ++--
- drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
- include/linux/lsm_hooks.h                          |   6 +
+ include/linux/module.h                             |   1 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
+ kernel/fork.c                                      |   6 +
+ kernel/module/main.c                               |   2 +
  kernel/module/signing.c                            |   9 +-
+ mm/Kconfig                                         |   3 +-
+ scripts/mod/modpost.c                              |   8 ++
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
- security/security.c                                |   6 +
- sound/pci/hda/patch_realtek.c                      |   2 +
- 39 files changed, 512 insertions(+), 187 deletions(-)
+ security/security.c                                |  12 ++
+ 38 files changed, 498 insertions(+), 179 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index df591a8efd8a..924a4f55e1c0 100644
+index d5041f7daf68..040d61eb5fe5 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -62,11 +61,26 @@ index df591a8efd8a..924a4f55e1c0 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
+@@ -1335,7 +1347,13 @@ define filechk_version.h
+ 	((c) > 255 ? 255 : (c)))';                                       \
+ 	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
+ 	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
+-	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
++	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);                \
++	echo '#define RHEL_MAJOR $(RHEL_MAJOR)'; \
++	echo '#define RHEL_MINOR $(RHEL_MINOR)'; \
++	echo '#define RHEL_RELEASE_VERSION(a,b) (((a) << 8) + (b))'; \
++	echo '#define RHEL_RELEASE_CODE \
++		$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
++	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
+ endef
+
+ $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index a04bb151a902..292f324bf1ff 100644
+index 9ed7f03ba15a..9f5972a2d17b 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1307,9 +1307,9 @@ config HIGHMEM
+@@ -1305,9 +1305,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -79,10 +93,10 @@ index a04bb151a902..292f324bf1ff 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 15e097206e1a..8eefb7a011f0 100644
+index 92f3fff2522b..eda3f7dfc558 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1239,7 +1239,7 @@ endchoice
+@@ -1269,7 +1269,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -104,10 +118,10 @@ index b0d00032479d..afb9544fb007 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index e43ee9becbbb..a167e34eaa56 100644
+index f44f70de9661..829255d50d01 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2518,3 +2518,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2517,3 +2517,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -117,7 +131,7 @@ index e43ee9becbbb..a167e34eaa56 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 8ec5cdf9dadc..e2b89563075b 100644
+index fe10da1a271e..e2c6068201c0 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -128,7 +142,7 @@ index 8ec5cdf9dadc..e2b89563075b 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -969,6 +970,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -914,6 +915,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -268,7 +282,7 @@ index 0c6f06abe3f4..f66b85b2c108 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 8f216de76648..51337c993a16 100644
+index 9c2cb6cbea76..a9ecf278aa79 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -729,6 +729,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -296,20 +310,6 @@ index 8f216de76648..51337c993a16 100644
  	/* wait for engine to stop. This could be as long as 500 msec */
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 0923582299f3..e88dd1a937a3 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -615,6 +615,9 @@ static const struct usb_device_id blacklist_table[] = {
- 	{ USB_DEVICE(0x0489, 0xe0e2), .driver_info = BTUSB_MEDIATEK |
- 						     BTUSB_WIDEBAND_SPEECH |
- 						     BTUSB_VALID_LE_STATES },
-+	{ USB_DEVICE(0x0489, 0xe0e4), .driver_info = BTUSB_MEDIATEK |
-+						     BTUSB_WIDEBAND_SPEECH |
-+						     BTUSB_VALID_LE_STATES },
- 	{ USB_DEVICE(0x0489, 0xe0f2), .driver_info = BTUSB_MEDIATEK |
- 						     BTUSB_WIDEBAND_SPEECH |
- 						     BTUSB_VALID_LE_STATES },
 diff --git a/drivers/char/ipmi/ipmi_dmi.c b/drivers/char/ipmi/ipmi_dmi.c
 index bbf7029e224b..cf7faa970dd6 100644
 --- a/drivers/char/ipmi/ipmi_dmi.c
@@ -954,7 +954,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 256a38371120..a77075a6abb5 100644
+index f1dcfa3f1a1b..62fa35de72ac 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -965,7 +965,7 @@ index 256a38371120..a77075a6abb5 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2821,6 +2822,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -2846,6 +2847,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
 
@@ -991,144 +991,8 @@ index 256a38371120..a77075a6abb5 100644
 +#endif
 +
  /*
-  * Changes the default domain of an iommu group that has *only* one device
+  * Changes the default domain of an iommu group
   *
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 8d8403b65e1b..188818d8f110 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
-
- static blk_status_t nvme_error_status(u16 status)
- {
-+	if (unlikely(status & NVME_SC_DNR))
-+		return BLK_STS_TARGET;
-+
- 	switch (status & 0x7ff) {
- 	case NVME_SC_SUCCESS:
- 		return BLK_STS_OK;
-@@ -341,6 +344,7 @@ enum nvme_disposition {
- 	COMPLETE,
- 	RETRY,
- 	FAILOVER,
-+	FAILUP,
- 	AUTHENTICATE,
- };
-
-@@ -352,15 +356,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
- 	if ((nvme_req(req)->status & 0x7ff) == NVME_SC_AUTH_REQUIRED)
- 		return AUTHENTICATE;
-
--	if (blk_noretry_request(req) ||
-+	if ((req->cmd_flags & (REQ_FAILFAST_DEV | REQ_FAILFAST_DRIVER)) ||
- 	    (nvme_req(req)->status & NVME_SC_DNR) ||
- 	    nvme_req(req)->retries >= nvme_max_retries)
- 		return COMPLETE;
-
--	if (req->cmd_flags & REQ_NVME_MPATH) {
-+	if (req->cmd_flags & (REQ_NVME_MPATH | REQ_FAILFAST_TRANSPORT)) {
- 		if (nvme_is_path_error(nvme_req(req)->status) ||
- 		    blk_queue_dying(req->q))
--			return FAILOVER;
-+			return (req->cmd_flags & REQ_NVME_MPATH) ?
-+				FAILOVER : FAILUP;
- 	} else {
- 		if (blk_queue_dying(req->q))
- 			return COMPLETE;
-@@ -390,6 +395,14 @@ static inline void nvme_end_req(struct request *req)
- 	blk_mq_end_request(req, status);
- }
-
-+static inline void nvme_failup_req(struct request *req)
-+{
-+	nvme_update_ana(req);
-+
-+	nvme_req(req)->status = NVME_SC_HOST_PATH_ERROR;
-+	nvme_end_req(req);
-+}
-+
- void nvme_complete_rq(struct request *req)
- {
- 	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
-@@ -419,6 +432,9 @@ void nvme_complete_rq(struct request *req)
- 	case FAILOVER:
- 		nvme_failover_req(req);
- 		return;
-+	case FAILUP:
-+		nvme_failup_req(req);
-+		return;
- 	case AUTHENTICATE:
- #ifdef CONFIG_NVME_AUTH
- 		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
-diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 2bc159a318ff..d5562a97f232 100644
---- a/drivers/nvme/host/multipath.c
-+++ b/drivers/nvme/host/multipath.c
-@@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
- 			blk_freeze_queue_start(h->disk->queue);
- }
-
--void nvme_failover_req(struct request *req)
-+void nvme_update_ana(struct request *req)
- {
- 	struct nvme_ns *ns = req->q->queuedata;
- 	u16 status = nvme_req(req)->status & 0x7ff;
--	unsigned long flags;
--	struct bio *bio;
--
--	nvme_mpath_clear_current_path(ns);
-
- 	/*
- 	 * If we got back an ANA error, we know the controller is alive but not
-@@ -98,6 +94,16 @@ void nvme_failover_req(struct request *req)
- 		set_bit(NVME_NS_ANA_PENDING, &ns->flags);
- 		queue_work(nvme_wq, &ns->ctrl->ana_work);
- 	}
-+}
-+
-+void nvme_failover_req(struct request *req)
-+{
-+	struct nvme_ns *ns = req->q->queuedata;
-+	unsigned long flags;
-+	struct bio *bio;
-+
-+	nvme_mpath_clear_current_path(ns);
-+	nvme_update_ana(req);
-
- 	spin_lock_irqsave(&ns->head->requeue_lock, flags);
- 	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -904,8 +910,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
- 	int error = 0;
-
- 	/* check if multipath is enabled and we have the capability */
--	if (!multipath || !ctrl->subsys ||
--	    !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
-+	if (!ctrl->subsys || !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
- 		return 0;
-
- 	if (!ctrl->max_namespaces ||
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 8657811f8b88..feee7e1e6c8d 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -879,6 +879,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
- void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
- void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
- void nvme_failover_req(struct request *req);
-+void nvme_update_ana(struct request *req);
- void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
- int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
- void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -917,6 +918,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
- static inline void nvme_failover_req(struct request *req)
- {
- }
-+static inline void nvme_update_ana(struct request *req)
-+{
-+}
- static inline void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl)
- {
- }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index c525867760bf..549083cdf0ec 100644
 --- a/drivers/pci/quirks.c
@@ -1183,7 +1047,7 @@ index 97a0f8faea6e..d837548d2024 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 7aa62c92185f..2da17f5aeef9 100644
+index 571d1a6e1b74..8f786e38de3f 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1251,7 +1115,7 @@ index 7aa62c92185f..2da17f5aeef9 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 094b76dc7164..ea6c9eaeed9a 100644
+index 6bb55e61e8e8..3bf124aca5ff 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -403,6 +403,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -1263,23 +1127,18 @@ index 094b76dc7164..ea6c9eaeed9a 100644
 
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
-diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 6e156d2acffc..cf65032538ea 100644
---- a/include/linux/lsm_hooks.h
-+++ b/include/linux/lsm_hooks.h
-@@ -1618,6 +1618,12 @@
-  *	@what: kernel feature being accessed.
-  *	Return 0 if permission is granted.
-  *
-+ * @lock_kernel_down
-+ * 	Put the kernel into lock-down mode.
-+ *
-+ * 	@where: Where the lock-down is originating from (e.g. command line option)
-+ * 	@level: The lock-down level (can only increase)
-+ *
-  * Security hooks for perf events
-  *
-  * @perf_event_open:
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 9e56763dff81..71da868d8895 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -418,6 +418,7 @@ struct module {
+ 	struct module_attribute *modinfo_attrs;
+ 	const char *version;
+ 	const char *srcversion;
++	const char *rhelversion;
+ 	struct kobject *holders_dir;
+
+ 	/* Exported symbols */
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
 index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h
@@ -1293,10 +1152,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 5984d0d550b4..e01d28e48d9c 100644
+index e2734e9e44d5..52344c344e7a 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -485,6 +485,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -482,6 +482,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -1304,7 +1163,7 @@ index 5984d0d550b4..e01d28e48d9c 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1400,6 +1401,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1388,6 +1389,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -1315,6 +1174,43 @@ index 5984d0d550b4..e01d28e48d9c 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 8103ffd217e9..00bc9fa0828b 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -662,6 +662,12 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
+ 		retval = -EINTR;
+ 		goto fail_uprobe_end;
+ 	}
++#ifdef CONFIG_PER_VMA_LOCK
++	/* Disallow any page faults before calling flush_cache_dup_mm */
++	for_each_vma(old_vmi, mpnt)
++		vma_start_write(mpnt);
++	vma_iter_set(&old_vmi, 0);
++#endif
+ 	flush_cache_dup_mm(oldmm);
+ 	uprobe_dup_mmap(oldmm, mm);
+ 	/*
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 4e2cf784cf8c..66782bc8bc65 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -528,6 +528,7 @@ static struct module_attribute modinfo_##field = {                    \
+
+ MODINFO_ATTR(version);
+ MODINFO_ATTR(srcversion);
++MODINFO_ATTR(rhelversion);
+
+ static struct {
+ 	char name[MODULE_NAME_LEN + 1];
+@@ -987,6 +988,7 @@ struct module_attribute *modinfo_attrs[] = {
+ 	&module_uevent,
+ 	&modinfo_version,
+ 	&modinfo_srcversion,
++	&modinfo_rhelversion,
+ 	&modinfo_initstate,
+ 	&modinfo_coresize,
+ #ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
 diff --git a/kernel/module/signing.c b/kernel/module/signing.c
 index a2ff4242e623..f0d2be1ee4f1 100644
 --- a/kernel/module/signing.c
@@ -1338,6 +1234,54 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
 
  int module_sig_check(struct load_info *info, int flags)
+diff --git a/mm/Kconfig b/mm/Kconfig
+index e3454087fd31..1d2afc2567d0 100644
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -1198,8 +1198,9 @@ config ARCH_SUPPORTS_PER_VMA_LOCK
+        def_bool n
+
+ config PER_VMA_LOCK
+-	def_bool y
++	bool "Enable per-vma locking during page fault handling."
+ 	depends on ARCH_SUPPORTS_PER_VMA_LOCK && MMU && SMP
++	depends on BROKEN
+ 	help
+ 	  Allow per-vma locking during page fault handling.
+
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index d8baa9b9ae6d..720cb35f6070 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -23,6 +23,7 @@
+ #include "modpost.h"
+ #include "../../include/linux/license.h"
+ #include "../../include/linux/module_symbol.h"
++#include "../../include/generated/uapi/linux/version.h"
+
+ /* Are we using CONFIG_MODVERSIONS? */
+ static bool modversions;
+@@ -2101,6 +2102,12 @@ static void write_buf(struct buffer *b, const char *fname)
+ 	}
+ }
+
++static void add_rhelversion(struct buffer *b, struct module *mod)
++{
++	buf_printf(b, "MODULE_INFO(rhelversion, \"%d.%d\");\n", RHEL_MAJOR,
++		   RHEL_MINOR);
++}
++
+ static void write_if_changed(struct buffer *b, const char *fname)
+ {
+ 	char *tmp;
+@@ -2164,6 +2171,7 @@ static void write_mod_c_file(struct module *mod)
+ 	add_depends(&buf, mod);
+ 	add_moddevtable(&buf, mod);
+ 	add_srcversion(&buf, mod);
++	add_rhelversion(&buf, mod);
+
+ 	ret = snprintf(fname, sizeof(fname), "%s.mod.c", mod->name);
+ 	if (ret >= sizeof(fname)) {
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index f6b3c7cd39c7..35044647ed1a 100755
 --- a/scripts/tags.sh
@@ -1400,25 +1344,31 @@ index e84ddf484010..d0501353a4b9 100644
  	prompt "Kernel default lockdown mode"
  	default LOCK_DOWN_KERNEL_FORCE_NONE
 diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-index a79b985e917e..772a69bf43ec 100644
+index 68d19632aeb7..ef348935b6ff 100644
 --- a/security/lockdown/lockdown.c
 +++ b/security/lockdown/lockdown.c
 @@ -73,6 +73,7 @@ static int lockdown_is_locked_down(enum lockdown_reason what)
 
- static struct security_hook_list lockdown_hooks[] __lsm_ro_after_init = {
+ static struct security_hook_list lockdown_hooks[] __ro_after_init = {
  	LSM_HOOK_INIT(locked_down, lockdown_is_locked_down),
 +	LSM_HOOK_INIT(lock_kernel_down, lock_kernel_down),
  };
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index cf6cc576736f..3653a4f35265 100644
+index d5ff7ff45b77..ac7d177a5fea 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2706,6 +2706,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5167,6 +5167,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
++/**
++ * security_lock_kernel_down() - Put the kernel into lock-down mode.
++ *
++ * @where: Where the lock-down is originating from (e.g. command line option)
++ * @level: The lock-down level (can only increase)
++ */
 +int security_lock_kernel_down(const char *where, enum lockdown_reason level)
 +{
 +	return call_int_hook(lock_kernel_down, 0, where, level);
@@ -1426,18 +1376,5 @@ index cf6cc576736f..3653a4f35265 100644
 +EXPORT_SYMBOL(security_lock_kernel_down);
 +
  #ifdef CONFIG_PERF_EVENTS
- int security_perf_event_open(struct perf_event_attr *attr, int type)
- {
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index eb049014f87a..3fc66c4f9540 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9734,6 +9734,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x17aa, 0x2318, "Thinkpad Z13 Gen2", ALC287_FIXUP_CS35L41_I2C_2),
- 	SND_PCI_QUIRK(0x17aa, 0x2319, "Thinkpad Z16 Gen2", ALC287_FIXUP_CS35L41_I2C_2),
- 	SND_PCI_QUIRK(0x17aa, 0x231a, "Thinkpad Z16 Gen2", ALC287_FIXUP_CS35L41_I2C_2),
-+	SND_PCI_QUIRK(0x17aa, 0x2316, "Thinkpad P1 Gen 6", ALC287_FIXUP_CS35L41_I2C_2),
-+	SND_PCI_QUIRK(0x17aa, 0x2317, "Thinkpad P1 Gen 6", ALC287_FIXUP_CS35L41_I2C_2),
- 	SND_PCI_QUIRK(0x17aa, 0x30bb, "ThinkCentre AIO", ALC233_FIXUP_LENOVO_LINE2_MIC_HOTKEY),
- 	SND_PCI_QUIRK(0x17aa, 0x30e2, "ThinkCentre AIO", ALC233_FIXUP_LENOVO_LINE2_MIC_HOTKEY),
- 	SND_PCI_QUIRK(0x17aa, 0x310c, "ThinkCentre Station", ALC294_FIXUP_LENOVO_MIC_LOCATION),
+ /**
+  * security_perf_event_open() - Check if a perf event open is allowed
