@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc2.20230721gitf7e3a1bafdea.20
+%define pkgrelease 0.rc3.23
 %define kversion 6
-%define tarfile_release 6.5-rc2-221-gf7e3a1bafdea
+%define tarfile_release 6.5-rc3
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20230721gitf7e3a1bafdea.20%{?buildid}%{?dist}
+%define specrelease 0.rc3.23%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3738,6 +3738,17 @@ fi\
 #
 #
 %changelog
+* Mon Jul 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc3.23.el127]
+- Linux v6.5.0-0.rc3
+
+* Sun Jul 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc2.c2782531397f.22.el127]
+- Linux v6.5.0-0.rc2.c2782531397f
+
+* Sat Jul 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc2.d192f5382581.21.el127]
+- Update filters for new config items (Justin M. Forbes)
+- More Fedora 6.5 configs (Justin M. Forbes)
+- Linux v6.5.0-0.rc2.d192f5382581
+
 * Fri Jul 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc2.f7e3a1bafdea.20.el127]
 - redhat/configs: disable pre-UVC cameras for RHEL on aarch64 (Dean Nelson)
 - redhat/configs: enable CONFIG_MEDIA_SUPPORT for RHEL on aarch64 (Dean Nelson)
