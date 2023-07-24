@@ -171,18 +171,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.4
-%define specversion 6.4.4
+%define specrpmversion 6.4.6
+%define specversion 6.4.6
 %define patchversion 6.4
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.4.4
+%define tarfile_release 6.4.6
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.4.4
+%define kabiversion 6.4.6
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -1785,7 +1785,7 @@ rm -f localversion-next
 # *** ERROR: ambiguous python shebang in /usr/bin/kvm_stat: #!/usr/bin/python. Change it to python3 (or python2) explicitly.
 # We patch all sources below for which we got a report/error.
 echo "Fixing Python shebangs..."
-pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
+%py3_shebang_fix \
 	tools/kvm/kvm_stat/kvm_stat \
 	scripts/show_delta \
 	scripts/diffconfig \
@@ -3740,6 +3740,11 @@ fi\
 #
 #
 %changelog
+* Mon Jul 24 2023 Augusto Caringi <acaringi@redhat.com> [6.4.6-0]
+- Change pathfix.py to %%py3_shebang_fix (Justin M. Forbes)
+- Add config option coming to a stable update soon (Justin M. Forbes)
+- Linux v6.4.6
+
 * Wed Jul 19 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.4-0]
 - move ownership of /lib/modules/<ver>/ to kernel-core (Thorsten Leemhuis)
 - Let kernel-modules-core own the files depmod generates. (Thorsten Leemhuis)
