@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc3.23
+%define pkgrelease 0.rc3.20230725git0b5547c51827.24
 %define kversion 6
-%define tarfile_release 6.5-rc3
+%define tarfile_release 6.5-rc3-18-g0b5547c51827
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.23%{?buildid}%{?dist}
+%define specrelease 0.rc3.20230725git0b5547c51827.24%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3308,7 +3308,9 @@ rm -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 if [[ ! -e "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext" ]]; then\
     ln -s "/lib/modules/%{KVERREL}%{?1:+%{1}}/symvers.%compext" "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext"\
-    command -v restorecon &>/dev/null && restorecon "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext" \
+    if command -v restorecon &>/dev/null; then\
+        restorecon "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext"\
+    fi\
 fi\
 %{nil}
 
@@ -3738,6 +3740,12 @@ fi\
 #
 #
 %changelog
+* Tue Jul 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc3.0b5547c51827.24.el127]
+- redhat/scripts/rh-dist-git.sh: fix outdated message and comment (Denys Vlasenko)
+- redhat/configs: Disable CONFIG_I8K (Prarit Bhargava)
+- Make sure posttrans script doesn't fail if restorecon is not installed (Daan De Meyer)
+- Linux v6.5.0-0.rc3.0b5547c51827
+
 * Mon Jul 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc3.23.el127]
 - Linux v6.5.0-0.rc3
 

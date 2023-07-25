@@ -232,7 +232,7 @@ index 00d76448319d..e679d13303e3 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 52683fddafaf..d0f15368dcce 100644
+index 0ba1067f4e5f..c75367c1671f 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1561,6 +1561,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
