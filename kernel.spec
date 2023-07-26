@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc3.20230725git0b5547c51827.24
+%define pkgrelease 0.rc3.20230726git18b44bc5a672.25
 %define kversion 6
-%define tarfile_release 6.5-rc3-18-g0b5547c51827
+%define tarfile_release 6.5-rc3-24-g18b44bc5a672
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20230725git0b5547c51827.24%{?buildid}%{?dist}
+%define specrelease 0.rc3.20230726git18b44bc5a672.25%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3740,6 +3740,12 @@ fi\
 #
 #
 %changelog
+* Wed Jul 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc3.18b44bc5a672.25.el127]
+- redhat/scripts/rh-dist-git.sh: print list of uploaded files (Denys Vlasenko)
+- redhat/scripts/expand_srpm.sh: add missing function, robustify (Denys Vlasenko)
+- redhat: Enable HSR and PRP (Felix Maurer)
+- Linux v6.5.0-0.rc3.18b44bc5a672
+
 * Tue Jul 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc3.0b5547c51827.24.el127]
 - redhat/scripts/rh-dist-git.sh: fix outdated message and comment (Denys Vlasenko)
 - redhat/configs: Disable CONFIG_I8K (Prarit Bhargava)
