@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc3.20230726git18b44bc5a672.25
+%define pkgrelease 0.rc3.20230727git0a8db05b571a.26
 %define kversion 6
-%define tarfile_release 6.5-rc3-24-g18b44bc5a672
+%define tarfile_release 6.5-rc3-44-g0a8db05b571a
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20230726git18b44bc5a672.25%{?buildid}%{?dist}
+%define specrelease 0.rc3.20230727git0a8db05b571a.26%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3740,6 +3740,10 @@ fi\
 #
 #
 %changelog
+* Thu Jul 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc3.0a8db05b571a.26.el127]
+- redhat/configs: Disable FIREWIRE for RHEL (Prarit Bhargava)
+- Linux v6.5.0-0.rc3.0a8db05b571a
+
 * Wed Jul 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc3.18b44bc5a672.25.el127]
 - redhat/scripts/rh-dist-git.sh: print list of uploaded files (Denys Vlasenko)
 - redhat/scripts/expand_srpm.sh: add missing function, robustify (Denys Vlasenko)
