@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc3.20230728git57012c57536f.27
+%define pkgrelease 0.rc4.30
 %define kversion 6
-%define tarfile_release 6.5-rc3-123-g57012c57536f
+%define tarfile_release 6.5-rc4
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20230728git57012c57536f.27%{?buildid}%{?dist}
+%define specrelease 0.rc4.30%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3740,6 +3740,15 @@ fi\
 #
 #
 %changelog
+* Mon Jul 31 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc4.30.el127]
+- Linux v6.5.0-0.rc4
+
+* Sun Jul 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc3.d31e3792919e.29.el127]
+- Linux v6.5.0-0.rc3.d31e3792919e
+
+* Sat Jul 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc3.ffabf7c73176.28.el127]
+- Linux v6.5.0-0.rc3.ffabf7c73176
+
 * Fri Jul 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc3.57012c57536f.27.el127]
 - Linux v6.5.0-0.rc3.57012c57536f
 
