@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc4.30
+%define pkgrelease 0.rc4.31
 %define kversion 6
 %define tarfile_release 6.5-rc4
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.30%{?buildid}%{?dist}
+%define specrelease 0.rc4.31%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3740,6 +3740,19 @@ fi\
 #
 #
 %changelog
+* Wed Aug 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc4.31.el127]
+- [CI] add exit 0 to the end of CI scripts (Don Zickus)
+- redhat: configs: Disable CONFIG_CRYPTO_STATS since performance issue for storage (Kate Hsuan) [2227793]
+- Remove obsolete variable from gitlab-ci.yml (Ondrej Kinst)
+- redhat/configs: Move GVT-g to Fedora only (Alex Williamson)
+- [CI] Make sure we are on correct branch before running script (Don Zickus)
+- CI: ark-update-configs: sync push command and output (Don Zickus)
+- CI: ark-update-configs: misc changes (Don Zickus)
+- CI: sync ark-create-release push commands with output (Don Zickus)
+- CI: ark-create-release: Add a robust check if nothing changed (Don Zickus)
+- CI: Remove legacy tag check cruft (Don Zickus)
+- CI: Introduce simple environment script (Don Zickus)
+
 * Mon Jul 31 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc4.30.el127]
 - Linux v6.5.0-0.rc4
 
