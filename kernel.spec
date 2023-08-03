@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc4.31
+%define pkgrelease 0.rc4.20230803gitec351c8f2e62.32
 %define kversion 6
-%define tarfile_release 6.5-rc4
+%define tarfile_release 6.5-rc4-41-gec351c8f2e62
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.31%{?buildid}%{?dist}
+%define specrelease 0.rc4.20230803gitec351c8f2e62.32%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3361,7 +3361,7 @@ rm -f /boot/efi/EFI/Linux/${entry_token}-%{KVERREL}%{?1:+%{1}}.efi\
 #
 %define kernel_variant_preun() \
 %{expand:%%preun %{?1:%{1}-}core}\
-/bin/kernel-install remove %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
+/bin/kernel-install remove %{KVERREL}%{?1:+%{1}} || exit $?\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
     %{_sbindir}/weak-modules --remove-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
@@ -3740,6 +3740,11 @@ fi\
 #
 #
 %changelog
+* Thu Aug 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc4.ec351c8f2e62.32.el127]
+- Description: Set config for Tegra234 pinctrl driver (Joel Slebodnick)
+- Update RPM Scriptlet for kernel-install Changes (Jonathan Steffan)
+- Linux v6.5.0-0.rc4.ec351c8f2e62
+
 * Wed Aug 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc4.31.el127]
 - [CI] add exit 0 to the end of CI scripts (Don Zickus)
 - redhat: configs: Disable CONFIG_CRYPTO_STATS since performance issue for storage (Kate Hsuan) [2227793]
