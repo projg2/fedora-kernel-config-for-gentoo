@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc4.20230803gitec351c8f2e62.32
+%define pkgrelease 0.rc4.20230804gitc1a515d3c027.33
 %define kversion 6
-%define tarfile_release 6.5-rc4-41-gec351c8f2e62
+%define tarfile_release 6.5-rc4-174-gc1a515d3c027
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20230803gitec351c8f2e62.32%{?buildid}%{?dist}
+%define specrelease 0.rc4.20230804gitc1a515d3c027.33%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3740,6 +3740,9 @@ fi\
 #
 #
 %changelog
+* Fri Aug 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc4.c1a515d3c027.33.el127]
+- Linux v6.5.0-0.rc4.c1a515d3c027
+
 * Thu Aug 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc4.ec351c8f2e62.32.el127]
 - Description: Set config for Tegra234 pinctrl driver (Joel Slebodnick)
 - Update RPM Scriptlet for kernel-install Changes (Jonathan Steffan)
