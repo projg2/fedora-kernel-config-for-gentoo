@@ -171,18 +171,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.8
-%define specversion 6.4.8
+%define specrpmversion 6.4.9
+%define specversion 6.4.9
 %define patchversion 6.4
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.4.8
+%define tarfile_release 6.4.9
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.4.8
+%define kabiversion 6.4.9
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3740,6 +3740,14 @@ fi\
 #
 #
 %changelog
+* Tue Aug 08 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.9-0]
+- Config updates for 6.4.9 (Justin M. Forbes)
+- Update BugsFixed for 6.4.9 (Justin M. Forbes)
+- Add some BugsFixed for the 6.4.9 update (Justin M. Forbes)
+- ACPI: resource: revert "Remove "Zen" specific match and quirks" (Hans de Goede)
+- arm: i.MX: Some minor NXP i.MX cleanups (Peter Robinson)
+- Linux v6.4.9
+
 * Thu Aug 03 2023 Augusto Caringi <acaringi@redhat.com> [6.4.8-0]
 - redhat: configs: Disable CONFIG_CRYPTO_STATS since performance issue for storage (Kate Hsuan) [2227793]
 - Linux v6.4.8
