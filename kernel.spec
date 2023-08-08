@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc5.36
+%define pkgrelease 0.rc5.20230808git14f9643dc90a.37
 %define kversion 6
-%define tarfile_release 6.5-rc5
+%define tarfile_release 6.5-rc5-29-g14f9643dc90a
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.36%{?buildid}%{?dist}
+%define specrelease 0.rc5.20230808git14f9643dc90a.37%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3740,6 +3740,10 @@ fi\
 #
 #
 %changelog
+* Tue Aug 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc5.14f9643dc90a.37.el127]
+- redhat/configs: Texas Instruments INA3221 driver (Steve Best)
+- Linux v6.5.0-0.rc5.14f9643dc90a
+
 * Mon Aug 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc5.36.el127]
 - Linux v6.5.0-0.rc5
 
