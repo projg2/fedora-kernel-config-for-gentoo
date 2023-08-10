@@ -174,13 +174,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc5.20230809git13b937206866.38
+%define pkgrelease 0.rc5.20230810git374a7f47bf40.39
 %define kversion 6
-%define tarfile_release 6.5-rc5-53-g13b937206866
+%define tarfile_release 6.5-rc5-63-g374a7f47bf40
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20230809git13b937206866.38%{?buildid}%{?dist}
+%define specrelease 0.rc5.20230810git374a7f47bf40.39%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3740,6 +3740,10 @@ fi\
 #
 #
 %changelog
+* Thu Aug 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc5.374a7f47bf40.39.el127]
+- redhat/configs: Remove `CONFIG_HZ_1000 is not set` for aarch64 (Enric Balletbo i Serra)
+- Linux v6.5.0-0.rc5.374a7f47bf40
+
 * Wed Aug 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc5.13b937206866.38.el127]
 - redhat/configs: turn on the framework for SPI NOR for ARM (Steve Best)
 - configs: add new ChromeOS UART driver (Mark Langsdorf)
