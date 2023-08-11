@@ -1,3 +1,15 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/f0ba6e68da37465b394524e19c278ba7f1eb5b63
+ f0ba6e68da37465b394524e19c278ba7f1eb5b63 KVM: SEV: remove ghcb variable declarations
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/2aa51a1742c6cec31060ee550f78e96ef1a4f8a4
+ 2aa51a1742c6cec31060ee550f78e96ef1a4f8a4 KVM: SEV: only access GHCB fields once
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/56fefaa3f32f116c0a6ab4b8d91e45852f36ab2c
+ 56fefaa3f32f116c0a6ab4b8d91e45852f36ab2c KVM: SEV: snapshot the GHCB before accessing it
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d2da896865f56b119ba96a5aea155e330998a318
+ d2da896865f56b119ba96a5aea155e330998a318 drm/amd/display: Fix a regression on Polaris cards
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/65e3a6166a5616d51a1a656bcb97cae229333a1b
  65e3a6166a5616d51a1a656bcb97cae229333a1b ACPI: resource: revert "Remove "Zen" specific match and quirks"
 
