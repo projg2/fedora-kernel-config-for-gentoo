@@ -118,7 +118,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 6bbf9db6b414..e321cd641d46 100644
+index 00cfb37a9ab8..ec716b2b5554 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -420,10 +420,10 @@ index c2c786eb95ab..4e3aa80cd5cf 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 5b145f1aaa1b..59cb691d7f07 100644
+index 87e385542576..7e9de6e3eb9f 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1748,6 +1748,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1749,6 +1749,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -1210,7 +1210,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 37b6fa746662..62a97e568b7f 100644
+index f3a01b79148c..9a1a74d183ce 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
