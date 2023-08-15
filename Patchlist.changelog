@@ -1,3 +1,21 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/31a8a6b4003446a250fa9f7ee97de71720331c1f
+ 31a8a6b4003446a250fa9f7ee97de71720331c1f [redhat] kernel/rh_messages.c: move hardware tables to rh_messages.h
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0f6fbe653a0a7943a1c36ee4f47395ea30b79c75
+ 0f6fbe653a0a7943a1c36ee4f47395ea30b79c75 [redhat] kernel/rh_messages.c: Wire up new calls
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b73e031eb85ee3e0755203421a1b6ad153216568
+ b73e031eb85ee3e0755203421a1b6ad153216568 [redhat] drivers/pci: Update rh_messages.c
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/edb8831394cd8eddf069a09842f464bfc8a957a7
+ edb8831394cd8eddf069a09842f464bfc8a957a7 [redhat] drivers/message/fusion/mptspi.c: Remove extra disabled warning
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/635b364c987e7559bc20d3f22822a514b56ac33d
+ 635b364c987e7559bc20d3f22822a514b56ac33d [redhat] mptsas: Remove add_taint()
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b8cb66e488122646b260a080f683d8746a145ebb
+ b8cb66e488122646b260a080f683d8746a145ebb [redhat] drivers/pci: Remove RHEL-only pci_hw_*() functions
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/7ba2fc7e001181fe630e92a4633e76a6c71689e1
  7ba2fc7e001181fe630e92a4633e76a6c71689e1 scsi: sd: Add "probe_type" module parameter to allow synchronous probing
 
