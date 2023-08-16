@@ -162,13 +162,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc6.20230815git91aa6c412d7f.44
+%define pkgrelease 0.rc6.20230816git4853c74bd7ab.45
 %define kversion 6
-%define tarfile_release 6.5-rc6-27-g91aa6c412d7f
+%define tarfile_release 6.5-rc6-36-g4853c74bd7ab
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20230815git91aa6c412d7f.44%{?buildid}%{?dist}
+%define specrelease 0.rc6.20230816git4853c74bd7ab.45%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3713,6 +3713,13 @@ fi\
 #
 #
 %changelog
+* Wed Aug 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc6.4853c74bd7ab.45.el130]
+- New configs in arch/x86 (Fedora Kernel Team)
+- Add an armv7 directory back for the Fedora configs (Justin M. Forbes)
+- Fedora 6.5 config updates (Justin M. Forbes)
+- Turn off DMABUF_SYSFS_STATS (Justin M. Forbes)
+- Linux v6.5.0-0.rc6.4853c74bd7ab
+
 * Tue Aug 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc6.91aa6c412d7f.44.el130]
 - CI: rawhide_release: switch to using script to push (Don Zickus)
 - redhat/self-test: Update self-test data (Prarit Bhargava)
