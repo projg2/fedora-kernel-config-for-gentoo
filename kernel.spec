@@ -171,18 +171,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.10
-%define specversion 6.4.10
+%define specrpmversion 6.4.11
+%define specversion 6.4.11
 %define patchversion 6.4
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.4.10
+%define tarfile_release 6.4.11
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.4.10
+%define kabiversion 6.4.11
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -210,6 +210,8 @@ Summary: The Linux kernel
 %define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
 # kernel-zfcpdump (s390 specific kernel for zfcpdump)
 %define with_zfcpdump  %{?_without_zfcpdump:  0} %{?!_without_zfcpdump:  1}
+# kernel-16k (aarch64 kernel with 16K page_size)
+%define with_arm64_16k %{?_without_arm64_16k: 0} %{?!_without_arm64_16k: 1}
 # kernel-64k (aarch64 kernel with 64K page_size)
 %define with_arm64_64k %{?_without_arm64_64k: 0} %{?!_without_arm64_64k: 1}
 # kernel-rt (x86_64 and aarch64 only PREEMPT_RT enabled kernel)
@@ -220,6 +222,7 @@ Summary: The Linux kernel
 # up         X         X             X
 # pae        X                       X
 # zfcpdump   X                       X
+# arm64_16k  X         X             X
 # arm64_64k  X         X             X
 # realtime   X         X             X
 
@@ -317,6 +320,9 @@ Summary: The Linux kernel
 %define with_realtime 0
 %define with_arm64_64k 0
 %endif
+
+# No arm64-16k flavor for now
+%define with_arm64_16k 0
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -452,6 +458,7 @@ Summary: The Linux kernel
 %define with_headers 0
 %define with_efiuki 0
 %define with_zfcpdump 0
+%define with_arm64_16k 0
 %define with_arm64_64k 0
 %endif
 
@@ -518,8 +525,9 @@ Summary: The Linux kernel
 %define with_zfcpdump 0
 %endif
 
-# 64k variant only for aarch64
+# 16k and 64k variants only for aarch64
 %ifnarch aarch64
+%define with_arm64_16k 0
 %define with_arm64_64k 0
 %endif
 
@@ -613,6 +621,7 @@ Summary: The Linux kernel
 %define with_debug 0
 %define with_pae 0
 %define with_zfcpdump 0
+%define with_arm64_16k 0
 %define with_arm64_64k 0
 %define with_realtime 0
 
@@ -664,6 +673,11 @@ Summary: The Linux kernel
 %define with_realtime_base 1
 %else
 %define with_realtime_base 0
+%endif
+%if %{with_arm64_16k} && !%{with_dbgonly}
+%define with_arm64_16k_base 1
+%else
+%define with_arm64_16k_base 0
 %endif
 %if %{with_arm64_64k} && !%{with_dbgonly}
 %define with_arm64_64k_base 1
@@ -947,6 +961,8 @@ Source54: %{name}-armv7hl-fedora.config
 Source55: %{name}-armv7hl-debug-fedora.config
 Source56: %{name}-armv7hl-lpae-fedora.config
 Source57: %{name}-armv7hl-lpae-debug-fedora.config
+Source58: %{name}-aarch64-16k-fedora.config
+Source59: %{name}-aarch64-16k-debug-fedora.config
 Source60: %{name}-ppc64le-fedora.config
 Source61: %{name}-ppc64le-debug-fedora.config
 Source62: %{name}-s390x-fedora.config
@@ -1608,6 +1624,29 @@ Cortex-A15 devices with LPAE and HW virtualisation support
 The kernel package contains the Linux kernel (vmlinuz) for use by the
 zfcpdump infrastructure.
 # with_zfcpdump
+%endif
+
+%if %{with_arm64_16k_base}
+%define variant_summary The Linux kernel compiled for 16k pagesize usage
+%kernel_variant_package 16k
+%description 16k-core
+The kernel package contains a variant of the ARM64 Linux kernel using
+a 16K page size.
+%endif
+
+%if %{with_arm64_16k} && %{with_debug}
+%define variant_summary The Linux kernel compiled with extra debugging enabled
+%if !%{debugbuildsenabled}
+%kernel_variant_package -m 16k-debug
+%else
+%kernel_variant_package 16k-debug
+%endif
+%description 16k-debug-core
+The debug kernel package contains a variant of the ARM64 Linux kernel using
+a 16K page size.
+This variant of the kernel has numerous debugging options enabled.
+It should only be installed when trying to gather additional information
+on kernel bugs, as some of these options impact performance noticably.
 %endif
 
 %if %{with_arm64_64k_base}
@@ -2662,6 +2701,10 @@ echo "building rt-debug"
 BuildKernel %make_target %kernel_image %{_use_vdso} rt-debug
 %endif
 
+%if %{with_arm64_16k}
+BuildKernel %make_target %kernel_image %{_use_vdso} 16k-debug
+%endif
+
 %if %{with_arm64_64k}
 BuildKernel %make_target %kernel_image %{_use_vdso} 64k-debug
 %endif
@@ -2674,6 +2717,10 @@ BuildKernel %make_target %kernel_image %{_use_vdso} debug
 
 %if %{with_zfcpdump}
 BuildKernel %make_target %kernel_image %{_use_vdso} zfcpdump
+%endif
+
+%if %{with_arm64_16k_base}
+BuildKernel %make_target %kernel_image %{_use_vdso} 16k
 %endif
 
 %if %{with_arm64_64k_base}
@@ -2693,7 +2740,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
 %ifnarch noarch i686 %{nobuildarches}
-%if !%{with_debug} && !%{with_zfcpdump} && !%{with_pae} && !%{with_up} && !%{with_arm64_64k} && !%{with_realtime}
+%if !%{with_debug} && !%{with_zfcpdump} && !%{with_pae} && !%{with_up} && !%{with_arm64_16k} && !%{with_arm64_64k} && !%{with_realtime}
 # If only building the user space tools, then initialize the build environment
 # and some variables so that the various userspace tools can be built.
 InitBuildVars
@@ -2856,6 +2903,12 @@ find Documentation -type d | xargs chmod u+w
     fi \
     if [ "%{with_realtime}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
          %{modsign_cmd} certs/signing_key.pem.sign+rt-debug certs/signing_key.x509.sign+rt-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+rt-debug/ \
+    fi \
+    if [ "%{with_arm64_16k_base}" -ne "0" ]; then \
+       %{modsign_cmd} certs/signing_key.pem.sign+16k certs/signing_key.x509.sign+16k $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+16k/ \
+    fi \
+    if [ "%{with_arm64_16k}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
+         %{modsign_cmd} certs/signing_key.pem.sign+16k-debug certs/signing_key.x509.sign+16k-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+16k-debug/ \
     fi \
     if [ "%{with_arm64_64k_base}" -ne "0" ]; then \
        %{modsign_cmd} certs/signing_key.pem.sign+64k certs/signing_key.x509.sign+64k $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+64k/ \
@@ -3396,6 +3449,16 @@ fi\
 %kernel_variant_post -v debug
 %endif
 
+%if %{with_arm64_16k_base}
+%kernel_variant_preun 16k
+%kernel_variant_post -v 16k
+%endif
+
+%if %{with_debug} && %{with_arm64_16k}
+%kernel_variant_preun 16k-debug
+%kernel_variant_post -v 16k-debug
+%endif
+
 %if %{with_arm64_64k_base}
 %kernel_variant_preun 64k
 %kernel_variant_post -v 64k
@@ -3695,6 +3758,9 @@ fi\
 %if %{with_up}
 %kernel_variant_files %{_use_vdso} %{with_debug} debug
 %endif
+%if %{with_arm64_16k}
+%kernel_variant_files %{_use_vdso} %{with_debug} 16k-debug
+%endif
 %if %{with_arm64_64k}
 %kernel_variant_files %{_use_vdso} %{with_debug} 64k-debug
 %endif
@@ -3710,6 +3776,14 @@ fi\
 %files debug-modules
 %files debug-modules-core
 %files debug-modules-extra
+%if %{with_arm64_16k}
+%files 16k-debug
+%files 16k-debug-core
+%files 16k-debug-devel
+%files 16k-debug-devel-matched
+%files 16k-debug-modules
+%files 16k-debug-modules-extra
+%endif
 %if %{with_arm64_64k}
 %files 64k-debug
 %files 64k-debug-core
@@ -3720,6 +3794,7 @@ fi\
 %endif
 %endif
 %kernel_variant_files %{_use_vdso} %{with_zfcpdump} zfcpdump
+%kernel_variant_files %{_use_vdso} %{with_arm64_16k_base} 16k
 %kernel_variant_files %{_use_vdso} %{with_arm64_64k_base} 64k
 
 %define kernel_variant_ipaclones(k:) \
@@ -3740,6 +3815,14 @@ fi\
 #
 #
 %changelog
+* Wed Aug 16 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.11-0]
+- Add more bugfixes for 6.4.11 (Justin M. Forbes)
+- Turn off DMABUF_SYSFS_STATS (Justin M. Forbes)
+- Revert "KVM: SEV: remove ghcb variable declarations" (Justin M. Forbes)
+- Add bug fixed for 6.4.11 (Justin M. Forbes)
+- redhat: Add arm64-16k kernel flavor scaffold for 16K page-size'd AArch64 (Neal Gompa)
+- Linux v6.4.11
+
 * Fri Aug 11 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.10-0]
 - More security bug fixes for 6.4.10 (Justin M. Forbes)
 - KVM: SEV: remove ghcb variable declarations (Paolo Bonzini)
