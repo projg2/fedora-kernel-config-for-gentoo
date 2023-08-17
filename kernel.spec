@@ -162,13 +162,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc6.20230816git4853c74bd7ab.45
+%define pkgrelease 0.rc6.20230817git4853c74bd7ab.46
 %define kversion 6
 %define tarfile_release 6.5-rc6-36-g4853c74bd7ab
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20230816git4853c74bd7ab.45%{?buildid}%{?dist}
+%define specrelease 0.rc6.20230817git4853c74bd7ab.46%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3713,6 +3713,10 @@ fi\
 #
 #
 %changelog
+* Thu Aug 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc6.4853c74bd7ab.46.el130]
+- all: properly cleanup firewire once and for all (Peter Robinson)
+- Fix up filters for Fedora (Justin M. Forbes)
+
 * Wed Aug 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc6.4853c74bd7ab.45.el130]
 - New configs in arch/x86 (Fedora Kernel Team)
 - Add an armv7 directory back for the Fedora configs (Justin M. Forbes)
