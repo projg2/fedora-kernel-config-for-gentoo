@@ -162,13 +162,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc6.20230818git0e8860d2125f.47
+%define pkgrelease 0.rc7.20230821gitf7757129e3de.50
 %define kversion 6
-%define tarfile_release 6.5-rc6-117-g0e8860d2125f
+%define tarfile_release 6.5-rc7-4-gf7757129e3de
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20230818git0e8860d2125f.47%{?buildid}%{?dist}
+%define specrelease 0.rc7.20230821gitf7757129e3de.50%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3713,6 +3713,15 @@ fi\
 #
 #
 %changelog
+* Mon Aug 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc7.f7757129e3de.50.el130]
+- Linux v6.5.0-0.rc7.f7757129e3de
+
+* Sun Aug 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc6.b320441c04c9.49.el130]
+- Linux v6.5.0-0.rc6.b320441c04c9
+
+* Sat Aug 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc6.4e7ffde6984a.48.el130]
+- Linux v6.5.0-0.rc6.4e7ffde6984a
+
 * Fri Aug 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc6.0e8860d2125f.47.el130]
 - redhat/configs: enable tegra114 SPI (Mark Salter)
 - Linux v6.5.0-0.rc6.0e8860d2125f
