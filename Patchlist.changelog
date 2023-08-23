@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3646d21c389ec7834fc09907787bf597342b7678
+ 3646d21c389ec7834fc09907787bf597342b7678 ASoC: SOF: intel: hda: Clean up link DMA for IPC3 during stop
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/1004737240e720078d4c57351d055e516b648305
  1004737240e720078d4c57351d055e516b648305 Revert "KVM: SEV: remove ghcb variable declarations"
 

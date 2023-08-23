@@ -171,18 +171,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.11
-%define specversion 6.4.11
+%define specrpmversion 6.4.12
+%define specversion 6.4.12
 %define patchversion 6.4
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.4.11
+%define tarfile_release 6.4.12
 # This is needed to do merge window version magic
 %define patchlevel 4
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.4.11
+%define kabiversion 6.4.12
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3363,7 +3363,9 @@ rm -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 if [[ ! -e "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext" ]]; then\
     ln -s "/lib/modules/%{KVERREL}%{?1:+%{1}}/symvers.%compext" "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext"\
-    command -v restorecon &>/dev/null && restorecon "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext" \
+    if command -v restorecon &>/dev/null; then\
+        restorecon "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext"\
+    fi\
 fi\
 %{nil}
 
@@ -3815,6 +3817,11 @@ fi\
 #
 #
 %changelog
+* Wed Aug 23 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.12-0]
+- ASoC: SOF: intel: hda: Clean up link DMA for IPC3 during stop (Ranjani Sridharan)
+- Make sure posttrans script doesn't fail if restorecon is not installed (Daan De Meyer)
+- Linux v6.4.12
+
 * Wed Aug 16 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.4.11-0]
 - Add more bugfixes for 6.4.11 (Justin M. Forbes)
 - Turn off DMABUF_SYSFS_STATS (Justin M. Forbes)
