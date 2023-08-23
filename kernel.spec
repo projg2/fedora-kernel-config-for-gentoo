@@ -162,13 +162,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc7.20230822gitf7757129e3de.51
+%define pkgrelease 0.rc7.20230823git89bf6209cad6.52
 %define kversion 6
-%define tarfile_release 6.5-rc7-4-gf7757129e3de
+%define tarfile_release 6.5-rc7-18-g89bf6209cad6
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20230822gitf7757129e3de.51%{?buildid}%{?dist}
+%define specrelease 0.rc7.20230823git89bf6209cad6.52%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3713,6 +3713,15 @@ fi\
 #
 #
 %changelog
+* Wed Aug 23 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc7.20230823git89bf6209cad6.52]
+- Remove unused config entry for Fedora (Justin M. Forbes)
+
+* Wed Aug 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc7.89bf6209cad6.52.eln130]
+- redhat/self-test: Remove rpmlint test (Prarit Bhargava)
+- Remove the armv7 config directory from Fedora again (Justin M. Forbes)
+- Enable CONFIG_EXPERT for both RHEL and Fedora (Justin M. Forbes)
+- Linux v6.5.0-0.rc7.89bf6209cad6
+
 * Tue Aug 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc7.f7757129e3de.51.eln130]
 - redhat/configs: Enable CONFIG_DEVICE_PRIVATE on aarch64 (David Hildenbrand) [2231407]
 - redhat/configs: disable CONFIG_ROCKCHIP_ERRATUM_3588001 for RHEL (Mark Salter)
