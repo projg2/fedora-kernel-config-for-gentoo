@@ -162,13 +162,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.0
 %define specversion 6.5.0
 %define patchversion 6.5
-%define pkgrelease 0.rc7.20230823git89bf6209cad6.52
+%define pkgrelease 0.rc7.20230825git4f9e7fabf864.54
 %define kversion 6
-%define tarfile_release 6.5-rc7-18-g89bf6209cad6
+%define tarfile_release 6.5-rc7-104-g4f9e7fabf864
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20230823git89bf6209cad6.52%{?buildid}%{?dist}
+%define specrelease 0.rc7.20230825git4f9e7fabf864.54%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.0
 
@@ -3713,8 +3713,13 @@ fi\
 #
 #
 %changelog
-* Wed Aug 23 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.0-0.rc7.20230823git89bf6209cad6.52]
+* Fri Aug 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc7.4f9e7fabf864.54.eln130]
+- Linux v6.5.0-0.rc7.4f9e7fabf864
+
+* Thu Aug 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc7.93f5de5f648d.53.eln130]
+- Consolidate configs to common for 6.5 (Justin M. Forbes)
 - Remove unused config entry for Fedora (Justin M. Forbes)
+- Linux v6.5.0-0.rc7.93f5de5f648d
 
 * Wed Aug 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.5.0-0.rc7.89bf6209cad6.52.eln130]
 - redhat/self-test: Remove rpmlint test (Prarit Bhargava)
