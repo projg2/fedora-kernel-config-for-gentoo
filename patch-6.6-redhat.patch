@@ -67,10 +67,10 @@
  66 files changed, 1779 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 0c38a8af95ce..805c3c2df287 100644
+index 93f646e0b4b5..64545207b874 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6685,6 +6685,15 @@
+@@ -6703,6 +6703,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 2fdd8b40b7e0..42e68b77b932 100644
+index 4f283d915e54..f0355c2e70bf 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -142,7 +142,7 @@ index 2fdd8b40b7e0..42e68b77b932 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1335,7 +1347,13 @@ define filechk_version.h
+@@ -1336,7 +1348,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -158,7 +158,7 @@ index 2fdd8b40b7e0..42e68b77b932 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 7a27550ff3c1..cf402933dd3c 100644
+index 9557808e8937..fafcbf82c9f2 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -1307,9 +1307,9 @@ config HIGHMEM
@@ -174,10 +174,10 @@ index 7a27550ff3c1..cf402933dd3c 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 29db061db9bb..25b06fd4d485 100644
+index b10515c0200b..6e1ed0068863 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1296,7 +1296,7 @@ endchoice
+@@ -1295,7 +1295,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -1773,10 +1773,10 @@ index 5a1e39df8b26..a38713d445d7 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 0d91e0af0125..9fbf61a303bc 100644
+index cee8fe87e9f4..25e3a8d580af 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -481,4 +481,18 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -446,4 +446,18 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -1796,7 +1796,7 @@ index 0d91e0af0125..9fbf61a303bc 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index af796986baee..83e1cb0ca159 100644
+index f5b7352afaac..8c4b00792970 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -405,6 +405,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -1859,7 +1859,7 @@ index 6717b15e798c..8e1d3eae1686 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index c69a2cc1f412..b9ae5eb4c66d 100644
+index 9c856e9aada5..a7e939f85677 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1560,6 +1560,7 @@ int pci_add_dynid(struct pci_driver *drv,
@@ -2415,7 +2415,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index bac98ea18f78..28abed10b583 100644
+index b2c38bfe5647..7124af1d2ae7 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -483,6 +483,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
@@ -2464,7 +2464,7 @@ index 3947122d618b..5b9462a450a1 100644
  obj-$(CONFIG_MULTIUSER) += groups.o
  obj-$(CONFIG_VHOST_TASK) += vhost_task.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index a2aef900519c..b872a64be8fd 100644
+index ebeb0695305a..f776e028c798 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@
@@ -2475,7 +2475,7 @@ index a2aef900519c..b872a64be8fd 100644
  #include <uapi/linux/btf.h>
  #include <linux/pgtable.h>
  #include <linux/bpf_lsm.h>
-@@ -55,6 +56,23 @@ static DEFINE_SPINLOCK(map_idr_lock);
+@@ -57,6 +58,23 @@ static DEFINE_SPINLOCK(map_idr_lock);
  static DEFINE_IDR(link_idr);
  static DEFINE_SPINLOCK(link_idr_lock);
 
@@ -2499,7 +2499,7 @@ index a2aef900519c..b872a64be8fd 100644
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
 
-@@ -5456,6 +5474,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -5654,6 +5672,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;
@@ -2512,7 +2512,7 @@ index a2aef900519c..b872a64be8fd 100644
  	}
 
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 59b1d067e528..0b1c207dcd4f 100644
+index 98fedfdb8db5..e3b1a8220944 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
 @@ -528,6 +528,7 @@ static struct module_attribute modinfo_##field = {                    \
@@ -2531,7 +2531,7 @@ index 59b1d067e528..0b1c207dcd4f 100644
  	&modinfo_initstate,
  	&modinfo_coresize,
  #ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
-@@ -2794,6 +2796,11 @@ static int early_mod_check(struct load_info *info, int flags)
+@@ -2802,6 +2804,11 @@ static int early_mod_check(struct load_info *info, int flags)
  		return -EPERM;
  	}
 
@@ -2567,7 +2567,7 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index 10effe40a3fa..f49ce6660929 100644
+index 07239d4ad81e..066ff701f4bb 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
 @@ -479,6 +479,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
@@ -3232,7 +3232,7 @@ index 68d19632aeb7..ef348935b6ff 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 549104a447e3..73670798f075 100644
+index 3b454e9442b1..b0bd302e2826 100644
 --- a/security/security.c
 +++ b/security/security.c
 @@ -5198,6 +5198,18 @@ int security_locked_down(enum lockdown_reason what)
