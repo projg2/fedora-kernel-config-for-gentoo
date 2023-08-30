@@ -40,7 +40,7 @@
  39 files changed, 518 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 0ff13b943f99..a0066c563e57 100644
+index 900e515b87cf..5da008e699ef 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -263,7 +263,7 @@ index c2c786eb95ab..4e3aa80cd5cf 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/resource.c b/drivers/acpi/resource.c
-index a4d9f149b48d..5c48b981758c 100644
+index 32cfa3f4efd3..596edf4068b7 100644
 --- a/drivers/acpi/resource.c
 +++ b/drivers/acpi/resource.c
 @@ -470,6 +470,24 @@ static const struct dmi_system_id asus_laptop[] = {
@@ -291,7 +291,7 @@ index a4d9f149b48d..5c48b981758c 100644
  static const struct dmi_system_id tongfang_gm_rg[] = {
  	{
  		.ident = "TongFang GMxRGxx/XMG CORE 15 (M22)/TUXEDO Stellaris 15 Gen4 AMD",
-@@ -532,6 +550,8 @@ struct irq_override_cmp {
+@@ -536,6 +554,8 @@ struct irq_override_cmp {
  static const struct irq_override_cmp override_table[] = {
  	{ medion_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0, false },
  	{ asus_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0, false },
@@ -300,7 +300,7 @@ index a4d9f149b48d..5c48b981758c 100644
  	{ tongfang_gm_rg, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1, true },
  	{ maingear_laptop, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1, true },
  	{ pcspecialist_laptop, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1, true },
-@@ -555,18 +575,6 @@ static bool acpi_dev_irq_override(u32 gsi, u8 triggering, u8 polarity,
+@@ -559,18 +579,6 @@ static bool acpi_dev_irq_override(u32 gsi, u8 triggering, u8 polarity,
  	}
 
  #ifdef CONFIG_X86
