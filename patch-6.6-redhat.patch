@@ -67,7 +67,7 @@
  66 files changed, 1779 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 93f646e0b4b5..64545207b874 100644
+index 0b739a37c524..8c7afb8f37b8 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -6703,6 +6703,15 @@
@@ -234,7 +234,7 @@ index c744104e4a9c..8e3e8c976991 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 41b573f34a10..da1bef251b9f 100644
+index 90b8c5ea25aa..79f3e50b7753 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1582,6 +1582,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -246,7 +246,7 @@ index 41b573f34a10..da1bef251b9f 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index fd975a4a5200..d171d94853de 100644
+index b9145a63da77..0fee4777b66f 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -265,7 +265,7 @@ index fd975a4a5200..d171d94853de 100644
 
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -800,6 +802,49 @@ static void __init early_reserve_memory(void)
+@@ -799,6 +801,49 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
 
@@ -315,7 +315,7 @@ index fd975a4a5200..d171d94853de 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -1031,6 +1076,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -1032,6 +1077,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -329,7 +329,7 @@ index fd975a4a5200..d171d94853de 100644
  	reserve_ibft_region();
  	dmi_setup();
 
-@@ -1192,19 +1244,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1193,19 +1245,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -350,7 +350,7 @@ index fd975a4a5200..d171d94853de 100644
 
  	reserve_initrd();
 
-@@ -1317,6 +1357,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1318,6 +1358,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
 
@@ -1078,7 +1078,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index caaf563d38ae..d9c4d039c4e7 100644
+index c9c370de9d3d..9a73c9aad0f4 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1089,7 +1089,7 @@ index caaf563d38ae..d9c4d039c4e7 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2819,6 +2820,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -2898,6 +2899,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
 
@@ -1331,7 +1331,7 @@ index f35647c470af..e57357f23306 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index ae9baf801681..55648c5fe49e 100644
+index a79c110c7e51..cef4feacb300 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
@@ -1356,10 +1356,10 @@ index ae9baf801681..55648c5fe49e 100644
  	if (!rc)
  		return rc;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 321156ca273d..fc399e56ec8f 100644
+index 5de09d2eb014..4113148f68ca 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4406,6 +4406,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4408,6 +4408,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1705,10 +1705,10 @@ index eae288c8d40a..8b8bf447cedc 100644
 
  error_proc:
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 5a1e39df8b26..a38713d445d7 100644
+index 80b21d1c6eaf..b66c0683f2fc 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
-@@ -43,6 +43,8 @@
+@@ -44,6 +44,8 @@ struct screen_info;
  #define EFI_ABORTED		(21 | (1UL << (BITS_PER_LONG-1)))
  #define EFI_SECURITY_VIOLATION	(26 | (1UL << (BITS_PER_LONG-1)))
 
@@ -1717,7 +1717,7 @@ index 5a1e39df8b26..a38713d445d7 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -870,6 +872,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -871,6 +873,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1732,7 +1732,7 @@ index 5a1e39df8b26..a38713d445d7 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -881,6 +891,8 @@ static inline bool efi_enabled(int feature)
+@@ -882,6 +892,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1741,7 +1741,7 @@ index 5a1e39df8b26..a38713d445d7 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -902,6 +914,8 @@ static inline bool efi_enabled(int feature)
+@@ -903,6 +915,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1750,7 +1750,7 @@ index 5a1e39df8b26..a38713d445d7 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -916,6 +930,7 @@ static inline void efi_find_mirror(void) {}
+@@ -917,6 +931,7 @@ static inline void efi_find_mirror(void) {}
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1758,7 +1758,7 @@ index 5a1e39df8b26..a38713d445d7 100644
 
  /*
   * Variable Attributes
-@@ -1132,13 +1147,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1133,13 +1148,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const void *caller);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -1796,7 +1796,7 @@ index cee8fe87e9f4..25e3a8d580af 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index f5b7352afaac..8c4b00792970 100644
+index ac962c4cb44b..d0cedef6859c 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -405,6 +405,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -1859,10 +1859,10 @@ index 6717b15e798c..8e1d3eae1686 100644
 
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 9c856e9aada5..a7e939f85677 100644
+index 8c7c2c3c6c65..ee66c86fc538 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1560,6 +1560,7 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1589,6 +1589,7 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -1870,7 +1870,7 @@ index 9c856e9aada5..a7e939f85677 100644
  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
  		    int pass);
 
-@@ -2578,6 +2579,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
+@@ -2612,6 +2613,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
  	return false;
  }
 
@@ -2415,10 +2415,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
 
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index b2c38bfe5647..7124af1d2ae7 100644
+index 5f16eecde00b..974be25cfa70 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -483,6 +483,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -484,6 +484,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -2426,7 +2426,7 @@ index b2c38bfe5647..7124af1d2ae7 100644
  #else /* CONFIG_SECURITY */
 
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1394,6 +1395,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1395,6 +1396,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -3232,10 +3232,10 @@ index 68d19632aeb7..ef348935b6ff 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 3b454e9442b1..b0bd302e2826 100644
+index 23b129d482a7..55d0fe0d121b 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -5198,6 +5198,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5230,6 +5230,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 
