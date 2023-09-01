@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc0.20230831gitb97d64c72259.2
+%define pkgrelease 0.rc0.20230901git99d99825fc07.3
 %define kversion 6
-%define tarfile_release 6.5-8894-gb97d64c72259
+%define tarfile_release 6.5-9276-g99d99825fc07
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230831gitb97d64c72259.2%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230901git99d99825fc07.3%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -3701,8 +3701,13 @@ fi\
 #
 #
 %changelog
-* Thu Aug 31 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.6.0-0.rc0.20230831gitb97d64c72259.2]
+* Fri Sep 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.99d99825fc07.3.eln130]
+- Disable tests for ELN realtime pipelines (Michael Hofmann)
+- New configs in mm/Kconfig (Fedora Kernel Team)
+- Flip CONFIG_SND_SOC_CS35L56_SDW to m and clean up (Justin M. Forbes)
 - Add drm_exec_test to mod-internal.list (Thorsten Leemhuis)
+- Add new pending entry for CONFIG_SND_SOC_CS35L56_SDW to fix mismatch (Justin M. Forbes)
+- Linux v6.6.0-0.rc0.99d99825fc07
 
 * Thu Aug 31 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.b97d64c72259.2.eln130]
 - Fix tarball creation logic (Don Zickus)

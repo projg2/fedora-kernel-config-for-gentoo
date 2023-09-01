@@ -67,7 +67,7 @@
  66 files changed, 1779 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 0b739a37c524..8c7afb8f37b8 100644
+index fcf79acea475..c3800130d049 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -6703,6 +6703,15 @@
@@ -234,10 +234,10 @@ index c744104e4a9c..8e3e8c976991 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 90b8c5ea25aa..79f3e50b7753 100644
+index 6d75fab10161..87ec6900d962 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1582,6 +1582,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1601,6 +1601,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
