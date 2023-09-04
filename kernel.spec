@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc0.20230901git99d99825fc07.3
+%define pkgrelease 0.rc0.20230904git708283abf896.6
 %define kversion 6
-%define tarfile_release 6.5-9276-g99d99825fc07
+%define tarfile_release 6.5-11329-g708283abf896
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230901git99d99825fc07.3%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230904git708283abf896.6%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -3701,6 +3701,18 @@ fi\
 #
 #
 %changelog
+* Mon Sep 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.708283abf896.6]
+- Linux v6.6.0-0.rc0.708283abf896
+
+* Sun Sep 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.92901222f83d.5]
+- Flip CONFIG_VIDEO_V4L2_SUBDEV_API in pending RHEL due to mismatch (Justin M. Forbes)
+- Linux v6.6.0-0.rc0.92901222f83d
+
+* Sat Sep 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.0468be89b3fa.4]
+- CONFIG_HW_RANDOM_HISI: move to common and set to m (Scott Weaver)
+- Turn off CONFIG_MEMORY_HOTPLUG_DEFAULT_ONLINE for Fedora s390x (Justin M. Forbes)
+- Linux v6.6.0-0.rc0.0468be89b3fa
+
 * Fri Sep 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.99d99825fc07.3.eln130]
 - Disable tests for ELN realtime pipelines (Michael Hofmann)
 - New configs in mm/Kconfig (Fedora Kernel Team)

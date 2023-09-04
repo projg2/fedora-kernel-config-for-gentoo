@@ -67,10 +67,10 @@
  66 files changed, 1779 insertions(+), 188 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index fcf79acea475..c3800130d049 100644
+index 0a1731a0f0ef..7015d8d057a0 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6703,6 +6703,15 @@
+@@ -6711,6 +6711,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
 
@@ -234,7 +234,7 @@ index c744104e4a9c..8e3e8c976991 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 6d75fab10161..87ec6900d962 100644
+index 382d4e6b848d..e73c87159175 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1601,6 +1601,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -422,7 +422,7 @@ index c2c786eb95ab..4e3aa80cd5cf 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 531a9e3df717..d7d4ca66f2fb 100644
+index 691d4b7686ee..433ff7d8a844 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1752,6 +1752,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -835,10 +835,10 @@ index 84e7ba5314d3..efc96776f761 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 7e307022303a..c68d7da67148 100644
+index 77b0271ce6eb..96f60c139c4a 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-@@ -9,6 +9,7 @@
+@@ -10,6 +10,7 @@
  #include <linux/init.h>
  #include <linux/types.h>
  #include <linux/device.h>
@@ -846,7 +846,7 @@ index 7e307022303a..c68d7da67148 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2265,6 +2266,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2303,6 +2304,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -863,7 +863,7 @@ index 7e307022303a..c68d7da67148 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2298,6 +2309,11 @@ static int __init etm4x_init(void)
+@@ -2372,6 +2383,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -875,7 +875,7 @@ index 7e307022303a..c68d7da67148 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2324,6 +2340,9 @@ static int __init etm4x_init(void)
+@@ -2398,6 +2414,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -1078,7 +1078,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index c9c370de9d3d..9a73c9aad0f4 100644
+index 3bfc56df4f78..9671f1bda4ed 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1089,7 +1089,7 @@ index c9c370de9d3d..9a73c9aad0f4 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2898,6 +2899,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -2930,6 +2931,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
 
@@ -1530,7 +1530,7 @@ index 0b1616e93cf4..85fc52038a82 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index 050eed8e2684..6842a7be3789 100644
+index b9d46dcb5210..bd012e44b02a 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
@@ -1594,10 +1594,10 @@ index c3c1f466fe01..370efec15191 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 877e4f446709..7afe5faf7066 100644
+index 03bc3a0b45b6..ce18d8eba061 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -8087,6 +8087,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -8090,6 +8090,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -1605,7 +1605,7 @@ index 877e4f446709..7afe5faf7066 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -8099,13 +8100,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -8102,13 +8103,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -1625,10 +1625,10 @@ index 877e4f446709..7afe5faf7066 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2271) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2261) },
 diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index b2a3988e1e15..cc22e1ac8fb9 100644
+index 675332e49a7b..4a3cbddacef1 100644
 --- a/drivers/scsi/qla4xxx/ql4_os.c
 +++ b/drivers/scsi/qla4xxx/ql4_os.c
-@@ -9850,6 +9850,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
+@@ -9865,6 +9865,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
  		.subvendor	= PCI_ANY_ID,
  		.subdevice	= PCI_ANY_ID,
  	},
@@ -1636,7 +1636,7 @@ index b2a3988e1e15..cc22e1ac8fb9 100644
  	{
  		.vendor         = PCI_VENDOR_ID_QLOGIC,
  		.device         = PCI_DEVICE_ID_QLOGIC_ISP8022,
-@@ -9868,6 +9869,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
+@@ -9883,6 +9884,7 @@ static struct pci_device_id qla4xxx_pci_tbl[] = {
  		.subvendor	= PCI_ANY_ID,
  		.subdevice	= PCI_ANY_ID,
  	},
@@ -1673,10 +1673,10 @@ index 3c668cfb146d..95724cd9875f 100644
  	if (err)
  		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index a739403a9e45..191513936ce8 100644
+index 3c54b218301c..3a52d7e751ce 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5749,6 +5749,13 @@ static void hub_event(struct work_struct *work)
+@@ -5763,6 +5763,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
@@ -2438,7 +2438,7 @@ index 5f16eecde00b..974be25cfa70 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/main.c b/init/main.c
-index ad920fac325c..5ff72cc9c7e3 100644
+index 436d73261810..bc0ce06105e6 100644
 --- a/init/main.c
 +++ b/init/main.c
 @@ -1147,6 +1147,9 @@ static bool __init_or_module initcall_blacklisted(initcall_t fn)
