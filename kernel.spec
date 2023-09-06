@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc0.20230905git3f86ed6ec0b3.7
+%define pkgrelease 0.rc0.20230906git65d6e954e378.8
 %define kversion 6
-%define tarfile_release 6.5-11704-g3f86ed6ec0b3
+%define tarfile_release 6.5-11938-g65d6e954e378
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20230905git3f86ed6ec0b3.7%{?buildid}%{?dist}
+%define specrelease 0.rc0.20230906git65d6e954e378.8%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -3701,8 +3701,13 @@ fi\
 #
 #
 %changelog
-* Tue Sep 05 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.6.0-0.rc0.20230905git3f86ed6ec0b3.7]
+* Wed Sep 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.65d6e954e378.8]
+- Rename pipeline repo branch and DW tree names (Michael Hofmann)
+- Adjust comments that refer to ARK in a Rawhide context (Michael Hofmann)
+- Rename variable names starting with ark- to rawhide- (Michael Hofmann)
+- Rename trigger-ark to trigger-rawhide (Michael Hofmann)
 - Fix up config mismatches for Fedora (Justin M. Forbes)
+- Linux v6.6.0-0.rc0.65d6e954e378
 
 * Tue Sep 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.3f86ed6ec0b3.7]
 - redhat/configs: Texas Instruments Inc. K3 multicore SoC architecture (Steve Best)

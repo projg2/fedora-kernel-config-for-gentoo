@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 4f283d915e54..f0355c2e70bf 100644
+index 73f23fa0677a..b67872ae6283 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -142,7 +142,7 @@ index 4f283d915e54..f0355c2e70bf 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1336,7 +1348,13 @@ define filechk_version.h
+@@ -1250,7 +1262,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -442,7 +442,7 @@ index 691d4b7686ee..433ff7d8a844 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 06aec35f88f2..50428bd0fa12 100644
+index e2bacedf28ef..b55ea894d874 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -729,6 +729,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -3126,7 +3126,7 @@ index 000000000000..616692b1ac11
 +
 +#endif /* __RH_MESSAGES_H */
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index b29b29707f10..e176487ebf1f 100644
+index 34a5386d444a..6d8ea13fc608 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -23,6 +23,7 @@
@@ -3135,9 +3135,9 @@ index b29b29707f10..e176487ebf1f 100644
  #include "../../include/linux/module_symbol.h"
 +#include "../../include/generated/uapi/linux/version.h"
 
+ static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
- static bool modversions;
-@@ -2076,6 +2077,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2068,6 +2069,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -3150,7 +3150,7 @@ index b29b29707f10..e176487ebf1f 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2136,6 +2143,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2128,6 +2135,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
