@@ -212,7 +212,7 @@ index 05e51666db03..454a33b77878 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index c744104e4a9c..8e3e8c976991 100644
+index de6ad0fb2328..5cc2758be027 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -223,7 +223,7 @@ index c744104e4a9c..8e3e8c976991 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -915,6 +916,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -914,6 +915,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -2464,7 +2464,7 @@ index 3947122d618b..5b9462a450a1 100644
  obj-$(CONFIG_MULTIUSER) += groups.o
  obj-$(CONFIG_VHOST_TASK) += vhost_task.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index ebeb0695305a..f776e028c798 100644
+index eb01c31ed591..8a85897c7ea0 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@
