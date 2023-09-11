@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 73f23fa0677a..b67872ae6283 100644
+index ceb23eed4dce..88bf786d292e 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1356,7 +1356,7 @@ index a79c110c7e51..cef4feacb300 100644
  	if (!rc)
  		return rc;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 5de09d2eb014..4113148f68ca 100644
+index eeec1d6f9023..22b85cc6ed39 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4408,6 +4408,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1594,10 +1594,10 @@ index c3c1f466fe01..370efec15191 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 03bc3a0b45b6..ce18d8eba061 100644
+index 50db08265c51..5ece5ffc3944 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -8090,6 +8090,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -8113,6 +8113,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
 
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -1605,7 +1605,7 @@ index 03bc3a0b45b6..ce18d8eba061 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -8102,13 +8103,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -8125,13 +8126,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -1645,10 +1645,10 @@ index 675332e49a7b..4a3cbddacef1 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 3c668cfb146d..95724cd9875f 100644
+index c92a317ba547..8fa8c1d9c9a5 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
-@@ -130,6 +130,14 @@ static const char *sd_cache_types[] = {
+@@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
  	"write back, no read (daft)"
  };
 
@@ -1663,7 +1663,7 @@ index 3c668cfb146d..95724cd9875f 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -3961,6 +3969,8 @@ static int __init init_sd(void)
+@@ -3949,6 +3957,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
 
