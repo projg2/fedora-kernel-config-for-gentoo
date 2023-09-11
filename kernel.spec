@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.5.2
 %define specversion 6.5.2
 %define patchversion 6.5
-%define pkgrelease 300
+%define pkgrelease 301
 %define kversion 6
 %define tarfile_release 6.5.2
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 300%{?buildid}%{?dist}
+%define specrelease 301%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.5.2
 
@@ -789,7 +789,7 @@ BuildRequires: binutils
 BuildRequires: lvm2
 BuildRequires: systemd-boot-unsigned
 # For systemd-stub and systemd-pcrphase
-BuildRequires: systemd-udev >= 252-1
+BuildRequires: systemd-udev
 # For TPM operations in UKI initramfs
 BuildRequires: tpm2-tools
 %endif
@@ -3702,6 +3702,11 @@ fi\
 #
 #
 %changelog
+* Mon Sep 11 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.2-301]
+- Revert "misc: rtsx: judge ASPM Mode to set PETXCFG Reg" (Justin M. Forbes)
+- Config updates for 6.5.3 (Justin M. Forbes)
+- Fix up buildReqs for UKI (Justin M. Forbes)
+
 * Wed Sep 06 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.2-0]
 - Move squashfs to kernel-modules-core (Justin M. Forbes)
 - Add TPM bug to BugsFixed (Justin M. Forbes)
