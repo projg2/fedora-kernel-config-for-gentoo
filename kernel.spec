@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.5.2
-%define specversion 6.5.2
+%define specrpmversion 6.5.3
+%define specversion 6.5.3
 %define patchversion 6.5
-%define pkgrelease 301
+%define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.5.2
+%define tarfile_release 6.5.3
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 301%{?buildid}%{?dist}
+%define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.5.2
+%define kabiversion 6.5.3
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3702,10 +3702,11 @@ fi\
 #
 #
 %changelog
-* Mon Sep 11 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.2-301]
+* Wed Sep 13 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.3-0]
 - Revert "misc: rtsx: judge ASPM Mode to set PETXCFG Reg" (Justin M. Forbes)
 - Config updates for 6.5.3 (Justin M. Forbes)
 - Fix up buildReqs for UKI (Justin M. Forbes)
+- Linux v6.5.3
 
 * Wed Sep 06 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.2-0]
 - Move squashfs to kernel-modules-core (Justin M. Forbes)
