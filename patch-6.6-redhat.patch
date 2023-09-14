@@ -3126,7 +3126,7 @@ index 000000000000..616692b1ac11
 +
 +#endif /* __RH_MESSAGES_H */
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 34a5386d444a..6d8ea13fc608 100644
+index de499dce5265..e3cee099f90d 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -23,6 +23,7 @@
@@ -3137,7 +3137,7 @@ index 34a5386d444a..6d8ea13fc608 100644
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -2068,6 +2069,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2077,6 +2078,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -3150,7 +3150,7 @@ index 34a5386d444a..6d8ea13fc608 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2128,6 +2135,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2137,6 +2144,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
