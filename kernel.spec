@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.5.3
-%define specversion 6.5.3
+%define specrpmversion 6.5.4
+%define specversion 6.5.4
 %define patchversion 6.5
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.5.3
+%define tarfile_release 6.5.4
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.5.3
+%define kabiversion 6.5.4
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3702,6 +3702,13 @@ fi\
 #
 #
 %changelog
+* Tue Sep 19 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.4-0]
+- Add F38 and F37 as release targets (Justin M. Forbes)
+- Add NFS bug fix for 6.5.4 (Justin M. Forbes)
+- selinux: fix handling of empty opts in selinux_fs_context_submount() (Ondrej Mosnacek)
+- Turn off appletalk for fedora (Justin M. Forbes)
+- Linux v6.5.4
+
 * Wed Sep 13 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.3-0]
 - Revert "misc: rtsx: judge ASPM Mode to set PETXCFG Reg" (Justin M. Forbes)
 - Config updates for 6.5.3 (Justin M. Forbes)
