@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc2.20230919git2cf0f7156238.21
+%define pkgrelease 0.rc2.20230921git42dc814987c1.22
 %define kversion 6
-%define tarfile_release 6.6-rc2-18-g2cf0f7156238
+%define tarfile_release 6.6-rc2-48-g42dc814987c1
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20230919git2cf0f7156238.21%{?buildid}%{?dist}
+%define specrelease 0.rc2.20230921git42dc814987c1.22%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -3334,7 +3334,7 @@ fi\
 %endif
 
 %if %{with_debug} && %{with_arm64_16k}
-%kernel_variant_preun 16k-debug
+%kernel_variant_preun -v 16k-debug
 %kernel_variant_post -v 16k-debug
 %endif
 
@@ -3694,6 +3694,10 @@ fi\
 #
 #
 %changelog
+* Thu Sep 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.42dc814987c1.22]
+- redhat: spec: Fix typo for kernel_variant_preun for 16k-debug flavor (Neal Gompa)
+- Linux v6.6.0-0.rc2.42dc814987c1
+
 * Tue Sep 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.2cf0f7156238.21]
 - Linux v6.6.0-0.rc2.2cf0f7156238
 
