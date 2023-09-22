@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc2.20230921git42dc814987c1.22
+%define pkgrelease 0.rc2.20230922git27bbf45eae9c.23
 %define kversion 6
-%define tarfile_release 6.6-rc2-48-g42dc814987c1
+%define tarfile_release 6.6-rc2-244-g27bbf45eae9c
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20230921git42dc814987c1.22%{?buildid}%{?dist}
+%define specrelease 0.rc2.20230922git27bbf45eae9c.23%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -193,6 +193,8 @@ Summary: The Linux kernel
 #
 # standard kernel
 %define with_up        %{?_without_up:        0} %{?!_without_up:        1}
+# build the base variants
+%define with_base      %{?_without_base:      0} %{?!_without_base:      1}
 # build also debug variants
 %define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
 # kernel-zfcpdump (s390 specific kernel for zfcpdump)
@@ -205,7 +207,7 @@ Summary: The Linux kernel
 %define with_realtime  %{?_with_realtime:     1} %{?!_with_realtime:     0}
 
 # Supported variants
-#            (base)    with_debug    with_gcov
+#            with_base with_debug    with_gcov
 # up         X         X             X
 # zfcpdump   X                       X
 # arm64_16k  X         X             X
@@ -399,6 +401,7 @@ Summary: The Linux kernel
 
 # if requested, only build debug kernel
 %if %{with_dbgonly}
+%define with_base 0
 %define with_vdso_install 0
 %define with_perf 0
 %define with_tools 0
@@ -606,22 +609,22 @@ Summary: The Linux kernel
 %endif
 
 # short-hand for "are we building base/non-debug variants of ...?"
-%if %{with_up} && !%{with_dbgonly}
+%if %{with_up} && %{with_base}
 %define with_up_base 1
 %else
 %define with_up_base 0
 %endif
-%if %{with_realtime} && !%{with_dbgonly}
+%if %{with_realtime} && %{with_base}
 %define with_realtime_base 1
 %else
 %define with_realtime_base 0
 %endif
-%if %{with_arm64_16k} && !%{with_dbgonly}
+%if %{with_arm64_16k} && %{with_base}
 %define with_arm64_16k_base 1
 %else
 %define with_arm64_16k_base 0
 %endif
-%if %{with_arm64_64k} && !%{with_dbgonly}
+%if %{with_arm64_64k} && %{with_base}
 %define with_arm64_64k_base 1
 %else
 %define with_arm64_64k_base 0
@@ -3694,6 +3697,11 @@ fi\
 #
 #
 %changelog
+* Fri Sep 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.27bbf45eae9c.23]
+- gitlab-ci: use --with debug/base to select kernel variants (Michael Hofmann)
+- kernel.spec: add rpmbuild --without base option (Michael Hofmann)
+- Linux v6.6.0-0.rc2.27bbf45eae9c
+
 * Thu Sep 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.42dc814987c1.22]
 - redhat: spec: Fix typo for kernel_variant_preun for 16k-debug flavor (Neal Gompa)
 - Linux v6.6.0-0.rc2.42dc814987c1
