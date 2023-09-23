@@ -16,6 +16,7 @@
  drivers/hid/hid-rmi.c                              |  66 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
+ drivers/iommu/apple-dart.c                         |   3 +-
  drivers/iommu/iommu.c                              |  22 ++++
  drivers/misc/cardreader/rts5227.c                  |   2 +-
  drivers/misc/cardreader/rts5228.c                  |  18 +++
@@ -29,21 +30,24 @@
  drivers/pci/quirks.c                               |  24 ++++
  drivers/scsi/sd.c                                  |  10 ++
  drivers/usb/core/hub.c                             |   7 ++
+ fs/btrfs/space-info.c                              |  17 +++
+ fs/btrfs/super.c                                   |   3 +-
+ include/linux/atomic/atomic-arch-fallback.h        |  10 +-
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  kernel/module/signing.c                            |   9 +-
+ scripts/atomic/gen-atomic-fallback.sh              |   2 +-
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- security/selinux/hooks.c                           |  10 +-
- 42 files changed, 580 insertions(+), 192 deletions(-)
+ 46 files changed, 594 insertions(+), 203 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index beddccac3283..b7f8a65852ca 100644
+index 7545d2b0e7b7..fe35765f10c9 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -242,7 +246,7 @@ index 87e385542576..7e9de6e3eb9f 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 06aec35f88f2..50428bd0fa12 100644
+index a6212f6d3796..1bd84617d751 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -729,6 +729,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -913,6 +917,20 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index 8af64b57f048..f4d880408254 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -671,8 +671,7 @@ static int apple_dart_attach_dev(struct iommu_domain *domain,
+ 		return ret;
+ 
+ 	switch (domain->type) {
+-	case IOMMU_DOMAIN_DMA:
+-	case IOMMU_DOMAIN_UNMANAGED:
++	default:
+ 		ret = apple_dart_domain_add_streams(dart_domain, cfg);
+ 		if (ret)
+ 			return ret;
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
 index cabeb5bd3e41..25ef4e9cc34a 100644
 --- a/drivers/iommu/iommu.c
@@ -1122,7 +1140,7 @@ index a3f4b52bb159..32b7783e9d4f 100644
  	/* No CD interrupt if probing driver with card inserted.
  	 * So we need to initialize pcr->card_exist here.
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index f3a01b79148c..9a1a74d183ce 100644
+index 21783aa2ee8e..f2f9bdb3e0c8 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1338,6 +1356,94 @@ index 26a27ff50408..e1050b7dd63d 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/btrfs/space-info.c b/fs/btrfs/space-info.c
+index ba5322fe34f5..35d084c52f2d 100644
+--- a/fs/btrfs/space-info.c
++++ b/fs/btrfs/space-info.c
+@@ -365,6 +365,23 @@ static u64 calc_available_free_space(struct btrfs_fs_info *fs_info,
+ 	factor = btrfs_bg_type_to_factor(profile);
+ 	avail = div_u64(avail, factor);
+ 
++	/*
++	 * Since data allocations immediately use block groups as part of the
++	 * reservation, because we assume that data reservations will == actual
++	 * usage, we could potentially overcommit and then immediately have that
++	 * available space used by a data allocation, which could put us in a
++	 * bind when we get close to filling the file system.
++	 *
++	 * To handle this simply remove 1G (which is our current maximum chunk
++	 * allocation size) from the available space.  If we are relatively
++	 * empty this won't affect our ability to overcommit much, and if we're
++	 * very close to full it'll keep us from getting into a position where
++	 * we've given ourselves very little metadata wiggle room.
++	 */
++	if (avail < SZ_1G)
++		return 0;
++	avail -= SZ_1G;
++
+ 	/*
+ 	 * If we aren't flushing all things, let us overcommit up to
+ 	 * 1/2th of the space. If we can flush, don't let us overcommit
+diff --git a/fs/btrfs/super.c b/fs/btrfs/super.c
+index f1dd172d8d5b..784640ce7857 100644
+--- a/fs/btrfs/super.c
++++ b/fs/btrfs/super.c
+@@ -2111,7 +2111,8 @@ static int btrfs_statfs(struct dentry *dentry, struct kstatfs *buf)
+ 	 * calculated f_bavail.
+ 	 */
+ 	if (!mixed && block_rsv->space_info->full &&
+-	    total_free_meta - thresh < block_rsv->size)
++	    (total_free_meta < thresh ||
++	     total_free_meta - thresh < block_rsv->size))
+ 		buf->f_bavail = 0;
+ 
+ 	buf->f_type = BTRFS_SUPER_MAGIC;
+diff --git a/include/linux/atomic/atomic-arch-fallback.h b/include/linux/atomic/atomic-arch-fallback.h
+index 18f5744dfb5d..b83ef19da13d 100644
+--- a/include/linux/atomic/atomic-arch-fallback.h
++++ b/include/linux/atomic/atomic-arch-fallback.h
+@@ -459,8 +459,6 @@ raw_atomic_read_acquire(const atomic_t *v)
+ {
+ #if defined(arch_atomic_read_acquire)
+ 	return arch_atomic_read_acquire(v);
+-#elif defined(arch_atomic_read)
+-	return arch_atomic_read(v);
+ #else
+ 	int ret;
+ 
+@@ -508,8 +506,6 @@ raw_atomic_set_release(atomic_t *v, int i)
+ {
+ #if defined(arch_atomic_set_release)
+ 	arch_atomic_set_release(v, i);
+-#elif defined(arch_atomic_set)
+-	arch_atomic_set(v, i);
+ #else
+ 	if (__native_word(atomic_t)) {
+ 		smp_store_release(&(v)->counter, i);
+@@ -2575,8 +2571,6 @@ raw_atomic64_read_acquire(const atomic64_t *v)
+ {
+ #if defined(arch_atomic64_read_acquire)
+ 	return arch_atomic64_read_acquire(v);
+-#elif defined(arch_atomic64_read)
+-	return arch_atomic64_read(v);
+ #else
+ 	s64 ret;
+ 
+@@ -2624,8 +2618,6 @@ raw_atomic64_set_release(atomic64_t *v, s64 i)
+ {
+ #if defined(arch_atomic64_set_release)
+ 	arch_atomic64_set_release(v, i);
+-#elif defined(arch_atomic64_set)
+-	arch_atomic64_set(v, i);
+ #else
+ 	if (__native_word(atomic64_t)) {
+ 		smp_store_release(&(v)->counter, i);
+@@ -4657,4 +4649,4 @@ raw_atomic64_dec_if_positive(atomic64_t *v)
+ }
+ 
+ #endif /* _LINUX_ATOMIC_FALLBACK_H */
+-// 202b45c7db600ce36198eb1f1fc2c2d5268ace2d
++// 2fdd6702823fa842f9cea57a002e6e4476ae780c
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index ab088c662e88..f974f9d9a7c5 100644
 --- a/include/linux/efi.h
@@ -1477,6 +1583,19 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
  
  int module_sig_check(struct load_info *info, int flags)
+diff --git a/scripts/atomic/gen-atomic-fallback.sh b/scripts/atomic/gen-atomic-fallback.sh
+index c0c8a85d7c81..a45154cefa48 100755
+--- a/scripts/atomic/gen-atomic-fallback.sh
++++ b/scripts/atomic/gen-atomic-fallback.sh
+@@ -102,7 +102,7 @@ gen_proto_order_variant()
+ 	fi
+ 
+ 	# Allow ACQUIRE/RELEASE/RELAXED ops to be defined in terms of FULL ops
+-	if [ ! -z "${order}" ]; then
++	if [ ! -z "${order}" ] && ! meta_is_implicitly_relaxed "${meta}"; then
+ 		printf "#elif defined(arch_${basename})\n"
+ 		printf "\t${retstmt}arch_${basename}(${args});\n"
+ 	fi
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index a70d43723146..56d06b04f752 100755
 --- a/scripts/tags.sh
@@ -1573,30 +1692,3 @@ index 549104a447e3..73670798f075 100644
  #ifdef CONFIG_PERF_EVENTS
  /**
   * security_perf_event_open() - Check if a perf event open is allowed
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index afd663744041..5c16fe737a27 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -2748,14 +2748,20 @@ static int selinux_umount(struct vfsmount *mnt, int flags)
- static int selinux_fs_context_submount(struct fs_context *fc,
- 				   struct super_block *reference)
- {
--	const struct superblock_security_struct *sbsec;
-+	const struct superblock_security_struct *sbsec = selinux_superblock(reference);
- 	struct selinux_mnt_opts *opts;
- 
-+	/*
-+	 * Ensure that fc->security remains NULL when no options are set
-+	 * as expected by selinux_set_mnt_opts().
-+	 */
-+	if (!(sbsec->flags & (FSCONTEXT_MNT|CONTEXT_MNT|DEFCONTEXT_MNT)))
-+		return 0;
-+
- 	opts = kzalloc(sizeof(*opts), GFP_KERNEL);
- 	if (!opts)
- 		return -ENOMEM;
- 
--	sbsec = selinux_superblock(reference);
- 	if (sbsec->flags & FSCONTEXT_MNT)
- 		opts->fscontext_sid = sbsec->sid;
- 	if (sbsec->flags & CONTEXT_MNT)

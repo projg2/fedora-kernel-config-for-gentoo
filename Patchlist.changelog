@@ -1,3 +1,15 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/fe8fa52d7059d2dd7b171a0ad1a53bd55c7d449a
+ fe8fa52d7059d2dd7b171a0ad1a53bd55c7d449a iommu/apple-dart: Handle DMA_FQ domains in attach_dev()
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d08eefa0932515ada7d972c51b99153a7ea3d6ac
+ d08eefa0932515ada7d972c51b99153a7ea3d6ac locking/atomic: scripts: fix fallback ifdeffery
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d39b077dee33176ab97b22593fc8ae8a130ee768
+ d39b077dee33176ab97b22593fc8ae8a130ee768 btrfs: adjust overcommit logic when very close to full
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/a1c2565138b048b69ec731e22118ec1837fa5ceb
+ a1c2565138b048b69ec731e22118ec1837fa5ceb btrfs: properly report 0 avail for very full file systems
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/60528063540aabceb7c4d79c7938d229ed5efc4f
  60528063540aabceb7c4d79c7938d229ed5efc4f selinux: fix handling of empty opts in selinux_fs_context_submount()
 
