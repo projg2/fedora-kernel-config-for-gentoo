@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc2.20230922git27bbf45eae9c.23
+%define pkgrelease 0.rc3.26
 %define kversion 6
-%define tarfile_release 6.6-rc2-244-g27bbf45eae9c
+%define tarfile_release 6.6-rc3
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20230922git27bbf45eae9c.23%{?buildid}%{?dist}
+%define specrelease 0.rc3.26%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -3697,6 +3697,16 @@ fi\
 #
 #
 %changelog
+* Mon Sep 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.26]
+- Change default pending for XFS_ONLINE_SCRUB_STATSas it now selects XFS_DEBUG (Justin M. Forbes)
+- Linux v6.6.0-0.rc3
+
+* Sun Sep 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.3aba70aed91f.25]
+- Linux v6.6.0-0.rc2.3aba70aed91f
+
+* Sat Sep 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.d90b0276af8f.24]
+- Linux v6.6.0-0.rc2.d90b0276af8f
+
 * Fri Sep 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.27bbf45eae9c.23]
 - gitlab-ci: use --with debug/base to select kernel variants (Michael Hofmann)
 - kernel.spec: add rpmbuild --without base option (Michael Hofmann)

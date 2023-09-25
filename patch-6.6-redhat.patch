@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 57698d048e2c..019e11e44f6c 100644
+index 3de08c780c74..763471c11b7c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -246,7 +246,7 @@ index 382d4e6b848d..e73c87159175 100644
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
  		cpu_parse_early_param();
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index b9145a63da77..0fee4777b66f 100644
+index b098b1fa2470..6b936d786590 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -265,7 +265,7 @@ index b9145a63da77..0fee4777b66f 100644
  
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -799,6 +801,49 @@ static void __init early_reserve_memory(void)
+@@ -795,6 +797,49 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
  
@@ -315,7 +315,7 @@ index b9145a63da77..0fee4777b66f 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -1032,6 +1077,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -1028,6 +1073,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -329,7 +329,7 @@ index b9145a63da77..0fee4777b66f 100644
  	reserve_ibft_region();
  	dmi_setup();
  
-@@ -1193,19 +1245,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1189,19 +1241,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -350,7 +350,7 @@ index b9145a63da77..0fee4777b66f 100644
  
  	reserve_initrd();
  
-@@ -1318,6 +1358,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1314,6 +1354,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
  
@@ -544,7 +544,7 @@ index e489fefd23da..f2dfae764fb5 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 1599f1176842..a1fc17f1e0cc 100644
+index ce20a60676f0..3cbe5c720e5c 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -555,7 +555,7 @@ index 1599f1176842..a1fc17f1e0cc 100644
  
  #include <asm/early_ioremap.h>
  
-@@ -953,40 +954,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -979,40 +980,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
  
