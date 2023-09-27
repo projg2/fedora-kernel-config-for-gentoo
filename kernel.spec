@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc3.27
+%define pkgrelease 0.rc3.20230927git0e945134b680.28
 %define kversion 6
-%define tarfile_release 6.6-rc3
+%define tarfile_release 6.6-rc3-38-g0e945134b680
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.27%{?buildid}%{?dist}
+%define specrelease 0.rc3.20230927git0e945134b680.28%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -187,9 +187,12 @@ Summary: The Linux kernel
 # should not be exported to RPM provides
 %global __provides_exclude_from ^%{_libexecdir}/kselftests
 
-# The following build options are enabled by default, but may become disabled
-# by later architecture-specific checks. These can also be disabled by using
-# --without <opt> in the rpmbuild command, or by forcing these values to 0.
+# The following build options are (mostly) enabled by default, but may become
+# enabled/disabled by later architecture-specific checks.
+# Where disabled by default, they can be enabled by using --with <opt> in the
+# rpmbuild command, or by forcing these values to 1.
+# Where enabled by default, they can be disabled by using --without <opt> in
+# the rpmbuild command, or by forcing these values to 0.
 #
 # standard kernel
 %define with_up        %{?_without_up:        0} %{?!_without_up:        1}
@@ -200,7 +203,7 @@ Summary: The Linux kernel
 # kernel-zfcpdump (s390 specific kernel for zfcpdump)
 %define with_zfcpdump  %{?_without_zfcpdump:  0} %{?!_without_zfcpdump:  1}
 # kernel-16k (aarch64 kernel with 16K page_size)
-%define with_arm64_16k %{?_without_arm64_16k: 0} %{?!_without_arm64_16k: 1}
+%define with_arm64_16k %{?_with_arm64_16k:    1} %{?!_with_arm64_16k:    0}
 # kernel-64k (aarch64 kernel with 64K page_size)
 %define with_arm64_64k %{?_without_arm64_64k: 0} %{?!_without_arm64_64k: 1}
 # kernel-rt (x86_64 and aarch64 only PREEMPT_RT enabled kernel)
@@ -300,15 +303,10 @@ Summary: The Linux kernel
 %define with_perf 0
 %define with_tools 0
 %define with_bpftool 0
-# selftests turns on bpftool
-%define with_selftests 0
 # No realtime fedora variants
 %define with_realtime 0
 %define with_arm64_64k 0
 %endif
-
-# No arm64-16k flavor for now
-%define with_arm64_16k 0
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -448,9 +446,9 @@ Summary: The Linux kernel
 %define use_vdso 1
 %endif
 
-# selftests require bpftool to be built
-%if %{with_selftests}
-%define with_bpftool 1
+# selftests require bpftool to be built.  If bpftools is disabled, then disable selftests
+%if %{with_bpftool} == 0
+%define with_selftests 0
 %endif
 
 %ifnarch noarch
@@ -2719,12 +2717,14 @@ if [ -f $DevelDir/vmlinux.h ]; then
   RPM_VMLINUX_H=$DevelDir/vmlinux.h
 fi
 
+%if %{with_bpftool}
 %global bpftool_make \
   %{__make} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_LDFLAGS="%{__global_ldflags}" DESTDIR=$RPM_BUILD_ROOT %{?make_opts} VMLINUX_H="${RPM_VMLINUX_H}" V=1
-%if %{with_bpftool}
 pushd tools/bpf/bpftool
 %{bpftool_make}
 popd
+%else
+echo "bpftools disabled ... disabling selftests"
 %endif
 
 %if %{with_selftests}
@@ -3697,6 +3697,17 @@ fi\
 #
 #
 %changelog
+* Wed Sep 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.0e945134b680.28]
+- kernel.spec: adjust build option comment (Michael Hofmann)
+- kernel.spec: allow to enable arm64_16k variant (Michael Hofmann)
+- gitlab-ci: enable build-only pipelines for Rawhide/16k/aarch64 (Michael Hofmann)
+- kernel.spec.template: Fix --without bpftool (Prarit Bhargava)
+- redhat/configs: NXP BBNSM Power Key Driver (Steve Best)
+- redhat/self-test: Update data for cross compile fields (Prarit Bhargava)
+- redhat/Makefile.cross: Add message for disabled subpackages (Prarit Bhargava)
+- redhat/Makefile.cross: Update cross targets with disabled subpackages (Prarit Bhargava)
+- Linux v6.6.0-0.rc3.0e945134b680
+
 * Tue Sep 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.27]
 - Remove XFS_ASSERT_FATAL from pending-fedora (Justin M. Forbes)
 
