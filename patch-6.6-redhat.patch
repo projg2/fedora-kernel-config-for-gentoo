@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 3de08c780c74..763471c11b7c 100644
+index 373649c7374e..6c81485add7c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -234,7 +234,7 @@ index de6ad0fb2328..5cc2758be027 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 382d4e6b848d..e73c87159175 100644
+index 4e5ffc8b0e46..b6f895184ab0 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1601,6 +1601,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -1645,7 +1645,7 @@ index 675332e49a7b..4a3cbddacef1 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index c92a317ba547..8fa8c1d9c9a5 100644
+index 83b6a3f3863b..457285298ac7 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
@@ -1663,7 +1663,7 @@ index c92a317ba547..8fa8c1d9c9a5 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -3949,6 +3957,8 @@ static int __init init_sd(void)
+@@ -4012,6 +4020,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
@@ -3126,7 +3126,7 @@ index 000000000000..616692b1ac11
 +
 +#endif /* __RH_MESSAGES_H */
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index de499dce5265..e3cee099f90d 100644
+index b3dee80497cb..3715db3f99d4 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -23,6 +23,7 @@
@@ -3137,7 +3137,7 @@ index de499dce5265..e3cee099f90d 100644
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -2077,6 +2078,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2088,6 +2089,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -3150,7 +3150,7 @@ index de499dce5265..e3cee099f90d 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2137,6 +2144,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2148,6 +2155,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);

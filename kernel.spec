@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc3.20230929git9ed22ae6be81.30
+%define pkgrelease 0.rc4.33
 %define kversion 6
-%define tarfile_release 6.6-rc3-55-g9ed22ae6be81
+%define tarfile_release 6.6-rc4
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20230929git9ed22ae6be81.30%{?buildid}%{?dist}
+%define specrelease 0.rc4.33%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -3697,6 +3697,16 @@ fi\
 #
 #
 %changelog
+* Mon Oct 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.33]
+- Linux v6.6.0-0.rc4
+
+* Sun Oct 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.e402b08634b3.32]
+- Linux v6.6.0-0.rc3.e402b08634b3
+
+* Sat Sep 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.9f3ebbef746f.31]
+- fedora: Switch TI_SCI_CLK and TI_SCI_PM_DOMAINS symbols to built-in (Javier Martinez Canillas)
+- Linux v6.6.0-0.rc3.9f3ebbef746f
+
 * Fri Sep 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.9ed22ae6be81.30]
 - Linux v6.6.0-0.rc3.9ed22ae6be81
 
