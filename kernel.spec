@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc4.20231003gitce36c8b14987.34
+%define pkgrelease 0.rc4.20231004gitcbf3a2cb156a.35
 %define kversion 6
-%define tarfile_release 6.6-rc4-12-gce36c8b14987
+%define tarfile_release 6.6-rc4-29-gcbf3a2cb156a
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20231003gitce36c8b14987.34%{?buildid}%{?dist}
+%define specrelease 0.rc4.20231004gitcbf3a2cb156a.35%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -3697,6 +3697,9 @@ fi\
 #
 #
 %changelog
+* Wed Oct 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.cbf3a2cb156a.35]
+- Linux v6.6.0-0.rc4.cbf3a2cb156a
+
 * Tue Oct 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.ce36c8b14987.34]
 - common: aarch64: enable NXP Flex SPI (Peter Robinson)
 - Linux v6.6.0-0.rc4.ce36c8b14987
