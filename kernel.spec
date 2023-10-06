@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.5.5
-%define specversion 6.5.5
+%define specrpmversion 6.5.6
+%define specversion 6.5.6
 %define patchversion 6.5
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.5.5
+%define tarfile_release 6.5.6
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.5.5
+%define kabiversion 6.5.6
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3702,6 +3702,20 @@ fi\
 #
 #
 %changelog
+* Fri Oct 06 2023 Augusto Caringi <acaringi@redhat.com> [6.5.6-0]
+- power: supply: core: Use blocking_notifier_call_chain to avoid RCU complaint (Kai-Heng Feng)
+- Revert "Add linux-next specific files for 20231004" (Justin M. Forbes)
+- redhat/configs: enable missing Kconfig options for Qualcomm RideSX4 (Brian Masney)
+- add a couple of CVEs to BugsFixed (Justin M. Forbes)
+- Add another F39 FE bug to BugsFixed (Justin M. Forbes)
+- Add linux-next specific files for 20231004 (Stephen Rothwell)
+- common: aarch64: enable NXP Flex SPI (Peter Robinson)
+- fedora: Switch TI_SCI_CLK and TI_SCI_PM_DOMAINS symbols to built-in (Javier Martinez Canillas)
+- Add bug for amdgpu to BugsFixed for 6.5.6 (Justin M. Forbes)
+- drm/amdgpu: set completion status as preempted for the resubmission (Jiadong Zhu)
+- Add CVE-2023-42756 to BugsFixed for 6.5.6 (Justin M. Forbes)
+- Linux v6.5.6
+
 * Sat Sep 23 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.5-0]
 - iommu/apple-dart: Handle DMA_FQ domains in attach_dev() (Hector Martin)
 - Note fix for atomic locking in BugsFixed (Justin M. Forbes)
