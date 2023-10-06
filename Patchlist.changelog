@@ -1,3 +1,15 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9ed1817997b0d2f283275cce33cd7043b220d990
+ 9ed1817997b0d2f283275cce33cd7043b220d990 power: supply: core: Use blocking_notifier_call_chain to avoid RCU complaint
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/a3359bb88c8debcf1ed9aeeab15090cff336c8fd
+ a3359bb88c8debcf1ed9aeeab15090cff336c8fd Revert "Add linux-next specific files for 20231004"
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/4ef04c8ed25522fe1e4f917fe557716145c7361d
+ 4ef04c8ed25522fe1e4f917fe557716145c7361d Add linux-next specific files for 20231004
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/afdab9b20ab7455f752527125b57c92d24601c6e
+ afdab9b20ab7455f752527125b57c92d24601c6e drm/amdgpu: set completion status as preempted for the resubmission
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/fe8fa52d7059d2dd7b171a0ad1a53bd55c7d449a
  fe8fa52d7059d2dd7b171a0ad1a53bd55c7d449a iommu/apple-dart: Handle DMA_FQ domains in attach_dev()
 
