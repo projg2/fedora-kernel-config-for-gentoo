@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc4.20231005git3006adf3be79.36
+%define pkgrelease 0.rc5.40
 %define kversion 6
-%define tarfile_release 6.6-rc4-37-g3006adf3be79
+%define tarfile_release 6.6-rc5
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20231005git3006adf3be79.36%{?buildid}%{?dist}
+%define specrelease 0.rc5.40%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -470,6 +470,8 @@ Summary: The Linux kernel
 %endif
 %endif
 
+%define all_configs %{name}-%{specrpmversion}-*.config
+
 # don't build noarch kernels or headers (duh)
 %ifarch noarch
 %define with_up 0
@@ -481,7 +483,6 @@ Summary: The Linux kernel
 %define with_bpftool 0
 %define with_selftests 0
 %define with_debug 0
-%define all_arch_configs %{name}-%{specrpmversion}-*.config
 %endif
 
 # sparse blows up on ppc
@@ -510,13 +511,11 @@ Summary: The Linux kernel
 %ifarch i686
 %define asmarch x86
 %define hdrarch i386
-%define all_arch_configs %{name}-%{specrpmversion}-i?86*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
 %ifarch x86_64
 %define asmarch x86
-%define all_arch_configs %{name}-%{specrpmversion}-x86_64*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
@@ -527,19 +526,16 @@ Summary: The Linux kernel
 %define kernel_image vmlinux
 %define kernel_image_elf 1
 %define use_vdso 0
-%define all_arch_configs %{name}-%{specrpmversion}-ppc64le*.config
 %endif
 
 %ifarch s390x
 %define asmarch s390
 %define hdrarch s390
-%define all_arch_configs %{name}-%{specrpmversion}-s390x.config
 %define kernel_image arch/s390/boot/bzImage
 %define vmlinux_decompressor arch/s390/boot/vmlinux
 %endif
 
 %ifarch aarch64
-%define all_arch_configs %{name}-%{specrpmversion}-aarch64*.config
 %define asmarch arm64
 %define hdrarch arm64
 %define make_target vmlinuz.efi
@@ -912,7 +908,14 @@ Source65: filter-s390x.sh.fedora
 Source66: filter-modules.sh.fedora
 %endif
 
-Source75: partial-kgcov-snip.config
+Source70: partial-kgcov-snip.config
+Source71: partial-kgcov-debug-snip.config
+Source72: partial-clang-snip.config
+Source73: partial-clang-debug-snip.config
+Source74: partial-clang_lto-x86_64-snip.config
+Source75: partial-clang_lto-x86_64-debug-snip.config
+Source76: partial-clang_lto-aarch64-snip.config
+Source77: partial-clang_lto-aarch64-debug-snip.config
 Source80: generate_all_configs.sh
 Source81: process_configs.sh
 
@@ -1768,30 +1771,56 @@ cp $RPM_SOURCE_DIR/%{name}-*.config .
 cp %{SOURCE80} .
 # merge.py
 cp %{SOURCE3000} .
-# kernel-local
-cp %{SOURCE3001} .
+# kernel-local - rename and copy for partial snippet config process
+cp %{SOURCE3001} partial-kernel-local-snip.config
+cp %{SOURCE3001} partial-kernel-local-debug-snip.config
 FLAVOR=%{primary_target} SPECPACKAGE_NAME=%{name} SPECVERSION=%{specversion} SPECRPMVERSION=%{specrpmversion} ./generate_all_configs.sh %{debugbuildsenabled}
+
+# Collect custom defined config options
+PARTIAL_CONFIGS=""
+%if %{with_gcov}
+PARTIAL_CONFIGS="$PARTIAL_CONFIGS %{SOURCE70} %{SOURCE71}"
+%endif
+%if %{with toolchain_clang}
+PARTIAL_CONFIGS="$PARTIAL_CONFIGS %{SOURCE72} %{SOURCE73}"
+%endif
+%if %{with clang_lto}
+PARTIAL_CONFIGS="$PARTIAL_CONFIGS %{SOURCE74} %{SOURCE75} %{SOURCE76} %{SOURCE77}"
+%endif
+PARTIAL_CONFIGS="$PARTIAL_CONFIGS partial-kernel-local-snip.config partial-kernel-local-debug-snip.config"
+
+GetArch()
+{
+  case "$1" in
+  *aarch64*) echo "aarch64" ;;
+  *ppc64le*) echo "ppc64le" ;;
+  *s390x*) echo "s390x" ;;
+  *x86_64*) echo "x86_64" ;;
+  # no arch, apply everywhere
+  *) echo "" ;;
+  esac
+}
 
 # Merge in any user-provided local config option changes
 %ifnarch %nobuildarches
-for i in %{all_arch_configs}
+for i in %{all_configs}
 do
-  mv $i $i.tmp
-  ./merge.py %{SOURCE3001} $i.tmp > $i
-%if %{with_gcov}
-  echo "Merging with gcov options"
-  cat %{SOURCE75}
-  mv $i $i.tmp
-  ./merge.py %{SOURCE75} $i.tmp > $i
-%endif
-  rm $i.tmp
-done
-%endif
+  kern_arch="$(GetArch $i)"
+  kern_debug="$(echo $i | grep -q debug && echo "debug" || echo "")"
 
-%if %{with clang_lto}
-for i in *aarch64*.config *x86_64*.config; do
-  sed -i 's/# CONFIG_LTO_CLANG_THIN is not set/CONFIG_LTO_CLANG_THIN=y/' $i
-  sed -i 's/CONFIG_LTO_NONE=y/# CONFIG_LTO_NONE is not set/' $i
+  for j in $PARTIAL_CONFIGS
+  do
+    part_arch="$(GetArch $j)"
+    part_debug="$(echo $j | grep -q debug && echo "debug" || echo "")"
+
+    # empty arch means apply to all arches
+    if [ "$part_arch" == "" -o "$part_arch" == "$kern_arch" ] && [ "$part_debug" == "$kern_debug" ]
+    then
+      mv $i $i.tmp
+      ./merge.py $j $i.tmp > $i
+    fi
+  done
+  rm -f $i.tmp
 done
 %endif
 
@@ -3697,6 +3726,24 @@ fi\
 #
 #
 %changelog
+* Mon Oct 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc5.40]
+- CI: Remove unused kpet_tree_family (Nikolai Kondrashov)
+- Linux v6.6.0-0.rc5
+
+* Sun Oct 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.b9ddbb0cde2a.39]
+- Linux v6.6.0-0.rc4.b9ddbb0cde2a
+
+* Sat Oct 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.82714078aee4.38]
+- Linux v6.6.0-0.rc4.82714078aee4
+
+* Fri Oct 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.b78b18fb8ee1.37]
+- Add clang config framework (Don Zickus)
+- Apply partial snippet configs to all configs (Don Zickus)
+- Remove unpackaged kgcov config files (Don Zickus)
+- redhat/configs: enable missing Kconfig options for Qualcomm RideSX4 (Brian Masney)
+- enable CONFIG_ADDRESS_MASKING for x86_64 (Chris von Recklinghausen)
+- Linux v6.6.0-0.rc4.b78b18fb8ee1
+
 * Thu Oct 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.3006adf3be79.36]
 - Linux v6.6.0-0.rc4.3006adf3be79
 

@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 373649c7374e..6c81485add7c 100644
+index 88ebf6547964..347ae064ce5a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -174,10 +174,10 @@ index 9557808e8937..fafcbf82c9f2 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index b10515c0200b..6e1ed0068863 100644
+index 78f20e632712..70e11a7f350f 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1295,7 +1295,7 @@ endchoice
+@@ -1308,7 +1308,7 @@ endchoice
  
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -1331,7 +1331,7 @@ index f35647c470af..e57357f23306 100644
  {
  }
 diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index a79c110c7e51..cef4feacb300 100644
+index 51ec9e7e784f..8c3713edc7a6 100644
 --- a/drivers/pci/pci-driver.c
 +++ b/drivers/pci/pci-driver.c
 @@ -19,6 +19,7 @@
