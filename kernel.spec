@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc5.40
+%define pkgrelease 0.rc5.20231011git1c8b86a3799f.42
 %define kversion 6
-%define tarfile_release 6.6-rc5
+%define tarfile_release 6.6-rc5-55-g1c8b86a3799f
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.40%{?buildid}%{?dist}
+%define specrelease 0.rc5.20231011git1c8b86a3799f.42%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -3726,6 +3726,13 @@ fi\
 #
 #
 %changelog
+* Wed Oct 11 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc5.1c8b86a3799f.42]
+- Linux v6.6.0-0.rc5.1c8b86a3799f
+
+* Tue Oct 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc5.41]
+- redhat/configs: Freescale Layerscape SoC family (Steve Best)
+- Add clang MR/baseline pipelines (Michael Hofmann)
+
 * Mon Oct 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc5.40]
 - CI: Remove unused kpet_tree_family (Nikolai Kondrashov)
 - Linux v6.6.0-0.rc5
