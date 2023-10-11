@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.5.6
-%define specversion 6.5.6
+%define specrpmversion 6.5.7
+%define specversion 6.5.7
 %define patchversion 6.5
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.5.6
+%define tarfile_release 6.5.7
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.5.6
+%define kabiversion 6.5.7
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3702,6 +3702,10 @@ fi\
 #
 #
 %changelog
+* Tue Oct 10 2023 Augusto Caringi <acaringi@redhat.com> [6.5.7-0]
+- common: aarch64: enable CONFIG_ARM64_ERRATUM_2966298 (Augusto Caringi)
+- Linux v6.5.7
+
 * Fri Oct 06 2023 Augusto Caringi <acaringi@redhat.com> [6.5.6-0]
 - power: supply: core: Use blocking_notifier_call_chain to avoid RCU complaint (Kai-Heng Feng)
 - Revert "Add linux-next specific files for 20231004" (Justin M. Forbes)
