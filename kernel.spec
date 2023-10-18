@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc6.47
+%define pkgrelease 0.rc6.20231018git06dc10eae55b.49
 %define kversion 6
-%define tarfile_release 6.6-rc6
+%define tarfile_release 6.6-rc6-39-g06dc10eae55b
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.47%{?buildid}%{?dist}
+%define specrelease 0.rc6.20231018git06dc10eae55b.49%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -2821,33 +2821,16 @@ find Documentation -type d | xargs chmod u+w
 #
 # Don't sign modules for the zfcpdump variant as it is monolithic.
 
-# TODO - this needs to be fixed in same way as we have it in c9s
 %define __modsign_install_post \
   if [ "%{signmodules}" -eq "1" ]; then \
-    if [ "%{with_up_base}" -ne "0" ]; then \
-      %{modsign_cmd} certs/signing_key.pem.sign certs/signing_key.x509.sign $RPM_BUILD_ROOT/lib/modules/%{KVERREL}/ \
-    fi \
-    if [ "%{with_up}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
-         %{modsign_cmd} certs/signing_key.pem.sign+debug certs/signing_key.x509.sign+debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+debug/ \
-    fi \
-    if [ "%{with_realtime_base}" -ne "0" ]; then \
-       %{modsign_cmd} certs/signing_key.pem.sign+rt certs/signing_key.x509.sign+rt $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+rt/ \
-    fi \
-    if [ "%{with_realtime}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
-         %{modsign_cmd} certs/signing_key.pem.sign+rt-debug certs/signing_key.x509.sign+rt-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+rt-debug/ \
-    fi \
-    if [ "%{with_arm64_16k_base}" -ne "0" ]; then \
-       %{modsign_cmd} certs/signing_key.pem.sign+16k certs/signing_key.x509.sign+16k $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+16k/ \
-    fi \
-    if [ "%{with_arm64_16k}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
-         %{modsign_cmd} certs/signing_key.pem.sign+16k-debug certs/signing_key.x509.sign+16k-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+16k-debug/ \
-    fi \
-    if [ "%{with_arm64_64k_base}" -ne "0" ]; then \
-       %{modsign_cmd} certs/signing_key.pem.sign+64k certs/signing_key.x509.sign+64k $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+64k/ \
-    fi \
-    if [ "%{with_arm64_64k}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
-         %{modsign_cmd} certs/signing_key.pem.sign+64k-debug certs/signing_key.x509.sign+64k-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+64k-debug/ \
-    fi \
+    echo "Signing kernel modules ..." \
+    modules_dirs="$(shopt -s nullglob; echo $RPM_BUILD_ROOT/lib/modules/%{KVERREL}*)" \
+    for modules_dir in $modules_dirs; do \
+        variant_suffix="${modules_dir#$RPM_BUILD_ROOT/lib/modules/%{KVERREL}}" \
+        [ "$variant_suffix" == "+zfcpdump" ] && continue \
+        echo "Signing modules for %{KVERREL}${variant_suffix}" \
+        %{modsign_cmd} certs/signing_key.pem.sign${variant_suffix} certs/signing_key.x509.sign${variant_suffix} $modules_dir/ \
+    done \
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
     echo "Compressing kernel modules ..." \
@@ -3726,6 +3709,21 @@ fi\
 #
 #
 %changelog
+* Wed Oct 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc6.06dc10eae55b.49]
+- Linux v6.6.0-0.rc6.06dc10eae55b
+
+* Tue Oct 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc6.213f891525c2.48]
+- redhat: disable kunit by default (Nico Pache)
+- redhat/configs: enable the AMD_PMF driver for RHEL (David Arcari)
+- Make CONFIG_ADDRESS_MASKING consistent between fedora and rhel (Chris von Recklinghausen)
+- CI: add ark-latest baseline job to tag cki-gating for successful pipelines (Michael Hofmann)
+- CI: provide child pipelines for CKI container image gating (Michael Hofmann)
+- CI: allow to run as child pipeline (Michael Hofmann)
+- CI: provide descriptive pipeline name for scheduled pipelines (Michael Hofmann)
+- CI: use job templates for variant variables (Michael Hofmann)
+- redhat/kernel.spec.template: simplify __modsign_install_post (Jan Stancek)
+- Linux v6.6.0-0.rc6.213f891525c2
+
 * Mon Oct 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc6.47]
 - Linux v6.6.0-0.rc6
 
