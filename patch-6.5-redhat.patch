@@ -42,7 +42,7 @@
  41 files changed, 554 insertions(+), 189 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index f9d5970f3441..e9655d0c31ca 100644
+index a687c9a0646c..82992814939e 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1241,10 +1241,10 @@ index d6535cbb4e05..bcaad1fc5d8d 100644
  	if (err)
  		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 26a27ff50408..e1050b7dd63d 100644
+index f2c561ae4bfe..36805f1c5786 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5805,6 +5805,13 @@ static void hub_event(struct work_struct *work)
+@@ -5824,6 +5824,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
  
