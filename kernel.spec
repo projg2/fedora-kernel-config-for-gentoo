@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc6.20231019gitdd72f9c7e512.50
+%define pkgrelease 0.rc6.20231020gitce55c22ec8b2.51
 %define kversion 6
-%define tarfile_release 6.6-rc6-43-gdd72f9c7e512
+%define tarfile_release 6.6-rc6-182-gce55c22ec8b2
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20231019gitdd72f9c7e512.50%{?buildid}%{?dist}
+%define specrelease 0.rc6.20231020gitce55c22ec8b2.51%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -3709,6 +3709,14 @@ fi\
 #
 #
 %changelog
+* Fri Oct 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc6.ce55c22ec8b2.51]
+- redhat/configs: share CONFIG_ARM64_ERRATUM_2966298 between rhel and fedora (Mark Salter)
+- configs: Remove S390 IOMMU config options that no longer exist (Jerry Snitselaar)
+- redhat: docs: clarify where bugs and issues are created (Scott Weaver)
+- redhat/scripts/rh-dist-git.sh does not take any arguments: fix error message (Denys Vlasenko)
+- Add target_branch for gen_config_patches.sh (Don Zickus)
+- Linux v6.6.0-0.rc6.ce55c22ec8b2
+
 * Thu Oct 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc6.dd72f9c7e512.50]
 - Linux v6.6.0-0.rc6.dd72f9c7e512
 
