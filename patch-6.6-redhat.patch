@@ -120,7 +120,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index a3e52e10840e..329dd7b06695 100644
+index 5fc735c7fed1..46bc07b7a4b5 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -379,10 +379,10 @@ index 6aef1ee5e1bd..8f146b1b4972 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index c2c786eb95ab..4e3aa80cd5cf 100644
+index 1687483ff319..390b67f19181 100644
 --- a/drivers/acpi/irq.c
 +++ b/drivers/acpi/irq.c
-@@ -138,6 +138,7 @@ struct acpi_irq_parse_one_ctx {
+@@ -143,6 +143,7 @@ struct acpi_irq_parse_one_ctx {
  	unsigned int index;
  	unsigned long *res_flags;
  	struct irq_fwspec *fwspec;
@@ -390,7 +390,7 @@ index c2c786eb95ab..4e3aa80cd5cf 100644
  };
  
  /**
-@@ -211,7 +212,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -216,7 +217,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  		return AE_CTRL_TERMINATE;
  	case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
  		eirq = &ares->data.extended_irq;
@@ -400,7 +400,7 @@ index c2c786eb95ab..4e3aa80cd5cf 100644
  			return AE_OK;
  		if (ctx->index >= eirq->interrupt_count) {
  			ctx->index -= eirq->interrupt_count;
-@@ -247,8 +249,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -252,8 +254,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  static int acpi_irq_parse_one(acpi_handle handle, unsigned int index,
  			      struct irq_fwspec *fwspec, unsigned long *flags)
  {
@@ -544,7 +544,7 @@ index e489fefd23da..f2dfae764fb5 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index ce20a60676f0..3cbe5c720e5c 100644
+index 1974f0ad32ba..6ba6391494ec 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -555,7 +555,7 @@ index ce20a60676f0..3cbe5c720e5c 100644
  
  #include <asm/early_ioremap.h>
  
-@@ -979,40 +980,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -983,40 +984,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
  
@@ -1562,7 +1562,7 @@ index e1aa667dae66..32e3b2683f2f 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index c3c1f466fe01..370efec15191 100644
+index 605013d3ee83..59d7ac663316 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 @@ -12617,6 +12617,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
@@ -1594,7 +1594,7 @@ index c3c1f466fe01..370efec15191 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 50db08265c51..5ece5ffc3944 100644
+index dcae09a37d49..83a9a522cf8a 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
 @@ -8113,6 +8113,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
