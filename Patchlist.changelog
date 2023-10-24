@@ -1,3 +1,9 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/1820b71069f04d9347e71caeb9fe49e095dd28ec
+ 1820b71069f04d9347e71caeb9fe49e095dd28ec crypto: rng - Override drivers/char/random in FIPS mode
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/325cfb22f086df02e268cfbfa6ff96d89d0acd5d
+ 325cfb22f086df02e268cfbfa6ff96d89d0acd5d random: Add hook to override device reads and getrandom(2)
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/8374deeb36ca291927f714ba4b78349fb3a6e3b1
  8374deeb36ca291927f714ba4b78349fb3a6e3b1 [redhat] kernel/rh_messages.c: move hardware tables to rh_messages.h
 

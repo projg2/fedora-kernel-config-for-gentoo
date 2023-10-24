@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.6.0
 %define specversion 6.6.0
 %define patchversion 6.6
-%define pkgrelease 0.rc7.54
+%define pkgrelease 0.rc7.20231024gitd88520ad73b7.55
 %define kversion 6
-%define tarfile_release 6.6-rc7
+%define tarfile_release 6.6-rc7-18-gd88520ad73b7
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.54%{?buildid}%{?dist}
+%define specrelease 0.rc7.20231024gitd88520ad73b7.55%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.6.0
 
@@ -3709,6 +3709,13 @@ fi\
 #
 #
 %changelog
+* Tue Oct 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc7.d88520ad73b7.55]
+- redhat: remove pending-rhel CONFIG_XFS_ASSERT_FATAL file (Patrick Talbert)
+- New configs in fs/xfs (Fedora Kernel Team)
+- crypto: rng - Override drivers/char/random in FIPS mode (Herbert Xu)
+- random: Add hook to override device reads and getrandom(2) (Herbert Xu)
+- Linux v6.6.0-0.rc7.d88520ad73b7
+
 * Mon Oct 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc7.54]
 - Linux v6.6.0-0.rc7
 
