@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.6.0
-%define specversion 6.6.0
-%define patchversion 6.6
-%define pkgrelease 61
+%define specrpmversion 6.7.0
+%define specversion 6.7.0
+%define patchversion 6.7
+%define pkgrelease 0.rc0.20231031git5a6a09e97199.2
 %define kversion 6
-%define tarfile_release 6.6
+%define tarfile_release 6.6-3860-g5a6a09e97199
 # This is needed to do merge window version magic
-%define patchlevel 6
+%define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 61%{?buildid}%{?dist}
+%define specrelease 0.rc0.20231031git5a6a09e97199.2%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.6.0
+%define kabiversion 6.7.0
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -943,8 +943,8 @@ Source211: Module.kabi_dup_ppc64le
 Source212: Module.kabi_dup_s390x
 Source213: Module.kabi_dup_x86_64
 
-Source300: kernel-abi-stablelists-%{kabiversion}.tar.bz2
-Source301: kernel-kabi-dw-%{kabiversion}.tar.bz2
+Source300: kernel-abi-stablelists-%{kabiversion}.tar.xz
+Source301: kernel-kabi-dw-%{kabiversion}.tar.xz
 
 # RT specific virt module
 Source400: mod-kvm.list
@@ -2172,10 +2172,10 @@ BuildKernel() {
     # Don't build kabi base for debug kernels
     if [ "$Variant" != "zfcpdump" -a "$Variant" != "debug" ]; then
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf
-        tar xjvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
+        tar -xvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
 
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/stablelists
-        tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
+        tar -xvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
 
         echo "**** GENERATING DWARF-based kABI baseline dataset ****"
         chmod 0755 $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh
@@ -2191,10 +2191,10 @@ BuildKernel() {
 %if %{with_kabidwchk}
     if [ "$Variant" != "zfcpdump" ]; then
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf
-        tar xjvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
+        tar -xvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
         if [ -d "$RPM_BUILD_ROOT/kabi-dwarf/base/%{_target_cpu}${Variant:+.${Variant}}" ]; then
             mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/stablelists
-            tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
+            tar -xvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
 
             echo "**** GENERATING DWARF-based kABI dataset ****"
             chmod 0755 $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh
@@ -2939,7 +2939,7 @@ INSTALL_KABI_PATH=$RPM_BUILD_ROOT/lib/modules/
 mkdir -p $INSTALL_KABI_PATH
 
 # install kabi releases directories
-tar xjvf %{SOURCE300} -C $INSTALL_KABI_PATH
+tar -xvf %{SOURCE300} -C $INSTALL_KABI_PATH
 # with_kernel_abi_stablelists
 %endif
 
@@ -3709,59 +3709,27 @@ fi\
 #
 #
 %changelog
-* Mon Oct 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-61]
-- Linux v6.6.0
-
-* Sun Oct 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc7.2af9b20dbb39.60]
-- Linux v6.6.0-0.rc7.2af9b20dbb39
-
-* Sat Oct 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc7.56567a20b22b.59]
+* Tue Oct 31 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc0.5a6a09e97199.2]
+- Reset RHEL_RELEASE for rebase (Justin M. Forbes)
+- [Scheduled job] Catch config mismatches early during upstream merge (Don Zickus)
+- redhat/self-test: Update data for KABI xz change (Prarit Bhargava)
+- redhat/scripts: Switch KABI tarballs to xz (Prarit Bhargava)
+- redhat/kernel.spec.template: Switch KABI compression to xz (Prarit Bhargava)
+- redhat: self-test: Use a more complete SRPM file suffix (Andrew Halaney)
+- redhat: makefile: remove stray rpmbuild --without (Eric Chanudet)
 - Consolidate configs into common for 6.6 (Justin M. Forbes)
-- Linux v6.6.0-0.rc7.56567a20b22b
-
-* Fri Oct 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc7.750b95887e56.58]
-- Linux v6.6.0-0.rc7.750b95887e56
-
-* Thu Oct 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc7.611da07b89fd.57]
 - Updated Fedora configs (Justin M. Forbes)
 - Turn on UFSHCD for Fedora x86 (Justin M. Forbes)
-- Linux v6.6.0-0.rc7.611da07b89fd
-
-* Wed Oct 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc7.4f82870119a4.56]
 - redhat: configs: generic: x86: Disable CONFIG_VIDEO_OV01A10 for x86 platform (Hans de Goede)
-- Linux v6.6.0-0.rc7.4f82870119a4
-
-* Tue Oct 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc7.d88520ad73b7.55]
 - redhat: remove pending-rhel CONFIG_XFS_ASSERT_FATAL file (Patrick Talbert)
 - New configs in fs/xfs (Fedora Kernel Team)
 - crypto: rng - Override drivers/char/random in FIPS mode (Herbert Xu)
 - random: Add hook to override device reads and getrandom(2) (Herbert Xu)
-- Linux v6.6.0-0.rc7.d88520ad73b7
-
-* Mon Oct 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc7.54]
-- Linux v6.6.0-0.rc7
-
-* Sun Oct 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc6.1acfd2bd3f0d.53]
-- Linux v6.6.0-0.rc6.1acfd2bd3f0d
-
-* Sat Oct 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc6.9c5d00cb7b6b.52]
-- Linux v6.6.0-0.rc6.9c5d00cb7b6b
-
-* Fri Oct 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc6.ce55c22ec8b2.51]
 - redhat/configs: share CONFIG_ARM64_ERRATUM_2966298 between rhel and fedora (Mark Salter)
 - configs: Remove S390 IOMMU config options that no longer exist (Jerry Snitselaar)
 - redhat: docs: clarify where bugs and issues are created (Scott Weaver)
 - redhat/scripts/rh-dist-git.sh does not take any arguments: fix error message (Denys Vlasenko)
 - Add target_branch for gen_config_patches.sh (Don Zickus)
-- Linux v6.6.0-0.rc6.ce55c22ec8b2
-
-* Thu Oct 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc6.dd72f9c7e512.50]
-- Linux v6.6.0-0.rc6.dd72f9c7e512
-
-* Wed Oct 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc6.06dc10eae55b.49]
-- Linux v6.6.0-0.rc6.06dc10eae55b
-
-* Tue Oct 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc6.213f891525c2.48]
 - redhat: disable kunit by default (Nico Pache)
 - redhat/configs: enable the AMD_PMF driver for RHEL (David Arcari)
 - Make CONFIG_ADDRESS_MASKING consistent between fedora and rhel (Chris von Recklinghausen)
@@ -3771,77 +3739,18 @@ fi\
 - CI: provide descriptive pipeline name for scheduled pipelines (Michael Hofmann)
 - CI: use job templates for variant variables (Michael Hofmann)
 - redhat/kernel.spec.template: simplify __modsign_install_post (Jan Stancek)
-- Linux v6.6.0-0.rc6.213f891525c2
-
-* Mon Oct 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc6.47]
-- Linux v6.6.0-0.rc6
-
-* Sun Oct 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc5.9a3dad63edbe.46]
 - Fedora filter updates after configs (Justin M. Forbes)
 - Fedora configs for 6.6 (Justin M. Forbes)
-- Linux v6.6.0-0.rc5.9a3dad63edbe
-
-* Sat Oct 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc5.727fb8376504.45]
-- Linux v6.6.0-0.rc5.727fb8376504
-
-* Fri Oct 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc5.10a6e5feccb8.44]
-- Linux v6.6.0-0.rc5.10a6e5feccb8
-
-* Thu Oct 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc5.401644852d0b.43]
-- Linux v6.6.0-0.rc5.401644852d0b
-
-* Wed Oct 11 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc5.1c8b86a3799f.42]
-- Linux v6.6.0-0.rc5.1c8b86a3799f
-
-* Tue Oct 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc5.41]
 - redhat/configs: Freescale Layerscape SoC family (Steve Best)
 - Add clang MR/baseline pipelines (Michael Hofmann)
-
-* Mon Oct 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc5.40]
 - CI: Remove unused kpet_tree_family (Nikolai Kondrashov)
-- Linux v6.6.0-0.rc5
-
-* Sun Oct 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.b9ddbb0cde2a.39]
-- Linux v6.6.0-0.rc4.b9ddbb0cde2a
-
-* Sat Oct 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.82714078aee4.38]
-- Linux v6.6.0-0.rc4.82714078aee4
-
-* Fri Oct 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.b78b18fb8ee1.37]
 - Add clang config framework (Don Zickus)
 - Apply partial snippet configs to all configs (Don Zickus)
 - Remove unpackaged kgcov config files (Don Zickus)
 - redhat/configs: enable missing Kconfig options for Qualcomm RideSX4 (Brian Masney)
 - enable CONFIG_ADDRESS_MASKING for x86_64 (Chris von Recklinghausen)
-- Linux v6.6.0-0.rc4.b78b18fb8ee1
-
-* Thu Oct 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.3006adf3be79.36]
-- Linux v6.6.0-0.rc4.3006adf3be79
-
-* Wed Oct 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.cbf3a2cb156a.35]
-- Linux v6.6.0-0.rc4.cbf3a2cb156a
-
-* Tue Oct 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.ce36c8b14987.34]
 - common: aarch64: enable NXP Flex SPI (Peter Robinson)
-- Linux v6.6.0-0.rc4.ce36c8b14987
-
-* Mon Oct 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc4.33]
-- Linux v6.6.0-0.rc4
-
-* Sun Oct 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.e402b08634b3.32]
-- Linux v6.6.0-0.rc3.e402b08634b3
-
-* Sat Sep 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.9f3ebbef746f.31]
 - fedora: Switch TI_SCI_CLK and TI_SCI_PM_DOMAINS symbols to built-in (Javier Martinez Canillas)
-- Linux v6.6.0-0.rc3.9f3ebbef746f
-
-* Fri Sep 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.9ed22ae6be81.30]
-- Linux v6.6.0-0.rc3.9ed22ae6be81
-
-* Thu Sep 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.633b47cb009d.29]
-- Linux v6.6.0-0.rc3.633b47cb009d
-
-* Wed Sep 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.0e945134b680.28]
 - kernel.spec: adjust build option comment (Michael Hofmann)
 - kernel.spec: allow to enable arm64_16k variant (Michael Hofmann)
 - gitlab-ci: enable build-only pipelines for Rawhide/16k/aarch64 (Michael Hofmann)
@@ -3850,122 +3759,40 @@ fi\
 - redhat/self-test: Update data for cross compile fields (Prarit Bhargava)
 - redhat/Makefile.cross: Add message for disabled subpackages (Prarit Bhargava)
 - redhat/Makefile.cross: Update cross targets with disabled subpackages (Prarit Bhargava)
-- Linux v6.6.0-0.rc3.0e945134b680
-
-* Tue Sep 26 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.27]
 - Remove XFS_ASSERT_FATAL from pending-fedora (Justin M. Forbes)
-
-* Mon Sep 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc3.26]
 - Change default pending for XFS_ONLINE_SCRUB_STATSas it now selects XFS_DEBUG (Justin M. Forbes)
-- Linux v6.6.0-0.rc3
-
-* Sun Sep 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.3aba70aed91f.25]
-- Linux v6.6.0-0.rc2.3aba70aed91f
-
-* Sat Sep 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.d90b0276af8f.24]
-- Linux v6.6.0-0.rc2.d90b0276af8f
-
-* Fri Sep 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.27bbf45eae9c.23]
 - gitlab-ci: use --with debug/base to select kernel variants (Michael Hofmann)
 - kernel.spec: add rpmbuild --without base option (Michael Hofmann)
-- Linux v6.6.0-0.rc2.27bbf45eae9c
-
-* Thu Sep 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.42dc814987c1.22]
 - redhat: spec: Fix typo for kernel_variant_preun for 16k-debug flavor (Neal Gompa)
-- Linux v6.6.0-0.rc2.42dc814987c1
-
-* Tue Sep 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.2cf0f7156238.21]
-- Linux v6.6.0-0.rc2.2cf0f7156238
-
-* Mon Sep 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc2.20]
-- Linux v6.6.0-0.rc2
-
-* Sun Sep 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc1.f0b0d403eabb.19]
-- Linux v6.6.0-0.rc1.f0b0d403eabb
-
-* Sat Sep 16 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc1.57d88e8a5974.18]
-- Linux v6.6.0-0.rc1.57d88e8a5974
-
-* Fri Sep 15 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc1.9fdfb15a3dbf.17]
 - Turn off appletalk for fedora (Justin M. Forbes)
-- Linux v6.6.0-0.rc1.9fdfb15a3dbf
-
-* Thu Sep 14 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc1.aed8aee11130.16]
-- Linux v6.6.0-0.rc1.aed8aee11130
-
-* Wed Sep 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc1.3669558bdf35.15]
-- Linux v6.6.0-0.rc1.3669558bdf35
-
-* Tue Sep 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc1.14]
 - New configs in drivers/media (Fedora Kernel Team)
 - redhat/docs: Add a mention of bugzilla for bugs (Prarit Bhargava)
 - Fix the fixup of Fedora release (Don Zickus)
-
-* Mon Sep 11 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc1.13]
-- Linux v6.6.0-0.rc1
-
-* Sun Sep 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.535a265d7f0d.12]
-- Linux v6.6.0-0.rc0.535a265d7f0d
-
-* Sat Sep 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.6099776f9f26.11]
-- Linux v6.6.0-0.rc0.6099776f9f26
-
-* Fri Sep 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.a48fa7efaf11.10]
-- Linux v6.6.0-0.rc0.a48fa7efaf11
-
-* Thu Sep 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.7ba2090ca64e.9]
 - Fix Fedora release scheduled job (Don Zickus)
 - Move squashfs to kernel-modules-core (Justin M. Forbes)
 - redhat: Explicitly disable CONFIG_COPS (Vitaly Kuznetsov)
 - redhat: Add dist-check-licenses target (Vitaly Kuznetsov)
 - redhat: Introduce "Verify SPDX-License-Identifier tags" selftest (Vitaly Kuznetsov)
 - redhat: Use kspdx-tool output for the License: field (Vitaly Kuznetsov)
-- Linux v6.6.0-0.rc0.7ba2090ca64e
-
-* Wed Sep 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.65d6e954e378.8]
 - Rename pipeline repo branch and DW tree names (Michael Hofmann)
 - Adjust comments that refer to ARK in a Rawhide context (Michael Hofmann)
 - Rename variable names starting with ark- to rawhide- (Michael Hofmann)
 - Rename trigger-ark to trigger-rawhide (Michael Hofmann)
 - Fix up config mismatches for Fedora (Justin M. Forbes)
-- Linux v6.6.0-0.rc0.65d6e954e378
-
-* Tue Sep 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.3f86ed6ec0b3.7]
 - redhat/configs: Texas Instruments Inc. K3 multicore SoC architecture (Steve Best)
-- Linux v6.6.0-0.rc0.3f86ed6ec0b3
-
-* Mon Sep 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.708283abf896.6]
-- Linux v6.6.0-0.rc0.708283abf896
-
-* Sun Sep 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.92901222f83d.5]
 - Flip CONFIG_VIDEO_V4L2_SUBDEV_API in pending RHEL due to mismatch (Justin M. Forbes)
-- Linux v6.6.0-0.rc0.92901222f83d
-
-* Sat Sep 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.0468be89b3fa.4]
 - CONFIG_HW_RANDOM_HISI: move to common and set to m (Scott Weaver)
 - Turn off CONFIG_MEMORY_HOTPLUG_DEFAULT_ONLINE for Fedora s390x (Justin M. Forbes)
-- Linux v6.6.0-0.rc0.0468be89b3fa
-
-* Fri Sep 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.99d99825fc07.3.eln130]
 - Disable tests for ELN realtime pipelines (Michael Hofmann)
 - New configs in mm/Kconfig (Fedora Kernel Team)
 - Flip CONFIG_SND_SOC_CS35L56_SDW to m and clean up (Justin M. Forbes)
 - Add drm_exec_test to mod-internal.list (Thorsten Leemhuis)
 - Add new pending entry for CONFIG_SND_SOC_CS35L56_SDW to fix mismatch (Justin M. Forbes)
-- Linux v6.6.0-0.rc0.99d99825fc07
-
-* Thu Aug 31 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.b97d64c72259.2.eln130]
 - Fix tarball creation logic (Don Zickus)
 - redhat: bump libcpupower soname to match upstream (Patrick Talbert)
 - Turn on MEMFD_CREATE in pending as it is selected by CONFIG_TMPFS (Justin M. Forbes)
-- Linux v6.6.0-0.rc0.b97d64c72259
-
-* Wed Aug 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.6c1b980a7e79.1.eln130]
 - redhat: drop unneeded build-time dependency gcc-plugin-devel (Coiby Xu)
 - Reset RHEL release and trim changelog after rebase (Justin M. Forbes)
-- Linux v6.6.0-0.rc0.6c1b980a7e79
-
-* Tue Aug 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.6.0-0.rc0.1c59d383390f.59.eln130]
 - all: x86: move wayward x86 specific config home (Peter Robinson)
 - all: de-dupe non standard config options (Peter Robinson)
 - all: x86: clean up microcode loading options (Peter Robinson)
@@ -4733,8 +4560,6 @@ fi\
 - redhat: generate distgit changelog in genspec.sh as well (Herton R. Krzesinski)
 - redhat: make genspec prefer metadata from git notes (Herton R. Krzesinski)
 - redhat: use tags from git notes for zstream to generate changelog (Herton R. Krzesinski)
-- ARK: Remove code marking drivers as tech preview (Peter Georg)
-- ARK: Remove code marking devices deprecated (Peter Georg)
 - ARK: Remove code marking devices unmaintained (Peter Georg)
 - rh_message: Fix function name (Peter Georg) [2019377]
 - Turn on CONFIG_RANDOM_TRUST_BOOTLOADER (Justin M. Forbes)
@@ -5078,7 +4903,6 @@ fi\
 - Attempt to fix Intel PMT code (David Arcari)
 - CI: Enable realtime branch testing (Veronika Kabatova)
 - CI: Enable realtime checks for c9s and RHEL9 (Veronika Kabatova)
-- [fs] dax: mark tech preview (Bill O'Donnell) [1995338]
 - ark: wireless: enable all rtw88 pcie wirless variants (Peter Robinson)
 - wireless: rtw88: move debug options to common/debug (Peter Robinson)
 - fedora: minor PTP clock driver cleanups (Peter Robinson)
@@ -5253,7 +5077,6 @@ fi\
 - Enable CONFIG_BPF_UNPRIV_DEFAULT_OFF (Jiri Olsa)
 - configs/common/s390: disable CONFIG_QETH_{OSN,OSX} (Philipp Rudo) [1903201]
 - nvme: nvme_mpath_init remove multipath check (Mike Snitzer)
-- team: mark team driver as deprecated (Hangbin Liu) [1945477]
 - Make CRYPTO_EC also builtin (Simo Sorce) [1947240]
 - Do not hard-code a default value for DIST (David Ward)
 - Override %%{debugbuildsenabled} if the --with-release option is used (David Ward)
@@ -5262,7 +5085,6 @@ fi\
 - Revert s390x/zfcpdump part of a9d179c40281 and ecbfddd98621 (Vladis Dronov)
 - Embed crypto algos, modes and templates needed in the FIPS mode (Vladis Dronov) [1947240]
 - configs: Add and enable CONFIG_HYPERV_TESTING for debug kernels (Mohammed Gamal)
-- mm/cma: mark CMA on x86_64 tech preview and print RHEL-specific infos (David Hildenbrand) [1945002]
 - configs: enable CONFIG_CMA on x86_64 in ARK (David Hildenbrand) [1945002]
 - rpmspec: build debug-* meta-packages if debug builds are disabled (Herton R. Krzesinski)
 - UIO: disable unused config options (Aristeu Rozanski) [1957819]
@@ -5347,7 +5169,6 @@ fi\
 - Limit CONFIG_USB_CDNS_SUPPORT to x86_64 and arm in Fedora (David Ward)
 - Fedora: Enable CHARGER_GPIO on aarch64 too (Peter Robinson)
 - Fedora config updates (Justin M. Forbes)
-- wireguard: mark as Tech Preview (Hangbin Liu) [1613522]
 - configs: enable CONFIG_WIREGUARD in ARK (Hangbin Liu) [1613522]
 - Remove duplicate configs acroos fedora, ark and common (Don Zickus)
 - Combine duplicate configs across ark and fedora into common (Don Zickus)
@@ -5986,11 +5807,4 @@ fi\
 - [initial commit] Add scripts (Laura Abbott)
 - [initial commit] Add configs (Laura Abbott)
 - [initial commit] Add Makefiles (Laura Abbott)
-- Linux v6.6.0-0.rc0.1c59d383390f
-
-###
-# The following Emacs magic makes C-c C-e use UTC dates.
-# Local Variables:
-# rpm-change-log-uses-utc: t
-# End:
-###
+- Linux v6.7.0-0.rc0.5a6a09e97199
