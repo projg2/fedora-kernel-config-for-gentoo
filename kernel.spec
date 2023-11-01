@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc0.20231031git5a6a09e97199.2
+%define pkgrelease 0.rc0.20231101git8bc9e6515183.3
 %define kversion 6
-%define tarfile_release 6.6-3860-g5a6a09e97199
+%define tarfile_release 6.6-6824-g8bc9e6515183
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20231031git5a6a09e97199.2%{?buildid}%{?dist}
+%define specrelease 0.rc0.20231101git8bc9e6515183.3%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3709,6 +3709,16 @@ fi\
 #
 #
 %changelog
+* Wed Nov 01 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.0-0.rc0.20231101git8bc9e6515183.3]
+- Add clk-fractional-divider_test to mod-internal.list (Thorsten Leemhuis)
+- Add gso_test to mod-internal.list (Thorsten Leemhuis)
+- Add property-entry-test to mod-internal.list (Thorsten Leemhuis)
+
+* Wed Nov 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc0.8bc9e6515183.3]
+- Fedora 6.7 configs part 1 (Justin M. Forbes)
+- Trim changelog after version bump (Justin M. Forbes)
+- Linux v6.7.0-0.rc0.8bc9e6515183
+
 * Tue Oct 31 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc0.5a6a09e97199.2]
 - Reset RHEL_RELEASE for rebase (Justin M. Forbes)
 - [Scheduled job] Catch config mismatches early during upstream merge (Don Zickus)
@@ -5808,3 +5818,10 @@ fi\
 - [initial commit] Add configs (Laura Abbott)
 - [initial commit] Add Makefiles (Laura Abbott)
 - Linux v6.7.0-0.rc0.5a6a09e97199
+
+###
+# The following Emacs magic makes C-c C-e use UTC dates.
+# Local Variables:
+# rpm-change-log-uses-utc: t
+# End:
+###

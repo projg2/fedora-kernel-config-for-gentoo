@@ -1,5 +1,6 @@
 bitfield_kunit
 checksum_kunit
+clk-fractional-divider_test
 clk-gate_test
 clk_test
 cmdline_kunit
@@ -26,6 +27,7 @@ drm_rect_test
 ext4-inode-test
 fat_test
 fortify_kunit
+gso_test
 gss_krb5_test
 handshake-test
 hashtable_test
@@ -49,6 +51,7 @@ mtty
 netdevsim
 overflow_kunit
 pktgen
+property-entry-test
 rational-test
 rcuscale
 rcutorture
