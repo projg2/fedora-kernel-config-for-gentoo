@@ -72,10 +72,10 @@
  71 files changed, 2060 insertions(+), 207 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 758bb25ea3e6..91a119b27baf 100644
+index 07625c60aa8a..8fb6b1101eaf 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6792,6 +6792,15 @@
+@@ -6786,6 +6786,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
  
@@ -125,7 +125,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 5c418efbe89b..d1eabd0f4e7f 100644
+index a1e931ff7eb0..525331e442fc 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -163,10 +163,10 @@ index 5c418efbe89b..d1eabd0f4e7f 100644
  
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 9557808e8937..fafcbf82c9f2 100644
+index f8567e95f98b..24308bf7af51 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1307,9 +1307,9 @@ config HIGHMEM
+@@ -1308,9 +1308,9 @@ config HIGHMEM
  	  If unsure, say n.
  
  config HIGHPTE
@@ -179,7 +179,7 @@ index 9557808e8937..fafcbf82c9f2 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 78f20e632712..70e11a7f350f 100644
+index 6062a52a084f..9e50562e3ee7 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1308,7 +1308,7 @@ endchoice
@@ -721,7 +721,7 @@ index fa5dd71a80fa..060d68c0b331 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index f1263364fa97..24ac410f4366 100644
+index 1a63200ea437..a911e976a596 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -729,6 +729,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -811,7 +811,7 @@ index 186f1fee7534..93e3a76596ff 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 3cb37760dfec..20aa9f3b8b48 100644
+index 4a9c79391dee..4f23b5a702cb 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -51,6 +51,7 @@
@@ -1020,7 +1020,7 @@ index e489fefd23da..f2dfae764fb5 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 1974f0ad32ba..6ba6391494ec 100644
+index 9d3910d1abe1..f73b3ba6ef0b 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -1031,9 +1031,9 @@ index 1974f0ad32ba..6ba6391494ec 100644
  
  #include <asm/early_ioremap.h>
  
-@@ -983,40 +984,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -972,40 +973,101 @@ int efi_mem_type(unsigned long phys_addr)
+ 	return -EINVAL;
  }
- #endif
  
 +struct efi_error_code {
 +	efi_status_t status;
@@ -1671,10 +1671,10 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 21783aa2ee8e..f2f9bdb3e0c8 100644
+index 62612f87aafa..66a4abbf0275 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
-@@ -251,6 +251,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
+@@ -252,6 +252,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
  
  static blk_status_t nvme_error_status(u16 status)
  {
@@ -1684,7 +1684,7 @@ index 21783aa2ee8e..f2f9bdb3e0c8 100644
  	switch (status & 0x7ff) {
  	case NVME_SC_SUCCESS:
  		return BLK_STS_OK;
-@@ -341,6 +344,7 @@ enum nvme_disposition {
+@@ -342,6 +345,7 @@ enum nvme_disposition {
  	COMPLETE,
  	RETRY,
  	FAILOVER,
@@ -1692,7 +1692,7 @@ index 21783aa2ee8e..f2f9bdb3e0c8 100644
  	AUTHENTICATE,
  };
  
-@@ -352,15 +356,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
+@@ -353,15 +357,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
  	if ((nvme_req(req)->status & 0x7ff) == NVME_SC_AUTH_REQUIRED)
  		return AUTHENTICATE;
  
@@ -1712,7 +1712,7 @@ index 21783aa2ee8e..f2f9bdb3e0c8 100644
  	} else {
  		if (blk_queue_dying(req->q))
  			return COMPLETE;
-@@ -390,6 +395,14 @@ static inline void nvme_end_req(struct request *req)
+@@ -391,6 +396,14 @@ static inline void nvme_end_req(struct request *req)
  	blk_mq_end_request(req, status);
  }
  
@@ -1727,7 +1727,7 @@ index 21783aa2ee8e..f2f9bdb3e0c8 100644
  void nvme_complete_rq(struct request *req)
  {
  	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
-@@ -419,6 +432,9 @@ void nvme_complete_rq(struct request *req)
+@@ -420,6 +433,9 @@ void nvme_complete_rq(struct request *req)
  	case FAILOVER:
  		nvme_failover_req(req);
  		return;
@@ -1735,7 +1735,7 @@ index 21783aa2ee8e..f2f9bdb3e0c8 100644
 +		nvme_failup_req(req);
 +		return;
  	case AUTHENTICATE:
- #ifdef CONFIG_NVME_AUTH
+ #ifdef CONFIG_NVME_HOST_AUTH
  		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
 index 0a88d7bdc5e3..967bb3a85889 100644
@@ -1785,10 +1785,10 @@ index 0a88d7bdc5e3..967bb3a85889 100644
  
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index f35647c470af..e57357f23306 100644
+index 39a90b7cb125..059dc8083d5b 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -885,6 +885,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -886,6 +886,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1796,7 +1796,7 @@ index f35647c470af..e57357f23306 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -923,6 +924,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -924,6 +925,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -2121,7 +2121,7 @@ index 675332e49a7b..4a3cbddacef1 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 6effa13039f3..fbfbd542b858 100644
+index f4a49623ee3b..12df97b2d794 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
@@ -2139,7 +2139,7 @@ index 6effa13039f3..fbfbd542b858 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -4045,6 +4053,8 @@ static int __init init_sd(void)
+@@ -4042,6 +4050,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
@@ -2167,10 +2167,10 @@ index 0ff47eeffb49..005b8c595c60 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/afs/main.c b/fs/afs/main.c
-index eae288c8d40a..8b8bf447cedc 100644
+index 6425c81d07de..4b137eeeb1a9 100644
 --- a/fs/afs/main.c
 +++ b/fs/afs/main.c
-@@ -201,6 +201,9 @@ static int __init afs_init(void)
+@@ -199,6 +199,9 @@ static int __init afs_init(void)
  		goto error_proc;
  	}
  
@@ -2193,7 +2193,7 @@ index 31f6fee0c36c..b099200de233 100644
  /*
   * Miscellaneous stuff.
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 80b21d1c6eaf..b66c0683f2fc 100644
+index 9cc5bf32f6f2..7462fb1fc99e 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -44,6 +44,8 @@ struct screen_info;
@@ -2205,7 +2205,7 @@ index 80b21d1c6eaf..b66c0683f2fc 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -871,6 +873,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -864,6 +866,14 @@ static inline int efi_range_is_wc(unsigned long start, unsigned long len)
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -2220,7 +2220,7 @@ index 80b21d1c6eaf..b66c0683f2fc 100644
  
  #ifdef CONFIG_EFI
  /*
-@@ -882,6 +892,8 @@ static inline bool efi_enabled(int feature)
+@@ -875,6 +885,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
  
@@ -2229,7 +2229,7 @@ index 80b21d1c6eaf..b66c0683f2fc 100644
  bool __pure __efi_soft_reserve_enabled(void);
  
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -903,6 +915,8 @@ static inline bool efi_enabled(int feature)
+@@ -896,6 +908,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
  
@@ -2238,7 +2238,7 @@ index 80b21d1c6eaf..b66c0683f2fc 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -917,6 +931,7 @@ static inline void efi_find_mirror(void) {}
+@@ -910,6 +924,7 @@ static inline void efi_find_mirror(void) {}
  #endif
  
  extern int efi_status_to_err(efi_status_t status);
@@ -2246,7 +2246,7 @@ index 80b21d1c6eaf..b66c0683f2fc 100644
  
  /*
   * Variable Attributes
-@@ -1133,13 +1148,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1126,13 +1141,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const void *caller);
  extern unsigned long efi_call_virt_save_flags(void);
  
@@ -2954,10 +2954,10 @@ index 1d1df326c881..c1c06654d448 100644
  
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/main.c b/init/main.c
-index 436d73261810..bc0ce06105e6 100644
+index e24b0780fdff..e4e1a6ea60ad 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -1147,6 +1147,9 @@ static bool __init_or_module initcall_blacklisted(initcall_t fn)
+@@ -1151,6 +1151,9 @@ static bool __init_or_module initcall_blacklisted(initcall_t fn)
  	 */
  	strreplace(fn_name, ' ', '\0');
  
@@ -3642,7 +3642,7 @@ index 000000000000..616692b1ac11
 +
 +#endif /* __RH_MESSAGES_H */
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index b3dee80497cb..3715db3f99d4 100644
+index ea72af229d2b..03d968e25856 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -23,6 +23,7 @@
