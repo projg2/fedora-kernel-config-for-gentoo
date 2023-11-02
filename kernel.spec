@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.5.9
-%define specversion 6.5.9
+%define specrpmversion 6.5.10
+%define specversion 6.5.10
 %define patchversion 6.5
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.5.9
+%define tarfile_release 6.5.10
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.5.9
+%define kabiversion 6.5.10
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3702,6 +3702,9 @@ fi\
 #
 #
 %changelog
+* Thu Nov 02 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.5.10-0]
+- Linux v6.5.10
+
 * Wed Oct 25 2023 Augusto Caringi <acaringi@redhat.com> [6.5.9-0]
 - Updated Fedora configs (Justin M. Forbes)
 - Add UFSHCD bug to BugsFixed (Justin M. Forbes)

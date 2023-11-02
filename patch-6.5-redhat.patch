@@ -42,7 +42,7 @@
  41 files changed, 554 insertions(+), 189 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index fc83c079c471..f2041b171589 100644
+index ab9f291c1d3f..575487f17f9b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1213,7 +1213,7 @@ index 3791aec69ddc..0d2e72a966c9 100644
  EXPORT_SYMBOL_GPL(power_supply_unreg_notifier);
  
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index d6535cbb4e05..bcaad1fc5d8d 100644
+index c4babb16dac7..9c9342e0c055 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -130,6 +130,14 @@ static const char *sd_cache_types[] = {
@@ -1231,7 +1231,7 @@ index d6535cbb4e05..bcaad1fc5d8d 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -4024,6 +4032,8 @@ static int __init init_sd(void)
+@@ -4057,6 +4065,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
