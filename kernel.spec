@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc0.20231102git21e80f3841c0.4
+%define pkgrelease 0.rc0.20231103git8f6f76a6a29f.7
 %define kversion 6
-%define tarfile_release 6.6-10297-g21e80f3841c0
+%define tarfile_release 6.6-12401-g8f6f76a6a29f
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20231102git21e80f3841c0.4%{?buildid}%{?dist}
+%define specrelease 0.rc0.20231103git8f6f76a6a29f.7%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3709,8 +3709,17 @@ fi\
 #
 #
 %changelog
-* Thu Nov 02 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.0-0.rc0.20231102git21e80f3841c0.4]
+* Fri Nov 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc0.8f6f76a6a29f.7]
+- Add mean_and_variance_test to mod-internal.list (Justin M. Forbes)
 - Add cfg80211-tests and mac80211-tests to mod-internal.list (Justin M. Forbes)
+
+* Fri Nov 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc0.8f6f76a6a29f.6]
+- Turn on CONFIG_MFD_CS42L43_SDW for RHEL in pending (Justin M. Forbes)
+- Linux v6.7.0-0.rc0.8f6f76a6a29f
+
+* Fri Nov 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc0.21e80f3841c0.5]
+- Turn on bcachefs for Fedora (Justin M. Forbes)
+- redhat: configs: fedora: Enable QSEECOM and friends (Andrew Halaney)
 
 * Thu Nov 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc0.21e80f3841c0.4]
 - Add clk-fractional-divider_test to mod-internal.list (Thorsten Leemhuis)

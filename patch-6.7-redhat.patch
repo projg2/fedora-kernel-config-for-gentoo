@@ -72,10 +72,10 @@
  71 files changed, 2060 insertions(+), 207 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 07625c60aa8a..8fb6b1101eaf 100644
+index 01c7082ee999..890ba3196b24 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6786,6 +6786,15 @@
+@@ -6789,6 +6789,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
  
@@ -179,7 +179,7 @@ index f8567e95f98b..24308bf7af51 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 6062a52a084f..9e50562e3ee7 100644
+index 7b071a00425d..9d6fa47573e3 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1308,7 +1308,7 @@ endchoice
@@ -217,7 +217,7 @@ index 05e51666db03..454a33b77878 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index de6ad0fb2328..5cc2758be027 100644
+index e555b576d3c8..a85c1d750c87 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -251,7 +251,7 @@ index 5d9591146244..a8b011410a2e 100644
  		cpu_parse_early_param();
  
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index ccd3ad29a1dc..7c4895d32a92 100644
+index 163c35db3d04..4bd4cf41282d 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -270,7 +270,7 @@ index ccd3ad29a1dc..7c4895d32a92 100644
  
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -795,6 +797,49 @@ static void __init early_reserve_memory(void)
+@@ -670,6 +672,49 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
  
@@ -320,7 +320,7 @@ index ccd3ad29a1dc..7c4895d32a92 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -1028,6 +1073,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -903,6 +948,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -334,7 +334,7 @@ index ccd3ad29a1dc..7c4895d32a92 100644
  	reserve_ibft_region();
  	dmi_setup();
  
-@@ -1189,19 +1241,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1064,19 +1116,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -355,7 +355,7 @@ index ccd3ad29a1dc..7c4895d32a92 100644
  
  	reserve_initrd();
  
-@@ -1316,6 +1356,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1191,6 +1231,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
  
@@ -365,7 +365,7 @@ index ccd3ad29a1dc..7c4895d32a92 100644
  }
  
 diff --git a/crypto/drbg.c b/crypto/drbg.c
-index ff4ebbc68efa..2410034cca4f 100644
+index e01f8c7769d0..febf071f0e59 100644
 --- a/crypto/drbg.c
 +++ b/crypto/drbg.c
 @@ -1510,13 +1510,14 @@ static int drbg_generate(struct drbg_state *drbg,
@@ -776,7 +776,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
  
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index 186f1fee7534..93e3a76596ff 100644
+index d6f14279684d..9bc53b1970ab 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -787,7 +787,7 @@ index 186f1fee7534..93e3a76596ff 100644
  #include <linux/delay.h>
  
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5516,8 +5517,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5511,8 +5512,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
  
@@ -1209,7 +1209,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index 84e7ba5314d3..efc96776f761 100644
+index d4af17fdba46..154f0403cbf4 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
 @@ -321,21 +321,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
@@ -1234,7 +1234,7 @@ index 84e7ba5314d3..efc96776f761 100644
  	return 1;
  }
  
-@@ -591,56 +582,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
+@@ -589,56 +580,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
  	.reset		= rmi_hid_reset,
  };
  
@@ -1291,7 +1291,7 @@ index 84e7ba5314d3..efc96776f761 100644
  static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
  {
  	struct rmi_data *data = NULL;
-@@ -713,18 +654,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
+@@ -711,18 +652,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
  
  	mutex_init(&data->page_mutex);
  
@@ -1594,7 +1594,7 @@ index c146378c7d03..f9e8d35eaccc 100644
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
 diff --git a/drivers/message/fusion/mptsas.c b/drivers/message/fusion/mptsas.c
-index 86f16f3ea478..499dc34a5e66 100644
+index 300f8e955a53..9636f3391891 100644
 --- a/drivers/message/fusion/mptsas.c
 +++ b/drivers/message/fusion/mptsas.c
 @@ -5383,6 +5383,10 @@ static void mptsas_remove(struct pci_dev *pdev)
@@ -1832,10 +1832,10 @@ index 51ec9e7e784f..8c3713edc7a6 100644
  	if (!rc)
  		return rc;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index eeec1d6f9023..22b85cc6ed39 100644
+index ea476252280a..d81cc740aad8 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4408,6 +4408,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4410,6 +4410,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
  
@@ -2006,7 +2006,7 @@ index 0b1616e93cf4..85fc52038a82 100644
  		PCI_ANY_ID, PCI_ANY_ID, },
  	{PCI_VENDOR_ID_EMULEX, PCI_DEVICE_ID_LANCER_G7_FC,
 diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index e1aa667dae66..32e3b2683f2f 100644
+index 3d4f13da1ae8..7fdf37db9969 100644
 --- a/drivers/scsi/megaraid/megaraid_sas_base.c
 +++ b/drivers/scsi/megaraid/megaraid_sas_base.c
 @@ -149,6 +149,7 @@ megasas_set_ld_removed_by_fw(struct megasas_instance *instance);
@@ -2070,10 +2070,10 @@ index 605013d3ee83..59d7ac663316 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index dcae09a37d49..83a9a522cf8a 100644
+index 32d1e73e46ee..2370195b61b7 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -8113,6 +8113,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -8114,6 +8114,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
  
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -2081,7 +2081,7 @@ index dcae09a37d49..83a9a522cf8a 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -8125,13 +8126,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -8126,13 +8127,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -2121,7 +2121,7 @@ index 675332e49a7b..4a3cbddacef1 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index f4a49623ee3b..12df97b2d794 100644
+index 530918cbfce2..a73f6df35334 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
@@ -2139,7 +2139,7 @@ index f4a49623ee3b..12df97b2d794 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -4042,6 +4050,8 @@ static int __init init_sd(void)
+@@ -4048,6 +4056,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
@@ -2181,10 +2181,10 @@ index 6425c81d07de..4b137eeeb1a9 100644
  
  error_proc:
 diff --git a/include/linux/crypto.h b/include/linux/crypto.h
-index 31f6fee0c36c..b099200de233 100644
+index b164da5e129e..59021b8609a7 100644
 --- a/include/linux/crypto.h
 +++ b/include/linux/crypto.h
-@@ -135,6 +135,7 @@
+@@ -133,6 +133,7 @@
  #define CRYPTO_TFM_REQ_FORBID_WEAK_KEYS	0x00000100
  #define CRYPTO_TFM_REQ_MAY_SLEEP	0x00000200
  #define CRYPTO_TFM_REQ_MAY_BACKLOG	0x00000400
@@ -2347,10 +2347,10 @@ index 6717b15e798c..8e1d3eae1686 100644
  
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index b56417276042..0930a07b7b03 100644
+index 60ca768bc867..1e333bcd719a 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1589,6 +1589,7 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1615,6 +1615,7 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2358,7 +2358,7 @@ index b56417276042..0930a07b7b03 100644
  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
  		    int pass);
  
-@@ -2638,6 +2639,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
+@@ -2667,6 +2668,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
  	return false;
  }
  
@@ -3083,10 +3083,10 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/kernel/panic.c b/kernel/panic.c
-index ffa037fa777d..e2b0439633b6 100644
+index 2807639aab51..914c2b14c184 100644
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -479,6 +479,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -483,6 +483,19 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
  	[ TAINT_TEST ]			= { 'N', ' ', true },
