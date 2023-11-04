@@ -204,7 +204,7 @@ index b0d00032479d..afb9544fb007 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 05e51666db03..454a33b77878 100644
+index cc364fce6aa9..f5709ee1047f 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
 @@ -2519,3 +2519,8 @@ int ipl_report_free(struct ipl_report *report)
@@ -217,7 +217,7 @@ index 05e51666db03..454a33b77878 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index e555b576d3c8..a85c1d750c87 100644
+index 5701356f4f33..cf3593dc271e 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -228,7 +228,7 @@ index e555b576d3c8..a85c1d750c87 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
  
-@@ -914,6 +915,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -907,6 +908,9 @@ void __init setup_arch(char **cmdline_p)
  
  	log_component_list();
  
@@ -251,7 +251,7 @@ index 5d9591146244..a8b011410a2e 100644
  		cpu_parse_early_param();
  
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 163c35db3d04..4bd4cf41282d 100644
+index 1526747bedf2..2ad416d34b84 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -2149,10 +2149,10 @@ index 530918cbfce2..a73f6df35334 100644
  	if (err)
  		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 0ff47eeffb49..005b8c595c60 100644
+index b4584a0cd484..7ddb492800c8 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5782,6 +5782,13 @@ static void hub_event(struct work_struct *work)
+@@ -5786,6 +5786,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
  
@@ -2261,10 +2261,10 @@ index 9cc5bf32f6f2..7462fb1fc99e 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index cee8fe87e9f4..25e3a8d580af 100644
+index d9ad21058eed..4424db2f92f5 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -446,4 +446,18 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -441,4 +441,18 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
