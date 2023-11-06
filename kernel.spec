@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc0.20231104git90b0c2b2edd1.7
+%define pkgrelease 0.rc0.20231105git1c41041124bd.8
 %define kversion 6
-%define tarfile_release 6.6-14142-g90b0c2b2edd1
+%define tarfile_release 6.6-14500-g1c41041124bd
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20231104git90b0c2b2edd1.7%{?buildid}%{?dist}
+%define specrelease 0.rc0.20231105git1c41041124bd.8%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3709,6 +3709,9 @@ fi\
 #
 #
 %changelog
+* Sun Nov 05 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc0.1c41041124bd.8]
+- Linux v6.7.0-0.rc0.1c41041124bd
+
 * Sat Nov 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc0.90b0c2b2edd1.7]
 - Add mean_and_variance_test to mod-internal.list (Justin M. Forbes)
 - Add cfg80211-tests and mac80211-tests to mod-internal.list (Justin M. Forbes)

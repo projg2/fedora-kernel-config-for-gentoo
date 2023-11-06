@@ -72,10 +72,10 @@
  71 files changed, 2060 insertions(+), 207 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 01c7082ee999..890ba3196b24 100644
+index 2a4bc78c27ec..6590dbfbf4b4 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6789,6 +6789,15 @@
+@@ -6794,6 +6794,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
  
@@ -125,7 +125,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index a1e931ff7eb0..525331e442fc 100644
+index a82587fbdad3..9c5035159d37 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -147,7 +147,7 @@ index a1e931ff7eb0..525331e442fc 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1250,7 +1262,13 @@ define filechk_version.h
+@@ -1239,7 +1251,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -239,7 +239,7 @@ index 5701356f4f33..cf3593dc271e 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 5d9591146244..a8b011410a2e 100644
+index b14fc8c1c953..b73ab08b5251 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1595,6 +1595,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -3642,18 +3642,18 @@ index 000000000000..616692b1ac11
 +
 +#endif /* __RH_MESSAGES_H */
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index ea72af229d2b..03d968e25856 100644
+index 973b5e5ae2dd..3c9f6d39cbd8 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -23,6 +23,7 @@
+@@ -22,6 +22,7 @@
+ #include <errno.h>
  #include "modpost.h"
  #include "../../include/linux/license.h"
- #include "../../include/linux/module_symbol.h"
 +#include "../../include/generated/uapi/linux/version.h"
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -2088,6 +2089,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -1985,6 +1986,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -3666,7 +3666,7 @@ index ea72af229d2b..03d968e25856 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2148,6 +2155,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2045,6 +2052,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
