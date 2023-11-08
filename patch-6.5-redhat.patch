@@ -24,13 +24,11 @@
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
- drivers/power/supply/power_supply_core.c           |   8 +-
  drivers/scsi/sd.c                                  |  10 ++
  drivers/usb/core/hub.c                             |   7 ++
  fs/btrfs/space-info.c                              |  17 +++
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
- include/linux/power_supply.h                       |   2 +-
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  kernel/module/signing.c                            |   9 +-
@@ -39,10 +37,10 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 41 files changed, 554 insertions(+), 189 deletions(-)
+ 39 files changed, 549 insertions(+), 184 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index ab9f291c1d3f..575487f17f9b 100644
+index 555cc34f4730..f87dc4f3eb24 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -343,7 +341,7 @@ index e489fefd23da..f2dfae764fb5 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 1599f1176842..a1fc17f1e0cc 100644
+index 9cfac61812f6..a8462d3bd33c 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -354,7 +352,7 @@ index 1599f1176842..a1fc17f1e0cc 100644
  
  #include <asm/early_ioremap.h>
  
-@@ -953,40 +954,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -957,40 +958,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
  
@@ -1140,10 +1138,10 @@ index f35647c470af..e57357f23306 100644
  {
  }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 321156ca273d..fc399e56ec8f 100644
+index eb65170b97ff..e8b906b6ffbf 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4406,6 +4406,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4408,6 +4408,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
  
@@ -1174,44 +1172,6 @@ index 321156ca273d..fc399e56ec8f 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
-diff --git a/drivers/power/supply/power_supply_core.c b/drivers/power/supply/power_supply_core.c
-index 3791aec69ddc..0d2e72a966c9 100644
---- a/drivers/power/supply/power_supply_core.c
-+++ b/drivers/power/supply/power_supply_core.c
-@@ -29,7 +29,7 @@
- struct class *power_supply_class;
- EXPORT_SYMBOL_GPL(power_supply_class);
- 
--ATOMIC_NOTIFIER_HEAD(power_supply_notifier);
-+BLOCKING_NOTIFIER_HEAD(power_supply_notifier);
- EXPORT_SYMBOL_GPL(power_supply_notifier);
- 
- static struct device_type power_supply_dev_type;
-@@ -97,7 +97,7 @@ static void power_supply_changed_work(struct work_struct *work)
- 		class_for_each_device(power_supply_class, NULL, psy,
- 				      __power_supply_changed_work);
- 		power_supply_update_leds(psy);
--		atomic_notifier_call_chain(&power_supply_notifier,
-+		blocking_notifier_call_chain(&power_supply_notifier,
- 				PSY_EVENT_PROP_CHANGED, psy);
- 		kobject_uevent(&psy->dev.kobj, KOBJ_CHANGE);
- 		spin_lock_irqsave(&psy->changed_lock, flags);
-@@ -1262,13 +1262,13 @@ static void power_supply_dev_release(struct device *dev)
- 
- int power_supply_reg_notifier(struct notifier_block *nb)
- {
--	return atomic_notifier_chain_register(&power_supply_notifier, nb);
-+	return blocking_notifier_chain_register(&power_supply_notifier, nb);
- }
- EXPORT_SYMBOL_GPL(power_supply_reg_notifier);
- 
- void power_supply_unreg_notifier(struct notifier_block *nb)
- {
--	atomic_notifier_chain_unregister(&power_supply_notifier, nb);
-+	blocking_notifier_chain_unregister(&power_supply_notifier, nb);
- }
- EXPORT_SYMBOL_GPL(power_supply_unreg_notifier);
- 
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
 index c4babb16dac7..9c9342e0c055 100644
 --- a/drivers/scsi/sd.c
@@ -1367,19 +1327,6 @@ index af796986baee..83e1cb0ca159 100644
  
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
-diff --git a/include/linux/power_supply.h b/include/linux/power_supply.h
-index a427f13c757f..85b86768c0b9 100644
---- a/include/linux/power_supply.h
-+++ b/include/linux/power_supply.h
-@@ -767,7 +767,7 @@ struct power_supply_battery_info {
- 	int bti_resistance_tolerance;
- };
- 
--extern struct atomic_notifier_head power_supply_notifier;
-+extern struct blocking_notifier_head power_supply_notifier;
- extern int power_supply_reg_notifier(struct notifier_block *nb);
- extern void power_supply_unreg_notifier(struct notifier_block *nb);
- #if IS_ENABLED(CONFIG_POWER_SUPPLY)
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
 index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h
