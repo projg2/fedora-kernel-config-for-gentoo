@@ -3108,7 +3108,7 @@ index 2807639aab51..914c2b14c184 100644
  /**
 diff --git a/kernel/rh_messages.c b/kernel/rh_messages.c
 new file mode 100644
-index 000000000000..48a6bb6c9b38
+index 000000000000..bb69e8965748
 --- /dev/null
 +++ b/kernel/rh_messages.c
 @@ -0,0 +1,414 @@
@@ -3153,7 +3153,7 @@ index 000000000000..48a6bb6c9b38
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+void mark_hardware_unmaintained(const char *driver_name, char *fmt, ...)
++void __maybe_unused mark_hardware_unmaintained(const char *driver_name, char *fmt, ...)
 +{
 +	char device_description[DEV_DESC_LEN];
 +	va_list args;
@@ -3183,7 +3183,7 @@ index 000000000000..48a6bb6c9b38
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+void mark_hardware_deprecated(const char *driver_name, char *fmt, ...)
++void __maybe_unused mark_hardware_deprecated(const char *driver_name, char *fmt, ...)
 +{
 +	char device_description[DEV_DESC_LEN];
 +	va_list args;
@@ -3212,7 +3212,7 @@ index 000000000000..48a6bb6c9b38
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+static void mark_hardware_disabled(const char *driver_name, char *fmt, ...)
++static void __maybe_unused mark_hardware_disabled(const char *driver_name, char *fmt, ...)
 +{
 +	char device_description[DEV_DESC_LEN];
 +	va_list args;
@@ -3233,7 +3233,7 @@ index 000000000000..48a6bb6c9b38
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+static void pci_hw_deprecated(struct pci_dev *dev)
++static void __maybe_unused pci_hw_deprecated(struct pci_dev *dev)
 +{
 +	const struct pci_device_id *ret = pci_match_id(rh_deprecated_pci_devices, dev);
 +
@@ -3271,7 +3271,7 @@ index 000000000000..48a6bb6c9b38
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+static bool pci_hw_disabled(struct pci_dev *dev)
++static bool __maybe_unused pci_hw_disabled(struct pci_dev *dev)
 +{
 +	const struct pci_device_id *ret = pci_match_id(rh_disabled_pci_devices, dev);
 +
@@ -3300,7 +3300,7 @@ index 000000000000..48a6bb6c9b38
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+static void driver_unmaintained(const char* module_name)
++static void __maybe_unused driver_unmaintained(const char* module_name)
 +{
 +	int i = 0;
 +
@@ -3329,7 +3329,7 @@ index 000000000000..48a6bb6c9b38
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+static void driver_deprecated(const char* module_name)
++static void __maybe_unused driver_deprecated(const char* module_name)
 +{
 +	int i = 0;
 +
@@ -3361,7 +3361,7 @@ index 000000000000..48a6bb6c9b38
 + * Reserved for Internal Red Hat use only.
 + */
 +
-+static void init_fn_unmaintained(char* fn_name)
++static void __maybe_unused init_fn_unmaintained(char* fn_name)
 +{
 +	int i = 0;
 +
@@ -3390,7 +3390,7 @@ index 000000000000..48a6bb6c9b38
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+static void init_fn_deprecated(char* fn_name)
++static void __maybe_unused init_fn_deprecated(char* fn_name)
 +{
 +	int i = 0;
 +
@@ -3416,7 +3416,7 @@ index 000000000000..48a6bb6c9b38
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+void mark_tech_preview(const char *msg, struct module *mod)
++void __maybe_unused mark_tech_preview(const char *msg, struct module *mod)
 +{
 +	const char *str = NULL;
 +
@@ -3446,7 +3446,7 @@ index 000000000000..48a6bb6c9b38
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+void mark_partner_supported(const char *msg, struct module *mod)
++void __maybe_unused mark_partner_supported(const char *msg, struct module *mod)
 +{
 +        const char *str = NULL;
 +
@@ -3484,7 +3484,7 @@ index 000000000000..48a6bb6c9b38
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+bool pci_rh_check_status(struct pci_dev *pci_dev)
++bool __maybe_unused pci_rh_check_status(struct pci_dev *pci_dev)
 +{
 +	if (pci_dev->driver->driver.owner != NULL) {
 +		if (!test_bit(TAINT_OOT_MODULE, &pci_dev->driver->driver.owner->taints)) {
@@ -3505,7 +3505,7 @@ index 000000000000..48a6bb6c9b38
 + *
 + * Reserved for Internal Red Hat use only.
 + */
-+void module_rh_check_status(const char * module_name)
++void __maybe_unused module_rh_check_status(const char * module_name)
 +{
 +	driver_unmaintained(module_name);
 +	driver_deprecated(module_name);
@@ -3521,7 +3521,7 @@ index 000000000000..48a6bb6c9b38
 +  *
 +  * Reserved for Internal Red Hat use only.
 +  */
-+void init_rh_check_status(char *fn_name)
++void __maybe_unused init_rh_check_status(char *fn_name)
 +{
 +	init_fn_deprecated(fn_name);
 +	init_fn_unmaintained(fn_name);

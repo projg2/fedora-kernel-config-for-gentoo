@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/690828965c5831294064da2c7aebe4de7438eab3
+ 690828965c5831294064da2c7aebe4de7438eab3 kernel/rh_messages.c: Mark functions as possibly unused
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/b1cf24a0ca9448a0dc5bb58b5610094f382f4292
  b1cf24a0ca9448a0dc5bb58b5610094f382f4292 crypto: rng - Override drivers/char/random in FIPS mode
 

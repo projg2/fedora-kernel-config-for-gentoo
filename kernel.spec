@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc0.20231107gitbe3ca57cfb77.10
+%define pkgrelease 0.rc0.20231108git305230142ae0.11
 %define kversion 6
-%define tarfile_release 6.6-15029-gbe3ca57cfb77
+%define tarfile_release 6.6-15365-g305230142ae0
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20231107gitbe3ca57cfb77.10%{?buildid}%{?dist}
+%define specrelease 0.rc0.20231108git305230142ae0.11%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3709,8 +3709,11 @@ fi\
 #
 #
 %changelog
-* Tue Nov 07 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.0-0.rc0.20231107gitbe3ca57cfb77.10]
+* Wed Nov 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc0.305230142ae0.11]
+- Turn CONFIG_SND_SOC_INTEL_AVS_MACH_RT5514 on for Fedora x86 (Jason Montleon)
+- kernel/rh_messages.c: Mark functions as possibly unused (Prarit Bhargava)
 - Add snd-hda-cirrus-scodec-test to mod-internal.list (Scott Weaver)
+- Linux v6.7.0-0.rc0.305230142ae0
 
 * Tue Nov 07 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc0.be3ca57cfb77.10]
 - Turn off BPF_SYSCALL in pending for zfcpdump (Justin M. Forbes)
