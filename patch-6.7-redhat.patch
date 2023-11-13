@@ -125,7 +125,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index a82587fbdad3..9c5035159d37 100644
+index ede0bd241056..c5fc72ae0c20 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1671,10 +1671,10 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 62612f87aafa..66a4abbf0275 100644
+index 88b54cdcbd68..8c304a6bb55d 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
-@@ -252,6 +252,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
+@@ -251,6 +251,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
  
  static blk_status_t nvme_error_status(u16 status)
  {
@@ -1684,7 +1684,7 @@ index 62612f87aafa..66a4abbf0275 100644
  	switch (status & 0x7ff) {
  	case NVME_SC_SUCCESS:
  		return BLK_STS_OK;
-@@ -342,6 +345,7 @@ enum nvme_disposition {
+@@ -341,6 +344,7 @@ enum nvme_disposition {
  	COMPLETE,
  	RETRY,
  	FAILOVER,
@@ -1692,7 +1692,7 @@ index 62612f87aafa..66a4abbf0275 100644
  	AUTHENTICATE,
  };
  
-@@ -353,15 +357,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
+@@ -352,15 +356,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
  	if ((nvme_req(req)->status & 0x7ff) == NVME_SC_AUTH_REQUIRED)
  		return AUTHENTICATE;
  
@@ -1712,7 +1712,7 @@ index 62612f87aafa..66a4abbf0275 100644
  	} else {
  		if (blk_queue_dying(req->q))
  			return COMPLETE;
-@@ -391,6 +396,14 @@ static inline void nvme_end_req(struct request *req)
+@@ -390,6 +395,14 @@ static inline void nvme_end_req(struct request *req)
  	blk_mq_end_request(req, status);
  }
  
@@ -1727,7 +1727,7 @@ index 62612f87aafa..66a4abbf0275 100644
  void nvme_complete_rq(struct request *req)
  {
  	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
-@@ -420,6 +433,9 @@ void nvme_complete_rq(struct request *req)
+@@ -419,6 +432,9 @@ void nvme_complete_rq(struct request *req)
  	case FAILOVER:
  		nvme_failover_req(req);
  		return;
@@ -2284,7 +2284,7 @@ index d9ad21058eed..4424db2f92f5 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 99b8176c3738..baaeb78a2bd2 100644
+index ff217a5ce552..90c924a7fa88 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -405,6 +405,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
