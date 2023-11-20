@@ -32,13 +32,14 @@
  include/linux/security.h                           |   5 +
  kernel/module/main.c                               |   2 +
  kernel/module/signing.c                            |   9 +-
+ net/netfilter/nf_tables_api.c                      |  22 ++-
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 ++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 40 files changed, 696 insertions(+), 182 deletions(-)
+ 41 files changed, 713 insertions(+), 187 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index 03c52108af62..66048c4637d1 100644
@@ -1480,6 +1481,63 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
  
  int module_sig_check(struct load_info *info, int flags)
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 3bf428a188cc..f9042b7e64b4 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -6464,6 +6464,12 @@ static int nft_setelem_deactivate(const struct net *net,
+ 	return ret;
+ }
+ 
++static void nft_setelem_catchall_destroy(struct nft_set_elem_catchall *catchall)
++{
++	list_del_rcu(&catchall->list);
++	kfree_rcu(catchall, rcu);
++}
++
+ static void nft_setelem_catchall_remove(const struct net *net,
+ 					const struct nft_set *set,
+ 					const struct nft_set_elem *elem)
+@@ -6472,8 +6478,7 @@ static void nft_setelem_catchall_remove(const struct net *net,
+ 
+ 	list_for_each_entry_safe(catchall, next, &set->catchall_list, list) {
+ 		if (catchall->elem == elem->priv) {
+-			list_del_rcu(&catchall->list);
+-			kfree_rcu(catchall, rcu);
++			nft_setelem_catchall_destroy(catchall);
+ 			break;
+ 		}
+ 	}
+@@ -9638,11 +9643,12 @@ static struct nft_trans_gc *nft_trans_gc_catchall(struct nft_trans_gc *gc,
+ 						  unsigned int gc_seq,
+ 						  bool sync)
+ {
+-	struct nft_set_elem_catchall *catchall;
++	struct nft_set_elem_catchall *catchall, *next;
+ 	const struct nft_set *set = gc->set;
++	struct nft_elem_priv *elem_priv;
+ 	struct nft_set_ext *ext;
+ 
+-	list_for_each_entry_rcu(catchall, &set->catchall_list, list) {
++	list_for_each_entry_safe(catchall, next, &set->catchall_list, list) {
+ 		ext = nft_set_elem_ext(set, catchall->elem);
+ 
+ 		if (!nft_set_elem_expired(ext))
+@@ -9660,7 +9666,13 @@ static struct nft_trans_gc *nft_trans_gc_catchall(struct nft_trans_gc *gc,
+ 		if (!gc)
+ 			return NULL;
+ 
+-		nft_trans_gc_elem_add(gc, catchall->elem);
++		elem_priv = catchall->elem;
++		if (sync) {
++			nft_setelem_data_deactivate(gc->net, gc->set, elem_priv);
++			nft_setelem_catchall_destroy(catchall);
++		}
++
++		nft_trans_gc_elem_add(gc, elem_priv);
+ 	}
+ 
+ 	return gc;
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
 index b3dee80497cb..3715db3f99d4 100644
 --- a/scripts/mod/modpost.c
