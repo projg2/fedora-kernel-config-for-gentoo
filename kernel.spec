@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.6.1
-%define specversion 6.6.1
+%define specrpmversion 6.6.2
+%define specversion 6.6.2
 %define patchversion 6.6
-%define pkgrelease 300
+%define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.6.1
+%define tarfile_release 6.6.2
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 300%{?buildid}%{?dist}
+%define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.6.1
+%define kabiversion 6.6.2
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3709,6 +3709,18 @@ fi\
 #
 #
 %changelog
+* Mon Nov 20 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.6.2-200]
+- frop the build number back to 200 for fedora-srpm.sh (Justin M. Forbes)
+- ACPI: video: Use acpi_device_fix_up_power_children() (Hans de Goede)
+- ACPI: PM: Add acpi_device_fix_up_power_children() function (Hans de Goede)
+
+* Mon Nov 20 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.6.2-0]
+- Add bug for AMD ACPI alarm (Justin M. Forbes)
+- rtc: cmos: Use ACPI alarm for non-Intel x86 systems too (Mario Limonciello)
+- Add bluetooth fixes to BugsFixed (Justin M. Forbes)
+- Drop F37 from release targets as it will not rebase to 6.6 (Justin M. Forbes)
+- Linux v6.6.2
+
 * Wed Nov 08 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.6.1-0]
 - drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set (Javier Martinez Canillas)
 - Added required files for rebase (Augusto Caringi)

@@ -1,3 +1,12 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/91d392fbbe771b2b4c45fd39b9150e27be3251ba
+ 91d392fbbe771b2b4c45fd39b9150e27be3251ba ACPI: video: Use acpi_device_fix_up_power_children()
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3bd5c005766e37c5c60b1210e844091ddebd28d6
+ 3bd5c005766e37c5c60b1210e844091ddebd28d6 ACPI: PM: Add acpi_device_fix_up_power_children() function
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/46f41fa0448229c32bbc60d3c8ef50d22c33b117
+ 46f41fa0448229c32bbc60d3c8ef50d22c33b117 rtc: cmos: Use ACPI alarm for non-Intel x86 systems too
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/84c68fe1f91beef8b25ca2202d3581260447b334
  84c68fe1f91beef8b25ca2202d3581260447b334 drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
 
