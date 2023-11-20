@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/acc130077a200c2467cd265c2ef75e82f653a1ad
+ acc130077a200c2467cd265c2ef75e82f653a1ad rtc: cmos: Use ACPI alarm for non-Intel x86 systems too
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/9ed1817997b0d2f283275cce33cd7043b220d990
  9ed1817997b0d2f283275cce33cd7043b220d990 power: supply: core: Use blocking_notifier_call_chain to avoid RCU complaint
 

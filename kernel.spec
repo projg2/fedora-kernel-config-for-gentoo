@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.5.11
-%define specversion 6.5.11
+%define specrpmversion 6.5.12
+%define specversion 6.5.12
 %define patchversion 6.5
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.5.11
+%define tarfile_release 6.5.12
 # This is needed to do merge window version magic
 %define patchlevel 5
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.5.11
+%define kabiversion 6.5.12
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3702,6 +3702,11 @@ fi\
 #
 #
 %changelog
+* Mon Nov 20 2023 Augusto Caringi <acaringi@redhat.com> [6.5.12-0]
+- Add bug for AMD ACPI alarm (Justin M. Forbes)
+- rtc: cmos: Use ACPI alarm for non-Intel x86 systems too (Mario Limonciello)
+- Linux v6.5.12
+
 * Wed Nov 08 2023 Augusto Caringi <acaringi@redhat.com> [6.5.11-0]
 - Linux v6.5.11
 

@@ -24,6 +24,7 @@
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
+ drivers/rtc/rtc-cmos.c                             |  18 ++-
  drivers/scsi/sd.c                                  |  10 ++
  drivers/usb/core/hub.c                             |   7 ++
  fs/btrfs/space-info.c                              |  17 +++
@@ -37,10 +38,10 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 39 files changed, 549 insertions(+), 184 deletions(-)
+ 40 files changed, 561 insertions(+), 190 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 555cc34f4730..f87dc4f3eb24 100644
+index a6e152146028..af6bab938da2 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1172,6 +1173,41 @@ index eb65170b97ff..e8b906b6ffbf 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/rtc/rtc-cmos.c b/drivers/rtc/rtc-cmos.c
+index c9416fe8542d..aafb1efe7915 100644
+--- a/drivers/rtc/rtc-cmos.c
++++ b/drivers/rtc/rtc-cmos.c
+@@ -818,18 +818,24 @@ static void rtc_wake_off(struct device *dev)
+ }
+ 
+ #ifdef CONFIG_X86
+-/* Enable use_acpi_alarm mode for Intel platforms no earlier than 2015 */
+ static void use_acpi_alarm_quirks(void)
+ {
+-	if (boot_cpu_data.x86_vendor != X86_VENDOR_INTEL)
++	switch (boot_cpu_data.x86_vendor) {
++	case X86_VENDOR_INTEL:
++		if (dmi_get_bios_year() < 2015)
++			return;
++		break;
++	case X86_VENDOR_AMD:
++	case X86_VENDOR_HYGON:
++		if (dmi_get_bios_year() < 2021)
++			return;
++		break;
++	default:
+ 		return;
+-
++	}
+ 	if (!is_hpet_enabled())
+ 		return;
+ 
+-	if (dmi_get_bios_year() < 2015)
+-		return;
+-
+ 	use_acpi_alarm = true;
+ }
+ #else
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
 index c4babb16dac7..9c9342e0c055 100644
 --- a/drivers/scsi/sd.c
