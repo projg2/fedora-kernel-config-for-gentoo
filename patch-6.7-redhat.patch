@@ -125,7 +125,7 @@ index 000000000000..effb81d04bfd
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index ede0bd241056..c5fc72ae0c20 100644
+index 724c79bebe72..3d43997c2197 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -2070,10 +2070,10 @@ index 605013d3ee83..59d7ac663316 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 32d1e73e46ee..2370195b61b7 100644
+index 03348f605c2e..fe30dee3d218 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
-@@ -8114,6 +8114,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
+@@ -8122,6 +8122,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
  };
  
  static struct pci_device_id qla2xxx_pci_tbl[] = {
@@ -2081,7 +2081,7 @@ index 32d1e73e46ee..2370195b61b7 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2100) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2200) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP2300) },
-@@ -8126,13 +8127,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
+@@ -8134,13 +8135,18 @@ static struct pci_device_id qla2xxx_pci_tbl[] = {
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP8432) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5422) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_QLOGIC, PCI_DEVICE_ID_QLOGIC_ISP5432) },
@@ -2121,7 +2121,7 @@ index 675332e49a7b..4a3cbddacef1 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 530918cbfce2..a73f6df35334 100644
+index fa00dd503cbf..a93a331d023d 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
@@ -2139,7 +2139,7 @@ index 530918cbfce2..a73f6df35334 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -4048,6 +4056,8 @@ static int __init init_sd(void)
+@@ -4041,6 +4049,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
@@ -3642,7 +3642,7 @@ index 000000000000..616692b1ac11
 +
 +#endif /* __RH_MESSAGES_H */
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 973b5e5ae2dd..3c9f6d39cbd8 100644
+index cb6406f485a9..71e1f15d9dce 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
@@ -3653,7 +3653,7 @@ index 973b5e5ae2dd..3c9f6d39cbd8 100644
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -1985,6 +1986,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -1987,6 +1988,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -3666,7 +3666,7 @@ index 973b5e5ae2dd..3c9f6d39cbd8 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2045,6 +2052,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2047,6 +2054,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);

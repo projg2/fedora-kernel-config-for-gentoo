@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc1.20231117git7475e51b8796.19
+%define pkgrelease 0.rc2.22
 %define kversion 6
-%define tarfile_release 6.7-rc1-125-g7475e51b8796
+%define tarfile_release 6.7-rc2
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20231117git7475e51b8796.19%{?buildid}%{?dist}
+%define specrelease 0.rc2.22%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3709,6 +3709,16 @@ fi\
 #
 #
 %changelog
+* Mon Nov 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc2.22]
+- Fix s390 zfcpfdump bpf build failures for cgroups (Don Zickus)
+- Linux v6.7.0-0.rc2
+
+* Sun Nov 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc1.037266a5f723.21]
+- Linux v6.7.0-0.rc1.037266a5f723
+
+* Sat Nov 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc1.791c8ab095f7.20]
+- Linux v6.7.0-0.rc1.791c8ab095f7
+
 * Fri Nov 17 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc1.7475e51b8796.19]
 - Linux v6.7.0-0.rc1.7475e51b8796
 
