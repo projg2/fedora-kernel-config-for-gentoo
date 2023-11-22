@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc2.22
+%define pkgrelease 0.rc2.20231122gitc2d5304e6c64.23
 %define kversion 6
-%define tarfile_release 6.7-rc2
+%define tarfile_release 6.7-rc2-14-gc2d5304e6c64
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.22%{?buildid}%{?dist}
+%define specrelease 0.rc2.20231122gitc2d5304e6c64.23%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -918,8 +918,6 @@ Source76: partial-clang_lto-aarch64-snip.config
 Source77: partial-clang_lto-aarch64-debug-snip.config
 Source80: generate_all_configs.sh
 Source81: process_configs.sh
-
-Source82: update_scripts.sh
 
 Source84: mod-internal.list
 Source85: mod-partner.list
@@ -1859,20 +1857,27 @@ done
 %endif
 RHJOBS=$RPM_BUILD_NCPUS SPECPACKAGE_NAME=%{name} ./process_configs.sh $OPTS %{specrpmversion}
 
-cp %{SOURCE82} .
-RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
-
 # We may want to override files from the primary target in case of building
 # against a flavour of it (eg. centos not rhel), thus override it here if
 # necessary
+update_scripts() {
+	TARGET="$1"
+
+	for i in "$RPM_SOURCE_DIR"/*."$TARGET"; do
+		NEW=${i%."$TARGET"}
+		cp "$i" "$(basename "$NEW")"
+	done
+}
+
+update_target=%{primary_target}
 if [ "%{primary_target}" == "rhel" ]; then
+: # no-op to avoid empty if-fi error
 %if 0%{?centos}
   echo "Updating scripts/sources to centos version"
-  RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh centos
-%else
-  echo "Not updating scripts/sources to centos version"
+  update_target=centos
 %endif
 fi
+update_scripts $update_target
 
 # end of kernel config
 %endif
@@ -3709,6 +3714,15 @@ fi\
 #
 #
 %changelog
+* Wed Nov 22 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.0-0.rc2.20231122gitc2d5304e6c64.23]
+- Turn on USB_DWC3 for Fedora (rhbz 2250955) (Justin M. Forbes)
+
+* Wed Nov 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc2.c2d5304e6c64.23]
+- redhat/configs: Move IOMMUFD to common (Alex Williamson)
+- redhat: Really remove cpupower files (Prarit Bhargava)
+- redhat: remove update_scripts.sh (Prarit Bhargava)
+- Linux v6.7.0-0.rc2.c2d5304e6c64
+
 * Mon Nov 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc2.22]
 - Fix s390 zfcpfdump bpf build failures for cgroups (Don Zickus)
 - Linux v6.7.0-0.rc2
