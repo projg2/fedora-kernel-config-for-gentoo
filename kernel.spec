@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc2.20231122gitc2d5304e6c64.23
+%define pkgrelease 0.rc2.20231125git0f5cc96c367f.26
 %define kversion 6
-%define tarfile_release 6.7-rc2-14-gc2d5304e6c64
+%define tarfile_release 6.7-rc2-195-g0f5cc96c367f
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20231122gitc2d5304e6c64.23%{?buildid}%{?dist}
+%define specrelease 0.rc2.20231125git0f5cc96c367f.26%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3714,8 +3714,15 @@ fi\
 #
 #
 %changelog
-* Wed Nov 22 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.0-0.rc2.20231122gitc2d5304e6c64.23]
+* Sat Nov 25 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc2.0f5cc96c367f.26]
+- Linux v6.7.0-0.rc2.0f5cc96c367f
+
+* Fri Nov 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc2.f1a09972a45a.25]
+- Linux v6.7.0-0.rc2.f1a09972a45a
+
+* Thu Nov 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc2.9b6de136b5f0.24]
 - Turn on USB_DWC3 for Fedora (rhbz 2250955) (Justin M. Forbes)
+- Linux v6.7.0-0.rc2.9b6de136b5f0
 
 * Wed Nov 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc2.c2d5304e6c64.23]
 - redhat/configs: Move IOMMUFD to common (Alex Williamson)

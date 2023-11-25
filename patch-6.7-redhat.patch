@@ -204,10 +204,10 @@ index b0d00032479d..afb9544fb007 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index cc364fce6aa9..f5709ee1047f 100644
+index ba75f6bee774..7d37ce1772f1 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2519,3 +2519,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2520,3 +2520,8 @@ int ipl_report_free(struct ipl_report *report)
  }
  
  #endif
@@ -1671,7 +1671,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 88b54cdcbd68..8c304a6bb55d 100644
+index 46a4c9c5ea96..d106f73f44f1 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
