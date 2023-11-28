@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.6.2
-%define specversion 6.6.2
+%define specrpmversion 6.6.3
+%define specversion 6.6.3
 %define patchversion 6.6
-%define pkgrelease 201
+%define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.6.2
+%define tarfile_release 6.6.3
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 201%{?buildid}%{?dist}
+%define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.6.2
+%define kabiversion 6.6.3
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3709,7 +3709,9 @@ fi\
 #
 #
 %changelog
-* Wed Nov 22 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.6.2-201]
+* Tue Nov 28 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.6.3-0]
+- Add BugsFixed for 6.6.3 (Justin M. Forbes)
+- Update BugsFixed (Justin M. Forbes)
 - Turn on USB_DWC3 for Fedora (rhbz 2250955) (Justin M. Forbes)
 - Revert "netfilter: nf_tables: remove catchall element in GC sync path" (Justin M. Forbes)
 - More BugsFixed (Justin M. Forbes)
@@ -3717,6 +3719,7 @@ fi\
 - frop the build number back to 200 for fedora-srpm.sh (Justin M. Forbes)
 - ACPI: video: Use acpi_device_fix_up_power_children() (Hans de Goede)
 - ACPI: PM: Add acpi_device_fix_up_power_children() function (Hans de Goede)
+- Linux v6.6.3
 
 * Mon Nov 20 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.6.2-0]
 - Add bug for AMD ACPI alarm (Justin M. Forbes)
