@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc3.28
+%define pkgrelease 0.rc3.20231128gitdf60cee26a2e.29
 %define kversion 6
-%define tarfile_release 6.7-rc3
+%define tarfile_release 6.7-rc3-14-gdf60cee26a2e
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.28%{?buildid}%{?dist}
+%define specrelease 0.rc3.20231128gitdf60cee26a2e.29%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3714,6 +3714,11 @@ fi\
 #
 #
 %changelog
+* Tue Nov 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc3.df60cee26a2e.29]
+- Add drm_exec_test to mod-internal.list for depmod to succeed (Mika Penttilä)
+- RHEL 9.4 DRM backport (upto v6.6 kernel), sync Kconfigs (Mika Penttilä)
+- Linux v6.7.0-0.rc3.df60cee26a2e
+
 * Mon Nov 27 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc3.28]
 - Linux v6.7.0-0.rc3
 
