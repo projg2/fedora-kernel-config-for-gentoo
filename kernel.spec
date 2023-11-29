@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc3.20231128gitdf60cee26a2e.29
+%define pkgrelease 0.rc3.20231129git18d46e76d7c2.30
 %define kversion 6
-%define tarfile_release 6.7-rc3-14-gdf60cee26a2e
+%define tarfile_release 6.7-rc3-24-g18d46e76d7c2
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20231128gitdf60cee26a2e.29%{?buildid}%{?dist}
+%define specrelease 0.rc3.20231129git18d46e76d7c2.30%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3574,7 +3574,7 @@ fi\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/dtb \
 %ghost /%{image_install_path}/dtb-%{KVERREL}%{?3:+%{3}} \
 %endif\
-%attr(0600, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
 %ghost %attr(0600, root, root) /boot/System.map-%{KVERREL}%{?3:+%{3}}\
 %dir /lib/modules\
 %dir /lib/modules/%{KVERREL}%{?3:+%{3}}\
@@ -3634,11 +3634,11 @@ fi\
 %else\
 %if %{with_efiuki}\
 %{expand:%%files %{?3:%{3}-}uki-virt}\
-%attr(0600, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.%compext\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/config\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.builtin*\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi\
+%attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi\
 %ghost /%{image_install_path}/efi/EFI/Linux/%{?-k:%{-k*}}%{!?-k:*}-%{KVERREL}%{?3:+%{3}}.efi\
 %endif\
 %endif\
@@ -3714,6 +3714,12 @@ fi\
 #
 #
 %changelog
+* Wed Nov 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc3.18d46e76d7c2.30]
+- Enable cryptographic acceleration config flags for PowerPC (Mamatha Inamdar)
+- Also make vmlinuz-virt.efi world readable (Zbigniew Jędrzejewski-Szmek)
+- Drop custom mode for System.map file (Zbigniew Jędrzejewski-Szmek)
+- Linux v6.7.0-0.rc3.18d46e76d7c2
+
 * Tue Nov 28 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc3.df60cee26a2e.29]
 - Add drm_exec_test to mod-internal.list for depmod to succeed (Mika Penttilä)
 - RHEL 9.4 DRM backport (upto v6.6 kernel), sync Kconfigs (Mika Penttilä)
