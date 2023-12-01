@@ -1,3 +1,9 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/6788547a344123907407878c441401412061007a
+ 6788547a344123907407878c441401412061007a ext4: Mark mounting fs-verity filesystems as tech-preview
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/17cfb62d66fef8c562cdd953244ca3dae6fcdc4b
+ 17cfb62d66fef8c562cdd953244ca3dae6fcdc4b erofs: Add tech preview markers at mount
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/690828965c5831294064da2c7aebe4de7438eab3
  690828965c5831294064da2c7aebe4de7438eab3 kernel/rh_messages.c: Mark functions as possibly unused
 

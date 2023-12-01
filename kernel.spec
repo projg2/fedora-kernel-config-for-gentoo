@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc3.20231129git18d46e76d7c2.30
+%define pkgrelease 0.rc3.20231201git994d5c58e50e.32
 %define kversion 6
-%define tarfile_release 6.7-rc3-24-g18d46e76d7c2
+%define tarfile_release 6.7-rc3-134-g994d5c58e50e
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20231129git18d46e76d7c2.30%{?buildid}%{?dist}
+%define specrelease 0.rc3.20231201git994d5c58e50e.32%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -285,7 +285,7 @@ Summary: The Linux kernel
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
 
-%ifarch x86_64
+%ifarch x86_64 aarch64
 %define with_efiuki %{?_without_efiuki: 0} %{?!_without_efiuki: 1}
 %else
 %define with_efiuki 0
@@ -1652,6 +1652,26 @@ Prebuilt debug unified kernel image for virtual machines.
 %if %{with_up_base} && %{with_efiuki}
 %description uki-virt
 Prebuilt default unified kernel image for virtual machines.
+%endif
+
+%if %{with_arm64_16k} && %{with_debug} && %{with_efiuki}
+%description 16k-debug-uki-virt
+Prebuilt 16k debug unified kernel image for virtual machines.
+%endif
+
+%if %{with_arm64_16k_base} && %{with_efiuki}
+%description 16k-uki-virt
+Prebuilt 16k unified kernel image for virtual machines.
+%endif
+
+%if %{with_arm64_64k} && %{with_debug} && %{with_efiuki}
+%description 64k-debug-uki-virt
+Prebuilt 64k debug unified kernel image for virtual machines.
+%endif
+
+%if %{with_arm64_64k_base} && %{with_efiuki}
+%description 64k-uki-virt
+Prebuilt 64k unified kernel image for virtual machines.
 %endif
 
 %if %{with_ipaclones}
@@ -3358,6 +3378,16 @@ fi\
 %kernel_variant_post -v 16k-debug
 %endif
 
+%if %{with_arm64_16k} && %{with_debug} && %{with_efiuki}
+%kernel_variant_posttrans -v 16k-debug -u virt
+%kernel_variant_preun -v 16k-debug -u virt
+%endif
+
+%if %{with_arm64_16k_base} && %{with_efiuki}
+%kernel_variant_posttrans -v 16k -u virt
+%kernel_variant_preun -v 16k -u virt
+%endif
+
 %if %{with_arm64_64k_base}
 %kernel_variant_preun -v 64k
 %kernel_variant_post -v 64k
@@ -3366,6 +3396,16 @@ fi\
 %if %{with_debug} && %{with_arm64_64k}
 %kernel_variant_preun -v 64k-debug
 %kernel_variant_post -v 64k-debug
+%endif
+
+%if %{with_arm64_64k} && %{with_debug} && %{with_efiuki}
+%kernel_variant_posttrans -v 64k-debug -u virt
+%kernel_variant_preun -v 64k-debug -u virt
+%endif
+
+%if %{with_arm64_64k_base} && %{with_efiuki}
+%kernel_variant_posttrans -v 64k -u virt
+%kernel_variant_preun -v 64k -u virt
 %endif
 
 %if %{with_realtime_base}
@@ -3714,6 +3754,19 @@ fi\
 #
 #
 %changelog
+* Fri Dec 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc3.994d5c58e50e.32]
+- ext4: Mark mounting fs-verity filesystems as tech-preview (Alexander Larsson)
+- erofs: Add tech preview markers at mount (Alexander Larsson)
+- Enable fs-verity (Alexander Larsson)
+- Enable erofs (Alexander Larsson)
+- aarch64: enable uki (Gerd Hoffmann)
+- redhat: enable CONFIG_SND_SOC_INTEL_SOF_DA7219_MACH as a module for x86 (Patrick Talbert)
+- Turn CONFIG_MFD_CS42L43_SDW on for RHEL (Justin M. Forbes)
+- Linux v6.7.0-0.rc3.994d5c58e50e
+
+* Thu Nov 30 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc3.3b47bc037bd4.31]
+- Linux v6.7.0-0.rc3.3b47bc037bd4
+
 * Wed Nov 29 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc3.18d46e76d7c2.30]
 - Enable cryptographic acceleration config flags for PowerPC (Mamatha Inamdar)
 - Also make vmlinuz-virt.efi world readable (Zbigniew Jędrzejewski-Szmek)
