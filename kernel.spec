@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.6.3
-%define specversion 6.6.3
+%define specrpmversion 6.6.4
+%define specversion 6.6.4
 %define patchversion 6.6
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.6.3
+%define tarfile_release 6.6.4
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.6.3
+%define kabiversion 6.6.4
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -785,7 +785,7 @@ BuildRequires: binutils
 BuildRequires: lvm2
 BuildRequires: systemd-boot-unsigned
 # For systemd-stub and systemd-pcrphase
-BuildRequires: systemd-udev >= 252-1
+BuildRequires: systemd-udev
 # For TPM operations in UKI initramfs
 BuildRequires: tpm2-tools
 %endif
@@ -1509,7 +1509,7 @@ Provides: installonlypkg(kernel)\
 Provides: kernel-%{?1:%{1}-}uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 Requires(pre): %{kernel_prereq}\
-Requires(pre): systemd >= 254-1\
+Requires(pre): systemd\
 %endif\
 %endif\
 %if %{with_gcov}\
@@ -3709,6 +3709,11 @@ fi\
 #
 #
 %changelog
+* Sun Dec 03 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.6.4-0]
+- redhat: Fix macro for kernel-uki-virt flavor (Neal Gompa)
+- Change the uki reqs for Fedora (Justin M. Forbes)
+- Linux v6.6.4
+
 * Tue Nov 28 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.6.3-0]
 - Add BugsFixed for 6.6.3 (Justin M. Forbes)
 - Update BugsFixed (Justin M. Forbes)
