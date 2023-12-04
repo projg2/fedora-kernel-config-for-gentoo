@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc3.20231201git994d5c58e50e.32
+%define pkgrelease 0.rc4.35
 %define kversion 6
-%define tarfile_release 6.7-rc3-134-g994d5c58e50e
+%define tarfile_release 6.7-rc4
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20231201git994d5c58e50e.32%{?buildid}%{?dist}
+%define specrelease 0.rc4.35%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3754,6 +3754,18 @@ fi\
 #
 #
 %changelog
+* Mon Dec 04 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc4.35]
+- Linux v6.7.0-0.rc4
+
+* Sun Dec 03 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc3.968f35f4ab1c.34]
+- Linux v6.7.0-0.rc3.968f35f4ab1c
+
+* Sat Dec 02 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc3.815fb87b7530.33]
+- redhat: disable iptables-legacy compatibility layer (Florian Westphal)
+- redhat: disable dccp conntrack support (Florian Westphal)
+- configs: enable netfilter_netlink_hook in fedora too (Florian Westphal)
+- Linux v6.7.0-0.rc3.815fb87b7530
+
 * Fri Dec 01 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc3.994d5c58e50e.32]
 - ext4: Mark mounting fs-verity filesystems as tech-preview (Alexander Larsson)
 - erofs: Add tech preview markers at mount (Alexander Larsson)
