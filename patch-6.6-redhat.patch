@@ -38,7 +38,7 @@
  37 files changed, 681 insertions(+), 181 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index cbe63ba9126e..07635f242c3d 100644
+index ee4e504a3e78..c4128bb7691b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -232,10 +232,10 @@ index 1687483ff319..390b67f19181 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 691d4b7686ee..433ff7d8a844 100644
+index 1d249d0f61ae..f064f4c6405a 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1752,6 +1752,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1757,6 +1757,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
  
@@ -924,7 +924,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index c146378c7d03..f9e8d35eaccc 100644
+index 3a67e636287a..eb5e796277d6 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1034,7 +1034,7 @@ index 228fb2d11c70..696cfa7025de 100644
  }
  #else
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 6effa13039f3..fbfbd542b858 100644
+index e17509f0b3fa..f3b41bec28c2 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
@@ -1052,7 +1052,7 @@ index 6effa13039f3..fbfbd542b858 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -4045,6 +4053,8 @@ static int __init init_sd(void)
+@@ -4052,6 +4060,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
