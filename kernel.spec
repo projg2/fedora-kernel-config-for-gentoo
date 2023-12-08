@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc4.20231206gitbee0e7762ad2.37
+%define pkgrelease 0.rc4.20231208git5e3f5b81de80.38
 %define kversion 6
-%define tarfile_release 6.7-rc4-9-gbee0e7762ad2
+%define tarfile_release 6.7-rc4-111-g5e3f5b81de80
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20231206gitbee0e7762ad2.37%{?buildid}%{?dist}
+%define specrelease 0.rc4.20231208git5e3f5b81de80.38%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3754,6 +3754,10 @@ fi\
 #
 #
 %changelog
+* Fri Dec 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc4.5e3f5b81de80.38]
+- Turn on CONFIG_SECURITY_DMESG_RESTRICT for Fedora (Justin M. Forbes)
+- Linux v6.7.0-0.rc4.5e3f5b81de80
+
 * Wed Dec 06 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc4.bee0e7762ad2.37]
 - Turn off shellcheck for the fedora-stable-release script (Justin M. Forbes)
 
