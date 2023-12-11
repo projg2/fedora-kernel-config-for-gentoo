@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc4.20231208git5e3f5b81de80.38
+%define pkgrelease 0.rc5.41
 %define kversion 6
-%define tarfile_release 6.7-rc4-111-g5e3f5b81de80
+%define tarfile_release 6.7-rc5
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20231208git5e3f5b81de80.38%{?buildid}%{?dist}
+%define specrelease 0.rc5.41%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3754,6 +3754,16 @@ fi\
 #
 #
 %changelog
+* Mon Dec 11 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc5.41]
+- redhat/configs: Enable UCLAMP_TASK for PipeWire and WirePlumber (Neal Gompa)
+- Linux v6.7.0-0.rc5
+
+* Sun Dec 10 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc4.c527f5606aa5.40]
+- Linux v6.7.0-0.rc4.c527f5606aa5
+
+* Sat Dec 09 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc4.f2e8a57ee903.39]
+- Linux v6.7.0-0.rc4.f2e8a57ee903
+
 * Fri Dec 08 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc4.5e3f5b81de80.38]
 - Turn on CONFIG_SECURITY_DMESG_RESTRICT for Fedora (Justin M. Forbes)
 - Linux v6.7.0-0.rc4.5e3f5b81de80
