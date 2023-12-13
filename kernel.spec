@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc5.20231212git26aff849438c.42
+%define pkgrelease 0.rc5.20231213git88035e5694a8.43
 %define kversion 6
-%define tarfile_release 6.7-rc5-14-g26aff849438c
+%define tarfile_release 6.7-rc5-42-g88035e5694a8
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20231212git26aff849438c.42%{?buildid}%{?dist}
+%define specrelease 0.rc5.20231213git88035e5694a8.43%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3754,6 +3754,11 @@ fi\
 #
 #
 %changelog
+* Wed Dec 13 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc5.88035e5694a8.43]
+- Some Fedora config updates for MLX5 (Justin M. Forbes)
+- Turn on DRM_ACCEL drivers for Fedora (Justin M. Forbes)
+- Linux v6.7.0-0.rc5.88035e5694a8
+
 * Tue Dec 12 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc5.26aff849438c.42]
 - redhat: enable the kfence test (Nico Pache)
 - Linux v6.7.0-0.rc5.26aff849438c
