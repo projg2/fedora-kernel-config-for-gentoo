@@ -38,7 +38,7 @@
  37 files changed, 681 insertions(+), 181 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 1eefa893f048..1ee70ed9aba6 100644
+index 707952172ece..456d7d6b52d6 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -681,7 +681,7 @@ index 84e7ba5314d3..efc96776f761 100644
  	data->xport.ops = &hid_rmi_ops;
  
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 77b0271ce6eb..96f60c139c4a 100644
+index 34aee59dd147..7c5a7f7c11bd 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -10,6 +10,7 @@
@@ -1034,7 +1034,7 @@ index 228fb2d11c70..696cfa7025de 100644
  }
  #else
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index e17509f0b3fa..f3b41bec28c2 100644
+index c2e8d9e27749..c24dbb681664 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
@@ -1052,7 +1052,7 @@ index e17509f0b3fa..f3b41bec28c2 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -4052,6 +4060,8 @@ static int __init init_sd(void)
+@@ -4045,6 +4053,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
@@ -1429,7 +1429,7 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index b3dee80497cb..3715db3f99d4 100644
+index ac4ef3e206bb..80ede130812c 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -23,6 +23,7 @@
@@ -1440,7 +1440,7 @@ index b3dee80497cb..3715db3f99d4 100644
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -2088,6 +2089,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2090,6 +2091,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -1453,7 +1453,7 @@ index b3dee80497cb..3715db3f99d4 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2148,6 +2155,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2150,6 +2157,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
