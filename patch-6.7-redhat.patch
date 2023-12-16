@@ -2398,7 +2398,7 @@ index 6717b15e798c..8e1d3eae1686 100644
  
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 60ca768bc867..1e333bcd719a 100644
+index dea043bc1e38..e37dd7f39e9b 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
 @@ -1615,6 +1615,7 @@ int pci_add_dynid(struct pci_driver *drv,
@@ -2409,7 +2409,7 @@ index 60ca768bc867..1e333bcd719a 100644
  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
  		    int pass);
  
-@@ -2667,6 +2668,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
+@@ -2670,6 +2671,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
  	return false;
  }
  
