@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc6.48
+%define pkgrelease 0.rc6.20231219git2cf4f94d8e86.49
 %define kversion 6
-%define tarfile_release 6.7-rc6
+%define tarfile_release 6.7-rc6-10-g2cf4f94d8e86
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.48%{?buildid}%{?dist}
+%define specrelease 0.rc6.20231219git2cf4f94d8e86.49%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3754,6 +3754,9 @@ fi\
 #
 #
 %changelog
+* Tue Dec 19 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc6.2cf4f94d8e86.49]
+- Linux v6.7.0-0.rc6.2cf4f94d8e86
+
 * Mon Dec 18 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc6.48]
 - Disable accel drivers for Fedora x86 (Kate Hsuan)
 - redhat: scripts: An automation script for disabling unused driver for x86 (Kate Hsuan)
