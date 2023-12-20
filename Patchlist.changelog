@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/2fa4b6a18ce384be968eda55c9cb12a6bb5cb4ca
+ 2fa4b6a18ce384be968eda55c9cb12a6bb5cb4ca ALSA: hda: cs35l41: Support mute notifications for CS35L41 HDA
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/0181cc27d637d9f2606dbf33fac4ddf5a64162ca
  0181cc27d637d9f2606dbf33fac4ddf5a64162ca Add support for various laptops using CS35L41 HDA without _DSD
 
